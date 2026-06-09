@@ -1,0 +1,31 @@
+[package]
+name = "lightbi-server"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tokio = { version = "1.0", features = ["full"] }
+axum = { version = "0.7.5", features = ["multipart"] }
+tower-http = { version = "0.5.2", features = ["cors"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+lightbi-project = { path = "../../crates/lightbi-project" }
+lightbi-connectors = { path = "../../crates/lightbi-connectors" }
+lightbi-duckdb = { path = "../../crates/lightbi-duckdb" }
+lightbi-export = { path = "../../crates/lightbi-export" }
+lightbi-view = { path = "../../crates/lightbi-view" }
+lightbi-planner = { path = "../../crates/lightbi-planner" }
+lightbi-runtime = { path = "../../crates/lightbi-runtime" }
+lightbi-runtime-backend = { path = "../../crates/lightbi-runtime-backend" }
+lightbi-vdataset-runtime = { path = "../../crates/lightbi-vdataset-runtime" }
+lightbi-render-contract = { path = "../../crates/lightbi-render-contract" }
+lightbi-dataset = { path = "../../crates/lightbi-dataset" }
+lightbi-schema = { path = "../../crates/lightbi-schema" }
+lightbi-perspective = { path = "../../crates/lightbi-perspective" }
+lightbi-recipe = { path = "../../crates/lightbi-recipe" }
+lightbi-question = { path = "../../crates/lightbi-question" }
+lightbi-insight = { path = "../../crates/lightbi-insight" }
+lightbi-chart = { path = "../../crates/lightbi-chart" }
+lightbi-dashboard = { path = "../../crates/lightbi-dashboard" }
+sqlx = { version = "0.7", features = ["sqlite", "runtime-tokio-rustls"] }
+uuid = { version = "1.8.0", features = ["v4"] }
