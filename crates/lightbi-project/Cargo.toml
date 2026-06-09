@@ -1,0 +1,30 @@
+[package]
+name = "lightbi-project"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+lightbi-store = { path = "../lightbi-store" }
+lightbi-connectors = { path = "../lightbi-connectors" }
+lightbi-dataset = { path = "../lightbi-dataset" }
+lightbi-schema = { path = "../lightbi-schema" }
+lightbi-perspective = { path = "../lightbi-perspective" }
+lightbi-recipe = { path = "../lightbi-recipe" }
+lightbi-planner = { path = "../lightbi-planner" }
+lightbi-question = { path = "../lightbi-question" }
+lightbi-runtime = { path = "../lightbi-runtime" }
+lightbi-runtime-backend = { path = "../lightbi-runtime-backend" }
+lightbi-duckdb = { path = "../lightbi-duckdb" }
+lightbi-vdataset-runtime = { path = "../lightbi-vdataset-runtime" }
+lightbi-view = { path = "../lightbi-view" }
+lightbi-insight = { path = "../lightbi-insight" }
+lightbi-export = { path = "../lightbi-export" }
+lightbi-chart = { path = "../lightbi-chart" }
+lightbi-dashboard = { path = "../lightbi-dashboard" }
+lightbi-render-contract = { path = "../lightbi-render-contract" }
+sqlx = { version = "0.7", features = ["sqlite", "runtime-tokio"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tokio = { version = "1", features = ["full"] }
+async-trait = "0.1"
+thiserror = "1.0"

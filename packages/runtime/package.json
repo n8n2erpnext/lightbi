@@ -1,0 +1,16 @@
+{
+  "name": "@lightbi/runtime",
+  "version": "0.1.0",
+  "private": true,
+  "main": "src/index.ts",
+  "scripts": {
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "zustand": "^5.0.1",
+    "@lightbi/core-types": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.2.2"
+  }
+}

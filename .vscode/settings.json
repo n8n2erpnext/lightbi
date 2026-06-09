@@ -1,0 +1,30 @@
+{
+  "files.watcherExclude": {
+    "**/target/**": true,
+    "**/node_modules/**": true,
+    "**/.git/**": true,
+    "**/dist/**": true,
+    "**/.vite/**": true,
+    "**/logs/**": true,
+    "**/tmp/**": true,
+    "**/.turbo/**": true,
+    "**/coverage/**": true
+  },
+
+  "search.exclude": {
+    "**/target": true,
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/.vite": true,
+    "**/logs": true,
+    "**/tmp": true,
+    "**/.turbo": true,
+    "**/coverage": true
+  },
+
+  "rust-analyzer.checkOnSave": false,
+  "rust-analyzer.cargo.buildScripts.enable": false,
+  "rust-analyzer.procMacro.enable": false,
+
+  "typescript.tsserver.maxTsServerMemory": 1024
+}

@@ -1,0 +1,10 @@
+[package]
+name = "lightbi-runtime"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+async-trait = "0.1"
+thiserror = "1.0"
+lightbi-planner = { path = "../../crates/lightbi-planner" }
+lightbi-runtime-backend = { path = "../../crates/lightbi-runtime-backend" }
