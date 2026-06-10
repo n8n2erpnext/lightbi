@@ -3,6 +3,10 @@
 All notable changes to the LightBI architecture and codebase will be documented in this file.
 
 ## [Unreleased]
+- **Phase UX-4: Developer Mode Toggle**:
+  - `apps/desktop`: Extracted execution warnings into the Developer Diagnostics panel.
+  - `apps/desktop`: Made Developer Diagnostics collapsed by default with an explicit Show/Hide toggle button to clean up normal user workflow.
+
 - **Phase UX-3: Investigation Workspace Layout Cleanup**:
   - `apps/desktop`: Reorganized `/investigation` to prioritize user-facing analysis surface.
   - `apps/desktop`: Hid developer diagnostics (Runtime Intents, Plans, SQL Preview) inside a default-collapsed panel.

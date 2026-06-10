@@ -165,19 +165,7 @@ export const Investigation: React.FC = () => {
                   <span className="text-slate-500">Row count: {previewResult.rowCount}</span>
                 </div>
                 
-                {previewResult.warnings.length > 0 && (
-                  <div className="bg-amber-50 border border-amber-200 text-amber-800 p-3 rounded-md text-xs">
-                    <ul className="list-disc pl-4 space-y-1">
-                      {previewResult.warnings.map((w, i) => {
-                        // Check if it's the missing rows warning to add the extra UI honesty text
-                        if (w === "No dataset rows available for preview.") {
-                          return <li key={i}>{w} Execution wiring will be completed when dataset rows are passed into the investigation session.</li>;
-                        }
-                        return <li key={i}>{w}</li>;
-                      })}
-                    </ul>
-                  </div>
-                )}
+
 
                 {previewResult.rows.length > 0 && (
                   <div className="overflow-x-auto border border-gray-200 rounded-md">
@@ -224,7 +212,9 @@ export const Investigation: React.FC = () => {
                 <Code2 className="w-4 h-4" />
               </div>
               <div>
-                <h3 className="text-sm font-semibold text-gray-900 mb-0.5">Developer diagnostics</h3>
+                <h3 className="text-sm font-semibold text-gray-900 mb-0.5">
+                  {showDiagnostics ? 'Hide developer diagnostics' : 'Show developer diagnostics'}
+                </h3>
                 <p className="text-xs text-gray-500">Runtime intent, logical plan and SQL preview.</p>
               </div>
             </div>
@@ -260,6 +250,22 @@ export const Investigation: React.FC = () => {
 
                 {/* Plan Column */}
                 <div>
+                  {previewResult?.warnings && previewResult.warnings.length > 0 && (
+                    <div className="mb-4">
+                      <h3 className="text-slate-500 mb-2 font-semibold">Execution Warnings</h3>
+                      <div className="bg-amber-950/30 border border-amber-900/50 text-amber-500 p-3 rounded-lg text-xs">
+                        <ul className="list-disc pl-4 space-y-1">
+                          {previewResult.warnings.map((w, i) => {
+                            if (w === "No dataset rows available for preview.") {
+                              return <li key={i}>{w} Execution wiring will be completed when dataset rows are passed into the investigation session.</li>;
+                            }
+                            return <li key={i}>{w}</li>;
+                          })}
+                        </ul>
+                      </div>
+                    </div>
+                  )}
+
                   <h3 className="text-slate-500 mb-2 font-semibold">Runtime Plan</h3>
                   <div className="space-y-1.5 text-slate-300 bg-slate-950 p-3 rounded-lg border border-slate-800/50 mb-4">
                     {runtimePlanPreview.logicalOperations.map((op, i) => {
