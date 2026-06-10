@@ -21,7 +21,7 @@ export interface DuckDBPreviewResult {
   warnings: string[];
   blockedReasons: string[];
   errorMessage?: string;
-  source: "duckdb_preview_sandbox";
+  source: "duckdb_preview_sandbox" | "backend_duckdb_preview" | "js_sandbox_fallback";
 }
 
 export async function executeDuckDBPreviewSandbox(input: DuckDBPreviewInput): Promise<DuckDBPreviewResult> {

@@ -4,6 +4,7 @@ import { ArrowLeft, Database, BarChart3, ChevronDown, ChevronRight, Activity, Co
 import { getCurrentInvestigationSession } from '../lib/investigation-session';
 import { createSafeSqlPreview } from '../lib/safe-sql-preview';
 import { executeDuckDBPreviewSandbox, type DuckDBPreviewResult } from '../lib/duckdb-preview-sandbox';
+import { executeBackendPreview } from '../lib/backend-preview-executor';
 import { createChartPreviewModel, type ChartPreviewModel } from '../lib/chart-preview-model';
 import { ChartPreviewRenderer } from '../components/analysis/ChartPreviewRenderer';
 
@@ -38,12 +39,24 @@ export const Investigation: React.FC = () => {
   const handleRunPreview = async () => {
     setIsExecuting(true);
     try {
-      const result = await executeDuckDBPreviewSandbox({
-        runtimeIntent,
+      let result = await executeBackendPreview({
         runtimePlan: runtimePlanPreview,
-        rows: rows || [],
-        safeSqlPreview
       });
+
+      const needsFallback = result.status === 'failed' || 
+                           (result.status === 'blocked' && result.blockedReasons.some(r => r.includes('No active dataset source available') || r.includes('Only CSV current source is supported')));
+
+      if (needsFallback) {
+        const fallbackResult = await executeDuckDBPreviewSandbox({
+          runtimeIntent,
+          runtimePlan: runtimePlanPreview,
+          rows: rows || [],
+          safeSqlPreview
+        });
+        fallbackResult.source = "js_sandbox_fallback";
+        result = fallbackResult;
+      }
+
       setPreviewResult(result);
       
       const model = createChartPreviewModel({
@@ -163,6 +176,11 @@ export const Investigation: React.FC = () => {
                     {previewResult.status.toUpperCase()}
                   </span>
                   <span className="text-slate-500">Row count: {previewResult.rowCount}</span>
+                  <span className="text-slate-400">•</span>
+                  <span className="text-slate-500 flex items-center gap-1">
+                    <Database className="w-3 h-3" />
+                    Source: <span className="font-mono text-[10px] bg-slate-100 px-1.5 py-0.5 rounded">{previewResult.source}</span>
+                  </span>
                 </div>
                 
 

@@ -3,6 +3,12 @@
 All notable changes to the LightBI architecture and codebase will be documented in this file.
 
 ## [Unreleased]
+- **Phase DU-7C: Frontend Backend Preview Adapter**:
+  - `apps/desktop`: Implemented `executeBackendPreview` adapter to seamlessly route `RuntimePlanPreview` JSON to the Rust Axum execution endpoint.
+  - `apps/desktop`: Updated `Investigation.tsx` to execute via `backend_duckdb_preview` as the primary source of truth, eliminating the need to pass massive JS row sets around for large datasets.
+  - `apps/desktop`: Configured resilient fallback to `js_sandbox_fallback` if the backend connection drops or no active CSV is found in the current source state. Added explicit UI execution source tags.
+  - `docs`: Created `ADR-109-frontend-backend-preview-adapter.md`.
+
 - **Phase DU-7B: Axum Preview Execution Endpoint Contract**:
   - `apps/server`: Implemented a generic `POST /api/preview/execute` endpoint for safe, structured execution of `RuntimePlanPreview` operations.
   - `apps/server`: Added backend SQL compilation logic (`compile_preview_sql`) for logical operations (`group_by`, `trend`, `distribution`, `relationship`) without accepting raw frontend SQL payloads.
