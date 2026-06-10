@@ -60,6 +60,12 @@ The JS sandbox evaluates limits imperatively (pre-aggregation) while the backend
 **Global State Contamination**
 `current_source` is a global Mutex. It must be refactored to be scoped per session, or the `execute` endpoint must explicitly validate the `sourceId` from the frontend against a source registry.
 
+**Mitigation Plan:**
+- Current DU-7 preview phase is single-user/dev-safe only.
+- Before multi-user or project persistence, `current_source` must become project/session scoped.
+- Future execution endpoints should receive `datasetId`/`sourceId` and validate ownership.
+- Global `current_source` is strictly forbidden for production.
+
 ### P2 (Scalability Risk)
 **On-the-fly CSV Parsing**
 Using `read_csv_auto` for every single chart query is functional for previews, but highly inefficient for scale. In the future, the CSV should be materialized into a persistent DuckDB table on upload, and the execution endpoint should query the materialized table.

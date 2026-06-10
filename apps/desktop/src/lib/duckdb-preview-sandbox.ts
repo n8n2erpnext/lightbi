@@ -64,14 +64,20 @@ export async function executeDuckDBPreviewSandbox(input: DuckDBPreviewInput): Pr
     result.columns.push(`${m}_count`);
   }
 
+  let appliedLimit = 100;
+  
+  // Extract limit to apply AFTER aggregation
+  for (const op of input.runtimePlan.logicalOperations) {
+    if (op.type === "limit") {
+      appliedLimit = Math.min(op.rows, 100);
+    }
+  }
+
   for (const op of input.runtimePlan.logicalOperations) {
     switch (op.type) {
       case "scan":
-        // do nothing, we start with currentRows
-        break;
-
       case "limit":
-        currentRows = currentRows.slice(0, Math.min(op.rows, 100));
+        // do nothing, limit is applied at the end
         break;
 
       case "group_by": {
@@ -98,6 +104,17 @@ export async function executeDuckDBPreviewSandbox(input: DuckDBPreviewInput): Pr
           });
         }
         currentRows = Array.from(grouped.values());
+        
+        // Sort deterministically before limit
+        const sortDim = op.dimensions[0];
+        if (sortDim) {
+          currentRows.sort((a, b) => {
+            const va = String(a[sortDim] ?? '');
+            const vb = String(b[sortDim] ?? '');
+            return va.localeCompare(vb);
+          });
+        }
+        
         // For simple group_by logic without specific select
         if (result.columns.length === 0) {
           result.columns = [...op.dimensions, ...op.measures.map(m => `${m}_count`)];
@@ -130,11 +147,9 @@ export async function executeDuckDBPreviewSandbox(input: DuckDBPreviewInput): Pr
         currentRows = Array.from(grouped.values());
         // Sort by time dimension heuristically if it looks sortable, otherwise string sort
         currentRows.sort((a, b) => {
-          const va = a[timeDim];
-          const vb = b[timeDim];
-          if (va < vb) return -1;
-          if (va > vb) return 1;
-          return 0;
+          const va = String(a[timeDim] ?? '');
+          const vb = String(b[timeDim] ?? '');
+          return va.localeCompare(vb);
         });
         if (result.columns.length === 0) {
           result.columns = [timeDim, ...op.measures.map(m => `${m}_count`)];
@@ -153,6 +168,14 @@ export async function executeDuckDBPreviewSandbox(input: DuckDBPreviewInput): Pr
           grouped.get(val)!.row_count++;
         }
         currentRows = Array.from(grouped.values());
+        
+        // Sort deterministically before limit
+        currentRows.sort((a, b) => {
+          const va = String(a[dim] ?? '');
+          const vb = String(b[dim] ?? '');
+          return va.localeCompare(vb);
+        });
+
         if (result.columns.length === 0) {
           result.columns = [dim, 'row_count'];
         } else {
@@ -187,9 +210,9 @@ export async function executeDuckDBPreviewSandbox(input: DuckDBPreviewInput): Pr
     }
   }
 
-  // 5. Final enforce max 100 limit globally just in case limit op wasn't last or wasn't present
-  if (currentRows.length > 100) {
-    currentRows = currentRows.slice(0, 100);
+  // 5. Final enforce limit
+  if (currentRows.length > appliedLimit) {
+    currentRows = currentRows.slice(0, appliedLimit);
   }
 
   result.rows = currentRows;

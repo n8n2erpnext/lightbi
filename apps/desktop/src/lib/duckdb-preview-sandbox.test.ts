@@ -63,6 +63,31 @@ describe('DuckDB Preview Sandbox', () => {
     expect(result.rows).toContainEqual({ route: "B", shipment_count: 1 });
   });
 
+  it('3.5 group_by with 300 rows and limit 1', async () => {
+    const rows = [];
+    for (let i=0; i<200; i++) rows.push({ route: "A", shipment: `S${i}` });
+    for (let i=0; i<100; i++) rows.push({ route: "B", shipment: `S${200+i}` });
+
+    const groupPlan: RuntimePlanPreview = {
+      ...dummyPlan,
+      expectedOutput: { shape: 'bar_chart', dimensions: ['route'], measures: ['shipment'] },
+      logicalOperations: [
+        { type: "limit", rows: 1 },
+        { type: "group_by", dimensions: ["route"], measures: ["shipment"] }
+      ]
+    };
+    const result = await executeDuckDBPreviewSandbox({
+      runtimeIntent: {} as any,
+      runtimePlan: groupPlan,
+      rows
+    });
+    
+    // With deterministic sort ascending on dimension 'route', A comes first
+    expect(result.status).toBe('executed');
+    expect(result.rows).toHaveLength(1);
+    expect(result.rows[0]).toEqual({ route: "A", shipment_count: 200 });
+  });
+
   it('4. trend count correct', async () => {
     const rows = [
       { report_date: "2024-12-23", shipment: "S1" },
@@ -86,6 +111,30 @@ describe('DuckDB Preview Sandbox', () => {
     expect(result.rows[0].shipment_count).toBe(2);
     expect(result.rows[1].report_date).toBe("2024-12-24");
     expect(result.rows[1].shipment_count).toBe(1);
+  });
+
+  it('4.5 trend with 300 rows and limit 1', async () => {
+    const rows = [];
+    for (let i=0; i<200; i++) rows.push({ report_date: "2024-12-23", shipment: `S${i}` });
+    for (let i=0; i<100; i++) rows.push({ report_date: "2024-12-24", shipment: `S${200+i}` });
+
+    const trendPlan: RuntimePlanPreview = {
+      ...dummyPlan,
+      expectedOutput: { shape: 'line_chart', dimensions: ['report_date'], measures: ['shipment'] },
+      logicalOperations: [
+        { type: "limit", rows: 1 },
+        { type: "trend", timeDimension: "report_date", measures: ["shipment"] }
+      ]
+    };
+    const result = await executeDuckDBPreviewSandbox({
+      runtimeIntent: {} as any,
+      runtimePlan: trendPlan,
+      rows
+    });
+    
+    expect(result.rows).toHaveLength(1);
+    expect(result.rows[0].report_date).toBe("2024-12-23");
+    expect(result.rows[0].shipment_count).toBe(200);
   });
 
   it('5. distribution count correct', async () => {
@@ -118,6 +167,33 @@ describe('DuckDB Preview Sandbox', () => {
     expect(aged).toBeDefined();
     if (aged?.row_count !== undefined) expect(aged?.row_count).toBe(1);
     else expect(aged?.record_count_count).toBe(1);
+  });
+
+  it('5.5 distribution with 300 rows and limit 1', async () => {
+    const rows = [];
+    for (let i=0; i<250; i++) rows.push({ stock_status: "Normal" });
+    for (let i=0; i<50; i++) rows.push({ stock_status: "Aged" });
+
+    const distPlan: RuntimePlanPreview = {
+      ...dummyPlan,
+      expectedOutput: { shape: 'bar_chart', dimensions: ['stock_status'], measures: ['record_count'] },
+      logicalOperations: [
+        { type: "limit", rows: 1 },
+        { type: "distribution", dimension: "stock_status" }
+      ]
+    };
+    const result = await executeDuckDBPreviewSandbox({
+      runtimeIntent: {} as any,
+      runtimePlan: distPlan,
+      rows
+    });
+    expect(result.rows).toHaveLength(1);
+    
+    // Sort ascends, 'Aged' comes before 'Normal'
+    const aged = result.rows[0];
+    expect(aged.stock_status).toBe("Aged");
+    if (aged.row_count !== undefined) expect(aged.row_count).toBe(50);
+    else expect(aged.record_count_count).toBe(50);
   });
 
   it('6. relationship filters non-null pairs', async () => {
