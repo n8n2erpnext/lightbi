@@ -83,7 +83,7 @@ async function inspectExcel(file: File, candidate: SourceCandidate): Promise<Sou
       return obj;
     });
 
-    const previewObjects = allObjects.slice(0, 10);
+    const previewObjects = allObjects.slice(0, 1000);
     const profiles = profileColumns(columns, allObjects, dataRows.length);
 
     sheetsData[sheetName] = {
@@ -153,7 +153,7 @@ async function inspectDelimitedText(file: File, candidate: SourceCandidate): Pro
     return obj;
   });
 
-  const preview_rows = allObjects.slice(0, 10);
+  const preview_rows = allObjects.slice(0, 1000);
   const profiles = profileColumns(columns, allObjects, dataLines.length);
 
   return {
@@ -209,7 +209,7 @@ async function inspectJson(file: File, candidate: SourceCandidate): Promise<Sour
       name: file.name,
       rows_count: dataArray.length,
       columns,
-      preview_rows: dataArray.slice(0, 10),
+      preview_rows: dataArray.slice(0, 1000),
       detected_fields: columns,
       profiles: profileColumns(columns, dataArray, dataArray.length)
     },

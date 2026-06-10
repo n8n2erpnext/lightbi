@@ -9,6 +9,7 @@ export interface InvestigationSession {
   analysisAction: AnalysisAction;
   runtimeIntent: RuntimeIntent;
   runtimePlanPreview: RuntimePlanPreview;
+  rows?: Record<string, unknown>[];
 }
 
 // In-memory store for now, since we aren't using a real backend or persistent DB yet.
@@ -19,15 +20,25 @@ export function createInvestigationSession(
   datasetId: string,
   analysisAction: AnalysisAction,
   runtimeIntent: RuntimeIntent,
-  runtimePlanPreview: RuntimePlanPreview
+  runtimePlanPreview: RuntimePlanPreview,
+  rows?: Record<string, unknown>[]
 ): InvestigationSession {
+  let safeRows = rows;
+  if (safeRows && safeRows.length > 1000) {
+    safeRows = safeRows.slice(0, 1000);
+  }
+  // Deep clone to preserve original
+  safeRows = safeRows ? JSON.parse(JSON.stringify(safeRows)) : undefined;
+  console.log("TRACE [SESSION] rows.length:", safeRows ? safeRows.length : 0);
+
   const session: InvestigationSession = {
     id: `session_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
     datasetId,
     createdAt: Date.now(),
     analysisAction,
     runtimeIntent,
-    runtimePlanPreview
+    runtimePlanPreview,
+    rows: safeRows
   };
   
   currentSession = session;

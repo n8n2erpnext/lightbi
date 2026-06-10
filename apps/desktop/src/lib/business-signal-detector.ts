@@ -52,69 +52,79 @@ export function normalizeString(str: string): string {
     .replace(/\s+/g, " "); // Collapse multiple spaces
 }
 
-const TAXONOMY: Record<string, { domain: string, label: string, aliases: string[] }> = {
+export type SignalType = "time" | "dimension" | "measure";
+
+const TAXONOMY: Record<string, { domain: string, label: string, type: SignalType, aliases: string[] }> = {
   // Operations
-  "report_date": { domain: "operations", label: "Report Date", aliases: ["ngày báo cáo", "ngay bao cao", "ngày", "ngay", "date", "report date", "delivery date", "ngày giao", "ngay giao", "ngày phát", "ngay phat"] },
-  "driver": { domain: "operations", label: "Driver", aliases: ["driver", "courier", "shipper", "tai xe", "nhan vien giao hang", "tên lái xe", "ten lai xe", "lái xe", "lai xe", "tài xế", "tên tài xế", "ten tai xe", "bưu tá", "buu ta"] },
-  "route": { domain: "operations", label: "Route", aliases: ["route", "zone", "region", "tuyen xe", "khu vuc phat"] },
-  "shipment": { domain: "operations", label: "Shipment", aliases: ["shipment", "package", "parcel", "don hang", "kien hang", "mã tài kiện", "ma tai kien", "tài kiện", "tai kien", "mã kiện", "ma kien", "kiện hàng", "mã vận đơn", "ma van don", "vận đơn", "van don", "awb", "tracking", "tracking code", "shipment id", "parcel id"] },
-  "delivery_status": { domain: "operations", label: "Delivery Status", aliases: ["delivery status", "status", "trang thai", "trang thai giao hang"] },
-  "sla": { domain: "operations", label: "SLA", aliases: ["sla", "deadline", "promise date", "thoi han", "han chot"] },
-  "warehouse": { domain: "operations", label: "Warehouse", aliases: ["warehouse", "hub", "depot", "kho", "kho hang"] },
-  "delay": { domain: "operations", label: "Delay", aliases: ["delay", "late", "cham tre", "tre han"] },
-  "vehicle": { domain: "operations", label: "Vehicle", aliases: ["vehicle", "truck", "van", "xe", "phuong tien"] },
+  "report_date": { domain: "operations", label: "Report Date", type: "time", aliases: ["ngày báo cáo", "ngay bao cao", "ngày", "ngay", "date", "report date", "delivery date", "ngày giao", "ngay giao", "ngày phát", "ngay phat"] },
+  "driver": { domain: "operations", label: "Driver", type: "dimension", aliases: ["driver", "courier", "shipper", "tai xe", "nhan vien giao hang", "tên lái xe", "ten lai xe", "lái xe", "lai xe", "tài xế", "tên tài xế", "ten tai xe", "bưu tá", "buu ta"] },
+  "route": { domain: "operations", label: "Route", type: "dimension", aliases: ["route", "zone", "region", "tuyen xe", "khu vuc phat"] },
+  "shipment": { domain: "operations", label: "Shipment", type: "measure", aliases: ["shipment", "package", "parcel", "don hang", "kien hang", "mã tài kiện", "ma tai kien", "tài kiện", "tai kien", "mã kiện", "ma kien", "kiện hàng", "mã vận đơn", "ma van don", "vận đơn", "van don", "awb", "tracking", "tracking code", "shipment id", "parcel id"] },
+  "delivery_status": { domain: "operations", label: "Delivery Status", type: "dimension", aliases: ["delivery status", "trang thai giao hang"] },
+  "sla": { domain: "operations", label: "SLA", type: "dimension", aliases: ["sla", "deadline", "promise date", "thoi han", "han chot"] },
+  "warehouse": { domain: "operations", label: "Warehouse", type: "dimension", aliases: ["warehouse", "hub", "depot", "kho", "kho hang"] },
+  "delay": { domain: "operations", label: "Delay", type: "measure", aliases: ["delay", "late", "cham tre", "tre han"] },
+  "vehicle": { domain: "operations", label: "Vehicle", type: "dimension", aliases: ["vehicle", "truck", "van", "xe", "phuong tien"] },
   
   // Revenue
-  "customer": { domain: "customer", label: "Customer", aliases: ["customer", "client", "buyer", "khach hang", "nguoi mua"] },
-  "order": { domain: "revenue", label: "Order", aliases: ["order", "purchase", "don mua", "don hang"] },
-  "revenue": { domain: "revenue", label: "Revenue", aliases: ["revenue", "doanh thu", "doanh so"] },
-  "discount": { domain: "revenue", label: "Discount", aliases: ["discount", "giam gia", "chiet khau"] },
-  "sales": { domain: "revenue", label: "Sales", aliases: ["sales", "ban hang", "doanh ban"] },
-  "branch": { domain: "revenue", label: "Branch", aliases: ["branch", "store", "chi nhanh", "cua hang"] },
-  "salesperson": { domain: "revenue", label: "Salesperson", aliases: ["salesperson", "rep", "nhan vien ban hang", "nhan vien kinh doanh"] },
+  "customer": { domain: "customer", label: "Customer", type: "dimension", aliases: ["customer", "client", "buyer", "khach hang", "nguoi mua"] },
+  "order": { domain: "revenue", label: "Order", type: "measure", aliases: ["order", "purchase", "don mua", "don hang"] },
+  "revenue": { domain: "revenue", label: "Revenue", type: "measure", aliases: ["revenue", "doanh thu", "doanh so"] },
+  "discount": { domain: "revenue", label: "Discount", type: "measure", aliases: ["discount", "giam gia", "chiet khau"] },
+  "sales": { domain: "revenue", label: "Sales", type: "measure", aliases: ["sales", "ban hang", "doanh ban"] },
+  "branch": { domain: "revenue", label: "Branch", type: "dimension", aliases: ["branch", "store", "chi nhanh", "cua hang"] },
+  "salesperson": { domain: "revenue", label: "Salesperson", type: "dimension", aliases: ["salesperson", "rep", "nhan vien ban hang", "nhan vien kinh doanh"] },
   
   // Finance
-  "cost": { domain: "finance", label: "Cost", aliases: ["cost", "chi phi", "gia von"] },
-  "profit": { domain: "finance", label: "Profit", aliases: ["profit", "loi nhuan", "lai"] },
-  "margin": { domain: "finance", label: "Margin", aliases: ["margin", "bien loi nhuan"] },
-  "expense": { domain: "finance", label: "Expense", aliases: ["expense", "chi tieu", "chi phi phat sinh"] },
-  "budget": { domain: "finance", label: "Budget", aliases: ["budget", "ngan sach", "han muc"] },
-  "purchase_cost": { domain: "finance", label: "Purchase Cost", aliases: ["purchase cost", "gia mua", "chi phi mua hang"] },
-  "operational_cost": { domain: "finance", label: "Operational Cost", aliases: ["operational cost", "opex", "chi phi hoat dong"] },
-  "supplier_cost": { domain: "finance", label: "Supplier Cost", aliases: ["supplier cost", "chi phi nha cung cap"] },
+  "cost": { domain: "finance", label: "Cost", type: "measure", aliases: ["cost", "chi phi", "gia von"] },
+  "profit": { domain: "finance", label: "Profit", type: "measure", aliases: ["profit", "loi nhuan", "lai"] },
+  "margin": { domain: "finance", label: "Margin", type: "measure", aliases: ["margin", "bien loi nhuan"] },
+  "expense": { domain: "finance", label: "Expense", type: "measure", aliases: ["expense", "chi tieu", "chi phi phat sinh"] },
+  "budget": { domain: "finance", label: "Budget", type: "measure", aliases: ["budget", "ngan sach", "han muc"] },
+  "purchase_cost": { domain: "finance", label: "Purchase Cost", type: "measure", aliases: ["purchase cost", "gia mua", "chi phi mua hang"] },
+  "operational_cost": { domain: "finance", label: "Operational Cost", type: "measure", aliases: ["operational cost", "opex", "chi phi hoat dong"] },
+  "supplier_cost": { domain: "finance", label: "Supplier Cost", type: "measure", aliases: ["supplier cost", "chi phi nha cung cap"] },
   
   // Inventory
-  "sku": { domain: "inventory", label: "SKU", aliases: ["sku", "product code", "item code", "ma san pham", "ma hang"] },
-  "product": { domain: "inventory", label: "Product", aliases: ["product", "item", "san pham", "mat hang"] },
-  "inventory": { domain: "inventory", label: "Inventory", aliases: ["inventory", "stock", "ton kho", "so luong ton"] },
-  "supplier": { domain: "inventory", label: "Supplier", aliases: ["supplier", "vendor", "nha cung cap"] },
-  "stock_movement": { domain: "inventory", label: "Stock Movement", aliases: ["stock movement", "inbound", "outbound", "nhap xuat", "luan chuyen kho"] },
-  "stock_qty": { domain: "inventory", label: "Stock Quantity", aliases: ["stock qty", "quantity", "so luong ton", "sl ton"] },
-  "stock_age": { domain: "inventory", label: "Stock Age", aliases: ["stock age", "aging", "tuoi ton kho", "thoi gian ton"] },
-  "inbound": { domain: "inventory", label: "Inbound", aliases: ["inbound", "receipt", "nhap kho", "hang nhap"] },
-  "outbound": { domain: "inventory", label: "Outbound", aliases: ["outbound", "issue", "xuat kho", "hang xuat"] },
-  "replenishment": { domain: "inventory", label: "Replenishment", aliases: ["replenishment", "restock", "bo sung hang", "nhap them"] },
+  "sku": { domain: "inventory", label: "SKU", type: "dimension", aliases: ["sku", "product code", "item code", "ma san pham", "ma hang"] },
+  "product": { domain: "inventory", label: "Product", type: "dimension", aliases: ["product", "item", "san pham", "mat hang"] },
+  "inventory": { domain: "inventory", label: "Inventory", type: "measure", aliases: ["inventory", "stock", "ton kho", "so luong ton"] },
+  "supplier": { domain: "inventory", label: "Supplier", type: "dimension", aliases: ["supplier", "vendor", "nha cung cap"] },
+  "stock_movement": { domain: "inventory", label: "Stock Movement", type: "measure", aliases: ["stock movement", "inbound", "outbound", "nhap xuat", "luan chuyen kho"] },
+  "stock_qty": { domain: "inventory", label: "Stock Quantity", type: "measure", aliases: ["stock qty", "quantity", "so luong ton", "sl ton"] },
+  "stock_age": { domain: "inventory", label: "Stock Age", type: "measure", aliases: ["stock age", "aging", "tuoi ton kho", "thoi gian ton"] },
+  "inbound": { domain: "inventory", label: "Inbound", type: "measure", aliases: ["inbound", "receipt", "nhap kho", "hang nhap"] },
+  "outbound": { domain: "inventory", label: "Outbound", type: "measure", aliases: ["outbound", "issue", "xuat kho", "hang xuat"] },
+  "replenishment": { domain: "inventory", label: "Replenishment", type: "measure", aliases: ["replenishment", "restock", "bo sung hang", "nhap them"] },
+  "stock_status": { domain: "inventory", label: "Inventory Status", type: "dimension", aliases: ["stock status", "trang thai ton kho"] },
+  
+  // Core / Generic
+  "status": { domain: "core", label: "Status", type: "dimension", aliases: ["status", "trang thai"] },
   
   // Customer
-  "segment": { domain: "customer", label: "Segment", aliases: ["segment", "phan khuc", "nhom khach hang"] },
-  "retention": { domain: "customer", label: "Retention", aliases: ["retention", "giu chan", "ty le giu chan"] },
-  "satisfaction": { domain: "customer", label: "Satisfaction", aliases: ["satisfaction", "nps", "rating", "danh gia", "hai long"] },
-  "order_count": { domain: "customer", label: "Order Count", aliases: ["order count", "number of orders", "so luong don", "tong so don"] },
-  "last_purchase": { domain: "customer", label: "Last Purchase", aliases: ["last purchase", "recency", "mua hang lan cuoi", "lan cuoi mua"] },
-  "contribution": { domain: "customer", label: "Contribution", aliases: ["contribution", "ltv", "dong gop", "gia tri khach hang"] },
-  "purchase_behavior": { domain: "customer", label: "Purchase Behavior", aliases: ["purchase behavior", "behavior", "hanh vi mua hang"] },
+  "segment": { domain: "customer", label: "Segment", type: "dimension", aliases: ["segment", "phan khuc", "nhom khach hang"] },
+  "retention": { domain: "customer", label: "Retention", type: "measure", aliases: ["retention", "giu chan", "ty le giu chan"] },
+  "satisfaction": { domain: "customer", label: "Satisfaction", type: "measure", aliases: ["satisfaction", "nps", "rating", "danh gia", "hai long"] },
+  "order_count": { domain: "customer", label: "Order Count", type: "measure", aliases: ["order count", "number of orders", "so luong don", "tong so don"] },
+  "last_purchase": { domain: "customer", label: "Last Purchase", type: "time", aliases: ["last purchase", "recency", "mua hang lan cuoi", "lan cuoi mua"] },
+  "contribution": { domain: "customer", label: "Contribution", type: "measure", aliases: ["contribution", "ltv", "dong gop", "gia tri khach hang"] },
+  "purchase_behavior": { domain: "customer", label: "Purchase Behavior", type: "dimension", aliases: ["purchase behavior", "behavior", "hanh vi mua hang"] },
   
   // Performance
-  "target": { domain: "performance", label: "Target", aliases: ["target", "goal", "muc tieu", "chi tieu"] },
-  "achievement": { domain: "performance", label: "Achievement", aliases: ["achievement", "actual", "thuc te", "dat duoc"] },
-  "utilization": { domain: "performance", label: "Utilization", aliases: ["utilization", "capacity", "su dung", "hieu suat"] },
-  "productivity": { domain: "performance", label: "Productivity", aliases: ["productivity", "nang suat"] },
-  "kpi": { domain: "performance", label: "KPI", aliases: ["kpi", "metric", "chi so", "chi so hieu suat"] },
-  "actual": { domain: "performance", label: "Actual", aliases: ["actual", "thuc te"] },
-  "department": { domain: "performance", label: "Department", aliases: ["department", "team", "phong ban", "bo phan"] },
-  "efficiency": { domain: "performance", label: "Efficiency", aliases: ["efficiency", "hieu qua"] },
-  "performance_gap": { domain: "performance", label: "Performance Gap", aliases: ["performance gap", "gap", "chenh lech", "khoang cach"] }
+  "target": { domain: "performance", label: "Target", type: "measure", aliases: ["target", "goal", "muc tieu", "chi tieu"] },
+  "achievement": { domain: "performance", label: "Achievement", type: "measure", aliases: ["achievement", "actual", "thuc te", "dat duoc"] },
+  "utilization": { domain: "performance", label: "Utilization", type: "measure", aliases: ["utilization", "capacity", "su dung", "hieu suat"] },
+  "productivity": { domain: "performance", label: "Productivity", type: "measure", aliases: ["productivity", "nang suat"] },
+  "kpi": { domain: "performance", label: "KPI", type: "dimension", aliases: ["kpi", "metric", "chi so", "chi so hieu suat"] },
+  "actual": { domain: "performance", label: "Actual", type: "measure", aliases: ["actual", "thuc te"] },
+  "department": { domain: "performance", label: "Department", type: "dimension", aliases: ["department", "team", "phong ban", "bo phan"] },
+  "efficiency": { domain: "performance", label: "Efficiency", type: "measure", aliases: ["efficiency", "hieu qua"] },
+  "performance_gap": { domain: "performance", label: "Performance Gap", type: "measure", aliases: ["performance gap", "gap", "chenh lech", "khoang cach"] }
 };
+
+export function getSignalType(canonicalId: string): SignalType {
+  return TAXONOMY[canonicalId]?.type || "dimension";
+}
 
 export interface DetectorInput {
   columns: Array<{ name: string, type?: string }>;
@@ -198,6 +208,28 @@ export function detectBusinessSignals(input: DetectorInput): BusinessSignalRegis
         confidenceScore: candidate.confidence.score,
         supportingEvidence: [candidate.evidence]
       });
+    }
+  }
+
+  // 2.5 Contextual promotion for 'status'
+  if (mergedSignalsMap.has('status')) {
+    const hasDeliveryContext = mergedSignalsMap.has('driver') || mergedSignalsMap.has('route') || mergedSignalsMap.has('shipment');
+    const hasInventoryContext = mergedSignalsMap.has('sku') || mergedSignalsMap.has('inventory') || mergedSignalsMap.has('stock_qty') || mergedSignalsMap.has('stock_age');
+    
+    if (hasDeliveryContext) {
+       const s = mergedSignalsMap.get('status')!;
+       mergedSignalsMap.delete('status');
+       s.canonicalId = 'delivery_status';
+       s.label = 'Delivery Status';
+       s.domain = 'operations';
+       mergedSignalsMap.set('delivery_status', s);
+    } else if (hasInventoryContext) {
+       const s = mergedSignalsMap.get('status')!;
+       mergedSignalsMap.delete('status');
+       s.canonicalId = 'stock_status';
+       s.label = 'Inventory Status';
+       s.domain = 'inventory';
+       mergedSignalsMap.set('stock_status', s);
     }
   }
 

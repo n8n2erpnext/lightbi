@@ -18,11 +18,11 @@ describe('Analysis Opportunity Actions', () => {
       sourceTrace: { signalIds: [], perspectiveIds: [], businessViewIds: [], questionSuggestionIds: [] },
       createdAt: '2026-06-10T00:00:00Z',
       availableAnalysis: [
-        { id: 'aa1', label: 'Shipment activity by route', basedOnSignals: ['shipment', 'route'], source: 'signals' },
-        { id: 'aa2', label: 'Shipment activity by driver', basedOnSignals: ['shipment', 'driver'], source: 'signals' },
-        { id: 'aa3', label: 'Satisfaction by route', basedOnSignals: ['satisfaction', 'route'], source: 'signals' },
-        { id: 'aa4', label: 'Satisfaction by driver', basedOnSignals: ['satisfaction', 'driver'], source: 'signals' },
-        { id: 'aa5', label: 'Activity over report date', basedOnSignals: ['report_date'], source: 'signals' }
+        { id: 'aa1', label: 'Shipment activity by route', basedOnSignals: ['shipment', 'route'], source: 'signals', actionType: 'group_by', dimensions: ['route'], measures: ['shipment'] },
+        { id: 'aa2', label: 'Shipment activity by driver', basedOnSignals: ['shipment', 'driver'], source: 'signals', actionType: 'group_by', dimensions: ['driver'], measures: ['shipment'] },
+        { id: 'aa3', label: 'Satisfaction by route', basedOnSignals: ['satisfaction', 'route'], source: 'signals', actionType: 'group_by', dimensions: ['route'], measures: ['satisfaction'] },
+        { id: 'aa4', label: 'Satisfaction by driver', basedOnSignals: ['satisfaction', 'driver'], source: 'signals', actionType: 'group_by', dimensions: ['driver'], measures: ['satisfaction'] },
+        { id: 'aa5', label: 'Activity over report date', basedOnSignals: ['report_date'], source: 'signals', actionType: 'trend', dimensions: ['report_date'], measures: ['shipment'] }
       ],
       unavailableAnalysis: []
     };

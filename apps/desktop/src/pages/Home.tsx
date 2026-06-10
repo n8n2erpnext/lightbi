@@ -12,6 +12,7 @@ import { createDataIntakeRequest } from '../lib/data-intake';
 import { createSourceCandidate, createFileSourceCandidate } from '../lib/source-preflight';
 import type { SourceCandidate, SourceInspectionResult } from '../lib/source-preflight';
 import { inspectLocalFile } from '../lib/local-file-inspector';
+import { createPreviewRows } from '../lib/data-intake-preview-rows';
 import { classifyDatasetFamilies } from '../lib/batch-inspection';
 import type { DatasetFamily } from '../lib/batch-inspection';
 import { generateRecipePlan } from '../lib/recipe-planner';
@@ -139,10 +140,17 @@ export const Home: React.FC = () => {
     const intent = createRuntimeIntentFromAnalysisAction(action);
     const plan = createRuntimePlanPreview(intent);
     
-    // Attempt to get a valid dataset identifier.
-    const dId = datasetHealthResult?.datasetId || activeDataset?.id || 'sales.csv';
-    
-    createInvestigationSession(dId, action, intent, plan);
+    // Attempt to extract rows if available from current dataset state
+    const datasetRows = currentDataset?.previewRows || currentDataset?.rows;
+    console.log("TRACE [OPPORTUNITY] selectedAction.id:", action.id);
+
+    createInvestigationSession(
+      currentDataset?.file_name || 'dataset',
+      action,
+      intent,
+      plan,
+      datasetRows
+    );
     navigate('/investigation');
   };
 
@@ -601,6 +609,19 @@ export const Home: React.FC = () => {
       };
     });
 
+    const firstAccessible = family.files.find(item => item.result.status === 'accessible');
+    const firstMd = firstAccessible ? (firstAccessible.result as any).metadata : null;
+    let rawPreviewRows: any[] = [];
+    if (firstMd) {
+      if (firstMd.is_workbook && firstMd.default_sheet && firstMd.sheets) {
+        rawPreviewRows = firstMd.sheets[firstMd.default_sheet]?.preview_rows || [];
+      } else {
+        rawPreviewRows = firstMd.preview_rows || [];
+      }
+    }
+    const finalPreviewRows = createPreviewRows(rawPreviewRows, family.columns);
+    console.log("TRACE [HOME] currentDataset.previewRows.length:", finalPreviewRows.length);
+
     setCurrentDataset({
       status: 'ready',
       file_name: pendingLocalBatch.families.length > 1 ? family.name : (family.files.length > 1 ? `Combined dataset (${family.files.length} files)` : family.files[0].file.name),
@@ -611,7 +632,8 @@ export const Home: React.FC = () => {
       normalizedUrl: (family.files[0].result as any).normalizedUrl,
       sourceFiles: sourceFiles as any, // Storing extended metadata format here
       selected_sheet: null,
-      file_reference: null
+      file_reference: null,
+      previewRows: finalPreviewRows
     });
 
     handleCancelInspection();

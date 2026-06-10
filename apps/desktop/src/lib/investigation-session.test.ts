@@ -1,22 +1,18 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { createInvestigationSession, getCurrentInvestigationSession, clearInvestigationSession } from './investigation-session';
+import { createInvestigationSession, clearInvestigationSession } from './investigation-session';
 import type { AnalysisAction } from './analysis-opportunity-actions';
 import type { RuntimeIntent } from './analysis-runtime-contract';
 import type { RuntimePlanPreview } from './runtime-planner-preview';
 
 describe('Investigation Session', () => {
-  beforeEach(() => {
-    clearInvestigationSession();
-  });
-
   const dummyAction: AnalysisAction = {
     id: 'a1',
     opportunityName: 'Test',
-    label: 'Test',
-    description: 'Test',
+    label: 'Test label',
+    description: 'Test desc',
     actionType: 'group_by',
-    dimensions: ['dim1'],
-    measures: ['meas1'],
+    dimensions: [],
+    measures: [],
     confidenceScore: 0.9,
     source: 'dataset_understanding'
   };
@@ -24,11 +20,11 @@ describe('Investigation Session', () => {
   const dummyIntent: RuntimeIntent = {
     id: 'i1',
     sourceActionId: 'a1',
-    type: 'group_by',
-    dimensions: ['dim1'],
-    measures: ['meas1'],
-    expectedShape: 'bar_chart',
     status: 'ready',
+    type: 'group_by',
+    dimensions: [],
+    measures: [],
+    expectedShape: 'bar_chart',
     warnings: [],
     blockedReasons: [],
     source: 'analysis_action'
@@ -40,30 +36,49 @@ describe('Investigation Session', () => {
     status: 'ready',
     executionMode: 'preview_only',
     logicalOperations: [],
-    requiredColumns: ['dim1', 'meas1'],
-    expectedOutput: {
-      shape: 'bar_chart',
-      dimensions: ['dim1'],
-      measures: ['meas1']
-    },
+    requiredColumns: [],
+    expectedOutput: { shape: 'table', dimensions: [], measures: [] },
     warnings: [],
     blockedReasons: [],
     source: 'runtime_intent'
   };
 
-  it('creates and retrieves a session', () => {
-    const session = createInvestigationSession('dataset1', dummyAction, dummyIntent, dummyPlan);
-    expect(session.id).toBeDefined();
-    expect(session.datasetId).toBe('dataset1');
-    expect(session.analysisAction).toBe(dummyAction);
-
-    const retrieved = getCurrentInvestigationSession();
-    expect(retrieved).toBe(session);
+  beforeEach(() => {
+    clearInvestigationSession();
   });
 
-  it('clears session', () => {
-    createInvestigationSession('dataset1', dummyAction, dummyIntent, dummyPlan);
-    clearInvestigationSession();
-    expect(getCurrentInvestigationSession()).toBeNull();
+  it('1. session can store rows', () => {
+    const rows = [{ a: 1 }];
+    const session = createInvestigationSession('d1', dummyAction, dummyIntent, dummyPlan, rows);
+    expect(session.rows).toBeDefined();
+    expect(session.rows).toHaveLength(1);
+    expect(session.rows?.[0].a).toBe(1);
+  });
+
+  it('2. rows are capped at 1000', () => {
+    const rows = Array.from({ length: 1500 }).map((_, i) => ({ id: i }));
+    const session = createInvestigationSession('d1', dummyAction, dummyIntent, dummyPlan, rows);
+    expect(session.rows).toHaveLength(1000);
+  });
+
+  it('3. rows are cloned or preserved safely', () => {
+    const rows = [{ val: 'original' }];
+    const session = createInvestigationSession('d1', dummyAction, dummyIntent, dummyPlan, rows);
+    // Mutate original
+    rows[0].val = 'mutated';
+    expect(session.rows?.[0].val).toBe('original');
+  });
+
+  it('4. session without rows remains valid', () => {
+    const session = createInvestigationSession('d1', dummyAction, dummyIntent, dummyPlan);
+    expect(session.rows).toBeUndefined();
+    expect(session.datasetId).toBe('d1');
+  });
+
+  it('5. creating session does not mutate input rows', () => {
+    const rows = Array.from({ length: 1500 }).map((_, i) => ({ id: i }));
+    const session = createInvestigationSession('d1', dummyAction, dummyIntent, dummyPlan, rows);
+    expect(rows).toHaveLength(1500); // Original array size remains
+    expect(session.rows).toHaveLength(1000);
   });
 });

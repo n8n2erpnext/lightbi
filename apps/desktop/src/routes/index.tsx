@@ -8,6 +8,7 @@ import { ChartBuilder } from '../pages/ChartBuilder';
 import { Datasets } from '../pages/Datasets';
 import { DataSources } from '../pages/DataSources';
 import { Settings } from '../pages/Settings';
+import { Investigation } from '../pages/Investigation';
 
 const RouteError = () => {
   const error = useRouteError() as Error;
@@ -49,6 +50,7 @@ export const router = createBrowserRouter([
       { path: '/datasets', element: <Datasets /> },
       { path: '/datasources', element: <DataSources /> },
       { path: '/settings', element: <Settings /> },
+      { path: '/investigation', element: <Investigation /> },
       { path: '*', element: <Navigate to="/" replace /> },
     ],
   },

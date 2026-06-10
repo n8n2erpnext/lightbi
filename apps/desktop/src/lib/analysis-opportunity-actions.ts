@@ -21,40 +21,22 @@ export function generateAnalysisActions(understanding: DatasetUnderstanding): An
     let measures: string[] = [];
     let description = "";
 
-    // Specific mapping based on the labels or basedOnSignals
-    if (aa.label === "Shipment activity by route") {
-      actionType = "group_by";
-      dimensions = ["route"];
-      measures = ["shipment"];
-      description = "Count shipments grouped by route.";
-    } else if (aa.label === "Shipment activity by driver") {
-      actionType = "group_by";
-      dimensions = ["driver"];
-      measures = ["shipment"];
-      description = "Count shipments grouped by driver.";
-    } else if (aa.label === "Satisfaction by route") {
-      actionType = "group_by";
-      dimensions = ["route"];
-      measures = ["satisfaction"];
-      description = "Analyze satisfaction grouped by route.";
-    } else if (aa.label === "Satisfaction by driver") {
-      actionType = "group_by";
-      dimensions = ["driver"];
-      measures = ["satisfaction"];
-      description = "Analyze satisfaction grouped by driver.";
-    } else if (aa.label === "Activity over report date") {
-      actionType = "trend";
-      dimensions = ["report_date"];
-      measures = ["shipment"]; // Default measure for activity
-      description = "Analyze trend over report date.";
+    // Require explicit metadata. Do not guess.
+    if (!aa.actionType) {
+      continue; // Skip if metadata is missing
+    }
+
+    actionType = aa.actionType;
+    dimensions = aa.dimensions || [];
+    measures = aa.measures || [];
+    
+    // Provide a simple description based on action type
+    if (actionType === "trend") {
+      description = `Analyze trend of ${measures.join(", ")} over ${dimensions.join(", ")}.`;
+    } else if (actionType === "distribution") {
+      description = `Analyze distribution of ${dimensions.join(", ")}.`;
     } else {
-      // Fallback naive logic if we don't have hardcoded mappings
-      const hasDate = aa.basedOnSignals.some(s => s.includes('date') || s.includes('time'));
-      actionType = hasDate ? "trend" : "group_by";
-      dimensions = aa.basedOnSignals.slice(0, 1);
-      measures = aa.basedOnSignals.slice(1);
-      if (measures.length === 0) measures = ["record_count"];
-      description = `Analyze ${measures.join(", ")} by ${dimensions.join(", ")}.`;
+      description = `Analyze ${measures.join(", ")} grouped by ${dimensions.join(", ")}.`;
     }
 
     actions.push({

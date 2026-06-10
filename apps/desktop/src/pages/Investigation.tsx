@@ -3,11 +3,17 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Database, BarChart3, ChevronDown, ChevronRight, Activity, Code2 } from 'lucide-react';
 import { getCurrentInvestigationSession } from '../lib/investigation-session';
 import { createSafeSqlPreview } from '../lib/safe-sql-preview';
+import { executeDuckDBPreviewSandbox, type DuckDBPreviewResult } from '../lib/duckdb-preview-sandbox';
+import { createChartPreviewModel, type ChartPreviewModel } from '../lib/chart-preview-model';
+import { ChartPreviewRenderer } from '../components/analysis/ChartPreviewRenderer';
 
 export const Investigation: React.FC = () => {
   const navigate = useNavigate();
   const session = getCurrentInvestigationSession();
   const [showDiagnostics, setShowDiagnostics] = useState(false);
+  const [previewResult, setPreviewResult] = useState<DuckDBPreviewResult | null>(null);
+  const [chartModel, setChartModel] = useState<ChartPreviewModel | null>(null);
+  const [isExecuting, setIsExecuting] = useState(false);
 
   if (!session) {
     return (
@@ -26,8 +32,30 @@ export const Investigation: React.FC = () => {
     );
   }
 
-  const { analysisAction, runtimeIntent, runtimePlanPreview } = session;
+  const { analysisAction, runtimeIntent, runtimePlanPreview, rows } = session;
   const safeSqlPreview = React.useMemo(() => createSafeSqlPreview(runtimePlanPreview), [runtimePlanPreview]);
+
+  const handleRunPreview = async () => {
+    setIsExecuting(true);
+    try {
+      const result = await executeDuckDBPreviewSandbox({
+        runtimeIntent,
+        runtimePlan: runtimePlanPreview,
+        rows: rows || [],
+        safeSqlPreview
+      });
+      setPreviewResult(result);
+      
+      const model = createChartPreviewModel({
+        previewResult: result,
+        runtimePlan: runtimePlanPreview,
+        analysisLabel: analysisAction.opportunityName
+      });
+      setChartModel(model);
+    } finally {
+      setIsExecuting(false);
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50">
@@ -97,15 +125,91 @@ export const Investigation: React.FC = () => {
                </div>
              </div>
              
-             {/* Chart Placeholder Area */}
-             <div className="w-full h-64 bg-slate-50 border-2 border-dashed border-slate-200 rounded-lg flex flex-col items-center justify-center text-slate-400">
-               <Activity className="w-8 h-8 text-slate-300 mb-2" />
-               <span className="text-sm font-medium">Ready to execute</span>
+             {/* Chart Placeholder / Renderer Area */}
+             <div className="w-full mt-4">
+               {chartModel ? (
+                 <ChartPreviewRenderer model={chartModel} />
+               ) : (
+                 <div className="w-full h-64 bg-slate-50 border-2 border-dashed border-slate-200 rounded-lg flex flex-col items-center justify-center text-slate-400">
+                   <Activity className="w-8 h-8 text-slate-300 mb-2" />
+                   <span className="text-sm font-medium">Ready to execute</span>
+                 </div>
+               )}
              </div>
           </div>
           
-          <div className="px-6 py-4 bg-slate-50/50 text-xs text-slate-500">
-            Results not executed yet.
+          <div className="px-6 py-4 bg-slate-50 border-t border-gray-100 flex flex-col gap-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-semibold text-gray-900">Preview execution</h3>
+              <button
+                onClick={handleRunPreview}
+                disabled={isExecuting}
+                className="px-3 py-1.5 bg-indigo-600 text-white text-xs font-medium rounded-md hover:bg-indigo-700 disabled:opacity-50 transition-colors"
+              >
+                {isExecuting ? 'Running...' : 'Run preview'}
+              </button>
+            </div>
+            
+            {!previewResult && !isExecuting && (
+              <div className="text-xs text-slate-500 italic">
+                Results not executed yet. Click "Run preview" to execute.
+              </div>
+            )}
+            
+            {previewResult && (
+              <div className="flex flex-col gap-3">
+                <div className="flex items-center gap-3 text-xs">
+                  <span className={`px-2 py-0.5 rounded font-medium ${previewResult.status === 'executed' ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>
+                    {previewResult.status.toUpperCase()}
+                  </span>
+                  <span className="text-slate-500">Row count: {previewResult.rowCount}</span>
+                </div>
+                
+                {previewResult.warnings.length > 0 && (
+                  <div className="bg-amber-50 border border-amber-200 text-amber-800 p-3 rounded-md text-xs">
+                    <ul className="list-disc pl-4 space-y-1">
+                      {previewResult.warnings.map((w, i) => {
+                        // Check if it's the missing rows warning to add the extra UI honesty text
+                        if (w === "No dataset rows available for preview.") {
+                          return <li key={i}>{w} Execution wiring will be completed when dataset rows are passed into the investigation session.</li>;
+                        }
+                        return <li key={i}>{w}</li>;
+                      })}
+                    </ul>
+                  </div>
+                )}
+
+                {previewResult.rows.length > 0 && (
+                  <div className="overflow-x-auto border border-gray-200 rounded-md">
+                    <table className="min-w-full divide-y divide-gray-200 text-xs text-left">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          {previewResult.columns.map(c => (
+                            <th key={c} className="px-3 py-2 font-medium text-gray-500 uppercase tracking-wider">{c}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {previewResult.rows.slice(0, 10).map((row, i) => (
+                          <tr key={i}>
+                            {previewResult.columns.map(c => (
+                              <td key={c} className="px-3 py-2 text-gray-900 whitespace-nowrap">
+                                {String(row[c] ?? '')}
+                              </td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                    {previewResult.rows.length > 10 && (
+                      <div className="px-3 py-2 bg-gray-50 text-gray-500 italic text-[10px] text-center border-t border-gray-200">
+                        Showing first 10 rows
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
 
