@@ -1,0 +1,65 @@
+import { describe, it, expect } from 'vitest';
+import { createRuntimeIntentFromAnalysisAction } from './analysis-runtime-contract';
+import type { AnalysisAction } from './analysis-opportunity-actions';
+
+describe('Analysis Runtime Contract', () => {
+  const baseAction: AnalysisAction = {
+    id: 'a1',
+    opportunityName: 'Test',
+    label: 'Test',
+    description: 'Test',
+    actionType: 'group_by',
+    dimensions: [],
+    measures: [],
+    confidenceScore: 0.9,
+    source: 'dataset_understanding'
+  };
+
+  it('group_by route + shipment -> ready bar_chart', () => {
+    const action: AnalysisAction = { ...baseAction, actionType: 'group_by', dimensions: ['route'], measures: ['shipment'] };
+    const intent = createRuntimeIntentFromAnalysisAction(action);
+    expect(intent.status).toBe('ready');
+    expect(intent.expectedShape).toBe('bar_chart');
+    expect(intent.blockedReasons).toHaveLength(0);
+  });
+
+  it('trend report_date + shipment -> ready line_chart', () => {
+    const action: AnalysisAction = { ...baseAction, actionType: 'trend', dimensions: ['report_date'], measures: ['shipment'] };
+    const intent = createRuntimeIntentFromAnalysisAction(action);
+    expect(intent.status).toBe('ready');
+    expect(intent.expectedShape).toBe('line_chart');
+    expect(intent.blockedReasons).toHaveLength(0);
+  });
+
+  it('trend route + shipment -> blocked because no time dimension', () => {
+    const action: AnalysisAction = { ...baseAction, actionType: 'trend', dimensions: ['route'], measures: ['shipment'] };
+    const intent = createRuntimeIntentFromAnalysisAction(action);
+    expect(intent.status).toBe('blocked');
+    expect(intent.blockedReasons).toContain('trend requires at least 1 time-like dimension');
+  });
+
+  it('relationship with one measure -> blocked', () => {
+    const action: AnalysisAction = { ...baseAction, actionType: 'relationship', dimensions: ['route'], measures: ['shipment'] };
+    const intent = createRuntimeIntentFromAnalysisAction(action);
+    expect(intent.status).toBe('blocked');
+    expect(intent.blockedReasons).toContain('relationship requires at least 2 measures');
+  });
+
+  it('distribution with no dimension -> blocked', () => {
+    const action: AnalysisAction = { ...baseAction, actionType: 'distribution', dimensions: [], measures: ['shipment'] };
+    const intent = createRuntimeIntentFromAnalysisAction(action);
+    expect(intent.status).toBe('blocked');
+    expect(intent.blockedReasons).toContain('distribution requires at least 1 dimension');
+  });
+
+  it('contract contains no sql/query/chart config/result rows', () => {
+    const action: AnalysisAction = { ...baseAction, actionType: 'group_by', dimensions: ['route'], measures: ['shipment'] };
+    const intent = createRuntimeIntentFromAnalysisAction(action);
+    const keys = Object.keys(intent);
+    expect(keys).not.toContain('sql');
+    expect(keys).not.toContain('query');
+    expect(keys).not.toContain('chartConfig');
+    expect(keys).not.toContain('rows');
+    expect(keys).not.toContain('dataset');
+  });
+});

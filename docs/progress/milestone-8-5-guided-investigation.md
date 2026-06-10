@@ -37,11 +37,91 @@ Following the implementation of Milestone 8 (Business Confidence), an architectu
   - Implemented generator that dynamically reads from `DOMAIN_KNOWLEDGE_CATALOG_V1`.
   - Computes `requiredMatchRatio`, `optionalMatchRatio`, and `averageSignalConfidence` purely as an evaluator function.
   - Passes 10 critical validation tests, including automatic awareness of new Registry entries.
-- **Phase BVQ-5: Question Planner Implementation**
-- **Phase BVQ-5: Question Planner**
-  - Generate questions purely from the `BusinessViewCandidate` constraints.
-- **Phase BVQ-6: Home Wiring Cleanup**
-  - Remove all hardcoded maps from the UI.
-  - Wire `Home.tsx` to the new pipeline.
-- **Phase BVQ-7: Cross-domain dataset validation**
-  - Prove that the Phase TEST-1 matrix now securely passes without cross-domain leakages.
+- **Phase BVQ-5A: Question Plan Contract** (COMPLETED)
+  - Generate generic analytical `QuestionPlan` structures from `BusinessViewCandidate` and `DOMAIN_KNOWLEDGE_CATALOG_V1`.
+  - Ban NLP text inside the planning layer.
+- **Phase BVQ-5B: Question Suggestion Renderer** (COMPLETED)
+  - Render strict presentation strings (`QuestionSuggestion`) from `QuestionPlan` using predefined templates from the Catalog.
+  - Eliminate the risk of LLM hallucinations and execution side-effects.
+- **Phase BVQ-6: Guided Investigation Pipeline Orchestrator** (COMPLETED)
+  - Created `guided-investigation-pipeline.ts` as the single, deterministic orchestrator for the entire `Signals -> Perspectives -> Business Views -> Plans -> Suggestions` flow.
+- **Phase BVQ-7A: Home Wiring Cleanup - Replace Legacy Question Source** (COMPLETED)
+  - Deleted legacy `question-suggestions.ts`.
+  - Wired `Home.tsx` to read `guidedInvestigationResult.questionSuggestions`.
+- **Phase BVQ-7B: Home Wiring Cleanup - Replace Hardcoded Perspective Source** (COMPLETED)
+  - Removed hardcoded array of operations/revenue/inventory/customer/performance perspectives.
+  - Wired `Home.tsx` to read `guidedInvestigationResult.perspectives`.
+- **Phase BVQ-7C: Home Wiring Cleanup - Replace Hardcoded Business View Source** (COMPLETED)
+  - Deleted `PerspectiveBusinessViewMap` from `Home.tsx`.
+  - Wired UI to `guidedInvestigationResult.businessViews`.
+- **Phase BVQ-7D: Home Wiring Cleanup - Question Filtering by Pipeline Business View** (COMPLETED)
+  - Eradicated heuristic/semantic keyword filtering.
+  - Wired question rendering strictly to `guidedInvestigationResult.questionSuggestions`.
+- **Phase BVQ-7E: Final Home Purity Audit** (COMPLETED)
+  - Produced `AUDIT-home-guided-investigation-final.md`.
+  - Confirmed 100% adherence to Guided Investigation Pipeline in `Home.tsx`.
+- **Phase BVQ-8A: Cross-Domain Validation Dataset Suite** (COMPLETED)
+  - Created automated test validation suite `guided-investigation-pipeline.cross-domain.test.ts`.
+  - Proved that the Phase TEST-1 matrix passes without cross-domain leakages.
+  - Produced `AUDIT-cross-domain-validation-suite.md`.
+- **Phase BVQ-8B: Signal Coverage Report** (COMPLETED)
+  - Extracted knowledge catalog metrics vs pipeline detector mapping.
+  - Published `AUDIT-signal-coverage-report.md`.
+  - Published `AUDIT-business-knowledge-vs-execution-gap.md`.
+- **Phase BVQ-8C: Detector Vocabulary Completion** (COMPLETED)
+  - Expanded `TAXONOMY` in `business-signal-detector.ts` with 22 new aliases.
+  - Closed the execution gap to 0% across all domains.
+  - Added `business-signal-detector.coverage.test.ts`.
+- **Phase BVQ-9A & 9B: Regression & Trace Audits** (COMPLETED)
+  - Traced drop in Views/Questions to stricter registry validation.
+  - Published `AUDIT-regression-guided-investigation-vs-legacy.md`.
+  - Published `AUDIT-delivery-performance-live-trace.md`.
+- **Phase BVQ-8D: Real Dataset Vocabulary Patch** (COMPLETED)
+  - Patched `TAXONOMY` with specific Vietnamese logistics aliases.
+  - Recovered missing signals (`report_date`, `driver`, `shipment`) while strictly maintaining View thresholds.
+- **Architecture Reset: Dataset Understanding Before Questions** (COMPLETED)
+  - Repositioned product philosophy away from "Question Generation".
+  - Created `ADR-097-dataset-understanding-before-questions.md`.
+  - Created `dataset-understanding-layer.md`.
+  - Created `BVQ-RESET-DECISION.md`.
+- **Phase DU-1: Dataset Understanding Contract** (COMPLETED)
+  - Implemented `dataset-understanding-contract.ts`.
+  - Created `ADR-098`.
+- **Phase DU-2: Dataset Understanding Card UI** (COMPLETED)
+  - Implemented `DatasetUnderstandingCard.tsx`.
+  - Wired to `Home.tsx`.
+- **Phase DU-3: Home Layout Repositioning** (COMPLETED)
+  - Renamed Perspective section to "Optional".
+  - Reframed empty business view state.
+  - Showed missing signals natively in the view area.
+- **Phase DU-4: Analysis Opportunity Actions** (COMPLETED)
+  - Created `AnalysisAction` type and generator.
+  - Created `AnalysisOpportunityCard` and `AnalysisOpportunityGrid`.
+  - Displayed Investigation Preview selection state.
+- **Phase DU-5A: Analysis Action Runtime Contract** (COMPLETED)
+  - Defined `RuntimeIntent` contract.
+  - Created `createRuntimeIntentFromAnalysisAction` with structural validation.
+  - Created `ADR-099`.
+- **Phase DU-5B: Runtime Planner Preview** (COMPLETED)
+  - Created `RuntimePlanPreview` with logical operations.
+  - Implemented `createRuntimePlanPreview`.
+  - Added preview to Investigation panel.
+  - Created `ADR-100`.
+- **Phase UX-2: Investigation Workspace Routing** (COMPLETED)
+  - Separated Home and Investigation pages.
+  - Created `InvestigationSession` state management.
+  - Routed Analysis Opportunity clicks to `/investigation`.
+  - Removed diagnostics from Home.
+- **Phase DU-5C: Safe SQL Preview Contract** (COMPLETED)
+  - Created `SafeSqlPreview` interface.
+  - Implemented `createSafeSqlPreview` with DuckDB quoting logic.
+  - Updated Investigation UI to display generated SQL.
+  - Created `ADR-102`.
+- **Phase UX-3: Investigation Workspace Layout Cleanup** (COMPLETED)
+  - Built primary chart placeholder surface.
+  - Moved pipeline diagnostics to a collapsed Developer Diagnostics panel.
+  - Removed technical jargon from default view.
+  - Created `ADR-103`.
+
+
+

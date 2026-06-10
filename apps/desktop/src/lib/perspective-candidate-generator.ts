@@ -1,11 +1,12 @@
-import type { BusinessSignalRegistry, BusinessSignal } from './business-signal-detector';
+import type { BusinessSignalRegistry } from './business-signal-detector';
 
 export type PerspectiveId =
   | "operations"
   | "revenue"
   | "inventory"
   | "customer"
-  | "performance";
+  | "performance"
+  | "finance";
 
 export interface PerspectiveCandidateEvidence {
   signalId: string;
@@ -46,8 +47,13 @@ const PERSPECTIVE_DEFINITIONS: Record<PerspectiveId, { label: string, descriptio
   },
   "performance": {
     label: "Performance",
-    description: "Understand overall operational performance.",
-    mappedSignals: ["target", "achievement", "utilization", "productivity", "sla"]
+    description: "Analyze goal achievements and execution efficiency.",
+    mappedSignals: ["target", "achievement", "utilization", "productivity"]
+  },
+  "finance": {
+    label: "Finance",
+    description: "Analyze profitability, margins, and expenses.",
+    mappedSignals: ["cost", "profit", "margin", "expense", "budget"]
   }
 };
 

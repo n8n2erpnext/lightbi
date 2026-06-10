@@ -14,18 +14,24 @@ import type { SourceCandidate, SourceInspectionResult } from '../lib/source-pref
 import { inspectLocalFile } from '../lib/local-file-inspector';
 import { classifyDatasetFamilies } from '../lib/batch-inspection';
 import type { DatasetFamily } from '../lib/batch-inspection';
-import { mapSemanticFields } from '../lib/semantic-fields';
-import { generateQuestionSuggestions } from '../lib/question-suggestions';
 import { generateRecipePlan } from '../lib/recipe-planner';
 import type { RecipePlan } from '../lib/recipe-planner';
 import { detectKeyCandidates } from '../lib/business-key-detector';
 import { discoverCollections } from '../lib/relationship-discovery';
 import { generateBusinessViews } from '../lib/business-view-generator';
-import type { RelationshipGraph } from '../lib/relationship-graph';
 import type { BusinessViewCandidate } from '../lib/business-view-generator';
+import type { RelationshipGraph } from '../lib/relationship-graph';
 import { BusinessViewReviewStep } from '../components/data-intake/BusinessViewReviewStep';
 import type { WorkspaceUnderstandingState } from '../lib/workspace-understanding-state';
-import { createWorkspaceUnderstandingState, applyBusinessViewSelection, getSuggestedQuestionsForActiveContext, getActiveAnalysisContextLabel } from '../lib/workspace-understanding-state';
+import { createWorkspaceUnderstandingState, applyBusinessViewSelection, getActiveAnalysisContextLabel } from '../lib/workspace-understanding-state';
+import { runGuidedInvestigationPipeline } from '../lib/guided-investigation-pipeline';
+import { createDatasetUnderstanding } from '../lib/dataset-understanding-contract';
+import { DatasetUnderstandingCard } from '../components/analysis/DatasetUnderstandingCard';
+import type { AnalysisAction } from '../lib/analysis-opportunity-actions';
+import { createRuntimeIntentFromAnalysisAction } from '../lib/analysis-runtime-contract';
+import { createRuntimePlanPreview } from '../lib/runtime-planner-preview';
+import { createInvestigationSession } from '../lib/investigation-session';
+import { useNavigate } from 'react-router-dom';
 import { createVirtualDatasetPlan } from '../lib/virtual-dataset-planner';
 import type { VirtualDatasetPlan } from '../lib/virtual-dataset-planner';
 import { VirtualDatasetPlanPreview } from '../components/analysis/VirtualDatasetPlanPreview';
@@ -73,6 +79,7 @@ const getGreeting = () => {
 };
 
 export const Home: React.FC = () => {
+  const navigate = useNavigate();
   const [currentDataset, setCurrentDataset] = useState<any>(null);
   const [workspaceState, setWorkspaceState] = useState<WorkspaceUnderstandingState | null>(null);
   const [inputValue, setInputValue] = useState("");
@@ -127,6 +134,18 @@ export const Home: React.FC = () => {
 
   const { isUploading, uploadError } = useDatasetUpload();
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
+
+  const handleSelectAnalysisAction = (action: AnalysisAction) => {
+    const intent = createRuntimeIntentFromAnalysisAction(action);
+    const plan = createRuntimePlanPreview(intent);
+    
+    // Attempt to get a valid dataset identifier.
+    const dId = datasetHealthResult?.datasetId || activeDataset?.id || 'sales.csv';
+    
+    createInvestigationSession(dId, action, intent, plan);
+    navigate('/investigation');
+  };
+
   const [previewActionId, setPreviewActionId] = useState<string | null>(null);
   const [isPlusMenuOpen, setIsPlusMenuOpen] = useState(false);
   const [isReplaceMenuOpen, setIsReplaceMenuOpen] = useState(false);
@@ -192,28 +211,6 @@ export const Home: React.FC = () => {
   const [selectedPerspective, setSelectedPerspective] = useState<string | null>(null);
   const [selectedBusinessView, setSelectedBusinessView] = useState<string | null>(null);
   
-  const PerspectiveBusinessViewMap: Record<string, { id: string, title: string, purpose: string, evidence: string[], relationships: string[], coverage: { datasets: number, businessKeys: number, views: number }, belief: string }[]> = {
-    "operations": [
-      { id: "logistics_journey", title: "Logistics Journey", purpose: "Understand delivery flow from dispatch to final delivery.", evidence: ["Route", "Driver", "Delivery Status", "Delivery Date"], relationships: ["Driver → Route", "Route → Delivery Status", "Delivery Status → Delivery Outcome"], coverage: { datasets: 2, businessKeys: 4, views: 1 }, belief: "LightBI believes this data represents a delivery lifecycle process and can be analyzed for delays, bottlenecks, route quality and execution performance." },
-      { id: "driver_performance", title: "Driver Performance", purpose: "Analyze driver execution quality.", evidence: ["Driver", "Rating", "On-Time Ratio"], relationships: ["Driver → Rating"], coverage: { datasets: 1, businessKeys: 2, views: 1 }, belief: "LightBI believes this represents a driver performance monitoring process." },
-      { id: "delivery_sla", title: "Delivery SLA", purpose: "Understand delays and service compliance.", evidence: ["Order", "Promise Date", "Delivery Date"], relationships: ["Order → Delivery Date"], coverage: { datasets: 1, businessKeys: 3, views: 1 }, belief: "LightBI believes this data can be analyzed to track on-time delivery compliance and violations." }
-    ],
-    "revenue": [
-      { id: "revenue_trend", title: "Revenue Trend", purpose: "Analyze revenue growth over time.", evidence: ["Revenue", "Date", "Region"], relationships: ["Region → Revenue"], coverage: { datasets: 1, businessKeys: 3, views: 1 }, belief: "LightBI believes this data represents financial performance over time." }
-    ],
-    "inventory": [
-      { id: "inventory_aging", title: "Inventory Aging", purpose: "Understand stock movement and aging risks.", evidence: ["SKU", "Warehouse", "Days in Stock"], relationships: ["Warehouse → SKU"], coverage: { datasets: 1, businessKeys: 3, views: 1 }, belief: "LightBI believes this represents inventory health and aging analysis." }
-    ],
-    "customer": [
-      { id: "customer_retention", title: "Customer Retention", purpose: "Understand customer behavior and contribution.", evidence: ["Customer", "Order History", "Churn Risk"], relationships: ["Customer → Order History"], coverage: { datasets: 1, businessKeys: 3, views: 1 }, belief: "LightBI believes this represents customer lifetime value and retention." }
-    ],
-    "performance": [
-      { id: "operational_performance", title: "Operational Performance", purpose: "Understand overall operational performance.", evidence: ["Branch", "KPIs", "Targets"], relationships: ["Branch → KPIs"], coverage: { datasets: 1, businessKeys: 3, views: 1 }, belief: "LightBI believes this represents corporate operational key performance indicators." }
-    ]
-  };
-
-  const activeBusinessViews = selectedPerspective ? PerspectiveBusinessViewMap[selectedPerspective] || [] : [];
-  const selectedViewData = activeBusinessViews.find(v => v.id === selectedBusinessView) || null;
   const activeAnalysisIntent = analysisIntent || selectedTopic || null;
 
   useEffect(() => {
@@ -347,30 +344,51 @@ export const Home: React.FC = () => {
     return selectHeroSuggestionPool({ dataColumns: columns });
   }, [currentDataset]);
 
-  const semanticSuggestions = React.useMemo(() => {
-    let fieldLevelQuestions: any[] = [];
-    if (currentDataset?.status === 'ready') {
-      const profiles = currentDataset?.profiles ? Object.values(currentDataset.profiles) : [];
-      const mapping = mapSemanticFields(profiles as any[]);
-      fieldLevelQuestions = generateQuestionSuggestions(mapping);
-    }
-    
-    if (workspaceState?.activeContext.type === "business_view") {
-      const qs = getSuggestedQuestionsForActiveContext(workspaceState, []);
-      const bizQuestions = qs.map((q: any) => ({
-        question: q.question,
-        requiredFields: [],
-        confidence: 90
+  const guidedInvestigationResult = React.useMemo(() => {
+    if (currentDataset?.status === 'ready' && currentDataset.columns) {
+      const columnsForPipeline = currentDataset.columns.map((c: string) => ({ 
+        name: c, 
+        type: currentDataset.profiles?.[c]?.inferredType || currentDataset.profiles?.[c]?.type || 'string' 
       }));
-      
-      if (analysisMode === "investigate") {
-        return [...bizQuestions, ...fieldLevelQuestions];
-      }
-      return bizQuestions;
+      return runGuidedInvestigationPipeline({ columns: columnsForPipeline });
     }
+    return null;
+  }, [currentDataset]);
+
+  const datasetUnderstanding = React.useMemo(() => {
+    if (!currentDataset || !guidedInvestigationResult) return null;
+    return createDatasetUnderstanding({
+      datasetName: currentDataset.file_name,
+      rowCount: currentDataset.rows_count,
+      columnCount: Array.isArray(currentDataset.columns) ? currentDataset.columns.length : 0,
+      signalRegistry: guidedInvestigationResult.signals,
+      perspectives: guidedInvestigationResult.perspectives,
+      businessViews: guidedInvestigationResult.businessViews,
+      questionSuggestions: guidedInvestigationResult.questionSuggestions,
+    });
+  }, [currentDataset, guidedInvestigationResult]);
+
+  const activeBusinessViews = selectedPerspective && guidedInvestigationResult
+    ? guidedInvestigationResult.businessViews.filter(v => v.perspectiveId === selectedPerspective)
+    : [];
+  const selectedViewData = activeBusinessViews.find(v => v.id === selectedBusinessView) || null;
+
+  useEffect(() => {
+    if (selectedBusinessView && activeBusinessViews) {
+      if (!activeBusinessViews.some(v => v.id === selectedBusinessView)) {
+        setSelectedBusinessView(null);
+      }
+    }
+  }, [selectedBusinessView, activeBusinessViews]);
+
+  const visibleQuestionSuggestions = React.useMemo(() => {
+    if (!guidedInvestigationResult || !selectedPerspective || !selectedBusinessView) return [];
     
-    return fieldLevelQuestions;
-  }, [currentDataset, workspaceState, analysisMode]);
+    return guidedInvestigationResult.questionSuggestions.filter(q => 
+      q.perspectiveId === selectedPerspective &&
+      q.businessViewId === selectedBusinessView
+    );
+  }, [guidedInvestigationResult, selectedPerspective, selectedBusinessView]);
 
   const activePool = React.useMemo(() => getStructuredPool(selectedPoolKey), [selectedPoolKey]);
   
@@ -379,6 +397,14 @@ export const Home: React.FC = () => {
     const shuffled = [...defaultPool].sort(() => 0.5 - Math.random());
     return shuffled.slice(0, 4);
   });
+
+  useEffect(() => {
+    if (selectedPerspective && guidedInvestigationResult) {
+      if (!guidedInvestigationResult.perspectives.some(p => p.id === selectedPerspective)) {
+        setSelectedPerspective(null);
+      }
+    }
+  }, [selectedPerspective, guidedInvestigationResult]);
 
   useEffect(() => {
     if (currentDataset?.status !== 'ready') return; // Keep default chips if no ready dataset
@@ -790,41 +816,52 @@ export const Home: React.FC = () => {
                 <div className="w-full animate-in fade-in slide-in-from-bottom-4 duration-500 flex flex-col gap-4">
                   <DataQualityCard health={datasetHealthResult} />
                   
+                  {/* Dataset Understanding Layer */}
+                  {datasetUnderstanding && (
+                    <DatasetUnderstandingCard 
+                      understanding={datasetUnderstanding} 
+                      onSelectAction={handleSelectAnalysisAction}
+                    />
+                  )}
+
                   {/* Global Perspective Selector */}
                   <div className="w-full bg-white border border-gray-200 rounded-xl shadow-sm p-5 flex flex-col gap-4 animate-in fade-in zoom-in-95 duration-500 mt-2">
                     <div>
-                      <h3 className="text-[16px] font-semibold text-gray-900 mb-1">Choose a Perspective</h3>
-                      <p className="text-[13px] text-gray-500">How would you like to understand this business data?</p>
+                      <h3 className="text-[16px] font-semibold text-gray-900 mb-1">Optional: Choose a deeper business perspective</h3>
+                      <p className="text-[13px] text-gray-500">LightBI already understands the dataset. Choose a perspective only if you want advanced guided analysis.</p>
                     </div>
                     
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                      {[
-                        { id: "operations", name: "Operations", desc: "Understand workflows, delays, bottlenecks and execution performance." },
-                        { id: "revenue", name: "Revenue", desc: "Understand growth, branch performance and revenue trends." },
-                        { id: "inventory", name: "Inventory", desc: "Understand stock movement, aging and replenishment risks." },
-                        { id: "customer", name: "Customer", desc: "Understand customer behavior and contribution." },
-                        { id: "performance", name: "Performance", desc: "Understand overall operational performance." }
-                      ].map(p => (
-                        <button
-                          key={p.id}
-                          onClick={() => {
-                            setSelectedPerspective(p.id);
-                            setSelectedBusinessView(null);
-                          }}
-                          className={`p-4 rounded-xl border text-left transition-all ${
-                            selectedPerspective === p.id 
-                              ? 'bg-blue-50 border-blue-500 shadow-sm ring-1 ring-blue-500' 
-                              : 'bg-white border-gray-200 hover:border-blue-300 hover:bg-slate-50'
-                          }`}
-                        >
-                          <div className={`font-semibold text-[14px] mb-1 ${selectedPerspective === p.id ? 'text-blue-900' : 'text-gray-800'}`}>
-                            {p.name}
-                          </div>
-                          <div className={`text-[11px] leading-snug ${selectedPerspective === p.id ? 'text-blue-700/80' : 'text-gray-500'}`}>
-                            {p.desc}
-                          </div>
-                        </button>
-                      ))}
+                      {!guidedInvestigationResult?.perspectives || guidedInvestigationResult.perspectives.length === 0 ? (
+                        <div className="col-span-2 md:col-span-3 p-5 bg-gray-50 border border-gray-200 rounded-xl flex items-center justify-center">
+                          <p className="text-sm text-gray-500">No reliable business perspectives found for this data yet.</p>
+                        </div>
+                      ) : (
+                        guidedInvestigationResult.perspectives.map(p => (
+                          <button
+                            key={p.id}
+                            onClick={() => {
+                              setSelectedPerspective(p.id);
+                              setSelectedBusinessView(null);
+                            }}
+                            className={`p-4 rounded-xl border text-left transition-all flex flex-col ${
+                              selectedPerspective === p.id 
+                                ? 'bg-blue-50 border-blue-500 shadow-sm ring-1 ring-blue-500' 
+                                : 'bg-white border-gray-200 hover:border-blue-300 hover:bg-slate-50'
+                            }`}
+                          >
+                            <div className={`font-semibold text-[14px] mb-1 ${selectedPerspective === p.id ? 'text-blue-900' : 'text-gray-800'}`}>
+                              {p.label}
+                            </div>
+                            <div className={`text-[11px] leading-snug mb-2 ${selectedPerspective === p.id ? 'text-blue-700/80' : 'text-gray-500'}`}>
+                              {p.description}
+                            </div>
+                            <div className="text-[10px] text-gray-400 font-medium border-t border-gray-100 pt-1.5 mt-auto w-full">
+                              Detected from: {p.supportingSignals.join(", ")}
+                            </div>
+                          </button>
+                        ))
+                      )}
                     </div>
                   </div>
 
@@ -837,24 +874,33 @@ export const Home: React.FC = () => {
                       </div>
                       
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        {activeBusinessViews.map(v => (
-                          <button
-                            key={v.id}
-                            onClick={() => setSelectedBusinessView(v.id)}
-                            className={`p-4 rounded-xl border text-left transition-all ${
-                              selectedBusinessView === v.id 
-                                ? 'bg-indigo-50 border-indigo-500 shadow-sm ring-1 ring-indigo-500' 
-                                : 'bg-white border-gray-200 hover:border-indigo-300 hover:bg-slate-50'
-                            }`}
-                          >
-                            <div className={`font-semibold text-[14px] mb-1 ${selectedBusinessView === v.id ? 'text-indigo-900' : 'text-gray-800'}`}>
-                              {v.title}
-                            </div>
-                            <div className={`text-[11px] leading-snug ${selectedBusinessView === v.id ? 'text-indigo-700/80' : 'text-gray-500'}`}>
-                              {v.purpose}
-                            </div>
-                          </button>
-                        ))}
+                        {!activeBusinessViews || activeBusinessViews.length === 0 ? (
+                          <div className="col-span-1 md:col-span-2 p-5 bg-gray-50 border border-gray-200 rounded-xl flex items-center justify-center">
+                            <p className="text-sm text-gray-500">No reliable business views found for this perspective.</p>
+                          </div>
+                        ) : (
+                          activeBusinessViews.map(v => (
+                            <button
+                              key={v.id}
+                              onClick={() => setSelectedBusinessView(v.id)}
+                              className={`p-4 rounded-xl border text-left transition-all ${
+                                selectedBusinessView === v.id 
+                                  ? 'bg-indigo-50 border-indigo-500 shadow-sm ring-1 ring-indigo-500' 
+                                  : 'bg-white border-gray-200 hover:border-indigo-300 hover:bg-slate-50'
+                              }`}
+                            >
+                              <div className={`font-semibold text-[14px] mb-1 ${selectedBusinessView === v.id ? 'text-indigo-900' : 'text-gray-800'}`}>
+                                {v.label}
+                              </div>
+                              <div className={`text-[11px] leading-snug mb-2 ${selectedBusinessView === v.id ? 'text-indigo-700/80' : 'text-gray-500'}`}>
+                                {v.description}
+                              </div>
+                              <div className="text-[10px] text-gray-400 font-medium border-t border-gray-100 pt-1.5 mt-auto">
+                                Confidence: {v.confidenceScore}% | Reqs met: {v.matchedRequiredSignals.length}
+                              </div>
+                            </button>
+                          ))
+                        )}
                       </div>
                     </div>
                   )}
@@ -1041,6 +1087,15 @@ export const Home: React.FC = () => {
                         Ask
                       </button>
                     </div>
+                    {guidedInvestigationResult && (
+                      <div className="text-[11px] text-gray-400 font-mono mt-1 mb-2 border border-gray-100 p-2 rounded-md bg-gray-50 flex gap-4">
+                        <span>Understanding Debug:</span>
+                        <span>Signals: {guidedInvestigationResult.signals.signals.length}</span>
+                        <span>Perspectives: {guidedInvestigationResult.perspectives.length}</span>
+                        <span>Advanced Views: {guidedInvestigationResult.businessViews.length}</span>
+                        <span>Optional Questions: {guidedInvestigationResult.questionSuggestions.length}</span>
+                      </div>
+                    )}
                     <div className="text-xs text-gray-500 mb-2">
                       {analysisMode === "explore" && "Dataset First - What is inside this data?"}
                       {analysisMode === "investigate" && "Business View First - What business process is happening?"}
@@ -1056,7 +1111,7 @@ export const Home: React.FC = () => {
                             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
                           </div>
                           <h3 className="text-sm font-semibold text-gray-900">Questions Hidden</h3>
-                          <p className="text-xs text-gray-500 max-w-[250px]">Select a Perspective and Business View above to discover relevant questions.</p>
+                          <p className="text-xs text-gray-500 max-w-[250px]">Select a perspective to continue.</p>
                         </div>
                       </div>
                     ) : !selectedBusinessView ? (
@@ -1065,31 +1120,30 @@ export const Home: React.FC = () => {
                           <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm text-gray-400">
                             <Layers className="w-6 h-6" />
                           </div>
-                          <h3 className="text-sm font-semibold text-gray-900">Awaiting Business View</h3>
-                          <p className="text-xs text-gray-500 max-w-[250px]">Select a Business View above to generate relevant questions.</p>
+                          <h3 className="text-sm font-semibold text-gray-900">Advanced guided views unavailable</h3>
+                          <p className="text-xs text-gray-500 max-w-sm mt-1">LightBI understands this dataset and can suggest basic analysis, but no advanced Business View is available yet because required signals are missing.</p>
+                          {datasetUnderstanding && datasetUnderstanding.unavailableAnalysis.length > 0 && (
+                            <div className="mt-4 text-left w-full bg-red-50/50 p-3 rounded-md border border-red-100/60">
+                              <p className="text-[11px] font-semibold text-red-800 mb-1.5 uppercase tracking-wider">Missing required signals</p>
+                              <div className="flex flex-wrap gap-1.5">
+                                {Array.from(new Set(datasetUnderstanding.unavailableAnalysis.flatMap(ua => ua.missingSignals))).map(sig => (
+                                  <span key={sig} className="text-[11px] font-medium bg-white border border-red-200 shadow-sm text-red-600 px-2 py-0.5 rounded-md">{sig}</span>
+                                ))}
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </div>
-                    ) : semanticSuggestions.length > 0 ? (() => {
-                      // Filter questions heuristically based on the selected Business View instead of just perspective
-                      const relevantKeywords = selectedViewData ? [...selectedViewData.title.toLowerCase().split(" "), ...selectedViewData.evidence.map(e => e.toLowerCase())] : [];
-                      
-                      let activeQuestions = semanticSuggestions.filter(curr => {
-                        const text = curr.question.toLowerCase();
-                        return relevantKeywords.some(kw => text.includes(kw));
-                      });
-
-                      if (activeQuestions.length === 0) activeQuestions = semanticSuggestions;
-
-                      return (
-                        <div className="w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    ) : visibleQuestionSuggestions.length > 0 ? (
+                      <div className="w-full animate-in fade-in slide-in-from-bottom-4 duration-500 mt-4">
                           {selectedViewData && (
                             <BusinessViewSummaryCard
-                              title={selectedViewData.title}
-                              purpose={selectedViewData.purpose}
-                              evidence={selectedViewData.evidence}
-                              relationships={selectedViewData.relationships}
-                              coverage={selectedViewData.coverage}
-                              belief={selectedViewData.belief}
+                              title={selectedViewData.label}
+                              purpose={selectedViewData.description}
+                              evidence={selectedViewData.evidence.map(e => e.label)}
+                              relationships={[]} // Auto-relationships not extracted from views yet
+                              coverage={{ datasets: 1, businessKeys: selectedViewData.matchedRequiredSignals.length, views: 1 }}
+                              belief={`LightBI believes this data supports the ${selectedViewData.label} business view with ${selectedViewData.confidenceScore}% confidence, matching ${selectedViewData.matchedRequiredSignals.length} required signals.`}
                             />
                           )}
                           
@@ -1100,14 +1154,14 @@ export const Home: React.FC = () => {
                                 What can I learn from this data?
                               </h3>
                               <p className="text-[13px] text-blue-700/80 mb-4">
-                                LightBI generated these questions based on the {selectedViewData?.title || selectedPerspective} context.
+                                LightBI generated these questions based on the {selectedViewData?.label || selectedPerspective} context.
                               </p>
                             </div>
                           
                           <div className="flex flex-col gap-3">
-                            <h4 className="text-[13px] font-bold text-slate-700 uppercase tracking-wider">{selectedViewData?.title || selectedPerspective} Questions</h4>
+                            <h4 className="text-[13px] font-bold text-slate-700 uppercase tracking-wider">{selectedViewData?.label || selectedPerspective} Questions</h4>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                              {(activeQuestions as any[]).slice(0, 6).map((suggestion: any, idx: number) => (
+                              {visibleQuestionSuggestions.map((suggestion, idx) => (
                                 <div key={idx} className="bg-white border border-blue-200 rounded-lg p-4 hover:bg-blue-50 transition-colors flex flex-col justify-between shadow-sm">
                                   <button
                                     onClick={() => {
@@ -1117,7 +1171,7 @@ export const Home: React.FC = () => {
                                         if (view && workspaceState.relationshipState?.graph) {
                                           const plan = createVirtualDatasetPlan({
                                             businessView: view,
-                                            question: suggestion,
+                                            question: suggestion as any,
                                             graph: workspaceState.relationshipState.graph,
                                             workspaceState
                                           });
@@ -1125,37 +1179,43 @@ export const Home: React.FC = () => {
                                           return;
                                         }
                                       }
-                                      setRecipePreview(generateRecipePlan(suggestion.question));
+                                      setRecipePreview(generateRecipePlan(suggestion.text));
                                     }}
                                     className="w-full text-left flex items-start justify-between group mb-3"
                                   >
-                                    <span className="text-[14px] text-blue-900 font-medium leading-snug pr-4">{suggestion.question}</span>
+                                    <span className="text-[14px] text-blue-900 font-medium leading-snug pr-4">{suggestion.text}</span>
                                     <ChevronRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity text-blue-500 mt-0.5 shrink-0" />
                                   </button>
                                   
                                   <div className="flex flex-col gap-2 mt-auto">
                                     <div className="text-[11px] text-slate-500 font-medium flex flex-wrap items-center gap-1">
                                       <span>Detected from:</span>
-                                      {suggestion.requiredFields.map((f: any) => f.name).join(", ")}
+                                      {suggestion.evidenceSignals.join(", ")}
                                     </div>
-                                    <div className="flex items-center">
+                                    <div className="flex items-center gap-2">
                                       <span className={`text-[11px] px-2 py-0.5 rounded-full font-semibold ${
-                                        suggestion.confidence >= 80 ? 'bg-emerald-100 text-emerald-700' :
-                                        suggestion.confidence >= 50 ? 'bg-amber-100 text-amber-700' :
+                                        suggestion.confidenceScore >= 80 ? 'bg-emerald-100 text-emerald-700' :
+                                        suggestion.confidenceScore >= 50 ? 'bg-amber-100 text-amber-700' :
                                         'bg-slate-100 text-slate-600'
                                       }`}>
-                                        Question Match: {suggestion.confidence >= 80 ? 'Strong Signal' : suggestion.confidence >= 50 ? 'Moderate Signal' : 'Weak Signal'}
+                                        Question Match: {suggestion.confidenceScore >= 80 ? 'Strong Signal' : suggestion.confidenceScore >= 50 ? 'Moderate Signal' : 'Weak Signal'}
+                                      </span>
+                                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-600 font-semibold border border-indigo-100">
+                                        Source: Domain Catalog
                                       </span>
                                     </div>
                                   </div>
                                 </div>
                               ))}
                             </div>
-                            </div>
                           </div>
                         </div>
-                      );
-                    })() : null
+                      </div>
+                    ) : (
+                      <div className="w-full p-5 bg-gray-50 border border-gray-200 rounded-xl flex items-center justify-center mt-4">
+                        <p className="text-sm text-gray-500">No reliable questions found for this Business View.</p>
+                      </div>
+                    )
                   )}
 
                   {analysisMode === "investigate" && (
@@ -1177,36 +1237,24 @@ export const Home: React.FC = () => {
                           </div>
                           <div>
                             <h3 className="text-[16px] font-semibold text-gray-900">Business View Inspector</h3>
-                            <p className="text-[13px] text-gray-500">Inspecting: {selectedViewData.title}</p>
+                            <p className="text-[13px] text-gray-500">Inspecting: {selectedViewData.label}</p>
                           </div>
                         </div>
                         
                         <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 space-y-4">
                           <div>
                             <h4 className="text-[12px] font-bold text-slate-500 uppercase tracking-wider mb-1">Purpose</h4>
-                            <p className="text-[14px] text-slate-800">{selectedViewData.purpose}</p>
+                            <p className="text-[14px] text-slate-800">{selectedViewData.description}</p>
                           </div>
                           
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="grid grid-cols-1 gap-4">
                             <div>
                               <h4 className="text-[12px] font-bold text-slate-500 uppercase tracking-wider mb-2">Evidence</h4>
                               <ul className="space-y-1">
                                 {selectedViewData.evidence.map((ev, i) => (
                                   <li key={i} className="text-[13px] text-slate-700 flex items-center gap-2">
                                     <div className="w-1.5 h-1.5 rounded-full bg-indigo-400" />
-                                    {ev}
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                            
-                            <div>
-                              <h4 className="text-[12px] font-bold text-slate-500 uppercase tracking-wider mb-2">Relationships</h4>
-                              <ul className="space-y-1">
-                                {selectedViewData.relationships.map((rel, i) => (
-                                  <li key={i} className="text-[13px] text-slate-700 flex items-center gap-2">
-                                    <Link className="w-3.5 h-3.5 text-indigo-400" />
-                                    {rel}
+                                    {ev.label}
                                   </li>
                                 ))}
                               </ul>
@@ -1223,7 +1271,7 @@ export const Home: React.FC = () => {
                         <div className="flex gap-2 mb-2">
                           <span className="text-[10px] px-2 py-1 bg-purple-100 text-purple-800 font-semibold uppercase tracking-wider rounded">Detected Perspective: {selectedPerspective}</span>
                           {selectedViewData && (
-                            <span className="text-[10px] px-2 py-1 bg-blue-100 text-blue-800 font-semibold uppercase tracking-wider rounded">Detected View: {selectedViewData.title}</span>
+                            <span className="text-[10px] px-2 py-1 bg-blue-100 text-blue-800 font-semibold uppercase tracking-wider rounded">Detected View: {selectedViewData.label}</span>
                           )}
                         </div>
                       )}

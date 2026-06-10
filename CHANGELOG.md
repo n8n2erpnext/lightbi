@@ -3,6 +3,109 @@
 All notable changes to the LightBI architecture and codebase will be documented in this file.
 
 ## [Unreleased]
+- **Phase UX-3: Investigation Workspace Layout Cleanup**:
+  - `apps/desktop`: Reorganized `/investigation` to prioritize user-facing analysis surface.
+  - `apps/desktop`: Hid developer diagnostics (Runtime Intents, Plans, SQL Preview) inside a default-collapsed panel.
+
+- **Phase DU-5C: Safe SQL Preview Contract**:
+  - `apps/desktop`: Implemented `SafeSqlPreview` to translate logical plans into safely quoted DuckDB SQL.
+  - `apps/desktop`: Displayed explainable SQL preview natively in the Investigation workspace.
+
+- **Phase UX-2: Investigation Workspace Routing**:
+  - `apps/desktop`: Implemented `/investigation` route and `InvestigationSession` context to decouple analysis selection from chart execution.
+  - `apps/desktop`: Removed Runtime Intent and Plan preview diagnostics from the Home page. Routing users straight to Investigation upon clicking an Analysis Opportunity.
+
+- **Phase UX-AUDIT-1: Home Information Density Review**:
+  - `docs/architecture`: Created `AUDIT-home-information-density.md` and `AUDIT-home-vs-investigation-boundary.md`.
+  - Identified that Home has become a pipeline debugger. Recommended hiding Runtime Intents and Plans behind a Developer Mode and routing Analysis Opportunities directly to chart execution.
+
+- **Phase DU-5B: Runtime Planner Preview**:
+  - `apps/desktop`: Implemented `RuntimePlanPreview` to declare logical operations before any database execution.
+  - `apps/desktop`: Mapped `RuntimeIntent` to declarative steps like `scan`, `group_by`, `trend`, `distribution`, `relationship`, and `limit`.
+  - `apps/desktop`: Displayed logical operation blueprint natively inside the Investigation Preview panel.
+
+- **Phase DU-5A: Analysis Action Runtime Contract**:
+  - `apps/desktop`: Implemented `RuntimeIntent` contract to safely map `AnalysisAction` to execution intent without SQL.
+  - `apps/desktop`: Added structural validation for dimensions/measures based on analysis type (trend, group_by, etc.).
+  - `apps/desktop`: Updated `Home.tsx` Investigation Preview to compute and display runtime status (`ready` vs `blocked`).
+
+- **Phase DU-4: Analysis Opportunity Actions**:
+  - `apps/desktop`: Transformed 'Available Analysis' text into actionable `AnalysisOpportunityCard` components.
+  - `apps/desktop`: Implemented `generateAnalysisActions` to map dataset understanding to execution-ready actions (group_by, trend, distribution, relationship).
+  - `apps/desktop`: Added Investigation Preview panel in `Home.tsx` to display selected action context without generating SQL or charts yet.
+
+- **Phase DU-3: Layout Repositioning**:
+  - `apps/desktop`: Reframed the Home layout to position Dataset Understanding as the primary success path.
+  - `apps/desktop`: Made Perspective -> Views -> Questions an "optional advanced" path and reframed 0 Questions from a failure state to a descriptive unavailable state, identifying exact missing signals.
+
+- **Phase DU-2: Dataset Understanding Card**:
+  - `apps/desktop`: Implemented `DatasetUnderstandingCard.tsx` and wired it into `Home.tsx`.
+  - `apps/desktop`: Replaced the "0 Questions" failure state with a clear UI showing detected entities, available analysis, and missing analysis.
+
+- **Phase DU-1: Dataset Understanding Contract**:
+  - `apps/desktop`: Implemented `dataset-understanding-contract.ts` and `createDatasetUnderstanding`.
+  - `apps/desktop`: Added strict tests for partial vs understood status logic.
+  - `docs`: Created `ADR-098-dataset-understanding-contract.md`.
+
+- **Architecture Reset: Dataset Understanding Before Questions**:
+  - `docs`: Created `ADR-097`, `dataset-understanding-layer.md`, and `BVQ-RESET-DECISION.md`.
+  - Shifted product philosophy: LightBI is a Business Understanding Layer, not just a Question Generator. Empty question states are no longer considered failures if the system can articulate dataset understanding.
+
+- **Phase BVQ-8D: Real Dataset Vocabulary Patch**:
+  - `apps/desktop`: Patched `TAXONOMY` with specific Vietnamese logistics aliases (`tên lái xe`, `mã tài kiện`, etc.) and introduced `report_date` canonical signal.
+  - `tests`: Added `business-signal-detector.real-vietnamese.test.ts` to enforce detection and strict Business View threshold enforcement.
+  - `docs`: Completed audits `AUDIT-regression-guided-investigation-vs-legacy.md` and `AUDIT-delivery-performance-live-trace.md`.
+
+- **Phase BVQ-8C: Detector Vocabulary Completion**:
+  - `apps/desktop`: Expanded `TAXONOMY` in `business-signal-detector.ts` with 22 new canonical concepts (e.g. `delay`, `salesperson`, `efficiency`) to match Domain Knowledge Catalog.
+  - `tests`: Added `business-signal-detector.coverage.test.ts` to enforce alias detection and 100% coverage.
+  - `docs`: Updated `AUDIT-signal-coverage-report.md` and `AUDIT-business-knowledge-vs-execution-gap.md` to reflect 0% execution gap.
+
+- **Phase BVQ-8B: Signal Coverage Report**:
+  - `docs`: Published `AUDIT-signal-coverage-report.md` measuring execution vs knowledge coverage.
+  - `docs`: Published `AUDIT-business-knowledge-vs-execution-gap.md` highlighting lexical gap per domain.
+
+- **Phase BVQ-8A: Cross-Domain Validation Dataset Suite**:
+  - `tests`: Implemented `guided-investigation-pipeline.cross-domain.test.ts` to ensure strict multi-domain isolation. All 8 validation matrices pass.
+  - `apps/desktop`: Fixed `finance` domain mapping in `TAXONOMY` and `PerspectiveCandidateGenerator` to decouple `profit` and `cost` from `revenue` domain.
+  - `docs`: Published `AUDIT-cross-domain-validation-suite.md`.
+
+- **Phase BVQ-7E: Final Home Purity Audit**:
+  - `docs`: Published `AUDIT-home-guided-investigation-final.md` confirming `Home.tsx` is completely decoupled from heuristic `semantic` maps and `dataset-capabilities.ts`.
+  - `tests`: Verified 100% test passing rate (242 tests) and zero type errors across the Guided Investigation Pipeline integration.
+
+- **Phase BVQ-7D: Home Wiring Cleanup - Question Filtering by Pipeline Business View**:
+  - `apps/desktop`: Replaced heuristic semantic question filtering in `Home.tsx` with strict `perspectiveId` and `businessViewId` matching.
+  - `apps/desktop`: Replaced legacy `semanticSuggestions` object entirely in favor of `visibleQuestionSuggestions`.
+  - `apps/desktop`: Upgraded question cards to render `QuestionSuggestion` fields directly (`evidenceSignals`, `confidenceScore`).
+
+- **Phase BVQ-7C: Home Wiring Cleanup - Replace Hardcoded Business View Source**:
+  - `apps/desktop`: Completely demolished `PerspectiveBusinessViewMap` from `Home.tsx`.
+  - `apps/desktop`: Replaced static business views rendering with dynamic data from `guidedInvestigationResult.businessViews`.
+  - `apps/desktop`: Rewrote `BusinessViewSummaryCard` mapping to safely consume `BusinessViewCandidate` fields (evidence, confidence scores, matching required signals).
+  - `apps/desktop`: Ensured strict empty states to uphold the No Fallback rule.
+
+- **Phase BVQ-7B: Home Wiring Cleanup - Replace Hardcoded Perspective Source**:
+  - `apps/desktop`: Replaced the hardcoded perspective selector array in `Home.tsx` with dynamic `guidedInvestigationResult.perspectives`.
+  - `apps/desktop`: Added logic to clear `selectedPerspective` state if it becomes unsupported.
+  - `apps/desktop`: Enforced strict empty state and added "Detected from" tags to perspective UI cards.
+
+- **Phase BVQ-7A: Home Wiring Cleanup - Replace Legacy Question Source**:
+  - `apps/desktop`: Removed legacy NLP logic (`question-suggestions.ts`).
+  - `apps/desktop`: Wired `Home.tsx` to display questions exclusively from `runGuidedInvestigationPipeline`.
+  - `apps/desktop`: Added pipeline debug stats to the UI and enforced strict empty state handling for questions.
+- **Phase BVQ-6: Guided Investigation Pipeline Orchestrator**:
+  - `apps/desktop`: Implemented `guided-investigation-pipeline.ts` to deterministically orchestrate `Dataset -> Signals -> Perspectives -> Business Views -> Question Plans -> Question Suggestions`.
+  - `docs`: Authored `ADR-096-guided-investigation-pipeline.md` enforcing a strict unidirectional semantic pipeline without React state side-effects.
+- **Phase BVQ-5B: Question Suggestion Renderer**:
+  - `apps/desktop`: Implemented `question-suggestion-renderer.ts` to transform abstract `QuestionPlan` objects into `QuestionSuggestion` objects.
+  - `apps/desktop`: Strictly mapped text output from predefined `questionTemplates` in `DOMAIN_KNOWLEDGE_CATALOG_V1`.
+  - `docs`: Authored `ADR-095-question-suggestion-renderer.md` enforcing the strict separation of presentation and planning.
+
+- **Phase BVQ-5A: Question Plan Contract**:
+  - `apps/desktop`: Implemented `question-plan-generator.ts` as the bridge between Business Views and final questions.
+  - `apps/desktop`: Deduce generic dimensions and measures (e.g., `time` dimension for `trend` intent) without generating human language text.
+  - `docs`: Authored `ADR-094-question-plan-before-question.md` preventing NLP leakage into execution pipelines.
 
 - **Phase BVQ-4B: Registry-Driven Business View Candidate Generator**:
   - `apps/desktop`: Rebuilt the Business View candidate generator to natively consume `DOMAIN_KNOWLEDGE_CATALOG_V1`.

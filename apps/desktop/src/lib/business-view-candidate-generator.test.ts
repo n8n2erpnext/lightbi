@@ -45,7 +45,7 @@ describe('Business View Candidate Generator (Registry-Driven)', () => {
       { id: 'route', score: 100 },
       { id: 'delivery_status', score: 100 }
     ]);
-    const candidates = generateBusinessViewCandidates(createMockPerspective('operations'), registry);
+    const candidates = generateBusinessViewCandidates({ perspectives: [createMockPerspective('operations')], signalRegistry: registry });
     expect(candidates.length).toBeGreaterThan(0);
     expect(candidates[0].perspectiveId).toBe('operations');
   });
@@ -55,7 +55,7 @@ describe('Business View Candidate Generator (Registry-Driven)', () => {
       { id: 'inventory', score: 100 },
       { id: 'stock_movement', score: 100 }
     ]);
-    const candidates = generateBusinessViewCandidates(createMockPerspective('inventory'), registry);
+    const candidates = generateBusinessViewCandidates({ perspectives: [createMockPerspective('inventory')], signalRegistry: registry });
     expect(candidates.length).toBeGreaterThan(0);
     expect(candidates[0].perspectiveId).toBe('inventory');
   });
@@ -65,7 +65,7 @@ describe('Business View Candidate Generator (Registry-Driven)', () => {
       { id: 'revenue', score: 100 },
       { id: 'order', score: 100 }
     ]);
-    const candidates = generateBusinessViewCandidates(createMockPerspective('revenue'), registry);
+    const candidates = generateBusinessViewCandidates({ perspectives: [createMockPerspective('revenue')], signalRegistry: registry });
     expect(candidates.length).toBeGreaterThan(0);
     expect(candidates[0].perspectiveId).toBe('revenue');
   });
@@ -75,7 +75,7 @@ describe('Business View Candidate Generator (Registry-Driven)', () => {
       { id: 'customer', score: 100 },
       { id: 'segment', score: 100 }
     ]);
-    const candidates = generateBusinessViewCandidates(createMockPerspective('customer'), registry);
+    const candidates = generateBusinessViewCandidates({ perspectives: [createMockPerspective('customer')], signalRegistry: registry });
     expect(candidates.length).toBeGreaterThan(0);
     expect(candidates[0].perspectiveId).toBe('customer');
   });
@@ -85,14 +85,14 @@ describe('Business View Candidate Generator (Registry-Driven)', () => {
       { id: 'target', score: 100 },
       { id: 'achievement', score: 100 }
     ]);
-    const candidates = generateBusinessViewCandidates(createMockPerspective('performance'), registry);
+    const candidates = generateBusinessViewCandidates({ perspectives: [createMockPerspective('performance')], signalRegistry: registry });
     expect(candidates.length).toBeGreaterThan(0);
     expect(candidates[0].perspectiveId).toBe('performance');
   });
 
   it('6. No signals returns []', () => {
     const registry = createMockRegistry([]);
-    const candidates = generateBusinessViewCandidates(createMockPerspective('operations'), registry);
+    const candidates = generateBusinessViewCandidates({ perspectives: [createMockPerspective('operations')], signalRegistry: registry });
     expect(candidates.length).toBe(0);
   });
 
@@ -101,7 +101,7 @@ describe('Business View Candidate Generator (Registry-Driven)', () => {
     const registry = createMockRegistry([
       { id: 'route', score: 100 }
     ]);
-    const candidates = generateBusinessViewCandidates(createMockPerspective('operations'), registry);
+    const candidates = generateBusinessViewCandidates({ perspectives: [createMockPerspective('operations')], signalRegistry: registry });
     expect(candidates.length).toBe(0);
   });
 
@@ -121,7 +121,7 @@ describe('Business View Candidate Generator (Registry-Driven)', () => {
       { id: 'revenue', score: 100 },
       { id: 'order', score: 100 }
     ]);
-    const candidates = generateBusinessViewCandidates(createMockPerspective('revenue'), reg);
+    const candidates = generateBusinessViewCandidates({ perspectives: [createMockPerspective('revenue')], signalRegistry: reg });
     const view = candidates.find(c => c.id === 'revenue_performance')!;
     expect(view.matchedRequiredSignals).toContain('revenue');
     expect(view.matchedRequiredSignals).toContain('order');
@@ -134,18 +134,18 @@ describe('Business View Candidate Generator (Registry-Driven)', () => {
     const registry = createMockRegistry([
       { id: 'revenue', score: 100 }
     ]);
-    const c1 = generateBusinessViewCandidates(createMockPerspective('revenue'), registry);
+    const c1 = generateBusinessViewCandidates({ perspectives: [createMockPerspective('revenue')], signalRegistry: registry });
     
     const registry2 = createMockRegistry([
       { id: 'revenue', score: 100 },
       { id: 'order', score: 100 }
     ]);
-    const c2 = generateBusinessViewCandidates(createMockPerspective('revenue'), registry2);
+    const c2 = generateBusinessViewCandidates({ perspectives: [createMockPerspective('revenue')], signalRegistry: registry2 });
     
     // c2 should have higher score for revenue_trend because it matched optional signal (order)
     const trend1 = c1.find(c => c.id === 'revenue_trend')!;
     const trend2 = c2.find(c => c.id === 'revenue_trend')!;
-    expect(trend2.confidence.score).toBeGreaterThan(trend1.confidence.score);
+    expect(trend2.confidenceScore).toBeGreaterThan(trend1.confidenceScore);
   });
 
   it('10. Generator uses registry dynamically (new Business View automatically works)', () => {
@@ -170,7 +170,7 @@ describe('Business View Candidate Generator (Registry-Driven)', () => {
       { id: 'fake_signal', score: 100 }
     ]);
 
-    const candidates = generateBusinessViewCandidates(createMockPerspective('finance'), registry);
+    const candidates = generateBusinessViewCandidates({ perspectives: [createMockPerspective('finance')], signalRegistry: registry });
     
     // Clean up mutation
     catalog!.businessViews = catalog!.businessViews.filter(v => v.id !== 'fake_view');
