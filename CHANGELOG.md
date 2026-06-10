@@ -3,6 +3,23 @@
 All notable changes to the LightBI architecture and codebase will be documented in this file.
 
 ## [Unreleased]
+- **Phase DU-7B: Axum Preview Execution Endpoint Contract**:
+  - `apps/server`: Implemented a generic `POST /api/preview/execute` endpoint for safe, structured execution of `RuntimePlanPreview` operations.
+  - `apps/server`: Added backend SQL compilation logic (`compile_preview_sql`) for logical operations (`group_by`, `trend`, `distribution`, `relationship`) without accepting raw frontend SQL payloads.
+  - `apps/server`: Enforced strict security rails: capped limit at 100 rows, safely quoted identifiers, explicitly injected server-stored CSV file path (`state.current_source`), and completely isolated from frontend mock execution.
+  - `apps/server`: Extended test suite coverage for query compilation logic ensuring structural integrity.
+
+- **Phase UX-6: Freeze Home as Understanding-First Entry Point**:
+  - `apps/desktop`: Removed legacy BVQ UI components from Home (Perspective Selector, Advanced Guided Views, Explore/Investigate/Ask tabs, Chat panel).
+  - `apps/desktop`: Renamed "Dataset Understanding" to "What LightBI Found".
+  - `apps/desktop`: Removed "Confidence: %" and "Missing / Unavailable" negative UX copy from the dataset understanding card, replacing with positive-first wording.
+  - `docs/architecture`: Created `AUDIT-home-freeze-remnants.md` and `AUDIT-home-information-hierarchy.md` to document the removals.
+
+- **Phase UX-5: Home Simplification Audit**:
+  - `docs/architecture`: Conducted pure read-only UX/Product audit on the Home screen.
+  - Created `AUDIT-home-simplification.md` and `AUDIT-bvq-remnants.md`.
+  - Identified severe UX friction caused by legacy BVQ remnants (Perspectives, Advanced Views, missing signal warnings, Ask/Investigate tabs) conflicting with the new Understanding-First product direction. Recommended P0 removal of all non-essential elements from Home.
+
 - **Phase UX-4: Developer Mode Toggle**:
   - `apps/desktop`: Extracted execution warnings into the Developer Diagnostics panel.
   - `apps/desktop`: Made Developer Diagnostics collapsed by default with an explicit Show/Hide toggle button to clean up normal user workflow.
