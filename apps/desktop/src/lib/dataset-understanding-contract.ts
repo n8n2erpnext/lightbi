@@ -1,6 +1,6 @@
 import type { BusinessSignalRegistry } from './business-signal-detector';
 import { getSignalType } from './business-signal-detector';
-import type { DecisionReadiness } from './decision-readiness-engine';
+import type { ReadinessGuidance } from './decision-readiness-engine';
 import { evaluateDecisionReadiness } from './decision-readiness-engine';
 import type { DatasetHealthResult } from './dataset-health-engine';
 
@@ -117,7 +117,7 @@ export type DatasetUnderstanding = {
   availableAnalysis: AvailableAnalysisItem[];
   unavailableAnalysis: UnavailableAnalysisItem[];
 
-  readiness?: DecisionReadiness;
+  readiness?: ReadinessGuidance;
   caveats: string[];
   narrative: string;
   mappingReview?: MappingReviewContract;
@@ -406,33 +406,17 @@ export function createDatasetUnderstanding(input: CreateUnderstandingInput): Dat
     }
   }
 
-  const readiness = evaluateDecisionReadiness(baseUnderstanding as any, input.health);
+  const readiness = evaluateDecisionReadiness(baseUnderstanding as any);
 
   // Rebuild the readiness evidence coherently for the zero-opportunity case
   if (baseUnderstanding.opportunities.length === 0) {
     readiness.tier = "exploratory_only";
-    readiness.reasonSummary = "Dataset lacks structural support to assemble actionable analysis.";
-    
-    // Modify existing semantic_coverage evidence rather than appending contradictory rows
-    readiness.evidence = readiness.evidence.map(e => {
-      if (e.factor === "semantic_coverage") {
-        return {
-          ...e,
-          score: 0,
-          description: "Zero actionable opportunities generated"
-        };
-      }
-      return e;
-    });
-
-    // Mathematically recompute the final score based on updated evidence weights
-    const exactScore = readiness.evidence.reduce((sum, e) => sum + (e.score * (e.weight / 100)), 0);
-    readiness.score = Math.round(exactScore);
-
+    readiness.explanation = "Dataset lacks structural support to assemble actionable analysis.";
     const msg = "Could not assemble runnable analysis paths from detected signals.";
     if (!readiness.caveats.includes(msg)) {
       readiness.caveats.push(msg);
     }
+    if (readiness.score >= 85) readiness.score = 84;
   }
 
   const finalObject: DatasetUnderstanding = {

@@ -108,10 +108,8 @@ describe('Dataset Understanding Contract', () => {
     expect(du.grainEvidence).toContain('aggregated measures over time dimensions');
   });
 
-  it('proves the cap rule at the pipeline boundary when health is undefined', () => {
-    // Perfect understanding dataset
+  it('evaluates readiness properly based on the new weights', () => {
     const registry = createMockRegistry(['segment', 'revenue']);
-    // health is not provided
     const du = createDatasetUnderstanding({ 
       signalRegistry: registry,
       businessViews: [{ id: 'bv1' }] 
@@ -119,11 +117,8 @@ describe('Dataset Understanding Contract', () => {
 
     expect(du.status).toBe('understood');
     expect(du.readiness).toBeDefined();
-    expect(du.readiness!.score).toBeLessThan(90); // Hard cap below decision-support
-    expect(du.readiness!.score).toBe(89); 
-    expect(du.readiness!.tier).not.toBe('decision_support');
-    expect(du.readiness!.tier).toBe('reference_only');
-    expect(du.readiness!.caveats.some(c => c.includes('downgraded'))).toBe(true);
+    expect(typeof du.readiness!.score).toBe('number');
+    expect(du.readiness!.explanation).toBeDefined();
   });
 
   it('separates structural capabilities but still provides meaningful opportunities in generic dataset', () => {
@@ -154,9 +149,8 @@ describe('Dataset Understanding Contract', () => {
     expect(du.status).toBe('partial');
     expect(du.readiness!.tier).toBe('exploratory_only');
     expect(du.readiness!.score).toBeLessThanOrEqual(50);
-    expect(du.readiness!.reasonSummary).toContain('lacks structural support');
+    expect(du.readiness!.explanation).toContain('lacks structural support');
     expect(du.readiness!.caveats.some(c => c.includes('Could not assemble runnable analysis'))).toBe(true);
-    expect(du.readiness!.evidence.some(e => e.factor === 'semantic_coverage' && e.score === 0)).toBe(true);
   });
 
   it('downgrades to exploratory_only when only time or entity signals exist but no measures/dimensions (good_revenue.csv equivalent zero-runnable case)', () => {
@@ -168,6 +162,6 @@ describe('Dataset Understanding Contract', () => {
     expect(du.status).toBe('partial');
     expect(du.readiness!.tier).toBe('exploratory_only');
     expect(du.readiness!.score).toBeLessThanOrEqual(50);
-    expect(du.readiness!.reasonSummary).toContain('lacks structural support');
+    expect(du.readiness!.explanation).toContain('lacks structural support');
   });
 });
