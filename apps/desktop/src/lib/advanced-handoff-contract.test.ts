@@ -2,37 +2,21 @@ import { describe, it, expect } from 'vitest';
 import { generateAdvancedHandoff } from './advanced-handoff-contract';
 import type { DatasetUnderstanding } from './dataset-understanding-contract';
 
-describe('Advanced Handoff Contract', () => {
-  it('maps raw columns to canonical concepts explicitly', () => {
+describe('Advanced Handoff Contract Phase 5', () => {
+  it('Scenario 1: Dataset giao hàng đầy đủ (route, driver, report_date, revenue)', () => {
     const mockUnderstanding: DatasetUnderstanding = {
       id: 'test',
       status: 'understood',
-      datasetName: 'Sales Data',
+      datasetName: 'Delivery Data',
       confidenceScore: 95,
-      grainHint: 'event',
-      summary: {
-        rowCount: 1000,
-        columnCount: 5,
-        signalCount: 2,
-        perspectiveCount: 1,
-        businessViewCount: 1,
-        questionCount: 0
-      },
+      grain: 'event',
+      grainEvidence: 'event level signals',
+      summary: { signalCount: 4 } as any,
       detectedConcepts: [
-        {
-          signalId: 'revenue',
-          label: 'Revenue',
-          canonicalConcept: 'revenue',
-          confidenceScore: 90,
-          evidence: ['Revenue 2023', 'Revenue 2024'] // Multiple evidence columns for one concept
-        },
-        {
-          signalId: 'status',
-          label: 'Status',
-          canonicalConcept: 'status',
-          confidenceScore: 85,
-          evidence: ['Order Status']
-        }
+        { signalId: 'route', label: 'Route', canonicalConcept: 'route', confidenceScore: 90, evidence: ['Tuyến xe'] },
+        { signalId: 'driver', label: 'Driver', canonicalConcept: 'driver', confidenceScore: 85, evidence: ['Tài xế'] },
+        { signalId: 'report_date', label: 'Report Date', canonicalConcept: 'report_date', confidenceScore: 95, evidence: ['Ngày'] },
+        { signalId: 'revenue', label: 'Revenue', canonicalConcept: 'revenue', confidenceScore: 80, evidence: ['Doanh thu'] }
       ],
       inferredEntities: [],
       workflowHints: [],
@@ -41,55 +25,114 @@ describe('Advanced Handoff Contract', () => {
       opportunities: [],
       availableAnalysis: [],
       unavailableAnalysis: [],
-      caveats: ['Dataset has missing values'],
-      narrative: 'A dataset about sales',
-      sourceTrace: { signalIds: [], perspectiveIds: [], businessViewIds: [], questionSuggestionIds: [] },
+      caveats: [],
+      narrative: '',
+      sourceTrace: {} as any,
       createdAt: new Date().toISOString(),
       readiness: {
-        score: 90,
+        score: 95,
         tier: 'decision_support',
         reasonSummary: 'Good to go',
+        explanation: '',
         evidence: [],
-        caveats: ['Readiness caveat 1', 'Dataset has missing values'] // Duplicate caveat to test dedupe
+        caveats: []
       }
     };
 
     const artifact = generateAdvancedHandoff(mockUnderstanding);
 
-    // 1. Explicit Lineage
-    // 'revenue' has 2 evidence columns, 'status' has 1. So 3 mappings total.
-    expect(artifact.rawToCanonicalMapping).toHaveLength(3);
-    
-    const rev23 = artifact.rawToCanonicalMapping.find(m => m.originalColumn === 'Revenue 2023');
-    expect(rev23?.canonicalConcept).toBe('revenue');
-    expect(rev23?.signalType).toBe('measure'); // honest type from getSignalType
-    
-    // 2. Honest Roles
-    const statusCol = artifact.rawToCanonicalMapping.find(m => m.originalColumn === 'Order Status');
-    expect(statusCol?.canonicalConcept).toBe('status');
-    expect(statusCol?.signalType).toBe('status'); // specific rule for status
-
-    // 3. Grain Hint
-    expect(artifact.grainHint).toBe('event');
-
-    // 4. Caveat Deduplication
-    expect(artifact.caveats).toHaveLength(2); // deduped
-    expect(artifact.caveats).toContain('Dataset has missing values');
-    expect(artifact.caveats).toContain('Readiness caveat 1');
+    expect(artifact.grain).toBe('event');
+    expect(artifact.fieldRoles.length).toBeGreaterThanOrEqual(4);
+    expect(artifact.canonicalMapping.length).toBeGreaterThanOrEqual(1);
+    expect(artifact.readinessSummary.tier).toBe('decision_support');
+    expect(artifact.readinessSummary.recommendation).toContain('Suitable for automated reporting');
   });
 
-  it('safely falls back for generic/partial datasets without readiness', () => {
-    const genericUnderstanding: DatasetUnderstanding = {
-      id: 'test_generic',
+  it('Scenario 2: Dataset tồn kho (sku, warehouse, stock_qty)', () => {
+    const mockUnderstanding: DatasetUnderstanding = {
+      id: 'test2',
       status: 'partial',
-      confidenceScore: 50,
-      grainHint: 'unknown',
-      summary: {
-        signalCount: 0,
-        perspectiveCount: 0,
-        businessViewCount: 0,
-        questionCount: 0
-      },
+      datasetName: 'Inventory Data',
+      confidenceScore: 80,
+      grain: 'snapshot',
+      grainEvidence: 'snapshot signals',
+      summary: {} as any,
+      detectedConcepts: [
+        { signalId: 'sku', label: 'SKU', canonicalConcept: 'sku', confidenceScore: 90, evidence: ['Mã SP'] },
+        { signalId: 'warehouse', label: 'Warehouse', canonicalConcept: 'warehouse', confidenceScore: 85, evidence: ['Kho'] },
+        { signalId: 'stock_qty', label: 'Stock Qty', canonicalConcept: 'stock_qty', confidenceScore: 95, evidence: ['Tồn kho'] }
+      ],
+      inferredEntities: [],
+      workflowHints: [],
+      relationshipHints: [],
+      capabilities: [],
+      opportunities: [],
+      availableAnalysis: [],
+      unavailableAnalysis: [],
+      caveats: [],
+      narrative: '',
+      sourceTrace: {} as any,
+      createdAt: new Date().toISOString(),
+      readiness: {
+        score: 86,
+        tier: 'caution',
+        reasonSummary: '',
+        explanation: '',
+        evidence: [],
+        caveats: []
+      }
+    };
+
+    const artifact = generateAdvancedHandoff(mockUnderstanding);
+    
+    expect(artifact.grain).toBe('snapshot');
+    expect(artifact.fieldRoles).toHaveLength(3);
+    const roles = artifact.fieldRoles.map(r => r.role);
+    expect(roles).toContain('dimension'); // sku, warehouse
+    expect(roles).toContain('measure'); // stock_qty
+  });
+
+  it('Scenario 3: Dataset trống / không có signals', () => {
+    const mockUnderstanding: DatasetUnderstanding = {
+      id: 'test3',
+      status: 'insufficient',
+      datasetName: 'Empty Data',
+      confidenceScore: 0,
+      grain: 'unknown',
+      grainEvidence: 'No patterns',
+      summary: {} as any,
+      detectedConcepts: [
+        { signalId: 'unrecognized', label: 'Unrecognized', canonicalConcept: 'unrecognized', confidenceScore: 50, evidence: ['Cột rác'] }
+      ],
+      inferredEntities: [],
+      workflowHints: [],
+      relationshipHints: [],
+      capabilities: [],
+      opportunities: [],
+      availableAnalysis: [],
+      unavailableAnalysis: [],
+      caveats: [],
+      narrative: '',
+      sourceTrace: {} as any,
+      createdAt: new Date().toISOString()
+    };
+
+    const artifact = generateAdvancedHandoff(mockUnderstanding);
+    
+    expect(artifact.grain).toBe('unknown');
+    expect(artifact.caveats.some(c => c.includes('could not be classified'))).toBe(true);
+    expect(artifact.caveats.some(c => c.includes('grain is undetermined'))).toBe(true);
+  });
+
+  it('Scenario 4: readinessSummary.recommendation phải khớp với tier', () => {
+    const mockUnderstanding: DatasetUnderstanding = {
+      id: 'test4',
+      status: 'understood',
+      datasetName: 'Test',
+      confidenceScore: 0,
+      grain: 'unknown',
+      grainEvidence: '',
+      summary: {} as any,
       detectedConcepts: [],
       inferredEntities: [],
       workflowHints: [],
@@ -100,16 +143,19 @@ describe('Advanced Handoff Contract', () => {
       unavailableAnalysis: [],
       caveats: [],
       narrative: '',
-      sourceTrace: { signalIds: [], perspectiveIds: [], businessViewIds: [], questionSuggestionIds: [] },
-      createdAt: new Date().toISOString()
-      // Note: readiness is missing
+      sourceTrace: {} as any,
+      createdAt: new Date().toISOString(),
+      readiness: {
+        score: 40,
+        tier: 'exploratory_only',
+        reasonSummary: '',
+        explanation: '',
+        evidence: [],
+        caveats: []
+      }
     };
 
-    const artifact = generateAdvancedHandoff(genericUnderstanding);
-
-    expect(artifact.readiness.tier).toBe('exploratory_only');
-    expect(artifact.readiness.summary).toContain('Insufficient');
-    expect(artifact.rawToCanonicalMapping).toHaveLength(0);
-    expect(artifact.datasetName).toBe('Unnamed Dataset');
+    const artifact = generateAdvancedHandoff(mockUnderstanding);
+    expect(artifact.readinessSummary.recommendation).toContain('Use for exploration only');
   });
 });

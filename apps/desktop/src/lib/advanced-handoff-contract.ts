@@ -1,55 +1,75 @@
-import type { DatasetUnderstanding } from './dataset-understanding-contract';
+import type { DatasetUnderstanding, DatasetGrain } from './dataset-understanding-contract';
 import type { DecisionReadinessTier } from './decision-readiness-engine';
 import { getSignalType } from './business-signal-detector';
 
-export type FieldLineage = {
-  originalColumn: string;
-  canonicalConcept: string | null;
-  signalType: 'measure' | 'dimension' | 'time' | 'status' | 'unknown';
-  confidenceScore: number;
-  derivationNote?: string;
-};
+export type FieldRole = "dimension" | "measure" | "time" | "identifier" | "unknown";
 
-export type AdvancedHandoffArtifact = {
-  datasetName: string;
-  summary: {
-    rowCount?: number;
-    columnCount?: number;
-  };
-  grainHint: "event" | "entity" | "snapshot" | "summary" | "unknown";
-  rawToCanonicalMapping: FieldLineage[];
+export interface FieldRoleEntry {
+  rawHeader: string;
+  canonicalId: string;
+  role: FieldRole;
+  confidence: number;
+  note: string;
+}
+
+export interface CanonicalMappingEntry {
+  rawHeader: string;
+  canonicalId: string;
+  mappingSource: "alias" | "overlay" | "inferred";
+}
+
+export interface AdvancedHandoffArtifact {
+  generatedAt: string;
+  datasetLabel: string;
+  fieldRoles: FieldRoleEntry[];
+  grain: DatasetGrain;
+  grainEvidence: string;
+  canonicalMapping: CanonicalMappingEntry[];
   caveats: string[];
-  readiness: {
+  readinessSummary: {
+    score: number;
     tier: DecisionReadinessTier;
-    summary: string;
+    recommendation: string;
   };
-};
+}
 
 export function generateAdvancedHandoff(understanding: DatasetUnderstanding): AdvancedHandoffArtifact {
-  const rawToCanonicalMapping: FieldLineage[] = [];
+  const fieldRoles: FieldRoleEntry[] = [];
+  const canonicalMapping: CanonicalMappingEntry[] = [];
 
-  for (const concept of understanding.detectedConcepts) {
-    for (const originalColumn of concept.evidence) {
-      let signalType: 'measure' | 'dimension' | 'time' | 'status' | 'unknown' = 'unknown';
-      const baseType = getSignalType(concept.canonicalConcept);
-      
-      if (['status', 'delivery_status', 'stock_status'].includes(concept.canonicalConcept)) {
-        signalType = 'status';
-      } else {
-        signalType = baseType;
-      }
+  for (const concept of understanding.detectedConcepts || []) {
+    let role: FieldRole = "unknown";
+    const baseType = getSignalType(concept.canonicalConcept);
+    
+    if (concept.canonicalConcept === "unrecognized" || concept.canonicalConcept === "unknown") {
+      role = "unknown";
+    } else if (concept.canonicalConcept.endsWith("_id")) {
+      role = "identifier";
+    } else if (baseType === "dimension") {
+      role = "dimension";
+    } else if (baseType === "measure") {
+      role = "measure";
+    } else if (baseType === "time") {
+      role = "time";
+    }
 
-      rawToCanonicalMapping.push({
-        originalColumn,
-        canonicalConcept: concept.canonicalConcept,
-        signalType,
-        confidenceScore: concept.confidenceScore,
-        derivationNote: "Derived from semantic understanding core"
+    for (const rawHeader of concept.evidence || []) {
+      fieldRoles.push({
+        rawHeader,
+        canonicalId: concept.canonicalConcept,
+        role,
+        confidence: concept.confidenceScore / 100, // 0.0 - 1.0
+        note: `Inferred from semantic engine`
+      });
+
+      canonicalMapping.push({
+        rawHeader,
+        canonicalId: concept.canonicalConcept,
+        mappingSource: "inferred"
       });
     }
   }
 
-  // Deduplicate caveats securely
   const caveatSet = new Set<string>();
   if (understanding.caveats) {
     for (const c of understanding.caveats) caveatSet.add(c);
@@ -58,21 +78,38 @@ export function generateAdvancedHandoff(understanding: DatasetUnderstanding): Ad
     for (const c of understanding.readiness.caveats) caveatSet.add(c);
   }
 
+  const unknownRoles = fieldRoles.filter(f => f.role === 'unknown');
+  if (unknownRoles.length > 0) {
+    const rawHeaders = unknownRoles.map(f => f.rawHeader).join(', ');
+    caveatSet.add(`${unknownRoles.length} columns could not be classified: [${rawHeaders}]`);
+  }
+
+  if (understanding.grain === 'unknown') {
+    caveatSet.add("Dataset grain is undetermined — verify row granularity before aggregation");
+  }
+
   const tier = understanding.readiness?.tier || "exploratory_only";
-  const summary = understanding.readiness?.reasonSummary || "Insufficient readiness data evaluated. Use for exploration only.";
+  const score = understanding.readiness?.score || 0;
+  
+  let recommendation = "Use for exploration only. Do not use as basis for automated decisions.";
+  if (tier === "decision_support") {
+    recommendation = "Suitable for automated reporting and decision dashboards.";
+  } else if (tier === "caution") {
+    recommendation = "Suitable for manual analysis. Verify findings before acting on them.";
+  }
 
   return {
-    datasetName: understanding.datasetName || "Unnamed Dataset",
-    summary: {
-      rowCount: understanding.summary.rowCount,
-      columnCount: understanding.summary.columnCount
-    },
-    grainHint: understanding.grainHint,
-    rawToCanonicalMapping,
+    generatedAt: new Date().toISOString(),
+    datasetLabel: understanding.datasetName || "Unnamed Dataset",
+    fieldRoles,
+    grain: understanding.grain || "unknown",
+    grainEvidence: understanding.grainEvidence || "No structural patterns recognized.",
+    canonicalMapping,
     caveats: Array.from(caveatSet),
-    readiness: {
+    readinessSummary: {
+      score,
       tier,
-      summary
+      recommendation
     }
   };
 }
