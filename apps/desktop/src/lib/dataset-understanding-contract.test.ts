@@ -25,6 +25,7 @@ describe('Dataset Understanding Contract', () => {
     const registry = createMockRegistry([]);
     const du = createDatasetUnderstanding({ signalRegistry: registry });
     expect(du.status).toBe('insufficient');
+    expect(du.grainHint).toBe('unknown');
     expect(du.summary.signalCount).toBe(0);
     expect(du.narrative).toBe('Insufficient data to understand this dataset.');
     expect(du.sourceTrace.signalIds.length).toBe(0);
@@ -35,6 +36,7 @@ describe('Dataset Understanding Contract', () => {
     const du = createDatasetUnderstanding({ signalRegistry: registry });
     
     expect(du.status).toBe('partial');
+    expect(du.grainHint).toBe('event');
     expect(du.confidenceScore).toBeGreaterThan(0);
     expect(du.detectedConcepts.length).toBe(5);
     
@@ -45,12 +47,15 @@ describe('Dataset Understanding Contract', () => {
     expect(entityLabels).toContain('Customer Feedback');
     expect(entityLabels).toContain('Report Date'); 
     
-    const availableLabels = du.availableAnalysis.map(a => a.label);
-    expect(availableLabels).toContain('Shipment activity by route');
-    expect(availableLabels).toContain('Shipment activity by driver');
-    expect(availableLabels).toContain('Satisfaction by route');
-    expect(availableLabels).toContain('Satisfaction by driver');
-    expect(availableLabels).toContain('Activity over report date');
+    const opportunityLabels = du.opportunities.map(a => a.label);
+    expect(opportunityLabels).toContain('Shipment activity by route');
+    expect(opportunityLabels).toContain('Shipment activity by driver');
+    expect(opportunityLabels).toContain('Satisfaction by route');
+    expect(opportunityLabels).toContain('Satisfaction by driver');
+    expect(opportunityLabels).toContain('Activity over report date');
+    
+    // Bridge must match opportunities
+    expect(du.availableAnalysis.length).toBe(du.opportunities.length);
     
     const unavailableLabels = du.unavailableAnalysis.map(a => a.label);
     expect(unavailableLabels).toContain('SLA breach analysis');
@@ -61,7 +66,7 @@ describe('Dataset Understanding Contract', () => {
   });
 
   it('Strong dataset understood', () => {
-    const registry = createMockRegistry(['order', 'revenue']);
+    const registry = createMockRegistry(['segment', 'revenue']);
     const du = createDatasetUnderstanding({ 
       signalRegistry: registry,
       businessViews: [{ id: 'bv1' }] 
@@ -76,7 +81,88 @@ describe('Dataset Understanding Contract', () => {
     const du = createDatasetUnderstanding({ signalRegistry: registry, questionSuggestions: [] });
     
     expect(du.status).toBe('partial');
-    expect(du.availableAnalysis.length).toBeGreaterThan(0);
+    expect(du.opportunities.length).toBeGreaterThan(0);
     expect(du.summary.questionCount).toBe(0);
+  });
+
+  it('determines grainHint as entity for pure identifiers', () => {
+    const registry = createMockRegistry(['customer', 'segment']);
+    const du = createDatasetUnderstanding({ signalRegistry: registry });
+    expect(du.grainHint).toBe('entity');
+  });
+
+  it('determines grainHint as summary for aggregated measures over time', () => {
+    const registry = createMockRegistry(['report_date', 'revenue', 'cost']);
+    const du = createDatasetUnderstanding({ signalRegistry: registry });
+    expect(du.grainHint).toBe('summary');
+  });
+
+  it('does not classify time + driver/route + measure as event but rather summary', () => {
+    const registry = createMockRegistry(['report_date', 'driver', 'revenue']);
+    const du = createDatasetUnderstanding({ signalRegistry: registry });
+    expect(du.grainHint).toBe('summary');
+  });
+
+  it('proves the cap rule at the pipeline boundary when health is undefined', () => {
+    // Perfect understanding dataset
+    const registry = createMockRegistry(['segment', 'revenue']);
+    // health is not provided
+    const du = createDatasetUnderstanding({ 
+      signalRegistry: registry,
+      businessViews: [{ id: 'bv1' }] 
+    });
+
+    expect(du.status).toBe('understood');
+    expect(du.readiness).toBeDefined();
+    expect(du.readiness!.score).toBeLessThan(90); // Hard cap below decision-support
+    expect(du.readiness!.score).toBe(89); 
+    expect(du.readiness!.tier).not.toBe('decision_support');
+    expect(du.readiness!.tier).toBe('reference_only');
+    expect(du.readiness!.caveats.some(c => c.includes('downgraded'))).toBe(true);
+  });
+
+  it('separates structural capabilities but still provides meaningful opportunities in generic dataset', () => {
+    // Generic dataset with measure and dimension
+    const registry = createMockRegistry(['revenue', 'segment', 'product']);
+    const du = createDatasetUnderstanding({ signalRegistry: registry });
+    
+    // Should generate multiple structural capabilities (e.g. group_by segment, group_by product)
+    expect(du.capabilities.length).toBeGreaterThan(1);
+    
+    // Should ALSO preserve meaningful opportunities but NOT be a mechanical mirror
+    expect(du.opportunities.length).toBeGreaterThan(0);
+    expect(du.opportunities.length).toBeLessThan(du.capabilities.length);
+    
+    // Bridge should match opportunities
+    expect(du.availableAnalysis.length).toBe(du.opportunities.length);
+  });
+
+  it('downgrades to exploratory_only when signals/views are present but no actionable opportunities exist (broken_finance.csv equivalent)', () => {
+    // Measures present, but no dimensions/time to aggregate them against
+    const registry = createMockRegistry(['revenue', 'cost', 'profit', 'expense']);
+    const du = createDatasetUnderstanding({ 
+      signalRegistry: registry,
+      businessViews: [{ id: 'profitability_analysis' }, { id: 'margin_analysis' }] 
+    });
+
+    expect(du.opportunities.length).toBe(0);
+    expect(du.status).toBe('partial');
+    expect(du.readiness!.tier).toBe('exploratory_only');
+    expect(du.readiness!.score).toBeLessThanOrEqual(50);
+    expect(du.readiness!.reasonSummary).toContain('lacks structural support');
+    expect(du.readiness!.caveats.some(c => c.includes('Could not assemble runnable analysis'))).toBe(true);
+    expect(du.readiness!.evidence.some(e => e.factor === 'semantic_coverage' && e.score === 0)).toBe(true);
+  });
+
+  it('downgrades to exploratory_only when only time or entity signals exist but no measures/dimensions (good_revenue.csv equivalent zero-runnable case)', () => {
+    // Only time signal present, but no measures to compute a trend
+    const registry = createMockRegistry(['report_date']);
+    const du = createDatasetUnderstanding({ signalRegistry: registry });
+
+    expect(du.opportunities.length).toBe(0);
+    expect(du.status).toBe('partial');
+    expect(du.readiness!.tier).toBe('exploratory_only');
+    expect(du.readiness!.score).toBeLessThanOrEqual(50);
+    expect(du.readiness!.reasonSummary).toContain('lacks structural support');
   });
 });

@@ -9,11 +9,13 @@ export type LogicalRuntimeOperation =
       type: "group_by";
       dimensions: string[];
       measures: string[];
+      measureAggregations?: Record<string, "SUM" | "COUNT">;
     }
   | {
       type: "trend";
       timeDimension: string;
       measures: string[];
+      measureAggregations?: Record<string, "SUM" | "COUNT">;
     }
   | {
       type: "distribution";

@@ -1,15 +1,12 @@
 import React, { useEffect, useRef } from 'react';
 import * as echarts from 'echarts';
 import type { ChartPreviewModel } from '../../lib/chart-preview-model';
+import { useDisplayPreferences } from '../../stores/display-preferences-store';
+import { formatValue, inferSemanticType } from '../../lib/display-formatter';
 
 export const ChartPreviewRenderer: React.FC<{ model: ChartPreviewModel }> = ({ model }) => {
   const chartRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (model.status === 'ready') {
-      console.log("TRACE [CHART] chartType:", model.chartType);
-    }
-  }, [model]);
+  const { preferences } = useDisplayPreferences();
 
   useEffect(() => {
     if (!chartRef.current) return;
@@ -18,24 +15,42 @@ export const ChartPreviewRenderer: React.FC<{ model: ChartPreviewModel }> = ({ m
 
     const chartInstance = echarts.init(chartRef.current);
 
-    const xAxisData = model.rows.map(row => String(row[model.xField || ''] || ''));
+    const xField = model.xField || '';
+    const xSampleVal = model.rows[0]?.[xField];
+    const xSType = inferSemanticType(xField, xSampleVal);
+
+    // Format X-axis data for category charts
+    const xAxisData = model.rows.map(row => {
+      const val = row[xField];
+      return formatValue(val, xSType, preferences);
+    });
     
     let seriesType = 'bar';
     if (model.chartType === 'line') seriesType = 'line';
     if (model.chartType === 'scatter') seriesType = 'scatter';
 
     const series = model.seriesFields.map(field => {
+      const sampleVal = model.rows[0]?.[field];
+      const sType = inferSemanticType(field, sampleVal);
       return {
         name: field,
         type: seriesType,
         data: model.rows.map(row => {
           const val = row[field];
           return typeof val === 'number' ? val : 0;
-        })
+        }),
+        tooltip: {
+          valueFormatter: (value: any) => formatValue(value, sType, preferences)
+        }
       };
     });
 
-    const option = {
+    // Infer Y-axis type from first series field
+    const primaryYField = model.seriesFields[0];
+    const primaryYSample = model.rows[0]?.[primaryYField];
+    const primaryYSType = primaryYField ? inferSemanticType(primaryYField, primaryYSample) : 'unknown';
+
+    const option: any = {
       title: {
         text: model.title,
         left: 'center',
@@ -61,25 +76,48 @@ export const ChartPreviewRenderer: React.FC<{ model: ChartPreviewModel }> = ({ m
       },
       yAxis: {
         type: 'value',
-        axisLabel: { color: '#6B7280' },
+        axisLabel: { 
+          color: '#6B7280',
+          formatter: (value: any) => formatValue(value, primaryYSType, preferences, { compact: true })
+        },
         splitLine: { lineStyle: { type: 'dashed', color: '#E5E7EB' } }
       },
       series: series
     };
 
     if (model.chartType === 'scatter') {
-       // For scatter, we need 2D data.
-       // Assuming seriesFields[0] is X and seriesFields[1] is Y
        if (model.seriesFields.length >= 2) {
-         option.xAxis = { type: 'value', axisLabel: { color: '#6B7280' } } as any;
+         const scatXField = model.seriesFields[0];
+         const scatYField = model.seriesFields[1];
+         const scatXSample = model.rows[0]?.[scatXField];
+         const scatYSample = model.rows[0]?.[scatYField];
+         const scatXSType = inferSemanticType(scatXField, scatXSample);
+         const scatYSType = inferSemanticType(scatYField, scatYSample);
+
+         option.xAxis = { 
+           type: 'value', 
+           axisLabel: { 
+             color: '#6B7280',
+             formatter: (value: any) => formatValue(value, scatXSType, preferences, { compact: true })
+           } 
+         };
+         option.tooltip = {
+           trigger: 'item',
+           formatter: (params: any) => {
+             const [xVal, yVal] = params.value;
+             const fX = formatValue(xVal, scatXSType, preferences);
+             const fY = formatValue(yVal, scatYSType, preferences);
+             return `${params.marker} ${fX} : <b>${fY}</b>`;
+           }
+         };
          option.series = [{
            name: model.title,
            type: 'scatter',
            data: model.rows.map(row => [
-             row[model.seriesFields[0]] || 0,
-             row[model.seriesFields[1]] || 0
+             row[scatXField] || 0,
+             row[scatYField] || 0
            ])
-         }] as any;
+         }];
        }
     }
 
@@ -92,7 +130,7 @@ export const ChartPreviewRenderer: React.FC<{ model: ChartPreviewModel }> = ({ m
       window.removeEventListener('resize', handleResize);
       chartInstance.dispose();
     };
-  }, [model]);
+  }, [model, preferences]);
 
   if (model.status === 'empty') {
     return (
@@ -128,9 +166,9 @@ export const ChartPreviewRenderer: React.FC<{ model: ChartPreviewModel }> = ({ m
           <tbody className="bg-white divide-y divide-gray-200">
             {model.rows.map((row, i) => (
               <tr key={i}>
-                {model.xField && <td className="px-3 py-2 whitespace-nowrap text-gray-900">{String(row[model.xField] ?? '')}</td>}
+                {model.xField && <td className="px-3 py-2 whitespace-nowrap text-gray-900">{formatValue(row[model.xField], inferSemanticType(model.xField, row[model.xField]), preferences)}</td>}
                 {model.seriesFields.map(f => (
-                  <td key={f} className="px-3 py-2 whitespace-nowrap text-gray-900">{String(row[f] ?? '')}</td>
+                  <td key={f} className="px-3 py-2 whitespace-nowrap text-gray-900">{formatValue(row[f], inferSemanticType(f, row[f]), preferences)}</td>
                 ))}
               </tr>
             ))}

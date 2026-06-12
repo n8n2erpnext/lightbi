@@ -9,9 +9,10 @@ export interface DatasetUnderstandingCardProps {
   understanding: DatasetUnderstanding;
   selectedActionId?: string;
   onSelectAction?: (action: AnalysisAction) => void;
+  onMappingAction?: (action: any) => void;
 }
 
-export const DatasetUnderstandingCard: React.FC<DatasetUnderstandingCardProps> = ({ understanding, selectedActionId, onSelectAction }) => {
+export const DatasetUnderstandingCard: React.FC<DatasetUnderstandingCardProps> = ({ understanding, selectedActionId, onSelectAction, onMappingAction }) => {
   const analysisActions = React.useMemo(() => generateAnalysisActions(understanding), [understanding]);
   const getStatusConfig = () => {
     switch (understanding.status) {
@@ -128,6 +129,69 @@ export const DatasetUnderstandingCard: React.FC<DatasetUnderstandingCardProps> =
                 </li>
              ))}
            </ul>
+        </div>
+      )}
+
+      {understanding.mappingReview && understanding.mappingReview.items.length > 0 && (
+        <div className="mt-4 pt-4 border-t border-gray-100">
+          <h4 className="text-[13px] font-bold text-gray-900 mb-3">Truth & Mapping Review</h4>
+          <div className="space-y-3">
+            {understanding.mappingReview.items.map((item, idx) => (
+              <div key={idx} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200">
+                <span className="text-[13px] font-medium text-gray-700">{item.physicalColumn}</span>
+                <div className="flex items-center gap-2">
+                  {item.issueType === 'ambiguous' && (
+                    <button 
+                      onClick={() => onMappingAction?.({ actionType: 'map_temporary', physicalColumn: item.physicalColumn, targetSignal: item.inferredSignal || '' })}
+                      className="px-3 py-1 bg-white border border-gray-300 rounded text-[12px] font-medium text-gray-700 hover:bg-gray-50"
+                    >
+                      Map to {item.inferredSignal}
+                    </button>
+                  )}
+                  <div className="flex items-center gap-2">
+                    <select 
+                      className="px-2 py-1 text-[12px] border border-gray-300 rounded bg-white"
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        const btn = e.target.nextElementSibling as HTMLButtonElement;
+                        btn.disabled = !val;
+                      }}
+                    >
+                      <option value="">Select signal...</option>
+                      <option value="revenue">revenue</option>
+                      <option value="route">route</option>
+                    </select>
+                    <button 
+                      onClick={(e) => {
+                        const select = e.currentTarget.previousElementSibling as HTMLSelectElement;
+                        const targetSignal = select.value;
+                        if (targetSignal) {
+                          onMappingAction?.({ actionType: 'map_temporary', physicalColumn: item.physicalColumn, targetSignal });
+                        }
+                      }}
+                      className="px-3 py-1 bg-blue-600 text-white rounded text-[12px] font-medium disabled:opacity-50"
+                    >
+                      Apply
+                    </button>
+                  </div>
+                  <button 
+                    onClick={() => onMappingAction?.({ actionType: 'ignore_mismatch', physicalColumn: item.physicalColumn })}
+                    className="px-3 py-1 text-[12px] font-medium text-gray-500 hover:text-gray-700"
+                  >
+                    Ignore
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Readiness Toast / Alert */}
+      {understanding.readiness && understanding.readiness.score > 40 && understanding.opportunities.length > 0 && (
+        <div className="mt-4 p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-lg text-[13px] flex items-center">
+          <CheckCircle2 className="w-4 h-4 mr-2 text-emerald-500" />
+          Readiness improved: 40 -&gt; {understanding.readiness.score}. Unlocked opportunities: 0 -&gt; {understanding.opportunities.length}.
         </div>
       )}
 

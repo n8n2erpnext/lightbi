@@ -71,6 +71,10 @@ import type { PreviewRuntimeResult } from '../lib/duckdb-preview-runtime';
 import { ResultValidationCard } from '../components/analysis/ResultValidationCard';
 import { validatePreviewRuntimeResult } from '../lib/result-validator-contract';
 import type { ResultValidationResult } from '../lib/result-validator-contract';
+import type { MappingOverlayAction } from '../lib/mapping-overlay-state';
+import { applyMappingAction } from '../lib/mapping-overlay-state';
+import { useDisplayPreferences } from '../stores/display-preferences-store';
+import { formatValue } from '../lib/display-formatter';
 
 const getGreeting = () => {
     // TODO: Pass display_name when auth exists
@@ -80,6 +84,7 @@ const getGreeting = () => {
 };
 
 export const Home: React.FC = () => {
+  const { preferences } = useDisplayPreferences();
   const navigate = useNavigate();
   const [currentDataset, setCurrentDataset] = useState<any>(null);
   const [workspaceState, setWorkspaceState] = useState<WorkspaceUnderstandingState | null>(null);
@@ -98,6 +103,7 @@ export const Home: React.FC = () => {
   };
   const [pendingLocalBatch, setPendingLocalBatch] = useState<PendingLocalFileBatch | null>(null);
   const [lastInspectedFamilies, setLastInspectedFamilies] = useState<DatasetFamily[] | null>(null);
+  const [mappingOverlayActions, setMappingOverlayActions] = useState<MappingOverlayAction[]>([]);
   const inspectionRunId = useRef(0);
 
 
@@ -356,12 +362,14 @@ export const Home: React.FC = () => {
     if (currentDataset?.status === 'ready' && currentDataset.columns) {
       const columnsForPipeline = currentDataset.columns.map((c: string) => ({ 
         name: c, 
-        type: currentDataset.profiles?.[c]?.inferredType || currentDataset.profiles?.[c]?.type || 'string' 
+        type: currentDataset.profiles?.[c]?.inferredType || currentDataset.profiles?.[c]?.type || 'string',
+        distinctRatio: currentDataset.profiles?.[c]?.distinct_ratio,
+        uniqueValuesCount: currentDataset.profiles?.[c]?.unique_count
       }));
-      return runGuidedInvestigationPipeline({ columns: columnsForPipeline });
+      return runGuidedInvestigationPipeline({ columns: columnsForPipeline, overlayActions: mappingOverlayActions });
     }
     return null;
-  }, [currentDataset]);
+  }, [currentDataset, mappingOverlayActions]);
 
   const datasetUnderstanding = React.useMemo(() => {
     if (!currentDataset || !guidedInvestigationResult) return null;
@@ -373,8 +381,9 @@ export const Home: React.FC = () => {
       perspectives: guidedInvestigationResult.perspectives,
       businessViews: guidedInvestigationResult.businessViews,
       questionSuggestions: guidedInvestigationResult.questionSuggestions,
+      health: datasetHealthResult || undefined,
     });
-  }, [currentDataset, guidedInvestigationResult]);
+  }, [currentDataset, guidedInvestigationResult, datasetHealthResult]);
 
   const activeBusinessViews = selectedPerspective && guidedInvestigationResult
     ? guidedInvestigationResult.businessViews.filter(v => v.perspectiveId === selectedPerspective)
@@ -800,9 +809,9 @@ export const Home: React.FC = () => {
                         )}
                       </div>
                       {(currentDataset.sourceType === "virtual_business_view" || workspaceState?.activeContext.type === "business_view") ? (
-                        <p className="text-[12px] text-gray-500">Business view · {currentDataset.selectedBusinessView?.datasets?.length || 0} datasets · {Array.isArray(currentDataset.columns) ? currentDataset.columns.length : 0} columns</p>
+                        <p className="text-[12px] text-gray-500">Business view · {formatValue(currentDataset.selectedBusinessView?.datasets?.length || 0, 'number', preferences, { compact: true })} datasets · {formatValue(Array.isArray(currentDataset.columns) ? currentDataset.columns.length : 0, 'number', preferences, { compact: true })} columns</p>
                       ) : (
-                        <p className="text-[12px] text-gray-500">{currentDataset.rows_count?.toLocaleString()} rows · {Array.isArray(currentDataset.columns) ? currentDataset.columns.length : 0} columns</p>
+                        <p className="text-[12px] text-gray-500">{formatValue(currentDataset.rows_count, 'number', preferences, { compact: true })} rows · {formatValue(Array.isArray(currentDataset.columns) ? currentDataset.columns.length : 0, 'number', preferences, { compact: true })} columns</p>
                       )}
                     </div>
                   </div>
@@ -843,6 +852,9 @@ export const Home: React.FC = () => {
                     <DatasetUnderstandingCard 
                       understanding={datasetUnderstanding} 
                       onSelectAction={handleSelectAnalysisAction}
+                      onMappingAction={(action) => {
+                         setMappingOverlayActions(prev => applyMappingAction(prev, action));
+                      }}
                     />
                   )}
 
@@ -1016,8 +1028,8 @@ export const Home: React.FC = () => {
                                     <span className="text-[12px] text-gray-500">{fam.files.length} files</span>
                                   </div>
                                   <div className="text-[12px] text-gray-500 flex gap-3">
-                                    <span>{fam.totalRows.toLocaleString()} rows</span>
-                                    <span>{fam.columns.length} columns</span>
+                                    <span>{formatValue(fam.totalRows, 'number', preferences, { compact: true })} rows</span>
+                                    <span>{formatValue(fam.columns.length, 'number', preferences, { compact: true })} columns</span>
                                     {fam.files.length > 1 && <span className="text-emerald-600 flex items-center gap-1"><span className="text-emerald-500">✓</span> Compatible for append</span>}
                                   </div>
                                   <div className="mt-2 text-[11px] text-gray-400 truncate">

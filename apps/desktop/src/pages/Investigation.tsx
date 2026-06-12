@@ -1,19 +1,28 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Database, BarChart3, ChevronDown, ChevronRight, Activity, Code2 } from 'lucide-react';
+import { ArrowLeft, Database, BarChart3, ChevronDown, ChevronRight, Activity, Code2, AlertTriangle } from 'lucide-react';
 import { getCurrentInvestigationSession } from '../lib/investigation-session';
 import { createSafeSqlPreview } from '../lib/safe-sql-preview';
 import { executeDuckDBPreviewSandbox, type DuckDBPreviewResult } from '../lib/duckdb-preview-sandbox';
 import { executeBackendPreview } from '../lib/backend-preview-executor';
 import { createChartPreviewModel, type ChartPreviewModel } from '../lib/chart-preview-model';
 import { ChartPreviewRenderer } from '../components/analysis/ChartPreviewRenderer';
+import { validatePreviewAgainstIntent, type ResultValidationResult } from '../lib/result-validator-contract';
+import { enhancePlanWithGuardedSum } from '../lib/guarded-sum-bridge';
+import { useDisplayPreferences } from '../stores/display-preferences-store';
+import { formatValue, inferSemanticType } from '../lib/display-formatter';
+import { Settings } from 'lucide-react';
+import { DisplayPreferencesModal } from '../components/settings/DisplayPreferencesModal';
 
 export const Investigation: React.FC = () => {
   const navigate = useNavigate();
   const session = getCurrentInvestigationSession();
+  const { preferences } = useDisplayPreferences();
   const [showDiagnostics, setShowDiagnostics] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [previewResult, setPreviewResult] = useState<DuckDBPreviewResult | null>(null);
   const [chartModel, setChartModel] = useState<ChartPreviewModel | null>(null);
+  const [validationResult, setValidationResult] = useState<ResultValidationResult | null>(null);
   const [isExecuting, setIsExecuting] = useState(false);
 
   if (!session) {
@@ -34,17 +43,35 @@ export const Investigation: React.FC = () => {
   }
 
   const { analysisAction, runtimeIntent, runtimePlanPreview, rows } = session;
-  const safeSqlPreview = React.useMemo(() => createSafeSqlPreview(runtimePlanPreview), [runtimePlanPreview]);
+  const safeSqlPreview = React.useMemo(() => {
+    const enhancedPlan = enhancePlanWithGuardedSum(runtimePlanPreview, rows || []);
+    return createSafeSqlPreview(enhancedPlan);
+  }, [runtimePlanPreview, rows]);
 
   const handleRunPreview = async () => {
     setIsExecuting(true);
     try {
       let result = await executeBackendPreview({
         runtimePlan: runtimePlanPreview,
+        safeSqlPreview,
+        rows: rows || []
       });
 
-      const needsFallback = result.status === 'failed' || 
-                           (result.status === 'blocked' && result.blockedReasons.some(r => r.includes('No active dataset source available') || r.includes('Only CSV current source is supported')));
+      const isInfraError = result.status === 'failed' && (
+        result.errorMessage?.includes('NETWORK_UNAVAILABLE') || 
+        result.errorMessage?.includes('LOCAL_EXECUTOR_UNAVAILABLE') ||
+        result.errorMessage?.includes('DUCKDB_BOOTSTRAP_ERROR') ||
+        result.errorMessage?.includes('DUCKDB_WORKER_ERROR') ||
+        result.errorMessage?.includes('DUCKDB_MEMORY_ERROR')
+      );
+      const isMissingSourceWarning = result.status === 'blocked' && result.blockedReasons.some(r => r.includes('No active dataset source available') || r.includes('Only CSV current source is supported'));
+
+      // Strict Sandbox Fallback Rule:
+      // Only allow JS sandbox fallback if it is a missing source warning OR if it's an infrastructure error BUT the query is simple enough.
+      // Complex intents like trend, group_by, relationship MUST fail transparently if the backend is dead.
+      // Semantic errors like CANONICAL_PROJECTION_MISSING must NEVER fallback.
+      const isSafeFallbackIntent = runtimeIntent.type === 'table_preview' || runtimeIntent.type === 'distribution';
+      const needsFallback = isMissingSourceWarning || (isInfraError && isSafeFallbackIntent);
 
       if (needsFallback) {
         const fallbackResult = await executeDuckDBPreviewSandbox({
@@ -57,14 +84,31 @@ export const Investigation: React.FC = () => {
         result = fallbackResult;
       }
 
-      setPreviewResult(result);
+      const validation = validatePreviewAgainstIntent(runtimeIntent, result);
       
-      const model = createChartPreviewModel({
-        previewResult: result,
-        runtimePlan: runtimePlanPreview,
-        analysisLabel: analysisAction.opportunityName
-      });
-      setChartModel(model);
+      // Upgrade failure status based on boundary contract validation
+      if (validation.status === 'failed' && result.status !== 'failed') {
+        result.status = 'failed';
+        result.errorMessage = "Validation boundary rejected the preview result due to insufficient quality or missing required data.";
+      }
+      if (result.rows.length === 0 && result.status === 'executed') {
+        result.status = 'failed';
+        result.errorMessage = "Execution completed but returned an empty dataset. Analysis unavailable.";
+      }
+
+      setPreviewResult(result);
+      setValidationResult(validation);
+      
+      if (result.status !== 'failed') {
+        const model = createChartPreviewModel({
+          previewResult: result,
+          runtimePlan: runtimePlanPreview,
+          analysisLabel: analysisAction.opportunityName
+        });
+        setChartModel(model);
+      } else {
+        setChartModel(null);
+      }
     } finally {
       setIsExecuting(false);
     }
@@ -81,7 +125,7 @@ export const Investigation: React.FC = () => {
         >
           <ArrowLeft className="w-5 h-5" />
         </button>
-        <div>
+        <div className="flex-1">
           <h1 className="text-[15px] font-semibold text-gray-900 leading-tight">
             {analysisAction.opportunityName}
           </h1>
@@ -92,6 +136,16 @@ export const Investigation: React.FC = () => {
               {analysisAction.actionType}
             </span>
           </div>
+        </div>
+        <div className="flex items-center">
+          <button
+            onClick={() => setIsSettingsOpen(true)}
+            className="p-1.5 hover:bg-gray-100 rounded-md transition-colors text-gray-500 hover:text-gray-900 flex items-center gap-2"
+            title="Display Preferences"
+          >
+            <Settings className="w-5 h-5" />
+            <span className="text-sm font-medium">Settings</span>
+          </button>
         </div>
       </header>
 
@@ -140,7 +194,13 @@ export const Investigation: React.FC = () => {
              
              {/* Chart Placeholder / Renderer Area */}
              <div className="w-full mt-4">
-               {chartModel ? (
+               {previewResult?.status === 'failed' ? (
+                 <div className="w-full h-64 bg-red-50/50 border-2 border-dashed border-red-200 rounded-lg flex flex-col items-center justify-center text-red-500 p-6 text-center">
+                   <AlertTriangle className="w-8 h-8 text-red-400 mb-2" />
+                   <span className="text-sm font-medium">Execution Failed</span>
+                   <span className="text-xs text-red-400 mt-1">{previewResult.errorMessage || "Preview could not be rendered."}</span>
+                 </div>
+               ) : chartModel ? (
                  <ChartPreviewRenderer model={chartModel} />
                ) : (
                  <div className="w-full h-64 bg-slate-50 border-2 border-dashed border-slate-200 rounded-lg flex flex-col items-center justify-center text-slate-400">
@@ -171,6 +231,53 @@ export const Investigation: React.FC = () => {
             
             {previewResult && (
               <div className="flex flex-col gap-3">
+                {previewResult.status === 'failed' && (
+                  <div className="bg-red-50 border border-red-200 rounded-md p-4 mb-2 flex flex-col gap-2">
+                    <div className="flex items-center gap-2 text-red-800 font-semibold">
+                      <AlertTriangle className="w-5 h-5" />
+                      Execution Boundary Failed
+                    </div>
+                    <p className="text-sm text-red-700">
+                      {previewResult.errorMessage || "The engine could not process the analysis request."}
+                    </p>
+                    {validationResult?.warnings && validationResult.warnings.length > 0 && (
+                      <ul className="list-disc pl-5 text-xs text-red-600 mt-2">
+                        {validationResult.warnings.map(w => <li key={w}>{w}</li>)}
+                      </ul>
+                    )}
+                  </div>
+                )}
+                
+                {previewResult.source === 'js_sandbox_fallback' && previewResult.status !== 'failed' && (
+                  <div className="bg-amber-50 border border-amber-200 rounded-md p-3 mb-1 flex items-start gap-3">
+                    <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                    <div>
+                      <h4 className="text-sm font-medium text-amber-800">Degraded Execution Mode</h4>
+                      <p className="text-xs text-amber-700 mt-1">
+                        The backend execution pipeline is currently unavailable. This preview was generated using a constrained, in-browser sandbox fallback. Results may differ from full backend execution.
+                      </p>
+                    </div>
+                  </div>
+                )}
+                
+                {(() => {
+                  const cleansingWarnings = previewResult.warnings.filter(w => w.includes('underwent silent cleansing'));
+                  if (cleansingWarnings.length === 0) return null;
+                  return (
+                    <div className="bg-amber-50 border border-amber-200 rounded-md p-3 mb-1 flex items-start gap-3">
+                      <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                      <div>
+                        <h4 className="text-sm font-medium text-amber-800">Data Cleansing Active</h4>
+                        <p className="text-xs text-amber-700 mt-1">
+                          The system has applied the <strong>Safe Numeric Guard</strong>. Dirty strings were automatically stripped of invalid characters or skipped to prevent execution failure during aggregation.
+                        </p>
+                        <ul className="list-disc pl-4 mt-1.5 text-xs text-amber-700">
+                          {cleansingWarnings.map((w, i) => <li key={i}>{w}</li>)}
+                        </ul>
+                      </div>
+                    </div>
+                  );
+                })()}
                 <div className="flex items-center gap-3 text-xs">
                   <span className={`px-2 py-0.5 rounded font-medium ${previewResult.status === 'executed' ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>
                     {previewResult.status.toUpperCase()}
@@ -179,7 +286,7 @@ export const Investigation: React.FC = () => {
                   <span className="text-slate-400">•</span>
                   <span className="text-slate-500 flex items-center gap-1">
                     <Database className="w-3 h-3" />
-                    Source: <span className="font-mono text-[10px] bg-slate-100 px-1.5 py-0.5 rounded">{previewResult.source}</span>
+                    Source: <span className={`font-mono text-[10px] px-1.5 py-0.5 rounded ${previewResult.source === 'js_sandbox_fallback' ? 'bg-amber-100 text-amber-800 font-semibold' : 'bg-slate-100'}`}>{previewResult.source}</span>
                   </span>
                 </div>
                 
@@ -198,11 +305,14 @@ export const Investigation: React.FC = () => {
                       <tbody className="bg-white divide-y divide-gray-200">
                         {previewResult.rows.slice(0, 10).map((row, i) => (
                           <tr key={i}>
-                            {previewResult.columns.map(c => (
-                              <td key={c} className="px-3 py-2 text-gray-900 whitespace-nowrap">
-                                {String(row[c] ?? '')}
-                              </td>
-                            ))}
+                            {previewResult.columns.map(c => {
+                              const semanticType = inferSemanticType(c, row[c]);
+                              return (
+                                <td key={c} className="px-3 py-2 text-gray-900 whitespace-nowrap">
+                                  {formatValue(row[c], semanticType, preferences)}
+                                </td>
+                              );
+                            })}
                           </tr>
                         ))}
                       </tbody>
@@ -343,6 +453,8 @@ export const Investigation: React.FC = () => {
         </div>
 
       </main>
+      
+      <DisplayPreferencesModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
     </div>
   );
 };

@@ -1,5 +1,7 @@
 import React from 'react';
 import { Layers, CheckCircle2, Link as LinkIcon, Box, BrainCircuit } from 'lucide-react';
+import { useDisplayPreferences } from '../../stores/display-preferences-store';
+import { formatValue } from '../../lib/display-formatter';
 
 interface BusinessViewSummaryProps {
   title: string;
@@ -15,6 +17,8 @@ interface BusinessViewSummaryProps {
 }
 
 export function BusinessViewSummaryCard({ title, purpose, evidence, relationships, coverage, belief }: BusinessViewSummaryProps) {
+  const { preferences } = useDisplayPreferences();
+
   return (
     <div className="w-full bg-white border border-indigo-100 rounded-2xl shadow-md overflow-hidden mb-8">
       <div className="bg-indigo-50 border-b border-indigo-100 p-5">
@@ -59,15 +63,15 @@ export function BusinessViewSummaryCard({ title, purpose, evidence, relationship
       <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex flex-wrap gap-6">
         <div className="flex items-center gap-2">
           <Box className="w-4 h-4 text-gray-400" />
-          <span className="text-xs font-medium text-gray-600">{coverage.datasets} datasets connected</span>
+          <span className="text-xs font-medium text-gray-600">{formatValue(coverage.datasets, 'number', preferences, { compact: true })} datasets connected</span>
         </div>
         <div className="flex items-center gap-2">
           <CheckCircle2 className="w-4 h-4 text-gray-400" />
-          <span className="text-xs font-medium text-gray-600">{coverage.businessKeys} business keys detected</span>
+          <span className="text-xs font-medium text-gray-600">{formatValue(coverage.businessKeys, 'number', preferences, { compact: true })} business keys detected</span>
         </div>
         <div className="flex items-center gap-2">
           <Layers className="w-4 h-4 text-gray-400" />
-          <span className="text-xs font-medium text-gray-600">{coverage.views} business view generated</span>
+          <span className="text-xs font-medium text-gray-600">{formatValue(coverage.views, 'number', preferences, { compact: true })} business view generated</span>
         </div>
       </div>
       

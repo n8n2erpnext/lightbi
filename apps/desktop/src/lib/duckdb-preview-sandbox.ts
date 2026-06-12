@@ -33,7 +33,7 @@ export async function executeDuckDBPreviewSandbox(input: DuckDBPreviewInput): Pr
     rows: [],
     rowCount: 0,
     maxRows: 100,
-    warnings: [],
+    warnings: [...input.runtimePlan.warnings],
     blockedReasons: [],
     source: "duckdb_preview_sandbox"
   };
@@ -45,8 +45,8 @@ export async function executeDuckDBPreviewSandbox(input: DuckDBPreviewInput): Pr
     return result;
   }
 
-  // 2. Add warning about mock executor
-  result.warnings.push("Mock preview executor used because DuckDB WASM is not wired yet.");
+  // 2. Add warning about fallback executor
+  result.warnings.push("JS Sandbox preview used as a constrained fallback because full execution paths (Local DuckDB/Cloud) were unavailable or blocked by policy.");
 
   // 3. Handle empty input rows
   if (!input.rows || input.rows.length === 0) {

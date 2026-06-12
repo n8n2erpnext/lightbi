@@ -14,8 +14,9 @@ export interface AnalysisAction {
 
 export function generateAnalysisActions(understanding: DatasetUnderstanding): AnalysisAction[] {
   const actions: AnalysisAction[] = [];
+  const sourceItems = understanding.opportunities || understanding.availableAnalysis || [];
 
-  for (const aa of understanding.availableAnalysis) {
+  for (const aa of sourceItems) {
     let actionType: AnalysisAction["actionType"] = "group_by";
     let dimensions: string[] = [];
     let measures: string[] = [];

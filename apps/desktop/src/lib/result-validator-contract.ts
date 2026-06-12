@@ -1,5 +1,6 @@
 import type { ExpectedResultContract } from './expected-result-contract';
 import type { PreviewRuntimeResult } from './duckdb-preview-runtime';
+import type { RuntimeIntent } from './analysis-runtime-contract';
 
 export type ResultValidationStatus = "passed" | "warning" | "failed";
 
@@ -116,4 +117,35 @@ export function validatePreviewRuntimeResult(input: {
     evidence,
     warnings
   };
+}
+
+export function validatePreviewAgainstIntent(intent: RuntimeIntent, previewResult: any): ResultValidationResult {
+  const expectedResult: ExpectedResultContract = {
+    id: `mapped-${intent.id}`,
+    questionId: '',
+    businessViewId: '',
+    shape: intent.expectedShape === 'bar_chart' || intent.expectedShape === 'line_chart' ? 'trend' : 'summary',
+    outputType: 'chart',
+    dimensions: intent.dimensions.map(d => ({ id: d, label: d })),
+    measures: intent.measures.map(m => ({ id: m, label: m })),
+    assumptions: [],
+    warnings: [],
+    confidence: 'HIGH'
+  };
+  
+  // Adapt duckdb preview result to preview runtime result structure if needed
+  const adaptedPreview: PreviewRuntimeResult = {
+    ...previewResult,
+    columns: previewResult.columns.map((c: string) => {
+      // Very basic type inference for validation
+      const isMeasure = intent.measures.includes(c);
+      return {
+        name: c,
+        type: isMeasure ? "DOUBLE" : "VARCHAR",
+        role: isMeasure ? "measure" : "dimension"
+      };
+    })
+  };
+
+  return validatePreviewRuntimeResult({ expectedResult, previewResult: adaptedPreview });
 }

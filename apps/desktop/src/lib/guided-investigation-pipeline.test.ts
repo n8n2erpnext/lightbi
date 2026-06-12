@@ -8,7 +8,8 @@ describe('Guided Investigation Pipeline Orchestrator', () => {
     const result = runGuidedInvestigationPipeline({
       columns: [
         { name: 'revenue', type: 'number' },
-        { name: 'order', type: 'string' }
+        { name: 'order', type: 'string' },
+        { name: 'report_date', type: 'date' }
       ]
     });
 

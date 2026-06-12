@@ -5,10 +5,17 @@ import type { SandboxExecutionRequest, SandboxEvaluationResult } from './runtime
 import type { PreviewResultContract } from './preview-result-contract';
 import type { BusinessConfidenceResult } from './business-confidence-engine';
 
+/**
+ * @deprecated This runtime is a disconnected mock and does not execute real DuckDB.
+ * Retained for legacy contract compatibility in Home.tsx. Do not use for actual execution.
+ */
 export type PreviewRuntimeStatus = "ready" | "warning" | "blocked" | "error";
 
 export type PreviewRuntimeRow = Record<string, string | number | boolean | null>;
 
+/**
+ * @deprecated This runtime is a disconnected mock and does not execute real DuckDB.
+ */
 export type PreviewRuntimeResult = {
   id: string;
   compiledQueryId: string;
@@ -41,6 +48,9 @@ export type PreviewRuntimeResult = {
   };
 };
 
+/**
+ * @deprecated This runtime is a disconnected mock and does not execute real DuckDB.
+ */
 export type PreviewRuntimeInput = {
   artifact: RuntimeBoundaryArtifact;
   expectedResult: ExpectedResultContract;
@@ -51,6 +61,9 @@ export type PreviewRuntimeInput = {
   businessConfidence: BusinessConfidenceResult;
 };
 
+/**
+ * @deprecated This runtime is a disconnected mock and does not execute real DuckDB.
+ */
 export function createPreviewRuntimeRequest(input: PreviewRuntimeInput): Omit<PreviewRuntimeResult, "execution" | "rows" | "rowCount" | "truncated"> & { _requestContext: PreviewRuntimeInput; maxRows: number } {
   const { sandboxEvaluation, compiledQuery, previewContract, businessConfidence, sandboxRequest } = input;
   
@@ -82,6 +95,10 @@ export function createPreviewRuntimeRequest(input: PreviewRuntimeInput): Omit<Pr
   };
 }
 
+/**
+ * @deprecated This runtime is a disconnected mock and does not execute real DuckDB.
+ * Returns fake randomized data. Do not use for real queries.
+ */
 export function executeDuckDBPreviewRuntime(input: PreviewRuntimeInput): PreviewRuntimeResult {
   const request = createPreviewRuntimeRequest(input);
   
@@ -163,6 +180,9 @@ export function executeDuckDBPreviewRuntime(input: PreviewRuntimeInput): Preview
   };
 }
 
+/**
+ * @deprecated This runtime is a disconnected mock and does not execute real DuckDB.
+ */
 export function summarizePreviewRuntimeResult(result: PreviewRuntimeResult): string {
   switch (result.status) {
     case "ready": return "DuckDB returned a limited preview result.";

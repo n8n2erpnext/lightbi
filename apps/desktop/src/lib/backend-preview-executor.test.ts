@@ -23,7 +23,24 @@ describe('backend-preview-executor', () => {
     vi.restoreAllMocks();
   });
 
-  it('sends runtimePlan only, no SQL, and maps executed response', async () => {
+  it('fails fast when no endpoint is configured', async () => {
+    const result = await executeBackendPreview({ runtimePlan: mockPlan });
+    expect(result.status).toBe('failed');
+    expect(result.errorMessage).toContain('NETWORK_UNAVAILABLE');
+    expect(result.errorMessage).toContain('No backend configured');
+  });
+
+  it('routes to local executor seam when no endpoint is configured but safeSqlPreview and rows are provided', async () => {
+    const safeSqlPreview: any = { id: 'sql_1', status: 'ready', sql: 'SELECT * FROM table', dialect: 'duckdb', parameters: [], warnings: [], blockedReasons: [] };
+    const rows = [{ region: 'North', sales: 100 }];
+    const result = await executeBackendPreview({ runtimePlan: mockPlan, safeSqlPreview, rows });
+    
+    expect(result.status).toBe('failed');
+    expect(result.errorMessage).toContain('DUCKDB_BOOTSTRAP_ERROR');
+    expect(result.source).toBe('local_duckdb_preview');
+  });
+
+  it('sends runtimePlan only, no SQL, and maps executed response when endpoint is configured', async () => {
     const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(JSON.stringify({
       status: 'executed',
       columns: ['region', 'sales_count'],
@@ -34,7 +51,7 @@ describe('backend-preview-executor', () => {
       blocked_reasons: []
     })));
 
-    const result = await executeBackendPreview({ runtimePlan: mockPlan });
+    const result = await executeBackendPreview({ runtimePlan: mockPlan, endpoint: '/api/preview/execute' });
 
     expect(fetchSpy).toHaveBeenCalledWith('/api/preview/execute', expect.objectContaining({
       method: 'POST',
@@ -48,7 +65,7 @@ describe('backend-preview-executor', () => {
     expect(result.source).toBe('backend_duckdb_preview');
   });
 
-  it('maps blocked response', async () => {
+  it('maps blocked response when endpoint is configured', async () => {
     const blockedPlan = { ...mockPlan, status: 'blocked' as const, blockedReasons: ['missing columns'] };
     vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(JSON.stringify({
       status: 'blocked',
@@ -60,17 +77,17 @@ describe('backend-preview-executor', () => {
       blocked_reasons: ['missing columns']
     })));
 
-    const result = await executeBackendPreview({ runtimePlan: blockedPlan });
+    const result = await executeBackendPreview({ runtimePlan: blockedPlan, endpoint: '/api/preview/execute' });
     expect(result.status).toBe('blocked');
     expect(result.blockedReasons).toEqual(['missing columns']);
   });
 
-  it('network failure returns failed', async () => {
+  it('network failure returns failed when endpoint is configured', async () => {
     vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('Network error'));
     
-    const result = await executeBackendPreview({ runtimePlan: mockPlan });
+    const result = await executeBackendPreview({ runtimePlan: mockPlan, endpoint: '/api/preview/execute' });
     expect(result.status).toBe('failed');
-    expect(result.errorMessage).toBe('Network error');
+    expect(result.errorMessage).toBe('NETWORK_UNAVAILABLE: Network error');
     expect(result.source).toBe('backend_duckdb_preview');
   });
 });

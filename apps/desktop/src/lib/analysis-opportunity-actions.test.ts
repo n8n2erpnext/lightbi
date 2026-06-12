@@ -8,6 +8,7 @@ describe('Analysis Opportunity Actions', () => {
       id: 'du_1',
       status: 'partial',
       confidenceScore: 0.9,
+      grainHint: 'event',
       summary: { signalCount: 5, perspectiveCount: 0, businessViewCount: 0, questionCount: 0 },
       detectedConcepts: [],
       inferredEntities: [],
@@ -17,6 +18,14 @@ describe('Analysis Opportunity Actions', () => {
       narrative: 'Test',
       sourceTrace: { signalIds: [], perspectiveIds: [], businessViewIds: [], questionSuggestionIds: [] },
       createdAt: '2026-06-10T00:00:00Z',
+      capabilities: [],
+      opportunities: [
+        { id: 'aa1', label: 'Shipment activity by route', basedOnSignals: ['shipment', 'route'], source: 'heuristic', actionType: 'group_by', dimensions: ['route'], measures: ['shipment'] },
+        { id: 'aa2', label: 'Shipment activity by driver', basedOnSignals: ['shipment', 'driver'], source: 'heuristic', actionType: 'group_by', dimensions: ['driver'], measures: ['shipment'] },
+        { id: 'aa3', label: 'Satisfaction by route', basedOnSignals: ['satisfaction', 'route'], source: 'heuristic', actionType: 'group_by', dimensions: ['route'], measures: ['satisfaction'] },
+        { id: 'aa4', label: 'Satisfaction by driver', basedOnSignals: ['satisfaction', 'driver'], source: 'heuristic', actionType: 'group_by', dimensions: ['driver'], measures: ['satisfaction'] },
+        { id: 'aa5', label: 'Activity over report date', basedOnSignals: ['report_date'], source: 'heuristic', actionType: 'trend', dimensions: ['report_date'], measures: ['shipment'] }
+      ],
       availableAnalysis: [
         { id: 'aa1', label: 'Shipment activity by route', basedOnSignals: ['shipment', 'route'], source: 'signals', actionType: 'group_by', dimensions: ['route'], measures: ['shipment'] },
         { id: 'aa2', label: 'Shipment activity by driver', basedOnSignals: ['shipment', 'driver'], source: 'signals', actionType: 'group_by', dimensions: ['driver'], measures: ['shipment'] },

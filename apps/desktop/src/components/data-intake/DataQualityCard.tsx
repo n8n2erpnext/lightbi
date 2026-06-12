@@ -1,16 +1,24 @@
 import React from 'react';
 import { Activity, AlertTriangle, ShieldCheck, FileDigit, Link, Layers } from 'lucide-react';
 import type { DatasetHealthResult } from '../../lib/dataset-health-engine';
+import { useDisplayPreferences } from '../../stores/display-preferences-store';
+import { formatValue } from '../../lib/display-formatter';
 
 export interface DataQualityCardProps {
   health: DatasetHealthResult;
 }
 
 export const DataQualityCard: React.FC<DataQualityCardProps> = ({ health }) => {
+  const { preferences } = useDisplayPreferences();
+
   const getColorBand = (score: number) => {
     if (score >= 85) return "text-emerald-400 bg-emerald-500/10 border-emerald-500/20";
     if (score >= 60) return "text-amber-400 bg-amber-500/10 border-amber-500/20";
     return "text-rose-400 bg-rose-500/10 border-rose-500/20";
+  };
+
+  const renderScore = (score: number | null | undefined) => {
+    return formatValue(score, 'number', preferences, { compact: true });
   };
 
   return (
@@ -22,7 +30,7 @@ export const DataQualityCard: React.FC<DataQualityCardProps> = ({ health }) => {
         </div>
         <div className={`px-3 py-1 rounded-full border text-[13px] font-bold ${getColorBand(health.overall)} flex items-center gap-2`}>
            <ShieldCheck className="w-4 h-4" />
-           {health.overall} / 100
+           {renderScore(health.overall)} / {renderScore(100)}
         </div>
       </div>
 
@@ -34,22 +42,22 @@ export const DataQualityCard: React.FC<DataQualityCardProps> = ({ health }) => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="bg-slate-950 p-4 rounded-lg border border-slate-800 flex flex-col items-center justify-center">
              <Layers className="w-5 h-5 text-blue-400 mb-2 opacity-80" />
-             <div className="text-[18px] font-bold text-white">{health.completeness}</div>
+             <div className="text-[18px] font-bold text-white">{renderScore(health.completeness)}</div>
              <div className="text-[11px] text-slate-500 uppercase tracking-wider font-semibold">Completeness</div>
           </div>
           <div className="bg-slate-950 p-4 rounded-lg border border-slate-800 flex flex-col items-center justify-center">
              <FileDigit className="w-5 h-5 text-teal-400 mb-2 opacity-80" />
-             <div className="text-[18px] font-bold text-white">{health.consistency}</div>
+             <div className="text-[18px] font-bold text-white">{renderScore(health.consistency)}</div>
              <div className="text-[11px] text-slate-500 uppercase tracking-wider font-semibold">Consistency</div>
           </div>
           <div className="bg-slate-950 p-4 rounded-lg border border-slate-800 flex flex-col items-center justify-center">
              <Activity className="w-5 h-5 text-fuchsia-400 mb-2 opacity-80" />
-             <div className="text-[18px] font-bold text-white">{health.uniqueness}</div>
+             <div className="text-[18px] font-bold text-white">{renderScore(health.uniqueness)}</div>
              <div className="text-[11px] text-slate-500 uppercase tracking-wider font-semibold">Uniqueness</div>
           </div>
           <div className="bg-slate-950 p-4 rounded-lg border border-slate-800 flex flex-col items-center justify-center">
              <Link className="w-5 h-5 text-amber-400 mb-2 opacity-80" />
-             <div className="text-[18px] font-bold text-white">{health.keyQuality}</div>
+             <div className="text-[18px] font-bold text-white">{renderScore(health.keyQuality)}</div>
              <div className="text-[11px] text-slate-500 uppercase tracking-wider font-semibold">Key Quality</div>
           </div>
         </div>
@@ -72,4 +80,4 @@ export const DataQualityCard: React.FC<DataQualityCardProps> = ({ health }) => {
       </div>
     </div>
   );
-};
+}

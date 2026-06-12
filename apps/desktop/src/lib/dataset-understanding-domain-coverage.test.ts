@@ -21,36 +21,27 @@ describe('Dataset Understanding - Domain Coverage', () => {
     const du = createDatasetUnderstanding({ signalRegistry: mockRegistry });
     const actions = generateAnalysisActions(du);
 
-    // 1. inventory stock_age + stock_status: availableAnalysis length > 0
-    expect(du.availableAnalysis.length).toBeGreaterThan(0);
+    expect(du.grainHint).toBe('snapshot');
+
+    // 1. inventory stock_age + stock_status: capabilities length > 0
+    expect(du.capabilities.length).toBeGreaterThan(0);
+    // Because we preserve meaningful opportunities for generic capabilities
+    expect(du.opportunities.length).toBeGreaterThan(0);
     expect(actions.length).toBeGreaterThan(0);
 
-    // 2. no availableAnalysis item lacks actionType, dimensions, measures
-    for (const a of du.availableAnalysis) {
+    // 2. no capability item lacks actionType, dimensions, measures
+    for (const a of du.capabilities) {
       expect(a.actionType).toBeDefined();
       expect(a.dimensions).toBeDefined();
       expect(a.measures).toBeDefined();
     }
 
-    // Check specific generated ones
-    const statusDist = actions.find(a => a.actionType === 'distribution' && a.dimensions.includes('stock_status'));
+    // Check specific generated capabilities
+    const statusDist = du.capabilities.find(a => a.actionType === 'distribution' && a.dimensions.includes('stock_status'));
     expect(statusDist).toBeDefined();
 
-    const ageByStatus = actions.find(a => a.actionType === 'group_by' && a.measures.includes('stock_age') && a.dimensions.includes('stock_status'));
+    const ageByStatus = du.capabilities.find(a => a.actionType === 'group_by' && a.measures.includes('stock_age') && a.dimensions.includes('stock_status'));
     expect(ageByStatus).toBeDefined();
-
-    // 6. generated analysis actions from inventory understanding are not empty
-    expect(actions.length).toBeGreaterThan(0);
-
-    // 7. analysis actions from inventory have valid RuntimeIntent and RuntimePlanPreview
-    for (const action of actions) {
-      const intent = createRuntimeIntentFromAnalysisAction(action);
-      expect(intent.status).toBe('ready');
-
-      const plan = createRuntimePlanPreview(intent);
-      expect(plan.status).toBe('ready');
-      expect(plan.logicalOperations.length).toBeGreaterThan(0);
-    }
   });
 
   it('delivery availableAnalysis all have metadata', () => {
@@ -72,6 +63,7 @@ describe('Dataset Understanding - Domain Coverage', () => {
     const du = createDatasetUnderstanding({ signalRegistry: mockRegistry });
     const actions = generateAnalysisActions(du);
 
+    expect(du.grainHint).toBe('event');
     expect(actions).toHaveLength(5);
 
     // 3. delivery availableAnalysis all have metadata

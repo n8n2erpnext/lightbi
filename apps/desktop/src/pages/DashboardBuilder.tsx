@@ -1,6 +1,8 @@
 import React from 'react';
 import { RefreshCw, Edit2, Share2, Plus } from 'lucide-react';
 import { useAppRuntime } from '@lightbi/runtime';
+import { DashboardKPIWidget } from '../components/dashboards/DashboardKPIWidget';
+import { DashboardChartWidget } from '../components/dashboards/DashboardChartWidget';
 
 export const DashboardBuilder: React.FC = () => {
   const activeDashboardId = useAppRuntime(s => s.activeDashboardId);
@@ -38,41 +40,68 @@ export const DashboardBuilder: React.FC = () => {
         <div className="grid grid-cols-20 gap-3" style={{ gridAutoRows: '30px' }}>
           
           {/* KPI Widget 1 */}
-          <div className="col-span-5 row-span-3 bg-white border border-gray-200 rounded-md p-3.5 shadow-sm flex flex-col justify-center">
-            <h3 className="text-[12px] font-medium text-gray-500 uppercase tracking-wider">Total Revenue</h3>
-            <div className="text-xl font-semibold text-gray-900 mt-1">$45,231.89</div>
-            <div className="text-[11px] font-medium text-emerald-600 mt-1 flex items-center">+20.1% from last month</div>
-          </div>
+          <DashboardKPIWidget 
+            title="Total Revenue"
+            value={45231.89}
+            valueType="currency"
+            trend={{ value: 20.1, label: 'from last month', isPositive: true }}
+            className="col-span-5 row-span-3"
+            colSpan={5}
+          />
 
           {/* KPI Widget 2 */}
-          <div className="col-span-5 row-span-3 bg-white border border-gray-200 rounded-md p-3.5 shadow-sm flex flex-col justify-center">
-            <h3 className="text-[12px] font-medium text-gray-500 uppercase tracking-wider">Active Users</h3>
-            <div className="text-xl font-semibold text-gray-900 mt-1">+2350</div>
-            <div className="text-[11px] font-medium text-emerald-600 mt-1 flex items-center">+180.1% from last month</div>
-          </div>
+          <DashboardKPIWidget 
+            title="Active Users"
+            value={2350}
+            valueType="number"
+            trend={{ value: 180.1, label: 'from last month', isPositive: true }}
+            className="col-span-5 row-span-3"
+            colSpan={5}
+          />
 
           {/* KPI Widget 3 */}
-          <div className="col-span-5 row-span-3 bg-white border border-gray-200 rounded-md p-3.5 shadow-sm flex flex-col justify-center">
-            <h3 className="text-[12px] font-medium text-gray-500 uppercase tracking-wider">Sales</h3>
-            <div className="text-xl font-semibold text-gray-900 mt-1">+12,234</div>
-            <div className="text-[11px] font-medium text-emerald-600 mt-1 flex items-center">+19% from last month</div>
-          </div>
+          <DashboardKPIWidget 
+            title="Sales"
+            value={12234}
+            valueType="number"
+            trend={{ value: 19, label: 'from last month', isPositive: true }}
+            className="col-span-5 row-span-3"
+            colSpan={5}
+          />
 
           {/* Donut Chart Widget */}
-          <div className="col-span-10 row-span-10 bg-white border border-gray-200 rounded-md p-4 shadow-sm flex flex-col">
-            <h3 className="text-[13px] font-semibold text-gray-800 mb-3">Revenue by Category</h3>
-            <div className="flex-1 bg-gray-50/50 border border-dashed border-gray-200 rounded flex items-center justify-center text-[13px] text-gray-400">
-              [Donut Chart Placeholder]
-            </div>
-          </div>
+          <DashboardChartWidget
+            title="Revenue by Category"
+            chartType="donut"
+            data={[
+              { category: 'Electronics', revenue: 15400.50 },
+              { category: 'Clothing', revenue: 8200.75 },
+              { category: 'Software', revenue: 21630.64 }
+            ]}
+            xAxisKey="category"
+            seriesKey="revenue"
+            valueType="currency"
+            className="col-span-10 row-span-10"
+            colSpan={10}
+          />
 
-          {/* Table Widget */}
-          <div className="col-span-10 row-span-10 bg-white border border-gray-200 rounded-md p-4 shadow-sm flex flex-col">
-            <h3 className="text-[13px] font-semibold text-gray-800 mb-3">Recent Transactions</h3>
-            <div className="flex-1 bg-gray-50/50 border border-dashed border-gray-200 rounded flex items-center justify-center text-[13px] text-gray-400">
-              [Table Placeholder]
-            </div>
-          </div>
+          {/* Bar Chart Widget (Replacing Table for demo of formatValue) */}
+          <DashboardChartWidget
+            title="Recent Transactions"
+            chartType="bar"
+            data={[
+              { date: 'Mon', amount: 12500 },
+              { date: 'Tue', amount: 18400 },
+              { date: 'Wed', amount: 9600 },
+              { date: 'Thu', amount: 22100 },
+              { date: 'Fri', amount: 28500 }
+            ]}
+            xAxisKey="date"
+            seriesKey="amount"
+            valueType="currency"
+            className="col-span-10 row-span-10"
+            colSpan={10}
+          />
 
         </div>
       </div>

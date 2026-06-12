@@ -1,15 +1,49 @@
 import type { RuntimePlanPreview } from './runtime-planner-preview';
 import type { DuckDBPreviewResult } from './duckdb-preview-sandbox';
+import type { SafeSqlPreview } from './safe-sql-preview';
+import { executeLocalDuckDB } from './local-duckdb-executor';
 
 export interface BackendPreviewInput {
   runtimePlan: RuntimePlanPreview;
+  safeSqlPreview?: SafeSqlPreview;
+  rows?: Record<string, unknown>[];
   endpoint?: string;
   limit?: number;
 }
 
 export async function executeBackendPreview(input: BackendPreviewInput): Promise<DuckDBPreviewResult> {
-  const endpoint = input.endpoint || '/api/preview/execute';
   const limit = input.limit || 100;
+  
+  // Local Execution Path / Seam fallback if no endpoint is configured.
+  // Instead of failing blindly, we attempt local execution.
+  // Currently, local DuckDB WASM infrastructure is not fully present,
+  // so executeLocalDuckDB will cleanly fail-fast at the executor seam.
+  if (!input.endpoint) {
+    if (input.safeSqlPreview && input.rows) {
+      return executeLocalDuckDB({
+        runtimePlan: input.runtimePlan,
+        safeSqlPreview: input.safeSqlPreview,
+        rows: input.rows,
+        limit
+      });
+    }
+
+    return {
+      id: `preview_exec_${input.runtimePlan.id}`,
+      sourceSqlPreviewId: 'backend_executor',
+      status: "failed",
+      columns: [],
+      rows: [],
+      rowCount: 0,
+      maxRows: limit,
+      warnings: [...input.runtimePlan.warnings],
+      blockedReasons: [],
+      errorMessage: "NETWORK_UNAVAILABLE: No backend configured for execution.",
+      source: "backend_duckdb_preview"
+    };
+  }
+
+  const endpoint = input.endpoint;
   
   try {
     const response = await fetch(endpoint, {
@@ -32,9 +66,9 @@ export async function executeBackendPreview(input: BackendPreviewInput): Promise
         rows: [],
         rowCount: 0,
         maxRows: limit,
-        warnings: [`Backend returned HTTP ${response.status}`],
+        warnings: [...input.runtimePlan.warnings],
         blockedReasons: [],
-        errorMessage: `HTTP Error: ${response.statusText}`,
+        errorMessage: `HTTP_ERROR: ${response.status} - ${response.statusText}`,
         source: "backend_duckdb_preview"
       };
     }
@@ -49,7 +83,7 @@ export async function executeBackendPreview(input: BackendPreviewInput): Promise
       rows: data.rows || [],
       rowCount: data.row_count || 0,
       maxRows: data.max_rows || limit,
-      warnings: data.warnings || [],
+      warnings: [...input.runtimePlan.warnings, ...(data.warnings || [])],
       blockedReasons: data.blocked_reasons || [],
       errorMessage: data.error_message || undefined,
       source: "backend_duckdb_preview"
@@ -63,9 +97,9 @@ export async function executeBackendPreview(input: BackendPreviewInput): Promise
       rows: [],
       rowCount: 0,
       maxRows: limit,
-      warnings: ["Network failure when connecting to backend."],
+      warnings: [...input.runtimePlan.warnings],
       blockedReasons: [],
-      errorMessage: error instanceof Error ? error.message : String(error),
+      errorMessage: error instanceof Error ? `NETWORK_UNAVAILABLE: ${error.message}` : "NETWORK_UNAVAILABLE: Failed to connect to the backend execution API.",
       source: "backend_duckdb_preview"
     };
   }

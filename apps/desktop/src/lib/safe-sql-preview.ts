@@ -1,4 +1,4 @@
-import type { RuntimePlanPreview, LogicalRuntimeOperation } from './runtime-planner-preview';
+import type { RuntimePlanPreview } from './runtime-planner-preview';
 
 export interface SafeSqlPreview {
   id: string;
@@ -13,8 +13,13 @@ export interface SafeSqlPreview {
   source: "runtime_plan_preview";
 }
 
-function quoteIdent(ident: string): string {
-  // Safe DuckDB quoting
+function quoteLowercaseIdent(ident: string): string {
+  // Safe DuckDB quoting, forcing lowercase to match canonical projection bottleneck
+  return `"${ident.toLowerCase().replace(/"/g, '""')}"`;
+}
+
+function quoteExactIdent(ident: string): string {
+  // Safe DuckDB quoting preserving exact case for SELECT AS aliases
   return `"${ident.replace(/"/g, '""')}"`;
 }
 
@@ -57,38 +62,85 @@ export function createSafeSqlPreview(plan: RuntimePlanPreview): SafeSqlPreview {
         if (hasMainOp) break;
         hasMainOp = true;
         
-        const gbDims = op.dimensions.map(quoteIdent);
-        const gbMeasures = op.measures.map(m => `COUNT(${quoteIdent(m)}) AS ${quoteIdent(m + '_count')}`);
+        const gbDimsLower = op.dimensions.map(quoteLowercaseIdent);
+        const gbDimsAlias = op.dimensions.map(d => `${quoteLowercaseIdent(d)} AS ${quoteExactIdent(d)}`);
         
-        selectClause = [...gbDims, ...gbMeasures].join(', ');
-        groupByClause = `\nGROUP BY ${gbDims.join(', ')}`;
+        const gbMeasures = op.measures.map(m => {
+          const lowerM = quoteLowercaseIdent(m);
+          const exactM = quoteExactIdent(m);
+          if (op.measureAggregations && op.measureAggregations[m] === "SUM") {
+            // Align perfectly with numeric-health-gate.ts (stripping , . đ VNĐ $ and spaces)
+            const cleansed = `REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(${lowerM}, ',', ''), '.', ''), 'đ', ''), 'VNĐ', ''), '$', ''), ' ', '')`;
+            return `SUM(TRY_CAST(${cleansed} AS DOUBLE)) AS ${exactM}`;
+          }
+          return `CAST(COUNT(${lowerM}) AS INTEGER) AS ${exactM}`;
+        });
+        
+        selectClause = [...gbDimsAlias, ...gbMeasures].join(', ');
+        if (!selectClause) {
+          preview.status = "blocked";
+          preview.blockedReasons.push("Missing dimensions or measures for group_by operation.");
+          return preview;
+        }
+        
+        if (gbDimsLower.length > 0) {
+          whereClause = `\nWHERE ` + gbDimsLower.map(d => `${d} IS NOT NULL`).join(' AND ');
+          groupByClause = `\nGROUP BY ${gbDimsLower.join(', ')}`;
+        }
         break;
       case "trend":
         if (hasMainOp) break;
         hasMainOp = true;
         
-        const tDim = quoteIdent(op.timeDimension);
-        const tMeasures = op.measures.map(m => `COUNT(${quoteIdent(m)}) AS ${quoteIdent(m + '_count')}`);
+        if (!op.timeDimension) {
+          preview.status = "blocked";
+          preview.blockedReasons.push("Missing time dimension for trend operation.");
+          return preview;
+        }
         
-        selectClause = [tDim, ...tMeasures].join(', ');
-        groupByClause = `\nGROUP BY ${tDim}`;
-        orderByClause = `\nORDER BY ${tDim}`;
+        const tDimLower = quoteLowercaseIdent(op.timeDimension);
+        const tDimExact = quoteExactIdent(op.timeDimension);
+        const tDimExpr = `CAST(${tDimLower} AS TIMESTAMP)`;
+        const tMeasures = op.measures.map(m => {
+          const lowerM = quoteLowercaseIdent(m);
+          const exactM = quoteExactIdent(m);
+          if (op.measureAggregations && op.measureAggregations[m] === "SUM") {
+            // Align perfectly with numeric-health-gate.ts (stripping , . đ VNĐ $ and spaces)
+            const cleansed = `REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(${lowerM}, ',', ''), '.', ''), 'đ', ''), 'VNĐ', ''), '$', ''), ' ', '')`;
+            return `SUM(TRY_CAST(${cleansed} AS DOUBLE)) AS ${exactM}`;
+          }
+          return `CAST(COUNT(${lowerM}) AS INTEGER) AS ${exactM}`;
+        });
+        
+        // Safe DuckDB dialect for trend: explicitly filter out NULL dates
+        selectClause = [`${tDimExpr} AS ${tDimExact}`, ...tMeasures].join(', ');
+        whereClause = `\nWHERE ${tDimLower} IS NOT NULL`;
+        groupByClause = `\nGROUP BY ${tDimExpr}`;
+        orderByClause = `\nORDER BY ${tDimExpr}`;
         break;
       case "distribution":
         if (hasMainOp) break;
         hasMainOp = true;
         
-        const dDim = quoteIdent(op.dimension);
-        selectClause = `${dDim}, COUNT(*) AS "row_count"`;
-        groupByClause = `\nGROUP BY ${dDim}`;
+        const dDimLower = quoteLowercaseIdent(op.dimension);
+        const dDimExact = quoteExactIdent(op.dimension);
+        selectClause = `${dDimLower} AS ${dDimExact}, CAST(COUNT(*) AS INTEGER) AS "row_count"`;
+        whereClause = `\nWHERE ${dDimLower} IS NOT NULL`;
+        groupByClause = `\nGROUP BY ${dDimLower}`;
         break;
       case "relationship":
         if (hasMainOp) break;
         hasMainOp = true;
         
-        const rMeasures = op.measures.map(quoteIdent);
-        selectClause = rMeasures.join(', ');
-        whereClause = `\nWHERE ` + rMeasures.map(m => `${m} IS NOT NULL`).join('\n  AND ');
+        const rMeasuresLower = op.measures.map(quoteLowercaseIdent);
+        const rMeasuresAlias = op.measures.map(m => `${quoteLowercaseIdent(m)} AS ${quoteExactIdent(m)}`);
+        selectClause = rMeasuresAlias.join(', ');
+        if (!selectClause) {
+          preview.status = "blocked";
+          preview.blockedReasons.push("Missing measures for relationship operation.");
+          return preview;
+        }
+        whereClause = `\nWHERE ` + rMeasuresLower.map(m => `${m} IS NOT NULL`).join('\n  AND ');
         break;
       default:
         preview.status = "blocked";

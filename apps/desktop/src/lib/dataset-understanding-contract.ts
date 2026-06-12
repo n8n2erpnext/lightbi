@@ -1,7 +1,24 @@
 import type { BusinessSignalRegistry } from './business-signal-detector';
 import { getSignalType } from './business-signal-detector';
+import type { DecisionReadiness } from './decision-readiness-engine';
+import { evaluateDecisionReadiness } from './decision-readiness-engine';
+import type { DatasetHealthResult } from './dataset-health-engine';
 
 export type DatasetUnderstandingStatus = "understood" | "partial" | "insufficient";
+
+export type MappingIssueType = "recognized" | "ambiguous" | "unrecognized" | "conflicting";
+
+export interface MappingReviewItem {
+  physicalColumn: string;
+  inferredSignal?: string;
+  issueType: MappingIssueType;
+  confidence: number;
+  suggestedActions: string[];
+}
+
+export interface MappingReviewContract {
+  items: MappingReviewItem[];
+}
 
 export type UnderstandingConcept = {
   signalId: string;
@@ -52,13 +69,31 @@ export type UnavailableAnalysisItem = {
   reason: string;
 };
 
+export type DatasetCapability = {
+  id: string;
+  actionType: "group_by" | "trend" | "distribution" | "relationship";
+  dimensions: string[];
+  measures: string[];
+};
+
+export type AnalysisOpportunity = {
+  id: string;
+  label: string;
+  basedOnSignals: string[];
+  source: "business_view" | "question_suggestion" | "heuristic" | "signals";
+  actionType: "group_by" | "trend" | "distribution" | "relationship";
+  dimensions: string[];
+  measures: string[];
+};
+
 export type DatasetUnderstanding = {
   id: string;
   datasetName?: string;
 
   status: DatasetUnderstandingStatus;
   confidenceScore: number;
-
+  grainHint: "event" | "entity" | "snapshot" | "summary" | "unknown";
+  
   summary: {
     rowCount?: number;
     columnCount?: number;
@@ -67,17 +102,22 @@ export type DatasetUnderstanding = {
     businessViewCount: number;
     questionCount: number;
   };
-
+  
   detectedConcepts: UnderstandingConcept[];
   inferredEntities: UnderstandingEntity[];
   workflowHints: WorkflowHint[];
   relationshipHints: RelationshipHint[];
-
+  
+  capabilities: DatasetCapability[];
+  opportunities: AnalysisOpportunity[];
+  // Legacy compatibility fields
   availableAnalysis: AvailableAnalysisItem[];
   unavailableAnalysis: UnavailableAnalysisItem[];
 
+  readiness?: DecisionReadiness;
   caveats: string[];
   narrative: string;
+  mappingReview?: MappingReviewContract;
 
   sourceTrace: {
     signalIds: string[];
@@ -97,6 +137,7 @@ export interface CreateUnderstandingInput {
   perspectives?: any[]; 
   businessViews?: any[];
   questionSuggestions?: any[];
+  health?: DatasetHealthResult;
 }
 
 export function createDatasetUnderstanding(input: CreateUnderstandingInput): DatasetUnderstanding {
@@ -142,7 +183,8 @@ export function createDatasetUnderstanding(input: CreateUnderstandingInput): Dat
 
   const workflowHints: WorkflowHint[] = [];
   const relationshipHints: RelationshipHint[] = [];
-  const availableAnalysis: AvailableAnalysisItem[] = [];
+  const capabilities: DatasetCapability[] = [];
+  const opportunities: AnalysisOpportunity[] = [];
   const unavailableAnalysis: UnavailableAnalysisItem[] = [];
 
   const signalIds = signals.map(s => s.canonicalId);
@@ -158,12 +200,12 @@ export function createDatasetUnderstanding(input: CreateUnderstandingInput): Dat
     const feedback = inferredEntities.find(e => e.conceptSignals.includes('satisfaction'));
     if (feedback) feedback.label = 'Customer Feedback';
 
-    availableAnalysis.push(
-      { id: 'aa1', label: 'Shipment activity by route', basedOnSignals: ['shipment', 'route'], source: 'signals', actionType: 'group_by', dimensions: ['route'], measures: ['shipment'] },
-      { id: 'aa2', label: 'Shipment activity by driver', basedOnSignals: ['shipment', 'driver'], source: 'signals', actionType: 'group_by', dimensions: ['driver'], measures: ['shipment'] },
-      { id: 'aa3', label: 'Satisfaction by route', basedOnSignals: ['satisfaction', 'route'], source: 'signals', actionType: 'group_by', dimensions: ['route'], measures: ['satisfaction'] },
-      { id: 'aa4', label: 'Satisfaction by driver', basedOnSignals: ['satisfaction', 'driver'], source: 'signals', actionType: 'group_by', dimensions: ['driver'], measures: ['satisfaction'] },
-      { id: 'aa5', label: 'Activity over report date', basedOnSignals: ['report_date'], source: 'signals', actionType: 'trend', dimensions: ['report_date'], measures: ['shipment'] }
+    opportunities.push(
+      { id: 'opp1', label: 'Shipment activity by route', basedOnSignals: ['shipment', 'route'], source: 'heuristic', actionType: 'group_by', dimensions: ['route'], measures: ['shipment'] },
+      { id: 'opp2', label: 'Shipment activity by driver', basedOnSignals: ['shipment', 'driver'], source: 'heuristic', actionType: 'group_by', dimensions: ['driver'], measures: ['shipment'] },
+      { id: 'opp3', label: 'Satisfaction by route', basedOnSignals: ['satisfaction', 'route'], source: 'heuristic', actionType: 'group_by', dimensions: ['route'], measures: ['satisfaction'] },
+      { id: 'opp4', label: 'Satisfaction by driver', basedOnSignals: ['satisfaction', 'driver'], source: 'heuristic', actionType: 'group_by', dimensions: ['driver'], measures: ['satisfaction'] },
+      { id: 'opp5', label: 'Activity over report date', basedOnSignals: ['report_date'], source: 'heuristic', actionType: 'trend', dimensions: ['report_date'], measures: ['shipment'] }
     );
 
     if (!has('sla') || !has('delivery_status')) {
@@ -174,49 +216,89 @@ export function createDatasetUnderstanding(input: CreateUnderstandingInput): Dat
       );
     }
   } else {
-    // Generic generator
-    let oppId = 1;
+    // Generic generator builds structural capabilities
+    let capId = 1;
 
-    // Distribution analysis for dimensions
+    let hasPromotedDist = false;
+    // Distribution capabilities
     for (const dim of dimensionSignals) {
-      if (oppId > 8) break;
-      availableAnalysis.push({
-        id: `gen_aa_${oppId++}`,
-        label: `${dim.label} distribution`,
-        basedOnSignals: [dim.canonicalId],
-        source: 'signals',
+      if (capId > 8) break;
+      const capability: DatasetCapability = {
+        id: `cap_${capId}`,
         actionType: 'distribution',
         dimensions: [dim.canonicalId],
         measures: ['record_count']
-      });
+      };
+      capabilities.push(capability);
+      
+      if (!hasPromotedDist) {
+        opportunities.push({
+          id: `gen_aa_${capId}`,
+          label: `${dim.label} distribution`,
+          basedOnSignals: [dim.canonicalId],
+          source: 'signals',
+          actionType: capability.actionType,
+          dimensions: capability.dimensions,
+          measures: capability.measures
+        });
+        hasPromotedDist = true;
+      }
+      capId++;
     }
 
-    // Measure by Dimension / Trend over Time
+    let hasPromotedTrend = false;
+    let hasPromotedGroupBy = false;
+
+    // Trend and Group By capabilities
     for (const measure of measureSignals) {
       for (const time of timeSignals) {
-        if (oppId > 16) break;
-        availableAnalysis.push({
-          id: `gen_aa_${oppId++}`,
-          label: `${measure.label} over ${time.label}`,
-          basedOnSignals: [measure.canonicalId, time.canonicalId],
-          source: 'signals',
+        if (capId > 16) break;
+        const capability: DatasetCapability = {
+          id: `cap_${capId}`,
           actionType: 'trend',
           dimensions: [time.canonicalId],
           measures: [measure.canonicalId]
-        });
+        };
+        capabilities.push(capability);
+        
+        if (!hasPromotedTrend) {
+          opportunities.push({
+            id: `gen_aa_${capId}`,
+            label: `${measure.label} over ${time.label}`,
+            basedOnSignals: [measure.canonicalId, time.canonicalId],
+            source: 'signals',
+            actionType: capability.actionType,
+            dimensions: capability.dimensions,
+            measures: capability.measures
+          });
+          hasPromotedTrend = true;
+        }
+        capId++;
       }
       
       for (const dim of dimensionSignals) {
-        if (oppId > 16) break;
-        availableAnalysis.push({
-          id: `gen_aa_${oppId++}`,
-          label: `${measure.label} by ${dim.label}`,
-          basedOnSignals: [measure.canonicalId, dim.canonicalId],
-          source: 'signals',
+        if (capId > 16) break;
+        const capability: DatasetCapability = {
+          id: `cap_${capId}`,
           actionType: 'group_by',
           dimensions: [dim.canonicalId],
           measures: [measure.canonicalId]
-        });
+        };
+        capabilities.push(capability);
+        
+        if (!hasPromotedGroupBy) {
+          opportunities.push({
+            id: `gen_aa_${capId}`,
+            label: `${measure.label} by ${dim.label}`,
+            basedOnSignals: [measure.canonicalId, dim.canonicalId],
+            source: 'signals',
+            actionType: capability.actionType,
+            dimensions: capability.dimensions,
+            measures: capability.measures
+          });
+          hasPromotedGroupBy = true;
+        }
+        capId++;
       }
     }
 
@@ -246,16 +328,36 @@ export function createDatasetUnderstanding(input: CreateUnderstandingInput): Dat
   } else if (has('report_date') && has('route') && has('driver') && has('shipment') && has('satisfaction')) {
     narrative = "This dataset appears to describe delivery operations activity, but advanced SLA/status analysis is unavailable.";
   } else {
-    narrative = `Detected ${signals.length} business concepts. Found ${availableAnalysis.length} analysis opportunities.`;
+    narrative = `Detected ${signals.length} business concepts. Found ${opportunities.length} analysis opportunities.`;
   }
 
   const confidenceScore = signals.length > 0 ? (signals.reduce((acc, s) => acc + s.confidenceScore, 0) / signals.length) : 0;
 
-  return {
+  // 8. Grain Hint Heuristics
+  let grainHint: "event" | "entity" | "snapshot" | "summary" | "unknown" = "unknown";
+
+  const hasEventSignals = has('shipment') || has('order') || has('stock_movement') || has('inbound') || has('outbound');
+  const hasSnapshotSignals = has('stock_age') || has('stock_status') || has('inventory') || has('replenishment') || has('warehouse');
+  const hasEntitySignals = has('sku') || has('product') || has('customer') || has('supplier') || has('branch') || has('salesperson');
+  const hasTime = timeSignals.length > 0;
+
+  if (hasEventSignals) {
+    grainHint = "event";
+  } else if (hasSnapshotSignals) {
+    grainHint = "snapshot";
+  } else if (hasEntitySignals && !hasTime && measureSignals.length <= 1) {
+    grainHint = "entity";
+  } else if (hasTime && measureSignals.length > 0 && !hasEntitySignals && !hasEventSignals && !hasSnapshotSignals) {
+    grainHint = "summary";
+  }
+
+  const baseUnderstanding = {
     id: `du_${Date.now()}`,
+    datasetId: input.signalRegistry.datasetId || `ds_${Date.now()}`,
     datasetName,
     status,
     confidenceScore,
+    grainHint,
     summary: {
       rowCount,
       columnCount,
@@ -268,16 +370,66 @@ export function createDatasetUnderstanding(input: CreateUnderstandingInput): Dat
     inferredEntities,
     workflowHints,
     relationshipHints,
-    availableAnalysis,
+    capabilities,
+    opportunities,
+    availableAnalysis: opportunities as any, // Compatibility bridge
     unavailableAnalysis,
-    caveats: [],
+    caveats: [] as string[],
     narrative,
+    mappingReview: input.signalRegistry.mappingReview,
     sourceTrace: {
-      signalIds,
+      signalIds: signals.map(s => s.canonicalId),
       perspectiveIds: perspectives.map(p => p.id || 'p'),
       businessViewIds: businessViews.map(v => v.id || 'v'),
       questionSuggestionIds: questionSuggestions.map(q => q.id || 'q'),
     },
-    createdAt: new Date().toISOString(),
+    createdAt: new Date().toISOString()
   };
+
+  // Phase 1 Honesty: establish final truthful understanding state first
+  if (baseUnderstanding.opportunities.length === 0) {
+    if (baseUnderstanding.status === "understood") {
+      baseUnderstanding.status = "partial";
+    }
+    const msg = "Could not assemble runnable analysis paths from detected signals.";
+    if (!baseUnderstanding.caveats.includes(msg)) {
+      baseUnderstanding.caveats.push(msg);
+    }
+  }
+
+  const readiness = evaluateDecisionReadiness(baseUnderstanding as any, input.health);
+
+  // Rebuild the readiness evidence coherently for the zero-opportunity case
+  if (baseUnderstanding.opportunities.length === 0) {
+    readiness.tier = "exploratory_only";
+    readiness.reasonSummary = "Dataset lacks structural support to assemble actionable analysis.";
+    
+    // Modify existing semantic_coverage evidence rather than appending contradictory rows
+    readiness.evidence = readiness.evidence.map(e => {
+      if (e.factor === "semantic_coverage") {
+        return {
+          ...e,
+          score: 0,
+          description: "Zero actionable opportunities generated"
+        };
+      }
+      return e;
+    });
+
+    // Mathematically recompute the final score based on updated evidence weights
+    const exactScore = readiness.evidence.reduce((sum, e) => sum + (e.score * (e.weight / 100)), 0);
+    readiness.score = Math.round(exactScore);
+
+    const msg = "Could not assemble runnable analysis paths from detected signals.";
+    if (!readiness.caveats.includes(msg)) {
+      readiness.caveats.push(msg);
+    }
+  }
+
+  const finalObject: DatasetUnderstanding = {
+    ...baseUnderstanding,
+    readiness
+  };
+  
+  return finalObject;
 }
