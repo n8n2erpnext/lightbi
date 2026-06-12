@@ -1,68 +1,87 @@
-import type { DatasetUnderstanding } from './dataset-understanding-contract';
+import type { DatasetUnderstanding, DatasetGrain } from './dataset-understanding-contract';
 import type { DecisionReadinessTier } from './decision-readiness-engine';
 import { getSignalType } from './business-signal-detector';
 
-export type AISemanticField = {
-  canonicalConcept: string;
-  label: string;
-  signalType: 'measure' | 'dimension' | 'time' | 'status' | 'unknown';
-  confidenceScore: number;
-  sourceColumns: string[];
-};
+export type FieldRole = "dimension" | "measure" | "time" | "identifier" | "unknown";
+export type AITrustLevel = "high" | "moderate" | "low";
 
-export type AISafeActionHint = {
-  label: string;
-  actionType: "group_by" | "trend" | "distribution" | "relationship";
-  dimensions: string[];
-  measures: string[];
-};
+export interface SemanticKeyEntry {
+  canonicalId: string;
+  role: FieldRole;
+  safeForFilter: boolean;
+  safeForGroup: boolean;
+  safeForAggregate: boolean;
+  note: string;
+}
 
-export type AIBriefingReadiness = {
-  tier: DecisionReadinessTier;
-  isTrustworthy: boolean; // Explicit flag for AI: true only if decision_support
-  summary: string;
-};
+export interface AISemanticBriefing {
+  briefingVersion: "1.0";
+  generatedAt: string;
+  datasetLabel: string;
+  semanticKeys: SemanticKeyEntry[];
+  grain: DatasetGrain;
+  grainNote: string;
+  trustLevel: AITrustLevel;
+  trustRationale: string;
+  safeActions: string[];
+  caveats: string[];
+}
 
-export type AIBriefingContract = {
-  datasetName: string;
-  grain: "event" | "entity" | "snapshot" | "summary" | "unknown";
-  readiness: AIBriefingReadiness;
-  caveats: string[]; // Critical instructions for AI
-  keySemanticFields: AISemanticField[];
-  safeActionHints: AISafeActionHint[];
-};
+export function generateAIBriefing(understanding: DatasetUnderstanding): AISemanticBriefing {
+  const semanticKeys: SemanticKeyEntry[] = [];
+  let hasDimension = false;
+  let hasMeasure = false;
+  let hasTime = false;
+  let dimensionIds: string[] = [];
+  let measureIds: string[] = [];
 
-export function generateAIBriefing(understanding: DatasetUnderstanding): AIBriefingContract {
-  // Extract explicit, AI-friendly semantic fields
-  const keySemanticFields: AISemanticField[] = understanding.detectedConcepts.map(concept => {
-    let signalType: 'measure' | 'dimension' | 'time' | 'status' | 'unknown' = 'unknown';
+  for (const concept of understanding.detectedConcepts || []) {
+    let role: FieldRole = "unknown";
     const baseType = getSignalType(concept.canonicalConcept);
     
-    // Honest role derivation
-    if (['status', 'delivery_status', 'stock_status'].includes(concept.canonicalConcept)) {
-      signalType = 'status';
-    } else {
-      signalType = baseType;
+    if (concept.canonicalConcept === "unrecognized" || concept.canonicalConcept === "unknown") {
+      role = "unknown";
+    } else if (concept.canonicalConcept.endsWith("_id")) {
+      role = "identifier";
+    } else if (baseType === "dimension") {
+      role = "dimension";
+    } else if (baseType === "measure") {
+      role = "measure";
+    } else if (baseType === "time") {
+      role = "time";
     }
 
-    return {
-      canonicalConcept: concept.canonicalConcept,
-      label: concept.label,
-      signalType,
-      confidenceScore: concept.confidenceScore,
-      sourceColumns: concept.evidence
-    };
-  });
+    const isDimensionOrId = role === "dimension" || role === "identifier";
+    const isMeasure = role === "measure";
+    const isTime = role === "time";
+    const isUnknown = role === "unknown";
 
-  // Extract safe action hints directly from opportunities
-  const safeActionHints: AISafeActionHint[] = understanding.opportunities.map(opp => ({
-    label: opp.label,
-    actionType: opp.actionType,
-    dimensions: opp.dimensions,
-    measures: opp.measures
-  }));
+    if (isDimensionOrId) { hasDimension = true; dimensionIds.push(concept.canonicalConcept); }
+    if (isMeasure) { hasMeasure = true; measureIds.push(concept.canonicalConcept); }
+    if (isTime) hasTime = true;
 
-  // Aggregate and deduplicate caveats securely
+    semanticKeys.push({
+      canonicalId: concept.canonicalConcept,
+      role,
+      safeForFilter: !isUnknown,
+      safeForGroup: isDimensionOrId,
+      safeForAggregate: isMeasure,
+      note: `Detected as ${role}`
+    });
+  }
+
+  const safeActions: string[] = ["preview sample rows"];
+  
+  if (hasDimension && hasMeasure) {
+    safeActions.push(`group by ${dimensionIds[0]} and sum ${measureIds[0]}`);
+  }
+  if (hasTime && hasMeasure) {
+    safeActions.push(`trend ${measureIds[0]} over time`);
+  }
+  if (!hasMeasure && hasDimension) {
+    safeActions.push(`count rows by ${dimensionIds[0]}`);
+  }
+
   const caveatSet = new Set<string>();
   if (understanding.caveats) {
     for (const c of understanding.caveats) caveatSet.add(c);
@@ -71,26 +90,36 @@ export function generateAIBriefing(understanding: DatasetUnderstanding): AIBrief
     for (const c of understanding.readiness.caveats) caveatSet.add(c);
   }
 
-  // Handle readiness prominently
-  const tier = understanding.readiness?.tier || "exploratory_only";
-  const isTrustworthy = tier === "decision_support";
-  
-  let summary = understanding.readiness?.reasonSummary || "Insufficient readiness data evaluated. Use for exploration only.";
-  // Make weak readiness impossible for AI to miss
-  if (!isTrustworthy) {
-    summary = `WARNING: ${summary} AI must exercise extreme caution. Data is not fully trusted for decisions.`;
+  const unknownCount = semanticKeys.filter(k => k.role === "unknown").length;
+  if (unknownCount > 0) {
+    const pct = Math.round((unknownCount / Math.max(semanticKeys.length, 1)) * 100);
+    caveatSet.add(`${pct}% of recognized concepts have unknown roles`);
   }
 
+  const tier = understanding.readiness?.tier || "exploratory_only";
+  let trustLevel: AITrustLevel = "low";
+  if (tier === "decision_support") trustLevel = "high";
+  else if (tier === "caution") trustLevel = "moderate";
+
+  const grain = understanding.grain || "unknown";
+  let grainNote = "Row granularity could not be determined — verify before aggregation";
+  const entityStr = understanding.inferredEntities?.length ? understanding.inferredEntities.join('/') : "record";
+
+  if (grain === "event") grainNote = `Each row appears to be a ${entityStr} event`;
+  else if (grain === "snapshot") grainNote = `Each row appears to be a point-in-time snapshot of ${entityStr}`;
+  else if (grain === "entity") grainNote = `Each row appears to represent a single ${entityStr} record`;
+  else if (grain === "summary") grainNote = "Each row appears to be a aggregated summary over a time period";
+
   return {
-    datasetName: understanding.datasetName || "Unnamed Dataset",
-    grain: understanding.grainHint,
-    readiness: {
-      tier,
-      isTrustworthy,
-      summary
-    },
-    caveats: Array.from(caveatSet),
-    keySemanticFields,
-    safeActionHints
+    briefingVersion: "1.0",
+    generatedAt: new Date().toISOString(),
+    datasetLabel: understanding.datasetName || "Unnamed Dataset",
+    semanticKeys,
+    grain,
+    grainNote,
+    trustLevel,
+    trustRationale: understanding.readiness?.reasonSummary || "Unknown",
+    safeActions,
+    caveats: Array.from(caveatSet)
   };
 }
