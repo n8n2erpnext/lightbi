@@ -25,7 +25,8 @@ describe('Dataset Understanding Contract', () => {
     const registry = createMockRegistry([]);
     const du = createDatasetUnderstanding({ signalRegistry: registry });
     expect(du.status).toBe('insufficient');
-    expect(du.grainHint).toBe('unknown');
+    expect(du.grain).toBe('unknown');
+    expect(du.grainEvidence).toBe('No structural patterns recognized.');
     expect(du.summary.signalCount).toBe(0);
     expect(du.narrative).toBe('Insufficient data to understand this dataset.');
     expect(du.sourceTrace.signalIds.length).toBe(0);
@@ -36,7 +37,8 @@ describe('Dataset Understanding Contract', () => {
     const du = createDatasetUnderstanding({ signalRegistry: registry });
     
     expect(du.status).toBe('partial');
-    expect(du.grainHint).toBe('event');
+    expect(du.grain).toBe('event');
+    expect(du.grainEvidence).toContain('event-level signals');
     expect(du.confidenceScore).toBeGreaterThan(0);
     expect(du.detectedConcepts.length).toBe(5);
     
@@ -88,19 +90,22 @@ describe('Dataset Understanding Contract', () => {
   it('determines grainHint as entity for pure identifiers', () => {
     const registry = createMockRegistry(['customer', 'segment']);
     const du = createDatasetUnderstanding({ signalRegistry: registry });
-    expect(du.grainHint).toBe('entity');
+    expect(du.grain).toBe('entity');
+    expect(du.grainEvidence).toContain('entity-level signals');
   });
 
   it('determines grainHint as summary for aggregated measures over time', () => {
     const registry = createMockRegistry(['report_date', 'revenue', 'cost']);
     const du = createDatasetUnderstanding({ signalRegistry: registry });
-    expect(du.grainHint).toBe('summary');
+    expect(du.grain).toBe('summary');
+    expect(du.grainEvidence).toContain('aggregated measures over time dimensions');
   });
 
   it('does not classify time + driver/route + measure as event but rather summary', () => {
     const registry = createMockRegistry(['report_date', 'driver', 'revenue']);
     const du = createDatasetUnderstanding({ signalRegistry: registry });
-    expect(du.grainHint).toBe('summary');
+    expect(du.grain).toBe('summary');
+    expect(du.grainEvidence).toContain('aggregated measures over time dimensions');
   });
 
   it('proves the cap rule at the pipeline boundary when health is undefined', () => {

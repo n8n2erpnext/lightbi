@@ -4,6 +4,8 @@ import type { DecisionReadiness } from './decision-readiness-engine';
 import { evaluateDecisionReadiness } from './decision-readiness-engine';
 import type { DatasetHealthResult } from './dataset-health-engine';
 
+export type DatasetGrain = "event" | "entity" | "snapshot" | "summary" | "unknown";
+
 export type DatasetUnderstandingStatus = "understood" | "partial" | "insufficient";
 
 export type MappingIssueType = "recognized" | "ambiguous" | "unrecognized" | "conflicting";
@@ -92,7 +94,8 @@ export type DatasetUnderstanding = {
 
   status: DatasetUnderstandingStatus;
   confidenceScore: number;
-  grainHint: "event" | "entity" | "snapshot" | "summary" | "unknown";
+  grain: DatasetGrain;
+  grainEvidence: string;
   
   summary: {
     rowCount?: number;
@@ -333,8 +336,9 @@ export function createDatasetUnderstanding(input: CreateUnderstandingInput): Dat
 
   const confidenceScore = signals.length > 0 ? (signals.reduce((acc, s) => acc + s.confidenceScore, 0) / signals.length) : 0;
 
-  // 8. Grain Hint Heuristics
-  let grainHint: "event" | "entity" | "snapshot" | "summary" | "unknown" = "unknown";
+  // 8. Grain Heuristics
+  let grain: DatasetGrain = "unknown";
+  let grainEvidence = "No structural patterns recognized.";
 
   const hasEventSignals = has('shipment') || has('order') || has('stock_movement') || has('inbound') || has('outbound');
   const hasSnapshotSignals = has('stock_age') || has('stock_status') || has('inventory') || has('replenishment') || has('warehouse');
@@ -342,13 +346,17 @@ export function createDatasetUnderstanding(input: CreateUnderstandingInput): Dat
   const hasTime = timeSignals.length > 0;
 
   if (hasEventSignals) {
-    grainHint = "event";
+    grain = "event";
+    grainEvidence = "Detected event-level signals (e.g. shipment, order).";
   } else if (hasSnapshotSignals) {
-    grainHint = "snapshot";
+    grain = "snapshot";
+    grainEvidence = "Detected point-in-time snapshot signals (e.g. inventory, warehouse).";
   } else if (hasEntitySignals && !hasTime && measureSignals.length <= 1) {
-    grainHint = "entity";
+    grain = "entity";
+    grainEvidence = "Detected entity-level signals without deep temporal data.";
   } else if (hasTime && measureSignals.length > 0 && !hasEntitySignals && !hasEventSignals && !hasSnapshotSignals) {
-    grainHint = "summary";
+    grain = "summary";
+    grainEvidence = "Detected aggregated measures over time dimensions.";
   }
 
   const baseUnderstanding = {
@@ -357,7 +365,8 @@ export function createDatasetUnderstanding(input: CreateUnderstandingInput): Dat
     datasetName,
     status,
     confidenceScore,
-    grainHint,
+    grain,
+    grainEvidence,
     summary: {
       rowCount,
       columnCount,

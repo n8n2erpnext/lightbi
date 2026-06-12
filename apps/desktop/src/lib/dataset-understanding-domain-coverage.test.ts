@@ -21,7 +21,7 @@ describe('Dataset Understanding - Domain Coverage', () => {
     const du = createDatasetUnderstanding({ signalRegistry: mockRegistry });
     const actions = generateAnalysisActions(du);
 
-    expect(du.grainHint).toBe('snapshot');
+    expect(du.grain).toBe('snapshot');
 
     // 1. inventory stock_age + stock_status: capabilities length > 0
     expect(du.capabilities.length).toBeGreaterThan(0);
@@ -63,7 +63,7 @@ describe('Dataset Understanding - Domain Coverage', () => {
     const du = createDatasetUnderstanding({ signalRegistry: mockRegistry });
     const actions = generateAnalysisActions(du);
 
-    expect(du.grainHint).toBe('event');
+    expect(du.grain).toBe('event');
     expect(actions).toHaveLength(5);
 
     // 3. delivery availableAnalysis all have metadata
