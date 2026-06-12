@@ -75,15 +75,37 @@ export async function executeBackendPreview(input: BackendPreviewInput): Promise
 
     const data = await response.json();
     
+    let totalMalformedDropped = 0;
+    const rows = data.rows || [];
+    const columns = (data.columns || []).filter((name: string) => !name.startsWith('__malformed_'));
+    
+    for (const jsonRow of rows) {
+      for (const key of Object.keys(jsonRow)) {
+        if (key.startsWith('__malformed_')) {
+          if (typeof jsonRow[key] === 'number') {
+            totalMalformedDropped += jsonRow[key];
+          } else if (typeof jsonRow[key] === 'bigint') {
+            totalMalformedDropped += Number(jsonRow[key]);
+          }
+          delete jsonRow[key];
+        }
+      }
+    }
+    
+    const warnings = [...input.runtimePlan.warnings, ...(data.warnings || [])];
+    if (totalMalformedDropped > 0) {
+      warnings.push(`Guarded SUM detected and silently dropped ${totalMalformedDropped} malformed values during execution (not caught by initial sample).`);
+    }
+
     return {
       id: `preview_exec_${input.runtimePlan.id}`,
       sourceSqlPreviewId: 'backend_executor',
       status: data.status as "ready" | "blocked" | "executed" | "failed",
-      columns: data.columns || [],
-      rows: data.rows || [],
+      columns,
+      rows,
       rowCount: data.row_count || 0,
       maxRows: data.max_rows || limit,
-      warnings: [...input.runtimePlan.warnings, ...(data.warnings || [])],
+      warnings,
       blockedReasons: data.blocked_reasons || [],
       errorMessage: data.error_message || undefined,
       source: "backend_duckdb_preview"

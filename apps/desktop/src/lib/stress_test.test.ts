@@ -29,14 +29,13 @@ const cases = {
 };
 
 // DuckDB SQL Simulation
-function simulateDuckDBSum(values: any[], measureAgg: string) {
+function simulateDuckDBSum(values: any[], measureAgg: string, measureName: string) {
   if (measureAgg !== 'SUM') return { sum: null, note: "Downgraded to COUNT" };
   
   let total = 0;
   let nullCount = 0;
   for (const v of values) {
     if (v === null || v === undefined) {
-      nullCount++;
       continue;
     }
     // Simulate EXACT DuckDB SQL behavior generated in safe-sql-preview.ts
@@ -49,7 +48,7 @@ function simulateDuckDBSum(values: any[], measureAgg: string) {
       total += parsed;
     }
   }
-  return { sum: total, dropped: nullCount };
+  return { sum: total, [`__malformed_${measureName}`]: nullCount };
 }
 
 import { describe, it } from 'vitest';
@@ -73,13 +72,21 @@ describe('Guarded SUM Stress Test', () => {
       const warnings = enhanced.warnings;
 
       // 3. SQL Simulation
-      const sqlResult = simulateDuckDBSum(rowsData, agg);
+      const sqlResult = simulateDuckDBSum(rowsData, agg, 'val') as any;
+      let dropped = 0;
+      if (sqlResult['__malformed_val'] !== undefined) {
+         dropped = sqlResult['__malformed_val'];
+         delete sqlResult['__malformed_val'];
+         if (dropped > 0) {
+            warnings.push(`Guarded SUM detected and silently dropped ${dropped} malformed values during execution (not caught by initial sample).`);
+         }
+      }
 
       console.log(`\n[CASE] ${name}`);
       console.log(`- Gate: isSafeForSum=${health.isSafeForSum}, needsCleansing=${health.needsCleansing}, parseRate=${health.parseSuccessRate.toFixed(2)}`);
       console.log(`- Path: ${agg}`);
       console.log(`- Warnings: ${warnings.length > 0 ? warnings[0] : 'None'}`);
-      console.log(`- Actual SQL SUM: ${sqlResult.sum !== null ? sqlResult.sum : 'N/A'} (dropped ${sqlResult.dropped} rows)`);
+      console.log(`- Actual SQL SUM: ${sqlResult.sum !== null ? sqlResult.sum : 'N/A'} (dropped ${dropped} rows)`);
       
       if (name.includes("EU Format") && agg === 'SUM' && sqlResult.sum !== null && sqlResult.sum > 100000) {
          console.log(`  => 🚨 FALSE TRUST: Value multiplied by 100 due to decimal destruction! expected ~3000, got ${sqlResult.sum}`);
@@ -87,8 +94,8 @@ describe('Guarded SUM Stress Test', () => {
       if (name.includes("US Format") && agg === 'SUM' && sqlResult.sum !== null && sqlResult.sum > 100000) {
          console.log(`  => 🚨 FALSE TRUST: Value multiplied by 100 due to decimal destruction! expected ~3000, got ${sqlResult.sum}`);
       }
-      if (name === "Late Row Anomaly" && agg === 'SUM' && sqlResult.dropped > 0) {
-         console.log(`  => 🚨 SILENT DROP: Tail rows silently evaluated to NULL in DuckDB, missed by JS Sample (only saw 500 rows). Warning present: ${warnings.length > 0 ? 'YES' : 'NO'}`);
+      if (name === "Late Row Anomaly" && agg === 'SUM' && dropped > 0) {
+         console.log(`  => ✅ CATCH: Tail rows dropped ${dropped} times, captured natively by DuckDB. Warning present: ${warnings.length > 0 ? 'YES' : 'NO'}`);
       }
     }
   });

@@ -38,8 +38,32 @@ export async function executeLocalDuckDB(input: LocalDuckDBInput): Promise<DuckD
     const arrowResult = await conn.query(input.safeSqlPreview.sql);
     
     // 5. Convert Arrow Table back to JS objects
-    const rows = arrowResult.toArray().map((row: any) => row.toJSON());
-    const columns = arrowResult.schema.fields.map(f => f.name);
+    let totalMalformedDropped = 0;
+    
+    const columns = arrowResult.schema.fields
+      .map(f => f.name)
+      .filter(name => !name.startsWith('__malformed_'));
+      
+    const rows = arrowResult.toArray().map((row: any) => {
+      const jsonRow = row.toJSON();
+      
+      for (const key of Object.keys(jsonRow)) {
+        if (key.startsWith('__malformed_')) {
+          if (typeof jsonRow[key] === 'number') {
+            totalMalformedDropped += jsonRow[key];
+          } else if (typeof jsonRow[key] === 'bigint') {
+            totalMalformedDropped += Number(jsonRow[key]);
+          }
+          delete jsonRow[key];
+        }
+      }
+      return jsonRow;
+    });
+    
+    const warnings = [...input.runtimePlan.warnings];
+    if (totalMalformedDropped > 0) {
+      warnings.push(`Guarded SUM detected and silently dropped ${totalMalformedDropped} malformed values during execution (not caught by initial sample).`);
+    }
     
     await conn.close();
 
@@ -51,7 +75,7 @@ export async function executeLocalDuckDB(input: LocalDuckDBInput): Promise<DuckD
       rows,
       rowCount: rows.length,
       maxRows: limit,
-      warnings: [...input.runtimePlan.warnings],
+      warnings,
       blockedReasons: [],
       source: 'local_duckdb_preview' as any
     };
