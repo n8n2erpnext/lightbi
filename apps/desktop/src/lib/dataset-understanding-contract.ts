@@ -1,3 +1,5 @@
+import { detectCapabilities, generateOpportunities } from './dataset-capability-engine';
+import type { DatasetCapability, AnalysisOpportunity } from './dataset-capability-engine';
 import type { BusinessSignalRegistry } from './business-signal-detector';
 import { getSignalType } from './business-signal-detector';
 import type { ReadinessGuidance } from './decision-readiness-engine';
@@ -69,23 +71,6 @@ export type UnavailableAnalysisItem = {
   label: string;
   missingSignals: string[];
   reason: string;
-};
-
-export type DatasetCapability = {
-  id: string;
-  actionType: "group_by" | "trend" | "distribution" | "relationship";
-  dimensions: string[];
-  measures: string[];
-};
-
-export type AnalysisOpportunity = {
-  id: string;
-  label: string;
-  basedOnSignals: string[];
-  source: "business_view" | "question_suggestion" | "heuristic" | "signals";
-  actionType: "group_by" | "trend" | "distribution" | "relationship";
-  dimensions: string[];
-  measures: string[];
 };
 
 export type DatasetUnderstanding = {
@@ -186,8 +171,8 @@ export function createDatasetUnderstanding(input: CreateUnderstandingInput): Dat
 
   const workflowHints: WorkflowHint[] = [];
   const relationshipHints: RelationshipHint[] = [];
-  const capabilities: DatasetCapability[] = [];
-  const opportunities: AnalysisOpportunity[] = [];
+  // opportunities and capabilities generated at the end
+  const availableAnalysis: any[] = [];
   const unavailableAnalysis: UnavailableAnalysisItem[] = [];
 
   const signalIds = signals.map(s => s.canonicalId);
@@ -203,12 +188,12 @@ export function createDatasetUnderstanding(input: CreateUnderstandingInput): Dat
     const feedback = inferredEntities.find(e => e.conceptSignals.includes('satisfaction'));
     if (feedback) feedback.label = 'Customer Feedback';
 
-    opportunities.push(
-      { id: 'opp1', label: 'Shipment activity by route', basedOnSignals: ['shipment', 'route'], source: 'heuristic', actionType: 'group_by', dimensions: ['route'], measures: ['shipment'] },
-      { id: 'opp2', label: 'Shipment activity by driver', basedOnSignals: ['shipment', 'driver'], source: 'heuristic', actionType: 'group_by', dimensions: ['driver'], measures: ['shipment'] },
-      { id: 'opp3', label: 'Satisfaction by route', basedOnSignals: ['satisfaction', 'route'], source: 'heuristic', actionType: 'group_by', dimensions: ['route'], measures: ['satisfaction'] },
-      { id: 'opp4', label: 'Satisfaction by driver', basedOnSignals: ['satisfaction', 'driver'], source: 'heuristic', actionType: 'group_by', dimensions: ['driver'], measures: ['satisfaction'] },
-      { id: 'opp5', label: 'Activity over report date', basedOnSignals: ['report_date'], source: 'heuristic', actionType: 'trend', dimensions: ['report_date'], measures: ['shipment'] }
+    availableAnalysis.push(
+      { id: 'opp1', label: 'Shipment activity by route', basedOnSignals: ['shipment', 'route'], source: 'signals', actionType: 'group_by', dimensions: ['route'], measures: ['shipment'] },
+      { id: 'opp2', label: 'Shipment activity by driver', basedOnSignals: ['shipment', 'driver'], source: 'signals', actionType: 'group_by', dimensions: ['driver'], measures: ['shipment'] },
+      { id: 'opp3', label: 'Satisfaction by route', basedOnSignals: ['satisfaction', 'route'], source: 'signals', actionType: 'group_by', dimensions: ['route'], measures: ['satisfaction'] },
+      { id: 'opp4', label: 'Satisfaction by driver', basedOnSignals: ['satisfaction', 'driver'], source: 'signals', actionType: 'group_by', dimensions: ['driver'], measures: ['satisfaction'] },
+      { id: 'opp5', label: 'Activity over report date', basedOnSignals: ['report_date'], source: 'signals', actionType: 'trend', dimensions: ['report_date'], measures: ['shipment'] }
     );
 
     if (!has('sla') || !has('delivery_status')) {
@@ -223,26 +208,17 @@ export function createDatasetUnderstanding(input: CreateUnderstandingInput): Dat
     let capId = 1;
 
     let hasPromotedDist = false;
-    // Distribution capabilities
     for (const dim of dimensionSignals) {
       if (capId > 8) break;
-      const capability: DatasetCapability = {
-        id: `cap_${capId}`,
-        actionType: 'distribution',
-        dimensions: [dim.canonicalId],
-        measures: ['record_count']
-      };
-      capabilities.push(capability);
-      
       if (!hasPromotedDist) {
-        opportunities.push({
+        availableAnalysis.push({
           id: `gen_aa_${capId}`,
           label: `${dim.label} distribution`,
           basedOnSignals: [dim.canonicalId],
           source: 'signals',
-          actionType: capability.actionType,
-          dimensions: capability.dimensions,
-          measures: capability.measures
+          actionType: 'distribution',
+          dimensions: [dim.canonicalId],
+          measures: ['record_count']
         });
         hasPromotedDist = true;
       }
@@ -252,52 +228,35 @@ export function createDatasetUnderstanding(input: CreateUnderstandingInput): Dat
     let hasPromotedTrend = false;
     let hasPromotedGroupBy = false;
 
-    // Trend and Group By capabilities
     for (const measure of measureSignals) {
       for (const time of timeSignals) {
         if (capId > 16) break;
-        const capability: DatasetCapability = {
-          id: `cap_${capId}`,
-          actionType: 'trend',
-          dimensions: [time.canonicalId],
-          measures: [measure.canonicalId]
-        };
-        capabilities.push(capability);
-        
         if (!hasPromotedTrend) {
-          opportunities.push({
+          availableAnalysis.push({
             id: `gen_aa_${capId}`,
             label: `${measure.label} over ${time.label}`,
             basedOnSignals: [measure.canonicalId, time.canonicalId],
             source: 'signals',
-            actionType: capability.actionType,
-            dimensions: capability.dimensions,
-            measures: capability.measures
+            actionType: 'trend',
+            dimensions: [time.canonicalId],
+            measures: [measure.canonicalId]
           });
           hasPromotedTrend = true;
         }
         capId++;
       }
-      
+
       for (const dim of dimensionSignals) {
-        if (capId > 16) break;
-        const capability: DatasetCapability = {
-          id: `cap_${capId}`,
-          actionType: 'group_by',
-          dimensions: [dim.canonicalId],
-          measures: [measure.canonicalId]
-        };
-        capabilities.push(capability);
-        
+        if (capId > 24) break;
         if (!hasPromotedGroupBy) {
-          opportunities.push({
+          availableAnalysis.push({
             id: `gen_aa_${capId}`,
             label: `${measure.label} by ${dim.label}`,
             basedOnSignals: [measure.canonicalId, dim.canonicalId],
             source: 'signals',
-            actionType: capability.actionType,
-            dimensions: capability.dimensions,
-            measures: capability.measures
+            actionType: 'group_by',
+            dimensions: [dim.canonicalId],
+            measures: [measure.canonicalId]
           });
           hasPromotedGroupBy = true;
         }
@@ -331,7 +290,7 @@ export function createDatasetUnderstanding(input: CreateUnderstandingInput): Dat
   } else if (has('report_date') && has('route') && has('driver') && has('shipment') && has('satisfaction')) {
     narrative = "This dataset appears to describe delivery operations activity, but advanced SLA/status analysis is unavailable.";
   } else {
-    narrative = `Detected ${signals.length} business concepts. Found ${opportunities.length} analysis opportunities.`;
+    narrative = `Detected ${signals.length} business concepts. Generated ${availableAnalysis.length} structural models.`;
   }
 
   const confidenceScore = signals.length > 0 ? (signals.reduce((acc, s) => acc + s.confidenceScore, 0) / signals.length) : 0;
@@ -359,6 +318,9 @@ export function createDatasetUnderstanding(input: CreateUnderstandingInput): Dat
     grainEvidence = "Detected aggregated measures over time dimensions.";
   }
 
+  const capabilities = detectCapabilities(signals);
+  const opportunities = generateOpportunities(capabilities, grain);
+  
   const baseUnderstanding = {
     id: `du_${Date.now()}`,
     datasetId: input.signalRegistry.datasetId || `ds_${Date.now()}`,
@@ -381,7 +343,7 @@ export function createDatasetUnderstanding(input: CreateUnderstandingInput): Dat
     relationshipHints,
     capabilities,
     opportunities,
-    availableAnalysis: opportunities as any, // Compatibility bridge
+    availableAnalysis,
     unavailableAnalysis,
     caveats: [] as string[],
     narrative,
@@ -396,7 +358,7 @@ export function createDatasetUnderstanding(input: CreateUnderstandingInput): Dat
   };
 
   // Phase 1 Honesty: establish final truthful understanding state first
-  if (baseUnderstanding.opportunities.length === 0) {
+  if (baseUnderstanding.opportunities.every(o => o.confidence === 'low') && baseUnderstanding.availableAnalysis.length === 0) {
     if (baseUnderstanding.status === "understood") {
       baseUnderstanding.status = "partial";
     }
@@ -409,7 +371,7 @@ export function createDatasetUnderstanding(input: CreateUnderstandingInput): Dat
   const readiness = evaluateDecisionReadiness(baseUnderstanding as any);
 
   // Rebuild the readiness evidence coherently for the zero-opportunity case
-  if (baseUnderstanding.opportunities.length === 0) {
+  if (baseUnderstanding.opportunities.every(o => o.confidence === 'low') && baseUnderstanding.availableAnalysis.length === 0) {
     readiness.tier = "exploratory_only";
     readiness.explanation = "Dataset lacks structural support to assemble actionable analysis.";
     const msg = "Could not assemble runnable analysis paths from detected signals.";

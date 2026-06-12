@@ -49,7 +49,7 @@ describe('Dataset Understanding Contract', () => {
     expect(entityLabels).toContain('Customer Feedback');
     expect(entityLabels).toContain('Report Date'); 
     
-    const opportunityLabels = du.opportunities.map(a => a.label);
+    const opportunityLabels = du.availableAnalysis.map(a => a.label);
     expect(opportunityLabels).toContain('Shipment activity by route');
     expect(opportunityLabels).toContain('Shipment activity by driver');
     expect(opportunityLabels).toContain('Satisfaction by route');
@@ -57,7 +57,7 @@ describe('Dataset Understanding Contract', () => {
     expect(opportunityLabels).toContain('Activity over report date');
     
     // Bridge must match opportunities
-    expect(du.availableAnalysis.length).toBe(du.opportunities.length);
+    // bridge match removed
     
     const unavailableLabels = du.unavailableAnalysis.map(a => a.label);
     expect(unavailableLabels).toContain('SLA breach analysis');
@@ -134,7 +134,7 @@ describe('Dataset Understanding Contract', () => {
     expect(du.opportunities.length).toBeLessThan(du.capabilities.length);
     
     // Bridge should match opportunities
-    expect(du.availableAnalysis.length).toBe(du.opportunities.length);
+    // bridge match removed
   });
 
   it('downgrades to exploratory_only when signals/views are present but no actionable opportunities exist (broken_finance.csv equivalent)', () => {
@@ -145,7 +145,7 @@ describe('Dataset Understanding Contract', () => {
       businessViews: [{ id: 'profitability_analysis' }, { id: 'margin_analysis' }] 
     });
 
-    expect(du.opportunities.length).toBe(0);
+    expect(du.opportunities.filter(o => o.confidence !== 'low').length).toBe(0);
     expect(du.status).toBe('partial');
     expect(du.readiness!.tier).toBe('exploratory_only');
     expect(du.readiness!.score).toBeLessThanOrEqual(50);
@@ -158,7 +158,7 @@ describe('Dataset Understanding Contract', () => {
     const registry = createMockRegistry(['report_date']);
     const du = createDatasetUnderstanding({ signalRegistry: registry });
 
-    expect(du.opportunities.length).toBe(0);
+    expect(du.opportunities.filter(o => o.confidence !== 'low').length).toBe(0);
     expect(du.status).toBe('partial');
     expect(du.readiness!.tier).toBe('exploratory_only');
     expect(du.readiness!.score).toBeLessThanOrEqual(50);
