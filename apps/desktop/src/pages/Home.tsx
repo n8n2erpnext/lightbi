@@ -32,6 +32,7 @@ import type { AnalysisAction } from '../lib/analysis-opportunity-actions';
 import { createRuntimeIntentFromAnalysisAction } from '../lib/analysis-runtime-contract';
 import { createRuntimePlanPreview } from '../lib/runtime-planner-preview';
 import { createInvestigationSession } from '../lib/investigation-session';
+import { generateAIBriefing } from '../lib/ai-briefing-contract';
 import { useNavigate } from 'react-router-dom';
 import { createVirtualDatasetPlan } from '../lib/virtual-dataset-planner';
 import type { VirtualDatasetPlan } from '../lib/virtual-dataset-planner';
@@ -150,12 +151,15 @@ export const Home: React.FC = () => {
     const datasetRows = currentDataset?.previewRows || currentDataset?.rows;
     console.log("TRACE [OPPORTUNITY] selectedAction.id:", action.id);
 
+    const aiBriefing = datasetUnderstanding ? generateAIBriefing(datasetUnderstanding) : undefined;
+
     createInvestigationSession(
       currentDataset?.file_name || 'dataset',
       action,
       intent,
       plan,
-      datasetRows
+      datasetRows,
+      aiBriefing
     );
     navigate('/investigation');
   };

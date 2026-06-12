@@ -1,6 +1,7 @@
 import type { AnalysisAction } from './analysis-opportunity-actions';
 import type { RuntimeIntent } from './analysis-runtime-contract';
 import type { RuntimePlanPreview } from './runtime-planner-preview';
+import type { AISemanticBriefing } from './ai-briefing-contract';
 
 export interface InvestigationSession {
   id: string;
@@ -10,6 +11,7 @@ export interface InvestigationSession {
   runtimeIntent: RuntimeIntent;
   runtimePlanPreview: RuntimePlanPreview;
   rows?: Record<string, unknown>[];
+  aiBriefing?: AISemanticBriefing;
 }
 
 // In-memory store for now, since we aren't using a real backend or persistent DB yet.
@@ -21,7 +23,8 @@ export function createInvestigationSession(
   analysisAction: AnalysisAction,
   runtimeIntent: RuntimeIntent,
   runtimePlanPreview: RuntimePlanPreview,
-  rows?: Record<string, unknown>[]
+  rows?: Record<string, unknown>[],
+  aiBriefing?: AISemanticBriefing
 ): InvestigationSession {
   let safeRows = rows;
   if (safeRows && safeRows.length > 1000) {
@@ -38,7 +41,8 @@ export function createInvestigationSession(
     analysisAction,
     runtimeIntent,
     runtimePlanPreview,
-    rows: safeRows
+    rows: safeRows,
+    aiBriefing
   };
   
   currentSession = session;

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Database, BarChart3, ChevronDown, ChevronRight, Activity, Code2, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Database, BarChart3, ChevronDown, ChevronRight, Activity, Code2, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { getCurrentInvestigationSession } from '../lib/investigation-session';
 import { createSafeSqlPreview } from '../lib/safe-sql-preview';
 import { executeDuckDBPreviewSandbox, type DuckDBPreviewResult } from '../lib/duckdb-preview-sandbox';
@@ -24,6 +24,7 @@ export const Investigation: React.FC = () => {
   const [chartModel, setChartModel] = useState<ChartPreviewModel | null>(null);
   const [validationResult, setValidationResult] = useState<ResultValidationResult | null>(null);
   const [isExecuting, setIsExecuting] = useState(false);
+  const [showAiContext, setShowAiContext] = useState(false);
 
   if (!session) {
     return (
@@ -42,7 +43,7 @@ export const Investigation: React.FC = () => {
     );
   }
 
-  const { analysisAction, runtimeIntent, runtimePlanPreview, rows } = session;
+  const { analysisAction, runtimeIntent, runtimePlanPreview, rows, aiBriefing } = session;
   const safeSqlPreview = React.useMemo(() => {
     const enhancedPlan = enhancePlanWithGuardedSum(runtimePlanPreview, rows || []);
     return createSafeSqlPreview(enhancedPlan);
@@ -152,6 +153,95 @@ export const Investigation: React.FC = () => {
       {/* Main Content */}
       <main className="flex-1 p-6 max-w-6xl mx-auto w-full flex flex-col gap-6">
         
+        {/* Readiness Banner */}
+        {aiBriefing && aiBriefing.trustLevel !== 'high' && (
+          <div className={`p-4 rounded-xl border flex items-start gap-3 ${
+            aiBriefing.trustLevel === 'low' 
+              ? 'bg-red-50 border-red-200 text-red-800' 
+              : 'bg-amber-50 border-amber-200 text-amber-800'
+          }`}>
+            <AlertTriangle className={`w-5 h-5 flex-shrink-0 mt-0.5 ${
+              aiBriefing.trustLevel === 'low' ? 'text-red-500' : 'text-amber-500'
+            }`} />
+            <div>
+              <h3 className="font-semibold text-sm">
+                {aiBriefing.trustLevel === 'low' ? 'Low Readiness (Exploratory Only)' : 'Moderate Readiness (Caution)'}
+              </h3>
+              <p className="text-xs mt-1 opacity-90">{aiBriefing.trustRationale}</p>
+            </div>
+          </div>
+        )}
+
+        {/* AI Context Panel */}
+        {aiBriefing && (
+          <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden transition-all duration-300">
+            <button 
+              onClick={() => setShowAiContext(!showAiContext)}
+              className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors text-left"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                  <Database className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-900 mb-0.5">AI Semantic Briefing</h3>
+                  <p className="text-xs text-gray-500">Context, grain, and safe actions for execution</p>
+                </div>
+              </div>
+              <div className="text-gray-400">
+                {showAiContext ? <ChevronDown className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
+              </div>
+            </button>
+            
+            {showAiContext && (
+              <div className="p-6 pt-2 border-t border-gray-100 bg-slate-50">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">Grain & Trust</h4>
+                    <div className="bg-white p-3 rounded border border-gray-200 text-sm mb-3">
+                      <span className="font-semibold block mb-1">Grain: {aiBriefing.grain}</span>
+                      <span className="text-gray-600">{aiBriefing.grainNote}</span>
+                    </div>
+                    <div className="bg-white p-3 rounded border border-gray-200 text-sm">
+                      <span className="font-semibold block mb-1">Trust Level: <span className={
+                        aiBriefing.trustLevel === 'high' ? 'text-emerald-600' :
+                        aiBriefing.trustLevel === 'moderate' ? 'text-amber-600' : 'text-red-600'
+                      }>{aiBriefing.trustLevel.toUpperCase()}</span></span>
+                      <span className="text-gray-600">{aiBriefing.trustRationale}</span>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">Safe Actions</h4>
+                    <ul className="space-y-2 mb-4">
+                      {aiBriefing.safeActions.map((action, i) => (
+                        <li key={i} className="flex items-center text-sm text-gray-700 bg-white p-2 rounded border border-gray-200">
+                          <CheckCircle2 className="w-4 h-4 text-emerald-500 mr-2 shrink-0" />
+                          <code className="bg-gray-100 px-1 rounded">{action}</code>
+                        </li>
+                      ))}
+                    </ul>
+                    
+                    {aiBriefing.caveats.length > 0 && (
+                      <>
+                        <h4 className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 mt-4">Caveats</h4>
+                        <ul className="space-y-1">
+                          {aiBriefing.caveats.map((c, i) => (
+                            <li key={i} className="flex items-start text-xs text-amber-700 bg-amber-50 p-2 rounded border border-amber-100">
+                              <AlertTriangle className="w-3.5 h-3.5 text-amber-500 mr-2 shrink-0 mt-0.5" />
+                              {c}
+                            </li>
+                          ))}
+                        </ul>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Primary Analysis Surface */}
         <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden flex flex-col">
           <div className="px-6 py-5 border-b border-gray-100 flex items-center justify-between bg-slate-50/50">
