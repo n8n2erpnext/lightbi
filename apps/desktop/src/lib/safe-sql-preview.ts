@@ -70,7 +70,7 @@ export function createSafeSqlPreview(plan: RuntimePlanPreview): SafeSqlPreview {
           const exactM = quoteExactIdent(m);
           if (op.measureAggregations && op.measureAggregations[m] === "SUM") {
             // Align perfectly with numeric-health-gate.ts (stripping , . đ VNĐ $ and spaces)
-            const cleansed = `REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(${lowerM}, ',', ''), '.', ''), 'đ', ''), 'VNĐ', ''), '$', ''), ' ', '')`;
+            const cleansed = `REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(CAST(${lowerM} AS VARCHAR), ',', ''), '.', ''), 'đ', ''), 'VNĐ', ''), '$', ''), ' ', '')`;
             const malformedAlias = quoteExactIdent('__malformed_' + m);
             return `SUM(TRY_CAST(${cleansed} AS DOUBLE)) AS ${exactM}, SUM(CASE WHEN ${lowerM} IS NOT NULL AND TRY_CAST(${cleansed} AS DOUBLE) IS NULL THEN 1 ELSE 0 END) AS ${malformedAlias}`;
           }
@@ -107,7 +107,7 @@ export function createSafeSqlPreview(plan: RuntimePlanPreview): SafeSqlPreview {
           const exactM = quoteExactIdent(m);
           if (op.measureAggregations && op.measureAggregations[m] === "SUM") {
             // Align perfectly with numeric-health-gate.ts (stripping , . đ VNĐ $ and spaces)
-            const cleansed = `REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(${lowerM}, ',', ''), '.', ''), 'đ', ''), 'VNĐ', ''), '$', ''), ' ', '')`;
+            const cleansed = `REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(CAST(${lowerM} AS VARCHAR), ',', ''), '.', ''), 'đ', ''), 'VNĐ', ''), '$', ''), ' ', '')`;
             const malformedAlias = quoteExactIdent('__malformed_' + m);
             return `SUM(TRY_CAST(${cleansed} AS DOUBLE)) AS ${exactM}, SUM(CASE WHEN ${lowerM} IS NOT NULL AND TRY_CAST(${cleansed} AS DOUBLE) IS NULL THEN 1 ELSE 0 END) AS ${malformedAlias}`;
           }

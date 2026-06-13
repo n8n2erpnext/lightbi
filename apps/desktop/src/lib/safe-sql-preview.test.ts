@@ -37,7 +37,7 @@ describe('Safe SQL Preview', () => {
 
     const sqlPreview = createSafeSqlPreview(plan);
     expect(sqlPreview.status).toBe('ready');
-    expect(sqlPreview.sql).toBe('SELECT "driver" AS "Driver", SUM(TRY_CAST(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE("revenue", \',\', \'\'), \'.\', \'\'), \'đ\', \'\'), \'VNĐ\', \'\'), \'$\', \'\'), \' \', \'\') AS DOUBLE)) AS "Revenue", SUM(CASE WHEN "revenue" IS NOT NULL AND TRY_CAST(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE("revenue", \',\', \'\'), \'.\', \'\'), \'đ\', \'\'), \'VNĐ\', \'\'), \'$\', \'\'), \' \', \'\') AS DOUBLE) IS NULL THEN 1 ELSE 0 END) AS "__malformed_Revenue"\nFROM __LIGHTBI_PREVIEW_TABLE__\nWHERE "driver" IS NOT NULL\nGROUP BY "driver"\nLIMIT 100;');
+    expect(sqlPreview.sql).toBe('SELECT "driver" AS "Driver", SUM(TRY_CAST(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(CAST("revenue" AS VARCHAR), \',\', \'\'), \'.\', \'\'), \'đ\', \'\'), \'VNĐ\', \'\'), \'$\', \'\'), \' \', \'\') AS DOUBLE)) AS "Revenue", SUM(CASE WHEN "revenue" IS NOT NULL AND TRY_CAST(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(CAST("revenue" AS VARCHAR), \',\', \'\'), \'.\', \'\'), \'đ\', \'\'), \'VNĐ\', \'\'), \'$\', \'\'), \' \', \'\') AS DOUBLE) IS NULL THEN 1 ELSE 0 END) AS "__malformed_Revenue"\nFROM __LIGHTBI_PREVIEW_TABLE__\nWHERE "driver" IS NOT NULL\nGROUP BY "driver"\nLIMIT 100;');
   });
 
   it('trend plan produces ORDER BY time dimension', () => {
@@ -61,7 +61,7 @@ describe('Safe SQL Preview', () => {
 
     const sqlPreview = createSafeSqlPreview(plan);
     expect(sqlPreview.status).toBe('ready');
-    expect(sqlPreview.sql).toBe('SELECT CAST("report_date" AS TIMESTAMP) AS "Report_Date", SUM(TRY_CAST(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE("revenue", \',\', \'\'), \'.\', \'\'), \'đ\', \'\'), \'VNĐ\', \'\'), \'$\', \'\'), \' \', \'\') AS DOUBLE)) AS "Revenue", SUM(CASE WHEN "revenue" IS NOT NULL AND TRY_CAST(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE("revenue", \',\', \'\'), \'.\', \'\'), \'đ\', \'\'), \'VNĐ\', \'\'), \'$\', \'\'), \' \', \'\') AS DOUBLE) IS NULL THEN 1 ELSE 0 END) AS "__malformed_Revenue"\nFROM __LIGHTBI_PREVIEW_TABLE__\nWHERE "report_date" IS NOT NULL\nGROUP BY CAST("report_date" AS TIMESTAMP)\nORDER BY CAST("report_date" AS TIMESTAMP)\nLIMIT 100;');
+    expect(sqlPreview.sql).toBe('SELECT CAST("report_date" AS TIMESTAMP) AS "Report_Date", SUM(TRY_CAST(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(CAST("revenue" AS VARCHAR), \',\', \'\'), \'.\', \'\'), \'đ\', \'\'), \'VNĐ\', \'\'), \'$\', \'\'), \' \', \'\') AS DOUBLE)) AS "Revenue", SUM(CASE WHEN "revenue" IS NOT NULL AND TRY_CAST(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(CAST("revenue" AS VARCHAR), \',\', \'\'), \'.\', \'\'), \'đ\', \'\'), \'VNĐ\', \'\'), \'$\', \'\'), \' \', \'\') AS DOUBLE) IS NULL THEN 1 ELSE 0 END) AS "__malformed_Revenue"\nFROM __LIGHTBI_PREVIEW_TABLE__\nWHERE "report_date" IS NOT NULL\nGROUP BY CAST("report_date" AS TIMESTAMP)\nORDER BY CAST("report_date" AS TIMESTAMP)\nLIMIT 100;');
   });
 
   it('distribution plan uses COUNT(*)', () => {
@@ -117,7 +117,7 @@ describe('Safe SQL Preview', () => {
 
     const sqlPreview = createSafeSqlPreview(plan);
     expect(sqlPreview.status).toBe('ready');
-    expect(sqlPreview.sql).toBe('SELECT "tên lái xe" AS "Tên Lái Xe", SUM(TRY_CAST(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE("giá ""gốc""", \',\', \'\'), \'.\', \'\'), \'đ\', \'\'), \'VNĐ\', \'\'), \'$\', \'\'), \' \', \'\') AS DOUBLE)) AS "Giá ""Gốc""", SUM(CASE WHEN "giá ""gốc""" IS NOT NULL AND TRY_CAST(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE("giá ""gốc""", \',\', \'\'), \'.\', \'\'), \'đ\', \'\'), \'VNĐ\', \'\'), \'$\', \'\'), \' \', \'\') AS DOUBLE) IS NULL THEN 1 ELSE 0 END) AS "__malformed_Giá ""Gốc"""\nFROM __LIGHTBI_PREVIEW_TABLE__\nWHERE "tên lái xe" IS NOT NULL\nGROUP BY "tên lái xe"\nLIMIT 100;');
+    expect(sqlPreview.sql).toBe('SELECT "tên lái xe" AS "Tên Lái Xe", SUM(TRY_CAST(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(CAST("giá ""gốc""" AS VARCHAR), \',\', \'\'), \'.\', \'\'), \'đ\', \'\'), \'VNĐ\', \'\'), \'$\', \'\'), \' \', \'\') AS DOUBLE)) AS "Giá ""Gốc""", SUM(CASE WHEN "giá ""gốc""" IS NOT NULL AND TRY_CAST(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(CAST("giá ""gốc""" AS VARCHAR), \',\', \'\'), \'.\', \'\'), \'đ\', \'\'), \'VNĐ\', \'\'), \'$\', \'\'), \' \', \'\') AS DOUBLE) IS NULL THEN 1 ELSE 0 END) AS "__malformed_Giá ""Gốc"""\nFROM __LIGHTBI_PREVIEW_TABLE__\nWHERE "tên lái xe" IS NOT NULL\nGROUP BY "tên lái xe"\nLIMIT 100;');
   });
 
   it('unsupported operation blocks', () => {
