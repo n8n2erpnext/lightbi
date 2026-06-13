@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { CheckCircle2, AlertTriangle, XCircle, ChevronRight, Info, Database, Box, Layers, Table, HelpCircle, ChevronDown, ChevronUp } from 'lucide-react';
+import { CheckCircle2, AlertTriangle, XCircle, ChevronRight, Info, Database, Box, Layers, Table, HelpCircle, ChevronDown, ChevronUp, Download } from 'lucide-react';
+import { generateAdvancedHandoff } from '../../lib/advanced-handoff-generator';
 import type { DatasetUnderstanding } from '../../lib/dataset-understanding-contract';
 import type { AnalysisAction } from '../../lib/analysis-opportunity-actions';
 import { generateAnalysisActions } from '../../lib/analysis-opportunity-actions';
@@ -48,6 +49,26 @@ export const DatasetUnderstandingCard: React.FC<DatasetUnderstandingCardProps> =
     }
   };
 
+  const handleExportHandoff = () => {
+    const rawColumns = understanding.mappingReview?.items.map(i => i.physicalColumn) || 
+      understanding.detectedConcepts.flatMap(c => c.evidence);
+    const uniqueColumns = Array.from(new Set(rawColumns));
+    
+    const artifact = generateAdvancedHandoff(understanding, uniqueColumns);
+    const jsonStr = JSON.stringify(artifact, null, 2);
+    
+    const blob = new Blob([jsonStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `lightbi_handoff_${understanding.datasetId}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   const statusConfig = getStatusConfig();
   const StatusIcon = statusConfig.icon;
   const grainConfig = getGrainConfig();
@@ -81,9 +102,19 @@ export const DatasetUnderstandingCard: React.FC<DatasetUnderstandingCardProps> =
           <p className="text-[13px] text-gray-600 max-w-3xl leading-relaxed">{understanding.narrative}</p>
         </div>
         <div className="flex flex-col items-end gap-1.5">
-          <div className={`flex items-center px-2.5 py-1 rounded-md text-[12px] font-medium border ${statusConfig.bg} ${statusConfig.border} ${statusConfig.color}`}>
-            <StatusIcon className="w-3.5 h-3.5 mr-1.5" />
-            {statusConfig.text}
+          <div className="flex items-center gap-2">
+            <button 
+              onClick={handleExportHandoff}
+              className="flex items-center px-2.5 py-1 rounded-md text-[12px] font-medium border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 shadow-sm transition-colors"
+              title="Export Advanced Handoff JSON for dbt/Python"
+            >
+              <Download className="w-3.5 h-3.5 mr-1.5 text-gray-500" />
+              Export Handoff
+            </button>
+            <div className={`flex items-center px-2.5 py-1 rounded-md text-[12px] font-medium border ${statusConfig.bg} ${statusConfig.border} ${statusConfig.color}`}>
+              <StatusIcon className="w-3.5 h-3.5 mr-1.5" />
+              {statusConfig.text}
+            </div>
           </div>
           <span className="text-[11px] text-gray-400 font-medium">Confidence: {Math.round(understanding.confidenceScore)}%</span>
         </div>

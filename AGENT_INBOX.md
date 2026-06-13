@@ -1,139 +1,86 @@
-# AGENT INBOX — Guarded SUM Phase B: Sampling Robustness
+# AGENT INBOX — Phase 5: Lightweight Advanced Handoff Artifact
 
 Date: 2026-06-13
-Phase: Guarded SUM Phase B (Execution Safety)
+Phase: MVP Phase 5 (Advanced Mode Handoff)
 Commander: Gemini Brain
-Priority: P0 — Data Integrity Risk
+Priority: P1
 
 ---
 
 ## Bối Cảnh
 
-Hiện tại, `guarded-sum-bridge.ts` chỉ lấy đúng 500 dòng đầu (`head`) để quyết định measure có an toàn cho hàm SUM ( DuckDB execution ) hay không.
-Điều này gây rủi ro Data Integrity rất lớn (Silent wrong SUM), vì dirty data thường nằm ở những dòng tail (dòng cuối).
-
-Phase B sẽ khắc phục triệt để bằng cách:
-1. Scan toàn bộ (full scan) nếu dataset ≤ 2000 rows.
-2. Scan 1000 head + 1000 tail nếu dataset > 2000 rows.
-3. Update `NumericHealthResult` trả về đầy đủ audit trace.
-4. Nới lỏng `isSafeForSum` (ngưỡng 80%) nhưng tăng cường cảnh báo nếu `estimatedDropRate` > 5%.
+Theo ROADMAP-MVP-V1.md, chúng ta đã hoàn tất Phase 0, 1, 2, 3 và 4. Giờ là Phase 5: tạo một Artifact (file JSON) chứa toàn bộ Semantic Understanding, Readiness, Caveats,... để bàn giao cho các Data Analysts dùng trong Advanced Mode (Python/dbt). Mục đích là để họ thừa hưởng được bộ engine "Understanding" của LightBI mà không cần LightBI phải biến thành 1 công cụ ETL cồng kềnh.
 
 ---
 
 ## Scope
 
-Chỉ sửa 2 file:
-- `apps/desktop/src/lib/numeric-health-gate.ts` (và file test của nó)
-- `apps/desktop/src/lib/guarded-sum-bridge.ts`
-
-KHÔNG ĐƯỢC CHẠM VÀO UI components.
-
----
-
-## File 1: `apps/desktop/src/lib/numeric-health-gate.ts`
-
-**1. Sửa interface:**
-```ts
-export interface NumericHealthResult {
-  columnName: string;
-  isSafeForSum: boolean;
-  parseSuccessRate: number;
-  needsCleansing: boolean;
-  // Phase B fields
-  scannedRows: number;
-  totalRows: number;
-  scanCoverage: number;
-  estimatedDropRate: number;
-  warningMessage?: string;
-}
-```
-
-**2. Sửa function signature & logic:**
-Sửa `evaluateNumericHealth` nhận thêm `totalRows?: number` (hoặc lấy từ `sampleValues.length` nếu không có).
-
-Bên trong `evaluateNumericHealth`:
-- Tính `scannedRows = sampleValues.length`
-- Tính `totalRows = totalRows || scannedRows`
-- Tính `scanCoverage = scannedRows > 0 ? scannedRows / totalRows : 0`
-- Tính `estimatedDropRate = validSampleCount > 0 ? (validSampleCount - successCount) / validSampleCount : 0`
-- Đổi điều kiện `isSafeForSum`:
-  ```ts
-  const isSafeForSum = parseSuccessRate >= 0.80;
-  ```
-- Tạo warningMessage:
-  ```ts
-  let warningMessage: string | undefined = undefined;
-  if (estimatedDropRate > 0.05) {
-    warningMessage = `High drop rate (${(estimatedDropRate * 100).toFixed(1)}%). SUM may exclude dirty rows.`;
-  }
-  ```
+Tạo ra tính năng xuất file JSON "Advanced Handoff" từ DatasetUnderstanding.
+Chỉ sửa / tạo các file sau:
+- `apps/desktop/src/lib/advanced-handoff-contract.ts` (Tạo mới)
+- `apps/desktop/src/lib/advanced-handoff-generator.ts` (Tạo mới)
+- `apps/desktop/src/lib/advanced-handoff-generator.test.ts` (Tạo mới)
+- `apps/desktop/src/components/analysis/DatasetUnderstandingCard.tsx` (Sửa để thêm nút Export)
 
 ---
 
-## File 2: `apps/desktop/src/lib/guarded-sum-bridge.ts`
+## Yêu Cầu Code
 
-**1. Cập nhật `extractSampleValues`:**
-Sửa hàm này để lấy mẫu theo quy tắc:
-- Nhận thêm `rawRows` đầy đủ.
-- Nếu `rawRows.length <= 2000` → lấy toàn bộ rows (full scan).
-- Nếu `rawRows.length > 2000` → lấy 1000 rows đầu (head) + 1000 rows cuối (tail).
-
+### 1. `apps/desktop/src/lib/advanced-handoff-contract.ts`
+Tạo interface cho Artifact. Yêu cầu có:
 ```ts
-function extractSampleValues(measure: string, rawRows: any[]): any[] {
-  if (rawRows.length === 0) return [];
-  const firstRow = rawRows[0];
-  const exactKey = Object.keys(firstRow).find(k => k.toLowerCase() === measure.toLowerCase());
-  if (!exactKey) return [];
+import type { DatasetGrain } from './dataset-understanding-contract';
 
-  const samples = [];
-  if (rawRows.length <= 2000) {
-    for (let i = 0; i < rawRows.length; i++) {
-      samples.push(rawRows[i][exactKey]);
-    }
-  } else {
-    // Head 1000
-    for (let i = 0; i < 1000; i++) {
-      samples.push(rawRows[i][exactKey]);
-    }
-    // Tail 1000
-    for (let i = rawRows.length - 1000; i < rawRows.length; i++) {
-      samples.push(rawRows[i][exactKey]);
-    }
-  }
-  return samples;
+export interface FieldMapping {
+  physicalColumn: string;
+  canonicalSignal?: string;
+  domain?: string;
+  role: "dimension" | "measure" | "time" | "unknown";
+  confidence: number;
+}
+
+export interface AdvancedHandoffArtifact {
+  datasetId: string;
+  datasetName?: string;
+  generatedAt: string;
+  grain: DatasetGrain;
+  grainEvidence: string;
+  readinessTier: string;
+  readinessScore: number;
+  fieldMappings: FieldMapping[];
+  caveats: string[];
 }
 ```
 
-**2. Cập nhật `enhancePlanWithGuardedSum`:**
-Khi gọi `evaluateNumericHealth`, truyền thêm `rawRows.length` làm param `totalRows` (vì hàm `extractSampleValues` chỉ trả mảng mẫu, không phải toàn bộ dataset).
+### 2. `apps/desktop/src/lib/advanced-handoff-generator.ts`
+Hàm pure function để map từ `DatasetUnderstanding` và raw columns sang `AdvancedHandoffArtifact`:
 ```ts
-const health = evaluateNumericHealth(measure, samples, rawRows.length);
-```
+import type { DatasetUnderstanding } from './dataset-understanding-contract';
+import type { AdvancedHandoffArtifact, FieldMapping } from './advanced-handoff-contract';
+import { getSignalType } from './business-signal-detector';
 
-Và cập nhật đoạn sinh warning. Thay vì hardcode công thức ở đây, hãy dùng thẳng `health.estimatedDropRate` và `health.warningMessage`:
-```ts
-if (health.isSafeForSum) {
-  measureAggregations[measure] = "SUM";
-  if (health.needsCleansing || health.parseSuccessRate < 1.0) {
-    newWarnings.push(`Measure '${measure}' underwent silent cleansing (drop rate: ${(health.estimatedDropRate * 100).toFixed(1)}% or stripped chars) to enable SUM.`);
-  }
-  if (health.warningMessage) {
-    newWarnings.push(`Measure '${measure}': ${health.warningMessage}`);
-  }
-} else {
-  measureAggregations[measure] = "COUNT";
+export function generateAdvancedHandoff(
+  understanding: DatasetUnderstanding,
+  rawColumns: string[]
+): AdvancedHandoffArtifact {
+  // Logic: 
+  // 1. Duyệt qua rawColumns
+  // 2. Với mỗi column, tìm trong understanding.mappingReview hoặc understanding.detectedConcepts
+  //    để lấy canonicalSignal, domain, confidence.
+  // 3. getSignalType(canonicalSignal) để ra role.
+  // 4. Trả về object AdvancedHandoffArtifact
 }
 ```
 
----
+### 3. `apps/desktop/src/lib/advanced-handoff-generator.test.ts`
+Viết test case đảm bảo hàm sinh JSON artifact chạy đúng, có test trường hợp dataset tốt, và trường hợp không nhận diện được column nào.
 
-## File 3: `apps/desktop/src/lib/numeric-health-gate.test.ts`
-
-Sửa các tests hiện tại để tương thích với `NumericHealthResult` mới. Bạn có thể pass mock `totalRows` vào các test.
-
-Đảm bảo test cover:
-- parseSuccessRate >= 0.80 cho kết quả `isSafeForSum = true`.
-- estimatedDropRate > 0.05 tạo ra `warningMessage`.
+### 4. `apps/desktop/src/components/analysis/DatasetUnderstandingCard.tsx`
+Thêm một button **"Export Advanced Handoff"** (nằm cạnh nút View Data hoặc ở góc card).
+Khi click:
+- Gọi `generateAdvancedHandoff` (chú ý bạn cần lấy được `rawColumns` từ đâu đó trong Component, có thể lấy từ context hoặc props, hoặc lấy từ keys của data mẫu).
+- Serialize ra JSON chuỗi.
+- Tạo một blob download: `lightbi_handoff_${datasetId}.json`.
 
 ---
 
@@ -144,20 +91,14 @@ Chạy theo thứ tự:
 ```bash
 cd /home/ubuntu/n8n2erpnext/LightBI/apps/desktop
 
-# 1. Test numeric-health-gate
-pnpm exec vitest run src/lib/numeric-health-gate.test.ts
+# 1. Test unit
+pnpm exec vitest run src/lib/advanced-handoff-generator.test.ts
 
-# 2. Test guarded sum
-pnpm exec vitest run src/lib/guarded-sum-bridge.test.ts
-
-# 3. Test stress test (có dùng evaluateNumericHealth)
-pnpm exec vitest run src/lib/stress_test.test.ts
-
-# 4. Full suite
-pnpm test
-
-# 5. TypeScript
+# 2. Build TypeScript check
 npx tsc --noEmit
+
+# 3. Test regression toàn cục
+pnpm test
 ```
 
 ---
@@ -165,7 +106,6 @@ npx tsc --noEmit
 ## Handoff Requirements
 
 Khi xong, viết:
-- `AGENT_HANDOFF.md`: Cập nhật trạng thái "Guarded SUM Phase B" thành ✅ Complete. Ghi rõ số lượng test pass.
+- `AGENT_HANDOFF_PHASE5.md`: Cập nhật trạng thái Phase 5 ✅ Complete.
 - `AGENT_OUTBOX.md`: Output test.
-- `CHANGELOG.md`: Thêm entry cho "Guarded SUM Phase B" (ở phần Unreleased).
-- Git commit: `fix(execution): Guarded SUM Phase B — robust head/tail sampling and 80% safety threshold`
+- Git commit: `feat(understanding): Phase 5 — Lightweight Advanced Handoff JSON export`
