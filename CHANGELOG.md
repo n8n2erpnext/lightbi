@@ -425,3 +425,7 @@ All notable changes to the LightBI architecture and codebase will be documented 
 - **Phase 3 (App Runtime)**: Bootstrapped `Zustand` frontend adapter.
 - **Phase 2 (Domain Model)**: Locked base architecture (`Project -> Datasource -> Dataset -> Chart -> Dashboard`).
 - **Phase 1**: Initial setup, pnpm workspace, cargo workspace.
+
+## [Unreleased]
+### Added
+- **DU-9 Semantic Graph Phase 1**: Implemented semantic concept map data layer (\SemanticGraphModel\, \SemanticGraphBuilder\) and visualization component (\SemanticGraphView\) rendered purely in SVG. Concept maps now appear automatically inside the \DatasetUnderstandingCard\ for multi-signal datasets.
