@@ -1,5 +1,5 @@
-import { DatasetUnderstanding } from './dataset-understanding-contract';
-import { SemanticGraph, SemanticNode, SemanticEdge, SemanticNodeType } from './semantic-graph-model';
+import type { DatasetUnderstanding } from './dataset-understanding-contract';
+import type { SemanticGraph, SemanticNode, SemanticEdge, SemanticNodeType } from './semantic-graph-model';
 import { TAXONOMY } from './business-signal-detector';
 
 export function buildSemanticGraph(understanding: DatasetUnderstanding): SemanticGraph {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { SemanticGraph, SemanticNodeType } from '../../lib/semantic-graph-model';
+import type { SemanticGraph, SemanticNodeType } from '../../lib/semantic-graph-model';
 
 interface SemanticGraphViewProps {
   graph: SemanticGraph;
