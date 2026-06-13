@@ -42,8 +42,14 @@ impl ExecutionBackend for DuckDBBackend {
         let start_time = std::time::Instant::now();
         let mut stmt = conn.prepare(&sql).map_err(|e| BackendError::ExecutionFailed(e.to_string()))?;
         
-        let column_count = stmt.column_count();
-        let column_names: Vec<String> = stmt.column_names().into_iter().map(|s| s.to_string()).collect();
+        // Execute query FIRST to force schema sniffing for read_csv_auto
+        let mut rows_result = stmt.query([]).map_err(|e| BackendError::ExecutionFailed(e.to_string()))?;
+
+        // Inspect columns AFTER execution
+        let stmt_ref = rows_result.as_ref().ok_or_else(|| BackendError::ExecutionFailed("Statement not available after execution".to_string()))?;
+        let column_count = stmt_ref.column_count();
+        let column_names: Vec<String> = stmt_ref.column_names().into_iter().map(|s| s.to_string()).collect();
+        
         let mut columns = Vec::new();
         for name in &column_names {
             columns.push(ColumnDef {
@@ -52,7 +58,6 @@ impl ExecutionBackend for DuckDBBackend {
             });
         }
 
-        let mut rows_result = stmt.query([]).map_err(|e| BackendError::ExecutionFailed(e.to_string()))?;
         let mut rows = Vec::new();
 
         while let Some(row) = rows_result.next().map_err(|e| BackendError::ExecutionFailed(e.to_string()))? {
@@ -91,3 +96,87 @@ impl ExecutionBackend for DuckDBBackend {
         })
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::io::Write;
+
+    #[tokio::test]
+    async fn test_duckdb_backend_basic_select() {
+        let backend = DuckDBBackend::new();
+        let plan = ExecutionPlan {
+            id: "test".to_string(),
+            project_id: "p1".to_string(),
+            recipe_id: "r1".to_string(),
+            plan_name: "test".to_string(),
+            dataset_scope: vec![],
+            source_scope: vec![],
+            strategy_type: lightbi_planner::model::StrategyType::Pushdown,
+            steps: vec![lightbi_planner::model::ExecutionStep {
+                step_order: 1,
+                step_type: "SQL".to_string(),
+                payload: "SELECT 1 AS a".to_string(),
+            }],
+        };
+
+        let result = backend.execute_plan(&plan).await.unwrap();
+        assert_eq!(result.columns.len(), 1);
+        assert_eq!(result.columns[0].name, "a");
+        assert_eq!(result.rows.len(), 1);
+        assert_eq!(result.rows[0][0], serde_json::Value::Number(1.into()));
+    }
+
+    #[tokio::test]
+    async fn test_duckdb_backend_invalid_sql() {
+        let backend = DuckDBBackend::new();
+        let plan = ExecutionPlan {
+            id: "test".to_string(),
+            project_id: "p1".to_string(),
+            recipe_id: "r1".to_string(),
+            plan_name: "test".to_string(),
+            dataset_scope: vec![],
+            source_scope: vec![],
+            strategy_type: lightbi_planner::model::StrategyType::Pushdown,
+            steps: vec![lightbi_planner::model::ExecutionStep {
+                step_order: 1,
+                step_type: "SQL".to_string(),
+                payload: "SELECT * FROM non_existent_table".to_string(),
+            }],
+        };
+
+        let result = backend.execute_plan(&plan).await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_duckdb_backend_read_csv_auto() {
+        let backend = DuckDBBackend::new();
+        
+        let mut temp_file = tempfile::NamedTempFile::new().unwrap();
+        writeln!(temp_file, "id,name\n1,Alice\n2,Bob").unwrap();
+        
+        let sql = format!("SELECT * FROM read_csv_auto('{}')", temp_file.path().display());
+        let plan = ExecutionPlan {
+            id: "test".to_string(),
+            project_id: "p1".to_string(),
+            recipe_id: "r1".to_string(),
+            plan_name: "test".to_string(),
+            dataset_scope: vec![],
+            source_scope: vec![],
+            strategy_type: lightbi_planner::model::StrategyType::Pushdown,
+            steps: vec![lightbi_planner::model::ExecutionStep {
+                step_order: 1,
+                step_type: "SQL".to_string(),
+                payload: sql,
+            }],
+        };
+
+        let result = backend.execute_plan(&plan).await.unwrap();
+        assert_eq!(result.columns.len(), 2);
+        assert_eq!(result.columns[0].name, "id");
+        assert_eq!(result.columns[1].name, "name");
+        assert_eq!(result.rows.len(), 2);
+    }
+}
+

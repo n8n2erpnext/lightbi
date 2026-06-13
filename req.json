@@ -1,0 +1,18 @@
+{
+  "runtime_plan": {
+    "status": "ready",
+    "logicalOperations": [
+      {
+        "type": "scan",
+        "columns": ["Ngày báo cáo", "Tuyến xe"]
+      }
+    ],
+    "requiredColumns": ["Ngày báo cáo", "Tuyến xe"],
+    "expectedOutput": {
+      "shape": "tabular",
+      "dimensions": ["Ngày báo cáo"],
+      "measures": ["Tuyến xe"]
+    }
+  },
+  "limit": 10
+}

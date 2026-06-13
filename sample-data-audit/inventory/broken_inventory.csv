@@ -1,0 +1,16 @@
+mã hàng,sp,tồn kho,số lượng,kho,luân chuyển,nhập,xuất,nhà cc,bổ sung,tuổi tồn
+SKU-101,Laptop Pro,High,500,WH-East,Inbound,100,0,TechSupply Inc,No,15
+SKU-102,,Low,20,,Outbound,0,50,Peripherals Co,Yes,45
+SKU-103,Keyboard Y,Medium,150,WH-East,None,0,0,,No,
+SKU-104,Monitor Z,High,,WH-South,Inbound,50,0,DisplayCorp,No,10
+,Desk Chair,Low,5,WH-North,Outbound,0,10,OfficeFurn,Yes,120
+SKU-101,Laptop Pro,High,600,WH-West,Inbound,100,,TechSupply Inc,No,5
+SKU-106,Webcam A,,100,WH-East,Outbound,,20,CamTech,No,25
+SKU-107,Headset B,Low,15,WH-South,Outbound,0,30,AudioSys,Yes,60
+SKU-102,Mouse X,Low,10,,Outbound,0,10,Peripherals Co,Yes,50
+SKU-103,,Medium,140,WH-West,Outbound,0,10,Peripherals Co,No,35
+SKU-108,USB Hub,High,400,WH-East,Inbound,200,0,,No,8
+SKU-104,Monitor Z,Medium,,WH-North,,0,50,DisplayCorp,No,15
+SKU-109,Mousepad,High,800,WH-South,None,0,0,OfficeFurn,,40
+SKU-110,Stand,Low,2,WH-East,Outbound,0,5,OfficeFurn,Yes,
+SKU-101,Laptop Pro,Medium,450,,Outbound,0,50,TechSupply Inc,No,20

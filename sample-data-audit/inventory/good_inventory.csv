@@ -1,0 +1,16 @@
+sku_code,product_desc,inventory_level,stock_qty,warehouse_id,stock_movement_type,inbound_qty,outbound_qty,supplier_name,replenishment_flag,stock_age_days
+SKU-101,Laptop Pro,High,500,WH-East,Inbound,100,0,TechSupply Inc,No,15
+SKU-102,Mouse X,Low,20,WH-West,Outbound,0,50,Peripherals Co,Yes,45
+SKU-103,Keyboard Y,Medium,150,WH-East,None,0,0,Peripherals Co,No,30
+SKU-104,Monitor Z,High,300,WH-South,Inbound,50,0,DisplayCorp,No,10
+SKU-105,Desk Chair,Low,5,WH-North,Outbound,0,10,OfficeFurn,Yes,120
+SKU-101,Laptop Pro,High,600,WH-West,Inbound,100,0,TechSupply Inc,No,5
+SKU-106,Webcam A,Medium,100,WH-East,Outbound,0,20,CamTech,No,25
+SKU-107,Headset B,Low,15,WH-South,Outbound,0,30,AudioSys,Yes,60
+SKU-102,Mouse X,Low,10,WH-North,Outbound,0,10,Peripherals Co,Yes,50
+SKU-103,Keyboard Y,Medium,140,WH-West,Outbound,0,10,Peripherals Co,No,35
+SKU-108,USB Hub,High,400,WH-East,Inbound,200,0,TechSupply Inc,No,8
+SKU-104,Monitor Z,Medium,250,WH-North,Outbound,0,50,DisplayCorp,No,15
+SKU-109,Mousepad,High,800,WH-South,None,0,0,OfficeFurn,No,40
+SKU-110,Stand,Low,2,WH-East,Outbound,0,5,OfficeFurn,Yes,90
+SKU-101,Laptop Pro,Medium,450,WH-North,Outbound,0,50,TechSupply Inc,No,20

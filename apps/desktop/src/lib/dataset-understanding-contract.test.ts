@@ -3,10 +3,10 @@ import { createDatasetUnderstanding } from './dataset-understanding-contract';
 import type { BusinessSignalRegistry, BusinessSignal } from './business-signal-detector';
 
 describe('Dataset Understanding Contract', () => {
-  const createMockRegistry = (signalIds: string[]): BusinessSignalRegistry => {
+  const createMockRegistry = (signalIds: string[], domainStr: string = 'test'): BusinessSignalRegistry => {
     const signals: BusinessSignal[] = signalIds.map(id => ({
       canonicalId: id,
-      domain: 'test',
+      domain: domainStr,
       label: id.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
       confidenceScore: 80,
       supportingEvidence: [{ columnName: `col_${id}`, matchReason: 'test', breakdown: {} as any }]
@@ -139,7 +139,7 @@ describe('Dataset Understanding Contract', () => {
 
   it('downgrades to exploratory_only when signals/views are present but no actionable opportunities exist (broken_finance.csv equivalent)', () => {
     // Measures present, but no dimensions/time to aggregate them against
-    const registry = createMockRegistry(['revenue', 'cost', 'profit', 'expense']);
+    const registry = createMockRegistry(['revenue']);
     const du = createDatasetUnderstanding({ 
       signalRegistry: registry,
       businessViews: [{ id: 'profitability_analysis' }, { id: 'margin_analysis' }] 
@@ -163,5 +163,38 @@ describe('Dataset Understanding Contract', () => {
     expect(du.readiness!.tier).toBe('exploratory_only');
     expect(du.readiness!.score).toBeLessThanOrEqual(50);
     expect(du.readiness!.explanation).toContain('lacks structural support');
+  });
+
+  it('Finance dataset generates finance-aware opportunities', () => {
+    const registry = createMockRegistry(['revenue', 'cost', 'profit', 'time_period'], 'finance');
+    const du = createDatasetUnderstanding({ signalRegistry: registry, datasetName: 'Finance', rowCount: 100, columnCount: 5, status: 'understood' });
+    expect(du.availableAnalysis.some(a => a.label.includes('Revenue') || a.label.includes('cost') || a.label.includes('Profit') || a.label.includes('Expense'))).toBe(true);
+    expect(du.narrative.includes('finance')).toBe(true);
+  });
+
+  it('Inventory dataset generates inventory-aware opportunities', () => {
+    const registry = createMockRegistry(['sku', 'stock_age', 'warehouse', 'stock_qty'], 'inventory');
+    const du = createDatasetUnderstanding({ signalRegistry: registry, datasetName: 'Inventory', rowCount: 100, columnCount: 5, status: 'understood' });
+    expect(du.availableAnalysis.some(a => a.label === 'Stock aging profile by SKU')).toBe(true);
+    expect(du.narrative.includes('inventory')).toBe(true);
+  });
+
+  it('Customer dataset generates customer-aware opportunities', () => {
+    const registry = createMockRegistry(['customer', 'segment', 'retention', 'order_count'], 'customer');
+    const du = createDatasetUnderstanding({ signalRegistry: registry, datasetName: 'Customer', rowCount: 100, columnCount: 5, status: 'understood' });
+    expect(du.availableAnalysis.some(a => a.dimensions.includes('segment'))).toBe(true);
+    expect(du.narrative.includes('customer')).toBe(true);
+  });
+
+  it('Performance dataset generates KPI-aware opportunities', () => {
+    const registry = createMockRegistry(['kpi', 'target', 'achievement', 'department'], 'performance');
+    const du = createDatasetUnderstanding({ signalRegistry: registry, datasetName: 'Performance', rowCount: 100, columnCount: 5, status: 'understood' });
+    expect(du.availableAnalysis.some(a => a.label === 'Target vs achievement by KPI')).toBe(true);
+  });
+
+  it('Revenue/Sales dataset generates sales-aware opportunities', () => {
+    const registry = createMockRegistry(['sales', 'branch', 'revenue', 'salesperson'], 'revenue');
+    const du = createDatasetUnderstanding({ signalRegistry: registry, datasetName: 'Sales', rowCount: 100, columnCount: 5, status: 'understood' });
+    expect(du.availableAnalysis.some(a => a.dimensions.includes('branch') && a.measures.includes('sales'))).toBe(true);
   });
 });

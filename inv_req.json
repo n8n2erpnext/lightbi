@@ -1,0 +1,23 @@
+{
+  "runtime_plan": {
+    "status": "ready",
+    "logicalOperations": [
+      {
+        "type": "scan",
+        "columns": ["Kho", "Mã hàng"]
+      },
+      {
+        "type": "group_by",
+        "dimensions": ["Kho"],
+        "measures": ["Mã hàng"]
+      }
+    ],
+    "requiredColumns": ["Kho", "Mã hàng"],
+    "expectedOutput": {
+      "shape": "tabular",
+      "dimensions": ["Kho"],
+      "measures": ["Mã hàng"]
+    }
+  },
+  "limit": 10
+}

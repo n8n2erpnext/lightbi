@@ -1,0 +1,16 @@
+customer_id,segment_tier,lifetime_order_count,total_revenue,retention_status,last_purchase_date,contribution_margin,purchase_behavior_category
+CUST-001,Gold,45,12500.00,Active,2023-10-01,35.5,Frequent
+CUST-002,Silver,12,3200.00,At Risk,2023-05-15,25.0,Occasional
+CUST-003,Bronze,3,450.00,Churned,2022-11-20,15.0,One-off
+CUST-004,Platinum,120,45000.00,Active,2023-10-10,40.0,Loyalist
+CUST-005,Silver,15,4000.00,Active,2023-09-25,28.0,Occasional
+CUST-006,Gold,38,11000.00,At Risk,2023-06-10,32.0,Frequent
+CUST-007,Bronze,5,800.00,Active,2023-09-01,18.0,Occasional
+CUST-008,Platinum,95,38000.00,Active,2023-10-05,42.0,Loyalist
+CUST-009,Silver,10,2500.00,Churned,2022-12-05,22.0,One-off
+CUST-010,Gold,50,15000.00,Active,2023-10-08,36.0,Frequent
+CUST-011,Bronze,2,300.00,Churned,2022-08-14,10.0,One-off
+CUST-012,Silver,18,4800.00,Active,2023-09-30,26.0,Occasional
+CUST-013,Platinum,150,60000.00,Active,2023-10-12,45.0,Loyalist
+CUST-014,Gold,42,13000.00,At Risk,2023-04-20,34.0,Frequent
+CUST-015,Bronze,6,950.00,Active,2023-08-15,19.0,Occasional

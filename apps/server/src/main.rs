@@ -84,6 +84,7 @@ struct RuntimePlanPreview {
 
 #[derive(Deserialize, Debug)]
 struct PreviewExecuteRequest {
+    dataset_id: String,
     #[serde(alias = "runtimePlan")]
     runtime_plan: RuntimePlanPreview,
     limit: Option<usize>,
@@ -119,6 +120,7 @@ struct AppState {
     context: Arc<ProjectContext>,
     latest_csv_path: tokio::sync::Mutex<Option<String>>,
     current_source: tokio::sync::Mutex<Option<CurrentSourceSession>>,
+    dataset_registry: tokio::sync::Mutex<std::collections::HashMap<String, CurrentSourceSession>>,
 }
 
 async fn build_context() -> Arc<ProjectContext> {
@@ -202,6 +204,7 @@ async fn main() {
         context: build_context().await,
         latest_csv_path: tokio::sync::Mutex::new(None),
         current_source: tokio::sync::Mutex::new(None),
+        dataset_registry: tokio::sync::Mutex::new(std::collections::HashMap::new()),
     });
 
     let cors = CorsLayer::new()
@@ -319,6 +322,38 @@ async fn resolve_current_source(state: &Arc<AppState>) -> Option<CurrentSourceSe
     }
     
     println!("[resolve_current_source] current source resolved from none");
+    None
+}
+
+async fn resolve_dataset_source(state: &Arc<AppState>, dataset_id: &str) -> Option<CurrentSourceSession> {
+    {
+        let memory_cache = state.dataset_registry.lock().await;
+        if let Some(src) = memory_cache.get(dataset_id) {
+            println!("[resolve_dataset_source] resolved from memory for {}: {}", dataset_id, src.file_path);
+            return Some(src.clone());
+        }
+    }
+    
+    let session_dir = state.context.project_path.join("session").join("datasets");
+    let session_file = session_dir.join(format!("{}.json", dataset_id));
+    
+    println!("[resolve_dataset_source] metadata read path: {:?}", session_file);
+    if let Ok(content) = tokio::fs::read_to_string(&session_file).await {
+        if let Ok(src) = serde_json::from_str::<CurrentSourceSession>(&content) {
+            let file_exists = tokio::fs::metadata(&src.file_path).await.is_ok();
+            println!("[resolve_dataset_source] file existence check result: {}", file_exists);
+            
+            if file_exists {
+                println!("[resolve_dataset_source] resolved from disk for {}: {}", dataset_id, src.file_path);
+                state.dataset_registry.lock().await.insert(dataset_id.to_string(), src.clone());
+                return Some(src);
+            } else {
+                println!("[resolve_dataset_source] source file missing on disk");
+            }
+        }
+    }
+    
+    println!("[resolve_dataset_source] failed to resolve dataset: {}", dataset_id);
     None
 }
 
@@ -468,13 +503,20 @@ async fn import_csv(State(state): State<Arc<AppState>>, mut multipart: Multipart
                 };
 
                 *state.current_source.lock().await = Some(session.clone());
+                state.dataset_registry.lock().await.insert(dataset_id.clone(), session.clone());
 
                 let session_dir = state.context.project_path.join("session");
                 let _ = tokio::fs::create_dir_all(&session_dir).await;
+                
+                let datasets_dir = session_dir.join("datasets");
+                let _ = tokio::fs::create_dir_all(&datasets_dir).await;
+                let dataset_file = datasets_dir.join(format!("{}.json", dataset_id));
                 let session_file = session_dir.join("current_source.json");
-                println!("[import-csv] metadata write path: {:?}", session_file);
+                
+                println!("[import-csv] metadata write path: {:?}", dataset_file);
                 if let Ok(json_str) = serde_json::to_string_pretty(&session) {
-                    let _ = tokio::fs::write(&session_file, json_str).await;
+                    let _ = tokio::fs::write(&dataset_file, &json_str).await;
+                    let _ = tokio::fs::write(&session_file, &json_str).await;
                 }
 
                 println!("[import-csv] response sent");
@@ -650,11 +692,26 @@ async fn execute_preview(State(state): State<Arc<AppState>>, Json(payload): Json
 
     let limit = payload.limit.unwrap_or(100).min(100);
 
-    let source = resolve_current_source(&state).await;
+    let dataset_id = &payload.dataset_id;
+    if dataset_id.is_empty() {
+        blocked_reasons.push("dataset_id is missing or empty.".to_string());
+        return (StatusCode::BAD_REQUEST, Json(PreviewExecuteResponse {
+            status: "blocked".to_string(),
+            columns: vec![],
+            rows: vec![],
+            row_count: 0,
+            max_rows: limit,
+            warnings,
+            blocked_reasons,
+            error_message: None,
+        })).into_response();
+    }
+
+    let source = resolve_dataset_source(&state, dataset_id).await;
     let file_path = match source {
         Some(s) if s.file_path.to_lowercase().ends_with(".csv") => s.file_path,
         Some(_) => {
-            blocked_reasons.push("Only CSV current source is supported in DU-7B.".to_string());
+            blocked_reasons.push("Only CSV source is supported in DU-8.".to_string());
             return (StatusCode::OK, Json(PreviewExecuteResponse {
                 status: "blocked".to_string(),
                 columns: vec![],
@@ -667,8 +724,8 @@ async fn execute_preview(State(state): State<Arc<AppState>>, Json(payload): Json
             })).into_response();
         }
         None => {
-            blocked_reasons.push("No active dataset source available.".to_string());
-            return (StatusCode::OK, Json(PreviewExecuteResponse {
+            blocked_reasons.push(format!("No active dataset source available for dataset_id: {}", dataset_id));
+            return (StatusCode::NOT_FOUND, Json(PreviewExecuteResponse {
                 status: "blocked".to_string(),
                 columns: vec![],
                 rows: vec![],

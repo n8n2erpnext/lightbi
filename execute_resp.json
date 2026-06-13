@@ -1,0 +1,1 @@
+Failed to deserialize the JSON body into the target type: runtime_plan.logicalOperations[0].type: unknown variant `Scan`, expected one of `scan`, `limit`, `group_by`, `trend`, `distribution`, `relationship` at line 1 column 97

@@ -1,0 +1,16 @@
+order_id,product_name,revenue_amount,sales_amount,branch_location,salesperson_name,discount_applied,customer_id
+ORD-501,Widget A,150.00,150.00,New York,Jim Halpert,0.00,CUST-01
+ORD-502,Widget B,200.00,250.00,Chicago,Dwight Schrute,50.00,CUST-02
+ORD-503,Widget A,150.00,150.00,New York,Jim Halpert,0.00,CUST-03
+ORD-504,Widget C,300.00,300.00,Scranton,Michael Scott,0.00,CUST-01
+ORD-505,Widget B,220.00,250.00,Chicago,Dwight Schrute,30.00,CUST-04
+ORD-506,Widget D,500.00,500.00,Stamford,Andy Bernard,0.00,CUST-05
+ORD-507,Widget A,130.00,150.00,New York,Jim Halpert,20.00,CUST-06
+ORD-508,Widget C,300.00,300.00,Scranton,Michael Scott,0.00,CUST-02
+ORD-509,Widget B,250.00,250.00,Chicago,Dwight Schrute,0.00,CUST-07
+ORD-510,Widget D,450.00,500.00,Stamford,Andy Bernard,50.00,CUST-08
+ORD-511,Widget A,150.00,150.00,New York,Jim Halpert,0.00,CUST-09
+ORD-512,Widget C,270.00,300.00,Scranton,Michael Scott,30.00,CUST-10
+ORD-513,Widget B,250.00,250.00,Chicago,Dwight Schrute,0.00,CUST-01
+ORD-514,Widget A,150.00,150.00,New York,Jim Halpert,0.00,CUST-11
+ORD-515,Widget D,500.00,500.00,Stamford,Andy Bernard,0.00,CUST-12

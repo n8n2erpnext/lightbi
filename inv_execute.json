@@ -1,0 +1,1 @@
+{"status":"executed","columns":["Kho","Mã hàng_count"],"rows":[{"Kho":"Kho B","Mã hàng_count":2},{"Kho":"Kho A","Mã hàng_count":2},{"Kho":"Kho C","Mã hàng_count":1}],"row_count":3,"max_rows":10,"warnings":[],"blocked_reasons":[],"error_message":null}

@@ -43,11 +43,19 @@ SELECT * FROM read_csv_auto('/absolute/path/to/delivery_performance_reports.csv'
 ```
 Can completely run manually inside the DuckDB CLI. It returns the expected schema (all CSV columns) and 100 rows. The issue is purely the order of Rust API calls.
 
-## Minimal Fix Recommendation
-Do not query `column_names()` or `column_count()` prior to execution.
-The fix requires modifying `crates/lightbi-duckdb/src/backend.rs`:
-1. Execute the query first: `let mut rows_result = stmt.query([])?;`
-2. **After** `stmt.query` has run (which forces DuckDB to sniff the CSV and bind the schema), you can safely call `stmt.column_names()` and `stmt.column_count()` (while abiding by the Rust borrow checker), or extract the column names directly from the `rows_result.as_ref()` if supported by the driver.
+## Fix Applied
+The ordering bug was successfully fixed.
+**Before:**
+1. `conn.prepare(&sql)`
+2. `stmt.column_count()` and `stmt.column_names()` -> **PANIC!**
+3. `stmt.query([])`
 
-**Risk Level:** P1 (Execution Blocking)
-While the frontend `js_sandbox_fallback` gracefully catches this and hides it from the user, the backend execution is completely blocked on all CSV files until this ordering bug is fixed.
+**After:**
+1. `conn.prepare(&sql)`
+2. `stmt.query([])` -> Forces DuckDB to execute and sniff the schema for `read_csv_auto`.
+3. Extract `column_names()` via `rows_result.as_ref().unwrap()`.
+
+**Result:**
+The backend source now successfully executes queries on CSV files natively via DuckDB. Playwright E2E tests have confirmed that `backend_duckdb_preview` is now the primary execution source, rather than falling back to `js_sandbox_fallback`.
+
+**Risk Level:** RESOLVED (Previously P1)

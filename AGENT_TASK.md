@@ -1,0 +1,4 @@
+- [x] Edit `business-signal-detector.ts` to extend `DetectorInput` and update `profileSupport` heuristics.
+- [x] Edit `business-signal-detector.test.ts` to add test cases proving the new heuristics.
+- [x] Run the specified test suite to verify tests pass and no existing behaviors break.
+- [x] Update `AGENT_HANDOFF.md` with implementation details.

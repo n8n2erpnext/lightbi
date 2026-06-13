@@ -1,0 +1,16 @@
+đơn_hàng,sản phẩm,doanh thu,chi nhánh,nv bh,chiết khấu,khách hàng,doanh thu 2
+501,Widget A,150.00,New York,Jim Halpert,0,CUST-01,150.00
+502,Widget B,200.00,Chicago,Dwight Schrute,50,CUST-02,200.00
+503,,150.00,New York,,0,CUST-03,150.00
+504,Widget C,300.00,Scranton,Michael Scott,0,,300.00
+,Widget B,220.00,Chicago,Dwight Schrute,30,CUST-04,220.00
+506,Widget D,500.00,,Andy Bernard,0,CUST-05,500.00
+507,Widget A,130.00,New York,Jim Halpert,,CUST-06,130.00
+508,Widget C,300.00,Scranton,Michael Scott,0,CUST-02,300.00
+509,Widget B,,Chicago,Dwight Schrute,0,CUST-07,
+510,Widget D,450.00,Stamford,,50,CUST-08,450.00
+511,,150.00,New York,Jim Halpert,0,CUST-09,150.00
+512,Widget C,270.00,Scranton,Michael Scott,30,CUST-10,270.00
+513,Widget B,250.00,Chicago,Dwight Schrute,0,,250.00
+514,Widget A,150.00,,Jim Halpert,0,CUST-11,150.00
+515,Widget D,500.00,Stamford,Andy Bernard,0,CUST-12,500.00

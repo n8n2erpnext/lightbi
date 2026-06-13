@@ -3,6 +3,16 @@
 All notable changes to the LightBI architecture and codebase will be documented in this file.
 
 ## [Unreleased]
+- **Phase DU-9: Semantic Graph Visualization (Phase 1)**:
+  - `apps/desktop`: Implemented `SemanticGraphModel`, `SemanticGraphBuilder`, and `SemanticGraphView` using pure SVG to render an interactive map of business concepts and relationships inline within the `DatasetUnderstandingCard`.
+  - `apps/desktop`: Implemented deduplication and layout logic.
+  - `apps/desktop`: Added comprehensive unit and component tests ensuring proper type, domain coloring, and relationship mapping.
+
+- **Phase DU-7H: Dataset Source Registration & Execution Mapping**:
+  - `apps/desktop`: Implemented automatic dataset upload to the Rust backend upon local parsing in `Home.tsx` to keep the backend `current_source` in sync.
+  - `apps/desktop`: Fixed Logical to Physical column mapping utilizing `BusinessSignalRegistry` in `Home.tsx` to prevent DuckDB Binder Errors on non-English headers.
+  - `docs`: Created `AUDIT-dataset-source-registration.md` to document the successful execution mapping and bypass of the JS sandbox.
+
 - **Phase DU-7C: Frontend Backend Preview Adapter**:
   - `apps/desktop`: Implemented `executeBackendPreview` adapter to seamlessly route `RuntimePlanPreview` JSON to the Rust Axum execution endpoint.
   - `apps/desktop`: Updated `Investigation.tsx` to execute via `backend_duckdb_preview` as the primary source of truth, eliminating the need to pass massive JS row sets around for large datasets.

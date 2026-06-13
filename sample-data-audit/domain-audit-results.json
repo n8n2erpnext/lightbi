@@ -1,0 +1,382 @@
+[
+  {
+    "domain": "operations",
+    "type": "good",
+    "file": "good_operations.csv",
+    "signals": [
+      "driver",
+      "route",
+      "delivery_status",
+      "sla",
+      "warehouse",
+      "delay",
+      "vehicle"
+    ],
+    "perspectives": [
+      "operations",
+      "inventory"
+    ],
+    "businessViews": [
+      "driver_performance",
+      "delivery_sla",
+      "route_performance",
+      "logistics_journey"
+    ],
+    "opportunities": [
+      "Driver distribution",
+      "Delay by Driver"
+    ],
+    "grainHint": "snapshot",
+    "readinessTier": "reference_only",
+    "readinessScore": 85,
+    "caveats": [],
+    "missingValuesScore": 100
+  },
+  {
+    "domain": "operations",
+    "type": "broken",
+    "file": "broken_operations.csv",
+    "signals": [
+      "driver",
+      "sla",
+      "warehouse",
+      "vehicle"
+    ],
+    "perspectives": [
+      "operations",
+      "inventory"
+    ],
+    "businessViews": [
+      "driver_performance"
+    ],
+    "opportunities": [
+      "Driver distribution"
+    ],
+    "grainHint": "snapshot",
+    "readinessTier": "exploratory_only",
+    "readinessScore": 82,
+    "caveats": [],
+    "missingValuesScore": 91.85185185185185
+  },
+  {
+    "domain": "revenue",
+    "type": "good",
+    "file": "good_revenue.csv",
+    "signals": [
+      "order",
+      "product",
+      "revenue",
+      "sales",
+      "salesperson",
+      "customer"
+    ],
+    "perspectives": [
+      "revenue",
+      "inventory",
+      "customer"
+    ],
+    "businessViews": [
+      "revenue_trend",
+      "order_performance",
+      "salesperson_performance",
+      "revenue_performance",
+      "customer_contribution"
+    ],
+    "opportunities": [
+      "Product distribution",
+      "Order by Product"
+    ],
+    "grainHint": "event",
+    "readinessTier": "exploratory_only",
+    "readinessScore": 83,
+    "caveats": [],
+    "missingValuesScore": 100
+  },
+  {
+    "domain": "revenue",
+    "type": "broken",
+    "file": "broken_revenue.csv",
+    "signals": [
+      "shipment",
+      "order",
+      "product",
+      "revenue",
+      "branch",
+      "discount",
+      "customer"
+    ],
+    "perspectives": [
+      "revenue",
+      "operations",
+      "customer",
+      "inventory"
+    ],
+    "businessViews": [
+      "revenue_trend",
+      "order_performance",
+      "revenue_performance",
+      "discount_impact",
+      "branch_performance",
+      "customer_contribution"
+    ],
+    "opportunities": [
+      "Product distribution",
+      "Shipment by Product"
+    ],
+    "grainHint": "event",
+    "readinessTier": "reference_only",
+    "readinessScore": 89,
+    "caveats": [],
+    "missingValuesScore": 90
+  },
+  {
+    "domain": "inventory",
+    "type": "good",
+    "file": "good_inventory.csv",
+    "signals": [
+      "sku",
+      "stock_qty",
+      "warehouse",
+      "stock_movement",
+      "inbound",
+      "outbound",
+      "supplier"
+    ],
+    "perspectives": [
+      "inventory",
+      "operations"
+    ],
+    "businessViews": [
+      "stock_movement"
+    ],
+    "opportunities": [
+      "SKU distribution",
+      "Stock Quantity by SKU"
+    ],
+    "grainHint": "event",
+    "readinessTier": "exploratory_only",
+    "readinessScore": 84,
+    "caveats": [],
+    "missingValuesScore": 100
+  },
+  {
+    "domain": "inventory",
+    "type": "broken",
+    "file": "broken_inventory.csv",
+    "signals": [
+      "sku",
+      "inventory",
+      "warehouse"
+    ],
+    "perspectives": [
+      "operations",
+      "inventory"
+    ],
+    "businessViews": [
+      "inventory_aging"
+    ],
+    "opportunities": [
+      "SKU distribution",
+      "Inventory by SKU"
+    ],
+    "grainHint": "snapshot",
+    "readinessTier": "exploratory_only",
+    "readinessScore": 81,
+    "caveats": [],
+    "missingValuesScore": 89.6969696969697
+  },
+  {
+    "domain": "customer",
+    "type": "good",
+    "file": "good_customer.csv",
+    "signals": [
+      "customer",
+      "revenue",
+      "last_purchase"
+    ],
+    "perspectives": [
+      "revenue",
+      "customer"
+    ],
+    "businessViews": [
+      "revenue_trend",
+      "customer_contribution"
+    ],
+    "opportunities": [
+      "Customer distribution",
+      "Revenue over Last Purchase",
+      "Revenue by Customer"
+    ],
+    "grainHint": "unknown",
+    "readinessTier": "reference_only",
+    "readinessScore": 85,
+    "caveats": [],
+    "missingValuesScore": 100
+  },
+  {
+    "domain": "customer",
+    "type": "broken",
+    "file": "broken_customer.csv",
+    "signals": [
+      "customer",
+      "segment",
+      "revenue",
+      "retention",
+      "contribution"
+    ],
+    "perspectives": [
+      "revenue",
+      "customer"
+    ],
+    "businessViews": [
+      "customer_segmentation",
+      "customer_contribution",
+      "customer_retention",
+      "revenue_trend"
+    ],
+    "opportunities": [
+      "Customer distribution",
+      "Revenue by Customer"
+    ],
+    "grainHint": "unknown",
+    "readinessTier": "reference_only",
+    "readinessScore": 85,
+    "caveats": [],
+    "missingValuesScore": 87.5
+  },
+  {
+    "domain": "performance",
+    "type": "good",
+    "file": "good_performance.csv",
+    "signals": [
+      "kpi",
+      "target",
+      "achievement",
+      "actual",
+      "department",
+      "performance_gap"
+    ],
+    "perspectives": [
+      "performance"
+    ],
+    "businessViews": [
+      "kpi_monitoring",
+      "department_performance",
+      "target_achievement",
+      "operational_performance"
+    ],
+    "opportunities": [
+      "KPI distribution",
+      "Target by KPI"
+    ],
+    "grainHint": "unknown",
+    "readinessTier": "reference_only",
+    "readinessScore": 85,
+    "caveats": [],
+    "missingValuesScore": 100
+  },
+  {
+    "domain": "performance",
+    "type": "broken",
+    "file": "broken_performance.csv",
+    "signals": [
+      "kpi",
+      "target",
+      "achievement",
+      "actual",
+      "productivity",
+      "utilization",
+      "department",
+      "efficiency",
+      "performance_gap"
+    ],
+    "perspectives": [
+      "performance"
+    ],
+    "businessViews": [
+      "target_achievement",
+      "efficiency_analysis",
+      "operational_performance",
+      "kpi_monitoring",
+      "department_performance"
+    ],
+    "opportunities": [
+      "KPI distribution",
+      "Target by KPI"
+    ],
+    "grainHint": "unknown",
+    "readinessTier": "reference_only",
+    "readinessScore": 88,
+    "caveats": [],
+    "missingValuesScore": 90.37037037037037
+  },
+  {
+    "domain": "finance",
+    "type": "good",
+    "file": "good_finance.csv",
+    "signals": [
+      "time_period",
+      "revenue",
+      "cost",
+      "profit",
+      "margin",
+      "expense",
+      "discount"
+    ],
+    "perspectives": [
+      "finance",
+      "revenue"
+    ],
+    "businessViews": [
+      "profitability_analysis",
+      "margin_analysis",
+      "cost_impact",
+      "expense_review",
+      "discount_impact",
+      "revenue_trend"
+    ],
+    "opportunities": [
+      "Revenue over Time Period"
+    ],
+    "grainHint": "summary",
+    "readinessTier": "reference_only",
+    "readinessScore": 87,
+    "caveats": [],
+    "missingValuesScore": 100
+  },
+  {
+    "domain": "finance",
+    "type": "broken",
+    "file": "broken_finance.csv",
+    "signals": [
+      "revenue",
+      "cost",
+      "profit",
+      "expense",
+      "target",
+      "discount",
+      "purchase_cost"
+    ],
+    "perspectives": [
+      "finance",
+      "revenue",
+      "performance"
+    ],
+    "businessViews": [
+      "profitability_analysis",
+      "cost_impact",
+      "expense_review",
+      "revenue_trend",
+      "discount_impact"
+    ],
+    "opportunities": [],
+    "grainHint": "unknown",
+    "readinessTier": "exploratory_only",
+    "readinessScore": 53,
+    "caveats": [
+      "Could not assemble runnable analysis paths from detected signals.",
+      "Could not assemble runnable analysis paths from detected signals."
+    ],
+    "missingValuesScore": 86
+  }
+]

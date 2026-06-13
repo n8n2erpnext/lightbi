@@ -4,6 +4,8 @@ import type { DatasetUnderstanding } from '../../lib/dataset-understanding-contr
 import type { AnalysisAction } from '../../lib/analysis-opportunity-actions';
 import { generateAnalysisActions } from '../../lib/analysis-opportunity-actions';
 import { AnalysisOpportunityGrid } from './AnalysisOpportunityGrid';
+import { buildSemanticGraph } from '../../lib/semantic-graph-builder';
+import { SemanticGraphView } from './SemanticGraphView';
 
 export interface DatasetUnderstandingCardProps {
   understanding: DatasetUnderstanding;
@@ -15,6 +17,7 @@ export interface DatasetUnderstandingCardProps {
 export const DatasetUnderstandingCard: React.FC<DatasetUnderstandingCardProps> = ({ understanding, selectedActionId, onSelectAction, onMappingAction }) => {
   const analysisActions = React.useMemo(() => generateAnalysisActions(understanding), [understanding]);
   const [showCaveats, setShowCaveats] = useState(false);
+  const graph = React.useMemo(() => buildSemanticGraph(understanding), [understanding]);
 
   const getStatusConfig = () => {
     switch (understanding.status) {
@@ -146,6 +149,12 @@ export const DatasetUnderstandingCard: React.FC<DatasetUnderstandingCardProps> =
                <div className="mt-2.5 text-[11px] text-gray-400">
                  Based on {understanding.detectedConcepts.length} signals: {understanding.detectedConcepts.map(c => c.label).join(', ')}
                </div>
+            )}
+            {graph.nodes.length >= 2 && (
+              <div className="semantic-graph-section mt-4 border border-gray-100 rounded-lg overflow-hidden">
+                <h4 className="text-[11px] font-bold uppercase tracking-wider text-gray-500 bg-gray-50 px-3 py-2 border-b border-gray-100">Concept Map</h4>
+                <SemanticGraphView graph={graph} />
+              </div>
             )}
           </div>
 

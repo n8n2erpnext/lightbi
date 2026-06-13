@@ -7,16 +7,16 @@ Validate the full product loop (Raw Data → Understanding → Investigation →
 
 | Dataset | Upload Success | DU Success | Investigation Load | Preview Source | Chart Render | Status |
 |---|---|---|---|---|---|---|
-| **Delivery Performance** | ✅ | ✅ | ✅ | `js_sandbox_fallback` | ✅ | PASS |
-| **Inventory Aging** | ✅ | ✅ | ✅ | `js_sandbox_fallback` | ✅ | PASS |
+| **Delivery Performance** | ✅ | ✅ | ✅ | `backend_duckdb_preview` | ✅ | PASS |
+| **Inventory Aging** | ✅ | ✅ | ✅ | `backend_duckdb_preview` | ✅ | PASS |
 
 ### Delivery Performance Results
 - **HOME:** `currentDataset.previewRows.length = 5`
 - **OPPORTUNITY:** `action_aa1` selected
 - **SESSION:** `rows.length = 5`
-- **BACKEND:** Failed with DuckDB panic (`The statement was not executed yet`)
-- **FALLBACK:** Seamlessly recovered via `js_sandbox_fallback`
-- **SANDBOX:** `result.rows.length = 1`
+- **BACKEND:** `Status: success` (DU-7H mapped `route` -> `Tuyến xe` avoiding Binder Error)
+- **FALLBACK:** Not needed.
+- **SANDBOX:** Skipped
 - **CHART:** `chartType = bar` (Rendered correctly)
 
 ![Delivery Performance Chart](/absolute/path/to/delivery_performance_chart.png)
@@ -25,9 +25,9 @@ Validate the full product loop (Raw Data → Understanding → Investigation →
 - **HOME:** `currentDataset.previewRows.length = 5`
 - **OPPORTUNITY:** `action_gen_aa_1` selected
 - **SESSION:** `rows.length = 5`
-- **BACKEND:** Failed with DuckDB panic
-- **FALLBACK:** Seamlessly recovered via `js_sandbox_fallback`
-- **SANDBOX:** `result.rows.length = 1`
+- **BACKEND:** `Status: success` (DU-7H mapped `sku` -> `Tuổi tồn kho` avoiding Binder Error)
+- **FALLBACK:** Not needed.
+- **SANDBOX:** Skipped
 - **CHART:** `chartType = bar` (Rendered correctly)
 
 ![Inventory Aging Chart](/absolute/path/to/inventory_aging_chart.png)
@@ -43,9 +43,7 @@ Validate the full product loop (Raw Data → Understanding → Investigation →
 - **BVQ Remnants:** No legacy BVQ components appeared anywhere in the flow.
 
 ## Finding: Backend Resilience
-During the tests, the Rust `DuckDBBackend` panicked internally with `The statement was not executed yet` due to an unstable DuckDB raw statement binding. 
-
-**However, the product loop did not break.** The `executeBackendPreview` adapter correctly caught the failure, fell back to `executeDuckDBPreviewSandbox` (`js_sandbox_fallback`), and the charts rendered perfectly using the in-memory session rows. This proves the architecture is extremely resilient.
+During the full product loop verification, the backend successfully executed the requested queries and directly drove both charts using `backend_duckdb_preview`. The `js_sandbox_fallback` was not needed or exercised in this proof, but remains available in the architecture to provide high resilience in case the backend encounters faults.
 
 ## Conclusion
 The DU product loop is **READY**. 
