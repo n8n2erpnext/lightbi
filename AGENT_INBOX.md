@@ -1,185 +1,162 @@
-# AGENT INBOX — DU-9 Phase 2: Semantic Graph Visual Polish + Playwright Capture
+# AGENT INBOX — Guarded SUM Phase B: Sampling Robustness
 
 Date: 2026-06-13
-Phase: DU-9 Phase 2 — Visual Fixes + Tooltip + Playwright Capture
+Phase: Guarded SUM Phase B (Execution Safety)
 Commander: Gemini Brain
-Priority: P1 — Beta Demo Quality
-Prerequisite: DU-9 Phase 1 (commit d763b6b) ✅ DONE
+Priority: P0 — Data Integrity Risk
 
 ---
 
 ## Bối Cảnh
 
-Phase 1 đã tạo xong graph structure và đúng logic. Tuy nhiên Brain QA phát hiện 3 lỗi visual cần fix trước Beta:
+Hiện tại, `guarded-sum-bridge.ts` chỉ lấy đúng 500 dòng đầu (`head`) để quyết định measure có an toàn cho hàm SUM ( DuckDB execution ) hay không.
+Điều này gây rủi ro Data Integrity rất lớn (Silent wrong SUM), vì dirty data thường nằm ở những dòng tail (dòng cuối).
 
-1. **Node border sai màu**: `stroke="#333"` (đen) thay vì `stroke="#fff"` (trắng) — node trông nặng nề, không premium
-2. **Tất cả edges cùng màu #999**: Không phân biệt được relationship vs workflow vs co_occurrence
-3. **Thiếu `performance` domain màu**: `DOMAIN_COLORS` không có `performance` → node performance domain dùng màu `unknown` (#888)
-
-Phase 2 fix 3 lỗi này + thêm hover tooltip + Playwright visual capture.
+Phase B sẽ khắc phục triệt để bằng cách:
+1. Scan toàn bộ (full scan) nếu dataset ≤ 2000 rows.
+2. Scan 1000 head + 1000 tail nếu dataset > 2000 rows.
+3. Update `NumericHealthResult` trả về đầy đủ audit trace.
+4. Nới lỏng `isSafeForSum` (ngưỡng 80%) nhưng tăng cường cảnh báo nếu `estimatedDropRate` > 5%.
 
 ---
 
 ## Scope
 
-Chỉ được sửa:
-- `apps/desktop/src/components/analysis/SemanticGraphView.tsx`
-- `apps/desktop/src/components/analysis/SemanticGraphView.test.tsx` (cập nhật test)
-- Thêm Playwright spec mới nếu cần
+Chỉ sửa 2 file:
+- `apps/desktop/src/lib/numeric-health-gate.ts` (và file test của nó)
+- `apps/desktop/src/lib/guarded-sum-bridge.ts`
 
-KHÔNG được sửa:
-- `semantic-graph-model.ts`
-- `semantic-graph-builder.ts`
-- `semantic-graph-builder.test.ts`
-- `DatasetUnderstandingCard.tsx`
-- Bất kỳ file lib / server / executor nào
+KHÔNG ĐƯỢC CHẠM VÀO UI components.
 
 ---
 
-## Fix 1: Node border — `stroke="#333"` → `stroke="#fff"`
+## File 1: `apps/desktop/src/lib/numeric-health-gate.ts`
 
-Trong `SemanticGraphView.tsx`, tìm dòng có `stroke="#333"` ở `<circle>` → đổi thành `stroke="#fff"`.
+**1. Sửa interface:**
+```ts
+export interface NumericHealthResult {
+  columnName: string;
+  isSafeForSum: boolean;
+  parseSuccessRate: number;
+  needsCleansing: boolean;
+  // Phase B fields
+  scannedRows: number;
+  totalRows: number;
+  scanCoverage: number;
+  estimatedDropRate: number;
+  warningMessage?: string;
+}
+```
+
+**2. Sửa function signature & logic:**
+Sửa `evaluateNumericHealth` nhận thêm `totalRows?: number` (hoặc lấy từ `sampleValues.length` nếu không có).
+
+Bên trong `evaluateNumericHealth`:
+- Tính `scannedRows = sampleValues.length`
+- Tính `totalRows = totalRows || scannedRows`
+- Tính `scanCoverage = scannedRows > 0 ? scannedRows / totalRows : 0`
+- Tính `estimatedDropRate = validSampleCount > 0 ? (validSampleCount - successCount) / validSampleCount : 0`
+- Đổi điều kiện `isSafeForSum`:
+  ```ts
+  const isSafeForSum = parseSuccessRate >= 0.80;
+  ```
+- Tạo warningMessage:
+  ```ts
+  let warningMessage: string | undefined = undefined;
+  if (estimatedDropRate > 0.05) {
+    warningMessage = `High drop rate (${(estimatedDropRate * 100).toFixed(1)}%). SUM may exclude dirty rows.`;
+  }
+  ```
 
 ---
 
-## Fix 2: Edge colors theo type
+## File 2: `apps/desktop/src/lib/guarded-sum-bridge.ts`
 
-Thay đổi phần render edges. Hiện tại tất cả edges dùng `stroke="#999"`. Cần phân biệt:
-
-```
-relationship → stroke="#818cf8" (indigo), strokeWidth=2, strokeOpacity=0.6
-workflow     → stroke="#34d399" (emerald), strokeWidth=1.5, strokeDasharray="5,3", strokeOpacity=0.7
-co_occurrence → stroke="#94a3b8" (slate), strokeWidth=1, strokeOpacity=0.4
-```
-
-Thay phần render edge hiện tại bằng:
-```tsx
-const getEdgeStyle = (type: string) => {
-  if (type === 'relationship') return { stroke: '#818cf8', strokeWidth: 2, strokeDasharray: 'none', strokeOpacity: 0.6 };
-  if (type === 'workflow')     return { stroke: '#34d399', strokeWidth: 1.5, strokeDasharray: '5,3', strokeOpacity: 0.7 };
-  return { stroke: '#94a3b8', strokeWidth: 1, strokeDasharray: 'none', strokeOpacity: 0.4 }; // co_occurrence
-};
-```
-
-Áp dụng `getEdgeStyle(edge.type)` vào từng `<line>` thay vì hardcode.
-
----
-
-## Fix 3: Thêm `performance` vào DOMAIN_COLORS
+**1. Cập nhật `extractSampleValues`:**
+Sửa hàm này để lấy mẫu theo quy tắc:
+- Nhận thêm `rawRows` đầy đủ.
+- Nếu `rawRows.length <= 2000` → lấy toàn bộ rows (full scan).
+- Nếu `rawRows.length > 2000` → lấy 1000 rows đầu (head) + 1000 rows cuối (tail).
 
 ```ts
-const DOMAIN_COLORS: Record<string, string> = {
-  operations:  '#4F86C6',
-  finance:     '#5EAA7B',
-  inventory:   '#E08A3C',
-  revenue:     '#9B6BC9',
-  customer:    '#E05C7A',
-  performance: '#F59E0B',   // ← THÊM DÒNG NÀY
-  unknown:     '#888888'
-};
+function extractSampleValues(measure: string, rawRows: any[]): any[] {
+  if (rawRows.length === 0) return [];
+  const firstRow = rawRows[0];
+  const exactKey = Object.keys(firstRow).find(k => k.toLowerCase() === measure.toLowerCase());
+  if (!exactKey) return [];
+
+  const samples = [];
+  if (rawRows.length <= 2000) {
+    for (let i = 0; i < rawRows.length; i++) {
+      samples.push(rawRows[i][exactKey]);
+    }
+  } else {
+    // Head 1000
+    for (let i = 0; i < 1000; i++) {
+      samples.push(rawRows[i][exactKey]);
+    }
+    // Tail 1000
+    for (let i = rawRows.length - 1000; i < rawRows.length; i++) {
+      samples.push(rawRows[i][exactKey]);
+    }
+  }
+  return samples;
+}
 ```
 
----
-
-## Fix 4: Hover tooltip bằng SVG `<title>`
-
-Bên trong `<g key={node.id}>`, thêm `<title>` ngay sau `<g>`:
-
-```tsx
-<g key={node.id}>
-  <title>{`${node.label} (${node.domain}) · ${Math.round(node.confidenceScore)}% confidence`}</title>
-  <circle ... />
-  <text ... />
-</g>
-```
-
-SVG `<title>` là native browser tooltip — không cần JS, không cần thư viện.
-
----
-
-## Cập Nhật Tests: `SemanticGraphView.test.tsx`
-
-Thêm 2 test case mới:
-
-**Test 4: Node border là white**
-```tsx
-it('renders circle with white stroke border', () => {
-  const graph = {
-    nodes: [{ id: 'route', label: 'Route', type: 'dimension' as const, domain: 'operations', confidenceScore: 80 }],
-    edges: [],
-    grain: 'event'
-  };
-  const { container } = render(<SemanticGraphView graph={graph} />);
-  const circle = container.querySelector('circle');
-  expect(circle?.getAttribute('stroke')).toBe('#fff');
-});
-```
-
-**Test 5: Performance domain dùng màu #F59E0B**
-```tsx
-it('renders performance domain node with amber color', () => {
-  const graph = {
-    nodes: [{ id: 'kpi', label: 'KPI', type: 'dimension' as const, domain: 'performance', confidenceScore: 90 }],
-    edges: [],
-    grain: 'unknown'
-  };
-  const { container } = render(<SemanticGraphView graph={graph} />);
-  const circle = container.querySelector('circle');
-  expect(circle?.getAttribute('fill')).toBe('#F59E0B');
-});
-```
-
-3 tests cũ phải vẫn pass. Tổng: 5 tests trong SemanticGraphView.test.tsx.
-
----
-
-## Playwright Visual Capture
-
-Tạo file mới: `apps/desktop/e2e/semantic-graph-capture.spec.ts`
-
-Playwright spec này chụp ảnh Concept Map cho 2 dataset:
-
+**2. Cập nhật `enhancePlanWithGuardedSum`:**
+Khi gọi `evaluateNumericHealth`, truyền thêm `rawRows.length` làm param `totalRows` (vì hàm `extractSampleValues` chỉ trả mảng mẫu, không phải toàn bộ dataset).
 ```ts
-import { test, expect } from '@playwright/test';
-
-test('Delivery dataset shows Concept Map with event grain', async ({ page }) => {
-  await page.goto('http://localhost:5173');
-  // Upload good_operations.csv từ sample-data-audit/
-  // Chờ DatasetUnderstandingCard hiển thị
-  // Tìm element có text "Concept Map"
-  // Chụp screenshot SVG graph
-  await page.screenshot({ path: 'e2e/screenshots/delivery-concept-map.png', fullPage: false });
-  // Verify text "event" xuất hiện trong SVG (grain badge)
-  await expect(page.locator('text=event')).toBeVisible();
-});
-
-test('Inventory dataset shows Concept Map with snapshot grain', async ({ page }) => {
-  await page.goto('http://localhost:5173');
-  // Upload good_inventory.csv từ sample-data-audit/
-  // Chờ DatasetUnderstandingCard hiển thị
-  // Chụp screenshot
-  await page.screenshot({ path: 'e2e/screenshots/inventory-concept-map.png', fullPage: false });
-  // Verify grain badge
-  await expect(page.locator('svg')).toBeVisible();
-});
+const health = evaluateNumericHealth(measure, samples, rawRows.length);
 ```
 
-**Lưu ý quan trọng:** Nếu e2e test cần server đang chạy và không thể chạy headless trong môi trường này, CHỈ tạo file spec nhưng KHÔNG chạy Playwright. Ghi rõ trong handoff: "Playwright spec created, requires manual run with dev server".
+Và cập nhật đoạn sinh warning. Thay vì hardcode công thức ở đây, hãy dùng thẳng `health.estimatedDropRate` và `health.warningMessage`:
+```ts
+if (health.isSafeForSum) {
+  measureAggregations[measure] = "SUM";
+  if (health.needsCleansing || health.parseSuccessRate < 1.0) {
+    newWarnings.push(`Measure '${measure}' underwent silent cleansing (drop rate: ${(health.estimatedDropRate * 100).toFixed(1)}% or stripped chars) to enable SUM.`);
+  }
+  if (health.warningMessage) {
+    newWarnings.push(`Measure '${measure}': ${health.warningMessage}`);
+  }
+} else {
+  measureAggregations[measure] = "COUNT";
+}
+```
+
+---
+
+## File 3: `apps/desktop/src/lib/numeric-health-gate.test.ts`
+
+Sửa các tests hiện tại để tương thích với `NumericHealthResult` mới. Bạn có thể pass mock `totalRows` vào các test.
+
+Đảm bảo test cover:
+- parseSuccessRate >= 0.80 cho kết quả `isSafeForSum = true`.
+- estimatedDropRate > 0.05 tạo ra `warningMessage`.
 
 ---
 
 ## Verification Commands
 
+Chạy theo thứ tự:
+
 ```bash
 cd /home/ubuntu/n8n2erpnext/LightBI/apps/desktop
 
-# 1. SemanticGraphView tests (phải pass 5 tests)
-pnpm exec vitest run src/components/analysis/SemanticGraphView.test.tsx
+# 1. Test numeric-health-gate
+pnpm exec vitest run src/lib/numeric-health-gate.test.ts
 
-# 2. Full suite — 0 regression
+# 2. Test guarded sum
+pnpm exec vitest run src/lib/guarded-sum-bridge.test.ts
+
+# 3. Test stress test (có dùng evaluateNumericHealth)
+pnpm exec vitest run src/lib/stress_test.test.ts
+
+# 4. Full suite
 pnpm test
 
-# 3. TypeScript
+# 5. TypeScript
 npx tsc --noEmit
 ```
 
@@ -188,14 +165,7 @@ npx tsc --noEmit
 ## Handoff Requirements
 
 Khi xong, viết:
-- `AGENT_HANDOFF_SEMANTIC_GRAPH_PHASE2.md`:
-  - 3 lỗi visual đã fix (liệt kê rõ từng fix)
-  - Test count: bao nhiêu test trước, bao nhiêu sau
-  - TypeScript result
-  - Playwright spec: đã tạo hay không, có chạy được không
-
-- `AGENT_OUTBOX.md`: test output + kết quả
-
-- `CHANGELOG.md`: thêm DU-9 Phase 2 entry
-
-- Git commit: `fix(du9): visual polish — white node border, typed edge colors, performance domain, hover tooltip`
+- `AGENT_HANDOFF.md`: Cập nhật trạng thái "Guarded SUM Phase B" thành ✅ Complete. Ghi rõ số lượng test pass.
+- `AGENT_OUTBOX.md`: Output test.
+- `CHANGELOG.md`: Thêm entry cho "Guarded SUM Phase B" (ở phần Unreleased).
+- Git commit: `fix(execution): Guarded SUM Phase B — robust head/tail sampling and 80% safety threshold`

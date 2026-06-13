@@ -42,34 +42,50 @@ describe('evaluateNumericHealth', () => {
     const result = evaluateNumericHealth('sparse_revenue', samples);
     
     expect(result.isSafeForSum).toBe(true);
-    // 3 valid samples, all 3 succeeded. Rate = 1.0.
     expect(result.parseSuccessRate).toBe(1.0);
     expect(result.needsCleansing).toBe(false);
   });
 
-  it('fails the trust gate if garbage strings drop success rate below 95%', () => {
+  it('passes the trust gate if garbage strings drop success rate to 80%', () => {
     // 10 samples: 8 good, 2 garbage = 80% success rate
     const samples = [
       '100', '200', '300', '400', '500', 
       '600', '700', '800', 'N/A', 'abc'
     ];
+    // We pass totalRows = 10 explicitly to test parameter binding
+    const result = evaluateNumericHealth('dirty_revenue', samples, 10);
+    
+    expect(result.isSafeForSum).toBe(true); // threshold lowered to 80%
+    expect(result.parseSuccessRate).toBe(0.8);
+    expect(result.needsCleansing).toBe(false);
+    expect(result.estimatedDropRate).toBe(0.2); // 20% drop rate
+    expect(result.warningMessage).toContain('High drop rate');
+  });
+
+  it('fails the gate if threshold is below 80% (e.g. 70%)', () => {
+    // 10 samples: 7 good, 3 garbage = 70% success rate
+    const samples = [
+      '100', '200', '300', '400', '500', 
+      '600', '700', 'N/A', 'N/A', 'abc'
+    ];
     const result = evaluateNumericHealth('dirty_revenue', samples);
     
     expect(result.isSafeForSum).toBe(false);
-    expect(result.parseSuccessRate).toBe(0.8);
-    expect(result.needsCleansing).toBe(false);
+    expect(result.parseSuccessRate).toBe(0.7);
   });
 
-  it('treats empty strings and spaces as garbage and fails the gate if threshold not met', () => {
+  it('treats empty strings and spaces as garbage and passes the gate if threshold is 90% but adds warning', () => {
     // 20 samples: 18 good, 2 empty = 90%
     const samples = Array(18).fill('1000').concat(['', '   ']);
     const result = evaluateNumericHealth('empty_str_revenue', samples);
     
-    expect(result.isSafeForSum).toBe(false);
+    expect(result.isSafeForSum).toBe(true); // >= 80%
     expect(result.parseSuccessRate).toBe(0.9);
+    expect(result.estimatedDropRate).toBe(0.1); // > 5%, so should have warning
+    expect(result.warningMessage).toContain('High drop rate');
   });
 
-  it('passes the trust gate if garbage is under 5%', () => {
+  it('passes the trust gate with NO warning if garbage is under 5%', () => {
     // 100 samples: 96 good, 4 garbage = 96%
     const samples = Array(96).fill('1,000đ').concat(['N/A', 'N/A', '', 'abc']);
     const result = evaluateNumericHealth('mostly_clean_revenue', samples);
@@ -77,6 +93,8 @@ describe('evaluateNumericHealth', () => {
     expect(result.isSafeForSum).toBe(true);
     expect(result.parseSuccessRate).toBe(0.96);
     expect(result.needsCleansing).toBe(true);
+    expect(result.estimatedDropRate).toBe(0.04);
+    expect(result.warningMessage).toBeUndefined(); // <= 5% no warning
   });
 
   it('hard-blocks decimal-looking strings (US format)', () => {

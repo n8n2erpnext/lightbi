@@ -8,23 +8,25 @@ import { evaluateNumericHealth } from './numeric-health-gate';
  */
 function extractSampleValues(measure: string, rawRows: any[]): any[] {
   if (rawRows.length === 0) return [];
-  
-  // Find the actual key in the raw row that matches the measure (case-insensitive)
   const firstRow = rawRows[0];
   const exactKey = Object.keys(firstRow).find(k => k.toLowerCase() === measure.toLowerCase());
-  
-  if (!exactKey) {
-    // If not found, just return empty to fail the gate safely
-    return [];
-  }
+  if (!exactKey) return [];
 
-  // Sample up to 500 rows for performance
-  const limit = Math.min(rawRows.length, 500);
   const samples = [];
-  for (let i = 0; i < limit; i++) {
-    samples.push(rawRows[i][exactKey]);
+  if (rawRows.length <= 2000) {
+    for (let i = 0; i < rawRows.length; i++) {
+      samples.push(rawRows[i][exactKey]);
+    }
+  } else {
+    // Head 1000
+    for (let i = 0; i < 1000; i++) {
+      samples.push(rawRows[i][exactKey]);
+    }
+    // Tail 1000
+    for (let i = rawRows.length - 1000; i < rawRows.length; i++) {
+      samples.push(rawRows[i][exactKey]);
+    }
   }
-  
   return samples;
 }
 
@@ -48,13 +50,15 @@ export function enhancePlanWithGuardedSum(plan: RuntimePlanPreview, rawRows: any
       
       for (const measure of op.measures) {
         const samples = extractSampleValues(measure, rawRows);
-        const health = evaluateNumericHealth(measure, samples);
+        const health = evaluateNumericHealth(measure, samples, rawRows.length);
         
         if (health.isSafeForSum) {
           measureAggregations[measure] = "SUM";
           if (health.needsCleansing || health.parseSuccessRate < 1.0) {
-            const dropRate = ((1 - health.parseSuccessRate) * 100).toFixed(1);
-            newWarnings.push(`Measure '${measure}' underwent silent cleansing (drop rate: ${dropRate}% or stripped chars) to enable SUM.`);
+            newWarnings.push(`Measure '${measure}' underwent silent cleansing (drop rate: ${(health.estimatedDropRate * 100).toFixed(1)}% or stripped chars) to enable SUM.`);
+          }
+          if (health.warningMessage) {
+            newWarnings.push(`Measure '${measure}': ${health.warningMessage}`);
           }
         } else {
           measureAggregations[measure] = "COUNT";

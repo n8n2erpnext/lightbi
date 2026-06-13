@@ -1,23 +1,18 @@
-# Phase 2 Execution Complete
+# Guarded SUM Phase B Complete
 
-All visual fixes and updates for Semantic Graph Phase 2 have been successfully implemented and verified.
+## Modifications
+1. **`numeric-health-gate.ts`**:
+   - `NumericHealthResult` extended to include `scannedRows`, `totalRows`, `scanCoverage`, `estimatedDropRate`, and `warningMessage`.
+   - `isSafeForSum` logic relaxed from `0.95` to `0.80`.
+   - Introduced dynamic `warningMessage` if `estimatedDropRate > 0.05`.
 
-1. **Files Modified/Created**:
-   - SemanticGraphView.tsx: Changed node border to #fff, added semantic edge colors by type, added performance: '#F59E0B' to DOMAIN_COLORS, and added <title> hover tooltips.
-   - SemanticGraphView.test.tsx: Added 2 new tests verifying the white stroke border and the performance domain color. Total tests in file: 5.
-   - e2e/semantic-graph-capture.spec.ts: Created Playwright spec to capture Concept Maps.
+2. **`guarded-sum-bridge.ts`**:
+   - `extractSampleValues` updated to fetch all rows if `rawRows.length <= 2000`, or sample `1000 head + 1000 tail` rows if `rawRows.length > 2000`.
+   - `enhancePlanWithGuardedSum` updated to feed `rawRows.length` to health evaluation and surface `warningMessage`.
 
-2. **Verification Results**:
-   - pnpm exec vitest run src/components/analysis/SemanticGraphView.test.tsx passes with 5/5 tests.
-   - pnpm test successfully passed all 461 tests across the repository with zero regressions.
-   - TypeScript compilation (
-px tsc --noEmit) completed with no errors.
-
-3. **Playwright Spec**:
-   - The Playwright spec semantic-graph-capture.spec.ts was successfully created. 
-   - Note: The spec requires a manual run with the dev server running, as directed.
-
-4. **Handoff & Commits**:
-   - AGENT_HANDOFF_SEMANTIC_GRAPH_PHASE2.md created.
-   - CHANGELOG.md updated with the DU-9 Phase 2 entry.
-   - Changes committed under the requested commit message.
+## Verification Results
+- **`numeric-health-gate.test.ts`**: Passed (updated `isSafeForSum` tests and threshold expectations).
+- **`guarded-sum-bridge.test.ts`**: Passed.
+- **`stress_test.test.ts`**: Passed.
+- **Full Suite**: 462 tests passed, 0 regressions.
+- **TypeScript**: `npx tsc --noEmit` compiled cleanly.
