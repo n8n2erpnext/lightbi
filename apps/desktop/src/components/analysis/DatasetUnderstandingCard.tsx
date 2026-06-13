@@ -50,7 +50,7 @@ export const DatasetUnderstandingCard: React.FC<DatasetUnderstandingCardProps> =
   };
 
   const handleExportHandoff = () => {
-    const rawColumns = understanding.mappingReview?.items.map(i => i.physicalColumn) || 
+    const rawColumns = understanding.mappingReview?.items?.map(i => i.physicalColumn) || 
       understanding.detectedConcepts.flatMap(c => c.evidence);
     const uniqueColumns = Array.from(new Set(rawColumns));
     

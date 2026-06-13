@@ -10,7 +10,7 @@ export function generateAdvancedHandoff(
 
   for (const col of rawColumns) {
     // 1. Find mapping review
-    const mapped = understanding.mappingReview?.items.find(m => m.physicalColumn === col);
+    const mapped = understanding.mappingReview?.items?.find(m => m.physicalColumn === col);
     
     let canonicalSignal: string | undefined = undefined;
     let confidence: number = 0;

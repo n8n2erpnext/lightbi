@@ -1,18 +1,21 @@
-# Guarded SUM Phase B Complete
+# Phase 5: Lightweight Advanced Handoff Complete
 
 ## Modifications
-1. **`numeric-health-gate.ts`**:
-   - `NumericHealthResult` extended to include `scannedRows`, `totalRows`, `scanCoverage`, `estimatedDropRate`, and `warningMessage`.
-   - `isSafeForSum` logic relaxed from `0.95` to `0.80`.
-   - Introduced dynamic `warningMessage` if `estimatedDropRate > 0.05`.
+1. **`advanced-handoff-contract.ts`**:
+   - Replaced old interface with the precise `AdvancedHandoffArtifact` and `FieldMapping` requested.
 
-2. **`guarded-sum-bridge.ts`**:
-   - `extractSampleValues` updated to fetch all rows if `rawRows.length <= 2000`, or sample `1000 head + 1000 tail` rows if `rawRows.length > 2000`.
-   - `enhancePlanWithGuardedSum` updated to feed `rawRows.length` to health evaluation and surface `warningMessage`.
+2. **`advanced-handoff-generator.ts`**:
+   - Implemented `generateAdvancedHandoff` pure function to securely extract mappings from `understanding.mappingReview` and fall back to `detectedConcepts`.
+   - Connected `getSignalType` and `TAXONOMY` from the business signal detector to populate roles and domains.
 
-## Verification Results
-- **`numeric-health-gate.test.ts`**: Passed (updated `isSafeForSum` tests and threshold expectations).
-- **`guarded-sum-bridge.test.ts`**: Passed.
-- **`stress_test.test.ts`**: Passed.
-- **Full Suite**: 462 tests passed, 0 regressions.
-- **TypeScript**: `npx tsc --noEmit` compiled cleanly.
+3. **`advanced-handoff-generator.test.ts`**:
+   - Added unit tests for artifact mapping accuracy and fallback logic.
+
+4. **`DatasetUnderstandingCard.tsx`**:
+   - Integrated a new "Export Handoff" button alongside the dataset readiness headers.
+   - Wired the button to extract unique raw columns and generate a downloadable JSON Blob matching `lightbi_handoff_{datasetId}.json`.
+
+## Verification
+- Unit Test (`advanced-handoff-generator.test.ts`): Passed.
+- Full Suite: Passed (all 463 tests).
+- TypeScript: `npx tsc --noEmit` compiled cleanly.
