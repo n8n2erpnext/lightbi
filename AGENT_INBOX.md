@@ -1,103 +1,128 @@
-# AGENT INBOX — Phase 5: Lightweight Advanced Handoff Artifact
+# AGENT INBOX — Phase 6: AI Semantic Briefing Contract
 
 Date: 2026-06-13
-Phase: MVP Phase 5 (Advanced Mode Handoff)
+Phase: MVP Phase 6 (AI Briefing)
 Commander: Gemini Brain
-Priority: P1
+Priority: P1 — MVP V1 Final Phase
 
 ---
 
 ## Bối Cảnh
 
-Theo ROADMAP-MVP-V1.md, chúng ta đã hoàn tất Phase 0, 1, 2, 3 và 4. Giờ là Phase 5: tạo một Artifact (file JSON) chứa toàn bộ Semantic Understanding, Readiness, Caveats,... để bàn giao cho các Data Analysts dùng trong Advanced Mode (Python/dbt). Mục đích là để họ thừa hưởng được bộ engine "Understanding" của LightBI mà không cần LightBI phải biến thành 1 công cụ ETL cồng kềnh.
+Đây là Phase cuối cùng trong MVP V1 ROADMAP. Mục tiêu: tạo một structured contract dành cho AI đọc trước khi thực thi lệnh người dùng. AI không là source of truth — mà đọc understanding từ LightBI.
+
+Theo ROADMAP: "AI reads understanding first. AI does not become the source of truth."
 
 ---
 
 ## Scope
 
-Tạo ra tính năng xuất file JSON "Advanced Handoff" từ DatasetUnderstanding.
-Chỉ sửa / tạo các file sau:
-- `apps/desktop/src/lib/advanced-handoff-contract.ts` (Tạo mới)
-- `apps/desktop/src/lib/advanced-handoff-generator.ts` (Tạo mới)
-- `apps/desktop/src/lib/advanced-handoff-generator.test.ts` (Tạo mới)
-- `apps/desktop/src/components/analysis/DatasetUnderstandingCard.tsx` (Sửa để thêm nút Export)
+Chỉ tạo / sửa:
+- `apps/desktop/src/lib/ai-briefing-contract.ts` (Tạo mới)
+- `apps/desktop/src/lib/ai-briefing-generator.ts` (Tạo mới)
+- `apps/desktop/src/lib/ai-briefing-generator.test.ts` (Tạo mới)
+
+KHÔNG được sửa:
+- Bất kỳ UI component nào
+- Bất kỳ file execution/server nào
+- DatasetUnderstanding pipeline
 
 ---
 
 ## Yêu Cầu Code
 
-### 1. `apps/desktop/src/lib/advanced-handoff-contract.ts`
-Tạo interface cho Artifact. Yêu cầu có:
+### 1. `apps/desktop/src/lib/ai-briefing-contract.ts`
+
 ```ts
 import type { DatasetGrain } from './dataset-understanding-contract';
 
-export interface FieldMapping {
-  physicalColumn: string;
-  canonicalSignal?: string;
-  domain?: string;
+export interface AISemanticField {
+  canonicalId: string;
+  label: string;
+  domain: string;
   role: "dimension" | "measure" | "time" | "unknown";
   confidence: number;
 }
 
-export interface AdvancedHandoffArtifact {
+export interface AISafeBriefing {
   datasetId: string;
-  datasetName?: string;
   generatedAt: string;
   grain: DatasetGrain;
   grainEvidence: string;
   readinessTier: string;
   readinessScore: number;
-  fieldMappings: FieldMapping[];
+  semanticFields: AISemanticField[];
   caveats: string[];
+  safeActionHints: string[];
 }
 ```
 
-### 2. `apps/desktop/src/lib/advanced-handoff-generator.ts`
-Hàm pure function để map từ `DatasetUnderstanding` và raw columns sang `AdvancedHandoffArtifact`:
+### 2. `apps/desktop/src/lib/ai-briefing-generator.ts`
+
 ```ts
 import type { DatasetUnderstanding } from './dataset-understanding-contract';
-import type { AdvancedHandoffArtifact, FieldMapping } from './advanced-handoff-contract';
+import type { AISafeBriefing, AISemanticField } from './ai-briefing-contract';
 import { getSignalType } from './business-signal-detector';
 
-export function generateAdvancedHandoff(
-  understanding: DatasetUnderstanding,
-  rawColumns: string[]
-): AdvancedHandoffArtifact {
-  // Logic: 
-  // 1. Duyệt qua rawColumns
-  // 2. Với mỗi column, tìm trong understanding.mappingReview hoặc understanding.detectedConcepts
-  //    để lấy canonicalSignal, domain, confidence.
-  // 3. getSignalType(canonicalSignal) để ra role.
-  // 4. Trả về object AdvancedHandoffArtifact
+export function generateAIBriefing(understanding: DatasetUnderstanding): AISafeBriefing {
+  // 1. Map detectedConcepts → semanticFields (dùng getSignalType để lấy role)
+  // 2. Lấy grain, grainEvidence từ understanding
+  // 3. Lấy readinessTier, readinessScore từ understanding.readiness
+  // 4. Caveats: merge understanding.caveats + understanding.readiness?.caveats (dedup)
+  // 5. safeActionHints: derive từ understanding.opportunities (lấy label của những opportunity có confidence = 'high' hoặc 'medium')
+  //    Format: "Can {opportunity.label}" — giới hạn tối đa 5 hints
+  // 6. datasetId: understanding.datasetId hoặc understanding.id
 }
 ```
 
-### 3. `apps/desktop/src/lib/advanced-handoff-generator.test.ts`
-Viết test case đảm bảo hàm sinh JSON artifact chạy đúng, có test trường hợp dataset tốt, và trường hợp không nhận diện được column nào.
+### 3. `apps/desktop/src/lib/ai-briefing-generator.test.ts`
 
-### 4. `apps/desktop/src/components/analysis/DatasetUnderstandingCard.tsx`
-Thêm một button **"Export Advanced Handoff"** (nằm cạnh nút View Data hoặc ở góc card).
-Khi click:
-- Gọi `generateAdvancedHandoff` (chú ý bạn cần lấy được `rawColumns` từ đâu đó trong Component, có thể lấy từ context hoặc props, hoặc lấy từ keys của data mẫu).
-- Serialize ra JSON chuỗi.
-- Tạo một blob download: `lightbi_handoff_${datasetId}.json`.
+Test case bắt buộc:
+
+**Test 1: Delivery dataset → semanticFields có driver, route, shipment**
+```ts
+it('generates briefing with semantic fields from detected concepts', () => {
+  const understanding = { /* mock với detectedConcepts, grain='event', readiness */ };
+  const briefing = generateAIBriefing(understanding);
+  expect(briefing.grain).toBe('event');
+  expect(briefing.semanticFields.length).toBeGreaterThan(0);
+  expect(briefing.safeActionHints.length).toBeGreaterThan(0);
+});
+```
+
+**Test 2: Empty understanding → briefing vẫn trả về nhưng semanticFields = []**
+```ts
+it('handles empty understanding gracefully', () => {
+  const understanding = { /* mock với 0 detectedConcepts, grain='unknown' */ };
+  const briefing = generateAIBriefing(understanding);
+  expect(briefing.semanticFields).toHaveLength(0);
+  expect(briefing.grain).toBe('unknown');
+});
+```
+
+**Test 3: Caveats dedup chính xác**
+```ts
+it('deduplicates caveats from understanding and readiness', () => {
+  // cả 2 nguồn cùng có 1 caveat giống nhau
+  const briefing = generateAIBriefing(understandingWithDupCaveats);
+  expect(briefing.caveats.filter(c => c === 'No time detected.').length).toBe(1);
+});
+```
 
 ---
 
 ## Verification Commands
 
-Chạy theo thứ tự:
-
 ```bash
 cd /home/ubuntu/n8n2erpnext/LightBI/apps/desktop
 
-# 1. Test unit
-pnpm exec vitest run src/lib/advanced-handoff-generator.test.ts
+# 1. Test Phase 6
+pnpm exec vitest run src/lib/ai-briefing-generator.test.ts
 
-# 2. Build TypeScript check
+# 2. TypeScript check
 npx tsc --noEmit
 
-# 3. Test regression toàn cục
+# 3. Full suite — 0 regression
 pnpm test
 ```
 
@@ -105,7 +130,8 @@ pnpm test
 
 ## Handoff Requirements
 
-Khi xong, viết:
-- `AGENT_HANDOFF_PHASE5.md`: Cập nhật trạng thái Phase 5 ✅ Complete.
+Khi xong:
+- `AGENT_HANDOFF.md`: Cập nhật Phase 6 → ✅ Complete. MVP V1 ROADMAP: ALL PHASES DONE.
 - `AGENT_OUTBOX.md`: Output test.
-- Git commit: `feat(understanding): Phase 5 — Lightweight Advanced Handoff JSON export`
+- `CHANGELOG.md`: Thêm entry "Phase 6 — AI Semantic Briefing Contract".
+- Git commit: `feat(ai): Phase 6 — AI Semantic Briefing Contract`
