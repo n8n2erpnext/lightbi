@@ -15,9 +15,7 @@ export async function executeBackendPreview(input: BackendPreviewInput): Promise
   const limit = input.limit || 100;
   
   // Local Execution Path / Seam fallback if no endpoint is configured.
-  // Instead of failing blindly, we attempt local execution.
-  // Currently, local DuckDB WASM infrastructure is not fully present,
-  // so executeLocalDuckDB will cleanly fail-fast at the executor seam.
+  // If no backend endpoint is configured, attempt local DuckDB execution when SQL and rows are available.
   if (!input.endpoint) {
     if (input.safeSqlPreview && input.rows) {
       return executeLocalDuckDB({
@@ -94,7 +92,7 @@ export async function executeBackendPreview(input: BackendPreviewInput): Promise
     
     const warnings = [...input.runtimePlan.warnings, ...(data.warnings || [])];
     if (totalMalformedDropped > 0) {
-      warnings.push(`Guarded SUM detected and silently dropped ${totalMalformedDropped} malformed values during execution (not caught by initial sample).`);
+      warnings.push(`Guarded SUM detected ${totalMalformedDropped} malformed values skipped during SUM aggregation.`);
     }
 
     return {

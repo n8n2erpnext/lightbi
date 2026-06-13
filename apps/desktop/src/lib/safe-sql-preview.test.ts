@@ -108,6 +108,18 @@ describe('Safe SQL Preview', () => {
     expect(sqlPreview.sql).toBe('SELECT "tên lái xe" AS "Tên Lái Xe", CAST(COUNT("đánh giá") AS INTEGER) AS "Đánh Giá"\nFROM __LIGHTBI_PREVIEW_TABLE__\nWHERE "tên lái xe" IS NOT NULL\nGROUP BY "tên lái xe"\nLIMIT 100;');
   });
 
+  it('hidden malformed alias is safely quoted with complex characters', () => {
+    const plan: RuntimePlanPreview = { ...basePlan, logicalOperations: [
+      { type: 'scan', columns: ['Tên Lái Xe', 'Giá "Gốc"'] },
+      { type: 'group_by', dimensions: ['Tên Lái Xe'], measures: ['Giá "Gốc"'], measureAggregations: { 'Giá "Gốc"': 'SUM' } },
+      { type: 'limit', rows: 100 }
+    ], requiredColumns: ['Tên Lái Xe', 'Giá "Gốc"']};
+
+    const sqlPreview = createSafeSqlPreview(plan);
+    expect(sqlPreview.status).toBe('ready');
+    expect(sqlPreview.sql).toBe('SELECT "tên lái xe" AS "Tên Lái Xe", SUM(TRY_CAST(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE("giá ""gốc""", \',\', \'\'), \'.\', \'\'), \'đ\', \'\'), \'VNĐ\', \'\'), \'$\', \'\'), \' \', \'\') AS DOUBLE)) AS "Giá ""Gốc""", SUM(CASE WHEN "giá ""gốc""" IS NOT NULL AND TRY_CAST(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE("giá ""gốc""", \',\', \'\'), \'.\', \'\'), \'đ\', \'\'), \'VNĐ\', \'\'), \'$\', \'\'), \' \', \'\') AS DOUBLE) IS NULL THEN 1 ELSE 0 END) AS "__malformed_Giá ""Gốc"""\nFROM __LIGHTBI_PREVIEW_TABLE__\nWHERE "tên lái xe" IS NOT NULL\nGROUP BY "tên lái xe"\nLIMIT 100;');
+  });
+
   it('unsupported operation blocks', () => {
     // @ts-ignore testing unsupported
     const plan: RuntimePlanPreview = { ...basePlan, logicalOperations: [ { type: 'unsupported' } ] };

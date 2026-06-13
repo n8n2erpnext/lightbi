@@ -23,9 +23,11 @@ export function evaluateNumericHealth(columnName: string, sampleValues: any[]): 
 
     validSampleCount++;
     
-    // If it's already a JS number, it's perfect.
+    // If it's already a JS number, only allow integers (block decimals until locale-aware parsing).
     if (typeof rawVal === 'number' && !isNaN(rawVal)) {
-      successCount++;
+      if (Number.isInteger(rawVal)) {
+        successCount++;
+      }
       continue;
     }
 

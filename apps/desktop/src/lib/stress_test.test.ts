@@ -18,7 +18,8 @@ const cases = {
   "Clean Int": ["1000", "2000", "3000"],
   "Clean Decimal": ["1000.50", "2000.75", "3000.00"],
   "EU Format (Comma as decimal)": ["1.000,50", "2.000,75"],
-  "US Format (Comma as thousands)": ["1,000.50", "2,000.75"],
+  "US Mixed Decimal": ["1,000.50", "2,000.75"],
+  "US Integer Thousands": ["1,000", "2,000"],
   "VND Currency": ["1.000.000đ", "2.000.000 VNĐ"],
   "USD Currency": ["$1,000", "$2,000"],
   "Garbage Mixed": ["N/A", "abc", "", "   "],
@@ -78,7 +79,7 @@ describe('Guarded SUM Stress Test', () => {
          dropped = sqlResult['__malformed_val'];
          delete sqlResult['__malformed_val'];
          if (dropped > 0) {
-            warnings.push(`Guarded SUM detected and silently dropped ${dropped} malformed values during execution (not caught by initial sample).`);
+            warnings.push(`Guarded SUM detected ${dropped} malformed values skipped during SUM aggregation.`);
          }
       }
 

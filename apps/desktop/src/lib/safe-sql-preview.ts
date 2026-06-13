@@ -71,7 +71,8 @@ export function createSafeSqlPreview(plan: RuntimePlanPreview): SafeSqlPreview {
           if (op.measureAggregations && op.measureAggregations[m] === "SUM") {
             // Align perfectly with numeric-health-gate.ts (stripping , . đ VNĐ $ and spaces)
             const cleansed = `REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(${lowerM}, ',', ''), '.', ''), 'đ', ''), 'VNĐ', ''), '$', ''), ' ', '')`;
-            return `SUM(TRY_CAST(${cleansed} AS DOUBLE)) AS ${exactM}, SUM(CASE WHEN ${lowerM} IS NOT NULL AND TRY_CAST(${cleansed} AS DOUBLE) IS NULL THEN 1 ELSE 0 END) AS "__malformed_${m}"`;
+            const malformedAlias = quoteExactIdent('__malformed_' + m);
+            return `SUM(TRY_CAST(${cleansed} AS DOUBLE)) AS ${exactM}, SUM(CASE WHEN ${lowerM} IS NOT NULL AND TRY_CAST(${cleansed} AS DOUBLE) IS NULL THEN 1 ELSE 0 END) AS ${malformedAlias}`;
           }
           return `CAST(COUNT(${lowerM}) AS INTEGER) AS ${exactM}`;
         });
@@ -107,7 +108,8 @@ export function createSafeSqlPreview(plan: RuntimePlanPreview): SafeSqlPreview {
           if (op.measureAggregations && op.measureAggregations[m] === "SUM") {
             // Align perfectly with numeric-health-gate.ts (stripping , . đ VNĐ $ and spaces)
             const cleansed = `REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(${lowerM}, ',', ''), '.', ''), 'đ', ''), 'VNĐ', ''), '$', ''), ' ', '')`;
-            return `SUM(TRY_CAST(${cleansed} AS DOUBLE)) AS ${exactM}, SUM(CASE WHEN ${lowerM} IS NOT NULL AND TRY_CAST(${cleansed} AS DOUBLE) IS NULL THEN 1 ELSE 0 END) AS "__malformed_${m}"`;
+            const malformedAlias = quoteExactIdent('__malformed_' + m);
+            return `SUM(TRY_CAST(${cleansed} AS DOUBLE)) AS ${exactM}, SUM(CASE WHEN ${lowerM} IS NOT NULL AND TRY_CAST(${cleansed} AS DOUBLE) IS NULL THEN 1 ELSE 0 END) AS ${malformedAlias}`;
           }
           return `CAST(COUNT(${lowerM}) AS INTEGER) AS ${exactM}`;
         });

@@ -2,13 +2,21 @@ import { describe, it, expect } from 'vitest';
 import { evaluateNumericHealth } from './numeric-health-gate';
 
 describe('evaluateNumericHealth', () => {
-  it('identifies a perfectly clean numeric array', () => {
-    const samples = [1000, 1000.5, '2000', '-500'];
+  it('identifies a perfectly clean integer numeric array', () => {
+    const samples = [1000, -500, '2000'];
     const result = evaluateNumericHealth('clean_revenue', samples);
     
     expect(result.isSafeForSum).toBe(true);
     expect(result.parseSuccessRate).toBe(1.0);
     expect(result.needsCleansing).toBe(false);
+  });
+
+  it('blocks JS non-integer decimals', () => {
+    const samples = [1000.5, 0.25];
+    const result = evaluateNumericHealth('decimal_revenue', samples);
+    
+    expect(result.isSafeForSum).toBe(false);
+    expect(result.parseSuccessRate).toBe(0.0);
   });
 
   it('identifies and accepts numbers with commas and flags cleansing', () => {

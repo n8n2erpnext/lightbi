@@ -62,7 +62,7 @@ export async function executeLocalDuckDB(input: LocalDuckDBInput): Promise<DuckD
     
     const warnings = [...input.runtimePlan.warnings];
     if (totalMalformedDropped > 0) {
-      warnings.push(`Guarded SUM detected and silently dropped ${totalMalformedDropped} malformed values during execution (not caught by initial sample).`);
+      warnings.push(`Guarded SUM detected ${totalMalformedDropped} malformed values skipped during SUM aggregation.`);
     }
     
     await conn.close();
