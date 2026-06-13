@@ -41,4 +41,26 @@ describe('SemanticGraphView', () => {
     const circle = container.querySelector('circle');
     expect(circle?.getAttribute('fill')).toBe('#4F86C6');
   });
+
+  it('renders circle with white stroke border', () => {
+    const graph: SemanticGraph = {
+      nodes: [{ id: 'route', label: 'Route', type: 'dimension' as const, domain: 'operations', confidenceScore: 80 }],
+      edges: [],
+      grain: 'event'
+    };
+    const { container } = render(<SemanticGraphView graph={graph} />);
+    const circle = container.querySelector('circle');
+    expect(circle?.getAttribute('stroke')).toBe('#fff');
+  });
+
+  it('renders performance domain node with amber color', () => {
+    const graph: SemanticGraph = {
+      nodes: [{ id: 'kpi', label: 'KPI', type: 'dimension' as const, domain: 'performance', confidenceScore: 90 }],
+      edges: [],
+      grain: 'unknown'
+    };
+    const { container } = render(<SemanticGraphView graph={graph} />);
+    const circle = container.querySelector('circle');
+    expect(circle?.getAttribute('fill')).toBe('#F59E0B');
+  });
 });

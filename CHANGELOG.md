@@ -305,6 +305,7 @@ All notable changes to the LightBI architecture and codebase will be documented 
   - Added UI components: Business View Review UI, Relationship Evidence Drawer, VirtualDatasetPlanPreview.
 
 ### Added
+- **DU-9 Semantic Graph Phase 2**: Visual polish including white node borders, semantic edge colors by relationship type, performance domain color, and hover tooltips for concept map nodes. Also added Playwright spec for concept map capturing.
 - **Milestone 5: Relationship Discovery & Dataset Collections**:
   - `docs`: Authored Architecture Decision Records (ADR-055 to ADR-058) establishing the Business Key Detection Engine, Relationship Discovery Engine, Dataset Collection, and Virtual Dataset Layer.
   - `docs`: Defined the explicit Relationship Discovery Scoring contract `relationship-discovery-scoring.md` detailing the multi-signal algorithm (semantic tag, name, profile, pattern, overlap) to detect cross-domain joins without manual modeling.
@@ -428,4 +429,5 @@ All notable changes to the LightBI architecture and codebase will be documented 
 
 ## [Unreleased]
 ### Added
+- **DU-9 Semantic Graph Phase 2**: Visual polish including white node borders, semantic edge colors by relationship type, performance domain color, and hover tooltips for concept map nodes. Also added Playwright spec for concept map capturing.
 - **DU-9 Semantic Graph Phase 1**: Implemented semantic concept map data layer (\SemanticGraphModel\, \SemanticGraphBuilder\) and visualization component (\SemanticGraphView\) rendered purely in SVG. Concept maps now appear automatically inside the \DatasetUnderstandingCard\ for multi-signal datasets.

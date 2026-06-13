@@ -9,7 +9,7 @@ export default defineConfig({
     allowedHosts: ['lightbi.thaiduy.digital'],
   },
   test: {
-    exclude: ['**/node_modules/**', '**/dist/**', 'verify.spec.ts', 'concurrency.spec.ts'],
+    exclude: ['**/node_modules/**', '**/dist/**', 'verify.spec.ts', 'concurrency.spec.ts', '**/e2e/**'],
   },
   optimizeDeps: {
     exclude: ['@duckdb/duckdb-wasm']

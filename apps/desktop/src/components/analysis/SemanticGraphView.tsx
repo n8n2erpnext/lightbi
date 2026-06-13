@@ -11,6 +11,7 @@ const DOMAIN_COLORS: Record<string, string> = {
   inventory: '#E08A3C',
   revenue: '#9B6BC9',
   customer: '#E05C7A',
+  performance: '#F59E0B',
   unknown: '#888888'
 };
 
@@ -26,6 +27,12 @@ function getNodeStyle(type: SemanticNodeType) {
 function truncateLabel(label: string) {
   return label.length > 10 ? label.slice(0, 9) + '…' : label;
 }
+
+const getEdgeStyle = (type: string) => {
+  if (type === 'relationship') return { stroke: '#818cf8', strokeWidth: 2, strokeDasharray: 'none', strokeOpacity: 0.6 };
+  if (type === 'workflow')     return { stroke: '#34d399', strokeWidth: 1.5, strokeDasharray: '5,3', strokeOpacity: 0.7 };
+  return { stroke: '#94a3b8', strokeWidth: 1, strokeDasharray: 'none', strokeOpacity: 0.4 }; // co_occurrence
+};
 
 export const SemanticGraphView: React.FC<SemanticGraphViewProps> = ({ graph }) => {
   if (!graph || graph.nodes.length === 0) return null;
@@ -73,6 +80,7 @@ export const SemanticGraphView: React.FC<SemanticGraphViewProps> = ({ graph }) =
           const targetPos = nodePositions.get(edge.targetId);
           if (!sourcePos || !targetPos) return null;
 
+          const style = getEdgeStyle(edge.type);
           return (
             <line
               key={edge.id}
@@ -80,9 +88,10 @@ export const SemanticGraphView: React.FC<SemanticGraphViewProps> = ({ graph }) =
               y1={sourcePos.y}
               x2={targetPos.x}
               y2={targetPos.y}
-              stroke="#999"
-              strokeWidth="2"
-              strokeOpacity="0.4"
+              stroke={style.stroke}
+              strokeWidth={style.strokeWidth}
+              strokeDasharray={style.strokeDasharray}
+              strokeOpacity={style.strokeOpacity}
             />
           );
         })}
@@ -96,12 +105,13 @@ export const SemanticGraphView: React.FC<SemanticGraphViewProps> = ({ graph }) =
 
           return (
             <g key={node.id}>
+              <title>{`${node.label} (${node.domain}) · ${Math.round(node.confidenceScore)}% confidence`}</title>
               <circle
                 cx={pos.x}
                 cy={pos.y}
                 r={18}
                 fill={color}
-                stroke="#333"
+                stroke="#fff"
                 strokeWidth={style.strokeWidth}
                 strokeDasharray={style.strokeDasharray}
               />
