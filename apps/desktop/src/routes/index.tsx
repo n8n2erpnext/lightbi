@@ -9,6 +9,7 @@ import { Datasets } from '../pages/Datasets';
 import { DataSources } from '../pages/DataSources';
 import { Settings } from '../pages/Settings';
 import { Investigation } from '../pages/Investigation';
+import { Advanced } from '../pages/Advanced';
 
 const RouteError = () => {
   const error = useRouteError() as Error;
@@ -51,6 +52,7 @@ export const router = createBrowserRouter([
       { path: '/datasources', element: <DataSources /> },
       { path: '/settings', element: <Settings /> },
       { path: '/investigation', element: <Investigation /> },
+      { path: '/advanced', element: <Advanced /> },
       { path: '*', element: <Navigate to="/" replace /> },
     ],
   },

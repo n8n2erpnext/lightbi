@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Database, BarChart3, ChevronDown, ChevronRight, Activity, Code2, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { getCurrentInvestigationSession } from '../lib/investigation-session';
+import { isDataQualityReviewAction } from '../lib/understanding-next/action-adapter';
 import { createSafeSqlPreview } from '../lib/safe-sql-preview';
 import { executeDuckDBPreviewSandbox, type DuckDBPreviewResult } from '../lib/duckdb-preview-sandbox';
 import { executeBackendPreview } from '../lib/backend-preview-executor';
@@ -13,6 +14,12 @@ import { useDisplayPreferences } from '../stores/display-preferences-store';
 import { formatValue, inferSemanticType } from '../lib/display-formatter';
 import { Settings } from 'lucide-react';
 import { DisplayPreferencesModal } from '../components/settings/DisplayPreferencesModal';
+import { DatasetInsightSummary } from '../components/analysis/DatasetInsightSummary';
+import {
+  createQueryResultBuffer,
+  ExecutionRunCoordinator,
+  queryResultBufferToRows
+} from '@lightbi/runtime';
 
 export const Investigation: React.FC = () => {
   const navigate = useNavigate();
@@ -25,6 +32,9 @@ export const Investigation: React.FC = () => {
   const [validationResult, setValidationResult] = useState<ResultValidationResult | null>(null);
   const [isExecuting, setIsExecuting] = useState(false);
   const [showAiContext, setShowAiContext] = useState(false);
+  const executionRuns = useRef(new ExecutionRunCoordinator('simple-preview'));
+
+  useEffect(() => () => executionRuns.current.cancel(), []);
 
   if (!session) {
     return (
@@ -43,20 +53,50 @@ export const Investigation: React.FC = () => {
     );
   }
 
-  const { analysisAction, runtimeIntent, runtimePlanPreview, rows, aiBriefing } = session;
+  const { analysisAction, runtimeIntent, runtimePlanPreview, rows, aiBriefing, runtimeDatasetSource, rowScope } = session;
+  const readinessTier = aiBriefing?.readinessTier ?? 'exploratory_only';
+  const isHighReadiness = readinessTier === 'production_ready' || readinessTier === 'decision_support';
+  const isLowReadiness = readinessTier === 'exploratory_only';
+  const readinessLabel = isHighReadiness
+    ? 'High Readiness'
+    : isLowReadiness
+      ? 'Low Readiness (Exploratory Only)'
+      : 'Moderate Readiness (Caution)';
+  const readinessClass = isHighReadiness
+    ? 'text-emerald-600'
+    : isLowReadiness
+      ? 'text-red-600'
+      : 'text-amber-600';
+  const readinessBannerClass = isLowReadiness
+    ? 'bg-red-50 border-red-200 text-red-800'
+    : 'bg-amber-50 border-amber-200 text-amber-800';
+  const readinessIconClass = isLowReadiness ? 'text-red-500' : 'text-amber-500';
+  const briefingRationale = aiBriefing?.caveats?.length
+    ? aiBriefing.caveats.join(' ')
+    : `Readiness score: ${aiBriefing?.readinessScore ?? 0}`;
+  const safeActionHints = aiBriefing?.safeActionHints ?? [];
   const safeSqlPreview = React.useMemo(() => {
     const enhancedPlan = enhancePlanWithGuardedSum(runtimePlanPreview, rows || []);
     return createSafeSqlPreview(enhancedPlan);
   }, [runtimePlanPreview, rows]);
 
   const handleRunPreview = async () => {
+    const run = executionRuns.current.begin();
     setIsExecuting(true);
+    setPreviewResult(null);
+    setChartModel(null);
+    setValidationResult(null);
     try {
       let result = await executeBackendPreview({
         runtimePlan: runtimePlanPreview,
         safeSqlPreview,
-        rows: rows || []
+        rows: rows || [],
+        runtimeDatasetSource,
+        rowScope,
+        signal: run.signal
       });
+
+      if (!executionRuns.current.isCurrent(run)) return;
 
       const isInfraError = result.status === 'failed' && (
         result.errorMessage?.includes('NETWORK_UNAVAILABLE') || 
@@ -79,11 +119,14 @@ export const Investigation: React.FC = () => {
           runtimeIntent,
           runtimePlan: runtimePlanPreview,
           rows: rows || [],
-          safeSqlPreview
+          safeSqlPreview,
+          signal: run.signal
         });
         fallbackResult.source = "js_sandbox_fallback";
         result = fallbackResult;
       }
+
+      if (!executionRuns.current.isCurrent(run)) return;
 
       const validation = validatePreviewAgainstIntent(runtimeIntent, result);
       
@@ -96,6 +139,21 @@ export const Investigation: React.FC = () => {
         result.status = 'failed';
         result.errorMessage = "Execution completed but returned an empty dataset. Analysis unavailable.";
       }
+
+      const resultBuffer = createQueryResultBuffer({
+        runId: run.id,
+        columns: result.columns,
+        rows: result.rows,
+        limit: result.maxRows,
+        totalRowCount: result.rowCount,
+        truncated: result.rowCount > result.rows.length
+      });
+      result = {
+        ...result,
+        columns: resultBuffer.columns.map(column => column.name),
+        rows: queryResultBufferToRows(resultBuffer),
+        resultBuffer
+      };
 
       setPreviewResult(result);
       setValidationResult(validation);
@@ -110,13 +168,21 @@ export const Investigation: React.FC = () => {
       } else {
         setChartModel(null);
       }
+    } catch (error) {
+      if (executionRuns.current.isCurrent(run) && !(error instanceof DOMException && error.name === 'AbortError')) {
+        console.error('Preview execution failed', error);
+      }
     } finally {
-      setIsExecuting(false);
+      if (executionRuns.current.finish(run)) {
+        setIsExecuting(false);
+      }
     }
   };
 
+  const isDataQualityReview = isDataQualityReviewAction(analysisAction);
+
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50">
+    <div className="h-full min-h-0 overflow-y-auto flex flex-col bg-slate-50">
       {/* Header */}
       <header className="bg-white border-b border-gray-200 px-4 py-3 flex items-center gap-4 sticky top-0 z-10 shadow-sm">
         <button 
@@ -151,23 +217,17 @@ export const Investigation: React.FC = () => {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 p-6 max-w-6xl mx-auto w-full flex flex-col gap-6">
+      <main className="flex-1 p-6 pb-24 max-w-6xl mx-auto w-full flex flex-col gap-6">
         
         {/* Readiness Banner */}
-        {aiBriefing && aiBriefing.trustLevel !== 'high' && (
-          <div className={`p-4 rounded-xl border flex items-start gap-3 ${
-            aiBriefing.trustLevel === 'low' 
-              ? 'bg-red-50 border-red-200 text-red-800' 
-              : 'bg-amber-50 border-amber-200 text-amber-800'
-          }`}>
-            <AlertTriangle className={`w-5 h-5 flex-shrink-0 mt-0.5 ${
-              aiBriefing.trustLevel === 'low' ? 'text-red-500' : 'text-amber-500'
-            }`} />
+        {aiBriefing && !isHighReadiness && (
+          <div className={`p-4 rounded-xl border flex items-start gap-3 ${readinessBannerClass}`}>
+            <AlertTriangle className={`w-5 h-5 flex-shrink-0 mt-0.5 ${readinessIconClass}`} />
             <div>
               <h3 className="font-semibold text-sm">
-                {aiBriefing.trustLevel === 'low' ? 'Low Readiness (Exploratory Only)' : 'Moderate Readiness (Caution)'}
+                {readinessLabel}
               </h3>
-              <p className="text-xs mt-1 opacity-90">{aiBriefing.trustRationale}</p>
+              <p className="text-xs mt-1 opacity-90">{briefingRationale}</p>
             </div>
           </div>
         )}
@@ -200,26 +260,29 @@ export const Investigation: React.FC = () => {
                     <h4 className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">Grain & Trust</h4>
                     <div className="bg-white p-3 rounded border border-gray-200 text-sm mb-3">
                       <span className="font-semibold block mb-1">Grain: {aiBriefing.grain}</span>
-                      <span className="text-gray-600">{aiBriefing.grainNote}</span>
+                      <span className="text-gray-600">{aiBriefing.grainEvidence || 'No grain evidence recorded.'}</span>
                     </div>
                     <div className="bg-white p-3 rounded border border-gray-200 text-sm">
-                      <span className="font-semibold block mb-1">Trust Level: <span className={
-                        aiBriefing.trustLevel === 'high' ? 'text-emerald-600' :
-                        aiBriefing.trustLevel === 'moderate' ? 'text-amber-600' : 'text-red-600'
-                      }>{aiBriefing.trustLevel.toUpperCase()}</span></span>
-                      <span className="text-gray-600">{aiBriefing.trustRationale}</span>
+                      <span className="font-semibold block mb-1">Readiness: <span className={readinessClass}>{readinessTier.toUpperCase()}</span></span>
+                      <span className="text-gray-600">{briefingRationale}</span>
                     </div>
                   </div>
                   
                   <div>
                     <h4 className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">Safe Actions</h4>
                     <ul className="space-y-2 mb-4">
-                      {aiBriefing.safeActions.map((action, i) => (
-                        <li key={i} className="flex items-center text-sm text-gray-700 bg-white p-2 rounded border border-gray-200">
-                          <CheckCircle2 className="w-4 h-4 text-emerald-500 mr-2 shrink-0" />
-                          <code className="bg-gray-100 px-1 rounded">{action}</code>
+                      {safeActionHints.length > 0 ? (
+                        safeActionHints.map((action, i) => (
+                          <li key={i} className="flex items-center text-sm text-gray-700 bg-white p-2 rounded border border-gray-200">
+                            <CheckCircle2 className="w-4 h-4 text-emerald-500 mr-2 shrink-0" />
+                            <code className="bg-gray-100 px-1 rounded">{action}</code>
+                          </li>
+                        ))
+                      ) : (
+                        <li className="text-sm text-gray-500 bg-white p-2 rounded border border-gray-200">
+                          No safe action hints recorded.
                         </li>
-                      ))}
+                      )}
                     </ul>
                     
                     {aiBriefing.caveats.length > 0 && (
@@ -246,7 +309,7 @@ export const Investigation: React.FC = () => {
         <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden flex flex-col">
           <div className="px-6 py-5 border-b border-gray-100 flex items-center justify-between bg-slate-50/50">
             <div>
-              <h2 className="text-sm font-semibold text-gray-900 mb-1">Chart preview will appear here</h2>
+              <h2 className="text-sm font-semibold text-gray-900 mb-1">Analysis preview</h2>
               <p className="text-xs text-gray-500">LightBI has prepared this analysis. Execution will run in the next phase.</p>
             </div>
             <div className="flex gap-2">
@@ -258,29 +321,39 @@ export const Investigation: React.FC = () => {
           </div>
           
           <div className="p-6 bg-white border-b border-gray-100">
-             <div className="flex flex-wrap gap-4 mb-8">
-               <div className="flex flex-col gap-1.5">
-                 <span className="text-[10px] uppercase tracking-wider font-semibold text-gray-400">Dimensions</span>
-                 <div className="flex flex-wrap gap-2">
-                   {runtimeIntent.dimensions.map(d => (
-                     <span key={d} className="px-2.5 py-1 bg-blue-50 text-blue-700 border border-blue-100 rounded text-xs font-medium">
-                       {d}
-                     </span>
-                   ))}
+             {isDataQualityReview ? (
+               <div className="w-full mb-6 p-4 bg-amber-50 border-2 border-amber-200 rounded-lg flex flex-col items-center justify-center text-amber-800 text-center">
+                 <AlertTriangle className="w-8 h-8 text-amber-500 mb-2" />
+                 <span className="text-sm font-semibold">Data Quality Review Required</span>
+                 <span className="text-xs text-amber-700 mt-1 max-w-md">
+                   This dataset contains technical constraints or dirty signals (e.g. mixed types, formula errors, serial dates). Runtime execution is disabled until these are reviewed.
+                 </span>
+               </div>
+             ) : (
+               <div className="flex flex-wrap gap-4 mb-8">
+                 <div className="flex flex-col gap-1.5">
+                   <span className="text-[10px] uppercase tracking-wider font-semibold text-gray-400">Dimensions</span>
+                   <div className="flex flex-wrap gap-2">
+                     {runtimeIntent.dimensions.map(d => (
+                       <span key={d} className="px-2.5 py-1 bg-blue-50 text-blue-700 border border-blue-100 rounded text-xs font-medium">
+                         {d}
+                       </span>
+                     ))}
+                   </div>
+                 </div>
+                 
+                 <div className="flex flex-col gap-1.5">
+                   <span className="text-[10px] uppercase tracking-wider font-semibold text-gray-400">Measures</span>
+                   <div className="flex flex-wrap gap-2">
+                     {[...runtimeIntent.measures, ...(runtimeIntent.derivedMeasures ?? []).flatMap(m => [m.numeratorLabel, m.denominatorLabel, m.label])].map(m => (
+                       <span key={m} className="px-2.5 py-1 bg-emerald-50 text-emerald-700 border border-emerald-100 rounded text-xs font-medium">
+                         {m}
+                       </span>
+                     ))}
+                   </div>
                  </div>
                </div>
-               
-               <div className="flex flex-col gap-1.5">
-                 <span className="text-[10px] uppercase tracking-wider font-semibold text-gray-400">Measures</span>
-                 <div className="flex flex-wrap gap-2">
-                   {runtimeIntent.measures.map(m => (
-                     <span key={m} className="px-2.5 py-1 bg-emerald-50 text-emerald-700 border border-emerald-100 rounded text-xs font-medium">
-                       {m}
-                     </span>
-                   ))}
-                 </div>
-               </div>
-             </div>
+             )}
              
              {/* Chart Placeholder / Renderer Area */}
              <div className="w-full mt-4">
@@ -290,7 +363,16 @@ export const Investigation: React.FC = () => {
                    <span className="text-sm font-medium">Execution Failed</span>
                    <span className="text-xs text-red-400 mt-1">{previewResult.errorMessage || "Preview could not be rendered."}</span>
                  </div>
-               ) : chartModel ? (
+               ) : previewResult?.rows && previewResult.rows.length > 0 && runtimeIntent.expectedShape === 'table' ? (
+                 <div className="space-y-5">
+                   <DatasetInsightSummary columns={previewResult.columns} rows={previewResult.rows} rowCount={previewResult.rowCount} />
+                   {chartModel && chartModel.chartType !== 'table' && (
+                     <div className="border-t border-gray-100 pt-5">
+                       <ChartPreviewRenderer model={chartModel} />
+                     </div>
+                   )}
+                 </div>
+               ) : chartModel && runtimeIntent.expectedShape !== 'table' ? (
                  <ChartPreviewRenderer model={chartModel} />
                ) : (
                  <div className="w-full h-64 bg-slate-50 border-2 border-dashed border-slate-200 rounded-lg flex flex-col items-center justify-center text-slate-400">
@@ -306,8 +388,9 @@ export const Investigation: React.FC = () => {
               <h3 className="text-sm font-semibold text-gray-900">Preview execution</h3>
               <button
                 onClick={handleRunPreview}
-                disabled={isExecuting}
+                disabled={isExecuting || isDataQualityReview}
                 className="px-3 py-1.5 bg-indigo-600 text-white text-xs font-medium rounded-md hover:bg-indigo-700 disabled:opacity-50 transition-colors"
+                title={isDataQualityReview ? "Execution disabled for Data Quality Review" : undefined}
               >
                 {isExecuting ? 'Running...' : 'Run preview'}
               </button>
@@ -325,7 +408,7 @@ export const Investigation: React.FC = () => {
                   <div className="bg-red-50 border border-red-200 rounded-md p-4 mb-2 flex flex-col gap-2">
                     <div className="flex items-center gap-2 text-red-800 font-semibold">
                       <AlertTriangle className="w-5 h-5" />
-                      Execution Boundary Failed
+                      Execution Failed
                     </div>
                     <p className="text-sm text-red-700">
                       {previewResult.errorMessage || "The engine could not process the analysis request."}
@@ -373,6 +456,17 @@ export const Investigation: React.FC = () => {
                     {previewResult.status.toUpperCase()}
                   </span>
                   <span className="text-slate-500">Row count: {previewResult.rowCount}</span>
+                  {previewResult.executionScope && (
+                    <span className="px-2 py-0.5 rounded bg-blue-50 text-blue-700 font-medium">
+                      {previewResult.executionScope === 'full_file'
+                        ? 'Full file'
+                        : previewResult.executionScope === 'semantic_sample'
+                          ? 'Representative sample'
+                          : previewResult.executionScope === 'retained_rows'
+                            ? 'Retained rows'
+                            : 'Preview rows'}
+                    </span>
+                  )}
                   <span className="text-slate-400">•</span>
                   <span className="text-slate-500 flex items-center gap-1">
                     <Database className="w-3 h-3" />
@@ -383,17 +477,25 @@ export const Investigation: React.FC = () => {
 
 
                 {previewResult.rows.length > 0 && (
-                  <div className="overflow-x-auto border border-gray-200 rounded-md">
+                  <details className="mt-4 mb-2 group">
+                    <summary className="text-sm font-semibold text-gray-800 flex items-center gap-2 cursor-pointer select-none list-none [&::-webkit-details-marker]:hidden mb-2 hover:text-indigo-600 transition-colors">
+                      <ChevronRight className="w-4 h-4 text-gray-500 group-open:rotate-90 transition-transform" />
+                      <Database className="w-4 h-4 text-gray-500 group-hover:text-indigo-500" />
+                      Raw rows evidence
+                    </summary>
+                    <div className="pl-6">
+                      <p className="text-xs text-gray-500 mb-3">Scroll horizontally and vertically to inspect underlying raw data.</p>
+                      <div className="max-h-[400px] overflow-auto border border-gray-200 rounded-md">
                     <table className="min-w-full divide-y divide-gray-200 text-xs text-left">
-                      <thead className="bg-gray-50">
+                      <thead className="bg-gray-50 sticky top-0 shadow-sm z-10">
                         <tr>
                           {previewResult.columns.map(c => (
-                            <th key={c} className="px-3 py-2 font-medium text-gray-500 uppercase tracking-wider">{c}</th>
+                            <th key={c} className="px-3 py-2 font-medium text-gray-500 uppercase tracking-wider bg-gray-50">{c}</th>
                           ))}
                         </tr>
                       </thead>
                       <tbody className="bg-white divide-y divide-gray-200">
-                        {previewResult.rows.slice(0, 10).map((row, i) => (
+                        {previewResult.rows.map((row, i) => (
                           <tr key={i}>
                             {previewResult.columns.map(c => {
                               const semanticType = inferSemanticType(c, row[c]);
@@ -407,12 +509,9 @@ export const Investigation: React.FC = () => {
                         ))}
                       </tbody>
                     </table>
-                    {previewResult.rows.length > 10 && (
-                      <div className="px-3 py-2 bg-gray-50 text-gray-500 italic text-[10px] text-center border-t border-gray-200">
-                        Showing first 10 rows
-                      </div>
-                    )}
-                  </div>
+                    </div>
+                    </div>
+                  </details>
                 )}
               </div>
             )}

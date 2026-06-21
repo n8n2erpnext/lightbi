@@ -96,6 +96,7 @@ function inspectSupportedSource(value: string): LinkPreflightResult {
     if (
       normalizedLower.includes("sharepoint.com") ||
       normalizedLower.includes("1drv.ms") ||
+      normalizedLower.includes("onedrive.live.com") ||
       normalizedLower.includes("office.com")
     ) {
       return {
@@ -127,6 +128,7 @@ function inspectSupportedSource(value: string): LinkPreflightResult {
   if (
     normalizedLower.includes("sharepoint.com") ||
     normalizedLower.includes("1drv.ms") ||
+    normalizedLower.includes("onedrive.live.com") ||
     normalizedLower.includes("office.com")
   ) {
     return {

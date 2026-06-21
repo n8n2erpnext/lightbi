@@ -1,3 +1,4 @@
+import { getApiBaseUrl } from '../lib/api-base';
 import React, { useState, useEffect, useRef } from 'react';
 import { Search, Loader2, ChevronRight, Database, Plus, FileSpreadsheet, Database as DatabaseIcon, FileText, Link, Server, HardDrive, ArrowLeft, Monitor, Globe, Beaker, Table, Code, Sparkles, Layers } from 'lucide-react';
 import ReactECharts from 'echarts-for-react';
@@ -28,11 +29,16 @@ import { createWorkspaceUnderstandingState, applyBusinessViewSelection, getActiv
 import { runGuidedInvestigationPipeline } from '../lib/guided-investigation-pipeline';
 import { createDatasetUnderstanding } from '../lib/dataset-understanding-contract';
 import { DatasetUnderstandingCard } from '../components/analysis/DatasetUnderstandingCard';
+import { UnderstandingNextCard } from '../components/analysis/UnderstandingNextCard';
+import { createUnderstandingCoreResult } from '../lib/understanding-core/question-engine';
+import { adaptCoreToUnderstandingNext } from '../lib/understanding-core/next-adapter';
+import { createUnderstandingCoreInputFromSource } from '../lib/understanding-core/source-input';
 import type { AnalysisAction } from '../lib/analysis-opportunity-actions';
+import { isDataQualityReviewAction } from '../lib/understanding-next/action-adapter';
 import { createRuntimeIntentFromAnalysisAction } from '../lib/analysis-runtime-contract';
 import { createRuntimePlanPreview } from '../lib/runtime-planner-preview';
 import { createInvestigationSession } from '../lib/investigation-session';
-import { generateAIBriefing } from '../lib/ai-briefing-contract';
+import { generateAIBriefing, generateAIBriefingFromUnderstandingNext } from '../lib/ai-briefing-generator';
 import { useNavigate } from 'react-router-dom';
 import { createVirtualDatasetPlan } from '../lib/virtual-dataset-planner';
 import type { VirtualDatasetPlan } from '../lib/virtual-dataset-planner';
@@ -48,9 +54,11 @@ import type { DuckDBLogicalPlan } from '../lib/duckdb-logical-plan';
 import { DuckDBLogicalPlanPreview } from '../components/analysis/DuckDBLogicalPlanPreview';
 import { createRuntimeBoundaryArtifact } from '../lib/runtime-boundary-contract';
 import type { RuntimeBoundaryArtifact } from '../lib/runtime-boundary-contract';
+import { MultiFileUnderstandingProofPanel } from '../components/analysis/MultiFileUnderstandingProofPanel';
 import { createExpectedResultContract } from '../lib/expected-result-contract';
 import type { ExpectedResultContract } from '../lib/expected-result-contract';
 import { ExpectedResultPreview } from '../components/analysis/ExpectedResultPreview';
+import { selectFirstNonEmptyRows } from '../lib/row-surface';
 import { compileSafeQuery } from '../lib/safe-sql-compiler';
 import type { CompiledQueryContract } from '../lib/safe-sql-compiler';
 import { CompiledQueryPreview } from '../components/analysis/CompiledQueryPreview';
@@ -76,6 +84,8 @@ import type { MappingOverlayAction } from '../lib/mapping-overlay-state';
 import { applyMappingAction } from '../lib/mapping-overlay-state';
 import { useDisplayPreferences } from '../stores/display-preferences-store';
 import { formatValue } from '../lib/display-formatter';
+import { ExecutionRunCoordinator } from '@lightbi/runtime';
+import { advancedSourceId, useAdvancedSourceStore } from '../stores/advanced-source-store';
 
 const getGreeting = () => {
     // TODO: Pass display_name when auth exists
@@ -88,6 +98,7 @@ export const Home: React.FC = () => {
   const { preferences } = useDisplayPreferences();
   const navigate = useNavigate();
   const [currentDataset, setCurrentDataset] = useState<any>(null);
+  const registerAdvancedSource = useAdvancedSourceStore(state => state.registerSource);
   const [workspaceState, setWorkspaceState] = useState<WorkspaceUnderstandingState | null>(null);
   const [inputValue, setInputValue] = useState("");
   const [analysisIntent, setAnalysisIntent] = useState<string | null>(null);
@@ -105,7 +116,9 @@ export const Home: React.FC = () => {
   const [pendingLocalBatch, setPendingLocalBatch] = useState<PendingLocalFileBatch | null>(null);
   const [lastInspectedFamilies, setLastInspectedFamilies] = useState<DatasetFamily[] | null>(null);
   const [mappingOverlayActions, setMappingOverlayActions] = useState<MappingOverlayAction[]>([]);
-  const inspectionRunId = useRef(0);
+  const inspectionRuns = useRef(new ExecutionRunCoordinator('simple-inspection'));
+
+  useEffect(() => () => inspectionRuns.current.cancel(), []);
 
 
   const [isAsking, setIsAsking] = useState(false);
@@ -144,14 +157,26 @@ export const Home: React.FC = () => {
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
 
   const handleSelectAnalysisAction = (action: AnalysisAction) => {
+    // Use the typed adapter helper — no `as any` needed
+    const isDQR = isDataQualityReviewAction(action);
+
     const intent = createRuntimeIntentFromAnalysisAction(action);
     const plan = createRuntimePlanPreview(intent);
     
     // Attempt to extract rows if available from current dataset state
-    const datasetRows = currentDataset?.previewRows || currentDataset?.rows;
-    console.log("TRACE [OPPORTUNITY] selectedAction.id:", action.id);
+    const datasetRows = selectFirstNonEmptyRows(
+      currentDataset?.analysisRows,
+      currentDataset?.semanticRows,
+      currentDataset?.previewRows,
+      currentDataset?.rows
+    );
+    console.log("TRACE [OPPORTUNITY] selectedAction.id:", action.id, "isDQR:", isDQR);
 
-    const aiBriefing = datasetUnderstanding ? generateAIBriefing(datasetUnderstanding) : undefined;
+    const aiBriefing = datasetUnderstandingNext
+      ? generateAIBriefingFromUnderstandingNext(datasetUnderstandingNext)
+      : datasetUnderstanding
+        ? generateAIBriefing(datasetUnderstanding)
+        : undefined;
 
     createInvestigationSession(
       currentDataset?.file_name || 'dataset',
@@ -159,7 +184,15 @@ export const Home: React.FC = () => {
       intent,
       plan,
       datasetRows,
-      aiBriefing
+      aiBriefing,
+      currentDataset?.runtimeDatasetSource,
+      currentDataset?.runtimeDatasetSource
+        ? 'full_file'
+        : currentDataset?.analysisRows?.length
+          ? 'retained_rows'
+          : currentDataset?.semanticRows?.length
+            ? 'semantic_sample'
+            : 'preview'
     );
     navigate('/investigation');
   };
@@ -294,6 +327,10 @@ export const Home: React.FC = () => {
                     <button 
                       key={item.id} 
                       onClick={() => {
+                        if (item.hasSubmenu) {
+                          setActiveSubmenu(item.submenuId);
+                          return;
+                        }
                         setIsOpen(false);
                         const request = createDataIntakeRequest(item);
                         if (request.nextStep === "file_picker") {
@@ -389,10 +426,69 @@ export const Home: React.FC = () => {
     });
   }, [currentDataset, guidedInvestigationResult, datasetHealthResult]);
 
+  const datasetUnderstandingNext = React.useMemo(() => {
+    if (currentDataset?.status !== 'ready' || currentDataset.sourceType === 'virtual_business_view' || !currentDataset.columns) return null;
+    
+    // Extract source row count properly
+    let sourceRowCount = currentDataset.rows_count;
+    if (currentDataset.sourceFiles && currentDataset.sourceFiles.length > 0) {
+      sourceRowCount = currentDataset.sourceFiles.reduce((acc: number, f: any) => acc + (f.rows || 0), 0) || currentDataset.rows_count;
+    }
+
+    const onlineSourceTypes = new Set(['google_sheets', 'm365_excel', 'csv_url', 'excel_url']);
+    const databaseSourceTypes = new Set(['postgresql', 'mysql', 'mariadb', 'mongodb_atlas', 'sqlite']);
+    const sourceRows = selectFirstNonEmptyRows(
+      currentDataset.semanticRows,
+      currentDataset.analysisRows,
+      currentDataset.previewRows,
+      currentDataset.rows
+    );
+    const sourceNames = currentDataset.sourceFiles ? currentDataset.sourceFiles.map((f: any) => f.name) : [currentDataset.file_name || 'dataset'];
+    const sheetNames = currentDataset.sourceFiles?.flatMap((f: any) => f.sheetNames || []) || [];
+
+    const coreInput = databaseSourceTypes.has(currentDataset.sourceType)
+      ? createUnderstandingCoreInputFromSource({
+        kind: 'database_table',
+        connectionName: currentDataset.sourceType,
+        tableName: currentDataset.file_name || 'database table',
+        columns: currentDataset.columns,
+        rows: sourceRows,
+        columnProfiles: currentDataset.profiles,
+        sourceRowCount
+      })
+      : onlineSourceTypes.has(currentDataset.sourceType)
+      ? createUnderstandingCoreInputFromSource({
+        kind: 'online_file',
+        title: currentDataset.file_name || 'online dataset',
+        url: currentDataset.normalizedUrl,
+        sheetNames,
+        columns: currentDataset.columns,
+        rows: sourceRows,
+        columnProfiles: currentDataset.profiles,
+        sourceRowCount
+      })
+      : createUnderstandingCoreInputFromSource({
+        kind: 'local_file',
+        fileNames: sourceNames,
+        label: currentDataset.file_name || 'dataset',
+        sheetNames,
+        columns: currentDataset.columns,
+        rows: sourceRows,
+        columnProfiles: currentDataset.profiles,
+        sourceRowCount
+      });
+
+    const coreUnderstanding = createUnderstandingCoreResult(coreInput);
+
+    return adaptCoreToUnderstandingNext(coreUnderstanding);
+  }, [currentDataset]);
+
   const activeBusinessViews = selectedPerspective && guidedInvestigationResult
     ? guidedInvestigationResult.businessViews.filter(v => v.perspectiveId === selectedPerspective)
     : [];
-  const selectedViewData = activeBusinessViews.find(v => v.id === selectedBusinessView) || null;
+  const selectedViewData = (currentDataset?.sourceType === "virtual_business_view" && currentDataset.selectedBusinessView) 
+    ? currentDataset.selectedBusinessView 
+    : (activeBusinessViews.find(v => v.id === selectedBusinessView) || null);
 
   useEffect(() => {
     if (selectedBusinessView && activeBusinessViews) {
@@ -403,6 +499,17 @@ export const Home: React.FC = () => {
   }, [selectedBusinessView, activeBusinessViews]);
 
   const visibleQuestionSuggestions = React.useMemo(() => {
+    if (currentDataset?.sourceType === 'virtual_business_view' && currentDataset.selectedBusinessView) {
+      return currentDataset.selectedBusinessView.suggestedQuestions.map((q: any) => ({
+        ...q,
+        id: q.id,
+        text: q.question,
+        evidenceSignals: q.requiredDomains || [],
+        confidenceScore: currentDataset.selectedBusinessView.confidence === 'HIGH' ? 95 : 75,
+        type: q.intent
+      }));
+    }
+
     if (!guidedInvestigationResult || !selectedPerspective || !selectedBusinessView) return [];
     
     return guidedInvestigationResult.questionSuggestions.filter(q => 
@@ -433,7 +540,7 @@ export const Home: React.FC = () => {
     setActiveChips(shuffled.slice(0, 4));
   }, [activePool, currentDataset]);
 
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5172';
+  const API_BASE_URL = getApiBaseUrl();
 
   useEffect(() => {
     const fetchCurrentSource = async () => {
@@ -503,7 +610,7 @@ export const Home: React.FC = () => {
       step: "family_selection"
     });
     
-    const runId = ++inspectionRunId.current;
+    const inspectionRun = inspectionRuns.current.begin();
 
     // Inspect files concurrently
     const inspectionPromises = files.map(file => {
@@ -511,14 +618,23 @@ export const Home: React.FC = () => {
       if ('status' in candidateOrError) {
         return Promise.resolve(candidateOrError as SourceInspectionResult);
       }
-      return inspectLocalFile(candidateOrError as SourceCandidate).catch(() => ({
-        status: 'not_found', sourceType: candidateOrError.sourceType, label: candidateOrError.label, message: "Error reading file."
-      } as SourceInspectionResult));
+      return inspectLocalFile(candidateOrError as SourceCandidate, { signal: inspectionRun.signal }).catch(error => {
+        if (inspectionRun.signal.aborted) throw error;
+        return {
+          status: 'not_found', sourceType: candidateOrError.sourceType, label: candidateOrError.label, message: "Error reading file."
+        } as SourceInspectionResult;
+      });
     });
 
-    const results = await Promise.all(inspectionPromises);
+    let results: SourceInspectionResult[];
+    try {
+      results = await Promise.all(inspectionPromises);
+    } catch (error) {
+      if (inspectionRun.signal.aborted) return;
+      throw error;
+    }
     
-    if (runId !== inspectionRunId.current) return;
+    if (!inspectionRuns.current.isCurrent(inspectionRun)) return;
     
     const hasError = results.every(r => r.status !== 'accessible');
     
@@ -574,10 +690,11 @@ export const Home: React.FC = () => {
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
+    inspectionRuns.current.finish(inspectionRun);
   };
 
   const handleCancelInspection = () => {
-    inspectionRunId.current += 1;
+    inspectionRuns.current.cancel();
     setPendingLocalBatch(null);
   };
 
@@ -625,6 +742,22 @@ export const Home: React.FC = () => {
     const firstAccessible = family.files.find(item => item.result.status === 'accessible');
     const firstMd = firstAccessible ? (firstAccessible.result as any).metadata : null;
     let rawPreviewRows: any[] = [];
+    const rawSemanticRows = family.files.flatMap(item => {
+      if (item.result.status !== 'accessible') return [];
+      const md = (item.result as any).metadata;
+      if (md?.is_workbook && md.default_sheet && md.sheets) {
+        return md.sheets[md.default_sheet]?.semantic_rows || md.sheets[md.default_sheet]?.preview_rows || [];
+      }
+      return md?.semantic_rows || md?.preview_rows || [];
+    });
+    const rawAnalysisRows = family.files.flatMap(item => {
+      if (item.result.status !== 'accessible') return [];
+      const md = (item.result as any).metadata;
+      if (md?.is_workbook && md.default_sheet && md.sheets) {
+        return md.sheets[md.default_sheet]?.analysis_rows || [];
+      }
+      return md?.analysis_rows || [];
+    });
     if (firstMd) {
       if (firstMd.is_workbook && firstMd.default_sheet && firstMd.sheets) {
         rawPreviewRows = firstMd.sheets[firstMd.default_sheet]?.preview_rows || [];
@@ -633,11 +766,38 @@ export const Home: React.FC = () => {
       }
     }
     const finalPreviewRows = createPreviewRows(rawPreviewRows, family.columns);
+    const semanticSample = {
+      strategy: rawSemanticRows.length >= family.totalRows ? 'full' : 'matrix_sample',
+      sourceRowCount: family.totalRows,
+      sampleRowCount: rawSemanticRows.length
+    };
     console.log("TRACE [HOME] currentDataset.previewRows.length:", finalPreviewRows.length);
+
+    const sourceName = pendingLocalBatch.families.length > 1 ? family.name : (family.files.length > 1 ? `Combined dataset (${family.files.length} files)` : family.files[0].file.name);
+    registerAdvancedSource({
+      id: advancedSourceId((family.files[0].result as any).sourceType, sourceName),
+      name: sourceName,
+      sourceType: (family.files[0].result as any).sourceType,
+      sourceKind: 'local_file',
+      normalizedUrl: (family.files[0].result as any).normalizedUrl,
+      tables: family.files.flatMap((item, fileIndex) => {
+        if (item.result.status !== 'accessible') return [];
+        const metadata = item.result.metadata;
+        if (metadata.is_workbook && metadata.sheets) {
+          return Object.entries(metadata.sheets).map(([sheetName, sheet]) => ({
+            id: `${fileIndex}:${sheetName}`, name: family.files.length > 1 ? `${item.file.name} · ${sheetName}` : sheetName,
+            rowCount: sheet.rows_count, columns: sheet.columns, profiles: sheet.profiles || {}, file: item.file, sheetName,
+          }));
+        }
+        return [{ id: `${fileIndex}:data`, name: family.files.length > 1 ? item.file.name : 'data', rowCount: metadata.rows_count || 0, columns: metadata.columns || [], profiles: metadata.profiles || {}, file: item.file }];
+      }),
+      semanticSample,
+      registeredAt: new Date().toISOString(),
+    });
 
     setCurrentDataset({
       status: 'ready',
-      file_name: pendingLocalBatch.families.length > 1 ? family.name : (family.files.length > 1 ? `Combined dataset (${family.files.length} files)` : family.files[0].file.name),
+      file_name: sourceName,
       rows_count: family.totalRows,
       columns: family.columns,
       profiles: family.profiles,
@@ -645,7 +805,22 @@ export const Home: React.FC = () => {
       normalizedUrl: (family.files[0].result as any).normalizedUrl,
       sourceFiles: sourceFiles as any, // Storing extended metadata format here
       selected_sheet: null,
-      file_reference: null,
+      file_reference: family.files[0]?.file || null,
+      runtimeDatasetSource: {
+        kind: 'local_files',
+        files: family.files.map(item => {
+          const md = item.result.status === 'accessible' ? item.result.metadata : undefined;
+          return {
+            file: item.file,
+            sheetName: md?.is_workbook ? md.default_sheet : undefined
+          };
+        }),
+        sourceRowCount: family.totalRows
+      },
+      semanticSample,
+      analysisRowScope: rawAnalysisRows.length >= family.totalRows ? 'full' : 'not_retained',
+      semanticRows: rawSemanticRows,
+      analysisRows: rawAnalysisRows,
       previewRows: finalPreviewRows
     });
 
@@ -698,6 +873,97 @@ export const Home: React.FC = () => {
       <DataIntakeDrawer 
         request={activeConnection} 
         onClose={() => setActiveConnection(null)} 
+        onSourceInspected={(inspectionResult) => {
+          if (inspectionResult.status !== 'accessible') return;
+          const md = inspectionResult.metadata;
+          let rows = md.rows_count || 0;
+          let columns = md.columns || [];
+          let profiles = md.profiles || {};
+          let rawPreviewRows = md.preview_rows || [];
+          let rawSemanticRows = md.semantic_rows || rawPreviewRows;
+          let rawAnalysisRows = md.analysis_rows || [];
+          let sheetNames: string[] = md.sheet_names || [];
+
+          if (md.is_workbook && md.default_sheet && md.sheets) {
+            const sheet = md.sheets[md.default_sheet];
+            if (sheet) {
+              rows = sheet.rows_count || 0;
+              columns = sheet.columns || [];
+              profiles = sheet.profiles || {};
+              rawPreviewRows = sheet.preview_rows || [];
+              rawSemanticRows = sheet.semantic_rows || rawPreviewRows;
+              rawAnalysisRows = sheet.analysis_rows || [];
+            }
+          }
+
+          const previewRows = createPreviewRows(rawPreviewRows, columns);
+          const sourceLabel = md.name || inspectionResult.label;
+          const selectedSemanticSample = md.is_workbook && md.default_sheet && md.sheets
+            ? md.sheets[md.default_sheet]?.semantic_sample
+            : md.semantic_sample;
+
+          if (inspectionResult.file) {
+            registerAdvancedSource({
+              id: advancedSourceId(inspectionResult.sourceType, sourceLabel),
+              name: sourceLabel,
+              sourceType: inspectionResult.sourceType,
+              sourceKind: 'online_link',
+              normalizedUrl: inspectionResult.normalizedUrl,
+              tables: md.is_workbook && md.sheets
+                ? Object.entries(md.sheets).map(([sheetName, sheet]: [string, any]) => ({
+                    id: `0:${sheetName}`, name: sheetName, rowCount: sheet.rows_count, columns: sheet.columns,
+                    profiles: sheet.profiles || {}, file: inspectionResult.file!, sheetName,
+                  }))
+                : [{ id: '0:data', name: 'data', rowCount: rows, columns, profiles, file: inspectionResult.file }],
+              semanticSample: selectedSemanticSample ? {
+                strategy: selectedSemanticSample.strategy,
+                sourceRowCount: selectedSemanticSample.source_row_count,
+                sampleRowCount: selectedSemanticSample.sample_row_count,
+              } : undefined,
+              registeredAt: new Date().toISOString(),
+            });
+          }
+
+          setCurrentDataset({
+            status: 'ready',
+            file_name: sourceLabel,
+            rows_count: rows,
+            columns,
+            profiles,
+            sourceType: inspectionResult.sourceType,
+            normalizedUrl: inspectionResult.normalizedUrl,
+            sourceFiles: [{
+              name: sourceLabel,
+              rows,
+              columns: columns.length,
+              fingerprint: `${inspectionResult.sourceType}:${columns.join('|')}`,
+              url: inspectionResult.normalizedUrl,
+              sheetNames
+            }] as any,
+            selected_sheet: md.default_sheet || null,
+            file_reference: inspectionResult.file || null,
+            runtimeDatasetSource: inspectionResult.file ? {
+              kind: 'local_files',
+              files: [{ file: inspectionResult.file, sheetName: md.default_sheet }],
+              sourceRowCount: rows
+            } : undefined,
+            semanticSample: selectedSemanticSample ? {
+              strategy: selectedSemanticSample.strategy,
+              sourceRowCount: selectedSemanticSample.source_row_count,
+              sampleRowCount: selectedSemanticSample.sample_row_count
+            } : undefined,
+            analysisRowScope: md.is_workbook && md.default_sheet && md.sheets
+              ? md.sheets[md.default_sheet]?.analysis_row_scope
+              : md.analysis_row_scope,
+            semanticRows: rawSemanticRows,
+            analysisRows: rawAnalysisRows,
+            previewRows
+          });
+          setWorkspaceState(createWorkspaceUnderstandingState({ type: 'dataset', datasetId: sourceLabel }));
+          setResult(null);
+          setSelectedTopic(null);
+          setPreviewActionId(null);
+        }}
       />
 
       <div className="w-full max-w-6xl flex flex-col items-center relative" onClick={e => e.stopPropagation()}>
@@ -802,7 +1068,7 @@ export const Home: React.FC = () => {
               
               {/* Data Status Card – only rendered when currentDataset.status === "ready" */}
               {currentDataset?.status === 'ready' && (
-                <div className="w-full p-4 bg-white border border-gray-200 rounded-xl flex justify-between items-center shadow-sm">
+                <div className="w-full gap-3 p-4 bg-white border border-gray-200 rounded-xl flex flex-col sm:flex-row sm:justify-between sm:items-center shadow-sm">
                   <div className="flex items-center">
                     <Database className="w-5 h-5 text-emerald-500 mr-3" />
                     <div className="flex flex-col gap-0.5">
@@ -815,12 +1081,22 @@ export const Home: React.FC = () => {
                       {(currentDataset.sourceType === "virtual_business_view" || workspaceState?.activeContext.type === "business_view") ? (
                         <p className="text-[12px] text-gray-500">Business view · {formatValue(currentDataset.selectedBusinessView?.datasets?.length || 0, 'number', preferences, { compact: true })} datasets · {formatValue(Array.isArray(currentDataset.columns) ? currentDataset.columns.length : 0, 'number', preferences, { compact: true })} columns</p>
                       ) : (
-                        <p className="text-[12px] text-gray-500">{formatValue(currentDataset.rows_count, 'number', preferences, { compact: true })} rows · {formatValue(Array.isArray(currentDataset.columns) ? currentDataset.columns.length : 0, 'number', preferences, { compact: true })} columns</p>
+                        <>
+                          <p className="text-[12px] text-gray-500">{formatValue(currentDataset.rows_count, 'number', preferences, { compact: true })} rows · {formatValue(Array.isArray(currentDataset.columns) ? currentDataset.columns.length : 0, 'number', preferences, { compact: true })} columns</p>
+                          {currentDataset.semanticSample?.strategy === 'matrix_sample' && (
+                            <p className="text-[11px] text-blue-700">
+                              Understanding: {formatValue(currentDataset.semanticSample.sampleRowCount, 'number', preferences)} representative rows · Runtime: {currentDataset.runtimeDatasetSource ? 'full local file' : 'representative sample'}
+                            </p>
+                          )}
+                        </>
                       )}
                     </div>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex flex-wrap gap-2">
                     <button onClick={() => {}} className="px-3 py-1.5 bg-gray-50 text-gray-600 rounded-md text-[12px] font-medium hover:bg-gray-100 transition-colors border border-transparent hover:border-gray-200">View Data</button>
+                    {currentDataset.sourceType !== 'virtual_business_view' && currentDataset.file_reference && (
+                      <button onClick={() => navigate('/advanced')} className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white rounded-md text-[12px] font-medium hover:bg-blue-700 transition-colors"><Code className="h-3.5 w-3.5" /> Open Advanced</button>
+                    )}
                     {lastInspectedFamilies && lastInspectedFamilies.length > 1 && (
                       <button 
                         onClick={() => {
@@ -852,7 +1128,12 @@ export const Home: React.FC = () => {
                   <DataQualityCard health={datasetHealthResult} />
                   
                   {/* Dataset Understanding Layer */}
-                  {datasetUnderstanding && (
+                  {currentDataset?.sourceType !== 'virtual_business_view' && datasetUnderstandingNext ? (
+                    <UnderstandingNextCard 
+                      understanding={datasetUnderstandingNext} 
+                      onSelectAction={handleSelectAnalysisAction}
+                    />
+                  ) : datasetUnderstanding ? (
                     <DatasetUnderstandingCard 
                       understanding={datasetUnderstanding} 
                       onSelectAction={handleSelectAnalysisAction}
@@ -860,9 +1141,11 @@ export const Home: React.FC = () => {
                          setMappingOverlayActions(prev => applyMappingAction(prev, action));
                       }}
                     />
-                  )}
+                  ) : null}
 
                   {/* Global Perspective Selector */}
+                  {!datasetUnderstandingNext && (
+                  <>
                   <div className="w-full bg-white border border-gray-200 rounded-xl shadow-sm p-5 flex flex-col gap-4 animate-in fade-in zoom-in-95 duration-500 mt-2">
                     <div>
                       <h3 className="text-[16px] font-semibold text-gray-900 mb-1">Optional: Choose a deeper business perspective</h3>
@@ -942,6 +1225,8 @@ export const Home: React.FC = () => {
                       </div>
                     </div>
                   )}
+                  </>
+                  )}
 
                 </div>
               )}
@@ -996,8 +1281,19 @@ export const Home: React.FC = () => {
                     </div>
                   )}
 
+                  {pendingLocalBatch.status === "ready" && pendingLocalBatch.families.length > 1 && pendingLocalBatch.graph && (
+                    <div className="w-full animate-in fade-in slide-in-from-bottom-4 duration-500 mt-4 mb-4">
+                      <MultiFileUnderstandingProofPanel 
+                        graph={pendingLocalBatch.graph}
+                        businessViews={pendingLocalBatch.businessViews}
+                        selectedViewId={pendingLocalBatch.businessViews?.[0]?.id}
+                        families={pendingLocalBatch.families} 
+                      />
+                    </div>
+                  )}
+
                   {pendingLocalBatch.status === "ready" && pendingLocalBatch.step === "family_selection" && (
-                    <div className="flex flex-col gap-4 pt-2 border-t border-gray-100">
+                    <div className="w-full animate-in fade-in slide-in-from-bottom-4 duration-500 mt-4 flex flex-col gap-4 pt-2 border-t border-gray-100">
                       
                       <div className="flex flex-col gap-2">
                         <label className="block text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-1">
@@ -1059,7 +1355,8 @@ export const Home: React.FC = () => {
                   )}
 
                   {pendingLocalBatch.status === "ready" && pendingLocalBatch.step === "business_view_review" && pendingLocalBatch.graph && pendingLocalBatch.businessViews && (
-                    <BusinessViewReviewStep
+                    <div className="w-full animate-in fade-in slide-in-from-bottom-4 duration-500 mt-4 mb-8">
+                      <BusinessViewReviewStep
                       graph={pendingLocalBatch.graph}
                       initialViews={pendingLocalBatch.businessViews}
                       datasetCount={pendingLocalBatch.families.length}
@@ -1096,13 +1393,14 @@ export const Home: React.FC = () => {
                         }
                       }}
                     />
+                    </div>
                   )}
                 </div>
               )}
 
 
               {/* Detected Opportunities – only when currentDataset.status === 'ready' and domains exist */}
-              {currentDataset?.status === 'ready' && currentDataset.columns && currentDataset.columns.length > 0 ? (
+              {!datasetUnderstandingNext && currentDataset?.status === 'ready' && currentDataset.columns && currentDataset.columns.length > 0 ? (
                 <>
                   <div className="flex flex-col gap-4">
                     <div className="flex bg-gray-100 p-1 rounded-lg self-start">
@@ -1142,7 +1440,7 @@ export const Home: React.FC = () => {
                   </div>
 
                   {analysisMode === "explore" && (
-                    !selectedPerspective ? (
+                    (!selectedPerspective && currentDataset?.sourceType !== "virtual_business_view") ? (
                       <div className="w-full p-8 bg-slate-50 border border-dashed border-gray-300 rounded-xl flex items-center justify-center text-center mt-4">
                         <div className="flex flex-col items-center gap-2">
                           <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm text-gray-400">
@@ -1152,7 +1450,7 @@ export const Home: React.FC = () => {
                           <p className="text-xs text-gray-500 max-w-[250px]">Select a perspective to continue.</p>
                         </div>
                       </div>
-                    ) : !selectedBusinessView ? (
+                    ) : !selectedViewData ? (
                       <div className="w-full p-8 bg-slate-50 border border-dashed border-gray-300 rounded-xl flex items-center justify-center text-center mt-4 animate-in fade-in zoom-in-95">
                         <div className="flex flex-col items-center gap-2">
                           <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm text-gray-400">
@@ -1176,12 +1474,12 @@ export const Home: React.FC = () => {
                       <div className="w-full animate-in fade-in slide-in-from-bottom-4 duration-500 mt-4">
                           {selectedViewData && (
                             <BusinessViewSummaryCard
-                              title={selectedViewData.label}
+                              title={selectedViewData.label || selectedViewData.title}
                               purpose={selectedViewData.description}
-                              evidence={selectedViewData.evidence.map(e => e.label)}
+                              evidence={selectedViewData.evidence.map(e => e.label || e.message)}
                               relationships={[]} // Auto-relationships not extracted from views yet
-                              coverage={{ datasets: 1, businessKeys: selectedViewData.matchedRequiredSignals.length, views: 1 }}
-                              belief={`LightBI believes this data supports the ${selectedViewData.label} business view with ${selectedViewData.confidenceScore}% confidence, matching ${selectedViewData.matchedRequiredSignals.length} required signals.`}
+                              coverage={{ datasets: 1, businessKeys: selectedViewData.matchedRequiredSignals?.length || 0, views: 1 }}
+                              belief={`LightBI believes this data supports the ${selectedViewData.label || selectedViewData.title} business view with ${selectedViewData.confidenceScore || 90}% confidence, matching ${selectedViewData.matchedRequiredSignals?.length || 0} required signals.`}
                             />
                           )}
                           
@@ -1192,12 +1490,12 @@ export const Home: React.FC = () => {
                                 What can I learn from this data?
                               </h3>
                               <p className="text-[13px] text-blue-700/80 mb-4">
-                                LightBI generated these questions based on the {selectedViewData?.label || selectedPerspective} context.
+                                LightBI generated these questions based on the {selectedViewData?.label || selectedViewData?.title || selectedPerspective} context.
                               </p>
                             </div>
                           
                           <div className="flex flex-col gap-3">
-                            <h4 className="text-[13px] font-bold text-slate-700 uppercase tracking-wider">{selectedViewData?.label || selectedPerspective} Questions</h4>
+                            <h4 className="text-[13px] font-bold text-slate-700 uppercase tracking-wider">{selectedViewData?.label || selectedViewData?.title || selectedPerspective} Questions</h4>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                               {visibleQuestionSuggestions.map((suggestion, idx) => (
                                 <div key={idx} className="bg-white border border-blue-200 rounded-lg p-4 hover:bg-blue-50 transition-colors flex flex-col justify-between shadow-sm">
@@ -1257,7 +1555,7 @@ export const Home: React.FC = () => {
                   )}
 
                   {analysisMode === "investigate" && (
-                    !selectedBusinessView || !selectedViewData ? (
+                    !selectedViewData ? (
                       <div className="w-full p-8 bg-slate-50 border border-dashed border-gray-300 rounded-xl flex items-center justify-center text-center mt-4">
                         <div className="flex flex-col items-center gap-2">
                           <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm text-gray-400">
@@ -1275,7 +1573,7 @@ export const Home: React.FC = () => {
                           </div>
                           <div>
                             <h3 className="text-[16px] font-semibold text-gray-900">Business View Inspector</h3>
-                            <p className="text-[13px] text-gray-500">Inspecting: {selectedViewData.label}</p>
+                            <p className="text-[13px] text-gray-500">Inspecting: {selectedViewData.label || selectedViewData.title}</p>
                           </div>
                         </div>
                         
@@ -1292,7 +1590,7 @@ export const Home: React.FC = () => {
                                 {selectedViewData.evidence.map((ev, i) => (
                                   <li key={i} className="text-[13px] text-slate-700 flex items-center gap-2">
                                     <div className="w-1.5 h-1.5 rounded-full bg-indigo-400" />
-                                    {ev.label}
+                                    {ev.label || ev.message}
                                   </li>
                                 ))}
                               </ul>
@@ -1309,7 +1607,7 @@ export const Home: React.FC = () => {
                         <div className="flex gap-2 mb-2">
                           <span className="text-[10px] px-2 py-1 bg-purple-100 text-purple-800 font-semibold uppercase tracking-wider rounded">Detected Perspective: {selectedPerspective}</span>
                           {selectedViewData && (
-                            <span className="text-[10px] px-2 py-1 bg-blue-100 text-blue-800 font-semibold uppercase tracking-wider rounded">Detected View: {selectedViewData.label}</span>
+                            <span className="text-[10px] px-2 py-1 bg-blue-100 text-blue-800 font-semibold uppercase tracking-wider rounded">Detected View: {selectedViewData.label || selectedViewData.title}</span>
                           )}
                         </div>
                       )}
@@ -1343,7 +1641,7 @@ export const Home: React.FC = () => {
 
                 </>
               ) : (
-                currentDataset?.status === 'ready' && (
+                currentDataset?.status === 'ready' && !datasetUnderstandingNext && (
                   <div className="w-full p-4 bg-amber-50 border border-amber-200 rounded-xl shadow-sm">
                     <p className="text-sm text-amber-800 flex items-center">
                       <Search className="w-4 h-4 mr-2" />
@@ -1357,7 +1655,7 @@ export const Home: React.FC = () => {
               {currentDataset?.status !== 'ready' && (
                 <>
                   {/* Suggested Actions */}
-                  <div>
+                  <div className="hidden">
                     <h3 className="text-[12px] font-semibold text-gray-500 uppercase tracking-wider mb-4">{homeGuidance.sections.suggestedActions}</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       {homeGuidance.homeStates.noData.actions.map(a => ({ id: "", label: a })).map((action, idx) => (
@@ -1842,60 +2140,40 @@ export const Home: React.FC = () => {
                 setSelectedLogicalPlan(null);
               }}
               onContinue={() => {
-                // Now we don't reset state here because we continue to preview runtime below
+                if (
+                  runtimeBoundaryArtifact &&
+                  expectedResultContract &&
+                  compiledQueryContract &&
+                  sandboxRequest &&
+                  sandboxEvaluation &&
+                  previewResultContract
+                ) {
+                  const res = executeDuckDBPreviewRuntime({
+                    artifact: runtimeBoundaryArtifact,
+                    expectedResult: expectedResultContract,
+                    compiledQuery: compiledQueryContract,
+                    sandboxRequest,
+                    sandboxEvaluation,
+                    previewContract: previewResultContract,
+                    businessConfidence: businessConfidenceResult || undefined
+                  });
+                  setPreviewRuntimeResult(res);
+
+                  const valRes = validatePreviewRuntimeResult({
+                    expectedResult: expectedResultContract,
+                    previewResult: res
+                  });
+                  setResultValidationResult(valRes);
+                }
               }}
             />
-            {businessConfidenceResult && (
+            {previewRuntimeResult && (
               <div className="space-y-6">
-                
-                {!previewRuntimeResult ? (
-                  <div className="flex justify-end">
-                    <button
-                      onClick={() => {
-                        if (
-                          runtimeBoundaryArtifact &&
-                          expectedResultContract &&
-                          compiledQueryContract &&
-                          sandboxRequest &&
-                          sandboxEvaluation &&
-                          previewResultContract
-                        ) {
-                          const res = executeDuckDBPreviewRuntime({
-                            artifact: runtimeBoundaryArtifact,
-                            expectedResult: expectedResultContract,
-                            compiledQuery: compiledQueryContract,
-                            sandboxRequest,
-                            sandboxEvaluation,
-                            previewContract: previewResultContract,
-                            businessConfidence: businessConfidenceResult
-                          });
-                          setPreviewRuntimeResult(res);
-
-                          const valRes = validatePreviewRuntimeResult({
-                            expectedResult: expectedResultContract,
-                            previewResult: res
-                          });
-                          setResultValidationResult(valRes);
-                        }
-                      }}
-                      className="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-lg transition shadow-lg border border-blue-500/50 flex items-center gap-2"
-                    >
-                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      Run limited preview
-                    </button>
-                  </div>
-                ) : (
-                  <div className="space-y-6">
-                    <DuckDBPreviewRuntimeCard result={previewRuntimeResult} />
-                    {resultValidationResult && <ResultValidationCard result={resultValidationResult} />}
-                    <div className="text-sm text-gray-500 italic mt-2 text-center">
-                      Business Confidence remains provisional as Coverage signal is not available yet.
-                    </div>
-                  </div>
-                )}
+                <DuckDBPreviewRuntimeCard result={previewRuntimeResult} />
+                {resultValidationResult && <ResultValidationCard result={resultValidationResult} />}
+                <div className="text-sm text-gray-500 italic mt-2 text-center">
+                  Business Confidence remains provisional as Coverage signal is not available yet.
+                </div>
               </div>
             )}
           </div>

@@ -1,6 +1,8 @@
 import type { RuntimeIntent } from './analysis-runtime-contract';
 import type { RuntimePlanPreview } from './runtime-planner-preview';
 import type { SafeSqlPreview } from './safe-sql-preview';
+import type { RuntimeRowScope } from './runtime-dataset-source';
+import type { QueryResultBuffer } from '@lightbi/core-types';
 
 export interface DuckDBPreviewInput {
   runtimeIntent: RuntimeIntent;
@@ -8,6 +10,7 @@ export interface DuckDBPreviewInput {
   rows: Record<string, unknown>[];
   tableName?: string;
   safeSqlPreview?: SafeSqlPreview;
+  signal?: AbortSignal;
 }
 
 export interface DuckDBPreviewResult {
@@ -21,10 +24,13 @@ export interface DuckDBPreviewResult {
   warnings: string[];
   blockedReasons: string[];
   errorMessage?: string;
+  executionScope?: RuntimeRowScope;
+  resultBuffer?: QueryResultBuffer;
   source: "duckdb_preview_sandbox" | "backend_duckdb_preview" | "js_sandbox_fallback";
 }
 
 export async function executeDuckDBPreviewSandbox(input: DuckDBPreviewInput): Promise<DuckDBPreviewResult> {
+  input.signal?.throwIfAborted();
   const result: DuckDBPreviewResult = {
     id: `preview_exec_${input.runtimePlan.id}`,
     sourceSqlPreviewId: input.safeSqlPreview?.id || 'unknown',
@@ -217,6 +223,7 @@ export async function executeDuckDBPreviewSandbox(input: DuckDBPreviewInput): Pr
 
   result.rows = currentRows;
   result.rowCount = currentRows.length;
+  input.signal?.throwIfAborted();
 
   console.log("TRACE [SANDBOX] result.rows.length:", result.rowCount);
 

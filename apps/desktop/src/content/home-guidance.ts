@@ -5,12 +5,12 @@ export const homeGuidance = {
     "Upload data and ask questions.",
     "Turn spreadsheets into insights.",
     "Find hidden trends in your business.",
-    "Analyze revenue, inventory, or customers."
+    "Review revenue, inventory, or customers."
   ],
   noDataCards: [
     {
       id: "sales-report",
-      title: "Analyze a sales report",
+      title: "Review a sales report",
       description: "Find revenue trends, top customers, and growth opportunities.",
       intent: "topic"
     },
@@ -80,6 +80,7 @@ export const homeGuidance = {
           { id: "postgresql", label: "PostgreSQL", icon: "Database", sourceKind: "system", sourceType: "postgresql", requiresInput: true, nextStep: "connection_form" },
           { id: "mysql", label: "MySQL", icon: "Database", sourceKind: "system", sourceType: "mysql", requiresInput: true, nextStep: "connection_form" },
           { id: "mariadb", label: "MariaDB", icon: "Database", sourceKind: "system", sourceType: "mariadb", requiresInput: true, nextStep: "connection_form" },
+          { id: "mongodb-atlas", label: "MongoDB Atlas", icon: "Database", sourceKind: "system", sourceType: "mongodb_atlas", requiresInput: true, nextStep: "connection_form" },
           { id: "sql-server", label: "SQL Server", icon: "Database", sourceKind: "system", sourceType: "sqlserver", requiresInput: true, nextStep: "connection_form" },
           { id: "sqlite", label: "SQLite", icon: "Database", sourceKind: "system", sourceType: "sqlite", requiresInput: true, nextStep: "connection_form" }
         ]
@@ -114,22 +115,22 @@ export const homeGuidance = {
   },
   heroSuggestionPools: {
     default: [
-      "Analyze sales performance",
+      "Review sales performance",
       "Compare branch revenue",
       "Combine Excel reports",
       "Build executive summary",
       "Review receivables aging",
-      "Analyze student performance",
+      "Review student performance",
       "Summarize support tickets",
       "Review employee attendance"
     ],
     retail: [
-      "Analyze sales performance",
+      "Review sales performance",
       "Find top products",
       "Compare branch revenue",
       "Review low-performing stores",
       "Find slow-moving inventory",
-      "Analyze customer repeat purchases",
+      "Review customer repeat purchases",
       "Compare store conversion rates",
       "Summarize daily sales"
     ],
@@ -174,7 +175,7 @@ export const homeGuidance = {
       "Analyze journal entries"
     ],
     education: [
-      "Analyze student performance",
+      "Review student performance",
       "Review attendance trends",
       "Find at-risk students",
       "Compare class results",
@@ -548,6 +549,48 @@ export const homeGuidance = {
         { id: "sqlite", label: "SQLite" }
       ],
       buttonText: "Continue"
+    },
+    postgresql: {
+      title: "Connect PostgreSQL",
+      description: "Inspect one read-only table sample",
+      driver: "postgresql",
+      uriPlaceholder: "postgresql://user:password@host:5432/database",
+      tablePlaceholder: "orders",
+      schemaPlaceholder: "public",
+      buttonText: "Inspect table"
+    },
+    mysql: {
+      title: "Connect MySQL",
+      description: "Inspect one read-only table sample",
+      driver: "mysql",
+      uriPlaceholder: "mysql://user:password@host:3306/database",
+      tablePlaceholder: "orders",
+      buttonText: "Inspect table"
+    },
+    mariadb: {
+      title: "Connect MariaDB",
+      description: "Inspect one read-only table sample",
+      driver: "mariadb",
+      uriPlaceholder: "mysql://user:password@host:3306/database",
+      tablePlaceholder: "orders",
+      buttonText: "Inspect table"
+    },
+    mongodb_atlas: {
+      title: "Connect MongoDB Atlas",
+      description: "Inspect one read-only collection sample",
+      driver: "mongodb_atlas",
+      uriPlaceholder: "mongodb+srv://user:password@cluster.mongodb.net/",
+      databasePlaceholder: "production",
+      collectionPlaceholder: "orders",
+      buttonText: "Inspect collection"
+    },
+    sqlite: {
+      title: "Connect SQLite",
+      description: "Inspect one SQLite table from a server-accessible path",
+      driver: "sqlite",
+      uriPlaceholder: "/absolute/path/to/database.sqlite or sqlite:///absolute/path/to/database.sqlite",
+      tablePlaceholder: "orders",
+      buttonText: "Inspect table"
     },
     api: {
       title: "Connect API",

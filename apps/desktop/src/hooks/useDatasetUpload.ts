@@ -1,10 +1,11 @@
+import { getApiBaseUrl } from '../lib/api-base';
 import { useState } from 'react';
 
 export const useDatasetUpload = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
 
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5172';
+  const API_BASE_URL = getApiBaseUrl();
 
   const uploadFile = async (file: File): Promise<any> => {
     const allowedExtensions = ['.csv', '.xlsx', '.xls', '.txt', '.tsv', '.json'];

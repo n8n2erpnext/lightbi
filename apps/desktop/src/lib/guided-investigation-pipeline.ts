@@ -3,6 +3,7 @@ import { generatePerspectiveCandidates, type PerspectiveCandidate } from './pers
 import { generateBusinessViewCandidates, type BusinessViewCandidate } from './business-view-candidate-generator';
 import { generateQuestionPlans, type QuestionPlan } from './question-plan-generator';
 import { renderQuestionSuggestions, type QuestionSuggestion } from './question-suggestion-renderer';
+import { getUnprojectableCanonicalFields } from './canonical-row-projection';
 
 export type GuidedInvestigationResult = {
   signals: BusinessSignalRegistry;
@@ -40,6 +41,19 @@ export function runGuidedInvestigationPipeline(input: DetectorInput): GuidedInve
   if (!hasDimensions || !hasMeasures) {
     for (const plan of questionPlans) {
       plan.status = 'rejected';
+    }
+  } else {
+    // Phase 1.5 Strict Canonical Gating
+    // Even if generic dimensions exist, ensure the specific required abstract metrics 
+    // actually project to physical headers.
+    const rawHeaders = input.columns.map(c => c.name);
+    for (const plan of questionPlans) {
+      if (plan.status === 'rejected') continue;
+      const requiredFields = [...plan.dimensions, ...plan.measures];
+      const unprojectable = getUnprojectableCanonicalFields(rawHeaders, requiredFields);
+      if (unprojectable.length > 0) {
+        plan.status = 'rejected';
+      }
     }
   }
 

@@ -88,6 +88,25 @@ describe('createSourceCandidate', () => {
     });
   });
 
+  describe('Microsoft 365 Excel URLs', () => {
+    it('returns candidate for OneDrive short Excel share links without a file extension', () => {
+      const result = createSourceCandidate('https://1drv.ms/x/c/9032a21a3fab331f/IQA4-us9c_ouSr-i-wYwBLlWAWtU3ZOwu14F9kMJi-xusQ4?e=TWd6pK');
+      expect(isCandidate(result)).toBe(true);
+      if (isCandidate(result)) {
+        expect(result.sourceType).toBe('m365_excel');
+        expect(result.label).toBe('Microsoft 365 Excel');
+      }
+    });
+
+    it('returns candidate for onedrive.live.com Excel viewer links', () => {
+      const result = createSourceCandidate('https://onedrive.live.com/:x:/g/personal/9032a21a3fab331f/IQA4-us9c_ouSr-i-wYwBLlWAWHufKrljaLgtOfYIzJ4-DM?rtime=qG54vf_M3kg');
+      expect(isCandidate(result)).toBe(true);
+      if (isCandidate(result)) {
+        expect(result.sourceType).toBe('m365_excel');
+      }
+    });
+  });
+
   describe('Unsupported random URLs', () => {
     it('returns unsupported for https://example.com/about', () => {
       const result = createSourceCandidate('https://example.com/about');

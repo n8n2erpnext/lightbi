@@ -49,6 +49,11 @@ export const ChartPreviewRenderer: React.FC<{ model: ChartPreviewModel }> = ({ m
     const primaryYField = model.seriesFields[0];
     const primaryYSample = model.rows[0]?.[primaryYField];
     const primaryYSType = primaryYField ? inferSemanticType(primaryYField, primaryYSample) : 'unknown';
+    const formatAxisValue = (value: any) => {
+      const numericValue = typeof value === 'number' ? Math.abs(value) : Number.NaN;
+      const shouldCompact = primaryYSType !== 'currency' || !Number.isFinite(numericValue) || numericValue >= 10000;
+      return formatValue(value, primaryYSType, preferences, { compact: shouldCompact });
+    };
 
     const option: any = {
       title: {
@@ -78,7 +83,7 @@ export const ChartPreviewRenderer: React.FC<{ model: ChartPreviewModel }> = ({ m
         type: 'value',
         axisLabel: { 
           color: '#6B7280',
-          formatter: (value: any) => formatValue(value, primaryYSType, preferences, { compact: true })
+          formatter: formatAxisValue
         },
         splitLine: { lineStyle: { type: 'dashed', color: '#E5E7EB' } }
       },
@@ -179,6 +184,6 @@ export const ChartPreviewRenderer: React.FC<{ model: ChartPreviewModel }> = ({ m
   }
 
   return (
-    <div className="w-full h-80 bg-white" ref={chartRef} />
+    <div className="w-full h-80 bg-white" ref={chartRef} data-testid="chart-preview-canvas" />
   );
 };

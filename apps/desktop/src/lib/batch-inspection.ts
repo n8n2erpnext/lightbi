@@ -73,7 +73,8 @@ export function classifyDatasetFamilies(
       }
     }
 
-    if (cols.length === 0) continue;
+    // Allow files with 0 columns so they still get a DatasetFamily as requested
+    // if (cols.length === 0) continue;
 
     let matchKey = '';
 

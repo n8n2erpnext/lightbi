@@ -7,3 +7,13 @@ dist/
 build/
 coverage/
 target/
+
+# Local research fixtures and generated acceptance artifacts
+references/
+sample data/
+ui-audit/
+apps/desktop/ui-audit/
+apps/desktop/test-results/
+test_duck
+test_duck.rs
+migrate.js

@@ -58,7 +58,7 @@ export type PreviewRuntimeInput = {
   sandboxRequest: SandboxExecutionRequest;
   sandboxEvaluation: SandboxEvaluationResult;
   previewContract: PreviewResultContract;
-  businessConfidence: BusinessConfidenceResult;
+  businessConfidence?: BusinessConfidenceResult;
 };
 
 /**
@@ -73,7 +73,7 @@ export function createPreviewRuntimeRequest(input: PreviewRuntimeInput): Omit<Pr
   if (sandboxEvaluation.canExecute === false || compiledQuery.status === "blocked" || previewContract.status === "blocked") {
     status = "blocked";
     warnings.push("Execution blocked by upstream contracts.");
-  } else if (businessConfidence.level === "LOW") {
+  } else if (businessConfidence?.level === "LOW") {
     status = "warning";
     warnings.push("Business confidence is LOW. Proceed with caution.");
   }

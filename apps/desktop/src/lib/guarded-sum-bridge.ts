@@ -49,6 +49,16 @@ export function enhancePlanWithGuardedSum(plan: RuntimePlanPreview, rawRows: any
       const measureAggregations: Record<string, "SUM" | "COUNT"> = {};
       
       for (const measure of op.measures) {
+        const explicitAggregation = op.measureAggregations?.[measure];
+        if (explicitAggregation === "SUM" || explicitAggregation === "AVG") {
+          measureAggregations[measure] = explicitAggregation;
+          continue;
+        }
+        if (explicitAggregation === "COUNT") {
+          measureAggregations[measure] = "COUNT";
+          continue;
+        }
+
         const samples = extractSampleValues(measure, rawRows);
         const health = evaluateNumericHealth(measure, samples, rawRows.length);
         

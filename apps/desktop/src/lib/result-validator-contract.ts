@@ -1,6 +1,7 @@
 import type { ExpectedResultContract } from './expected-result-contract';
 import type { PreviewRuntimeResult } from './duckdb-preview-runtime';
 import type { RuntimeIntent } from './analysis-runtime-contract';
+import { isTimeLikeDimension } from './time-dimension';
 
 export type ResultValidationStatus = "passed" | "warning" | "failed";
 
@@ -68,7 +69,12 @@ export function validatePreviewRuntimeResult(input: {
     warnings.push("Summary shape requires at least one measure.");
   } else if (shape === "trend") {
     // In expectedResult, dimensions are just strings or objects. Assume strings or id.
-    const hasTime = expectedDims.some(d => JSON.stringify(d).toLowerCase().includes('date') || JSON.stringify(d).toLowerCase().includes('time'));
+    const hasTime = expectedDims.some(d => {
+      const value = typeof d === "string"
+        ? d
+        : [d?.id, d?.label].filter(Boolean).join(" ");
+      return isTimeLikeDimension(value || JSON.stringify(d));
+    });
     if (!hasTime) {
       shapeScore = 50;
       warnings.push("Trend shape expects a date/time dimension but none detected explicitly.");
@@ -124,8 +130,13 @@ export function validatePreviewAgainstIntent(intent: RuntimeIntent, previewResul
     id: `mapped-${intent.id}`,
     questionId: '',
     businessViewId: '',
-    shape: intent.expectedShape === 'bar_chart' || intent.expectedShape === 'line_chart' ? 'trend' : 'summary',
-    outputType: 'chart',
+    shape: intent.expectedShape === 'table' ? 'table' :
+           intent.type === 'trend' ? 'trend' :
+           intent.type === 'distribution' ? 'distribution' :
+           intent.type === 'group_by' ? 'group_by' :
+           intent.type === 'relationship' ? 'relationship' :
+           intent.type === 'table_preview' ? 'table' : 'summary',
+    outputType: intent.expectedShape === 'table' ? 'table' : 'chart',
     dimensions: intent.dimensions.map(d => ({ id: d, label: d })),
     measures: intent.measures.map(m => ({ id: m, label: m })),
     assumptions: [],
@@ -136,11 +147,14 @@ export function validatePreviewAgainstIntent(intent: RuntimeIntent, previewResul
   // Adapt duckdb preview result to preview runtime result structure if needed
   const adaptedPreview: PreviewRuntimeResult = {
     ...previewResult,
-    columns: previewResult.columns.map((c: string) => {
+    columns: previewResult.columns.map((c: string | { name?: string; id?: string; label?: string; role?: "dimension" | "measure" }) => {
       // Very basic type inference for validation
-      const isMeasure = intent.measures.includes(c);
+      const name = typeof c === "string" ? c : c.name || c.id || c.label || "";
+      const isMeasure = typeof c === "object" && c.role
+        ? c.role === "measure"
+        : intent.measures.includes(name);
       return {
-        name: c,
+        name,
         type: isMeasure ? "DOUBLE" : "VARCHAR",
         role: isMeasure ? "measure" : "dimension"
       };

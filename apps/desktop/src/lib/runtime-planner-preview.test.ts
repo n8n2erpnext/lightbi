@@ -26,6 +26,23 @@ describe('Runtime Planner Preview', () => {
     expect(plan.logicalOperations[2].type).toBe('limit');
   });
 
+  it('group_by passes measure aggregation metadata to logical operation', () => {
+    const intent: RuntimeIntent = {
+      ...baseIntent,
+      type: 'group_by',
+      dimensions: ['Mã kho'],
+      measures: ['Tổng tiền'],
+      expectedShape: 'bar_chart',
+      measureAggregations: { 'Tổng tiền': 'SUM' }
+    };
+    const plan = createRuntimePlanPreview(intent);
+    expect(plan.measureAggregations).toEqual({ 'Tổng tiền': 'SUM' });
+    expect(plan.logicalOperations[1].type).toBe('group_by');
+    if (plan.logicalOperations[1].type === 'group_by') {
+      expect(plan.logicalOperations[1].measureAggregations).toEqual({ 'Tổng tiền': 'SUM' });
+    }
+  });
+
   it('trend intent generates scan + trend + limit', () => {
     const intent: RuntimeIntent = { ...baseIntent, type: 'trend', dimensions: ['report_date'], measures: ['shipment'], expectedShape: 'line_chart' };
     const plan = createRuntimePlanPreview(intent);
@@ -34,6 +51,26 @@ describe('Runtime Planner Preview', () => {
     expect(plan.logicalOperations[1].type).toBe('trend');
     if (plan.logicalOperations[1].type === 'trend') {
         expect(plan.logicalOperations[1].timeDimension).toBe('report_date');
+    }
+  });
+
+  it('trend intent keeps Vietnamese date dimension as time dimension', () => {
+    const intent: RuntimeIntent = { ...baseIntent, type: 'trend', dimensions: ['Ngày xuất'], measures: ['Tổng tiền'], expectedShape: 'line_chart' };
+    const plan = createRuntimePlanPreview(intent);
+    expect(plan.status).toBe('ready');
+    expect(plan.logicalOperations[1].type).toBe('trend');
+    if (plan.logicalOperations[1].type === 'trend') {
+      expect(plan.logicalOperations[1].timeDimension).toBe('Ngày xuất');
+    }
+  });
+
+  it('trend intent treats month period as a time dimension', () => {
+    const intent: RuntimeIntent = { ...baseIntent, type: 'trend', dimensions: ['month'], measures: ['duration'], expectedShape: 'line_chart' };
+    const plan = createRuntimePlanPreview(intent);
+    expect(plan.status).toBe('ready');
+    expect(plan.logicalOperations[1].type).toBe('trend');
+    if (plan.logicalOperations[1].type === 'trend') {
+      expect(plan.logicalOperations[1].timeDimension).toBe('month');
     }
   });
 
@@ -59,6 +96,24 @@ describe('Runtime Planner Preview', () => {
     expect(plan.requiredColumns).toHaveLength(2); // route, shipment
     expect(plan.requiredColumns).toContain('route');
     expect(plan.requiredColumns).toContain('shipment');
+  });
+
+  it('excludes virtual fields from requiredColumns', () => {
+    const intent: RuntimeIntent = { ...baseIntent, type: 'group_by', dimensions: ['route'], measures: ['shipment', 'record_count', 'row_count'] };
+    const plan = createRuntimePlanPreview(intent);
+    expect(plan.requiredColumns).toHaveLength(2); // route, shipment
+    expect(plan.requiredColumns).not.toContain('record_count');
+    expect(plan.requiredColumns).not.toContain('row_count');
+  });
+
+  it('table_preview intent generates scan + table_preview + limit', () => {
+    const intent: RuntimeIntent = { ...baseIntent, type: 'table_preview', dimensions: [], measures: [], expectedShape: 'table' };
+    const plan = createRuntimePlanPreview(intent);
+    expect(plan.status).toBe('ready');
+    expect(plan.logicalOperations).toHaveLength(3);
+    expect(plan.logicalOperations[0].type).toBe('scan');
+    expect(plan.logicalOperations[1].type).toBe('table_preview');
+    expect(plan.logicalOperations[2].type).toBe('limit');
   });
 
   it('preview contains no SQL or rows', () => {

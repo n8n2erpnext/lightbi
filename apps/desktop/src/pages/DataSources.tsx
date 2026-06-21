@@ -1,3 +1,4 @@
+import { getApiBaseUrl } from '../lib/api-base';
 import React, { useState, useEffect } from 'react';
 import { Database, FileSpreadsheet, Activity, ServerCog } from 'lucide-react';
 import { useAppRuntime } from '@lightbi/runtime';
@@ -8,7 +9,7 @@ export const DataSources: React.FC = () => {
   
   const [apiHealth, setApiHealth] = useState<'checking' | 'online' | 'offline'>('checking');
   
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5172';
+  const API_BASE_URL = getApiBaseUrl();
 
   useEffect(() => {
     const checkHealth = async () => {
@@ -31,14 +32,22 @@ export const DataSources: React.FC = () => {
             <ServerCog className="w-6 h-6 mr-3 text-gray-400" />
             Advanced Management
           </h1>
-          <p className="text-[13px] text-gray-500 mt-1">Manage imported datasets, connections, and system health.</p>
-          <div className="flex items-center mt-3 space-x-3 text-[11px] text-gray-400">
+          <p className="text-[13px] text-gray-500 mt-1">Manage imported datasets, optional connectors, and system health.</p>
+          <div className="flex items-center mt-3 space-x-3 text-[11px] text-gray-500">
+            <span className="px-2 py-1 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-100 font-medium">
+              Local file analysis: Available offline
+            </span>
             <span className="flex items-center">
               <Activity className="w-3 h-3 mr-1" />
-              API: {apiHealth === 'checking' ? 'Checking...' : apiHealth === 'online' ? <span className="text-emerald-500 font-medium">Online</span> : <span className="text-red-500 font-medium">Offline</span>}
+              Connector API: {apiHealth === 'checking' ? 'Checking...' : apiHealth === 'online' ? <span className="text-emerald-500 font-medium">Online</span> : <span className="text-amber-600 font-medium">Offline</span>}
             </span>
             <span>Target: {API_BASE_URL}</span>
           </div>
+          {apiHealth === 'offline' && (
+            <p className="text-[12px] text-gray-500 mt-2 max-w-2xl">
+              Backend is only needed for ERP/database/API connectors, persistence, shared jobs, or server-side execution. Uploaded local files continue to parse and preview in-browser.
+            </p>
+          )}
         </div>
       </div>
 

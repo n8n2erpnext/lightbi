@@ -23,8 +23,57 @@ describe('Analysis Runtime Contract', () => {
     expect(intent.blockedReasons).toHaveLength(0);
   });
 
+  it('preserves explicit measure aggregation metadata', () => {
+    const action: AnalysisAction = {
+      ...baseAction,
+      actionType: 'group_by',
+      dimensions: ['Mã kho'],
+      measures: ['Tổng tiền'],
+      measureAggregations: { 'Tổng tiền': 'SUM' }
+    };
+    const intent = createRuntimeIntentFromAnalysisAction(action);
+    expect(intent.measureAggregations).toEqual({ 'Tổng tiền': 'SUM' });
+  });
+
+  it('group_by with derived measure but no physical measure is ready', () => {
+    const action: AnalysisAction = {
+      ...baseAction,
+      actionType: 'group_by',
+      dimensions: ['job'],
+      measures: [],
+      derivedMeasures: [{
+        id: 'response_rate',
+        label: 'response_rate',
+        type: 'positive_rate',
+        sourceColumn: 'y',
+        positiveValues: ['yes'],
+        numeratorLabel: 'positive_count',
+        denominatorLabel: 'total_count',
+      }]
+    };
+    const intent = createRuntimeIntentFromAnalysisAction(action);
+    expect(intent.status).toBe('ready');
+    expect(intent.derivedMeasures?.[0].label).toBe('response_rate');
+  });
+
   it('trend report_date + shipment -> ready line_chart', () => {
     const action: AnalysisAction = { ...baseAction, actionType: 'trend', dimensions: ['report_date'], measures: ['shipment'] };
+    const intent = createRuntimeIntentFromAnalysisAction(action);
+    expect(intent.status).toBe('ready');
+    expect(intent.expectedShape).toBe('line_chart');
+    expect(intent.blockedReasons).toHaveLength(0);
+  });
+
+  it('trend Vietnamese date column + revenue -> ready line_chart', () => {
+    const action: AnalysisAction = { ...baseAction, actionType: 'trend', dimensions: ['Ngày xuất'], measures: ['Tổng tiền'] };
+    const intent = createRuntimeIntentFromAnalysisAction(action);
+    expect(intent.status).toBe('ready');
+    expect(intent.expectedShape).toBe('line_chart');
+    expect(intent.blockedReasons).toHaveLength(0);
+  });
+
+  it('trend month period + duration -> ready line_chart', () => {
+    const action: AnalysisAction = { ...baseAction, actionType: 'trend', dimensions: ['month'], measures: ['duration'] };
     const intent = createRuntimeIntentFromAnalysisAction(action);
     expect(intent.status).toBe('ready');
     expect(intent.expectedShape).toBe('line_chart');
@@ -61,5 +110,15 @@ describe('Analysis Runtime Contract', () => {
     expect(keys).not.toContain('chartConfig');
     expect(keys).not.toContain('rows');
     expect(keys).not.toContain('dataset');
+  });
+
+  it('table_preview -> ready table', () => {
+    const action: AnalysisAction = { ...baseAction, actionType: 'table_preview', dimensions: [], measures: [] };
+    const intent = createRuntimeIntentFromAnalysisAction(action);
+    expect(intent.status).toBe('ready');
+    expect(intent.expectedShape).toBe('table');
+    expect(intent.blockedReasons).toHaveLength(0);
+    expect(intent.dimensions).toEqual([]);
+    expect(intent.measures).toEqual([]);
   });
 });

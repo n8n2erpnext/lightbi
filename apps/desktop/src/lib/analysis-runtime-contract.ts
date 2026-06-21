@@ -1,10 +1,12 @@
 import type { AnalysisAction } from './analysis-opportunity-actions';
+import { isTimeLikeDimension } from './time-dimension';
 
 export type RuntimeIntentType =
   | "group_by"
   | "trend"
   | "distribution"
-  | "relationship";
+  | "relationship"
+  | "table_preview";
 
 export type RuntimeIntentStatus =
   | "ready"
@@ -16,6 +18,8 @@ export interface RuntimeIntent {
   type: RuntimeIntentType;
   dimensions: string[];
   measures: string[];
+  measureAggregations?: Record<string, "SUM" | "COUNT" | "AVG">;
+  derivedMeasures?: DerivedMeasure[];
   expectedShape:
     | "table"
     | "bar_chart"
@@ -27,14 +31,15 @@ export interface RuntimeIntent {
   source: "analysis_action";
 }
 
-const TIME_LIKE_DIMENSIONS = [
-  'report_date',
-  'date',
-  'order_date',
-  'delivery_date',
-  'created_at',
-  'updated_at'
-];
+export interface DerivedMeasure {
+  id: string;
+  label: string;
+  type: "positive_rate";
+  sourceColumn: string;
+  positiveValues: string[];
+  numeratorLabel: string;
+  denominatorLabel: string;
+}
 
 export function createRuntimeIntentFromAnalysisAction(action: AnalysisAction): RuntimeIntent {
   const intent: RuntimeIntent = {
@@ -43,6 +48,8 @@ export function createRuntimeIntentFromAnalysisAction(action: AnalysisAction): R
     type: action.actionType,
     dimensions: [...action.dimensions],
     measures: [...action.measures],
+    measureAggregations: action.measureAggregations ? { ...action.measureAggregations } : undefined,
+    derivedMeasures: action.derivedMeasures ? action.derivedMeasures.map(measure => ({ ...measure, positiveValues: [...measure.positiveValues] })) : undefined,
     expectedShape: "table", // Default fallback
     status: "ready",
     warnings: [],
@@ -51,22 +58,26 @@ export function createRuntimeIntentFromAnalysisAction(action: AnalysisAction): R
   };
 
   switch (action.actionType) {
+    case "table_preview":
+      intent.expectedShape = "table";
+      break;
+
     case "group_by":
       if (intent.dimensions.length < 1) {
         intent.blockedReasons.push("group_by requires at least 1 dimension");
       }
-      if (intent.measures.length < 1) {
+      if (intent.measures.length < 1 && (intent.derivedMeasures?.length ?? 0) < 1) {
         intent.blockedReasons.push("group_by requires at least 1 measure");
       }
       intent.expectedShape = "bar_chart";
       break;
 
     case "trend":
-      const hasTimeDimension = intent.dimensions.some(dim => TIME_LIKE_DIMENSIONS.includes(dim) || dim.includes('time') || dim.includes('date'));
+      const hasTimeDimension = intent.dimensions.some(dim => isTimeLikeDimension(dim));
       if (!hasTimeDimension) {
         intent.blockedReasons.push("trend requires at least 1 time-like dimension");
       }
-      if (intent.measures.length < 1) {
+      if (intent.measures.length < 1 && (intent.derivedMeasures?.length ?? 0) < 1) {
         intent.blockedReasons.push("trend requires at least 1 measure");
       }
       intent.expectedShape = "line_chart";

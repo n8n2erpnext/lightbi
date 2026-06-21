@@ -37,6 +37,45 @@ describe('guarded-sum-bridge', () => {
     expect(gbOp.measureAggregations!['revenue']).toBe('SUM');
   });
 
+  it('promotes decimal numeric columns to SUM', () => {
+    const rawRows = [
+      { Sales: 261.96 },
+      { Sales: 993.9 },
+      { Sales: 14.62 }
+    ];
+
+    const plan: RuntimePlanPreview = {
+      ...basePlan,
+      logicalOperations: [
+        { type: 'trend', timeDimension: 'Order Date', measures: ['Sales'] }
+      ]
+    };
+
+    const enhanced = enhancePlanWithGuardedSum(plan, rawRows);
+    const trendOp = enhanced.logicalOperations[0] as LogicalRuntimeOperation & { type: 'trend' };
+
+    expect(trendOp.measureAggregations?.Sales).toBe('SUM');
+  });
+
+  it('preserves explicit SUM even when health evaluation would otherwise downgrade', () => {
+    const rawRows = [
+      { Sales: 'not-a-number' },
+      { Sales: 993.9 }
+    ];
+
+    const plan: RuntimePlanPreview = {
+      ...basePlan,
+      logicalOperations: [
+        { type: 'trend', timeDimension: 'Order Date', measures: ['Sales'], measureAggregations: { Sales: 'SUM' } }
+      ]
+    };
+
+    const enhanced = enhancePlanWithGuardedSum(plan, rawRows);
+    const trendOp = enhanced.logicalOperations[0] as LogicalRuntimeOperation & { type: 'trend' };
+
+    expect(trendOp.measureAggregations?.Sales).toBe('SUM');
+  });
+
   it('downgrades dirty text columns to COUNT', () => {
     const rawRows = [
       { feedback: 'Good' },

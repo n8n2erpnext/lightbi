@@ -7,12 +7,14 @@ import { GoogleSheetsStep } from './GoogleSheetsStep';
 import { DatabaseStep } from './DatabaseStep';
 import { ApiStep } from './ApiStep';
 import { WarehouseStep } from './WarehouseStep';
+import type { SourceInspectionResult } from '../../lib/source-preflight';
 interface DataIntakeDrawerProps {
   request: DataIntakeRequest | null;
   onClose: () => void;
+  onSourceInspected?: (result: SourceInspectionResult) => void;
 }
 
-export function DataIntakeDrawer({ request, onClose }: DataIntakeDrawerProps) {
+export function DataIntakeDrawer({ request, onClose, onSourceInspected }: DataIntakeDrawerProps) {
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && request) onClose();
@@ -49,9 +51,21 @@ export function DataIntakeDrawer({ request, onClose }: DataIntakeDrawerProps) {
       case 'm365_excel':
       case 'csv_url':
       case 'excel_url':
-        return <GoogleSheetsStep config={config} onClose={onClose} initialUrl={request.initialUrl} />;
+        return (
+          <GoogleSheetsStep
+            config={config}
+            onClose={onClose}
+            initialUrl={request.initialUrl}
+            onSourceInspected={onSourceInspected}
+          />
+        );
       case 'database':
-        return <DatabaseStep config={config} onClose={onClose} />;
+      case 'postgresql':
+      case 'mysql':
+      case 'mariadb':
+      case 'mongodb_atlas':
+      case 'sqlite':
+        return <DatabaseStep config={config} onClose={onClose} onSourceInspected={onSourceInspected} />;
       case 'api':
         return <ApiStep config={config} onClose={onClose} />;
       case 'data_warehouse':

@@ -1,7 +1,8 @@
 import type { AnalysisAction } from './analysis-opportunity-actions';
 import type { RuntimeIntent } from './analysis-runtime-contract';
 import type { RuntimePlanPreview } from './runtime-planner-preview';
-import type { AISemanticBriefing } from './ai-briefing-contract';
+import type { AISafeBriefing } from './ai-briefing-contract';
+import type { RuntimeDatasetSource, RuntimeRowScope } from './runtime-dataset-source';
 
 export interface InvestigationSession {
   id: string;
@@ -11,7 +12,9 @@ export interface InvestigationSession {
   runtimeIntent: RuntimeIntent;
   runtimePlanPreview: RuntimePlanPreview;
   rows?: Record<string, unknown>[];
-  aiBriefing?: AISemanticBriefing;
+  aiBriefing?: AISafeBriefing;
+  runtimeDatasetSource?: RuntimeDatasetSource;
+  rowScope?: RuntimeRowScope;
 }
 
 // In-memory store for now, since we aren't using a real backend or persistent DB yet.
@@ -24,12 +27,11 @@ export function createInvestigationSession(
   runtimeIntent: RuntimeIntent,
   runtimePlanPreview: RuntimePlanPreview,
   rows?: Record<string, unknown>[],
-  aiBriefing?: AISemanticBriefing
+  aiBriefing?: AISafeBriefing,
+  runtimeDatasetSource?: RuntimeDatasetSource,
+  rowScope?: RuntimeRowScope
 ): InvestigationSession {
   let safeRows = rows;
-  if (safeRows && safeRows.length > 1000) {
-    safeRows = safeRows.slice(0, 1000);
-  }
   // Deep clone to preserve original
   safeRows = safeRows ? JSON.parse(JSON.stringify(safeRows)) : undefined;
   console.log("TRACE [SESSION] rows.length:", safeRows ? safeRows.length : 0);
@@ -42,7 +44,9 @@ export function createInvestigationSession(
     runtimeIntent,
     runtimePlanPreview,
     rows: safeRows,
-    aiBriefing
+    aiBriefing,
+    runtimeDatasetSource,
+    rowScope
   };
   
   currentSession = session;

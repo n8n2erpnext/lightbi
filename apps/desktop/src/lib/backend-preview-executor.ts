@@ -2,13 +2,17 @@ import type { RuntimePlanPreview } from './runtime-planner-preview';
 import type { DuckDBPreviewResult } from './duckdb-preview-sandbox';
 import type { SafeSqlPreview } from './safe-sql-preview';
 import { executeLocalDuckDB } from './local-duckdb-executor';
+import type { RuntimeDatasetSource, RuntimeRowScope } from './runtime-dataset-source';
 
 export interface BackendPreviewInput {
   runtimePlan: RuntimePlanPreview;
   safeSqlPreview?: SafeSqlPreview;
   rows?: Record<string, unknown>[];
+  runtimeDatasetSource?: RuntimeDatasetSource;
+  rowScope?: RuntimeRowScope;
   endpoint?: string;
   limit?: number;
+  signal?: AbortSignal;
 }
 
 export async function executeBackendPreview(input: BackendPreviewInput): Promise<DuckDBPreviewResult> {
@@ -17,12 +21,15 @@ export async function executeBackendPreview(input: BackendPreviewInput): Promise
   // Local Execution Path / Seam fallback if no endpoint is configured.
   // If no backend endpoint is configured, attempt local DuckDB execution when SQL and rows are available.
   if (!input.endpoint) {
-    if (input.safeSqlPreview && input.rows) {
+    if (input.safeSqlPreview && (input.runtimeDatasetSource || input.rows)) {
       return executeLocalDuckDB({
         runtimePlan: input.runtimePlan,
         safeSqlPreview: input.safeSqlPreview,
         rows: input.rows,
-        limit
+        runtimeDatasetSource: input.runtimeDatasetSource,
+        rowScope: input.rowScope,
+        limit,
+        signal: input.signal
       });
     }
 
@@ -52,7 +59,8 @@ export async function executeBackendPreview(input: BackendPreviewInput): Promise
       body: JSON.stringify({
         runtime_plan: input.runtimePlan,
         limit
-      })
+      }),
+      signal: input.signal
     });
 
     if (!response.ok) {
@@ -109,6 +117,7 @@ export async function executeBackendPreview(input: BackendPreviewInput): Promise
       source: "backend_duckdb_preview"
     };
   } catch (error) {
+    const aborted = input.signal?.aborted || (error instanceof DOMException && error.name === 'AbortError');
     return {
       id: `preview_exec_${input.runtimePlan.id}`,
       sourceSqlPreviewId: 'backend_executor',
@@ -119,7 +128,11 @@ export async function executeBackendPreview(input: BackendPreviewInput): Promise
       maxRows: limit,
       warnings: [...input.runtimePlan.warnings],
       blockedReasons: [],
-      errorMessage: error instanceof Error ? `NETWORK_UNAVAILABLE: ${error.message}` : "NETWORK_UNAVAILABLE: Failed to connect to the backend execution API.",
+      errorMessage: aborted
+        ? "EXECUTION_ABORTED: Preview execution was cancelled."
+        : error instanceof Error
+          ? `NETWORK_UNAVAILABLE: ${error.message}`
+          : "NETWORK_UNAVAILABLE: Failed to connect to the backend execution API.",
       source: "backend_duckdb_preview"
     };
   }

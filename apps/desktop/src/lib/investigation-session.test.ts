@@ -55,10 +55,11 @@ describe('Investigation Session', () => {
     expect(session.rows?.[0].a).toBe(1);
   });
 
-  it('2. rows are capped at 1000', () => {
+  it('2. rows preserve the full analysis dataset', () => {
     const rows = Array.from({ length: 1500 }).map((_, i) => ({ id: i }));
     const session = createInvestigationSession('d1', dummyAction, dummyIntent, dummyPlan, rows);
-    expect(session.rows).toHaveLength(1000);
+    expect(session.rows).toHaveLength(1500);
+    expect(session.rows?.[1499].id).toBe(1499);
   });
 
   it('3. rows are cloned or preserved safely', () => {
@@ -79,6 +80,6 @@ describe('Investigation Session', () => {
     const rows = Array.from({ length: 1500 }).map((_, i) => ({ id: i }));
     const session = createInvestigationSession('d1', dummyAction, dummyIntent, dummyPlan, rows);
     expect(rows).toHaveLength(1500); // Original array size remains
-    expect(session.rows).toHaveLength(1000);
+    expect(session.rows).toHaveLength(1500);
   });
 });

@@ -11,17 +11,17 @@ export const DuckDBPreviewRuntimeCard: React.FC<DuckDBPreviewRuntimeCardProps> =
       <div className="flex justify-between items-start mb-4">
         <div>
           <h3 className="text-lg font-semibold text-gray-100 flex items-center gap-2">
-            DuckDB Preview Result
+            [PARTIAL] Virtual Business View Preview
             <span className={`px-2 py-0.5 rounded text-xs font-medium uppercase tracking-wide border ${
               result.status === 'ready' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
               result.status === 'warning' ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' :
               result.status === 'error' ? 'bg-rose-500/10 text-rose-400 border-rose-500/20' :
               'bg-gray-500/10 text-gray-400 border-gray-500/20'
             }`}>
-              {result.status}
+              mock_{result.status}
             </span>
           </h3>
-          <p className="text-sm text-gray-400 mt-1">Preview only. Full execution has not run.</p>
+          <p className="text-sm text-amber-400 mt-1 font-medium">PARTIAL: Virtual Business View preview is mock/contract-only. Real joined execution over uploaded rows is not yet implemented.</p>
         </div>
         <div className="text-right">
           <div className="text-sm font-medium text-gray-300">

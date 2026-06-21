@@ -1,3 +1,4 @@
+import { getApiBaseUrl } from './lib/api-base';
 import { useState, useMemo } from 'react';
 import ReactECharts from 'echarts-for-react';
 import './App.css';
@@ -7,7 +8,7 @@ export default function App() {
   const [chartData, setChartData] = useState<any>(null);
 
   const importCsv = async () => {
-    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5172';
+    const API_BASE_URL = getApiBaseUrl();
     try {
       const res = await fetch(`${API_BASE_URL}/api/project/import-csv`, {
         method: 'POST',
@@ -25,7 +26,7 @@ export default function App() {
   };
 
   const loadChart = async () => {
-    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5172';
+    const API_BASE_URL = getApiBaseUrl();
     try {
       const res = await fetch(`${API_BASE_URL}/api/chart/line`);
       const data = await res.json();
@@ -37,7 +38,7 @@ export default function App() {
   };
 
   const exportExcel = async () => {
-    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5172';
+    const API_BASE_URL = getApiBaseUrl();
     try {
       const res = await fetch(`${API_BASE_URL}/api/export/line/download`);
       const data = await res.json();

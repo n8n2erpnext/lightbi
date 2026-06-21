@@ -31,6 +31,8 @@ export const AnalysisOpportunityCard: React.FC<AnalysisOpportunityCardProps> = (
 
   return (
     <div 
+      role="button"
+      tabIndex={0}
       onClick={() => onSelect(action)}
       className={`relative p-3.5 rounded-xl border transition-all cursor-pointer flex flex-col gap-2 group ${
         isSelected 

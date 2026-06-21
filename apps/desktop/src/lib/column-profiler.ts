@@ -6,6 +6,11 @@ export interface ColumnProfile {
   distinctCount: number;
   nullPercent: number;
   topValues: string[];
+  topValueCounts?: Array<{ value: string; count: number }>;
+  nonEmptyCount?: number;
+  dominanceRatio?: number;
+  profiledRowCount?: number;
+  profilingScope?: "full" | "sample";
   isIdentifier: boolean;
   isCategorical: boolean;
 }
@@ -27,8 +32,7 @@ export function profileColumns(
     return profiles;
   }
 
-  // Sample up to 1000 rows for performance
-  const sample = dataRows.slice(0, 1000);
+  const sample = dataRows;
   const sampleSize = sample.length;
 
   columns.forEach(col => {
@@ -93,6 +97,13 @@ export function profileColumns(
       .map(entry => entry[0]);
 
     const distinctCount = sortedValues.length;
+    const topValueCounts = Array.from(valueCounts.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 10)
+      .map(([value, count]) => ({ value, count }));
+    const dominanceRatio = nonNullCount > 0 && topValueCounts[0]
+      ? topValueCounts[0].count / nonNullCount
+      : undefined;
 
     // Extrapolate distinct count if sample size is smaller than total
     // A simple linear extrapolation for high cardinality, though typically
@@ -111,6 +122,11 @@ export function profileColumns(
       distinctCount: estimatedTotalDistinct,
       nullPercent: sampleSize > 0 ? (nullCount / sampleSize) * 100 : 0,
       topValues: sortedValues.slice(0, 5),
+      topValueCounts,
+      nonEmptyCount: nonNullCount,
+      dominanceRatio,
+      profiledRowCount: sampleSize,
+      profilingScope: sampleSize >= totalRows ? "full" : "sample",
       isIdentifier,
       isCategorical
     };

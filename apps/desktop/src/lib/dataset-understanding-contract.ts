@@ -61,7 +61,7 @@ export type AvailableAnalysisItem = {
   label: string;
   basedOnSignals: string[];
   source: "signals" | "business_view" | "question";
-  actionType?: "group_by" | "trend" | "distribution" | "relationship";
+  actionType?: "group_by" | "trend" | "distribution" | "relationship" | "table_preview";
   dimensions?: string[];
   measures?: string[];
 };
@@ -209,9 +209,14 @@ function generateDomainOpportunities(
     let hasPromotedDist = false;
     for (const dim of dimensionSignals) {
       if (capId > 8) break;
-      if (!hasPromotedDist) {
+      const isIdentifier = dim.canonicalId.toLowerCase().includes('id') || dim.canonicalId.toLowerCase().includes('sku') || dim.canonicalId.toLowerCase().includes('code') || dim.canonicalId.toLowerCase().includes('name');
+      if (!hasPromotedDist && !isIdentifier) {
+        // Only promote distribution for safe categorical non-identifiers
         available.push({ id: `gen_aa_${capId++}`, label: `${dim.label} distribution`, basedOnSignals: [dim.canonicalId], source: 'signals', actionType: 'distribution', dimensions: [dim.canonicalId], measures: ['record_count'] });
         hasPromotedDist = true;
+      } else if (isIdentifier) {
+        // High cardinality identifier / meaningless record_count fallback to table_preview
+        available.push({ id: `gen_aa_${capId++}`, label: `Preview ${dim.label} data`, basedOnSignals: [dim.canonicalId], source: 'signals', actionType: 'table_preview', dimensions: [dim.canonicalId], measures: [] });
       }
     }
     let hasPromotedTrend = false;
@@ -235,6 +240,19 @@ function generateDomainOpportunities(
 
     if (signals.length > 0 && measureSignals.length === 0) unavailable.push({ id: 'gen_ua_1', label: 'Quantitative breakdown analysis', missingSignals: ['(any measure)'], reason: 'Dataset lacks quantitative measure signals to aggregate.' });
     if (signals.length > 0 && timeSignals.length === 0) unavailable.push({ id: 'gen_ua_2', label: 'Trend over time analysis', missingSignals: ['(any time dimension)'], reason: 'Dataset lacks time-based signals for trend analysis.' });
+  }
+
+  // Fallback if absolutely no opportunities were generated
+  if (available.length === 0) {
+    available.push({ 
+      id: `gen_aa_preview`, 
+      label: `Explore dataset structure and sample rows`, 
+      basedOnSignals: [], 
+      source: 'signals', 
+      actionType: 'table_preview', 
+      dimensions: [], 
+      measures: [] 
+    });
   }
 
   return { available, unavailable };

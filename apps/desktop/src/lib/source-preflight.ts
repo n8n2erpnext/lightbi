@@ -20,7 +20,12 @@ export type SourceType =
   | "local_xls"
   | "local_txt"
   | "local_tsv"
-  | "local_json";
+  | "local_json"
+  | "postgresql"
+  | "mysql"
+  | "mariadb"
+  | "mongodb_atlas"
+  | "sqlite";
 
 export type SourceCandidate = {
   sourceType: SourceType;
@@ -41,12 +46,30 @@ export type SourceInspectionResult =
         rows_count?: number;
         columns?: string[];
         preview_rows?: any[];
+        semantic_rows?: any[];
+        semantic_sample?: {
+          strategy: "full" | "matrix_sample";
+          source_row_count: number;
+          sample_row_count: number;
+          row_indexes?: number[];
+        };
+        analysis_rows?: any[];
+        analysis_row_scope?: "full" | "not_retained";
         profiles?: Record<string, ColumnProfile>;
         is_workbook?: boolean;
         sheets?: Record<string, {
           rows_count: number;
           columns: string[];
           preview_rows: any[];
+          semantic_rows?: any[];
+          semantic_sample?: {
+            strategy: "full" | "matrix_sample";
+            source_row_count: number;
+            sample_row_count: number;
+            row_indexes?: number[];
+          };
+          analysis_rows?: any[];
+          analysis_row_scope?: "full" | "not_retained";
           profiles?: Record<string, ColumnProfile>;
         }>;
         default_sheet?: string;
@@ -166,10 +189,10 @@ export function createSourceCandidate(
 
   // ─── Microsoft 365 Excel ─────────────────────────────────────────────────
   if (
-    (lower.includes(".xlsx") || lower.includes(".xls")) &&
-    (lower.includes("sharepoint.com") ||
-      lower.includes("1drv.ms") ||
-      lower.includes("office.com"))
+    lower.includes("sharepoint.com") ||
+    lower.includes("1drv.ms") ||
+    lower.includes("onedrive.live.com") ||
+    lower.includes("office.com")
   ) {
     return {
       sourceType: "m365_excel",

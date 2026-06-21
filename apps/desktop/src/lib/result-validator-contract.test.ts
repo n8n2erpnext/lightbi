@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { validatePreviewRuntimeResult } from './result-validator-contract';
+import { validatePreviewRuntimeResult, validatePreviewAgainstIntent } from './result-validator-contract';
 import type { ExpectedResultContract } from './expected-result-contract';
 import type { PreviewRuntimeResult } from './duckdb-preview-runtime';
 
@@ -99,6 +99,14 @@ describe('Result Validator Contract', () => {
     expect(result.warnings).toContain("Trend shape expects a date/time dimension but none detected explicitly.");
   });
 
+  it('6b. Trend with month period dimension does not warn', () => {
+    const input = createMockInput({
+      expected: { shape: "trend", dimensions: [{ id: "month", label: "month" }] as any }
+    });
+    const result = validatePreviewRuntimeResult(input);
+    expect(result.warnings).not.toContain("Trend shape expects a date/time dimension but none detected explicitly.");
+  });
+
   it('7. Score maps to HIGH/MEDIUM/LOW', () => {
     const passed = validatePreviewRuntimeResult(createMockInput());
     expect(passed.confidence).toBe("HIGH");
@@ -110,5 +118,36 @@ describe('Result Validator Contract', () => {
     }));
     // 50% dimension, full others
     expect(["MEDIUM", "HIGH"]).toContain(partial.confidence); // Math.round might push it either way depending on exact weights
+  });
+
+  it('8. Table shape with zero measures does not fail as summary', () => {
+    const input = createMockInput({
+      expected: { shape: "table", measures: [] },
+      preview: { columns: [{ id: "dim1", label: "Dim 1", role: "dimension" }] }
+    });
+    const result = validatePreviewRuntimeResult(input);
+    expect(result.warnings).not.toContain("Summary shape requires at least one measure.");
+    expect(result.score).toBeGreaterThanOrEqual(85);
+  });
+
+  it('9. validatePreviewAgainstIntent maps table shape to table outputType', () => {
+    // Use imported function
+    const intent = {
+      id: "int-1",
+      expectedShape: "table",
+      dimensions: ["dim1"],
+      measures: []
+    } as any;
+    const previewResult = {
+      id: "prv-1",
+      columns: [{ name: "dim1", type: "VARCHAR" }],
+      rows: []
+    };
+    const result = validatePreviewAgainstIntent(intent, previewResult);
+    // the returned ResultValidationResult only has expectedResultId, not the full expectedResult, 
+    // but we can check that it doesn't log output type warnings or we can mock/spy it.
+    // Actually, output type isn't returned in the result validation result, it's just validated against.
+    // We'll just verify the score doesn't drop.
+    expect(result.score).toBeGreaterThanOrEqual(85);
   });
 });

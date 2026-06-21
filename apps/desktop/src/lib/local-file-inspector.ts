@@ -1,12 +1,51 @@
 import * as XLSX from 'xlsx';
 import type { SourceCandidate, SourceInspectionResult } from './source-preflight';
 import { profileColumns } from './column-profiler';
+import { createSemanticSample, type SemanticSample } from './semantic-sampler';
+
+const FULL_ANALYSIS_ROW_LIMIT = 20_000;
+
+function createRepresentativeRows<T>(rows: T[], limit: number = 1000): T[] {
+  if (!Array.isArray(rows) || rows.length <= limit) return rows.slice();
+  if (limit <= 0) return [];
+
+  const indexes = new Set<number>();
+  for (let i = 0; i < limit; i++) {
+    const index = Math.round((i * (rows.length - 1)) / (limit - 1));
+    indexes.add(index);
+  }
+
+  return [...indexes]
+    .sort((a, b) => a - b)
+    .map(index => rows[index]);
+}
+
+function sampleSeed(label: string, columns: string[], rowCount: number): string {
+  return `${label}:${rowCount}:${columns.join("|")}`;
+}
+
+function semanticSampleMetadata<T>(sample: SemanticSample<T>) {
+  return {
+    strategy: sample.strategy,
+    source_row_count: sample.sourceRowCount,
+    sample_row_count: sample.sampleRowCount,
+    row_indexes: sample.rowIndexes
+  };
+}
+
+function retainAnalysisRows<T>(rows: T[]): T[] | undefined {
+  return rows.length <= FULL_ANALYSIS_ROW_LIMIT ? rows : undefined;
+}
 
 /**
  * Inspect a local file using real parsing.
  * Uses SheetJS for Excel, native Text API for CSV/TXT/TSV, and native JSON parser.
  */
-export async function inspectLocalFile(candidate: SourceCandidate): Promise<SourceInspectionResult> {
+export async function inspectLocalFile(
+  candidate: SourceCandidate,
+  options: { signal?: AbortSignal } = {}
+): Promise<SourceInspectionResult> {
+  options.signal?.throwIfAborted();
   const file = candidate.file;
   if (!file) {
     return {
@@ -19,15 +58,15 @@ export async function inspectLocalFile(candidate: SourceCandidate): Promise<Sour
 
   try {
     if (candidate.sourceType === "local_xlsx" || candidate.sourceType === "local_xls") {
-      return await inspectExcel(file, candidate);
+      return await inspectExcel(file, candidate, options.signal);
     }
     
     if (candidate.sourceType === "local_csv" || candidate.sourceType === "local_tsv" || candidate.sourceType === "local_txt") {
-      return await inspectDelimitedText(file, candidate);
+      return await inspectDelimitedText(file, candidate, options.signal);
     }
     
     if (candidate.sourceType === "local_json") {
-      return await inspectJson(file, candidate);
+      return await inspectJson(file, candidate, options.signal);
     }
 
     return {
@@ -35,6 +74,7 @@ export async function inspectLocalFile(candidate: SourceCandidate): Promise<Sour
       message: "Unsupported local file type."
     };
   } catch (err: any) {
+    if (options.signal?.aborted || err?.name === "AbortError") throw err;
     console.error("Local file inspection error:", err);
     return {
       status: "invalid_format",
@@ -44,8 +84,9 @@ export async function inspectLocalFile(candidate: SourceCandidate): Promise<Sour
   }
 }
 
-async function inspectExcel(file: File, candidate: SourceCandidate): Promise<SourceInspectionResult> {
+async function inspectExcel(file: File, candidate: SourceCandidate, signal?: AbortSignal): Promise<SourceInspectionResult> {
   const buffer = await file.arrayBuffer();
+  signal?.throwIfAborted();
   // Read workbook without cell dates to prevent parsing issues, keep it fast.
   const workbook = XLSX.read(buffer, { type: "array" });
   
@@ -57,6 +98,7 @@ async function inspectExcel(file: File, candidate: SourceCandidate): Promise<Sou
   const sheetsData: Record<string, any> = {};
 
   for (const sheetName of sheetNames) {
+    signal?.throwIfAborted();
     const worksheet = workbook.Sheets[sheetName];
     // sheet_to_json with header: 1 returns array of arrays
     const rows = XLSX.utils.sheet_to_json<any[]>(worksheet, { header: 1 });
@@ -65,7 +107,16 @@ async function inspectExcel(file: File, candidate: SourceCandidate): Promise<Sou
       sheetsData[sheetName] = {
         rows_count: 0,
         columns: [],
-        preview_rows: []
+        preview_rows: [],
+        semantic_rows: [],
+        semantic_sample: {
+          strategy: "full",
+          source_row_count: 0,
+          sample_row_count: 0,
+          row_indexes: []
+        },
+        analysis_rows: [],
+        analysis_row_scope: "full"
       };
       continue;
     }
@@ -83,13 +134,21 @@ async function inspectExcel(file: File, candidate: SourceCandidate): Promise<Sou
       return obj;
     });
 
-    const previewObjects = allObjects.slice(0, 1000);
-    const profiles = profileColumns(columns, allObjects, dataRows.length);
+    const previewObjects = createRepresentativeRows(allObjects, 1000);
+    const semanticSample = createSemanticSample(allObjects, {
+      seed: sampleSeed(`${file.name}:${sheetName}`, columns, allObjects.length)
+    });
+    const profiles = profileColumns(columns, semanticSample.rows, dataRows.length);
+    const retainedAnalysisRows = retainAnalysisRows(allObjects);
 
     sheetsData[sheetName] = {
       rows_count: dataRows.length,
       columns,
       preview_rows: previewObjects,
+      semantic_rows: semanticSample.rows,
+      semantic_sample: semanticSampleMetadata(semanticSample),
+      analysis_rows: retainedAnalysisRows,
+      analysis_row_scope: retainedAnalysisRows ? "full" : "not_retained",
       profiles
     };
   }
@@ -116,8 +175,9 @@ async function inspectExcel(file: File, candidate: SourceCandidate): Promise<Sou
   };
 }
 
-async function inspectDelimitedText(file: File, candidate: SourceCandidate): Promise<SourceInspectionResult> {
+async function inspectDelimitedText(file: File, candidate: SourceCandidate, signal?: AbortSignal): Promise<SourceInspectionResult> {
   const text = await file.text();
+  signal?.throwIfAborted();
   const lines = text.split(/\r?\n/).filter(line => line.trim().length > 0);
   
   if (lines.length === 0) {
@@ -153,8 +213,12 @@ async function inspectDelimitedText(file: File, candidate: SourceCandidate): Pro
     return obj;
   });
 
-  const preview_rows = allObjects.slice(0, 1000);
-  const profiles = profileColumns(columns, allObjects, dataLines.length);
+  const preview_rows = createRepresentativeRows(allObjects, 1000);
+  const semanticSample = createSemanticSample(allObjects, {
+    seed: sampleSeed(file.name, columns, allObjects.length)
+  });
+  const profiles = profileColumns(columns, semanticSample.rows, dataLines.length);
+  const retainedAnalysisRows = retainAnalysisRows(allObjects);
 
   return {
     status: "accessible",
@@ -166,6 +230,10 @@ async function inspectDelimitedText(file: File, candidate: SourceCandidate): Pro
       rows_count: dataLines.length,
       columns,
       preview_rows,
+      semantic_rows: semanticSample.rows,
+      semantic_sample: semanticSampleMetadata(semanticSample),
+      analysis_rows: retainedAnalysisRows,
+      analysis_row_scope: retainedAnalysisRows ? "full" : "not_retained",
       detected_delimiter: delimiter === "\t" ? "tab" : delimiter,
       profiles
     },
@@ -173,8 +241,9 @@ async function inspectDelimitedText(file: File, candidate: SourceCandidate): Pro
   };
 }
 
-async function inspectJson(file: File, candidate: SourceCandidate): Promise<SourceInspectionResult> {
+async function inspectJson(file: File, candidate: SourceCandidate, signal?: AbortSignal): Promise<SourceInspectionResult> {
   const text = await file.text();
+  signal?.throwIfAborted();
   const json = JSON.parse(text);
 
   let dataArray: any[] = [];
@@ -199,6 +268,10 @@ async function inspectJson(file: File, candidate: SourceCandidate): Promise<Sour
 
   const firstObj = dataArray.find(item => typeof item === "object" && item !== null) || {};
   const columns = Object.keys(firstObj);
+  const semanticSample = createSemanticSample(dataArray, {
+    seed: sampleSeed(file.name, columns, dataArray.length)
+  });
+  const retainedAnalysisRows = retainAnalysisRows(dataArray);
 
   return {
     status: "accessible",
@@ -209,9 +282,13 @@ async function inspectJson(file: File, candidate: SourceCandidate): Promise<Sour
       name: file.name,
       rows_count: dataArray.length,
       columns,
-      preview_rows: dataArray.slice(0, 1000),
+      preview_rows: createRepresentativeRows(dataArray, 1000),
+      semantic_rows: semanticSample.rows,
+      semantic_sample: semanticSampleMetadata(semanticSample),
+      analysis_rows: retainedAnalysisRows,
+      analysis_row_scope: retainedAnalysisRows ? "full" : "not_retained",
       detected_fields: columns,
-      profiles: profileColumns(columns, dataArray, dataArray.length)
+      profiles: profileColumns(columns, semanticSample.rows, dataArray.length)
     },
     file
   };

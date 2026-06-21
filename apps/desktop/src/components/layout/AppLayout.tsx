@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
 import { useAppRuntime } from '@lightbi/runtime';
-import { Home as HomeIcon, LayoutDashboard, PieChart, Database, Server, Settings, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Home as HomeIcon, LayoutDashboard, PieChart, Database, Server, Settings, ChevronLeft, ChevronRight, TerminalSquare } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
 export const AppLayout: React.FC = () => {
@@ -14,6 +14,7 @@ export const AppLayout: React.FC = () => {
     { name: 'Charts', path: '/charts', icon: PieChart },
     { name: 'Datasets', path: '/datasets', icon: Database },
     { name: 'Data Sources', path: '/datasources', icon: Server },
+    { name: 'Advanced', path: '/advanced', icon: TerminalSquare },
   ];
 
   const bottomNavItems = [
@@ -26,15 +27,23 @@ export const AppLayout: React.FC = () => {
       <aside
         className={cn(
           "flex flex-col bg-white border-r border-gray-200 transition-all duration-300 relative",
-          isSidebarExpanded ? "w-[224px]" : "w-[48px]"
+          isSidebarExpanded ? "w-[48px] md:w-[224px]" : "w-[48px]"
         )}
       >
         {/* Header / Logo Area */}
         <div className="h-14 flex items-center px-3 border-b border-gray-200">
-          <div className="flex-shrink-0 flex items-center justify-center w-6 h-6 bg-gray-900 rounded">
-            <span className="text-white font-bold text-xs">L</span>
-          </div>
-          {isSidebarExpanded && <span className="ml-3 font-semibold text-sm">LightBI</span>}
+          <img
+            src="/branding/lightbi-icon.svg"
+            alt=""
+            className="w-7 h-7 flex-shrink-0"
+          />
+          {isSidebarExpanded && (
+            <img
+              src="/branding/lightbi-wordmark.svg"
+              alt="LightBI"
+              className="ml-3 hidden w-[54px] h-4 object-contain md:block"
+            />
+          )}
         </div>
 
         {/* Navigation */}
@@ -47,13 +56,13 @@ export const AppLayout: React.FC = () => {
                 cn(
                   "flex items-center h-8 px-2 rounded-md transition-colors text-[13px] font-medium",
                   isActive ? "bg-gray-100 text-gray-900" : "text-gray-600 hover:bg-gray-50 hover:text-gray-900",
-                  !isSidebarExpanded && "justify-center"
+                  !isSidebarExpanded ? "justify-center" : "justify-center md:justify-start"
                 )
               }
               title={item.name}
             >
               <item.icon className="w-4 h-4 flex-shrink-0" strokeWidth={1.5} />
-              {isSidebarExpanded && <span className="ml-3 truncate">{item.name}</span>}
+              {isSidebarExpanded && <span className="ml-3 hidden truncate md:block">{item.name}</span>}
             </NavLink>
           ))}
         </nav>
@@ -68,13 +77,13 @@ export const AppLayout: React.FC = () => {
                 cn(
                   "flex items-center h-8 px-2 rounded-md transition-colors text-[13px] font-medium",
                   isActive ? "bg-gray-100 text-gray-900" : "text-gray-600 hover:bg-gray-50 hover:text-gray-900",
-                  !isSidebarExpanded && "justify-center"
+                  !isSidebarExpanded ? "justify-center" : "justify-center md:justify-start"
                 )
               }
               title={item.name}
             >
               <item.icon className="w-4 h-4 flex-shrink-0" strokeWidth={1.5} />
-              {isSidebarExpanded && <span className="ml-3 truncate">{item.name}</span>}
+              {isSidebarExpanded && <span className="ml-3 hidden truncate md:block">{item.name}</span>}
             </NavLink>
           ))}
         </div>
@@ -82,7 +91,7 @@ export const AppLayout: React.FC = () => {
         {/* Toggle Button */}
         <button
           onClick={toggleSidebar}
-          className="absolute -right-3 top-16 bg-white border border-gray-200 rounded-full p-1 text-gray-500 hover:text-gray-800 focus:outline-none shadow-sm z-10"
+          className="absolute -right-3 top-16 z-10 hidden rounded-full border border-gray-200 bg-white p-1 text-gray-500 shadow-sm hover:text-gray-800 focus:outline-none md:block"
         >
           {isSidebarExpanded ? <ChevronLeft className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
         </button>

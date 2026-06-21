@@ -90,6 +90,29 @@ describe('Investigation Boundary Contract & Truth Truth', () => {
     cleanup();
   });
 
+  it('0.1 renders Run preview when AI briefing uses current readiness contract', () => {
+    (getCurrentInvestigationSession as any).mockReturnValue({
+      ...mockSession,
+      aiBriefing: {
+        datasetId: 'test-dataset',
+        generatedAt: '2026-06-14T00:00:00.000Z',
+        grain: 'event',
+        grainEvidence: 'Contains shipment rows',
+        readinessTier: 'caution',
+        readinessScore: 72,
+        semanticFields: [],
+        caveats: ['No stable time dimension detected.'],
+        safeActionHints: ['Can inspect dataset structure']
+      }
+    });
+
+    render(<Investigation />);
+
+    expect(screen.getByRole('button', { name: /Run preview/i })).toBeDefined();
+    expect(screen.getByText('Moderate Readiness (Caution)')).toBeDefined();
+    expect(screen.getByText(/No stable time dimension detected/)).toBeDefined();
+  });
+
   it('1. Upgrades empty executed result to failed truth state', async () => {
     (executeBackendPreview as any).mockResolvedValue({
       status: 'executed',

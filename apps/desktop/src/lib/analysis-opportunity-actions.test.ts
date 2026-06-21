@@ -53,4 +53,182 @@ describe('Analysis Opportunity Actions', () => {
     expect(trend?.dimensions).toEqual(['report_date']);
     expect(trend?.measures).toEqual(['shipment']);
   });
+
+  it('should generate table_preview action when capability is present', () => {
+    const mockUnderstanding: DatasetUnderstanding = {
+      id: 'du_2',
+      status: 'partial',
+      confidenceScore: 0.9,
+      grainHint: 'event',
+      summary: { signalCount: 0, perspectiveCount: 0, businessViewCount: 0, questionCount: 0 },
+      detectedConcepts: [],
+      inferredEntities: [],
+      workflowHints: [],
+      relationshipHints: [],
+      caveats: [],
+      narrative: 'Test',
+      sourceTrace: { signalIds: [], perspectiveIds: [], businessViewIds: [], questionSuggestionIds: [] },
+      createdAt: '2026-06-10T00:00:00Z',
+      capabilities: [],
+      opportunities: [
+        { 
+          id: 'preview', 
+          label: 'Explore dataset structure', 
+          description: 'Preview',
+          requiredCapabilities: ['table_preview'],
+          confidence: 'high',
+          recommendedVisual: 'table',
+          complexity: 'low',
+          requiredConcepts: []
+        }
+      ],
+      availableAnalysis: [],
+      unavailableAnalysis: []
+    };
+
+    const actions = generateAnalysisActions(mockUnderstanding);
+    expect(actions.length).toBe(2); // preview + fallback
+    expect(actions[0].actionType).toBe('table_preview');
+    expect(actions[0].dimensions).toEqual([]);
+    expect(actions[0].measures).toEqual([]);
+  });
+
+  it('legacy opportunity with trend_over_time but no dimensions/measures does not produce blocked trend', () => {
+    const mockUnderstanding: DatasetUnderstanding = {
+      id: 'du_3',
+      status: 'partial',
+      confidenceScore: 0.9,
+      grainHint: 'event',
+      summary: { signalCount: 0, perspectiveCount: 0, businessViewCount: 0, questionCount: 0 },
+      detectedConcepts: [],
+      inferredEntities: [],
+      workflowHints: [],
+      relationshipHints: [],
+      caveats: [],
+      narrative: 'Test',
+      sourceTrace: { signalIds: [], perspectiveIds: [], businessViewIds: [], questionSuggestionIds: [] },
+      createdAt: '2026-06-10T00:00:00Z',
+      capabilities: [],
+      opportunities: [
+        { 
+          id: 'trend_invalid', 
+          label: 'Trend without dimensions', 
+          description: 'Trend',
+          requiredCapabilities: ['trend_over_time'],
+          confidence: 'high',
+          recommendedVisual: 'line_chart',
+          complexity: 'low',
+          requiredConcepts: []
+        }
+      ],
+      availableAnalysis: [],
+      unavailableAnalysis: []
+    };
+
+    const actions = generateAnalysisActions(mockUnderstanding);
+    // Should downgrade to table_preview instead of generating a blocked trend
+    expect(actions[0].actionType).toBe('table_preview');
+  });
+
+  it('legacy opportunity with distribution but no dimensions does not produce blocked distribution', () => {
+    const mockUnderstanding: DatasetUnderstanding = {
+      id: 'du_4',
+      status: 'partial',
+      confidenceScore: 0.9,
+      grainHint: 'event',
+      summary: { signalCount: 0, perspectiveCount: 0, businessViewCount: 0, questionCount: 0 },
+      detectedConcepts: [],
+      inferredEntities: [],
+      workflowHints: [],
+      relationshipHints: [],
+      caveats: [],
+      narrative: 'Test',
+      sourceTrace: { signalIds: [], perspectiveIds: [], businessViewIds: [], questionSuggestionIds: [] },
+      createdAt: '2026-06-10T00:00:00Z',
+      capabilities: [],
+      opportunities: [
+        { 
+          id: 'dist_invalid', 
+          label: 'Distribution without dimensions', 
+          description: 'Dist',
+          requiredCapabilities: ['distribution'],
+          confidence: 'high',
+          recommendedVisual: 'bar_chart',
+          complexity: 'low',
+          requiredConcepts: []
+        }
+      ],
+      availableAnalysis: [],
+      unavailableAnalysis: []
+    };
+
+    const actions = generateAnalysisActions(mockUnderstanding);
+    // Should downgrade to table_preview instead of generating a blocked distribution
+    expect(actions[0].actionType).toBe('table_preview');
+  });
+
+  it('legacy opportunity with relationship but only 1 measure does not produce blocked relationship', () => {
+    const mockUnderstanding: DatasetUnderstanding = {
+      id: 'du_rel_1',
+      status: 'partial',
+      confidenceScore: 0.9,
+      grainHint: 'event',
+      summary: { signalCount: 0, perspectiveCount: 0, businessViewCount: 0, questionCount: 0 },
+      detectedConcepts: [],
+      inferredEntities: [],
+      workflowHints: [],
+      relationshipHints: [],
+      caveats: [],
+      narrative: 'Test',
+      sourceTrace: { signalIds: [], perspectiveIds: [], businessViewIds: [], questionSuggestionIds: [] },
+      createdAt: '2026-06-10T00:00:00Z',
+      capabilities: [],
+      opportunities: [
+        { 
+          id: 'rel_invalid', 
+          label: 'Relationship with 1 measure', 
+          description: 'Rel',
+          requiredCapabilities: ['relationship'],
+          confidence: 'high',
+          recommendedVisual: 'scatter',
+          complexity: 'low',
+          requiredConcepts: [],
+          measures: ['meas1'] as any
+        } as any
+      ],
+      availableAnalysis: [],
+      unavailableAnalysis: []
+    };
+
+    const actions = generateAnalysisActions(mockUnderstanding);
+    // Should downgrade to table_preview instead of generating a blocked relationship
+    expect(actions[0].actionType).toBe('table_preview');
+  });
+
+  it('fallback table preview remains available', () => {
+    const mockUnderstanding: DatasetUnderstanding = {
+      id: 'du_5',
+      status: 'partial',
+      confidenceScore: 0.9,
+      grainHint: 'event',
+      summary: { signalCount: 0, perspectiveCount: 0, businessViewCount: 0, questionCount: 0 },
+      detectedConcepts: [],
+      inferredEntities: [],
+      workflowHints: [],
+      relationshipHints: [],
+      caveats: [],
+      narrative: 'Test',
+      sourceTrace: { signalIds: [], perspectiveIds: [], businessViewIds: [], questionSuggestionIds: [] },
+      createdAt: '2026-06-10T00:00:00Z',
+      capabilities: [],
+      opportunities: [],
+      availableAnalysis: [],
+      unavailableAnalysis: []
+    };
+
+    const actions = generateAnalysisActions(mockUnderstanding);
+    expect(actions.length).toBe(1);
+    expect(actions[0].id).toBe('fallback_analyze');
+    expect(actions[0].actionType).toBe('table_preview');
+  });
 });

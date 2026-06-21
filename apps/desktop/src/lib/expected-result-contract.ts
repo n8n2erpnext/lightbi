@@ -7,7 +7,10 @@ export type ExpectedResultShape =
   | "comparison"
   | "summary"
   | "distribution"
-  | "diagnostic";
+  | "diagnostic"
+  | "table"
+  | "group_by"
+  | "relationship";
 
 export type ExpectedOutputType =
   | "table"

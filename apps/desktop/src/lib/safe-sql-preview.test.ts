@@ -37,7 +37,57 @@ describe('Safe SQL Preview', () => {
 
     const sqlPreview = createSafeSqlPreview(plan);
     expect(sqlPreview.status).toBe('ready');
-    expect(sqlPreview.sql).toBe('SELECT "driver" AS "Driver", SUM(TRY_CAST(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(CAST("revenue" AS VARCHAR), \',\', \'\'), \'.\', \'\'), \'đ\', \'\'), \'VNĐ\', \'\'), \'$\', \'\'), \' \', \'\') AS DOUBLE)) AS "Revenue", SUM(CASE WHEN "revenue" IS NOT NULL AND TRY_CAST(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(CAST("revenue" AS VARCHAR), \',\', \'\'), \'.\', \'\'), \'đ\', \'\'), \'VNĐ\', \'\'), \'$\', \'\'), \' \', \'\') AS DOUBLE) IS NULL THEN 1 ELSE 0 END) AS "__malformed_Revenue"\nFROM __LIGHTBI_PREVIEW_TABLE__\nWHERE "driver" IS NOT NULL\nGROUP BY "driver"\nLIMIT 100;');
+    expect(sqlPreview.sql).toContain('SUM(COALESCE(TRY_CAST');
+    expect(sqlPreview.sql).toContain('AS "Revenue"');
+    expect(sqlPreview.sql).toContain('AS "__malformed_Revenue"');
+    expect(sqlPreview.sql).toContain('GROUP BY "driver"');
+  });
+
+  it('group_by plan produces AVG when metadata marks indicator measures', () => {
+    const plan: RuntimePlanPreview = { ...basePlan, logicalOperations: [
+      { type: 'scan', columns: ['Country Name', 'Business: Internet users (per 100 people)'] },
+      {
+        type: 'group_by',
+        dimensions: ['Country Name'],
+        measures: ['Business: Internet users (per 100 people)'],
+        measureAggregations: { 'Business: Internet users (per 100 people)': 'AVG' }
+      },
+      { type: 'limit', rows: 100 }
+    ], requiredColumns: ['Country Name', 'Business: Internet users (per 100 people)']};
+
+    const sqlPreview = createSafeSqlPreview(plan);
+    expect(sqlPreview.status).toBe('ready');
+    expect(sqlPreview.sql).toContain('AVG(COALESCE(TRY_CAST');
+    expect(sqlPreview.sql).toContain('"business: internet users (per 100 people)"');
+  });
+
+  it('group_by plan produces positive-rate derived metrics', () => {
+    const plan: RuntimePlanPreview = { ...basePlan, logicalOperations: [
+      { type: 'scan', columns: ['job', 'y'] },
+      {
+        type: 'group_by',
+        dimensions: ['job'],
+        measures: [],
+        derivedMeasures: [{
+          id: 'response_rate',
+          label: 'response_rate',
+          type: 'positive_rate',
+          sourceColumn: 'y',
+          positiveValues: ['yes', 'y', 'true', '1'],
+          numeratorLabel: 'positive_count',
+          denominatorLabel: 'total_count',
+        }]
+      },
+      { type: 'limit', rows: 100 }
+    ], requiredColumns: ['job', 'y']};
+
+    const sqlPreview = createSafeSqlPreview(plan);
+    expect(sqlPreview.status).toBe('ready');
+    expect(sqlPreview.sql).toContain('"job" AS "job"');
+    expect(sqlPreview.sql).toContain('AS "positive_count"');
+    expect(sqlPreview.sql).toContain('AS "total_count"');
+    expect(sqlPreview.sql).toContain('AS "response_rate"');
+    expect(sqlPreview.sql).toContain('LOWER(TRIM(CAST("y" AS VARCHAR))) IN');
   });
 
   it('trend plan produces ORDER BY time dimension', () => {
@@ -49,7 +99,12 @@ describe('Safe SQL Preview', () => {
 
     const sqlPreview = createSafeSqlPreview(plan);
     expect(sqlPreview.status).toBe('ready');
-    expect(sqlPreview.sql).toBe('SELECT CAST("report_date" AS TIMESTAMP) AS "Report_Date", CAST(COUNT("shipment") AS INTEGER) AS "Shipment"\nFROM __LIGHTBI_PREVIEW_TABLE__\nWHERE "report_date" IS NOT NULL\nGROUP BY CAST("report_date" AS TIMESTAMP)\nORDER BY CAST("report_date" AS TIMESTAMP)\nLIMIT 100;');
+    expect(sqlPreview.sql).toContain('DATE \'1899-12-30\'');
+    expect(sqlPreview.sql).toContain("STRFTIME(CAST(CASE");
+    expect(sqlPreview.sql).toContain('AS "Report_Date"');
+    expect(sqlPreview.sql).toContain('CAST(COUNT("shipment") AS INTEGER) AS "Shipment"');
+    expect(sqlPreview.sql).toContain('GROUP BY STRFTIME(CAST(CASE WHEN TRY_CAST(CAST("report_date" AS VARCHAR) AS DOUBLE)');
+    expect(sqlPreview.sql).toContain('ORDER BY STRFTIME(CAST(CASE WHEN TRY_CAST(CAST("report_date" AS VARCHAR) AS DOUBLE)');
   });
 
   it('trend plan produces SUM when metadata permits', () => {
@@ -61,7 +116,42 @@ describe('Safe SQL Preview', () => {
 
     const sqlPreview = createSafeSqlPreview(plan);
     expect(sqlPreview.status).toBe('ready');
-    expect(sqlPreview.sql).toBe('SELECT CAST("report_date" AS TIMESTAMP) AS "Report_Date", SUM(TRY_CAST(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(CAST("revenue" AS VARCHAR), \',\', \'\'), \'.\', \'\'), \'đ\', \'\'), \'VNĐ\', \'\'), \'$\', \'\'), \' \', \'\') AS DOUBLE)) AS "Revenue", SUM(CASE WHEN "revenue" IS NOT NULL AND TRY_CAST(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(CAST("revenue" AS VARCHAR), \',\', \'\'), \'.\', \'\'), \'đ\', \'\'), \'VNĐ\', \'\'), \'$\', \'\'), \' \', \'\') AS DOUBLE) IS NULL THEN 1 ELSE 0 END) AS "__malformed_Revenue"\nFROM __LIGHTBI_PREVIEW_TABLE__\nWHERE "report_date" IS NOT NULL\nGROUP BY CAST("report_date" AS TIMESTAMP)\nORDER BY CAST("report_date" AS TIMESTAMP)\nLIMIT 100;');
+    expect(sqlPreview.sql).toContain('DATE \'1899-12-30\'');
+    expect(sqlPreview.sql).toContain('AS "Report_Date"');
+    expect(sqlPreview.sql).toContain('SUM(COALESCE(TRY_CAST');
+    expect(sqlPreview.sql).toContain('AS "Revenue"');
+  });
+
+  it('trend plan handles Vietnamese Excel date headers', () => {
+    const plan: RuntimePlanPreview = { ...basePlan, logicalOperations: [
+      { type: 'scan', columns: ['Ngày xuất', 'Tổng tiền'] },
+      { type: 'trend', timeDimension: 'Ngày xuất', measures: ['Tổng tiền'], measureAggregations: { 'Tổng tiền': 'SUM' } },
+      { type: 'limit', rows: 100 }
+    ], requiredColumns: ['Ngày xuất', 'Tổng tiền']};
+
+    const sqlPreview = createSafeSqlPreview(plan);
+    expect(sqlPreview.status).toBe('ready');
+    expect(sqlPreview.sql).toContain('DATE \'1899-12-30\'');
+    expect(sqlPreview.sql).toContain("STRFTIME(CAST(CASE");
+    expect(sqlPreview.sql).toContain('"ngày xuất"');
+    expect(sqlPreview.sql).toContain('AS "Ngày xuất"');
+    expect(sqlPreview.sql).toContain('AS "Tổng tiền"');
+  });
+
+  it('trend plan handles month period labels without timestamp casting', () => {
+    const plan: RuntimePlanPreview = { ...basePlan, logicalOperations: [
+      { type: 'scan', columns: ['month', 'duration'] },
+      { type: 'trend', timeDimension: 'month', measures: ['duration'] },
+      { type: 'limit', rows: 100 }
+    ], requiredColumns: ['month', 'duration']};
+
+    const sqlPreview = createSafeSqlPreview(plan);
+    expect(sqlPreview.status).toBe('ready');
+    expect(sqlPreview.sql).toContain('TRIM(CAST("month" AS VARCHAR)) AS "month"');
+    expect(sqlPreview.sql).toContain('CAST(COUNT("duration") AS INTEGER) AS "duration"');
+    expect(sqlPreview.sql).toContain("WHEN 'may' THEN 5");
+    expect(sqlPreview.sql).not.toContain("DATE '1899-12-30'");
+    expect(sqlPreview.sql).not.toContain('TRY_CAST(CAST("month" AS VARCHAR) AS TIMESTAMP)');
   });
 
   it('distribution plan uses COUNT(*)', () => {
@@ -117,7 +207,10 @@ describe('Safe SQL Preview', () => {
 
     const sqlPreview = createSafeSqlPreview(plan);
     expect(sqlPreview.status).toBe('ready');
-    expect(sqlPreview.sql).toBe('SELECT "tên lái xe" AS "Tên Lái Xe", SUM(TRY_CAST(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(CAST("giá ""gốc""" AS VARCHAR), \',\', \'\'), \'.\', \'\'), \'đ\', \'\'), \'VNĐ\', \'\'), \'$\', \'\'), \' \', \'\') AS DOUBLE)) AS "Giá ""Gốc""", SUM(CASE WHEN "giá ""gốc""" IS NOT NULL AND TRY_CAST(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(CAST("giá ""gốc""" AS VARCHAR), \',\', \'\'), \'.\', \'\'), \'đ\', \'\'), \'VNĐ\', \'\'), \'$\', \'\'), \' \', \'\') AS DOUBLE) IS NULL THEN 1 ELSE 0 END) AS "__malformed_Giá ""Gốc"""\nFROM __LIGHTBI_PREVIEW_TABLE__\nWHERE "tên lái xe" IS NOT NULL\nGROUP BY "tên lái xe"\nLIMIT 100;');
+    expect(sqlPreview.sql).toContain('SUM(COALESCE(TRY_CAST');
+    expect(sqlPreview.sql).toContain('"giá ""gốc"""');
+    expect(sqlPreview.sql).toContain('AS "Giá ""Gốc"""');
+    expect(sqlPreview.sql).toContain('AS "__malformed_Giá ""Gốc"""');
   });
 
   it('unsupported operation blocks', () => {
@@ -126,6 +219,30 @@ describe('Safe SQL Preview', () => {
     const sqlPreview = createSafeSqlPreview(plan);
     expect(sqlPreview.status).toBe('blocked');
     expect(sqlPreview.blockedReasons).toContain('Unsupported operation type');
+  });
+
+  it('table_preview produces SELECT *', () => {
+    const plan: RuntimePlanPreview = { ...basePlan, logicalOperations: [
+      { type: 'scan', columns: [] },
+      { type: 'table_preview' },
+      { type: 'limit', rows: 100 }
+    ], requiredColumns: []};
+
+    const sqlPreview = createSafeSqlPreview(plan);
+    expect(sqlPreview.status).toBe('ready');
+    expect(sqlPreview.sql).toBe('SELECT * FROM __LIGHTBI_PREVIEW_TABLE__ LIMIT 100;');
+  });
+
+  it('virtual measure counts map to COUNT(*)', () => {
+    const plan: RuntimePlanPreview = { ...basePlan, logicalOperations: [
+      { type: 'scan', columns: ['Driver'] },
+      { type: 'group_by', dimensions: ['Driver'], measures: ['record_count'] },
+      { type: 'limit', rows: 100 }
+    ], requiredColumns: ['Driver']};
+
+    const sqlPreview = createSafeSqlPreview(plan);
+    expect(sqlPreview.status).toBe('ready');
+    expect(sqlPreview.sql).toBe('SELECT "driver" AS "Driver", CAST(COUNT(*) AS INTEGER) AS "record_count"\nFROM __LIGHTBI_PREVIEW_TABLE__\nWHERE "driver" IS NOT NULL\nGROUP BY "driver"\nLIMIT 100;');
   });
 
 });

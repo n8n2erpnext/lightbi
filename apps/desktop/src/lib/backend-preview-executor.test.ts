@@ -90,4 +90,22 @@ describe('backend-preview-executor', () => {
     expect(result.errorMessage).toBe('NETWORK_UNAVAILABLE: Network error');
     expect(result.source).toBe('backend_duckdb_preview');
   });
+
+  it('passes cancellation to backend fetch and classifies an aborted run', async () => {
+    const controller = new AbortController();
+    vi.spyOn(globalThis, 'fetch').mockImplementation(async (_url, init) => {
+      expect(init?.signal).toBe(controller.signal);
+      controller.abort();
+      throw new DOMException('Aborted', 'AbortError');
+    });
+
+    const result = await executeBackendPreview({
+      runtimePlan: mockPlan,
+      endpoint: '/api/preview/execute',
+      signal: controller.signal
+    });
+
+    expect(result.status).toBe('failed');
+    expect(result.errorMessage).toContain('EXECUTION_ABORTED');
+  });
 });

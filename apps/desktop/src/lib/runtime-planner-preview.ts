@@ -1,4 +1,5 @@
 import type { RuntimeIntent } from './analysis-runtime-contract';
+import { isTimeLikeDimension } from './time-dimension';
 
 export type LogicalRuntimeOperation =
   | {
@@ -6,16 +7,20 @@ export type LogicalRuntimeOperation =
       columns: string[];
     }
   | {
+      type: "table_preview";
+    }
+  | {
       type: "group_by";
       dimensions: string[];
       measures: string[];
-      measureAggregations?: Record<string, "SUM" | "COUNT">;
+      measureAggregations?: Record<string, "SUM" | "COUNT" | "AVG">;
+      derivedMeasures?: DerivedMeasure[];
     }
   | {
       type: "trend";
       timeDimension: string;
       measures: string[];
-      measureAggregations?: Record<string, "SUM" | "COUNT">;
+      measureAggregations?: Record<string, "SUM" | "COUNT" | "AVG">;
     }
   | {
       type: "distribution";
@@ -42,19 +47,24 @@ export interface RuntimePlanPreview {
     dimensions: string[];
     measures: string[];
   };
+  measureAggregations?: Record<string, "SUM" | "COUNT" | "AVG">;
+  derivedMeasures?: DerivedMeasure[];
   warnings: string[];
   blockedReasons: string[];
   source: "runtime_intent";
 }
 
-const TIME_LIKE_DIMENSIONS = [
-  'report_date',
-  'date',
-  'order_date',
-  'delivery_date',
-  'created_at',
-  'updated_at'
-];
+export interface DerivedMeasure {
+  id: string;
+  label: string;
+  type: "positive_rate";
+  sourceColumn: string;
+  positiveValues: string[];
+  numeratorLabel: string;
+  denominatorLabel: string;
+}
+
+export const VIRTUAL_MEASURE_FIELDS = new Set(["record_count", "row_count"]);
 
 export function createRuntimePlanPreview(intent: RuntimeIntent): RuntimePlanPreview {
   const plan: RuntimePlanPreview = {
@@ -63,12 +73,18 @@ export function createRuntimePlanPreview(intent: RuntimeIntent): RuntimePlanPrev
     status: intent.status,
     executionMode: "preview_only",
     logicalOperations: [],
-    requiredColumns: Array.from(new Set([...intent.dimensions, ...intent.measures])),
+    requiredColumns: Array.from(new Set([
+      ...intent.dimensions,
+      ...intent.measures,
+      ...(intent.derivedMeasures ?? []).map(measure => measure.sourceColumn)
+    ])).filter(col => !VIRTUAL_MEASURE_FIELDS.has(col)),
     expectedOutput: {
       shape: intent.expectedShape,
       dimensions: [...intent.dimensions],
       measures: [...intent.measures]
     },
+    measureAggregations: intent.measureAggregations ? { ...intent.measureAggregations } : undefined,
+    derivedMeasures: intent.derivedMeasures ? intent.derivedMeasures.map(measure => ({ ...measure, positiveValues: [...measure.positiveValues] })) : undefined,
     warnings: [...intent.warnings],
     blockedReasons: [...intent.blockedReasons],
     source: "runtime_intent"
@@ -86,20 +102,29 @@ export function createRuntimePlanPreview(intent: RuntimeIntent): RuntimePlanPrev
 
   // Main logic operation
   switch (intent.type) {
+    case "table_preview":
+      plan.logicalOperations.push({
+        type: "table_preview"
+      });
+      break;
+
     case "group_by":
       plan.logicalOperations.push({
         type: "group_by",
         dimensions: [...intent.dimensions],
-        measures: [...intent.measures]
+        measures: [...intent.measures],
+        measureAggregations: intent.measureAggregations,
+        derivedMeasures: intent.derivedMeasures
       });
       break;
     
     case "trend":
-      const timeDim = intent.dimensions.find(dim => TIME_LIKE_DIMENSIONS.includes(dim) || dim.includes('time') || dim.includes('date')) || intent.dimensions[0];
+      const timeDim = intent.dimensions.find(dim => isTimeLikeDimension(dim)) || intent.dimensions[0];
       plan.logicalOperations.push({
         type: "trend",
         timeDimension: timeDim,
-        measures: [...intent.measures]
+        measures: [...intent.measures],
+        measureAggregations: intent.measureAggregations
       });
       break;
 

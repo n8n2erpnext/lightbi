@@ -38,11 +38,9 @@ export function evaluateNumericHealth(columnName: string, sampleValues: any[], t
 
     validSampleCount++;
     
-    // If it's already a JS number, only allow integers (block decimals until locale-aware parsing).
+    // If it's already a JS number, allow integers and decimals.
     if (typeof rawVal === 'number' && !isNaN(rawVal)) {
-      if (Number.isInteger(rawVal)) {
-        successCount++;
-      }
+      successCount++;
       continue;
     }
 
@@ -58,12 +56,18 @@ export function evaluateNumericHealth(columnName: string, sampleValues: any[], t
     // 1. Strip currency symbols for evaluation
     let numStr = cleansed.replace(/[đ$€£]/g, '').replace(/VNĐ/ig, '').trim();
 
-    // 2. Hard-block Decimal Ambiguity and Mixed Separators
+    // 2. Hard-block only truly ambiguous mixed separators.
     const hasDot = numStr.includes('.');
     const hasComma = numStr.includes(',');
 
     if (hasDot && hasComma) {
       continue; // Block: Mixed separators are too ambiguous to safely strip
+    }
+
+    if (/^-?\d+\.\d+$/.test(numStr) || /^-?\d+,\d+$/.test(numStr)) {
+      successCount++;
+      detectedCleansing = detectedCleansing || hasComma || /[đ$€£]|VNĐ/i.test(cleansed);
+      continue;
     }
 
     if (hasDot) {
