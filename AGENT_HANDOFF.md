@@ -1663,6 +1663,8 @@ See `docs/architecture/ADR-113-shared-simple-advanced-execution-core.md`.
 
 - Added an evidence-based scorer for Understanding Next AI briefing readiness.
 - Score now varies based on header recovery status, detected grain/domain, usable signal roles, signal confidence/count, executable actions, best question fit, dirty signal severity, blocked reasons, and unavailable actions.
+- Corrected the scorer to follow the documented readiness contract: Data Quality, Understanding Confidence, Semantic Coverage, and Execution Reliability are weighted inputs; `>=90` is `decision_support`, `85-89` is `caution`, and `<85` is `exploratory_only`.
+- Understanding Next now carries profiled column health into the briefing path, so the score is grounded in completeness/type consistency/key-like evidence. Missing health evidence caps the score below caution/decision support.
 - Failed headers remain low/exploratory; strong clean datasets can reach `decision_support`; weak or dirty datasets drop below caution.
 
 ### Verification

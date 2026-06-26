@@ -112,54 +112,123 @@ function scoreUnderstandingNextReadiness(
     return { tier: "exploratory_only", score: 25 };
   }
 
-  let score = 35;
+  const dataQuality = scoreDataQuality(understanding);
+  const understandingConfidence = scoreUnderstandingConfidence(understanding);
+  const semanticCoverage = scoreSemanticCoverage(understanding);
+  const executionReliability = scoreExecutionReliability(understanding);
 
-  score += headerScore(understanding.quality.headerStatus);
-
-  if (understanding.profile.grain !== "unknown") score += 10;
-  if (understanding.profile.detectedDomains.length > 0) score += 6;
-
-  const usableSignals = understanding.signals.filter(signal => signal.role !== "technical");
-  const signalRoles = new Set(usableSignals.map(signal => signal.role));
-  if (signalRoles.has("measure")) score += 8;
-  if (signalRoles.has("dimension") || signalRoles.has("status") || signalRoles.has("identifier")) score += 8;
-  if (signalRoles.has("time")) score += 6;
-
-  const averageSignalConfidence = usableSignals.length
-    ? usableSignals.reduce((sum, signal) => sum + signal.confidence, 0) / usableSignals.length
-    : 0;
-  score += Math.min(10, Math.round((averageSignalConfidence / 100) * 10));
-  score += Math.min(8, Math.round(usableSignals.length / 2));
-
-  const executableActions = understanding.availableActions.filter(action => action.executionScope !== "not_supported");
-  score += Math.min(10, executableActions.length * 3);
-  if (executableActions.some(action => action.executionScope === "full_local_file")) score += 4;
-
-  const bestQuestionFit = Math.max(0, ...understanding.recommendedQuestions.map(question => question.fitScore));
-  score += Math.min(5, Math.round(bestQuestionFit / 20));
+  let score = Math.round(
+    dataQuality * 0.4 +
+    understandingConfidence * 0.25 +
+    semanticCoverage * 0.2 +
+    executionReliability * 0.15
+  );
 
   score -= dirtySignalPenalty(understanding.quality.dirtySignals);
-  score -= Math.min(18, understanding.quality.blockedReasons.length * 6);
-  score -= Math.min(12, understanding.unavailableActions.length * 2);
+  score -= Math.min(20, understanding.quality.blockedReasons.length * 10);
+
+  if (!understanding.columns?.length) {
+    score = Math.min(score, 84);
+  }
+
+  if (understanding.quality.dirtySignals.some(signal => signal.severity === "blocking")) {
+    score = Math.min(score, 60);
+  } else if (understanding.quality.dirtySignals.some(signal => signal.severity === "warning")) {
+    score = Math.min(score, 89);
+  }
 
   const boundedScore = Math.max(0, Math.min(100, Math.round(score)));
   const tier = boundedScore >= 85
-    ? "decision_support"
-    : boundedScore >= 55
       ? "caution"
       : "exploratory_only";
 
-  return { tier, score: boundedScore };
+  return {
+    tier: boundedScore >= 90 ? "decision_support" : tier,
+    score: boundedScore
+  };
 }
 
-function headerScore(status: DatasetUnderstandingResult["quality"]["headerStatus"]): number {
+function scoreDataQuality(understanding: DatasetUnderstandingResult): number {
+  const header = headerQuality(understanding.quality.headerStatus);
+  const columns = understanding.columns ?? [];
+  if (columns.length === 0) return Math.min(header, 65);
+
+  const rowCount = Math.max(1, understanding.source.sampleRowCount || understanding.source.parsedRowCount || 1);
+  const completeness = average(columns.map(column => (column.health.nonEmptyCount / rowCount) * 100));
+  const consistency = average(columns.map(column => {
+    if (column.health.inferredType === "mixed") return 35;
+    if (column.health.inferredType === "empty") return 0;
+    return 100;
+  }));
+  const uniqueness = Math.max(
+    0,
+    ...columns.map(column => Math.min(100, (column.health.distinctCount / rowCount) * 100))
+  );
+  const identifierSignals = understanding.signals.filter(signal => signal.role === "identifier");
+  const keyQuality = identifierSignals.length
+    ? Math.max(...identifierSignals.map(signal => signal.confidence))
+    : Math.max(
+        0,
+        ...columns.map(column => {
+          const completenessRatio = column.health.nonEmptyCount / rowCount;
+          const distinctRatio = column.health.distinctCount / rowCount;
+          return Math.min(100, distinctRatio * 100 - (1 - completenessRatio) * 50);
+        })
+      );
+
+  return clampScore(
+    completeness * 0.3 +
+    consistency * 0.2 +
+    uniqueness * 0.25 +
+    keyQuality * 0.25
+  );
+}
+
+function scoreUnderstandingConfidence(understanding: DatasetUnderstandingResult): number {
+  const usableSignals = understanding.signals.filter(signal => signal.role !== "technical");
+  const confidence = usableSignals.length
+    ? average(usableSignals.map(signal => signal.confidence))
+    : 0;
+  const signalDensity = understanding.source.sourceColumnCount > 0
+    ? Math.min(100, (usableSignals.length / understanding.source.sourceColumnCount) * 100)
+    : 0;
+  const profileConfidence =
+    (understanding.profile.grain !== "unknown" ? 50 : 0) +
+    (understanding.profile.detectedDomains.length > 0 ? 50 : 0);
+
+  return clampScore(confidence * 0.55 + signalDensity * 0.2 + profileConfidence * 0.25);
+}
+
+function scoreSemanticCoverage(understanding: DatasetUnderstandingResult): number {
+  const roles = new Set(understanding.signals.filter(signal => signal.role !== "technical").map(signal => signal.role));
+  let score = 0;
+  if (roles.has("measure")) score += 30;
+  if (roles.has("dimension") || roles.has("status") || roles.has("identifier")) score += 30;
+  if (roles.has("time")) score += 20;
+  if (understanding.profile.grain !== "unknown") score += 10;
+  if (understanding.profile.detectedDomains.length > 0) score += 10;
+  return clampScore(score);
+}
+
+function scoreExecutionReliability(understanding: DatasetUnderstandingResult): number {
+  const executableActions = understanding.availableActions.filter(action => action.executionScope !== "not_supported");
+  const bestFit = Math.max(0, ...understanding.recommendedQuestions.map(question => question.fitScore));
+  const actionCoverage = understanding.recommendedQuestions.length > 0
+    ? (executableActions.length / understanding.recommendedQuestions.length) * 100
+    : executableActions.length > 0 ? 70 : 0;
+  const fullFileBonus = executableActions.some(action => action.executionScope === "full_local_file") ? 10 : 0;
+  const unavailablePenalty = Math.min(25, understanding.unavailableActions.length * 5);
+  return clampScore(bestFit * 0.45 + actionCoverage * 0.45 + fullFileBonus - unavailablePenalty);
+}
+
+function headerQuality(status: DatasetUnderstandingResult["quality"]["headerStatus"]): number {
   switch (status) {
     case "clean":
-      return 12;
+      return 100;
     case "recovered":
-      return 8;
+      return 85;
     case "ambiguous":
-      return 2;
+      return 55;
     case "failed":
       return 0;
   }
@@ -179,4 +248,13 @@ function dirtySignalPenalty(signals: DirtySignal[]): number {
       }
     }, 0)
   );
+}
+
+function average(values: number[]): number {
+  if (values.length === 0) return 0;
+  return values.reduce((sum, value) => sum + value, 0) / values.length;
+}
+
+function clampScore(value: number): number {
+  return Math.max(0, Math.min(100, Math.round(value)));
 }

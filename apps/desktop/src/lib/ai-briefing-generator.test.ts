@@ -115,7 +115,7 @@ describe('AI Briefing Generator', () => {
     const strongBriefing = generateAIBriefingFromUnderstandingNext(strong);
     const weakBriefing = generateAIBriefingFromUnderstandingNext(weak);
 
-    expect(strongBriefing.readinessScore).toBeGreaterThan(70);
+    expect(strongBriefing.readinessScore).toBeGreaterThanOrEqual(90);
     expect(strongBriefing.readinessTier).toBe('decision_support');
     expect(weakBriefing.readinessScore).toBeLessThan(70);
     expect(weakBriefing.readinessTier).toBe('exploratory_only');
@@ -135,6 +135,52 @@ function makeUnderstandingNext(overrides: Partial<DatasetUnderstandingResult> = 
     },
     quality: { headerStatus: 'clean', dirtySignals: [], blockedReasons: [] },
     profile: { grain: 'transaction', documentType: 'retail_sales_document', detectedDomains: ['revenue'] },
+    columns: [
+      {
+        name: 'date',
+        normalizedName: 'date',
+        health: {
+          inferredType: 'date',
+          nonEmptyCount: 100,
+          parseSuccessRate: 1,
+          distinctCount: 12,
+          topValues: [{ value: '2026-01-01', count: 8 }],
+        },
+      },
+      {
+        name: 'revenue',
+        normalizedName: 'revenue',
+        health: {
+          inferredType: 'number',
+          nonEmptyCount: 100,
+          parseSuccessRate: 1,
+          distinctCount: 95,
+          topValues: [{ value: '1000', count: 2 }],
+        },
+      },
+      {
+        name: 'segment',
+        normalizedName: 'segment',
+        health: {
+          inferredType: 'string',
+          nonEmptyCount: 100,
+          parseSuccessRate: 1,
+          distinctCount: 5,
+          topValues: [{ value: 'Retail', count: 30 }],
+        },
+      },
+      {
+        name: 'order_id',
+        normalizedName: 'order_id',
+        health: {
+          inferredType: 'string',
+          nonEmptyCount: 100,
+          parseSuccessRate: 1,
+          distinctCount: 100,
+          topValues: [{ value: 'A001', count: 1 }],
+        },
+      },
+    ],
     signals: [
       {
         canonicalId: 'date',
@@ -157,6 +203,17 @@ function makeUnderstandingNext(overrides: Partial<DatasetUnderstandingResult> = 
         cardinality: 80,
         role: 'measure',
         usableForDefaultQuestion: true,
+      },
+      {
+        canonicalId: 'order_id',
+        label: 'Order ID',
+        domain: 'revenue',
+        physicalColumn: 'order_id',
+        confidence: 95,
+        evidence: ['order_id'],
+        cardinality: 100,
+        role: 'identifier',
+        usableForDefaultQuestion: false,
       },
       {
         canonicalId: 'segment',

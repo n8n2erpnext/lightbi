@@ -14,6 +14,7 @@ export function createDatasetUnderstandingResult(input: UnderstandingInput): Dat
     source: datasetProfile.source,
     quality: datasetProfile.quality,
     profile: datasetProfile.profile,
+    columns: datasetProfile.columns,
     signals,
     lenses,
     perspectives,

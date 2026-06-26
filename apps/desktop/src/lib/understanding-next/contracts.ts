@@ -188,6 +188,7 @@ export type DatasetUnderstandingResult = {
   source: SourceProfile;
   quality: DatasetProfile["quality"];
   profile: DatasetProfile["profile"];
+  columns?: DatasetProfile["columns"];
   signals: BusinessSignal[];
   lenses: BusinessLens[];
   perspectives: BusinessPerspective[];
