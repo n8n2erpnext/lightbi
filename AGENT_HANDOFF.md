@@ -1650,6 +1650,27 @@ See `docs/architecture/ADR-113-shared-simple-advanced-execution-core.md`.
 - Source commit is still restricted to direct base-table tabs with complete primary-key metadata. Arbitrary SQL results, local files, and online sheets keep edit/export behavior rather than claiming source overwrite.
 - Insert/delete, bulk paste-to-source, and transformed full-file/source export remain future slices.
 
+---
+
+## 2026-06-26 — Understanding Next Readiness Score Fix
+
+### Issue
+
+- Investigation readiness for Understanding Next datasets was effectively constant: any dataset with a runnable action became `caution` with score `70`.
+- Root cause was `generateAIBriefingFromUnderstandingNext`, which hard-coded `readinessScore: tier === "caution" ? 70 : 35` instead of scoring the actual quality/profile/signal/action evidence.
+
+### Fix
+
+- Added an evidence-based scorer for Understanding Next AI briefing readiness.
+- Score now varies based on header recovery status, detected grain/domain, usable signal roles, signal confidence/count, executable actions, best question fit, dirty signal severity, blocked reasons, and unavailable actions.
+- Failed headers remain low/exploratory; strong clean datasets can reach `decision_support`; weak or dirty datasets drop below caution.
+
+### Verification
+
+- Added regression coverage proving a strong dataset scores above 70 and a weak/dirty dataset scores below 70.
+- Focused test passed: `src/lib/ai-briefing-generator.test.ts` — 4 tests.
+- Focused ESLint and TypeScript passed for the briefing generator.
+
 ### Deliberate Boundaries
 
 - Advanced remains read-only. Writeback, DDL, Redis, and ERD editing remain deferred by ADR.
