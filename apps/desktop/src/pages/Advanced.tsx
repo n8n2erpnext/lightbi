@@ -499,7 +499,12 @@ export const Advanced: React.FC = () => {
   const activeTableNode = useMemo(() => activeTab.tableContext
     ? schema?.schemas.find(item => item.name === activeTab.tableContext!.schema)?.tables.find(item => item.name === activeTab.tableContext!.table)
     : undefined, [activeTab.tableContext, schema]);
-  const canCommitActive = connection?.provider === 'sqlite' && activeTableNode?.writable === true && activeTableNode.columns.some(column => column.primaryKey);
+  const canCommitActive = Boolean(
+    connection
+    && ['sqlite', 'postgresql', 'mysql', 'mariadb'].includes(connection.provider)
+    && activeTableNode?.writable === true
+    && activeTableNode.columns.some(column => column.primaryKey)
+  );
 
   const connect = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -741,7 +746,7 @@ export const Advanced: React.FC = () => {
   const discardEdits = () => patchTab(activeTab.id, { editState: EMPTY_ADVANCED_EDIT_STATE, editMode: false, error: '' });
 
   const reviewSourceChanges = async () => {
-    if (!connection || connection.provider !== 'sqlite' || !activeTab.result || !activeTab.tableContext) return;
+    if (!connection || !['sqlite', 'postgresql', 'mysql', 'mariadb'].includes(connection.provider) || !activeTab.result || !activeTab.tableContext) return;
     const schemaNode = schema?.schemas.find(item => item.name === activeTab.tableContext!.schema);
     const table = schemaNode?.tables.find(item => item.name === activeTab.tableContext!.table);
     const primaryKeys = table?.columns.filter(column => column.primaryKey).map(column => column.name) ?? [];

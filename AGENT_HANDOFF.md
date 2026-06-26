@@ -1624,6 +1624,32 @@ See `docs/architecture/ADR-113-shared-simple-advanced-execution-core.md`.
 - Frontend: `http://100.94.184.141:5173/advanced`
 - Backend: `0.0.0.0:5172`, reached through the frontend `/api` proxy.
 
+---
+
+## 2026-06-26 — Advanced PostgreSQL/MySQL/MariaDB Source Commit
+
+### Implementation
+
+- Enabled the existing Advanced source-commit contract for PostgreSQL, MySQL, and MariaDB direct-table results. SQLite behavior is preserved; MongoDB remains explicitly non-writable.
+- PostgreSQL mutations compile to quoted, parameterized `UPDATE` statements with a conservative type-cast allowlist for scalar column types. Unsupported writable column types are rejected before execution.
+- MySQL/MariaDB mutations compile to quoted, parameterized `UPDATE` statements and use native engine coercion for scalar JSON input values.
+- Preview returns redacted SQL with placeholders only. Commit runs the full batch in one transaction, validates base table/primary key/changed columns/expected originals, requires each row update to affect exactly one row, and rolls back with `409 ADVANCED_MUTATION_CONFLICT` on stale or missing rows.
+- Successful commits invalidate schema/count/query caches for the affected connection so the next run reloads source truth.
+- MySQL/MariaDB result decoding now handles boolean and date/time values instead of surfacing them as unsupported cells.
+
+### Verification
+
+- Added Rust tests for provider-specific SQL preview generation and PostgreSQL type allowlist rejection.
+- PostgreSQL Docker acceptance covered writable metadata, redacted preview, one-row commit, stale-row conflict rollback, and persisted verification.
+- MySQL Docker acceptance covered the same mutation path against the Ghost database.
+- MariaDB ERPNext LXD acceptance covered the same mutation path through a temporary loopback proxy because the service binds internally; the proxy and fixture table were removed after verification.
+- Focused Advanced frontend tests, ESLint, and TypeScript passed after enabling SQL source commit in the UI.
+
+### Boundaries
+
+- Source commit is still restricted to direct base-table tabs with complete primary-key metadata. Arbitrary SQL results, local files, and online sheets keep edit/export behavior rather than claiming source overwrite.
+- Insert/delete, bulk paste-to-source, and transformed full-file/source export remain future slices.
+
 ### Deliberate Boundaries
 
 - Advanced remains read-only. Writeback, DDL, Redis, and ERD editing remain deferred by ADR.

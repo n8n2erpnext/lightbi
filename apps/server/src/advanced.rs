@@ -742,6 +742,50 @@ fn sorted_keys(values: &HashMap<String, Value>) -> Vec<String> {
     keys
 }
 
+fn mutation_scalar(value: &Value) -> String {
+    match value {
+        Value::String(value) => value.clone(),
+        other => other.to_string(),
+    }
+}
+
+fn postgres_cast_type(column: &ColumnNode) -> Result<&'static str, ApiError> {
+    match column.native_type.to_ascii_lowercase().as_str() {
+        "smallint" => Ok("smallint"),
+        "integer" => Ok("integer"),
+        "bigint" => Ok("bigint"),
+        "decimal" => Ok("decimal"),
+        "numeric" => Ok("numeric"),
+        "real" => Ok("real"),
+        "double precision" => Ok("double precision"),
+        "smallserial" => Ok("smallint"),
+        "serial" => Ok("integer"),
+        "bigserial" => Ok("bigint"),
+        "boolean" => Ok("boolean"),
+        "text" => Ok("text"),
+        "character" => Ok("character"),
+        "character varying" => Ok("character varying"),
+        "date" => Ok("date"),
+        "time without time zone" => Ok("time without time zone"),
+        "time with time zone" => Ok("time with time zone"),
+        "timestamp without time zone" => Ok("timestamp without time zone"),
+        "timestamp with time zone" => Ok("timestamp with time zone"),
+        "uuid" => Ok("uuid"),
+        "json" => Ok("json"),
+        "jsonb" => Ok("jsonb"),
+        _ => Err(ApiError::bad_request(
+            "ADVANCED_MUTATION_TYPE_UNSUPPORTED",
+            "A changed or key column uses a PostgreSQL type that is not enabled for safe source commit.",
+        )),
+    }
+}
+
+fn mutation_column<'a>(table: &'a TableNode, name: &str) -> Result<&'a ColumnNode, ApiError> {
+    table.columns.iter().find(|column| column.name == name).ok_or_else(|| {
+        ApiError::bad_request("ADVANCED_MUTATION_COLUMN_INVALID", "A mutation column is not present in the table.")
+    })
+}
+
 fn sqlite_push_value(builder: &mut QueryBuilder<Sqlite>, value: &Value) {
     match value {
         Value::Null => { builder.push("NULL"); }
@@ -780,52 +824,196 @@ fn sqlite_mutation_builder<'a>(request: &'a MutationRequest, row: &'a RowMutatio
     builder
 }
 
+fn postgres_push_value(builder: &mut QueryBuilder<Postgres>, column: &ColumnNode, value: &Value) -> Result<(), ApiError> {
+    if value.is_null() {
+        builder.push("NULL");
+    } else {
+        let cast_type = postgres_cast_type(column)?;
+        builder.push("CAST(").push_bind(mutation_scalar(value)).push(" AS ").push(cast_type).push(")");
+    }
+    Ok(())
+}
+
+fn postgres_push_condition(builder: &mut QueryBuilder<Postgres>, table: &TableNode, column: &str, value: &Value) -> Result<(), ApiError> {
+    builder.push(quote_sql_identifier(column));
+    if value.is_null() {
+        builder.push(" IS NULL");
+    } else {
+        builder.push(" = ");
+        postgres_push_value(builder, mutation_column(table, column)?, value)?;
+    }
+    Ok(())
+}
+
+fn postgres_mutation_builder<'a>(request: &'a MutationRequest, row: &'a RowMutationRequest, table: &TableNode) -> Result<QueryBuilder<'a, Postgres>, ApiError> {
+    let mut builder = QueryBuilder::<Postgres>::new(format!(
+        "UPDATE {}.{} SET ", quote_sql_identifier(&request.schema), quote_sql_identifier(&request.table)
+    ));
+    for (index, column) in sorted_keys(&row.changes).iter().enumerate() {
+        if index > 0 { builder.push(", "); }
+        builder.push(quote_sql_identifier(column)).push(" = ");
+        postgres_push_value(&mut builder, mutation_column(table, column)?, &row.changes[column])?;
+    }
+    builder.push(" WHERE ");
+    for (index, column) in sorted_keys(&row.key).iter().enumerate() {
+        if index > 0 { builder.push(" AND "); }
+        postgres_push_condition(&mut builder, table, column, &row.key[column])?;
+    }
+    for column in sorted_keys(&row.changes) {
+        builder.push(" AND ");
+        postgres_push_condition(&mut builder, table, &column, &row.expected[&column])?;
+    }
+    Ok(builder)
+}
+
+fn mysql_push_value(builder: &mut QueryBuilder<MySql>, value: &Value) {
+    match value {
+        Value::Null => { builder.push("NULL"); }
+        Value::Bool(value) => { builder.push_bind(*value); }
+        Value::Number(value) if value.is_i64() => { builder.push_bind(value.as_i64().unwrap_or_default()); }
+        Value::Number(value) if value.is_u64() => { builder.push_bind(value.as_u64().unwrap_or_default()); }
+        Value::Number(value) => { builder.push_bind(value.as_f64().unwrap_or_default()); }
+        Value::String(value) => { builder.push_bind(value.clone()); }
+        other => { builder.push_bind(other.to_string()); }
+    };
+}
+
+fn mysql_push_condition(builder: &mut QueryBuilder<MySql>, column: &str, value: &Value) {
+    builder.push(quote_mysql_identifier(column));
+    if value.is_null() { builder.push(" IS NULL"); } else { builder.push(" = "); mysql_push_value(builder, value); }
+}
+
+fn mysql_mutation_builder<'a>(request: &'a MutationRequest, row: &'a RowMutationRequest) -> QueryBuilder<'a, MySql> {
+    let mut builder = QueryBuilder::<MySql>::new(format!(
+        "UPDATE {}.{} SET ", quote_mysql_identifier(&request.schema), quote_mysql_identifier(&request.table)
+    ));
+    for (index, column) in sorted_keys(&row.changes).iter().enumerate() {
+        if index > 0 { builder.push(", "); }
+        builder.push(quote_mysql_identifier(column)).push(" = ");
+        mysql_push_value(&mut builder, &row.changes[column]);
+    }
+    builder.push(" WHERE ");
+    for (index, column) in sorted_keys(&row.key).iter().enumerate() {
+        if index > 0 { builder.push(" AND "); }
+        mysql_push_condition(&mut builder, column, &row.key[column]);
+    }
+    for column in sorted_keys(&row.changes) {
+        builder.push(" AND ");
+        mysql_push_condition(&mut builder, &column, &row.expected[&column]);
+    }
+    builder
+}
+
 pub(crate) async fn preview_mutation(
     State(state): State<Arc<AppState>>, Path(connection_id): Path<String>, Json(request): Json<MutationRequest>,
 ) -> Result<Json<MutationPreviewResponse>, ApiError> {
     let session = connection(&state, &connection_id).await?;
-    let ConnectionBackend::Sqlite(pool) = session.backend else {
-        return Err(ApiError::bad_request("ADVANCED_MUTATION_PROVIDER_UNSUPPORTED", "Source commit is currently enabled for SQLite while other providers complete acceptance."));
+    let statements = match &session.backend {
+        ConnectionBackend::Postgres(pool) => {
+            let schemas = discover_postgres_schema(pool).await?;
+            let table = schemas.iter().find(|schema| schema.name == request.schema)
+                .and_then(|schema| schema.tables.iter().find(|table| table.name == request.table))
+                .ok_or_else(|| ApiError::not_found("Mutation table was not found."))?;
+            validate_mutation_request(table, &request)?;
+            request.rows.iter().map(|row| postgres_mutation_builder(&request, row, table).map(|builder| format!("{};", builder.sql()))).collect::<Result<Vec<_>, _>>()?
+        }
+        ConnectionBackend::MySql(pool) => {
+            if request.schema != session.database { return Err(ApiError::bad_request("ADVANCED_MUTATION_SCHEMA_INVALID", "MySQL/MariaDB mutations must target the connected database.")); }
+            let schemas = discover_mysql_schema(pool, &session.database).await?;
+            let table = schemas[0].tables.iter().find(|table| table.name == request.table)
+                .ok_or_else(|| ApiError::not_found("Mutation table was not found."))?;
+            validate_mutation_request(table, &request)?;
+            request.rows.iter().map(|row| format!("{};", mysql_mutation_builder(&request, row).sql())).collect()
+        }
+        ConnectionBackend::Sqlite(pool) => {
+            if request.schema != "main" { return Err(ApiError::bad_request("ADVANCED_MUTATION_SCHEMA_INVALID", "SQLite mutations require the main schema.")); }
+            let schemas = discover_sqlite_schema(pool).await?;
+            let table = schemas[0].tables.iter().find(|table| table.name == request.table)
+                .ok_or_else(|| ApiError::not_found("Mutation table was not found."))?;
+            validate_mutation_request(table, &request)?;
+            request.rows.iter().map(|row| format!("{};", sqlite_mutation_builder(&request, row).sql())).collect()
+        }
+        ConnectionBackend::Mongo(_) => return Err(ApiError::bad_request("ADVANCED_MUTATION_PROVIDER_UNSUPPORTED", "MongoDB source commit is not enabled.")),
     };
-    if request.schema != "main" { return Err(ApiError::bad_request("ADVANCED_MUTATION_SCHEMA_INVALID", "SQLite mutations require the main schema.")); }
-    let schemas = discover_sqlite_schema(&pool).await?;
-    let table = schemas[0].tables.iter().find(|table| table.name == request.table)
-        .ok_or_else(|| ApiError::not_found("Mutation table was not found."))?;
-    validate_mutation_request(table, &request)?;
-    let statements = request.rows.iter().map(|row| {
-        let sets = sorted_keys(&row.changes).into_iter().map(|column| format!("{} = ?", quote_sql_identifier(&column))).collect::<Vec<_>>().join(", ");
-        let predicates = sorted_keys(&row.key).into_iter().chain(sorted_keys(&row.changes)).map(|column| format!("{} = ?", quote_sql_identifier(&column))).collect::<Vec<_>>().join(" AND ");
-        format!("UPDATE {} SET {sets} WHERE {predicates};", quote_sql_identifier(&request.table))
-    }).collect();
     Ok(Json(MutationPreviewResponse { statements, row_count: request.rows.len(), can_commit: true }))
+}
+
+fn mutation_conflict() -> ApiError {
+    ApiError { status: StatusCode::CONFLICT, code: "ADVANCED_MUTATION_CONFLICT", message: "A row changed or disappeared after it was loaded; the entire mutation was rolled back.".to_string() }
+}
+
+async fn invalidate_mutation_caches(state: &Arc<AppState>, connection_id: &str) {
+    state.advanced.schema_cache.write().await.remove(connection_id);
+    state.advanced.count_cache.write().await.retain(|(id, _, _), _| id != connection_id);
 }
 
 pub(crate) async fn commit_mutation(
     State(state): State<Arc<AppState>>, Path(connection_id): Path<String>, Json(request): Json<MutationRequest>,
 ) -> Result<Json<MutationCommitResponse>, ApiError> {
     let session = connection(&state, &connection_id).await?;
-    let ConnectionBackend::Sqlite(pool) = session.backend else {
-        return Err(ApiError::bad_request("ADVANCED_MUTATION_PROVIDER_UNSUPPORTED", "Source commit is currently enabled for SQLite while other providers complete acceptance."));
-    };
-    if request.schema != "main" { return Err(ApiError::bad_request("ADVANCED_MUTATION_SCHEMA_INVALID", "SQLite mutations require the main schema.")); }
-    let schemas = discover_sqlite_schema(&pool).await?;
-    let table = schemas[0].tables.iter().find(|table| table.name == request.table)
-        .ok_or_else(|| ApiError::not_found("Mutation table was not found."))?;
-    validate_mutation_request(table, &request)?;
-    let mut tx = pool.begin().await.map_err(|error| ApiError::database(format!("Could not start mutation transaction: {error}")))?;
-    let mut updated_rows = 0;
-    for row in &request.rows {
-        let result = sqlite_mutation_builder(&request, row).build().execute(&mut *tx).await
-            .map_err(|error| ApiError::database(format!("SQLite mutation failed and was rolled back: {error}")))?;
-        if result.rows_affected() != 1 {
-            tx.rollback().await.ok();
-            return Err(ApiError { status: StatusCode::CONFLICT, code: "ADVANCED_MUTATION_CONFLICT", message: "A row changed or disappeared after it was loaded; the entire mutation was rolled back.".to_string() });
+    let updated_rows = match &session.backend {
+        ConnectionBackend::Postgres(pool) => {
+            let schemas = discover_postgres_schema(pool).await?;
+            let table = schemas.iter().find(|schema| schema.name == request.schema)
+                .and_then(|schema| schema.tables.iter().find(|table| table.name == request.table))
+                .ok_or_else(|| ApiError::not_found("Mutation table was not found."))?;
+            validate_mutation_request(table, &request)?;
+            for row in &request.rows { postgres_mutation_builder(&request, row, table)?; }
+            let mut tx = pool.begin().await.map_err(|error| ApiError::database(format!("Could not start PostgreSQL mutation transaction: {error}")))?;
+            let mut updated = 0;
+            for row in &request.rows {
+                let mut builder = postgres_mutation_builder(&request, row, table)?;
+                let result = match builder.build().execute(&mut *tx).await {
+                    Ok(result) => result,
+                    Err(error) => { tx.rollback().await.ok(); return Err(ApiError::database(format!("PostgreSQL mutation failed and was rolled back: {error}"))); }
+                };
+                if result.rows_affected() != 1 { tx.rollback().await.ok(); return Err(mutation_conflict()); }
+                updated += 1;
+            }
+            tx.commit().await.map_err(|error| ApiError::database(format!("Could not commit PostgreSQL mutation transaction: {error}")))?;
+            updated
         }
-        updated_rows += 1;
-    }
-    tx.commit().await.map_err(|error| ApiError::database(format!("Could not commit mutation transaction: {error}")))?;
-    state.advanced.schema_cache.write().await.remove(&connection_id);
-    state.advanced.count_cache.write().await.retain(|(id, _, _), _| id != &connection_id);
+        ConnectionBackend::MySql(pool) => {
+            if request.schema != session.database { return Err(ApiError::bad_request("ADVANCED_MUTATION_SCHEMA_INVALID", "MySQL/MariaDB mutations must target the connected database.")); }
+            let schemas = discover_mysql_schema(pool, &session.database).await?;
+            let table = schemas[0].tables.iter().find(|table| table.name == request.table)
+                .ok_or_else(|| ApiError::not_found("Mutation table was not found."))?;
+            validate_mutation_request(table, &request)?;
+            let mut tx = pool.begin().await.map_err(|error| ApiError::database(format!("Could not start MySQL/MariaDB mutation transaction: {error}")))?;
+            let mut updated = 0;
+            for row in &request.rows {
+                let result = match mysql_mutation_builder(&request, row).build().execute(&mut *tx).await {
+                    Ok(result) => result,
+                    Err(error) => { tx.rollback().await.ok(); return Err(ApiError::database(format!("MySQL/MariaDB mutation failed and was rolled back: {error}"))); }
+                };
+                if result.rows_affected() != 1 { tx.rollback().await.ok(); return Err(mutation_conflict()); }
+                updated += 1;
+            }
+            tx.commit().await.map_err(|error| ApiError::database(format!("Could not commit MySQL/MariaDB mutation transaction: {error}")))?;
+            updated
+        }
+        ConnectionBackend::Sqlite(pool) => {
+            if request.schema != "main" { return Err(ApiError::bad_request("ADVANCED_MUTATION_SCHEMA_INVALID", "SQLite mutations require the main schema.")); }
+            let schemas = discover_sqlite_schema(pool).await?;
+            let table = schemas[0].tables.iter().find(|table| table.name == request.table)
+                .ok_or_else(|| ApiError::not_found("Mutation table was not found."))?;
+            validate_mutation_request(table, &request)?;
+            let mut tx = pool.begin().await.map_err(|error| ApiError::database(format!("Could not start SQLite mutation transaction: {error}")))?;
+            let mut updated = 0;
+            for row in &request.rows {
+                let result = match sqlite_mutation_builder(&request, row).build().execute(&mut *tx).await {
+                    Ok(result) => result,
+                    Err(error) => { tx.rollback().await.ok(); return Err(ApiError::database(format!("SQLite mutation failed and was rolled back: {error}"))); }
+                };
+                if result.rows_affected() != 1 { tx.rollback().await.ok(); return Err(mutation_conflict()); }
+                updated += 1;
+            }
+            tx.commit().await.map_err(|error| ApiError::database(format!("Could not commit SQLite mutation transaction: {error}")))?;
+            updated
+        }
+        ConnectionBackend::Mongo(_) => return Err(ApiError::bad_request("ADVANCED_MUTATION_PROVIDER_UNSUPPORTED", "MongoDB source commit is not enabled.")),
+    };
+    invalidate_mutation_caches(&state, &connection_id).await;
     Ok(Json(MutationCommitResponse { updated_rows }))
 }
 
@@ -1348,9 +1536,23 @@ fn logical_type_sqlite(native: &str) -> &'static str {
 fn mysql_cell(row: &MySqlRow, index: usize, native: &str) -> Value {
     if row.try_get_raw(index).map(|value| value.is_null()).unwrap_or(true) { return Value::Null; }
     let upper = native.to_ascii_uppercase();
-    if upper.contains("INT") { return row.try_get::<i64, _>(index).map(|value| Value::String(value.to_string())).unwrap_or_else(|_| Value::String("[unsupported value]".into())); }
+    if upper.contains("BOOL") {
+        return row.try_get::<bool, _>(index).map(Value::Bool)
+            .or_else(|_| row.try_get::<i8, _>(index).map(|value| Value::Bool(value != 0)))
+            .or_else(|_| row.try_get::<u8, _>(index).map(|value| Value::Bool(value != 0)))
+            .unwrap_or_else(|_| Value::String("[unsupported value]".into()));
+    }
+    if upper.contains("INT") {
+        return row.try_get::<i64, _>(index).map(|value| Value::String(value.to_string()))
+            .or_else(|_| row.try_get::<u64, _>(index).map(|value| Value::String(value.to_string())))
+            .unwrap_or_else(|_| Value::String("[unsupported value]".into()));
+    }
     if upper.contains("FLOAT") || upper.contains("DOUBLE") { return row.try_get::<f64, _>(index).map(|value| json!(value)).unwrap_or(Value::Null); }
     if upper.contains("DECIMAL") { return row.try_get::<Decimal, _>(index).map(|value| Value::String(value.to_string())).unwrap_or(Value::Null); }
+    if upper == "DATE" { return row.try_get::<NaiveDate, _>(index).map(|value| Value::String(value.to_string())).unwrap_or(Value::Null); }
+    if upper.contains("DATETIME") || upper.contains("TIMESTAMP") { return row.try_get::<NaiveDateTime, _>(index).map(|value| Value::String(value.to_string())).unwrap_or(Value::Null); }
+    if upper == "TIME" { return row.try_get::<NaiveTime, _>(index).map(|value| Value::String(value.to_string())).unwrap_or(Value::Null); }
+    if upper == "JSON" { return row.try_get::<Value, _>(index).unwrap_or(Value::Null); }
     row.try_get::<String, _>(index).map(Value::String).unwrap_or_else(|_| Value::String("[unsupported value]".into()))
 }
 
@@ -1515,5 +1717,53 @@ mod tests {
         transaction.rollback().await.expect("rollback transaction");
         let names: Vec<String> = sqlx::query_scalar("SELECT name FROM people ORDER BY id").fetch_all(&pool).await.expect("read rows");
         assert_eq!(names, vec!["Alice", "Bob"]);
+    }
+
+    fn mutation_test_table(native_type: &str) -> TableNode {
+        TableNode {
+            name: "people".into(), kind: "base_table".into(), estimated_rows: None, writable: true,
+            columns: vec![
+                ColumnNode { name: "id".into(), native_type: "integer".into(), nullable: false, primary_key: true },
+                ColumnNode { name: "name".into(), native_type: native_type.into(), nullable: false, primary_key: false },
+            ],
+        }
+    }
+
+    fn mutation_test_request() -> MutationRequest {
+        MutationRequest {
+            schema: "public".into(), table: "people".into(),
+            rows: vec![RowMutationRequest {
+                key: HashMap::from([("id".into(), json!(1))]),
+                changes: HashMap::from([("name".into(), json!("Alicia"))]),
+                expected: HashMap::from([("name".into(), json!("Alice"))]),
+            }],
+        }
+    }
+
+    #[test]
+    fn compiles_redacted_postgres_and_mysql_mutations() {
+        let request = mutation_test_request();
+        let table = mutation_test_table("character varying");
+        let postgres = match postgres_mutation_builder(&request, &request.rows[0], &table) {
+            Ok(builder) => builder.sql().to_string(),
+            Err(error) => panic!("postgres builder failed: {}", error.message),
+        };
+        assert!(postgres.starts_with("UPDATE \"public\".\"people\" SET \"name\" = CAST($1 AS character varying)"));
+        assert!(postgres.contains("\"id\" = CAST($2 AS integer)"));
+        assert!(!postgres.contains("Alicia"));
+        let mysql = mysql_mutation_builder(&request, &request.rows[0]).sql().to_string();
+        assert!(mysql.starts_with("UPDATE `public`.`people` SET `name` = ?"));
+        assert!(mysql.contains("`id` = ?"));
+        assert!(!mysql.contains("Alicia"));
+    }
+
+    #[test]
+    fn rejects_postgres_types_outside_the_mutation_allowlist() {
+        let request = mutation_test_request();
+        let error = match postgres_mutation_builder(&request, &request.rows[0], &mutation_test_table("ARRAY")) {
+            Ok(_) => panic!("array mutation must be rejected"),
+            Err(error) => error,
+        };
+        assert_eq!(error.code, "ADVANCED_MUTATION_TYPE_UNSUPPORTED");
     }
 }

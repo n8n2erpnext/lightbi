@@ -268,6 +268,12 @@ SQLite direct-table results now support capability-gated source commit through t
 
 The contract is intentionally provider-neutral, but only the SQLite adapter is enabled in this slice. PostgreSQL and MySQL/MariaDB discovery already emit key/write metadata; their binding and transaction adapters require independent acceptance before enablement. MongoDB, arbitrary SQL results, local files, and online sheets remain non-writable. This preserves the source-capability boundary instead of making editability an unchecked grid property.
 
+### 2026-06-26 SQL Source Commit Adapter Expansion
+
+PostgreSQL, MySQL, and MariaDB now use the same source-commit contract as SQLite for direct base-table tabs. Each adapter compiles quoted, parameterized `UPDATE` statements server-side, previews only redacted placeholder SQL, validates the requested table/key/changed columns/expected originals, executes the batch in one transaction, and rolls back on any stale-row or affected-row mismatch.
+
+PostgreSQL adds a conservative scalar type-cast allowlist so bound values are cast explicitly without opening arbitrary type-name SQL. MySQL and MariaDB bind scalar JSON values and rely on the engine's native coercion. MongoDB, arbitrary SQL results, local files, and online sheets remain non-writable source targets; those paths should continue toward transformed copy/export flows rather than in-place mutation.
+
 The descriptor store is intentionally memory-only because browser `File` handles and downloaded Microsoft 365/Google Sheet payloads must not be serialized. Refreshing the page requires selecting the source again. Queries remain read-only (`SELECT`/`WITH`) and capped at 1,000 rows per page.
 
 Acceptance covered a 41K-row local workbook handoff, a smaller multi-sheet workbook query, a live Microsoft 365 workbook with 1,644 rows, and a CSV query/chart at a 390x844 viewport with no horizontal page overflow.
