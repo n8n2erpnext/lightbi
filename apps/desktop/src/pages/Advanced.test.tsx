@@ -39,6 +39,11 @@ describe('Advanced workspace', () => {
   beforeEach(() => {
     cleanup();
     localStorage.clear();
+    Object.assign(navigator, {
+      clipboard: {
+        writeText: vi.fn().mockResolvedValue(undefined),
+      },
+    });
     useAdvancedSourceStore.setState({ sources: [], activeSourceId: null });
   });
 
@@ -105,5 +110,39 @@ describe('Advanced workspace', () => {
     expect(screen.getByText(/"sales": 99/)).toBeTruthy();
     fireEvent.click(screen.getByTitle('Discard result edits'));
     expect(screen.queryByText('1 changed')).toBeNull();
+  });
+
+  it('supports grid range selection and TSV copy', async () => {
+    useAdvancedSourceStore.getState().registerSource({
+      id: 'local:grid',
+      name: 'grid.xlsx',
+      sourceType: 'local_xlsx',
+      sourceKind: 'local_file',
+      tables: [{
+        id: 'sheet:grid',
+        name: 'Grid',
+        rowCount: 2,
+        columns: ['region', 'sales'],
+        profiles: {},
+        file: new File(['region,sales\nNorth,12'], 'grid.csv', { type: 'text/csv' }),
+        sheetName: 'Grid',
+      }],
+      semanticSample: { strategy: 'matrix_sample', sourceRowCount: 2, sampleRowCount: 2 },
+      registeredAt: new Date().toISOString(),
+    });
+
+    render(<Advanced />);
+    fireEvent.click(screen.getByRole('button', { name: 'Open' }));
+    await waitFor(() => expect(screen.getByText(/inherited Simple understanding/)).toBeTruthy());
+
+    fireEvent.click(screen.getByRole('button', { name: 'Run' }));
+    await waitFor(() => expect(screen.getByText('North')).toBeTruthy());
+
+    fireEvent.click(screen.getByText('North'));
+    fireEvent.click(screen.getByText('20'), { shiftKey: true });
+    expect(screen.getByText('2x2')).toBeTruthy();
+
+    fireEvent.keyDown(screen.getByRole('grid', { name: 'Result grid' }), { key: 'c', ctrlKey: true });
+    await waitFor(() => expect(navigator.clipboard.writeText).toHaveBeenCalledWith('North\t12\nSouth\t20'));
   });
 });

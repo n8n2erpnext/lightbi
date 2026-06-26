@@ -99,6 +99,9 @@ const ROW_HEIGHT = 30;
 const GRID_HEIGHT = 360;
 const OVERSCAN = 8;
 
+type GridPosition = { rowIndex: number; columnIndex: number };
+type GridSelection = { anchor: GridPosition; focus: GridPosition };
+
 type ResultView = 'grid' | 'chart' | 'json' | 'structure' | 'plan';
 type WorkspaceTab = PersistedAdvancedTab & {
   offset: number;
@@ -149,6 +152,26 @@ function displayCell(value: QueryCellValue): string {
   return String(value);
 }
 
+function gridClipboardCell(value: QueryCellValue): string {
+  if (value === null) return '';
+  return String(value).replace(/\r?\n/g, ' ');
+}
+
+async function copyTextToClipboard(text: string): Promise<void> {
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch {
+    const area = document.createElement('textarea');
+    area.value = text;
+    area.style.position = 'fixed';
+    area.style.opacity = '0';
+    document.body.appendChild(area);
+    area.select();
+    document.execCommand('copy');
+    area.remove();
+  }
+}
+
 function compactCount(value?: number | null): string {
   if (value === undefined || value === null || value < 0) return '';
   return new Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 1 }).format(value);
@@ -166,13 +189,55 @@ const VirtualResultGrid: React.FC<{
   editedKeys?: Set<string>;
   onEdit?: (rowIndex: number, columnIndex: number, oldValue: QueryCellValue, newValue: QueryCellValue) => void;
 }> = ({ result, sort, onSort, editable = false, editedKeys = new Set(), onEdit }) => {
+  const gridRef = useRef<HTMLDivElement | null>(null);
   const [scrollTop, setScrollTop] = useState(0);
   const [editing, setEditing] = useState<{ rowIndex: number; columnIndex: number; value: string } | null>(null);
+  const [selection, setSelection] = useState<GridSelection | null>(null);
   const start = Math.max(0, Math.floor(scrollTop / ROW_HEIGHT) - OVERSCAN);
   const visibleCount = Math.ceil(GRID_HEIGHT / ROW_HEIGHT) + OVERSCAN * 2;
   const end = Math.min(result.rows.length, start + visibleCount);
   const gridWidth = Math.max(720, result.columns.length * 180);
   const template = `repeat(${Math.max(result.columns.length, 1)}, minmax(180px, 1fr))`;
+  const selectedRange = selection ? {
+    rowStart: Math.min(selection.anchor.rowIndex, selection.focus.rowIndex),
+    rowEnd: Math.max(selection.anchor.rowIndex, selection.focus.rowIndex),
+    columnStart: Math.min(selection.anchor.columnIndex, selection.focus.columnIndex),
+    columnEnd: Math.max(selection.anchor.columnIndex, selection.focus.columnIndex),
+  } : null;
+  const selectionSize = selectedRange ? {
+    rows: selectedRange.rowEnd - selectedRange.rowStart + 1,
+    columns: selectedRange.columnEnd - selectedRange.columnStart + 1,
+  } : null;
+  const isSelected = (rowIndex: number, columnIndex: number) => Boolean(
+    selectedRange
+    && rowIndex >= selectedRange.rowStart
+    && rowIndex <= selectedRange.rowEnd
+    && columnIndex >= selectedRange.columnStart
+    && columnIndex <= selectedRange.columnEnd
+  );
+  const isActive = (rowIndex: number, columnIndex: number) => selection?.focus.rowIndex === rowIndex && selection.focus.columnIndex === columnIndex;
+  const selectCell = (rowIndex: number, columnIndex: number, extend: boolean) => {
+    const nextFocus = { rowIndex, columnIndex };
+    setSelection(current => extend && current ? { anchor: current.anchor, focus: nextFocus } : { anchor: nextFocus, focus: nextFocus });
+  };
+  const moveSelection = (rowDelta: number, columnDelta: number, extend: boolean) => {
+    setSelection(current => {
+      const focus = current?.focus ?? { rowIndex: 0, columnIndex: 0 };
+      const nextFocus = {
+        rowIndex: Math.max(0, Math.min(result.rows.length - 1, focus.rowIndex + rowDelta)),
+        columnIndex: Math.max(0, Math.min(result.columns.length - 1, focus.columnIndex + columnDelta)),
+      };
+      return extend && current ? { anchor: current.anchor, focus: nextFocus } : { anchor: nextFocus, focus: nextFocus };
+    });
+  };
+  const copySelection = async () => {
+    if (!selectedRange) return;
+    const text = result.rows
+      .slice(selectedRange.rowStart, selectedRange.rowEnd + 1)
+      .map(row => row.slice(selectedRange.columnStart, selectedRange.columnEnd + 1).map(value => gridClipboardCell(value ?? null)).join('\t'))
+      .join('\n');
+    await copyTextToClipboard(text);
+  };
   const commitEdit = (rowIndex: number, columnIndex: number, oldValue: QueryCellValue, text: string) => {
     const logicalType = result.columns[columnIndex]?.logicalType;
     let value: QueryCellValue = text;
@@ -183,12 +248,33 @@ const VirtualResultGrid: React.FC<{
   };
 
   return (
-    <div className="h-full min-h-0 overflow-auto bg-white" onScroll={event => setScrollTop(event.currentTarget.scrollTop)}>
+    <div
+      ref={gridRef}
+      role="grid"
+      aria-label="Result grid"
+      aria-rowcount={result.rows.length}
+      aria-colcount={result.columns.length}
+      tabIndex={0}
+      className="h-full min-h-0 overflow-auto bg-white outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
+      onScroll={event => setScrollTop(event.currentTarget.scrollTop)}
+      onKeyDown={event => {
+        if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'c') {
+          event.preventDefault();
+          void copySelection();
+          return;
+        }
+        if (event.key === 'ArrowUp') { event.preventDefault(); moveSelection(-1, 0, event.shiftKey); }
+        if (event.key === 'ArrowDown') { event.preventDefault(); moveSelection(1, 0, event.shiftKey); }
+        if (event.key === 'ArrowLeft') { event.preventDefault(); moveSelection(0, -1, event.shiftKey); }
+        if (event.key === 'ArrowRight') { event.preventDefault(); moveSelection(0, 1, event.shiftKey); }
+      }}
+    >
       <div style={{ width: gridWidth }}>
-        <div className="sticky top-0 z-10 grid h-8 border-b border-gray-300 bg-gray-100 text-[11px] font-semibold text-gray-600" style={{ gridTemplateColumns: template }}>
+        <div role="row" className="sticky top-0 z-10 grid h-8 border-b border-gray-300 bg-gray-100 text-[11px] font-semibold text-gray-600" style={{ gridTemplateColumns: template }}>
           {result.columns.map(column => (
             <button
               key={column.id}
+              role="columnheader"
               className="flex min-w-0 items-center gap-2 border-r border-gray-200 px-2 text-left hover:bg-gray-200"
               title={`Sort by ${column.name} · ${column.nativeType || column.logicalType}`}
               onClick={() => onSort(column.name)}
@@ -200,11 +286,13 @@ const VirtualResultGrid: React.FC<{
           ))}
         </div>
         <div className="relative" style={{ height: result.rows.length * ROW_HEIGHT }}>
+          {selectionSize && <div className="pointer-events-none sticky left-2 top-9 z-20 inline-flex bg-blue-600 px-1.5 py-0.5 text-[9px] font-semibold text-white shadow-sm">{selectionSize.rows}x{selectionSize.columns}</div>}
           {result.rows.slice(start, end).map((row, relativeIndex) => {
             const rowIndex = start + relativeIndex;
             return (
               <div
                 key={rowIndex}
+                role="row"
                 className="absolute grid border-b border-gray-100 text-[12px] text-gray-700 hover:bg-blue-50"
                 style={{ top: rowIndex * ROW_HEIGHT, height: ROW_HEIGHT, width: gridWidth, gridTemplateColumns: template }}
               >
@@ -212,11 +300,21 @@ const VirtualResultGrid: React.FC<{
                   const value = row[columnIndex] ?? null;
                   const isEditing = editing?.rowIndex === rowIndex && editing.columnIndex === columnIndex;
                   const changed = editedKeys.has(`${rowIndex}:${columnIndex}`);
+                  const selected = isSelected(rowIndex, columnIndex);
+                  const active = isActive(rowIndex, columnIndex);
                   return (
                   <div
                     key={column.id}
-                    className={`min-w-0 truncate border-r border-gray-100 px-2 py-1.5 font-mono ${value === null ? 'italic text-gray-400' : ''} ${changed ? 'bg-amber-100 text-amber-950' : ''} ${editable ? 'cursor-text' : ''}`}
+                    role="gridcell"
+                    aria-selected={selected}
+                    aria-rowindex={rowIndex + 1}
+                    aria-colindex={columnIndex + 1}
+                    className={`min-w-0 truncate border-r px-2 py-1.5 font-mono ${value === null ? 'italic text-gray-400' : ''} ${changed ? 'bg-amber-100 text-amber-950' : ''} ${selected ? 'border-blue-300 bg-blue-100 text-blue-950' : 'border-gray-100'} ${active ? 'ring-2 ring-inset ring-blue-600' : ''} ${editable ? 'cursor-text' : 'cursor-cell'}`}
                     title={editable ? `Edit ${column.name}` : displayCell(value)}
+                    onClick={event => {
+                      gridRef.current?.focus();
+                      selectCell(rowIndex, columnIndex, event.shiftKey);
+                    }}
                     onDoubleClick={() => editable && setEditing({ rowIndex, columnIndex, value: value === null ? '' : String(value) })}
                   >
                     {isEditing ? <input autoFocus value={editing.value} onChange={event => setEditing({ ...editing, value: event.target.value })} onBlur={() => commitEdit(rowIndex, columnIndex, value, editing.value)} onKeyDown={event => { if (event.key === 'Enter') commitEdit(rowIndex, columnIndex, value, editing.value); if (event.key === 'Escape') setEditing(null); }} className="h-6 w-full border border-blue-500 bg-white px-1 font-mono text-[12px] not-italic text-gray-900 outline-none" /> : displayCell(value)}
@@ -718,18 +816,7 @@ export const Advanced: React.FC = () => {
   const copyResult = async () => {
     if (!visibleResult) return;
     const text = advancedResultToCsv(visibleResult.columns, visibleResult.rows);
-    try {
-      await navigator.clipboard.writeText(text);
-    } catch {
-      const area = document.createElement('textarea');
-      area.value = text;
-      area.style.position = 'fixed';
-      area.style.opacity = '0';
-      document.body.appendChild(area);
-      area.select();
-      document.execCommand('copy');
-      area.remove();
-    }
+    await copyTextToClipboard(text);
   };
 
   const editCell = (rowIndex: number, columnIndex: number, oldValue: QueryCellValue, newValue: QueryCellValue) => {

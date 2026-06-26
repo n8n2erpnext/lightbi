@@ -1673,6 +1673,23 @@ See `docs/architecture/ADR-113-shared-simple-advanced-execution-core.md`.
 - Focused test passed: `src/lib/ai-briefing-generator.test.ts` — 4 tests.
 - Focused ESLint and TypeScript passed for the briefing generator.
 
+---
+
+## 2026-06-26 — Advanced Grid Pro v1 Toward TablePro Parity
+
+### Implementation
+
+- Added a tab-local grid selection model outside the immutable result buffer and outside the edit overlay.
+- Result grid now supports active cell focus, click selection, shift-click range selection, arrow-key movement, shift-arrow range extension, and Ctrl/Cmd+C copy of the selected range as TSV.
+- Selection rendering is virtual-grid aware: only visible selected cells render, while the selection state remains based on absolute row/column positions.
+- Clipboard copying uses the shared fallback helper and does not mutate result rows or persisted tab state.
+
+### Verification
+
+- Added Advanced component coverage for 2x2 range selection and TSV copy.
+- Focused test passed: `src/pages/Advanced.test.tsx` — 3 tests.
+- Focused ESLint and TypeScript passed for `Advanced.tsx` and `Advanced.test.tsx`.
+
 ### Deliberate Boundaries
 
 - Advanced remains read-only. Writeback, DDL, Redis, and ERD editing remain deferred by ADR.
