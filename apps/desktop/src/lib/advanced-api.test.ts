@@ -32,7 +32,8 @@ describe('advanced api', () => {
     const result = await executeAdvancedQuery('connection-1', {
       runId: 'advanced-query:1', sql: 'SELECT amount FROM ledger', limit: 200, offset: 200,
       sort: { column: 'amount', direction: 'desc' },
-      filters: [{ column: 'amount', operator: 'starts_with', value: '9' }]
+      filters: [{ column: 'amount', operator: 'starts_with', value: '9' }],
+      filterTree: { combinator: 'or', children: [{ column: 'amount', operator: 'greater_or_equal', value: '9' }] }
     });
 
     expect(result.rows[0][0]).toBe('9007199254740993.25');
@@ -42,6 +43,8 @@ describe('advanced api', () => {
       body: expect.stringContaining('"offset":200')
     }));
     expect(fetchMock.mock.calls[0][1]?.body).toContain('"operator":"starts_with"');
+    expect(fetchMock.mock.calls[0][1]?.body).toContain('"filterTree"');
+    expect(fetchMock.mock.calls[0][1]?.body).toContain('"greater_or_equal"');
   });
 
   it('requests exact counts with encoded schema and table names', async () => {

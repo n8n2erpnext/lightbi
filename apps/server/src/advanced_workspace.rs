@@ -53,6 +53,9 @@ pub(crate) async fn initialize(pool: &SqlitePool) -> Result<(), sqlx::Error> {
             created_at TEXT NOT NULL, updated_at TEXT NOT NULL
         )"#,
     ).execute(pool).await?;
+    let _ = sqlx::query("ALTER TABLE advanced_connection_profiles ADD COLUMN group_name TEXT").execute(pool).await;
+    let _ = sqlx::query("ALTER TABLE advanced_connection_profiles ADD COLUMN tag_name TEXT").execute(pool).await;
+    let _ = sqlx::query("ALTER TABLE advanced_connection_profiles ADD COLUMN safe_mode TEXT NOT NULL DEFAULT 'confirm_writes'").execute(pool).await;
     Ok(())
 }
 
@@ -252,6 +255,7 @@ fn favorite_from_row(row: sqlx::sqlite::SqliteRow) -> FavoriteEntry {
 pub(crate) struct ConnectionProfile {
     id: String, name: String, provider: String, database: String, tls_mode: String,
     ssh_host: Option<String>, ssh_port: Option<i64>, ssh_user: Option<String>,
+    group_name: Option<String>, tag_name: Option<String>, safe_mode: String,
     created_at: String, updated_at: String,
 }
 
@@ -260,10 +264,11 @@ pub(crate) struct ConnectionProfile {
 pub(crate) struct SaveProfileRequest {
     name: String, provider: String, database: Option<String>, connection_url: String,
     tls_mode: Option<String>, ssh_host: Option<String>, ssh_port: Option<i64>, ssh_user: Option<String>,
+    group_name: Option<String>, tag_name: Option<String>, safe_mode: Option<String>,
 }
 
 pub(crate) async fn list_profiles(State(state): State<Arc<AppState>>) -> Result<Json<Vec<ConnectionProfile>>, ApiError> {
-    let rows = sqlx::query("SELECT id, name, provider, database_name, tls_mode, ssh_host, ssh_port, ssh_user, created_at, updated_at FROM advanced_connection_profiles ORDER BY updated_at DESC")
+    let rows = sqlx::query("SELECT id, name, provider, database_name, tls_mode, ssh_host, ssh_port, ssh_user, group_name, tag_name, safe_mode, created_at, updated_at FROM advanced_connection_profiles ORDER BY COALESCE(group_name, ''), updated_at DESC")
         .fetch_all(&state.context.sqlite_pool).await.map_err(|error| ApiError::storage(format!("Could not load connection profiles: {error}")))?;
     Ok(Json(rows.into_iter().map(profile_from_row).collect()))
 }
@@ -284,6 +289,10 @@ pub(crate) async fn save_profile(
     if request.ssh_host.is_some() && request.ssh_user.as_deref().unwrap_or_default().trim().is_empty() {
         return Err(ApiError::bad_request("ADVANCED_SSH_PROFILE_INVALID", "SSH user is required when an SSH host is configured."));
     }
+    let safe_mode = request.safe_mode.unwrap_or_else(|| "confirm_writes".to_string());
+    if !["off", "confirm_writes", "read_only"].contains(&safe_mode.as_str()) {
+        return Err(ApiError::bad_request("ADVANCED_SAFE_MODE_INVALID", "Safe mode must be off, confirm_writes, or read_only."));
+    }
     let secured_url = apply_tls_policy(url, &request.provider, &tls_mode);
     let (cipher, nonce) = encrypt_secret(&secured_url).await?;
     let now = Utc::now().to_rfc3339();
@@ -291,16 +300,20 @@ pub(crate) async fn save_profile(
         id: Uuid::new_v4().to_string(), name: name.to_string(), provider: request.provider,
         database: request.database.unwrap_or_default(), tls_mode, ssh_host: request.ssh_host.filter(|value| !value.trim().is_empty()),
         ssh_port: request.ssh_port.map(|port| port.clamp(1, 65535)), ssh_user: request.ssh_user.filter(|value| !value.trim().is_empty()),
+        group_name: request.group_name.filter(|value| !value.trim().is_empty()),
+        tag_name: request.tag_name.filter(|value| !value.trim().is_empty()),
+        safe_mode,
         created_at: now.clone(), updated_at: now,
     };
-    sqlx::query("INSERT INTO advanced_connection_profiles (id, name, provider, database_name, tls_mode, ssh_host, ssh_port, ssh_user, credential_cipher, credential_nonce, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+    sqlx::query("INSERT INTO advanced_connection_profiles (id, name, provider, database_name, tls_mode, ssh_host, ssh_port, ssh_user, group_name, tag_name, safe_mode, credential_cipher, credential_nonce, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
         .bind(&profile.id).bind(&profile.name).bind(&profile.provider).bind(&profile.database).bind(&profile.tls_mode)
-        .bind(&profile.ssh_host).bind(profile.ssh_port).bind(&profile.ssh_user).bind(cipher).bind(nonce).bind(&profile.created_at).bind(&profile.updated_at)
+        .bind(&profile.ssh_host).bind(profile.ssh_port).bind(&profile.ssh_user).bind(&profile.group_name).bind(&profile.tag_name).bind(&profile.safe_mode)
+        .bind(cipher).bind(nonce).bind(&profile.created_at).bind(&profile.updated_at)
         .execute(&state.context.sqlite_pool).await.map_err(|error| ApiError::storage(format!("Could not save connection profile: {error}")))?;
     Ok((StatusCode::CREATED, Json(profile)))
 }
 
-fn apply_tls_policy(url: &str, provider: &str, mode: &str) -> String {
+pub(crate) fn apply_tls_policy(url: &str, provider: &str, mode: &str) -> String {
     if mode == "driver-default" || provider == "sqlite" { return url.to_string(); }
     let separator = if url.contains('?') { '&' } else { '?' };
     match provider {
@@ -321,6 +334,7 @@ fn profile_from_row(row: sqlx::sqlite::SqliteRow) -> ConnectionProfile {
     ConnectionProfile {
         id: row.get("id"), name: row.get("name"), provider: row.get("provider"), database: row.get("database_name"),
         tls_mode: row.get("tls_mode"), ssh_host: row.get("ssh_host"), ssh_port: row.get("ssh_port"), ssh_user: row.get("ssh_user"),
+        group_name: row.get("group_name"), tag_name: row.get("tag_name"), safe_mode: row.get("safe_mode"),
         created_at: row.get("created_at"), updated_at: row.get("updated_at"),
     }
 }

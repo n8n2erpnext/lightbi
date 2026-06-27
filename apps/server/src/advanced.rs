@@ -1,16 +1,19 @@
 use std::{
     collections::HashMap,
+    net::TcpListener,
     sync::Arc,
     time::{Duration, Instant},
 };
 
 use axum::{
-    extract::{Path, Query as AxumQuery, State},
-    http::StatusCode,
+    extract::{Multipart, Path, Query as AxumQuery, State},
+    http::{header, HeaderValue, StatusCode},
     response::{IntoResponse, Response},
     Json,
 };
 use chrono::{DateTime, NaiveDate, NaiveDateTime, NaiveTime, Utc};
+use lightbi_export::excel::ExcelGenerator;
+use lightbi_runtime_backend::model::{ColumnDef, ExecutionMetadata, ResultSet};
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
@@ -22,9 +25,11 @@ use sqlx::{
 };
 use mongodb::{bson::{Bson, Document}, Client as MongoClient};
 use tokio::{
+    process::{Child, Command},
     sync::{Mutex, RwLock},
     task::AbortHandle,
 };
+use url::Url;
 use uuid::Uuid;
 
 use crate::AppState;
@@ -36,6 +41,9 @@ const STATEMENT_TIMEOUT_MS: u64 = 15_000;
 const COUNT_TIMEOUT_MS: u64 = 5_000;
 const SCHEMA_CACHE_TTL: Duration = Duration::from_secs(60);
 const COUNT_CACHE_TTL: Duration = Duration::from_secs(300);
+const EXPORT_PAGE_SIZE: usize = 1_000;
+const MAX_EXPORT_ROWS: usize = 250_000;
+const MAX_IMPORT_ROWS: usize = 100_000;
 
 #[derive(Clone)]
 pub(crate) struct AdvancedState {
@@ -44,6 +52,8 @@ pub(crate) struct AdvancedState {
     schema_cache: Arc<RwLock<HashMap<String, CachedSchema>>>,
     schema_locks: Arc<RwLock<HashMap<String, Arc<Mutex<()>>>>>,
     count_cache: Arc<RwLock<HashMap<(String, String, String), CachedCount>>>,
+    export_jobs: Arc<RwLock<HashMap<String, ExportJob>>>,
+    import_jobs: Arc<RwLock<HashMap<String, ImportJob>>>,
 }
 
 struct CachedSchema {
@@ -61,12 +71,42 @@ struct ActiveRun {
     abort_handle: AbortHandle,
 }
 
+struct ExportJob {
+    status: ExportJobStatus,
+    format: String,
+    rows: usize,
+    file_name: String,
+    content_type: String,
+    data: Option<Vec<u8>>,
+    error: Option<String>,
+    abort_handle: Option<AbortHandle>,
+}
+
+struct ImportJob {
+    status: ExportJobStatus,
+    statement_count: usize,
+    executed_statements: usize,
+    skipped_statements: usize,
+    error: Option<String>,
+    abort_handle: Option<AbortHandle>,
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum ExportJobStatus {
+    Running,
+    Completed,
+    Failed,
+    Cancelled,
+}
+
 #[derive(Clone)]
 struct ConnectionSession {
     id: String,
     name: String,
     database: String,
     backend: ConnectionBackend,
+    ssh_tunnel: Option<Arc<Mutex<Child>>>,
+    safe_mode: String,
 }
 
 #[derive(Clone)]
@@ -85,6 +125,8 @@ impl AdvancedState {
             schema_cache: Arc::new(RwLock::new(HashMap::new())),
             schema_locks: Arc::new(RwLock::new(HashMap::new())),
             count_cache: Arc::new(RwLock::new(HashMap::new())),
+            export_jobs: Arc::new(RwLock::new(HashMap::new())),
+            import_jobs: Arc::new(RwLock::new(HashMap::new())),
         }
     }
 }
@@ -97,6 +139,11 @@ pub(crate) struct CreateConnectionRequest {
     profile_id: Option<String>,
     provider: Option<String>,
     database_name: Option<String>,
+    tls_mode: Option<String>,
+    ssh_host: Option<String>,
+    ssh_port: Option<u16>,
+    ssh_user: Option<String>,
+    safe_mode: Option<String>,
 }
 
 #[derive(Debug, Serialize)]
@@ -124,6 +171,7 @@ pub(crate) struct SchemaResponse {
 struct SchemaNode {
     name: String,
     tables: Vec<TableNode>,
+    routines: Vec<RoutineNode>,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -132,8 +180,13 @@ struct TableNode {
     name: String,
     kind: String,
     estimated_rows: Option<i64>,
+    table_size_bytes: Option<i64>,
+    comment: Option<String>,
+    ddl: Option<String>,
     writable: bool,
     columns: Vec<ColumnNode>,
+    indexes: Vec<IndexNode>,
+    foreign_keys: Vec<ForeignKeyNode>,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -143,6 +196,35 @@ struct ColumnNode {
     native_type: String,
     nullable: bool,
     primary_key: bool,
+    default_value: Option<String>,
+    comment: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct IndexNode {
+    name: String,
+    columns: Vec<String>,
+    unique: bool,
+    definition: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct ForeignKeyNode {
+    name: String,
+    columns: Vec<String>,
+    referenced_table: String,
+    referenced_columns: Vec<String>,
+    definition: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct RoutineNode {
+    name: String,
+    kind: String,
+    definition: Option<String>,
 }
 
 #[derive(Debug, Default, Deserialize)]
@@ -178,11 +260,71 @@ pub(crate) struct ExecuteQueryRequest {
     offset: Option<usize>,
     sort: Option<QuerySortRequest>,
     filters: Option<Vec<QueryFilterRequest>>,
+    filter_tree: Option<QueryFilterGroup>,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub(crate) struct ExportRequest {
+    sql: String,
+    format: String,
+    file_name: Option<String>,
+    table_name: Option<String>,
+    sort: Option<QuerySortRequest>,
+    filters: Option<Vec<QueryFilterRequest>>,
+    filter_tree: Option<QueryFilterGroup>,
+}
+
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub(crate) struct ExportStartResponse {
+    job_id: String,
+}
+
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub(crate) struct ExportJobResponse {
+    job_id: String,
+    status: String,
+    format: String,
+    rows: usize,
+    file_name: String,
+    error: Option<String>,
+}
+
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub(crate) struct ImportStartResponse {
+    job_id: String,
+}
+
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub(crate) struct ImportJobResponse {
+    job_id: String,
+    status: String,
+    statement_count: usize,
+    executed_statements: usize,
+    skipped_statements: usize,
+    error: Option<String>,
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum ImportErrorMode {
+    StopRollback,
+    StopCommit,
+    SkipContinue,
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub(crate) struct ExplainQueryRequest {
+    sql: String,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub(crate) struct ScriptRequest {
     sql: String,
 }
 
@@ -197,9 +339,25 @@ pub(crate) struct MutationRequest {
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
 struct RowMutationRequest {
+    #[serde(default)]
+    action: MutationAction,
     key: HashMap<String, Value>,
     changes: HashMap<String, Value>,
     expected: HashMap<String, Value>,
+}
+
+#[derive(Debug, Clone, Copy, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+enum MutationAction {
+    Update,
+    Insert,
+    Delete,
+}
+
+impl Default for MutationAction {
+    fn default() -> Self {
+        Self::Update
+    }
 }
 
 #[derive(Debug, Serialize)]
@@ -214,6 +372,20 @@ pub(crate) struct MutationPreviewResponse {
 #[serde(rename_all = "camelCase")]
 pub(crate) struct MutationCommitResponse {
     updated_rows: u64,
+}
+
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub(crate) struct ScriptPreviewResponse {
+    statements: Vec<String>,
+    statement_count: usize,
+    can_commit: bool,
+}
+
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub(crate) struct ScriptCommitResponse {
+    executed_statements: usize,
 }
 
 #[derive(Debug, Serialize)]
@@ -236,25 +408,26 @@ pub(crate) struct DocumentQueryRequest {
     offset: Option<usize>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
 struct QuerySortRequest {
     column: String,
     direction: SortDirection,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Copy, Deserialize)]
 #[serde(rename_all = "lowercase")]
 enum SortDirection {
     Asc,
     Desc,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
 struct QueryFilterRequest {
     column: String,
     operator: FilterOperator,
+    #[serde(default)]
     value: String,
 }
 
@@ -262,9 +435,88 @@ struct QueryFilterRequest {
 #[serde(rename_all = "snake_case")]
 enum FilterOperator {
     Contains,
+    NotContains,
     Equals,
+    NotEquals,
     StartsWith,
     EndsWith,
+    GreaterThan,
+    GreaterOrEqual,
+    LessThan,
+    LessOrEqual,
+    IsBlank,
+    IsNotBlank,
+    In,
+    NotIn,
+}
+
+#[derive(Debug, Clone, Copy, Deserialize)]
+#[serde(rename_all = "lowercase")]
+enum FilterCombinator {
+    And,
+    Or,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(untagged)]
+enum QueryFilterNode {
+    Condition(QueryFilterRequest),
+    Group(QueryFilterGroup),
+}
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct QueryFilterGroup {
+    combinator: FilterCombinator,
+    children: Vec<QueryFilterNode>,
+}
+
+fn validate_filter_condition(column_names: &[String], filter: &QueryFilterRequest) -> Result<(), ApiError> {
+    if !column_names.iter().any(|name| name == &filter.column) {
+        return Err(ApiError::bad_request("ADVANCED_FILTER_COLUMN_INVALID", "Filter column is not present in this result."));
+    }
+    if filter.value.len() > 1_000 {
+        return Err(ApiError::bad_request("ADVANCED_FILTER_VALUE_TOO_LONG", "Filter value cannot exceed 1,000 characters."));
+    }
+    Ok(())
+}
+
+fn validate_filter_node(column_names: &[String], node: &QueryFilterNode, depth: usize, count: &mut usize) -> Result<(), ApiError> {
+    if depth > 4 {
+        return Err(ApiError::bad_request("ADVANCED_FILTER_DEPTH", "Filter groups can be nested up to four levels."));
+    }
+    match node {
+        QueryFilterNode::Condition(filter) => {
+            *count += 1;
+            if *count > 20 {
+                return Err(ApiError::bad_request("ADVANCED_FILTER_LIMIT", "A query can apply at most 20 result filters."));
+            }
+            validate_filter_condition(column_names, filter)
+        }
+        QueryFilterNode::Group(group) => {
+            if group.children.is_empty() {
+                return Err(ApiError::bad_request("ADVANCED_FILTER_EMPTY_GROUP", "Filter groups must contain at least one condition."));
+            }
+            for child in &group.children {
+                validate_filter_node(column_names, child, depth + 1, count)?;
+            }
+            Ok(())
+        }
+    }
+}
+
+fn validate_filter_tree(column_names: &[String], tree: &Option<QueryFilterGroup>) -> Result<(), ApiError> {
+    if let Some(group) = tree {
+        let mut count = 0;
+        validate_filter_node(column_names, &QueryFilterNode::Group(group.clone()), 0, &mut count)?;
+    }
+    Ok(())
+}
+
+fn table_node_mut<'a>(schemas: &'a mut [SchemaNode], schema: &str, table: &str) -> Option<&'a mut TableNode> {
+    schemas.iter_mut()
+        .find(|candidate| candidate.name == schema)
+        .and_then(|schema_node| schema_node.tables.iter_mut().find(|candidate| candidate.name == table))
 }
 
 #[derive(Debug, Serialize)]
@@ -346,6 +598,46 @@ impl IntoResponse for ApiError {
     }
 }
 
+fn free_local_port() -> Result<u16, ApiError> {
+    let listener = TcpListener::bind("127.0.0.1:0")
+        .map_err(|error| ApiError::database(format!("Could not allocate local tunnel port: {error}")))?;
+    let port = listener.local_addr()
+        .map_err(|error| ApiError::database(format!("Could not inspect local tunnel port: {error}")))?
+        .port();
+    drop(listener);
+    Ok(port)
+}
+
+async fn maybe_open_ssh_tunnel(url: &str, request: &CreateConnectionRequest) -> Result<(String, Option<Arc<Mutex<Child>>>), ApiError> {
+    let Some(ssh_host) = request.ssh_host.as_deref().map(str::trim).filter(|value| !value.is_empty()) else {
+        return Ok((url.to_string(), None));
+    };
+    let ssh_user = request.ssh_user.as_deref().map(str::trim).filter(|value| !value.is_empty())
+        .ok_or_else(|| ApiError::bad_request("ADVANCED_SSH_PROFILE_INVALID", "SSH user is required when an SSH host is configured."))?;
+    let mut parsed = Url::parse(url).map_err(|error| ApiError::bad_request("ADVANCED_CONNECTION_INVALID", format!("Invalid connection URL for SSH tunnel: {error}")))?;
+    let remote_host = parsed.host_str().ok_or_else(|| ApiError::bad_request("ADVANCED_CONNECTION_INVALID", "Connection URL must include a database host for SSH tunnel."))?.to_string();
+    let remote_port = parsed.port_or_known_default().ok_or_else(|| ApiError::bad_request("ADVANCED_CONNECTION_INVALID", "Connection URL must include or imply a database port for SSH tunnel."))?;
+    let local_port = free_local_port()?;
+    let ssh_target = format!("{ssh_user}@{ssh_host}");
+    let local_forward = format!("127.0.0.1:{local_port}:{remote_host}:{remote_port}");
+    let mut child = Command::new("ssh")
+        .arg("-N")
+        .arg("-L").arg(local_forward)
+        .arg("-p").arg(request.ssh_port.unwrap_or(22).to_string())
+        .arg("-o").arg("ExitOnForwardFailure=yes")
+        .arg("-o").arg("ServerAliveInterval=30")
+        .arg(ssh_target)
+        .spawn()
+        .map_err(|error| ApiError::database(format!("Could not start SSH tunnel: {error}")))?;
+    tokio::time::sleep(Duration::from_millis(700)).await;
+    if let Some(status) = child.try_wait().map_err(|error| ApiError::database(format!("Could not inspect SSH tunnel: {error}")))? {
+        return Err(ApiError::database(format!("SSH tunnel exited before connection was opened: {status}")));
+    }
+    parsed.set_host(Some("127.0.0.1")).map_err(|_| ApiError::bad_request("ADVANCED_CONNECTION_INVALID", "Could not rewrite connection URL for SSH tunnel."))?;
+    parsed.set_port(Some(local_port)).map_err(|_| ApiError::bad_request("ADVANCED_CONNECTION_INVALID", "Could not rewrite connection port for SSH tunnel."))?;
+    Ok((parsed.to_string(), Some(Arc::new(Mutex::new(child)))))
+}
+
 pub(crate) async fn create_connection(
     State(state): State<Arc<AppState>>,
     Json(request): Json<CreateConnectionRequest>,
@@ -358,14 +650,25 @@ pub(crate) async fn create_connection(
             request.profile_id.as_deref().ok_or_else(|| ApiError::bad_request("ADVANCED_CONNECTION_INVALID", "Connection URL or profileId is required."))?,
         ).await?,
     };
-    let connection_url = connection_url_owned.trim();
-    if name.is_empty() || connection_url.is_empty() {
+    let raw_connection_url = connection_url_owned.trim();
+    if name.is_empty() || raw_connection_url.is_empty() {
         return Err(ApiError::bad_request(
             "ADVANCED_CONNECTION_INVALID",
             "Connection name and PostgreSQL URL are required.",
         ));
     }
     let requested_provider = request.provider.as_deref().unwrap_or_default().to_ascii_lowercase();
+    let tls_mode = request.tls_mode.as_deref().unwrap_or("driver-default");
+    if !["driver-default", "require", "verify-full"].contains(&tls_mode) {
+        return Err(ApiError::bad_request("ADVANCED_TLS_MODE_INVALID", "TLS mode must be driver-default, require, or verify-full."));
+    }
+    let safe_mode = request.safe_mode.as_deref().unwrap_or("confirm_writes");
+    if !["off", "confirm_writes", "read_only"].contains(&safe_mode) {
+        return Err(ApiError::bad_request("ADVANCED_SAFE_MODE_INVALID", "Safe mode must be off, confirm_writes, or read_only."));
+    }
+    let tls_url = crate::advanced_workspace::apply_tls_policy(raw_connection_url, &requested_provider, tls_mode);
+    let (connection_url, ssh_tunnel) = maybe_open_ssh_tunnel(&tls_url, &request).await?;
+    let connection_url = connection_url.as_str();
     let (provider, database, backend) = if connection_url.starts_with("postgres://") || connection_url.starts_with("postgresql://") {
         let pool = PgPoolOptions::new().max_connections(4).acquire_timeout(Duration::from_secs(10)).connect(connection_url).await
             .map_err(|error| ApiError::database(format!("Could not connect to PostgreSQL: {error}")))?;
@@ -405,6 +708,8 @@ pub(crate) async fn create_connection(
         name: name.to_string(),
         database: database.clone(),
         backend,
+        ssh_tunnel,
+        safe_mode: safe_mode.to_string(),
     };
     state
         .advanced
@@ -466,6 +771,10 @@ pub(crate) async fn delete_connection(
         ConnectionBackend::MySql(pool) => pool.close().await,
         ConnectionBackend::Sqlite(pool) => pool.close().await,
         ConnectionBackend::Mongo(_) => {}
+    }
+    if let Some(tunnel) = session.ssh_tunnel {
+        let mut child = tunnel.lock().await;
+        let _ = child.kill().await;
     }
     Ok(StatusCode::NO_CONTENT)
 }
@@ -553,7 +862,7 @@ async fn discover_postgres_schema(pool: &PgPool) -> Result<Vec<SchemaNode>, ApiE
     let rows = sqlx::query(
         r#"
         SELECT c.table_schema, c.table_name, t.table_type, c.column_name,
-               c.data_type, c.udt_name, c.is_nullable,
+               c.data_type, c.udt_name, c.is_nullable, c.column_default,
                EXISTS (
                  SELECT 1 FROM information_schema.table_constraints tc
                  JOIN information_schema.key_column_usage kcu
@@ -561,7 +870,10 @@ async fn discover_postgres_schema(pool: &PgPool) -> Result<Vec<SchemaNode>, ApiE
                  WHERE tc.constraint_type = 'PRIMARY KEY' AND tc.table_schema = c.table_schema
                    AND tc.table_name = c.table_name AND kcu.column_name = c.column_name
                ) AS primary_key,
-               CASE WHEN t.table_type = 'BASE TABLE' THEN pc.reltuples::bigint ELSE NULL END AS estimated_rows
+               CASE WHEN t.table_type = 'BASE TABLE' THEN pc.reltuples::bigint ELSE NULL END AS estimated_rows,
+               CASE WHEN t.table_type = 'BASE TABLE' THEN pg_total_relation_size(pc.oid)::bigint ELSE NULL END AS table_size_bytes,
+               obj_description(pc.oid, 'pg_class') AS table_comment,
+               col_description(pc.oid, c.ordinal_position::int) AS column_comment
         FROM information_schema.columns c
         JOIN information_schema.tables t
           ON t.table_schema = c.table_schema AND t.table_name = c.table_name
@@ -586,6 +898,7 @@ async fn discover_postgres_schema(pool: &PgPool) -> Result<Vec<SchemaNode>, ApiE
                 schemas.push(SchemaNode {
                     name: schema_name.clone(),
                     tables: Vec::new(),
+                    routines: Vec::new(),
                 });
                 schemas.len() - 1
             });
@@ -601,8 +914,13 @@ async fn discover_postgres_schema(pool: &PgPool) -> Result<Vec<SchemaNode>, ApiE
                         .to_ascii_lowercase()
                         .replace(' ', "_"),
                     estimated_rows: row.try_get("estimated_rows").ok(),
+                    table_size_bytes: row.try_get("table_size_bytes").ok(),
+                    comment: row.try_get("table_comment").ok(),
+                    ddl: None,
                     writable: row.get::<String, _>("table_type") == "BASE TABLE",
                     columns: Vec::new(),
+                    indexes: Vec::new(),
+                    foreign_keys: Vec::new(),
                 });
                 tables.len() - 1
             });
@@ -617,7 +935,62 @@ async fn discover_postgres_schema(pool: &PgPool) -> Result<Vec<SchemaNode>, ApiE
             },
             nullable: row.get::<String, _>("is_nullable") == "YES",
             primary_key: row.get("primary_key"),
+            default_value: row.try_get("column_default").ok(),
+            comment: row.try_get("column_comment").ok(),
         });
+    }
+
+    let index_rows = sqlx::query(
+        "SELECT schemaname, tablename, indexname, indexdef FROM pg_indexes WHERE schemaname NOT IN ('pg_catalog', 'information_schema')",
+    ).fetch_all(pool).await.map_err(|error| ApiError::database(format!("Could not load PostgreSQL indexes: {error}")))?;
+    for row in index_rows {
+        let schema_name: String = row.get("schemaname");
+        let table_name: String = row.get("tablename");
+        if let Some(table) = table_node_mut(&mut schemas, &schema_name, &table_name) {
+            let definition: String = row.get("indexdef");
+            table.indexes.push(IndexNode {
+                name: row.get("indexname"),
+                columns: Vec::new(),
+                unique: definition.to_ascii_uppercase().contains("UNIQUE INDEX"),
+                definition: Some(definition),
+            });
+        }
+    }
+
+    let fk_rows = sqlx::query(
+        r#"SELECT n.nspname AS schema_name, c.relname AS table_name, con.conname AS fk_name,
+                  confrelid::regclass::text AS referenced_table, pg_get_constraintdef(con.oid) AS definition
+           FROM pg_constraint con
+           JOIN pg_class c ON c.oid = con.conrelid
+           JOIN pg_namespace n ON n.oid = c.relnamespace
+           WHERE con.contype = 'f' AND n.nspname NOT IN ('pg_catalog', 'information_schema')"#,
+    ).fetch_all(pool).await.map_err(|error| ApiError::database(format!("Could not load PostgreSQL foreign keys: {error}")))?;
+    for row in fk_rows {
+        let schema_name: String = row.get("schema_name");
+        let table_name: String = row.get("table_name");
+        if let Some(table) = table_node_mut(&mut schemas, &schema_name, &table_name) {
+            table.foreign_keys.push(ForeignKeyNode {
+                name: row.get("fk_name"),
+                columns: Vec::new(),
+                referenced_table: row.get("referenced_table"),
+                referenced_columns: Vec::new(),
+                definition: row.try_get("definition").ok(),
+            });
+        }
+    }
+
+    let routine_rows = sqlx::query(
+        "SELECT routine_schema, routine_name, routine_type FROM information_schema.routines WHERE routine_schema NOT IN ('pg_catalog', 'information_schema')",
+    ).fetch_all(pool).await.map_err(|error| ApiError::database(format!("Could not load PostgreSQL routines: {error}")))?;
+    for row in routine_rows {
+        let schema_name: String = row.get("routine_schema");
+        if let Some(schema) = schemas.iter_mut().find(|candidate| candidate.name == schema_name) {
+            schema.routines.push(RoutineNode {
+                name: row.get("routine_name"),
+                kind: row.get::<String, _>("routine_type").to_ascii_lowercase(),
+                definition: None,
+            });
+        }
     }
 
     Ok(schemas)
@@ -627,7 +1000,8 @@ async fn discover_mysql_schema(pool: &MySqlPool, database: &str) -> Result<Vec<S
     let rows = sqlx::query(
         r#"SELECT c.TABLE_NAME AS table_name, t.TABLE_TYPE AS table_type, c.COLUMN_NAME AS column_name,
                   c.COLUMN_TYPE AS native_type, c.IS_NULLABLE AS is_nullable, c.COLUMN_KEY = 'PRI' AS primary_key,
-                  t.TABLE_ROWS AS estimated_rows
+                  c.COLUMN_DEFAULT AS column_default, c.COLUMN_COMMENT AS column_comment,
+                  t.TABLE_ROWS AS estimated_rows, (t.DATA_LENGTH + t.INDEX_LENGTH) AS table_size_bytes, t.TABLE_COMMENT AS table_comment
            FROM information_schema.COLUMNS c
            JOIN information_schema.TABLES t ON t.TABLE_SCHEMA = c.TABLE_SCHEMA AND t.TABLE_NAME = c.TABLE_NAME
            WHERE c.TABLE_SCHEMA = ? ORDER BY c.TABLE_NAME, c.ORDINAL_POSITION"#,
@@ -641,8 +1015,13 @@ async fn discover_mysql_schema(pool: &MySqlPool, database: &str) -> Result<Vec<S
                 name: table_name.clone(),
                 kind: row.get::<String, _>("table_type").to_ascii_lowercase().replace(' ', "_"),
                 estimated_rows: row.try_get::<u64, _>("estimated_rows").ok().and_then(|value| i64::try_from(value).ok()),
+                table_size_bytes: row.try_get::<u64, _>("table_size_bytes").ok().and_then(|value| i64::try_from(value).ok()),
+                comment: row.try_get("table_comment").ok(),
+                ddl: None,
                 writable: row.get::<String, _>("table_type").eq_ignore_ascii_case("BASE TABLE"),
                 columns: Vec::new(),
+                indexes: Vec::new(),
+                foreign_keys: Vec::new(),
             });
             tables.len() - 1
         });
@@ -650,9 +1029,55 @@ async fn discover_mysql_schema(pool: &MySqlPool, database: &str) -> Result<Vec<S
             name: row.get("column_name"), native_type: row.get("native_type"),
             nullable: row.get::<String, _>("is_nullable") == "YES",
             primary_key: row.get::<i64, _>("primary_key") != 0,
+            default_value: row.try_get("column_default").ok(),
+            comment: row.try_get("column_comment").ok(),
         });
     }
-    Ok(vec![SchemaNode { name: database.to_string(), tables }])
+    let mut schema = SchemaNode { name: database.to_string(), tables, routines: Vec::new() };
+    let index_rows = sqlx::query(
+        "SELECT TABLE_NAME, INDEX_NAME, NON_UNIQUE, GROUP_CONCAT(COLUMN_NAME ORDER BY SEQ_IN_INDEX) AS columns_list FROM information_schema.STATISTICS WHERE TABLE_SCHEMA = ? GROUP BY TABLE_NAME, INDEX_NAME, NON_UNIQUE",
+    ).bind(database).fetch_all(pool).await
+        .map_err(|error| ApiError::database(format!("Could not load MySQL/MariaDB indexes: {error}")))?;
+    for row in index_rows {
+        let table_name: String = row.get("TABLE_NAME");
+        if let Some(table) = schema.tables.iter_mut().find(|candidate| candidate.name == table_name) {
+            let columns_list: Option<String> = row.try_get("columns_list").ok();
+            table.indexes.push(IndexNode {
+                name: row.get("INDEX_NAME"),
+                columns: columns_list.unwrap_or_default().split(',').map(str::to_string).collect(),
+                unique: row.get::<i64, _>("NON_UNIQUE") == 0,
+                definition: None,
+            });
+        }
+    }
+    let fk_rows = sqlx::query(
+        "SELECT CONSTRAINT_NAME, TABLE_NAME, COLUMN_NAME, REFERENCED_TABLE_NAME, REFERENCED_COLUMN_NAME FROM information_schema.KEY_COLUMN_USAGE WHERE TABLE_SCHEMA = ? AND REFERENCED_TABLE_NAME IS NOT NULL",
+    ).bind(database).fetch_all(pool).await
+        .map_err(|error| ApiError::database(format!("Could not load MySQL/MariaDB foreign keys: {error}")))?;
+    for row in fk_rows {
+        let table_name: String = row.get("TABLE_NAME");
+        if let Some(table) = schema.tables.iter_mut().find(|candidate| candidate.name == table_name) {
+            table.foreign_keys.push(ForeignKeyNode {
+                name: row.get("CONSTRAINT_NAME"),
+                columns: vec![row.get("COLUMN_NAME")],
+                referenced_table: row.get("REFERENCED_TABLE_NAME"),
+                referenced_columns: vec![row.get("REFERENCED_COLUMN_NAME")],
+                definition: None,
+            });
+        }
+    }
+    let routine_rows = sqlx::query(
+        "SELECT ROUTINE_NAME, ROUTINE_TYPE FROM information_schema.ROUTINES WHERE ROUTINE_SCHEMA = ?",
+    ).bind(database).fetch_all(pool).await
+        .map_err(|error| ApiError::database(format!("Could not load MySQL/MariaDB routines: {error}")))?;
+    for row in routine_rows {
+        schema.routines.push(RoutineNode {
+            name: row.get("ROUTINE_NAME"),
+            kind: row.get::<String, _>("ROUTINE_TYPE").to_ascii_lowercase(),
+            definition: None,
+        });
+    }
+    Ok(vec![schema])
 }
 
 async fn discover_sqlite_schema(pool: &SqlitePool) -> Result<Vec<SchemaNode>, ApiError> {
@@ -668,10 +1093,44 @@ async fn discover_sqlite_schema(pool: &SqlitePool) -> Result<Vec<SchemaNode>, Ap
                 name: row.get("name"), native_type: row.get::<String, _>("type"),
                 nullable: row.get::<i64, _>("notnull") == 0,
                 primary_key: row.get::<i64, _>("pk") > 0,
+                default_value: row.try_get("dflt_value").ok(),
+                comment: None,
             }).collect();
-        tables.push(TableNode { name, kind: if kind == "table" { "base_table".into() } else { "view".into() }, estimated_rows: None, writable: kind == "table", columns });
+        let ddl = sqlx::query_scalar::<_, String>("SELECT sql FROM sqlite_master WHERE name = ?")
+            .bind(&name).fetch_optional(pool).await.ok().flatten();
+        let mut table = TableNode {
+            name, kind: if kind == "table" { "base_table".into() } else { "view".into() },
+            estimated_rows: None, table_size_bytes: None, comment: None, ddl,
+            writable: kind == "table", columns, indexes: Vec::new(), foreign_keys: Vec::new(),
+        };
+        let index_rows = sqlx::query(&format!("PRAGMA index_list({})", quote_sql_identifier(&table.name)))
+            .fetch_all(pool).await.unwrap_or_default();
+        for index_row in index_rows {
+            let index_name: String = index_row.get("name");
+            let unique = index_row.get::<i64, _>("unique") != 0;
+            let column_rows = sqlx::query(&format!("PRAGMA index_info({})", quote_sql_identifier(&index_name)))
+                .fetch_all(pool).await.unwrap_or_default();
+            table.indexes.push(IndexNode {
+                name: index_name,
+                columns: column_rows.into_iter().map(|row| row.get("name")).collect(),
+                unique,
+                definition: None,
+            });
+        }
+        let fk_rows = sqlx::query(&format!("PRAGMA foreign_key_list({})", quote_sql_identifier(&table.name)))
+            .fetch_all(pool).await.unwrap_or_default();
+        for fk_row in fk_rows {
+            table.foreign_keys.push(ForeignKeyNode {
+                name: format!("fk_{}_{}", table.name, fk_row.get::<i64, _>("id")),
+                columns: vec![fk_row.get("from")],
+                referenced_table: fk_row.get("table"),
+                referenced_columns: vec![fk_row.get("to")],
+                definition: None,
+            });
+        }
+        tables.push(table);
     }
-    Ok(vec![SchemaNode { name: "main".to_string(), tables }])
+    Ok(vec![SchemaNode { name: "main".to_string(), tables, routines: Vec::new() }])
 }
 
 async fn discover_mongo_schema(client: &MongoClient, database: &str) -> Result<Vec<SchemaNode>, ApiError> {
@@ -684,10 +1143,14 @@ async fn discover_mongo_schema(client: &MongoClient, database: &str) -> Result<V
             .map_err(|error| ApiError::database(format!("Could not sample MongoDB collection {name}: {error}")))?;
         let columns = sample.unwrap_or_default().iter().map(|(key, value)| ColumnNode {
             name: key.clone(), native_type: bson_type(value).to_string(), nullable: true, primary_key: key == "_id",
+            default_value: None, comment: None,
         }).collect();
-        tables.push(TableNode { name, kind: "collection".to_string(), estimated_rows: None, writable: false, columns });
+        tables.push(TableNode {
+            name, kind: "collection".to_string(), estimated_rows: None, table_size_bytes: None, comment: None, ddl: None,
+            writable: false, columns, indexes: Vec::new(), foreign_keys: Vec::new(),
+        });
     }
-    Ok(vec![SchemaNode { name: database.to_string(), tables }])
+    Ok(vec![SchemaNode { name: database.to_string(), tables, routines: Vec::new() }])
 }
 
 fn bson_type(value: &Bson) -> &'static str {
@@ -715,20 +1178,34 @@ fn validate_mutation_request(table: &TableNode, request: &MutationRequest) -> Re
         return Err(ApiError::bad_request("ADVANCED_MUTATION_KEY_REQUIRED", "The table has no primary key and cannot be updated safely."));
     }
     for row in &request.rows {
-        if row.changes.is_empty() || row.changes.len() > 50 {
-            return Err(ApiError::bad_request("ADVANCED_MUTATION_CHANGE_LIMIT", "Each row must change between 1 and 50 columns."));
-        }
-        if row.key.len() != primary_keys.len() || primary_keys.iter().any(|key| !row.key.contains_key(key)) {
-            return Err(ApiError::bad_request("ADVANCED_MUTATION_KEY_INCOMPLETE", "Every primary-key column is required and extra key columns are not allowed."));
+        match row.action {
+            MutationAction::Insert => {
+                if row.changes.is_empty() || row.changes.len() > 100 {
+                    return Err(ApiError::bad_request("ADVANCED_MUTATION_CHANGE_LIMIT", "Inserted rows must contain between 1 and 100 columns."));
+                }
+            }
+            MutationAction::Update => {
+                if row.changes.is_empty() || row.changes.len() > 50 {
+                    return Err(ApiError::bad_request("ADVANCED_MUTATION_CHANGE_LIMIT", "Each row must change between 1 and 50 columns."));
+                }
+                if row.key.len() != primary_keys.len() || primary_keys.iter().any(|key| !row.key.contains_key(key)) {
+                    return Err(ApiError::bad_request("ADVANCED_MUTATION_KEY_INCOMPLETE", "Every primary-key column is required and extra key columns are not allowed."));
+                }
+            }
+            MutationAction::Delete => {
+                if row.key.len() != primary_keys.len() || primary_keys.iter().any(|key| !row.key.contains_key(key)) {
+                    return Err(ApiError::bad_request("ADVANCED_MUTATION_KEY_INCOMPLETE", "Every primary-key column is required and extra key columns are not allowed."));
+                }
+            }
         }
         for column in row.changes.keys() {
-            if primary_keys.contains(column) {
+            if row.action == MutationAction::Update && primary_keys.contains(column) {
                 return Err(ApiError::bad_request("ADVANCED_MUTATION_PRIMARY_KEY", "Primary-key columns cannot be edited in this phase."));
             }
             if !table.columns.iter().any(|candidate| &candidate.name == column) {
                 return Err(ApiError::bad_request("ADVANCED_MUTATION_COLUMN_INVALID", "A changed column is not present in the table."));
             }
-            if !row.expected.contains_key(column) {
+            if row.action == MutationAction::Update && !row.expected.contains_key(column) {
                 return Err(ApiError::bad_request("ADVANCED_MUTATION_EXPECTED_REQUIRED", "Every changed column requires its expected original value."));
             }
         }
@@ -804,6 +1281,29 @@ fn sqlite_push_condition(builder: &mut QueryBuilder<Sqlite>, column: &str, value
 }
 
 fn sqlite_mutation_builder<'a>(request: &'a MutationRequest, row: &'a RowMutationRequest) -> QueryBuilder<'a, Sqlite> {
+    if row.action == MutationAction::Insert {
+        let columns = sorted_keys(&row.changes);
+        let mut builder = QueryBuilder::<Sqlite>::new(format!("INSERT INTO {} (", quote_sql_identifier(&request.table)));
+        for (index, column) in columns.iter().enumerate() {
+            if index > 0 { builder.push(", "); }
+            builder.push(quote_sql_identifier(column));
+        }
+        builder.push(") VALUES (");
+        for (index, column) in columns.iter().enumerate() {
+            if index > 0 { builder.push(", "); }
+            sqlite_push_value(&mut builder, &row.changes[column]);
+        }
+        builder.push(")");
+        return builder;
+    }
+    if row.action == MutationAction::Delete {
+        let mut builder = QueryBuilder::<Sqlite>::new(format!("DELETE FROM {} WHERE ", quote_sql_identifier(&request.table)));
+        for (index, column) in sorted_keys(&row.key).iter().enumerate() {
+            if index > 0 { builder.push(" AND "); }
+            sqlite_push_condition(&mut builder, column, &row.key[column]);
+        }
+        return builder;
+    }
     let mut builder = QueryBuilder::<Sqlite>::new(format!("UPDATE {} SET ", quote_sql_identifier(&request.table)));
     for (index, column) in sorted_keys(&row.changes).iter().enumerate() {
         if index > 0 { builder.push(", "); }
@@ -846,6 +1346,33 @@ fn postgres_push_condition(builder: &mut QueryBuilder<Postgres>, table: &TableNo
 }
 
 fn postgres_mutation_builder<'a>(request: &'a MutationRequest, row: &'a RowMutationRequest, table: &TableNode) -> Result<QueryBuilder<'a, Postgres>, ApiError> {
+    if row.action == MutationAction::Insert {
+        let columns = sorted_keys(&row.changes);
+        let mut builder = QueryBuilder::<Postgres>::new(format!(
+            "INSERT INTO {}.{} (", quote_sql_identifier(&request.schema), quote_sql_identifier(&request.table)
+        ));
+        for (index, column) in columns.iter().enumerate() {
+            if index > 0 { builder.push(", "); }
+            builder.push(quote_sql_identifier(column));
+        }
+        builder.push(") VALUES (");
+        for (index, column) in columns.iter().enumerate() {
+            if index > 0 { builder.push(", "); }
+            postgres_push_value(&mut builder, mutation_column(table, column)?, &row.changes[column])?;
+        }
+        builder.push(")");
+        return Ok(builder);
+    }
+    if row.action == MutationAction::Delete {
+        let mut builder = QueryBuilder::<Postgres>::new(format!(
+            "DELETE FROM {}.{} WHERE ", quote_sql_identifier(&request.schema), quote_sql_identifier(&request.table)
+        ));
+        for (index, column) in sorted_keys(&row.key).iter().enumerate() {
+            if index > 0 { builder.push(" AND "); }
+            postgres_push_condition(&mut builder, table, column, &row.key[column])?;
+        }
+        return Ok(builder);
+    }
     let mut builder = QueryBuilder::<Postgres>::new(format!(
         "UPDATE {}.{} SET ", quote_sql_identifier(&request.schema), quote_sql_identifier(&request.table)
     ));
@@ -871,7 +1398,7 @@ fn mysql_push_value(builder: &mut QueryBuilder<MySql>, value: &Value) {
         Value::Null => { builder.push("NULL"); }
         Value::Bool(value) => { builder.push_bind(*value); }
         Value::Number(value) if value.is_i64() => { builder.push_bind(value.as_i64().unwrap_or_default()); }
-        Value::Number(value) if value.is_u64() => { builder.push_bind(value.as_u64().unwrap_or_default()); }
+        Value::Number(value) if value.is_u64() => { builder.push_bind(value.as_u64().and_then(|item| i64::try_from(item).ok()).unwrap_or(i64::MAX)); }
         Value::Number(value) => { builder.push_bind(value.as_f64().unwrap_or_default()); }
         Value::String(value) => { builder.push_bind(value.clone()); }
         other => { builder.push_bind(other.to_string()); }
@@ -884,6 +1411,33 @@ fn mysql_push_condition(builder: &mut QueryBuilder<MySql>, column: &str, value: 
 }
 
 fn mysql_mutation_builder<'a>(request: &'a MutationRequest, row: &'a RowMutationRequest) -> QueryBuilder<'a, MySql> {
+    if row.action == MutationAction::Insert {
+        let columns = sorted_keys(&row.changes);
+        let mut builder = QueryBuilder::<MySql>::new(format!(
+            "INSERT INTO {}.{} (", quote_mysql_identifier(&request.schema), quote_mysql_identifier(&request.table)
+        ));
+        for (index, column) in columns.iter().enumerate() {
+            if index > 0 { builder.push(", "); }
+            builder.push(quote_mysql_identifier(column));
+        }
+        builder.push(") VALUES (");
+        for (index, column) in columns.iter().enumerate() {
+            if index > 0 { builder.push(", "); }
+            mysql_push_value(&mut builder, &row.changes[column]);
+        }
+        builder.push(")");
+        return builder;
+    }
+    if row.action == MutationAction::Delete {
+        let mut builder = QueryBuilder::<MySql>::new(format!(
+            "DELETE FROM {}.{} WHERE ", quote_mysql_identifier(&request.schema), quote_mysql_identifier(&request.table)
+        ));
+        for (index, column) in sorted_keys(&row.key).iter().enumerate() {
+            if index > 0 { builder.push(" AND "); }
+            mysql_push_condition(&mut builder, column, &row.key[column]);
+        }
+        return builder;
+    }
     let mut builder = QueryBuilder::<MySql>::new(format!(
         "UPDATE {}.{} SET ", quote_mysql_identifier(&request.schema), quote_mysql_identifier(&request.table)
     ));
@@ -935,11 +1489,18 @@ pub(crate) async fn preview_mutation(
         }
         ConnectionBackend::Mongo(_) => return Err(ApiError::bad_request("ADVANCED_MUTATION_PROVIDER_UNSUPPORTED", "MongoDB source commit is not enabled.")),
     };
-    Ok(Json(MutationPreviewResponse { statements, row_count: request.rows.len(), can_commit: true }))
+    Ok(Json(MutationPreviewResponse { statements, row_count: request.rows.len(), can_commit: session.safe_mode != "read_only" }))
 }
 
 fn mutation_conflict() -> ApiError {
     ApiError { status: StatusCode::CONFLICT, code: "ADVANCED_MUTATION_CONFLICT", message: "A row changed or disappeared after it was loaded; the entire mutation was rolled back.".to_string() }
+}
+
+fn ensure_write_allowed(session: &ConnectionSession) -> Result<(), ApiError> {
+    if session.safe_mode == "read_only" {
+        return Err(ApiError::bad_request("ADVANCED_SAFE_MODE_READ_ONLY", "This connection profile is read-only; write transactions are blocked."));
+    }
+    Ok(())
 }
 
 async fn invalidate_mutation_caches(state: &Arc<AppState>, connection_id: &str) {
@@ -951,6 +1512,7 @@ pub(crate) async fn commit_mutation(
     State(state): State<Arc<AppState>>, Path(connection_id): Path<String>, Json(request): Json<MutationRequest>,
 ) -> Result<Json<MutationCommitResponse>, ApiError> {
     let session = connection(&state, &connection_id).await?;
+    ensure_write_allowed(&session)?;
     let updated_rows = match &session.backend {
         ConnectionBackend::Postgres(pool) => {
             let schemas = discover_postgres_schema(pool).await?;
@@ -1015,6 +1577,238 @@ pub(crate) async fn commit_mutation(
     };
     invalidate_mutation_caches(&state, &connection_id).await;
     Ok(Json(MutationCommitResponse { updated_rows }))
+}
+
+fn split_script_statements(sql: &str) -> Result<Vec<String>, ApiError> {
+    let statements = sql
+        .split(';')
+        .map(str::trim)
+        .filter(|statement| !statement.is_empty())
+        .map(str::to_string)
+        .collect::<Vec<_>>();
+    if statements.is_empty() {
+        return Err(ApiError::bad_request("ADVANCED_SCRIPT_EMPTY", "Enter SQL statements before review."));
+    }
+    if statements.len() > 5000 {
+        return Err(ApiError::bad_request("ADVANCED_SCRIPT_TOO_LARGE", "A script can include at most 5,000 statements."));
+    }
+    for statement in &statements {
+        let first = statement.split_whitespace().next().unwrap_or_default().to_ascii_uppercase();
+        let allowed = matches!(first.as_str(), "CREATE" | "ALTER" | "DROP" | "TRUNCATE" | "INSERT" | "UPDATE" | "DELETE");
+        if !allowed {
+            return Err(ApiError::bad_request(
+                "ADVANCED_SCRIPT_STATEMENT_UNSUPPORTED",
+                "Script commit only permits CREATE, ALTER, DROP, TRUNCATE, INSERT, UPDATE, or DELETE statements.",
+            ));
+        }
+    }
+    Ok(statements)
+}
+
+pub(crate) async fn preview_script(
+    State(state): State<Arc<AppState>>, Path(connection_id): Path<String>, Json(request): Json<ScriptRequest>,
+) -> Result<Json<ScriptPreviewResponse>, ApiError> {
+    let session = connection(&state, &connection_id).await?;
+    if matches!(session.backend, ConnectionBackend::Mongo(_)) {
+        return Err(ApiError::bad_request("ADVANCED_SCRIPT_PROVIDER_UNSUPPORTED", "MongoDB SQL script commit is not enabled."));
+    }
+    let statements = split_script_statements(&request.sql)?;
+    Ok(Json(ScriptPreviewResponse { statement_count: statements.len(), statements: statements.iter().map(|statement| format!("{statement};")).collect(), can_commit: session.safe_mode != "read_only" }))
+}
+
+pub(crate) async fn commit_script(
+    State(state): State<Arc<AppState>>, Path(connection_id): Path<String>, Json(request): Json<ScriptRequest>,
+) -> Result<Json<ScriptCommitResponse>, ApiError> {
+    let session = connection(&state, &connection_id).await?;
+    ensure_write_allowed(&session)?;
+    let statements = split_script_statements(&request.sql)?;
+    let executed = match &session.backend {
+        ConnectionBackend::Postgres(pool) => {
+            let mut tx = pool.begin().await.map_err(|error| ApiError::database(format!("Could not start PostgreSQL script transaction: {error}")))?;
+            for statement in &statements {
+                if let Err(error) = sqlx::query(statement).execute(&mut *tx).await {
+                    tx.rollback().await.ok();
+                    return Err(ApiError::database(format!("PostgreSQL script failed and was rolled back: {error}")));
+                }
+            }
+            tx.commit().await.map_err(|error| ApiError::database(format!("Could not commit PostgreSQL script transaction: {error}")))?;
+            statements.len()
+        }
+        ConnectionBackend::MySql(pool) => {
+            let mut tx = pool.begin().await.map_err(|error| ApiError::database(format!("Could not start MySQL/MariaDB script transaction: {error}")))?;
+            for statement in &statements {
+                if let Err(error) = sqlx::query(statement).execute(&mut *tx).await {
+                    tx.rollback().await.ok();
+                    return Err(ApiError::database(format!("MySQL/MariaDB script failed and was rolled back: {error}")));
+                }
+            }
+            tx.commit().await.map_err(|error| ApiError::database(format!("Could not commit MySQL/MariaDB script transaction: {error}")))?;
+            statements.len()
+        }
+        ConnectionBackend::Sqlite(pool) => {
+            let mut tx = pool.begin().await.map_err(|error| ApiError::database(format!("Could not start SQLite script transaction: {error}")))?;
+            for statement in &statements {
+                if let Err(error) = sqlx::query(statement).execute(&mut *tx).await {
+                    tx.rollback().await.ok();
+                    return Err(ApiError::database(format!("SQLite script failed and was rolled back: {error}")));
+                }
+            }
+            tx.commit().await.map_err(|error| ApiError::database(format!("Could not commit SQLite script transaction: {error}")))?;
+            statements.len()
+        }
+        ConnectionBackend::Mongo(_) => return Err(ApiError::bad_request("ADVANCED_SCRIPT_PROVIDER_UNSUPPORTED", "MongoDB SQL script commit is not enabled.")),
+    };
+    invalidate_mutation_caches(&state, &connection_id).await;
+    Ok(Json(ScriptCommitResponse { executed_statements: executed }))
+}
+
+pub(crate) async fn start_sql_import(
+    State(state): State<Arc<AppState>>, Path(connection_id): Path<String>, Json(request): Json<ScriptRequest>,
+) -> Result<Json<ImportStartResponse>, ApiError> {
+    let session = connection(&state, &connection_id).await?;
+    ensure_write_allowed(&session)?;
+    if matches!(session.backend, ConnectionBackend::Mongo(_)) {
+        return Err(ApiError::bad_request("ADVANCED_SCRIPT_PROVIDER_UNSUPPORTED", "MongoDB SQL script import is not enabled."));
+    }
+    let statements = split_script_statements(&request.sql)?;
+    let job_id = Uuid::new_v4().to_string();
+    state.advanced.import_jobs.write().await.insert(job_id.clone(), ImportJob {
+        status: ExportJobStatus::Running,
+        statement_count: statements.len(),
+        executed_statements: 0,
+        skipped_statements: 0,
+        error: None,
+        abort_handle: None,
+    });
+    let task_state = state.clone();
+    let task_job_id = job_id.clone();
+    let task_connection_id = connection_id.clone();
+    let task = tokio::spawn(async move {
+        let outcome = run_sql_import_job(session, task_connection_id, task_job_id.clone(), statements, task_state.clone()).await;
+        let mut jobs = task_state.advanced.import_jobs.write().await;
+        if let Some(job) = jobs.get_mut(&task_job_id) {
+            if job.status == ExportJobStatus::Cancelled {
+                return;
+            }
+            match outcome {
+                Ok(()) => {
+                    job.status = ExportJobStatus::Completed;
+                    job.abort_handle = None;
+                }
+                Err(error) => {
+                    job.status = ExportJobStatus::Failed;
+                    job.error = Some(error.message);
+                    job.abort_handle = None;
+                }
+            }
+        }
+    });
+    if let Some(job) = state.advanced.import_jobs.write().await.get_mut(&job_id) {
+        job.abort_handle = Some(task.abort_handle());
+    }
+    Ok(Json(ImportStartResponse { job_id }))
+}
+
+pub(crate) async fn start_csv_import(
+    State(state): State<Arc<AppState>>, Path(connection_id): Path<String>, mut multipart: Multipart,
+) -> Result<Json<ImportStartResponse>, ApiError> {
+    let session = connection(&state, &connection_id).await?;
+    ensure_write_allowed(&session)?;
+    if matches!(session.backend, ConnectionBackend::Mongo(_)) {
+        return Err(ApiError::bad_request("ADVANCED_IMPORT_PROVIDER_UNSUPPORTED", "CSV import targets relational database sessions only."));
+    }
+    let mut file_bytes = Vec::new();
+    let mut schema = String::new();
+    let mut table = String::new();
+    let mut mapping = HashMap::<String, String>::new();
+    let mut error_mode = ImportErrorMode::StopRollback;
+
+    while let Some(field) = multipart.next_field().await.map_err(|error| ApiError::bad_request("ADVANCED_IMPORT_MULTIPART", format!("Could not read import form: {error}")))? {
+        let name = field.name().unwrap_or_default().to_string();
+        match name.as_str() {
+            "file" => {
+                file_bytes = field.bytes().await.map_err(|error| ApiError::bad_request("ADVANCED_IMPORT_FILE", format!("Could not read CSV file: {error}")))?.to_vec();
+            }
+            "schema" => schema = field.text().await.unwrap_or_default(),
+            "table" => table = field.text().await.unwrap_or_default(),
+            "mapping" => {
+                let text = field.text().await.unwrap_or_default();
+                mapping = serde_json::from_str::<HashMap<String, String>>(&text).unwrap_or_default();
+            }
+            "errorMode" => {
+                error_mode = match field.text().await.unwrap_or_default().as_str() {
+                    "stop_commit" => ImportErrorMode::StopCommit,
+                    "skip_continue" => ImportErrorMode::SkipContinue,
+                    _ => ImportErrorMode::StopRollback,
+                };
+            }
+            _ => {}
+        }
+    }
+    if file_bytes.is_empty() || schema.trim().is_empty() || table.trim().is_empty() {
+        return Err(ApiError::bad_request("ADVANCED_IMPORT_REQUIRED", "CSV import requires file, schema, and table."));
+    }
+    let rows = parse_csv_import_rows(&file_bytes, &mapping)?;
+    let job_id = Uuid::new_v4().to_string();
+    state.advanced.import_jobs.write().await.insert(job_id.clone(), ImportJob {
+        status: ExportJobStatus::Running,
+        statement_count: rows.len(),
+        executed_statements: 0,
+        skipped_statements: 0,
+        error: None,
+        abort_handle: None,
+    });
+    let task_state = state.clone();
+    let task_job_id = job_id.clone();
+    let task_connection_id = connection_id.clone();
+    let task = tokio::spawn(async move {
+        let outcome = run_csv_import_job(session, task_connection_id, task_job_id.clone(), schema, table, rows, error_mode, task_state.clone()).await;
+        let mut jobs = task_state.advanced.import_jobs.write().await;
+        if let Some(job) = jobs.get_mut(&task_job_id) {
+            if job.status == ExportJobStatus::Cancelled {
+                return;
+            }
+            match outcome {
+                Ok(message) => {
+                    job.status = ExportJobStatus::Completed;
+                    job.error = message;
+                    job.abort_handle = None;
+                }
+                Err(error) => {
+                    job.status = ExportJobStatus::Failed;
+                    job.error = Some(error.message);
+                    job.abort_handle = None;
+                }
+            }
+        }
+    });
+    if let Some(job) = state.advanced.import_jobs.write().await.get_mut(&job_id) {
+        job.abort_handle = Some(task.abort_handle());
+    }
+    Ok(Json(ImportStartResponse { job_id }))
+}
+
+pub(crate) async fn get_import_job(
+    State(state): State<Arc<AppState>>, Path(job_id): Path<String>,
+) -> Result<Json<ImportJobResponse>, ApiError> {
+    let jobs = state.advanced.import_jobs.read().await;
+    let job = jobs.get(&job_id).ok_or_else(|| ApiError::bad_request("ADVANCED_IMPORT_NOT_FOUND", "Import job was not found."))?;
+    Ok(Json(import_job_response(&job_id, job)))
+}
+
+pub(crate) async fn cancel_import_job(
+    State(state): State<Arc<AppState>>, Path(job_id): Path<String>,
+) -> StatusCode {
+    let mut jobs = state.advanced.import_jobs.write().await;
+    if let Some(job) = jobs.get_mut(&job_id) {
+        if let Some(handle) = job.abort_handle.take() {
+            handle.abort();
+        }
+        job.status = ExportJobStatus::Cancelled;
+        StatusCode::ACCEPTED
+    } else {
+        StatusCode::NO_CONTENT
+    }
 }
 
 pub(crate) async fn get_table_count(
@@ -1145,11 +1939,21 @@ pub(crate) async fn execute_query(
 
     let task_run_id = run_id.clone();
     let task = tokio::spawn(async move {
-        let filters = request.filters.unwrap_or_default();
+        let filter_tree = request.filter_tree.or_else(|| {
+            let filters = request.filters.unwrap_or_default();
+            if filters.is_empty() {
+                None
+            } else {
+                Some(QueryFilterGroup {
+                    combinator: FilterCombinator::And,
+                    children: filters.into_iter().map(QueryFilterNode::Condition).collect(),
+                })
+            }
+        });
         match session.backend {
-            ConnectionBackend::Postgres(pool) => run_postgres_query(pool, task_run_id, sql, limit, offset, request.sort, filters).await,
-            ConnectionBackend::MySql(pool) => run_mysql_query(pool, task_run_id, sql, limit, offset, request.sort, filters).await,
-            ConnectionBackend::Sqlite(pool) => run_sqlite_query(pool, task_run_id, sql, limit, offset, request.sort, filters).await,
+            ConnectionBackend::Postgres(pool) => run_postgres_query(pool, task_run_id, sql, limit, offset, request.sort, filter_tree).await,
+            ConnectionBackend::MySql(pool) => run_mysql_query(pool, task_run_id, sql, limit, offset, request.sort, filter_tree).await,
+            ConnectionBackend::Sqlite(pool) => run_sqlite_query(pool, task_run_id, sql, limit, offset, request.sort, filter_tree).await,
             ConnectionBackend::Mongo(_) => Err(ApiError::bad_request("ADVANCED_MONGO_REQUEST_REQUIRED", "MongoDB uses the document query endpoint.")),
         }
     });
@@ -1180,6 +1984,121 @@ pub(crate) async fn cancel_run(
 ) -> StatusCode {
     if let Some(handle) = state.advanced.runs.write().await.remove(&run_id) {
         handle.abort_handle.abort();
+        StatusCode::ACCEPTED
+    } else {
+        StatusCode::NO_CONTENT
+    }
+}
+
+pub(crate) async fn start_export(
+    State(state): State<Arc<AppState>>,
+    Path(connection_id): Path<String>,
+    Json(request): Json<ExportRequest>,
+) -> Result<Json<ExportStartResponse>, ApiError> {
+    let session = connection(&state, &connection_id).await?;
+    if matches!(session.backend, ConnectionBackend::Mongo(_)) {
+        return Err(ApiError::bad_request("ADVANCED_EXPORT_MONGO_UNSUPPORTED", "MongoDB export still uses the document query path."));
+    }
+    let sql = normalized_read_query(&request.sql)?;
+    let format = request.format.trim().to_ascii_lowercase();
+    if !["csv", "json", "sql", "xlsx"].contains(&format.as_str()) {
+        return Err(ApiError::bad_request("ADVANCED_EXPORT_FORMAT", "Backend streaming export supports CSV, JSON, SQL, and XLSX."));
+    }
+    let filter_tree = request.filter_tree.or_else(|| {
+        let filters = request.filters.unwrap_or_default();
+        if filters.is_empty() {
+            None
+        } else {
+            Some(QueryFilterGroup {
+                combinator: FilterCombinator::And,
+                children: filters.into_iter().map(QueryFilterNode::Condition).collect(),
+            })
+        }
+    });
+    let job_id = Uuid::new_v4().to_string();
+    let safe_name = request.file_name.unwrap_or_else(|| "lightbi-export".to_string()).replace(['/', '\\'], "_");
+    let file_name = format!("{safe_name}.full.{format}");
+    let content_type = match format.as_str() {
+        "json" => "application/json;charset=utf-8",
+        "sql" => "application/sql;charset=utf-8",
+        "xlsx" => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        _ => "text/csv;charset=utf-8",
+    }.to_string();
+    state.advanced.export_jobs.write().await.insert(job_id.clone(), ExportJob {
+        status: ExportJobStatus::Running,
+        format: format.clone(),
+        rows: 0,
+        file_name,
+        content_type,
+        data: None,
+        error: None,
+        abort_handle: None,
+    });
+
+    let task_state = state.clone();
+    let task_job_id = job_id.clone();
+    let task = tokio::spawn(async move {
+        let outcome = run_export_job(session, task_job_id.clone(), sql, format, request.table_name, request.sort, filter_tree, task_state.clone()).await;
+        let mut jobs = task_state.advanced.export_jobs.write().await;
+        if let Some(job) = jobs.get_mut(&task_job_id) {
+            if job.status == ExportJobStatus::Cancelled {
+                return;
+            }
+            match outcome {
+                Ok(data) => {
+                    job.status = ExportJobStatus::Completed;
+                    job.data = Some(data);
+                    job.abort_handle = None;
+                }
+                Err(error) => {
+                    job.status = ExportJobStatus::Failed;
+                    job.error = Some(error.message);
+                    job.abort_handle = None;
+                }
+            }
+        }
+    });
+    if let Some(job) = state.advanced.export_jobs.write().await.get_mut(&job_id) {
+        job.abort_handle = Some(task.abort_handle());
+    }
+    Ok(Json(ExportStartResponse { job_id }))
+}
+
+pub(crate) async fn get_export_job(
+    State(state): State<Arc<AppState>>,
+    Path(job_id): Path<String>,
+) -> Result<Json<ExportJobResponse>, ApiError> {
+    let jobs = state.advanced.export_jobs.read().await;
+    let job = jobs.get(&job_id).ok_or_else(|| ApiError::bad_request("ADVANCED_EXPORT_NOT_FOUND", "Export job was not found."))?;
+    Ok(Json(export_job_response(&job_id, job)))
+}
+
+pub(crate) async fn download_export_job(
+    State(state): State<Arc<AppState>>,
+    Path(job_id): Path<String>,
+) -> Result<Response, ApiError> {
+    let jobs = state.advanced.export_jobs.read().await;
+    let job = jobs.get(&job_id).ok_or_else(|| ApiError::bad_request("ADVANCED_EXPORT_NOT_FOUND", "Export job was not found."))?;
+    if job.status != ExportJobStatus::Completed {
+        return Err(ApiError::bad_request("ADVANCED_EXPORT_NOT_READY", "Export job is not complete yet."));
+    }
+    let data = job.data.clone().unwrap_or_default();
+    let mut response = data.into_response();
+    response.headers_mut().insert(header::CONTENT_TYPE, HeaderValue::from_str(&job.content_type).unwrap_or_else(|_| HeaderValue::from_static("application/octet-stream")));
+    response.headers_mut().insert(header::CONTENT_DISPOSITION, HeaderValue::from_str(&format!("attachment; filename=\"{}\"", job.file_name.replace('"', ""))).unwrap_or_else(|_| HeaderValue::from_static("attachment")));
+    Ok(response)
+}
+
+pub(crate) async fn cancel_export_job(
+    State(state): State<Arc<AppState>>,
+    Path(job_id): Path<String>,
+) -> StatusCode {
+    let mut jobs = state.advanced.export_jobs.write().await;
+    if let Some(job) = jobs.get_mut(&job_id) {
+        if let Some(handle) = job.abort_handle.take() {
+            handle.abort();
+        }
+        job.status = ExportJobStatus::Cancelled;
         StatusCode::ACCEPTED
     } else {
         StatusCode::NO_CONTENT
@@ -1276,6 +2195,55 @@ pub(crate) async fn explain_query(
     Ok(Json(ExplainQueryResponse { plan, execution_ms: started_at.elapsed().as_millis() as u64 }))
 }
 
+fn split_filter_values(value: &str) -> Vec<String> {
+    value.split(',').map(|item| item.trim().to_string()).filter(|item| !item.is_empty()).take(50).collect()
+}
+
+fn push_pg_filter_condition(builder: &mut QueryBuilder<'_, Postgres>, filter: &QueryFilterRequest) {
+    let column = quote_pg_identifier(&filter.column);
+    let text_column = format!("CAST({column} AS TEXT)");
+    match filter.operator {
+        FilterOperator::Contains => { builder.push(text_column).push(" ILIKE ").push_bind(format!("%{}%", filter.value)); }
+        FilterOperator::NotContains => { builder.push("(").push(text_column).push(" NOT ILIKE ").push_bind(format!("%{}%", filter.value)).push(" OR ").push(column).push(" IS NULL)"); }
+        FilterOperator::Equals => { builder.push(text_column).push(" = ").push_bind(filter.value.clone()); }
+        FilterOperator::NotEquals => { builder.push("(").push(text_column).push(" <> ").push_bind(filter.value.clone()).push(" OR ").push(column).push(" IS NULL)"); }
+        FilterOperator::StartsWith => { builder.push(text_column).push(" ILIKE ").push_bind(format!("{}%", filter.value)); }
+        FilterOperator::EndsWith => { builder.push(text_column).push(" ILIKE ").push_bind(format!("%{}", filter.value)); }
+        FilterOperator::GreaterThan => { builder.push(text_column).push(" > ").push_bind(filter.value.clone()); }
+        FilterOperator::GreaterOrEqual => { builder.push(text_column).push(" >= ").push_bind(filter.value.clone()); }
+        FilterOperator::LessThan => { builder.push(text_column).push(" < ").push_bind(filter.value.clone()); }
+        FilterOperator::LessOrEqual => { builder.push(text_column).push(" <= ").push_bind(filter.value.clone()); }
+        FilterOperator::IsBlank => { builder.push("(").push(column.clone()).push(" IS NULL OR ").push(text_column).push(" = '')"); }
+        FilterOperator::IsNotBlank => { builder.push("(").push(column.clone()).push(" IS NOT NULL AND ").push(text_column).push(" <> '')"); }
+        FilterOperator::In | FilterOperator::NotIn => {
+            if matches!(filter.operator, FilterOperator::NotIn) { builder.push("("); }
+            builder.push(text_column).push(if matches!(filter.operator, FilterOperator::NotIn) { " NOT IN (" } else { " IN (" });
+            let values = split_filter_values(&filter.value);
+            for (index, value) in values.iter().enumerate() {
+                if index > 0 { builder.push(", "); }
+                builder.push_bind(value.clone());
+            }
+            if values.is_empty() { builder.push_bind(String::new()); }
+            builder.push(")");
+            if matches!(filter.operator, FilterOperator::NotIn) { builder.push(" OR ").push(column).push(" IS NULL)"); }
+        }
+    };
+}
+
+fn push_pg_filter_node(builder: &mut QueryBuilder<'_, Postgres>, node: &QueryFilterNode) {
+    match node {
+        QueryFilterNode::Condition(filter) => push_pg_filter_condition(builder, filter),
+        QueryFilterNode::Group(group) => {
+            builder.push("(");
+            for (index, child) in group.children.iter().enumerate() {
+                if index > 0 { builder.push(match group.combinator { FilterCombinator::And => " AND ", FilterCombinator::Or => " OR " }); }
+                push_pg_filter_node(builder, child);
+            }
+            builder.push(")");
+        }
+    }
+}
+
 async fn run_postgres_query(
     pool: PgPool,
     run_id: String,
@@ -1283,7 +2251,7 @@ async fn run_postgres_query(
     limit: usize,
     offset: usize,
     sort: Option<QuerySortRequest>,
-    filters: Vec<QueryFilterRequest>,
+    filter_tree: Option<QueryFilterGroup>,
 ) -> Result<QueryResponse, ApiError> {
     let mut tx = pool.begin().await.map_err(|error| {
         ApiError::database(format!("Could not start query transaction: {error}"))
@@ -1305,7 +2273,7 @@ async fn run_postgres_query(
     let description = (&mut *tx).describe(&describe_sql).await.map_err(|error| {
         ApiError::database(format!("Could not describe PostgreSQL result: {error}"))
     })?;
-    let columns = description
+    let columns: Vec<QueryColumn> = description
         .columns()
         .iter()
         .enumerate()
@@ -1319,30 +2287,8 @@ async fn run_postgres_query(
             }
         })
         .collect();
-    if filters.len() > 5 {
-        return Err(ApiError::bad_request(
-            "ADVANCED_FILTER_LIMIT",
-            "A query can apply at most five result filters.",
-        ));
-    }
-    for filter in &filters {
-        if !description
-            .columns()
-            .iter()
-            .any(|column| column.name() == filter.column)
-        {
-            return Err(ApiError::bad_request(
-                "ADVANCED_FILTER_COLUMN_INVALID",
-                "Filter column is not present in this result.",
-            ));
-        }
-        if filter.value.len() > 1_000 {
-            return Err(ApiError::bad_request(
-                "ADVANCED_FILTER_VALUE_TOO_LONG",
-                "Filter value cannot exceed 1,000 characters.",
-            ));
-        }
-    }
+    let names = columns.iter().map(|column| column.name.clone()).collect::<Vec<_>>();
+    validate_filter_tree(&names, &filter_tree)?;
     if let Some(sort) = &sort {
         if !description
             .columns()
@@ -1358,32 +2304,9 @@ async fn run_postgres_query(
 
     let mut builder =
         QueryBuilder::<Postgres>::new(format!("SELECT * FROM ({sql}) AS __lightbi_query"));
-    for (index, filter) in filters.iter().enumerate() {
-        builder.push(if index == 0 { " WHERE " } else { " AND " });
-        builder
-            .push("CAST(")
-            .push(quote_pg_identifier(&filter.column))
-            .push(" AS TEXT)");
-        match filter.operator {
-            FilterOperator::Contains => {
-                builder
-                    .push(" ILIKE ")
-                    .push_bind(format!("%{}%", filter.value));
-            }
-            FilterOperator::Equals => {
-                builder.push(" = ").push_bind(&filter.value);
-            }
-            FilterOperator::StartsWith => {
-                builder
-                    .push(" ILIKE ")
-                    .push_bind(format!("{}%", filter.value));
-            }
-            FilterOperator::EndsWith => {
-                builder
-                    .push(" ILIKE ")
-                    .push_bind(format!("%{}", filter.value));
-            }
-        };
+    if let Some(group) = &filter_tree {
+        builder.push(" WHERE ");
+        push_pg_filter_node(&mut builder, &QueryFilterNode::Group(group.clone()));
     }
     if let Some(sort) = sort {
         builder
@@ -1439,21 +2362,107 @@ async fn run_postgres_query(
     })
 }
 
-fn validate_controls(column_names: &[String], sort: &Option<QuerySortRequest>, filters: &[QueryFilterRequest]) -> Result<(), ApiError> {
-    if filters.len() > 5 { return Err(ApiError::bad_request("ADVANCED_FILTER_LIMIT", "A query can apply at most five result filters.")); }
-    for filter in filters {
-        if !column_names.iter().any(|name| name == &filter.column) { return Err(ApiError::bad_request("ADVANCED_FILTER_COLUMN_INVALID", "Filter column is not present in this result.")); }
-        if filter.value.len() > 1_000 { return Err(ApiError::bad_request("ADVANCED_FILTER_VALUE_TOO_LONG", "Filter value cannot exceed 1,000 characters.")); }
-    }
+fn validate_controls(column_names: &[String], sort: &Option<QuerySortRequest>, filter_tree: &Option<QueryFilterGroup>) -> Result<(), ApiError> {
+    validate_filter_tree(column_names, filter_tree)?;
     if let Some(sort) = sort {
         if !column_names.iter().any(|name| name == &sort.column) { return Err(ApiError::bad_request("ADVANCED_SORT_COLUMN_INVALID", "Sort column is not present in this result.")); }
     }
     Ok(())
 }
 
+fn push_mysql_filter_condition(builder: &mut QueryBuilder<'_, MySql>, filter: &QueryFilterRequest) {
+    let column = quote_mysql_identifier(&filter.column);
+    let text_column = format!("CAST({column} AS CHAR)");
+    match filter.operator {
+        FilterOperator::Contains => { builder.push(text_column).push(" LIKE ").push_bind(format!("%{}%", filter.value)); }
+        FilterOperator::NotContains => { builder.push("(").push(text_column).push(" NOT LIKE ").push_bind(format!("%{}%", filter.value)).push(" OR ").push(column).push(" IS NULL)"); }
+        FilterOperator::Equals => { builder.push(text_column).push(" = ").push_bind(filter.value.clone()); }
+        FilterOperator::NotEquals => { builder.push("(").push(text_column).push(" <> ").push_bind(filter.value.clone()).push(" OR ").push(column).push(" IS NULL)"); }
+        FilterOperator::StartsWith => { builder.push(text_column).push(" LIKE ").push_bind(format!("{}%", filter.value)); }
+        FilterOperator::EndsWith => { builder.push(text_column).push(" LIKE ").push_bind(format!("%{}", filter.value)); }
+        FilterOperator::GreaterThan => { builder.push(text_column).push(" > ").push_bind(filter.value.clone()); }
+        FilterOperator::GreaterOrEqual => { builder.push(text_column).push(" >= ").push_bind(filter.value.clone()); }
+        FilterOperator::LessThan => { builder.push(text_column).push(" < ").push_bind(filter.value.clone()); }
+        FilterOperator::LessOrEqual => { builder.push(text_column).push(" <= ").push_bind(filter.value.clone()); }
+        FilterOperator::IsBlank => { builder.push("(").push(column.clone()).push(" IS NULL OR ").push(text_column).push(" = '')"); }
+        FilterOperator::IsNotBlank => { builder.push("(").push(column.clone()).push(" IS NOT NULL AND ").push(text_column).push(" <> '')"); }
+        FilterOperator::In | FilterOperator::NotIn => {
+            if matches!(filter.operator, FilterOperator::NotIn) { builder.push("("); }
+            builder.push(text_column).push(if matches!(filter.operator, FilterOperator::NotIn) { " NOT IN (" } else { " IN (" });
+            let values = split_filter_values(&filter.value);
+            for (index, value) in values.iter().enumerate() {
+                if index > 0 { builder.push(", "); }
+                builder.push_bind(value.clone());
+            }
+            if values.is_empty() { builder.push_bind(String::new()); }
+            builder.push(")");
+            if matches!(filter.operator, FilterOperator::NotIn) { builder.push(" OR ").push(column).push(" IS NULL)"); }
+        }
+    };
+}
+
+fn push_mysql_filter_node(builder: &mut QueryBuilder<'_, MySql>, node: &QueryFilterNode) {
+    match node {
+        QueryFilterNode::Condition(filter) => push_mysql_filter_condition(builder, filter),
+        QueryFilterNode::Group(group) => {
+            builder.push("(");
+            for (index, child) in group.children.iter().enumerate() {
+                if index > 0 { builder.push(match group.combinator { FilterCombinator::And => " AND ", FilterCombinator::Or => " OR " }); }
+                push_mysql_filter_node(builder, child);
+            }
+            builder.push(")");
+        }
+    }
+}
+
+fn push_sqlite_filter_condition(builder: &mut QueryBuilder<'_, Sqlite>, filter: &QueryFilterRequest) {
+    let column = quote_sql_identifier(&filter.column);
+    let text_column = format!("CAST({column} AS TEXT)");
+    match filter.operator {
+        FilterOperator::Contains => { builder.push(text_column).push(" LIKE ").push_bind(format!("%{}%", filter.value)); }
+        FilterOperator::NotContains => { builder.push("(").push(text_column).push(" NOT LIKE ").push_bind(format!("%{}%", filter.value)).push(" OR ").push(column).push(" IS NULL)"); }
+        FilterOperator::Equals => { builder.push(text_column).push(" = ").push_bind(filter.value.clone()); }
+        FilterOperator::NotEquals => { builder.push("(").push(text_column).push(" <> ").push_bind(filter.value.clone()).push(" OR ").push(column).push(" IS NULL)"); }
+        FilterOperator::StartsWith => { builder.push(text_column).push(" LIKE ").push_bind(format!("{}%", filter.value)); }
+        FilterOperator::EndsWith => { builder.push(text_column).push(" LIKE ").push_bind(format!("%{}", filter.value)); }
+        FilterOperator::GreaterThan => { builder.push(text_column).push(" > ").push_bind(filter.value.clone()); }
+        FilterOperator::GreaterOrEqual => { builder.push(text_column).push(" >= ").push_bind(filter.value.clone()); }
+        FilterOperator::LessThan => { builder.push(text_column).push(" < ").push_bind(filter.value.clone()); }
+        FilterOperator::LessOrEqual => { builder.push(text_column).push(" <= ").push_bind(filter.value.clone()); }
+        FilterOperator::IsBlank => { builder.push("(").push(column.clone()).push(" IS NULL OR ").push(text_column).push(" = '')"); }
+        FilterOperator::IsNotBlank => { builder.push("(").push(column.clone()).push(" IS NOT NULL AND ").push(text_column).push(" <> '')"); }
+        FilterOperator::In | FilterOperator::NotIn => {
+            if matches!(filter.operator, FilterOperator::NotIn) { builder.push("("); }
+            builder.push(text_column).push(if matches!(filter.operator, FilterOperator::NotIn) { " NOT IN (" } else { " IN (" });
+            let values = split_filter_values(&filter.value);
+            for (index, value) in values.iter().enumerate() {
+                if index > 0 { builder.push(", "); }
+                builder.push_bind(value.clone());
+            }
+            if values.is_empty() { builder.push_bind(String::new()); }
+            builder.push(")");
+            if matches!(filter.operator, FilterOperator::NotIn) { builder.push(" OR ").push(column).push(" IS NULL)"); }
+        }
+    };
+}
+
+fn push_sqlite_filter_node(builder: &mut QueryBuilder<'_, Sqlite>, node: &QueryFilterNode) {
+    match node {
+        QueryFilterNode::Condition(filter) => push_sqlite_filter_condition(builder, filter),
+        QueryFilterNode::Group(group) => {
+            builder.push("(");
+            for (index, child) in group.children.iter().enumerate() {
+                if index > 0 { builder.push(match group.combinator { FilterCombinator::And => " AND ", FilterCombinator::Or => " OR " }); }
+                push_sqlite_filter_node(builder, child);
+            }
+            builder.push(")");
+        }
+    }
+}
+
 async fn run_mysql_query(
     pool: MySqlPool, run_id: String, sql: String, limit: usize, offset: usize,
-    sort: Option<QuerySortRequest>, filters: Vec<QueryFilterRequest>,
+    sort: Option<QuerySortRequest>, filter_tree: Option<QueryFilterGroup>,
 ) -> Result<QueryResponse, ApiError> {
     let describe_sql = format!("SELECT * FROM ({sql}) AS __lightbi_query LIMIT 0");
     let description = pool.describe(&describe_sql).await.map_err(|error| ApiError::database(format!("Could not describe MySQL/MariaDB result: {error}")))?;
@@ -1462,16 +2471,11 @@ async fn run_mysql_query(
         QueryColumn { id: format!("column:{index}:{}", column.name()), name: column.name().to_string(), logical_type: logical_type_mysql(&native_type), native_type }
     }).collect();
     let names = columns.iter().map(|column| column.name.clone()).collect::<Vec<_>>();
-    validate_controls(&names, &sort, &filters)?;
+    validate_controls(&names, &sort, &filter_tree)?;
     let mut builder = QueryBuilder::<MySql>::new(format!("SELECT * FROM ({sql}) AS __lightbi_query"));
-    for (index, filter) in filters.iter().enumerate() {
-        builder.push(if index == 0 { " WHERE " } else { " AND " }).push("CAST(").push(quote_mysql_identifier(&filter.column)).push(" AS CHAR)");
-        match filter.operator {
-            FilterOperator::Contains => { builder.push(" LIKE ").push_bind(format!("%{}%", filter.value)); }
-            FilterOperator::Equals => { builder.push(" = ").push_bind(&filter.value); }
-            FilterOperator::StartsWith => { builder.push(" LIKE ").push_bind(format!("{}%", filter.value)); }
-            FilterOperator::EndsWith => { builder.push(" LIKE ").push_bind(format!("%{}", filter.value)); }
-        }
+    if let Some(group) = &filter_tree {
+        builder.push(" WHERE ");
+        push_mysql_filter_node(&mut builder, &QueryFilterNode::Group(group.clone()));
     }
     if let Some(sort) = sort { builder.push(" ORDER BY ").push(quote_mysql_identifier(&sort.column)).push(match sort.direction { SortDirection::Asc => " ASC", SortDirection::Desc => " DESC" }); }
     builder.push(" LIMIT ").push_bind((limit + 1) as i64).push(" OFFSET ").push_bind(offset as i64);
@@ -1486,7 +2490,7 @@ async fn run_mysql_query(
 
 async fn run_sqlite_query(
     pool: SqlitePool, run_id: String, sql: String, limit: usize, offset: usize,
-    sort: Option<QuerySortRequest>, filters: Vec<QueryFilterRequest>,
+    sort: Option<QuerySortRequest>, filter_tree: Option<QueryFilterGroup>,
 ) -> Result<QueryResponse, ApiError> {
     let describe_sql = format!("SELECT * FROM ({sql}) AS __lightbi_query LIMIT 0");
     let description = pool.describe(&describe_sql).await.map_err(|error| ApiError::database(format!("Could not describe SQLite result: {error}")))?;
@@ -1495,16 +2499,11 @@ async fn run_sqlite_query(
         QueryColumn { id: format!("column:{index}:{}", column.name()), name: column.name().to_string(), logical_type: logical_type_sqlite(&native_type), native_type }
     }).collect();
     let names = columns.iter().map(|column| column.name.clone()).collect::<Vec<_>>();
-    validate_controls(&names, &sort, &filters)?;
+    validate_controls(&names, &sort, &filter_tree)?;
     let mut builder = QueryBuilder::<Sqlite>::new(format!("SELECT * FROM ({sql}) AS __lightbi_query"));
-    for (index, filter) in filters.iter().enumerate() {
-        builder.push(if index == 0 { " WHERE " } else { " AND " }).push("CAST(").push(quote_sql_identifier(&filter.column)).push(" AS TEXT)");
-        match filter.operator {
-            FilterOperator::Contains => { builder.push(" LIKE ").push_bind(format!("%{}%", filter.value)); }
-            FilterOperator::Equals => { builder.push(" = ").push_bind(&filter.value); }
-            FilterOperator::StartsWith => { builder.push(" LIKE ").push_bind(format!("{}%", filter.value)); }
-            FilterOperator::EndsWith => { builder.push(" LIKE ").push_bind(format!("%{}", filter.value)); }
-        }
+    if let Some(group) = &filter_tree {
+        builder.push(" WHERE ");
+        push_sqlite_filter_node(&mut builder, &QueryFilterNode::Group(group.clone()));
     }
     if let Some(sort) = sort { builder.push(" ORDER BY ").push(quote_sql_identifier(&sort.column)).push(match sort.direction { SortDirection::Asc => " ASC", SortDirection::Desc => " DESC" }); }
     builder.push(" LIMIT ").push_bind((limit + 1) as i64).push(" OFFSET ").push_bind(offset as i64);
@@ -1520,6 +2519,492 @@ async fn run_sqlite_query(
 fn query_response(run_id: String, columns: Vec<QueryColumn>, rows: Vec<Vec<Value>>, offset: usize, limit: usize, truncated: bool, elapsed: Duration) -> QueryResponse {
     QueryResponse { run_id, columns, rows, page: QueryPage { offset, limit, has_more: truncated }, truncated,
         warnings: if truncated { vec![format!("Result limited to {limit} rows.")] } else { Vec::new() }, execution_ms: elapsed.as_millis() as u64 }
+}
+
+fn export_job_response(job_id: &str, job: &ExportJob) -> ExportJobResponse {
+    let status = match job.status {
+        ExportJobStatus::Running => "running",
+        ExportJobStatus::Completed => "completed",
+        ExportJobStatus::Failed => "failed",
+        ExportJobStatus::Cancelled => "cancelled",
+    }.to_string();
+    ExportJobResponse {
+        job_id: job_id.to_string(),
+        status,
+        format: job.format.clone(),
+        rows: job.rows,
+        file_name: job.file_name.clone(),
+        error: job.error.clone(),
+    }
+}
+
+fn import_job_response(job_id: &str, job: &ImportJob) -> ImportJobResponse {
+    let status = match job.status {
+        ExportJobStatus::Running => "running",
+        ExportJobStatus::Completed => "completed",
+        ExportJobStatus::Failed => "failed",
+        ExportJobStatus::Cancelled => "cancelled",
+    }.to_string();
+    ImportJobResponse {
+        job_id: job_id.to_string(),
+        status,
+        statement_count: job.statement_count,
+        executed_statements: job.executed_statements,
+        skipped_statements: job.skipped_statements,
+        error: job.error.clone(),
+    }
+}
+
+fn parse_csv_import_rows(file_bytes: &[u8], mapping: &HashMap<String, String>) -> Result<Vec<HashMap<String, Value>>, ApiError> {
+    let mut reader = csv::ReaderBuilder::new()
+        .flexible(true)
+        .from_reader(file_bytes);
+    let headers = reader.headers()
+        .map_err(|error| ApiError::bad_request("ADVANCED_IMPORT_CSV_HEADERS", format!("Could not read CSV headers: {error}")))?
+        .iter()
+        .map(str::to_string)
+        .collect::<Vec<_>>();
+    let effective_mapping = if mapping.is_empty() {
+        headers.iter().map(|name| (name.clone(), name.clone())).collect::<HashMap<_, _>>()
+    } else {
+        mapping.clone()
+    };
+    let mut rows = Vec::new();
+    for record in reader.records() {
+        let record = record.map_err(|error| ApiError::bad_request("ADVANCED_IMPORT_CSV_ROW", format!("Could not read CSV row: {error}")))?;
+        let mut row = HashMap::new();
+        for (target, source) in &effective_mapping {
+            if target.trim().is_empty() || source.trim().is_empty() {
+                continue;
+            }
+            if let Some(index) = headers.iter().position(|header| header == source) {
+                let value = record.get(index).unwrap_or_default();
+                row.insert(target.clone(), if value.trim().is_empty() { Value::Null } else { Value::String(value.to_string()) });
+            }
+        }
+        if !row.is_empty() {
+            rows.push(row);
+        }
+        if rows.len() > MAX_IMPORT_ROWS {
+            return Err(ApiError::bad_request("ADVANCED_IMPORT_ROW_LIMIT", "CSV import is limited to 100,000 rows per interactive job."));
+        }
+    }
+    if rows.is_empty() {
+        return Err(ApiError::bad_request("ADVANCED_IMPORT_EMPTY", "CSV import did not contain mapped rows."));
+    }
+    Ok(rows)
+}
+
+async fn run_sql_import_job(
+    session: ConnectionSession,
+    connection_id: String,
+    job_id: String,
+    statements: Vec<String>,
+    state: Arc<AppState>,
+) -> Result<(), ApiError> {
+    match &session.backend {
+        ConnectionBackend::Postgres(pool) => {
+            let mut tx = pool.begin().await.map_err(|error| ApiError::database(format!("Could not start PostgreSQL import transaction: {error}")))?;
+            for statement in &statements {
+                if let Err(error) = sqlx::query(statement).execute(&mut *tx).await {
+                    tx.rollback().await.ok();
+                    return Err(ApiError::database(format!("PostgreSQL import failed and was rolled back: {error}")));
+                }
+                increment_import_job(&state, &job_id).await?;
+            }
+            tx.commit().await.map_err(|error| ApiError::database(format!("Could not commit PostgreSQL import transaction: {error}")))?;
+        }
+        ConnectionBackend::MySql(pool) => {
+            let mut tx = pool.begin().await.map_err(|error| ApiError::database(format!("Could not start MySQL/MariaDB import transaction: {error}")))?;
+            for statement in &statements {
+                if let Err(error) = sqlx::query(statement).execute(&mut *tx).await {
+                    tx.rollback().await.ok();
+                    return Err(ApiError::database(format!("MySQL/MariaDB import failed and was rolled back: {error}")));
+                }
+                increment_import_job(&state, &job_id).await?;
+            }
+            tx.commit().await.map_err(|error| ApiError::database(format!("Could not commit MySQL/MariaDB import transaction: {error}")))?;
+        }
+        ConnectionBackend::Sqlite(pool) => {
+            let mut tx = pool.begin().await.map_err(|error| ApiError::database(format!("Could not start SQLite import transaction: {error}")))?;
+            for statement in &statements {
+                if let Err(error) = sqlx::query(statement).execute(&mut *tx).await {
+                    tx.rollback().await.ok();
+                    return Err(ApiError::database(format!("SQLite import failed and was rolled back: {error}")));
+                }
+                increment_import_job(&state, &job_id).await?;
+            }
+            tx.commit().await.map_err(|error| ApiError::database(format!("Could not commit SQLite import transaction: {error}")))?;
+        }
+        ConnectionBackend::Mongo(_) => return Err(ApiError::bad_request("ADVANCED_SCRIPT_PROVIDER_UNSUPPORTED", "MongoDB SQL script import is not enabled.")),
+    }
+    invalidate_mutation_caches(&state, &connection_id).await;
+    Ok(())
+}
+
+async fn run_csv_import_job(
+    session: ConnectionSession,
+    connection_id: String,
+    job_id: String,
+    schema: String,
+    table: String,
+    rows: Vec<HashMap<String, Value>>,
+    error_mode: ImportErrorMode,
+    state: Arc<AppState>,
+) -> Result<Option<String>, ApiError> {
+    match &session.backend {
+        ConnectionBackend::Postgres(pool) => {
+            let schemas = discover_postgres_schema(pool).await?;
+            let table_node = schemas.iter().find(|item| item.name == schema.trim())
+                .and_then(|schema_node| schema_node.tables.iter().find(|item| item.name == table.trim()))
+                .ok_or_else(|| ApiError::not_found("CSV import target table was not found."))?;
+            validate_import_columns(table_node, &rows)?;
+            if error_mode == ImportErrorMode::SkipContinue {
+                let mut skipped = 0usize;
+                for row in &rows {
+                    match postgres_insert_values(pool, schema.trim(), table.trim(), row).await {
+                        Ok(()) => increment_import_job(&state, &job_id).await?,
+                        Err(_) => { skipped += 1; skip_import_job(&state, &job_id).await?; }
+                    }
+                }
+                invalidate_mutation_caches(&state, &connection_id).await;
+                return Ok((skipped > 0).then(|| format!("Skipped {skipped} CSV row(s).")));
+            }
+            let mut tx = pool.begin().await.map_err(|error| ApiError::database(format!("Could not start PostgreSQL CSV import transaction: {error}")))?;
+            for row in &rows {
+                if let Err(error) = postgres_insert_values_tx(&mut tx, schema.trim(), table.trim(), row).await {
+                    if error_mode == ImportErrorMode::StopCommit {
+                        tx.commit().await.ok();
+                    } else {
+                        tx.rollback().await.ok();
+                    }
+                    return Err(ApiError::database(format!("PostgreSQL CSV import failed: {error}")));
+                }
+                increment_import_job(&state, &job_id).await?;
+            }
+            tx.commit().await.map_err(|error| ApiError::database(format!("Could not commit PostgreSQL CSV import transaction: {error}")))?;
+        }
+        ConnectionBackend::MySql(pool) => {
+            if schema.trim() != session.database {
+                return Err(ApiError::bad_request("ADVANCED_IMPORT_SCHEMA_INVALID", "MySQL/MariaDB CSV import must target the connected database."));
+            }
+            let schemas = discover_mysql_schema(pool, &session.database).await?;
+            let table_node = schemas[0].tables.iter().find(|item| item.name == table.trim()).ok_or_else(|| ApiError::not_found("CSV import target table was not found."))?;
+            validate_import_columns(table_node, &rows)?;
+            if error_mode == ImportErrorMode::SkipContinue {
+                let mut skipped = 0usize;
+                for row in &rows {
+                    match mysql_insert_values(pool, schema.trim(), table.trim(), row).await {
+                        Ok(()) => increment_import_job(&state, &job_id).await?,
+                        Err(_) => { skipped += 1; skip_import_job(&state, &job_id).await?; }
+                    }
+                }
+                invalidate_mutation_caches(&state, &connection_id).await;
+                return Ok((skipped > 0).then(|| format!("Skipped {skipped} CSV row(s).")));
+            }
+            let mut tx = pool.begin().await.map_err(|error| ApiError::database(format!("Could not start MySQL/MariaDB CSV import transaction: {error}")))?;
+            for row in &rows {
+                if let Err(error) = mysql_insert_values_tx(&mut tx, schema.trim(), table.trim(), row).await {
+                    if error_mode == ImportErrorMode::StopCommit { tx.commit().await.ok(); } else { tx.rollback().await.ok(); }
+                    return Err(ApiError::database(format!("MySQL/MariaDB CSV import failed: {error}")));
+                }
+                increment_import_job(&state, &job_id).await?;
+            }
+            tx.commit().await.map_err(|error| ApiError::database(format!("Could not commit MySQL/MariaDB CSV import transaction: {error}")))?;
+        }
+        ConnectionBackend::Sqlite(pool) => {
+            if schema.trim() != "main" {
+                return Err(ApiError::bad_request("ADVANCED_IMPORT_SCHEMA_INVALID", "SQLite CSV import requires the main schema."));
+            }
+            let schemas = discover_sqlite_schema(pool).await?;
+            let table_node = schemas[0].tables.iter().find(|item| item.name == table.trim()).ok_or_else(|| ApiError::not_found("CSV import target table was not found."))?;
+            validate_import_columns(table_node, &rows)?;
+            if error_mode == ImportErrorMode::SkipContinue {
+                let mut skipped = 0usize;
+                for row in &rows {
+                    match sqlite_insert_values(pool, table.trim(), row).await {
+                        Ok(()) => increment_import_job(&state, &job_id).await?,
+                        Err(_) => { skipped += 1; skip_import_job(&state, &job_id).await?; }
+                    }
+                }
+                invalidate_mutation_caches(&state, &connection_id).await;
+                return Ok((skipped > 0).then(|| format!("Skipped {skipped} CSV row(s).")));
+            }
+            let mut tx = pool.begin().await.map_err(|error| ApiError::database(format!("Could not start SQLite CSV import transaction: {error}")))?;
+            for row in &rows {
+                if let Err(error) = sqlite_insert_values_tx(&mut tx, table.trim(), row).await {
+                    if error_mode == ImportErrorMode::StopCommit { tx.commit().await.ok(); } else { tx.rollback().await.ok(); }
+                    return Err(ApiError::database(format!("SQLite CSV import failed: {error}")));
+                }
+                increment_import_job(&state, &job_id).await?;
+            }
+            tx.commit().await.map_err(|error| ApiError::database(format!("Could not commit SQLite CSV import transaction: {error}")))?;
+        }
+        ConnectionBackend::Mongo(_) => return Err(ApiError::bad_request("ADVANCED_IMPORT_PROVIDER_UNSUPPORTED", "CSV import targets relational database sessions only.")),
+    }
+    invalidate_mutation_caches(&state, &connection_id).await;
+    Ok(None)
+}
+
+fn validate_import_columns(table: &TableNode, rows: &[HashMap<String, Value>]) -> Result<(), ApiError> {
+    if !table.writable || table.kind != "base_table" {
+        return Err(ApiError::bad_request("ADVANCED_IMPORT_TABLE_READ_ONLY", "CSV import target must be a writable base table."));
+    }
+    let allowed = table.columns.iter().map(|column| column.name.as_str()).collect::<Vec<_>>();
+    for column in rows.first().into_iter().flat_map(|row| row.keys()) {
+        if !allowed.iter().any(|allowed| allowed == column) {
+            return Err(ApiError::bad_request("ADVANCED_IMPORT_COLUMN_INVALID", format!("CSV import target column {column} does not exist.")));
+        }
+    }
+    Ok(())
+}
+
+async fn increment_import_job(state: &Arc<AppState>, job_id: &str) -> Result<(), ApiError> {
+    if let Some(job) = state.advanced.import_jobs.write().await.get_mut(job_id) {
+        if job.status == ExportJobStatus::Cancelled {
+            return Err(ApiError::bad_request("ADVANCED_IMPORT_CANCELLED", "Import job was cancelled."));
+        }
+        job.executed_statements += 1;
+    }
+    Ok(())
+}
+
+async fn skip_import_job(state: &Arc<AppState>, job_id: &str) -> Result<(), ApiError> {
+    if let Some(job) = state.advanced.import_jobs.write().await.get_mut(job_id) {
+        if job.status == ExportJobStatus::Cancelled {
+            return Err(ApiError::bad_request("ADVANCED_IMPORT_CANCELLED", "Import job was cancelled."));
+        }
+        job.skipped_statements += 1;
+    }
+    Ok(())
+}
+
+async fn run_export_job(
+    session: ConnectionSession,
+    job_id: String,
+    sql: String,
+    format: String,
+    table_name: Option<String>,
+    sort: Option<QuerySortRequest>,
+    filter_tree: Option<QueryFilterGroup>,
+    state: Arc<AppState>,
+) -> Result<Vec<u8>, ApiError> {
+    let mut offset = 0;
+    let mut total_rows = 0;
+    let mut output = Vec::<u8>::new();
+    let mut first_json_row = true;
+    let mut columns = Vec::<QueryColumn>::new();
+    let mut xlsx_rows = Vec::<Vec<Value>>::new();
+    let target_table = table_name.unwrap_or_else(|| "lightbi_export".to_string());
+
+    if format == "json" {
+        output.extend_from_slice(b"[\n");
+    }
+
+    for page_index in 0..=MAX_EXPORT_ROWS / EXPORT_PAGE_SIZE {
+        let page = match session.backend.clone() {
+            ConnectionBackend::Postgres(pool) => run_postgres_query(pool, format!("export:{job_id}:{page_index}"), sql.clone(), EXPORT_PAGE_SIZE, offset, sort.clone(), filter_tree.clone()).await?,
+            ConnectionBackend::MySql(pool) => run_mysql_query(pool, format!("export:{job_id}:{page_index}"), sql.clone(), EXPORT_PAGE_SIZE, offset, sort.clone(), filter_tree.clone()).await?,
+            ConnectionBackend::Sqlite(pool) => run_sqlite_query(pool, format!("export:{job_id}:{page_index}"), sql.clone(), EXPORT_PAGE_SIZE, offset, sort.clone(), filter_tree.clone()).await?,
+            ConnectionBackend::Mongo(_) => return Err(ApiError::bad_request("ADVANCED_EXPORT_MONGO_UNSUPPORTED", "MongoDB export still uses the document query path.")),
+        };
+        if page_index == 0 {
+            columns = page.columns;
+            if format == "csv" {
+                output.extend_from_slice(csv_line(columns.iter().map(|column| column.name.as_str())).as_bytes());
+            }
+        }
+        if page.rows.is_empty() {
+            break;
+        }
+        if total_rows + page.rows.len() > MAX_EXPORT_ROWS {
+            return Err(ApiError::bad_request("ADVANCED_EXPORT_ROW_LIMIT", "Backend export is limited to 250,000 rows per interactive job."));
+        }
+        match format.as_str() {
+            "json" => {
+                for row in &page.rows {
+                    if !first_json_row {
+                        output.extend_from_slice(b",\n");
+                    }
+                    first_json_row = false;
+                    let object = serde_json::Map::from_iter(columns.iter().enumerate().map(|(index, column)| (column.name.clone(), row.get(index).cloned().unwrap_or(Value::Null))));
+                    output.extend_from_slice(serde_json::to_string(&Value::Object(object)).unwrap_or_else(|_| "{}".to_string()).as_bytes());
+                }
+            }
+            "sql" => {
+                let names = columns.iter().map(|column| quote_sql_identifier(&column.name)).collect::<Vec<_>>().join(", ");
+                let table = quote_sql_identifier(&target_table);
+                for row in &page.rows {
+                    let values = row.iter().map(sql_literal_json).collect::<Vec<_>>().join(", ");
+                    output.extend_from_slice(format!("INSERT INTO {table} ({names}) VALUES ({values});\n").as_bytes());
+                }
+            }
+            "xlsx" => {
+                xlsx_rows.extend(page.rows.iter().cloned());
+            }
+            _ => {
+                for row in &page.rows {
+                    output.extend_from_slice(csv_line(row.iter().map(json_export_cell)).as_bytes());
+                }
+            }
+        }
+        total_rows += page.rows.len();
+        if let Some(job) = state.advanced.export_jobs.write().await.get_mut(&job_id) {
+            if job.status == ExportJobStatus::Cancelled {
+                return Err(ApiError::bad_request("ADVANCED_EXPORT_CANCELLED", "Export job was cancelled."));
+            }
+            job.rows = total_rows;
+        }
+        if !page.page.has_more {
+            break;
+        }
+        offset += page.rows.len();
+    }
+
+    if format == "json" {
+        output.extend_from_slice(b"\n]\n");
+    }
+    if format == "xlsx" {
+        let path = format!("/tmp/lightbi-advanced-export-{job_id}.xlsx");
+        let result_set = ResultSet {
+            columns: columns.iter().map(|column| ColumnDef { name: column.name.clone(), data_type: column.native_type.clone() }).collect(),
+            rows: xlsx_rows,
+            statistics: HashMap::new(),
+            metadata: ExecutionMetadata { rows_processed: total_rows as u64, execution_time_ms: 0, backend_name: "advanced".to_string() },
+        };
+        ExcelGenerator::generate_from_resultset(&result_set, &path)
+            .map_err(|error| ApiError::database(format!("Could not generate XLSX export: {error}")))?;
+        let bytes = tokio::fs::read(&path).await.map_err(|error| ApiError::database(format!("Could not read XLSX export: {error}")))?;
+        let _ = tokio::fs::remove_file(&path).await;
+        return Ok(bytes);
+    }
+    Ok(output)
+}
+
+fn csv_line<T: AsRef<str>>(cells: impl IntoIterator<Item = T>) -> String {
+    let mut line = cells.into_iter().map(|cell| csv_cell(cell.as_ref())).collect::<Vec<_>>().join(",");
+    line.push('\n');
+    line
+}
+
+fn csv_cell(value: &str) -> String {
+    let hardened = if value.starts_with(['=', '+', '-', '@']) { format!("'{value}") } else { value.to_string() };
+    if hardened.contains([',', '"', '\n', '\r']) {
+        format!("\"{}\"", hardened.replace('"', "\"\""))
+    } else {
+        hardened
+    }
+}
+
+fn json_export_cell(value: &Value) -> String {
+    match value {
+        Value::Null => String::new(),
+        Value::String(text) => text.clone(),
+        Value::Bool(true) => "true".to_string(),
+        Value::Bool(false) => "false".to_string(),
+        Value::Number(number) => number.to_string(),
+        other => other.to_string(),
+    }
+}
+
+fn sql_literal_json(value: &Value) -> String {
+    match value {
+        Value::Null => "NULL".to_string(),
+        Value::Bool(value) => if *value { "TRUE" } else { "FALSE" }.to_string(),
+        Value::Number(number) => number.to_string(),
+        Value::String(text) => format!("'{}'", text.replace('\'', "''")),
+        other => format!("'{}'", other.to_string().replace('\'', "''")),
+    }
+}
+
+async fn postgres_insert_values(pool: &PgPool, schema: &str, table: &str, row: &HashMap<String, Value>) -> Result<(), sqlx::Error> {
+    let mut builder = postgres_insert_builder(schema, table, row);
+    builder.build().execute(pool).await.map(|_| ())
+}
+
+async fn postgres_insert_values_tx(tx: &mut sqlx::Transaction<'_, Postgres>, schema: &str, table: &str, row: &HashMap<String, Value>) -> Result<(), sqlx::Error> {
+    let mut builder = postgres_insert_builder(schema, table, row);
+    builder.build().execute(&mut **tx).await.map(|_| ())
+}
+
+fn postgres_insert_builder<'a>(schema: &'a str, table: &'a str, row: &'a HashMap<String, Value>) -> QueryBuilder<'a, Postgres> {
+    let columns = sorted_keys(row);
+    let mut builder = QueryBuilder::<Postgres>::new(format!("INSERT INTO {}.{} (", quote_pg_identifier(schema), quote_pg_identifier(table)));
+    for (index, column) in columns.iter().enumerate() {
+        if index > 0 { builder.push(", "); }
+        builder.push(quote_pg_identifier(column));
+    }
+    builder.push(") VALUES (");
+    for (index, column) in columns.iter().enumerate() {
+        if index > 0 { builder.push(", "); }
+        postgres_push_import_value(&mut builder, &row[column]);
+    }
+    builder.push(")");
+    builder
+}
+
+fn postgres_push_import_value(builder: &mut QueryBuilder<Postgres>, value: &Value) {
+    match value {
+        Value::Null => { builder.push("NULL"); }
+        Value::String(value) => { builder.push_bind(value.clone()); }
+        Value::Bool(value) => { builder.push_bind(*value); }
+        Value::Number(value) if value.is_i64() => { builder.push_bind(value.as_i64().unwrap_or_default()); }
+        Value::Number(value) if value.is_u64() => { builder.push_bind(value.as_u64().and_then(|item| i64::try_from(item).ok()).unwrap_or(i64::MAX)); }
+        Value::Number(value) => { builder.push_bind(value.as_f64().unwrap_or_default()); }
+        other => { builder.push_bind(other.to_string()); }
+    };
+}
+
+async fn mysql_insert_values(pool: &MySqlPool, schema: &str, table: &str, row: &HashMap<String, Value>) -> Result<(), sqlx::Error> {
+    let mut builder = mysql_insert_builder(schema, table, row);
+    builder.build().execute(pool).await.map(|_| ())
+}
+
+async fn mysql_insert_values_tx(tx: &mut sqlx::Transaction<'_, MySql>, schema: &str, table: &str, row: &HashMap<String, Value>) -> Result<(), sqlx::Error> {
+    let mut builder = mysql_insert_builder(schema, table, row);
+    builder.build().execute(&mut **tx).await.map(|_| ())
+}
+
+fn mysql_insert_builder<'a>(schema: &'a str, table: &'a str, row: &'a HashMap<String, Value>) -> QueryBuilder<'a, MySql> {
+    let columns = sorted_keys(row);
+    let mut builder = QueryBuilder::<MySql>::new(format!("INSERT INTO {}.{} (", quote_mysql_identifier(schema), quote_mysql_identifier(table)));
+    for (index, column) in columns.iter().enumerate() {
+        if index > 0 { builder.push(", "); }
+        builder.push(quote_mysql_identifier(column));
+    }
+    builder.push(") VALUES (");
+    for (index, column) in columns.iter().enumerate() {
+        if index > 0 { builder.push(", "); }
+        mysql_push_value(&mut builder, &row[column]);
+    }
+    builder.push(")");
+    builder
+}
+
+async fn sqlite_insert_values(pool: &SqlitePool, table: &str, row: &HashMap<String, Value>) -> Result<(), sqlx::Error> {
+    let mut builder = sqlite_insert_builder(table, row);
+    builder.build().execute(pool).await.map(|_| ())
+}
+
+async fn sqlite_insert_values_tx(tx: &mut sqlx::Transaction<'_, Sqlite>, table: &str, row: &HashMap<String, Value>) -> Result<(), sqlx::Error> {
+    let mut builder = sqlite_insert_builder(table, row);
+    builder.build().execute(&mut **tx).await.map(|_| ())
+}
+
+fn sqlite_insert_builder<'a>(table: &'a str, row: &'a HashMap<String, Value>) -> QueryBuilder<'a, Sqlite> {
+    let columns = sorted_keys(row);
+    let mut builder = QueryBuilder::<Sqlite>::new(format!("INSERT INTO {} (", quote_sql_identifier(table)));
+    for (index, column) in columns.iter().enumerate() {
+        if index > 0 { builder.push(", "); }
+        builder.push(quote_sql_identifier(column));
+    }
+    builder.push(") VALUES (");
+    for (index, column) in columns.iter().enumerate() {
+        if index > 0 { builder.push(", "); }
+        sqlite_push_value(&mut builder, &row[column]);
+    }
+    builder.push(")");
+    builder
 }
 
 fn logical_type_mysql(native: &str) -> &'static str {
@@ -1640,6 +3125,15 @@ mod tests {
     }
 
     #[test]
+    fn validates_write_script_statements() {
+        match split_script_statements("CREATE TABLE people (id INT); INSERT INTO people (id) VALUES (1);") {
+            Ok(statements) => assert_eq!(statements.len(), 2),
+            Err(_) => panic!("valid script should pass"),
+        }
+        assert!(split_script_statements("SELECT * FROM people").is_err());
+    }
+
+    #[test]
     fn preserves_high_precision_types_as_strings() {
         assert_eq!(logical_type("INT8"), "string");
         assert_eq!(logical_type("NUMERIC"), "string");
@@ -1663,6 +3157,31 @@ mod tests {
         assert!(matches!(filter.operator, FilterOperator::StartsWith));
     }
 
+    #[test]
+    fn deserializes_nested_filter_tree() {
+        let request: ExecuteQueryRequest = serde_json::from_value(json!({
+            "runId": "run-1",
+            "sql": "SELECT name, status FROM users",
+            "filterTree": {
+                "combinator": "and",
+                "children": [
+                    { "column": "name", "operator": "not_contains", "value": "test" },
+                    {
+                        "combinator": "or",
+                        "children": [
+                            { "column": "status", "operator": "equals", "value": "active" },
+                            { "column": "status", "operator": "is_blank" }
+                        ]
+                    }
+                ]
+            }
+        }))
+        .expect("filter tree request should deserialize");
+        let group = request.filter_tree.expect("filter tree should exist");
+        assert!(matches!(group.combinator, FilterCombinator::And));
+        assert_eq!(group.children.len(), 2);
+    }
+
     #[tokio::test]
     async fn sqlite_mutation_requires_primary_key_and_expected_value() {
         let pool = SqlitePoolOptions::new().max_connections(1).connect("sqlite::memory:").await.expect("sqlite pool");
@@ -1671,6 +3190,7 @@ mod tests {
         let request = MutationRequest {
             schema: "main".into(), table: "people".into(),
             rows: vec![RowMutationRequest {
+                action: MutationAction::Update,
                 key: HashMap::from([("id".into(), json!(1))]),
                 changes: HashMap::from([("name".into(), json!("Alicia"))]),
                 expected: HashMap::from([("name".into(), json!("Alice"))]),
@@ -1698,11 +3218,13 @@ mod tests {
             schema: "main".into(), table: "people".into(),
             rows: vec![
                 RowMutationRequest {
+                    action: MutationAction::Update,
                     key: HashMap::from([("id".into(), json!(1))]),
                     changes: HashMap::from([("name".into(), json!("Alicia"))]),
                     expected: HashMap::from([("name".into(), json!("Alice"))]),
                 },
                 RowMutationRequest {
+                    action: MutationAction::Update,
                     key: HashMap::from([("id".into(), json!(2))]),
                     changes: HashMap::from([("name".into(), json!("Robert"))]),
                     expected: HashMap::from([("name".into(), json!("Stale Bob"))]),
@@ -1721,10 +3243,12 @@ mod tests {
 
     fn mutation_test_table(native_type: &str) -> TableNode {
         TableNode {
-            name: "people".into(), kind: "base_table".into(), estimated_rows: None, writable: true,
+            name: "people".into(), kind: "base_table".into(), estimated_rows: None,
+            table_size_bytes: None, comment: None, ddl: None, writable: true,
+            indexes: Vec::new(), foreign_keys: Vec::new(),
             columns: vec![
-                ColumnNode { name: "id".into(), native_type: "integer".into(), nullable: false, primary_key: true },
-                ColumnNode { name: "name".into(), native_type: native_type.into(), nullable: false, primary_key: false },
+                ColumnNode { name: "id".into(), native_type: "integer".into(), nullable: false, primary_key: true, default_value: None, comment: None },
+                ColumnNode { name: "name".into(), native_type: native_type.into(), nullable: false, primary_key: false, default_value: None, comment: None },
             ],
         }
     }
@@ -1733,6 +3257,7 @@ mod tests {
         MutationRequest {
             schema: "public".into(), table: "people".into(),
             rows: vec![RowMutationRequest {
+                action: MutationAction::Update,
                 key: HashMap::from([("id".into(), json!(1))]),
                 changes: HashMap::from([("name".into(), json!("Alicia"))]),
                 expected: HashMap::from([("name".into(), json!("Alice"))]),
@@ -1755,6 +3280,26 @@ mod tests {
         assert!(mysql.starts_with("UPDATE `public`.`people` SET `name` = ?"));
         assert!(mysql.contains("`id` = ?"));
         assert!(!mysql.contains("Alicia"));
+    }
+
+    #[test]
+    fn compiles_insert_and_delete_mutations() {
+        let mut insert = mutation_test_request();
+        insert.rows[0].action = MutationAction::Insert;
+        insert.rows[0].key.clear();
+        insert.rows[0].expected.clear();
+        insert.rows[0].changes.insert("id".into(), json!(3));
+        let sqlite_insert = sqlite_mutation_builder(&insert, &insert.rows[0]).sql().to_string();
+        assert!(sqlite_insert.starts_with("INSERT INTO \"people\""));
+        assert!(!sqlite_insert.contains("Alicia"));
+
+        let mut delete = mutation_test_request();
+        delete.rows[0].action = MutationAction::Delete;
+        delete.rows[0].changes.clear();
+        delete.rows[0].expected.clear();
+        let sqlite_delete = sqlite_mutation_builder(&delete, &delete.rows[0]).sql().to_string();
+        assert!(sqlite_delete.starts_with("DELETE FROM \"people\" WHERE"));
+        assert!(!sqlite_delete.contains("Alicia"));
     }
 
     #[test]

@@ -1,5 +1,5 @@
 import type { QueryCellValue } from '@lightbi/core-types';
-import type { AdvancedFilter, AdvancedQueryResult, AdvancedSort } from './advanced-api';
+import type { AdvancedFilter, AdvancedFilterGroup, AdvancedFilterNode, AdvancedQueryResult, AdvancedSort } from './advanced-api';
 import { materializeRuntimeDatasetSource } from './full-file-runtime-materializer';
 import { initDuckDbWasm } from './duckdb-wasm-loader';
 import type { AdvancedWorkspaceSource } from '../stores/advanced-source-store';
@@ -37,6 +37,50 @@ function escapedLiteral(value: string): string {
   return `'${value.replaceAll("'", "''")}'`;
 }
 
+function isFilterGroup(node: AdvancedFilterNode): node is AdvancedFilterGroup {
+  return 'children' in node;
+}
+
+function escapeLike(value: string): string {
+  return value.replaceAll('\\', '\\\\').replaceAll('%', '\\%').replaceAll('_', '\\_');
+}
+
+function splitFilterList(value: string): string[] {
+  return value.split(',').map(item => item.trim()).filter(Boolean).slice(0, 50);
+}
+
+function compileFilterCondition(filter: AdvancedFilter): string {
+  const column = `CAST(${quoteIdentifier(filter.column)} AS VARCHAR)`;
+  const value = filter.value ?? '';
+  switch (filter.operator) {
+    case 'contains': return `${column} ILIKE ${escapedLiteral(`%${escapeLike(value)}%`)} ESCAPE '\\'`;
+    case 'not_contains': return `(${column} NOT ILIKE ${escapedLiteral(`%${escapeLike(value)}%`)} ESCAPE '\\' OR ${quoteIdentifier(filter.column)} IS NULL)`;
+    case 'equals': return `${column} = ${escapedLiteral(value)}`;
+    case 'not_equals': return `(${column} <> ${escapedLiteral(value)} OR ${quoteIdentifier(filter.column)} IS NULL)`;
+    case 'starts_with': return `${column} ILIKE ${escapedLiteral(`${escapeLike(value)}%`)} ESCAPE '\\'`;
+    case 'ends_with': return `${column} ILIKE ${escapedLiteral(`%${escapeLike(value)}`)} ESCAPE '\\'`;
+    case 'greater_than': return `${quoteIdentifier(filter.column)} > ${escapedLiteral(value)}`;
+    case 'greater_or_equal': return `${quoteIdentifier(filter.column)} >= ${escapedLiteral(value)}`;
+    case 'less_than': return `${quoteIdentifier(filter.column)} < ${escapedLiteral(value)}`;
+    case 'less_or_equal': return `${quoteIdentifier(filter.column)} <= ${escapedLiteral(value)}`;
+    case 'is_blank': return `(${quoteIdentifier(filter.column)} IS NULL OR ${column} = '')`;
+    case 'is_not_blank': return `(${quoteIdentifier(filter.column)} IS NOT NULL AND ${column} <> '')`;
+    case 'in': return `${column} IN (${splitFilterList(value).map(escapedLiteral).join(', ') || "''"})`;
+    case 'not_in': return `(${column} NOT IN (${splitFilterList(value).map(escapedLiteral).join(', ') || "''"}) OR ${quoteIdentifier(filter.column)} IS NULL)`;
+  }
+}
+
+function compileFilterNode(node: AdvancedFilterNode): string {
+  if (!isFilterGroup(node)) return compileFilterCondition(node);
+  const predicates = node.children.map(compileFilterNode).filter(Boolean);
+  if (predicates.length === 0) return '';
+  return `(${predicates.join(node.combinator === 'or' ? ' OR ' : ' AND ')})`;
+}
+
+function filterLeaves(node: AdvancedFilterNode): AdvancedFilter[] {
+  return isFilterGroup(node) ? node.children.flatMap(filterLeaves) : [node];
+}
+
 export class AdvancedFileSession {
   private connection: Awaited<ReturnType<Awaited<ReturnType<typeof initDuckDbWasm>>['connect']>> | null = null;
   private sourceId = '';
@@ -60,7 +104,7 @@ export class AdvancedFileSession {
   }
 
   async execute(input: {
-    runId: string; sql: string; limit: number; offset?: number; sort?: AdvancedSort; filters?: AdvancedFilter[]; signal?: AbortSignal;
+    runId: string; sql: string; limit: number; offset?: number; sort?: AdvancedSort; filters?: AdvancedFilter[]; filterTree?: AdvancedFilterGroup; signal?: AbortSignal;
   }): Promise<AdvancedQueryResult> {
     if (!this.connection) throw new Error('File workspace session is not open.');
     input.signal?.throwIfAborted();
@@ -69,19 +113,15 @@ export class AdvancedFileSession {
     const offset = Math.max(input.offset || 0, 0);
     const description = await this.connection.query(`SELECT * FROM (${sql}) AS __lightbi_file_query LIMIT 0`);
     const available = new Set(description.schema.fields.map(field => field.name));
-    for (const filter of input.filters || []) {
+    const filterTree = input.filterTree ?? ((input.filters || []).length ? { combinator: 'and' as const, children: input.filters || [] } : undefined);
+    for (const filter of filterTree ? filterLeaves(filterTree) : []) {
       if (!available.has(filter.column)) throw new Error('Filter column is not present in this result.');
+      if ((filter.value ?? '').length > 1000) throw new Error('Filter value cannot exceed 1,000 characters.');
     }
     if (input.sort && !available.has(input.sort.column)) throw new Error('Sort column is not present in this result.');
-    const predicates = (input.filters || []).map(filter => {
-      const value = filter.value.replaceAll('%', '\\%').replaceAll('_', '\\_');
-      const pattern = filter.operator === 'contains' ? `%${value}%` : filter.operator === 'starts_with' ? `${value}%` : filter.operator === 'ends_with' ? `%${value}` : value;
-      return filter.operator === 'equals'
-        ? `CAST(${quoteIdentifier(filter.column)} AS VARCHAR) = ${escapedLiteral(filter.value)}`
-        : `CAST(${quoteIdentifier(filter.column)} AS VARCHAR) ILIKE ${escapedLiteral(pattern)} ESCAPE '\\'`;
-    });
+    const predicate = filterTree ? compileFilterNode(filterTree) : '';
     const order = input.sort ? ` ORDER BY ${quoteIdentifier(input.sort.column)} ${input.sort.direction === 'desc' ? 'DESC' : 'ASC'} NULLS LAST` : '';
-    const where = predicates.length ? ` WHERE ${predicates.join(' AND ')}` : '';
+    const where = predicate ? ` WHERE ${predicate}` : '';
     const startedAt = performance.now();
     const result = await this.connection.query(`SELECT * FROM (${sql}) AS __lightbi_file_query${where}${order} LIMIT ${limit + 1} OFFSET ${offset}`);
     input.signal?.throwIfAborted();

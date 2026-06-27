@@ -1626,6 +1626,174 @@ See `docs/architecture/ADR-113-shared-simple-advanced-execution-core.md`.
 
 ---
 
+## 2026-06-27 — Advanced TablePro Parity: SQL Import, Export Worker, Profiles, Deep Structure
+
+### Implementation
+
+- Added SQL-file import for Advanced DB sessions. Toolbar "Import SQL file" accepts `.sql/.txt`, opens the file in a script tab, immediately calls the existing script preview endpoint, and uses the same transaction review modal.
+- Added backend export worker endpoints for DB CSV/JSON/SQL full-result export:
+  - `POST /api/advanced/connections/:connection_id/exports`
+  - `GET /api/advanced/exports/:job_id`
+  - `GET /api/advanced/exports/:job_id/download`
+  - `DELETE /api/advanced/exports/:job_id`
+- Advanced UI now uses the backend worker for DB full CSV/JSON/SQL exports, polls row progress, downloads the completed blob, and can cancel the server job. File/online-source exports and XLSX remain on the existing client-paged path.
+- Added backend SQL import worker endpoints for reviewed scripts:
+  - `POST /api/advanced/connections/:connection_id/imports/sql`
+  - `GET /api/advanced/imports/:job_id`
+  - `DELETE /api/advanced/imports/:job_id`
+- Script commit now starts the backend import worker, polls executed-statement progress in the modal, can cancel the job, and still runs inside one transaction with rollback on failure.
+- Added CSV backend row import worker for direct writable relational table tabs:
+  - `POST /api/advanced/connections/:connection_id/imports/csv`
+  - multipart fields: `file`, `schema`, `table`, `mapping`, `errorMode`
+  - supports `stop_rollback`, `stop_commit`, and `skip_continue`
+  - validates target table/columns, limits interactive jobs to 100,000 rows, updates executed/skipped progress, and invalidates schema/count caches
+- Advanced toolbar now exposes "Import CSV/Excel into current table" for direct writable table tabs.
+- Added import mapping modal for CSV/Excel:
+  - parses CSV headers client-side
+  - parses the first Excel worksheet client-side with the existing `xlsx` library and normalizes it to CSV for the backend worker
+  - maps target columns to detected source headers
+  - lets the user select `stop_rollback`, `stop_commit`, or `skip_continue`
+  - shows imported/skipped progress
+- Backend full-result export now also supports XLSX through the export worker. DB "All XLSX" uses the backend job path with progress/download instead of the client-paged path.
+- Connection profiles now store and return `groupName`, `tagName`, and `safeMode` (`off`, `confirm_writes`, `read_only`) with lightweight SQLite migrations.
+- Connection open requests carry safe mode into the in-memory session. Mutation/script previews set `canCommit=false` for read-only sessions, and mutation/script commits are blocked server-side for read-only profiles.
+- Structure editor now goes beyond columns/table rename:
+  - column default and comment SQL generation
+  - table comments
+  - create/drop index
+  - add/drop foreign key/constraint
+  - trigger SQL passthrough into the reviewable script
+- All deep structure operations still generate SQL into a review tab/modal rather than executing silently.
+
+### Verification
+
+- `npm test -- --run src/pages/Advanced.test.tsx src/lib/advanced-api.test.ts` passed: 2 files, 19 tests.
+- `npx eslint src/pages/Advanced.tsx src/pages/Advanced.test.tsx src/lib/advanced-api.ts src/lib/advanced-file-session.ts` passed.
+- `cargo test -p lightbi-server validates_write_script_statements` passed. Existing unrelated Rust warnings remain.
+
+### Remaining Parity Notes
+
+- Backend export worker is implemented for DB CSV/JSON/SQL/XLSX with server-side paging/progress/cancel.
+- Import worker parity is covered for SQL scripts plus CSV/Excel row import with mapping UI, progress/cancel, transaction behavior, and error modes. Excel is normalized to CSV in the browser before entering the backend row worker.
+
+### Strategic Later, Not Current Core Scope
+
+These TablePro-level product/platform directions are intentionally deferred until LightBI can stand on its own with the current Simple + Advanced core:
+
+- Real plugin SDK like `TableProPluginKit`: LightBI currently uses built-in providers/import/export paths rather than third-party driver/import/export plugins.
+- Cloud sync and conflict resolution: LightBI has local profile group/tag/safe-mode metadata, but no CloudKit-like sync layer.
+- Wider driver ecosystem: TablePro has plugins/core work for BigQuery, DynamoDB, Etcd, MSSQL, and similar providers. LightBI currently focuses PostgreSQL, MySQL/MariaDB, SQLite, MongoDB, local files, online sheets, and Microsoft 365 links.
+- Desktop OS polish: TablePro is macOS-native. LightBI's current web surface is only a fast validation shell; the product direction is a desktop app that supports macOS, Windows, and Debian-family Linux. Native-feeling desktop polish should be evaluated per target OS later, not treated as web-only parity.
+- Backend-native Excel parser: LightBI currently parses Excel in the browser and normalizes it into the backend row-import worker. Workflow parity is covered, but backend-native workbook parsing can be revisited when the platform layer matures.
+
+This list is strategic roadmap material, not an immediate blocker for declaring Advanced core parity.
+- Profile group/tag/safe-mode are local metadata and policy. Cloud sync/conflict resolution is intentionally not implemented.
+
+---
+
+## 2026-06-26 — Advanced TablePro Parity Recheck + Row Delete UI
+
+### TablePro Recheck
+
+- Re-read targeted TablePro reference files instead of broad source dumps:
+  - `MainContentCoordinator+TableRowsMutation.swift`
+  - `MainContentCoordinator+RowOperations.swift`
+  - `DataGridView+CellPaste.swift`
+  - `RowEditingCoordinator+SaveChanges.swift`
+- Relevant TablePro pattern: result-row mutation is centralized, grid operations produce a pending row/cell delta, and save assembles parameterized statements behind an explicit review/authorization/transaction flow.
+- LightBI parity already covered in this branch: grid selection/keyboard/copy/paste/resize/reorder, advanced filters, schema metadata, TLS/SSH profile connection, backend update/insert/delete mutation contract, result export options, Mongo query builder basics.
+- Remaining gaps toward 1:1: no blocking parity gaps in the planned TablePro-inspired slice. Future hardening: create-table import, larger server-side streaming import workers, and real LLM-backed assistant actions.
+
+### Implementation
+
+- Added per-tab `deletedRowIndexes` state in Advanced mode.
+- Added per-tab duplicate-as-insert pending state.
+- Added blank/form insert UI for writable DB table tabs.
+- Grid edit mode context menu now supports `Duplicate as insert`, `Mark row delete`, and `Restore row`.
+- The toolbar `Insert new row` action opens a modal for non-primary-key columns and adds a pending insert row after basic type coercion.
+- Duplicate-as-insert builds an insert mutation from the selected result row while omitting primary-key columns to avoid immediate key collisions on serial/auto-increment tables.
+- Added full-result paged exports for CSV, XLSX, JSON, and SQL. The export path pages through the active query/source with a larger page size instead of only exporting the current bounded result page.
+- Mongo toolbar now includes a projection field selector with Include/Exclude actions that update the JSON document query projection.
+- Added dirty-tab lifecycle protection: tab titles show an amber dirty dot, closing a dirty tab opens an unsaved-changes confirmation dialog, and browser/tab reload gets a `beforeunload` guard while any tab has pending edits/inserts/deletes.
+- PostgreSQL Explain now renders a visual plan tree with operation, relation/index, cost, estimated rows, actual time, planning time, execution time, and collapsible raw JSON fallback.
+- Added SQL assistant helper from the Advanced toolbar. It performs static SQL inspection, summarizes query intent/risk, flags common performance/safety issues such as `SELECT *`, missing `LIMIT`, unbounded `ORDER BY`, large `OFFSET`, write queries without `WHERE`, leading-wildcard `LIKE`, and shows an optimized sketch when possible.
+- Added import from a Simple-understood source into an existing writable relational DB table. The flow opens a modal from Advanced toolbar, selects source/table/target, supports custom target-to-source column mapping with same-name defaults, loads source rows through the existing DuckDB file session, and inserts in 100-row mutation batches through the existing transaction endpoint.
+- Deleted rows remain visible with red styling/line-through so the pending operation is inspectable before commit.
+- Pending insert/delete rows block rerun/sort/filter/paging/table switching through the same guard as cell edits.
+- Review transaction now merges blank inserts, duplicate inserts, cell updates, and row deletes. If a row is both edited and marked delete, update mutations for that row are suppressed and only the delete mutation is sent.
+- Discard and successful commit clear cell edits, pending inserts, and pending row deletes.
+
+### Verification
+
+- `npm test -- --run src/pages/Advanced.test.tsx src/lib/advanced-api.test.ts` passed: 2 files, 18 tests after query-parameter, row-copy, command-switcher, FK-navigation, create-table SQL, structure-editor, create-table import-script, and SQL-script transaction coverage.
+- `cargo test -p lightbi-server validates_write_script_statements` passed.
+- Focused ESLint passed for touched Advanced frontend/API files.
+
+### Push Status
+
+- Not pushed. User requested pushing only after all planned parity steps are complete.
+
+### 2026-06-27 Re-Audit Against Full TablePro Surface
+
+- User clarified the target is strict Advanced-mode parity with TablePro, excluding real LLM for now, not only the previously scoped parity slice.
+- Re-read additional TablePro modules:
+  - `Views/Structure/CreateTableView.swift`
+  - `Views/Main/Extensions/MainContentCoordinator+FKNavigation.swift`
+  - `Views/Editor/QueryParameterPanelView.swift`
+  - `Views/Main/Extensions/MainContentCoordinator+QueryParameters.swift`
+  - `Views/Results/DataGridView+RowActions.swift`
+  - `Views/Main/Extensions/MainContentCoordinator+QuickSwitcher.swift`
+  - `Views/Import/ImportDialog.swift`
+  - `Core/Services/Export/ExportService.swift`
+  - `Core/Plugins/StreamingQueryExportDataSource.swift`
+- Updated assessment: LightBI Advanced covers the core data workspace, grid, writeback, filters, schema metadata, export/import, Mongo builder, dirty lifecycle, plan tree, and static assistant, but it is not yet full 1:1 with TablePro's broader pro surface.
+- Implemented after this audit:
+  - Query parameter panel detects `:name` placeholders, preserves values per tab/history/favorite, materializes values for run/explain/paging/export/run-all execution, and escapes SQL string literals.
+  - Result-grid context menu now supports rich row copy actions for selected rows: JSON, CSV, Markdown, SQL `INSERT`, SQL `UPDATE`, selected-column `IN (...)`, and column-values-only copy; right-click inside an existing range preserves the range selection.
+  - Command switcher opens from toolbar or `Ctrl/Cmd+K`, searches tables, tabs, history, favorites, Simple-understood sources, and workspace actions, with keyboard Enter/Escape navigation.
+  - Foreign-key result navigation uses table metadata to add context-menu actions on FK columns and opens the referenced table filtered by referenced key values.
+  - Create-table workflow opens a DDL builder for relational DB sessions with schema/table, columns, nullable/PK flags, index flags, FK references, live SQL preview, and "Open SQL in tab" review flow.
+  - Structure editor opens for active relational tables and generates reviewable ALTER SQL for table rename, column rename, type changes, nullability changes, add column, and drop column.
+  - Full-result export now shows paged progress and supports cancellation from the toolbar while the client-side export loop is running.
+  - Import flow now supports "Create new table script": it reads Simple-understood source rows in batches and opens a reviewable SQL tab containing `CREATE TABLE` plus `INSERT` statements with inferred column types.
+  - Direct SQL script review/commit flow added for relational DB sessions. The backend previews CREATE/ALTER/DROP/TRUNCATE/INSERT/UPDATE/DELETE scripts, commits them inside a transaction, rolls back on failure, and invalidates schema/count caches. Frontend has a toolbar review button and commit modal.
+- Confirmed remaining strict-parity gaps:
+  - Import plugin-style file preview/format selection/progress is partially represented; LightBI has source-to-existing-table import with custom mapping, create-table SQL script generation, and direct script commit, but not SQL-file import or deeper format-specific options.
+  - Export has client-side paged progress/cancel, but not true backend/plugin streaming.
+  - Multi-database/schema switcher and connection organization/tag/group/sync features are partial or absent.
+  - Redis/server-dashboard/plugin ecosystem/MCP/integration surfaces exist in TablePro but are out-of-scope unless LightBI explicitly wants full product parity beyond SQL/Mongo/file BI Advanced mode.
+
+---
+
+## 2026-06-26 — Advanced Mode TablePro-Parity Push In Progress
+
+### Implemented
+
+- Grid Pro layer now has range selection, keyboard navigation, TSV copy, multi-cell paste, per-tab column resize/reorder, and a cell context menu.
+- Advanced filters now share one operator contract across file DuckDB sessions and database sessions. Added broader operators, AND/OR filter groups, backward-compatible flat filters, and parameterized SQL compilation in the Rust backend.
+- Schema explorer now carries deeper metadata: column defaults/comments, table comments/size, indexes, foreign keys, DDL where available, and routines. Explorer surfaces compact index/FK/routine hints.
+- Writeback backend contract now supports update/insert/delete mutation actions. Existing preview/commit transaction path remains redacted and parameterized; bulk paste feeds the edit overlay.
+- Connection profiles now apply TLS at connection time, and SSH profile fields open a real `ssh -N -L` tunnel held by the backend session and killed on disconnect.
+- Result export now supports CSV, XLSX, JSON, and SQL insert scripts for the current bounded result page.
+- Mongo advanced UX has a field/operator/sort builder that updates the JSON document query instead of forcing users to hand-write the whole query.
+
+### Verification
+
+- `npm test -- --run src/pages/Advanced.test.tsx` passed.
+- `npm test -- --run src/pages/Advanced.test.tsx src/lib/advanced-api.test.ts` passed during filter/export work.
+- `npm test -- --run src/lib/advanced-edit-session.test.ts src/lib/advanced-api.test.ts` passed.
+- Focused ESLint passed for touched Advanced/frontend files.
+- `cargo test -p lightbi-server deserializes_` passed.
+- `cargo test -p lightbi-server compiles_` passed.
+
+### Superseded Status
+
+- Insert form, duplicate-as-insert, and delete are now exposed in the grid/writeback UI and commit through the existing transaction review path.
+- Full-result paged exports and DB-table import were completed later in this same parity slice; see `Advanced TablePro Parity Recheck + Row Delete UI` above for the current status.
+- Full workspace build/lint still has unrelated pre-existing failures outside Advanced/this slice.
+
+---
+
 ## 2026-06-26 — Advanced PostgreSQL/MySQL/MariaDB Source Commit
 
 ### Implementation
@@ -1818,3 +1986,278 @@ See `docs/architecture/ADR-113-shared-simple-advanced-execution-core.md`.
 
 - Frontend: `http://100.94.184.141:5173/advanced`
 - Backend: `0.0.0.0:5172`, reached through the frontend `/api` proxy.
+## 2026-06-27 — Simple Mode BA Decision Engine Phase BA-1
+
+User direction: pause the DA-heavy/TablePro track and push Simple mode toward a real BA decision layer for SME workflows. Simple mode must answer:
+
+1. What data am I looking at?
+2. How much should I trust it?
+3. What insights are worth noticing?
+4. What should I decide or check next?
+
+Architecture anchor added:
+
+- `docs/architecture/ADR-115-ba-decision-engine-simple-mode.md`
+- Defines the Simple mode path as `Data Understanding -> Data Trust Scoring -> Insight Mining -> Chart Recommendation -> Decision Briefing -> Action Suggestions`.
+- Keeps the core deterministic first. LLM can later rewrite wording, but cannot invent facts or evidence.
+- Establishes Advanced as DA/pro workspace and Simple as BA decision workspace, with a future Advanced -> Analyze in Simple loop.
+
+Current baseline after reading code:
+
+- Data Understanding: roughly 70-80%.
+- Data Trust Scoring: roughly 55-65%.
+- Insight Mining: now roughly 35-45% after this phase.
+- Chart Recommendation: roughly 45-55%.
+- Decision Briefing: now roughly 30-40% after this phase.
+- Advanced -> Simple Loop: still 0-15%.
+
+Implemented first BA slice:
+
+- Added `apps/desktop/src/lib/ba-decision-engine.ts`.
+  - Produces `BADecisionBrief`.
+  - Separates `dataTrustScore` from `decisionReadinessScore`.
+  - Mines deterministic insights from executed preview results:
+    - top concentration
+    - bottom group
+    - trend direction
+    - coverage/scope
+    - data quality caveats
+  - Produces recommended charts and decision suggestions.
+- Added `apps/desktop/src/components/analysis/BADecisionBriefPanel.tsx`.
+  - Renders Executive Summary, Data Trust Score, Decision Readiness Score, Key Insights, Recommended Charts, Decision Suggestions, and Data Caveats.
+- Wired `apps/desktop/src/pages/Investigation.tsx`.
+  - After preview execution, Simple mode now shows chart/table evidence plus BA Decision Brief from the same result.
+  - Replaced conditional `useMemo` usage after the no-session return with direct computation to satisfy React hooks lint.
+- Added `apps/desktop/src/lib/ba-decision-engine.test.ts`.
+
+Verification:
+
+```bash
+cd apps/desktop
+npx eslint src/lib/ba-decision-engine.ts src/lib/ba-decision-engine.test.ts src/components/analysis/BADecisionBriefPanel.tsx src/pages/Investigation.tsx
+npx vitest run src/lib/ba-decision-engine.test.ts --reporter=dot --pool=forks
+```
+
+Both passed.
+
+Additional check:
+
+```bash
+cd apps/desktop
+npx vitest run src/pages/Investigation.test.tsx src/lib/ba-decision-engine.test.ts --reporter=dot --pool=forks
+```
+
+Result: `ba-decision-engine.test.ts` passed; `Investigation.test.tsx` still has 7 known legacy expectation failures around `Execution Boundary Failed` versus current UI text `Execution Failed`, plus duplicate error surfaces. This matches the pre-existing Investigation test debt already noted earlier and was not introduced by the BA engine slice.
+
+Important remaining BA work:
+
+1. Pre-execution BA brief from data profile, not only after `Run preview`.
+2. More insight types: anomaly/outlier, Pareto on raw rows, period-over-period, missing value impact, duplicate/key risk, segment comparison.
+3. Better chart recommendation ranking per insight, not only primary chart plus hints.
+4. Stronger `Decision Readiness Score` formula using required business fields by domain.
+5. Advanced -> Simple loop: after Advanced filtering/edit/querying, create a temporary Simple investigation session and run the same BA Decision Engine.
+
+## 2026-06-27 — Simple Mode BA Pre-Execution Brief
+
+User direction: continue BA before the full UI/UX redesign. Add a pre-execution BA brief from data profile/session rows so Simple mode starts answering decision questions before the user clicks `Run preview`.
+
+Implemented:
+
+- Extended `apps/desktop/src/lib/ba-decision-engine.ts`.
+  - Added `createPreExecutionBADecisionBrief()`.
+  - Builds an estimated result matrix from retained/profile rows and the current runtime intent.
+  - Supports lightweight estimates for `group_by`, `distribution`, `trend`, `relationship`, and table-like fallbacks.
+  - Reuses the same `createBADecisionBrief()` contract so pre/post execution stay aligned.
+  - Adds explicit caveats: pre-execution estimate only, run preview to validate.
+  - Caps decision readiness below data trust so the UI does not imply final decision quality before execution.
+- Wired `apps/desktop/src/pages/Investigation.tsx`.
+  - Before `Run preview`, the BA Decision Brief panel now shows a cautious pre-execution estimate.
+  - After preview execution, the panel automatically switches to the executed-result brief.
+- Updated `apps/desktop/src/lib/ba-decision-engine.test.ts`.
+  - Added coverage proving retained rows can produce a pre-execution top-concentration insight and that the brief remains cautious.
+
+Verification:
+
+```bash
+cd apps/desktop
+npx eslint src/lib/ba-decision-engine.ts src/lib/ba-decision-engine.test.ts src/components/analysis/BADecisionBriefPanel.tsx src/pages/Investigation.tsx
+npx vitest run src/lib/ba-decision-engine.test.ts --reporter=dot --pool=forks
+```
+
+Both passed.
+
+Updated BA status estimate:
+
+- Data Understanding: 70-80%.
+- Data Trust Scoring: 55-65%.
+- Insight Mining: 40-50%.
+- Chart Recommendation: 45-55%.
+- Decision Briefing: 40-50%.
+- Advanced -> Simple Loop: 0-15%.
+
+Next BA slice:
+
+1. Add anomaly/outlier and duplicate/key-risk insight miners.
+2. Improve Decision Readiness Score using domain-required fields.
+3. Add richer chart recommendation ranking before UI redesign.
+
+## 2026-06-27 — Simple Mode BA Risk Insight Miners
+
+User direction: continue the BA track and read docs if needed. Re-read:
+
+- `docs/architecture/ADR-115-ba-decision-engine-simple-mode.md`
+- `docs/architecture/ADR-079-data-quality-vs-business-confidence.md`
+- `docs/architecture/ADR-072-insight-contract.md`
+
+Confirmed direction:
+
+- Keep Data Quality, Business Confidence, and Decision Readiness conceptually separate.
+- Insights must be deterministic, evidence-backed, and traceable.
+- BA should warn users about data conditions that can make a business decision wrong, not only summarize top/bottom values.
+
+Implemented:
+
+- Extended `BAInsightType` with:
+  - `outlier`
+  - `key_risk`
+- Added `mineOutlierInsight()`.
+  - Uses IQR fences on the selected numeric field.
+  - Reports most extreme value, expected range, and outlier ratio.
+  - Marks severity as warning/critical depending on outlier density.
+- Added `mineKeyRiskInsight()`.
+  - Finds id/code/key-like fields or falls back to the active dimension.
+  - Reports duplicate row ratio, empty ratio, and most repeated value.
+  - Flags fields that are unsafe as decision keys for grouped totals, joins, or record counts.
+- Updated Decision Readiness scoring.
+  - Outlier and key-risk insights now add extra score penalties.
+  - Suggestions now explicitly tell the user to inspect unusual values or duplicate/empty keys.
+- Fixed pre-execution path.
+  - Key-risk is checked against raw retained/profile rows before aggregation so duplicate keys are not hidden by the estimated group-by matrix.
+
+Verification:
+
+```bash
+cd apps/desktop
+npx eslint src/lib/ba-decision-engine.ts src/lib/ba-decision-engine.test.ts src/components/analysis/BADecisionBriefPanel.tsx src/pages/Investigation.tsx
+npx vitest run src/lib/ba-decision-engine.test.ts --reporter=dot --pool=forks
+```
+
+Both passed. `ba-decision-engine.test.ts` now has 5 passing tests covering executed brief, blocked brief, pre-execution brief, outlier risk, and duplicate key risk.
+
+Updated BA status estimate:
+
+- Data Understanding: 70-80%.
+- Data Trust Scoring: 60-70%.
+- Insight Mining: 50-60%.
+- Chart Recommendation: 45-55%.
+- Decision Briefing: 45-55%.
+- Advanced -> Simple Loop: 0-15%.
+
+Next BA slice:
+
+1. Domain-required-field readiness scoring: clean data can still be low decision readiness if required business fields are missing.
+2. Period-over-period insight when a valid time dimension exists.
+3. Insight-to-chart ranking so each important insight has the best chart/evidence view before the full UI/UX redesign.
+
+## 2026-06-27 — Simple Mode BA Required Fields, Latest Period, Chart Ranking
+
+User direction: keep going full BA according to docs before the full UI/UX rebuild.
+
+Implemented:
+
+- Added conservative domain-required-field readiness scoring in `apps/desktop/src/lib/ba-decision-engine.ts`.
+  - Rule map covers finance, revenue, inventory, and operations decision contexts.
+  - Produces `field_gap` insights when semantic briefing has an explicit domain but the required business field groups are missing.
+  - Example: a finance/profitability decision with revenue but no cost/gross margin fields now lowers Decision Readiness even if Data Trust is high.
+  - Important correction: field-gap no longer infers domain from vague column names alone, avoiding false positives for generic `amount` datasets.
+- Added `minePeriodOverPeriodInsight()`.
+  - For trend/line results, compares latest period with previous period.
+  - Emits evidence for previous value, latest value, and percentage/absolute change.
+- Improved insight-to-chart ranking.
+  - Recommendations now rank insights by severity, type importance, and confidence.
+  - Critical/warning field gaps, key risks, and outliers outrank generic coverage/data-quality hints.
+- Decision suggestions now reflect missing business fields directly.
+
+Verification:
+
+```bash
+cd apps/desktop
+npx eslint src/lib/ba-decision-engine.ts src/lib/ba-decision-engine.test.ts src/components/analysis/BADecisionBriefPanel.tsx src/pages/Investigation.tsx
+npx vitest run src/lib/ba-decision-engine.test.ts --reporter=dot --pool=forks
+```
+
+Both passed. `ba-decision-engine.test.ts` now has 7 passing tests:
+
+- executed brief
+- blocked brief
+- pre-execution brief
+- outlier risk
+- duplicate key risk
+- missing required business fields
+- latest period movement
+
+Updated BA status estimate:
+
+- Data Understanding: 70-80%.
+- Data Trust Scoring: 65-75%.
+- Insight Mining: 60-70%.
+- Chart Recommendation: 55-65%.
+- Decision Briefing: 55-65%.
+- Advanced -> Simple Loop: 0-15%.
+
+Remaining BA before UI/UX rebuild:
+
+1. Add richer distribution/segment-comparison insights.
+2. Add raw-row evidence pointers for risk insights, not only text evidence.
+3. Add Advanced -> Simple loop so edited/query result buffers can create a Simple BA brief.
+4. Optional: compact BA score breakdown UI once engine coverage is stable.
+
+## 2026-06-27 — Simple BA Completion Slice Before UI/UX Rebuild
+
+User requested completing all remaining BA items before full UI/UX redesign:
+
+1. Segment/distribution insight deeper.
+2. Raw-row evidence pointers for risk insights.
+3. Advanced -> Simple loop.
+4. Compact score breakdown UI.
+
+Implemented:
+
+- Extended `apps/desktop/src/lib/ba-decision-engine.ts`.
+  - Added `segment_spread` insight.
+  - Detects large spread between highest, median, and lowest segments.
+  - Added `BARowEvidence` and optional `evidenceRows` on insights.
+  - Outlier and key-risk insights now attach row pointers with key field/value evidence.
+  - Added `BAScoreBreakdownItem` and required `scoreBreakdown` on `BADecisionBrief`.
+  - All brief paths now include score breakdown: blocked, no-row pre-execution, pre-execution estimate, and executed result.
+- Updated `apps/desktop/src/components/analysis/BADecisionBriefPanel.tsx`.
+  - Shows compact score breakdown below Data Trust / Decision Readiness.
+  - Shows raw-row pointers inside risk insight cards when available.
+- Added Advanced -> Simple loop in `apps/desktop/src/pages/Advanced.tsx`.
+  - Result toolbar now has `BA Brief` when a result is visible.
+  - It converts the current displayed Advanced result to retained rows, creates an Investigation session, and navigates to `/investigation`.
+  - Uses table-preview intent for now; Simple BA pre-execution engine then builds the decision brief from those retained rows.
+  - Uses `window.history.pushState` + `popstate` rather than `useNavigate` so existing tests can render Advanced outside a Router.
+- Updated `apps/desktop/src/lib/ba-decision-engine.test.ts`.
+  - Added coverage for segment spread, score breakdown, and raw-row evidence pointers.
+
+Verification:
+
+```bash
+cd apps/desktop
+npx eslint src/lib/ba-decision-engine.ts src/lib/ba-decision-engine.test.ts src/components/analysis/BADecisionBriefPanel.tsx src/pages/Investigation.tsx src/pages/Advanced.tsx
+npx vitest run src/pages/Advanced.test.tsx src/lib/ba-decision-engine.test.ts --reporter=dot --pool=forks
+```
+
+Both passed. Advanced + BA focused tests: 2 files, 25 tests passed.
+
+Updated BA status estimate:
+
+- Data Understanding: 70-80%.
+- Data Trust Scoring: 65-75%.
+- Insight Mining: 70-80%.
+- Chart Recommendation: 60-70%.
+- Decision Briefing: 65-75%.
+- Advanced -> Simple Loop: 45-55%.
+
+BA engine is now ready enough to support the upcoming full UI/UX rebuild. Remaining work is mostly product polish and broader domain coverage rather than core BA architecture.

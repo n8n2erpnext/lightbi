@@ -15,6 +15,8 @@ import { formatValue, inferSemanticType } from '../lib/display-formatter';
 import { Settings } from 'lucide-react';
 import { DisplayPreferencesModal } from '../components/settings/DisplayPreferencesModal';
 import { DatasetInsightSummary } from '../components/analysis/DatasetInsightSummary';
+import { BADecisionBriefPanel } from '../components/analysis/BADecisionBriefPanel';
+import { createBADecisionBrief, createPreExecutionBADecisionBrief } from '../lib/ba-decision-engine';
 import {
   createQueryResultBuffer,
   ExecutionRunCoordinator,
@@ -75,10 +77,23 @@ export const Investigation: React.FC = () => {
     ? aiBriefing.caveats.join(' ')
     : `Readiness score: ${aiBriefing?.readinessScore ?? 0}`;
   const safeActionHints = aiBriefing?.safeActionHints ?? [];
-  const safeSqlPreview = React.useMemo(() => {
-    const enhancedPlan = enhancePlanWithGuardedSum(runtimePlanPreview, rows || []);
-    return createSafeSqlPreview(enhancedPlan);
-  }, [runtimePlanPreview, rows]);
+  const enhancedPlan = enhancePlanWithGuardedSum(runtimePlanPreview, rows || []);
+  const safeSqlPreview = createSafeSqlPreview(enhancedPlan);
+  const baDecisionBrief = previewResult
+    ? createBADecisionBrief({
+      datasetId: session.datasetId,
+      previewResult,
+      chartModel,
+      aiBriefing,
+      runtimeIntent
+    })
+    : createPreExecutionBADecisionBrief({
+      datasetId: session.datasetId,
+      rows,
+      aiBriefing,
+      runtimeIntent,
+      rowScope
+    });
 
   const handleRunPreview = async () => {
     const run = executionRuns.current.begin();
@@ -381,6 +396,12 @@ export const Investigation: React.FC = () => {
                  </div>
                )}
              </div>
+
+             {baDecisionBrief && (
+               <div className="mt-6">
+                 <BADecisionBriefPanel brief={baDecisionBrief} />
+               </div>
+             )}
           </div>
           
           <div className="px-6 py-4 bg-slate-50 border-t border-gray-100 flex flex-col gap-4">

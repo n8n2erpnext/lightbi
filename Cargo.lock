@@ -1859,6 +1859,7 @@ dependencies = [
  "axum",
  "base64 0.22.1",
  "chrono",
+ "csv",
  "lightbi-chart",
  "lightbi-connectors",
  "lightbi-dashboard",
@@ -1886,6 +1887,7 @@ dependencies = [
  "sqlx",
  "tokio",
  "tower-http 0.5.2",
+ "url",
  "uuid",
 ]
 

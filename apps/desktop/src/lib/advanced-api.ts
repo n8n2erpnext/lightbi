@@ -13,19 +13,48 @@ export type AdvancedColumnNode = {
   nativeType: string;
   nullable: boolean;
   primaryKey?: boolean;
+  defaultValue?: string | null;
+  comment?: string | null;
+};
+
+export type AdvancedIndexNode = {
+  name: string;
+  columns: string[];
+  unique?: boolean;
+  definition?: string;
+};
+
+export type AdvancedForeignKeyNode = {
+  name: string;
+  columns: string[];
+  referencedTable: string;
+  referencedColumns: string[];
+  definition?: string;
+};
+
+export type AdvancedRoutineNode = {
+  name: string;
+  kind: string;
+  definition?: string;
 };
 
 export type AdvancedTableNode = {
   name: string;
   kind: string;
   estimatedRows?: number | null;
+  tableSizeBytes?: number | null;
+  comment?: string | null;
+  ddl?: string | null;
   writable?: boolean;
   columns: AdvancedColumnNode[];
+  indexes?: AdvancedIndexNode[];
+  foreignKeys?: AdvancedForeignKeyNode[];
 };
 
 export type AdvancedSchemaNode = {
   name: string;
   tables: AdvancedTableNode[];
+  routines?: AdvancedRoutineNode[];
 };
 
 export type AdvancedSchema = {
@@ -38,8 +67,17 @@ export type AdvancedSchema = {
 };
 
 export type AdvancedSort = { column: string; direction: 'asc' | 'desc' };
-export type AdvancedFilterOperator = 'contains' | 'equals' | 'starts_with' | 'ends_with';
-export type AdvancedFilter = { column: string; operator: AdvancedFilterOperator; value: string };
+export type AdvancedFilterOperator =
+  | 'contains' | 'not_contains'
+  | 'equals' | 'not_equals'
+  | 'starts_with' | 'ends_with'
+  | 'greater_than' | 'greater_or_equal'
+  | 'less_than' | 'less_or_equal'
+  | 'is_blank' | 'is_not_blank'
+  | 'in' | 'not_in';
+export type AdvancedFilter = { column: string; operator: AdvancedFilterOperator; value?: string };
+export type AdvancedFilterNode = AdvancedFilter | AdvancedFilterGroup;
+export type AdvancedFilterGroup = { combinator: 'and' | 'or'; children: AdvancedFilterNode[] };
 export type AdvancedTableCount = { schema: string; table: string; exactRows: number; cached: boolean };
 
 export type AdvancedQueryResult = QueryResultBuffer & { warnings: string[]; executionMs: number };
@@ -51,13 +89,32 @@ export type AdvancedFavorite = {
   id: string; name: string; sql: string; provider: string; database: string; createdAt: string; updatedAt: string;
 };
 export type AdvancedExplainResult = { plan: unknown; executionMs: number };
-export type AdvancedMutationRow = { key: Record<string, unknown>; changes: Record<string, unknown>; expected: Record<string, unknown> };
+export type AdvancedMutationAction = 'update' | 'insert' | 'delete';
+export type AdvancedMutationRow = { action?: AdvancedMutationAction; key: Record<string, unknown>; changes: Record<string, unknown>; expected: Record<string, unknown> };
 export type AdvancedMutationRequest = { schema: string; table: string; rows: AdvancedMutationRow[] };
 export type AdvancedMutationPreview = { statements: string[]; rowCount: number; canCommit: boolean };
 export type AdvancedMutationCommit = { updatedRows: number };
+export type AdvancedScriptPreview = { statements: string[]; statementCount: number; canCommit: boolean };
+export type AdvancedScriptCommit = { executedStatements: number };
+export type AdvancedExportJob = {
+  jobId: string;
+  status: 'running' | 'completed' | 'failed' | 'cancelled';
+  format: string;
+  rows: number;
+  fileName: string;
+  error?: string | null;
+};
+export type AdvancedImportJob = {
+  jobId: string;
+  status: 'running' | 'completed' | 'failed' | 'cancelled';
+  statementCount: number;
+  executedStatements: number;
+  skippedStatements: number;
+  error?: string | null;
+};
 export type AdvancedConnectionProfile = {
   id: string; name: string; provider: AdvancedConnection['provider']; database: string; tlsMode: string;
-  sshHost?: string; sshPort?: number; sshUser?: string; createdAt: string; updatedAt: string;
+  sshHost?: string; sshPort?: number; sshUser?: string; groupName?: string | null; tagName?: string | null; safeMode: 'off' | 'confirm_writes' | 'read_only'; createdAt: string; updatedAt: string;
 };
 
 async function readResponse<T>(response: Response): Promise<T> {
@@ -71,12 +128,13 @@ export async function createAdvancedConnection(
   connectionUrl: string,
   provider?: AdvancedConnection['provider'],
   databaseName?: string,
+  options?: { tlsMode?: string; sshHost?: string; sshPort?: number; sshUser?: string; safeMode?: AdvancedConnectionProfile['safeMode'] },
   signal?: AbortSignal
 ): Promise<AdvancedConnection> {
   const response = await fetch(`${getApiBaseUrl()}/api/advanced/connections`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ name, connectionUrl, provider, databaseName }),
+    body: JSON.stringify({ name, connectionUrl, provider, databaseName, ...options }),
     signal
   });
   return readResponse(response);
@@ -85,7 +143,17 @@ export async function createAdvancedConnection(
 export async function createAdvancedConnectionFromProfile(name: string, profile: AdvancedConnectionProfile, signal?: AbortSignal): Promise<AdvancedConnection> {
   return readResponse(await fetch(`${getApiBaseUrl()}/api/advanced/connections`, {
     method: 'POST', headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ name, profileId: profile.id, provider: profile.provider, databaseName: profile.database || undefined }), signal,
+    body: JSON.stringify({
+      name,
+      profileId: profile.id,
+      provider: profile.provider,
+      databaseName: profile.database || undefined,
+      tlsMode: profile.tlsMode,
+      sshHost: profile.sshHost,
+      sshPort: profile.sshPort,
+      sshUser: profile.sshUser,
+      safeMode: profile.safeMode,
+    }), signal,
   }));
 }
 
@@ -117,7 +185,7 @@ export async function loadAdvancedTableCount(
 
 export async function executeAdvancedQuery(
   connectionId: string,
-  request: { runId: string; sql: string; limit: number; offset?: number; sort?: AdvancedSort; filters?: AdvancedFilter[] },
+  request: { runId: string; sql: string; limit: number; offset?: number; sort?: AdvancedSort; filters?: AdvancedFilter[]; filterTree?: AdvancedFilterGroup },
   signal?: AbortSignal
 ): Promise<AdvancedQueryResult> {
   const response = await fetch(`${getApiBaseUrl()}/api/advanced/connections/${connectionId}/query`, {
@@ -145,6 +213,71 @@ export async function commitAdvancedMutation(connectionId: string, request: Adva
   return readResponse(await fetch(`${getApiBaseUrl()}/api/advanced/connections/${connectionId}/mutations/commit`, {
     method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(request),
   }));
+}
+
+export async function previewAdvancedScript(connectionId: string, sql: string): Promise<AdvancedScriptPreview> {
+  return readResponse(await fetch(`${getApiBaseUrl()}/api/advanced/connections/${connectionId}/scripts/preview`, {
+    method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ sql }),
+  }));
+}
+
+export async function commitAdvancedScript(connectionId: string, sql: string): Promise<AdvancedScriptCommit> {
+  return readResponse(await fetch(`${getApiBaseUrl()}/api/advanced/connections/${connectionId}/scripts/commit`, {
+    method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ sql }),
+  }));
+}
+
+export async function startAdvancedExport(
+  connectionId: string,
+  request: { sql: string; format: 'csv' | 'json' | 'sql' | 'xlsx'; fileName?: string; tableName?: string; sort?: AdvancedSort; filters?: AdvancedFilter[]; filterTree?: AdvancedFilterGroup }
+): Promise<{ jobId: string }> {
+  return readResponse(await fetch(`${getApiBaseUrl()}/api/advanced/connections/${connectionId}/exports`, {
+    method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(request),
+  }));
+}
+
+export async function loadAdvancedExportJob(jobId: string): Promise<AdvancedExportJob> {
+  return readResponse(await fetch(`${getApiBaseUrl()}/api/advanced/exports/${encodeURIComponent(jobId)}`));
+}
+
+export async function downloadAdvancedExportJob(jobId: string): Promise<Blob> {
+  const response = await fetch(`${getApiBaseUrl()}/api/advanced/exports/${encodeURIComponent(jobId)}/download`);
+  if (response.ok) return response.blob();
+  const body = await response.json().catch(() => null) as { message?: string } | null;
+  throw new Error(body?.message || `Advanced export download returned ${response.status}.`);
+}
+
+export async function cancelAdvancedExportJob(jobId: string): Promise<void> {
+  await fetch(`${getApiBaseUrl()}/api/advanced/exports/${encodeURIComponent(jobId)}`, { method: 'DELETE' });
+}
+
+export async function startAdvancedSqlImport(connectionId: string, sql: string): Promise<{ jobId: string }> {
+  return readResponse(await fetch(`${getApiBaseUrl()}/api/advanced/connections/${connectionId}/imports/sql`, {
+    method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ sql }),
+  }));
+}
+
+export async function startAdvancedCsvImport(
+  connectionId: string,
+  request: { file: File; schema: string; table: string; mapping?: Record<string, string>; errorMode?: 'stop_rollback' | 'stop_commit' | 'skip_continue' }
+): Promise<{ jobId: string }> {
+  const form = new FormData();
+  form.append('file', request.file);
+  form.append('schema', request.schema);
+  form.append('table', request.table);
+  form.append('mapping', JSON.stringify(request.mapping ?? {}));
+  form.append('errorMode', request.errorMode ?? 'stop_rollback');
+  return readResponse(await fetch(`${getApiBaseUrl()}/api/advanced/connections/${connectionId}/imports/csv`, {
+    method: 'POST', body: form,
+  }));
+}
+
+export async function loadAdvancedImportJob(jobId: string): Promise<AdvancedImportJob> {
+  return readResponse(await fetch(`${getApiBaseUrl()}/api/advanced/imports/${encodeURIComponent(jobId)}`));
+}
+
+export async function cancelAdvancedImportJob(jobId: string): Promise<void> {
+  await fetch(`${getApiBaseUrl()}/api/advanced/imports/${encodeURIComponent(jobId)}`, { method: 'DELETE' });
 }
 
 export async function cancelAdvancedRun(runId: string): Promise<void> {
@@ -191,7 +324,7 @@ export async function loadAdvancedProfiles(): Promise<AdvancedConnectionProfile[
 
 export async function saveAdvancedProfile(record: {
   name: string; provider: AdvancedConnection['provider']; database?: string; connectionUrl: string; tlsMode: string;
-  sshHost?: string; sshPort?: number; sshUser?: string;
+  sshHost?: string; sshPort?: number; sshUser?: string; groupName?: string; tagName?: string; safeMode?: AdvancedConnectionProfile['safeMode'];
 }): Promise<AdvancedConnectionProfile> {
   return readResponse(await fetch(`${getApiBaseUrl()}/api/advanced/profiles`, {
     method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(record),
