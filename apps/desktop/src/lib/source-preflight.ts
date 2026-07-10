@@ -77,6 +77,12 @@ export type SourceInspectionResult =
         sheet_names?: string[];
         detected_delimiter?: string;
         detected_fields?: string[];
+        persisted_file?: {
+          fileId: string;
+          originalName: string;
+          filePath: string;
+          bytesWritten: number;
+        };
       };
       file?: File;
     }

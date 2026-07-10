@@ -15,7 +15,7 @@ export type DatasetHealthWarning = {
 };
 
 export type DatasetHealthResult = {
-  datasetId: string;
+  datasetId?: string;
   completeness: number;
   consistency: number;
   uniqueness: number;

@@ -1,47 +1,50 @@
 import React from 'react';
-import { Plus } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { LayoutDashboard, Plus } from 'lucide-react';
 import { useAppRuntime } from '@lightbi/runtime';
 
 export const Dashboards: React.FC = () => {
+  const navigate = useNavigate();
   const dashboardsObj = useAppRuntime(s => s.dashboards);
+  const createDashboard = useAppRuntime(s => s.createDashboard);
   const dashboards = Object.values(dashboardsObj);
 
+  const handleCreateDashboard = () => {
+    const id = createDashboard('Decision dashboard');
+    navigate(`/dashboards/${id}`);
+  };
+
   return (
-    <div className="flex-1 p-4 flex flex-col overflow-hidden">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-xl font-semibold text-gray-900">Dashboards</h1>
-        <Link to="/dashboards/new" className="bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded-md text-sm font-medium flex items-center transition-colors">
-          <Plus className="w-4 h-4 mr-2" />
-          New Dashboard
-        </Link>
-      </div>
-      
-      <div className="bg-white rounded-md border border-gray-200 overflow-hidden flex-1 shadow-sm">
-        <table className="w-full text-left text-[13px] text-gray-600">
-          <thead className="bg-gray-50/50 border-b border-gray-200 text-gray-500 uppercase tracking-wider text-[11px]">
-            <tr>
-              <th className="px-5 py-2.5 font-medium">Title</th>
-              <th className="px-5 py-2.5 font-medium">Last Modified</th>
-              <th className="px-5 py-2.5 font-medium text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {dashboards.map((dash) => (
-              <tr key={dash.id} className="border-b border-gray-100 hover:bg-gray-50/80 transition-colors">
-                <td className="px-5 py-3 font-medium text-gray-900">
-                  <Link to={`/dashboards/${dash.id}`} className="hover:text-gray-600">
-                    {dash.name}
-                  </Link>
-                </td>
-                <td className="px-5 py-3 text-gray-500">{new Date(dash.updatedAt || Date.now()).toLocaleDateString()}</td>
-                <td className="px-5 py-3 text-right">
-                  <Link to={`/dashboards/${dash.id}`} className="text-gray-900 font-medium hover:underline">View</Link>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+    <div className="flex h-full min-h-0 flex-col overflow-y-auto bg-[#fbfbfa] px-5 py-8 text-[#202123] md:px-8 lg:px-10">
+      <div className="mx-auto flex w-full max-w-[1180px] flex-col gap-5">
+        <header className="flex flex-col gap-4 border-b border-black/10 pb-5 md:flex-row md:items-end md:justify-between">
+          <div>
+            <div className="mb-2 flex items-center gap-2 text-[12px] font-medium text-black/45"><LayoutDashboard className="h-4 w-4" strokeWidth={1.7} /> Dashboards</div>
+            <h1 className="text-[28px] font-semibold tracking-normal">Decision dashboards</h1>
+            <p className="mt-2 max-w-2xl text-[14px] leading-6 text-black/50">Assemble reusable chart cards into operational views that can refresh when datasets change.</p>
+          </div>
+          <button onClick={handleCreateDashboard} className="inline-flex h-10 items-center gap-2 rounded-md bg-gray-900 px-3 text-[13px] font-medium text-white hover:bg-black"><Plus className="h-4 w-4" /> New dashboard</button>
+        </header>
+
+        <section className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
+          {dashboards.map(dashboard => (
+            <Link key={dashboard.id} to={`/dashboards/${dashboard.id}`} className="rounded-lg border border-black/10 bg-white p-5 shadow-sm transition-colors hover:bg-black/[0.02]">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <h2 className="truncate text-[16px] font-semibold">{dashboard.name}</h2>
+                  <p className="mt-1 text-[13px] text-black/45">{dashboard.widgets.length} chart cards</p>
+                </div>
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gray-100 text-gray-600"><LayoutDashboard className="h-4 w-4" /></div>
+              </div>
+              <div className="mt-5 grid grid-cols-3 gap-2">
+                {Array.from({ length: Math.max(3, Math.min(6, dashboard.widgets.length || 3)) }, (_, index) => (
+                  <div key={index} className={`h-12 rounded border ${index < dashboard.widgets.length ? 'border-blue-100 bg-blue-50' : 'border-dashed border-black/10 bg-[#fbfbfa]'}`} />
+                ))}
+              </div>
+              <div className="mt-4 text-[12px] text-black/40">Updated {dashboard.updatedAt ? new Date(dashboard.updatedAt).toLocaleDateString() : 'recently'}</div>
+            </Link>
+          ))}
+        </section>
       </div>
     </div>
   );

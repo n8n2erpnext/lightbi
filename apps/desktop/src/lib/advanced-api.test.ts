@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { createAdvancedConnection, executeAdvancedQuery, loadAdvancedTableCount } from './advanced-api';
+import { createAdvancedConnection, executeAdvancedQuery, loadAdvancedProviderPlugins, loadAdvancedTableCount } from './advanced-api';
 
 describe('advanced api', () => {
   afterEach(() => vi.restoreAllMocks());
@@ -56,5 +56,70 @@ describe('advanced api', () => {
 
     expect(count.exactRows).toBe(42);
     expect(fetchMock.mock.calls[0][0]).toContain('schema=sales+data&table=order%2Fitems');
+  });
+
+  it('loads only exposable supported provider plugins for the Advanced dropdown', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(JSON.stringify([
+      {
+        manifest: {
+          apiVersion: 'lightbi.plugin.v1',
+          id: 'postgresql',
+          displayName: 'PostgreSQL',
+          version: '0.1.0',
+          providerKind: 'relational',
+          description: 'Built in',
+          urlSchemes: ['postgresql'],
+          connectionFields: [],
+          capabilities: {
+            connect: true,
+            schemaDiscovery: true,
+            readOnlyQuery: true,
+            cancellableQuery: true,
+            streamingQuery: false,
+            writeback: true,
+            ddl: true,
+            importRows: true,
+            exportRows: true,
+            explain: true,
+            serverDashboard: false,
+            semanticHints: false,
+          },
+        },
+        exposureGate: { canExpose: true, missingCapabilities: [], warnings: [] },
+        source: 'core_builtin',
+      },
+      {
+        manifest: {
+          apiVersion: 'lightbi.plugin.v1',
+          id: 'sqlserver',
+          displayName: 'SQL Server',
+          version: '0.1.0',
+          providerKind: 'relational',
+          description: 'Planned',
+          urlSchemes: ['sqlserver'],
+          connectionFields: [],
+          capabilities: {
+            connect: false,
+            schemaDiscovery: false,
+            readOnlyQuery: false,
+            cancellableQuery: false,
+            streamingQuery: false,
+            writeback: false,
+            ddl: false,
+            importRows: false,
+            exportRows: false,
+            explain: false,
+            serverDashboard: false,
+            semanticHints: false,
+          },
+        },
+        exposureGate: { canExpose: false, missingCapabilities: ['connect'], warnings: [] },
+        source: 'planned_plugin',
+      },
+    ]), { status: 200, headers: { 'content-type': 'application/json' } }));
+
+    const providers = await loadAdvancedProviderPlugins();
+
+    expect(providers.map(provider => provider.manifest.id)).toEqual(['postgresql']);
   });
 });

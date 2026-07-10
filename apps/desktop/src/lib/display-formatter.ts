@@ -2,11 +2,89 @@ import type { DisplayPreferences } from '../stores/display-preferences-store';
 
 export type SemanticType = 'currency' | 'number' | 'date' | 'time' | 'datetime' | 'string' | 'unknown';
 
-export function inferSemanticType(columnName: string, value: any): SemanticType {
+function isDateLikeColumn(columnName: string): boolean {
+  const lower = columnName.toLowerCase();
+  return (
+    lower.includes('date') ||
+    lower.includes('time') ||
+    lower.includes('timestamp') ||
+    lower.includes('created_at') ||
+    lower.includes('updated_at') ||
+    lower.includes('ngày') ||
+    lower.includes('ngay') ||
+    lower.includes('thời gian') ||
+    lower.includes('thoi gian')
+  );
+}
+
+function isDateTimeLikeColumn(columnName: string): boolean {
+  const lower = columnName.toLowerCase();
+  return (
+    lower.includes('time') ||
+    lower.includes('timestamp') ||
+    lower.includes('_at') ||
+    lower.includes('thời gian') ||
+    lower.includes('thoi gian')
+  );
+}
+
+function isIdentifierLikeColumn(columnName: string): boolean {
+  const lower = columnName.toLowerCase();
+  return (
+    lower === 'id' ||
+    lower.endsWith('id') ||
+    lower.includes('_id') ||
+    lower.includes(' id') ||
+    lower.includes('code') ||
+    lower.includes('mã') ||
+    lower.includes('ma ') ||
+    lower.startsWith('ma ') ||
+    lower.includes('mã số') ||
+    lower.includes('mã phiếu') ||
+    lower.includes('mã kho') ||
+    lower.includes('mã nhân') ||
+    lower.includes('orderid') ||
+    lower.includes('order id') ||
+    lower.includes('customerid') ||
+    lower.includes('customer id') ||
+    lower.includes('productid') ||
+    lower.includes('product id')
+  );
+}
+
+function isPlausibleDateNumber(value: number): boolean {
+  // Excel serial dates, Unix seconds, and Unix milliseconds for common business data ranges.
+  return (
+    (value >= 20_000 && value <= 80_000) ||
+    (value >= 946_684_800 && value <= 4_102_444_800) ||
+    (value >= 946_684_800_000 && value <= 4_102_444_800_000)
+  );
+}
+
+function dateFromValue(value: unknown): Date {
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    if (value >= 20_000 && value <= 80_000) {
+      const excelEpoch = Date.UTC(1899, 11, 30);
+      return new Date(excelEpoch + Math.floor(value) * 86_400_000);
+    }
+    if (value >= 946_684_800 && value <= 4_102_444_800) {
+      return new Date(value * 1000);
+    }
+  }
+  return new Date(value as string | number | Date);
+}
+
+export function inferSemanticType(columnName: string, value: unknown): SemanticType {
   if (value === null || value === undefined) return 'unknown';
   
   if (typeof value === 'number') {
     const lower = columnName.toLowerCase();
+    if (isDateLikeColumn(columnName) && isPlausibleDateNumber(value)) {
+      return isDateTimeLikeColumn(columnName) ? 'datetime' : 'date';
+    }
+    if (isIdentifierLikeColumn(columnName)) {
+      return 'string';
+    }
     if (lower.includes('revenue') || lower.includes('cost') || lower.includes('price') || lower.includes('doanh thu') || lower.includes('tiền') || lower.includes('budget') || lower.includes('sales')) {
       return 'currency';
     }
@@ -40,7 +118,7 @@ export interface FormatOptions {
   compact?: boolean;
 }
 
-export function formatValue(value: any, semanticType: SemanticType, prefs: DisplayPreferences, extraOptions?: FormatOptions): string {
+export function formatValue(value: unknown, semanticType: SemanticType, prefs: DisplayPreferences, extraOptions?: FormatOptions): string {
   if (value === null || value === undefined || value === '') {
     return '-'; // Clear zero/null rule for MVP
   }
@@ -52,7 +130,7 @@ export function formatValue(value: any, semanticType: SemanticType, prefs: Displ
 
   // Handle Numbers and Currency
   if (semanticType === 'number' || semanticType === 'currency') {
-    let num = Number(value);
+    const num = Number(value);
     if (isNaN(num)) return String(value);
 
     // Rule: Null/Empty handled above. Zero can be '0' or '0.00' based on decimal places.
@@ -61,7 +139,7 @@ export function formatValue(value: any, semanticType: SemanticType, prefs: Displ
 
     const actualLocale = resolveLocaleForSeparators(prefs.locale, prefs.thousandsSeparator);
     
-    let options: Intl.NumberFormatOptions = {
+    const options: Intl.NumberFormatOptions = {
       style: semanticType === 'currency' && prefs.currencyDisplay !== 'none' ? 'currency' : 'decimal',
     };
 
@@ -106,12 +184,12 @@ export function formatValue(value: any, semanticType: SemanticType, prefs: Displ
       // Prepend a dummy date and force UTC so time parsing doesn't shift
       d = new Date(`1970-01-01T${value}Z`);
     } else {
-      d = new Date(value);
+      d = dateFromValue(value);
     }
 
     if (isNaN(d.getTime())) return String(value); // Unparseable date
 
-    let options: Intl.DateTimeFormatOptions = {};
+    const options: Intl.DateTimeFormatOptions = {};
     
     // Timezone - For time-only, we enforce UTC to match our parse trick
     if (isTimeOnly) {

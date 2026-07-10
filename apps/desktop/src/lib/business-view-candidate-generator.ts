@@ -27,6 +27,7 @@ export type BusinessViewCandidate = {
   matchedOptionalSignals: string[];
   evidence: BusinessViewCandidateEvidence[];
   intentIds: string[];
+  relationshipIds?: string[];
   examples: string[];
 };
 

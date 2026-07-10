@@ -1,4 +1,3 @@
-import React from 'react';
 import { Layers, CheckCircle2, Link as LinkIcon, Box, BrainCircuit } from 'lucide-react';
 import { useDisplayPreferences } from '../../stores/display-preferences-store';
 import { formatValue } from '../../lib/display-formatter';

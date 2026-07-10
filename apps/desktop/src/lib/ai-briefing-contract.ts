@@ -6,6 +6,10 @@ export interface AISemanticField {
   domain: string;
   role: "dimension" | "measure" | "time" | "unknown";
   confidence: number;
+  coverageStatus?: "recognized" | "partial" | "unknown_business_like" | "technical_or_noise";
+  physicalColumn?: string;
+  sampleValues?: string[];
+  reason?: string;
 }
 
 export interface AISafeBriefing {
@@ -18,4 +22,15 @@ export interface AISafeBriefing {
   semanticFields: AISemanticField[];
   caveats: string[];
   safeActionHints: string[];
+  semanticCoverage?: {
+    totalColumns: number;
+    nonEmptyColumns: number;
+    recognized: number;
+    partial: number;
+    unknownBusinessLike: number;
+    technicalOrNoise: number;
+    coverageScore: number;
+    unknownBusinessLikeColumns: string[];
+    partialColumns: string[];
+  };
 }

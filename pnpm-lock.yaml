@@ -157,6 +157,12 @@ importers:
         specifier: ^5.2.2
         version: 5.9.3
 
+  packages/plugin-sdk:
+    devDependencies:
+      typescript:
+        specifier: ^5.2.2
+        version: 5.9.3
+
   packages/query-models:
     dependencies:
       '@lightbi/core-types':

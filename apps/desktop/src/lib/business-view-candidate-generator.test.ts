@@ -107,9 +107,6 @@ describe('Business View Candidate Generator (Registry-Driven)', () => {
 
   it('8. Evidence includes: matched, missing', () => {
     // Delivery SLA requires sla and route.
-    const registry = createMockRegistry([
-      { id: 'route', score: 100 }
-    ]);
     // Force it to skip threshold check just to inspect missing if we had it, 
     // but threshold fails, so we need to pass threshold to inspect evidence.
     // Driver Performance needs driver, sla (min 2)

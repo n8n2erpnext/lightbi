@@ -14,6 +14,10 @@ use axum::{
 use chrono::{DateTime, NaiveDate, NaiveDateTime, NaiveTime, Utc};
 use lightbi_export::excel::ExcelGenerator;
 use lightbi_runtime_backend::model::{ColumnDef, ExecutionMetadata, ResultSet};
+use mongodb::{
+    bson::{Bson, Document},
+    Client as MongoClient,
+};
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
@@ -21,9 +25,9 @@ use sqlx::{
     mysql::{MySqlPoolOptions, MySqlRow},
     postgres::{PgPoolOptions, PgRow},
     sqlite::{SqliteConnectOptions, SqlitePoolOptions, SqliteRow},
-    Column, Executor, MySql, MySqlPool, PgPool, Postgres, QueryBuilder, Row, Sqlite, SqlitePool, TypeInfo, ValueRef,
+    Column, Executor, MySql, MySqlPool, PgPool, Postgres, QueryBuilder, Row, Sqlite, SqlitePool,
+    TypeInfo, ValueRef,
 };
-use mongodb::{bson::{Bson, Document}, Client as MongoClient};
 use tokio::{
     process::{Child, Command},
     sync::{Mutex, RwLock},
@@ -471,31 +475,54 @@ struct QueryFilterGroup {
     children: Vec<QueryFilterNode>,
 }
 
-fn validate_filter_condition(column_names: &[String], filter: &QueryFilterRequest) -> Result<(), ApiError> {
+fn validate_filter_condition(
+    column_names: &[String],
+    filter: &QueryFilterRequest,
+) -> Result<(), ApiError> {
     if !column_names.iter().any(|name| name == &filter.column) {
-        return Err(ApiError::bad_request("ADVANCED_FILTER_COLUMN_INVALID", "Filter column is not present in this result."));
+        return Err(ApiError::bad_request(
+            "ADVANCED_FILTER_COLUMN_INVALID",
+            "Filter column is not present in this result.",
+        ));
     }
     if filter.value.len() > 1_000 {
-        return Err(ApiError::bad_request("ADVANCED_FILTER_VALUE_TOO_LONG", "Filter value cannot exceed 1,000 characters."));
+        return Err(ApiError::bad_request(
+            "ADVANCED_FILTER_VALUE_TOO_LONG",
+            "Filter value cannot exceed 1,000 characters.",
+        ));
     }
     Ok(())
 }
 
-fn validate_filter_node(column_names: &[String], node: &QueryFilterNode, depth: usize, count: &mut usize) -> Result<(), ApiError> {
+fn validate_filter_node(
+    column_names: &[String],
+    node: &QueryFilterNode,
+    depth: usize,
+    count: &mut usize,
+) -> Result<(), ApiError> {
     if depth > 4 {
-        return Err(ApiError::bad_request("ADVANCED_FILTER_DEPTH", "Filter groups can be nested up to four levels."));
+        return Err(ApiError::bad_request(
+            "ADVANCED_FILTER_DEPTH",
+            "Filter groups can be nested up to four levels.",
+        ));
     }
     match node {
         QueryFilterNode::Condition(filter) => {
             *count += 1;
             if *count > 20 {
-                return Err(ApiError::bad_request("ADVANCED_FILTER_LIMIT", "A query can apply at most 20 result filters."));
+                return Err(ApiError::bad_request(
+                    "ADVANCED_FILTER_LIMIT",
+                    "A query can apply at most 20 result filters.",
+                ));
             }
             validate_filter_condition(column_names, filter)
         }
         QueryFilterNode::Group(group) => {
             if group.children.is_empty() {
-                return Err(ApiError::bad_request("ADVANCED_FILTER_EMPTY_GROUP", "Filter groups must contain at least one condition."));
+                return Err(ApiError::bad_request(
+                    "ADVANCED_FILTER_EMPTY_GROUP",
+                    "Filter groups must contain at least one condition.",
+                ));
             }
             for child in &group.children {
                 validate_filter_node(column_names, child, depth + 1, count)?;
@@ -505,18 +532,36 @@ fn validate_filter_node(column_names: &[String], node: &QueryFilterNode, depth: 
     }
 }
 
-fn validate_filter_tree(column_names: &[String], tree: &Option<QueryFilterGroup>) -> Result<(), ApiError> {
+fn validate_filter_tree(
+    column_names: &[String],
+    tree: &Option<QueryFilterGroup>,
+) -> Result<(), ApiError> {
     if let Some(group) = tree {
         let mut count = 0;
-        validate_filter_node(column_names, &QueryFilterNode::Group(group.clone()), 0, &mut count)?;
+        validate_filter_node(
+            column_names,
+            &QueryFilterNode::Group(group.clone()),
+            0,
+            &mut count,
+        )?;
     }
     Ok(())
 }
 
-fn table_node_mut<'a>(schemas: &'a mut [SchemaNode], schema: &str, table: &str) -> Option<&'a mut TableNode> {
-    schemas.iter_mut()
+fn table_node_mut<'a>(
+    schemas: &'a mut [SchemaNode],
+    schema: &str,
+    table: &str,
+) -> Option<&'a mut TableNode> {
+    schemas
+        .iter_mut()
         .find(|candidate| candidate.name == schema)
-        .and_then(|schema_node| schema_node.tables.iter_mut().find(|candidate| candidate.name == table))
+        .and_then(|schema_node| {
+            schema_node
+                .tables
+                .iter_mut()
+                .find(|candidate| candidate.name == table)
+        })
 }
 
 #[derive(Debug, Serialize)]
@@ -599,42 +644,100 @@ impl IntoResponse for ApiError {
 }
 
 fn free_local_port() -> Result<u16, ApiError> {
-    let listener = TcpListener::bind("127.0.0.1:0")
-        .map_err(|error| ApiError::database(format!("Could not allocate local tunnel port: {error}")))?;
-    let port = listener.local_addr()
-        .map_err(|error| ApiError::database(format!("Could not inspect local tunnel port: {error}")))?
+    let listener = TcpListener::bind("127.0.0.1:0").map_err(|error| {
+        ApiError::database(format!("Could not allocate local tunnel port: {error}"))
+    })?;
+    let port = listener
+        .local_addr()
+        .map_err(|error| {
+            ApiError::database(format!("Could not inspect local tunnel port: {error}"))
+        })?
         .port();
     drop(listener);
     Ok(port)
 }
 
-async fn maybe_open_ssh_tunnel(url: &str, request: &CreateConnectionRequest) -> Result<(String, Option<Arc<Mutex<Child>>>), ApiError> {
-    let Some(ssh_host) = request.ssh_host.as_deref().map(str::trim).filter(|value| !value.is_empty()) else {
+async fn maybe_open_ssh_tunnel(
+    url: &str,
+    request: &CreateConnectionRequest,
+) -> Result<(String, Option<Arc<Mutex<Child>>>), ApiError> {
+    let Some(ssh_host) = request
+        .ssh_host
+        .as_deref()
+        .map(str::trim)
+        .filter(|value| !value.is_empty())
+    else {
         return Ok((url.to_string(), None));
     };
-    let ssh_user = request.ssh_user.as_deref().map(str::trim).filter(|value| !value.is_empty())
-        .ok_or_else(|| ApiError::bad_request("ADVANCED_SSH_PROFILE_INVALID", "SSH user is required when an SSH host is configured."))?;
-    let mut parsed = Url::parse(url).map_err(|error| ApiError::bad_request("ADVANCED_CONNECTION_INVALID", format!("Invalid connection URL for SSH tunnel: {error}")))?;
-    let remote_host = parsed.host_str().ok_or_else(|| ApiError::bad_request("ADVANCED_CONNECTION_INVALID", "Connection URL must include a database host for SSH tunnel."))?.to_string();
-    let remote_port = parsed.port_or_known_default().ok_or_else(|| ApiError::bad_request("ADVANCED_CONNECTION_INVALID", "Connection URL must include or imply a database port for SSH tunnel."))?;
+    let ssh_user = request
+        .ssh_user
+        .as_deref()
+        .map(str::trim)
+        .filter(|value| !value.is_empty())
+        .ok_or_else(|| {
+            ApiError::bad_request(
+                "ADVANCED_SSH_PROFILE_INVALID",
+                "SSH user is required when an SSH host is configured.",
+            )
+        })?;
+    let mut parsed = Url::parse(url).map_err(|error| {
+        ApiError::bad_request(
+            "ADVANCED_CONNECTION_INVALID",
+            format!("Invalid connection URL for SSH tunnel: {error}"),
+        )
+    })?;
+    let remote_host = parsed
+        .host_str()
+        .ok_or_else(|| {
+            ApiError::bad_request(
+                "ADVANCED_CONNECTION_INVALID",
+                "Connection URL must include a database host for SSH tunnel.",
+            )
+        })?
+        .to_string();
+    let remote_port = parsed.port_or_known_default().ok_or_else(|| {
+        ApiError::bad_request(
+            "ADVANCED_CONNECTION_INVALID",
+            "Connection URL must include or imply a database port for SSH tunnel.",
+        )
+    })?;
     let local_port = free_local_port()?;
     let ssh_target = format!("{ssh_user}@{ssh_host}");
     let local_forward = format!("127.0.0.1:{local_port}:{remote_host}:{remote_port}");
     let mut child = Command::new("ssh")
         .arg("-N")
-        .arg("-L").arg(local_forward)
-        .arg("-p").arg(request.ssh_port.unwrap_or(22).to_string())
-        .arg("-o").arg("ExitOnForwardFailure=yes")
-        .arg("-o").arg("ServerAliveInterval=30")
+        .arg("-L")
+        .arg(local_forward)
+        .arg("-p")
+        .arg(request.ssh_port.unwrap_or(22).to_string())
+        .arg("-o")
+        .arg("ExitOnForwardFailure=yes")
+        .arg("-o")
+        .arg("ServerAliveInterval=30")
         .arg(ssh_target)
         .spawn()
         .map_err(|error| ApiError::database(format!("Could not start SSH tunnel: {error}")))?;
     tokio::time::sleep(Duration::from_millis(700)).await;
-    if let Some(status) = child.try_wait().map_err(|error| ApiError::database(format!("Could not inspect SSH tunnel: {error}")))? {
-        return Err(ApiError::database(format!("SSH tunnel exited before connection was opened: {status}")));
+    if let Some(status) = child
+        .try_wait()
+        .map_err(|error| ApiError::database(format!("Could not inspect SSH tunnel: {error}")))?
+    {
+        return Err(ApiError::database(format!(
+            "SSH tunnel exited before connection was opened: {status}"
+        )));
     }
-    parsed.set_host(Some("127.0.0.1")).map_err(|_| ApiError::bad_request("ADVANCED_CONNECTION_INVALID", "Could not rewrite connection URL for SSH tunnel."))?;
-    parsed.set_port(Some(local_port)).map_err(|_| ApiError::bad_request("ADVANCED_CONNECTION_INVALID", "Could not rewrite connection port for SSH tunnel."))?;
+    parsed.set_host(Some("127.0.0.1")).map_err(|_| {
+        ApiError::bad_request(
+            "ADVANCED_CONNECTION_INVALID",
+            "Could not rewrite connection URL for SSH tunnel.",
+        )
+    })?;
+    parsed.set_port(Some(local_port)).map_err(|_| {
+        ApiError::bad_request(
+            "ADVANCED_CONNECTION_INVALID",
+            "Could not rewrite connection port for SSH tunnel.",
+        )
+    })?;
     Ok((parsed.to_string(), Some(Arc::new(Mutex::new(child)))))
 }
 
@@ -643,12 +746,25 @@ pub(crate) async fn create_connection(
     Json(request): Json<CreateConnectionRequest>,
 ) -> Result<impl IntoResponse, ApiError> {
     let name = request.name.trim();
-    let connection_url_owned = match request.connection_url.as_deref().map(str::trim).filter(|value| !value.is_empty()) {
+    let connection_url_owned = match request
+        .connection_url
+        .as_deref()
+        .map(str::trim)
+        .filter(|value| !value.is_empty())
+    {
         Some(value) => value.to_string(),
-        None => crate::advanced_workspace::resolve_profile_secret(
-            &state.context.sqlite_pool,
-            request.profile_id.as_deref().ok_or_else(|| ApiError::bad_request("ADVANCED_CONNECTION_INVALID", "Connection URL or profileId is required."))?,
-        ).await?,
+        None => {
+            crate::advanced_workspace::resolve_profile_secret(
+                &state.context.sqlite_pool,
+                request.profile_id.as_deref().ok_or_else(|| {
+                    ApiError::bad_request(
+                        "ADVANCED_CONNECTION_INVALID",
+                        "Connection URL or profileId is required.",
+                    )
+                })?,
+            )
+            .await?
+        }
     };
     let raw_connection_url = connection_url_owned.trim();
     if name.is_empty() || raw_connection_url.is_empty() {
@@ -657,49 +773,149 @@ pub(crate) async fn create_connection(
             "Connection name and PostgreSQL URL are required.",
         ));
     }
-    let requested_provider = request.provider.as_deref().unwrap_or_default().to_ascii_lowercase();
+    let requested_provider = request
+        .provider
+        .as_deref()
+        .unwrap_or_default()
+        .to_ascii_lowercase();
     let tls_mode = request.tls_mode.as_deref().unwrap_or("driver-default");
     if !["driver-default", "require", "verify-full"].contains(&tls_mode) {
-        return Err(ApiError::bad_request("ADVANCED_TLS_MODE_INVALID", "TLS mode must be driver-default, require, or verify-full."));
+        return Err(ApiError::bad_request(
+            "ADVANCED_TLS_MODE_INVALID",
+            "TLS mode must be driver-default, require, or verify-full.",
+        ));
     }
     let safe_mode = request.safe_mode.as_deref().unwrap_or("confirm_writes");
     if !["off", "confirm_writes", "read_only"].contains(&safe_mode) {
-        return Err(ApiError::bad_request("ADVANCED_SAFE_MODE_INVALID", "Safe mode must be off, confirm_writes, or read_only."));
+        return Err(ApiError::bad_request(
+            "ADVANCED_SAFE_MODE_INVALID",
+            "Safe mode must be off, confirm_writes, or read_only.",
+        ));
     }
-    let tls_url = crate::advanced_workspace::apply_tls_policy(raw_connection_url, &requested_provider, tls_mode);
+    let tls_url = crate::advanced_workspace::apply_tls_policy(
+        raw_connection_url,
+        &requested_provider,
+        tls_mode,
+    );
     let (connection_url, ssh_tunnel) = maybe_open_ssh_tunnel(&tls_url, &request).await?;
     let connection_url = connection_url.as_str();
-    let (provider, database, backend) = if connection_url.starts_with("postgres://") || connection_url.starts_with("postgresql://") {
-        let pool = PgPoolOptions::new().max_connections(4).acquire_timeout(Duration::from_secs(10)).connect(connection_url).await
-            .map_err(|error| ApiError::database(format!("Could not connect to PostgreSQL: {error}")))?;
-        let database = sqlx::query_scalar("SELECT current_database()").fetch_one(&pool).await
-            .map_err(|error| ApiError::database(format!("Could not identify PostgreSQL database: {error}")))?;
-        ("postgresql".to_string(), database, ConnectionBackend::Postgres(pool))
+    let (provider, database, backend) = if connection_url.starts_with("postgres://")
+        || connection_url.starts_with("postgresql://")
+    {
+        let pool = PgPoolOptions::new()
+            .max_connections(4)
+            .acquire_timeout(Duration::from_secs(10))
+            .connect(connection_url)
+            .await
+            .map_err(|error| {
+                ApiError::database(format!("Could not connect to PostgreSQL: {error}"))
+            })?;
+        let database = sqlx::query_scalar("SELECT current_database()")
+            .fetch_one(&pool)
+            .await
+            .map_err(|error| {
+                ApiError::database(format!("Could not identify PostgreSQL database: {error}"))
+            })?;
+        (
+            "postgresql".to_string(),
+            database,
+            ConnectionBackend::Postgres(pool),
+        )
     } else if connection_url.starts_with("mysql://") {
-        let pool = MySqlPoolOptions::new().max_connections(4).acquire_timeout(Duration::from_secs(10)).connect(connection_url).await
-            .map_err(|error| ApiError::database(format!("Could not connect to MySQL/MariaDB: {error}")))?;
-        let database: String = sqlx::query_scalar("SELECT DATABASE()").fetch_one(&pool).await
-            .map_err(|error| ApiError::database(format!("Could not identify MySQL/MariaDB database: {error}")))?;
-        let provider = if requested_provider == "mariadb" { "mariadb" } else { "mysql" };
-        (provider.to_string(), database, ConnectionBackend::MySql(pool))
+        let pool = MySqlPoolOptions::new()
+            .max_connections(4)
+            .acquire_timeout(Duration::from_secs(10))
+            .connect(connection_url)
+            .await
+            .map_err(|error| {
+                ApiError::database(format!("Could not connect to MySQL/MariaDB: {error}"))
+            })?;
+        let database: String = sqlx::query_scalar("SELECT DATABASE()")
+            .fetch_one(&pool)
+            .await
+            .map_err(|error| {
+                ApiError::database(format!(
+                    "Could not identify MySQL/MariaDB database: {error}"
+                ))
+            })?;
+        let provider = if requested_provider == "mariadb" {
+            "mariadb"
+        } else {
+            "mysql"
+        };
+        (
+            provider.to_string(),
+            database,
+            ConnectionBackend::MySql(pool),
+        )
     } else if connection_url.starts_with("sqlite:") || requested_provider == "sqlite" {
-        let normalized = if connection_url.starts_with("sqlite:") { connection_url.to_string() } else { format!("sqlite://{connection_url}") };
-        let options: SqliteConnectOptions = normalized.parse().map_err(|error| ApiError::bad_request("ADVANCED_CONNECTION_INVALID", format!("Invalid SQLite URL: {error}")))?;
-        let pool = SqlitePoolOptions::new().max_connections(1).acquire_timeout(Duration::from_secs(10)).connect_with(options).await
+        let normalized = if connection_url.starts_with("sqlite:") {
+            connection_url.to_string()
+        } else {
+            format!("sqlite://{connection_url}")
+        };
+        let options: SqliteConnectOptions = normalized.parse().map_err(|error| {
+            ApiError::bad_request(
+                "ADVANCED_CONNECTION_INVALID",
+                format!("Invalid SQLite URL: {error}"),
+            )
+        })?;
+        let pool = SqlitePoolOptions::new()
+            .max_connections(1)
+            .acquire_timeout(Duration::from_secs(10))
+            .connect_with(options)
+            .await
             .map_err(|error| ApiError::database(format!("Could not connect to SQLite: {error}")))?;
-        let database = request.database_name.clone().filter(|value| !value.trim().is_empty()).unwrap_or_else(|| "main".to_string());
-        ("sqlite".to_string(), database, ConnectionBackend::Sqlite(pool))
-    } else if connection_url.starts_with("mongodb://") || connection_url.starts_with("mongodb+srv://") {
-        let client = MongoClient::with_uri_str(connection_url).await
-            .map_err(|error| ApiError::database(format!("Could not connect to MongoDB: {error}")))?;
-        let database = request.database_name.clone().filter(|value| !value.trim().is_empty())
-            .or_else(|| client.default_database().map(|database| database.name().to_string()))
-            .ok_or_else(|| ApiError::bad_request("ADVANCED_MONGO_DATABASE_REQUIRED", "MongoDB requires a database name in the URL or form."))?;
-        client.database(&database).run_command(mongodb::bson::doc! { "ping": 1 }).await
-            .map_err(|error| ApiError::database(format!("Could not ping MongoDB database: {error}")))?;
-        ("mongodb".to_string(), database, ConnectionBackend::Mongo(client))
+        let database = request
+            .database_name
+            .clone()
+            .filter(|value| !value.trim().is_empty())
+            .unwrap_or_else(|| "main".to_string());
+        (
+            "sqlite".to_string(),
+            database,
+            ConnectionBackend::Sqlite(pool),
+        )
+    } else if connection_url.starts_with("mongodb://")
+        || connection_url.starts_with("mongodb+srv://")
+    {
+        let client = MongoClient::with_uri_str(connection_url)
+            .await
+            .map_err(|error| {
+                ApiError::database(format!("Could not connect to MongoDB: {error}"))
+            })?;
+        let database = request
+            .database_name
+            .clone()
+            .filter(|value| !value.trim().is_empty())
+            .or_else(|| {
+                client
+                    .default_database()
+                    .map(|database| database.name().to_string())
+            })
+            .ok_or_else(|| {
+                ApiError::bad_request(
+                    "ADVANCED_MONGO_DATABASE_REQUIRED",
+                    "MongoDB requires a database name in the URL or form.",
+                )
+            })?;
+        client
+            .database(&database)
+            .run_command(mongodb::bson::doc! { "ping": 1 })
+            .await
+            .map_err(|error| {
+                ApiError::database(format!("Could not ping MongoDB database: {error}"))
+            })?;
+        (
+            "mongodb".to_string(),
+            database,
+            ConnectionBackend::Mongo(client),
+        )
     } else {
-        return Err(ApiError::bad_request("ADVANCED_CONNECTION_PROVIDER_UNSUPPORTED", "Use a PostgreSQL, MySQL/MariaDB, SQLite, or MongoDB URL."));
+        return Err(ApiError::bad_request(
+            "ADVANCED_CONNECTION_PROVIDER_UNSUPPORTED",
+            "Use a PostgreSQL, MySQL/MariaDB, SQLite, or MongoDB URL.",
+        ));
     };
 
     let id = Uuid::new_v4().to_string();
@@ -838,7 +1054,9 @@ pub(crate) async fn get_schema(
         ConnectionBackend::Postgres(pool) => discover_postgres_schema(pool).await?,
         ConnectionBackend::MySql(pool) => discover_mysql_schema(pool, &session.database).await?,
         ConnectionBackend::Sqlite(pool) => discover_sqlite_schema(pool).await?,
-        ConnectionBackend::Mongo(client) => discover_mongo_schema(client, &session.database).await?,
+        ConnectionBackend::Mongo(client) => {
+            discover_mongo_schema(client, &session.database).await?
+        }
     };
     state.advanced.schema_cache.write().await.insert(
         connection_id,
@@ -984,7 +1202,10 @@ async fn discover_postgres_schema(pool: &PgPool) -> Result<Vec<SchemaNode>, ApiE
     ).fetch_all(pool).await.map_err(|error| ApiError::database(format!("Could not load PostgreSQL routines: {error}")))?;
     for row in routine_rows {
         let schema_name: String = row.get("routine_schema");
-        if let Some(schema) = schemas.iter_mut().find(|candidate| candidate.name == schema_name) {
+        if let Some(schema) = schemas
+            .iter_mut()
+            .find(|candidate| candidate.name == schema_name)
+        {
             schema.routines.push(RoutineNode {
                 name: row.get("routine_name"),
                 kind: row.get::<String, _>("routine_type").to_ascii_lowercase(),
@@ -996,7 +1217,10 @@ async fn discover_postgres_schema(pool: &PgPool) -> Result<Vec<SchemaNode>, ApiE
     Ok(schemas)
 }
 
-async fn discover_mysql_schema(pool: &MySqlPool, database: &str) -> Result<Vec<SchemaNode>, ApiError> {
+async fn discover_mysql_schema(
+    pool: &MySqlPool,
+    database: &str,
+) -> Result<Vec<SchemaNode>, ApiError> {
     let rows = sqlx::query(
         r#"SELECT c.TABLE_NAME AS table_name, t.TABLE_TYPE AS table_type, c.COLUMN_NAME AS column_name,
                   c.COLUMN_TYPE AS native_type, c.IS_NULLABLE AS is_nullable, c.COLUMN_KEY = 'PRI' AS primary_key,
@@ -1010,41 +1234,68 @@ async fn discover_mysql_schema(pool: &MySqlPool, database: &str) -> Result<Vec<S
     let mut tables = Vec::<TableNode>::new();
     for row in rows {
         let table_name: String = row.get("table_name");
-        let index = tables.iter().position(|table| table.name == table_name).unwrap_or_else(|| {
-            tables.push(TableNode {
-                name: table_name.clone(),
-                kind: row.get::<String, _>("table_type").to_ascii_lowercase().replace(' ', "_"),
-                estimated_rows: row.try_get::<u64, _>("estimated_rows").ok().and_then(|value| i64::try_from(value).ok()),
-                table_size_bytes: row.try_get::<u64, _>("table_size_bytes").ok().and_then(|value| i64::try_from(value).ok()),
-                comment: row.try_get("table_comment").ok(),
-                ddl: None,
-                writable: row.get::<String, _>("table_type").eq_ignore_ascii_case("BASE TABLE"),
-                columns: Vec::new(),
-                indexes: Vec::new(),
-                foreign_keys: Vec::new(),
+        let index = tables
+            .iter()
+            .position(|table| table.name == table_name)
+            .unwrap_or_else(|| {
+                tables.push(TableNode {
+                    name: table_name.clone(),
+                    kind: row
+                        .get::<String, _>("table_type")
+                        .to_ascii_lowercase()
+                        .replace(' ', "_"),
+                    estimated_rows: row
+                        .try_get::<u64, _>("estimated_rows")
+                        .ok()
+                        .and_then(|value| i64::try_from(value).ok()),
+                    table_size_bytes: row
+                        .try_get::<u64, _>("table_size_bytes")
+                        .ok()
+                        .and_then(|value| i64::try_from(value).ok()),
+                    comment: row.try_get("table_comment").ok(),
+                    ddl: None,
+                    writable: row
+                        .get::<String, _>("table_type")
+                        .eq_ignore_ascii_case("BASE TABLE"),
+                    columns: Vec::new(),
+                    indexes: Vec::new(),
+                    foreign_keys: Vec::new(),
+                });
+                tables.len() - 1
             });
-            tables.len() - 1
-        });
         tables[index].columns.push(ColumnNode {
-            name: row.get("column_name"), native_type: row.get("native_type"),
+            name: row.get("column_name"),
+            native_type: row.get("native_type"),
             nullable: row.get::<String, _>("is_nullable") == "YES",
             primary_key: row.get::<i64, _>("primary_key") != 0,
             default_value: row.try_get("column_default").ok(),
             comment: row.try_get("column_comment").ok(),
         });
     }
-    let mut schema = SchemaNode { name: database.to_string(), tables, routines: Vec::new() };
+    let mut schema = SchemaNode {
+        name: database.to_string(),
+        tables,
+        routines: Vec::new(),
+    };
     let index_rows = sqlx::query(
         "SELECT TABLE_NAME, INDEX_NAME, NON_UNIQUE, GROUP_CONCAT(COLUMN_NAME ORDER BY SEQ_IN_INDEX) AS columns_list FROM information_schema.STATISTICS WHERE TABLE_SCHEMA = ? GROUP BY TABLE_NAME, INDEX_NAME, NON_UNIQUE",
     ).bind(database).fetch_all(pool).await
         .map_err(|error| ApiError::database(format!("Could not load MySQL/MariaDB indexes: {error}")))?;
     for row in index_rows {
         let table_name: String = row.get("TABLE_NAME");
-        if let Some(table) = schema.tables.iter_mut().find(|candidate| candidate.name == table_name) {
+        if let Some(table) = schema
+            .tables
+            .iter_mut()
+            .find(|candidate| candidate.name == table_name)
+        {
             let columns_list: Option<String> = row.try_get("columns_list").ok();
             table.indexes.push(IndexNode {
                 name: row.get("INDEX_NAME"),
-                columns: columns_list.unwrap_or_default().split(',').map(str::to_string).collect(),
+                columns: columns_list
+                    .unwrap_or_default()
+                    .split(',')
+                    .map(str::to_string)
+                    .collect(),
                 unique: row.get::<i64, _>("NON_UNIQUE") == 0,
                 definition: None,
             });
@@ -1056,7 +1307,11 @@ async fn discover_mysql_schema(pool: &MySqlPool, database: &str) -> Result<Vec<S
         .map_err(|error| ApiError::database(format!("Could not load MySQL/MariaDB foreign keys: {error}")))?;
     for row in fk_rows {
         let table_name: String = row.get("TABLE_NAME");
-        if let Some(table) = schema.tables.iter_mut().find(|candidate| candidate.name == table_name) {
+        if let Some(table) = schema
+            .tables
+            .iter_mut()
+            .find(|candidate| candidate.name == table_name)
+        {
             table.foreign_keys.push(ForeignKeyNode {
                 name: row.get("CONSTRAINT_NAME"),
                 columns: vec![row.get("COLUMN_NAME")],
@@ -1087,29 +1342,62 @@ async fn discover_sqlite_schema(pool: &SqlitePool) -> Result<Vec<SchemaNode>, Ap
     for entity in entities {
         let name: String = entity.get("name");
         let kind: String = entity.get("type");
-        let columns = sqlx::query(&format!("PRAGMA table_info({})", quote_sql_identifier(&name)))
-            .fetch_all(pool).await.map_err(|error| ApiError::database(format!("Could not load SQLite columns: {error}")))?
-            .into_iter().map(|row| ColumnNode {
-                name: row.get("name"), native_type: row.get::<String, _>("type"),
-                nullable: row.get::<i64, _>("notnull") == 0,
-                primary_key: row.get::<i64, _>("pk") > 0,
-                default_value: row.try_get("dflt_value").ok(),
-                comment: None,
-            }).collect();
+        let columns = sqlx::query(&format!(
+            "PRAGMA table_info({})",
+            quote_sql_identifier(&name)
+        ))
+        .fetch_all(pool)
+        .await
+        .map_err(|error| ApiError::database(format!("Could not load SQLite columns: {error}")))?
+        .into_iter()
+        .map(|row| ColumnNode {
+            name: row.get("name"),
+            native_type: row.get::<String, _>("type"),
+            nullable: row.get::<i64, _>("notnull") == 0,
+            primary_key: row.get::<i64, _>("pk") > 0,
+            default_value: row.try_get("dflt_value").ok(),
+            comment: None,
+        })
+        .collect();
         let ddl = sqlx::query_scalar::<_, String>("SELECT sql FROM sqlite_master WHERE name = ?")
-            .bind(&name).fetch_optional(pool).await.ok().flatten();
+            .bind(&name)
+            .fetch_optional(pool)
+            .await
+            .ok()
+            .flatten();
         let mut table = TableNode {
-            name, kind: if kind == "table" { "base_table".into() } else { "view".into() },
-            estimated_rows: None, table_size_bytes: None, comment: None, ddl,
-            writable: kind == "table", columns, indexes: Vec::new(), foreign_keys: Vec::new(),
+            name,
+            kind: if kind == "table" {
+                "base_table".into()
+            } else {
+                "view".into()
+            },
+            estimated_rows: None,
+            table_size_bytes: None,
+            comment: None,
+            ddl,
+            writable: kind == "table",
+            columns,
+            indexes: Vec::new(),
+            foreign_keys: Vec::new(),
         };
-        let index_rows = sqlx::query(&format!("PRAGMA index_list({})", quote_sql_identifier(&table.name)))
-            .fetch_all(pool).await.unwrap_or_default();
+        let index_rows = sqlx::query(&format!(
+            "PRAGMA index_list({})",
+            quote_sql_identifier(&table.name)
+        ))
+        .fetch_all(pool)
+        .await
+        .unwrap_or_default();
         for index_row in index_rows {
             let index_name: String = index_row.get("name");
             let unique = index_row.get::<i64, _>("unique") != 0;
-            let column_rows = sqlx::query(&format!("PRAGMA index_info({})", quote_sql_identifier(&index_name)))
-                .fetch_all(pool).await.unwrap_or_default();
+            let column_rows = sqlx::query(&format!(
+                "PRAGMA index_info({})",
+                quote_sql_identifier(&index_name)
+            ))
+            .fetch_all(pool)
+            .await
+            .unwrap_or_default();
             table.indexes.push(IndexNode {
                 name: index_name,
                 columns: column_rows.into_iter().map(|row| row.get("name")).collect(),
@@ -1117,8 +1405,13 @@ async fn discover_sqlite_schema(pool: &SqlitePool) -> Result<Vec<SchemaNode>, Ap
                 definition: None,
             });
         }
-        let fk_rows = sqlx::query(&format!("PRAGMA foreign_key_list({})", quote_sql_identifier(&table.name)))
-            .fetch_all(pool).await.unwrap_or_default();
+        let fk_rows = sqlx::query(&format!(
+            "PRAGMA foreign_key_list({})",
+            quote_sql_identifier(&table.name)
+        ))
+        .fetch_all(pool)
+        .await
+        .unwrap_or_default();
         for fk_row in fk_rows {
             table.foreign_keys.push(ForeignKeyNode {
                 name: format!("fk_{}_{}", table.name, fk_row.get::<i64, _>("id")),
@@ -1130,35 +1423,77 @@ async fn discover_sqlite_schema(pool: &SqlitePool) -> Result<Vec<SchemaNode>, Ap
         }
         tables.push(table);
     }
-    Ok(vec![SchemaNode { name: "main".to_string(), tables, routines: Vec::new() }])
+    Ok(vec![SchemaNode {
+        name: "main".to_string(),
+        tables,
+        routines: Vec::new(),
+    }])
 }
 
-async fn discover_mongo_schema(client: &MongoClient, database: &str) -> Result<Vec<SchemaNode>, ApiError> {
+async fn discover_mongo_schema(
+    client: &MongoClient,
+    database: &str,
+) -> Result<Vec<SchemaNode>, ApiError> {
     let db = client.database(database);
-    let names = db.list_collection_names().await
-        .map_err(|error| ApiError::database(format!("Could not list MongoDB collections: {error}")))?;
+    let names = db.list_collection_names().await.map_err(|error| {
+        ApiError::database(format!("Could not list MongoDB collections: {error}"))
+    })?;
     let mut tables = Vec::new();
     for name in names {
-        let sample = db.collection::<Document>(&name).find_one(Document::new()).await
-            .map_err(|error| ApiError::database(format!("Could not sample MongoDB collection {name}: {error}")))?;
-        let columns = sample.unwrap_or_default().iter().map(|(key, value)| ColumnNode {
-            name: key.clone(), native_type: bson_type(value).to_string(), nullable: true, primary_key: key == "_id",
-            default_value: None, comment: None,
-        }).collect();
+        let sample = db
+            .collection::<Document>(&name)
+            .find_one(Document::new())
+            .await
+            .map_err(|error| {
+                ApiError::database(format!(
+                    "Could not sample MongoDB collection {name}: {error}"
+                ))
+            })?;
+        let columns = sample
+            .unwrap_or_default()
+            .iter()
+            .map(|(key, value)| ColumnNode {
+                name: key.clone(),
+                native_type: bson_type(value).to_string(),
+                nullable: true,
+                primary_key: key == "_id",
+                default_value: None,
+                comment: None,
+            })
+            .collect();
         tables.push(TableNode {
-            name, kind: "collection".to_string(), estimated_rows: None, table_size_bytes: None, comment: None, ddl: None,
-            writable: false, columns, indexes: Vec::new(), foreign_keys: Vec::new(),
+            name,
+            kind: "collection".to_string(),
+            estimated_rows: None,
+            table_size_bytes: None,
+            comment: None,
+            ddl: None,
+            writable: false,
+            columns,
+            indexes: Vec::new(),
+            foreign_keys: Vec::new(),
         });
     }
-    Ok(vec![SchemaNode { name: database.to_string(), tables, routines: Vec::new() }])
+    Ok(vec![SchemaNode {
+        name: database.to_string(),
+        tables,
+        routines: Vec::new(),
+    }])
 }
 
 fn bson_type(value: &Bson) -> &'static str {
     match value {
-        Bson::Double(_) => "double", Bson::String(_) => "string", Bson::Array(_) => "array",
-        Bson::Document(_) => "document", Bson::Boolean(_) => "boolean", Bson::DateTime(_) => "date",
-        Bson::Null => "null", Bson::Int32(_) => "int32", Bson::Int64(_) => "int64",
-        Bson::ObjectId(_) => "objectId", _ => "bson",
+        Bson::Double(_) => "double",
+        Bson::String(_) => "string",
+        Bson::Array(_) => "array",
+        Bson::Document(_) => "document",
+        Bson::Boolean(_) => "boolean",
+        Bson::DateTime(_) => "date",
+        Bson::Null => "null",
+        Bson::Int32(_) => "int32",
+        Bson::Int64(_) => "int64",
+        Bson::ObjectId(_) => "objectId",
+        _ => "bson",
     }
 }
 
@@ -1166,47 +1501,87 @@ fn quote_sql_identifier(value: &str) -> String {
     format!("\"{}\"", value.replace('"', "\"\""))
 }
 
-fn validate_mutation_request(table: &TableNode, request: &MutationRequest) -> Result<Vec<String>, ApiError> {
+fn validate_mutation_request(
+    table: &TableNode,
+    request: &MutationRequest,
+) -> Result<Vec<String>, ApiError> {
     if !table.writable || table.kind != "base_table" {
-        return Err(ApiError::bad_request("ADVANCED_MUTATION_TABLE_READ_ONLY", "Only writable base tables can be updated."));
+        return Err(ApiError::bad_request(
+            "ADVANCED_MUTATION_TABLE_READ_ONLY",
+            "Only writable base tables can be updated.",
+        ));
     }
     if request.rows.is_empty() || request.rows.len() > 100 {
-        return Err(ApiError::bad_request("ADVANCED_MUTATION_ROW_LIMIT", "A mutation must contain between 1 and 100 rows."));
+        return Err(ApiError::bad_request(
+            "ADVANCED_MUTATION_ROW_LIMIT",
+            "A mutation must contain between 1 and 100 rows.",
+        ));
     }
-    let primary_keys = table.columns.iter().filter(|column| column.primary_key).map(|column| column.name.clone()).collect::<Vec<_>>();
+    let primary_keys = table
+        .columns
+        .iter()
+        .filter(|column| column.primary_key)
+        .map(|column| column.name.clone())
+        .collect::<Vec<_>>();
     if primary_keys.is_empty() {
-        return Err(ApiError::bad_request("ADVANCED_MUTATION_KEY_REQUIRED", "The table has no primary key and cannot be updated safely."));
+        return Err(ApiError::bad_request(
+            "ADVANCED_MUTATION_KEY_REQUIRED",
+            "The table has no primary key and cannot be updated safely.",
+        ));
     }
     for row in &request.rows {
         match row.action {
             MutationAction::Insert => {
                 if row.changes.is_empty() || row.changes.len() > 100 {
-                    return Err(ApiError::bad_request("ADVANCED_MUTATION_CHANGE_LIMIT", "Inserted rows must contain between 1 and 100 columns."));
+                    return Err(ApiError::bad_request(
+                        "ADVANCED_MUTATION_CHANGE_LIMIT",
+                        "Inserted rows must contain between 1 and 100 columns.",
+                    ));
                 }
             }
             MutationAction::Update => {
                 if row.changes.is_empty() || row.changes.len() > 50 {
-                    return Err(ApiError::bad_request("ADVANCED_MUTATION_CHANGE_LIMIT", "Each row must change between 1 and 50 columns."));
+                    return Err(ApiError::bad_request(
+                        "ADVANCED_MUTATION_CHANGE_LIMIT",
+                        "Each row must change between 1 and 50 columns.",
+                    ));
                 }
-                if row.key.len() != primary_keys.len() || primary_keys.iter().any(|key| !row.key.contains_key(key)) {
+                if row.key.len() != primary_keys.len()
+                    || primary_keys.iter().any(|key| !row.key.contains_key(key))
+                {
                     return Err(ApiError::bad_request("ADVANCED_MUTATION_KEY_INCOMPLETE", "Every primary-key column is required and extra key columns are not allowed."));
                 }
             }
             MutationAction::Delete => {
-                if row.key.len() != primary_keys.len() || primary_keys.iter().any(|key| !row.key.contains_key(key)) {
+                if row.key.len() != primary_keys.len()
+                    || primary_keys.iter().any(|key| !row.key.contains_key(key))
+                {
                     return Err(ApiError::bad_request("ADVANCED_MUTATION_KEY_INCOMPLETE", "Every primary-key column is required and extra key columns are not allowed."));
                 }
             }
         }
         for column in row.changes.keys() {
             if row.action == MutationAction::Update && primary_keys.contains(column) {
-                return Err(ApiError::bad_request("ADVANCED_MUTATION_PRIMARY_KEY", "Primary-key columns cannot be edited in this phase."));
+                return Err(ApiError::bad_request(
+                    "ADVANCED_MUTATION_PRIMARY_KEY",
+                    "Primary-key columns cannot be edited in this phase.",
+                ));
             }
-            if !table.columns.iter().any(|candidate| &candidate.name == column) {
-                return Err(ApiError::bad_request("ADVANCED_MUTATION_COLUMN_INVALID", "A changed column is not present in the table."));
+            if !table
+                .columns
+                .iter()
+                .any(|candidate| &candidate.name == column)
+            {
+                return Err(ApiError::bad_request(
+                    "ADVANCED_MUTATION_COLUMN_INVALID",
+                    "A changed column is not present in the table.",
+                ));
             }
             if row.action == MutationAction::Update && !row.expected.contains_key(column) {
-                return Err(ApiError::bad_request("ADVANCED_MUTATION_EXPECTED_REQUIRED", "Every changed column requires its expected original value."));
+                return Err(ApiError::bad_request(
+                    "ADVANCED_MUTATION_EXPECTED_REQUIRED",
+                    "Every changed column requires its expected original value.",
+                ));
             }
         }
     }
@@ -1258,62 +1633,110 @@ fn postgres_cast_type(column: &ColumnNode) -> Result<&'static str, ApiError> {
 }
 
 fn mutation_column<'a>(table: &'a TableNode, name: &str) -> Result<&'a ColumnNode, ApiError> {
-    table.columns.iter().find(|column| column.name == name).ok_or_else(|| {
-        ApiError::bad_request("ADVANCED_MUTATION_COLUMN_INVALID", "A mutation column is not present in the table.")
-    })
+    table
+        .columns
+        .iter()
+        .find(|column| column.name == name)
+        .ok_or_else(|| {
+            ApiError::bad_request(
+                "ADVANCED_MUTATION_COLUMN_INVALID",
+                "A mutation column is not present in the table.",
+            )
+        })
 }
 
 fn sqlite_push_value(builder: &mut QueryBuilder<Sqlite>, value: &Value) {
     match value {
-        Value::Null => { builder.push("NULL"); }
-        Value::Bool(value) => { builder.push_bind(*value); }
-        Value::Number(value) if value.is_i64() => { builder.push_bind(value.as_i64().unwrap_or_default()); }
-        Value::Number(value) if value.is_u64() => { builder.push_bind(value.as_u64().unwrap_or_default() as i64); }
-        Value::Number(value) => { builder.push_bind(value.as_f64().unwrap_or_default()); }
-        Value::String(value) => { builder.push_bind(value.clone()); }
-        other => { builder.push_bind(other.to_string()); }
+        Value::Null => {
+            builder.push("NULL");
+        }
+        Value::Bool(value) => {
+            builder.push_bind(*value);
+        }
+        Value::Number(value) if value.is_i64() => {
+            builder.push_bind(value.as_i64().unwrap_or_default());
+        }
+        Value::Number(value) if value.is_u64() => {
+            builder.push_bind(value.as_u64().unwrap_or_default() as i64);
+        }
+        Value::Number(value) => {
+            builder.push_bind(value.as_f64().unwrap_or_default());
+        }
+        Value::String(value) => {
+            builder.push_bind(value.clone());
+        }
+        other => {
+            builder.push_bind(other.to_string());
+        }
     };
 }
 
 fn sqlite_push_condition(builder: &mut QueryBuilder<Sqlite>, column: &str, value: &Value) {
     builder.push(quote_sql_identifier(column));
-    if value.is_null() { builder.push(" IS NULL"); } else { builder.push(" = "); sqlite_push_value(builder, value); }
+    if value.is_null() {
+        builder.push(" IS NULL");
+    } else {
+        builder.push(" = ");
+        sqlite_push_value(builder, value);
+    }
 }
 
-fn sqlite_mutation_builder<'a>(request: &'a MutationRequest, row: &'a RowMutationRequest) -> QueryBuilder<'a, Sqlite> {
+fn sqlite_mutation_builder<'a>(
+    request: &'a MutationRequest,
+    row: &'a RowMutationRequest,
+) -> QueryBuilder<'a, Sqlite> {
     if row.action == MutationAction::Insert {
         let columns = sorted_keys(&row.changes);
-        let mut builder = QueryBuilder::<Sqlite>::new(format!("INSERT INTO {} (", quote_sql_identifier(&request.table)));
+        let mut builder = QueryBuilder::<Sqlite>::new(format!(
+            "INSERT INTO {} (",
+            quote_sql_identifier(&request.table)
+        ));
         for (index, column) in columns.iter().enumerate() {
-            if index > 0 { builder.push(", "); }
+            if index > 0 {
+                builder.push(", ");
+            }
             builder.push(quote_sql_identifier(column));
         }
         builder.push(") VALUES (");
         for (index, column) in columns.iter().enumerate() {
-            if index > 0 { builder.push(", "); }
+            if index > 0 {
+                builder.push(", ");
+            }
             sqlite_push_value(&mut builder, &row.changes[column]);
         }
         builder.push(")");
         return builder;
     }
     if row.action == MutationAction::Delete {
-        let mut builder = QueryBuilder::<Sqlite>::new(format!("DELETE FROM {} WHERE ", quote_sql_identifier(&request.table)));
+        let mut builder = QueryBuilder::<Sqlite>::new(format!(
+            "DELETE FROM {} WHERE ",
+            quote_sql_identifier(&request.table)
+        ));
         for (index, column) in sorted_keys(&row.key).iter().enumerate() {
-            if index > 0 { builder.push(" AND "); }
+            if index > 0 {
+                builder.push(" AND ");
+            }
             sqlite_push_condition(&mut builder, column, &row.key[column]);
         }
         return builder;
     }
-    let mut builder = QueryBuilder::<Sqlite>::new(format!("UPDATE {} SET ", quote_sql_identifier(&request.table)));
+    let mut builder = QueryBuilder::<Sqlite>::new(format!(
+        "UPDATE {} SET ",
+        quote_sql_identifier(&request.table)
+    ));
     for (index, column) in sorted_keys(&row.changes).iter().enumerate() {
-        if index > 0 { builder.push(", "); }
+        if index > 0 {
+            builder.push(", ");
+        }
         builder.push(quote_sql_identifier(column)).push(" = ");
         sqlite_push_value(&mut builder, &row.changes[column]);
     }
     builder.push(" WHERE ");
     let mut condition_index = 0;
     for column in sorted_keys(&row.key) {
-        if condition_index > 0 { builder.push(" AND "); }
+        if condition_index > 0 {
+            builder.push(" AND ");
+        }
         sqlite_push_condition(&mut builder, &column, &row.key[&column]);
         condition_index += 1;
     }
@@ -1324,17 +1747,31 @@ fn sqlite_mutation_builder<'a>(request: &'a MutationRequest, row: &'a RowMutatio
     builder
 }
 
-fn postgres_push_value(builder: &mut QueryBuilder<Postgres>, column: &ColumnNode, value: &Value) -> Result<(), ApiError> {
+fn postgres_push_value(
+    builder: &mut QueryBuilder<Postgres>,
+    column: &ColumnNode,
+    value: &Value,
+) -> Result<(), ApiError> {
     if value.is_null() {
         builder.push("NULL");
     } else {
         let cast_type = postgres_cast_type(column)?;
-        builder.push("CAST(").push_bind(mutation_scalar(value)).push(" AS ").push(cast_type).push(")");
+        builder
+            .push("CAST(")
+            .push_bind(mutation_scalar(value))
+            .push(" AS ")
+            .push(cast_type)
+            .push(")");
     }
     Ok(())
 }
 
-fn postgres_push_condition(builder: &mut QueryBuilder<Postgres>, table: &TableNode, column: &str, value: &Value) -> Result<(), ApiError> {
+fn postgres_push_condition(
+    builder: &mut QueryBuilder<Postgres>,
+    table: &TableNode,
+    column: &str,
+    value: &Value,
+) -> Result<(), ApiError> {
     builder.push(quote_sql_identifier(column));
     if value.is_null() {
         builder.push(" IS NULL");
@@ -1345,45 +1782,73 @@ fn postgres_push_condition(builder: &mut QueryBuilder<Postgres>, table: &TableNo
     Ok(())
 }
 
-fn postgres_mutation_builder<'a>(request: &'a MutationRequest, row: &'a RowMutationRequest, table: &TableNode) -> Result<QueryBuilder<'a, Postgres>, ApiError> {
+fn postgres_mutation_builder<'a>(
+    request: &'a MutationRequest,
+    row: &'a RowMutationRequest,
+    table: &TableNode,
+) -> Result<QueryBuilder<'a, Postgres>, ApiError> {
     if row.action == MutationAction::Insert {
         let columns = sorted_keys(&row.changes);
         let mut builder = QueryBuilder::<Postgres>::new(format!(
-            "INSERT INTO {}.{} (", quote_sql_identifier(&request.schema), quote_sql_identifier(&request.table)
+            "INSERT INTO {}.{} (",
+            quote_sql_identifier(&request.schema),
+            quote_sql_identifier(&request.table)
         ));
         for (index, column) in columns.iter().enumerate() {
-            if index > 0 { builder.push(", "); }
+            if index > 0 {
+                builder.push(", ");
+            }
             builder.push(quote_sql_identifier(column));
         }
         builder.push(") VALUES (");
         for (index, column) in columns.iter().enumerate() {
-            if index > 0 { builder.push(", "); }
-            postgres_push_value(&mut builder, mutation_column(table, column)?, &row.changes[column])?;
+            if index > 0 {
+                builder.push(", ");
+            }
+            postgres_push_value(
+                &mut builder,
+                mutation_column(table, column)?,
+                &row.changes[column],
+            )?;
         }
         builder.push(")");
         return Ok(builder);
     }
     if row.action == MutationAction::Delete {
         let mut builder = QueryBuilder::<Postgres>::new(format!(
-            "DELETE FROM {}.{} WHERE ", quote_sql_identifier(&request.schema), quote_sql_identifier(&request.table)
+            "DELETE FROM {}.{} WHERE ",
+            quote_sql_identifier(&request.schema),
+            quote_sql_identifier(&request.table)
         ));
         for (index, column) in sorted_keys(&row.key).iter().enumerate() {
-            if index > 0 { builder.push(" AND "); }
+            if index > 0 {
+                builder.push(" AND ");
+            }
             postgres_push_condition(&mut builder, table, column, &row.key[column])?;
         }
         return Ok(builder);
     }
     let mut builder = QueryBuilder::<Postgres>::new(format!(
-        "UPDATE {}.{} SET ", quote_sql_identifier(&request.schema), quote_sql_identifier(&request.table)
+        "UPDATE {}.{} SET ",
+        quote_sql_identifier(&request.schema),
+        quote_sql_identifier(&request.table)
     ));
     for (index, column) in sorted_keys(&row.changes).iter().enumerate() {
-        if index > 0 { builder.push(", "); }
+        if index > 0 {
+            builder.push(", ");
+        }
         builder.push(quote_sql_identifier(column)).push(" = ");
-        postgres_push_value(&mut builder, mutation_column(table, column)?, &row.changes[column])?;
+        postgres_push_value(
+            &mut builder,
+            mutation_column(table, column)?,
+            &row.changes[column],
+        )?;
     }
     builder.push(" WHERE ");
     for (index, column) in sorted_keys(&row.key).iter().enumerate() {
-        if index > 0 { builder.push(" AND "); }
+        if index > 0 {
+            builder.push(" AND ");
+        }
         postgres_push_condition(&mut builder, table, column, &row.key[column])?;
     }
     for column in sorted_keys(&row.changes) {
@@ -1395,34 +1860,67 @@ fn postgres_mutation_builder<'a>(request: &'a MutationRequest, row: &'a RowMutat
 
 fn mysql_push_value(builder: &mut QueryBuilder<MySql>, value: &Value) {
     match value {
-        Value::Null => { builder.push("NULL"); }
-        Value::Bool(value) => { builder.push_bind(*value); }
-        Value::Number(value) if value.is_i64() => { builder.push_bind(value.as_i64().unwrap_or_default()); }
-        Value::Number(value) if value.is_u64() => { builder.push_bind(value.as_u64().and_then(|item| i64::try_from(item).ok()).unwrap_or(i64::MAX)); }
-        Value::Number(value) => { builder.push_bind(value.as_f64().unwrap_or_default()); }
-        Value::String(value) => { builder.push_bind(value.clone()); }
-        other => { builder.push_bind(other.to_string()); }
+        Value::Null => {
+            builder.push("NULL");
+        }
+        Value::Bool(value) => {
+            builder.push_bind(*value);
+        }
+        Value::Number(value) if value.is_i64() => {
+            builder.push_bind(value.as_i64().unwrap_or_default());
+        }
+        Value::Number(value) if value.is_u64() => {
+            builder.push_bind(
+                value
+                    .as_u64()
+                    .and_then(|item| i64::try_from(item).ok())
+                    .unwrap_or(i64::MAX),
+            );
+        }
+        Value::Number(value) => {
+            builder.push_bind(value.as_f64().unwrap_or_default());
+        }
+        Value::String(value) => {
+            builder.push_bind(value.clone());
+        }
+        other => {
+            builder.push_bind(other.to_string());
+        }
     };
 }
 
 fn mysql_push_condition(builder: &mut QueryBuilder<MySql>, column: &str, value: &Value) {
     builder.push(quote_mysql_identifier(column));
-    if value.is_null() { builder.push(" IS NULL"); } else { builder.push(" = "); mysql_push_value(builder, value); }
+    if value.is_null() {
+        builder.push(" IS NULL");
+    } else {
+        builder.push(" = ");
+        mysql_push_value(builder, value);
+    }
 }
 
-fn mysql_mutation_builder<'a>(request: &'a MutationRequest, row: &'a RowMutationRequest) -> QueryBuilder<'a, MySql> {
+fn mysql_mutation_builder<'a>(
+    request: &'a MutationRequest,
+    row: &'a RowMutationRequest,
+) -> QueryBuilder<'a, MySql> {
     if row.action == MutationAction::Insert {
         let columns = sorted_keys(&row.changes);
         let mut builder = QueryBuilder::<MySql>::new(format!(
-            "INSERT INTO {}.{} (", quote_mysql_identifier(&request.schema), quote_mysql_identifier(&request.table)
+            "INSERT INTO {}.{} (",
+            quote_mysql_identifier(&request.schema),
+            quote_mysql_identifier(&request.table)
         ));
         for (index, column) in columns.iter().enumerate() {
-            if index > 0 { builder.push(", "); }
+            if index > 0 {
+                builder.push(", ");
+            }
             builder.push(quote_mysql_identifier(column));
         }
         builder.push(") VALUES (");
         for (index, column) in columns.iter().enumerate() {
-            if index > 0 { builder.push(", "); }
+            if index > 0 {
+                builder.push(", ");
+            }
             mysql_push_value(&mut builder, &row.changes[column]);
         }
         builder.push(")");
@@ -1430,25 +1928,35 @@ fn mysql_mutation_builder<'a>(request: &'a MutationRequest, row: &'a RowMutation
     }
     if row.action == MutationAction::Delete {
         let mut builder = QueryBuilder::<MySql>::new(format!(
-            "DELETE FROM {}.{} WHERE ", quote_mysql_identifier(&request.schema), quote_mysql_identifier(&request.table)
+            "DELETE FROM {}.{} WHERE ",
+            quote_mysql_identifier(&request.schema),
+            quote_mysql_identifier(&request.table)
         ));
         for (index, column) in sorted_keys(&row.key).iter().enumerate() {
-            if index > 0 { builder.push(" AND "); }
+            if index > 0 {
+                builder.push(" AND ");
+            }
             mysql_push_condition(&mut builder, column, &row.key[column]);
         }
         return builder;
     }
     let mut builder = QueryBuilder::<MySql>::new(format!(
-        "UPDATE {}.{} SET ", quote_mysql_identifier(&request.schema), quote_mysql_identifier(&request.table)
+        "UPDATE {}.{} SET ",
+        quote_mysql_identifier(&request.schema),
+        quote_mysql_identifier(&request.table)
     ));
     for (index, column) in sorted_keys(&row.changes).iter().enumerate() {
-        if index > 0 { builder.push(", "); }
+        if index > 0 {
+            builder.push(", ");
+        }
         builder.push(quote_mysql_identifier(column)).push(" = ");
         mysql_push_value(&mut builder, &row.changes[column]);
     }
     builder.push(" WHERE ");
     for (index, column) in sorted_keys(&row.key).iter().enumerate() {
-        if index > 0 { builder.push(" AND "); }
+        if index > 0 {
+            builder.push(" AND ");
+        }
         mysql_push_condition(&mut builder, column, &row.key[column]);
     }
     for column in sorted_keys(&row.changes) {
@@ -1459,121 +1967,277 @@ fn mysql_mutation_builder<'a>(request: &'a MutationRequest, row: &'a RowMutation
 }
 
 pub(crate) async fn preview_mutation(
-    State(state): State<Arc<AppState>>, Path(connection_id): Path<String>, Json(request): Json<MutationRequest>,
+    State(state): State<Arc<AppState>>,
+    Path(connection_id): Path<String>,
+    Json(request): Json<MutationRequest>,
 ) -> Result<Json<MutationPreviewResponse>, ApiError> {
     let session = connection(&state, &connection_id).await?;
     let statements = match &session.backend {
         ConnectionBackend::Postgres(pool) => {
             let schemas = discover_postgres_schema(pool).await?;
-            let table = schemas.iter().find(|schema| schema.name == request.schema)
-                .and_then(|schema| schema.tables.iter().find(|table| table.name == request.table))
+            let table = schemas
+                .iter()
+                .find(|schema| schema.name == request.schema)
+                .and_then(|schema| {
+                    schema
+                        .tables
+                        .iter()
+                        .find(|table| table.name == request.table)
+                })
                 .ok_or_else(|| ApiError::not_found("Mutation table was not found."))?;
             validate_mutation_request(table, &request)?;
-            request.rows.iter().map(|row| postgres_mutation_builder(&request, row, table).map(|builder| format!("{};", builder.sql()))).collect::<Result<Vec<_>, _>>()?
+            request
+                .rows
+                .iter()
+                .map(|row| {
+                    postgres_mutation_builder(&request, row, table)
+                        .map(|builder| format!("{};", builder.sql()))
+                })
+                .collect::<Result<Vec<_>, _>>()?
         }
         ConnectionBackend::MySql(pool) => {
-            if request.schema != session.database { return Err(ApiError::bad_request("ADVANCED_MUTATION_SCHEMA_INVALID", "MySQL/MariaDB mutations must target the connected database.")); }
+            if request.schema != session.database {
+                return Err(ApiError::bad_request(
+                    "ADVANCED_MUTATION_SCHEMA_INVALID",
+                    "MySQL/MariaDB mutations must target the connected database.",
+                ));
+            }
             let schemas = discover_mysql_schema(pool, &session.database).await?;
-            let table = schemas[0].tables.iter().find(|table| table.name == request.table)
+            let table = schemas[0]
+                .tables
+                .iter()
+                .find(|table| table.name == request.table)
                 .ok_or_else(|| ApiError::not_found("Mutation table was not found."))?;
             validate_mutation_request(table, &request)?;
-            request.rows.iter().map(|row| format!("{};", mysql_mutation_builder(&request, row).sql())).collect()
+            request
+                .rows
+                .iter()
+                .map(|row| format!("{};", mysql_mutation_builder(&request, row).sql()))
+                .collect()
         }
         ConnectionBackend::Sqlite(pool) => {
-            if request.schema != "main" { return Err(ApiError::bad_request("ADVANCED_MUTATION_SCHEMA_INVALID", "SQLite mutations require the main schema.")); }
+            if request.schema != "main" {
+                return Err(ApiError::bad_request(
+                    "ADVANCED_MUTATION_SCHEMA_INVALID",
+                    "SQLite mutations require the main schema.",
+                ));
+            }
             let schemas = discover_sqlite_schema(pool).await?;
-            let table = schemas[0].tables.iter().find(|table| table.name == request.table)
+            let table = schemas[0]
+                .tables
+                .iter()
+                .find(|table| table.name == request.table)
                 .ok_or_else(|| ApiError::not_found("Mutation table was not found."))?;
             validate_mutation_request(table, &request)?;
-            request.rows.iter().map(|row| format!("{};", sqlite_mutation_builder(&request, row).sql())).collect()
+            request
+                .rows
+                .iter()
+                .map(|row| format!("{};", sqlite_mutation_builder(&request, row).sql()))
+                .collect()
         }
-        ConnectionBackend::Mongo(_) => return Err(ApiError::bad_request("ADVANCED_MUTATION_PROVIDER_UNSUPPORTED", "MongoDB source commit is not enabled.")),
+        ConnectionBackend::Mongo(_) => {
+            return Err(ApiError::bad_request(
+                "ADVANCED_MUTATION_PROVIDER_UNSUPPORTED",
+                "MongoDB source commit is not enabled.",
+            ))
+        }
     };
-    Ok(Json(MutationPreviewResponse { statements, row_count: request.rows.len(), can_commit: session.safe_mode != "read_only" }))
+    Ok(Json(MutationPreviewResponse {
+        statements,
+        row_count: request.rows.len(),
+        can_commit: session.safe_mode != "read_only",
+    }))
 }
 
 fn mutation_conflict() -> ApiError {
-    ApiError { status: StatusCode::CONFLICT, code: "ADVANCED_MUTATION_CONFLICT", message: "A row changed or disappeared after it was loaded; the entire mutation was rolled back.".to_string() }
+    ApiError {
+        status: StatusCode::CONFLICT,
+        code: "ADVANCED_MUTATION_CONFLICT",
+        message:
+            "A row changed or disappeared after it was loaded; the entire mutation was rolled back."
+                .to_string(),
+    }
 }
 
 fn ensure_write_allowed(session: &ConnectionSession) -> Result<(), ApiError> {
     if session.safe_mode == "read_only" {
-        return Err(ApiError::bad_request("ADVANCED_SAFE_MODE_READ_ONLY", "This connection profile is read-only; write transactions are blocked."));
+        return Err(ApiError::bad_request(
+            "ADVANCED_SAFE_MODE_READ_ONLY",
+            "This connection profile is read-only; write transactions are blocked.",
+        ));
     }
     Ok(())
 }
 
 async fn invalidate_mutation_caches(state: &Arc<AppState>, connection_id: &str) {
-    state.advanced.schema_cache.write().await.remove(connection_id);
-    state.advanced.count_cache.write().await.retain(|(id, _, _), _| id != connection_id);
+    state
+        .advanced
+        .schema_cache
+        .write()
+        .await
+        .remove(connection_id);
+    state
+        .advanced
+        .count_cache
+        .write()
+        .await
+        .retain(|(id, _, _), _| id != connection_id);
 }
 
 pub(crate) async fn commit_mutation(
-    State(state): State<Arc<AppState>>, Path(connection_id): Path<String>, Json(request): Json<MutationRequest>,
+    State(state): State<Arc<AppState>>,
+    Path(connection_id): Path<String>,
+    Json(request): Json<MutationRequest>,
 ) -> Result<Json<MutationCommitResponse>, ApiError> {
     let session = connection(&state, &connection_id).await?;
     ensure_write_allowed(&session)?;
     let updated_rows = match &session.backend {
         ConnectionBackend::Postgres(pool) => {
             let schemas = discover_postgres_schema(pool).await?;
-            let table = schemas.iter().find(|schema| schema.name == request.schema)
-                .and_then(|schema| schema.tables.iter().find(|table| table.name == request.table))
+            let table = schemas
+                .iter()
+                .find(|schema| schema.name == request.schema)
+                .and_then(|schema| {
+                    schema
+                        .tables
+                        .iter()
+                        .find(|table| table.name == request.table)
+                })
                 .ok_or_else(|| ApiError::not_found("Mutation table was not found."))?;
             validate_mutation_request(table, &request)?;
-            for row in &request.rows { postgres_mutation_builder(&request, row, table)?; }
-            let mut tx = pool.begin().await.map_err(|error| ApiError::database(format!("Could not start PostgreSQL mutation transaction: {error}")))?;
+            for row in &request.rows {
+                postgres_mutation_builder(&request, row, table)?;
+            }
+            let mut tx = pool.begin().await.map_err(|error| {
+                ApiError::database(format!(
+                    "Could not start PostgreSQL mutation transaction: {error}"
+                ))
+            })?;
             let mut updated = 0;
             for row in &request.rows {
                 let mut builder = postgres_mutation_builder(&request, row, table)?;
                 let result = match builder.build().execute(&mut *tx).await {
                     Ok(result) => result,
-                    Err(error) => { tx.rollback().await.ok(); return Err(ApiError::database(format!("PostgreSQL mutation failed and was rolled back: {error}"))); }
+                    Err(error) => {
+                        tx.rollback().await.ok();
+                        return Err(ApiError::database(format!(
+                            "PostgreSQL mutation failed and was rolled back: {error}"
+                        )));
+                    }
                 };
-                if result.rows_affected() != 1 { tx.rollback().await.ok(); return Err(mutation_conflict()); }
+                if result.rows_affected() != 1 {
+                    tx.rollback().await.ok();
+                    return Err(mutation_conflict());
+                }
                 updated += 1;
             }
-            tx.commit().await.map_err(|error| ApiError::database(format!("Could not commit PostgreSQL mutation transaction: {error}")))?;
+            tx.commit().await.map_err(|error| {
+                ApiError::database(format!(
+                    "Could not commit PostgreSQL mutation transaction: {error}"
+                ))
+            })?;
             updated
         }
         ConnectionBackend::MySql(pool) => {
-            if request.schema != session.database { return Err(ApiError::bad_request("ADVANCED_MUTATION_SCHEMA_INVALID", "MySQL/MariaDB mutations must target the connected database.")); }
+            if request.schema != session.database {
+                return Err(ApiError::bad_request(
+                    "ADVANCED_MUTATION_SCHEMA_INVALID",
+                    "MySQL/MariaDB mutations must target the connected database.",
+                ));
+            }
             let schemas = discover_mysql_schema(pool, &session.database).await?;
-            let table = schemas[0].tables.iter().find(|table| table.name == request.table)
+            let table = schemas[0]
+                .tables
+                .iter()
+                .find(|table| table.name == request.table)
                 .ok_or_else(|| ApiError::not_found("Mutation table was not found."))?;
             validate_mutation_request(table, &request)?;
-            let mut tx = pool.begin().await.map_err(|error| ApiError::database(format!("Could not start MySQL/MariaDB mutation transaction: {error}")))?;
+            let mut tx = pool.begin().await.map_err(|error| {
+                ApiError::database(format!(
+                    "Could not start MySQL/MariaDB mutation transaction: {error}"
+                ))
+            })?;
             let mut updated = 0;
             for row in &request.rows {
-                let result = match mysql_mutation_builder(&request, row).build().execute(&mut *tx).await {
+                let result = match mysql_mutation_builder(&request, row)
+                    .build()
+                    .execute(&mut *tx)
+                    .await
+                {
                     Ok(result) => result,
-                    Err(error) => { tx.rollback().await.ok(); return Err(ApiError::database(format!("MySQL/MariaDB mutation failed and was rolled back: {error}"))); }
+                    Err(error) => {
+                        tx.rollback().await.ok();
+                        return Err(ApiError::database(format!(
+                            "MySQL/MariaDB mutation failed and was rolled back: {error}"
+                        )));
+                    }
                 };
-                if result.rows_affected() != 1 { tx.rollback().await.ok(); return Err(mutation_conflict()); }
+                if result.rows_affected() != 1 {
+                    tx.rollback().await.ok();
+                    return Err(mutation_conflict());
+                }
                 updated += 1;
             }
-            tx.commit().await.map_err(|error| ApiError::database(format!("Could not commit MySQL/MariaDB mutation transaction: {error}")))?;
+            tx.commit().await.map_err(|error| {
+                ApiError::database(format!(
+                    "Could not commit MySQL/MariaDB mutation transaction: {error}"
+                ))
+            })?;
             updated
         }
         ConnectionBackend::Sqlite(pool) => {
-            if request.schema != "main" { return Err(ApiError::bad_request("ADVANCED_MUTATION_SCHEMA_INVALID", "SQLite mutations require the main schema.")); }
+            if request.schema != "main" {
+                return Err(ApiError::bad_request(
+                    "ADVANCED_MUTATION_SCHEMA_INVALID",
+                    "SQLite mutations require the main schema.",
+                ));
+            }
             let schemas = discover_sqlite_schema(pool).await?;
-            let table = schemas[0].tables.iter().find(|table| table.name == request.table)
+            let table = schemas[0]
+                .tables
+                .iter()
+                .find(|table| table.name == request.table)
                 .ok_or_else(|| ApiError::not_found("Mutation table was not found."))?;
             validate_mutation_request(table, &request)?;
-            let mut tx = pool.begin().await.map_err(|error| ApiError::database(format!("Could not start SQLite mutation transaction: {error}")))?;
+            let mut tx = pool.begin().await.map_err(|error| {
+                ApiError::database(format!(
+                    "Could not start SQLite mutation transaction: {error}"
+                ))
+            })?;
             let mut updated = 0;
             for row in &request.rows {
-                let result = match sqlite_mutation_builder(&request, row).build().execute(&mut *tx).await {
+                let result = match sqlite_mutation_builder(&request, row)
+                    .build()
+                    .execute(&mut *tx)
+                    .await
+                {
                     Ok(result) => result,
-                    Err(error) => { tx.rollback().await.ok(); return Err(ApiError::database(format!("SQLite mutation failed and was rolled back: {error}"))); }
+                    Err(error) => {
+                        tx.rollback().await.ok();
+                        return Err(ApiError::database(format!(
+                            "SQLite mutation failed and was rolled back: {error}"
+                        )));
+                    }
                 };
-                if result.rows_affected() != 1 { tx.rollback().await.ok(); return Err(mutation_conflict()); }
+                if result.rows_affected() != 1 {
+                    tx.rollback().await.ok();
+                    return Err(mutation_conflict());
+                }
                 updated += 1;
             }
-            tx.commit().await.map_err(|error| ApiError::database(format!("Could not commit SQLite mutation transaction: {error}")))?;
+            tx.commit().await.map_err(|error| {
+                ApiError::database(format!(
+                    "Could not commit SQLite mutation transaction: {error}"
+                ))
+            })?;
             updated
         }
-        ConnectionBackend::Mongo(_) => return Err(ApiError::bad_request("ADVANCED_MUTATION_PROVIDER_UNSUPPORTED", "MongoDB source commit is not enabled.")),
+        ConnectionBackend::Mongo(_) => {
+            return Err(ApiError::bad_request(
+                "ADVANCED_MUTATION_PROVIDER_UNSUPPORTED",
+                "MongoDB source commit is not enabled.",
+            ))
+        }
     };
     invalidate_mutation_caches(&state, &connection_id).await;
     Ok(Json(MutationCommitResponse { updated_rows }))
@@ -1587,14 +2251,27 @@ fn split_script_statements(sql: &str) -> Result<Vec<String>, ApiError> {
         .map(str::to_string)
         .collect::<Vec<_>>();
     if statements.is_empty() {
-        return Err(ApiError::bad_request("ADVANCED_SCRIPT_EMPTY", "Enter SQL statements before review."));
+        return Err(ApiError::bad_request(
+            "ADVANCED_SCRIPT_EMPTY",
+            "Enter SQL statements before review.",
+        ));
     }
     if statements.len() > 5000 {
-        return Err(ApiError::bad_request("ADVANCED_SCRIPT_TOO_LARGE", "A script can include at most 5,000 statements."));
+        return Err(ApiError::bad_request(
+            "ADVANCED_SCRIPT_TOO_LARGE",
+            "A script can include at most 5,000 statements.",
+        ));
     }
     for statement in &statements {
-        let first = statement.split_whitespace().next().unwrap_or_default().to_ascii_uppercase();
-        let allowed = matches!(first.as_str(), "CREATE" | "ALTER" | "DROP" | "TRUNCATE" | "INSERT" | "UPDATE" | "DELETE");
+        let first = statement
+            .split_whitespace()
+            .next()
+            .unwrap_or_default()
+            .to_ascii_uppercase();
+        let allowed = matches!(
+            first.as_str(),
+            "CREATE" | "ALTER" | "DROP" | "TRUNCATE" | "INSERT" | "UPDATE" | "DELETE"
+        );
         if !allowed {
             return Err(ApiError::bad_request(
                 "ADVANCED_SCRIPT_STATEMENT_UNSUPPORTED",
@@ -1606,85 +2283,151 @@ fn split_script_statements(sql: &str) -> Result<Vec<String>, ApiError> {
 }
 
 pub(crate) async fn preview_script(
-    State(state): State<Arc<AppState>>, Path(connection_id): Path<String>, Json(request): Json<ScriptRequest>,
+    State(state): State<Arc<AppState>>,
+    Path(connection_id): Path<String>,
+    Json(request): Json<ScriptRequest>,
 ) -> Result<Json<ScriptPreviewResponse>, ApiError> {
     let session = connection(&state, &connection_id).await?;
     if matches!(session.backend, ConnectionBackend::Mongo(_)) {
-        return Err(ApiError::bad_request("ADVANCED_SCRIPT_PROVIDER_UNSUPPORTED", "MongoDB SQL script commit is not enabled."));
+        return Err(ApiError::bad_request(
+            "ADVANCED_SCRIPT_PROVIDER_UNSUPPORTED",
+            "MongoDB SQL script commit is not enabled.",
+        ));
     }
     let statements = split_script_statements(&request.sql)?;
-    Ok(Json(ScriptPreviewResponse { statement_count: statements.len(), statements: statements.iter().map(|statement| format!("{statement};")).collect(), can_commit: session.safe_mode != "read_only" }))
+    Ok(Json(ScriptPreviewResponse {
+        statement_count: statements.len(),
+        statements: statements
+            .iter()
+            .map(|statement| format!("{statement};"))
+            .collect(),
+        can_commit: session.safe_mode != "read_only",
+    }))
 }
 
 pub(crate) async fn commit_script(
-    State(state): State<Arc<AppState>>, Path(connection_id): Path<String>, Json(request): Json<ScriptRequest>,
+    State(state): State<Arc<AppState>>,
+    Path(connection_id): Path<String>,
+    Json(request): Json<ScriptRequest>,
 ) -> Result<Json<ScriptCommitResponse>, ApiError> {
     let session = connection(&state, &connection_id).await?;
     ensure_write_allowed(&session)?;
     let statements = split_script_statements(&request.sql)?;
     let executed = match &session.backend {
         ConnectionBackend::Postgres(pool) => {
-            let mut tx = pool.begin().await.map_err(|error| ApiError::database(format!("Could not start PostgreSQL script transaction: {error}")))?;
+            let mut tx = pool.begin().await.map_err(|error| {
+                ApiError::database(format!(
+                    "Could not start PostgreSQL script transaction: {error}"
+                ))
+            })?;
             for statement in &statements {
                 if let Err(error) = sqlx::query(statement).execute(&mut *tx).await {
                     tx.rollback().await.ok();
-                    return Err(ApiError::database(format!("PostgreSQL script failed and was rolled back: {error}")));
+                    return Err(ApiError::database(format!(
+                        "PostgreSQL script failed and was rolled back: {error}"
+                    )));
                 }
             }
-            tx.commit().await.map_err(|error| ApiError::database(format!("Could not commit PostgreSQL script transaction: {error}")))?;
+            tx.commit().await.map_err(|error| {
+                ApiError::database(format!(
+                    "Could not commit PostgreSQL script transaction: {error}"
+                ))
+            })?;
             statements.len()
         }
         ConnectionBackend::MySql(pool) => {
-            let mut tx = pool.begin().await.map_err(|error| ApiError::database(format!("Could not start MySQL/MariaDB script transaction: {error}")))?;
+            let mut tx = pool.begin().await.map_err(|error| {
+                ApiError::database(format!(
+                    "Could not start MySQL/MariaDB script transaction: {error}"
+                ))
+            })?;
             for statement in &statements {
                 if let Err(error) = sqlx::query(statement).execute(&mut *tx).await {
                     tx.rollback().await.ok();
-                    return Err(ApiError::database(format!("MySQL/MariaDB script failed and was rolled back: {error}")));
+                    return Err(ApiError::database(format!(
+                        "MySQL/MariaDB script failed and was rolled back: {error}"
+                    )));
                 }
             }
-            tx.commit().await.map_err(|error| ApiError::database(format!("Could not commit MySQL/MariaDB script transaction: {error}")))?;
+            tx.commit().await.map_err(|error| {
+                ApiError::database(format!(
+                    "Could not commit MySQL/MariaDB script transaction: {error}"
+                ))
+            })?;
             statements.len()
         }
         ConnectionBackend::Sqlite(pool) => {
-            let mut tx = pool.begin().await.map_err(|error| ApiError::database(format!("Could not start SQLite script transaction: {error}")))?;
+            let mut tx = pool.begin().await.map_err(|error| {
+                ApiError::database(format!(
+                    "Could not start SQLite script transaction: {error}"
+                ))
+            })?;
             for statement in &statements {
                 if let Err(error) = sqlx::query(statement).execute(&mut *tx).await {
                     tx.rollback().await.ok();
-                    return Err(ApiError::database(format!("SQLite script failed and was rolled back: {error}")));
+                    return Err(ApiError::database(format!(
+                        "SQLite script failed and was rolled back: {error}"
+                    )));
                 }
             }
-            tx.commit().await.map_err(|error| ApiError::database(format!("Could not commit SQLite script transaction: {error}")))?;
+            tx.commit().await.map_err(|error| {
+                ApiError::database(format!(
+                    "Could not commit SQLite script transaction: {error}"
+                ))
+            })?;
             statements.len()
         }
-        ConnectionBackend::Mongo(_) => return Err(ApiError::bad_request("ADVANCED_SCRIPT_PROVIDER_UNSUPPORTED", "MongoDB SQL script commit is not enabled.")),
+        ConnectionBackend::Mongo(_) => {
+            return Err(ApiError::bad_request(
+                "ADVANCED_SCRIPT_PROVIDER_UNSUPPORTED",
+                "MongoDB SQL script commit is not enabled.",
+            ))
+        }
     };
     invalidate_mutation_caches(&state, &connection_id).await;
-    Ok(Json(ScriptCommitResponse { executed_statements: executed }))
+    Ok(Json(ScriptCommitResponse {
+        executed_statements: executed,
+    }))
 }
 
 pub(crate) async fn start_sql_import(
-    State(state): State<Arc<AppState>>, Path(connection_id): Path<String>, Json(request): Json<ScriptRequest>,
+    State(state): State<Arc<AppState>>,
+    Path(connection_id): Path<String>,
+    Json(request): Json<ScriptRequest>,
 ) -> Result<Json<ImportStartResponse>, ApiError> {
     let session = connection(&state, &connection_id).await?;
     ensure_write_allowed(&session)?;
     if matches!(session.backend, ConnectionBackend::Mongo(_)) {
-        return Err(ApiError::bad_request("ADVANCED_SCRIPT_PROVIDER_UNSUPPORTED", "MongoDB SQL script import is not enabled."));
+        return Err(ApiError::bad_request(
+            "ADVANCED_SCRIPT_PROVIDER_UNSUPPORTED",
+            "MongoDB SQL script import is not enabled.",
+        ));
     }
     let statements = split_script_statements(&request.sql)?;
     let job_id = Uuid::new_v4().to_string();
-    state.advanced.import_jobs.write().await.insert(job_id.clone(), ImportJob {
-        status: ExportJobStatus::Running,
-        statement_count: statements.len(),
-        executed_statements: 0,
-        skipped_statements: 0,
-        error: None,
-        abort_handle: None,
-    });
+    state.advanced.import_jobs.write().await.insert(
+        job_id.clone(),
+        ImportJob {
+            status: ExportJobStatus::Running,
+            statement_count: statements.len(),
+            executed_statements: 0,
+            skipped_statements: 0,
+            error: None,
+            abort_handle: None,
+        },
+    );
     let task_state = state.clone();
     let task_job_id = job_id.clone();
     let task_connection_id = connection_id.clone();
     let task = tokio::spawn(async move {
-        let outcome = run_sql_import_job(session, task_connection_id, task_job_id.clone(), statements, task_state.clone()).await;
+        let outcome = run_sql_import_job(
+            session,
+            task_connection_id,
+            task_job_id.clone(),
+            statements,
+            task_state.clone(),
+        )
+        .await;
         let mut jobs = task_state.advanced.import_jobs.write().await;
         if let Some(job) = jobs.get_mut(&task_job_id) {
             if job.status == ExportJobStatus::Cancelled {
@@ -1710,12 +2453,17 @@ pub(crate) async fn start_sql_import(
 }
 
 pub(crate) async fn start_csv_import(
-    State(state): State<Arc<AppState>>, Path(connection_id): Path<String>, mut multipart: Multipart,
+    State(state): State<Arc<AppState>>,
+    Path(connection_id): Path<String>,
+    mut multipart: Multipart,
 ) -> Result<Json<ImportStartResponse>, ApiError> {
     let session = connection(&state, &connection_id).await?;
     ensure_write_allowed(&session)?;
     if matches!(session.backend, ConnectionBackend::Mongo(_)) {
-        return Err(ApiError::bad_request("ADVANCED_IMPORT_PROVIDER_UNSUPPORTED", "CSV import targets relational database sessions only."));
+        return Err(ApiError::bad_request(
+            "ADVANCED_IMPORT_PROVIDER_UNSUPPORTED",
+            "CSV import targets relational database sessions only.",
+        ));
     }
     let mut file_bytes = Vec::new();
     let mut schema = String::new();
@@ -1723,17 +2471,32 @@ pub(crate) async fn start_csv_import(
     let mut mapping = HashMap::<String, String>::new();
     let mut error_mode = ImportErrorMode::StopRollback;
 
-    while let Some(field) = multipart.next_field().await.map_err(|error| ApiError::bad_request("ADVANCED_IMPORT_MULTIPART", format!("Could not read import form: {error}")))? {
+    while let Some(field) = multipart.next_field().await.map_err(|error| {
+        ApiError::bad_request(
+            "ADVANCED_IMPORT_MULTIPART",
+            format!("Could not read import form: {error}"),
+        )
+    })? {
         let name = field.name().unwrap_or_default().to_string();
         match name.as_str() {
             "file" => {
-                file_bytes = field.bytes().await.map_err(|error| ApiError::bad_request("ADVANCED_IMPORT_FILE", format!("Could not read CSV file: {error}")))?.to_vec();
+                file_bytes = field
+                    .bytes()
+                    .await
+                    .map_err(|error| {
+                        ApiError::bad_request(
+                            "ADVANCED_IMPORT_FILE",
+                            format!("Could not read CSV file: {error}"),
+                        )
+                    })?
+                    .to_vec();
             }
             "schema" => schema = field.text().await.unwrap_or_default(),
             "table" => table = field.text().await.unwrap_or_default(),
             "mapping" => {
                 let text = field.text().await.unwrap_or_default();
-                mapping = serde_json::from_str::<HashMap<String, String>>(&text).unwrap_or_default();
+                mapping =
+                    serde_json::from_str::<HashMap<String, String>>(&text).unwrap_or_default();
             }
             "errorMode" => {
                 error_mode = match field.text().await.unwrap_or_default().as_str() {
@@ -1746,23 +2509,39 @@ pub(crate) async fn start_csv_import(
         }
     }
     if file_bytes.is_empty() || schema.trim().is_empty() || table.trim().is_empty() {
-        return Err(ApiError::bad_request("ADVANCED_IMPORT_REQUIRED", "CSV import requires file, schema, and table."));
+        return Err(ApiError::bad_request(
+            "ADVANCED_IMPORT_REQUIRED",
+            "CSV import requires file, schema, and table.",
+        ));
     }
     let rows = parse_csv_import_rows(&file_bytes, &mapping)?;
     let job_id = Uuid::new_v4().to_string();
-    state.advanced.import_jobs.write().await.insert(job_id.clone(), ImportJob {
-        status: ExportJobStatus::Running,
-        statement_count: rows.len(),
-        executed_statements: 0,
-        skipped_statements: 0,
-        error: None,
-        abort_handle: None,
-    });
+    state.advanced.import_jobs.write().await.insert(
+        job_id.clone(),
+        ImportJob {
+            status: ExportJobStatus::Running,
+            statement_count: rows.len(),
+            executed_statements: 0,
+            skipped_statements: 0,
+            error: None,
+            abort_handle: None,
+        },
+    );
     let task_state = state.clone();
     let task_job_id = job_id.clone();
     let task_connection_id = connection_id.clone();
     let task = tokio::spawn(async move {
-        let outcome = run_csv_import_job(session, task_connection_id, task_job_id.clone(), schema, table, rows, error_mode, task_state.clone()).await;
+        let outcome = run_csv_import_job(
+            session,
+            task_connection_id,
+            task_job_id.clone(),
+            schema,
+            table,
+            rows,
+            error_mode,
+            task_state.clone(),
+        )
+        .await;
         let mut jobs = task_state.advanced.import_jobs.write().await;
         if let Some(job) = jobs.get_mut(&task_job_id) {
             if job.status == ExportJobStatus::Cancelled {
@@ -1789,15 +2568,19 @@ pub(crate) async fn start_csv_import(
 }
 
 pub(crate) async fn get_import_job(
-    State(state): State<Arc<AppState>>, Path(job_id): Path<String>,
+    State(state): State<Arc<AppState>>,
+    Path(job_id): Path<String>,
 ) -> Result<Json<ImportJobResponse>, ApiError> {
     let jobs = state.advanced.import_jobs.read().await;
-    let job = jobs.get(&job_id).ok_or_else(|| ApiError::bad_request("ADVANCED_IMPORT_NOT_FOUND", "Import job was not found."))?;
+    let job = jobs.get(&job_id).ok_or_else(|| {
+        ApiError::bad_request("ADVANCED_IMPORT_NOT_FOUND", "Import job was not found.")
+    })?;
     Ok(Json(import_job_response(&job_id, job)))
 }
 
 pub(crate) async fn cancel_import_job(
-    State(state): State<Arc<AppState>>, Path(job_id): Path<String>,
+    State(state): State<Arc<AppState>>,
+    Path(job_id): Path<String>,
 ) -> StatusCode {
     let mut jobs = state.advanced.import_jobs.write().await;
     if let Some(job) = jobs.get_mut(&job_id) {
@@ -1844,30 +2627,84 @@ pub(crate) async fn get_table_count(
             let exists: bool = sqlx::query_scalar("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = $1 AND table_name = $2)")
                 .bind(&schema).bind(&table).fetch_one(pool).await
                 .map_err(|error| ApiError::database(format!("Could not validate table for count: {error}")))?;
-            if !exists { return Err(ApiError::bad_request("ADVANCED_COUNT_ENTITY_INVALID", "Table is not present in the current schema catalog.")); }
-            let mut tx = pool.begin().await.map_err(|error| ApiError::database(format!("Could not start count transaction: {error}")))?;
-            sqlx::query("SET TRANSACTION READ ONLY").execute(&mut *tx).await.map_err(|error| ApiError::database(format!("Could not enable read-only count: {error}")))?;
-            sqlx::query(&format!("SET LOCAL statement_timeout = '{COUNT_TIMEOUT_MS}ms'")).execute(&mut *tx).await.map_err(|error| ApiError::database(format!("Could not set count timeout: {error}")))?;
-            let count: i64 = sqlx::query_scalar(&format!("SELECT COUNT(*)::bigint FROM {}.{}", quote_pg_identifier(&schema), quote_pg_identifier(&table)))
-                .fetch_one(&mut *tx).await.map_err(|error| ApiError::database(format!("Exact row count failed or timed out: {error}")))?;
-            tx.rollback().await.ok(); count
+            if !exists {
+                return Err(ApiError::bad_request(
+                    "ADVANCED_COUNT_ENTITY_INVALID",
+                    "Table is not present in the current schema catalog.",
+                ));
+            }
+            let mut tx = pool.begin().await.map_err(|error| {
+                ApiError::database(format!("Could not start count transaction: {error}"))
+            })?;
+            sqlx::query("SET TRANSACTION READ ONLY")
+                .execute(&mut *tx)
+                .await
+                .map_err(|error| {
+                    ApiError::database(format!("Could not enable read-only count: {error}"))
+                })?;
+            sqlx::query(&format!(
+                "SET LOCAL statement_timeout = '{COUNT_TIMEOUT_MS}ms'"
+            ))
+            .execute(&mut *tx)
+            .await
+            .map_err(|error| ApiError::database(format!("Could not set count timeout: {error}")))?;
+            let count: i64 = sqlx::query_scalar(&format!(
+                "SELECT COUNT(*)::bigint FROM {}.{}",
+                quote_pg_identifier(&schema),
+                quote_pg_identifier(&table)
+            ))
+            .fetch_one(&mut *tx)
+            .await
+            .map_err(|error| {
+                ApiError::database(format!("Exact row count failed or timed out: {error}"))
+            })?;
+            tx.rollback().await.ok();
+            count
         }
         ConnectionBackend::MySql(pool) => {
             let exists: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM information_schema.TABLES WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ?")
                 .bind(&schema).bind(&table).fetch_one(pool).await.map_err(|error| ApiError::database(format!("Could not validate table: {error}")))?;
-            if exists == 0 { return Err(ApiError::bad_request("ADVANCED_COUNT_ENTITY_INVALID", "Table is not present in the current schema catalog.")); }
-            let count: i64 = tokio::time::timeout(Duration::from_millis(COUNT_TIMEOUT_MS), sqlx::query_scalar(&format!("SELECT COUNT(*) FROM {}", quote_mysql_identifier(&table))).fetch_one(pool)).await
-                .map_err(|_| ApiError::database("MySQL/MariaDB exact count timed out."))?
-                .map_err(|error| ApiError::database(format!("Exact row count failed: {error}")))?;
+            if exists == 0 {
+                return Err(ApiError::bad_request(
+                    "ADVANCED_COUNT_ENTITY_INVALID",
+                    "Table is not present in the current schema catalog.",
+                ));
+            }
+            let count: i64 = tokio::time::timeout(
+                Duration::from_millis(COUNT_TIMEOUT_MS),
+                sqlx::query_scalar(&format!(
+                    "SELECT COUNT(*) FROM {}",
+                    quote_mysql_identifier(&table)
+                ))
+                .fetch_one(pool),
+            )
+            .await
+            .map_err(|_| ApiError::database("MySQL/MariaDB exact count timed out."))?
+            .map_err(|error| ApiError::database(format!("Exact row count failed: {error}")))?;
             count
         }
-        ConnectionBackend::Sqlite(pool) => tokio::time::timeout(Duration::from_millis(COUNT_TIMEOUT_MS), sqlx::query_scalar(&format!("SELECT COUNT(*) FROM {}", quote_sql_identifier(&table))).fetch_one(pool)).await
-            .map_err(|_| ApiError::database("SQLite exact count timed out."))?
-            .map_err(|error| ApiError::database(format!("Exact row count failed: {error}")))?,
+        ConnectionBackend::Sqlite(pool) => tokio::time::timeout(
+            Duration::from_millis(COUNT_TIMEOUT_MS),
+            sqlx::query_scalar(&format!(
+                "SELECT COUNT(*) FROM {}",
+                quote_sql_identifier(&table)
+            ))
+            .fetch_one(pool),
+        )
+        .await
+        .map_err(|_| ApiError::database("SQLite exact count timed out."))?
+        .map_err(|error| ApiError::database(format!("Exact row count failed: {error}")))?,
         ConnectionBackend::Mongo(client) => {
-            let count = tokio::time::timeout(Duration::from_millis(COUNT_TIMEOUT_MS), client.database(&session.database).collection::<Document>(&table).count_documents(Document::new())).await
-                .map_err(|_| ApiError::database("MongoDB exact count timed out."))?
-                .map_err(|error| ApiError::database(format!("Exact document count failed: {error}")))?;
+            let count = tokio::time::timeout(
+                Duration::from_millis(COUNT_TIMEOUT_MS),
+                client
+                    .database(&session.database)
+                    .collection::<Document>(&table)
+                    .count_documents(Document::new()),
+            )
+            .await
+            .map_err(|_| ApiError::database("MongoDB exact count timed out."))?
+            .map_err(|error| ApiError::database(format!("Exact document count failed: {error}")))?;
             i64::try_from(count).unwrap_or(i64::MAX)
         }
     };
@@ -1946,15 +2783,54 @@ pub(crate) async fn execute_query(
             } else {
                 Some(QueryFilterGroup {
                     combinator: FilterCombinator::And,
-                    children: filters.into_iter().map(QueryFilterNode::Condition).collect(),
+                    children: filters
+                        .into_iter()
+                        .map(QueryFilterNode::Condition)
+                        .collect(),
                 })
             }
         });
         match session.backend {
-            ConnectionBackend::Postgres(pool) => run_postgres_query(pool, task_run_id, sql, limit, offset, request.sort, filter_tree).await,
-            ConnectionBackend::MySql(pool) => run_mysql_query(pool, task_run_id, sql, limit, offset, request.sort, filter_tree).await,
-            ConnectionBackend::Sqlite(pool) => run_sqlite_query(pool, task_run_id, sql, limit, offset, request.sort, filter_tree).await,
-            ConnectionBackend::Mongo(_) => Err(ApiError::bad_request("ADVANCED_MONGO_REQUEST_REQUIRED", "MongoDB uses the document query endpoint.")),
+            ConnectionBackend::Postgres(pool) => {
+                run_postgres_query(
+                    pool,
+                    task_run_id,
+                    sql,
+                    limit,
+                    offset,
+                    request.sort,
+                    filter_tree,
+                )
+                .await
+            }
+            ConnectionBackend::MySql(pool) => {
+                run_mysql_query(
+                    pool,
+                    task_run_id,
+                    sql,
+                    limit,
+                    offset,
+                    request.sort,
+                    filter_tree,
+                )
+                .await
+            }
+            ConnectionBackend::Sqlite(pool) => {
+                run_sqlite_query(
+                    pool,
+                    task_run_id,
+                    sql,
+                    limit,
+                    offset,
+                    request.sort,
+                    filter_tree,
+                )
+                .await
+            }
+            ConnectionBackend::Mongo(_) => Err(ApiError::bad_request(
+                "ADVANCED_MONGO_REQUEST_REQUIRED",
+                "MongoDB uses the document query endpoint.",
+            )),
         }
     });
     state.advanced.runs.write().await.insert(
@@ -1997,12 +2873,18 @@ pub(crate) async fn start_export(
 ) -> Result<Json<ExportStartResponse>, ApiError> {
     let session = connection(&state, &connection_id).await?;
     if matches!(session.backend, ConnectionBackend::Mongo(_)) {
-        return Err(ApiError::bad_request("ADVANCED_EXPORT_MONGO_UNSUPPORTED", "MongoDB export still uses the document query path."));
+        return Err(ApiError::bad_request(
+            "ADVANCED_EXPORT_MONGO_UNSUPPORTED",
+            "MongoDB export still uses the document query path.",
+        ));
     }
     let sql = normalized_read_query(&request.sql)?;
     let format = request.format.trim().to_ascii_lowercase();
     if !["csv", "json", "sql", "xlsx"].contains(&format.as_str()) {
-        return Err(ApiError::bad_request("ADVANCED_EXPORT_FORMAT", "Backend streaming export supports CSV, JSON, SQL, and XLSX."));
+        return Err(ApiError::bad_request(
+            "ADVANCED_EXPORT_FORMAT",
+            "Backend streaming export supports CSV, JSON, SQL, and XLSX.",
+        ));
     }
     let filter_tree = request.filter_tree.or_else(|| {
         let filters = request.filters.unwrap_or_default();
@@ -2011,34 +2893,54 @@ pub(crate) async fn start_export(
         } else {
             Some(QueryFilterGroup {
                 combinator: FilterCombinator::And,
-                children: filters.into_iter().map(QueryFilterNode::Condition).collect(),
+                children: filters
+                    .into_iter()
+                    .map(QueryFilterNode::Condition)
+                    .collect(),
             })
         }
     });
     let job_id = Uuid::new_v4().to_string();
-    let safe_name = request.file_name.unwrap_or_else(|| "lightbi-export".to_string()).replace(['/', '\\'], "_");
+    let safe_name = request
+        .file_name
+        .unwrap_or_else(|| "lightbi-export".to_string())
+        .replace(['/', '\\'], "_");
     let file_name = format!("{safe_name}.full.{format}");
     let content_type = match format.as_str() {
         "json" => "application/json;charset=utf-8",
         "sql" => "application/sql;charset=utf-8",
         "xlsx" => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         _ => "text/csv;charset=utf-8",
-    }.to_string();
-    state.advanced.export_jobs.write().await.insert(job_id.clone(), ExportJob {
-        status: ExportJobStatus::Running,
-        format: format.clone(),
-        rows: 0,
-        file_name,
-        content_type,
-        data: None,
-        error: None,
-        abort_handle: None,
-    });
+    }
+    .to_string();
+    state.advanced.export_jobs.write().await.insert(
+        job_id.clone(),
+        ExportJob {
+            status: ExportJobStatus::Running,
+            format: format.clone(),
+            rows: 0,
+            file_name,
+            content_type,
+            data: None,
+            error: None,
+            abort_handle: None,
+        },
+    );
 
     let task_state = state.clone();
     let task_job_id = job_id.clone();
     let task = tokio::spawn(async move {
-        let outcome = run_export_job(session, task_job_id.clone(), sql, format, request.table_name, request.sort, filter_tree, task_state.clone()).await;
+        let outcome = run_export_job(
+            session,
+            task_job_id.clone(),
+            sql,
+            format,
+            request.table_name,
+            request.sort,
+            filter_tree,
+            task_state.clone(),
+        )
+        .await;
         let mut jobs = task_state.advanced.export_jobs.write().await;
         if let Some(job) = jobs.get_mut(&task_job_id) {
             if job.status == ExportJobStatus::Cancelled {
@@ -2069,7 +2971,9 @@ pub(crate) async fn get_export_job(
     Path(job_id): Path<String>,
 ) -> Result<Json<ExportJobResponse>, ApiError> {
     let jobs = state.advanced.export_jobs.read().await;
-    let job = jobs.get(&job_id).ok_or_else(|| ApiError::bad_request("ADVANCED_EXPORT_NOT_FOUND", "Export job was not found."))?;
+    let job = jobs.get(&job_id).ok_or_else(|| {
+        ApiError::bad_request("ADVANCED_EXPORT_NOT_FOUND", "Export job was not found.")
+    })?;
     Ok(Json(export_job_response(&job_id, job)))
 }
 
@@ -2078,14 +2982,30 @@ pub(crate) async fn download_export_job(
     Path(job_id): Path<String>,
 ) -> Result<Response, ApiError> {
     let jobs = state.advanced.export_jobs.read().await;
-    let job = jobs.get(&job_id).ok_or_else(|| ApiError::bad_request("ADVANCED_EXPORT_NOT_FOUND", "Export job was not found."))?;
+    let job = jobs.get(&job_id).ok_or_else(|| {
+        ApiError::bad_request("ADVANCED_EXPORT_NOT_FOUND", "Export job was not found.")
+    })?;
     if job.status != ExportJobStatus::Completed {
-        return Err(ApiError::bad_request("ADVANCED_EXPORT_NOT_READY", "Export job is not complete yet."));
+        return Err(ApiError::bad_request(
+            "ADVANCED_EXPORT_NOT_READY",
+            "Export job is not complete yet.",
+        ));
     }
     let data = job.data.clone().unwrap_or_default();
     let mut response = data.into_response();
-    response.headers_mut().insert(header::CONTENT_TYPE, HeaderValue::from_str(&job.content_type).unwrap_or_else(|_| HeaderValue::from_static("application/octet-stream")));
-    response.headers_mut().insert(header::CONTENT_DISPOSITION, HeaderValue::from_str(&format!("attachment; filename=\"{}\"", job.file_name.replace('"', ""))).unwrap_or_else(|_| HeaderValue::from_static("attachment")));
+    response.headers_mut().insert(
+        header::CONTENT_TYPE,
+        HeaderValue::from_str(&job.content_type)
+            .unwrap_or_else(|_| HeaderValue::from_static("application/octet-stream")),
+    );
+    response.headers_mut().insert(
+        header::CONTENT_DISPOSITION,
+        HeaderValue::from_str(&format!(
+            "attachment; filename=\"{}\"",
+            job.file_name.replace('"', "")
+        ))
+        .unwrap_or_else(|_| HeaderValue::from_static("attachment")),
+    );
     Ok(response)
 }
 
@@ -2112,60 +3032,158 @@ pub(crate) async fn execute_document_query(
 ) -> Result<Json<QueryResponse>, ApiError> {
     let session = connection(&state, &connection_id).await?;
     let ConnectionBackend::Mongo(client) = session.backend else {
-        return Err(ApiError::bad_request("ADVANCED_DOCUMENT_QUERY_UNSUPPORTED", "Document queries require a MongoDB session."));
+        return Err(ApiError::bad_request(
+            "ADVANCED_DOCUMENT_QUERY_UNSUPPORTED",
+            "Document queries require a MongoDB session.",
+        ));
     };
     let collection_name = request.collection.trim();
-    if collection_name.is_empty() { return Err(ApiError::bad_request("ADVANCED_MONGO_COLLECTION_REQUIRED", "Collection is required.")); }
+    if collection_name.is_empty() {
+        return Err(ApiError::bad_request(
+            "ADVANCED_MONGO_COLLECTION_REQUIRED",
+            "Collection is required.",
+        ));
+    }
     let filter = json_document(request.filter, "filter")?;
-    let projection = request.projection.map(|value| json_document(value, "projection")).transpose()?;
-    let sort = request.sort.map(|value| json_document(value, "sort")).transpose()?;
-    let limit = request.limit.unwrap_or(DEFAULT_ROW_LIMIT).clamp(1, MAX_ROW_LIMIT);
+    let projection = request
+        .projection
+        .map(|value| json_document(value, "projection"))
+        .transpose()?;
+    let sort = request
+        .sort
+        .map(|value| json_document(value, "sort"))
+        .transpose()?;
+    let limit = request
+        .limit
+        .unwrap_or(DEFAULT_ROW_LIMIT)
+        .clamp(1, MAX_ROW_LIMIT);
     let offset = request.offset.unwrap_or(0).min(MAX_ROW_OFFSET);
     let run_id = request.run_id.trim().to_string();
-    if run_id.is_empty() { return Err(ApiError::bad_request("ADVANCED_RUN_ID_REQUIRED", "runId is required.")); }
+    if run_id.is_empty() {
+        return Err(ApiError::bad_request(
+            "ADVANCED_RUN_ID_REQUIRED",
+            "runId is required.",
+        ));
+    }
     let started_at = Instant::now();
-    let collection = client.database(&session.database).collection::<Document>(collection_name);
-    let mut find = collection.find(filter).limit((limit + 1) as i64).skip(offset as u64);
-    if let Some(projection) = projection { find = find.projection(projection); }
-    if let Some(sort) = sort { find = find.sort(sort); }
+    let collection = client
+        .database(&session.database)
+        .collection::<Document>(collection_name);
+    let mut find = collection
+        .find(filter)
+        .limit((limit + 1) as i64)
+        .skip(offset as u64);
+    if let Some(projection) = projection {
+        find = find.projection(projection);
+    }
+    if let Some(sort) = sort {
+        find = find.sort(sort);
+    }
     let mut cursor = tokio::time::timeout(Duration::from_millis(STATEMENT_TIMEOUT_MS), find)
-        .await.map_err(|_| ApiError::database("MongoDB query timed out."))?
+        .await
+        .map_err(|_| ApiError::database("MongoDB query timed out."))?
         .map_err(|error| ApiError::database(format!("MongoDB query failed: {error}")))?;
     let mut documents = Vec::new();
     while documents.len() <= limit {
-        let has_next = tokio::time::timeout(Duration::from_millis(STATEMENT_TIMEOUT_MS), cursor.advance()).await
-            .map_err(|_| ApiError::database("MongoDB cursor timed out."))?
-            .map_err(|error| ApiError::database(format!("MongoDB cursor failed: {error}")))?;
-        if !has_next { break; }
-        documents.push(cursor.deserialize_current().map_err(|error| ApiError::database(format!("Could not decode MongoDB document: {error}")))?);
+        let has_next = tokio::time::timeout(
+            Duration::from_millis(STATEMENT_TIMEOUT_MS),
+            cursor.advance(),
+        )
+        .await
+        .map_err(|_| ApiError::database("MongoDB cursor timed out."))?
+        .map_err(|error| ApiError::database(format!("MongoDB cursor failed: {error}")))?;
+        if !has_next {
+            break;
+        }
+        documents.push(cursor.deserialize_current().map_err(|error| {
+            ApiError::database(format!("Could not decode MongoDB document: {error}"))
+        })?);
     }
-    let truncated = documents.len() > limit; documents.truncate(limit);
+    let truncated = documents.len() > limit;
+    documents.truncate(limit);
     let mut names = Vec::<String>::new();
-    for document in &documents { for key in document.keys() { if !names.contains(key) { names.push(key.clone()); } } }
-    let columns = names.iter().enumerate().map(|(index, name)| {
-        let native = documents.iter().find_map(|document| document.get(name)).map(bson_type).unwrap_or("bson");
-        QueryColumn { id: format!("column:{index}:{name}"), name: name.clone(), logical_type: logical_type_bson(native), native_type: native.to_string() }
-    }).collect();
-    let rows = documents.iter().map(|document| names.iter().map(|name| document.get(name).map(bson_json).unwrap_or(Value::Null)).collect()).collect();
-    Ok(Json(query_response(run_id, columns, rows, offset, limit, truncated, started_at.elapsed())))
+    for document in &documents {
+        for key in document.keys() {
+            if !names.contains(key) {
+                names.push(key.clone());
+            }
+        }
+    }
+    let columns = names
+        .iter()
+        .enumerate()
+        .map(|(index, name)| {
+            let native = documents
+                .iter()
+                .find_map(|document| document.get(name))
+                .map(bson_type)
+                .unwrap_or("bson");
+            QueryColumn {
+                id: format!("column:{index}:{name}"),
+                name: name.clone(),
+                logical_type: logical_type_bson(native),
+                native_type: native.to_string(),
+            }
+        })
+        .collect();
+    let rows = documents
+        .iter()
+        .map(|document| {
+            names
+                .iter()
+                .map(|name| document.get(name).map(bson_json).unwrap_or(Value::Null))
+                .collect()
+        })
+        .collect();
+    Ok(Json(query_response(
+        run_id,
+        columns,
+        rows,
+        offset,
+        limit,
+        truncated,
+        started_at.elapsed(),
+    )))
 }
 
 fn json_document(value: Value, label: &str) -> Result<Document, ApiError> {
-    if value.is_null() { return Ok(Document::new()); }
-    serde_json::from_value(value).map_err(|error| ApiError::bad_request("ADVANCED_MONGO_DOCUMENT_INVALID", format!("MongoDB {label} must be a JSON object: {error}")))
+    if value.is_null() {
+        return Ok(Document::new());
+    }
+    serde_json::from_value(value).map_err(|error| {
+        ApiError::bad_request(
+            "ADVANCED_MONGO_DOCUMENT_INVALID",
+            format!("MongoDB {label} must be a JSON object: {error}"),
+        )
+    })
 }
 
 fn logical_type_bson(native: &str) -> &'static str {
-    match native { "double" | "int32" | "int64" => "number", "boolean" => "boolean", "date" => "date", _ => "string" }
+    match native {
+        "double" | "int32" | "int64" => "number",
+        "boolean" => "boolean",
+        "date" => "date",
+        _ => "string",
+    }
 }
 
 fn bson_json(value: &Bson) -> Value {
     match value {
-        Bson::Double(value) => json!(value), Bson::String(value) => Value::String(value.clone()), Bson::Boolean(value) => Value::Bool(*value),
-        Bson::Int32(value) => json!(value), Bson::Int64(value) => Value::String(value.to_string()), Bson::DateTime(value) => Value::String(value.to_string()),
-        Bson::ObjectId(value) => Value::String(value.to_hex()), Bson::Null => Value::Null,
+        Bson::Double(value) => json!(value),
+        Bson::String(value) => Value::String(value.clone()),
+        Bson::Boolean(value) => Value::Bool(*value),
+        Bson::Int32(value) => json!(value),
+        Bson::Int64(value) => Value::String(value.to_string()),
+        Bson::DateTime(value) => Value::String(value.to_string()),
+        Bson::ObjectId(value) => Value::String(value.to_hex()),
+        Bson::Null => Value::Null,
         Bson::Array(values) => Value::Array(values.iter().map(bson_json).collect()),
-        Bson::Document(document) => Value::Object(document.iter().map(|(key, value)| (key.clone(), bson_json(value))).collect()),
+        Bson::Document(document) => Value::Object(
+            document
+                .iter()
+                .map(|(key, value)| (key.clone(), bson_json(value)))
+                .collect(),
+        ),
         other => Value::String(other.to_string()),
     }
 }
@@ -2178,54 +3196,162 @@ pub(crate) async fn explain_query(
     let session = connection(&state, &connection_id).await?;
     let sql = normalized_read_query(&request.sql)?;
     let ConnectionBackend::Postgres(pool) = session.backend else {
-        return Err(ApiError::bad_request("ADVANCED_EXPLAIN_UNSUPPORTED", "Query plan is currently available for PostgreSQL sessions."));
+        return Err(ApiError::bad_request(
+            "ADVANCED_EXPLAIN_UNSUPPORTED",
+            "Query plan is currently available for PostgreSQL sessions.",
+        ));
     };
-    let mut tx = pool.begin().await
-        .map_err(|error| ApiError::database(format!("Could not start explain transaction: {error}")))?;
-    sqlx::query("SET TRANSACTION READ ONLY").execute(&mut *tx).await
-        .map_err(|error| ApiError::database(format!("Could not enable read-only explain: {error}")))?;
-    sqlx::query(&format!("SET LOCAL statement_timeout = '{STATEMENT_TIMEOUT_MS}ms'"))
-        .execute(&mut *tx).await
-        .map_err(|error| ApiError::database(format!("Could not set explain timeout: {error}")))?;
+    let mut tx = pool.begin().await.map_err(|error| {
+        ApiError::database(format!("Could not start explain transaction: {error}"))
+    })?;
+    sqlx::query("SET TRANSACTION READ ONLY")
+        .execute(&mut *tx)
+        .await
+        .map_err(|error| {
+            ApiError::database(format!("Could not enable read-only explain: {error}"))
+        })?;
+    sqlx::query(&format!(
+        "SET LOCAL statement_timeout = '{STATEMENT_TIMEOUT_MS}ms'"
+    ))
+    .execute(&mut *tx)
+    .await
+    .map_err(|error| ApiError::database(format!("Could not set explain timeout: {error}")))?;
     let started_at = Instant::now();
-    let plan: Value = sqlx::query_scalar(&format!("EXPLAIN (FORMAT JSON, COSTS TRUE, VERBOSE FALSE) {sql}"))
-        .fetch_one(&mut *tx).await
-        .map_err(|error| ApiError::database(format!("PostgreSQL explain failed: {error}")))?;
+    let plan: Value = sqlx::query_scalar(&format!(
+        "EXPLAIN (FORMAT JSON, COSTS TRUE, VERBOSE FALSE) {sql}"
+    ))
+    .fetch_one(&mut *tx)
+    .await
+    .map_err(|error| ApiError::database(format!("PostgreSQL explain failed: {error}")))?;
     tx.rollback().await.ok();
-    Ok(Json(ExplainQueryResponse { plan, execution_ms: started_at.elapsed().as_millis() as u64 }))
+    Ok(Json(ExplainQueryResponse {
+        plan,
+        execution_ms: started_at.elapsed().as_millis() as u64,
+    }))
 }
 
 fn split_filter_values(value: &str) -> Vec<String> {
-    value.split(',').map(|item| item.trim().to_string()).filter(|item| !item.is_empty()).take(50).collect()
+    value
+        .split(',')
+        .map(|item| item.trim().to_string())
+        .filter(|item| !item.is_empty())
+        .take(50)
+        .collect()
 }
 
 fn push_pg_filter_condition(builder: &mut QueryBuilder<'_, Postgres>, filter: &QueryFilterRequest) {
     let column = quote_pg_identifier(&filter.column);
     let text_column = format!("CAST({column} AS TEXT)");
     match filter.operator {
-        FilterOperator::Contains => { builder.push(text_column).push(" ILIKE ").push_bind(format!("%{}%", filter.value)); }
-        FilterOperator::NotContains => { builder.push("(").push(text_column).push(" NOT ILIKE ").push_bind(format!("%{}%", filter.value)).push(" OR ").push(column).push(" IS NULL)"); }
-        FilterOperator::Equals => { builder.push(text_column).push(" = ").push_bind(filter.value.clone()); }
-        FilterOperator::NotEquals => { builder.push("(").push(text_column).push(" <> ").push_bind(filter.value.clone()).push(" OR ").push(column).push(" IS NULL)"); }
-        FilterOperator::StartsWith => { builder.push(text_column).push(" ILIKE ").push_bind(format!("{}%", filter.value)); }
-        FilterOperator::EndsWith => { builder.push(text_column).push(" ILIKE ").push_bind(format!("%{}", filter.value)); }
-        FilterOperator::GreaterThan => { builder.push(text_column).push(" > ").push_bind(filter.value.clone()); }
-        FilterOperator::GreaterOrEqual => { builder.push(text_column).push(" >= ").push_bind(filter.value.clone()); }
-        FilterOperator::LessThan => { builder.push(text_column).push(" < ").push_bind(filter.value.clone()); }
-        FilterOperator::LessOrEqual => { builder.push(text_column).push(" <= ").push_bind(filter.value.clone()); }
-        FilterOperator::IsBlank => { builder.push("(").push(column.clone()).push(" IS NULL OR ").push(text_column).push(" = '')"); }
-        FilterOperator::IsNotBlank => { builder.push("(").push(column.clone()).push(" IS NOT NULL AND ").push(text_column).push(" <> '')"); }
+        FilterOperator::Contains => {
+            builder
+                .push(text_column)
+                .push(" ILIKE ")
+                .push_bind(format!("%{}%", filter.value));
+        }
+        FilterOperator::NotContains => {
+            builder
+                .push("(")
+                .push(text_column)
+                .push(" NOT ILIKE ")
+                .push_bind(format!("%{}%", filter.value))
+                .push(" OR ")
+                .push(column)
+                .push(" IS NULL)");
+        }
+        FilterOperator::Equals => {
+            builder
+                .push(text_column)
+                .push(" = ")
+                .push_bind(filter.value.clone());
+        }
+        FilterOperator::NotEquals => {
+            builder
+                .push("(")
+                .push(text_column)
+                .push(" <> ")
+                .push_bind(filter.value.clone())
+                .push(" OR ")
+                .push(column)
+                .push(" IS NULL)");
+        }
+        FilterOperator::StartsWith => {
+            builder
+                .push(text_column)
+                .push(" ILIKE ")
+                .push_bind(format!("{}%", filter.value));
+        }
+        FilterOperator::EndsWith => {
+            builder
+                .push(text_column)
+                .push(" ILIKE ")
+                .push_bind(format!("%{}", filter.value));
+        }
+        FilterOperator::GreaterThan => {
+            builder
+                .push(text_column)
+                .push(" > ")
+                .push_bind(filter.value.clone());
+        }
+        FilterOperator::GreaterOrEqual => {
+            builder
+                .push(text_column)
+                .push(" >= ")
+                .push_bind(filter.value.clone());
+        }
+        FilterOperator::LessThan => {
+            builder
+                .push(text_column)
+                .push(" < ")
+                .push_bind(filter.value.clone());
+        }
+        FilterOperator::LessOrEqual => {
+            builder
+                .push(text_column)
+                .push(" <= ")
+                .push_bind(filter.value.clone());
+        }
+        FilterOperator::IsBlank => {
+            builder
+                .push("(")
+                .push(column.clone())
+                .push(" IS NULL OR ")
+                .push(text_column)
+                .push(" = '')");
+        }
+        FilterOperator::IsNotBlank => {
+            builder
+                .push("(")
+                .push(column.clone())
+                .push(" IS NOT NULL AND ")
+                .push(text_column)
+                .push(" <> '')");
+        }
         FilterOperator::In | FilterOperator::NotIn => {
-            if matches!(filter.operator, FilterOperator::NotIn) { builder.push("("); }
-            builder.push(text_column).push(if matches!(filter.operator, FilterOperator::NotIn) { " NOT IN (" } else { " IN (" });
+            if matches!(filter.operator, FilterOperator::NotIn) {
+                builder.push("(");
+            }
+            builder
+                .push(text_column)
+                .push(if matches!(filter.operator, FilterOperator::NotIn) {
+                    " NOT IN ("
+                } else {
+                    " IN ("
+                });
             let values = split_filter_values(&filter.value);
             for (index, value) in values.iter().enumerate() {
-                if index > 0 { builder.push(", "); }
+                if index > 0 {
+                    builder.push(", ");
+                }
                 builder.push_bind(value.clone());
             }
-            if values.is_empty() { builder.push_bind(String::new()); }
+            if values.is_empty() {
+                builder.push_bind(String::new());
+            }
             builder.push(")");
-            if matches!(filter.operator, FilterOperator::NotIn) { builder.push(" OR ").push(column).push(" IS NULL)"); }
+            if matches!(filter.operator, FilterOperator::NotIn) {
+                builder.push(" OR ").push(column).push(" IS NULL)");
+            }
         }
     };
 }
@@ -2236,7 +3362,12 @@ fn push_pg_filter_node(builder: &mut QueryBuilder<'_, Postgres>, node: &QueryFil
         QueryFilterNode::Group(group) => {
             builder.push("(");
             for (index, child) in group.children.iter().enumerate() {
-                if index > 0 { builder.push(match group.combinator { FilterCombinator::And => " AND ", FilterCombinator::Or => " OR " }); }
+                if index > 0 {
+                    builder.push(match group.combinator {
+                        FilterCombinator::And => " AND ",
+                        FilterCombinator::Or => " OR ",
+                    });
+                }
                 push_pg_filter_node(builder, child);
             }
             builder.push(")");
@@ -2287,7 +3418,10 @@ async fn run_postgres_query(
             }
         })
         .collect();
-    let names = columns.iter().map(|column| column.name.clone()).collect::<Vec<_>>();
+    let names = columns
+        .iter()
+        .map(|column| column.name.clone())
+        .collect::<Vec<_>>();
     validate_filter_tree(&names, &filter_tree)?;
     if let Some(sort) = &sort {
         if !description
@@ -2362,10 +3496,19 @@ async fn run_postgres_query(
     })
 }
 
-fn validate_controls(column_names: &[String], sort: &Option<QuerySortRequest>, filter_tree: &Option<QueryFilterGroup>) -> Result<(), ApiError> {
+fn validate_controls(
+    column_names: &[String],
+    sort: &Option<QuerySortRequest>,
+    filter_tree: &Option<QueryFilterGroup>,
+) -> Result<(), ApiError> {
     validate_filter_tree(column_names, filter_tree)?;
     if let Some(sort) = sort {
-        if !column_names.iter().any(|name| name == &sort.column) { return Err(ApiError::bad_request("ADVANCED_SORT_COLUMN_INVALID", "Sort column is not present in this result.")); }
+        if !column_names.iter().any(|name| name == &sort.column) {
+            return Err(ApiError::bad_request(
+                "ADVANCED_SORT_COLUMN_INVALID",
+                "Sort column is not present in this result.",
+            ));
+        }
     }
     Ok(())
 }
@@ -2374,29 +3517,115 @@ fn push_mysql_filter_condition(builder: &mut QueryBuilder<'_, MySql>, filter: &Q
     let column = quote_mysql_identifier(&filter.column);
     let text_column = format!("CAST({column} AS CHAR)");
     match filter.operator {
-        FilterOperator::Contains => { builder.push(text_column).push(" LIKE ").push_bind(format!("%{}%", filter.value)); }
-        FilterOperator::NotContains => { builder.push("(").push(text_column).push(" NOT LIKE ").push_bind(format!("%{}%", filter.value)).push(" OR ").push(column).push(" IS NULL)"); }
-        FilterOperator::Equals => { builder.push(text_column).push(" = ").push_bind(filter.value.clone()); }
-        FilterOperator::NotEquals => { builder.push("(").push(text_column).push(" <> ").push_bind(filter.value.clone()).push(" OR ").push(column).push(" IS NULL)"); }
-        FilterOperator::StartsWith => { builder.push(text_column).push(" LIKE ").push_bind(format!("{}%", filter.value)); }
-        FilterOperator::EndsWith => { builder.push(text_column).push(" LIKE ").push_bind(format!("%{}", filter.value)); }
-        FilterOperator::GreaterThan => { builder.push(text_column).push(" > ").push_bind(filter.value.clone()); }
-        FilterOperator::GreaterOrEqual => { builder.push(text_column).push(" >= ").push_bind(filter.value.clone()); }
-        FilterOperator::LessThan => { builder.push(text_column).push(" < ").push_bind(filter.value.clone()); }
-        FilterOperator::LessOrEqual => { builder.push(text_column).push(" <= ").push_bind(filter.value.clone()); }
-        FilterOperator::IsBlank => { builder.push("(").push(column.clone()).push(" IS NULL OR ").push(text_column).push(" = '')"); }
-        FilterOperator::IsNotBlank => { builder.push("(").push(column.clone()).push(" IS NOT NULL AND ").push(text_column).push(" <> '')"); }
+        FilterOperator::Contains => {
+            builder
+                .push(text_column)
+                .push(" LIKE ")
+                .push_bind(format!("%{}%", filter.value));
+        }
+        FilterOperator::NotContains => {
+            builder
+                .push("(")
+                .push(text_column)
+                .push(" NOT LIKE ")
+                .push_bind(format!("%{}%", filter.value))
+                .push(" OR ")
+                .push(column)
+                .push(" IS NULL)");
+        }
+        FilterOperator::Equals => {
+            builder
+                .push(text_column)
+                .push(" = ")
+                .push_bind(filter.value.clone());
+        }
+        FilterOperator::NotEquals => {
+            builder
+                .push("(")
+                .push(text_column)
+                .push(" <> ")
+                .push_bind(filter.value.clone())
+                .push(" OR ")
+                .push(column)
+                .push(" IS NULL)");
+        }
+        FilterOperator::StartsWith => {
+            builder
+                .push(text_column)
+                .push(" LIKE ")
+                .push_bind(format!("{}%", filter.value));
+        }
+        FilterOperator::EndsWith => {
+            builder
+                .push(text_column)
+                .push(" LIKE ")
+                .push_bind(format!("%{}", filter.value));
+        }
+        FilterOperator::GreaterThan => {
+            builder
+                .push(text_column)
+                .push(" > ")
+                .push_bind(filter.value.clone());
+        }
+        FilterOperator::GreaterOrEqual => {
+            builder
+                .push(text_column)
+                .push(" >= ")
+                .push_bind(filter.value.clone());
+        }
+        FilterOperator::LessThan => {
+            builder
+                .push(text_column)
+                .push(" < ")
+                .push_bind(filter.value.clone());
+        }
+        FilterOperator::LessOrEqual => {
+            builder
+                .push(text_column)
+                .push(" <= ")
+                .push_bind(filter.value.clone());
+        }
+        FilterOperator::IsBlank => {
+            builder
+                .push("(")
+                .push(column.clone())
+                .push(" IS NULL OR ")
+                .push(text_column)
+                .push(" = '')");
+        }
+        FilterOperator::IsNotBlank => {
+            builder
+                .push("(")
+                .push(column.clone())
+                .push(" IS NOT NULL AND ")
+                .push(text_column)
+                .push(" <> '')");
+        }
         FilterOperator::In | FilterOperator::NotIn => {
-            if matches!(filter.operator, FilterOperator::NotIn) { builder.push("("); }
-            builder.push(text_column).push(if matches!(filter.operator, FilterOperator::NotIn) { " NOT IN (" } else { " IN (" });
+            if matches!(filter.operator, FilterOperator::NotIn) {
+                builder.push("(");
+            }
+            builder
+                .push(text_column)
+                .push(if matches!(filter.operator, FilterOperator::NotIn) {
+                    " NOT IN ("
+                } else {
+                    " IN ("
+                });
             let values = split_filter_values(&filter.value);
             for (index, value) in values.iter().enumerate() {
-                if index > 0 { builder.push(", "); }
+                if index > 0 {
+                    builder.push(", ");
+                }
                 builder.push_bind(value.clone());
             }
-            if values.is_empty() { builder.push_bind(String::new()); }
+            if values.is_empty() {
+                builder.push_bind(String::new());
+            }
             builder.push(")");
-            if matches!(filter.operator, FilterOperator::NotIn) { builder.push(" OR ").push(column).push(" IS NULL)"); }
+            if matches!(filter.operator, FilterOperator::NotIn) {
+                builder.push(" OR ").push(column).push(" IS NULL)");
+            }
         }
     };
 }
@@ -2407,7 +3636,12 @@ fn push_mysql_filter_node(builder: &mut QueryBuilder<'_, MySql>, node: &QueryFil
         QueryFilterNode::Group(group) => {
             builder.push("(");
             for (index, child) in group.children.iter().enumerate() {
-                if index > 0 { builder.push(match group.combinator { FilterCombinator::And => " AND ", FilterCombinator::Or => " OR " }); }
+                if index > 0 {
+                    builder.push(match group.combinator {
+                        FilterCombinator::And => " AND ",
+                        FilterCombinator::Or => " OR ",
+                    });
+                }
                 push_mysql_filter_node(builder, child);
             }
             builder.push(")");
@@ -2415,33 +3649,122 @@ fn push_mysql_filter_node(builder: &mut QueryBuilder<'_, MySql>, node: &QueryFil
     }
 }
 
-fn push_sqlite_filter_condition(builder: &mut QueryBuilder<'_, Sqlite>, filter: &QueryFilterRequest) {
+fn push_sqlite_filter_condition(
+    builder: &mut QueryBuilder<'_, Sqlite>,
+    filter: &QueryFilterRequest,
+) {
     let column = quote_sql_identifier(&filter.column);
     let text_column = format!("CAST({column} AS TEXT)");
     match filter.operator {
-        FilterOperator::Contains => { builder.push(text_column).push(" LIKE ").push_bind(format!("%{}%", filter.value)); }
-        FilterOperator::NotContains => { builder.push("(").push(text_column).push(" NOT LIKE ").push_bind(format!("%{}%", filter.value)).push(" OR ").push(column).push(" IS NULL)"); }
-        FilterOperator::Equals => { builder.push(text_column).push(" = ").push_bind(filter.value.clone()); }
-        FilterOperator::NotEquals => { builder.push("(").push(text_column).push(" <> ").push_bind(filter.value.clone()).push(" OR ").push(column).push(" IS NULL)"); }
-        FilterOperator::StartsWith => { builder.push(text_column).push(" LIKE ").push_bind(format!("{}%", filter.value)); }
-        FilterOperator::EndsWith => { builder.push(text_column).push(" LIKE ").push_bind(format!("%{}", filter.value)); }
-        FilterOperator::GreaterThan => { builder.push(text_column).push(" > ").push_bind(filter.value.clone()); }
-        FilterOperator::GreaterOrEqual => { builder.push(text_column).push(" >= ").push_bind(filter.value.clone()); }
-        FilterOperator::LessThan => { builder.push(text_column).push(" < ").push_bind(filter.value.clone()); }
-        FilterOperator::LessOrEqual => { builder.push(text_column).push(" <= ").push_bind(filter.value.clone()); }
-        FilterOperator::IsBlank => { builder.push("(").push(column.clone()).push(" IS NULL OR ").push(text_column).push(" = '')"); }
-        FilterOperator::IsNotBlank => { builder.push("(").push(column.clone()).push(" IS NOT NULL AND ").push(text_column).push(" <> '')"); }
+        FilterOperator::Contains => {
+            builder
+                .push(text_column)
+                .push(" LIKE ")
+                .push_bind(format!("%{}%", filter.value));
+        }
+        FilterOperator::NotContains => {
+            builder
+                .push("(")
+                .push(text_column)
+                .push(" NOT LIKE ")
+                .push_bind(format!("%{}%", filter.value))
+                .push(" OR ")
+                .push(column)
+                .push(" IS NULL)");
+        }
+        FilterOperator::Equals => {
+            builder
+                .push(text_column)
+                .push(" = ")
+                .push_bind(filter.value.clone());
+        }
+        FilterOperator::NotEquals => {
+            builder
+                .push("(")
+                .push(text_column)
+                .push(" <> ")
+                .push_bind(filter.value.clone())
+                .push(" OR ")
+                .push(column)
+                .push(" IS NULL)");
+        }
+        FilterOperator::StartsWith => {
+            builder
+                .push(text_column)
+                .push(" LIKE ")
+                .push_bind(format!("{}%", filter.value));
+        }
+        FilterOperator::EndsWith => {
+            builder
+                .push(text_column)
+                .push(" LIKE ")
+                .push_bind(format!("%{}", filter.value));
+        }
+        FilterOperator::GreaterThan => {
+            builder
+                .push(text_column)
+                .push(" > ")
+                .push_bind(filter.value.clone());
+        }
+        FilterOperator::GreaterOrEqual => {
+            builder
+                .push(text_column)
+                .push(" >= ")
+                .push_bind(filter.value.clone());
+        }
+        FilterOperator::LessThan => {
+            builder
+                .push(text_column)
+                .push(" < ")
+                .push_bind(filter.value.clone());
+        }
+        FilterOperator::LessOrEqual => {
+            builder
+                .push(text_column)
+                .push(" <= ")
+                .push_bind(filter.value.clone());
+        }
+        FilterOperator::IsBlank => {
+            builder
+                .push("(")
+                .push(column.clone())
+                .push(" IS NULL OR ")
+                .push(text_column)
+                .push(" = '')");
+        }
+        FilterOperator::IsNotBlank => {
+            builder
+                .push("(")
+                .push(column.clone())
+                .push(" IS NOT NULL AND ")
+                .push(text_column)
+                .push(" <> '')");
+        }
         FilterOperator::In | FilterOperator::NotIn => {
-            if matches!(filter.operator, FilterOperator::NotIn) { builder.push("("); }
-            builder.push(text_column).push(if matches!(filter.operator, FilterOperator::NotIn) { " NOT IN (" } else { " IN (" });
+            if matches!(filter.operator, FilterOperator::NotIn) {
+                builder.push("(");
+            }
+            builder
+                .push(text_column)
+                .push(if matches!(filter.operator, FilterOperator::NotIn) {
+                    " NOT IN ("
+                } else {
+                    " IN ("
+                });
             let values = split_filter_values(&filter.value);
             for (index, value) in values.iter().enumerate() {
-                if index > 0 { builder.push(", "); }
+                if index > 0 {
+                    builder.push(", ");
+                }
                 builder.push_bind(value.clone());
             }
-            if values.is_empty() { builder.push_bind(String::new()); }
+            if values.is_empty() {
+                builder.push_bind(String::new());
+            }
             builder.push(")");
-            if matches!(filter.operator, FilterOperator::NotIn) { builder.push(" OR ").push(column).push(" IS NULL)"); }
+            if matches!(filter.operator, FilterOperator::NotIn) {
+                builder.push(" OR ").push(column).push(" IS NULL)");
+            }
         }
     };
 }
@@ -2452,7 +3775,12 @@ fn push_sqlite_filter_node(builder: &mut QueryBuilder<'_, Sqlite>, node: &QueryF
         QueryFilterNode::Group(group) => {
             builder.push("(");
             for (index, child) in group.children.iter().enumerate() {
-                if index > 0 { builder.push(match group.combinator { FilterCombinator::And => " AND ", FilterCombinator::Or => " OR " }); }
+                if index > 0 {
+                    builder.push(match group.combinator {
+                        FilterCombinator::And => " AND ",
+                        FilterCombinator::Or => " OR ",
+                    });
+                }
                 push_sqlite_filter_node(builder, child);
             }
             builder.push(")");
@@ -2461,64 +3789,197 @@ fn push_sqlite_filter_node(builder: &mut QueryBuilder<'_, Sqlite>, node: &QueryF
 }
 
 async fn run_mysql_query(
-    pool: MySqlPool, run_id: String, sql: String, limit: usize, offset: usize,
-    sort: Option<QuerySortRequest>, filter_tree: Option<QueryFilterGroup>,
+    pool: MySqlPool,
+    run_id: String,
+    sql: String,
+    limit: usize,
+    offset: usize,
+    sort: Option<QuerySortRequest>,
+    filter_tree: Option<QueryFilterGroup>,
 ) -> Result<QueryResponse, ApiError> {
     let describe_sql = format!("SELECT * FROM ({sql}) AS __lightbi_query LIMIT 0");
-    let description = pool.describe(&describe_sql).await.map_err(|error| ApiError::database(format!("Could not describe MySQL/MariaDB result: {error}")))?;
-    let columns: Vec<QueryColumn> = description.columns().iter().enumerate().map(|(index, column)| {
-        let native_type = column.type_info().name().to_string();
-        QueryColumn { id: format!("column:{index}:{}", column.name()), name: column.name().to_string(), logical_type: logical_type_mysql(&native_type), native_type }
-    }).collect();
-    let names = columns.iter().map(|column| column.name.clone()).collect::<Vec<_>>();
+    let description = pool.describe(&describe_sql).await.map_err(|error| {
+        ApiError::database(format!("Could not describe MySQL/MariaDB result: {error}"))
+    })?;
+    let columns: Vec<QueryColumn> = description
+        .columns()
+        .iter()
+        .enumerate()
+        .map(|(index, column)| {
+            let native_type = column.type_info().name().to_string();
+            QueryColumn {
+                id: format!("column:{index}:{}", column.name()),
+                name: column.name().to_string(),
+                logical_type: logical_type_mysql(&native_type),
+                native_type,
+            }
+        })
+        .collect();
+    let names = columns
+        .iter()
+        .map(|column| column.name.clone())
+        .collect::<Vec<_>>();
     validate_controls(&names, &sort, &filter_tree)?;
-    let mut builder = QueryBuilder::<MySql>::new(format!("SELECT * FROM ({sql}) AS __lightbi_query"));
+    let mut builder =
+        QueryBuilder::<MySql>::new(format!("SELECT * FROM ({sql}) AS __lightbi_query"));
     if let Some(group) = &filter_tree {
         builder.push(" WHERE ");
         push_mysql_filter_node(&mut builder, &QueryFilterNode::Group(group.clone()));
     }
-    if let Some(sort) = sort { builder.push(" ORDER BY ").push(quote_mysql_identifier(&sort.column)).push(match sort.direction { SortDirection::Asc => " ASC", SortDirection::Desc => " DESC" }); }
-    builder.push(" LIMIT ").push_bind((limit + 1) as i64).push(" OFFSET ").push_bind(offset as i64);
+    if let Some(sort) = sort {
+        builder
+            .push(" ORDER BY ")
+            .push(quote_mysql_identifier(&sort.column))
+            .push(match sort.direction {
+                SortDirection::Asc => " ASC",
+                SortDirection::Desc => " DESC",
+            });
+    }
+    builder
+        .push(" LIMIT ")
+        .push_bind((limit + 1) as i64)
+        .push(" OFFSET ")
+        .push_bind(offset as i64);
     let started_at = Instant::now();
-    let mut rows = tokio::time::timeout(Duration::from_millis(STATEMENT_TIMEOUT_MS), builder.build().fetch_all(&pool)).await
-        .map_err(|_| ApiError::database("MySQL/MariaDB query timed out."))?
-        .map_err(|error| ApiError::database(format!("MySQL/MariaDB query failed: {error}")))?;
-    let truncated = rows.len() > limit; rows.truncate(limit);
-    let values = rows.iter().map(|row| row.columns().iter().enumerate().map(|(index, column)| mysql_cell(row, index, column.type_info().name())).collect()).collect();
-    Ok(query_response(run_id, columns, values, offset, limit, truncated, started_at.elapsed()))
+    let mut rows = tokio::time::timeout(
+        Duration::from_millis(STATEMENT_TIMEOUT_MS),
+        builder.build().fetch_all(&pool),
+    )
+    .await
+    .map_err(|_| ApiError::database("MySQL/MariaDB query timed out."))?
+    .map_err(|error| ApiError::database(format!("MySQL/MariaDB query failed: {error}")))?;
+    let truncated = rows.len() > limit;
+    rows.truncate(limit);
+    let values = rows
+        .iter()
+        .map(|row| {
+            row.columns()
+                .iter()
+                .enumerate()
+                .map(|(index, column)| mysql_cell(row, index, column.type_info().name()))
+                .collect()
+        })
+        .collect();
+    Ok(query_response(
+        run_id,
+        columns,
+        values,
+        offset,
+        limit,
+        truncated,
+        started_at.elapsed(),
+    ))
 }
 
 async fn run_sqlite_query(
-    pool: SqlitePool, run_id: String, sql: String, limit: usize, offset: usize,
-    sort: Option<QuerySortRequest>, filter_tree: Option<QueryFilterGroup>,
+    pool: SqlitePool,
+    run_id: String,
+    sql: String,
+    limit: usize,
+    offset: usize,
+    sort: Option<QuerySortRequest>,
+    filter_tree: Option<QueryFilterGroup>,
 ) -> Result<QueryResponse, ApiError> {
     let describe_sql = format!("SELECT * FROM ({sql}) AS __lightbi_query LIMIT 0");
-    let description = pool.describe(&describe_sql).await.map_err(|error| ApiError::database(format!("Could not describe SQLite result: {error}")))?;
-    let columns: Vec<QueryColumn> = description.columns().iter().enumerate().map(|(index, column)| {
-        let native_type = column.type_info().name().to_string();
-        QueryColumn { id: format!("column:{index}:{}", column.name()), name: column.name().to_string(), logical_type: logical_type_sqlite(&native_type), native_type }
-    }).collect();
-    let names = columns.iter().map(|column| column.name.clone()).collect::<Vec<_>>();
+    let description = pool.describe(&describe_sql).await.map_err(|error| {
+        ApiError::database(format!("Could not describe SQLite result: {error}"))
+    })?;
+    let columns: Vec<QueryColumn> = description
+        .columns()
+        .iter()
+        .enumerate()
+        .map(|(index, column)| {
+            let native_type = column.type_info().name().to_string();
+            QueryColumn {
+                id: format!("column:{index}:{}", column.name()),
+                name: column.name().to_string(),
+                logical_type: logical_type_sqlite(&native_type),
+                native_type,
+            }
+        })
+        .collect();
+    let names = columns
+        .iter()
+        .map(|column| column.name.clone())
+        .collect::<Vec<_>>();
     validate_controls(&names, &sort, &filter_tree)?;
-    let mut builder = QueryBuilder::<Sqlite>::new(format!("SELECT * FROM ({sql}) AS __lightbi_query"));
+    let mut builder =
+        QueryBuilder::<Sqlite>::new(format!("SELECT * FROM ({sql}) AS __lightbi_query"));
     if let Some(group) = &filter_tree {
         builder.push(" WHERE ");
         push_sqlite_filter_node(&mut builder, &QueryFilterNode::Group(group.clone()));
     }
-    if let Some(sort) = sort { builder.push(" ORDER BY ").push(quote_sql_identifier(&sort.column)).push(match sort.direction { SortDirection::Asc => " ASC", SortDirection::Desc => " DESC" }); }
-    builder.push(" LIMIT ").push_bind((limit + 1) as i64).push(" OFFSET ").push_bind(offset as i64);
+    if let Some(sort) = sort {
+        builder
+            .push(" ORDER BY ")
+            .push(quote_sql_identifier(&sort.column))
+            .push(match sort.direction {
+                SortDirection::Asc => " ASC",
+                SortDirection::Desc => " DESC",
+            });
+    }
+    builder
+        .push(" LIMIT ")
+        .push_bind((limit + 1) as i64)
+        .push(" OFFSET ")
+        .push_bind(offset as i64);
     let started_at = Instant::now();
-    let mut rows = tokio::time::timeout(Duration::from_millis(STATEMENT_TIMEOUT_MS), builder.build().fetch_all(&pool)).await
-        .map_err(|_| ApiError::database("SQLite query timed out."))?
-        .map_err(|error| ApiError::database(format!("SQLite query failed: {error}")))?;
-    let truncated = rows.len() > limit; rows.truncate(limit);
-    let values = rows.iter().map(|row| row.columns().iter().enumerate().map(|(index, column)| sqlite_cell(row, index, column.type_info().name())).collect()).collect();
-    Ok(query_response(run_id, columns, values, offset, limit, truncated, started_at.elapsed()))
+    let mut rows = tokio::time::timeout(
+        Duration::from_millis(STATEMENT_TIMEOUT_MS),
+        builder.build().fetch_all(&pool),
+    )
+    .await
+    .map_err(|_| ApiError::database("SQLite query timed out."))?
+    .map_err(|error| ApiError::database(format!("SQLite query failed: {error}")))?;
+    let truncated = rows.len() > limit;
+    rows.truncate(limit);
+    let values = rows
+        .iter()
+        .map(|row| {
+            row.columns()
+                .iter()
+                .enumerate()
+                .map(|(index, column)| sqlite_cell(row, index, column.type_info().name()))
+                .collect()
+        })
+        .collect();
+    Ok(query_response(
+        run_id,
+        columns,
+        values,
+        offset,
+        limit,
+        truncated,
+        started_at.elapsed(),
+    ))
 }
 
-fn query_response(run_id: String, columns: Vec<QueryColumn>, rows: Vec<Vec<Value>>, offset: usize, limit: usize, truncated: bool, elapsed: Duration) -> QueryResponse {
-    QueryResponse { run_id, columns, rows, page: QueryPage { offset, limit, has_more: truncated }, truncated,
-        warnings: if truncated { vec![format!("Result limited to {limit} rows.")] } else { Vec::new() }, execution_ms: elapsed.as_millis() as u64 }
+fn query_response(
+    run_id: String,
+    columns: Vec<QueryColumn>,
+    rows: Vec<Vec<Value>>,
+    offset: usize,
+    limit: usize,
+    truncated: bool,
+    elapsed: Duration,
+) -> QueryResponse {
+    QueryResponse {
+        run_id,
+        columns,
+        rows,
+        page: QueryPage {
+            offset,
+            limit,
+            has_more: truncated,
+        },
+        truncated,
+        warnings: if truncated {
+            vec![format!("Result limited to {limit} rows.")]
+        } else {
+            Vec::new()
+        },
+        execution_ms: elapsed.as_millis() as u64,
+    }
 }
 
 fn export_job_response(job_id: &str, job: &ExportJob) -> ExportJobResponse {
@@ -2527,7 +3988,8 @@ fn export_job_response(job_id: &str, job: &ExportJob) -> ExportJobResponse {
         ExportJobStatus::Completed => "completed",
         ExportJobStatus::Failed => "failed",
         ExportJobStatus::Cancelled => "cancelled",
-    }.to_string();
+    }
+    .to_string();
     ExportJobResponse {
         job_id: job_id.to_string(),
         status,
@@ -2544,7 +4006,8 @@ fn import_job_response(job_id: &str, job: &ImportJob) -> ImportJobResponse {
         ExportJobStatus::Completed => "completed",
         ExportJobStatus::Failed => "failed",
         ExportJobStatus::Cancelled => "cancelled",
-    }.to_string();
+    }
+    .to_string();
     ImportJobResponse {
         job_id: job_id.to_string(),
         status,
@@ -2555,23 +4018,40 @@ fn import_job_response(job_id: &str, job: &ImportJob) -> ImportJobResponse {
     }
 }
 
-fn parse_csv_import_rows(file_bytes: &[u8], mapping: &HashMap<String, String>) -> Result<Vec<HashMap<String, Value>>, ApiError> {
+fn parse_csv_import_rows(
+    file_bytes: &[u8],
+    mapping: &HashMap<String, String>,
+) -> Result<Vec<HashMap<String, Value>>, ApiError> {
     let mut reader = csv::ReaderBuilder::new()
         .flexible(true)
         .from_reader(file_bytes);
-    let headers = reader.headers()
-        .map_err(|error| ApiError::bad_request("ADVANCED_IMPORT_CSV_HEADERS", format!("Could not read CSV headers: {error}")))?
+    let headers = reader
+        .headers()
+        .map_err(|error| {
+            ApiError::bad_request(
+                "ADVANCED_IMPORT_CSV_HEADERS",
+                format!("Could not read CSV headers: {error}"),
+            )
+        })?
         .iter()
         .map(str::to_string)
         .collect::<Vec<_>>();
     let effective_mapping = if mapping.is_empty() {
-        headers.iter().map(|name| (name.clone(), name.clone())).collect::<HashMap<_, _>>()
+        headers
+            .iter()
+            .map(|name| (name.clone(), name.clone()))
+            .collect::<HashMap<_, _>>()
     } else {
         mapping.clone()
     };
     let mut rows = Vec::new();
     for record in reader.records() {
-        let record = record.map_err(|error| ApiError::bad_request("ADVANCED_IMPORT_CSV_ROW", format!("Could not read CSV row: {error}")))?;
+        let record = record.map_err(|error| {
+            ApiError::bad_request(
+                "ADVANCED_IMPORT_CSV_ROW",
+                format!("Could not read CSV row: {error}"),
+            )
+        })?;
         let mut row = HashMap::new();
         for (target, source) in &effective_mapping {
             if target.trim().is_empty() || source.trim().is_empty() {
@@ -2579,18 +4059,31 @@ fn parse_csv_import_rows(file_bytes: &[u8], mapping: &HashMap<String, String>) -
             }
             if let Some(index) = headers.iter().position(|header| header == source) {
                 let value = record.get(index).unwrap_or_default();
-                row.insert(target.clone(), if value.trim().is_empty() { Value::Null } else { Value::String(value.to_string()) });
+                row.insert(
+                    target.clone(),
+                    if value.trim().is_empty() {
+                        Value::Null
+                    } else {
+                        Value::String(value.to_string())
+                    },
+                );
             }
         }
         if !row.is_empty() {
             rows.push(row);
         }
         if rows.len() > MAX_IMPORT_ROWS {
-            return Err(ApiError::bad_request("ADVANCED_IMPORT_ROW_LIMIT", "CSV import is limited to 100,000 rows per interactive job."));
+            return Err(ApiError::bad_request(
+                "ADVANCED_IMPORT_ROW_LIMIT",
+                "CSV import is limited to 100,000 rows per interactive job.",
+            ));
         }
     }
     if rows.is_empty() {
-        return Err(ApiError::bad_request("ADVANCED_IMPORT_EMPTY", "CSV import did not contain mapped rows."));
+        return Err(ApiError::bad_request(
+            "ADVANCED_IMPORT_EMPTY",
+            "CSV import did not contain mapped rows.",
+        ));
     }
     Ok(rows)
 }
@@ -2604,39 +4097,74 @@ async fn run_sql_import_job(
 ) -> Result<(), ApiError> {
     match &session.backend {
         ConnectionBackend::Postgres(pool) => {
-            let mut tx = pool.begin().await.map_err(|error| ApiError::database(format!("Could not start PostgreSQL import transaction: {error}")))?;
+            let mut tx = pool.begin().await.map_err(|error| {
+                ApiError::database(format!(
+                    "Could not start PostgreSQL import transaction: {error}"
+                ))
+            })?;
             for statement in &statements {
                 if let Err(error) = sqlx::query(statement).execute(&mut *tx).await {
                     tx.rollback().await.ok();
-                    return Err(ApiError::database(format!("PostgreSQL import failed and was rolled back: {error}")));
+                    return Err(ApiError::database(format!(
+                        "PostgreSQL import failed and was rolled back: {error}"
+                    )));
                 }
                 increment_import_job(&state, &job_id).await?;
             }
-            tx.commit().await.map_err(|error| ApiError::database(format!("Could not commit PostgreSQL import transaction: {error}")))?;
+            tx.commit().await.map_err(|error| {
+                ApiError::database(format!(
+                    "Could not commit PostgreSQL import transaction: {error}"
+                ))
+            })?;
         }
         ConnectionBackend::MySql(pool) => {
-            let mut tx = pool.begin().await.map_err(|error| ApiError::database(format!("Could not start MySQL/MariaDB import transaction: {error}")))?;
+            let mut tx = pool.begin().await.map_err(|error| {
+                ApiError::database(format!(
+                    "Could not start MySQL/MariaDB import transaction: {error}"
+                ))
+            })?;
             for statement in &statements {
                 if let Err(error) = sqlx::query(statement).execute(&mut *tx).await {
                     tx.rollback().await.ok();
-                    return Err(ApiError::database(format!("MySQL/MariaDB import failed and was rolled back: {error}")));
+                    return Err(ApiError::database(format!(
+                        "MySQL/MariaDB import failed and was rolled back: {error}"
+                    )));
                 }
                 increment_import_job(&state, &job_id).await?;
             }
-            tx.commit().await.map_err(|error| ApiError::database(format!("Could not commit MySQL/MariaDB import transaction: {error}")))?;
+            tx.commit().await.map_err(|error| {
+                ApiError::database(format!(
+                    "Could not commit MySQL/MariaDB import transaction: {error}"
+                ))
+            })?;
         }
         ConnectionBackend::Sqlite(pool) => {
-            let mut tx = pool.begin().await.map_err(|error| ApiError::database(format!("Could not start SQLite import transaction: {error}")))?;
+            let mut tx = pool.begin().await.map_err(|error| {
+                ApiError::database(format!(
+                    "Could not start SQLite import transaction: {error}"
+                ))
+            })?;
             for statement in &statements {
                 if let Err(error) = sqlx::query(statement).execute(&mut *tx).await {
                     tx.rollback().await.ok();
-                    return Err(ApiError::database(format!("SQLite import failed and was rolled back: {error}")));
+                    return Err(ApiError::database(format!(
+                        "SQLite import failed and was rolled back: {error}"
+                    )));
                 }
                 increment_import_job(&state, &job_id).await?;
             }
-            tx.commit().await.map_err(|error| ApiError::database(format!("Could not commit SQLite import transaction: {error}")))?;
+            tx.commit().await.map_err(|error| {
+                ApiError::database(format!(
+                    "Could not commit SQLite import transaction: {error}"
+                ))
+            })?;
         }
-        ConnectionBackend::Mongo(_) => return Err(ApiError::bad_request("ADVANCED_SCRIPT_PROVIDER_UNSUPPORTED", "MongoDB SQL script import is not enabled.")),
+        ConnectionBackend::Mongo(_) => {
+            return Err(ApiError::bad_request(
+                "ADVANCED_SCRIPT_PROVIDER_UNSUPPORTED",
+                "MongoDB SQL script import is not enabled.",
+            ))
+        }
     }
     invalidate_mutation_caches(&state, &connection_id).await;
     Ok(())
@@ -2655,8 +4183,15 @@ async fn run_csv_import_job(
     match &session.backend {
         ConnectionBackend::Postgres(pool) => {
             let schemas = discover_postgres_schema(pool).await?;
-            let table_node = schemas.iter().find(|item| item.name == schema.trim())
-                .and_then(|schema_node| schema_node.tables.iter().find(|item| item.name == table.trim()))
+            let table_node = schemas
+                .iter()
+                .find(|item| item.name == schema.trim())
+                .and_then(|schema_node| {
+                    schema_node
+                        .tables
+                        .iter()
+                        .find(|item| item.name == table.trim())
+                })
                 .ok_or_else(|| ApiError::not_found("CSV import target table was not found."))?;
             validate_import_columns(table_node, &rows)?;
             if error_mode == ImportErrorMode::SkipContinue {
@@ -2664,96 +4199,179 @@ async fn run_csv_import_job(
                 for row in &rows {
                     match postgres_insert_values(pool, schema.trim(), table.trim(), row).await {
                         Ok(()) => increment_import_job(&state, &job_id).await?,
-                        Err(_) => { skipped += 1; skip_import_job(&state, &job_id).await?; }
+                        Err(_) => {
+                            skipped += 1;
+                            skip_import_job(&state, &job_id).await?;
+                        }
                     }
                 }
                 invalidate_mutation_caches(&state, &connection_id).await;
                 return Ok((skipped > 0).then(|| format!("Skipped {skipped} CSV row(s).")));
             }
-            let mut tx = pool.begin().await.map_err(|error| ApiError::database(format!("Could not start PostgreSQL CSV import transaction: {error}")))?;
+            let mut tx = pool.begin().await.map_err(|error| {
+                ApiError::database(format!(
+                    "Could not start PostgreSQL CSV import transaction: {error}"
+                ))
+            })?;
             for row in &rows {
-                if let Err(error) = postgres_insert_values_tx(&mut tx, schema.trim(), table.trim(), row).await {
+                if let Err(error) =
+                    postgres_insert_values_tx(&mut tx, schema.trim(), table.trim(), row).await
+                {
                     if error_mode == ImportErrorMode::StopCommit {
                         tx.commit().await.ok();
                     } else {
                         tx.rollback().await.ok();
                     }
-                    return Err(ApiError::database(format!("PostgreSQL CSV import failed: {error}")));
+                    return Err(ApiError::database(format!(
+                        "PostgreSQL CSV import failed: {error}"
+                    )));
                 }
                 increment_import_job(&state, &job_id).await?;
             }
-            tx.commit().await.map_err(|error| ApiError::database(format!("Could not commit PostgreSQL CSV import transaction: {error}")))?;
+            tx.commit().await.map_err(|error| {
+                ApiError::database(format!(
+                    "Could not commit PostgreSQL CSV import transaction: {error}"
+                ))
+            })?;
         }
         ConnectionBackend::MySql(pool) => {
             if schema.trim() != session.database {
-                return Err(ApiError::bad_request("ADVANCED_IMPORT_SCHEMA_INVALID", "MySQL/MariaDB CSV import must target the connected database."));
+                return Err(ApiError::bad_request(
+                    "ADVANCED_IMPORT_SCHEMA_INVALID",
+                    "MySQL/MariaDB CSV import must target the connected database.",
+                ));
             }
             let schemas = discover_mysql_schema(pool, &session.database).await?;
-            let table_node = schemas[0].tables.iter().find(|item| item.name == table.trim()).ok_or_else(|| ApiError::not_found("CSV import target table was not found."))?;
+            let table_node = schemas[0]
+                .tables
+                .iter()
+                .find(|item| item.name == table.trim())
+                .ok_or_else(|| ApiError::not_found("CSV import target table was not found."))?;
             validate_import_columns(table_node, &rows)?;
             if error_mode == ImportErrorMode::SkipContinue {
                 let mut skipped = 0usize;
                 for row in &rows {
                     match mysql_insert_values(pool, schema.trim(), table.trim(), row).await {
                         Ok(()) => increment_import_job(&state, &job_id).await?,
-                        Err(_) => { skipped += 1; skip_import_job(&state, &job_id).await?; }
+                        Err(_) => {
+                            skipped += 1;
+                            skip_import_job(&state, &job_id).await?;
+                        }
                     }
                 }
                 invalidate_mutation_caches(&state, &connection_id).await;
                 return Ok((skipped > 0).then(|| format!("Skipped {skipped} CSV row(s).")));
             }
-            let mut tx = pool.begin().await.map_err(|error| ApiError::database(format!("Could not start MySQL/MariaDB CSV import transaction: {error}")))?;
+            let mut tx = pool.begin().await.map_err(|error| {
+                ApiError::database(format!(
+                    "Could not start MySQL/MariaDB CSV import transaction: {error}"
+                ))
+            })?;
             for row in &rows {
-                if let Err(error) = mysql_insert_values_tx(&mut tx, schema.trim(), table.trim(), row).await {
-                    if error_mode == ImportErrorMode::StopCommit { tx.commit().await.ok(); } else { tx.rollback().await.ok(); }
-                    return Err(ApiError::database(format!("MySQL/MariaDB CSV import failed: {error}")));
+                if let Err(error) =
+                    mysql_insert_values_tx(&mut tx, schema.trim(), table.trim(), row).await
+                {
+                    if error_mode == ImportErrorMode::StopCommit {
+                        tx.commit().await.ok();
+                    } else {
+                        tx.rollback().await.ok();
+                    }
+                    return Err(ApiError::database(format!(
+                        "MySQL/MariaDB CSV import failed: {error}"
+                    )));
                 }
                 increment_import_job(&state, &job_id).await?;
             }
-            tx.commit().await.map_err(|error| ApiError::database(format!("Could not commit MySQL/MariaDB CSV import transaction: {error}")))?;
+            tx.commit().await.map_err(|error| {
+                ApiError::database(format!(
+                    "Could not commit MySQL/MariaDB CSV import transaction: {error}"
+                ))
+            })?;
         }
         ConnectionBackend::Sqlite(pool) => {
             if schema.trim() != "main" {
-                return Err(ApiError::bad_request("ADVANCED_IMPORT_SCHEMA_INVALID", "SQLite CSV import requires the main schema."));
+                return Err(ApiError::bad_request(
+                    "ADVANCED_IMPORT_SCHEMA_INVALID",
+                    "SQLite CSV import requires the main schema.",
+                ));
             }
             let schemas = discover_sqlite_schema(pool).await?;
-            let table_node = schemas[0].tables.iter().find(|item| item.name == table.trim()).ok_or_else(|| ApiError::not_found("CSV import target table was not found."))?;
+            let table_node = schemas[0]
+                .tables
+                .iter()
+                .find(|item| item.name == table.trim())
+                .ok_or_else(|| ApiError::not_found("CSV import target table was not found."))?;
             validate_import_columns(table_node, &rows)?;
             if error_mode == ImportErrorMode::SkipContinue {
                 let mut skipped = 0usize;
                 for row in &rows {
                     match sqlite_insert_values(pool, table.trim(), row).await {
                         Ok(()) => increment_import_job(&state, &job_id).await?,
-                        Err(_) => { skipped += 1; skip_import_job(&state, &job_id).await?; }
+                        Err(_) => {
+                            skipped += 1;
+                            skip_import_job(&state, &job_id).await?;
+                        }
                     }
                 }
                 invalidate_mutation_caches(&state, &connection_id).await;
                 return Ok((skipped > 0).then(|| format!("Skipped {skipped} CSV row(s).")));
             }
-            let mut tx = pool.begin().await.map_err(|error| ApiError::database(format!("Could not start SQLite CSV import transaction: {error}")))?;
+            let mut tx = pool.begin().await.map_err(|error| {
+                ApiError::database(format!(
+                    "Could not start SQLite CSV import transaction: {error}"
+                ))
+            })?;
             for row in &rows {
                 if let Err(error) = sqlite_insert_values_tx(&mut tx, table.trim(), row).await {
-                    if error_mode == ImportErrorMode::StopCommit { tx.commit().await.ok(); } else { tx.rollback().await.ok(); }
-                    return Err(ApiError::database(format!("SQLite CSV import failed: {error}")));
+                    if error_mode == ImportErrorMode::StopCommit {
+                        tx.commit().await.ok();
+                    } else {
+                        tx.rollback().await.ok();
+                    }
+                    return Err(ApiError::database(format!(
+                        "SQLite CSV import failed: {error}"
+                    )));
                 }
                 increment_import_job(&state, &job_id).await?;
             }
-            tx.commit().await.map_err(|error| ApiError::database(format!("Could not commit SQLite CSV import transaction: {error}")))?;
+            tx.commit().await.map_err(|error| {
+                ApiError::database(format!(
+                    "Could not commit SQLite CSV import transaction: {error}"
+                ))
+            })?;
         }
-        ConnectionBackend::Mongo(_) => return Err(ApiError::bad_request("ADVANCED_IMPORT_PROVIDER_UNSUPPORTED", "CSV import targets relational database sessions only.")),
+        ConnectionBackend::Mongo(_) => {
+            return Err(ApiError::bad_request(
+                "ADVANCED_IMPORT_PROVIDER_UNSUPPORTED",
+                "CSV import targets relational database sessions only.",
+            ))
+        }
     }
     invalidate_mutation_caches(&state, &connection_id).await;
     Ok(None)
 }
 
-fn validate_import_columns(table: &TableNode, rows: &[HashMap<String, Value>]) -> Result<(), ApiError> {
+fn validate_import_columns(
+    table: &TableNode,
+    rows: &[HashMap<String, Value>],
+) -> Result<(), ApiError> {
     if !table.writable || table.kind != "base_table" {
-        return Err(ApiError::bad_request("ADVANCED_IMPORT_TABLE_READ_ONLY", "CSV import target must be a writable base table."));
+        return Err(ApiError::bad_request(
+            "ADVANCED_IMPORT_TABLE_READ_ONLY",
+            "CSV import target must be a writable base table.",
+        ));
     }
-    let allowed = table.columns.iter().map(|column| column.name.as_str()).collect::<Vec<_>>();
+    let allowed = table
+        .columns
+        .iter()
+        .map(|column| column.name.as_str())
+        .collect::<Vec<_>>();
     for column in rows.first().into_iter().flat_map(|row| row.keys()) {
         if !allowed.iter().any(|allowed| allowed == column) {
-            return Err(ApiError::bad_request("ADVANCED_IMPORT_COLUMN_INVALID", format!("CSV import target column {column} does not exist.")));
+            return Err(ApiError::bad_request(
+                "ADVANCED_IMPORT_COLUMN_INVALID",
+                format!("CSV import target column {column} does not exist."),
+            ));
         }
     }
     Ok(())
@@ -2762,7 +4380,10 @@ fn validate_import_columns(table: &TableNode, rows: &[HashMap<String, Value>]) -
 async fn increment_import_job(state: &Arc<AppState>, job_id: &str) -> Result<(), ApiError> {
     if let Some(job) = state.advanced.import_jobs.write().await.get_mut(job_id) {
         if job.status == ExportJobStatus::Cancelled {
-            return Err(ApiError::bad_request("ADVANCED_IMPORT_CANCELLED", "Import job was cancelled."));
+            return Err(ApiError::bad_request(
+                "ADVANCED_IMPORT_CANCELLED",
+                "Import job was cancelled.",
+            ));
         }
         job.executed_statements += 1;
     }
@@ -2772,7 +4393,10 @@ async fn increment_import_job(state: &Arc<AppState>, job_id: &str) -> Result<(),
 async fn skip_import_job(state: &Arc<AppState>, job_id: &str) -> Result<(), ApiError> {
     if let Some(job) = state.advanced.import_jobs.write().await.get_mut(job_id) {
         if job.status == ExportJobStatus::Cancelled {
-            return Err(ApiError::bad_request("ADVANCED_IMPORT_CANCELLED", "Import job was cancelled."));
+            return Err(ApiError::bad_request(
+                "ADVANCED_IMPORT_CANCELLED",
+                "Import job was cancelled.",
+            ));
         }
         job.skipped_statements += 1;
     }
@@ -2803,22 +4427,65 @@ async fn run_export_job(
 
     for page_index in 0..=MAX_EXPORT_ROWS / EXPORT_PAGE_SIZE {
         let page = match session.backend.clone() {
-            ConnectionBackend::Postgres(pool) => run_postgres_query(pool, format!("export:{job_id}:{page_index}"), sql.clone(), EXPORT_PAGE_SIZE, offset, sort.clone(), filter_tree.clone()).await?,
-            ConnectionBackend::MySql(pool) => run_mysql_query(pool, format!("export:{job_id}:{page_index}"), sql.clone(), EXPORT_PAGE_SIZE, offset, sort.clone(), filter_tree.clone()).await?,
-            ConnectionBackend::Sqlite(pool) => run_sqlite_query(pool, format!("export:{job_id}:{page_index}"), sql.clone(), EXPORT_PAGE_SIZE, offset, sort.clone(), filter_tree.clone()).await?,
-            ConnectionBackend::Mongo(_) => return Err(ApiError::bad_request("ADVANCED_EXPORT_MONGO_UNSUPPORTED", "MongoDB export still uses the document query path.")),
+            ConnectionBackend::Postgres(pool) => {
+                run_postgres_query(
+                    pool,
+                    format!("export:{job_id}:{page_index}"),
+                    sql.clone(),
+                    EXPORT_PAGE_SIZE,
+                    offset,
+                    sort.clone(),
+                    filter_tree.clone(),
+                )
+                .await?
+            }
+            ConnectionBackend::MySql(pool) => {
+                run_mysql_query(
+                    pool,
+                    format!("export:{job_id}:{page_index}"),
+                    sql.clone(),
+                    EXPORT_PAGE_SIZE,
+                    offset,
+                    sort.clone(),
+                    filter_tree.clone(),
+                )
+                .await?
+            }
+            ConnectionBackend::Sqlite(pool) => {
+                run_sqlite_query(
+                    pool,
+                    format!("export:{job_id}:{page_index}"),
+                    sql.clone(),
+                    EXPORT_PAGE_SIZE,
+                    offset,
+                    sort.clone(),
+                    filter_tree.clone(),
+                )
+                .await?
+            }
+            ConnectionBackend::Mongo(_) => {
+                return Err(ApiError::bad_request(
+                    "ADVANCED_EXPORT_MONGO_UNSUPPORTED",
+                    "MongoDB export still uses the document query path.",
+                ))
+            }
         };
         if page_index == 0 {
             columns = page.columns;
             if format == "csv" {
-                output.extend_from_slice(csv_line(columns.iter().map(|column| column.name.as_str())).as_bytes());
+                output.extend_from_slice(
+                    csv_line(columns.iter().map(|column| column.name.as_str())).as_bytes(),
+                );
             }
         }
         if page.rows.is_empty() {
             break;
         }
         if total_rows + page.rows.len() > MAX_EXPORT_ROWS {
-            return Err(ApiError::bad_request("ADVANCED_EXPORT_ROW_LIMIT", "Backend export is limited to 250,000 rows per interactive job."));
+            return Err(ApiError::bad_request(
+                "ADVANCED_EXPORT_ROW_LIMIT",
+                "Backend export is limited to 250,000 rows per interactive job.",
+            ));
         }
         match format.as_str() {
             "json" => {
@@ -2827,16 +4494,37 @@ async fn run_export_job(
                         output.extend_from_slice(b",\n");
                     }
                     first_json_row = false;
-                    let object = serde_json::Map::from_iter(columns.iter().enumerate().map(|(index, column)| (column.name.clone(), row.get(index).cloned().unwrap_or(Value::Null))));
-                    output.extend_from_slice(serde_json::to_string(&Value::Object(object)).unwrap_or_else(|_| "{}".to_string()).as_bytes());
+                    let object = serde_json::Map::from_iter(columns.iter().enumerate().map(
+                        |(index, column)| {
+                            (
+                                column.name.clone(),
+                                row.get(index).cloned().unwrap_or(Value::Null),
+                            )
+                        },
+                    ));
+                    output.extend_from_slice(
+                        serde_json::to_string(&Value::Object(object))
+                            .unwrap_or_else(|_| "{}".to_string())
+                            .as_bytes(),
+                    );
                 }
             }
             "sql" => {
-                let names = columns.iter().map(|column| quote_sql_identifier(&column.name)).collect::<Vec<_>>().join(", ");
+                let names = columns
+                    .iter()
+                    .map(|column| quote_sql_identifier(&column.name))
+                    .collect::<Vec<_>>()
+                    .join(", ");
                 let table = quote_sql_identifier(&target_table);
                 for row in &page.rows {
-                    let values = row.iter().map(sql_literal_json).collect::<Vec<_>>().join(", ");
-                    output.extend_from_slice(format!("INSERT INTO {table} ({names}) VALUES ({values});\n").as_bytes());
+                    let values = row
+                        .iter()
+                        .map(sql_literal_json)
+                        .collect::<Vec<_>>()
+                        .join(", ");
+                    output.extend_from_slice(
+                        format!("INSERT INTO {table} ({names}) VALUES ({values});\n").as_bytes(),
+                    );
                 }
             }
             "xlsx" => {
@@ -2851,7 +4539,10 @@ async fn run_export_job(
         total_rows += page.rows.len();
         if let Some(job) = state.advanced.export_jobs.write().await.get_mut(&job_id) {
             if job.status == ExportJobStatus::Cancelled {
-                return Err(ApiError::bad_request("ADVANCED_EXPORT_CANCELLED", "Export job was cancelled."));
+                return Err(ApiError::bad_request(
+                    "ADVANCED_EXPORT_CANCELLED",
+                    "Export job was cancelled.",
+                ));
             }
             job.rows = total_rows;
         }
@@ -2867,14 +4558,27 @@ async fn run_export_job(
     if format == "xlsx" {
         let path = format!("/tmp/lightbi-advanced-export-{job_id}.xlsx");
         let result_set = ResultSet {
-            columns: columns.iter().map(|column| ColumnDef { name: column.name.clone(), data_type: column.native_type.clone() }).collect(),
+            columns: columns
+                .iter()
+                .map(|column| ColumnDef {
+                    name: column.name.clone(),
+                    data_type: column.native_type.clone(),
+                })
+                .collect(),
             rows: xlsx_rows,
             statistics: HashMap::new(),
-            metadata: ExecutionMetadata { rows_processed: total_rows as u64, execution_time_ms: 0, backend_name: "advanced".to_string() },
+            metadata: ExecutionMetadata {
+                rows_processed: total_rows as u64,
+                execution_time_ms: 0,
+                backend_name: "advanced".to_string(),
+            },
         };
-        ExcelGenerator::generate_from_resultset(&result_set, &path)
-            .map_err(|error| ApiError::database(format!("Could not generate XLSX export: {error}")))?;
-        let bytes = tokio::fs::read(&path).await.map_err(|error| ApiError::database(format!("Could not read XLSX export: {error}")))?;
+        ExcelGenerator::generate_from_resultset(&result_set, &path).map_err(|error| {
+            ApiError::database(format!("Could not generate XLSX export: {error}"))
+        })?;
+        let bytes = tokio::fs::read(&path)
+            .await
+            .map_err(|error| ApiError::database(format!("Could not read XLSX export: {error}")))?;
         let _ = tokio::fs::remove_file(&path).await;
         return Ok(bytes);
     }
@@ -2882,13 +4586,21 @@ async fn run_export_job(
 }
 
 fn csv_line<T: AsRef<str>>(cells: impl IntoIterator<Item = T>) -> String {
-    let mut line = cells.into_iter().map(|cell| csv_cell(cell.as_ref())).collect::<Vec<_>>().join(",");
+    let mut line = cells
+        .into_iter()
+        .map(|cell| csv_cell(cell.as_ref()))
+        .collect::<Vec<_>>()
+        .join(",");
     line.push('\n');
     line
 }
 
 fn csv_cell(value: &str) -> String {
-    let hardened = if value.starts_with(['=', '+', '-', '@']) { format!("'{value}") } else { value.to_string() };
+    let hardened = if value.starts_with(['=', '+', '-', '@']) {
+        format!("'{value}")
+    } else {
+        value.to_string()
+    };
     if hardened.contains([',', '"', '\n', '\r']) {
         format!("\"{}\"", hardened.replace('"', "\"\""))
     } else {
@@ -2917,26 +4629,48 @@ fn sql_literal_json(value: &Value) -> String {
     }
 }
 
-async fn postgres_insert_values(pool: &PgPool, schema: &str, table: &str, row: &HashMap<String, Value>) -> Result<(), sqlx::Error> {
+async fn postgres_insert_values(
+    pool: &PgPool,
+    schema: &str,
+    table: &str,
+    row: &HashMap<String, Value>,
+) -> Result<(), sqlx::Error> {
     let mut builder = postgres_insert_builder(schema, table, row);
     builder.build().execute(pool).await.map(|_| ())
 }
 
-async fn postgres_insert_values_tx(tx: &mut sqlx::Transaction<'_, Postgres>, schema: &str, table: &str, row: &HashMap<String, Value>) -> Result<(), sqlx::Error> {
+async fn postgres_insert_values_tx(
+    tx: &mut sqlx::Transaction<'_, Postgres>,
+    schema: &str,
+    table: &str,
+    row: &HashMap<String, Value>,
+) -> Result<(), sqlx::Error> {
     let mut builder = postgres_insert_builder(schema, table, row);
     builder.build().execute(&mut **tx).await.map(|_| ())
 }
 
-fn postgres_insert_builder<'a>(schema: &'a str, table: &'a str, row: &'a HashMap<String, Value>) -> QueryBuilder<'a, Postgres> {
+fn postgres_insert_builder<'a>(
+    schema: &'a str,
+    table: &'a str,
+    row: &'a HashMap<String, Value>,
+) -> QueryBuilder<'a, Postgres> {
     let columns = sorted_keys(row);
-    let mut builder = QueryBuilder::<Postgres>::new(format!("INSERT INTO {}.{} (", quote_pg_identifier(schema), quote_pg_identifier(table)));
+    let mut builder = QueryBuilder::<Postgres>::new(format!(
+        "INSERT INTO {}.{} (",
+        quote_pg_identifier(schema),
+        quote_pg_identifier(table)
+    ));
     for (index, column) in columns.iter().enumerate() {
-        if index > 0 { builder.push(", "); }
+        if index > 0 {
+            builder.push(", ");
+        }
         builder.push(quote_pg_identifier(column));
     }
     builder.push(") VALUES (");
     for (index, column) in columns.iter().enumerate() {
-        if index > 0 { builder.push(", "); }
+        if index > 0 {
+            builder.push(", ");
+        }
         postgres_push_import_value(&mut builder, &row[column]);
     }
     builder.push(")");
@@ -2945,62 +4679,119 @@ fn postgres_insert_builder<'a>(schema: &'a str, table: &'a str, row: &'a HashMap
 
 fn postgres_push_import_value(builder: &mut QueryBuilder<Postgres>, value: &Value) {
     match value {
-        Value::Null => { builder.push("NULL"); }
-        Value::String(value) => { builder.push_bind(value.clone()); }
-        Value::Bool(value) => { builder.push_bind(*value); }
-        Value::Number(value) if value.is_i64() => { builder.push_bind(value.as_i64().unwrap_or_default()); }
-        Value::Number(value) if value.is_u64() => { builder.push_bind(value.as_u64().and_then(|item| i64::try_from(item).ok()).unwrap_or(i64::MAX)); }
-        Value::Number(value) => { builder.push_bind(value.as_f64().unwrap_or_default()); }
-        other => { builder.push_bind(other.to_string()); }
+        Value::Null => {
+            builder.push("NULL");
+        }
+        Value::String(value) => {
+            builder.push_bind(value.clone());
+        }
+        Value::Bool(value) => {
+            builder.push_bind(*value);
+        }
+        Value::Number(value) if value.is_i64() => {
+            builder.push_bind(value.as_i64().unwrap_or_default());
+        }
+        Value::Number(value) if value.is_u64() => {
+            builder.push_bind(
+                value
+                    .as_u64()
+                    .and_then(|item| i64::try_from(item).ok())
+                    .unwrap_or(i64::MAX),
+            );
+        }
+        Value::Number(value) => {
+            builder.push_bind(value.as_f64().unwrap_or_default());
+        }
+        other => {
+            builder.push_bind(other.to_string());
+        }
     };
 }
 
-async fn mysql_insert_values(pool: &MySqlPool, schema: &str, table: &str, row: &HashMap<String, Value>) -> Result<(), sqlx::Error> {
+async fn mysql_insert_values(
+    pool: &MySqlPool,
+    schema: &str,
+    table: &str,
+    row: &HashMap<String, Value>,
+) -> Result<(), sqlx::Error> {
     let mut builder = mysql_insert_builder(schema, table, row);
     builder.build().execute(pool).await.map(|_| ())
 }
 
-async fn mysql_insert_values_tx(tx: &mut sqlx::Transaction<'_, MySql>, schema: &str, table: &str, row: &HashMap<String, Value>) -> Result<(), sqlx::Error> {
+async fn mysql_insert_values_tx(
+    tx: &mut sqlx::Transaction<'_, MySql>,
+    schema: &str,
+    table: &str,
+    row: &HashMap<String, Value>,
+) -> Result<(), sqlx::Error> {
     let mut builder = mysql_insert_builder(schema, table, row);
     builder.build().execute(&mut **tx).await.map(|_| ())
 }
 
-fn mysql_insert_builder<'a>(schema: &'a str, table: &'a str, row: &'a HashMap<String, Value>) -> QueryBuilder<'a, MySql> {
+fn mysql_insert_builder<'a>(
+    schema: &'a str,
+    table: &'a str,
+    row: &'a HashMap<String, Value>,
+) -> QueryBuilder<'a, MySql> {
     let columns = sorted_keys(row);
-    let mut builder = QueryBuilder::<MySql>::new(format!("INSERT INTO {}.{} (", quote_mysql_identifier(schema), quote_mysql_identifier(table)));
+    let mut builder = QueryBuilder::<MySql>::new(format!(
+        "INSERT INTO {}.{} (",
+        quote_mysql_identifier(schema),
+        quote_mysql_identifier(table)
+    ));
     for (index, column) in columns.iter().enumerate() {
-        if index > 0 { builder.push(", "); }
+        if index > 0 {
+            builder.push(", ");
+        }
         builder.push(quote_mysql_identifier(column));
     }
     builder.push(") VALUES (");
     for (index, column) in columns.iter().enumerate() {
-        if index > 0 { builder.push(", "); }
+        if index > 0 {
+            builder.push(", ");
+        }
         mysql_push_value(&mut builder, &row[column]);
     }
     builder.push(")");
     builder
 }
 
-async fn sqlite_insert_values(pool: &SqlitePool, table: &str, row: &HashMap<String, Value>) -> Result<(), sqlx::Error> {
+async fn sqlite_insert_values(
+    pool: &SqlitePool,
+    table: &str,
+    row: &HashMap<String, Value>,
+) -> Result<(), sqlx::Error> {
     let mut builder = sqlite_insert_builder(table, row);
     builder.build().execute(pool).await.map(|_| ())
 }
 
-async fn sqlite_insert_values_tx(tx: &mut sqlx::Transaction<'_, Sqlite>, table: &str, row: &HashMap<String, Value>) -> Result<(), sqlx::Error> {
+async fn sqlite_insert_values_tx(
+    tx: &mut sqlx::Transaction<'_, Sqlite>,
+    table: &str,
+    row: &HashMap<String, Value>,
+) -> Result<(), sqlx::Error> {
     let mut builder = sqlite_insert_builder(table, row);
     builder.build().execute(&mut **tx).await.map(|_| ())
 }
 
-fn sqlite_insert_builder<'a>(table: &'a str, row: &'a HashMap<String, Value>) -> QueryBuilder<'a, Sqlite> {
+fn sqlite_insert_builder<'a>(
+    table: &'a str,
+    row: &'a HashMap<String, Value>,
+) -> QueryBuilder<'a, Sqlite> {
     let columns = sorted_keys(row);
-    let mut builder = QueryBuilder::<Sqlite>::new(format!("INSERT INTO {} (", quote_sql_identifier(table)));
+    let mut builder =
+        QueryBuilder::<Sqlite>::new(format!("INSERT INTO {} (", quote_sql_identifier(table)));
     for (index, column) in columns.iter().enumerate() {
-        if index > 0 { builder.push(", "); }
+        if index > 0 {
+            builder.push(", ");
+        }
         builder.push(quote_sql_identifier(column));
     }
     builder.push(") VALUES (");
     for (index, column) in columns.iter().enumerate() {
-        if index > 0 { builder.push(", "); }
+        if index > 0 {
+            builder.push(", ");
+        }
         sqlite_push_value(&mut builder, &row[column]);
     }
     builder.push(")");
@@ -3009,46 +4800,130 @@ fn sqlite_insert_builder<'a>(table: &'a str, row: &'a HashMap<String, Value>) ->
 
 fn logical_type_mysql(native: &str) -> &'static str {
     let native = native.to_ascii_uppercase();
-    if native.contains("INT") || native.contains("DECIMAL") || native.contains("FLOAT") || native.contains("DOUBLE") { "number" }
-    else if native.contains("DATE") || native.contains("TIME") || native.contains("YEAR") { "date" }
-    else if native.contains("BOOL") || native == "TINYINT" { "boolean" } else { "string" }
+    if native.contains("INT")
+        || native.contains("DECIMAL")
+        || native.contains("FLOAT")
+        || native.contains("DOUBLE")
+    {
+        "number"
+    } else if native.contains("DATE") || native.contains("TIME") || native.contains("YEAR") {
+        "date"
+    } else if native.contains("BOOL") || native == "TINYINT" {
+        "boolean"
+    } else {
+        "string"
+    }
 }
 
 fn logical_type_sqlite(native: &str) -> &'static str {
-    match native.to_ascii_uppercase().as_str() { "INTEGER" | "REAL" | "NUMERIC" => "number", "BOOLEAN" => "boolean", "DATE" | "DATETIME" => "date", _ => "string" }
+    match native.to_ascii_uppercase().as_str() {
+        "INTEGER" | "REAL" | "NUMERIC" => "number",
+        "BOOLEAN" => "boolean",
+        "DATE" | "DATETIME" => "date",
+        _ => "string",
+    }
 }
 
 fn mysql_cell(row: &MySqlRow, index: usize, native: &str) -> Value {
-    if row.try_get_raw(index).map(|value| value.is_null()).unwrap_or(true) { return Value::Null; }
+    if row
+        .try_get_raw(index)
+        .map(|value| value.is_null())
+        .unwrap_or(true)
+    {
+        return Value::Null;
+    }
     let upper = native.to_ascii_uppercase();
     if upper.contains("BOOL") {
-        return row.try_get::<bool, _>(index).map(Value::Bool)
-            .or_else(|_| row.try_get::<i8, _>(index).map(|value| Value::Bool(value != 0)))
-            .or_else(|_| row.try_get::<u8, _>(index).map(|value| Value::Bool(value != 0)))
+        return row
+            .try_get::<bool, _>(index)
+            .map(Value::Bool)
+            .or_else(|_| {
+                row.try_get::<i8, _>(index)
+                    .map(|value| Value::Bool(value != 0))
+            })
+            .or_else(|_| {
+                row.try_get::<u8, _>(index)
+                    .map(|value| Value::Bool(value != 0))
+            })
             .unwrap_or_else(|_| Value::String("[unsupported value]".into()));
     }
     if upper.contains("INT") {
-        return row.try_get::<i64, _>(index).map(|value| Value::String(value.to_string()))
-            .or_else(|_| row.try_get::<u64, _>(index).map(|value| Value::String(value.to_string())))
+        return row
+            .try_get::<i64, _>(index)
+            .map(|value| Value::String(value.to_string()))
+            .or_else(|_| {
+                row.try_get::<u64, _>(index)
+                    .map(|value| Value::String(value.to_string()))
+            })
             .unwrap_or_else(|_| Value::String("[unsupported value]".into()));
     }
-    if upper.contains("FLOAT") || upper.contains("DOUBLE") { return row.try_get::<f64, _>(index).map(|value| json!(value)).unwrap_or(Value::Null); }
-    if upper.contains("DECIMAL") { return row.try_get::<Decimal, _>(index).map(|value| Value::String(value.to_string())).unwrap_or(Value::Null); }
-    if upper == "DATE" { return row.try_get::<NaiveDate, _>(index).map(|value| Value::String(value.to_string())).unwrap_or(Value::Null); }
-    if upper.contains("DATETIME") || upper.contains("TIMESTAMP") { return row.try_get::<NaiveDateTime, _>(index).map(|value| Value::String(value.to_string())).unwrap_or(Value::Null); }
-    if upper == "TIME" { return row.try_get::<NaiveTime, _>(index).map(|value| Value::String(value.to_string())).unwrap_or(Value::Null); }
-    if upper == "JSON" { return row.try_get::<Value, _>(index).unwrap_or(Value::Null); }
-    row.try_get::<String, _>(index).map(Value::String).unwrap_or_else(|_| Value::String("[unsupported value]".into()))
+    if upper.contains("FLOAT") || upper.contains("DOUBLE") {
+        return row
+            .try_get::<f64, _>(index)
+            .map(|value| json!(value))
+            .unwrap_or(Value::Null);
+    }
+    if upper.contains("DECIMAL") {
+        return row
+            .try_get::<Decimal, _>(index)
+            .map(|value| Value::String(value.to_string()))
+            .unwrap_or(Value::Null);
+    }
+    if upper == "DATE" {
+        return row
+            .try_get::<NaiveDate, _>(index)
+            .map(|value| Value::String(value.to_string()))
+            .unwrap_or(Value::Null);
+    }
+    if upper.contains("DATETIME") || upper.contains("TIMESTAMP") {
+        return row
+            .try_get::<NaiveDateTime, _>(index)
+            .map(|value| Value::String(value.to_string()))
+            .unwrap_or(Value::Null);
+    }
+    if upper == "TIME" {
+        return row
+            .try_get::<NaiveTime, _>(index)
+            .map(|value| Value::String(value.to_string()))
+            .unwrap_or(Value::Null);
+    }
+    if upper == "JSON" {
+        return row.try_get::<Value, _>(index).unwrap_or(Value::Null);
+    }
+    row.try_get::<String, _>(index)
+        .map(Value::String)
+        .unwrap_or_else(|_| Value::String("[unsupported value]".into()))
 }
 
 fn sqlite_cell(row: &SqliteRow, index: usize, native: &str) -> Value {
-    if row.try_get_raw(index).map(|value| value.is_null()).unwrap_or(true) { return Value::Null; }
+    if row
+        .try_get_raw(index)
+        .map(|value| value.is_null())
+        .unwrap_or(true)
+    {
+        return Value::Null;
+    }
     match native.to_ascii_uppercase().as_str() {
-        "INTEGER" => row.try_get::<i64, _>(index).map(|value| Value::String(value.to_string())).unwrap_or(Value::Null),
-        "REAL" => row.try_get::<f64, _>(index).map(|value| json!(value)).unwrap_or(Value::Null),
-        "BOOLEAN" => row.try_get::<bool, _>(index).map(Value::Bool).unwrap_or(Value::Null),
-        "BLOB" => row.try_get::<Vec<u8>, _>(index).map(|value| Value::String(format!("[binary: {} bytes]", value.len()))).unwrap_or(Value::Null),
-        _ => row.try_get::<String, _>(index).map(Value::String).unwrap_or_else(|_| Value::String("[unsupported value]".into())),
+        "INTEGER" => row
+            .try_get::<i64, _>(index)
+            .map(|value| Value::String(value.to_string()))
+            .unwrap_or(Value::Null),
+        "REAL" => row
+            .try_get::<f64, _>(index)
+            .map(|value| json!(value))
+            .unwrap_or(Value::Null),
+        "BOOLEAN" => row
+            .try_get::<bool, _>(index)
+            .map(Value::Bool)
+            .unwrap_or(Value::Null),
+        "BLOB" => row
+            .try_get::<Vec<u8>, _>(index)
+            .map(|value| Value::String(format!("[binary: {} bytes]", value.len())))
+            .unwrap_or(Value::Null),
+        _ => row
+            .try_get::<String, _>(index)
+            .map(Value::String)
+            .unwrap_or_else(|_| Value::String("[unsupported value]".into())),
     }
 }
 
@@ -3126,7 +5001,9 @@ mod tests {
 
     #[test]
     fn validates_write_script_statements() {
-        match split_script_statements("CREATE TABLE people (id INT); INSERT INTO people (id) VALUES (1);") {
+        match split_script_statements(
+            "CREATE TABLE people (id INT); INSERT INTO people (id) VALUES (1);",
+        ) {
             Ok(statements) => assert_eq!(statements.len(), 2),
             Err(_) => panic!("valid script should pass"),
         }
@@ -3184,11 +5061,22 @@ mod tests {
 
     #[tokio::test]
     async fn sqlite_mutation_requires_primary_key_and_expected_value() {
-        let pool = SqlitePoolOptions::new().max_connections(1).connect("sqlite::memory:").await.expect("sqlite pool");
-        sqlx::query("CREATE TABLE people (id INTEGER PRIMARY KEY, name TEXT NOT NULL)").execute(&pool).await.expect("create table");
-        sqlx::query("INSERT INTO people (id, name) VALUES (1, 'Alice')").execute(&pool).await.expect("insert row");
+        let pool = SqlitePoolOptions::new()
+            .max_connections(1)
+            .connect("sqlite::memory:")
+            .await
+            .expect("sqlite pool");
+        sqlx::query("CREATE TABLE people (id INTEGER PRIMARY KEY, name TEXT NOT NULL)")
+            .execute(&pool)
+            .await
+            .expect("create table");
+        sqlx::query("INSERT INTO people (id, name) VALUES (1, 'Alice')")
+            .execute(&pool)
+            .await
+            .expect("insert row");
         let request = MutationRequest {
-            schema: "main".into(), table: "people".into(),
+            schema: "main".into(),
+            table: "people".into(),
             rows: vec![RowMutationRequest {
                 action: MutationAction::Update,
                 key: HashMap::from([("id".into(), json!(1))]),
@@ -3196,26 +5084,58 @@ mod tests {
                 expected: HashMap::from([("name".into(), json!("Alice"))]),
             }],
         };
-        let schemas = discover_sqlite_schema(&pool).await.unwrap_or_else(|error| panic!("discover schema: {}", error.message));
-        let table = schemas[0].tables.iter().find(|table| table.name == "people").expect("people table");
+        let schemas = discover_sqlite_schema(&pool)
+            .await
+            .unwrap_or_else(|error| panic!("discover schema: {}", error.message));
+        let table = schemas[0]
+            .tables
+            .iter()
+            .find(|table| table.name == "people")
+            .expect("people table");
         assert!(table.writable);
-        assert!(table.columns.iter().any(|column| column.name == "id" && column.primary_key));
-        validate_mutation_request(table, &request).unwrap_or_else(|error| panic!("valid mutation: {}", error.message));
-        let result = sqlite_mutation_builder(&request, &request.rows[0]).build().execute(&pool).await.expect("update row");
+        assert!(table
+            .columns
+            .iter()
+            .any(|column| column.name == "id" && column.primary_key));
+        validate_mutation_request(table, &request)
+            .unwrap_or_else(|error| panic!("valid mutation: {}", error.message));
+        let result = sqlite_mutation_builder(&request, &request.rows[0])
+            .build()
+            .execute(&pool)
+            .await
+            .expect("update row");
         assert_eq!(result.rows_affected(), 1);
-        let name: String = sqlx::query_scalar("SELECT name FROM people WHERE id = 1").fetch_one(&pool).await.expect("read row");
+        let name: String = sqlx::query_scalar("SELECT name FROM people WHERE id = 1")
+            .fetch_one(&pool)
+            .await
+            .expect("read row");
         assert_eq!(name, "Alicia");
-        let conflict = sqlite_mutation_builder(&request, &request.rows[0]).build().execute(&pool).await.expect("stale update");
+        let conflict = sqlite_mutation_builder(&request, &request.rows[0])
+            .build()
+            .execute(&pool)
+            .await
+            .expect("stale update");
         assert_eq!(conflict.rows_affected(), 0);
     }
 
     #[tokio::test]
     async fn sqlite_mutation_rolls_back_the_entire_batch_on_conflict() {
-        let pool = SqlitePoolOptions::new().max_connections(1).connect("sqlite::memory:").await.expect("sqlite pool");
-        sqlx::query("CREATE TABLE people (id INTEGER PRIMARY KEY, name TEXT NOT NULL)").execute(&pool).await.expect("create table");
-        sqlx::query("INSERT INTO people (id, name) VALUES (1, 'Alice'), (2, 'Bob')").execute(&pool).await.expect("insert rows");
+        let pool = SqlitePoolOptions::new()
+            .max_connections(1)
+            .connect("sqlite::memory:")
+            .await
+            .expect("sqlite pool");
+        sqlx::query("CREATE TABLE people (id INTEGER PRIMARY KEY, name TEXT NOT NULL)")
+            .execute(&pool)
+            .await
+            .expect("create table");
+        sqlx::query("INSERT INTO people (id, name) VALUES (1, 'Alice'), (2, 'Bob')")
+            .execute(&pool)
+            .await
+            .expect("insert rows");
         let request = MutationRequest {
-            schema: "main".into(), table: "people".into(),
+            schema: "main".into(),
+            table: "people".into(),
             rows: vec![
                 RowMutationRequest {
                     action: MutationAction::Update,
@@ -3232,30 +5152,62 @@ mod tests {
             ],
         };
         let mut transaction = pool.begin().await.expect("begin transaction");
-        let first = sqlite_mutation_builder(&request, &request.rows[0]).build().execute(&mut *transaction).await.expect("first update");
-        let conflict = sqlite_mutation_builder(&request, &request.rows[1]).build().execute(&mut *transaction).await.expect("stale update");
+        let first = sqlite_mutation_builder(&request, &request.rows[0])
+            .build()
+            .execute(&mut *transaction)
+            .await
+            .expect("first update");
+        let conflict = sqlite_mutation_builder(&request, &request.rows[1])
+            .build()
+            .execute(&mut *transaction)
+            .await
+            .expect("stale update");
         assert_eq!(first.rows_affected(), 1);
         assert_eq!(conflict.rows_affected(), 0);
         transaction.rollback().await.expect("rollback transaction");
-        let names: Vec<String> = sqlx::query_scalar("SELECT name FROM people ORDER BY id").fetch_all(&pool).await.expect("read rows");
+        let names: Vec<String> = sqlx::query_scalar("SELECT name FROM people ORDER BY id")
+            .fetch_all(&pool)
+            .await
+            .expect("read rows");
         assert_eq!(names, vec!["Alice", "Bob"]);
     }
 
     fn mutation_test_table(native_type: &str) -> TableNode {
         TableNode {
-            name: "people".into(), kind: "base_table".into(), estimated_rows: None,
-            table_size_bytes: None, comment: None, ddl: None, writable: true,
-            indexes: Vec::new(), foreign_keys: Vec::new(),
+            name: "people".into(),
+            kind: "base_table".into(),
+            estimated_rows: None,
+            table_size_bytes: None,
+            comment: None,
+            ddl: None,
+            writable: true,
+            indexes: Vec::new(),
+            foreign_keys: Vec::new(),
             columns: vec![
-                ColumnNode { name: "id".into(), native_type: "integer".into(), nullable: false, primary_key: true, default_value: None, comment: None },
-                ColumnNode { name: "name".into(), native_type: native_type.into(), nullable: false, primary_key: false, default_value: None, comment: None },
+                ColumnNode {
+                    name: "id".into(),
+                    native_type: "integer".into(),
+                    nullable: false,
+                    primary_key: true,
+                    default_value: None,
+                    comment: None,
+                },
+                ColumnNode {
+                    name: "name".into(),
+                    native_type: native_type.into(),
+                    nullable: false,
+                    primary_key: false,
+                    default_value: None,
+                    comment: None,
+                },
             ],
         }
     }
 
     fn mutation_test_request() -> MutationRequest {
         MutationRequest {
-            schema: "public".into(), table: "people".into(),
+            schema: "public".into(),
+            table: "people".into(),
             rows: vec![RowMutationRequest {
                 action: MutationAction::Update,
                 key: HashMap::from([("id".into(), json!(1))]),
@@ -3273,10 +5225,14 @@ mod tests {
             Ok(builder) => builder.sql().to_string(),
             Err(error) => panic!("postgres builder failed: {}", error.message),
         };
-        assert!(postgres.starts_with("UPDATE \"public\".\"people\" SET \"name\" = CAST($1 AS character varying)"));
+        assert!(postgres.starts_with(
+            "UPDATE \"public\".\"people\" SET \"name\" = CAST($1 AS character varying)"
+        ));
         assert!(postgres.contains("\"id\" = CAST($2 AS integer)"));
         assert!(!postgres.contains("Alicia"));
-        let mysql = mysql_mutation_builder(&request, &request.rows[0]).sql().to_string();
+        let mysql = mysql_mutation_builder(&request, &request.rows[0])
+            .sql()
+            .to_string();
         assert!(mysql.starts_with("UPDATE `public`.`people` SET `name` = ?"));
         assert!(mysql.contains("`id` = ?"));
         assert!(!mysql.contains("Alicia"));
@@ -3289,7 +5245,9 @@ mod tests {
         insert.rows[0].key.clear();
         insert.rows[0].expected.clear();
         insert.rows[0].changes.insert("id".into(), json!(3));
-        let sqlite_insert = sqlite_mutation_builder(&insert, &insert.rows[0]).sql().to_string();
+        let sqlite_insert = sqlite_mutation_builder(&insert, &insert.rows[0])
+            .sql()
+            .to_string();
         assert!(sqlite_insert.starts_with("INSERT INTO \"people\""));
         assert!(!sqlite_insert.contains("Alicia"));
 
@@ -3297,7 +5255,9 @@ mod tests {
         delete.rows[0].action = MutationAction::Delete;
         delete.rows[0].changes.clear();
         delete.rows[0].expected.clear();
-        let sqlite_delete = sqlite_mutation_builder(&delete, &delete.rows[0]).sql().to_string();
+        let sqlite_delete = sqlite_mutation_builder(&delete, &delete.rows[0])
+            .sql()
+            .to_string();
         assert!(sqlite_delete.starts_with("DELETE FROM \"people\" WHERE"));
         assert!(!sqlite_delete.contains("Alicia"));
     }
@@ -3305,7 +5265,11 @@ mod tests {
     #[test]
     fn rejects_postgres_types_outside_the_mutation_allowlist() {
         let request = mutation_test_request();
-        let error = match postgres_mutation_builder(&request, &request.rows[0], &mutation_test_table("ARRAY")) {
+        let error = match postgres_mutation_builder(
+            &request,
+            &request.rows[0],
+            &mutation_test_table("ARRAY"),
+        ) {
             Ok(_) => panic!("array mutation must be rejected"),
             Err(error) => error,
         };

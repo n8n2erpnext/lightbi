@@ -1,8 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { generateQuestionPlans, mapIntentToStructure } from './question-plan-generator';
 import type { BusinessViewCandidate } from './business-view-candidate-generator';
-import type { BusinessSignalRegistry, BusinessSignal } from './business-signal-detector';
-import { getDomainCatalog } from './domain-knowledge-catalog';
+import type { BusinessSignalRegistry } from './business-signal-detector';
 
 function createMockRegistry(): BusinessSignalRegistry {
   return {

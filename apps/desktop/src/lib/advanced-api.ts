@@ -5,7 +5,58 @@ export type AdvancedConnection = {
   connectionId: string;
   name: string;
   database: string;
-  provider: 'postgresql' | 'mysql' | 'mariadb' | 'sqlite' | 'mongodb';
+  provider: AdvancedProviderId;
+};
+
+export type AdvancedProviderId = 'postgresql' | 'mysql' | 'mariadb' | 'sqlite' | 'mongodb';
+
+export type AdvancedProviderCapabilityMap = {
+  connect: boolean;
+  schemaDiscovery: boolean;
+  readOnlyQuery: boolean;
+  cancellableQuery: boolean;
+  streamingQuery: boolean;
+  writeback: boolean;
+  ddl: boolean;
+  importRows: boolean;
+  exportRows: boolean;
+  explain: boolean;
+  serverDashboard: boolean;
+  semanticHints: boolean;
+};
+
+export type AdvancedProviderConnectionField = {
+  id: string;
+  label: string;
+  kind: 'text' | 'password' | 'number' | 'boolean' | 'select' | 'path';
+  required: boolean;
+  defaultValue?: unknown;
+  placeholder?: string;
+  secret?: boolean;
+  helpText?: string;
+};
+
+export type AdvancedProviderPlugin = {
+  manifest: {
+    apiVersion: string;
+    id: AdvancedProviderId;
+    displayName: string;
+    version: string;
+    providerKind: string;
+    description: string;
+    iconName?: string | null;
+    defaultPort?: number | null;
+    urlSchemes: string[];
+    connectionFields: AdvancedProviderConnectionField[];
+    capabilities: AdvancedProviderCapabilityMap;
+    sqlDialect?: unknown;
+  };
+  exposureGate: {
+    canExpose: boolean;
+    missingCapabilities: string[];
+    warnings: string[];
+  };
+  source: string;
 };
 
 export type AdvancedColumnNode = {
@@ -138,6 +189,15 @@ export async function createAdvancedConnection(
     signal
   });
   return readResponse(response);
+}
+
+export async function loadAdvancedProviderPlugins(signal?: AbortSignal): Promise<AdvancedProviderPlugin[]> {
+  const response = await fetch(`${getApiBaseUrl()}/api/plugins/providers`, { signal });
+  const providers = await readResponse<Array<Omit<AdvancedProviderPlugin, 'manifest'> & { manifest: Omit<AdvancedProviderPlugin['manifest'], 'id'> & { id: string } }>>(response);
+  return providers.filter((provider): provider is AdvancedProviderPlugin => (
+    provider.exposureGate.canExpose
+    && ['postgresql', 'mysql', 'mariadb', 'sqlite', 'mongodb'].includes(provider.manifest.id)
+  ));
 }
 
 export async function createAdvancedConnectionFromProfile(name: string, profile: AdvancedConnectionProfile, signal?: AbortSignal): Promise<AdvancedConnection> {

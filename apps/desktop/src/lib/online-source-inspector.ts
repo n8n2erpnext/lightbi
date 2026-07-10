@@ -2,7 +2,7 @@ import * as XLSX from 'xlsx';
 import { profileColumns } from './column-profiler';
 import type { SourceCandidate, SourceInspectionResult } from './source-preflight';
 import { getApiBaseUrl } from './api-base';
-import { createSemanticSample, type SemanticSample } from './semantic-sampler';
+import { createUnderstandingSample, type SemanticSample } from './semantic-sampler';
 
 const FULL_ANALYSIS_ROW_LIMIT = 20_000;
 
@@ -179,7 +179,7 @@ function accessibleTabularResult(
     };
   }
 
-  const semanticSample = createSemanticSample(rows, {
+  const semanticSample = createUnderstandingSample(rows, {
     seed: sampleSeed(name, columns, rows.length)
   });
   const retainedAnalysisRows = retainAnalysisRows(rows);
@@ -234,7 +234,7 @@ function inspectWorkbookBuffer(
       });
       return row;
     });
-    const semanticSample = createSemanticSample(objects, {
+    const semanticSample = createUnderstandingSample(objects, {
       seed: sampleSeed(`${name}:${sheetName}`, columns, objects.length)
     });
     const retainedAnalysisRows = retainAnalysisRows(objects);

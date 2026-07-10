@@ -62,7 +62,7 @@ export const DatasetUnderstandingCard: React.FC<DatasetUnderstandingCardProps> =
     
     const a = document.createElement('a');
     a.href = url;
-    a.download = `lightbi_handoff_${understanding.datasetId}.json`;
+    a.download = `lightbi_handoff_${understanding.datasetId ?? understanding.id ?? understanding.datasetName ?? 'dataset'}.json`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -74,7 +74,7 @@ export const DatasetUnderstandingCard: React.FC<DatasetUnderstandingCardProps> =
   const grainConfig = getGrainConfig();
   const GrainIcon = grainConfig.icon;
   const readinessConfig = getReadinessConfig();
-  const ReadinessIcon = readinessConfig?.icon;
+  const ReadinessIcon = readinessConfig?.icon ?? Info;
 
   const allCaveats = [
     ...(understanding.caveats || []),
@@ -126,7 +126,7 @@ export const DatasetUnderstandingCard: React.FC<DatasetUnderstandingCardProps> =
           <ReadinessIcon className="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" />
           <div className="flex flex-col">
             <span className="text-[13px] font-semibold">{readinessConfig.text}</span>
-            <span className="text-[12px] opacity-90 mt-0.5">{understanding.readiness.reasonSummary}</span>
+            <span className="text-[12px] opacity-90 mt-0.5">{understanding.readiness.reasonSummary ?? understanding.readiness.explanation}</span>
           </div>
         </div>
       )}

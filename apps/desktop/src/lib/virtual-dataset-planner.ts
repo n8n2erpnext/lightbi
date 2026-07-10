@@ -115,7 +115,7 @@ export function createVirtualDatasetPlan({
   // Determine status
   if (hasRejected || (businessView.datasets.length > 1 && validRelationshipIds.length === 0)) {
     status = "blocked";
-  } else if (hasLowConfidence || missingDomains.length > 0 || businessView.status === "ignored" || businessView.status === "rejected") {
+  } else if (hasLowConfidence || hasManyToMany || missingDomains.length > 0 || businessView.status === "ignored" || businessView.status === "rejected") {
     status = "draft";
     if (hasLowConfidence) confidence = "LOW";
   } else {

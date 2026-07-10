@@ -10,6 +10,23 @@ function quoteIdentifier(value: string): string {
   return `"${value.replaceAll('"', '""')}"`;
 }
 
+function normalizeColumnKey(value: string): string {
+  return value.normalize('NFC').trim().toLocaleLowerCase('vi-VN');
+}
+
+function createDisplaySelectList(columns: string[], rawColumns: string[]): string {
+  const rawByNormalized = new Map<string, string>();
+  for (const rawColumn of rawColumns) {
+    rawByNormalized.set(normalizeColumnKey(rawColumn), rawColumn);
+  }
+  return columns
+    .map((column, index) => {
+      const rawColumn = rawByNormalized.get(normalizeColumnKey(column)) ?? rawColumns[index] ?? column;
+      return `${quoteIdentifier(rawColumn)} AS ${quoteIdentifier(column)}`;
+    })
+    .join(', ');
+}
+
 function normalizeValue(value: unknown): QueryCellValue {
   if (value === null || value === undefined) return null;
   if (typeof value === 'bigint') return value.toString();
@@ -83,23 +100,27 @@ function filterLeaves(node: AdvancedFilterNode): AdvancedFilter[] {
 
 export class AdvancedFileSession {
   private connection: Awaited<ReturnType<Awaited<ReturnType<typeof initDuckDbWasm>>['connect']>> | null = null;
-  private sourceId = '';
 
   async open(source: AdvancedWorkspaceSource, signal?: AbortSignal): Promise<void> {
-    if (this.connection && this.sourceId === source.id) return;
+    // Rebuild the in-memory file workspace every time. A source id can be reused
+    // after Simple re-understands a file/link, while table names and headers change.
     await this.close();
     signal?.throwIfAborted();
     const db = await initDuckDbWasm();
     this.connection = await db.connect();
-    this.sourceId = source.id;
     for (const [index, table] of source.tables.entries()) {
       signal?.throwIfAborted();
       const materialized = await materializeRuntimeDatasetSource({
         kind: 'local_files', files: [{ file: table.file, sheetName: table.sheetName }], sourceRowCount: table.rowCount,
       }, signal);
       const fileName = `advanced-source-${index}.json`;
+      const rawViewName = `__lightbi_source_${index}`;
       await db.registerFileText(fileName, materialized.jsonText);
-      await this.connection.query(`CREATE OR REPLACE VIEW ${quoteIdentifier(table.name)} AS SELECT * FROM read_json_auto('${fileName}')`);
+      await this.connection.query(`CREATE OR REPLACE VIEW ${quoteIdentifier(rawViewName)} AS SELECT * FROM read_json_auto('${fileName}')`);
+      const rawDescription = await this.connection.query(`SELECT * FROM ${quoteIdentifier(rawViewName)} LIMIT 0`);
+      const rawColumns = rawDescription.schema.fields.map(field => field.name);
+      const selectList = table.columns.length > 0 ? createDisplaySelectList(table.columns, rawColumns) : '*';
+      await this.connection.query(`CREATE OR REPLACE VIEW ${quoteIdentifier(table.name)} AS SELECT ${selectList} FROM ${quoteIdentifier(rawViewName)}`);
     }
   }
 
@@ -146,6 +167,5 @@ export class AdvancedFileSession {
   async close(): Promise<void> {
     if (this.connection) await this.connection.close().catch(() => undefined);
     this.connection = null;
-    this.sourceId = '';
   }
 }

@@ -153,8 +153,8 @@ export function createChartPreviewModel(input: CreateChartPreviewInput): ChartPr
   const candidateYFields = previewResult.columns.filter(c => c !== model.xField);
   
   // Try to find a count/numeric field or a measure-derived field
-  const yField = candidateYFields.find(c => c.endsWith('_rate') || c.includes('rate'))
-                 || candidateYFields.find(c => c.endsWith('_count') || c.endsWith('_sum') || c.includes('qty')) 
+  const yField = candidateYFields.find(c => c.endsWith('_count') || c.endsWith('_sum') || c.includes('qty'))
+                 || candidateYFields.find(c => c.endsWith('_rate') || c.includes('rate'))
                  || candidateYFields[0];
                  
   if (yField) {

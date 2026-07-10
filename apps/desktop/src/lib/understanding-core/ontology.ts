@@ -1,4 +1,5 @@
 import type { SignalFamily, SignalRole } from "./contracts";
+import { SEMANTIC_SIGNAL_REGISTRY_V1, type SemanticSignalDefinition } from "../semantic-registry";
 
 export type SignalRule = {
   id: string;
@@ -7,9 +8,288 @@ export type SignalRule = {
   label: string;
   patterns: RegExp[];
   defaultUsable?: boolean;
+  source?: "semantic_registry" | "core_supplemental";
+  registryCanonicalIds?: string[];
 };
 
-export const UNIVERSAL_SIGNAL_RULES: SignalRule[] = [
+const CORE_ID_BY_CANONICAL: Record<string, string> = {
+  report_date: "time.transaction_date",
+  pickup_date: "time.transaction_date",
+  delivery_date: "time.transaction_date",
+  actual_time: "time.completed_at",
+  close_date: "time.completed_at",
+  hire_date: "time.created_at",
+  termination_date: "time.completed_at",
+  renewal_date: "time.deadline",
+  effective_date: "time.transaction_date",
+  expiration_date: "time.deadline",
+  time_period: "time.period",
+  fiscal_month: "time.fiscal_month",
+  fiscal_year: "time.fiscal_year",
+  response_time: "time.duration",
+  resolution_time: "time.duration",
+  waiting_time: "time.duration",
+  downtime: "time.duration",
+
+  revenue: "money.revenue",
+  net_revenue: "money.revenue",
+  sales: "money.revenue",
+  invoice_total: "money.revenue",
+  receivable: "money.receivable",
+  payable: "money.payable",
+  debt: "money.debt",
+  cost: "money.cost",
+  total_cost: "money.cost",
+  expense: "money.cost",
+  purchase_cost: "money.cost",
+  operational_cost: "money.cost",
+  supplier_cost: "money.cost",
+  gross_profit: "money.profit",
+  profit: "money.profit",
+  margin: "money.margin",
+  margin_pct: "money.margin",
+  opening_balance: "money.opening_balance",
+  closing_balance: "money.closing_balance",
+  balance: "money.balance",
+  discount: "money.discount",
+  tax_amount: "money.tax",
+  tax_rate: "money.tax",
+  delivery_fee: "money.fee",
+  toll_fee: "money.fee",
+  freight_fee: "money.fee",
+  cod_amount: "money.cod",
+  payment_method: "money.payment_method",
+  payment_cash: "money.payment_cash",
+  payment_card: "money.payment_card",
+  payment_bank: "money.payment_bank",
+  payment_voucher: "money.payment_voucher",
+  change_amount: "money.refund_or_change",
+  rounding_amount: "money.rounding",
+
+  customer: "entity.customer",
+  account: "entity.customer",
+  contact: "entity.customer",
+  patient: "entity.patient",
+  supplier: "entity.vendor",
+  vendor: "entity.vendor",
+  employee: "entity.employee",
+  cashier: "entity.employee",
+  owner: "entity.employee",
+  agent: "entity.employee",
+  salesperson: "entity.salesperson",
+  manager: "entity.manager",
+  department: "entity.department",
+  team: "entity.team",
+  carrier: "entity.carrier",
+  driver: "entity.driver",
+  doctor: "entity.doctor",
+  provider: "entity.vendor",
+  person: "entity.person",
+  coach: "entity.coach",
+  role: "entity.role",
+
+  product: "item.product",
+  material: "item.product",
+  crop: "item.product",
+  sku: "item.sku",
+  barcode: "item.sku",
+  batch: "item.sku",
+  serial_number: "item.sku",
+  service_group: "item.service",
+  item_type: "item.product",
+  medicine: "item.medicine",
+
+  branch: "location.store",
+  warehouse: "location.warehouse",
+  current_location: "location.current",
+  origin_location: "location.route",
+  destination_location: "location.route",
+  route: "location.route",
+  territory: "location.region",
+  country: "location.country",
+  region: "location.region",
+  bin_location: "location.warehouse",
+  field: "location.region",
+  plant: "location.warehouse",
+  property: "location.store",
+  unit: "location.store",
+
+  invoice: "document.invoice",
+  receipt: "document.invoice",
+  billing_document: "document.invoice",
+  order: "document.order",
+  order_id: "document.order",
+  sales_order: "document.sales_order",
+  purchase_order: "document.purchase_order",
+  goods_receipt: "document.goods_receipt",
+  return_document: "document.return",
+  goods_movement: "document.stock_transfer",
+  shipment: "document.shipment",
+  shipment_id: "document.shipment",
+  trip: "document.shipment",
+  work_order: "document.order",
+  maintenance_order: "document.order",
+  appointment: "document.order",
+  claim: "document.order",
+  ticket: "document.order",
+  contract_id: "document.order",
+  lease: "document.order",
+  grant: "document.order",
+  inspection_lot: "document.order",
+  document_type: "document.type",
+  related_document: "document.related",
+
+  status: "status.lifecycle",
+  lifecycle_status: "status.lifecycle",
+  delivery_status: "status.delivery",
+  on_time_status: "status.delivery",
+  fulfillment_status: "status.fulfillment",
+  approval_status: "status.approval",
+  reconciliation_status: "status.reconciliation",
+  payment_status: "status.payment",
+  stock_status: "status.stock",
+  load_status: "status.lifecycle",
+  attendance_status: "status.lifecycle",
+  pipeline_stage: "status.lifecycle",
+  stage_name: "status.lifecycle",
+  lead_status: "status.lifecycle",
+  ticket_status: "status.lifecycle",
+  priority: "status.lifecycle",
+  qc_result: "status.lifecycle",
+
+  stock_qty: "quantity.units",
+  quantity: "quantity.units",
+  ordered_qty: "quantity.ordered",
+  received_qty: "quantity.received",
+  sold_qty: "quantity.sold",
+  returned_qty: "quantity.returned",
+  weight: "quantity.weight",
+  volume: "quantity.units",
+  distance: "quantity.units",
+  work_hours: "quantity.units",
+  scrap_qty: "quantity.returned",
+  reserved_qty: "quantity.units",
+  available_qty: "quantity.units",
+
+  stock_age: "inventory.age",
+  stock_threshold: "inventory.age_bucket",
+  reorder_level: "inventory.age_bucket",
+  inventory: "inventory.age_bucket",
+
+  retention: "engagement.outcome",
+  purchase_behavior: "engagement.outcome",
+  campaign: "engagement.contact_channel",
+  source_medium: "engagement.contact_channel",
+  segment: "engagement.segment",
+  campaign_attempts: "engagement.campaign_attempts",
+  previous_contacts: "engagement.previous_contacts",
+  previous_outcome: "engagement.previous_outcome",
+
+  event: "event.activity",
+  activity: "event.activity",
+  row_type: "event.activity",
+
+  kpi: "indicator.metric",
+  target: "indicator.metric",
+  achievement: "indicator.metric",
+  actual: "indicator.metric",
+  capacity: "indicator.metric",
+  utilization: "indicator.metric",
+  productivity: "indicator.metric",
+  defect_rate: "indicator.metric",
+  yield_rate: "indicator.metric",
+  quality_score: "indicator.metric",
+  progress_pct: "indicator.metric"
+};
+
+export const CORE_ONLY_UNIVERSAL_SIGNAL_IDS = new Set([
+  "document.match",
+  "document.round",
+  "document.prescription",
+  "event.lineup"
+]);
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function aliasesToPatterns(signal: SemanticSignalDefinition): RegExp[] {
+  const aliases = [...new Set([
+    ...signal.headerAliases,
+    ...signal.aliases,
+    ...signal.valueAliases.filter(alias => alias.length >= 3)
+  ].map(alias => alias.trim()).filter(Boolean))];
+
+  return aliases.map(alias => {
+    const escaped = escapeRegExp(alias);
+    if (/^[a-z0-9]+$/i.test(alias) && alias.length <= 4) {
+      return new RegExp(`\\b${escaped}\\b`, "i");
+    }
+    return new RegExp(escaped, "i");
+  });
+}
+
+function semanticFamilyToCoreFamily(signal: SemanticSignalDefinition): SignalFamily {
+  const mappedId = CORE_ID_BY_CANONICAL[signal.canonicalId];
+  if (mappedId) return mappedId.split(".")[0] as SignalFamily;
+
+  if (signal.semanticFamily === "money" || signal.semanticFamily === "accounting") return "money";
+  if (signal.semanticFamily === "time") return "time";
+  if (signal.semanticFamily === "entity" || signal.semanticFamily === "organization") return "entity";
+  if (signal.semanticFamily === "item" || signal.semanticFamily === "material") return "item";
+  if (signal.semanticFamily === "location") return "location";
+  if (signal.semanticFamily === "document" || signal.role === "identifier") return "document";
+  if (signal.semanticFamily === "status" || signal.role === "status") return "status";
+  if (signal.semanticFamily === "quantity" || signal.semanticFamily === "measurement") return "quantity";
+  if (signal.semanticFamily === "inventory") return "inventory";
+  if (signal.semanticFamily === "engagement" || signal.semanticFamily === "marketing" || signal.semanticFamily === "subscription") return "engagement";
+  if (signal.semanticFamily === "quality") return "quality";
+  if (signal.role === "measure") return "indicator";
+  return "event";
+}
+
+function semanticRoleToCoreRole(signal: SemanticSignalDefinition): SignalRole {
+  if (signal.role === "identifier") return "identifier";
+  if (signal.role === "status") return "status";
+  if (signal.role === "time") return "time";
+  if (signal.role === "measure") return "measure";
+  return "dimension";
+}
+
+function coreRuleId(signal: SemanticSignalDefinition): string {
+  return CORE_ID_BY_CANONICAL[signal.canonicalId] ?? `${semanticFamilyToCoreFamily(signal)}.${signal.canonicalId}`;
+}
+
+function makeRegistryBackedRules(): SignalRule[] {
+  const byId = new Map<string, SignalRule>();
+  for (const signal of SEMANTIC_SIGNAL_REGISTRY_V1) {
+    const id = coreRuleId(signal);
+    const existing = byId.get(id);
+    const patterns = aliasesToPatterns(signal);
+    if (!patterns.length) continue;
+
+    if (existing) {
+      existing.patterns.push(...patterns);
+      existing.registryCanonicalIds?.push(signal.canonicalId);
+      continue;
+    }
+
+    byId.set(id, {
+      id,
+      family: semanticFamilyToCoreFamily(signal),
+      role: semanticRoleToCoreRole(signal),
+      label: signal.label,
+      patterns,
+      defaultUsable: signal.role !== "identifier",
+      source: "semantic_registry",
+      registryCanonicalIds: [signal.canonicalId]
+    });
+  }
+
+  return [...byId.values()];
+}
+
+const CORE_COMPAT_SIGNAL_RULES: SignalRule[] = [
   // Money is intentionally broad. Industry-specific overlays should inherit it.
   { id: "money.revenue", family: "money", role: "measure", label: "Revenue / Total Amount", patterns: [/doanh thu|tổng tiền|thành tiền|sales|revenue|gross amount|net amount|total amount|transaction value/i] },
   { id: "money.receivable", family: "money", role: "measure", label: "Receivable / Amount Due", patterns: [/tiền phải thu|phải thu|amount due|receivable|\bar\b/i] },
@@ -23,6 +303,7 @@ export const UNIVERSAL_SIGNAL_RULES: SignalRule[] = [
   { id: "money.balance", family: "money", role: "measure", label: "Balance", patterns: [/số dư|balance/i] },
   { id: "money.discount", family: "money", role: "measure", label: "Discount", patterns: [/chiết khấu|giảm giá|discount/i] },
   { id: "money.tax", family: "money", role: "measure", label: "Tax", patterns: [/thuế|vat|tax/i] },
+  { id: "money.payment_method", family: "money", role: "dimension", label: "Payment Method", patterns: [/phương thức thanh toán|hình thức thanh toán|payment method|payment/i] },
   { id: "money.payment_cash", family: "money", role: "measure", label: "Cash Payment", patterns: [/tiền mặt|cash/i] },
   { id: "money.payment_card", family: "money", role: "measure", label: "Card Payment", patterns: [/cà thẻ|card/i] },
   { id: "money.payment_bank", family: "money", role: "measure", label: "Bank Transfer", patterns: [/ngân hàng|chuyển khoản|bank|transfer/i] },
@@ -87,7 +368,7 @@ export const UNIVERSAL_SIGNAL_RULES: SignalRule[] = [
   { id: "status.fulfillment", family: "status", role: "status", label: "Fulfillment Status", patterns: [/thực hiện|fulfillment|fulfilled|picked|packed/i] },
   { id: "status.reconciliation", family: "status", role: "status", label: "Reconciliation Status", patterns: [/đối soát|reconcile|reconciliation/i] },
   { id: "status.payment", family: "status", role: "status", label: "Payment Status", patterns: [/trạng thái thanh toán|payment status/i] },
-  { id: "status.delivery", family: "status", role: "status", label: "Delivery Status", patterns: [/trạng thái giao hàng|delivery status|đúng hẹn|on.?time/i] },
+  { id: "status.delivery", family: "status", role: "status", label: "Delivery Status", patterns: [/trạng thái giao hàng|delivery.?status|delivery_status|đúng hẹn|on.?time/i] },
   { id: "status.stock", family: "status", role: "status", label: "Stock Status", patterns: [/ngưỡng tồn|tồn kho|stock status|inventory status/i] },
 
   { id: "quantity.units", family: "quantity", role: "measure", label: "Quantity", patterns: [/số lượng|qty|quantity|units/i] },
@@ -121,3 +402,50 @@ export const UNIVERSAL_SIGNAL_RULES: SignalRule[] = [
   // measures but should generally be averaged or inspected, not summed as money.
   { id: "indicator.metric", family: "indicator", role: "measure", label: "Indicator / Metric", patterns: [/^[a-z][^:]{1,48}:\s*.+/i, /per 100|per 1,000|% of|% gdp|index|rate|ratio|life expectancy|population/i] }
 ];
+
+function mergeUniversalRules(registryRules: SignalRule[], compatRules: SignalRule[]): {
+  merged: SignalRule[];
+  supplemental: SignalRule[];
+} {
+  const byId = new Map<string, SignalRule>();
+
+  for (const rule of registryRules) {
+    byId.set(rule.id, {
+      ...rule,
+      patterns: [...rule.patterns],
+      registryCanonicalIds: [...(rule.registryCanonicalIds ?? [])]
+    });
+  }
+
+  const supplemental: SignalRule[] = [];
+  for (const rule of compatRules) {
+    const existing = byId.get(rule.id);
+    if (existing) {
+      existing.patterns.push(...rule.patterns);
+      if (rule.defaultUsable === false) existing.defaultUsable = false;
+      continue;
+    }
+
+    const supplementalRule = {
+      ...rule,
+      patterns: [...rule.patterns],
+      source: "core_supplemental" as const
+    };
+    supplemental.push(supplementalRule);
+    byId.set(supplementalRule.id, supplementalRule);
+  }
+
+  return {
+    merged: [...byId.values()],
+    supplemental
+  };
+}
+
+export const REGISTRY_BACKED_UNIVERSAL_SIGNAL_RULES = makeRegistryBackedRules();
+const MERGED_UNIVERSAL_SIGNAL_RULES = mergeUniversalRules(
+  REGISTRY_BACKED_UNIVERSAL_SIGNAL_RULES,
+  CORE_COMPAT_SIGNAL_RULES
+);
+
+export const CORE_SUPPLEMENTAL_SIGNAL_RULES = MERGED_UNIVERSAL_SIGNAL_RULES.supplemental;
+export const UNIVERSAL_SIGNAL_RULES = MERGED_UNIVERSAL_SIGNAL_RULES.merged;

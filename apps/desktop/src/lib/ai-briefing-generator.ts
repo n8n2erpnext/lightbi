@@ -1,7 +1,14 @@
 import type { DatasetUnderstanding } from './dataset-understanding-contract';
 import type { AISafeBriefing, AISemanticField } from './ai-briefing-contract';
 import { getSignalType } from './business-signal-detector';
+import type { SemanticCoverageItem } from './semantic-coverage';
 import type { DatasetUnderstandingResult, DirtySignal } from './understanding-next/contracts';
+
+function normalizeBriefingGrain(grain: DatasetUnderstandingResult['profile']['grain']): DatasetUnderstanding['grain'] {
+  if (grain === 'master_data') return 'entity';
+  if (grain === 'transaction') return 'transaction';
+  return grain;
+}
 
 export function generateAIBriefing(understanding: DatasetUnderstanding): AISafeBriefing {
   const semanticFields: AISemanticField[] = (understanding.detectedConcepts || []).map(concept => {
@@ -24,6 +31,17 @@ export function generateAIBriefing(understanding: DatasetUnderstanding): AISafeB
       confidence: concept.confidenceScore
     };
   });
+  const seenSemanticColumns = new Set(
+    semanticFields.map(field => (field.physicalColumn || field.label || field.canonicalId).toLowerCase())
+  );
+
+  for (const item of understanding.semanticCoverage?.items ?? []) {
+    if (item.status !== 'unknown_business_like' && item.status !== 'partial') continue;
+    const key = item.physicalColumn.toLowerCase();
+    if (seenSemanticColumns.has(key)) continue;
+    seenSemanticColumns.add(key);
+    semanticFields.push(semanticCoverageItemToField(item));
+  }
 
   const caveatsSet = new Set<string>();
   if (understanding.caveats) {
@@ -32,8 +50,18 @@ export function generateAIBriefing(understanding: DatasetUnderstanding): AISafeB
   if (understanding.readiness?.caveats) {
     understanding.readiness.caveats.forEach(c => caveatsSet.add(c));
   }
+  for (const item of understanding.semanticCoverage?.items ?? []) {
+    if (item.status === 'unknown_business_like') {
+      caveatsSet.add(`Unmapped business-like column kept for review: ${item.physicalColumn}.`);
+    } else if (item.status === 'partial') {
+      caveatsSet.add(`Partially mapped business column needs review: ${item.physicalColumn}.`);
+    }
+  }
 
   const safeActionHints: string[] = [];
+  if ((understanding.semanticCoverage?.summary.unknownBusinessLike ?? 0) > 0) {
+    safeActionHints.push('Review unmapped business-like fields before final BA/AI narrative.');
+  }
   if (understanding.opportunities) {
     for (const opp of understanding.opportunities) {
       if (opp.confidence === 'high' || opp.confidence === 'medium') {
@@ -47,14 +75,46 @@ export function generateAIBriefing(understanding: DatasetUnderstanding): AISafeB
   return {
     datasetId: understanding.datasetId || 'unknown_dataset',
     generatedAt: new Date().toISOString(),
-    grain: understanding.grain || 'unknown',
+    grain: understanding.grain ?? 'unknown',
     grainEvidence: understanding.grainEvidence || '',
     readinessTier: understanding.readiness?.tier || 'exploratory_only',
     readinessScore: understanding.readiness?.score || 0,
     semanticFields,
     caveats: Array.from(caveatsSet),
-    safeActionHints
+    safeActionHints,
+    semanticCoverage: understanding.semanticCoverage
+      ? {
+          ...understanding.semanticCoverage.summary,
+          unknownBusinessLikeColumns: understanding.semanticCoverage.items
+            .filter(item => item.status === 'unknown_business_like')
+            .map(item => item.physicalColumn),
+          partialColumns: understanding.semanticCoverage.items
+            .filter(item => item.status === 'partial')
+            .map(item => item.physicalColumn)
+        }
+      : undefined
   };
+}
+
+function semanticCoverageItemToField(item: SemanticCoverageItem): AISemanticField {
+  return {
+    canonicalId: `${item.status}:${item.physicalColumn}`,
+    label: item.physicalColumn,
+    domain: 'unmapped',
+    role: semanticCoverageRole(item),
+    confidence: item.confidence,
+    coverageStatus: item.status,
+    physicalColumn: item.physicalColumn,
+    sampleValues: item.topValues,
+    reason: item.reason
+  };
+}
+
+function semanticCoverageRole(item: SemanticCoverageItem): AISemanticField['role'] {
+  if (item.dataType === 'number') return 'measure';
+  if (item.dataType === 'date') return 'time';
+  if (item.dataType === 'string' || item.dataType === 'boolean') return 'dimension';
+  return 'unknown';
 }
 
 export function generateAIBriefingFromUnderstandingNext(
@@ -88,7 +148,7 @@ export function generateAIBriefingFromUnderstandingNext(
   return {
     datasetId: understanding.source.fileNames[0] ?? "local_dataset",
     generatedAt: new Date().toISOString(),
-    grain: understanding.profile.grain,
+    grain: normalizeBriefingGrain(understanding.profile.grain),
     grainEvidence: [
       `${understanding.profile.documentType.replace(/_/g, " ")}`,
       understanding.profile.detectedDomains.length > 0

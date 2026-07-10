@@ -12,7 +12,6 @@ import { describe, it, expect } from "vitest";
 import { buildDatasetProfile } from "./dataset-profiler";
 import { detectBusinessSignals } from "./signal-detector";
 import { generateQuestionFit } from "./question-fit-engine";
-import { createGuardedActions } from "./runtime-action-guard";
 import { createDatasetUnderstandingResult } from "./orchestrator";
 import type { UnderstandingInput } from "./contracts";
 
@@ -27,14 +26,6 @@ function makeInput(
   fileNames: string[] = ["dataset.xlsx"]
 ): UnderstandingInput {
   return { fileNames, columns, rows, sourceRowCount };
-}
-
-function makeRow(columns: string[], values: Record<string, unknown>): Record<string, unknown> {
-  const row: Record<string, unknown> = {};
-  for (const col of columns) {
-    row[col] = values[col] ?? "";
-  }
-  return row;
 }
 
 // ---------------------------------------------------------------------------
@@ -196,6 +187,60 @@ describe("BHX-like retail sales document", () => {
     expect(paymentLens!.questions[0].defaultAction!.actionKind).toBe("table_preview");
   });
 
+  it("payment mix uses categorical Payment as a real group_by when revenue exists", () => {
+    const result = createDatasetUnderstandingResult(makeInput(
+      ["OrderDate", "Store", "Payment", "Revenue"],
+      Array.from({ length: 90 }, (_, index) => ({
+        OrderDate: `2026-05-${String((index % 28) + 1).padStart(2, "0")}`,
+        Store: `S${index % 4}`,
+        Payment: ["Tiền mặt", "Trả góp", "Chuyển khoản"][index % 3],
+        Revenue: 1000000 + index * 1000
+      })),
+      90,
+      ["sales-payment-sample.xlsx"]
+    ));
+
+    const paymentQuestion = result.recommendedQuestions.find(question => question.label === "Payment method mix");
+    expect(paymentQuestion?.actionKind).toBe("group_by");
+    expect(paymentQuestion?.dimensions).toEqual(["Payment"]);
+    expect(paymentQuestion?.measures).toEqual(["Revenue"]);
+  });
+
+  it("payment mix can use profit and receivable fields when clean ERP accounting data is available", () => {
+    const result = createDatasetUnderstandingResult(makeInput(
+      [
+        "InvoiceDate",
+        "Payment",
+        "NetRevenue",
+        "InvoiceTotal",
+        "GrossProfit",
+        "MarginPct",
+        "AR_Debit"
+      ],
+      Array.from({ length: 90 }, (_, index) => ({
+        InvoiceDate: `2026-06-${String((index % 28) + 1).padStart(2, "0")}`,
+        Payment: ["Tiền mặt", "Trả góp", "Chuyển khoản", "Thẻ", "Ví điện tử"][index % 5],
+        NetRevenue: 1000000 + index * 10000,
+        InvoiceTotal: 1080000 + index * 10000,
+        GrossProfit: 150000 + index * 1200,
+        MarginPct: 0.15 + (index % 5) / 100,
+        AR_Debit: 1080000 + index * 10000
+      }))
+    ));
+
+    const ids = result.signals.map(signal => signal.canonicalId);
+    expect(ids).toEqual(expect.arrayContaining(["payment_method", "revenue", "invoice_total", "gross_profit", "margin_pct", "receivable"]));
+
+    const paymentProfitQuestion = result.recommendedQuestions.find(question => question.label === "Payment profitability and receivable mix");
+    expect(paymentProfitQuestion?.actionKind).toBe("group_by");
+    expect(paymentProfitQuestion?.dimensions).toEqual(["Payment"]);
+    expect(paymentProfitQuestion?.measures).toEqual(expect.arrayContaining(["NetRevenue", "GrossProfit", "AR_Debit"]));
+
+    const paymentLens = result.lenses.find(lens => lens.id === "payment_mix");
+    expect(paymentLens?.availability).toBe("ready");
+    expect(paymentLens?.questions.some(question => question.label === "Payment profitability and receivable mix")).toBe(true);
+  });
+
   it("does not expose structurally blocked group_by actions as executable", () => {
     const result = createDatasetUnderstandingResult(INPUT);
     const invalidGroupBy = result.availableActions.filter(a =>
@@ -211,6 +256,184 @@ describe("BHX-like retail sales document", () => {
       !lens.questions.some(question => question.defaultAction)
     );
     expect(readyWithoutAction).toHaveLength(0);
+  });
+});
+
+describe("Clean ERP logistics and cost coverage", () => {
+  it("creates carrier/status/fee questions without file-name hardcoding", () => {
+    const result = createDatasetUnderstandingResult(makeInput(
+      [
+        "ShipmentID",
+        "OrderID",
+        "OrderDate",
+        "Carrier",
+        "DeliveryFee",
+        "DeliveryStatus",
+        "Qty",
+        "TotalCost"
+      ],
+      Array.from({ length: 90 }, (_, index) => ({
+        ShipmentID: `SHIP${String(index + 1).padStart(5, "0")}`,
+        OrderID: `SO${String(index + 1).padStart(5, "0")}`,
+        OrderDate: `2026-06-${String((index % 28) + 1).padStart(2, "0")}`,
+        Carrier: ["Nội bộ", "GHN", "Ahamove", "Xe tải thuê ngoài", "GrabExpress"][index % 5],
+        DeliveryFee: (index % 7) * 25000,
+        DeliveryStatus: ["Đã giao", "Hoàn tất", "Giao lại"][index % 3],
+        Qty: (index % 4) + 1,
+        TotalCost: 500000 + index * 1000
+      })),
+      90,
+      ["generic-logistics-export.csv"]
+    ));
+
+    expect(result.profile.documentType).toBe("logistics_export_report");
+    expect(result.profile.detectedDomains).toContain("operations");
+    expect(result.signals.map(signal => signal.canonicalId)).toEqual(expect.arrayContaining([
+      "shipment_id",
+      "order_id",
+      "date",
+      "carrier",
+      "delivery_fee",
+      "delivery_status",
+      "quantity",
+      "total_cost"
+    ]));
+
+    const carrierQuestion = result.recommendedQuestions.find(question => question.label === "Carrier cost impact");
+    expect(carrierQuestion?.actionKind).toBe("group_by");
+    expect(carrierQuestion?.dimensions).toEqual(["Carrier"]);
+    expect(carrierQuestion?.measures).toEqual(expect.arrayContaining(["DeliveryFee", "Qty"]));
+
+    const statusQuestion = result.recommendedQuestions.find(question => question.label === "Delivery completion mix");
+    expect(statusQuestion?.actionKind).toBe("group_by");
+    expect(statusQuestion?.dimensions).toEqual(["DeliveryStatus"]);
+    expect(statusQuestion?.derivedMeasures?.[0]?.type).toBe("positive_rate");
+    expect(statusQuestion?.derivedMeasures?.[0]?.positiveValues).toEqual(expect.arrayContaining(["Đúng hẹn", "Dung hen"]));
+
+    expect(result.lenses.map(lens => lens.id)).toEqual(expect.arrayContaining([
+      "carrier_cost_impact",
+      "delivery_status_mix"
+    ]));
+  });
+});
+
+describe("Context-aware values drive Simple Mode angles", () => {
+  it("detects payment method from generic headers and creates a payment angle", () => {
+    const result = createDatasetUnderstandingResult(makeInput(
+      ["Period", "Type", "Amount"],
+      Array.from({ length: 60 }, (_, index) => ({
+        Period: `2026-${index % 2 === 0 ? "05" : "06"}`,
+        Type: ["Tiền mặt", "Trả góp", "Chuyển khoản"][index % 3],
+        Amount: 1000000 + index * 50000
+      })),
+      60,
+      ["generic-payment-export.xlsx"]
+    ));
+
+    expect(result.profile.detectedDomains).toContain("revenue");
+    expect(result.signals.map(signal => signal.canonicalId)).toEqual(expect.arrayContaining([
+      "payment_method",
+      "revenue"
+    ]));
+
+    const paymentQuestion = result.recommendedQuestions.find(question => question.label === "Payment method mix");
+    expect(paymentQuestion?.actionKind).toBe("group_by");
+    expect(paymentQuestion?.dimensions).toEqual(["Type"]);
+    expect(paymentQuestion?.measures).toEqual(["Amount"]);
+    expect(result.stakeholderFits.map(fit => fit.id)).toEqual(expect.arrayContaining(["sales", "finance_accounting"]));
+  });
+
+  it("detects delivery status from generic headers and does not invent carrier-cost angles", () => {
+    const result = createDatasetUnderstandingResult(makeInput(
+      ["ShipmentID", "Mode", "Qty"],
+      Array.from({ length: 60 }, (_, index) => ({
+        ShipmentID: `SHP${String(index).padStart(4, "0")}`,
+        Mode: ["Đã giao", "Hoàn tất", "Giao lại"][index % 3],
+        Qty: (index % 4) + 1
+      })),
+      60,
+      ["generic-delivery-status.csv"]
+    ));
+
+    expect(result.profile.detectedDomains).toContain("operations");
+    expect(result.signals.map(signal => signal.canonicalId)).toEqual(expect.arrayContaining([
+      "shipment_id",
+      "delivery_status",
+      "quantity"
+    ]));
+
+    const statusQuestion = result.recommendedQuestions.find(question => question.label === "Delivery completion mix");
+    expect(statusQuestion?.actionKind).toBe("group_by");
+    expect(statusQuestion?.dimensions).toEqual(["Mode"]);
+
+    expect(result.recommendedQuestions.find(question => question.label === "Carrier cost impact")).toBeUndefined();
+    expect(result.lenses.find(lens => lens.id === "carrier_cost_impact")).toBeUndefined();
+  });
+});
+
+describe("Semantic affinity vector", () => {
+  it("promotes hybrid ERP exports into revenue, finance, operations, inventory, and performance context", () => {
+    const result = createDatasetUnderstandingResult(makeInput(
+      [
+        "SalesOrderNo",
+        "PostingDate",
+        "SalesRep",
+        "Revenue",
+        "TotalCost",
+        "WaybillNo",
+        "TripID",
+        "DriverName",
+        "SKU",
+        "Qty"
+      ],
+      Array.from({ length: 80 }, (_, index) => ({
+        SalesOrderNo: `SO-${String(index + 1).padStart(4, "0")}`,
+        PostingDate: `2026-06-${String((index % 28) + 1).padStart(2, "0")}`,
+        SalesRep: `NVKD${index % 5}`,
+        Revenue: 1000000 + index * 25000,
+        TotalCost: 650000 + index * 12000,
+        WaybillNo: `AWB-${String(index + 1).padStart(5, "0")}`,
+        TripID: `TRIP-${index % 6}`,
+        DriverName: `TX${index % 4}`,
+        SKU: `SKU-${index % 12}`,
+        Qty: (index % 5) + 1
+      })),
+      80,
+      ["hybrid-erp-export.xlsx"]
+    ));
+
+    expect(result.signals.map(signal => signal.canonicalId)).toEqual(expect.arrayContaining([
+      "order_id",
+      "date",
+      "salesperson",
+      "revenue",
+      "total_cost",
+      "shipment_id",
+      "trip",
+      "driver",
+      "sku",
+      "quantity"
+    ]));
+    expect(result.profile.detectedDomains).toEqual(expect.arrayContaining([
+      "revenue",
+      "finance",
+      "operations",
+      "inventory",
+      "performance"
+    ]));
+    expect(result.domainAffinities?.map(affinity => affinity.domain)).toEqual(expect.arrayContaining([
+      "revenue",
+      "finance",
+      "operations",
+      "inventory",
+      "performance"
+    ]));
+    expect(result.stakeholderFits.map(fit => fit.id)).toEqual(expect.arrayContaining([
+      "sales",
+      "finance_accounting",
+      "logistics_operations",
+      "warehouse_inventory"
+    ]));
   });
 });
 
@@ -319,6 +542,15 @@ describe("TTKT-like logistics intake report", () => {
     expect(lensIds).toContain("operations_sla");
     expect(lensIds).toContain("operations_waiting_time");
     expect(lensIds).toContain("route_trip_vehicle");
+  });
+
+  it("does not offer carrier cost impact when the current file has no carrier or cost evidence", () => {
+    const result = createDatasetUnderstandingResult(INPUT);
+    const carrierQuestion = result.recommendedQuestions.find(question => question.label === "Carrier cost impact");
+    const carrierLens = result.lenses.find(lens => lens.id === "carrier_cost_impact");
+
+    expect(carrierQuestion).toBeUndefined();
+    expect(carrierLens).toBeUndefined();
   });
 
   it("source/sample/result rows are distinguished", () => {
@@ -837,7 +1069,7 @@ describe("Domain coverage: all domains must have representable question template
     expect(perfQ.length).toBeGreaterThan(0);
   });
 
-  it("finance domain is represented as not implemented, without executable actions", () => {
+  it("finance domain does not show a placeholder angle without executable evidence", () => {
     const input = makeInput(
       ["Budget", "Cost", "Profit", "Fiscal Period"],
       Array.from({ length: 20 }, (_, i) => ({
@@ -849,8 +1081,7 @@ describe("Domain coverage: all domains must have representable question template
     );
     const result = createDatasetUnderstandingResult(input);
     const financeLens = result.lenses.find(lens => lens.id === "finance_not_implemented");
-    expect(financeLens).toBeDefined();
-    expect(financeLens!.availability).toBe("not_implemented");
+    expect(financeLens).toBeUndefined();
     expect(result.availableActions.some(action => action.label.toLowerCase().includes("finance"))).toBe(false);
   });
 });

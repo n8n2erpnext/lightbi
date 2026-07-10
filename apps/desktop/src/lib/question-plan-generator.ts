@@ -41,7 +41,7 @@ export function mapIntentToStructure(intentId: string): { dimensions: string[], 
 
 export function generateQuestionPlans(
   businessViews: BusinessViewCandidate[],
-  registry: BusinessSignalRegistry
+  _registry: BusinessSignalRegistry
 ): QuestionPlan[] {
   const plans: QuestionPlan[] = [];
 

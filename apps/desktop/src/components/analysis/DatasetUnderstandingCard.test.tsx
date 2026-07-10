@@ -12,7 +12,9 @@ describe('DatasetUnderstandingCard', () => {
       id: 'test-id',
       status: 'understood',
       confidenceScore: 80,
+      grain: 'event',
       grainHint: 'event',
+      grainEvidence: 'test grain',
       narrative: 'Test narrative',
       sourceTrace: {
         signalIds: [],
@@ -113,7 +115,9 @@ describe('DatasetUnderstandingCard', () => {
       id: 'test-id-1',
       status: 'partial',
       confidenceScore: 50,
+      grain: 'unknown',
       grainHint: 'unknown',
+      grainEvidence: 'test grain',
       narrative: 'Initial',
       sourceTrace: { signalIds: [], perspectiveIds: [], businessViewIds: [], questionSuggestionIds: [] },
       createdAt: new Date().toISOString(),
@@ -148,8 +152,8 @@ describe('DatasetUnderstandingCard', () => {
       id: 'test-id-2',
       status: 'understood',
       opportunities: [
-         { id: 'opp-1', label: 'New Opp 1', requiredSignals: [], domain: 'revenue' },
-         { id: 'opp-2', label: 'New Opp 2', requiredSignals: [], domain: 'revenue' }
+         { id: 'opp-1', label: 'New Opp 1', description: 'New Opp 1', requiredCapabilities: [], requiredSignals: [], domain: 'revenue', grain: 'event', confidence: 'medium' },
+         { id: 'opp-2', label: 'New Opp 2', description: 'New Opp 2', requiredCapabilities: [], requiredSignals: [], domain: 'revenue', grain: 'event', confidence: 'medium' }
       ], // increased to 2
       readiness: {
          tier: 'decision_support',

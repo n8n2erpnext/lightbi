@@ -1,8 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { createDatasetUnderstanding } from './dataset-understanding-contract';
 import { generateAnalysisActions } from './analysis-opportunity-actions';
-import { createRuntimeIntentFromAnalysisAction } from './analysis-runtime-contract';
-import { createRuntimePlanPreview } from './runtime-planner-preview';
 
 describe('Dataset Understanding - Domain Coverage', () => {
   it('generates explicit distribution, group_by, and trend metadata for generic inventory dataset', () => {

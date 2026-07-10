@@ -18,7 +18,8 @@ export function buildSemanticGraph(understanding: DatasetUnderstanding): Semanti
 
   // 1. Nodes
   for (const concept of understanding.detectedConcepts || []) {
-    const signalInfo = TAXONOMY[concept.signalId];
+    const signalId = concept.signalId ?? concept.canonicalConcept;
+    const signalInfo = TAXONOMY[signalId];
     
     let type: SemanticNodeType = "unknown";
     if (signalInfo && (signalInfo.type === 'time' || signalInfo.type === 'dimension' || signalInfo.type === 'measure')) {
@@ -28,8 +29,8 @@ export function buildSemanticGraph(understanding: DatasetUnderstanding): Semanti
     const domain = signalInfo?.domain || "unknown";
 
     nodes.push({
-      id: concept.signalId,
-      label: concept.label,
+      id: signalId,
+      label: concept.label ?? concept.displayName ?? concept.canonicalConcept,
       type,
       domain,
       confidenceScore: concept.confidenceScore
@@ -39,14 +40,18 @@ export function buildSemanticGraph(understanding: DatasetUnderstanding): Semanti
   // 2. Edges from relationshipHints
   if (understanding.relationshipHints) {
     for (const hint of understanding.relationshipHints) {
-      addEdge(hint.sourceSignal, hint.targetSignal, "relationship", hint.description);
+      addEdge(hint.sourceSignal, hint.targetSignal, "relationship", hint.description ?? hint.reason ?? hint.label);
     }
   }
 
   // 3. Edges from workflowHints
   if (understanding.workflowHints) {
     for (const hint of understanding.workflowHints) {
-      addEdge(hint.sourceSignal, hint.targetSignal, "workflow", hint.description);
+      const sourceSignal = hint.sourceSignal ?? hint.fromSignal;
+      const targetSignal = hint.targetSignal ?? hint.toSignal;
+      if (targetSignal) {
+        addEdge(sourceSignal, targetSignal, "workflow", hint.description ?? hint.label);
+      }
     }
   }
 
@@ -62,6 +67,6 @@ export function buildSemanticGraph(understanding: DatasetUnderstanding): Semanti
   return {
     nodes,
     edges,
-    grain: understanding.grain || "unknown"
+    grain: understanding.grain ?? "unknown"
   };
 }

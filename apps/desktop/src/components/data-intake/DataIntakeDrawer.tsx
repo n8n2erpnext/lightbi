@@ -38,7 +38,7 @@ export function DataIntakeDrawer({ request, onClose, onSourceInspected }: DataIn
   if (!request) return null;
 
   const panelKey = request.sourceType as keyof typeof homeGuidance.connectionPanel;
-  const config = homeGuidance.connectionPanel[panelKey] as any;
+  const config = homeGuidance.connectionPanel[panelKey];
 
   if (request.sourceType !== 'local_file' && !config) return null;
 
@@ -47,6 +47,7 @@ export function DataIntakeDrawer({ request, onClose, onSourceInspected }: DataIn
       case 'local_file':
         // local_file is handled inline on Home.tsx, should not be routed here.
         return null;
+      case 'online_link':
       case 'google_sheets':
       case 'm365_excel':
       case 'csv_url':
@@ -65,7 +66,7 @@ export function DataIntakeDrawer({ request, onClose, onSourceInspected }: DataIn
       case 'mariadb':
       case 'mongodb_atlas':
       case 'sqlite':
-        return <DatabaseStep config={config} onClose={onClose} onSourceInspected={onSourceInspected} />;
+        return <DatabaseStep config={config as Parameters<typeof DatabaseStep>[0]['config']} onClose={onClose} onSourceInspected={onSourceInspected} />;
       case 'api':
         return <ApiStep config={config} onClose={onClose} />;
       case 'data_warehouse':

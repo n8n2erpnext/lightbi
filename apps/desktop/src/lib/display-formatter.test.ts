@@ -14,10 +14,22 @@ describe('display-formatter inferSemanticType', () => {
     expect(inferSemanticType('age', 25)).toBe('number');
   });
 
+  it('keeps numeric identifiers and Vietnamese mã columns as strings', () => {
+    expect(inferSemanticType('Mã kho xuất', 6968)).toBe('string');
+    expect(inferSemanticType('Mã phiếu xuất', 21090069680195476)).toBe('string');
+    expect(inferSemanticType('ORDERID', 21090069680195476)).toBe('string');
+    expect(inferSemanticType('CUSTOMERID', 9117)).toBe('string');
+  });
+
   it('infers dates correctly', () => {
     expect(inferSemanticType('created_at', '2024-01-01')).toBe('date');
     expect(inferSemanticType('updated_at', '2024-01-01 14:30:00')).toBe('datetime');
     expect(inferSemanticType('time', '14:30:00')).toBe('time');
+  });
+
+  it('infers numeric epoch values as dates when the column name is date-like', () => {
+    expect(inferSemanticType('ORDERDATE', 1714953600000)).toBe('date');
+    expect(inferSemanticType('created_at', 1714953600)).toBe('datetime');
   });
 });
 
@@ -25,6 +37,11 @@ describe('display-formatter formatValue', () => {
   it('formats numbers with commas in en-US', () => {
     const formatted = formatValue(1234567.89, 'number', { ...DEFAULT_PREFERENCES, locale: 'en-US' });
     expect(formatted).toBe('1,234,567.89');
+  });
+
+  it('does not add thousands separators to identifier-like values formatted as strings', () => {
+    const semanticType = inferSemanticType('Mã kho xuất', 6968);
+    expect(formatValue(6968, semanticType, { ...DEFAULT_PREFERENCES, locale: 'vi-VN' })).toBe('6968');
   });
 
   it('formats numbers with dots in vi-VN', () => {
@@ -67,6 +84,16 @@ describe('display-formatter formatValue', () => {
     const d = '2024-12-31';
     const formatted = formatValue(d, 'date', { ...DEFAULT_PREFERENCES, locale: 'en-US', dateFormat: 'short' });
     expect(formatted).toBe('12/31/24');
+  });
+
+  it('formats epoch milliseconds as a date instead of a large number', () => {
+    const formatted = formatValue(1714953600000, 'date', { ...DEFAULT_PREFERENCES, locale: 'en-US', dateFormat: 'iso', timezone: 'UTC' });
+    expect(formatted).toBe('2024-05-06');
+  });
+
+  it('formats Excel serial dates as dates', () => {
+    const formatted = formatValue(45645, 'date', { ...DEFAULT_PREFERENCES, locale: 'en-US', dateFormat: 'iso', timezone: 'UTC' });
+    expect(formatted).toBe('2024-12-19');
   });
 
   it('formats datetime according to compact preference', () => {

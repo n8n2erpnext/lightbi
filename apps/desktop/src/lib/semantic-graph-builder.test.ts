@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { buildSemanticGraph } from './semantic-graph-builder';
-import { DatasetUnderstanding } from './dataset-understanding-contract';
+import type { DatasetUnderstanding } from './dataset-understanding-contract';
 
 describe('semantic-graph-builder', () => {
   it('builds a graph for delivery dataset', () => {

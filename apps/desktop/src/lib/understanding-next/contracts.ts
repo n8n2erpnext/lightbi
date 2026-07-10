@@ -104,6 +104,24 @@ export type BusinessPerspective = {
   signalIds: string[];
 };
 
+export type BusinessStakeholderFit = {
+  id: string;
+  label: string;
+  score: number;
+  domains: DomainId[];
+  matchedSignals: string[];
+  matchedColumns: string[];
+  reasons: string[];
+};
+
+export type SemanticDomainAffinity = {
+  domain: DomainId;
+  score: number;
+  matchedSignals: string[];
+  matchedColumns: string[];
+  reasons: string[];
+};
+
 export type BusinessQuestion = {
   id: string;
   label: string;
@@ -190,6 +208,8 @@ export type DatasetUnderstandingResult = {
   profile: DatasetProfile["profile"];
   columns?: DatasetProfile["columns"];
   signals: BusinessSignal[];
+  domainAffinities?: SemanticDomainAffinity[];
+  stakeholderFits: BusinessStakeholderFit[];
   lenses: BusinessLens[];
   perspectives: BusinessPerspective[];
   recommendedQuestions: BusinessQuestion[];

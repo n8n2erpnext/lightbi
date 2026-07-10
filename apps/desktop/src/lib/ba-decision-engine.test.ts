@@ -239,6 +239,55 @@ describe('ba decision engine', () => {
     expect(brief.decisionReadinessScore).toBeLessThan(70);
   });
 
+  it('surfaces semantic coverage gaps when populated business-like fields are not understood yet', () => {
+    const brief = createBADecisionBrief({
+      datasetId: 'orders.xlsx',
+      previewResult,
+      chartModel,
+      runtimeIntent,
+      aiBriefing: {
+        datasetId: 'orders.xlsx',
+        generatedAt: '2026-06-27T00:00:00.000Z',
+        grain: 'transaction',
+        grainEvidence: 'orders export',
+        readinessTier: 'caution',
+        readinessScore: 85,
+        semanticFields: [
+          {
+            canonicalId: 'unknown_business_like:PaymentMode',
+            label: 'PaymentMode',
+            domain: 'unmapped',
+            role: 'dimension',
+            confidence: 35,
+            coverageStatus: 'unknown_business_like',
+            physicalColumn: 'PaymentMode',
+            sampleValues: ['Cash', 'Installment'],
+            reason: 'Column has business-like data but no safe canonical signal mapping yet.',
+          },
+        ],
+        caveats: ['Unmapped business-like column kept for review: PaymentMode.'],
+        safeActionHints: ['Review unmapped business-like fields before final BA/AI narrative.'],
+        semanticCoverage: {
+          totalColumns: 4,
+          nonEmptyColumns: 4,
+          recognized: 2,
+          partial: 0,
+          unknownBusinessLike: 1,
+          technicalOrNoise: 1,
+          coverageScore: 50,
+          unknownBusinessLikeColumns: ['PaymentMode'],
+          partialColumns: [],
+        },
+      },
+    });
+
+    const gap = brief.insights.find(insight => insight.id === 'ba_semantic_coverage_gap');
+    expect(gap?.type).toBe('field_gap');
+    expect(gap?.evidence.some(item => item.includes('PaymentMode'))).toBe(true);
+    expect(brief.decisionSuggestions.some(suggestion => suggestion.action.includes('data exists'))).toBe(true);
+    expect(brief.decisionReadinessScore).toBeLessThan(75);
+  });
+
   it('adds latest-period movement insight for trend results', () => {
     const trendIntent: RuntimeIntent = {
       ...runtimeIntent,
@@ -283,6 +332,74 @@ describe('ba decision engine', () => {
 
     expect(brief.insights.some(insight => insight.id === 'ba_period_over_period')).toBe(true);
     expect(brief.recommendedCharts.some(chart => chart.chartType === 'line')).toBe(true);
+  });
+
+  it('reports positive-rate status mixes using numerator and denominator instead of treating the rate as a top amount', () => {
+    const deliveryIntent: RuntimeIntent = {
+      ...runtimeIntent,
+      dimensions: ['Xe đến đúng hẹn'],
+      measures: ['record_count'],
+      derivedMeasures: [{
+        id: 'delivery_completion_rate',
+        label: 'Delivery completion rate',
+        type: 'positive_rate',
+        sourceColumn: 'Xe đến đúng hẹn',
+        positiveValues: ['Đúng hẹn', 'Dung hen'],
+        numeratorLabel: 'completed_deliveries',
+        denominatorLabel: 'total_deliveries'
+      }]
+    };
+    const deliveryRows = [
+      {
+        'Xe đến đúng hẹn': 'Đúng hẹn',
+        record_count: 5704,
+        completed_deliveries: 5704,
+        total_deliveries: 5704,
+        delivery_completion_rate: 1
+      },
+      {
+        'Xe đến đúng hẹn': 'Không đúng hẹn',
+        record_count: 1198,
+        completed_deliveries: 0,
+        total_deliveries: 1198,
+        delivery_completion_rate: 0
+      }
+    ];
+    const brief = createBADecisionBrief({
+      datasetId: 'bcctnhapTTKT_23122024.xlsx',
+      previewResult: {
+        ...previewResult,
+        columns: ['Xe đến đúng hẹn', 'record_count', 'completed_deliveries', 'total_deliveries', 'delivery_completion_rate'],
+        rows: deliveryRows,
+        rowCount: 2,
+        executionScope: 'full_file'
+      },
+      chartModel: {
+        ...chartModel,
+        title: 'Delivery completion mix',
+        xField: 'Xe đến đúng hẹn',
+        yField: 'completed_deliveries',
+        seriesFields: ['record_count', 'completed_deliveries', 'total_deliveries', 'delivery_completion_rate'],
+        rows: deliveryRows
+      },
+      runtimeIntent: deliveryIntent,
+      aiBriefing: {
+        datasetId: 'bcctnhapTTKT_23122024.xlsx',
+        generatedAt: '2026-07-04T00:00:00.000Z',
+        grain: 'event',
+        grainEvidence: 'delivery report',
+        readinessTier: 'caution',
+        readinessScore: 72,
+        semanticFields: [],
+        caveats: [],
+        safeActionHints: []
+      }
+    });
+
+    const positiveRateInsight = brief.insights.find(insight => insight.id === 'ba_positive_rate_mix');
+    expect(positiveRateInsight?.statement).toContain('Đúng hẹn has 5,704 positive rows');
+    expect(positiveRateInsight?.evidence).toContain('Overall: 5,704 / 6,902 (83%)');
+    expect(brief.executiveSummary).toContain('Đúng hẹn has 5,704 positive rows');
   });
 
   it('adds segment spread insight and score breakdown', () => {

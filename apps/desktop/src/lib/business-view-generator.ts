@@ -53,7 +53,9 @@ export type BusinessViewCandidate = {
   score: number;
   datasets: string[];
   domains: BusinessDomain[];
+  coreDomains?: BusinessDomain[];
   supportingRelationshipIds: string[];
+  relationshipIds?: string[];
   evidence: BusinessViewEvidence[];
   suggestedQuestions: QuestionSuggestion[];
 };

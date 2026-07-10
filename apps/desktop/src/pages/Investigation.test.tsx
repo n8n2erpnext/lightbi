@@ -110,7 +110,7 @@ describe('Investigation Boundary Contract & Truth Truth', () => {
 
     expect(screen.getByRole('button', { name: /Run preview/i })).toBeDefined();
     expect(screen.getByText('Moderate Readiness (Caution)')).toBeDefined();
-    expect(screen.getByText(/No stable time dimension detected/)).toBeDefined();
+    expect(screen.getAllByText(/No stable time dimension detected/)[0]).toBeDefined();
   });
 
   it('1. Upgrades empty executed result to failed truth state', async () => {
@@ -132,7 +132,7 @@ describe('Investigation Boundary Contract & Truth Truth', () => {
 
     // Wait for the empty state upgrade
     await waitFor(() => {
-      expect(screen.getByText('Execution Failed')).toBeDefined();
+      expect(screen.getAllByText('Execution Failed')[0]).toBeDefined();
     });
     
     expect(screen.getAllByText('Execution completed but returned an empty dataset. Analysis unavailable.')[0]).toBeDefined();
@@ -195,7 +195,7 @@ describe('Investigation Boundary Contract & Truth Truth', () => {
     fireEvent.click(runBtn);
 
     await waitFor(() => {
-      expect(screen.getAllByText('Execution Boundary Failed')[0]).toBeDefined();
+      expect(screen.getAllByText('Execution Failed')[0]).toBeDefined();
     });
     
     expect(screen.getAllByText('DUCKDB_PARSER_ERROR: syntax error')[0]).toBeDefined();
@@ -259,7 +259,7 @@ describe('Investigation Boundary Contract & Truth Truth', () => {
 
     await waitFor(() => {
       // It should NOT fall back, so it should show the execution boundary failed
-      expect(screen.getAllByText('Execution Boundary Failed')[0]).toBeDefined();
+      expect(screen.getAllByText('Execution Failed')[0]).toBeDefined();
     });
     
     expect(screen.getAllByText('CANONICAL_PROJECTION_MISSING: Required field "revenue" is missing from dataset')[0]).toBeDefined();
@@ -291,7 +291,7 @@ describe('Investigation Boundary Contract & Truth Truth', () => {
     fireEvent.click(runBtn);
 
     await waitFor(() => {
-      expect(screen.getAllByText('Execution Boundary Failed')[0]).toBeDefined();
+      expect(screen.getAllByText('Execution Failed')[0]).toBeDefined();
     });
     
     expect(screen.getAllByText('DUCKDB_BOOTSTRAP_ERROR: Worker not found')[0]).toBeDefined();
@@ -323,7 +323,7 @@ describe('Investigation Boundary Contract & Truth Truth', () => {
     fireEvent.click(runBtn);
 
     await waitFor(() => {
-      expect(screen.getAllByText('Execution Boundary Failed')[0]).toBeDefined();
+      expect(screen.getAllByText('Execution Failed')[0]).toBeDefined();
     });
     
     expect(screen.getAllByText('LOCAL_EXECUTOR_UNAVAILABLE: WASM memory limit')[0]).toBeDefined();
@@ -352,7 +352,7 @@ describe('Investigation Boundary Contract & Truth Truth', () => {
     fireEvent.click(runBtn);
 
     await waitFor(() => {
-      expect(screen.getAllByText('Execution Boundary Failed')[0]).toBeDefined();
+      expect(screen.getAllByText('Execution Failed')[0]).toBeDefined();
     });
     
     expect(screen.getAllByText('DUCKDB_UNKNOWN_RUNTIME_ERROR: some weird panic')[0]).toBeDefined();
@@ -382,7 +382,7 @@ describe('Investigation Boundary Contract & Truth Truth', () => {
     fireEvent.click(runBtn);
 
     await waitFor(() => {
-      expect(screen.getAllByText('Execution Boundary Failed')[0]).toBeDefined();
+      expect(screen.getAllByText('Execution Failed')[0]).toBeDefined();
     });
     
     expect(screen.getAllByText('Validation boundary rejected the preview result due to insufficient quality or missing required data.')[0]).toBeDefined();

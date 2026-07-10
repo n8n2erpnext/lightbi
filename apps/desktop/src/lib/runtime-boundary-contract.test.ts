@@ -13,11 +13,17 @@ import type { DuckDBLogicalPlan } from './duckdb-logical-plan';
 describe('Runtime Boundary Contract', () => {
   const mockView: BusinessViewCandidate = {
     id: 'view_1',
+    type: 'operations_overview',
     title: 'View',
     description: 'Desc',
+    status: 'suggested',
     confidence: 'HIGH',
+    score: 90,
     relationshipIds: ['rel_1'],
     datasets: ['d1'],
+    domains: [],
+    supportingRelationshipIds: ['rel_1'],
+    evidence: [],
     suggestedQuestions: [],
     coreDomains: []
   };

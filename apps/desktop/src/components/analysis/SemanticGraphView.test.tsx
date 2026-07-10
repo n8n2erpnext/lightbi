@@ -1,9 +1,8 @@
 /** @vitest-environment jsdom */
-import React from 'react';
 import { render } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
 import { SemanticGraphView } from './SemanticGraphView';
-import { SemanticGraph } from '../../lib/semantic-graph-model';
+import type { SemanticGraph } from '../../lib/semantic-graph-model';
 
 describe('SemanticGraphView', () => {
   it('renders null for empty graph', () => {

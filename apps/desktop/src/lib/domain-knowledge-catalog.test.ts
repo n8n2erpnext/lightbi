@@ -2,11 +2,8 @@ import { describe, it, expect } from 'vitest';
 import {
   DOMAIN_KNOWLEDGE_CATALOG_V1,
   getDomainCatalog,
-  listDomainCatalogs,
-  listBusinessViewsByDomain,
   findBusinessViewDefinition,
   listQuestionIntentsByBusinessView,
-  listSignalsForDomain
 } from './domain-knowledge-catalog';
 
 describe('Domain Knowledge Catalog V1', () => {

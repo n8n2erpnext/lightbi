@@ -2,7 +2,6 @@ import type {
   CoreAction,
   DerivedMeasure,
   QuestionCandidate,
-  SignalFamily,
   UnderstandingCoreInput,
   UnderstandingCoreResult,
   UniversalSignal
@@ -17,16 +16,8 @@ function firstAny(signals: UniversalSignal[], predicate: (signal: UniversalSigna
   return signals.find(predicate);
 }
 
-function all(signals: UniversalSignal[], predicate: (signal: UniversalSignal) => boolean): UniversalSignal[] {
-  return signals.filter(signal => signal.usableForDefaultQuestion && predicate(signal));
-}
-
 function byId(id: string) {
   return (signal: UniversalSignal) => signal.id === id;
-}
-
-function byPrefix(prefix: string) {
-  return (signal: UniversalSignal) => signal.id.startsWith(prefix);
 }
 
 function executionScope(input: UnderstandingCoreInput): CoreAction["executionScope"] {
@@ -132,7 +123,15 @@ export function generateUniversalQuestions(input: UnderstandingCoreInput, signal
   const soldQty = first(signals, byId("quantity.sold"));
   const returnedQty = first(signals, byId("quantity.returned"));
   const orderedQty = first(signals, byId("quantity.ordered"));
-  const payments = signals.filter(signal => signal.id.startsWith("money.payment_") && signal.health.nonEmptyCount > 0);
+  const paymentMethod = first(signals, byId("money.payment_method"));
+  const payments = signals.filter(signal =>
+    signal.id.startsWith("money.payment_") &&
+    signal.id !== "money.payment_method" &&
+    signal.health.nonEmptyCount > 0
+  );
+  const carrier = first(signals, byId("entity.carrier"));
+  const deliveryStatus = first(signals, byId("status.delivery")) ?? first(signals, byId("status.fulfillment"));
+  const deliveryFee = first(signals, byId("money.fee"));
   const quality = signals.filter(signal => signal.family === "quality");
   const engagementOutcome = first(signals, byId("engagement.outcome"));
   const engagementSegment = first(signals, byId("engagement.segment"));
@@ -490,11 +489,116 @@ export function generateUniversalQuestions(input: UnderstandingCoreInput, signal
     lens: "Payment behavior",
     intent: "mix",
     requiredFamilies: ["money"],
-    requiredSignals: ["money.payment_*"],
-    optionalSignals: ["time.*", "location.*"],
-    evidence: payments.flatMap(signal => signal.evidence),
-    action: makeAction("payment_mix", "Payment mix", "table_preview", payments.map(signal => signal.physicalColumn), [], scope),
-    blockedReasons: payments.length > 0 ? [] : ["At least one payment amount field is required."]
+    requiredSignals: ["money.payment_method|money.payment_*"],
+    optionalSignals: ["money.revenue|money.receivable", "time.*", "location.*"],
+    evidence: [paymentMethod, ...payments].filter(Boolean).flatMap(signal => signal!.evidence),
+    action: paymentMethod && money
+      ? makeAction("payment_mix", "Payment mix", "group_by", [paymentMethod.physicalColumn], [money.physicalColumn], scope)
+      : makeAction("payment_mix", "Payment mix", "table_preview", payments.map(signal => signal.physicalColumn), [], scope),
+    blockedReasons: paymentMethod && !money
+      ? ["A revenue or receivable measure is required to calculate payment mix value."]
+      : paymentMethod || payments.length > 0
+        ? []
+        : ["A payment method column or payment amount fields are required."]
+  }));
+
+  const paymentProfitMeasures = [
+    revenue,
+    profit,
+    receivable,
+    first(signals, byId("money.margin"))
+  ].filter((signal, index, list): signal is UniversalSignal =>
+    Boolean(signal) && list.findIndex(item => item?.physicalColumn === signal?.physicalColumn) === index
+  );
+  questions.push(candidate({
+    id: "payment_profitability_receivable_mix",
+    label: "Payment profitability and receivable mix",
+    prompt: "Do payment methods differ by revenue, profit, margin, invoice total, or receivable exposure?",
+    lens: "Payment behavior",
+    intent: "ranking",
+    requiredFamilies: ["money"],
+    requiredSignals: ["money.payment_method", "money.revenue|money.profit|money.receivable|money.margin"],
+    optionalSignals: ["time.*", "location.*", "item.*"],
+    evidence: [paymentMethod, ...paymentProfitMeasures].filter(Boolean).flatMap(signal => signal!.evidence),
+    action: makeAction(
+      "payment_profitability_receivable_mix",
+      "Payment profitability and receivable mix",
+      "group_by",
+      paymentMethod ? [paymentMethod.physicalColumn] : [],
+      paymentProfitMeasures.map(signal => signal.physicalColumn),
+      scope,
+      undefined,
+      Object.fromEntries(paymentProfitMeasures.map(signal => [
+        signal.physicalColumn,
+        signal.id === "money.margin" ? "AVG" : "SUM"
+      ]))
+    ),
+    blockedReasons: [
+      ...(!paymentMethod ? ["A payment method column is required."] : []),
+      ...(paymentProfitMeasures.length === 0 ? ["A revenue, profit, margin, or receivable measure is required."] : [])
+    ]
+  }));
+
+  const carrierMeasures = [
+    deliveryFee,
+    quantity,
+    cost
+  ].filter((signal, index, list): signal is UniversalSignal =>
+    Boolean(signal) && list.findIndex(item => item?.physicalColumn === signal?.physicalColumn) === index
+  );
+  questions.push(candidate({
+    id: "carrier_cost_impact",
+    label: "Carrier cost impact",
+    prompt: "How do carriers compare by delivery fee, fulfilled volume, and operational cost exposure?",
+    lens: "Delivery and logistics",
+    intent: "ranking",
+    requiredFamilies: ["entity", "money"],
+    requiredSignals: ["entity.carrier", "money.fee|quantity.*|money.cost"],
+    optionalSignals: ["status.delivery", "time.*", "location.*", "item.*"],
+    evidence: [carrier, deliveryStatus, ...carrierMeasures].filter(Boolean).flatMap(signal => signal!.evidence),
+    action: makeAction(
+      "carrier_cost_impact",
+      "Carrier cost impact",
+      "group_by",
+      carrier ? [carrier.physicalColumn] : [],
+      carrierMeasures.map(signal => signal.physicalColumn),
+      scope
+    ),
+    blockedReasons: [
+      ...(!carrier ? ["A carrier/logistics provider field is required."] : []),
+      ...(carrierMeasures.length === 0 ? ["A delivery fee, quantity, or cost measure is required."] : [])
+    ]
+  }));
+
+  questions.push(candidate({
+    id: "delivery_completion_mix",
+    label: "Delivery completion mix",
+    prompt: "What share of deliveries are completed, retried, failed, or still in progress?",
+    lens: "Delivery and logistics",
+    intent: "ranking",
+    requiredFamilies: ["status"],
+    requiredSignals: ["status.delivery|status.fulfillment"],
+    optionalSignals: ["entity.carrier", "money.fee", "quantity.*"],
+    evidence: [deliveryStatus, carrier, deliveryFee, quantity].filter(Boolean).flatMap(signal => signal!.evidence),
+    action: makeAction(
+      "delivery_completion_mix",
+      "Delivery completion mix",
+      "group_by",
+      deliveryStatus ? [deliveryStatus.physicalColumn] : [],
+      ["record_count"],
+      scope,
+      deliveryStatus ? [{
+        id: "delivery_completion_rate",
+        label: "delivery_completion_rate",
+        type: "positive_rate",
+        sourceColumn: deliveryStatus.physicalColumn,
+        positiveValues: ["Đã giao", "Da giao", "Hoàn tất", "Hoan tat", "Delivered", "Completed", "Complete", "Fulfilled", "Đúng hẹn", "Dung hen", "On time", "Ontime", "Timely"],
+        numeratorLabel: "completed_deliveries",
+        denominatorLabel: "total_deliveries"
+      }] : undefined,
+      { record_count: "COUNT" }
+    ),
+    blockedReasons: deliveryStatus ? [] : ["A delivery or fulfillment status field is required."]
   }));
 
   questions.push(candidate({

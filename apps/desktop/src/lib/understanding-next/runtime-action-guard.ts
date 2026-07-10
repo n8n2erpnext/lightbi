@@ -11,7 +11,7 @@ import type { AnalysisAction, BusinessQuestion, DatasetProfile, UnavailableActio
  */
 export function createGuardedActions(
   questions: BusinessQuestion[],
-  datasetProfile?: Pick<DatasetProfile, "profile" | "quality">
+  _datasetProfile?: Pick<DatasetProfile, "profile" | "quality">
 ): {
   availableActions: AnalysisAction[];
   unavailableActions: UnavailableAction[];

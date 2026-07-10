@@ -66,6 +66,23 @@ describe("understanding-core universal signal ontology", () => {
     expect(questionIds(result)).toContain("document_coverage");
   });
 
+  it("runs payment mix as a real group_by when payment method is one categorical column", () => {
+    const result = createUnderstandingCoreResult(input(
+      ["OrderDate", "Store", "Payment", "Revenue"],
+      makeRows(120, index => ({
+        OrderDate: `2026-05-${String((index % 28) + 1).padStart(2, "0")}`,
+        Store: `S${index % 4}`,
+        Payment: ["Tiền mặt", "Trả góp", "Chuyển khoản"][index % 3],
+        Revenue: 1000000 + index * 1000
+      }))
+    ));
+
+    const paymentQuestion = result.questions.find(question => question.id === "payment_mix");
+    expect(paymentQuestion?.action?.actionKind).toBe("group_by");
+    expect(paymentQuestion?.action?.dimensions).toEqual(["Payment"]);
+    expect(paymentQuestion?.action?.measures).toEqual(["Revenue"]);
+  });
+
   it("lets healthcare billing inherit business questions while adding healthcare overlay signals", () => {
     const result = createUnderstandingCoreResult(input(
       ["Ngày khám", "Bệnh nhân", "Bác sĩ", "Tên thuốc", "Dịch vụ", "Tiền phải thu", "Tiền mặt", "Trạng thái thanh toán"],

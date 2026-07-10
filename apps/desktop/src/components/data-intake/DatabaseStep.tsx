@@ -3,23 +3,41 @@ import { AlertTriangle, Check, Database, Loader2 } from 'lucide-react';
 import { closeAdvancedConnection, createAdvancedConnection, executeAdvancedDocumentQuery, executeAdvancedQuery, loadAdvancedSchema, loadAdvancedTableCount, type AdvancedConnection } from '../../lib/advanced-api';
 import { profileColumns } from '../../lib/column-profiler';
 import type { SourceInspectionResult, SourceType } from '../../lib/source-preflight';
+import { homeGuidance } from '../../content/home-guidance';
 
 interface DatabaseStepProps {
-  config: any;
+  config: DatabaseConnectionConfig;
   onClose: () => void;
   onSourceInspected?: (result: SourceInspectionResult) => void;
 }
 
 type InspectStatus = SourceInspectionResult | null;
+type DatabaseDriver = Extract<SourceType, 'postgresql' | 'mysql' | 'mariadb' | 'mongodb_atlas' | 'sqlite'>;
+type DatabaseConnectionConfig = {
+  title: string;
+  description?: string;
+  driver?: DatabaseDriver;
+  uriPlaceholder?: string;
+  tablePlaceholder?: string;
+  schemaPlaceholder?: string;
+  databasePlaceholder?: string;
+  collectionPlaceholder?: string;
+  buttonText?: string;
+  options?: { id: DatabaseDriver; label: string }[];
+};
 
 const SQL_DRIVERS = new Set(['postgresql', 'mysql', 'mariadb', 'sqlite']);
 
 export function DatabaseStep({ config, onClose, onSourceInspected }: DatabaseStepProps) {
-  const driver = config.driver as SourceType;
+  const [selectedDriver, setSelectedDriver] = useState<DatabaseDriver | null>(config.driver ?? null);
+  const activeConfig = selectedDriver
+    ? homeGuidance.connectionPanel[selectedDriver] as DatabaseConnectionConfig
+    : config;
+  const driver = activeConfig.driver;
   const isMongo = driver === 'mongodb_atlas';
-  const isSql = SQL_DRIVERS.has(driver);
+  const isSql = Boolean(driver && SQL_DRIVERS.has(driver));
   const [connectionUrl, setConnectionUrl] = useState('');
-  const [schemaName, setSchemaName] = useState(config.schemaPlaceholder === 'public' ? 'public' : '');
+  const [schemaName, setSchemaName] = useState(activeConfig.schemaPlaceholder === 'public' ? 'public' : '');
   const [tableName, setTableName] = useState('');
   const [databaseName, setDatabaseName] = useState('');
   const [collectionName, setCollectionName] = useState('');
@@ -27,21 +45,41 @@ export function DatabaseStep({ config, onClose, onSourceInspected }: DatabaseSte
   const [isInspecting, setIsInspecting] = useState(false);
   const [inspectionResult, setInspectionResult] = useState<InspectStatus>(null);
 
-  const canInspect = Boolean(connectionUrl.trim()) && (
+  const canInspect = Boolean(driver && connectionUrl.trim()) && (
     isMongo
       ? Boolean(databaseName.trim() && collectionName.trim())
       : Boolean(tableName.trim())
   );
 
+  const handleSelectDriver = (nextDriver: DatabaseDriver | null) => {
+    setSelectedDriver(nextDriver);
+    if (!nextDriver) {
+      setConnectionUrl('');
+      setSchemaName('');
+      setTableName('');
+      setDatabaseName('');
+      setCollectionName('');
+      setInspectionResult(null);
+      return;
+    }
+    const nextConfig = homeGuidance.connectionPanel[nextDriver] as DatabaseConnectionConfig;
+    setConnectionUrl('');
+    setSchemaName(nextConfig.schemaPlaceholder === 'public' ? 'public' : '');
+    setTableName('');
+    setDatabaseName('');
+    setCollectionName('');
+    setInspectionResult(null);
+  };
+
   const handleInspect = async () => {
-    if (!canInspect) return;
+    if (!canInspect || !driver) return;
     setIsInspecting(true);
     setInspectionResult(null);
 
     let session: AdvancedConnection | null = null;
     try {
       const provider = (driver === 'mongodb_atlas' ? 'mongodb' : driver) as AdvancedConnection['provider'];
-      session = await createAdvancedConnection(config.title, connectionUrl.trim(), provider, databaseName.trim() || undefined);
+      session = await createAdvancedConnection(activeConfig.title, connectionUrl.trim(), provider, databaseName.trim() || undefined);
       const catalog = await loadAdvancedSchema(session.connectionId);
       const entityName = isMongo ? collectionName.trim() : tableName.trim();
       const targetSchema = catalog.schemas.find(schema => schema.name === (schemaName.trim() || session!.database)) ?? catalog.schemas[0];
@@ -63,10 +101,10 @@ export function DatabaseStep({ config, onClose, onSourceInspected }: DatabaseSte
       const inspection = {
         status: 'accessible' as const,
         sourceType: driver,
-        label: config.title,
+        label: activeConfig.title,
         normalizedUrl: `${provider}://connected`,
         metadata: {
-          name: `${config.title} ${targetSchema.name}.${entityName}`,
+          name: `${activeConfig.title} ${targetSchema.name}.${entityName}`,
           rows_count: exact?.exactRows ?? rows.length,
           sampled_rows_count: rows.length,
           columns,
@@ -75,12 +113,12 @@ export function DatabaseStep({ config, onClose, onSourceInspected }: DatabaseSte
         },
       };
       setInspectionResult(inspection);
-    } catch (error: any) {
+    } catch (error: unknown) {
       setInspectionResult({
         status: 'not_found',
         sourceType: driver,
-        label: config.title,
-        message: error?.message ?? 'Could not inspect this database source.'
+        label: activeConfig.title,
+        message: error instanceof Error ? error.message : 'Could not inspect this database source.'
       });
     } finally {
       if (session) await closeAdvancedConnection(session.connectionId).catch(() => undefined);
@@ -110,28 +148,61 @@ export function DatabaseStep({ config, onClose, onSourceInspected }: DatabaseSte
         )}
       </div>
 
+      {!driver && config.options && (
+        <div className="grid grid-cols-1 gap-3 rounded-xl border border-gray-100 bg-white p-6 shadow-sm sm:grid-cols-2">
+          {config.options.map(option => (
+            <button
+              key={option.id}
+              onClick={() => handleSelectDriver(option.id)}
+              className="flex items-center gap-3 rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-left transition-colors hover:border-gray-300 hover:bg-white"
+            >
+              <Database className="h-5 w-5 text-gray-500" />
+              <div>
+                <div className="text-sm font-semibold text-gray-900">{option.label}</div>
+                <div className="mt-0.5 text-xs text-gray-500">Inspect a read-only sample</div>
+              </div>
+            </button>
+          ))}
+        </div>
+      )}
+
+      {driver && (
       <div className="space-y-4 rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
+        {!config.driver && (
+          <div className="flex items-center justify-between border-b border-gray-100 pb-4">
+            <div>
+              <p className="text-sm font-semibold text-gray-900">{activeConfig.title}</p>
+              {activeConfig.description && <p className="mt-0.5 text-xs text-gray-500">{activeConfig.description}</p>}
+            </div>
+            <button
+              onClick={() => handleSelectDriver(null)}
+              className="rounded-md border border-gray-200 px-2.5 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-50"
+            >
+              Change type
+            </button>
+          </div>
+        )}
         <label className="block">
           <span className="text-sm font-medium text-gray-700">Connection URI</span>
           <input
             type="password"
             value={connectionUrl}
             onChange={(event) => setConnectionUrl(event.target.value)}
-            placeholder={config.uriPlaceholder}
+            placeholder={activeConfig.uriPlaceholder}
             className="mt-2 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900"
           />
         </label>
 
         {isSql && (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            {'schemaPlaceholder' in config && (
+            {'schemaPlaceholder' in activeConfig && (
               <label className="block">
                 <span className="text-sm font-medium text-gray-700">Schema</span>
                 <input
                   type="text"
                   value={schemaName}
                   onChange={(event) => setSchemaName(event.target.value)}
-                  placeholder={config.schemaPlaceholder}
+                  placeholder={activeConfig.schemaPlaceholder}
                   className="mt-2 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900"
                 />
               </label>
@@ -142,7 +213,7 @@ export function DatabaseStep({ config, onClose, onSourceInspected }: DatabaseSte
                 type="text"
                 value={tableName}
                 onChange={(event) => setTableName(event.target.value)}
-                placeholder={config.tablePlaceholder}
+                placeholder={activeConfig.tablePlaceholder}
                 className="mt-2 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900"
               />
             </label>
@@ -157,7 +228,7 @@ export function DatabaseStep({ config, onClose, onSourceInspected }: DatabaseSte
                 type="text"
                 value={databaseName}
                 onChange={(event) => setDatabaseName(event.target.value)}
-                placeholder={config.databasePlaceholder}
+                placeholder={activeConfig.databasePlaceholder}
                 className="mt-2 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900"
               />
             </label>
@@ -167,7 +238,7 @@ export function DatabaseStep({ config, onClose, onSourceInspected }: DatabaseSte
                 type="text"
                 value={collectionName}
                 onChange={(event) => setCollectionName(event.target.value)}
-                placeholder={config.collectionPlaceholder}
+                placeholder={activeConfig.collectionPlaceholder}
                 className="mt-2 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900"
               />
             </label>
@@ -186,6 +257,7 @@ export function DatabaseStep({ config, onClose, onSourceInspected }: DatabaseSte
           />
         </label>
       </div>
+      )}
 
       {isInspecting && (
         <div className="flex items-center gap-2 rounded-lg border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-700">
@@ -227,6 +299,7 @@ export function DatabaseStep({ config, onClose, onSourceInspected }: DatabaseSte
         </div>
       )}
 
+      {driver && (
       <div className="pt-4 flex justify-end">
         {inspectionResult?.status === 'accessible' ? (
           <button
@@ -241,10 +314,11 @@ export function DatabaseStep({ config, onClose, onSourceInspected }: DatabaseSte
             disabled={!canInspect || isInspecting}
             className="px-6 py-3 bg-gray-900 text-white text-base font-medium rounded-lg hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors w-full sm:w-auto"
           >
-            {isInspecting ? 'Inspecting...' : config.buttonText || 'Inspect'}
+            {isInspecting ? 'Inspecting...' : activeConfig.buttonText || 'Inspect'}
           </button>
         )}
       </div>
+      )}
     </div>
   );
 }

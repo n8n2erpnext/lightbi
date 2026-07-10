@@ -1,10 +1,16 @@
 import type { BusinessSignal, DatasetProfile } from "./contracts";
+import { inferContextSemanticCandidates } from "../context-semantic-dictionary";
+import {
+  SEMANTIC_SIGNAL_BY_ID,
+  SEMANTIC_SIGNAL_REGISTRY_V1,
+  type SemanticSignalDefinition
+} from "../semantic-registry";
 
 // ---------------------------------------------------------------------------
 // Signal rules
 // ---------------------------------------------------------------------------
 
-type SignalRule = {
+export type SignalRule = {
   canonicalId: string;
   label: string;
   domain: BusinessSignal["domain"];
@@ -12,6 +18,8 @@ type SignalRule = {
   patterns: RegExp[];
   /** If true, this field is inherently an identifier (high-cardinality OK). */
   isIdentifier?: boolean;
+  source?: "semantic_registry" | "next_supplemental";
+  registryCanonicalIds?: string[];
 };
 
 /**
@@ -20,7 +28,7 @@ type SignalRule = {
  * Rules MUST be generic semantic patterns, NOT sample file names.
  * Evidence is attached from column profiles and value distributions.
  */
-const SIGNAL_RULES: SignalRule[] = [
+const COMPAT_SIGNAL_RULES: SignalRule[] = [
   // Time
   {
     canonicalId: "date",
@@ -43,7 +51,35 @@ const SIGNAL_RULES: SignalRule[] = [
     label: "Receivable",
     domain: "revenue",
     role: "measure",
-    patterns: [/tiền phải thu|phải thu|receivable|amount due/i]
+    patterns: [/tiền phải thu|phải thu|receivable|amount due|\bar[_\s-]?debit\b|accounts?.?receivable/i]
+  },
+  {
+    canonicalId: "invoice_total",
+    label: "Invoice Total",
+    domain: "finance",
+    role: "measure",
+    patterns: [/invoice.?total|gross.?invoice|tổng hóa đơn|tong hoa don|tổng thanh toán|tong thanh toan/i]
+  },
+  {
+    canonicalId: "gross_profit",
+    label: "Gross Profit",
+    domain: "finance",
+    role: "measure",
+    patterns: [/gross.?profit|lợi nhuận gộp|loi nhuan gop|profit/i]
+  },
+  {
+    canonicalId: "margin_pct",
+    label: "Margin %",
+    domain: "finance",
+    role: "measure",
+    patterns: [/margin.?pct|margin.?percent|gross.?margin|biên lợi nhuận|bien loi nhuan|margin/i]
+  },
+  {
+    canonicalId: "total_cost",
+    label: "Total Cost",
+    domain: "finance",
+    role: "measure",
+    patterns: [/total.?cost|unit.?cost|cost|giá vốn|gia von|cogs/i]
   },
   {
     canonicalId: "quantity",
@@ -81,6 +117,13 @@ const SIGNAL_RULES: SignalRule[] = [
     patterns: [/ngân hàng|bank|transfer|chuyển khoản/i]
   },
   {
+    canonicalId: "payment_method",
+    label: "Payment Method",
+    domain: "revenue",
+    role: "dimension",
+    patterns: [/phương thức thanh toán|hình thức thanh toán|payment method|payment/i]
+  },
+  {
     canonicalId: "change_amount",
     label: "Change Amount",
     domain: "revenue",
@@ -97,9 +140,9 @@ const SIGNAL_RULES: SignalRule[] = [
   {
     canonicalId: "delivery_fee",
     label: "Delivery Fee",
-    domain: "revenue",
+    domain: "operations",
     role: "measure",
-    patterns: [/phí giao|giao hàng|delivery fee|shipping/i]
+    patterns: [/phí giao|phi giao|giao hàng|delivery.?fee|shipping.?fee|freight.?fee|phí vận chuyển|phi van chuyen/i]
   },
 
   // Store / Branch
@@ -173,6 +216,20 @@ const SIGNAL_RULES: SignalRule[] = [
     patterns: [/lái xe|driver/i]
   },
   {
+    canonicalId: "carrier",
+    label: "Carrier / Logistics Provider",
+    domain: "operations",
+    role: "dimension",
+    patterns: [/carrier|courier|shipper|đơn vị vận chuyển|don vi van chuyen|nhà vận chuyển|nha van chuyen|transport.?provider/i]
+  },
+  {
+    canonicalId: "delivery_status",
+    label: "Delivery Status",
+    domain: "operations",
+    role: "status",
+    patterns: [/delivery.?status|trạng thái giao|trang thai giao|fulfillment.?status|delivered.?status|shipment.?status/i]
+  },
+  {
     canonicalId: "waiting_time",
     label: "Waiting Time",
     domain: "operations",
@@ -208,6 +265,14 @@ const SIGNAL_RULES: SignalRule[] = [
     domain: "inventory",
     role: "identifier",
     patterns: [/mã phiếu gửi|ma phieu gui|tracking|waybill|shipment.?id|awb/i],
+    isIdentifier: true
+  },
+  {
+    canonicalId: "order_id",
+    label: "Order ID",
+    domain: "revenue",
+    role: "identifier",
+    patterns: [/order.?id|sales.?order|so.?no|đơn hàng|don hang|mã đơn|ma don/i],
     isIdentifier: true
   },
   {
@@ -336,6 +401,228 @@ const ROW_TYPE_VALUE_PATTERNS = [
   // Add other known operational code patterns here (generic, not sample-specific):
   /^(CASH|CREDIT|DEBIT|COD|PREPAID|RETURN|EXCHANGE)$/i
 ];
+
+const CONTEXT_CANONICAL_TO_NEXT: Record<string, string> = {
+  report_date: "date",
+  pickup_date: "date",
+  delivery_date: "date",
+  actual_time: "date",
+  close_date: "date",
+  hire_date: "date",
+  termination_date: "date",
+  renewal_date: "date",
+  effective_date: "date",
+  expiration_date: "date",
+  time_period: "date",
+  order: "order_id",
+  shipment: "shipment_id",
+  stock_qty: "quantity",
+  margin: "margin_pct",
+  cost: "total_cost",
+  profit: "gross_profit",
+  fee: "delivery_fee",
+  toll_fee: "delivery_fee",
+  freight_fee: "delivery_fee",
+  sales: "revenue",
+  net_revenue: "revenue",
+  payable: "revenue",
+  expense: "total_cost",
+  purchase_cost: "total_cost",
+  operational_cost: "total_cost",
+  supplier_cost: "total_cost",
+  gross_profit: "gross_profit",
+  branch: "branch",
+  warehouse: "branch",
+  customer: "customer",
+  account: "customer",
+  contact: "customer",
+  employee: "employee",
+  owner: "employee",
+  agent: "employee",
+  salesperson: "salesperson",
+  sku: "sku",
+  product: "product",
+  material: "product",
+  delivery_status: "delivery_status",
+  stock_status: "stock_status",
+  current_location: "current_location",
+  origin_location: "origin_location",
+  destination_location: "destination_location"
+};
+
+export const NEXT_ONLY_SIGNAL_IDS = new Set([
+  "payment_cash",
+  "payment_card",
+  "payment_voucher",
+  "payment_bank",
+  "change_amount",
+  "rounding_amount",
+  "waiting_time",
+  "on_time_status",
+  "capacity",
+  "stock_threshold",
+  "freight_fee",
+  "service_group",
+  "item_type",
+  "load_status",
+  "row_type"
+]);
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function aliasesToPatterns(signal: SemanticSignalDefinition): RegExp[] {
+  const aliases = [...new Set([
+    ...signal.headerAliases,
+    ...signal.aliases,
+    ...signal.valueAliases.filter(alias => alias.length >= 3)
+  ].map(alias => alias.trim()).filter(Boolean))];
+
+  return aliases.map(alias => {
+    const escaped = escapeRegExp(alias);
+    if (/^[a-z0-9]+$/i.test(alias) && alias.length <= 4) {
+      return new RegExp(`\\b${escaped}\\b`, "i");
+    }
+    return new RegExp(escaped, "i");
+  });
+}
+
+function normalizeRegistryCanonical(canonicalId: string): string {
+  return CONTEXT_CANONICAL_TO_NEXT[canonicalId] ?? canonicalId;
+}
+
+function toNextDomain(signal: SemanticSignalDefinition): BusinessSignal["domain"] {
+  const supported = signal.domains.find(domain =>
+    domain === "operations" ||
+    domain === "revenue" ||
+    domain === "inventory" ||
+    domain === "customer" ||
+    domain === "performance" ||
+    domain === "finance"
+  );
+  return (supported ?? "operations") as BusinessSignal["domain"];
+}
+
+function toNextRole(signal: SemanticSignalDefinition): BusinessSignal["role"] {
+  if (signal.role === "identifier") return "identifier";
+  if (signal.role === "status") return "status";
+  if (signal.role === "time") return "time";
+  if (signal.role === "measure") return "measure";
+  return "dimension";
+}
+
+function makeRegistryBackedNextRules(): SignalRule[] {
+  const byId = new Map<string, SignalRule>();
+  for (const signal of SEMANTIC_SIGNAL_REGISTRY_V1) {
+    const canonicalId = normalizeRegistryCanonical(signal.canonicalId);
+    const patterns = aliasesToPatterns(signal);
+    if (!patterns.length) continue;
+
+    const existing = byId.get(canonicalId);
+    if (existing) {
+      existing.patterns.push(...patterns);
+      existing.registryCanonicalIds?.push(signal.canonicalId);
+      continue;
+    }
+
+    byId.set(canonicalId, {
+      canonicalId,
+      label: signal.label,
+      domain: toNextDomain(signal),
+      role: toNextRole(signal),
+      patterns,
+      isIdentifier: signal.role === "identifier",
+      source: "semantic_registry",
+      registryCanonicalIds: [signal.canonicalId]
+    });
+  }
+  return [...byId.values()];
+}
+
+function mergeSignalRules(registryRules: SignalRule[], compatRules: SignalRule[]): {
+  merged: SignalRule[];
+  supplemental: SignalRule[];
+} {
+  const byId = new Map<string, SignalRule>();
+  for (const rule of registryRules) {
+    byId.set(rule.canonicalId, {
+      ...rule,
+      patterns: [...rule.patterns],
+      registryCanonicalIds: [...(rule.registryCanonicalIds ?? [])]
+    });
+  }
+
+  const supplemental: SignalRule[] = [];
+  for (const rule of compatRules) {
+    const existing = byId.get(rule.canonicalId);
+    if (existing) {
+      existing.patterns.push(...rule.patterns);
+      existing.isIdentifier = existing.isIdentifier || rule.isIdentifier;
+      continue;
+    }
+
+    const supplementalRule = {
+      ...rule,
+      patterns: [...rule.patterns],
+      source: "next_supplemental" as const
+    };
+    supplemental.push(supplementalRule);
+    byId.set(supplementalRule.canonicalId, supplementalRule);
+  }
+
+  return {
+    merged: [...byId.values()],
+    supplemental
+  };
+}
+
+export const REGISTRY_BACKED_NEXT_SIGNAL_RULES = makeRegistryBackedNextRules();
+const MERGED_NEXT_SIGNAL_RULES = mergeSignalRules(REGISTRY_BACKED_NEXT_SIGNAL_RULES, COMPAT_SIGNAL_RULES);
+export const NEXT_SUPPLEMENTAL_SIGNAL_RULES = MERGED_NEXT_SIGNAL_RULES.supplemental;
+const SIGNAL_RULES = MERGED_NEXT_SIGNAL_RULES.merged;
+
+function normalizeContextCanonical(canonicalId: string): string {
+  return CONTEXT_CANONICAL_TO_NEXT[canonicalId] ?? canonicalId;
+}
+
+function signalDomain(canonicalId: string, fallback: BusinessSignal["domain"]): BusinessSignal["domain"] {
+  const definition = SEMANTIC_SIGNAL_BY_ID.get(canonicalId) ?? SEMANTIC_SIGNAL_BY_ID.get(
+    Object.entries(CONTEXT_CANONICAL_TO_NEXT).find(([, nextId]) => nextId === canonicalId)?.[0] ?? canonicalId
+  );
+  const domain = definition?.domain ?? fallback;
+  if (domain === "operations" || domain === "revenue" || domain === "inventory" || domain === "customer" || domain === "performance" || domain === "finance") {
+    return domain;
+  }
+  return fallback;
+}
+
+function signalLabel(canonicalId: string, fallback: string): string {
+  const definition = SEMANTIC_SIGNAL_BY_ID.get(canonicalId) ?? SEMANTIC_SIGNAL_BY_ID.get(
+    Object.entries(CONTEXT_CANONICAL_TO_NEXT).find(([, nextId]) => nextId === canonicalId)?.[0] ?? canonicalId
+  );
+  return definition?.label ?? fallback;
+}
+
+function toContextType(type: BusinessSignal["role"] | DatasetProfile["columns"][number]["health"]["inferredType"]): string {
+  return type === "mixed" ? "string" : type;
+}
+
+function columnSampleValues(column: DatasetProfile["columns"][number]): string[] {
+  return column.health.topValues.flatMap(item => Array.from({ length: Math.min(item.count, 20) }, () => item.value));
+}
+
+function dedupeSignals(signals: BusinessSignal[]): BusinessSignal[] {
+  const byColumnAndSignal = new Map<string, BusinessSignal>();
+  for (const signal of signals) {
+    const key = `${signal.canonicalId}::${signal.physicalColumn}`;
+    const existing = byColumnAndSignal.get(key);
+    if (!existing || signal.confidence > existing.confidence) {
+      byColumnAndSignal.set(key, signal);
+    }
+  }
+  return [...byColumnAndSignal.values()].sort((left, right) => right.confidence - left.confidence);
+}
 
 // ---------------------------------------------------------------------------
 // Detector
@@ -482,7 +769,69 @@ export function detectBusinessSignals(profile: DatasetProfile): BusinessSignal[]
         }
       }
     }
+
+    const contextCandidates = inferContextSemanticCandidates(
+      {
+        name: column.name,
+        type: toContextType(column.health.inferredType),
+        sampleValues: columnSampleValues(column),
+        uniqueValuesCount: column.health.distinctCount,
+        distinctRatio: sampleRows > 0 ? column.health.distinctCount / sampleRows : undefined
+      },
+      {
+        siblingColumns: profile.columns
+          .filter(sibling => sibling.name !== column.name)
+          .map(sibling => ({
+            name: sibling.name,
+            type: toContextType(sibling.health.inferredType),
+            sampleValues: columnSampleValues(sibling),
+            uniqueValuesCount: sibling.health.distinctCount,
+            distinctRatio: sampleRows > 0 ? sibling.health.distinctCount / sampleRows : undefined
+          }))
+      }
+    );
+
+    const isTechnicalColumn = profile.quality.dirtySignals.some(
+      s => s.kind === "technical_column" && s.column === column.name
+    );
+    if (!isTechnicalColumn) {
+      for (const candidate of contextCandidates.slice(0, 3)) {
+        const canonicalId = normalizeContextCanonical(candidate.canonicalId);
+        if (canonicalId === "status") continue;
+
+        const role = candidate.role === "identifier"
+          ? "identifier"
+          : candidate.role === "status"
+            ? "status"
+            : candidate.role === "time"
+              ? "time"
+              : candidate.role === "measure"
+                ? "measure"
+                : "dimension";
+        const highCardinalityIdentifier =
+          role === "identifier" || column.health.distinctCount > Math.max(50, sampleRows * 0.5);
+        const dominanceRatio = column.health.dominanceRatio;
+        const isDominated = dominanceRatio != null && dominanceRatio > 0.9;
+
+        signals.push({
+          canonicalId,
+          label: signalLabel(canonicalId, candidate.label),
+          domain: signalDomain(canonicalId, candidate.primaryDomain as BusinessSignal["domain"]),
+          physicalColumn: column.name,
+          confidence: Math.max(45, Math.min(95, candidate.confidence)),
+          evidence: [
+            `context semantic match: ${candidate.canonicalId}`,
+            ...candidate.reasons,
+            `evidence=${candidate.evidenceTypes.join("+")}`
+          ],
+          cardinality: column.health.distinctCount,
+          dominanceRatio,
+          role,
+          usableForDefaultQuestion: !isDominated && !highCardinalityIdentifier && candidate.confidence >= 45
+        });
+      }
+    }
   }
 
-  return signals;
+  return dedupeSignals(signals);
 }

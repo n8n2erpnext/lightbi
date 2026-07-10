@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { buildRenamedResultSql } from './advanced-workspace-helpers';
 import { advancedResultToCsv, createAdvancedTab, prependAdvancedHistory, restoreAdvancedTabs, serializeAdvancedTabs, splitAdvancedStatements } from './advanced-workspace';
 
 describe('advanced workspace persistence boundary', () => {
@@ -34,5 +35,22 @@ describe('advanced workspace persistence boundary', () => {
 
   it('exports CSV with escaping and spreadsheet formula protection', () => {
     expect(advancedResultToCsv([{ name: 'value' }], [['=cmd'], ['a"b']])).toBe('"value"\r\n"\'=cmd"\r\n"a""b"');
+  });
+
+  it('builds a wrapped projection for result column rename aliases', () => {
+    const sql = buildRenamedResultSql('SELECT *\nFROM "data";', {
+      runId: 'run-1',
+      columns: [
+        { id: 'column:0:OrderID', name: 'OrderID', logicalType: 'string', nativeType: 'VARCHAR' },
+        { id: 'column:1:CustomerName', name: 'CustomerName', logicalType: 'string', nativeType: 'VARCHAR' },
+      ],
+      rows: [],
+      page: { offset: 0, limit: 200, hasMore: false },
+      truncated: false,
+      warnings: [],
+      executionMs: 1,
+    }, 'column:1:CustomerName', 'Name');
+
+    expect(sql).toBe('SELECT\n  "OrderID" AS "OrderID",\n  "CustomerName" AS "Name"\nFROM (\nSELECT *\nFROM "data"\n) AS __lightbi_renamed_result');
   });
 });

@@ -43,13 +43,14 @@ export function generateAnalysisActions(understanding: DatasetUnderstanding): An
     if ('requiredCapabilities' in aa) {
        const opp = aa as AnalysisOpportunity;
        let actionType: AnalysisAction["actionType"] = "group_by";
-       if (opp.requiredCapabilities.includes("table_preview")) {
+       const requiredCapabilities = opp.requiredCapabilities ?? [];
+       if (requiredCapabilities.includes("table_preview")) {
          actionType = "table_preview";
-       } else if (opp.requiredCapabilities.includes("trend_over_time")) {
+       } else if (requiredCapabilities.includes("trend_over_time")) {
          actionType = "trend";
-       } else if (opp.requiredCapabilities.includes("distribution")) {
+       } else if (requiredCapabilities.includes("distribution")) {
          actionType = "distribution";
-       } else if (opp.requiredCapabilities.includes("relationship")) {
+       } else if (requiredCapabilities.includes("relationship")) {
          actionType = "relationship";
        }
 
@@ -73,7 +74,7 @@ export function generateAnalysisActions(understanding: DatasetUnderstanding): An
          id: `action_${opp.id}`,
          opportunityName: opp.label,
          label: opp.label,
-         description: opp.description,
+         description: opp.description ?? opp.label,
          actionType,
          dimensions,
          measures,

@@ -211,14 +211,30 @@ function buildBusinessLenses(
   const findQuestion = (predicate: (question: BusinessQuestion) => boolean) =>
     questions.find(predicate);
   const hasSignal = (id: string) => hasAny(signals, id);
-  const usableSignal = (id: string) => has(signals, id);
   const columns = (ids: string[]) => signalColumns(signals, ids);
+  const isInventorySnapshot = profile.profile.documentType === "inventory_snapshot";
 
   const pushLens = (lens: BusinessLens) => {
+    if (lens.availability === "not_implemented") return;
+
+    const evidenceColumns = signalColumns(signals, [...lens.requiredSignals, ...lens.optionalSignals]);
+    const requiredEvidenceColumns = signalColumns(signals, lens.requiredSignals);
+    const hasRequiredEvidence =
+      lens.requiredSignals.length === 0 || requiredEvidenceColumns.length > 0;
+    const hasRunnableQuestion = lens.questions.some(question => question.defaultAction);
+    const hasEvidenceAnchor =
+      hasRequiredEvidence
+      && (evidenceColumns.length > 0 || lens.requiredSignals.length === 0 && lens.optionalSignals.length === 0);
+    if (!hasRunnableQuestion && !hasEvidenceAnchor) return;
+
     const hasAction = lens.questions.some(question => question.defaultAction);
     const availability =
       lens.availability === "ready" && !hasAction ? "partial" : lens.availability;
-    lenses.push({ ...lens, availability });
+    lenses.push({
+      ...lens,
+      availability,
+      reasons: lens.reasons.length > 0 ? lens.reasons : evidenceColumns.map(column => `Detected: ${column}`)
+    });
   };
 
   const executionScope: BusinessQuestion["executionScope"] =
@@ -275,7 +291,7 @@ function buildBusinessLenses(
     return lenses.sort((a, b) => b.priority - a.priority);
   }
 
-  if (profile.profile.detectedDomains.includes("revenue")) {
+  if (profile.profile.detectedDomains.includes("revenue") && !isInventorySnapshot) {
     const revenueMeasure = columns(["receivable", "revenue"])[0];
     const revenueReasons = [
       revenueMeasure ? `Money column detected: ${revenueMeasure}` : "No reliable money measure detected",
@@ -324,25 +340,46 @@ function buildBusinessLenses(
       ]
     });
 
-    const paymentSignals = ["payment_cash", "payment_card", "payment_voucher", "payment_bank"];
+    const paymentSignals = [
+      "payment_method",
+      "payment_cash",
+      "payment_card",
+      "payment_voucher",
+      "payment_bank",
+      "gross_profit",
+      "margin_pct",
+      "invoice_total",
+      "receivable"
+    ];
     const paymentColumns = columns(paymentSignals);
+    const paymentMethodColumn = signalColumn(signals, "payment_method");
+    const paymentValueColumn = signalColumn(signals, "revenue")
+      ?? signalColumn(signals, "receivable")
+      ?? signalColumn(signals, "invoice_total");
     pushLens({
       id: "payment_mix",
       domain: "revenue",
-      label: "Payment mix",
-      description: "Inspect how money is split across cash, card, voucher, bank transfer, or other payment methods.",
-      priority: 86,
+      label: "Payment mix and cash-flow exposure",
+      description: "Inspect how money, receivables, and profit are split across cash, installment, transfer, card, voucher, or other payment methods.",
+      priority: 91,
       requiredSignals: [],
       optionalSignals: paymentSignals,
-      availability: paymentColumns.length > 0 ? "ready" : "blocked",
+      availability: paymentMethodColumn && paymentValueColumn ? "ready" : paymentColumns.length > 0 ? "ready" : "blocked",
       reasons: paymentColumns.length > 0 ? paymentColumns.map(column => `Detected: ${column}`) : ["No payment method columns detected."],
       questions: [
         orientationQuestion("payment_mix", findQuestion(q => q.label === "Payment method mix"), {
           id: "oq_payment_mix_missing",
           label: "Payment method mix",
-          userPrompt: "Do you want to compare cash, card, voucher, bank, or other payment amounts?",
+          userPrompt: "Do you want to compare cash, installment, transfer, card, voucher, or other payment types?",
           intent: "mix",
-          blockedReasons: ["Payment amount columns are required."]
+          blockedReasons: ["A payment method column and a money measure are required."]
+        }),
+        orientationQuestion("payment_mix", findQuestion(q => q.label === "Payment profitability and receivable mix"), {
+          id: "oq_payment_profitability_missing",
+          label: "Payment profitability and receivable mix",
+          userPrompt: "Do payment methods differ by revenue, profit, margin, invoice total, or receivable exposure?",
+          intent: "compare",
+          blockedReasons: ["A payment method column plus revenue/profit/receivable measures are required."]
         })
       ]
     });
@@ -419,9 +456,53 @@ function buildBusinessLenses(
     });
   }
 
-  const isInventorySnapshot = profile.profile.documentType === "inventory_snapshot";
-
   if (profile.profile.detectedDomains.includes("operations") && !isInventorySnapshot) {
+    const carrierColumn = signalColumn(signals, "carrier");
+    const deliveryStatusColumn = signalColumn(signals, "delivery_status");
+    const logisticsMeasures = columns(["delivery_fee", "quantity", "total_cost"]);
+
+    pushLens({
+      id: "carrier_cost_impact",
+      domain: "operations",
+      label: "Carrier cost impact",
+      description: "Compare internal or outsourced carriers by delivery fee, volume, status, and available cost measures.",
+      priority: 93,
+      requiredSignals: ["carrier"],
+      optionalSignals: ["delivery_fee", "delivery_status", "quantity", "total_cost"],
+      availability: carrierColumn && logisticsMeasures.length > 0 ? "ready" : carrierColumn ? "partial" : "blocked",
+      reasons: columns(["carrier", "delivery_fee", "delivery_status", "quantity", "total_cost"]).map(column => `Detected: ${column}`),
+      questions: [
+        orientationQuestion("carrier_cost_impact", findQuestion(q => q.label === "Carrier cost impact"), {
+          id: "oq_carrier_cost_impact_missing",
+          label: "Carrier cost impact",
+          userPrompt: "How do carriers compare by delivery fee, fulfilled volume, and operational cost exposure?",
+          intent: "compare",
+          blockedReasons: ["A carrier dimension and delivery fee, quantity, or cost measure are required."]
+        })
+      ]
+    });
+
+    pushLens({
+      id: "delivery_status_mix",
+      domain: "operations",
+      label: "Delivery completion mix",
+      description: "Measure delivery completion, retry, failure, or lifecycle status using status values and order/shipment counts.",
+      priority: 91,
+      requiredSignals: ["delivery_status"],
+      optionalSignals: ["carrier", "delivery_fee", "quantity"],
+      availability: deliveryStatusColumn ? "ready" : "blocked",
+      reasons: columns(["delivery_status", "carrier", "delivery_fee", "quantity"]).map(column => `Detected: ${column}`),
+      questions: [
+        orientationQuestion("delivery_status_mix", findQuestion(q => q.label === "Delivery completion mix"), {
+          id: "oq_delivery_status_mix_missing",
+          label: "Delivery completion mix",
+          userPrompt: "What share of deliveries are completed, retried, failed, or still in progress?",
+          intent: "mix",
+          blockedReasons: ["A delivery or fulfillment status column is required."]
+        })
+      ]
+    });
+
     pushLens({
       id: "operations_sla",
       domain: "operations",
@@ -489,7 +570,6 @@ function buildBusinessLenses(
   if (profile.profile.detectedDomains.includes("inventory")) {
     const currentLocation = signalColumn(signals, "current_location") ?? signalColumn(signals, "branch");
     const stockThreshold = signalColumn(signals, "stock_threshold");
-    const stockAge = signalColumn(signals, "stock_age");
     const stockStatus = signalColumn(signals, "stock_status") ?? signalColumn(signals, "load_status");
     const codAmount = signalColumn(signals, "cod_amount") ?? signalColumn(signals, "declared_value");
     const serviceOrItem =
@@ -698,7 +778,7 @@ function buildBusinessLenses(
       domain: "performance",
       label: "Ranking and KPI performance",
       description: "Review ranking, KPI, target, achievement, manager, or team performance.",
-      priority: 86,
+      priority: isInventorySnapshot ? 58 : 86,
       requiredSignals: [],
       optionalSignals: ["kpi", "employee"],
       availability: hasSignal("kpi") ? "ready" : "partial",
@@ -762,10 +842,11 @@ export function generateQuestionFit(
       measureAggregations: defaultMeasureAggregations(q.actionKind, q.measures, q.measureAggregations),
       executionScope:
         profile.source.sourceRowCount > profile.source.sampleRowCount
-          ? "sample_preview"
+        ? "sample_preview"
           : "full_local_file"
     });
   };
+  const isInventorySnapshot = profile.profile.documentType === "inventory_snapshot";
 
   // -------------------------------------------------------------------------
   // DIRTY EXPORT: data_quality_review has highest priority
@@ -807,7 +888,7 @@ export function generateQuestionFit(
   // -------------------------------------------------------------------------
   // REVENUE domain
   // -------------------------------------------------------------------------
-  if (profile.profile.detectedDomains.includes("revenue")) {
+  if (profile.profile.detectedDomains.includes("revenue") && !isInventorySnapshot) {
     perspectives.push(
       perspective(
         "revenue_money",
@@ -866,7 +947,21 @@ export function generateQuestionFit(
       });
     }
 
-    if (hasAny(signals, "payment_cash") || hasAny(signals, "payment_card")) {
+    if (hasAny(signals, "payment_method") && hasAny(signals, "revenue")) {
+      addQuestion({
+        label: "Payment method mix",
+        userPrompt: "What is the value split between cash, installment, transfer, card, voucher, or other payment types?",
+        domain: "revenue",
+        perspectiveId: "revenue_money",
+        requiredSignals: ["payment_method", "revenue"],
+        optionalSignals: ["branch", "date"],
+        dimensions: [signalColumn(signals, "payment_method") ?? "payment"],
+        measures: [signalColumn(signals, "revenue") ?? "revenue"],
+        fitScore: fitScore(signals, ["payment_method", "revenue"], 84),
+        actionKind: "group_by",
+        caveats: []
+      });
+    } else if (hasAny(signals, "payment_cash") || hasAny(signals, "payment_card")) {
       addQuestion({
         label: "Payment method mix",
         userPrompt: "What is the split between cash, card, and other payment types?",
@@ -882,6 +977,35 @@ export function generateQuestionFit(
         fitScore: 78,
         actionKind: "table_preview",
         caveats: ["Payment fields are available; aggregate payment-mix SQL is not implemented yet, so this opens an evidence preview."]
+      });
+    }
+
+    const paymentProfitMeasures = signalColumns(signals, [
+      "revenue",
+      "gross_profit",
+      "receivable",
+      "invoice_total",
+      "margin_pct"
+    ]);
+    if (hasAny(signals, "payment_method") && paymentProfitMeasures.length > 0) {
+      addQuestion({
+        label: "Payment profitability and receivable mix",
+        userPrompt: "Do payment methods differ by revenue, profit, margin, invoice total, or receivable exposure?",
+        domain: "revenue",
+        perspectiveId: "revenue_money",
+        requiredSignals: ["payment_method"],
+        optionalSignals: ["revenue", "gross_profit", "receivable", "invoice_total", "margin_pct", "branch", "date"],
+        dimensions: [signalColumn(signals, "payment_method") ?? "payment"],
+        measures: paymentProfitMeasures,
+        measureAggregations: Object.fromEntries(
+          paymentProfitMeasures.map(measure => [
+            measure,
+            measure === signalColumn(signals, "margin_pct") ? "AVG" : "SUM"
+          ])
+        ),
+        fitScore: Math.min(94, 74 + paymentProfitMeasures.length * 4),
+        actionKind: "group_by",
+        caveats: []
       });
     }
   }
@@ -918,6 +1042,66 @@ export function generateQuestionFit(
       });
     }
 
+    const carrierMeasures = signalColumns(signals, ["delivery_fee", "quantity", "total_cost"]);
+    if (hasAny(signals, "carrier") && carrierMeasures.length > 0) {
+      addQuestion({
+        label: "Carrier cost impact",
+        userPrompt: "How do carriers compare by delivery fee, fulfilled volume, and operational cost exposure?",
+        domain: "operations",
+        perspectiveId: "ops_flow",
+        requiredSignals: ["carrier"],
+        optionalSignals: ["delivery_fee", "delivery_status", "quantity", "total_cost"],
+        dimensions: [signalColumn(signals, "carrier") ?? "carrier"],
+        measures: carrierMeasures,
+        fitScore: Math.min(94, 78 + carrierMeasures.length * 4),
+        actionKind: "group_by",
+        caveats: []
+      });
+    }
+
+    if (hasAny(signals, "delivery_status")) {
+      const deliveryStatusColumn = signalColumn(signals, "delivery_status") ?? "delivery_status";
+      addQuestion({
+        label: "Delivery completion mix",
+        userPrompt: "What share of deliveries are completed, retried, failed, or still in progress?",
+        domain: "operations",
+        perspectiveId: "ops_flow",
+        requiredSignals: ["delivery_status"],
+        optionalSignals: ["carrier", "delivery_fee", "quantity"],
+        dimensions: [deliveryStatusColumn],
+        measures: ["record_count"],
+        derivedMeasures: [
+          {
+            id: "delivery_completion_rate",
+            label: "Delivery completion rate",
+            type: "positive_rate",
+            sourceColumn: deliveryStatusColumn,
+            positiveValues: [
+              "Đã giao",
+              "Da giao",
+              "Hoàn tất",
+              "Hoan tat",
+              "Delivered",
+              "Completed",
+              "Complete",
+              "Fulfilled",
+              "Đúng hẹn",
+              "Dung hen",
+              "On time",
+              "Ontime",
+              "Timely"
+            ],
+            numeratorLabel: "Completed deliveries",
+            denominatorLabel: "Total deliveries"
+          }
+        ],
+        measureAggregations: { record_count: "COUNT" },
+        fitScore: hasAny(signals, "carrier") ? 90 : 84,
+        actionKind: "group_by",
+        caveats: []
+      });
+    }
+
     if (hasAny(signals, "waiting_time")) {
       addQuestion({
         label: "Waiting time hotspots",
@@ -939,9 +1123,10 @@ export function generateQuestionFit(
     }
 
     if (hasAny(signals, "vehicle") || hasAny(signals, "driver")) {
+      const onTimeColumn = signalColumn(signals, "on_time_status");
       addQuestion({
         label: "Vehicle or driver punctuality",
-        userPrompt: "Which vehicles or drivers are most often late?",
+        userPrompt: "Which vehicles or drivers are on time, late, or need follow-up?",
         domain: "operations",
         perspectiveId: "ops_flow",
         requiredSignals: [],
@@ -951,7 +1136,30 @@ export function generateQuestionFit(
             signalColumn(signals, "driver") ??
             "vehicle"
         ],
-        measures: [],
+        measures: ["record_count"],
+        measureAggregations: { record_count: "COUNT" },
+        derivedMeasures: onTimeColumn ? [
+          {
+            id: "on_time_rate",
+            label: "On-time rate",
+            type: "positive_rate",
+            sourceColumn: onTimeColumn,
+            positiveValues: [
+              "Có",
+              "Co",
+              "Đúng hẹn",
+              "Dung hen",
+              "Đúng giờ",
+              "Dung gio",
+              "On time",
+              "Ontime",
+              "Timely",
+              "Yes"
+            ],
+            numeratorLabel: "On-time records",
+            denominatorLabel: "Total records"
+          }
+        ] : undefined,
         fitScore: 76,
         actionKind: "group_by",
         caveats: []

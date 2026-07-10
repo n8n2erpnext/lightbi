@@ -40,7 +40,6 @@ describe('DashboardKPIWidget formatting', () => {
         value={1500000} 
         valueType="number"
         colSpan={5} // Compact trigger
-        rowSpan={3}
       />
     );
 
@@ -57,7 +56,6 @@ describe('DashboardKPIWidget formatting', () => {
         value={1500000} 
         valueType="number"
         colSpan={6} // Wide trigger
-        rowSpan={3}
       />
     );
 
@@ -74,7 +72,6 @@ describe('DashboardKPIWidget formatting', () => {
         value={null} 
         valueType="number"
         colSpan={5}
-        rowSpan={3}
       />
     );
 

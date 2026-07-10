@@ -19,6 +19,21 @@ describe("materializeRuntimeFilePayloads", () => {
     ]);
   });
 
+  it("keeps UTF-8 Vietnamese headers from Google Sheets CSV intact", () => {
+    const result = materializeRuntimeFilePayloads([{
+      name: "Google Sheet.csv",
+      buffer: textBuffer("Mã nhân viên xuất,Ngày xuất,Tên kho xuất\n123,2024-12-19,BHX HCM")
+    }]);
+
+    expect(JSON.parse(result.jsonText)).toEqual([
+      {
+        "mã nhân viên xuất": 123,
+        "ngày xuất": "2024-12-19",
+        "tên kho xuất": "BHX HCM"
+      }
+    ]);
+  });
+
   it("combines JSON files without retaining rows in React state", () => {
     const result = materializeRuntimeFilePayloads([
       { name: "a.json", buffer: textBuffer('[{"Region":"North"}]') },

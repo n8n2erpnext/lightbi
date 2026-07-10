@@ -6,8 +6,12 @@ export type ReadinessTier = "decision_support" | "caution" | "exploratory_only";
 export type ReadinessGuidance = {
   score: number;
   tier: ReadinessTier;
-  explanation: string;
+  explanation?: string;
+  reasonSummary?: string;
   caveats: string[];
+  issues?: string[];
+  missingnessScore?: number;
+  opportunitiesUnlocked?: number;
 };
 
 export function evaluateDecisionReadiness(
@@ -65,6 +69,7 @@ export function evaluateDecisionReadiness(
     score: roundedScore,
     tier,
     explanation,
+    reasonSummary: explanation,
     caveats
   };
 }

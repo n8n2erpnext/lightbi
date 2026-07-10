@@ -147,6 +147,11 @@ function inferDocumentType(
   if (/deadline/i.test(text)) exportScore += 2;
   if (/xuất đúng|cldv/i.test(text)) exportScore += 3;
   if (/ma_tai|mã tải/i.test(text)) exportScore += 2;
+  if (/shipment.?id|tracking|waybill|awb|pick.?no/i.test(text)) exportScore += 2;
+  if (/carrier|courier|shipper|đơn vị vận chuyển|don vi van chuyen|nhà vận chuyển|nha van chuyen/i.test(text)) exportScore += 3;
+  if (/delivery.?status|trạng thái giao|trang thai giao|fulfillment|delivered|completed/i.test(text)) exportScore += 3;
+  if (/delivery.?fee|shipping.?fee|freight.?fee|phí giao|phi giao|phí vận chuyển|phi van chuyen/i.test(text)) exportScore += 2;
+  if (/shipped.?at|delivered.?at|ngày giao|ngay giao|ngày vận chuyển|ngay van chuyen/i.test(text)) exportScore += 1;
 
   // --- Inventory snapshot ---------------------------------------------------
   let inventorySnapScore = 0;

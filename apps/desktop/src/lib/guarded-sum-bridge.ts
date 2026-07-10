@@ -46,7 +46,7 @@ export function enhancePlanWithGuardedSum(plan: RuntimePlanPreview, rawRows: any
 
   const enhancedOperations: LogicalRuntimeOperation[] = plan.logicalOperations.map(op => {
     if (op.type === 'group_by' || op.type === 'trend') {
-      const measureAggregations: Record<string, "SUM" | "COUNT"> = {};
+      const measureAggregations: Record<string, "SUM" | "COUNT" | "AVG"> = {};
       
       for (const measure of op.measures) {
         const explicitAggregation = op.measureAggregations?.[measure];

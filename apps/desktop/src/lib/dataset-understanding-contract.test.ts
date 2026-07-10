@@ -182,7 +182,7 @@ describe('Dataset Understanding Contract', () => {
   it('Customer dataset generates customer-aware opportunities', () => {
     const registry = createMockRegistry(['customer', 'segment', 'retention', 'order_count'], 'customer');
     const du = createDatasetUnderstanding({ signalRegistry: registry, datasetName: 'Customer', rowCount: 100, columnCount: 5, status: 'understood' });
-    expect(du.availableAnalysis.some(a => a.dimensions.includes('segment'))).toBe(true);
+    expect(du.availableAnalysis.some(a => (a.dimensions ?? []).includes('segment'))).toBe(true);
     expect(du.narrative.includes('customer')).toBe(true);
   });
 
@@ -195,6 +195,6 @@ describe('Dataset Understanding Contract', () => {
   it('Revenue/Sales dataset generates sales-aware opportunities', () => {
     const registry = createMockRegistry(['sales', 'branch', 'revenue', 'salesperson'], 'revenue');
     const du = createDatasetUnderstanding({ signalRegistry: registry, datasetName: 'Sales', rowCount: 100, columnCount: 5, status: 'understood' });
-    expect(du.availableAnalysis.some(a => a.dimensions.includes('branch') && a.measures.includes('sales'))).toBe(true);
+    expect(du.availableAnalysis.some(a => (a.dimensions ?? []).includes('branch') && (a.measures ?? []).includes('sales'))).toBe(true);
   });
 });

@@ -187,6 +187,7 @@ export function adaptCoreToUnderstandingNext(core: UnderstandingCoreResult): Dat
       role: signal.role === "quality" ? "technical" : signal.role,
       usableForDefaultQuestion: signal.usableForDefaultQuestion
     })),
+    stakeholderFits: [],
     lenses,
     perspectives: core.overlays.map<BusinessPerspective>(overlay => ({
       id: overlay,

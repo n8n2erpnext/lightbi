@@ -6,6 +6,7 @@ import type { DatasetUnderstandingResult } from './understanding-next/contracts'
 describe('AI Briefing Generator', () => {
   it('generates briefing with semantic fields from detected concepts', () => {
     const understanding: DatasetUnderstanding = {
+      id: 'du-123',
       datasetId: 'ds-123',
       datasetName: 'Delivery',
       grain: 'event',
@@ -21,10 +22,18 @@ describe('AI Briefing Generator', () => {
       ],
       mappingReview: { items: [], completionScore: 100 },
       inferredEntities: [],
+      workflowHints: [],
+      relationshipHints: [],
+      capabilities: [],
+      availableAnalysis: [],
+      unavailableAnalysis: [],
       caveats: [],
       status: 'understood',
       confidenceScore: 90,
-      narrative: ''
+      narrative: '',
+      summary: { signalCount: 3, perspectiveCount: 0, businessViewCount: 0, questionCount: 0 },
+      sourceTrace: { signalIds: [], perspectiveIds: [], businessViewIds: [], questionSuggestionIds: [] },
+      createdAt: new Date().toISOString()
     };
 
     const briefing = generateAIBriefing(understanding);
@@ -37,14 +46,25 @@ describe('AI Briefing Generator', () => {
 
   it('handles empty understanding gracefully', () => {
     const understanding: DatasetUnderstanding = {
+      id: 'du-empty',
       datasetId: 'unknown',
       grain: 'unknown',
+      grainEvidence: '',
       detectedConcepts: [],
       inferredEntities: [],
+      workflowHints: [],
+      relationshipHints: [],
+      capabilities: [],
+      opportunities: [],
+      availableAnalysis: [],
+      unavailableAnalysis: [],
       caveats: [],
       status: 'insufficient',
       confidenceScore: 0,
-      narrative: ''
+      narrative: '',
+      summary: { signalCount: 0, perspectiveCount: 0, businessViewCount: 0, questionCount: 0 },
+      sourceTrace: { signalIds: [], perspectiveIds: [], businessViewIds: [], questionSuggestionIds: [] },
+      createdAt: new Date().toISOString()
     };
     const briefing = generateAIBriefing(understanding);
     expect(briefing.semanticFields).toHaveLength(0);
@@ -54,19 +74,109 @@ describe('AI Briefing Generator', () => {
 
   it('deduplicates caveats from understanding and readiness', () => {
     const understandingWithDupCaveats: DatasetUnderstanding = {
+      id: 'du-dup',
       datasetId: 'ds-dup',
       grain: 'unknown',
+      grainEvidence: '',
       detectedConcepts: [],
       inferredEntities: [],
+      workflowHints: [],
+      relationshipHints: [],
+      capabilities: [],
+      opportunities: [],
+      availableAnalysis: [],
+      unavailableAnalysis: [],
       caveats: ['No time detected.'],
       readiness: { tier: 'caution', score: 50, caveats: ['No time detected.', 'Missing primary key'], issues: [], reasonSummary: 'Caution' },
       status: 'partial',
       confidenceScore: 50,
-      narrative: ''
+      narrative: '',
+      summary: { signalCount: 0, perspectiveCount: 0, businessViewCount: 0, questionCount: 0 },
+      sourceTrace: { signalIds: [], perspectiveIds: [], businessViewIds: [], questionSuggestionIds: [] },
+      createdAt: new Date().toISOString()
     };
     const briefing = generateAIBriefing(understandingWithDupCaveats);
     expect(briefing.caveats.filter(c => c === 'No time detected.').length).toBe(1);
     expect(briefing.caveats.length).toBe(2);
+  });
+
+  it('keeps unmapped business-like columns in the AI-safe briefing', () => {
+    const understanding: DatasetUnderstanding = {
+      id: 'du-coverage',
+      datasetId: 'ds-coverage',
+      grain: 'event',
+      grainEvidence: 'Contains transaction rows',
+      detectedConcepts: [
+        {
+          canonicalConcept: 'money.revenue',
+          displayName: 'Revenue',
+          businessDomain: 'revenue',
+          confidenceScore: 92,
+          evidence: ['Revenue'],
+        },
+      ],
+      inferredEntities: [],
+      workflowHints: [],
+      relationshipHints: [],
+      capabilities: [],
+      opportunities: [],
+      availableAnalysis: [],
+      unavailableAnalysis: [],
+      caveats: [],
+      status: 'partial',
+      confidenceScore: 82,
+      narrative: '',
+      summary: { signalCount: 1, perspectiveCount: 0, businessViewCount: 0, questionCount: 0 },
+      sourceTrace: { signalIds: [], perspectiveIds: [], businessViewIds: [], questionSuggestionIds: [] },
+      createdAt: new Date().toISOString(),
+      semanticCoverage: {
+        items: [
+          {
+            physicalColumn: 'Revenue',
+            status: 'recognized',
+            inferredSignal: 'money.revenue',
+            confidence: 92,
+            dataType: 'number',
+            nonEmptySampleCount: 3,
+            distinctCount: 3,
+            topValues: ['100', '200', '300'],
+            reason: 'Mapped to money.revenue.',
+            suggestedActions: [],
+          },
+          {
+            physicalColumn: 'DecisionMode',
+            status: 'unknown_business_like',
+            confidence: 35,
+            dataType: 'string',
+            nonEmptySampleCount: 3,
+            distinctCount: 2,
+            topValues: ['Cash', 'Installment'],
+            reason: 'Column has business-like data but no safe canonical signal mapping yet.',
+            suggestedActions: ['Surface this field in coverage review.'],
+          },
+        ],
+        summary: {
+          totalColumns: 2,
+          recognized: 1,
+          partial: 0,
+          unknownBusinessLike: 1,
+          technicalOrNoise: 0,
+          nonEmptyColumns: 2,
+          coverageScore: 50,
+        },
+      },
+    };
+
+    const briefing = generateAIBriefing(understanding);
+
+    expect(briefing.semanticCoverage?.unknownBusinessLikeColumns).toEqual(['DecisionMode']);
+    expect(briefing.semanticFields.some(field =>
+      field.physicalColumn === 'DecisionMode' &&
+      field.coverageStatus === 'unknown_business_like' &&
+      field.role === 'dimension'
+    )).toBe(true);
+    expect(briefing.caveats.some(caveat => caveat.includes('DecisionMode'))).toBe(true);
+    expect(briefing.safeActionHints[0]).toContain('unmapped business-like fields');
   });
 
   it('scores Understanding Next readiness from data quality instead of a fixed caution value', () => {
@@ -227,6 +337,7 @@ function makeUnderstandingNext(overrides: Partial<DatasetUnderstandingResult> = 
         usableForDefaultQuestion: true,
       },
     ],
+    stakeholderFits: [],
     lenses: [],
     perspectives: [],
     recommendedQuestions: [

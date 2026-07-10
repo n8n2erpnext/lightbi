@@ -54,11 +54,11 @@ export function generateAdvancedHandoff(
   }
 
   return {
-    datasetId: understanding.datasetId,
+    datasetId: understanding.datasetId ?? understanding.id ?? 'unknown_dataset',
     datasetName: understanding.datasetName,
     generatedAt: new Date().toISOString(),
-    grain: understanding.grain,
-    grainEvidence: understanding.grainEvidence,
+    grain: understanding.grain ?? 'unknown',
+    grainEvidence: understanding.grainEvidence ?? '',
     readinessTier: understanding.readiness?.tier || "exploratory_only",
     readinessScore: understanding.readiness?.score || 0,
     fieldMappings,

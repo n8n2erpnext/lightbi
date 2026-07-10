@@ -1691,6 +1691,97 @@ This list is strategic roadmap material, not an immediate blocker for declaring 
 
 ---
 
+## 2026-06-28 — Plugin-First Provider Expansion Decision
+
+User asked whether LightBI should stop expanding core database/system support directly and move future systems into plugins, after reviewing TablePro's plugin model.
+
+Decision:
+
+- Freeze the current built-in provider core for now: local files, online spreadsheet/file links, PostgreSQL, MySQL/MariaDB, SQLite, and MongoDB/Atlas.
+- New enterprise systems should be implemented through a plugin contract, not patched straight into core.
+- SQL Server is confirmed in TablePro as a real plugin/core driver surface (`MSSQLDriverPlugin`, `TableProMSSQLCore`, dialect/schema/TLS/writeback support), so LightBI should treat SQL Server as the first future provider plugin rather than a quick core dropdown item.
+- Do not expose SQL Server in Simple or Advanced user-facing provider lists until a plugin can connect, discover schema, run bounded read-only queries, and return typed result buffers.
+
+Implemented:
+
+- Added `docs/architecture/ADR-116-plugin-first-system-expansion.md`.
+- Added interface-only `@lightbi/plugin-sdk` scaffold under `packages/plugin-sdk`.
+- Removed the stale SQL Server source item from legacy `homeGuidance.sourceMenu.database` so the UI does not promise unsupported core SQL Server.
+
+Next when this track resumes:
+
+1. Add a plugin registry/host boundary that can load built-in plugins first.
+2. Move current built-in DB provider metadata toward registry descriptors.
+3. Implement SQL Server as the first provider plugin with bracket quoting, `dbo` schema default, TLS/encryption fields, schema catalog queries, and read-only query execution.
+4. Only then expose SQL Server in Simple database intake and Advanced connection selection.
+
+---
+
+## 2026-06-28 — Advanced.tsx Clean-Code Split Phase 1
+
+User requested cleanup because `apps/desktop/src/pages/Advanced.tsx` had grown to nearly 3,000 lines.
+
+Implemented a low-risk first split without changing Advanced behavior:
+
+- Moved pure workspace helpers, SQL quoting/literal utilities, parameter materialization, import/structure draft types, mutation-row builders, Mongo filter helpers, and SQL assistant static analysis into `apps/desktop/src/lib/advanced-workspace-helpers.ts`.
+- Moved result presentation components into `apps/desktop/src/components/advanced/AdvancedResultViews.tsx`:
+  - `ResultChart`
+  - `ResultJson`
+  - `QueryPlanView`
+  - `ResultStructure`
+- Kept the main `Advanced.tsx` state machine, effects, command palette, dialogs, and data-flow handlers in place for now.
+- Reduced `Advanced.tsx` from 2,950 lines to 2,304 lines.
+- Fixed adjacent type drift in `DataIntakeDrawer.tsx` and the Advanced test fixture profile shape.
+
+Verification:
+
+```bash
+cd apps/desktop
+./node_modules/.bin/eslint --config eslint.config.js src/pages/Advanced.tsx src/pages/Advanced.test.tsx src/lib/advanced-workspace-helpers.ts src/components/advanced/AdvancedResultViews.tsx src/components/data-intake/DataIntakeDrawer.tsx
+./node_modules/.bin/vitest run src/pages/Advanced.test.tsx src/lib/advanced-api.test.ts --reporter=dot --pool=forks
+```
+
+Both passed. Advanced tests: 2 files, 19 tests passed.
+
+Filtered TypeScript check for the touched Advanced/DataIntake files produced no matching errors. Repo-wide `tsconfig.app.json` still has unrelated pre-existing type drift in Understanding/Dashboard/Home areas.
+
+Next clean-code slices:
+
+1. Extract `SchemaTree`, `HistoryPanel`, and `FavoritesPanel`.
+2. Extract modal/dialog components for import/writeback/create-table/structure editor.
+3. Move Advanced state transitions into a reducer or workspace hook once components are smaller.
+
+## 2026-06-28 — Advanced.tsx Clean-Code Split Phase 2
+
+Continued the same cleanup after the user asked to proceed.
+
+Implemented:
+
+- Extracted `VirtualResultGrid` into `apps/desktop/src/components/advanced/VirtualResultGrid.tsx`.
+- Moved grid selection, keyboard navigation, clipboard copy/paste, context menu actions, column resize/reorder, edit-cell coercion, and FK navigation action type into the grid component boundary.
+- `Advanced.tsx` now imports `VirtualResultGrid` and `GridForeignKeyAction` instead of owning the whole grid implementation.
+- Reduced `Advanced.tsx` further from 2,304 lines to 1,976 lines.
+
+Verification:
+
+```bash
+cd apps/desktop
+./node_modules/.bin/eslint --config eslint.config.js src/pages/Advanced.tsx src/pages/Advanced.test.tsx src/lib/advanced-workspace-helpers.ts src/components/advanced/AdvancedResultViews.tsx src/components/advanced/VirtualResultGrid.tsx src/components/data-intake/DataIntakeDrawer.tsx
+./node_modules/.bin/vitest run src/pages/Advanced.test.tsx src/lib/advanced-api.test.ts --reporter=dot --pool=forks
+```
+
+Both passed. Advanced tests: 2 files, 19 tests passed.
+
+Filtered TypeScript check for touched Advanced/DataIntake files produced no matching errors. Repo-wide type drift remains unrelated.
+
+Next clean-code slices:
+
+1. Extract `SchemaTree`, `HistoryPanel`, and `FavoritesPanel`.
+2. Extract modal/dialog components for import/writeback/create-table/structure editor.
+3. Move Advanced state transitions into a reducer or workspace hook once components are smaller.
+
+---
+
 ## 2026-06-26 — Advanced TablePro Parity Recheck + Row Delete UI
 
 ### TablePro Recheck
@@ -2261,3 +2352,1385 @@ Updated BA status estimate:
 - Advanced -> Simple Loop: 45-55%.
 
 BA engine is now ready enough to support the upcoming full UI/UX rebuild. Remaining work is mostly product polish and broader domain coverage rather than core BA architecture.
+
+## 2026-06-27 — UI/UX Rebuild Phase 1: Desktop BA Workspace Shell
+
+User approved starting UI/UX after pushing the prior BA/Advanced code. Direction clarified:
+
+- Web UI is a fast validation shell for now.
+- Desktop app is the main product direction.
+- Future enterprise web should mirror/sync the desktop experience similar to ChatGPT web/desktop.
+- UI should feel like a desktop productivity/agent workspace, not a SaaS landing page.
+
+Implemented:
+
+- Updated `apps/desktop/src/components/layout/AppLayout.tsx`.
+  - Reworked the shell toward a Codex-like desktop layout.
+  - Sidebar now uses a quiet grey desktop rail, softer active states, wider expanded width, and an account/project block.
+  - Renamed navigation toward product semantics: `New brief`, `Decision briefs`, `Sources`, `Advanced`.
+- Updated `apps/desktop/src/pages/Home.tsx`.
+  - Reworked the empty-data start surface into a centered BA composer: “What should LightBI understand?”
+  - Added three primary source/action tiles: local files, online sheet, Advanced.
+  - Kept existing Simple Mode data-intake/understanding logic intact.
+  - When a dataset is ready, the connected-data strip now emphasizes the trust score: `High trust`, `Review recommended`, or `Needs cleaning`.
+- Updated `apps/desktop/src/pages/Investigation.tsx`.
+  - Reframed the main surface as `Decision workspace`.
+  - Kept chart preview, BA Decision Brief, raw evidence, and diagnostics together.
+  - Tuned layout/colors/radius toward the desktop shell style without changing execution logic.
+
+Verification:
+
+```bash
+cd apps/desktop
+npx eslint src/components/layout/AppLayout.tsx src/pages/Investigation.tsx src/components/analysis/BADecisionBriefPanel.tsx
+npx vitest run src/lib/ba-decision-engine.test.ts --reporter=dot --pool=forks
+```
+
+Both passed. BA engine test: 1 file, 9 tests passed.
+
+Known verification caveat:
+
+- `npm run build` currently fails on pre-existing repo-wide TypeScript/contract drift unrelated to this UI pass, including dataset-understanding contract fields, old test fixtures, and BA engine type cleanup items.
+- `npx eslint src/pages/Home.tsx` also still reports existing Home technical debt (`any`, React compiler memoization/effect rules, etc.). The UI pass intentionally avoided deep Home refactor to keep current data-intake behavior stable.
+
+Next UI/UX steps:
+
+1. Do a focused Home technical-debt cleanup so `Home.tsx` can lint independently.
+2. Add a real desktop top bar / command affordance once shell routes are stable.
+3. Create a proper reusable `Composer` / `SourceActionTile` component instead of inline Home JSX.
+4. Add screenshot QA for empty Home, dataset-ready Home, Investigation pre-execution, and Investigation executed states.
+
+## 2026-06-27 — Charts Route Reframed As Chart Library
+
+User noticed `/charts/:id` was still the old placeholder ChartBuilder with fake drag/drop fields and no real effect.
+
+Decision:
+
+- `Charts` should become a reusable chart library: saved chart cards + chart templates.
+- Dashboard building should later consume these chart cards by drag/drop, Power BI style.
+- The old standalone ChartBuilder placeholder should not be exposed until backed by real dataset binding and dashboard placement.
+
+Implemented:
+
+- Replaced `apps/desktop/src/pages/Charts.tsx`.
+  - New `Chart Library` page with saved chart cards from runtime `charts`.
+  - Shows chart templates: trend, compare groups, share of total, KPI scorecard, evidence table.
+  - Adds search over saved charts.
+  - Adds CTA to `Create from BA brief` and `Open dashboards`.
+  - Clearly frames chart cards as reusable dashboard assets that refresh with datasets.
+- Updated `apps/desktop/src/routes/index.tsx`.
+  - `/charts/new` and `/charts/:id` now redirect to `/charts`.
+  - This avoids sending users to the obsolete placeholder builder.
+
+Verification:
+
+```bash
+cd apps/desktop
+npx eslint src/pages/Charts.tsx
+```
+
+Passed. `src/routes/index.tsx` still has the existing `react-refresh/only-export-components` lint issue because it exports `router` and defines `RouteError` in the same file; unrelated to the chart-library change.
+
+## 2026-06-28 — Advanced Clean Code Phase 3: Side Panels Extracted
+
+Continuation of the Advanced cleanup after helper extraction and result/grid extraction.
+
+Implemented:
+
+- Added `apps/desktop/src/components/advanced/AdvancedSidePanels.tsx`.
+  - Moved `SchemaTree`, `HistoryPanel`, and `FavoritesPanel` out of `Advanced.tsx`.
+  - Kept schema search, table expansion, exact-count loading, history apply/clear, and favorite apply/delete behavior unchanged.
+- Updated `apps/desktop/src/pages/Advanced.tsx`.
+  - Now imports the side-panel components instead of defining them inline.
+  - Removed unused chevron imports from the page.
+  - Reduced the page from about 1,971 lines to 1,851 lines in this pass.
+
+Verification:
+
+```bash
+cd apps/desktop
+./node_modules/.bin/eslint --config eslint.config.js src/pages/Advanced.tsx src/pages/Advanced.test.tsx src/lib/advanced-workspace-helpers.ts src/components/advanced/AdvancedResultViews.tsx src/components/advanced/VirtualResultGrid.tsx src/components/advanced/AdvancedSidePanels.tsx src/components/data-intake/DataIntakeDrawer.tsx
+./node_modules/.bin/vitest run src/pages/Advanced.test.tsx src/lib/advanced-api.test.ts --reporter=dot --pool=forks
+./node_modules/.bin/tsc --noEmit --pretty false --project tsconfig.app.json 2>&1 | rg "src/pages/Advanced|src/lib/advanced-workspace-helpers|src/components/advanced/AdvancedResultViews|src/components/advanced/VirtualResultGrid|src/components/advanced/AdvancedSidePanels|src/components/data-intake/DataIntakeDrawer"
+```
+
+Results:
+
+- ESLint passed for the touched Advanced/DataIntake files.
+- Vitest passed: 2 files, 19 tests.
+- Filtered typecheck returned no matching errors for touched files; `rg` exited `1` only because no matching TypeScript errors were found.
+
+## 2026-06-28 — Advanced Clean Code Phase 4: Connection Gate Extracted
+
+Continuation of Advanced cleanup focused on separating the "no active source" entry UI from the main workspace.
+
+Implemented:
+
+- Added `apps/desktop/src/components/advanced/AdvancedConnectionGate.tsx`.
+  - Owns the "datasets understood in Simple" launcher.
+  - Owns the database connection form UI, saved profile selector, TLS/safe-mode/profile fields, and SSH metadata inputs.
+  - Keeps connect/open-source behavior in `Advanced.tsx` via callbacks, so runtime session logic remains centralized.
+- Updated `apps/desktop/src/pages/Advanced.tsx`.
+  - Replaced the inline connection/source gate JSX with `AdvancedConnectionGate`.
+  - Added small `handleProviderChange` and `handleProfileChange` callbacks to remove long inline event handlers.
+  - Removed the now-unused `Plug` icon import.
+
+Verification:
+
+```bash
+cd apps/desktop
+./node_modules/.bin/eslint --config eslint.config.js src/pages/Advanced.tsx src/components/advanced/AdvancedConnectionGate.tsx src/components/advanced/AdvancedSidePanels.tsx src/pages/Advanced.test.tsx src/lib/advanced-workspace-helpers.ts src/components/advanced/AdvancedResultViews.tsx src/components/advanced/VirtualResultGrid.tsx src/components/data-intake/DataIntakeDrawer.tsx
+./node_modules/.bin/vitest run src/pages/Advanced.test.tsx src/lib/advanced-api.test.ts --reporter=dot --pool=forks
+./node_modules/.bin/tsc --noEmit --pretty false --project tsconfig.app.json 2>&1 | rg "src/pages/Advanced|src/lib/advanced-workspace-helpers|src/components/advanced/AdvancedResultViews|src/components/advanced/VirtualResultGrid|src/components/advanced/AdvancedSidePanels|src/components/advanced/AdvancedConnectionGate|src/components/data-intake/DataIntakeDrawer"
+```
+
+Results:
+
+- ESLint passed for the touched Advanced/DataIntake files.
+- Vitest passed: 2 files, 19 tests.
+- Filtered typecheck returned no matching errors for touched files; `rg` exited `1` only because no matching TypeScript errors were found.
+
+## 2026-06-28 — Home Pending File Card Polish
+
+User flagged that the post-import local-file pending card looked awkward, especially the "1 files detected" copy and the large displaced block under the hero.
+
+Implemented:
+
+- Updated `apps/desktop/src/pages/Home.tsx`.
+  - Hero empty state now uses a shorter height when `pendingLocalBatch` exists, so the pending dataset card stays closer to the composer/action tiles.
+  - Fixed singular/plural wording: `1 file ready`, `N files ready`, and `1 dataset group found`.
+  - Restyled the pending card from a large blue bordered block into a quieter desktop card.
+  - Tightened file/group rows, truncation, metadata, and CTA spacing.
+
+Verification caveat:
+
+- `tsc --noEmit --project tsconfig.app.json | rg "src/pages/Home.tsx"` still reports existing unrelated Home type debt around mapping overlay and implicit-any handlers. No new parser/type error was introduced in the edited pending-card JSX.
+
+Follow-up visual alignment:
+
+- The pending local-file card was still visually shifted left because it lived inside the main `lg:col-span-2` column while the hero composer/action tiles were centered across the page.
+- Updated the Home grid so, when `pendingLocalBatch` exists and no dataset is active yet, the main column spans all three grid columns and centers itself with `max-w-3xl`.
+- Reduced the grid gap for this pending state so the card reads as part of the import flow instead of a lower-left secondary panel.
+
+## 2026-06-28 — BA Understanding Card Reframed
+
+User asked whether the `What do you want to understand?` section was enough to show real data understanding. Decision: the prior UI exposed lenses/actions, but did not first tell the user what LightBI believes the dataset is.
+
+Implemented:
+
+- Updated `apps/desktop/src/components/analysis/UnderstandingNextCard.tsx`.
+  - Added a BA summary block: `LightBI understands this as ...`.
+  - Translates document type/grain/domain ids into user-facing labels.
+  - Shows source row/column interpretation, ready runtime action count, review-needed count, business domains, and key signals mapped to physical columns.
+  - Renamed the lens section to `Choose the decision angle to explore`.
+  - Splits READY lenses from PARTIAL/BLOCKED lenses.
+  - PARTIAL lenses are now tucked into a details panel explaining what needs more signals instead of competing equally with runnable choices.
+
+Verification:
+
+```bash
+cd apps/desktop
+./node_modules/.bin/eslint --config eslint.config.js src/components/analysis/UnderstandingNextCard.tsx
+./node_modules/.bin/tsc --noEmit --pretty false --project tsconfig.app.json 2>&1 | rg "src/components/analysis/UnderstandingNextCard"
+```
+
+Results:
+
+- ESLint passed.
+- Filtered typecheck returned no matching errors; `rg` exited `1` only because no matching TypeScript errors were found.
+
+## 2026-06-28 — BA Decision Trust Report
+
+User clarified the target BA pipeline: data source -> structure understanding -> cleaning/standardization -> trust percentage -> business semantics -> insight -> suitable chart. The trust percentage must be a user-facing answer, e.g. "63% trust; 15% inbound data missing; 2 sheets wrong format; 5 duplicate rows; do not decide yet."
+
+Implemented:
+
+- Added `apps/desktop/src/lib/decision-trust-report.ts`.
+  - Produces a `DecisionTrustReport` separate from the technical `DatasetHealthResult`.
+  - Scores concrete decision risks from existing profile/metadata:
+    - Missing-data percentages per column.
+    - Workbook sheets with different structure or empty sheets.
+    - Duplicate-key row estimates from best key cardinality.
+    - Weak/no key detection.
+    - Sample-only profiling caveat.
+  - Classifies the result as `safe_to_decide`, `review_before_deciding`, or `exploratory_only`.
+  - Returns headline, explanation, recommendation, and evidence snippets for UI.
+- Added `apps/desktop/src/components/analysis/DecisionTrustReportCard.tsx`.
+  - Shows the trust score and recommendation directly below Data Quality.
+  - Lists evidence-backed issues so users know why a conclusion is or is not decision-safe.
+- Updated `apps/desktop/src/pages/Home.tsx`.
+  - Builds a `DatasetFamily` from local/online `SourceInspectionResult` so the same trust engine works for files and online sheets.
+  - Stores the report when a local dataset family is accepted or an online/local source drawer inspection completes.
+  - Clears the report for virtual business views until a separate multi-dataset/relationship trust model is implemented.
+
+Verification:
+
+```bash
+cd apps/desktop
+./node_modules/.bin/eslint src/lib/decision-trust-report.ts src/lib/decision-trust-report.test.ts src/components/analysis/DecisionTrustReportCard.tsx
+npx vitest run src/lib/decision-trust-report.test.ts --reporter=dot --pool=forks
+./node_modules/.bin/tsc --noEmit --pretty false --project tsconfig.app.json
+```
+
+Results:
+
+- ESLint passed for the new engine/card/test files.
+- Vitest passed: 1 file, 4 tests.
+- Full app typecheck still fails on existing unrelated type debt in Understanding/BA tests and `Home.tsx` mapping-overlay/implicit-any handlers; no new type error was reported for the trust report engine/card or the newly wired Home line.
+
+## 2026-06-28 — Chart Drill-Through Export Phase 1
+
+User asked for a practical BA/operations workflow: when a chart shows a segment such as `ton>24h = 67`, the user should click that segment, inspect the matching source rows, select the rows they want, and export them to Excel instead of manually filtering in Excel.
+
+Implemented:
+
+- Added `apps/desktop/src/lib/drill-through-export.ts`.
+  - Defines `DrillThroughPoint` and `DrillThroughResult`.
+  - Builds safe DuckDB drill-through SQL:
+    - `SELECT * FROM __LIGHTBI_PREVIEW_TABLE__ WHERE <clicked dimension> = <clicked value> LIMIT 50000`.
+  - Executes against the same local DuckDB runtime used by Simple preview.
+  - Works with full local file runtime when `runtimeDatasetSource` exists; falls back to retained rows otherwise.
+  - Provides CSV/XLSX export helpers with spreadsheet-formula protection for CSV.
+- Added `apps/desktop/src/lib/drill-through-export.test.ts`.
+  - Verifies `ton>24h` style segment SQL.
+  - Verifies CSV escaping/formula protection.
+- Updated `apps/desktop/src/components/analysis/ChartPreviewRenderer.tsx`.
+  - Emits raw clicked chart point metadata via `onDrillThrough`.
+  - Keeps formatted display labels separate from raw filter values.
+  - Removed existing `any` lint debt in this component while touching it.
+- Updated `apps/desktop/src/pages/Investigation.tsx`.
+  - Clicking a chart segment now opens a `Filtered rows from chart` panel.
+  - Panel shows matched row count, source filter, table preview, row checkboxes, select all / clear selection.
+  - Exports selected rows to CSV or Excel.
+  - Uses a separate execution coordinator for drill-through so clicking a segment does not abort the preview execution coordinator.
+
+Current scope:
+
+- Phase 1 targets local file / online sheet materialized into the local DuckDB runtime.
+- DB/Mongo provider-specific drill-through can reuse the same `DrillThroughPoint` contract later.
+- The exported columns currently come from the DuckDB materialized source, so local file headers may be lowercased by the runtime materializer. Future polish can preserve original header labels in the materialized runtime metadata.
+
+Verification:
+
+```bash
+cd apps/desktop
+./node_modules/.bin/eslint src/lib/drill-through-export.ts src/lib/drill-through-export.test.ts src/components/analysis/ChartPreviewRenderer.tsx src/pages/Investigation.tsx
+npx vitest run src/lib/drill-through-export.test.ts --reporter=dot --pool=forks
+./node_modules/.bin/tsc --noEmit --pretty false --project tsconfig.app.json 2>&1 | rg "src/lib/drill-through-export|src/components/analysis/ChartPreviewRenderer|src/pages/Investigation"
+```
+
+Results:
+
+- ESLint passed for touched drill-through files.
+- Vitest passed: 1 file, 2 tests.
+- Filtered typecheck returned no matching errors; `rg` exited `1` only because no matching TypeScript errors were found.
+
+## 2026-06-28 — Drill-Through Date Display Fix
+
+User noticed drill-through rows displayed `ORDERDATE` as large grouped numbers such as `1.714.953.600.000`.
+
+Implemented:
+
+- Updated `apps/desktop/src/lib/display-formatter.ts`.
+  - Numeric values in date-like columns are now inferred as dates/datetimes when they look like:
+    - Excel serial dates.
+    - Unix seconds.
+    - Unix milliseconds.
+  - `formatValue` now converts Excel serial and Unix seconds/milliseconds before date formatting.
+  - Cleaned existing `any`/`let` lint debt in the formatter while touching it.
+- Updated `apps/desktop/src/lib/display-formatter.test.ts`.
+  - Added coverage for `ORDERDATE = 1714953600000`.
+  - Added coverage for Excel serial date formatting.
+
+Verification:
+
+```bash
+cd apps/desktop
+./node_modules/.bin/eslint src/lib/display-formatter.ts src/lib/display-formatter.test.ts src/pages/Investigation.tsx
+npx vitest run src/lib/display-formatter.test.ts src/lib/drill-through-export.test.ts --reporter=dot --pool=forks
+./node_modules/.bin/tsc --noEmit --pretty false --project tsconfig.app.json 2>&1 | rg "src/lib/display-formatter|src/pages/Investigation|src/components/analysis/ChartPreviewRenderer|src/lib/drill-through-export"
+```
+
+Results:
+
+- ESLint passed.
+- Vitest passed: 2 files, 18 tests.
+- Filtered typecheck returned no matching errors; `rg` exited `1` only because no matching TypeScript errors were found.
+
+## 2026-06-28 — Google Sheets UTF-8 CSV Runtime Fix
+
+User reported a public Google Sheet failed in Investigation/Advanced with:
+
+- `DUCKDB_BINDER_ERROR: Referenced column "mã nhân viên xuất" not found`
+- Candidate bindings showed mojibake headers such as `"mã£ nháº­n viãªn xuáº¥t"`.
+
+Root cause:
+
+- `online-source-inspector` fetched and inspected Google Sheets CSV as UTF-8 text correctly.
+- The runtime/Advanced file workspace later materialized the saved `.csv` through `XLSX.read(array)` as if it were an Excel workbook.
+- SheetJS guessed CSV encoding incorrectly for Vietnamese text, producing mojibake headers inside DuckDB.
+
+Implemented:
+
+- Updated `apps/desktop/src/lib/full-file-runtime-parser.ts`.
+  - CSV/TSV/TXT payloads now use explicit `TextDecoder("utf-8")` and a text delimiter parser.
+  - Excel files still use `XLSX.read`.
+  - The fix applies to both Simple Investigation runtime and Advanced inherited file workspace because both use `materializeRuntimeDatasetSource`.
+- Updated `apps/desktop/src/lib/full-file-runtime-parser.test.ts`.
+  - Added a regression test for UTF-8 Vietnamese Google Sheets CSV headers:
+    - `Mã nhân viên xuất`
+    - `Ngày xuất`
+    - `Tên kho xuất`
+
+Verification:
+
+```bash
+cd apps/desktop
+./node_modules/.bin/eslint src/lib/full-file-runtime-parser.ts src/lib/full-file-runtime-parser.test.ts
+npx vitest run src/lib/full-file-runtime-parser.test.ts src/lib/local-duckdb-executor.test.ts --reporter=dot --pool=forks
+./node_modules/.bin/tsc --noEmit --pretty false --project tsconfig.app.json 2>&1 | rg "src/lib/full-file-runtime-parser|src/lib/local-duckdb-executor|src/lib/advanced-file-session"
+```
+
+Results:
+
+- ESLint passed.
+- Vitest passed: 2 files, 18 tests.
+- Filtered typecheck returned no matching errors; `rg` exited `1` only because no matching TypeScript errors were found.
+- Manual network probe of the provided Google CSV export returned clean UTF-8 headers, confirming the bug was local runtime parsing, not Google.
+
+## 2026-06-28 — Identifier Display Formatting Fix
+
+User noticed LightBI was adding thousands separators to identifier/code columns, e.g. `Mã kho xuất = 6968` displayed as `6.968`.
+
+Implemented:
+
+- Updated `apps/desktop/src/lib/display-formatter.ts`.
+  - Numeric values in identifier-like columns now infer as `string`, not `number`.
+  - Covered common code/id patterns:
+    - `Mã ...`
+    - `code`
+    - `id`, `...id`, `_id`
+    - `ORDERID`, `CUSTOMERID`, `PRODUCTID`
+  - Date-like numeric columns still take precedence, so `ORDERDATE` keeps formatting as date.
+- Updated `apps/desktop/src/lib/display-formatter.test.ts`.
+  - Added regression tests for `Mã kho xuất`, `Mã phiếu xuất`, `ORDERID`, `CUSTOMERID`.
+  - Added a display test ensuring `6968` stays `6968`, not `6.968`.
+
+Verification:
+
+```bash
+cd apps/desktop
+./node_modules/.bin/eslint src/lib/display-formatter.ts src/lib/display-formatter.test.ts src/pages/Investigation.tsx src/components/analysis/ChartPreviewRenderer.tsx
+npx vitest run src/lib/display-formatter.test.ts --reporter=dot --pool=forks
+./node_modules/.bin/tsc --noEmit --pretty false --project tsconfig.app.json 2>&1 | rg "src/lib/display-formatter|src/pages/Investigation|src/components/analysis/ChartPreviewRenderer"
+```
+
+Results:
+
+- ESLint passed.
+- Vitest passed: 1 file, 18 tests.
+- Filtered typecheck returned no matching errors; `rg` exited `1` only because no matching TypeScript errors were found.
+
+## 2026-06-28 — Advanced Workspace Header Preservation
+
+User reported Advanced Data Workspace still showed lowercased headers after the Google Sheets UTF-8 fix, e.g. `mã phiếu xuất`, `ngày xuất`, while the source sheet headers are `Mã phiếu xuất`, `Ngày xuất`.
+
+Root cause:
+
+- `full-file-runtime-parser` intentionally normalizes runtime JSON keys to lowercase for safer SQL binding.
+- `AdvancedFileSession` previously exposed `read_json_auto(...)` directly as the user-facing table, so the lowercased runtime keys leaked into Advanced grid/query results.
+
+Implemented:
+
+- Updated `apps/desktop/src/lib/advanced-file-session.ts`.
+  - Advanced now creates an internal raw DuckDB view per source file.
+  - The public Advanced table view aliases lowercase runtime keys back to the original file headers from `AdvancedWorkspaceSource.tables[].columns`.
+  - Example: `"mã phiếu xuất" AS "Mã phiếu xuất"`.
+  - This keeps runtime SQL stable while preserving source header display in Advanced.
+- Added `apps/desktop/src/lib/advanced-file-session.test.ts`.
+  - Regression test ensures Vietnamese Google Sheet headers are exposed with original casing in the Advanced table view.
+
+Verification:
+
+```bash
+apps/desktop/node_modules/.bin/vitest run apps/desktop/src/lib/advanced-file-session.test.ts
+apps/desktop/node_modules/.bin/eslint apps/desktop/src/lib/advanced-file-session.ts apps/desktop/src/lib/advanced-file-session.test.ts
+```
+
+Results:
+
+- Vitest passed: 1 file, 1 test.
+- ESLint passed.
+
+## 2026-06-28 — Advanced Result Column Alias Rename
+
+User asked how to rename a column such as `CustomerName` to `Name` inside Advanced.
+
+Decision:
+
+- For file/online-sheet inherited workspaces, renaming should be a result alias, not a destructive source-file edit.
+- For real database schema renames, the existing/future Structure Editor should continue to generate physical `ALTER TABLE ... RENAME COLUMN ...` SQL.
+
+Implemented:
+
+- Added `buildRenamedResultSql` in `apps/desktop/src/lib/advanced-workspace-helpers.ts`.
+  - Wraps the current query and projects every column with explicit aliases.
+  - Example: `CustomerName` can become `Name` while all other columns keep their names.
+  - Rejects empty names, missing result columns, and duplicate output names.
+- Updated `apps/desktop/src/components/advanced/VirtualResultGrid.tsx`.
+  - Right-clicking a grid header or cell now exposes `Rename column alias`.
+- Updated `apps/desktop/src/pages/Advanced.tsx`.
+  - The rename prompt builds the alias SQL, resets sort/filter, runs the query again, and updates grid/export/BA Brief output with the new alias.
+
+Verification:
+
+```bash
+apps/desktop/node_modules/.bin/vitest run apps/desktop/src/lib/advanced-workspace.test.ts apps/desktop/src/lib/advanced-file-session.test.ts
+apps/desktop/node_modules/.bin/eslint apps/desktop/src/pages/Advanced.tsx apps/desktop/src/components/advanced/VirtualResultGrid.tsx apps/desktop/src/lib/advanced-workspace-helpers.ts apps/desktop/src/lib/advanced-workspace.test.ts
+apps/desktop/node_modules/.bin/tsc --noEmit --pretty false --project apps/desktop/tsconfig.app.json 2>&1 | rg "src/pages/Advanced|src/components/advanced/VirtualResultGrid|src/lib/advanced-workspace-helpers|src/lib/advanced-workspace.test"
+```
+
+Results:
+
+- Vitest passed: 2 files, 7 tests.
+- ESLint passed.
+- Filtered typecheck returned no matching errors; `rg` exited `1` only because no matching TypeScript errors were found.
+
+## 2026-06-28 — Advanced Export Toolbar Compact Menu
+
+User flagged that the Advanced toolbar exposed too many export actions directly (`All CSV`, `All XLSX`, `All JSON`, `All SQL`, `Export XLSX`, etc.).
+
+Implemented:
+
+- Updated `apps/desktop/src/pages/Advanced.tsx`.
+  - Replaced the long row of export buttons with one `Download` button.
+  - Dropdown groups actions into:
+    - `Current page`: CSV, XLSX, JSON, SQL.
+    - `Full result`: All CSV, All XLSX, All JSON, All SQL.
+  - Keeps full-export progress and cancel affordance inside the dropdown/button state.
+  - Removed toolbar horizontal overflow pressure from the export controls.
+
+Verification:
+
+```bash
+apps/desktop/node_modules/.bin/eslint apps/desktop/src/pages/Advanced.tsx
+apps/desktop/node_modules/.bin/tsc --noEmit --pretty false --project apps/desktop/tsconfig.app.json 2>&1 | rg "src/pages/Advanced"
+```
+
+Results:
+
+- ESLint passed.
+- Filtered typecheck returned no matching errors; `rg` exited `1` only because no matching TypeScript errors were found.
+
+## 2026-06-28 — Chart Library To Dashboard Flow
+
+User asked to continue the `/charts` page, which was still mostly a static chart-library placeholder.
+
+Implemented:
+
+- Updated `packages/runtime/src/types.ts` and `packages/runtime/src/store.ts`.
+  - Added runtime actions:
+    - `createDashboard`
+    - `createChart`
+    - `addChartToDashboard`
+  - Dashboard widgets now store chart placements in runtime state.
+- Rebuilt `apps/desktop/src/pages/Charts.tsx`.
+  - Saved chart cards now have visual mini-previews.
+  - Users can choose a dashboard target, create a new dashboard, add saved charts to that dashboard, and see placed chart cards in a target preview panel.
+  - Chart templates can create reusable chart cards against a selected dataset and immediately add them to the chosen dashboard.
+- Rebuilt `apps/desktop/src/pages/DashboardBuilder.tsx`.
+  - Uses the route dashboard id and renders actual dashboard widgets from runtime state.
+  - Chart widgets render preview visuals through existing dashboard widget components.
+  - Empty dashboards guide users back to Chart Library.
+- Rebuilt `apps/desktop/src/pages/Dashboards.tsx`.
+  - Replaced the old table with dashboard cards.
+  - `New dashboard` now creates a real runtime dashboard and opens it.
+
+Verification:
+
+```bash
+apps/desktop/node_modules/.bin/eslint apps/desktop/src/pages/Charts.tsx apps/desktop/src/pages/Dashboards.tsx apps/desktop/src/pages/DashboardBuilder.tsx
+apps/desktop/node_modules/.bin/tsc --noEmit --pretty false --project apps/desktop/tsconfig.app.json 2>&1 | rg "src/pages/Charts|src/pages/Dashboards|src/pages/DashboardBuilder|packages/runtime|runtime/src"
+packages/runtime/node_modules/.bin/tsc --noEmit --pretty false --moduleResolution bundler --module ESNext --target ES2020 --jsx react-jsx packages/runtime/src/store.ts packages/runtime/src/types.ts
+```
+
+Results:
+
+- ESLint passed.
+- Runtime typecheck passed.
+- App filtered typecheck returned no matching errors; `rg` exited `1` only because no matching TypeScript errors were found.
+
+## 2026-06-28 — Product Direction Boundary: Business Understanding Engine
+
+User provided a product/pricing direction clarifying that LightBI is not merely a BI tool and not an AI dashboard. The accepted product identity is:
+
+```text
+Raw Data
+-> Import
+-> Understand
+-> Clean / Standardize as non-destructive overlay
+-> Trust Score
+-> Dashboard / KPI / Insight
+-> AI Report, optional
+```
+
+Decision:
+
+- LightBI is a **Business Understanding Engine**.
+- Simple Mode is the BA / decision workspace and the key differentiator.
+- Advanced Mode remains strategically important and should compete with TablePro-level data workspace capability.
+- The intended competitive position is: TablePro-level Advanced workspace + Simple Mode Business Understanding Engine.
+- AI is optional and must read LightBI-generated artifacts, not raw data.
+- Clean/standardize means mapping overlays, aliases, inferred types, normalized runtime views, and reviewable artifacts. It must not silently mutate original files, sheets, or databases.
+- Provider/system expansion remains plugin-first.
+
+Docs added:
+
+- `docs/architecture/ADR-117-business-understanding-engine-product-boundary.md`
+- `docs/product/product-direction-and-pricing-v1.md`
+
+Important invariant for future work:
+
+Advanced can remain powerful, but its result buffers must be able to flow back into Simple Mode for trust scoring, insights, charts, dashboard cards, and BA decision briefs.
+
+## 2026-06-28 — Plugin SDK Contract Manual Phase 1
+
+User asked to continue the unfinished SDK work, log progress, and add manual docs for SDK implementation.
+
+Implemented:
+
+- Expanded `packages/plugin-sdk/src/index.ts` from a minimal provider interface into a fuller provider contract:
+  - versioned `lightbi.plugin.v1` API marker;
+  - manifest metadata, connection fields, TLS/safe-mode/SSH input, lifecycle context, logger, and secret store types;
+  - SQL dialect details for quoting, parameters, limits, transactions, explain, savepoints, and reserved words;
+  - deep schema metadata for schemas, tables, columns, indexes, foreign keys, triggers, routines, comments, defaults, sizes, and estimated rows;
+  - query params, bounded query options, stream query chunks, and typed result buffers;
+  - backend-style streaming export/import contracts for CSV, XLSX, JSON, and SQL;
+  - import preview/mapping/error-mode contracts;
+  - writeback/DDL preview and commit contracts with transaction policy;
+  - normalized diagnostics and provider error shape;
+  - `defineLightBIProviderPlugin()` helper for plugin authors.
+- Added `packages/plugin-sdk/README.md` with product boundary, minimum provider contract, and starter SQL Server-style example.
+- Added `docs/plugin-sdk/provider-plugin-manual.md` with lifecycle, UI exposure gate, manifest rules, SQL dialect guidance, schema metadata expectations, query/import/export/writeback/DDL/diagnostics rules, Simple Mode handoff, SQL Server first-plugin notes, deployment checklist, and release readiness criteria.
+- Updated `docs/architecture/ADR-116-plugin-first-system-expansion.md` to point to the SDK manual.
+
+Current status:
+
+- SDK is still interface/manual phase, not a dynamic third-party marketplace runtime.
+- Future provider expansion should go through this contract first, then a backend plugin host/registry.
+- SQL Server remains the recommended first real provider plugin once the host boundary exists.
+
+## 2026-06-29 — Plugin SDK Built-In Registry Phase
+
+User asked to continue the unfinished SDK work.
+
+Implemented:
+
+- Added `LightBIPluginRegistry` to `packages/plugin-sdk/src/index.ts`.
+  - Registers trusted plugin objects.
+  - Rejects duplicate provider IDs.
+  - Lists all entries, manifests, and exposable entries.
+  - Initializes and disposes registered plugins in host order.
+- Added `evaluateProviderExposureGate()`.
+  - Checks minimum provider exposure requirements before Simple/Advanced UI can list a provider.
+  - Blocks missing provider ID, display name, connect, schema discovery, or read-only query capability.
+  - Warns when `normalizeError` or relational `sqlDialect` is missing.
+- Added `packages/plugin-sdk/examples/sqlserver-provider.ts`.
+  - Provides the first SQL Server-style provider manifest skeleton.
+  - Uses bracket quoting, `@p1` parameter style, SQL Server default port, `dbo` default schema, TLS/encryption fields, and TablePro-inspired provider capability boundaries.
+  - It is example-only and not wired to a driver.
+- Updated `packages/plugin-sdk/README.md` and `docs/plugin-sdk/provider-plugin-manual.md` with registry usage and SQL Server skeleton notes.
+
+Important invariant:
+
+- `LightBIPluginRegistry` is a trusted built-in/first-party registry, not a dynamic marketplace loader.
+- Future backend work should create a host adapter that imports trusted plugins, registers them, and exposes only `registry.listExposable()` to user-facing provider lists.
+
+## 2026-06-29 — Backend Plugin Host Bridge Phase
+
+User asked to continue SDK work.
+
+Implemented:
+
+- Added `apps/server/src/plugin_host.rs`.
+  - Mirrors the TypeScript SDK manifest and exposure-gate shape in Rust because the current backend is Axum/Rust.
+  - Registers current built-in providers as `core_builtin`: PostgreSQL, MySQL, MariaDB, SQLite, MongoDB.
+  - Registers SQL Server as `planned_plugin` with connect/schema/query capabilities disabled so it remains hidden from public provider lists.
+  - Defines provider capabilities, connection fields, SQL dialect metadata, registry entries, and exposure-gate evaluation.
+- Updated `apps/server/src/main.rs`.
+  - Added `plugin_registry` to `AppState`.
+  - Initialized it with `PluginRegistry::built_in()`.
+  - Added API routes:
+    - `GET /api/plugins/providers`
+    - `GET /api/plugins/providers/diagnostics`
+- Updated SDK manual and ADR-116 with backend bridge details.
+
+Design note:
+
+- This bridge does not execute plugin code yet. It is the provider availability/manifest boundary so UI and future backend host code stop relying on hardcoded provider dropdowns.
+- Public UI should consume `/api/plugins/providers`. Developer diagnostics can use `/api/plugins/providers/diagnostics`.
+
+## 2026-06-29 — Advanced Provider Dropdown Uses Plugin Registry
+
+User asked to continue SDK work after the backend plugin host bridge.
+
+Implemented:
+
+- Updated `apps/desktop/src/lib/advanced-api.ts`.
+  - Added provider manifest/capability/exposure-gate client types.
+  - Added `loadAdvancedProviderPlugins()` for `GET /api/plugins/providers`.
+  - Filters public providers to currently supported Advanced providers: PostgreSQL, MySQL, MariaDB, SQLite, MongoDB.
+- Updated `apps/desktop/src/components/advanced/AdvancedConnectionGate.tsx`.
+  - Provider dropdown now renders backend plugin manifests instead of hardcoded options.
+- Updated `apps/desktop/src/pages/Advanced.tsx`.
+  - Loads provider plugins on mount.
+  - Falls back to the existing five built-in providers if the backend registry is unavailable.
+  - Uses provider display name from manifest when switching provider.
+- Updated `apps/desktop/src/lib/advanced-api.test.ts`.
+  - Added coverage that planned/hidden providers such as SQL Server do not appear in the Advanced dropdown loader.
+
+Verification:
+
+```bash
+apps/desktop/node_modules/.bin/vitest run apps/desktop/src/lib/advanced-api.test.ts
+apps/desktop/node_modules/.bin/eslint apps/desktop/src/lib/advanced-api.ts apps/desktop/src/lib/advanced-api.test.ts apps/desktop/src/components/advanced/AdvancedConnectionGate.tsx apps/desktop/src/pages/Advanced.tsx
+```
+
+Results:
+
+- Vitest passed: 4 tests.
+- Targeted ESLint passed.
+- Full app typecheck still reports pre-existing unrelated errors in BA/understanding/dashboard tests and old contracts; no new error was reported for the files touched in this SDK provider dropdown phase.
+
+## 2026-06-29 — Advanced Result Buffer to Simple BA Handoff
+
+User approved the next phase after SDK/typecheck cleanup: connect Advanced results back into Simple Mode so LightBI's TablePro-like workspace feeds the BA decision engine.
+
+Implemented:
+
+- Added `apps/desktop/src/lib/advanced-result-handoff.ts`.
+  - Converts an `AdvancedQueryResult` into a Simple `InvestigationSession` payload.
+  - Preserves source lineage: dataset ID, Advanced title, provider, and materialized SQL.
+  - Converts result-buffer rows into retained row objects for the BA pipeline.
+  - Infers a Simple action from result columns:
+    - date + numeric measure -> `trend`
+    - categorical + measure -> `group_by`
+    - categorical only -> `distribution`
+    - otherwise -> `table_preview`
+  - Creates runtime intent, runtime plan preview, and a safe AI briefing with bounded-buffer caveats.
+- Updated `apps/desktop/src/pages/Advanced.tsx`.
+  - Existing `BA Brief` action now uses the handoff helper instead of creating a generic empty action.
+  - Simple Mode receives meaningful dimensions/measures and readiness caveats from the Advanced result buffer.
+- Updated `apps/desktop/src/pages/Investigation.tsx`.
+  - Renamed secondary duplicate preview buttons to reduce accessible-name collisions:
+    - placeholder button: `Preview chart`
+    - lower execution button: `Execute preview`
+    - primary header action remains `Run preview`.
+- Added `apps/desktop/src/lib/advanced-result-handoff.test.ts`.
+
+Verification:
+
+```bash
+apps/desktop/node_modules/.bin/vitest run apps/desktop/src/lib/advanced-result-handoff.test.ts apps/desktop/src/lib/investigation-session.test.ts
+apps/desktop/node_modules/.bin/tsc --noEmit --pretty false --project apps/desktop/tsconfig.app.json
+```
+
+Results:
+
+- New handoff/session tests passed: 8 tests.
+- Full desktop typecheck passed.
+- Broader `Investigation.test.tsx` still has older brittle assertions around repeated UI text such as readiness caveats and boundary labels; this is separate from the handoff contract and should be cleaned in a UI test maintenance pass.
+
+## 2026-06-29 — Investigation Boundary Test Maintenance
+
+User asked to continue after the Advanced -> Simple BA handoff.
+
+Implemented:
+
+- Updated `apps/desktop/src/pages/Investigation.test.tsx`.
+  - Replaced brittle single-text queries for repeated caveat/failure text with `getAllByText(...)[0]`.
+  - Updated old expected boundary heading from `Execution Boundary Failed` to current UI wording `Execution Failed`.
+  - Kept the behavioral assertions intact: no fallback for SQL/semantic/runtime boundary failures, fallback only for allowed simple/infra cases, and no success chart placeholder when validation rejects the result.
+
+Verification:
+
+```bash
+apps/desktop/node_modules/.bin/vitest run apps/desktop/src/lib/advanced-result-handoff.test.ts apps/desktop/src/lib/investigation-session.test.ts apps/desktop/src/pages/Investigation.test.tsx
+apps/desktop/node_modules/.bin/vitest run apps/desktop/src/lib/advanced-workspace.test.ts apps/desktop/src/pages/Advanced.test.tsx apps/desktop/src/lib/advanced-result-handoff.test.ts
+apps/desktop/node_modules/.bin/tsc --noEmit --pretty false --project apps/desktop/tsconfig.app.json
+```
+
+Results:
+
+- Investigation + handoff/session tests passed: 18 tests.
+- Advanced workspace/page + handoff tests passed: 25 tests.
+- Full desktop typecheck passed.
+
+## 2026-06-29 — Windows Desktop Packaging Smoke Build
+
+User asked for a Windows 10 64-bit desktop build to download and test.
+
+Implemented:
+
+- Added a minimal Tauri v2 desktop shell under `crates/lightbi-tauri`.
+  - `tauri.conf.json` bundles the existing `apps/desktop` Vite build into a Windows NSIS installer.
+  - `build.rs` wires `tauri-build`.
+  - `src/main.rs` now boots a Tauri app window instead of the placeholder Rust hello-world.
+- Added Windows packaging icons in `crates/lightbi-tauri/icons/`.
+- Fixed `apps/desktop/vite.config.ts` to use `vitest/config`, allowing production build config to keep its `test` block without TypeScript rejecting it.
+
+Verification:
+
+```bash
+pnpm --dir apps/desktop build
+cargo check -p lightbi-tauri
+cargo tauri build --target x86_64-pc-windows-gnu
+```
+
+Results:
+
+- Windows x64 app binary built:
+  - `target/x86_64-pc-windows-gnu/release/lightbi-tauri.exe`
+- Windows x64 NSIS installer built:
+  - `target/x86_64-pc-windows-gnu/release/bundle/nsis/LightBI_0.1.0_x64-setup.exe`
+- Installer size: about 18 MB.
+- Cross-build warning is expected because this was built from Linux ARM64 to Windows x64. Installer signing is skipped until a Windows signing workflow/certificate is added.
+- This is a desktop-shell smoke build. Backend embedding/offline API packaging is not yet complete, so flows requiring the backend server may still need the web/server stack running.
+
+## 2026-06-29 — ADR/Handoff Technical Debt Audit
+
+User asked to review ADRs and handoff for outstanding technical debt after the Windows desktop smoke build and native-app discussion.
+
+Verified:
+
+```bash
+pnpm --dir apps/desktop exec tsc --noEmit --pretty false --project tsconfig.app.json
+cargo check -p lightbi-tauri
+cargo check -p lightbi-server
+```
+
+Results:
+
+- Desktop TypeScript check passed.
+- Tauri shell check passed after regenerating `crates/lightbi-tauri/icons/icon.png` as RGBA. The first full workspace check exposed this as a real packaging issue: `icon.png is not RGBA`.
+- Server/plugin-host check passed.
+- Rust warnings remain but are not blocking:
+  - unused registry fields in export/runtime/materializer scaffolds;
+  - unused `plan` in runtime coordinator placeholder;
+  - unused imports in perspective/project crates;
+  - unused preview DTO fields in `apps/server/src/main.rs`.
+
+Current important technical debt:
+
+1. Desktop shell is still WebView/Tauri, not native WinUI/SwiftUI/AppKit. Native shells are deferred by product decision.
+2. Backend/core runtime is not embedded as a desktop sidecar yet. Desktop smoke build relies on frontend/local runtime; server-backed flows still need backend separately.
+3. Windows installer is unsigned; macOS signing/notarization and OS-specific build workflows are not set up.
+4. Plugin SDK has contracts, registry, backend manifest bridge, and UI provider dropdown integration, but no dynamic trusted plugin loader/driver execution yet.
+5. SQL Server remains intentionally hidden/planned until implemented as the first real provider plugin.
+6. Full-file materialization still builds large JSON payloads before DuckDB registration; streaming/Arrow ingestion remains a performance phase.
+7. Advanced chart/dashboard cards now exist, but saved dashboard cards still need deeper real-data binding/refresh semantics before they are Power BI-like.
+8. File/online-sheet header aliases are non-destructive result overlays. Physical source mutation is intentionally not implemented.
+
+Strategic non-debt / intentionally deferred:
+
+- Real LLM reporting remains paused. AI must read LightBI artifacts later, not raw data.
+- Native Windows/macOS shells are not current scope; current desktop package is a testable shell.
+- Cloud sync/marketplace/plugin signing are future product layers, not MVP blockers.
+
+## 2026-06-29 — Beta Gate Direction: Domain BA First
+
+User clarified the near-term product target after ADR-118:
+
+- The immediate goal is to complete the domain-specific BA layer in Simple Mode and polish UI/UX enough for Beta.
+- LightBI's market differentiation is not only Advanced/TablePro-style data workspace parity, but Simple Mode's ability to answer business questions like a real BA for each covered domain.
+- Existing covered domains such as Revenue/Sales, Finance/Profitability, Inventory, Logistics/Operations, Customer, and Performance should go deeper before adding many new domains.
+- For Beta, prioritize:
+  1. Domain BA Playbooks (`docs/architecture/ADR-118-domain-ba-playbooks.md`).
+  2. Multi-period comparison for business reports.
+  3. Revenue/profit/cost/driver explanations with caveats when evidence is missing.
+  4. Exportable evidence rows behind each answer.
+  5. UI/UX polish for Simple Mode decision flow.
+  6. A standalone LightBI web presence for Beta onboarding.
+- Defer until after Beta/community feedback:
+  - broad new domain expansion;
+  - additional database drivers;
+  - real third-party plugin execution/marketplace;
+  - SQL Server or other enterprise connectors beyond planned SDK scaffolding.
+
+Implementation reminder:
+
+- Do not let Advanced Mode or provider/plugin work pull focus away from the Beta Gate unless needed to support Simple BA answers.
+- Keep new domain logic in deterministic, testable playbooks rather than UI copy or connector-specific code.
+- Use the existing SDK as the future expansion boundary, but avoid expanding it before the BA differentiator is Beta-ready.
+
+## 2026-06-30 — Domain BA Playbook Core Phase 1
+
+User resumed work and asked to implement BA Playbooks.
+
+Implemented:
+
+- Added `apps/desktop/src/lib/domain-ba-playbooks.ts`.
+  - Defines deterministic `DomainBAPlaybook` contracts.
+  - Covers Beta domain set:
+    - Revenue / Sales;
+    - Finance / Profitability;
+    - Inventory / Stock;
+    - Operations / Logistics;
+    - Customer;
+    - Performance / KPI.
+  - Each playbook includes supported business questions, metric formulas, driver models, caveat rules, chart rules, and exportable evidence rules.
+- Added `apps/desktop/src/lib/ba-comparison-engine.ts`.
+  - Builds `DomainComparisonBrief` artifacts from two or more period inputs.
+  - Detects revenue/cost/profit/category/product/branch/customer-like fields through existing taxonomy plus local BA comparison aliases.
+  - Computes revenue delta, estimated profit delta when cost/profit evidence exists, top growth drivers, top decline drivers, top profit drivers, reason codes, caveats, recommended charts, and exportable evidence rows.
+  - Refuses profitability claims when cost/profit/cost-like evidence is missing.
+  - Keeps profit ranking independent from revenue ranking.
+- Added tests:
+  - `apps/desktop/src/lib/domain-ba-playbooks.test.ts`
+  - `apps/desktop/src/lib/ba-comparison-engine.test.ts`
+
+Verification:
+
+```bash
+pnpm --dir apps/desktop exec vitest run src/lib/domain-ba-playbooks.test.ts src/lib/ba-comparison-engine.test.ts
+pnpm --dir apps/desktop exec tsc --noEmit --pretty false --project tsconfig.app.json
+```
+
+Results:
+
+- Domain BA Playbook tests passed: 7 tests.
+- Desktop TypeScript check passed.
+
+Important behavior now locked:
+
+- Two monthly business reports can be compared without hardcoding a sample file.
+- English and Vietnamese headers are both covered for the initial revenue/profit path.
+- Revenue increase does not imply profit increase.
+- If cost-like fields are missing, LightBI produces revenue comparison but blocks/downranks profit conclusions.
+
+Next recommended step:
+
+- Wire `createDomainComparisonBrief()` into the Simple Mode multi-file dataset family flow and render a `Business Comparison Brief` UI block before deeper UI polish.
+
+## 2026-06-30 — Domain BA Playbook Simple Integration
+
+User asked to continue until BA Playbook is done.
+
+Implemented:
+
+- Added `apps/desktop/src/components/analysis/BusinessComparisonBriefCard.tsx`.
+  - Renders the deterministic `DomainComparisonBrief` artifact for Simple Mode.
+  - Shows period comparison, decision/trust scores, metric deltas, growth drivers, decline drivers, profit drivers, reason codes, caveats, and exportable evidence groups.
+  - Evidence groups have CSV and XLSX export actions so users can take the filtered rows behind a BA answer without manually filtering Excel.
+- Wired `createDomainComparisonBriefFromFamily()` into `apps/desktop/src/pages/Home.tsx`.
+  - When a local multi-file dataset family is selected, Simple Mode now attempts to generate a business comparison brief automatically.
+  - Single-file, online-source refresh, virtual dataset, and source replacement paths clear stale comparison state.
+- Extended `apps/desktop/src/lib/ba-comparison-engine.test.ts`.
+  - Covers generation from `DatasetFamily`, not only direct period arrays.
+
+Verification:
+
+```bash
+pnpm --dir apps/desktop exec vitest run src/lib/domain-ba-playbooks.test.ts src/lib/ba-comparison-engine.test.ts
+pnpm --dir apps/desktop exec tsc --noEmit --pretty false --project tsconfig.app.json
+```
+
+Results:
+
+- Domain BA Playbook + comparison tests passed: 8 tests.
+- Desktop TypeScript check passed.
+
+Current behavior:
+
+- Simple Mode can compare two or more compatible business report files and answer:
+  - revenue increased/decreased;
+  - where growth and decline came from;
+  - whether profit can be discussed safely;
+  - which products/categories/locations/customers drive growth, decline, or profit;
+  - which caveats make the conclusion unsafe;
+  - which raw rows support each exportable evidence group.
+- Profitability is intentionally blocked/downranked when the file has no cost/profit/margin evidence.
+
+Known Beta polish left:
+
+- Add a small period-label control if filename/date inference is ambiguous.
+- Add deeper N-period trend explanation after the two-period path is stable in user testing.
+
+## 2026-06-30 — BA Playbook 5-Phase Smoothing
+
+User asked whether the older target question is fully satisfied, then approved the five proposed phases, with an extra warning: do not hardcode a sales sample; research and support basic/standard/advanced data maturity across covered domains.
+
+Implemented:
+
+- Extended `apps/desktop/src/lib/domain-ba-playbooks.ts`.
+  - Added `DomainSignalTier`.
+  - Each Beta domain now has `basic`, `standard`, and `advanced` signal tiers:
+    - Revenue / Sales;
+    - Finance / Profitability;
+    - Inventory / Stock;
+    - Operations / Logistics;
+    - Customer;
+    - Performance / KPI.
+  - This gives LightBI a maturity ladder: what can be answered with a basic file, what becomes possible with standard signals, and what advanced evidence is required for stronger BA conclusions.
+- Extended `apps/desktop/src/lib/ba-comparison-engine.ts`.
+  - Added `business_period_review` preset metadata.
+  - Added deterministic period mapping with confidence and chronological sorting from month/date/year-month file names.
+  - Added editable Simple Mode period labels: users can correct ambiguous labels and recompute the comparison brief.
+  - Added signal coverage summary for revenue, cost, profit, dimension, quantity, and discount.
+  - Added profit evidence states:
+    - direct profit/margin available;
+    - estimated from cost-like fields;
+    - missing.
+  - Added structured BA narrative sections:
+    - executive answer;
+    - where it changed;
+    - why it changed;
+    - profitability answer;
+    - decision safety.
+  - Upgraded evidence export groups so exported rows include both previous and current period rows with `__lightbi_period`.
+  - Preserved the guardrail that revenue leaders are not automatically profit leaders.
+- Updated `apps/desktop/src/components/analysis/BusinessComparisonBriefCard.tsx`.
+  - Renders period mapping status.
+  - Renders profit evidence status.
+  - Renders structured narrative sections.
+  - Shows TOP 10 drivers instead of truncating at 5.
+  - Keeps CSV/XLSX export on evidence groups.
+- Updated `apps/desktop/src/lib/domain-ba-playbooks.test.ts` and `apps/desktop/src/lib/ba-comparison-engine.test.ts`.
+  - Tests now cover signal tiers, top 10 drivers, period inference from filenames, narrative sections, profit guardrails, and evidence row period tagging.
+- Updated `docs/architecture/ADR-118-domain-ba-playbooks.md` with the five-phase implementation status.
+
+Verification:
+
+```bash
+pnpm --dir apps/desktop exec vitest run src/lib/domain-ba-playbooks.test.ts src/lib/ba-comparison-engine.test.ts
+pnpm --dir apps/desktop exec tsc --noEmit --pretty false --project tsconfig.app.json
+```
+
+Results:
+
+- BA Playbook tests passed: 11 tests.
+- Desktop TypeScript check passed.
+
+Current status against the old user question:
+
+- Simple Mode can now answer the two-report business comparison target at Beta-core level:
+  - revenue increased/decreased;
+  - growth drivers;
+  - decline drivers;
+  - likely reasons from quantity/cost/discount/driver mix when signals exist;
+  - TOP 10 contributors;
+  - profit ranking when profit/cost evidence exists;
+  - explicit refusal/caveat when profit evidence is missing;
+  - exportable evidence rows for follow-up.
+
+Remaining polish:
+
+- Improve period-label UX for many files with drag-to-order or month presets if Beta users need it.
+- Add more domain-specific runtime assertions for real inventory/logistics/customer/performance Beta files.
+
+## 2026-07-01 — BA Playbook Real ERP Regression + TOP 10 Fix
+
+User added more real paired ERP files and noticed the TOP 10 requirement was still being lost in the answer layer.
+
+Sample files now covered by regression:
+
+- `sample data/Sales_ERP_May_2026.xlsx`
+- `sample data/Sales_ERP_June_2026.xlsx`
+- `sample data/Accounting_ERP_May_2026.csv`
+- `sample data/Accounting_ERP_June_2026.csv`
+- `sample data/Logistics_ERP_May_2026.csv`
+- `sample data/Logistics_ERP_June_2026.csv`
+
+Implemented:
+
+- Fixed `apps/desktop/src/lib/ba-comparison-engine.ts`.
+  - `where_changed` narrative now keeps TOP 10 growth and TOP 10 decline drivers instead of only 3 each.
+  - `profitability_answer` narrative now keeps TOP 10 profit drivers instead of only 5.
+  - Added ERP aliases for compact accounting/logistics headers such as `NetRevenue`, `InvoiceTotal`, `Revenue_Credit`, `TotalCost`, `UnitCost`, `COGS_Debit`, `GrossProfit`, `MarginPct`, and `DeliveryFee`.
+  - Tightened revenue detection so cost-like fields such as `TotalCost` are not misclassified as revenue just because they contain `total`.
+- Fixed `apps/desktop/src/components/analysis/BusinessComparisonBriefCard.tsx`.
+  - Narrative cards can now render the full TOP 10 growth + TOP 10 decline list.
+- Extended `apps/desktop/src/lib/ba-comparison-engine.test.ts`.
+  - Added BOM-safe tabular file reader for CSV/XLSX real files.
+  - Added Accounting ERP May/June regression proving direct profit evidence, cost fields, and TOP 10 profit ranking are detected.
+  - Added Logistics ERP May/June regression proving LightBI does not pretend revenue exists when only cost/fee/quantity signals are present.
+
+Verification:
+
+```bash
+pnpm exec vitest run src/lib/ba-comparison-engine.test.ts
+pnpm exec tsc -b
+```
+
+Results:
+
+- BA comparison engine tests passed: 9 tests.
+- Desktop TypeScript build passed.
+
+## 2026-07-01 — Cross-Domain BA Fusion Overview Phase 1
+
+User requirement:
+
+- Simple Mode must combine multiple dataset categories that describe the same business object, e.g. Sales + Accounting + Logistics/Inventory, into one overview rather than forcing only one same-schema group.
+- The overview must answer at BA level: revenue movement, where it changed, TOP 10 growth/decline, TOP 10 profit, why revenue leaders may not be profit leaders, and caveats when supporting data is missing.
+
+Implemented:
+
+- Added `apps/desktop/src/lib/business-fusion-overview.ts`.
+  - Infers dataset role from columns: `sales`, `accounting`, `logistics`, `inventory`, or `unknown`.
+  - Detects shared business object keys across different schemas: order, SKU, product, category, store, brand.
+  - Infers periods from file names such as May/June 2026.
+  - Builds cross-domain metrics from the strongest source available:
+    - revenue from accounting when available, otherwise sales;
+    - gross profit from accounting/profit-capable source;
+    - quantity and delivery fee from logistics/inventory source.
+  - Produces TOP 10 revenue growth, TOP 10 revenue decline, and TOP 10 current profit drivers.
+  - Adds cross-checks such as Sales-vs-Accounting revenue gap and revenue-vs-profit leader mismatch.
+  - Adds caveats when Sales, Accounting, Logistics/Inventory, shared keys, or profit evidence are missing.
+- Added `apps/desktop/src/components/analysis/BusinessFusionOverviewCard.tsx`.
+  - Renders executive summary, readiness score, metric deltas, shared keys, detected source roles, TOP 10 growth/decline/profit, cross-checks, and caveats.
+- Wired the overview into `apps/desktop/src/pages/Home.tsx` for multi-file local inspection batches.
+  - When several dataset families are detected, LightBI now attempts a fusion overview before the user picks one same-schema family.
+
+Verification:
+
+```bash
+pnpm exec vitest run src/lib/business-fusion-overview.test.ts
+pnpm exec tsc --noEmit
+```
+
+Results:
+
+- Cross-domain fusion overview test passed against real sample files:
+  - `sample data/Sales_ERP_May_2026.xlsx`
+  - `sample data/Sales_ERP_June_2026.xlsx`
+  - `sample data/Accounting_ERP_May_2026.csv`
+  - `sample data/Accounting_ERP_June_2026.csv`
+  - `sample data/Logistics_ERP_May_2026.csv`
+  - `sample data/Logistics_ERP_June_2026.csv`
+- Desktop TypeScript check passed.
+
+Current limitation / next phase:
+
+- Phase 1 is an overview card during multi-file inspection. It does not yet create a persistent fused semantic model or drill-through across all joined domains.
+- Next phase should turn detected shared keys into a real virtual fused dataset so chart, BA analysis panel, and export evidence can operate across Sales + Accounting + Logistics together.
+
+## 2026-07-01 — Cross-Domain BA Fusion Dataset Phase 2
+
+Implemented:
+
+- Extended `apps/desktop/src/lib/business-fusion-overview.ts`.
+  - Added `createBusinessFusionVirtualDataset`.
+  - Creates one local-first virtual table from multiple dataset families using the strongest shared business key.
+  - Output grain is `period + object_key_type + object_key`.
+  - Output columns include:
+    - `sales_revenue`
+    - `accounting_revenue`
+    - `revenue_gap`
+    - `gross_profit`
+    - `profit_margin`
+    - `logistics_quantity`
+    - `delivery_fee`
+    - per-domain row counts
+    - `source_roles`
+  - Profiles the fused rows with the existing column profiler so downstream Simple Mode understanding can treat it like a normal dataset.
+- Updated `apps/desktop/src/components/analysis/BusinessFusionOverviewCard.tsx`.
+  - Added a `Use fused dataset` CTA.
+  - Keeps the overview informational, but now lets users enter a real analysis surface.
+- Updated `apps/desktop/src/pages/Home.tsx`.
+  - Added `handleUseBusinessFusionDataset`.
+  - When the user clicks the CTA, Simple Mode switches to a `business_fusion_view` dataset with retained rows, semantic sample, profiles, and preview rows.
+  - Existing same-schema family selection remains available, so the user can still inspect a single domain group when needed.
+- Extended `apps/desktop/src/lib/business-fusion-overview.test.ts`.
+  - Verifies the virtual fusion dataset exists for the real Sales + Accounting + Logistics May/June ERP sample set.
+  - Verifies fused columns, periods, profit evidence, and logistics quantity evidence.
+
+Verification:
+
+```bash
+pnpm exec vitest run src/lib/business-fusion-overview.test.ts
+pnpm exec tsc --noEmit
+```
+
+Results:
+
+- Cross-domain fusion test passed.
+- Desktop TypeScript check passed.
+
+Current limitation / next phase:
+
+- The fused dataset is an aggregated analytical surface, not a row-level physical join yet.
+- Next phase can add drill-through from a fused object row back to all contributing Sales/Accounting/Logistics raw rows, then export that evidence bundle.
+
+## 2026-07-01 — Cross-Domain BA Fusion Dataset Phase 3
+
+Implemented:
+
+- Extended `apps/desktop/src/lib/business-fusion-overview.ts`.
+  - Added structured BA narrative sections:
+    - Executive answer
+    - Where it changed
+    - Profitability answer
+    - Operational explanation
+    - Decision caveat
+  - Added structured reconciliation checks for Sales vs Accounting revenue gaps.
+  - Added decision risk signals for reconciliation gaps, revenue/profit leader mismatch, and missing evidence.
+  - Keeps the engine generic: output is based on detected fields, shared keys, periods, metrics, and domain roles rather than sample-file-specific rules.
+- Updated `apps/desktop/src/components/analysis/BusinessFusionOverviewCard.tsx`.
+  - Added an `Executive BA readout` section so multi-domain batches explain the business movement directly, not only show metrics.
+  - Added `Decision risk signals` so the user can see whether the overview is decision-grade or still exploratory.
+- Extended `apps/desktop/src/lib/business-fusion-overview.test.ts`.
+  - Verifies narrative coverage for executive answer, where changed, profitability, operations, and caveats.
+  - Verifies TOP growth/decline/profit evidence and reconciliation checks exist on the real Sales + Accounting + Logistics ERP sample set.
+
+Verification:
+
+```bash
+pnpm exec vitest run src/lib/business-fusion-overview.test.ts
+pnpm exec tsc --noEmit
+```
+
+Results:
+
+- Cross-domain BA fusion overview test passed.
+- Desktop TypeScript check passed.
+
+Current limitation / next phase:
+
+- The overview now gives a stronger BA readout, but evidence export is still centered on downstream chart drill-through.
+- Next phase should add fused-row drill-through evidence bundles: click one product/order/store/category in the fused view and export all contributing Sales + Accounting + Logistics raw rows together.
+
+## 2026-07-01 — Cross-Domain BA Fusion Dataset Phase 4
+
+Implemented:
+
+- Extended `createBusinessFusionVirtualDataset` in `apps/desktop/src/lib/business-fusion-overview.ts`.
+  - Every fused analytical row now has a stable `fusion_row_id`.
+  - Added `evidenceBundles` keyed by `fusion_row_id`.
+  - Each evidence bundle preserves contributing raw rows with:
+    - source role (`sales`, `accounting`, `logistics`, `inventory`)
+    - family name
+    - period
+    - source row index
+    - original row payload
+  - This turns the fused model from a summary-only surface into an auditable BA surface: LightBI can explain a cross-domain conclusion and later export the rows behind it.
+- Extended `apps/desktop/src/lib/business-fusion-overview.test.ts`.
+  - Verifies fused rows include `fusion_row_id`.
+  - Verifies at least one fused object has multi-domain evidence from Sales, Accounting, and Logistics.
+  - Verifies evidence rows stay period-aligned with the fused row.
+
+Verification:
+
+```bash
+pnpm exec vitest run src/lib/business-fusion-overview.test.ts
+pnpm exec tsc --noEmit
+```
+
+Results:
+
+- Cross-domain BA fusion evidence test passed.
+- Desktop TypeScript check passed.
+
+Current limitation / next phase:
+
+- Evidence bundles exist in the model, but the UI does not yet expose a dedicated fused drill-through/export action.
+- Next phase can wire `evidenceBundles` into Simple/Advanced chart drill-through so a user can export "all rows behind this cross-domain business object" as Excel/CSV.
+
+Follow-up applied in this same phase:
+
+- Updated `apps/desktop/src/pages/Home.tsx`.
+  - `business_fusion_view` is now treated as a business view in the loaded dataset status card.
+  - The fused dataset keeps `evidenceBundles` in `currentDataset`.
+  - The cross-domain overview card now remains visible after the user clicks `Use fused dataset`, so the executive BA readout is not lost when moving from batch selection into the analysis workspace.
+
+Verification:
+
+```bash
+pnpm exec vitest run src/lib/business-fusion-overview.test.ts
+pnpm exec tsc --noEmit
+```
+
+Results:
+
+- Cross-domain BA fusion test passed.
+- Desktop TypeScript check passed.
+
+## 2026-07-01 — Cross-Domain BA Fusion Flow Placement Fix
+
+User clarified that the full `Cross-domain BA overview` was appearing too early at the import/understanding step.
+
+Decision:
+
+- Step 1/2 after import should only prove that LightBI understands the uploaded files and can map related datasets together.
+- The full BA answer, including executive readout, revenue increase/decrease, Top 10 growth/decline/profit, caveats, and cross-domain risk signals, belongs after the user chooses to create/use the fused dataset or enters the decision/chart workspace.
+
+Implemented:
+
+- Added `apps/desktop/src/components/analysis/BusinessFusionOpportunityCard.tsx`.
+  - Lightweight import-step card: detected source roles, shared business keys, available decision angles, caveats, and CTA.
+  - Does not show full BA conclusions at the import step.
+- Updated `apps/desktop/src/pages/Home.tsx`.
+  - Pending multi-file batches now render `BusinessFusionOpportunityCard`.
+  - Loaded `business_fusion_view` datasets still render the full `BusinessFusionOverviewCard`.
+  - Engine/model output is unchanged; only display placement changed.
+
+Verification:
+
+```bash
+cd apps/desktop
+pnpm exec tsc --noEmit
+pnpm exec vitest run src/lib/business-fusion-overview.test.ts
+```
+
+Results:
+
+- Desktop TypeScript check passed.
+- Cross-domain BA fusion test passed.
+
+## 2026-07-01 — Business View Question Sandbox Guard
+
+User found that clicking suggested questions in the Business View review flow opened the old virtual dataset sandbox pipeline and produced a blocking validation modal.
+
+Decision:
+
+- Business View review questions are guidance/intent suggestions, not execution controls.
+- Execution and deep BA answers should happen after the user selects the view and enters the analysis/chart workspace.
+
+Implemented:
+
+- Updated `apps/desktop/src/pages/Home.tsx`.
+  - Virtual business view question clicks now open a lightweight selected-question note.
+  - The old `VirtualDatasetPlanPreview` -> runtime preview -> sandbox policy chain is no longer triggered from this review surface.
+  - Any stale sandbox/query preview state is cleared when selecting a virtual business view question.
+
+Verification:
+
+```bash
+pnpm --dir apps/desktop exec tsc --noEmit
+```
+
+Result: Desktop TypeScript check passed.
+
+## 2026-07-10 — Semantic Dictionary Expansion + Affinity Vector Safepoint
+
+User resumed the dictionary expansion work and clarified that LightBI must cover not only ERP systems, but also external/manual and cross-department data exports.
+
+Implemented:
+
+- Expanded the central semantic registry with many partial/runtime-safe signals for CRM, SAP-like material/billing, POS, bank statements, marketing analytics, procurement, HR/payroll, maintenance/assets/IoT, survey, education, and healthcare-like exports.
+- Improved context semantic inference:
+  - compact header matching for enterprise headers such as `SalesOrderNo`, `TripID`, `AccountId`, `FulfillmentStatus`;
+  - identifier string shape support;
+  - neighbor and cross-file support for the new data families.
+- Added a lightweight `semantic-domain-affinity` layer under `understanding-next`.
+  - It scores domain affinity from detected signal clusters instead of single-column matches only.
+  - Hybrid ERP-style files can now surface revenue + finance + operations + inventory + performance context when evidence co-occurs.
+- Wired domain affinity into the understanding orchestrator and the Understanding Next UI domain ordering.
+- Added regression tests for Salesforce-style, SAP-style, ecommerce/fulfillment, POS, bank, marketing, HR, maintenance/IoT, survey, education, healthcare, and hybrid ERP exports.
+
+Verification:
+
+```bash
+pnpm --dir apps/desktop exec vitest run src/lib/context-semantic-dictionary.test.ts src/lib/semantic-registry.test.ts src/lib/understanding-next/understanding-next.test.ts src/lib/semantic-coverage.test.ts src/lib/business-signal-detector.test.ts src/lib/semantic-sampler.test.ts src/lib/ai-briefing-generator.test.ts --reporter=dot
+pnpm --dir apps/desktop exec tsc --noEmit --pretty false --project tsconfig.app.json
+```
+
+Results:
+
+- 7 test files passed.
+- 134 tests passed.
+- Desktop TypeScript check passed.
+
+Remaining:
+
+- Continue broadening dictionary by industry/file family.
+- Keep newly recognized signals as `partial` until BA playbooks/actions can execute them safely.
+
+Follow-up implemented in the same phase:
+
+- Added broader partial recognition for external/manual file families:
+  - access audit/permission/MFA logs;
+  - app/API operational logs;
+  - SaaS subscription and recurring revenue exports;
+  - contract/legal, property/lease, construction/project progress;
+  - agriculture/field, utility/meter, compliance/risk, nonprofit funding, and QC inspection exports.
+- Added neighbor and cross-file evidence support for the new families to avoid trusting generic headers without contextual backing.
+- Extended semantic domain affinity cluster rules for reliability, access-control, subscription revenue, contract lifecycle, property operations, construction progress, agri/utility operations, risk controls, nonprofit funding, and quality inspection.
+- Tightened `error_code` value matching after a regression showed `External` could be over-read as an error code.
+
+Verification:
+
+```bash
+pnpm --dir apps/desktop exec vitest run src/lib/context-semantic-dictionary.test.ts src/lib/semantic-registry.test.ts src/lib/understanding-next/understanding-next.test.ts src/lib/semantic-coverage.test.ts src/lib/business-signal-detector.test.ts src/lib/semantic-sampler.test.ts src/lib/ai-briefing-generator.test.ts --reporter=dot
+pnpm --dir apps/desktop exec tsc --noEmit --pretty false --project tsconfig.app.json
+```
+
+Results:
+
+- 7 test files passed.
+- 137 tests passed.
+- Desktop TypeScript check passed.
+
+Follow-up implemented in the same phase: semantic layer merge guardrail.
+
+- `understanding-core/ontology.ts` is now a registry-backed adapter instead of an independent semantic rule owner.
+  - Core universal rules are generated from `SEMANTIC_SIGNAL_REGISTRY_V1`.
+  - Legacy core patterns are merged into matching registry-owned IDs for compatibility.
+  - Remaining core-only supplemental IDs are explicit and allowlisted.
+- `understanding-next/signal-detector.ts` is now registry-backed as well.
+  - Registry rules are generated first.
+  - Next compatibility rules only supplement unmapped IDs.
+  - Payment/logistics/document/status signals no longer live only in the chart detector.
+- Expanded `semantic-registry.ts` with missing central signals needed to remove detector drift:
+  - payment cash/card/bank/voucher, change amount, rounding amount, payment status;
+  - on-time status, waiting time, current/origin/destination location, freight fee, service group, item type, load status, row type;
+  - debt, balance, fiscal month/year, manager, person, coach, role, doctor, medicine;
+  - goods receipt, return document, related document, document type;
+  - ordered/received/sold quantity, campaign attempts, previous contacts/outcome, country.
+- Tightened alias behavior:
+  - short aliases such as `cod` now use token-boundary regexes in registry-backed detectors;
+  - `row_type` no longer uses generic `type/cash/credit/debit` aliases that can steal payment or generic columns.
+- Added source-of-truth tests proving:
+  - detector taxonomy and context dictionary come from the registry;
+  - understanding-core and understanding-next are registry-backed adapters;
+  - supplemental rules cannot silently grow outside explicit allowlists.
+
+Verification:
+
+```bash
+pnpm --dir apps/desktop exec vitest run src/lib/semantic-registry.test.ts src/lib/context-semantic-dictionary.test.ts src/lib/business-signal-detector.test.ts src/lib/understanding-core/understanding-core.test.ts src/lib/understanding-core/next-adapter.test.ts src/lib/understanding-next/understanding-next.test.ts src/lib/semantic-coverage.test.ts src/lib/semantic-sampler.test.ts src/lib/ai-briefing-generator.test.ts --reporter=dot
+pnpm --dir apps/desktop exec tsc --noEmit --pretty false --project tsconfig.app.json
+```
+
+Results:
+
+- 9 test files passed.
+- 158 tests passed.
+- Desktop TypeScript check passed.
+
+## 2026-07-01 — Final Cross-Domain BA Overview Placement
+
+User clarified the full `Cross-domain BA overview` should not live on the Home/import/review screen.
+
+Final UX rule:
+
+- Home/import/review is for understanding, evidence, business-view selection, and suggested questions only.
+- Full cross-domain BA conclusions belong inside the Investigation context:
+  - the chart/BA answer workspace, or
+  - the `Analyze deeper` side panel.
+
+Implemented:
+
+- Removed `BusinessFusionOverviewCard` from `apps/desktop/src/pages/Home.tsx`.
+- Kept lightweight `BusinessFusionOpportunityCard` on Home so users can still see why LightBI suggests a business view.
+- Added optional `businessFusionOverview` to `InvestigationSession`.
+- Passed `currentDataset.businessFusionOverview` into the Investigation session.
+- Rendered `BusinessFusionOverviewCard` inside the `Deep BA Analysis` drawer in `apps/desktop/src/pages/Investigation.tsx`.
+
+Verification:
+
+```bash
+pnpm --dir apps/desktop exec tsc --noEmit
+```
+
+Result: Desktop TypeScript check passed.

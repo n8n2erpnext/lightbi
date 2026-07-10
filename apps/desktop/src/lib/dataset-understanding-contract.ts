@@ -1,12 +1,13 @@
 import { detectCapabilities, generateOpportunities } from './dataset-capability-engine';
 import type { DatasetCapability, AnalysisOpportunity } from './dataset-capability-engine';
-import type { BusinessSignalRegistry } from './business-signal-detector';
+import type { BusinessSignal, BusinessSignalRegistry } from './business-signal-detector';
 import { getSignalType } from './business-signal-detector';
+import type { SemanticCoverageReport } from './semantic-coverage';
 import type { ReadinessGuidance } from './decision-readiness-engine';
 import { evaluateDecisionReadiness } from './decision-readiness-engine';
 import type { DatasetHealthResult } from './dataset-health-engine';
 
-export type DatasetGrain = "event" | "entity" | "snapshot" | "summary" | "unknown";
+export type DatasetGrain = "event" | "entity" | "snapshot" | "summary" | "transaction" | "unknown";
 
 export type DatasetUnderstandingStatus = "understood" | "partial" | "insufficient";
 
@@ -22,11 +23,14 @@ export interface MappingReviewItem {
 
 export interface MappingReviewContract {
   items: MappingReviewItem[];
+  completionScore?: number;
 }
 
 export type UnderstandingConcept = {
-  signalId: string;
-  label: string;
+  signalId?: string;
+  label?: string;
+  displayName?: string;
+  businessDomain?: string;
   canonicalConcept: string;
   confidenceScore: number;
   evidence: string[];
@@ -44,6 +48,9 @@ export type WorkflowHint = {
   label: string;
   fromSignal: string;
   toSignal?: string;
+  sourceSignal?: string;
+  targetSignal?: string;
+  description?: string;
   confidenceScore: number;
 };
 
@@ -54,6 +61,7 @@ export type RelationshipHint = {
   targetSignal: string;
   confidenceScore: number;
   reason: string;
+  description?: string;
 };
 
 export type AvailableAnalysisItem = {
@@ -75,11 +83,13 @@ export type UnavailableAnalysisItem = {
 
 export type DatasetUnderstanding = {
   id: string;
+  datasetId?: string;
   datasetName?: string;
 
   status: DatasetUnderstandingStatus;
   confidenceScore: number;
   grain: DatasetGrain;
+  grainHint?: DatasetGrain;
   grainEvidence: string;
   
   summary: {
@@ -106,6 +116,7 @@ export type DatasetUnderstanding = {
   caveats: string[];
   narrative: string;
   mappingReview?: MappingReviewContract;
+  semanticCoverage?: SemanticCoverageReport;
 
   sourceTrace: {
     signalIds: string[];
@@ -119,6 +130,7 @@ export type DatasetUnderstanding = {
 
 export interface CreateUnderstandingInput {
   datasetName?: string;
+  status?: DatasetUnderstandingStatus;
   rowCount?: number;
   columnCount?: number;
   signalRegistry: BusinessSignalRegistry;
@@ -302,6 +314,7 @@ export function createDatasetUnderstanding(input: CreateUnderstandingInput): Dat
   } = input;
 
   const signals = signalRegistry.signals || [];
+  const semanticCoverage = signalRegistry.semanticCoverage;
   const hasSignals = signals.length > 0;
   const hasViewsOrQuestions = businessViews.length > 0 || questionSuggestions.length > 0;
 
@@ -414,6 +427,7 @@ export function createDatasetUnderstanding(input: CreateUnderstandingInput): Dat
     caveats: [] as string[],
     narrative,
     mappingReview: input.signalRegistry.mappingReview,
+    semanticCoverage,
     sourceTrace: {
       signalIds: signals.map(s => s.canonicalId),
       perspectiveIds: perspectives.map(p => p.id || 'p'),
@@ -423,8 +437,12 @@ export function createDatasetUnderstanding(input: CreateUnderstandingInput): Dat
     createdAt: new Date().toISOString()
   };
 
+  const hasActionableOpportunity = baseUnderstanding.opportunities.some(o => o.confidence === 'high' || o.confidence === 'medium');
+  const hasRunnableAvailableAnalysis = baseUnderstanding.availableAnalysis.some(a => a.actionType && a.actionType !== 'table_preview');
+  const lacksActionableAnalysis = !hasActionableOpportunity && !hasRunnableAvailableAnalysis;
+
   // Phase 1 Honesty: establish final truthful understanding state first
-  if (baseUnderstanding.opportunities.every(o => o.confidence === 'low') && baseUnderstanding.availableAnalysis.length === 0) {
+  if (lacksActionableAnalysis) {
     if (baseUnderstanding.status === "understood") {
       baseUnderstanding.status = "partial";
     }
@@ -434,17 +452,35 @@ export function createDatasetUnderstanding(input: CreateUnderstandingInput): Dat
     }
   }
 
+  const unknownBusinessLikeCount = semanticCoverage?.summary.unknownBusinessLike ?? 0;
+  if (unknownBusinessLikeCount > 0) {
+    if (baseUnderstanding.status === "understood") {
+      baseUnderstanding.status = "partial";
+    }
+    const msg = `${unknownBusinessLikeCount} populated business-like column(s) are not mapped to canonical signals yet. Review semantic coverage before relying on AI or final BA narrative.`;
+    if (!baseUnderstanding.caveats.includes(msg)) {
+      baseUnderstanding.caveats.push(msg);
+    }
+  }
+
   const readiness = evaluateDecisionReadiness(baseUnderstanding as any);
 
   // Rebuild the readiness evidence coherently for the zero-opportunity case
-  if (baseUnderstanding.opportunities.every(o => o.confidence === 'low') && baseUnderstanding.availableAnalysis.length === 0) {
+  if (lacksActionableAnalysis) {
     readiness.tier = "exploratory_only";
     readiness.explanation = "Dataset lacks structural support to assemble actionable analysis.";
     const msg = "Could not assemble runnable analysis paths from detected signals.";
     if (!readiness.caveats.includes(msg)) {
       readiness.caveats.push(msg);
     }
-    if (readiness.score >= 85) readiness.score = 84;
+    if (readiness.score > 50) readiness.score = 50;
+  }
+  if (unknownBusinessLikeCount > 0) {
+    const msg = `${unknownBusinessLikeCount} business-like column(s) need semantic review.`;
+    if (!readiness.caveats.includes(msg)) {
+      readiness.caveats.push(msg);
+    }
+    if (readiness.score > 85) readiness.score = 85;
   }
 
   const finalObject: DatasetUnderstanding = {

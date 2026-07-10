@@ -1,17 +1,12 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import ReactECharts from 'echarts-for-react';
 import * as XLSX from 'xlsx';
 import type { QueryCellValue } from '@lightbi/core-types';
 import { ExecutionRunCoordinator } from '@lightbi/runtime';
 import {
-  ArrowDown,
   ArrowLeft,
   ArrowRight,
-  ArrowUp,
   BarChart3,
   Braces,
-  ChevronDown,
-  ChevronRight,
   Clock3,
   Code2,
   Columns,
@@ -26,7 +21,6 @@ import {
   Filter,
   Loader2,
   Play,
-  Plug,
   Plus,
   RefreshCw,
   Search,
@@ -39,7 +33,6 @@ import {
   Pencil,
   Redo2,
   RotateCcw,
-  Trash2,
   Undo2,
   Unplug,
   X,
@@ -62,6 +55,7 @@ import {
   loadAdvancedHistory,
   loadAdvancedExportJob,
   loadAdvancedImportJob,
+  loadAdvancedProviderPlugins,
   loadAdvancedProfiles,
   loadAdvancedSchema,
   loadAdvancedTableCount,
@@ -73,7 +67,6 @@ import {
   startAdvancedExport,
   startAdvancedCsvImport,
   startAdvancedSqlImport,
-  type AdvancedColumnNode,
   type AdvancedConnection,
   type AdvancedConnectionProfile,
   type AdvancedFilter,
@@ -83,6 +76,8 @@ import {
   type AdvancedMutationPreview,
   type AdvancedMutationRequest,
   type AdvancedQueryResult,
+  type AdvancedProviderId,
+  type AdvancedProviderPlugin,
   type AdvancedSchema,
   type AdvancedScriptPreview,
   type AdvancedSort,
@@ -93,12 +88,48 @@ import {
   advancedResultToCsv,
   createAdvancedId,
   createAdvancedTab,
-  restoreAdvancedTabs,
   serializeAdvancedTabs,
   splitAdvancedStatements,
   type AdvancedHistoryEntry,
-  type PersistedAdvancedTab,
 } from '../lib/advanced-workspace';
+import {
+  CREATE_NEW_IMPORT_TARGET,
+  analyzeSqlForAssistant,
+  buildDeleteMutationRows,
+  buildInsertMutationRows,
+  buildRenamedResultSql,
+  buildManualInsertMutationRows,
+  compactCount,
+  coerceInsertDraftValue,
+  copyTextToClipboard,
+  createBlankColumnDraft,
+  createBlankStructureColumnDraft,
+  defaultImportColumnMap,
+  generateCreateTableSql,
+  generateStructureSql,
+  hydrateTab,
+  importColumnSqlType,
+  loadAdvancedWorkspaceTabs,
+  materializeSqlParameters,
+  mongoFilterValue,
+  qualifiedTableReference,
+  quoteIdentifier,
+  quoteMysqlIdentifier,
+  reconcileSqlParameters,
+  resultRowsAsObjects,
+  splitReferencedTable,
+  sqlLiteral,
+  structureDraftFromTable,
+  type CreateColumnDraft,
+  type CreateTableDraft,
+  type FileTableImportDraft,
+  type ImportDraft,
+  type QuickCommand,
+  type SqlAssistantBrief,
+  type StructureColumnDraft,
+  type StructureTableDraft,
+  type WorkspaceTab,
+} from '../lib/advanced-workspace-helpers';
 import { AdvancedFileSession } from '../lib/advanced-file-session';
 import {
   applyAdvancedEdits,
@@ -108,1145 +139,64 @@ import {
   redoAdvancedCellEdit,
   projectAdvancedColumns,
   undoAdvancedCellEdit,
-  type AdvancedEditState,
 } from '../lib/advanced-edit-session';
 import { useAdvancedSourceStore, type AdvancedWorkspaceSource } from '../stores/advanced-source-store';
 import { createInvestigationSession } from '../lib/investigation-session';
-import { createRuntimeIntentFromAnalysisAction } from '../lib/analysis-runtime-contract';
-import { createRuntimePlanPreview } from '../lib/runtime-planner-preview';
-import type { AnalysisAction } from '../lib/analysis-opportunity-actions';
-
-const ROW_HEIGHT = 30;
-const GRID_HEIGHT = 360;
-const OVERSCAN = 8;
-const CREATE_NEW_IMPORT_TARGET = '__create_new_table__';
-
-type GridPosition = { rowIndex: number; columnIndex: number };
-type GridSelection = { anchor: GridPosition; focus: GridPosition };
-type GridForeignKeyAction = {
-  id: string;
-  columnNames: string[];
-  label: string;
-  onNavigate: (row: QueryCellValue[], result: AdvancedQueryResult) => void;
-};
-
-type ResultView = 'grid' | 'chart' | 'json' | 'structure' | 'plan';
-type WorkspaceTab = PersistedAdvancedTab & {
-  offset: number;
-  result: AdvancedQueryResult | null;
-  warnings: string[];
-  error: string;
-  isRunning: boolean;
-  resultView: ResultView;
-  sort?: AdvancedSort;
-  filters: AdvancedFilter[];
-  filterCombinator: 'and' | 'or';
-  filterColumn: string;
-  filterOperator: AdvancedFilterOperator;
-  filterValue: string;
-  projectionColumn: string;
-  plan: unknown | null;
-  editMode: boolean;
-  editState: AdvancedEditState;
-  insertRowIndexes: number[];
-  insertRows: Record<string, QueryCellValue>[];
-  deletedRowIndexes: number[];
-  hiddenColumnIds: string[];
-  columnWidths: Record<string, number>;
-  columnOrder: string[];
-  parameters: Record<string, string>;
-  tableContext?: { schema: string; table: string };
-};
-
-function hydrateTab(tab: PersistedAdvancedTab): WorkspaceTab {
-  return {
-    ...tab,
-    offset: 0,
-    result: null,
-    warnings: [],
-    error: '',
-    isRunning: false,
-    resultView: 'grid',
-    filters: [],
-    filterCombinator: 'and',
-    filterColumn: '',
-    filterOperator: 'contains',
-    filterValue: '',
-    projectionColumn: '',
-    plan: null,
-    editMode: false,
-    editState: EMPTY_ADVANCED_EDIT_STATE,
-    insertRowIndexes: [],
-    insertRows: [],
-    deletedRowIndexes: [],
-    hiddenColumnIds: [],
-    columnWidths: {},
-    columnOrder: [],
-    parameters: {},
-  };
-}
-
-function quoteIdentifier(value: string): string {
-  return `"${value.replaceAll('"', '""')}"`;
-}
-
-function quoteMysqlIdentifier(value: string): string {
-  return `\`${value.replaceAll('`', '``')}\``;
-}
-
-function qualifiedTableReference(provider: AdvancedConnection['provider'] | 'duckdb', schemaName: string, tableName: string): string {
-  if (provider === 'mysql' || provider === 'mariadb') return `${quoteMysqlIdentifier(schemaName)}.${quoteMysqlIdentifier(tableName)}`;
-  if (provider === 'sqlite' || provider === 'duckdb') return quoteIdentifier(tableName);
-  return `${quoteIdentifier(schemaName)}.${quoteIdentifier(tableName)}`;
-}
-
-function splitReferencedTable(currentSchema: string, referencedTable: string): { schema: string; table: string } {
-  const parts = referencedTable.split('.');
-  if (parts.length >= 2) return { schema: parts.slice(0, -1).join('.'), table: parts[parts.length - 1] };
-  return { schema: currentSchema, table: referencedTable };
-}
-
-function displayCell(value: QueryCellValue): string {
-  if (value === null) return 'NULL';
-  if (typeof value === 'boolean') return value ? 'true' : 'false';
-  return String(value);
-}
-
-function gridClipboardCell(value: QueryCellValue): string {
-  if (value === null) return '';
-  return String(value).replace(/\r?\n/g, ' ');
-}
-
-function detectSqlParameters(sql: string): string[] {
-  const names = new Set<string>();
-  for (const match of sql.matchAll(/(^|[^:]):([A-Za-z_][A-Za-z0-9_]*)/g)) names.add(match[2]);
-  return [...names].sort();
-}
-
-function reconcileSqlParameters(sql: string, existing: Record<string, string>): Record<string, string> {
-  return Object.fromEntries(detectSqlParameters(sql).map(name => [name, existing[name] ?? '']));
-}
-
-function parameterValue(value: string): QueryCellValue {
-  if (value.trim() === '') return null;
-  if (/^(true|false)$/i.test(value.trim())) return value.trim().toLowerCase() === 'true';
-  if (Number.isFinite(Number(value))) return Number(value);
-  return value;
-}
-
-function materializeSqlParameters(sql: string, parameters: Record<string, string>): string {
-  return sql.replace(/(^|[^:]):([A-Za-z_][A-Za-z0-9_]*)/g, (_match, prefix: string, name: string) => (
-    `${prefix}${sqlLiteral(parameterValue(parameters[name] ?? ''))}`
-  ));
-}
-
-function parseClipboardRows(text: string): string[][] {
-  return text
-    .replace(/\r\n/g, '\n')
-    .replace(/\r/g, '\n')
-    .split('\n')
-    .filter((line, index, lines) => line.length > 0 || index < lines.length - 1)
-    .map(line => line.split('\t'));
-}
-
-async function readTextFromClipboard(): Promise<string> {
-  try {
-    return await navigator.clipboard.readText();
-  } catch {
-    return '';
-  }
-}
-
-function resultRowsAsObjects(result: AdvancedQueryResult): Record<string, unknown>[] {
-  return result.rows.map(row => Object.fromEntries(result.columns.map((column, index) => [column.name, row[index] ?? null])));
-}
-
-function buildDeleteMutationRows(result: AdvancedQueryResult, rowIndexes: number[], primaryKeys: string[]) {
-  if (primaryKeys.length === 0) throw new Error('A primary key is required for source commit.');
-  const columnIndexes = new Map(result.columns.map((column, index) => [column.name, index]));
-  for (const key of primaryKeys) if (!columnIndexes.has(key)) throw new Error(`Primary-key column ${key} is missing from the result.`);
-  return [...new Set(rowIndexes)].sort((left, right) => left - right).map(rowIndex => {
-    const row = result.rows[rowIndex];
-    if (!row) throw new Error('A deleted row is no longer present in the result.');
-    return {
-      action: 'delete' as const,
-      key: Object.fromEntries(primaryKeys.map(key => [key, row[columnIndexes.get(key)!] ?? null])),
-      changes: {},
-      expected: {},
-    };
-  });
-}
-
-function buildInsertMutationRows(result: AdvancedQueryResult, rowIndexes: number[], primaryKeys: string[]) {
-  const primaryKeySet = new Set(primaryKeys);
-  return rowIndexes.map(rowIndex => {
-    const row = result.rows[rowIndex];
-    if (!row) throw new Error('An inserted row source is no longer present in the result.');
-    const changes = Object.fromEntries(result.columns.flatMap((column, columnIndex) => (
-      primaryKeySet.has(column.name) ? [] : [[column.name, row[columnIndex] ?? null]]
-    )));
-    return { action: 'insert' as const, key: {}, changes, expected: {} };
-  });
-}
-
-function buildManualInsertMutationRows(rows: Record<string, QueryCellValue>[]) {
-  return rows.map(row => ({ action: 'insert' as const, key: {}, changes: row, expected: {} }));
-}
-
-function coerceInsertDraftValue(nativeType: string, text: string): QueryCellValue {
-  const value = text.trim();
-  if (value === '') return null;
-  if (/^(true|false)$/i.test(value)) return value.toLowerCase() === 'true';
-  if (/(int|decimal|numeric|double|float|real|serial|money)/i.test(nativeType) && Number.isFinite(Number(value))) return Number(value);
-  return text;
-}
-
-type SqlAssistantBrief = {
-  intent: string;
-  risk: 'low' | 'medium' | 'high';
-  observations: string[];
-  recommendations: string[];
-  optimizedSketch?: string;
-};
-
-type ImportDraft = {
-  open: boolean;
-  sourceId: string;
-  tableName: string;
-  target: string;
-  newSchemaName: string;
-  newTableName: string;
-  columnMap: Record<string, string>;
-  running: boolean;
-  importedRows: number;
-  error: string;
-};
-
-type FileTableImportDraft = {
-  open: boolean;
-  file: File | null;
-  fileName: string;
-  headers: string[];
-  schema: string;
-  table: string;
-  columnMap: Record<string, string>;
-  errorMode: 'stop_rollback' | 'stop_commit' | 'skip_continue';
-  running: boolean;
-  importedRows: number;
-  skippedRows: number;
-  error: string;
-};
-
-type CreateColumnDraft = {
-  id: string;
-  name: string;
-  nativeType: string;
-  nullable: boolean;
-  primaryKey: boolean;
-  indexed: boolean;
-  referencesTable: string;
-  referencesColumn: string;
-};
-
-type CreateTableDraft = {
-  open: boolean;
-  schemaName: string;
-  tableName: string;
-  columns: CreateColumnDraft[];
-};
-
-type StructureColumnDraft = {
-  id: string;
-  originalName: string;
-  name: string;
-  originalType: string;
-  nativeType: string;
-  originalNullable: boolean;
-  nullable: boolean;
-  originalDefault: string;
-  defaultValue: string;
-  originalComment: string;
-  comment: string;
-  primaryKey: boolean;
-  drop: boolean;
-  added: boolean;
-};
-
-type StructureTableDraft = {
-  open: boolean;
-  schemaName: string;
-  originalTableName: string;
-  tableName: string;
-  columns: StructureColumnDraft[];
-  originalTableComment: string;
-  tableComment: string;
-  newIndexName: string;
-  newIndexColumns: string;
-  newIndexUnique: boolean;
-  dropIndexName: string;
-  newForeignKeyName: string;
-  foreignKeyColumns: string;
-  foreignKeyReferenceTable: string;
-  foreignKeyReferenceColumns: string;
-  dropForeignKeyName: string;
-  triggerName: string;
-  triggerSql: string;
-};
-
-type QuickCommand = {
-  id: string;
-  kind: 'table' | 'tab' | 'history' | 'favorite' | 'source' | 'action';
-  title: string;
-  subtitle: string;
-  keywords: string;
-  run: () => void;
-};
-
-function analyzeSqlForAssistant(sql: string, provider: string): SqlAssistantBrief {
-  const compact = sql.trim().replace(/\s+/g, ' ');
-  const lower = compact.toLowerCase();
-  const observations: string[] = [];
-  const recommendations: string[] = [];
-  const verb = lower.match(/^(select|insert|update|delete|with|create|alter|drop)\b/)?.[1] ?? 'statement';
-  let risk: SqlAssistantBrief['risk'] = ['delete', 'update', 'drop', 'alter'].includes(verb) ? 'high' : 'low';
-  const intent = verb === 'with' ? 'Common-table-expression query' : `${verb.toUpperCase()} query`;
-  if (/\bselect\s+\*/i.test(compact)) recommendations.push('Select only needed columns to reduce transfer, memory, and grid rendering cost.');
-  if (!/\blimit\s+\d+/i.test(compact) && /\bselect\b/i.test(compact)) recommendations.push('Add a LIMIT while exploring, then use full export when the result shape is verified.');
-  if (/\border\s+by\b/i.test(compact) && !/\blimit\s+\d+/i.test(compact)) recommendations.push('ORDER BY without LIMIT can force a full sort; confirm the sorted columns are indexed.');
-  if (/\boffset\s+\d+/i.test(compact)) recommendations.push('Large OFFSET pagination can get slower over time; prefer keyset pagination when browsing operational tables.');
-  if (/\blike\s+['"]%/i.test(compact)) recommendations.push('Leading-wildcard LIKE usually cannot use a normal b-tree index; consider full-text/trigram search if this is frequent.');
-  if (/\bjoin\b/i.test(compact)) observations.push('Contains joins; validate join keys and indexes on both sides.');
-  if (/\bwhere\b/i.test(compact)) observations.push('Has a WHERE clause, so execution can likely be narrowed by indexes.');
-  if (/\bgroup\s+by\b/i.test(compact)) observations.push('Aggregates rows; compare grouping columns with available indexes and expected cardinality.');
-  if ((verb === 'update' || verb === 'delete') && !/\bwhere\b/i.test(compact)) {
-    risk = 'high';
-    recommendations.unshift('This write query has no WHERE clause. Review carefully before execution.');
-  }
-  if (provider === 'postgresql' && /\bselect\b/i.test(compact)) observations.push('PostgreSQL EXPLAIN plan tree is available from the toolbar.');
-  if (observations.length === 0) observations.push('No obvious structural issue found from static SQL inspection.');
-  if (recommendations.length === 0) recommendations.push('Query shape looks reasonable. Use Explain/Run on a bounded result before exporting all rows.');
-  const optimizedSketch = /\bselect\s+\*/i.test(compact)
-    ? compact.replace(/\bselect\s+\*/i, 'SELECT <needed_columns>')
-    : undefined;
-  return { intent, risk, observations, recommendations, optimizedSketch };
-}
-
-function defaultImportColumnMap(sourceColumns: string[], targetColumns: AdvancedColumnNode[]): Record<string, string> {
-  const normalized = new Map(sourceColumns.map(column => [column.toLocaleLowerCase(), column]));
-  return Object.fromEntries(targetColumns
-    .filter(column => !column.primaryKey)
-    .map(column => [column.name, normalized.get(column.name.toLocaleLowerCase()) ?? '']));
-}
-
-function importColumnSqlType(nativeType?: string): string {
-  const type = nativeType || '';
-  if (/bool/i.test(type)) return 'BOOLEAN';
-  if (/(int|whole)/i.test(type)) return 'BIGINT';
-  if (/(number|decimal|numeric|double|float|real|money|currency)/i.test(type)) return 'DOUBLE PRECISION';
-  if (/(date|time)/i.test(type)) return 'TIMESTAMP';
-  return 'TEXT';
-}
-
-function createBlankColumnDraft(): CreateColumnDraft {
-  return { id: createAdvancedId(), name: '', nativeType: 'TEXT', nullable: true, primaryKey: false, indexed: false, referencesTable: '', referencesColumn: '' };
-}
-
-function createBlankStructureColumnDraft(): StructureColumnDraft {
-  return { id: createAdvancedId(), originalName: '', name: '', originalType: 'TEXT', nativeType: 'TEXT', originalNullable: true, nullable: true, originalDefault: '', defaultValue: '', originalComment: '', comment: '', primaryKey: false, drop: false, added: true };
-}
-
-function structureDraftFromTable(schemaName: string, table: AdvancedTableNode): StructureTableDraft {
-  return {
-    open: true,
-    schemaName,
-    originalTableName: table.name,
-    tableName: table.name,
-    columns: table.columns.map(column => ({
-      id: createAdvancedId(),
-      originalName: column.name,
-      name: column.name,
-      originalType: column.nativeType,
-      nativeType: column.nativeType,
-      originalNullable: column.nullable,
-      nullable: column.nullable,
-      originalDefault: column.defaultValue ?? '',
-      defaultValue: column.defaultValue ?? '',
-      originalComment: column.comment ?? '',
-      comment: column.comment ?? '',
-      primaryKey: Boolean(column.primaryKey),
-      drop: false,
-      added: false,
-    })),
-    originalTableComment: table.comment ?? '',
-    tableComment: table.comment ?? '',
-    newIndexName: '',
-    newIndexColumns: '',
-    newIndexUnique: false,
-    dropIndexName: '',
-    newForeignKeyName: '',
-    foreignKeyColumns: '',
-    foreignKeyReferenceTable: '',
-    foreignKeyReferenceColumns: '',
-    dropForeignKeyName: '',
-    triggerName: '',
-    triggerSql: '',
-  };
-}
-
-function generateCreateTableSql(draft: CreateTableDraft, provider: AdvancedConnection['provider'] | 'duckdb'): string {
-  const schemaName = draft.schemaName || 'public';
-  const tableName = draft.tableName || 'new_table';
-  const columns = draft.columns.filter(column => column.name.trim());
-  const columnLines = columns.map(column => {
-    const parts = [provider === 'mysql' || provider === 'mariadb' ? quoteMysqlIdentifier(column.name.trim()) : quoteIdentifier(column.name.trim()), column.nativeType.trim() || 'TEXT'];
-    if (!column.nullable || column.primaryKey) parts.push('NOT NULL');
-    return `  ${parts.join(' ')}`;
-  });
-  const primaryKeys = columns.filter(column => column.primaryKey).map(column => provider === 'mysql' || provider === 'mariadb' ? quoteMysqlIdentifier(column.name.trim()) : quoteIdentifier(column.name.trim()));
-  if (primaryKeys.length > 0) columnLines.push(`  PRIMARY KEY (${primaryKeys.join(', ')})`);
-  const create = `CREATE TABLE ${qualifiedTableReference(provider, schemaName, tableName)} (\n${columnLines.join(',\n') || '  id INTEGER PRIMARY KEY'}\n);`;
-  const indexStatements = columns.filter(column => column.indexed && !column.primaryKey).map(column => (
-    `CREATE INDEX ${provider === 'mysql' || provider === 'mariadb' ? quoteMysqlIdentifier(`idx_${tableName}_${column.name}`) : quoteIdentifier(`idx_${tableName}_${column.name}`)} ON ${qualifiedTableReference(provider, schemaName, tableName)} (${provider === 'mysql' || provider === 'mariadb' ? quoteMysqlIdentifier(column.name.trim()) : quoteIdentifier(column.name.trim())});`
-  ));
-  const fkStatements = columns.filter(column => column.referencesTable.trim() && column.referencesColumn.trim()).map(column => {
-    const referenced = splitReferencedTable(schemaName, column.referencesTable.trim());
-    const localColumn = provider === 'mysql' || provider === 'mariadb' ? quoteMysqlIdentifier(column.name.trim()) : quoteIdentifier(column.name.trim());
-    const referencedColumn = provider === 'mysql' || provider === 'mariadb' ? quoteMysqlIdentifier(column.referencesColumn.trim()) : quoteIdentifier(column.referencesColumn.trim());
-    return `ALTER TABLE ${qualifiedTableReference(provider, schemaName, tableName)} ADD FOREIGN KEY (${localColumn}) REFERENCES ${qualifiedTableReference(provider, referenced.schema, referenced.table)} (${referencedColumn});`;
-  });
-  return [create, ...indexStatements, ...fkStatements].join('\n\n');
-}
-
-function generateStructureSql(draft: StructureTableDraft, provider: AdvancedConnection['provider'] | 'duckdb'): string {
-  const schemaName = draft.schemaName || 'public';
-  const originalTable = draft.originalTableName || draft.tableName || 'table_name';
-  const nextTable = draft.tableName || originalTable;
-  const tableRef = qualifiedTableReference(provider, schemaName, originalTable);
-  const nextTableRef = qualifiedTableReference(provider, schemaName, nextTable);
-  const quoteColumn = (name: string) => provider === 'mysql' || provider === 'mariadb' ? quoteMysqlIdentifier(name) : quoteIdentifier(name);
-  const statements: string[] = [];
-  if (nextTable !== originalTable) {
-    if (provider === 'mysql' || provider === 'mariadb') statements.push(`RENAME TABLE ${tableRef} TO ${nextTableRef};`);
-    else if (provider === 'sqlite') statements.push(`ALTER TABLE ${tableRef} RENAME TO ${quoteIdentifier(nextTable)};`);
-    else statements.push(`ALTER TABLE ${tableRef} RENAME TO ${quoteIdentifier(nextTable)};`);
-  }
-  const mutableTableRef = nextTable !== originalTable ? nextTableRef : tableRef;
-  draft.columns.forEach(column => {
-    const name = column.name.trim();
-    const originalName = column.originalName.trim();
-    if (!name && !originalName) return;
-    if (column.added) {
-      if (!name) return;
-      statements.push(`ALTER TABLE ${mutableTableRef} ADD COLUMN ${quoteColumn(name)} ${column.nativeType || 'TEXT'}${column.nullable ? '' : ' NOT NULL'}${column.defaultValue.trim() ? ` DEFAULT ${column.defaultValue.trim()}` : ''};`);
-      if (column.comment.trim()) {
-        if (provider === 'postgresql') statements.push(`COMMENT ON COLUMN ${mutableTableRef}.${quoteColumn(name)} IS ${sqlLiteral(column.comment.trim())};`);
-        else if (provider === 'mysql' || provider === 'mariadb') statements.push(`-- Review manually: MySQL column comments require MODIFY COLUMN with the full column definition for ${name}.`);
-      }
-      return;
-    }
-    if (column.drop) {
-      statements.push(`ALTER TABLE ${mutableTableRef} DROP COLUMN ${quoteColumn(originalName)};`);
-      return;
-    }
-    const columnRef = quoteColumn(originalName);
-    if (name && name !== originalName) {
-      statements.push(`ALTER TABLE ${mutableTableRef} RENAME COLUMN ${columnRef} TO ${quoteColumn(name)};`);
-    }
-    const effectiveName = name || originalName;
-    if (column.nativeType && column.nativeType !== column.originalType) {
-      if (provider === 'postgresql') statements.push(`ALTER TABLE ${mutableTableRef} ALTER COLUMN ${quoteColumn(effectiveName)} TYPE ${column.nativeType};`);
-      else if (provider === 'mysql' || provider === 'mariadb') statements.push(`ALTER TABLE ${mutableTableRef} MODIFY COLUMN ${quoteColumn(effectiveName)} ${column.nativeType}${column.nullable ? '' : ' NOT NULL'};`);
-      else statements.push(`-- Review manually: change ${effectiveName} type from ${column.originalType} to ${column.nativeType};`);
-    }
-    if (column.nullable !== column.originalNullable && provider === 'postgresql') {
-      statements.push(`ALTER TABLE ${mutableTableRef} ALTER COLUMN ${quoteColumn(effectiveName)} ${column.nullable ? 'DROP NOT NULL' : 'SET NOT NULL'};`);
-    }
-    if (column.defaultValue.trim() !== column.originalDefault.trim()) {
-      if (provider === 'postgresql') statements.push(`ALTER TABLE ${mutableTableRef} ALTER COLUMN ${quoteColumn(effectiveName)} ${column.defaultValue.trim() ? `SET DEFAULT ${column.defaultValue.trim()}` : 'DROP DEFAULT'};`);
-      else if (provider === 'mysql' || provider === 'mariadb') statements.push(`ALTER TABLE ${mutableTableRef} ALTER COLUMN ${quoteColumn(effectiveName)} ${column.defaultValue.trim() ? `SET DEFAULT ${column.defaultValue.trim()}` : 'DROP DEFAULT'};`);
-      else statements.push(`-- Review manually: change ${effectiveName} default to ${column.defaultValue.trim() || 'NULL/default removed'};`);
-    }
-    if (column.comment.trim() !== column.originalComment.trim()) {
-      if (provider === 'postgresql') statements.push(`COMMENT ON COLUMN ${mutableTableRef}.${quoteColumn(effectiveName)} IS ${column.comment.trim() ? sqlLiteral(column.comment.trim()) : 'NULL'};`);
-      else if (provider === 'mysql' || provider === 'mariadb') statements.push(`-- Review manually: change ${effectiveName} comment to ${sqlLiteral(column.comment.trim())};`);
-      else statements.push(`-- Review manually: comments are not stored by SQLite for ${effectiveName};`);
-    }
-  });
-  if (draft.tableComment.trim() !== draft.originalTableComment.trim()) {
-    if (provider === 'postgresql') statements.push(`COMMENT ON TABLE ${mutableTableRef} IS ${draft.tableComment.trim() ? sqlLiteral(draft.tableComment.trim()) : 'NULL'};`);
-    else if (provider === 'mysql' || provider === 'mariadb') statements.push(`ALTER TABLE ${mutableTableRef} COMMENT = ${sqlLiteral(draft.tableComment.trim())};`);
-    else statements.push(`-- Review manually: SQLite table comments are not supported;`);
-  }
-  if (draft.newIndexName.trim() && draft.newIndexColumns.trim()) {
-    const columns = draft.newIndexColumns.split(',').map(column => column.trim()).filter(Boolean).map(quoteColumn).join(', ');
-    statements.push(`CREATE ${draft.newIndexUnique ? 'UNIQUE ' : ''}INDEX ${provider === 'mysql' || provider === 'mariadb' ? quoteMysqlIdentifier(draft.newIndexName.trim()) : quoteIdentifier(draft.newIndexName.trim())} ON ${mutableTableRef} (${columns});`);
-  }
-  if (draft.dropIndexName.trim()) {
-    if (provider === 'mysql' || provider === 'mariadb') statements.push(`DROP INDEX ${quoteMysqlIdentifier(draft.dropIndexName.trim())} ON ${mutableTableRef};`);
-    else statements.push(`DROP INDEX ${quoteIdentifier(draft.dropIndexName.trim())};`);
-  }
-  if (draft.newForeignKeyName.trim() && draft.foreignKeyColumns.trim() && draft.foreignKeyReferenceTable.trim() && draft.foreignKeyReferenceColumns.trim()) {
-    const reference = splitReferencedTable(schemaName, draft.foreignKeyReferenceTable.trim());
-    const columns = draft.foreignKeyColumns.split(',').map(column => column.trim()).filter(Boolean).map(quoteColumn).join(', ');
-    const referencedColumns = draft.foreignKeyReferenceColumns.split(',').map(column => column.trim()).filter(Boolean).map(quoteColumn).join(', ');
-    statements.push(`ALTER TABLE ${mutableTableRef} ADD CONSTRAINT ${provider === 'mysql' || provider === 'mariadb' ? quoteMysqlIdentifier(draft.newForeignKeyName.trim()) : quoteIdentifier(draft.newForeignKeyName.trim())} FOREIGN KEY (${columns}) REFERENCES ${qualifiedTableReference(provider, reference.schema, reference.table)} (${referencedColumns});`);
-  }
-  if (draft.dropForeignKeyName.trim()) {
-    if (provider === 'mysql' || provider === 'mariadb') statements.push(`ALTER TABLE ${mutableTableRef} DROP FOREIGN KEY ${quoteMysqlIdentifier(draft.dropForeignKeyName.trim())};`);
-    else statements.push(`ALTER TABLE ${mutableTableRef} DROP CONSTRAINT ${quoteIdentifier(draft.dropForeignKeyName.trim())};`);
-  }
-  if (draft.triggerName.trim() && draft.triggerSql.trim()) {
-    statements.push(draft.triggerSql.trim().endsWith(';') ? draft.triggerSql.trim() : `${draft.triggerSql.trim()};`);
-  }
-  return statements.length ? statements.join('\n\n') : '-- No structure changes selected.';
-}
-
-function sqlLiteral(value: unknown): string {
-  if (value === null || value === undefined) return 'NULL';
-  if (typeof value === 'number' && Number.isFinite(value)) return String(value);
-  if (typeof value === 'boolean') return value ? 'TRUE' : 'FALSE';
-  return `'${String(value).replaceAll("'", "''")}'`;
-}
-
-function mongoFilterValue(operator: AdvancedFilterOperator, value: string): unknown {
-  const numeric = Number(value);
-  const typedValue: unknown = value.trim() !== '' && Number.isFinite(numeric) ? numeric : value;
-  switch (operator) {
-    case 'not_equals': return { $ne: typedValue };
-    case 'contains': return { $regex: value, $options: 'i' };
-    case 'not_contains': return { $not: { $regex: value, $options: 'i' } };
-    case 'starts_with': return { $regex: `^${value}`, $options: 'i' };
-    case 'ends_with': return { $regex: `${value}$`, $options: 'i' };
-    case 'greater_than': return { $gt: typedValue };
-    case 'greater_or_equal': return { $gte: typedValue };
-    case 'less_than': return { $lt: typedValue };
-    case 'less_or_equal': return { $lte: typedValue };
-    case 'is_blank': return { $in: [null, ''] };
-    case 'is_not_blank': return { $nin: [null, ''] };
-    case 'in': return { $in: value.split(',').map(item => item.trim()).filter(Boolean) };
-    case 'not_in': return { $nin: value.split(',').map(item => item.trim()).filter(Boolean) };
-    default: return typedValue;
-  }
-}
-
-async function copyTextToClipboard(text: string): Promise<void> {
-  try {
-    await navigator.clipboard.writeText(text);
-  } catch {
-    const area = document.createElement('textarea');
-    area.value = text;
-    area.style.position = 'fixed';
-    area.style.opacity = '0';
-    document.body.appendChild(area);
-    area.select();
-    document.execCommand('copy');
-    area.remove();
-  }
-}
-
-function compactCount(value?: number | null): string {
-  if (value === undefined || value === null || value < 0) return '';
-  return new Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 1 }).format(value);
-}
+import { createAdvancedResultHandoff } from '../lib/advanced-result-handoff';
+import { AdvancedConnectionGate } from '../components/advanced/AdvancedConnectionGate';
+import { QueryPlanView, ResultChart, ResultJson, ResultStructure } from '../components/advanced/AdvancedResultViews';
+import { FavoritesPanel, HistoryPanel, SchemaTree } from '../components/advanced/AdvancedSidePanels';
+import { VirtualResultGrid, type GridForeignKeyAction } from '../components/advanced/VirtualResultGrid';
 
 function loadTabs(): WorkspaceTab[] {
-  return restoreAdvancedTabs(localStorage.getItem(ADVANCED_TABS_STORAGE_KEY)).map(hydrateTab);
+  return loadAdvancedWorkspaceTabs(localStorage.getItem(ADVANCED_TABS_STORAGE_KEY));
 }
 
-const VirtualResultGrid: React.FC<{
-  result: AdvancedQueryResult;
-  sort?: AdvancedSort;
-  onSort: (column: string) => void;
-  columnWidths?: Record<string, number>;
-  onColumnResize?: (columnId: string, width: number) => void;
-  onColumnMove?: (columnId: string, direction: -1 | 1) => void;
-  editable?: boolean;
-  editedKeys?: Set<string>;
-  deletedRows?: Set<number>;
-  onEdit?: (rowIndex: number, columnIndex: number, oldValue: QueryCellValue, newValue: QueryCellValue) => void;
-  onDuplicateRow?: (rowIndex: number) => void;
-  onDeleteRow?: (rowIndex: number) => void;
-  onRestoreRow?: (rowIndex: number) => void;
-  copyTableName?: string;
-  foreignKeyActions?: GridForeignKeyAction[];
-}> = ({ result, sort, onSort, columnWidths = {}, onColumnResize, onColumnMove, editable = false, editedKeys = new Set(), deletedRows = new Set(), onEdit, onDuplicateRow, onDeleteRow, onRestoreRow, copyTableName, foreignKeyActions = [] }) => {
-  const gridRef = useRef<HTMLDivElement | null>(null);
-  const [scrollTop, setScrollTop] = useState(0);
-  const [editing, setEditing] = useState<{ rowIndex: number; columnIndex: number; value: string } | null>(null);
-  const [selection, setSelection] = useState<GridSelection | null>(null);
-  const [contextMenu, setContextMenu] = useState<{ x: number; y: number; rowIndex: number; columnIndex: number } | null>(null);
-  const start = Math.max(0, Math.floor(scrollTop / ROW_HEIGHT) - OVERSCAN);
-  const visibleCount = Math.ceil(GRID_HEIGHT / ROW_HEIGHT) + OVERSCAN * 2;
-  const end = Math.min(result.rows.length, start + visibleCount);
-  const resolvedColumnWidths = result.columns.map(column => Math.max(80, Math.min(520, columnWidths[column.id] ?? 180)));
-  const gridWidth = Math.max(720, resolvedColumnWidths.reduce((sum, width) => sum + width, 0));
-  const template = resolvedColumnWidths.length ? resolvedColumnWidths.map(width => `${width}px`).join(' ') : 'minmax(180px, 1fr)';
-  const selectedRange = selection ? {
-    rowStart: Math.min(selection.anchor.rowIndex, selection.focus.rowIndex),
-    rowEnd: Math.max(selection.anchor.rowIndex, selection.focus.rowIndex),
-    columnStart: Math.min(selection.anchor.columnIndex, selection.focus.columnIndex),
-    columnEnd: Math.max(selection.anchor.columnIndex, selection.focus.columnIndex),
-  } : null;
-  const selectionSize = selectedRange ? {
-    rows: selectedRange.rowEnd - selectedRange.rowStart + 1,
-    columns: selectedRange.columnEnd - selectedRange.columnStart + 1,
-  } : null;
-  const isSelected = (rowIndex: number, columnIndex: number) => Boolean(
-    selectedRange
-    && rowIndex >= selectedRange.rowStart
-    && rowIndex <= selectedRange.rowEnd
-    && columnIndex >= selectedRange.columnStart
-    && columnIndex <= selectedRange.columnEnd
-  );
-  const isActive = (rowIndex: number, columnIndex: number) => selection?.focus.rowIndex === rowIndex && selection.focus.columnIndex === columnIndex;
-  const selectCell = (rowIndex: number, columnIndex: number, extend: boolean) => {
-    const nextFocus = { rowIndex, columnIndex };
-    setSelection(current => extend && current ? { anchor: current.anchor, focus: nextFocus } : { anchor: nextFocus, focus: nextFocus });
-  };
-  const moveSelection = (rowDelta: number, columnDelta: number, extend: boolean) => {
-    setSelection(current => {
-      const focus = current?.focus ?? { rowIndex: 0, columnIndex: 0 };
-      const nextFocus = {
-        rowIndex: Math.max(0, Math.min(result.rows.length - 1, focus.rowIndex + rowDelta)),
-        columnIndex: Math.max(0, Math.min(result.columns.length - 1, focus.columnIndex + columnDelta)),
-      };
-      return extend && current ? { anchor: current.anchor, focus: nextFocus } : { anchor: nextFocus, focus: nextFocus };
-    });
-  };
-  const copySelection = async () => {
-    if (!selectedRange) return;
-    const text = result.rows
-      .slice(selectedRange.rowStart, selectedRange.rowEnd + 1)
-      .map(row => row.slice(selectedRange.columnStart, selectedRange.columnEnd + 1).map(value => gridClipboardCell(value ?? null)).join('\t'))
-      .join('\n');
-    await copyTextToClipboard(text);
-  };
-  const selectedRowIndexes = (fallbackRow: number) => {
-    if (!selectedRange) return [fallbackRow];
-    const indexes: number[] = [];
-    for (let index = selectedRange.rowStart; index <= selectedRange.rowEnd; index += 1) indexes.push(index);
-    return indexes;
-  };
-  const selectedRowObjects = (fallbackRow: number) => selectedRowIndexes(fallbackRow).map(rowIndex => (
-    Object.fromEntries(result.columns.map((column, columnIndex) => [column.name, result.rows[rowIndex]?.[columnIndex] ?? null]))
-  ));
-  const copyRowsAsJson = async (rowIndex: number) => {
-    await copyTextToClipboard(JSON.stringify(selectedRowObjects(rowIndex), null, 2));
-  };
-  const copyRowsAsMarkdown = async (rowIndex: number) => {
-    const rows = selectedRowIndexes(rowIndex).map(index => result.rows[index] ?? []);
-    const header = `| ${result.columns.map(column => column.name).join(' | ')} |`;
-    const divider = `| ${result.columns.map(() => '---').join(' | ')} |`;
-    const body = rows.map(row => `| ${result.columns.map((_, index) => gridClipboardCell(row[index] ?? null).replaceAll('|', '\\|')).join(' | ')} |`);
-    await copyTextToClipboard([header, divider, ...body].join('\n'));
-  };
-  const copyRowsAsInsert = async (rowIndex: number) => {
-    const tableName = quoteIdentifier(copyTableName || 'target_table');
-    const columns = result.columns.map(column => quoteIdentifier(column.name)).join(', ');
-    const statements = selectedRowIndexes(rowIndex).map(index => {
-      const row = result.rows[index] ?? [];
-      return `INSERT INTO ${tableName} (${columns}) VALUES (${result.columns.map((_, columnIndex) => sqlLiteral(row[columnIndex] ?? null)).join(', ')});`;
-    });
-    await copyTextToClipboard(statements.join('\n'));
-  };
-  const copyRowsAsUpdate = async (rowIndex: number) => {
-    if (result.columns.length === 0) return;
-    const tableName = quoteIdentifier(copyTableName || 'target_table');
-    const keyColumn = result.columns[0];
-    const setColumns = result.columns.slice(1);
-    const statements = selectedRowIndexes(rowIndex).map(index => {
-      const row = result.rows[index] ?? [];
-      const assignments = (setColumns.length ? setColumns : result.columns)
-        .map((column, offset) => {
-          const sourceIndex = setColumns.length ? offset + 1 : offset;
-          return `${quoteIdentifier(column.name)} = ${sqlLiteral(row[sourceIndex] ?? null)}`;
-        })
-        .join(', ');
-      return `UPDATE ${tableName} SET ${assignments} WHERE ${quoteIdentifier(keyColumn.name)} = ${sqlLiteral(row[0] ?? null)};`;
-    });
-    await copyTextToClipboard(statements.join('\n'));
-  };
-  const copyRowsAsCsv = async (rowIndex: number) => {
-    const rows = selectedRowIndexes(rowIndex).map(index => result.rows[index] ?? []);
-    await copyTextToClipboard(advancedResultToCsv(result.columns, rows));
-  };
-  const copyColumnAsInClause = async (rowIndex: number, columnIndex: number) => {
-    const values = selectedRowIndexes(rowIndex).map(index => sqlLiteral(result.rows[index]?.[columnIndex] ?? null));
-    await copyTextToClipboard(`${quoteIdentifier(result.columns[columnIndex]?.name || 'column')} IN (${values.join(', ')})`);
-  };
-  const copyColumnValues = async (rowIndex: number, columnIndex: number) => {
-    const values = selectedRowIndexes(rowIndex).map(index => gridClipboardCell(result.rows[index]?.[columnIndex] ?? null));
-    await copyTextToClipboard(values.join('\n'));
-  };
+const FALLBACK_PROVIDER_PLUGINS: AdvancedProviderPlugin[] = [
+  createFallbackProviderPlugin('postgresql', 'PostgreSQL'),
+  createFallbackProviderPlugin('mysql', 'MySQL'),
+  createFallbackProviderPlugin('mariadb', 'MariaDB'),
+  createFallbackProviderPlugin('sqlite', 'SQLite'),
+  createFallbackProviderPlugin('mongodb', 'MongoDB'),
+];
 
-  const coerceGridValue = (columnIndex: number, text: string): QueryCellValue => {
-    const logicalType = result.columns[columnIndex]?.logicalType;
-    let value: QueryCellValue = text;
-    if (logicalType === 'number' && text.trim() !== '' && Number.isFinite(Number(text))) value = Number(text);
-    else if (logicalType === 'boolean' && /^(true|false)$/i.test(text.trim())) value = text.trim().toLowerCase() === 'true';
-    return value;
-  };
-
-  const commitEdit = (rowIndex: number, columnIndex: number, oldValue: QueryCellValue, text: string) => {
-    const value = coerceGridValue(columnIndex, text);
-    onEdit?.(rowIndex, columnIndex, oldValue, value);
-    setEditing(null);
-  };
-
-  const pasteClipboardAt = async (rowIndex: number, columnIndex: number) => {
-    if (!editable) return;
-    if (deletedRows.has(rowIndex)) return;
-    const matrix = parseClipboardRows(await readTextFromClipboard());
-    if (matrix.length === 0) return;
-    matrix.forEach((row, rowOffset) => {
-      row.forEach((cell, columnOffset) => {
-        const targetRow = rowIndex + rowOffset;
-        const targetColumn = columnIndex + columnOffset;
-        if (targetRow >= result.rows.length || targetColumn >= result.columns.length) return;
-        if (deletedRows.has(targetRow)) return;
-        const oldValue = result.rows[targetRow]?.[targetColumn] ?? null;
-        onEdit?.(targetRow, targetColumn, oldValue, coerceGridValue(targetColumn, cell));
-      });
-    });
-  };
-
-  const startColumnResize = (event: React.PointerEvent, columnId: string, width: number) => {
-    event.preventDefault();
-    event.stopPropagation();
-    const startX = event.clientX;
-    const onMove = (moveEvent: PointerEvent) => {
-      onColumnResize?.(columnId, Math.max(80, Math.min(520, width + moveEvent.clientX - startX)));
-    };
-    const onUp = () => {
-      window.removeEventListener('pointermove', onMove);
-      window.removeEventListener('pointerup', onUp);
-    };
-    window.addEventListener('pointermove', onMove);
-    window.addEventListener('pointerup', onUp);
-  };
-
-  return (
-    <div
-      ref={gridRef}
-      role="grid"
-      aria-label="Result grid"
-      aria-rowcount={result.rows.length}
-      aria-colcount={result.columns.length}
-      tabIndex={0}
-      className="h-full min-h-0 overflow-auto bg-white outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
-      onScroll={event => setScrollTop(event.currentTarget.scrollTop)}
-      onKeyDown={event => {
-        if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'c') {
-          event.preventDefault();
-          void copySelection();
-          return;
-        }
-        if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'v') {
-          event.preventDefault();
-          const focus = selection?.focus ?? { rowIndex: 0, columnIndex: 0 };
-          void pasteClipboardAt(focus.rowIndex, focus.columnIndex);
-          return;
-        }
-        if (event.key === 'Escape') setContextMenu(null);
-        if (event.key === 'ArrowUp') { event.preventDefault(); moveSelection(-1, 0, event.shiftKey); }
-        if (event.key === 'ArrowDown') { event.preventDefault(); moveSelection(1, 0, event.shiftKey); }
-        if (event.key === 'ArrowLeft') { event.preventDefault(); moveSelection(0, -1, event.shiftKey); }
-        if (event.key === 'ArrowRight') { event.preventDefault(); moveSelection(0, 1, event.shiftKey); }
-      }}
-    >
-      <div style={{ width: gridWidth }}>
-        <div role="row" className="sticky top-0 z-10 grid h-8 border-b border-gray-300 bg-gray-100 text-[11px] font-semibold text-gray-600" style={{ gridTemplateColumns: template }}>
-          {result.columns.map((column, columnIndex) => (
-            <button
-              key={column.id}
-              role="columnheader"
-              className="group relative flex min-w-0 items-center gap-1 border-r border-gray-200 px-2 text-left hover:bg-gray-200"
-              title={`Sort by ${column.name} · ${column.nativeType || column.logicalType}`}
-              onClick={() => onSort(column.name)}
-            >
-              <span className="truncate">{column.name}</span>
-              {sort?.column === column.name && (sort.direction === 'asc' ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />)}
-              <span className="ml-auto hidden shrink-0 items-center gap-0.5 group-hover:flex">
-                <span
-                  role="button"
-                  aria-label={`Move ${column.name} left`}
-                  title={`Move ${column.name} left`}
-                  className={`p-0.5 text-gray-400 hover:bg-gray-300 hover:text-gray-700 ${columnIndex === 0 ? 'pointer-events-none opacity-30' : ''}`}
-                  onClick={event => { event.stopPropagation(); onColumnMove?.(column.id, -1); }}
-                ><ArrowLeft className="h-3 w-3" /></span>
-                <span
-                  role="button"
-                  aria-label={`Move ${column.name} right`}
-                  title={`Move ${column.name} right`}
-                  className={`p-0.5 text-gray-400 hover:bg-gray-300 hover:text-gray-700 ${columnIndex === result.columns.length - 1 ? 'pointer-events-none opacity-30' : ''}`}
-                  onClick={event => { event.stopPropagation(); onColumnMove?.(column.id, 1); }}
-                ><ArrowRight className="h-3 w-3" /></span>
-              </span>
-              <span className="ml-auto shrink-0 font-mono text-[9px] font-normal text-gray-400">{column.nativeType || column.logicalType}</span>
-              <span
-                className="absolute right-0 top-0 h-full w-2 cursor-col-resize"
-                title={`Resize ${column.name}`}
-                onPointerDown={event => startColumnResize(event, column.id, resolvedColumnWidths[columnIndex])}
-              />
-            </button>
-          ))}
-        </div>
-        <div className="relative" style={{ height: result.rows.length * ROW_HEIGHT }}>
-          {selectionSize && <div className="pointer-events-none sticky left-2 top-9 z-20 inline-flex bg-blue-600 px-1.5 py-0.5 text-[9px] font-semibold text-white shadow-sm">{selectionSize.rows}x{selectionSize.columns}</div>}
-          {result.rows.slice(start, end).map((row, relativeIndex) => {
-            const rowIndex = start + relativeIndex;
-            const deleted = deletedRows.has(rowIndex);
-            return (
-              <div
-                key={rowIndex}
-                role="row"
-                aria-disabled={deleted}
-                className={`absolute grid border-b border-gray-100 text-[12px] hover:bg-blue-50 ${deleted ? 'bg-red-50 text-red-700 opacity-80' : 'text-gray-700'}`}
-                style={{ top: rowIndex * ROW_HEIGHT, height: ROW_HEIGHT, width: gridWidth, gridTemplateColumns: template }}
-              >
-                {result.columns.map((column, columnIndex) => {
-                  const value = row[columnIndex] ?? null;
-                  const isEditing = editing?.rowIndex === rowIndex && editing.columnIndex === columnIndex;
-                  const changed = editedKeys.has(`${rowIndex}:${columnIndex}`);
-                  const selected = isSelected(rowIndex, columnIndex);
-                  const active = isActive(rowIndex, columnIndex);
-                  return (
-                  <div
-                    key={column.id}
-                    role="gridcell"
-                    aria-selected={selected}
-                    aria-rowindex={rowIndex + 1}
-                    aria-colindex={columnIndex + 1}
-                    className={`min-w-0 truncate border-r px-2 py-1.5 font-mono ${value === null ? 'italic text-gray-400' : ''} ${changed ? 'bg-amber-100 text-amber-950' : ''} ${selected ? 'border-blue-300 bg-blue-100 text-blue-950' : 'border-gray-100'} ${active ? 'ring-2 ring-inset ring-blue-600' : ''} ${editable && !deleted ? 'cursor-text' : 'cursor-cell'} ${deleted ? 'line-through decoration-red-500 decoration-2' : ''}`}
-                    title={editable ? `Edit ${column.name}` : displayCell(value)}
-                    onClick={event => {
-                      gridRef.current?.focus();
-                      selectCell(rowIndex, columnIndex, event.shiftKey);
-                      setContextMenu(null);
-                    }}
-                    onContextMenu={event => {
-                      event.preventDefault();
-                      gridRef.current?.focus();
-                      if (!selected) selectCell(rowIndex, columnIndex, event.shiftKey);
-                      setContextMenu({ x: event.clientX, y: event.clientY, rowIndex, columnIndex });
-                    }}
-                    onDoubleClick={() => editable && !deleted && setEditing({ rowIndex, columnIndex, value: value === null ? '' : String(value) })}
-                  >
-                    {isEditing ? <input autoFocus value={editing.value} onChange={event => setEditing({ ...editing, value: event.target.value })} onBlur={() => commitEdit(rowIndex, columnIndex, value, editing.value)} onKeyDown={event => { if (event.key === 'Enter') commitEdit(rowIndex, columnIndex, value, editing.value); if (event.key === 'Escape') setEditing(null); }} className="h-6 w-full border border-blue-500 bg-white px-1 font-mono text-[12px] not-italic text-gray-900 outline-none" /> : displayCell(value)}
-                  </div>
-                );})}
-              </div>
-            );
-          })}
-        </div>
-      </div>
-      {contextMenu && (
-        <div className="fixed z-50 w-52 border border-gray-200 bg-white py-1 text-[11px] text-gray-700 shadow-lg" style={{ left: contextMenu.x, top: contextMenu.y }}>
-          {foreignKeyActions.filter(action => action.columnNames.includes(result.columns[contextMenu.columnIndex]?.name || '')).map(action => (
-            <button key={action.id} className="flex h-7 w-full items-center gap-2 px-2 text-left hover:bg-purple-50 hover:text-purple-700" onClick={() => { action.onNavigate(result.rows[contextMenu.rowIndex] ?? [], result); setContextMenu(null); }}><ArrowRight className="h-3.5 w-3.5 text-purple-400" /> {action.label}</button>
-          ))}
-          {foreignKeyActions.some(action => action.columnNames.includes(result.columns[contextMenu.columnIndex]?.name || '')) && <div className="my-1 border-t border-gray-100" />}
-          <button className="flex h-7 w-full items-center gap-2 px-2 text-left hover:bg-gray-100" onClick={() => { void copySelection(); setContextMenu(null); }}><Copy className="h-3.5 w-3.5 text-gray-400" /> Copy selection</button>
-          <button className="flex h-7 w-full items-center gap-2 px-2 text-left hover:bg-gray-100" onClick={() => { void copyTextToClipboard(gridClipboardCell(result.rows[contextMenu.rowIndex]?.[contextMenu.columnIndex] ?? null)); setContextMenu(null); }}><Copy className="h-3.5 w-3.5 text-gray-400" /> Copy cell</button>
-          <button className="flex h-7 w-full items-center gap-2 px-2 text-left hover:bg-gray-100" onClick={() => { void copyRowsAsJson(contextMenu.rowIndex); setContextMenu(null); }}><Braces className="h-3.5 w-3.5 text-gray-400" /> Copy rows JSON</button>
-          <button className="flex h-7 w-full items-center gap-2 px-2 text-left hover:bg-gray-100" onClick={() => { void copyRowsAsCsv(contextMenu.rowIndex); setContextMenu(null); }}><Table2 className="h-3.5 w-3.5 text-gray-400" /> Copy rows CSV</button>
-          <button className="flex h-7 w-full items-center gap-2 px-2 text-left hover:bg-gray-100" onClick={() => { void copyRowsAsMarkdown(contextMenu.rowIndex); setContextMenu(null); }}><ListTree className="h-3.5 w-3.5 text-gray-400" /> Copy rows Markdown</button>
-          <button className="flex h-7 w-full items-center gap-2 px-2 text-left hover:bg-gray-100" onClick={() => { void copyRowsAsInsert(contextMenu.rowIndex); setContextMenu(null); }}><Database className="h-3.5 w-3.5 text-gray-400" /> Copy rows INSERT</button>
-          <button className="flex h-7 w-full items-center gap-2 px-2 text-left hover:bg-gray-100" onClick={() => { void copyRowsAsUpdate(contextMenu.rowIndex); setContextMenu(null); }}><Database className="h-3.5 w-3.5 text-gray-400" /> Copy rows UPDATE</button>
-          <button className="flex h-7 w-full items-center gap-2 px-2 text-left hover:bg-gray-100" onClick={() => { void copyColumnAsInClause(contextMenu.rowIndex, contextMenu.columnIndex); setContextMenu(null); }}><Filter className="h-3.5 w-3.5 text-gray-400" /> Copy IN clause</button>
-          <button className="flex h-7 w-full items-center gap-2 px-2 text-left hover:bg-gray-100" onClick={() => { void copyColumnValues(contextMenu.rowIndex, contextMenu.columnIndex); setContextMenu(null); }}><Columns className="h-3.5 w-3.5 text-gray-400" /> Copy column values</button>
-          <button disabled={!editable || deletedRows.has(contextMenu.rowIndex)} className="flex h-7 w-full items-center gap-2 px-2 text-left hover:bg-gray-100 disabled:opacity-40" onClick={() => { void pasteClipboardAt(contextMenu.rowIndex, contextMenu.columnIndex); setContextMenu(null); }}><Pencil className="h-3.5 w-3.5 text-gray-400" /> Paste cells</button>
-          {editable && onDuplicateRow && <button disabled={deletedRows.has(contextMenu.rowIndex)} className="flex h-7 w-full items-center gap-2 px-2 text-left hover:bg-emerald-50 hover:text-emerald-700 disabled:opacity-40" onClick={() => { onDuplicateRow(contextMenu.rowIndex); setContextMenu(null); }}><Plus className="h-3.5 w-3.5 text-emerald-500" /> Duplicate as insert</button>}
-          {editable && onDeleteRow && onRestoreRow && <button className="flex h-7 w-full items-center gap-2 px-2 text-left hover:bg-red-50 hover:text-red-700" onClick={() => { if (deletedRows.has(contextMenu.rowIndex)) onRestoreRow(contextMenu.rowIndex); else onDeleteRow(contextMenu.rowIndex); setContextMenu(null); }}><Trash2 className="h-3.5 w-3.5 text-red-400" /> {deletedRows.has(contextMenu.rowIndex) ? 'Restore row' : 'Mark row delete'}</button>}
-          <div className="my-1 border-t border-gray-100" />
-          <button disabled={contextMenu.columnIndex === 0} className="flex h-7 w-full items-center gap-2 px-2 text-left hover:bg-gray-100 disabled:opacity-40" onClick={() => { onColumnMove?.(result.columns[contextMenu.columnIndex].id, -1); setContextMenu(null); }}><ArrowLeft className="h-3.5 w-3.5 text-gray-400" /> Move column left</button>
-          <button disabled={contextMenu.columnIndex === result.columns.length - 1} className="flex h-7 w-full items-center gap-2 px-2 text-left hover:bg-gray-100 disabled:opacity-40" onClick={() => { onColumnMove?.(result.columns[contextMenu.columnIndex].id, 1); setContextMenu(null); }}><ArrowRight className="h-3.5 w-3.5 text-gray-400" /> Move column right</button>
-        </div>
-      )}
-    </div>
-  );
-};
-
-const ResultChart: React.FC<{ result: AdvancedQueryResult }> = ({ result }) => {
-  const numericIndex = result.columns.findIndex(column => column.logicalType === 'number');
-  const categoryIndex = result.columns.findIndex((column, index) => index !== numericIndex && (column.logicalType === 'string' || column.logicalType === 'date'));
-  if (numericIndex < 0 || categoryIndex < 0) {
-    return <div className="flex h-full items-center justify-center text-sm text-gray-500">A category/date column and numeric column are required.</div>;
-  }
-  const numeric = result.columns[numericIndex];
-  const category = result.columns[categoryIndex];
-  const rows = result.rows.slice(0, 100);
-  const option = {
-    animation: false,
-    tooltip: { trigger: 'axis' },
-    grid: { left: 56, right: 24, top: 32, bottom: 64 },
-    xAxis: { type: 'category', name: category.name, data: rows.map(row => displayCell(row[categoryIndex] ?? null)), axisLabel: { color: '#6b7280', hideOverlap: true, rotate: rows.length > 18 ? 35 : 0 } },
-    yAxis: { type: 'value', name: numeric.name, splitLine: { lineStyle: { color: '#e5e7eb' } } },
-    series: [{ name: numeric.name, type: category.logicalType === 'date' ? 'line' : 'bar', data: rows.map(row => Number(row[numericIndex]) || 0), itemStyle: { color: '#2563eb' }, lineStyle: { color: '#2563eb' } }],
-  };
-  return <ReactECharts option={option} style={{ height: '100%', minHeight: 320 }} />;
-};
-
-const ResultJson: React.FC<{ result: AdvancedQueryResult }> = ({ result }) => {
-  const rows = result.rows.map(row => Object.fromEntries(result.columns.map((column, index) => [column.name, row[index] ?? null])));
-  return <pre className="h-full min-h-0 overflow-auto bg-gray-950 p-4 font-mono text-[11px] leading-5 text-emerald-200">{JSON.stringify(rows, null, 2)}</pre>;
-};
-
-type QueryPlanNode = {
-  operation: string;
-  relation?: string;
-  indexName?: string;
-  startupCost?: number;
-  totalCost?: number;
-  estimatedRows?: number;
-  actualTime?: number;
-  children: QueryPlanNode[];
-};
-
-function asRecord(value: unknown): Record<string, unknown> | null {
-  return value && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : null;
-}
-
-function numberField(record: Record<string, unknown>, key: string): number | undefined {
-  const value = record[key];
-  return typeof value === 'number' && Number.isFinite(value) ? value : undefined;
-}
-
-function parsePlanNode(value: unknown): QueryPlanNode | null {
-  const record = asRecord(value);
-  if (!record) return null;
-  const childValues = Array.isArray(record.Plans) ? record.Plans : [];
+function createFallbackProviderPlugin(id: AdvancedProviderId, displayName: string): AdvancedProviderPlugin {
   return {
-    operation: typeof record['Node Type'] === 'string' ? record['Node Type'] : 'Plan node',
-    relation: typeof record['Relation Name'] === 'string' ? record['Relation Name'] : undefined,
-    indexName: typeof record['Index Name'] === 'string' ? record['Index Name'] : undefined,
-    startupCost: numberField(record, 'Startup Cost'),
-    totalCost: numberField(record, 'Total Cost'),
-    estimatedRows: numberField(record, 'Plan Rows'),
-    actualTime: numberField(record, 'Actual Total Time'),
-    children: childValues.flatMap(child => {
-      const node = parsePlanNode(child);
-      return node ? [node] : [];
-    }),
+    manifest: {
+      apiVersion: 'lightbi.plugin.v1',
+      id,
+      displayName,
+      version: '0.1.0',
+      providerKind: id === 'mongodb' ? 'document' : 'relational',
+      description: 'Fallback built-in provider manifest used when the backend plugin registry is unavailable.',
+      defaultPort: id === 'postgresql' ? 5432 : id === 'mysql' || id === 'mariadb' ? 3306 : id === 'mongodb' ? 27017 : null,
+      urlSchemes: [id],
+      connectionFields: [],
+      capabilities: {
+        connect: true,
+        schemaDiscovery: true,
+        readOnlyQuery: true,
+        cancellableQuery: true,
+        streamingQuery: false,
+        writeback: id !== 'mongodb',
+        ddl: id !== 'mongodb',
+        importRows: id !== 'mongodb',
+        exportRows: true,
+        explain: id !== 'mongodb',
+        serverDashboard: false,
+        semanticHints: false,
+      },
+    },
+    exposureGate: { canExpose: true, missingCapabilities: [], warnings: ['Using frontend fallback provider manifest.'] },
+    source: 'frontend_fallback',
   };
 }
 
-function parseQueryPlan(plan: unknown): { root: QueryPlanNode | null; planningTime?: number; executionTime?: number } {
-  const top = Array.isArray(plan) ? asRecord(plan[0]) : asRecord(plan);
-  if (!top) return { root: null };
-  const root = parsePlanNode(top.Plan ?? top);
-  return {
-    root,
-    planningTime: numberField(top, 'Planning Time'),
-    executionTime: numberField(top, 'Execution Time'),
-  };
+function providerDisplayName(providers: AdvancedProviderPlugin[], providerId: AdvancedProviderId): string {
+  return providers.find(provider => provider.manifest.id === providerId)?.manifest.displayName
+    ?? FALLBACK_PROVIDER_PLUGINS.find(provider => provider.manifest.id === providerId)?.manifest.displayName
+    ?? providerId;
 }
-
-const QueryPlanTreeRow: React.FC<{ node: QueryPlanNode; depth?: number; maxCost: number }> = ({ node, depth = 0, maxCost }) => {
-  const costRatio = maxCost > 0 && node.totalCost ? node.totalCost / maxCost : 0;
-  const color = costRatio > 0.5 ? 'bg-red-500' : costRatio > 0.2 ? 'bg-amber-500' : costRatio > 0.05 ? 'bg-yellow-400' : 'bg-emerald-500';
-  return (
-    <>
-      <div className="grid min-h-8 grid-cols-[minmax(220px,1fr)_120px_90px_90px] items-center border-b border-gray-100 text-[11px] text-gray-700 hover:bg-blue-50">
-        <div className="flex min-w-0 items-center gap-2 px-3" style={{ paddingLeft: 12 + depth * 18 }}>
-          <span className={`h-2 w-2 shrink-0 rounded-full ${color}`} />
-          <div className="min-w-0"><div className="truncate font-medium text-gray-900">{node.operation}</div>{(node.relation || node.indexName) && <div className="truncate text-[10px] text-gray-500">{node.relation}{node.indexName ? ` · ${node.indexName}` : ''}</div>}</div>
-        </div>
-        <div className="px-3 font-mono text-gray-500">{node.startupCost !== undefined && node.totalCost !== undefined ? `${node.startupCost.toFixed(2)}..${node.totalCost.toFixed(2)}` : '-'}</div>
-        <div className="px-3 font-mono text-gray-500">{node.estimatedRows?.toLocaleString('en') ?? '-'}</div>
-        <div className="px-3 font-mono text-gray-500">{node.actualTime !== undefined ? `${node.actualTime.toFixed(3)}ms` : '-'}</div>
-      </div>
-      {node.children.map((child, index) => <QueryPlanTreeRow key={`${depth}:${index}:${child.operation}:${child.relation ?? ''}`} node={child} depth={depth + 1} maxCost={maxCost} />)}
-    </>
-  );
-};
-
-const QueryPlanView: React.FC<{ plan: unknown }> = ({ plan }) => {
-  const parsed = useMemo(() => parseQueryPlan(plan), [plan]);
-  const maxCost = useMemo(() => {
-    const costs: number[] = [];
-    const visit = (node: QueryPlanNode | null) => {
-      if (!node) return;
-      if (node.totalCost !== undefined) costs.push(node.totalCost);
-      node.children.forEach(visit);
-    };
-    visit(parsed.root);
-    return Math.max(0, ...costs);
-  }, [parsed.root]);
-  if (!parsed.root) return <pre className="min-h-0 flex-1 overflow-auto bg-gray-950 p-4 font-mono text-[11px] leading-5 text-emerald-300">{JSON.stringify(plan, null, 2)}</pre>;
-  return (
-    <div className="flex h-full min-h-0 flex-col bg-white">
-      <div className="flex h-9 shrink-0 items-center gap-3 border-b border-gray-200 bg-gray-50 px-3 text-[11px] text-gray-500">
-        <span className="font-semibold text-gray-800">Plan tree</span>
-        {parsed.planningTime !== undefined && <span>Planning {parsed.planningTime.toFixed(3)}ms</span>}
-        {parsed.executionTime !== undefined && <span>Execution {parsed.executionTime.toFixed(3)}ms</span>}
-      </div>
-      <div className="min-h-0 flex-1 overflow-auto">
-        <div className="grid h-8 min-w-[760px] grid-cols-[minmax(220px,1fr)_120px_90px_90px] items-center border-b border-gray-200 bg-gray-100 px-0 text-[10px] font-semibold uppercase tracking-wide text-gray-500">
-          <div className="px-3">Operation</div><div className="px-3">Cost</div><div className="px-3">Rows</div><div className="px-3">Actual</div>
-        </div>
-        <div className="min-w-[760px]"><QueryPlanTreeRow node={parsed.root} maxCost={maxCost} /></div>
-      </div>
-      <details className="shrink-0 border-t border-gray-200 bg-gray-950 text-emerald-200">
-        <summary className="cursor-pointer px-3 py-2 text-[11px] text-gray-300">Raw JSON</summary>
-        <pre className="max-h-56 overflow-auto p-3 font-mono text-[11px] leading-5">{JSON.stringify(plan, null, 2)}</pre>
-      </details>
-    </div>
-  );
-};
-
-const ResultStructure: React.FC<{ result: AdvancedQueryResult }> = ({ result }) => {
-  const profiles = useMemo(() => result.columns.map((column, columnIndex) => {
-    const values = result.rows.map(row => row[columnIndex] ?? null);
-    const present = values.filter(value => value !== null);
-    const distinct = new Set(present.map(value => typeof value === 'object' ? JSON.stringify(value) : String(value)));
-    const numeric = present.map(Number).filter(Number.isFinite);
-    return {
-      column,
-      nulls: values.length - present.length,
-      distinct: distinct.size,
-      minimum: numeric.length ? Math.min(...numeric) : null,
-      maximum: numeric.length ? Math.max(...numeric) : null,
-      example: present[0] ?? null,
-    };
-  }), [result]);
-  return (
-    <div className="h-full overflow-auto bg-white">
-      <table className="w-full min-w-[760px] border-collapse text-left text-[11px]">
-        <thead className="sticky top-0 bg-gray-100 text-gray-600"><tr>{['Column', 'Logical type', 'Native type', 'Nulls', 'Distinct', 'Min', 'Max', 'Example'].map(label => <th key={label} className="border-b border-r border-gray-200 px-3 py-2 font-semibold">{label}</th>)}</tr></thead>
-        <tbody>{profiles.map(profile => <tr key={profile.column.id} className="border-b border-gray-100 hover:bg-blue-50">
-          <td className="border-r border-gray-100 px-3 py-2 font-medium text-gray-800">{profile.column.name}</td>
-          <td className="border-r border-gray-100 px-3 py-2">{profile.column.logicalType}</td>
-          <td className="border-r border-gray-100 px-3 py-2 font-mono text-gray-500">{profile.column.nativeType || '-'}</td>
-          <td className="border-r border-gray-100 px-3 py-2 tabular-nums">{profile.nulls}</td>
-          <td className="border-r border-gray-100 px-3 py-2 tabular-nums">{profile.distinct}</td>
-          <td className="border-r border-gray-100 px-3 py-2 font-mono">{profile.minimum ?? '-'}</td>
-          <td className="border-r border-gray-100 px-3 py-2 font-mono">{profile.maximum ?? '-'}</td>
-          <td className="max-w-[260px] truncate px-3 py-2 font-mono" title={displayCell(profile.example)}>{displayCell(profile.example)}</td>
-        </tr>)}</tbody>
-      </table>
-    </div>
-  );
-};
-
-const SchemaTree: React.FC<{
-  schema: AdvancedSchema;
-  onSelectTable: (schemaName: string, table: AdvancedTableNode) => void;
-  exactCounts: Record<string, { status: 'loading' | 'ready' | 'failed'; count?: number }>;
-  onRequestCount: (schemaName: string, table: AdvancedTableNode) => void;
-}> = ({ schema, onSelectTable, exactCounts, onRequestCount }) => {
-  const [expandedSchemas, setExpandedSchemas] = useState<Record<string, boolean>>({ public: true });
-  const [expandedTables, setExpandedTables] = useState<Record<string, boolean>>({});
-  const [search, setSearch] = useState('');
-  const normalizedSearch = search.trim().toLocaleLowerCase();
-  return (
-    <div className="py-1 text-[12px]">
-      <label className="mx-2 mb-1 flex h-7 items-center gap-1.5 border border-gray-200 bg-white px-2 text-gray-400"><Search className="h-3 w-3" /><input aria-label="Search tables" value={search} onChange={event => setSearch(event.target.value)} className="min-w-0 flex-1 bg-transparent text-[11px] text-gray-700 outline-none" placeholder="Search tables" /></label>
-      {schema.schemas.map(schemaNode => {
-        const visibleTables = normalizedSearch ? schemaNode.tables.filter(table => table.name.toLocaleLowerCase().includes(normalizedSearch)) : schemaNode.tables;
-        if (normalizedSearch && visibleTables.length === 0) return null;
-        const schemaOpen = expandedSchemas[schemaNode.name] ?? false;
-        return (
-          <div key={schemaNode.name}>
-            <button className="flex h-7 w-full items-center gap-1 px-2 text-left font-medium text-gray-700 hover:bg-gray-100" onClick={() => setExpandedSchemas(current => ({ ...current, [schemaNode.name]: !schemaOpen }))}>
-              {schemaOpen ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
-              <Database className="h-3.5 w-3.5 text-gray-400" />
-              <span className="truncate">{schemaNode.name}</span>
-              <span className="ml-auto text-[10px] font-normal text-gray-400">{schemaNode.tables.length}</span>
-            </button>
-            {(schemaOpen || normalizedSearch) && visibleTables.map(table => {
-              const key = `${schemaNode.name}.${table.name}`;
-              const tableOpen = expandedTables[key] ?? false;
-              const indexCount = table.indexes?.length ?? 0;
-              const foreignKeyCount = table.foreignKeys?.length ?? 0;
-              return (
-                <div key={key}>
-                  <div className="flex h-7 items-center pl-6 pr-2 text-gray-600 hover:bg-blue-50 hover:text-blue-700">
-                    <button className="p-1" onClick={() => {
-                      setExpandedTables(current => ({ ...current, [key]: !tableOpen }));
-                      if (!tableOpen) onRequestCount(schemaNode.name, table);
-                    }} title="Toggle columns">
-                      {tableOpen ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
-                    </button>
-                    <button className="flex min-w-0 flex-1 items-center gap-2 text-left" onClick={() => onSelectTable(schemaNode.name, table)} title={`Open ${key}`}>
-                      <Table2 className="h-3.5 w-3.5 shrink-0" />
-                      <span className="truncate">{table.name}</span>
-                      {(indexCount > 0 || foreignKeyCount > 0) && <span className="shrink-0 font-mono text-[8px] text-blue-500">{indexCount}i/{foreignKeyCount}fk</span>}
-                      <span className="ml-auto shrink-0 text-[10px] text-gray-400">
-                        {exactCounts[key]?.status === 'loading' ? <Loader2 className="h-3 w-3 animate-spin" /> : exactCounts[key]?.status === 'ready' ? compactCount(exactCounts[key].count) : table.estimatedRows !== undefined && table.estimatedRows !== null ? `~${compactCount(table.estimatedRows)}` : ''}
-                      </span>
-                    </button>
-                  </div>
-                  {tableOpen && table.comment && <div className="truncate pl-12 pr-2 text-[10px] italic text-gray-400" title={table.comment}>{table.comment}</div>}
-                  {tableOpen && table.columns.map(column => (
-                    <div key={`${key}.${column.name}`} className="flex h-6 items-center gap-2 pl-12 pr-2 text-[11px] text-gray-500" title={[column.comment, column.defaultValue ? `default ${column.defaultValue}` : ''].filter(Boolean).join(' · ') || undefined}>
-                      <span className="truncate">{column.name}</span>
-                      {column.primaryKey && <span className="shrink-0 bg-amber-100 px-1 text-[8px] font-semibold text-amber-800">PK</span>}
-                      {column.defaultValue && <span className="shrink-0 bg-gray-100 px-1 text-[8px] text-gray-500">DEF</span>}
-                      <span className="ml-auto shrink-0 font-mono text-[9px] text-gray-400">{column.nativeType}{column.nullable ? '?' : ''}</span>
-                    </div>
-                  ))}
-                  {tableOpen && indexCount > 0 && <div className="pl-12 pr-2 text-[10px] text-blue-500">Indexes: {table.indexes!.slice(0, 3).map(index => index.name).join(', ')}{indexCount > 3 ? ` +${indexCount - 3}` : ''}</div>}
-                  {tableOpen && foreignKeyCount > 0 && <div className="pl-12 pr-2 text-[10px] text-purple-500">FK: {table.foreignKeys!.slice(0, 2).map(fk => fk.name).join(', ')}{foreignKeyCount > 2 ? ` +${foreignKeyCount - 2}` : ''}</div>}
-                </div>
-              );
-            })}
-          </div>
-        );
-      })}
-      {schema.schemas.some(schemaNode => (schemaNode.routines?.length ?? 0) > 0) && <div className="mt-2 border-t border-gray-200 pt-2">
-        {schema.schemas.flatMap(schemaNode => (schemaNode.routines || []).slice(0, 5).map(routine => (
-          <div key={`${schemaNode.name}.${routine.name}`} className="flex h-6 items-center gap-2 px-3 text-[10px] text-gray-500"><Braces className="h-3 w-3 text-gray-400" /><span className="truncate">{routine.name}</span><span className="ml-auto uppercase text-[8px] text-gray-400">{routine.kind}</span></div>
-        )))}
-      </div>}
-    </div>
-  );
-};
-
-const HistoryPanel: React.FC<{
-  entries: AdvancedHistoryEntry[];
-  onSelect: (entry: AdvancedHistoryEntry) => void;
-  onClear: () => void;
-}> = ({ entries, onSelect, onClear }) => (
-  <div className="flex h-full flex-col">
-    <div className="flex h-8 items-center justify-between border-b border-gray-200 px-2 text-[10px] text-gray-500">
-      <span>{entries.length} executions</span>
-      <button className="px-1.5 py-1 hover:bg-gray-200" onClick={onClear}>Clear</button>
-    </div>
-    <div className="flex-1 overflow-auto">
-      {entries.map(entry => (
-        <button key={entry.id} className="block w-full border-b border-gray-200 px-3 py-2 text-left hover:bg-gray-100" onClick={() => onSelect(entry)}>
-          <div className="truncate font-mono text-[11px] text-gray-700">{entry.sql.replace(/\s+/g, ' ')}</div>
-          <div className="mt-1 flex items-center gap-2 text-[9px] text-gray-400">
-            <span className={entry.successful ? 'text-emerald-600' : 'text-red-600'}>{entry.successful ? `${entry.rowCount} rows` : 'Failed'}</span>
-            <span>{entry.executionMs} ms</span>
-            <span className="ml-auto">{new Date(entry.executedAt).toLocaleTimeString()}</span>
-          </div>
-        </button>
-      ))}
-      {entries.length === 0 && <div className="p-3 text-[11px] text-gray-400">No query history.</div>}
-    </div>
-  </div>
-);
-
-const FavoritesPanel: React.FC<{
-  entries: AdvancedFavorite[];
-  onSelect: (entry: AdvancedFavorite) => void;
-  onDelete: (entry: AdvancedFavorite) => void;
-}> = ({ entries, onSelect, onDelete }) => (
-  <div className="h-full overflow-auto">
-    {entries.map(entry => (
-      <div key={entry.id} className="flex border-b border-gray-200 hover:bg-gray-100">
-        <button className="min-w-0 flex-1 px-3 py-2 text-left" onClick={() => onSelect(entry)}>
-          <div className="truncate text-[11px] font-medium text-gray-700">{entry.name}</div>
-          <div className="mt-1 truncate font-mono text-[9px] text-gray-400">{entry.sql.replace(/\s+/g, ' ')}</div>
-        </button>
-        <button className="shrink-0 p-2 text-gray-400 hover:text-red-600" onClick={() => onDelete(entry)} title="Delete favorite"><X className="h-3.5 w-3.5" /></button>
-      </div>
-    ))}
-    {entries.length === 0 && <div className="p-3 text-[11px] text-gray-400">No saved queries.</div>}
-  </div>
-);
 
 export const Advanced: React.FC = () => {
   const coordinators = useRef(new Map<string, ExecutionRunCoordinator>());
@@ -1266,6 +216,7 @@ export const Advanced: React.FC = () => {
   const [connectionName, setConnectionName] = useState('Postgres');
   const [connectionUrl, setConnectionUrl] = useState('');
   const [connectionProvider, setConnectionProvider] = useState<AdvancedConnection['provider']>('postgresql');
+  const [providerPlugins, setProviderPlugins] = useState<AdvancedProviderPlugin[]>(FALLBACK_PROVIDER_PLUGINS);
   const [databaseName, setDatabaseName] = useState('');
   const [profiles, setProfiles] = useState<AdvancedConnectionProfile[]>([]);
   const [selectedProfileId, setSelectedProfileId] = useState('');
@@ -1286,6 +237,7 @@ export const Advanced: React.FC = () => {
   const [history, setHistory] = useState<AdvancedHistoryEntry[]>([]);
   const [favorites, setFavorites] = useState<AdvancedFavorite[]>([]);
   const [showColumnMenu, setShowColumnMenu] = useState(false);
+  const [showExportMenu, setShowExportMenu] = useState(false);
   const [mutationReview, setMutationReview] = useState<{ request: AdvancedMutationRequest; preview: AdvancedMutationPreview } | null>(null);
   const [scriptReview, setScriptReview] = useState<{ sql: string; preview: AdvancedScriptPreview } | null>(null);
   const [insertDraft, setInsertDraft] = useState<{ open: boolean; values: Record<string, string> }>({ open: false, values: {} });
@@ -1307,6 +259,12 @@ export const Advanced: React.FC = () => {
   const [commandOpen, setCommandOpen] = useState(false);
   const [commandQuery, setCommandQuery] = useState('');
   const [selectedCommandIndex, setSelectedCommandIndex] = useState(0);
+  const [renameColumnDraft, setRenameColumnDraft] = useState<{
+    tabId: string;
+    columnId: string;
+    currentName: string;
+    nextName: string;
+  } | null>(null);
 
   const activeTab = tabs.find(tab => tab.id === activeTabId) ?? tabs[0];
   const tabHasPendingChanges = (tab: WorkspaceTab): boolean => (
@@ -1335,6 +293,16 @@ export const Advanced: React.FC = () => {
       setFavorites(favoriteRows);
       setProfiles(profileRows);
     }).catch(() => undefined);
+  }, []);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    void loadAdvancedProviderPlugins(controller.signal)
+      .then(providers => {
+        if (providers.length > 0) setProviderPlugins(providers);
+      })
+      .catch(() => setProviderPlugins(FALLBACK_PROVIDER_PLUGINS));
+    return () => controller.abort();
   }, []);
 
   useEffect(() => () => {
@@ -1431,7 +399,7 @@ export const Advanced: React.FC = () => {
     && activeTableNode.columns.some(column => column.primaryKey)
   );
 
-  const connect = async (event: React.FormEvent) => {
+  const connect = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setConnectionError('');
     setIsConnecting(true);
@@ -1548,11 +516,12 @@ export const Advanced: React.FC = () => {
       .catch(cause => patchTab(activeTab.id, { error: cause instanceof Error ? cause.message : 'Could not save favorite.' }));
   };
 
-  const runQuery = async (tabId = activeTab.id, options?: { offset?: number; sort?: AdvancedSort; filters?: AdvancedFilter[] }) => {
+  const runQuery = async (tabId = activeTab.id, options?: { offset?: number; sort?: AdvancedSort; filters?: AdvancedFilter[]; sql?: string }) => {
     if (!connection && !fileSource) return;
     const tab = tabs.find(candidate => candidate.id === tabId);
-    if (!tab?.sql.trim()) return;
-    const executableSql = materializeSqlParameters(tab.sql, tab.parameters);
+    const sql = options?.sql ?? tab?.sql ?? '';
+    if (!tab || !sql.trim()) return;
+    const executableSql = materializeSqlParameters(sql, tab.parameters);
     if (Object.keys(tab.editState.changes).length > 0 || tab.insertRowIndexes.length > 0 || tab.insertRows.length > 0 || tab.deletedRowIndexes.length > 0) {
       patchTab(tabId, { warnings: ['Export or discard pending result edits before rerunning, sorting, filtering, or paging.'] });
       return;
@@ -1566,7 +535,7 @@ export const Advanced: React.FC = () => {
     const coordinator = coordinatorFor(tabId);
     const run = coordinator.begin();
     activeRunIds.current.set(tabId, run.id);
-    patchTab(tabId, { isRunning: true, error: '', warnings: [], offset, sort, filters });
+    patchTab(tabId, { sql, isRunning: true, error: '', warnings: [], offset, sort, filters, parameters: reconcileSqlParameters(sql, tab.parameters) });
     try {
       const nextResult = fileSource
         ? await fileSession.current.execute({ runId: run.id, sql: executableSql, limit: tab.limit, offset, sort, filters, filterTree, signal: run.signal })
@@ -1588,7 +557,7 @@ export const Advanced: React.FC = () => {
         hiddenColumnIds: [],
         columnOrder: [],
       });
-      recordHistory({ sql: tab.sql, executionMs: nextResult.executionMs, rowCount: nextResult.rows.length, successful: true });
+      recordHistory({ sql, executionMs: nextResult.executionMs, rowCount: nextResult.rows.length, successful: true });
       coordinator.finish(run);
       activeRunIds.current.delete(tabId);
     } catch (cause) {
@@ -1596,7 +565,7 @@ export const Advanced: React.FC = () => {
       if (coordinator.isCurrent(run)) {
         const message = cause instanceof Error ? cause.message : 'Query failed.';
         patchTab(tabId, { error: message, isRunning: false });
-        recordHistory({ sql: tab.sql, executionMs: 0, rowCount: 0, successful: false, error: message });
+        recordHistory({ sql, executionMs: 0, rowCount: 0, successful: false, error: message });
         coordinator.finish(run);
         activeRunIds.current.delete(tabId);
       }
@@ -1825,34 +794,26 @@ export const Advanced: React.FC = () => {
 
   const analyzeActiveResultInSimple = () => {
     if (!displayResult) return;
-    const rows = resultRowsAsObjects(displayResult).slice(0, 1000);
-    if (rows.length === 0) {
+    if (displayResult.rows.length === 0) {
       patchTab(activeTab.id, { warnings: ['Run a query with rows before creating a Simple BA brief.'] });
       return;
     }
 
-    const analysisAction: AnalysisAction = {
-      id: `advanced_result_${activeTab.id}`,
-      opportunityName: `Decision brief: ${activeTab.title}`,
-      label: 'Analyze Advanced result',
-      description: 'Create a Simple mode BA decision brief from the current Advanced result set.',
-      actionType: 'table_preview',
-      dimensions: [],
-      measures: [],
-      confidenceScore: 70,
-      source: 'dataset_understanding'
-    };
-    const runtimeIntent = createRuntimeIntentFromAnalysisAction(analysisAction);
-    const runtimePlanPreview = createRuntimePlanPreview(runtimeIntent);
+    const handoff = createAdvancedResultHandoff({
+      datasetId: `advanced:${activeTab.title}`,
+      title: activeTab.title,
+      provider: workspaceProvider,
+      sql: materializeSqlParameters(activeTab.sql, activeTab.parameters),
+    }, displayResult);
     createInvestigationSession(
-      `advanced:${activeTab.title}`,
-      analysisAction,
-      runtimeIntent,
-      runtimePlanPreview,
-      rows,
+      handoff.datasetId,
+      handoff.analysisAction,
+      handoff.runtimeIntent,
+      handoff.runtimePlanPreview,
+      handoff.rows,
+      handoff.aiBriefing,
       undefined,
-      undefined,
-      'retained_rows'
+      handoff.rowScope
     );
     window.history.pushState(null, '', '/investigation');
     window.dispatchEvent(new PopStateEvent('popstate'));
@@ -2458,6 +1419,51 @@ export const Advanced: React.FC = () => {
     patchTab(activeTab.id, { columnOrder: nextOrder });
   };
 
+  const renameResultColumnAlias = (columnId: string, currentName: string) => {
+    if (!activeTab.result) return;
+    setRenameColumnDraft({ tabId: activeTab.id, columnId, currentName, nextName: currentName });
+  };
+
+  const confirmRenameResultColumnAlias = () => {
+    if (!renameColumnDraft) return;
+    const targetTab = tabs.find(tab => tab.id === renameColumnDraft.tabId);
+    const nextName = renameColumnDraft.nextName.trim();
+    if (!targetTab?.result || !nextName || nextName === renameColumnDraft.currentName) {
+      setRenameColumnDraft(null);
+      return;
+    }
+    try {
+      const sql = buildRenamedResultSql(targetTab.sql, targetTab.result, renameColumnDraft.columnId, nextName);
+      patchTab(targetTab.id, { plan: null, filterValue: '', filterColumn: '', tableContext: undefined });
+      setRenameColumnDraft(null);
+      void runQuery(targetTab.id, { sql, offset: 0, sort: undefined, filters: [] });
+    } catch (cause) {
+      patchTab(targetTab.id, { error: cause instanceof Error ? cause.message : 'Could not rename column alias.' });
+      setRenameColumnDraft(null);
+    }
+  };
+
+  const handleProviderChange = (provider: AdvancedConnection['provider']) => {
+    setConnectionProvider(provider);
+    setConnectionName(providerDisplayName(providerPlugins, provider));
+  };
+
+  const handleProfileChange = (profileId: string) => {
+    setSelectedProfileId(profileId);
+    const profile = profiles.find(item => item.id === profileId);
+    if (!profile) return;
+    setConnectionName(profile.name);
+    setConnectionProvider(profile.provider);
+    setDatabaseName(profile.database);
+    setTlsMode(profile.tlsMode);
+    setSshHost(profile.sshHost || '');
+    setSshPort(profile.sshPort || 22);
+    setSshUser(profile.sshUser || '');
+    setProfileGroupName(profile.groupName || '');
+    setProfileTagName(profile.tagName || '');
+    setSafeMode(profile.safeMode || 'confirm_writes');
+  };
+
   const createTableSqlPreview = generateCreateTableSql(createTableDraft, workspaceProvider);
 
   return (
@@ -2471,47 +1477,42 @@ export const Advanced: React.FC = () => {
       </header>
 
       {!connection && !fileSource ? (
-        <div className="flex flex-1 items-start justify-center overflow-auto bg-gray-50 p-3 sm:p-8">
-          <div className="mt-4 w-full max-w-3xl space-y-5 sm:mt-8">
-          {orderedSources.length > 0 && <section className="border border-gray-200 bg-white shadow-sm">
-            <div className="flex items-center gap-3 border-b border-gray-200 px-4 py-3">
-              <FileSpreadsheet className="h-4 w-4 text-blue-600" />
-              <div><h2 className="text-sm font-semibold text-gray-900">Datasets understood in Simple</h2><p className="text-[11px] text-gray-500">Open the original file or online workbook without importing or profiling it again.</p></div>
-            </div>
-            <div className="divide-y divide-gray-100">
-              {orderedSources.map(source => <div key={source.id} className="flex min-w-0 items-center gap-3 px-4 py-3">
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center bg-blue-50 text-blue-700"><FileSpreadsheet className="h-4 w-4" /></div>
-                <div className="min-w-0 flex-1"><div className="flex items-center gap-2"><span className="truncate text-[12px] font-medium text-gray-800">{source.name}</span>{source.id === preferredSourceId && <span className="shrink-0 bg-emerald-50 px-1.5 py-0.5 text-[9px] font-semibold uppercase text-emerald-700">Current</span>}</div><p className="truncate text-[10px] text-gray-500">{source.sourceKind === 'online_link' ? 'Online link' : 'Local file'} · {source.tables.length} table{source.tables.length === 1 ? '' : 's'} · {source.tables.reduce((sum, table) => sum + table.rowCount, 0).toLocaleString()} rows</p></div>
-                <button type="button" disabled={isConnecting} onClick={() => void openFileSource(source)} className="flex h-8 shrink-0 items-center gap-1.5 bg-blue-600 px-3 text-[11px] font-medium text-white hover:bg-blue-700 disabled:opacity-50">{isConnecting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Play className="h-3.5 w-3.5" />} Open</button>
-              </div>)}
-            </div>
-          </section>}
-          <form className="w-full border border-gray-200 bg-white p-4 shadow-sm sm:p-6" onSubmit={connect}>
-            <div className="mb-5 flex items-center gap-3"><div className="flex h-9 w-9 items-center justify-center bg-blue-50 text-blue-700"><Plug className="h-4 w-4" /></div><div><h2 className="text-sm font-semibold text-gray-900">Open database session</h2><p className="text-[12px] text-gray-500">Credentials stay in backend memory for this server session.</p></div></div>
-            <label className="mb-1 block text-[11px] font-medium text-gray-600" htmlFor="advanced-provider">Provider</label>
-            <select id="advanced-provider" className="mb-4 h-9 w-full border border-gray-300 bg-white px-3 text-sm" value={connectionProvider} onChange={event => { const provider = event.target.value as AdvancedConnection['provider']; setConnectionProvider(provider); setConnectionName(provider === 'postgresql' ? 'Postgres' : provider === 'mongodb' ? 'MongoDB Atlas' : provider === 'sqlite' ? 'SQLite' : provider === 'mariadb' ? 'MariaDB' : 'MySQL'); }}>
-              <option value="postgresql">PostgreSQL</option><option value="mysql">MySQL</option><option value="mariadb">MariaDB</option><option value="sqlite">SQLite</option><option value="mongodb">MongoDB / Atlas</option>
-            </select>
-            {profiles.length > 0 && <><label className="mb-1 block text-[11px] font-medium text-gray-600" htmlFor="advanced-profile">Saved profile</label><select id="advanced-profile" className="mb-4 h-9 w-full border border-gray-300 bg-white px-3 text-sm" value={selectedProfileId} onChange={event => { setSelectedProfileId(event.target.value); const profile = profiles.find(item => item.id === event.target.value); if (profile) { setConnectionName(profile.name); setConnectionProvider(profile.provider); setDatabaseName(profile.database); setTlsMode(profile.tlsMode); setSshHost(profile.sshHost || ''); setSshPort(profile.sshPort || 22); setSshUser(profile.sshUser || ''); setProfileGroupName(profile.groupName || ''); setProfileTagName(profile.tagName || ''); setSafeMode(profile.safeMode || 'confirm_writes'); } }}><option value="">New connection</option>{profiles.map(profile => <option key={profile.id} value={profile.id}>{profile.groupName ? `${profile.groupName} / ` : ''}{profile.name} · {profile.provider}{profile.tagName ? ` · ${profile.tagName}` : ''}</option>)}</select></>}
-            <label className="mb-1 block text-[11px] font-medium text-gray-600" htmlFor="advanced-name">Connection name</label>
-            <input id="advanced-name" className="mb-4 h-9 w-full border border-gray-300 px-3 text-sm outline-none focus:border-blue-500" value={connectionName} onChange={event => setConnectionName(event.target.value)} required />
-            <label className="mb-1 block text-[11px] font-medium text-gray-600" htmlFor="advanced-url">Connection URL or SQLite path</label>
-            <input id="advanced-url" type="password" disabled={Boolean(selectedProfileId)} className="h-9 w-full border border-gray-300 px-3 font-mono text-sm outline-none focus:border-blue-500 disabled:bg-gray-100" placeholder={selectedProfileId ? 'Encrypted credential from profile' : connectionProvider === 'mongodb' ? 'mongodb+srv://user:password@cluster/database' : connectionProvider === 'sqlite' ? 'sqlite:///path/to/database.db' : `${connectionProvider}://user:password@host/database`} value={connectionUrl} onChange={event => setConnectionUrl(event.target.value)} required={!selectedProfileId} />
-            {connectionProvider === 'mongodb' && <><label className="mb-1 mt-4 block text-[11px] font-medium text-gray-600" htmlFor="advanced-database">Database override</label><input id="advanced-database" className="h-9 w-full border border-gray-300 px-3 text-sm" value={databaseName} onChange={event => setDatabaseName(event.target.value)} placeholder="Optional when present in URL" /></>}
-            {!selectedProfileId && <div className="mt-4 grid grid-cols-2 gap-3">
-              <label className="block"><span className="text-[11px] font-medium text-gray-600">TLS policy</span><select className="mt-1 h-8 w-full border border-gray-300 bg-white px-2 text-[11px]" value={tlsMode} onChange={event => setTlsMode(event.target.value)}><option value="driver-default">Driver default</option><option value="require">Require TLS</option><option value="verify-full">Verify full</option></select></label>
-              <label className="block"><span className="text-[11px] font-medium text-gray-600">Safe mode</span><select className="mt-1 h-8 w-full border border-gray-300 bg-white px-2 text-[11px]" value={safeMode} onChange={event => setSafeMode(event.target.value as AdvancedConnectionProfile['safeMode'])}><option value="confirm_writes">Confirm writes</option><option value="read_only">Read only</option><option value="off">Off</option></select></label>
-              <input className="h-8 border border-gray-300 px-2 text-[11px]" value={profileGroupName} onChange={event => setProfileGroupName(event.target.value)} placeholder="Profile group" />
-              <input className="h-8 border border-gray-300 px-2 text-[11px]" value={profileTagName} onChange={event => setProfileTagName(event.target.value)} placeholder="Profile tag" />
-              <input className="h-8 border border-gray-300 px-2 text-[11px]" value={sshHost} onChange={event => setSshHost(event.target.value)} placeholder="SSH host" />
-              <div className="flex gap-2"><input className="h-8 min-w-0 flex-1 border border-gray-300 px-2 text-[11px]" value={sshUser} onChange={event => setSshUser(event.target.value)} placeholder="SSH user" /><input type="number" className="h-8 w-16 border border-gray-300 px-2 text-[11px]" value={sshPort} onChange={event => setSshPort(Number(event.target.value) || 22)} /></div>
-              <label className="col-span-2 flex items-center gap-2 text-[11px] text-gray-600"><input type="checkbox" checked={saveProfile} onChange={event => setSaveProfile(event.target.checked)} /> Save encrypted profile</label>
-            </div>}
-            {connectionError && <div className="mt-3 border-l-2 border-red-500 bg-red-50 px-3 py-2 text-[12px] text-red-700">{connectionError}</div>}
-            <button type="submit" disabled={isConnecting} className="mt-5 flex h-9 items-center gap-2 bg-gray-900 px-4 text-[12px] font-medium text-white hover:bg-gray-800 disabled:opacity-50">{isConnecting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plug className="h-4 w-4" />} Connect</button>
-          </form>
-          </div>
-        </div>
+        <AdvancedConnectionGate
+          orderedSources={orderedSources}
+          preferredSourceId={preferredSourceId}
+          isConnecting={isConnecting}
+          profiles={profiles}
+          providerPlugins={providerPlugins}
+          selectedProfileId={selectedProfileId}
+          connectionProvider={connectionProvider}
+          connectionName={connectionName}
+          connectionUrl={connectionUrl}
+          databaseName={databaseName}
+          tlsMode={tlsMode}
+          safeMode={safeMode}
+          profileGroupName={profileGroupName}
+          profileTagName={profileTagName}
+          sshHost={sshHost}
+          sshUser={sshUser}
+          sshPort={sshPort}
+          saveProfile={saveProfile}
+          connectionError={connectionError}
+          onOpenFileSource={source => { void openFileSource(source); }}
+          onSubmit={connect}
+          onProviderChange={handleProviderChange}
+          onProfileChange={handleProfileChange}
+          onConnectionNameChange={setConnectionName}
+          onConnectionUrlChange={setConnectionUrl}
+          onDatabaseNameChange={setDatabaseName}
+          onTlsModeChange={setTlsMode}
+          onSafeModeChange={setSafeMode}
+          onProfileGroupNameChange={setProfileGroupName}
+          onProfileTagNameChange={setProfileTagName}
+          onSshHostChange={setSshHost}
+          onSshUserChange={setSshUser}
+          onSshPortChange={setSshPort}
+          onSaveProfileChange={setSaveProfile}
+        />
       ) : (
         <div className="flex min-h-0 flex-1">
           <aside className="hidden w-64 shrink-0 flex-col border-r border-gray-200 bg-gray-50 lg:flex">
@@ -2590,7 +1591,7 @@ export const Advanced: React.FC = () => {
                   <button onClick={() => patchTab(activeTab.id, tab => ({ parameters: Object.fromEntries(Object.keys(tab.parameters).map(name => [name, ''])) }))} className="p-1 text-gray-500 hover:bg-gray-100" title="Clear parameter values"><RotateCcw className="h-3.5 w-3.5" /></button>
                 </div>
               )}
-              <div className="flex h-9 shrink-0 items-center overflow-x-auto border-b border-gray-200 px-2">
+              <div className="flex h-9 shrink-0 items-center border-b border-gray-200 px-2">
                 <button onClick={() => patchTab(activeTab.id, { resultView: 'grid' })} className={`flex h-7 items-center gap-1.5 px-3 text-[11px] ${activeTab.resultView === 'grid' ? 'bg-gray-200 font-medium text-gray-900' : 'text-gray-500 hover:bg-gray-100'}`}><Columns className="h-3.5 w-3.5" /> Grid</button>
                 <button onClick={() => patchTab(activeTab.id, { resultView: 'chart' })} className={`flex h-7 items-center gap-1.5 px-3 text-[11px] ${activeTab.resultView === 'chart' ? 'bg-gray-200 font-medium text-gray-900' : 'text-gray-500 hover:bg-gray-100'}`}><BarChart3 className="h-3.5 w-3.5" /> Chart</button>
                 <button onClick={() => patchTab(activeTab.id, { resultView: 'json' })} className={`hidden h-7 items-center gap-1.5 px-3 text-[11px] sm:flex ${activeTab.resultView === 'json' ? 'bg-gray-200 font-medium text-gray-900' : 'text-gray-500 hover:bg-gray-100'}`}><Braces className="h-3.5 w-3.5" /> JSON</button>
@@ -2622,7 +1623,36 @@ export const Advanced: React.FC = () => {
                 {activeTab.warnings.map(warning => <span key={warning} className="ml-3 truncate text-[10px] text-amber-700">{warning}</span>)}
                 {activeTab.result && <span className="ml-auto flex items-center gap-1 text-[10px] text-gray-400"><Clock3 className="h-3 w-3" /> {activeTab.result.executionMs} ms</span>}
                 {activeResult && <button onClick={() => void copyResult()} className="ml-2 p-1 text-gray-500 hover:bg-gray-100" title="Copy current result as CSV"><Copy className="h-3.5 w-3.5" /></button>}
-                {activeResult && <><button onClick={() => exportResult('csv')} className="ml-2 p-1 text-gray-500 hover:bg-gray-100" title={hasActivePendingChanges ? 'Export edited result page as CSV' : 'Export current result page as CSV'}><Download className="h-3.5 w-3.5" /></button><button onClick={() => void exportAllResult('csv')} disabled={isExportingAll} className="hidden h-6 items-center gap-1 px-1.5 text-[9px] font-semibold text-gray-500 hover:bg-gray-100 disabled:opacity-40 sm:inline-flex" title="Export full result as paged CSV">{isExportingAll && <Loader2 className="h-3 w-3 animate-spin" />}All CSV</button><button onClick={() => void exportAllResult('xlsx')} disabled={isExportingAll} className="hidden h-6 px-1.5 text-[9px] font-semibold text-gray-500 hover:bg-gray-100 disabled:opacity-40 sm:inline-flex">All XLSX</button><button onClick={() => void exportAllResult('json')} disabled={isExportingAll} className="hidden h-6 px-1.5 text-[9px] font-semibold text-gray-500 hover:bg-gray-100 disabled:opacity-40 sm:inline-flex">All JSON</button><button onClick={() => void exportAllResult('sql')} disabled={isExportingAll} className="hidden h-6 px-1.5 text-[9px] font-semibold text-gray-500 hover:bg-gray-100 disabled:opacity-40 sm:inline-flex">All SQL</button>{exportProgress && <span className="hidden items-center gap-1 px-1.5 text-[9px] font-semibold text-blue-700 sm:inline-flex"><Loader2 className="h-3 w-3 animate-spin" /> {exportProgress.format} {exportProgress.rows.toLocaleString('en')}</span>}{isExportingAll && <button onClick={cancelFullExport} className="hidden h-6 px-1.5 text-[9px] font-semibold text-red-600 hover:bg-red-50 sm:inline-flex">Cancel export</button>}<button onClick={() => exportResult('xlsx')} className="hidden h-6 px-1.5 text-[9px] font-semibold text-gray-500 hover:bg-gray-100 sm:inline-flex">Export XLSX</button><button onClick={() => exportResult('json')} className="hidden h-6 px-1.5 text-[9px] font-semibold text-gray-500 hover:bg-gray-100 sm:inline-flex">Export JSON</button><button onClick={() => exportResult('sql')} className="hidden h-6 px-1.5 text-[9px] font-semibold text-gray-500 hover:bg-gray-100 sm:inline-flex">Export SQL</button></>}
+                {activeResult && <div className="relative ml-2">
+                  <button
+                    onClick={() => setShowExportMenu(value => !value)}
+                    className={`flex h-7 items-center gap-1 px-2 text-[10px] font-medium ${isExportingAll ? 'bg-blue-50 text-blue-700' : 'text-gray-500 hover:bg-gray-100'}`}
+                    title="Download result"
+                  >
+                    {isExportingAll ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Download className="h-3.5 w-3.5" />}
+                    <span className="hidden sm:inline">Download</span>
+                  </button>
+                  {showExportMenu && <div className="absolute right-0 top-8 z-40 w-52 border border-gray-200 bg-white py-1 text-[11px] text-gray-700 shadow-lg">
+                    <div className="border-b border-gray-100 px-2 py-1.5 text-[10px] font-semibold uppercase tracking-wide text-gray-500">Current page</div>
+                    {(['csv', 'xlsx', 'json', 'sql'] as const).map(format => (
+                      <button key={format} onClick={() => { exportResult(format); setShowExportMenu(false); }} className="flex h-7 w-full items-center justify-between px-2 text-left hover:bg-gray-100">
+                        <span>{format.toUpperCase()}</span>
+                        <span className="text-[9px] text-gray-400">{hasActivePendingChanges ? 'edited page' : 'page'}</span>
+                      </button>
+                    ))}
+                    <div className="mt-1 border-b border-t border-gray-100 px-2 py-1.5 text-[10px] font-semibold uppercase tracking-wide text-gray-500">Full result</div>
+                    {(['csv', 'xlsx', 'json', 'sql'] as const).map(format => (
+                      <button key={format} disabled={isExportingAll} onClick={() => { void exportAllResult(format); setShowExportMenu(false); }} className="flex h-7 w-full items-center justify-between px-2 text-left hover:bg-gray-100 disabled:opacity-40">
+                        <span>All {format.toUpperCase()}</span>
+                        <span className="text-[9px] text-gray-400">paged</span>
+                      </button>
+                    ))}
+                    {(exportProgress || isExportingAll) && <div className="mt-1 border-t border-gray-100 px-2 py-1.5">
+                      {exportProgress && <div className="mb-1 flex items-center gap-1 text-[10px] font-semibold text-blue-700"><Loader2 className="h-3 w-3 animate-spin" /> {exportProgress.format} {exportProgress.rows.toLocaleString('en')} rows</div>}
+                      {isExportingAll && <button onClick={() => { cancelFullExport(); setShowExportMenu(false); }} className="h-7 w-full text-left text-[10px] font-semibold text-red-600 hover:bg-red-50">Cancel full export</button>}
+                    </div>}
+                  </div>}
+                </div>}
               </div>
               {activeTab.result && workspaceProvider !== 'mongodb' && (
                 <div className="hidden min-h-9 shrink-0 flex-wrap items-center gap-2 border-b border-gray-200 bg-gray-50 px-2 py-1 md:flex">
@@ -2683,7 +1713,7 @@ export const Advanced: React.FC = () => {
                   <button onClick={applyMongoBuilder} className="h-7 bg-gray-800 px-3 text-[11px] font-medium text-white">Apply</button>
                 </div>
               )}
-              {activeTab.error ? <div className="m-3 border-l-2 border-red-500 bg-red-50 px-3 py-2 font-mono text-[12px] text-red-700">{activeTab.error}</div> : activeTab.isRunning ? <div className="flex flex-1 items-center justify-center gap-2 text-sm text-gray-500"><Loader2 className="h-4 w-4 animate-spin" /> Executing read-only query...</div> : activeTab.resultView === 'plan' && activeTab.plan !== null ? <QueryPlanView plan={activeTab.plan} /> : displayResult ? <div className="min-h-0 flex-1">{activeTab.resultView === 'grid' ? <VirtualResultGrid result={displayResult} sort={activeTab.sort} onSort={workspaceProvider === 'mongodb' ? () => undefined : toggleSort} columnWidths={activeTab.columnWidths} onColumnResize={resizeVisibleColumn} onColumnMove={moveVisibleColumn} editable={activeTab.editMode} editedKeys={visibleEditedKeys} deletedRows={activeDeletedRows} onEdit={editVisibleCell} onDuplicateRow={canCommitActive ? duplicateRowAsInsert : undefined} onDeleteRow={canCommitActive ? markRowDeleted : undefined} onRestoreRow={canCommitActive ? restoreDeletedRow : undefined} copyTableName={activeTab.tableContext?.table} foreignKeyActions={foreignKeyActions} /> : activeTab.resultView === 'chart' ? <ResultChart result={displayResult} /> : activeTab.resultView === 'json' ? <ResultJson result={displayResult} /> : <ResultStructure result={displayResult} />}</div> : <div className="flex flex-1 items-center justify-center text-sm text-gray-400">No result set.</div>}
+              {activeTab.error ? <div className="m-3 border-l-2 border-red-500 bg-red-50 px-3 py-2 font-mono text-[12px] text-red-700">{activeTab.error}</div> : activeTab.isRunning ? <div className="flex flex-1 items-center justify-center gap-2 text-sm text-gray-500"><Loader2 className="h-4 w-4 animate-spin" /> Executing read-only query...</div> : activeTab.resultView === 'plan' && activeTab.plan !== null ? <QueryPlanView plan={activeTab.plan} /> : displayResult ? <div className="min-h-0 flex-1">{activeTab.resultView === 'grid' ? <VirtualResultGrid result={displayResult} sort={activeTab.sort} onSort={workspaceProvider === 'mongodb' ? () => undefined : toggleSort} columnWidths={activeTab.columnWidths} onColumnResize={resizeVisibleColumn} onColumnMove={moveVisibleColumn} editable={activeTab.editMode} editedKeys={visibleEditedKeys} deletedRows={activeDeletedRows} onEdit={editVisibleCell} onDuplicateRow={canCommitActive ? duplicateRowAsInsert : undefined} onDeleteRow={canCommitActive ? markRowDeleted : undefined} onRestoreRow={canCommitActive ? restoreDeletedRow : undefined} copyTableName={activeTab.tableContext?.table} foreignKeyActions={foreignKeyActions} onRenameColumn={workspaceProvider === 'mongodb' ? undefined : renameResultColumnAlias} /> : activeTab.resultView === 'chart' ? <ResultChart result={displayResult} /> : activeTab.resultView === 'json' ? <ResultJson result={displayResult} /> : <ResultStructure result={displayResult} />}</div> : <div className="flex flex-1 items-center justify-center text-sm text-gray-400">No result set.</div>}
             </div>
           </section>
         </div>
@@ -2744,6 +1774,80 @@ export const Advanced: React.FC = () => {
             {visibleQuickCommands.length === 0 && <div className="px-4 py-8 text-center text-[12px] text-gray-400">No commands found.</div>}
           </div>
         </div>
+      </div>}
+      {renameColumnDraft && <div
+        className="fixed inset-0 z-50 flex items-center justify-center bg-gray-950/45 p-4 backdrop-blur-[2px]"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Rename column alias"
+        onMouseDown={event => {
+          if (event.target === event.currentTarget) setRenameColumnDraft(null);
+        }}
+      >
+        <form
+          className="w-full max-w-md overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl"
+          onSubmit={event => {
+            event.preventDefault();
+            confirmRenameResultColumnAlias();
+          }}
+        >
+          <div className="flex items-start gap-3 border-b border-gray-100 px-5 py-4">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-700">
+              <Pencil className="h-4 w-4" />
+            </span>
+            <div className="min-w-0 flex-1">
+              <h2 className="text-sm font-semibold text-gray-950">Rename column alias</h2>
+              <p className="mt-1 text-[12px] leading-5 text-gray-500">This changes the result view alias only. Source data stays untouched.</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setRenameColumnDraft(null)}
+              className="rounded-full p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-700"
+              title="Close"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+          <div className="space-y-3 px-5 py-4">
+            <div className="rounded-xl border border-gray-200 bg-gray-50 px-3 py-2">
+              <div className="text-[10px] font-semibold uppercase tracking-wide text-gray-400">Current column</div>
+              <div className="mt-1 truncate font-mono text-[12px] text-gray-700">{renameColumnDraft.currentName}</div>
+            </div>
+            <label className="grid gap-1.5 text-[12px] font-medium text-gray-700">
+              New alias
+              <input
+                autoFocus
+                value={renameColumnDraft.nextName}
+                onChange={event => setRenameColumnDraft(current => current ? { ...current, nextName: event.target.value } : current)}
+                onKeyDown={event => {
+                  if (event.key === 'Escape') {
+                    event.preventDefault();
+                    setRenameColumnDraft(null);
+                  }
+                }}
+                className="h-11 rounded-xl border border-gray-300 bg-white px-3 font-mono text-[13px] text-gray-950 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+                placeholder="Column alias"
+              />
+            </label>
+          </div>
+          <div className="flex items-center justify-end gap-2 bg-gray-50 px-5 py-4">
+            <button
+              type="button"
+              onClick={() => setRenameColumnDraft(null)}
+              className="h-9 rounded-lg border border-gray-200 bg-white px-3 text-[12px] font-medium text-gray-600 hover:bg-gray-100"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={!renameColumnDraft.nextName.trim() || renameColumnDraft.nextName.trim() === renameColumnDraft.currentName}
+              className="flex h-9 items-center gap-1.5 rounded-lg bg-gray-950 px-3 text-[12px] font-semibold text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              <Pencil className="h-3.5 w-3.5" />
+              Rename
+            </button>
+          </div>
+        </form>
       </div>}
       {createTableDraft.open && <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/35 p-4" role="dialog" aria-modal="true" aria-label="Create table SQL">
         <div className="flex max-h-[86vh] w-full max-w-5xl flex-col border border-gray-300 bg-white shadow-xl">

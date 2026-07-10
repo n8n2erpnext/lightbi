@@ -77,7 +77,7 @@ describe('Chart Preview Model', () => {
     expect(model.seriesFields).toContain('shipment_count');
   });
 
-  it('8. yField prefers response_rate over count fields', () => {
+  it('8. yField prefers count fields over auxiliary rate fields for mix charts', () => {
     const plan = { ...dummyPlan, expectedOutput: { ...dummyPlan.expectedOutput, dimensions: ['job'], shape: 'bar_chart' as const } };
     const result = {
       ...dummyResult,
@@ -85,7 +85,8 @@ describe('Chart Preview Model', () => {
       rows: [{ job: 'admin', positive_count: 10, total_count: 100, response_rate: 0.1 }]
     };
     const model = createChartPreviewModel({ previewResult: result, runtimePlan: plan, analysisLabel: 'Response by audience segment' });
-    expect(model.yField).toBe('response_rate');
+    expect(model.yField).toBe('positive_count');
+    expect(model.seriesFields).toContain('response_rate');
   });
 
   it('9. table preview adds a categorical distribution chart alongside the summary', () => {

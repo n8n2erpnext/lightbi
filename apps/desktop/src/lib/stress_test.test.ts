@@ -69,6 +69,12 @@ describe('Guarded SUM Stress Test', () => {
       const plan = JSON.parse(JSON.stringify(basePlan));
       const enhanced = enhancePlanWithGuardedSum(plan, rawRows);
       const gbOp = enhanced.logicalOperations[0];
+      if (gbOp.type !== 'group_by' && gbOp.type !== 'trend') {
+        throw new Error('Expected aggregate operation');
+      }
+      if (!gbOp.measureAggregations) {
+        throw new Error('Expected measure aggregations');
+      }
       const agg = gbOp.measureAggregations['val'];
       const warnings = enhanced.warnings;
 

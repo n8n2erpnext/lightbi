@@ -1,8 +1,17 @@
+import { createSemanticCoverageReport, type SemanticCoverageReport } from './semantic-coverage';
+import { inferContextSemanticCandidates } from './context-semantic-dictionary';
+import { SEMANTIC_TAXONOMY_V1, type SignalType } from './semantic-registry';
+
 export interface EvidenceBreakdown {
   columnAliasMatch: number;
   semanticTagMatch: number;
   relationshipSupport: number;
   profileSupport: number;
+  valueSupport?: number;
+  shapeSupport?: number;
+  neighborSupport?: number;
+  crossFileSupport?: number;
+  conflictPenalty?: number;
 }
 
 export interface BusinessSignalEvidence {
@@ -40,6 +49,7 @@ export interface BusinessSignalRegistry {
   getSignalsByDomain: (domain: string) => BusinessSignal[];
   getOverallConfidence: () => number;
   mappingReview?: import('./dataset-understanding-contract').MappingReviewContract;
+  semanticCoverage?: SemanticCoverageReport;
 }
 
 // Vietnamese string normalization: lowercase, trim, remove accents, normalize hyphen/underscore to space
@@ -53,76 +63,9 @@ export function normalizeString(str: string): string {
     .replace(/\s+/g, " "); // Collapse multiple spaces
 }
 
-export type SignalType = "time" | "dimension" | "measure";
+export type { SignalType } from './semantic-registry';
 
-export const TAXONOMY: Record<string, { domain: string, label: string, type: SignalType, aliases: string[] }> = {
-  // Operations
-  "report_date": { domain: "operations", label: "Report Date", type: "time", aliases: ["ngày báo cáo", "ngay bao cao", "ngày", "ngay", "report", "report date", "delivery date", "ngày giao", "ngay giao", "ngày phát", "ngay phat"] },
-  "driver": { domain: "operations", label: "Driver", type: "dimension", aliases: ["driver", "courier", "shipper", "tai xe", "nhan vien giao hang", "tên lái xe", "ten lai xe", "lái xe", "lai xe", "tài xế", "tên tài xế", "ten tai xe", "bưu tá", "buu ta"] },
-  "route": { domain: "operations", label: "Route", type: "dimension", aliases: ["route", "zone", "region", "tuyen xe", "khu vuc phat"] },
-  "shipment": { domain: "operations", label: "Shipment", type: "measure", aliases: ["shipment", "package", "parcel", "don hang", "kien hang", "mã tài kiện", "ma tai kien", "tài kiện", "tai kien", "mã kiện", "ma kien", "kiện hàng", "mã vận đơn", "ma van don", "vận đơn", "van don", "awb", "tracking", "tracking code", "shipment id", "parcel id"] },
-  "delivery_status": { domain: "operations", label: "Delivery Status", type: "dimension", aliases: ["delivery status", "trang thai giao hang"] },
-  "sla": { domain: "operations", label: "SLA", type: "dimension", aliases: ["sla", "deadline", "promise date", "thoi han", "han chot"] },
-  "warehouse": { domain: "operations", label: "Warehouse", type: "dimension", aliases: ["warehouse", "hub", "depot", "kho", "kho hang"] },
-  "delay": { domain: "operations", label: "Delay", type: "measure", aliases: ["delay", "late", "cham tre", "tre han"] },
-  "vehicle": { domain: "operations", label: "Vehicle", type: "dimension", aliases: ["vehicle", "truck", "van", "xe", "phuong tien"] },
-  
-  // Revenue
-  "customer": { domain: "customer", label: "Customer", type: "dimension", aliases: ["customer", "client", "buyer", "khach hang", "nguoi mua"] },
-  "order": { domain: "revenue", label: "Order", type: "measure", aliases: ["order", "purchase", "don mua", "don hang"] },
-  "revenue": { domain: "revenue", label: "Revenue", type: "measure", aliases: ["revenue", "doanh thu", "doanh so"] },
-  "discount": { domain: "revenue", label: "Discount", type: "measure", aliases: ["discount", "giam gia", "chiet khau"] },
-  "sales": { domain: "revenue", label: "Sales", type: "measure", aliases: ["sales", "ban hang", "doanh ban"] },
-  "branch": { domain: "revenue", label: "Branch", type: "dimension", aliases: ["branch", "store", "chi nhanh", "cua hang"] },
-  "salesperson": { domain: "revenue", label: "Salesperson", type: "dimension", aliases: ["salesperson", "rep", "nhan vien ban hang", "nhan vien kinh doanh"] },
-  
-  // Finance
-  "cost": { domain: "finance", label: "Cost", type: "measure", aliases: ["cost", "chi phi", "gia von"] },
-  "profit": { domain: "finance", label: "Profit", type: "measure", aliases: ["profit", "loi nhuan", "lai"] },
-  "margin": { domain: "finance", label: "Margin", type: "measure", aliases: ["margin", "bien loi nhuan"] },
-  "expense": { domain: "finance", label: "Expense", type: "measure", aliases: ["expense", "chi tieu", "chi phi phat sinh"] },
-  "budget": { domain: "finance", label: "Budget", type: "measure", aliases: ["budget", "ngan sach", "han muc"] },
-  "purchase_cost": { domain: "finance", label: "Purchase Cost", type: "measure", aliases: ["purchase cost", "gia mua", "chi phi mua hang"] },
-  "operational_cost": { domain: "finance", label: "Operational Cost", type: "measure", aliases: ["operational cost", "opex", "chi phi hoat dong"] },
-  "supplier_cost": { domain: "finance", label: "Supplier Cost", type: "measure", aliases: ["supplier cost", "chi phi nha cung cap"] },
-  
-  // Inventory
-  "sku": { domain: "inventory", label: "SKU", type: "dimension", aliases: ["sku", "product code", "item code", "ma san pham", "ma hang"] },
-  "product": { domain: "inventory", label: "Product", type: "dimension", aliases: ["product", "item", "san pham", "mat hang"] },
-  "inventory": { domain: "inventory", label: "Inventory", type: "measure", aliases: ["inventory", "stock", "ton kho", "so luong ton"] },
-  "supplier": { domain: "inventory", label: "Supplier", type: "dimension", aliases: ["supplier", "vendor", "nha cung cap"] },
-  "stock_movement": { domain: "inventory", label: "Stock Movement", type: "measure", aliases: ["stock movement", "inbound", "outbound", "nhap xuat", "luan chuyen kho"] },
-  "stock_qty": { domain: "inventory", label: "Stock Quantity", type: "measure", aliases: ["stock qty", "quantity", "so luong ton", "sl ton"] },
-  "stock_age": { domain: "inventory", label: "Stock Age", type: "measure", aliases: ["stock age", "aging", "tuoi ton kho", "thoi gian ton"] },
-  "inbound": { domain: "inventory", label: "Inbound", type: "measure", aliases: ["inbound", "receipt", "nhap kho", "hang nhap"] },
-  "outbound": { domain: "inventory", label: "Outbound", type: "measure", aliases: ["outbound", "issue", "xuat kho", "hang xuat"] },
-  "replenishment": { domain: "inventory", label: "Replenishment", type: "measure", aliases: ["replenishment", "restock", "bo sung hang", "nhap them"] },
-  "stock_status": { domain: "inventory", label: "Inventory Status", type: "dimension", aliases: ["stock status", "trang thai ton kho"] },
-  
-  // Core / Generic
-  "time_period": { domain: "core", label: "Time Period", type: "time", aliases: ["period", "month", "fiscal period"] },
-  "status": { domain: "core", label: "Status", type: "dimension", aliases: ["status", "trang thai"] },
-  
-  // Customer
-  "segment": { domain: "customer", label: "Segment", type: "dimension", aliases: ["segment", "phan khuc", "nhom khach hang"] },
-  "retention": { domain: "customer", label: "Retention", type: "measure", aliases: ["retention", "giu chan", "ty le giu chan"] },
-  "satisfaction": { domain: "customer", label: "Satisfaction", type: "measure", aliases: ["satisfaction", "nps", "rating", "danh gia", "hai long"] },
-  "order_count": { domain: "customer", label: "Order Count", type: "measure", aliases: ["order count", "number of orders", "so luong don", "tong so don"] },
-  "last_purchase": { domain: "customer", label: "Last Purchase", type: "time", aliases: ["last purchase", "recency", "mua hang lan cuoi", "lan cuoi mua"] },
-  "contribution": { domain: "customer", label: "Contribution", type: "measure", aliases: ["contribution", "ltv", "dong gop", "gia tri khach hang"] },
-  "purchase_behavior": { domain: "customer", label: "Purchase Behavior", type: "dimension", aliases: ["purchase behavior", "behavior", "hanh vi mua hang"] },
-  
-  // Performance
-  "target": { domain: "performance", label: "Target", type: "measure", aliases: ["target", "goal", "muc tieu", "chi tieu"] },
-  "achievement": { domain: "performance", label: "Achievement", type: "measure", aliases: ["achievement", "actual", "thuc te", "dat duoc"] },
-  "utilization": { domain: "performance", label: "Utilization", type: "measure", aliases: ["utilization", "capacity", "su dung", "hieu suat"] },
-  "productivity": { domain: "performance", label: "Productivity", type: "measure", aliases: ["productivity", "nang suat"] },
-  "kpi": { domain: "performance", label: "KPI", type: "dimension", aliases: ["kpi", "metric", "chi so", "chi so hieu suat"] },
-  "actual": { domain: "performance", label: "Actual", type: "measure", aliases: ["actual", "thuc te"] },
-  "department": { domain: "performance", label: "Department", type: "dimension", aliases: ["department", "team", "phong ban", "bo phan"] },
-  "efficiency": { domain: "performance", label: "Efficiency", type: "measure", aliases: ["efficiency", "hieu qua"] },
-  "performance_gap": { domain: "performance", label: "Performance Gap", type: "measure", aliases: ["performance gap", "gap", "chenh lech", "khoang cach"] }
-};
+export const TAXONOMY = SEMANTIC_TAXONOMY_V1;
 
 export function getSignalType(canonicalId: string): SignalType {
   return TAXONOMY[canonicalId]?.type || "dimension";
@@ -137,7 +80,12 @@ export interface DetectorInput {
     distinctRatio?: number
   }>;
   semanticTags?: Record<string, string>; // mapping from column name to semantic tag
-  overlayActions?: Array<{ physicalColumn: string, actionType: 'map_temporary' | 'keep_raw_unchanged' | 'ignore_mismatch', targetSignal?: string }>;
+  overlayActions?: Array<{ physicalColumn: string, actionType: 'map_temporary' | 'merge_temporary' | 'keep_raw_unchanged' | 'ignore_mismatch', targetSignal?: string }>;
+  semanticContext?: {
+    relatedColumns?: DetectorInput['columns'];
+    crossFileSignals?: string[];
+    crossFileColumnNames?: string[];
+  };
 }
 
 const SUFFIX_MAPPING = [
@@ -228,7 +176,7 @@ export function detectBusinessSignals(input: DetectorInput): BusinessSignalRegis
     }
 
     let exactMatchFound = false;
-    for (const [canonicalId, info] of Object.entries(TAXONOMY)) {
+    for (const [, info] of Object.entries(TAXONOMY)) {
        if (info.aliases.includes(normalizedCol)) exactMatchFound = true;
     }
 
@@ -266,7 +214,7 @@ export function detectBusinessSignals(input: DetectorInput): BusinessSignalRegis
       if (info.aliases.includes(normalizedCol)) {
         breakdown.columnAliasMatch = 40;
         isMatch = true;
-      } else if (!exactMatchFound && variantStr !== normalizedCol && info.aliases.includes(variantStr)) {
+      } else if ((!exactMatchFound || (canonicalId === 'margin' && normalizedCol === 'margin pct')) && variantStr !== normalizedCol && info.aliases.includes(variantStr)) {
          if (!variantTypeHint || variantTypeHint === info.type) {
             breakdown.columnAliasMatch = 30;
             isMatch = true;
@@ -338,6 +286,51 @@ export function detectBusinessSignals(input: DetectorInput): BusinessSignalRegis
         });
       }
     }
+
+    const contextCandidates = inferContextSemanticCandidates(col, {
+      siblingColumns: [
+        ...input.columns.filter(candidateColumn => candidateColumn.name !== col.name),
+        ...(input.semanticContext?.relatedColumns || [])
+      ],
+      crossFileSignals: input.semanticContext?.crossFileSignals,
+      crossFileColumnNames: input.semanticContext?.crossFileColumnNames
+    });
+    for (const contextCandidate of contextCandidates) {
+      const info = TAXONOMY[contextCandidate.canonicalId];
+      if (!info) continue;
+      const existingMatchesForColumn = new Set(colMapToSignals.get(col.name) || []);
+      if (contextCandidate.valueScore <= 0 && contextCandidate.neighborScore <= 0 && contextCandidate.crossFileScore <= 0 && existingMatchesForColumn.has(contextCandidate.canonicalId)) {
+        continue;
+      }
+
+      colMapToSignals.get(col.name)!.push(contextCandidate.canonicalId);
+      if (!signalMapToCols.has(contextCandidate.canonicalId)) signalMapToCols.set(contextCandidate.canonicalId, []);
+      signalMapToCols.get(contextCandidate.canonicalId)!.push(col.name);
+
+      candidates.push({
+        canonicalId: contextCandidate.canonicalId,
+        domain: info.domain,
+        evidence: {
+          columnName: col.name,
+          matchReason: contextCandidate.reasons.join(' '),
+          breakdown: {
+            columnAliasMatch: contextCandidate.headerScore,
+            semanticTagMatch: 0,
+            relationshipSupport: 0,
+            profileSupport: 0,
+            valueSupport: contextCandidate.valueScore,
+            shapeSupport: contextCandidate.shapeScore,
+            neighborSupport: contextCandidate.neighborScore,
+            crossFileSupport: contextCandidate.crossFileScore
+          }
+        },
+        confidence: {
+          score: contextCandidate.confidence,
+          isVerified: false
+        },
+        detectorId: "context_semantic_dictionary_v1"
+      });
+    }
   }
 
   const mappingReviewItems: import('./dataset-understanding-contract').MappingReviewItem[] = [];
@@ -350,7 +343,7 @@ export function detectBusinessSignals(input: DetectorInput): BusinessSignalRegis
        continue;
     }
     
-    const matches = colMapToSignals.get(col.name) || [];
+    const matches = [...new Set(colMapToSignals.get(col.name) || [])];
     if (overlay?.actionType === 'map_temporary') {
        mappingReviewItems.push({ physicalColumn: col.name, inferredSignal: matches[0], issueType: 'recognized', confidence: 100, suggestedActions: [] });
        continue;
@@ -359,7 +352,7 @@ export function detectBusinessSignals(input: DetectorInput): BusinessSignalRegis
     if (matches.length === 0) {
        mappingReviewItems.push({ physicalColumn: col.name, issueType: 'unrecognized', confidence: 0, suggestedActions: [] });
     } else if (matches.length > 1) {
-       mappingReviewItems.push({ physicalColumn: col.name, issueType: 'ambiguous', confidence: 40, suggestedActions: [] });
+       mappingReviewItems.push({ physicalColumn: col.name, inferredSignal: matches[0], issueType: 'conflicting', confidence: 40, suggestedActions: [] });
     } else {
        const canonicalId = matches[0];
        const peers = signalMapToCols.get(canonicalId) || [];
@@ -425,6 +418,7 @@ export function detectBusinessSignals(input: DetectorInput): BusinessSignalRegis
   }
 
   const signals = Array.from(mergedSignalsMap.values());
+  const semanticCoverage = createSemanticCoverageReport(input.columns, mappingReviewItems);
 
   // 3. Construct Registry
   return {
@@ -440,6 +434,7 @@ export function detectBusinessSignals(input: DetectorInput): BusinessSignalRegis
     },
     mappingReview: {
       items: mappingReviewItems
-    }
+    },
+    semanticCoverage
   };
 }

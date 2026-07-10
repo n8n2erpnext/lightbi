@@ -1,7 +1,7 @@
 import * as XLSX from 'xlsx';
 import type { SourceCandidate, SourceInspectionResult } from './source-preflight';
 import { profileColumns } from './column-profiler';
-import { createSemanticSample, type SemanticSample } from './semantic-sampler';
+import { createUnderstandingSample, type SemanticSample } from './semantic-sampler';
 
 const FULL_ANALYSIS_ROW_LIMIT = 20_000;
 
@@ -135,7 +135,7 @@ async function inspectExcel(file: File, candidate: SourceCandidate, signal?: Abo
     });
 
     const previewObjects = createRepresentativeRows(allObjects, 1000);
-    const semanticSample = createSemanticSample(allObjects, {
+    const semanticSample = createUnderstandingSample(allObjects, {
       seed: sampleSeed(`${file.name}:${sheetName}`, columns, allObjects.length)
     });
     const profiles = profileColumns(columns, semanticSample.rows, dataRows.length);
@@ -214,7 +214,7 @@ async function inspectDelimitedText(file: File, candidate: SourceCandidate, sign
   });
 
   const preview_rows = createRepresentativeRows(allObjects, 1000);
-  const semanticSample = createSemanticSample(allObjects, {
+  const semanticSample = createUnderstandingSample(allObjects, {
     seed: sampleSeed(file.name, columns, allObjects.length)
   });
   const profiles = profileColumns(columns, semanticSample.rows, dataLines.length);
@@ -268,7 +268,7 @@ async function inspectJson(file: File, candidate: SourceCandidate, signal?: Abor
 
   const firstObj = dataArray.find(item => typeof item === "object" && item !== null) || {};
   const columns = Object.keys(firstObj);
-  const semanticSample = createSemanticSample(dataArray, {
+  const semanticSample = createUnderstandingSample(dataArray, {
     seed: sampleSeed(file.name, columns, dataArray.length)
   });
   const retainedAnalysisRows = retainAnalysisRows(dataArray);

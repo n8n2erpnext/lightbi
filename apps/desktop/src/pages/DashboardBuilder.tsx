@@ -1,109 +1,119 @@
 import React from 'react';
-import { RefreshCw, Edit2, Share2, Plus } from 'lucide-react';
+import { Link, useParams } from 'react-router-dom';
+import { Edit2, Plus, RefreshCw, Share2 } from 'lucide-react';
 import { useAppRuntime } from '@lightbi/runtime';
+import type { Chart, DashboardWidget } from '@lightbi/core-types';
 import { DashboardKPIWidget } from '../components/dashboards/DashboardKPIWidget';
 import { DashboardChartWidget } from '../components/dashboards/DashboardChartWidget';
 
+type SavedChartPayload = {
+  chartType?: 'bar' | 'line' | 'scatter' | 'table';
+  xField?: string;
+  yField?: string;
+  seriesFields?: string[];
+  rows?: Record<string, unknown>[];
+  rowCount?: number;
+};
+
+const getSavedChartPayload = (chart: Chart): SavedChartPayload | null => {
+  const payload = chart.formatting?.lightbiData;
+  if (!payload || typeof payload !== 'object') return null;
+  if (!Array.isArray(payload.rows)) return null;
+  return payload as SavedChartPayload;
+};
+
+const widgetGridStyle = (widget: DashboardWidget): React.CSSProperties => {
+  const colSpan = Math.max(3, Math.min(20, widget.layout.w || 10));
+  const rowSpan = Math.max(3, Math.min(14, widget.layout.h || 8));
+  return { gridColumn: `span ${colSpan} / span ${colSpan}`, gridRow: `span ${rowSpan} / span ${rowSpan}` };
+};
+
+const DashboardWidgetCard: React.FC<{ widget: DashboardWidget; chart?: Chart }> = ({ widget, chart }) => {
+  if (!chart) {
+    return <div style={widgetGridStyle(widget)} className="rounded-md border border-dashed border-gray-200 bg-white p-4 text-sm text-gray-400">Missing chart</div>;
+  }
+  const payload = getSavedChartPayload(chart);
+  if (!payload || !payload.rows?.length) {
+    return (
+      <div style={widgetGridStyle(widget)} className="flex h-full flex-col justify-center rounded-md border border-dashed border-gray-200 bg-white p-4 text-sm text-gray-500">
+        <h3 className="font-semibold text-gray-800">{chart.name}</h3>
+        <p className="mt-1 text-xs text-gray-400">Needs a saved BA or Advanced result before it can render real data.</p>
+      </div>
+    );
+  }
+
+  const xAxisKey = payload.xField || chart.xAxis?.[0]?.columnName || Object.keys(payload.rows[0] ?? {})[0] || 'name';
+  const seriesKey = payload.yField || payload.seriesFields?.[0] || chart.yAxis?.[0]?.columnName || Object.keys(payload.rows[0] ?? {}).find(key => key !== xAxisKey) || 'value';
+
+  if (chart.type === 'Number') {
+    const value = Number(payload.rows[0]?.[seriesKey] ?? payload.rowCount ?? 0);
+    return <div style={widgetGridStyle(widget)}><DashboardKPIWidget title={chart.name} value={Number.isFinite(value) ? value : 0} valueType="number" className="h-full" colSpan={widget.layout.w} /></div>;
+  }
+  if (chart.type === 'Table') {
+    const columns = Object.keys(payload.rows[0] ?? {}).slice(0, 6);
+    return (
+      <div style={widgetGridStyle(widget)} className="rounded-md border border-gray-200 bg-white p-4 shadow-sm">
+        <h3 className="mb-3 text-[13px] font-semibold text-gray-800">{chart.name}</h3>
+        <table className="w-full text-left text-[11px] text-gray-600">
+          <thead className="text-gray-400"><tr>{columns.map(column => <th key={column} className="py-1 pr-2">{column}</th>)}</tr></thead>
+          <tbody>{payload.rows.slice(0, 8).map((row, index) => <tr key={index} className="border-t border-gray-100">{columns.map(column => <td key={column} className="max-w-40 truncate py-2 pr-2">{String(row[column] ?? '')}</td>)}</tr>)}</tbody>
+        </table>
+      </div>
+    );
+  }
+  return (
+    <div style={widgetGridStyle(widget)}>
+      <DashboardChartWidget
+        title={chart.name}
+        chartType={chart.type === 'Line' ? 'line' : chart.type === 'Donut' || chart.type === 'Pie' ? 'donut' : 'bar'}
+        data={payload.rows}
+        xAxisKey={xAxisKey}
+        seriesKey={seriesKey}
+        valueType="number"
+        className="h-full"
+        colSpan={widget.layout.w}
+      />
+    </div>
+  );
+};
+
 export const DashboardBuilder: React.FC = () => {
-  const activeDashboardId = useAppRuntime(s => s.activeDashboardId);
+  const { id } = useParams();
   const dashboards = useAppRuntime(s => s.dashboards);
-  const dashboard = activeDashboardId ? dashboards[activeDashboardId] : null;
+  const charts = useAppRuntime(s => s.charts);
+  const activeDashboardId = useAppRuntime(s => s.activeDashboardId);
+  const dashboard = dashboards[id || activeDashboardId || ''] ?? null;
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-gray-50">
-      {/* Header */}
-      <header className="h-12 border-b border-gray-200 bg-white flex items-center justify-between px-4 shrink-0">
+    <div className="flex h-full flex-1 flex-col bg-gray-50">
+      <header className="flex h-12 shrink-0 items-center justify-between border-b border-gray-200 bg-white px-4">
         <div className="flex items-center space-x-3 text-gray-900">
-          <h1 className="text-[15px] font-semibold">{dashboard ? dashboard.name : 'Select a Dashboard'}</h1>
-          <span className="text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded border border-gray-200 uppercase tracking-widest font-medium">Mock Data</span>
+          <h1 className="text-[15px] font-semibold">{dashboard ? dashboard.name : 'Select a dashboard'}</h1>
+          <span className="rounded border border-gray-200 bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-widest text-gray-500">{dashboard?.widgets.length ?? 0} cards</span>
         </div>
         <div className="flex items-center space-x-2">
-          <button className="p-1.5 text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded-md transition-colors" title="Refresh">
-            <RefreshCw className="w-4 h-4" />
-          </button>
-          <button className="p-1.5 text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded-md transition-colors" title="Edit">
-            <Edit2 className="w-4 h-4" />
-          </button>
-          <button className="p-1.5 text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded-md transition-colors" title="Share">
-            <Share2 className="w-4 h-4" />
-          </button>
-          <div className="w-px h-5 bg-gray-300 mx-2"></div>
-          <button className="bg-gray-900 hover:bg-gray-800 text-white px-3 py-1.5 rounded-md text-sm font-medium flex items-center transition-colors">
-            <Plus className="w-4 h-4 mr-1" /> Add Widget
-          </button>
+          <button className="rounded-md p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-800" title="Refresh"><RefreshCw className="h-4 w-4" /></button>
+          <button className="rounded-md p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-800" title="Edit"><Edit2 className="h-4 w-4" /></button>
+          <button className="rounded-md p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-800" title="Share"><Share2 className="h-4 w-4" /></button>
+          <div className="mx-2 h-5 w-px bg-gray-300" />
+          <Link to="/charts" className="flex items-center rounded-md bg-gray-900 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-gray-800"><Plus className="mr-1 h-4 w-4" /> Add chart</Link>
         </div>
       </header>
 
-      {/* Grid Canvas */}
       <div className="flex-1 overflow-y-auto p-4">
-        {/* 20-col grid placeholder */}
-        <div className="grid grid-cols-20 gap-3" style={{ gridAutoRows: '30px' }}>
-          
-          {/* KPI Widget 1 */}
-          <DashboardKPIWidget 
-            title="Total Revenue"
-            value={45231.89}
-            valueType="currency"
-            trend={{ value: 20.1, label: 'from last month', isPositive: true }}
-            className="col-span-5 row-span-3"
-            colSpan={5}
-          />
-
-          {/* KPI Widget 2 */}
-          <DashboardKPIWidget 
-            title="Active Users"
-            value={2350}
-            valueType="number"
-            trend={{ value: 180.1, label: 'from last month', isPositive: true }}
-            className="col-span-5 row-span-3"
-            colSpan={5}
-          />
-
-          {/* KPI Widget 3 */}
-          <DashboardKPIWidget 
-            title="Sales"
-            value={12234}
-            valueType="number"
-            trend={{ value: 19, label: 'from last month', isPositive: true }}
-            className="col-span-5 row-span-3"
-            colSpan={5}
-          />
-
-          {/* Donut Chart Widget */}
-          <DashboardChartWidget
-            title="Revenue by Category"
-            chartType="donut"
-            data={[
-              { category: 'Electronics', revenue: 15400.50 },
-              { category: 'Clothing', revenue: 8200.75 },
-              { category: 'Software', revenue: 21630.64 }
-            ]}
-            xAxisKey="category"
-            seriesKey="revenue"
-            valueType="currency"
-            className="col-span-10 row-span-10"
-            colSpan={10}
-          />
-
-          {/* Bar Chart Widget (Replacing Table for demo of formatValue) */}
-          <DashboardChartWidget
-            title="Recent Transactions"
-            chartType="bar"
-            data={[
-              { date: 'Mon', amount: 12500 },
-              { date: 'Tue', amount: 18400 },
-              { date: 'Wed', amount: 9600 },
-              { date: 'Thu', amount: 22100 },
-              { date: 'Fri', amount: 28500 }
-            ]}
-            xAxisKey="date"
-            seriesKey="amount"
-            valueType="currency"
-            className="col-span-10 row-span-10"
-            colSpan={10}
-          />
-
-        </div>
+        {!dashboard ? (
+          <div className="flex h-full items-center justify-center rounded-lg border border-dashed border-gray-200 bg-white text-sm text-gray-500">Choose or create a dashboard from the chart library.</div>
+        ) : dashboard.widgets.length === 0 ? (
+          <div className="flex h-full flex-col items-center justify-center rounded-lg border border-dashed border-gray-200 bg-white text-center">
+            <h2 className="text-base font-semibold text-gray-900">No chart cards yet</h2>
+            <p className="mt-1 text-sm text-gray-500">Add reusable chart cards from the Chart Library.</p>
+            <Link to="/charts" className="mt-4 rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white">Open Chart Library</Link>
+          </div>
+        ) : (
+          <div className="grid grid-cols-20 gap-3" style={{ gridAutoRows: '30px' }}>
+            {dashboard.widgets.map(widget => <DashboardWidgetCard key={widget.id} widget={widget} chart={widget.referenceId ? charts[widget.referenceId] : undefined} />)}
+          </div>
+        )}
       </div>
     </div>
   );

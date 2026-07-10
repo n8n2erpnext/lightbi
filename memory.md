@@ -1,5 +1,191 @@
 # PROJECT_MEMORY.md — LightBI
 
+## 2026-07-03 Business Brain Orchestrator Direction
+
+Accepted direction:
+
+```text
+Raw / imported data
+-> Semantic Coverage Engine
+-> Business Signal Registry
+-> KPI Engine
+-> Playbook Matcher
+-> Variance Engine
+-> Root Cause Engine
+-> Risk Engine
+-> Recommendation Engine
+-> Executive Narrative
+```
+
+Why:
+
+* Simple mode must approach a real Business Analyst decision workspace.
+* Recent ERP sample work exposed a recurring gap: data can contain valid business evidence, but LightBI can still be blind if the signal/angle is not already modeled.
+* This is the same root issue behind categorical `Payment` initially not producing the right Payment Mix angle, and Logistics `Carrier`/`DeliveryStatus`/`DeliveryFee` not yet producing internal-vs-outsourced delivery cost/profit impact analysis.
+
+Rules:
+
+* Every imported field must be classified as `recognized`, `partial`, `unknown_business_like`, or `technical_or_noise`.
+* Every selected angle must produce a `BusinessBrainBrief` with readiness, KPI, variance, root cause, risks, recommendations, missing evidence, narrative, and evidence.
+* `partial` and `blocked` are valid outputs, but must explain missing evidence.
+* Executive Narrative must be selected-angle-first. Cross-domain overview may support the answer, but must not replace it.
+* Do not keep patching single signals as the main strategy; build Semantic Coverage + Business Brain Orchestrator first.
+
+Canonical docs:
+
+* `docs/architecture/ADR-119-business-brain-orchestrator.md`
+* `docs/progress/phase-28-business-brain-orchestrator.md`
+
+## 2026-07-04 Context-Aware Semantic Dictionary Direction
+
+Accepted direction:
+
+* LightBI must not rely on headers alone. It must infer business meaning from header evidence, value evidence, shape evidence, and later neighbor/cross-file evidence.
+* The dictionary is domain-wide, not a one-off fix for finance/revenue or the six ERP sample files.
+* Runtime-supported BA domains remain explicit:
+  * operations
+  * revenue
+  * inventory
+  * customer
+  * performance
+  * finance
+* Guidance-only domains must not be treated as fully supported BA domains until they have dictionary entries, playbooks, tests, and executable actions.
+* The product guarantee is not "perfectly understand arbitrary data"; the guarantee is "do not silently hide populated business-like fields."
+
+Canonical docs:
+
+* `docs/architecture/ADR-120-context-aware-semantic-dictionary.md`
+* `docs/progress/phase-29-context-aware-semantic-dictionary.md`
+
+Implementation checkpoint 2026-07-04:
+
+* Added `context-semantic-dictionary.ts` as the first semantic dictionary/evidence layer.
+* Added value-based inference for payment method, delivery status, and carrier/provider signals.
+* Expanded `CONTEXT_SEMANTIC_DICTIONARY_V1` across all six runtime-supported BA domains: operations, revenue, inventory, customer, performance, and finance.
+* Dictionary entries now include route, shipment, delivery fee, revenue, net revenue, invoice total, receivable, branch, salesperson, gross profit, profit, margin, total cost, customer, segment, retention/churn, sku, product, stock quantity, inventory, warehouse, stock status, target, actual, achievement, department, KPI, and time period.
+* Generic headers such as `Type`, `Mode`, and `Provider` can now be mapped from values when values are clear.
+* Imperfect headers with inventory-status and performance-achievement values are now covered by regression tests.
+* Header/value disagreement is surfaced as partial/conflicting semantic coverage instead of being silently trusted.
+* Guardrails:
+  * shape evidence cannot create a signal by itself;
+  * generic `internal` / `external` is not enough to infer carrier;
+  * `shipper` / `courier` must not cause driver/person fields to bleed into carrier without stronger provider evidence.
+* Verification passed:
+  * `pnpm --dir apps/desktop exec vitest run src/lib/context-semantic-dictionary.test.ts src/lib/business-signal-detector.test.ts src/lib/semantic-coverage.test.ts --reporter=dot` -> 34 tests.
+  * `pnpm --dir apps/desktop exec vitest run src/lib/context-semantic-dictionary.test.ts src/lib/business-fusion-overview.test.ts src/lib/business-brain-brief.test.ts src/lib/understanding-core/understanding-core.test.ts src/lib/understanding-core/next-adapter.test.ts src/lib/understanding-next/understanding-next.test.ts src/lib/semantic-coverage.test.ts --reporter=dot` -> 110 tests.
+  * `pnpm --dir apps/desktop exec tsc --noEmit --pretty false --project tsconfig.app.json` -> pass.
+
+Implementation checkpoint 2026-07-03:
+
+* `BusinessBrainBrief` now has a selected-angle KPI slice for payment/logistics/product charts instead of relying only on cross-domain overview metrics.
+* Payment charts can surface payment mix, receivable exposure, and profit/margin signals when those fields are present.
+* Logistics charts can surface delivery fee, fulfilled rate, and internal/external carrier share from generic carrier/status/fee fields.
+* Missing-evidence checks must inspect action fields, chart fields, and overview fields before claiming a profit, receivable, or delivery-fee gap.
+* Root-cause ranking for payment/logistics/product must lead with the selected chart driver; overview drivers are supporting context, not the primary answer.
+
+Implementation checkpoint 2026-07-04:
+
+* Continue Business Brain phases by strengthening the existing selected-angle flow, not replacing stable Simple/Advanced session behavior.
+* `BusinessBrainBrief` now computes canonical chart KPI formulas with source columns for revenue, net revenue, invoice total, gross profit, margin, quantity, delivery fee, AR, payment mix, deferred payment share, delivery fee/revenue, and delivery fee/profit.
+* Header matching must handle camelCase/PascalCase generically, for example `NetRevenue`, `GrossProfit`, `DeliveryFee`, and `AR_Debit`.
+* Chart-level variance now compares previous/current period-like rows and exposes delta/delta percent.
+* KPI-backed risks now cover low margin, high AR, high deferred payment share, delivery fee pressure, outsourced carrier dependency, and low fulfilled delivery rate.
+* Deep BA UI separates KPI, Variance, Root Cause, Risks, Recommendations, and Missing Evidence.
+
+Implementation checkpoint 2026-07-04 follow-up:
+
+* Root-cause engine now creates adaptive drill-down findings from available chart fields: product, category, store, salesperson, payment, carrier, and delivery status.
+* Drill priority must remain selected-angle aware and generic: logistics leads with carrier/status, payment leads with payment, product leads with product/category, profitability leads with product/category/store/payment/logistics.
+* Recommendations now include `do_now` only when missing evidence and high-risk blockers are absent.
+* Deep BA KPI/Variance UI now shows formula and source columns for auditability.
+
+Implementation checkpoint 2026-07-04 next step:
+
+* `BusinessBrainBrief` now includes `nextQuestions`, and Deep BA renders them as visible follow-up BA questions.
+* Variance engine now supports plan/budget/target fields when selected chart evidence has actual-vs-plan columns.
+* Deeper scenario and what-if baselines beyond selected chart rows remain future enhancement, not a BB-3 V1 blocker.
+
+Implementation checkpoint 2026-07-04 risk expansion:
+
+* Risk Engine now combines selected chart KPI/variance evidence with multi-file fusion overview context.
+* Covered V1 risks now include concentration, revenue/reconciliation gaps, cost/delivery-fee spike, weak key coverage, missing shared keys, relationship/many-to-many warnings, low margin, AR/deferred payment, outsourced carrier dependency, and fulfilled-rate risk.
+
+Implementation checkpoint 2026-07-04 Business Brain V1 completion:
+
+* Phase 28 BB-0 through BB-9 are V1 complete.
+* `BusinessBrainBrief` now carries an explicit `evidence` audit trail covering KPI, variance, root cause, risk, and missing evidence.
+* Deep BA panel renders Evidence audit trail in addition to KPI, Variance, Root Cause, Risks, Recommendations, Next Questions, and Missing Evidence.
+* Regression now reads the six ERP sample files directly and proves LightBI can surface Payment mix/AR/profit, Carrier internal-vs-external share/delivery fee, and DeliveryStatus fulfilled-rate evidence.
+* Verification passed:
+  * `pnpm --dir apps/desktop exec vitest run src/lib/business-brain-brief.test.ts --reporter=dot` -> 12 tests.
+  * `pnpm --dir apps/desktop exec vitest run src/lib/business-brain-brief.test.ts src/lib/business-fusion-overview.test.ts src/lib/understanding-next/understanding-next.test.ts src/lib/understanding-core/understanding-core.test.ts src/lib/semantic-coverage.test.ts src/lib/ai-briefing-generator.test.ts src/lib/ba-decision-engine.test.ts --reporter=dot` -> 118 tests.
+  * `pnpm --dir apps/desktop exec tsc --noEmit --pretty false --project tsconfig.app.json` -> pass.
+
+Implementation checkpoint 2026-07-04 UI action visibility fix:
+
+* Business Brain engine support alone was not enough: Payment/Delivery reports did not show in Simple Mode after 6-file fusion because the fusion virtual dataset dropped `payment`, `carrier`, `invoice_total`, and `ar_debit`, and Home uses `understanding-core` actions.
+* Fusion virtual dataset now preserves Payment, Carrier, Delivery Status, Invoice Total, and AR evidence.
+* `understanding-core` now emits executable Simple actions for:
+  * `Payment profitability and receivable mix`;
+  * `Carrier cost impact`;
+  * `Delivery completion mix`.
+* Six-file fusion regression now asserts those labels are present in `availableActions`, so UI visibility is covered, not only downstream BA report generation.
+* Verification passed:
+  * `pnpm --dir apps/desktop exec vitest run src/lib/business-fusion-overview.test.ts --reporter=dot`
+  * `pnpm --dir apps/desktop exec vitest run src/lib/business-fusion-overview.test.ts src/lib/business-brain-brief.test.ts src/lib/understanding-core/understanding-core.test.ts src/lib/understanding-core/next-adapter.test.ts src/lib/understanding-next/understanding-next.test.ts --reporter=dot` -> 103 tests.
+  * `pnpm --dir apps/desktop exec tsc --noEmit --pretty false --project tsconfig.app.json`
+
+## 2026-06-28 Product Boundary Update
+
+Accepted product identity:
+
+```text
+Raw Data
+→ Import
+→ Understand
+→ Clean / Standardize as non-destructive overlay
+→ Trust Score
+→ Dashboard / KPI / Insight
+→ AI Report, optional
+```
+
+LightBI is a **Business Understanding Engine**.
+
+Clarifications:
+
+* Simple Mode is the BA / decision workspace and the product differentiator.
+* Advanced Mode should still compete with TablePro-level data workspace capability.
+* The competitive position is **TablePro-level Advanced workspace + Simple Mode Business Understanding Engine**.
+* AI is optional and must only read LightBI-generated artifacts such as understanding, trust, chart/KPI summaries, insights, caveats, and dashboard state.
+* AI must not own raw data profiling, KPI computation, trust scoring, query execution, cleaning, or source mutation.
+* Clean / Standardize means reversible overlays, aliases, inferred types, normalized runtime views, presentation formatting, or reviewable export/import artifacts. It must not silently mutate original files, sheets, or databases.
+* Provider expansion remains plugin-first.
+
+Canonical docs:
+
+* `docs/architecture/ADR-117-business-understanding-engine-product-boundary.md`
+* `docs/product/product-direction-and-pricing-v1.md`
+
+## 2026-06-28 Plugin SDK Phase
+
+`@lightbi/plugin-sdk` is now a richer TypeScript contract for provider plugins, but it is still interface/manual phase, not a dynamic marketplace runtime.
+
+Current SDK docs:
+
+* `packages/plugin-sdk/src/index.ts`
+* `packages/plugin-sdk/README.md`
+* `docs/plugin-sdk/provider-plugin-manual.md`
+* `docs/architecture/ADR-116-plugin-first-system-expansion.md`
+
+Important SDK rules:
+
+* New enterprise systems should be plugin-first, not patched into core.
+* A provider must not appear in Simple or Advanced UI until it can connect, discover schema, run bounded read-only queries, return typed rows, and normalize errors.
+* SQL Server should be the first real provider plugin once the backend plugin host/registry exists.
+* `LightBIPluginRegistry` now exists for trusted built-in/first-party plugin objects. It is not a dynamic marketplace loader. SQL Server currently has an example manifest skeleton only.
+* Rust backend now has `apps/server/src/plugin_host.rs` as a manifest/exposure-gate bridge. Public provider route: `GET /api/plugins/providers`. Diagnostics route: `GET /api/plugins/providers/diagnostics`.
+* Advanced provider dropdown now loads `GET /api/plugins/providers` and falls back to the five built-in providers if the backend registry is unavailable.
+
 ## 0. Operating Workflow
 
 This project uses a multi-agent handoff workflow:
@@ -1205,3 +1391,245 @@ A. Backend DuckDB fully verified with real uploaded files.
 B. Backend still fails and fallback hides it.
 C. Evidence insufficient.
 ```
+
+---
+
+# 14. 2026-07-03 Business Brain Semantic Coverage Implementation
+
+Root cause for the current "blindness" issue is in the data-understanding / semantic-coverage layer:
+
+```text
+populated business column
+-> not mapped to current canonical taxonomy/playbook
+-> dropped from downstream AI/BA artifacts
+-> Simple Mode and AI Mode answer as if the evidence does not exist
+```
+
+Implemented first guardrail:
+
+* Added semantic coverage classification:
+  * `recognized`
+  * `partial`
+  * `unknown_business_like`
+  * `technical_or_noise`
+* Added coverage report to business signal detector and dataset understanding.
+* Unknown business-like fields now:
+  * downgrade understanding to `partial` when needed;
+  * cap readiness;
+  * add caveats;
+  * flow into `AISafeBriefing`;
+  * surface as a BA `field_gap` insight.
+* Do not hardcode the fix to payment, vehicle type, sample file names, month labels, or any one dataset. The system must classify all user-input fields generically before selected-angle analysis.
+
+Verified:
+
+```text
+pnpm --dir apps/desktop exec vitest run src/lib/semantic-coverage.test.ts src/lib/ai-briefing-generator.test.ts src/lib/ba-decision-engine.test.ts src/lib/business-brain-brief.test.ts --reporter=dot
+pnpm --dir apps/desktop exec tsc --noEmit --pretty false --project tsconfig.app.json
+```
+
+Follow-up implementation in the same direction:
+
+* Extended generic ERP recognition in `understanding-next`:
+  * payment method;
+  * invoice total;
+  * receivable / AR debit;
+  * gross profit;
+  * margin percent;
+  * total cost / COGS;
+  * carrier / logistics provider;
+  * delivery fee;
+  * delivery status;
+  * order and shipment keys.
+* Added executable Simple Mode questions/lenses:
+  * `Payment profitability and receivable mix`;
+  * `Carrier cost impact`;
+  * `Delivery completion mix`.
+* Guardrail tests use synthetic clean ERP-like structures, not sample file names, so the behavior generalizes beyond the six demo files.
+
+Verified:
+
+```text
+pnpm --dir apps/desktop exec vitest run src/lib/understanding-next/understanding-next.test.ts src/lib/understanding-core/understanding-core.test.ts src/lib/semantic-coverage.test.ts src/lib/ai-briefing-generator.test.ts src/lib/ba-decision-engine.test.ts src/lib/business-brain-brief.test.ts --reporter=dot
+pnpm --dir apps/desktop exec tsc --noEmit --pretty false --project tsconfig.app.json
+```
+
+---
+
+# 15. 2026-07-04 Context-Aware Semantic Dictionary V1
+
+Phase 29 root-cause fix for "data is present but LightBI is blind" now has a testable V1:
+
+* Added a domain-wide semantic dictionary for the six runtime BA domains:
+  * operations;
+  * revenue;
+  * inventory;
+  * customer;
+  * performance;
+  * finance.
+* Detector evidence now supports:
+  * header;
+  * value;
+  * shape;
+  * neighbor columns;
+  * cross-file context.
+* Guardrails:
+  * shape evidence alone cannot create a business signal;
+  * cross-file context cannot create a mapping by itself;
+  * generic `Internal` / `External` values remain unknown unless stronger domain evidence exists;
+  * header/value contradiction is partial/conflicting, not silently trusted;
+  * dictionary canonical IDs are regression-checked against the runtime taxonomy.
+* Important product interpretation:
+  * this reduces semantic blindness before BA/AI narrative;
+  * it does not claim 100% arbitrary-enterprise-file understanding;
+  * populated business-like unknowns must remain visible as gaps/caveats.
+
+Verified:
+
+```text
+pnpm --dir apps/desktop exec vitest run src/lib/context-semantic-dictionary.test.ts src/lib/business-signal-detector.test.ts src/lib/semantic-coverage.test.ts --reporter=dot
+pnpm --dir apps/desktop exec tsc --noEmit --pretty false --project tsconfig.app.json
+```
+
+---
+
+# 16. 2026-07-04 Semantic Registry Unification Safepoint
+
+Phase 30 created a source-of-truth bridge for scattered semantic architecture:
+
+* Added `apps/desktop/src/lib/semantic-registry.ts`.
+* `business-signal-detector.ts` now gets `TAXONOMY` from `SEMANTIC_TAXONOMY_V1`.
+* `context-semantic-dictionary.ts` now gets `CONTEXT_SEMANTIC_DICTIONARY_V1` from `SEMANTIC_CONTEXT_DICTIONARY_V1`.
+* Added drift guard tests:
+  * detector taxonomy must come from the registry;
+  * context dictionary must come from the registry;
+  * supported runtime BA domains remain explicit;
+  * every signal referenced by domain BA playbooks and domain knowledge catalog must exist in the registry.
+* Added partial registry entries for playbook-only / derived signals so BA playbooks no longer name concepts absent from runtime semantics.
+* Generic high-risk aliases such as `category` and `group` were kept out of exact alias matching unless value/context evidence exists.
+
+Verification:
+
+```text
+pnpm --dir apps/desktop exec vitest run src/lib/semantic-registry.test.ts src/lib/domain-ba-playbooks.test.ts src/lib/domain-knowledge-catalog.test.ts src/lib/context-semantic-dictionary.test.ts src/lib/business-signal-detector.test.ts --reporter=dot
+pnpm --dir apps/desktop exec vitest run src/lib/semantic-registry.test.ts src/lib/context-semantic-dictionary.test.ts src/lib/business-fusion-overview.test.ts src/lib/business-brain-brief.test.ts src/lib/understanding-core/understanding-core.test.ts src/lib/understanding-core/next-adapter.test.ts src/lib/understanding-next/understanding-next.test.ts src/lib/semantic-coverage.test.ts src/lib/domain-ba-playbooks.test.ts src/lib/domain-knowledge-catalog.test.ts --reporter=dot
+pnpm --dir apps/desktop exec tsc --noEmit --pretty false --project tsconfig.app.json
+```
+
+Cleanup completed:
+
+* Removed the old copied taxonomy and context dictionary migration references after the registry bridge tests stayed green.
+
+Remaining architecture boundary:
+
+* `understanding-core/ontology.ts` remains a broader universal ontology adapter, not the runtime BA source of truth.
+
+---
+
+# 17. 2026-07-10 Semantic Dictionary Expansion + Domain Affinity Safepoint
+
+Continuation of Phase 30 to reduce semantic blindness beyond clean ERP sample files.
+
+Implemented:
+
+* Expanded `semantic-registry.ts` with broader partial/runtime-safe signals across:
+  * Salesforce/CRM style sales and service exports;
+  * SAP/Dynamics/NetSuite-like sales, billing, material, plant, storage, and fulfillment exports;
+  * POS/cashier settlement;
+  * bank statement and reconciliation;
+  * marketing ads and web analytics;
+  * procurement/RFQ/purchase requests;
+  * HR payroll, attendance, leave, and employee master;
+  * maintenance/assets/IoT measurements;
+  * survey, education, and healthcare-like operational exports.
+* Improved `context-semantic-dictionary.ts`:
+  * compact/camel-like header matching for headers such as `SalesOrderNo`, `TripID`, `AccountId`, `FulfillmentStatus`;
+  * identifier string shape support;
+  * neighbor/cross-file evidence groups for the new external-data families.
+* Added `understanding-next/semantic-domain-affinity.ts`.
+  * Builds a lightweight semantic affinity vector from detected signals.
+  * Promotes hybrid files into multiple domains when signal clusters co-occur, for example order + revenue + cost + shipment + trip + driver + SKU + quantity.
+* Wired affinity into `understanding-next/orchestrator.ts` and `UnderstandingNextCard.tsx` so detected domains are ordered by inferred signal clusters when available.
+* Added regression coverage for hybrid ERP exports and non-ERP exports.
+
+Verified:
+
+```text
+pnpm --dir apps/desktop exec vitest run src/lib/context-semantic-dictionary.test.ts src/lib/semantic-registry.test.ts src/lib/understanding-next/understanding-next.test.ts src/lib/semantic-coverage.test.ts src/lib/business-signal-detector.test.ts src/lib/semantic-sampler.test.ts src/lib/ai-briefing-generator.test.ts --reporter=dot
+pnpm --dir apps/desktop exec tsc --noEmit --pretty false --project tsconfig.app.json
+```
+
+Result:
+
+* 7 test files passed.
+* 134 tests passed.
+* Desktop TypeScript check passed.
+
+Remaining:
+
+* Continue researching and adding broader industry/file families.
+* Add more playbook/action support for newly recognized partial signals before exposing them as executable BA angles.
+
+Follow-up in the same phase:
+
+* Expanded partial recognition beyond ERP/SAP/CRM into external/manual operational files:
+  * access audit logs and permission/MFA signals;
+  * application/API logs with endpoint, HTTP status, latency, error, service, and environment;
+  * SaaS/subscription files with plan, MRR/ARR, renewal, and usage;
+  * contract/legal, property/lease, construction/project progress;
+  * agriculture/field, utility/meter, compliance/risk, nonprofit/donor/grant, and QC inspection data.
+* Added neighbor and cross-file evidence groups for those families so generic columns such as `Status`, `Amount`, `ID`, or `Action` are not trusted without surrounding context.
+* Extended the semantic domain affinity vector with cluster rules for app reliability, access audit, subscription revenue, contract lifecycle, property operations, construction progress, agriculture/utility operations, risk controls, nonprofit funding, and QC/quality data.
+* Fixed an over-broad error-code value regex that mistakenly treated generic values beginning with `E` such as `External` as `error_code`.
+
+Verification:
+
+```text
+pnpm --dir apps/desktop exec vitest run src/lib/context-semantic-dictionary.test.ts src/lib/semantic-registry.test.ts src/lib/understanding-next/understanding-next.test.ts src/lib/semantic-coverage.test.ts src/lib/business-signal-detector.test.ts src/lib/semantic-sampler.test.ts src/lib/ai-briefing-generator.test.ts --reporter=dot
+pnpm --dir apps/desktop exec tsc --noEmit --pretty false --project tsconfig.app.json
+```
+
+Result:
+
+* 7 test files passed.
+* 137 tests passed.
+* Desktop TypeScript check passed.
+
+Follow-up: semantic layer merge guardrail.
+
+Implemented:
+
+* Converted `understanding-core/ontology.ts` from a standalone rule owner into a registry-backed adapter:
+  * rules are generated from `SEMANTIC_SIGNAL_REGISTRY_V1`;
+  * legacy core patterns are merged into matching registry-owned IDs for compatibility;
+  * remaining core-only supplemental IDs are explicit and allowlisted.
+* Converted `understanding-next/signal-detector.ts` to the same registry-backed pattern:
+  * registry rules are generated first;
+  * next-layer compatibility rules only supplement unmapped IDs;
+  * payment/logistics/document/status signals no longer live only inside the chart detector.
+* Expanded `semantic-registry.ts` with missing central signals needed to remove detector drift:
+  * payment cash/card/bank/voucher, change amount, rounding amount, payment status;
+  * on-time status, waiting time, current/origin/destination location, freight fee, service group, item type, load status, row type;
+  * debt, balance, fiscal month/year, manager, person, coach, role, doctor, medicine;
+  * goods receipt, return document, related document, document type;
+  * ordered/received/sold quantity, campaign attempts, previous contacts/outcome, country.
+* Tightened alias handling after regression:
+  * short aliases such as `cod` now match token boundaries in registry-backed regex generation;
+  * `row_type` no longer uses generic values such as `cash`, `credit`, `debit`, or generic `type` aliases that can steal payment/generic columns.
+* Added `semantic-registry.test.ts` guard coverage proving:
+  * business detector taxonomy and context dictionary still come from the registry;
+  * understanding-core and understanding-next are registry-backed adapters;
+  * supplemental signal rules cannot silently grow outside explicit allowlists.
+
+Verification:
+
+```text
+pnpm --dir apps/desktop exec vitest run src/lib/semantic-registry.test.ts src/lib/context-semantic-dictionary.test.ts src/lib/business-signal-detector.test.ts src/lib/understanding-core/understanding-core.test.ts src/lib/understanding-core/next-adapter.test.ts src/lib/understanding-next/understanding-next.test.ts src/lib/semantic-coverage.test.ts src/lib/semantic-sampler.test.ts src/lib/ai-briefing-generator.test.ts --reporter=dot
+pnpm --dir apps/desktop exec tsc --noEmit --pretty false --project tsconfig.app.json
+```
+
+Result:
+
+* 9 test files passed.
+* 158 tests passed.
+* Desktop TypeScript check passed.

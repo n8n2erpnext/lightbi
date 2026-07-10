@@ -138,7 +138,13 @@ function normalizedName(value: string): string {
   return value
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/g, 'd')
+    .replace(/Đ/g, 'D')
     .toLowerCase();
+}
+
+function normalizedLoose(value: string): string {
+  return normalizedName(value).replace(/[_-]+/g, ' ').replace(/\s+/g, ' ').trim();
 }
 
 const DOMAIN_REQUIRED_FIELD_RULES = [
@@ -229,12 +235,23 @@ function selectNumericField(
   chartModel: ChartPreviewModel | null
 ): string | null {
   const preferred = chartModel?.yField ?? chartModel?.seriesFields?.[0];
-  if (preferred && numericCoverage(rows, preferred) >= 0.6) return preferred;
+  const isRateLike = (field: string) => /(rate|ratio|share|pct|percent)/.test(normalizedLoose(field));
+  if (preferred && numericCoverage(rows, preferred) >= 0.6 && !isRateLike(preferred)) return preferred;
+  if (preferred && isRateLike(preferred)) {
+    const nonRatePreferred = (chartModel?.seriesFields ?? [])
+      .find(field => field !== preferred && !isRateLike(field) && numericCoverage(rows, field) >= 0.6);
+    if (nonRatePreferred) return nonRatePreferred;
+  }
 
   const ranked = columns
     .map(field => ({ field, coverage: numericCoverage(rows, field) }))
     .filter(item => item.coverage >= 0.6)
-    .sort((a, b) => b.coverage - a.coverage);
+    .sort((a, b) => {
+      const aRate = isRateLike(a.field) ? 1 : 0;
+      const bRate = isRateLike(b.field) ? 1 : 0;
+      if (aRate !== bRate) return aRate - bRate;
+      return b.coverage - a.coverage;
+    });
 
   return ranked[0]?.field ?? null;
 }
@@ -409,6 +426,65 @@ function mineTopConcentrationInsight(
       `${top.label}: ${formatNumber(top.value)}`,
       total > 0 ? `Top share: ${formatPercent(topShare)}` : 'Total is zero or unavailable',
       total > 0 ? `Top 3 share: ${formatPercent(top3Share)}` : `Compared across ${values.length} groups`
+    ],
+    chartHint: 'bar'
+  };
+}
+
+function findFieldByLooseName(columns: string[], target: string): string | null {
+  const normalizedTarget = normalizedLoose(target);
+  return columns.find(column => normalizedLoose(column) === normalizedTarget)
+    ?? columns.find(column => normalizedLoose(column).includes(normalizedTarget) || normalizedTarget.includes(normalizedLoose(column)))
+    ?? null;
+}
+
+function minePositiveRateInsight(
+  rows: Record<string, unknown>[],
+  columns: string[],
+  categoryField: string | null,
+  runtimeIntent: RuntimeIntent
+): BAInsight | null {
+  const measure = runtimeIntent.derivedMeasures?.find(item => item.type === 'positive_rate');
+  if (!measure || !categoryField || rows.length === 0) return null;
+
+  const numeratorField = findFieldByLooseName(columns, measure.numeratorLabel);
+  const denominatorField = findFieldByLooseName(columns, measure.denominatorLabel);
+  if (!numeratorField || !denominatorField) return null;
+
+  const values = rows
+    .map(row => {
+      const numerator = toNumber(row[numeratorField]) ?? 0;
+      const denominator = toNumber(row[denominatorField]) ?? 0;
+      return {
+        label: isEmpty(row[categoryField]) ? '(empty)' : String(row[categoryField]),
+        numerator,
+        denominator,
+        rate: denominator > 0 ? numerator / denominator : 0
+      };
+    })
+    .filter(item => item.denominator > 0);
+  if (values.length === 0) return null;
+
+  const totalNumerator = values.reduce((sum, item) => sum + item.numerator, 0);
+  const totalDenominator = values.reduce((sum, item) => sum + item.denominator, 0);
+  if (totalDenominator <= 0) return null;
+
+  const positiveRows = values.filter(item => item.numerator > 0).sort((a, b) => b.numerator - a.numerator);
+  const lead = positiveRows[0] ?? values.sort((a, b) => b.denominator - a.denominator)[0];
+  const overallRate = totalNumerator / totalDenominator;
+  const severity: BAInsightSeverity = overallRate >= 0.9 ? 'positive' : overallRate >= 0.75 ? 'neutral' : 'warning';
+
+  return {
+    id: 'ba_positive_rate_mix',
+    type: 'distribution',
+    title: `${measure.label} by ${categoryField}`,
+    statement: `${lead.label} has ${formatNumber(lead.numerator)} positive row${lead.numerator === 1 ? '' : 's'}; overall positive rate is ${formatPercent(overallRate)}.`,
+    severity,
+    confidence: clampScore(76 + Math.min(18, values.length * 3)),
+    evidence: [
+      `${lead.label}: ${formatNumber(lead.numerator)} / ${formatNumber(lead.denominator)} (${formatPercent(lead.rate)})`,
+      `Overall: ${formatNumber(totalNumerator)} / ${formatNumber(totalDenominator)} (${formatPercent(overallRate)})`,
+      `Compared across ${values.length} ${categoryField} group${values.length === 1 ? '' : 's'}`
     ],
     chartHint: 'bar'
   };
@@ -750,12 +826,36 @@ function mineDataQualityInsight(aiBriefing?: AISafeBriefing): BAInsight | null {
   };
 }
 
+function mineSemanticCoverageGapInsight(aiBriefing?: AISafeBriefing): BAInsight | null {
+  const coverage = aiBriefing?.semanticCoverage;
+  if (!coverage || coverage.unknownBusinessLike === 0) return null;
+
+  const columns = coverage.unknownBusinessLikeColumns.slice(0, 5);
+  const extraCount = Math.max(0, coverage.unknownBusinessLikeColumns.length - columns.length);
+
+  return {
+    id: 'ba_semantic_coverage_gap',
+    type: 'field_gap',
+    title: 'Semantic coverage gap',
+    statement: `${coverage.unknownBusinessLike} populated business-like column(s) were kept for review because LightBI has not mapped them to safe canonical signals yet.`,
+    severity: coverage.coverageScore < 70 ? 'critical' : 'warning',
+    confidence: clampScore(100 - coverage.coverageScore),
+    evidence: [
+      `Coverage score: ${coverage.coverageScore}/100`,
+      `Unmapped business-like: ${columns.join(', ')}${extraCount > 0 ? `, and ${extraCount} more` : ''}`,
+      `Recognized columns: ${coverage.recognized}/${coverage.nonEmptyColumns}`
+    ],
+    chartHint: 'table'
+  };
+}
+
 function insightPriority(insight: BAInsight): number {
   const severityScore = insight.severity === 'critical' ? 40 : insight.severity === 'warning' ? 28 : insight.severity === 'positive' ? 18 : 12;
   const typeScore: Record<BAInsightType, number> = {
     field_gap: 35,
     key_risk: 34,
     outlier: 32,
+    segment_spread: 30,
     top_concentration: 26,
     trend: 24,
     bottom_group: 20,
@@ -802,6 +902,7 @@ function buildDecisionSuggestions(
   const hasKeyRisk = insights.some(insight => insight.type === 'key_risk');
   const hasOutlierRisk = insights.some(insight => insight.type === 'outlier');
   const hasFieldGap = insights.some(insight => insight.type === 'field_gap');
+  const hasSemanticCoverageGap = insights.some(insight => insight.id === 'ba_semantic_coverage_gap');
 
   if (decisionReadinessScore >= 80) {
     suggestions.push({
@@ -820,7 +921,9 @@ function buildDecisionSuggestions(
   if (insights.some(insight => insight.severity === 'warning' || insight.severity === 'critical')) {
     suggestions.push({
       title: 'Investigate risk drivers',
-      action: hasFieldGap
+      action: hasSemanticCoverageGap
+        ? 'Review the unmapped business-like columns before trusting the BA answer; the data exists but LightBI has not safely understood those fields yet.'
+        : hasFieldGap
         ? 'Confirm the missing business fields before using this result as a decision answer.'
         : hasKeyRisk
         ? 'Check duplicate or empty key values before trusting grouped totals, joins, or record counts.'
@@ -965,6 +1068,7 @@ export function createBADecisionBrief(input: CreateBADecisionBriefInput): BADeci
   const categoryField = selectCategoryField(rows, columns, numericField, chartModel);
 
   const insights = [
+    minePositiveRateInsight(rows, columns, categoryField, runtimeIntent),
     mineTopConcentrationInsight(rows, categoryField, numericField),
     mineBottomInsight(rows, categoryField, numericField),
     mineSegmentSpreadInsight(rows, categoryField, numericField),
@@ -974,6 +1078,7 @@ export function createBADecisionBrief(input: CreateBADecisionBriefInput): BADeci
     mineKeyRiskInsight(rows, columns, categoryField),
     mineRequiredFieldGapInsight(columns, aiBriefing, runtimeIntent),
     mineCoverageInsight(previewResult),
+    mineSemanticCoverageGapInsight(aiBriefing),
     mineDataQualityInsight(aiBriefing)
   ].filter((insight): insight is BAInsight => Boolean(insight));
 
@@ -1097,7 +1202,7 @@ export function createPreExecutionBADecisionBrief(input: CreatePreExecutionBADec
     + insights.filter(insight => insight.type === 'outlier' || insight.type === 'key_risk').length * 6
     + insights.filter(insight => insight.type === 'field_gap').length * 10
     + extraRiskPenalty;
-  const riskAwareSuggestions = buildDecisionSuggestions(
+  const riskAwareSuggestions: BADecisionSuggestion[] = buildDecisionSuggestions(
     brief.dataTrustScore,
     decisionReadinessScore,
     insights,
@@ -1121,13 +1226,13 @@ export function createPreExecutionBADecisionBrief(input: CreatePreExecutionBADec
       `Pre-execution estimate based on ${sourceScope}. Run preview to validate result rows.`,
       ...brief.caveats
     ].slice(0, 6),
-    decisionSuggestions: [
+    decisionSuggestions: ([
       {
         title: 'Run preview to validate',
         action: 'Use this pre-execution brief to orient the analysis, then run preview before making a decision.',
-        priority: 'high'
+        priority: 'high' as const
       },
       ...riskAwareSuggestions
-    ].slice(0, 3)
+    ] satisfies BADecisionSuggestion[]).slice(0, 3)
   };
 }

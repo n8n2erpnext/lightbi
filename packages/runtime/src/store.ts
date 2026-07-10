@@ -14,25 +14,13 @@ const mockProject: Project = {
   dashboards: []
 };
 
-const mockDashboards: Record<string, Dashboard> = {
-  'dash-1': { id: 'dash-1', projectId: 'proj-1', name: 'Sales Overview', widgets: [], metadata: {}, createdAt: '', updatedAt: '' },
-  'dash-2': { id: 'dash-2', projectId: 'proj-1', name: 'Inventory Status', widgets: [], metadata: {}, createdAt: '', updatedAt: '' }
-};
+const mockDashboards: Record<string, Dashboard> = {};
 
-const mockCharts: Record<string, Chart> = {
-  'chart-1': { id: 'chart-1', projectId: 'proj-1', datasetId: 'ds-1', name: 'Revenue Trend', type: 'Line', formatting: {}, createdAt: '', updatedAt: '' },
-  'chart-2': { id: 'chart-2', projectId: 'proj-1', datasetId: 'ds-2', name: 'Category Breakdown', type: 'Donut', formatting: {}, createdAt: '', updatedAt: '' }
-};
+const mockCharts: Record<string, Chart> = {};
 
-const mockDatasets: Record<string, Dataset> = {
-  'ds-1': { id: 'ds-1', projectId: 'proj-1', name: 'Sales Data', origin: { type: 'DatabaseTable', sourceId: 'src-1', reference: 'sales' }, columns: [], rowCount: 12500, metadata: {}, createdAt: '', updatedAt: '' },
-  'ds-2': { id: 'ds-2', projectId: 'proj-1', name: 'Products', origin: { type: 'FileImport', sourceId: 'src-2', reference: 'products.csv' }, columns: [], rowCount: 430, metadata: {}, createdAt: '', updatedAt: '' }
-};
+const mockDatasets: Record<string, Dataset> = {};
 
-const mockDatasources: Record<string, Datasource> = {
-  'src-1': { id: 'src-1', projectId: 'proj-1', name: 'ERPNext Database', type: 'MariaDB', config: {}, status: 'Connected', createdAt: '', updatedAt: '' },
-  'src-2': { id: 'src-2', projectId: 'proj-1', name: 'Inventory Export', type: 'CSV', config: {}, status: 'Disconnected', createdAt: '', updatedAt: '' }
-};
+const mockDatasources: Record<string, Datasource> = {};
 
 export const useAppRuntime = create<AppRuntimeState>((set) => ({
   activeProjectId: null,
@@ -70,4 +58,67 @@ export const useAppRuntime = create<AppRuntimeState>((set) => ({
   setActiveChart: (chartId) => set({ activeChartId: chartId }),
   setActiveDataset: (datasetId) => set({ activeDatasetId: datasetId }),
   setActiveDatasource: (datasourceId) => set({ activeDatasourceId: datasourceId }),
+  createDashboard: (name) => {
+    const id = `dash-${Date.now()}`;
+    const now = new Date().toISOString();
+    set((state) => ({
+      dashboards: {
+        ...state.dashboards,
+        [id]: {
+          id,
+          projectId: state.activeProjectId || 'proj-1',
+          name: name.trim() || 'Untitled dashboard',
+          widgets: [],
+          metadata: {},
+          createdAt: now,
+          updatedAt: now,
+        },
+      },
+      activeDashboardId: id,
+    }));
+    return id;
+  },
+  createChart: (chart) => {
+    const id = `chart-${Date.now()}`;
+    const now = new Date().toISOString();
+    set((state) => ({
+      charts: {
+        ...state.charts,
+        [id]: { ...chart, id, createdAt: now, updatedAt: now },
+      },
+      activeChartId: id,
+    }));
+    return id;
+  },
+  addChartToDashboard: (dashboardId, chartId) => set((state) => {
+    const dashboard = state.dashboards[dashboardId];
+    const chart = state.charts[chartId];
+    if (!dashboard || !chart) return state;
+    if (dashboard.widgets.some(widget => widget.type === 'Chart' && widget.referenceId === chartId)) {
+      return { activeDashboardId: dashboardId };
+    }
+    const index = dashboard.widgets.length;
+    const widget = {
+      id: `widget-${Date.now()}-${index}`,
+      type: 'Chart' as const,
+      referenceId: chartId,
+      layout: {
+        x: (index % 2) * 10,
+        y: Math.floor(index / 2) * 8,
+        w: chart.type === 'Number' ? 5 : 10,
+        h: chart.type === 'Number' ? 3 : 8,
+      },
+    };
+    return {
+      dashboards: {
+        ...state.dashboards,
+        [dashboardId]: {
+          ...dashboard,
+          widgets: [...dashboard.widgets, widget],
+          updatedAt: new Date().toISOString(),
+        },
+      },
+      activeDashboardId: dashboardId,
+    };
+  }),
 }));

@@ -5,6 +5,39 @@ import { adaptNextActionsToLegacy } from '../../lib/understanding-next/action-ad
 import { AnalysisOpportunityGrid } from './AnalysisOpportunityGrid';
 import type { AnalysisAction } from '../../lib/analysis-opportunity-actions';
 
+const DOCUMENT_TYPE_LABELS: Record<string, string> = {
+  retail_sales_document: 'retail sales data',
+  logistics_intake_report: 'logistics intake data',
+  logistics_export_report: 'logistics export data',
+  inventory_snapshot: 'inventory snapshot data',
+  product_master: 'product master data',
+  management_ranking: 'management ranking data',
+  dirty_operational_export: 'operational export with cleanup risk',
+  generic_table: 'general business table',
+};
+
+const GRAIN_LABELS: Record<string, string> = {
+  transaction: 'transaction-level',
+  event: 'event-level',
+  snapshot: 'snapshot-level',
+  master_data: 'master-data',
+  summary: 'summary-level',
+  unknown: 'unknown-grain',
+};
+
+const DOMAIN_LABELS: Record<string, string> = {
+  operations: 'Operations',
+  revenue: 'Revenue',
+  inventory: 'Inventory',
+  customer: 'Customer',
+  performance: 'Performance',
+  finance: 'Finance',
+};
+
+function humanize(value: string): string {
+  return value.replace(/_/g, ' ');
+}
+
 export interface UnderstandingNextCardProps {
   understanding: DatasetUnderstandingResult;
   selectedActionId?: string;
@@ -25,6 +58,23 @@ export const UnderstandingNextCard: React.FC<UnderstandingNextCardProps> = ({
 
   const statusConfig = getHeaderStatus();
   const StatusIcon = statusConfig.icon;
+  const readyLenses = understanding.lenses
+    .map(lens => ({ ...lens, questions: lens.questions.filter(question => question.defaultAction) }))
+    .filter(lens => lens.availability === 'ready' && lens.questions.length > 0);
+  const partialLenses = understanding.lenses.filter(lens => !readyLenses.some(ready => ready.id === lens.id));
+  const topSignals = [...understanding.signals]
+    .filter(signal => signal.role !== 'technical')
+    .sort((left, right) => right.confidence - left.confidence)
+    .slice(0, 5);
+  const topStakeholders = [...(understanding.stakeholderFits ?? [])].slice(0, 4);
+  const topDomains = (understanding.domainAffinities?.length
+    ? understanding.domainAffinities.map(affinity => affinity.domain)
+    : understanding.profile.detectedDomains
+  ).slice(0, 4).map(domain => DOMAIN_LABELS[domain] ?? humanize(domain));
+  const readyQuestionCount = readyLenses.reduce((sum, lens) => sum + lens.questions.filter(question => question.defaultAction).length, 0);
+  const blockedAnalysisCount = understanding.unavailableActions.length + partialLenses.reduce((sum, lens) => sum + lens.questions.filter(question => !question.defaultAction).length, 0);
+  const documentLabel = DOCUMENT_TYPE_LABELS[understanding.profile.documentType] ?? humanize(understanding.profile.documentType);
+  const grainLabel = GRAIN_LABELS[understanding.profile.grain] ?? humanize(understanding.profile.grain);
 
 
 
@@ -41,8 +91,8 @@ export const UnderstandingNextCard: React.FC<UnderstandingNextCardProps> = ({
             </div>
           </div>
           <div className="flex items-center gap-4 text-[13px] text-gray-600">
-             <div className="flex items-center gap-1.5"><FileText className="w-4 h-4 text-gray-400"/> {understanding.profile.documentType}</div>
-             <div className="flex items-center gap-1.5"><Layers className="w-4 h-4 text-gray-400"/> Grain: {understanding.profile.grain}</div>
+             <div className="flex items-center gap-1.5"><FileText className="w-4 h-4 text-gray-400"/> {documentLabel}</div>
+             <div className="flex items-center gap-1.5"><Layers className="w-4 h-4 text-gray-400"/> Grain: {grainLabel}</div>
           </div>
         </div>
         <div className="flex flex-col items-end gap-1.5">
@@ -50,6 +100,70 @@ export const UnderstandingNextCard: React.FC<UnderstandingNextCardProps> = ({
             <div><span className="text-slate-400">Source Rows:</span> <span className="font-semibold text-slate-700">{understanding.source.sourceRowCount > 0 ? understanding.source.sourceRowCount.toLocaleString() : 'Unknown'}</span></div>
             <div><span className="text-slate-400">Sample Rows:</span> <span className="font-semibold text-slate-700">{understanding.source.sampleRowCount.toLocaleString()}</span></div>
             <div><span className="text-slate-400">Parsed Rows:</span> <span className="font-semibold text-slate-700">{understanding.source.parsedRowCount.toLocaleString()}</span></div>
+          </div>
+        </div>
+      </div>
+
+      {/* BA summary */}
+      <div className="rounded-xl border border-blue-100 bg-gradient-to-br from-blue-50 via-white to-emerald-50 p-4">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+          <div className="min-w-0">
+            <div className="text-[11px] font-semibold uppercase tracking-wide text-blue-600">LightBI understands this as</div>
+            <h4 className="mt-1 text-[18px] font-semibold text-gray-950">
+              {documentLabel}
+              <span className="text-gray-400"> · </span>
+              {grainLabel}
+            </h4>
+            <p className="mt-1 max-w-2xl text-[13px] leading-5 text-gray-600">
+              LightBI sees {understanding.source.sourceRowCount > 0 ? understanding.source.sourceRowCount.toLocaleString() : 'an unknown number of'} source rows,
+              {' '}{understanding.source.sourceColumnCount.toLocaleString()} columns, and enough business signals to offer {readyQuestionCount} ready runtime action{readyQuestionCount === 1 ? '' : 's'}.
+              {blockedAnalysisCount > 0 ? ` ${blockedAnalysisCount} other angle${blockedAnalysisCount === 1 ? '' : 's'} need more signals before they are safe to run.` : ''}
+            </p>
+          </div>
+          <div className="grid min-w-[220px] grid-cols-2 gap-2 text-[11px]">
+            <div className="rounded-lg border border-white/80 bg-white/80 p-2">
+              <div className="text-gray-400">Ready lenses</div>
+              <div className="mt-0.5 text-[18px] font-semibold text-emerald-700">{readyLenses.length}</div>
+            </div>
+            <div className="rounded-lg border border-white/80 bg-white/80 p-2">
+              <div className="text-gray-400">Review needed</div>
+              <div className="mt-0.5 text-[18px] font-semibold text-amber-700">{partialLenses.length}</div>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-4 grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
+          <div>
+            <div className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-gray-500">Business domains</div>
+            <div className="flex flex-wrap gap-2">
+              {topDomains.length > 0 ? topDomains.map(domain => (
+                <span key={domain} className="rounded-full border border-blue-100 bg-white px-2.5 py-1 text-[12px] font-medium text-blue-700">{domain}</span>
+              )) : <span className="text-[12px] text-gray-400">No strong business domain detected yet.</span>}
+            </div>
+            {topStakeholders.length > 0 && (
+              <div className="mt-3">
+                <div className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-gray-500">Relevant roles</div>
+                <div className="flex flex-wrap gap-2">
+                  {topStakeholders.map(role => (
+                    <span key={role.id} className="rounded-full border border-emerald-100 bg-white px-2.5 py-1 text-[12px] font-medium text-emerald-700">
+                      {role.label}
+                      <span className="ml-1 text-emerald-400">{role.score}</span>
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+          <div>
+            <div className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-gray-500">Key signals found</div>
+            <div className="flex flex-wrap gap-2">
+              {topSignals.length > 0 ? topSignals.map(signal => (
+                <span key={`${signal.canonicalId}:${signal.physicalColumn}`} className="rounded-full border border-gray-200 bg-white px-2.5 py-1 text-[12px] text-gray-700">
+                  <span className="font-medium">{signal.label}</span>
+                  <span className="text-gray-400">: {signal.physicalColumn}</span>
+                </span>
+              )) : <span className="text-[12px] text-gray-400">No reusable business signal detected.</span>}
+            </div>
           </div>
         </div>
       </div>
@@ -82,13 +196,13 @@ export const UnderstandingNextCard: React.FC<UnderstandingNextCardProps> = ({
       {/* Lens-first orientation */}
       <div className="pt-4 border-t border-gray-100">
         <div className="mb-3">
-          <h4 className="text-[15px] font-semibold text-gray-900">What do you want to understand?</h4>
+          <h4 className="text-[15px] font-semibold text-gray-900">Choose the decision angle to explore</h4>
           <p className="text-[12px] text-gray-500 mt-0.5">
-            Choose a business lens first. LightBI will only offer runtime actions when the needed signals are present.
+            Ready angles are generated only after LightBI finds the required columns and metrics in this dataset.
           </p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {understanding.lenses.map(lens => {
+        {readyLenses.length > 0 && <div className="mb-3 grid grid-cols-1 md:grid-cols-2 gap-3">
+          {readyLenses.map(lens => {
             const statusClass =
               lens.availability === 'ready'
                 ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
@@ -106,7 +220,7 @@ export const UnderstandingNextCard: React.FC<UnderstandingNextCardProps> = ({
                     <div className="text-[12px] text-gray-500 mt-0.5">{lens.description}</div>
                   </div>
                   <span className={`text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full border ${statusClass}`}>
-                    {lens.availability.replace('_', ' ')}
+                    ready
                   </span>
                 </div>
 
@@ -146,7 +260,40 @@ export const UnderstandingNextCard: React.FC<UnderstandingNextCardProps> = ({
               </div>
             );
           })}
-        </div>
+        </div>}
+
+        {partialLenses.length > 0 && (
+          <details className="rounded-lg border border-amber-100 bg-amber-50/40">
+            <summary className="cursor-pointer px-3 py-2 text-[12px] font-semibold text-amber-800">
+              {partialLenses.length} angle{partialLenses.length === 1 ? '' : 's'} need more signals
+            </summary>
+            <div className="grid grid-cols-1 gap-2 border-t border-amber-100 p-3 md:grid-cols-2">
+              {partialLenses.map(lens => (
+                <div key={lens.id} className="rounded-lg border border-amber-100 bg-white p-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <div className="text-[13px] font-semibold text-gray-900">{lens.label}</div>
+                      <div className="mt-0.5 text-[12px] text-gray-500">{lens.description}</div>
+                    </div>
+                    <span className="shrink-0 rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] font-semibold uppercase text-amber-700">
+                      {lens.availability.replace('_', ' ')}
+                    </span>
+                  </div>
+                  {lens.reasons.length > 0 && (
+                    <ul className="mt-2 space-y-1">
+                      {lens.reasons.slice(0, 3).map((reason, idx) => (
+                        <li key={idx} className="flex gap-1.5 text-[11px] text-gray-500">
+                          <span className="text-amber-300">•</span>
+                          <span>{reason}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              ))}
+            </div>
+          </details>
+        )}
       </div>
 
       <details className="pt-3 border-t border-gray-100 mt-1 group">

@@ -3,6 +3,8 @@ import type { RuntimeIntent } from './analysis-runtime-contract';
 import type { RuntimePlanPreview } from './runtime-planner-preview';
 import type { AISafeBriefing } from './ai-briefing-contract';
 import type { RuntimeDatasetSource, RuntimeRowScope } from './runtime-dataset-source';
+import type { BusinessFusionOverview } from './business-fusion-overview';
+import type { SaveWorkspaceSessionRequest } from './workspace-session-api';
 
 export interface InvestigationSession {
   id: string;
@@ -15,6 +17,8 @@ export interface InvestigationSession {
   aiBriefing?: AISafeBriefing;
   runtimeDatasetSource?: RuntimeDatasetSource;
   rowScope?: RuntimeRowScope;
+  businessFusionOverview?: BusinessFusionOverview;
+  workspaceSessionPayload?: SaveWorkspaceSessionRequest;
 }
 
 // In-memory store for now, since we aren't using a real backend or persistent DB yet.
@@ -29,7 +33,9 @@ export function createInvestigationSession(
   rows?: Record<string, unknown>[],
   aiBriefing?: AISafeBriefing,
   runtimeDatasetSource?: RuntimeDatasetSource,
-  rowScope?: RuntimeRowScope
+  rowScope?: RuntimeRowScope,
+  businessFusionOverview?: BusinessFusionOverview,
+  workspaceSessionPayload?: SaveWorkspaceSessionRequest
 ): InvestigationSession {
   let safeRows = rows;
   // Deep clone to preserve original
@@ -46,7 +52,9 @@ export function createInvestigationSession(
     rows: safeRows,
     aiBriefing,
     runtimeDatasetSource,
-    rowScope
+    rowScope,
+    businessFusionOverview,
+    workspaceSessionPayload
   };
   
   currentSession = session;

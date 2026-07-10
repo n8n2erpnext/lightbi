@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { initDuckDbWasm } from './duckdb-wasm-loader';
-import * as duckdb from '@duckdb/duckdb-wasm';
 
 describe('duckdb-wasm-loader', () => {
   beforeEach(() => {

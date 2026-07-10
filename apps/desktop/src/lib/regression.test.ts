@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it } from 'vitest';
 import { runGuidedInvestigationPipeline } from './guided-investigation-pipeline';
 import { DOMAIN_KNOWLEDGE_CATALOG_V1 } from './domain-knowledge-catalog';
 

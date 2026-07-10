@@ -1,4 +1,3 @@
-import React from 'react';
 import type { RelationshipGraph } from '../../lib/relationship-graph';
 import type { BusinessViewCandidate } from '../../lib/business-view-generator';
 import type { DatasetFamily } from '../../lib/batch-inspection';

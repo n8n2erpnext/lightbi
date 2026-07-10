@@ -10,6 +10,7 @@ export type SemanticSample<T> = {
 
 export type SemanticSampleOptions = {
   maxRows?: number;
+  fullRows?: number;
   headRows?: number;
   tailRows?: number;
   evenRows?: number;
@@ -18,11 +19,11 @@ export type SemanticSampleOptions = {
 };
 
 const DEFAULT_OPTIONS = {
-  maxRows: 2000,
-  headRows: 200,
-  tailRows: 200,
-  evenRows: 1000,
-  randomRows: 600
+  maxRows: 1000,
+  headRows: 100,
+  tailRows: 100,
+  evenRows: 500,
+  randomRows: 300
 };
 
 function hashSeed(seed: string): number {
@@ -101,13 +102,14 @@ export function createSemanticSample<T>(
 ): SemanticSample<T> {
   const rowCount = Array.isArray(rows) ? rows.length : 0;
   const maxRows = options.maxRows ?? DEFAULT_OPTIONS.maxRows;
+  const fullRows = options.fullRows ?? maxRows;
   const seed = options.seed ?? String(rowCount);
 
   if (rowCount === 0 || maxRows <= 0) {
     return { rows: [], rowIndexes: [], strategy: "full", sourceRowCount: rowCount, sampleRowCount: 0 };
   }
 
-  if (rowCount <= maxRows) {
+  if (rowCount <= Math.min(maxRows, fullRows)) {
     return {
       rows: rows.slice(),
       rowIndexes: rows.map((_, index) => index),
@@ -131,4 +133,21 @@ export function createSemanticSample<T>(
     sourceRowCount: rowCount,
     sampleRowCount: rowIndexes.length
   };
+}
+
+export function createUnderstandingSample<T>(
+  rows: T[],
+  options: Omit<SemanticSampleOptions, "maxRows" | "fullRows" | "headRows" | "tailRows" | "evenRows" | "randomRows"> & {
+    maxRows?: number;
+  } = {}
+): SemanticSample<T> {
+  return createSemanticSample(rows, {
+    maxRows: options.maxRows ?? DEFAULT_OPTIONS.maxRows,
+    fullRows: 100,
+    headRows: 100,
+    tailRows: 100,
+    evenRows: 500,
+    randomRows: 300,
+    seed: options.seed
+  });
 }

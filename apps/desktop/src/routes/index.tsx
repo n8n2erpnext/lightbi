@@ -4,7 +4,6 @@ import { Home } from '../pages/Home';
 import { Dashboards } from '../pages/Dashboards';
 import { DashboardBuilder } from '../pages/DashboardBuilder';
 import { Charts } from '../pages/Charts';
-import { ChartBuilder } from '../pages/ChartBuilder';
 import { Datasets } from '../pages/Datasets';
 import { DataSources } from '../pages/DataSources';
 import { Settings } from '../pages/Settings';
@@ -46,8 +45,8 @@ export const router = createBrowserRouter([
       { path: '/dashboards', element: <Dashboards /> },
       { path: '/dashboards/:id', element: <DashboardBuilder /> },
       { path: '/charts', element: <Charts /> },
-      { path: '/charts/new', element: <ChartBuilder /> },
-      { path: '/charts/:id', element: <ChartBuilder /> },
+      { path: '/charts/new', element: <Navigate to="/charts" replace /> },
+      { path: '/charts/:id', element: <Navigate to="/charts" replace /> },
       { path: '/datasets', element: <Datasets /> },
       { path: '/datasources', element: <DataSources /> },
       { path: '/settings', element: <Settings /> },

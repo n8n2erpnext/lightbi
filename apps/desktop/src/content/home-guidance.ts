@@ -81,7 +81,6 @@ export const homeGuidance = {
           { id: "mysql", label: "MySQL", icon: "Database", sourceKind: "system", sourceType: "mysql", requiresInput: true, nextStep: "connection_form" },
           { id: "mariadb", label: "MariaDB", icon: "Database", sourceKind: "system", sourceType: "mariadb", requiresInput: true, nextStep: "connection_form" },
           { id: "mongodb-atlas", label: "MongoDB Atlas", icon: "Database", sourceKind: "system", sourceType: "mongodb_atlas", requiresInput: true, nextStep: "connection_form" },
-          { id: "sql-server", label: "SQL Server", icon: "Database", sourceKind: "system", sourceType: "sqlserver", requiresInput: true, nextStep: "connection_form" },
           { id: "sqlite", label: "SQLite", icon: "Database", sourceKind: "system", sourceType: "sqlite", requiresInput: true, nextStep: "connection_form" }
         ]
       },
@@ -514,6 +513,13 @@ export const homeGuidance = {
     "Export Results"
   ],
   connectionPanel: {
+    online_link: {
+      title: "Connect Online Data",
+      description: "Paste a Google Sheet, Microsoft 365, OneDrive, CSV, or Excel sharing link",
+      inputType: "url",
+      example: "https://1drv.ms/x/... or https://docs.google.com/spreadsheets/...",
+      buttonText: "Inspect link"
+    },
     google_sheets: {
       title: "Connect Google Sheets",
       description: "Paste a Google Sheets URL",
@@ -545,7 +551,7 @@ export const homeGuidance = {
         { id: "postgresql", label: "PostgreSQL" },
         { id: "mysql", label: "MySQL" },
         { id: "mariadb", label: "MariaDB" },
-        { id: "sqlserver", label: "SQL Server" },
+        { id: "mongodb_atlas", label: "MongoDB Atlas" },
         { id: "sqlite", label: "SQLite" }
       ],
       buttonText: "Continue"

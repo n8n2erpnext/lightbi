@@ -277,7 +277,10 @@ describe('Advanced workspace', () => {
         name: 'Orders',
         rowCount: 2,
         columns: ['region', 'sales'],
-        profiles: { region: { dataType: 'string' }, sales: { dataType: 'number' } },
+        profiles: {
+          region: { name: 'region', dataType: 'string', distinctCount: 1, nullPercent: 0, topValues: ['North'], topValueCounts: [{ value: 'North', count: 1 }], isIdentifier: false, isCategorical: true },
+          sales: { name: 'sales', dataType: 'number', distinctCount: 1, nullPercent: 0, topValues: ['12'], topValueCounts: [{ value: '12', count: 1 }], isIdentifier: false, isCategorical: false },
+        },
         file: new File(['region,sales\nNorth,12'], 'orders.csv', { type: 'text/csv' }),
         sheetName: 'Orders',
       }],

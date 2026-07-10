@@ -18,10 +18,21 @@ export interface DatasetCapability {
 export interface AnalysisOpportunity {
   id: string;
   label: string;
-  description: string;
-  requiredCapabilities: CapabilityType[];
-  grain: DatasetGrain;
-  confidence: "high" | "medium" | "low";
+  description?: string;
+  type?: string;
+  source?: string;
+  domain?: string;
+  complexity?: string;
+  requiredCapabilities?: CapabilityType[];
+  requiredSignals?: string[];
+  requiredConcepts?: string[];
+  basedOnSignals?: string[];
+  recommendedVisual?: string;
+  actionType?: "group_by" | "trend" | "distribution" | "relationship" | "table_preview";
+  dimensions?: string[];
+  measures?: string[];
+  grain?: DatasetGrain;
+  confidence?: "high" | "medium" | "low";
 }
 
 export function detectCapabilities(signals: BusinessSignal[]): DatasetCapability[] {

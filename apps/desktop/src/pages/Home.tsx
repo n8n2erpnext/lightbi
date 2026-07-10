@@ -1,6 +1,6 @@
 import { getApiBaseUrl } from '../lib/api-base';
-import React, { useState, useEffect, useRef } from 'react';
-import { Search, Loader2, ChevronRight, Database, Plus, FileSpreadsheet, Database as DatabaseIcon, FileText, Link, Server, HardDrive, ArrowLeft, Monitor, Globe, Beaker, Table, Code, Sparkles, Layers } from 'lucide-react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { Search, Loader2, ChevronRight, Database, Plus, FileSpreadsheet, Link, Server, Code, Sparkles, Layers, Monitor, Globe, Save, Trash2, History, FolderOpen } from 'lucide-react';
 import ReactECharts from 'echarts-for-react';
 import { useDatasetUpload } from '../hooks/useDatasetUpload';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -9,7 +9,6 @@ import { DataIntakeDrawer } from '../components/data-intake/DataIntakeDrawer';
 import type { DataIntakeRequest } from '../lib/data-intake';
 import { selectHeroSuggestionPool, getStructuredPool } from '../lib/home-persona';
 import type { HeroSuggestionPrompt } from '../lib/home-persona';
-import { createDataIntakeRequest } from '../lib/data-intake';
 import { createSourceCandidate, createFileSourceCandidate } from '../lib/source-preflight';
 import type { SourceCandidate, SourceInspectionResult } from '../lib/source-preflight';
 import { inspectLocalFile } from '../lib/local-file-inspector';
@@ -59,6 +58,7 @@ import { createExpectedResultContract } from '../lib/expected-result-contract';
 import type { ExpectedResultContract } from '../lib/expected-result-contract';
 import { ExpectedResultPreview } from '../components/analysis/ExpectedResultPreview';
 import { selectFirstNonEmptyRows } from '../lib/row-surface';
+import { createUnderstandingSample } from '../lib/semantic-sampler';
 import { compileSafeQuery } from '../lib/safe-sql-compiler';
 import type { CompiledQueryContract } from '../lib/safe-sql-compiler';
 import { CompiledQueryPreview } from '../components/analysis/CompiledQueryPreview';
@@ -73,6 +73,7 @@ import { createDatasetHealthSignal, createRelationshipSignal, createBusinessView
 import { PreviewResultContractCard } from '../components/analysis/PreviewResultContractCard';
 import { calculateDatasetHealth } from '../lib/dataset-health-engine';
 import { DataQualityCard } from '../components/data-intake/DataQualityCard';
+import { DecisionTrustReportCard } from '../components/analysis/DecisionTrustReportCard';
 import { BusinessViewSummaryCard } from '../components/analysis/BusinessViewSummaryCard';
 import { DuckDBPreviewRuntimeCard } from '../components/analysis/DuckDBPreviewRuntimeCard';
 import { executeDuckDBPreviewRuntime } from '../lib/duckdb-preview-runtime';
@@ -86,19 +87,170 @@ import { useDisplayPreferences } from '../stores/display-preferences-store';
 import { formatValue } from '../lib/display-formatter';
 import { ExecutionRunCoordinator } from '@lightbi/runtime';
 import { advancedSourceId, useAdvancedSourceStore } from '../stores/advanced-source-store';
+import { createDecisionTrustReport, type DecisionTrustReport } from '../lib/decision-trust-report';
+import { createBusinessFusionOverview, createBusinessFusionVirtualDataset, type BusinessFusionOverview } from '../lib/business-fusion-overview';
+import { BusinessFusionOpportunityCard } from '../components/analysis/BusinessFusionOpportunityCard';
+import { deleteWorkspaceSession, loadWorkspaceSessions, saveWorkspaceSession, type SaveWorkspaceSessionRequest, type WorkspaceSessionRecord } from '../lib/workspace-session-api';
+import { downloadProjectSourceFile, uploadProjectSourceFile, type PersistedProjectSourceFile } from '../lib/project-source-file-api';
+
+const WORKSPACE_SESSION_ROW_LIMIT = 250;
+
+function limitSessionRows(rows: unknown): unknown[] {
+  return Array.isArray(rows) ? rows.slice(0, WORKSPACE_SESSION_ROW_LIMIT) : [];
+}
+
+function compactSemanticSample(sample: any) {
+  if (!sample || typeof sample !== 'object') return sample;
+  return {
+    strategy: sample.strategy,
+    sourceRowCount: Number(sample.sourceRowCount) || 0,
+    sampleRowCount: Number(sample.sampleRowCount) || 0,
+  };
+}
+
+function safeWorkspaceFileStem(value: string): string {
+  const cleaned = value.trim().toLowerCase().replace(/[^a-z0-9_-]+/g, '-').replace(/^-+|-+$/g, '');
+  return cleaned || 'lightbi-session';
+}
+
+function createWorkspaceSessionSnapshot(dataset: any) {
+  const analysisRows = limitSessionRows(dataset.analysisRows);
+  const semanticRows = limitSessionRows(dataset.semanticRows);
+  const understandingRows = limitSessionRows(dataset.understandingRows);
+  return {
+    version: 1,
+    savedAt: new Date().toISOString(),
+    rowRetentionLimit: WORKSPACE_SESSION_ROW_LIMIT,
+    currentDataset: {
+      status: 'ready',
+      file_name: dataset.file_name,
+      rows_count: dataset.rows_count,
+      columns: Array.isArray(dataset.columns) ? dataset.columns : [],
+      profiles: dataset.profiles || {},
+      sourceType: dataset.sourceType,
+      normalizedUrl: dataset.normalizedUrl,
+      sourceFiles: dataset.sourceFiles || [],
+      selected_sheet: dataset.selected_sheet ?? null,
+      semanticSample: compactSemanticSample(dataset.semanticSample),
+      analysisRowScope: dataset.analysisRows?.length > WORKSPACE_SESSION_ROW_LIMIT ? 'retained_sample' : dataset.analysisRowScope,
+      semanticRows,
+      analysisRows,
+      previewRows: limitSessionRows(dataset.previewRows).slice(0, 100),
+      understandingColumns: dataset.understandingColumns,
+      understandingRows,
+      understandingProfiles: dataset.understandingProfiles,
+      understandingSourceRowCount: dataset.understandingSourceRowCount,
+      selectedBusinessView: dataset.selectedBusinessView,
+      businessFusionOverview: dataset.businessFusionOverview,
+      objectKey: dataset.objectKey,
+    },
+  };
+}
+
+function persistedFilesFromSession(session: WorkspaceSessionRecord): PersistedProjectSourceFile[] {
+  const summary = Array.isArray(session.sourceSummary) ? session.sourceSummary : [];
+  const fromSummary = summary
+    .map((item: any) => item?.persistedFile)
+    .filter(Boolean) as PersistedProjectSourceFile[];
+  if (fromSummary.length > 0) return fromSummary;
+
+  const snapshotFiles = (session.snapshot as any)?.currentDataset?.sourceFiles;
+  return (Array.isArray(snapshotFiles) ? snapshotFiles : [])
+    .map((item: any) => item?.persistedFile)
+    .filter(Boolean) as PersistedProjectSourceFile[];
+}
+
+function attachPersistedFile(
+  result: SourceInspectionResult,
+  persistedFile: PersistedProjectSourceFile | null
+): SourceInspectionResult {
+  if (result.status !== 'accessible' || !persistedFile) return result;
+  return {
+    ...result,
+    metadata: {
+      ...result.metadata,
+      persisted_file: persistedFile,
+    },
+  };
+}
 
 const getGreeting = () => {
     // TODO: Pass display_name when auth exists
     const display_name = null;
-    if (display_name) return `Good morning, ${display_name} 👋`;
-    return 'Good morning 👋';
+    const hour = new Date().getHours();
+    const period = hour < 12
+      ? 'Good morning'
+      : hour < 18
+        ? 'Good afternoon'
+        : hour < 22
+          ? 'Good evening'
+          : 'Working late';
+    if (display_name) return `${period}, ${display_name} 👋`;
+    return `${period} 👋`;
 };
+
+function familyFromInspectionResult(
+  inspectionResult: SourceInspectionResult,
+  fallbackName: string
+): DatasetFamily | null {
+  if (inspectionResult.status !== 'accessible') return null;
+  const metadata = inspectionResult.metadata;
+  const defaultSheet = metadata.is_workbook && metadata.default_sheet && metadata.sheets
+    ? metadata.sheets[metadata.default_sheet]
+    : null;
+  const columns = defaultSheet?.columns ?? metadata.columns ?? [];
+  const profiles = defaultSheet?.profiles ?? metadata.profiles ?? {};
+  const totalRows = defaultSheet?.rows_count ?? metadata.rows_count ?? 0;
+  const file = inspectionResult.file ?? new File([], fallbackName);
+  return {
+    id: `source_${fallbackName}`.toLowerCase().replace(/[^a-z0-9_-]+/g, '-'),
+    name: fallbackName,
+    schemaFingerprint: columns.map(column => column.trim().toLocaleLowerCase()).join('|'),
+    files: [{ file, result: inspectionResult }],
+    totalRows,
+    columns,
+    profiles,
+  };
+}
 
 export const Home: React.FC = () => {
   const { preferences } = useDisplayPreferences();
   const navigate = useNavigate();
   const [currentDataset, setCurrentDataset] = useState<any>(null);
+  const [workspaceSessions, setWorkspaceSessions] = useState<WorkspaceSessionRecord[]>([]);
+  const [sessionStatus, setSessionStatus] = useState<string | null>(null);
+  const [isSavingSession, setIsSavingSession] = useState(false);
   const registerAdvancedSource = useAdvancedSourceStore(state => state.registerSource);
+  const registerBusinessFusionAdvancedSource = useCallback((
+    sourceName: string,
+    fusion: NonNullable<ReturnType<typeof createBusinessFusionVirtualDataset>>,
+    semanticSample?: { strategy: string; sourceRowCount: number; sampleRowCount: number }
+  ) => {
+    const tableName = sourceName.length > 80 ? 'business_fusion' : sourceName;
+    const file = new File(
+      [JSON.stringify(fusion.rows)],
+      `${safeWorkspaceFileStem(sourceName)}.json`,
+      { type: 'application/json' }
+    );
+    registerAdvancedSource({
+      id: advancedSourceId('business_fusion_view', sourceName),
+      name: sourceName,
+      sourceType: 'business_fusion_view',
+      sourceKind: 'local_file',
+      tables: [{
+        id: '0:business_fusion',
+        name: tableName,
+        rowCount: fusion.rows.length,
+        columns: fusion.columns,
+        profiles: fusion.profiles,
+        file,
+      }],
+      semanticSample: semanticSample
+        ? compactSemanticSample(semanticSample)
+        : { strategy: 'full', sourceRowCount: fusion.rows.length, sampleRowCount: fusion.rows.length },
+      registeredAt: new Date().toISOString(),
+    });
+  }, [registerAdvancedSource]);
   const [workspaceState, setWorkspaceState] = useState<WorkspaceUnderstandingState | null>(null);
   const [inputValue, setInputValue] = useState("");
   const [analysisIntent, setAnalysisIntent] = useState<string | null>(null);
@@ -112,13 +264,285 @@ export const Home: React.FC = () => {
     step: "family_selection" | "business_view_review";
     graph?: RelationshipGraph;
     businessViews?: BusinessViewCandidate[];
+    businessOverview?: BusinessFusionOverview | null;
   };
   const [pendingLocalBatch, setPendingLocalBatch] = useState<PendingLocalFileBatch | null>(null);
   const [lastInspectedFamilies, setLastInspectedFamilies] = useState<DatasetFamily[] | null>(null);
+  const [decisionTrustReport, setDecisionTrustReport] = useState<DecisionTrustReport | null>(null);
   const [mappingOverlayActions, setMappingOverlayActions] = useState<MappingOverlayAction[]>([]);
   const inspectionRuns = useRef(new ExecutionRunCoordinator('simple-inspection'));
+  const lastAutoSaveSignatureRef = useRef<string>("");
 
   useEffect(() => () => inspectionRuns.current.cancel(), []);
+
+  const refreshWorkspaceSessions = useCallback(async () => {
+    try {
+      const records = await loadWorkspaceSessions();
+      setWorkspaceSessions(records);
+    } catch (error) {
+      setSessionStatus(error instanceof Error ? error.message : 'Could not load saved sessions.');
+    }
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    void loadWorkspaceSessions()
+      .then(records => {
+        if (!cancelled) setWorkspaceSessions(records);
+      })
+      .catch(error => {
+        if (!cancelled) setSessionStatus(error instanceof Error ? error.message : 'Could not load saved sessions.');
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleFocus = () => {
+      void refreshWorkspaceSessions();
+    };
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') void refreshWorkspaceSessions();
+    };
+    window.addEventListener('focus', handleFocus);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [refreshWorkspaceSessions]);
+
+  const sessionSignature = (dataset: any) => JSON.stringify({
+    name: dataset?.file_name,
+    sourceType: dataset?.sourceType,
+    rows: dataset?.rows_count,
+    columns: Array.isArray(dataset?.columns) ? dataset.columns : [],
+    sourceFiles: (dataset?.sourceFiles || []).map((file: any) => ({
+      name: file?.name,
+      rows: file?.rows,
+      fileId: file?.persistedFile?.fileId,
+      path: file?.persistedFile?.filePath,
+    })),
+    analysisRows: Array.isArray(dataset?.analysisRows) ? dataset.analysisRows.length : 0,
+    understandingRows: Array.isArray(dataset?.understandingRows) ? dataset.understandingRows.length : 0,
+    objectKey: dataset?.objectKey,
+    selectedView: dataset?.selectedBusinessView?.id,
+  });
+
+  const createWorkspaceSessionSaveRequest = (dataset: any): SaveWorkspaceSessionRequest => {
+    const columns = Array.isArray(dataset.columns) ? dataset.columns : [];
+    return {
+      id: dataset.restoredFromSessionId,
+      title: dataset.file_name || 'Untitled session',
+      sourceType: dataset.sourceType || 'dataset',
+      rowCount: Number(dataset.rows_count) || 0,
+      columnCount: columns.length,
+      sourceSummary: dataset.sourceFiles || [],
+      snapshot: createWorkspaceSessionSnapshot(dataset),
+    };
+  };
+
+  const saveCurrentWorkspaceSession = async (dataset: any, options: { silent?: boolean } = {}) => {
+    if (dataset?.status !== 'ready') return null;
+    if (!options.silent) {
+      setIsSavingSession(true);
+      setSessionStatus(null);
+    }
+    try {
+      const saved = await saveWorkspaceSession(createWorkspaceSessionSaveRequest(dataset));
+      setWorkspaceSessions(current => [saved, ...current.filter(item => item.id !== saved.id)].slice(0, 100));
+      setCurrentDataset((dataset: any) => dataset ? { ...dataset, restoredFromSessionId: saved.id } : dataset);
+      if (!options.silent) setSessionStatus('Session saved.');
+      return saved;
+    } catch (error) {
+      setSessionStatus(error instanceof Error ? error.message : 'Could not save session.');
+      return null;
+    } finally {
+      if (!options.silent) setIsSavingSession(false);
+    }
+  };
+
+  const handleSaveWorkspaceSession = async () => {
+    const saved = await saveCurrentWorkspaceSession(currentDataset);
+    if (saved && currentDataset) {
+      lastAutoSaveSignatureRef.current = sessionSignature({ ...currentDataset, restoredFromSessionId: saved.id });
+    }
+  };
+
+  const handleOpenWorkspaceSession = async (session: WorkspaceSessionRecord) => {
+    const restoredDataset = (session.snapshot as any)?.currentDataset;
+    if (!restoredDataset) {
+      setSessionStatus('Saved session does not contain a dataset snapshot.');
+      return;
+    }
+    const persistedFiles = persistedFilesFromSession(session);
+    if (persistedFiles.length > 0) {
+      setSessionStatus('Reloading saved source files...');
+      try {
+        const files = await Promise.all(persistedFiles.map(sourceFile => downloadProjectSourceFile(sourceFile)));
+        const results = await Promise.all(files.map((file, index) => {
+          const candidate = createFileSourceCandidate(file);
+          if ('status' in candidate) return Promise.resolve(candidate as SourceInspectionResult);
+          return inspectLocalFile(candidate as SourceCandidate).then(result => attachPersistedFile(result, persistedFiles[index]));
+        }));
+        const accessible = results.filter(result => result.status === 'accessible');
+        if (accessible.length !== files.length) {
+          throw new Error('One or more saved files could not be parsed after reload.');
+        }
+        const items = files.map((file, index) => ({ file, result: results[index] as SourceInspectionResult }));
+        const families = classifyDatasetFamilies(items, 'strict');
+
+        if (restoredDataset.sourceType === 'business_fusion_view') {
+          const fusion = createBusinessFusionVirtualDataset(families);
+          if (!fusion) throw new Error('Saved files were found, but could not rebuild the fusion view.');
+          const semanticSample = createUnderstandingSample(fusion.rows, {
+            seed: `${fusion.id}:${session.id}`
+          });
+          registerBusinessFusionAdvancedSource(restoredDataset.file_name || fusion.name, fusion, semanticSample);
+          const sourceFiles = families.flatMap(fam =>
+            fam.files.map(item => {
+              const md = item.result.status === 'accessible' ? item.result.metadata : null;
+              const sheetRows = md?.is_workbook && md.default_sheet && md.sheets?.[md.default_sheet]
+                ? md.sheets[md.default_sheet].rows_count
+                : undefined;
+              return {
+                name: item.file.name,
+                rows: sheetRows ?? md?.rows_count ?? 0,
+                columns: fam.columns.length,
+                familyName: fam.name,
+                persistedFile: md?.persisted_file,
+                sheetNames: md?.is_workbook && md.default_sheet ? [md.default_sheet] : []
+              };
+            })
+          );
+          setCurrentDataset({
+            ...restoredDataset,
+            status: 'ready',
+            file_name: restoredDataset.file_name || fusion.name,
+            rows_count: fusion.rows.length,
+            columns: fusion.columns,
+            profiles: fusion.profiles,
+            sourceType: 'business_fusion_view',
+            normalizedUrl: fusion.id,
+            sourceFiles,
+            file_reference: null,
+            runtimeDatasetSource: undefined,
+            semanticSample,
+            analysisRowScope: 'full',
+            semanticRows: semanticSample.rows,
+            analysisRows: fusion.rows,
+            previewRows: fusion.rows.slice(0, 100),
+            understandingColumns: fusion.understandingColumns,
+            understandingRows: fusion.understandingRows,
+            understandingProfiles: fusion.understandingProfiles,
+            understandingSourceRowCount: fusion.understandingSourceRowCount,
+            businessFusionOverview: fusion.overview,
+            objectKey: fusion.objectKey,
+            evidenceBundles: fusion.evidenceBundles,
+            restoredFromSessionId: session.id,
+          });
+        } else {
+          const family = families[0];
+          const rawSemanticRows = family.files.flatMap(item => {
+            if (item.result.status !== 'accessible') return [];
+            const md = item.result.metadata;
+            if (md?.is_workbook && md.default_sheet && md.sheets) {
+              return md.sheets[md.default_sheet]?.semantic_rows || md.sheets[md.default_sheet]?.preview_rows || [];
+            }
+            return md?.semantic_rows || md?.preview_rows || [];
+          });
+          const rawAnalysisRows = family.files.flatMap(item => {
+            if (item.result.status !== 'accessible') return [];
+            const md = item.result.metadata;
+            if (md?.is_workbook && md.default_sheet && md.sheets) {
+              return md.sheets[md.default_sheet]?.analysis_rows || [];
+            }
+            return md?.analysis_rows || [];
+          });
+          const first = family.files.find(item => item.result.status === 'accessible');
+          const firstMd = first?.result.status === 'accessible' ? first.result.metadata : null;
+          const rawPreviewRows = firstMd?.is_workbook && firstMd.default_sheet && firstMd.sheets
+            ? firstMd.sheets[firstMd.default_sheet]?.preview_rows || []
+            : firstMd?.preview_rows || [];
+          const sourceFiles = family.files.map(item => {
+            const md = item.result.status === 'accessible' ? item.result.metadata : null;
+            return {
+              name: item.file.name,
+              rows: md?.is_workbook && md.default_sheet && md.sheets?.[md.default_sheet]
+                ? md.sheets[md.default_sheet].rows_count
+                : md?.rows_count ?? 0,
+              columns: family.columns.length,
+              fingerprint: family.schemaFingerprint,
+              persistedFile: md?.persisted_file,
+              sheetNames: md?.is_workbook && md.default_sheet ? [md.default_sheet] : []
+            };
+          });
+          setCurrentDataset({
+            ...restoredDataset,
+            status: 'ready',
+            file_name: restoredDataset.file_name || family.name,
+            rows_count: family.totalRows,
+            columns: family.columns,
+            profiles: family.profiles,
+            sourceType: family.files[0]?.result.status === 'accessible' ? family.files[0].result.sourceType : restoredDataset.sourceType,
+            sourceFiles,
+            file_reference: null,
+            runtimeDatasetSource: undefined,
+            semanticSample: {
+              strategy: rawSemanticRows.length >= family.totalRows ? 'full' : 'matrix_sample',
+              sourceRowCount: family.totalRows,
+              sampleRowCount: rawSemanticRows.length
+            },
+            analysisRowScope: rawAnalysisRows.length >= family.totalRows ? 'full' : 'not_retained',
+            semanticRows: rawSemanticRows,
+            analysisRows: rawAnalysisRows,
+            previewRows: createPreviewRows(rawPreviewRows, family.columns),
+            restoredFromSessionId: session.id,
+          });
+        }
+        setWorkspaceState(createWorkspaceUnderstandingState({ type: 'dataset', datasetId: session.id }));
+        setDecisionTrustReport(null);
+        setPendingLocalBatch(null);
+        setSelectedTopic(null);
+        setResult(null);
+        setPreviewActionId(null);
+        setSessionStatus('Session opened from saved source file.');
+        return;
+      } catch (error) {
+        const missingPath = persistedFiles.map(file => file.filePath).join(', ');
+        setSessionStatus(`${error instanceof Error ? error.message : 'Could not reload saved source file.'} Missing path: ${missingPath}. Showing saved snapshot.`);
+      }
+    }
+    setCurrentDataset({
+      ...restoredDataset,
+      status: 'ready',
+      file_reference: null,
+      runtimeDatasetSource: undefined,
+      restoredFromSessionId: session.id,
+    });
+    setWorkspaceState(createWorkspaceUnderstandingState({ type: 'dataset', datasetId: session.id }));
+    setDecisionTrustReport(null);
+    setPendingLocalBatch(null);
+    setSelectedTopic(null);
+    setResult(null);
+    setPreviewActionId(null);
+    setSessionStatus('Session opened.');
+  };
+
+  const handleDeleteWorkspaceSession = async (sessionId: string) => {
+    setSessionStatus(null);
+    try {
+      await deleteWorkspaceSession(sessionId);
+      setWorkspaceSessions(current => current.filter(session => session.id !== sessionId));
+      if (currentDataset?.restoredFromSessionId === sessionId) {
+        setCurrentDataset((dataset: any) => dataset ? { ...dataset, restoredFromSessionId: undefined } : dataset);
+      }
+      setSessionStatus('Session deleted.');
+    } catch (error) {
+      setSessionStatus(error instanceof Error ? error.message : 'Could not delete session.');
+    }
+  };
 
 
   const [isAsking, setIsAsking] = useState(false);
@@ -127,6 +551,10 @@ export const Home: React.FC = () => {
   const questionInputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [questionPlaceholder, setQuestionPlaceholder] = useState("Ask a question about your data...");
+  const [previewActionId, setPreviewActionId] = useState<string | null>(null);
+  const [isPlusMenuOpen, setIsPlusMenuOpen] = useState(false);
+  const [isReplaceMenuOpen, setIsReplaceMenuOpen] = useState(false);
+  const [activeConnection, setActiveConnection] = useState<DataIntakeRequest | null>(null);
 
   // Debounce input: detect source candidate from URL pattern only.
   useEffect(() => {
@@ -153,10 +581,44 @@ export const Home: React.FC = () => {
     return () => clearTimeout(timer);
   }, [inputValue]);
 
+  const openLocalFilePicker = () => {
+    setIsPlusMenuOpen(false);
+    setIsReplaceMenuOpen(false);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+      fileInputRef.current.click();
+    }
+  };
+
+  const openOnlineDataDrawer = () => {
+    setIsPlusMenuOpen(false);
+    setIsReplaceMenuOpen(false);
+    setQuestionPlaceholder("Paste Google Sheet, Microsoft 365, OneDrive, CSV, or Excel URL...");
+    setActiveConnection({
+      sourceKind: "online_link",
+      sourceType: "online_link",
+      label: "Online Data",
+      requiresInput: true,
+      nextStep: "url_input",
+    });
+  };
+
+  const openDatabaseDrawer = () => {
+    setIsPlusMenuOpen(false);
+    setIsReplaceMenuOpen(false);
+    setActiveConnection({
+      sourceKind: "system",
+      sourceType: "database",
+      label: "Database System",
+      requiresInput: true,
+      nextStep: "connection_form",
+    });
+  };
+
   const { isUploading, uploadError } = useDatasetUpload();
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
 
-  const handleSelectAnalysisAction = (action: AnalysisAction) => {
+  const handleSelectAnalysisAction = async (action: AnalysisAction) => {
     // Use the typed adapter helper — no `as any` needed
     const isDQR = isDataQualityReviewAction(action);
 
@@ -178,6 +640,15 @@ export const Home: React.FC = () => {
         ? generateAIBriefing(datasetUnderstanding)
         : undefined;
 
+    let datasetForSession = currentDataset;
+    if (currentDataset?.status === 'ready') {
+      const saved = await saveCurrentWorkspaceSession(currentDataset, { silent: true });
+      if (saved) {
+        datasetForSession = { ...currentDataset, restoredFromSessionId: saved.id };
+        lastAutoSaveSignatureRef.current = sessionSignature(datasetForSession);
+      }
+    }
+
     createInvestigationSession(
       currentDataset?.file_name || 'dataset',
       action,
@@ -192,17 +663,13 @@ export const Home: React.FC = () => {
           ? 'retained_rows'
           : currentDataset?.semanticRows?.length
             ? 'semantic_sample'
-            : 'preview'
+            : 'preview',
+      currentDataset?.businessFusionOverview,
+      datasetForSession?.status === 'ready' ? createWorkspaceSessionSaveRequest(datasetForSession) : undefined
     );
     navigate('/investigation');
   };
 
-  const [previewActionId, setPreviewActionId] = useState<string | null>(null);
-  const [isPlusMenuOpen, setIsPlusMenuOpen] = useState(false);
-  const [isReplaceMenuOpen, setIsReplaceMenuOpen] = useState(false);
-  const [activeSubmenu, setActiveSubmenu] = useState<string | null>(null);
-  const [activeConnection, setActiveConnection] = useState<DataIntakeRequest | null>(null);
-  const [promptIndex, setPromptIndex] = useState(0);
   const [isInputFocused, setIsInputFocused] = useState(false);
   const [recipePreview, setRecipePreview] = useState<RecipePlan | null>(null);
   const [selectedVirtualPlan, setSelectedVirtualPlan] = useState<VirtualDatasetPlan | null>(null);
@@ -264,9 +731,6 @@ export const Home: React.FC = () => {
   
   const activeAnalysisIntent = analysisIntent || selectedTopic || null;
 
-  useEffect(() => {
-    if (!isPlusMenuOpen && !isReplaceMenuOpen) setActiveSubmenu(null);
-  }, [isPlusMenuOpen, isReplaceMenuOpen]);
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -299,95 +763,31 @@ export const Home: React.FC = () => {
     };
   }, [isPlusMenuOpen, isReplaceMenuOpen]);
 
-  const renderSourcePickerMenu = (isOpen: boolean, setIsOpen: (val: boolean) => void, positionClass: string) => {
+  const renderSourcePickerMenu = (isOpen: boolean, positionClass: string) => {
     if (!isOpen) return null;
     return (
-      <div ref={menuRef} className={`absolute ${positionClass} w-64 bg-white border border-gray-200 rounded-md shadow-lg z-20 py-2 animate-in fade-in slide-in-from-top-2 duration-200 text-left overflow-hidden`}>
-        <AnimatePresence mode="wait">
-          {activeSubmenu ? (
-            <motion.div
-              key="submenu"
-              initial={{ x: 20, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: -20, opacity: 0 }}
-              transition={{ duration: 0.15 }}
-            >
-              <div className="px-2 pb-2 border-b border-gray-100 flex items-center">
-                <button onClick={() => setActiveSubmenu(null)} className="p-1.5 hover:bg-gray-100 rounded-md text-gray-500 mr-1">
-                  <ArrowLeft className="w-4 h-4" />
-                </button>
-                <span className="text-[12px] font-medium text-gray-700">
-                  {homeGuidance.plusMenu.submenus[activeSubmenu as keyof typeof homeGuidance.plusMenu.submenus]?.title}
-                </span>
-              </div>
-              <div className="pt-1">
-                {homeGuidance.plusMenu.submenus[activeSubmenu as keyof typeof homeGuidance.plusMenu.submenus]?.items.map((item) => {
-                  const Icon = { Database: DatabaseIcon, Server, HardDrive, FileSpreadsheet, Table, Link, Code, FileText }[item.icon as string] || DatabaseIcon;
-                  return (
-                    <button 
-                      key={item.id} 
-                      onClick={() => {
-                        if (item.hasSubmenu) {
-                          setActiveSubmenu(item.submenuId);
-                          return;
-                        }
-                        setIsOpen(false);
-                        const request = createDataIntakeRequest(item);
-                        if (request.nextStep === "file_picker") {
-                          fileInputRef.current?.click();
-                        } else if (request.nextStep === "url_input") {
-                          if (currentDataset?.status === 'ready') {
-                            setActiveConnection(request);
-                          } else {
-                            const ph = homeGuidance.inlineLinkIntake.placeholders[request.sourceType as keyof typeof homeGuidance.inlineLinkIntake.placeholders];
-                            setQuestionPlaceholder(ph || "Paste your link here...");
-                            setTimeout(() => questionInputRef.current?.focus(), 50);
-                          }
-                        } else if (request.nextStep === "load_sample") {
-                          alert(`Sample data loading for ${request.label} coming soon`);
-                        } else {
-                          setActiveConnection(request);
-                        }
-                      }} 
-                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center"
-                    >
-                      <Icon className="w-4 h-4 mr-2 text-gray-400"/> {item.label}
-                    </button>
-                  );
-                })}
-              </div>
-            </motion.div>
-          ) : (
-            <motion.div
-              key="main-menu"
-              initial={{ x: -20, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: 20, opacity: 0 }}
-              transition={{ duration: 0.15 }}
-              className="py-1"
-            >
-              {homeGuidance.plusMenu.mainMenu.map((item) => {
-                const Icon = { Monitor, Globe, Server, Beaker }[item.icon as string] || Server;
-                return (
-                  <button 
-                    key={item.id} 
-                    onClick={() => {
-                      if (item.hasSubmenu) {
-                        setActiveSubmenu(item.submenuId);
-                      } else {
-                        setIsOpen(false);
-                      }
-                    }} 
-                    className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 flex items-center justify-between font-medium"
-                  >
-                    <span className="flex items-center"><Icon className="w-4 h-4 mr-2 text-gray-500"/> {item.label}</span>
-                    {item.hasSubmenu && <ChevronRight className="w-4 h-4 text-gray-400" />}
-                  </button>
-                );
-              })}
-            </motion.div>
-          )}
-        </AnimatePresence>
+      <div ref={menuRef} className={`absolute ${positionClass} w-64 overflow-hidden rounded-lg border border-black/10 bg-white py-2 text-left shadow-lg z-20 animate-in fade-in slide-in-from-top-2 duration-200`}>
+        <button
+          onClick={openLocalFilePicker}
+          className="flex w-full items-center px-4 py-3 text-[14px] font-medium text-[#202123] transition-colors hover:bg-black/[0.035]"
+        >
+          <Monitor className="mr-3 h-4 w-4 text-black/55" strokeWidth={1.7} />
+          My Computer
+        </button>
+        <button
+          onClick={openOnlineDataDrawer}
+          className="flex w-full items-center px-4 py-3 text-[14px] font-medium text-[#202123] transition-colors hover:bg-black/[0.035]"
+        >
+          <Globe className="mr-3 h-4 w-4 text-black/55" strokeWidth={1.7} />
+          Online Data
+        </button>
+        <button
+          onClick={openDatabaseDrawer}
+          className="flex w-full items-center px-4 py-3 text-[14px] font-medium text-[#202123] transition-colors hover:bg-black/[0.035]"
+        >
+          <Server className="mr-3 h-4 w-4 text-black/55" strokeWidth={1.7} />
+          Database System
+        </button>
       </div>
     );
   };
@@ -430,14 +830,17 @@ export const Home: React.FC = () => {
     if (currentDataset?.status !== 'ready' || currentDataset.sourceType === 'virtual_business_view' || !currentDataset.columns) return null;
     
     // Extract source row count properly
-    let sourceRowCount = currentDataset.rows_count;
+    let sourceRowCount = currentDataset.understandingSourceRowCount ?? currentDataset.rows_count;
     if (currentDataset.sourceFiles && currentDataset.sourceFiles.length > 0) {
-      sourceRowCount = currentDataset.sourceFiles.reduce((acc: number, f: any) => acc + (f.rows || 0), 0) || currentDataset.rows_count;
+      sourceRowCount = currentDataset.understandingSourceRowCount ?? (currentDataset.sourceFiles.reduce((acc: number, f: any) => acc + (f.rows || 0), 0) || currentDataset.rows_count);
     }
 
+    const understandingColumns = currentDataset.understandingColumns ?? currentDataset.columns;
+    const understandingProfiles = currentDataset.understandingProfiles ?? currentDataset.profiles;
     const onlineSourceTypes = new Set(['google_sheets', 'm365_excel', 'csv_url', 'excel_url']);
     const databaseSourceTypes = new Set(['postgresql', 'mysql', 'mariadb', 'mongodb_atlas', 'sqlite']);
     const sourceRows = selectFirstNonEmptyRows(
+      currentDataset.understandingRows,
       currentDataset.semanticRows,
       currentDataset.analysisRows,
       currentDataset.previewRows,
@@ -451,9 +854,9 @@ export const Home: React.FC = () => {
         kind: 'database_table',
         connectionName: currentDataset.sourceType,
         tableName: currentDataset.file_name || 'database table',
-        columns: currentDataset.columns,
+        columns: understandingColumns,
         rows: sourceRows,
-        columnProfiles: currentDataset.profiles,
+        columnProfiles: understandingProfiles,
         sourceRowCount
       })
       : onlineSourceTypes.has(currentDataset.sourceType)
@@ -462,9 +865,9 @@ export const Home: React.FC = () => {
         title: currentDataset.file_name || 'online dataset',
         url: currentDataset.normalizedUrl,
         sheetNames,
-        columns: currentDataset.columns,
+        columns: understandingColumns,
         rows: sourceRows,
-        columnProfiles: currentDataset.profiles,
+        columnProfiles: understandingProfiles,
         sourceRowCount
       })
       : createUnderstandingCoreInputFromSource({
@@ -472,9 +875,9 @@ export const Home: React.FC = () => {
         fileNames: sourceNames,
         label: currentDataset.file_name || 'dataset',
         sheetNames,
-        columns: currentDataset.columns,
+        columns: understandingColumns,
         rows: sourceRows,
-        columnProfiles: currentDataset.profiles,
+        columnProfiles: understandingProfiles,
         sourceRowCount
       });
 
@@ -558,11 +961,6 @@ export const Home: React.FC = () => {
     };
     fetchCurrentSource();
     
-    // Rotate prompts every 5 seconds
-    const interval = setInterval(() => {
-      setPromptIndex((prev) => (prev + 1) % homeGuidance.rotatingPrompts.length);
-    }, 5000);
-    return () => clearInterval(interval);
   }, [API_BASE_URL]);
 
   useEffect(() => {
@@ -593,6 +991,10 @@ export const Home: React.FC = () => {
     setResult(null);
     setSelectedTopic(null);
     setPreviewActionId(null);
+    setCurrentDataset(null);
+    setWorkspaceState(null);
+    setDecisionTrustReport(null);
+    setMappingOverlayActions([]);
 
     // Close menus if they are open
     setIsPlusMenuOpen(false);
@@ -612,13 +1014,21 @@ export const Home: React.FC = () => {
     
     const inspectionRun = inspectionRuns.current.begin();
 
-    // Inspect files concurrently
+    // Persist and inspect files concurrently. Browser file inputs do not expose an absolute
+    // local path, so LightBI keeps a project-scoped copy for future session reloads.
     const inspectionPromises = files.map(file => {
       const candidateOrError = createFileSourceCandidate(file);
       if ('status' in candidateOrError) {
         return Promise.resolve(candidateOrError as SourceInspectionResult);
       }
-      return inspectLocalFile(candidateOrError as SourceCandidate, { signal: inspectionRun.signal }).catch(error => {
+      const persistedFilePromise = uploadProjectSourceFile(file).catch(error => {
+        console.warn("Could not persist project source file:", error);
+        return null;
+      });
+      const inspectionPromise = inspectLocalFile(candidateOrError as SourceCandidate, { signal: inspectionRun.signal });
+      return Promise.all([inspectionPromise, persistedFilePromise]).then(([result, persistedFile]) => (
+        attachPersistedFile(result, persistedFile)
+      )).catch(error => {
         if (inspectionRun.signal.aborted) throw error;
         return {
           status: 'not_found', sourceType: candidateOrError.sourceType, label: candidateOrError.label, message: "Error reading file."
@@ -653,6 +1063,7 @@ export const Home: React.FC = () => {
       
       let graph: RelationshipGraph | undefined = undefined;
       let businessViews: BusinessViewCandidate[] | undefined = undefined;
+      let businessOverview: BusinessFusionOverview | null = null;
       let nextStep: "family_selection" | "business_view_review" = "family_selection";
 
       try {
@@ -669,9 +1080,11 @@ export const Home: React.FC = () => {
           if (businessViews.length > 0) {
             nextStep = "business_view_review";
           }
+          businessOverview = createBusinessFusionOverview(families);
         }
       } catch (e) {
         console.error("Discovery error:", e);
+        businessOverview = createBusinessFusionOverview(families);
       }
       
       setPendingLocalBatch({
@@ -682,7 +1095,8 @@ export const Home: React.FC = () => {
         selectedFamilyId: families.length === 1 ? families[0].id : null,
         step: nextStep,
         graph,
-        businessViews
+        businessViews,
+        businessOverview
       });
       setLastInspectedFamilies(families);
     }
@@ -735,7 +1149,9 @@ export const Home: React.FC = () => {
         name: item.file.name,
         rows,
         columns: colsCount,
-        fingerprint: family.schemaFingerprint
+        fingerprint: family.schemaFingerprint,
+        persistedFile: md?.persisted_file,
+        sheetNames: md?.is_workbook && md.default_sheet ? [md.default_sheet] : []
       };
     });
 
@@ -823,8 +1239,68 @@ export const Home: React.FC = () => {
       analysisRows: rawAnalysisRows,
       previewRows: finalPreviewRows
     });
+    setDecisionTrustReport(createDecisionTrustReport(family));
 
     handleCancelInspection();
+  };
+
+  const handleUseBusinessFusionDataset = () => {
+    if (!pendingLocalBatch) return;
+    const fusion = createBusinessFusionVirtualDataset(pendingLocalBatch.families);
+    if (!fusion) return;
+
+    const semanticSample = createUnderstandingSample(fusion.rows, {
+      seed: fusion.id
+    });
+    registerBusinessFusionAdvancedSource(fusion.name, fusion, semanticSample);
+    const sourceFiles = pendingLocalBatch.families.flatMap(fam =>
+      fam.files.map(item => {
+        const md = item.result.status === 'accessible' ? item.result.metadata : null;
+        const sheetRows = md?.is_workbook && md.default_sheet && md.sheets?.[md.default_sheet]
+          ? md.sheets[md.default_sheet].rows_count
+          : undefined;
+        return {
+          name: item.file.name,
+          rows: sheetRows ?? md?.rows_count ?? 0,
+          columns: fam.columns.length,
+          familyName: fam.name,
+          persistedFile: md?.persisted_file,
+          sheetNames: md?.is_workbook && md.default_sheet ? [md.default_sheet] : []
+        };
+      })
+    );
+
+    setCurrentDataset({
+      status: 'ready',
+      file_name: fusion.name,
+      rows_count: fusion.rows.length,
+      columns: fusion.columns,
+      profiles: fusion.profiles,
+      sourceType: 'business_fusion_view',
+      normalizedUrl: fusion.id,
+      sourceFiles,
+      selected_sheet: null,
+      file_reference: null,
+      runtimeDatasetSource: undefined,
+      semanticSample,
+      analysisRowScope: 'full',
+      semanticRows: semanticSample.rows,
+      analysisRows: fusion.rows,
+      previewRows: fusion.rows.slice(0, 100),
+      understandingColumns: fusion.understandingColumns,
+      understandingRows: fusion.understandingRows,
+      understandingProfiles: fusion.understandingProfiles,
+      understandingSourceRowCount: fusion.understandingSourceRowCount,
+      businessFusionOverview: fusion.overview,
+      objectKey: fusion.objectKey,
+      evidenceBundles: fusion.evidenceBundles
+    });
+    setWorkspaceState(createWorkspaceUnderstandingState({ type: 'dataset', datasetId: fusion.id }));
+    setDecisionTrustReport(null);
+    setPendingLocalBatch(null);
+    setSelectedTopic(null);
+    setResult(null);
+    setPreviewActionId(null);
   };
 
   const askQuestion = async (q: string) => {
@@ -866,8 +1342,84 @@ export const Home: React.FC = () => {
   };
 
 
+  const datasetTrustScore = datasetHealthResult?.overall ?? null;
+  const datasetTrustLabel = datasetTrustScore === null
+    ? 'Waiting for data'
+    : datasetTrustScore >= 85
+      ? 'High trust'
+      : datasetTrustScore >= 60
+        ? 'Review recommended'
+        : 'Needs cleaning';
+  const datasetTrustClass = datasetTrustScore === null
+    ? 'bg-black/[0.04] text-black/55'
+    : datasetTrustScore >= 85
+      ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+      : datasetTrustScore >= 60
+        ? 'bg-amber-50 text-amber-700 border-amber-200'
+        : 'bg-rose-50 text-rose-700 border-rose-200';
+
+  const renderSessionHistoryPanel = (className = "") => (
+    <div className={`bg-white border border-black/10 rounded-xl p-5 shadow-sm ${className}`}>
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <h3 className="flex items-center text-[12px] font-semibold uppercase tracking-wider text-gray-500">
+          <History className="mr-2 h-4 w-4 text-gray-400" /> Session history
+        </h3>
+        <span className="text-[11px] text-gray-400">{workspaceSessions.length}</span>
+      </div>
+      {workspaceSessions.length > 0 ? (
+        <div className="grid gap-2">
+          {workspaceSessions.slice(0, 6).map(session => {
+            const isActive = currentDataset?.restoredFromSessionId === session.id;
+            return (
+              <div key={session.id} className={`rounded-lg border p-3 transition-colors ${isActive ? 'border-emerald-200 bg-emerald-50/70' : 'border-gray-100 bg-white hover:border-gray-200'}`}>
+                <div className="flex items-start justify-between gap-2">
+                  <button
+                    onClick={() => void handleOpenWorkspaceSession(session)}
+                    className="min-w-0 flex-1 text-left"
+                    title="Open saved session"
+                  >
+                    <div className="truncate text-[13px] font-semibold text-gray-900">{session.title}</div>
+                    <div className="mt-1 flex flex-wrap gap-x-2 gap-y-1 text-[11px] text-gray-500">
+                      <span>{formatValue(session.rowCount, 'number', preferences, { compact: true })} rows</span>
+                      <span>{formatValue(session.columnCount, 'number', preferences, { compact: true })} columns</span>
+                      <span>{session.sourceType}</span>
+                    </div>
+                  </button>
+                  <div className="flex shrink-0 items-center gap-1">
+                    <button
+                      onClick={() => void handleOpenWorkspaceSession(session)}
+                      className="rounded-md p-1.5 text-gray-400 transition-colors hover:bg-blue-50 hover:text-blue-700"
+                      title="Open session"
+                    >
+                      <FolderOpen className="h-3.5 w-3.5" />
+                    </button>
+                    <button
+                      onClick={() => void handleDeleteWorkspaceSession(session.id)}
+                      className="rounded-md p-1.5 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-700"
+                      title="Delete session"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <div className="rounded-lg border border-dashed border-gray-200 px-3 py-5 text-center">
+          <div className="text-[13px] font-medium text-gray-700">No saved sessions yet</div>
+          <div className="mt-1 text-[12px] text-gray-400">LightBI saves when you start an analysis or preview a chart.</div>
+        </div>
+      )}
+      {sessionStatus && (
+        <div className="mt-4 rounded-md bg-gray-50 px-3 py-2 text-[12px] text-gray-500">{sessionStatus}</div>
+      )}
+    </div>
+  );
+
   return (
-    <div className="flex-1 flex flex-col items-center pt-20 px-6 overflow-y-auto bg-gray-50/30 text-gray-900 font-sans" onClick={() => isPlusMenuOpen && setIsPlusMenuOpen(false)}>
+    <div className="flex-1 overflow-y-auto bg-[#fbfbfa] text-[#202123] font-sans" onClick={() => isPlusMenuOpen && setIsPlusMenuOpen(false)}>
       
       {/* Global Data Intake Drawer */}
       <DataIntakeDrawer 
@@ -882,7 +1434,7 @@ export const Home: React.FC = () => {
           let rawPreviewRows = md.preview_rows || [];
           let rawSemanticRows = md.semantic_rows || rawPreviewRows;
           let rawAnalysisRows = md.analysis_rows || [];
-          let sheetNames: string[] = md.sheet_names || [];
+          const sheetNames: string[] = md.sheet_names || [];
 
           if (md.is_workbook && md.default_sheet && md.sheets) {
             const sheet = md.sheets[md.default_sheet];
@@ -960,43 +1512,37 @@ export const Home: React.FC = () => {
             previewRows
           });
           setWorkspaceState(createWorkspaceUnderstandingState({ type: 'dataset', datasetId: sourceLabel }));
+          const trustFamily = familyFromInspectionResult(inspectionResult, sourceLabel);
+          setDecisionTrustReport(trustFamily ? createDecisionTrustReport(trustFamily) : null);
           setResult(null);
           setSelectedTopic(null);
           setPreviewActionId(null);
         }}
       />
 
-      <div className="w-full max-w-6xl flex flex-col items-center relative" onClick={e => e.stopPropagation()}>
+      <div className="mx-auto flex w-full max-w-[1280px] flex-col px-5 py-8 md:px-8 lg:px-10" onClick={e => e.stopPropagation()}>
         {!result && !isAsking && !selectedTopic && (
           <>
             {currentDataset?.status !== 'ready' && (
-              <div className="w-full mb-12 flex flex-col items-center text-center">
-                <h2 className="text-xl text-gray-500 mb-2">{getGreeting()}</h2>
-                <div className="h-[40px] relative w-full max-w-2xl overflow-hidden flex justify-center mb-8">
-                  <AnimatePresence mode="wait">
-                    <motion.h1
-                      key={promptIndex}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.5, ease: "easeOut" }}
-                      className="text-3xl font-medium text-gray-900 tracking-tight absolute"
-                    >
-                      {homeGuidance.rotatingPrompts[promptIndex]}
-                    </motion.h1>
-                  </AnimatePresence>
+              <div className={`flex w-full flex-col items-center justify-center text-center ${pendingLocalBatch ? 'min-h-0 pb-8 pt-10' : 'min-h-[calc(100vh-130px)] pb-12'}`}>
+                <div className="mb-4 rounded-full border border-black/10 bg-white/70 px-3 py-1.5 text-[13px] text-black/45 shadow-sm">{getGreeting()}</div>
+                <div className="relative mb-8 flex w-full max-w-4xl justify-center">
+                  <h1 className="text-[34px] font-medium tracking-normal text-[#202123] md:text-[44px]">
+                    What should LightBI understand?
+                  </h1>
                 </div>
 
-                <div className="w-full relative flex flex-col items-center max-w-3xl">
-                  <div className="w-full relative flex items-center">
+                <div className="relative flex w-full max-w-[820px] flex-col items-center">
+                  <div className="relative flex w-full items-center rounded-[24px] border border-black/10 bg-white shadow-[0_22px_65px_rgba(15,23,42,0.10)] transition-shadow duration-300 focus-within:shadow-[0_28px_75px_rgba(15,23,42,0.14)]">
                     <button 
                       onClick={() => setIsPlusMenuOpen(!isPlusMenuOpen)}
-                      className="source-picker-toggle absolute left-3 w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-md transition-colors z-10"
+                      className="source-picker-toggle absolute left-4 z-10 flex h-10 w-10 items-center justify-center rounded-xl text-black/55 transition-colors hover:bg-black/[0.04] hover:text-[#202123]"
+                      title="Add data source"
                     >
-                      <Plus className="w-4 h-4" />
+                      <Plus className="h-5 w-5" />
                     </button>
                     
-                    {renderSourcePickerMenu(isPlusMenuOpen, setIsPlusMenuOpen, "top-14 left-0")}
+                    {renderSourcePickerMenu(isPlusMenuOpen, "top-16 left-0")}
 
                     <input 
                       ref={questionInputRef}
@@ -1011,12 +1557,12 @@ export const Home: React.FC = () => {
                               setInputValue("");
                           }
                       }}
-                      placeholder={questionPlaceholder}
-                      className="w-full pl-14 pr-4 py-3 bg-white border border-gray-300 rounded-lg shadow-sm text-base focus:outline-none focus:ring-1 focus:ring-gray-900 focus:border-gray-900 transition-all placeholder:text-gray-400"
+                      placeholder={questionPlaceholder === "Ask a question about your data..." ? "Paste a sheet link, import a file, or ask what to analyze" : questionPlaceholder}
+                      className="h-[78px] w-full rounded-[24px] border-0 bg-transparent pl-16 pr-6 text-[16px] text-[#202123] outline-none placeholder:text-black/30"
                     />
                   </div>
 
-                  <div className="flex flex-wrap justify-center content-start gap-2 mt-4 min-h-[76px]">
+                  <div className="mt-4 flex min-h-[42px] flex-wrap content-start justify-center gap-2">
                     {activeChips.map((chip, idx) => {
                       const style = homeGuidance.heroChipCategoryStyles[chip.category] || homeGuidance.heroChipCategoryStyles.general;
                       return (
@@ -1033,7 +1579,7 @@ export const Home: React.FC = () => {
                                 setAnalysisIntent(chip.text);
                                 askQuestion(chip.text);
                               }} 
-                              className={`group flex items-center gap-2 text-[13px] text-gray-500 hover:text-gray-900 bg-white border border-gray-200 hover:border-gray-300 px-4 py-1.5 rounded-full transition-colors shadow-sm whitespace-nowrap ${style.hover}`}
+                              className={`group flex items-center gap-2 whitespace-nowrap rounded-full border border-black/10 bg-white px-4 py-2 text-[13px] text-black/55 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-black/15 hover:bg-black/[0.025] hover:text-[#202123] hover:shadow-md ${style.hover}`}
                             >
                               <span className={`h-2 w-2 rounded-full flex-shrink-0 ${style.dot}`} />
                               <span>{chip.text}</span>
@@ -1043,6 +1589,35 @@ export const Home: React.FC = () => {
                       );
                     })}
                   </div>
+
+                  <div className="mt-9 grid w-full grid-cols-1 gap-3 md:grid-cols-3">
+                    <button
+                      onClick={openLocalFilePicker}
+                      className="group rounded-[16px] border border-black/10 bg-white p-5 text-left shadow-sm transition-all duration-200 hover:-translate-y-1 hover:bg-white hover:shadow-lg"
+                    >
+                      <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-[12px] bg-emerald-50 text-emerald-600 shadow-sm transition-transform duration-200 group-hover:scale-105"><FileSpreadsheet className="h-5 w-5" strokeWidth={1.7} /></div>
+                      <div className="text-[15px] font-medium text-[#202123]">Import local files</div>
+                      <div className="mt-1 text-[13px] leading-5 text-black/45">Excel, CSV, JSON, TSV with matrix sampling and quality score.</div>
+                    </button>
+                    <button
+                      onClick={openOnlineDataDrawer}
+                      className="group rounded-[16px] border border-black/10 bg-white p-5 text-left shadow-sm transition-all duration-200 hover:-translate-y-1 hover:bg-white hover:shadow-lg"
+                    >
+                      <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-[12px] bg-blue-50 text-blue-600 shadow-sm transition-transform duration-200 group-hover:scale-105"><Link className="h-5 w-5" strokeWidth={1.7} /></div>
+                      <div className="text-[15px] font-medium text-[#202123]">Connect online sheet</div>
+                      <div className="mt-1 text-[13px] leading-5 text-black/45">Short or full links stay online-first, then LightBI builds a BA brief.</div>
+                    </button>
+                    <button
+                      onClick={openDatabaseDrawer}
+                      className="group rounded-[16px] border border-black/10 bg-white p-5 text-left shadow-sm transition-all duration-200 hover:-translate-y-1 hover:bg-white hover:shadow-lg"
+                    >
+                      <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-[12px] bg-violet-50 text-violet-600 shadow-sm transition-transform duration-200 group-hover:scale-105"><Server className="h-5 w-5" strokeWidth={1.7} /></div>
+                      <div className="text-[15px] font-medium text-[#202123]">Connect database system</div>
+                      <div className="mt-1 text-[13px] leading-5 text-black/45">Postgres, MySQL, MariaDB, MongoDB, SQLite, then LightBI builds a BA brief.</div>
+                    </button>
+                  </div>
+
+                  {renderSessionHistoryPanel("mt-5 w-full text-left")}
                 </div>
               </div>
             )}
@@ -1062,40 +1637,57 @@ export const Home: React.FC = () => {
         {isUploading && <div className="mb-4 flex items-center text-sm text-gray-500"><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Uploading and analyzing data...</div>}
 
         {!result && !isAsking && !selectedTopic && (
-          <div className="w-full grid grid-cols-1 lg:grid-cols-3 gap-8 items-start pb-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <div className={`w-full grid grid-cols-1 lg:grid-cols-3 ${pendingLocalBatch && currentDataset?.status !== 'ready' ? 'gap-5' : 'gap-8'} items-start pb-12 animate-in fade-in slide-in-from-bottom-4 duration-500`}>
             {/* Main Column */}
-            <div className="lg:col-span-2 flex flex-col gap-8">
+            <div className={`flex flex-col gap-8 ${pendingLocalBatch && currentDataset?.status !== 'ready' ? 'mx-auto w-full max-w-3xl lg:col-span-3' : 'lg:col-span-2'}`}>
               
               {/* Data Status Card – only rendered when currentDataset.status === "ready" */}
               {currentDataset?.status === 'ready' && (
-                <div className="w-full gap-3 p-4 bg-white border border-gray-200 rounded-xl flex flex-col sm:flex-row sm:justify-between sm:items-center shadow-sm">
-                  <div className="flex items-center">
-                    <Database className="w-5 h-5 text-emerald-500 mr-3" />
-                    <div className="flex flex-col gap-0.5">
-                      <div className="flex items-center gap-2">
-                        <p className="text-[14px] font-medium text-gray-900">Connected Data: {workspaceState ? getActiveAnalysisContextLabel(workspaceState, currentDataset.file_name) : currentDataset.file_name}</p>
-                        {(currentDataset.sourceType === "virtual_business_view" || workspaceState?.activeContext.type === "business_view") && (
-                          <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-purple-100 text-purple-700">Business View</span>
+                <div className="w-full rounded-[18px] border border-black/10 bg-white p-5 shadow-sm">
+                  <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+                    <div className="flex min-w-0 items-start gap-3">
+                      <div className="mt-0.5 flex h-12 w-12 shrink-0 items-center justify-center rounded-[14px] bg-black/[0.04] shadow-sm">
+                        <Database className="h-5 w-5 text-black/65" strokeWidth={1.7} />
+                      </div>
+                      <div className="min-w-0">
+                        <div className="mb-1 flex flex-wrap items-center gap-2">
+                          <p className="truncate text-[17px] font-semibold text-[#202123]">
+                            {workspaceState ? getActiveAnalysisContextLabel(workspaceState, currentDataset.file_name) : currentDataset.file_name}
+                          </p>
+                          {(['virtual_business_view', 'business_fusion_view'].includes(currentDataset.sourceType) || workspaceState?.activeContext.type === "business_view") && (
+                            <span className="rounded border border-violet-200 bg-violet-50 px-2 py-0.5 text-[11px] font-medium text-violet-700">Business View</span>
+                          )}
+                          <span className={`rounded border px-2 py-0.5 text-[11px] font-semibold ${datasetTrustClass}`}>
+                            {datasetTrustScore === null ? datasetTrustLabel : `${datasetTrustLabel}: ${formatValue(datasetTrustScore, 'number', preferences)} / 100`}
+                          </span>
+                        </div>
+                        {(['virtual_business_view', 'business_fusion_view'].includes(currentDataset.sourceType) || workspaceState?.activeContext.type === "business_view") ? (
+                          <p className="text-[13px] text-black/50">Business view · {formatValue(currentDataset.businessFusionOverview?.sources?.length || currentDataset.selectedBusinessView?.datasets?.length || 0, 'number', preferences, { compact: true })} datasets · {formatValue(Array.isArray(currentDataset.columns) ? currentDataset.columns.length : 0, 'number', preferences, { compact: true })} columns</p>
+                        ) : (
+                          <>
+                            <p className="text-[13px] text-black/50">{formatValue(currentDataset.rows_count, 'number', preferences, { compact: true })} rows · {formatValue(Array.isArray(currentDataset.columns) ? currentDataset.columns.length : 0, 'number', preferences, { compact: true })} columns</p>
+                            {currentDataset.semanticSample?.strategy === 'matrix_sample' && (
+                              <p className="mt-1 text-[12px] text-blue-700">
+                                Understanding: {formatValue(currentDataset.semanticSample.sampleRowCount, 'number', preferences)} representative rows · Runtime: {currentDataset.runtimeDatasetSource ? 'full local file' : 'representative sample'}
+                              </p>
+                            )}
+                          </>
                         )}
                       </div>
-                      {(currentDataset.sourceType === "virtual_business_view" || workspaceState?.activeContext.type === "business_view") ? (
-                        <p className="text-[12px] text-gray-500">Business view · {formatValue(currentDataset.selectedBusinessView?.datasets?.length || 0, 'number', preferences, { compact: true })} datasets · {formatValue(Array.isArray(currentDataset.columns) ? currentDataset.columns.length : 0, 'number', preferences, { compact: true })} columns</p>
-                      ) : (
-                        <>
-                          <p className="text-[12px] text-gray-500">{formatValue(currentDataset.rows_count, 'number', preferences, { compact: true })} rows · {formatValue(Array.isArray(currentDataset.columns) ? currentDataset.columns.length : 0, 'number', preferences, { compact: true })} columns</p>
-                          {currentDataset.semanticSample?.strategy === 'matrix_sample' && (
-                            <p className="text-[11px] text-blue-700">
-                              Understanding: {formatValue(currentDataset.semanticSample.sampleRowCount, 'number', preferences)} representative rows · Runtime: {currentDataset.runtimeDatasetSource ? 'full local file' : 'representative sample'}
-                            </p>
-                          )}
-                        </>
-                      )}
                     </div>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    <button onClick={() => {}} className="px-3 py-1.5 bg-gray-50 text-gray-600 rounded-md text-[12px] font-medium hover:bg-gray-100 transition-colors border border-transparent hover:border-gray-200">View Data</button>
+                    <div className="flex flex-wrap gap-2 lg:justify-end">
+                    <button
+                      onClick={handleSaveWorkspaceSession}
+                      disabled={isSavingSession}
+                      className="flex items-center gap-1.5 rounded-[10px] border border-black/10 bg-white px-3 py-2 text-[12px] font-medium text-black/65 shadow-sm transition-colors hover:bg-black/[0.035] disabled:cursor-not-allowed disabled:opacity-60"
+                      title="Save current session"
+                    >
+                      {isSavingSession ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
+                      Save session
+                    </button>
+                    <button onClick={() => {}} className="rounded-[10px] border border-black/10 bg-white px-3 py-2 text-[12px] font-medium text-black/65 shadow-sm transition-colors hover:bg-black/[0.035]">View Data</button>
                     {currentDataset.sourceType !== 'virtual_business_view' && currentDataset.file_reference && (
-                      <button onClick={() => navigate('/advanced')} className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white rounded-md text-[12px] font-medium hover:bg-blue-700 transition-colors"><Code className="h-3.5 w-3.5" /> Open Advanced</button>
+                      <button onClick={() => navigate('/advanced')} className="flex items-center gap-1.5 rounded-[10px] bg-[#202123] px-3 py-2 text-[12px] font-medium text-white shadow-sm transition-colors hover:bg-black"><Code className="h-3.5 w-3.5" /> Open Advanced</button>
                     )}
                     {lastInspectedFamilies && lastInspectedFamilies.length > 1 && (
                       <button 
@@ -1110,14 +1702,33 @@ export const Home: React.FC = () => {
                             step: "family_selection"
                           });
                         }} 
-                        className="px-3 py-1.5 bg-gray-50 text-gray-600 rounded-md text-[12px] font-medium hover:bg-gray-100 transition-colors border border-transparent hover:border-gray-200"
+                        className="rounded-[10px] border border-black/10 bg-white px-3 py-2 text-[12px] font-medium text-black/65 shadow-sm transition-colors hover:bg-black/[0.035]"
                       >
                         Change Group
                       </button>
                     )}
                     <div className="relative">
-                      <button onClick={() => setIsReplaceMenuOpen(!isReplaceMenuOpen)} className="source-picker-toggle px-3 py-1.5 bg-white border border-gray-200 text-gray-700 rounded-md text-[12px] font-medium hover:bg-gray-50 transition-colors shadow-sm">Replace Data</button>
-                      {renderSourcePickerMenu(isReplaceMenuOpen, setIsReplaceMenuOpen, "top-10 right-0")}
+                      <button onClick={() => setIsReplaceMenuOpen(!isReplaceMenuOpen)} className="source-picker-toggle rounded-[10px] border border-black/10 bg-white px-3 py-2 text-[12px] font-medium text-black/65 shadow-sm transition-colors hover:bg-black/[0.035]">Replace Data</button>
+                      {renderSourcePickerMenu(isReplaceMenuOpen, "top-10 right-0")}
+                    </div>
+                    </div>
+                  </div>
+                  <div className="mt-5 grid grid-cols-2 gap-3 border-t border-black/5 pt-4 md:grid-cols-4">
+                    <div className="rounded-[14px] bg-[#f7f7f6] px-4 py-3">
+                      <div className="text-[11px] font-medium uppercase tracking-wide text-black/40">Rows</div>
+                      <div className="mt-1 text-[20px] font-semibold text-[#202123]">{formatValue(currentDataset.rows_count, 'number', preferences, { compact: true })}</div>
+                    </div>
+                    <div className="rounded-[14px] bg-[#f7f7f6] px-4 py-3">
+                      <div className="text-[11px] font-medium uppercase tracking-wide text-black/40">Columns</div>
+                      <div className="mt-1 text-[20px] font-semibold text-[#202123]">{formatValue(Array.isArray(currentDataset.columns) ? currentDataset.columns.length : 0, 'number', preferences, { compact: true })}</div>
+                    </div>
+                    <div className="rounded-[14px] bg-[#f7f7f6] px-4 py-3">
+                      <div className="text-[11px] font-medium uppercase tracking-wide text-black/40">Data trust</div>
+                      <div className="mt-1 text-[20px] font-semibold text-[#202123]">{datasetTrustScore === null ? 'Review' : `${formatValue(datasetTrustScore, 'number', preferences)} / 100`}</div>
+                    </div>
+                    <div className="rounded-[14px] bg-[#f7f7f6] px-4 py-3">
+                      <div className="text-[11px] font-medium uppercase tracking-wide text-black/40">Runtime</div>
+                      <div className="mt-1 text-[20px] font-semibold text-[#202123]">{currentDataset.runtimeDatasetSource ? 'Full file' : 'Sample'}</div>
                     </div>
                   </div>
                 </div>
@@ -1126,6 +1737,7 @@ export const Home: React.FC = () => {
               {datasetHealthResult && (
                 <div className="w-full animate-in fade-in slide-in-from-bottom-4 duration-500 flex flex-col gap-4">
                   <DataQualityCard health={datasetHealthResult} />
+                  {decisionTrustReport && <DecisionTrustReportCard report={decisionTrustReport} />}
                   
                   {/* Dataset Understanding Layer */}
                   {currentDataset?.sourceType !== 'virtual_business_view' && datasetUnderstandingNext ? (
@@ -1233,13 +1845,13 @@ export const Home: React.FC = () => {
 
               {/* Inline Pending Local Batch Inspection Card */}
               {pendingLocalBatch && (
-                <div className="w-full p-5 bg-white border border-blue-200 rounded-xl shadow-sm animate-in fade-in zoom-in-95 flex flex-col gap-4 relative overflow-hidden">
+                <div className="w-full rounded-xl border border-black/10 bg-white p-4 shadow-sm animate-in fade-in zoom-in-95 flex flex-col gap-4 relative overflow-hidden">
                   {pendingLocalBatch.status === "reading" && (
                     <div className="absolute top-0 left-0 h-1 bg-blue-500 w-full animate-pulse" />
                   )}
-                  <div className="flex justify-between items-start">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex min-w-0 items-center gap-3">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-emerald-50">
                         {pendingLocalBatch.status === "reading" ? (
                           <Loader2 className="w-5 h-5 text-blue-500 animate-spin" />
                         ) : pendingLocalBatch.status === "error" ? (
@@ -1248,14 +1860,14 @@ export const Home: React.FC = () => {
                           <FileSpreadsheet className="w-5 h-5 text-emerald-500" />
                         )}
                       </div>
-                      <div>
-                        <h3 className="text-[14px] font-semibold text-gray-900">
+                      <div className="min-w-0">
+                        <h3 className="text-[13px] font-semibold text-[#202123]">
                           {pendingLocalBatch.isRestored ? "Choose dataset group" : 
                            pendingLocalBatch.status === "reading" ? `Inspecting ${pendingLocalBatch.files.length} files...` : 
-                           pendingLocalBatch.status === "error" ? "Inspection failed" : `${pendingLocalBatch.files.length} files detected`}
+                           pendingLocalBatch.status === "error" ? "Inspection failed" : `${pendingLocalBatch.files.length} file${pendingLocalBatch.files.length === 1 ? '' : 's'} ready`}
                         </h3>
                         {!pendingLocalBatch.isRestored && pendingLocalBatch.files.length > 0 && (
-                          <p className="text-[12px] text-gray-500 line-clamp-1">
+                          <p className="truncate text-[12px] text-black/45">
                             {pendingLocalBatch.files.length === 1 ? pendingLocalBatch.files[0].name : `${pendingLocalBatch.files[0].name} and ${pendingLocalBatch.files.length - 1} more`}
                           </p>
                         )}
@@ -1292,12 +1904,21 @@ export const Home: React.FC = () => {
                     </div>
                   )}
 
+                  {pendingLocalBatch.status === "ready" && pendingLocalBatch.businessOverview && (
+                    <div className="w-full animate-in fade-in slide-in-from-bottom-4 duration-500 mt-4 mb-4">
+                      <BusinessFusionOpportunityCard
+                        overview={pendingLocalBatch.businessOverview}
+                        onUseFusedDataset={handleUseBusinessFusionDataset}
+                      />
+                    </div>
+                  )}
+
                   {pendingLocalBatch.status === "ready" && pendingLocalBatch.step === "family_selection" && (
-                    <div className="w-full animate-in fade-in slide-in-from-bottom-4 duration-500 mt-4 flex flex-col gap-4 pt-2 border-t border-gray-100">
+                    <div className="w-full animate-in fade-in slide-in-from-bottom-4 duration-500 flex flex-col gap-3 border-t border-gray-100 pt-3">
                       
                       <div className="flex flex-col gap-2">
-                        <label className="block text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-1">
-                          {pendingLocalBatch.families.length} Dataset Groups Detected
+                        <label className="block text-[10px] font-semibold uppercase tracking-wide text-black/40">
+                          {pendingLocalBatch.families.length} dataset group{pendingLocalBatch.families.length === 1 ? '' : 's'} found
                         </label>
                         
                         {pendingLocalBatch.families.length > 1 && !pendingLocalBatch.isRestored && (
@@ -1311,28 +1932,28 @@ export const Home: React.FC = () => {
                           </div>
                         )}
 
-                        <div className="flex flex-col gap-3">
+                        <div className="flex flex-col gap-2">
                           {pendingLocalBatch.families.map((fam) => (
                             <div 
                               key={fam.id}
                               onClick={() => setPendingLocalBatch({ ...pendingLocalBatch, selectedFamilyId: fam.id })}
-                              className={`border rounded-lg p-3 cursor-pointer transition-colors ${pendingLocalBatch.selectedFamilyId === fam.id ? 'border-blue-500 bg-blue-50' : 'border-gray-200 bg-white hover:border-gray-300'}`}
+                              className={`cursor-pointer rounded-lg border p-3 transition-colors ${pendingLocalBatch.selectedFamilyId === fam.id ? 'border-blue-400 bg-blue-50' : 'border-gray-200 bg-white hover:border-gray-300'}`}
                             >
                               <div className="flex items-center gap-3">
-                                <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${pendingLocalBatch.selectedFamilyId === fam.id ? 'border-blue-500 bg-blue-500' : 'border-gray-300 bg-white'}`}>
+                                <div className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full border ${pendingLocalBatch.selectedFamilyId === fam.id ? 'border-blue-500 bg-blue-500' : 'border-gray-300 bg-white'}`}>
                                   {pendingLocalBatch.selectedFamilyId === fam.id && <div className="w-2 h-2 rounded-full bg-white" />}
                                 </div>
-                                <div className="flex-1">
-                                  <div className="flex justify-between items-center mb-1">
-                                    <h4 className="text-[13px] font-semibold text-gray-900">{fam.name}</h4>
-                                    <span className="text-[12px] text-gray-500">{fam.files.length} files</span>
+                                <div className="min-w-0 flex-1">
+                                  <div className="mb-1 flex items-center justify-between gap-3">
+                                    <h4 className="truncate text-[13px] font-semibold text-[#202123]">{fam.name}</h4>
+                                    <span className="shrink-0 text-[11px] text-black/45">{fam.files.length} file{fam.files.length === 1 ? '' : 's'}</span>
                                   </div>
-                                  <div className="text-[12px] text-gray-500 flex gap-3">
+                                  <div className="flex flex-wrap gap-x-3 gap-y-1 text-[12px] text-black/50">
                                     <span>{formatValue(fam.totalRows, 'number', preferences, { compact: true })} rows</span>
                                     <span>{formatValue(fam.columns.length, 'number', preferences, { compact: true })} columns</span>
                                     {fam.files.length > 1 && <span className="text-emerald-600 flex items-center gap-1"><span className="text-emerald-500">✓</span> Compatible for append</span>}
                                   </div>
-                                  <div className="mt-2 text-[11px] text-gray-400 truncate">
+                                  <div className="mt-1 truncate text-[11px] text-black/35">
                                     {fam.files.map(f => f.file.name).join(', ')}
                                   </div>
                                 </div>
@@ -1342,11 +1963,11 @@ export const Home: React.FC = () => {
                         </div>
                       </div>
 
-                      <div className="flex justify-end pt-4 border-t border-gray-100">
+                      <div className="flex justify-end border-t border-gray-100 pt-3">
                         <button 
                           onClick={handleUseLocalDataset}
                           disabled={!pendingLocalBatch.selectedFamilyId && pendingLocalBatch.families.length > 1}
-                          className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 text-[13px] font-medium text-white shadow-sm transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
                         >
                           {pendingLocalBatch.families.length === 1 ? 'Use this dataset' : 'Use selected dataset'} <ChevronRight className="w-4 h-4" />
                         </button>
@@ -1367,24 +1988,80 @@ export const Home: React.FC = () => {
                           const newState = applyBusinessViewSelection(initial, confirmedView, pendingLocalBatch.graph!);
                           setWorkspaceState(newState);
 
-                          const allColumns: string[] = [];
-                          confirmedView.datasets.forEach(dsId => {
-                            const fam = pendingLocalBatch.families.find(f => f.id === dsId);
-                            if (fam) {
-                              fam.columns.forEach(c => allColumns.push(`${fam.name}.${c}`));
-                            }
-                          });
-                          
-                          setCurrentDataset({
-                            status: 'ready',
-                            file_name: confirmedView.title,
-                            rows_count: null,
-                            columns: allColumns,
-                            profiles: {},
-                            sourceType: "virtual_business_view",
-                            selectedBusinessView: confirmedView
-                          });
+                          const fusion = createBusinessFusionVirtualDataset(pendingLocalBatch.families);
+                          if (fusion) {
+                            const semanticSample = createUnderstandingSample(fusion.rows, {
+                              seed: `${fusion.id}:${confirmedView.id}`
+                            });
+                            registerBusinessFusionAdvancedSource(confirmedView.title, fusion, semanticSample);
+                            const sourceFiles = pendingLocalBatch.families.flatMap(fam =>
+                              fam.files.map(item => {
+                                const md = item.result.status === 'accessible' ? item.result.metadata : null;
+                                const sheetRows = md?.is_workbook && md.default_sheet && md.sheets?.[md.default_sheet]
+                                  ? md.sheets[md.default_sheet].rows_count
+                                  : undefined;
+
+                                return {
+                                  name: item.file.name,
+                                  rows: sheetRows ?? md?.rows_count ?? 0,
+                                  columns: fam.columns,
+                                  familyName: fam.name,
+                                  persistedFile: md?.persisted_file,
+                                  sheetNames: md?.is_workbook && md.default_sheet ? [md.default_sheet] : []
+                                };
+                              })
+                            );
+
+                            setCurrentDataset({
+                              status: 'ready',
+                              file_name: confirmedView.title,
+                              rows_count: fusion.rows.length,
+                              columns: fusion.columns,
+                              profiles: fusion.profiles,
+                              sourceType: 'business_fusion_view',
+                              normalizedUrl: fusion.id,
+                              sourceFiles,
+                              selected_sheet: null,
+                              file_reference: null,
+                              runtimeDatasetSource: undefined,
+                              semanticSample,
+                              analysisRowScope: 'full',
+                              semanticRows: semanticSample.rows,
+                              analysisRows: fusion.rows,
+                              previewRows: fusion.rows.slice(0, 100),
+                              understandingColumns: fusion.understandingColumns,
+                              understandingRows: fusion.understandingRows,
+                              understandingProfiles: fusion.understandingProfiles,
+                              understandingSourceRowCount: fusion.understandingSourceRowCount,
+                              selectedBusinessView: confirmedView,
+                              businessFusionOverview: fusion.overview,
+                              objectKey: fusion.objectKey,
+                              evidenceBundles: fusion.evidenceBundles
+                            });
+                          } else {
+                            const allColumns: string[] = [];
+                            confirmedView.datasets.forEach(dsId => {
+                              const fam = pendingLocalBatch.families.find(f => f.id === dsId);
+                              if (fam) {
+                                fam.columns.forEach(c => allColumns.push(`${fam.name}.${c}`));
+                              }
+                            });
+
+                            setCurrentDataset({
+                              status: 'ready',
+                              file_name: confirmedView.title,
+                              rows_count: null,
+                              columns: allColumns,
+                              profiles: {},
+                              sourceType: "virtual_business_view",
+                              selectedBusinessView: confirmedView
+                            });
+                          }
+                          setDecisionTrustReport(null);
                           setPendingLocalBatch(null);
+                          setSelectedTopic(null);
+                          setResult(null);
+                          setPreviewActionId(null);
                         } else {
                           setPendingLocalBatch({
                             ...pendingLocalBatch,
@@ -1476,7 +2153,7 @@ export const Home: React.FC = () => {
                             <BusinessViewSummaryCard
                               title={selectedViewData.label || selectedViewData.title}
                               purpose={selectedViewData.description}
-                              evidence={selectedViewData.evidence.map(e => e.label || e.message)}
+                              evidence={selectedViewData.evidence.map((e: any) => e.label || e.message)}
                               relationships={[]} // Auto-relationships not extracted from views yet
                               coverage={{ datasets: 1, businessKeys: selectedViewData.matchedRequiredSignals?.length || 0, views: 1 }}
                               belief={`LightBI believes this data supports the ${selectedViewData.label || selectedViewData.title} business view with ${selectedViewData.confidenceScore || 90}% confidence, matching ${selectedViewData.matchedRequiredSignals?.length || 0} required signals.`}
@@ -1497,31 +2174,37 @@ export const Home: React.FC = () => {
                           <div className="flex flex-col gap-3">
                             <h4 className="text-[13px] font-bold text-slate-700 uppercase tracking-wider">{selectedViewData?.label || selectedViewData?.title || selectedPerspective} Questions</h4>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                              {visibleQuestionSuggestions.map((suggestion, idx) => (
+                              {visibleQuestionSuggestions.map((suggestion: any, idx: number) => (
                                 <div key={idx} className="bg-white border border-blue-200 rounded-lg p-4 hover:bg-blue-50 transition-colors flex flex-col justify-between shadow-sm">
-                                  <button
-                                    onClick={() => {
-                                      if (workspaceState?.activeContext.type === "business_view" && workspaceState.businessViewState) {
-                                        const viewId = (workspaceState.activeContext as any).businessViewId;
-                                        const view = workspaceState.businessViewState.confirmedBusinessViews.find(v => v.id === viewId);
-                                        if (view && workspaceState.relationshipState?.graph) {
-                                          const plan = createVirtualDatasetPlan({
-                                            businessView: view,
-                                            question: suggestion as any,
-                                            graph: workspaceState.relationshipState.graph,
-                                            workspaceState
-                                          });
-                                          setSelectedVirtualPlan(plan);
-                                          return;
+                                  {currentDataset?.sourceType === "virtual_business_view" ? (
+                                    <div className="mb-3 w-full text-left">
+                                      <span className="text-[14px] text-blue-900 font-medium leading-snug">{suggestion.text}</span>
+                                    </div>
+                                  ) : (
+                                    <button
+                                      onClick={() => {
+                                        if (workspaceState?.activeContext.type === "business_view" && workspaceState.businessViewState) {
+                                          const viewId = (workspaceState.activeContext as any).businessViewId;
+                                          const view = workspaceState.businessViewState.confirmedBusinessViews.find(v => v.id === viewId);
+                                          if (view && workspaceState.relationshipState?.graph) {
+                                            const plan = createVirtualDatasetPlan({
+                                              businessView: view,
+                                              question: suggestion as any,
+                                              graph: workspaceState.relationshipState.graph,
+                                              workspaceState
+                                            });
+                                            setSelectedVirtualPlan(plan);
+                                            return;
+                                          }
                                         }
-                                      }
-                                      setRecipePreview(generateRecipePlan(suggestion.text));
-                                    }}
-                                    className="w-full text-left flex items-start justify-between group mb-3"
-                                  >
-                                    <span className="text-[14px] text-blue-900 font-medium leading-snug pr-4">{suggestion.text}</span>
-                                    <ChevronRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity text-blue-500 mt-0.5 shrink-0" />
-                                  </button>
+                                        setRecipePreview(generateRecipePlan(suggestion.text));
+                                      }}
+                                      className="w-full text-left flex items-start justify-between group mb-3"
+                                    >
+                                      <span className="text-[14px] text-blue-900 font-medium leading-snug pr-4">{suggestion.text}</span>
+                                      <ChevronRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity text-blue-500 mt-0.5 shrink-0" />
+                                    </button>
+                                  )}
                                   
                                   <div className="flex flex-col gap-2 mt-auto">
                                     <div className="text-[11px] text-slate-500 font-medium flex flex-wrap items-center gap-1">
@@ -1587,7 +2270,7 @@ export const Home: React.FC = () => {
                             <div>
                               <h4 className="text-[12px] font-bold text-slate-500 uppercase tracking-wider mb-2">Evidence</h4>
                               <ul className="space-y-1">
-                                {selectedViewData.evidence.map((ev, i) => (
+                                {selectedViewData.evidence.map((ev: any, i: number) => (
                                   <li key={i} className="text-[13px] text-slate-700 flex items-center gap-2">
                                     <div className="w-1.5 h-1.5 rounded-full bg-indigo-400" />
                                     {ev.label || ev.message}
@@ -1653,9 +2336,8 @@ export const Home: React.FC = () => {
 
 
               {currentDataset?.status !== 'ready' && (
-                <>
-                  {/* Suggested Actions */}
-                  <div className="hidden">
+                <div className="hidden">
+                  {/* Legacy suggested actions kept dormant until wired to real saved work. */}
                     <h3 className="text-[12px] font-semibold text-gray-500 uppercase tracking-wider mb-4">{homeGuidance.sections.suggestedActions}</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       {homeGuidance.homeStates.noData.actions.map(a => ({ id: "", label: a })).map((action, idx) => (
@@ -1733,32 +2415,14 @@ export const Home: React.FC = () => {
                         </motion.div>
                       )}
                     </AnimatePresence>
-                  </div>
-
-                  {/* Quick Start */}
-                  <div>
-                    <h3 className="text-[12px] font-semibold text-gray-500 uppercase tracking-wider mb-4">
-                      {homeGuidance.sections.quickStartEmpty}
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      {homeGuidance.noDataCards.map((card, idx) => (
-                        <button 
-                          key={idx}
-                          onClick={() => setSelectedTopic(card.title)}
-                          className="text-left group transition-all rounded-xl p-4 bg-white shadow-sm hover:shadow-md"
-                        >
-                          <h4 className="text-[14px] font-semibold text-gray-900 mb-1 group-hover:text-emerald-600 transition-colors">{card.title}</h4>
-                          <p className="text-[13px] text-gray-500">{card.description}</p>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </>
+                </div>
               )}
             </div>
 
-            {/* Sidebar (Recent Insights) */}
+            {/* Sidebar */}
+            {currentDataset?.status === 'ready' && (
             <div className="lg:col-span-1 flex flex-col gap-6">
+              {currentDataset?.status === 'ready' && (
               <div className="bg-white border border-transparent rounded-xl p-6 shadow-sm flex flex-col h-full">
                 <h3 className="text-[12px] font-semibold text-gray-500 uppercase tracking-wider mb-5 flex items-center">
                   <Search className="w-4 h-4 mr-2 text-gray-400" /> {homeGuidance.recentInsights.title}
@@ -1793,7 +2457,9 @@ export const Home: React.FC = () => {
                   </div>
                 )}
               </div>
+              )}
             </div>
+            )}
 
           </div>
         )}
