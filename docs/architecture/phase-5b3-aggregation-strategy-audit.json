@@ -1,0 +1,96 @@
+{
+  "schemaVersion": "lightbi.phase-5b3-strategy-audit.v1",
+  "strategies": [
+    {
+      "id": "warning_only",
+      "blocksSilentSum": false,
+      "permitsUnsafeExplicit": true,
+      "safety": "observability only",
+      "remainingRisks": [
+        "silent SUM continues"
+      ],
+      "ux": "warning",
+      "authority": "legacy unchanged",
+      "requiredEvidence": [],
+      "laterProjection": false
+    },
+    {
+      "id": "require_explicit_user_confirmation",
+      "blocksSilentSum": true,
+      "permitsUnsafeExplicit": true,
+      "safety": "removes silent choice, not semantic risk",
+      "remainingRisks": [
+        "confirmation is not correctness"
+      ],
+      "ux": "confirmation step",
+      "authority": "user choice remains uncertified",
+      "requiredEvidence": [
+        "REQUIRE_EXPLICIT_USER_CONFIRMATION"
+      ],
+      "laterProjection": true
+    },
+    {
+      "id": "prohibit_automatic_default_but_allow_explicit_choice",
+      "blocksSilentSum": true,
+      "permitsUnsafeExplicit": true,
+      "safety": "blocks default injection",
+      "remainingRisks": [
+        "unsafe explicit aggregation remains"
+      ],
+      "ux": "aggregation selection required",
+      "authority": "explicit choice only",
+      "requiredEvidence": [
+        "REQUIRE_AGGREGATION_RULE"
+      ],
+      "laterProjection": true
+    },
+    {
+      "id": "require_governed_metric_semantics",
+      "blocksSilentSum": true,
+      "permitsUnsafeExplicit": false,
+      "safety": "requires governed formula and grain",
+      "remainingRisks": [
+        "metric catalog completeness"
+      ],
+      "ux": "metric unavailable until governed",
+      "authority": "canonical metric contract",
+      "requiredEvidence": [
+        "REQUIRE_METRIC_DEFINITION",
+        "REQUIRE_GRAIN_CONFIRMATION"
+      ],
+      "laterProjection": true
+    },
+    {
+      "id": "canonical_restriction_projection",
+      "blocksSilentSum": true,
+      "permitsUnsafeExplicit": false,
+      "safety": "projects canonical blockers",
+      "remainingRisks": [
+        "projection drift"
+      ],
+      "ux": "blocked states surfaced",
+      "authority": "future controlled boundary",
+      "requiredEvidence": [
+        "REQUIRE_VALID_CANONICAL_ENVELOPE",
+        "REQUIRE_AGGREGATION_RULE"
+      ],
+      "laterProjection": true
+    },
+    {
+      "id": "retain_legacy_behavior",
+      "blocksSilentSum": false,
+      "permitsUnsafeExplicit": true,
+      "safety": "none beyond current parsing",
+      "remainingRisks": [
+        "all current semantic aggregation risks"
+      ],
+      "ux": "unchanged",
+      "authority": "legacy",
+      "requiredEvidence": [],
+      "laterProjection": false
+    }
+  ],
+  "automaticSelection": null,
+  "implementedStrategy": null,
+  "productionBehaviorChanged": false
+}

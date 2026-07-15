@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "lightbi.phase-5b3-migration-gate.v1",
+  "automaticSumConflictCoverageComplete": true,
+  "previewAuthorityTraceComplete": true,
+  "executionAuthorityTraceComplete": true,
+  "aggregationGuardShadowReplayComplete": true,
+  "guardStrategyDispositionComplete": true,
+  "criticalAggregationDivergencesResolved": false,
+  "aggregationProjectionPlanningEligible": true,
+  "authorityMigrationEvidenceSufficientForPhase5CPlanning": false,
+  "canonicalAuthorityMigrationEligible": false,
+  "finalWorktreeFullSuiteVerified": false,
+  "lossless": true,
+  "deterministic": true,
+  "blockerPreserving": true,
+  "importIsolated": true,
+  "productionWiring": {
+    "executed": false
+  },
+  "phase5CStarted": false
+}

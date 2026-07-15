@@ -1,0 +1,64 @@
+{
+  "schemaVersion": "lightbi.phase-3b2a-resolution-audit.v1",
+  "date": "2026-07-11",
+  "scope": "Phase 3B2A shadow semantic resolution only",
+  "policy": {
+    "version": "lightbi.semantic-resolution-policy.v1",
+    "hashAlgorithm": "sha256",
+    "hash": "03760815ec922ab0a24469d559402ba4a24c379d665c6926b48cf87a2827450a",
+    "decisionForm": "deterministic_rule_lattice",
+    "weightedScore": false,
+    "totalRanking": false
+  },
+  "inputs": {
+    "physicalArtifact": "lightbi.dataset-understanding-artifact.v1",
+    "candidateArtifact": "lightbi.candidate-artifact.v1",
+    "contextualArtifact": "lightbi.contextual-evidence.v1",
+    "aggregationPolicy": "lightbi.contextual-evidence-policy.v2",
+    "aggregationPolicyHash": "5abf964930277f0005bb877a80106d404acc601400753d25c933cec59380aa7a",
+    "corpusVersion": "1.2.0"
+  },
+  "governedCases": { "total": 30, "goldenTuningEligible": true, "holdoutTuningEligible": false, "adversarialTuningEligible": false, "multiFileTuningEligible": false },
+  "finalStateByGroup": {
+    "golden": { "confirmed": 2, "probable": 24, "ambiguous": 72, "unknown": 54, "technical": 0, "unsupported_input": 0 },
+    "holdout": { "confirmed": 3, "probable": 45, "ambiguous": 146, "unknown": 82, "technical": 0, "unsupported_input": 0 },
+    "adversarial": { "confirmed": 0, "probable": 3, "ambiguous": 15, "unknown": 53, "technical": 1, "unsupported_input": 0 },
+    "multi_file": { "confirmed": 0, "probable": 54, "ambiguous": 168, "unknown": 30, "technical": 0, "unsupported_input": 0 }
+  },
+  "finalStateTotals": { "confirmed": 5, "probable": 126, "ambiguous": 401, "unknown": 219, "technical": 1, "unsupported_input": 0 },
+  "candidateDispositions": { "selected": 131, "viable": 302, "insufficient_evidence": 566, "materially_conflicted": 179, "dominated": 1, "correlated_evidence_only": 44 },
+  "candidateAbsentDebtRecords": 14,
+  "selectedByLexicalClass": { "canonical_id_exact": 93, "header_alias_exact": 38, "canonical_label_exact": 0, "alias_exact": 0, "token_containment": 0, "value_only": 0, "none": 0 },
+  "evidenceGovernance": {
+    "candidateProfilesWithCorrelatedEvidence": 588,
+    "selectedResultsUsingIndependentContext": 59,
+    "resolutionsPreventedByMaterialConflict": 146,
+    "resolutionsPreventedByStructuralLimitations": 0,
+    "columnsDirectlyAffectedByCandidateAbsenceDebt": 9,
+    "candidateAbsenceDebtCarried": 14,
+    "deterministicDominanceCount": 1
+  },
+  "collisionOutcomes": { "headerOnlyCases": 84, "ambiguous": 84, "confirmed": 0, "mutualContextResolved": 0 },
+  "broadCandidateOutcomes": { "occurrences": 18, "ambiguous": 18, "forcedSelection": 0 },
+  "preservation": { "inputCandidates": 1223, "outputCandidateTraces": 1223, "candidateOrderPreserved": true, "completeEvidenceProfilesPreserved": true },
+  "failClosed": ["source_identity", "source_hash", "artifact_version", "registry_version", "aggregation_policy_hash", "column_identity", "candidate_preservation"],
+  "limitations": [
+    "Diagnostics describe shadow artifact behavior, not semantic accuracy.",
+    "Inspected holdout, adversarial, and multi-file cases remain validation-only and cannot justify tuning or mvp_proven claims.",
+    "No absent candidate is manufactured; five debt records are carried globally but do not match a physical column in each per-source artifact.",
+    "No domain, grain, relationship, metric, action, question, narrative, or runtime conclusion is produced."
+  ],
+  "productionWiring": { "executed": false },
+  "verification": {
+    "phase3b2a": { "filesPassed": 2, "testsPassed": 9 },
+    "phase3b1": { "filesPassed": 2, "testsPassed": 8 },
+    "phase3a": { "filesPassed": 4, "testsPassed": 37 },
+    "phase2": { "filesPassed": 2, "testsPassed": 12 },
+    "phase1And1b": { "filesPassed": 3, "testsPassed": 62 },
+    "legacyBusinessDetector": { "filesPassed": 3, "testsPassed": 35 },
+    "typescriptNoEmit": "passed",
+    "gitDiffCheck": "passed",
+    "fullDesktopSuite": { "runCount": 1, "filesPassed": 101, "filesFailed": 4, "testsPassed": 870, "testsFailed": 9, "newPhase3b2aFailures": 0 }
+  },
+  "stopCondition": "Stop after Phase 3B2A; Phase 3B2B and Phase 4 are not started."
+}

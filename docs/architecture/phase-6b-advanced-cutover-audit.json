@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "lightbi.phase-6b-advanced-cutover-audit.v1",
+  "phase": "6B",
+  "advancedSessionCreator": "apps/desktop/src/pages/Advanced.tsx#createAdvancedResultHandoff",
+  "canonicalBoundary": "apps/desktop/src/lib/understanding-core/canonical-consumer-boundary.ts",
+  "advancedAdapter": "apps/desktop/src/lib/advanced-result-handoff.ts",
+  "preservedAdvancedConfiguration": ["provider", "sql", "resultView", "visibleColumns", "filters", "filterCombinator", "sort", "tableContext"],
+  "allowedAdvancedSelection": "existing canonical actionCandidateId only",
+  "forbiddenAdvancedAuthority": ["new semantic mapping", "new metric", "operator override", "silent SUM", "COUNT fallback"],
+  "fullRetainedRowsRequired": true,
+  "partialResultBehavior": "invalid artifact and blocked canonical handoff",
+  "sameArtifactForUnchangedState": true,
+  "stateQualifierInvalidatesOnSqlOrConfigurationChange": true,
+  "governedExecution": "executeGovernedMetricRequest",
+  "decisionUseAuthorized": false
+}

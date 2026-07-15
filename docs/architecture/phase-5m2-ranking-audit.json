@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "lightbi.phase-5m2-ranking-audit.v1",
+  "questionPolicyHash": "9c8ce5e0904a95f70e80cb81bc79a4c52ba4729f4772a7e9a8d6e997da3d6cbb",
+  "maxDefaultQuestions": 5,
+  "ordering": [
+    "metric state: ready before conditionally_ready",
+    "source_local before relationship_dependent",
+    "policy priority ascending",
+    "governed identity ascending"
+  ],
+  "suppressedFromDefaults": [
+    "blocked",
+    "unknown",
+    "unsupported",
+    "not_applicable"
+  ],
+  "inputOrderInvariant": true,
+  "duplicateGovernedIdentitySuppressed": true,
+  "filenameOrSampleLogic": false,
+  "stableIds": true
+}

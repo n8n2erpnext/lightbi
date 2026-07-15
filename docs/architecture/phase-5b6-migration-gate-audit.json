@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "lightbi.phase-5b6-migration-gate-audit.v1",
+  "typescriptBuildIntegrityEstablished": false,
+  "phase5B5DiagnosticProvenanceEstablished": true,
+  "originalCanonicalCapabilityBindingComplete": true,
+  "actualPlanBindingCoverageComplete": false,
+  "actualSqlPreviewBindingCoverageComplete": false,
+  "previewRequestIdentitySafe": true,
+  "previewResultIdentitySafe": false,
+  "chartSidecarCompatibilityEstablished": true,
+  "BASidecarCompatibilityEstablished": false,
+  "consumerContractDebtDispositioned": true,
+  "sidecarReplayLossless": true,
+  "sidecarReplayImportIsolated": true,
+  "aggregationRestrictionProjectionEligible": true,
+  "productionProjectionEligible": false,
+  "criticalAggregationDivergencesResolved": false,
+  "authorityMigrationEvidenceSufficientForPhase5CPlanning": false,
+  "canonicalAuthorityMigrationEligible": false,
+  "finalWorktreeFullSuiteVerified": false,
+  "summaryPercentage": null,
+  "productionWiring": {
+    "executed": false
+  },
+  "phase5CStarted": false
+}

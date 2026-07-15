@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "lightbi.phase-5b6b-migration-gate-audit.v1",
+  "typescriptBuildIntegrityEstablished": true,
+  "authenticRuntimePlanReplayAvailable": false,
+  "actualPlanBindingCoverageComplete": false,
+  "actualSqlPreviewBindingCoverageComplete": false,
+  "previewRequestIdentitySafe": true,
+  "previewResultIdentitySafe": false,
+  "productionProjectionEligible": false,
+  "authorityMigrationEvidenceSufficientForPhase5CPlanning": false,
+  "canonicalAuthorityMigrationEligible": false,
+  "productionWiring": {"executed": false},
+  "futureEvidenceRequirement": "Collect prospective authentic evidence from new governed sessions under a separately approved capture contract.",
+  "syntheticFixtureCountedAsAuthentic": false
+}

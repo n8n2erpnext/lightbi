@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "lightbi.phase-5m3-query-plan-audit.v1",
+  "phase": "5M3",
+  "runtimePolicyHash": "9b5ef8acc2d6761b428b41713c4e0d87a9db3bb9c79d251e51026057d0ea00b4",
+  "dialect": "duckdb",
+  "tableIdentity": "__LIGHTBI_PREVIEW_TABLE__",
+  "operators": {
+    "sales_revenue": "governed_sum",
+    "quantity_sold": "governed_sum",
+    "transaction_count": "governed_identity_count",
+    "inventory_on_hand": "governed_point_in_time_snapshot_sum",
+    "delivery_count": "governed_identity_count",
+    "gross_profit": "governed_revenue_minus_cost"
+  },
+  "operatorAuthority": "governed_metric_definition",
+  "questionTextAuthority": false,
+  "automaticSum": false,
+  "automaticCountFallback": false,
+  "legacyNumericHealthAuthorization": false,
+  "structuredFiltersOnly": true,
+  "parameterizedFilterValues": true,
+  "rawUserTextConcatenated": false,
+  "canonicalBindingsRequired": true,
+  "unsupportedCombinationBehavior": "fail_closed",
+  "deterministicPlanIdentity": true,
+  "byteStableForIdenticalInput": true,
+  "decisionUseAuthorized": false,
+  "productionWiring": { "executed": false }
+}

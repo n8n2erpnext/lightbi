@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "lightbi.phase-5a-projection-audit.v1",
+  "date": "2026-07-13",
+  "adapterPolicy": {
+    "version": "lightbi.canonical-runtime-adapter-policy.v1",
+    "sha256": "be4d0ac3d02305c13948cb6b7c8ecb0c087c6a2ea259e064411b9ff85ca2129b"
+  },
+  "authority": "canonical_shadow_non_authoritative",
+  "productionWiring": false,
+  "capabilityProjectionLoss": 0,
+  "trustProjectionLoss": 0,
+  "blockerProjectionLoss": 0,
+  "remediationProjectionLoss": 0,
+  "intentionallyOmittedSafetyFields": []
+}

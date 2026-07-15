@@ -1,0 +1,1601 @@
+{
+  "schemaVersion": "lightbi.phase-3a2-acceptance-truth-audit.v1",
+  "corpusVersionBefore": "1.1.0",
+  "corpusVersionAfter": "1.2.0",
+  "createdOn": "2026-07-11",
+  "productionBehaviorChanged": false,
+  "verifiedMetricDigestChanged": false,
+  "physicalHashesChanged": false,
+  "reviewedRecordCount": 46,
+  "freshHoldoutIntegrity": {
+    "pristine": false,
+    "inspectedGroups": [
+      "holdout",
+      "adversarial",
+      "multi_file"
+    ],
+    "roadmapDebt": "Fresh unseen holdout sources are required before recognition claims can be promoted to mvp_proven."
+  },
+  "corpusMetrics": {
+    "before": {
+      "requiredCandidateCount": 124,
+      "requiredCandidatesPresent": 118,
+      "requiredCandidateGaps": 6,
+      "requiredCandidateRecall": 0.9516,
+      "totalAmbiguityContracts": 32,
+      "completeAmbiguityContracts": 10,
+      "missingAmbiguityCandidates": 41,
+      "unknownNoCandidateExpectations": 1
+    },
+    "after": {
+      "requiredCandidateCount": 128,
+      "requiredCandidatesPresent": 124,
+      "requiredCandidateGaps": 4,
+      "requiredCandidateRecall": 0.9688,
+      "totalAmbiguityContracts": 22,
+      "completeAmbiguityContracts": 17,
+      "missingAmbiguityCandidates": 10,
+      "removedInvalidAmbiguityCandidates": 27,
+      "deferredTaxonomyQuestionRecords": 19,
+      "distinctTaxonomyDebts": 7,
+      "unknownNoCandidateExpectations": 5
+    },
+    "candidateQualityUnchangedFromPhase3A1": {
+      "totalPhysicalColumns": 752,
+      "zeroCandidates": 106,
+      "oneCandidate": 242,
+      "multipleCandidates": 404,
+      "averageCandidates": 1.6263,
+      "medianCandidates": 2,
+      "maximumCandidates": 5,
+      "broadColumnCount": 18
+    },
+    "interpretation": "Recall changes combine acceptance-truth correction with unchanged engine output and must not be presented as an engine improvement."
+  },
+  "entries": [
+    {
+      "sampleId": "rev.bhx_pos_export",
+      "corpusGroup": "golden",
+      "physicalColumn": "Mã phiếu xuất",
+      "physicalType": "string_or_categorical",
+      "representativeValues": [
+        "17-digit issue-slip identifiers",
+        "Loại phiếu xuất",
+        "warehouse and tender sibling columns"
+      ],
+      "siblingHeaders": [
+        "Loại phiếu xuất",
+        "warehouse and tender sibling columns"
+      ],
+      "candidate": "receipt",
+      "priorExpectationType": "required_mapping",
+      "registryMeaning": {
+        "label": "Receipt / Payment Reference",
+        "semanticFamily": "document",
+        "role": "identifier"
+      },
+      "semanticAssessment": "defer_taxonomy_question",
+      "evidenceInspected": [
+        "physical_header",
+        "representative_values",
+        "physical_type",
+        "sibling_headers",
+        "registry_definition"
+      ],
+      "disposition": "defer_taxonomy_question",
+      "reasonCode": "payment_receipt_is_not_outbound_issue_document",
+      "corpusChanged": true,
+      "taxonomyDebt": "outbound_issue_document_id",
+      "phaseDeferredTo": "future_taxonomy_governance",
+      "notes": "Review acceptance truth against a future atomic stock-issue or POS-document signal; do not alias issue slips to payment receipts."
+    },
+    {
+      "sampleId": "inv.provincial_aging_20241228",
+      "corpusGroup": "holdout",
+      "physicalColumn": "Mã phiếu gửi",
+      "physicalType": "string_or_categorical",
+      "representativeValues": [
+        "shipment-like alphanumeric references",
+        "regional inventory-aging siblings"
+      ],
+      "siblingHeaders": [
+        "regional inventory-aging siblings"
+      ],
+      "candidate": "shipment",
+      "priorExpectationType": "required_mapping",
+      "registryMeaning": {
+        "label": "Shipment",
+        "semanticFamily": "document",
+        "role": "identifier"
+      },
+      "semanticAssessment": "retain_required_candidate",
+      "evidenceInspected": [
+        "physical_header",
+        "representative_values",
+        "physical_type",
+        "sibling_headers",
+        "registry_definition"
+      ],
+      "disposition": "retain_required_candidate",
+      "reasonCode": "direct_physical_and_context_evidence",
+      "corpusChanged": false,
+      "taxonomyDebt": "shipment_recognition_coverage",
+      "phaseDeferredTo": "future_registry_governance",
+      "notes": "Consider a generic consignment-note/phiếu gửi alias in a future registry review with non-holdout evidence."
+    },
+    {
+      "sampleId": "inv.hublan_expected_stock",
+      "corpusGroup": "holdout",
+      "physicalColumn": "Mã Phiếu Gửi",
+      "physicalType": "string_or_categorical",
+      "representativeValues": [
+        "shipment-like numeric references",
+        "origin/destination and service siblings"
+      ],
+      "siblingHeaders": [
+        "origin/destination and service siblings"
+      ],
+      "candidate": "shipment",
+      "priorExpectationType": "required_mapping",
+      "registryMeaning": {
+        "label": "Shipment",
+        "semanticFamily": "document",
+        "role": "identifier"
+      },
+      "semanticAssessment": "retain_required_candidate",
+      "evidenceInspected": [
+        "physical_header",
+        "representative_values",
+        "physical_type",
+        "sibling_headers",
+        "registry_definition"
+      ],
+      "disposition": "retain_required_candidate",
+      "reasonCode": "direct_physical_and_context_evidence",
+      "corpusChanged": false,
+      "taxonomyDebt": "shipment_recognition_coverage",
+      "phaseDeferredTo": "future_registry_governance",
+      "notes": "Retain as validation evidence for a future generic consignment-note registry review."
+    },
+    {
+      "sampleId": "ops.ttkt_20241224",
+      "corpusGroup": "holdout",
+      "physicalColumn": "Thời gian dự kiến đến",
+      "physicalType": "date_or_time",
+      "representativeValues": [
+        "expected arrival timestamps",
+        "actual/check-in and on-time siblings"
+      ],
+      "siblingHeaders": [
+        "actual/check-in and on-time siblings"
+      ],
+      "candidate": "eta",
+      "priorExpectationType": "required_mapping",
+      "registryMeaning": {
+        "label": "ETA / Promised Time",
+        "semanticFamily": "time",
+        "role": "time"
+      },
+      "semanticAssessment": "retain_required_candidate",
+      "evidenceInspected": [
+        "physical_header",
+        "representative_values",
+        "physical_type",
+        "sibling_headers",
+        "registry_definition"
+      ],
+      "disposition": "retain_required_candidate",
+      "reasonCode": "direct_physical_and_context_evidence",
+      "corpusChanged": false,
+      "taxonomyDebt": "eta_recognition_coverage",
+      "phaseDeferredTo": "future_registry_governance",
+      "notes": "Retain for a future ETA alias review backed by tuning-eligible evidence; partial-token false positives were removed now."
+    },
+    {
+      "sampleId": "adv.management_merged_header",
+      "corpusGroup": "adversarial",
+      "physicalColumn": "MSNV Quản lý",
+      "physicalType": "string_or_categorical",
+      "representativeValues": [
+        "numeric employee identifiers",
+        "manager name and ranking siblings"
+      ],
+      "siblingHeaders": [
+        "manager name and ranking siblings"
+      ],
+      "candidate": "employee_id",
+      "priorExpectationType": "required_mapping",
+      "registryMeaning": {
+        "label": "Employee ID",
+        "semanticFamily": "entity",
+        "role": "identifier"
+      },
+      "semanticAssessment": "retain_required_candidate",
+      "evidenceInspected": [
+        "physical_header",
+        "representative_values",
+        "physical_type",
+        "sibling_headers",
+        "registry_definition"
+      ],
+      "disposition": "retain_required_candidate",
+      "reasonCode": "direct_physical_and_context_evidence",
+      "corpusChanged": false,
+      "taxonomyDebt": "employee_id_recognition_coverage",
+      "phaseDeferredTo": "future_registry_governance",
+      "notes": "Do not add MSNV from an adversarial case; retain for a future multilingual employee-ID review."
+    },
+    {
+      "sampleId": "adv.bank_marketing_generic_headers",
+      "corpusGroup": "adversarial",
+      "physicalColumn": "campaign",
+      "physicalType": "numeric",
+      "representativeValues": [
+        "integer contact-attempt counts",
+        "generic campaign header",
+        "bank-marketing source definition"
+      ],
+      "siblingHeaders": [
+        "generic campaign header",
+        "bank-marketing source definition"
+      ],
+      "candidate": "campaign_attempts",
+      "priorExpectationType": "required_mapping",
+      "registryMeaning": {
+        "label": "Campaign Attempts",
+        "semanticFamily": "engagement",
+        "role": "measure"
+      },
+      "semanticAssessment": "replace_with_atomic_signal",
+      "evidenceInspected": [
+        "physical_header",
+        "representative_values",
+        "physical_type",
+        "sibling_headers",
+        "registry_definition"
+      ],
+      "disposition": "replace_with_atomic_signal",
+      "reasonCode": "dimension_measure_mismatch",
+      "corpusChanged": true,
+      "taxonomyDebt": "campaign_attempts_vs_campaign",
+      "phaseDeferredTo": "corrected_to_campaign",
+      "notes": "Header-only campaign remains the campaign dimension candidate; campaign_attempts requires value/source context and must not be forced in Phase 3A.1."
+    },
+    {
+      "sampleId": "rev.sales_erp_may_2026",
+      "corpusGroup": "golden",
+      "physicalColumn": "Status",
+      "physicalType": "string_or_categorical",
+      "representativeValues": [
+        "Hoàn tất and Đã giao values",
+        "generic Status header"
+      ],
+      "siblingHeaders": [
+        "generic Status header"
+      ],
+      "candidate": "fulfillment_status",
+      "priorExpectationType": "required_mapping",
+      "registryMeaning": {
+        "label": "Fulfillment Status",
+        "semanticFamily": "status",
+        "role": "status"
+      },
+      "semanticAssessment": "remove_invalid_candidate",
+      "evidenceInspected": [
+        "physical_header",
+        "representative_values",
+        "physical_type",
+        "sibling_headers",
+        "registry_definition"
+      ],
+      "disposition": "remove_invalid_candidate",
+      "reasonCode": "stage_inappropriate_or_semantic_mismatch",
+      "corpusChanged": true,
+      "taxonomyDebt": null,
+      "phaseDeferredTo": "removed_in_phase_3a2",
+      "notes": "Treat fulfillment as contextual value/domain evidence, not a mandatory header-only candidate from every Status column."
+    },
+    {
+      "sampleId": "rev.bhx_pos_export",
+      "corpusGroup": "golden",
+      "physicalColumn": "Khách hàng",
+      "physicalType": "string_or_categorical",
+      "representativeValues": [
+        "retail customer names",
+        "customer tender transaction context"
+      ],
+      "siblingHeaders": [
+        "customer tender transaction context"
+      ],
+      "candidate": "buyer",
+      "priorExpectationType": "contextual_ambiguity",
+      "registryMeaning": {
+        "label": "Buyer / Purchaser",
+        "semanticFamily": "entity",
+        "role": "dimension"
+      },
+      "semanticAssessment": "remove_invalid_candidate",
+      "evidenceInspected": [
+        "physical_header",
+        "representative_values",
+        "physical_type",
+        "sibling_headers",
+        "registry_definition"
+      ],
+      "disposition": "remove_invalid_candidate",
+      "reasonCode": "stage_inappropriate_or_semantic_mismatch",
+      "corpusChanged": true,
+      "taxonomyDebt": null,
+      "phaseDeferredTo": "removed_in_phase_3a2",
+      "notes": "Customer is supported; procurement buyer and company account are different atomic concepts and should not be mandatory header-only candidates."
+    },
+    {
+      "sampleId": "rev.bhx_pos_export",
+      "corpusGroup": "golden",
+      "physicalColumn": "Khách hàng",
+      "physicalType": "string_or_categorical",
+      "representativeValues": [
+        "retail customer names",
+        "customer tender transaction context"
+      ],
+      "siblingHeaders": [
+        "customer tender transaction context"
+      ],
+      "candidate": "account",
+      "priorExpectationType": "contextual_ambiguity",
+      "registryMeaning": {
+        "label": "Account / Company",
+        "semanticFamily": "entity",
+        "role": "dimension"
+      },
+      "semanticAssessment": "remove_invalid_candidate",
+      "evidenceInspected": [
+        "physical_header",
+        "representative_values",
+        "physical_type",
+        "sibling_headers",
+        "registry_definition"
+      ],
+      "disposition": "remove_invalid_candidate",
+      "reasonCode": "stage_inappropriate_or_semantic_mismatch",
+      "corpusChanged": true,
+      "taxonomyDebt": null,
+      "phaseDeferredTo": "removed_in_phase_3a2",
+      "notes": "Customer is supported; procurement buyer and company account are different atomic concepts and should not be mandatory header-only candidates."
+    },
+    {
+      "sampleId": "inv.plu_product_master",
+      "corpusGroup": "golden",
+      "physicalColumn": "Đơn vị tính",
+      "physicalType": "string_or_categorical",
+      "representativeValues": [
+        "Kg, Cặp, Vỉ, Bó, Gói values",
+        "product master context"
+      ],
+      "siblingHeaders": [
+        "product master context"
+      ],
+      "candidate": "unit",
+      "priorExpectationType": "required_mapping",
+      "registryMeaning": {
+        "label": "Unit / Space",
+        "semanticFamily": "location",
+        "role": "identifier"
+      },
+      "semanticAssessment": "remove_invalid_candidate",
+      "evidenceInspected": [
+        "physical_header",
+        "representative_values",
+        "physical_type",
+        "sibling_headers",
+        "registry_definition"
+      ],
+      "disposition": "remove_invalid_candidate",
+      "reasonCode": "stage_inappropriate_or_semantic_mismatch",
+      "corpusChanged": true,
+      "taxonomyDebt": null,
+      "phaseDeferredTo": "removed_in_phase_3a2",
+      "notes": "UOM is correct; registry unit means room/space/property unit and must not be forced onto units of measure."
+    },
+    {
+      "sampleId": "ops.ttkt_20241219",
+      "corpusGroup": "golden",
+      "physicalColumn": "Đánh giá",
+      "physicalType": "string_or_categorical",
+      "representativeValues": [
+        "Đúng giờ and Không đúng giờ values",
+        "waiting-time and on-time siblings"
+      ],
+      "siblingHeaders": [
+        "waiting-time and on-time siblings"
+      ],
+      "candidate": "status",
+      "priorExpectationType": "contextual_ambiguity",
+      "registryMeaning": {
+        "label": "Status",
+        "semanticFamily": "status",
+        "role": "status"
+      },
+      "semanticAssessment": "retain_contextual_candidate",
+      "evidenceInspected": [
+        "physical_header",
+        "representative_values",
+        "physical_type",
+        "sibling_headers",
+        "registry_definition"
+      ],
+      "disposition": "retain_contextual_candidate",
+      "reasonCode": "plausible_only_with_representative_context",
+      "corpusChanged": false,
+      "taxonomyDebt": "contextual_resolution_required",
+      "phaseDeferredTo": "Phase_3B",
+      "notes": "Generic evaluation is not automatically status plus two score measures; later context may propose on-time semantics."
+    },
+    {
+      "sampleId": "ops.ttkt_20241219",
+      "corpusGroup": "golden",
+      "physicalColumn": "Đánh giá",
+      "physicalType": "string_or_categorical",
+      "representativeValues": [
+        "Đúng giờ and Không đúng giờ values",
+        "waiting-time and on-time siblings"
+      ],
+      "siblingHeaders": [
+        "waiting-time and on-time siblings"
+      ],
+      "candidate": "quality_score",
+      "priorExpectationType": "contextual_ambiguity",
+      "registryMeaning": {
+        "label": "Quality Score",
+        "semanticFamily": "performance",
+        "role": "measure"
+      },
+      "semanticAssessment": "remove_invalid_candidate",
+      "evidenceInspected": [
+        "physical_header",
+        "representative_values",
+        "physical_type",
+        "sibling_headers",
+        "registry_definition"
+      ],
+      "disposition": "remove_invalid_candidate",
+      "reasonCode": "stage_inappropriate_or_semantic_mismatch",
+      "corpusChanged": true,
+      "taxonomyDebt": null,
+      "phaseDeferredTo": "removed_in_phase_3a2",
+      "notes": "Generic evaluation is not automatically status plus two score measures; later context may propose on-time semantics."
+    },
+    {
+      "sampleId": "ops.ttkt_20241219",
+      "corpusGroup": "golden",
+      "physicalColumn": "Đánh giá",
+      "physicalType": "string_or_categorical",
+      "representativeValues": [
+        "Đúng giờ and Không đúng giờ values",
+        "waiting-time and on-time siblings"
+      ],
+      "siblingHeaders": [
+        "waiting-time and on-time siblings"
+      ],
+      "candidate": "rating_score",
+      "priorExpectationType": "contextual_ambiguity",
+      "registryMeaning": {
+        "label": "Rating Score",
+        "semanticFamily": "engagement",
+        "role": "measure"
+      },
+      "semanticAssessment": "remove_invalid_candidate",
+      "evidenceInspected": [
+        "physical_header",
+        "representative_values",
+        "physical_type",
+        "sibling_headers",
+        "registry_definition"
+      ],
+      "disposition": "remove_invalid_candidate",
+      "reasonCode": "stage_inappropriate_or_semantic_mismatch",
+      "corpusChanged": true,
+      "taxonomyDebt": null,
+      "phaseDeferredTo": "removed_in_phase_3a2",
+      "notes": "Generic evaluation is not automatically status plus two score measures; later context may propose on-time semantics."
+    },
+    {
+      "sampleId": "rev.sales_erp_june_2026",
+      "corpusGroup": "holdout",
+      "physicalColumn": "Status",
+      "physicalType": "string_or_categorical",
+      "representativeValues": [
+        "validation-only duplicate of sales status semantics"
+      ],
+      "siblingHeaders": [],
+      "candidate": "fulfillment_status",
+      "priorExpectationType": "required_mapping",
+      "registryMeaning": {
+        "label": "Fulfillment Status",
+        "semanticFamily": "status",
+        "role": "status"
+      },
+      "semanticAssessment": "remove_invalid_candidate",
+      "evidenceInspected": [
+        "physical_header",
+        "representative_values",
+        "physical_type",
+        "sibling_headers",
+        "registry_definition"
+      ],
+      "disposition": "remove_invalid_candidate",
+      "reasonCode": "stage_inappropriate_or_semantic_mismatch",
+      "corpusChanged": true,
+      "taxonomyDebt": null,
+      "phaseDeferredTo": "removed_in_phase_3a2",
+      "notes": "Validate the generic-status truth issue; do not tune from holdout."
+    },
+    {
+      "sampleId": "inv.provincial_aging_20241228",
+      "corpusGroup": "holdout",
+      "physicalColumn": "Trạng thái",
+      "physicalType": "string_or_categorical",
+      "representativeValues": [
+        "numeric 300/400 codes",
+        "inventory aging siblings"
+      ],
+      "siblingHeaders": [
+        "inventory aging siblings"
+      ],
+      "candidate": "delivery_status",
+      "priorExpectationType": "contextual_ambiguity",
+      "registryMeaning": {
+        "label": "Delivery Status",
+        "semanticFamily": "status",
+        "role": "status"
+      },
+      "semanticAssessment": "remove_invalid_candidate",
+      "evidenceInspected": [
+        "physical_header",
+        "representative_values",
+        "physical_type",
+        "sibling_headers",
+        "registry_definition"
+      ],
+      "disposition": "remove_invalid_candidate",
+      "reasonCode": "stage_inappropriate_or_semantic_mismatch",
+      "corpusChanged": true,
+      "taxonomyDebt": null,
+      "phaseDeferredTo": "removed_in_phase_3a2",
+      "notes": "Numeric status codes require a codebook/context; header alone cannot require delivery and stock statuses."
+    },
+    {
+      "sampleId": "inv.provincial_aging_20241228",
+      "corpusGroup": "holdout",
+      "physicalColumn": "Trạng thái",
+      "physicalType": "string_or_categorical",
+      "representativeValues": [
+        "numeric 300/400 codes",
+        "inventory aging siblings"
+      ],
+      "siblingHeaders": [
+        "inventory aging siblings"
+      ],
+      "candidate": "stock_status",
+      "priorExpectationType": "contextual_ambiguity",
+      "registryMeaning": {
+        "label": "Inventory Status",
+        "semanticFamily": "status",
+        "role": "status"
+      },
+      "semanticAssessment": "remove_invalid_candidate",
+      "evidenceInspected": [
+        "physical_header",
+        "representative_values",
+        "physical_type",
+        "sibling_headers",
+        "registry_definition"
+      ],
+      "disposition": "remove_invalid_candidate",
+      "reasonCode": "stage_inappropriate_or_semantic_mismatch",
+      "corpusChanged": true,
+      "taxonomyDebt": null,
+      "phaseDeferredTo": "removed_in_phase_3a2",
+      "notes": "Numeric status codes require a codebook/context; header alone cannot require delivery and stock statuses."
+    },
+    {
+      "sampleId": "inv.hublan_expected_stock",
+      "corpusGroup": "holdout",
+      "physicalColumn": "Trạng Thái",
+      "physicalType": "string_or_categorical",
+      "representativeValues": [
+        "numeric string 200/300/400 codes",
+        "expected-stock siblings"
+      ],
+      "siblingHeaders": [
+        "expected-stock siblings"
+      ],
+      "candidate": "delivery_status",
+      "priorExpectationType": "contextual_ambiguity",
+      "registryMeaning": {
+        "label": "Delivery Status",
+        "semanticFamily": "status",
+        "role": "status"
+      },
+      "semanticAssessment": "remove_invalid_candidate",
+      "evidenceInspected": [
+        "physical_header",
+        "representative_values",
+        "physical_type",
+        "sibling_headers",
+        "registry_definition"
+      ],
+      "disposition": "remove_invalid_candidate",
+      "reasonCode": "stage_inappropriate_or_semantic_mismatch",
+      "corpusChanged": true,
+      "taxonomyDebt": null,
+      "phaseDeferredTo": "removed_in_phase_3a2",
+      "notes": "Require a source codebook/context rather than broad header aliases."
+    },
+    {
+      "sampleId": "inv.hublan_expected_stock",
+      "corpusGroup": "holdout",
+      "physicalColumn": "Trạng Thái",
+      "physicalType": "string_or_categorical",
+      "representativeValues": [
+        "numeric string 200/300/400 codes",
+        "expected-stock siblings"
+      ],
+      "siblingHeaders": [
+        "expected-stock siblings"
+      ],
+      "candidate": "stock_status",
+      "priorExpectationType": "contextual_ambiguity",
+      "registryMeaning": {
+        "label": "Inventory Status",
+        "semanticFamily": "status",
+        "role": "status"
+      },
+      "semanticAssessment": "remove_invalid_candidate",
+      "evidenceInspected": [
+        "physical_header",
+        "representative_values",
+        "physical_type",
+        "sibling_headers",
+        "registry_definition"
+      ],
+      "disposition": "remove_invalid_candidate",
+      "reasonCode": "stage_inappropriate_or_semantic_mismatch",
+      "corpusChanged": true,
+      "taxonomyDebt": null,
+      "phaseDeferredTo": "removed_in_phase_3a2",
+      "notes": "Require a source codebook/context rather than broad header aliases."
+    },
+    {
+      "sampleId": "ops.ttkt_20241223",
+      "corpusGroup": "holdout",
+      "physicalColumn": "Đánh giá",
+      "physicalType": "string_or_categorical",
+      "representativeValues": [
+        "validation-only on-time evaluation values"
+      ],
+      "siblingHeaders": [],
+      "candidate": "status",
+      "priorExpectationType": "contextual_ambiguity",
+      "registryMeaning": {
+        "label": "Status",
+        "semanticFamily": "status",
+        "role": "status"
+      },
+      "semanticAssessment": "retain_contextual_candidate",
+      "evidenceInspected": [
+        "physical_header",
+        "representative_values",
+        "physical_type",
+        "sibling_headers",
+        "registry_definition"
+      ],
+      "disposition": "retain_contextual_candidate",
+      "reasonCode": "plausible_only_with_representative_context",
+      "corpusChanged": false,
+      "taxonomyDebt": "contextual_resolution_required",
+      "phaseDeferredTo": "Phase_3B",
+      "notes": "Validate the golden truth issue; do not add holdout aliases."
+    },
+    {
+      "sampleId": "ops.ttkt_20241223",
+      "corpusGroup": "holdout",
+      "physicalColumn": "Đánh giá",
+      "physicalType": "string_or_categorical",
+      "representativeValues": [
+        "validation-only on-time evaluation values"
+      ],
+      "siblingHeaders": [],
+      "candidate": "quality_score",
+      "priorExpectationType": "contextual_ambiguity",
+      "registryMeaning": {
+        "label": "Quality Score",
+        "semanticFamily": "performance",
+        "role": "measure"
+      },
+      "semanticAssessment": "remove_invalid_candidate",
+      "evidenceInspected": [
+        "physical_header",
+        "representative_values",
+        "physical_type",
+        "sibling_headers",
+        "registry_definition"
+      ],
+      "disposition": "remove_invalid_candidate",
+      "reasonCode": "stage_inappropriate_or_semantic_mismatch",
+      "corpusChanged": true,
+      "taxonomyDebt": null,
+      "phaseDeferredTo": "removed_in_phase_3a2",
+      "notes": "Validate the golden truth issue; do not add holdout aliases."
+    },
+    {
+      "sampleId": "ops.ttkt_20241223",
+      "corpusGroup": "holdout",
+      "physicalColumn": "Đánh giá",
+      "physicalType": "string_or_categorical",
+      "representativeValues": [
+        "validation-only on-time evaluation values"
+      ],
+      "siblingHeaders": [],
+      "candidate": "rating_score",
+      "priorExpectationType": "contextual_ambiguity",
+      "registryMeaning": {
+        "label": "Rating Score",
+        "semanticFamily": "engagement",
+        "role": "measure"
+      },
+      "semanticAssessment": "remove_invalid_candidate",
+      "evidenceInspected": [
+        "physical_header",
+        "representative_values",
+        "physical_type",
+        "sibling_headers",
+        "registry_definition"
+      ],
+      "disposition": "remove_invalid_candidate",
+      "reasonCode": "stage_inappropriate_or_semantic_mismatch",
+      "corpusChanged": true,
+      "taxonomyDebt": null,
+      "phaseDeferredTo": "removed_in_phase_3a2",
+      "notes": "Validate the golden truth issue; do not add holdout aliases."
+    },
+    {
+      "sampleId": "ops.ttkt_20241224",
+      "corpusGroup": "holdout",
+      "physicalColumn": "Đánh giá thời gian chờ",
+      "physicalType": "date_or_time",
+      "representativeValues": [
+        "Nhập muộn and Đúng giờ values",
+        "waiting-time columns"
+      ],
+      "siblingHeaders": [
+        "waiting-time columns"
+      ],
+      "candidate": "status",
+      "priorExpectationType": "contextual_ambiguity",
+      "registryMeaning": {
+        "label": "Status",
+        "semanticFamily": "status",
+        "role": "status"
+      },
+      "semanticAssessment": "remove_invalid_candidate",
+      "evidenceInspected": [
+        "physical_header",
+        "representative_values",
+        "physical_type",
+        "sibling_headers",
+        "registry_definition"
+      ],
+      "disposition": "remove_invalid_candidate",
+      "reasonCode": "stage_inappropriate_or_semantic_mismatch",
+      "corpusChanged": true,
+      "taxonomyDebt": null,
+      "phaseDeferredTo": "removed_in_phase_3a2",
+      "notes": "Later context may identify a timing status; do not make status/quality candidates mandatory from this holdout header."
+    },
+    {
+      "sampleId": "ops.ttkt_20241224",
+      "corpusGroup": "holdout",
+      "physicalColumn": "Đánh giá thời gian chờ",
+      "physicalType": "date_or_time",
+      "representativeValues": [
+        "Nhập muộn and Đúng giờ values",
+        "waiting-time columns"
+      ],
+      "siblingHeaders": [
+        "waiting-time columns"
+      ],
+      "candidate": "on_time_status",
+      "priorExpectationType": "contextual_ambiguity",
+      "registryMeaning": {
+        "label": "On-time Status",
+        "semanticFamily": "status",
+        "role": "status"
+      },
+      "semanticAssessment": "remove_invalid_candidate",
+      "evidenceInspected": [
+        "physical_header",
+        "representative_values",
+        "physical_type",
+        "sibling_headers",
+        "registry_definition"
+      ],
+      "disposition": "remove_invalid_candidate",
+      "reasonCode": "stage_inappropriate_or_semantic_mismatch",
+      "corpusChanged": true,
+      "taxonomyDebt": null,
+      "phaseDeferredTo": "removed_in_phase_3a2",
+      "notes": "Later context may identify a timing status; do not make status/quality candidates mandatory from this holdout header."
+    },
+    {
+      "sampleId": "ops.ttkt_20241224",
+      "corpusGroup": "holdout",
+      "physicalColumn": "Đánh giá thời gian chờ",
+      "physicalType": "date_or_time",
+      "representativeValues": [
+        "Nhập muộn and Đúng giờ values",
+        "waiting-time columns"
+      ],
+      "siblingHeaders": [
+        "waiting-time columns"
+      ],
+      "candidate": "quality_score",
+      "priorExpectationType": "contextual_ambiguity",
+      "registryMeaning": {
+        "label": "Quality Score",
+        "semanticFamily": "performance",
+        "role": "measure"
+      },
+      "semanticAssessment": "remove_invalid_candidate",
+      "evidenceInspected": [
+        "physical_header",
+        "representative_values",
+        "physical_type",
+        "sibling_headers",
+        "registry_definition"
+      ],
+      "disposition": "remove_invalid_candidate",
+      "reasonCode": "stage_inappropriate_or_semantic_mismatch",
+      "corpusChanged": true,
+      "taxonomyDebt": null,
+      "phaseDeferredTo": "removed_in_phase_3a2",
+      "notes": "Later context may identify a timing status; do not make status/quality candidates mandatory from this holdout header."
+    },
+    {
+      "sampleId": "fin.sales_june_missing_cost",
+      "corpusGroup": "holdout",
+      "physicalColumn": "Status",
+      "physicalType": "string_or_categorical",
+      "representativeValues": [
+        "same validation-only sales Status values"
+      ],
+      "siblingHeaders": [],
+      "candidate": "fulfillment_status",
+      "priorExpectationType": "required_mapping",
+      "registryMeaning": {
+        "label": "Fulfillment Status",
+        "semanticFamily": "status",
+        "role": "status"
+      },
+      "semanticAssessment": "remove_invalid_candidate",
+      "evidenceInspected": [
+        "physical_header",
+        "representative_values",
+        "physical_type",
+        "sibling_headers",
+        "registry_definition"
+      ],
+      "disposition": "remove_invalid_candidate",
+      "reasonCode": "stage_inappropriate_or_semantic_mismatch",
+      "corpusChanged": true,
+      "taxonomyDebt": null,
+      "phaseDeferredTo": "removed_in_phase_3a2",
+      "notes": "Keep validation-only and defer header-vs-context truth correction."
+    },
+    {
+      "sampleId": "adv.motodetail_dirty_export",
+      "corpusGroup": "adversarial",
+      "physicalColumn": "CHARGE",
+      "physicalType": "numeric",
+      "representativeValues": [
+        "10,000/15,000 numeric charges",
+        "OTHER CHARGE sibling"
+      ],
+      "siblingHeaders": [
+        "OTHER CHARGE sibling"
+      ],
+      "candidate": "cost",
+      "priorExpectationType": "contextual_ambiguity",
+      "registryMeaning": {
+        "label": "Cost",
+        "semanticFamily": "money",
+        "role": "measure"
+      },
+      "semanticAssessment": "remove_invalid_candidate",
+      "evidenceInspected": [
+        "physical_header",
+        "representative_values",
+        "physical_type",
+        "sibling_headers",
+        "registry_definition"
+      ],
+      "disposition": "remove_invalid_candidate",
+      "reasonCode": "stage_inappropriate_or_semantic_mismatch",
+      "corpusChanged": true,
+      "taxonomyDebt": null,
+      "phaseDeferredTo": "removed_in_phase_3a2",
+      "notes": "Fee is the lexical candidate; cost or revenue direction needs context and must not be header-forced."
+    },
+    {
+      "sampleId": "adv.motodetail_dirty_export",
+      "corpusGroup": "adversarial",
+      "physicalColumn": "CHARGE",
+      "physicalType": "numeric",
+      "representativeValues": [
+        "10,000/15,000 numeric charges",
+        "OTHER CHARGE sibling"
+      ],
+      "siblingHeaders": [
+        "OTHER CHARGE sibling"
+      ],
+      "candidate": "revenue",
+      "priorExpectationType": "contextual_ambiguity",
+      "registryMeaning": {
+        "label": "Revenue",
+        "semanticFamily": "money",
+        "role": "measure"
+      },
+      "semanticAssessment": "remove_invalid_candidate",
+      "evidenceInspected": [
+        "physical_header",
+        "representative_values",
+        "physical_type",
+        "sibling_headers",
+        "registry_definition"
+      ],
+      "disposition": "remove_invalid_candidate",
+      "reasonCode": "stage_inappropriate_or_semantic_mismatch",
+      "corpusChanged": true,
+      "taxonomyDebt": null,
+      "phaseDeferredTo": "removed_in_phase_3a2",
+      "notes": "Fee is the lexical candidate; cost or revenue direction needs context and must not be header-forced."
+    },
+    {
+      "sampleId": "adv.motodetail_dirty_export",
+      "corpusGroup": "adversarial",
+      "physicalColumn": "MET.\nID",
+      "physicalType": "string_or_categorical",
+      "representativeValues": [
+        "MOTO, PAY, PAY+ values",
+        "dirty operational export"
+      ],
+      "siblingHeaders": [
+        "dirty operational export"
+      ],
+      "candidate": "document_type",
+      "priorExpectationType": "required_mapping",
+      "registryMeaning": {
+        "label": "Document Type",
+        "semanticFamily": "document",
+        "role": "dimension"
+      },
+      "semanticAssessment": "remove_invalid_candidate",
+      "evidenceInspected": [
+        "physical_header",
+        "representative_values",
+        "physical_type",
+        "sibling_headers",
+        "registry_definition"
+      ],
+      "disposition": "remove_invalid_candidate",
+      "reasonCode": "stage_inappropriate_or_semantic_mismatch",
+      "corpusChanged": true,
+      "taxonomyDebt": null,
+      "phaseDeferredTo": "removed_in_phase_3a2",
+      "notes": "row_type matches the existing value taxonomy; document_type is not implied by MET ID alone."
+    },
+    {
+      "sampleId": "adv.management_merged_header",
+      "corpusGroup": "adversarial",
+      "physicalColumn": "Xếp hạng",
+      "physicalType": "numeric",
+      "representativeValues": [
+        "ordinal ranking values",
+        "manager score siblings"
+      ],
+      "siblingHeaders": [
+        "manager score siblings"
+      ],
+      "candidate": "rating_score",
+      "priorExpectationType": "contextual_ambiguity",
+      "registryMeaning": {
+        "label": "Rating Score",
+        "semanticFamily": "engagement",
+        "role": "measure"
+      },
+      "semanticAssessment": "unsupported_or_out_of_scope",
+      "evidenceInspected": [
+        "physical_header",
+        "representative_values",
+        "physical_type",
+        "sibling_headers",
+        "registry_definition"
+      ],
+      "disposition": "unsupported_or_out_of_scope",
+      "reasonCode": "no_valid_existing_atomic_signal",
+      "corpusChanged": true,
+      "taxonomyDebt": "atomic_taxonomy_absent",
+      "phaseDeferredTo": "future_taxonomy_governance",
+      "notes": "Registry lacks an atomic rank signal; do not misuse rating, quality, or KPI measures and do not tune from adversarial data."
+    },
+    {
+      "sampleId": "adv.management_merged_header",
+      "corpusGroup": "adversarial",
+      "physicalColumn": "Xếp hạng",
+      "physicalType": "numeric",
+      "representativeValues": [
+        "ordinal ranking values",
+        "manager score siblings"
+      ],
+      "siblingHeaders": [
+        "manager score siblings"
+      ],
+      "candidate": "quality_score",
+      "priorExpectationType": "contextual_ambiguity",
+      "registryMeaning": {
+        "label": "Quality Score",
+        "semanticFamily": "performance",
+        "role": "measure"
+      },
+      "semanticAssessment": "unsupported_or_out_of_scope",
+      "evidenceInspected": [
+        "physical_header",
+        "representative_values",
+        "physical_type",
+        "sibling_headers",
+        "registry_definition"
+      ],
+      "disposition": "unsupported_or_out_of_scope",
+      "reasonCode": "no_valid_existing_atomic_signal",
+      "corpusChanged": true,
+      "taxonomyDebt": "atomic_taxonomy_absent",
+      "phaseDeferredTo": "future_taxonomy_governance",
+      "notes": "Registry lacks an atomic rank signal; do not misuse rating, quality, or KPI measures and do not tune from adversarial data."
+    },
+    {
+      "sampleId": "adv.management_merged_header",
+      "corpusGroup": "adversarial",
+      "physicalColumn": "Xếp hạng",
+      "physicalType": "numeric",
+      "representativeValues": [
+        "ordinal ranking values",
+        "manager score siblings"
+      ],
+      "siblingHeaders": [
+        "manager score siblings"
+      ],
+      "candidate": "kpi",
+      "priorExpectationType": "contextual_ambiguity",
+      "registryMeaning": {
+        "label": "KPI",
+        "semanticFamily": "performance",
+        "role": "dimension"
+      },
+      "semanticAssessment": "unsupported_or_out_of_scope",
+      "evidenceInspected": [
+        "physical_header",
+        "representative_values",
+        "physical_type",
+        "sibling_headers",
+        "registry_definition"
+      ],
+      "disposition": "unsupported_or_out_of_scope",
+      "reasonCode": "no_valid_existing_atomic_signal",
+      "corpusChanged": true,
+      "taxonomyDebt": "atomic_taxonomy_absent",
+      "phaseDeferredTo": "future_taxonomy_governance",
+      "notes": "Registry lacks an atomic rank signal; do not misuse rating, quality, or KPI measures and do not tune from adversarial data."
+    },
+    {
+      "sampleId": "adv.management_merged_header",
+      "corpusGroup": "adversarial",
+      "physicalColumn": "Trung bình điểm 4 tiêu chí ",
+      "physicalType": "numeric",
+      "representativeValues": [
+        "decimal average scores",
+        "ranking and stars siblings"
+      ],
+      "siblingHeaders": [
+        "ranking and stars siblings"
+      ],
+      "candidate": "rating_score",
+      "priorExpectationType": "contextual_ambiguity",
+      "registryMeaning": {
+        "label": "Rating Score",
+        "semanticFamily": "engagement",
+        "role": "measure"
+      },
+      "semanticAssessment": "retain_contextual_candidate",
+      "evidenceInspected": [
+        "physical_header",
+        "representative_values",
+        "physical_type",
+        "sibling_headers",
+        "registry_definition"
+      ],
+      "disposition": "retain_contextual_candidate",
+      "reasonCode": "plausible_only_with_representative_context",
+      "corpusChanged": false,
+      "taxonomyDebt": "contextual_resolution_required",
+      "phaseDeferredTo": "Phase_3B",
+      "notes": "Potential generic average-score aliases need tuning-eligible evidence; adversarial data cannot drive the change."
+    },
+    {
+      "sampleId": "adv.management_merged_header",
+      "corpusGroup": "adversarial",
+      "physicalColumn": "Trung bình điểm 4 tiêu chí ",
+      "physicalType": "numeric",
+      "representativeValues": [
+        "decimal average scores",
+        "ranking and stars siblings"
+      ],
+      "siblingHeaders": [
+        "ranking and stars siblings"
+      ],
+      "candidate": "quality_score",
+      "priorExpectationType": "contextual_ambiguity",
+      "registryMeaning": {
+        "label": "Quality Score",
+        "semanticFamily": "performance",
+        "role": "measure"
+      },
+      "semanticAssessment": "retain_contextual_candidate",
+      "evidenceInspected": [
+        "physical_header",
+        "representative_values",
+        "physical_type",
+        "sibling_headers",
+        "registry_definition"
+      ],
+      "disposition": "retain_contextual_candidate",
+      "reasonCode": "plausible_only_with_representative_context",
+      "corpusChanged": false,
+      "taxonomyDebt": "contextual_resolution_required",
+      "phaseDeferredTo": "Phase_3B",
+      "notes": "Potential generic average-score aliases need tuning-eligible evidence; adversarial data cannot drive the change."
+    },
+    {
+      "sampleId": "adv.world_bank_cross_domain",
+      "corpusGroup": "adversarial",
+      "physicalColumn": "Date",
+      "physicalType": "date_or_time",
+      "representativeValues": [
+        "annual Excel date serials",
+        "country indicator time-series context"
+      ],
+      "siblingHeaders": [
+        "country indicator time-series context"
+      ],
+      "candidate": "report_date",
+      "priorExpectationType": "contextual_ambiguity",
+      "registryMeaning": {
+        "label": "Report Date",
+        "semanticFamily": "time",
+        "role": "time"
+      },
+      "semanticAssessment": "remove_invalid_candidate",
+      "evidenceInspected": [
+        "physical_header",
+        "representative_values",
+        "physical_type",
+        "sibling_headers",
+        "registry_definition"
+      ],
+      "disposition": "remove_invalid_candidate",
+      "reasonCode": "stage_inappropriate_or_semantic_mismatch",
+      "corpusChanged": true,
+      "taxonomyDebt": null,
+      "phaseDeferredTo": "removed_in_phase_3a2",
+      "notes": "Generic Date supports time_period; report/effective meanings require context and should not be mandatory header candidates."
+    },
+    {
+      "sampleId": "adv.world_bank_cross_domain",
+      "corpusGroup": "adversarial",
+      "physicalColumn": "Date",
+      "physicalType": "date_or_time",
+      "representativeValues": [
+        "annual Excel date serials",
+        "country indicator time-series context"
+      ],
+      "siblingHeaders": [
+        "country indicator time-series context"
+      ],
+      "candidate": "effective_date",
+      "priorExpectationType": "contextual_ambiguity",
+      "registryMeaning": {
+        "label": "Effective Date",
+        "semanticFamily": "time",
+        "role": "time"
+      },
+      "semanticAssessment": "remove_invalid_candidate",
+      "evidenceInspected": [
+        "physical_header",
+        "representative_values",
+        "physical_type",
+        "sibling_headers",
+        "registry_definition"
+      ],
+      "disposition": "remove_invalid_candidate",
+      "reasonCode": "stage_inappropriate_or_semantic_mismatch",
+      "corpusChanged": true,
+      "taxonomyDebt": null,
+      "phaseDeferredTo": "removed_in_phase_3a2",
+      "notes": "Generic Date supports time_period; report/effective meanings require context and should not be mandatory header candidates."
+    },
+    {
+      "sampleId": "adv.world_cup_events",
+      "corpusGroup": "adversarial",
+      "physicalColumn": "Event",
+      "physicalType": "string_or_categorical",
+      "representativeValues": [
+        "football event codes such as G40'",
+        "player/match siblings"
+      ],
+      "siblingHeaders": [
+        "player/match siblings"
+      ],
+      "candidate": "status",
+      "priorExpectationType": "contextual_ambiguity",
+      "registryMeaning": {
+        "label": "Status",
+        "semanticFamily": "status",
+        "role": "status"
+      },
+      "semanticAssessment": "unsupported_or_out_of_scope",
+      "evidenceInspected": [
+        "physical_header",
+        "representative_values",
+        "physical_type",
+        "sibling_headers",
+        "registry_definition"
+      ],
+      "disposition": "unsupported_or_out_of_scope",
+      "reasonCode": "no_valid_existing_atomic_signal",
+      "corpusChanged": true,
+      "taxonomyDebt": "atomic_taxonomy_absent",
+      "phaseDeferredTo": "future_taxonomy_governance",
+      "notes": "Sports events are not status, error, or audit actions; keep unsupported rather than force cross-domain semantics."
+    },
+    {
+      "sampleId": "adv.world_cup_events",
+      "corpusGroup": "adversarial",
+      "physicalColumn": "Event",
+      "physicalType": "string_or_categorical",
+      "representativeValues": [
+        "football event codes such as G40'",
+        "player/match siblings"
+      ],
+      "siblingHeaders": [
+        "player/match siblings"
+      ],
+      "candidate": "error_event",
+      "priorExpectationType": "contextual_ambiguity",
+      "registryMeaning": {
+        "label": "Error Event",
+        "semanticFamily": "status",
+        "role": "status"
+      },
+      "semanticAssessment": "unsupported_or_out_of_scope",
+      "evidenceInspected": [
+        "physical_header",
+        "representative_values",
+        "physical_type",
+        "sibling_headers",
+        "registry_definition"
+      ],
+      "disposition": "unsupported_or_out_of_scope",
+      "reasonCode": "no_valid_existing_atomic_signal",
+      "corpusChanged": true,
+      "taxonomyDebt": "atomic_taxonomy_absent",
+      "phaseDeferredTo": "future_taxonomy_governance",
+      "notes": "Sports events are not status, error, or audit actions; keep unsupported rather than force cross-domain semantics."
+    },
+    {
+      "sampleId": "adv.world_cup_events",
+      "corpusGroup": "adversarial",
+      "physicalColumn": "Event",
+      "physicalType": "string_or_categorical",
+      "representativeValues": [
+        "football event codes such as G40'",
+        "player/match siblings"
+      ],
+      "siblingHeaders": [
+        "player/match siblings"
+      ],
+      "candidate": "audit_action",
+      "priorExpectationType": "contextual_ambiguity",
+      "registryMeaning": {
+        "label": "Audit Action",
+        "semanticFamily": "access",
+        "role": "dimension"
+      },
+      "semanticAssessment": "unsupported_or_out_of_scope",
+      "evidenceInspected": [
+        "physical_header",
+        "representative_values",
+        "physical_type",
+        "sibling_headers",
+        "registry_definition"
+      ],
+      "disposition": "unsupported_or_out_of_scope",
+      "reasonCode": "no_valid_existing_atomic_signal",
+      "corpusChanged": true,
+      "taxonomyDebt": "atomic_taxonomy_absent",
+      "phaseDeferredTo": "future_taxonomy_governance",
+      "notes": "Sports events are not status, error, or audit actions; keep unsupported rather than force cross-domain semantics."
+    },
+    {
+      "sampleId": "adv.bank_marketing_generic_headers",
+      "corpusGroup": "adversarial",
+      "physicalColumn": "job",
+      "physicalType": "string_or_categorical",
+      "representativeValues": [
+        "occupation categories",
+        "bank marketing demographics"
+      ],
+      "siblingHeaders": [
+        "bank marketing demographics"
+      ],
+      "candidate": "job_title",
+      "priorExpectationType": "contextual_ambiguity",
+      "registryMeaning": {
+        "label": "Job Title",
+        "semanticFamily": "organization",
+        "role": "dimension"
+      },
+      "semanticAssessment": "retain_contextual_candidate",
+      "evidenceInspected": [
+        "physical_header",
+        "representative_values",
+        "physical_type",
+        "sibling_headers",
+        "registry_definition"
+      ],
+      "disposition": "retain_contextual_candidate",
+      "reasonCode": "plausible_only_with_representative_context",
+      "corpusChanged": false,
+      "taxonomyDebt": "contextual_resolution_required",
+      "phaseDeferredTo": "Phase_3B",
+      "notes": "Job may support occupation/job-title candidates, but adversarial data cannot tune aliases; existing value-pattern over-generation remains visible."
+    },
+    {
+      "sampleId": "adv.bank_marketing_generic_headers",
+      "corpusGroup": "adversarial",
+      "physicalColumn": "job",
+      "physicalType": "string_or_categorical",
+      "representativeValues": [
+        "occupation categories",
+        "bank marketing demographics"
+      ],
+      "siblingHeaders": [
+        "bank marketing demographics"
+      ],
+      "candidate": "role",
+      "priorExpectationType": "contextual_ambiguity",
+      "registryMeaning": {
+        "label": "Role / Position",
+        "semanticFamily": "entity",
+        "role": "dimension"
+      },
+      "semanticAssessment": "remove_invalid_candidate",
+      "evidenceInspected": [
+        "physical_header",
+        "representative_values",
+        "physical_type",
+        "sibling_headers",
+        "registry_definition"
+      ],
+      "disposition": "remove_invalid_candidate",
+      "reasonCode": "stage_inappropriate_or_semantic_mismatch",
+      "corpusChanged": true,
+      "taxonomyDebt": null,
+      "phaseDeferredTo": "removed_in_phase_3a2",
+      "notes": "Job may support occupation/job-title candidates, but adversarial data cannot tune aliases; existing value-pattern over-generation remains visible."
+    },
+    {
+      "sampleId": "adv.bank_marketing_generic_headers",
+      "corpusGroup": "adversarial",
+      "physicalColumn": "y",
+      "physicalType": "string_or_categorical",
+      "representativeValues": [
+        "yes/no target values",
+        "opaque one-character header"
+      ],
+      "siblingHeaders": [
+        "opaque one-character header"
+      ],
+      "candidate": "status",
+      "priorExpectationType": "contextual_ambiguity",
+      "registryMeaning": {
+        "label": "Status",
+        "semanticFamily": "status",
+        "role": "status"
+      },
+      "semanticAssessment": "unsupported_or_out_of_scope",
+      "evidenceInspected": [
+        "physical_header",
+        "representative_values",
+        "physical_type",
+        "sibling_headers",
+        "registry_definition"
+      ],
+      "disposition": "unsupported_or_out_of_scope",
+      "reasonCode": "no_valid_existing_atomic_signal",
+      "corpusChanged": true,
+      "taxonomyDebt": "atomic_taxonomy_absent",
+      "phaseDeferredTo": "future_taxonomy_governance",
+      "notes": "The source target definition is contextual; y must remain unknown at candidate stage without a codebook/source contract."
+    },
+    {
+      "sampleId": "adv.bank_marketing_generic_headers",
+      "corpusGroup": "adversarial",
+      "physicalColumn": "y",
+      "physicalType": "string_or_categorical",
+      "representativeValues": [
+        "yes/no target values",
+        "opaque one-character header"
+      ],
+      "siblingHeaders": [
+        "opaque one-character header"
+      ],
+      "candidate": "conversion",
+      "priorExpectationType": "contextual_ambiguity",
+      "registryMeaning": {
+        "label": "Conversion",
+        "semanticFamily": "marketing",
+        "role": "measure"
+      },
+      "semanticAssessment": "unsupported_or_out_of_scope",
+      "evidenceInspected": [
+        "physical_header",
+        "representative_values",
+        "physical_type",
+        "sibling_headers",
+        "registry_definition"
+      ],
+      "disposition": "unsupported_or_out_of_scope",
+      "reasonCode": "no_valid_existing_atomic_signal",
+      "corpusChanged": true,
+      "taxonomyDebt": "atomic_taxonomy_absent",
+      "phaseDeferredTo": "future_taxonomy_governance",
+      "notes": "The source target definition is contextual; y must remain unknown at candidate stage without a codebook/source contract."
+    },
+    {
+      "sampleId": "multi.commerce_may_2026",
+      "corpusGroup": "multi_file",
+      "physicalColumn": "Status",
+      "physicalType": "string_or_categorical",
+      "representativeValues": [
+        "multi-file validation-only reuse of sales Status"
+      ],
+      "siblingHeaders": [],
+      "candidate": "fulfillment_status",
+      "priorExpectationType": "required_mapping",
+      "registryMeaning": {
+        "label": "Fulfillment Status",
+        "semanticFamily": "status",
+        "role": "status"
+      },
+      "semanticAssessment": "remove_invalid_candidate",
+      "evidenceInspected": [
+        "physical_header",
+        "representative_values",
+        "physical_type",
+        "sibling_headers",
+        "registry_definition"
+      ],
+      "disposition": "remove_invalid_candidate",
+      "reasonCode": "stage_inappropriate_or_semantic_mismatch",
+      "corpusChanged": true,
+      "taxonomyDebt": null,
+      "phaseDeferredTo": "removed_in_phase_3a2",
+      "notes": "Do not tune from multi-file; inherit the generic Status truth review."
+    },
+    {
+      "sampleId": "multi.commerce_june_2026",
+      "corpusGroup": "multi_file",
+      "physicalColumn": "Status",
+      "physicalType": "string_or_categorical",
+      "representativeValues": [
+        "multi-file validation-only reuse of sales Status"
+      ],
+      "siblingHeaders": [],
+      "candidate": "fulfillment_status",
+      "priorExpectationType": "required_mapping",
+      "registryMeaning": {
+        "label": "Fulfillment Status",
+        "semanticFamily": "status",
+        "role": "status"
+      },
+      "semanticAssessment": "remove_invalid_candidate",
+      "evidenceInspected": [
+        "physical_header",
+        "representative_values",
+        "physical_type",
+        "sibling_headers",
+        "registry_definition"
+      ],
+      "disposition": "remove_invalid_candidate",
+      "reasonCode": "stage_inappropriate_or_semantic_mismatch",
+      "corpusChanged": true,
+      "taxonomyDebt": null,
+      "phaseDeferredTo": "removed_in_phase_3a2",
+      "notes": "Do not tune from multi-file; inherit the generic Status truth review."
+    },
+    {
+      "sampleId": "multi.sales_period_pair",
+      "corpusGroup": "multi_file",
+      "physicalColumn": "Status",
+      "physicalType": "string_or_categorical",
+      "representativeValues": [
+        "multi-file validation-only reuse of both sales periods"
+      ],
+      "siblingHeaders": [],
+      "candidate": "fulfillment_status",
+      "priorExpectationType": "required_mapping",
+      "registryMeaning": {
+        "label": "Fulfillment Status",
+        "semanticFamily": "status",
+        "role": "status"
+      },
+      "semanticAssessment": "remove_invalid_candidate",
+      "evidenceInspected": [
+        "physical_header",
+        "representative_values",
+        "physical_type",
+        "sibling_headers",
+        "registry_definition"
+      ],
+      "disposition": "remove_invalid_candidate",
+      "reasonCode": "stage_inappropriate_or_semantic_mismatch",
+      "corpusChanged": true,
+      "taxonomyDebt": null,
+      "phaseDeferredTo": "removed_in_phase_3a2",
+      "notes": "Do not tune from multi-file; inherit the generic Status truth review."
+    },
+    {
+      "sampleId": "multi.logistics_period_pair",
+      "corpusGroup": "multi_file",
+      "physicalColumn": "DeliveryStatus",
+      "physicalType": "string_or_categorical",
+      "representativeValues": [
+        "Đã giao, Hoàn tất, Giao lại values",
+        "multi-file validation-only logistics periods"
+      ],
+      "siblingHeaders": [
+        "multi-file validation-only logistics periods"
+      ],
+      "candidate": "fulfillment_status",
+      "priorExpectationType": "required_mapping",
+      "registryMeaning": {
+        "label": "Fulfillment Status",
+        "semanticFamily": "status",
+        "role": "status"
+      },
+      "semanticAssessment": "remove_invalid_candidate",
+      "evidenceInspected": [
+        "physical_header",
+        "representative_values",
+        "physical_type",
+        "sibling_headers",
+        "registry_definition"
+      ],
+      "disposition": "remove_invalid_candidate",
+      "reasonCode": "stage_inappropriate_or_semantic_mismatch",
+      "corpusChanged": true,
+      "taxonomyDebt": null,
+      "phaseDeferredTo": "removed_in_phase_3a2",
+      "notes": "delivery_status is directly supported; fulfillment_status requires contextual/value policy and is not a mandatory header-only candidate."
+    }
+  ]
+}

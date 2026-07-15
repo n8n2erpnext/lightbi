@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "lightbi.phase-5b6b-build-restoration-audit.v1",
+  "command": "cd apps/desktop && npx tsc --noEmit -p tsconfig.app.json",
+  "before": {
+    "exitStatus": 2,
+    "diagnosticCount": 28,
+    "outputSha256": "4598e25b55440240a01c8b1e8bed3c492c0eebc672b40a32e188d430f95de86c"
+  },
+  "after": {
+    "exitStatus": 0,
+    "diagnosticCount": 0,
+    "outputSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "cleanHeadEvidence": {
+    "commit": "70603dd6679a37a6f0a23e20fe6883faabd0e8a7",
+    "exitStatus": 0,
+    "diagnosticCount": 0,
+    "outputSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "configuration": {
+    "tsconfigAppSha256": "b1eac9ba6cd1c01d59ebca159805e052c798d9d4ab904680b79ce3e306ea0bbd",
+    "tsconfigSha256": "770b4140bbb581e2dfd9ea9946ffc9c75a1d86ba7d2db5f77c83e37cbdf9d808",
+    "packageJsonSha256": "b13ae06b7bcd52a96c2aa15f17c388064f633bd52fef4455b52844a46289230f",
+    "compilerOptionsChanged": false,
+    "tsconfigChanged": false,
+    "dependencyChanged": false
+  },
+  "prohibitedWorkarounds": {
+    "diagnosticSuppressionAdded": false,
+    "skipLibCheckChanged": false,
+    "generatedFilesDeleted": false,
+    "dependencyDowngradedOrSubstituted": false,
+    "unsafeBoundaryCastAdded": false
+  },
+  "typescriptBuildIntegrityEstablished": true
+}

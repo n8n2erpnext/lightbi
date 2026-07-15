@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "lightbi.phase-5b4-result-use-restriction-audit.v1",
+  "restrictionCodes": [
+    "AUTOMATIC_AGGREGATION_PROHIBITED",
+    "AUTOMATIC_COUNT_SUBSTITUTION_PROHIBITED",
+    "NOT_BUSINESS_VERIFIED",
+    "NOT_ELIGIBLE_FOR_AUTOMATIC_ALERT",
+    "NOT_ELIGIBLE_FOR_BA_CONCLUSION",
+    "NOT_ELIGIBLE_FOR_NARRATIVE_CLAIM",
+    "NOT_ELIGIBLE_FOR_PERSISTED_METRIC",
+    "REQUIRES_GRAIN_CONFIRMATION",
+    "REQUIRES_MEASURE_ROLE",
+    "REQUIRES_METRIC_DEFINITION",
+    "REQUIRES_NON_ADDITIVE_FORMULA"
+  ],
+  "distribution": {
+    "AUTOMATIC_AGGREGATION_PROHIBITED": 136,
+    "AUTOMATIC_COUNT_SUBSTITUTION_PROHIBITED": 136,
+    "NOT_BUSINESS_VERIFIED": 145,
+    "NOT_ELIGIBLE_FOR_AUTOMATIC_ALERT": 145,
+    "NOT_ELIGIBLE_FOR_BA_CONCLUSION": 145,
+    "NOT_ELIGIBLE_FOR_NARRATIVE_CLAIM": 145,
+    "NOT_ELIGIBLE_FOR_PERSISTED_METRIC": 145,
+    "REQUIRES_GRAIN_CONFIRMATION": 145,
+    "REQUIRES_MEASURE_ROLE": 133,
+    "REQUIRES_METRIC_DEFINITION": 136,
+    "REQUIRES_NON_ADDITIVE_FORMULA": 12
+  },
+  "currentFlowGap": {
+    "previewRowsEnterChart": true,
+    "previewRowsEnterBADecisionBrief": true,
+    "structuredAggregationRestrictionsCurrentlyCarried": false
+  },
+  "futureBoundary": {
+    "restrictedResultIdentifiableDownstream": true,
+    "acknowledgementGrantsBAAuthority": false,
+    "BAEligibilityRequiresGovernedMetric": true,
+    "narrativeEligibilityRequiresGovernedMetric": true
+  },
+  "restrictionAbsenceIsPermission": false,
+  "productionBehaviorChanged": false
+}

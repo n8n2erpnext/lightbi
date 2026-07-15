@@ -1,0 +1,27 @@
+{
+  "schemaVersion": "lightbi.phase-5m3-ground-truth-comparison-audit.v1",
+  "phase": "5M3",
+  "comparisonStates": ["exact_match", "within_tolerance", "mismatch", "unavailable"],
+  "controlledVerifiedAnswers": {
+    "count": 6,
+    "exactMatches": 6,
+    "withinTolerance": 0,
+    "mismatches": 0,
+    "unavailable": 0,
+    "provenance": "controlled_fixture"
+  },
+  "realCorpusVerifiedAnswers": {
+    "sampleId": "rev.sales_erp_may_2026",
+    "groundTruthDigest": "27f1bc7122a58ad2179442c7319326e522c1e5422c69e659b17bd595fd661866",
+    "metric": "revenue_sum",
+    "expected": 22973896244,
+    "actual": null,
+    "comparison": "unavailable",
+    "executionPerformed": false,
+    "reason": "upstream governed metric action unavailable"
+  },
+  "inventedExpectedValues": false,
+  "unexecutedValueClaimedAsMatch": false,
+  "decisionUseAuthorized": false,
+  "productionWiring": { "executed": false }
+}

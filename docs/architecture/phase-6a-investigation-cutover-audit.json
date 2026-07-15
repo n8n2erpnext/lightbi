@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "lightbi.phase-6a-investigation-cutover-audit.v1",
+  "handoffContract": "lightbi.canonical-investigation-handoff.v1",
+  "receives": ["artifact identity", "dataset-state identity", "governed action candidate", "runtime preflight", "query planning result", "structured blockers"],
+  "rebuildsSemanticArtifact": false,
+  "reinterpretsMetricOperator": false,
+  "executionRows": "same canonicalRows selection used to build the artifact",
+  "eligibleExecution": "executeGovernedMetricRequest through createGovernedLocalDuckDBBoundary",
+  "ineligibleExecution": "blocked before query execution",
+  "executionEvidenceRetained": true,
+  "restrictionsRetained": true,
+  "decisionUseAuthorized": false,
+  "legacyAdvancedSessionCompatibilityRetained": true
+}

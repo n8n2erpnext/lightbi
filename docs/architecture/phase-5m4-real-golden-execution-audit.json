@@ -1,0 +1,80 @@
+{
+  "schemaVersion": "lightbi.phase-5m4-real-golden-execution-audit.v1",
+  "phase": "5M4",
+  "sampleId": "rev.sales_erp_may_2026",
+  "path": [
+    "canonical_source",
+    "domain_activation",
+    "metric_preflight",
+    "governed_question_action",
+    "runtime_preflight",
+    "governed_query_plan",
+    "duckdb_execution",
+    "ground_truth_comparison"
+  ],
+  "canonical": {
+    "sourceReference": "sample data/Sales_ERP_May_2026.xlsx#Sales",
+    "rowCount": 1500,
+    "revenueBinding": "Revenue",
+    "structuralGrain": "document",
+    "temporalBasis": "event",
+    "aggregationForm": "atomic_rows",
+    "currencyEvidence": "single_source_no_cross_currency_conversion_claim",
+    "sourceSafeToAggregate": false
+  },
+  "domainActivation": "conditional",
+  "metricPreflight": {
+    "metricId": "sales_revenue",
+    "state": "conditionally_ready",
+    "blockers": [],
+    "runtimeActionAuthorized": false
+  },
+  "questionAction": {
+    "questionId": "commerce.sales_revenue.by_product",
+    "state": "conditional",
+    "defaultQuestionCountAtMost": 5
+  },
+  "runtimePreflight": {
+    "state": "conditionally_executable",
+    "planningAllowed": true,
+    "executionAllowed": true
+  },
+  "queryPlan": {
+    "metricId": "sales_revenue",
+    "operator": "governed_sum",
+    "operatorSource": "governed_metric_definition",
+    "silentFallbackUsed": false,
+    "expectedValueUsedForPlanning": false
+  },
+  "execution": {
+    "engine": "duckdb",
+    "scope": "full_file",
+    "performed": true,
+    "status": "executed",
+    "actual": 22973896244
+  },
+  "groundTruthComparison": {
+    "provenance": "rev.sales_erp_may_2026:verifiedMetricAnswers.revenue_sum",
+    "expected": 22973896244,
+    "actual": 22973896244,
+    "tolerance": 0,
+    "state": "exact_match",
+    "comparisonTiming": "post_execution_only"
+  },
+  "evidenceKinds": [
+    "metric_definition",
+    "metric_preflight",
+    "canonical_binding",
+    "grain",
+    "duckdb_execution"
+  ],
+  "restrictions": [
+    "DECISION_USE_PROHIBITED",
+    "PRODUCTION_WIRING_NOT_EXECUTED",
+    "SOURCE_LEVEL_SAFE_TO_AGGREGATE_REMAINS_FALSE"
+  ],
+  "decisionUseAuthorized": false,
+  "productionWiring": {
+    "executed": false
+  }
+}

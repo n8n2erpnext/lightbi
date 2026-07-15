@@ -1,0 +1,11 @@
+{
+  "schemaVersion": "lightbi.phase-5b2-dedup-audit.v1",
+  "rawComparisonOccurrences": 291,
+  "uniqueSourceColumnDivergences": 145,
+  "uniqueAuthorityPathDivergences": 136,
+  "uniqueSafetyMechanismClasses": [
+    "physical_parse_only"
+  ],
+  "duplicateDerivationsRemoved": 146,
+  "repeatedConsumersSharingAuthorityDecision": 145
+}

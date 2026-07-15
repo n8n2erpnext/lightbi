@@ -1,0 +1,124 @@
+{
+  "schemaVersion": "lightbi.phase-5m4-real-golden-blocker-audit.v1",
+  "phase": "5M4",
+  "sampleId": "rev.sales_erp_may_2026",
+  "source": {
+    "path": "sample data/Sales_ERP_May_2026.xlsx",
+    "sheet": "Sales",
+    "sha256": "e2cad91d14cf4ae19daa09dd9c980ea57b6b9cc20a518a9fa6818c3b18aef9ae",
+    "verifiedRowCount": 1500
+  },
+  "rootCauseClassification": "generic_semantic_binding_defect",
+  "rootCause": {
+    "summary": "Header alias collisions were treated as permanently ambiguous even when full-file value, type, grain, and sibling-column evidence left one viable semantic binding.",
+    "generic": true,
+    "sourceSpecificException": false,
+    "thresholdLowered": false,
+    "safetyRuleWeakened": false
+  },
+  "blockers": [
+    {
+      "owner": "Phase 3B semantic resolver",
+      "module": "semantic-resolver.ts",
+      "evidence": "OrderID and OrderDate retained header-level collision alternatives after contextual evidence had ruled out the weak alternatives.",
+      "classification": "generic_implementation_defect",
+      "correctSafetyBehavior": false,
+      "missingEvidence": false,
+      "corpusContractDebt": false,
+      "minimumValidRemediation": "Resolve a header collision only when exactly one viable candidate remains and every alternative is independently contradicted, dominated, or weak without contextual support."
+    },
+    {
+      "owner": "Phase 4A grain candidate and resolver",
+      "module": "grain-candidate-engine.ts; grain-resolver.ts; grain-resolution-validation.ts",
+      "evidence": "Resolved document identity and event time were present, but a source-wide unrelated ambiguity and a competing entity candidate prevented the document/event/atomic signature from being retained.",
+      "classification": "secondary_generic_projection_defect",
+      "correctSafetyBehavior": false,
+      "missingEvidence": false,
+      "corpusContractDebt": false,
+      "minimumValidRemediation": "Scope ambiguity validation to selected grain dependencies, retain physical temporal evidence, and prefer an exact document semantic identity over a generic entity candidate."
+    },
+    {
+      "owner": "Phase 5M1 metric preflight",
+      "module": "governed-metric-preflight.ts",
+      "evidence": "Repeated/additivity blockers from unrelated measures were projected onto sales_revenue even though the bound Revenue column had atomic-row evidence.",
+      "classification": "secondary_overly_broad_blocker",
+      "correctSafetyBehavior": false,
+      "missingEvidence": false,
+      "corpusContractDebt": false,
+      "minimumValidRemediation": "Apply measure-safety blockers only to the metric's selected physical binding and preserve all unresolved binding-specific blockers."
+    },
+    {
+      "owner": "Phase 4A measure safety",
+      "module": "grain resolver",
+      "evidence": "Source-level safeToAggregate remains false because not every measure is globally safe.",
+      "classification": "correct_safety_behavior",
+      "correctSafetyBehavior": true,
+      "missingEvidence": false,
+      "corpusContractDebt": false,
+      "minimumValidRemediation": "None; metric-specific execution must remain governed and must not mutate safeToAggregate."
+    }
+  ],
+  "corrections": {
+    "productionFiles": {
+      "apps/desktop/src/lib/semantic-registry.ts": {
+        "beforeSha256": "e4dc3201dc6a154accbd7433abe1bd79f0916be570f6c0554a3affde730437a5",
+        "afterSha256": "2568e7f7e16d014afc24d1cf4b17e421cdad3307589f1c1fadc1960d23606a53"
+      },
+      "apps/desktop/src/lib/understanding-core/semantic-candidate-engine.ts": {
+        "beforeSha256": "3d61192a4d1464cb90011c5687e2fee7112921a7000d36194e5b8e765e6a6bc4",
+        "afterSha256": "543be8896e0ea52914cc0f5db183f18dcaaed44c036dc1d25519cada9a6c9f0c"
+      }
+    },
+    "candidateQuality": {
+      "totalPhysicalColumns": 752,
+      "zeroCandidates": 106,
+      "oneCandidate": 242,
+      "multipleCandidates": 404,
+      "averageCandidates": 1.6263,
+      "medianCandidates": 2,
+      "maximumCandidates": 5,
+      "broadColumnCount": 18,
+      "candidateSourceDistribution": {
+        "canonicalId": 208,
+        "alias": 377,
+        "headerAlias": 492,
+        "label": 0,
+        "tokenContainment": 561,
+        "valueAlias": 75,
+        "valuePattern": 289
+      }
+    },
+    "relationshipValidation": {
+      "historicalPreservedCandidateCount": 11,
+      "currentPreservedCandidateCount": 12,
+      "pairCount": 9,
+      "historicalPreservedKeyPairCount": 10,
+      "currentPreservedKeyPairCount": 32,
+      "historicalConfirmedCandidateObservations": 4,
+      "currentConfirmedCandidateObservations": 12,
+      "reason": "The generic semantic correction exposes one additional governed relationship candidate; no join or execution authority is granted."
+    }
+  },
+  "realGoldenAfterCorrection": {
+    "semanticBindings": {
+      "OrderID": "order",
+      "OrderDate": "time_period",
+      "Revenue": "revenue",
+      "Payment": "payment_method",
+      "Product": "product"
+    },
+    "grain": {
+      "structural": "document",
+      "temporal": "event",
+      "aggregation": "atomic_rows",
+      "safeToAggregate": false
+    },
+    "domainActivation": "conditional",
+    "salesRevenueMetricState": "conditionally_ready",
+    "runtimeState": "conditionally_executable"
+  },
+  "decisionUseAuthorized": false,
+  "productionWiring": {
+    "executed": false
+  }
+}

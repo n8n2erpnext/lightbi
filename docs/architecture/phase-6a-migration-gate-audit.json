@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "lightbi.phase-6a-migration-gate-audit.v1",
+  "phase": "6A",
+  "singleArtifactIdentity": true,
+  "homeCutover": true,
+  "investigationCutoverForHomeSelectedPath": true,
+  "realGoldenEndToEnd": true,
+  "runtimeSafetyPreserved": true,
+  "verification": {
+    "phase6aTargeted": { "testFilesPassed": 3, "testsPassed": 16, "testsFailed": 0 },
+    "phase5m1ThroughM4": { "testFilesPassed": 6, "testsPassed": 19, "testsFailed": 0 },
+    "understandingCore": { "testFilesPassed": 63, "testsPassed": 284, "testsFailed": 0 },
+    "desktopFullSuite": {
+      "testFilesPassed": 152,
+      "testFilesFailed": 4,
+      "testsPassed": 1083,
+      "testsFailed": 9,
+      "allowlistedFailures": 9,
+      "unexpectedFailures": 0,
+      "allowlist": "phase-5b6b-regression-baseline-allowlist.v1.json"
+    },
+    "typescript": "passed",
+    "auditJsonParsed": 8,
+    "importChecks": "passed",
+    "diffCheck": "passed"
+  },
+  "legacyRetirementEligible": false,
+  "remainingDebt": [
+    "Advanced-created legacy sessions still use the compatibility Investigation path",
+    "understanding-next presentation contracts remain as compatibility adapters",
+    "full-file rows must be retained before a canonical consumer artifact can be valid",
+    "only the existing conditional commerce_distribution_mvp pack is governed"
+  ],
+  "classification": "canonical_consumer_cutover_ready_with_documented_debt",
+  "decisionUseAuthorized": false,
+  "phase7Started": false
+}

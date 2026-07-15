@@ -1,0 +1,44 @@
+{
+  "schemaVersion": "lightbi.phase-5m4-final-gate-audit.v1",
+  "phase": "5M4",
+  "classification": "phase5_core_ready_for_phase6_cutover",
+  "provisional": false,
+  "gates": {
+    "realGoldenEligibility": "pass",
+    "realGoldenExecution": "pass",
+    "groundTruthExactMatch": "pass",
+    "runtimeSafety": "pass",
+    "corpusRegression": "pass",
+    "importIsolation": "pass",
+    "typescript": "pass",
+    "completeUnderstandingCore": "pass",
+    "fullDesktopSuite": "pass_with_governed_allowlist"
+  },
+  "allowlist": "docs/architecture/phase-5b6b-regression-baseline-allowlist.v1.json",
+  "verification": {
+    "typescriptExitCode": 0,
+    "understandingCore": {
+      "testFilesPassed": 61,
+      "testsPassed": 278,
+      "failures": 0
+    },
+    "fullDesktopSuite": {
+      "runCount": 1,
+      "testFilesPassed": 150,
+      "testFilesFailed": 4,
+      "testsPassed": 1077,
+      "testsFailed": 9,
+      "allowlistedFailures": 9,
+      "unexpectedFailures": 0,
+      "phase5M4OwnedFailures": 0
+    },
+    "auditParse": "pass",
+    "importIsolation": "pass",
+    "gitDiffCheck": "pass"
+  },
+  "unexpectedFailures": 0,
+  "decisionUseAuthorized": false,
+  "productionWiring": {
+    "executed": false
+  }
+}

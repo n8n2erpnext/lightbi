@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "lightbi.phase-6b-production-reachability-audit.v1",
+  "productionSessionCreators": [
+    "apps/desktop/src/pages/Home.tsx#createInvestigationSession",
+    "apps/desktop/src/pages/Advanced.tsx#createInvestigationSession"
+  ],
+  "canonicalPath": ["canonical dataset artifact", "governed action candidate", "runtime preflight", "governed query plan", "governed execution and evidence"],
+  "homePassesCanonicalHandoff": true,
+  "advancedPassesCanonicalHandoff": true,
+  "investigationBlocksMissingCanonicalHandoff": true,
+  "legacyBackendPreviewReachableFromInvestigation": false,
+  "legacyJsSandboxReachableFromInvestigation": false,
+  "legacyMockPreviewReachableFromHome": false,
+  "legacyDetectorInvokedOnCanonicalSessionPath": false,
+  "productionImportsOfPhase5ShadowOrAuditModules": []
+}

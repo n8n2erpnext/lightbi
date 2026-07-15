@@ -26,7 +26,7 @@ export interface DuckDBPreviewResult {
   errorMessage?: string;
   executionScope?: RuntimeRowScope;
   resultBuffer?: QueryResultBuffer;
-  source: "duckdb_preview_sandbox" | "backend_duckdb_preview" | "js_sandbox_fallback";
+  source: "duckdb_preview_sandbox" | "backend_duckdb_preview" | "js_sandbox_fallback" | "governed_duckdb_execution";
 }
 
 export async function executeDuckDBPreviewSandbox(input: DuckDBPreviewInput): Promise<DuckDBPreviewResult> {

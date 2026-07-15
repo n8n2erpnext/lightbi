@@ -1,0 +1,2894 @@
+{
+  "schemaVersion": "phase0.registry-inventory.v1",
+  "generatedFrom": "apps/desktop/src/lib/semantic-registry.ts",
+  "generatedOn": "2026-07-10",
+  "policy": "Conservative Phase 0 audit classification only; no runtime behavior or registry definitions changed.",
+  "signalCount": 321,
+  "coverageStatusCounts": {
+    "supported": 62,
+    "partial": 259,
+    "advertised_only": 0
+  },
+  "phase0RecognitionStatusCounts": {
+    "mvp_proven": 0,
+    "experimental": 62,
+    "research_only": 259
+  },
+  "primaryDomainCounts": {
+    "core": 2,
+    "customer": 41,
+    "finance": 61,
+    "inventory": 42,
+    "operations": 78,
+    "performance": 62,
+    "revenue": 35
+  },
+  "collisionCounts": {
+    "aliases": 58,
+    "headerAliases": 75
+  },
+  "normalizedAliasCollisions": [
+    {
+      "normalizedAlias": "actual",
+      "canonicalIds": [
+        "achievement",
+        "actual"
+      ]
+    },
+    {
+      "normalizedAlias": "bac si",
+      "canonicalIds": [
+        "doctor",
+        "provider"
+      ]
+    },
+    {
+      "normalizedAlias": "bien loi nhuan",
+      "canonicalIds": [
+        "margin",
+        "margin_pct"
+      ]
+    },
+    {
+      "normalizedAlias": "buyer",
+      "canonicalIds": [
+        "buyer",
+        "customer"
+      ]
+    },
+    {
+      "normalizedAlias": "capacity",
+      "canonicalIds": [
+        "capacity",
+        "utilization"
+      ]
+    },
+    {
+      "normalizedAlias": "channel",
+      "canonicalIds": [
+        "channel",
+        "sales_channel"
+      ]
+    },
+    {
+      "normalizedAlias": "chi tieu",
+      "canonicalIds": [
+        "expense",
+        "target"
+      ]
+    },
+    {
+      "normalizedAlias": "chuc danh",
+      "canonicalIds": [
+        "job_title",
+        "role"
+      ]
+    },
+    {
+      "normalizedAlias": "clinician",
+      "canonicalIds": [
+        "doctor",
+        "provider"
+      ]
+    },
+    {
+      "normalizedAlias": "coupon",
+      "canonicalIds": [
+        "coupon",
+        "payment_voucher"
+      ]
+    },
+    {
+      "normalizedAlias": "delivery date",
+      "canonicalIds": [
+        "delivery_date",
+        "report_date"
+      ]
+    },
+    {
+      "normalizedAlias": "doctor",
+      "canonicalIds": [
+        "doctor",
+        "provider"
+      ]
+    },
+    {
+      "normalizedAlias": "don hang",
+      "canonicalIds": [
+        "order",
+        "shipment"
+      ]
+    },
+    {
+      "normalizedAlias": "error code",
+      "canonicalIds": [
+        "error_code",
+        "failure_code"
+      ]
+    },
+    {
+      "normalizedAlias": "fault code",
+      "canonicalIds": [
+        "error_code",
+        "failure_code"
+      ]
+    },
+    {
+      "normalizedAlias": "freight fee",
+      "canonicalIds": [
+        "delivery_fee",
+        "freight_fee"
+      ]
+    },
+    {
+      "normalizedAlias": "gia tri khach hang",
+      "canonicalIds": [
+        "contribution",
+        "customer_value"
+      ]
+    },
+    {
+      "normalizedAlias": "gia von",
+      "canonicalIds": [
+        "cost",
+        "total_cost"
+      ]
+    },
+    {
+      "normalizedAlias": "gross margin",
+      "canonicalIds": [
+        "margin",
+        "margin_pct"
+      ]
+    },
+    {
+      "normalizedAlias": "hop dong",
+      "canonicalIds": [
+        "contract_id",
+        "project"
+      ]
+    },
+    {
+      "normalizedAlias": "inbound",
+      "canonicalIds": [
+        "inbound",
+        "stock_movement"
+      ]
+    },
+    {
+      "normalizedAlias": "job title",
+      "canonicalIds": [
+        "job_title",
+        "role"
+      ]
+    },
+    {
+      "normalizedAlias": "kenh ban",
+      "canonicalIds": [
+        "channel",
+        "sales_channel"
+      ]
+    },
+    {
+      "normalizedAlias": "lead",
+      "canonicalIds": [
+        "coach",
+        "lead"
+      ]
+    },
+    {
+      "normalizedAlias": "lead time",
+      "canonicalIds": [
+        "duration",
+        "lead_time"
+      ]
+    },
+    {
+      "normalizedAlias": "legal entity",
+      "canonicalIds": [
+        "account",
+        "company_code"
+      ]
+    },
+    {
+      "normalizedAlias": "loai hang",
+      "canonicalIds": [
+        "category",
+        "item_type"
+      ]
+    },
+    {
+      "normalizedAlias": "ltv",
+      "canonicalIds": [
+        "contribution",
+        "customer_value"
+      ]
+    },
+    {
+      "normalizedAlias": "margin pct",
+      "canonicalIds": [
+        "margin",
+        "margin_pct"
+      ]
+    },
+    {
+      "normalizedAlias": "margin percent",
+      "canonicalIds": [
+        "margin",
+        "margin_pct"
+      ]
+    },
+    {
+      "normalizedAlias": "mat hang",
+      "canonicalIds": [
+        "material",
+        "product"
+      ]
+    },
+    {
+      "normalizedAlias": "on time",
+      "canonicalIds": [
+        "on_time_rate",
+        "on_time_status"
+      ]
+    },
+    {
+      "normalizedAlias": "order qty",
+      "canonicalIds": [
+        "order",
+        "ordered_qty"
+      ]
+    },
+    {
+      "normalizedAlias": "outbound",
+      "canonicalIds": [
+        "outbound",
+        "stock_movement"
+      ]
+    },
+    {
+      "normalizedAlias": "owner",
+      "canonicalIds": [
+        "agent",
+        "owner"
+      ]
+    },
+    {
+      "normalizedAlias": "package",
+      "canonicalIds": [
+        "plan_name",
+        "shipment"
+      ]
+    },
+    {
+      "normalizedAlias": "position",
+      "canonicalIds": [
+        "job_title",
+        "role"
+      ]
+    },
+    {
+      "normalizedAlias": "promise date",
+      "canonicalIds": [
+        "eta",
+        "sla"
+      ]
+    },
+    {
+      "normalizedAlias": "quantity",
+      "canonicalIds": [
+        "quantity",
+        "stock_qty"
+      ]
+    },
+    {
+      "normalizedAlias": "rating",
+      "canonicalIds": [
+        "rating_score",
+        "satisfaction"
+      ]
+    },
+    {
+      "normalizedAlias": "receipt",
+      "canonicalIds": [
+        "inbound",
+        "receipt"
+      ]
+    },
+    {
+      "normalizedAlias": "refund amount",
+      "canonicalIds": [
+        "change_amount",
+        "refund"
+      ]
+    },
+    {
+      "normalizedAlias": "role",
+      "canonicalIds": [
+        "permission_role",
+        "role"
+      ]
+    },
+    {
+      "normalizedAlias": "sales channel",
+      "canonicalIds": [
+        "channel",
+        "sales_channel"
+      ]
+    },
+    {
+      "normalizedAlias": "sales stage",
+      "canonicalIds": [
+        "pipeline_stage",
+        "stage_name"
+      ]
+    },
+    {
+      "normalizedAlias": "score",
+      "canonicalIds": [
+        "quality_score",
+        "rating_score"
+      ]
+    },
+    {
+      "normalizedAlias": "service cost",
+      "canonicalIds": [
+        "maintenance_cost",
+        "support_cost"
+      ]
+    },
+    {
+      "normalizedAlias": "so luong ton",
+      "canonicalIds": [
+        "inventory",
+        "stock_qty"
+      ]
+    },
+    {
+      "normalizedAlias": "stage",
+      "canonicalIds": [
+        "pipeline_stage",
+        "stage_name"
+      ]
+    },
+    {
+      "normalizedAlias": "start date",
+      "canonicalIds": [
+        "effective_date",
+        "hire_date"
+      ]
+    },
+    {
+      "normalizedAlias": "storage location",
+      "canonicalIds": [
+        "bin_location",
+        "storage_location"
+      ]
+    },
+    {
+      "normalizedAlias": "team",
+      "canonicalIds": [
+        "department",
+        "team"
+      ]
+    },
+    {
+      "normalizedAlias": "thiet bi",
+      "canonicalIds": [
+        "device_type",
+        "machine"
+      ]
+    },
+    {
+      "normalizedAlias": "thoi gian xu ly",
+      "canonicalIds": [
+        "lead_time",
+        "resolution_time"
+      ]
+    },
+    {
+      "normalizedAlias": "thuc te",
+      "canonicalIds": [
+        "achievement",
+        "actual"
+      ]
+    },
+    {
+      "normalizedAlias": "tien thue",
+      "canonicalIds": [
+        "rent_amount",
+        "tax_amount"
+      ]
+    },
+    {
+      "normalizedAlias": "tra hang",
+      "canonicalIds": [
+        "return_document",
+        "returns"
+      ]
+    },
+    {
+      "normalizedAlias": "unit",
+      "canonicalIds": [
+        "unit",
+        "uom"
+      ]
+    }
+  ],
+  "normalizedHeaderAliasCollisions": [
+    {
+      "normalizedAlias": "account",
+      "canonicalIds": [
+        "account",
+        "gl_account"
+      ]
+    },
+    {
+      "normalizedAlias": "bac si",
+      "canonicalIds": [
+        "doctor",
+        "provider"
+      ]
+    },
+    {
+      "normalizedAlias": "balance",
+      "canonicalIds": [
+        "balance",
+        "closing_balance"
+      ]
+    },
+    {
+      "normalizedAlias": "barcode",
+      "canonicalIds": [
+        "barcode",
+        "sku"
+      ]
+    },
+    {
+      "normalizedAlias": "bien loi nhuan",
+      "canonicalIds": [
+        "margin",
+        "margin_pct"
+      ]
+    },
+    {
+      "normalizedAlias": "buyer",
+      "canonicalIds": [
+        "buyer",
+        "customer"
+      ]
+    },
+    {
+      "normalizedAlias": "capacity",
+      "canonicalIds": [
+        "capacity",
+        "utilization"
+      ]
+    },
+    {
+      "normalizedAlias": "channel",
+      "canonicalIds": [
+        "channel",
+        "sales_channel"
+      ]
+    },
+    {
+      "normalizedAlias": "chi tieu",
+      "canonicalIds": [
+        "expense",
+        "target"
+      ]
+    },
+    {
+      "normalizedAlias": "chuc danh",
+      "canonicalIds": [
+        "job_title",
+        "role"
+      ]
+    },
+    {
+      "normalizedAlias": "churn",
+      "canonicalIds": [
+        "churn",
+        "retention"
+      ]
+    },
+    {
+      "normalizedAlias": "churn rate",
+      "canonicalIds": [
+        "churn",
+        "retention"
+      ]
+    },
+    {
+      "normalizedAlias": "clinician",
+      "canonicalIds": [
+        "doctor",
+        "provider"
+      ]
+    },
+    {
+      "normalizedAlias": "cost",
+      "canonicalIds": [
+        "cost",
+        "spend"
+      ]
+    },
+    {
+      "normalizedAlias": "coupon",
+      "canonicalIds": [
+        "coupon",
+        "payment_voucher"
+      ]
+    },
+    {
+      "normalizedAlias": "courier",
+      "canonicalIds": [
+        "carrier",
+        "driver"
+      ]
+    },
+    {
+      "normalizedAlias": "credit amount",
+      "canonicalIds": [
+        "credit",
+        "deposit_amount"
+      ]
+    },
+    {
+      "normalizedAlias": "dat duoc",
+      "canonicalIds": [
+        "achievement",
+        "actual"
+      ]
+    },
+    {
+      "normalizedAlias": "debit amount",
+      "canonicalIds": [
+        "debit",
+        "withdrawal_amount"
+      ]
+    },
+    {
+      "normalizedAlias": "delivery date",
+      "canonicalIds": [
+        "delivery_date",
+        "report_date"
+      ]
+    },
+    {
+      "normalizedAlias": "doctor",
+      "canonicalIds": [
+        "doctor",
+        "provider"
+      ]
+    },
+    {
+      "normalizedAlias": "error code",
+      "canonicalIds": [
+        "error_code",
+        "failure_code"
+      ]
+    },
+    {
+      "normalizedAlias": "fault code",
+      "canonicalIds": [
+        "error_code",
+        "failure_code"
+      ]
+    },
+    {
+      "normalizedAlias": "freight fee",
+      "canonicalIds": [
+        "delivery_fee",
+        "freight_fee"
+      ]
+    },
+    {
+      "normalizedAlias": "fulfillment status",
+      "canonicalIds": [
+        "delivery_status",
+        "fulfillment_status"
+      ]
+    },
+    {
+      "normalizedAlias": "gia tri khach hang",
+      "canonicalIds": [
+        "contribution",
+        "customer_value"
+      ]
+    },
+    {
+      "normalizedAlias": "gia von",
+      "canonicalIds": [
+        "cost",
+        "total_cost"
+      ]
+    },
+    {
+      "normalizedAlias": "gross margin",
+      "canonicalIds": [
+        "margin",
+        "margin_pct"
+      ]
+    },
+    {
+      "normalizedAlias": "hop dong",
+      "canonicalIds": [
+        "contract_id",
+        "project"
+      ]
+    },
+    {
+      "normalizedAlias": "inbound",
+      "canonicalIds": [
+        "inbound",
+        "stock_movement"
+      ]
+    },
+    {
+      "normalizedAlias": "job title",
+      "canonicalIds": [
+        "job_title",
+        "role"
+      ]
+    },
+    {
+      "normalizedAlias": "kenh ban",
+      "canonicalIds": [
+        "channel",
+        "sales_channel"
+      ]
+    },
+    {
+      "normalizedAlias": "lead",
+      "canonicalIds": [
+        "coach",
+        "lead"
+      ]
+    },
+    {
+      "normalizedAlias": "lead time",
+      "canonicalIds": [
+        "duration",
+        "lead_time"
+      ]
+    },
+    {
+      "normalizedAlias": "legal entity",
+      "canonicalIds": [
+        "account",
+        "company_code"
+      ]
+    },
+    {
+      "normalizedAlias": "loai hang",
+      "canonicalIds": [
+        "category",
+        "item_type"
+      ]
+    },
+    {
+      "normalizedAlias": "ltv",
+      "canonicalIds": [
+        "contribution",
+        "customer_value"
+      ]
+    },
+    {
+      "normalizedAlias": "margin pct",
+      "canonicalIds": [
+        "margin",
+        "margin_pct"
+      ]
+    },
+    {
+      "normalizedAlias": "margin percent",
+      "canonicalIds": [
+        "margin",
+        "margin_pct"
+      ]
+    },
+    {
+      "normalizedAlias": "net revenue",
+      "canonicalIds": [
+        "net_revenue",
+        "revenue"
+      ]
+    },
+    {
+      "normalizedAlias": "ngay",
+      "canonicalIds": [
+        "report_date",
+        "time_period"
+      ]
+    },
+    {
+      "normalizedAlias": "nguong ton",
+      "canonicalIds": [
+        "stock_status",
+        "stock_threshold"
+      ]
+    },
+    {
+      "normalizedAlias": "on time",
+      "canonicalIds": [
+        "on_time_rate",
+        "on_time_status"
+      ]
+    },
+    {
+      "normalizedAlias": "order qty",
+      "canonicalIds": [
+        "order",
+        "ordered_qty"
+      ]
+    },
+    {
+      "normalizedAlias": "outbound",
+      "canonicalIds": [
+        "outbound",
+        "stock_movement"
+      ]
+    },
+    {
+      "normalizedAlias": "owner",
+      "canonicalIds": [
+        "agent",
+        "owner"
+      ]
+    },
+    {
+      "normalizedAlias": "plan",
+      "canonicalIds": [
+        "plan_name",
+        "target"
+      ]
+    },
+    {
+      "normalizedAlias": "position",
+      "canonicalIds": [
+        "job_title",
+        "role"
+      ]
+    },
+    {
+      "normalizedAlias": "promise date",
+      "canonicalIds": [
+        "eta",
+        "sla"
+      ]
+    },
+    {
+      "normalizedAlias": "qty",
+      "canonicalIds": [
+        "quantity",
+        "stock_qty"
+      ]
+    },
+    {
+      "normalizedAlias": "quantity",
+      "canonicalIds": [
+        "quantity",
+        "stock_qty"
+      ]
+    },
+    {
+      "normalizedAlias": "rating",
+      "canonicalIds": [
+        "rating_score",
+        "satisfaction"
+      ]
+    },
+    {
+      "normalizedAlias": "receipt",
+      "canonicalIds": [
+        "inbound",
+        "receipt"
+      ]
+    },
+    {
+      "normalizedAlias": "refund",
+      "canonicalIds": [
+        "change_amount",
+        "refund"
+      ]
+    },
+    {
+      "normalizedAlias": "refund amount",
+      "canonicalIds": [
+        "change_amount",
+        "refund"
+      ]
+    },
+    {
+      "normalizedAlias": "roi bo",
+      "canonicalIds": [
+        "churn",
+        "retention"
+      ]
+    },
+    {
+      "normalizedAlias": "role",
+      "canonicalIds": [
+        "permission_role",
+        "role"
+      ]
+    },
+    {
+      "normalizedAlias": "route",
+      "canonicalIds": [
+        "endpoint",
+        "route"
+      ]
+    },
+    {
+      "normalizedAlias": "sales",
+      "canonicalIds": [
+        "revenue",
+        "sales"
+      ]
+    },
+    {
+      "normalizedAlias": "sales channel",
+      "canonicalIds": [
+        "channel",
+        "sales_channel"
+      ]
+    },
+    {
+      "normalizedAlias": "sales stage",
+      "canonicalIds": [
+        "pipeline_stage",
+        "stage_name"
+      ]
+    },
+    {
+      "normalizedAlias": "score",
+      "canonicalIds": [
+        "quality_score",
+        "rating_score"
+      ]
+    },
+    {
+      "normalizedAlias": "service cost",
+      "canonicalIds": [
+        "maintenance_cost",
+        "support_cost"
+      ]
+    },
+    {
+      "normalizedAlias": "shipper",
+      "canonicalIds": [
+        "carrier",
+        "driver"
+      ]
+    },
+    {
+      "normalizedAlias": "sl",
+      "canonicalIds": [
+        "quantity",
+        "stock_qty"
+      ]
+    },
+    {
+      "normalizedAlias": "so luong",
+      "canonicalIds": [
+        "quantity",
+        "stock_qty"
+      ]
+    },
+    {
+      "normalizedAlias": "stage",
+      "canonicalIds": [
+        "pipeline_stage",
+        "stage_name"
+      ]
+    },
+    {
+      "normalizedAlias": "start date",
+      "canonicalIds": [
+        "effective_date",
+        "hire_date"
+      ]
+    },
+    {
+      "normalizedAlias": "status",
+      "canonicalIds": [
+        "lead_status",
+        "status",
+        "ticket_status"
+      ]
+    },
+    {
+      "normalizedAlias": "storage location",
+      "canonicalIds": [
+        "bin_location",
+        "storage_location"
+      ]
+    },
+    {
+      "normalizedAlias": "tai khoan",
+      "canonicalIds": [
+        "gl_account",
+        "user_login"
+      ]
+    },
+    {
+      "normalizedAlias": "team",
+      "canonicalIds": [
+        "department",
+        "team"
+      ]
+    },
+    {
+      "normalizedAlias": "tien thue",
+      "canonicalIds": [
+        "rent_amount",
+        "tax_amount"
+      ]
+    },
+    {
+      "normalizedAlias": "unit",
+      "canonicalIds": [
+        "unit",
+        "uom"
+      ]
+    },
+    {
+      "normalizedAlias": "units",
+      "canonicalIds": [
+        "quantity",
+        "stock_qty"
+      ]
+    }
+  ],
+  "signals": [
+    {
+      "canonicalId": "account",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "customer"
+    },
+    {
+      "canonicalId": "achievement",
+      "currentCoverageStatus": "supported",
+      "phase0RecognitionStatus": "experimental",
+      "primaryDomain": "performance"
+    },
+    {
+      "canonicalId": "acquisition_cost",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "customer"
+    },
+    {
+      "canonicalId": "actual",
+      "currentCoverageStatus": "supported",
+      "phase0RecognitionStatus": "experimental",
+      "primaryDomain": "performance"
+    },
+    {
+      "canonicalId": "actual_time",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "agent",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "performance"
+    },
+    {
+      "canonicalId": "appointment",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "approval_status",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "performance"
+    },
+    {
+      "canonicalId": "arr",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "revenue"
+    },
+    {
+      "canonicalId": "asset",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "attendance_status",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "performance"
+    },
+    {
+      "canonicalId": "audit_action",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "performance"
+    },
+    {
+      "canonicalId": "audit_finding",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "performance"
+    },
+    {
+      "canonicalId": "available_qty",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "inventory"
+    },
+    {
+      "canonicalId": "balance",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "finance"
+    },
+    {
+      "canonicalId": "bank_account",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "finance"
+    },
+    {
+      "canonicalId": "bank_transaction",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "finance"
+    },
+    {
+      "canonicalId": "barcode",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "inventory"
+    },
+    {
+      "canonicalId": "batch",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "inventory"
+    },
+    {
+      "canonicalId": "billing_document",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "finance"
+    },
+    {
+      "canonicalId": "bin_location",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "inventory"
+    },
+    {
+      "canonicalId": "bom",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "inventory"
+    },
+    {
+      "canonicalId": "branch",
+      "currentCoverageStatus": "supported",
+      "phase0RecognitionStatus": "experimental",
+      "primaryDomain": "revenue"
+    },
+    {
+      "canonicalId": "budget",
+      "currentCoverageStatus": "supported",
+      "phase0RecognitionStatus": "experimental",
+      "primaryDomain": "finance"
+    },
+    {
+      "canonicalId": "buyer",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "inventory"
+    },
+    {
+      "canonicalId": "campaign",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "customer"
+    },
+    {
+      "canonicalId": "campaign_attempts",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "customer"
+    },
+    {
+      "canonicalId": "capacity",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "performance"
+    },
+    {
+      "canonicalId": "carrier",
+      "currentCoverageStatus": "supported",
+      "phase0RecognitionStatus": "experimental",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "cashier",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "performance"
+    },
+    {
+      "canonicalId": "category",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "inventory"
+    },
+    {
+      "canonicalId": "change_amount",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "revenue"
+    },
+    {
+      "canonicalId": "change_order",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "finance"
+    },
+    {
+      "canonicalId": "channel",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "revenue"
+    },
+    {
+      "canonicalId": "churn",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "customer"
+    },
+    {
+      "canonicalId": "claim",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "finance"
+    },
+    {
+      "canonicalId": "clicks",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "performance"
+    },
+    {
+      "canonicalId": "close_date",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "performance"
+    },
+    {
+      "canonicalId": "closing_balance",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "finance"
+    },
+    {
+      "canonicalId": "coach",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "performance"
+    },
+    {
+      "canonicalId": "cod_amount",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "commission",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "finance"
+    },
+    {
+      "canonicalId": "company_code",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "finance"
+    },
+    {
+      "canonicalId": "consumption",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "contact",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "customer"
+    },
+    {
+      "canonicalId": "contract_id",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "finance"
+    },
+    {
+      "canonicalId": "contract_value",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "finance"
+    },
+    {
+      "canonicalId": "contribution",
+      "currentCoverageStatus": "supported",
+      "phase0RecognitionStatus": "experimental",
+      "primaryDomain": "customer"
+    },
+    {
+      "canonicalId": "control_id",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "performance"
+    },
+    {
+      "canonicalId": "conversion",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "performance"
+    },
+    {
+      "canonicalId": "cost",
+      "currentCoverageStatus": "supported",
+      "phase0RecognitionStatus": "experimental",
+      "primaryDomain": "finance"
+    },
+    {
+      "canonicalId": "cost_center",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "finance"
+    },
+    {
+      "canonicalId": "cost_delta",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "finance"
+    },
+    {
+      "canonicalId": "counterparty",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "customer"
+    },
+    {
+      "canonicalId": "country",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "customer"
+    },
+    {
+      "canonicalId": "coupon",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "revenue"
+    },
+    {
+      "canonicalId": "course",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "performance"
+    },
+    {
+      "canonicalId": "cpc",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "finance"
+    },
+    {
+      "canonicalId": "credit",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "finance"
+    },
+    {
+      "canonicalId": "crop",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "inventory"
+    },
+    {
+      "canonicalId": "ctr",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "performance"
+    },
+    {
+      "canonicalId": "currency",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "finance"
+    },
+    {
+      "canonicalId": "current_location",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "customer",
+      "currentCoverageStatus": "supported",
+      "phase0RecognitionStatus": "experimental",
+      "primaryDomain": "customer"
+    },
+    {
+      "canonicalId": "customer_value",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "customer"
+    },
+    {
+      "canonicalId": "debit",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "finance"
+    },
+    {
+      "canonicalId": "debt",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "finance"
+    },
+    {
+      "canonicalId": "declared_value",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "defect_code",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "performance"
+    },
+    {
+      "canonicalId": "defect_rate",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "performance"
+    },
+    {
+      "canonicalId": "delay",
+      "currentCoverageStatus": "supported",
+      "phase0RecognitionStatus": "experimental",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "delivery_date",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "delivery_fee",
+      "currentCoverageStatus": "supported",
+      "phase0RecognitionStatus": "experimental",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "delivery_status",
+      "currentCoverageStatus": "supported",
+      "phase0RecognitionStatus": "experimental",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "department",
+      "currentCoverageStatus": "supported",
+      "phase0RecognitionStatus": "experimental",
+      "primaryDomain": "performance"
+    },
+    {
+      "canonicalId": "deposit_amount",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "finance"
+    },
+    {
+      "canonicalId": "destination_location",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "device_type",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "customer"
+    },
+    {
+      "canonicalId": "diagnosis",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "discount",
+      "currentCoverageStatus": "supported",
+      "phase0RecognitionStatus": "experimental",
+      "primaryDomain": "revenue"
+    },
+    {
+      "canonicalId": "distance",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "distribution_channel",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "revenue"
+    },
+    {
+      "canonicalId": "division",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "performance"
+    },
+    {
+      "canonicalId": "doctor",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "document_type",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "donation_amount",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "finance"
+    },
+    {
+      "canonicalId": "donor",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "customer"
+    },
+    {
+      "canonicalId": "downtime",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "driver",
+      "currentCoverageStatus": "supported",
+      "phase0RecognitionStatus": "experimental",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "due_date",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "finance"
+    },
+    {
+      "canonicalId": "duration",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "effective_date",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "finance"
+    },
+    {
+      "canonicalId": "efficiency",
+      "currentCoverageStatus": "supported",
+      "phase0RecognitionStatus": "experimental",
+      "primaryDomain": "performance"
+    },
+    {
+      "canonicalId": "employee",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "performance"
+    },
+    {
+      "canonicalId": "employee_id",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "performance"
+    },
+    {
+      "canonicalId": "endpoint",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "enrollment_status",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "customer"
+    },
+    {
+      "canonicalId": "environment",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "error_code",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "error_event",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "eta",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "exchange_rate",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "finance"
+    },
+    {
+      "canonicalId": "expected_revenue",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "revenue"
+    },
+    {
+      "canonicalId": "expense",
+      "currentCoverageStatus": "supported",
+      "phase0RecognitionStatus": "experimental",
+      "primaryDomain": "finance"
+    },
+    {
+      "canonicalId": "expiration_date",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "finance"
+    },
+    {
+      "canonicalId": "failure_code",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "fee",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "finance"
+    },
+    {
+      "canonicalId": "field",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "fiscal_month",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "finance"
+    },
+    {
+      "canonicalId": "fiscal_year",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "finance"
+    },
+    {
+      "canonicalId": "forecast_category",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "performance"
+    },
+    {
+      "canonicalId": "freight_fee",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "fuel_cost",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "fulfillment",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "fulfillment_status",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "gl_account",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "finance"
+    },
+    {
+      "canonicalId": "goods_movement",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "inventory"
+    },
+    {
+      "canonicalId": "goods_receipt",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "inventory"
+    },
+    {
+      "canonicalId": "grade",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "performance"
+    },
+    {
+      "canonicalId": "grant",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "finance"
+    },
+    {
+      "canonicalId": "gross_profit",
+      "currentCoverageStatus": "supported",
+      "phase0RecognitionStatus": "experimental",
+      "primaryDomain": "finance"
+    },
+    {
+      "canonicalId": "harvest_qty",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "inventory"
+    },
+    {
+      "canonicalId": "hire_date",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "performance"
+    },
+    {
+      "canonicalId": "http_status",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "performance"
+    },
+    {
+      "canonicalId": "humidity",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "impressions",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "performance"
+    },
+    {
+      "canonicalId": "inbound",
+      "currentCoverageStatus": "supported",
+      "phase0RecognitionStatus": "experimental",
+      "primaryDomain": "inventory"
+    },
+    {
+      "canonicalId": "inspection_lot",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "inventory",
+      "currentCoverageStatus": "supported",
+      "phase0RecognitionStatus": "experimental",
+      "primaryDomain": "inventory"
+    },
+    {
+      "canonicalId": "invoice_total",
+      "currentCoverageStatus": "supported",
+      "phase0RecognitionStatus": "experimental",
+      "primaryDomain": "revenue"
+    },
+    {
+      "canonicalId": "ip_address",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "irrigation",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "item_type",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "job_title",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "performance"
+    },
+    {
+      "canonicalId": "journal",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "finance"
+    },
+    {
+      "canonicalId": "kpi",
+      "currentCoverageStatus": "supported",
+      "phase0RecognitionStatus": "experimental",
+      "primaryDomain": "performance"
+    },
+    {
+      "canonicalId": "landing_page",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "customer"
+    },
+    {
+      "canonicalId": "last_purchase",
+      "currentCoverageStatus": "supported",
+      "phase0RecognitionStatus": "experimental",
+      "primaryDomain": "customer"
+    },
+    {
+      "canonicalId": "latency_ms",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "performance"
+    },
+    {
+      "canonicalId": "lead",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "customer"
+    },
+    {
+      "canonicalId": "lead_status",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "customer"
+    },
+    {
+      "canonicalId": "lead_time",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "performance"
+    },
+    {
+      "canonicalId": "lease",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "finance"
+    },
+    {
+      "canonicalId": "leave_type",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "performance"
+    },
+    {
+      "canonicalId": "load_status",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "machine",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "maintenance_cost",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "finance"
+    },
+    {
+      "canonicalId": "maintenance_order",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "manager",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "performance"
+    },
+    {
+      "canonicalId": "margin",
+      "currentCoverageStatus": "supported",
+      "phase0RecognitionStatus": "experimental",
+      "primaryDomain": "finance"
+    },
+    {
+      "canonicalId": "margin_delta",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "finance"
+    },
+    {
+      "canonicalId": "margin_pct",
+      "currentCoverageStatus": "supported",
+      "phase0RecognitionStatus": "experimental",
+      "primaryDomain": "finance"
+    },
+    {
+      "canonicalId": "material",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "inventory"
+    },
+    {
+      "canonicalId": "medicine",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "inventory"
+    },
+    {
+      "canonicalId": "meter_id",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "meter_reading",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "mfa_status",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "performance"
+    },
+    {
+      "canonicalId": "milestone",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "performance"
+    },
+    {
+      "canonicalId": "movement_type",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "inventory"
+    },
+    {
+      "canonicalId": "mrr",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "revenue"
+    },
+    {
+      "canonicalId": "net_revenue",
+      "currentCoverageStatus": "supported",
+      "phase0RecognitionStatus": "experimental",
+      "primaryDomain": "revenue"
+    },
+    {
+      "canonicalId": "occupancy_status",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "on_time_rate",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "on_time_status",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "opening_balance",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "finance"
+    },
+    {
+      "canonicalId": "operational_cost",
+      "currentCoverageStatus": "supported",
+      "phase0RecognitionStatus": "experimental",
+      "primaryDomain": "finance"
+    },
+    {
+      "canonicalId": "opportunity",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "customer"
+    },
+    {
+      "canonicalId": "order",
+      "currentCoverageStatus": "supported",
+      "phase0RecognitionStatus": "experimental",
+      "primaryDomain": "revenue"
+    },
+    {
+      "canonicalId": "order_accuracy",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "order_count",
+      "currentCoverageStatus": "supported",
+      "phase0RecognitionStatus": "experimental",
+      "primaryDomain": "customer"
+    },
+    {
+      "canonicalId": "ordered_qty",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "inventory"
+    },
+    {
+      "canonicalId": "origin_location",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "outage",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "outbound",
+      "currentCoverageStatus": "supported",
+      "phase0RecognitionStatus": "experimental",
+      "primaryDomain": "inventory"
+    },
+    {
+      "canonicalId": "owner",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "performance"
+    },
+    {
+      "canonicalId": "patient",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "customer"
+    },
+    {
+      "canonicalId": "payable",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "finance"
+    },
+    {
+      "canonicalId": "payment_bank",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "revenue"
+    },
+    {
+      "canonicalId": "payment_card",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "revenue"
+    },
+    {
+      "canonicalId": "payment_cash",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "revenue"
+    },
+    {
+      "canonicalId": "payment_method",
+      "currentCoverageStatus": "supported",
+      "phase0RecognitionStatus": "experimental",
+      "primaryDomain": "revenue"
+    },
+    {
+      "canonicalId": "payment_status",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "revenue"
+    },
+    {
+      "canonicalId": "payment_terms",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "finance"
+    },
+    {
+      "canonicalId": "payment_voucher",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "revenue"
+    },
+    {
+      "canonicalId": "performance_gap",
+      "currentCoverageStatus": "supported",
+      "phase0RecognitionStatus": "experimental",
+      "primaryDomain": "performance"
+    },
+    {
+      "canonicalId": "permission_role",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "performance"
+    },
+    {
+      "canonicalId": "person",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "performance"
+    },
+    {
+      "canonicalId": "pickup_date",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "pipeline_stage",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "customer"
+    },
+    {
+      "canonicalId": "plan_name",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "customer"
+    },
+    {
+      "canonicalId": "plant",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "inventory"
+    },
+    {
+      "canonicalId": "pledge",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "finance"
+    },
+    {
+      "canonicalId": "policy",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "performance"
+    },
+    {
+      "canonicalId": "pos_terminal",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "revenue"
+    },
+    {
+      "canonicalId": "previous_contacts",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "customer"
+    },
+    {
+      "canonicalId": "previous_outcome",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "customer"
+    },
+    {
+      "canonicalId": "priority",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "performance"
+    },
+    {
+      "canonicalId": "probability",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "performance"
+    },
+    {
+      "canonicalId": "product",
+      "currentCoverageStatus": "supported",
+      "phase0RecognitionStatus": "experimental",
+      "primaryDomain": "inventory"
+    },
+    {
+      "canonicalId": "productivity",
+      "currentCoverageStatus": "supported",
+      "phase0RecognitionStatus": "experimental",
+      "primaryDomain": "performance"
+    },
+    {
+      "canonicalId": "profit",
+      "currentCoverageStatus": "supported",
+      "phase0RecognitionStatus": "experimental",
+      "primaryDomain": "finance"
+    },
+    {
+      "canonicalId": "profit_delta",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "finance"
+    },
+    {
+      "canonicalId": "progress_pct",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "performance"
+    },
+    {
+      "canonicalId": "project",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "performance"
+    },
+    {
+      "canonicalId": "property",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "provider",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "purchase_behavior",
+      "currentCoverageStatus": "supported",
+      "phase0RecognitionStatus": "experimental",
+      "primaryDomain": "customer"
+    },
+    {
+      "canonicalId": "purchase_cost",
+      "currentCoverageStatus": "supported",
+      "phase0RecognitionStatus": "experimental",
+      "primaryDomain": "finance"
+    },
+    {
+      "canonicalId": "purchase_order",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "inventory"
+    },
+    {
+      "canonicalId": "purchase_request",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "inventory"
+    },
+    {
+      "canonicalId": "qc_result",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "performance"
+    },
+    {
+      "canonicalId": "quality_score",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "performance"
+    },
+    {
+      "canonicalId": "quantity",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "inventory"
+    },
+    {
+      "canonicalId": "quotation",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "revenue"
+    },
+    {
+      "canonicalId": "rating_score",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "customer"
+    },
+    {
+      "canonicalId": "receipt",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "finance"
+    },
+    {
+      "canonicalId": "receipt_line",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "revenue"
+    },
+    {
+      "canonicalId": "receivable",
+      "currentCoverageStatus": "supported",
+      "phase0RecognitionStatus": "experimental",
+      "primaryDomain": "revenue"
+    },
+    {
+      "canonicalId": "received_qty",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "inventory"
+    },
+    {
+      "canonicalId": "reconciliation_status",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "finance"
+    },
+    {
+      "canonicalId": "refund",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "revenue"
+    },
+    {
+      "canonicalId": "related_document",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "remediation_status",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "performance"
+    },
+    {
+      "canonicalId": "renewal_date",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "customer"
+    },
+    {
+      "canonicalId": "rent_amount",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "finance"
+    },
+    {
+      "canonicalId": "reorder_level",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "inventory"
+    },
+    {
+      "canonicalId": "replenishment",
+      "currentCoverageStatus": "supported",
+      "phase0RecognitionStatus": "experimental",
+      "primaryDomain": "inventory"
+    },
+    {
+      "canonicalId": "report_date",
+      "currentCoverageStatus": "supported",
+      "phase0RecognitionStatus": "experimental",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "request_id",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "reserved_qty",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "inventory"
+    },
+    {
+      "canonicalId": "resolution_time",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "performance"
+    },
+    {
+      "canonicalId": "resource_name",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "response_time",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "performance"
+    },
+    {
+      "canonicalId": "retention",
+      "currentCoverageStatus": "supported",
+      "phase0RecognitionStatus": "experimental",
+      "primaryDomain": "customer"
+    },
+    {
+      "canonicalId": "return_document",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "revenue"
+    },
+    {
+      "canonicalId": "returns",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "revenue"
+    },
+    {
+      "canonicalId": "revenue",
+      "currentCoverageStatus": "supported",
+      "phase0RecognitionStatus": "experimental",
+      "primaryDomain": "revenue"
+    },
+    {
+      "canonicalId": "revenue_delta",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "revenue"
+    },
+    {
+      "canonicalId": "rework_qty",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "rfq",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "inventory"
+    },
+    {
+      "canonicalId": "roas",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "performance"
+    },
+    {
+      "canonicalId": "role",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "performance"
+    },
+    {
+      "canonicalId": "rounding_amount",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "revenue"
+    },
+    {
+      "canonicalId": "route",
+      "currentCoverageStatus": "supported",
+      "phase0RecognitionStatus": "experimental",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "row_type",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "salary",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "finance"
+    },
+    {
+      "canonicalId": "sales",
+      "currentCoverageStatus": "supported",
+      "phase0RecognitionStatus": "experimental",
+      "primaryDomain": "revenue"
+    },
+    {
+      "canonicalId": "sales_channel",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "revenue"
+    },
+    {
+      "canonicalId": "sales_order",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "revenue"
+    },
+    {
+      "canonicalId": "sales_org",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "revenue"
+    },
+    {
+      "canonicalId": "salesperson",
+      "currentCoverageStatus": "supported",
+      "phase0RecognitionStatus": "experimental",
+      "primaryDomain": "revenue"
+    },
+    {
+      "canonicalId": "satisfaction",
+      "currentCoverageStatus": "supported",
+      "phase0RecognitionStatus": "experimental",
+      "primaryDomain": "customer"
+    },
+    {
+      "canonicalId": "scrap_qty",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "segment",
+      "currentCoverageStatus": "supported",
+      "phase0RecognitionStatus": "experimental",
+      "primaryDomain": "customer"
+    },
+    {
+      "canonicalId": "sensor",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "sentiment",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "customer"
+    },
+    {
+      "canonicalId": "serial_number",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "inventory"
+    },
+    {
+      "canonicalId": "service_group",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "service_name",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "session_id",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "shift",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "performance"
+    },
+    {
+      "canonicalId": "shift_close",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "finance"
+    },
+    {
+      "canonicalId": "shipment",
+      "currentCoverageStatus": "supported",
+      "phase0RecognitionStatus": "experimental",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "shipment_count",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "sku",
+      "currentCoverageStatus": "supported",
+      "phase0RecognitionStatus": "experimental",
+      "primaryDomain": "inventory"
+    },
+    {
+      "canonicalId": "sla",
+      "currentCoverageStatus": "supported",
+      "phase0RecognitionStatus": "experimental",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "sold_qty",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "revenue"
+    },
+    {
+      "canonicalId": "source_medium",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "customer"
+    },
+    {
+      "canonicalId": "spend",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "finance"
+    },
+    {
+      "canonicalId": "stage_name",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "customer"
+    },
+    {
+      "canonicalId": "status",
+      "currentCoverageStatus": "supported",
+      "phase0RecognitionStatus": "experimental",
+      "primaryDomain": "core"
+    },
+    {
+      "canonicalId": "stock_age",
+      "currentCoverageStatus": "supported",
+      "phase0RecognitionStatus": "experimental",
+      "primaryDomain": "inventory"
+    },
+    {
+      "canonicalId": "stock_movement",
+      "currentCoverageStatus": "supported",
+      "phase0RecognitionStatus": "experimental",
+      "primaryDomain": "inventory"
+    },
+    {
+      "canonicalId": "stock_qty",
+      "currentCoverageStatus": "supported",
+      "phase0RecognitionStatus": "experimental",
+      "primaryDomain": "inventory"
+    },
+    {
+      "canonicalId": "stock_quantity",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "inventory"
+    },
+    {
+      "canonicalId": "stock_status",
+      "currentCoverageStatus": "supported",
+      "phase0RecognitionStatus": "experimental",
+      "primaryDomain": "inventory"
+    },
+    {
+      "canonicalId": "stock_threshold",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "inventory"
+    },
+    {
+      "canonicalId": "stock_value",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "inventory"
+    },
+    {
+      "canonicalId": "stockout_rate",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "inventory"
+    },
+    {
+      "canonicalId": "storage_cost",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "finance"
+    },
+    {
+      "canonicalId": "storage_location",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "inventory"
+    },
+    {
+      "canonicalId": "student",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "customer"
+    },
+    {
+      "canonicalId": "subcontractor",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "subscription",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "customer"
+    },
+    {
+      "canonicalId": "supplier",
+      "currentCoverageStatus": "supported",
+      "phase0RecognitionStatus": "experimental",
+      "primaryDomain": "inventory"
+    },
+    {
+      "canonicalId": "supplier_cost",
+      "currentCoverageStatus": "supported",
+      "phase0RecognitionStatus": "experimental",
+      "primaryDomain": "finance"
+    },
+    {
+      "canonicalId": "support_cost",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "customer"
+    },
+    {
+      "canonicalId": "survey_question",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "customer"
+    },
+    {
+      "canonicalId": "survey_response",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "customer"
+    },
+    {
+      "canonicalId": "target",
+      "currentCoverageStatus": "supported",
+      "phase0RecognitionStatus": "experimental",
+      "primaryDomain": "performance"
+    },
+    {
+      "canonicalId": "tariff",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "finance"
+    },
+    {
+      "canonicalId": "tax_amount",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "finance"
+    },
+    {
+      "canonicalId": "tax_rate",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "finance"
+    },
+    {
+      "canonicalId": "team",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "performance"
+    },
+    {
+      "canonicalId": "temperature",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "termination_date",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "performance"
+    },
+    {
+      "canonicalId": "territory",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "performance"
+    },
+    {
+      "canonicalId": "ticket",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "customer"
+    },
+    {
+      "canonicalId": "ticket_status",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "customer"
+    },
+    {
+      "canonicalId": "time_period",
+      "currentCoverageStatus": "supported",
+      "phase0RecognitionStatus": "experimental",
+      "primaryDomain": "core"
+    },
+    {
+      "canonicalId": "toll_fee",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "total_cost",
+      "currentCoverageStatus": "supported",
+      "phase0RecognitionStatus": "experimental",
+      "primaryDomain": "finance"
+    },
+    {
+      "canonicalId": "transaction_description",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "finance"
+    },
+    {
+      "canonicalId": "transportation_cost",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "trip",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "turnover",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "inventory"
+    },
+    {
+      "canonicalId": "unit",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "unit_price",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "revenue"
+    },
+    {
+      "canonicalId": "uom",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "inventory"
+    },
+    {
+      "canonicalId": "usage_units",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "performance"
+    },
+    {
+      "canonicalId": "user_login",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "utilization",
+      "currentCoverageStatus": "supported",
+      "phase0RecognitionStatus": "experimental",
+      "primaryDomain": "performance"
+    },
+    {
+      "canonicalId": "vehicle",
+      "currentCoverageStatus": "supported",
+      "phase0RecognitionStatus": "experimental",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "volume",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "waiting_time",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "warehouse",
+      "currentCoverageStatus": "supported",
+      "phase0RecognitionStatus": "experimental",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "weight",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "withdrawal_amount",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "finance"
+    },
+    {
+      "canonicalId": "work_hours",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "performance"
+    },
+    {
+      "canonicalId": "work_order",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "operations"
+    },
+    {
+      "canonicalId": "yield_rate",
+      "currentCoverageStatus": "partial",
+      "phase0RecognitionStatus": "research_only",
+      "primaryDomain": "performance"
+    }
+  ]
+}

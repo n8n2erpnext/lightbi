@@ -1,0 +1,763 @@
+{
+  "schemaVersion": "lightbi.phase-4a2b-counterfactual-audit.v1",
+  "date": "2026-07-12",
+  "mutations": [
+    {
+      "mutation": "remove_identity_evidence_from_entity",
+      "axis": "structural_form",
+      "originalAxisStates": {
+        "target": "confirmed"
+      },
+      "mutatedAxisStates": {
+        "target": "probable"
+      },
+      "expectedMonotonicRelation": "not_increased",
+      "actualRelation": "not_increased",
+      "invariantResult": "passed",
+      "policyRuleIds": [
+        "GR-STRUCT-ENTITY",
+        "GR-IDENTITY-EXACT",
+        "GR-PARENT-MECHANICAL",
+        "GR-TEMPORAL-UNRESOLVED",
+        "GR-AGGREGATION-RISK"
+      ],
+      "evidenceDependencyChanges": {
+        "before": 1,
+        "after": 1
+      },
+      "deterministicReplayResult": true
+    },
+    {
+      "mutation": "remove_parent_repetition_from_line",
+      "axis": "structural_form",
+      "originalAxisStates": {
+        "target": "confirmed"
+      },
+      "mutatedAxisStates": {
+        "target": "ambiguous"
+      },
+      "expectedMonotonicRelation": "not_increased",
+      "actualRelation": "not_increased",
+      "invariantResult": "passed",
+      "policyRuleIds": [
+        "GR-STRUCT-LINE",
+        "GR-IDENTITY-EXACT",
+        "GR-PARENT-MECHANICAL",
+        "GR-TEMPORAL-SNAPSHOT",
+        "GR-AGGREGATION-RISK"
+      ],
+      "evidenceDependencyChanges": {
+        "before": 5,
+        "after": 1
+      },
+      "deterministicReplayResult": true
+    },
+    {
+      "mutation": "remove_child_variation_from_line",
+      "axis": "parent_basis",
+      "originalAxisStates": {
+        "target": "confirmed"
+      },
+      "mutatedAxisStates": {
+        "target": "unknown"
+      },
+      "expectedMonotonicRelation": "not_increased",
+      "actualRelation": "not_increased",
+      "invariantResult": "passed",
+      "policyRuleIds": [
+        "GR-STRUCT-LINE",
+        "GR-IDENTITY-EXACT",
+        "GR-PARENT-MECHANICAL",
+        "GR-TEMPORAL-SNAPSHOT",
+        "GR-AGGREGATION-RISK"
+      ],
+      "evidenceDependencyChanges": {
+        "before": 5,
+        "after": 1
+      },
+      "deterministicReplayResult": true
+    },
+    {
+      "mutation": "remove_granular_child_identity",
+      "axis": "structural_form",
+      "originalAxisStates": {
+        "target": "confirmed"
+      },
+      "mutatedAxisStates": {
+        "target": "ambiguous"
+      },
+      "expectedMonotonicRelation": "not_increased",
+      "actualRelation": "not_increased",
+      "invariantResult": "passed",
+      "policyRuleIds": [
+        "GR-STRUCT-LINE",
+        "GR-IDENTITY-EXACT",
+        "GR-PARENT-MECHANICAL",
+        "GR-TEMPORAL-SNAPSHOT",
+        "GR-AGGREGATION-RISK"
+      ],
+      "evidenceDependencyChanges": {
+        "before": 5,
+        "after": 2
+      },
+      "deterministicReplayResult": true
+    },
+    {
+      "mutation": "resolved_identifier_to_ambiguous",
+      "axis": "identity_basis",
+      "originalAxisStates": {
+        "target": "confirmed"
+      },
+      "mutatedAxisStates": {
+        "target": "probable"
+      },
+      "expectedMonotonicRelation": "not_increased",
+      "actualRelation": "not_increased",
+      "invariantResult": "passed",
+      "policyRuleIds": [
+        "GR-STRUCT-ENTITY",
+        "GR-IDENTITY-EXACT",
+        "GR-PARENT-MECHANICAL",
+        "GR-TEMPORAL-UNRESOLVED",
+        "GR-AGGREGATION-RISK"
+      ],
+      "evidenceDependencyChanges": {
+        "before": 1,
+        "after": 1
+      },
+      "deterministicReplayResult": true
+    },
+    {
+      "mutation": "semantic_identifier_to_unresolved_physical",
+      "axis": "identity_basis",
+      "originalAxisStates": {
+        "target": "confirmed"
+      },
+      "mutatedAxisStates": {
+        "target": "probable"
+      },
+      "expectedMonotonicRelation": "not_increased",
+      "actualRelation": "not_increased",
+      "invariantResult": "passed",
+      "policyRuleIds": [
+        "GR-STRUCT-ENTITY",
+        "GR-IDENTITY-EXACT",
+        "GR-PARENT-MECHANICAL",
+        "GR-TEMPORAL-UNRESOLVED",
+        "GR-AGGREGATION-RISK"
+      ],
+      "evidenceDependencyChanges": {
+        "before": 1,
+        "after": 1
+      },
+      "deterministicReplayResult": true
+    },
+    {
+      "mutation": "remove_exact_uniqueness",
+      "axis": "identity_basis",
+      "originalAxisStates": {
+        "target": "confirmed"
+      },
+      "mutatedAxisStates": {
+        "target": "unknown"
+      },
+      "expectedMonotonicRelation": "not_increased",
+      "actualRelation": "not_increased",
+      "invariantResult": "passed",
+      "policyRuleIds": [
+        "GR-STRUCT-ENTITY",
+        "GR-IDENTITY-EXACT",
+        "GR-PARENT-MECHANICAL",
+        "GR-TEMPORAL-UNRESOLVED",
+        "GR-AGGREGATION-RISK"
+      ],
+      "evidenceDependencyChanges": {
+        "before": 1,
+        "after": 1
+      },
+      "deterministicReplayResult": true
+    },
+    {
+      "mutation": "nulls_below_identity_coverage",
+      "axis": "identity_basis",
+      "originalAxisStates": {
+        "target": "confirmed"
+      },
+      "mutatedAxisStates": {
+        "target": "confirmed"
+      },
+      "expectedMonotonicRelation": "not_increased",
+      "actualRelation": "not_increased",
+      "invariantResult": "passed",
+      "policyRuleIds": [
+        "GR-STRUCT-ENTITY",
+        "GR-IDENTITY-EXACT",
+        "GR-PARENT-MECHANICAL",
+        "GR-TEMPORAL-UNRESOLVED",
+        "GR-AGGREGATION-RISK"
+      ],
+      "evidenceDependencyChanges": {
+        "before": 1,
+        "after": 1
+      },
+      "deterministicReplayResult": true
+    },
+    {
+      "mutation": "mixed_types_on_key",
+      "axis": "identity_basis",
+      "originalAxisStates": {
+        "target": "confirmed"
+      },
+      "mutatedAxisStates": {
+        "target": "unknown"
+      },
+      "expectedMonotonicRelation": "not_increased",
+      "actualRelation": "not_increased",
+      "invariantResult": "passed",
+      "policyRuleIds": [
+        "GR-STRUCT-ENTITY",
+        "GR-IDENTITY-EXACT",
+        "GR-PARENT-MECHANICAL",
+        "GR-TEMPORAL-UNRESOLVED",
+        "GR-AGGREGATION-RISK"
+      ],
+      "evidenceDependencyChanges": {
+        "before": 1,
+        "after": 1
+      },
+      "deterministicReplayResult": true
+    },
+    {
+      "mutation": "technical_index_marker",
+      "axis": "identity_basis",
+      "originalAxisStates": {
+        "target": "confirmed"
+      },
+      "mutatedAxisStates": {
+        "target": "unknown"
+      },
+      "expectedMonotonicRelation": "not_increased",
+      "actualRelation": "not_increased",
+      "invariantResult": "passed",
+      "policyRuleIds": [
+        "GR-STRUCT-ENTITY",
+        "GR-IDENTITY-EXACT",
+        "GR-PARENT-MECHANICAL",
+        "GR-TEMPORAL-UNRESOLVED",
+        "GR-AGGREGATION-RISK"
+      ],
+      "evidenceDependencyChanges": {
+        "before": 1,
+        "after": 0
+      },
+      "deterministicReplayResult": true
+    },
+    {
+      "mutation": "add_incomparable_single_key",
+      "axis": "identity_basis",
+      "originalAxisStates": {
+        "target": "confirmed"
+      },
+      "mutatedAxisStates": {
+        "target": "ambiguous"
+      },
+      "expectedMonotonicRelation": "not_increased",
+      "actualRelation": "not_increased",
+      "invariantResult": "passed",
+      "policyRuleIds": [
+        "GR-STRUCT-ENTITY",
+        "GR-IDENTITY-EXACT",
+        "GR-PARENT-MECHANICAL",
+        "GR-TEMPORAL-UNRESOLVED",
+        "GR-AGGREGATION-RISK"
+      ],
+      "evidenceDependencyChanges": {
+        "before": 1,
+        "after": 1
+      },
+      "deterministicReplayResult": true
+    },
+    {
+      "mutation": "add_incomparable_composite_key",
+      "axis": "identity_basis",
+      "originalAxisStates": {
+        "target": "confirmed"
+      },
+      "mutatedAxisStates": {
+        "target": "ambiguous"
+      },
+      "expectedMonotonicRelation": "not_increased",
+      "actualRelation": "not_increased",
+      "invariantResult": "passed",
+      "policyRuleIds": [
+        "GR-STRUCT-ENTITY",
+        "GR-IDENTITY-EXACT",
+        "GR-PARENT-MECHANICAL",
+        "GR-TEMPORAL-UNRESOLVED",
+        "GR-AGGREGATION-RISK"
+      ],
+      "evidenceDependencyChanges": {
+        "before": 1,
+        "after": 1
+      },
+      "deterministicReplayResult": true
+    },
+    {
+      "mutation": "add_material_candidate_debt",
+      "axis": "identity_basis",
+      "originalAxisStates": {
+        "target": "confirmed"
+      },
+      "mutatedAxisStates": {
+        "target": "probable"
+      },
+      "expectedMonotonicRelation": "not_increased",
+      "actualRelation": "not_increased",
+      "invariantResult": "passed",
+      "policyRuleIds": [
+        "GR-STRUCT-ENTITY",
+        "GR-IDENTITY-EXACT",
+        "GR-PARENT-MECHANICAL",
+        "GR-TEMPORAL-UNRESOLVED",
+        "GR-AGGREGATION-RISK"
+      ],
+      "evidenceDependencyChanges": {
+        "before": 1,
+        "after": 1
+      },
+      "deterministicReplayResult": true
+    },
+    {
+      "mutation": "add_unrelated_candidate_debt",
+      "axis": "temporal_mode",
+      "originalAxisStates": {
+        "target": "probable"
+      },
+      "mutatedAxisStates": {
+        "target": "probable"
+      },
+      "expectedMonotonicRelation": "not_increased",
+      "actualRelation": "not_increased",
+      "invariantResult": "passed",
+      "policyRuleIds": [
+        "GR-STRUCT-AGGREGATE",
+        "GR-IDENTITY-LIMITED",
+        "GR-PARENT-MECHANICAL",
+        "GR-TEMPORAL-UNRESOLVED",
+        "GR-AGGREGATION-RISK"
+      ],
+      "evidenceDependencyChanges": {
+        "before": 1,
+        "after": 1
+      },
+      "deterministicReplayResult": true
+    },
+    {
+      "mutation": "remove_event_time_semantics",
+      "axis": "temporal_mode",
+      "originalAxisStates": {
+        "target": "probable"
+      },
+      "mutatedAxisStates": {
+        "target": "unknown"
+      },
+      "expectedMonotonicRelation": "not_increased",
+      "actualRelation": "not_increased",
+      "invariantResult": "passed",
+      "policyRuleIds": [
+        "GR-STRUCT-AGGREGATE",
+        "GR-IDENTITY-LIMITED",
+        "GR-PARENT-MECHANICAL",
+        "GR-TEMPORAL-UNRESOLVED",
+        "GR-AGGREGATION-RISK"
+      ],
+      "evidenceDependencyChanges": {
+        "before": 1,
+        "after": 1
+      },
+      "deterministicReplayResult": true
+    },
+    {
+      "mutation": "event_to_unresolved_temporal_basis",
+      "axis": "temporal_mode",
+      "originalAxisStates": {
+        "target": "probable"
+      },
+      "mutatedAxisStates": {
+        "target": "unknown"
+      },
+      "expectedMonotonicRelation": "not_increased",
+      "actualRelation": "not_increased",
+      "invariantResult": "passed",
+      "policyRuleIds": [
+        "GR-STRUCT-AGGREGATE",
+        "GR-IDENTITY-LIMITED",
+        "GR-PARENT-MECHANICAL",
+        "GR-TEMPORAL-UNRESOLVED",
+        "GR-AGGREGATION-RISK"
+      ],
+      "evidenceDependencyChanges": {
+        "before": 1,
+        "after": 1
+      },
+      "deterministicReplayResult": true
+    },
+    {
+      "mutation": "add_competing_snapshot",
+      "axis": "temporal_mode",
+      "originalAxisStates": {
+        "target": "ambiguous"
+      },
+      "mutatedAxisStates": {
+        "target": "ambiguous"
+      },
+      "expectedMonotonicRelation": "not_increased",
+      "actualRelation": "not_increased",
+      "invariantResult": "passed",
+      "policyRuleIds": [
+        "GR-STRUCT-LINE",
+        "GR-IDENTITY-EXACT",
+        "GR-PARENT-MECHANICAL",
+        "GR-TEMPORAL-EVENT",
+        "GR-TEMPORAL-INTERVAL",
+        "GR-TEMPORAL-SNAPSHOT",
+        "GR-AGGREGATION-RISK"
+      ],
+      "evidenceDependencyChanges": {
+        "before": 5,
+        "after": 5
+      },
+      "deterministicReplayResult": true
+    },
+    {
+      "mutation": "start_end_conflict",
+      "axis": "temporal_mode",
+      "originalAxisStates": {
+        "target": "unknown"
+      },
+      "mutatedAxisStates": {
+        "target": "unknown"
+      },
+      "expectedMonotonicRelation": "not_increased",
+      "actualRelation": "not_increased",
+      "invariantResult": "passed",
+      "policyRuleIds": [
+        "GR-STRUCT-ENTITY",
+        "GR-IDENTITY-EXACT",
+        "GR-PARENT-MECHANICAL",
+        "GR-TEMPORAL-UNRESOLVED",
+        "GR-AGGREGATION-RISK"
+      ],
+      "evidenceDependencyChanges": {
+        "before": 1,
+        "after": 1
+      },
+      "deterministicReplayResult": true
+    },
+    {
+      "mutation": "remove_reporting_period",
+      "axis": "structural_form",
+      "originalAxisStates": {
+        "target": "probable"
+      },
+      "mutatedAxisStates": {
+        "target": "unknown"
+      },
+      "expectedMonotonicRelation": "not_increased",
+      "actualRelation": "not_increased",
+      "invariantResult": "passed",
+      "policyRuleIds": [
+        "GR-STRUCT-AGGREGATE",
+        "GR-IDENTITY-LIMITED",
+        "GR-PARENT-MECHANICAL",
+        "GR-TEMPORAL-UNRESOLVED",
+        "GR-AGGREGATION-RISK"
+      ],
+      "evidenceDependencyChanges": {
+        "before": 1,
+        "after": 0
+      },
+      "deterministicReplayResult": true
+    },
+    {
+      "mutation": "remove_repeated_parent_measure",
+      "axis": "aggregation_form",
+      "originalAxisStates": {
+        "target": "probable"
+      },
+      "mutatedAxisStates": {
+        "target": "probable"
+      },
+      "expectedMonotonicRelation": "not_increased",
+      "actualRelation": "not_increased",
+      "invariantResult": "passed",
+      "policyRuleIds": [
+        "GR-STRUCT-LINE",
+        "GR-IDENTITY-EXACT",
+        "GR-PARENT-MECHANICAL",
+        "GR-TEMPORAL-SNAPSHOT",
+        "GR-AGGREGATION-RISK"
+      ],
+      "evidenceDependencyChanges": {
+        "before": 5,
+        "after": 4
+      },
+      "deterministicReplayResult": true
+    },
+    {
+      "mutation": "add_structural_corruption",
+      "axis": "structural_form",
+      "originalAxisStates": {
+        "target": "confirmed"
+      },
+      "mutatedAxisStates": {
+        "target": "probable"
+      },
+      "expectedMonotonicRelation": "not_increased",
+      "actualRelation": "not_increased",
+      "invariantResult": "passed",
+      "policyRuleIds": [
+        "GR-STRUCT-ENTITY",
+        "GR-IDENTITY-EXACT",
+        "GR-PARENT-MECHANICAL",
+        "GR-TEMPORAL-UNRESOLVED",
+        "GR-AGGREGATION-RISK"
+      ],
+      "evidenceDependencyChanges": {
+        "before": 1,
+        "after": 1
+      },
+      "deterministicReplayResult": true
+    },
+    {
+      "mutation": "duplicate_evidence",
+      "axis": "identity_basis",
+      "originalAxisStates": {
+        "target": "confirmed"
+      },
+      "mutatedAxisStates": {
+        "target": "confirmed"
+      },
+      "expectedMonotonicRelation": "not_increased",
+      "actualRelation": "not_increased",
+      "invariantResult": "passed",
+      "policyRuleIds": [
+        "GR-STRUCT-ENTITY",
+        "GR-IDENTITY-EXACT",
+        "GR-PARENT-MECHANICAL",
+        "GR-TEMPORAL-UNRESOLVED",
+        "GR-AGGREGATION-RISK"
+      ],
+      "evidenceDependencyChanges": {
+        "before": 1,
+        "after": 1
+      },
+      "deterministicReplayResult": true
+    },
+    {
+      "mutation": "duplicate_parent_child_evidence",
+      "axis": "parent_basis",
+      "originalAxisStates": {
+        "target": "confirmed"
+      },
+      "mutatedAxisStates": {
+        "target": "confirmed"
+      },
+      "expectedMonotonicRelation": "not_increased",
+      "actualRelation": "not_increased",
+      "invariantResult": "passed",
+      "policyRuleIds": [
+        "GR-STRUCT-LINE",
+        "GR-IDENTITY-EXACT",
+        "GR-PARENT-MECHANICAL",
+        "GR-TEMPORAL-SNAPSHOT",
+        "GR-AGGREGATION-RISK"
+      ],
+      "evidenceDependencyChanges": {
+        "before": 5,
+        "after": 5
+      },
+      "deterministicReplayResult": true
+    },
+    {
+      "mutation": "duplicate_candidate",
+      "axis": "structural_form",
+      "originalAxisStates": {
+        "target": "confirmed"
+      },
+      "mutatedAxisStates": {
+        "target": "confirmed"
+      },
+      "expectedMonotonicRelation": "not_increased",
+      "actualRelation": "not_increased",
+      "invariantResult": "passed",
+      "policyRuleIds": [
+        "GR-STRUCT-LINE",
+        "GR-IDENTITY-EXACT",
+        "GR-PARENT-MECHANICAL",
+        "GR-TEMPORAL-SNAPSHOT",
+        "GR-AGGREGATION-RISK"
+      ],
+      "evidenceDependencyChanges": {
+        "before": 5,
+        "after": 5
+      },
+      "deterministicReplayResult": true
+    },
+    {
+      "mutation": "shuffle_evidence_order",
+      "axis": "structural_form",
+      "originalAxisStates": {
+        "target": "confirmed"
+      },
+      "mutatedAxisStates": {
+        "target": "confirmed"
+      },
+      "expectedMonotonicRelation": "unchanged_or_incomparable",
+      "actualRelation": "not_increased",
+      "invariantResult": "passed",
+      "policyRuleIds": [
+        "GR-STRUCT-LINE",
+        "GR-IDENTITY-EXACT",
+        "GR-PARENT-MECHANICAL",
+        "GR-TEMPORAL-SNAPSHOT",
+        "GR-AGGREGATION-RISK"
+      ],
+      "evidenceDependencyChanges": {
+        "before": 5,
+        "after": 5
+      },
+      "deterministicReplayResult": true
+    },
+    {
+      "mutation": "shuffle_candidate_order",
+      "axis": "structural_form",
+      "originalAxisStates": {
+        "target": "confirmed"
+      },
+      "mutatedAxisStates": {
+        "target": "confirmed"
+      },
+      "expectedMonotonicRelation": "unchanged_or_incomparable",
+      "actualRelation": "not_increased",
+      "invariantResult": "passed",
+      "policyRuleIds": [
+        "GR-STRUCT-LINE",
+        "GR-IDENTITY-EXACT",
+        "GR-PARENT-MECHANICAL",
+        "GR-TEMPORAL-SNAPSHOT",
+        "GR-AGGREGATION-RISK"
+      ],
+      "evidenceDependencyChanges": {
+        "before": 5,
+        "after": 5
+      },
+      "deterministicReplayResult": true
+    },
+    {
+      "mutation": "shuffle_raw_rows",
+      "axis": "structural_form",
+      "originalAxisStates": {
+        "target": "confirmed"
+      },
+      "mutatedAxisStates": {
+        "target": "confirmed"
+      },
+      "expectedMonotonicRelation": "unchanged_or_incomparable",
+      "actualRelation": "not_increased",
+      "invariantResult": "passed",
+      "policyRuleIds": [
+        "GR-STRUCT-LINE",
+        "GR-IDENTITY-EXACT",
+        "GR-PARENT-MECHANICAL",
+        "GR-TEMPORAL-SNAPSHOT",
+        "GR-AGGREGATION-RISK"
+      ],
+      "evidenceDependencyChanges": {
+        "before": 5,
+        "after": 5
+      },
+      "deterministicReplayResult": true
+    },
+    {
+      "mutation": "add_unrelated_sibling_column",
+      "axis": "temporal_mode",
+      "originalAxisStates": {
+        "target": "probable"
+      },
+      "mutatedAxisStates": {
+        "target": "probable"
+      },
+      "expectedMonotonicRelation": "unchanged_or_incomparable",
+      "actualRelation": "not_increased",
+      "invariantResult": "passed",
+      "policyRuleIds": [
+        "GR-STRUCT-AGGREGATE",
+        "GR-IDENTITY-LIMITED",
+        "GR-PARENT-MECHANICAL",
+        "GR-TEMPORAL-UNRESOLVED",
+        "GR-AGGREGATION-RISK"
+      ],
+      "evidenceDependencyChanges": {
+        "before": 1,
+        "after": 1
+      },
+      "deterministicReplayResult": true
+    },
+    {
+      "mutation": "add_compatible_temporal_axis",
+      "axis": "structural_form",
+      "originalAxisStates": {
+        "target": "confirmed"
+      },
+      "mutatedAxisStates": {
+        "target": "confirmed"
+      },
+      "expectedMonotonicRelation": "not_increased",
+      "actualRelation": "not_increased",
+      "invariantResult": "passed",
+      "policyRuleIds": [
+        "GR-STRUCT-ENTITY",
+        "GR-IDENTITY-EXACT",
+        "GR-PARENT-MECHANICAL",
+        "GR-TEMPORAL-UNRESOLVED",
+        "GR-AGGREGATION-RISK"
+      ],
+      "evidenceDependencyChanges": {
+        "before": 1,
+        "after": 1
+      },
+      "deterministicReplayResult": true
+    },
+    {
+      "mutation": "remove_one_axis_preserve_unrelated",
+      "axis": "structural_form",
+      "originalAxisStates": {
+        "target": "confirmed"
+      },
+      "mutatedAxisStates": {
+        "target": "confirmed"
+      },
+      "expectedMonotonicRelation": "unchanged_or_incomparable",
+      "actualRelation": "not_increased",
+      "invariantResult": "passed",
+      "policyRuleIds": [
+        "GR-STRUCT-LINE",
+        "GR-IDENTITY-EXACT",
+        "GR-PARENT-MECHANICAL",
+        "GR-TEMPORAL-SNAPSHOT",
+        "GR-AGGREGATION-RISK"
+      ],
+      "evidenceDependencyChanges": {
+        "before": 5,
+        "after": 5
+      },
+      "deterministicReplayResult": true
+    }
+  ],
+  "summary": {
+    "total": 30,
+    "passed": 30,
+    "failed": 0
+  }
+}

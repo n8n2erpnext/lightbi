@@ -804,6 +804,14 @@ export const Advanced: React.FC = () => {
       title: activeTab.title,
       provider: workspaceProvider,
       sql: materializeSqlParameters(activeTab.sql, activeTab.parameters),
+      configuration: {
+        resultView: activeTab.resultView,
+        visibleColumns: displayResult.columns.map(column => column.name),
+        filters: activeTab.filters.map(filter => ({ ...filter })),
+        filterCombinator: activeTab.filterCombinator,
+        sort: activeTab.sort ? { ...activeTab.sort } : null,
+        tableContext: activeTab.tableContext ? { ...activeTab.tableContext } : null,
+      },
     }, displayResult);
     createInvestigationSession(
       handoff.datasetId,
@@ -813,7 +821,10 @@ export const Advanced: React.FC = () => {
       handoff.rows,
       handoff.aiBriefing,
       undefined,
-      handoff.rowScope
+      handoff.rowScope,
+      undefined,
+      undefined,
+      handoff.canonicalHandoff
     );
     window.history.pushState(null, '', '/investigation');
     window.dispatchEvent(new PopStateEvent('popstate'));

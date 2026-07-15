@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "lightbi.phase-5b6a-import-isolation-audit.v1",
+  "scannedRoots": [
+    "apps/desktop/src/pages",
+    "apps/desktop/src/components",
+    "apps/desktop/src/lib",
+    "packages"
+  ],
+  "productionReferences": [],
+  "productionImporterAdded": false,
+  "understandingCoreBarrelExportAdded": false,
+  "runtimeContractChanged": false,
+  "planOrSqlChanged": false,
+  "persistenceTelemetryOrFeatureFlagAdded": false,
+  "duckDBExecuted": false,
+  "userFacingChartOrBAInvoked": false,
+  "authorityChanged": false,
+  "domainSupportManifestRemainsEmpty": true,
+  "importIsolationPassed": true
+}

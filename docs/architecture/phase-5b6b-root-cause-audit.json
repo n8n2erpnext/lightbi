@@ -1,0 +1,22 @@
+{
+  "schemaVersion": "lightbi.phase-5b6b-root-cause-audit.v1",
+  "rawDiagnosticCount": 28,
+  "primaryRootCauseCount": 10,
+  "cascadingDiagnosticCount": 0,
+  "filesAffected": 18,
+  "phasesAffected": ["phase_3_owned", "phase_4a_owned", "phase_4b_owned", "phase_4c_owned", "phase_5a_owned", "phase_5b_owned", "phase_5b1_owned", "phase_5b3_owned"],
+  "rootCauses": [
+    {"id":"rc-01","category":"exhaustive-switch gap","diagnostics":["ts-01"],"summary":"Earlier NONE branch exhaustively narrowed the operator; a later redundant NONE comparison was impossible."},
+    {"id":"rc-02","category":"fixture shape drift","diagnostics":["ts-02"],"summary":"Phase 5A corpus fixture read aggregation risk IDs from MeasureBehaviorV1 instead of the grain-candidate risk collection."},
+    {"id":"rc-03","category":"discriminated-union mismatch","diagnostics":["ts-03"],"summary":"Source-only property was read before narrowing CanonicalRuntimeAdapterInputV1 by scope."},
+    {"id":"rc-04","category":"incompatible contract version","diagnostics":["ts-04","ts-17"],"summary":"Literal values widened to boolean/string before assignment to literal-union contracts."},
+    {"id":"rc-05","category":"stale generated type","diagnostics":["ts-05","ts-07","ts-09","ts-11","ts-12","ts-16","ts-18","ts-19","ts-21","ts-22","ts-24","ts-25","ts-26","ts-27","ts-28"],"summary":"Dead imports, locals, and parameters remained after phase-local contract evolution."},
+    {"id":"rc-06","category":"unsafe indexing","diagnostics":["ts-06"],"summary":"Object.fromEntries could not prove total EvidenceFamily coverage."},
+    {"id":"rc-07","category":"incorrect generic constraint","diagnostics":["ts-08"],"summary":"Set construction widened MeasureBehaviorKind literals to string."},
+    {"id":"rc-08","category":"readonly/mutable mismatch","diagnostics":["ts-10"],"summary":"Allowed-state arrays widened to string[] instead of GrainAxisState[]."},
+    {"id":"rc-09","category":"duplicated declaration","diagnostics":["ts-13","ts-14","ts-15"],"summary":"Three relationship contract type names collided with semantic or grain contract exports at the existing barrel."},
+    {"id":"rc-10","category":"optional/required field mismatch","diagnostics":["ts-20","ts-23"],"summary":"Optional physical source hashes were not normalized to the canonical explicit-null boundary."}
+  ],
+  "contractsAffected": ["aggregation guard input", "canonical runtime adapter input/view", "contextual evidence corpus fixture", "grain candidate behavior", "grain resolution validation", "relationship candidate/resolution contracts", "semantic candidate artifact", "legacy comparison result"],
+  "allPrimaryRootCausesResolved": true
+}

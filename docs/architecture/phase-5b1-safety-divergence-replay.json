@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "lightbi.phase-5b1-safety-replay.v1",
+  "date": "2026-07-13",
+  "subjects": {
+    "governed": 51,
+    "authenticPaired": 19,
+    "syntheticOnly": 0,
+    "noApplicableOrUnavailable": 32
+  },
+  "observations": {
+    "authentic": 291
+  },
+  "authority": {
+    "legacyChanged": false,
+    "canonicalChanged": false,
+    "operationApproval": false,
+    "productionWiring": false
+  },
+  "aggregation": {
+    "pairedObservations": 291,
+    "criticalDivergences": 282
+  },
+  "pairOperation": {
+    "pairedObservations": 0,
+    "reason": "legacy planner contract input unavailable"
+  },
+  "domainMetric": {
+    "pairedObservations": 0,
+    "reason": "no governed domain support or matching legacy domain invocation input"
+  },
+  "behaviorChanged": false
+}

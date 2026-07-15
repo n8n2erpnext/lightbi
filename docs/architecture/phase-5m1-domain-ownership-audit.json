@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "lightbi.phase-5m1-domain-ownership-audit.v1",
+  "phase": "5M1",
+  "implementations": [
+    { "file": "apps/desktop/src/lib/understanding-core/domain-support-manifest.ts", "owner": "understanding-core", "productionActive": false, "status": "canonical", "inputs": ["governed pack definition"], "dictionaryCoverageActivatesSupport": false, "definesMetrics": false, "activatesQuestionsOrActions": false, "migrationDisposition": "canonical governed owner" },
+    { "file": "apps/desktop/src/lib/domain-knowledge-catalog.ts", "owner": "legacy downstream", "productionActive": true, "status": "legacy", "inputs": ["legacy business signals"], "dictionaryCoverageActivatesSupport": true, "definesMetrics": false, "activatesQuestionsOrActions": true, "migrationDisposition": "retain unchanged until Phase 6" },
+    { "file": "apps/desktop/src/lib/domain-ba-playbooks.ts", "owner": "legacy downstream", "productionActive": true, "status": "legacy", "inputs": ["legacy taxonomy"], "dictionaryCoverageActivatesSupport": true, "definesMetrics": true, "activatesQuestionsOrActions": true, "migrationDisposition": "future consumer; no rewiring in Phase 5M1" },
+    { "file": "apps/desktop/src/lib/semantic-registry.ts", "owner": "semantic registry", "productionActive": true, "status": "shared frozen input", "inputs": ["headers", "values", "types"], "dictionaryCoverageActivatesSupport": false, "definesMetrics": false, "activatesQuestionsOrActions": false, "migrationDisposition": "candidate evidence only" },
+    { "file": "apps/desktop/src/lib/understanding-next/semantic-domain-affinity.ts", "owner": "understanding-next", "productionActive": true, "status": "legacy frozen", "inputs": ["legacy signals"], "dictionaryCoverageActivatesSupport": true, "definesMetrics": false, "activatesQuestionsOrActions": false, "migrationDisposition": "delete later; not support truth" },
+    { "file": "apps/desktop/src/lib/understanding-core/governed-metric-policy.ts", "owner": "understanding-core", "productionActive": false, "status": "canonical shadow", "inputs": ["frozen canonical artifacts"], "dictionaryCoverageActivatesSupport": false, "definesMetrics": true, "activatesQuestionsOrActions": false, "migrationDisposition": "canonical metric authority candidate" },
+    { "file": "apps/desktop/src/lib/understanding-core/governed-metric-preflight.ts", "owner": "understanding-core", "productionActive": false, "status": "canonical shadow", "inputs": ["physical", "semantic", "grain", "readiness", "relationship"], "dictionaryCoverageActivatesSupport": false, "definesMetrics": false, "activatesQuestionsOrActions": false, "migrationDisposition": "Phase 5M2 input only" }
+  ],
+  "decision": "understanding-core is the sole future canonical owner; no legacy implementation was deleted or rewired"
+}

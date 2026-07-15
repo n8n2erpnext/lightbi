@@ -1,0 +1,91 @@
+{
+  "schemaVersion": "lightbi.phase-5b4-strategy-decision-audit.v1",
+  "strategies": [
+    {
+      "id": "warning_only",
+      "suitability": {
+        "exploratoryPreview": "insufficient",
+        "chartDisplay": "insufficient",
+        "BADecisionUse": "prohibited",
+        "narrativeUse": "requires_approved_metric_and_canonical_readiness",
+        "automatedAlerts": "prohibited_without_governed_metric",
+        "persistedMetrics": "prohibited_without_governed_metric",
+        "executionAuthority": "not_authorized_in_phase_5b4"
+      },
+      "governedDisposition": "insufficient_for_silent_automatic_aggregation"
+    },
+    {
+      "id": "require_explicit_user_confirmation",
+      "suitability": {
+        "exploratoryPreview": "candidate_with_restrictions",
+        "chartDisplay": "insufficient",
+        "BADecisionUse": "prohibited",
+        "narrativeUse": "requires_approved_metric_and_canonical_readiness",
+        "automatedAlerts": "prohibited_without_governed_metric",
+        "persistedMetrics": "prohibited_without_governed_metric",
+        "executionAuthority": "not_authorized_in_phase_5b4"
+      },
+      "governedDisposition": "composable_policy_component"
+    },
+    {
+      "id": "prohibit_automatic_default_but_allow_explicit_choice",
+      "suitability": {
+        "exploratoryPreview": "candidate_with_restrictions",
+        "chartDisplay": "insufficient",
+        "BADecisionUse": "prohibited",
+        "narrativeUse": "requires_approved_metric_and_canonical_readiness",
+        "automatedAlerts": "prohibited_without_governed_metric",
+        "persistedMetrics": "prohibited_without_governed_metric",
+        "executionAuthority": "not_authorized_in_phase_5b4"
+      },
+      "governedDisposition": "composable_policy_component"
+    },
+    {
+      "id": "require_governed_metric_semantics",
+      "suitability": {
+        "exploratoryPreview": "candidate_with_restrictions",
+        "chartDisplay": "insufficient",
+        "BADecisionUse": "requires_approved_metric_and_canonical_readiness",
+        "narrativeUse": "requires_approved_metric_and_canonical_readiness",
+        "automatedAlerts": "prohibited_without_governed_metric",
+        "persistedMetrics": "prohibited_without_governed_metric",
+        "executionAuthority": "not_authorized_in_phase_5b4"
+      },
+      "governedDisposition": "composable_policy_component"
+    },
+    {
+      "id": "canonical_restriction_projection",
+      "suitability": {
+        "exploratoryPreview": "candidate_with_restrictions",
+        "chartDisplay": "candidate_restricted_display",
+        "BADecisionUse": "requires_approved_metric_and_canonical_readiness",
+        "narrativeUse": "requires_approved_metric_and_canonical_readiness",
+        "automatedAlerts": "prohibited_without_governed_metric",
+        "persistedMetrics": "prohibited_without_governed_metric",
+        "executionAuthority": "not_authorized_in_phase_5b4"
+      },
+      "governedDisposition": "future_non_authoritative_projection_candidate"
+    },
+    {
+      "id": "retain_legacy_behavior",
+      "suitability": {
+        "exploratoryPreview": "insufficient",
+        "chartDisplay": "insufficient",
+        "BADecisionUse": "prohibited",
+        "narrativeUse": "requires_approved_metric_and_canonical_readiness",
+        "automatedAlerts": "prohibited_without_governed_metric",
+        "persistedMetrics": "prohibited_without_governed_metric",
+        "executionAuthority": "not_authorized_in_phase_5b4"
+      },
+      "governedDisposition": "insufficient_for_silent_automatic_aggregation"
+    }
+  ],
+  "globalStrategySelected": null,
+  "compositionalFuturePolicy": [
+    "prohibit automatic defaults",
+    "require acknowledgement for exploratory explicit choice",
+    "require governed metric semantics for decision use",
+    "project canonical restrictions losslessly"
+  ],
+  "implemented": false
+}

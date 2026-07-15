@@ -1,0 +1,12 @@
+{
+  "schemaVersion": "lightbi.phase-6b-import-isolation-audit.v1",
+  "authorizedCanonicalConsumers": ["apps/desktop/src/pages/Home.tsx", "apps/desktop/src/pages/Advanced.tsx", "apps/desktop/src/pages/Investigation.tsx", "apps/desktop/src/lib/advanced-result-handoff.ts", "apps/desktop/src/lib/investigation-session.ts"],
+  "legacyExecutionImportsRemovedFromInvestigation": ["backend-preview-executor", "duckdb-preview-sandbox executor", "guarded-sum-bridge", "safe-sql-preview builder"],
+  "legacyMockImportsRemovedFromHome": ["duckdb-preview-runtime", "DuckDBPreviewRuntimeCard", "result-validator-contract"],
+  "phase5ShadowOrAuditImportsInProductionConsumers": [],
+  "semanticAliasesChanged": false,
+  "domainSupportChanged": false,
+  "metricPolicyChanged": false,
+  "questionPolicyChanged": false,
+  "runtimePolicyChanged": false
+}

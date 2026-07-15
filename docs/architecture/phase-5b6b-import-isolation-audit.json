@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "lightbi.phase-5b6b-import-isolation-audit.v1",
+  "baseline": "phase-5b6a-import-isolation-audit.json",
+  "newProductionImporters": [],
+  "newBarrelExports": [],
+  "runtimeInvocations": [],
+  "forbiddenProductionFilesModified": [],
+  "investigationModified": false,
+  "executorModified": false,
+  "chartOrBAModified": false,
+  "persistenceOrTelemetryModified": false,
+  "featureFlagAdded": false,
+  "operationApproved": false,
+  "domainActivated": false,
+  "relationshipTypeNamesDomainQualifiedAtExistingOwnerBoundary": ["RelationshipEvidenceDirection", "RelationshipAxisResolutionV1", "RelationshipCandidateDisposition"],
+  "shadowImportIsolationPreserved": true
+}

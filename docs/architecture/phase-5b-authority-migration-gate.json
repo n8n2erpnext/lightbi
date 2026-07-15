@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "lightbi.phase-5b-migration-gate.v1",
+  "date": "2026-07-13",
+  "policy": {
+    "version": "lightbi.legacy-canonical-comparison-policy.v1",
+    "sha256": "6d1e75c5e51059e1217a1d1ce7ef7819c5775f07e489c27cc0db2a7e180c044a"
+  },
+  "authority": {
+    "legacyChanged": false,
+    "canonicalChanged": false,
+    "operationApproval": false,
+    "productionWiring": false
+  },
+  "projectionMigrationEligible": true,
+  "shadowComparisonCoverageComplete": false,
+  "criticalSafetyDivergencesResolved": false,
+  "legacyAuthorityContractDocumented": true,
+  "canonicalAuthorityMigrationEligible": false
+}

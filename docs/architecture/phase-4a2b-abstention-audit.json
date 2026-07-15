@@ -1,0 +1,3946 @@
+{
+  "schemaVersion": "lightbi.phase-4a2b-abstention-audit.v1",
+  "date": "2026-07-12",
+  "corpusVersion": "1.2.0",
+  "policy": {
+    "version": "lightbi.grain-resolution-policy.v1",
+    "sha256": "219e8b7e78261bcbc9ff4714cf93ec62f709c54670ad7e8bf8a3edbfef01d3ef",
+    "semanticPolicySha256": "064e6861cc208e7d35074d9b872e0d4a11dfacdbc850e6d017c24f32462d6ad3",
+    "grainCandidatePolicySha256": "6ea68eb979878f6fcbd83b180e9eb92789174c23651a476edf50c4efb2f7d531"
+  },
+  "preservation": {
+    "physicalSourceOccurrences": 37,
+    "semanticResolutions": 752,
+    "semanticTraces": 1223,
+    "grainCandidateTraces": 104,
+    "candidateDebt": 14,
+    "measureSafetyFalse": true,
+    "productionWiring": false,
+    "crossSourceRelationships": false,
+    "domainSupportManifestEmpty": true
+  },
+  "summary": {
+    "fullyUnresolved": 21,
+    "minimumResolutionRateRequired": false
+  },
+  "records": [
+    {
+      "sourceIdentity": {
+        "sampleId": "rev.sales_erp_may_2026",
+        "sourceId": "sample data/Sales_ERP_May_2026.xlsx#Sales"
+      },
+      "corpusGroup": "golden",
+      "tuningProvenance": "allowed",
+      "classification": "semantic_coverage_dependency",
+      "candidateClasses": [
+        "aggregate_record",
+        "unknown"
+      ],
+      "candidateDebt": [],
+      "structuralLimitations": [
+        {
+          "code": "candidates_only",
+          "severity": "info",
+          "scope": "governance",
+          "explanation": "No final grain, winner, rank, or aggregate grain confidence is produced.",
+          "physicalColumns": []
+        },
+        {
+          "code": "bounded_composite_search",
+          "severity": "info",
+          "scope": "governance",
+          "explanation": "Composite search is pruned and bounded to width three.",
+          "physicalColumns": []
+        }
+      ],
+      "semanticDependencies": [
+        {
+          "physicalColumn": "Brand",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Category",
+          "state": "probable",
+          "candidateId": "category",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "Discount",
+          "state": "probable",
+          "candidateId": "discount",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "OrderDate",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "OrderID",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Payment",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Product",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Qty",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Revenue",
+          "state": "probable",
+          "candidateId": "revenue",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "Salesperson",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Status",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Store",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "UnitPrice",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        }
+      ],
+      "resolutionPolicyOverAbstention": false,
+      "policyTunedFromSource": false
+    },
+    {
+      "sourceIdentity": {
+        "sampleId": "rev.sales_erp_june_2026",
+        "sourceId": "sample data/Sales_ERP_June_2026.xlsx#Sales"
+      },
+      "corpusGroup": "holdout",
+      "tuningProvenance": "forbidden",
+      "classification": "semantic_coverage_dependency",
+      "candidateClasses": [
+        "aggregate_record",
+        "unknown"
+      ],
+      "candidateDebt": [],
+      "structuralLimitations": [
+        {
+          "code": "candidates_only",
+          "severity": "info",
+          "scope": "governance",
+          "explanation": "No final grain, winner, rank, or aggregate grain confidence is produced.",
+          "physicalColumns": []
+        },
+        {
+          "code": "bounded_composite_search",
+          "severity": "info",
+          "scope": "governance",
+          "explanation": "Composite search is pruned and bounded to width three.",
+          "physicalColumns": []
+        }
+      ],
+      "semanticDependencies": [
+        {
+          "physicalColumn": "Brand",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Category",
+          "state": "probable",
+          "candidateId": "category",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "Discount",
+          "state": "probable",
+          "candidateId": "discount",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "OrderDate",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "OrderID",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Payment",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Product",
+          "state": "probable",
+          "candidateId": "product",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "Qty",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Revenue",
+          "state": "probable",
+          "candidateId": "revenue",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "Salesperson",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Status",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Store",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "UnitPrice",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        }
+      ],
+      "resolutionPolicyOverAbstention": false,
+      "policyTunedFromSource": false
+    },
+    {
+      "sourceIdentity": {
+        "sampleId": "rev.bhx_pos_export",
+        "sourceId": "sample data/BHX_PHIEUXUAT.xlsx#Sheet1"
+      },
+      "corpusGroup": "golden",
+      "tuningProvenance": "allowed",
+      "classification": "semantic_coverage_dependency",
+      "candidateClasses": [
+        "aggregate_record",
+        "unknown"
+      ],
+      "candidateDebt": [],
+      "structuralLimitations": [
+        {
+          "code": "candidates_only",
+          "severity": "info",
+          "scope": "governance",
+          "explanation": "No final grain, winner, rank, or aggregate grain confidence is produced.",
+          "physicalColumns": []
+        },
+        {
+          "code": "bounded_composite_search",
+          "severity": "info",
+          "scope": "governance",
+          "explanation": "Composite search is pruned and bounded to width three.",
+          "physicalColumns": []
+        }
+      ],
+      "semanticDependencies": [
+        {
+          "physicalColumn": "Chứng từ liên quan",
+          "state": "probable",
+          "candidateId": "related_document",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "Khách hàng",
+          "state": "probable",
+          "candidateId": "customer",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "Mã nhân viên xuất",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Ngày xuất",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Tiền làm tròn",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        }
+      ],
+      "resolutionPolicyOverAbstention": false,
+      "policyTunedFromSource": false
+    },
+    {
+      "sourceIdentity": {
+        "sampleId": "rev.accounting_may_sales_basis",
+        "sourceId": "sample data/Accounting_ERP_May_2026.csv#Sheet1"
+      },
+      "corpusGroup": "holdout",
+      "tuningProvenance": "forbidden",
+      "classification": "semantic_coverage_dependency",
+      "candidateClasses": [
+        "aggregate_record",
+        "unknown"
+      ],
+      "candidateDebt": [],
+      "structuralLimitations": [
+        {
+          "code": "candidates_only",
+          "severity": "info",
+          "scope": "governance",
+          "explanation": "No final grain, winner, rank, or aggregate grain confidence is produced.",
+          "physicalColumns": []
+        },
+        {
+          "code": "bounded_composite_search",
+          "severity": "info",
+          "scope": "governance",
+          "explanation": "Composite search is pruned and bounded to width three.",
+          "physicalColumns": []
+        }
+      ],
+      "semanticDependencies": [
+        {
+          "physicalColumn": "AR_Account",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "AR_Debit",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Brand",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Category",
+          "state": "probable",
+          "candidateId": "category",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "COGS_Account",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "COGS_Debit",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Discount",
+          "state": "probable",
+          "candidateId": "discount",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "GrossProfit",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Inventory_Account",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Inventory_Credit",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "InvoiceTotal",
+          "state": "probable",
+          "candidateId": "invoice_total",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "JournalNo",
+          "state": "probable",
+          "candidateId": "journal",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "MarginPct",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "NetRevenue",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "OrderID",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Payment",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Product",
+          "state": "probable",
+          "candidateId": "product",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "Qty",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Revenue_Account",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Revenue_Credit",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Salesperson",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "SKU",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [
+            "sku"
+          ],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Store",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "TotalCost",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "UnitCost",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "UnitPrice",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "VAT_Account",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        }
+      ],
+      "resolutionPolicyOverAbstention": false,
+      "policyTunedFromSource": false
+    },
+    {
+      "sourceIdentity": {
+        "sampleId": "inv.provincial_aging_20241228",
+        "sourceId": "sample data/Bao_cao_chi_tiet_Ton_kho_vung_tinh_28-12-2024.xlsx#TonTaiKhoVungChiTiet"
+      },
+      "corpusGroup": "holdout",
+      "tuningProvenance": "forbidden",
+      "classification": "candidate_absence",
+      "candidateClasses": [
+        "aggregate_record",
+        "unknown"
+      ],
+      "candidateDebt": [
+        {
+          "physicalColumn": "inv.provincial_aging_20241228:Mã phiếu gửi",
+          "candidateId": "shipment",
+          "reasonCode": "required_candidate_absent",
+          "effect": "parent_hypothesis_limited"
+        }
+      ],
+      "structuralLimitations": [
+        {
+          "code": "candidates_only",
+          "severity": "info",
+          "scope": "governance",
+          "explanation": "No final grain, winner, rank, or aggregate grain confidence is produced.",
+          "physicalColumns": []
+        },
+        {
+          "code": "bounded_composite_search",
+          "severity": "info",
+          "scope": "governance",
+          "explanation": "Composite search is pruned and bounded to width three.",
+          "physicalColumns": []
+        },
+        {
+          "code": "ambiguous_date_locale",
+          "severity": "info",
+          "scope": "evidence",
+          "explanation": "Day/month order is ambiguous for at least one parsed date string.",
+          "physicalColumns": [
+            "Thời gian nhập máy"
+          ]
+        },
+        {
+          "code": "ambiguous_date_locale",
+          "severity": "info",
+          "scope": "evidence",
+          "explanation": "Day/month order is ambiguous for at least one parsed date string.",
+          "physicalColumns": [
+            "Thời gian nhận"
+          ]
+        },
+        {
+          "code": "ambiguous_date_locale",
+          "severity": "info",
+          "scope": "evidence",
+          "explanation": "Day/month order is ambiguous for at least one parsed date string.",
+          "physicalColumns": [
+            "Thời gian tác động"
+          ]
+        }
+      ],
+      "semanticDependencies": [
+        {
+          "physicalColumn": " Loại hàng ",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": " Thời gian tồn ",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Bưu cục hiện tại",
+          "state": "probable",
+          "candidateId": "current_location",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "Bưu cục nhập máy",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Bưu cục phát",
+          "state": "probable",
+          "candidateId": "destination_location",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "Chi nhánh hiện tại",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Chi nhánh nhận",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Chi nhánh phát",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Điểm đến",
+          "state": "probable",
+          "candidateId": "destination_location",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "Khối lượng \n (gram)",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Mã dịch vụ",
+          "state": "probable",
+          "candidateId": "service_group",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "Ngưỡng tồn",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Nhóm dịch vụ",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Tình trạng tải",
+          "state": "confirmed",
+          "candidateId": "load_status",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-CONFIRMED"
+          ]
+        },
+        {
+          "physicalColumn": "Trạng thái",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        }
+      ],
+      "resolutionPolicyOverAbstention": false,
+      "policyTunedFromSource": false
+    },
+    {
+      "sourceIdentity": {
+        "sampleId": "ops.ttkt_20241219",
+        "sourceId": "sample data/bcctnhapTTKT_19122024.xlsx#NhapXuatDungGioTTKT"
+      },
+      "corpusGroup": "golden",
+      "tuningProvenance": "allowed",
+      "classification": "candidate_absence",
+      "candidateClasses": [
+        "aggregate_record",
+        "unknown"
+      ],
+      "candidateDebt": [
+        {
+          "physicalColumn": "ops.ttkt_20241219:Đánh giá",
+          "candidateId": "on_time_status",
+          "reasonCode": "contextual_candidate_absent",
+          "effect": "semantic_role_unavailable"
+        },
+        {
+          "physicalColumn": "ops.ttkt_20241219:Đánh giá",
+          "candidateId": "status",
+          "reasonCode": "contextual_candidate_absent",
+          "effect": "semantic_role_unavailable"
+        }
+      ],
+      "structuralLimitations": [
+        {
+          "code": "candidates_only",
+          "severity": "info",
+          "scope": "governance",
+          "explanation": "No final grain, winner, rank, or aggregate grain confidence is produced.",
+          "physicalColumns": []
+        },
+        {
+          "code": "bounded_composite_search",
+          "severity": "info",
+          "scope": "governance",
+          "explanation": "Composite search is pruned and bounded to width three.",
+          "physicalColumns": []
+        }
+      ],
+      "semanticDependencies": [
+        {
+          "physicalColumn": "Biển kiểm soát",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Chuyến xe",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [
+            "trip"
+          ],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Đánh giá thời gian chờ",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Loại hàng",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Mã tải kiện",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Ngày báo cáo",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Số lượng",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Tên lái xe",
+          "state": "probable",
+          "candidateId": "driver",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "Thời gian chờ",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Thời gian kết thúc chuyến xe",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Thời gian quy định",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Trọng lượng (Gam)",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Tuyến xe",
+          "state": "probable",
+          "candidateId": "route",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "Xe đến đúng hẹn",
+          "state": "confirmed",
+          "candidateId": "on_time_status",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-CONFIRMED"
+          ]
+        }
+      ],
+      "resolutionPolicyOverAbstention": false,
+      "policyTunedFromSource": false
+    },
+    {
+      "sourceIdentity": {
+        "sampleId": "ops.ttkt_20241223",
+        "sourceId": "sample data/bcctnhapTTKT_23122024.xlsx#NhapXuatDungGioTTKT"
+      },
+      "corpusGroup": "holdout",
+      "tuningProvenance": "forbidden",
+      "classification": "candidate_absence",
+      "candidateClasses": [
+        "aggregate_record",
+        "unknown"
+      ],
+      "candidateDebt": [
+        {
+          "physicalColumn": "ops.ttkt_20241223:Đánh giá",
+          "candidateId": "on_time_status",
+          "reasonCode": "contextual_candidate_absent",
+          "effect": "semantic_role_unavailable"
+        },
+        {
+          "physicalColumn": "ops.ttkt_20241223:Đánh giá",
+          "candidateId": "status",
+          "reasonCode": "contextual_candidate_absent",
+          "effect": "semantic_role_unavailable"
+        }
+      ],
+      "structuralLimitations": [
+        {
+          "code": "candidates_only",
+          "severity": "info",
+          "scope": "governance",
+          "explanation": "No final grain, winner, rank, or aggregate grain confidence is produced.",
+          "physicalColumns": []
+        },
+        {
+          "code": "bounded_composite_search",
+          "severity": "info",
+          "scope": "governance",
+          "explanation": "Composite search is pruned and bounded to width three.",
+          "physicalColumns": []
+        }
+      ],
+      "semanticDependencies": [
+        {
+          "physicalColumn": "Biển kiểm soát",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Chuyến xe",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [
+            "trip"
+          ],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Đánh giá thời gian chờ",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Loại hàng",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Ngày báo cáo",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Số lượng",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Tên lái xe",
+          "state": "probable",
+          "candidateId": "driver",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "Thời gian chờ",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Thời gian kết thúc chuyến xe",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Thời gian quy định",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Trọng lượng (Gam)",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Tuyến xe",
+          "state": "probable",
+          "candidateId": "route",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "Xe đến đúng hẹn",
+          "state": "confirmed",
+          "candidateId": "on_time_status",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-CONFIRMED"
+          ]
+        }
+      ],
+      "resolutionPolicyOverAbstention": false,
+      "policyTunedFromSource": false
+    },
+    {
+      "sourceIdentity": {
+        "sampleId": "ops.ttkt_20241224",
+        "sourceId": "sample data/bcctnhapTTKT_24122024.xlsx#NhapXuatDungGioTTKT"
+      },
+      "corpusGroup": "holdout",
+      "tuningProvenance": "forbidden",
+      "classification": "candidate_absence",
+      "candidateClasses": [
+        "aggregate_record",
+        "unknown"
+      ],
+      "candidateDebt": [
+        {
+          "physicalColumn": "ops.ttkt_20241224:Đánh giá thời gian chờ",
+          "candidateId": "on_time_status",
+          "reasonCode": "contextual_candidate_absent",
+          "effect": "semantic_role_unavailable"
+        },
+        {
+          "physicalColumn": "ops.ttkt_20241224:Đánh giá thời gian chờ",
+          "candidateId": "status",
+          "reasonCode": "contextual_candidate_absent",
+          "effect": "semantic_role_unavailable"
+        },
+        {
+          "physicalColumn": "ops.ttkt_20241224:Thời gian dự kiến đến",
+          "candidateId": "eta",
+          "reasonCode": "required_candidate_absent",
+          "effect": "semantic_role_unavailable"
+        }
+      ],
+      "structuralLimitations": [
+        {
+          "code": "candidates_only",
+          "severity": "info",
+          "scope": "governance",
+          "explanation": "No final grain, winner, rank, or aggregate grain confidence is produced.",
+          "physicalColumns": []
+        },
+        {
+          "code": "bounded_composite_search",
+          "severity": "info",
+          "scope": "governance",
+          "explanation": "Composite search is pruned and bounded to width three.",
+          "physicalColumns": []
+        }
+      ],
+      "semanticDependencies": [
+        {
+          "physicalColumn": "Biển kiểm soát",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Chuyến xe",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [
+            "trip"
+          ],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Loại hàng",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Ngày báo cáo",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Số lượng",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Tên lái xe",
+          "state": "probable",
+          "candidateId": "driver",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "Thời gian chờ",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Thời gian kết thúc chuyến xe",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Thời gian quy định",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Trọng lượng (Gam)",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Tuyến xe",
+          "state": "probable",
+          "candidateId": "route",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "Xe đến đúng hẹn",
+          "state": "confirmed",
+          "candidateId": "on_time_status",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-CONFIRMED"
+          ]
+        }
+      ],
+      "resolutionPolicyOverAbstention": false,
+      "policyTunedFromSource": false
+    },
+    {
+      "sourceIdentity": {
+        "sampleId": "fin.accounting_may_2026",
+        "sourceId": "sample data/Accounting_ERP_May_2026.csv#Sheet1"
+      },
+      "corpusGroup": "golden",
+      "tuningProvenance": "allowed",
+      "classification": "semantic_coverage_dependency",
+      "candidateClasses": [
+        "aggregate_record",
+        "unknown"
+      ],
+      "candidateDebt": [],
+      "structuralLimitations": [
+        {
+          "code": "candidates_only",
+          "severity": "info",
+          "scope": "governance",
+          "explanation": "No final grain, winner, rank, or aggregate grain confidence is produced.",
+          "physicalColumns": []
+        },
+        {
+          "code": "bounded_composite_search",
+          "severity": "info",
+          "scope": "governance",
+          "explanation": "Composite search is pruned and bounded to width three.",
+          "physicalColumns": []
+        }
+      ],
+      "semanticDependencies": [
+        {
+          "physicalColumn": "AR_Account",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "AR_Debit",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Brand",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Category",
+          "state": "probable",
+          "candidateId": "category",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "COGS_Account",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "COGS_Debit",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Discount",
+          "state": "probable",
+          "candidateId": "discount",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "GrossProfit",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Inventory_Account",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Inventory_Credit",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "InvoiceTotal",
+          "state": "probable",
+          "candidateId": "invoice_total",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "JournalNo",
+          "state": "probable",
+          "candidateId": "journal",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "MarginPct",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "NetRevenue",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "OrderID",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Payment",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Product",
+          "state": "probable",
+          "candidateId": "product",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "Qty",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Revenue_Account",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Revenue_Credit",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Salesperson",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "SKU",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [
+            "sku"
+          ],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Store",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "TotalCost",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "UnitCost",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "UnitPrice",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "VAT_Account",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        }
+      ],
+      "resolutionPolicyOverAbstention": false,
+      "policyTunedFromSource": false
+    },
+    {
+      "sourceIdentity": {
+        "sampleId": "fin.accounting_june_2026",
+        "sourceId": "sample data/Accounting_ERP_June_2026.csv#Sheet1"
+      },
+      "corpusGroup": "holdout",
+      "tuningProvenance": "forbidden",
+      "classification": "semantic_coverage_dependency",
+      "candidateClasses": [
+        "aggregate_record",
+        "unknown"
+      ],
+      "candidateDebt": [],
+      "structuralLimitations": [
+        {
+          "code": "candidates_only",
+          "severity": "info",
+          "scope": "governance",
+          "explanation": "No final grain, winner, rank, or aggregate grain confidence is produced.",
+          "physicalColumns": []
+        },
+        {
+          "code": "bounded_composite_search",
+          "severity": "info",
+          "scope": "governance",
+          "explanation": "Composite search is pruned and bounded to width three.",
+          "physicalColumns": []
+        }
+      ],
+      "semanticDependencies": [
+        {
+          "physicalColumn": "AR_Account",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "AR_Debit",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Brand",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Category",
+          "state": "probable",
+          "candidateId": "category",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "COGS_Account",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "COGS_Debit",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Discount",
+          "state": "probable",
+          "candidateId": "discount",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "GrossProfit",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Inventory_Account",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Inventory_Credit",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "InvoiceTotal",
+          "state": "probable",
+          "candidateId": "invoice_total",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "JournalNo",
+          "state": "probable",
+          "candidateId": "journal",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "MarginPct",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "NetRevenue",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "OrderID",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Payment",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Product",
+          "state": "probable",
+          "candidateId": "product",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "Qty",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Revenue_Account",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Revenue_Credit",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Salesperson",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "SKU",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [
+            "sku"
+          ],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Store",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "TotalCost",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "UnitCost",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "UnitPrice",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "VAT_Account",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        }
+      ],
+      "resolutionPolicyOverAbstention": false,
+      "policyTunedFromSource": false
+    },
+    {
+      "sourceIdentity": {
+        "sampleId": "fin.bhx_tender_reconciliation",
+        "sourceId": "sample data/BHX_PHIEUXUAT.xlsx#Sheet1"
+      },
+      "corpusGroup": "golden",
+      "tuningProvenance": "allowed",
+      "classification": "semantic_coverage_dependency",
+      "candidateClasses": [
+        "aggregate_record",
+        "unknown"
+      ],
+      "candidateDebt": [],
+      "structuralLimitations": [
+        {
+          "code": "candidates_only",
+          "severity": "info",
+          "scope": "governance",
+          "explanation": "No final grain, winner, rank, or aggregate grain confidence is produced.",
+          "physicalColumns": []
+        },
+        {
+          "code": "bounded_composite_search",
+          "severity": "info",
+          "scope": "governance",
+          "explanation": "Composite search is pruned and bounded to width three.",
+          "physicalColumns": []
+        }
+      ],
+      "semanticDependencies": [
+        {
+          "physicalColumn": "Chứng từ liên quan",
+          "state": "probable",
+          "candidateId": "related_document",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "Khách hàng",
+          "state": "probable",
+          "candidateId": "customer",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "Mã nhân viên xuất",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Ngày xuất",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Tiền làm tròn",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        }
+      ],
+      "resolutionPolicyOverAbstention": false,
+      "policyTunedFromSource": false
+    },
+    {
+      "sourceIdentity": {
+        "sampleId": "fin.sales_june_missing_cost",
+        "sourceId": "sample data/Sales_ERP_June_2026.xlsx#Sales"
+      },
+      "corpusGroup": "holdout",
+      "tuningProvenance": "forbidden",
+      "classification": "semantic_coverage_dependency",
+      "candidateClasses": [
+        "aggregate_record",
+        "unknown"
+      ],
+      "candidateDebt": [],
+      "structuralLimitations": [
+        {
+          "code": "candidates_only",
+          "severity": "info",
+          "scope": "governance",
+          "explanation": "No final grain, winner, rank, or aggregate grain confidence is produced.",
+          "physicalColumns": []
+        },
+        {
+          "code": "bounded_composite_search",
+          "severity": "info",
+          "scope": "governance",
+          "explanation": "Composite search is pruned and bounded to width three.",
+          "physicalColumns": []
+        }
+      ],
+      "semanticDependencies": [
+        {
+          "physicalColumn": "Brand",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Category",
+          "state": "probable",
+          "candidateId": "category",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "Discount",
+          "state": "probable",
+          "candidateId": "discount",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "OrderDate",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "OrderID",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Payment",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Product",
+          "state": "probable",
+          "candidateId": "product",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "Qty",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Revenue",
+          "state": "probable",
+          "candidateId": "revenue",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "Salesperson",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Status",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Store",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "UnitPrice",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        }
+      ],
+      "resolutionPolicyOverAbstention": false,
+      "policyTunedFromSource": false
+    },
+    {
+      "sourceIdentity": {
+        "sampleId": "adv.world_bank_cross_domain",
+        "sourceId": "sample data/World Bank Indicators.xlsx#Data by country"
+      },
+      "corpusGroup": "adversarial",
+      "tuningProvenance": "forbidden",
+      "classification": "semantic_coverage_dependency",
+      "candidateClasses": [
+        "aggregate_record",
+        "unknown"
+      ],
+      "candidateDebt": [],
+      "structuralLimitations": [
+        {
+          "code": "candidates_only",
+          "severity": "info",
+          "scope": "governance",
+          "explanation": "No final grain, winner, rank, or aggregate grain confidence is produced.",
+          "physicalColumns": []
+        },
+        {
+          "code": "bounded_composite_search",
+          "severity": "info",
+          "scope": "governance",
+          "explanation": "Composite search is pruned and bounded to width three.",
+          "physicalColumns": []
+        }
+      ],
+      "semanticDependencies": [
+        {
+          "physicalColumn": "Country Name",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        }
+      ],
+      "resolutionPolicyOverAbstention": false,
+      "policyTunedFromSource": false
+    },
+    {
+      "sourceIdentity": {
+        "sampleId": "multi.commerce_may_2026",
+        "sourceId": "sample data/Sales_ERP_May_2026.xlsx#Sales"
+      },
+      "corpusGroup": "multi_file",
+      "tuningProvenance": "forbidden",
+      "classification": "semantic_coverage_dependency",
+      "candidateClasses": [
+        "aggregate_record",
+        "unknown"
+      ],
+      "candidateDebt": [],
+      "structuralLimitations": [
+        {
+          "code": "candidates_only",
+          "severity": "info",
+          "scope": "governance",
+          "explanation": "No final grain, winner, rank, or aggregate grain confidence is produced.",
+          "physicalColumns": []
+        },
+        {
+          "code": "bounded_composite_search",
+          "severity": "info",
+          "scope": "governance",
+          "explanation": "Composite search is pruned and bounded to width three.",
+          "physicalColumns": []
+        }
+      ],
+      "semanticDependencies": [
+        {
+          "physicalColumn": "Brand",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Category",
+          "state": "probable",
+          "candidateId": "category",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "Discount",
+          "state": "probable",
+          "candidateId": "discount",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "OrderDate",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "OrderID",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Payment",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Product",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Qty",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Revenue",
+          "state": "probable",
+          "candidateId": "revenue",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "Salesperson",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Status",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Store",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "UnitPrice",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        }
+      ],
+      "resolutionPolicyOverAbstention": false,
+      "policyTunedFromSource": false
+    },
+    {
+      "sourceIdentity": {
+        "sampleId": "multi.commerce_may_2026",
+        "sourceId": "sample data/Accounting_ERP_May_2026.csv#Sheet1"
+      },
+      "corpusGroup": "multi_file",
+      "tuningProvenance": "forbidden",
+      "classification": "semantic_coverage_dependency",
+      "candidateClasses": [
+        "aggregate_record",
+        "unknown"
+      ],
+      "candidateDebt": [],
+      "structuralLimitations": [
+        {
+          "code": "candidates_only",
+          "severity": "info",
+          "scope": "governance",
+          "explanation": "No final grain, winner, rank, or aggregate grain confidence is produced.",
+          "physicalColumns": []
+        },
+        {
+          "code": "bounded_composite_search",
+          "severity": "info",
+          "scope": "governance",
+          "explanation": "Composite search is pruned and bounded to width three.",
+          "physicalColumns": []
+        }
+      ],
+      "semanticDependencies": [
+        {
+          "physicalColumn": "AR_Account",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "AR_Debit",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Brand",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Category",
+          "state": "probable",
+          "candidateId": "category",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "COGS_Account",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "COGS_Debit",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Discount",
+          "state": "probable",
+          "candidateId": "discount",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "GrossProfit",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Inventory_Account",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Inventory_Credit",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "InvoiceTotal",
+          "state": "probable",
+          "candidateId": "invoice_total",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "JournalNo",
+          "state": "probable",
+          "candidateId": "journal",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "MarginPct",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "NetRevenue",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "OrderID",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Payment",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Product",
+          "state": "probable",
+          "candidateId": "product",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "Qty",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Revenue_Account",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Revenue_Credit",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Salesperson",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "SKU",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [
+            "sku"
+          ],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Store",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "TotalCost",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "UnitCost",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "UnitPrice",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "VAT_Account",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        }
+      ],
+      "resolutionPolicyOverAbstention": false,
+      "policyTunedFromSource": false
+    },
+    {
+      "sourceIdentity": {
+        "sampleId": "multi.commerce_june_2026",
+        "sourceId": "sample data/Sales_ERP_June_2026.xlsx#Sales"
+      },
+      "corpusGroup": "multi_file",
+      "tuningProvenance": "forbidden",
+      "classification": "semantic_coverage_dependency",
+      "candidateClasses": [
+        "aggregate_record",
+        "unknown"
+      ],
+      "candidateDebt": [],
+      "structuralLimitations": [
+        {
+          "code": "candidates_only",
+          "severity": "info",
+          "scope": "governance",
+          "explanation": "No final grain, winner, rank, or aggregate grain confidence is produced.",
+          "physicalColumns": []
+        },
+        {
+          "code": "bounded_composite_search",
+          "severity": "info",
+          "scope": "governance",
+          "explanation": "Composite search is pruned and bounded to width three.",
+          "physicalColumns": []
+        }
+      ],
+      "semanticDependencies": [
+        {
+          "physicalColumn": "Brand",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Category",
+          "state": "probable",
+          "candidateId": "category",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "Discount",
+          "state": "probable",
+          "candidateId": "discount",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "OrderDate",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "OrderID",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Payment",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Product",
+          "state": "probable",
+          "candidateId": "product",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "Qty",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Revenue",
+          "state": "probable",
+          "candidateId": "revenue",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "Salesperson",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Status",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Store",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "UnitPrice",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        }
+      ],
+      "resolutionPolicyOverAbstention": false,
+      "policyTunedFromSource": false
+    },
+    {
+      "sourceIdentity": {
+        "sampleId": "multi.commerce_june_2026",
+        "sourceId": "sample data/Accounting_ERP_June_2026.csv#Sheet1"
+      },
+      "corpusGroup": "multi_file",
+      "tuningProvenance": "forbidden",
+      "classification": "semantic_coverage_dependency",
+      "candidateClasses": [
+        "aggregate_record",
+        "unknown"
+      ],
+      "candidateDebt": [],
+      "structuralLimitations": [
+        {
+          "code": "candidates_only",
+          "severity": "info",
+          "scope": "governance",
+          "explanation": "No final grain, winner, rank, or aggregate grain confidence is produced.",
+          "physicalColumns": []
+        },
+        {
+          "code": "bounded_composite_search",
+          "severity": "info",
+          "scope": "governance",
+          "explanation": "Composite search is pruned and bounded to width three.",
+          "physicalColumns": []
+        }
+      ],
+      "semanticDependencies": [
+        {
+          "physicalColumn": "AR_Account",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "AR_Debit",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Brand",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Category",
+          "state": "probable",
+          "candidateId": "category",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "COGS_Account",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "COGS_Debit",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Discount",
+          "state": "probable",
+          "candidateId": "discount",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "GrossProfit",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Inventory_Account",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Inventory_Credit",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "InvoiceTotal",
+          "state": "probable",
+          "candidateId": "invoice_total",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "JournalNo",
+          "state": "probable",
+          "candidateId": "journal",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "MarginPct",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "NetRevenue",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "OrderID",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Payment",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Product",
+          "state": "probable",
+          "candidateId": "product",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "Qty",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Revenue_Account",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Revenue_Credit",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Salesperson",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "SKU",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [
+            "sku"
+          ],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Store",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "TotalCost",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "UnitCost",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "UnitPrice",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "VAT_Account",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        }
+      ],
+      "resolutionPolicyOverAbstention": false,
+      "policyTunedFromSource": false
+    },
+    {
+      "sourceIdentity": {
+        "sampleId": "multi.sales_period_pair",
+        "sourceId": "sample data/Sales_ERP_May_2026.xlsx#Sales"
+      },
+      "corpusGroup": "multi_file",
+      "tuningProvenance": "forbidden",
+      "classification": "semantic_coverage_dependency",
+      "candidateClasses": [
+        "aggregate_record",
+        "unknown"
+      ],
+      "candidateDebt": [],
+      "structuralLimitations": [
+        {
+          "code": "candidates_only",
+          "severity": "info",
+          "scope": "governance",
+          "explanation": "No final grain, winner, rank, or aggregate grain confidence is produced.",
+          "physicalColumns": []
+        },
+        {
+          "code": "bounded_composite_search",
+          "severity": "info",
+          "scope": "governance",
+          "explanation": "Composite search is pruned and bounded to width three.",
+          "physicalColumns": []
+        }
+      ],
+      "semanticDependencies": [
+        {
+          "physicalColumn": "Brand",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Category",
+          "state": "probable",
+          "candidateId": "category",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "Discount",
+          "state": "probable",
+          "candidateId": "discount",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "OrderDate",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "OrderID",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Payment",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Product",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Qty",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Revenue",
+          "state": "probable",
+          "candidateId": "revenue",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "Salesperson",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Status",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Store",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "UnitPrice",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        }
+      ],
+      "resolutionPolicyOverAbstention": false,
+      "policyTunedFromSource": false
+    },
+    {
+      "sourceIdentity": {
+        "sampleId": "multi.sales_period_pair",
+        "sourceId": "sample data/Sales_ERP_June_2026.xlsx#Sales"
+      },
+      "corpusGroup": "multi_file",
+      "tuningProvenance": "forbidden",
+      "classification": "semantic_coverage_dependency",
+      "candidateClasses": [
+        "aggregate_record",
+        "unknown"
+      ],
+      "candidateDebt": [],
+      "structuralLimitations": [
+        {
+          "code": "candidates_only",
+          "severity": "info",
+          "scope": "governance",
+          "explanation": "No final grain, winner, rank, or aggregate grain confidence is produced.",
+          "physicalColumns": []
+        },
+        {
+          "code": "bounded_composite_search",
+          "severity": "info",
+          "scope": "governance",
+          "explanation": "Composite search is pruned and bounded to width three.",
+          "physicalColumns": []
+        }
+      ],
+      "semanticDependencies": [
+        {
+          "physicalColumn": "Brand",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Category",
+          "state": "probable",
+          "candidateId": "category",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "Discount",
+          "state": "probable",
+          "candidateId": "discount",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "OrderDate",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "OrderID",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Payment",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Product",
+          "state": "probable",
+          "candidateId": "product",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "Qty",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Revenue",
+          "state": "probable",
+          "candidateId": "revenue",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "Salesperson",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Status",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Store",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "UnitPrice",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        }
+      ],
+      "resolutionPolicyOverAbstention": false,
+      "policyTunedFromSource": false
+    },
+    {
+      "sourceIdentity": {
+        "sampleId": "multi.accounting_period_pair",
+        "sourceId": "sample data/Accounting_ERP_May_2026.csv#Sheet1"
+      },
+      "corpusGroup": "multi_file",
+      "tuningProvenance": "forbidden",
+      "classification": "semantic_coverage_dependency",
+      "candidateClasses": [
+        "aggregate_record",
+        "unknown"
+      ],
+      "candidateDebt": [],
+      "structuralLimitations": [
+        {
+          "code": "candidates_only",
+          "severity": "info",
+          "scope": "governance",
+          "explanation": "No final grain, winner, rank, or aggregate grain confidence is produced.",
+          "physicalColumns": []
+        },
+        {
+          "code": "bounded_composite_search",
+          "severity": "info",
+          "scope": "governance",
+          "explanation": "Composite search is pruned and bounded to width three.",
+          "physicalColumns": []
+        }
+      ],
+      "semanticDependencies": [
+        {
+          "physicalColumn": "AR_Account",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "AR_Debit",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Brand",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Category",
+          "state": "probable",
+          "candidateId": "category",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "COGS_Account",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "COGS_Debit",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Discount",
+          "state": "probable",
+          "candidateId": "discount",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "GrossProfit",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Inventory_Account",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Inventory_Credit",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "InvoiceTotal",
+          "state": "probable",
+          "candidateId": "invoice_total",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "JournalNo",
+          "state": "probable",
+          "candidateId": "journal",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "MarginPct",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "NetRevenue",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "OrderID",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Payment",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Product",
+          "state": "probable",
+          "candidateId": "product",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "Qty",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Revenue_Account",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Revenue_Credit",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Salesperson",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "SKU",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [
+            "sku"
+          ],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Store",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "TotalCost",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "UnitCost",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "UnitPrice",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "VAT_Account",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        }
+      ],
+      "resolutionPolicyOverAbstention": false,
+      "policyTunedFromSource": false
+    },
+    {
+      "sourceIdentity": {
+        "sampleId": "multi.accounting_period_pair",
+        "sourceId": "sample data/Accounting_ERP_June_2026.csv#Sheet1"
+      },
+      "corpusGroup": "multi_file",
+      "tuningProvenance": "forbidden",
+      "classification": "semantic_coverage_dependency",
+      "candidateClasses": [
+        "aggregate_record",
+        "unknown"
+      ],
+      "candidateDebt": [],
+      "structuralLimitations": [
+        {
+          "code": "candidates_only",
+          "severity": "info",
+          "scope": "governance",
+          "explanation": "No final grain, winner, rank, or aggregate grain confidence is produced.",
+          "physicalColumns": []
+        },
+        {
+          "code": "bounded_composite_search",
+          "severity": "info",
+          "scope": "governance",
+          "explanation": "Composite search is pruned and bounded to width three.",
+          "physicalColumns": []
+        }
+      ],
+      "semanticDependencies": [
+        {
+          "physicalColumn": "AR_Account",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "AR_Debit",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Brand",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Category",
+          "state": "probable",
+          "candidateId": "category",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "COGS_Account",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "COGS_Debit",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Discount",
+          "state": "probable",
+          "candidateId": "discount",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "GrossProfit",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Inventory_Account",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Inventory_Credit",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "InvoiceTotal",
+          "state": "probable",
+          "candidateId": "invoice_total",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "JournalNo",
+          "state": "probable",
+          "candidateId": "journal",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "MarginPct",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "NetRevenue",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "OrderID",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Payment",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Product",
+          "state": "probable",
+          "candidateId": "product",
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-PROBABLE"
+          ]
+        },
+        {
+          "physicalColumn": "Qty",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Revenue_Account",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Revenue_Credit",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Salesperson",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "SKU",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [
+            "sku"
+          ],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "Store",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "TotalCost",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "UnitCost",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "UnitPrice",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        },
+        {
+          "physicalColumn": "VAT_Account",
+          "state": "ambiguous",
+          "candidateId": null,
+          "alternativeCandidateIds": [],
+          "ruleIds": [
+            "R-AMBIGUOUS"
+          ]
+        }
+      ],
+      "resolutionPolicyOverAbstention": false,
+      "policyTunedFromSource": false
+    }
+  ]
+}

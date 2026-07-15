@@ -1,0 +1,128 @@
+{
+  "schemaVersion": "lightbi.phase-5b6-consumer-migration-debt.v1",
+  "consumers": [
+    {
+      "consumer": "plan_preview",
+      "migrationDebt": "metadata_field_addition_required",
+      "actualRestrictionSupport": false,
+      "identitySupport": true,
+      "restrictionVisibility": false,
+      "metricEvidenceVisibility": false,
+      "eligibilityEnforcementCapability": false,
+      "authorityEscalationRisk": true,
+      "implementedInPhase5B6": false
+    },
+    {
+      "consumer": "SQL_preview",
+      "migrationDebt": "metadata_field_addition_required",
+      "actualRestrictionSupport": false,
+      "identitySupport": true,
+      "restrictionVisibility": false,
+      "metricEvidenceVisibility": false,
+      "eligibilityEnforcementCapability": false,
+      "authorityEscalationRisk": true,
+      "implementedInPhase5B6": false
+    },
+    {
+      "consumer": "backend_execution_request",
+      "migrationDebt": "stable_identity_binding_required",
+      "actualRestrictionSupport": false,
+      "identitySupport": false,
+      "restrictionVisibility": false,
+      "metricEvidenceVisibility": false,
+      "eligibilityEnforcementCapability": false,
+      "authorityEscalationRisk": true,
+      "implementedInPhase5B6": false
+    },
+    {
+      "consumer": "execution_result",
+      "migrationDebt": "provenance_required",
+      "actualRestrictionSupport": false,
+      "identitySupport": false,
+      "restrictionVisibility": false,
+      "metricEvidenceVisibility": false,
+      "eligibilityEnforcementCapability": false,
+      "authorityEscalationRisk": true,
+      "implementedInPhase5B6": false
+    },
+    {
+      "consumer": "chart_preview",
+      "migrationDebt": "restriction_enforcement_required",
+      "actualRestrictionSupport": false,
+      "identitySupport": false,
+      "restrictionVisibility": false,
+      "metricEvidenceVisibility": false,
+      "eligibilityEnforcementCapability": false,
+      "authorityEscalationRisk": true,
+      "implementedInPhase5B6": false
+    },
+    {
+      "consumer": "KPI_card",
+      "migrationDebt": "metric_reference_required",
+      "actualRestrictionSupport": false,
+      "identitySupport": false,
+      "restrictionVisibility": false,
+      "metricEvidenceVisibility": false,
+      "eligibilityEnforcementCapability": false,
+      "authorityEscalationRisk": true,
+      "implementedInPhase5B6": false
+    },
+    {
+      "consumer": "BA_decision_brief",
+      "migrationDebt": "use_eligibility_gate_required",
+      "actualRestrictionSupport": false,
+      "identitySupport": false,
+      "restrictionVisibility": false,
+      "metricEvidenceVisibility": false,
+      "eligibilityEnforcementCapability": false,
+      "authorityEscalationRisk": true,
+      "implementedInPhase5B6": false
+    },
+    {
+      "consumer": "narrative_generation",
+      "migrationDebt": "acknowledgement_boundary_required",
+      "actualRestrictionSupport": false,
+      "identitySupport": false,
+      "restrictionVisibility": false,
+      "metricEvidenceVisibility": false,
+      "eligibilityEnforcementCapability": false,
+      "authorityEscalationRisk": true,
+      "implementedInPhase5B6": false
+    },
+    {
+      "consumer": "recommendation",
+      "migrationDebt": "restriction_enforcement_required",
+      "actualRestrictionSupport": false,
+      "identitySupport": false,
+      "restrictionVisibility": false,
+      "metricEvidenceVisibility": false,
+      "eligibilityEnforcementCapability": false,
+      "authorityEscalationRisk": true,
+      "implementedInPhase5B6": false
+    },
+    {
+      "consumer": "automated_alert",
+      "migrationDebt": "major_contract_redesign",
+      "actualRestrictionSupport": false,
+      "identitySupport": false,
+      "restrictionVisibility": false,
+      "metricEvidenceVisibility": false,
+      "eligibilityEnforcementCapability": false,
+      "authorityEscalationRisk": true,
+      "implementedInPhase5B6": false
+    },
+    {
+      "consumer": "persisted_metric",
+      "migrationDebt": "major_contract_redesign",
+      "actualRestrictionSupport": false,
+      "identitySupport": false,
+      "restrictionVisibility": false,
+      "metricEvidenceVisibility": false,
+      "eligibilityEnforcementCapability": false,
+      "authorityEscalationRisk": true,
+      "implementedInPhase5B6": false
+    }
+  ],
+  "allDebtDispositioned": true,
+  "productionMigrationImplemented": false
+}

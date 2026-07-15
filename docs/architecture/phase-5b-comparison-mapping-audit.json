@@ -1,0 +1,167 @@
+{
+  "schemaVersion": "lightbi.phase-5b-mapping-audit.v1",
+  "date": "2026-07-13",
+  "policy": {
+    "version": "lightbi.legacy-canonical-comparison-policy.v1",
+    "sha256": "6d1e75c5e51059e1217a1d1ce7ef7819c5775f07e489c27cc0db2a7e180c044a"
+  },
+  "authority": {
+    "legacyChanged": false,
+    "canonicalChanged": false,
+    "operationApproval": false,
+    "productionWiring": false
+  },
+  "mappings": [
+    {
+      "mappingId": "MAP-NUMERIC-SUM-SAFETY",
+      "legacyModuleId": "numeric_health",
+      "legacyField": "isSafeForSum",
+      "canonicalCapabilities": [
+        "numeric_aggregation_ready"
+      ],
+      "validScopes": [
+        "source"
+      ],
+      "comparisonType": "directly_comparable",
+      "prerequisites": [
+        "legacy_boolean_present"
+      ],
+      "authorityMeaning": "legacy execution safety hint",
+      "safetyMeaning": "numeric aggregation safety",
+      "allowedDivergences": [
+        "agreement_same_restriction",
+        "canonical_more_conservative",
+        "legacy_more_conservative",
+        "safety_conflict"
+      ],
+      "prohibitedInterpretations": [
+        "score_to_readiness",
+        "automatic_winner"
+      ],
+      "rationale": "Both sides express aggregation restriction, but canonical remains authoritative only in shadow.",
+      "version": 1
+    },
+    {
+      "mappingId": "MAP-DATASET-HEALTH",
+      "legacyModuleId": "dataset_health",
+      "legacyField": "overall",
+      "canonicalCapabilities": [
+        "physical_profile_ready",
+        "structural_quality_assessment_ready"
+      ],
+      "validScopes": [
+        "source"
+      ],
+      "comparisonType": "partially_comparable",
+      "prerequisites": [
+        "legacy_score_present"
+      ],
+      "authorityMeaning": "display information",
+      "safetyMeaning": "none",
+      "allowedDivergences": [
+        "numeric_score_not_comparable",
+        "legacy_overstates_readiness",
+        "inconclusive"
+      ],
+      "prohibitedInterpretations": [
+        "numeric_threshold_to_state"
+      ],
+      "rationale": "Global physical score is not a canonical capability state.",
+      "version": 1
+    },
+    {
+      "mappingId": "MAP-DECISION-READINESS",
+      "legacyModuleId": "decision_readiness",
+      "legacyField": "score",
+      "canonicalCapabilities": [
+        "generic_analysis_ready",
+        "semantic_labeling_ready",
+        "grain_interpretation_ready"
+      ],
+      "validScopes": [
+        "source",
+        "bundle"
+      ],
+      "comparisonType": "structurally_incomparable",
+      "prerequisites": [
+        "legacy_score_present"
+      ],
+      "authorityMeaning": "user-facing guidance",
+      "safetyMeaning": "must_not_override_blockers",
+      "allowedDivergences": [
+        "numeric_score_not_comparable",
+        "legacy_overstates_readiness",
+        "inconclusive"
+      ],
+      "prohibitedInterpretations": [
+        "global_score_equivalence"
+      ],
+      "rationale": "One legacy score spans several independent canonical dimensions.",
+      "version": 1
+    },
+    {
+      "mappingId": "MAP-PLAN-STATUS",
+      "legacyModuleId": "virtual_dataset_planner",
+      "legacyField": "status",
+      "canonicalCapabilities": [
+        "join_planning_ready",
+        "append_planning_ready",
+        "join_execution_ready",
+        "append_execution_ready"
+      ],
+      "validScopes": [
+        "source_pair",
+        "bundle"
+      ],
+      "comparisonType": "authority_only_comparable",
+      "prerequisites": [
+        "legacy_status_present"
+      ],
+      "authorityMeaning": "planning",
+      "safetyMeaning": "operation restrictions",
+      "allowedDivergences": [
+        "agreement_same_restriction",
+        "authority_conflict",
+        "safety_conflict",
+        "scope_semantics_mismatch"
+      ],
+      "prohibitedInterpretations": [
+        "planning_equals_execution"
+      ],
+      "rationale": "Planner status can conflict with canonical operation restrictions.",
+      "version": 1
+    },
+    {
+      "mappingId": "MAP-DOMAIN-METRIC",
+      "legacyModuleId": "domain_metric",
+      "legacyField": "available",
+      "canonicalCapabilities": [
+        "domain_activation_ready",
+        "domain_metric_planning_ready"
+      ],
+      "validScopes": [
+        "source",
+        "bundle"
+      ],
+      "comparisonType": "directly_comparable",
+      "prerequisites": [
+        "legacy_boolean_present"
+      ],
+      "authorityMeaning": "domain output",
+      "safetyMeaning": "domain support required",
+      "allowedDivergences": [
+        "agreement_same_availability",
+        "safety_conflict",
+        "canonical_more_conservative"
+      ],
+      "prohibitedInterpretations": [
+        "semantic_coverage_activates_domain"
+      ],
+      "rationale": "Domain metric availability requires governed support.",
+      "version": 1
+    }
+  ],
+  "duplicateMappings": 0,
+  "fuzzyMappings": 0,
+  "globalScoreMapping": false
+}

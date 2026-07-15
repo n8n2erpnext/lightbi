@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
+import * as fs from "node:fs";
+import * as path from "node:path";
 import { createSemanticSample, createUnderstandingSample } from "./semantic-sampler";
+
+const REPO_ROOT = path.resolve(__dirname, "../../../..");
 
 describe("createSemanticSample", () => {
   it("returns full rows when the dataset is within the semantic budget", () => {
@@ -47,5 +51,46 @@ describe("createSemanticSample", () => {
     expect(sample.rowIndexes).toContain(4999);
     expect(sample.rows.some(row => row.lateSignal === "tail-only-signal")).toBe(true);
     expect(sample.rowIndexes.some(index => index > 100 && index < 4900)).toBe(true);
+  });
+});
+
+describe("Phase 1 source-neutral corpus boundary", () => {
+  it("can load the acceptance contract without understanding-next contracts", () => {
+    const manifestPath = path.join(REPO_ROOT, "sample-corpus/manifest.json");
+    const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8")) as {
+      canonicalFutureRunner: string;
+      groundTruthFiles: Array<{ path: string; required: boolean }>;
+    };
+
+    expect(manifest.canonicalFutureRunner).toBe("understanding-core");
+    expect(manifest.groundTruthFiles.length).toBeGreaterThan(0);
+
+    const documents = manifest.groundTruthFiles.map(entry => {
+      expect(entry.required).toBe(true);
+      return JSON.parse(fs.readFileSync(path.join(REPO_ROOT, entry.path), "utf8")) as {
+        samples: Array<{
+          sources: unknown[];
+          dataset: unknown;
+          recognition: unknown;
+          profilingExpectations: unknown;
+          relationshipTruth?: unknown;
+          support: unknown;
+          verifiedMetricAnswers: unknown;
+        }>;
+      };
+    });
+
+    const samples = documents.flatMap(document => document.samples);
+    expect(samples).toHaveLength(30);
+    for (const sample of samples) {
+      expect(sample.sources).toBeDefined();
+      expect(sample.dataset).toBeDefined();
+      expect(sample.recognition).toBeDefined();
+      expect(sample.profilingExpectations).toBeDefined();
+      expect(sample.support).toBeDefined();
+      expect(sample.verifiedMetricAnswers).toBeDefined();
+      if (sample.sources.length > 1) expect(sample.relationshipTruth).toBeDefined();
+    }
+    expect(JSON.stringify({ manifest, documents })).not.toContain("understanding-next");
   });
 });

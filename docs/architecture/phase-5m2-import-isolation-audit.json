@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "lightbi.phase-5m2-import-isolation-audit.v1",
+  "canonicalModules": [
+    "governed-question-action-contracts.ts",
+    "commerce-distribution-question-policy.ts",
+    "governed-question-action-generator.ts"
+  ],
+  "testModules": [
+    "governed-question-action-generator.test.ts",
+    "governed-question-action-generator.corpus.test.ts",
+    "phase-5m2-governance.test.ts"
+  ],
+  "productionImporters": [],
+  "newBarrelExports": [],
+  "forbiddenImportsConsumed": [],
+  "unchanged": [
+    "Home",
+    "Investigation",
+    "UI",
+    "AI",
+    "DuckDB",
+    "runtime execution",
+    "legacy playbooks",
+    "semantic policy",
+    "grain policy",
+    "relationship policy",
+    "readiness policy",
+    "metric policy"
+  ],
+  "productionRuntimeBehaviorChanged": false,
+  "productionWiring": {
+    "executed": false
+  }
+}

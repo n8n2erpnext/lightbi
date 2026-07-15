@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "lightbi.phase-5m1-migration-gate-audit.v1",
+  "phase": "5M1",
+  "domainPackAvailableForFutureConsumption": true,
+  "governedMetricDefinitionsAvailable": true,
+  "metricPreflightAvailable": true,
+  "questionActionGenerationEligible": true,
+  "runtimeAuthorityMigrationEligible": false,
+  "productionProjectionEligible": false,
+  "duckdbMetricExecutionEligible": false,
+  "legacyDeletionEligible": false,
+  "phase6CutoverEligible": false,
+  "remainingGates": ["Phase 5M2 question/action contracts", "production consumer migration", "runtime plan binding", "execution safety proof", "fresh acceptance evidence"],
+  "stopCondition": "Stop after Phase 5M1; do not begin Phase 5M2 or Phase 6"
+}

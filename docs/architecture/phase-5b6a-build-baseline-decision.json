@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "lightbi.phase-5b6a-build-baseline-decision.v1",
+  "decision": "build_regression_owned_by_concurrent_changes",
+  "cleanHeadTypecheckPassed": true,
+  "currentTreeTypecheckPassed": false,
+  "currentDiagnosticCount": 28,
+  "allDiagnosticsEnumerated": true,
+  "diagnosticsReproduceInCleanHead": false,
+  "diagnosticsEarliestReproduceBeforePhase5B5": true,
+  "phase5B5IntroducedAdditionalDiagnostic": false,
+  "phase5B6IntroducedAdditionalDiagnostic": false,
+  "typescriptDiagnosticOriginEstablished": true,
+  "typescriptBuildIntegrityEstablished": false,
+  "rationale": "The exact HEAD passes the exact typecheck in a detached worktree. The final 28 diagnostics first appear after earlier canonical/Phase 5 untracked source is applied and remain byte-identical after Phase 5B5 and Phase 5B6 are added. Concurrent dirty-tree diagnostics are not governed clean-HEAD debt.",
+  "finalVerification": {
+    "currentTreeTypecheck": {
+      "exitStatus": 2,
+      "diagnosticCount": 28,
+      "outputSha256": "4598e25b55440240a01c8b1e8bed3c492c0eebc672b40a32e188d430f95de86c"
+    },
+    "freshDetachedCleanHeadTypecheck": {
+      "worktree": "/tmp/lightbi-phase5b6a-final-clean-head",
+      "exitStatus": 0,
+      "diagnosticCount": 0,
+      "outputSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "fullDesktopSuite": {
+      "runCount": 1,
+      "exitStatus": 1,
+      "testFilesPassed": 136,
+      "testFilesFailed": 4,
+      "testsPassed": 1029,
+      "testsFailed": 8,
+      "phase5B6AFailures": 0,
+      "outputSha256": "f7d8f8bd0f059a7450f25dba968db1bc79f130e0aeb59776d9f109a87ab0b1c3"
+    }
+  }
+}

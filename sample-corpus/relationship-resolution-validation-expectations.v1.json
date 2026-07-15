@@ -1,0 +1,12 @@
+{
+  "schemaVersion": "lightbi.relationship-resolution-validation-expectations.v1",
+  "corpusVersion": "1.2.0",
+  "resolutionPolicyVersion": "lightbi.relationship-resolution-policy.v2",
+  "resolutionPolicySha256": "68b96f0b410315937256992d28378ae4932910a8bdc8719f0b475addd9855a10",
+  "governance": {"evaluationOnly": true, "tuningUse": "forbidden", "realWorldAccuracyClaim": false, "mvpProvenClaim": false},
+  "coverage": {"bundles": 5, "sourceOccurrences": 12, "pairOccurrences": 9, "relationshipCandidates": 11, "keyPairOccurrences": 10},
+  "candidateScopedCardinality": {"totalObservations": 6, "confirmedObservations": 4, "orphanAllowed": false, "wrongKeyAllowed": false},
+  "pairLevelCardinality": {"confirmedAllowedWithoutSelectedKey": false, "states": {"ambiguous": 4, "unknown": 5}},
+  "safety": {"safetyApproved": false, "executionAuthorized": false, "joinSafetyExecuted": false, "operationExecutionExecuted": false, "productionWiringExecuted": false},
+  "freezeClassification": "freeze_ready_with_documented_debt"
+}

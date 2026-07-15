@@ -1,0 +1,180 @@
+{
+  "schemaVersion": "lightbi.phase-5b5-production-contract-loss-audit.v1",
+  "transitions": [
+    {
+      "id": "numeric_health_to_guarded_plan",
+      "producer": "numeric-health-gate.evaluateNumericHealth",
+      "consumer": "guarded-sum-bridge.enhancePlanWithGuardedSum",
+      "actualContract": "ColumnNumericHealth -> RuntimePlanPreview",
+      "operator": "physical SUM/AVG/COUNT support; bridge may inject SUM or COUNT",
+      "preserved": [
+        "physical column name",
+        "physical parse decision"
+      ],
+      "lost": [
+        "aggregation origin",
+        "metric identity",
+        "measure role",
+        "grain",
+        "restrictions",
+        "acknowledgement",
+        "decision-use eligibility",
+        "canonical provenance"
+      ],
+      "lossClasses": [
+        "aggregation_origin_loss",
+        "metric_identity_loss",
+        "measure_role_loss",
+        "grain_context_loss",
+        "restriction_loss",
+        "acknowledgement_loss",
+        "decision_use_boundary_loss",
+        "authority_escalation_risk"
+      ],
+      "userVisibleOrAuthorityBearing": true
+    },
+    {
+      "id": "guarded_plan_to_SQL_preview",
+      "producer": "guarded-sum-bridge.enhancePlanWithGuardedSum",
+      "consumer": "safe-sql-preview.createSafeSqlPreview",
+      "actualContract": "RuntimePlanPreview -> SafeSqlPreview",
+      "operator": "operator encoded only in SQL",
+      "preserved": [
+        "plan id",
+        "referenced columns",
+        "SQL operator text"
+      ],
+      "lost": [
+        "origin",
+        "metric identity",
+        "grain",
+        "measure role",
+        "restrictions",
+        "acknowledgement",
+        "result-use eligibility"
+      ],
+      "lossClasses": [
+        "aggregation_origin_loss",
+        "metric_identity_loss",
+        "grain_context_loss",
+        "measure_role_loss",
+        "restriction_loss",
+        "acknowledgement_loss",
+        "decision_use_boundary_loss"
+      ],
+      "userVisibleOrAuthorityBearing": true
+    },
+    {
+      "id": "SQL_preview_to_backend_request",
+      "producer": "Investigation.handleRunPreview",
+      "consumer": "backend-preview-executor.executeBackendPreview",
+      "actualContract": "SafeSqlPreview plus unenhanced RuntimePlanPreview and source rows -> BackendPreviewExecutionResult",
+      "operator": "SQL from enhanced plan; request runtime plan is unenhanced",
+      "preserved": [
+        "SQL text",
+        "source id",
+        "requested columns"
+      ],
+      "lost": [
+        "operator-origin linkage",
+        "canonical provenance",
+        "restrictions",
+        "metric identity"
+      ],
+      "lossClasses": [
+        "provenance_loss",
+        "aggregation_origin_loss",
+        "restriction_loss",
+        "metric_identity_loss",
+        "authority_escalation_risk"
+      ],
+      "userVisibleOrAuthorityBearing": true
+    },
+    {
+      "id": "backend_to_local_result",
+      "producer": "backend-preview-executor.executeBackendPreview/local-duckdb-executor",
+      "consumer": "Investigation.handleRunPreview",
+      "actualContract": "BackendPreviewExecutionInput -> DuckDBPreviewResult",
+      "operator": "executed from SQL only",
+      "preserved": [
+        "rows",
+        "columns",
+        "execution warnings"
+      ],
+      "lost": [
+        "aggregation lineage",
+        "origin",
+        "metric identity",
+        "grain",
+        "measure role",
+        "restrictions",
+        "decision-use boundary"
+      ],
+      "lossClasses": [
+        "provenance_loss",
+        "aggregation_origin_loss",
+        "metric_identity_loss",
+        "grain_context_loss",
+        "measure_role_loss",
+        "restriction_loss",
+        "decision_use_boundary_loss"
+      ],
+      "userVisibleOrAuthorityBearing": true
+    },
+    {
+      "id": "result_to_chart",
+      "producer": "Investigation.handleRunPreview",
+      "consumer": "chart-preview-model.createChartPreviewModel",
+      "actualContract": "DuckDBPreviewResult + unenhanced RuntimePlanPreview -> ChartPreviewModel",
+      "operator": "not governed in result contract",
+      "preserved": [
+        "rows",
+        "display dimensions/measures"
+      ],
+      "lost": [
+        "origin",
+        "metric identity",
+        "restrictions",
+        "authority provenance"
+      ],
+      "lossClasses": [
+        "aggregation_origin_loss",
+        "metric_identity_loss",
+        "restriction_loss",
+        "decision_use_boundary_loss",
+        "authority_escalation_risk"
+      ],
+      "userVisibleOrAuthorityBearing": true
+    },
+    {
+      "id": "result_to_BA_and_persistence",
+      "producer": "Investigation/createChartPreviewModel",
+      "consumer": "ba-decision-engine.createBADecisionBrief and chart/session persistence",
+      "actualContract": "preview rows/chart model/briefing -> BA brief, recommendation, saved chart/session",
+      "operator": "not governed downstream",
+      "preserved": [
+        "display data",
+        "basic runtime metadata"
+      ],
+      "lost": [
+        "machine-readable restrictions",
+        "metric approval",
+        "origin",
+        "grain/measure-role lineage"
+      ],
+      "lossClasses": [
+        "restriction_loss",
+        "metric_identity_loss",
+        "aggregation_origin_loss",
+        "grain_context_loss",
+        "measure_role_loss",
+        "decision_use_boundary_loss",
+        "authority_escalation_risk"
+      ],
+      "userVisibleOrAuthorityBearing": true
+    }
+  ],
+  "acknowledgementMetadataPresent": false,
+  "structuredRestrictionContractPresent": false,
+  "productionContractsModified": false
+}

@@ -1,0 +1,1527 @@
+{
+  "schemaVersion": "lightbi.phase-5b5-projection-strategy-audit.v1",
+  "strategies": [
+    {
+      "strategy": "restriction_metadata_only",
+      "surfaces": [
+        {
+          "consumer": "plan_preview",
+          "safetyProperties": [
+            "origin preserved",
+            "restrictions machine-readable"
+          ],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "no Phase 5B5 UI effect",
+          "residualRisk": "production migration and consumer enforcement remain unresolved",
+          "losslessness": "possible_with_versioned_projection",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": true
+        },
+        {
+          "consumer": "SQL_preview",
+          "safetyProperties": [
+            "origin preserved",
+            "restrictions machine-readable"
+          ],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "no Phase 5B5 UI effect",
+          "residualRisk": "production migration and consumer enforcement remain unresolved",
+          "losslessness": "possible_with_versioned_projection",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": true
+        },
+        {
+          "consumer": "backend_execution_request",
+          "safetyProperties": [
+            "origin preserved",
+            "restrictions machine-readable"
+          ],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "no Phase 5B5 UI effect",
+          "residualRisk": "production migration and consumer enforcement remain unresolved",
+          "losslessness": "possible_with_versioned_projection",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": true
+        },
+        {
+          "consumer": "execution_result",
+          "safetyProperties": [
+            "origin preserved",
+            "restrictions machine-readable"
+          ],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "no Phase 5B5 UI effect",
+          "residualRisk": "production migration and consumer enforcement remain unresolved",
+          "losslessness": "possible_with_versioned_projection",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": true
+        },
+        {
+          "consumer": "chart_preview",
+          "safetyProperties": [
+            "origin preserved",
+            "restrictions machine-readable"
+          ],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "no Phase 5B5 UI effect",
+          "residualRisk": "production migration and consumer enforcement remain unresolved",
+          "losslessness": "possible_with_versioned_projection",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": true
+        },
+        {
+          "consumer": "KPI_card",
+          "safetyProperties": [
+            "origin preserved",
+            "restrictions machine-readable"
+          ],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "no Phase 5B5 UI effect",
+          "residualRisk": "production migration and consumer enforcement remain unresolved",
+          "losslessness": "possible_with_versioned_projection",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": true
+        },
+        {
+          "consumer": "BA_decision_brief",
+          "safetyProperties": [
+            "origin preserved",
+            "restrictions machine-readable"
+          ],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "no Phase 5B5 UI effect",
+          "residualRisk": "production migration and consumer enforcement remain unresolved",
+          "losslessness": "possible_with_versioned_projection",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": true
+        },
+        {
+          "consumer": "narrative_generation",
+          "safetyProperties": [
+            "origin preserved",
+            "restrictions machine-readable"
+          ],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "no Phase 5B5 UI effect",
+          "residualRisk": "production migration and consumer enforcement remain unresolved",
+          "losslessness": "possible_with_versioned_projection",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": true
+        },
+        {
+          "consumer": "recommendation",
+          "safetyProperties": [
+            "origin preserved",
+            "restrictions machine-readable"
+          ],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "no Phase 5B5 UI effect",
+          "residualRisk": "production migration and consumer enforcement remain unresolved",
+          "losslessness": "possible_with_versioned_projection",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": true
+        },
+        {
+          "consumer": "automated_alert",
+          "safetyProperties": [
+            "origin preserved",
+            "restrictions machine-readable"
+          ],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "no Phase 5B5 UI effect",
+          "residualRisk": "production migration and consumer enforcement remain unresolved",
+          "losslessness": "possible_with_versioned_projection",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": true
+        },
+        {
+          "consumer": "persisted_metric",
+          "safetyProperties": [
+            "origin preserved",
+            "restrictions machine-readable"
+          ],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "no Phase 5B5 UI effect",
+          "residualRisk": "production migration and consumer enforcement remain unresolved",
+          "losslessness": "possible_with_versioned_projection",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": true
+        }
+      ],
+      "selectedForProduction": false
+    },
+    {
+      "strategy": "metadata_plus_visible_warning",
+      "surfaces": [
+        {
+          "consumer": "plan_preview",
+          "safetyProperties": [
+            "origin preserved",
+            "restrictions machine-readable"
+          ],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "later visible warning required",
+          "residualRisk": "production migration and consumer enforcement remain unresolved",
+          "losslessness": "possible_with_versioned_projection",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": true
+        },
+        {
+          "consumer": "SQL_preview",
+          "safetyProperties": [
+            "origin preserved",
+            "restrictions machine-readable"
+          ],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "later visible warning required",
+          "residualRisk": "production migration and consumer enforcement remain unresolved",
+          "losslessness": "possible_with_versioned_projection",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": true
+        },
+        {
+          "consumer": "backend_execution_request",
+          "safetyProperties": [
+            "origin preserved",
+            "restrictions machine-readable"
+          ],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "later visible warning required",
+          "residualRisk": "production migration and consumer enforcement remain unresolved",
+          "losslessness": "possible_with_versioned_projection",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": true
+        },
+        {
+          "consumer": "execution_result",
+          "safetyProperties": [
+            "origin preserved",
+            "restrictions machine-readable"
+          ],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "later visible warning required",
+          "residualRisk": "production migration and consumer enforcement remain unresolved",
+          "losslessness": "possible_with_versioned_projection",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": true
+        },
+        {
+          "consumer": "chart_preview",
+          "safetyProperties": [
+            "origin preserved",
+            "restrictions machine-readable"
+          ],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "later visible warning required",
+          "residualRisk": "production migration and consumer enforcement remain unresolved",
+          "losslessness": "possible_with_versioned_projection",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": true
+        },
+        {
+          "consumer": "KPI_card",
+          "safetyProperties": [
+            "origin preserved",
+            "restrictions machine-readable"
+          ],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "later visible warning required",
+          "residualRisk": "production migration and consumer enforcement remain unresolved",
+          "losslessness": "possible_with_versioned_projection",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": true
+        },
+        {
+          "consumer": "BA_decision_brief",
+          "safetyProperties": [
+            "origin preserved",
+            "restrictions machine-readable"
+          ],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "later visible warning required",
+          "residualRisk": "production migration and consumer enforcement remain unresolved",
+          "losslessness": "possible_with_versioned_projection",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": true
+        },
+        {
+          "consumer": "narrative_generation",
+          "safetyProperties": [
+            "origin preserved",
+            "restrictions machine-readable"
+          ],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "later visible warning required",
+          "residualRisk": "production migration and consumer enforcement remain unresolved",
+          "losslessness": "possible_with_versioned_projection",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": true
+        },
+        {
+          "consumer": "recommendation",
+          "safetyProperties": [
+            "origin preserved",
+            "restrictions machine-readable"
+          ],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "later visible warning required",
+          "residualRisk": "production migration and consumer enforcement remain unresolved",
+          "losslessness": "possible_with_versioned_projection",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": true
+        },
+        {
+          "consumer": "automated_alert",
+          "safetyProperties": [
+            "origin preserved",
+            "restrictions machine-readable"
+          ],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "later visible warning required",
+          "residualRisk": "production migration and consumer enforcement remain unresolved",
+          "losslessness": "possible_with_versioned_projection",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": true
+        },
+        {
+          "consumer": "persisted_metric",
+          "safetyProperties": [
+            "origin preserved",
+            "restrictions machine-readable"
+          ],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "later visible warning required",
+          "residualRisk": "production migration and consumer enforcement remain unresolved",
+          "losslessness": "possible_with_versioned_projection",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": true
+        }
+      ],
+      "selectedForProduction": false
+    },
+    {
+      "strategy": "metadata_plus_acknowledgement_boundary",
+      "surfaces": [
+        {
+          "consumer": "plan_preview",
+          "safetyProperties": [
+            "origin preserved",
+            "restrictions machine-readable"
+          ],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "no Phase 5B5 UI effect",
+          "residualRisk": "production migration and consumer enforcement remain unresolved",
+          "losslessness": "possible_with_versioned_projection",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": true
+        },
+        {
+          "consumer": "SQL_preview",
+          "safetyProperties": [
+            "origin preserved",
+            "restrictions machine-readable"
+          ],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "no Phase 5B5 UI effect",
+          "residualRisk": "production migration and consumer enforcement remain unresolved",
+          "losslessness": "possible_with_versioned_projection",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": true
+        },
+        {
+          "consumer": "backend_execution_request",
+          "safetyProperties": [
+            "origin preserved",
+            "restrictions machine-readable"
+          ],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "no Phase 5B5 UI effect",
+          "residualRisk": "production migration and consumer enforcement remain unresolved",
+          "losslessness": "possible_with_versioned_projection",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": true
+        },
+        {
+          "consumer": "execution_result",
+          "safetyProperties": [
+            "origin preserved",
+            "restrictions machine-readable"
+          ],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "no Phase 5B5 UI effect",
+          "residualRisk": "production migration and consumer enforcement remain unresolved",
+          "losslessness": "possible_with_versioned_projection",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": true
+        },
+        {
+          "consumer": "chart_preview",
+          "safetyProperties": [
+            "origin preserved",
+            "restrictions machine-readable"
+          ],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "no Phase 5B5 UI effect",
+          "residualRisk": "production migration and consumer enforcement remain unresolved",
+          "losslessness": "possible_with_versioned_projection",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": true
+        },
+        {
+          "consumer": "KPI_card",
+          "safetyProperties": [
+            "origin preserved",
+            "restrictions machine-readable"
+          ],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "no Phase 5B5 UI effect",
+          "residualRisk": "production migration and consumer enforcement remain unresolved",
+          "losslessness": "possible_with_versioned_projection",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": true
+        },
+        {
+          "consumer": "BA_decision_brief",
+          "safetyProperties": [
+            "origin preserved",
+            "restrictions machine-readable"
+          ],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "no Phase 5B5 UI effect",
+          "residualRisk": "production migration and consumer enforcement remain unresolved",
+          "losslessness": "possible_with_versioned_projection",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": true
+        },
+        {
+          "consumer": "narrative_generation",
+          "safetyProperties": [
+            "origin preserved",
+            "restrictions machine-readable"
+          ],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "no Phase 5B5 UI effect",
+          "residualRisk": "production migration and consumer enforcement remain unresolved",
+          "losslessness": "possible_with_versioned_projection",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": true
+        },
+        {
+          "consumer": "recommendation",
+          "safetyProperties": [
+            "origin preserved",
+            "restrictions machine-readable"
+          ],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "no Phase 5B5 UI effect",
+          "residualRisk": "production migration and consumer enforcement remain unresolved",
+          "losslessness": "possible_with_versioned_projection",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": true
+        },
+        {
+          "consumer": "automated_alert",
+          "safetyProperties": [
+            "origin preserved",
+            "restrictions machine-readable"
+          ],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "no Phase 5B5 UI effect",
+          "residualRisk": "production migration and consumer enforcement remain unresolved",
+          "losslessness": "possible_with_versioned_projection",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": true
+        },
+        {
+          "consumer": "persisted_metric",
+          "safetyProperties": [
+            "origin preserved",
+            "restrictions machine-readable"
+          ],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "no Phase 5B5 UI effect",
+          "residualRisk": "production migration and consumer enforcement remain unresolved",
+          "losslessness": "possible_with_versioned_projection",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": true
+        }
+      ],
+      "selectedForProduction": false
+    },
+    {
+      "strategy": "hard_prohibition_automatic_defaults",
+      "surfaces": [
+        {
+          "consumer": "plan_preview",
+          "safetyProperties": [
+            "origin preserved",
+            "restrictions machine-readable"
+          ],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "no Phase 5B5 UI effect",
+          "residualRisk": "production migration and consumer enforcement remain unresolved",
+          "losslessness": "possible_with_versioned_projection",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": true
+        },
+        {
+          "consumer": "SQL_preview",
+          "safetyProperties": [
+            "origin preserved",
+            "restrictions machine-readable"
+          ],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "no Phase 5B5 UI effect",
+          "residualRisk": "production migration and consumer enforcement remain unresolved",
+          "losslessness": "possible_with_versioned_projection",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": true
+        },
+        {
+          "consumer": "backend_execution_request",
+          "safetyProperties": [
+            "origin preserved",
+            "restrictions machine-readable"
+          ],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "no Phase 5B5 UI effect",
+          "residualRisk": "production migration and consumer enforcement remain unresolved",
+          "losslessness": "possible_with_versioned_projection",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": true
+        },
+        {
+          "consumer": "execution_result",
+          "safetyProperties": [
+            "origin preserved",
+            "restrictions machine-readable"
+          ],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "no Phase 5B5 UI effect",
+          "residualRisk": "production migration and consumer enforcement remain unresolved",
+          "losslessness": "possible_with_versioned_projection",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": true
+        },
+        {
+          "consumer": "chart_preview",
+          "safetyProperties": [
+            "origin preserved",
+            "restrictions machine-readable"
+          ],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "no Phase 5B5 UI effect",
+          "residualRisk": "production migration and consumer enforcement remain unresolved",
+          "losslessness": "possible_with_versioned_projection",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": true
+        },
+        {
+          "consumer": "KPI_card",
+          "safetyProperties": [
+            "origin preserved",
+            "restrictions machine-readable"
+          ],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "no Phase 5B5 UI effect",
+          "residualRisk": "production migration and consumer enforcement remain unresolved",
+          "losslessness": "possible_with_versioned_projection",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": true
+        },
+        {
+          "consumer": "BA_decision_brief",
+          "safetyProperties": [
+            "origin preserved",
+            "restrictions machine-readable"
+          ],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "no Phase 5B5 UI effect",
+          "residualRisk": "production migration and consumer enforcement remain unresolved",
+          "losslessness": "possible_with_versioned_projection",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": true
+        },
+        {
+          "consumer": "narrative_generation",
+          "safetyProperties": [
+            "origin preserved",
+            "restrictions machine-readable"
+          ],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "no Phase 5B5 UI effect",
+          "residualRisk": "production migration and consumer enforcement remain unresolved",
+          "losslessness": "possible_with_versioned_projection",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": true
+        },
+        {
+          "consumer": "recommendation",
+          "safetyProperties": [
+            "origin preserved",
+            "restrictions machine-readable"
+          ],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "no Phase 5B5 UI effect",
+          "residualRisk": "production migration and consumer enforcement remain unresolved",
+          "losslessness": "possible_with_versioned_projection",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": true
+        },
+        {
+          "consumer": "automated_alert",
+          "safetyProperties": [
+            "origin preserved",
+            "restrictions machine-readable"
+          ],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "no Phase 5B5 UI effect",
+          "residualRisk": "production migration and consumer enforcement remain unresolved",
+          "losslessness": "possible_with_versioned_projection",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": true
+        },
+        {
+          "consumer": "persisted_metric",
+          "safetyProperties": [
+            "origin preserved",
+            "restrictions machine-readable"
+          ],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "no Phase 5B5 UI effect",
+          "residualRisk": "production migration and consumer enforcement remain unresolved",
+          "losslessness": "possible_with_versioned_projection",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": true
+        }
+      ],
+      "selectedForProduction": false
+    },
+    {
+      "strategy": "governed_metric_only_BA_boundary",
+      "surfaces": [
+        {
+          "consumer": "plan_preview",
+          "safetyProperties": [
+            "origin preserved",
+            "restrictions machine-readable"
+          ],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "no Phase 5B5 UI effect",
+          "residualRisk": "production migration and consumer enforcement remain unresolved",
+          "losslessness": "possible_with_versioned_projection",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": true
+        },
+        {
+          "consumer": "SQL_preview",
+          "safetyProperties": [
+            "origin preserved",
+            "restrictions machine-readable"
+          ],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "no Phase 5B5 UI effect",
+          "residualRisk": "production migration and consumer enforcement remain unresolved",
+          "losslessness": "possible_with_versioned_projection",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": true
+        },
+        {
+          "consumer": "backend_execution_request",
+          "safetyProperties": [
+            "origin preserved",
+            "restrictions machine-readable"
+          ],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "no Phase 5B5 UI effect",
+          "residualRisk": "production migration and consumer enforcement remain unresolved",
+          "losslessness": "possible_with_versioned_projection",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": true
+        },
+        {
+          "consumer": "execution_result",
+          "safetyProperties": [
+            "origin preserved",
+            "restrictions machine-readable"
+          ],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "no Phase 5B5 UI effect",
+          "residualRisk": "production migration and consumer enforcement remain unresolved",
+          "losslessness": "possible_with_versioned_projection",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": true
+        },
+        {
+          "consumer": "chart_preview",
+          "safetyProperties": [
+            "origin preserved",
+            "restrictions machine-readable"
+          ],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "no Phase 5B5 UI effect",
+          "residualRisk": "production migration and consumer enforcement remain unresolved",
+          "losslessness": "possible_with_versioned_projection",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": true
+        },
+        {
+          "consumer": "KPI_card",
+          "safetyProperties": [
+            "origin preserved",
+            "restrictions machine-readable"
+          ],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "no Phase 5B5 UI effect",
+          "residualRisk": "production migration and consumer enforcement remain unresolved",
+          "losslessness": "possible_with_versioned_projection",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": true
+        },
+        {
+          "consumer": "BA_decision_brief",
+          "safetyProperties": [
+            "origin preserved",
+            "restrictions machine-readable"
+          ],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "no Phase 5B5 UI effect",
+          "residualRisk": "production migration and consumer enforcement remain unresolved",
+          "losslessness": "possible_with_versioned_projection",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": true
+        },
+        {
+          "consumer": "narrative_generation",
+          "safetyProperties": [
+            "origin preserved",
+            "restrictions machine-readable"
+          ],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "no Phase 5B5 UI effect",
+          "residualRisk": "production migration and consumer enforcement remain unresolved",
+          "losslessness": "possible_with_versioned_projection",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": true
+        },
+        {
+          "consumer": "recommendation",
+          "safetyProperties": [
+            "origin preserved",
+            "restrictions machine-readable"
+          ],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "no Phase 5B5 UI effect",
+          "residualRisk": "production migration and consumer enforcement remain unresolved",
+          "losslessness": "possible_with_versioned_projection",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": true
+        },
+        {
+          "consumer": "automated_alert",
+          "safetyProperties": [
+            "origin preserved",
+            "restrictions machine-readable"
+          ],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "no Phase 5B5 UI effect",
+          "residualRisk": "production migration and consumer enforcement remain unresolved",
+          "losslessness": "possible_with_versioned_projection",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": true
+        },
+        {
+          "consumer": "persisted_metric",
+          "safetyProperties": [
+            "origin preserved",
+            "restrictions machine-readable"
+          ],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "no Phase 5B5 UI effect",
+          "residualRisk": "production migration and consumer enforcement remain unresolved",
+          "losslessness": "possible_with_versioned_projection",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": true
+        }
+      ],
+      "selectedForProduction": false
+    },
+    {
+      "strategy": "retain_current_contracts",
+      "surfaces": [
+        {
+          "consumer": "plan_preview",
+          "safetyProperties": [],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "no Phase 5B5 UI effect",
+          "residualRisk": "authority metadata remains lost",
+          "losslessness": "lossy",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": false
+        },
+        {
+          "consumer": "SQL_preview",
+          "safetyProperties": [],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "no Phase 5B5 UI effect",
+          "residualRisk": "authority metadata remains lost",
+          "losslessness": "lossy",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": false
+        },
+        {
+          "consumer": "backend_execution_request",
+          "safetyProperties": [],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "no Phase 5B5 UI effect",
+          "residualRisk": "authority metadata remains lost",
+          "losslessness": "lossy",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": false
+        },
+        {
+          "consumer": "execution_result",
+          "safetyProperties": [],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "no Phase 5B5 UI effect",
+          "residualRisk": "authority metadata remains lost",
+          "losslessness": "lossy",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": false
+        },
+        {
+          "consumer": "chart_preview",
+          "safetyProperties": [],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "no Phase 5B5 UI effect",
+          "residualRisk": "authority metadata remains lost",
+          "losslessness": "lossy",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": false
+        },
+        {
+          "consumer": "KPI_card",
+          "safetyProperties": [],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "no Phase 5B5 UI effect",
+          "residualRisk": "authority metadata remains lost",
+          "losslessness": "lossy",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": false
+        },
+        {
+          "consumer": "BA_decision_brief",
+          "safetyProperties": [],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "no Phase 5B5 UI effect",
+          "residualRisk": "authority metadata remains lost",
+          "losslessness": "lossy",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": false
+        },
+        {
+          "consumer": "narrative_generation",
+          "safetyProperties": [],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "no Phase 5B5 UI effect",
+          "residualRisk": "authority metadata remains lost",
+          "losslessness": "lossy",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": false
+        },
+        {
+          "consumer": "recommendation",
+          "safetyProperties": [],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "no Phase 5B5 UI effect",
+          "residualRisk": "authority metadata remains lost",
+          "losslessness": "lossy",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": false
+        },
+        {
+          "consumer": "automated_alert",
+          "safetyProperties": [],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "no Phase 5B5 UI effect",
+          "residualRisk": "authority metadata remains lost",
+          "losslessness": "lossy",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": false
+        },
+        {
+          "consumer": "persisted_metric",
+          "safetyProperties": [],
+          "metadataRequirements": [
+            "lineage",
+            "restriction set",
+            "use eligibility",
+            "integrity"
+          ],
+          "UXImplications": "no Phase 5B5 UI effect",
+          "residualRisk": "authority metadata remains lost",
+          "losslessness": "lossy",
+          "authorityImplications": "none in Phase 5B5",
+          "implementationPrerequisites": [
+            "versioned production contract migration",
+            "consumer enforcement",
+            "regression approval"
+          ],
+          "suitabilityForLaterControlledProjection": false
+        }
+      ],
+      "selectedForProduction": false
+    }
+  ],
+  "productionStrategySelected": null
+}

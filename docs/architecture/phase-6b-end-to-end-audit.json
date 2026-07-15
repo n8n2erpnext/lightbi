@@ -1,0 +1,11 @@
+{
+  "schemaVersion": "lightbi.phase-6b-end-to-end-audit.v1",
+  "simpleGolden": {"source": "sample data/Sales_ERP_May_2026.xlsx", "metric": "sales_revenue", "expected": 22973896244, "actual": 22973896244, "comparison": "exact_match", "engine": "duckdb"},
+  "advancedGolden": {"source": "sample data/Sales_ERP_May_2026.xlsx", "metric": "sales_revenue", "expected": 22973896244, "actual": 22973896244, "comparison": "exact_match", "engine": "duckdb"},
+  "artifactIdentityPreservedForAdvancedSelection": true,
+  "runtimeRestrictionsRetained": true,
+  "decisionUseAuthorized": false,
+  "advancedPartialRowsBlocked": true,
+  "advancedOperatorMutationBlocked": true,
+  "advancedUnsupportedMetricBlocked": true
+}

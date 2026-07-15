@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "lightbi.phase-5m3-runtime-preflight-audit.v1",
+  "phase": "5M3",
+  "domainPackId": "commerce_distribution_mvp",
+  "runtimeContractVersion": "lightbi.governed-runtime-contract.v1",
+  "runtimePolicyVersion": "lightbi.governed-runtime-policy.v1",
+  "runtimePolicyHash": "9b5ef8acc2d6761b428b41713c4e0d87a9db3bb9c79d251e51026057d0ea00b4",
+  "metricPolicyHash": "79b00e4aa7e97311da56db1f19a996c52c8034dc52da21b0dc6981dfd1282702",
+  "questionPolicyHash": "9c8ce5e0904a95f70e80cb81bc79a4c52ba4729f4772a7e9a8d6e997da3d6cbb",
+  "manifestPolicyHash": "7b18e323865c6058a780d5ef31527878a60c004a116ba600c95ec6a705b8f37c",
+  "metricIds": ["sales_revenue", "quantity_sold", "transaction_count", "inventory_on_hand", "delivery_count", "gross_profit"],
+  "states": ["executable", "conditionally_executable", "blocked", "unavailable", "invalid"],
+  "positiveProbeCount": 10,
+  "negativeProbeCount": 20,
+  "preflightChecks": [
+    "upstream artifact identity and policy hash",
+    "exact source and canonical column binding",
+    "metric definition and governed operator",
+    "grain, dimension and time compatibility",
+    "unit and currency compatibility",
+    "duplicate and repeated-total handling",
+    "snapshot as-of basis",
+    "relationship requirements",
+    "metric blockers and monotonic restrictions",
+    "production and decision authority remain false"
+  ],
+  "conditionallyExecutableMetricIds": ["sales_revenue", "quantity_sold", "transaction_count", "inventory_on_hand", "delivery_count"],
+  "grossProfitConditionalExecutionPermitted": false,
+  "blockedMetricPromotionPermitted": false,
+  "explanationOnlyExecutionPermitted": false,
+  "productionWiring": { "executed": false }
+}

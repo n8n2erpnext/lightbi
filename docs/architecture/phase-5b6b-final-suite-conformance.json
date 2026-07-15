@@ -1,0 +1,111 @@
+{
+  "schemaVersion": "lightbi.phase-5b6b-final-suite-conformance.v1",
+  "execution": {
+    "command": "cd apps/desktop && npx vitest run",
+    "preservedLog": "/tmp/lightbi-phase5b6b-full-suite.log",
+    "preservedLogSha256": "1d3b1337630f7d74d30b0c78cdb9831fcce243c6b5a019cce24de3526441aea4",
+    "exitStatus": 1,
+    "durationSeconds": 215.93,
+    "runCountOnFinalSourceTestScannerState": 1
+  },
+  "totals": {
+    "testFiles": 141,
+    "passedTestFiles": 137,
+    "failedTestFiles": 4,
+    "tests": 1042,
+    "passedTests": 1033,
+    "failedTests": 9
+  },
+  "governedBaseline": {
+    "allowlist": "docs/architecture/phase-5b6b-regression-baseline-allowlist.v1.json",
+    "identityKey": "file|fullTestName",
+    "deterministicBaselineFailuresObserved": 6,
+    "timingSensitiveBaselineFailuresObserved": 3,
+    "timingSensitiveBaselineCasesPassed": 0,
+    "unexpectedFailures": 0,
+    "phase5B6BOwnedFailures": 0,
+    "totalFailureCountUsedAsGate": false
+  },
+  "observedFailures": [
+    {
+      "file": "src/lib/guided-investigation-pipeline.test.ts",
+      "fullTestName": "Guided Investigation Pipeline Orchestrator > Executes the entire end-to-end pipeline deterministically",
+      "class": "deterministic",
+      "failureType": "assertion",
+      "signature": "expected 0 to be greater than 0",
+      "allowlistMatch": true
+    },
+    {
+      "file": "src/lib/numeric-health-gate.test.ts",
+      "fullTestName": "evaluateNumericHealth > blocks JS non-integer decimals",
+      "class": "deterministic",
+      "failureType": "assertion",
+      "signature": "expected true to be false",
+      "allowlistMatch": true
+    },
+    {
+      "file": "src/lib/numeric-health-gate.test.ts",
+      "fullTestName": "evaluateNumericHealth > hard-blocks decimal-looking strings (US format)",
+      "class": "deterministic",
+      "failureType": "assertion",
+      "signature": "expected true to be false",
+      "allowlistMatch": true
+    },
+    {
+      "file": "src/lib/numeric-health-gate.test.ts",
+      "fullTestName": "evaluateNumericHealth > hard-blocks decimal-looking strings (EU format)",
+      "class": "deterministic",
+      "failureType": "assertion",
+      "signature": "expected true to be false",
+      "allowlistMatch": true
+    },
+    {
+      "file": "src/lib/virtual-dataset-planner.test.ts",
+      "fullTestName": "Virtual Dataset Planner > 2. Product Performance + inventory risk question",
+      "class": "deterministic",
+      "failureType": "assertion",
+      "signature": "expected 'draft' to be 'ready'",
+      "allowlistMatch": true
+    },
+    {
+      "file": "src/lib/virtual-dataset-planner.test.ts",
+      "fullTestName": "Virtual Dataset Planner > 6. Many-to-many relationship",
+      "class": "deterministic",
+      "failureType": "assertion",
+      "signature": "expected 'draft' to be 'ready'",
+      "allowlistMatch": true
+    },
+    {
+      "file": "src/lib/ba-comparison-engine.test.ts",
+      "fullTestName": "ba comparison engine > answers the real May vs June 2026 sales ERP comparison with revenue drivers and profit caveats",
+      "class": "timing_sensitive",
+      "failureType": "timeout_only",
+      "signature": "Test timed out in 5000ms",
+      "allowlistMatch": true
+    },
+    {
+      "file": "src/lib/ba-comparison-engine.test.ts",
+      "fullTestName": "ba comparison engine > answers the real May vs June 2026 accounting ERP comparison with top 10 profit evidence",
+      "class": "timing_sensitive",
+      "failureType": "timeout_only",
+      "signature": "Test timed out in 5000ms",
+      "allowlistMatch": true
+    },
+    {
+      "file": "src/lib/ba-comparison-engine.test.ts",
+      "fullTestName": "ba comparison engine > handles the real May vs June 2026 logistics ERP pair without pretending revenue is available",
+      "class": "timing_sensitive",
+      "failureType": "timeout_only",
+      "signature": "Test timed out in 5000ms",
+      "allowlistMatch": true
+    }
+  ],
+  "gates": {
+    "deterministicBaselineConformance": true,
+    "timingSensitiveBaselineConformance": true,
+    "unexpectedRegressionFailureCount": 0,
+    "phase5B6BOwnedFailureCount": 0,
+    "finalWorktreeFullSuiteVerified": true
+  },
+  "classification": "build_integrity_restored_with_governed_baseline_debt"
+}

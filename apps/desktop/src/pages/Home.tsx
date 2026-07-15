@@ -25,19 +25,18 @@ import type { RelationshipGraph } from '../lib/relationship-graph';
 import { BusinessViewReviewStep } from '../components/data-intake/BusinessViewReviewStep';
 import type { WorkspaceUnderstandingState } from '../lib/workspace-understanding-state';
 import { createWorkspaceUnderstandingState, applyBusinessViewSelection, getActiveAnalysisContextLabel } from '../lib/workspace-understanding-state';
-import { runGuidedInvestigationPipeline } from '../lib/guided-investigation-pipeline';
-import { createDatasetUnderstanding } from '../lib/dataset-understanding-contract';
 import { DatasetUnderstandingCard } from '../components/analysis/DatasetUnderstandingCard';
 import { UnderstandingNextCard } from '../components/analysis/UnderstandingNextCard';
-import { createUnderstandingCoreResult } from '../lib/understanding-core/question-engine';
-import { adaptCoreToUnderstandingNext } from '../lib/understanding-core/next-adapter';
-import { createUnderstandingCoreInputFromSource } from '../lib/understanding-core/source-input';
+import {
+  getOrBuildCanonicalConsumerArtifact,
+  prepareCanonicalInvestigationHandoff,
+} from '../lib/understanding-core/canonical-consumer-boundary';
+import { projectCanonicalArtifactToUnderstandingNext } from '../lib/canonical-consumer-presentation-adapter';
 import type { AnalysisAction } from '../lib/analysis-opportunity-actions';
-import { isDataQualityReviewAction } from '../lib/understanding-next/action-adapter';
 import { createRuntimeIntentFromAnalysisAction } from '../lib/analysis-runtime-contract';
 import { createRuntimePlanPreview } from '../lib/runtime-planner-preview';
 import { createInvestigationSession } from '../lib/investigation-session';
-import { generateAIBriefing, generateAIBriefingFromUnderstandingNext } from '../lib/ai-briefing-generator';
+import { generateCanonicalAIBriefing } from '../lib/canonical-ai-briefing';
 import { useNavigate } from 'react-router-dom';
 import { createVirtualDatasetPlan } from '../lib/virtual-dataset-planner';
 import type { VirtualDatasetPlan } from '../lib/virtual-dataset-planner';
@@ -51,8 +50,6 @@ import { ExecutionGuardNotice } from '../components/analysis/ExecutionGuardNotic
 import { createDuckDBLogicalPlan } from '../lib/duckdb-logical-plan';
 import type { DuckDBLogicalPlan } from '../lib/duckdb-logical-plan';
 import { DuckDBLogicalPlanPreview } from '../components/analysis/DuckDBLogicalPlanPreview';
-import { createRuntimeBoundaryArtifact } from '../lib/runtime-boundary-contract';
-import type { RuntimeBoundaryArtifact } from '../lib/runtime-boundary-contract';
 import { MultiFileUnderstandingProofPanel } from '../components/analysis/MultiFileUnderstandingProofPanel';
 import { createExpectedResultContract } from '../lib/expected-result-contract';
 import type { ExpectedResultContract } from '../lib/expected-result-contract';
@@ -67,20 +64,11 @@ import type { SandboxExecutionRequest, SandboxEvaluationResult } from '../lib/ru
 import { SandboxPolicyPreview } from '../components/analysis/SandboxPolicyPreview';
 import { createPreviewResultContract } from '../lib/preview-result-contract';
 import type { PreviewResultContract } from '../lib/preview-result-contract';
-import { calculateBusinessConfidence } from '../lib/business-confidence-engine';
-import type { ConfidenceSignalRegistry } from '../lib/business-confidence-engine';
-import { createDatasetHealthSignal, createRelationshipSignal, createBusinessViewSignal, createResultValidationSignal } from '../lib/confidence-signal-adapters';
 import { PreviewResultContractCard } from '../components/analysis/PreviewResultContractCard';
 import { calculateDatasetHealth } from '../lib/dataset-health-engine';
 import { DataQualityCard } from '../components/data-intake/DataQualityCard';
 import { DecisionTrustReportCard } from '../components/analysis/DecisionTrustReportCard';
 import { BusinessViewSummaryCard } from '../components/analysis/BusinessViewSummaryCard';
-import { DuckDBPreviewRuntimeCard } from '../components/analysis/DuckDBPreviewRuntimeCard';
-import { executeDuckDBPreviewRuntime } from '../lib/duckdb-preview-runtime';
-import type { PreviewRuntimeResult } from '../lib/duckdb-preview-runtime';
-import { ResultValidationCard } from '../components/analysis/ResultValidationCard';
-import { validatePreviewRuntimeResult } from '../lib/result-validator-contract';
-import type { ResultValidationResult } from '../lib/result-validator-contract';
 import type { MappingOverlayAction } from '../lib/mapping-overlay-state';
 import { applyMappingAction } from '../lib/mapping-overlay-state';
 import { useDisplayPreferences } from '../stores/display-preferences-store';
@@ -620,25 +608,21 @@ export const Home: React.FC = () => {
 
   const handleSelectAnalysisAction = async (action: AnalysisAction) => {
     // Use the typed adapter helper — no `as any` needed
-    const isDQR = isDataQualityReviewAction(action);
+    const isDQR = action.actionType === 'data_quality_review';
 
     const intent = createRuntimeIntentFromAnalysisAction(action);
     const plan = createRuntimePlanPreview(intent);
     
     // Attempt to extract rows if available from current dataset state
-    const datasetRows = selectFirstNonEmptyRows(
-      currentDataset?.analysisRows,
-      currentDataset?.semanticRows,
-      currentDataset?.previewRows,
-      currentDataset?.rows
-    );
+    const datasetRows = canonicalRows;
     console.log("TRACE [OPPORTUNITY] selectedAction.id:", action.id, "isDQR:", isDQR);
 
-    const aiBriefing = datasetUnderstandingNext
-      ? generateAIBriefingFromUnderstandingNext(datasetUnderstandingNext)
-      : datasetUnderstanding
-        ? generateAIBriefing(datasetUnderstanding)
-        : undefined;
+    const canonicalHandoff = canonicalArtifact
+      ? prepareCanonicalInvestigationHandoff(canonicalArtifact, action.id)
+      : undefined;
+    const aiBriefing = canonicalArtifact
+      ? generateCanonicalAIBriefing(canonicalArtifact)
+      : undefined;
 
     let datasetForSession = currentDataset;
     if (currentDataset?.status === 'ready') {
@@ -665,7 +649,8 @@ export const Home: React.FC = () => {
             ? 'semantic_sample'
             : 'preview',
       currentDataset?.businessFusionOverview,
-      datasetForSession?.status === 'ready' ? createWorkspaceSessionSaveRequest(datasetForSession) : undefined
+      datasetForSession?.status === 'ready' ? createWorkspaceSessionSaveRequest(datasetForSession) : undefined,
+      canonicalHandoff
     );
     navigate('/investigation');
   };
@@ -677,14 +662,11 @@ export const Home: React.FC = () => {
   const [acceptedRuntimePreview, setAcceptedRuntimePreview] = useState<RuntimePreview | null>(null);
   const [executionGuardResult, setExecutionGuardResult] = useState<ExecutionGuardResult | null>(null);
   const [selectedLogicalPlan, setSelectedLogicalPlan] = useState<DuckDBLogicalPlan | null>(null);
-  const [runtimeBoundaryArtifact, setRuntimeBoundaryArtifact] = useState<RuntimeBoundaryArtifact | null>(null);
   const [expectedResultContract, setExpectedResultContract] = useState<ExpectedResultContract | null>(null);
   const [compiledQueryContract, setCompiledQueryContract] = useState<CompiledQueryContract | null>(null);
   const [sandboxRequest, setSandboxRequest] = useState<SandboxExecutionRequest | null>(null);
   const [sandboxEvaluation, setSandboxEvaluation] = useState<SandboxEvaluationResult | null>(null);
   const [previewResultContract, setPreviewResultContract] = useState<PreviewResultContract | null>(null);
-  const [previewRuntimeResult, setPreviewRuntimeResult] = useState<PreviewRuntimeResult | null>(null);
-  const [resultValidationResult, setResultValidationResult] = useState<ResultValidationResult | null>(null);
 
   const datasetHealthResult = React.useMemo(() => {
     if (currentDataset?.status === 'ready' && currentDataset.sourceType !== "virtual_business_view" && currentDataset.profiles) {
@@ -701,28 +683,6 @@ export const Home: React.FC = () => {
     }
     return null;
   }, [currentDataset]);
-
-  const businessConfidenceResult = React.useMemo(() => {
-    if (!expectedResultContract || !workspaceState?.businessViewState || !datasetHealthResult) return null;
-
-    const businessView = workspaceState.businessViewState.confirmedBusinessViews.find(v => v.id === expectedResultContract.businessViewId) || null;
-    const isMultiDataset = false;
-
-    const signals = [
-      createDatasetHealthSignal(datasetHealthResult),
-      createRelationshipSignal(null, isMultiDataset),
-      createBusinessViewSignal(businessView),
-      createResultValidationSignal(resultValidationResult)
-    ];
-
-    const registry: ConfidenceSignalRegistry = {
-      version: "1.0",
-      isMultiDataset,
-      signals
-    };
-
-    return calculateBusinessConfidence(registry);
-  }, [expectedResultContract, workspaceState, datasetHealthResult, resultValidationResult]);
 
   type AnalysisMode = "explore" | "investigate" | "ask";
   const [analysisMode, setAnalysisMode] = useState<AnalysisMode>("explore");
@@ -799,92 +759,49 @@ export const Home: React.FC = () => {
     return selectHeroSuggestionPool({ dataColumns: columns });
   }, [currentDataset]);
 
-  const guidedInvestigationResult = React.useMemo(() => {
-    if (currentDataset?.status === 'ready' && currentDataset.columns) {
-      const columnsForPipeline = currentDataset.columns.map((c: string) => ({ 
-        name: c, 
-        type: currentDataset.profiles?.[c]?.inferredType || currentDataset.profiles?.[c]?.type || 'string',
-        distinctRatio: currentDataset.profiles?.[c]?.distinct_ratio,
-        uniqueValuesCount: currentDataset.profiles?.[c]?.unique_count
-      }));
-      return runGuidedInvestigationPipeline({ columns: columnsForPipeline, overlayActions: mappingOverlayActions });
-    }
-    return null;
-  }, [currentDataset, mappingOverlayActions]);
+  // Legacy presentation branches remain mounted for compatibility, but no legacy
+  // detector or understanding-next orchestrator participates in the selected path.
+  const guidedInvestigationResult: any = null;
+  const datasetUnderstanding: any = null;
 
-  const datasetUnderstanding = React.useMemo(() => {
-    if (!currentDataset || !guidedInvestigationResult) return null;
-    return createDatasetUnderstanding({
-      datasetName: currentDataset.file_name,
-      rowCount: currentDataset.rows_count,
-      columnCount: Array.isArray(currentDataset.columns) ? currentDataset.columns.length : 0,
-      signalRegistry: guidedInvestigationResult.signals,
-      perspectives: guidedInvestigationResult.perspectives,
-      businessViews: guidedInvestigationResult.businessViews,
-      questionSuggestions: guidedInvestigationResult.questionSuggestions,
-      health: datasetHealthResult || undefined,
+  const canonicalRows = React.useMemo(
+    () => selectFirstNonEmptyRows(
+      currentDataset?.understandingRows,
+      currentDataset?.analysisRows,
+      currentDataset?.semanticRows,
+      currentDataset?.previewRows,
+      currentDataset?.rows
+    ) as Record<string, unknown>[],
+    [currentDataset]
+  );
+
+  const canonicalArtifact = React.useMemo(() => {
+    if (currentDataset?.status !== 'ready' || !Array.isArray(currentDataset.columns)) return null;
+    const sourceType = String(currentDataset.sourceType || 'unknown');
+    const sourceKind = ['postgresql', 'mysql', 'mariadb', 'mongodb_atlas', 'sqlite'].includes(sourceType)
+      ? 'database_table'
+      : ['google_sheets', 'm365_excel', 'csv_url', 'excel_url'].includes(sourceType)
+        ? 'online_file'
+        : sourceType === 'local_xlsx' || sourceType === 'local_csv' || sourceType === 'local_json' || sourceType === 'local_file'
+          ? 'local_file'
+          : sourceType === 'api_response'
+            ? 'api_response'
+            : 'unknown';
+    return getOrBuildCanonicalConsumerArtifact({
+      datasetId: currentDataset.file_name || 'dataset',
+      sourceLabel: currentDataset.file_name || 'dataset',
+      sourceKind,
+      columns: currentDataset.understandingColumns ?? currentDataset.columns,
+      rows: canonicalRows,
+      sourceRowCount: Number(currentDataset.understandingSourceRowCount ?? currentDataset.rows_count ?? canonicalRows.length),
+      sheet: currentDataset.selected_sheet ?? undefined,
     });
-  }, [currentDataset, guidedInvestigationResult, datasetHealthResult]);
+  }, [canonicalRows, currentDataset]);
 
-  const datasetUnderstandingNext = React.useMemo(() => {
-    if (currentDataset?.status !== 'ready' || currentDataset.sourceType === 'virtual_business_view' || !currentDataset.columns) return null;
-    
-    // Extract source row count properly
-    let sourceRowCount = currentDataset.understandingSourceRowCount ?? currentDataset.rows_count;
-    if (currentDataset.sourceFiles && currentDataset.sourceFiles.length > 0) {
-      sourceRowCount = currentDataset.understandingSourceRowCount ?? (currentDataset.sourceFiles.reduce((acc: number, f: any) => acc + (f.rows || 0), 0) || currentDataset.rows_count);
-    }
-
-    const understandingColumns = currentDataset.understandingColumns ?? currentDataset.columns;
-    const understandingProfiles = currentDataset.understandingProfiles ?? currentDataset.profiles;
-    const onlineSourceTypes = new Set(['google_sheets', 'm365_excel', 'csv_url', 'excel_url']);
-    const databaseSourceTypes = new Set(['postgresql', 'mysql', 'mariadb', 'mongodb_atlas', 'sqlite']);
-    const sourceRows = selectFirstNonEmptyRows(
-      currentDataset.understandingRows,
-      currentDataset.semanticRows,
-      currentDataset.analysisRows,
-      currentDataset.previewRows,
-      currentDataset.rows
-    );
-    const sourceNames = currentDataset.sourceFiles ? currentDataset.sourceFiles.map((f: any) => f.name) : [currentDataset.file_name || 'dataset'];
-    const sheetNames = currentDataset.sourceFiles?.flatMap((f: any) => f.sheetNames || []) || [];
-
-    const coreInput = databaseSourceTypes.has(currentDataset.sourceType)
-      ? createUnderstandingCoreInputFromSource({
-        kind: 'database_table',
-        connectionName: currentDataset.sourceType,
-        tableName: currentDataset.file_name || 'database table',
-        columns: understandingColumns,
-        rows: sourceRows,
-        columnProfiles: understandingProfiles,
-        sourceRowCount
-      })
-      : onlineSourceTypes.has(currentDataset.sourceType)
-      ? createUnderstandingCoreInputFromSource({
-        kind: 'online_file',
-        title: currentDataset.file_name || 'online dataset',
-        url: currentDataset.normalizedUrl,
-        sheetNames,
-        columns: understandingColumns,
-        rows: sourceRows,
-        columnProfiles: understandingProfiles,
-        sourceRowCount
-      })
-      : createUnderstandingCoreInputFromSource({
-        kind: 'local_file',
-        fileNames: sourceNames,
-        label: currentDataset.file_name || 'dataset',
-        sheetNames,
-        columns: understandingColumns,
-        rows: sourceRows,
-        columnProfiles: understandingProfiles,
-        sourceRowCount
-      });
-
-    const coreUnderstanding = createUnderstandingCoreResult(coreInput);
-
-    return adaptCoreToUnderstandingNext(coreUnderstanding);
-  }, [currentDataset]);
+  const datasetUnderstandingNext = React.useMemo(
+    () => canonicalArtifact ? projectCanonicalArtifactToUnderstandingNext(canonicalArtifact) : null,
+    [canonicalArtifact]
+  );
 
   const activeBusinessViews = selectedPerspective && guidedInvestigationResult
     ? guidedInvestigationResult.businessViews.filter(v => v.perspectiveId === selectedPerspective)
@@ -1740,7 +1657,7 @@ export const Home: React.FC = () => {
                   {decisionTrustReport && <DecisionTrustReportCard report={decisionTrustReport} />}
                   
                   {/* Dataset Understanding Layer */}
-                  {currentDataset?.sourceType !== 'virtual_business_view' && datasetUnderstandingNext ? (
+                  {datasetUnderstandingNext ? (
                     <UnderstandingNextCard 
                       understanding={datasetUnderstandingNext} 
                       onSelectAction={handleSelectAnalysisAction}
@@ -2671,17 +2588,6 @@ export const Home: React.FC = () => {
                   const question = businessView?.suggestedQuestions.find(q => q.id === selectedVirtualPlan.questionId);
                   
                   if (businessView && question) {
-                     const artifact = createRuntimeBoundaryArtifact({
-                        businessView,
-                        question,
-                        virtualPlan: selectedVirtualPlan,
-                        runtimePreview: acceptedRuntimePreview,
-                        executionGuard: executionGuardResult,
-                        logicalPlan,
-                        runtimePreviewAccepted: true
-                     });
-                     setRuntimeBoundaryArtifact(artifact);
-                     
                      const expectedResult = createExpectedResultContract({
                        question,
                        businessView,
@@ -2806,42 +2712,16 @@ export const Home: React.FC = () => {
                 setSelectedLogicalPlan(null);
               }}
               onContinue={() => {
-                if (
-                  runtimeBoundaryArtifact &&
-                  expectedResultContract &&
-                  compiledQueryContract &&
-                  sandboxRequest &&
-                  sandboxEvaluation &&
-                  previewResultContract
-                ) {
-                  const res = executeDuckDBPreviewRuntime({
-                    artifact: runtimeBoundaryArtifact,
-                    expectedResult: expectedResultContract,
-                    compiledQuery: compiledQueryContract,
-                    sandboxRequest,
-                    sandboxEvaluation,
-                    previewContract: previewResultContract,
-                    businessConfidence: businessConfidenceResult || undefined
-                  });
-                  setPreviewRuntimeResult(res);
-
-                  const valRes = validatePreviewRuntimeResult({
-                    expectedResult: expectedResultContract,
-                    previewResult: res
-                  });
-                  setResultValidationResult(valRes);
-                }
+                // The legacy mock runtime was retired in Phase 6B. Execution is
+                // only available through a canonical Investigation handoff.
+                setPreviewResultContract(null);
+                setSandboxRequest(null);
+                setSandboxEvaluation(null);
+                setCompiledQueryContract(null);
+                setExpectedResultContract(null);
+                setSelectedLogicalPlan(null);
               }}
             />
-            {previewRuntimeResult && (
-              <div className="space-y-6">
-                <DuckDBPreviewRuntimeCard result={previewRuntimeResult} />
-                {resultValidationResult && <ResultValidationCard result={resultValidationResult} />}
-                <div className="text-sm text-gray-500 italic mt-2 text-center">
-                  Business Confidence remains provisional as Coverage signal is not available yet.
-                </div>
-              </div>
-            )}
           </div>
         </div>
       )}

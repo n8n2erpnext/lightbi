@@ -1,0 +1,48 @@
+{
+  "schemaVersion": "lightbi.phase-5b6b-semantic-preservation-audit.v1",
+  "method": "pre-fix and post-fix SHA-256 comparison plus deterministic canonical regression tests without audit-write environment flags",
+  "frozenPolicySourceHashes": [
+    {"file":"semantic-resolution-policy.ts","before":"01c3ffaa9773681747dd0ea881a8949b0e42aff97e1065f4b82a06516b259d8b","after":"01c3ffaa9773681747dd0ea881a8949b0e42aff97e1065f4b82a06516b259d8b"},
+    {"file":"grain-candidate-policy.ts","before":"0c2abadb558ddf8d65ff20a470b6a6471627042b9982653e5dac0422a4af42b4","after":"0c2abadb558ddf8d65ff20a470b6a6471627042b9982653e5dac0422a4af42b4"},
+    {"file":"grain-resolution-policy.ts","before":"8388c58f8c3e8ea4ee3dbaebbbc38cdd76eaf724a9d4a551bf86e9bdfb62ac26","after":"8388c58f8c3e8ea4ee3dbaebbbc38cdd76eaf724a9d4a551bf86e9bdfb62ac26"},
+    {"file":"relationship-candidate-policy.ts","before":"8cccfe3d5d052fbc196af790d2f1850eb6c2964a5304c1f3301673a3379b5a5b","after":"8cccfe3d5d052fbc196af790d2f1850eb6c2964a5304c1f3301673a3379b5a5b"},
+    {"file":"relationship-resolution-policy.ts","before":"e983e7387f20450ba9bf9661c33cb61fe5ef6688003ef18635ae570542f62204","after":"e983e7387f20450ba9bf9661c33cb61fe5ef6688003ef18635ae570542f62204"},
+    {"file":"readiness-policy.ts","before":"85296ca279a02b84624092b79ad2add8144e726370f3034d794d3b7c286cfc79","after":"85296ca279a02b84624092b79ad2add8144e726370f3034d794d3b7c286cfc79"},
+    {"file":"canonical-runtime-adapter-policy.ts","before":"cfab01ac35080a26e80bffe1bde52dc76795f4c0a5e1746797bcd8d668e75c6c","after":"cfab01ac35080a26e80bffe1bde52dc76795f4c0a5e1746797bcd8d668e75c6c"},
+    {"file":"legacy-canonical-comparison-policy.ts","before":"fc223fdfea6e3304567cb281a91296b46c6290b17afa04fb85f56109839581dd","after":"fc223fdfea6e3304567cb281a91296b46c6290b17afa04fb85f56109839581dd"},
+    {"file":"aggregation-guard-shadow-policy.ts","before":"cdece9ea60af4a78de73293b4670dfeff8fa961c2aaed61ce70b1b8b4528070a","after":"cdece9ea60af4a78de73293b4670dfeff8fa961c2aaed61ce70b1b8b4528070a"},
+    {"file":"aggregation-intent-policy.ts","before":"e3bd9516222f1f2f454f121b31ec0d9d3ac8e3732fc5f11b179216a5a2faec84","after":"e3bd9516222f1f2f454f121b31ec0d9d3ac8e3732fc5f11b179216a5a2faec84"},
+    {"file":"aggregation-restriction-projection-policy.ts","before":"089015599fcd1addb1ac6772504ebf8413511fd41742d4d326f74b4ecfd0e7e1","after":"089015599fcd1addb1ac6772504ebf8413511fd41742d4d326f74b4ecfd0e7e1"},
+    {"file":"actual-contract-sidecar-policy.ts","before":"ebdda4d7eae0c17e43381cdd6b4ed6c3cc00551344a6b115e660035a0d5d4496","after":"ebdda4d7eae0c17e43381cdd6b4ed6c3cc00551344a6b115e660035a0d5d4496"}
+  ],
+  "frozenArtifacts": [
+    {"file":"phase-4c1-readiness-corpus-audit.json","sha256":"dd995a9703fb378849256a2ecb57792c564a56dfb43aed9f9dfd2a4ac4732746","byteIdentical":true,"semanticIdentity":"readiness corpus"},
+    {"file":"phase-5a-runtime-envelope-corpus-audit.json","sha256":"c466617e988c868586569dc4fc298b556e259cf743c0140d26637c575d3a7a2a","byteIdentical":true,"semanticIdentity":"runtime envelope projections"},
+    {"file":"phase-5b1-paired-observation-replay-audit.json","sha256":"5edbc545780656df17578fe3615095ca6f6ba61ae1c2f486df7a1cb762dcfa8b","byteIdentical":true,"semanticIdentity":"comparison raw observations"},
+    {"file":"phase-5b2-aggregation-divergence-disposition.json","sha256":"ac1612db4707d951f261715654413297bce6501d55b111ebb58b9d7ae127758d","byteIdentical":true,"semanticIdentity":"145 aggregation records"},
+    {"file":"phase-5b4-unique-divergence-policy-replay.json","sha256":"c9979741f466e28562c5e80cf6c2b73c44c2381f61879e6693adbca90407923e","byteIdentical":true,"semanticIdentity":"result-use restrictions"},
+    {"file":"phase-5b5-aggregation-restriction-projection-replay.json","sha256":"909201d592594bd9c3f4c3bc149d689699ab4cb924b5442aa8066447bc663d20","byteIdentical":true,"semanticIdentity":"projection lineage and identities"},
+    {"file":"phase-5b6-sidecar-replay-audit.json","sha256":"21bb717a0f8df345d9f2beafee48271cc658e435b9eae2079ee3e94c90198148","byteIdentical":true,"semanticIdentity":"sidecar authority boundaries"}
+  ],
+  "invariants": {
+    "aggregationRecordCount": 145,
+    "aggregationRecordIdentitiesRetained": true,
+    "capabilityStatesChanged": false,
+    "blockerDebtRemediationRestrictionRemoved": false,
+    "safeToAggregateIntroduced": false,
+    "metricOrOperationApproved": false,
+    "productionWiringExecuted": false,
+    "canonicalAuthorityMigrationEligible": false,
+    "newProductionImporter": false
+  },
+  "governedSourceHashCorrection": {
+    "file": "semantic-candidate-engine.ts",
+    "before": "deece00f0384d6ef8e3c6b00b29c69d1b4648d8f7869206004df2edb3bd8f295",
+    "after": "3d61192a4d1464cb90011c5687e2fee7112921a7000d36194e5b8e765e6a6bc4",
+    "reason": "Phase 5B6B type-correct explicit-null boundary and removal of dead bindings; deterministic semantic corpus output remains unchanged.",
+    "policySemanticChange": false,
+    "artifactSemanticChange": false
+  },
+  "frozenPolicyIdentityPreserved": true,
+  "canonicalArtifactSemanticsPreserved": true
+}

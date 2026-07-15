@@ -1,0 +1,11 @@
+{
+  "schemaVersion": "lightbi.phase-6b-single-path-audit.v1",
+  "home": {"artifact": true, "action": true, "runtimePreflight": true, "queryPlan": true, "execution": "governed"},
+  "advanced": {"artifact": true, "action": true, "runtimePreflight": true, "queryPlan": true, "execution": "governed"},
+  "investigation": {"missingCanonicalHandoff": "blocked", "canonicalPreflightBlocked": "blocked", "legacyFallback": false},
+  "independentProfilingOnSessionPath": false,
+  "independentSemanticMappingOnSessionPath": false,
+  "independentQuestionGenerationOnSessionPath": false,
+  "independentAggregationSelectionOnSessionPath": false,
+  "decisionUseAuthorized": false
+}

@@ -1,0 +1,1748 @@
+{
+  "schemaVersion": "lightbi.acceptance-ground-truth.v1.1",
+  "corpusVersion": "1.2.0",
+  "category": "multi_file",
+  "samples": [
+    {
+      "id": "multi.commerce_may_2026",
+      "corpusVersion": "1.2.0",
+      "group": "multi_file",
+      "category": "multi_file",
+      "provenance": {
+        "kind": "repository_sample",
+        "sourceSystem": "synthetic_cross_function_erp_exports",
+        "tuningUse": "forbidden",
+        "dataHandling": "existing_local_acceptance_data",
+        "notes": "Ground truth records expected semantics; it is not a current product-support claim."
+      },
+      "sources": [
+        {
+          "path": "sample data/Sales_ERP_May_2026.xlsx",
+          "sheet": "Sales",
+          "required": true,
+          "sha256": "e2cad91d14cf4ae19daa09dd9c980ea57b6b9cc20a518a9fa6818c3b18aef9ae"
+        },
+        {
+          "path": "sample data/Logistics_ERP_May_2026.csv",
+          "sheet": "Sheet1",
+          "required": true,
+          "sha256": "e093e56ae6750a5ec3bbc98983f21409f373ee71d75b9cceb12c52b2d840ff72"
+        },
+        {
+          "path": "sample data/Accounting_ERP_May_2026.csv",
+          "sheet": "Sheet1",
+          "required": true,
+          "sha256": "3c59da1c10c67ab974dfd204b737402aff1c28d748665949942579fb5fb1a2fd"
+        }
+      ],
+      "dataset": {
+        "expectedArchetype": "cross_function_commerce_bundle",
+        "expectedGrain": "transaction",
+        "grainTruth": {
+          "coarseGrain": "transaction",
+          "rowEntity": "cross_file_record",
+          "parentEntity": "business_period",
+          "candidateKeys": [],
+          "parentKeys": [],
+          "measureExpectations": [
+            {
+              "physicalColumn": "Revenue",
+              "repeatedWithinParent": true,
+              "additiveAcrossRows": true,
+              "reasonCode": "row_additive_measure"
+            },
+            {
+              "physicalColumn": "NetRevenue",
+              "repeatedWithinParent": true,
+              "additiveAcrossRows": true,
+              "reasonCode": "row_additive_measure"
+            },
+            {
+              "physicalColumn": "GrossProfit",
+              "repeatedWithinParent": true,
+              "additiveAcrossRows": true,
+              "reasonCode": "row_additive_measure"
+            },
+            {
+              "physicalColumn": "DeliveryFee",
+              "repeatedWithinParent": true,
+              "additiveAcrossRows": true,
+              "reasonCode": "row_additive_measure"
+            }
+          ]
+        }
+      },
+      "recognition": {
+        "requiredMappings": [
+          {
+            "physicalColumn": "OrderID",
+            "canonicalSignal": "order",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          },
+          {
+            "physicalColumn": "Product",
+            "canonicalSignal": "product",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          },
+          {
+            "physicalColumn": "Revenue",
+            "canonicalSignal": "revenue",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          }
+        ],
+        "forbiddenMappings": [
+          {
+            "physicalColumn": "OrderID",
+            "canonicalSignal": "quantity",
+            "reasonCode": "semantic_mismatch"
+          },
+          {
+            "physicalColumn": "DeliveryFee",
+            "canonicalSignal": "revenue",
+            "reasonCode": "semantic_mismatch"
+          }
+        ],
+        "expectedAmbiguousMappings": [
+          {
+            "physicalColumn": "Status",
+            "candidateSignals": [
+              "status",
+              "delivery_status"
+            ],
+            "reasonCode": "normalized_alias_collision",
+            "evidenceScope": "header_only",
+            "headerOnlyExpectedState": "ambiguous",
+            "contextualResolution": {
+              "policy": "may_resolve_with_context",
+              "resolvedCanonicalSignal": null,
+              "allowedFinalStates": [
+                "ambiguous",
+                "probable",
+                "confirmed"
+              ],
+              "requiredEvidence": [
+                "value_distribution",
+                "physical_type",
+                "dataset_grain",
+                "sibling_columns"
+              ],
+              "forbiddenEvidence": [
+                "header_only"
+              ]
+            }
+          }
+        ],
+        "expectedUnknownBusinessColumns": []
+      },
+      "support": {
+        "allowedDomainPacks": [
+          "revenue_sales",
+          "delivery_operations",
+          "finance_profitability"
+        ],
+        "blockedDomainPacks": [
+          "inventory_snapshot",
+          "inventory_movement",
+          "customer_contribution",
+          "performance_target_actual"
+        ],
+        "expectedExecutableActions": [
+          "revenue_cost_profit_reconciliation",
+          "carrier_cost_impact"
+        ],
+        "expectedBlockedActions": [
+          {
+            "actionId": "automatic_join",
+            "reasonCode": "relationship_must_be_proven"
+          }
+        ]
+      },
+      "verifiedMetricAnswers": {
+        "sales_revenue_sum": 22973896244,
+        "accounting_net_revenue_sum": 22973896244,
+        "revenue_gap": 0,
+        "delivery_fee_sum": 147925000,
+        "gross_profit_sum": 3075721244
+      },
+      "profilingExpectations": {
+        "sourceProfiles": [
+          {
+            "sourcePath": "sample data/Sales_ERP_May_2026.xlsx",
+            "sheet": "Sales",
+            "headerPosition": {
+              "zeroBasedRowIndex": 0,
+              "basis": "verified_source_read"
+            },
+            "verifiedRowCount": 1500
+          },
+          {
+            "sourcePath": "sample data/Logistics_ERP_May_2026.csv",
+            "sheet": "Sheet1",
+            "headerPosition": {
+              "zeroBasedRowIndex": 0,
+              "basis": "verified_source_read"
+            },
+            "verifiedRowCount": 1500
+          },
+          {
+            "sourcePath": "sample data/Accounting_ERP_May_2026.csv",
+            "sheet": "Sheet1",
+            "headerPosition": {
+              "zeroBasedRowIndex": 0,
+              "basis": "verified_source_read"
+            },
+            "verifiedRowCount": 1500
+          }
+        ],
+        "verifiedRowCount": null,
+        "columnPhysicalTypes": [
+          {
+            "physicalColumn": "OrderID",
+            "sourcePaths": [
+              "sample data/Sales_ERP_May_2026.xlsx",
+              "sample data/Logistics_ERP_May_2026.csv",
+              "sample data/Accounting_ERP_May_2026.csv"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "allowedParseExpectations": [
+              "preserve_text"
+            ]
+          },
+          {
+            "physicalColumn": "Product",
+            "sourcePaths": [
+              "sample data/Sales_ERP_May_2026.xlsx",
+              "sample data/Logistics_ERP_May_2026.csv",
+              "sample data/Accounting_ERP_May_2026.csv"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "allowedParseExpectations": [
+              "preserve_text"
+            ]
+          },
+          {
+            "physicalColumn": "Revenue",
+            "sourcePaths": [
+              "sample data/Sales_ERP_May_2026.xlsx"
+            ],
+            "allowedTypes": [
+              "number"
+            ],
+            "allowedParseExpectations": [
+              "numeric"
+            ]
+          },
+          {
+            "physicalColumn": "DeliveryFee",
+            "sourcePaths": [
+              "sample data/Logistics_ERP_May_2026.csv"
+            ],
+            "allowedTypes": [
+              "numeric_string"
+            ],
+            "allowedParseExpectations": [
+              "numeric_coercible"
+            ]
+          },
+          {
+            "physicalColumn": "Status",
+            "sourcePaths": [
+              "sample data/Sales_ERP_May_2026.xlsx"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "allowedParseExpectations": [
+              "preserve_text"
+            ]
+          }
+        ],
+        "issues": {
+          "expected": [],
+          "allowed": [
+            {
+              "code": "cross_file_duplicate_join_key",
+              "physicalColumn": null
+            }
+          ],
+          "forbidden": [
+            {
+              "code": "silent_parse_drop",
+              "physicalColumn": null
+            }
+          ]
+        },
+        "representativeEvidence": {
+          "requiredSamplingRegions": [
+            "head",
+            "middle",
+            "tail",
+            "deterministic_random"
+          ],
+          "minimumDistinctRegions": 4,
+          "requiredColumns": [
+            "OrderID",
+            "Product",
+            "Revenue",
+            "DeliveryFee",
+            "Status"
+          ],
+          "mustPreservePhysicalColumnNames": true,
+          "mustReportUnparsedValues": true
+        }
+      },
+      "relationshipTruth": {
+        "expectedRelationships": [
+          {
+            "id": "sales_to_logistics_by_order",
+            "leftSource": "sample data/Sales_ERP_May_2026.xlsx",
+            "rightSource": "sample data/Logistics_ERP_May_2026.csv",
+            "leftKeys": [
+              "OrderID"
+            ],
+            "rightKeys": [
+              "OrderID"
+            ],
+            "expectedCardinality": "one_to_one",
+            "operation": "join",
+            "decision": "allowed_after_key_validation",
+            "joinReasonCode": "shared_business_order_key",
+            "timePeriodAlignment": "2026-05",
+            "duplicationRisk": {
+              "level": "medium",
+              "reasonCode": "validate_key_uniqueness_before_join"
+            }
+          },
+          {
+            "id": "sales_to_accounting_by_order",
+            "leftSource": "sample data/Sales_ERP_May_2026.xlsx",
+            "rightSource": "sample data/Accounting_ERP_May_2026.csv",
+            "leftKeys": [
+              "OrderID"
+            ],
+            "rightKeys": [
+              "OrderID"
+            ],
+            "expectedCardinality": "one_to_one",
+            "operation": "join",
+            "decision": "allowed_after_key_validation",
+            "joinReasonCode": "shared_business_order_key",
+            "timePeriodAlignment": "2026-05",
+            "duplicationRisk": {
+              "level": "medium",
+              "reasonCode": "validate_key_uniqueness_before_join"
+            }
+          }
+        ],
+        "forbiddenRelationships": [
+          {
+            "id": "sales_price_to_logistics_cost",
+            "leftSource": "sample data/Sales_ERP_May_2026.xlsx",
+            "rightSource": "sample data/Logistics_ERP_May_2026.csv",
+            "leftKeys": [
+              "UnitPrice"
+            ],
+            "rightKeys": [
+              "UnitCost"
+            ],
+            "decision": "refuse",
+            "refusalReasonCode": "measure_values_are_not_identity_keys"
+          }
+        ],
+        "timeAlignment": {
+          "expected": "same_period",
+          "periods": [
+            "2026-05"
+          ],
+          "reasonCode": "monthly_bundle_alignment"
+        },
+        "duplicationRisk": {
+          "level": "medium",
+          "reasonCode": "cross_function_grain_must_be_validated"
+        }
+      }
+    },
+    {
+      "id": "multi.commerce_june_2026",
+      "corpusVersion": "1.2.0",
+      "group": "multi_file",
+      "category": "multi_file",
+      "provenance": {
+        "kind": "repository_sample",
+        "sourceSystem": "synthetic_cross_function_erp_exports",
+        "tuningUse": "forbidden",
+        "dataHandling": "existing_local_acceptance_data",
+        "notes": "Ground truth records expected semantics; it is not a current product-support claim."
+      },
+      "sources": [
+        {
+          "path": "sample data/Sales_ERP_June_2026.xlsx",
+          "sheet": "Sales",
+          "required": true,
+          "sha256": "a0a69a4d45531090ed5a829467d25ca89320d17792a72e4a91c55b95b9469e52"
+        },
+        {
+          "path": "sample data/Logistics_ERP_June_2026.csv",
+          "sheet": "Sheet1",
+          "required": true,
+          "sha256": "ccc7f8036429a5c1b879a8a77dec843ef5ba65dbb88e3b2471a0aa70cd0bb216"
+        },
+        {
+          "path": "sample data/Accounting_ERP_June_2026.csv",
+          "sheet": "Sheet1",
+          "required": true,
+          "sha256": "b3a3b290d5f54ca5d7fc79b7aed0f287f539e665113331bb6d4764fa5fc6aaea"
+        }
+      ],
+      "dataset": {
+        "expectedArchetype": "cross_function_commerce_bundle",
+        "expectedGrain": "transaction",
+        "grainTruth": {
+          "coarseGrain": "transaction",
+          "rowEntity": "cross_file_record",
+          "parentEntity": "business_period",
+          "candidateKeys": [],
+          "parentKeys": [],
+          "measureExpectations": [
+            {
+              "physicalColumn": "Revenue",
+              "repeatedWithinParent": true,
+              "additiveAcrossRows": true,
+              "reasonCode": "row_additive_measure"
+            },
+            {
+              "physicalColumn": "NetRevenue",
+              "repeatedWithinParent": true,
+              "additiveAcrossRows": true,
+              "reasonCode": "row_additive_measure"
+            },
+            {
+              "physicalColumn": "GrossProfit",
+              "repeatedWithinParent": true,
+              "additiveAcrossRows": true,
+              "reasonCode": "row_additive_measure"
+            },
+            {
+              "physicalColumn": "DeliveryFee",
+              "repeatedWithinParent": true,
+              "additiveAcrossRows": true,
+              "reasonCode": "row_additive_measure"
+            }
+          ]
+        }
+      },
+      "recognition": {
+        "requiredMappings": [
+          {
+            "physicalColumn": "OrderID",
+            "canonicalSignal": "order",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          },
+          {
+            "physicalColumn": "Product",
+            "canonicalSignal": "product",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          },
+          {
+            "physicalColumn": "Revenue",
+            "canonicalSignal": "revenue",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          }
+        ],
+        "forbiddenMappings": [
+          {
+            "physicalColumn": "OrderID",
+            "canonicalSignal": "quantity",
+            "reasonCode": "semantic_mismatch"
+          },
+          {
+            "physicalColumn": "DeliveryFee",
+            "canonicalSignal": "revenue",
+            "reasonCode": "semantic_mismatch"
+          }
+        ],
+        "expectedAmbiguousMappings": [
+          {
+            "physicalColumn": "Status",
+            "candidateSignals": [
+              "status",
+              "delivery_status"
+            ],
+            "reasonCode": "normalized_alias_collision",
+            "evidenceScope": "header_only",
+            "headerOnlyExpectedState": "ambiguous",
+            "contextualResolution": {
+              "policy": "may_resolve_with_context",
+              "resolvedCanonicalSignal": null,
+              "allowedFinalStates": [
+                "ambiguous",
+                "probable",
+                "confirmed"
+              ],
+              "requiredEvidence": [
+                "value_distribution",
+                "physical_type",
+                "dataset_grain",
+                "sibling_columns"
+              ],
+              "forbiddenEvidence": [
+                "header_only"
+              ]
+            }
+          }
+        ],
+        "expectedUnknownBusinessColumns": []
+      },
+      "support": {
+        "allowedDomainPacks": [
+          "revenue_sales",
+          "delivery_operations",
+          "finance_profitability"
+        ],
+        "blockedDomainPacks": [
+          "inventory_snapshot",
+          "inventory_movement",
+          "customer_contribution",
+          "performance_target_actual"
+        ],
+        "expectedExecutableActions": [
+          "revenue_cost_profit_reconciliation",
+          "carrier_cost_impact"
+        ],
+        "expectedBlockedActions": [
+          {
+            "actionId": "automatic_join",
+            "reasonCode": "relationship_must_be_proven"
+          }
+        ]
+      },
+      "verifiedMetricAnswers": {
+        "sales_revenue_sum": 20637539164,
+        "accounting_net_revenue_sum": 20637539164,
+        "revenue_gap": 0,
+        "delivery_fee_sum": 141625000,
+        "gross_profit_sum": 2934640164
+      },
+      "profilingExpectations": {
+        "sourceProfiles": [
+          {
+            "sourcePath": "sample data/Sales_ERP_June_2026.xlsx",
+            "sheet": "Sales",
+            "headerPosition": {
+              "zeroBasedRowIndex": 0,
+              "basis": "verified_source_read"
+            },
+            "verifiedRowCount": 1500
+          },
+          {
+            "sourcePath": "sample data/Logistics_ERP_June_2026.csv",
+            "sheet": "Sheet1",
+            "headerPosition": {
+              "zeroBasedRowIndex": 0,
+              "basis": "verified_source_read"
+            },
+            "verifiedRowCount": 1500
+          },
+          {
+            "sourcePath": "sample data/Accounting_ERP_June_2026.csv",
+            "sheet": "Sheet1",
+            "headerPosition": {
+              "zeroBasedRowIndex": 0,
+              "basis": "verified_source_read"
+            },
+            "verifiedRowCount": 1500
+          }
+        ],
+        "verifiedRowCount": null,
+        "columnPhysicalTypes": [
+          {
+            "physicalColumn": "OrderID",
+            "sourcePaths": [
+              "sample data/Sales_ERP_June_2026.xlsx",
+              "sample data/Logistics_ERP_June_2026.csv",
+              "sample data/Accounting_ERP_June_2026.csv"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "allowedParseExpectations": [
+              "preserve_text"
+            ]
+          },
+          {
+            "physicalColumn": "Product",
+            "sourcePaths": [
+              "sample data/Sales_ERP_June_2026.xlsx",
+              "sample data/Logistics_ERP_June_2026.csv",
+              "sample data/Accounting_ERP_June_2026.csv"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "allowedParseExpectations": [
+              "preserve_text"
+            ]
+          },
+          {
+            "physicalColumn": "Revenue",
+            "sourcePaths": [
+              "sample data/Sales_ERP_June_2026.xlsx"
+            ],
+            "allowedTypes": [
+              "number"
+            ],
+            "allowedParseExpectations": [
+              "numeric"
+            ]
+          },
+          {
+            "physicalColumn": "DeliveryFee",
+            "sourcePaths": [
+              "sample data/Logistics_ERP_June_2026.csv"
+            ],
+            "allowedTypes": [
+              "numeric_string"
+            ],
+            "allowedParseExpectations": [
+              "numeric_coercible"
+            ]
+          },
+          {
+            "physicalColumn": "Status",
+            "sourcePaths": [
+              "sample data/Sales_ERP_June_2026.xlsx"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "allowedParseExpectations": [
+              "preserve_text"
+            ]
+          }
+        ],
+        "issues": {
+          "expected": [],
+          "allowed": [
+            {
+              "code": "cross_file_duplicate_join_key",
+              "physicalColumn": null
+            }
+          ],
+          "forbidden": [
+            {
+              "code": "silent_parse_drop",
+              "physicalColumn": null
+            }
+          ]
+        },
+        "representativeEvidence": {
+          "requiredSamplingRegions": [
+            "head",
+            "middle",
+            "tail",
+            "deterministic_random"
+          ],
+          "minimumDistinctRegions": 4,
+          "requiredColumns": [
+            "OrderID",
+            "Product",
+            "Revenue",
+            "DeliveryFee",
+            "Status"
+          ],
+          "mustPreservePhysicalColumnNames": true,
+          "mustReportUnparsedValues": true
+        }
+      },
+      "relationshipTruth": {
+        "expectedRelationships": [
+          {
+            "id": "sales_to_logistics_by_order",
+            "leftSource": "sample data/Sales_ERP_June_2026.xlsx",
+            "rightSource": "sample data/Logistics_ERP_June_2026.csv",
+            "leftKeys": [
+              "OrderID"
+            ],
+            "rightKeys": [
+              "OrderID"
+            ],
+            "expectedCardinality": "one_to_one",
+            "operation": "join",
+            "decision": "allowed_after_key_validation",
+            "joinReasonCode": "shared_business_order_key",
+            "timePeriodAlignment": "2026-06",
+            "duplicationRisk": {
+              "level": "medium",
+              "reasonCode": "validate_key_uniqueness_before_join"
+            }
+          },
+          {
+            "id": "sales_to_accounting_by_order",
+            "leftSource": "sample data/Sales_ERP_June_2026.xlsx",
+            "rightSource": "sample data/Accounting_ERP_June_2026.csv",
+            "leftKeys": [
+              "OrderID"
+            ],
+            "rightKeys": [
+              "OrderID"
+            ],
+            "expectedCardinality": "one_to_one",
+            "operation": "join",
+            "decision": "allowed_after_key_validation",
+            "joinReasonCode": "shared_business_order_key",
+            "timePeriodAlignment": "2026-06",
+            "duplicationRisk": {
+              "level": "medium",
+              "reasonCode": "validate_key_uniqueness_before_join"
+            }
+          }
+        ],
+        "forbiddenRelationships": [
+          {
+            "id": "sales_price_to_logistics_cost",
+            "leftSource": "sample data/Sales_ERP_June_2026.xlsx",
+            "rightSource": "sample data/Logistics_ERP_June_2026.csv",
+            "leftKeys": [
+              "UnitPrice"
+            ],
+            "rightKeys": [
+              "UnitCost"
+            ],
+            "decision": "refuse",
+            "refusalReasonCode": "measure_values_are_not_identity_keys"
+          }
+        ],
+        "timeAlignment": {
+          "expected": "same_period",
+          "periods": [
+            "2026-06"
+          ],
+          "reasonCode": "monthly_bundle_alignment"
+        },
+        "duplicationRisk": {
+          "level": "medium",
+          "reasonCode": "cross_function_grain_must_be_validated"
+        }
+      }
+    },
+    {
+      "id": "multi.sales_period_pair",
+      "corpusVersion": "1.2.0",
+      "group": "multi_file",
+      "category": "multi_file",
+      "provenance": {
+        "kind": "repository_sample",
+        "sourceSystem": "synthetic_cross_function_erp_exports",
+        "tuningUse": "forbidden",
+        "dataHandling": "existing_local_acceptance_data",
+        "notes": "Ground truth records expected semantics; it is not a current product-support claim."
+      },
+      "sources": [
+        {
+          "path": "sample data/Sales_ERP_May_2026.xlsx",
+          "sheet": "Sales",
+          "required": true,
+          "sha256": "e2cad91d14cf4ae19daa09dd9c980ea57b6b9cc20a518a9fa6818c3b18aef9ae"
+        },
+        {
+          "path": "sample data/Sales_ERP_June_2026.xlsx",
+          "sheet": "Sales",
+          "required": true,
+          "sha256": "a0a69a4d45531090ed5a829467d25ca89320d17792a72e4a91c55b95b9469e52"
+        }
+      ],
+      "dataset": {
+        "expectedArchetype": "cross_function_commerce_bundle",
+        "expectedGrain": "transaction",
+        "grainTruth": {
+          "coarseGrain": "transaction",
+          "rowEntity": "cross_file_record",
+          "parentEntity": "business_period",
+          "candidateKeys": [],
+          "parentKeys": [],
+          "measureExpectations": [
+            {
+              "physicalColumn": "Revenue",
+              "repeatedWithinParent": true,
+              "additiveAcrossRows": true,
+              "reasonCode": "row_additive_measure"
+            },
+            {
+              "physicalColumn": "NetRevenue",
+              "repeatedWithinParent": true,
+              "additiveAcrossRows": true,
+              "reasonCode": "row_additive_measure"
+            },
+            {
+              "physicalColumn": "GrossProfit",
+              "repeatedWithinParent": true,
+              "additiveAcrossRows": true,
+              "reasonCode": "row_additive_measure"
+            },
+            {
+              "physicalColumn": "DeliveryFee",
+              "repeatedWithinParent": true,
+              "additiveAcrossRows": true,
+              "reasonCode": "row_additive_measure"
+            }
+          ]
+        }
+      },
+      "recognition": {
+        "requiredMappings": [
+          {
+            "physicalColumn": "OrderID",
+            "canonicalSignal": "order",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          },
+          {
+            "physicalColumn": "Product",
+            "canonicalSignal": "product",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          },
+          {
+            "physicalColumn": "Revenue",
+            "canonicalSignal": "revenue",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          }
+        ],
+        "forbiddenMappings": [
+          {
+            "physicalColumn": "OrderID",
+            "canonicalSignal": "quantity",
+            "reasonCode": "semantic_mismatch"
+          },
+          {
+            "physicalColumn": "UnitPrice",
+            "canonicalSignal": "total_cost",
+            "reasonCode": "semantic_mismatch"
+          }
+        ],
+        "expectedAmbiguousMappings": [
+          {
+            "physicalColumn": "Status",
+            "candidateSignals": [
+              "status",
+              "delivery_status"
+            ],
+            "reasonCode": "normalized_alias_collision",
+            "evidenceScope": "header_only",
+            "headerOnlyExpectedState": "ambiguous",
+            "contextualResolution": {
+              "policy": "may_resolve_with_context",
+              "resolvedCanonicalSignal": null,
+              "allowedFinalStates": [
+                "ambiguous",
+                "probable",
+                "confirmed"
+              ],
+              "requiredEvidence": [
+                "value_distribution",
+                "physical_type",
+                "dataset_grain",
+                "sibling_columns"
+              ],
+              "forbiddenEvidence": [
+                "header_only"
+              ]
+            }
+          }
+        ],
+        "expectedUnknownBusinessColumns": []
+      },
+      "support": {
+        "allowedDomainPacks": [
+          "revenue_sales"
+        ],
+        "blockedDomainPacks": [
+          "inventory_snapshot",
+          "inventory_movement",
+          "delivery_operations",
+          "finance_profitability",
+          "customer_contribution",
+          "performance_target_actual"
+        ],
+        "expectedExecutableActions": [
+          "period_revenue_variance",
+          "payment_mix_variance"
+        ],
+        "expectedBlockedActions": [
+          {
+            "actionId": "automatic_join",
+            "reasonCode": "relationship_must_be_proven"
+          }
+        ]
+      },
+      "verifiedMetricAnswers": {
+        "may_revenue": 22973896244,
+        "june_revenue": 20637539164,
+        "revenue_delta": -2336357080
+      },
+      "profilingExpectations": {
+        "sourceProfiles": [
+          {
+            "sourcePath": "sample data/Sales_ERP_May_2026.xlsx",
+            "sheet": "Sales",
+            "headerPosition": {
+              "zeroBasedRowIndex": 0,
+              "basis": "verified_source_read"
+            },
+            "verifiedRowCount": 1500
+          },
+          {
+            "sourcePath": "sample data/Sales_ERP_June_2026.xlsx",
+            "sheet": "Sales",
+            "headerPosition": {
+              "zeroBasedRowIndex": 0,
+              "basis": "verified_source_read"
+            },
+            "verifiedRowCount": 1500
+          }
+        ],
+        "verifiedRowCount": null,
+        "columnPhysicalTypes": [
+          {
+            "physicalColumn": "OrderID",
+            "sourcePaths": [
+              "sample data/Sales_ERP_May_2026.xlsx",
+              "sample data/Sales_ERP_June_2026.xlsx"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "allowedParseExpectations": [
+              "preserve_text"
+            ]
+          },
+          {
+            "physicalColumn": "Product",
+            "sourcePaths": [
+              "sample data/Sales_ERP_May_2026.xlsx",
+              "sample data/Sales_ERP_June_2026.xlsx"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "allowedParseExpectations": [
+              "preserve_text"
+            ]
+          },
+          {
+            "physicalColumn": "Revenue",
+            "sourcePaths": [
+              "sample data/Sales_ERP_May_2026.xlsx",
+              "sample data/Sales_ERP_June_2026.xlsx"
+            ],
+            "allowedTypes": [
+              "number"
+            ],
+            "allowedParseExpectations": [
+              "numeric"
+            ]
+          },
+          {
+            "physicalColumn": "UnitPrice",
+            "sourcePaths": [
+              "sample data/Sales_ERP_May_2026.xlsx",
+              "sample data/Sales_ERP_June_2026.xlsx"
+            ],
+            "allowedTypes": [
+              "number"
+            ],
+            "allowedParseExpectations": [
+              "numeric"
+            ]
+          },
+          {
+            "physicalColumn": "Status",
+            "sourcePaths": [
+              "sample data/Sales_ERP_May_2026.xlsx",
+              "sample data/Sales_ERP_June_2026.xlsx"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "allowedParseExpectations": [
+              "preserve_text"
+            ]
+          }
+        ],
+        "issues": {
+          "expected": [],
+          "allowed": [
+            {
+              "code": "cross_file_duplicate_join_key",
+              "physicalColumn": null
+            }
+          ],
+          "forbidden": [
+            {
+              "code": "silent_parse_drop",
+              "physicalColumn": null
+            }
+          ]
+        },
+        "representativeEvidence": {
+          "requiredSamplingRegions": [
+            "head",
+            "middle",
+            "tail",
+            "deterministic_random"
+          ],
+          "minimumDistinctRegions": 4,
+          "requiredColumns": [
+            "OrderID",
+            "Product",
+            "Revenue",
+            "UnitPrice",
+            "Status"
+          ],
+          "mustPreservePhysicalColumnNames": true,
+          "mustReportUnparsedValues": true
+        }
+      },
+      "relationshipTruth": {
+        "expectedRelationships": [
+          {
+            "id": "adjacent_period_append",
+            "leftSource": "sample data/Sales_ERP_May_2026.xlsx",
+            "rightSource": "sample data/Sales_ERP_June_2026.xlsx",
+            "leftKeys": [
+              "OrderID"
+            ],
+            "rightKeys": [
+              "OrderID"
+            ],
+            "expectedCardinality": "disjoint_period_partition",
+            "operation": "append",
+            "decision": "append_only",
+            "joinReasonCode": "schema_compatible_adjacent_periods",
+            "timePeriodAlignment": "2026-05_to_2026-06",
+            "duplicationRisk": {
+              "level": "low",
+              "reasonCode": "period_partition_expected"
+            }
+          }
+        ],
+        "forbiddenRelationships": [
+          {
+            "id": "adjacent_period_row_join",
+            "leftSource": "sample data/Sales_ERP_May_2026.xlsx",
+            "rightSource": "sample data/Sales_ERP_June_2026.xlsx",
+            "leftKeys": [
+              "OrderID"
+            ],
+            "rightKeys": [
+              "OrderID"
+            ],
+            "decision": "refuse",
+            "refusalReasonCode": "period_partitions_must_append_not_row_join"
+          }
+        ],
+        "timeAlignment": {
+          "expected": "adjacent_periods",
+          "periods": [
+            "2026-05",
+            "2026-06"
+          ],
+          "reasonCode": "month_over_month_sequence"
+        },
+        "duplicationRisk": {
+          "level": "low",
+          "reasonCode": "append_requires_period_and_key_deduplication_check"
+        }
+      }
+    },
+    {
+      "id": "multi.logistics_period_pair",
+      "corpusVersion": "1.2.0",
+      "group": "multi_file",
+      "category": "multi_file",
+      "provenance": {
+        "kind": "repository_sample",
+        "sourceSystem": "synthetic_cross_function_erp_exports",
+        "tuningUse": "forbidden",
+        "dataHandling": "existing_local_acceptance_data",
+        "notes": "Ground truth records expected semantics; it is not a current product-support claim."
+      },
+      "sources": [
+        {
+          "path": "sample data/Logistics_ERP_May_2026.csv",
+          "sheet": "Sheet1",
+          "required": true,
+          "sha256": "e093e56ae6750a5ec3bbc98983f21409f373ee71d75b9cceb12c52b2d840ff72"
+        },
+        {
+          "path": "sample data/Logistics_ERP_June_2026.csv",
+          "sheet": "Sheet1",
+          "required": true,
+          "sha256": "ccc7f8036429a5c1b879a8a77dec843ef5ba65dbb88e3b2471a0aa70cd0bb216"
+        }
+      ],
+      "dataset": {
+        "expectedArchetype": "cross_function_commerce_bundle",
+        "expectedGrain": "transaction",
+        "grainTruth": {
+          "coarseGrain": "transaction",
+          "rowEntity": "cross_file_record",
+          "parentEntity": "business_period",
+          "candidateKeys": [],
+          "parentKeys": [],
+          "measureExpectations": [
+            {
+              "physicalColumn": "Revenue",
+              "repeatedWithinParent": true,
+              "additiveAcrossRows": true,
+              "reasonCode": "row_additive_measure"
+            },
+            {
+              "physicalColumn": "NetRevenue",
+              "repeatedWithinParent": true,
+              "additiveAcrossRows": true,
+              "reasonCode": "row_additive_measure"
+            },
+            {
+              "physicalColumn": "GrossProfit",
+              "repeatedWithinParent": true,
+              "additiveAcrossRows": true,
+              "reasonCode": "row_additive_measure"
+            },
+            {
+              "physicalColumn": "DeliveryFee",
+              "repeatedWithinParent": true,
+              "additiveAcrossRows": true,
+              "reasonCode": "row_additive_measure"
+            }
+          ]
+        }
+      },
+      "recognition": {
+        "requiredMappings": [
+          {
+            "physicalColumn": "ShipmentID",
+            "canonicalSignal": "shipment",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          },
+          {
+            "physicalColumn": "Carrier",
+            "canonicalSignal": "carrier",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          },
+          {
+            "physicalColumn": "DeliveryFee",
+            "canonicalSignal": "delivery_fee",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          }
+        ],
+        "forbiddenMappings": [
+          {
+            "physicalColumn": "ShipmentID",
+            "canonicalSignal": "quantity",
+            "reasonCode": "semantic_mismatch"
+          },
+          {
+            "physicalColumn": "DeliveryFee",
+            "canonicalSignal": "revenue",
+            "reasonCode": "semantic_mismatch"
+          }
+        ],
+        "expectedAmbiguousMappings": [
+          {
+            "physicalColumn": "DeliveryStatus",
+            "candidateSignals": [
+              "status",
+              "delivery_status"
+            ],
+            "reasonCode": "normalized_alias_collision",
+            "evidenceScope": "header_only",
+            "headerOnlyExpectedState": "ambiguous",
+            "contextualResolution": {
+              "policy": "may_resolve_with_context",
+              "resolvedCanonicalSignal": null,
+              "allowedFinalStates": [
+                "ambiguous",
+                "probable",
+                "confirmed"
+              ],
+              "requiredEvidence": [
+                "value_distribution",
+                "physical_type",
+                "dataset_grain",
+                "sibling_columns"
+              ],
+              "forbiddenEvidence": [
+                "header_only"
+              ]
+            }
+          }
+        ],
+        "expectedUnknownBusinessColumns": []
+      },
+      "support": {
+        "allowedDomainPacks": [
+          "delivery_operations",
+          "inventory_movement"
+        ],
+        "blockedDomainPacks": [
+          "revenue_sales",
+          "inventory_snapshot",
+          "finance_profitability",
+          "customer_contribution",
+          "performance_target_actual"
+        ],
+        "expectedExecutableActions": [
+          "delivery_fee_variance",
+          "carrier_mix_variance"
+        ],
+        "expectedBlockedActions": [
+          {
+            "actionId": "automatic_join",
+            "reasonCode": "relationship_must_be_proven"
+          }
+        ]
+      },
+      "verifiedMetricAnswers": {
+        "may_delivery_fee": 147925000,
+        "june_delivery_fee": 141625000,
+        "delivery_fee_delta": -6300000
+      },
+      "profilingExpectations": {
+        "sourceProfiles": [
+          {
+            "sourcePath": "sample data/Logistics_ERP_May_2026.csv",
+            "sheet": "Sheet1",
+            "headerPosition": {
+              "zeroBasedRowIndex": 0,
+              "basis": "verified_source_read"
+            },
+            "verifiedRowCount": 1500
+          },
+          {
+            "sourcePath": "sample data/Logistics_ERP_June_2026.csv",
+            "sheet": "Sheet1",
+            "headerPosition": {
+              "zeroBasedRowIndex": 0,
+              "basis": "verified_source_read"
+            },
+            "verifiedRowCount": 1500
+          }
+        ],
+        "verifiedRowCount": null,
+        "columnPhysicalTypes": [
+          {
+            "physicalColumn": "ShipmentID",
+            "sourcePaths": [
+              "sample data/Logistics_ERP_May_2026.csv",
+              "sample data/Logistics_ERP_June_2026.csv"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "allowedParseExpectations": [
+              "preserve_text"
+            ]
+          },
+          {
+            "physicalColumn": "Carrier",
+            "sourcePaths": [
+              "sample data/Logistics_ERP_May_2026.csv",
+              "sample data/Logistics_ERP_June_2026.csv"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "allowedParseExpectations": [
+              "preserve_text"
+            ]
+          },
+          {
+            "physicalColumn": "DeliveryFee",
+            "sourcePaths": [
+              "sample data/Logistics_ERP_May_2026.csv",
+              "sample data/Logistics_ERP_June_2026.csv"
+            ],
+            "allowedTypes": [
+              "numeric_string"
+            ],
+            "allowedParseExpectations": [
+              "numeric_coercible"
+            ]
+          },
+          {
+            "physicalColumn": "DeliveryStatus",
+            "sourcePaths": [
+              "sample data/Logistics_ERP_May_2026.csv",
+              "sample data/Logistics_ERP_June_2026.csv"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "allowedParseExpectations": [
+              "preserve_text"
+            ]
+          }
+        ],
+        "issues": {
+          "expected": [],
+          "allowed": [
+            {
+              "code": "cross_file_duplicate_join_key",
+              "physicalColumn": null
+            }
+          ],
+          "forbidden": [
+            {
+              "code": "silent_parse_drop",
+              "physicalColumn": null
+            }
+          ]
+        },
+        "representativeEvidence": {
+          "requiredSamplingRegions": [
+            "head",
+            "middle",
+            "tail",
+            "deterministic_random"
+          ],
+          "minimumDistinctRegions": 4,
+          "requiredColumns": [
+            "ShipmentID",
+            "Carrier",
+            "DeliveryFee",
+            "DeliveryStatus"
+          ],
+          "mustPreservePhysicalColumnNames": true,
+          "mustReportUnparsedValues": true
+        }
+      },
+      "relationshipTruth": {
+        "expectedRelationships": [
+          {
+            "id": "adjacent_period_append",
+            "leftSource": "sample data/Logistics_ERP_May_2026.csv",
+            "rightSource": "sample data/Logistics_ERP_June_2026.csv",
+            "leftKeys": [
+              "ShipmentID"
+            ],
+            "rightKeys": [
+              "ShipmentID"
+            ],
+            "expectedCardinality": "disjoint_period_partition",
+            "operation": "append",
+            "decision": "append_only",
+            "joinReasonCode": "schema_compatible_adjacent_periods",
+            "timePeriodAlignment": "2026-05_to_2026-06",
+            "duplicationRisk": {
+              "level": "low",
+              "reasonCode": "period_partition_expected"
+            }
+          }
+        ],
+        "forbiddenRelationships": [
+          {
+            "id": "adjacent_period_row_join",
+            "leftSource": "sample data/Logistics_ERP_May_2026.csv",
+            "rightSource": "sample data/Logistics_ERP_June_2026.csv",
+            "leftKeys": [
+              "ShipmentID"
+            ],
+            "rightKeys": [
+              "ShipmentID"
+            ],
+            "decision": "refuse",
+            "refusalReasonCode": "period_partitions_must_append_not_row_join"
+          }
+        ],
+        "timeAlignment": {
+          "expected": "adjacent_periods",
+          "periods": [
+            "2026-05",
+            "2026-06"
+          ],
+          "reasonCode": "month_over_month_sequence"
+        },
+        "duplicationRisk": {
+          "level": "low",
+          "reasonCode": "append_requires_period_and_key_deduplication_check"
+        }
+      }
+    },
+    {
+      "id": "multi.accounting_period_pair",
+      "corpusVersion": "1.2.0",
+      "group": "multi_file",
+      "category": "multi_file",
+      "provenance": {
+        "kind": "repository_sample",
+        "sourceSystem": "synthetic_cross_function_erp_exports",
+        "tuningUse": "forbidden",
+        "dataHandling": "existing_local_acceptance_data",
+        "notes": "Ground truth records expected semantics; it is not a current product-support claim."
+      },
+      "sources": [
+        {
+          "path": "sample data/Accounting_ERP_May_2026.csv",
+          "sheet": "Sheet1",
+          "required": true,
+          "sha256": "3c59da1c10c67ab974dfd204b737402aff1c28d748665949942579fb5fb1a2fd"
+        },
+        {
+          "path": "sample data/Accounting_ERP_June_2026.csv",
+          "sheet": "Sheet1",
+          "required": true,
+          "sha256": "b3a3b290d5f54ca5d7fc79b7aed0f287f539e665113331bb6d4764fa5fc6aaea"
+        }
+      ],
+      "dataset": {
+        "expectedArchetype": "cross_function_commerce_bundle",
+        "expectedGrain": "transaction",
+        "grainTruth": {
+          "coarseGrain": "transaction",
+          "rowEntity": "cross_file_record",
+          "parentEntity": "business_period",
+          "candidateKeys": [],
+          "parentKeys": [],
+          "measureExpectations": [
+            {
+              "physicalColumn": "Revenue",
+              "repeatedWithinParent": true,
+              "additiveAcrossRows": true,
+              "reasonCode": "row_additive_measure"
+            },
+            {
+              "physicalColumn": "NetRevenue",
+              "repeatedWithinParent": true,
+              "additiveAcrossRows": true,
+              "reasonCode": "row_additive_measure"
+            },
+            {
+              "physicalColumn": "GrossProfit",
+              "repeatedWithinParent": true,
+              "additiveAcrossRows": true,
+              "reasonCode": "row_additive_measure"
+            },
+            {
+              "physicalColumn": "DeliveryFee",
+              "repeatedWithinParent": true,
+              "additiveAcrossRows": true,
+              "reasonCode": "row_additive_measure"
+            }
+          ]
+        }
+      },
+      "recognition": {
+        "requiredMappings": [
+          {
+            "physicalColumn": "InvoiceNo",
+            "canonicalSignal": "billing_document",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          },
+          {
+            "physicalColumn": "NetRevenue",
+            "canonicalSignal": "net_revenue",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          },
+          {
+            "physicalColumn": "GrossProfit",
+            "canonicalSignal": "gross_profit",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          }
+        ],
+        "forbiddenMappings": [
+          {
+            "physicalColumn": "InvoiceNo",
+            "canonicalSignal": "invoice_total",
+            "reasonCode": "semantic_mismatch"
+          },
+          {
+            "physicalColumn": "AR_Account",
+            "canonicalSignal": "revenue",
+            "reasonCode": "semantic_mismatch"
+          }
+        ],
+        "expectedAmbiguousMappings": [
+          {
+            "physicalColumn": "MarginPct",
+            "candidateSignals": [
+              "margin",
+              "margin_pct"
+            ],
+            "reasonCode": "normalized_alias_collision",
+            "evidenceScope": "header_only",
+            "headerOnlyExpectedState": "ambiguous",
+            "contextualResolution": {
+              "policy": "may_resolve_with_context",
+              "resolvedCanonicalSignal": null,
+              "allowedFinalStates": [
+                "ambiguous",
+                "probable",
+                "confirmed"
+              ],
+              "requiredEvidence": [
+                "value_distribution",
+                "physical_type",
+                "dataset_grain",
+                "sibling_columns"
+              ],
+              "forbiddenEvidence": [
+                "header_only"
+              ]
+            }
+          }
+        ],
+        "expectedUnknownBusinessColumns": []
+      },
+      "support": {
+        "allowedDomainPacks": [
+          "finance_profitability",
+          "revenue_sales"
+        ],
+        "blockedDomainPacks": [
+          "inventory_snapshot",
+          "inventory_movement",
+          "delivery_operations",
+          "customer_contribution",
+          "performance_target_actual"
+        ],
+        "expectedExecutableActions": [
+          "gross_profit_variance",
+          "revenue_reconciliation"
+        ],
+        "expectedBlockedActions": [
+          {
+            "actionId": "automatic_join",
+            "reasonCode": "relationship_must_be_proven"
+          }
+        ]
+      },
+      "verifiedMetricAnswers": {
+        "may_gross_profit": 3075721244,
+        "june_gross_profit": 2934640164,
+        "gross_profit_delta": -141081080
+      },
+      "profilingExpectations": {
+        "sourceProfiles": [
+          {
+            "sourcePath": "sample data/Accounting_ERP_May_2026.csv",
+            "sheet": "Sheet1",
+            "headerPosition": {
+              "zeroBasedRowIndex": 0,
+              "basis": "verified_source_read"
+            },
+            "verifiedRowCount": 1500
+          },
+          {
+            "sourcePath": "sample data/Accounting_ERP_June_2026.csv",
+            "sheet": "Sheet1",
+            "headerPosition": {
+              "zeroBasedRowIndex": 0,
+              "basis": "verified_source_read"
+            },
+            "verifiedRowCount": 1500
+          }
+        ],
+        "verifiedRowCount": null,
+        "columnPhysicalTypes": [
+          {
+            "physicalColumn": "InvoiceNo",
+            "sourcePaths": [
+              "sample data/Accounting_ERP_May_2026.csv",
+              "sample data/Accounting_ERP_June_2026.csv"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "allowedParseExpectations": [
+              "preserve_text"
+            ]
+          },
+          {
+            "physicalColumn": "NetRevenue",
+            "sourcePaths": [
+              "sample data/Accounting_ERP_May_2026.csv",
+              "sample data/Accounting_ERP_June_2026.csv"
+            ],
+            "allowedTypes": [
+              "numeric_string"
+            ],
+            "allowedParseExpectations": [
+              "numeric_coercible"
+            ]
+          },
+          {
+            "physicalColumn": "GrossProfit",
+            "sourcePaths": [
+              "sample data/Accounting_ERP_May_2026.csv",
+              "sample data/Accounting_ERP_June_2026.csv"
+            ],
+            "allowedTypes": [
+              "numeric_string"
+            ],
+            "allowedParseExpectations": [
+              "numeric_coercible"
+            ]
+          },
+          {
+            "physicalColumn": "AR_Account",
+            "sourcePaths": [
+              "sample data/Accounting_ERP_May_2026.csv",
+              "sample data/Accounting_ERP_June_2026.csv"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "allowedParseExpectations": [
+              "preserve_text"
+            ]
+          },
+          {
+            "physicalColumn": "MarginPct",
+            "sourcePaths": [
+              "sample data/Accounting_ERP_May_2026.csv",
+              "sample data/Accounting_ERP_June_2026.csv"
+            ],
+            "allowedTypes": [
+              "numeric_string"
+            ],
+            "allowedParseExpectations": [
+              "numeric_coercible"
+            ]
+          }
+        ],
+        "issues": {
+          "expected": [],
+          "allowed": [
+            {
+              "code": "cross_file_duplicate_join_key",
+              "physicalColumn": null
+            }
+          ],
+          "forbidden": [
+            {
+              "code": "silent_parse_drop",
+              "physicalColumn": null
+            }
+          ]
+        },
+        "representativeEvidence": {
+          "requiredSamplingRegions": [
+            "head",
+            "middle",
+            "tail",
+            "deterministic_random"
+          ],
+          "minimumDistinctRegions": 4,
+          "requiredColumns": [
+            "InvoiceNo",
+            "NetRevenue",
+            "GrossProfit",
+            "AR_Account",
+            "MarginPct"
+          ],
+          "mustPreservePhysicalColumnNames": true,
+          "mustReportUnparsedValues": true
+        }
+      },
+      "relationshipTruth": {
+        "expectedRelationships": [
+          {
+            "id": "adjacent_period_append",
+            "leftSource": "sample data/Accounting_ERP_May_2026.csv",
+            "rightSource": "sample data/Accounting_ERP_June_2026.csv",
+            "leftKeys": [
+              "InvoiceNo"
+            ],
+            "rightKeys": [
+              "InvoiceNo"
+            ],
+            "expectedCardinality": "disjoint_period_partition",
+            "operation": "append",
+            "decision": "append_only",
+            "joinReasonCode": "schema_compatible_adjacent_periods",
+            "timePeriodAlignment": "2026-05_to_2026-06",
+            "duplicationRisk": {
+              "level": "low",
+              "reasonCode": "period_partition_expected"
+            }
+          }
+        ],
+        "forbiddenRelationships": [
+          {
+            "id": "adjacent_period_row_join",
+            "leftSource": "sample data/Accounting_ERP_May_2026.csv",
+            "rightSource": "sample data/Accounting_ERP_June_2026.csv",
+            "leftKeys": [
+              "InvoiceNo"
+            ],
+            "rightKeys": [
+              "InvoiceNo"
+            ],
+            "decision": "refuse",
+            "refusalReasonCode": "period_partitions_must_append_not_row_join"
+          }
+        ],
+        "timeAlignment": {
+          "expected": "adjacent_periods",
+          "periods": [
+            "2026-05",
+            "2026-06"
+          ],
+          "reasonCode": "month_over_month_sequence"
+        },
+        "duplicationRisk": {
+          "level": "low",
+          "reasonCode": "append_requires_period_and_key_deduplication_check"
+        }
+      }
+    }
+  ]
+}

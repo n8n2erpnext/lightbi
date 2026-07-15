@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "lightbi.phase-5a-readiness-validation-debt-gate.v1",
+  "sourceAudit": "phase-4c2-counterfactual-audit.json",
+  "readinessValidationCoverageCompleteForShadowComparison": true,
+  "readinessValidationCoverageCompleteForAuthorityMigration": false,
+  "classes": {
+    "critical_before_phase_5b": ["artifact_mismatch","invalid_scope","stale_downstream_ready","high_ratio_critical"],
+    "critical_before_phase_5c": ["remove_full_file","mixed_type","remove_semantics","remove_identity","repeated_total","snapshot_risk","remove_measures","non_additive_percentage","unresolved_numeric","remove_relationships","relation_without_key","candidate_cardinality_only","competing_key","many_to_many","null_key","remove_temporal","overlap_risk","schema_drift","remove_schema","remove_selected_key","remove_safety","empty_domain","synthetic_domain","relevant_debt","blocked_to_unsupported","unsupported_to_blocked","not_applicable_to_blocked"],
+    "acceptable_documented_debt": ["confirmed_to_probable","probable_to_ambiguous","grain_to_unknown","unrelated_debt"],
+    "already_covered_by_equivalent_executable_invariant": ["duplicate_evidence","duplicate_blockers","duplicate_remediation","shuffle_capabilities","shuffle_sources","shuffle_pairs","change_projection"]
+  },
+  "totalClasses": 42,
+  "claim": "Machine-readable Phase 4C2 cases are not represented as dedicated executable tests unless listed as equivalent executable invariants.",
+  "authorityMigrationBlocked": true
+}

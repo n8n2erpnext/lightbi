@@ -1,0 +1,113 @@
+{
+  "schemaVersion": "lightbi.phase-5m2-question-action-policy-audit.v1",
+  "domainPackId": "commerce_distribution_mvp",
+  "questionPolicyVersion": "lightbi.question-action-policy.v1",
+  "questionPolicyHash": "9c8ce5e0904a95f70e80cb81bc79a4c52ba4729f4772a7e9a8d6e997da3d6cbb",
+  "metricPolicyHash": "79b00e4aa7e97311da56db1f19a996c52c8034dc52da21b0dc6981dfd1282702",
+  "manifestPolicyHash": "7b18e323865c6058a780d5ef31527878a60c004a116ba600c95ec6a705b8f37c",
+  "metricIds": [
+    "sales_revenue",
+    "quantity_sold",
+    "transaction_count",
+    "inventory_on_hand",
+    "delivery_count",
+    "gross_profit"
+  ],
+  "questionFamilies": [
+    {
+      "questionId": "commerce.sales_revenue.over_time",
+      "metricId": "sales_revenue",
+      "intent": "trend",
+      "timeRequirement": "event_or_period",
+      "sourceComplexity": "source_local",
+      "priority": 10
+    },
+    {
+      "questionId": "commerce.sales_revenue.by_product",
+      "metricId": "sales_revenue",
+      "intent": "ranking",
+      "timeRequirement": "not_required",
+      "sourceComplexity": "source_local",
+      "priority": 20
+    },
+    {
+      "questionId": "commerce.quantity_sold.over_time",
+      "metricId": "quantity_sold",
+      "intent": "trend",
+      "timeRequirement": "event_or_period",
+      "sourceComplexity": "source_local",
+      "priority": 30
+    },
+    {
+      "questionId": "commerce.quantity_sold.by_product",
+      "metricId": "quantity_sold",
+      "intent": "ranking",
+      "timeRequirement": "not_required",
+      "sourceComplexity": "source_local",
+      "priority": 40
+    },
+    {
+      "questionId": "commerce.transaction_count.summary",
+      "metricId": "transaction_count",
+      "intent": "summary",
+      "timeRequirement": "not_required",
+      "sourceComplexity": "source_local",
+      "priority": 50
+    },
+    {
+      "questionId": "commerce.inventory_on_hand.as_of",
+      "metricId": "inventory_on_hand",
+      "intent": "point_in_time",
+      "timeRequirement": "point_in_time_as_of",
+      "sourceComplexity": "source_local",
+      "priority": 60
+    },
+    {
+      "questionId": "commerce.inventory_on_hand.by_product",
+      "metricId": "inventory_on_hand",
+      "intent": "ranking",
+      "timeRequirement": "point_in_time_as_of",
+      "sourceComplexity": "source_local",
+      "priority": 65
+    },
+    {
+      "questionId": "commerce.delivery_count.summary",
+      "metricId": "delivery_count",
+      "intent": "summary",
+      "timeRequirement": "not_required",
+      "sourceComplexity": "source_local",
+      "priority": 70
+    },
+    {
+      "questionId": "commerce.delivery_count.by_status",
+      "metricId": "delivery_count",
+      "intent": "status_breakdown",
+      "timeRequirement": "not_required",
+      "sourceComplexity": "source_local",
+      "priority": 75
+    },
+    {
+      "questionId": "commerce.gross_profit.over_time",
+      "metricId": "gross_profit",
+      "intent": "trend",
+      "timeRequirement": "compatible_period",
+      "sourceComplexity": "relationship_dependent",
+      "priority": 80
+    }
+  ],
+  "excluded": [
+    "margin",
+    "forecast",
+    "retention",
+    "churn",
+    "LTV",
+    "generic KPI"
+  ],
+  "legacySupportTruthConsumed": false,
+  "runtimeActionCreated": false,
+  "runtimeActionAuthorized": false,
+  "executionPerformed": false,
+  "productionWiring": {
+    "executed": false
+  }
+}

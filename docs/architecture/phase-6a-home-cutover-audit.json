@@ -1,0 +1,11 @@
+{
+  "schemaVersion": "lightbi.phase-6a-home-cutover-audit.v1",
+  "canonicalInputs": ["physical profile", "semantic resolution", "grain resolution", "readiness", "domain activation", "metric preflight", "question generation"],
+  "derivedOutputs": ["source summary", "mapping review", "domain state", "ranked default questions", "blocked question reasons", "trust", "caveats"],
+  "presentationAdapter": "apps/desktop/src/lib/canonical-consumer-presentation-adapter.ts#projectCanonicalArtifactToUnderstandingNext",
+  "adapterClassification": "compatibility_adapter_only",
+  "legacyDetectorCalls": [],
+  "understandingNextDetectorCalls": [],
+  "invalidArtifactActions": 0,
+  "uiRedesign": false
+}

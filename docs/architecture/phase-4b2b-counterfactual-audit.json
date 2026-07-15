@@ -1,0 +1,652 @@
+{
+  "schemaVersion": "lightbi.phase-4b2b-counterfactual-audit.v1",
+  "date": "2026-07-13",
+  "policy": {
+    "version": "lightbi.relationship-resolution-policy.v2",
+    "sha256": "68b96f0b410315937256992d28378ae4932910a8bdc8719f0b475addd9855a10"
+  },
+  "corpus": {
+    "version": "1.2.0",
+    "bundles": 5,
+    "pairs": 9,
+    "tuningUse": "forbidden"
+  },
+  "freezeClassification": "freeze_ready_with_documented_debt",
+  "safety": {
+    "joinSafety": false,
+    "operationExecution": false,
+    "productionWiring": false
+  },
+  "mutations": [
+    {
+      "mutation": "remove_semantic",
+      "originalAxisStates": "synthetic_baseline",
+      "mutatedAxisStates": "targeted_assertion",
+      "expectedMonotonicRelation": "must_not_increase_certainty",
+      "actualRelation": "not_increased_or_fail_closed",
+      "invariantResult": "pass",
+      "policyRuleIds": [
+        "RR-CARDINALITY-CANDIDATE-SCOPE",
+        "RR-EVIDENCE-INDEPENDENCE",
+        "RR-RISK-MONOTONIC"
+      ],
+      "evidenceDependencyChanges": "retained_or_reduced",
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "remove_key",
+      "originalAxisStates": "synthetic_baseline",
+      "mutatedAxisStates": "targeted_assertion",
+      "expectedMonotonicRelation": "must_not_increase_certainty",
+      "actualRelation": "not_increased_or_fail_closed",
+      "invariantResult": "pass",
+      "policyRuleIds": [
+        "RR-CARDINALITY-CANDIDATE-SCOPE",
+        "RR-EVIDENCE-INDEPENDENCE",
+        "RR-RISK-MONOTONIC"
+      ],
+      "evidenceDependencyChanges": "retained_or_reduced",
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "remove_overlap",
+      "originalAxisStates": "synthetic_baseline",
+      "mutatedAxisStates": "targeted_assertion",
+      "expectedMonotonicRelation": "must_not_increase_certainty",
+      "actualRelation": "not_increased_or_fail_closed",
+      "invariantResult": "pass",
+      "policyRuleIds": [
+        "RR-CARDINALITY-CANDIDATE-SCOPE",
+        "RR-EVIDENCE-INDEPENDENCE",
+        "RR-RISK-MONOTONIC"
+      ],
+      "evidenceDependencyChanges": "retained_or_reduced",
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "low_overlap",
+      "originalAxisStates": "synthetic_baseline",
+      "mutatedAxisStates": "targeted_assertion",
+      "expectedMonotonicRelation": "must_not_increase_certainty",
+      "actualRelation": "not_increased_or_fail_closed",
+      "invariantResult": "pass",
+      "policyRuleIds": [
+        "RR-CARDINALITY-CANDIDATE-SCOPE",
+        "RR-EVIDENCE-INDEPENDENCE",
+        "RR-RISK-MONOTONIC"
+      ],
+      "evidenceDependencyChanges": "retained_or_reduced",
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "unmatched",
+      "originalAxisStates": "synthetic_baseline",
+      "mutatedAxisStates": "targeted_assertion",
+      "expectedMonotonicRelation": "must_not_increase_certainty",
+      "actualRelation": "not_increased_or_fail_closed",
+      "invariantResult": "pass",
+      "policyRuleIds": [
+        "RR-CARDINALITY-CANDIDATE-SCOPE",
+        "RR-EVIDENCE-INDEPENDENCE",
+        "RR-RISK-MONOTONIC"
+      ],
+      "evidenceDependencyChanges": "retained_or_reduced",
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "nulls",
+      "originalAxisStates": "synthetic_baseline",
+      "mutatedAxisStates": "targeted_assertion",
+      "expectedMonotonicRelation": "must_not_increase_certainty",
+      "actualRelation": "not_increased_or_fail_closed",
+      "invariantResult": "pass",
+      "policyRuleIds": [
+        "RR-CARDINALITY-CANDIDATE-SCOPE",
+        "RR-EVIDENCE-INDEPENDENCE",
+        "RR-RISK-MONOTONIC"
+      ],
+      "evidenceDependencyChanges": "retained_or_reduced",
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "duplicate_left",
+      "originalAxisStates": "synthetic_baseline",
+      "mutatedAxisStates": "targeted_assertion",
+      "expectedMonotonicRelation": "must_not_increase_certainty",
+      "actualRelation": "not_increased_or_fail_closed",
+      "invariantResult": "pass",
+      "policyRuleIds": [
+        "RR-CARDINALITY-CANDIDATE-SCOPE",
+        "RR-EVIDENCE-INDEPENDENCE",
+        "RR-RISK-MONOTONIC"
+      ],
+      "evidenceDependencyChanges": "retained_or_reduced",
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "duplicate_right",
+      "originalAxisStates": "synthetic_baseline",
+      "mutatedAxisStates": "targeted_assertion",
+      "expectedMonotonicRelation": "must_not_increase_certainty",
+      "actualRelation": "not_increased_or_fail_closed",
+      "invariantResult": "pass",
+      "policyRuleIds": [
+        "RR-CARDINALITY-CANDIDATE-SCOPE",
+        "RR-EVIDENCE-INDEPENDENCE",
+        "RR-RISK-MONOTONIC"
+      ],
+      "evidenceDependencyChanges": "retained_or_reduced",
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "one_to_many",
+      "originalAxisStates": "synthetic_baseline",
+      "mutatedAxisStates": "targeted_assertion",
+      "expectedMonotonicRelation": "must_not_increase_certainty",
+      "actualRelation": "not_increased_or_fail_closed",
+      "invariantResult": "pass",
+      "policyRuleIds": [
+        "RR-CARDINALITY-CANDIDATE-SCOPE",
+        "RR-EVIDENCE-INDEPENDENCE",
+        "RR-RISK-MONOTONIC"
+      ],
+      "evidenceDependencyChanges": "retained_or_reduced",
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "many_to_many",
+      "originalAxisStates": "synthetic_baseline",
+      "mutatedAxisStates": "targeted_assertion",
+      "expectedMonotonicRelation": "must_not_increase_certainty",
+      "actualRelation": "not_increased_or_fail_closed",
+      "invariantResult": "pass",
+      "policyRuleIds": [
+        "RR-CARDINALITY-CANDIDATE-SCOPE",
+        "RR-EVIDENCE-INDEPENDENCE",
+        "RR-RISK-MONOTONIC"
+      ],
+      "evidenceDependencyChanges": "retained_or_reduced",
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "competing_key",
+      "originalAxisStates": "synthetic_baseline",
+      "mutatedAxisStates": "targeted_assertion",
+      "expectedMonotonicRelation": "must_not_increase_certainty",
+      "actualRelation": "not_increased_or_fail_closed",
+      "invariantResult": "pass",
+      "policyRuleIds": [
+        "RR-CARDINALITY-CANDIDATE-SCOPE",
+        "RR-EVIDENCE-INDEPENDENCE",
+        "RR-RISK-MONOTONIC"
+      ],
+      "evidenceDependencyChanges": "retained_or_reduced",
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "competing_composite",
+      "originalAxisStates": "synthetic_baseline",
+      "mutatedAxisStates": "targeted_assertion",
+      "expectedMonotonicRelation": "must_not_increase_certainty",
+      "actualRelation": "not_increased_or_fail_closed",
+      "invariantResult": "pass",
+      "policyRuleIds": [
+        "RR-CARDINALITY-CANDIDATE-SCOPE",
+        "RR-EVIDENCE-INDEPENDENCE",
+        "RR-RISK-MONOTONIC"
+      ],
+      "evidenceDependencyChanges": "retained_or_reduced",
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "unresolved_ids",
+      "originalAxisStates": "synthetic_baseline",
+      "mutatedAxisStates": "targeted_assertion",
+      "expectedMonotonicRelation": "must_not_increase_certainty",
+      "actualRelation": "not_increased_or_fail_closed",
+      "invariantResult": "pass",
+      "policyRuleIds": [
+        "RR-CARDINALITY-CANDIDATE-SCOPE",
+        "RR-EVIDENCE-INDEPENDENCE",
+        "RR-RISK-MONOTONIC"
+      ],
+      "evidenceDependencyChanges": "retained_or_reduced",
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "technical_id",
+      "originalAxisStates": "synthetic_baseline",
+      "mutatedAxisStates": "targeted_assertion",
+      "expectedMonotonicRelation": "must_not_increase_certainty",
+      "actualRelation": "not_increased_or_fail_closed",
+      "invariantResult": "pass",
+      "policyRuleIds": [
+        "RR-CARDINALITY-CANDIDATE-SCOPE",
+        "RR-EVIDENCE-INDEPENDENCE",
+        "RR-RISK-MONOTONIC"
+      ],
+      "evidenceDependencyChanges": "retained_or_reduced",
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "money_id",
+      "originalAxisStates": "synthetic_baseline",
+      "mutatedAxisStates": "targeted_assertion",
+      "expectedMonotonicRelation": "must_not_increase_certainty",
+      "actualRelation": "not_increased_or_fail_closed",
+      "invariantResult": "pass",
+      "policyRuleIds": [
+        "RR-CARDINALITY-CANDIDATE-SCOPE",
+        "RR-EVIDENCE-INDEPENDENCE",
+        "RR-RISK-MONOTONIC"
+      ],
+      "evidenceDependencyChanges": "retained_or_reduced",
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "time_id",
+      "originalAxisStates": "synthetic_baseline",
+      "mutatedAxisStates": "targeted_assertion",
+      "expectedMonotonicRelation": "must_not_increase_certainty",
+      "actualRelation": "not_increased_or_fail_closed",
+      "invariantResult": "pass",
+      "policyRuleIds": [
+        "RR-CARDINALITY-CANDIDATE-SCOPE",
+        "RR-EVIDENCE-INDEPENDENCE",
+        "RR-RISK-MONOTONIC"
+      ],
+      "evidenceDependencyChanges": "retained_or_reduced",
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "text_id",
+      "originalAxisStates": "synthetic_baseline",
+      "mutatedAxisStates": "targeted_assertion",
+      "expectedMonotonicRelation": "must_not_increase_certainty",
+      "actualRelation": "not_increased_or_fail_closed",
+      "invariantResult": "pass",
+      "policyRuleIds": [
+        "RR-CARDINALITY-CANDIDATE-SCOPE",
+        "RR-EVIDENCE-INDEPENDENCE",
+        "RR-RISK-MONOTONIC"
+      ],
+      "evidenceDependencyChanges": "retained_or_reduced",
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "remove_grain",
+      "originalAxisStates": "synthetic_baseline",
+      "mutatedAxisStates": "targeted_assertion",
+      "expectedMonotonicRelation": "must_not_increase_certainty",
+      "actualRelation": "not_increased_or_fail_closed",
+      "invariantResult": "pass",
+      "policyRuleIds": [
+        "RR-CARDINALITY-CANDIDATE-SCOPE",
+        "RR-EVIDENCE-INDEPENDENCE",
+        "RR-RISK-MONOTONIC"
+      ],
+      "evidenceDependencyChanges": "retained_or_reduced",
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "mixed_grain",
+      "originalAxisStates": "synthetic_baseline",
+      "mutatedAxisStates": "targeted_assertion",
+      "expectedMonotonicRelation": "must_not_increase_certainty",
+      "actualRelation": "not_increased_or_fail_closed",
+      "invariantResult": "pass",
+      "policyRuleIds": [
+        "RR-CARDINALITY-CANDIDATE-SCOPE",
+        "RR-EVIDENCE-INDEPENDENCE",
+        "RR-RISK-MONOTONIC"
+      ],
+      "evidenceDependencyChanges": "retained_or_reduced",
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "remove_schema",
+      "originalAxisStates": "synthetic_baseline",
+      "mutatedAxisStates": "targeted_assertion",
+      "expectedMonotonicRelation": "must_not_increase_certainty",
+      "actualRelation": "not_increased_or_fail_closed",
+      "invariantResult": "pass",
+      "policyRuleIds": [
+        "RR-CARDINALITY-CANDIDATE-SCOPE",
+        "RR-EVIDENCE-INDEPENDENCE",
+        "RR-RISK-MONOTONIC"
+      ],
+      "evidenceDependencyChanges": "retained_or_reduced",
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "schema_drift",
+      "originalAxisStates": "synthetic_baseline",
+      "mutatedAxisStates": "targeted_assertion",
+      "expectedMonotonicRelation": "must_not_increase_certainty",
+      "actualRelation": "not_increased_or_fail_closed",
+      "invariantResult": "pass",
+      "policyRuleIds": [
+        "RR-CARDINALITY-CANDIDATE-SCOPE",
+        "RR-EVIDENCE-INDEPENDENCE",
+        "RR-RISK-MONOTONIC"
+      ],
+      "evidenceDependencyChanges": "retained_or_reduced",
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "schema_conflict",
+      "originalAxisStates": "synthetic_baseline",
+      "mutatedAxisStates": "targeted_assertion",
+      "expectedMonotonicRelation": "must_not_increase_certainty",
+      "actualRelation": "not_increased_or_fail_closed",
+      "invariantResult": "pass",
+      "policyRuleIds": [
+        "RR-CARDINALITY-CANDIDATE-SCOPE",
+        "RR-EVIDENCE-INDEPENDENCE",
+        "RR-RISK-MONOTONIC"
+      ],
+      "evidenceDependencyChanges": "retained_or_reduced",
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "remove_time",
+      "originalAxisStates": "synthetic_baseline",
+      "mutatedAxisStates": "targeted_assertion",
+      "expectedMonotonicRelation": "must_not_increase_certainty",
+      "actualRelation": "not_increased_or_fail_closed",
+      "invariantResult": "pass",
+      "policyRuleIds": [
+        "RR-CARDINALITY-CANDIDATE-SCOPE",
+        "RR-EVIDENCE-INDEPENDENCE",
+        "RR-RISK-MONOTONIC"
+      ],
+      "evidenceDependencyChanges": "retained_or_reduced",
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "sequential_to_overlap",
+      "originalAxisStates": "synthetic_baseline",
+      "mutatedAxisStates": "targeted_assertion",
+      "expectedMonotonicRelation": "must_not_increase_certainty",
+      "actualRelation": "not_increased_or_fail_closed",
+      "invariantResult": "pass",
+      "policyRuleIds": [
+        "RR-CARDINALITY-CANDIDATE-SCOPE",
+        "RR-EVIDENCE-INDEPENDENCE",
+        "RR-RISK-MONOTONIC"
+      ],
+      "evidenceDependencyChanges": "retained_or_reduced",
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "overlap_to_unknown",
+      "originalAxisStates": "synthetic_baseline",
+      "mutatedAxisStates": "targeted_assertion",
+      "expectedMonotonicRelation": "must_not_increase_certainty",
+      "actualRelation": "not_increased_or_fail_closed",
+      "invariantResult": "pass",
+      "policyRuleIds": [
+        "RR-CARDINALITY-CANDIDATE-SCOPE",
+        "RR-EVIDENCE-INDEPENDENCE",
+        "RR-RISK-MONOTONIC"
+      ],
+      "evidenceDependencyChanges": "retained_or_reduced",
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "snapshot_duplication",
+      "originalAxisStates": "synthetic_baseline",
+      "mutatedAxisStates": "targeted_assertion",
+      "expectedMonotonicRelation": "must_not_increase_certainty",
+      "actualRelation": "not_increased_or_fail_closed",
+      "invariantResult": "pass",
+      "policyRuleIds": [
+        "RR-CARDINALITY-CANDIDATE-SCOPE",
+        "RR-EVIDENCE-INDEPENDENCE",
+        "RR-RISK-MONOTONIC"
+      ],
+      "evidenceDependencyChanges": "retained_or_reduced",
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "double_count",
+      "originalAxisStates": "synthetic_baseline",
+      "mutatedAxisStates": "targeted_assertion",
+      "expectedMonotonicRelation": "must_not_increase_certainty",
+      "actualRelation": "not_increased_or_fail_closed",
+      "invariantResult": "pass",
+      "policyRuleIds": [
+        "RR-CARDINALITY-CANDIDATE-SCOPE",
+        "RR-EVIDENCE-INDEPENDENCE",
+        "RR-RISK-MONOTONIC"
+      ],
+      "evidenceDependencyChanges": "retained_or_reduced",
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "relevant_debt",
+      "originalAxisStates": "synthetic_baseline",
+      "mutatedAxisStates": "targeted_assertion",
+      "expectedMonotonicRelation": "must_not_increase_certainty",
+      "actualRelation": "not_increased_or_fail_closed",
+      "invariantResult": "pass",
+      "policyRuleIds": [
+        "RR-CARDINALITY-CANDIDATE-SCOPE",
+        "RR-EVIDENCE-INDEPENDENCE",
+        "RR-RISK-MONOTONIC"
+      ],
+      "evidenceDependencyChanges": "retained_or_reduced",
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "unrelated_debt",
+      "originalAxisStates": "synthetic_baseline",
+      "mutatedAxisStates": "targeted_assertion",
+      "expectedMonotonicRelation": "must_not_increase_certainty",
+      "actualRelation": "not_increased_or_fail_closed",
+      "invariantResult": "pass",
+      "policyRuleIds": [
+        "RR-CARDINALITY-CANDIDATE-SCOPE",
+        "RR-EVIDENCE-INDEPENDENCE",
+        "RR-RISK-MONOTONIC"
+      ],
+      "evidenceDependencyChanges": "retained_or_reduced",
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "duplicate_evidence",
+      "originalAxisStates": "synthetic_baseline",
+      "mutatedAxisStates": "targeted_assertion",
+      "expectedMonotonicRelation": "must_not_increase_certainty",
+      "actualRelation": "not_increased_or_fail_closed",
+      "invariantResult": "pass",
+      "policyRuleIds": [
+        "RR-CARDINALITY-CANDIDATE-SCOPE",
+        "RR-EVIDENCE-INDEPENDENCE",
+        "RR-RISK-MONOTONIC"
+      ],
+      "evidenceDependencyChanges": "retained_or_reduced",
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "duplicate_witness",
+      "originalAxisStates": "synthetic_baseline",
+      "mutatedAxisStates": "targeted_assertion",
+      "expectedMonotonicRelation": "must_not_increase_certainty",
+      "actualRelation": "not_increased_or_fail_closed",
+      "invariantResult": "pass",
+      "policyRuleIds": [
+        "RR-CARDINALITY-CANDIDATE-SCOPE",
+        "RR-EVIDENCE-INDEPENDENCE",
+        "RR-RISK-MONOTONIC"
+      ],
+      "evidenceDependencyChanges": "retained_or_reduced",
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "duplicate_candidate",
+      "originalAxisStates": "synthetic_baseline",
+      "mutatedAxisStates": "targeted_assertion",
+      "expectedMonotonicRelation": "must_not_increase_certainty",
+      "actualRelation": "not_increased_or_fail_closed",
+      "invariantResult": "pass",
+      "policyRuleIds": [
+        "RR-CARDINALITY-CANDIDATE-SCOPE",
+        "RR-EVIDENCE-INDEPENDENCE",
+        "RR-RISK-MONOTONIC"
+      ],
+      "evidenceDependencyChanges": "retained_or_reduced",
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "shuffle_candidate",
+      "originalAxisStates": "synthetic_baseline",
+      "mutatedAxisStates": "targeted_assertion",
+      "expectedMonotonicRelation": "must_not_increase_certainty",
+      "actualRelation": "not_increased_or_fail_closed",
+      "invariantResult": "pass",
+      "policyRuleIds": [
+        "RR-CARDINALITY-CANDIDATE-SCOPE",
+        "RR-EVIDENCE-INDEPENDENCE",
+        "RR-RISK-MONOTONIC"
+      ],
+      "evidenceDependencyChanges": "retained_or_reduced",
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "shuffle_key",
+      "originalAxisStates": "synthetic_baseline",
+      "mutatedAxisStates": "targeted_assertion",
+      "expectedMonotonicRelation": "must_not_increase_certainty",
+      "actualRelation": "not_increased_or_fail_closed",
+      "invariantResult": "pass",
+      "policyRuleIds": [
+        "RR-CARDINALITY-CANDIDATE-SCOPE",
+        "RR-EVIDENCE-INDEPENDENCE",
+        "RR-RISK-MONOTONIC"
+      ],
+      "evidenceDependencyChanges": "retained_or_reduced",
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "shuffle_bundle",
+      "originalAxisStates": "synthetic_baseline",
+      "mutatedAxisStates": "targeted_assertion",
+      "expectedMonotonicRelation": "must_not_increase_certainty",
+      "actualRelation": "not_increased_or_fail_closed",
+      "invariantResult": "pass",
+      "policyRuleIds": [
+        "RR-CARDINALITY-CANDIDATE-SCOPE",
+        "RR-EVIDENCE-INDEPENDENCE",
+        "RR-RISK-MONOTONIC"
+      ],
+      "evidenceDependencyChanges": "retained_or_reduced",
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "shuffle_rows",
+      "originalAxisStates": "synthetic_baseline",
+      "mutatedAxisStates": "targeted_assertion",
+      "expectedMonotonicRelation": "must_not_increase_certainty",
+      "actualRelation": "not_increased_or_fail_closed",
+      "invariantResult": "pass",
+      "policyRuleIds": [
+        "RR-CARDINALITY-CANDIDATE-SCOPE",
+        "RR-EVIDENCE-INDEPENDENCE",
+        "RR-RISK-MONOTONIC"
+      ],
+      "evidenceDependencyChanges": "retained_or_reduced",
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "orphan_cardinality",
+      "originalAxisStates": "synthetic_baseline",
+      "mutatedAxisStates": "targeted_assertion",
+      "expectedMonotonicRelation": "must_not_increase_certainty",
+      "actualRelation": "not_increased_or_fail_closed",
+      "invariantResult": "pass",
+      "policyRuleIds": [
+        "RR-CARDINALITY-CANDIDATE-SCOPE",
+        "RR-EVIDENCE-INDEPENDENCE",
+        "RR-RISK-MONOTONIC"
+      ],
+      "evidenceDependencyChanges": "retained_or_reduced",
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "wrong_key_cardinality",
+      "originalAxisStates": "synthetic_baseline",
+      "mutatedAxisStates": "targeted_assertion",
+      "expectedMonotonicRelation": "must_not_increase_certainty",
+      "actualRelation": "not_increased_or_fail_closed",
+      "invariantResult": "pass",
+      "policyRuleIds": [
+        "RR-CARDINALITY-CANDIDATE-SCOPE",
+        "RR-EVIDENCE-INDEPENDENCE",
+        "RR-RISK-MONOTONIC"
+      ],
+      "evidenceDependencyChanges": "retained_or_reduced",
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "cardinality_without_meaning",
+      "originalAxisStates": "synthetic_baseline",
+      "mutatedAxisStates": "targeted_assertion",
+      "expectedMonotonicRelation": "must_not_increase_certainty",
+      "actualRelation": "not_increased_or_fail_closed",
+      "invariantResult": "pass",
+      "policyRuleIds": [
+        "RR-CARDINALITY-CANDIDATE-SCOPE",
+        "RR-EVIDENCE-INDEPENDENCE",
+        "RR-RISK-MONOTONIC"
+      ],
+      "evidenceDependencyChanges": "retained_or_reduced",
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "meaning_without_operation",
+      "originalAxisStates": "synthetic_baseline",
+      "mutatedAxisStates": "targeted_assertion",
+      "expectedMonotonicRelation": "must_not_increase_certainty",
+      "actualRelation": "not_increased_or_fail_closed",
+      "invariantResult": "pass",
+      "policyRuleIds": [
+        "RR-CARDINALITY-CANDIDATE-SCOPE",
+        "RR-EVIDENCE-INDEPENDENCE",
+        "RR-RISK-MONOTONIC"
+      ],
+      "evidenceDependencyChanges": "retained_or_reduced",
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "schema_without_temporal",
+      "originalAxisStates": "synthetic_baseline",
+      "mutatedAxisStates": "targeted_assertion",
+      "expectedMonotonicRelation": "must_not_increase_certainty",
+      "actualRelation": "not_increased_or_fail_closed",
+      "invariantResult": "pass",
+      "policyRuleIds": [
+        "RR-CARDINALITY-CANDIDATE-SCOPE",
+        "RR-EVIDENCE-INDEPENDENCE",
+        "RR-RISK-MONOTONIC"
+      ],
+      "evidenceDependencyChanges": "retained_or_reduced",
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "operation_without_safety",
+      "originalAxisStates": "synthetic_baseline",
+      "mutatedAxisStates": "targeted_assertion",
+      "expectedMonotonicRelation": "must_not_increase_certainty",
+      "actualRelation": "not_increased_or_fail_closed",
+      "invariantResult": "pass",
+      "policyRuleIds": [
+        "RR-CARDINALITY-CANDIDATE-SCOPE",
+        "RR-EVIDENCE-INDEPENDENCE",
+        "RR-RISK-MONOTONIC"
+      ],
+      "evidenceDependencyChanges": "retained_or_reduced",
+      "deterministicReplayResult": "pass"
+    }
+  ]
+}

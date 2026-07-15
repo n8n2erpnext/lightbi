@@ -1,0 +1,99 @@
+{
+  "schemaVersion": "lightbi.phase-4a1-grain-candidate-audit.v1",
+  "date": "2026-07-12",
+  "scope": "candidate_and_evidence_only",
+  "summary": {
+    "samples": 30,
+    "physicalSources": 37,
+    "rowsEvaluated": 199694,
+    "semanticResolutionsCovered": 752,
+    "semanticCandidateTracesAvailableUpstream": 1223,
+    "uniqueCandidateAbsenceDebtCarried": 14,
+    "singleKeyCandidates": 9,
+    "compositeKeyCandidates": 8,
+    "parentKeyCandidates": 8,
+    "temporalBasisCandidates": 8,
+    "aggregationRisks": 305,
+    "ambiguousSemanticDependencies": 1095,
+    "structuralBlockers": 0,
+    "keyCombinationsEvaluated": 8,
+    "keyColumnsPruned": 0,
+    "sourcesByNonUnknownCandidateCount": {
+      "zero": 0,
+      "one": 23,
+      "multiple": 14
+    }
+  },
+  "grainCandidatesByClass": {
+    "aggregate_record": 28,
+    "unknown": 37,
+    "mixed_structure": 5,
+    "entity_record": 9,
+    "document_record": 9,
+    "line_record": 8,
+    "event_record": 8
+  },
+  "measureBehaviors": {
+    "unresolved_measure_role": 206,
+    "non_additive_candidate": 31,
+    "additive_candidate": 42,
+    "dimension_or_code_candidate": 5,
+    "semi_additive_candidate": 7,
+    "repeated_measure_risk": 20
+  },
+  "evidenceFamilies": {
+    "identity_structure": 63,
+    "structural_integrity": 42,
+    "temporal_structure": 90,
+    "dimension_measure_structure": 291,
+    "uniqueness_and_repetition": 17,
+    "parent_child_structure": 16,
+    "semantic_role_compatibility": 8
+  },
+  "evidenceProvenance": {
+    "full_file_rows": 86,
+    "full_file_profile": 382,
+    "semantic_resolution": 59
+  },
+  "validationByGroup": {
+    "golden": {
+      "sources": 8,
+      "candidates": 23,
+      "keys": 5,
+      "parents": 2,
+      "debt": 2
+    },
+    "holdout": {
+      "sources": 12,
+      "candidates": 33,
+      "keys": 4,
+      "parents": 2,
+      "debt": 7
+    },
+    "adversarial": {
+      "sources": 5,
+      "candidates": 12,
+      "keys": 0,
+      "parents": 0,
+      "debt": 5
+    },
+    "multi_file": {
+      "sources": 12,
+      "candidates": 36,
+      "keys": 8,
+      "parents": 4,
+      "debt": 0
+    }
+  },
+  "governance": {
+    "finalGrainResolution": false,
+    "crossSourceRelationships": false,
+    "productionWiring": false,
+    "domainSupportManifestPopulated": false
+  },
+  "limitations": [
+    "Diagnostics describe candidate coverage, not grain accuracy.",
+    "Existing corpus grain truth is audited but not treated as infallible or as a final-winner assertion.",
+    "Validation-only groups did not tune production policy."
+  ]
+}

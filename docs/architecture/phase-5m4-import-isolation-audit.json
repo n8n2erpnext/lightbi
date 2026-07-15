@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "lightbi.phase-5m4-import-isolation-audit.v1",
+  "phase": "5M4",
+  "governedModules": [
+    "commerce-distribution-domain-pack",
+    "governed-metric-preflight",
+    "governed-question-action-generator",
+    "governed-runtime-preflight",
+    "governed-metric-query-planner",
+    "governed-metric-executor"
+  ],
+  "productionImporters": [],
+  "barrelExports": [],
+  "homeWiringChanged": false,
+  "investigationWiringChanged": false,
+  "uiWiringChanged": false,
+  "aiOrBaWiringChanged": false,
+  "duckdbProductionBehaviorChanged": false,
+  "phase6CutoverExecuted": false,
+  "decisionUseAuthorized": false,
+  "productionWiring": {
+    "executed": false
+  }
+}

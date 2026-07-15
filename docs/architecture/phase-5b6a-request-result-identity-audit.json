@@ -1,0 +1,156 @@
+{
+  "schemaVersion": "lightbi.phase-5b6a-request-result-identity-audit.v1",
+  "currentBindingClassification": "identity_safe_for_request_only",
+  "currentContracts": {
+    "callerRun": {
+      "contract": "ExecutionRunCoordinator / ExecutionRun",
+      "fields": [
+        "id",
+        "generation",
+        "signal"
+      ],
+      "stableWithinCallerLifecycle": true,
+      "transmittedToBackendPreviewInput": false,
+      "echoedByDuckDBPreviewResult": false
+    },
+    "previewRequest": {
+      "requestIdentity": false,
+      "sourceHash": false,
+      "incomingPlanFingerprint": false,
+      "enhancedPlanFingerprint": false,
+      "sqlFingerprint": false,
+      "canonicalEnvelopeIdentity": false,
+      "restrictionSetIdentity": false,
+      "retryIdentity": false,
+      "cancellationSignal": true
+    },
+    "previewResult": {
+      "requestIdentity": false,
+      "resultIdentity": "plan-derived id only; not unique per request",
+      "sourceHash": false,
+      "planFingerprints": false,
+      "sqlFingerprint": false,
+      "canonicalEnvelopeIdentity": false,
+      "restrictionSetIdentity": false,
+      "retryIdentity": false,
+      "cancellationGeneration": false
+    },
+    "consumers": {
+      "chartHasStableCorrelationContract": false,
+      "BAHasStableCorrelationContract": false,
+      "queryResultBufferRunId": "caller run ID is added after execution, but is not echoed by or cryptographically bound to executor result content"
+    }
+  },
+  "scenarios": [
+    {
+      "id": "two_concurrent_same_source_and_sql",
+      "classification": "unsafe",
+      "finding": "Coordinator run IDs can suppress stale UI state locally, but neither request nor executor result carries the run token; result IDs collide when plan IDs match."
+    },
+    {
+      "id": "same_sql_different_aggregation_origins",
+      "classification": "unsafe",
+      "finding": "Origin is absent from the executor result identity and cannot be correlated from SQL."
+    },
+    {
+      "id": "same_origin_different_restriction_sets",
+      "classification": "unsafe",
+      "finding": "Restriction-set identity is absent from request and result contracts."
+    },
+    {
+      "id": "retry_same_request",
+      "classification": "ambiguous",
+      "finding": "No retry-of token or attempt identity is carried."
+    },
+    {
+      "id": "stale_result_after_newer_request",
+      "classification": "request_lifecycle_only",
+      "finding": "ExecutionRunCoordinator rejects stale completion in the active component closure, but the result itself cannot prove which request produced it."
+    },
+    {
+      "id": "duplicate_result_delivery",
+      "classification": "unsafe",
+      "finding": "No unique result identity or delivery identity exists."
+    },
+    {
+      "id": "source_changed_between_plan_and_result",
+      "classification": "unsafe",
+      "finding": "Source hash is not carried or echoed."
+    },
+    {
+      "id": "chart_and_ba_receive_different_results",
+      "classification": "unsafe",
+      "finding": "No shared immutable request/result identity is required by chart and BA inputs."
+    },
+    {
+      "id": "canceled_request_result_arrives",
+      "classification": "request_lifecycle_only",
+      "finding": "Abort and generation checks can suppress local state, but result cancellation generation is absent."
+    },
+    {
+      "id": "result_lacks_request_identity",
+      "classification": "unsafe",
+      "finding": "DuckDBPreviewResult does not expose the caller run token."
+    }
+  ],
+  "minimumFutureCorrelationContract": {
+    "identityRule": "Use an explicit caller-created opaque requestToken for each attempt plus deterministic governed fingerprints. SQL, source identity, timestamps and mutable counters are never sufficient alone.",
+    "previewRequestRequiredFields": [
+      "requestToken",
+      "requestRootToken",
+      "attempt",
+      "sourceHash",
+      "incomingPlanFingerprint",
+      "enhancedPlanFingerprint",
+      "sqlFingerprint",
+      "canonicalEnvelopeIdentity",
+      "restrictionSetIdentity",
+      "retryOfToken|null",
+      "cancellationGeneration"
+    ],
+    "executorResultRequiredFields": [
+      "requestToken",
+      "requestRootToken",
+      "attempt",
+      "resultIdentity",
+      "sourceHash",
+      "incomingPlanFingerprint",
+      "enhancedPlanFingerprint",
+      "sqlFingerprint",
+      "canonicalEnvelopeIdentity",
+      "restrictionSetIdentity",
+      "cancellationGeneration",
+      "executionStatus"
+    ],
+    "chartInputRequiredFields": [
+      "requestToken",
+      "resultIdentity",
+      "sourceHash",
+      "restrictionSetIdentity",
+      "chartDisplayEligibility"
+    ],
+    "BAInputRequiredFields": [
+      "requestToken",
+      "resultIdentity",
+      "sourceHash",
+      "restrictionSetIdentity",
+      "BAConclusionEligibility",
+      "narrativeClaimEligibility"
+    ],
+    "retryCancellationRules": [
+      "Every attempt receives a unique requestToken and shares requestRootToken with its retry chain.",
+      "retryOfToken identifies the immediately preceding attempt.",
+      "A consumer accepts only the current non-canceled generation and exact governed fingerprint tuple.",
+      "Duplicate resultIdentity delivery is idempotently ignored.",
+      "A source hash or governed fingerprint mismatch fails closed."
+    ],
+    "distinguishesIdenticalSql": true,
+    "implementedInProduction": false
+  },
+  "previewRequestIdentitySafe": true,
+  "previewResultIdentitySafe": false,
+  "chartAssociationPossible": true,
+  "chartRestrictionEnforcementPossible": false,
+  "BASidecarAssociationPossible": false,
+  "BARestrictionEnforcementPossible": false
+}

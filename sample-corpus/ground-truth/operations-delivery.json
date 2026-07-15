@@ -1,0 +1,1455 @@
+{
+  "schemaVersion": "lightbi.acceptance-ground-truth.v1.1",
+  "corpusVersion": "1.2.0",
+  "category": "operations_delivery",
+  "samples": [
+    {
+      "id": "ops.ttkt_20241219",
+      "corpusVersion": "1.2.0",
+      "group": "golden",
+      "category": "operations_delivery",
+      "provenance": {
+        "kind": "repository_sample",
+        "sourceSystem": "postal_transport_export",
+        "tuningUse": "allowed",
+        "dataHandling": "existing_local_acceptance_data",
+        "notes": "Ground truth records expected semantics; it is not a current product-support claim."
+      },
+      "sources": [
+        {
+          "path": "sample data/bcctnhapTTKT_19122024.xlsx",
+          "sheet": "NhapXuatDungGioTTKT",
+          "required": true,
+          "sha256": "2e871cd767c9fc03bca2a3f7e4a050ec6c679d934f124a006ddfa63f0739de8e"
+        }
+      ],
+      "dataset": {
+        "expectedArchetype": "vehicle_arrival_events",
+        "expectedGrain": "event",
+        "grainTruth": {
+          "coarseGrain": "event",
+          "rowEntity": "transfer_event",
+          "parentEntity": "trip",
+          "candidateKeys": [
+            [
+              "Mã tải kiện",
+              "Thời gian checkin"
+            ]
+          ],
+          "parentKeys": [
+            [
+              "Chuyến xe"
+            ]
+          ],
+          "measureExpectations": [
+            {
+              "physicalColumn": "Số lượng",
+              "repeatedWithinParent": true,
+              "additiveAcrossRows": true,
+              "reasonCode": "row_additive_measure"
+            },
+            {
+              "physicalColumn": "Trọng lượng (Gam)",
+              "repeatedWithinParent": true,
+              "additiveAcrossRows": true,
+              "reasonCode": "row_additive_measure"
+            },
+            {
+              "physicalColumn": "Thời gian chờ",
+              "repeatedWithinParent": true,
+              "additiveAcrossRows": false,
+              "reasonCode": "non_additive_or_ratio_measure"
+            }
+          ]
+        }
+      },
+      "recognition": {
+        "requiredMappings": [
+          {
+            "physicalColumn": "Mã tải kiện",
+            "canonicalSignal": "shipment",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          },
+          {
+            "physicalColumn": "Chuyến xe",
+            "canonicalSignal": "trip",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          },
+          {
+            "physicalColumn": "Tuyến xe",
+            "canonicalSignal": "route",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          },
+          {
+            "physicalColumn": "Biển kiểm soát",
+            "canonicalSignal": "vehicle",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          },
+          {
+            "physicalColumn": "Tên lái xe",
+            "canonicalSignal": "driver",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          },
+          {
+            "physicalColumn": "Xe đến đúng hẹn",
+            "canonicalSignal": "on_time_status",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          }
+        ],
+        "forbiddenMappings": [
+          {
+            "physicalColumn": "Biển kiểm soát",
+            "canonicalSignal": "carrier",
+            "reasonCode": "semantic_mismatch"
+          },
+          {
+            "physicalColumn": "Số lượng",
+            "canonicalSignal": "stock_qty",
+            "reasonCode": "semantic_mismatch"
+          }
+        ],
+        "expectedAmbiguousMappings": [
+          {
+            "physicalColumn": "Đánh giá",
+            "candidateSignals": [
+              "status",
+              "on_time_status"
+            ],
+            "reasonCode": "normalized_alias_collision",
+            "evidenceScope": "header_only",
+            "headerOnlyExpectedState": "ambiguous",
+            "contextualResolution": {
+              "policy": "may_resolve_with_context",
+              "resolvedCanonicalSignal": null,
+              "allowedFinalStates": [
+                "ambiguous",
+                "probable",
+                "confirmed"
+              ],
+              "requiredEvidence": [
+                "value_distribution",
+                "physical_type",
+                "dataset_grain",
+                "sibling_columns"
+              ],
+              "forbiddenEvidence": [
+                "header_only"
+              ]
+            }
+          }
+        ],
+        "expectedUnknownBusinessColumns": []
+      },
+      "support": {
+        "allowedDomainPacks": [
+          "delivery_operations"
+        ],
+        "blockedDomainPacks": [
+          "revenue_sales",
+          "inventory_snapshot",
+          "inventory_movement",
+          "finance_profitability",
+          "customer_contribution",
+          "performance_target_actual"
+        ],
+        "expectedExecutableActions": [
+          "on_time_vehicle_lookup",
+          "route_on_time_review"
+        ],
+        "expectedBlockedActions": [
+          {
+            "actionId": "carrier_cost_impact",
+            "reasonCode": "missing_carrier_cost"
+          }
+        ]
+      },
+      "verifiedMetricAnswers": {},
+      "profilingExpectations": {
+        "sourceProfiles": [
+          {
+            "sourcePath": "sample data/bcctnhapTTKT_19122024.xlsx",
+            "sheet": "NhapXuatDungGioTTKT",
+            "headerPosition": {
+              "zeroBasedRowIndex": 0,
+              "basis": "verified_source_read"
+            },
+            "verifiedRowCount": 7481
+          }
+        ],
+        "verifiedRowCount": 7481,
+        "columnPhysicalTypes": [
+          {
+            "physicalColumn": "Mã tải kiện",
+            "sourcePaths": [
+              "sample data/bcctnhapTTKT_19122024.xlsx"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "allowedParseExpectations": [
+              "preserve_text"
+            ]
+          },
+          {
+            "physicalColumn": "Chuyến xe",
+            "sourcePaths": [
+              "sample data/bcctnhapTTKT_19122024.xlsx"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "allowedParseExpectations": [
+              "preserve_text"
+            ]
+          },
+          {
+            "physicalColumn": "Tuyến xe",
+            "sourcePaths": [
+              "sample data/bcctnhapTTKT_19122024.xlsx"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "allowedParseExpectations": [
+              "preserve_text"
+            ]
+          },
+          {
+            "physicalColumn": "Biển kiểm soát",
+            "sourcePaths": [
+              "sample data/bcctnhapTTKT_19122024.xlsx"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "allowedParseExpectations": [
+              "preserve_text"
+            ]
+          },
+          {
+            "physicalColumn": "Tên lái xe",
+            "sourcePaths": [
+              "sample data/bcctnhapTTKT_19122024.xlsx"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "allowedParseExpectations": [
+              "preserve_text"
+            ]
+          },
+          {
+            "physicalColumn": "Xe đến đúng hẹn",
+            "sourcePaths": [
+              "sample data/bcctnhapTTKT_19122024.xlsx"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "allowedParseExpectations": [
+              "preserve_text"
+            ]
+          },
+          {
+            "physicalColumn": "Số lượng",
+            "sourcePaths": [
+              "sample data/bcctnhapTTKT_19122024.xlsx"
+            ],
+            "allowedTypes": [
+              "number"
+            ],
+            "allowedParseExpectations": [
+              "numeric"
+            ]
+          },
+          {
+            "physicalColumn": "Đánh giá",
+            "sourcePaths": [
+              "sample data/bcctnhapTTKT_19122024.xlsx"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "allowedParseExpectations": [
+              "preserve_text"
+            ]
+          }
+        ],
+        "issues": {
+          "expected": [],
+          "allowed": [],
+          "forbidden": [
+            {
+              "code": "silent_parse_drop",
+              "physicalColumn": null
+            }
+          ]
+        },
+        "representativeEvidence": {
+          "requiredSamplingRegions": [
+            "head",
+            "middle",
+            "tail",
+            "deterministic_random"
+          ],
+          "minimumDistinctRegions": 4,
+          "requiredColumns": [
+            "Mã tải kiện",
+            "Chuyến xe",
+            "Tuyến xe",
+            "Biển kiểm soát",
+            "Tên lái xe",
+            "Xe đến đúng hẹn",
+            "Số lượng",
+            "Đánh giá"
+          ],
+          "mustPreservePhysicalColumnNames": true,
+          "mustReportUnparsedValues": true
+        }
+      }
+    },
+    {
+      "id": "ops.ttkt_20241223",
+      "corpusVersion": "1.2.0",
+      "group": "holdout",
+      "category": "operations_delivery",
+      "provenance": {
+        "kind": "repository_sample",
+        "sourceSystem": "postal_transport_export",
+        "tuningUse": "forbidden",
+        "dataHandling": "existing_local_acceptance_data",
+        "notes": "Ground truth records expected semantics; it is not a current product-support claim."
+      },
+      "sources": [
+        {
+          "path": "sample data/bcctnhapTTKT_23122024.xlsx",
+          "sheet": "NhapXuatDungGioTTKT",
+          "required": true,
+          "sha256": "99373be1d5e2b4e67b46c3c1730650b0c38e0112a3b0ac550215313f95771b98"
+        }
+      ],
+      "dataset": {
+        "expectedArchetype": "vehicle_arrival_events",
+        "expectedGrain": "event",
+        "grainTruth": {
+          "coarseGrain": "event",
+          "rowEntity": "transfer_event",
+          "parentEntity": "trip",
+          "candidateKeys": [
+            [
+              "Mã tải kiện",
+              "Thời gian checkin"
+            ]
+          ],
+          "parentKeys": [
+            [
+              "Chuyến xe"
+            ]
+          ],
+          "measureExpectations": [
+            {
+              "physicalColumn": "Số lượng",
+              "repeatedWithinParent": true,
+              "additiveAcrossRows": true,
+              "reasonCode": "row_additive_measure"
+            },
+            {
+              "physicalColumn": "Trọng lượng (Gam)",
+              "repeatedWithinParent": true,
+              "additiveAcrossRows": true,
+              "reasonCode": "row_additive_measure"
+            },
+            {
+              "physicalColumn": "Thời gian chờ",
+              "repeatedWithinParent": true,
+              "additiveAcrossRows": false,
+              "reasonCode": "non_additive_or_ratio_measure"
+            }
+          ]
+        }
+      },
+      "recognition": {
+        "requiredMappings": [
+          {
+            "physicalColumn": "Chuyến xe",
+            "canonicalSignal": "trip",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          },
+          {
+            "physicalColumn": "Tuyến xe",
+            "canonicalSignal": "route",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          },
+          {
+            "physicalColumn": "Biển kiểm soát",
+            "canonicalSignal": "vehicle",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          },
+          {
+            "physicalColumn": "Thời gian chờ",
+            "canonicalSignal": "waiting_time",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          },
+          {
+            "physicalColumn": "Xe đến đúng hẹn",
+            "canonicalSignal": "on_time_status",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          }
+        ],
+        "forbiddenMappings": [
+          {
+            "physicalColumn": "Biển kiểm soát",
+            "canonicalSignal": "carrier",
+            "reasonCode": "semantic_mismatch"
+          },
+          {
+            "physicalColumn": "Trọng tải (Kg)",
+            "canonicalSignal": "delivery_fee",
+            "reasonCode": "semantic_mismatch"
+          }
+        ],
+        "expectedAmbiguousMappings": [
+          {
+            "physicalColumn": "Đánh giá",
+            "candidateSignals": [
+              "status",
+              "on_time_status"
+            ],
+            "reasonCode": "normalized_alias_collision",
+            "evidenceScope": "header_only",
+            "headerOnlyExpectedState": "ambiguous",
+            "contextualResolution": {
+              "policy": "may_resolve_with_context",
+              "resolvedCanonicalSignal": null,
+              "allowedFinalStates": [
+                "ambiguous",
+                "probable",
+                "confirmed"
+              ],
+              "requiredEvidence": [
+                "value_distribution",
+                "physical_type",
+                "dataset_grain",
+                "sibling_columns"
+              ],
+              "forbiddenEvidence": [
+                "header_only"
+              ]
+            }
+          }
+        ],
+        "expectedUnknownBusinessColumns": []
+      },
+      "support": {
+        "allowedDomainPacks": [
+          "delivery_operations"
+        ],
+        "blockedDomainPacks": [
+          "revenue_sales",
+          "inventory_snapshot",
+          "inventory_movement",
+          "finance_profitability",
+          "customer_contribution",
+          "performance_target_actual"
+        ],
+        "expectedExecutableActions": [
+          "on_time_vehicle_lookup",
+          "waiting_time_by_route"
+        ],
+        "expectedBlockedActions": [
+          {
+            "actionId": "carrier_cost_impact",
+            "reasonCode": "missing_carrier_and_cost"
+          }
+        ]
+      },
+      "verifiedMetricAnswers": {
+        "row_count": 7373,
+        "on_time_count": 5704,
+        "late_count": 1198,
+        "blank_on_time_count": 471,
+        "distinct_vehicle_count": 23
+      },
+      "profilingExpectations": {
+        "sourceProfiles": [
+          {
+            "sourcePath": "sample data/bcctnhapTTKT_23122024.xlsx",
+            "sheet": "NhapXuatDungGioTTKT",
+            "headerPosition": {
+              "zeroBasedRowIndex": 0,
+              "basis": "verified_source_read"
+            },
+            "verifiedRowCount": 7373
+          }
+        ],
+        "verifiedRowCount": 7373,
+        "columnPhysicalTypes": [
+          {
+            "physicalColumn": "Chuyến xe",
+            "sourcePaths": [
+              "sample data/bcctnhapTTKT_23122024.xlsx"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "allowedParseExpectations": [
+              "preserve_text"
+            ]
+          },
+          {
+            "physicalColumn": "Tuyến xe",
+            "sourcePaths": [
+              "sample data/bcctnhapTTKT_23122024.xlsx"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "allowedParseExpectations": [
+              "preserve_text"
+            ]
+          },
+          {
+            "physicalColumn": "Biển kiểm soát",
+            "sourcePaths": [
+              "sample data/bcctnhapTTKT_23122024.xlsx"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "allowedParseExpectations": [
+              "preserve_text"
+            ]
+          },
+          {
+            "physicalColumn": "Thời gian chờ",
+            "sourcePaths": [
+              "sample data/bcctnhapTTKT_23122024.xlsx"
+            ],
+            "allowedTypes": [
+              "excel_serial_date",
+              "number"
+            ],
+            "allowedParseExpectations": [
+              "date_semantics_require_validation"
+            ]
+          },
+          {
+            "physicalColumn": "Xe đến đúng hẹn",
+            "sourcePaths": [
+              "sample data/bcctnhapTTKT_23122024.xlsx"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "allowedParseExpectations": [
+              "preserve_text"
+            ]
+          },
+          {
+            "physicalColumn": "Trọng tải (Kg)",
+            "sourcePaths": [
+              "sample data/bcctnhapTTKT_23122024.xlsx"
+            ],
+            "allowedTypes": [
+              "number"
+            ],
+            "allowedParseExpectations": [
+              "numeric"
+            ]
+          },
+          {
+            "physicalColumn": "Đánh giá",
+            "sourcePaths": [
+              "sample data/bcctnhapTTKT_23122024.xlsx"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "allowedParseExpectations": [
+              "preserve_text"
+            ]
+          }
+        ],
+        "issues": {
+          "expected": [],
+          "allowed": [],
+          "forbidden": [
+            {
+              "code": "silent_parse_drop",
+              "physicalColumn": null
+            }
+          ]
+        },
+        "representativeEvidence": {
+          "requiredSamplingRegions": [
+            "head",
+            "middle",
+            "tail",
+            "deterministic_random"
+          ],
+          "minimumDistinctRegions": 4,
+          "requiredColumns": [
+            "Chuyến xe",
+            "Tuyến xe",
+            "Biển kiểm soát",
+            "Thời gian chờ",
+            "Xe đến đúng hẹn",
+            "Trọng tải (Kg)",
+            "Đánh giá"
+          ],
+          "mustPreservePhysicalColumnNames": true,
+          "mustReportUnparsedValues": true
+        }
+      }
+    },
+    {
+      "id": "ops.ttkt_20241224",
+      "corpusVersion": "1.2.0",
+      "group": "holdout",
+      "category": "operations_delivery",
+      "provenance": {
+        "kind": "repository_sample",
+        "sourceSystem": "postal_transport_export",
+        "tuningUse": "forbidden",
+        "dataHandling": "existing_local_acceptance_data",
+        "notes": "Ground truth records expected semantics; it is not a current product-support claim."
+      },
+      "sources": [
+        {
+          "path": "sample data/bcctnhapTTKT_24122024.xlsx",
+          "sheet": "NhapXuatDungGioTTKT",
+          "required": true,
+          "sha256": "9190c28d88d7a50759ecfa5622f2e31d20147a125dd90d6b40c2de00fd866630"
+        }
+      ],
+      "dataset": {
+        "expectedArchetype": "vehicle_arrival_events",
+        "expectedGrain": "event",
+        "grainTruth": {
+          "coarseGrain": "event",
+          "rowEntity": "transfer_event",
+          "parentEntity": "trip",
+          "candidateKeys": [
+            [
+              "Mã tải kiện",
+              "Thời gian checkin"
+            ]
+          ],
+          "parentKeys": [
+            [
+              "Chuyến xe"
+            ]
+          ],
+          "measureExpectations": [
+            {
+              "physicalColumn": "Số lượng",
+              "repeatedWithinParent": true,
+              "additiveAcrossRows": true,
+              "reasonCode": "row_additive_measure"
+            },
+            {
+              "physicalColumn": "Trọng lượng (Gam)",
+              "repeatedWithinParent": true,
+              "additiveAcrossRows": true,
+              "reasonCode": "row_additive_measure"
+            },
+            {
+              "physicalColumn": "Thời gian chờ",
+              "repeatedWithinParent": true,
+              "additiveAcrossRows": false,
+              "reasonCode": "non_additive_or_ratio_measure"
+            }
+          ]
+        }
+      },
+      "recognition": {
+        "requiredMappings": [
+          {
+            "physicalColumn": "Ngày báo cáo",
+            "canonicalSignal": "report_date",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          },
+          {
+            "physicalColumn": "Chuyến xe",
+            "canonicalSignal": "trip",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          },
+          {
+            "physicalColumn": "Biển kiểm soát",
+            "canonicalSignal": "vehicle",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          },
+          {
+            "physicalColumn": "Thời gian dự kiến đến",
+            "canonicalSignal": "eta",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          },
+          {
+            "physicalColumn": "Xe đến đúng hẹn",
+            "canonicalSignal": "on_time_status",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          }
+        ],
+        "forbiddenMappings": [
+          {
+            "physicalColumn": "Biển kiểm soát",
+            "canonicalSignal": "driver",
+            "reasonCode": "semantic_mismatch"
+          },
+          {
+            "physicalColumn": "Trọng tải (Kg)",
+            "canonicalSignal": "transportation_cost",
+            "reasonCode": "semantic_mismatch"
+          }
+        ],
+        "expectedAmbiguousMappings": [
+          {
+            "physicalColumn": "Đánh giá thời gian chờ",
+            "candidateSignals": [
+              "status",
+              "on_time_status"
+            ],
+            "reasonCode": "normalized_alias_collision",
+            "evidenceScope": "header_only",
+            "headerOnlyExpectedState": "ambiguous",
+            "contextualResolution": {
+              "policy": "may_resolve_with_context",
+              "resolvedCanonicalSignal": null,
+              "allowedFinalStates": [
+                "ambiguous",
+                "probable",
+                "confirmed"
+              ],
+              "requiredEvidence": [
+                "value_distribution",
+                "physical_type",
+                "dataset_grain",
+                "sibling_columns"
+              ],
+              "forbiddenEvidence": [
+                "header_only"
+              ]
+            }
+          }
+        ],
+        "expectedUnknownBusinessColumns": []
+      },
+      "support": {
+        "allowedDomainPacks": [
+          "delivery_operations"
+        ],
+        "blockedDomainPacks": [
+          "revenue_sales",
+          "inventory_snapshot",
+          "inventory_movement",
+          "finance_profitability",
+          "customer_contribution",
+          "performance_target_actual"
+        ],
+        "expectedExecutableActions": [
+          "on_time_vehicle_lookup",
+          "arrival_variance_review"
+        ],
+        "expectedBlockedActions": [
+          {
+            "actionId": "carrier_cost_impact",
+            "reasonCode": "missing_carrier_and_cost"
+          }
+        ]
+      },
+      "verifiedMetricAnswers": {},
+      "profilingExpectations": {
+        "sourceProfiles": [
+          {
+            "sourcePath": "sample data/bcctnhapTTKT_24122024.xlsx",
+            "sheet": "NhapXuatDungGioTTKT",
+            "headerPosition": {
+              "zeroBasedRowIndex": 0,
+              "basis": "verified_source_read"
+            },
+            "verifiedRowCount": 5924
+          }
+        ],
+        "verifiedRowCount": 5924,
+        "columnPhysicalTypes": [
+          {
+            "physicalColumn": "Ngày báo cáo",
+            "sourcePaths": [
+              "sample data/bcctnhapTTKT_24122024.xlsx"
+            ],
+            "allowedTypes": [
+              "date_string"
+            ],
+            "allowedParseExpectations": [
+              "date_coercible"
+            ]
+          },
+          {
+            "physicalColumn": "Chuyến xe",
+            "sourcePaths": [
+              "sample data/bcctnhapTTKT_24122024.xlsx"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "allowedParseExpectations": [
+              "preserve_text"
+            ]
+          },
+          {
+            "physicalColumn": "Biển kiểm soát",
+            "sourcePaths": [
+              "sample data/bcctnhapTTKT_24122024.xlsx"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "allowedParseExpectations": [
+              "preserve_text"
+            ]
+          },
+          {
+            "physicalColumn": "Thời gian dự kiến đến",
+            "sourcePaths": [
+              "sample data/bcctnhapTTKT_24122024.xlsx"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "allowedParseExpectations": [
+              "preserve_text"
+            ]
+          },
+          {
+            "physicalColumn": "Xe đến đúng hẹn",
+            "sourcePaths": [
+              "sample data/bcctnhapTTKT_24122024.xlsx"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "allowedParseExpectations": [
+              "preserve_text"
+            ]
+          },
+          {
+            "physicalColumn": "Trọng tải (Kg)",
+            "sourcePaths": [
+              "sample data/bcctnhapTTKT_24122024.xlsx"
+            ],
+            "allowedTypes": [
+              "number"
+            ],
+            "allowedParseExpectations": [
+              "numeric"
+            ]
+          },
+          {
+            "physicalColumn": "Đánh giá thời gian chờ",
+            "sourcePaths": [
+              "sample data/bcctnhapTTKT_24122024.xlsx"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "allowedParseExpectations": [
+              "preserve_text"
+            ]
+          }
+        ],
+        "issues": {
+          "expected": [],
+          "allowed": [],
+          "forbidden": [
+            {
+              "code": "silent_parse_drop",
+              "physicalColumn": null
+            }
+          ]
+        },
+        "representativeEvidence": {
+          "requiredSamplingRegions": [
+            "head",
+            "middle",
+            "tail",
+            "deterministic_random"
+          ],
+          "minimumDistinctRegions": 4,
+          "requiredColumns": [
+            "Ngày báo cáo",
+            "Chuyến xe",
+            "Biển kiểm soát",
+            "Thời gian dự kiến đến",
+            "Xe đến đúng hẹn",
+            "Trọng tải (Kg)",
+            "Đánh giá thời gian chờ"
+          ],
+          "mustPreservePhysicalColumnNames": true,
+          "mustReportUnparsedValues": true
+        }
+      }
+    },
+    {
+      "id": "ops.logistics_may_2026",
+      "corpusVersion": "1.2.0",
+      "group": "golden",
+      "category": "operations_delivery",
+      "provenance": {
+        "kind": "repository_sample",
+        "sourceSystem": "synthetic_logistics_export",
+        "tuningUse": "allowed",
+        "dataHandling": "existing_local_acceptance_data",
+        "notes": "Ground truth records expected semantics; it is not a current product-support claim."
+      },
+      "sources": [
+        {
+          "path": "sample data/Logistics_ERP_May_2026.csv",
+          "sheet": "Sheet1",
+          "required": true,
+          "sha256": "e093e56ae6750a5ec3bbc98983f21409f373ee71d75b9cceb12c52b2d840ff72"
+        }
+      ],
+      "dataset": {
+        "expectedArchetype": "shipment_lines",
+        "expectedGrain": "event",
+        "grainTruth": {
+          "coarseGrain": "event",
+          "rowEntity": "shipment_line",
+          "parentEntity": "shipment",
+          "candidateKeys": [
+            [
+              "ShipmentID",
+              "SKU"
+            ]
+          ],
+          "parentKeys": [
+            [
+              "ShipmentID"
+            ]
+          ],
+          "measureExpectations": [
+            {
+              "physicalColumn": "Qty",
+              "repeatedWithinParent": true,
+              "additiveAcrossRows": true,
+              "reasonCode": "row_additive_measure"
+            },
+            {
+              "physicalColumn": "TotalCost",
+              "repeatedWithinParent": true,
+              "additiveAcrossRows": true,
+              "reasonCode": "row_additive_measure"
+            },
+            {
+              "physicalColumn": "DeliveryFee",
+              "repeatedWithinParent": true,
+              "additiveAcrossRows": false,
+              "reasonCode": "non_additive_or_ratio_measure"
+            }
+          ]
+        }
+      },
+      "recognition": {
+        "requiredMappings": [
+          {
+            "physicalColumn": "ShipmentID",
+            "canonicalSignal": "shipment",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          },
+          {
+            "physicalColumn": "Carrier",
+            "canonicalSignal": "carrier",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          },
+          {
+            "physicalColumn": "DeliveryFee",
+            "canonicalSignal": "delivery_fee",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          },
+          {
+            "physicalColumn": "DeliveryStatus",
+            "canonicalSignal": "delivery_status",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          },
+          {
+            "physicalColumn": "DeliveredAt",
+            "canonicalSignal": "delivery_date",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          }
+        ],
+        "forbiddenMappings": [
+          {
+            "physicalColumn": "Carrier",
+            "canonicalSignal": "driver",
+            "reasonCode": "semantic_mismatch"
+          },
+          {
+            "physicalColumn": "DeliveryFee",
+            "canonicalSignal": "revenue",
+            "reasonCode": "semantic_mismatch"
+          }
+        ],
+        "expectedAmbiguousMappings": [],
+        "expectedUnknownBusinessColumns": []
+      },
+      "support": {
+        "allowedDomainPacks": [
+          "delivery_operations"
+        ],
+        "blockedDomainPacks": [
+          "revenue_sales",
+          "inventory_snapshot",
+          "inventory_movement",
+          "finance_profitability",
+          "customer_contribution",
+          "performance_target_actual"
+        ],
+        "expectedExecutableActions": [
+          "carrier_delivery_fee_ranking",
+          "delivery_status_mix"
+        ],
+        "expectedBlockedActions": [
+          {
+            "actionId": "on_time_performance",
+            "reasonCode": "missing_sla_or_on_time_basis"
+          }
+        ]
+      },
+      "verifiedMetricAnswers": {
+        "row_count": 1500,
+        "delivery_fee_sum": 147925000,
+        "internal_carrier_count": 334,
+        "outsourced_truck_count": 294
+      },
+      "profilingExpectations": {
+        "sourceProfiles": [
+          {
+            "sourcePath": "sample data/Logistics_ERP_May_2026.csv",
+            "sheet": "Sheet1",
+            "headerPosition": {
+              "zeroBasedRowIndex": 0,
+              "basis": "verified_source_read"
+            },
+            "verifiedRowCount": 1500
+          }
+        ],
+        "verifiedRowCount": 1500,
+        "columnPhysicalTypes": [
+          {
+            "physicalColumn": "ShipmentID",
+            "sourcePaths": [
+              "sample data/Logistics_ERP_May_2026.csv"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "allowedParseExpectations": [
+              "preserve_text"
+            ]
+          },
+          {
+            "physicalColumn": "Carrier",
+            "sourcePaths": [
+              "sample data/Logistics_ERP_May_2026.csv"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "allowedParseExpectations": [
+              "preserve_text"
+            ]
+          },
+          {
+            "physicalColumn": "DeliveryFee",
+            "sourcePaths": [
+              "sample data/Logistics_ERP_May_2026.csv"
+            ],
+            "allowedTypes": [
+              "numeric_string"
+            ],
+            "allowedParseExpectations": [
+              "numeric_coercible"
+            ]
+          },
+          {
+            "physicalColumn": "DeliveryStatus",
+            "sourcePaths": [
+              "sample data/Logistics_ERP_May_2026.csv"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "allowedParseExpectations": [
+              "preserve_text"
+            ]
+          },
+          {
+            "physicalColumn": "DeliveredAt",
+            "sourcePaths": [
+              "sample data/Logistics_ERP_May_2026.csv"
+            ],
+            "allowedTypes": [
+              "date_string"
+            ],
+            "allowedParseExpectations": [
+              "date_coercible"
+            ]
+          }
+        ],
+        "issues": {
+          "expected": [],
+          "allowed": [
+            {
+              "code": "duplicate_parent_key",
+              "physicalColumn": "ShipmentID"
+            }
+          ],
+          "forbidden": [
+            {
+              "code": "silent_parse_drop",
+              "physicalColumn": null
+            }
+          ]
+        },
+        "representativeEvidence": {
+          "requiredSamplingRegions": [
+            "head",
+            "middle",
+            "tail",
+            "deterministic_random"
+          ],
+          "minimumDistinctRegions": 4,
+          "requiredColumns": [
+            "ShipmentID",
+            "Carrier",
+            "DeliveryFee",
+            "DeliveryStatus",
+            "DeliveredAt"
+          ],
+          "mustPreservePhysicalColumnNames": true,
+          "mustReportUnparsedValues": true
+        }
+      }
+    },
+    {
+      "id": "ops.logistics_june_2026",
+      "corpusVersion": "1.2.0",
+      "group": "holdout",
+      "category": "operations_delivery",
+      "provenance": {
+        "kind": "repository_sample",
+        "sourceSystem": "synthetic_logistics_export",
+        "tuningUse": "forbidden",
+        "dataHandling": "existing_local_acceptance_data",
+        "notes": "Ground truth records expected semantics; it is not a current product-support claim."
+      },
+      "sources": [
+        {
+          "path": "sample data/Logistics_ERP_June_2026.csv",
+          "sheet": "Sheet1",
+          "required": true,
+          "sha256": "ccc7f8036429a5c1b879a8a77dec843ef5ba65dbb88e3b2471a0aa70cd0bb216"
+        }
+      ],
+      "dataset": {
+        "expectedArchetype": "shipment_lines",
+        "expectedGrain": "event",
+        "grainTruth": {
+          "coarseGrain": "event",
+          "rowEntity": "shipment_line",
+          "parentEntity": "shipment",
+          "candidateKeys": [
+            [
+              "ShipmentID",
+              "SKU"
+            ]
+          ],
+          "parentKeys": [
+            [
+              "ShipmentID"
+            ]
+          ],
+          "measureExpectations": [
+            {
+              "physicalColumn": "Qty",
+              "repeatedWithinParent": true,
+              "additiveAcrossRows": true,
+              "reasonCode": "row_additive_measure"
+            },
+            {
+              "physicalColumn": "TotalCost",
+              "repeatedWithinParent": true,
+              "additiveAcrossRows": true,
+              "reasonCode": "row_additive_measure"
+            },
+            {
+              "physicalColumn": "DeliveryFee",
+              "repeatedWithinParent": true,
+              "additiveAcrossRows": false,
+              "reasonCode": "non_additive_or_ratio_measure"
+            }
+          ]
+        }
+      },
+      "recognition": {
+        "requiredMappings": [
+          {
+            "physicalColumn": "ShipmentID",
+            "canonicalSignal": "shipment",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          },
+          {
+            "physicalColumn": "Carrier",
+            "canonicalSignal": "carrier",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          },
+          {
+            "physicalColumn": "DeliveryFee",
+            "canonicalSignal": "delivery_fee",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          },
+          {
+            "physicalColumn": "DeliveryStatus",
+            "canonicalSignal": "delivery_status",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          },
+          {
+            "physicalColumn": "Store",
+            "canonicalSignal": "branch",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          }
+        ],
+        "forbiddenMappings": [
+          {
+            "physicalColumn": "Carrier",
+            "canonicalSignal": "driver",
+            "reasonCode": "semantic_mismatch"
+          },
+          {
+            "physicalColumn": "DeliveryFee",
+            "canonicalSignal": "profit",
+            "reasonCode": "semantic_mismatch"
+          }
+        ],
+        "expectedAmbiguousMappings": [],
+        "expectedUnknownBusinessColumns": []
+      },
+      "support": {
+        "allowedDomainPacks": [
+          "delivery_operations"
+        ],
+        "blockedDomainPacks": [
+          "revenue_sales",
+          "inventory_snapshot",
+          "inventory_movement",
+          "finance_profitability",
+          "customer_contribution",
+          "performance_target_actual"
+        ],
+        "expectedExecutableActions": [
+          "carrier_delivery_fee_ranking",
+          "delivery_status_mix"
+        ],
+        "expectedBlockedActions": [
+          {
+            "actionId": "on_time_performance",
+            "reasonCode": "missing_sla_or_on_time_basis"
+          }
+        ]
+      },
+      "verifiedMetricAnswers": {
+        "row_count": 1500,
+        "delivery_fee_sum": 141625000,
+        "internal_carrier_count": 303,
+        "outsourced_truck_count": 289
+      },
+      "profilingExpectations": {
+        "sourceProfiles": [
+          {
+            "sourcePath": "sample data/Logistics_ERP_June_2026.csv",
+            "sheet": "Sheet1",
+            "headerPosition": {
+              "zeroBasedRowIndex": 0,
+              "basis": "verified_source_read"
+            },
+            "verifiedRowCount": 1500
+          }
+        ],
+        "verifiedRowCount": 1500,
+        "columnPhysicalTypes": [
+          {
+            "physicalColumn": "ShipmentID",
+            "sourcePaths": [
+              "sample data/Logistics_ERP_June_2026.csv"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "allowedParseExpectations": [
+              "preserve_text"
+            ]
+          },
+          {
+            "physicalColumn": "Carrier",
+            "sourcePaths": [
+              "sample data/Logistics_ERP_June_2026.csv"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "allowedParseExpectations": [
+              "preserve_text"
+            ]
+          },
+          {
+            "physicalColumn": "DeliveryFee",
+            "sourcePaths": [
+              "sample data/Logistics_ERP_June_2026.csv"
+            ],
+            "allowedTypes": [
+              "numeric_string"
+            ],
+            "allowedParseExpectations": [
+              "numeric_coercible"
+            ]
+          },
+          {
+            "physicalColumn": "DeliveryStatus",
+            "sourcePaths": [
+              "sample data/Logistics_ERP_June_2026.csv"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "allowedParseExpectations": [
+              "preserve_text"
+            ]
+          },
+          {
+            "physicalColumn": "Store",
+            "sourcePaths": [
+              "sample data/Logistics_ERP_June_2026.csv"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "allowedParseExpectations": [
+              "preserve_text"
+            ]
+          }
+        ],
+        "issues": {
+          "expected": [],
+          "allowed": [
+            {
+              "code": "duplicate_parent_key",
+              "physicalColumn": "ShipmentID"
+            }
+          ],
+          "forbidden": [
+            {
+              "code": "silent_parse_drop",
+              "physicalColumn": null
+            }
+          ]
+        },
+        "representativeEvidence": {
+          "requiredSamplingRegions": [
+            "head",
+            "middle",
+            "tail",
+            "deterministic_random"
+          ],
+          "minimumDistinctRegions": 4,
+          "requiredColumns": [
+            "ShipmentID",
+            "Carrier",
+            "DeliveryFee",
+            "DeliveryStatus",
+            "Store"
+          ],
+          "mustPreservePhysicalColumnNames": true,
+          "mustReportUnparsedValues": true
+        }
+      }
+    }
+  ]
+}

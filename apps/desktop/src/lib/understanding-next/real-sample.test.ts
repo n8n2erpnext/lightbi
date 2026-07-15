@@ -6,8 +6,9 @@
  *
  * Verdicts follow PASS / PARTIAL / FAIL / BLOCKED / NOT VERIFIED.
  *
- * NOTE: These tests require the `xlsx` package available in node_modules.
- * They run via vitest in Node environment (no browser, no DuckDB, no React).
+ * NOTE: These tests require the `xlsx` package and all named files in `sample data/`.
+ * Phase 1 makes missing required files a hard setup failure. Remaining conditional
+ * assertions are legacy verification gaps, not canonical corpus acceptance.
  */
 
 import { describe, it, expect, beforeAll } from "vitest";
@@ -29,11 +30,10 @@ const SAMPLE_DIR = path.resolve(__dirname, "../../../../../sample data");
 function loadXlsx(
   fileName: string,
   options?: { sheetIndex?: number; maxRows?: number }
-): { input: UnderstandingInput; sheetNames: string[]; sourceRowCount: number } | null {
+): { input: UnderstandingInput; sheetNames: string[]; sourceRowCount: number } {
   const filePath = path.join(SAMPLE_DIR, fileName);
   if (!fs.existsSync(filePath)) {
-    console.warn(`[real-sample] File not found: ${filePath}`);
-    return null;
+    throw new Error(`[real-sample] Required corpus sample is missing: ${filePath}`);
   }
 
   const wb = XLSX.readFile(filePath);
@@ -68,11 +68,10 @@ function loadXlsx(
 function recoverHeaders(
   fileName: string,
   options?: { sheetIndex?: number; maxRows?: number }
-): { input: UnderstandingInput; sheetNames: string[]; sourceRowCount: number } | null {
+): { input: UnderstandingInput; sheetNames: string[]; sourceRowCount: number } {
   const filePath = path.join(SAMPLE_DIR, fileName);
   if (!fs.existsSync(filePath)) {
-    console.warn(`[real-sample] File not found: ${filePath}`);
-    return null;
+    throw new Error(`[real-sample] Required corpus sample is missing: ${filePath}`);
   }
 
   const wb = XLSX.readFile(filePath);
@@ -152,13 +151,11 @@ describe("REAL SAMPLE: BHX_PHIEUXUAT.xlsx", () => {
   });
 
   it("file loads successfully", () => {
-    if (!loaded) return; // skip if file not found
     expect(loaded.input.columns.length).toBeGreaterThan(0);
     expect(loaded.sourceRowCount).toBeGreaterThan(0);
   });
 
   it("sourceRowCount reflects full dataset (~14862), not sample", () => {
-    if (!loaded) return;
     // BHX has 14862 rows — we sampled 200 but sourceRowCount should be full
     expect(loaded.sourceRowCount).toBeGreaterThan(1000);
     const profile = buildDatasetProfile(loaded.input);
@@ -167,19 +164,16 @@ describe("REAL SAMPLE: BHX_PHIEUXUAT.xlsx", () => {
   });
 
   it("documentType is retail_sales_document", () => {
-    if (!loaded) return;
     const profile = buildDatasetProfile(loaded.input);
     expect(profile.profile.documentType).toBe("retail_sales_document");
   });
 
   it("detects revenue domain", () => {
-    if (!loaded) return;
     const profile = buildDatasetProfile(loaded.input);
     expect(profile.profile.detectedDomains).toContain("revenue");
   });
 
   it("Khach hang column has high dominanceRatio (Khach le dominates)", () => {
-    if (!loaded) return;
     const profile = buildDatasetProfile(loaded.input);
     // Find customer-like column
     const custCol = profile.columns.find(c =>
@@ -192,7 +186,6 @@ describe("REAL SAMPLE: BHX_PHIEUXUAT.xlsx", () => {
   });
 
   it("customer signal is demoted (dominanceRatio > 0.9 => usableForDefaultQuestion false)", () => {
-    if (!loaded) return;
     const profile = buildDatasetProfile(loaded.input);
     const signals = detectBusinessSignals(profile);
     const customerSignal = signals.find(s => s.canonicalId === "customer");
@@ -203,7 +196,6 @@ describe("REAL SAMPLE: BHX_PHIEUXUAT.xlsx", () => {
   });
 
   it("top recommended questions are revenue/store/payment, not customer distribution", () => {
-    if (!loaded) return;
     const profile = buildDatasetProfile(loaded.input);
     const signals = detectBusinessSignals(profile);
     const { questions } = generateQuestionFit(profile, signals);
@@ -220,7 +212,6 @@ describe("REAL SAMPLE: BHX_PHIEUXUAT.xlsx", () => {
   });
 
   it("Ngay xuat is detected as date column with Excel serial or string dates", () => {
-    if (!loaded) return;
     const profile = buildDatasetProfile(loaded.input);
     const dateCol = profile.columns.find(c => /ngày xuất|ngay xuat/i.test(c.name));
     if (!dateCol) return;
@@ -249,24 +240,20 @@ describe("REAL SAMPLE: bcctnhapTTKT_19122024.xlsx", () => {
   });
 
   it("file loads successfully", () => {
-    if (!loaded) return;
     expect(loaded.input.columns.length).toBeGreaterThan(5);
   });
 
   it("documentType is logistics_intake_report", () => {
-    if (!loaded) return;
     const profile = buildDatasetProfile(loaded.input);
     expect(profile.profile.documentType).toBe("logistics_intake_report");
   });
 
   it("detects operations domain", () => {
-    if (!loaded) return;
     const profile = buildDatasetProfile(loaded.input);
     expect(profile.profile.detectedDomains).toContain("operations");
   });
 
   it("detects on_time_status signal from on-time columns", () => {
-    if (!loaded) return;
     const profile = buildDatasetProfile(loaded.input);
     const signals = detectBusinessSignals(profile);
     const onTimeSignal = signals.find(s => s.canonicalId === "on_time_status");
@@ -274,7 +261,6 @@ describe("REAL SAMPLE: bcctnhapTTKT_19122024.xlsx", () => {
   });
 
   it("detects route or trip signal", () => {
-    if (!loaded) return;
     const profile = buildDatasetProfile(loaded.input);
     const signals = detectBusinessSignals(profile);
     const hasRouteOrTrip =
@@ -284,7 +270,6 @@ describe("REAL SAMPLE: bcctnhapTTKT_19122024.xlsx", () => {
   });
 
   it("recommended questions include on-time or waiting time analysis", () => {
-    if (!loaded) return;
     const profile = buildDatasetProfile(loaded.input);
     const signals = detectBusinessSignals(profile);
     const { questions } = generateQuestionFit(profile, signals);
@@ -295,7 +280,6 @@ describe("REAL SAMPLE: bcctnhapTTKT_19122024.xlsx", () => {
   });
 
   it("sourceRowCount > sampleRowCount", () => {
-    if (!loaded) return;
     const profile = buildDatasetProfile(loaded.input);
     expect(profile.source.sourceRowCount).toBeGreaterThan(profile.source.sampleRowCount);
   });
@@ -313,7 +297,6 @@ describe("REAL SAMPLE: motodetail.xlsx", () => {
   });
 
   it("file loads and has the expected columns", () => {
-    if (!loaded) return;
     const cols = loaded.input.columns;
     expect(cols.length).toBeGreaterThan(10);
     // Key columns with newlines exist
@@ -322,13 +305,11 @@ describe("REAL SAMPLE: motodetail.xlsx", () => {
   });
 
   it("documentType is dirty_operational_export", () => {
-    if (!loaded) return;
     const profile = buildDatasetProfile(loaded.input);
     expect(profile.profile.documentType).toBe("dirty_operational_export");
   });
 
   it("detects excel_serial_date on DATE column (values like 43738)", () => {
-    if (!loaded) return;
     const profile = buildDatasetProfile(loaded.input);
     const serialSignals = profile.quality.dirtySignals.filter(
       s => s.kind === "excel_serial_date" && /date/i.test(s.column ?? "")
@@ -337,7 +318,6 @@ describe("REAL SAMPLE: motodetail.xlsx", () => {
   });
 
   it("detects formula_error #REF! on AREA CLASS column", () => {
-    if (!loaded) return;
     const profile = buildDatasetProfile(loaded.input);
     const formulaErrors = profile.quality.dirtySignals.filter(
       s => s.kind === "formula_error" && /area.*class|class/i.test((s.column ?? "").replace(/\n/g, ""))
@@ -346,7 +326,6 @@ describe("REAL SAMPLE: motodetail.xlsx", () => {
   });
 
   it("__PowerAppsId__ is classified as technical_column", () => {
-    if (!loaded) return;
     const profile = buildDatasetProfile(loaded.input);
     const techCol = profile.quality.dirtySignals.filter(
       s => s.kind === "technical_column" && s.column === "__PowerAppsId__"
@@ -355,7 +334,6 @@ describe("REAL SAMPLE: motodetail.xlsx", () => {
   });
 
   it("MET.\\nID is NOT classified as technical_column", () => {
-    if (!loaded) return;
     const profile = buildDatasetProfile(loaded.input);
     const metTech = profile.quality.dirtySignals.filter(
       s => s.kind === "technical_column" && /met\.?\s*id/i.test((s.column ?? "").replace(/\n/g, " "))
@@ -364,7 +342,6 @@ describe("REAL SAMPLE: motodetail.xlsx", () => {
   });
 
   it("MET.\\nID is detected as row_type signal (by name or value)", () => {
-    if (!loaded) return;
     const profile = buildDatasetProfile(loaded.input);
     const signals = detectBusinessSignals(profile);
     const rowTypeSignal = signals.find(
@@ -384,14 +361,12 @@ describe("REAL SAMPLE: motodetail.xlsx", () => {
   });
 
   it("data_quality_review is top recommended question", () => {
-    if (!loaded) return;
     const result = createDatasetUnderstandingResult(loaded.input);
     expect(result.recommendedQuestions.length).toBeGreaterThan(0);
     expect(result.recommendedQuestions[0].actionKind).toBe("data_quality_review");
   });
 
   it("data_quality_review is in availableActions", () => {
-    if (!loaded) return;
     const result = createDatasetUnderstandingResult(loaded.input);
     const dqrAction = result.availableActions.find(a => {
       const q = result.recommendedQuestions.find(q => q.id === a.questionId);
@@ -401,7 +376,6 @@ describe("REAL SAMPLE: motodetail.xlsx", () => {
   });
 
   it("detects money_embedded_in_text on NOTE column", () => {
-    if (!loaded) return;
     const profile = buildDatasetProfile(loaded.input);
     // NOTE may or may not have money values in the sample — check if NOTE column exists
     const noteCol = profile.columns.find(c => /note/i.test(c.name));
@@ -431,7 +405,6 @@ describe("REAL SAMPLE: PLU ALL FRESH 22.03.2021.xlsx", () => {
   });
 
   it("file loads and has product-like columns", () => {
-    if (!loaded) return;
     const cols = loaded.input.columns;
     expect(cols.length).toBeGreaterThan(3);
     const hasPLU = cols.some(c => /mã sản phẩm|sku|plu|mã hàng/i.test(c));
@@ -439,7 +412,6 @@ describe("REAL SAMPLE: PLU ALL FRESH 22.03.2021.xlsx", () => {
   });
 
   it("documentType is product_master or inventory_snapshot", () => {
-    if (!loaded) return;
     const profile = buildDatasetProfile(loaded.input);
     expect(["product_master", "inventory_snapshot", "generic_table"]).toContain(
       profile.profile.documentType
@@ -451,13 +423,11 @@ describe("REAL SAMPLE: PLU ALL FRESH 22.03.2021.xlsx", () => {
   });
 
   it("detects inventory domain", () => {
-    if (!loaded) return;
     const profile = buildDatasetProfile(loaded.input);
     expect(profile.profile.detectedDomains).toContain("inventory");
   });
 
   it("detects SKU/product signal", () => {
-    if (!loaded) return;
     const profile = buildDatasetProfile(loaded.input);
     const signals = detectBusinessSignals(profile);
     const skuSignal = signals.find(s => s.canonicalId === "sku");
@@ -465,7 +435,6 @@ describe("REAL SAMPLE: PLU ALL FRESH 22.03.2021.xlsx", () => {
   });
 
   it("__EMPTY columns from xlsx are treated as blank headers (not business signals)", () => {
-    if (!loaded) return;
     const profile = buildDatasetProfile(loaded.input);
     // __EMPTY columns may be present — they should be technical or low-confidence
     const emptyColSignals = profile.quality.dirtySignals.filter(
@@ -479,7 +448,6 @@ describe("REAL SAMPLE: PLU ALL FRESH 22.03.2021.xlsx", () => {
   });
 
   it("inventory-oriented questions are generated", () => {
-    if (!loaded) return;
     const profile = buildDatasetProfile(loaded.input);
     const signals = detectBusinessSignals(profile);
     const { questions } = generateQuestionFit(profile, signals);
@@ -500,7 +468,6 @@ describe("REAL SAMPLE: Bao_cao_chi_tiet_Ton_kho_vung_tinh_28-12-2024.xlsx", () =
   });
 
   it("file loads with inventory aging columns", () => {
-    if (!loaded) return;
     expect(loaded.sourceRowCount).toBeGreaterThan(1000);
     expect(loaded.input.columns).toEqual(expect.arrayContaining([
       "Mã phiếu gửi",
@@ -511,14 +478,12 @@ describe("REAL SAMPLE: Bao_cao_chi_tiet_Ton_kho_vung_tinh_28-12-2024.xlsx", () =
   });
 
   it("documentType is inventory_snapshot", () => {
-    if (!loaded) return;
     const profile = buildDatasetProfile(loaded.input);
     expect(profile.profile.documentType).toBe("inventory_snapshot");
     expect(profile.profile.detectedDomains).toContain("inventory");
   });
 
   it("detects inventory aging, location, money, and service signals", () => {
-    if (!loaded) return;
     const profile = buildDatasetProfile(loaded.input);
     const signals = detectBusinessSignals(profile);
     const ids = signals.map(signal => signal.canonicalId);
@@ -532,7 +497,6 @@ describe("REAL SAMPLE: Bao_cao_chi_tiet_Ton_kho_vung_tinh_28-12-2024.xlsx", () =
   });
 
   it("creates executable inventory aging/value/structure lenses", () => {
-    if (!loaded) return;
     const result = createDatasetUnderstandingResult(loaded.input);
     const lensIds = result.lenses.map(lens => lens.id);
     expect(lensIds).toContain("stock_health");
@@ -562,12 +526,10 @@ describe("REAL SAMPLE: QUAN_LY (management ranking)", () => {
   });
 
   it("file loads", () => {
-    if (!loadedDefault && !loadedRecovered) return;
     expect(true).toBe(true); // at least one loaded
   });
 
   it("default parse: columns are all __EMPTY (real headers are in row 0)", () => {
-    if (!loadedDefault) return;
     const cols = loadedDefault.input.columns;
     const allEmpty = cols.every(c => /^__empty/i.test(c.trim()) || /^col_\d+/.test(c));
     // QUAN_LY is a known case where xlsx misses the header row
@@ -589,7 +551,6 @@ describe("REAL SAMPLE: QUAN_LY (management ranking)", () => {
   });
 
   it("recovered headers include ranking/management columns", () => {
-    if (!loadedRecovered) return;
     const cols = loadedRecovered.input.columns;
     const hasRankingCols = cols.some(c =>
       /xếp hạng|rank|kpi|quản lý|manager|target|msnv|họ tên/i.test(c)
@@ -598,7 +559,6 @@ describe("REAL SAMPLE: QUAN_LY (management ranking)", () => {
   });
 
   it("recovered: documentType is management_ranking or generic_table", () => {
-    if (!loadedRecovered) return;
     if (loadedRecovered.input.columns.length === 0) {
       // BLOCKED — acceptable
       return;
@@ -615,7 +575,6 @@ describe("REAL SAMPLE: QUAN_LY (management ranking)", () => {
   });
 
   it("recovered: performance questions or BLOCKED clean if schema cannot be used", () => {
-    if (!loadedRecovered) return;
     if (loadedRecovered.input.columns.length === 0) {
       // Acceptable: BLOCKED with empty schema
       return;

@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "lightbi.phase-5b4-migration-gate.v1",
+  "automaticAggregationDefaultPolicyGoverned": true,
+  "exploratoryAggregationBoundaryGoverned": true,
+  "decisionUseBoundaryGoverned": true,
+  "countSemanticsGoverned": true,
+  "governedMetricEvidenceContractDefined": true,
+  "aggregationRestrictionProjectionEligible": true,
+  "criticalAggregationDivergencesResolved": false,
+  "authorityMigrationEvidenceSufficientForPhase5CPlanning": false,
+  "canonicalAuthorityMigrationEligible": false,
+  "finalWorktreeFullSuiteVerified": false,
+  "pairBundleAuthorityDebtDispositioned": false,
+  "summaryPercentage": null,
+  "productionWiring": {
+    "executed": false
+  },
+  "phase5CStarted": false
+}

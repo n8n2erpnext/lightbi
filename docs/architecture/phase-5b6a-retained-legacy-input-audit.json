@@ -1,0 +1,109 @@
+{
+  "schemaVersion": "lightbi.phase-5b6a-retained-legacy-input-audit.v1",
+  "candidates": [
+    {
+      "source": "apps/desktop/src/lib/runtime-planner-preview.test.ts",
+      "provenance": "planner unit-test fixtures",
+      "sourceHashCompatibility": "unavailable",
+      "predatesCanonicalConclusion": true,
+      "tuningStatus": "synthetic_contract_test_only",
+      "containsAllRequiredLegacyInputs": false,
+      "reuseClassification": "synthetic",
+      "missing": [
+        "governed source identity/hash binding",
+        "historical selected action",
+        "historical rows/workspace"
+      ]
+    },
+    {
+      "source": "apps/desktop/src/lib/advanced-result-handoff.test.ts",
+      "provenance": "Advanced handoff unit-test result fixtures",
+      "sourceHashCompatibility": "unavailable",
+      "predatesCanonicalConclusion": true,
+      "tuningStatus": "synthetic_contract_test_only",
+      "containsAllRequiredLegacyInputs": false,
+      "reuseClassification": "synthetic",
+      "missing": [
+        "governed 145-record source binding",
+        "historical production query result"
+      ]
+    },
+    {
+      "source": "apps/desktop/src/pages/Investigation.test.tsx and apps/desktop/src/lib/investigation-session.test.ts",
+      "provenance": "mocked/synthetic active-session fixtures",
+      "sourceHashCompatibility": "unavailable",
+      "predatesCanonicalConclusion": true,
+      "tuningStatus": "synthetic_contract_test_only",
+      "containsAllRequiredLegacyInputs": false,
+      "reuseClassification": "synthetic",
+      "missing": [
+        "governed source hash",
+        "historical user selection provenance"
+      ]
+    },
+    {
+      "source": "sample-corpus/manifest.json and sample-corpus/ground-truth/*.json",
+      "provenance": "Phase 1B acceptance truth",
+      "sourceHashCompatibility": "available for corpus sources but not tied to a historical runtime plan",
+      "predatesCanonicalConclusion": true,
+      "tuningStatus": "golden tuning only; holdout/adversarial/multi_file evaluation-only",
+      "containsAllRequiredLegacyInputs": false,
+      "reuseClassification": "partial",
+      "missing": [
+        "historical selected action",
+        "RuntimeIntent",
+        "plan",
+        "workspace/result execution state"
+      ]
+    },
+    {
+      "source": "workspace session snapshot contract and Home/Investigation persistence payloads",
+      "provenance": "production persistence shape",
+      "sourceHashCompatibility": "source files may be retained; no plan hash binding exists",
+      "predatesCanonicalConclusion": true,
+      "tuningStatus": "runtime artifact shape",
+      "containsAllRequiredLegacyInputs": false,
+      "reuseClassification": "partial",
+      "missing": [
+        "AnalysisAction",
+        "RuntimeIntent",
+        "incoming/enhanced plan",
+        "SQL preview",
+        "request/result identity"
+      ]
+    },
+    {
+      "source": "docs/architecture/phase-5b1-paired-observation-replay-audit.json",
+      "provenance": "numeric legacy/canonical observation audit",
+      "sourceHashCompatibility": "governed source identity retained",
+      "predatesCanonicalConclusion": false,
+      "tuningStatus": "evaluation audit",
+      "containsAllRequiredLegacyInputs": false,
+      "reuseClassification": "partial",
+      "missing": [
+        "planner inputs and runtime preview execution"
+      ]
+    },
+    {
+      "source": "docs/architecture/phase-5b4-unique-divergence-policy-replay.json and Phase 5B5/5B6 audits",
+      "provenance": "post-conclusion canonical/sidecar audit outputs",
+      "sourceHashCompatibility": "governed source identity retained",
+      "predatesCanonicalConclusion": false,
+      "tuningStatus": "evaluation-only audit",
+      "containsAllRequiredLegacyInputs": false,
+      "reuseClassification": "partial",
+      "missing": [
+        "question/action",
+        "business view",
+        "workspace",
+        "rows bound to plan",
+        "incoming/enhanced plan",
+        "SQL"
+      ]
+    }
+  ],
+  "authenticReusableCandidateCount": 0,
+  "partialCandidateCount": 4,
+  "syntheticCandidateCount": 3,
+  "conclusion": "No repository-controlled artifact contains all actual legacy producer inputs with source-hash-compatible provenance for any of the 145 governed records."
+}

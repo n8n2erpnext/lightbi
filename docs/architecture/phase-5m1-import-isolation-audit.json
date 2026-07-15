@@ -1,0 +1,11 @@
+{
+  "schemaVersion": "lightbi.phase-5m1-import-isolation-audit.v1",
+  "newProductionImporters": [],
+  "newBarrelExports": [],
+  "canonicalModules": ["commerce-distribution-domain-pack.ts", "governed-domain-metric-contracts.ts", "governed-metric-policy.ts", "governed-metric-preflight.ts"],
+  "testImporters": ["governed-metric-preflight.test.ts", "governed-metric-preflight.corpus.test.ts", "phase-5m1-governance.test.ts"],
+  "unchanged": ["Home", "Investigation", "chart", "BA", "AI", "DuckDB", "runtime execution", "persistence", "telemetry", "capture protocol"],
+  "legacyPhase0ManifestRetained": true,
+  "productionRuntimeBehaviorChanged": false,
+  "productionWiring": { "executed": false }
+}

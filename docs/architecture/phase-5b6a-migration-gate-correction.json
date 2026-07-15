@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "lightbi.phase-5b6a-migration-gate-correction.v1",
+  "phase5B5NonOwnershipEstablished": true,
+  "typescriptDiagnosticOriginEstablished": true,
+  "typescriptBuildIntegrityEstablished": false,
+  "abstractSidecarProjectionLossless": true,
+  "authenticRuntimePlanReplayAvailable": false,
+  "actualPlanBindingCoverageComplete": false,
+  "actualSqlPreviewBindingCoverageComplete": false,
+  "previewRequestIdentitySafe": true,
+  "previewResultIdentitySafe": false,
+  "chartAssociationPossible": true,
+  "chartRestrictionEnforcementPossible": false,
+  "BASidecarAssociationPossible": false,
+  "BARestrictionEnforcementPossible": false,
+  "actualContractProjectionPlanningEligible": false,
+  "productionProjectionEligible": false,
+  "canonicalAuthorityMigrationEligible": false,
+  "criticalAggregationDivergencesResolved": false,
+  "summaryPercentage": null,
+  "productionWiring": {
+    "executed": false
+  },
+  "finalVerification": {
+    "phase5B6ATargetedTestsPassed": 5,
+    "phase5B6AndPhase5B6ATargetedTestsPassed": 15,
+    "understandingCoreTestFilesPassed": 47,
+    "understandingCoreTestsPassed": 229,
+    "fullDesktopSuiteRunCount": 1,
+    "fullDesktopSuitePhase5B6AFailures": 0,
+    "fullDesktopSuiteKnownOutOfScopeFailures": 8
+  },
+  "constraints": {
+    "abstractLosslessnessDoesNotEstablishActualContractEligibility": true,
+    "requestIdentityDoesNotEstablishResultIdentity": true,
+    "chartAssociationDoesNotEstablishRestrictionEnforcement": true,
+    "buildIntegrityCannotReplaceAuthenticPlanBinding": true,
+    "authenticPlanBindingCannotReplaceResultIdentity": true
+  },
+  "correction": "Phase 5B6 abstract projection remains lossless, but missing authentic runtime bindings and unsafe result identity keep actual-contract planning and production projection ineligible."
+}

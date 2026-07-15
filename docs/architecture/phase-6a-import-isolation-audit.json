@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "lightbi.phase-6a-import-isolation-audit.v1",
+  "authorizedProductionImporters": [
+    "apps/desktop/src/pages/Home.tsx",
+    "apps/desktop/src/pages/Investigation.tsx",
+    "apps/desktop/src/lib/investigation-session.ts",
+    "apps/desktop/src/lib/canonical-ai-briefing.ts",
+    "apps/desktop/src/lib/canonical-consumer-presentation-adapter.ts"
+  ],
+  "canonicalBarrelExport": null,
+  "canonicalConsumerImports": "direct module imports preserve the frozen Phase 5B6B barrel hash",
+  "forbiddenLegacyImportsInHome": [],
+  "understandingNextImportsInsideCanonicalCore": [],
+  "phase5PolicyFilesModified": [],
+  "newSemanticAliases": false,
+  "newDomains": false,
+  "newMetrics": false,
+  "newQuestions": false,
+  "runtimePolicyChanged": false
+}

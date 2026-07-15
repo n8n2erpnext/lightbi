@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "lightbi.phase-6b-final-gate-audit.v1",
+  "phase": "6B",
+  "simpleCanonicalPath": true,
+  "advancedCanonicalPath": true,
+  "canonicalBlockersCannotFallback": true,
+  "legacyProductionSessionPathReachable": false,
+  "oneArtifactPerUnchangedState": true,
+  "sourceOrConfigurationChangeInvalidatesIdentity": true,
+  "runtimeRestrictionsRetained": true,
+  "decisionUseAuthorized": false,
+  "policySemanticsChanged": false,
+  "phase7Started": false,
+  "verification": {
+    "phase6bAndPhase6aTargeted": {
+      "files": 5,
+      "tests": 17,
+      "passed": 17,
+      "failed": 0
+    },
+    "phase5m1ThroughM4Regression": {
+      "commandExitCode": 0,
+      "result": "passed"
+    },
+    "understandingCore": {
+      "testFilesInvoked": 65,
+      "commandExitCode": 0,
+      "result": "passed"
+    },
+    "typescript": "passed",
+    "auditJsonFilesParsed": 7,
+    "importAndReachabilityScans": "passed",
+    "gitDiffCheck": "passed",
+    "fullDesktopSuite": {
+      "runs": 1,
+      "capturedDeterministicFailures": 6,
+      "capturedFailureFiles": [
+        "guided-investigation-pipeline.test.ts",
+        "numeric-health-gate.test.ts",
+        "virtual-dataset-planner.test.ts"
+      ],
+      "allCapturedFailuresGovernedByBaselineAllowlist": true,
+      "unexpectedFailuresObserved": 0,
+      "limitation": "The runner session closed before its final aggregate line could be retained; the process completed and every captured failure matched the governed Phase 5B6B allowlist. The suite was not rerun because Phase 6B permits one full-suite run."
+    }
+  },
+  "verificationStatus": "completed_with_allowlisted_failures_and_truncated_runner_summary",
+  "classification": "phase6_cutover_ready_with_documented_debt"
+}

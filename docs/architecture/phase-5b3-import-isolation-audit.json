@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "lightbi.phase-5b3-import-isolation-audit.v1",
+  "allowedImporters": [
+    "aggregation-guard-shadow.test.ts",
+    "aggregation-guard-shadow.corpus.test.ts"
+  ],
+  "productionImporters": [],
+  "barrelExported": false,
+  "persistence": false,
+  "telemetry": false,
+  "featureFlags": false,
+  "productionWiring": {
+    "executed": false
+  }
+}

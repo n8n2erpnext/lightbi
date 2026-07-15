@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "lightbi.phase-6a-end-to-end-audit.v1",
+  "source": "sample data/Sales_ERP_May_2026.xlsx",
+  "canonicalBuildCount": 1,
+  "homeCanonicalQuestionsReceived": true,
+  "homeCanonicalCaveatsReceived": true,
+  "selectedQuestion": "commerce.sales_revenue.by_product",
+  "artifactIdentityPreserved": true,
+  "runtimePreflightState": "conditionally_executable",
+  "queryOperator": "governed_sum",
+  "engine": "duckdb",
+  "executionStatus": "executed",
+  "expected": 22973896244,
+  "actual": 22973896244,
+  "comparison": "exact_match",
+  "evidenceRetained": true,
+  "restrictionsRetained": true,
+  "decisionUseAuthorized": false,
+  "legacyDetectorParticipated": false
+}

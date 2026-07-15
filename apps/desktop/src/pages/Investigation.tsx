@@ -2,14 +2,11 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Database, BarChart3, ChevronDown, ChevronRight, Activity, Code2, AlertTriangle, CheckCircle2, ClipboardCheck, Download, FileSpreadsheet, X } from 'lucide-react';
 import { getCurrentInvestigationSession } from '../lib/investigation-session';
-import { isDataQualityReviewAction } from '../lib/understanding-next/action-adapter';
-import { createSafeSqlPreview } from '../lib/safe-sql-preview';
-import { executeDuckDBPreviewSandbox, type DuckDBPreviewResult } from '../lib/duckdb-preview-sandbox';
-import { executeBackendPreview } from '../lib/backend-preview-executor';
+import type { SafeSqlPreview } from '../lib/safe-sql-preview';
+import type { DuckDBPreviewResult } from '../lib/duckdb-preview-sandbox';
 import { createChartPreviewModel, type ChartPreviewModel } from '../lib/chart-preview-model';
 import { ChartPreviewRenderer } from '../components/analysis/ChartPreviewRenderer';
 import { validatePreviewAgainstIntent, type ResultValidationResult } from '../lib/result-validator-contract';
-import { enhancePlanWithGuardedSum } from '../lib/guarded-sum-bridge';
 import { useDisplayPreferences, type DisplayPreferences } from '../stores/display-preferences-store';
 import { formatValue, inferSemanticType } from '../lib/display-formatter';
 import { Settings2 } from 'lucide-react';
@@ -23,11 +20,7 @@ import { createBusinessBrainBrief } from '../lib/business-brain-brief';
 import type { AnalysisAction } from '../lib/analysis-opportunity-actions';
 import type { BusinessFusionOverview, FusionMetricDelta } from '../lib/business-fusion-overview';
 import { useAppRuntime } from '@lightbi/runtime';
-import {
-  createQueryResultBuffer,
-  ExecutionRunCoordinator,
-  queryResultBufferToRows
-} from '@lightbi/runtime';
+import { ExecutionRunCoordinator } from '@lightbi/runtime';
 import {
   executeDrillThrough,
   exportRowsAsCsv,
@@ -38,6 +31,8 @@ import {
 import { saveWorkspaceSession, type SaveWorkspaceSessionRequest } from '../lib/workspace-session-api';
 import { advancedSourceId, useAdvancedSourceStore } from '../stores/advanced-source-store';
 import { profileColumns } from '../lib/column-profiler';
+import { executeGovernedMetricRequest } from '../lib/understanding-core/governed-metric-executor';
+import { createGovernedLocalDuckDBBoundary } from '../lib/understanding-core/governed-local-duckdb-boundary';
 
 const INVESTIGATION_SESSION_ROW_LIMIT = 250;
 
@@ -376,8 +371,8 @@ export const Investigation: React.FC = () => {
   }, [registerAdvancedSource, session]);
 
   useEffect(() => {
-    if (!session || autoPreviewStarted.current || isDataQualityReviewAction(session.analysisAction)) return;
-    const hasPreviewInput = Boolean(session.runtimeDatasetSource) || (session.rows?.length ?? 0) > 0;
+    if (!session || !session.canonicalHandoff || autoPreviewStarted.current || session.analysisAction.actionType === 'data_quality_review') return;
+    const hasPreviewInput = (session.rows?.length ?? 0) > 0;
     if (!hasPreviewInput) return;
     autoPreviewStarted.current = true;
     const timer = window.setTimeout(() => {
@@ -404,7 +399,7 @@ export const Investigation: React.FC = () => {
     );
   }
 
-  const { analysisAction, runtimeIntent, runtimePlanPreview, rows, aiBriefing, runtimeDatasetSource, rowScope, businessFusionOverview } = session;
+  const { analysisAction, runtimeIntent, runtimePlanPreview, rows, aiBriefing, runtimeDatasetSource, rowScope, businessFusionOverview, canonicalHandoff } = session;
   const fallbackWorkspaceSessionPayload = (): SaveWorkspaceSessionRequest => {
     const columns = rows?.[0] ? Object.keys(rows[0]) : [];
     const retainedRows = limitInvestigationRows(rows);
@@ -467,8 +462,35 @@ export const Investigation: React.FC = () => {
     ? aiBriefing.caveats.join(' ')
     : `Readiness score: ${aiBriefing?.readinessScore ?? 0}`;
   const safeActionHints = aiBriefing?.safeActionHints ?? [];
-  const enhancedPlan = enhancePlanWithGuardedSum(runtimePlanPreview, rows || []);
-  const safeSqlPreview = createSafeSqlPreview(enhancedPlan);
+  const safeSqlPreview: SafeSqlPreview = canonicalHandoff?.queryPlanning.state === 'planned'
+    ? {
+      id: `sql_${canonicalHandoff.queryPlanning.plan.planId}`,
+      sourcePlanId: canonicalHandoff.queryPlanning.plan.planId,
+      status: 'ready',
+      dialect: 'duckdb',
+      sql: canonicalHandoff.queryPlanning.plan.sql,
+      parameters: Object.fromEntries(canonicalHandoff.queryPlanning.plan.parameters.map((value, index) => [`parameter_${index + 1}`, value])),
+      referencedColumns: [...new Set([
+        ...canonicalHandoff.queryPlanning.plan.metricBindings.map(binding => binding.physicalColumn),
+        ...canonicalHandoff.queryPlanning.plan.groupingBindings.map(binding => binding.physicalColumn),
+        ...(canonicalHandoff.queryPlanning.plan.timeBinding ? [canonicalHandoff.queryPlanning.plan.timeBinding.physicalColumn] : []),
+      ])],
+      warnings: canonicalHandoff.queryPlanning.plan.restrictions.map(item => item.code),
+      blockedReasons: [],
+      source: 'runtime_plan_preview',
+    }
+    : {
+      id: `sql_blocked_${canonicalHandoff?.artifactIdentity ?? 'canonical_handoff_required'}`,
+      sourcePlanId: canonicalHandoff?.artifactIdentity ?? 'canonical_handoff_required',
+      status: 'blocked',
+      dialect: 'duckdb',
+      sql: null,
+      parameters: {},
+      referencedColumns: [],
+      warnings: [],
+      blockedReasons: canonicalHandoff?.blockers.length ? [...canonicalHandoff.blockers] : ['canonical_handoff_required'],
+      source: 'runtime_plan_preview',
+    };
   const baDecisionBrief = previewResult
     ? createBADecisionBrief({
       datasetId: session.datasetId,
@@ -530,87 +552,55 @@ export const Investigation: React.FC = () => {
     setSelectedDrillRows(new Set());
     setDrillError(null);
     try {
-      let result = await executeBackendPreview({
-        runtimePlan: runtimePlanPreview,
-        safeSqlPreview,
-        rows: rows || [],
-        runtimeDatasetSource,
-        rowScope,
-        signal: run.signal
-      });
-
-      if (!executionRuns.current.isCurrent(run)) return;
-
-      const isInfraError = result.status === 'failed' && (
-        result.errorMessage?.includes('NETWORK_UNAVAILABLE') || 
-        result.errorMessage?.includes('LOCAL_EXECUTOR_UNAVAILABLE') ||
-        result.errorMessage?.includes('DUCKDB_BOOTSTRAP_ERROR') ||
-        result.errorMessage?.includes('DUCKDB_WORKER_ERROR') ||
-        result.errorMessage?.includes('DUCKDB_MEMORY_ERROR')
-      );
-      const isMissingSourceWarning = result.status === 'blocked' && result.blockedReasons.some(r => r.includes('No active dataset source available') || r.includes('Only CSV current source is supported'));
-
-      // Strict Sandbox Fallback Rule:
-      // Only allow JS sandbox fallback if it is a missing source warning OR if it's an infrastructure error BUT the query is simple enough.
-      // Complex intents like trend, group_by, relationship MUST fail transparently if the backend is dead.
-      // Semantic errors like CANONICAL_PROJECTION_MISSING must NEVER fallback.
-      const isSafeFallbackIntent = runtimeIntent.type === 'table_preview' || runtimeIntent.type === 'distribution';
-      const needsFallback = isMissingSourceWarning || (isInfraError && isSafeFallbackIntent);
-
-      if (needsFallback) {
-        const fallbackResult = await executeDuckDBPreviewSandbox({
-          runtimeIntent,
-          runtimePlan: runtimePlanPreview,
+      if (!canonicalHandoff || canonicalHandoff.queryPlanning.state !== 'planned') {
+          const blocked: DuckDBPreviewResult = {
+            id: `canonical-blocked:${canonicalHandoff?.artifactIdentity ?? 'canonical_handoff_required'}`,
+            sourceSqlPreviewId: 'canonical-governed-preflight',
+            status: 'blocked',
+            columns: [], rows: [], rowCount: 0, maxRows: 100,
+            warnings: canonicalHandoff?.runtimePreflight.restrictions.map(item => item.code) ?? [],
+            blockedReasons: canonicalHandoff?.blockers.length ? canonicalHandoff.blockers : ['canonical_handoff_required'],
+            source: 'governed_duckdb_execution',
+          };
+          setPreviewResult(blocked);
+          setValidationResult(validatePreviewAgainstIntent(runtimeIntent, blocked));
+          setChartModel(createChartPreviewModel({ previewResult: blocked, runtimePlan: runtimePlanPreview, analysisLabel: analysisAction.opportunityName }));
+          return;
+      }
+      const governed = await executeGovernedMetricRequest({
+          schemaVersion: 'lightbi.governed-metric-execution-request.v1',
+          requestId: `consumer:${canonicalHandoff.queryPlanning.plan.planId}`,
+          plan: canonicalHandoff.queryPlanning.plan,
           rows: rows || [],
-          safeSqlPreview,
-          signal: run.signal
-        });
-        fallbackResult.source = "js_sandbox_fallback";
-        result = fallbackResult;
-      }
-
-      if (!executionRuns.current.isCurrent(run)) return;
-
-      const validation = validatePreviewAgainstIntent(runtimeIntent, result);
-      
-      // Upgrade failure status based on boundary contract validation
-      if (validation.status === 'failed' && result.status !== 'failed') {
-        result.status = 'failed';
-        result.errorMessage = "Validation boundary rejected the preview result due to insufficient quality or missing required data.";
-      }
-      if (result.rows.length === 0 && result.status === 'executed') {
-        result.status = 'failed';
-        result.errorMessage = "Execution completed but returned an empty dataset. Analysis unavailable.";
-      }
-
-      const resultBuffer = createQueryResultBuffer({
-        runId: run.id,
-        columns: result.columns,
-        rows: result.rows,
-        limit: result.maxRows,
-        totalRowCount: result.rowCount,
-        truncated: result.rowCount > result.rows.length
-      });
-      result = {
-        ...result,
-        columns: resultBuffer.columns.map(column => column.name),
-        rows: queryResultBufferToRows(resultBuffer),
-        resultBuffer
-      };
-
-      setPreviewResult(result);
-      setValidationResult(validation);
-      
-      if (result.status !== 'failed') {
-        const model = createChartPreviewModel({
-          previewResult: result,
-          runtimePlan: runtimePlanPreview,
-          analysisLabel: analysisAction.opportunityName
-        });
-        setChartModel(model);
-      } else {
-        setChartModel(null);
-      }
+          groundTruth: { state: 'unavailable', value: null, tolerance: null, provenance: 'production_consumer_no_ground_truth' },
+        }, createGovernedLocalDuckDBBoundary());
+        session.canonicalExecutionResult = governed;
+        const result: DuckDBPreviewResult = {
+          id: governed.resultId,
+          sourceSqlPreviewId: governed.queryPlanIdentity,
+          status: governed.status,
+          columns: governed.columns,
+          rows: governed.rows,
+          rowCount: governed.rowCount,
+          maxRows: 100,
+          warnings: [
+            ...governed.limitations,
+            ...governed.restrictions.map(item => item.code),
+            ...governed.evidence.map(item => item.evidenceId),
+          ],
+          blockedReasons: governed.status === 'blocked' ? governed.limitations : [],
+          errorMessage: governed.error ?? undefined,
+          executionScope: rowScope,
+          source: 'governed_duckdb_execution',
+        };
+        if (!executionRuns.current.isCurrent(run)) return;
+        const validation = validatePreviewAgainstIntent(runtimeIntent, result);
+        setPreviewResult(result);
+        setValidationResult(validation);
+        setChartModel(result.status === 'executed'
+          ? createChartPreviewModel({ previewResult: result, runtimePlan: runtimePlanPreview, analysisLabel: analysisAction.opportunityName })
+          : null);
+      return;
     } catch (error) {
       if (executionRuns.current.isCurrent(run) && !(error instanceof DOMException && error.name === 'AbortError')) {
         console.error('Preview execution failed', error);
@@ -666,7 +656,7 @@ export const Investigation: React.FC = () => {
       .slice(0, 90) || 'lightbi_filtered_rows'
     : 'lightbi_filtered_rows';
 
-  const isDataQualityReview = isDataQualityReviewAction(analysisAction);
+  const isDataQualityReview = analysisAction.actionType === 'data_quality_review';
 
   return (
     <div className="flex h-full min-h-0 flex-col overflow-y-auto bg-[#fbfbfa]">
@@ -1098,18 +1088,6 @@ export const Investigation: React.FC = () => {
                   </div>
                 )}
                 
-                {previewResult.source === 'js_sandbox_fallback' && previewResult.status !== 'failed' && (
-                  <div className="bg-amber-50 border border-amber-200 rounded-md p-3 mb-1 flex items-start gap-3">
-                    <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
-                    <div>
-                      <h4 className="text-sm font-medium text-amber-800">Degraded Execution Mode</h4>
-                      <p className="text-xs text-amber-700 mt-1">
-                        The backend execution pipeline is currently unavailable. This preview was generated using a constrained, in-browser sandbox fallback. Results may differ from full backend execution.
-                      </p>
-                    </div>
-                  </div>
-                )}
-                
                 {(() => {
                   const cleansingWarnings = previewResult.warnings.filter(w => w.includes('underwent silent cleansing'));
                   if (cleansingWarnings.length === 0) return null;
@@ -1147,7 +1125,7 @@ export const Investigation: React.FC = () => {
                   <span className="text-slate-400">•</span>
                   <span className="text-slate-500 flex items-center gap-1">
                     <Database className="w-3 h-3" />
-                    Source: <span className={`font-mono text-[10px] px-1.5 py-0.5 rounded ${previewResult.source === 'js_sandbox_fallback' ? 'bg-amber-100 text-amber-800 font-semibold' : 'bg-slate-100'}`}>{previewResult.source}</span>
+                    Source: <span className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[10px]">{previewResult.source}</span>
                   </span>
                 </div>
                 

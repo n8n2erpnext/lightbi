@@ -1,0 +1,4075 @@
+{
+  "schemaVersion": "lightbi.phase-5b6a-authentic-plan-capture-feasibility.v1",
+  "recordsConsidered": 145,
+  "classificationCounts": {
+    "source_record_not_plan_applicable": 145
+  },
+  "exactAuthenticPlanReproducible": 0,
+  "losslessLegacyPlanReproducible": 0,
+  "syntheticFixtureCountedAsAuthentic": false,
+  "all145RecordsRepresented": true,
+  "records": [
+    {
+      "recordId": "aggregation-record-001",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:1486cccb4c881c55e77bd76f7336251c58d65c112711b073bd647883e6447708",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "e2cad91d14cf4ae19daa09dd9c980ea57b6b9cc20a518a9fa6818c3b18aef9ae"
+        },
+        "physicalColumnIndex": 6,
+        "physicalColumn": "Qty"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-002",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:1486cccb4c881c55e77bd76f7336251c58d65c112711b073bd647883e6447708",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "e2cad91d14cf4ae19daa09dd9c980ea57b6b9cc20a518a9fa6818c3b18aef9ae"
+        },
+        "physicalColumnIndex": 7,
+        "physicalColumn": "UnitPrice"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-003",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:1486cccb4c881c55e77bd76f7336251c58d65c112711b073bd647883e6447708",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "e2cad91d14cf4ae19daa09dd9c980ea57b6b9cc20a518a9fa6818c3b18aef9ae"
+        },
+        "physicalColumnIndex": 8,
+        "physicalColumn": "Discount"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-004",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:1486cccb4c881c55e77bd76f7336251c58d65c112711b073bd647883e6447708",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "e2cad91d14cf4ae19daa09dd9c980ea57b6b9cc20a518a9fa6818c3b18aef9ae"
+        },
+        "physicalColumnIndex": 9,
+        "physicalColumn": "Revenue"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-005",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:60dc2957604eb25de3cd546886050bac82fc6786b213edbc7e4502bdac5478a5",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "a0a69a4d45531090ed5a829467d25ca89320d17792a72e4a91c55b95b9469e52"
+        },
+        "physicalColumnIndex": 6,
+        "physicalColumn": "Qty"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-006",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:60dc2957604eb25de3cd546886050bac82fc6786b213edbc7e4502bdac5478a5",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "a0a69a4d45531090ed5a829467d25ca89320d17792a72e4a91c55b95b9469e52"
+        },
+        "physicalColumnIndex": 7,
+        "physicalColumn": "UnitPrice"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-007",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:60dc2957604eb25de3cd546886050bac82fc6786b213edbc7e4502bdac5478a5",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "a0a69a4d45531090ed5a829467d25ca89320d17792a72e4a91c55b95b9469e52"
+        },
+        "physicalColumnIndex": 8,
+        "physicalColumn": "Discount"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-008",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:60dc2957604eb25de3cd546886050bac82fc6786b213edbc7e4502bdac5478a5",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "a0a69a4d45531090ed5a829467d25ca89320d17792a72e4a91c55b95b9469e52"
+        },
+        "physicalColumnIndex": 9,
+        "physicalColumn": "Revenue"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-009",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:16b6a6d40d46dfda73d16658557e298e937e8fc8352be1eba119f494fb5981a0",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "48542ee8aa9d0b9069d329ffc3dc58d141028400257c3eb95f8e62867793641d"
+        },
+        "physicalColumnIndex": 0,
+        "physicalColumn": "Mã phiếu xuất"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-010",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:16b6a6d40d46dfda73d16658557e298e937e8fc8352be1eba119f494fb5981a0",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "48542ee8aa9d0b9069d329ffc3dc58d141028400257c3eb95f8e62867793641d"
+        },
+        "physicalColumnIndex": 1,
+        "physicalColumn": "Ngày xuất"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-011",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:16b6a6d40d46dfda73d16658557e298e937e8fc8352be1eba119f494fb5981a0",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "48542ee8aa9d0b9069d329ffc3dc58d141028400257c3eb95f8e62867793641d"
+        },
+        "physicalColumnIndex": 2,
+        "physicalColumn": "Mã kho xuất"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-012",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:16b6a6d40d46dfda73d16658557e298e937e8fc8352be1eba119f494fb5981a0",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "48542ee8aa9d0b9069d329ffc3dc58d141028400257c3eb95f8e62867793641d"
+        },
+        "physicalColumnIndex": 5,
+        "physicalColumn": "Tổng tiền"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-013",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:16b6a6d40d46dfda73d16658557e298e937e8fc8352be1eba119f494fb5981a0",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "48542ee8aa9d0b9069d329ffc3dc58d141028400257c3eb95f8e62867793641d"
+        },
+        "physicalColumnIndex": 6,
+        "physicalColumn": "Tiền làm tròn"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-014",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:16b6a6d40d46dfda73d16658557e298e937e8fc8352be1eba119f494fb5981a0",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "48542ee8aa9d0b9069d329ffc3dc58d141028400257c3eb95f8e62867793641d"
+        },
+        "physicalColumnIndex": 7,
+        "physicalColumn": "Tiền phải thu"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-015",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:16b6a6d40d46dfda73d16658557e298e937e8fc8352be1eba119f494fb5981a0",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "48542ee8aa9d0b9069d329ffc3dc58d141028400257c3eb95f8e62867793641d"
+        },
+        "physicalColumnIndex": 8,
+        "physicalColumn": "Tiền mặt khách đưa"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-016",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:16b6a6d40d46dfda73d16658557e298e937e8fc8352be1eba119f494fb5981a0",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "48542ee8aa9d0b9069d329ffc3dc58d141028400257c3eb95f8e62867793641d"
+        },
+        "physicalColumnIndex": 9,
+        "physicalColumn": "Tiền cà thẻ"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-017",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:16b6a6d40d46dfda73d16658557e298e937e8fc8352be1eba119f494fb5981a0",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "48542ee8aa9d0b9069d329ffc3dc58d141028400257c3eb95f8e62867793641d"
+        },
+        "physicalColumnIndex": 10,
+        "physicalColumn": "Tiền PMH"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-018",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:16b6a6d40d46dfda73d16658557e298e937e8fc8352be1eba119f494fb5981a0",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "48542ee8aa9d0b9069d329ffc3dc58d141028400257c3eb95f8e62867793641d"
+        },
+        "physicalColumnIndex": 11,
+        "physicalColumn": "Tiền tặng khách"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-019",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:16b6a6d40d46dfda73d16658557e298e937e8fc8352be1eba119f494fb5981a0",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "48542ee8aa9d0b9069d329ffc3dc58d141028400257c3eb95f8e62867793641d"
+        },
+        "physicalColumnIndex": 12,
+        "physicalColumn": "Tiền gửi ngân hàng"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-020",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:16b6a6d40d46dfda73d16658557e298e937e8fc8352be1eba119f494fb5981a0",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "48542ee8aa9d0b9069d329ffc3dc58d141028400257c3eb95f8e62867793641d"
+        },
+        "physicalColumnIndex": 13,
+        "physicalColumn": "Phí giao hàng"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-021",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:16b6a6d40d46dfda73d16658557e298e937e8fc8352be1eba119f494fb5981a0",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "48542ee8aa9d0b9069d329ffc3dc58d141028400257c3eb95f8e62867793641d"
+        },
+        "physicalColumnIndex": 14,
+        "physicalColumn": "Tiền thối lại"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-022",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:16b6a6d40d46dfda73d16658557e298e937e8fc8352be1eba119f494fb5981a0",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "48542ee8aa9d0b9069d329ffc3dc58d141028400257c3eb95f8e62867793641d"
+        },
+        "physicalColumnIndex": 16,
+        "physicalColumn": "Mã nhân viên xuất"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-023",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:f13925c4ec1a99cca5bad94f9b3ba71bb7c2b0081bc76422a641f3150f8c6693",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "c6fe1da814aea2e10ad396c9a54cc6130d2365b867fcf99fe7fe39ac5a9afef3"
+        },
+        "physicalColumnIndex": 0,
+        "physicalColumn": "Row ID"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-024",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:f13925c4ec1a99cca5bad94f9b3ba71bb7c2b0081bc76422a641f3150f8c6693",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "c6fe1da814aea2e10ad396c9a54cc6130d2365b867fcf99fe7fe39ac5a9afef3"
+        },
+        "physicalColumnIndex": 2,
+        "physicalColumn": "Order Date"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-025",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:f13925c4ec1a99cca5bad94f9b3ba71bb7c2b0081bc76422a641f3150f8c6693",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "c6fe1da814aea2e10ad396c9a54cc6130d2365b867fcf99fe7fe39ac5a9afef3"
+        },
+        "physicalColumnIndex": 3,
+        "physicalColumn": "Ship Date"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-026",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:f13925c4ec1a99cca5bad94f9b3ba71bb7c2b0081bc76422a641f3150f8c6693",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "c6fe1da814aea2e10ad396c9a54cc6130d2365b867fcf99fe7fe39ac5a9afef3"
+        },
+        "physicalColumnIndex": 11,
+        "physicalColumn": "Postal Code"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-027",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:f13925c4ec1a99cca5bad94f9b3ba71bb7c2b0081bc76422a641f3150f8c6693",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "c6fe1da814aea2e10ad396c9a54cc6130d2365b867fcf99fe7fe39ac5a9afef3"
+        },
+        "physicalColumnIndex": 17,
+        "physicalColumn": "Sales"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-028",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:f13925c4ec1a99cca5bad94f9b3ba71bb7c2b0081bc76422a641f3150f8c6693",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "c6fe1da814aea2e10ad396c9a54cc6130d2365b867fcf99fe7fe39ac5a9afef3"
+        },
+        "physicalColumnIndex": 18,
+        "physicalColumn": "Quantity"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-029",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:f13925c4ec1a99cca5bad94f9b3ba71bb7c2b0081bc76422a641f3150f8c6693",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "c6fe1da814aea2e10ad396c9a54cc6130d2365b867fcf99fe7fe39ac5a9afef3"
+        },
+        "physicalColumnIndex": 19,
+        "physicalColumn": "Discount"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-030",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:f13925c4ec1a99cca5bad94f9b3ba71bb7c2b0081bc76422a641f3150f8c6693",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "c6fe1da814aea2e10ad396c9a54cc6130d2365b867fcf99fe7fe39ac5a9afef3"
+        },
+        "physicalColumnIndex": 20,
+        "physicalColumn": "Profit"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-031",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:2161a7aed6ae356f094cc17cca200a9c8b4d10825b4eccffc907d87e114e6931",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "3c59da1c10c67ab974dfd204b737402aff1c28d748665949942579fb5fb1a2fd"
+        },
+        "physicalColumnIndex": 11,
+        "physicalColumn": "Qty"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-032",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:2161a7aed6ae356f094cc17cca200a9c8b4d10825b4eccffc907d87e114e6931",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "3c59da1c10c67ab974dfd204b737402aff1c28d748665949942579fb5fb1a2fd"
+        },
+        "physicalColumnIndex": 12,
+        "physicalColumn": "UnitPrice"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-033",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:2161a7aed6ae356f094cc17cca200a9c8b4d10825b4eccffc907d87e114e6931",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "3c59da1c10c67ab974dfd204b737402aff1c28d748665949942579fb5fb1a2fd"
+        },
+        "physicalColumnIndex": 13,
+        "physicalColumn": "Discount"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-034",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:2161a7aed6ae356f094cc17cca200a9c8b4d10825b4eccffc907d87e114e6931",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "3c59da1c10c67ab974dfd204b737402aff1c28d748665949942579fb5fb1a2fd"
+        },
+        "physicalColumnIndex": 14,
+        "physicalColumn": "NetRevenue"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-035",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:2161a7aed6ae356f094cc17cca200a9c8b4d10825b4eccffc907d87e114e6931",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "3c59da1c10c67ab974dfd204b737402aff1c28d748665949942579fb5fb1a2fd"
+        },
+        "physicalColumnIndex": 15,
+        "physicalColumn": "VATRate"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-036",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:2161a7aed6ae356f094cc17cca200a9c8b4d10825b4eccffc907d87e114e6931",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "3c59da1c10c67ab974dfd204b737402aff1c28d748665949942579fb5fb1a2fd"
+        },
+        "physicalColumnIndex": 16,
+        "physicalColumn": "VATOutput"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-037",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:2161a7aed6ae356f094cc17cca200a9c8b4d10825b4eccffc907d87e114e6931",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "3c59da1c10c67ab974dfd204b737402aff1c28d748665949942579fb5fb1a2fd"
+        },
+        "physicalColumnIndex": 17,
+        "physicalColumn": "InvoiceTotal"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-038",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:2161a7aed6ae356f094cc17cca200a9c8b4d10825b4eccffc907d87e114e6931",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "3c59da1c10c67ab974dfd204b737402aff1c28d748665949942579fb5fb1a2fd"
+        },
+        "physicalColumnIndex": 18,
+        "physicalColumn": "UnitCost"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-039",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:2161a7aed6ae356f094cc17cca200a9c8b4d10825b4eccffc907d87e114e6931",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "3c59da1c10c67ab974dfd204b737402aff1c28d748665949942579fb5fb1a2fd"
+        },
+        "physicalColumnIndex": 19,
+        "physicalColumn": "TotalCost"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-040",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:2161a7aed6ae356f094cc17cca200a9c8b4d10825b4eccffc907d87e114e6931",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "3c59da1c10c67ab974dfd204b737402aff1c28d748665949942579fb5fb1a2fd"
+        },
+        "physicalColumnIndex": 20,
+        "physicalColumn": "GrossProfit"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-041",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:2161a7aed6ae356f094cc17cca200a9c8b4d10825b4eccffc907d87e114e6931",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "3c59da1c10c67ab974dfd204b737402aff1c28d748665949942579fb5fb1a2fd"
+        },
+        "physicalColumnIndex": 21,
+        "physicalColumn": "MarginPct"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-042",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:2161a7aed6ae356f094cc17cca200a9c8b4d10825b4eccffc907d87e114e6931",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "3c59da1c10c67ab974dfd204b737402aff1c28d748665949942579fb5fb1a2fd"
+        },
+        "physicalColumnIndex": 22,
+        "physicalColumn": "AR_Debit"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-043",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:2161a7aed6ae356f094cc17cca200a9c8b4d10825b4eccffc907d87e114e6931",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "3c59da1c10c67ab974dfd204b737402aff1c28d748665949942579fb5fb1a2fd"
+        },
+        "physicalColumnIndex": 23,
+        "physicalColumn": "Revenue_Credit"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-044",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:2161a7aed6ae356f094cc17cca200a9c8b4d10825b4eccffc907d87e114e6931",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "3c59da1c10c67ab974dfd204b737402aff1c28d748665949942579fb5fb1a2fd"
+        },
+        "physicalColumnIndex": 24,
+        "physicalColumn": "VATOutput_Credit"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-045",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:2161a7aed6ae356f094cc17cca200a9c8b4d10825b4eccffc907d87e114e6931",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "3c59da1c10c67ab974dfd204b737402aff1c28d748665949942579fb5fb1a2fd"
+        },
+        "physicalColumnIndex": 25,
+        "physicalColumn": "COGS_Debit"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-046",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:2161a7aed6ae356f094cc17cca200a9c8b4d10825b4eccffc907d87e114e6931",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "3c59da1c10c67ab974dfd204b737402aff1c28d748665949942579fb5fb1a2fd"
+        },
+        "physicalColumnIndex": 26,
+        "physicalColumn": "Inventory_Credit"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-047",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:466c9f5230b61d93f6562dd437b89a71ce7153447fd93a63f07ab9aaa12d1339",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "bdd0a8638b9d126a0cf4c2dfe102a1ced3ed5aedfb9b53c73da196781a7c24a9"
+        },
+        "physicalColumnIndex": 0,
+        "physicalColumn": "Mã sản phẩm"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-048",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:466c9f5230b61d93f6562dd437b89a71ce7153447fd93a63f07ab9aaa12d1339",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "bdd0a8638b9d126a0cf4c2dfe102a1ced3ed5aedfb9b53c73da196781a7c24a9"
+        },
+        "physicalColumnIndex": 4,
+        "physicalColumn": "Barcode"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-049",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:a1d486570f887e8971b065304fcac3d659c414b85873abfcf4d0651abab75abd",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "4329115eb0c53c679669303d79e7c12e1e2fa08eaef2b0b6f2537a464c3835cf"
+        },
+        "physicalColumnIndex": 0,
+        "physicalColumn": "STT"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-050",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:a1d486570f887e8971b065304fcac3d659c414b85873abfcf4d0651abab75abd",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "4329115eb0c53c679669303d79e7c12e1e2fa08eaef2b0b6f2537a464c3835cf"
+        },
+        "physicalColumnIndex": 5,
+        "physicalColumn": "Đơn hoàn"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-051",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:a1d486570f887e8971b065304fcac3d659c414b85873abfcf4d0651abab75abd",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "4329115eb0c53c679669303d79e7c12e1e2fa08eaef2b0b6f2537a464c3835cf"
+        },
+        "physicalColumnIndex": 10,
+        "physicalColumn": "Khối lượng \n (gram)"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-052",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:a1d486570f887e8971b065304fcac3d659c414b85873abfcf4d0651abab75abd",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "4329115eb0c53c679669303d79e7c12e1e2fa08eaef2b0b6f2537a464c3835cf"
+        },
+        "physicalColumnIndex": 14,
+        "physicalColumn": "Tiền thu hộ \n (đồng)"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-053",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:a1d486570f887e8971b065304fcac3d659c414b85873abfcf4d0651abab75abd",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "4329115eb0c53c679669303d79e7c12e1e2fa08eaef2b0b6f2537a464c3835cf"
+        },
+        "physicalColumnIndex": 15,
+        "physicalColumn": "Tổng cước \n (đồng)"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-054",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:a1d486570f887e8971b065304fcac3d659c414b85873abfcf4d0651abab75abd",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "4329115eb0c53c679669303d79e7c12e1e2fa08eaef2b0b6f2537a464c3835cf"
+        },
+        "physicalColumnIndex": 19,
+        "physicalColumn": " Thời gian tồn "
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-055",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:a1d486570f887e8971b065304fcac3d659c414b85873abfcf4d0651abab75abd",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "4329115eb0c53c679669303d79e7c12e1e2fa08eaef2b0b6f2537a464c3835cf"
+        },
+        "physicalColumnIndex": 22,
+        "physicalColumn": "Trạng thái"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-056",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:a1d486570f887e8971b065304fcac3d659c414b85873abfcf4d0651abab75abd",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "4329115eb0c53c679669303d79e7c12e1e2fa08eaef2b0b6f2537a464c3835cf"
+        },
+        "physicalColumnIndex": 24,
+        "physicalColumn": "    Khai giá   "
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-057",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:a87a1b97163c96db79224f8395f0d14e5a4f04369711b8e8f63f44a13d9f53cb",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "b779e84c77ee80e6d2f8e02aa4a802a2a801b3fbf122929a0aeca1256096d593"
+        },
+        "physicalColumnIndex": 1,
+        "physicalColumn": "Mã Phiếu Gửi"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-058",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:a87a1b97163c96db79224f8395f0d14e5a4f04369711b8e8f63f44a13d9f53cb",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "b779e84c77ee80e6d2f8e02aa4a802a2a801b3fbf122929a0aeca1256096d593"
+        },
+        "physicalColumnIndex": 3,
+        "physicalColumn": "Huyện Nhận"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-059",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:a87a1b97163c96db79224f8395f0d14e5a4f04369711b8e8f63f44a13d9f53cb",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "b779e84c77ee80e6d2f8e02aa4a802a2a801b3fbf122929a0aeca1256096d593"
+        },
+        "physicalColumnIndex": 6,
+        "physicalColumn": "Huyện Phát"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-060",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:a87a1b97163c96db79224f8395f0d14e5a4f04369711b8e8f63f44a13d9f53cb",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "b779e84c77ee80e6d2f8e02aa4a802a2a801b3fbf122929a0aeca1256096d593"
+        },
+        "physicalColumnIndex": 12,
+        "physicalColumn": "Trạng Thái"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-061",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:a87a1b97163c96db79224f8395f0d14e5a4f04369711b8e8f63f44a13d9f53cb",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "b779e84c77ee80e6d2f8e02aa4a802a2a801b3fbf122929a0aeca1256096d593"
+        },
+        "physicalColumnIndex": 19,
+        "physicalColumn": "Tiền COD"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-062",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:a87a1b97163c96db79224f8395f0d14e5a4f04369711b8e8f63f44a13d9f53cb",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "b779e84c77ee80e6d2f8e02aa4a802a2a801b3fbf122929a0aeca1256096d593"
+        },
+        "physicalColumnIndex": 20,
+        "physicalColumn": "Người Nhập Máy"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-063",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:a87a1b97163c96db79224f8395f0d14e5a4f04369711b8e8f63f44a13d9f53cb",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "b779e84c77ee80e6d2f8e02aa4a802a2a801b3fbf122929a0aeca1256096d593"
+        },
+        "physicalColumnIndex": 22,
+        "physicalColumn": "Trọng lượng"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-064",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:a87a1b97163c96db79224f8395f0d14e5a4f04369711b8e8f63f44a13d9f53cb",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "b779e84c77ee80e6d2f8e02aa4a802a2a801b3fbf122929a0aeca1256096d593"
+        },
+        "physicalColumnIndex": 24,
+        "physicalColumn": "Tiền Cước"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-065",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:6be7bfc16791c5687eb34c2bc60004767c0de0451fd4b44ba0779a1b6617f2c7",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "e093e56ae6750a5ec3bbc98983f21409f373ee71d75b9cceb12c52b2d840ff72"
+        },
+        "physicalColumnIndex": 12,
+        "physicalColumn": "Qty"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-066",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:6be7bfc16791c5687eb34c2bc60004767c0de0451fd4b44ba0779a1b6617f2c7",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "e093e56ae6750a5ec3bbc98983f21409f373ee71d75b9cceb12c52b2d840ff72"
+        },
+        "physicalColumnIndex": 13,
+        "physicalColumn": "UnitCost"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-067",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:6be7bfc16791c5687eb34c2bc60004767c0de0451fd4b44ba0779a1b6617f2c7",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "e093e56ae6750a5ec3bbc98983f21409f373ee71d75b9cceb12c52b2d840ff72"
+        },
+        "physicalColumnIndex": 14,
+        "physicalColumn": "TotalCost"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-068",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:6be7bfc16791c5687eb34c2bc60004767c0de0451fd4b44ba0779a1b6617f2c7",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "e093e56ae6750a5ec3bbc98983f21409f373ee71d75b9cceb12c52b2d840ff72"
+        },
+        "physicalColumnIndex": 16,
+        "physicalColumn": "DeliveryFee"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-069",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:83b0ec5246ba66034cee34ddb66431ddefd89a075748197a5dc674d9cf659dd0",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "ccc7f8036429a5c1b879a8a77dec843ef5ba65dbb88e3b2471a0aa70cd0bb216"
+        },
+        "physicalColumnIndex": 12,
+        "physicalColumn": "Qty"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-070",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:83b0ec5246ba66034cee34ddb66431ddefd89a075748197a5dc674d9cf659dd0",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "ccc7f8036429a5c1b879a8a77dec843ef5ba65dbb88e3b2471a0aa70cd0bb216"
+        },
+        "physicalColumnIndex": 13,
+        "physicalColumn": "UnitCost"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-071",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:83b0ec5246ba66034cee34ddb66431ddefd89a075748197a5dc674d9cf659dd0",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "ccc7f8036429a5c1b879a8a77dec843ef5ba65dbb88e3b2471a0aa70cd0bb216"
+        },
+        "physicalColumnIndex": 14,
+        "physicalColumn": "TotalCost"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-072",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:83b0ec5246ba66034cee34ddb66431ddefd89a075748197a5dc674d9cf659dd0",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "ccc7f8036429a5c1b879a8a77dec843ef5ba65dbb88e3b2471a0aa70cd0bb216"
+        },
+        "physicalColumnIndex": 16,
+        "physicalColumn": "DeliveryFee"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-073",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:a053f87544a441d65028970b7bc336ab86113d92cfc12918f048300a43128d20",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "2e871cd767c9fc03bca2a3f7e4a050ec6c679d934f124a006ddfa63f0739de8e"
+        },
+        "physicalColumnIndex": 0,
+        "physicalColumn": "STT"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-074",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:a053f87544a441d65028970b7bc336ab86113d92cfc12918f048300a43128d20",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "2e871cd767c9fc03bca2a3f7e4a050ec6c679d934f124a006ddfa63f0739de8e"
+        },
+        "physicalColumnIndex": 8,
+        "physicalColumn": "Số lượng"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-075",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:a053f87544a441d65028970b7bc336ab86113d92cfc12918f048300a43128d20",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "2e871cd767c9fc03bca2a3f7e4a050ec6c679d934f124a006ddfa63f0739de8e"
+        },
+        "physicalColumnIndex": 9,
+        "physicalColumn": "Trọng lượng (Gam)"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-076",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:a053f87544a441d65028970b7bc336ab86113d92cfc12918f048300a43128d20",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "2e871cd767c9fc03bca2a3f7e4a050ec6c679d934f124a006ddfa63f0739de8e"
+        },
+        "physicalColumnIndex": 16,
+        "physicalColumn": "Thời gian chờ"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-077",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:a053f87544a441d65028970b7bc336ab86113d92cfc12918f048300a43128d20",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "2e871cd767c9fc03bca2a3f7e4a050ec6c679d934f124a006ddfa63f0739de8e"
+        },
+        "physicalColumnIndex": 24,
+        "physicalColumn": "Trọng tải (Kg)"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-078",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:d69323ecfaa80f23a98ccacf059c79273c981369604dd6a83ad9aa978728806b",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "99373be1d5e2b4e67b46c3c1730650b0c38e0112a3b0ac550215313f95771b98"
+        },
+        "physicalColumnIndex": 0,
+        "physicalColumn": "STT"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-079",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:d69323ecfaa80f23a98ccacf059c79273c981369604dd6a83ad9aa978728806b",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "99373be1d5e2b4e67b46c3c1730650b0c38e0112a3b0ac550215313f95771b98"
+        },
+        "physicalColumnIndex": 8,
+        "physicalColumn": "Số lượng"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-080",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:d69323ecfaa80f23a98ccacf059c79273c981369604dd6a83ad9aa978728806b",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "99373be1d5e2b4e67b46c3c1730650b0c38e0112a3b0ac550215313f95771b98"
+        },
+        "physicalColumnIndex": 9,
+        "physicalColumn": "Trọng lượng (Gam)"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-081",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:d69323ecfaa80f23a98ccacf059c79273c981369604dd6a83ad9aa978728806b",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "99373be1d5e2b4e67b46c3c1730650b0c38e0112a3b0ac550215313f95771b98"
+        },
+        "physicalColumnIndex": 16,
+        "physicalColumn": "Thời gian chờ"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-082",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:d69323ecfaa80f23a98ccacf059c79273c981369604dd6a83ad9aa978728806b",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "99373be1d5e2b4e67b46c3c1730650b0c38e0112a3b0ac550215313f95771b98"
+        },
+        "physicalColumnIndex": 24,
+        "physicalColumn": "Trọng tải (Kg)"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-083",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:8977bd5ccb2e943345481848de9f94a16e0bbfc4c58dd4e251b3a86eef6fee28",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "9190c28d88d7a50759ecfa5622f2e31d20147a125dd90d6b40c2de00fd866630"
+        },
+        "physicalColumnIndex": 0,
+        "physicalColumn": "STT"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-084",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:8977bd5ccb2e943345481848de9f94a16e0bbfc4c58dd4e251b3a86eef6fee28",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "9190c28d88d7a50759ecfa5622f2e31d20147a125dd90d6b40c2de00fd866630"
+        },
+        "physicalColumnIndex": 2,
+        "physicalColumn": "Mã tải kiện"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-085",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:8977bd5ccb2e943345481848de9f94a16e0bbfc4c58dd4e251b3a86eef6fee28",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "9190c28d88d7a50759ecfa5622f2e31d20147a125dd90d6b40c2de00fd866630"
+        },
+        "physicalColumnIndex": 8,
+        "physicalColumn": "Số lượng"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-086",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:8977bd5ccb2e943345481848de9f94a16e0bbfc4c58dd4e251b3a86eef6fee28",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "9190c28d88d7a50759ecfa5622f2e31d20147a125dd90d6b40c2de00fd866630"
+        },
+        "physicalColumnIndex": 9,
+        "physicalColumn": "Trọng lượng (Gam)"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-087",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:8977bd5ccb2e943345481848de9f94a16e0bbfc4c58dd4e251b3a86eef6fee28",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "9190c28d88d7a50759ecfa5622f2e31d20147a125dd90d6b40c2de00fd866630"
+        },
+        "physicalColumnIndex": 16,
+        "physicalColumn": "Thời gian chờ"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-088",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:8977bd5ccb2e943345481848de9f94a16e0bbfc4c58dd4e251b3a86eef6fee28",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "9190c28d88d7a50759ecfa5622f2e31d20147a125dd90d6b40c2de00fd866630"
+        },
+        "physicalColumnIndex": 24,
+        "physicalColumn": "Trọng tải (Kg)"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-089",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:fde25a58ab3c1ef10ba5593fff8b39ff9a73a4e813cda4159f8bd465e6f582b6",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "b3a3b290d5f54ca5d7fc79b7aed0f287f539e665113331bb6d4764fa5fc6aaea"
+        },
+        "physicalColumnIndex": 11,
+        "physicalColumn": "Qty"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-090",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:fde25a58ab3c1ef10ba5593fff8b39ff9a73a4e813cda4159f8bd465e6f582b6",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "b3a3b290d5f54ca5d7fc79b7aed0f287f539e665113331bb6d4764fa5fc6aaea"
+        },
+        "physicalColumnIndex": 12,
+        "physicalColumn": "UnitPrice"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-091",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:fde25a58ab3c1ef10ba5593fff8b39ff9a73a4e813cda4159f8bd465e6f582b6",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "b3a3b290d5f54ca5d7fc79b7aed0f287f539e665113331bb6d4764fa5fc6aaea"
+        },
+        "physicalColumnIndex": 13,
+        "physicalColumn": "Discount"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-092",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:fde25a58ab3c1ef10ba5593fff8b39ff9a73a4e813cda4159f8bd465e6f582b6",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "b3a3b290d5f54ca5d7fc79b7aed0f287f539e665113331bb6d4764fa5fc6aaea"
+        },
+        "physicalColumnIndex": 14,
+        "physicalColumn": "NetRevenue"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-093",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:fde25a58ab3c1ef10ba5593fff8b39ff9a73a4e813cda4159f8bd465e6f582b6",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "b3a3b290d5f54ca5d7fc79b7aed0f287f539e665113331bb6d4764fa5fc6aaea"
+        },
+        "physicalColumnIndex": 15,
+        "physicalColumn": "VATRate"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-094",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:fde25a58ab3c1ef10ba5593fff8b39ff9a73a4e813cda4159f8bd465e6f582b6",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "b3a3b290d5f54ca5d7fc79b7aed0f287f539e665113331bb6d4764fa5fc6aaea"
+        },
+        "physicalColumnIndex": 16,
+        "physicalColumn": "VATOutput"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-095",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:fde25a58ab3c1ef10ba5593fff8b39ff9a73a4e813cda4159f8bd465e6f582b6",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "b3a3b290d5f54ca5d7fc79b7aed0f287f539e665113331bb6d4764fa5fc6aaea"
+        },
+        "physicalColumnIndex": 17,
+        "physicalColumn": "InvoiceTotal"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-096",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:fde25a58ab3c1ef10ba5593fff8b39ff9a73a4e813cda4159f8bd465e6f582b6",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "b3a3b290d5f54ca5d7fc79b7aed0f287f539e665113331bb6d4764fa5fc6aaea"
+        },
+        "physicalColumnIndex": 18,
+        "physicalColumn": "UnitCost"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-097",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:fde25a58ab3c1ef10ba5593fff8b39ff9a73a4e813cda4159f8bd465e6f582b6",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "b3a3b290d5f54ca5d7fc79b7aed0f287f539e665113331bb6d4764fa5fc6aaea"
+        },
+        "physicalColumnIndex": 19,
+        "physicalColumn": "TotalCost"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-098",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:fde25a58ab3c1ef10ba5593fff8b39ff9a73a4e813cda4159f8bd465e6f582b6",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "b3a3b290d5f54ca5d7fc79b7aed0f287f539e665113331bb6d4764fa5fc6aaea"
+        },
+        "physicalColumnIndex": 20,
+        "physicalColumn": "GrossProfit"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-099",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:fde25a58ab3c1ef10ba5593fff8b39ff9a73a4e813cda4159f8bd465e6f582b6",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "b3a3b290d5f54ca5d7fc79b7aed0f287f539e665113331bb6d4764fa5fc6aaea"
+        },
+        "physicalColumnIndex": 21,
+        "physicalColumn": "MarginPct"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-100",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:fde25a58ab3c1ef10ba5593fff8b39ff9a73a4e813cda4159f8bd465e6f582b6",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "b3a3b290d5f54ca5d7fc79b7aed0f287f539e665113331bb6d4764fa5fc6aaea"
+        },
+        "physicalColumnIndex": 22,
+        "physicalColumn": "AR_Debit"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-101",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:fde25a58ab3c1ef10ba5593fff8b39ff9a73a4e813cda4159f8bd465e6f582b6",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "b3a3b290d5f54ca5d7fc79b7aed0f287f539e665113331bb6d4764fa5fc6aaea"
+        },
+        "physicalColumnIndex": 23,
+        "physicalColumn": "Revenue_Credit"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-102",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:fde25a58ab3c1ef10ba5593fff8b39ff9a73a4e813cda4159f8bd465e6f582b6",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "b3a3b290d5f54ca5d7fc79b7aed0f287f539e665113331bb6d4764fa5fc6aaea"
+        },
+        "physicalColumnIndex": 24,
+        "physicalColumn": "VATOutput_Credit"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-103",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:fde25a58ab3c1ef10ba5593fff8b39ff9a73a4e813cda4159f8bd465e6f582b6",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "b3a3b290d5f54ca5d7fc79b7aed0f287f539e665113331bb6d4764fa5fc6aaea"
+        },
+        "physicalColumnIndex": 25,
+        "physicalColumn": "COGS_Debit"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-104",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:fde25a58ab3c1ef10ba5593fff8b39ff9a73a4e813cda4159f8bd465e6f582b6",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "b3a3b290d5f54ca5d7fc79b7aed0f287f539e665113331bb6d4764fa5fc6aaea"
+        },
+        "physicalColumnIndex": 26,
+        "physicalColumn": "Inventory_Credit"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-105",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:a22918227843aa91a0c106e9cf1ed74c14897c3ae16a9b968df06b7e8215610b",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "2ebdd4c6a9f38ed2c7126c7b7426f6475ca9d5cdeb875f296692f50342f78cad"
+        },
+        "physicalColumnIndex": 0,
+        "physicalColumn": "DATE"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-106",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:a22918227843aa91a0c106e9cf1ed74c14897c3ae16a9b968df06b7e8215610b",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "2ebdd4c6a9f38ed2c7126c7b7426f6475ca9d5cdeb875f296692f50342f78cad"
+        },
+        "physicalColumnIndex": 3,
+        "physicalColumn": "ORD.\nCODE"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-107",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:a22918227843aa91a0c106e9cf1ed74c14897c3ae16a9b968df06b7e8215610b",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "2ebdd4c6a9f38ed2c7126c7b7426f6475ca9d5cdeb875f296692f50342f78cad"
+        },
+        "physicalColumnIndex": 8,
+        "physicalColumn": "S.P"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-108",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:a22918227843aa91a0c106e9cf1ed74c14897c3ae16a9b968df06b7e8215610b",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "2ebdd4c6a9f38ed2c7126c7b7426f6475ca9d5cdeb875f296692f50342f78cad"
+        },
+        "physicalColumnIndex": 9,
+        "physicalColumn": "L.P"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-109",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:a22918227843aa91a0c106e9cf1ed74c14897c3ae16a9b968df06b7e8215610b",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "2ebdd4c6a9f38ed2c7126c7b7426f6475ca9d5cdeb875f296692f50342f78cad"
+        },
+        "physicalColumnIndex": 10,
+        "physicalColumn": "CHARGE"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-110",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:43de0e902ca1bcce6930f6a92eea6efc8d8f5659827f2009c56dba3ff089787b",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "ea15f8c666e75a6ea4117bbb235bf2ac3565d13e1eb06f1db56ad95ac2c9c989"
+        },
+        "physicalColumnIndex": 0,
+        "physicalColumn": "Xếp hạng"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-111",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:43de0e902ca1bcce6930f6a92eea6efc8d8f5659827f2009c56dba3ff089787b",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "ea15f8c666e75a6ea4117bbb235bf2ac3565d13e1eb06f1db56ad95ac2c9c989"
+        },
+        "physicalColumnIndex": 1,
+        "physicalColumn": "MSNV Quản lý"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-112",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:43de0e902ca1bcce6930f6a92eea6efc8d8f5659827f2009c56dba3ff089787b",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "ea15f8c666e75a6ea4117bbb235bf2ac3565d13e1eb06f1db56ad95ac2c9c989"
+        },
+        "physicalColumnIndex": 3,
+        "physicalColumn": "Tổng sao từ T6/2016 đến T05/2017"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-113",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:43de0e902ca1bcce6930f6a92eea6efc8d8f5659827f2009c56dba3ff089787b",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "ea15f8c666e75a6ea4117bbb235bf2ac3565d13e1eb06f1db56ad95ac2c9c989"
+        },
+        "physicalColumnIndex": 4,
+        "physicalColumn": "Trung bình điểm 4 tiêu chí "
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-114",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:1a261275a557086e774dff92b1f4a8b5ad935ef1b5fbabe89ca9230280e7288b",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "4adb07d7d2ab2d41e5967503c70d079a69c086b05ef602c428af3709be850e6b"
+        },
+        "physicalColumnIndex": 1,
+        "physicalColumn": "Date"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-115",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:1a261275a557086e774dff92b1f4a8b5ad935ef1b5fbabe89ca9230280e7288b",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "4adb07d7d2ab2d41e5967503c70d079a69c086b05ef602c428af3709be850e6b"
+        },
+        "physicalColumnIndex": 2,
+        "physicalColumn": "Transit: Railways, (million passenger-km)"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-116",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:1a261275a557086e774dff92b1f4a8b5ad935ef1b5fbabe89ca9230280e7288b",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "4adb07d7d2ab2d41e5967503c70d079a69c086b05ef602c428af3709be850e6b"
+        },
+        "physicalColumnIndex": 3,
+        "physicalColumn": "Transit: Passenger cars (per 1,000 people)"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-117",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:1a261275a557086e774dff92b1f4a8b5ad935ef1b5fbabe89ca9230280e7288b",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "4adb07d7d2ab2d41e5967503c70d079a69c086b05ef602c428af3709be850e6b"
+        },
+        "physicalColumnIndex": 4,
+        "physicalColumn": "Business: Mobile phone subscribers"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-118",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:1a261275a557086e774dff92b1f4a8b5ad935ef1b5fbabe89ca9230280e7288b",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "4adb07d7d2ab2d41e5967503c70d079a69c086b05ef602c428af3709be850e6b"
+        },
+        "physicalColumnIndex": 5,
+        "physicalColumn": "Business: Internet users (per 100 people)"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-119",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:1a261275a557086e774dff92b1f4a8b5ad935ef1b5fbabe89ca9230280e7288b",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "4adb07d7d2ab2d41e5967503c70d079a69c086b05ef602c428af3709be850e6b"
+        },
+        "physicalColumnIndex": 6,
+        "physicalColumn": "Health: Mortality, under-5 (per 1,000 live births)"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-120",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:1a261275a557086e774dff92b1f4a8b5ad935ef1b5fbabe89ca9230280e7288b",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "4adb07d7d2ab2d41e5967503c70d079a69c086b05ef602c428af3709be850e6b"
+        },
+        "physicalColumnIndex": 7,
+        "physicalColumn": "Health: Health expenditure per capita (current US$)"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-121",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:1a261275a557086e774dff92b1f4a8b5ad935ef1b5fbabe89ca9230280e7288b",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "4adb07d7d2ab2d41e5967503c70d079a69c086b05ef602c428af3709be850e6b"
+        },
+        "physicalColumnIndex": 8,
+        "physicalColumn": "Health: Health expenditure, total (% GDP)"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-122",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:1a261275a557086e774dff92b1f4a8b5ad935ef1b5fbabe89ca9230280e7288b",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "4adb07d7d2ab2d41e5967503c70d079a69c086b05ef602c428af3709be850e6b"
+        },
+        "physicalColumnIndex": 9,
+        "physicalColumn": "Population: Total (count)"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-123",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:1a261275a557086e774dff92b1f4a8b5ad935ef1b5fbabe89ca9230280e7288b",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "4adb07d7d2ab2d41e5967503c70d079a69c086b05ef602c428af3709be850e6b"
+        },
+        "physicalColumnIndex": 10,
+        "physicalColumn": "Population: Urban (count)"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-124",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:1a261275a557086e774dff92b1f4a8b5ad935ef1b5fbabe89ca9230280e7288b",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "4adb07d7d2ab2d41e5967503c70d079a69c086b05ef602c428af3709be850e6b"
+        },
+        "physicalColumnIndex": 11,
+        "physicalColumn": "Population:: Birth rate, crude (per 1,000)"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-125",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:1a261275a557086e774dff92b1f4a8b5ad935ef1b5fbabe89ca9230280e7288b",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "4adb07d7d2ab2d41e5967503c70d079a69c086b05ef602c428af3709be850e6b"
+        },
+        "physicalColumnIndex": 12,
+        "physicalColumn": "Health: Life expectancy at birth, female (years)"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-126",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:1a261275a557086e774dff92b1f4a8b5ad935ef1b5fbabe89ca9230280e7288b",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "4adb07d7d2ab2d41e5967503c70d079a69c086b05ef602c428af3709be850e6b"
+        },
+        "physicalColumnIndex": 13,
+        "physicalColumn": "Health: Life expectancy at birth, male (years)"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-127",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:1a261275a557086e774dff92b1f4a8b5ad935ef1b5fbabe89ca9230280e7288b",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "4adb07d7d2ab2d41e5967503c70d079a69c086b05ef602c428af3709be850e6b"
+        },
+        "physicalColumnIndex": 14,
+        "physicalColumn": "Health: Life expectancy at birth, total (years)"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-128",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:1a261275a557086e774dff92b1f4a8b5ad935ef1b5fbabe89ca9230280e7288b",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "4adb07d7d2ab2d41e5967503c70d079a69c086b05ef602c428af3709be850e6b"
+        },
+        "physicalColumnIndex": 15,
+        "physicalColumn": "Population: Ages 0-14 (% of total)"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-129",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:1a261275a557086e774dff92b1f4a8b5ad935ef1b5fbabe89ca9230280e7288b",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "4adb07d7d2ab2d41e5967503c70d079a69c086b05ef602c428af3709be850e6b"
+        },
+        "physicalColumnIndex": 16,
+        "physicalColumn": "Population: Ages 15-64 (% of total)"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-130",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:1a261275a557086e774dff92b1f4a8b5ad935ef1b5fbabe89ca9230280e7288b",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "4adb07d7d2ab2d41e5967503c70d079a69c086b05ef602c428af3709be850e6b"
+        },
+        "physicalColumnIndex": 17,
+        "physicalColumn": "Population: Ages 65+ (% of total)"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-131",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:1a261275a557086e774dff92b1f4a8b5ad935ef1b5fbabe89ca9230280e7288b",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "4adb07d7d2ab2d41e5967503c70d079a69c086b05ef602c428af3709be850e6b"
+        },
+        "physicalColumnIndex": 18,
+        "physicalColumn": "Finance: GDP (current US$)"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-132",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:1a261275a557086e774dff92b1f4a8b5ad935ef1b5fbabe89ca9230280e7288b",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "4adb07d7d2ab2d41e5967503c70d079a69c086b05ef602c428af3709be850e6b"
+        },
+        "physicalColumnIndex": 19,
+        "physicalColumn": "Finance: GDP per capita (current US$)"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-133",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:6e9b93c6371c3136a43a35c5bdb86f218af52344912b1a3890a0371e88db6366",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "7d8a61d02b4fa70388cea363b967c1af9606f7259f8cf57152c044f5f461c0e5"
+        },
+        "physicalColumnIndex": 0,
+        "physicalColumn": "RoundID"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-134",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:6e9b93c6371c3136a43a35c5bdb86f218af52344912b1a3890a0371e88db6366",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "7d8a61d02b4fa70388cea363b967c1af9606f7259f8cf57152c044f5f461c0e5"
+        },
+        "physicalColumnIndex": 1,
+        "physicalColumn": "MatchID"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-135",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:6e9b93c6371c3136a43a35c5bdb86f218af52344912b1a3890a0371e88db6366",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "7d8a61d02b4fa70388cea363b967c1af9606f7259f8cf57152c044f5f461c0e5"
+        },
+        "physicalColumnIndex": 5,
+        "physicalColumn": "Shirt Number"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-136",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:b05096707032d4fb1d97761b0520ef1c4e5bf1440bb6971b226a573fb8ddfb43",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "01e63f4291b069eb5dfb4124707aa8dfcca1f3ed3c070b18df0391bba50ee99d"
+        },
+        "physicalColumnIndex": 0,
+        "physicalColumn": "age"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-137",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:b05096707032d4fb1d97761b0520ef1c4e5bf1440bb6971b226a573fb8ddfb43",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "01e63f4291b069eb5dfb4124707aa8dfcca1f3ed3c070b18df0391bba50ee99d"
+        },
+        "physicalColumnIndex": 10,
+        "physicalColumn": "duration"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-138",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:b05096707032d4fb1d97761b0520ef1c4e5bf1440bb6971b226a573fb8ddfb43",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "01e63f4291b069eb5dfb4124707aa8dfcca1f3ed3c070b18df0391bba50ee99d"
+        },
+        "physicalColumnIndex": 11,
+        "physicalColumn": "campaign"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-139",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:b05096707032d4fb1d97761b0520ef1c4e5bf1440bb6971b226a573fb8ddfb43",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "01e63f4291b069eb5dfb4124707aa8dfcca1f3ed3c070b18df0391bba50ee99d"
+        },
+        "physicalColumnIndex": 12,
+        "physicalColumn": "pdays"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-140",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:b05096707032d4fb1d97761b0520ef1c4e5bf1440bb6971b226a573fb8ddfb43",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "01e63f4291b069eb5dfb4124707aa8dfcca1f3ed3c070b18df0391bba50ee99d"
+        },
+        "physicalColumnIndex": 13,
+        "physicalColumn": "previous"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-141",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:b05096707032d4fb1d97761b0520ef1c4e5bf1440bb6971b226a573fb8ddfb43",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "01e63f4291b069eb5dfb4124707aa8dfcca1f3ed3c070b18df0391bba50ee99d"
+        },
+        "physicalColumnIndex": 15,
+        "physicalColumn": "emp.var.rate"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-142",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:b05096707032d4fb1d97761b0520ef1c4e5bf1440bb6971b226a573fb8ddfb43",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "01e63f4291b069eb5dfb4124707aa8dfcca1f3ed3c070b18df0391bba50ee99d"
+        },
+        "physicalColumnIndex": 16,
+        "physicalColumn": "cons.price.idx"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-143",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:b05096707032d4fb1d97761b0520ef1c4e5bf1440bb6971b226a573fb8ddfb43",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "01e63f4291b069eb5dfb4124707aa8dfcca1f3ed3c070b18df0391bba50ee99d"
+        },
+        "physicalColumnIndex": 17,
+        "physicalColumn": "cons.conf.idx"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-144",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:b05096707032d4fb1d97761b0520ef1c4e5bf1440bb6971b226a573fb8ddfb43",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "01e63f4291b069eb5dfb4124707aa8dfcca1f3ed3c070b18df0391bba50ee99d"
+        },
+        "physicalColumnIndex": 18,
+        "physicalColumn": "euribor3m"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    },
+    {
+      "recordId": "aggregation-record-145",
+      "governedIdentity": {
+        "sourceIdentity": "sha256:b05096707032d4fb1d97761b0520ef1c4e5bf1440bb6971b226a573fb8ddfb43",
+        "sourceHash": {
+          "algorithm": "sha256",
+          "value": "01e63f4291b069eb5dfb4124707aa8dfcca1f3ed3c070b18df0391bba50ee99d"
+        },
+        "physicalColumnIndex": 19,
+        "physicalColumn": "nr.employed"
+      },
+      "classification": "source_record_not_plan_applicable",
+      "sourceIdentityMatchesGovernedRecord": true,
+      "sourceHashAvailable": true,
+      "authenticLegacyPlanInputRetained": false,
+      "authenticIncomingPlanCaptured": false,
+      "authenticEnhancedPlanCaptured": false,
+      "authenticSqlPreviewCaptured": false,
+      "missingHistoricalInputs": [
+        "selected AnalysisAction or AdvancedQueryResult",
+        "RuntimeIntent",
+        "incoming RuntimePlanPreview",
+        "row buffer bound to that plan execution",
+        "enhanced plan",
+        "SafeSqlPreview"
+      ],
+      "rationale": "This governed artifact is a column-level aggregation divergence observation, not a retained historical preview-plan execution. Canonical outcome and expected answers cannot manufacture an authentic legacy plan."
+    }
+  ],
+  "actualCapturePathDecision": "authentic_capture_not_feasible_for_current_corpus",
+  "decisionRationale": "The current 145-record corpus governs physical-column aggregation divergence, not historical user preview requests. It has no retained action/result/workspace bundle from which actual legacy producers can be replayed without inventing inputs."
+}

@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "lightbi.phase-5m3-runtime-safety-audit.v1",
+  "phase": "5M3",
+  "negativeProbeCount": 20,
+  "falseExecutableCases": 0,
+  "failClosed": true,
+  "probes": [
+    { "id": 1, "name": "automatic SUM attempt", "outcome": "blocked" },
+    { "id": 2, "name": "COUNT fallback attempt", "outcome": "blocked" },
+    { "id": 3, "name": "unit price used as revenue", "outcome": "blocked" },
+    { "id": 4, "name": "snapshot quantity used as quantity sold", "outcome": "blocked" },
+    { "id": 5, "name": "snapshot summed across periods", "outcome": "blocked" },
+    { "id": 6, "name": "repeated order total", "outcome": "blocked" },
+    { "id": 7, "name": "count without governed identity", "outcome": "blocked" },
+    { "id": 8, "name": "gross profit without cost", "outcome": "blocked" },
+    { "id": 9, "name": "gross profit with incompatible currency", "outcome": "blocked" },
+    { "id": 10, "name": "gross profit with incompatible grain", "outcome": "blocked" },
+    { "id": 11, "name": "missing as-of basis", "outcome": "blocked" },
+    { "id": 12, "name": "blocked metric promoted to executable", "outcome": "blocked" },
+    { "id": 13, "name": "conditional restrictions removed", "outcome": "blocked" },
+    { "id": 14, "name": "free-form question text used to generate SQL", "outcome": "invalid" },
+    { "id": 15, "name": "SQL/operator differs from metric definition", "outcome": "blocked" },
+    { "id": 16, "name": "unsupported grouping dimension", "outcome": "blocked" },
+    { "id": 17, "name": "invalid canonical source binding", "outcome": "blocked" },
+    { "id": 18, "name": "policy/hash mismatch", "outcome": "blocked" },
+    { "id": 19, "name": "execution success granting decision authority", "outcome": "prohibited" },
+    { "id": 20, "name": "production import or UI wiring", "outcome": "absent" }
+  ],
+  "decisionUseAuthorized": false,
+  "productionWiring": { "executed": false }
+}

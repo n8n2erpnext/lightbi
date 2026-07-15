@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "lightbi.phase-5b5-import-isolation-audit.v1",
+  "projectionPolicyHash": "35521a2f66fd24f6a305e89b5bc20098d33242cec9b87ac8dece60ecdd08a8ad",
+  "allowedImporters": [
+    "aggregation-restriction-projection-contracts.ts",
+    "aggregation-restriction-projection-policy.ts",
+    "aggregation-restriction-projection.corpus.test.ts",
+    "aggregation-restriction-projection.test.ts",
+    "aggregation-restriction-projection.ts"
+  ],
+  "productionImporters": [],
+  "barrelExported": false,
+  "persistence": false,
+  "telemetry": false,
+  "featureFlags": false,
+  "UIChanged": false,
+  "productionFilesModified": false,
+  "productionWiring": {
+    "executed": false
+  }
+}

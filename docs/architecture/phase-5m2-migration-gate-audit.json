@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "lightbi.phase-5m2-migration-gate-audit.v1",
+  "phase": "5M2",
+  "deterministicQuestionGenerationAvailable": true,
+  "guardedActionCandidatesAvailable": true,
+  "questionActionContractAvailable": true,
+  "runtimeGuardIntegrationEligible": true,
+  "runtimeActionAuthorizationEligible": false,
+  "sqlGenerationEligible": false,
+  "duckdbExecutionEligible": false,
+  "productionProjectionEligible": false,
+  "legacyDeletionEligible": false,
+  "phase6CutoverEligible": false,
+  "remainingGates": [
+    "runtime guard binding",
+    "runtime plan identity",
+    "operation safety",
+    "consumer migration",
+    "fresh held-out acceptance evidence"
+  ],
+  "stopCondition": "Stop after Phase 5M2; do not begin runtime guard wiring, execution, UI integration, or Phase 6",
+  "productionWiring": {
+    "executed": false
+  }
+}

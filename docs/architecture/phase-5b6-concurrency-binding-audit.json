@@ -1,0 +1,35 @@
+{
+  "schemaVersion": "lightbi.phase-5b6-concurrency-binding-audit.v1",
+  "identityParts": [
+    "sourceHash",
+    "incomingPlanFingerprint",
+    "enhancedPlanFingerprint",
+    "sqlFingerprint",
+    "canonicalEnvelopeIdentity",
+    "phase5B5LineageIdentity",
+    "restrictionSetIdentity"
+  ],
+  "prohibitedBindings": {
+    "arrayPosition": true,
+    "currentTime": true,
+    "sqlOnly": true,
+    "sourceOnly": true
+  },
+  "probes": {
+    "sameSourceDifferentOperators": "distinct",
+    "sameSQLDifferentOrigins": "distinct",
+    "sameOperatorDifferentRestrictions": "distinct",
+    "reorderedRequests": "position_independent",
+    "duplicatedRequestObjects": "exact_retry_idempotent",
+    "retriedRequests": "idempotent",
+    "staleResult": "fail_closed",
+    "changedSourceHash": "fail_closed",
+    "wrongChartBinding": "fail_closed",
+    "wrongBABinding": "fail_closed"
+  },
+  "globalMutableRegistry": false,
+  "leakageBetweenRequests": false,
+  "previewRequestIdentitySafe": true,
+  "previewResultIdentitySafe": false,
+  "reason": "Actual result contract does not retain binding identity or lineage; association is test-side only."
+}

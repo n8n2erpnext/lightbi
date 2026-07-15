@@ -1,0 +1,65 @@
+{
+  "schemaVersion": "lightbi.phase-5b-debt-coverage.v1",
+  "date": "2026-07-13",
+  "policy": {
+    "version": "lightbi.legacy-canonical-comparison-policy.v1",
+    "sha256": "6d1e75c5e51059e1217a1d1ce7ef7819c5775f07e489c27cc0db2a7e180c044a"
+  },
+  "authority": {
+    "legacyChanged": false,
+    "canonicalChanged": false,
+    "operationApproval": false,
+    "productionWiring": false
+  },
+  "executableNow": [
+    "invalid_artifact_scope",
+    "critical_blocker_cannot_be_canceled",
+    "projection_cannot_alter_state",
+    "no_measures_not_applicable",
+    "zero_denominator_null",
+    "high_ratio_does_not_approve_operation"
+  ],
+  "coveredByEquivalentInvariant": [
+    "stale_downstream_readiness",
+    "candidate_cardinality_cannot_raise_join",
+    "unsupported_domain_cannot_become_ready",
+    "not_applicable_requires_scope_change"
+  ],
+  "stillMachineAuditOnly": [
+    "remove_full_file",
+    "artifact_mismatch",
+    "mixed_type",
+    "remove_semantics",
+    "confirmed_to_probable",
+    "probable_to_ambiguous",
+    "remove_identity",
+    "grain_to_unknown",
+    "repeated_total",
+    "snapshot_risk",
+    "non_additive_percentage",
+    "unresolved_numeric",
+    "remove_relationships",
+    "relation_without_key",
+    "competing_key",
+    "many_to_many",
+    "null_key",
+    "remove_temporal",
+    "overlap_risk",
+    "schema_drift",
+    "remove_schema",
+    "remove_selected_key",
+    "remove_safety",
+    "synthetic_domain",
+    "relevant_debt",
+    "unrelated_debt",
+    "duplicate_evidence",
+    "duplicate_blockers",
+    "duplicate_remediation",
+    "shuffle_capabilities",
+    "shuffle_sources",
+    "shuffle_pairs",
+    "blocked_to_unsupported",
+    "unsupported_to_blocked"
+  ],
+  "blockingPhase5C": true
+}

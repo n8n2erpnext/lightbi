@@ -1,0 +1,186 @@
+{
+  "schemaVersion": "lightbi.phase-4b2b-temporal-audit.v1",
+  "date": "2026-07-13",
+  "policy": {
+    "version": "lightbi.relationship-resolution-policy.v2",
+    "sha256": "68b96f0b410315937256992d28378ae4932910a8bdc8719f0b475addd9855a10"
+  },
+  "corpus": {
+    "version": "1.2.0",
+    "bundles": 5,
+    "pairs": 9,
+    "tuningUse": "forbidden"
+  },
+  "freezeClassification": "freeze_ready_with_documented_debt",
+  "safety": {
+    "joinSafety": false,
+    "operationExecution": false,
+    "productionWiring": false
+  },
+  "records": [
+    {
+      "bundleId": "multi.commerce_may_2026",
+      "pairId": "pair:23857b1b9f637f2c",
+      "state": "ambiguous",
+      "cause": "overlapping_ranges",
+      "debt": [
+        {
+          "code": "insufficient_temporal_evidence",
+          "axis": "temporal",
+          "candidateReferences": [
+            "pair:23857b1b9f637f2c:unresolved"
+          ],
+          "reason": "Multiple temporal alternatives require later partition validation."
+        }
+      ],
+      "safetyApproved": false,
+      "executionAuthorized": false
+    },
+    {
+      "bundleId": "multi.commerce_may_2026",
+      "pairId": "pair:7c6214dbcf4d1a72",
+      "state": "ambiguous",
+      "cause": "overlapping_ranges",
+      "debt": [
+        {
+          "code": "insufficient_temporal_evidence",
+          "axis": "temporal",
+          "candidateReferences": [
+            "pair:7c6214dbcf4d1a72:identity"
+          ],
+          "reason": "Multiple temporal alternatives require later partition validation."
+        }
+      ],
+      "safetyApproved": false,
+      "executionAuthorized": false
+    },
+    {
+      "bundleId": "multi.commerce_may_2026",
+      "pairId": "pair:e5224dd199f8f4f5",
+      "state": "ambiguous",
+      "cause": "overlapping_ranges",
+      "debt": [
+        {
+          "code": "insufficient_temporal_evidence",
+          "axis": "temporal",
+          "candidateReferences": [
+            "pair:e5224dd199f8f4f5:unresolved"
+          ],
+          "reason": "Multiple temporal alternatives require later partition validation."
+        }
+      ],
+      "safetyApproved": false,
+      "executionAuthorized": false
+    },
+    {
+      "bundleId": "multi.commerce_june_2026",
+      "pairId": "pair:ac78987907cd6c20",
+      "state": "ambiguous",
+      "cause": "overlapping_ranges",
+      "debt": [
+        {
+          "code": "insufficient_temporal_evidence",
+          "axis": "temporal",
+          "candidateReferences": [
+            "pair:ac78987907cd6c20:unresolved"
+          ],
+          "reason": "Multiple temporal alternatives require later partition validation."
+        }
+      ],
+      "safetyApproved": false,
+      "executionAuthorized": false
+    },
+    {
+      "bundleId": "multi.commerce_june_2026",
+      "pairId": "pair:d31d59ba9619b647",
+      "state": "ambiguous",
+      "cause": "overlapping_ranges",
+      "debt": [
+        {
+          "code": "insufficient_temporal_evidence",
+          "axis": "temporal",
+          "candidateReferences": [
+            "pair:d31d59ba9619b647:identity"
+          ],
+          "reason": "Multiple temporal alternatives require later partition validation."
+        }
+      ],
+      "safetyApproved": false,
+      "executionAuthorized": false
+    },
+    {
+      "bundleId": "multi.commerce_june_2026",
+      "pairId": "pair:e05cac4cc63dd89d",
+      "state": "ambiguous",
+      "cause": "overlapping_ranges",
+      "debt": [
+        {
+          "code": "insufficient_temporal_evidence",
+          "axis": "temporal",
+          "candidateReferences": [
+            "pair:e05cac4cc63dd89d:unresolved"
+          ],
+          "reason": "Multiple temporal alternatives require later partition validation."
+        }
+      ],
+      "safetyApproved": false,
+      "executionAuthorized": false
+    },
+    {
+      "bundleId": "multi.sales_period_pair",
+      "pairId": "pair:990d5628b7295853",
+      "state": "ambiguous",
+      "cause": "sequential_but_partition_unproven",
+      "debt": [
+        {
+          "code": "insufficient_temporal_evidence",
+          "axis": "temporal",
+          "candidateReferences": [
+            "pair:990d5628b7295853:schema"
+          ],
+          "reason": "Multiple temporal alternatives require later partition validation."
+        }
+      ],
+      "safetyApproved": false,
+      "executionAuthorized": false
+    },
+    {
+      "bundleId": "multi.logistics_period_pair",
+      "pairId": "pair:82c4a25a45f1ff95",
+      "state": "ambiguous",
+      "cause": "overlapping_ranges",
+      "debt": [
+        {
+          "code": "insufficient_temporal_evidence",
+          "axis": "temporal",
+          "candidateReferences": [
+            "pair:82c4a25a45f1ff95:identity",
+            "pair:82c4a25a45f1ff95:schema"
+          ],
+          "reason": "Multiple temporal alternatives require later partition validation."
+        }
+      ],
+      "safetyApproved": false,
+      "executionAuthorized": false
+    },
+    {
+      "bundleId": "multi.accounting_period_pair",
+      "pairId": "pair:e017ee451b367014",
+      "state": "ambiguous",
+      "cause": "sequential_but_partition_unproven",
+      "debt": [
+        {
+          "code": "insufficient_temporal_evidence",
+          "axis": "temporal",
+          "candidateReferences": [
+            "pair:e017ee451b367014:identity",
+            "pair:e017ee451b367014:schema"
+          ],
+          "reason": "Multiple temporal alternatives require later partition validation."
+        }
+      ],
+      "safetyApproved": false,
+      "executionAuthorized": false
+    }
+  ]
+}

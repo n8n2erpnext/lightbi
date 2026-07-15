@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "lightbi.phase-6a-legacy-reachability-audit.v1",
+  "selectedProductionPath": "Home canonical dataset state to Investigation governed execution",
+  "entries": [
+    { "target": "business-signal-detector", "classification": "production_unreachable", "retirement": "delete_in_phase6b" },
+    { "target": "understanding-next signal detector/orchestrator", "classification": "production_unreachable", "retirement": "delete_in_phase6b" },
+    { "target": "understanding-next contracts and action adapter", "classification": "compatibility_adapter_only", "retirement": "migrate presentation contract in_phase6b" },
+    { "target": "duplicate dataset-understanding builders", "classification": "production_unreachable", "retirement": "delete_in_phase6b" },
+    { "target": "guided investigation legacy path", "classification": "production_unreachable", "retirement": "delete_in_phase6b" },
+    { "target": "legacy Investigation path for sessions created by Advanced", "classification": "still_production_reachable", "retirement": "documented compatibility debt" },
+    { "target": "mock/deprecated preview paths", "classification": "still_production_reachable", "retirement": "noncanonical-session compatibility only" },
+    { "target": "legacy detector tests", "classification": "test_only", "retirement": "retain until Phase 6B" }
+  ],
+  "legacyDetectorParticipatesInGoldenPath": false
+}

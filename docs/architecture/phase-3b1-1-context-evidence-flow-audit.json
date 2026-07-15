@@ -1,0 +1,87 @@
+{
+  "schemaVersion": "lightbi.phase-3b1-1-context-flow-audit.v1",
+  "createdOn": "2026-07-11",
+  "rootCause": {
+    "classification": ["phase3a_neutral_by_contract", "missing_candidate_relative_relation_policy"],
+    "aggregationDefect": false,
+    "summary": "Phase 3A emits sibling_header_context only for same-family sibling headers and always marks it neutral. Phase 3B1 preserved that direction without flattening. Candidate-relative declared relations were absent."
+  },
+  "flow": [
+    {
+      "stage": "phase2_physical_artifact",
+      "createdAt": "profiler.ts",
+      "candidateSpecific": false,
+      "direction": "none",
+      "provenance": "full-file source profile with physical headers, types, cardinality, parse and structural evidence",
+      "informationLoss": false
+    },
+    {
+      "stage": "phase3a_candidate_artifact",
+      "createdAt": "semantic-candidate-engine.ts:appendSiblingEvidence",
+      "evidenceType": "sibling_header_context",
+      "candidateSpecific": true,
+      "direction": "neutral",
+      "witnesses": "normalized sibling headers sharing semanticFamily with a different registry candidate",
+      "provenance": "source_profile",
+      "limitation": "Sibling context is recorded but not resolved in Phase 3A.",
+      "informationLoss": false
+    },
+    {
+      "stage": "phase3b1_family_aggregation",
+      "createdAt": "contextual-evidence-aggregator.ts",
+      "candidateSpecific": true,
+      "classificationBefore": "neutral when Phase 3A sibling evidence exists; unavailable otherwise",
+      "informationLoss": false
+    },
+    {
+      "stage": "phase3b1_1_candidate_relative_relations",
+      "createdAt": "contextual-evidence-policy.ts and contextual-evidence-aggregator.ts",
+      "candidateSpecific": true,
+      "direction": "support when one declared generic relation is mechanically satisfied; conflict only for a declared incompatibility",
+      "provenance": "source-local Phase 3A sibling candidates and Phase 2-compatible structure",
+      "informationLoss": false
+    }
+  ],
+  "relationPolicy": {
+    "schemaVersion": "lightbi.context-relation-policy.v1",
+    "rules": [
+      { "relationId": "generic.identifier-label.v1", "type": "identifier_label", "eligibility": "support_only" },
+      { "relationId": "generic.quantity-uom.v1", "type": "quantity_uom", "eligibility": "support_only" },
+      { "relationId": "generic.amount-currency.v1", "type": "amount_currency", "eligibility": "support_only" },
+      { "relationId": "generic.status-timestamp.v1", "type": "status_timestamp", "eligibility": "support_only" },
+      { "relationId": "generic.origin-destination.v1", "type": "origin_destination", "eligibility": "support_only" }
+    ],
+    "forbiddenInference": ["ordinary_cooccurrence", "domain", "grain", "relationship", "candidate_selection"],
+    "oneIndependentContributionPerRelationClass": true,
+    "absenceIsConflict": false
+  },
+  "contextDiagnostics": {
+    "before": { "supports": 0, "conflicts": 0, "mixed": 0, "neutral": 769, "unavailable": 454 },
+    "after": { "supports": 374, "conflicts": 0, "mixed": 0, "neutral": 505, "unavailable": 344 },
+    "contextOnlySupportProfiles": 0,
+    "contextPlusLexicalSupportProfiles": 280,
+    "contextPlusPhysicalSupportProfiles": 351,
+    "relationClassDistribution": { "identifier_label": 282, "quantity_uom": 73, "status_timestamp": 16, "origin_destination": 3, "amount_currency": 0 },
+    "duplicateRelationEvidenceRemoved": 0,
+    "unresolvedContextConflicts": 0,
+    "broadCandidateOccurrences": 18,
+    "candidateAbsenceDebt": 14
+  },
+  "policyIdentity": {
+    "policyVersion": "lightbi.contextual-evidence-policy.v2",
+    "compatibilityHashAlgorithm": "sha256",
+    "compatibilityHash": "5abf964930277f0005bb877a80106d404acc601400753d25c933cec59380aa7a",
+    "nonSecurityFingerprintAlgorithm": "fnv1a32",
+    "nonSecurityFingerprintRole": "diagnostic fingerprint only",
+    "canonicalJsonKeyOrderIndependent": true
+  },
+  "preservation": {
+    "phase3aCandidatesAdded": 0,
+    "phase3aCandidatesRemoved": 0,
+    "candidateOrderingChanged": false,
+    "collisionContracts": 84,
+    "collisionResolutionExecuted": false,
+    "candidateAbsenceDebt": 14,
+    "domainSupportManifestChanged": false
+  }
+}

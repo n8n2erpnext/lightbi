@@ -1,0 +1,5820 @@
+{
+  "schemaVersion": "lightbi.phase-4c2-remediation-audit.v1",
+  "date": "2026-07-13",
+  "policy": {
+    "version": "lightbi.readiness-policy.v2",
+    "sha256": "50c546791c8a8df182f1e8b1a7c74dfd0fa420c71cd2bb8b4aea31ba107a0c7f"
+  },
+  "coverage": {
+    "sourceOccurrences": 37,
+    "bundles": 5,
+    "pairs": 9,
+    "capabilities": 34
+  },
+  "freezeClassification": "freeze_ready_with_documented_debt",
+  "productionIsolation": {
+    "operationApproval": false,
+    "productionWiring": false,
+    "domainManifestEmpty": true
+  },
+  "records": [
+    {
+      "scope": "source",
+      "id": "sample data/Sales_ERP_May_2026.xlsx#Sales",
+      "capabilityId": "semantic_labeling_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "semantic_labeling_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Sales_ERP_May_2026.xlsx#Sales",
+      "capabilityId": "ambiguous_column_review_required",
+      "state": "ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "ambiguous_column_review_required"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Sales_ERP_May_2026.xlsx#Sales",
+      "capabilityId": "row_identity_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "row_identity_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Sales_ERP_May_2026.xlsx#Sales",
+      "capabilityId": "grain_interpretation_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "grain_interpretation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Sales_ERP_May_2026.xlsx#Sales",
+      "capabilityId": "numeric_aggregation_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "choose_safe_aggregation_rule",
+        "parameters": {
+          "capabilityId": "numeric_aggregation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Sales_ERP_May_2026.xlsx#Sales",
+      "capabilityId": "domain_activation_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_activation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Sales_ERP_May_2026.xlsx#Sales",
+      "capabilityId": "domain_metric_planning_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_metric_planning_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Sales_ERP_June_2026.xlsx#Sales",
+      "capabilityId": "semantic_labeling_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "semantic_labeling_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Sales_ERP_June_2026.xlsx#Sales",
+      "capabilityId": "ambiguous_column_review_required",
+      "state": "ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "ambiguous_column_review_required"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Sales_ERP_June_2026.xlsx#Sales",
+      "capabilityId": "row_identity_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "row_identity_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Sales_ERP_June_2026.xlsx#Sales",
+      "capabilityId": "grain_interpretation_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "grain_interpretation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Sales_ERP_June_2026.xlsx#Sales",
+      "capabilityId": "numeric_aggregation_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "choose_safe_aggregation_rule",
+        "parameters": {
+          "capabilityId": "numeric_aggregation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Sales_ERP_June_2026.xlsx#Sales",
+      "capabilityId": "domain_activation_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_activation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Sales_ERP_June_2026.xlsx#Sales",
+      "capabilityId": "domain_metric_planning_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_metric_planning_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/BHX_PHIEUXUAT.xlsx#Sheet1",
+      "capabilityId": "semantic_labeling_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "semantic_labeling_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/BHX_PHIEUXUAT.xlsx#Sheet1",
+      "capabilityId": "ambiguous_column_review_required",
+      "state": "ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "ambiguous_column_review_required"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/BHX_PHIEUXUAT.xlsx#Sheet1",
+      "capabilityId": "row_identity_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "row_identity_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/BHX_PHIEUXUAT.xlsx#Sheet1",
+      "capabilityId": "grain_interpretation_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "grain_interpretation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/BHX_PHIEUXUAT.xlsx#Sheet1",
+      "capabilityId": "numeric_aggregation_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "choose_safe_aggregation_rule",
+        "parameters": {
+          "capabilityId": "numeric_aggregation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/BHX_PHIEUXUAT.xlsx#Sheet1",
+      "capabilityId": "domain_activation_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_activation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/BHX_PHIEUXUAT.xlsx#Sheet1",
+      "capabilityId": "domain_metric_planning_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_metric_planning_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Sample - Superstore for Tableau 9.x versions.xls#Orders",
+      "capabilityId": "semantic_labeling_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "semantic_labeling_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Sample - Superstore for Tableau 9.x versions.xls#Orders",
+      "capabilityId": "ambiguous_column_review_required",
+      "state": "ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "ambiguous_column_review_required"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Sample - Superstore for Tableau 9.x versions.xls#Orders",
+      "capabilityId": "row_identity_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "row_identity_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Sample - Superstore for Tableau 9.x versions.xls#Orders",
+      "capabilityId": "grain_interpretation_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "grain_interpretation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Sample - Superstore for Tableau 9.x versions.xls#Orders",
+      "capabilityId": "numeric_aggregation_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "choose_safe_aggregation_rule",
+        "parameters": {
+          "capabilityId": "numeric_aggregation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Sample - Superstore for Tableau 9.x versions.xls#Orders",
+      "capabilityId": "domain_activation_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_activation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Sample - Superstore for Tableau 9.x versions.xls#Orders",
+      "capabilityId": "domain_metric_planning_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_metric_planning_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Accounting_ERP_May_2026.csv#Sheet1",
+      "capabilityId": "semantic_labeling_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "semantic_labeling_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Accounting_ERP_May_2026.csv#Sheet1",
+      "capabilityId": "ambiguous_column_review_required",
+      "state": "ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "ambiguous_column_review_required"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Accounting_ERP_May_2026.csv#Sheet1",
+      "capabilityId": "row_identity_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "row_identity_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Accounting_ERP_May_2026.csv#Sheet1",
+      "capabilityId": "grain_interpretation_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "grain_interpretation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Accounting_ERP_May_2026.csv#Sheet1",
+      "capabilityId": "numeric_aggregation_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "choose_safe_aggregation_rule",
+        "parameters": {
+          "capabilityId": "numeric_aggregation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Accounting_ERP_May_2026.csv#Sheet1",
+      "capabilityId": "domain_activation_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_activation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Accounting_ERP_May_2026.csv#Sheet1",
+      "capabilityId": "domain_metric_planning_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_metric_planning_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/PLU ALL FRESH 22.03.2021.xlsx#DATA",
+      "capabilityId": "semantic_labeling_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "semantic_labeling_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/PLU ALL FRESH 22.03.2021.xlsx#DATA",
+      "capabilityId": "ambiguous_column_review_required",
+      "state": "ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "ambiguous_column_review_required"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/PLU ALL FRESH 22.03.2021.xlsx#DATA",
+      "capabilityId": "row_identity_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "row_identity_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/PLU ALL FRESH 22.03.2021.xlsx#DATA",
+      "capabilityId": "grain_interpretation_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "grain_interpretation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/PLU ALL FRESH 22.03.2021.xlsx#DATA",
+      "capabilityId": "numeric_aggregation_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "choose_safe_aggregation_rule",
+        "parameters": {
+          "capabilityId": "numeric_aggregation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/PLU ALL FRESH 22.03.2021.xlsx#DATA",
+      "capabilityId": "domain_activation_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_activation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/PLU ALL FRESH 22.03.2021.xlsx#DATA",
+      "capabilityId": "domain_metric_planning_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_metric_planning_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Bao_cao_chi_tiet_Ton_kho_vung_tinh_28-12-2024.xlsx#TonTaiKhoVungChiTiet",
+      "capabilityId": "semantic_labeling_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "semantic_labeling_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Bao_cao_chi_tiet_Ton_kho_vung_tinh_28-12-2024.xlsx#TonTaiKhoVungChiTiet",
+      "capabilityId": "ambiguous_column_review_required",
+      "state": "ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "ambiguous_column_review_required"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Bao_cao_chi_tiet_Ton_kho_vung_tinh_28-12-2024.xlsx#TonTaiKhoVungChiTiet",
+      "capabilityId": "row_identity_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "row_identity_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Bao_cao_chi_tiet_Ton_kho_vung_tinh_28-12-2024.xlsx#TonTaiKhoVungChiTiet",
+      "capabilityId": "grain_interpretation_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "grain_interpretation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Bao_cao_chi_tiet_Ton_kho_vung_tinh_28-12-2024.xlsx#TonTaiKhoVungChiTiet",
+      "capabilityId": "numeric_aggregation_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "choose_safe_aggregation_rule",
+        "parameters": {
+          "capabilityId": "numeric_aggregation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Bao_cao_chi_tiet_Ton_kho_vung_tinh_28-12-2024.xlsx#TonTaiKhoVungChiTiet",
+      "capabilityId": "domain_activation_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_activation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Bao_cao_chi_tiet_Ton_kho_vung_tinh_28-12-2024.xlsx#TonTaiKhoVungChiTiet",
+      "capabilityId": "domain_metric_planning_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_metric_planning_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/TỒN DỰ KIẾN HUBLAN.xlsx#TonChuaKetNoi",
+      "capabilityId": "semantic_labeling_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "semantic_labeling_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/TỒN DỰ KIẾN HUBLAN.xlsx#TonChuaKetNoi",
+      "capabilityId": "ambiguous_column_review_required",
+      "state": "ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "ambiguous_column_review_required"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/TỒN DỰ KIẾN HUBLAN.xlsx#TonChuaKetNoi",
+      "capabilityId": "row_identity_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "row_identity_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/TỒN DỰ KIẾN HUBLAN.xlsx#TonChuaKetNoi",
+      "capabilityId": "grain_interpretation_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "grain_interpretation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/TỒN DỰ KIẾN HUBLAN.xlsx#TonChuaKetNoi",
+      "capabilityId": "numeric_aggregation_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "choose_safe_aggregation_rule",
+        "parameters": {
+          "capabilityId": "numeric_aggregation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/TỒN DỰ KIẾN HUBLAN.xlsx#TonChuaKetNoi",
+      "capabilityId": "domain_activation_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_activation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/TỒN DỰ KIẾN HUBLAN.xlsx#TonChuaKetNoi",
+      "capabilityId": "domain_metric_planning_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_metric_planning_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Logistics_ERP_May_2026.csv#Sheet1",
+      "capabilityId": "semantic_labeling_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "semantic_labeling_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Logistics_ERP_May_2026.csv#Sheet1",
+      "capabilityId": "ambiguous_column_review_required",
+      "state": "ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "ambiguous_column_review_required"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Logistics_ERP_May_2026.csv#Sheet1",
+      "capabilityId": "row_identity_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "row_identity_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Logistics_ERP_May_2026.csv#Sheet1",
+      "capabilityId": "numeric_aggregation_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "choose_safe_aggregation_rule",
+        "parameters": {
+          "capabilityId": "numeric_aggregation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Logistics_ERP_May_2026.csv#Sheet1",
+      "capabilityId": "repeated_measure_protection_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "remove_repeated_totals",
+        "parameters": {
+          "capabilityId": "repeated_measure_protection_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Logistics_ERP_May_2026.csv#Sheet1",
+      "capabilityId": "domain_activation_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_activation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Logistics_ERP_May_2026.csv#Sheet1",
+      "capabilityId": "domain_metric_planning_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_metric_planning_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Logistics_ERP_June_2026.csv#Sheet1",
+      "capabilityId": "semantic_labeling_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "semantic_labeling_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Logistics_ERP_June_2026.csv#Sheet1",
+      "capabilityId": "ambiguous_column_review_required",
+      "state": "ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "ambiguous_column_review_required"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Logistics_ERP_June_2026.csv#Sheet1",
+      "capabilityId": "row_identity_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "row_identity_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Logistics_ERP_June_2026.csv#Sheet1",
+      "capabilityId": "numeric_aggregation_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "choose_safe_aggregation_rule",
+        "parameters": {
+          "capabilityId": "numeric_aggregation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Logistics_ERP_June_2026.csv#Sheet1",
+      "capabilityId": "repeated_measure_protection_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "remove_repeated_totals",
+        "parameters": {
+          "capabilityId": "repeated_measure_protection_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Logistics_ERP_June_2026.csv#Sheet1",
+      "capabilityId": "domain_activation_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_activation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Logistics_ERP_June_2026.csv#Sheet1",
+      "capabilityId": "domain_metric_planning_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_metric_planning_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/bcctnhapTTKT_19122024.xlsx#NhapXuatDungGioTTKT",
+      "capabilityId": "semantic_labeling_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "semantic_labeling_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/bcctnhapTTKT_19122024.xlsx#NhapXuatDungGioTTKT",
+      "capabilityId": "ambiguous_column_review_required",
+      "state": "ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "ambiguous_column_review_required"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/bcctnhapTTKT_19122024.xlsx#NhapXuatDungGioTTKT",
+      "capabilityId": "row_identity_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "row_identity_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/bcctnhapTTKT_19122024.xlsx#NhapXuatDungGioTTKT",
+      "capabilityId": "grain_interpretation_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "grain_interpretation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/bcctnhapTTKT_19122024.xlsx#NhapXuatDungGioTTKT",
+      "capabilityId": "numeric_aggregation_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "choose_safe_aggregation_rule",
+        "parameters": {
+          "capabilityId": "numeric_aggregation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/bcctnhapTTKT_19122024.xlsx#NhapXuatDungGioTTKT",
+      "capabilityId": "domain_activation_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_activation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/bcctnhapTTKT_19122024.xlsx#NhapXuatDungGioTTKT",
+      "capabilityId": "domain_metric_planning_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_metric_planning_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/bcctnhapTTKT_23122024.xlsx#NhapXuatDungGioTTKT",
+      "capabilityId": "semantic_labeling_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "semantic_labeling_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/bcctnhapTTKT_23122024.xlsx#NhapXuatDungGioTTKT",
+      "capabilityId": "ambiguous_column_review_required",
+      "state": "ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "ambiguous_column_review_required"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/bcctnhapTTKT_23122024.xlsx#NhapXuatDungGioTTKT",
+      "capabilityId": "row_identity_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "row_identity_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/bcctnhapTTKT_23122024.xlsx#NhapXuatDungGioTTKT",
+      "capabilityId": "grain_interpretation_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "grain_interpretation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/bcctnhapTTKT_23122024.xlsx#NhapXuatDungGioTTKT",
+      "capabilityId": "numeric_aggregation_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "choose_safe_aggregation_rule",
+        "parameters": {
+          "capabilityId": "numeric_aggregation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/bcctnhapTTKT_23122024.xlsx#NhapXuatDungGioTTKT",
+      "capabilityId": "domain_activation_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_activation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/bcctnhapTTKT_23122024.xlsx#NhapXuatDungGioTTKT",
+      "capabilityId": "domain_metric_planning_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_metric_planning_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/bcctnhapTTKT_24122024.xlsx#NhapXuatDungGioTTKT",
+      "capabilityId": "semantic_labeling_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "semantic_labeling_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/bcctnhapTTKT_24122024.xlsx#NhapXuatDungGioTTKT",
+      "capabilityId": "ambiguous_column_review_required",
+      "state": "ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "ambiguous_column_review_required"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/bcctnhapTTKT_24122024.xlsx#NhapXuatDungGioTTKT",
+      "capabilityId": "row_identity_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "row_identity_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/bcctnhapTTKT_24122024.xlsx#NhapXuatDungGioTTKT",
+      "capabilityId": "grain_interpretation_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "grain_interpretation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/bcctnhapTTKT_24122024.xlsx#NhapXuatDungGioTTKT",
+      "capabilityId": "numeric_aggregation_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "choose_safe_aggregation_rule",
+        "parameters": {
+          "capabilityId": "numeric_aggregation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/bcctnhapTTKT_24122024.xlsx#NhapXuatDungGioTTKT",
+      "capabilityId": "domain_activation_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_activation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/bcctnhapTTKT_24122024.xlsx#NhapXuatDungGioTTKT",
+      "capabilityId": "domain_metric_planning_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_metric_planning_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Logistics_ERP_May_2026.csv#Sheet1",
+      "capabilityId": "semantic_labeling_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "semantic_labeling_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Logistics_ERP_May_2026.csv#Sheet1",
+      "capabilityId": "ambiguous_column_review_required",
+      "state": "ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "ambiguous_column_review_required"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Logistics_ERP_May_2026.csv#Sheet1",
+      "capabilityId": "row_identity_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "row_identity_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Logistics_ERP_May_2026.csv#Sheet1",
+      "capabilityId": "numeric_aggregation_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "choose_safe_aggregation_rule",
+        "parameters": {
+          "capabilityId": "numeric_aggregation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Logistics_ERP_May_2026.csv#Sheet1",
+      "capabilityId": "repeated_measure_protection_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "remove_repeated_totals",
+        "parameters": {
+          "capabilityId": "repeated_measure_protection_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Logistics_ERP_May_2026.csv#Sheet1",
+      "capabilityId": "domain_activation_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_activation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Logistics_ERP_May_2026.csv#Sheet1",
+      "capabilityId": "domain_metric_planning_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_metric_planning_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Logistics_ERP_June_2026.csv#Sheet1",
+      "capabilityId": "semantic_labeling_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "semantic_labeling_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Logistics_ERP_June_2026.csv#Sheet1",
+      "capabilityId": "ambiguous_column_review_required",
+      "state": "ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "ambiguous_column_review_required"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Logistics_ERP_June_2026.csv#Sheet1",
+      "capabilityId": "row_identity_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "row_identity_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Logistics_ERP_June_2026.csv#Sheet1",
+      "capabilityId": "numeric_aggregation_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "choose_safe_aggregation_rule",
+        "parameters": {
+          "capabilityId": "numeric_aggregation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Logistics_ERP_June_2026.csv#Sheet1",
+      "capabilityId": "repeated_measure_protection_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "remove_repeated_totals",
+        "parameters": {
+          "capabilityId": "repeated_measure_protection_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Logistics_ERP_June_2026.csv#Sheet1",
+      "capabilityId": "domain_activation_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_activation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Logistics_ERP_June_2026.csv#Sheet1",
+      "capabilityId": "domain_metric_planning_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_metric_planning_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Accounting_ERP_May_2026.csv#Sheet1",
+      "capabilityId": "semantic_labeling_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "semantic_labeling_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Accounting_ERP_May_2026.csv#Sheet1",
+      "capabilityId": "ambiguous_column_review_required",
+      "state": "ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "ambiguous_column_review_required"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Accounting_ERP_May_2026.csv#Sheet1",
+      "capabilityId": "row_identity_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "row_identity_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Accounting_ERP_May_2026.csv#Sheet1",
+      "capabilityId": "grain_interpretation_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "grain_interpretation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Accounting_ERP_May_2026.csv#Sheet1",
+      "capabilityId": "numeric_aggregation_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "choose_safe_aggregation_rule",
+        "parameters": {
+          "capabilityId": "numeric_aggregation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Accounting_ERP_May_2026.csv#Sheet1",
+      "capabilityId": "domain_activation_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_activation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Accounting_ERP_May_2026.csv#Sheet1",
+      "capabilityId": "domain_metric_planning_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_metric_planning_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Accounting_ERP_June_2026.csv#Sheet1",
+      "capabilityId": "semantic_labeling_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "semantic_labeling_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Accounting_ERP_June_2026.csv#Sheet1",
+      "capabilityId": "ambiguous_column_review_required",
+      "state": "ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "ambiguous_column_review_required"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Accounting_ERP_June_2026.csv#Sheet1",
+      "capabilityId": "row_identity_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "row_identity_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Accounting_ERP_June_2026.csv#Sheet1",
+      "capabilityId": "grain_interpretation_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "grain_interpretation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Accounting_ERP_June_2026.csv#Sheet1",
+      "capabilityId": "numeric_aggregation_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "choose_safe_aggregation_rule",
+        "parameters": {
+          "capabilityId": "numeric_aggregation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Accounting_ERP_June_2026.csv#Sheet1",
+      "capabilityId": "domain_activation_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_activation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Accounting_ERP_June_2026.csv#Sheet1",
+      "capabilityId": "domain_metric_planning_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_metric_planning_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/BHX_PHIEUXUAT.xlsx#Sheet1",
+      "capabilityId": "semantic_labeling_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "semantic_labeling_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/BHX_PHIEUXUAT.xlsx#Sheet1",
+      "capabilityId": "ambiguous_column_review_required",
+      "state": "ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "ambiguous_column_review_required"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/BHX_PHIEUXUAT.xlsx#Sheet1",
+      "capabilityId": "row_identity_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "row_identity_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/BHX_PHIEUXUAT.xlsx#Sheet1",
+      "capabilityId": "grain_interpretation_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "grain_interpretation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/BHX_PHIEUXUAT.xlsx#Sheet1",
+      "capabilityId": "numeric_aggregation_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "choose_safe_aggregation_rule",
+        "parameters": {
+          "capabilityId": "numeric_aggregation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/BHX_PHIEUXUAT.xlsx#Sheet1",
+      "capabilityId": "domain_activation_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_activation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/BHX_PHIEUXUAT.xlsx#Sheet1",
+      "capabilityId": "domain_metric_planning_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_metric_planning_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Sample - Superstore for Tableau 9.x versions.xls#Orders",
+      "capabilityId": "semantic_labeling_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "semantic_labeling_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Sample - Superstore for Tableau 9.x versions.xls#Orders",
+      "capabilityId": "ambiguous_column_review_required",
+      "state": "ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "ambiguous_column_review_required"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Sample - Superstore for Tableau 9.x versions.xls#Orders",
+      "capabilityId": "row_identity_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "row_identity_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Sample - Superstore for Tableau 9.x versions.xls#Orders",
+      "capabilityId": "grain_interpretation_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "grain_interpretation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Sample - Superstore for Tableau 9.x versions.xls#Orders",
+      "capabilityId": "numeric_aggregation_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "choose_safe_aggregation_rule",
+        "parameters": {
+          "capabilityId": "numeric_aggregation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Sample - Superstore for Tableau 9.x versions.xls#Orders",
+      "capabilityId": "domain_activation_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_activation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Sample - Superstore for Tableau 9.x versions.xls#Orders",
+      "capabilityId": "domain_metric_planning_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_metric_planning_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Sales_ERP_June_2026.xlsx#Sales",
+      "capabilityId": "semantic_labeling_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "semantic_labeling_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Sales_ERP_June_2026.xlsx#Sales",
+      "capabilityId": "ambiguous_column_review_required",
+      "state": "ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "ambiguous_column_review_required"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Sales_ERP_June_2026.xlsx#Sales",
+      "capabilityId": "row_identity_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "row_identity_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Sales_ERP_June_2026.xlsx#Sales",
+      "capabilityId": "grain_interpretation_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "grain_interpretation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Sales_ERP_June_2026.xlsx#Sales",
+      "capabilityId": "numeric_aggregation_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "choose_safe_aggregation_rule",
+        "parameters": {
+          "capabilityId": "numeric_aggregation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Sales_ERP_June_2026.xlsx#Sales",
+      "capabilityId": "domain_activation_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_activation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Sales_ERP_June_2026.xlsx#Sales",
+      "capabilityId": "domain_metric_planning_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_metric_planning_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/motodetail.xlsx#Bản sao của Moto Detail",
+      "capabilityId": "semantic_labeling_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "semantic_labeling_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/motodetail.xlsx#Bản sao của Moto Detail",
+      "capabilityId": "ambiguous_column_review_required",
+      "state": "ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "ambiguous_column_review_required"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/motodetail.xlsx#Bản sao của Moto Detail",
+      "capabilityId": "row_identity_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "row_identity_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/motodetail.xlsx#Bản sao của Moto Detail",
+      "capabilityId": "grain_interpretation_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "grain_interpretation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/motodetail.xlsx#Bản sao của Moto Detail",
+      "capabilityId": "numeric_aggregation_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "choose_safe_aggregation_rule",
+        "parameters": {
+          "capabilityId": "numeric_aggregation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/motodetail.xlsx#Bản sao của Moto Detail",
+      "capabilityId": "domain_activation_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_activation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/motodetail.xlsx#Bản sao của Moto Detail",
+      "capabilityId": "domain_metric_planning_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_metric_planning_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/2017-06-22 DANH SACH XEP HANG QUAN LY TOAN QUOC.xlsx#2200 Quản lý được ĐK Tỉnh",
+      "capabilityId": "semantic_labeling_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "semantic_labeling_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/2017-06-22 DANH SACH XEP HANG QUAN LY TOAN QUOC.xlsx#2200 Quản lý được ĐK Tỉnh",
+      "capabilityId": "ambiguous_column_review_required",
+      "state": "ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "ambiguous_column_review_required"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/2017-06-22 DANH SACH XEP HANG QUAN LY TOAN QUOC.xlsx#2200 Quản lý được ĐK Tỉnh",
+      "capabilityId": "row_identity_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "row_identity_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/2017-06-22 DANH SACH XEP HANG QUAN LY TOAN QUOC.xlsx#2200 Quản lý được ĐK Tỉnh",
+      "capabilityId": "grain_interpretation_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "grain_interpretation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/2017-06-22 DANH SACH XEP HANG QUAN LY TOAN QUOC.xlsx#2200 Quản lý được ĐK Tỉnh",
+      "capabilityId": "numeric_aggregation_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "choose_safe_aggregation_rule",
+        "parameters": {
+          "capabilityId": "numeric_aggregation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/2017-06-22 DANH SACH XEP HANG QUAN LY TOAN QUOC.xlsx#2200 Quản lý được ĐK Tỉnh",
+      "capabilityId": "domain_activation_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_activation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/2017-06-22 DANH SACH XEP HANG QUAN LY TOAN QUOC.xlsx#2200 Quản lý được ĐK Tỉnh",
+      "capabilityId": "domain_metric_planning_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_metric_planning_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/World Bank Indicators.xlsx#Data by country",
+      "capabilityId": "semantic_labeling_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "semantic_labeling_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/World Bank Indicators.xlsx#Data by country",
+      "capabilityId": "ambiguous_column_review_required",
+      "state": "ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "ambiguous_column_review_required"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/World Bank Indicators.xlsx#Data by country",
+      "capabilityId": "row_identity_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "row_identity_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/World Bank Indicators.xlsx#Data by country",
+      "capabilityId": "grain_interpretation_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "grain_interpretation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/World Bank Indicators.xlsx#Data by country",
+      "capabilityId": "numeric_aggregation_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "choose_safe_aggregation_rule",
+        "parameters": {
+          "capabilityId": "numeric_aggregation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/World Bank Indicators.xlsx#Data by country",
+      "capabilityId": "domain_activation_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_activation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/World Bank Indicators.xlsx#Data by country",
+      "capabilityId": "domain_metric_planning_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_metric_planning_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/WorldCupPlayers.xlsx#WorldCupPlayers",
+      "capabilityId": "semantic_labeling_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "semantic_labeling_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/WorldCupPlayers.xlsx#WorldCupPlayers",
+      "capabilityId": "ambiguous_column_review_required",
+      "state": "ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "ambiguous_column_review_required"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/WorldCupPlayers.xlsx#WorldCupPlayers",
+      "capabilityId": "row_identity_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "row_identity_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/WorldCupPlayers.xlsx#WorldCupPlayers",
+      "capabilityId": "grain_interpretation_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "grain_interpretation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/WorldCupPlayers.xlsx#WorldCupPlayers",
+      "capabilityId": "numeric_aggregation_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "choose_safe_aggregation_rule",
+        "parameters": {
+          "capabilityId": "numeric_aggregation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/WorldCupPlayers.xlsx#WorldCupPlayers",
+      "capabilityId": "domain_activation_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_activation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/WorldCupPlayers.xlsx#WorldCupPlayers",
+      "capabilityId": "domain_metric_planning_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_metric_planning_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/bank-additional-full.xlsx#Worksheet",
+      "capabilityId": "semantic_labeling_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "semantic_labeling_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/bank-additional-full.xlsx#Worksheet",
+      "capabilityId": "ambiguous_column_review_required",
+      "state": "ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "ambiguous_column_review_required"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/bank-additional-full.xlsx#Worksheet",
+      "capabilityId": "row_identity_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "row_identity_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/bank-additional-full.xlsx#Worksheet",
+      "capabilityId": "grain_interpretation_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "grain_interpretation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/bank-additional-full.xlsx#Worksheet",
+      "capabilityId": "numeric_aggregation_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "choose_safe_aggregation_rule",
+        "parameters": {
+          "capabilityId": "numeric_aggregation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/bank-additional-full.xlsx#Worksheet",
+      "capabilityId": "domain_activation_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_activation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/bank-additional-full.xlsx#Worksheet",
+      "capabilityId": "domain_metric_planning_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_metric_planning_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Sales_ERP_May_2026.xlsx#Sales",
+      "capabilityId": "semantic_labeling_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "semantic_labeling_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Sales_ERP_May_2026.xlsx#Sales",
+      "capabilityId": "ambiguous_column_review_required",
+      "state": "ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "ambiguous_column_review_required"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Sales_ERP_May_2026.xlsx#Sales",
+      "capabilityId": "row_identity_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "row_identity_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Sales_ERP_May_2026.xlsx#Sales",
+      "capabilityId": "grain_interpretation_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "grain_interpretation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Sales_ERP_May_2026.xlsx#Sales",
+      "capabilityId": "numeric_aggregation_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "choose_safe_aggregation_rule",
+        "parameters": {
+          "capabilityId": "numeric_aggregation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Sales_ERP_May_2026.xlsx#Sales",
+      "capabilityId": "domain_activation_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_activation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Sales_ERP_May_2026.xlsx#Sales",
+      "capabilityId": "domain_metric_planning_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_metric_planning_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Logistics_ERP_May_2026.csv#Sheet1",
+      "capabilityId": "semantic_labeling_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "semantic_labeling_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Logistics_ERP_May_2026.csv#Sheet1",
+      "capabilityId": "ambiguous_column_review_required",
+      "state": "ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "ambiguous_column_review_required"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Logistics_ERP_May_2026.csv#Sheet1",
+      "capabilityId": "row_identity_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "row_identity_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Logistics_ERP_May_2026.csv#Sheet1",
+      "capabilityId": "numeric_aggregation_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "choose_safe_aggregation_rule",
+        "parameters": {
+          "capabilityId": "numeric_aggregation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Logistics_ERP_May_2026.csv#Sheet1",
+      "capabilityId": "repeated_measure_protection_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "remove_repeated_totals",
+        "parameters": {
+          "capabilityId": "repeated_measure_protection_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Logistics_ERP_May_2026.csv#Sheet1",
+      "capabilityId": "domain_activation_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_activation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Logistics_ERP_May_2026.csv#Sheet1",
+      "capabilityId": "domain_metric_planning_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_metric_planning_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Accounting_ERP_May_2026.csv#Sheet1",
+      "capabilityId": "semantic_labeling_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "semantic_labeling_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Accounting_ERP_May_2026.csv#Sheet1",
+      "capabilityId": "ambiguous_column_review_required",
+      "state": "ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "ambiguous_column_review_required"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Accounting_ERP_May_2026.csv#Sheet1",
+      "capabilityId": "row_identity_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "row_identity_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Accounting_ERP_May_2026.csv#Sheet1",
+      "capabilityId": "grain_interpretation_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "grain_interpretation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Accounting_ERP_May_2026.csv#Sheet1",
+      "capabilityId": "numeric_aggregation_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "choose_safe_aggregation_rule",
+        "parameters": {
+          "capabilityId": "numeric_aggregation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Accounting_ERP_May_2026.csv#Sheet1",
+      "capabilityId": "domain_activation_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_activation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Accounting_ERP_May_2026.csv#Sheet1",
+      "capabilityId": "domain_metric_planning_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_metric_planning_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Sales_ERP_June_2026.xlsx#Sales",
+      "capabilityId": "semantic_labeling_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "semantic_labeling_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Sales_ERP_June_2026.xlsx#Sales",
+      "capabilityId": "ambiguous_column_review_required",
+      "state": "ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "ambiguous_column_review_required"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Sales_ERP_June_2026.xlsx#Sales",
+      "capabilityId": "row_identity_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "row_identity_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Sales_ERP_June_2026.xlsx#Sales",
+      "capabilityId": "grain_interpretation_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "grain_interpretation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Sales_ERP_June_2026.xlsx#Sales",
+      "capabilityId": "numeric_aggregation_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "choose_safe_aggregation_rule",
+        "parameters": {
+          "capabilityId": "numeric_aggregation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Sales_ERP_June_2026.xlsx#Sales",
+      "capabilityId": "domain_activation_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_activation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Sales_ERP_June_2026.xlsx#Sales",
+      "capabilityId": "domain_metric_planning_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_metric_planning_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Logistics_ERP_June_2026.csv#Sheet1",
+      "capabilityId": "semantic_labeling_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "semantic_labeling_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Logistics_ERP_June_2026.csv#Sheet1",
+      "capabilityId": "ambiguous_column_review_required",
+      "state": "ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "ambiguous_column_review_required"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Logistics_ERP_June_2026.csv#Sheet1",
+      "capabilityId": "row_identity_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "row_identity_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Logistics_ERP_June_2026.csv#Sheet1",
+      "capabilityId": "numeric_aggregation_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "choose_safe_aggregation_rule",
+        "parameters": {
+          "capabilityId": "numeric_aggregation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Logistics_ERP_June_2026.csv#Sheet1",
+      "capabilityId": "repeated_measure_protection_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "remove_repeated_totals",
+        "parameters": {
+          "capabilityId": "repeated_measure_protection_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Logistics_ERP_June_2026.csv#Sheet1",
+      "capabilityId": "domain_activation_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_activation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Logistics_ERP_June_2026.csv#Sheet1",
+      "capabilityId": "domain_metric_planning_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_metric_planning_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Accounting_ERP_June_2026.csv#Sheet1",
+      "capabilityId": "semantic_labeling_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "semantic_labeling_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Accounting_ERP_June_2026.csv#Sheet1",
+      "capabilityId": "ambiguous_column_review_required",
+      "state": "ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "ambiguous_column_review_required"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Accounting_ERP_June_2026.csv#Sheet1",
+      "capabilityId": "row_identity_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "row_identity_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Accounting_ERP_June_2026.csv#Sheet1",
+      "capabilityId": "grain_interpretation_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "grain_interpretation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Accounting_ERP_June_2026.csv#Sheet1",
+      "capabilityId": "numeric_aggregation_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "choose_safe_aggregation_rule",
+        "parameters": {
+          "capabilityId": "numeric_aggregation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Accounting_ERP_June_2026.csv#Sheet1",
+      "capabilityId": "domain_activation_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_activation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Accounting_ERP_June_2026.csv#Sheet1",
+      "capabilityId": "domain_metric_planning_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_metric_planning_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Sales_ERP_May_2026.xlsx#Sales",
+      "capabilityId": "semantic_labeling_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "semantic_labeling_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Sales_ERP_May_2026.xlsx#Sales",
+      "capabilityId": "ambiguous_column_review_required",
+      "state": "ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "ambiguous_column_review_required"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Sales_ERP_May_2026.xlsx#Sales",
+      "capabilityId": "row_identity_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "row_identity_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Sales_ERP_May_2026.xlsx#Sales",
+      "capabilityId": "grain_interpretation_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "grain_interpretation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Sales_ERP_May_2026.xlsx#Sales",
+      "capabilityId": "numeric_aggregation_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "choose_safe_aggregation_rule",
+        "parameters": {
+          "capabilityId": "numeric_aggregation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Sales_ERP_May_2026.xlsx#Sales",
+      "capabilityId": "domain_activation_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_activation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Sales_ERP_May_2026.xlsx#Sales",
+      "capabilityId": "domain_metric_planning_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_metric_planning_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Sales_ERP_June_2026.xlsx#Sales",
+      "capabilityId": "semantic_labeling_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "semantic_labeling_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Sales_ERP_June_2026.xlsx#Sales",
+      "capabilityId": "ambiguous_column_review_required",
+      "state": "ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "ambiguous_column_review_required"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Sales_ERP_June_2026.xlsx#Sales",
+      "capabilityId": "row_identity_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "row_identity_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Sales_ERP_June_2026.xlsx#Sales",
+      "capabilityId": "grain_interpretation_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "grain_interpretation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Sales_ERP_June_2026.xlsx#Sales",
+      "capabilityId": "numeric_aggregation_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "choose_safe_aggregation_rule",
+        "parameters": {
+          "capabilityId": "numeric_aggregation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Sales_ERP_June_2026.xlsx#Sales",
+      "capabilityId": "domain_activation_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_activation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Sales_ERP_June_2026.xlsx#Sales",
+      "capabilityId": "domain_metric_planning_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_metric_planning_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Logistics_ERP_May_2026.csv#Sheet1",
+      "capabilityId": "semantic_labeling_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "semantic_labeling_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Logistics_ERP_May_2026.csv#Sheet1",
+      "capabilityId": "ambiguous_column_review_required",
+      "state": "ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "ambiguous_column_review_required"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Logistics_ERP_May_2026.csv#Sheet1",
+      "capabilityId": "row_identity_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "row_identity_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Logistics_ERP_May_2026.csv#Sheet1",
+      "capabilityId": "numeric_aggregation_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "choose_safe_aggregation_rule",
+        "parameters": {
+          "capabilityId": "numeric_aggregation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Logistics_ERP_May_2026.csv#Sheet1",
+      "capabilityId": "repeated_measure_protection_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "remove_repeated_totals",
+        "parameters": {
+          "capabilityId": "repeated_measure_protection_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Logistics_ERP_May_2026.csv#Sheet1",
+      "capabilityId": "domain_activation_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_activation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Logistics_ERP_May_2026.csv#Sheet1",
+      "capabilityId": "domain_metric_planning_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_metric_planning_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Logistics_ERP_June_2026.csv#Sheet1",
+      "capabilityId": "semantic_labeling_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "semantic_labeling_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Logistics_ERP_June_2026.csv#Sheet1",
+      "capabilityId": "ambiguous_column_review_required",
+      "state": "ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "ambiguous_column_review_required"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Logistics_ERP_June_2026.csv#Sheet1",
+      "capabilityId": "row_identity_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "row_identity_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Logistics_ERP_June_2026.csv#Sheet1",
+      "capabilityId": "numeric_aggregation_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "choose_safe_aggregation_rule",
+        "parameters": {
+          "capabilityId": "numeric_aggregation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Logistics_ERP_June_2026.csv#Sheet1",
+      "capabilityId": "repeated_measure_protection_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "remove_repeated_totals",
+        "parameters": {
+          "capabilityId": "repeated_measure_protection_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Logistics_ERP_June_2026.csv#Sheet1",
+      "capabilityId": "domain_activation_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_activation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Logistics_ERP_June_2026.csv#Sheet1",
+      "capabilityId": "domain_metric_planning_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_metric_planning_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Accounting_ERP_May_2026.csv#Sheet1",
+      "capabilityId": "semantic_labeling_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "semantic_labeling_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Accounting_ERP_May_2026.csv#Sheet1",
+      "capabilityId": "ambiguous_column_review_required",
+      "state": "ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "ambiguous_column_review_required"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Accounting_ERP_May_2026.csv#Sheet1",
+      "capabilityId": "row_identity_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "row_identity_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Accounting_ERP_May_2026.csv#Sheet1",
+      "capabilityId": "grain_interpretation_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "grain_interpretation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Accounting_ERP_May_2026.csv#Sheet1",
+      "capabilityId": "numeric_aggregation_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "choose_safe_aggregation_rule",
+        "parameters": {
+          "capabilityId": "numeric_aggregation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Accounting_ERP_May_2026.csv#Sheet1",
+      "capabilityId": "domain_activation_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_activation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Accounting_ERP_May_2026.csv#Sheet1",
+      "capabilityId": "domain_metric_planning_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_metric_planning_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Accounting_ERP_June_2026.csv#Sheet1",
+      "capabilityId": "semantic_labeling_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "semantic_labeling_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Accounting_ERP_June_2026.csv#Sheet1",
+      "capabilityId": "ambiguous_column_review_required",
+      "state": "ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "ambiguous_column_review_required"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Accounting_ERP_June_2026.csv#Sheet1",
+      "capabilityId": "row_identity_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "row_identity_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Accounting_ERP_June_2026.csv#Sheet1",
+      "capabilityId": "grain_interpretation_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "grain_interpretation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Accounting_ERP_June_2026.csv#Sheet1",
+      "capabilityId": "numeric_aggregation_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "choose_safe_aggregation_rule",
+        "parameters": {
+          "capabilityId": "numeric_aggregation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Accounting_ERP_June_2026.csv#Sheet1",
+      "capabilityId": "domain_activation_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_activation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "source",
+      "id": "sample data/Accounting_ERP_June_2026.csv#Sheet1",
+      "capabilityId": "domain_metric_planning_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_metric_planning_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.commerce_may_2026",
+      "capabilityId": "semantic_labeling_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "semantic_labeling_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.commerce_may_2026",
+      "capabilityId": "ambiguous_column_review_required",
+      "state": "ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "ambiguous_column_review_required"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.commerce_may_2026",
+      "capabilityId": "row_identity_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "row_identity_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.commerce_may_2026",
+      "capabilityId": "grain_interpretation_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "grain_interpretation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.commerce_may_2026",
+      "capabilityId": "numeric_aggregation_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "choose_safe_aggregation_rule",
+        "parameters": {
+          "capabilityId": "numeric_aggregation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.commerce_may_2026",
+      "capabilityId": "repeated_measure_protection_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "remove_repeated_totals",
+        "parameters": {
+          "capabilityId": "repeated_measure_protection_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.commerce_may_2026",
+      "capabilityId": "key_pair_assessment_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "select_or_confirm_key",
+        "parameters": {
+          "capabilityId": "key_pair_assessment_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.commerce_may_2026",
+      "capabilityId": "temporal_alignment_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "provide_period_semantics",
+        "parameters": {
+          "capabilityId": "temporal_alignment_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.commerce_may_2026",
+      "capabilityId": "join_planning_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "provide_relationship_contract",
+        "parameters": {
+          "capabilityId": "join_planning_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.commerce_may_2026",
+      "capabilityId": "append_planning_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "provide_relationship_contract",
+        "parameters": {
+          "capabilityId": "append_planning_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.commerce_may_2026",
+      "capabilityId": "comparison_planning_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "provide_relationship_contract",
+        "parameters": {
+          "capabilityId": "comparison_planning_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.commerce_may_2026",
+      "capabilityId": "reconciliation_planning_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "provide_relationship_contract",
+        "parameters": {
+          "capabilityId": "reconciliation_planning_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.commerce_may_2026",
+      "capabilityId": "join_execution_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "select_or_confirm_key",
+        "parameters": {
+          "capabilityId": "join_execution_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.commerce_may_2026",
+      "capabilityId": "join_execution_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "resolve_duplicate_keys",
+        "parameters": {
+          "capabilityId": "join_execution_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.commerce_may_2026",
+      "capabilityId": "append_execution_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "provide_period_semantics",
+        "parameters": {
+          "capabilityId": "append_execution_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.commerce_may_2026",
+      "capabilityId": "domain_activation_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_activation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.commerce_may_2026",
+      "capabilityId": "domain_metric_planning_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_metric_planning_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.commerce_june_2026",
+      "capabilityId": "semantic_labeling_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "semantic_labeling_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.commerce_june_2026",
+      "capabilityId": "ambiguous_column_review_required",
+      "state": "ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "ambiguous_column_review_required"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.commerce_june_2026",
+      "capabilityId": "row_identity_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "row_identity_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.commerce_june_2026",
+      "capabilityId": "grain_interpretation_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "grain_interpretation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.commerce_june_2026",
+      "capabilityId": "numeric_aggregation_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "choose_safe_aggregation_rule",
+        "parameters": {
+          "capabilityId": "numeric_aggregation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.commerce_june_2026",
+      "capabilityId": "repeated_measure_protection_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "remove_repeated_totals",
+        "parameters": {
+          "capabilityId": "repeated_measure_protection_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.commerce_june_2026",
+      "capabilityId": "key_pair_assessment_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "select_or_confirm_key",
+        "parameters": {
+          "capabilityId": "key_pair_assessment_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.commerce_june_2026",
+      "capabilityId": "temporal_alignment_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "provide_period_semantics",
+        "parameters": {
+          "capabilityId": "temporal_alignment_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.commerce_june_2026",
+      "capabilityId": "join_planning_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "provide_relationship_contract",
+        "parameters": {
+          "capabilityId": "join_planning_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.commerce_june_2026",
+      "capabilityId": "append_planning_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "provide_relationship_contract",
+        "parameters": {
+          "capabilityId": "append_planning_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.commerce_june_2026",
+      "capabilityId": "comparison_planning_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "provide_relationship_contract",
+        "parameters": {
+          "capabilityId": "comparison_planning_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.commerce_june_2026",
+      "capabilityId": "reconciliation_planning_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "provide_relationship_contract",
+        "parameters": {
+          "capabilityId": "reconciliation_planning_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.commerce_june_2026",
+      "capabilityId": "join_execution_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "select_or_confirm_key",
+        "parameters": {
+          "capabilityId": "join_execution_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.commerce_june_2026",
+      "capabilityId": "join_execution_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "resolve_duplicate_keys",
+        "parameters": {
+          "capabilityId": "join_execution_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.commerce_june_2026",
+      "capabilityId": "append_execution_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "provide_period_semantics",
+        "parameters": {
+          "capabilityId": "append_execution_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.commerce_june_2026",
+      "capabilityId": "domain_activation_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_activation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.commerce_june_2026",
+      "capabilityId": "domain_metric_planning_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_metric_planning_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.sales_period_pair",
+      "capabilityId": "semantic_labeling_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "semantic_labeling_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.sales_period_pair",
+      "capabilityId": "ambiguous_column_review_required",
+      "state": "ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "ambiguous_column_review_required"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.sales_period_pair",
+      "capabilityId": "row_identity_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "row_identity_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.sales_period_pair",
+      "capabilityId": "grain_interpretation_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "grain_interpretation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.sales_period_pair",
+      "capabilityId": "numeric_aggregation_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "choose_safe_aggregation_rule",
+        "parameters": {
+          "capabilityId": "numeric_aggregation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.sales_period_pair",
+      "capabilityId": "key_pair_assessment_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "provide_relationship_contract",
+        "parameters": {
+          "capabilityId": "key_pair_assessment_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.sales_period_pair",
+      "capabilityId": "temporal_alignment_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "provide_period_semantics",
+        "parameters": {
+          "capabilityId": "temporal_alignment_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.sales_period_pair",
+      "capabilityId": "join_planning_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "provide_relationship_contract",
+        "parameters": {
+          "capabilityId": "join_planning_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.sales_period_pair",
+      "capabilityId": "append_planning_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "provide_relationship_contract",
+        "parameters": {
+          "capabilityId": "append_planning_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.sales_period_pair",
+      "capabilityId": "comparison_planning_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "provide_relationship_contract",
+        "parameters": {
+          "capabilityId": "comparison_planning_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.sales_period_pair",
+      "capabilityId": "reconciliation_planning_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "provide_relationship_contract",
+        "parameters": {
+          "capabilityId": "reconciliation_planning_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.sales_period_pair",
+      "capabilityId": "join_execution_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "select_or_confirm_key",
+        "parameters": {
+          "capabilityId": "join_execution_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.sales_period_pair",
+      "capabilityId": "join_execution_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "resolve_duplicate_keys",
+        "parameters": {
+          "capabilityId": "join_execution_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.sales_period_pair",
+      "capabilityId": "append_execution_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "provide_period_semantics",
+        "parameters": {
+          "capabilityId": "append_execution_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.sales_period_pair",
+      "capabilityId": "domain_activation_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_activation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.sales_period_pair",
+      "capabilityId": "domain_metric_planning_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_metric_planning_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.logistics_period_pair",
+      "capabilityId": "semantic_labeling_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "semantic_labeling_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.logistics_period_pair",
+      "capabilityId": "ambiguous_column_review_required",
+      "state": "ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "ambiguous_column_review_required"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.logistics_period_pair",
+      "capabilityId": "row_identity_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "row_identity_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.logistics_period_pair",
+      "capabilityId": "numeric_aggregation_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "choose_safe_aggregation_rule",
+        "parameters": {
+          "capabilityId": "numeric_aggregation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.logistics_period_pair",
+      "capabilityId": "repeated_measure_protection_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "remove_repeated_totals",
+        "parameters": {
+          "capabilityId": "repeated_measure_protection_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.logistics_period_pair",
+      "capabilityId": "key_pair_assessment_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "select_or_confirm_key",
+        "parameters": {
+          "capabilityId": "key_pair_assessment_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.logistics_period_pair",
+      "capabilityId": "temporal_alignment_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "provide_period_semantics",
+        "parameters": {
+          "capabilityId": "temporal_alignment_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.logistics_period_pair",
+      "capabilityId": "join_planning_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "provide_relationship_contract",
+        "parameters": {
+          "capabilityId": "join_planning_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.logistics_period_pair",
+      "capabilityId": "append_planning_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "provide_relationship_contract",
+        "parameters": {
+          "capabilityId": "append_planning_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.logistics_period_pair",
+      "capabilityId": "comparison_planning_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "provide_relationship_contract",
+        "parameters": {
+          "capabilityId": "comparison_planning_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.logistics_period_pair",
+      "capabilityId": "reconciliation_planning_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "provide_relationship_contract",
+        "parameters": {
+          "capabilityId": "reconciliation_planning_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.logistics_period_pair",
+      "capabilityId": "join_execution_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "select_or_confirm_key",
+        "parameters": {
+          "capabilityId": "join_execution_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.logistics_period_pair",
+      "capabilityId": "join_execution_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "resolve_duplicate_keys",
+        "parameters": {
+          "capabilityId": "join_execution_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.logistics_period_pair",
+      "capabilityId": "append_execution_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "provide_period_semantics",
+        "parameters": {
+          "capabilityId": "append_execution_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.logistics_period_pair",
+      "capabilityId": "domain_activation_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_activation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.logistics_period_pair",
+      "capabilityId": "domain_metric_planning_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_metric_planning_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.accounting_period_pair",
+      "capabilityId": "semantic_labeling_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "semantic_labeling_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.accounting_period_pair",
+      "capabilityId": "ambiguous_column_review_required",
+      "state": "ready",
+      "remediation": {
+        "code": "confirm_column_meaning",
+        "parameters": {
+          "capabilityId": "ambiguous_column_review_required"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.accounting_period_pair",
+      "capabilityId": "row_identity_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "row_identity_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.accounting_period_pair",
+      "capabilityId": "grain_interpretation_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "confirm_grain",
+        "parameters": {
+          "capabilityId": "grain_interpretation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.accounting_period_pair",
+      "capabilityId": "numeric_aggregation_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "choose_safe_aggregation_rule",
+        "parameters": {
+          "capabilityId": "numeric_aggregation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.accounting_period_pair",
+      "capabilityId": "key_pair_assessment_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "select_or_confirm_key",
+        "parameters": {
+          "capabilityId": "key_pair_assessment_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.accounting_period_pair",
+      "capabilityId": "temporal_alignment_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "provide_period_semantics",
+        "parameters": {
+          "capabilityId": "temporal_alignment_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.accounting_period_pair",
+      "capabilityId": "join_planning_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "provide_relationship_contract",
+        "parameters": {
+          "capabilityId": "join_planning_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.accounting_period_pair",
+      "capabilityId": "append_planning_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "provide_relationship_contract",
+        "parameters": {
+          "capabilityId": "append_planning_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.accounting_period_pair",
+      "capabilityId": "comparison_planning_ready",
+      "state": "conditionally_ready",
+      "remediation": {
+        "code": "provide_relationship_contract",
+        "parameters": {
+          "capabilityId": "comparison_planning_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.accounting_period_pair",
+      "capabilityId": "reconciliation_planning_ready",
+      "state": "unknown",
+      "remediation": {
+        "code": "provide_relationship_contract",
+        "parameters": {
+          "capabilityId": "reconciliation_planning_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.accounting_period_pair",
+      "capabilityId": "join_execution_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "select_or_confirm_key",
+        "parameters": {
+          "capabilityId": "join_execution_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.accounting_period_pair",
+      "capabilityId": "join_execution_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "resolve_duplicate_keys",
+        "parameters": {
+          "capabilityId": "join_execution_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.accounting_period_pair",
+      "capabilityId": "append_execution_ready",
+      "state": "blocked",
+      "remediation": {
+        "code": "provide_period_semantics",
+        "parameters": {
+          "capabilityId": "append_execution_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.accounting_period_pair",
+      "capabilityId": "domain_activation_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_activation_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    },
+    {
+      "scope": "bundle",
+      "id": "multi.accounting_period_pair",
+      "capabilityId": "domain_metric_planning_ready",
+      "state": "unsupported",
+      "remediation": {
+        "code": "provide_domain_pack",
+        "parameters": {
+          "capabilityId": "domain_metric_planning_ready"
+        }
+      },
+      "deterministic": true,
+      "automaticMutation": false,
+      "approvalImplied": false,
+      "sensitiveParameters": false,
+      "consistent": true
+    }
+  ],
+  "contradictions": []
+}

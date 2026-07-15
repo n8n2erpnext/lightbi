@@ -5,6 +5,8 @@ import type { AISafeBriefing } from './ai-briefing-contract';
 import type { RuntimeDatasetSource, RuntimeRowScope } from './runtime-dataset-source';
 import type { BusinessFusionOverview } from './business-fusion-overview';
 import type { SaveWorkspaceSessionRequest } from './workspace-session-api';
+import type { CanonicalInvestigationHandoffV1 } from './understanding-core/canonical-consumer-boundary';
+import type { GovernedMetricExecutionResultV1 } from './understanding-core/governed-runtime-contracts';
 
 export interface InvestigationSession {
   id: string;
@@ -19,6 +21,8 @@ export interface InvestigationSession {
   rowScope?: RuntimeRowScope;
   businessFusionOverview?: BusinessFusionOverview;
   workspaceSessionPayload?: SaveWorkspaceSessionRequest;
+  canonicalHandoff?: CanonicalInvestigationHandoffV1;
+  canonicalExecutionResult?: GovernedMetricExecutionResultV1;
 }
 
 // In-memory store for now, since we aren't using a real backend or persistent DB yet.
@@ -35,7 +39,8 @@ export function createInvestigationSession(
   runtimeDatasetSource?: RuntimeDatasetSource,
   rowScope?: RuntimeRowScope,
   businessFusionOverview?: BusinessFusionOverview,
-  workspaceSessionPayload?: SaveWorkspaceSessionRequest
+  workspaceSessionPayload?: SaveWorkspaceSessionRequest,
+  canonicalHandoff?: CanonicalInvestigationHandoffV1
 ): InvestigationSession {
   let safeRows = rows;
   // Deep clone to preserve original
@@ -54,7 +59,8 @@ export function createInvestigationSession(
     runtimeDatasetSource,
     rowScope,
     businessFusionOverview,
-    workspaceSessionPayload
+    workspaceSessionPayload,
+    canonicalHandoff
   };
   
   currentSession = session;

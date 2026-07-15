@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "lightbi.phase-5m3-migration-gate-audit.v1",
+  "phase": "5M3",
+  "governedRuntimeContractsAvailable": true,
+  "runtimePreflightAvailable": true,
+  "deterministicQueryPlanningAvailable": true,
+  "controlledDuckDBExecutionAvailable": true,
+  "controlledGroundTruthComparisonAvailable": true,
+  "realGoldenRevenueExecutionAvailable": false,
+  "realGoldenRevenueDebt": "Phase 5M1 metric preflight remains blocked and Phase 5M2 emits no executable action candidate for rev.sales_erp_may_2026.",
+  "productionProjectionEligible": false,
+  "phase5M4Eligible": false,
+  "phase6CutoverEligible": false,
+  "legacyDeletionEligible": false,
+  "finalDesktopSuite": {
+    "status": "completed_with_governed_baseline",
+    "testFilesPassed": 147,
+    "testFilesFailed": 4,
+    "testsPassed": 1070,
+    "testsFailed": 9,
+    "governedBaselineFailureCount": 9,
+    "failuresOutsideGovernedBaseline": 0,
+    "phase5M3Failures": 0,
+    "baselineAllowlist": "phase-5b6b-regression-baseline-allowlist.v1.json"
+  },
+  "remainingGates": ["resolve real-corpus governed metric eligibility without weakening upstream policy", "Phase 5M4 acceptance freeze", "explicit production consumer migration", "Phase 6 cutover"],
+  "stopCondition": "Stop after Phase 5M3; do not begin Phase 5M4, production UI integration, AI/BA integration, or Phase 6.",
+  "productionWiring": { "executed": false }
+}

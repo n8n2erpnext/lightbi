@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "lightbi.phase-5b4-import-isolation-audit.v1",
+  "allowedImporters": [
+    "aggregation-intent-boundary.test.ts",
+    "aggregation-intent-boundary.corpus.test.ts"
+  ],
+  "productionImporters": [],
+  "barrelExported": false,
+  "persistence": false,
+  "telemetry": false,
+  "featureFlags": false,
+  "UIChanged": false,
+  "productionWiring": {
+    "executed": false
+  }
+}

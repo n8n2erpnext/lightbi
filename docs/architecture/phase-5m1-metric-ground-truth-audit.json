@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "lightbi.phase-5m1-metric-ground-truth-audit.v1",
+  "source": "sample-corpus/ground-truth/*.json",
+  "sourceDigest": "27f1bc7122a58ad2179442c7319326e522c1e5422c69e659b17bd595fd661866",
+  "verifiedValuesModified": false,
+  "metricMappings": {
+    "sales_revenue": ["revenue_sum", "sales_revenue_sum", "net_revenue_sum"],
+    "quantity_sold": ["quantity_sum", "sales_quantity_sum"],
+    "transaction_count": ["order_count", "transaction_count"],
+    "inventory_on_hand": ["stock_quantity_sum", "stock_qty_sum", "inventory_on_hand_sum", "ending_stock_sum"],
+    "delivery_count": ["shipment_count", "delivery_count"],
+    "gross_profit": ["gross_profit_sum"]
+  },
+  "unverifiedValuesInvented": false,
+  "preflightProducesMetricValue": false,
+  "limitations": ["A verified answer proves corpus truth, not current execution authorization", "Cross-source answers remain evaluation-only and relationship-gated"]
+}

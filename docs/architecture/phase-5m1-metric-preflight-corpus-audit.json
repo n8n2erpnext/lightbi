@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "lightbi.phase-5m1-metric-preflight-corpus-audit.v1",
+  "corpusVersion": "1.2.0",
+  "caseCount": 30,
+  "groups": {
+    "golden": { "caseCount": 8, "tuningAllowed": true },
+    "holdout": { "caseCount": 12, "tuningAllowed": false },
+    "adversarial": { "caseCount": 5, "tuningAllowed": false },
+    "multi_file": { "caseCount": 5, "tuningAllowed": false }
+  },
+  "syntheticContractFixtures": { "tuningAllowed": true, "positiveProbes": 10, "negativeProbes": 30 },
+  "states": ["ready", "conditionally_ready", "blocked", "unknown", "unsupported", "not_applicable"],
+  "assertions": ["applicability", "allowed state", "forbidden state", "required blocker", "verified value preservation", "grain expectation", "currency or unit expectation", "tuning provenance"],
+  "metricResultsProduced": false,
+  "productionRulesTunedFromEvaluationOnlyGroups": false
+}

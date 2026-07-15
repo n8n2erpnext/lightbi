@@ -1,0 +1,28 @@
+{
+  "schemaVersion": "lightbi.phase-5m4-phase5-acceptance-audit.v1",
+  "phase": "5M4",
+  "criteria": [
+    { "id": 1, "requirement": "one_governed_domain_pack_only", "status": "pass", "evidence": "commerce_distribution_mvp" },
+    { "id": 2, "requirement": "six_metric_definitions_governed", "status": "pass", "evidence": "Phase 5M1 catalog remains six definitions" },
+    { "id": 3, "requirement": "one_canonical_artifact_drives_preflight_questions_actions", "status": "pass", "evidence": "rev.sales_erp_may_2026 canonical replay" },
+    { "id": 4, "requirement": "at_most_five_default_questions", "status": "pass", "evidence": "M2 generation assertion and 30-case regression" },
+    { "id": 5, "requirement": "blocked_questions_have_structured_reasons", "status": "pass", "evidence": "M2 action blockers retained" },
+    { "id": 6, "requirement": "eligible_actions_pass_runtime_preflight", "status": "pass", "evidence": "sales_revenue conditionally_executable" },
+    { "id": 7, "requirement": "operators_only_from_governed_metric_definitions", "status": "pass", "evidence": "governed_sum" },
+    { "id": 8, "requirement": "no_silent_sum_or_count_fallback", "status": "pass", "evidence": "query planner and executor governed path" },
+    { "id": 9, "requirement": "real_golden_revenue_executes_and_matches", "status": "pass", "evidence": "22973896244 exact_match" },
+    { "id": 10, "requirement": "execution_grants_no_ba_or_decision_authority", "status": "pass", "evidence": "decisionUseAuthorized false" },
+    { "id": 11, "requirement": "no_production_consumer_wired", "status": "pass", "evidence": "Phase 5M4 import-isolation audit" },
+    { "id": 12, "requirement": "core_output_ready_for_phase6_consumption", "status": "pass", "evidence": "versioned contracts and governed artifacts; no cutover executed" }
+  ],
+  "passCount": 12,
+  "failCount": 0,
+  "homeConsumesArtifacts": false,
+  "investigationConsumesArtifacts": false,
+  "aiConsumesArtifacts": false,
+  "phase6CutoverExecuted": false,
+  "decisionUseAuthorized": false,
+  "productionWiring": {
+    "executed": false
+  }
+}

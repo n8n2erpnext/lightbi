@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "lightbi.phase-5b6-import-isolation-audit.v1",
+  "sidecarPolicyHash": "e1a3955a9d0554a655e7734ce36c36e0b28ee043cc362897eaf5ddd494fffe2f",
+  "allowedImporters": [
+    "actual-contract-capture-harness.ts",
+    "actual-contract-sidecar-contracts.ts",
+    "actual-contract-sidecar-policy.ts",
+    "actual-contract-sidecar.corpus.test.ts",
+    "actual-contract-sidecar.test.ts"
+  ],
+  "productionImporters": [],
+  "barrelExported": false,
+  "productionContractsModified": false,
+  "UIChanged": false,
+  "AIChanged": false,
+  "BAChanged": false,
+  "DuckDBChanged": false,
+  "persistence": false,
+  "telemetry": false,
+  "featureFlags": false,
+  "DOMAIN_SUPPORT_MANIFESTPopulated": false,
+  "productionWiring": {
+    "executed": false
+  }
+}

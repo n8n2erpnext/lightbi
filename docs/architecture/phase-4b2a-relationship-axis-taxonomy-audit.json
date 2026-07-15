@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "lightbi.phase-4b2a-axis-taxonomy-audit.v1",
+  "axes": {
+    "relationshipMeaning": ["identity_equivalence", "reference_relation", "parent_detail_relation", "mapping_bridge_relation", "temporal_continuation", "snapshot_sequence", "aggregate_detail_relation", "schema_continuation", "unresolved_relation", "no_supported_relation"],
+    "endpointKeyBasis": ["single_key_pair", "composite_key_pair", "unresolved_physical_pair", "ambiguous_key_pair", "no_supported_key_pair"],
+    "observedExtractCardinality": ["observed_one_to_one", "observed_one_to_many", "observed_many_to_one", "observed_many_to_many", "observed_partial_reference", "unknown_observed_cardinality"],
+    "temporalAlignment": ["same_period", "overlapping_periods", "sequential_periods", "disjoint_periods", "snapshot_sequence", "event_window_alignment", "unresolved_alignment", "no_temporal_basis"],
+    "schemaRelationship": ["compatible_continuation", "compatible_with_drift", "materially_incompatible", "unresolved_schema_relationship"],
+    "operationCompatibility": ["join_compatible_candidate", "append_compatible_candidate", "compare_compatible_candidate", "reconcile_compatible_candidate", "materially_blocked", "unresolved_operation", "no_supported_operation"]
+  },
+  "orthogonality": {"identityIsNotCardinality": true, "schemaIsNotAppendPermission": true, "sequentialTimeIsNotContinuationProof": true, "operationCompatibilityIsNotPermission": true, "dominanceAcrossAxes": false},
+  "axisStates": ["confirmed", "probable", "ambiguous", "unknown", "unsupported_input"]
+}

@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "lightbi.phase-5b1-paired-replay-audit.v1",
+  "date": "2026-07-13",
+  "subjects": {
+    "governed": 51,
+    "authenticPaired": 19,
+    "syntheticOnly": 0,
+    "noApplicableOrUnavailable": 32
+  },
+  "observations": {
+    "authentic": 291
+  },
+  "authority": {
+    "legacyChanged": false,
+    "canonicalChanged": false,
+    "operationApproval": false,
+    "productionWiring": false
+  },
+  "sourceSubjectsAttempted": 37,
+  "bundleSubjectsUnavailable": 5,
+  "pairSubjectsUnavailable": 9,
+  "bundlePairExclusionReason": "virtual planner requires business view, question, graph and workspace state absent from governed raw-input corpus",
+  "criticalSafetyDivergences": 282
+}

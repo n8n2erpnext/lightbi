@@ -1,0 +1,1 @@
+{"schemaVersion":"lightbi.phase-5b1-import-isolation-audit.v1","date":"2026-07-13","allowedImporters":["paired-legacy-replay.test.ts","canonical-runtime-adapter.corpus.test.ts"],"productionImporters":[],"barrelExported":false,"persistence":false,"telemetry":false,"productionWiring":false}

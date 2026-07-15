@@ -1,0 +1,51 @@
+{
+  "schemaVersion": "lightbi.phase-5b3-authority-audit.v1",
+  "paths": [
+    {
+      "consumer": "Investigation technical SQL details",
+      "classification": "user_visible_preview",
+      "sqlDisplayed": true,
+      "submittedUnchanged": false,
+      "additionalUserActionRequired": true,
+      "confirmationExists": false,
+      "resultsEnterChart": false,
+      "resultsEnterBA": false,
+      "persisted": false
+    },
+    {
+      "consumer": "Investigation.handleRunPreview -> executeBackendPreview",
+      "classification": "execution_candidate",
+      "sqlDisplayed": true,
+      "submittedUnchanged": true,
+      "additionalUserActionRequired": true,
+      "confirmationExists": false,
+      "resultsEnterChart": true,
+      "resultsEnterBA": true,
+      "persisted": false
+    },
+    {
+      "consumer": "backend-preview-executor -> local-duckdb-executor",
+      "classification": "direct_execution",
+      "sqlDisplayed": false,
+      "submittedUnchanged": true,
+      "additionalUserActionRequired": false,
+      "confirmationExists": false,
+      "resultsEnterChart": true,
+      "resultsEnterBA": true,
+      "persisted": false
+    },
+    {
+      "consumer": "DuckDB sandbox fallback",
+      "classification": "internal_preview_only",
+      "sqlDisplayed": false,
+      "submittedUnchanged": false,
+      "additionalUserActionRequired": false,
+      "confirmationExists": false,
+      "resultsEnterChart": true,
+      "resultsEnterBA": true,
+      "persisted": false
+    }
+  ],
+  "conclusion": "Generated SQL is execution-capable on the local backend path; existence alone is not treated as execution.",
+  "productionBehaviorChanged": false
+}

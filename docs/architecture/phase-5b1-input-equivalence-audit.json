@@ -1,0 +1,30 @@
+{
+  "schemaVersion": "lightbi.phase-5b1-input-equivalence-audit.v1",
+  "date": "2026-07-13",
+  "subjects": {
+    "governed": 51,
+    "authenticPaired": 19,
+    "syntheticOnly": 0,
+    "noApplicableOrUnavailable": 32
+  },
+  "observations": {
+    "authentic": 291
+  },
+  "authority": {
+    "legacyChanged": false,
+    "canonicalChanged": false,
+    "operationApproval": false,
+    "productionWiring": false
+  },
+  "accepted": [
+    "exact_same_governed_input",
+    "lossless_legacy_derived_input"
+  ],
+  "numericHealthDerivation": {
+    "functionId": "extract_physical_column_full_data_region.v1",
+    "losslessForLegacyColumnContract": true,
+    "canonicalConclusionUsed": false,
+    "expectedAnswerUsed": false
+  },
+  "partialDoesNotCountAsSafetyEvidence": true
+}

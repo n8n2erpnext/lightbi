@@ -1,0 +1,1194 @@
+{
+  "schemaVersion": "lightbi.phase-5b5-requirement-intersection.v1",
+  "requirements": [
+    {
+      "identity": "e2cad91d14cf4ae19daa09dd9c980ea57b6b9cc20a518a9fa6818c3b18aef9ae|6|Qty",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "e2cad91d14cf4ae19daa09dd9c980ea57b6b9cc20a518a9fa6818c3b18aef9ae|7|UnitPrice",
+      "requirements": [
+        "grain",
+        "nonAdditiveFormula",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "e2cad91d14cf4ae19daa09dd9c980ea57b6b9cc20a518a9fa6818c3b18aef9ae|8|Discount",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "e2cad91d14cf4ae19daa09dd9c980ea57b6b9cc20a518a9fa6818c3b18aef9ae|9|Revenue",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "a0a69a4d45531090ed5a829467d25ca89320d17792a72e4a91c55b95b9469e52|6|Qty",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "a0a69a4d45531090ed5a829467d25ca89320d17792a72e4a91c55b95b9469e52|7|UnitPrice",
+      "requirements": [
+        "grain",
+        "nonAdditiveFormula",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "a0a69a4d45531090ed5a829467d25ca89320d17792a72e4a91c55b95b9469e52|8|Discount",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "a0a69a4d45531090ed5a829467d25ca89320d17792a72e4a91c55b95b9469e52|9|Revenue",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "48542ee8aa9d0b9069d329ffc3dc58d141028400257c3eb95f8e62867793641d|0|Mã phiếu xuất",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "48542ee8aa9d0b9069d329ffc3dc58d141028400257c3eb95f8e62867793641d|1|Ngày xuất",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "48542ee8aa9d0b9069d329ffc3dc58d141028400257c3eb95f8e62867793641d|2|Mã kho xuất",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "48542ee8aa9d0b9069d329ffc3dc58d141028400257c3eb95f8e62867793641d|5|Tổng tiền",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "48542ee8aa9d0b9069d329ffc3dc58d141028400257c3eb95f8e62867793641d|6|Tiền làm tròn",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "48542ee8aa9d0b9069d329ffc3dc58d141028400257c3eb95f8e62867793641d|7|Tiền phải thu",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "48542ee8aa9d0b9069d329ffc3dc58d141028400257c3eb95f8e62867793641d|8|Tiền mặt khách đưa",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "48542ee8aa9d0b9069d329ffc3dc58d141028400257c3eb95f8e62867793641d|9|Tiền cà thẻ",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "48542ee8aa9d0b9069d329ffc3dc58d141028400257c3eb95f8e62867793641d|10|Tiền PMH",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "48542ee8aa9d0b9069d329ffc3dc58d141028400257c3eb95f8e62867793641d|11|Tiền tặng khách",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "48542ee8aa9d0b9069d329ffc3dc58d141028400257c3eb95f8e62867793641d|12|Tiền gửi ngân hàng",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "48542ee8aa9d0b9069d329ffc3dc58d141028400257c3eb95f8e62867793641d|13|Phí giao hàng",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "48542ee8aa9d0b9069d329ffc3dc58d141028400257c3eb95f8e62867793641d|14|Tiền thối lại",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "48542ee8aa9d0b9069d329ffc3dc58d141028400257c3eb95f8e62867793641d|16|Mã nhân viên xuất",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "c6fe1da814aea2e10ad396c9a54cc6130d2365b867fcf99fe7fe39ac5a9afef3|0|Row ID",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "c6fe1da814aea2e10ad396c9a54cc6130d2365b867fcf99fe7fe39ac5a9afef3|2|Order Date",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "c6fe1da814aea2e10ad396c9a54cc6130d2365b867fcf99fe7fe39ac5a9afef3|3|Ship Date",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "c6fe1da814aea2e10ad396c9a54cc6130d2365b867fcf99fe7fe39ac5a9afef3|11|Postal Code",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "c6fe1da814aea2e10ad396c9a54cc6130d2365b867fcf99fe7fe39ac5a9afef3|17|Sales",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "c6fe1da814aea2e10ad396c9a54cc6130d2365b867fcf99fe7fe39ac5a9afef3|18|Quantity",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "c6fe1da814aea2e10ad396c9a54cc6130d2365b867fcf99fe7fe39ac5a9afef3|19|Discount",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "c6fe1da814aea2e10ad396c9a54cc6130d2365b867fcf99fe7fe39ac5a9afef3|20|Profit",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "3c59da1c10c67ab974dfd204b737402aff1c28d748665949942579fb5fb1a2fd|11|Qty",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "3c59da1c10c67ab974dfd204b737402aff1c28d748665949942579fb5fb1a2fd|12|UnitPrice",
+      "requirements": [
+        "grain",
+        "nonAdditiveFormula",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "3c59da1c10c67ab974dfd204b737402aff1c28d748665949942579fb5fb1a2fd|13|Discount",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "3c59da1c10c67ab974dfd204b737402aff1c28d748665949942579fb5fb1a2fd|14|NetRevenue",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "3c59da1c10c67ab974dfd204b737402aff1c28d748665949942579fb5fb1a2fd|15|VATRate",
+      "requirements": [
+        "grain",
+        "nonAdditiveFormula",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "3c59da1c10c67ab974dfd204b737402aff1c28d748665949942579fb5fb1a2fd|16|VATOutput",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "3c59da1c10c67ab974dfd204b737402aff1c28d748665949942579fb5fb1a2fd|17|InvoiceTotal",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "3c59da1c10c67ab974dfd204b737402aff1c28d748665949942579fb5fb1a2fd|18|UnitCost",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "3c59da1c10c67ab974dfd204b737402aff1c28d748665949942579fb5fb1a2fd|19|TotalCost",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "3c59da1c10c67ab974dfd204b737402aff1c28d748665949942579fb5fb1a2fd|20|GrossProfit",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "3c59da1c10c67ab974dfd204b737402aff1c28d748665949942579fb5fb1a2fd|21|MarginPct",
+      "requirements": [
+        "grain",
+        "nonAdditiveFormula",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "3c59da1c10c67ab974dfd204b737402aff1c28d748665949942579fb5fb1a2fd|22|AR_Debit",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "3c59da1c10c67ab974dfd204b737402aff1c28d748665949942579fb5fb1a2fd|23|Revenue_Credit",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "3c59da1c10c67ab974dfd204b737402aff1c28d748665949942579fb5fb1a2fd|24|VATOutput_Credit",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "3c59da1c10c67ab974dfd204b737402aff1c28d748665949942579fb5fb1a2fd|25|COGS_Debit",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "3c59da1c10c67ab974dfd204b737402aff1c28d748665949942579fb5fb1a2fd|26|Inventory_Credit",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "bdd0a8638b9d126a0cf4c2dfe102a1ced3ed5aedfb9b53c73da196781a7c24a9|0|Mã sản phẩm",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "bdd0a8638b9d126a0cf4c2dfe102a1ced3ed5aedfb9b53c73da196781a7c24a9|4|Barcode",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "4329115eb0c53c679669303d79e7c12e1e2fa08eaef2b0b6f2537a464c3835cf|0|STT",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "4329115eb0c53c679669303d79e7c12e1e2fa08eaef2b0b6f2537a464c3835cf|5|Đơn hoàn",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "4329115eb0c53c679669303d79e7c12e1e2fa08eaef2b0b6f2537a464c3835cf|10|Khối lượng \n (gram)",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "4329115eb0c53c679669303d79e7c12e1e2fa08eaef2b0b6f2537a464c3835cf|14|Tiền thu hộ \n (đồng)",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "4329115eb0c53c679669303d79e7c12e1e2fa08eaef2b0b6f2537a464c3835cf|15|Tổng cước \n (đồng)",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "4329115eb0c53c679669303d79e7c12e1e2fa08eaef2b0b6f2537a464c3835cf|19| Thời gian tồn ",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "4329115eb0c53c679669303d79e7c12e1e2fa08eaef2b0b6f2537a464c3835cf|22|Trạng thái",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "4329115eb0c53c679669303d79e7c12e1e2fa08eaef2b0b6f2537a464c3835cf|24|    Khai giá   ",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "b779e84c77ee80e6d2f8e02aa4a802a2a801b3fbf122929a0aeca1256096d593|1|Mã Phiếu Gửi",
+      "requirements": [
+        "measureRole",
+        "grain"
+      ]
+    },
+    {
+      "identity": "b779e84c77ee80e6d2f8e02aa4a802a2a801b3fbf122929a0aeca1256096d593|3|Huyện Nhận",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "b779e84c77ee80e6d2f8e02aa4a802a2a801b3fbf122929a0aeca1256096d593|6|Huyện Phát",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "b779e84c77ee80e6d2f8e02aa4a802a2a801b3fbf122929a0aeca1256096d593|12|Trạng Thái",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "b779e84c77ee80e6d2f8e02aa4a802a2a801b3fbf122929a0aeca1256096d593|19|Tiền COD",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "b779e84c77ee80e6d2f8e02aa4a802a2a801b3fbf122929a0aeca1256096d593|20|Người Nhập Máy",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "b779e84c77ee80e6d2f8e02aa4a802a2a801b3fbf122929a0aeca1256096d593|22|Trọng lượng",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "b779e84c77ee80e6d2f8e02aa4a802a2a801b3fbf122929a0aeca1256096d593|24|Tiền Cước",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "e093e56ae6750a5ec3bbc98983f21409f373ee71d75b9cceb12c52b2d840ff72|12|Qty",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "e093e56ae6750a5ec3bbc98983f21409f373ee71d75b9cceb12c52b2d840ff72|13|UnitCost",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "e093e56ae6750a5ec3bbc98983f21409f373ee71d75b9cceb12c52b2d840ff72|14|TotalCost",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "e093e56ae6750a5ec3bbc98983f21409f373ee71d75b9cceb12c52b2d840ff72|16|DeliveryFee",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "ccc7f8036429a5c1b879a8a77dec843ef5ba65dbb88e3b2471a0aa70cd0bb216|12|Qty",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "ccc7f8036429a5c1b879a8a77dec843ef5ba65dbb88e3b2471a0aa70cd0bb216|13|UnitCost",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "ccc7f8036429a5c1b879a8a77dec843ef5ba65dbb88e3b2471a0aa70cd0bb216|14|TotalCost",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "ccc7f8036429a5c1b879a8a77dec843ef5ba65dbb88e3b2471a0aa70cd0bb216|16|DeliveryFee",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "2e871cd767c9fc03bca2a3f7e4a050ec6c679d934f124a006ddfa63f0739de8e|0|STT",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "2e871cd767c9fc03bca2a3f7e4a050ec6c679d934f124a006ddfa63f0739de8e|8|Số lượng",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "2e871cd767c9fc03bca2a3f7e4a050ec6c679d934f124a006ddfa63f0739de8e|9|Trọng lượng (Gam)",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "2e871cd767c9fc03bca2a3f7e4a050ec6c679d934f124a006ddfa63f0739de8e|16|Thời gian chờ",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "2e871cd767c9fc03bca2a3f7e4a050ec6c679d934f124a006ddfa63f0739de8e|24|Trọng tải (Kg)",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "99373be1d5e2b4e67b46c3c1730650b0c38e0112a3b0ac550215313f95771b98|0|STT",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "99373be1d5e2b4e67b46c3c1730650b0c38e0112a3b0ac550215313f95771b98|8|Số lượng",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "99373be1d5e2b4e67b46c3c1730650b0c38e0112a3b0ac550215313f95771b98|9|Trọng lượng (Gam)",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "99373be1d5e2b4e67b46c3c1730650b0c38e0112a3b0ac550215313f95771b98|16|Thời gian chờ",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "99373be1d5e2b4e67b46c3c1730650b0c38e0112a3b0ac550215313f95771b98|24|Trọng tải (Kg)",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "9190c28d88d7a50759ecfa5622f2e31d20147a125dd90d6b40c2de00fd866630|0|STT",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "9190c28d88d7a50759ecfa5622f2e31d20147a125dd90d6b40c2de00fd866630|2|Mã tải kiện",
+      "requirements": [
+        "measureRole",
+        "grain"
+      ]
+    },
+    {
+      "identity": "9190c28d88d7a50759ecfa5622f2e31d20147a125dd90d6b40c2de00fd866630|8|Số lượng",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "9190c28d88d7a50759ecfa5622f2e31d20147a125dd90d6b40c2de00fd866630|9|Trọng lượng (Gam)",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "9190c28d88d7a50759ecfa5622f2e31d20147a125dd90d6b40c2de00fd866630|16|Thời gian chờ",
+      "requirements": [
+        "measureRole",
+        "grain"
+      ]
+    },
+    {
+      "identity": "9190c28d88d7a50759ecfa5622f2e31d20147a125dd90d6b40c2de00fd866630|24|Trọng tải (Kg)",
+      "requirements": [
+        "measureRole",
+        "grain"
+      ]
+    },
+    {
+      "identity": "b3a3b290d5f54ca5d7fc79b7aed0f287f539e665113331bb6d4764fa5fc6aaea|11|Qty",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "b3a3b290d5f54ca5d7fc79b7aed0f287f539e665113331bb6d4764fa5fc6aaea|12|UnitPrice",
+      "requirements": [
+        "grain",
+        "nonAdditiveFormula",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "b3a3b290d5f54ca5d7fc79b7aed0f287f539e665113331bb6d4764fa5fc6aaea|13|Discount",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "b3a3b290d5f54ca5d7fc79b7aed0f287f539e665113331bb6d4764fa5fc6aaea|14|NetRevenue",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "b3a3b290d5f54ca5d7fc79b7aed0f287f539e665113331bb6d4764fa5fc6aaea|15|VATRate",
+      "requirements": [
+        "grain",
+        "nonAdditiveFormula",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "b3a3b290d5f54ca5d7fc79b7aed0f287f539e665113331bb6d4764fa5fc6aaea|16|VATOutput",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "b3a3b290d5f54ca5d7fc79b7aed0f287f539e665113331bb6d4764fa5fc6aaea|17|InvoiceTotal",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "b3a3b290d5f54ca5d7fc79b7aed0f287f539e665113331bb6d4764fa5fc6aaea|18|UnitCost",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "b3a3b290d5f54ca5d7fc79b7aed0f287f539e665113331bb6d4764fa5fc6aaea|19|TotalCost",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "b3a3b290d5f54ca5d7fc79b7aed0f287f539e665113331bb6d4764fa5fc6aaea|20|GrossProfit",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "b3a3b290d5f54ca5d7fc79b7aed0f287f539e665113331bb6d4764fa5fc6aaea|21|MarginPct",
+      "requirements": [
+        "grain",
+        "nonAdditiveFormula",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "b3a3b290d5f54ca5d7fc79b7aed0f287f539e665113331bb6d4764fa5fc6aaea|22|AR_Debit",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "b3a3b290d5f54ca5d7fc79b7aed0f287f539e665113331bb6d4764fa5fc6aaea|23|Revenue_Credit",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "b3a3b290d5f54ca5d7fc79b7aed0f287f539e665113331bb6d4764fa5fc6aaea|24|VATOutput_Credit",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "b3a3b290d5f54ca5d7fc79b7aed0f287f539e665113331bb6d4764fa5fc6aaea|25|COGS_Debit",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "b3a3b290d5f54ca5d7fc79b7aed0f287f539e665113331bb6d4764fa5fc6aaea|26|Inventory_Credit",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "2ebdd4c6a9f38ed2c7126c7b7426f6475ca9d5cdeb875f296692f50342f78cad|0|DATE",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "2ebdd4c6a9f38ed2c7126c7b7426f6475ca9d5cdeb875f296692f50342f78cad|3|ORD.\nCODE",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "2ebdd4c6a9f38ed2c7126c7b7426f6475ca9d5cdeb875f296692f50342f78cad|8|S.P",
+      "requirements": [
+        "measureRole",
+        "grain"
+      ]
+    },
+    {
+      "identity": "2ebdd4c6a9f38ed2c7126c7b7426f6475ca9d5cdeb875f296692f50342f78cad|9|L.P",
+      "requirements": [
+        "measureRole",
+        "grain"
+      ]
+    },
+    {
+      "identity": "2ebdd4c6a9f38ed2c7126c7b7426f6475ca9d5cdeb875f296692f50342f78cad|10|CHARGE",
+      "requirements": [
+        "measureRole",
+        "grain"
+      ]
+    },
+    {
+      "identity": "ea15f8c666e75a6ea4117bbb235bf2ac3565d13e1eb06f1db56ad95ac2c9c989|0|Xếp hạng",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "ea15f8c666e75a6ea4117bbb235bf2ac3565d13e1eb06f1db56ad95ac2c9c989|1|MSNV Quản lý",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "ea15f8c666e75a6ea4117bbb235bf2ac3565d13e1eb06f1db56ad95ac2c9c989|3|Tổng sao từ T6/2016 đến T05/2017",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "ea15f8c666e75a6ea4117bbb235bf2ac3565d13e1eb06f1db56ad95ac2c9c989|4|Trung bình điểm 4 tiêu chí ",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "4adb07d7d2ab2d41e5967503c70d079a69c086b05ef602c428af3709be850e6b|1|Date",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "4adb07d7d2ab2d41e5967503c70d079a69c086b05ef602c428af3709be850e6b|2|Transit: Railways, (million passenger-km)",
+      "requirements": [
+        "measureRole",
+        "grain"
+      ]
+    },
+    {
+      "identity": "4adb07d7d2ab2d41e5967503c70d079a69c086b05ef602c428af3709be850e6b|3|Transit: Passenger cars (per 1,000 people)",
+      "requirements": [
+        "measureRole",
+        "grain"
+      ]
+    },
+    {
+      "identity": "4adb07d7d2ab2d41e5967503c70d079a69c086b05ef602c428af3709be850e6b|4|Business: Mobile phone subscribers",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "4adb07d7d2ab2d41e5967503c70d079a69c086b05ef602c428af3709be850e6b|5|Business: Internet users (per 100 people)",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "4adb07d7d2ab2d41e5967503c70d079a69c086b05ef602c428af3709be850e6b|6|Health: Mortality, under-5 (per 1,000 live births)",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "4adb07d7d2ab2d41e5967503c70d079a69c086b05ef602c428af3709be850e6b|7|Health: Health expenditure per capita (current US$)",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "4adb07d7d2ab2d41e5967503c70d079a69c086b05ef602c428af3709be850e6b|8|Health: Health expenditure, total (% GDP)",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "4adb07d7d2ab2d41e5967503c70d079a69c086b05ef602c428af3709be850e6b|9|Population: Total (count)",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "4adb07d7d2ab2d41e5967503c70d079a69c086b05ef602c428af3709be850e6b|10|Population: Urban (count)",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "4adb07d7d2ab2d41e5967503c70d079a69c086b05ef602c428af3709be850e6b|11|Population:: Birth rate, crude (per 1,000)",
+      "requirements": [
+        "grain",
+        "nonAdditiveFormula",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "4adb07d7d2ab2d41e5967503c70d079a69c086b05ef602c428af3709be850e6b|12|Health: Life expectancy at birth, female (years)",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "4adb07d7d2ab2d41e5967503c70d079a69c086b05ef602c428af3709be850e6b|13|Health: Life expectancy at birth, male (years)",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "4adb07d7d2ab2d41e5967503c70d079a69c086b05ef602c428af3709be850e6b|14|Health: Life expectancy at birth, total (years)",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "4adb07d7d2ab2d41e5967503c70d079a69c086b05ef602c428af3709be850e6b|15|Population: Ages 0-14 (% of total)",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "4adb07d7d2ab2d41e5967503c70d079a69c086b05ef602c428af3709be850e6b|16|Population: Ages 15-64 (% of total)",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "4adb07d7d2ab2d41e5967503c70d079a69c086b05ef602c428af3709be850e6b|17|Population: Ages 65+ (% of total)",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "4adb07d7d2ab2d41e5967503c70d079a69c086b05ef602c428af3709be850e6b|18|Finance: GDP (current US$)",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "4adb07d7d2ab2d41e5967503c70d079a69c086b05ef602c428af3709be850e6b|19|Finance: GDP per capita (current US$)",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "7d8a61d02b4fa70388cea363b967c1af9606f7259f8cf57152c044f5f461c0e5|0|RoundID",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "7d8a61d02b4fa70388cea363b967c1af9606f7259f8cf57152c044f5f461c0e5|1|MatchID",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "7d8a61d02b4fa70388cea363b967c1af9606f7259f8cf57152c044f5f461c0e5|5|Shirt Number",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "01e63f4291b069eb5dfb4124707aa8dfcca1f3ed3c070b18df0391bba50ee99d|0|age",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "01e63f4291b069eb5dfb4124707aa8dfcca1f3ed3c070b18df0391bba50ee99d|10|duration",
+      "requirements": [
+        "grain",
+        "nonAdditiveFormula",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "01e63f4291b069eb5dfb4124707aa8dfcca1f3ed3c070b18df0391bba50ee99d|11|campaign",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "01e63f4291b069eb5dfb4124707aa8dfcca1f3ed3c070b18df0391bba50ee99d|12|pdays",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "01e63f4291b069eb5dfb4124707aa8dfcca1f3ed3c070b18df0391bba50ee99d|13|previous",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "01e63f4291b069eb5dfb4124707aa8dfcca1f3ed3c070b18df0391bba50ee99d|15|emp.var.rate",
+      "requirements": [
+        "grain",
+        "nonAdditiveFormula",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "01e63f4291b069eb5dfb4124707aa8dfcca1f3ed3c070b18df0391bba50ee99d|16|cons.price.idx",
+      "requirements": [
+        "grain",
+        "nonAdditiveFormula",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "01e63f4291b069eb5dfb4124707aa8dfcca1f3ed3c070b18df0391bba50ee99d|17|cons.conf.idx",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "01e63f4291b069eb5dfb4124707aa8dfcca1f3ed3c070b18df0391bba50ee99d|18|euribor3m",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    },
+    {
+      "identity": "01e63f4291b069eb5dfb4124707aa8dfcca1f3ed3c070b18df0391bba50ee99d|19|nr.employed",
+      "requirements": [
+        "measureRole",
+        "grain",
+        "metricDefinition"
+      ]
+    }
+  ],
+  "individualCounts": {
+    "measureRole": 133,
+    "grain": 145,
+    "nonAdditiveFormula": 12,
+    "repeatedTotal": 0,
+    "snapshotTime": 0,
+    "metricDefinition": 136,
+    "acknowledgement": 0
+  },
+  "pairIntersections": {
+    "measureRole&grain": 133,
+    "measureRole&nonAdditiveFormula": 0,
+    "measureRole&repeatedTotal": 0,
+    "measureRole&snapshotTime": 0,
+    "measureRole&metricDefinition": 124,
+    "measureRole&acknowledgement": 0,
+    "grain&nonAdditiveFormula": 12,
+    "grain&repeatedTotal": 0,
+    "grain&snapshotTime": 0,
+    "grain&metricDefinition": 136,
+    "grain&acknowledgement": 0,
+    "nonAdditiveFormula&repeatedTotal": 0,
+    "nonAdditiveFormula&snapshotTime": 0,
+    "nonAdditiveFormula&metricDefinition": 12,
+    "nonAdditiveFormula&acknowledgement": 0,
+    "repeatedTotal&snapshotTime": 0,
+    "repeatedTotal&metricDefinition": 0,
+    "repeatedTotal&acknowledgement": 0,
+    "snapshotTime&metricDefinition": 0,
+    "snapshotTime&acknowledgement": 0,
+    "metricDefinition&acknowledgement": 0
+  },
+  "recordsWithMultipleRequirements": 145,
+  "recordsWithOnlyOneRequirement": 0,
+  "recordsWithNoRecordedRequirement": 0,
+  "recordsWithInsufficientGranularEvidence": 145,
+  "requirementsIndependentOverlappingOrConditional": true,
+  "exclusivityInferredFromAggregateCounts": false
+}

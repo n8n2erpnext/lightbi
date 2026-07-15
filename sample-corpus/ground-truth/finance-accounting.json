@@ -1,0 +1,1485 @@
+{
+  "schemaVersion": "lightbi.acceptance-ground-truth.v1.1",
+  "corpusVersion": "1.2.0",
+  "category": "finance_accounting",
+  "samples": [
+    {
+      "id": "fin.accounting_may_2026",
+      "corpusVersion": "1.2.0",
+      "group": "golden",
+      "category": "finance_accounting",
+      "provenance": {
+        "kind": "repository_sample",
+        "sourceSystem": "synthetic_accounting_export",
+        "tuningUse": "allowed",
+        "dataHandling": "existing_local_acceptance_data",
+        "notes": "Ground truth records expected semantics; it is not a current product-support claim."
+      },
+      "sources": [
+        {
+          "path": "sample data/Accounting_ERP_May_2026.csv",
+          "sheet": "Sheet1",
+          "required": true,
+          "sha256": "3c59da1c10c67ab974dfd204b737402aff1c28d748665949942579fb5fb1a2fd"
+        }
+      ],
+      "dataset": {
+        "expectedArchetype": "posted_sales_invoice_lines",
+        "expectedGrain": "transaction",
+        "grainTruth": {
+          "coarseGrain": "transaction",
+          "rowEntity": "invoice_line",
+          "parentEntity": "invoice",
+          "candidateKeys": [
+            [
+              "InvoiceNo",
+              "SKU"
+            ]
+          ],
+          "parentKeys": [
+            [
+              "InvoiceNo"
+            ]
+          ],
+          "measureExpectations": [
+            {
+              "physicalColumn": "NetRevenue",
+              "repeatedWithinParent": true,
+              "additiveAcrossRows": true,
+              "reasonCode": "row_additive_measure"
+            },
+            {
+              "physicalColumn": "TotalCost",
+              "repeatedWithinParent": true,
+              "additiveAcrossRows": true,
+              "reasonCode": "row_additive_measure"
+            },
+            {
+              "physicalColumn": "GrossProfit",
+              "repeatedWithinParent": true,
+              "additiveAcrossRows": true,
+              "reasonCode": "row_additive_measure"
+            },
+            {
+              "physicalColumn": "MarginPct",
+              "repeatedWithinParent": true,
+              "additiveAcrossRows": false,
+              "reasonCode": "non_additive_or_ratio_measure"
+            }
+          ]
+        }
+      },
+      "recognition": {
+        "requiredMappings": [
+          {
+            "physicalColumn": "InvoiceNo",
+            "canonicalSignal": "billing_document",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          },
+          {
+            "physicalColumn": "JournalNo",
+            "canonicalSignal": "journal",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          },
+          {
+            "physicalColumn": "NetRevenue",
+            "canonicalSignal": "net_revenue",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          },
+          {
+            "physicalColumn": "TotalCost",
+            "canonicalSignal": "total_cost",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          },
+          {
+            "physicalColumn": "GrossProfit",
+            "canonicalSignal": "gross_profit",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          },
+          {
+            "physicalColumn": "MarginPct",
+            "canonicalSignal": "margin_pct",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          }
+        ],
+        "forbiddenMappings": [
+          {
+            "physicalColumn": "InvoiceNo",
+            "canonicalSignal": "invoice_total",
+            "reasonCode": "semantic_mismatch"
+          },
+          {
+            "physicalColumn": "JournalNo",
+            "canonicalSignal": "profit",
+            "reasonCode": "semantic_mismatch"
+          }
+        ],
+        "expectedAmbiguousMappings": [
+          {
+            "physicalColumn": "MarginPct",
+            "candidateSignals": [
+              "margin",
+              "margin_pct"
+            ],
+            "reasonCode": "normalized_alias_collision",
+            "evidenceScope": "header_only",
+            "headerOnlyExpectedState": "ambiguous",
+            "contextualResolution": {
+              "policy": "may_resolve_with_context",
+              "resolvedCanonicalSignal": "margin_pct",
+              "allowedFinalStates": [
+                "probable",
+                "confirmed"
+              ],
+              "requiredEvidence": [
+                "value_distribution",
+                "physical_type",
+                "dataset_grain",
+                "sibling_columns"
+              ],
+              "forbiddenEvidence": [
+                "header_only"
+              ]
+            }
+          }
+        ],
+        "expectedUnknownBusinessColumns": []
+      },
+      "support": {
+        "allowedDomainPacks": [
+          "finance_profitability",
+          "revenue_sales"
+        ],
+        "blockedDomainPacks": [
+          "inventory_snapshot",
+          "inventory_movement",
+          "delivery_operations",
+          "customer_contribution",
+          "performance_target_actual"
+        ],
+        "expectedExecutableActions": [
+          "gross_profit_trend",
+          "margin_by_product",
+          "sales_accounting_reconciliation"
+        ],
+        "expectedBlockedActions": [
+          {
+            "actionId": "cash_flow_statement",
+            "reasonCode": "unsupported_accounting_scope"
+          }
+        ]
+      },
+      "verifiedMetricAnswers": {
+        "row_count": 1500,
+        "net_revenue_sum": 22973896244,
+        "invoice_total_sum": 24811807225,
+        "total_cost_sum": 19898175000,
+        "gross_profit_sum": 3075721244
+      },
+      "profilingExpectations": {
+        "sourceProfiles": [
+          {
+            "sourcePath": "sample data/Accounting_ERP_May_2026.csv",
+            "sheet": "Sheet1",
+            "headerPosition": {
+              "zeroBasedRowIndex": 0,
+              "basis": "verified_source_read"
+            },
+            "verifiedRowCount": 1500
+          }
+        ],
+        "verifiedRowCount": 1500,
+        "columnPhysicalTypes": [
+          {
+            "physicalColumn": "InvoiceNo",
+            "sourcePaths": [
+              "sample data/Accounting_ERP_May_2026.csv"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "allowedParseExpectations": [
+              "preserve_text"
+            ]
+          },
+          {
+            "physicalColumn": "JournalNo",
+            "sourcePaths": [
+              "sample data/Accounting_ERP_May_2026.csv"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "allowedParseExpectations": [
+              "preserve_text"
+            ]
+          },
+          {
+            "physicalColumn": "NetRevenue",
+            "sourcePaths": [
+              "sample data/Accounting_ERP_May_2026.csv"
+            ],
+            "allowedTypes": [
+              "numeric_string"
+            ],
+            "allowedParseExpectations": [
+              "numeric_coercible"
+            ]
+          },
+          {
+            "physicalColumn": "TotalCost",
+            "sourcePaths": [
+              "sample data/Accounting_ERP_May_2026.csv"
+            ],
+            "allowedTypes": [
+              "numeric_string"
+            ],
+            "allowedParseExpectations": [
+              "numeric_coercible"
+            ]
+          },
+          {
+            "physicalColumn": "GrossProfit",
+            "sourcePaths": [
+              "sample data/Accounting_ERP_May_2026.csv"
+            ],
+            "allowedTypes": [
+              "numeric_string"
+            ],
+            "allowedParseExpectations": [
+              "numeric_coercible"
+            ]
+          },
+          {
+            "physicalColumn": "MarginPct",
+            "sourcePaths": [
+              "sample data/Accounting_ERP_May_2026.csv"
+            ],
+            "allowedTypes": [
+              "numeric_string"
+            ],
+            "allowedParseExpectations": [
+              "numeric_coercible"
+            ]
+          }
+        ],
+        "issues": {
+          "expected": [],
+          "allowed": [
+            {
+              "code": "duplicate_parent_key",
+              "physicalColumn": "InvoiceNo"
+            }
+          ],
+          "forbidden": [
+            {
+              "code": "silent_parse_drop",
+              "physicalColumn": null
+            }
+          ]
+        },
+        "representativeEvidence": {
+          "requiredSamplingRegions": [
+            "head",
+            "middle",
+            "tail",
+            "deterministic_random"
+          ],
+          "minimumDistinctRegions": 4,
+          "requiredColumns": [
+            "InvoiceNo",
+            "JournalNo",
+            "NetRevenue",
+            "TotalCost",
+            "GrossProfit",
+            "MarginPct"
+          ],
+          "mustPreservePhysicalColumnNames": true,
+          "mustReportUnparsedValues": true
+        }
+      }
+    },
+    {
+      "id": "fin.accounting_june_2026",
+      "corpusVersion": "1.2.0",
+      "group": "holdout",
+      "category": "finance_accounting",
+      "provenance": {
+        "kind": "repository_sample",
+        "sourceSystem": "synthetic_accounting_export",
+        "tuningUse": "forbidden",
+        "dataHandling": "existing_local_acceptance_data",
+        "notes": "Ground truth records expected semantics; it is not a current product-support claim."
+      },
+      "sources": [
+        {
+          "path": "sample data/Accounting_ERP_June_2026.csv",
+          "sheet": "Sheet1",
+          "required": true,
+          "sha256": "b3a3b290d5f54ca5d7fc79b7aed0f287f539e665113331bb6d4764fa5fc6aaea"
+        }
+      ],
+      "dataset": {
+        "expectedArchetype": "posted_sales_invoice_lines",
+        "expectedGrain": "transaction",
+        "grainTruth": {
+          "coarseGrain": "transaction",
+          "rowEntity": "invoice_line",
+          "parentEntity": "invoice",
+          "candidateKeys": [
+            [
+              "InvoiceNo",
+              "SKU"
+            ]
+          ],
+          "parentKeys": [
+            [
+              "InvoiceNo"
+            ]
+          ],
+          "measureExpectations": [
+            {
+              "physicalColumn": "NetRevenue",
+              "repeatedWithinParent": true,
+              "additiveAcrossRows": true,
+              "reasonCode": "row_additive_measure"
+            },
+            {
+              "physicalColumn": "TotalCost",
+              "repeatedWithinParent": true,
+              "additiveAcrossRows": true,
+              "reasonCode": "row_additive_measure"
+            },
+            {
+              "physicalColumn": "GrossProfit",
+              "repeatedWithinParent": true,
+              "additiveAcrossRows": true,
+              "reasonCode": "row_additive_measure"
+            },
+            {
+              "physicalColumn": "MarginPct",
+              "repeatedWithinParent": true,
+              "additiveAcrossRows": false,
+              "reasonCode": "non_additive_or_ratio_measure"
+            }
+          ]
+        }
+      },
+      "recognition": {
+        "requiredMappings": [
+          {
+            "physicalColumn": "InvoiceDate",
+            "canonicalSignal": "time_period",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          },
+          {
+            "physicalColumn": "NetRevenue",
+            "canonicalSignal": "net_revenue",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          },
+          {
+            "physicalColumn": "AR_Debit",
+            "canonicalSignal": "receivable",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          },
+          {
+            "physicalColumn": "COGS_Debit",
+            "canonicalSignal": "total_cost",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          },
+          {
+            "physicalColumn": "GrossProfit",
+            "canonicalSignal": "gross_profit",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          },
+          {
+            "physicalColumn": "MarginPct",
+            "canonicalSignal": "margin_pct",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          }
+        ],
+        "forbiddenMappings": [
+          {
+            "physicalColumn": "AR_Account",
+            "canonicalSignal": "receivable",
+            "reasonCode": "semantic_mismatch"
+          },
+          {
+            "physicalColumn": "VATRate",
+            "canonicalSignal": "margin_pct",
+            "reasonCode": "semantic_mismatch"
+          }
+        ],
+        "expectedAmbiguousMappings": [
+          {
+            "physicalColumn": "MarginPct",
+            "candidateSignals": [
+              "margin",
+              "margin_pct"
+            ],
+            "reasonCode": "normalized_alias_collision",
+            "evidenceScope": "header_only",
+            "headerOnlyExpectedState": "ambiguous",
+            "contextualResolution": {
+              "policy": "may_resolve_with_context",
+              "resolvedCanonicalSignal": "margin_pct",
+              "allowedFinalStates": [
+                "probable",
+                "confirmed"
+              ],
+              "requiredEvidence": [
+                "value_distribution",
+                "physical_type",
+                "dataset_grain",
+                "sibling_columns"
+              ],
+              "forbiddenEvidence": [
+                "header_only"
+              ]
+            }
+          }
+        ],
+        "expectedUnknownBusinessColumns": []
+      },
+      "support": {
+        "allowedDomainPacks": [
+          "finance_profitability",
+          "revenue_sales"
+        ],
+        "blockedDomainPacks": [
+          "inventory_snapshot",
+          "inventory_movement",
+          "delivery_operations",
+          "customer_contribution",
+          "performance_target_actual"
+        ],
+        "expectedExecutableActions": [
+          "gross_profit_trend",
+          "margin_by_product",
+          "sales_accounting_reconciliation"
+        ],
+        "expectedBlockedActions": [
+          {
+            "actionId": "receivable_aging",
+            "reasonCode": "missing_due_date_and_balance_basis"
+          }
+        ]
+      },
+      "verifiedMetricAnswers": {
+        "row_count": 1500,
+        "net_revenue_sum": 20637539164,
+        "invoice_total_sum": 22288541582,
+        "total_cost_sum": 17702899000,
+        "gross_profit_sum": 2934640164
+      },
+      "profilingExpectations": {
+        "sourceProfiles": [
+          {
+            "sourcePath": "sample data/Accounting_ERP_June_2026.csv",
+            "sheet": "Sheet1",
+            "headerPosition": {
+              "zeroBasedRowIndex": 0,
+              "basis": "verified_source_read"
+            },
+            "verifiedRowCount": 1500
+          }
+        ],
+        "verifiedRowCount": 1500,
+        "columnPhysicalTypes": [
+          {
+            "physicalColumn": "InvoiceDate",
+            "sourcePaths": [
+              "sample data/Accounting_ERP_June_2026.csv"
+            ],
+            "allowedTypes": [
+              "date_string"
+            ],
+            "allowedParseExpectations": [
+              "date_coercible"
+            ]
+          },
+          {
+            "physicalColumn": "NetRevenue",
+            "sourcePaths": [
+              "sample data/Accounting_ERP_June_2026.csv"
+            ],
+            "allowedTypes": [
+              "numeric_string"
+            ],
+            "allowedParseExpectations": [
+              "numeric_coercible"
+            ]
+          },
+          {
+            "physicalColumn": "AR_Debit",
+            "sourcePaths": [
+              "sample data/Accounting_ERP_June_2026.csv"
+            ],
+            "allowedTypes": [
+              "numeric_string"
+            ],
+            "allowedParseExpectations": [
+              "numeric_coercible"
+            ]
+          },
+          {
+            "physicalColumn": "COGS_Debit",
+            "sourcePaths": [
+              "sample data/Accounting_ERP_June_2026.csv"
+            ],
+            "allowedTypes": [
+              "numeric_string"
+            ],
+            "allowedParseExpectations": [
+              "numeric_coercible"
+            ]
+          },
+          {
+            "physicalColumn": "GrossProfit",
+            "sourcePaths": [
+              "sample data/Accounting_ERP_June_2026.csv"
+            ],
+            "allowedTypes": [
+              "numeric_string"
+            ],
+            "allowedParseExpectations": [
+              "numeric_coercible"
+            ]
+          },
+          {
+            "physicalColumn": "MarginPct",
+            "sourcePaths": [
+              "sample data/Accounting_ERP_June_2026.csv"
+            ],
+            "allowedTypes": [
+              "numeric_string"
+            ],
+            "allowedParseExpectations": [
+              "numeric_coercible"
+            ]
+          },
+          {
+            "physicalColumn": "AR_Account",
+            "sourcePaths": [
+              "sample data/Accounting_ERP_June_2026.csv"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "allowedParseExpectations": [
+              "preserve_text"
+            ]
+          },
+          {
+            "physicalColumn": "VATRate",
+            "sourcePaths": [
+              "sample data/Accounting_ERP_June_2026.csv"
+            ],
+            "allowedTypes": [
+              "numeric_string"
+            ],
+            "allowedParseExpectations": [
+              "numeric_coercible"
+            ]
+          }
+        ],
+        "issues": {
+          "expected": [],
+          "allowed": [
+            {
+              "code": "duplicate_parent_key",
+              "physicalColumn": "InvoiceNo"
+            }
+          ],
+          "forbidden": [
+            {
+              "code": "silent_parse_drop",
+              "physicalColumn": null
+            }
+          ]
+        },
+        "representativeEvidence": {
+          "requiredSamplingRegions": [
+            "head",
+            "middle",
+            "tail",
+            "deterministic_random"
+          ],
+          "minimumDistinctRegions": 4,
+          "requiredColumns": [
+            "InvoiceDate",
+            "NetRevenue",
+            "AR_Debit",
+            "COGS_Debit",
+            "GrossProfit",
+            "MarginPct",
+            "AR_Account",
+            "VATRate"
+          ],
+          "mustPreservePhysicalColumnNames": true,
+          "mustReportUnparsedValues": true
+        }
+      }
+    },
+    {
+      "id": "fin.bhx_tender_reconciliation",
+      "corpusVersion": "1.2.0",
+      "group": "golden",
+      "category": "finance_accounting",
+      "provenance": {
+        "kind": "repository_sample",
+        "sourceSystem": "retail_pos_export",
+        "tuningUse": "allowed",
+        "dataHandling": "existing_local_acceptance_data",
+        "notes": "Ground truth records expected semantics; it is not a current product-support claim."
+      },
+      "sources": [
+        {
+          "path": "sample data/BHX_PHIEUXUAT.xlsx",
+          "sheet": "Sheet1",
+          "required": true,
+          "sha256": "48542ee8aa9d0b9069d329ffc3dc58d141028400257c3eb95f8e62867793641d"
+        }
+      ],
+      "dataset": {
+        "expectedArchetype": "retail_receipt_headers",
+        "expectedGrain": "transaction",
+        "grainTruth": {
+          "coarseGrain": "transaction",
+          "rowEntity": "receipt",
+          "parentEntity": null,
+          "candidateKeys": [
+            [
+              "Mã phiếu xuất"
+            ]
+          ],
+          "parentKeys": [],
+          "measureExpectations": [
+            {
+              "physicalColumn": "Tổng tiền",
+              "repeatedWithinParent": false,
+              "additiveAcrossRows": true,
+              "reasonCode": "row_additive_measure"
+            },
+            {
+              "physicalColumn": "Tiền phải thu",
+              "repeatedWithinParent": false,
+              "additiveAcrossRows": true,
+              "reasonCode": "row_additive_measure"
+            }
+          ]
+        }
+      },
+      "recognition": {
+        "requiredMappings": [
+          {
+            "physicalColumn": "Tiền phải thu",
+            "canonicalSignal": "receivable",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          },
+          {
+            "physicalColumn": "Tiền mặt khách đưa",
+            "canonicalSignal": "payment_cash",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          },
+          {
+            "physicalColumn": "Tiền cà thẻ",
+            "canonicalSignal": "payment_card",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          },
+          {
+            "physicalColumn": "Tiền gửi ngân hàng",
+            "canonicalSignal": "payment_bank",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          },
+          {
+            "physicalColumn": "Tiền thối lại",
+            "canonicalSignal": "change_amount",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          }
+        ],
+        "forbiddenMappings": [
+          {
+            "physicalColumn": "Mã kho xuất",
+            "canonicalSignal": "gl_account",
+            "reasonCode": "semantic_mismatch"
+          },
+          {
+            "physicalColumn": "Tiền gửi ngân hàng",
+            "canonicalSignal": "bank_account",
+            "reasonCode": "semantic_mismatch"
+          }
+        ],
+        "expectedAmbiguousMappings": [],
+        "expectedUnknownBusinessColumns": []
+      },
+      "support": {
+        "allowedDomainPacks": [
+          "revenue_sales"
+        ],
+        "blockedDomainPacks": [
+          "inventory_snapshot",
+          "inventory_movement",
+          "delivery_operations",
+          "finance_profitability",
+          "customer_contribution",
+          "performance_target_actual"
+        ],
+        "expectedExecutableActions": [
+          "tender_reconciliation",
+          "payment_mix"
+        ],
+        "expectedBlockedActions": [
+          {
+            "actionId": "profitability_analysis",
+            "reasonCode": "missing_cost_basis"
+          },
+          {
+            "actionId": "journal_correctness",
+            "reasonCode": "unsupported_accounting_scope"
+          }
+        ]
+      },
+      "verifiedMetricAnswers": {},
+      "profilingExpectations": {
+        "sourceProfiles": [
+          {
+            "sourcePath": "sample data/BHX_PHIEUXUAT.xlsx",
+            "sheet": "Sheet1",
+            "headerPosition": {
+              "zeroBasedRowIndex": 0,
+              "basis": "verified_source_read"
+            },
+            "verifiedRowCount": 14862
+          }
+        ],
+        "verifiedRowCount": 14862,
+        "columnPhysicalTypes": [
+          {
+            "physicalColumn": "Tiền phải thu",
+            "sourcePaths": [
+              "sample data/BHX_PHIEUXUAT.xlsx"
+            ],
+            "allowedTypes": [
+              "number"
+            ],
+            "allowedParseExpectations": [
+              "numeric"
+            ]
+          },
+          {
+            "physicalColumn": "Tiền mặt khách đưa",
+            "sourcePaths": [
+              "sample data/BHX_PHIEUXUAT.xlsx"
+            ],
+            "allowedTypes": [
+              "number"
+            ],
+            "allowedParseExpectations": [
+              "numeric"
+            ]
+          },
+          {
+            "physicalColumn": "Tiền cà thẻ",
+            "sourcePaths": [
+              "sample data/BHX_PHIEUXUAT.xlsx"
+            ],
+            "allowedTypes": [
+              "number"
+            ],
+            "allowedParseExpectations": [
+              "numeric"
+            ]
+          },
+          {
+            "physicalColumn": "Tiền gửi ngân hàng",
+            "sourcePaths": [
+              "sample data/BHX_PHIEUXUAT.xlsx"
+            ],
+            "allowedTypes": [
+              "number"
+            ],
+            "allowedParseExpectations": [
+              "numeric"
+            ]
+          },
+          {
+            "physicalColumn": "Tiền thối lại",
+            "sourcePaths": [
+              "sample data/BHX_PHIEUXUAT.xlsx"
+            ],
+            "allowedTypes": [
+              "number"
+            ],
+            "allowedParseExpectations": [
+              "numeric"
+            ]
+          },
+          {
+            "physicalColumn": "Mã kho xuất",
+            "sourcePaths": [
+              "sample data/BHX_PHIEUXUAT.xlsx"
+            ],
+            "allowedTypes": [
+              "numeric_string"
+            ],
+            "allowedParseExpectations": [
+              "numeric_coercible"
+            ]
+          }
+        ],
+        "issues": {
+          "expected": [],
+          "allowed": [],
+          "forbidden": [
+            {
+              "code": "silent_parse_drop",
+              "physicalColumn": null
+            }
+          ]
+        },
+        "representativeEvidence": {
+          "requiredSamplingRegions": [
+            "head",
+            "middle",
+            "tail",
+            "deterministic_random"
+          ],
+          "minimumDistinctRegions": 4,
+          "requiredColumns": [
+            "Tiền phải thu",
+            "Tiền mặt khách đưa",
+            "Tiền cà thẻ",
+            "Tiền gửi ngân hàng",
+            "Tiền thối lại",
+            "Mã kho xuất"
+          ],
+          "mustPreservePhysicalColumnNames": true,
+          "mustReportUnparsedValues": true
+        }
+      }
+    },
+    {
+      "id": "fin.superstore_profit",
+      "corpusVersion": "1.2.0",
+      "group": "holdout",
+      "category": "finance_accounting",
+      "provenance": {
+        "kind": "repository_sample",
+        "sourceSystem": "tableau_public_sample",
+        "tuningUse": "forbidden",
+        "dataHandling": "existing_local_acceptance_data",
+        "notes": "Ground truth records expected semantics; it is not a current product-support claim."
+      },
+      "sources": [
+        {
+          "path": "sample data/Sample - Superstore for Tableau 9.x versions.xls",
+          "sheet": "Orders",
+          "required": true,
+          "sha256": "c6fe1da814aea2e10ad396c9a54cc6130d2365b867fcf99fe7fe39ac5a9afef3"
+        }
+      ],
+      "dataset": {
+        "expectedArchetype": "sales_order_lines",
+        "expectedGrain": "transaction",
+        "grainTruth": {
+          "coarseGrain": "transaction",
+          "rowEntity": "order_line",
+          "parentEntity": "sales_order",
+          "candidateKeys": [
+            [
+              "Row ID"
+            ]
+          ],
+          "parentKeys": [
+            [
+              "Order ID"
+            ]
+          ],
+          "measureExpectations": [
+            {
+              "physicalColumn": "Sales",
+              "repeatedWithinParent": true,
+              "additiveAcrossRows": true,
+              "reasonCode": "row_additive_measure"
+            },
+            {
+              "physicalColumn": "Quantity",
+              "repeatedWithinParent": true,
+              "additiveAcrossRows": true,
+              "reasonCode": "row_additive_measure"
+            },
+            {
+              "physicalColumn": "Profit",
+              "repeatedWithinParent": true,
+              "additiveAcrossRows": true,
+              "reasonCode": "row_additive_measure"
+            }
+          ]
+        }
+      },
+      "recognition": {
+        "requiredMappings": [
+          {
+            "physicalColumn": "Order Date",
+            "canonicalSignal": "time_period",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          },
+          {
+            "physicalColumn": "Profit",
+            "canonicalSignal": "profit",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          },
+          {
+            "physicalColumn": "Discount",
+            "canonicalSignal": "discount",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          },
+          {
+            "physicalColumn": "Product Name",
+            "canonicalSignal": "product",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          }
+        ],
+        "forbiddenMappings": [
+          {
+            "physicalColumn": "Postal Code",
+            "canonicalSignal": "gl_account",
+            "reasonCode": "semantic_mismatch"
+          },
+          {
+            "physicalColumn": "Quantity",
+            "canonicalSignal": "profit",
+            "reasonCode": "semantic_mismatch"
+          }
+        ],
+        "expectedAmbiguousMappings": [
+          {
+            "physicalColumn": "Sales",
+            "candidateSignals": [
+              "sales",
+              "revenue"
+            ],
+            "reasonCode": "normalized_alias_collision",
+            "evidenceScope": "header_only",
+            "headerOnlyExpectedState": "ambiguous",
+            "contextualResolution": {
+              "policy": "may_resolve_with_context",
+              "resolvedCanonicalSignal": null,
+              "allowedFinalStates": [
+                "ambiguous",
+                "probable",
+                "confirmed"
+              ],
+              "requiredEvidence": [
+                "value_distribution",
+                "physical_type",
+                "dataset_grain",
+                "sibling_columns"
+              ],
+              "forbiddenEvidence": [
+                "header_only"
+              ]
+            }
+          }
+        ],
+        "expectedUnknownBusinessColumns": []
+      },
+      "support": {
+        "allowedDomainPacks": [
+          "revenue_sales",
+          "finance_profitability"
+        ],
+        "blockedDomainPacks": [
+          "inventory_snapshot",
+          "inventory_movement",
+          "delivery_operations",
+          "customer_contribution",
+          "performance_target_actual"
+        ],
+        "expectedExecutableActions": [
+          "profit_trend",
+          "profit_by_product"
+        ],
+        "expectedBlockedActions": [
+          {
+            "actionId": "gross_margin",
+            "reasonCode": "missing_cost_or_margin_basis"
+          }
+        ]
+      },
+      "verifiedMetricAnswers": {
+        "row_count": 9994,
+        "sales_sum": 2297200.860299955,
+        "profit_sum": 286397.02170000126
+      },
+      "profilingExpectations": {
+        "sourceProfiles": [
+          {
+            "sourcePath": "sample data/Sample - Superstore for Tableau 9.x versions.xls",
+            "sheet": "Orders",
+            "headerPosition": {
+              "zeroBasedRowIndex": 0,
+              "basis": "verified_source_read"
+            },
+            "verifiedRowCount": 9994
+          }
+        ],
+        "verifiedRowCount": 9994,
+        "columnPhysicalTypes": [
+          {
+            "physicalColumn": "Order Date",
+            "sourcePaths": [
+              "sample data/Sample - Superstore for Tableau 9.x versions.xls"
+            ],
+            "allowedTypes": [
+              "excel_serial_date",
+              "number"
+            ],
+            "allowedParseExpectations": [
+              "date_semantics_require_validation"
+            ]
+          },
+          {
+            "physicalColumn": "Profit",
+            "sourcePaths": [
+              "sample data/Sample - Superstore for Tableau 9.x versions.xls"
+            ],
+            "allowedTypes": [
+              "number"
+            ],
+            "allowedParseExpectations": [
+              "numeric"
+            ]
+          },
+          {
+            "physicalColumn": "Discount",
+            "sourcePaths": [
+              "sample data/Sample - Superstore for Tableau 9.x versions.xls"
+            ],
+            "allowedTypes": [
+              "number"
+            ],
+            "allowedParseExpectations": [
+              "numeric"
+            ]
+          },
+          {
+            "physicalColumn": "Product Name",
+            "sourcePaths": [
+              "sample data/Sample - Superstore for Tableau 9.x versions.xls"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "allowedParseExpectations": [
+              "preserve_text"
+            ]
+          },
+          {
+            "physicalColumn": "Postal Code",
+            "sourcePaths": [
+              "sample data/Sample - Superstore for Tableau 9.x versions.xls"
+            ],
+            "allowedTypes": [
+              "number"
+            ],
+            "allowedParseExpectations": [
+              "numeric"
+            ]
+          },
+          {
+            "physicalColumn": "Quantity",
+            "sourcePaths": [
+              "sample data/Sample - Superstore for Tableau 9.x versions.xls"
+            ],
+            "allowedTypes": [
+              "number"
+            ],
+            "allowedParseExpectations": [
+              "numeric"
+            ]
+          },
+          {
+            "physicalColumn": "Sales",
+            "sourcePaths": [
+              "sample data/Sample - Superstore for Tableau 9.x versions.xls"
+            ],
+            "allowedTypes": [
+              "number"
+            ],
+            "allowedParseExpectations": [
+              "numeric"
+            ]
+          }
+        ],
+        "issues": {
+          "expected": [],
+          "allowed": [
+            {
+              "code": "duplicate_parent_key",
+              "physicalColumn": "Order ID"
+            }
+          ],
+          "forbidden": [
+            {
+              "code": "silent_parse_drop",
+              "physicalColumn": null
+            }
+          ]
+        },
+        "representativeEvidence": {
+          "requiredSamplingRegions": [
+            "head",
+            "middle",
+            "tail",
+            "deterministic_random"
+          ],
+          "minimumDistinctRegions": 4,
+          "requiredColumns": [
+            "Order Date",
+            "Profit",
+            "Discount",
+            "Product Name",
+            "Postal Code",
+            "Quantity",
+            "Sales"
+          ],
+          "mustPreservePhysicalColumnNames": true,
+          "mustReportUnparsedValues": true
+        }
+      }
+    },
+    {
+      "id": "fin.sales_june_missing_cost",
+      "corpusVersion": "1.2.0",
+      "group": "holdout",
+      "category": "finance_accounting",
+      "provenance": {
+        "kind": "repository_sample",
+        "sourceSystem": "synthetic_erp_export",
+        "tuningUse": "forbidden",
+        "dataHandling": "existing_local_acceptance_data",
+        "notes": "Ground truth records expected semantics; it is not a current product-support claim."
+      },
+      "sources": [
+        {
+          "path": "sample data/Sales_ERP_June_2026.xlsx",
+          "sheet": "Sales",
+          "required": true,
+          "sha256": "a0a69a4d45531090ed5a829467d25ca89320d17792a72e4a91c55b95b9469e52"
+        }
+      ],
+      "dataset": {
+        "expectedArchetype": "sales_transaction_lines",
+        "expectedGrain": "transaction",
+        "grainTruth": {
+          "coarseGrain": "transaction",
+          "rowEntity": "order_line",
+          "parentEntity": "sales_order",
+          "candidateKeys": [
+            [
+              "OrderID"
+            ]
+          ],
+          "parentKeys": [
+            [
+              "OrderID"
+            ]
+          ],
+          "measureExpectations": [
+            {
+              "physicalColumn": "Qty",
+              "repeatedWithinParent": true,
+              "additiveAcrossRows": true,
+              "reasonCode": "row_additive_measure"
+            },
+            {
+              "physicalColumn": "Revenue",
+              "repeatedWithinParent": true,
+              "additiveAcrossRows": true,
+              "reasonCode": "row_additive_measure"
+            },
+            {
+              "physicalColumn": "Discount",
+              "repeatedWithinParent": true,
+              "additiveAcrossRows": true,
+              "reasonCode": "row_additive_measure"
+            }
+          ]
+        }
+      },
+      "recognition": {
+        "requiredMappings": [
+          {
+            "physicalColumn": "Revenue",
+            "canonicalSignal": "revenue",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          },
+          {
+            "physicalColumn": "Discount",
+            "canonicalSignal": "discount",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          },
+          {
+            "physicalColumn": "Payment",
+            "canonicalSignal": "payment_method",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ]
+          }
+        ],
+        "forbiddenMappings": [
+          {
+            "physicalColumn": "UnitPrice",
+            "canonicalSignal": "total_cost",
+            "reasonCode": "semantic_mismatch"
+          },
+          {
+            "physicalColumn": "Revenue",
+            "canonicalSignal": "profit",
+            "reasonCode": "semantic_mismatch"
+          }
+        ],
+        "expectedAmbiguousMappings": [
+          {
+            "physicalColumn": "Status",
+            "candidateSignals": [
+              "status",
+              "delivery_status"
+            ],
+            "reasonCode": "normalized_alias_collision",
+            "evidenceScope": "header_only",
+            "headerOnlyExpectedState": "ambiguous",
+            "contextualResolution": {
+              "policy": "may_resolve_with_context",
+              "resolvedCanonicalSignal": null,
+              "allowedFinalStates": [
+                "ambiguous",
+                "probable",
+                "confirmed"
+              ],
+              "requiredEvidence": [
+                "value_distribution",
+                "physical_type",
+                "dataset_grain",
+                "sibling_columns"
+              ],
+              "forbiddenEvidence": [
+                "header_only"
+              ]
+            }
+          }
+        ],
+        "expectedUnknownBusinessColumns": []
+      },
+      "support": {
+        "allowedDomainPacks": [
+          "revenue_sales"
+        ],
+        "blockedDomainPacks": [
+          "inventory_snapshot",
+          "inventory_movement",
+          "delivery_operations",
+          "finance_profitability",
+          "customer_contribution",
+          "performance_target_actual"
+        ],
+        "expectedExecutableActions": [
+          "revenue_trend",
+          "payment_mix"
+        ],
+        "expectedBlockedActions": [
+          {
+            "actionId": "profitability_analysis",
+            "reasonCode": "missing_cost_basis"
+          },
+          {
+            "actionId": "gross_margin",
+            "reasonCode": "missing_cost_basis"
+          }
+        ]
+      },
+      "verifiedMetricAnswers": {},
+      "profilingExpectations": {
+        "sourceProfiles": [
+          {
+            "sourcePath": "sample data/Sales_ERP_June_2026.xlsx",
+            "sheet": "Sales",
+            "headerPosition": {
+              "zeroBasedRowIndex": 0,
+              "basis": "verified_source_read"
+            },
+            "verifiedRowCount": 1500
+          }
+        ],
+        "verifiedRowCount": 1500,
+        "columnPhysicalTypes": [
+          {
+            "physicalColumn": "Revenue",
+            "sourcePaths": [
+              "sample data/Sales_ERP_June_2026.xlsx"
+            ],
+            "allowedTypes": [
+              "number"
+            ],
+            "allowedParseExpectations": [
+              "numeric"
+            ]
+          },
+          {
+            "physicalColumn": "Discount",
+            "sourcePaths": [
+              "sample data/Sales_ERP_June_2026.xlsx"
+            ],
+            "allowedTypes": [
+              "number"
+            ],
+            "allowedParseExpectations": [
+              "numeric"
+            ]
+          },
+          {
+            "physicalColumn": "Payment",
+            "sourcePaths": [
+              "sample data/Sales_ERP_June_2026.xlsx"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "allowedParseExpectations": [
+              "preserve_text"
+            ]
+          },
+          {
+            "physicalColumn": "UnitPrice",
+            "sourcePaths": [
+              "sample data/Sales_ERP_June_2026.xlsx"
+            ],
+            "allowedTypes": [
+              "number"
+            ],
+            "allowedParseExpectations": [
+              "numeric"
+            ]
+          },
+          {
+            "physicalColumn": "Status",
+            "sourcePaths": [
+              "sample data/Sales_ERP_June_2026.xlsx"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "allowedParseExpectations": [
+              "preserve_text"
+            ]
+          }
+        ],
+        "issues": {
+          "expected": [],
+          "allowed": [
+            {
+              "code": "duplicate_parent_key",
+              "physicalColumn": "OrderID"
+            }
+          ],
+          "forbidden": [
+            {
+              "code": "silent_parse_drop",
+              "physicalColumn": null
+            }
+          ]
+        },
+        "representativeEvidence": {
+          "requiredSamplingRegions": [
+            "head",
+            "middle",
+            "tail",
+            "deterministic_random"
+          ],
+          "minimumDistinctRegions": 4,
+          "requiredColumns": [
+            "Revenue",
+            "Discount",
+            "Payment",
+            "UnitPrice",
+            "Status"
+          ],
+          "mustPreservePhysicalColumnNames": true,
+          "mustReportUnparsedValues": true
+        }
+      }
+    }
+  ]
+}

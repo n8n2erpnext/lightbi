@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "lightbi.phase-5m3-corpus-execution-audit.v1",
+  "phase": "5M3",
+  "executionEngine": "duckdb-wasm",
+  "executionScope": "controlled_rows",
+  "controlledExecution": {
+    "fixtureKind": "synthetic_canonical_control",
+    "executableActions": 6,
+    "conditionallyExecutableActions": 1,
+    "blockedActionsCovered": 20,
+    "executionSuccesses": 6,
+    "executionFailuresCovered": 1,
+    "exactGroundTruthMatches": 6,
+    "unavailableGroundTruth": 0,
+    "falseExecutableCases": 0,
+    "results": [
+      { "metricId": "sales_revenue", "operator": "governed_sum", "expected": 175, "actual": 175, "comparison": "exact_match" },
+      { "metricId": "quantity_sold", "operator": "governed_sum", "expected": 5, "actual": 5, "comparison": "exact_match" },
+      { "metricId": "transaction_count", "operator": "governed_identity_count", "expected": 2, "actual": 2, "comparison": "exact_match" },
+      { "metricId": "inventory_on_hand", "operator": "governed_point_in_time_snapshot_sum", "expected": 30, "actual": 30, "comparison": "exact_match" },
+      { "metricId": "delivery_count", "operator": "governed_identity_count", "expected": 2, "actual": 2, "comparison": "exact_match" },
+      { "metricId": "gross_profit", "operator": "governed_revenue_minus_cost", "expected": 100, "actual": 100, "comparison": "exact_match" }
+    ]
+  },
+  "realCorpusExecution": {
+    "sampleId": "rev.sales_erp_may_2026",
+    "verifiedRevenue": 22973896244,
+    "metricPreflightState": "blocked",
+    "actionCandidateAvailable": false,
+    "runtimeState": "unavailable",
+    "executionPerformed": false,
+    "blockedExplanation": "Phase 5M1 did not retain a ready or conditionally-ready sales_revenue action for this canonical golden source; Phase 5M3 did not promote or bypass the upstream state."
+  },
+  "decisionUseAuthorized": false,
+  "productionWiring": { "executed": false }
+}

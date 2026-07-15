@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "lightbi.phase-5m3-import-isolation-audit.v1",
+  "phase": "5M3",
+  "canonicalModules": [
+    "governed-runtime-contracts.ts",
+    "governed-runtime-policy.ts",
+    "governed-runtime-preflight.ts",
+    "governed-metric-query-planner.ts",
+    "governed-metric-executor.ts",
+    "governed-local-duckdb-boundary.ts"
+  ],
+  "productionImporters": [],
+  "barrelExports": [],
+  "existingBoundaryConsumed": "apps/desktop/src/lib/local-duckdb-executor.ts",
+  "legacyNumericHealthAuthorizationConsumed": false,
+  "unchanged": ["Home", "Investigation", "UI", "AI briefing", "BA narrative", "playbooks", "semantic policy", "grain policy", "relationship policy", "readiness policy", "metric policy", "question policy", "DuckDB executor behavior"],
+  "productionRuntimeBehaviorChanged": false,
+  "productionWiring": { "executed": false }
+}

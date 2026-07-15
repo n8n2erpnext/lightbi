@@ -1,45 +1,41 @@
 # Domain Sample Matrix
 
-This document outlines the core domains covered by the LightBI understanding engine, their canonical signals, business views, intent families, and an assessment of their support status based on the current architecture.
+Status: descriptive index only. This file does not prove signal recognition, domain support, action executability, or metric correctness.
 
-## 1. Operations Domain
-- **Purpose**: Analyze operational performance, logistics, and supply chain execution.
-- **Canonical Signals**: `driver`, `route`, `shipment`, `delivery_status`, `sla`, `warehouse`, `delay`, `vehicle`
-- **Business Views**: `logistics_journey`, `driver_performance`, `delivery_sla`, `route_performance`, `warehouse_flow`
-- **Intent Families**: `intent_delay_analysis`, `intent_sla_analysis`, `intent_route_performance`, `intent_driver_performance`, `intent_warehouse_flow`, `intent_logistics_journey`
-- **Support Status**: **Strong**. The logistics entity relations (driver, route, shipment) are extremely well-defined and straightforward to infer from tabular tracking data. The business views naturally cover standard operational pipelines.
+The Phase 1B machine-readable source of truth is corpus version `1.1.0`:
 
-## 2. Revenue Domain
-- **Purpose**: Analyze sales, revenue generation, and product performance.
-- **Canonical Signals**: `revenue`, `sales`, `order`, `branch`, `salesperson`, `discount`, `product`, `customer`
-- **Business Views**: `revenue_performance`, `revenue_trend`, `branch_performance`, `salesperson_performance`, `discount_impact`, `order_performance`
-- **Intent Families**: `intent_revenue_trend`, `intent_revenue_ranking`, `intent_branch_performance`, `intent_salesperson_performance`, `intent_discount_impact`, `intent_order_performance`
-- **Support Status**: **Strong**. Revenue is the most classic BI domain. The signals (order, revenue, product) are universally present in sales data and map reliably to these exact performance views.
+- `sample-corpus/manifest.json` for corpus policy and required files;
+- `sample-corpus/ground-truth/*.json` for per-sample recognition, ambiguity, grain, support, action, and metric expectations;
+- `docs/architecture/phase-1-corpus-verification.md` for the verification result.
 
-## 3. Inventory Domain
-- **Purpose**: Analyze stock levels, movement, and warehouse health.
-- **Canonical Signals**: `sku`, `product`, `inventory`, `stock_qty`, `warehouse`, `stock_movement`, `inbound`, `outbound`, `supplier`, `replenishment`, `stock_age`
-- **Business Views**: `inventory_health`, `inventory_aging`, `stock_movement`, `replenishment_risk`, `supplier_inventory_analysis`, `product_performance`
-- **Intent Families**: `intent_inventory_health`, `intent_inventory_aging`, `intent_stock_movement`, `intent_replenishment_risk`, `intent_supplier_inventory`, `intent_product_performance`
-- **Support Status**: **Strong**. Inventory states are explicit. The engine can easily isolate snapshot data (stock_qty) from transactional data (inbound, outbound, movement) based on these signals.
+Do not infer `mvp_supported` from this document or from a signal's generic registry domain. `DOMAIN_SUPPORT_MANIFEST` remains empty in Phase 1B.
 
-## 4. Customer Domain
-- **Purpose**: Analyze customer behavior, segmentation, and retention.
-- **Canonical Signals**: `customer`, `segment`, `order_count`, `revenue`, `retention`, `last_purchase`, `contribution`, `purchase_behavior`
-- **Business Views**: `customer_segmentation`, `customer_contribution`, `customer_retention`, `purchase_behavior`
-- **Intent Families**: `intent_customer_segmentation`, `intent_customer_contribution`, `intent_customer_retention`, `intent_purchase_behavior`
-- **Support Status**: **Strong**. Covers structural RFM-style signals (customer, revenue, order_count). However, advanced cohort intelligence requires further audit proof as deep behavioral inference may be limited by structural matching.
+## Corpus coverage
 
-## 5. Performance Domain
-- **Purpose**: Analyze KPIs, target achievements, and operational efficiency.
-- **Canonical Signals**: `kpi`, `target`, `actual`, `achievement`, `productivity`, `utilization`, `department`, `efficiency`, `performance_gap`
-- **Business Views**: `target_achievement`, `kpi_monitoring`, `efficiency_analysis`, `operational_performance`, `department_performance`
-- **Intent Families**: `intent_target_achievement`, `intent_kpi_monitoring`, `intent_efficiency_analysis`, `intent_operational_performance`, `intent_department_performance`
-- **Support Status**: **Partial**. While "target vs actual" schemas are correctly identified, performance metrics are highly context-dependent. A raw "efficiency" or "kpi" column often lacks the underlying formula context needed to truly automate advanced decision support, so the engine relies heavily on surface structure.
+| Ground-truth category | Cases | Purpose |
+|---|---:|---|
+| Revenue and sales | 5 | Transaction identity, revenue/payment/product mappings, profitability refusal when cost is absent. |
+| Inventory | 5 | Product master, snapshot aging/backlog, and event-grain movement distinctions. |
+| Operations and delivery | 5 | Shipment, route, trip, vehicle, driver/carrier, on-time, status, and fee evidence. |
+| Finance and accounting | 5 | Explicit invoice/revenue/cost/profit mappings plus refusal for unsupported accounting conclusions. |
+| Adversarial and dirty | 5 | Generic/misleading headers, merged headers, dirty exports, and out-of-wedge datasets. |
+| Multi-file | 5 | Monthly bundles, period pairs, relationship expectations, and join refusal. |
 
-## 6. Finance Domain
-- **Purpose**: Analyze profitability, margins, and expenses.
-- **Canonical Signals**: `revenue`, `cost`, `profit`, `margin`, `expense`, `discount`, `purchase_cost`, `operational_cost`, `supplier_cost`
-- **Business Views**: `profitability_analysis`, `margin_analysis`, `cost_impact`, `expense_review`, `supplier_cost_analysis`
-- **Intent Families**: `intent_profitability_analysis`, `intent_margin_analysis`, `intent_cost_impact`, `intent_expense_review`, `intent_supplier_cost_analysis`
-- **Support Status**: **Strong (Pending Audit)**. While explicit metrics like "profit" and "cost" map easily to profitability views, there is a known overlap risk where generic measures easily bleed into the Revenue domain. This separation requires strict audit proof.
+Total: 30 sample cases. Domain validation contains 12 held-out cases out of 20 domain cases (60%). Holdout cases are forbidden for alias or threshold tuning.
+
+## Collision coverage
+
+The adversarial ground truth contains 84 normalized collision cases representing the union of all current `aliases` and effective `headerAliases` collisions in the Phase 0 registry inventory. Each case requires ambiguity from the header alone and defines a separate contextual-resolution contract; contextual evidence may retain ambiguity or resolve it.
+
+## Interpretation boundary
+
+The corpus deliberately separates:
+
+```text
+recognition truth
+  != domain-pack eligibility
+  != executable action truth
+  != verified metric truth
+```
+
+The corpus defines future acceptance targets. It does not state that the current detector passes those targets, and it does not promote any signal or domain to `mvp_proven`.

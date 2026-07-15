@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "lightbi.phase-6a-consumer-path-audit.v1",
+  "selectedPath": [
+    "Home dataset state",
+    "getOrBuildCanonicalConsumerArtifact",
+    "canonical Home projection",
+    "prepareCanonicalInvestigationHandoff",
+    "Investigation governed execution"
+  ],
+  "canonicalBuildBoundary": "apps/desktop/src/lib/understanding-core/canonical-consumer-boundary.ts",
+  "independentLegacyDetectionOnSelectedPath": false,
+  "independentUnderstandingNextDetectionOnSelectedPath": false,
+  "silentAggregationFallbackOnSelectedPath": false,
+  "decisionUseAuthorized": false
+}

@@ -1,0 +1,62 @@
+{
+  "schemaVersion": "lightbi.phase-5b6-actual-contract-binding-audit.v1",
+  "policyHash": "e1a3955a9d0554a655e7734ce36c36e0b28ee043cc362897eaf5ddd494fffe2f",
+  "projectionPolicyHash": "35521a2f66fd24f6a305e89b5bc20098d33242cec9b87ac8dece60ecdd08a8ad",
+  "actualFunctionsInvokedInSyntheticIsolation": [
+    "enhancePlanWithGuardedSum",
+    "createSafeSqlPreview"
+  ],
+  "unsafeFunctionsNotInvoked": [
+    "executeBackendPreview",
+    "executeLocalDuckDB",
+    "executeDuckDBPreviewSandbox",
+    "createChartPreviewModel",
+    "createBADecisionBrief"
+  ],
+  "capturedBoundaries": {
+    "incomingPlan": true,
+    "enhancedPlan": true,
+    "operatorInsertion": true,
+    "SQLPreviewExactInHarness": true,
+    "executionRequestShape": true,
+    "resultContractShape": true,
+    "chartInputShape": true,
+    "BAInputShape": true
+  },
+  "actualReplay": {
+    "available": 0,
+    "unavailable": 145,
+    "reason": "AUTHENTIC_RUNTIME_PLAN_NOT_RETAINED_IN_PHASE5B4_OR_PHASE5B5_REPLAY"
+  },
+  "upstreamProjectionCompleteness": {
+    "canonicalEnvelopeReference": "full versioned record",
+    "readinessReference": "full versioned record",
+    "capabilityStatesPreserved": [
+      "numeric_aggregation_ready",
+      "measure_role_assessment_ready",
+      "grain_interpretation_ready"
+    ],
+    "blockersSeverityPreserved": true,
+    "remediationPreserved": true,
+    "debtPreserved": true,
+    "trustPresentationAuthoritative": false,
+    "summaryPercentage": null
+  },
+  "mutations": {
+    "productionObjects": false,
+    "runtimePlans": false,
+    "SQL": false
+  },
+  "execution": {
+    "query": false,
+    "network": false,
+    "DuckDB": false,
+    "UI": false,
+    "AI": false,
+    "persistence": false,
+    "telemetry": false
+  },
+  "productionWiring": {
+    "executed": false
+  }
+}

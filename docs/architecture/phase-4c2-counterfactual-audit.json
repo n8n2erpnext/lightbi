@@ -1,0 +1,652 @@
+{
+  "schemaVersion": "lightbi.phase-4c2-counterfactual-audit.v1",
+  "date": "2026-07-13",
+  "policy": {
+    "version": "lightbi.readiness-policy.v2",
+    "sha256": "50c546791c8a8df182f1e8b1a7c74dfd0fa420c71cd2bb8b4aea31ba107a0c7f"
+  },
+  "coverage": {
+    "sourceOccurrences": 37,
+    "bundles": 5,
+    "pairs": 9,
+    "capabilities": 34
+  },
+  "freezeClassification": "freeze_ready_with_documented_debt",
+  "productionIsolation": {
+    "operationApproval": false,
+    "productionWiring": false,
+    "domainManifestEmpty": true
+  },
+  "mutations": [
+    {
+      "mutation": "remove_full_file",
+      "originalCapabilityStates": "synthetic_baseline",
+      "mutatedStates": "targeted_assertion",
+      "expectedNonEscalation": "must_not_improve_without_support_or_scope_change",
+      "actualResult": "not_escalated",
+      "affectedPrerequisites": [],
+      "affectedBlockers": [],
+      "affectedTrustDimensions": [],
+      "policyRuleIds": [
+        "RD-SCOPE-NO-MEASURE",
+        "RD-RATIO-ZERO-DENOMINATOR"
+      ],
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "artifact_mismatch",
+      "originalCapabilityStates": "synthetic_baseline",
+      "mutatedStates": "targeted_assertion",
+      "expectedNonEscalation": "must_not_improve_without_support_or_scope_change",
+      "actualResult": "not_escalated",
+      "affectedPrerequisites": [],
+      "affectedBlockers": [],
+      "affectedTrustDimensions": [],
+      "policyRuleIds": [
+        "RD-SCOPE-NO-MEASURE",
+        "RD-RATIO-ZERO-DENOMINATOR"
+      ],
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "mixed_type",
+      "originalCapabilityStates": "synthetic_baseline",
+      "mutatedStates": "targeted_assertion",
+      "expectedNonEscalation": "must_not_improve_without_support_or_scope_change",
+      "actualResult": "not_escalated",
+      "affectedPrerequisites": [],
+      "affectedBlockers": [],
+      "affectedTrustDimensions": [],
+      "policyRuleIds": [
+        "RD-SCOPE-NO-MEASURE",
+        "RD-RATIO-ZERO-DENOMINATOR"
+      ],
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "remove_semantics",
+      "originalCapabilityStates": "synthetic_baseline",
+      "mutatedStates": "targeted_assertion",
+      "expectedNonEscalation": "must_not_improve_without_support_or_scope_change",
+      "actualResult": "not_escalated",
+      "affectedPrerequisites": [],
+      "affectedBlockers": [],
+      "affectedTrustDimensions": [],
+      "policyRuleIds": [
+        "RD-SCOPE-NO-MEASURE",
+        "RD-RATIO-ZERO-DENOMINATOR"
+      ],
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "confirmed_to_probable",
+      "originalCapabilityStates": "synthetic_baseline",
+      "mutatedStates": "targeted_assertion",
+      "expectedNonEscalation": "must_not_improve_without_support_or_scope_change",
+      "actualResult": "not_escalated",
+      "affectedPrerequisites": [],
+      "affectedBlockers": [],
+      "affectedTrustDimensions": [],
+      "policyRuleIds": [
+        "RD-SCOPE-NO-MEASURE",
+        "RD-RATIO-ZERO-DENOMINATOR"
+      ],
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "probable_to_ambiguous",
+      "originalCapabilityStates": "synthetic_baseline",
+      "mutatedStates": "targeted_assertion",
+      "expectedNonEscalation": "must_not_improve_without_support_or_scope_change",
+      "actualResult": "not_escalated",
+      "affectedPrerequisites": [],
+      "affectedBlockers": [],
+      "affectedTrustDimensions": [],
+      "policyRuleIds": [
+        "RD-SCOPE-NO-MEASURE",
+        "RD-RATIO-ZERO-DENOMINATOR"
+      ],
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "remove_identity",
+      "originalCapabilityStates": "synthetic_baseline",
+      "mutatedStates": "targeted_assertion",
+      "expectedNonEscalation": "must_not_improve_without_support_or_scope_change",
+      "actualResult": "not_escalated",
+      "affectedPrerequisites": [],
+      "affectedBlockers": [],
+      "affectedTrustDimensions": [],
+      "policyRuleIds": [
+        "RD-SCOPE-NO-MEASURE",
+        "RD-RATIO-ZERO-DENOMINATOR"
+      ],
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "grain_to_unknown",
+      "originalCapabilityStates": "synthetic_baseline",
+      "mutatedStates": "targeted_assertion",
+      "expectedNonEscalation": "must_not_improve_without_support_or_scope_change",
+      "actualResult": "not_escalated",
+      "affectedPrerequisites": [],
+      "affectedBlockers": [],
+      "affectedTrustDimensions": [],
+      "policyRuleIds": [
+        "RD-SCOPE-NO-MEASURE",
+        "RD-RATIO-ZERO-DENOMINATOR"
+      ],
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "repeated_total",
+      "originalCapabilityStates": "synthetic_baseline",
+      "mutatedStates": "targeted_assertion",
+      "expectedNonEscalation": "must_not_improve_without_support_or_scope_change",
+      "actualResult": "not_escalated",
+      "affectedPrerequisites": [],
+      "affectedBlockers": [],
+      "affectedTrustDimensions": [],
+      "policyRuleIds": [
+        "RD-SCOPE-NO-MEASURE",
+        "RD-RATIO-ZERO-DENOMINATOR"
+      ],
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "snapshot_risk",
+      "originalCapabilityStates": "synthetic_baseline",
+      "mutatedStates": "targeted_assertion",
+      "expectedNonEscalation": "must_not_improve_without_support_or_scope_change",
+      "actualResult": "not_escalated",
+      "affectedPrerequisites": [],
+      "affectedBlockers": [],
+      "affectedTrustDimensions": [],
+      "policyRuleIds": [
+        "RD-SCOPE-NO-MEASURE",
+        "RD-RATIO-ZERO-DENOMINATOR"
+      ],
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "remove_measures",
+      "originalCapabilityStates": "synthetic_baseline",
+      "mutatedStates": "targeted_assertion",
+      "expectedNonEscalation": "must_not_improve_without_support_or_scope_change",
+      "actualResult": "not_escalated",
+      "affectedPrerequisites": [],
+      "affectedBlockers": [],
+      "affectedTrustDimensions": [],
+      "policyRuleIds": [
+        "RD-SCOPE-NO-MEASURE",
+        "RD-RATIO-ZERO-DENOMINATOR"
+      ],
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "non_additive_percentage",
+      "originalCapabilityStates": "synthetic_baseline",
+      "mutatedStates": "targeted_assertion",
+      "expectedNonEscalation": "must_not_improve_without_support_or_scope_change",
+      "actualResult": "not_escalated",
+      "affectedPrerequisites": [],
+      "affectedBlockers": [],
+      "affectedTrustDimensions": [],
+      "policyRuleIds": [
+        "RD-SCOPE-NO-MEASURE",
+        "RD-RATIO-ZERO-DENOMINATOR"
+      ],
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "unresolved_numeric",
+      "originalCapabilityStates": "synthetic_baseline",
+      "mutatedStates": "targeted_assertion",
+      "expectedNonEscalation": "must_not_improve_without_support_or_scope_change",
+      "actualResult": "not_escalated",
+      "affectedPrerequisites": [],
+      "affectedBlockers": [],
+      "affectedTrustDimensions": [],
+      "policyRuleIds": [
+        "RD-SCOPE-NO-MEASURE",
+        "RD-RATIO-ZERO-DENOMINATOR"
+      ],
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "remove_relationships",
+      "originalCapabilityStates": "synthetic_baseline",
+      "mutatedStates": "targeted_assertion",
+      "expectedNonEscalation": "must_not_improve_without_support_or_scope_change",
+      "actualResult": "not_escalated",
+      "affectedPrerequisites": [],
+      "affectedBlockers": [],
+      "affectedTrustDimensions": [],
+      "policyRuleIds": [
+        "RD-SCOPE-NO-MEASURE",
+        "RD-RATIO-ZERO-DENOMINATOR"
+      ],
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "relation_without_key",
+      "originalCapabilityStates": "synthetic_baseline",
+      "mutatedStates": "targeted_assertion",
+      "expectedNonEscalation": "must_not_improve_without_support_or_scope_change",
+      "actualResult": "not_escalated",
+      "affectedPrerequisites": [],
+      "affectedBlockers": [],
+      "affectedTrustDimensions": [],
+      "policyRuleIds": [
+        "RD-SCOPE-NO-MEASURE",
+        "RD-RATIO-ZERO-DENOMINATOR"
+      ],
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "candidate_cardinality_only",
+      "originalCapabilityStates": "synthetic_baseline",
+      "mutatedStates": "targeted_assertion",
+      "expectedNonEscalation": "must_not_improve_without_support_or_scope_change",
+      "actualResult": "not_escalated",
+      "affectedPrerequisites": [],
+      "affectedBlockers": [],
+      "affectedTrustDimensions": [],
+      "policyRuleIds": [
+        "RD-SCOPE-NO-MEASURE",
+        "RD-RATIO-ZERO-DENOMINATOR"
+      ],
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "competing_key",
+      "originalCapabilityStates": "synthetic_baseline",
+      "mutatedStates": "targeted_assertion",
+      "expectedNonEscalation": "must_not_improve_without_support_or_scope_change",
+      "actualResult": "not_escalated",
+      "affectedPrerequisites": [],
+      "affectedBlockers": [],
+      "affectedTrustDimensions": [],
+      "policyRuleIds": [
+        "RD-SCOPE-NO-MEASURE",
+        "RD-RATIO-ZERO-DENOMINATOR"
+      ],
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "many_to_many",
+      "originalCapabilityStates": "synthetic_baseline",
+      "mutatedStates": "targeted_assertion",
+      "expectedNonEscalation": "must_not_improve_without_support_or_scope_change",
+      "actualResult": "not_escalated",
+      "affectedPrerequisites": [],
+      "affectedBlockers": [],
+      "affectedTrustDimensions": [],
+      "policyRuleIds": [
+        "RD-SCOPE-NO-MEASURE",
+        "RD-RATIO-ZERO-DENOMINATOR"
+      ],
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "null_key",
+      "originalCapabilityStates": "synthetic_baseline",
+      "mutatedStates": "targeted_assertion",
+      "expectedNonEscalation": "must_not_improve_without_support_or_scope_change",
+      "actualResult": "not_escalated",
+      "affectedPrerequisites": [],
+      "affectedBlockers": [],
+      "affectedTrustDimensions": [],
+      "policyRuleIds": [
+        "RD-SCOPE-NO-MEASURE",
+        "RD-RATIO-ZERO-DENOMINATOR"
+      ],
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "remove_temporal",
+      "originalCapabilityStates": "synthetic_baseline",
+      "mutatedStates": "targeted_assertion",
+      "expectedNonEscalation": "must_not_improve_without_support_or_scope_change",
+      "actualResult": "not_escalated",
+      "affectedPrerequisites": [],
+      "affectedBlockers": [],
+      "affectedTrustDimensions": [],
+      "policyRuleIds": [
+        "RD-SCOPE-NO-MEASURE",
+        "RD-RATIO-ZERO-DENOMINATOR"
+      ],
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "overlap_risk",
+      "originalCapabilityStates": "synthetic_baseline",
+      "mutatedStates": "targeted_assertion",
+      "expectedNonEscalation": "must_not_improve_without_support_or_scope_change",
+      "actualResult": "not_escalated",
+      "affectedPrerequisites": [],
+      "affectedBlockers": [],
+      "affectedTrustDimensions": [],
+      "policyRuleIds": [
+        "RD-SCOPE-NO-MEASURE",
+        "RD-RATIO-ZERO-DENOMINATOR"
+      ],
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "schema_drift",
+      "originalCapabilityStates": "synthetic_baseline",
+      "mutatedStates": "targeted_assertion",
+      "expectedNonEscalation": "must_not_improve_without_support_or_scope_change",
+      "actualResult": "not_escalated",
+      "affectedPrerequisites": [],
+      "affectedBlockers": [],
+      "affectedTrustDimensions": [],
+      "policyRuleIds": [
+        "RD-SCOPE-NO-MEASURE",
+        "RD-RATIO-ZERO-DENOMINATOR"
+      ],
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "remove_schema",
+      "originalCapabilityStates": "synthetic_baseline",
+      "mutatedStates": "targeted_assertion",
+      "expectedNonEscalation": "must_not_improve_without_support_or_scope_change",
+      "actualResult": "not_escalated",
+      "affectedPrerequisites": [],
+      "affectedBlockers": [],
+      "affectedTrustDimensions": [],
+      "policyRuleIds": [
+        "RD-SCOPE-NO-MEASURE",
+        "RD-RATIO-ZERO-DENOMINATOR"
+      ],
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "remove_selected_key",
+      "originalCapabilityStates": "synthetic_baseline",
+      "mutatedStates": "targeted_assertion",
+      "expectedNonEscalation": "must_not_improve_without_support_or_scope_change",
+      "actualResult": "not_escalated",
+      "affectedPrerequisites": [],
+      "affectedBlockers": [],
+      "affectedTrustDimensions": [],
+      "policyRuleIds": [
+        "RD-SCOPE-NO-MEASURE",
+        "RD-RATIO-ZERO-DENOMINATOR"
+      ],
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "remove_safety",
+      "originalCapabilityStates": "synthetic_baseline",
+      "mutatedStates": "targeted_assertion",
+      "expectedNonEscalation": "must_not_improve_without_support_or_scope_change",
+      "actualResult": "not_escalated",
+      "affectedPrerequisites": [],
+      "affectedBlockers": [],
+      "affectedTrustDimensions": [],
+      "policyRuleIds": [
+        "RD-SCOPE-NO-MEASURE",
+        "RD-RATIO-ZERO-DENOMINATOR"
+      ],
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "empty_domain",
+      "originalCapabilityStates": "synthetic_baseline",
+      "mutatedStates": "targeted_assertion",
+      "expectedNonEscalation": "must_not_improve_without_support_or_scope_change",
+      "actualResult": "not_escalated",
+      "affectedPrerequisites": [],
+      "affectedBlockers": [],
+      "affectedTrustDimensions": [],
+      "policyRuleIds": [
+        "RD-SCOPE-NO-MEASURE",
+        "RD-RATIO-ZERO-DENOMINATOR"
+      ],
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "synthetic_domain",
+      "originalCapabilityStates": "synthetic_baseline",
+      "mutatedStates": "targeted_assertion",
+      "expectedNonEscalation": "must_not_improve_without_support_or_scope_change",
+      "actualResult": "not_escalated",
+      "affectedPrerequisites": [],
+      "affectedBlockers": [],
+      "affectedTrustDimensions": [],
+      "policyRuleIds": [
+        "RD-SCOPE-NO-MEASURE",
+        "RD-RATIO-ZERO-DENOMINATOR"
+      ],
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "relevant_debt",
+      "originalCapabilityStates": "synthetic_baseline",
+      "mutatedStates": "targeted_assertion",
+      "expectedNonEscalation": "must_not_improve_without_support_or_scope_change",
+      "actualResult": "not_escalated",
+      "affectedPrerequisites": [],
+      "affectedBlockers": [],
+      "affectedTrustDimensions": [],
+      "policyRuleIds": [
+        "RD-SCOPE-NO-MEASURE",
+        "RD-RATIO-ZERO-DENOMINATOR"
+      ],
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "unrelated_debt",
+      "originalCapabilityStates": "synthetic_baseline",
+      "mutatedStates": "targeted_assertion",
+      "expectedNonEscalation": "must_not_improve_without_support_or_scope_change",
+      "actualResult": "not_escalated",
+      "affectedPrerequisites": [],
+      "affectedBlockers": [],
+      "affectedTrustDimensions": [],
+      "policyRuleIds": [
+        "RD-SCOPE-NO-MEASURE",
+        "RD-RATIO-ZERO-DENOMINATOR"
+      ],
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "duplicate_evidence",
+      "originalCapabilityStates": "synthetic_baseline",
+      "mutatedStates": "targeted_assertion",
+      "expectedNonEscalation": "must_not_improve_without_support_or_scope_change",
+      "actualResult": "not_escalated",
+      "affectedPrerequisites": [],
+      "affectedBlockers": [],
+      "affectedTrustDimensions": [],
+      "policyRuleIds": [
+        "RD-SCOPE-NO-MEASURE",
+        "RD-RATIO-ZERO-DENOMINATOR"
+      ],
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "duplicate_blockers",
+      "originalCapabilityStates": "synthetic_baseline",
+      "mutatedStates": "targeted_assertion",
+      "expectedNonEscalation": "must_not_improve_without_support_or_scope_change",
+      "actualResult": "not_escalated",
+      "affectedPrerequisites": [],
+      "affectedBlockers": [],
+      "affectedTrustDimensions": [],
+      "policyRuleIds": [
+        "RD-SCOPE-NO-MEASURE",
+        "RD-RATIO-ZERO-DENOMINATOR"
+      ],
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "duplicate_remediation",
+      "originalCapabilityStates": "synthetic_baseline",
+      "mutatedStates": "targeted_assertion",
+      "expectedNonEscalation": "must_not_improve_without_support_or_scope_change",
+      "actualResult": "not_escalated",
+      "affectedPrerequisites": [],
+      "affectedBlockers": [],
+      "affectedTrustDimensions": [],
+      "policyRuleIds": [
+        "RD-SCOPE-NO-MEASURE",
+        "RD-RATIO-ZERO-DENOMINATOR"
+      ],
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "shuffle_capabilities",
+      "originalCapabilityStates": "synthetic_baseline",
+      "mutatedStates": "targeted_assertion",
+      "expectedNonEscalation": "must_not_improve_without_support_or_scope_change",
+      "actualResult": "not_escalated",
+      "affectedPrerequisites": [],
+      "affectedBlockers": [],
+      "affectedTrustDimensions": [],
+      "policyRuleIds": [
+        "RD-SCOPE-NO-MEASURE",
+        "RD-RATIO-ZERO-DENOMINATOR"
+      ],
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "shuffle_sources",
+      "originalCapabilityStates": "synthetic_baseline",
+      "mutatedStates": "targeted_assertion",
+      "expectedNonEscalation": "must_not_improve_without_support_or_scope_change",
+      "actualResult": "not_escalated",
+      "affectedPrerequisites": [],
+      "affectedBlockers": [],
+      "affectedTrustDimensions": [],
+      "policyRuleIds": [
+        "RD-SCOPE-NO-MEASURE",
+        "RD-RATIO-ZERO-DENOMINATOR"
+      ],
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "shuffle_pairs",
+      "originalCapabilityStates": "synthetic_baseline",
+      "mutatedStates": "targeted_assertion",
+      "expectedNonEscalation": "must_not_improve_without_support_or_scope_change",
+      "actualResult": "not_escalated",
+      "affectedPrerequisites": [],
+      "affectedBlockers": [],
+      "affectedTrustDimensions": [],
+      "policyRuleIds": [
+        "RD-SCOPE-NO-MEASURE",
+        "RD-RATIO-ZERO-DENOMINATOR"
+      ],
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "change_projection",
+      "originalCapabilityStates": "synthetic_baseline",
+      "mutatedStates": "targeted_assertion",
+      "expectedNonEscalation": "must_not_improve_without_support_or_scope_change",
+      "actualResult": "not_escalated",
+      "affectedPrerequisites": [],
+      "affectedBlockers": [],
+      "affectedTrustDimensions": [],
+      "policyRuleIds": [
+        "RD-SCOPE-NO-MEASURE",
+        "RD-RATIO-ZERO-DENOMINATOR"
+      ],
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "high_ratio_critical",
+      "originalCapabilityStates": "synthetic_baseline",
+      "mutatedStates": "targeted_assertion",
+      "expectedNonEscalation": "must_not_improve_without_support_or_scope_change",
+      "actualResult": "not_escalated",
+      "affectedPrerequisites": [],
+      "affectedBlockers": [],
+      "affectedTrustDimensions": [],
+      "policyRuleIds": [
+        "RD-SCOPE-NO-MEASURE",
+        "RD-RATIO-ZERO-DENOMINATOR"
+      ],
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "invalid_scope",
+      "originalCapabilityStates": "synthetic_baseline",
+      "mutatedStates": "targeted_assertion",
+      "expectedNonEscalation": "must_not_improve_without_support_or_scope_change",
+      "actualResult": "fail_closed",
+      "affectedPrerequisites": [],
+      "affectedBlockers": [],
+      "affectedTrustDimensions": [],
+      "policyRuleIds": [
+        "RD-SCOPE-NO-MEASURE",
+        "RD-RATIO-ZERO-DENOMINATOR"
+      ],
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "blocked_to_unsupported",
+      "originalCapabilityStates": "synthetic_baseline",
+      "mutatedStates": "targeted_assertion",
+      "expectedNonEscalation": "must_not_improve_without_support_or_scope_change",
+      "actualResult": "not_escalated",
+      "affectedPrerequisites": [],
+      "affectedBlockers": [],
+      "affectedTrustDimensions": [],
+      "policyRuleIds": [
+        "RD-SCOPE-NO-MEASURE",
+        "RD-RATIO-ZERO-DENOMINATOR"
+      ],
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "unsupported_to_blocked",
+      "originalCapabilityStates": "synthetic_baseline",
+      "mutatedStates": "targeted_assertion",
+      "expectedNonEscalation": "must_not_improve_without_support_or_scope_change",
+      "actualResult": "not_escalated",
+      "affectedPrerequisites": [],
+      "affectedBlockers": [],
+      "affectedTrustDimensions": [],
+      "policyRuleIds": [
+        "RD-SCOPE-NO-MEASURE",
+        "RD-RATIO-ZERO-DENOMINATOR"
+      ],
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "not_applicable_to_blocked",
+      "originalCapabilityStates": "synthetic_baseline",
+      "mutatedStates": "targeted_assertion",
+      "expectedNonEscalation": "must_not_improve_without_support_or_scope_change",
+      "actualResult": "not_escalated",
+      "affectedPrerequisites": [],
+      "affectedBlockers": [],
+      "affectedTrustDimensions": [],
+      "policyRuleIds": [
+        "RD-SCOPE-NO-MEASURE",
+        "RD-RATIO-ZERO-DENOMINATOR"
+      ],
+      "deterministicReplayResult": "pass"
+    },
+    {
+      "mutation": "stale_downstream_ready",
+      "originalCapabilityStates": "synthetic_baseline",
+      "mutatedStates": "targeted_assertion",
+      "expectedNonEscalation": "must_not_improve_without_support_or_scope_change",
+      "actualResult": "fail_closed",
+      "affectedPrerequisites": [],
+      "affectedBlockers": [],
+      "affectedTrustDimensions": [],
+      "policyRuleIds": [
+        "RD-SCOPE-NO-MEASURE",
+        "RD-RATIO-ZERO-DENOMINATOR"
+      ],
+      "deterministicReplayResult": "pass"
+    }
+  ]
+}

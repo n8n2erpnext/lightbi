@@ -1,0 +1,359 @@
+{
+  "schemaVersion": "lightbi.phase-4c2-scope-audit.v1",
+  "date": "2026-07-13",
+  "policy": {
+    "version": "lightbi.readiness-policy.v2",
+    "sha256": "50c546791c8a8df182f1e8b1a7c74dfd0fa420c71cd2bb8b4aea31ba107a0c7f"
+  },
+  "coverage": {
+    "sourceOccurrences": 37,
+    "bundles": 5,
+    "pairs": 9,
+    "capabilities": 34
+  },
+  "freezeClassification": "freeze_ready_with_documented_debt",
+  "productionIsolation": {
+    "operationApproval": false,
+    "productionWiring": false,
+    "domainManifestEmpty": true
+  },
+  "scopeMatrix": [
+    {
+      "capabilityId": "physical_profile_ready",
+      "sourceLocal": true,
+      "sourcePair": false,
+      "bundle": true,
+      "domainActivated": false,
+      "executionRequest": false,
+      "invalidScopeFallback": "unknown"
+    },
+    {
+      "capabilityId": "structural_quality_assessment_ready",
+      "sourceLocal": true,
+      "sourcePair": false,
+      "bundle": true,
+      "domainActivated": false,
+      "executionRequest": false,
+      "invalidScopeFallback": "unknown"
+    },
+    {
+      "capabilityId": "representative_preview_ready",
+      "sourceLocal": true,
+      "sourcePair": false,
+      "bundle": true,
+      "domainActivated": false,
+      "executionRequest": false,
+      "invalidScopeFallback": "unknown"
+    },
+    {
+      "capabilityId": "full_file_evidence_ready",
+      "sourceLocal": true,
+      "sourcePair": false,
+      "bundle": true,
+      "domainActivated": false,
+      "executionRequest": false,
+      "invalidScopeFallback": "unknown"
+    },
+    {
+      "capabilityId": "semantic_labeling_ready",
+      "sourceLocal": true,
+      "sourcePair": false,
+      "bundle": true,
+      "domainActivated": false,
+      "executionRequest": false,
+      "invalidScopeFallback": "unknown"
+    },
+    {
+      "capabilityId": "semantic_grouping_filtering_ready",
+      "sourceLocal": true,
+      "sourcePair": false,
+      "bundle": true,
+      "domainActivated": false,
+      "executionRequest": false,
+      "invalidScopeFallback": "unknown"
+    },
+    {
+      "capabilityId": "ambiguous_column_review_required",
+      "sourceLocal": true,
+      "sourcePair": false,
+      "bundle": true,
+      "domainActivated": false,
+      "executionRequest": false,
+      "invalidScopeFallback": "unknown"
+    },
+    {
+      "capabilityId": "technical_column_separation_ready",
+      "sourceLocal": true,
+      "sourcePair": false,
+      "bundle": true,
+      "domainActivated": false,
+      "executionRequest": false,
+      "invalidScopeFallback": "unknown"
+    },
+    {
+      "capabilityId": "row_identity_ready",
+      "sourceLocal": true,
+      "sourcePair": false,
+      "bundle": true,
+      "domainActivated": false,
+      "executionRequest": false,
+      "invalidScopeFallback": "unknown"
+    },
+    {
+      "capabilityId": "grain_interpretation_ready",
+      "sourceLocal": true,
+      "sourcePair": false,
+      "bundle": true,
+      "domainActivated": false,
+      "executionRequest": false,
+      "invalidScopeFallback": "unknown"
+    },
+    {
+      "capabilityId": "parent_child_structure_ready",
+      "sourceLocal": true,
+      "sourcePair": false,
+      "bundle": true,
+      "domainActivated": false,
+      "executionRequest": false,
+      "invalidScopeFallback": "unknown"
+    },
+    {
+      "capabilityId": "temporal_analysis_ready",
+      "sourceLocal": true,
+      "sourcePair": false,
+      "bundle": true,
+      "domainActivated": false,
+      "executionRequest": false,
+      "invalidScopeFallback": "unknown"
+    },
+    {
+      "capabilityId": "measure_role_assessment_ready",
+      "sourceLocal": true,
+      "sourcePair": false,
+      "bundle": true,
+      "domainActivated": false,
+      "executionRequest": false,
+      "invalidScopeFallback": "unknown"
+    },
+    {
+      "capabilityId": "descriptive_counting_ready",
+      "sourceLocal": true,
+      "sourcePair": false,
+      "bundle": true,
+      "domainActivated": false,
+      "executionRequest": false,
+      "invalidScopeFallback": "unknown"
+    },
+    {
+      "capabilityId": "dimensional_grouping_ready",
+      "sourceLocal": true,
+      "sourcePair": false,
+      "bundle": true,
+      "domainActivated": false,
+      "executionRequest": false,
+      "invalidScopeFallback": "unknown"
+    },
+    {
+      "capabilityId": "numeric_aggregation_ready",
+      "sourceLocal": true,
+      "sourcePair": false,
+      "bundle": true,
+      "domainActivated": false,
+      "executionRequest": false,
+      "invalidScopeFallback": "unknown"
+    },
+    {
+      "capabilityId": "repeated_measure_protection_ready",
+      "sourceLocal": true,
+      "sourcePair": false,
+      "bundle": true,
+      "domainActivated": false,
+      "executionRequest": false,
+      "invalidScopeFallback": "unknown"
+    },
+    {
+      "capabilityId": "snapshot_time_aggregation_ready",
+      "sourceLocal": true,
+      "sourcePair": false,
+      "bundle": true,
+      "domainActivated": false,
+      "executionRequest": false,
+      "invalidScopeFallback": "unknown"
+    },
+    {
+      "capabilityId": "relationship_discovery_ready",
+      "sourceLocal": false,
+      "sourcePair": true,
+      "bundle": true,
+      "domainActivated": false,
+      "executionRequest": false,
+      "invalidScopeFallback": "not_applicable"
+    },
+    {
+      "capabilityId": "key_pair_assessment_ready",
+      "sourceLocal": false,
+      "sourcePair": true,
+      "bundle": true,
+      "domainActivated": false,
+      "executionRequest": false,
+      "invalidScopeFallback": "not_applicable"
+    },
+    {
+      "capabilityId": "extract_cardinality_observation_ready",
+      "sourceLocal": false,
+      "sourcePair": true,
+      "bundle": true,
+      "domainActivated": false,
+      "executionRequest": false,
+      "invalidScopeFallback": "not_applicable"
+    },
+    {
+      "capabilityId": "schema_comparison_ready",
+      "sourceLocal": false,
+      "sourcePair": true,
+      "bundle": true,
+      "domainActivated": false,
+      "executionRequest": false,
+      "invalidScopeFallback": "not_applicable"
+    },
+    {
+      "capabilityId": "temporal_alignment_ready",
+      "sourceLocal": false,
+      "sourcePair": true,
+      "bundle": true,
+      "domainActivated": false,
+      "executionRequest": false,
+      "invalidScopeFallback": "not_applicable"
+    },
+    {
+      "capabilityId": "join_planning_ready",
+      "sourceLocal": false,
+      "sourcePair": true,
+      "bundle": true,
+      "domainActivated": false,
+      "executionRequest": false,
+      "invalidScopeFallback": "not_applicable"
+    },
+    {
+      "capabilityId": "append_planning_ready",
+      "sourceLocal": false,
+      "sourcePair": true,
+      "bundle": true,
+      "domainActivated": false,
+      "executionRequest": false,
+      "invalidScopeFallback": "not_applicable"
+    },
+    {
+      "capabilityId": "comparison_planning_ready",
+      "sourceLocal": false,
+      "sourcePair": true,
+      "bundle": true,
+      "domainActivated": false,
+      "executionRequest": false,
+      "invalidScopeFallback": "not_applicable"
+    },
+    {
+      "capabilityId": "reconciliation_planning_ready",
+      "sourceLocal": false,
+      "sourcePair": true,
+      "bundle": true,
+      "domainActivated": false,
+      "executionRequest": false,
+      "invalidScopeFallback": "not_applicable"
+    },
+    {
+      "capabilityId": "join_execution_ready",
+      "sourceLocal": false,
+      "sourcePair": true,
+      "bundle": true,
+      "domainActivated": false,
+      "executionRequest": true,
+      "invalidScopeFallback": "not_applicable"
+    },
+    {
+      "capabilityId": "append_execution_ready",
+      "sourceLocal": false,
+      "sourcePair": true,
+      "bundle": true,
+      "domainActivated": false,
+      "executionRequest": true,
+      "invalidScopeFallback": "not_applicable"
+    },
+    {
+      "capabilityId": "domain_activation_ready",
+      "sourceLocal": true,
+      "sourcePair": false,
+      "bundle": true,
+      "domainActivated": true,
+      "executionRequest": false,
+      "invalidScopeFallback": "unsupported"
+    },
+    {
+      "capabilityId": "domain_metric_planning_ready",
+      "sourceLocal": true,
+      "sourcePair": false,
+      "bundle": true,
+      "domainActivated": true,
+      "executionRequest": false,
+      "invalidScopeFallback": "unsupported"
+    },
+    {
+      "capabilityId": "generic_analysis_ready",
+      "sourceLocal": true,
+      "sourcePair": false,
+      "bundle": true,
+      "domainActivated": false,
+      "executionRequest": false,
+      "invalidScopeFallback": "unknown"
+    },
+    {
+      "capabilityId": "BA_question_generation_ready",
+      "sourceLocal": true,
+      "sourcePair": false,
+      "bundle": true,
+      "domainActivated": false,
+      "executionRequest": false,
+      "invalidScopeFallback": "unknown"
+    },
+    {
+      "capabilityId": "narrative_explanation_ready",
+      "sourceLocal": true,
+      "sourcePair": false,
+      "bundle": true,
+      "domainActivated": false,
+      "executionRequest": false,
+      "invalidScopeFallback": "unknown"
+    }
+  ],
+  "allowedTransitions": {
+    "ready": [
+      "conditionally_ready",
+      "blocked",
+      "unknown"
+    ],
+    "conditionally_ready": [
+      "blocked",
+      "unknown"
+    ],
+    "blocked": [
+      "blocked"
+    ],
+    "unknown": [
+      "unknown",
+      "blocked"
+    ],
+    "unsupported": [
+      "unsupported"
+    ],
+    "not_applicable": [
+      "not_applicable"
+    ]
+  },
+  "dependencyCycleAudit": {
+    "acyclic": true,
+    "mutualMandatoryPairs": [],
+    "transitiveEvidenceDuplication": false,
+    "optionalSatisfiesMandatory": false,
+    "presentationFeedback": false
+  }
+}

@@ -1,0 +1,291 @@
+{
+  "schemaVersion": "lightbi.phase-5b4-intent-policy-audit.v1",
+  "policy": {
+    "schemaVersion": "lightbi.aggregation-intent-policy.v1",
+    "taxonomy": [
+      {
+        "useClass": "physical_operator_supported",
+        "chosenBy": "physical profiler",
+        "explicit": false,
+        "authorityLevel": "observation",
+        "requiredEvidence": [
+          "parse evidence"
+        ],
+        "allowedOutputUse": [
+          "operator feasibility observation"
+        ],
+        "prohibitedOutputUse": [
+          "business metric claim"
+        ],
+        "confirmationRequired": false,
+        "metricSemanticsRequired": false,
+        "canonicalApprovalEventuallyRequired": true,
+        "residualRisk": [
+          "physical support is not semantic additivity"
+        ]
+      },
+      {
+        "useClass": "descriptive_row_count",
+        "chosenBy": "explicit user or governed planner",
+        "explicit": "depends",
+        "authorityLevel": "exploratory_choice",
+        "requiredEvidence": [
+          "count semantics",
+          "row scope"
+        ],
+        "allowedOutputUse": [
+          "restricted descriptive preview"
+        ],
+        "prohibitedOutputUse": [
+          "entity count without governed key"
+        ],
+        "confirmationRequired": true,
+        "metricSemanticsRequired": false,
+        "canonicalApprovalEventuallyRequired": true,
+        "residualRisk": [
+          "duplicates and repeated periods"
+        ]
+      },
+      {
+        "useClass": "explicit_exploratory_aggregation",
+        "chosenBy": "user",
+        "explicit": true,
+        "authorityLevel": "exploratory_choice",
+        "requiredEvidence": [
+          "acknowledgement",
+          "restrictions"
+        ],
+        "allowedOutputUse": [
+          "future restricted exploratory preview"
+        ],
+        "prohibitedOutputUse": [
+          "BA conclusion",
+          "narrative",
+          "alert",
+          "persisted metric"
+        ],
+        "confirmationRequired": true,
+        "metricSemanticsRequired": true,
+        "canonicalApprovalEventuallyRequired": true,
+        "residualRisk": [
+          "consent is not correctness"
+        ]
+      },
+      {
+        "useClass": "planner_recommendation",
+        "chosenBy": "planner",
+        "explicit": false,
+        "authorityLevel": "recommendation",
+        "requiredEvidence": [
+          "unresolved evidence",
+          "risk disclosure"
+        ],
+        "allowedOutputUse": [
+          "recommendation display"
+        ],
+        "prohibitedOutputUse": [
+          "selection",
+          "execution",
+          "decision claim"
+        ],
+        "confirmationRequired": false,
+        "metricSemanticsRequired": true,
+        "canonicalApprovalEventuallyRequired": true,
+        "residualRisk": [
+          "recommendation may be semantically wrong"
+        ]
+      },
+      {
+        "useClass": "automatic_default_aggregation",
+        "chosenBy": "legacy runtime",
+        "explicit": false,
+        "authorityLevel": "observation",
+        "requiredEvidence": [
+          "governed metric contract"
+        ],
+        "allowedOutputUse": [],
+        "prohibitedOutputUse": [
+          "silent selection",
+          "execution",
+          "decision use"
+        ],
+        "confirmationRequired": false,
+        "metricSemanticsRequired": true,
+        "canonicalApprovalEventuallyRequired": true,
+        "residualRisk": [
+          "silent semantic choice"
+        ]
+      },
+      {
+        "useClass": "governed_metric_aggregation",
+        "chosenBy": "metric owner",
+        "explicit": "depends",
+        "authorityLevel": "governed_candidate",
+        "requiredEvidence": [
+          "complete approved metric evidence"
+        ],
+        "allowedOutputUse": [
+          "future controlled projection candidate"
+        ],
+        "prohibitedOutputUse": [
+          "use before canonical approval"
+        ],
+        "confirmationRequired": false,
+        "metricSemanticsRequired": true,
+        "canonicalApprovalEventuallyRequired": true,
+        "residualRisk": [
+          "contract compatibility and version drift"
+        ]
+      },
+      {
+        "useClass": "chart_display_use",
+        "chosenBy": "chart consumer",
+        "explicit": "depends",
+        "authorityLevel": "decision_use",
+        "requiredEvidence": [
+          "result restrictions"
+        ],
+        "allowedOutputUse": [
+          "restricted display only"
+        ],
+        "prohibitedOutputUse": [
+          "decision-safe implication"
+        ],
+        "confirmationRequired": false,
+        "metricSemanticsRequired": true,
+        "canonicalApprovalEventuallyRequired": true,
+        "residualRisk": [
+          "display can imply false confidence"
+        ]
+      },
+      {
+        "useClass": "BA_decision_use",
+        "chosenBy": "BA consumer",
+        "explicit": "depends",
+        "authorityLevel": "decision_use",
+        "requiredEvidence": [
+          "approved metric",
+          "canonical readiness"
+        ],
+        "allowedOutputUse": [],
+        "prohibitedOutputUse": [
+          "ungoverned conclusion",
+          "ranking",
+          "recommendation"
+        ],
+        "confirmationRequired": false,
+        "metricSemanticsRequired": true,
+        "canonicalApprovalEventuallyRequired": true,
+        "residualRisk": [
+          "downstream restriction loss"
+        ]
+      },
+      {
+        "useClass": "narrative_use",
+        "chosenBy": "narrative consumer",
+        "explicit": "depends",
+        "authorityLevel": "decision_use",
+        "requiredEvidence": [
+          "approved metric",
+          "canonical readiness"
+        ],
+        "allowedOutputUse": [],
+        "prohibitedOutputUse": [
+          "ungoverned trend or claim"
+        ],
+        "confirmationRequired": false,
+        "metricSemanticsRequired": true,
+        "canonicalApprovalEventuallyRequired": true,
+        "residualRisk": [
+          "language can overstate evidence"
+        ]
+      },
+      {
+        "useClass": "execution_authority",
+        "chosenBy": "runtime authority",
+        "explicit": "depends",
+        "authorityLevel": "execution",
+        "requiredEvidence": [
+          "canonical operation approval"
+        ],
+        "allowedOutputUse": [],
+        "prohibitedOutputUse": [
+          "shadow authorization"
+        ],
+        "confirmationRequired": false,
+        "metricSemanticsRequired": true,
+        "canonicalApprovalEventuallyRequired": true,
+        "residualRisk": [
+          "execution does not establish correctness"
+        ]
+      },
+      {
+        "useClass": "unknown_origin",
+        "chosenBy": "unknown",
+        "explicit": false,
+        "authorityLevel": "unknown",
+        "requiredEvidence": [
+          "origin resolution"
+        ],
+        "allowedOutputUse": [],
+        "prohibitedOutputUse": [
+          "selection",
+          "execution",
+          "decision use"
+        ],
+        "confirmationRequired": false,
+        "metricSemanticsRequired": true,
+        "canonicalApprovalEventuallyRequired": true,
+        "residualRisk": [
+          "authority cannot be inferred from operator"
+        ]
+      }
+    ],
+    "countRules": [
+      "COUNT(*) is descriptive row counting, not entity counting",
+      "COUNT(column) excludes nulls",
+      "COUNT(DISTINCT key) requires a governed key",
+      "row and entity counts must preserve duplicate, snapshot and repeated-period risk",
+      "automatic SUM-to-COUNT substitution is prohibited"
+    ],
+    "consentCorrectnessRules": [
+      "userIntentKnown, exploratoryExecutionConsent and businessCorrectnessEstablished are independent",
+      "acknowledgement never establishes business correctness",
+      "acknowledgement never changes semantic or grain resolution",
+      "acknowledgement never grants BA, narrative, alert or persisted-metric eligibility",
+      "acknowledgement contains no raw sensitive values"
+    ],
+    "restrictionRules": [
+      "restriction absence is not permission",
+      "chart displayability is not decision safety",
+      "ungoverned results remain identifiable downstream",
+      "BA and narrative eligibility require approved governed metric evidence"
+    ],
+    "forbiddenEffects": [
+      "mutate_runtime_plan",
+      "change_generated_sql",
+      "approve_operation",
+      "execute_metric",
+      "activate_domain",
+      "wire_production",
+      "persist_acknowledgement",
+      "emit_telemetry",
+      "infer_authority_from_operator",
+      "replace_sum_with_count"
+    ]
+  },
+  "policyHash": "7b67a5e53d821905e8341b10967e3b13b6d82b605b39d5a37905e49f3b6fc9f5",
+  "comparisonPolicy": {
+    "version": "lightbi.legacy-canonical-comparison-policy.v2",
+    "sha256": "deb9a908b698792388b2d7b1fab853978a03087bcda37dc64682ab4d3e60f2c8"
+  },
+  "phase5B3GuardPolicyHash": "ef3a150585c7d752e40dc8e2dfd859a2eaa814fbe578f620d0dbb651941247ee",
+  "consentCorrectnessStates": [
+    "userIntentKnown",
+    "exploratoryExecutionConsent",
+    "businessCorrectnessEstablished"
+  ],
+  "acknowledgementImplemented": false,
+  "metricDefinitionCreated": false,
+  "productionBehaviorChanged": false
+}

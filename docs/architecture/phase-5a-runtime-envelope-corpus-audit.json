@@ -1,0 +1,63 @@
+{
+  "schemaVersion": "lightbi.phase-5a-envelope-corpus-audit.v1",
+  "date": "2026-07-13",
+  "adapterPolicy": {
+    "version": "lightbi.canonical-runtime-adapter-policy.v1",
+    "sha256": "be4d0ac3d02305c13948cb6b7c8ecb0c087c6a2ea259e064411b9ff85ca2129b"
+  },
+  "authority": "canonical_shadow_non_authoritative",
+  "productionWiring": false,
+  "envelopeCount": {
+    "source": 37,
+    "sourcePair": 9,
+    "bundle": 5
+  },
+  "integrity": {
+    "valid": 51
+  },
+  "stateDistribution": {
+    "ready": 310,
+    "not_applicable": 482,
+    "blocked": 167,
+    "conditionally_ready": 362,
+    "unsupported": 84,
+    "unknown": 122
+  },
+  "restrictionDistribution": {
+    "DO_NOT_EXECUTE_JOIN": 51,
+    "DO_NOT_EXECUTE_APPEND": 51,
+    "DO_NOT_EXECUTE_COMPARE": 51,
+    "DO_NOT_EXECUTE_RECONCILIATION": 51,
+    "DO_NOT_AGGREGATE_MEASURES": 51,
+    "DO_NOT_ACTIVATE_DOMAIN": 51,
+    "DO_NOT_GENERATE_DOMAIN_METRICS": 51,
+    "DO_NOT_OVERRIDE_LEGACY_RUNTIME": 51,
+    "SHADOW_ONLY": 51
+  },
+  "blockerSeverityDistribution": {
+    "material": 126,
+    "informational": 42,
+    "critical": 83,
+    "caution": 4
+  },
+  "remediationDistribution": {
+    "confirm_column_meaning": 84,
+    "provide_domain_pack": 84,
+    "confirm_grain": 75,
+    "choose_safe_aggregation_rule": 42,
+    "remove_repeated_totals": 11,
+    "provide_period_semantics": 28,
+    "provide_relationship_contract": 58,
+    "select_or_confirm_key": 26,
+    "resolve_duplicate_keys": 14
+  },
+  "trustDimensionRecords": 612,
+  "projectionLoss": 0,
+  "artifactMismatch": 0,
+  "privacyViolations": 0,
+  "identityPreservation": true,
+  "provenance": {
+    "tuningEligible": 8,
+    "evaluationOnly": 43
+  }
+}

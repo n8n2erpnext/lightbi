@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "lightbi.phase-5m2-question-action-corpus-audit.v1",
+  "corpusVersion": "1.2.0",
+  "caseCount": 30,
+  "sourceCaseCount": 37,
+  "groups": {
+    "adversarial": {
+      "caseCount": 5,
+      "tuningAllowed": false
+    },
+    "golden": {
+      "caseCount": 8,
+      "tuningAllowed": true
+    },
+    "holdout": {
+      "caseCount": 12,
+      "tuningAllowed": false
+    },
+    "multi_file": {
+      "caseCount": 5,
+      "tuningAllowed": false
+    }
+  },
+  "assertions": [
+    "metric state is never strengthened",
+    "blocked questions are not defaults",
+    "default count is at most five",
+    "action candidates remain non-executable",
+    "verified metric answers are not emitted",
+    "source paths are not persisted"
+  ],
+  "syntheticPositiveRequirements": 8,
+  "syntheticNegativeRequirements": 14,
+  "evaluationOnlyPolicyTuning": false,
+  "metricResultsProduced": false,
+  "productionWiring": {
+    "executed": false
+  }
+}

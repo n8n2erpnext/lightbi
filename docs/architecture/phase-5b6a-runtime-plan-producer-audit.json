@@ -1,0 +1,76 @@
+{
+  "schemaVersion": "lightbi.phase-5b6a-runtime-plan-producer-audit.v1",
+  "auditedValue": "runtimePlanPreview",
+  "producerChains": [
+    {
+      "entryPath": "Simple Home analysis action",
+      "producers": [
+        "generateAnalysisActions(DatasetUnderstanding) -> user-selected AnalysisAction",
+        "createRuntimeIntentFromAnalysisAction(AnalysisAction) -> RuntimeIntent",
+        "createRuntimePlanPreview(RuntimeIntent) -> RuntimePlanPreview",
+        "createInvestigationSession(...) -> in-memory retention"
+      ],
+      "requiredInputs": [
+        "DatasetUnderstanding",
+        "selected AnalysisAction",
+        "current dataset rows",
+        "dataset identity"
+      ],
+      "questionInputText": "Action label/description is retained, but no independent historical free-text question is required by createRuntimePlanPreview.",
+      "businessView": "May influence the upstream generated AnalysisAction; no business-view field is consumed by the plan producer itself.",
+      "workspaceStore": "Current Home dataset state is required upstream; createRuntimePlanPreview itself has no store access.",
+      "relationshipGraph": "May influence upstream understanding/action generation; not consumed directly by the plan producer.",
+      "datasetUnderstanding": "Required to reproduce the authentic upstream Simple action selection, not required after an authentic AnalysisAction is retained.",
+      "timeRandomEnvironment": "Plan and intent creation are deterministic. Investigation session ID and createdAt use Date.now/Math.random only after plan creation.",
+      "aiDependency": false,
+      "persistenceDependency": false,
+      "pureDeterministicPlanProducer": true,
+      "safelyInvokableInTestsWithAuthenticInputs": true
+    },
+    {
+      "entryPath": "Advanced result handoff",
+      "producers": [
+        "createAdvancedResultHandoff(source, AdvancedQueryResult)",
+        "buildAnalysisAction(source, result) -> AnalysisAction",
+        "createRuntimeIntentFromAnalysisAction(AnalysisAction) -> RuntimeIntent",
+        "createRuntimePlanPreview(RuntimeIntent) -> RuntimePlanPreview"
+      ],
+      "requiredInputs": [
+        "AdvancedResultSource",
+        "AdvancedQueryResult including runId, columns, logical types and rows"
+      ],
+      "questionInputText": "No user free-text question; title and query result shape determine the generated action.",
+      "businessView": "Not required.",
+      "workspaceStore": "The query result and source metadata must be retained; no direct store access occurs in the producer.",
+      "relationshipGraph": "Not required.",
+      "datasetUnderstanding": "Not required by this path.",
+      "timeRandomEnvironment": "Plan path is deterministic. AI-safe briefing generatedAt uses current time but does not affect the plan.",
+      "aiDependency": false,
+      "persistenceDependency": false,
+      "pureDeterministicPlanProducer": true,
+      "safelyInvokableInTestsWithAuthenticInputs": true
+    }
+  ],
+  "downstreamTransformations": [
+    {
+      "function": "enhancePlanWithGuardedSum(runtimePlanPreview, rows)",
+      "result": "enhancedPlan",
+      "note": "May inject or rewrite guarded SUM metadata after the authentic incoming plan is created."
+    },
+    {
+      "function": "createSafeSqlPreview(enhancedPlan)",
+      "result": "safeSqlPreview",
+      "note": "SQL is derived from the enhanced plan."
+    },
+    {
+      "function": "executeBackendPreview",
+      "note": "Investigation currently passes the unenhanced runtimePlanPreview together with SQL generated from enhancedPlan."
+    }
+  ],
+  "persistenceFindings": {
+    "investigationSession": "In-memory singleton retains action, intent and incoming plan for the active session only.",
+    "workspaceSessionSnapshot": "Persists dataset/sample state but not AnalysisAction, RuntimeIntent, RuntimePlanPreview, enhanced plan or SafeSqlPreview.",
+    "governed145Records": "Retain canonical aggregation records and source identity, not historical planner inputs."
+  },
+  "producerIntegrityEstablished": true
+}

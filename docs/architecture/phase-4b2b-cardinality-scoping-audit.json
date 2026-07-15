@@ -1,0 +1,272 @@
+{
+  "schemaVersion": "lightbi.phase-4b2b-cardinality-audit.v1",
+  "date": "2026-07-13",
+  "policy": {
+    "version": "lightbi.relationship-resolution-policy.v2",
+    "sha256": "68b96f0b410315937256992d28378ae4932910a8bdc8719f0b475addd9855a10"
+  },
+  "corpus": {
+    "version": "1.2.0",
+    "bundles": 5,
+    "pairs": 9,
+    "tuningUse": "forbidden"
+  },
+  "freezeClassification": "freeze_ready_with_documented_debt",
+  "safety": {
+    "joinSafety": false,
+    "operationExecution": false,
+    "productionWiring": false
+  },
+  "confirmedCandidateObservations": 4,
+  "records": [
+    {
+      "bundleId": "multi.commerce_may_2026",
+      "pairId": "pair:7c6214dbcf4d1a72",
+      "keyPairId": "key:6502af77c728fdbf",
+      "candidateScopedObservedCardinality": {
+        "keyPairId": "key:6502af77c728fdbf",
+        "state": "confirmed",
+        "value": "observed_many_to_many",
+        "alternatives": [
+          "many_to_many"
+        ],
+        "matchedDistinct": 545,
+        "leftUnmatchedDistinct": 0,
+        "rightUnmatchedDistinct": 0,
+        "leftNulls": 0,
+        "rightNulls": 0,
+        "leftDuplicateRows": 955,
+        "rightDuplicateRows": 955,
+        "leftMaxFrequency": 8,
+        "rightMaxFrequency": 8,
+        "leftOverlapRatio": 1,
+        "rightOverlapRatio": 1,
+        "possibleFanout": true,
+        "temporalScope": "extract_local_unbounded_time",
+        "structuralLimitations": [],
+        "semanticLimitations": [
+          "ambiguous_semantic"
+        ]
+      },
+      "pairLevelCardinalitySummary": {
+        "state": "ambiguous",
+        "value": "unknown_observed_cardinality",
+        "candidateObservationCount": 1,
+        "selectedKeyPairId": null,
+        "reason": "key_not_selected"
+      },
+      "keySelected": false,
+      "businessCardinalityEstablished": false,
+      "joinAuthorized": false,
+      "exactCandidateScopeValidated": true
+    },
+    {
+      "bundleId": "multi.commerce_june_2026",
+      "pairId": "pair:d31d59ba9619b647",
+      "keyPairId": "key:6502af77c728fdbf",
+      "candidateScopedObservedCardinality": {
+        "keyPairId": "key:6502af77c728fdbf",
+        "state": "confirmed",
+        "value": "observed_many_to_many",
+        "alternatives": [
+          "many_to_many"
+        ],
+        "matchedDistinct": 542,
+        "leftUnmatchedDistinct": 0,
+        "rightUnmatchedDistinct": 0,
+        "leftNulls": 0,
+        "rightNulls": 0,
+        "leftDuplicateRows": 958,
+        "rightDuplicateRows": 958,
+        "leftMaxFrequency": 9,
+        "rightMaxFrequency": 9,
+        "leftOverlapRatio": 1,
+        "rightOverlapRatio": 1,
+        "possibleFanout": true,
+        "temporalScope": "extract_local_unbounded_time",
+        "structuralLimitations": [],
+        "semanticLimitations": [
+          "ambiguous_semantic"
+        ]
+      },
+      "pairLevelCardinalitySummary": {
+        "state": "ambiguous",
+        "value": "unknown_observed_cardinality",
+        "candidateObservationCount": 1,
+        "selectedKeyPairId": null,
+        "reason": "key_not_selected"
+      },
+      "keySelected": false,
+      "businessCardinalityEstablished": false,
+      "joinAuthorized": false,
+      "exactCandidateScopeValidated": true
+    },
+    {
+      "bundleId": "multi.logistics_period_pair",
+      "pairId": "pair:82c4a25a45f1ff95",
+      "keyPairId": "key:a1bb80649e6bad56",
+      "candidateScopedObservedCardinality": {
+        "keyPairId": "key:a1bb80649e6bad56",
+        "state": "ambiguous",
+        "value": "unknown_observed_cardinality",
+        "alternatives": [
+          "one_to_one",
+          "partial_reference"
+        ],
+        "matchedDistinct": 0,
+        "leftUnmatchedDistinct": 1500,
+        "rightUnmatchedDistinct": 1500,
+        "leftNulls": 0,
+        "rightNulls": 0,
+        "leftDuplicateRows": 0,
+        "rightDuplicateRows": 0,
+        "leftMaxFrequency": 1,
+        "rightMaxFrequency": 1,
+        "leftOverlapRatio": 0,
+        "rightOverlapRatio": 0,
+        "possibleFanout": false,
+        "temporalScope": "extract_local_unbounded_time",
+        "structuralLimitations": [],
+        "semanticLimitations": [
+          "ambiguous_semantic"
+        ]
+      },
+      "pairLevelCardinalitySummary": {
+        "state": "ambiguous",
+        "value": "unknown_observed_cardinality",
+        "candidateObservationCount": 3,
+        "selectedKeyPairId": null,
+        "reason": "key_not_selected"
+      },
+      "keySelected": false,
+      "businessCardinalityEstablished": false,
+      "joinAuthorized": false,
+      "exactCandidateScopeValidated": true
+    },
+    {
+      "bundleId": "multi.logistics_period_pair",
+      "pairId": "pair:82c4a25a45f1ff95",
+      "keyPairId": "key:cc0a3a930ecb55e0",
+      "candidateScopedObservedCardinality": {
+        "keyPairId": "key:cc0a3a930ecb55e0",
+        "state": "ambiguous",
+        "value": "unknown_observed_cardinality",
+        "alternatives": [
+          "one_to_one",
+          "partial_reference"
+        ],
+        "matchedDistinct": 0,
+        "leftUnmatchedDistinct": 1500,
+        "rightUnmatchedDistinct": 1500,
+        "leftNulls": 0,
+        "rightNulls": 0,
+        "leftDuplicateRows": 0,
+        "rightDuplicateRows": 0,
+        "leftMaxFrequency": 1,
+        "rightMaxFrequency": 1,
+        "leftOverlapRatio": 0,
+        "rightOverlapRatio": 0,
+        "possibleFanout": false,
+        "temporalScope": "extract_local_unbounded_time",
+        "structuralLimitations": [],
+        "semanticLimitations": [
+          "ambiguous_semantic",
+          "ambiguous_semantic"
+        ]
+      },
+      "pairLevelCardinalitySummary": {
+        "state": "ambiguous",
+        "value": "unknown_observed_cardinality",
+        "candidateObservationCount": 3,
+        "selectedKeyPairId": null,
+        "reason": "key_not_selected"
+      },
+      "keySelected": false,
+      "businessCardinalityEstablished": false,
+      "joinAuthorized": false,
+      "exactCandidateScopeValidated": true
+    },
+    {
+      "bundleId": "multi.logistics_period_pair",
+      "pairId": "pair:82c4a25a45f1ff95",
+      "keyPairId": "key:6502af77c728fdbf",
+      "candidateScopedObservedCardinality": {
+        "keyPairId": "key:6502af77c728fdbf",
+        "state": "confirmed",
+        "value": "observed_many_to_many",
+        "alternatives": [
+          "many_to_many"
+        ],
+        "matchedDistinct": 496,
+        "leftUnmatchedDistinct": 46,
+        "rightUnmatchedDistinct": 49,
+        "leftNulls": 0,
+        "rightNulls": 0,
+        "leftDuplicateRows": 958,
+        "rightDuplicateRows": 955,
+        "leftMaxFrequency": 9,
+        "rightMaxFrequency": 8,
+        "leftOverlapRatio": 0.915129151291513,
+        "rightOverlapRatio": 0.9100917431192661,
+        "possibleFanout": true,
+        "temporalScope": "extract_local_unbounded_time",
+        "structuralLimitations": [],
+        "semanticLimitations": [
+          "ambiguous_semantic"
+        ]
+      },
+      "pairLevelCardinalitySummary": {
+        "state": "ambiguous",
+        "value": "unknown_observed_cardinality",
+        "candidateObservationCount": 3,
+        "selectedKeyPairId": null,
+        "reason": "key_not_selected"
+      },
+      "keySelected": false,
+      "businessCardinalityEstablished": false,
+      "joinAuthorized": false,
+      "exactCandidateScopeValidated": true
+    },
+    {
+      "bundleId": "multi.accounting_period_pair",
+      "pairId": "pair:e017ee451b367014",
+      "keyPairId": "key:6502af77c728fdbf",
+      "candidateScopedObservedCardinality": {
+        "keyPairId": "key:6502af77c728fdbf",
+        "state": "confirmed",
+        "value": "observed_many_to_many",
+        "alternatives": [
+          "many_to_many"
+        ],
+        "matchedDistinct": 496,
+        "leftUnmatchedDistinct": 46,
+        "rightUnmatchedDistinct": 49,
+        "leftNulls": 0,
+        "rightNulls": 0,
+        "leftDuplicateRows": 958,
+        "rightDuplicateRows": 955,
+        "leftMaxFrequency": 9,
+        "rightMaxFrequency": 8,
+        "leftOverlapRatio": 0.915129151291513,
+        "rightOverlapRatio": 0.9100917431192661,
+        "possibleFanout": true,
+        "temporalScope": "extract_local_unbounded_time",
+        "structuralLimitations": [],
+        "semanticLimitations": [
+          "ambiguous_semantic"
+        ]
+      },
+      "pairLevelCardinalitySummary": {
+        "state": "ambiguous",
+        "value": "unknown_observed_cardinality",
+        "candidateObservationCount": 1,
+        "selectedKeyPairId": null,
+        "reason": "key_not_selected"
+      },
+      "keySelected": false,
+      "businessCardinalityEstablished": false,
+      "joinAuthorized": false,
+      "exactCandidateScopeValidated": true
+    }
+  ]
+}

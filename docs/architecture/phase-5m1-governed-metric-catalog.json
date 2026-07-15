@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "lightbi.phase-5m1-governed-metric-catalog.v1",
+  "policyVersion": "lightbi.governed-metric-policy.v1",
+  "policyHash": "79b00e4aa7e97311da56db1f19a996c52c8034dc52da21b0dc6981dfd1282702",
+  "domainPackId": "commerce_distribution_mvp",
+  "metrics": [
+    { "metricId": "sales_revenue", "operator": "sum", "additivity": "additive", "timeBehavior": "transaction_flow", "approval": "governed_definition", "executionAuthorization": false },
+    { "metricId": "quantity_sold", "operator": "sum", "additivity": "additive", "timeBehavior": "transaction_flow", "approval": "governed_definition", "executionAuthorization": false },
+    { "metricId": "transaction_count", "operator": "count_governed_identity", "additivity": "descriptive_count_only", "timeBehavior": "transaction_flow", "approval": "governed_definition", "executionAuthorization": false },
+    { "metricId": "inventory_on_hand", "operator": "sum", "additivity": "semi_additive", "timeBehavior": "point_in_time_snapshot", "approval": "governed_definition", "executionAuthorization": false },
+    { "metricId": "delivery_count", "operator": "count_governed_identity", "additivity": "descriptive_count_only", "timeBehavior": "transaction_flow", "approval": "governed_definition", "executionAuthorization": false },
+    { "metricId": "gross_profit", "operator": "derive_subtraction", "additivity": "additive", "timeBehavior": "period_flow", "approval": "governed_definition", "executionAuthorization": false }
+  ],
+  "excluded": ["margin", "retention", "LTV", "churn", "forecast", "generic KPI"],
+  "globalSafeToAggregateChanged": false
+}

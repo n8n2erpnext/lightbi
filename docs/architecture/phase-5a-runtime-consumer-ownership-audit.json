@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "lightbi.phase-5a-runtime-consumer-ownership-audit.v1",
+  "date": "2026-07-13",
+  "consumers": [
+    {"module":"apps/desktop/src/pages/Home.tsx","surface":"Home","inputs":["uploaded datasets","dataset health","business confidence","decision trust"],"owner":"legacy runtime UI","productionActive":true,"numericScore":true,"mixedConcerns":true,"canAuthorizeOperation":false,"userFacing":true,"migrationCategory":"future_authority_migration_target","phase5aDisposition":"retain_legacy_authority"},
+    {"module":"apps/desktop/src/pages/Investigation.tsx","surface":"Investigation","inputs":["AI briefing","preview result","BA decision brief"],"owner":"legacy investigation UI","productionActive":true,"numericScore":true,"mixedConcerns":true,"canAuthorizeOperation":false,"userFacing":true,"migrationCategory":"future_projection_consumer","phase5aDisposition":"retain_legacy_authority"},
+    {"module":"apps/desktop/src/lib/dataset-understanding-contract.ts","surface":"dataset understanding","inputs":["sampled rows","legacy semantic signals"],"owner":"legacy understanding","productionActive":true,"numericScore":true,"mixedConcerns":true,"canAuthorizeOperation":false,"userFacing":false,"migrationCategory":"deprecated_but_still_active","phase5aDisposition":"retain_legacy_authority"},
+    {"module":"apps/desktop/src/lib/decision-readiness-engine.ts","surface":"decision readiness","inputs":["legacy dataset understanding"],"owner":"legacy readiness","productionActive":true,"numericScore":true,"mixedConcerns":true,"canAuthorizeOperation":false,"userFacing":false,"migrationCategory":"future_shadow_comparison_target","phase5aDisposition":"retain_legacy_authority"},
+    {"module":"apps/desktop/src/lib/dataset-health-engine.ts","surface":"dataset health","inputs":["physical quality signals"],"owner":"legacy health","productionActive":true,"numericScore":true,"mixedConcerns":false,"canAuthorizeOperation":false,"userFacing":true,"migrationCategory":"future_shadow_comparison_target","phase5aDisposition":"retain_legacy_authority"},
+    {"module":"apps/desktop/src/lib/business-confidence-engine.ts","surface":"business confidence","inputs":["health","expected result","runtime validation"],"owner":"legacy confidence","productionActive":true,"numericScore":true,"mixedConcerns":true,"canAuthorizeOperation":false,"userFacing":true,"migrationCategory":"future_shadow_comparison_target","phase5aDisposition":"retain_legacy_authority"},
+    {"module":"apps/desktop/src/lib/ai-briefing-generator.ts","surface":"AI briefing","inputs":["legacy understanding","readiness score"],"owner":"AI briefing","productionActive":true,"numericScore":true,"mixedConcerns":true,"canAuthorizeOperation":false,"userFacing":true,"migrationCategory":"future_projection_consumer","phase5aDisposition":"retain_legacy_authority"},
+    {"module":"apps/desktop/src/lib/ba-decision-engine.ts","surface":"BA decision brief","inputs":["AI briefing","preview evidence","trust score"],"owner":"BA engine","productionActive":true,"numericScore":true,"mixedConcerns":true,"canAuthorizeOperation":false,"userFacing":true,"migrationCategory":"future_projection_consumer","phase5aDisposition":"retain_legacy_authority"},
+    {"module":"apps/desktop/src/lib/domain-ba-playbooks.ts","surface":"BA playbooks","inputs":["legacy domain catalog"],"owner":"domain BA","productionActive":true,"numericScore":false,"mixedConcerns":true,"canAuthorizeOperation":false,"userFacing":true,"migrationCategory":"future_projection_consumer","phase5aDisposition":"retain_legacy_authority"},
+    {"module":"apps/desktop/src/lib/virtual-dataset-planner.ts","surface":"query planning","inputs":["dataset graph","question intent"],"owner":"legacy planner","productionActive":true,"numericScore":false,"mixedConcerns":true,"canAuthorizeOperation":true,"userFacing":false,"migrationCategory":"future_authority_migration_target","phase5aDisposition":"retain_legacy_authority"},
+    {"module":"apps/desktop/src/lib/duckdb-preview-runtime.ts","surface":"preview execution","inputs":["compiled query","sandbox","business confidence"],"owner":"legacy execution runtime","productionActive":true,"numericScore":true,"mixedConcerns":true,"canAuthorizeOperation":true,"userFacing":false,"migrationCategory":"future_authority_migration_target","phase5aDisposition":"retain_legacy_authority"},
+    {"module":"apps/desktop/src/lib/understanding-core/question-engine.ts","surface":"current core question orchestration","inputs":["core source input"],"owner":"canonical migration compatibility","productionActive":true,"numericScore":false,"mixedConcerns":true,"canAuthorizeOperation":false,"userFacing":false,"migrationCategory":"requires_manual_review","phase5aDisposition":"retain_legacy_authority"}
+  ],
+  "legacyPreservation": {
+    "trustOutputsChanged": false,
+    "healthOutputsChanged": false,
+    "readinessOutputsChanged": false,
+    "homeChanged": false,
+    "investigationChanged": false,
+    "aiInputsChanged": false,
+    "baInputsChanged": false,
+    "operationPlanningChanged": false,
+    "persistedDataChanged": false,
+    "databaseSchemaChanged": false,
+    "featureFlagsChanged": false,
+    "uiContractsChanged": false
+  }
+}

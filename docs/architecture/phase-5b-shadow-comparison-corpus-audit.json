@@ -1,0 +1,40 @@
+{
+  "schemaVersion": "lightbi.phase-5b-corpus-audit.v1",
+  "date": "2026-07-13",
+  "policy": {
+    "version": "lightbi.legacy-canonical-comparison-policy.v1",
+    "sha256": "6d1e75c5e51059e1217a1d1ce7ef7819c5775f07e489c27cc0db2a7e180c044a"
+  },
+  "authority": {
+    "legacyChanged": false,
+    "canonicalChanged": false,
+    "operationApproval": false,
+    "productionWiring": false
+  },
+  "subjects": {
+    "source": 37,
+    "sourcePair": 9,
+    "bundle": 5,
+    "total": 51
+  },
+  "canonicalEnvelopes": {
+    "valid": 51,
+    "invalid": 0
+  },
+  "legacyObservations": {
+    "availableThroughGovernedSyntheticFixtures": 3,
+    "corpusObservationUnavailable": 51,
+    "reason": "No caller-supplied legacy contract input accompanies canonical corpus artifacts; no favorable legacy truth was mocked."
+  },
+  "mappingTypes": {
+    "directlyComparable": 2,
+    "partiallyComparable": 1,
+    "structurallyIncomparable": 1,
+    "authorityOnlyComparable": 1
+  },
+  "diagnosticsAreAccuracy": false,
+  "tuning": {
+    "goldenOnlyForDesign": true,
+    "evaluationOnlyNotTuned": true
+  }
+}

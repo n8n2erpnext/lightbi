@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "lightbi.phase-6b-legacy-retirement-audit.v1",
+  "entries": [
+    {"target": "backend-preview-executor", "classification": "test_fixture_only", "productionSessionPath": false, "reason": "Removed from Investigation; retained for historical tests and compatibility contracts."},
+    {"target": "duckdb-preview-sandbox execution", "classification": "test_fixture_only", "productionSessionPath": false, "reason": "Removed from Investigation; result type remains compatibility-only."},
+    {"target": "duckdb-preview-runtime mock execution", "classification": "test_fixture_only", "productionSessionPath": false, "reason": "Home no longer imports or invokes it; retained pending fixture cleanup."},
+    {"target": "safe-sql-preview", "classification": "compatibility_type_only", "productionSessionPath": false, "reason": "Investigation displays a projection of canonical governed plans with this legacy display contract; no SQL is created by it."},
+    {"target": "duckdb-preview-sandbox result contract", "classification": "compatibility_type_only", "productionSessionPath": false, "reason": "Used only as the current chart/drill presentation result shape; no sandbox executor is imported."},
+    {"target": "understanding-next action adapter", "classification": "adapter_only", "productionSessionPath": false, "reason": "Removed from Home and Investigation; retained for existing presentation components outside selected canonical sessions."},
+    {"target": "guided-investigation-pipeline and business-signal-detector", "classification": "retained_with_documented_reason", "productionSessionPath": false, "reason": "Legacy components and historical utilities still import these modules, but selected production session creators do not invoke them. Deletion requires a separate component retirement pass."},
+    {"target": "understanding-next orchestrator and signal detector", "classification": "test_fixture_only", "productionSessionPath": false, "reason": "No selected production session creator imports or invokes either module."},
+    {"target": "dataset-understanding builders", "classification": "blocked_by_external_consumer", "productionSessionPath": false, "reason": "Legacy presentation and comparison contracts still reference their types; no canonical session path calls them."}
+  ]
+}

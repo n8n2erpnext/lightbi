@@ -1,0 +1,262 @@
+{
+  "schemaVersion": "lightbi.phase-5b5-consumer-compatibility-matrix.v1",
+  "consumers": [
+    {
+      "consumer": "plan_preview",
+      "requiredProjectionFields": [
+        "lineage",
+        "restrictions",
+        "origin",
+        "operator"
+      ],
+      "prohibitedMissingFields": [
+        "lineage",
+        "restrictions",
+        "origin",
+        "operator"
+      ],
+      "minimumIntegrityState": "valid",
+      "permittedUseClasses": [
+        "mechanical_preview"
+      ],
+      "prohibitedUseClasses": [
+        "decision_chart",
+        "BA_conclusion"
+      ],
+      "acknowledgementMatters": false,
+      "approvedMetricEvidenceMandatory": false,
+      "currentContractSupportsProjection": false,
+      "migrationDebt": "production contract lacks structured aggregation lineage/restrictions"
+    },
+    {
+      "consumer": "SQL_preview",
+      "requiredProjectionFields": [
+        "lineage",
+        "restrictions",
+        "origin",
+        "operator",
+        "metricReference"
+      ],
+      "prohibitedMissingFields": [
+        "lineage",
+        "restrictions",
+        "origin",
+        "operator",
+        "metricReference"
+      ],
+      "minimumIntegrityState": "valid",
+      "permittedUseClasses": [
+        "mechanical_preview"
+      ],
+      "prohibitedUseClasses": [
+        "BA_conclusion"
+      ],
+      "acknowledgementMatters": false,
+      "approvedMetricEvidenceMandatory": false,
+      "currentContractSupportsProjection": false,
+      "migrationDebt": "production contract lacks structured aggregation lineage/restrictions"
+    },
+    {
+      "consumer": "backend_execution_request",
+      "requiredProjectionFields": [
+        "lineage",
+        "restrictions",
+        "useEligibility"
+      ],
+      "prohibitedMissingFields": [
+        "lineage",
+        "restrictions",
+        "useEligibility"
+      ],
+      "minimumIntegrityState": "valid",
+      "permittedUseClasses": [],
+      "prohibitedUseClasses": [
+        "execution_authority"
+      ],
+      "acknowledgementMatters": false,
+      "approvedMetricEvidenceMandatory": false,
+      "currentContractSupportsProjection": false,
+      "migrationDebt": "production contract lacks structured aggregation lineage/restrictions"
+    },
+    {
+      "consumer": "execution_result",
+      "requiredProjectionFields": [
+        "lineage",
+        "restrictions",
+        "executionProvenance"
+      ],
+      "prohibitedMissingFields": [
+        "lineage",
+        "restrictions",
+        "executionProvenance"
+      ],
+      "minimumIntegrityState": "valid",
+      "permittedUseClasses": [],
+      "prohibitedUseClasses": [
+        "BA_conclusion"
+      ],
+      "acknowledgementMatters": false,
+      "approvedMetricEvidenceMandatory": false,
+      "currentContractSupportsProjection": false,
+      "migrationDebt": "production contract lacks structured aggregation lineage/restrictions"
+    },
+    {
+      "consumer": "chart_preview",
+      "requiredProjectionFields": [
+        "lineage",
+        "restrictions",
+        "machineReadableRestrictions"
+      ],
+      "prohibitedMissingFields": [
+        "lineage",
+        "restrictions",
+        "machineReadableRestrictions"
+      ],
+      "minimumIntegrityState": "valid",
+      "permittedUseClasses": [
+        "exploratory_display"
+      ],
+      "prohibitedUseClasses": [
+        "decision_chart",
+        "KPI_card"
+      ],
+      "acknowledgementMatters": true,
+      "approvedMetricEvidenceMandatory": false,
+      "currentContractSupportsProjection": false,
+      "migrationDebt": "production contract lacks structured aggregation lineage/restrictions"
+    },
+    {
+      "consumer": "KPI_card",
+      "requiredProjectionFields": [
+        "lineage",
+        "restrictions",
+        "approvedMetricReference"
+      ],
+      "prohibitedMissingFields": [
+        "lineage",
+        "restrictions",
+        "approvedMetricReference"
+      ],
+      "minimumIntegrityState": "valid",
+      "permittedUseClasses": [],
+      "prohibitedUseClasses": [
+        "KPI_card"
+      ],
+      "acknowledgementMatters": false,
+      "approvedMetricEvidenceMandatory": true,
+      "currentContractSupportsProjection": false,
+      "migrationDebt": "production contract lacks structured aggregation lineage/restrictions"
+    },
+    {
+      "consumer": "BA_decision_brief",
+      "requiredProjectionFields": [
+        "lineage",
+        "restrictions",
+        "approvedMetricReference"
+      ],
+      "prohibitedMissingFields": [
+        "lineage",
+        "restrictions",
+        "approvedMetricReference"
+      ],
+      "minimumIntegrityState": "valid",
+      "permittedUseClasses": [],
+      "prohibitedUseClasses": [
+        "BA_conclusion"
+      ],
+      "acknowledgementMatters": false,
+      "approvedMetricEvidenceMandatory": true,
+      "currentContractSupportsProjection": false,
+      "migrationDebt": "production contract lacks structured aggregation lineage/restrictions"
+    },
+    {
+      "consumer": "narrative_generation",
+      "requiredProjectionFields": [
+        "lineage",
+        "restrictions",
+        "approvedMetricReference"
+      ],
+      "prohibitedMissingFields": [
+        "lineage",
+        "restrictions",
+        "approvedMetricReference"
+      ],
+      "minimumIntegrityState": "valid",
+      "permittedUseClasses": [],
+      "prohibitedUseClasses": [
+        "narrative"
+      ],
+      "acknowledgementMatters": false,
+      "approvedMetricEvidenceMandatory": true,
+      "currentContractSupportsProjection": false,
+      "migrationDebt": "production contract lacks structured aggregation lineage/restrictions"
+    },
+    {
+      "consumer": "recommendation",
+      "requiredProjectionFields": [
+        "lineage",
+        "restrictions",
+        "approvedMetricReference"
+      ],
+      "prohibitedMissingFields": [
+        "lineage",
+        "restrictions",
+        "approvedMetricReference"
+      ],
+      "minimumIntegrityState": "valid",
+      "permittedUseClasses": [],
+      "prohibitedUseClasses": [
+        "recommendation"
+      ],
+      "acknowledgementMatters": false,
+      "approvedMetricEvidenceMandatory": true,
+      "currentContractSupportsProjection": false,
+      "migrationDebt": "production contract lacks structured aggregation lineage/restrictions"
+    },
+    {
+      "consumer": "automated_alert",
+      "requiredProjectionFields": [
+        "lineage",
+        "restrictions",
+        "approvedMetricReference"
+      ],
+      "prohibitedMissingFields": [
+        "lineage",
+        "restrictions",
+        "approvedMetricReference"
+      ],
+      "minimumIntegrityState": "valid",
+      "permittedUseClasses": [],
+      "prohibitedUseClasses": [
+        "automatic_alert"
+      ],
+      "acknowledgementMatters": false,
+      "approvedMetricEvidenceMandatory": true,
+      "currentContractSupportsProjection": false,
+      "migrationDebt": "production contract lacks structured aggregation lineage/restrictions"
+    },
+    {
+      "consumer": "persisted_metric",
+      "requiredProjectionFields": [
+        "lineage",
+        "restrictions",
+        "approvedMetricReference"
+      ],
+      "prohibitedMissingFields": [
+        "lineage",
+        "restrictions",
+        "approvedMetricReference"
+      ],
+      "minimumIntegrityState": "valid",
+      "permittedUseClasses": [],
+      "prohibitedUseClasses": [
+        "persisted_metric"
+      ],
+      "acknowledgementMatters": false,
+      "approvedMetricEvidenceMandatory": true,
+      "currentContractSupportsProjection": false,
+      "migrationDebt": "production contract lacks structured aggregation lineage/restrictions"
+    }
+  ],
+  "productionConsumersModified": false
+}

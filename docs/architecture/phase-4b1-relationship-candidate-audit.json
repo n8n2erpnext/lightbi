@@ -1,0 +1,3748 @@
+{
+  "schemaVersion": "lightbi.phase-4b1-relationship-candidate-audit.v1",
+  "date": "2026-07-12",
+  "corpusVersion": "1.2.0",
+  "relationshipPolicy": {
+    "version": "lightbi.relationship-candidate-policy.v1",
+    "sha256": "6a615bac8756de8e2a3213a041943845726e71f2c8963956bdfe56bd074d5359"
+  },
+  "summary": {
+    "bundleCount": 5,
+    "sourceOccurrences": 12,
+    "pairOccurrences": 9,
+    "relationshipCandidatesByClass": {
+      "unrelated_candidate": 4,
+      "identity_equivalence": 4,
+      "schema_continuation": 3
+    },
+    "operationCandidates": {
+      "no_supported_operation": 4,
+      "unresolved_operation": 5,
+      "join_candidate": 3,
+      "reconcile_candidate": 3,
+      "append_candidate": 3,
+      "compare_candidate": 4
+    },
+    "keyPairAlternatives": 10,
+    "compositeKeyPairAlternatives": 2,
+    "cardinalityAlternatives": {
+      "many_to_many": 6,
+      "one_to_one": 2,
+      "partial_reference": 2
+    },
+    "duplicationRisks": {
+      "schema_drift": 6,
+      "duplicate_left_key": 6,
+      "duplicate_right_key": 6,
+      "many_to_many_fanout": 6,
+      "unknown_risk": 1,
+      "unmatched_reference": 4
+    },
+    "validationOnlyBundles": 5,
+    "productionRulesTuned": 0,
+    "relationshipAccuracyClaim": false,
+    "governanceGaps": [
+      "multi.logistics_period_pair:forbidden_join_candidate_retained_due_insufficient_canonical_refusal_evidence"
+    ]
+  },
+  "preservation": {
+    "finalRelationshipSelected": false,
+    "joinKeySelected": false,
+    "operationApproved": false,
+    "joinOrAppendExecuted": false,
+    "joinSafety": false,
+    "productionWiring": false
+  },
+  "bundles": [
+    {
+      "bundleId": "multi.commerce_may_2026",
+      "tuningUse": "forbidden",
+      "truth": {
+        "expectedRelationships": [
+          {
+            "id": "sales_to_logistics_by_order",
+            "leftSource": "sample data/Sales_ERP_May_2026.xlsx",
+            "rightSource": "sample data/Logistics_ERP_May_2026.csv",
+            "leftKeys": [
+              "OrderID"
+            ],
+            "rightKeys": [
+              "OrderID"
+            ],
+            "expectedCardinality": "one_to_one",
+            "operation": "join",
+            "decision": "allowed_after_key_validation",
+            "joinReasonCode": "shared_business_order_key",
+            "timePeriodAlignment": "2026-05",
+            "duplicationRisk": {
+              "level": "medium",
+              "reasonCode": "validate_key_uniqueness_before_join"
+            }
+          },
+          {
+            "id": "sales_to_accounting_by_order",
+            "leftSource": "sample data/Sales_ERP_May_2026.xlsx",
+            "rightSource": "sample data/Accounting_ERP_May_2026.csv",
+            "leftKeys": [
+              "OrderID"
+            ],
+            "rightKeys": [
+              "OrderID"
+            ],
+            "expectedCardinality": "one_to_one",
+            "operation": "join",
+            "decision": "allowed_after_key_validation",
+            "joinReasonCode": "shared_business_order_key",
+            "timePeriodAlignment": "2026-05",
+            "duplicationRisk": {
+              "level": "medium",
+              "reasonCode": "validate_key_uniqueness_before_join"
+            }
+          }
+        ],
+        "forbiddenRelationships": [
+          {
+            "id": "sales_price_to_logistics_cost",
+            "leftSource": "sample data/Sales_ERP_May_2026.xlsx",
+            "rightSource": "sample data/Logistics_ERP_May_2026.csv",
+            "leftKeys": [
+              "UnitPrice"
+            ],
+            "rightKeys": [
+              "UnitCost"
+            ],
+            "decision": "refuse",
+            "refusalReasonCode": "measure_values_are_not_identity_keys"
+          }
+        ],
+        "timeAlignment": {
+          "expected": "same_period",
+          "periods": [
+            "2026-05"
+          ],
+          "reasonCode": "monthly_bundle_alignment"
+        },
+        "duplicationRisk": {
+          "level": "medium",
+          "reasonCode": "cross_function_grain_must_be_validated"
+        }
+      },
+      "artifact": {
+        "schemaVersion": "lightbi.relationship-candidate-artifact.v1",
+        "bundle": {
+          "bundleId": "multi.commerce_may_2026",
+          "memberSourceIds": [
+            "sample data/Sales_ERP_May_2026.xlsx#Sales",
+            "sample data/Logistics_ERP_May_2026.csv#Sheet1",
+            "sample data/Accounting_ERP_May_2026.csv#Sheet1"
+          ],
+          "canonicalMemberOrder": [
+            "sample data/Accounting_ERP_May_2026.csv#Sheet1",
+            "sample data/Logistics_ERP_May_2026.csv#Sheet1",
+            "sample data/Sales_ERP_May_2026.xlsx#Sales"
+          ],
+          "pairCount": 3
+        },
+        "sources": [
+          {
+            "sourceId": "sample data/Accounting_ERP_May_2026.csv#Sheet1",
+            "sourceHash": {
+              "algorithm": "sha256",
+              "value": "3c59da1c10c67ab974dfd204b737402aff1c28d748665949942579fb5fb1a2fd"
+            },
+            "physicalVersion": "lightbi.dataset-understanding-artifact.v1",
+            "semanticVersion": "lightbi.semantic-resolution-shadow.v1",
+            "grainCandidateVersion": "lightbi.grain-candidate-artifact.v2",
+            "grainResolutionVersion": "lightbi.grain-resolution-shadow.v1"
+          },
+          {
+            "sourceId": "sample data/Logistics_ERP_May_2026.csv#Sheet1",
+            "sourceHash": {
+              "algorithm": "sha256",
+              "value": "e093e56ae6750a5ec3bbc98983f21409f373ee71d75b9cceb12c52b2d840ff72"
+            },
+            "physicalVersion": "lightbi.dataset-understanding-artifact.v1",
+            "semanticVersion": "lightbi.semantic-resolution-shadow.v1",
+            "grainCandidateVersion": "lightbi.grain-candidate-artifact.v2",
+            "grainResolutionVersion": "lightbi.grain-resolution-shadow.v1"
+          },
+          {
+            "sourceId": "sample data/Sales_ERP_May_2026.xlsx#Sales",
+            "sourceHash": {
+              "algorithm": "sha256",
+              "value": "e2cad91d14cf4ae19daa09dd9c980ea57b6b9cc20a518a9fa6818c3b18aef9ae"
+            },
+            "physicalVersion": "lightbi.dataset-understanding-artifact.v1",
+            "semanticVersion": "lightbi.semantic-resolution-shadow.v1",
+            "grainCandidateVersion": "lightbi.grain-candidate-artifact.v2",
+            "grainResolutionVersion": "lightbi.grain-resolution-shadow.v1"
+          }
+        ],
+        "semanticPolicyVersion": "lightbi.semantic-resolution-policy.v2",
+        "semanticPolicyHash": "064e6861cc208e7d35074d9b872e0d4a11dfacdbc850e6d017c24f32462d6ad3",
+        "grainCandidatePolicyVersion": "lightbi.grain-candidate-policy.v2",
+        "grainCandidatePolicyHash": "6ea68eb979878f6fcbd83b180e9eb92789174c23651a476edf50c4efb2f7d531",
+        "grainResolutionPolicyVersion": "lightbi.grain-resolution-policy.v1",
+        "grainResolutionPolicyHash": "219e8b7e78261bcbc9ff4714cf93ec62f709c54670ad7e8bf8a3edbfef01d3ef",
+        "relationshipPolicyVersion": "lightbi.relationship-candidate-policy.v1",
+        "relationshipPolicyHash": "6a615bac8756de8e2a3213a041943845726e71f2c8963956bdfe56bd074d5359",
+        "pairs": [
+          {
+            "pairId": "pair:23857b1b9f637f2c",
+            "leftSourceId": "sample data/Accounting_ERP_May_2026.csv#Sheet1",
+            "rightSourceId": "sample data/Sales_ERP_May_2026.xlsx#Sales",
+            "candidates": [
+              {
+                "candidateId": "pair:23857b1b9f637f2c:unresolved",
+                "relationshipClass": "unrelated_candidate",
+                "operationAlternatives": [
+                  "no_supported_operation",
+                  "unresolved_operation"
+                ],
+                "keyPairAlternatives": [],
+                "cardinalityAlternatives": [],
+                "evidence": [
+                  {
+                    "evidenceId": "pair:23857b1b9f637f2c:schema",
+                    "family": "schema_compatibility",
+                    "direction": "mixed",
+                    "provenance": "full_file_profile",
+                    "references": [
+                      "Brand",
+                      "Category",
+                      "Discount",
+                      "OrderID",
+                      "Payment",
+                      "Product",
+                      "Qty",
+                      "Salesperson",
+                      "Store",
+                      "UnitPrice"
+                    ],
+                    "correlatedWith": [],
+                    "explanationCode": "schema_compatibility_observed"
+                  },
+                  {
+                    "evidenceId": "pair:23857b1b9f637f2c:grain",
+                    "family": "grain_compatibility",
+                    "direction": "mixed",
+                    "provenance": "grain_resolution",
+                    "references": [],
+                    "correlatedWith": [],
+                    "explanationCode": "axis_local_grain_comparison"
+                  }
+                ],
+                "conflicts": [],
+                "schema": {
+                  "exactMatches": [
+                    "Brand",
+                    "Category",
+                    "Discount",
+                    "OrderID",
+                    "Payment",
+                    "Product",
+                    "Qty",
+                    "Salesperson",
+                    "Store",
+                    "UnitPrice"
+                  ],
+                  "renameCompatible": [],
+                  "missingLeft": [
+                    "OrderDate",
+                    "Revenue",
+                    "Status"
+                  ],
+                  "missingRight": [
+                    "AR_Account",
+                    "AR_Debit",
+                    "COGS_Account",
+                    "COGS_Debit",
+                    "GrossProfit",
+                    "Inventory_Account",
+                    "Inventory_Credit",
+                    "InvoiceDate",
+                    "InvoiceNo",
+                    "InvoiceTotal",
+                    "JournalNo",
+                    "MarginPct",
+                    "NetRevenue",
+                    "Revenue_Account",
+                    "Revenue_Credit",
+                    "SKU",
+                    "TotalCost",
+                    "UnitCost",
+                    "VATOutput",
+                    "VATOutput_Credit",
+                    "VATRate",
+                    "VAT_Account"
+                  ],
+                  "incompatiblePhysicalTypes": [],
+                  "semanticConflicts": [],
+                  "grainConflicts": [],
+                  "measureRoleConflicts": [],
+                  "structuralLimitations": []
+                },
+                "temporal": {
+                  "alternatives": [
+                    "overlapping_periods",
+                    "event_window_alignment"
+                  ],
+                  "leftRange": {
+                    "min": "2026-05-01T00:00:00.000Z",
+                    "max": "2026-05-31T00:00:00.000Z"
+                  },
+                  "rightRange": {
+                    "min": "2026-05-01T08:14:00.000Z",
+                    "max": "2026-05-31T20:15:00.000Z"
+                  },
+                  "provenance": [
+                    "full_file_profile"
+                  ],
+                  "limitations": []
+                },
+                "grain": {
+                  "structural": "unresolved",
+                  "identity": "compatible",
+                  "parent": "compatible",
+                  "temporal": "compatible",
+                  "aggregation": "compatible",
+                  "semanticLimitations": [],
+                  "candidateDebt": []
+                },
+                "duplication": {
+                  "risks": [
+                    "schema_drift"
+                  ],
+                  "safetyInferred": false
+                },
+                "limitations": [
+                  "candidate_only",
+                  "operation_not_approved"
+                ],
+                "debt": [],
+                "selected": false
+              }
+            ],
+            "generationReasons": [],
+            "exclusionReasons": [
+              "no_mechanically_plausible_key_pair",
+              "schema_continuation_not_supported"
+            ],
+            "compositeSearch": {
+              "maxWidth": 3,
+              "maximumCombinations": 64,
+              "evaluated": 0,
+              "pruned": 0,
+              "skipped": 0,
+              "deterministicOrder": "canonical_column_name"
+            }
+          },
+          {
+            "pairId": "pair:7c6214dbcf4d1a72",
+            "leftSourceId": "sample data/Accounting_ERP_May_2026.csv#Sheet1",
+            "rightSourceId": "sample data/Logistics_ERP_May_2026.csv#Sheet1",
+            "candidates": [
+              {
+                "candidateId": "pair:7c6214dbcf4d1a72:identity",
+                "relationshipClass": "identity_equivalence",
+                "operationAlternatives": [
+                  "join_candidate",
+                  "reconcile_candidate"
+                ],
+                "keyPairAlternatives": [
+                  {
+                    "candidateId": "key:6502af77c728fdbf",
+                    "kind": "single",
+                    "left": {
+                      "sourceId": "sample data/Accounting_ERP_May_2026.csv#Sheet1",
+                      "physicalColumns": [
+                        {
+                          "index": 7,
+                          "name": "SKU",
+                          "physicalTypes": [
+                            "string"
+                          ]
+                        }
+                      ],
+                      "semanticResolutions": [
+                        {
+                          "physicalColumn": "SKU",
+                          "state": "ambiguous",
+                          "selectedCandidateId": null,
+                          "candidateIds": [
+                            "branch",
+                            "sku"
+                          ]
+                        }
+                      ],
+                      "grainDependencies": {
+                        "structural": "unknown",
+                        "identity": "no_key",
+                        "parent": "no_parent",
+                        "temporal": "unresolved",
+                        "aggregation": "unresolved"
+                      },
+                      "identityState": "unknown",
+                      "keyProvenance": [],
+                      "nonNullRatio": 1,
+                      "uniquenessRatio": 0.36333333333333334,
+                      "limitations": [
+                        "ambiguous_identifier_alternative",
+                        "semantic_role_unresolved"
+                      ],
+                      "debt": []
+                    },
+                    "right": {
+                      "sourceId": "sample data/Logistics_ERP_May_2026.csv#Sheet1",
+                      "physicalColumns": [
+                        {
+                          "index": 8,
+                          "name": "SKU",
+                          "physicalTypes": [
+                            "string"
+                          ]
+                        }
+                      ],
+                      "semanticResolutions": [
+                        {
+                          "physicalColumn": "SKU",
+                          "state": "ambiguous",
+                          "selectedCandidateId": null,
+                          "candidateIds": [
+                            "branch",
+                            "sku"
+                          ]
+                        }
+                      ],
+                      "grainDependencies": {
+                        "structural": "line",
+                        "identity": "ambiguous_key",
+                        "parent": "parent_key",
+                        "temporal": "event",
+                        "aggregation": "repeated_parent_values"
+                      },
+                      "identityState": "probable",
+                      "keyProvenance": [],
+                      "nonNullRatio": 1,
+                      "uniquenessRatio": 0.36333333333333334,
+                      "limitations": [
+                        "ambiguous_identifier_alternative",
+                        "semantic_role_unresolved"
+                      ],
+                      "debt": []
+                    },
+                    "componentPairs": [
+                      {
+                        "leftColumn": "SKU",
+                        "rightColumn": "SKU",
+                        "basis": "ambiguous_semantic"
+                      }
+                    ],
+                    "overlap": {
+                      "scope": "full_file",
+                      "leftDistinct": 545,
+                      "rightDistinct": 545,
+                      "matchedDistinct": 545,
+                      "leftMatchedRows": 1500,
+                      "rightMatchedRows": 1500,
+                      "leftUnmatchedDistinct": 0,
+                      "rightUnmatchedDistinct": 0,
+                      "leftNulls": 0,
+                      "rightNulls": 0,
+                      "leftDuplicateRows": 955,
+                      "rightDuplicateRows": 955,
+                      "leftMaxFrequency": 8,
+                      "rightMaxFrequency": 8,
+                      "leftOverlapRatio": 1,
+                      "rightOverlapRatio": 1,
+                      "coverageRatio": 1,
+                      "possibleFanout": true,
+                      "witnessHashes": [
+                        "cc278ad1fd7a9841",
+                        "f9347e98a1da5e4c",
+                        "961326c463313b0e",
+                        "f44f269b76f1a00d",
+                        "63f6ab9dac4ecd6b"
+                      ],
+                      "rawValuesPersisted": false
+                    },
+                    "cardinalityAlternatives": [
+                      "many_to_many"
+                    ],
+                    "limitations": []
+                  }
+                ],
+                "cardinalityAlternatives": [
+                  "many_to_many"
+                ],
+                "evidence": [
+                  {
+                    "evidenceId": "pair:7c6214dbcf4d1a72:schema",
+                    "family": "schema_compatibility",
+                    "direction": "mixed",
+                    "provenance": "full_file_profile",
+                    "references": [
+                      "Brand",
+                      "Category",
+                      "OrderID",
+                      "Product",
+                      "Qty",
+                      "SKU",
+                      "Store",
+                      "TotalCost",
+                      "UnitCost"
+                    ],
+                    "correlatedWith": [],
+                    "explanationCode": "schema_compatibility_observed"
+                  },
+                  {
+                    "evidenceId": "pair:7c6214dbcf4d1a72:grain",
+                    "family": "grain_compatibility",
+                    "direction": "mixed",
+                    "provenance": "grain_resolution",
+                    "references": [],
+                    "correlatedWith": [],
+                    "explanationCode": "axis_local_grain_comparison"
+                  },
+                  {
+                    "evidenceId": "pair:7c6214dbcf4d1a72:keys",
+                    "family": "key_structure",
+                    "direction": "supports",
+                    "provenance": "full_file_rows",
+                    "references": [
+                      "key:6502af77c728fdbf"
+                    ],
+                    "correlatedWith": [],
+                    "explanationCode": "bounded_key_pairs_observed"
+                  }
+                ],
+                "conflicts": [],
+                "schema": {
+                  "exactMatches": [
+                    "Brand",
+                    "Category",
+                    "OrderID",
+                    "Product",
+                    "Qty",
+                    "SKU",
+                    "Store",
+                    "TotalCost",
+                    "UnitCost"
+                  ],
+                  "renameCompatible": [],
+                  "missingLeft": [
+                    "Carrier",
+                    "DeliveredAt",
+                    "DeliveryFee",
+                    "DeliveryStatus",
+                    "OrderDate",
+                    "PickNo",
+                    "ShipmentID",
+                    "ShippedAt",
+                    "Warehouse"
+                  ],
+                  "missingRight": [
+                    "AR_Account",
+                    "AR_Debit",
+                    "COGS_Account",
+                    "COGS_Debit",
+                    "Discount",
+                    "GrossProfit",
+                    "Inventory_Account",
+                    "Inventory_Credit",
+                    "InvoiceDate",
+                    "InvoiceNo",
+                    "InvoiceTotal",
+                    "JournalNo",
+                    "MarginPct",
+                    "NetRevenue",
+                    "Payment",
+                    "Revenue_Account",
+                    "Revenue_Credit",
+                    "Salesperson",
+                    "UnitPrice",
+                    "VATOutput",
+                    "VATOutput_Credit",
+                    "VATRate",
+                    "VAT_Account"
+                  ],
+                  "incompatiblePhysicalTypes": [],
+                  "semanticConflicts": [],
+                  "grainConflicts": [
+                    "structural_form_differs"
+                  ],
+                  "measureRoleConflicts": [],
+                  "structuralLimitations": []
+                },
+                "temporal": {
+                  "alternatives": [
+                    "overlapping_periods",
+                    "event_window_alignment"
+                  ],
+                  "leftRange": {
+                    "min": "2026-05-01T00:00:00.000Z",
+                    "max": "2026-05-31T00:00:00.000Z"
+                  },
+                  "rightRange": {
+                    "min": "2026-05-01T08:14:00.000Z",
+                    "max": "2026-06-03T01:40:00.000Z"
+                  },
+                  "provenance": [
+                    "full_file_profile"
+                  ],
+                  "limitations": []
+                },
+                "grain": {
+                  "structural": "unresolved",
+                  "identity": "mixed",
+                  "parent": "mixed",
+                  "temporal": "mixed",
+                  "aggregation": "mixed",
+                  "semanticLimitations": [],
+                  "candidateDebt": []
+                },
+                "duplication": {
+                  "risks": [
+                    "duplicate_left_key",
+                    "duplicate_right_key",
+                    "many_to_many_fanout",
+                    "schema_drift"
+                  ],
+                  "safetyInferred": false
+                },
+                "limitations": [
+                  "candidate_only",
+                  "operation_not_approved"
+                ],
+                "debt": [],
+                "selected": false
+              }
+            ],
+            "generationReasons": [
+              "bounded_key_pair"
+            ],
+            "exclusionReasons": [
+              "schema_continuation_not_supported"
+            ],
+            "compositeSearch": {
+              "maxWidth": 3,
+              "maximumCombinations": 64,
+              "evaluated": 3,
+              "pruned": 2,
+              "skipped": 0,
+              "deterministicOrder": "canonical_column_name"
+            }
+          },
+          {
+            "pairId": "pair:e5224dd199f8f4f5",
+            "leftSourceId": "sample data/Logistics_ERP_May_2026.csv#Sheet1",
+            "rightSourceId": "sample data/Sales_ERP_May_2026.xlsx#Sales",
+            "candidates": [
+              {
+                "candidateId": "pair:e5224dd199f8f4f5:unresolved",
+                "relationshipClass": "unrelated_candidate",
+                "operationAlternatives": [
+                  "no_supported_operation",
+                  "unresolved_operation"
+                ],
+                "keyPairAlternatives": [],
+                "cardinalityAlternatives": [],
+                "evidence": [
+                  {
+                    "evidenceId": "pair:e5224dd199f8f4f5:schema",
+                    "family": "schema_compatibility",
+                    "direction": "mixed",
+                    "provenance": "full_file_profile",
+                    "references": [
+                      "Brand",
+                      "Category",
+                      "OrderDate",
+                      "OrderID",
+                      "Product",
+                      "Qty",
+                      "Store"
+                    ],
+                    "correlatedWith": [],
+                    "explanationCode": "schema_compatibility_observed"
+                  },
+                  {
+                    "evidenceId": "pair:e5224dd199f8f4f5:grain",
+                    "family": "grain_compatibility",
+                    "direction": "mixed",
+                    "provenance": "grain_resolution",
+                    "references": [],
+                    "correlatedWith": [],
+                    "explanationCode": "axis_local_grain_comparison"
+                  }
+                ],
+                "conflicts": [],
+                "schema": {
+                  "exactMatches": [
+                    "Brand",
+                    "Category",
+                    "OrderDate",
+                    "OrderID",
+                    "Product",
+                    "Qty",
+                    "Store"
+                  ],
+                  "renameCompatible": [],
+                  "missingLeft": [
+                    "Discount",
+                    "Payment",
+                    "Revenue",
+                    "Salesperson",
+                    "Status",
+                    "UnitPrice"
+                  ],
+                  "missingRight": [
+                    "Carrier",
+                    "DeliveredAt",
+                    "DeliveryFee",
+                    "DeliveryStatus",
+                    "PickNo",
+                    "SKU",
+                    "ShipmentID",
+                    "ShippedAt",
+                    "TotalCost",
+                    "UnitCost",
+                    "Warehouse"
+                  ],
+                  "incompatiblePhysicalTypes": [],
+                  "semanticConflicts": [],
+                  "grainConflicts": [
+                    "structural_form_differs"
+                  ],
+                  "measureRoleConflicts": [],
+                  "structuralLimitations": []
+                },
+                "temporal": {
+                  "alternatives": [
+                    "overlapping_periods",
+                    "event_window_alignment"
+                  ],
+                  "leftRange": {
+                    "min": "2026-05-01T08:14:00.000Z",
+                    "max": "2026-06-03T01:40:00.000Z"
+                  },
+                  "rightRange": {
+                    "min": "2026-05-01T08:14:00.000Z",
+                    "max": "2026-05-31T20:15:00.000Z"
+                  },
+                  "provenance": [
+                    "full_file_profile"
+                  ],
+                  "limitations": []
+                },
+                "grain": {
+                  "structural": "unresolved",
+                  "identity": "mixed",
+                  "parent": "mixed",
+                  "temporal": "mixed",
+                  "aggregation": "mixed",
+                  "semanticLimitations": [],
+                  "candidateDebt": []
+                },
+                "duplication": {
+                  "risks": [
+                    "schema_drift"
+                  ],
+                  "safetyInferred": false
+                },
+                "limitations": [
+                  "candidate_only",
+                  "operation_not_approved"
+                ],
+                "debt": [],
+                "selected": false
+              }
+            ],
+            "generationReasons": [],
+            "exclusionReasons": [
+              "no_mechanically_plausible_key_pair",
+              "schema_continuation_not_supported"
+            ],
+            "compositeSearch": {
+              "maxWidth": 3,
+              "maximumCombinations": 64,
+              "evaluated": 0,
+              "pruned": 0,
+              "skipped": 0,
+              "deterministicOrder": "canonical_column_name"
+            }
+          }
+        ],
+        "coverage": {
+          "declaredSources": 3,
+          "validSources": 3,
+          "expectedPairs": 3,
+          "observedPairs": 3,
+          "inputGrainCandidates": 9,
+          "preservedDebt": 0
+        },
+        "limitations": [
+          "candidate_generation_only",
+          "no_operation_or_safety_approval"
+        ],
+        "debt": [],
+        "finalRelationshipResolution": {
+          "executed": false
+        },
+        "joinSafety": {
+          "executed": false
+        },
+        "productionWiring": {
+          "executed": false
+        }
+      }
+    },
+    {
+      "bundleId": "multi.commerce_june_2026",
+      "tuningUse": "forbidden",
+      "truth": {
+        "expectedRelationships": [
+          {
+            "id": "sales_to_logistics_by_order",
+            "leftSource": "sample data/Sales_ERP_June_2026.xlsx",
+            "rightSource": "sample data/Logistics_ERP_June_2026.csv",
+            "leftKeys": [
+              "OrderID"
+            ],
+            "rightKeys": [
+              "OrderID"
+            ],
+            "expectedCardinality": "one_to_one",
+            "operation": "join",
+            "decision": "allowed_after_key_validation",
+            "joinReasonCode": "shared_business_order_key",
+            "timePeriodAlignment": "2026-06",
+            "duplicationRisk": {
+              "level": "medium",
+              "reasonCode": "validate_key_uniqueness_before_join"
+            }
+          },
+          {
+            "id": "sales_to_accounting_by_order",
+            "leftSource": "sample data/Sales_ERP_June_2026.xlsx",
+            "rightSource": "sample data/Accounting_ERP_June_2026.csv",
+            "leftKeys": [
+              "OrderID"
+            ],
+            "rightKeys": [
+              "OrderID"
+            ],
+            "expectedCardinality": "one_to_one",
+            "operation": "join",
+            "decision": "allowed_after_key_validation",
+            "joinReasonCode": "shared_business_order_key",
+            "timePeriodAlignment": "2026-06",
+            "duplicationRisk": {
+              "level": "medium",
+              "reasonCode": "validate_key_uniqueness_before_join"
+            }
+          }
+        ],
+        "forbiddenRelationships": [
+          {
+            "id": "sales_price_to_logistics_cost",
+            "leftSource": "sample data/Sales_ERP_June_2026.xlsx",
+            "rightSource": "sample data/Logistics_ERP_June_2026.csv",
+            "leftKeys": [
+              "UnitPrice"
+            ],
+            "rightKeys": [
+              "UnitCost"
+            ],
+            "decision": "refuse",
+            "refusalReasonCode": "measure_values_are_not_identity_keys"
+          }
+        ],
+        "timeAlignment": {
+          "expected": "same_period",
+          "periods": [
+            "2026-06"
+          ],
+          "reasonCode": "monthly_bundle_alignment"
+        },
+        "duplicationRisk": {
+          "level": "medium",
+          "reasonCode": "cross_function_grain_must_be_validated"
+        }
+      },
+      "artifact": {
+        "schemaVersion": "lightbi.relationship-candidate-artifact.v1",
+        "bundle": {
+          "bundleId": "multi.commerce_june_2026",
+          "memberSourceIds": [
+            "sample data/Sales_ERP_June_2026.xlsx#Sales",
+            "sample data/Logistics_ERP_June_2026.csv#Sheet1",
+            "sample data/Accounting_ERP_June_2026.csv#Sheet1"
+          ],
+          "canonicalMemberOrder": [
+            "sample data/Accounting_ERP_June_2026.csv#Sheet1",
+            "sample data/Logistics_ERP_June_2026.csv#Sheet1",
+            "sample data/Sales_ERP_June_2026.xlsx#Sales"
+          ],
+          "pairCount": 3
+        },
+        "sources": [
+          {
+            "sourceId": "sample data/Accounting_ERP_June_2026.csv#Sheet1",
+            "sourceHash": {
+              "algorithm": "sha256",
+              "value": "b3a3b290d5f54ca5d7fc79b7aed0f287f539e665113331bb6d4764fa5fc6aaea"
+            },
+            "physicalVersion": "lightbi.dataset-understanding-artifact.v1",
+            "semanticVersion": "lightbi.semantic-resolution-shadow.v1",
+            "grainCandidateVersion": "lightbi.grain-candidate-artifact.v2",
+            "grainResolutionVersion": "lightbi.grain-resolution-shadow.v1"
+          },
+          {
+            "sourceId": "sample data/Logistics_ERP_June_2026.csv#Sheet1",
+            "sourceHash": {
+              "algorithm": "sha256",
+              "value": "ccc7f8036429a5c1b879a8a77dec843ef5ba65dbb88e3b2471a0aa70cd0bb216"
+            },
+            "physicalVersion": "lightbi.dataset-understanding-artifact.v1",
+            "semanticVersion": "lightbi.semantic-resolution-shadow.v1",
+            "grainCandidateVersion": "lightbi.grain-candidate-artifact.v2",
+            "grainResolutionVersion": "lightbi.grain-resolution-shadow.v1"
+          },
+          {
+            "sourceId": "sample data/Sales_ERP_June_2026.xlsx#Sales",
+            "sourceHash": {
+              "algorithm": "sha256",
+              "value": "a0a69a4d45531090ed5a829467d25ca89320d17792a72e4a91c55b95b9469e52"
+            },
+            "physicalVersion": "lightbi.dataset-understanding-artifact.v1",
+            "semanticVersion": "lightbi.semantic-resolution-shadow.v1",
+            "grainCandidateVersion": "lightbi.grain-candidate-artifact.v2",
+            "grainResolutionVersion": "lightbi.grain-resolution-shadow.v1"
+          }
+        ],
+        "semanticPolicyVersion": "lightbi.semantic-resolution-policy.v2",
+        "semanticPolicyHash": "064e6861cc208e7d35074d9b872e0d4a11dfacdbc850e6d017c24f32462d6ad3",
+        "grainCandidatePolicyVersion": "lightbi.grain-candidate-policy.v2",
+        "grainCandidatePolicyHash": "6ea68eb979878f6fcbd83b180e9eb92789174c23651a476edf50c4efb2f7d531",
+        "grainResolutionPolicyVersion": "lightbi.grain-resolution-policy.v1",
+        "grainResolutionPolicyHash": "219e8b7e78261bcbc9ff4714cf93ec62f709c54670ad7e8bf8a3edbfef01d3ef",
+        "relationshipPolicyVersion": "lightbi.relationship-candidate-policy.v1",
+        "relationshipPolicyHash": "6a615bac8756de8e2a3213a041943845726e71f2c8963956bdfe56bd074d5359",
+        "pairs": [
+          {
+            "pairId": "pair:ac78987907cd6c20",
+            "leftSourceId": "sample data/Accounting_ERP_June_2026.csv#Sheet1",
+            "rightSourceId": "sample data/Sales_ERP_June_2026.xlsx#Sales",
+            "candidates": [
+              {
+                "candidateId": "pair:ac78987907cd6c20:unresolved",
+                "relationshipClass": "unrelated_candidate",
+                "operationAlternatives": [
+                  "no_supported_operation",
+                  "unresolved_operation"
+                ],
+                "keyPairAlternatives": [],
+                "cardinalityAlternatives": [],
+                "evidence": [
+                  {
+                    "evidenceId": "pair:ac78987907cd6c20:schema",
+                    "family": "schema_compatibility",
+                    "direction": "mixed",
+                    "provenance": "full_file_profile",
+                    "references": [
+                      "Brand",
+                      "Category",
+                      "Discount",
+                      "OrderID",
+                      "Payment",
+                      "Product",
+                      "Qty",
+                      "Salesperson",
+                      "Store",
+                      "UnitPrice"
+                    ],
+                    "correlatedWith": [],
+                    "explanationCode": "schema_compatibility_observed"
+                  },
+                  {
+                    "evidenceId": "pair:ac78987907cd6c20:grain",
+                    "family": "grain_compatibility",
+                    "direction": "mixed",
+                    "provenance": "grain_resolution",
+                    "references": [],
+                    "correlatedWith": [],
+                    "explanationCode": "axis_local_grain_comparison"
+                  }
+                ],
+                "conflicts": [],
+                "schema": {
+                  "exactMatches": [
+                    "Brand",
+                    "Category",
+                    "Discount",
+                    "OrderID",
+                    "Payment",
+                    "Product",
+                    "Qty",
+                    "Salesperson",
+                    "Store",
+                    "UnitPrice"
+                  ],
+                  "renameCompatible": [],
+                  "missingLeft": [
+                    "OrderDate",
+                    "Revenue",
+                    "Status"
+                  ],
+                  "missingRight": [
+                    "AR_Account",
+                    "AR_Debit",
+                    "COGS_Account",
+                    "COGS_Debit",
+                    "GrossProfit",
+                    "Inventory_Account",
+                    "Inventory_Credit",
+                    "InvoiceDate",
+                    "InvoiceNo",
+                    "InvoiceTotal",
+                    "JournalNo",
+                    "MarginPct",
+                    "NetRevenue",
+                    "Revenue_Account",
+                    "Revenue_Credit",
+                    "SKU",
+                    "TotalCost",
+                    "UnitCost",
+                    "VATOutput",
+                    "VATOutput_Credit",
+                    "VATRate",
+                    "VAT_Account"
+                  ],
+                  "incompatiblePhysicalTypes": [],
+                  "semanticConflicts": [],
+                  "grainConflicts": [],
+                  "measureRoleConflicts": [],
+                  "structuralLimitations": []
+                },
+                "temporal": {
+                  "alternatives": [
+                    "overlapping_periods",
+                    "event_window_alignment"
+                  ],
+                  "leftRange": {
+                    "min": "2026-06-01T00:00:00.000Z",
+                    "max": "2026-06-30T00:00:00.000Z"
+                  },
+                  "rightRange": {
+                    "min": "2026-06-01T08:28:00.000Z",
+                    "max": "2026-06-30T20:50:00.000Z"
+                  },
+                  "provenance": [
+                    "full_file_profile"
+                  ],
+                  "limitations": []
+                },
+                "grain": {
+                  "structural": "unresolved",
+                  "identity": "compatible",
+                  "parent": "compatible",
+                  "temporal": "compatible",
+                  "aggregation": "compatible",
+                  "semanticLimitations": [],
+                  "candidateDebt": []
+                },
+                "duplication": {
+                  "risks": [
+                    "schema_drift"
+                  ],
+                  "safetyInferred": false
+                },
+                "limitations": [
+                  "candidate_only",
+                  "operation_not_approved"
+                ],
+                "debt": [],
+                "selected": false
+              }
+            ],
+            "generationReasons": [],
+            "exclusionReasons": [
+              "no_mechanically_plausible_key_pair",
+              "schema_continuation_not_supported"
+            ],
+            "compositeSearch": {
+              "maxWidth": 3,
+              "maximumCombinations": 64,
+              "evaluated": 0,
+              "pruned": 0,
+              "skipped": 0,
+              "deterministicOrder": "canonical_column_name"
+            }
+          },
+          {
+            "pairId": "pair:d31d59ba9619b647",
+            "leftSourceId": "sample data/Accounting_ERP_June_2026.csv#Sheet1",
+            "rightSourceId": "sample data/Logistics_ERP_June_2026.csv#Sheet1",
+            "candidates": [
+              {
+                "candidateId": "pair:d31d59ba9619b647:identity",
+                "relationshipClass": "identity_equivalence",
+                "operationAlternatives": [
+                  "join_candidate",
+                  "reconcile_candidate"
+                ],
+                "keyPairAlternatives": [
+                  {
+                    "candidateId": "key:6502af77c728fdbf",
+                    "kind": "single",
+                    "left": {
+                      "sourceId": "sample data/Accounting_ERP_June_2026.csv#Sheet1",
+                      "physicalColumns": [
+                        {
+                          "index": 7,
+                          "name": "SKU",
+                          "physicalTypes": [
+                            "string"
+                          ]
+                        }
+                      ],
+                      "semanticResolutions": [
+                        {
+                          "physicalColumn": "SKU",
+                          "state": "ambiguous",
+                          "selectedCandidateId": null,
+                          "candidateIds": [
+                            "branch",
+                            "sku"
+                          ]
+                        }
+                      ],
+                      "grainDependencies": {
+                        "structural": "unknown",
+                        "identity": "no_key",
+                        "parent": "no_parent",
+                        "temporal": "unresolved",
+                        "aggregation": "unresolved"
+                      },
+                      "identityState": "unknown",
+                      "keyProvenance": [],
+                      "nonNullRatio": 1,
+                      "uniquenessRatio": 0.36133333333333334,
+                      "limitations": [
+                        "ambiguous_identifier_alternative",
+                        "semantic_role_unresolved"
+                      ],
+                      "debt": []
+                    },
+                    "right": {
+                      "sourceId": "sample data/Logistics_ERP_June_2026.csv#Sheet1",
+                      "physicalColumns": [
+                        {
+                          "index": 8,
+                          "name": "SKU",
+                          "physicalTypes": [
+                            "string"
+                          ]
+                        }
+                      ],
+                      "semanticResolutions": [
+                        {
+                          "physicalColumn": "SKU",
+                          "state": "ambiguous",
+                          "selectedCandidateId": null,
+                          "candidateIds": [
+                            "branch",
+                            "sku"
+                          ]
+                        }
+                      ],
+                      "grainDependencies": {
+                        "structural": "line",
+                        "identity": "ambiguous_key",
+                        "parent": "parent_key",
+                        "temporal": "event",
+                        "aggregation": "repeated_parent_values"
+                      },
+                      "identityState": "probable",
+                      "keyProvenance": [],
+                      "nonNullRatio": 1,
+                      "uniquenessRatio": 0.36133333333333334,
+                      "limitations": [
+                        "ambiguous_identifier_alternative",
+                        "semantic_role_unresolved"
+                      ],
+                      "debt": []
+                    },
+                    "componentPairs": [
+                      {
+                        "leftColumn": "SKU",
+                        "rightColumn": "SKU",
+                        "basis": "ambiguous_semantic"
+                      }
+                    ],
+                    "overlap": {
+                      "scope": "full_file",
+                      "leftDistinct": 542,
+                      "rightDistinct": 542,
+                      "matchedDistinct": 542,
+                      "leftMatchedRows": 1500,
+                      "rightMatchedRows": 1500,
+                      "leftUnmatchedDistinct": 0,
+                      "rightUnmatchedDistinct": 0,
+                      "leftNulls": 0,
+                      "rightNulls": 0,
+                      "leftDuplicateRows": 958,
+                      "rightDuplicateRows": 958,
+                      "leftMaxFrequency": 9,
+                      "rightMaxFrequency": 9,
+                      "leftOverlapRatio": 1,
+                      "rightOverlapRatio": 1,
+                      "coverageRatio": 1,
+                      "possibleFanout": true,
+                      "witnessHashes": [
+                        "cc278ad1fd7a9841",
+                        "f9347e98a1da5e4c",
+                        "961326c463313b0e",
+                        "f44f269b76f1a00d",
+                        "63f6ab9dac4ecd6b"
+                      ],
+                      "rawValuesPersisted": false
+                    },
+                    "cardinalityAlternatives": [
+                      "many_to_many"
+                    ],
+                    "limitations": []
+                  }
+                ],
+                "cardinalityAlternatives": [
+                  "many_to_many"
+                ],
+                "evidence": [
+                  {
+                    "evidenceId": "pair:d31d59ba9619b647:schema",
+                    "family": "schema_compatibility",
+                    "direction": "mixed",
+                    "provenance": "full_file_profile",
+                    "references": [
+                      "Brand",
+                      "Category",
+                      "OrderID",
+                      "Product",
+                      "Qty",
+                      "SKU",
+                      "Store",
+                      "TotalCost",
+                      "UnitCost"
+                    ],
+                    "correlatedWith": [],
+                    "explanationCode": "schema_compatibility_observed"
+                  },
+                  {
+                    "evidenceId": "pair:d31d59ba9619b647:grain",
+                    "family": "grain_compatibility",
+                    "direction": "mixed",
+                    "provenance": "grain_resolution",
+                    "references": [],
+                    "correlatedWith": [],
+                    "explanationCode": "axis_local_grain_comparison"
+                  },
+                  {
+                    "evidenceId": "pair:d31d59ba9619b647:keys",
+                    "family": "key_structure",
+                    "direction": "supports",
+                    "provenance": "full_file_rows",
+                    "references": [
+                      "key:6502af77c728fdbf"
+                    ],
+                    "correlatedWith": [],
+                    "explanationCode": "bounded_key_pairs_observed"
+                  }
+                ],
+                "conflicts": [],
+                "schema": {
+                  "exactMatches": [
+                    "Brand",
+                    "Category",
+                    "OrderID",
+                    "Product",
+                    "Qty",
+                    "SKU",
+                    "Store",
+                    "TotalCost",
+                    "UnitCost"
+                  ],
+                  "renameCompatible": [],
+                  "missingLeft": [
+                    "Carrier",
+                    "DeliveredAt",
+                    "DeliveryFee",
+                    "DeliveryStatus",
+                    "OrderDate",
+                    "PickNo",
+                    "ShipmentID",
+                    "ShippedAt",
+                    "Warehouse"
+                  ],
+                  "missingRight": [
+                    "AR_Account",
+                    "AR_Debit",
+                    "COGS_Account",
+                    "COGS_Debit",
+                    "Discount",
+                    "GrossProfit",
+                    "Inventory_Account",
+                    "Inventory_Credit",
+                    "InvoiceDate",
+                    "InvoiceNo",
+                    "InvoiceTotal",
+                    "JournalNo",
+                    "MarginPct",
+                    "NetRevenue",
+                    "Payment",
+                    "Revenue_Account",
+                    "Revenue_Credit",
+                    "Salesperson",
+                    "UnitPrice",
+                    "VATOutput",
+                    "VATOutput_Credit",
+                    "VATRate",
+                    "VAT_Account"
+                  ],
+                  "incompatiblePhysicalTypes": [],
+                  "semanticConflicts": [],
+                  "grainConflicts": [
+                    "structural_form_differs"
+                  ],
+                  "measureRoleConflicts": [],
+                  "structuralLimitations": []
+                },
+                "temporal": {
+                  "alternatives": [
+                    "overlapping_periods",
+                    "event_window_alignment"
+                  ],
+                  "leftRange": {
+                    "min": "2026-06-01T00:00:00.000Z",
+                    "max": "2026-06-30T00:00:00.000Z"
+                  },
+                  "rightRange": {
+                    "min": "2026-06-01T08:28:00.000Z",
+                    "max": "2026-07-03T02:40:00.000Z"
+                  },
+                  "provenance": [
+                    "full_file_profile"
+                  ],
+                  "limitations": []
+                },
+                "grain": {
+                  "structural": "unresolved",
+                  "identity": "mixed",
+                  "parent": "mixed",
+                  "temporal": "mixed",
+                  "aggregation": "mixed",
+                  "semanticLimitations": [],
+                  "candidateDebt": []
+                },
+                "duplication": {
+                  "risks": [
+                    "duplicate_left_key",
+                    "duplicate_right_key",
+                    "many_to_many_fanout",
+                    "schema_drift"
+                  ],
+                  "safetyInferred": false
+                },
+                "limitations": [
+                  "candidate_only",
+                  "operation_not_approved"
+                ],
+                "debt": [],
+                "selected": false
+              }
+            ],
+            "generationReasons": [
+              "bounded_key_pair"
+            ],
+            "exclusionReasons": [
+              "schema_continuation_not_supported"
+            ],
+            "compositeSearch": {
+              "maxWidth": 3,
+              "maximumCombinations": 64,
+              "evaluated": 3,
+              "pruned": 2,
+              "skipped": 0,
+              "deterministicOrder": "canonical_column_name"
+            }
+          },
+          {
+            "pairId": "pair:e05cac4cc63dd89d",
+            "leftSourceId": "sample data/Logistics_ERP_June_2026.csv#Sheet1",
+            "rightSourceId": "sample data/Sales_ERP_June_2026.xlsx#Sales",
+            "candidates": [
+              {
+                "candidateId": "pair:e05cac4cc63dd89d:unresolved",
+                "relationshipClass": "unrelated_candidate",
+                "operationAlternatives": [
+                  "no_supported_operation",
+                  "unresolved_operation"
+                ],
+                "keyPairAlternatives": [],
+                "cardinalityAlternatives": [],
+                "evidence": [
+                  {
+                    "evidenceId": "pair:e05cac4cc63dd89d:schema",
+                    "family": "schema_compatibility",
+                    "direction": "mixed",
+                    "provenance": "full_file_profile",
+                    "references": [
+                      "Brand",
+                      "Category",
+                      "OrderDate",
+                      "OrderID",
+                      "Product",
+                      "Qty",
+                      "Store"
+                    ],
+                    "correlatedWith": [],
+                    "explanationCode": "schema_compatibility_observed"
+                  },
+                  {
+                    "evidenceId": "pair:e05cac4cc63dd89d:grain",
+                    "family": "grain_compatibility",
+                    "direction": "mixed",
+                    "provenance": "grain_resolution",
+                    "references": [],
+                    "correlatedWith": [],
+                    "explanationCode": "axis_local_grain_comparison"
+                  }
+                ],
+                "conflicts": [],
+                "schema": {
+                  "exactMatches": [
+                    "Brand",
+                    "Category",
+                    "OrderDate",
+                    "OrderID",
+                    "Product",
+                    "Qty",
+                    "Store"
+                  ],
+                  "renameCompatible": [],
+                  "missingLeft": [
+                    "Discount",
+                    "Payment",
+                    "Revenue",
+                    "Salesperson",
+                    "Status",
+                    "UnitPrice"
+                  ],
+                  "missingRight": [
+                    "Carrier",
+                    "DeliveredAt",
+                    "DeliveryFee",
+                    "DeliveryStatus",
+                    "PickNo",
+                    "SKU",
+                    "ShipmentID",
+                    "ShippedAt",
+                    "TotalCost",
+                    "UnitCost",
+                    "Warehouse"
+                  ],
+                  "incompatiblePhysicalTypes": [],
+                  "semanticConflicts": [],
+                  "grainConflicts": [
+                    "structural_form_differs"
+                  ],
+                  "measureRoleConflicts": [],
+                  "structuralLimitations": []
+                },
+                "temporal": {
+                  "alternatives": [
+                    "overlapping_periods",
+                    "event_window_alignment"
+                  ],
+                  "leftRange": {
+                    "min": "2026-06-01T08:28:00.000Z",
+                    "max": "2026-07-03T02:40:00.000Z"
+                  },
+                  "rightRange": {
+                    "min": "2026-06-01T08:28:00.000Z",
+                    "max": "2026-06-30T20:50:00.000Z"
+                  },
+                  "provenance": [
+                    "full_file_profile"
+                  ],
+                  "limitations": []
+                },
+                "grain": {
+                  "structural": "unresolved",
+                  "identity": "mixed",
+                  "parent": "mixed",
+                  "temporal": "mixed",
+                  "aggregation": "mixed",
+                  "semanticLimitations": [],
+                  "candidateDebt": []
+                },
+                "duplication": {
+                  "risks": [
+                    "schema_drift"
+                  ],
+                  "safetyInferred": false
+                },
+                "limitations": [
+                  "candidate_only",
+                  "operation_not_approved"
+                ],
+                "debt": [],
+                "selected": false
+              }
+            ],
+            "generationReasons": [],
+            "exclusionReasons": [
+              "no_mechanically_plausible_key_pair",
+              "schema_continuation_not_supported"
+            ],
+            "compositeSearch": {
+              "maxWidth": 3,
+              "maximumCombinations": 64,
+              "evaluated": 0,
+              "pruned": 0,
+              "skipped": 0,
+              "deterministicOrder": "canonical_column_name"
+            }
+          }
+        ],
+        "coverage": {
+          "declaredSources": 3,
+          "validSources": 3,
+          "expectedPairs": 3,
+          "observedPairs": 3,
+          "inputGrainCandidates": 9,
+          "preservedDebt": 0
+        },
+        "limitations": [
+          "candidate_generation_only",
+          "no_operation_or_safety_approval"
+        ],
+        "debt": [],
+        "finalRelationshipResolution": {
+          "executed": false
+        },
+        "joinSafety": {
+          "executed": false
+        },
+        "productionWiring": {
+          "executed": false
+        }
+      }
+    },
+    {
+      "bundleId": "multi.sales_period_pair",
+      "tuningUse": "forbidden",
+      "truth": {
+        "expectedRelationships": [
+          {
+            "id": "adjacent_period_append",
+            "leftSource": "sample data/Sales_ERP_May_2026.xlsx",
+            "rightSource": "sample data/Sales_ERP_June_2026.xlsx",
+            "leftKeys": [
+              "OrderID"
+            ],
+            "rightKeys": [
+              "OrderID"
+            ],
+            "expectedCardinality": "disjoint_period_partition",
+            "operation": "append",
+            "decision": "append_only",
+            "joinReasonCode": "schema_compatible_adjacent_periods",
+            "timePeriodAlignment": "2026-05_to_2026-06",
+            "duplicationRisk": {
+              "level": "low",
+              "reasonCode": "period_partition_expected"
+            }
+          }
+        ],
+        "forbiddenRelationships": [
+          {
+            "id": "adjacent_period_row_join",
+            "leftSource": "sample data/Sales_ERP_May_2026.xlsx",
+            "rightSource": "sample data/Sales_ERP_June_2026.xlsx",
+            "leftKeys": [
+              "OrderID"
+            ],
+            "rightKeys": [
+              "OrderID"
+            ],
+            "decision": "refuse",
+            "refusalReasonCode": "period_partitions_must_append_not_row_join"
+          }
+        ],
+        "timeAlignment": {
+          "expected": "adjacent_periods",
+          "periods": [
+            "2026-05",
+            "2026-06"
+          ],
+          "reasonCode": "month_over_month_sequence"
+        },
+        "duplicationRisk": {
+          "level": "low",
+          "reasonCode": "append_requires_period_and_key_deduplication_check"
+        }
+      },
+      "artifact": {
+        "schemaVersion": "lightbi.relationship-candidate-artifact.v1",
+        "bundle": {
+          "bundleId": "multi.sales_period_pair",
+          "memberSourceIds": [
+            "sample data/Sales_ERP_May_2026.xlsx#Sales",
+            "sample data/Sales_ERP_June_2026.xlsx#Sales"
+          ],
+          "canonicalMemberOrder": [
+            "sample data/Sales_ERP_June_2026.xlsx#Sales",
+            "sample data/Sales_ERP_May_2026.xlsx#Sales"
+          ],
+          "pairCount": 1
+        },
+        "sources": [
+          {
+            "sourceId": "sample data/Sales_ERP_June_2026.xlsx#Sales",
+            "sourceHash": {
+              "algorithm": "sha256",
+              "value": "a0a69a4d45531090ed5a829467d25ca89320d17792a72e4a91c55b95b9469e52"
+            },
+            "physicalVersion": "lightbi.dataset-understanding-artifact.v1",
+            "semanticVersion": "lightbi.semantic-resolution-shadow.v1",
+            "grainCandidateVersion": "lightbi.grain-candidate-artifact.v2",
+            "grainResolutionVersion": "lightbi.grain-resolution-shadow.v1"
+          },
+          {
+            "sourceId": "sample data/Sales_ERP_May_2026.xlsx#Sales",
+            "sourceHash": {
+              "algorithm": "sha256",
+              "value": "e2cad91d14cf4ae19daa09dd9c980ea57b6b9cc20a518a9fa6818c3b18aef9ae"
+            },
+            "physicalVersion": "lightbi.dataset-understanding-artifact.v1",
+            "semanticVersion": "lightbi.semantic-resolution-shadow.v1",
+            "grainCandidateVersion": "lightbi.grain-candidate-artifact.v2",
+            "grainResolutionVersion": "lightbi.grain-resolution-shadow.v1"
+          }
+        ],
+        "semanticPolicyVersion": "lightbi.semantic-resolution-policy.v2",
+        "semanticPolicyHash": "064e6861cc208e7d35074d9b872e0d4a11dfacdbc850e6d017c24f32462d6ad3",
+        "grainCandidatePolicyVersion": "lightbi.grain-candidate-policy.v2",
+        "grainCandidatePolicyHash": "6ea68eb979878f6fcbd83b180e9eb92789174c23651a476edf50c4efb2f7d531",
+        "grainResolutionPolicyVersion": "lightbi.grain-resolution-policy.v1",
+        "grainResolutionPolicyHash": "219e8b7e78261bcbc9ff4714cf93ec62f709c54670ad7e8bf8a3edbfef01d3ef",
+        "relationshipPolicyVersion": "lightbi.relationship-candidate-policy.v1",
+        "relationshipPolicyHash": "6a615bac8756de8e2a3213a041943845726e71f2c8963956bdfe56bd074d5359",
+        "pairs": [
+          {
+            "pairId": "pair:990d5628b7295853",
+            "leftSourceId": "sample data/Sales_ERP_June_2026.xlsx#Sales",
+            "rightSourceId": "sample data/Sales_ERP_May_2026.xlsx#Sales",
+            "candidates": [
+              {
+                "candidateId": "pair:990d5628b7295853:schema",
+                "relationshipClass": "schema_continuation",
+                "operationAlternatives": [
+                  "append_candidate",
+                  "compare_candidate"
+                ],
+                "keyPairAlternatives": [],
+                "cardinalityAlternatives": [],
+                "evidence": [
+                  {
+                    "evidenceId": "pair:990d5628b7295853:schema",
+                    "family": "schema_compatibility",
+                    "direction": "supports",
+                    "provenance": "full_file_profile",
+                    "references": [
+                      "Brand",
+                      "Category",
+                      "Discount",
+                      "OrderDate",
+                      "OrderID",
+                      "Payment",
+                      "Product",
+                      "Qty",
+                      "Revenue",
+                      "Salesperson",
+                      "Status",
+                      "Store",
+                      "UnitPrice"
+                    ],
+                    "correlatedWith": [],
+                    "explanationCode": "schema_compatibility_observed"
+                  },
+                  {
+                    "evidenceId": "pair:990d5628b7295853:grain",
+                    "family": "grain_compatibility",
+                    "direction": "mixed",
+                    "provenance": "grain_resolution",
+                    "references": [],
+                    "correlatedWith": [],
+                    "explanationCode": "axis_local_grain_comparison"
+                  }
+                ],
+                "conflicts": [],
+                "schema": {
+                  "exactMatches": [
+                    "Brand",
+                    "Category",
+                    "Discount",
+                    "OrderDate",
+                    "OrderID",
+                    "Payment",
+                    "Product",
+                    "Qty",
+                    "Revenue",
+                    "Salesperson",
+                    "Status",
+                    "Store",
+                    "UnitPrice"
+                  ],
+                  "renameCompatible": [],
+                  "missingLeft": [],
+                  "missingRight": [],
+                  "incompatiblePhysicalTypes": [],
+                  "semanticConflicts": [],
+                  "grainConflicts": [],
+                  "measureRoleConflicts": [],
+                  "structuralLimitations": []
+                },
+                "temporal": {
+                  "alternatives": [
+                    "sequential_periods",
+                    "disjoint_periods"
+                  ],
+                  "leftRange": {
+                    "min": "2026-06-01T08:28:00.000Z",
+                    "max": "2026-06-30T20:50:00.000Z"
+                  },
+                  "rightRange": {
+                    "min": "2026-05-01T08:14:00.000Z",
+                    "max": "2026-05-31T20:15:00.000Z"
+                  },
+                  "provenance": [
+                    "full_file_profile"
+                  ],
+                  "limitations": []
+                },
+                "grain": {
+                  "structural": "unresolved",
+                  "identity": "compatible",
+                  "parent": "compatible",
+                  "temporal": "compatible",
+                  "aggregation": "compatible",
+                  "semanticLimitations": [],
+                  "candidateDebt": []
+                },
+                "duplication": {
+                  "risks": [
+                    "unknown_risk"
+                  ],
+                  "safetyInferred": false
+                },
+                "limitations": [
+                  "candidate_only",
+                  "operation_not_approved"
+                ],
+                "debt": [],
+                "selected": false
+              }
+            ],
+            "generationReasons": [
+              "schema_continuation"
+            ],
+            "exclusionReasons": [
+              "no_mechanically_plausible_key_pair"
+            ],
+            "compositeSearch": {
+              "maxWidth": 3,
+              "maximumCombinations": 64,
+              "evaluated": 0,
+              "pruned": 0,
+              "skipped": 0,
+              "deterministicOrder": "canonical_column_name"
+            }
+          }
+        ],
+        "coverage": {
+          "declaredSources": 2,
+          "validSources": 2,
+          "expectedPairs": 1,
+          "observedPairs": 1,
+          "inputGrainCandidates": 4,
+          "preservedDebt": 0
+        },
+        "limitations": [
+          "candidate_generation_only",
+          "no_operation_or_safety_approval"
+        ],
+        "debt": [],
+        "finalRelationshipResolution": {
+          "executed": false
+        },
+        "joinSafety": {
+          "executed": false
+        },
+        "productionWiring": {
+          "executed": false
+        }
+      }
+    },
+    {
+      "bundleId": "multi.logistics_period_pair",
+      "tuningUse": "forbidden",
+      "truth": {
+        "expectedRelationships": [
+          {
+            "id": "adjacent_period_append",
+            "leftSource": "sample data/Logistics_ERP_May_2026.csv",
+            "rightSource": "sample data/Logistics_ERP_June_2026.csv",
+            "leftKeys": [
+              "ShipmentID"
+            ],
+            "rightKeys": [
+              "ShipmentID"
+            ],
+            "expectedCardinality": "disjoint_period_partition",
+            "operation": "append",
+            "decision": "append_only",
+            "joinReasonCode": "schema_compatible_adjacent_periods",
+            "timePeriodAlignment": "2026-05_to_2026-06",
+            "duplicationRisk": {
+              "level": "low",
+              "reasonCode": "period_partition_expected"
+            }
+          }
+        ],
+        "forbiddenRelationships": [
+          {
+            "id": "adjacent_period_row_join",
+            "leftSource": "sample data/Logistics_ERP_May_2026.csv",
+            "rightSource": "sample data/Logistics_ERP_June_2026.csv",
+            "leftKeys": [
+              "ShipmentID"
+            ],
+            "rightKeys": [
+              "ShipmentID"
+            ],
+            "decision": "refuse",
+            "refusalReasonCode": "period_partitions_must_append_not_row_join"
+          }
+        ],
+        "timeAlignment": {
+          "expected": "adjacent_periods",
+          "periods": [
+            "2026-05",
+            "2026-06"
+          ],
+          "reasonCode": "month_over_month_sequence"
+        },
+        "duplicationRisk": {
+          "level": "low",
+          "reasonCode": "append_requires_period_and_key_deduplication_check"
+        }
+      },
+      "artifact": {
+        "schemaVersion": "lightbi.relationship-candidate-artifact.v1",
+        "bundle": {
+          "bundleId": "multi.logistics_period_pair",
+          "memberSourceIds": [
+            "sample data/Logistics_ERP_May_2026.csv#Sheet1",
+            "sample data/Logistics_ERP_June_2026.csv#Sheet1"
+          ],
+          "canonicalMemberOrder": [
+            "sample data/Logistics_ERP_June_2026.csv#Sheet1",
+            "sample data/Logistics_ERP_May_2026.csv#Sheet1"
+          ],
+          "pairCount": 1
+        },
+        "sources": [
+          {
+            "sourceId": "sample data/Logistics_ERP_June_2026.csv#Sheet1",
+            "sourceHash": {
+              "algorithm": "sha256",
+              "value": "ccc7f8036429a5c1b879a8a77dec843ef5ba65dbb88e3b2471a0aa70cd0bb216"
+            },
+            "physicalVersion": "lightbi.dataset-understanding-artifact.v1",
+            "semanticVersion": "lightbi.semantic-resolution-shadow.v1",
+            "grainCandidateVersion": "lightbi.grain-candidate-artifact.v2",
+            "grainResolutionVersion": "lightbi.grain-resolution-shadow.v1"
+          },
+          {
+            "sourceId": "sample data/Logistics_ERP_May_2026.csv#Sheet1",
+            "sourceHash": {
+              "algorithm": "sha256",
+              "value": "e093e56ae6750a5ec3bbc98983f21409f373ee71d75b9cceb12c52b2d840ff72"
+            },
+            "physicalVersion": "lightbi.dataset-understanding-artifact.v1",
+            "semanticVersion": "lightbi.semantic-resolution-shadow.v1",
+            "grainCandidateVersion": "lightbi.grain-candidate-artifact.v2",
+            "grainResolutionVersion": "lightbi.grain-resolution-shadow.v1"
+          }
+        ],
+        "semanticPolicyVersion": "lightbi.semantic-resolution-policy.v2",
+        "semanticPolicyHash": "064e6861cc208e7d35074d9b872e0d4a11dfacdbc850e6d017c24f32462d6ad3",
+        "grainCandidatePolicyVersion": "lightbi.grain-candidate-policy.v2",
+        "grainCandidatePolicyHash": "6ea68eb979878f6fcbd83b180e9eb92789174c23651a476edf50c4efb2f7d531",
+        "grainResolutionPolicyVersion": "lightbi.grain-resolution-policy.v1",
+        "grainResolutionPolicyHash": "219e8b7e78261bcbc9ff4714cf93ec62f709c54670ad7e8bf8a3edbfef01d3ef",
+        "relationshipPolicyVersion": "lightbi.relationship-candidate-policy.v1",
+        "relationshipPolicyHash": "6a615bac8756de8e2a3213a041943845726e71f2c8963956bdfe56bd074d5359",
+        "pairs": [
+          {
+            "pairId": "pair:82c4a25a45f1ff95",
+            "leftSourceId": "sample data/Logistics_ERP_June_2026.csv#Sheet1",
+            "rightSourceId": "sample data/Logistics_ERP_May_2026.csv#Sheet1",
+            "candidates": [
+              {
+                "candidateId": "pair:82c4a25a45f1ff95:identity",
+                "relationshipClass": "identity_equivalence",
+                "operationAlternatives": [
+                  "join_candidate",
+                  "reconcile_candidate"
+                ],
+                "keyPairAlternatives": [
+                  {
+                    "candidateId": "key:a1bb80649e6bad56",
+                    "kind": "single",
+                    "left": {
+                      "sourceId": "sample data/Logistics_ERP_June_2026.csv#Sheet1",
+                      "physicalColumns": [
+                        {
+                          "index": 0,
+                          "name": "ShipmentID",
+                          "physicalTypes": [
+                            "string"
+                          ]
+                        }
+                      ],
+                      "semanticResolutions": [
+                        {
+                          "physicalColumn": "ShipmentID",
+                          "state": "ambiguous",
+                          "selectedCandidateId": null,
+                          "candidateIds": [
+                            "fulfillment",
+                            "shipment"
+                          ]
+                        }
+                      ],
+                      "grainDependencies": {
+                        "structural": "line",
+                        "identity": "ambiguous_key",
+                        "parent": "parent_key",
+                        "temporal": "event",
+                        "aggregation": "repeated_parent_values"
+                      },
+                      "identityState": "probable",
+                      "keyProvenance": [
+                        "semantic_resolution",
+                        "full_file_profile"
+                      ],
+                      "nonNullRatio": 1,
+                      "uniquenessRatio": 1,
+                      "limitations": [
+                        "ambiguous_identifier_alternative",
+                        "semantic_role_unresolved"
+                      ],
+                      "debt": []
+                    },
+                    "right": {
+                      "sourceId": "sample data/Logistics_ERP_May_2026.csv#Sheet1",
+                      "physicalColumns": [
+                        {
+                          "index": 0,
+                          "name": "ShipmentID",
+                          "physicalTypes": [
+                            "string"
+                          ]
+                        }
+                      ],
+                      "semanticResolutions": [
+                        {
+                          "physicalColumn": "ShipmentID",
+                          "state": "ambiguous",
+                          "selectedCandidateId": null,
+                          "candidateIds": [
+                            "fulfillment",
+                            "shipment"
+                          ]
+                        }
+                      ],
+                      "grainDependencies": {
+                        "structural": "line",
+                        "identity": "ambiguous_key",
+                        "parent": "parent_key",
+                        "temporal": "event",
+                        "aggregation": "repeated_parent_values"
+                      },
+                      "identityState": "probable",
+                      "keyProvenance": [
+                        "semantic_resolution",
+                        "full_file_profile"
+                      ],
+                      "nonNullRatio": 1,
+                      "uniquenessRatio": 1,
+                      "limitations": [
+                        "ambiguous_identifier_alternative",
+                        "semantic_role_unresolved"
+                      ],
+                      "debt": []
+                    },
+                    "componentPairs": [
+                      {
+                        "leftColumn": "ShipmentID",
+                        "rightColumn": "ShipmentID",
+                        "basis": "ambiguous_semantic"
+                      }
+                    ],
+                    "overlap": {
+                      "scope": "full_file",
+                      "leftDistinct": 1500,
+                      "rightDistinct": 1500,
+                      "matchedDistinct": 0,
+                      "leftMatchedRows": 0,
+                      "rightMatchedRows": 0,
+                      "leftUnmatchedDistinct": 1500,
+                      "rightUnmatchedDistinct": 1500,
+                      "leftNulls": 0,
+                      "rightNulls": 0,
+                      "leftDuplicateRows": 0,
+                      "rightDuplicateRows": 0,
+                      "leftMaxFrequency": 1,
+                      "rightMaxFrequency": 1,
+                      "leftOverlapRatio": 0,
+                      "rightOverlapRatio": 0,
+                      "coverageRatio": 0,
+                      "possibleFanout": false,
+                      "witnessHashes": [],
+                      "rawValuesPersisted": false
+                    },
+                    "cardinalityAlternatives": [
+                      "one_to_one",
+                      "partial_reference"
+                    ],
+                    "limitations": []
+                  },
+                  {
+                    "candidateId": "key:cc0a3a930ecb55e0",
+                    "kind": "composite",
+                    "left": {
+                      "sourceId": "sample data/Logistics_ERP_June_2026.csv#Sheet1",
+                      "physicalColumns": [
+                        {
+                          "index": 0,
+                          "name": "ShipmentID",
+                          "physicalTypes": [
+                            "string"
+                          ]
+                        },
+                        {
+                          "index": 8,
+                          "name": "SKU",
+                          "physicalTypes": [
+                            "string"
+                          ]
+                        }
+                      ],
+                      "semanticResolutions": [
+                        {
+                          "physicalColumn": "ShipmentID",
+                          "state": "ambiguous",
+                          "selectedCandidateId": null,
+                          "candidateIds": [
+                            "fulfillment",
+                            "shipment"
+                          ]
+                        },
+                        {
+                          "physicalColumn": "SKU",
+                          "state": "ambiguous",
+                          "selectedCandidateId": null,
+                          "candidateIds": [
+                            "branch",
+                            "sku"
+                          ]
+                        }
+                      ],
+                      "grainDependencies": {
+                        "structural": "line",
+                        "identity": "ambiguous_key",
+                        "parent": "parent_key",
+                        "temporal": "event",
+                        "aggregation": "repeated_parent_values"
+                      },
+                      "identityState": "probable",
+                      "keyProvenance": [
+                        "semantic_resolution",
+                        "full_file_profile",
+                        "full_file_rows"
+                      ],
+                      "nonNullRatio": 1,
+                      "uniquenessRatio": 0.36133333333333334,
+                      "limitations": [
+                        "ambiguous_identifier_alternative",
+                        "semantic_role_unresolved"
+                      ],
+                      "debt": []
+                    },
+                    "right": {
+                      "sourceId": "sample data/Logistics_ERP_May_2026.csv#Sheet1",
+                      "physicalColumns": [
+                        {
+                          "index": 0,
+                          "name": "ShipmentID",
+                          "physicalTypes": [
+                            "string"
+                          ]
+                        },
+                        {
+                          "index": 8,
+                          "name": "SKU",
+                          "physicalTypes": [
+                            "string"
+                          ]
+                        }
+                      ],
+                      "semanticResolutions": [
+                        {
+                          "physicalColumn": "ShipmentID",
+                          "state": "ambiguous",
+                          "selectedCandidateId": null,
+                          "candidateIds": [
+                            "fulfillment",
+                            "shipment"
+                          ]
+                        },
+                        {
+                          "physicalColumn": "SKU",
+                          "state": "ambiguous",
+                          "selectedCandidateId": null,
+                          "candidateIds": [
+                            "branch",
+                            "sku"
+                          ]
+                        }
+                      ],
+                      "grainDependencies": {
+                        "structural": "line",
+                        "identity": "ambiguous_key",
+                        "parent": "parent_key",
+                        "temporal": "event",
+                        "aggregation": "repeated_parent_values"
+                      },
+                      "identityState": "probable",
+                      "keyProvenance": [
+                        "semantic_resolution",
+                        "full_file_profile",
+                        "full_file_rows"
+                      ],
+                      "nonNullRatio": 1,
+                      "uniquenessRatio": 0.36333333333333334,
+                      "limitations": [
+                        "ambiguous_identifier_alternative",
+                        "semantic_role_unresolved"
+                      ],
+                      "debt": []
+                    },
+                    "componentPairs": [
+                      {
+                        "leftColumn": "ShipmentID",
+                        "rightColumn": "ShipmentID",
+                        "basis": "ambiguous_semantic"
+                      },
+                      {
+                        "leftColumn": "SKU",
+                        "rightColumn": "SKU",
+                        "basis": "ambiguous_semantic"
+                      }
+                    ],
+                    "overlap": {
+                      "scope": "full_file",
+                      "leftDistinct": 1500,
+                      "rightDistinct": 1500,
+                      "matchedDistinct": 0,
+                      "leftMatchedRows": 0,
+                      "rightMatchedRows": 0,
+                      "leftUnmatchedDistinct": 1500,
+                      "rightUnmatchedDistinct": 1500,
+                      "leftNulls": 0,
+                      "rightNulls": 0,
+                      "leftDuplicateRows": 0,
+                      "rightDuplicateRows": 0,
+                      "leftMaxFrequency": 1,
+                      "rightMaxFrequency": 1,
+                      "leftOverlapRatio": 0,
+                      "rightOverlapRatio": 0,
+                      "coverageRatio": 0,
+                      "possibleFanout": false,
+                      "witnessHashes": [],
+                      "rawValuesPersisted": false
+                    },
+                    "cardinalityAlternatives": [
+                      "one_to_one",
+                      "partial_reference"
+                    ],
+                    "limitations": []
+                  },
+                  {
+                    "candidateId": "key:6502af77c728fdbf",
+                    "kind": "single",
+                    "left": {
+                      "sourceId": "sample data/Logistics_ERP_June_2026.csv#Sheet1",
+                      "physicalColumns": [
+                        {
+                          "index": 8,
+                          "name": "SKU",
+                          "physicalTypes": [
+                            "string"
+                          ]
+                        }
+                      ],
+                      "semanticResolutions": [
+                        {
+                          "physicalColumn": "SKU",
+                          "state": "ambiguous",
+                          "selectedCandidateId": null,
+                          "candidateIds": [
+                            "branch",
+                            "sku"
+                          ]
+                        }
+                      ],
+                      "grainDependencies": {
+                        "structural": "line",
+                        "identity": "ambiguous_key",
+                        "parent": "parent_key",
+                        "temporal": "event",
+                        "aggregation": "repeated_parent_values"
+                      },
+                      "identityState": "probable",
+                      "keyProvenance": [],
+                      "nonNullRatio": 1,
+                      "uniquenessRatio": 0.36133333333333334,
+                      "limitations": [
+                        "ambiguous_identifier_alternative",
+                        "semantic_role_unresolved"
+                      ],
+                      "debt": []
+                    },
+                    "right": {
+                      "sourceId": "sample data/Logistics_ERP_May_2026.csv#Sheet1",
+                      "physicalColumns": [
+                        {
+                          "index": 8,
+                          "name": "SKU",
+                          "physicalTypes": [
+                            "string"
+                          ]
+                        }
+                      ],
+                      "semanticResolutions": [
+                        {
+                          "physicalColumn": "SKU",
+                          "state": "ambiguous",
+                          "selectedCandidateId": null,
+                          "candidateIds": [
+                            "branch",
+                            "sku"
+                          ]
+                        }
+                      ],
+                      "grainDependencies": {
+                        "structural": "line",
+                        "identity": "ambiguous_key",
+                        "parent": "parent_key",
+                        "temporal": "event",
+                        "aggregation": "repeated_parent_values"
+                      },
+                      "identityState": "probable",
+                      "keyProvenance": [],
+                      "nonNullRatio": 1,
+                      "uniquenessRatio": 0.36333333333333334,
+                      "limitations": [
+                        "ambiguous_identifier_alternative",
+                        "semantic_role_unresolved"
+                      ],
+                      "debt": []
+                    },
+                    "componentPairs": [
+                      {
+                        "leftColumn": "SKU",
+                        "rightColumn": "SKU",
+                        "basis": "ambiguous_semantic"
+                      }
+                    ],
+                    "overlap": {
+                      "scope": "full_file",
+                      "leftDistinct": 542,
+                      "rightDistinct": 545,
+                      "matchedDistinct": 496,
+                      "leftMatchedRows": 1374,
+                      "rightMatchedRows": 1369,
+                      "leftUnmatchedDistinct": 46,
+                      "rightUnmatchedDistinct": 49,
+                      "leftNulls": 0,
+                      "rightNulls": 0,
+                      "leftDuplicateRows": 958,
+                      "rightDuplicateRows": 955,
+                      "leftMaxFrequency": 9,
+                      "rightMaxFrequency": 8,
+                      "leftOverlapRatio": 0.915129151291513,
+                      "rightOverlapRatio": 0.9100917431192661,
+                      "coverageRatio": 0.9100917431192661,
+                      "possibleFanout": true,
+                      "witnessHashes": [
+                        "cc278ad1fd7a9841",
+                        "f9347e98a1da5e4c",
+                        "961326c463313b0e",
+                        "f44f269b76f1a00d",
+                        "63f6ab9dac4ecd6b"
+                      ],
+                      "rawValuesPersisted": false
+                    },
+                    "cardinalityAlternatives": [
+                      "many_to_many"
+                    ],
+                    "limitations": []
+                  }
+                ],
+                "cardinalityAlternatives": [
+                  "one_to_one",
+                  "partial_reference",
+                  "many_to_many"
+                ],
+                "evidence": [
+                  {
+                    "evidenceId": "pair:82c4a25a45f1ff95:schema",
+                    "family": "schema_compatibility",
+                    "direction": "supports",
+                    "provenance": "full_file_profile",
+                    "references": [
+                      "Brand",
+                      "Carrier",
+                      "Category",
+                      "DeliveredAt",
+                      "DeliveryFee",
+                      "DeliveryStatus",
+                      "OrderDate",
+                      "OrderID",
+                      "PickNo",
+                      "Product",
+                      "Qty",
+                      "SKU",
+                      "ShipmentID",
+                      "ShippedAt",
+                      "Store",
+                      "TotalCost",
+                      "UnitCost",
+                      "Warehouse"
+                    ],
+                    "correlatedWith": [],
+                    "explanationCode": "schema_compatibility_observed"
+                  },
+                  {
+                    "evidenceId": "pair:82c4a25a45f1ff95:grain",
+                    "family": "grain_compatibility",
+                    "direction": "supports",
+                    "provenance": "grain_resolution",
+                    "references": [],
+                    "correlatedWith": [],
+                    "explanationCode": "axis_local_grain_comparison"
+                  },
+                  {
+                    "evidenceId": "pair:82c4a25a45f1ff95:keys",
+                    "family": "key_structure",
+                    "direction": "supports",
+                    "provenance": "full_file_rows",
+                    "references": [
+                      "key:a1bb80649e6bad56",
+                      "key:cc0a3a930ecb55e0",
+                      "key:6502af77c728fdbf"
+                    ],
+                    "correlatedWith": [],
+                    "explanationCode": "bounded_key_pairs_observed"
+                  }
+                ],
+                "conflicts": [],
+                "schema": {
+                  "exactMatches": [
+                    "Brand",
+                    "Carrier",
+                    "Category",
+                    "DeliveredAt",
+                    "DeliveryFee",
+                    "DeliveryStatus",
+                    "OrderDate",
+                    "OrderID",
+                    "PickNo",
+                    "Product",
+                    "Qty",
+                    "SKU",
+                    "ShipmentID",
+                    "ShippedAt",
+                    "Store",
+                    "TotalCost",
+                    "UnitCost",
+                    "Warehouse"
+                  ],
+                  "renameCompatible": [],
+                  "missingLeft": [],
+                  "missingRight": [],
+                  "incompatiblePhysicalTypes": [],
+                  "semanticConflicts": [],
+                  "grainConflicts": [],
+                  "measureRoleConflicts": [],
+                  "structuralLimitations": []
+                },
+                "temporal": {
+                  "alternatives": [
+                    "overlapping_periods",
+                    "event_window_alignment"
+                  ],
+                  "leftRange": {
+                    "min": "2026-06-01T08:28:00.000Z",
+                    "max": "2026-07-03T02:40:00.000Z"
+                  },
+                  "rightRange": {
+                    "min": "2026-05-01T08:14:00.000Z",
+                    "max": "2026-06-03T01:40:00.000Z"
+                  },
+                  "provenance": [
+                    "full_file_profile"
+                  ],
+                  "limitations": []
+                },
+                "grain": {
+                  "structural": "compatible",
+                  "identity": "compatible",
+                  "parent": "compatible",
+                  "temporal": "compatible",
+                  "aggregation": "compatible",
+                  "semanticLimitations": [],
+                  "candidateDebt": []
+                },
+                "duplication": {
+                  "risks": [
+                    "unmatched_reference",
+                    "duplicate_left_key",
+                    "duplicate_right_key",
+                    "many_to_many_fanout"
+                  ],
+                  "safetyInferred": false
+                },
+                "limitations": [
+                  "candidate_only",
+                  "operation_not_approved"
+                ],
+                "debt": [],
+                "selected": false
+              },
+              {
+                "candidateId": "pair:82c4a25a45f1ff95:schema",
+                "relationshipClass": "schema_continuation",
+                "operationAlternatives": [
+                  "append_candidate",
+                  "compare_candidate"
+                ],
+                "keyPairAlternatives": [
+                  {
+                    "candidateId": "key:a1bb80649e6bad56",
+                    "kind": "single",
+                    "left": {
+                      "sourceId": "sample data/Logistics_ERP_June_2026.csv#Sheet1",
+                      "physicalColumns": [
+                        {
+                          "index": 0,
+                          "name": "ShipmentID",
+                          "physicalTypes": [
+                            "string"
+                          ]
+                        }
+                      ],
+                      "semanticResolutions": [
+                        {
+                          "physicalColumn": "ShipmentID",
+                          "state": "ambiguous",
+                          "selectedCandidateId": null,
+                          "candidateIds": [
+                            "fulfillment",
+                            "shipment"
+                          ]
+                        }
+                      ],
+                      "grainDependencies": {
+                        "structural": "line",
+                        "identity": "ambiguous_key",
+                        "parent": "parent_key",
+                        "temporal": "event",
+                        "aggregation": "repeated_parent_values"
+                      },
+                      "identityState": "probable",
+                      "keyProvenance": [
+                        "semantic_resolution",
+                        "full_file_profile"
+                      ],
+                      "nonNullRatio": 1,
+                      "uniquenessRatio": 1,
+                      "limitations": [
+                        "ambiguous_identifier_alternative",
+                        "semantic_role_unresolved"
+                      ],
+                      "debt": []
+                    },
+                    "right": {
+                      "sourceId": "sample data/Logistics_ERP_May_2026.csv#Sheet1",
+                      "physicalColumns": [
+                        {
+                          "index": 0,
+                          "name": "ShipmentID",
+                          "physicalTypes": [
+                            "string"
+                          ]
+                        }
+                      ],
+                      "semanticResolutions": [
+                        {
+                          "physicalColumn": "ShipmentID",
+                          "state": "ambiguous",
+                          "selectedCandidateId": null,
+                          "candidateIds": [
+                            "fulfillment",
+                            "shipment"
+                          ]
+                        }
+                      ],
+                      "grainDependencies": {
+                        "structural": "line",
+                        "identity": "ambiguous_key",
+                        "parent": "parent_key",
+                        "temporal": "event",
+                        "aggregation": "repeated_parent_values"
+                      },
+                      "identityState": "probable",
+                      "keyProvenance": [
+                        "semantic_resolution",
+                        "full_file_profile"
+                      ],
+                      "nonNullRatio": 1,
+                      "uniquenessRatio": 1,
+                      "limitations": [
+                        "ambiguous_identifier_alternative",
+                        "semantic_role_unresolved"
+                      ],
+                      "debt": []
+                    },
+                    "componentPairs": [
+                      {
+                        "leftColumn": "ShipmentID",
+                        "rightColumn": "ShipmentID",
+                        "basis": "ambiguous_semantic"
+                      }
+                    ],
+                    "overlap": {
+                      "scope": "full_file",
+                      "leftDistinct": 1500,
+                      "rightDistinct": 1500,
+                      "matchedDistinct": 0,
+                      "leftMatchedRows": 0,
+                      "rightMatchedRows": 0,
+                      "leftUnmatchedDistinct": 1500,
+                      "rightUnmatchedDistinct": 1500,
+                      "leftNulls": 0,
+                      "rightNulls": 0,
+                      "leftDuplicateRows": 0,
+                      "rightDuplicateRows": 0,
+                      "leftMaxFrequency": 1,
+                      "rightMaxFrequency": 1,
+                      "leftOverlapRatio": 0,
+                      "rightOverlapRatio": 0,
+                      "coverageRatio": 0,
+                      "possibleFanout": false,
+                      "witnessHashes": [],
+                      "rawValuesPersisted": false
+                    },
+                    "cardinalityAlternatives": [
+                      "one_to_one",
+                      "partial_reference"
+                    ],
+                    "limitations": []
+                  },
+                  {
+                    "candidateId": "key:cc0a3a930ecb55e0",
+                    "kind": "composite",
+                    "left": {
+                      "sourceId": "sample data/Logistics_ERP_June_2026.csv#Sheet1",
+                      "physicalColumns": [
+                        {
+                          "index": 0,
+                          "name": "ShipmentID",
+                          "physicalTypes": [
+                            "string"
+                          ]
+                        },
+                        {
+                          "index": 8,
+                          "name": "SKU",
+                          "physicalTypes": [
+                            "string"
+                          ]
+                        }
+                      ],
+                      "semanticResolutions": [
+                        {
+                          "physicalColumn": "ShipmentID",
+                          "state": "ambiguous",
+                          "selectedCandidateId": null,
+                          "candidateIds": [
+                            "fulfillment",
+                            "shipment"
+                          ]
+                        },
+                        {
+                          "physicalColumn": "SKU",
+                          "state": "ambiguous",
+                          "selectedCandidateId": null,
+                          "candidateIds": [
+                            "branch",
+                            "sku"
+                          ]
+                        }
+                      ],
+                      "grainDependencies": {
+                        "structural": "line",
+                        "identity": "ambiguous_key",
+                        "parent": "parent_key",
+                        "temporal": "event",
+                        "aggregation": "repeated_parent_values"
+                      },
+                      "identityState": "probable",
+                      "keyProvenance": [
+                        "semantic_resolution",
+                        "full_file_profile",
+                        "full_file_rows"
+                      ],
+                      "nonNullRatio": 1,
+                      "uniquenessRatio": 0.36133333333333334,
+                      "limitations": [
+                        "ambiguous_identifier_alternative",
+                        "semantic_role_unresolved"
+                      ],
+                      "debt": []
+                    },
+                    "right": {
+                      "sourceId": "sample data/Logistics_ERP_May_2026.csv#Sheet1",
+                      "physicalColumns": [
+                        {
+                          "index": 0,
+                          "name": "ShipmentID",
+                          "physicalTypes": [
+                            "string"
+                          ]
+                        },
+                        {
+                          "index": 8,
+                          "name": "SKU",
+                          "physicalTypes": [
+                            "string"
+                          ]
+                        }
+                      ],
+                      "semanticResolutions": [
+                        {
+                          "physicalColumn": "ShipmentID",
+                          "state": "ambiguous",
+                          "selectedCandidateId": null,
+                          "candidateIds": [
+                            "fulfillment",
+                            "shipment"
+                          ]
+                        },
+                        {
+                          "physicalColumn": "SKU",
+                          "state": "ambiguous",
+                          "selectedCandidateId": null,
+                          "candidateIds": [
+                            "branch",
+                            "sku"
+                          ]
+                        }
+                      ],
+                      "grainDependencies": {
+                        "structural": "line",
+                        "identity": "ambiguous_key",
+                        "parent": "parent_key",
+                        "temporal": "event",
+                        "aggregation": "repeated_parent_values"
+                      },
+                      "identityState": "probable",
+                      "keyProvenance": [
+                        "semantic_resolution",
+                        "full_file_profile",
+                        "full_file_rows"
+                      ],
+                      "nonNullRatio": 1,
+                      "uniquenessRatio": 0.36333333333333334,
+                      "limitations": [
+                        "ambiguous_identifier_alternative",
+                        "semantic_role_unresolved"
+                      ],
+                      "debt": []
+                    },
+                    "componentPairs": [
+                      {
+                        "leftColumn": "ShipmentID",
+                        "rightColumn": "ShipmentID",
+                        "basis": "ambiguous_semantic"
+                      },
+                      {
+                        "leftColumn": "SKU",
+                        "rightColumn": "SKU",
+                        "basis": "ambiguous_semantic"
+                      }
+                    ],
+                    "overlap": {
+                      "scope": "full_file",
+                      "leftDistinct": 1500,
+                      "rightDistinct": 1500,
+                      "matchedDistinct": 0,
+                      "leftMatchedRows": 0,
+                      "rightMatchedRows": 0,
+                      "leftUnmatchedDistinct": 1500,
+                      "rightUnmatchedDistinct": 1500,
+                      "leftNulls": 0,
+                      "rightNulls": 0,
+                      "leftDuplicateRows": 0,
+                      "rightDuplicateRows": 0,
+                      "leftMaxFrequency": 1,
+                      "rightMaxFrequency": 1,
+                      "leftOverlapRatio": 0,
+                      "rightOverlapRatio": 0,
+                      "coverageRatio": 0,
+                      "possibleFanout": false,
+                      "witnessHashes": [],
+                      "rawValuesPersisted": false
+                    },
+                    "cardinalityAlternatives": [
+                      "one_to_one",
+                      "partial_reference"
+                    ],
+                    "limitations": []
+                  },
+                  {
+                    "candidateId": "key:6502af77c728fdbf",
+                    "kind": "single",
+                    "left": {
+                      "sourceId": "sample data/Logistics_ERP_June_2026.csv#Sheet1",
+                      "physicalColumns": [
+                        {
+                          "index": 8,
+                          "name": "SKU",
+                          "physicalTypes": [
+                            "string"
+                          ]
+                        }
+                      ],
+                      "semanticResolutions": [
+                        {
+                          "physicalColumn": "SKU",
+                          "state": "ambiguous",
+                          "selectedCandidateId": null,
+                          "candidateIds": [
+                            "branch",
+                            "sku"
+                          ]
+                        }
+                      ],
+                      "grainDependencies": {
+                        "structural": "line",
+                        "identity": "ambiguous_key",
+                        "parent": "parent_key",
+                        "temporal": "event",
+                        "aggregation": "repeated_parent_values"
+                      },
+                      "identityState": "probable",
+                      "keyProvenance": [],
+                      "nonNullRatio": 1,
+                      "uniquenessRatio": 0.36133333333333334,
+                      "limitations": [
+                        "ambiguous_identifier_alternative",
+                        "semantic_role_unresolved"
+                      ],
+                      "debt": []
+                    },
+                    "right": {
+                      "sourceId": "sample data/Logistics_ERP_May_2026.csv#Sheet1",
+                      "physicalColumns": [
+                        {
+                          "index": 8,
+                          "name": "SKU",
+                          "physicalTypes": [
+                            "string"
+                          ]
+                        }
+                      ],
+                      "semanticResolutions": [
+                        {
+                          "physicalColumn": "SKU",
+                          "state": "ambiguous",
+                          "selectedCandidateId": null,
+                          "candidateIds": [
+                            "branch",
+                            "sku"
+                          ]
+                        }
+                      ],
+                      "grainDependencies": {
+                        "structural": "line",
+                        "identity": "ambiguous_key",
+                        "parent": "parent_key",
+                        "temporal": "event",
+                        "aggregation": "repeated_parent_values"
+                      },
+                      "identityState": "probable",
+                      "keyProvenance": [],
+                      "nonNullRatio": 1,
+                      "uniquenessRatio": 0.36333333333333334,
+                      "limitations": [
+                        "ambiguous_identifier_alternative",
+                        "semantic_role_unresolved"
+                      ],
+                      "debt": []
+                    },
+                    "componentPairs": [
+                      {
+                        "leftColumn": "SKU",
+                        "rightColumn": "SKU",
+                        "basis": "ambiguous_semantic"
+                      }
+                    ],
+                    "overlap": {
+                      "scope": "full_file",
+                      "leftDistinct": 542,
+                      "rightDistinct": 545,
+                      "matchedDistinct": 496,
+                      "leftMatchedRows": 1374,
+                      "rightMatchedRows": 1369,
+                      "leftUnmatchedDistinct": 46,
+                      "rightUnmatchedDistinct": 49,
+                      "leftNulls": 0,
+                      "rightNulls": 0,
+                      "leftDuplicateRows": 958,
+                      "rightDuplicateRows": 955,
+                      "leftMaxFrequency": 9,
+                      "rightMaxFrequency": 8,
+                      "leftOverlapRatio": 0.915129151291513,
+                      "rightOverlapRatio": 0.9100917431192661,
+                      "coverageRatio": 0.9100917431192661,
+                      "possibleFanout": true,
+                      "witnessHashes": [
+                        "cc278ad1fd7a9841",
+                        "f9347e98a1da5e4c",
+                        "961326c463313b0e",
+                        "f44f269b76f1a00d",
+                        "63f6ab9dac4ecd6b"
+                      ],
+                      "rawValuesPersisted": false
+                    },
+                    "cardinalityAlternatives": [
+                      "many_to_many"
+                    ],
+                    "limitations": []
+                  }
+                ],
+                "cardinalityAlternatives": [
+                  "one_to_one",
+                  "partial_reference",
+                  "many_to_many"
+                ],
+                "evidence": [
+                  {
+                    "evidenceId": "pair:82c4a25a45f1ff95:schema",
+                    "family": "schema_compatibility",
+                    "direction": "supports",
+                    "provenance": "full_file_profile",
+                    "references": [
+                      "Brand",
+                      "Carrier",
+                      "Category",
+                      "DeliveredAt",
+                      "DeliveryFee",
+                      "DeliveryStatus",
+                      "OrderDate",
+                      "OrderID",
+                      "PickNo",
+                      "Product",
+                      "Qty",
+                      "SKU",
+                      "ShipmentID",
+                      "ShippedAt",
+                      "Store",
+                      "TotalCost",
+                      "UnitCost",
+                      "Warehouse"
+                    ],
+                    "correlatedWith": [],
+                    "explanationCode": "schema_compatibility_observed"
+                  },
+                  {
+                    "evidenceId": "pair:82c4a25a45f1ff95:grain",
+                    "family": "grain_compatibility",
+                    "direction": "supports",
+                    "provenance": "grain_resolution",
+                    "references": [],
+                    "correlatedWith": [],
+                    "explanationCode": "axis_local_grain_comparison"
+                  },
+                  {
+                    "evidenceId": "pair:82c4a25a45f1ff95:keys",
+                    "family": "key_structure",
+                    "direction": "supports",
+                    "provenance": "full_file_rows",
+                    "references": [
+                      "key:a1bb80649e6bad56",
+                      "key:cc0a3a930ecb55e0",
+                      "key:6502af77c728fdbf"
+                    ],
+                    "correlatedWith": [],
+                    "explanationCode": "bounded_key_pairs_observed"
+                  }
+                ],
+                "conflicts": [],
+                "schema": {
+                  "exactMatches": [
+                    "Brand",
+                    "Carrier",
+                    "Category",
+                    "DeliveredAt",
+                    "DeliveryFee",
+                    "DeliveryStatus",
+                    "OrderDate",
+                    "OrderID",
+                    "PickNo",
+                    "Product",
+                    "Qty",
+                    "SKU",
+                    "ShipmentID",
+                    "ShippedAt",
+                    "Store",
+                    "TotalCost",
+                    "UnitCost",
+                    "Warehouse"
+                  ],
+                  "renameCompatible": [],
+                  "missingLeft": [],
+                  "missingRight": [],
+                  "incompatiblePhysicalTypes": [],
+                  "semanticConflicts": [],
+                  "grainConflicts": [],
+                  "measureRoleConflicts": [],
+                  "structuralLimitations": []
+                },
+                "temporal": {
+                  "alternatives": [
+                    "overlapping_periods",
+                    "event_window_alignment"
+                  ],
+                  "leftRange": {
+                    "min": "2026-06-01T08:28:00.000Z",
+                    "max": "2026-07-03T02:40:00.000Z"
+                  },
+                  "rightRange": {
+                    "min": "2026-05-01T08:14:00.000Z",
+                    "max": "2026-06-03T01:40:00.000Z"
+                  },
+                  "provenance": [
+                    "full_file_profile"
+                  ],
+                  "limitations": []
+                },
+                "grain": {
+                  "structural": "compatible",
+                  "identity": "compatible",
+                  "parent": "compatible",
+                  "temporal": "compatible",
+                  "aggregation": "compatible",
+                  "semanticLimitations": [],
+                  "candidateDebt": []
+                },
+                "duplication": {
+                  "risks": [
+                    "unmatched_reference",
+                    "duplicate_left_key",
+                    "duplicate_right_key",
+                    "many_to_many_fanout"
+                  ],
+                  "safetyInferred": false
+                },
+                "limitations": [
+                  "candidate_only",
+                  "operation_not_approved"
+                ],
+                "debt": [],
+                "selected": false
+              }
+            ],
+            "generationReasons": [
+              "bounded_key_pair",
+              "schema_continuation"
+            ],
+            "exclusionReasons": [],
+            "compositeSearch": {
+              "maxWidth": 3,
+              "maximumCombinations": 64,
+              "evaluated": 9,
+              "pruned": 6,
+              "skipped": 0,
+              "deterministicOrder": "canonical_column_name"
+            }
+          }
+        ],
+        "coverage": {
+          "declaredSources": 2,
+          "validSources": 2,
+          "expectedPairs": 1,
+          "observedPairs": 1,
+          "inputGrainCandidates": 10,
+          "preservedDebt": 0
+        },
+        "limitations": [
+          "candidate_generation_only",
+          "no_operation_or_safety_approval"
+        ],
+        "debt": [],
+        "finalRelationshipResolution": {
+          "executed": false
+        },
+        "joinSafety": {
+          "executed": false
+        },
+        "productionWiring": {
+          "executed": false
+        }
+      }
+    },
+    {
+      "bundleId": "multi.accounting_period_pair",
+      "tuningUse": "forbidden",
+      "truth": {
+        "expectedRelationships": [
+          {
+            "id": "adjacent_period_append",
+            "leftSource": "sample data/Accounting_ERP_May_2026.csv",
+            "rightSource": "sample data/Accounting_ERP_June_2026.csv",
+            "leftKeys": [
+              "InvoiceNo"
+            ],
+            "rightKeys": [
+              "InvoiceNo"
+            ],
+            "expectedCardinality": "disjoint_period_partition",
+            "operation": "append",
+            "decision": "append_only",
+            "joinReasonCode": "schema_compatible_adjacent_periods",
+            "timePeriodAlignment": "2026-05_to_2026-06",
+            "duplicationRisk": {
+              "level": "low",
+              "reasonCode": "period_partition_expected"
+            }
+          }
+        ],
+        "forbiddenRelationships": [
+          {
+            "id": "adjacent_period_row_join",
+            "leftSource": "sample data/Accounting_ERP_May_2026.csv",
+            "rightSource": "sample data/Accounting_ERP_June_2026.csv",
+            "leftKeys": [
+              "InvoiceNo"
+            ],
+            "rightKeys": [
+              "InvoiceNo"
+            ],
+            "decision": "refuse",
+            "refusalReasonCode": "period_partitions_must_append_not_row_join"
+          }
+        ],
+        "timeAlignment": {
+          "expected": "adjacent_periods",
+          "periods": [
+            "2026-05",
+            "2026-06"
+          ],
+          "reasonCode": "month_over_month_sequence"
+        },
+        "duplicationRisk": {
+          "level": "low",
+          "reasonCode": "append_requires_period_and_key_deduplication_check"
+        }
+      },
+      "artifact": {
+        "schemaVersion": "lightbi.relationship-candidate-artifact.v1",
+        "bundle": {
+          "bundleId": "multi.accounting_period_pair",
+          "memberSourceIds": [
+            "sample data/Accounting_ERP_May_2026.csv#Sheet1",
+            "sample data/Accounting_ERP_June_2026.csv#Sheet1"
+          ],
+          "canonicalMemberOrder": [
+            "sample data/Accounting_ERP_June_2026.csv#Sheet1",
+            "sample data/Accounting_ERP_May_2026.csv#Sheet1"
+          ],
+          "pairCount": 1
+        },
+        "sources": [
+          {
+            "sourceId": "sample data/Accounting_ERP_June_2026.csv#Sheet1",
+            "sourceHash": {
+              "algorithm": "sha256",
+              "value": "b3a3b290d5f54ca5d7fc79b7aed0f287f539e665113331bb6d4764fa5fc6aaea"
+            },
+            "physicalVersion": "lightbi.dataset-understanding-artifact.v1",
+            "semanticVersion": "lightbi.semantic-resolution-shadow.v1",
+            "grainCandidateVersion": "lightbi.grain-candidate-artifact.v2",
+            "grainResolutionVersion": "lightbi.grain-resolution-shadow.v1"
+          },
+          {
+            "sourceId": "sample data/Accounting_ERP_May_2026.csv#Sheet1",
+            "sourceHash": {
+              "algorithm": "sha256",
+              "value": "3c59da1c10c67ab974dfd204b737402aff1c28d748665949942579fb5fb1a2fd"
+            },
+            "physicalVersion": "lightbi.dataset-understanding-artifact.v1",
+            "semanticVersion": "lightbi.semantic-resolution-shadow.v1",
+            "grainCandidateVersion": "lightbi.grain-candidate-artifact.v2",
+            "grainResolutionVersion": "lightbi.grain-resolution-shadow.v1"
+          }
+        ],
+        "semanticPolicyVersion": "lightbi.semantic-resolution-policy.v2",
+        "semanticPolicyHash": "064e6861cc208e7d35074d9b872e0d4a11dfacdbc850e6d017c24f32462d6ad3",
+        "grainCandidatePolicyVersion": "lightbi.grain-candidate-policy.v2",
+        "grainCandidatePolicyHash": "6ea68eb979878f6fcbd83b180e9eb92789174c23651a476edf50c4efb2f7d531",
+        "grainResolutionPolicyVersion": "lightbi.grain-resolution-policy.v1",
+        "grainResolutionPolicyHash": "219e8b7e78261bcbc9ff4714cf93ec62f709c54670ad7e8bf8a3edbfef01d3ef",
+        "relationshipPolicyVersion": "lightbi.relationship-candidate-policy.v1",
+        "relationshipPolicyHash": "6a615bac8756de8e2a3213a041943845726e71f2c8963956bdfe56bd074d5359",
+        "pairs": [
+          {
+            "pairId": "pair:e017ee451b367014",
+            "leftSourceId": "sample data/Accounting_ERP_June_2026.csv#Sheet1",
+            "rightSourceId": "sample data/Accounting_ERP_May_2026.csv#Sheet1",
+            "candidates": [
+              {
+                "candidateId": "pair:e017ee451b367014:identity",
+                "relationshipClass": "identity_equivalence",
+                "operationAlternatives": [
+                  "compare_candidate",
+                  "unresolved_operation"
+                ],
+                "keyPairAlternatives": [
+                  {
+                    "candidateId": "key:6502af77c728fdbf",
+                    "kind": "single",
+                    "left": {
+                      "sourceId": "sample data/Accounting_ERP_June_2026.csv#Sheet1",
+                      "physicalColumns": [
+                        {
+                          "index": 7,
+                          "name": "SKU",
+                          "physicalTypes": [
+                            "string"
+                          ]
+                        }
+                      ],
+                      "semanticResolutions": [
+                        {
+                          "physicalColumn": "SKU",
+                          "state": "ambiguous",
+                          "selectedCandidateId": null,
+                          "candidateIds": [
+                            "branch",
+                            "sku"
+                          ]
+                        }
+                      ],
+                      "grainDependencies": {
+                        "structural": "unknown",
+                        "identity": "no_key",
+                        "parent": "no_parent",
+                        "temporal": "unresolved",
+                        "aggregation": "unresolved"
+                      },
+                      "identityState": "unknown",
+                      "keyProvenance": [],
+                      "nonNullRatio": 1,
+                      "uniquenessRatio": 0.36133333333333334,
+                      "limitations": [
+                        "ambiguous_identifier_alternative",
+                        "semantic_role_unresolved"
+                      ],
+                      "debt": []
+                    },
+                    "right": {
+                      "sourceId": "sample data/Accounting_ERP_May_2026.csv#Sheet1",
+                      "physicalColumns": [
+                        {
+                          "index": 7,
+                          "name": "SKU",
+                          "physicalTypes": [
+                            "string"
+                          ]
+                        }
+                      ],
+                      "semanticResolutions": [
+                        {
+                          "physicalColumn": "SKU",
+                          "state": "ambiguous",
+                          "selectedCandidateId": null,
+                          "candidateIds": [
+                            "branch",
+                            "sku"
+                          ]
+                        }
+                      ],
+                      "grainDependencies": {
+                        "structural": "unknown",
+                        "identity": "no_key",
+                        "parent": "no_parent",
+                        "temporal": "unresolved",
+                        "aggregation": "unresolved"
+                      },
+                      "identityState": "unknown",
+                      "keyProvenance": [],
+                      "nonNullRatio": 1,
+                      "uniquenessRatio": 0.36333333333333334,
+                      "limitations": [
+                        "ambiguous_identifier_alternative",
+                        "semantic_role_unresolved"
+                      ],
+                      "debt": []
+                    },
+                    "componentPairs": [
+                      {
+                        "leftColumn": "SKU",
+                        "rightColumn": "SKU",
+                        "basis": "ambiguous_semantic"
+                      }
+                    ],
+                    "overlap": {
+                      "scope": "full_file",
+                      "leftDistinct": 542,
+                      "rightDistinct": 545,
+                      "matchedDistinct": 496,
+                      "leftMatchedRows": 1374,
+                      "rightMatchedRows": 1369,
+                      "leftUnmatchedDistinct": 46,
+                      "rightUnmatchedDistinct": 49,
+                      "leftNulls": 0,
+                      "rightNulls": 0,
+                      "leftDuplicateRows": 958,
+                      "rightDuplicateRows": 955,
+                      "leftMaxFrequency": 9,
+                      "rightMaxFrequency": 8,
+                      "leftOverlapRatio": 0.915129151291513,
+                      "rightOverlapRatio": 0.9100917431192661,
+                      "coverageRatio": 0.9100917431192661,
+                      "possibleFanout": true,
+                      "witnessHashes": [
+                        "cc278ad1fd7a9841",
+                        "f9347e98a1da5e4c",
+                        "961326c463313b0e",
+                        "f44f269b76f1a00d",
+                        "63f6ab9dac4ecd6b"
+                      ],
+                      "rawValuesPersisted": false
+                    },
+                    "cardinalityAlternatives": [
+                      "many_to_many"
+                    ],
+                    "limitations": []
+                  }
+                ],
+                "cardinalityAlternatives": [
+                  "many_to_many"
+                ],
+                "evidence": [
+                  {
+                    "evidenceId": "pair:e017ee451b367014:schema",
+                    "family": "schema_compatibility",
+                    "direction": "supports",
+                    "provenance": "full_file_profile",
+                    "references": [
+                      "AR_Account",
+                      "AR_Debit",
+                      "Brand",
+                      "COGS_Account",
+                      "COGS_Debit",
+                      "Category",
+                      "Discount",
+                      "GrossProfit",
+                      "Inventory_Account",
+                      "Inventory_Credit",
+                      "InvoiceDate",
+                      "InvoiceNo",
+                      "InvoiceTotal",
+                      "JournalNo",
+                      "MarginPct",
+                      "NetRevenue",
+                      "OrderID",
+                      "Payment",
+                      "Product",
+                      "Qty",
+                      "Revenue_Account",
+                      "Revenue_Credit",
+                      "SKU",
+                      "Salesperson",
+                      "Store",
+                      "TotalCost",
+                      "UnitCost",
+                      "UnitPrice",
+                      "VATOutput",
+                      "VATOutput_Credit",
+                      "VATRate",
+                      "VAT_Account"
+                    ],
+                    "correlatedWith": [],
+                    "explanationCode": "schema_compatibility_observed"
+                  },
+                  {
+                    "evidenceId": "pair:e017ee451b367014:grain",
+                    "family": "grain_compatibility",
+                    "direction": "mixed",
+                    "provenance": "grain_resolution",
+                    "references": [],
+                    "correlatedWith": [],
+                    "explanationCode": "axis_local_grain_comparison"
+                  },
+                  {
+                    "evidenceId": "pair:e017ee451b367014:keys",
+                    "family": "key_structure",
+                    "direction": "supports",
+                    "provenance": "full_file_rows",
+                    "references": [
+                      "key:6502af77c728fdbf"
+                    ],
+                    "correlatedWith": [],
+                    "explanationCode": "bounded_key_pairs_observed"
+                  }
+                ],
+                "conflicts": [],
+                "schema": {
+                  "exactMatches": [
+                    "AR_Account",
+                    "AR_Debit",
+                    "Brand",
+                    "COGS_Account",
+                    "COGS_Debit",
+                    "Category",
+                    "Discount",
+                    "GrossProfit",
+                    "Inventory_Account",
+                    "Inventory_Credit",
+                    "InvoiceDate",
+                    "InvoiceNo",
+                    "InvoiceTotal",
+                    "JournalNo",
+                    "MarginPct",
+                    "NetRevenue",
+                    "OrderID",
+                    "Payment",
+                    "Product",
+                    "Qty",
+                    "Revenue_Account",
+                    "Revenue_Credit",
+                    "SKU",
+                    "Salesperson",
+                    "Store",
+                    "TotalCost",
+                    "UnitCost",
+                    "UnitPrice",
+                    "VATOutput",
+                    "VATOutput_Credit",
+                    "VATRate",
+                    "VAT_Account"
+                  ],
+                  "renameCompatible": [],
+                  "missingLeft": [],
+                  "missingRight": [],
+                  "incompatiblePhysicalTypes": [],
+                  "semanticConflicts": [],
+                  "grainConflicts": [],
+                  "measureRoleConflicts": [],
+                  "structuralLimitations": []
+                },
+                "temporal": {
+                  "alternatives": [
+                    "sequential_periods",
+                    "disjoint_periods"
+                  ],
+                  "leftRange": {
+                    "min": "2026-06-01T00:00:00.000Z",
+                    "max": "2026-06-30T00:00:00.000Z"
+                  },
+                  "rightRange": {
+                    "min": "2026-05-01T00:00:00.000Z",
+                    "max": "2026-05-31T00:00:00.000Z"
+                  },
+                  "provenance": [
+                    "full_file_profile"
+                  ],
+                  "limitations": []
+                },
+                "grain": {
+                  "structural": "unresolved",
+                  "identity": "compatible",
+                  "parent": "compatible",
+                  "temporal": "compatible",
+                  "aggregation": "compatible",
+                  "semanticLimitations": [],
+                  "candidateDebt": []
+                },
+                "duplication": {
+                  "risks": [
+                    "duplicate_left_key",
+                    "duplicate_right_key",
+                    "many_to_many_fanout",
+                    "unmatched_reference"
+                  ],
+                  "safetyInferred": false
+                },
+                "limitations": [
+                  "candidate_only",
+                  "operation_not_approved"
+                ],
+                "debt": [],
+                "selected": false
+              },
+              {
+                "candidateId": "pair:e017ee451b367014:schema",
+                "relationshipClass": "schema_continuation",
+                "operationAlternatives": [
+                  "append_candidate",
+                  "compare_candidate"
+                ],
+                "keyPairAlternatives": [
+                  {
+                    "candidateId": "key:6502af77c728fdbf",
+                    "kind": "single",
+                    "left": {
+                      "sourceId": "sample data/Accounting_ERP_June_2026.csv#Sheet1",
+                      "physicalColumns": [
+                        {
+                          "index": 7,
+                          "name": "SKU",
+                          "physicalTypes": [
+                            "string"
+                          ]
+                        }
+                      ],
+                      "semanticResolutions": [
+                        {
+                          "physicalColumn": "SKU",
+                          "state": "ambiguous",
+                          "selectedCandidateId": null,
+                          "candidateIds": [
+                            "branch",
+                            "sku"
+                          ]
+                        }
+                      ],
+                      "grainDependencies": {
+                        "structural": "unknown",
+                        "identity": "no_key",
+                        "parent": "no_parent",
+                        "temporal": "unresolved",
+                        "aggregation": "unresolved"
+                      },
+                      "identityState": "unknown",
+                      "keyProvenance": [],
+                      "nonNullRatio": 1,
+                      "uniquenessRatio": 0.36133333333333334,
+                      "limitations": [
+                        "ambiguous_identifier_alternative",
+                        "semantic_role_unresolved"
+                      ],
+                      "debt": []
+                    },
+                    "right": {
+                      "sourceId": "sample data/Accounting_ERP_May_2026.csv#Sheet1",
+                      "physicalColumns": [
+                        {
+                          "index": 7,
+                          "name": "SKU",
+                          "physicalTypes": [
+                            "string"
+                          ]
+                        }
+                      ],
+                      "semanticResolutions": [
+                        {
+                          "physicalColumn": "SKU",
+                          "state": "ambiguous",
+                          "selectedCandidateId": null,
+                          "candidateIds": [
+                            "branch",
+                            "sku"
+                          ]
+                        }
+                      ],
+                      "grainDependencies": {
+                        "structural": "unknown",
+                        "identity": "no_key",
+                        "parent": "no_parent",
+                        "temporal": "unresolved",
+                        "aggregation": "unresolved"
+                      },
+                      "identityState": "unknown",
+                      "keyProvenance": [],
+                      "nonNullRatio": 1,
+                      "uniquenessRatio": 0.36333333333333334,
+                      "limitations": [
+                        "ambiguous_identifier_alternative",
+                        "semantic_role_unresolved"
+                      ],
+                      "debt": []
+                    },
+                    "componentPairs": [
+                      {
+                        "leftColumn": "SKU",
+                        "rightColumn": "SKU",
+                        "basis": "ambiguous_semantic"
+                      }
+                    ],
+                    "overlap": {
+                      "scope": "full_file",
+                      "leftDistinct": 542,
+                      "rightDistinct": 545,
+                      "matchedDistinct": 496,
+                      "leftMatchedRows": 1374,
+                      "rightMatchedRows": 1369,
+                      "leftUnmatchedDistinct": 46,
+                      "rightUnmatchedDistinct": 49,
+                      "leftNulls": 0,
+                      "rightNulls": 0,
+                      "leftDuplicateRows": 958,
+                      "rightDuplicateRows": 955,
+                      "leftMaxFrequency": 9,
+                      "rightMaxFrequency": 8,
+                      "leftOverlapRatio": 0.915129151291513,
+                      "rightOverlapRatio": 0.9100917431192661,
+                      "coverageRatio": 0.9100917431192661,
+                      "possibleFanout": true,
+                      "witnessHashes": [
+                        "cc278ad1fd7a9841",
+                        "f9347e98a1da5e4c",
+                        "961326c463313b0e",
+                        "f44f269b76f1a00d",
+                        "63f6ab9dac4ecd6b"
+                      ],
+                      "rawValuesPersisted": false
+                    },
+                    "cardinalityAlternatives": [
+                      "many_to_many"
+                    ],
+                    "limitations": []
+                  }
+                ],
+                "cardinalityAlternatives": [
+                  "many_to_many"
+                ],
+                "evidence": [
+                  {
+                    "evidenceId": "pair:e017ee451b367014:schema",
+                    "family": "schema_compatibility",
+                    "direction": "supports",
+                    "provenance": "full_file_profile",
+                    "references": [
+                      "AR_Account",
+                      "AR_Debit",
+                      "Brand",
+                      "COGS_Account",
+                      "COGS_Debit",
+                      "Category",
+                      "Discount",
+                      "GrossProfit",
+                      "Inventory_Account",
+                      "Inventory_Credit",
+                      "InvoiceDate",
+                      "InvoiceNo",
+                      "InvoiceTotal",
+                      "JournalNo",
+                      "MarginPct",
+                      "NetRevenue",
+                      "OrderID",
+                      "Payment",
+                      "Product",
+                      "Qty",
+                      "Revenue_Account",
+                      "Revenue_Credit",
+                      "SKU",
+                      "Salesperson",
+                      "Store",
+                      "TotalCost",
+                      "UnitCost",
+                      "UnitPrice",
+                      "VATOutput",
+                      "VATOutput_Credit",
+                      "VATRate",
+                      "VAT_Account"
+                    ],
+                    "correlatedWith": [],
+                    "explanationCode": "schema_compatibility_observed"
+                  },
+                  {
+                    "evidenceId": "pair:e017ee451b367014:grain",
+                    "family": "grain_compatibility",
+                    "direction": "mixed",
+                    "provenance": "grain_resolution",
+                    "references": [],
+                    "correlatedWith": [],
+                    "explanationCode": "axis_local_grain_comparison"
+                  },
+                  {
+                    "evidenceId": "pair:e017ee451b367014:keys",
+                    "family": "key_structure",
+                    "direction": "supports",
+                    "provenance": "full_file_rows",
+                    "references": [
+                      "key:6502af77c728fdbf"
+                    ],
+                    "correlatedWith": [],
+                    "explanationCode": "bounded_key_pairs_observed"
+                  }
+                ],
+                "conflicts": [],
+                "schema": {
+                  "exactMatches": [
+                    "AR_Account",
+                    "AR_Debit",
+                    "Brand",
+                    "COGS_Account",
+                    "COGS_Debit",
+                    "Category",
+                    "Discount",
+                    "GrossProfit",
+                    "Inventory_Account",
+                    "Inventory_Credit",
+                    "InvoiceDate",
+                    "InvoiceNo",
+                    "InvoiceTotal",
+                    "JournalNo",
+                    "MarginPct",
+                    "NetRevenue",
+                    "OrderID",
+                    "Payment",
+                    "Product",
+                    "Qty",
+                    "Revenue_Account",
+                    "Revenue_Credit",
+                    "SKU",
+                    "Salesperson",
+                    "Store",
+                    "TotalCost",
+                    "UnitCost",
+                    "UnitPrice",
+                    "VATOutput",
+                    "VATOutput_Credit",
+                    "VATRate",
+                    "VAT_Account"
+                  ],
+                  "renameCompatible": [],
+                  "missingLeft": [],
+                  "missingRight": [],
+                  "incompatiblePhysicalTypes": [],
+                  "semanticConflicts": [],
+                  "grainConflicts": [],
+                  "measureRoleConflicts": [],
+                  "structuralLimitations": []
+                },
+                "temporal": {
+                  "alternatives": [
+                    "sequential_periods",
+                    "disjoint_periods"
+                  ],
+                  "leftRange": {
+                    "min": "2026-06-01T00:00:00.000Z",
+                    "max": "2026-06-30T00:00:00.000Z"
+                  },
+                  "rightRange": {
+                    "min": "2026-05-01T00:00:00.000Z",
+                    "max": "2026-05-31T00:00:00.000Z"
+                  },
+                  "provenance": [
+                    "full_file_profile"
+                  ],
+                  "limitations": []
+                },
+                "grain": {
+                  "structural": "unresolved",
+                  "identity": "compatible",
+                  "parent": "compatible",
+                  "temporal": "compatible",
+                  "aggregation": "compatible",
+                  "semanticLimitations": [],
+                  "candidateDebt": []
+                },
+                "duplication": {
+                  "risks": [
+                    "duplicate_left_key",
+                    "duplicate_right_key",
+                    "many_to_many_fanout",
+                    "unmatched_reference"
+                  ],
+                  "safetyInferred": false
+                },
+                "limitations": [
+                  "candidate_only",
+                  "operation_not_approved"
+                ],
+                "debt": [],
+                "selected": false
+              }
+            ],
+            "generationReasons": [
+              "bounded_key_pair",
+              "schema_continuation"
+            ],
+            "exclusionReasons": [],
+            "compositeSearch": {
+              "maxWidth": 3,
+              "maximumCombinations": 64,
+              "evaluated": 1,
+              "pruned": 0,
+              "skipped": 0,
+              "deterministicOrder": "canonical_column_name"
+            }
+          }
+        ],
+        "coverage": {
+          "declaredSources": 2,
+          "validSources": 2,
+          "expectedPairs": 1,
+          "observedPairs": 1,
+          "inputGrainCandidates": 4,
+          "preservedDebt": 0
+        },
+        "limitations": [
+          "candidate_generation_only",
+          "no_operation_or_safety_approval"
+        ],
+        "debt": [],
+        "finalRelationshipResolution": {
+          "executed": false
+        },
+        "joinSafety": {
+          "executed": false
+        },
+        "productionWiring": {
+          "executed": false
+        }
+      }
+    }
+  ]
+}

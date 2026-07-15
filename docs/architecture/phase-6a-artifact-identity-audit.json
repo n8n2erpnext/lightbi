@@ -1,0 +1,12 @@
+{
+  "schemaVersion": "lightbi.phase-6a-artifact-identity-audit.v1",
+  "identityBasis": ["dataset identity", "source kind", "physical columns", "full retained rows", "declared source row count", "sheet and path when available"],
+  "hash": "deterministicPolicySha256",
+  "unchangedStateBuildCount": 1,
+  "cacheReturnsSameObject": true,
+  "homeBuildAndInvestigationRowsShareCanonicalSelection": true,
+  "sourceChangeCreatesNewIdentity": true,
+  "staleStateReuse": false,
+  "invalidArtifactFailsClosed": true,
+  "duplicateBuildNegativeProbe": "passed"
+}

@@ -1,0 +1,2215 @@
+{
+  "schemaVersion": "lightbi.phase-4b2b-axis-audit.v1",
+  "date": "2026-07-13",
+  "policy": {
+    "version": "lightbi.relationship-resolution-policy.v2",
+    "sha256": "68b96f0b410315937256992d28378ae4932910a8bdc8719f0b475addd9855a10"
+  },
+  "corpus": {
+    "version": "1.2.0",
+    "bundles": 5,
+    "pairs": 9,
+    "tuningUse": "forbidden"
+  },
+  "freezeClassification": "freeze_ready_with_documented_debt",
+  "safety": {
+    "joinSafety": false,
+    "operationExecution": false,
+    "productionWiring": false
+  },
+  "nonUnknownDecisions": [
+    {
+      "bundleId": "multi.commerce_may_2026",
+      "pairId": "pair:23857b1b9f637f2c",
+      "provenance": "validation_only_tuning_forbidden",
+      "axis": "temporalAlignment",
+      "state": "ambiguous",
+      "value": "unresolved_alignment",
+      "alternatives": [
+        "overlapping_periods",
+        "event_window_alignment"
+      ],
+      "candidateTraceIds": [
+        "pair:23857b1b9f637f2c:unresolved"
+      ],
+      "keyPairIds": [],
+      "ruleIds": [
+        "RR-TEMPORAL-CANONICAL"
+      ],
+      "independentEvidence": [
+        "pair:23857b1b9f637f2c:schema",
+        "pair:23857b1b9f637f2c:grain"
+      ],
+      "correlatedEvidence": [],
+      "dependencies": [],
+      "fullFileOverlap": [],
+      "risks": [
+        "schema_drift"
+      ],
+      "conflicts": [],
+      "limitations": [
+        {
+          "code": "competing_temporal_alignments",
+          "axis": "temporal",
+          "severity": "material",
+          "sourceReferences": []
+        }
+      ],
+      "debt": [
+        {
+          "code": "insufficient_temporal_evidence",
+          "axis": "temporal",
+          "candidateReferences": [
+            "pair:23857b1b9f637f2c:unresolved"
+          ],
+          "reason": "Multiple temporal alternatives require later partition validation."
+        }
+      ],
+      "temporalDebt": [
+        {
+          "code": "insufficient_temporal_evidence",
+          "axis": "temporal",
+          "candidateReferences": [
+            "pair:23857b1b9f637f2c:unresolved"
+          ],
+          "reason": "Multiple temporal alternatives require later partition validation."
+        }
+      ],
+      "allowedStates": [
+        "confirmed",
+        "probable",
+        "ambiguous",
+        "unknown"
+      ],
+      "forbiddenStates": [
+        "unsupported_input"
+      ],
+      "conformance": true,
+      "falseCertaintyRisk": "bounded",
+      "disposition": "should_be_ambiguous"
+    },
+    {
+      "bundleId": "multi.commerce_may_2026",
+      "pairId": "pair:7c6214dbcf4d1a72",
+      "provenance": "validation_only_tuning_forbidden",
+      "axis": "meaning",
+      "state": "ambiguous",
+      "value": "unresolved_relation",
+      "alternatives": [
+        "identity_equivalence"
+      ],
+      "candidateTraceIds": [
+        "pair:7c6214dbcf4d1a72:identity"
+      ],
+      "keyPairIds": [
+        "key:6502af77c728fdbf"
+      ],
+      "ruleIds": [
+        "RR-MEANING-MULTI-EVIDENCE"
+      ],
+      "independentEvidence": [
+        "pair:7c6214dbcf4d1a72:schema",
+        "pair:7c6214dbcf4d1a72:grain",
+        "pair:7c6214dbcf4d1a72:keys"
+      ],
+      "correlatedEvidence": [],
+      "dependencies": [],
+      "fullFileOverlap": [
+        {
+          "keyPairId": "key:6502af77c728fdbf",
+          "scope": "full_file"
+        }
+      ],
+      "risks": [
+        "duplicate_left_key",
+        "duplicate_right_key",
+        "many_to_many_fanout",
+        "schema_drift"
+      ],
+      "conflicts": [],
+      "limitations": [
+        {
+          "code": "material_grain_conflict",
+          "axis": "meaning",
+          "severity": "material",
+          "sourceReferences": [
+            "pair:7c6214dbcf4d1a72:identity"
+          ]
+        }
+      ],
+      "debt": [],
+      "temporalDebt": [
+        {
+          "code": "insufficient_temporal_evidence",
+          "axis": "temporal",
+          "candidateReferences": [
+            "pair:7c6214dbcf4d1a72:identity"
+          ],
+          "reason": "Multiple temporal alternatives require later partition validation."
+        }
+      ],
+      "allowedStates": [
+        "confirmed",
+        "probable",
+        "ambiguous",
+        "unknown"
+      ],
+      "forbiddenStates": [
+        "unsupported_input"
+      ],
+      "conformance": true,
+      "falseCertaintyRisk": "bounded",
+      "disposition": "should_be_ambiguous"
+    },
+    {
+      "bundleId": "multi.commerce_may_2026",
+      "pairId": "pair:7c6214dbcf4d1a72",
+      "provenance": "validation_only_tuning_forbidden",
+      "axis": "keyBasis",
+      "state": "probable",
+      "value": "single_key_pair",
+      "alternatives": [
+        "single_key_pair"
+      ],
+      "candidateTraceIds": [
+        "pair:7c6214dbcf4d1a72:identity"
+      ],
+      "keyPairIds": [
+        "key:6502af77c728fdbf"
+      ],
+      "ruleIds": [
+        "RR-KEY-NOT-BY-COUNT",
+        "RR-KEY-COMPOSITE-BOUNDED"
+      ],
+      "independentEvidence": [
+        "pair:7c6214dbcf4d1a72:schema",
+        "pair:7c6214dbcf4d1a72:grain",
+        "pair:7c6214dbcf4d1a72:keys"
+      ],
+      "correlatedEvidence": [],
+      "dependencies": [],
+      "fullFileOverlap": [
+        {
+          "keyPairId": "key:6502af77c728fdbf",
+          "scope": "full_file"
+        }
+      ],
+      "risks": [
+        "duplicate_left_key",
+        "duplicate_right_key",
+        "many_to_many_fanout",
+        "schema_drift"
+      ],
+      "conflicts": [],
+      "limitations": [],
+      "debt": [],
+      "temporalDebt": [
+        {
+          "code": "insufficient_temporal_evidence",
+          "axis": "temporal",
+          "candidateReferences": [
+            "pair:7c6214dbcf4d1a72:identity"
+          ],
+          "reason": "Multiple temporal alternatives require later partition validation."
+        }
+      ],
+      "allowedStates": [
+        "confirmed",
+        "probable",
+        "ambiguous",
+        "unknown"
+      ],
+      "forbiddenStates": [
+        "unsupported_input"
+      ],
+      "conformance": true,
+      "falseCertaintyRisk": "bounded",
+      "disposition": "valid_probable"
+    },
+    {
+      "bundleId": "multi.commerce_may_2026",
+      "pairId": "pair:7c6214dbcf4d1a72",
+      "provenance": "validation_only_tuning_forbidden",
+      "axis": "observedCardinality",
+      "state": "ambiguous",
+      "value": "unknown_observed_cardinality",
+      "alternatives": [
+        "observed_many_to_many"
+      ],
+      "candidateTraceIds": [
+        "pair:7c6214dbcf4d1a72:identity"
+      ],
+      "keyPairIds": [
+        "key:6502af77c728fdbf"
+      ],
+      "ruleIds": [
+        "RR-CARDINALITY-EXTRACT",
+        "RR-CARDINALITY-CANDIDATE-SCOPE"
+      ],
+      "independentEvidence": [
+        "pair:7c6214dbcf4d1a72:schema",
+        "pair:7c6214dbcf4d1a72:grain",
+        "pair:7c6214dbcf4d1a72:keys"
+      ],
+      "correlatedEvidence": [],
+      "dependencies": [],
+      "fullFileOverlap": [
+        {
+          "keyPairId": "key:6502af77c728fdbf",
+          "scope": "full_file"
+        }
+      ],
+      "risks": [
+        "duplicate_left_key",
+        "duplicate_right_key",
+        "many_to_many_fanout",
+        "schema_drift"
+      ],
+      "conflicts": [],
+      "limitations": [
+        {
+          "code": "extract_observation_not_business_contract",
+          "axis": "cardinality",
+          "severity": "bounded",
+          "sourceReferences": []
+        },
+        {
+          "code": "pair_cardinality_unresolved_without_selected_key",
+          "axis": "cardinality",
+          "severity": "material",
+          "sourceReferences": []
+        }
+      ],
+      "debt": [],
+      "temporalDebt": [
+        {
+          "code": "insufficient_temporal_evidence",
+          "axis": "temporal",
+          "candidateReferences": [
+            "pair:7c6214dbcf4d1a72:identity"
+          ],
+          "reason": "Multiple temporal alternatives require later partition validation."
+        }
+      ],
+      "allowedStates": [
+        "confirmed",
+        "probable",
+        "ambiguous",
+        "unknown"
+      ],
+      "forbiddenStates": [
+        "unsupported_input"
+      ],
+      "conformance": true,
+      "falseCertaintyRisk": "bounded",
+      "disposition": "should_be_ambiguous"
+    },
+    {
+      "bundleId": "multi.commerce_may_2026",
+      "pairId": "pair:7c6214dbcf4d1a72",
+      "provenance": "validation_only_tuning_forbidden",
+      "axis": "temporalAlignment",
+      "state": "ambiguous",
+      "value": "unresolved_alignment",
+      "alternatives": [
+        "overlapping_periods",
+        "event_window_alignment"
+      ],
+      "candidateTraceIds": [
+        "pair:7c6214dbcf4d1a72:identity"
+      ],
+      "keyPairIds": [
+        "key:6502af77c728fdbf"
+      ],
+      "ruleIds": [
+        "RR-TEMPORAL-CANONICAL"
+      ],
+      "independentEvidence": [
+        "pair:7c6214dbcf4d1a72:schema",
+        "pair:7c6214dbcf4d1a72:grain",
+        "pair:7c6214dbcf4d1a72:keys"
+      ],
+      "correlatedEvidence": [],
+      "dependencies": [],
+      "fullFileOverlap": [
+        {
+          "keyPairId": "key:6502af77c728fdbf",
+          "scope": "full_file"
+        }
+      ],
+      "risks": [
+        "duplicate_left_key",
+        "duplicate_right_key",
+        "many_to_many_fanout",
+        "schema_drift"
+      ],
+      "conflicts": [],
+      "limitations": [
+        {
+          "code": "competing_temporal_alignments",
+          "axis": "temporal",
+          "severity": "material",
+          "sourceReferences": []
+        }
+      ],
+      "debt": [
+        {
+          "code": "insufficient_temporal_evidence",
+          "axis": "temporal",
+          "candidateReferences": [
+            "pair:7c6214dbcf4d1a72:identity"
+          ],
+          "reason": "Multiple temporal alternatives require later partition validation."
+        }
+      ],
+      "temporalDebt": [
+        {
+          "code": "insufficient_temporal_evidence",
+          "axis": "temporal",
+          "candidateReferences": [
+            "pair:7c6214dbcf4d1a72:identity"
+          ],
+          "reason": "Multiple temporal alternatives require later partition validation."
+        }
+      ],
+      "allowedStates": [
+        "confirmed",
+        "probable",
+        "ambiguous",
+        "unknown"
+      ],
+      "forbiddenStates": [
+        "unsupported_input"
+      ],
+      "conformance": true,
+      "falseCertaintyRisk": "bounded",
+      "disposition": "should_be_ambiguous"
+    },
+    {
+      "bundleId": "multi.commerce_may_2026",
+      "pairId": "pair:e5224dd199f8f4f5",
+      "provenance": "validation_only_tuning_forbidden",
+      "axis": "temporalAlignment",
+      "state": "ambiguous",
+      "value": "unresolved_alignment",
+      "alternatives": [
+        "overlapping_periods",
+        "event_window_alignment"
+      ],
+      "candidateTraceIds": [
+        "pair:e5224dd199f8f4f5:unresolved"
+      ],
+      "keyPairIds": [],
+      "ruleIds": [
+        "RR-TEMPORAL-CANONICAL"
+      ],
+      "independentEvidence": [
+        "pair:e5224dd199f8f4f5:schema",
+        "pair:e5224dd199f8f4f5:grain"
+      ],
+      "correlatedEvidence": [],
+      "dependencies": [],
+      "fullFileOverlap": [],
+      "risks": [
+        "schema_drift"
+      ],
+      "conflicts": [],
+      "limitations": [
+        {
+          "code": "competing_temporal_alignments",
+          "axis": "temporal",
+          "severity": "material",
+          "sourceReferences": []
+        }
+      ],
+      "debt": [
+        {
+          "code": "insufficient_temporal_evidence",
+          "axis": "temporal",
+          "candidateReferences": [
+            "pair:e5224dd199f8f4f5:unresolved"
+          ],
+          "reason": "Multiple temporal alternatives require later partition validation."
+        }
+      ],
+      "temporalDebt": [
+        {
+          "code": "insufficient_temporal_evidence",
+          "axis": "temporal",
+          "candidateReferences": [
+            "pair:e5224dd199f8f4f5:unresolved"
+          ],
+          "reason": "Multiple temporal alternatives require later partition validation."
+        }
+      ],
+      "allowedStates": [
+        "confirmed",
+        "probable",
+        "ambiguous",
+        "unknown"
+      ],
+      "forbiddenStates": [
+        "unsupported_input"
+      ],
+      "conformance": true,
+      "falseCertaintyRisk": "bounded",
+      "disposition": "should_be_ambiguous"
+    },
+    {
+      "bundleId": "multi.commerce_june_2026",
+      "pairId": "pair:ac78987907cd6c20",
+      "provenance": "validation_only_tuning_forbidden",
+      "axis": "temporalAlignment",
+      "state": "ambiguous",
+      "value": "unresolved_alignment",
+      "alternatives": [
+        "overlapping_periods",
+        "event_window_alignment"
+      ],
+      "candidateTraceIds": [
+        "pair:ac78987907cd6c20:unresolved"
+      ],
+      "keyPairIds": [],
+      "ruleIds": [
+        "RR-TEMPORAL-CANONICAL"
+      ],
+      "independentEvidence": [
+        "pair:ac78987907cd6c20:schema",
+        "pair:ac78987907cd6c20:grain"
+      ],
+      "correlatedEvidence": [],
+      "dependencies": [],
+      "fullFileOverlap": [],
+      "risks": [
+        "schema_drift"
+      ],
+      "conflicts": [],
+      "limitations": [
+        {
+          "code": "competing_temporal_alignments",
+          "axis": "temporal",
+          "severity": "material",
+          "sourceReferences": []
+        }
+      ],
+      "debt": [
+        {
+          "code": "insufficient_temporal_evidence",
+          "axis": "temporal",
+          "candidateReferences": [
+            "pair:ac78987907cd6c20:unresolved"
+          ],
+          "reason": "Multiple temporal alternatives require later partition validation."
+        }
+      ],
+      "temporalDebt": [
+        {
+          "code": "insufficient_temporal_evidence",
+          "axis": "temporal",
+          "candidateReferences": [
+            "pair:ac78987907cd6c20:unresolved"
+          ],
+          "reason": "Multiple temporal alternatives require later partition validation."
+        }
+      ],
+      "allowedStates": [
+        "confirmed",
+        "probable",
+        "ambiguous",
+        "unknown"
+      ],
+      "forbiddenStates": [
+        "unsupported_input"
+      ],
+      "conformance": true,
+      "falseCertaintyRisk": "bounded",
+      "disposition": "should_be_ambiguous"
+    },
+    {
+      "bundleId": "multi.commerce_june_2026",
+      "pairId": "pair:d31d59ba9619b647",
+      "provenance": "validation_only_tuning_forbidden",
+      "axis": "meaning",
+      "state": "ambiguous",
+      "value": "unresolved_relation",
+      "alternatives": [
+        "identity_equivalence"
+      ],
+      "candidateTraceIds": [
+        "pair:d31d59ba9619b647:identity"
+      ],
+      "keyPairIds": [
+        "key:6502af77c728fdbf"
+      ],
+      "ruleIds": [
+        "RR-MEANING-MULTI-EVIDENCE"
+      ],
+      "independentEvidence": [
+        "pair:d31d59ba9619b647:schema",
+        "pair:d31d59ba9619b647:grain",
+        "pair:d31d59ba9619b647:keys"
+      ],
+      "correlatedEvidence": [],
+      "dependencies": [],
+      "fullFileOverlap": [
+        {
+          "keyPairId": "key:6502af77c728fdbf",
+          "scope": "full_file"
+        }
+      ],
+      "risks": [
+        "duplicate_left_key",
+        "duplicate_right_key",
+        "many_to_many_fanout",
+        "schema_drift"
+      ],
+      "conflicts": [],
+      "limitations": [
+        {
+          "code": "material_grain_conflict",
+          "axis": "meaning",
+          "severity": "material",
+          "sourceReferences": [
+            "pair:d31d59ba9619b647:identity"
+          ]
+        }
+      ],
+      "debt": [],
+      "temporalDebt": [
+        {
+          "code": "insufficient_temporal_evidence",
+          "axis": "temporal",
+          "candidateReferences": [
+            "pair:d31d59ba9619b647:identity"
+          ],
+          "reason": "Multiple temporal alternatives require later partition validation."
+        }
+      ],
+      "allowedStates": [
+        "confirmed",
+        "probable",
+        "ambiguous",
+        "unknown"
+      ],
+      "forbiddenStates": [
+        "unsupported_input"
+      ],
+      "conformance": true,
+      "falseCertaintyRisk": "bounded",
+      "disposition": "should_be_ambiguous"
+    },
+    {
+      "bundleId": "multi.commerce_june_2026",
+      "pairId": "pair:d31d59ba9619b647",
+      "provenance": "validation_only_tuning_forbidden",
+      "axis": "keyBasis",
+      "state": "probable",
+      "value": "single_key_pair",
+      "alternatives": [
+        "single_key_pair"
+      ],
+      "candidateTraceIds": [
+        "pair:d31d59ba9619b647:identity"
+      ],
+      "keyPairIds": [
+        "key:6502af77c728fdbf"
+      ],
+      "ruleIds": [
+        "RR-KEY-NOT-BY-COUNT",
+        "RR-KEY-COMPOSITE-BOUNDED"
+      ],
+      "independentEvidence": [
+        "pair:d31d59ba9619b647:schema",
+        "pair:d31d59ba9619b647:grain",
+        "pair:d31d59ba9619b647:keys"
+      ],
+      "correlatedEvidence": [],
+      "dependencies": [],
+      "fullFileOverlap": [
+        {
+          "keyPairId": "key:6502af77c728fdbf",
+          "scope": "full_file"
+        }
+      ],
+      "risks": [
+        "duplicate_left_key",
+        "duplicate_right_key",
+        "many_to_many_fanout",
+        "schema_drift"
+      ],
+      "conflicts": [],
+      "limitations": [],
+      "debt": [],
+      "temporalDebt": [
+        {
+          "code": "insufficient_temporal_evidence",
+          "axis": "temporal",
+          "candidateReferences": [
+            "pair:d31d59ba9619b647:identity"
+          ],
+          "reason": "Multiple temporal alternatives require later partition validation."
+        }
+      ],
+      "allowedStates": [
+        "confirmed",
+        "probable",
+        "ambiguous",
+        "unknown"
+      ],
+      "forbiddenStates": [
+        "unsupported_input"
+      ],
+      "conformance": true,
+      "falseCertaintyRisk": "bounded",
+      "disposition": "valid_probable"
+    },
+    {
+      "bundleId": "multi.commerce_june_2026",
+      "pairId": "pair:d31d59ba9619b647",
+      "provenance": "validation_only_tuning_forbidden",
+      "axis": "observedCardinality",
+      "state": "ambiguous",
+      "value": "unknown_observed_cardinality",
+      "alternatives": [
+        "observed_many_to_many"
+      ],
+      "candidateTraceIds": [
+        "pair:d31d59ba9619b647:identity"
+      ],
+      "keyPairIds": [
+        "key:6502af77c728fdbf"
+      ],
+      "ruleIds": [
+        "RR-CARDINALITY-EXTRACT",
+        "RR-CARDINALITY-CANDIDATE-SCOPE"
+      ],
+      "independentEvidence": [
+        "pair:d31d59ba9619b647:schema",
+        "pair:d31d59ba9619b647:grain",
+        "pair:d31d59ba9619b647:keys"
+      ],
+      "correlatedEvidence": [],
+      "dependencies": [],
+      "fullFileOverlap": [
+        {
+          "keyPairId": "key:6502af77c728fdbf",
+          "scope": "full_file"
+        }
+      ],
+      "risks": [
+        "duplicate_left_key",
+        "duplicate_right_key",
+        "many_to_many_fanout",
+        "schema_drift"
+      ],
+      "conflicts": [],
+      "limitations": [
+        {
+          "code": "extract_observation_not_business_contract",
+          "axis": "cardinality",
+          "severity": "bounded",
+          "sourceReferences": []
+        },
+        {
+          "code": "pair_cardinality_unresolved_without_selected_key",
+          "axis": "cardinality",
+          "severity": "material",
+          "sourceReferences": []
+        }
+      ],
+      "debt": [],
+      "temporalDebt": [
+        {
+          "code": "insufficient_temporal_evidence",
+          "axis": "temporal",
+          "candidateReferences": [
+            "pair:d31d59ba9619b647:identity"
+          ],
+          "reason": "Multiple temporal alternatives require later partition validation."
+        }
+      ],
+      "allowedStates": [
+        "confirmed",
+        "probable",
+        "ambiguous",
+        "unknown"
+      ],
+      "forbiddenStates": [
+        "unsupported_input"
+      ],
+      "conformance": true,
+      "falseCertaintyRisk": "bounded",
+      "disposition": "should_be_ambiguous"
+    },
+    {
+      "bundleId": "multi.commerce_june_2026",
+      "pairId": "pair:d31d59ba9619b647",
+      "provenance": "validation_only_tuning_forbidden",
+      "axis": "temporalAlignment",
+      "state": "ambiguous",
+      "value": "unresolved_alignment",
+      "alternatives": [
+        "overlapping_periods",
+        "event_window_alignment"
+      ],
+      "candidateTraceIds": [
+        "pair:d31d59ba9619b647:identity"
+      ],
+      "keyPairIds": [
+        "key:6502af77c728fdbf"
+      ],
+      "ruleIds": [
+        "RR-TEMPORAL-CANONICAL"
+      ],
+      "independentEvidence": [
+        "pair:d31d59ba9619b647:schema",
+        "pair:d31d59ba9619b647:grain",
+        "pair:d31d59ba9619b647:keys"
+      ],
+      "correlatedEvidence": [],
+      "dependencies": [],
+      "fullFileOverlap": [
+        {
+          "keyPairId": "key:6502af77c728fdbf",
+          "scope": "full_file"
+        }
+      ],
+      "risks": [
+        "duplicate_left_key",
+        "duplicate_right_key",
+        "many_to_many_fanout",
+        "schema_drift"
+      ],
+      "conflicts": [],
+      "limitations": [
+        {
+          "code": "competing_temporal_alignments",
+          "axis": "temporal",
+          "severity": "material",
+          "sourceReferences": []
+        }
+      ],
+      "debt": [
+        {
+          "code": "insufficient_temporal_evidence",
+          "axis": "temporal",
+          "candidateReferences": [
+            "pair:d31d59ba9619b647:identity"
+          ],
+          "reason": "Multiple temporal alternatives require later partition validation."
+        }
+      ],
+      "temporalDebt": [
+        {
+          "code": "insufficient_temporal_evidence",
+          "axis": "temporal",
+          "candidateReferences": [
+            "pair:d31d59ba9619b647:identity"
+          ],
+          "reason": "Multiple temporal alternatives require later partition validation."
+        }
+      ],
+      "allowedStates": [
+        "confirmed",
+        "probable",
+        "ambiguous",
+        "unknown"
+      ],
+      "forbiddenStates": [
+        "unsupported_input"
+      ],
+      "conformance": true,
+      "falseCertaintyRisk": "bounded",
+      "disposition": "should_be_ambiguous"
+    },
+    {
+      "bundleId": "multi.commerce_june_2026",
+      "pairId": "pair:e05cac4cc63dd89d",
+      "provenance": "validation_only_tuning_forbidden",
+      "axis": "temporalAlignment",
+      "state": "ambiguous",
+      "value": "unresolved_alignment",
+      "alternatives": [
+        "overlapping_periods",
+        "event_window_alignment"
+      ],
+      "candidateTraceIds": [
+        "pair:e05cac4cc63dd89d:unresolved"
+      ],
+      "keyPairIds": [],
+      "ruleIds": [
+        "RR-TEMPORAL-CANONICAL"
+      ],
+      "independentEvidence": [
+        "pair:e05cac4cc63dd89d:schema",
+        "pair:e05cac4cc63dd89d:grain"
+      ],
+      "correlatedEvidence": [],
+      "dependencies": [],
+      "fullFileOverlap": [],
+      "risks": [
+        "schema_drift"
+      ],
+      "conflicts": [],
+      "limitations": [
+        {
+          "code": "competing_temporal_alignments",
+          "axis": "temporal",
+          "severity": "material",
+          "sourceReferences": []
+        }
+      ],
+      "debt": [
+        {
+          "code": "insufficient_temporal_evidence",
+          "axis": "temporal",
+          "candidateReferences": [
+            "pair:e05cac4cc63dd89d:unresolved"
+          ],
+          "reason": "Multiple temporal alternatives require later partition validation."
+        }
+      ],
+      "temporalDebt": [
+        {
+          "code": "insufficient_temporal_evidence",
+          "axis": "temporal",
+          "candidateReferences": [
+            "pair:e05cac4cc63dd89d:unresolved"
+          ],
+          "reason": "Multiple temporal alternatives require later partition validation."
+        }
+      ],
+      "allowedStates": [
+        "confirmed",
+        "probable",
+        "ambiguous",
+        "unknown"
+      ],
+      "forbiddenStates": [
+        "unsupported_input"
+      ],
+      "conformance": true,
+      "falseCertaintyRisk": "bounded",
+      "disposition": "should_be_ambiguous"
+    },
+    {
+      "bundleId": "multi.sales_period_pair",
+      "pairId": "pair:990d5628b7295853",
+      "provenance": "validation_only_tuning_forbidden",
+      "axis": "meaning",
+      "state": "probable",
+      "value": "schema_continuation",
+      "alternatives": [
+        "schema_continuation"
+      ],
+      "candidateTraceIds": [
+        "pair:990d5628b7295853:schema"
+      ],
+      "keyPairIds": [],
+      "ruleIds": [
+        "RR-MEANING-MULTI-EVIDENCE"
+      ],
+      "independentEvidence": [
+        "pair:990d5628b7295853:schema",
+        "pair:990d5628b7295853:grain"
+      ],
+      "correlatedEvidence": [],
+      "dependencies": [],
+      "fullFileOverlap": [],
+      "risks": [
+        "unknown_risk"
+      ],
+      "conflicts": [],
+      "limitations": [
+        {
+          "code": "business_relationship_not_contractually_proven",
+          "axis": "meaning",
+          "severity": "bounded",
+          "sourceReferences": []
+        }
+      ],
+      "debt": [],
+      "temporalDebt": [
+        {
+          "code": "insufficient_temporal_evidence",
+          "axis": "temporal",
+          "candidateReferences": [
+            "pair:990d5628b7295853:schema"
+          ],
+          "reason": "Multiple temporal alternatives require later partition validation."
+        }
+      ],
+      "allowedStates": [
+        "confirmed",
+        "probable",
+        "ambiguous",
+        "unknown"
+      ],
+      "forbiddenStates": [
+        "unsupported_input"
+      ],
+      "conformance": true,
+      "falseCertaintyRisk": "bounded",
+      "disposition": "valid_probable"
+    },
+    {
+      "bundleId": "multi.sales_period_pair",
+      "pairId": "pair:990d5628b7295853",
+      "provenance": "validation_only_tuning_forbidden",
+      "axis": "temporalAlignment",
+      "state": "ambiguous",
+      "value": "unresolved_alignment",
+      "alternatives": [
+        "sequential_periods",
+        "disjoint_periods"
+      ],
+      "candidateTraceIds": [
+        "pair:990d5628b7295853:schema"
+      ],
+      "keyPairIds": [],
+      "ruleIds": [
+        "RR-TEMPORAL-CANONICAL"
+      ],
+      "independentEvidence": [
+        "pair:990d5628b7295853:schema",
+        "pair:990d5628b7295853:grain"
+      ],
+      "correlatedEvidence": [],
+      "dependencies": [],
+      "fullFileOverlap": [],
+      "risks": [
+        "unknown_risk"
+      ],
+      "conflicts": [],
+      "limitations": [
+        {
+          "code": "competing_temporal_alignments",
+          "axis": "temporal",
+          "severity": "material",
+          "sourceReferences": []
+        }
+      ],
+      "debt": [
+        {
+          "code": "insufficient_temporal_evidence",
+          "axis": "temporal",
+          "candidateReferences": [
+            "pair:990d5628b7295853:schema"
+          ],
+          "reason": "Multiple temporal alternatives require later partition validation."
+        }
+      ],
+      "temporalDebt": [
+        {
+          "code": "insufficient_temporal_evidence",
+          "axis": "temporal",
+          "candidateReferences": [
+            "pair:990d5628b7295853:schema"
+          ],
+          "reason": "Multiple temporal alternatives require later partition validation."
+        }
+      ],
+      "allowedStates": [
+        "confirmed",
+        "probable",
+        "ambiguous",
+        "unknown"
+      ],
+      "forbiddenStates": [
+        "unsupported_input"
+      ],
+      "conformance": true,
+      "falseCertaintyRisk": "bounded",
+      "disposition": "should_be_ambiguous"
+    },
+    {
+      "bundleId": "multi.sales_period_pair",
+      "pairId": "pair:990d5628b7295853",
+      "provenance": "validation_only_tuning_forbidden",
+      "axis": "schemaRelationship",
+      "state": "probable",
+      "value": "compatible_continuation",
+      "alternatives": [
+        "compatible_continuation"
+      ],
+      "candidateTraceIds": [
+        "pair:990d5628b7295853:schema"
+      ],
+      "keyPairIds": [],
+      "ruleIds": [
+        "RR-SCHEMA-BROAD"
+      ],
+      "independentEvidence": [
+        "pair:990d5628b7295853:schema",
+        "pair:990d5628b7295853:grain"
+      ],
+      "correlatedEvidence": [],
+      "dependencies": [],
+      "fullFileOverlap": [],
+      "risks": [
+        "unknown_risk"
+      ],
+      "conflicts": [],
+      "limitations": [
+        {
+          "code": "operation_permission_not_implied",
+          "axis": "schema",
+          "severity": "bounded",
+          "sourceReferences": []
+        }
+      ],
+      "debt": [],
+      "temporalDebt": [
+        {
+          "code": "insufficient_temporal_evidence",
+          "axis": "temporal",
+          "candidateReferences": [
+            "pair:990d5628b7295853:schema"
+          ],
+          "reason": "Multiple temporal alternatives require later partition validation."
+        }
+      ],
+      "allowedStates": [
+        "confirmed",
+        "probable",
+        "ambiguous",
+        "unknown"
+      ],
+      "forbiddenStates": [
+        "unsupported_input"
+      ],
+      "conformance": true,
+      "falseCertaintyRisk": "bounded",
+      "disposition": "valid_probable"
+    },
+    {
+      "bundleId": "multi.sales_period_pair",
+      "pairId": "pair:990d5628b7295853",
+      "provenance": "validation_only_tuning_forbidden",
+      "axis": "operationCompatibility",
+      "state": "ambiguous",
+      "value": "unresolved_operation",
+      "alternatives": [
+        "append_compatible_candidate",
+        "compare_compatible_candidate"
+      ],
+      "candidateTraceIds": [
+        "pair:990d5628b7295853:schema"
+      ],
+      "keyPairIds": [],
+      "ruleIds": [
+        "RR-OPERATION-NO-APPROVAL"
+      ],
+      "independentEvidence": [
+        "pair:990d5628b7295853:schema",
+        "pair:990d5628b7295853:grain"
+      ],
+      "correlatedEvidence": [],
+      "dependencies": [],
+      "fullFileOverlap": [],
+      "risks": [
+        "unknown_risk"
+      ],
+      "conflicts": [],
+      "limitations": [
+        {
+          "code": "compatibility_is_not_permission",
+          "axis": "operation",
+          "severity": "material",
+          "sourceReferences": []
+        }
+      ],
+      "debt": [],
+      "temporalDebt": [
+        {
+          "code": "insufficient_temporal_evidence",
+          "axis": "temporal",
+          "candidateReferences": [
+            "pair:990d5628b7295853:schema"
+          ],
+          "reason": "Multiple temporal alternatives require later partition validation."
+        }
+      ],
+      "allowedStates": [
+        "confirmed",
+        "probable",
+        "ambiguous",
+        "unknown"
+      ],
+      "forbiddenStates": [
+        "unsupported_input"
+      ],
+      "conformance": true,
+      "falseCertaintyRisk": "bounded",
+      "disposition": "should_be_ambiguous"
+    },
+    {
+      "bundleId": "multi.logistics_period_pair",
+      "pairId": "pair:82c4a25a45f1ff95",
+      "provenance": "validation_only_tuning_forbidden",
+      "axis": "meaning",
+      "state": "ambiguous",
+      "value": "unresolved_relation",
+      "alternatives": [
+        "identity_equivalence",
+        "schema_continuation"
+      ],
+      "candidateTraceIds": [
+        "pair:82c4a25a45f1ff95:identity",
+        "pair:82c4a25a45f1ff95:schema"
+      ],
+      "keyPairIds": [
+        "key:a1bb80649e6bad56",
+        "key:cc0a3a930ecb55e0",
+        "key:6502af77c728fdbf"
+      ],
+      "ruleIds": [
+        "RR-MEANING-MULTI-EVIDENCE"
+      ],
+      "independentEvidence": [
+        "pair:82c4a25a45f1ff95:schema",
+        "pair:82c4a25a45f1ff95:grain",
+        "pair:82c4a25a45f1ff95:keys"
+      ],
+      "correlatedEvidence": [
+        "pair:82c4a25a45f1ff95:schema",
+        "pair:82c4a25a45f1ff95:grain",
+        "pair:82c4a25a45f1ff95:keys"
+      ],
+      "dependencies": [],
+      "fullFileOverlap": [
+        {
+          "keyPairId": "key:a1bb80649e6bad56",
+          "scope": "full_file"
+        },
+        {
+          "keyPairId": "key:cc0a3a930ecb55e0",
+          "scope": "full_file"
+        },
+        {
+          "keyPairId": "key:6502af77c728fdbf",
+          "scope": "full_file"
+        },
+        {
+          "keyPairId": "key:a1bb80649e6bad56",
+          "scope": "full_file"
+        },
+        {
+          "keyPairId": "key:cc0a3a930ecb55e0",
+          "scope": "full_file"
+        },
+        {
+          "keyPairId": "key:6502af77c728fdbf",
+          "scope": "full_file"
+        }
+      ],
+      "risks": [
+        "unmatched_reference",
+        "duplicate_left_key",
+        "duplicate_right_key",
+        "many_to_many_fanout"
+      ],
+      "conflicts": [],
+      "limitations": [
+        {
+          "code": "competing_relationship_meanings",
+          "axis": "meaning",
+          "severity": "material",
+          "sourceReferences": [
+            "pair:82c4a25a45f1ff95:identity",
+            "pair:82c4a25a45f1ff95:schema"
+          ]
+        }
+      ],
+      "debt": [],
+      "temporalDebt": [
+        {
+          "code": "insufficient_temporal_evidence",
+          "axis": "temporal",
+          "candidateReferences": [
+            "pair:82c4a25a45f1ff95:identity",
+            "pair:82c4a25a45f1ff95:schema"
+          ],
+          "reason": "Multiple temporal alternatives require later partition validation."
+        }
+      ],
+      "allowedStates": [
+        "confirmed",
+        "probable",
+        "ambiguous",
+        "unknown"
+      ],
+      "forbiddenStates": [
+        "unsupported_input"
+      ],
+      "conformance": true,
+      "falseCertaintyRisk": "bounded",
+      "disposition": "should_be_ambiguous"
+    },
+    {
+      "bundleId": "multi.logistics_period_pair",
+      "pairId": "pair:82c4a25a45f1ff95",
+      "provenance": "validation_only_tuning_forbidden",
+      "axis": "keyBasis",
+      "state": "ambiguous",
+      "value": "ambiguous_key_pair",
+      "alternatives": [
+        "single_key_pair",
+        "composite_key_pair"
+      ],
+      "candidateTraceIds": [
+        "pair:82c4a25a45f1ff95:identity",
+        "pair:82c4a25a45f1ff95:schema"
+      ],
+      "keyPairIds": [
+        "key:a1bb80649e6bad56",
+        "key:cc0a3a930ecb55e0",
+        "key:6502af77c728fdbf"
+      ],
+      "ruleIds": [
+        "RR-KEY-NOT-BY-COUNT",
+        "RR-KEY-COMPOSITE-BOUNDED"
+      ],
+      "independentEvidence": [
+        "pair:82c4a25a45f1ff95:schema",
+        "pair:82c4a25a45f1ff95:grain",
+        "pair:82c4a25a45f1ff95:keys"
+      ],
+      "correlatedEvidence": [
+        "pair:82c4a25a45f1ff95:schema",
+        "pair:82c4a25a45f1ff95:grain",
+        "pair:82c4a25a45f1ff95:keys"
+      ],
+      "dependencies": [],
+      "fullFileOverlap": [
+        {
+          "keyPairId": "key:a1bb80649e6bad56",
+          "scope": "full_file"
+        },
+        {
+          "keyPairId": "key:cc0a3a930ecb55e0",
+          "scope": "full_file"
+        },
+        {
+          "keyPairId": "key:6502af77c728fdbf",
+          "scope": "full_file"
+        },
+        {
+          "keyPairId": "key:a1bb80649e6bad56",
+          "scope": "full_file"
+        },
+        {
+          "keyPairId": "key:cc0a3a930ecb55e0",
+          "scope": "full_file"
+        },
+        {
+          "keyPairId": "key:6502af77c728fdbf",
+          "scope": "full_file"
+        }
+      ],
+      "risks": [
+        "unmatched_reference",
+        "duplicate_left_key",
+        "duplicate_right_key",
+        "many_to_many_fanout"
+      ],
+      "conflicts": [],
+      "limitations": [
+        {
+          "code": "material_competing_key_pairs",
+          "axis": "key",
+          "severity": "material",
+          "sourceReferences": [
+            "key:a1bb80649e6bad56",
+            "key:cc0a3a930ecb55e0",
+            "key:6502af77c728fdbf"
+          ]
+        }
+      ],
+      "debt": [],
+      "temporalDebt": [
+        {
+          "code": "insufficient_temporal_evidence",
+          "axis": "temporal",
+          "candidateReferences": [
+            "pair:82c4a25a45f1ff95:identity",
+            "pair:82c4a25a45f1ff95:schema"
+          ],
+          "reason": "Multiple temporal alternatives require later partition validation."
+        }
+      ],
+      "allowedStates": [
+        "confirmed",
+        "probable",
+        "ambiguous",
+        "unknown"
+      ],
+      "forbiddenStates": [
+        "unsupported_input"
+      ],
+      "conformance": true,
+      "falseCertaintyRisk": "bounded",
+      "disposition": "should_be_ambiguous"
+    },
+    {
+      "bundleId": "multi.logistics_period_pair",
+      "pairId": "pair:82c4a25a45f1ff95",
+      "provenance": "validation_only_tuning_forbidden",
+      "axis": "observedCardinality",
+      "state": "ambiguous",
+      "value": "unknown_observed_cardinality",
+      "alternatives": [
+        "observed_one_to_one",
+        "observed_partial_reference",
+        "observed_many_to_many"
+      ],
+      "candidateTraceIds": [
+        "pair:82c4a25a45f1ff95:identity",
+        "pair:82c4a25a45f1ff95:schema"
+      ],
+      "keyPairIds": [
+        "key:a1bb80649e6bad56",
+        "key:cc0a3a930ecb55e0",
+        "key:6502af77c728fdbf"
+      ],
+      "ruleIds": [
+        "RR-CARDINALITY-EXTRACT",
+        "RR-CARDINALITY-CANDIDATE-SCOPE"
+      ],
+      "independentEvidence": [
+        "pair:82c4a25a45f1ff95:schema",
+        "pair:82c4a25a45f1ff95:grain",
+        "pair:82c4a25a45f1ff95:keys"
+      ],
+      "correlatedEvidence": [
+        "pair:82c4a25a45f1ff95:schema",
+        "pair:82c4a25a45f1ff95:grain",
+        "pair:82c4a25a45f1ff95:keys"
+      ],
+      "dependencies": [],
+      "fullFileOverlap": [
+        {
+          "keyPairId": "key:a1bb80649e6bad56",
+          "scope": "full_file"
+        },
+        {
+          "keyPairId": "key:cc0a3a930ecb55e0",
+          "scope": "full_file"
+        },
+        {
+          "keyPairId": "key:6502af77c728fdbf",
+          "scope": "full_file"
+        },
+        {
+          "keyPairId": "key:a1bb80649e6bad56",
+          "scope": "full_file"
+        },
+        {
+          "keyPairId": "key:cc0a3a930ecb55e0",
+          "scope": "full_file"
+        },
+        {
+          "keyPairId": "key:6502af77c728fdbf",
+          "scope": "full_file"
+        }
+      ],
+      "risks": [
+        "unmatched_reference",
+        "duplicate_left_key",
+        "duplicate_right_key",
+        "many_to_many_fanout"
+      ],
+      "conflicts": [],
+      "limitations": [
+        {
+          "code": "extract_observation_not_business_contract",
+          "axis": "cardinality",
+          "severity": "bounded",
+          "sourceReferences": []
+        },
+        {
+          "code": "pair_cardinality_unresolved_without_selected_key",
+          "axis": "cardinality",
+          "severity": "material",
+          "sourceReferences": []
+        }
+      ],
+      "debt": [],
+      "temporalDebt": [
+        {
+          "code": "insufficient_temporal_evidence",
+          "axis": "temporal",
+          "candidateReferences": [
+            "pair:82c4a25a45f1ff95:identity",
+            "pair:82c4a25a45f1ff95:schema"
+          ],
+          "reason": "Multiple temporal alternatives require later partition validation."
+        }
+      ],
+      "allowedStates": [
+        "confirmed",
+        "probable",
+        "ambiguous",
+        "unknown"
+      ],
+      "forbiddenStates": [
+        "unsupported_input"
+      ],
+      "conformance": true,
+      "falseCertaintyRisk": "bounded",
+      "disposition": "should_be_ambiguous"
+    },
+    {
+      "bundleId": "multi.logistics_period_pair",
+      "pairId": "pair:82c4a25a45f1ff95",
+      "provenance": "validation_only_tuning_forbidden",
+      "axis": "temporalAlignment",
+      "state": "ambiguous",
+      "value": "unresolved_alignment",
+      "alternatives": [
+        "overlapping_periods",
+        "event_window_alignment"
+      ],
+      "candidateTraceIds": [
+        "pair:82c4a25a45f1ff95:identity",
+        "pair:82c4a25a45f1ff95:schema"
+      ],
+      "keyPairIds": [
+        "key:a1bb80649e6bad56",
+        "key:cc0a3a930ecb55e0",
+        "key:6502af77c728fdbf"
+      ],
+      "ruleIds": [
+        "RR-TEMPORAL-CANONICAL"
+      ],
+      "independentEvidence": [
+        "pair:82c4a25a45f1ff95:schema",
+        "pair:82c4a25a45f1ff95:grain",
+        "pair:82c4a25a45f1ff95:keys"
+      ],
+      "correlatedEvidence": [
+        "pair:82c4a25a45f1ff95:schema",
+        "pair:82c4a25a45f1ff95:grain",
+        "pair:82c4a25a45f1ff95:keys"
+      ],
+      "dependencies": [],
+      "fullFileOverlap": [
+        {
+          "keyPairId": "key:a1bb80649e6bad56",
+          "scope": "full_file"
+        },
+        {
+          "keyPairId": "key:cc0a3a930ecb55e0",
+          "scope": "full_file"
+        },
+        {
+          "keyPairId": "key:6502af77c728fdbf",
+          "scope": "full_file"
+        },
+        {
+          "keyPairId": "key:a1bb80649e6bad56",
+          "scope": "full_file"
+        },
+        {
+          "keyPairId": "key:cc0a3a930ecb55e0",
+          "scope": "full_file"
+        },
+        {
+          "keyPairId": "key:6502af77c728fdbf",
+          "scope": "full_file"
+        }
+      ],
+      "risks": [
+        "unmatched_reference",
+        "duplicate_left_key",
+        "duplicate_right_key",
+        "many_to_many_fanout"
+      ],
+      "conflicts": [],
+      "limitations": [
+        {
+          "code": "competing_temporal_alignments",
+          "axis": "temporal",
+          "severity": "material",
+          "sourceReferences": []
+        }
+      ],
+      "debt": [
+        {
+          "code": "insufficient_temporal_evidence",
+          "axis": "temporal",
+          "candidateReferences": [
+            "pair:82c4a25a45f1ff95:identity",
+            "pair:82c4a25a45f1ff95:schema"
+          ],
+          "reason": "Multiple temporal alternatives require later partition validation."
+        }
+      ],
+      "temporalDebt": [
+        {
+          "code": "insufficient_temporal_evidence",
+          "axis": "temporal",
+          "candidateReferences": [
+            "pair:82c4a25a45f1ff95:identity",
+            "pair:82c4a25a45f1ff95:schema"
+          ],
+          "reason": "Multiple temporal alternatives require later partition validation."
+        }
+      ],
+      "allowedStates": [
+        "confirmed",
+        "probable",
+        "ambiguous",
+        "unknown"
+      ],
+      "forbiddenStates": [
+        "unsupported_input"
+      ],
+      "conformance": true,
+      "falseCertaintyRisk": "bounded",
+      "disposition": "should_be_ambiguous"
+    },
+    {
+      "bundleId": "multi.logistics_period_pair",
+      "pairId": "pair:82c4a25a45f1ff95",
+      "provenance": "validation_only_tuning_forbidden",
+      "axis": "schemaRelationship",
+      "state": "probable",
+      "value": "compatible_continuation",
+      "alternatives": [
+        "compatible_continuation"
+      ],
+      "candidateTraceIds": [
+        "pair:82c4a25a45f1ff95:identity",
+        "pair:82c4a25a45f1ff95:schema"
+      ],
+      "keyPairIds": [
+        "key:a1bb80649e6bad56",
+        "key:cc0a3a930ecb55e0",
+        "key:6502af77c728fdbf"
+      ],
+      "ruleIds": [
+        "RR-SCHEMA-BROAD"
+      ],
+      "independentEvidence": [
+        "pair:82c4a25a45f1ff95:schema",
+        "pair:82c4a25a45f1ff95:grain",
+        "pair:82c4a25a45f1ff95:keys"
+      ],
+      "correlatedEvidence": [
+        "pair:82c4a25a45f1ff95:schema",
+        "pair:82c4a25a45f1ff95:grain",
+        "pair:82c4a25a45f1ff95:keys"
+      ],
+      "dependencies": [],
+      "fullFileOverlap": [
+        {
+          "keyPairId": "key:a1bb80649e6bad56",
+          "scope": "full_file"
+        },
+        {
+          "keyPairId": "key:cc0a3a930ecb55e0",
+          "scope": "full_file"
+        },
+        {
+          "keyPairId": "key:6502af77c728fdbf",
+          "scope": "full_file"
+        },
+        {
+          "keyPairId": "key:a1bb80649e6bad56",
+          "scope": "full_file"
+        },
+        {
+          "keyPairId": "key:cc0a3a930ecb55e0",
+          "scope": "full_file"
+        },
+        {
+          "keyPairId": "key:6502af77c728fdbf",
+          "scope": "full_file"
+        }
+      ],
+      "risks": [
+        "unmatched_reference",
+        "duplicate_left_key",
+        "duplicate_right_key",
+        "many_to_many_fanout"
+      ],
+      "conflicts": [],
+      "limitations": [
+        {
+          "code": "operation_permission_not_implied",
+          "axis": "schema",
+          "severity": "bounded",
+          "sourceReferences": []
+        }
+      ],
+      "debt": [],
+      "temporalDebt": [
+        {
+          "code": "insufficient_temporal_evidence",
+          "axis": "temporal",
+          "candidateReferences": [
+            "pair:82c4a25a45f1ff95:identity",
+            "pair:82c4a25a45f1ff95:schema"
+          ],
+          "reason": "Multiple temporal alternatives require later partition validation."
+        }
+      ],
+      "allowedStates": [
+        "confirmed",
+        "probable",
+        "ambiguous",
+        "unknown"
+      ],
+      "forbiddenStates": [
+        "unsupported_input"
+      ],
+      "conformance": true,
+      "falseCertaintyRisk": "bounded",
+      "disposition": "valid_probable"
+    },
+    {
+      "bundleId": "multi.accounting_period_pair",
+      "pairId": "pair:e017ee451b367014",
+      "provenance": "validation_only_tuning_forbidden",
+      "axis": "meaning",
+      "state": "ambiguous",
+      "value": "unresolved_relation",
+      "alternatives": [
+        "identity_equivalence",
+        "schema_continuation"
+      ],
+      "candidateTraceIds": [
+        "pair:e017ee451b367014:identity",
+        "pair:e017ee451b367014:schema"
+      ],
+      "keyPairIds": [
+        "key:6502af77c728fdbf"
+      ],
+      "ruleIds": [
+        "RR-MEANING-MULTI-EVIDENCE"
+      ],
+      "independentEvidence": [
+        "pair:e017ee451b367014:schema",
+        "pair:e017ee451b367014:grain",
+        "pair:e017ee451b367014:keys"
+      ],
+      "correlatedEvidence": [
+        "pair:e017ee451b367014:schema",
+        "pair:e017ee451b367014:grain",
+        "pair:e017ee451b367014:keys"
+      ],
+      "dependencies": [],
+      "fullFileOverlap": [
+        {
+          "keyPairId": "key:6502af77c728fdbf",
+          "scope": "full_file"
+        },
+        {
+          "keyPairId": "key:6502af77c728fdbf",
+          "scope": "full_file"
+        }
+      ],
+      "risks": [
+        "duplicate_left_key",
+        "duplicate_right_key",
+        "many_to_many_fanout",
+        "unmatched_reference"
+      ],
+      "conflicts": [],
+      "limitations": [
+        {
+          "code": "competing_relationship_meanings",
+          "axis": "meaning",
+          "severity": "material",
+          "sourceReferences": [
+            "pair:e017ee451b367014:identity",
+            "pair:e017ee451b367014:schema"
+          ]
+        }
+      ],
+      "debt": [],
+      "temporalDebt": [
+        {
+          "code": "insufficient_temporal_evidence",
+          "axis": "temporal",
+          "candidateReferences": [
+            "pair:e017ee451b367014:identity",
+            "pair:e017ee451b367014:schema"
+          ],
+          "reason": "Multiple temporal alternatives require later partition validation."
+        }
+      ],
+      "allowedStates": [
+        "confirmed",
+        "probable",
+        "ambiguous",
+        "unknown"
+      ],
+      "forbiddenStates": [
+        "unsupported_input"
+      ],
+      "conformance": true,
+      "falseCertaintyRisk": "bounded",
+      "disposition": "should_be_ambiguous"
+    },
+    {
+      "bundleId": "multi.accounting_period_pair",
+      "pairId": "pair:e017ee451b367014",
+      "provenance": "validation_only_tuning_forbidden",
+      "axis": "keyBasis",
+      "state": "probable",
+      "value": "single_key_pair",
+      "alternatives": [
+        "single_key_pair"
+      ],
+      "candidateTraceIds": [
+        "pair:e017ee451b367014:identity",
+        "pair:e017ee451b367014:schema"
+      ],
+      "keyPairIds": [
+        "key:6502af77c728fdbf"
+      ],
+      "ruleIds": [
+        "RR-KEY-NOT-BY-COUNT",
+        "RR-KEY-COMPOSITE-BOUNDED"
+      ],
+      "independentEvidence": [
+        "pair:e017ee451b367014:schema",
+        "pair:e017ee451b367014:grain",
+        "pair:e017ee451b367014:keys"
+      ],
+      "correlatedEvidence": [
+        "pair:e017ee451b367014:schema",
+        "pair:e017ee451b367014:grain",
+        "pair:e017ee451b367014:keys"
+      ],
+      "dependencies": [],
+      "fullFileOverlap": [
+        {
+          "keyPairId": "key:6502af77c728fdbf",
+          "scope": "full_file"
+        },
+        {
+          "keyPairId": "key:6502af77c728fdbf",
+          "scope": "full_file"
+        }
+      ],
+      "risks": [
+        "duplicate_left_key",
+        "duplicate_right_key",
+        "many_to_many_fanout",
+        "unmatched_reference"
+      ],
+      "conflicts": [],
+      "limitations": [],
+      "debt": [],
+      "temporalDebt": [
+        {
+          "code": "insufficient_temporal_evidence",
+          "axis": "temporal",
+          "candidateReferences": [
+            "pair:e017ee451b367014:identity",
+            "pair:e017ee451b367014:schema"
+          ],
+          "reason": "Multiple temporal alternatives require later partition validation."
+        }
+      ],
+      "allowedStates": [
+        "confirmed",
+        "probable",
+        "ambiguous",
+        "unknown"
+      ],
+      "forbiddenStates": [
+        "unsupported_input"
+      ],
+      "conformance": true,
+      "falseCertaintyRisk": "bounded",
+      "disposition": "valid_probable"
+    },
+    {
+      "bundleId": "multi.accounting_period_pair",
+      "pairId": "pair:e017ee451b367014",
+      "provenance": "validation_only_tuning_forbidden",
+      "axis": "observedCardinality",
+      "state": "ambiguous",
+      "value": "unknown_observed_cardinality",
+      "alternatives": [
+        "observed_many_to_many"
+      ],
+      "candidateTraceIds": [
+        "pair:e017ee451b367014:identity",
+        "pair:e017ee451b367014:schema"
+      ],
+      "keyPairIds": [
+        "key:6502af77c728fdbf"
+      ],
+      "ruleIds": [
+        "RR-CARDINALITY-EXTRACT",
+        "RR-CARDINALITY-CANDIDATE-SCOPE"
+      ],
+      "independentEvidence": [
+        "pair:e017ee451b367014:schema",
+        "pair:e017ee451b367014:grain",
+        "pair:e017ee451b367014:keys"
+      ],
+      "correlatedEvidence": [
+        "pair:e017ee451b367014:schema",
+        "pair:e017ee451b367014:grain",
+        "pair:e017ee451b367014:keys"
+      ],
+      "dependencies": [],
+      "fullFileOverlap": [
+        {
+          "keyPairId": "key:6502af77c728fdbf",
+          "scope": "full_file"
+        },
+        {
+          "keyPairId": "key:6502af77c728fdbf",
+          "scope": "full_file"
+        }
+      ],
+      "risks": [
+        "duplicate_left_key",
+        "duplicate_right_key",
+        "many_to_many_fanout",
+        "unmatched_reference"
+      ],
+      "conflicts": [],
+      "limitations": [
+        {
+          "code": "extract_observation_not_business_contract",
+          "axis": "cardinality",
+          "severity": "bounded",
+          "sourceReferences": []
+        },
+        {
+          "code": "pair_cardinality_unresolved_without_selected_key",
+          "axis": "cardinality",
+          "severity": "material",
+          "sourceReferences": []
+        }
+      ],
+      "debt": [],
+      "temporalDebt": [
+        {
+          "code": "insufficient_temporal_evidence",
+          "axis": "temporal",
+          "candidateReferences": [
+            "pair:e017ee451b367014:identity",
+            "pair:e017ee451b367014:schema"
+          ],
+          "reason": "Multiple temporal alternatives require later partition validation."
+        }
+      ],
+      "allowedStates": [
+        "confirmed",
+        "probable",
+        "ambiguous",
+        "unknown"
+      ],
+      "forbiddenStates": [
+        "unsupported_input"
+      ],
+      "conformance": true,
+      "falseCertaintyRisk": "bounded",
+      "disposition": "should_be_ambiguous"
+    },
+    {
+      "bundleId": "multi.accounting_period_pair",
+      "pairId": "pair:e017ee451b367014",
+      "provenance": "validation_only_tuning_forbidden",
+      "axis": "temporalAlignment",
+      "state": "ambiguous",
+      "value": "unresolved_alignment",
+      "alternatives": [
+        "sequential_periods",
+        "disjoint_periods"
+      ],
+      "candidateTraceIds": [
+        "pair:e017ee451b367014:identity",
+        "pair:e017ee451b367014:schema"
+      ],
+      "keyPairIds": [
+        "key:6502af77c728fdbf"
+      ],
+      "ruleIds": [
+        "RR-TEMPORAL-CANONICAL"
+      ],
+      "independentEvidence": [
+        "pair:e017ee451b367014:schema",
+        "pair:e017ee451b367014:grain",
+        "pair:e017ee451b367014:keys"
+      ],
+      "correlatedEvidence": [
+        "pair:e017ee451b367014:schema",
+        "pair:e017ee451b367014:grain",
+        "pair:e017ee451b367014:keys"
+      ],
+      "dependencies": [],
+      "fullFileOverlap": [
+        {
+          "keyPairId": "key:6502af77c728fdbf",
+          "scope": "full_file"
+        },
+        {
+          "keyPairId": "key:6502af77c728fdbf",
+          "scope": "full_file"
+        }
+      ],
+      "risks": [
+        "duplicate_left_key",
+        "duplicate_right_key",
+        "many_to_many_fanout",
+        "unmatched_reference"
+      ],
+      "conflicts": [],
+      "limitations": [
+        {
+          "code": "competing_temporal_alignments",
+          "axis": "temporal",
+          "severity": "material",
+          "sourceReferences": []
+        }
+      ],
+      "debt": [
+        {
+          "code": "insufficient_temporal_evidence",
+          "axis": "temporal",
+          "candidateReferences": [
+            "pair:e017ee451b367014:identity",
+            "pair:e017ee451b367014:schema"
+          ],
+          "reason": "Multiple temporal alternatives require later partition validation."
+        }
+      ],
+      "temporalDebt": [
+        {
+          "code": "insufficient_temporal_evidence",
+          "axis": "temporal",
+          "candidateReferences": [
+            "pair:e017ee451b367014:identity",
+            "pair:e017ee451b367014:schema"
+          ],
+          "reason": "Multiple temporal alternatives require later partition validation."
+        }
+      ],
+      "allowedStates": [
+        "confirmed",
+        "probable",
+        "ambiguous",
+        "unknown"
+      ],
+      "forbiddenStates": [
+        "unsupported_input"
+      ],
+      "conformance": true,
+      "falseCertaintyRisk": "bounded",
+      "disposition": "should_be_ambiguous"
+    },
+    {
+      "bundleId": "multi.accounting_period_pair",
+      "pairId": "pair:e017ee451b367014",
+      "provenance": "validation_only_tuning_forbidden",
+      "axis": "schemaRelationship",
+      "state": "probable",
+      "value": "compatible_continuation",
+      "alternatives": [
+        "compatible_continuation"
+      ],
+      "candidateTraceIds": [
+        "pair:e017ee451b367014:identity",
+        "pair:e017ee451b367014:schema"
+      ],
+      "keyPairIds": [
+        "key:6502af77c728fdbf"
+      ],
+      "ruleIds": [
+        "RR-SCHEMA-BROAD"
+      ],
+      "independentEvidence": [
+        "pair:e017ee451b367014:schema",
+        "pair:e017ee451b367014:grain",
+        "pair:e017ee451b367014:keys"
+      ],
+      "correlatedEvidence": [
+        "pair:e017ee451b367014:schema",
+        "pair:e017ee451b367014:grain",
+        "pair:e017ee451b367014:keys"
+      ],
+      "dependencies": [],
+      "fullFileOverlap": [
+        {
+          "keyPairId": "key:6502af77c728fdbf",
+          "scope": "full_file"
+        },
+        {
+          "keyPairId": "key:6502af77c728fdbf",
+          "scope": "full_file"
+        }
+      ],
+      "risks": [
+        "duplicate_left_key",
+        "duplicate_right_key",
+        "many_to_many_fanout",
+        "unmatched_reference"
+      ],
+      "conflicts": [],
+      "limitations": [
+        {
+          "code": "operation_permission_not_implied",
+          "axis": "schema",
+          "severity": "bounded",
+          "sourceReferences": []
+        }
+      ],
+      "debt": [],
+      "temporalDebt": [
+        {
+          "code": "insufficient_temporal_evidence",
+          "axis": "temporal",
+          "candidateReferences": [
+            "pair:e017ee451b367014:identity",
+            "pair:e017ee451b367014:schema"
+          ],
+          "reason": "Multiple temporal alternatives require later partition validation."
+        }
+      ],
+      "allowedStates": [
+        "confirmed",
+        "probable",
+        "ambiguous",
+        "unknown"
+      ],
+      "forbiddenStates": [
+        "unsupported_input"
+      ],
+      "conformance": true,
+      "falseCertaintyRisk": "bounded",
+      "disposition": "valid_probable"
+    }
+  ],
+  "pairReadiness": [
+    {
+      "bundleId": "multi.commerce_may_2026",
+      "pairId": "pair:23857b1b9f637f2c",
+      "evidenceBearingResolvedAxes": [],
+      "ambiguityOnlyAxes": [
+        "temporalAlignment"
+      ],
+      "blockingRisks": [],
+      "classification": "fully_unresolved"
+    },
+    {
+      "bundleId": "multi.commerce_may_2026",
+      "pairId": "pair:7c6214dbcf4d1a72",
+      "evidenceBearingResolvedAxes": [
+        "meaning",
+        "keyBasis",
+        "observedCardinality"
+      ],
+      "ambiguityOnlyAxes": [
+        "temporalAlignment"
+      ],
+      "blockingRisks": [
+        "many_to_many_fanout"
+      ],
+      "classification": "partially_resolved"
+    },
+    {
+      "bundleId": "multi.commerce_may_2026",
+      "pairId": "pair:e5224dd199f8f4f5",
+      "evidenceBearingResolvedAxes": [],
+      "ambiguityOnlyAxes": [
+        "temporalAlignment"
+      ],
+      "blockingRisks": [],
+      "classification": "fully_unresolved"
+    },
+    {
+      "bundleId": "multi.commerce_june_2026",
+      "pairId": "pair:ac78987907cd6c20",
+      "evidenceBearingResolvedAxes": [],
+      "ambiguityOnlyAxes": [
+        "temporalAlignment"
+      ],
+      "blockingRisks": [],
+      "classification": "fully_unresolved"
+    },
+    {
+      "bundleId": "multi.commerce_june_2026",
+      "pairId": "pair:d31d59ba9619b647",
+      "evidenceBearingResolvedAxes": [
+        "meaning",
+        "keyBasis",
+        "observedCardinality"
+      ],
+      "ambiguityOnlyAxes": [
+        "temporalAlignment"
+      ],
+      "blockingRisks": [
+        "many_to_many_fanout"
+      ],
+      "classification": "partially_resolved"
+    },
+    {
+      "bundleId": "multi.commerce_june_2026",
+      "pairId": "pair:e05cac4cc63dd89d",
+      "evidenceBearingResolvedAxes": [],
+      "ambiguityOnlyAxes": [
+        "temporalAlignment"
+      ],
+      "blockingRisks": [],
+      "classification": "fully_unresolved"
+    },
+    {
+      "bundleId": "multi.sales_period_pair",
+      "pairId": "pair:990d5628b7295853",
+      "evidenceBearingResolvedAxes": [
+        "meaning",
+        "schemaRelationship",
+        "operationCompatibility"
+      ],
+      "ambiguityOnlyAxes": [
+        "temporalAlignment"
+      ],
+      "blockingRisks": [],
+      "classification": "partially_resolved"
+    },
+    {
+      "bundleId": "multi.logistics_period_pair",
+      "pairId": "pair:82c4a25a45f1ff95",
+      "evidenceBearingResolvedAxes": [
+        "meaning",
+        "keyBasis",
+        "observedCardinality",
+        "schemaRelationship"
+      ],
+      "ambiguityOnlyAxes": [
+        "temporalAlignment"
+      ],
+      "blockingRisks": [
+        "many_to_many_fanout"
+      ],
+      "classification": "partially_resolved"
+    },
+    {
+      "bundleId": "multi.accounting_period_pair",
+      "pairId": "pair:e017ee451b367014",
+      "evidenceBearingResolvedAxes": [
+        "meaning",
+        "keyBasis",
+        "observedCardinality",
+        "schemaRelationship"
+      ],
+      "ambiguityOnlyAxes": [
+        "temporalAlignment"
+      ],
+      "blockingRisks": [
+        "many_to_many_fanout"
+      ],
+      "classification": "partially_resolved"
+    }
+  ]
+}

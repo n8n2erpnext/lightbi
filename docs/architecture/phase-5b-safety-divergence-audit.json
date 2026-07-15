@@ -1,0 +1,22 @@
+{
+  "schemaVersion": "lightbi.phase-5b-safety-audit.v1",
+  "date": "2026-07-13",
+  "policy": {
+    "version": "lightbi.legacy-canonical-comparison-policy.v1",
+    "sha256": "6d1e75c5e51059e1217a1d1ce7ef7819c5775f07e489c27cc0db2a7e180c044a"
+  },
+  "authority": {
+    "legacyChanged": false,
+    "canonicalChanged": false,
+    "operationApproval": false,
+    "productionWiring": false
+  },
+  "executableSyntheticRules": [
+    "numeric_aggregation_conflict",
+    "canonical_authority_leak",
+    "high_score_structurally_incomparable"
+  ],
+  "corpusSafetyConflicts": "not_classified_without_legacy_observations",
+  "unresolvedCriticalSafetyDivergences": true,
+  "phase5CBlocked": true
+}

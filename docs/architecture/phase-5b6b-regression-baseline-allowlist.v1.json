@@ -1,0 +1,98 @@
+{
+  "schemaVersion": "lightbi.phase-5b6b-regression-baseline-allowlist.v1",
+  "governance": {
+    "identityKey": "file|fullTestName",
+    "totalFailureCountIsGate": false,
+    "unexpectedFailureAllowed": false,
+    "phase5B6BOwnedFailureAllowed": false,
+    "timingSensitivePassIsRegression": false
+  },
+  "tests": [
+    {
+      "file": "src/lib/guided-investigation-pipeline.test.ts",
+      "fullTestName": "Guided Investigation Pipeline Orchestrator > Executes the entire end-to-end pipeline deterministically",
+      "expectedFailureType": "assertion",
+      "class": "deterministic",
+      "expectedSignature": "expected 0 to be greater than 0",
+      "ownership": "concurrent_unrelated_change",
+      "migrationDisposition": "retain_documented_baseline_until_governed_owner_phase"
+    },
+    {
+      "file": "src/lib/numeric-health-gate.test.ts",
+      "fullTestName": "evaluateNumericHealth > blocks JS non-integer decimals",
+      "expectedFailureType": "assertion",
+      "class": "deterministic",
+      "expectedSignature": "expected true to be false",
+      "ownership": "concurrent_unrelated_change",
+      "migrationDisposition": "retain_documented_baseline_until_governed_owner_phase"
+    },
+    {
+      "file": "src/lib/numeric-health-gate.test.ts",
+      "fullTestName": "evaluateNumericHealth > hard-blocks decimal-looking strings (US format)",
+      "expectedFailureType": "assertion",
+      "class": "deterministic",
+      "expectedSignature": "expected true to be false",
+      "ownership": "concurrent_unrelated_change",
+      "migrationDisposition": "retain_documented_baseline_until_governed_owner_phase"
+    },
+    {
+      "file": "src/lib/numeric-health-gate.test.ts",
+      "fullTestName": "evaluateNumericHealth > hard-blocks decimal-looking strings (EU format)",
+      "expectedFailureType": "assertion",
+      "class": "deterministic",
+      "expectedSignature": "expected true to be false",
+      "ownership": "concurrent_unrelated_change",
+      "migrationDisposition": "retain_documented_baseline_until_governed_owner_phase"
+    },
+    {
+      "file": "src/lib/virtual-dataset-planner.test.ts",
+      "fullTestName": "Virtual Dataset Planner > 2. Product Performance + inventory risk question",
+      "expectedFailureType": "assertion",
+      "class": "deterministic",
+      "expectedSignature": "expected 'draft' to be 'ready'",
+      "ownership": "concurrent_unrelated_change",
+      "migrationDisposition": "retain_documented_baseline_until_governed_owner_phase"
+    },
+    {
+      "file": "src/lib/virtual-dataset-planner.test.ts",
+      "fullTestName": "Virtual Dataset Planner > 6. Many-to-many relationship",
+      "expectedFailureType": "assertion",
+      "class": "deterministic",
+      "expectedSignature": "expected 'draft' to be 'ready'",
+      "ownership": "concurrent_unrelated_change",
+      "migrationDisposition": "retain_documented_baseline_until_governed_owner_phase"
+    },
+    {
+      "file": "src/lib/ba-comparison-engine.test.ts",
+      "fullTestName": "ba comparison engine > answers the real May vs June 2026 sales ERP comparison with revenue drivers and profit caveats",
+      "expectedFailureType": "timeout_only",
+      "class": "timing_sensitive",
+      "expectedSignature": "Test timed out in 5000ms",
+      "ownership": "concurrent_unrelated_change",
+      "migrationDisposition": "pass_or_timeout_only; assertion_failure_is_unexpected"
+    },
+    {
+      "file": "src/lib/ba-comparison-engine.test.ts",
+      "fullTestName": "ba comparison engine > answers the real May vs June 2026 accounting ERP comparison with top 10 profit evidence",
+      "expectedFailureType": "timeout_only",
+      "class": "timing_sensitive",
+      "expectedSignature": "Test timed out in 5000ms",
+      "ownership": "concurrent_unrelated_change",
+      "migrationDisposition": "pass_or_timeout_only; assertion_failure_is_unexpected"
+    },
+    {
+      "file": "src/lib/ba-comparison-engine.test.ts",
+      "fullTestName": "ba comparison engine > handles the real May vs June 2026 logistics ERP pair without pretending revenue is available",
+      "expectedFailureType": "timeout_only",
+      "class": "timing_sensitive",
+      "expectedSignature": "Test timed out in 5000ms",
+      "ownership": "concurrent_unrelated_change",
+      "migrationDisposition": "pass_or_timeout_only; assertion_failure_is_unexpected"
+    }
+  ],
+  "counts": {
+    "deterministic": 6,
+    "timingSensitive": 3,
+    "total": 9
+  }
+}
