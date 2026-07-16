@@ -15,6 +15,10 @@ import type {
   QuestionFamilyPolicyV1,
 } from "./governed-question-action-contracts";
 import { GOVERNED_METRIC_DEFINITIONS_V1, governedMetricPolicyHash } from "./governed-metric-policy";
+import type { GovernedRuntimePreflightInputV1 } from "./governed-runtime-contracts";
+import { preflightGovernedRuntimeAction } from "./governed-runtime-preflight";
+import { governedRuntimePolicyHash } from "./governed-runtime-policy";
+import { inventorySnapshotEvidenceMatchesSource } from "./canonical-source-evidence";
 
 const MANIFEST = GOVERNED_DOMAIN_SUPPORT_MANIFEST_V1[0];
 const USABLE_SEMANTIC_STATES = new Set(["confirmed", "probable"]);
@@ -227,6 +231,90 @@ function actionFor(question: GovernedQuestionCandidateV1, policy: QuestionFamily
   };
 }
 
+function inferredAsOfBasis(source: CanonicalMetricSourceV1, action: GovernedActionCandidateV1): GovernedRuntimePreflightInputV1["asOfBasis"] {
+  if (action.metricId !== "inventory_on_hand") return null;
+  const evidence = (source.sourceEvidence?.inventorySnapshots ?? []).filter((item) => inventorySnapshotEvidenceMatchesSource(item, source));
+  if (evidence.length !== 1) return null;
+  const asOf = evidence[0].asOf;
+  const column = source.semantic.columns.find((item) => item.physicalColumn === asOf.physicalColumn && item.selectedCandidateId === asOf.semanticId && USABLE_SEMANTIC_STATES.has(item.finalState));
+  return column ? { kind: "column_value", sourceColumnIndex: column.sourceColumnIndex, semanticId: asOf.semanticId, value: asOf.value } : null;
+}
+
+function generationIdentityBody(generation: QuestionActionGenerationV1) {
+  return {
+    sourceRef: generation.canonicalSourceReference,
+    domainActivationReference: generation.domainActivationReference,
+    metricPreflightReference: generation.metricPreflightReference,
+    policyHash: generation.questionPolicyHash,
+    defaultQuestions: generation.defaultQuestions,
+    candidateQuestions: generation.candidateQuestions,
+    actionCandidates: generation.actionCandidates,
+    blockers: generation.blockers,
+  };
+}
+
+function alignWithRuntimePreflight(
+  generation: QuestionActionGenerationV1,
+  input: QuestionActionGenerationInputV1,
+): QuestionActionGenerationV1 {
+  const runtimeByQuestion = new Map(generation.actionCandidates.map((action) => [
+    action.questionId,
+    preflightGovernedRuntimeAction({
+      schemaVersion: "lightbi.governed-runtime-preflight-input.v1",
+      canonicalSource: input.canonicalSource,
+      metricPreflight: input.metricPreflight,
+      questionGeneration: generation,
+      actionCandidate: action,
+      expectedRuntimePolicyHash: governedRuntimePolicyHash(),
+      asOfBasis: inferredAsOfBasis(input.canonicalSource, action),
+    }),
+  ]));
+  const runnableStates = new Set(["executable", "conditionally_executable"]);
+  const retainedActions = generation.actionCandidates.filter((action) => runnableStates.has(runtimeByQuestion.get(action.questionId)?.state ?? "unavailable"));
+  const retainedQuestionIds = new Set(retainedActions.map((action) => action.questionId));
+  const alignedQuestions = generation.candidateQuestions.map((question): GovernedQuestionCandidateV1 => {
+    if (!question.actionCandidateId || retainedQuestionIds.has(question.questionId)) {
+      return { ...question, advertisedAsDefault: false, rank: null };
+    }
+    const runtime = runtimeByQuestion.get(question.questionId);
+    const runtimeBlockers = runtime?.blockers.map((item) => blocker(item.code, "runtime_preflight", item.references, item.severity))
+      ?? [blocker("runtime_preflight_state_unavailable", "runtime_preflight", [question.questionId], "critical")];
+    return {
+      ...question,
+      questionState: "blocked",
+      actionCandidateId: null,
+      advertisedAsDefault: false,
+      rank: null,
+      blockers: dedupeBlockers([...question.blockers, ...runtimeBlockers]),
+      limitations: dedupeLimitations([
+        ...question.limitations,
+        limitation("runtime_preflight_blocked_explanation_only", runtimeBlockers.map((item) => item.code)),
+      ]),
+      remediation: unique([
+        ...question.remediation,
+        ...runtimeBlockers.map((item) => `satisfy_runtime_preflight:${item.code}`),
+      ]),
+    };
+  });
+  const defaultIds = new Set(alignedQuestions
+    .filter((question) => retainedQuestionIds.has(question.questionId) && ADVERTISABLE_STATES.has(question.questionState) && question.blockers.length === 0)
+    .slice(0, COMMERCE_DISTRIBUTION_QUESTION_POLICY_V1.maxDefaultQuestions)
+    .map((question) => question.questionId));
+  let rank = 0;
+  const rankedQuestions = alignedQuestions.map((question) => defaultIds.has(question.questionId)
+    ? { ...question, advertisedAsDefault: true, rank: ++rank }
+    : question);
+  const aligned: QuestionActionGenerationV1 = {
+    ...generation,
+    defaultQuestions: rankedQuestions.filter((question) => question.advertisedAsDefault),
+    candidateQuestions: rankedQuestions,
+    blockedQuestions: rankedQuestions.filter((question) => !ADVERTISABLE_STATES.has(question.questionState) || question.blockers.length > 0),
+    actionCandidates: retainedActions,
+  };
+  aligned.identity = deterministicPolicySha256(generationIdentityBody(aligned));
+  return aligned;
+}
+
 export function generateGovernedCommerceQuestionsAndActions(input: QuestionActionGenerationInputV1): QuestionActionGenerationV1 {
   const policyHash = questionActionPolicyHash();
   const sourceRef = sourceReference(input.canonicalSource);
@@ -265,7 +353,7 @@ export function generateGovernedCommerceQuestionsAndActions(input: QuestionActio
     evidence("generation:question-policy", "question_policy", [policyHash], "governed_question_policy"),
   ]);
   const identityBody = { sourceRef, domainActivationReference: input.domainActivation.identity, metricPreflightReference: input.metricPreflight.identity, policyHash, defaultQuestions, candidateQuestions: finalCandidates, actionCandidates, blockers: globalBlockers };
-  return {
+  const generation: QuestionActionGenerationV1 = {
     schemaVersion: "lightbi.question-action-generation.v1",
     contractVersion: "lightbi.governed-question-action-contract.v1",
     domainPackId: MANIFEST.packId,
@@ -294,4 +382,5 @@ export function generateGovernedCommerceQuestionsAndActions(input: QuestionActio
     decisionUseAuthorized: false,
     productionWiring: { executed: false },
   };
+  return alignWithRuntimePreflight(generation, input);
 }

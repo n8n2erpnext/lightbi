@@ -1,0 +1,2483 @@
+{
+  "schemaVersion": "lightbi.phase-7r33-sample-data-file-inventory.v1",
+  "phase": "7R3.3",
+  "collectionRoot": "sample data/",
+  "artifactCount": 23,
+  "supportedTableFileCount": 20,
+  "unsupportedArtifactCount": 3,
+  "sheetCount": 29,
+  "parseErrors": [],
+  "scopeNote": "Every artifact is hash-bound. All xlsx/xls/csv sheets were parsed independently of LightBI. MP4/SVG artifacts are accounted for but are not supported tabular sources.",
+  "artifacts": [
+    {
+      "relativePath": "sample data/2017-06-22 DANH SACH XEP HANG QUAN LY TOAN QUOC.xlsx",
+      "sha256": "ea15f8c666e75a6ea4117bbb235bf2ac3565d13e1eb06f1db56ad95ac2c9c989",
+      "bytes": 317713,
+      "format": "xlsx",
+      "supportedTableSource": true,
+      "unsupportedReason": null,
+      "sheets": [
+        {
+          "sheetName": "2200 Quản lý được ĐK Tỉnh",
+          "format": "xlsx",
+          "rowCount": 2200,
+          "columnCount": 6,
+          "physicalRange": "B1:G2202",
+          "physicalColumnCount": 6,
+          "reportTitleAndHeaderMetadata": {
+            "reportTitle": null,
+            "sheetTitle": "2200 Quản lý được ĐK Tỉnh",
+            "selectedHeaderRowOneBased": 2,
+            "skippedNonEmptyRows": [],
+            "headers": [
+              "Xếp hạng",
+              "MSNV Quản lý",
+              "Họ tên Quản lý",
+              "Tổng sao từ T6/2016 đến T05/2017",
+              "Trung bình điểm 4 tiêu chí",
+              "Ghi chú"
+            ],
+            "mergedRanges": []
+          },
+          "operationalProvenance": {
+            "documented": false,
+            "evidence": [],
+            "authoringMetadata": {
+              "author": null,
+              "lastAuthor": null,
+              "company": null,
+              "application": null,
+              "createdDate": null,
+              "modifiedDate": null
+            }
+          },
+          "businessSubject": "employee/manager performance ranking",
+          "likelyGrain": "source row",
+          "identityColumns": [
+            "MSNV Quản lý"
+          ],
+          "productOrItemColumns": [],
+          "quantityMeasures": [],
+          "moneyMeasures": [],
+          "dateAndPeriodFields": [],
+          "explicitAsOfFields": [],
+          "warehouseOrLocationFields": [],
+          "currencyEvidence": [],
+          "uomEvidence": [],
+          "relationshipsToExistingSources": [],
+          "possibleGovernedMetricFamilies": [],
+          "inventorySnapshotAssessment": "unrelated"
+        },
+        {
+          "sheetName": "489 Quản lý Chờ sắp xếp Tỉnh",
+          "format": "xlsx",
+          "rowCount": 489,
+          "columnCount": 7,
+          "physicalRange": "B1:H1000",
+          "physicalColumnCount": 7,
+          "reportTitleAndHeaderMetadata": {
+            "reportTitle": null,
+            "sheetTitle": "489 Quản lý Chờ sắp xếp Tỉnh",
+            "selectedHeaderRowOneBased": 2,
+            "skippedNonEmptyRows": [],
+            "headers": [
+              "Xếp hạng",
+              "MSNV Quản lý",
+              "Họ tên Quản lý",
+              "Tổng sao từ T6/2016 đến T5/2017",
+              "Trung bình 4 tiêu chí",
+              "Ghi chú",
+              "Chi tiết"
+            ],
+            "mergedRanges": []
+          },
+          "operationalProvenance": {
+            "documented": false,
+            "evidence": [],
+            "authoringMetadata": {
+              "author": null,
+              "lastAuthor": null,
+              "company": null,
+              "application": null,
+              "createdDate": null,
+              "modifiedDate": null
+            }
+          },
+          "businessSubject": "employee/manager performance ranking",
+          "likelyGrain": "source row",
+          "identityColumns": [
+            "MSNV Quản lý"
+          ],
+          "productOrItemColumns": [],
+          "quantityMeasures": [],
+          "moneyMeasures": [],
+          "dateAndPeriodFields": [],
+          "explicitAsOfFields": [],
+          "warehouseOrLocationFields": [],
+          "currencyEvidence": [],
+          "uomEvidence": [],
+          "relationshipsToExistingSources": [],
+          "possibleGovernedMetricFamilies": [],
+          "inventorySnapshotAssessment": "unrelated"
+        },
+        {
+          "sheetName": "43 QL SAP NGHI THAI SAI",
+          "format": "xlsx",
+          "rowCount": 43,
+          "columnCount": 10,
+          "physicalRange": "B1:K1000",
+          "physicalColumnCount": 10,
+          "reportTitleAndHeaderMetadata": {
+            "reportTitle": null,
+            "sheetTitle": "43 QL SAP NGHI THAI SAI",
+            "selectedHeaderRowOneBased": 2,
+            "skippedNonEmptyRows": [],
+            "headers": [
+              "Miền",
+              "AM Tháng 06/2017",
+              "MSNV",
+              "HỌ VÀ TÊN",
+              "BỘ PHẬN",
+              "SIÊU THỊ HIỆN TẠI",
+              "Ghi chú",
+              "RSM /AM BỐ TRÍ SIÊU THỊ",
+              "Sao",
+              "Điểm tiêu chí"
+            ],
+            "mergedRanges": []
+          },
+          "operationalProvenance": {
+            "documented": false,
+            "evidence": [],
+            "authoringMetadata": {
+              "author": null,
+              "lastAuthor": null,
+              "company": null,
+              "application": null,
+              "createdDate": null,
+              "modifiedDate": null
+            }
+          },
+          "businessSubject": "employee/manager performance ranking",
+          "likelyGrain": "source row",
+          "identityColumns": [
+            "MSNV"
+          ],
+          "productOrItemColumns": [],
+          "quantityMeasures": [],
+          "moneyMeasures": [],
+          "dateAndPeriodFields": [
+            "AM Tháng 06/2017"
+          ],
+          "explicitAsOfFields": [],
+          "warehouseOrLocationFields": [],
+          "currencyEvidence": [],
+          "uomEvidence": [],
+          "relationshipsToExistingSources": [],
+          "possibleGovernedMetricFamilies": [],
+          "inventorySnapshotAssessment": "unrelated"
+        }
+      ]
+    },
+    {
+      "relativePath": "sample data/3c5992d2e53f1c6714ee5184a407f6c8.mp4",
+      "sha256": "69d2d0c89d7d9fae9ac3a49f92b3fa6bc0e791d03b87e0b74d746cbab393eada",
+      "bytes": 19427151,
+      "format": "mp4",
+      "supportedTableSource": false,
+      "unsupportedReason": "non_tabular_media_or_vector",
+      "sheets": []
+    },
+    {
+      "relativePath": "sample data/Accounting_ERP_June_2026.csv",
+      "sha256": "b3a3b290d5f54ca5d7fc79b7aed0f287f539e665113331bb6d4764fa5fc6aaea",
+      "bytes": 536335,
+      "format": "csv",
+      "supportedTableSource": true,
+      "unsupportedReason": null,
+      "sheets": [
+        {
+          "sheetName": "Sheet1",
+          "format": "csv",
+          "rowCount": 1500,
+          "columnCount": 32,
+          "physicalRange": "A1:AF1501",
+          "physicalColumnCount": 32,
+          "reportTitleAndHeaderMetadata": {
+            "reportTitle": null,
+            "sheetTitle": "Sheet1",
+            "selectedHeaderRowOneBased": 1,
+            "skippedNonEmptyRows": [],
+            "headers": [
+              "InvoiceNo",
+              "JournalNo",
+              "OrderID",
+              "InvoiceDate",
+              "Store",
+              "Salesperson",
+              "Payment",
+              "SKU",
+              "Category",
+              "Product",
+              "Brand",
+              "Qty",
+              "UnitPrice",
+              "Discount",
+              "NetRevenue",
+              "VATRate",
+              "VATOutput",
+              "InvoiceTotal",
+              "UnitCost",
+              "TotalCost",
+              "GrossProfit",
+              "MarginPct",
+              "AR_Debit",
+              "Revenue_Credit",
+              "VATOutput_Credit",
+              "COGS_Debit",
+              "Inventory_Credit",
+              "AR_Account",
+              "Revenue_Account",
+              "VAT_Account",
+              "COGS_Account",
+              "Inventory_Account"
+            ],
+            "mergedRanges": []
+          },
+          "operationalProvenance": {
+            "documented": false,
+            "evidence": [],
+            "authoringMetadata": {
+              "author": null,
+              "lastAuthor": null,
+              "company": null,
+              "application": null,
+              "createdDate": null,
+              "modifiedDate": null
+            }
+          },
+          "businessSubject": "order-level accounting postings and profitability",
+          "likelyGrain": "accounting posting per order",
+          "identityColumns": [
+            "InvoiceNo",
+            "JournalNo",
+            "OrderID",
+            "InvoiceDate",
+            "InvoiceTotal"
+          ],
+          "productOrItemColumns": [
+            "SKU",
+            "Category",
+            "Product",
+            "Brand"
+          ],
+          "quantityMeasures": [
+            "Qty"
+          ],
+          "moneyMeasures": [
+            "Salesperson",
+            "UnitPrice",
+            "Discount",
+            "NetRevenue",
+            "VATRate",
+            "VATOutput",
+            "InvoiceTotal",
+            "UnitCost",
+            "TotalCost",
+            "GrossProfit",
+            "MarginPct",
+            "AR_Debit",
+            "Revenue_Credit",
+            "VATOutput_Credit",
+            "COGS_Debit",
+            "Inventory_Credit",
+            "AR_Account",
+            "Revenue_Account",
+            "VAT_Account"
+          ],
+          "dateAndPeriodFields": [
+            "InvoiceDate"
+          ],
+          "explicitAsOfFields": [],
+          "warehouseOrLocationFields": [],
+          "currencyEvidence": [],
+          "uomEvidence": [],
+          "relationshipsToExistingSources": [
+            "Exact-period OrderID relationship among Sales, Accounting and Logistics; 1:1 in observed files."
+          ],
+          "possibleGovernedMetricFamilies": [
+            "revenue_or_money",
+            "conditional_finance",
+            "quantity_or_volume",
+            "payment_mix",
+            "inventory_related_but_not_necessarily_on_hand"
+          ],
+          "inventorySnapshotAssessment": "movement_only"
+        }
+      ]
+    },
+    {
+      "relativePath": "sample data/Accounting_ERP_May_2026.csv",
+      "sha256": "3c59da1c10c67ab974dfd204b737402aff1c28d748665949942579fb5fb1a2fd",
+      "bytes": 537668,
+      "format": "csv",
+      "supportedTableSource": true,
+      "unsupportedReason": null,
+      "sheets": [
+        {
+          "sheetName": "Sheet1",
+          "format": "csv",
+          "rowCount": 1500,
+          "columnCount": 32,
+          "physicalRange": "A1:AF1501",
+          "physicalColumnCount": 32,
+          "reportTitleAndHeaderMetadata": {
+            "reportTitle": null,
+            "sheetTitle": "Sheet1",
+            "selectedHeaderRowOneBased": 1,
+            "skippedNonEmptyRows": [],
+            "headers": [
+              "InvoiceNo",
+              "JournalNo",
+              "OrderID",
+              "InvoiceDate",
+              "Store",
+              "Salesperson",
+              "Payment",
+              "SKU",
+              "Category",
+              "Product",
+              "Brand",
+              "Qty",
+              "UnitPrice",
+              "Discount",
+              "NetRevenue",
+              "VATRate",
+              "VATOutput",
+              "InvoiceTotal",
+              "UnitCost",
+              "TotalCost",
+              "GrossProfit",
+              "MarginPct",
+              "AR_Debit",
+              "Revenue_Credit",
+              "VATOutput_Credit",
+              "COGS_Debit",
+              "Inventory_Credit",
+              "AR_Account",
+              "Revenue_Account",
+              "VAT_Account",
+              "COGS_Account",
+              "Inventory_Account"
+            ],
+            "mergedRanges": []
+          },
+          "operationalProvenance": {
+            "documented": false,
+            "evidence": [],
+            "authoringMetadata": {
+              "author": null,
+              "lastAuthor": null,
+              "company": null,
+              "application": null,
+              "createdDate": null,
+              "modifiedDate": null
+            }
+          },
+          "businessSubject": "order-level accounting postings and profitability",
+          "likelyGrain": "accounting posting per order",
+          "identityColumns": [
+            "InvoiceNo",
+            "JournalNo",
+            "OrderID",
+            "InvoiceDate",
+            "InvoiceTotal"
+          ],
+          "productOrItemColumns": [
+            "SKU",
+            "Category",
+            "Product",
+            "Brand"
+          ],
+          "quantityMeasures": [
+            "Qty"
+          ],
+          "moneyMeasures": [
+            "Salesperson",
+            "UnitPrice",
+            "Discount",
+            "NetRevenue",
+            "VATRate",
+            "VATOutput",
+            "InvoiceTotal",
+            "UnitCost",
+            "TotalCost",
+            "GrossProfit",
+            "MarginPct",
+            "AR_Debit",
+            "Revenue_Credit",
+            "VATOutput_Credit",
+            "COGS_Debit",
+            "Inventory_Credit",
+            "AR_Account",
+            "Revenue_Account",
+            "VAT_Account"
+          ],
+          "dateAndPeriodFields": [
+            "InvoiceDate"
+          ],
+          "explicitAsOfFields": [],
+          "warehouseOrLocationFields": [],
+          "currencyEvidence": [],
+          "uomEvidence": [],
+          "relationshipsToExistingSources": [
+            "Exact-period OrderID relationship among Sales, Accounting and Logistics; 1:1 in observed files."
+          ],
+          "possibleGovernedMetricFamilies": [
+            "revenue_or_money",
+            "conditional_finance",
+            "quantity_or_volume",
+            "payment_mix",
+            "inventory_related_but_not_necessarily_on_hand"
+          ],
+          "inventorySnapshotAssessment": "movement_only"
+        }
+      ]
+    },
+    {
+      "relativePath": "sample data/BHX_PHIEUXUAT.xlsx",
+      "sha256": "48542ee8aa9d0b9069d329ffc3dc58d141028400257c3eb95f8e62867793641d",
+      "bytes": 1350019,
+      "format": "xlsx",
+      "supportedTableSource": true,
+      "unsupportedReason": null,
+      "sheets": [
+        {
+          "sheetName": "Sheet1",
+          "format": "xlsx",
+          "rowCount": 14862,
+          "columnCount": 19,
+          "physicalRange": "A1:S14864",
+          "physicalColumnCount": 19,
+          "reportTitleAndHeaderMetadata": {
+            "reportTitle": null,
+            "sheetTitle": "Sheet1",
+            "selectedHeaderRowOneBased": 1,
+            "skippedNonEmptyRows": [],
+            "headers": [
+              "Mã phiếu xuất",
+              "Ngày xuất",
+              "Mã kho xuất",
+              "Tên kho xuất",
+              "Loại phiếu xuất",
+              "Tổng tiền",
+              "Tiền làm tròn",
+              "Tiền phải thu",
+              "Tiền mặt khách đưa",
+              "Tiền cà thẻ",
+              "Tiền PMH",
+              "Tiền tặng khách",
+              "Tiền gửi ngân hàng",
+              "Phí giao hàng",
+              "Tiền thối lại",
+              "Khách hàng",
+              "Mã nhân viên xuất",
+              "Nhân viên xuất",
+              "Chứng từ liên quan"
+            ],
+            "mergedRanges": []
+          },
+          "operationalProvenance": {
+            "documented": false,
+            "evidence": [],
+            "authoringMetadata": {
+              "author": null,
+              "lastAuthor": null,
+              "company": null,
+              "application": null,
+              "createdDate": null,
+              "modifiedDate": null
+            }
+          },
+          "businessSubject": "warehouse issue/export documents and payment collection",
+          "likelyGrain": "source row",
+          "identityColumns": [
+            "Mã phiếu xuất",
+            "Mã kho xuất",
+            "Loại phiếu xuất",
+            "Mã nhân viên xuất",
+            "Chứng từ liên quan"
+          ],
+          "productOrItemColumns": [],
+          "quantityMeasures": [],
+          "moneyMeasures": [
+            "Tổng tiền",
+            "Tiền làm tròn",
+            "Tiền phải thu",
+            "Tiền mặt khách đưa",
+            "Tiền cà thẻ",
+            "Tiền PMH",
+            "Tiền tặng khách",
+            "Tiền gửi ngân hàng",
+            "Phí giao hàng",
+            "Tiền thối lại"
+          ],
+          "dateAndPeriodFields": [
+            "Ngày xuất"
+          ],
+          "explicitAsOfFields": [],
+          "warehouseOrLocationFields": [
+            "Mã kho xuất",
+            "Tên kho xuất"
+          ],
+          "currencyEvidence": [],
+          "uomEvidence": [],
+          "relationshipsToExistingSources": [],
+          "possibleGovernedMetricFamilies": [
+            "revenue_or_money",
+            "payment_mix"
+          ],
+          "inventorySnapshotAssessment": "movement_only"
+        }
+      ]
+    },
+    {
+      "relativePath": "sample data/Bao_cao_chi_tiet_Ton_kho_vung_tinh_28-12-2024.xlsx",
+      "sha256": "4329115eb0c53c679669303d79e7c12e1e2fa08eaef2b0b6f2537a464c3835cf",
+      "bytes": 939989,
+      "format": "xlsx",
+      "supportedTableSource": true,
+      "unsupportedReason": null,
+      "sheets": [
+        {
+          "sheetName": "TonTaiKhoVungChiTiet",
+          "format": "xlsx",
+          "rowCount": 6386,
+          "columnCount": 27,
+          "physicalRange": "A1:AA6387",
+          "physicalColumnCount": 27,
+          "reportTitleAndHeaderMetadata": {
+            "reportTitle": null,
+            "sheetTitle": "TonTaiKhoVungChiTiet",
+            "selectedHeaderRowOneBased": 1,
+            "skippedNonEmptyRows": [],
+            "headers": [
+              "STT",
+              "Mã phiếu gửi",
+              "Bưu cục nhập máy",
+              "User nhập máy",
+              "Thời gian nhập máy",
+              "Đơn hoàn",
+              "Bưu cục hiện tại",
+              "Mã dịch vụ",
+              "Nhóm dịch vụ",
+              "Loại hàng",
+              "Khối lượng \n (gram)",
+              "Bưu cục phát",
+              "Chi nhánh nhận",
+              "Chi nhánh phát",
+              "Tiền thu hộ \n (đồng)",
+              "Tổng cước \n (đồng)",
+              "Thời gian nhận",
+              "Ngưỡng tồn",
+              "Thời gian báo cáo",
+              "Thời gian tồn",
+              "Điểm đến",
+              "Chi nhánh hiện tại",
+              "Trạng thái",
+              "Thời gian tác động",
+              "Khai giá",
+              "Nội dung hàng",
+              "Tình trạng tải"
+            ],
+            "mergedRanges": []
+          },
+          "operationalProvenance": {
+            "documented": false,
+            "evidence": [],
+            "authoringMetadata": {
+              "author": null,
+              "lastAuthor": null,
+              "company": null,
+              "application": null,
+              "createdDate": null,
+              "modifiedDate": null
+            }
+          },
+          "businessSubject": "postal parcel aging/backlog at current network location",
+          "likelyGrain": "parcel at report time (backlog/aging, not stock item)",
+          "identityColumns": [
+            "STT",
+            "Mã phiếu gửi",
+            "Mã dịch vụ"
+          ],
+          "productOrItemColumns": [
+            "Loại hàng",
+            "Nội dung hàng"
+          ],
+          "quantityMeasures": [
+            "Khối lượng \n (gram)"
+          ],
+          "moneyMeasures": [
+            "Tiền thu hộ \n (đồng)",
+            "Tổng cước \n (đồng)"
+          ],
+          "dateAndPeriodFields": [
+            "Thời gian nhập máy",
+            "Thời gian nhận",
+            "Thời gian báo cáo",
+            "Thời gian tồn",
+            "Thời gian tác động"
+          ],
+          "explicitAsOfFields": [
+            "Thời gian báo cáo"
+          ],
+          "warehouseOrLocationFields": [
+            "Bưu cục hiện tại",
+            "Chi nhánh hiện tại"
+          ],
+          "currencyEvidence": [
+            {
+              "column": "Tiền thu hộ \n (đồng)",
+              "scope": "header-declared measure only",
+              "explicit": true
+            },
+            {
+              "column": "Tổng cước \n (đồng)",
+              "scope": "header-declared measure only",
+              "explicit": true
+            }
+          ],
+          "uomEvidence": [
+            "Khối lượng \n (gram)"
+          ],
+          "relationshipsToExistingSources": [],
+          "possibleGovernedMetricFamilies": [
+            "delivery_or_operations",
+            "inventory_related_but_not_necessarily_on_hand"
+          ],
+          "inventorySnapshotAssessment": "backlog_or_aging_only"
+        }
+      ]
+    },
+    {
+      "relativePath": "sample data/DATA_XUAT.xlsx",
+      "sha256": "81c19760bc18ce3f7205a667ffaa3ffa2317a02fc0c128573fa4bb6bbde7821f",
+      "bytes": 5547017,
+      "format": "xlsx",
+      "supportedTableSource": true,
+      "unsupportedReason": null,
+      "sheets": [
+        {
+          "sheetName": "DATA",
+          "format": "xlsx",
+          "rowCount": 29843,
+          "columnCount": 48,
+          "physicalRange": "A1:AV29845",
+          "physicalColumnCount": 48,
+          "reportTitleAndHeaderMetadata": {
+            "reportTitle": null,
+            "sheetTitle": "DATA",
+            "selectedHeaderRowOneBased": 1,
+            "skippedNonEmptyRows": [],
+            "headers": [
+              "Ma_don",
+              "Ma_tai",
+              "Don_hoan",
+              "Loai_hang",
+              "Don_vi_khai_thac",
+              "Chi_nhanh_goc",
+              "Chi_nhanh_phat",
+              "Ma_BC_Goc",
+              "Ma_BC_Phat",
+              "Trong_Luong",
+              "Dich_Vu",
+              "Hanh_Trinh",
+              "TG_nhap",
+              "TG_xuat",
+              "Deadline",
+              "Result",
+              "Result_p",
+              "Miền đơn vị",
+              "Miền phát",
+              "Bưu cục xe xã hội",
+              "Chi nhánh xét 24h",
+              "Loại nhập",
+              "Chi nhánh",
+              "Nhóm",
+              "Giờ nhập",
+              "Deadline xuất theo CLDV",
+              "Diễn giải",
+              "Xuất đúng theo CLDV",
+              "Đánh giá",
+              "BC 1 ca",
+              "deadline BC 1 ca (chạy data vlookup)",
+              "BC 1 ca xuất đúng? (chạy data vlookup)",
+              "xuất đúng HTĐT",
+              "xuất đúng cldv",
+              "chuyên tuyến",
+              "nối dvkt - cnp chuyên tuyển",
+              "cldv đúng (+Chuyên tuyến, CLDV LAN)",
+              "nối 2",
+              "DEADLINE cldv HUB LAN",
+              "LAN xuất đúng CLDV",
+              "Nối 3",
+              "rải đích LDG",
+              "Đơn tiktok",
+              "Xét CLDV<18h",
+              "deadline CLDV (chạy data vlookup)",
+              "CLDV<18h xuất đúng?(chạy data vlookup)",
+              "Liên miền miền Trung",
+              "Xuất đúng LM miền Trung 7h"
+            ],
+            "mergedRanges": []
+          },
+          "operationalProvenance": {
+            "documented": false,
+            "evidence": [],
+            "authoringMetadata": {
+              "author": null,
+              "lastAuthor": null,
+              "company": null,
+              "application": null,
+              "createdDate": null,
+              "modifiedDate": null
+            }
+          },
+          "businessSubject": "postal shipment processing timeliness and summary",
+          "likelyGrain": "source-specific row; see subject",
+          "identityColumns": [],
+          "productOrItemColumns": [],
+          "quantityMeasures": [
+            "Trong_Luong"
+          ],
+          "moneyMeasures": [],
+          "dateAndPeriodFields": [
+            "TG_nhap",
+            "TG_xuat",
+            "Deadline",
+            "Deadline xuất theo CLDV",
+            "deadline BC 1 ca (chạy data vlookup)",
+            "DEADLINE cldv HUB LAN",
+            "deadline CLDV (chạy data vlookup)"
+          ],
+          "explicitAsOfFields": [],
+          "warehouseOrLocationFields": [],
+          "currencyEvidence": [],
+          "uomEvidence": [],
+          "relationshipsToExistingSources": [],
+          "possibleGovernedMetricFamilies": [
+            "quantity_or_volume",
+            "delivery_or_operations"
+          ],
+          "inventorySnapshotAssessment": "movement_only"
+        },
+        {
+          "sheetName": "Trang tính1",
+          "format": "xlsx",
+          "rowCount": 5,
+          "columnCount": 4,
+          "physicalRange": "A3:D8",
+          "physicalColumnCount": 4,
+          "reportTitleAndHeaderMetadata": {
+            "reportTitle": null,
+            "sheetTitle": "Trang tính1",
+            "selectedHeaderRowOneBased": 3,
+            "skippedNonEmptyRows": [
+              {
+                "relativeIndex": 0,
+                "values": [
+                  "TỔNG SỐ ĐƠN",
+                  "TỔNG KHỐI LƯỢNG (KG)",
+                  "MIỀN PHÁT",
+                  null
+                ]
+              }
+            ],
+            "headers": [
+              "TỔNG SỐ ĐƠN",
+              "TỔNG KHỐI LƯỢNG (KG)",
+              "MIỀN PHÁT",
+              "unnamed region label"
+            ],
+            "mergedRanges": [
+              "C3:D3"
+            ]
+          },
+          "operationalProvenance": {
+            "documented": false,
+            "evidence": [],
+            "authoringMetadata": {
+              "author": null,
+              "lastAuthor": null,
+              "company": null,
+              "application": null,
+              "createdDate": null,
+              "modifiedDate": null
+            }
+          },
+          "businessSubject": "postal shipment processing timeliness and summary",
+          "likelyGrain": "report summary matrix",
+          "identityColumns": [],
+          "productOrItemColumns": [],
+          "quantityMeasures": [
+            "TỔNG KHỐI LƯỢNG (KG)"
+          ],
+          "moneyMeasures": [],
+          "dateAndPeriodFields": [],
+          "explicitAsOfFields": [],
+          "warehouseOrLocationFields": [],
+          "currencyEvidence": [],
+          "uomEvidence": [
+            "TỔNG KHỐI LƯỢNG (KG)"
+          ],
+          "relationshipsToExistingSources": [],
+          "possibleGovernedMetricFamilies": [],
+          "inventorySnapshotAssessment": "movement_only"
+        }
+      ]
+    },
+    {
+      "relativePath": "sample data/Group 9.svg",
+      "sha256": "9c9094b742b3023d5726fbfa77a4473bfa960c2a1162352163599ffd0785d781",
+      "bytes": 3065,
+      "format": "svg",
+      "supportedTableSource": false,
+      "unsupportedReason": "non_tabular_media_or_vector",
+      "sheets": []
+    },
+    {
+      "relativePath": "sample data/Logistics_ERP_June_2026.csv",
+      "sha256": "ccc7f8036429a5c1b879a8a77dec843ef5ba65dbb88e3b2471a0aa70cd0bb216",
+      "bytes": 301356,
+      "format": "csv",
+      "supportedTableSource": true,
+      "unsupportedReason": null,
+      "sheets": [
+        {
+          "sheetName": "Sheet1",
+          "format": "csv",
+          "rowCount": 1500,
+          "columnCount": 18,
+          "physicalRange": "A1:R1501",
+          "physicalColumnCount": 18,
+          "reportTitleAndHeaderMetadata": {
+            "reportTitle": null,
+            "sheetTitle": "Sheet1",
+            "selectedHeaderRowOneBased": 1,
+            "skippedNonEmptyRows": [],
+            "headers": [
+              "ShipmentID",
+              "PickNo",
+              "OrderID",
+              "OrderDate",
+              "ShippedAt",
+              "DeliveredAt",
+              "Store",
+              "Warehouse",
+              "SKU",
+              "Category",
+              "Product",
+              "Brand",
+              "Qty",
+              "UnitCost",
+              "TotalCost",
+              "Carrier",
+              "DeliveryFee",
+              "DeliveryStatus"
+            ],
+            "mergedRanges": []
+          },
+          "operationalProvenance": {
+            "documented": false,
+            "evidence": [],
+            "authoringMetadata": {
+              "author": null,
+              "lastAuthor": null,
+              "company": null,
+              "application": null,
+              "createdDate": null,
+              "modifiedDate": null
+            }
+          },
+          "businessSubject": "order shipment movement, carrier and delivery cost",
+          "likelyGrain": "shipment per order",
+          "identityColumns": [
+            "ShipmentID",
+            "PickNo",
+            "OrderID",
+            "OrderDate"
+          ],
+          "productOrItemColumns": [
+            "SKU",
+            "Category",
+            "Product",
+            "Brand"
+          ],
+          "quantityMeasures": [
+            "Qty"
+          ],
+          "moneyMeasures": [
+            "UnitCost",
+            "TotalCost"
+          ],
+          "dateAndPeriodFields": [
+            "OrderDate"
+          ],
+          "explicitAsOfFields": [],
+          "warehouseOrLocationFields": [
+            "Warehouse"
+          ],
+          "currencyEvidence": [],
+          "uomEvidence": [],
+          "relationshipsToExistingSources": [
+            "Exact-period OrderID relationship among Sales, Accounting and Logistics; 1:1 in observed files."
+          ],
+          "possibleGovernedMetricFamilies": [
+            "conditional_finance",
+            "quantity_or_volume",
+            "delivery_or_operations"
+          ],
+          "inventorySnapshotAssessment": "movement_only"
+        }
+      ]
+    },
+    {
+      "relativePath": "sample data/Logistics_ERP_May_2026.csv",
+      "sha256": "e093e56ae6750a5ec3bbc98983f21409f373ee71d75b9cceb12c52b2d840ff72",
+      "bytes": 301765,
+      "format": "csv",
+      "supportedTableSource": true,
+      "unsupportedReason": null,
+      "sheets": [
+        {
+          "sheetName": "Sheet1",
+          "format": "csv",
+          "rowCount": 1500,
+          "columnCount": 18,
+          "physicalRange": "A1:R1501",
+          "physicalColumnCount": 18,
+          "reportTitleAndHeaderMetadata": {
+            "reportTitle": null,
+            "sheetTitle": "Sheet1",
+            "selectedHeaderRowOneBased": 1,
+            "skippedNonEmptyRows": [],
+            "headers": [
+              "ShipmentID",
+              "PickNo",
+              "OrderID",
+              "OrderDate",
+              "ShippedAt",
+              "DeliveredAt",
+              "Store",
+              "Warehouse",
+              "SKU",
+              "Category",
+              "Product",
+              "Brand",
+              "Qty",
+              "UnitCost",
+              "TotalCost",
+              "Carrier",
+              "DeliveryFee",
+              "DeliveryStatus"
+            ],
+            "mergedRanges": []
+          },
+          "operationalProvenance": {
+            "documented": false,
+            "evidence": [],
+            "authoringMetadata": {
+              "author": null,
+              "lastAuthor": null,
+              "company": null,
+              "application": null,
+              "createdDate": null,
+              "modifiedDate": null
+            }
+          },
+          "businessSubject": "order shipment movement, carrier and delivery cost",
+          "likelyGrain": "shipment per order",
+          "identityColumns": [
+            "ShipmentID",
+            "PickNo",
+            "OrderID",
+            "OrderDate"
+          ],
+          "productOrItemColumns": [
+            "SKU",
+            "Category",
+            "Product",
+            "Brand"
+          ],
+          "quantityMeasures": [
+            "Qty"
+          ],
+          "moneyMeasures": [
+            "UnitCost",
+            "TotalCost"
+          ],
+          "dateAndPeriodFields": [
+            "OrderDate"
+          ],
+          "explicitAsOfFields": [],
+          "warehouseOrLocationFields": [
+            "Warehouse"
+          ],
+          "currencyEvidence": [],
+          "uomEvidence": [],
+          "relationshipsToExistingSources": [
+            "Exact-period OrderID relationship among Sales, Accounting and Logistics; 1:1 in observed files."
+          ],
+          "possibleGovernedMetricFamilies": [
+            "conditional_finance",
+            "quantity_or_volume",
+            "delivery_or_operations"
+          ],
+          "inventorySnapshotAssessment": "movement_only"
+        }
+      ]
+    },
+    {
+      "relativePath": "sample data/PLU ALL FRESH 22.03.2021.xlsx",
+      "sha256": "bdd0a8638b9d126a0cf4c2dfe102a1ced3ed5aedfb9b53c73da196781a7c24a9",
+      "bytes": 108654,
+      "format": "xlsx",
+      "supportedTableSource": true,
+      "unsupportedReason": null,
+      "sheets": [
+        {
+          "sheetName": "DATA",
+          "format": "xlsx",
+          "rowCount": 1219,
+          "columnCount": 5,
+          "physicalRange": "A1:BM1221",
+          "physicalColumnCount": 65,
+          "reportTitleAndHeaderMetadata": {
+            "reportTitle": null,
+            "sheetTitle": "DATA",
+            "selectedHeaderRowOneBased": 1,
+            "skippedNonEmptyRows": [],
+            "headers": [
+              "Mã sản phẩm",
+              "Tên sản phẩm",
+              "Nhóm sản phẩm",
+              "Đơn vị tính",
+              "Barcode"
+            ],
+            "mergedRanges": []
+          },
+          "operationalProvenance": {
+            "documented": false,
+            "evidence": [],
+            "authoringMetadata": {
+              "author": null,
+              "lastAuthor": "bhx",
+              "company": null,
+              "application": "WPS Spreadsheets",
+              "createdDate": "2021-03-22T04:46:27.000Z",
+              "modifiedDate": "2021-03-22T04:56:42.000Z"
+            }
+          },
+          "businessSubject": "product/PLU master data",
+          "likelyGrain": "source-specific row; see subject",
+          "identityColumns": [
+            "Mã sản phẩm",
+            "Barcode"
+          ],
+          "productOrItemColumns": [
+            "Mã sản phẩm",
+            "Tên sản phẩm",
+            "Nhóm sản phẩm"
+          ],
+          "quantityMeasures": [],
+          "moneyMeasures": [],
+          "dateAndPeriodFields": [],
+          "explicitAsOfFields": [],
+          "warehouseOrLocationFields": [],
+          "currencyEvidence": [],
+          "uomEvidence": [
+            "Đơn vị tính"
+          ],
+          "relationshipsToExistingSources": [
+            "Product code/barcode relates the three master-data sheets; no observed link to the ERP sample SKU scheme."
+          ],
+          "possibleGovernedMetricFamilies": [
+            "inventory_related_but_not_necessarily_on_hand"
+          ],
+          "inventorySnapshotAssessment": "threshold_or_master_data_only"
+        },
+        {
+          "sheetName": "ONLINE-OFF",
+          "format": "xlsx",
+          "rowCount": 846,
+          "columnCount": 6,
+          "physicalRange": "A1:BN847",
+          "physicalColumnCount": 66,
+          "reportTitleAndHeaderMetadata": {
+            "reportTitle": null,
+            "sheetTitle": "ONLINE-OFF",
+            "selectedHeaderRowOneBased": 1,
+            "skippedNonEmptyRows": [],
+            "headers": [
+              "Mã sản phẩm",
+              "Tên sản phẩm",
+              "Nhóm sản phẩm",
+              "Đơn vị tính",
+              "Barcode",
+              "ONLINE"
+            ],
+            "mergedRanges": []
+          },
+          "operationalProvenance": {
+            "documented": false,
+            "evidence": [],
+            "authoringMetadata": {
+              "author": null,
+              "lastAuthor": "bhx",
+              "company": null,
+              "application": "WPS Spreadsheets",
+              "createdDate": "2021-03-22T04:46:27.000Z",
+              "modifiedDate": "2021-03-22T04:56:42.000Z"
+            }
+          },
+          "businessSubject": "product/PLU master data",
+          "likelyGrain": "product master status",
+          "identityColumns": [
+            "Mã sản phẩm",
+            "Barcode"
+          ],
+          "productOrItemColumns": [
+            "Mã sản phẩm",
+            "Tên sản phẩm",
+            "Nhóm sản phẩm"
+          ],
+          "quantityMeasures": [],
+          "moneyMeasures": [],
+          "dateAndPeriodFields": [],
+          "explicitAsOfFields": [],
+          "warehouseOrLocationFields": [],
+          "currencyEvidence": [],
+          "uomEvidence": [
+            "Đơn vị tính"
+          ],
+          "relationshipsToExistingSources": [
+            "Product code/barcode relates the three master-data sheets; no observed link to the ERP sample SKU scheme."
+          ],
+          "possibleGovernedMetricFamilies": [
+            "inventory_related_but_not_necessarily_on_hand"
+          ],
+          "inventorySnapshotAssessment": "threshold_or_master_data_only"
+        },
+        {
+          "sheetName": "SC VỈ",
+          "format": "xlsx",
+          "rowCount": 42,
+          "columnCount": 5,
+          "physicalRange": "A1:BM43",
+          "physicalColumnCount": 65,
+          "reportTitleAndHeaderMetadata": {
+            "reportTitle": null,
+            "sheetTitle": "SC VỈ",
+            "selectedHeaderRowOneBased": 1,
+            "skippedNonEmptyRows": [],
+            "headers": [
+              "Mã sản phẩm",
+              "Tên sản phẩm",
+              "Nhóm sản phẩm",
+              "Đơn vị tính",
+              "Barcode"
+            ],
+            "mergedRanges": []
+          },
+          "operationalProvenance": {
+            "documented": false,
+            "evidence": [],
+            "authoringMetadata": {
+              "author": null,
+              "lastAuthor": "bhx",
+              "company": null,
+              "application": "WPS Spreadsheets",
+              "createdDate": "2021-03-22T04:46:27.000Z",
+              "modifiedDate": "2021-03-22T04:56:42.000Z"
+            }
+          },
+          "businessSubject": "product/PLU master data",
+          "likelyGrain": "product master subset",
+          "identityColumns": [
+            "Mã sản phẩm",
+            "Barcode"
+          ],
+          "productOrItemColumns": [
+            "Mã sản phẩm",
+            "Tên sản phẩm",
+            "Nhóm sản phẩm"
+          ],
+          "quantityMeasures": [],
+          "moneyMeasures": [],
+          "dateAndPeriodFields": [],
+          "explicitAsOfFields": [],
+          "warehouseOrLocationFields": [],
+          "currencyEvidence": [],
+          "uomEvidence": [
+            "Đơn vị tính"
+          ],
+          "relationshipsToExistingSources": [
+            "Product code/barcode relates the three master-data sheets; no observed link to the ERP sample SKU scheme."
+          ],
+          "possibleGovernedMetricFamilies": [
+            "inventory_related_but_not_necessarily_on_hand"
+          ],
+          "inventorySnapshotAssessment": "threshold_or_master_data_only"
+        }
+      ]
+    },
+    {
+      "relativePath": "sample data/Sales_ERP_June_2026.xlsx",
+      "sha256": "a0a69a4d45531090ed5a829467d25ca89320d17792a72e4a91c55b95b9469e52",
+      "bytes": 118219,
+      "format": "xlsx",
+      "supportedTableSource": true,
+      "unsupportedReason": null,
+      "sheets": [
+        {
+          "sheetName": "Sales",
+          "format": "xlsx",
+          "rowCount": 1500,
+          "columnCount": 13,
+          "physicalRange": "A1:M1501",
+          "physicalColumnCount": 13,
+          "reportTitleAndHeaderMetadata": {
+            "reportTitle": null,
+            "sheetTitle": "Sales",
+            "selectedHeaderRowOneBased": 1,
+            "skippedNonEmptyRows": [],
+            "headers": [
+              "OrderID",
+              "OrderDate",
+              "Store",
+              "Category",
+              "Product",
+              "Brand",
+              "Qty",
+              "UnitPrice",
+              "Discount",
+              "Revenue",
+              "Payment",
+              "Salesperson",
+              "Status"
+            ],
+            "mergedRanges": []
+          },
+          "operationalProvenance": {
+            "documented": false,
+            "evidence": [],
+            "authoringMetadata": {
+              "author": "openpyxl",
+              "lastAuthor": null,
+              "company": null,
+              "application": "Microsoft Excel Compatible / Openpyxl 3.1.5",
+              "createdDate": "2026-06-30T13:25:13.000Z",
+              "modifiedDate": "2026-06-30T13:25:14.000Z"
+            }
+          },
+          "businessSubject": "order-level sales",
+          "likelyGrain": "sales order",
+          "identityColumns": [
+            "OrderID",
+            "OrderDate"
+          ],
+          "productOrItemColumns": [
+            "Category",
+            "Product",
+            "Brand"
+          ],
+          "quantityMeasures": [
+            "Qty"
+          ],
+          "moneyMeasures": [
+            "UnitPrice",
+            "Discount",
+            "Revenue",
+            "Salesperson"
+          ],
+          "dateAndPeriodFields": [
+            "OrderDate"
+          ],
+          "explicitAsOfFields": [],
+          "warehouseOrLocationFields": [],
+          "currencyEvidence": [],
+          "uomEvidence": [],
+          "relationshipsToExistingSources": [
+            "Exact-period OrderID relationship among Sales, Accounting and Logistics; 1:1 in observed files."
+          ],
+          "possibleGovernedMetricFamilies": [
+            "revenue_or_money",
+            "quantity_or_volume",
+            "delivery_or_operations",
+            "payment_mix"
+          ],
+          "inventorySnapshotAssessment": "movement_only"
+        }
+      ]
+    },
+    {
+      "relativePath": "sample data/Sales_ERP_May_2026.xlsx",
+      "sha256": "e2cad91d14cf4ae19daa09dd9c980ea57b6b9cc20a518a9fa6818c3b18aef9ae",
+      "bytes": 118492,
+      "format": "xlsx",
+      "supportedTableSource": true,
+      "unsupportedReason": null,
+      "sheets": [
+        {
+          "sheetName": "Sales",
+          "format": "xlsx",
+          "rowCount": 1500,
+          "columnCount": 13,
+          "physicalRange": "A1:M1501",
+          "physicalColumnCount": 13,
+          "reportTitleAndHeaderMetadata": {
+            "reportTitle": null,
+            "sheetTitle": "Sales",
+            "selectedHeaderRowOneBased": 1,
+            "skippedNonEmptyRows": [],
+            "headers": [
+              "OrderID",
+              "OrderDate",
+              "Store",
+              "Category",
+              "Product",
+              "Brand",
+              "Qty",
+              "UnitPrice",
+              "Discount",
+              "Revenue",
+              "Payment",
+              "Salesperson",
+              "Status"
+            ],
+            "mergedRanges": []
+          },
+          "operationalProvenance": {
+            "documented": false,
+            "evidence": [],
+            "authoringMetadata": {
+              "author": "openpyxl",
+              "lastAuthor": null,
+              "company": null,
+              "application": "Microsoft Excel Compatible / Openpyxl 3.1.5",
+              "createdDate": "2026-06-30T13:25:13.000Z",
+              "modifiedDate": "2026-06-30T13:25:13.000Z"
+            }
+          },
+          "businessSubject": "order-level sales",
+          "likelyGrain": "sales order",
+          "identityColumns": [
+            "OrderID",
+            "OrderDate"
+          ],
+          "productOrItemColumns": [
+            "Category",
+            "Product",
+            "Brand"
+          ],
+          "quantityMeasures": [
+            "Qty"
+          ],
+          "moneyMeasures": [
+            "UnitPrice",
+            "Discount",
+            "Revenue",
+            "Salesperson"
+          ],
+          "dateAndPeriodFields": [
+            "OrderDate"
+          ],
+          "explicitAsOfFields": [],
+          "warehouseOrLocationFields": [],
+          "currencyEvidence": [],
+          "uomEvidence": [],
+          "relationshipsToExistingSources": [
+            "Exact-period OrderID relationship among Sales, Accounting and Logistics; 1:1 in observed files."
+          ],
+          "possibleGovernedMetricFamilies": [
+            "revenue_or_money",
+            "quantity_or_volume",
+            "delivery_or_operations",
+            "payment_mix"
+          ],
+          "inventorySnapshotAssessment": "movement_only"
+        }
+      ]
+    },
+    {
+      "relativePath": "sample data/Sample - Superstore for Tableau 9.x versions.xls",
+      "sha256": "c6fe1da814aea2e10ad396c9a54cc6130d2365b867fcf99fe7fe39ac5a9afef3",
+      "bytes": 3383296,
+      "format": "xls",
+      "supportedTableSource": true,
+      "unsupportedReason": null,
+      "sheets": [
+        {
+          "sheetName": "Orders",
+          "format": "xls",
+          "rowCount": 9994,
+          "columnCount": 21,
+          "physicalRange": "A1:U9995",
+          "physicalColumnCount": 21,
+          "reportTitleAndHeaderMetadata": {
+            "reportTitle": null,
+            "sheetTitle": "Orders",
+            "selectedHeaderRowOneBased": 1,
+            "skippedNonEmptyRows": [],
+            "headers": [
+              "Row ID",
+              "Order ID",
+              "Order Date",
+              "Ship Date",
+              "Ship Mode",
+              "Customer ID",
+              "Customer Name",
+              "Segment",
+              "Country",
+              "City",
+              "State",
+              "Postal Code",
+              "Region",
+              "Product ID",
+              "Category",
+              "Sub-Category",
+              "Product Name",
+              "Sales",
+              "Quantity",
+              "Discount",
+              "Profit"
+            ],
+            "mergedRanges": []
+          },
+          "operationalProvenance": {
+            "documented": false,
+            "evidence": [],
+            "authoringMetadata": {
+              "author": "Clara Siegel",
+              "lastAuthor": "Clara Siegel",
+              "company": "Tableau Software",
+              "application": "Microsoft Macintosh Excel",
+              "createdDate": "2014-11-07T23:43:06Z",
+              "modifiedDate": "2015-02-05T16:33:47.804Z"
+            }
+          },
+          "businessSubject": "retail orders with returns and regional ownership",
+          "likelyGrain": "order line",
+          "identityColumns": [
+            "Row ID",
+            "Order ID",
+            "Order Date",
+            "Customer ID",
+            "Postal Code",
+            "Product ID"
+          ],
+          "productOrItemColumns": [
+            "Product ID",
+            "Category",
+            "Sub-Category",
+            "Product Name"
+          ],
+          "quantityMeasures": [
+            "Quantity"
+          ],
+          "moneyMeasures": [
+            "Sales",
+            "Discount",
+            "Profit"
+          ],
+          "dateAndPeriodFields": [
+            "Order Date",
+            "Ship Date"
+          ],
+          "explicitAsOfFields": [],
+          "warehouseOrLocationFields": [],
+          "currencyEvidence": [],
+          "uomEvidence": [],
+          "relationshipsToExistingSources": [
+            "Order ID links to Returns; Region links to People."
+          ],
+          "possibleGovernedMetricFamilies": [
+            "revenue_or_money",
+            "conditional_finance",
+            "quantity_or_volume"
+          ],
+          "inventorySnapshotAssessment": "unrelated"
+        },
+        {
+          "sheetName": "Returns",
+          "format": "xls",
+          "rowCount": 296,
+          "columnCount": 2,
+          "physicalRange": "A1:B297",
+          "physicalColumnCount": 2,
+          "reportTitleAndHeaderMetadata": {
+            "reportTitle": null,
+            "sheetTitle": "Returns",
+            "selectedHeaderRowOneBased": 1,
+            "skippedNonEmptyRows": [],
+            "headers": [
+              "Returned",
+              "Order ID"
+            ],
+            "mergedRanges": []
+          },
+          "operationalProvenance": {
+            "documented": false,
+            "evidence": [],
+            "authoringMetadata": {
+              "author": "Clara Siegel",
+              "lastAuthor": "Clara Siegel",
+              "company": "Tableau Software",
+              "application": "Microsoft Macintosh Excel",
+              "createdDate": "2014-11-07T23:43:06Z",
+              "modifiedDate": "2015-02-05T16:33:47.804Z"
+            }
+          },
+          "businessSubject": "retail orders with returns and regional ownership",
+          "likelyGrain": "returned order",
+          "identityColumns": [
+            "Order ID"
+          ],
+          "productOrItemColumns": [],
+          "quantityMeasures": [],
+          "moneyMeasures": [],
+          "dateAndPeriodFields": [],
+          "explicitAsOfFields": [],
+          "warehouseOrLocationFields": [],
+          "currencyEvidence": [],
+          "uomEvidence": [],
+          "relationshipsToExistingSources": [
+            "Order ID links to Orders."
+          ],
+          "possibleGovernedMetricFamilies": [],
+          "inventorySnapshotAssessment": "unrelated"
+        },
+        {
+          "sheetName": "People",
+          "format": "xls",
+          "rowCount": 4,
+          "columnCount": 2,
+          "physicalRange": "A1:B5",
+          "physicalColumnCount": 2,
+          "reportTitleAndHeaderMetadata": {
+            "reportTitle": null,
+            "sheetTitle": "People",
+            "selectedHeaderRowOneBased": 1,
+            "skippedNonEmptyRows": [],
+            "headers": [
+              "Person",
+              "Region"
+            ],
+            "mergedRanges": []
+          },
+          "operationalProvenance": {
+            "documented": false,
+            "evidence": [],
+            "authoringMetadata": {
+              "author": "Clara Siegel",
+              "lastAuthor": "Clara Siegel",
+              "company": "Tableau Software",
+              "application": "Microsoft Macintosh Excel",
+              "createdDate": "2014-11-07T23:43:06Z",
+              "modifiedDate": "2015-02-05T16:33:47.804Z"
+            }
+          },
+          "businessSubject": "retail orders with returns and regional ownership",
+          "likelyGrain": "region owner",
+          "identityColumns": [],
+          "productOrItemColumns": [],
+          "quantityMeasures": [],
+          "moneyMeasures": [],
+          "dateAndPeriodFields": [],
+          "explicitAsOfFields": [],
+          "warehouseOrLocationFields": [],
+          "currencyEvidence": [],
+          "uomEvidence": [],
+          "relationshipsToExistingSources": [
+            "Region links to Orders."
+          ],
+          "possibleGovernedMetricFamilies": [],
+          "inventorySnapshotAssessment": "unrelated"
+        }
+      ]
+    },
+    {
+      "relativePath": "sample data/TỒN DỰ KIẾN HUBLAN.xlsx",
+      "sha256": "b779e84c77ee80e6d2f8e02aa4a802a2a801b3fbf122929a0aeca1256096d593",
+      "bytes": 630299,
+      "format": "xlsx",
+      "supportedTableSource": true,
+      "unsupportedReason": null,
+      "sheets": [
+        {
+          "sheetName": "TonChuaKetNoi",
+          "format": "xlsx",
+          "rowCount": 3612,
+          "columnCount": 25,
+          "physicalRange": "A1:Y3613",
+          "physicalColumnCount": 25,
+          "reportTitleAndHeaderMetadata": {
+            "reportTitle": null,
+            "sheetTitle": "TonChuaKetNoi",
+            "selectedHeaderRowOneBased": 1,
+            "skippedNonEmptyRows": [],
+            "headers": [
+              "Ngày Báo Cáo",
+              "Mã Phiếu Gửi",
+              "Tỉnh Nhận",
+              "Huyện Nhận",
+              "Tên Huyện Nhận",
+              "Tỉnh Phát",
+              "Huyện Phát",
+              "Tên Huyện Phát",
+              "Mã Dịch vụ",
+              "Mã Dịch vụ cộng thêm",
+              "Mã Bưu Cục Gốc",
+              "Time Tác Động",
+              "Trạng Thái",
+              "Bưu Cục Hiện Tại",
+              "Chi Nhánh Hiện Tại",
+              "Mã Đối Tác",
+              "Mã KH Gửi",
+              "Mã Bưu Cục Phát",
+              "Ngày Tạo Đơn",
+              "Tiền COD",
+              "Người Nhập Máy",
+              "Ngày Nhập Máy",
+              "Trọng lượng",
+              "Loại Hàng Hóa",
+              "Tiền Cước"
+            ],
+            "mergedRanges": []
+          },
+          "operationalProvenance": {
+            "documented": false,
+            "evidence": [],
+            "authoringMetadata": {
+              "author": null,
+              "lastAuthor": null,
+              "company": null,
+              "application": null,
+              "createdDate": null,
+              "modifiedDate": null
+            }
+          },
+          "businessSubject": "postal parcel backlog pending network connection",
+          "likelyGrain": "parcel at report date (backlog, not stock item)",
+          "identityColumns": [
+            "Mã Phiếu Gửi",
+            "Mã Dịch vụ",
+            "Mã Dịch vụ cộng thêm",
+            "Mã Bưu Cục Gốc",
+            "Mã Đối Tác",
+            "Mã KH Gửi",
+            "Mã Bưu Cục Phát"
+          ],
+          "productOrItemColumns": [
+            "Loại Hàng Hóa"
+          ],
+          "quantityMeasures": [
+            "Trọng lượng"
+          ],
+          "moneyMeasures": [
+            "Tiền COD",
+            "Tiền Cước"
+          ],
+          "dateAndPeriodFields": [
+            "Ngày Báo Cáo",
+            "Time Tác Động",
+            "Ngày Tạo Đơn",
+            "Ngày Nhập Máy"
+          ],
+          "explicitAsOfFields": [
+            "Ngày Báo Cáo"
+          ],
+          "warehouseOrLocationFields": [
+            "Bưu Cục Hiện Tại",
+            "Chi Nhánh Hiện Tại"
+          ],
+          "currencyEvidence": [],
+          "uomEvidence": [
+            "Trọng lượng"
+          ],
+          "relationshipsToExistingSources": [],
+          "possibleGovernedMetricFamilies": [
+            "quantity_or_volume",
+            "delivery_or_operations"
+          ],
+          "inventorySnapshotAssessment": "backlog_or_aging_only"
+        },
+        {
+          "sheetName": "Trang tính1",
+          "format": "xlsx",
+          "rowCount": 0,
+          "columnCount": 0,
+          "physicalRange": null,
+          "physicalColumnCount": 0,
+          "reportTitleAndHeaderMetadata": {
+            "reportTitle": null,
+            "sheetTitle": "Trang tính1",
+            "selectedHeaderRowOneBased": null,
+            "skippedNonEmptyRows": [],
+            "headers": [],
+            "mergedRanges": []
+          },
+          "operationalProvenance": {
+            "documented": false,
+            "evidence": [],
+            "authoringMetadata": {
+              "author": null,
+              "lastAuthor": null,
+              "company": null,
+              "application": null,
+              "createdDate": null,
+              "modifiedDate": null
+            }
+          },
+          "businessSubject": "postal parcel backlog pending network connection",
+          "likelyGrain": "report summary matrix",
+          "identityColumns": [],
+          "productOrItemColumns": [],
+          "quantityMeasures": [],
+          "moneyMeasures": [],
+          "dateAndPeriodFields": [],
+          "explicitAsOfFields": [],
+          "warehouseOrLocationFields": [],
+          "currencyEvidence": [],
+          "uomEvidence": [],
+          "relationshipsToExistingSources": [],
+          "possibleGovernedMetricFamilies": [],
+          "inventorySnapshotAssessment": "backlog_or_aging_only"
+        }
+      ]
+    },
+    {
+      "relativePath": "sample data/World Bank Indicators.xlsx",
+      "sha256": "4adb07d7d2ab2d41e5967503c70d079a69c086b05ef602c428af3709be850e6b",
+      "bytes": 294190,
+      "format": "xlsx",
+      "supportedTableSource": true,
+      "unsupportedReason": null,
+      "sheets": [
+        {
+          "sheetName": "Data by country",
+          "format": "xlsx",
+          "rowCount": 2354,
+          "columnCount": 20,
+          "physicalRange": "A1:T2355",
+          "physicalColumnCount": 20,
+          "reportTitleAndHeaderMetadata": {
+            "reportTitle": null,
+            "sheetTitle": "Data by country",
+            "selectedHeaderRowOneBased": 1,
+            "skippedNonEmptyRows": [],
+            "headers": [
+              "Country Name",
+              "Date",
+              "Transit: Railways, (million passenger-km)",
+              "Transit: Passenger cars (per 1,000 people)",
+              "Business: Mobile phone subscribers",
+              "Business: Internet users (per 100 people)",
+              "Health: Mortality, under-5 (per 1,000 live births)",
+              "Health: Health expenditure per capita (current US$)",
+              "Health: Health expenditure, total (% GDP)",
+              "Population: Total (count)",
+              "Population: Urban (count)",
+              "Population:: Birth rate, crude (per 1,000)",
+              "Health: Life expectancy at birth, female (years)",
+              "Health: Life expectancy at birth, male (years)",
+              "Health: Life expectancy at birth, total (years)",
+              "Population: Ages 0-14 (% of total)",
+              "Population: Ages 15-64 (% of total)",
+              "Population: Ages 65+ (% of total)",
+              "Finance: GDP (current US$)",
+              "Finance: GDP per capita (current US$)"
+            ],
+            "mergedRanges": []
+          },
+          "operationalProvenance": {
+            "documented": false,
+            "evidence": [],
+            "authoringMetadata": {
+              "author": "Stephen McDaniel",
+              "lastAuthor": "Daniel Hom",
+              "company": null,
+              "application": "Microsoft Excel",
+              "createdDate": "2012-08-29T01:49:52.000Z",
+              "modifiedDate": "2013-01-23T00:54:47.000Z"
+            }
+          },
+          "businessSubject": "country-year public indicators and region lookup",
+          "likelyGrain": "country-year",
+          "identityColumns": [],
+          "productOrItemColumns": [],
+          "quantityMeasures": [],
+          "moneyMeasures": [
+            "Health: Health expenditure, total (% GDP)",
+            "Population: Total (count)",
+            "Health: Life expectancy at birth, total (years)",
+            "Population: Ages 0-14 (% of total)",
+            "Population: Ages 15-64 (% of total)",
+            "Population: Ages 65+ (% of total)"
+          ],
+          "dateAndPeriodFields": [
+            "Date"
+          ],
+          "explicitAsOfFields": [],
+          "warehouseOrLocationFields": [],
+          "currencyEvidence": [
+            {
+              "column": "Health: Health expenditure per capita (current US$)",
+              "scope": "header-declared measure only",
+              "explicit": true
+            },
+            {
+              "column": "Finance: GDP (current US$)",
+              "scope": "header-declared measure only",
+              "explicit": true
+            },
+            {
+              "column": "Finance: GDP per capita (current US$)",
+              "scope": "header-declared measure only",
+              "explicit": true
+            }
+          ],
+          "uomEvidence": [],
+          "relationshipsToExistingSources": [
+            "Country links the indicator and region lookup sheets."
+          ],
+          "possibleGovernedMetricFamilies": [],
+          "inventorySnapshotAssessment": "unrelated"
+        },
+        {
+          "sheetName": "Regions and subregions",
+          "format": "xlsx",
+          "rowCount": 234,
+          "columnCount": 3,
+          "physicalRange": "A1:C235",
+          "physicalColumnCount": 3,
+          "reportTitleAndHeaderMetadata": {
+            "reportTitle": null,
+            "sheetTitle": "Regions and subregions",
+            "selectedHeaderRowOneBased": 1,
+            "skippedNonEmptyRows": [],
+            "headers": [
+              "Region",
+              "Subregion",
+              "Country"
+            ],
+            "mergedRanges": []
+          },
+          "operationalProvenance": {
+            "documented": false,
+            "evidence": [],
+            "authoringMetadata": {
+              "author": "Stephen McDaniel",
+              "lastAuthor": "Daniel Hom",
+              "company": null,
+              "application": "Microsoft Excel",
+              "createdDate": "2012-08-29T01:49:52.000Z",
+              "modifiedDate": "2013-01-23T00:54:47.000Z"
+            }
+          },
+          "businessSubject": "country-year public indicators and region lookup",
+          "likelyGrain": "country lookup",
+          "identityColumns": [],
+          "productOrItemColumns": [],
+          "quantityMeasures": [],
+          "moneyMeasures": [],
+          "dateAndPeriodFields": [],
+          "explicitAsOfFields": [],
+          "warehouseOrLocationFields": [],
+          "currencyEvidence": [],
+          "uomEvidence": [],
+          "relationshipsToExistingSources": [
+            "Country links the indicator and region lookup sheets."
+          ],
+          "possibleGovernedMetricFamilies": [],
+          "inventorySnapshotAssessment": "unrelated"
+        }
+      ]
+    },
+    {
+      "relativePath": "sample data/WorldCupPlayers.xlsx",
+      "sha256": "7d8a61d02b4fa70388cea363b967c1af9606f7259f8cf57152c044f5f461c0e5",
+      "bytes": 1213054,
+      "format": "xlsx",
+      "supportedTableSource": true,
+      "unsupportedReason": null,
+      "sheets": [
+        {
+          "sheetName": "WorldCupPlayers",
+          "format": "xlsx",
+          "rowCount": 37784,
+          "columnCount": 9,
+          "physicalRange": "A1:I37785",
+          "physicalColumnCount": 9,
+          "reportTitleAndHeaderMetadata": {
+            "reportTitle": null,
+            "sheetTitle": "WorldCupPlayers",
+            "selectedHeaderRowOneBased": 1,
+            "skippedNonEmptyRows": [],
+            "headers": [
+              "RoundID",
+              "MatchID",
+              "Team Initials",
+              "Coach Name",
+              "Line-up",
+              "Shirt Number",
+              "Player Name",
+              "Position",
+              "Event"
+            ],
+            "mergedRanges": []
+          },
+          "operationalProvenance": {
+            "documented": false,
+            "evidence": [],
+            "authoringMetadata": {
+              "author": null,
+              "lastAuthor": null,
+              "company": null,
+              "application": "LibreOffice/7.4.7.2$Linux_X86_64 LibreOffice_project/40$Build-2",
+              "createdDate": null,
+              "modifiedDate": null
+            }
+          },
+          "businessSubject": "football match player lineup/events",
+          "likelyGrain": "match-team-player lineup/event",
+          "identityColumns": [
+            "RoundID",
+            "MatchID"
+          ],
+          "productOrItemColumns": [],
+          "quantityMeasures": [],
+          "moneyMeasures": [],
+          "dateAndPeriodFields": [],
+          "explicitAsOfFields": [],
+          "warehouseOrLocationFields": [],
+          "currencyEvidence": [],
+          "uomEvidence": [],
+          "relationshipsToExistingSources": [],
+          "possibleGovernedMetricFamilies": [],
+          "inventorySnapshotAssessment": "unrelated"
+        }
+      ]
+    },
+    {
+      "relativePath": "sample data/bank-additional-full.xlsx",
+      "sha256": "01e63f4291b069eb5dfb4124707aa8dfcca1f3ed3c070b18df0391bba50ee99d",
+      "bytes": 2797081,
+      "format": "xlsx",
+      "supportedTableSource": true,
+      "unsupportedReason": null,
+      "sheets": [
+        {
+          "sheetName": "Worksheet",
+          "format": "xlsx",
+          "rowCount": 41188,
+          "columnCount": 21,
+          "physicalRange": "A1:U41189",
+          "physicalColumnCount": 21,
+          "reportTitleAndHeaderMetadata": {
+            "reportTitle": null,
+            "sheetTitle": "Worksheet",
+            "selectedHeaderRowOneBased": 1,
+            "skippedNonEmptyRows": [],
+            "headers": [
+              "age",
+              "job",
+              "marital",
+              "education",
+              "default",
+              "housing",
+              "loan",
+              "contact",
+              "month",
+              "day_of_week",
+              "duration",
+              "campaign",
+              "pdays",
+              "previous",
+              "poutcome",
+              "emp.var.rate",
+              "cons.price.idx",
+              "cons.conf.idx",
+              "euribor3m",
+              "nr.employed",
+              "y"
+            ],
+            "mergedRanges": []
+          },
+          "operationalProvenance": {
+            "documented": false,
+            "evidence": [],
+            "authoringMetadata": {
+              "author": "Unknown Creator",
+              "lastAuthor": "Unknown Creator",
+              "company": "Microsoft Corporation",
+              "application": "Microsoft Excel",
+              "createdDate": "2024-07-28T02:51:32.000Z",
+              "modifiedDate": "2024-07-28T02:51:32.000Z"
+            }
+          },
+          "businessSubject": "bank marketing campaign contacts and outcomes",
+          "likelyGrain": "campaign contact",
+          "identityColumns": [],
+          "productOrItemColumns": [],
+          "quantityMeasures": [],
+          "moneyMeasures": [
+            "cons.price.idx"
+          ],
+          "dateAndPeriodFields": [],
+          "explicitAsOfFields": [],
+          "warehouseOrLocationFields": [],
+          "currencyEvidence": [
+            {
+              "column": "euribor3m",
+              "scope": "header-declared measure only",
+              "explicit": true
+            }
+          ],
+          "uomEvidence": [],
+          "relationshipsToExistingSources": [],
+          "possibleGovernedMetricFamilies": [],
+          "inventorySnapshotAssessment": "unrelated"
+        }
+      ]
+    },
+    {
+      "relativePath": "sample data/bcctnhapTTKT_19122024.xlsx",
+      "sha256": "2e871cd767c9fc03bca2a3f7e4a050ec6c679d934f124a006ddfa63f0739de8e",
+      "bytes": 1008539,
+      "format": "xlsx",
+      "supportedTableSource": true,
+      "unsupportedReason": null,
+      "sheets": [
+        {
+          "sheetName": "NhapXuatDungGioTTKT",
+          "format": "xlsx",
+          "rowCount": 7481,
+          "columnCount": 28,
+          "physicalRange": "A1:AB8482",
+          "physicalColumnCount": 28,
+          "reportTitleAndHeaderMetadata": {
+            "reportTitle": null,
+            "sheetTitle": "NhapXuatDungGioTTKT",
+            "selectedHeaderRowOneBased": 1,
+            "skippedNonEmptyRows": [],
+            "headers": [
+              "STT",
+              "Ngày báo cáo",
+              "Mã tải kiện",
+              "Đơn vị",
+              "Bưu cục tạo bàn giao",
+              "Chuyến xe",
+              "Tuyến xe",
+              "Biển kiểm soát",
+              "Số lượng",
+              "Trọng lượng (Gam)",
+              "User bàn giao",
+              "Thời gian kết thúc chuyến xe",
+              "Bưu cục nhận bàn giao",
+              "User nhận bàn giao",
+              "Thời gian checkin",
+              "Thời gian checkout",
+              "Thời gian chờ",
+              "Tên lái xe",
+              "Thời gian nhận bàn giao",
+              "Thời gian tạo bàn giao",
+              "Thời gian quy định",
+              "Đánh giá",
+              "Loại hàng",
+              "Loại khai thác",
+              "Trọng tải (Kg)",
+              "Đánh giá thời gian chờ",
+              "Thời gian dự kiến đến",
+              "Xe đến đúng hẹn"
+            ],
+            "mergedRanges": []
+          },
+          "operationalProvenance": {
+            "documented": false,
+            "evidence": [],
+            "authoringMetadata": {
+              "author": null,
+              "lastAuthor": null,
+              "company": null,
+              "application": null,
+              "createdDate": null,
+              "modifiedDate": null
+            }
+          },
+          "businessSubject": "vehicle trip handoff and arrival punctuality",
+          "likelyGrain": "load/trip handoff event",
+          "identityColumns": [
+            "STT",
+            "Mã tải kiện"
+          ],
+          "productOrItemColumns": [
+            "Loại hàng"
+          ],
+          "quantityMeasures": [
+            "Số lượng",
+            "Trọng lượng (Gam)"
+          ],
+          "moneyMeasures": [],
+          "dateAndPeriodFields": [
+            "Ngày báo cáo",
+            "Thời gian kết thúc chuyến xe",
+            "Thời gian checkin",
+            "Thời gian checkout",
+            "Thời gian chờ",
+            "Thời gian nhận bàn giao",
+            "Thời gian tạo bàn giao",
+            "Thời gian quy định",
+            "Đánh giá thời gian chờ",
+            "Thời gian dự kiến đến"
+          ],
+          "explicitAsOfFields": [
+            "Ngày báo cáo"
+          ],
+          "warehouseOrLocationFields": [],
+          "currencyEvidence": [],
+          "uomEvidence": [
+            "Trọng lượng (Gam)",
+            "Trọng tải (Kg)"
+          ],
+          "relationshipsToExistingSources": [
+            "Same 28-column operational report family across three report dates; trip/load keys are period-scoped."
+          ],
+          "possibleGovernedMetricFamilies": [
+            "quantity_or_volume",
+            "delivery_or_operations"
+          ],
+          "inventorySnapshotAssessment": "movement_only"
+        }
+      ]
+    },
+    {
+      "relativePath": "sample data/bcctnhapTTKT_23122024.xlsx",
+      "sha256": "99373be1d5e2b4e67b46c3c1730650b0c38e0112a3b0ac550215313f95771b98",
+      "bytes": 932640,
+      "format": "xlsx",
+      "supportedTableSource": true,
+      "unsupportedReason": null,
+      "sheets": [
+        {
+          "sheetName": "NhapXuatDungGioTTKT",
+          "format": "xlsx",
+          "rowCount": 7373,
+          "columnCount": 28,
+          "physicalRange": "A1:AB7374",
+          "physicalColumnCount": 28,
+          "reportTitleAndHeaderMetadata": {
+            "reportTitle": null,
+            "sheetTitle": "NhapXuatDungGioTTKT",
+            "selectedHeaderRowOneBased": 1,
+            "skippedNonEmptyRows": [],
+            "headers": [
+              "STT",
+              "Ngày báo cáo",
+              "Mã tải kiện",
+              "Đơn vị",
+              "Bưu cục tạo bàn giao",
+              "Chuyến xe",
+              "Tuyến xe",
+              "Biển kiểm soát",
+              "Số lượng",
+              "Trọng lượng (Gam)",
+              "User bàn giao",
+              "Thời gian kết thúc chuyến xe",
+              "Bưu cục nhận bàn giao",
+              "User nhận bàn giao",
+              "Thời gian checkin",
+              "Thời gian checkout",
+              "Thời gian chờ",
+              "Tên lái xe",
+              "Thời gian nhận bàn giao",
+              "Thời gian tạo bàn giao",
+              "Thời gian quy định",
+              "Đánh giá",
+              "Loại hàng",
+              "Loại khai thác",
+              "Trọng tải (Kg)",
+              "Đánh giá thời gian chờ",
+              "Thời gian dự kiến đến",
+              "Xe đến đúng hẹn"
+            ],
+            "mergedRanges": []
+          },
+          "operationalProvenance": {
+            "documented": false,
+            "evidence": [],
+            "authoringMetadata": {
+              "author": null,
+              "lastAuthor": null,
+              "company": null,
+              "application": null,
+              "createdDate": null,
+              "modifiedDate": null
+            }
+          },
+          "businessSubject": "vehicle trip handoff and arrival punctuality",
+          "likelyGrain": "load/trip handoff event",
+          "identityColumns": [
+            "STT",
+            "Mã tải kiện"
+          ],
+          "productOrItemColumns": [
+            "Loại hàng"
+          ],
+          "quantityMeasures": [
+            "Số lượng",
+            "Trọng lượng (Gam)"
+          ],
+          "moneyMeasures": [],
+          "dateAndPeriodFields": [
+            "Ngày báo cáo",
+            "Thời gian kết thúc chuyến xe",
+            "Thời gian checkin",
+            "Thời gian checkout",
+            "Thời gian chờ",
+            "Thời gian nhận bàn giao",
+            "Thời gian tạo bàn giao",
+            "Thời gian quy định",
+            "Đánh giá thời gian chờ",
+            "Thời gian dự kiến đến"
+          ],
+          "explicitAsOfFields": [
+            "Ngày báo cáo"
+          ],
+          "warehouseOrLocationFields": [],
+          "currencyEvidence": [],
+          "uomEvidence": [
+            "Trọng lượng (Gam)",
+            "Trọng tải (Kg)"
+          ],
+          "relationshipsToExistingSources": [
+            "Same 28-column operational report family across three report dates; trip/load keys are period-scoped."
+          ],
+          "possibleGovernedMetricFamilies": [
+            "quantity_or_volume",
+            "delivery_or_operations"
+          ],
+          "inventorySnapshotAssessment": "movement_only"
+        }
+      ]
+    },
+    {
+      "relativePath": "sample data/bcctnhapTTKT_24122024.xlsx",
+      "sha256": "9190c28d88d7a50759ecfa5622f2e31d20147a125dd90d6b40c2de00fd866630",
+      "bytes": 728665,
+      "format": "xlsx",
+      "supportedTableSource": true,
+      "unsupportedReason": null,
+      "sheets": [
+        {
+          "sheetName": "NhapXuatDungGioTTKT",
+          "format": "xlsx",
+          "rowCount": 5924,
+          "columnCount": 28,
+          "physicalRange": "A1:AB5925",
+          "physicalColumnCount": 28,
+          "reportTitleAndHeaderMetadata": {
+            "reportTitle": null,
+            "sheetTitle": "NhapXuatDungGioTTKT",
+            "selectedHeaderRowOneBased": 1,
+            "skippedNonEmptyRows": [],
+            "headers": [
+              "STT",
+              "Ngày báo cáo",
+              "Mã tải kiện",
+              "Đơn vị",
+              "Bưu cục tạo bàn giao",
+              "Chuyến xe",
+              "Tuyến xe",
+              "Biển kiểm soát",
+              "Số lượng",
+              "Trọng lượng (Gam)",
+              "User bàn giao",
+              "Thời gian kết thúc chuyến xe",
+              "Bưu cục nhận bàn giao",
+              "User nhận bàn giao",
+              "Thời gian checkin",
+              "Thời gian checkout",
+              "Thời gian chờ",
+              "Tên lái xe",
+              "Thời gian nhận bàn giao",
+              "Thời gian tạo bàn giao",
+              "Thời gian quy định",
+              "Đánh giá",
+              "Loại hàng",
+              "Loại khai thác",
+              "Trọng tải (Kg)",
+              "Đánh giá thời gian chờ",
+              "Thời gian dự kiến đến",
+              "Xe đến đúng hẹn"
+            ],
+            "mergedRanges": []
+          },
+          "operationalProvenance": {
+            "documented": false,
+            "evidence": [],
+            "authoringMetadata": {
+              "author": null,
+              "lastAuthor": null,
+              "company": null,
+              "application": null,
+              "createdDate": null,
+              "modifiedDate": null
+            }
+          },
+          "businessSubject": "vehicle trip handoff and arrival punctuality",
+          "likelyGrain": "load/trip handoff event",
+          "identityColumns": [
+            "STT",
+            "Mã tải kiện"
+          ],
+          "productOrItemColumns": [
+            "Loại hàng"
+          ],
+          "quantityMeasures": [
+            "Số lượng",
+            "Trọng lượng (Gam)"
+          ],
+          "moneyMeasures": [],
+          "dateAndPeriodFields": [
+            "Ngày báo cáo",
+            "Thời gian kết thúc chuyến xe",
+            "Thời gian checkin",
+            "Thời gian checkout",
+            "Thời gian chờ",
+            "Thời gian nhận bàn giao",
+            "Thời gian tạo bàn giao",
+            "Thời gian quy định",
+            "Đánh giá thời gian chờ",
+            "Thời gian dự kiến đến"
+          ],
+          "explicitAsOfFields": [
+            "Ngày báo cáo"
+          ],
+          "warehouseOrLocationFields": [],
+          "currencyEvidence": [],
+          "uomEvidence": [
+            "Trọng lượng (Gam)",
+            "Trọng tải (Kg)"
+          ],
+          "relationshipsToExistingSources": [
+            "Same 28-column operational report family across three report dates; trip/load keys are period-scoped."
+          ],
+          "possibleGovernedMetricFamilies": [
+            "quantity_or_volume",
+            "delivery_or_operations"
+          ],
+          "inventorySnapshotAssessment": "movement_only"
+        }
+      ]
+    },
+    {
+      "relativePath": "sample data/lightbi.svg",
+      "sha256": "91b3f11b846a3aedb81a69c98bee6dd0cf4267132bc7cd37ee5190e436d050c1",
+      "bytes": 4185,
+      "format": "svg",
+      "supportedTableSource": false,
+      "unsupportedReason": "non_tabular_media_or_vector",
+      "sheets": []
+    },
+    {
+      "relativePath": "sample data/motodetail.xlsx",
+      "sha256": "2ebdd4c6a9f38ed2c7126c7b7426f6475ca9d5cdeb875f296692f50342f78cad",
+      "bytes": 282920,
+      "format": "xlsx",
+      "supportedTableSource": true,
+      "unsupportedReason": null,
+      "sheets": [
+        {
+          "sheetName": "Bản sao của Moto Detail",
+          "format": "xlsx",
+          "rowCount": 1461,
+          "columnCount": 16,
+          "physicalRange": "A1:P5006",
+          "physicalColumnCount": 16,
+          "reportTitleAndHeaderMetadata": {
+            "reportTitle": null,
+            "sheetTitle": "Bản sao của Moto Detail",
+            "selectedHeaderRowOneBased": 1,
+            "skippedNonEmptyRows": [],
+            "headers": [
+              "DATE",
+              "WHA.\nID",
+              "ORD.\nTITLE",
+              "ORD.\nCODE",
+              "CUST.\nNAME",
+              "AREA",
+              "AREA\nID",
+              "AREA\nCLASS",
+              "S.P",
+              "L.P",
+              "CHARGE",
+              "MET.\nID",
+              "EMP.\nID",
+              "OTHER\nCHARGE",
+              "NOTE",
+              "__PowerAppsId__"
+            ],
+            "mergedRanges": []
+          },
+          "operationalProvenance": {
+            "documented": false,
+            "evidence": [],
+            "authoringMetadata": {
+              "author": null,
+              "lastAuthor": null,
+              "company": null,
+              "application": null,
+              "createdDate": null,
+              "modifiedDate": null
+            }
+          },
+          "businessSubject": "warehouse/order charge detail",
+          "likelyGrain": "order/charge detail",
+          "identityColumns": [
+            "WHA.\nID",
+            "ORD.\nCODE",
+            "AREA\nID",
+            "MET.\nID",
+            "EMP.\nID"
+          ],
+          "productOrItemColumns": [],
+          "quantityMeasures": [],
+          "moneyMeasures": [
+            "S.P",
+            "L.P",
+            "CHARGE",
+            "OTHER\nCHARGE"
+          ],
+          "dateAndPeriodFields": [
+            "DATE"
+          ],
+          "explicitAsOfFields": [],
+          "warehouseOrLocationFields": [
+            "AREA",
+            "AREA\nID",
+            "AREA\nCLASS"
+          ],
+          "currencyEvidence": [],
+          "uomEvidence": [],
+          "relationshipsToExistingSources": [],
+          "possibleGovernedMetricFamilies": [
+            "revenue_or_money"
+          ],
+          "inventorySnapshotAssessment": "unrelated"
+        }
+      ]
+    }
+  ]
+}

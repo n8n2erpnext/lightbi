@@ -1,0 +1,63 @@
+{
+  "schemaVersion": "lightbi.evaluation-evidence-policy.v1",
+  "policyId": "phase7r34_evaluation_evidence_v1",
+  "policyVersion": "1.0.0",
+  "evidenceClasses": {
+    "authentic_operational_evidence": {
+      "definition": "Hash-bound source evidence observed outside a generated evaluation scenario, with documented operational provenance.",
+      "allowedUses": [
+        "mapping_precision",
+        "signal_recall",
+        "ambiguity_rate",
+        "grain_discovery",
+        "domain_activation",
+        "metric_truth_when_independently_verifiable"
+      ],
+      "primaryForSemanticEvaluation": true
+    },
+    "authentic_anchored_semi_synthetic_evidence": {
+      "definition": "Deterministic scenario data whose identities or measures are copied from hash-bound repository anchors and whose generated fields are explicitly declared and provenance-linked.",
+      "allowedUses": [
+        "deterministic_metric_arithmetic",
+        "runtime_guard_verification",
+        "cross_file_consistency",
+        "metric_family_coverage"
+      ],
+      "forbiddenUses": [
+        "claiming_externally_observed_operational_truth",
+        "replacing_authentic_mapping_precision_evidence",
+        "replacing_authentic_signal_recall_evidence",
+        "replacing_authentic_grain_discovery_evidence",
+        "replacing_authentic_domain_activation_evidence"
+      ],
+      "primaryForSemanticEvaluation": false
+    },
+    "fully_synthetic_fixture": {
+      "definition": "Generated fixture without row-level hash-bound operational anchors.",
+      "allowedUses": [
+        "unit_contract_testing",
+        "negative_path_testing"
+      ],
+      "releaseEvidenceEligible": false
+    },
+    "unsupported_evidence": {
+      "definition": "Evidence with missing provenance, unverifiable transformations, mutable expected values, or an unsupported source contract.",
+      "allowedUses": [],
+      "releaseEvidenceEligible": false
+    }
+  },
+  "releaseReporting": {
+    "separateAuthenticAndSemiSynthetic": true,
+    "silentReplacementForbidden": true,
+    "externallyObservedClaimForSemiSyntheticForbidden": true
+  },
+  "repositoryAnchorCaveat": {
+    "corpus12RecordedSourceSystems": [
+      "synthetic_erp_export",
+      "synthetic_logistics_export",
+      "synthetic_accounting_export"
+    ],
+    "treatmentInPhase7R34": "The six files are immutable repository-frozen operational anchors under the Phase 7R3.4 instruction, but are not relabelled as externally observed authentic evidence.",
+    "debt": "Externally observed provenance is not documented in corpus 1.2.0; release reports must retain this distinction."
+  }
+}

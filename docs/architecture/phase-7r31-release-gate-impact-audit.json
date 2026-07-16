@@ -1,0 +1,48 @@
+{
+  "schemaVersion": "lightbi.phase-7r31-release-gate-impact-audit.v1",
+  "phase": "7R3.1",
+  "before": {"familyCoverage":"1/4","verifiedComparisons":12,"exactMatches":12,"advertisedActions":14},
+  "after": {"familyCoverage":"2/4","verifiedComparisons":20,"exactMatches":20,"mismatches":0,"advertisedActions":30,"runtimeAllowed":30,"executed":30},
+  "regressionMeasurements": {
+    "revenue":"12/12 exact",
+    "mappingPrecision":1,
+    "heldoutCoreSignalRecall":0.9090909090909091,
+    "domainActivationPrecision":1,
+    "advertisedActionExecutionSuccess":1,
+    "falseExecutableActions":0,
+    "falseDecisionSupport":0,
+    "blockedExplanationCompleteness":1
+  },
+  "changedStates": [
+    {"sources":["ops.logistics_may_2026","ops.logistics_june_2026"],"metric":"delivery_count","from":"blocked","to":"conditionally_ready/conditionally_executable","reason":"existing exact shipment identity evidence was previously dropped by global key ambiguity"},
+    {"sources":["fin.accounting_may_2026","fin.accounting_june_2026"],"metric":"gross_profit","from":"M1 blocked by unrelated repeated measure","to":"M1 conditionally_ready; M3 correctly blocked","reason":"bound revenue/cost measures are additive under an exact selected identity; currency and binding blockers remain"}
+  ],
+  "verification": {
+    "phase7r31Targeted": {"testFiles":1,"tests":2,"result":"pass"},
+    "phase7AndR1ToR31": {"testFiles":4,"tests":22,"result":"pass"},
+    "phase5And6Regressions": {"testFiles":12,"tests":39,"result":"pass"},
+    "understandingCore": {"testFiles":69,"tests":312,"result":"pass"},
+    "typescript": {"command":"npx tsc --noEmit -p tsconfig.app.json","diagnostics":0,"result":"pass"},
+    "auditJsonParsing":"pass",
+    "productionLegacyExecutorCalls":0,
+    "productionLegacyImports":"type_only",
+    "diffCheck":"pass",
+    "fullDesktopSuite": {
+      "runs":1,
+      "testFiles":{"total":162,"passed":158,"failed":4},
+      "tests":{"total":1126,"passed":1117,"failed":9},
+      "governedDeterministicFailures":6,
+      "governedTimeoutFailures":3,
+      "unexpectedFailures":0,
+      "phase7r31OwnedFailures":0,
+      "exitStatus":1,
+      "logPath":"/tmp/phase7r31-full-desktop-suite.log",
+      "logSha256":"e67ebc8825a356805f0fae07fc98a71291a5fce89eac7c5d6f56b2371d0f50eb"
+    },
+    "corpusVersion":"1.2.0",
+    "corpusModified":false,
+    "baselineAllowlistSha256":"baa86950582b7d758396abb0c69fdaffcd3c2cbbb22b71dd3bbdb3c0aed1c4f5"
+  },
+  "releaseGate": "fail",
+  "failureReasons": ["required metric-family coverage is 2/4, not 4/4","inventory corpus evidence gap","conditional finance runtime eligibility remains unproved"]
+}

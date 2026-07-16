@@ -304,10 +304,10 @@ describe.sequential("Phase 3A canonical candidate corpus runner", () => {
   });
 
   it("keeps the historical Phase 3A.1 engine-quality and collision baseline machine-verifiable", () => {
-    const phase5m4Correction = JSON.parse(fs.readFileSync(
-      path.join(REPO_ROOT, "docs/architecture/phase-5m4-real-golden-blocker-audit.json"),
+    const phase7r1Correction = JSON.parse(fs.readFileSync(
+      path.join(REPO_ROOT, "docs/architecture/phase-7r1-corpus-regression-audit.json"),
       "utf8",
-    )) as { corrections: { candidateQuality: Record<string, unknown> } };
+    )) as { candidateQuality: Record<string, unknown> };
     const sorted = [...phase3a1Quality.candidateCounts].sort((left, right) => left - right);
     const total = sorted.length;
     const actualQuality = {
@@ -322,7 +322,7 @@ describe.sequential("Phase 3A canonical candidate corpus runner", () => {
       candidateSourceDistribution: phase3a1Quality.sourceDistribution,
     };
     expect(phase3a1Audit.candidateQuality.after).not.toEqual(actualQuality);
-    expect(phase5m4Correction.corrections.candidateQuality).toEqual(actualQuality);
+    expect(phase7r1Correction.candidateQuality).toEqual(actualQuality);
     expect(requiredExpectedCount).toBeGreaterThan(0);
     expect(requiredPresentCount).toBeGreaterThan(0);
     expect(ambiguityExpectedCount).toBeGreaterThan(0);

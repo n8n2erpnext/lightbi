@@ -10,7 +10,13 @@ target/
 
 # Local research fixtures and generated acceptance artifacts
 references/
-sample data/
+sample data/*
+!sample data/Sales_ERP_May_2026.xlsx
+!sample data/Sales_ERP_June_2026.xlsx
+!sample data/Logistics_ERP_May_2026.csv
+!sample data/Logistics_ERP_June_2026.csv
+!sample data/Accounting_ERP_May_2026.csv
+!sample data/Accounting_ERP_June_2026.csv
 ui-audit/
 apps/desktop/ui-audit/
 apps/desktop/test-results/

@@ -1,0 +1,51 @@
+{
+  "schemaVersion": "lightbi.phase-7r2-action-classification-audit.v1",
+  "phase": "7R2",
+  "previousAdvertisedRecords": 28,
+  "currentAdvertisedRunnableActions": 14,
+  "currentExplanationOnlyFromPreviousActions": 14,
+  "stateChanges": {
+    "unchangedRunnable": [
+      {"case":"rev.sales_erp_may_2026","source":"sample data/Sales_ERP_May_2026.xlsx","questionId":"commerce.sales_revenue.over_time","before":"advertised_runnable","after":"advertised_runnable"},
+      {"case":"rev.sales_erp_may_2026","source":"sample data/Sales_ERP_May_2026.xlsx","questionId":"commerce.sales_revenue.by_product","before":"advertised_runnable","after":"advertised_runnable"},
+      {"case":"rev.sales_erp_june_2026","source":"sample data/Sales_ERP_June_2026.xlsx","questionId":"commerce.sales_revenue.over_time","before":"advertised_runnable","after":"advertised_runnable"},
+      {"case":"rev.sales_erp_june_2026","source":"sample data/Sales_ERP_June_2026.xlsx","questionId":"commerce.sales_revenue.by_product","before":"advertised_runnable","after":"advertised_runnable"},
+      {"case":"fin.sales_june_missing_cost","source":"sample data/Sales_ERP_June_2026.xlsx","questionId":"commerce.sales_revenue.over_time","before":"advertised_runnable","after":"advertised_runnable"},
+      {"case":"fin.sales_june_missing_cost","source":"sample data/Sales_ERP_June_2026.xlsx","questionId":"commerce.sales_revenue.by_product","before":"advertised_runnable","after":"advertised_runnable"},
+      {"case":"multi.commerce_may_2026","source":"sample data/Sales_ERP_May_2026.xlsx","questionId":"commerce.sales_revenue.over_time","before":"advertised_runnable","after":"advertised_runnable"},
+      {"case":"multi.commerce_may_2026","source":"sample data/Sales_ERP_May_2026.xlsx","questionId":"commerce.sales_revenue.by_product","before":"advertised_runnable","after":"advertised_runnable"},
+      {"case":"multi.commerce_june_2026","source":"sample data/Sales_ERP_June_2026.xlsx","questionId":"commerce.sales_revenue.over_time","before":"advertised_runnable","after":"advertised_runnable"},
+      {"case":"multi.commerce_june_2026","source":"sample data/Sales_ERP_June_2026.xlsx","questionId":"commerce.sales_revenue.by_product","before":"advertised_runnable","after":"advertised_runnable"},
+      {"case":"multi.sales_period_pair","source":"sample data/Sales_ERP_May_2026.xlsx","questionId":"commerce.sales_revenue.over_time","before":"advertised_runnable","after":"advertised_runnable"},
+      {"case":"multi.sales_period_pair","source":"sample data/Sales_ERP_May_2026.xlsx","questionId":"commerce.sales_revenue.by_product","before":"advertised_runnable","after":"advertised_runnable"},
+      {"case":"multi.sales_period_pair","source":"sample data/Sales_ERP_June_2026.xlsx","questionId":"commerce.sales_revenue.over_time","before":"advertised_runnable","after":"advertised_runnable"},
+      {"case":"multi.sales_period_pair","source":"sample data/Sales_ERP_June_2026.xlsx","questionId":"commerce.sales_revenue.by_product","before":"advertised_runnable","after":"advertised_runnable"}
+    ],
+    "reclassifiedExplanationOnly": [
+      {"case":"rev.sales_erp_may_2026","source":"sample data/Sales_ERP_May_2026.xlsx","questionId":"commerce.transaction_count.summary","before":"advertised_but_runtime_blocked","after":"explanation_only"},
+      {"case":"rev.sales_erp_june_2026","source":"sample data/Sales_ERP_June_2026.xlsx","questionId":"commerce.transaction_count.summary","before":"advertised_but_runtime_blocked","after":"explanation_only"},
+      {"case":"rev.accounting_may_sales_basis","source":"sample data/Accounting_ERP_May_2026.csv","questionId":"commerce.transaction_count.summary","before":"advertised_but_runtime_blocked","after":"explanation_only"},
+      {"case":"fin.accounting_may_2026","source":"sample data/Accounting_ERP_May_2026.csv","questionId":"commerce.transaction_count.summary","before":"advertised_but_runtime_blocked","after":"explanation_only"},
+      {"case":"fin.accounting_june_2026","source":"sample data/Accounting_ERP_June_2026.csv","questionId":"commerce.transaction_count.summary","before":"advertised_but_runtime_blocked","after":"explanation_only"},
+      {"case":"fin.sales_june_missing_cost","source":"sample data/Sales_ERP_June_2026.xlsx","questionId":"commerce.transaction_count.summary","before":"advertised_but_runtime_blocked","after":"explanation_only"},
+      {"case":"multi.commerce_may_2026","source":"sample data/Sales_ERP_May_2026.xlsx","questionId":"commerce.transaction_count.summary","before":"advertised_but_runtime_blocked","after":"explanation_only"},
+      {"case":"multi.commerce_may_2026","source":"sample data/Accounting_ERP_May_2026.csv","questionId":"commerce.transaction_count.summary","before":"advertised_but_runtime_blocked","after":"explanation_only"},
+      {"case":"multi.commerce_june_2026","source":"sample data/Sales_ERP_June_2026.xlsx","questionId":"commerce.transaction_count.summary","before":"advertised_but_runtime_blocked","after":"explanation_only"},
+      {"case":"multi.commerce_june_2026","source":"sample data/Accounting_ERP_June_2026.csv","questionId":"commerce.transaction_count.summary","before":"advertised_but_runtime_blocked","after":"explanation_only"},
+      {"case":"multi.sales_period_pair","source":"sample data/Sales_ERP_May_2026.xlsx","questionId":"commerce.transaction_count.summary","before":"advertised_but_runtime_blocked","after":"explanation_only"},
+      {"case":"multi.sales_period_pair","source":"sample data/Sales_ERP_June_2026.xlsx","questionId":"commerce.transaction_count.summary","before":"advertised_but_runtime_blocked","after":"explanation_only"},
+      {"case":"multi.accounting_period_pair","source":"sample data/Accounting_ERP_May_2026.csv","questionId":"commerce.transaction_count.summary","before":"advertised_but_runtime_blocked","after":"explanation_only"},
+      {"case":"multi.accounting_period_pair","source":"sample data/Accounting_ERP_June_2026.csv","questionId":"commerce.transaction_count.summary","before":"advertised_but_runtime_blocked","after":"explanation_only"}
+    ]
+  },
+  "invariants": {
+    "advertisedRunnableImpliesRuntimePreflightAllowed": true,
+    "explanationOnlyExcludedFromAdvertisedActions": true,
+    "blockedActionsRetainBlockersRemediationAndCaveats": true,
+    "maxDefaultQuestions": 5,
+    "silentSumOrCountFallback": false,
+    "falseExecutableActions": 0,
+    "decisionUseAuthorized": false,
+    "homeAndInvestigationUseCanonicalClassification": true
+  }
+}

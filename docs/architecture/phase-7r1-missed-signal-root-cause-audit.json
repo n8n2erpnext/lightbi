@@ -1,0 +1,117 @@
+{
+  "schemaVersion": "lightbi.phase-7r1-missed-signal-root-cause-audit.v1",
+  "phase": "7R1",
+  "corpusVersion": "1.2.0",
+  "baselineMissCount": 9,
+  "remainingMissCount": 2,
+  "records": [
+    {
+      "sampleId": "rev.superstore_orders",
+      "physicalColumn": "Order Date",
+      "expectedSignal": "time_period",
+      "producedCandidates": ["report_date", "time_period"],
+      "baselineFinalResolution": "ambiguous",
+      "evidencePresent": ["exact date-role header evidence", "Excel serial date physical evidence"],
+      "blockerOrRejectionRule": "Excel serial dates were evaluated as numeric before date compatibility",
+      "rootCauseClass": "physical_profile_evidence_missing",
+      "phase7r1Disposition": "resolved_probable"
+    },
+    {
+      "sampleId": "rev.superstore_orders",
+      "physicalColumn": "Quantity",
+      "expectedSignal": "quantity",
+      "producedCandidates": ["quantity", "stock_qty"],
+      "baselineFinalResolution": "ambiguous",
+      "evidencePresent": ["exact quantity header", "numeric shape", "physical compatibility"],
+      "blockerOrRejectionRule": "Both generic quantity and stock quantity have equivalent independent evidence",
+      "rootCauseClass": "generic_collision_overblocking",
+      "phase7r1Disposition": "remains_ambiguous_precision_debt"
+    },
+    {
+      "sampleId": "rev.accounting_may_sales_basis",
+      "physicalColumn": "InvoiceDate",
+      "expectedSignal": "time_period",
+      "producedCandidates": ["time_period"],
+      "baselineFinalResolution": "unknown",
+      "evidencePresent": ["date suffix token", "date physical evidence"],
+      "blockerOrRejectionRule": "A role-prefixed date header had only weak token-containment evidence",
+      "rootCauseClass": "alias_or_normalization_gap",
+      "phase7r1Disposition": "resolved_probable"
+    },
+    {
+      "sampleId": "inv.provincial_aging_20241228",
+      "physicalColumn": "Mã phiếu gửi",
+      "expectedSignal": "shipment",
+      "producedCandidates": [],
+      "baselineFinalResolution": "unknown",
+      "evidencePresent": ["high-uniqueness identifier values", "document-reference header composition"],
+      "blockerOrRejectionRule": "Generic shipment document-reference composition was absent",
+      "rootCauseClass": "alias_or_normalization_gap",
+      "phase7r1Disposition": "resolved_confirmed"
+    },
+    {
+      "sampleId": "inv.hublan_expected_stock",
+      "physicalColumn": "Mã Phiếu Gửi",
+      "expectedSignal": "shipment",
+      "producedCandidates": ["bin_location"],
+      "baselineFinalResolution": "unknown",
+      "evidencePresent": ["high-uniqueness identifier values", "numeric identifier shape", "document-reference header composition"],
+      "blockerOrRejectionRule": "Shipment composition was absent and irrelevant alternate-parser failures were treated as identifier conflicts",
+      "rootCauseClass": "alias_or_normalization_gap",
+      "phase7r1Disposition": "resolved_confirmed"
+    },
+    {
+      "sampleId": "inv.logistics_june_item_flow",
+      "physicalColumn": "Qty",
+      "expectedSignal": "quantity",
+      "producedCandidates": ["quantity", "stock_qty"],
+      "baselineFinalResolution": "ambiguous",
+      "evidencePresent": ["quantity alias", "numeric shape", "physical compatibility"],
+      "blockerOrRejectionRule": "Both generic quantity and stock quantity have equivalent independent evidence",
+      "rootCauseClass": "generic_collision_overblocking",
+      "phase7r1Disposition": "remains_ambiguous_precision_debt"
+    },
+    {
+      "sampleId": "fin.accounting_june_2026",
+      "physicalColumn": "InvoiceDate",
+      "expectedSignal": "time_period",
+      "producedCandidates": ["time_period"],
+      "baselineFinalResolution": "unknown",
+      "evidencePresent": ["date suffix token", "date physical evidence"],
+      "blockerOrRejectionRule": "A role-prefixed date header had only weak token-containment evidence",
+      "rootCauseClass": "alias_or_normalization_gap",
+      "phase7r1Disposition": "resolved_probable"
+    },
+    {
+      "sampleId": "fin.accounting_june_2026",
+      "physicalColumn": "COGS_Debit",
+      "expectedSignal": "total_cost",
+      "producedCandidates": ["total_cost"],
+      "baselineFinalResolution": "ambiguous",
+      "evidencePresent": ["COGS measure head", "numeric money-compatible values"],
+      "blockerOrRejectionRule": "Accounting debit qualifier reduced the measure head to weak token evidence",
+      "rootCauseClass": "alias_or_normalization_gap",
+      "phase7r1Disposition": "resolved_probable"
+    },
+    {
+      "sampleId": "fin.superstore_profit",
+      "physicalColumn": "Order Date",
+      "expectedSignal": "time_period",
+      "producedCandidates": ["report_date", "time_period"],
+      "baselineFinalResolution": "ambiguous",
+      "evidencePresent": ["exact date-role header evidence", "Excel serial date physical evidence"],
+      "blockerOrRejectionRule": "Excel serial dates were evaluated as numeric before date compatibility",
+      "rootCauseClass": "physical_profile_evidence_missing",
+      "phase7r1Disposition": "resolved_probable"
+    }
+  ],
+  "precisionDefectAudit": {
+    "physicalColumn": "Ngưỡng tồn",
+    "baselineFalseMapping": "stock_status",
+    "expectedSignal": "stock_threshold",
+    "rootCauseClass": "resolver_threshold_or_rule_defect",
+    "genericFinding": "Categorical shape incorrectly dominated a more specific threshold header without status value evidence.",
+    "phase7r1Disposition": "resolved_to_stock_threshold",
+    "newConfidentFalseMappings": 0
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "schemaVersion": "lightbi.phase7r35-canonical-path-audit.v1",
+  "phase": "7R3.5",
+  "status": "completed_with_blocked_families",
+  "sourceCount": 12,
+  "targetComparisonCount": 8,
+  "relationshipBundleCount": 3,
+  "stages": [
+    "physical_profile",
+    "semantic_resolution",
+    "grain_resolution",
+    "relationship_resolution",
+    "readiness",
+    "domain_activation",
+    "metric_preflight",
+    "question_action_generation",
+    "runtime_preflight",
+    "governed_query_planning",
+    "local_duckdb_execution",
+    "post_execution_oracle_comparison"
+  ],
+  "localDuckDBBoundary": "actual_wasm_duckdb",
+  "directOracleExecution": false,
+  "familyStates": {
+    "revenue": "executed_exact",
+    "delivery_operations": "executed_exact",
+    "conditional_gross_profit": "blocked_at_metric_preflight",
+    "inventory_on_hand": "blocked_at_metric_preflight"
+  },
+  "unchangedProductionPath": true,
+  "decisionUseAuthorized": false,
+  "productionWiring": { "executed": false }
+}

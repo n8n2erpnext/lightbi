@@ -1,0 +1,69 @@
+{
+  "schemaVersion": "lightbi.phase-7r1-semantic-correction-audit.v1",
+  "phase": "7R1",
+  "corpusVersion": "1.2.0",
+  "corrections": [
+    {
+      "id": "P7R1-EXCEL-SERIAL-DATE-COMPATIBILITY",
+      "layer": "semantic_candidate_generation",
+      "genericRule": "Evaluate excel_serial_date against date-compatible registry types before numeric types.",
+      "independentProof": ["synthetic generic date fixture", "date-role collision fixture", "input-order determinism"],
+      "resolvedCoreOccurrences": 2
+    },
+    {
+      "id": "P7R1-GENERIC-TIME-SUFFIX",
+      "layer": "semantic_candidate_generation",
+      "genericRule": "Recognize a multi-token header ending in an exact governed date/month/time/year surface as time_period evidence.",
+      "independentProof": ["PostingDate positive fixture", "Candidate negative fixture", "Due Date collision fixture"],
+      "resolvedCoreOccurrences": 2
+    },
+    {
+      "id": "P7R1-ACCOUNTING-MEASURE-QUALIFIER",
+      "layer": "semantic_candidate_generation",
+      "genericRule": "Preserve an exact governed money-measure head when remaining tokens are bounded accounting amount qualifiers.",
+      "independentProof": ["COGS_Credit positive fixture", "Debit Account negative fixture", "identifier-versus-measure fixture"],
+      "resolvedCoreOccurrences": 1
+    },
+    {
+      "id": "P7R1-SHIPMENT-DOCUMENT-REFERENCE",
+      "layer": "semantic_candidate_generation",
+      "genericRule": "Recognize bounded Vietnamese and English shipment document-reference compositions and accept numeric or string identifiers.",
+      "independentProof": ["Consignment Note ID positive fixture", "Receipt Note ID negative fixture", "Shipment Status collision fixture"],
+      "resolvedCoreOccurrences": 2
+    },
+    {
+      "id": "P7R1-IDENTIFIER-PARSER-RELEVANCE",
+      "layer": "semantic_candidate_generation",
+      "genericRule": "For identifiers, only parse failures belonging to the native physical representation are material; mixed and malformed evidence remains material.",
+      "independentProof": ["numeric shipment identifier fixture", "unrelated document negative fixture", "mixed-type conflict preservation"],
+      "resolvedCoreOccurrences": 0
+    },
+    {
+      "id": "P7R1-THRESHOLD-STATUS-SPECIFICITY",
+      "layer": "semantic_resolution",
+      "genericRule": "A specific threshold candidate dominates a colliding status candidate unless status value aliases or patterns provide independent semantic evidence.",
+      "independentProof": ["Stock Threshold positive fixture", "Stock Status negative fixture", "Threshold Status collision fixture"],
+      "resolvedCoreOccurrences": 0,
+      "removedFalseMappings": 1
+    }
+  ],
+  "explicitNonCorrections": [
+    {
+      "signal": "quantity",
+      "reason": "Generic Quantity/Qty remains indistinguishable from the existing stock_qty alias contract without new independent context. Abstention preserves grain safety and precision."
+    }
+  ],
+  "prohibitedRuntimeInputs": {
+    "filename": false,
+    "sampleId": false,
+    "sourceHash": false,
+    "exactRowCount": false,
+    "expectedAnswer": false,
+    "customerValue": false
+  },
+  "productionFileHashes": {
+    "apps/desktop/src/lib/semantic-registry.ts": "df714442943dc7424304926675a8186056b4bf6a7f3cbea986f96d83756d9c18",
+    "apps/desktop/src/lib/understanding-core/semantic-candidate-engine.ts": "3f4e7b4aa14e83d86817f3887432fab8be1cacfd937676116c194fa21e3d6321",
+    "apps/desktop/src/lib/understanding-core/semantic-resolver.ts": "e337052611bdb155b144da319553bd0dd37d93b9b3ca36a17e67ed9ae5433659"
+  }
+}

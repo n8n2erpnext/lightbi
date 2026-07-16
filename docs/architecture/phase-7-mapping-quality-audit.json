@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "lightbi.phase-7-mapping-quality-audit.v1",
+  "phase": "7",
+  "corpusVersion": "1.2.0",
+  "scope": { "cases": 30, "sourceOccurrences": 37 },
+  "method": {
+    "precisionDenominator": "adjudicated confirmed/probable selections only",
+    "unadjudicatedSelectionsExcludedFromPrecision": true,
+    "unknownIsIncorrectOnlyWhenRequiredByGroundTruth": true,
+    "evaluationGroupsUsedForTuning": []
+  },
+  "confidenceBands": {
+    "confirmed": { "correct": 25, "incorrect": 1, "unadjudicated": 20, "precision": 0.9615384615 },
+    "probable": { "correct": 76, "incorrect": 0, "unadjudicated": 210, "precision": 1.0 },
+    "combinedHighConfidence": { "correct": 101, "incorrect": 1, "precision": 0.9901960784, "threshold": 0.95, "gate": "pass" }
+  },
+  "recall": {
+    "allRequiredMappings": 0.671875,
+    "heldoutCoreMvpSignals": { "value": 0.5909090909, "threshold": 0.9, "gate": "fail" }
+  },
+  "ambiguityAndUnknownRate": 0.5571808511,
+  "byGroup": {
+    "golden": { "cases": 8, "precision": 1.0, "requiredMappingRecall": 0.6190476190 },
+    "holdout": { "cases": 12, "precision": 0.9767441860, "requiredMappingRecall": 0.7 },
+    "adversarial": { "cases": 5, "precision": 1.0, "requiredMappingRecall": 0.4545454545 },
+    "multi_file": { "cases": 5, "precision": 1.0, "requiredMappingRecall": 0.8666666667 }
+  },
+  "mismatches": [
+    {
+      "sampleId": "inv.provincial_aging_20241228",
+      "physicalColumn": "Ngưỡng tồn",
+      "selectedSignal": "stock_status",
+      "selectedState": "confirmed",
+      "owningLayer": "semantic_precision_defect"
+    }
+  ],
+  "blockers": [
+    { "classification": "signal_recall_defect", "reason": "Held-out core signal recall is 59.09%, below 90%." }
+  ],
+  "observationSha256": "58e998a1dc8017d4478bcbd9a8f87146d9d8e38aea0efe10f3b2593527d368ba"
+}

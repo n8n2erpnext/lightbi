@@ -1,0 +1,144 @@
+{
+  "schemaVersion": "lightbi.phase-7r33-inventory-snapshot-evidence-audit.v1",
+  "phase": "7R3.3",
+  "requiredEvidence": {
+    "itemIdentity": true,
+    "quantityOnHandOrClosingBalance": true,
+    "explicitAsOfOrGovernedPeriod": true,
+    "warehouseWhereApplicable": true,
+    "governedSnapshotGrain": true,
+    "independentFrozenTruth": true
+  },
+  "candidates": [
+    {
+      "file": "PLU ALL FRESH 22.03.2021.xlsx",
+      "sheet": "DATA",
+      "rows": 1219,
+      "itemIdentityDistinct": 1219,
+      "quantityColumns": [],
+      "asOfColumns": [],
+      "classification": "threshold_or_master_data_only",
+      "validInventorySnapshotCandidate": false
+    },
+    {
+      "file": "Bao_cao_chi_tiet_Ton_kho_vung_tinh_28-12-2024.xlsx",
+      "sheet": "TonTaiKhoVungChiTiet",
+      "rows": 6386,
+      "parcelIdentityDistinct": 6386,
+      "itemColumns": [],
+      "quantityColumns": [],
+      "reportTimes": [
+        "09:12 28-12-2024"
+      ],
+      "classification": "backlog_or_aging_only",
+      "validInventorySnapshotCandidate": false
+    },
+    {
+      "file": "TỒN DỰ KIẾN HUBLAN.xlsx",
+      "sheet": "TonChuaKetNoi",
+      "rows": 3612,
+      "parcelIdentityDistinct": 3612,
+      "itemColumns": [],
+      "quantityColumns": [
+        "Trọng lượng"
+      ],
+      "reportDates": [
+        "2025-02-07"
+      ],
+      "classification": "backlog_or_aging_only",
+      "validInventorySnapshotCandidate": false
+    },
+    {
+      "file": "BHX_PHIEUXUAT.xlsx",
+      "sheet": "Sheet1",
+      "rows": 14862,
+      "documentIdentityDistinct": 14862,
+      "itemColumns": [],
+      "quantityColumns": [],
+      "dateRange": [
+        "2021-09-18",
+        "2021-09-20"
+      ],
+      "classification": "movement_only",
+      "validInventorySnapshotCandidate": false
+    },
+    {
+      "file": "Logistics_ERP_May_2026.csv",
+      "sheet": "Sheet1",
+      "rows": 1500,
+      "itemIdentityDistinct": 545,
+      "quantityTotal": 3050,
+      "shipmentIdentityDistinct": 1500,
+      "classification": "movement_only",
+      "validInventorySnapshotCandidate": false
+    },
+    {
+      "file": "Logistics_ERP_June_2026.csv",
+      "sheet": "Sheet1",
+      "rows": 1500,
+      "itemIdentityDistinct": 542,
+      "quantityTotal": 2964,
+      "shipmentIdentityDistinct": 1500,
+      "classification": "movement_only",
+      "validInventorySnapshotCandidate": false
+    },
+    {
+      "file": "Accounting_ERP_May_2026.csv",
+      "sheet": "Sheet1",
+      "rows": 1500,
+      "itemIdentityDistinct": 545,
+      "inventoryCreditTotal": 19898175000,
+      "classification": "movement_only",
+      "validInventorySnapshotCandidate": false
+    },
+    {
+      "file": "Accounting_ERP_June_2026.csv",
+      "sheet": "Sheet1",
+      "rows": 1500,
+      "itemIdentityDistinct": 542,
+      "inventoryCreditTotal": 17702899000,
+      "classification": "movement_only",
+      "validInventorySnapshotCandidate": false
+    },
+    {
+      "file": "Sales_ERP_May_2026.xlsx and Sales_ERP_June_2026.xlsx",
+      "classification": "movement_only",
+      "reason": "Qty is sold order quantity, not on-hand balance.",
+      "validInventorySnapshotCandidate": false
+    },
+    {
+      "file": "DATA_XUAT.xlsx",
+      "classification": "movement_only",
+      "reason": "Shipment processing/load weight and timeliness rows are movements.",
+      "validInventorySnapshotCandidate": false
+    },
+    {
+      "file": "bcctnhapTTKT_19122024.xlsx, bcctnhapTTKT_23122024.xlsx, bcctnhapTTKT_24122024.xlsx",
+      "classification": "movement_only",
+      "reason": "Trip/load handoff counts and weights are operational events, not item stock.",
+      "validInventorySnapshotCandidate": false
+    },
+    {
+      "file": "Sample - Superstore for Tableau 9.x versions.xls",
+      "classification": "movement_only",
+      "reason": "Quantity is sold order-line quantity; no as-of stock balance.",
+      "validInventorySnapshotCandidate": false
+    },
+    {
+      "file": "motodetail.xlsx",
+      "classification": "unrelated",
+      "reason": "Order/charge detail has no item on-hand balance or snapshot basis.",
+      "validInventorySnapshotCandidate": false
+    }
+  ],
+  "validCandidates": [],
+  "safetyChecks": {
+    "movementQuantityRelabelledAsOnHand": false,
+    "shipmentBacklogRelabelledAsOnHand": false,
+    "thresholdRelabelledAsOnHand": false,
+    "inventoryAccountingCreditRelabelledAsQuantity": false,
+    "multipleSnapshotsSummed": false,
+    "asOfInvented": false
+  },
+  "conclusion": "No authentic source contains the complete item + on-hand balance + as-of + governed snapshot-grain contract."
+}

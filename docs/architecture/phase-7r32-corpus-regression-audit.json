@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "lightbi.phase-7r32-corpus-regression-audit.v1",
+  "phase": "7R3.2",
+  "corpusVersion": "1.2.0",
+  "corpusModified": false,
+  "measurements": {
+    "revenueComparisons": {"matched":12,"total":12,"mismatches":0},
+    "deliveryComparisons": {"matched":8,"total":8,"mismatches":0},
+    "grossProfitGovernedComparisons": {"matched":0,"total":0,"mismatches":0},
+    "allGovernedMetricComparisons": {"matched":20,"total":20,"mismatches":0,"correctness":1},
+    "familyCoverage": {"covered":2,"required":4,"families":["revenue","delivery_operations"]},
+    "advertisedActionExecution": {"executed":30,"advertised":30,"rate":1},
+    "falseExecutableActions": 0,
+    "falseDecisionSupportCases": 0,
+    "blockedExplanationCompleteness": {"explained":340,"blocked":340,"rate":1},
+    "mappingPrecision": 1,
+    "heldoutCoreRecall": 0.9090909090909091,
+    "domainActivationPrecision": 1
+  },
+  "changedGrossProfitStates": [
+    {"caseId":"fin.accounting_may_2026","m1":"conditionally_ready unchanged","m2":"explanation_only unchanged","m3":"ambiguous revenue blocker removed; currency and conditional-permission blockers retained"},
+    {"caseId":"fin.accounting_june_2026","m1":"conditionally_ready unchanged","m2":"explanation_only unchanged","m3":"ambiguous revenue blocker removed; currency and conditional-permission blockers retained"}
+  ],
+  "inventoryStatus": "authentic_snapshot_and_frozen_truth_unavailable",
+  "regressionGate": "pass"
+}

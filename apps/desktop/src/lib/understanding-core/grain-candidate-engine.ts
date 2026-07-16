@@ -5,6 +5,7 @@ import { SEMANTIC_RESOLUTION_POLICY_VERSION } from "./semantic-resolution-contra
 import { semanticResolutionPolicyHash } from "./semantic-resolution-policy";
 import { GRAIN_CANDIDATE_ARTIFACT_VERSION,type AggregationRiskV1,type ColumnRoleObservationV1,type CompositeKeyCandidateV1,type GrainCandidateArtifactV1,type GrainCandidateDiagnosticsV1,type GrainCandidateV1,type GrainDebtV1,type GrainEvidenceFamily,type GrainEvidenceV1,type GrainLimitationV1,type IdentityColumnDecisionV1,type IdentityEvidenceLevel,type MeasureBehaviorV1,type ParentIdentityCandidateV1,type RowIdentityCandidateV1,type RowUnitClass,type TemporalBehaviorV1,type TemporalRole } from "./grain-candidate-contracts";
 import { GRAIN_CANDIDATE_POLICY,grainCandidatePolicyHash } from "./grain-candidate-policy";
+import { normalizeSemanticSurface } from "./semantic-candidate-engine";
 
 const nullish=(value:unknown)=>value==null||(typeof value==="string"&&value.trim()==="");
 const valueKey=(value:unknown)=>value instanceof Date?`date:${value.toISOString()}`:`${typeof value}:${String(value)}`;
@@ -51,13 +52,17 @@ function physicalIdentityEvidence(column:DatasetUnderstandingArtifactV1["sourceP
 }
 function roleObservations(physical:DatasetUnderstandingArtifactV1,resolution:SemanticResolutionArtifactV1,rows:readonly(readonly unknown[])[]){
   const decisions:IdentityColumnDecisionV1[]=[];
+  const explicitSnapshotInventory=resolution.columns.some((column)=>column.selectedCandidateId==="stock_qty"&&(column.finalState==="confirmed"||column.finalState==="probable"))
+    &&resolution.columns.some((column)=>column.selectedCandidateId==="time_period"&&(column.finalState==="confirmed"||column.finalState==="probable")&&normalizeSemanticSurface(column.physicalColumn).includes("as of"));
   const roles:ColumnRoleObservationV1[]=physical.sourceProfile.columns.map((column,index)=>{
     const semantic=semanticInfo(resolution,index),technical=resolution.columns[index].finalState==="technical"||column.technicalColumnEvidence.length>0;
     const stable=!column.physicalTypeCandidates.some((type)=>type.type==="mixed"||type.type==="unknown");
     const resolved=semantic.state==="confirmed"||semantic.state==="probable",resolvedIdentifier=resolved&&semantic.role==="identifier";
+    const normalizedHeader=normalizeSemanticSurface(column.physicalColumnName),headerTokens=new Set(normalizedHeader.split(" "));
+    const resolvedQualifiedDimension=explicitSnapshotInventory&&resolved&&semantic.candidateId==="warehouse"&&semantic.role==="dimension"&&["id","code","no","number"].some((token)=>headerTokens.has(token));
     const ambiguousIdentifier=semantic.state==="ambiguous"&&semantic.identifierAlternatives.length>0;
     const physicalIdentity=!resolvedIdentifier&&!ambiguousIdentifier&&semantic.state==="unknown"&&semantic.column.candidateTraces.length===0?physicalIdentityEvidence(column,rows,semantic):{eligible:false,stability:null,reasons:[]};
-    const identityEvidenceLevel:IdentityEvidenceLevel=resolvedIdentifier?"resolved_semantic":ambiguousIdentifier?"ambiguous_semantic":physicalIdentity.eligible?"unresolved_physical":"none";
+    const identityEvidenceLevel:IdentityEvidenceLevel=resolvedIdentifier||resolvedQualifiedDimension?"resolved_semantic":ambiguousIdentifier?"ambiguous_semantic":physicalIdentity.eligible?"unresolved_physical":"none";
     const measure=resolved&&(semantic.role==="measure"||semantic.type==="measure"),temporal=resolved&&(semantic.role==="time"||semantic.type==="time"),numeric=column.numericSummary!=null;
     const identityEligible=!technical&&stable&&identityEvidenceLevel!=="none"&&column.nonNullCount>0;
     const limitations=[...new Set([...column.limitations,...column.issues.map((issue)=>issue.code),...(semantic.state==="probable"?["probable_semantic_dependency"]:[]),...(ambiguousIdentifier?["ambiguous_identifier_alternative"]:[]),...(physicalIdentity.eligible?["unresolved_physical_identity_hypothesis","semantic_coverage_dependency"]:[]),...(["ambiguous","unknown"].includes(semantic.state)?["semantic_role_unresolved"]:[])])].sort();
@@ -81,11 +86,11 @@ function parentCandidates(roles:ColumnRoleObservationV1[],rows:readonly(readonly
 function temporalBehaviors(roles:ColumnRoleObservationV1[],physical:DatasetUnderstandingArtifactV1,rows:readonly(readonly unknown[])[]):TemporalBehaviorV1[]{
   const result:TemporalBehaviorV1[]=[];
   for(const role of roles.filter((item)=>item.temporalCandidate)){
-    const id=(role.semanticCandidateId??"").toLowerCase(),header=role.physicalColumn.toLowerCase(),column=physical.sourceProfile.columns[role.sourceColumnIndex];
+    const id=normalizeSemanticSurface(role.semanticCandidateId??""),header=normalizeSemanticSurface(role.physicalColumn),column=physical.sourceProfile.columns[role.sourceColumnIndex];
     let temporal:TemporalRole="unresolved_temporal_basis";
     if(/start|begin|from|effective/.test(id)||/start|begin|from|effective/.test(header))temporal="interval_start";
     else if(/end|expir|until|finish/.test(id)||/end|until|finish/.test(header))temporal="interval_end";
-    else if(/snapshot|as_of/.test(id)||/snapshot|as of/.test(header))temporal="snapshot_time";
+    else if(/snapshot|as of/.test(id)||/snapshot|as of/.test(header))temporal="snapshot_time";
     else if(column.dateTimeSummary&&(role.semanticState==="confirmed"||role.semanticState==="probable")&&/date|time|timestamp|ngay/.test(header)&&!/period|month|year|report|snapshot|as.?of/.test(header))temporal="event_time";
     else if(/period|month|year|report/.test(id)||/period|month|year|report/.test(header))temporal="reporting_period";
     else if(role.semanticState==="confirmed"||role.semanticState==="probable")temporal="event_time";

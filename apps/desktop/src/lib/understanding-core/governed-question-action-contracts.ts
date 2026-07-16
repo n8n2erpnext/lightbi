@@ -11,7 +11,7 @@ export type GovernedTimeRequirementV1 = "not_required" | "event_or_period" | "po
 export type QuestionActionBlockerV1 = {
   code: string;
   severity: "material" | "critical";
-  source: "policy" | "integrity" | "domain_activation" | "metric_preflight" | "dimension" | "time_basis";
+  source: "policy" | "integrity" | "domain_activation" | "metric_preflight" | "dimension" | "time_basis" | "runtime_preflight";
   references: string[];
 };
 

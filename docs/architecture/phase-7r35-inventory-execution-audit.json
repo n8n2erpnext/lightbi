@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "lightbi.phase7r35-inventory-execution-audit.v1",
+  "phase": "7R3.5",
+  "status": "failed_not_executed",
+  "requiredOperator": "governed_point_in_time_snapshot_sum",
+  "expectedSnapshots": {
+    "2026-05-31": 211067,
+    "2026-06-30": 378041
+  },
+  "declaredUom": "EA",
+  "declaredAsOfDates": ["2026-05-31", "2026-06-30"],
+  "semanticEvidenceObserved": {
+    "AsOfDate": "time_period",
+    "Product": "product",
+    "Category": "category",
+    "UOM": "uom",
+    "ReceivedQuantity": "received_qty",
+    "SoldQuantity": "sold_qty",
+    "ItemID": null,
+    "WarehouseID": null,
+    "QuantityOnHand": null
+  },
+  "may": {
+    "metricPreflightState": "blocked",
+    "blockers": [
+      "inventory_snapshot_as_of_basis_required",
+      "missing_semantic_requirement:inventory_snapshot_quantity"
+    ],
+    "advertisedActions": 0,
+    "executedActions": 0
+  },
+  "june": {
+    "metricPreflightState": "blocked",
+    "blockers": [
+      "inventory_snapshot_as_of_basis_required",
+      "missing_semantic_requirement:inventory_snapshot_quantity"
+    ],
+    "advertisedActions": 0,
+    "executedActions": 0
+  },
+  "perItemOracleCounts": { "may": 545, "june": 591 },
+  "governedVisiblePerItemCounts": { "may": 0, "june": 0 },
+  "itemWarehouseOracleAvailable": false,
+  "itemWarehouseBalanceComparisonComplete": false,
+  "duplicateSnapshotIdentitiesFromIndependentOracle": 0,
+  "negativeStockRowsFromIndependentOracle": 0,
+  "mayToJuneContinuityFromIndependentOracle": true,
+  "engineMetricCorrectnessEstablished": false,
+  "owningLayer": "semantic_resolution_and_metric_preflight",
+  "runtimeGuardWeakened": false,
+  "decisionUseAuthorized": false,
+  "productionWiring": { "executed": false }
+}

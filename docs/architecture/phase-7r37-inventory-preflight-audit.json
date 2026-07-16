@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "lightbi.phase-7r37-inventory-preflight-audit.v1",
+  "phase": "7R3.7",
+  "status": "pass",
+  "metricId": "inventory_on_hand",
+  "operator": "governed_point_in_time_snapshot_sum",
+  "sources": [
+    {"sourceId":"derived.inventory_snapshot_may","M1":"conditionally_ready","M2AdvertisedActions":4,"M3Passes":4,"asOf":"2026-05-31","uom":"EA","blockers":[]},
+    {"sourceId":"derived.inventory_snapshot_june","M1":"conditionally_ready","M2AdvertisedActions":4,"M3Passes":4,"asOf":"2026-06-30","uom":"EA","blockers":[]}
+  ],
+  "lenses": ["inventory total at as-of", "inventory by item at as-of", "inventory by warehouse at as-of", "exact item and warehouse verification grain"],
+  "blockedQuestionsRetain": ["blocker", "evidence", "limitation", "remediation"],
+  "falseExecutableActions": 0
+}

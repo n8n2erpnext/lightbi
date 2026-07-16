@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "lightbi.phase-7r37-inventory-execution-audit.v1",
+  "phase": "7R3.7",
+  "status": "pass",
+  "engine": "actual_local_duckdb",
+  "operator": "governed_point_in_time_snapshot_sum",
+  "executions": [
+    {"sourceId":"derived.inventory_snapshot_may","sourceReference":"source:92d32c8d930a2169f77c9bc23df07e34ed11cc1220a0e5c17d839836f23841b3","artifactIdentity":"metric-plan:711f156126703c6092695cad83172ae387e771ab1ed065ff6c070fb9bf6af402","quantityBinding":"QuantityOnHand","itemBinding":"ItemID","warehouseBinding":"WarehouseID","asOfBasis":"2026-05-31","uom":"EA","expected":211067,"actual":211067,"comparison":"exact_match","decisionUseAuthorized":false,"productionWiring":{"executed":false}},
+    {"sourceId":"derived.inventory_snapshot_june","sourceReference":"source:ddb422c0b70dad5cf61dc6bea9e24639c6bc5556f7796de9820b41b82c77afca","artifactIdentity":"metric-plan:6c4da64c5ca5495eb7b6ffd9603a1ce6eac7cb99e29ec0bbac86fe46af6621c2","quantityBinding":"QuantityOnHand","itemBinding":"ItemID","warehouseBinding":"WarehouseID","asOfBasis":"2026-06-30","uom":"EA","expected":378041,"actual":378041,"comparison":"exact_match","decisionUseAuthorized":false,"productionWiring":{"executed":false}}
+  ],
+  "periodsCombined": false,
+  "silentFallbackUsed": false,
+  "freeFormSqlAuthority": false
+}

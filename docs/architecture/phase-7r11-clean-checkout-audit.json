@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "lightbi.phase-7r11-clean-checkout-audit.v1",
+  "phase": "7R1.1",
+  "head": "522c019623540581353d6668077ee0ab4395cec6",
+  "exactPhase6B2PlusPhase7R1CandidateCommitted": false,
+  "evidence": {
+    "trackedCandidateDiffPresent": true,
+    "phase7EvaluatorCommitted": false,
+    "phase7R1TestCommitted": false,
+    "sampleDataTrackedFileCount": 0,
+    "requiredSampleDataIgnoredByGit": true,
+    "candidatePatchSha256": "0a0c2afcf816e4dc770443ab4917d1a29bfc813bd132191e8039df84d7c56ccd",
+    "lockfileSha256": "3a251c611b36675d265690f13e2144735774947cfefe4369847bac26cf9d7f92"
+  },
+  "cleanHeadReconstruction": {
+    "detachedWorktreeCreated": true,
+    "offlineFrozenInstall": "pass_with_nonblocking_arrow2csv_bin_warnings",
+    "phase7EvaluationBeforeExternalCorpus": "fail",
+    "failure": "PHASE_7_REQUIRED_SOURCE_MISSING:sample data/Sales_ERP_May_2026.xlsx",
+    "repositoryTypeScriptDiagnostics": 0
+  },
+  "candidatePlusExternalCorpusReconstruction": {
+    "trackedPatchApplied": true,
+    "evaluationFilesCopied": true,
+    "ignoredCorpusCopiedFromPrimaryWorktree": true,
+    "phase7Evaluation": "pass",
+    "normalizedOutputsEqual": true,
+    "normalizedObservationSha256": "01a532c9f5aaa59e969bbcdcdbb90c504634bd6401c144fa79b9075754671ade",
+    "interpretation": "This proves patch-level reproducibility only. It cannot satisfy clean checkout because both candidate artifacts and required corpus files were supplied outside committed HEAD."
+  },
+  "blockers": [
+    {"layer": "release_packaging", "classification": "clean_machine_reproducibility_defect", "reason": "The exact Phase 6B.2 plus Phase 7R1 candidate is absent from committed HEAD."},
+    {"layer": "corpus_packaging", "classification": "clean_machine_reproducibility_defect", "reason": "Required Phase 7 sample files are ignored and absent from a clean checkout."}
+  ],
+  "commitCreatedToPassAudit": false,
+  "gate": "fail"
+}

@@ -78,7 +78,7 @@ describe.sequential("Phase 3B1 governed corpus evidence aggregation", () => {
       }
     }
     expect(samples).toHaveLength(30);
-    expect(debts.filter((item) => item.reasonCode === "required_candidate_absent")).toHaveLength(4);
+    expect(debts.filter((item) => item.reasonCode === "required_candidate_absent")).toHaveLength(2);
     expect(debts.filter((item) => item.reasonCode === "contextual_candidate_absent")).toHaveLength(10);
     expect(observations).toBeGreaterThan(0); expect(profiles).toBeGreaterThan(0);
     expect(Object.values(familyCounts).every((count) => count > 0)).toBe(true);

@@ -1,0 +1,82 @@
+{
+  "schemaVersion": "lightbi.phase-7r33-accounting-currency-evidence-audit.v1",
+  "phase": "7R3.3",
+  "sources": [
+    {
+      "relativePath": "sample data/Accounting_ERP_May_2026.csv",
+      "sha256": "3c59da1c10c67ab974dfd204b737402aff1c28d748665949942579fb5fb1a2fd",
+      "rowCount": 1500,
+      "explicitCurrencyColumn": null,
+      "reportTitleOrHeaderCurrency": null,
+      "workbookMetadataCurrency": null,
+      "authenticCompanionMetadata": null,
+      "governedSameCurrencyRelationship": null,
+      "observedCurrencyTokenLocations": [],
+      "monetaryScope": {
+        "revenue": "Revenue_Credit",
+        "cost": "COGS_Debit",
+        "period": {
+          "min": "2026-05-01",
+          "max": "2026-05-31"
+        }
+      },
+      "mayAndJuneSameBasis": null,
+      "evidenceNature": "none",
+      "classification": "no_currency_evidence"
+    },
+    {
+      "relativePath": "sample data/Accounting_ERP_June_2026.csv",
+      "sha256": "b3a3b290d5f54ca5d7fc79b7aed0f287f539e665113331bb6d4764fa5fc6aaea",
+      "rowCount": 1500,
+      "explicitCurrencyColumn": null,
+      "reportTitleOrHeaderCurrency": null,
+      "workbookMetadataCurrency": null,
+      "authenticCompanionMetadata": null,
+      "governedSameCurrencyRelationship": null,
+      "observedCurrencyTokenLocations": [],
+      "monetaryScope": {
+        "revenue": "Revenue_Credit",
+        "cost": "COGS_Debit",
+        "period": {
+          "min": "2026-06-01",
+          "max": "2026-06-30"
+        }
+      },
+      "mayAndJuneSameBasis": null,
+      "evidenceNature": "none",
+      "classification": "no_currency_evidence"
+    }
+  ],
+  "relationshipReview": {
+    "orderRelationships": "Sales, Accounting and Logistics match exactly 1:1 by OrderID within each month.",
+    "currencyCarriedByRelatedSources": false,
+    "reason": "The related Sales and Logistics sources also contain no explicit currency field or hash-bound currency metadata; identity alignment cannot prove currency."
+  },
+  "explicitButInapplicableEvidence": [
+    {
+      "location": "sample data/Bao_cao_chi_tiet_Ton_kho_vung_tinh_28-12-2024.xlsx / TonTaiKhoVungChiTiet / Tiền thu hộ (đồng), Tổng cước (đồng)",
+      "value": "đồng",
+      "scope": "only those postal-report measures",
+      "provenance": "column headers in unrelated source",
+      "appliesToAccountingRevenueOrCogs": false
+    },
+    {
+      "location": "sample data/World Bank Indicators.xlsx / Data by country",
+      "value": "current US$",
+      "scope": "named World Bank indicator measures only",
+      "provenance": "column headers in unrelated source",
+      "appliesToAccountingRevenueOrCogs": false
+    }
+  ],
+  "forbiddenInferenceChecks": {
+    "vietnameseLanguageAccepted": false,
+    "localeOrCountryAccepted": false,
+    "filenameAccepted": false,
+    "numberFormattingAccepted": false,
+    "accountCodeConventionAccepted": false,
+    "magnitudeAccepted": false,
+    "expectedGrossProfitAccepted": false,
+    "absenceOfAnotherCurrencyAccepted": false
+  },
+  "conclusion": "Neither accounting source has acceptable explicit or relationship-carried currency evidence. Runtime permission must remain unchanged."
+}

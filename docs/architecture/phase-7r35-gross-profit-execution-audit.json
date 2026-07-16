@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "lightbi.phase7r35-gross-profit-execution-audit.v1",
+  "phase": "7R3.5",
+  "status": "failed_not_executed",
+  "requiredOperator": "governed_revenue_minus_cost",
+  "expected": {
+    "may": 3075721244,
+    "june": 2934640164
+  },
+  "observedMappings": {
+    "revenue": "Revenue_Credit",
+    "cost": ["UnitCost", "COGS_Debit"],
+    "identity": "OrderID",
+    "period": "InvoiceDate",
+    "grossProfit": "GrossProfit"
+  },
+  "declaredScenarioCurrency": "VND",
+  "currencyProvenanceClaim": "declared_scenario_metadata_not_inherited_fixture_discovery",
+  "may": {
+    "metricPreflightState": "blocked",
+    "blockers": [
+      "currency_basis_ambiguous_or_incompatible",
+      "repeated_or_unresolved_measure_aggregation",
+      "required_readiness_unavailable:repeated_measure_protection_ready"
+    ],
+    "advertisedActions": 0,
+    "executedActions": 0,
+    "exactComparisonAvailable": false
+  },
+  "june": {
+    "metricPreflightState": "blocked",
+    "blockers": ["currency_basis_ambiguous_or_incompatible"],
+    "advertisedActions": 0,
+    "executedActions": 0,
+    "exactComparisonAvailable": false
+  },
+  "runtimeGuardWeakened": false,
+  "owningLayer": "metric_preflight_and_readiness",
+  "decisionUseAuthorized": false,
+  "productionWiring": { "executed": false }
+}

@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "lightbi.phase7r36-explanation-completeness-audit.v1",
+  "phase": "7R3.6",
+  "status": "pass",
+  "negativeProbes": 15,
+  "negativeProbesBlockedOrExplanationOnly": 15,
+  "negativeProbeFailures": 0,
+  "blockedCorpusQuestions": 110,
+  "blockedCorpusQuestionsExplained": 110,
+  "blockedExplanationCompleteness": 1,
+  "requiredFields": ["blockers", "evidence", "limitations", "remediation"],
+  "currencyRemediation": "confirm_currency"
+}

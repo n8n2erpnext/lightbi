@@ -1,0 +1,55 @@
+{
+  "schemaVersion": "lightbi.phase-7-release-gate-audit.v1",
+  "phase": "7",
+  "evaluatedCommit": "522c019623540581353d6668077ee0ab4395cec6",
+  "corpusVersion": "1.2.0",
+  "gates": [
+    { "gate": "confirmed_high_confidence_mapping_precision", "value": 0.9901960784, "threshold": 0.95, "result": "pass" },
+    { "gate": "heldout_core_mvp_signal_recall", "value": 0.5909090909, "threshold": 0.9, "result": "fail", "blocker": "signal_recall_defect" },
+    { "gate": "domain_activation_precision", "value": 1.0, "threshold": 0.95, "result": "pass" },
+    { "gate": "known_false_decision_support", "value": 0, "threshold": 0, "result": "pass" },
+    { "gate": "false_executable_actions", "value": 0, "threshold": 0, "result": "pass" },
+    { "gate": "advertised_action_execution_success", "value": 0.6666666667, "threshold": 0.9, "result": "fail", "blocker": "runtime_execution_defect" },
+    { "gate": "verified_metric_correctness", "value": 0.5, "threshold": 1.0, "result": "fail", "blocker": "metric_correctness_defect" },
+    { "gate": "blocked_action_explanation_completeness", "value": 1.0, "threshold": 1.0, "result": "pass" },
+    { "gate": "production_legacy_deprecated_reachability", "value": 0, "threshold": 0, "result": "pass" },
+    { "gate": "repository_typescript_diagnostics", "value": 0, "threshold": 0, "result": "pass" },
+    { "gate": "clean_checkout_reproducibility", "value": false, "threshold": true, "result": "fail", "blocker": "clean_machine_reproducibility_defect" },
+    { "gate": "full_suite_unexpected_failures", "value": 0, "threshold": 0, "result": "pass" }
+  ],
+  "measurements": {
+    "grainAccuracy": 0.8108108108,
+    "ambiguityUnknownRate": 0.5571808511,
+    "runnableActionPrecision": 1.0,
+    "timeFromImportToFirstValidResultMs": { "observations": 6, "minimum": 1068.034019, "median": 1774.973143, "maximum": 3230.478046 }
+  },
+  "verification": {
+    "phase7Evaluation": { "files": 1, "tests": 1, "failed": 0 },
+    "phase5Phase6AndGoldenPaths": { "files": 26, "tests": 64, "failed": 0 },
+    "understandingCoreMatrix": { "files": 132, "tests": 289, "failed": 0 },
+    "typescriptDiagnostics": 0,
+    "jsonAuditsParsedBeforePhase7Outputs": 146,
+    "gitDiffCheck": "pass",
+    "fullDesktopSuite": {
+      "runCount": 1,
+      "testFiles": 159,
+      "passedTestFiles": 155,
+      "failedTestFiles": 4,
+      "tests": 1103,
+      "passedTests": 1094,
+      "failedTests": 9,
+      "governedDeterministicFailures": 6,
+      "governedTimingSensitiveTimeouts": 3,
+      "timingSensitiveCasesPassed": 0,
+      "unexpectedFailures": 0,
+      "phase7OwnedFailures": 0,
+      "processExitStatus": 1,
+      "completeLogSha256": "7fd5ee777ccbc69ab6d1527001386344e123a6f8e22bc0cd1bef2760c2c7d95d",
+      "baselineAllowlistSha256": "baa86950582b7d758396abb0c69fdaffcd3c2cbbb22b71dd3bbdb3c0aed1c4f5",
+      "conformance": "pass"
+    }
+  },
+  "releaseReady": false,
+  "primaryBlocker": "signal_recall_defect",
+  "additionalBlockers": ["runtime_execution_defect", "metric_correctness_defect", "clean_machine_reproducibility_defect"]
+}

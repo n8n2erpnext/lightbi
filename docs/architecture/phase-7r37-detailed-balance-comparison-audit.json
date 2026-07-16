@@ -1,0 +1,12 @@
+{
+  "schemaVersion": "lightbi.phase-7r37-detailed-balance-comparison-audit.v1",
+  "phase": "7R3.7",
+  "status": "pass",
+  "oracleSha256": "345d0edb3842fbf9b49884df0781adfe7ad73070692eda5a8a94566c7e150075",
+  "oracleLoadedAfterGovernedExecution": true,
+  "comparisons": [
+    {"period":"may","asOf":"2026-05-31","expectedKeys":1266,"governedKeys":1266,"missingKeys":0,"unexpectedKeys":0,"quantityMismatches":0,"duplicateIdentities":0,"groupedTotal":211067,"globalTotal":211067,"complete":true},
+    {"period":"june","asOf":"2026-06-30","expectedKeys":2198,"governedKeys":2198,"missingKeys":0,"unexpectedKeys":0,"quantityMismatches":0,"duplicateIdentities":0,"groupedTotal":378041,"globalTotal":378041,"complete":true}
+  ],
+  "crossPeriodMetricResultCreated": false
+}

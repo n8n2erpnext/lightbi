@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "lightbi.phase-7r3-corpus-regression-audit.v1",
+  "phase": "7R3",
+  "corpusVersion": "1.2.0",
+  "cases": 30,
+  "sourceOccurrences": 37,
+  "measurements": {
+    "combinedHighConfidenceMappingPrecision": 1.0,
+    "heldoutCoreMvpSignalRecall": 0.9090909091,
+    "ambiguityUnknownRate": 0.5385638298,
+    "grainAccuracy": 0.8108108108,
+    "domainActivationPrecision": 1.0,
+    "advertisedActionExecutionSuccess": 1.0,
+    "falseExecutableActions": 0,
+    "falseDecisionSupportCases": 0,
+    "blockedExplanationCompleteness": 1.0,
+    "verifiedMetricCorrectness": 1.0,
+    "verifiedMetricFamilyCoverage": 0.25
+  },
+  "regressions": [],
+  "evaluationIntegrity": {"holdoutTuned":false,"adversarialTuned":false,"multiFileTuned":false,"groundTruthModified":false},
+  "observationSha256": "7b192300ef2f5b4813325ad685bd10f28c36fb47e3ee181dfd859ba25164866a"
+}

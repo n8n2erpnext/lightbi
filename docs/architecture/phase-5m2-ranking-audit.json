@@ -1,6 +1,6 @@
 {
   "schemaVersion": "lightbi.phase-5m2-ranking-audit.v1",
-  "questionPolicyHash": "9c8ce5e0904a95f70e80cb81bc79a4c52ba4729f4772a7e9a8d6e997da3d6cbb",
+  "questionPolicyHash": "cc32c28851557fedb41ea87d9b873a1941b3808140d7f7608a6363170bd68b4e",
   "maxDefaultQuestions": 5,
   "ordering": [
     "metric state: ready before conditionally_ready",

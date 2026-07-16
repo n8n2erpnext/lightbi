@@ -1,0 +1,57 @@
+{
+  "schemaVersion": "lightbi.phase-7r38-evidence-population-audit.v1",
+  "phase": "7R3.8",
+  "populationsMixed": false,
+  "corpus120": {
+    "version": "1.2.0",
+    "manifestSha256": "a36284c1f4655289ff832bb4102f9e153fdad329020df6972802802368d0adaa",
+    "authority": [
+      "confirmed_probable_mapping_precision",
+      "heldout_core_signal_recall",
+      "ambiguity_unknown_behavior",
+      "grain_accuracy",
+      "domain_activation_precision",
+      "false_confident_mappings",
+      "import_to_first_valid_result_timing"
+    ],
+    "scope": { "cases": 30, "sourceOccurrences": 37 },
+    "evaluationOnlyGroups": ["holdout", "adversarial", "multi_file"],
+    "measurements": {
+      "combinedHighConfidencePrecision": 1,
+      "heldoutCoreSignalRecall": 0.9090909090909091,
+      "ambiguityUnknownRate": 0.538563829787234,
+      "grainAccuracy": 0.8648648648648649,
+      "domainActivationPrecision": 1,
+      "falseConfidentMappings": 0
+    }
+  },
+  "corpus130": {
+    "version": "1.3.0",
+    "manifestSha256": "1dca495e0903a7d9e025d24e103bd6b64de20d13425e2284b6d73901ad6a7cec",
+    "evidenceType": "repository_fixture_anchored_semi_synthetic_evidence",
+    "eligibleClaims": [
+      "governed_metric_arithmetic",
+      "four_family_execution_coverage",
+      "currency_uom_asof_handling",
+      "inventory_snapshot_correctness",
+      "runtime_guard_behavior",
+      "relationship_guard_behavior"
+    ],
+    "ineligibleClaims": [
+      "mapping_precision",
+      "signal_recall",
+      "external_operational_validity"
+    ],
+    "generatorByteIdentity": true,
+    "externallyObservedTruthClaim": false
+  },
+  "integrity": {
+    "corpus130UsedToImproveCorpus120QualityClaims": false,
+    "holdoutUsedForTuning": false,
+    "adversarialUsedForTuning": false,
+    "multiFileUsedForTuning": false,
+    "thresholdsChanged": false,
+    "groundTruthChanged": false
+  },
+  "status": "pass"
+}

@@ -17,9 +17,9 @@ export type GovernedExecutionRestrictionV1 = {
 
 export type GovernedExecutionEvidenceV1 = {
   evidenceId: string;
-  kind: "metric_definition" | "metric_preflight" | "canonical_binding" | "grain" | "time" | "relationship" | "runtime_policy" | "duckdb_execution";
+  kind: "metric_definition" | "metric_preflight" | "canonical_binding" | "grain" | "time" | "relationship" | "currency" | "inventory_snapshot" | "runtime_policy" | "duckdb_execution";
   references: string[];
-  provenance: "governed_policy" | "canonical_artifact" | "governed_preflight" | "local_duckdb";
+  provenance: "governed_policy" | "canonical_artifact" | "governed_preflight" | "source_bound_contract" | "local_duckdb";
 };
 
 export type GovernedRuntimeBlockerV1 = {

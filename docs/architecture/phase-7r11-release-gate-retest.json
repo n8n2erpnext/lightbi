@@ -1,0 +1,92 @@
+{
+  "schemaVersion": "lightbi.phase-7r11-release-gate-retest.v1",
+  "phase": "7R1.1",
+  "evaluatedCommit": "522c019623540581353d6668077ee0ab4395cec6",
+  "corpusVersion": "1.2.0",
+  "scope": {"cases": 30, "sourceOccurrences": 37, "groups": {"golden": 8, "holdout": 12, "adversarial": 5, "multi_file": 5}},
+  "measurements": {
+    "mappingPrecision": {
+      "confirmed": {"correct": 28, "incorrect": 0, "unadjudicated": 21, "precision": 1.0},
+      "probable": {"correct": 82, "incorrect": 0, "unadjudicated": 215, "precision": 1.0},
+      "combinedHighConfidence": {"correct": 110, "incorrect": 0, "precision": 1.0}
+    },
+    "requiredMappingRecall": 0.7421875,
+    "heldoutCoreMvpSignalRecall": {"numerator": 20, "denominator": 22, "value": 0.9090909091},
+    "ambiguityUnknownRate": 0.5385638298,
+    "grainAccuracy": {"overall": 0.8108108108, "golden": 0.875, "holdout": 0.6666666667, "adversarial": 0.6, "multi_file": 1.0},
+    "domainActivation": {
+      "expectedInScopeCases": 25,
+      "activatedInScopeCases": 20,
+      "coverage": 0.8,
+      "predicted": 20,
+      "truePositive": 20,
+      "falsePositive": 0,
+      "precision": 1.0,
+      "byGroup": {
+        "golden": {"expected": 8, "activated": 5},
+        "holdout": {"expected": 12, "activated": 10},
+        "adversarial": {"expected": 0, "activated": 0},
+        "multi_file": {"expected": 5, "activated": 5}
+      }
+    },
+    "runnableActionPrecision": 1.0,
+    "advertisedActionExecution": {"advertised": 28, "runtimeAllowed": 14, "executed": 14, "success": 0.5, "phase7OldDenominatorUsed": false},
+    "verifiedMetric": {"compared": 12, "matched": 6, "mismatched": 6, "correctness": 0.5, "coveredMetricIds": ["sales_revenue"], "requiredFamilyCoverage": 0.25},
+    "falseExecutableActions": 0,
+    "falseDecisionSupportCases": 0,
+    "blockedExplanation": {"total": 356, "explained": 356, "completeness": 1.0},
+    "productionLegacyDeprecatedReachability": 0,
+    "timeFromImportToFirstValidResultMs": {"observations": 6, "minimum": 1086.564766, "median": 1788.984853, "maximum": 3311.859929}
+  },
+  "gates": [
+    {"gate": "combined_high_confidence_mapping_precision", "value": 1.0, "threshold": 0.95, "result": "pass"},
+    {"gate": "heldout_core_mvp_signal_recall", "value": 0.9090909091, "threshold": 0.9, "result": "pass"},
+    {"gate": "domain_activation_precision", "value": 1.0, "threshold": 0.95, "result": "pass"},
+    {"gate": "false_executable_actions", "value": 0, "threshold": 0, "result": "pass"},
+    {"gate": "false_decision_support", "value": 0, "threshold": 0, "result": "pass"},
+    {"gate": "advertised_action_execution_success", "value": 0.5, "threshold": 0.9, "result": "fail", "owningLayer": "action_generation_and_runtime_preflight"},
+    {"gate": "verified_metric_correctness", "value": 0.5, "threshold": 1.0, "result": "fail", "owningLayer": "governed_query_execution_and_metric_comparison"},
+    {"gate": "verified_metric_family_coverage", "value": 0.25, "threshold": 1.0, "result": "fail", "owningLayer": "metric_preflight_and_execution_coverage"},
+    {"gate": "blocked_explanation_completeness", "value": 1.0, "threshold": 1.0, "result": "pass"},
+    {"gate": "production_legacy_deprecated_reachability", "value": 0, "threshold": 0, "result": "pass"},
+    {"gate": "repository_typescript_diagnostics", "value": 0, "threshold": 0, "result": "pass"},
+    {"gate": "clean_checkout_reproducibility", "value": false, "threshold": true, "result": "fail", "owningLayer": "release_and_corpus_packaging"},
+    {"gate": "full_suite_unexpected_failures", "value": 0, "threshold": 0, "result": "pass"}
+  ],
+  "verification": {
+    "unchangedPhase7Evaluator": {"testFiles": 1, "tests": 1, "failed": 0, "observationSha256": "2fea355a6e65e7028968be63454c214ca8ddfc715b1a7077f2e4709238833591"},
+    "phase7R1": {"testFiles": 1, "tests": 16, "failed": 0},
+    "phase5And6Regressions": {"testFiles": 11, "tests": 36, "failed": 0},
+    "completeUnderstandingCore": {"testFiles": 67, "tests": 305, "failed": 0},
+    "typescriptDiagnostics": 0,
+    "jsonAuditsParsedBeforePhase7R11Outputs": 175,
+    "importReachabilityAndSpecificityScans": "pass_canonical_production_path_only",
+    "gitDiffCheck": "pass",
+    "fullDesktopSuite": {
+      "runs": 1,
+      "testFiles": 160,
+      "passedTestFiles": 156,
+      "failedTestFiles": 4,
+      "tests": 1119,
+      "passedTests": 1110,
+      "failedTests": 9,
+      "governedDeterministicFailures": 6,
+      "governedTimingSensitiveFailures": 3,
+      "timingSensitiveCasesPassed": 0,
+      "unexpectedFailures": 0,
+      "phase7R11OwnedFailures": 0,
+      "processExitStatus": 1,
+      "completeLogSha256": "f334f39ea587ad4109bf82c090f2533c589f5e178cf4defccfcc4fd0651594af",
+      "completeLogBytes": 187860,
+      "baselineAllowlistSha256": "baa86950582b7d758396abb0c69fdaffcd3c2cbbb22b71dd3bbdb3c0aed1c4f5",
+      "conformance": "pass"
+    }
+  },
+  "failedReleaseGates": [
+    {"gate": "advertised_action_execution_success", "classification": "runtime_execution_defect", "owningLayer": "action_generation_and_runtime_preflight"},
+    {"gate": "verified_metric_correctness_and_coverage", "classification": "metric_correctness_defect", "owningLayer": "governed_query_execution_metric_preflight_and_comparison"},
+    {"gate": "clean_checkout_reproducibility", "classification": "clean_machine_reproducibility_defect", "owningLayer": "release_and_corpus_packaging"}
+  ],
+  "releaseReady": false,
+  "classification": "not_ready_multiple_release_blockers"
+}

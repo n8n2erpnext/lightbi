@@ -1,0 +1,35 @@
+{
+  "schemaVersion": "lightbi.phase-6b2-production-path-preservation-audit.v1",
+  "phase": "6B.2",
+  "productionSessionCreators": {
+    "simple": "apps/desktop/src/pages/Home.tsx#prepareCanonicalInvestigationHandoff",
+    "advanced": "apps/desktop/src/pages/Advanced.tsx#createAdvancedResultHandoff"
+  },
+  "consumer": "apps/desktop/src/pages/Investigation.tsx#executeGovernedMetricRequest",
+  "invariants": {
+    "simpleUsesCanonicalHandoff": true,
+    "advancedUsesCanonicalHandoff": true,
+    "investigationLegacyExecutorFallback": false,
+    "blockedCanonicalActionsStopBeforeExecution": true,
+    "actualExecutionFailuresVisible": true,
+    "restrictionsAndEvidenceAttached": true,
+    "decisionUseAuthorized": false,
+    "simpleGoldenRevenue": 22973896244,
+    "advancedGoldenRevenue": 22973896244,
+    "unchangedDatasetDuplicateCanonicalBuild": false
+  },
+  "forbiddenCallScan": {
+    "targets": ["executeBackendPreview", "executeDuckDBPreviewSandbox", "executeDuckDBPreviewRuntime", "js_sandbox_fallback", "mock_preview", "Degraded Execution Mode"],
+    "productionMatches": 0
+  },
+  "policyChanges": {
+    "semantic": false,
+    "grain": false,
+    "readiness": false,
+    "metric": false,
+    "question": false,
+    "runtime": false,
+    "baselineAllowlist": false
+  },
+  "baselineAllowlistSha256": "baa86950582b7d758396abb0c69fdaffcd3c2cbbb22b71dd3bbdb3c0aed1c4f5"
+}

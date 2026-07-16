@@ -1,0 +1,48 @@
+{
+  "schemaVersion": "lightbi.phase-7-grain-domain-audit.v1",
+  "phase": "7",
+  "grain": {
+    "accuracy": 0.8108108108,
+    "byGroup": {
+      "golden": 0.875,
+      "holdout": 0.6666666667,
+      "adversarial": 0.6,
+      "multi_file": 1.0
+    },
+    "mismatchCount": 7,
+    "mismatches": [
+      { "sampleId": "rev.superstore_orders", "structural": "mixed", "temporal": "unresolved" },
+      { "sampleId": "ops.ttkt_20241219", "structural": "aggregate", "temporal": "reporting_period" },
+      { "sampleId": "ops.ttkt_20241223", "structural": "aggregate", "temporal": "reporting_period" },
+      { "sampleId": "ops.ttkt_20241224", "structural": "aggregate", "temporal": "reporting_period" },
+      { "sampleId": "fin.superstore_profit", "structural": "mixed", "temporal": "unresolved" },
+      { "sampleId": "adv.world_cup_events", "structural": "unknown", "temporal": "none" },
+      { "sampleId": "adv.bank_marketing_generic_headers", "structural": "aggregate", "temporal": "reporting_period" }
+    ],
+    "threshold": null,
+    "gate": "measured_no_phase7_threshold_frozen"
+  },
+  "domainActivation": {
+    "predicted": 15,
+    "truePositive": 15,
+    "falsePositive": 0,
+    "precision": 1.0,
+    "threshold": 0.95,
+    "gate": "pass",
+    "expectedInScopeCases": 25,
+    "activatedInScopeCases": 15,
+    "coverage": 0.6,
+    "note": "Coverage is reported separately and is not converted into precision."
+  },
+  "multiFileRelationshipSafety": {
+    "cases": 5,
+    "resolutionMode": "shadow",
+    "joinSafetyExecuted": false,
+    "operationExecutionExecuted": false,
+    "unsafeJoinAuthorized": false
+  },
+  "blockers": [
+    { "classification": "grain_inference_defect", "reason": "Seven source occurrences miss frozen grain alternatives; no threshold was invented in Phase 7." },
+    { "classification": "signal_recall_defect", "reason": "Ten in-scope cases never activate the current commerce/distribution pack because required signals are absent or unresolved." }
+  ]
+}

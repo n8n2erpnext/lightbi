@@ -49,6 +49,7 @@ import type { ExecutionGuardResult } from '../lib/execution-guard';
 import { ExecutionGuardNotice } from '../components/analysis/ExecutionGuardNotice';
 import { createDuckDBLogicalPlan } from '../lib/duckdb-logical-plan';
 import type { DuckDBLogicalPlan } from '../lib/duckdb-logical-plan';
+import { createRuntimeBoundaryArtifact } from '../lib/runtime-boundary-contract';
 import { DuckDBLogicalPlanPreview } from '../components/analysis/DuckDBLogicalPlanPreview';
 import { MultiFileUnderstandingProofPanel } from '../components/analysis/MultiFileUnderstandingProofPanel';
 import { createExpectedResultContract } from '../lib/expected-result-contract';
@@ -80,6 +81,8 @@ import { createBusinessFusionOverview, createBusinessFusionVirtualDataset, type 
 import { BusinessFusionOpportunityCard } from '../components/analysis/BusinessFusionOpportunityCard';
 import { deleteWorkspaceSession, loadWorkspaceSessions, saveWorkspaceSession, type SaveWorkspaceSessionRequest, type WorkspaceSessionRecord } from '../lib/workspace-session-api';
 import { downloadProjectSourceFile, uploadProjectSourceFile, type PersistedProjectSourceFile } from '../lib/project-source-file-api';
+import type { GuidedInvestigationResult } from '../lib/guided-investigation-pipeline';
+import type { DatasetUnderstanding } from '../lib/dataset-understanding-contract';
 
 const WORKSPACE_SESSION_ROW_LIMIT = 250;
 
@@ -160,6 +163,14 @@ function attachPersistedFile(
       persisted_file: persistedFile,
     },
   };
+}
+
+function unavailableGuidedInvestigation(): GuidedInvestigationResult | null {
+  return null;
+}
+
+function unavailableLegacyUnderstanding(): DatasetUnderstanding | null {
+  return null;
 }
 
 const getGreeting = () => {
@@ -257,7 +268,7 @@ export const Home: React.FC = () => {
   const [pendingLocalBatch, setPendingLocalBatch] = useState<PendingLocalFileBatch | null>(null);
   const [lastInspectedFamilies, setLastInspectedFamilies] = useState<DatasetFamily[] | null>(null);
   const [decisionTrustReport, setDecisionTrustReport] = useState<DecisionTrustReport | null>(null);
-  const [mappingOverlayActions, setMappingOverlayActions] = useState<MappingOverlayAction[]>([]);
+  const [, setMappingOverlayActions] = useState<MappingOverlayAction[]>([]);
   const inspectionRuns = useRef(new ExecutionRunCoordinator('simple-inspection'));
   const lastAutoSaveSignatureRef = useRef<string>("");
 
@@ -608,14 +619,12 @@ export const Home: React.FC = () => {
 
   const handleSelectAnalysisAction = async (action: AnalysisAction) => {
     // Use the typed adapter helper — no `as any` needed
-    const isDQR = action.actionType === 'data_quality_review';
-
     const intent = createRuntimeIntentFromAnalysisAction(action);
     const plan = createRuntimePlanPreview(intent);
     
     // Attempt to extract rows if available from current dataset state
     const datasetRows = canonicalRows;
-    console.log("TRACE [OPPORTUNITY] selectedAction.id:", action.id, "isDQR:", isDQR);
+    console.log("TRACE [OPPORTUNITY] selectedAction.id:", action.id);
 
     const canonicalHandoff = canonicalArtifact
       ? prepareCanonicalInvestigationHandoff(canonicalArtifact, action.id)
@@ -761,8 +770,8 @@ export const Home: React.FC = () => {
 
   // Legacy presentation branches remain mounted for compatibility, but no legacy
   // detector or understanding-next orchestrator participates in the selected path.
-  const guidedInvestigationResult: any = null;
-  const datasetUnderstanding: any = null;
+  const guidedInvestigationResult = unavailableGuidedInvestigation();
+  const datasetUnderstanding = unavailableLegacyUnderstanding();
 
   const canonicalRows = React.useMemo(
     () => selectFirstNonEmptyRows(
@@ -2588,6 +2597,15 @@ export const Home: React.FC = () => {
                   const question = businessView?.suggestedQuestions.find(q => q.id === selectedVirtualPlan.questionId);
                   
                   if (businessView && question) {
+                     const artifact = createRuntimeBoundaryArtifact({
+                       businessView,
+                       question,
+                       virtualPlan: selectedVirtualPlan,
+                       runtimePreview: acceptedRuntimePreview,
+                       executionGuard: executionGuardResult,
+                       logicalPlan,
+                       runtimePreviewAccepted: true,
+                     });
                      const expectedResult = createExpectedResultContract({
                        question,
                        businessView,

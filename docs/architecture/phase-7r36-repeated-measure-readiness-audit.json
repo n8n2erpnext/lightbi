@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "lightbi.phase7r36-repeated-measure-readiness-audit.v1",
+  "phase": "7R3.6",
+  "status": "pass",
+  "scope": "gross_profit_metric_specific",
+  "globalSafeToAggregateWeakened": false,
+  "requiredIdentity": "OrderID",
+  "requiredAtomicBindings": ["Revenue_Credit", "COGS_Debit"],
+  "excludedCompetingBindings": ["UnitCost", "UnitPrice", "rate", "percentage", "uom"],
+  "negativeCases": {
+    "repeatedRevenueInsideIdentity": "blocked",
+    "repeatedCostInsideIdentity": "blocked",
+    "missingGovernedIdentity": "blocked",
+    "ambiguousRevenueBinding": "blocked"
+  },
+  "inventoryReadinessChanged": false
+}

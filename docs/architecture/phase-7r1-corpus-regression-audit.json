@@ -1,0 +1,82 @@
+{
+  "schemaVersion": "lightbi.phase-7r1-corpus-regression-audit.v1",
+  "phase": "7R1",
+  "corpusVersion": "1.2.0",
+  "scope": { "cases": 30, "sourceOccurrences": 37, "physicalColumns": 752 },
+  "baseline": {
+    "heldoutCoreRecall": 0.5909090909,
+    "requiredMappingRecall": 0.671875,
+    "ambiguityUnknownRate": 0.5571808511,
+    "combinedHighConfidencePrecision": 0.9901960784,
+    "confidentFalseMappings": 1,
+    "semanticCandidateTraces": 1223,
+    "requiredCandidateAbsenceDebt": 4,
+    "contextualCandidateAbsenceDebt": 10
+  },
+  "result": {
+    "heldoutCoreRecall": 0.9090909091,
+    "requiredMappingRecall": 0.7421875,
+    "ambiguityUnknownRate": 0.5385638298,
+    "confirmedPrecision": 1.0,
+    "probablePrecision": 1.0,
+    "combinedHighConfidencePrecision": 1.0,
+    "confidentFalseMappings": 0,
+    "semanticCandidateTraces": 1225,
+    "requiredCandidateAbsenceDebt": 2,
+    "contextualCandidateAbsenceDebt": 10,
+    "selectedSemanticResults": 346,
+    "confirmedSemanticResults": 49,
+    "probableSemanticResults": 297,
+    "grainForbiddenCertaintyViolations": 0
+  },
+  "candidateQuality": {
+    "totalPhysicalColumns": 752,
+    "zeroCandidates": 105,
+    "oneCandidate": 242,
+    "multipleCandidates": 405,
+    "averageCandidates": 1.629,
+    "medianCandidates": 2,
+    "maximumCandidates": 5,
+    "broadColumnCount": 18,
+    "candidateSourceDistribution": {
+      "alias": 408,
+      "canonicalId": 208,
+      "headerAlias": 492,
+      "label": 0,
+      "tokenContainment": 491,
+      "valueAlias": 75,
+      "valuePattern": 289
+    }
+  },
+  "coreRecallBySignal": [
+    { "signal": "delivery_status", "required": 2, "baselineFound": 2, "resultFound": 2 },
+    { "signal": "order", "required": 3, "baselineFound": 3, "resultFound": 3 },
+    { "signal": "product", "required": 3, "baselineFound": 3, "resultFound": 3 },
+    { "signal": "quantity", "required": 2, "baselineFound": 0, "resultFound": 0 },
+    { "signal": "revenue", "required": 2, "baselineFound": 2, "resultFound": 2 },
+    { "signal": "shipment", "required": 4, "baselineFound": 2, "resultFound": 4 },
+    { "signal": "time_period", "required": 5, "baselineFound": 1, "resultFound": 5 },
+    { "signal": "total_cost", "required": 1, "baselineFound": 0, "resultFound": 1 }
+  ],
+  "newlyResolvedSignals": [
+    "rev.superstore_orders:Order Date->time_period",
+    "rev.accounting_may_sales_basis:InvoiceDate->time_period",
+    "inv.provincial_aging_20241228:Mã phiếu gửi->shipment",
+    "inv.hublan_expected_stock:Mã Phiếu Gửi->shipment",
+    "fin.accounting_june_2026:InvoiceDate->time_period",
+    "fin.accounting_june_2026:COGS_Debit->total_cost",
+    "fin.superstore_profit:Order Date->time_period",
+    "inv.provincial_aging_20241228:Ngưỡng tồn->stock_threshold"
+  ],
+  "downstreamObservationsOnly": {
+    "domainActivationPredicted": { "baseline": 15, "result": 20 },
+    "advertisedActions": { "baseline": 21, "result": 28 },
+    "executedActions": { "baseline": 14, "result": 14 },
+    "advertisedActionExecutionSuccess": { "baseline": 0.6666666667, "result": 0.5 },
+    "metricCorrectness": { "baseline": 0.5, "result": 0.5 },
+    "falseExecutableActions": 0,
+    "falseDecisionSupport": 0,
+    "policyChanged": false
+  },
+  "evaluationObservationSha256": "57eb8ba8b8b90ab394e8ed9fab2914b668c8095ebf4ca3884b15ff8f1ba63192"
+}

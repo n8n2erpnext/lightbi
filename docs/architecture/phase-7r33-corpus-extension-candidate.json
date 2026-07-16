@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "lightbi.phase-7r33-corpus-extension-candidate.v1",
+  "phase": "7R3.3",
+  "baseCorpus": {
+    "version": "1.2.0",
+    "manifestPath": "sample-corpus/manifest.json",
+    "manifestSha256": "a36284c1f4655289ff832bb4102f9e153fdad329020df6972802802368d0adaa",
+    "modified": false
+  },
+  "proposedVersion": null,
+  "candidateCreated": false,
+  "sourceHashes": [],
+  "evidenceProvenance": [],
+  "expectedMappings": [],
+  "expectedGrain": null,
+  "expectedDomainState": null,
+  "expectedMetricFamily": null,
+  "frozenCurrencyMetadata": null,
+  "frozenAsOfMetadata": null,
+  "independentlyCalculatedTruth": null,
+  "goldenOrEvaluationEligibility": "not_eligible",
+  "reasonCaseIsNotSynthetic": null,
+  "rejectionReason": "No authentic source closes either missing evidence contract. Creating an extension would require inventing currency or inventory-on-hand truth."
+}

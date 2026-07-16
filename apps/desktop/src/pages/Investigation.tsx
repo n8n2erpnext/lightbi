@@ -371,7 +371,7 @@ export const Investigation: React.FC = () => {
   }, [registerAdvancedSource, session]);
 
   useEffect(() => {
-    if (!session || !session.canonicalHandoff || autoPreviewStarted.current || session.analysisAction.actionType === 'data_quality_review') return;
+    if (!session || !session.canonicalHandoff || autoPreviewStarted.current) return;
     const hasPreviewInput = (session.rows?.length ?? 0) > 0;
     if (!hasPreviewInput) return;
     autoPreviewStarted.current = true;
@@ -553,18 +553,50 @@ export const Investigation: React.FC = () => {
     setDrillError(null);
     try {
       if (!canonicalHandoff || canonicalHandoff.queryPlanning.state !== 'planned') {
+          const planningBlockers = canonicalHandoff?.queryPlanning.state === 'blocked'
+            ? canonicalHandoff.queryPlanning.blockers
+            : [];
+          const blockedReasons = [...new Set([
+            ...(canonicalHandoff?.blockers ?? []),
+            ...planningBlockers,
+            ...(!canonicalHandoff ? ['canonical_handoff_required'] : []),
+            ...(!rows?.length ? ['canonical_full_file_rows_required'] : []),
+          ])];
           const blocked: DuckDBPreviewResult = {
             id: `canonical-blocked:${canonicalHandoff?.artifactIdentity ?? 'canonical_handoff_required'}`,
             sourceSqlPreviewId: 'canonical-governed-preflight',
             status: 'blocked',
             columns: [], rows: [], rowCount: 0, maxRows: 100,
-            warnings: canonicalHandoff?.runtimePreflight.restrictions.map(item => item.code) ?? [],
-            blockedReasons: canonicalHandoff?.blockers.length ? canonicalHandoff.blockers : ['canonical_handoff_required'],
+            warnings: [
+              ...(canonicalHandoff?.runtimePreflight.restrictions.map(item => item.code) ?? []),
+              ...(canonicalHandoff?.runtimePreflight.evidence.map(item => item.evidenceId) ?? []),
+            ],
+            blockedReasons,
+            errorMessage: blockedReasons.join(', '),
             source: 'governed_duckdb_execution',
           };
           setPreviewResult(blocked);
           setValidationResult(validatePreviewAgainstIntent(runtimeIntent, blocked));
-          setChartModel(createChartPreviewModel({ previewResult: blocked, runtimePlan: runtimePlanPreview, analysisLabel: analysisAction.opportunityName }));
+          setChartModel(null);
+          return;
+      }
+      if (!rows?.length) {
+          const blocked: DuckDBPreviewResult = {
+            id: `canonical-blocked:${canonicalHandoff.artifactIdentity}`,
+            sourceSqlPreviewId: 'canonical-governed-preflight',
+            status: 'blocked',
+            columns: [], rows: [], rowCount: 0, maxRows: 100,
+            warnings: [
+              ...canonicalHandoff.runtimePreflight.restrictions.map(item => item.code),
+              ...canonicalHandoff.runtimePreflight.evidence.map(item => item.evidenceId),
+            ],
+            blockedReasons: ['canonical_full_file_rows_required'],
+            errorMessage: 'canonical_full_file_rows_required',
+            source: 'governed_duckdb_execution',
+          };
+          setPreviewResult(blocked);
+          setValidationResult(validatePreviewAgainstIntent(runtimeIntent, blocked));
+          setChartModel(null);
           return;
       }
       const governed = await executeGovernedMetricRequest({
@@ -575,7 +607,7 @@ export const Investigation: React.FC = () => {
           groundTruth: { state: 'unavailable', value: null, tolerance: null, provenance: 'production_consumer_no_ground_truth' },
         }, createGovernedLocalDuckDBBoundary());
         session.canonicalExecutionResult = governed;
-        const result: DuckDBPreviewResult = {
+        const canonicalResult: DuckDBPreviewResult = {
           id: governed.resultId,
           sourceSqlPreviewId: governed.queryPlanIdentity,
           status: governed.status,
@@ -594,7 +626,21 @@ export const Investigation: React.FC = () => {
           source: 'governed_duckdb_execution',
         };
         if (!executionRuns.current.isCurrent(run)) return;
-        const validation = validatePreviewAgainstIntent(runtimeIntent, result);
+        const validation = validatePreviewAgainstIntent(runtimeIntent, canonicalResult);
+        const result = canonicalResult.status === 'executed' && canonicalResult.rowCount === 0
+          ? {
+              ...canonicalResult,
+              status: 'failed' as const,
+              errorMessage: 'Execution completed but returned an empty dataset. Analysis unavailable.',
+            }
+          : canonicalResult.status === 'executed' && validation.status === 'failed'
+            ? {
+                ...canonicalResult,
+                status: 'failed' as const,
+                warnings: [...new Set([...canonicalResult.warnings, ...validation.warnings])],
+                errorMessage: 'Validation boundary rejected the preview result due to insufficient quality or missing required data.',
+              }
+            : canonicalResult;
         setPreviewResult(result);
         setValidationResult(validation);
         setChartModel(result.status === 'executed'
@@ -604,6 +650,28 @@ export const Investigation: React.FC = () => {
     } catch (error) {
       if (executionRuns.current.isCurrent(run) && !(error instanceof DOMException && error.name === 'AbortError')) {
         console.error('Preview execution failed', error);
+        const failed: DuckDBPreviewResult = {
+          id: `canonical-failed:${canonicalHandoff?.artifactIdentity ?? 'canonical_handoff_required'}`,
+          sourceSqlPreviewId: canonicalHandoff?.queryPlanning.state === 'planned'
+            ? canonicalHandoff.queryPlanning.plan.planId
+            : 'canonical-governed-preflight',
+          status: 'failed',
+          columns: [],
+          rows: [],
+          rowCount: 0,
+          maxRows: 100,
+          warnings: [
+            ...(canonicalHandoff?.runtimePreflight.restrictions.map(item => item.code) ?? []),
+            ...(canonicalHandoff?.runtimePreflight.evidence.map(item => item.evidenceId) ?? []),
+          ],
+          blockedReasons: [],
+          errorMessage: error instanceof Error ? error.message : 'Canonical preview execution failed.',
+          executionScope: rowScope,
+          source: 'governed_duckdb_execution',
+        };
+        setPreviewResult(failed);
+        setValidationResult(validatePreviewAgainstIntent(runtimeIntent, failed));
+        setChartModel(null);
       }
     } finally {
       if (executionRuns.current.finish(run)) {
@@ -655,8 +723,6 @@ export const Investigation: React.FC = () => {
       .replace(/^_+|_+$/g, '')
       .slice(0, 90) || 'lightbi_filtered_rows'
     : 'lightbi_filtered_rows';
-
-  const isDataQualityReview = analysisAction.actionType === 'data_quality_review';
 
   return (
     <div className="flex h-full min-h-0 flex-col overflow-y-auto bg-[#fbfbfa]">
@@ -813,9 +879,8 @@ export const Investigation: React.FC = () => {
               <button
                 data-run-preview="true"
                 onClick={handleRunPreview}
-                disabled={isExecuting || isDataQualityReview}
+                disabled={isExecuting}
                 className="rounded-[10px] bg-[#202123] px-3 py-2 text-xs font-medium text-white shadow-sm transition-colors hover:bg-black disabled:opacity-50"
-                title={isDataQualityReview ? "Execution disabled for Data Quality Review" : undefined}
               >
                 {isExecuting ? 'Running...' : previewResult ? 'Refresh preview' : 'Run preview'}
               </button>
@@ -823,16 +888,7 @@ export const Investigation: React.FC = () => {
           </div>
           
           <div className="border-b border-black/5 bg-white p-6">
-             {isDataQualityReview ? (
-               <div className="w-full mb-6 p-4 bg-amber-50 border-2 border-amber-200 rounded-lg flex flex-col items-center justify-center text-amber-800 text-center">
-                 <AlertTriangle className="w-8 h-8 text-amber-500 mb-2" />
-                 <span className="text-sm font-semibold">Data Quality Review Required</span>
-                 <span className="text-xs text-amber-700 mt-1 max-w-md">
-                   This dataset contains technical constraints or dirty signals (e.g. mixed types, formula errors, serial dates). Runtime execution is disabled until these are reviewed.
-                 </span>
-               </div>
-             ) : (
-               <div className="flex flex-wrap gap-4 mb-8">
+             <div className="flex flex-wrap gap-4 mb-8">
                  <div className="flex flex-col gap-1.5">
                    <span className="text-[10px] uppercase tracking-wider font-semibold text-gray-400">Dimensions</span>
                    <div className="flex flex-wrap gap-2">
@@ -854,12 +910,17 @@ export const Investigation: React.FC = () => {
                      ))}
                    </div>
                  </div>
-               </div>
-             )}
+             </div>
              
              {/* Chart Placeholder / Renderer Area */}
              <div className="mt-4 w-full">
-               {previewResult?.status === 'failed' ? (
+               {previewResult?.status === 'blocked' ? (
+                 <div className="flex h-64 w-full flex-col items-center justify-center rounded-[18px] border-2 border-dashed border-amber-200 bg-amber-50/50 p-6 text-center text-amber-700">
+                   <AlertTriangle className="mb-2 h-8 w-8 text-amber-500" />
+                   <span className="text-sm font-medium">Analysis Blocked</span>
+                   <span className="mt-1 text-xs text-amber-600">{previewResult.blockedReasons.join(', ') || 'Canonical preflight did not authorize execution.'}</span>
+                 </div>
+               ) : previewResult?.status === 'failed' ? (
                  <div className="flex h-64 w-full flex-col items-center justify-center rounded-[18px] border-2 border-dashed border-red-200 bg-red-50/50 p-6 text-center text-red-500">
                    <AlertTriangle className="w-8 h-8 text-red-400 mb-2" />
                    <span className="text-sm font-medium">Execution Failed</span>
@@ -882,7 +943,7 @@ export const Investigation: React.FC = () => {
                  <div className="flex h-64 w-full flex-col items-center justify-center rounded-[18px] border-2 border-dashed border-slate-200 bg-slate-50 text-slate-400">
                    <Activity className={`mb-2 h-8 w-8 text-slate-300 ${isExecuting ? 'animate-pulse' : ''}`} />
                    <span className="text-sm font-medium">{isExecuting ? 'Preparing preview...' : 'Ready to preview'}</span>
-                   {!isExecuting && !isDataQualityReview && (
+                   {!isExecuting && (
                      <button
                        onClick={handleRunPreview}
                        className="mt-4 rounded-md border border-black/10 bg-white px-3 py-1.5 text-xs font-medium text-black/65 shadow-sm transition-colors hover:bg-black/[0.035]"
@@ -1055,9 +1116,8 @@ export const Investigation: React.FC = () => {
               <h3 className="text-sm font-semibold text-gray-900">Preview execution</h3>
               <button
                 onClick={handleRunPreview}
-                disabled={isExecuting || isDataQualityReview}
+                disabled={isExecuting}
                 className="rounded-md bg-[#202123] px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-black disabled:opacity-50"
-                title={isDataQualityReview ? "Execution disabled for Data Quality Review" : undefined}
               >
                 {isExecuting ? 'Running...' : 'Execute preview'}
               </button>
@@ -1071,6 +1131,16 @@ export const Investigation: React.FC = () => {
             
             {previewResult && (
               <div className="flex flex-col gap-3">
+                {previewResult.status === 'blocked' && (
+                  <div className="mb-2 flex flex-col gap-2 rounded-md border border-amber-200 bg-amber-50 p-4">
+                    <div className="flex items-center gap-2 font-semibold text-amber-900">
+                      <AlertTriangle className="h-5 w-5" />
+                      Analysis Blocked
+                    </div>
+                    <p className="text-sm text-amber-800">{previewResult.blockedReasons.join(', ') || 'Canonical preflight did not authorize execution.'}</p>
+                  </div>
+                )}
+
                 {previewResult.status === 'failed' && (
                   <div className="bg-red-50 border border-red-200 rounded-md p-4 mb-2 flex flex-col gap-2">
                     <div className="flex items-center gap-2 text-red-800 font-semibold">
@@ -1107,7 +1177,7 @@ export const Investigation: React.FC = () => {
                   );
                 })()}
                 <div className="flex items-center gap-3 text-xs">
-                  <span className={`px-2 py-0.5 rounded font-medium ${previewResult.status === 'executed' ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>
+                  <span className={`px-2 py-0.5 rounded font-medium ${previewResult.status === 'executed' ? 'bg-emerald-100 text-emerald-700' : previewResult.status === 'blocked' ? 'bg-amber-100 text-amber-800' : 'bg-red-100 text-red-700'}`}>
                     {previewResult.status.toUpperCase()}
                   </span>
                   <span className="text-slate-500">Row count: {previewResult.rowCount}</span>

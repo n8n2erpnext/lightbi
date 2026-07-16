@@ -1,0 +1,33 @@
+{
+  "schemaVersion": "lightbi.phase-7-production-reachability-audit.v1",
+  "phase": "7",
+  "canonicalProductionPath": [
+    "canonical consumer boundary",
+    "commerce/distribution domain activation",
+    "governed metric preflight",
+    "governed question/action generation",
+    "governed runtime preflight",
+    "governed query planning",
+    "governed DuckDB execution",
+    "canonical evidence and caveats"
+  ],
+  "simpleCanonicalHandoff": true,
+  "advancedCanonicalHandoff": true,
+  "investigationLegacyExecutorFallback": false,
+  "productionLegacyOrDeprecatedReachability": 0,
+  "mockExecutionProductionReachability": 0,
+  "phase5ShadowAuditModuleProductionImports": 0,
+  "rawStringScan": {
+    "matches": 14,
+    "classification": "retained definitions, audit runner, type-only presentation adapters, ownership documentation, or comments",
+    "productionSessionPathMatches": 0
+  },
+  "verification": {
+    "phase6AGovernancePassed": true,
+    "phase6BGovernancePassed": true,
+    "phase6B2PreservationAuditPassed": true,
+    "forbiddenInvestigationExecutorMatches": 0
+  },
+  "gate": "pass",
+  "blockers": []
+}

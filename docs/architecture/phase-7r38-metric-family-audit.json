@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "lightbi.phase-7r38-metric-family-audit.v1",
+  "phase": "7R3.8",
+  "evidenceType": "repository_fixture_anchored_semi_synthetic_evidence",
+  "requiredFamilies": 4,
+  "coveredFamilies": 4,
+  "coverage": 1,
+  "families": [
+    {
+      "family": "revenue",
+      "operator": "governed_sum",
+      "results": [
+        { "period": "2026-05", "expected": 22973896244, "actual": 22973896244, "exactMatch": true },
+        { "period": "2026-06", "expected": 20637539164, "actual": 20637539164, "exactMatch": true }
+      ],
+      "authenticAnchorComparisonExact": true,
+      "scenarioComparisonExact": true
+    },
+    {
+      "family": "delivery_operations",
+      "operator": "governed_identity_count",
+      "identity": "ShipmentID",
+      "results": [
+        { "period": "2026-05", "expected": 1500, "actual": 1500, "exactMatch": true },
+        { "period": "2026-06", "expected": 1500, "actual": 1500, "exactMatch": true }
+      ]
+    },
+    {
+      "family": "conditional_gross_profit",
+      "operator": "governed_revenue_minus_cost",
+      "currency": "VND",
+      "results": [
+        { "period": "2026-05", "expected": 3075721244, "actual": 3075721244, "exactMatch": true },
+        { "period": "2026-06", "expected": 2934640164, "actual": 2934640164, "exactMatch": true }
+      ]
+    },
+    {
+      "family": "inventory_on_hand",
+      "operator": "governed_point_in_time_snapshot_sum",
+      "uom": "EA",
+      "results": [
+        { "asOf": "2026-05-31", "expected": 211067, "actual": 211067, "exactMatch": true, "itemWarehouseKeys": 1266, "keyMismatches": 0 },
+        { "asOf": "2026-06-30", "expected": 378041, "actual": 378041, "exactMatch": true, "itemWarehouseKeys": 2198, "keyMismatches": 0 }
+      ],
+      "completeDetailedComparison": true,
+      "periodsCombined": false
+    }
+  ],
+  "execution": {
+    "actualLocalDuckDb": true,
+    "advertisedActions": 18,
+    "executedActions": 18,
+    "successRate": 1,
+    "falseExecutableActions": 0,
+    "silentSumOrCountFallback": false,
+    "decisionUseAuthorized": false,
+    "productionWiringExecuted": false
+  },
+  "status": "pass"
+}

@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "lightbi.phase7r35-revenue-delivery-execution-audit.v1",
+  "phase": "7R3.5",
+  "status": "passed",
+  "revenue": {
+    "operator": "governed_sum",
+    "may": { "expected": 22973896244, "actual": 22973896244, "exactMatch": true },
+    "june": { "expected": 20637539164, "actual": 20637539164, "exactMatch": true },
+    "actionsExecuted": 4,
+    "groupings": ["time_period", "product"],
+    "allGroupedScopeTotalsExact": true,
+    "displayLimitIndependentScopeTotal": true,
+    "unitPriceSubstitution": false,
+    "repeatedTotalSubstitution": false
+  },
+  "delivery": {
+    "operator": "governed_identity_count",
+    "identity": "ShipmentID",
+    "may": { "expected": 1500, "actual": 1500, "exactMatch": true },
+    "june": { "expected": 1500, "actual": 1500, "exactMatch": true },
+    "actionsExecuted": 4,
+    "groupings": ["summary", "delivery_status"],
+    "rowCountFallback": false,
+    "countFallback": false,
+    "duplicateIdentityProtectionActive": true
+  },
+  "executionFailures": 0,
+  "falseExecutableActions": 0,
+  "decisionUseAuthorized": false,
+  "productionWiring": { "executed": false }
+}

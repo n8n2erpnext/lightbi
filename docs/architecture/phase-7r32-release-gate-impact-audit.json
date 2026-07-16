@@ -1,0 +1,35 @@
+{
+  "schemaVersion": "lightbi.phase-7r32-release-gate-impact-audit.v1",
+  "phase": "7R3.2",
+  "before": {"familyCoverage":"2/4","grossProfitBinding":"ambiguous","grossProfitGovernedExecutions":0},
+  "after": {"familyCoverage":"2/4","grossProfitBinding":"exact","grossProfitGovernedExecutions":0},
+  "resolved": ["ambiguous_revenue_binding"],
+  "remainingReleaseBlockers": [
+    {"gate":"conditional gross-profit executable comparison","owner":"source/corpus currency evidence","classification":"currency_evidence_missing"},
+    {"gate":"inventory family executable comparison","owner":"corpus evidence","classification":"authentic_snapshot_and_frozen_truth_unavailable"}
+  ],
+  "verification": {
+    "phase7r32Targeted": {"files":1,"tests":2,"result":"pass"},
+    "unchangedPhase7Evaluator": {"files":1,"tests":1,"result":"pass"},
+    "phase7R1ToR31AndPhase5To6Regressions": {"files":16,"tests":65,"result":"pass"},
+    "understandingCore": {"files":70,"tests":314,"result":"pass"},
+    "typescript": {"diagnostics":0,"result":"pass"},
+    "auditJsonParsing": "pass",
+    "productionLegacyExecutorCalls": 0,
+    "diffCheck": "pass",
+    "fullDesktopSuite": {
+      "runs": 1,
+      "testFiles": {"total":163,"passed":159,"failed":4},
+      "tests": {"total":1128,"passed":1119,"failed":9},
+      "governedDeterministicFailures": 6,
+      "governedTimeoutFailures": 3,
+      "unexpectedFailures": 0,
+      "phase7r32OwnedFailures": 0,
+      "exitStatus": 1,
+      "logPath": "/tmp/phase7r32-full-desktop-suite.log",
+      "logSha256": "bcfc4441c086ac497a2b33711c796e84ccef2b8255ec9eb968ca4beeb17fcd12"
+    }
+  },
+  "releaseImpact": "Gross-profit binding is truthful and exact, but the family remains non-executable because explicit currency compatibility evidence is absent.",
+  "classification": "not_ready_currency_compatibility"
+}

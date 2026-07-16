@@ -1,0 +1,52 @@
+{
+  "schemaVersion": "lightbi.phase-6b2-final-suite-conformance.v1",
+  "phase": "6B.2",
+  "checkpointCommit": "522c019623540581353d6668077ee0ab4395cec6",
+  "command": "cd apps/desktop && npx vitest run",
+  "runsInPhase6B2": 1,
+  "aggregate": {
+    "totalTestFiles": 158,
+    "passedTestFiles": 154,
+    "failedTestFiles": 4,
+    "totalTests": 1102,
+    "passedTests": 1093,
+    "failedTests": 9,
+    "durationSeconds": 264.44,
+    "finalProcessExitStatus": 1
+  },
+  "governedConformance": {
+    "deterministicBaselineFailuresObserved": 6,
+    "timingSensitiveFailuresObserved": 3,
+    "timingSensitiveCasesPassed": 0,
+    "unexpectedFailures": 0,
+    "phase6BOwnedFailures": 0,
+    "allFailureIdentitiesGoverned": true,
+    "allFailureSignaturesGoverned": true
+  },
+  "observedFailures": [
+    {"file": "src/lib/guided-investigation-pipeline.test.ts", "fullTestName": "Guided Investigation Pipeline Orchestrator > Executes the entire end-to-end pipeline deterministically", "class": "deterministic", "signature": "expected 0 to be greater than 0", "conformance": "allowed"},
+    {"file": "src/lib/numeric-health-gate.test.ts", "fullTestName": "evaluateNumericHealth > blocks JS non-integer decimals", "class": "deterministic", "signature": "expected true to be false", "conformance": "allowed"},
+    {"file": "src/lib/numeric-health-gate.test.ts", "fullTestName": "evaluateNumericHealth > hard-blocks decimal-looking strings (US format)", "class": "deterministic", "signature": "expected true to be false", "conformance": "allowed"},
+    {"file": "src/lib/numeric-health-gate.test.ts", "fullTestName": "evaluateNumericHealth > hard-blocks decimal-looking strings (EU format)", "class": "deterministic", "signature": "expected true to be false", "conformance": "allowed"},
+    {"file": "src/lib/virtual-dataset-planner.test.ts", "fullTestName": "Virtual Dataset Planner > 2. Product Performance + inventory risk question", "class": "deterministic", "signature": "expected 'draft' to be 'ready'", "conformance": "allowed"},
+    {"file": "src/lib/virtual-dataset-planner.test.ts", "fullTestName": "Virtual Dataset Planner > 6. Many-to-many relationship", "class": "deterministic", "signature": "expected 'draft' to be 'ready'", "conformance": "allowed"},
+    {"file": "src/lib/ba-comparison-engine.test.ts", "fullTestName": "ba comparison engine > answers the real May vs June 2026 sales ERP comparison with revenue drivers and profit caveats", "class": "timing_sensitive", "signature": "Test timed out in 5000ms", "conformance": "allowed"},
+    {"file": "src/lib/ba-comparison-engine.test.ts", "fullTestName": "ba comparison engine > answers the real May vs June 2026 accounting ERP comparison with top 10 profit evidence", "class": "timing_sensitive", "signature": "Test timed out in 5000ms", "conformance": "allowed"},
+    {"file": "src/lib/ba-comparison-engine.test.ts", "fullTestName": "ba comparison engine > handles the real May vs June 2026 logistics ERP pair without pretending revenue is available", "class": "timing_sensitive", "signature": "Test timed out in 5000ms", "conformance": "allowed"}
+  ],
+  "completeLog": {
+    "pathDuringVerification": "/tmp/phase6b2-full-suite.log",
+    "sha256": "8caf1fdbe84a20503ceb9776bb6fa7c77b93dfc21a18f89751543a706877fd33",
+    "lineCount": 165,
+    "byteCount": 7149,
+    "stdoutAndStderrCombined": true,
+    "finalAggregateRetained": true
+  },
+  "baselineAllowlist": {
+    "path": "docs/architecture/phase-5b6b-regression-baseline-allowlist.v1.json",
+    "sha256": "baa86950582b7d758396abb0c69fdaffcd3c2cbbb22b71dd3bbdb3c0aed1c4f5",
+    "modified": false
+  },
+  "finalWorktreeFullSuiteVerified": true,
+  "classification": "phase6_canonical_cutover_complete_ready_for_mvp_proof"
+}

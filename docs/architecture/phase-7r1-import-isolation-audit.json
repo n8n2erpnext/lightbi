@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "lightbi.phase-7r1-import-isolation-audit.v1",
+  "phase": "7R1",
+  "productionFilesChangedByPhase": [
+    "apps/desktop/src/lib/semantic-registry.ts",
+    "apps/desktop/src/lib/understanding-core/semantic-candidate-engine.ts",
+    "apps/desktop/src/lib/understanding-core/semantic-resolver.ts"
+  ],
+  "forbiddenLayerChanges": {
+    "metrics": false,
+    "questions": false,
+    "actions": false,
+    "runtimePlanning": false,
+    "duckdb": false,
+    "ui": false,
+    "domainActivationPolicy": false,
+    "phase6ConsumerWiring": false
+  },
+  "downstreamPolicyHashes": {
+    "governedMetricPolicy": "79b00e4aa7e97311da56db1f19a996c52c8034dc52da21b0dc6981dfd1282702",
+    "questionActionPolicy": "9c8ce5e0904a95f70e80cb81bc79a4c52ba4729f4772a7e9a8d6e997da3d6cbb",
+    "governedRuntimePolicy": "9b5ef8acc2d6761b428b41713c4e0d87a9db3bb9c79d251e51026057d0ea00b4"
+  },
+  "phase5b6bBaselineAllowlist": {
+    "path": "docs/architecture/phase-5b6b-regression-baseline-allowlist.v1.json",
+    "sha256": "baa86950582b7d758396abb0c69fdaffcd3c2cbbb22b71dd3bbdb3c0aed1c4f5",
+    "modified": false
+  },
+  "productionSpecificityScan": {
+    "sampleIds": 0,
+    "filenames": 0,
+    "sourceHashes": 0,
+    "expectedAnswers": 0,
+    "exactRowCounts": 0
+  },
+  "canonicalEngine": "understanding-core"
+}

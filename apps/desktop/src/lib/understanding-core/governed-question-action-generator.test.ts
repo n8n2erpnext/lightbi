@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { questionActionPolicyHash } from "./commerce-distribution-question-policy";
+import { deterministicPolicySha256 } from "./contextual-evidence-policy";
 import { generateGovernedCommerceQuestionsAndActions } from "./governed-question-action-generator";
 import type { CanonicalMetricSourceV1, DomainActivationArtifactV1, GovernedMetricPreflightItemV1, GovernedMetricPreflightV1, GovernedMetricStateV1 } from "./governed-domain-metric-contracts";
 import type { QuestionActionGenerationInputV1 } from "./governed-question-action-contracts";
@@ -10,21 +11,42 @@ type SourceOptions = { semantics?: Array<{ id: string; index?: number; state?: "
 function source(options: SourceOptions = {}): CanonicalMetricSourceV1 {
   const semantics = options.semantics ?? [
     { id: "report_date" }, { id: "product" }, { id: "delivery_status" },
+    { id: "order" }, { id: "revenue" }, { id: "sold_qty" },
+    { id: "shipment" }, { id: "stock_qty" }, { id: "total_cost" },
+    { id: "currency" }, { id: "uom" },
   ];
   return {
-    physical: { provenance: { sourceId: "canonical-source", sourceHash: { algorithm: "sha256", value: "phase5m2-source" } } },
+    physical: {
+      provenance: { sourceId: "canonical-source", sourceHash: { algorithm: "sha256", value: "phase5m2-source" } },
+      sourceProfile: {
+        columns: semantics.map((item, index) => ({
+          sourceColumnIndex: item.index ?? index,
+          physicalColumnName: item.id,
+          nullCount: 0,
+          parseEvidence: [{ parser: "numeric", attemptedCount: 1, successCount: 1, failureCount: 0, representativeFailures: [] }],
+          technicalColumnEvidence: [],
+        })),
+      },
+    },
     semantic: {
       sourceId: "canonical-source",
       columns: semantics.map((item, index) => ({
         sourceColumnIndex: item.index ?? index,
         finalState: item.state ?? "confirmed",
+        physicalColumn: item.id,
         selectedCandidateId: (item.state ?? "confirmed") === "ambiguous" ? null : item.id,
         candidateTraces: (item.state ?? "confirmed") === "ambiguous" ? [{ candidateId: item.id }] : [],
       })),
       productionWiring: { executed: options.production ?? false },
     },
     grain: {
-      signature: { temporalMode: { value: options.temporalMode ?? "event", state: options.temporalState ?? "confirmed" } },
+      signature: {
+        structuralForm: { value: "line", state: "confirmed" },
+        temporalMode: { value: options.temporalMode ?? "event", state: options.temporalState ?? "confirmed" },
+        aggregationForm: { value: options.temporalMode === "snapshot" ? "snapshot_values" : "additive_measures", state: "confirmed" },
+        identityBasis: { state: "confirmed", selectedCandidateIds: semantics.map((item) => item.id).filter((id) => ["order", "shipment", "product"].includes(id)) },
+        measureSafety: { safeToAggregate: false, riskIds: [] },
+      },
       productionWiring: { executed: options.production ?? false },
     },
     readiness: { productionWiring: { executed: options.production ?? false } },
@@ -45,6 +67,9 @@ function metric(metricId: string, state: GovernedMetricStateV1 = "ready", blocke
     currencyCompatible: null,
     duplicateHandlingSatisfied: blockers.length === 0,
     relationshipRequirementsSatisfied: blockers.length === 0,
+    selectedBindings: [],
+    selectedIdentityCandidateId: null,
+    currencyEvidenceIds: [], inventorySnapshotEvidenceIds: [],
     evidence: [],
     blockers: blockers.map((code) => ({ code, severity: "material", references: [] })),
     limitations: state === "conditionally_ready" ? [{ code: "basis_requires_confirmation", references: [] }] : [],
@@ -61,15 +86,15 @@ function metric(metricId: string, state: GovernedMetricStateV1 = "ready", blocke
 }
 
 function preflight(metrics: GovernedMetricPreflightItemV1[]): GovernedMetricPreflightV1 {
-  return {
+  const canonicalMetrics = [...metrics].sort((a, b) => a.metricId.localeCompare(b.metricId));
+  const base: Omit<GovernedMetricPreflightV1, "identity"> = {
     schemaVersion: "lightbi.governed-metric-preflight.v1",
     domainPackId: "commerce_distribution_mvp",
     policyVersion: "lightbi.governed-metric-policy.v1",
     policyHash: governedMetricPolicyHash(),
-    identity: "preflight-fixture-v1",
     sourceReferences: ["source:phase5m2-source"],
     tuningAllowed: true,
-    metrics,
+    metrics: canonicalMetrics,
     blockers: metrics.flatMap((item) => item.blockers),
     limitations: metrics.flatMap((item) => item.limitations),
     metricResultsProduced: false,
@@ -78,6 +103,10 @@ function preflight(metrics: GovernedMetricPreflightItemV1[]): GovernedMetricPref
     metricExecutionExecuted: false,
     decisionUseAuthorized: false,
     productionWiring: { executed: false },
+  };
+  return {
+    ...base,
+    identity: deterministicPolicySha256({ policyHash: base.policyHash, sourceReferences: base.sourceReferences, tuningAllowed: base.tuningAllowed, metrics: base.metrics }),
   };
 }
 
@@ -114,15 +143,21 @@ describe("Phase 5M2 governed commerce question and action generation", () => {
     expect(result.candidateQuestions.some((item) => item.questionId === "commerce.transaction_count.summary" && item.actionCandidateId)).toBe(true);
     expect(result.candidateQuestions.some((item) => item.questionId === "commerce.delivery_count.summary" && item.actionCandidateId)).toBe(true);
 
-    const inventory = generated([metric("inventory_on_hand")], source({ semantics: [{ id: "product" }], temporalMode: "snapshot" }));
-    expect(inventory.candidateQuestions.find((item) => item.questionId === "commerce.inventory_on_hand.as_of")?.actionCandidateId).not.toBeNull();
+    const inventory = generated([metric("inventory_on_hand")], source({ semantics: [{ id: "product" }, { id: "stock_qty" }, { id: "uom" }], temporalMode: "snapshot" }));
+    expect(inventory.candidateQuestions.find((item) => item.questionId === "commerce.inventory_on_hand.as_of")?.actionCandidateId).toBeNull();
+    expect(inventory.candidateQuestions.find((item) => item.questionId === "commerce.inventory_on_hand.as_of")?.questionState).toBe("blocked");
     expect(inventory.candidateQuestions.some((item) => item.questionId.includes("movement"))).toBe(false);
   });
 
   it("returns at most five deterministic defaults independent of input order", () => {
     const metrics = [metric("gross_profit", "conditionally_ready"), metric("delivery_count"), metric("transaction_count"), metric("quantity_sold"), metric("sales_revenue")];
     const first = generated(metrics);
-    const reorderedSource = source({ semantics: [{ id: "delivery_status", index: 2 }, { id: "product", index: 1 }, { id: "report_date", index: 0 }] });
+    const reorderedSource = source({ semantics: [
+      { id: "uom", index: 10 }, { id: "currency", index: 9 }, { id: "total_cost", index: 8 },
+      { id: "stock_qty", index: 7 }, { id: "shipment", index: 6 }, { id: "sold_qty", index: 5 },
+      { id: "revenue", index: 4 }, { id: "order", index: 3 }, { id: "delivery_status", index: 2 },
+      { id: "product", index: 1 }, { id: "report_date", index: 0 },
+    ] });
     const second = generated([...metrics].reverse(), reorderedSource);
     expect(first.defaultQuestions).toHaveLength(5);
     expect(first.defaultQuestions.map((item) => item.questionId)).toEqual(second.defaultQuestions.map((item) => item.questionId));
@@ -150,8 +185,9 @@ describe("Phase 5M2 governed commerce question and action generation", () => {
   });
 
   it("preserves snapshot, domain, alias, duplication, and state boundaries", () => {
-    const snapshot = generated([metric("inventory_on_hand")], source({ semantics: [{ id: "product" }], temporalMode: "snapshot" }));
+    const snapshot = generated([metric("inventory_on_hand")], source({ semantics: [{ id: "product" }, { id: "stock_qty" }, { id: "uom" }], temporalMode: "snapshot" }));
     const inventory = snapshot.candidateQuestions.filter((item) => item.metricId === "inventory_on_hand");
+    expect(inventory.every((item) => item.actionCandidateId === null)).toBe(true);
     expect(inventory.every((item) => item.prohibitedUses.includes("inventory_movement_claim"))).toBe(true);
     expect(inventory.some((item) => item.title.toLowerCase().includes("movement"))).toBe(false);
 

@@ -1,0 +1,22 @@
+{
+  "schemaVersion": "lightbi.phase-6b2-canonical-error-state-audit.v1",
+  "phase": "6B.2",
+  "states": [
+    {"state": "preflight_blocked", "source": "canonical handoff and query-planning blockers", "presentation": "Analysis Blocked", "stopsBeforeExecution": true, "legacyFallback": false},
+    {"state": "query_plan_invalid", "source": "queryPlanning.state=blocked", "presentation": "Analysis Blocked with planning blockers", "stopsBeforeExecution": true, "legacyFallback": false},
+    {"state": "execution_failed", "source": "governed result status or governed executor exception", "presentation": "Execution Failed with canonical error", "stopsBeforeExecution": false, "legacyFallback": false},
+    {"state": "result_unavailable", "source": "executed canonical result with zero rows", "presentation": "Execution Failed: empty dataset unavailable", "chartRendered": false, "legacyFallback": false},
+    {"state": "incomplete_canonical_input", "source": "missing retained full rows", "presentation": "Analysis Blocked: canonical_full_file_rows_required", "stopsBeforeExecution": true, "legacyFallback": false},
+    {"state": "stale_artifact_identity", "source": "canonical blocker", "presentation": "Analysis Blocked with stale identity reason", "stopsBeforeExecution": true, "legacyFallback": false},
+    {"state": "restriction_or_evidence_integrity_failure", "source": "runtime preflight blockers/restrictions/evidence", "presentation": "blocked or failed canonical state retaining references", "stopsBeforeExecution": true, "legacyFallback": false},
+    {"state": "validation_failed", "source": "result validation boundary", "presentation": "Execution Failed with validation warnings", "chartRendered": false, "legacyFallback": false}
+  ],
+  "invariants": {
+    "blockedActionsExecute": false,
+    "failedResultsRenderChart": false,
+    "restrictionsRetainedOnSuccess": true,
+    "restrictionsRetainedOnFailure": true,
+    "evidenceRetained": true,
+    "decisionUseAuthorized": false
+  }
+}

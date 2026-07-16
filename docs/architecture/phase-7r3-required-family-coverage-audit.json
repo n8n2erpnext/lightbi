@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "lightbi.phase-7r3-required-family-coverage-audit.v1",
+  "phase": "7R3",
+  "requiredFamilies": 4,
+  "familiesWithExecutableVerifiedComparison": 1,
+  "coverage": 0.25,
+  "gate": "fail",
+  "families": [
+    {"family":"revenue","metricIds":["sales_revenue"],"authenticInputs":true,"frozenTruth":true,"m1State":"conditionally_ready","m3State":"conditionally_executable","verifiedComparisons":12,"matched":12,"state":"covered","classification":"no_defect"},
+    {"family":"inventory","metricIds":["inventory_on_hand"],"authenticInputs":true,"frozenCompatibleTruth":false,"m1State":"blocked","m3State":"not_reached","verifiedComparisons":0,"state":"not_covered","classification":"corpus_ground_truth_gap","blockers":["point_in_time_snapshot_grain_not_proven","as_of_basis_missing","movement_quantity_truth_is_not_inventory_on_hand_truth"]},
+    {"family":"delivery_operations","metricIds":["delivery_count"],"authenticInputs":true,"frozenTruth":true,"m1State":"blocked","m3State":"not_reached","verifiedComparisons":0,"state":"not_covered","classification":"identity_or_deduplication_defect","blockers":["governed_identity_required_for_count","metric_time_basis_incompatible_or_missing"]},
+    {"family":"conditional_finance","metricIds":["gross_profit"],"authenticInputs":true,"frozenTruth":true,"m1State":"blocked","m3State":"not_reached","verifiedComparisons":0,"state":"not_covered","classification":"correct_governed_blocker","blockers":["repeated_or_unresolved_measure_aggregation","required_readiness_unavailable:repeated_measure_protection_ready"]}
+  ],
+  "coverageAttempt": {"newMetricsAdded":false,"groundTruthInvented":false,"blockersWeakened":false,"correctlyBlockedCasesCountedAsIncorrect":false},
+  "owningLayers": ["corpus_ground_truth","canonical_grain_identity","metric_preflight_readiness"]
+}

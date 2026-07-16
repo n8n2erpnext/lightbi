@@ -1,0 +1,118 @@
+{
+  "schemaVersion": "lightbi.phase-7r33-relationship-candidate-audit.v1",
+  "phase": "7R3.3",
+  "exactObservedRelationships": [
+    {
+      "period": "2026-05",
+      "sources": [
+        "sales",
+        "accounting"
+      ],
+      "key": "OrderID",
+      "leftRows": 1500,
+      "rightRows": 1500,
+      "leftDistinct": 1500,
+      "rightDistinct": 1500,
+      "intersectionDistinct": 1500,
+      "leftUnique": true,
+      "rightUnique": true,
+      "exactSetMatch": true,
+      "cardinality": "one_to_one",
+      "joinUse": "identity reconciliation only",
+      "currencyScopeProved": false,
+      "inventorySnapshotScopeProved": false
+    },
+    {
+      "period": "2026-05",
+      "sources": [
+        "accounting",
+        "logistics"
+      ],
+      "key": "OrderID",
+      "leftRows": 1500,
+      "rightRows": 1500,
+      "leftDistinct": 1500,
+      "rightDistinct": 1500,
+      "intersectionDistinct": 1500,
+      "leftUnique": true,
+      "rightUnique": true,
+      "exactSetMatch": true,
+      "cardinality": "one_to_one",
+      "joinUse": "identity reconciliation only",
+      "currencyScopeProved": false,
+      "inventorySnapshotScopeProved": false
+    },
+    {
+      "period": "2026-06",
+      "sources": [
+        "sales",
+        "accounting"
+      ],
+      "key": "OrderID",
+      "leftRows": 1500,
+      "rightRows": 1500,
+      "leftDistinct": 1500,
+      "rightDistinct": 1500,
+      "intersectionDistinct": 1500,
+      "leftUnique": true,
+      "rightUnique": true,
+      "exactSetMatch": true,
+      "cardinality": "one_to_one",
+      "joinUse": "identity reconciliation only",
+      "currencyScopeProved": false,
+      "inventorySnapshotScopeProved": false
+    },
+    {
+      "period": "2026-06",
+      "sources": [
+        "accounting",
+        "logistics"
+      ],
+      "key": "OrderID",
+      "leftRows": 1500,
+      "rightRows": 1500,
+      "leftDistinct": 1500,
+      "rightDistinct": 1500,
+      "intersectionDistinct": 1500,
+      "leftUnique": true,
+      "rightUnique": true,
+      "exactSetMatch": true,
+      "cardinality": "one_to_one",
+      "joinUse": "identity reconciliation only",
+      "currencyScopeProved": false,
+      "inventorySnapshotScopeProved": false
+    }
+  ],
+  "otherCandidates": [
+    {
+      "sources": [
+        "Superstore Orders",
+        "Superstore Returns"
+      ],
+      "keys": [
+        "Order ID"
+      ],
+      "status": "authentic within-workbook relationship; unrelated to accounting currency/inventory closure"
+    },
+    {
+      "sources": [
+        "World Bank Data by country",
+        "Regions and subregions"
+      ],
+      "keys": [
+        "Country Name/Country"
+      ],
+      "status": "authentic lookup relationship; unrelated"
+    },
+    {
+      "sources": [
+        "three bcctnhapTTKT reports"
+      ],
+      "keys": [
+        "report-family columns plus period-scoped load/trip identifiers"
+      ],
+      "status": "period series candidate; unrelated to item inventory snapshot"
+    }
+  ],
+  "rejectedClosureInference": "Exact business identity links do not imply same currency, and movement/master relationships do not imply inventory snapshot balances."
+}

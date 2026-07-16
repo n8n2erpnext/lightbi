@@ -13,6 +13,7 @@ import type {
   GovernedRuntimeStateV1,
 } from "./governed-runtime-contracts";
 import { GOVERNED_RUNTIME_POLICY_V1, governedRuntimePolicyHash } from "./governed-runtime-policy";
+import { currencyEvidenceMatchesSource, inventorySnapshotEvidenceMatchesSource } from "./canonical-source-evidence";
 
 const USABLE_STATES = new Set(["confirmed", "probable"]);
 
@@ -71,10 +72,26 @@ function semanticBinding(source: CanonicalMetricSourceV1, semanticId: string, ro
   });
 }
 
-function requirementBinding(source: CanonicalMetricSourceV1, definition: GovernedMetricDefinitionV1, requirementIndex: number): { binding: GovernedColumnBindingV1 | null; blockers: GovernedRuntimeBlockerV1[] } {
+function exactMetricIdentity(source: CanonicalMetricSourceV1, binding: GovernedColumnBindingV1): string | null {
+  const identity = source.grain.signature.identityBasis;
+  if (USABLE_STATES.has(identity.state) && identity.selectedCandidateIds.includes(binding.semanticId)) return binding.semanticId;
+  const profile = source.physical.sourceProfile.columns.find((item) => item.sourceColumnIndex === binding.sourceColumnIndex);
+  if (!profile || profile.nullCount !== 0 || profile.cardinality?.mode !== "exact" || profile.uniqueness?.uniquenessRatio !== 1) return null;
+  const candidateId = `key:${binding.sourceColumnIndex}`;
+  const retained = [...identity.selectedCandidateIds, ...identity.alternativeCandidateIds].includes(candidateId);
+  const evidenced = identity.supportingEvidenceReferences.includes(`${candidateId}:identity`) && identity.supportingEvidenceReferences.includes(`${candidateId}:unique`);
+  return retained && evidenced ? candidateId : null;
+}
+
+function requirementBinding(source: CanonicalMetricSourceV1, definition: GovernedMetricDefinitionV1, requirementIndex: number, metric: GovernedMetricPreflightItemV1): { binding: GovernedColumnBindingV1 | null; blockers: GovernedRuntimeBlockerV1[] } {
   const requirement = definition.requirements[requirementIndex];
   const role: GovernedColumnBindingV1["role"] = definition.aggregationOperator === "count_governed_identity" ? "identity" : "measure";
-  const matches = requirement.semanticSignals.flatMap((semanticId) => semanticBinding(source, semanticId, role, requirement.requirementId));
+  const matches = definition.metricId === "gross_profit"
+    ? metric.selectedBindings.filter((item) => item.requirementId === requirement.requirementId && item.sourceReference === sourceReference(source)).flatMap((selected) => {
+        const exact = semanticBinding(source, selected.semanticId, role, requirement.requirementId).find((item) => item.sourceColumnIndex === selected.sourceColumnIndex && item.physicalColumn === selected.physicalColumn);
+        return exact ? [exact] : [];
+      })
+    : requirement.semanticSignals.flatMap((semanticId) => semanticBinding(source, semanticId, role, requirement.requirementId));
   if (matches.length === 0) return { binding: null, blockers: [blocker(`runtime_binding_missing:${requirement.requirementId}`, "binding", [...requirement.semanticSignals], "critical")] };
   if (matches.length > 1) return { binding: null, blockers: [blocker(`runtime_binding_ambiguous:${requirement.requirementId}`, "binding", matches.map((item) => `${item.semanticId}:${item.sourceColumnIndex}`), "critical")] };
   const binding = matches[0];
@@ -110,10 +127,30 @@ function validateDimensionBindings(input: GovernedRuntimePreflightInputV1): { bi
 
 function validateTimeBinding(input: GovernedRuntimePreflightInputV1): { binding: GovernedColumnBindingV1 | null; blockers: GovernedRuntimeBlockerV1[] } {
   const action = input.actionCandidate;
-  if (!action || action.timeBasis.requirement === "not_required" || action.timeBasis.requirement === "point_in_time_as_of") return { binding: null, blockers: [] };
+  if (!action || action.timeBasis.requirement === "not_required") return { binding: null, blockers: [] };
+  if (action.timeBasis.requirement === "point_in_time_as_of") {
+    const basis = input.asOfBasis;
+    if (!basis || basis.kind !== "column_value" || basis.sourceColumnIndex === null || !basis.semanticId) return { binding: null, blockers: [blocker("governed_snapshot_time_binding_required", "time", [], "critical")] };
+    const binding = semanticBinding(input.canonicalSource, basis.semanticId, "time", "inventory_as_of").find((item) => item.sourceColumnIndex === basis.sourceColumnIndex) ?? null;
+    return binding ? { binding, blockers: [] } : { binding: null, blockers: [blocker("canonical_snapshot_time_binding_mismatch", "time", [basis.semanticId, String(basis.sourceColumnIndex)], "critical")] };
+  }
   if (action.timeBasis.sourceColumnIndex === null || action.timeBasis.resolvedSemanticId === null) return { binding: null, blockers: [blocker("governed_time_binding_required", "time", [action.timeBasis.requirement], "critical")] };
   const binding = semanticBinding(input.canonicalSource, action.timeBasis.resolvedSemanticId, "time", `time:${action.timeBasis.requirement}`).find((item) => item.sourceColumnIndex === action.timeBasis.sourceColumnIndex) ?? null;
   return binding ? { binding, blockers: [] } : { binding: null, blockers: [blocker("canonical_time_binding_mismatch", "time", [action.timeBasis.resolvedSemanticId, String(action.timeBasis.sourceColumnIndex)], "critical")] };
+}
+
+function validateInventorySnapshotEvidence(input: GovernedRuntimePreflightInputV1, metric: GovernedMetricPreflightItemV1): { blockers: GovernedRuntimeBlockerV1[]; evidence: NonNullable<CanonicalMetricSourceV1["sourceEvidence"]>["inventorySnapshots"] } {
+  if (metric.metricId !== "inventory_on_hand") return { blockers: [], evidence: [] };
+  const current = (input.canonicalSource.sourceEvidence?.inventorySnapshots ?? []).filter((item) => inventorySnapshotEvidenceMatchesSource(item, input.canonicalSource));
+  const expectedIds = unique(metric.inventorySnapshotEvidenceIds);
+  const currentIds = unique(current.map((item) => item.evidenceId));
+  const basis = input.asOfBasis;
+  const identity = input.canonicalSource.grain.signature.identityBasis;
+  const exactBasis = current.length === 1 && basis?.kind === "column_value" && basis.semanticId === current[0].asOf.semanticId && basis.value === current[0].asOf.value
+    && input.canonicalSource.semantic.columns.some((column) => column.sourceColumnIndex === basis.sourceColumnIndex && column.physicalColumn === current[0].asOf.physicalColumn);
+  const identityPreserved = metric.selectedIdentityCandidateId !== null && identity.selectedCandidateIds.includes(metric.selectedIdentityCandidateId);
+  const valid = expectedIds.length === 1 && currentIds.length === 1 && canonicalJson(expectedIds) === canonicalJson(currentIds) && exactBasis && identityPreserved && metric.unitCompatible === true;
+  return valid ? { blockers: [], evidence: current } : { blockers: [blocker("inventory_source_bound_snapshot_evidence_mismatch", "grain", [...expectedIds, ...currentIds, metric.selectedIdentityCandidateId ?? "missing_identity"], "critical")], evidence: current };
 }
 
 function validateAsOf(input: GovernedRuntimePreflightInputV1, metricId: string): GovernedRuntimeBlockerV1[] {
@@ -180,11 +217,34 @@ export function preflightGovernedRuntimeAction(input: GovernedRuntimePreflightIn
 
   const metricBindings: GovernedColumnBindingV1[] = [];
   definition.requirements.forEach((_, index) => {
-    const result = requirementBinding(input.canonicalSource, definition, index);
+    const result = requirementBinding(input.canonicalSource, definition, index, metric);
     blockers.push(...result.blockers);
     if (result.binding) metricBindings.push(result.binding);
   });
-  if (["transaction_count", "delivery_count"].includes(metric.metricId)) {
+  let grossProfitCurrencyEvidence: NonNullable<CanonicalMetricSourceV1["sourceEvidence"]>["currency"] = [];
+  if (metric.metricId === "gross_profit") {
+    const expectedIds = unique(metric.currencyEvidenceIds);
+    const current = (input.canonicalSource.sourceEvidence?.currency ?? []).filter((item) => currencyEvidenceMatchesSource(item, input.canonicalSource));
+    const currentIds = unique(current.map((item) => item.evidenceId));
+    const selectedColumns = metricBindings.map((binding) => binding.physicalColumn);
+    const scopeValid = current.every((item) => item.scope === "all_money_measures" || selectedColumns.every((column) => item.applicableMonetaryColumns.includes(column)));
+    const currencyValues = unique(current.map((item) => item.currency));
+    const periods = unique(current.map((item) => item.reportingPeriod));
+    if (expectedIds.length !== 1 || currentIds.length !== 1 || canonicalJson(expectedIds) !== canonicalJson(currentIds) || !scopeValid || currencyValues.length !== 1 || periods.length !== 1) {
+      blockers.push(blocker("gross_profit_source_bound_currency_evidence_mismatch", "unit_currency", [...expectedIds, ...currentIds], "critical"));
+    } else {
+      grossProfitCurrencyEvidence = current;
+    }
+    const identity = input.canonicalSource.grain.signature.identityBasis;
+    if (!metric.selectedIdentityCandidateId || !identity.selectedCandidateIds.includes(metric.selectedIdentityCandidateId)) blockers.push(blocker("gross_profit_selected_identity_not_preserved", "grain", [metric.selectedIdentityCandidateId ?? "missing"], "critical"));
+  }
+  const inventorySnapshot = validateInventorySnapshotEvidence(input, metric);
+  blockers.push(...inventorySnapshot.blockers);
+  if (metric.metricId === "delivery_count") {
+    const binding = metricBindings.find((item) => item.role === "identity" && item.semanticId === "shipment");
+    const identityCandidateId = binding ? exactMetricIdentity(input.canonicalSource, binding) : null;
+    if (!identityCandidateId) blockers.push(blocker("governed_delivery_identity_not_proved", "grain", binding ? [binding.semanticId, String(binding.sourceColumnIndex)] : [], "critical"));
+  } else if (metric.metricId === "transaction_count") {
     const identityIds = input.canonicalSource.grain.signature.identityBasis.selectedCandidateIds;
     if (!metricBindings.some((binding) => identityIds.includes(binding.semanticId)) || !USABLE_STATES.has(input.canonicalSource.grain.signature.identityBasis.state)) blockers.push(blocker("governed_identity_semantics_not_bound_to_grain", "grain", identityIds, "critical"));
   }
@@ -210,6 +270,8 @@ export function preflightGovernedRuntimeAction(input: GovernedRuntimePreflightIn
     evidence(`runtime-policy:${runtimePolicyHash}`, "runtime_policy", [runtimePolicyHash], "governed_policy"),
     evidence(`grain:${metric.metricId}`, "grain", [input.canonicalSource.grain.signature.structuralForm.value, input.canonicalSource.grain.signature.temporalMode.value], "canonical_artifact"),
     ...metricBindings.map((binding) => evidence(`binding:${binding.requirementId}`, "canonical_binding", [binding.semanticId, String(binding.sourceColumnIndex), binding.physicalColumn], "canonical_artifact")),
+    ...grossProfitCurrencyEvidence.map((item) => evidence(item.evidenceId, "currency", [item.currency, item.reportingPeriod, item.scope, item.provenance.kind, item.provenance.reference, ...item.applicableMonetaryColumns], "source_bound_contract")),
+    ...(inventorySnapshot.evidence ?? []).map((item) => evidence(item.evidenceId, "inventory_snapshot", [item.asOf.value, item.unit.value, item.itemIdentity.physicalColumn, item.warehouseIdentity.physicalColumn, item.quantity.physicalColumn], "source_bound_contract")),
     ...dimensions.bindings.map((binding) => evidence(`group:${binding.semanticId}`, "canonical_binding", [String(binding.sourceColumnIndex), binding.physicalColumn], "canonical_artifact")),
   ];
   const operator = (GOVERNED_RUNTIME_POLICY_V1.operators as Readonly<Record<string, GovernedRuntimeActionV1["operator"]>>)[metric.metricId];

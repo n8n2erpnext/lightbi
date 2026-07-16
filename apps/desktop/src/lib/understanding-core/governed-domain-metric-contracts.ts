@@ -20,9 +20,56 @@ export type GovernedMetricLimitationV1 = { code: string; references: string[] };
 export type GovernedMetricRemediationV1 = { code: string; parameters: Record<string, string | number | boolean> };
 export type GovernedMetricEvidenceV1 = {
   evidenceId: string;
-  kind: "physical" | "semantic" | "grain" | "relationship" | "readiness" | "policy";
+  kind: "physical" | "semantic" | "grain" | "relationship" | "readiness" | "policy" | "currency" | "inventory_snapshot";
   references: string[];
-  provenance: "full_file" | "canonical_resolution" | "canonical_readiness" | "governed_policy";
+  provenance: "full_file" | "canonical_resolution" | "canonical_readiness" | "governed_policy" | "source_bound_contract";
+};
+
+export type CanonicalSourceCurrencyEvidenceV1 = {
+  schemaVersion: "lightbi.canonical-source-currency-evidence.v1";
+  evidenceId: string;
+  sourceId: string;
+  sourceHash: { algorithm: "sha256"; value: string };
+  currency: string;
+  provenance: {
+    kind: "declared_scenario_metadata" | "declared_source_metadata";
+    reference: string;
+    referenceHash: { algorithm: "sha256"; value: string };
+  };
+  scope: "selected_columns" | "all_money_measures";
+  applicableMonetaryColumns: string[];
+  reportingPeriod: string;
+  inferred: false;
+  attachedAt: "canonical_source";
+};
+
+export type CanonicalSourceInventorySnapshotEvidenceV1 = {
+  schemaVersion: "lightbi.canonical-source-inventory-snapshot-evidence.v1";
+  evidenceId: string;
+  sourceId: string;
+  sourceHash: { algorithm: "sha256"; value: string };
+  provenance: {
+    kind: "declared_scenario_metadata" | "declared_source_metadata";
+    reference: string;
+    referenceHash: { algorithm: "sha256"; value: string };
+  };
+  scope: "one_item_warehouse_as_of_snapshot";
+  quantity: { physicalColumn: string; semanticId: "stock_qty" | "inventory" };
+  itemIdentity: { physicalColumn: string; semanticId: "sku" };
+  warehouseIdentity: { physicalColumn: string; semanticId: "warehouse" };
+  asOf: { physicalColumn: string; semanticId: "time_period"; value: string };
+  unit: { physicalColumn: string; semanticId: "uom"; value: string };
+  inferred: false;
+  attachedAt: "canonical_source";
+};
+
+export type GovernedMetricSelectedBindingV1 = {
+  requirementId: string;
+  semanticId: string;
+  sourceReference: string;
+  sourceColumnIndex: number;
+  physicalColumn: string;
+  semanticState: Extract<SemanticResolutionState, "confirmed" | "probable">;
 };
 
 export type GovernedMetricRequirementV1 = {
@@ -111,6 +158,7 @@ export type CanonicalMetricSourceV1 = {
   semantic: SemanticResolutionArtifactV1;
   grain: GrainResolutionArtifactV1;
   readiness: UnderstandingReadinessArtifactV1;
+  sourceEvidence?: { currency: CanonicalSourceCurrencyEvidenceV1[]; inventorySnapshots?: CanonicalSourceInventorySnapshotEvidenceV1[] };
 };
 
 export type DomainMetricEvaluationContextV1 = {
@@ -173,6 +221,10 @@ export type GovernedMetricPreflightItemV1 = {
   currencyCompatible: boolean | null;
   duplicateHandlingSatisfied: boolean;
   relationshipRequirementsSatisfied: boolean;
+  selectedBindings: GovernedMetricSelectedBindingV1[];
+  selectedIdentityCandidateId: string | null;
+  currencyEvidenceIds: string[];
+  inventorySnapshotEvidenceIds: string[];
   evidence: GovernedMetricEvidenceV1[];
   blockers: GovernedMetricBlockerV1[];
   limitations: GovernedMetricLimitationV1[];

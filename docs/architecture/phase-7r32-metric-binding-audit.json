@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "lightbi.phase-7r32-metric-binding-audit.v1",
+  "phase": "7R3.2",
+  "metric": {"metricId":"gross_profit","version":"1.0.1","operatorDefinition":"derive_subtraction","runtimeOperator":"governed_revenue_minus_cost"},
+  "correction": {
+    "before": {"grossProfitRevenueSignals":["revenue","net_revenue","invoice_total"],"result":"ambiguous between Revenue_Credit and InvoiceTotal"},
+    "after": {"grossProfitRevenueSignals":["revenue","net_revenue"],"result":"one exact Revenue_Credit binding"},
+    "businessRule": "Gross profit uses governed revenue excluding tax-inclusive invoice totals.",
+    "forbiddenSelectionMethodsUsed": []
+  },
+  "sources": [
+    {"caseId":"fin.accounting_may_2026","revenue":{"column":"Revenue_Credit","semantic":"revenue","index":23},"cost":{"column":"COGS_Debit","semantic":"total_cost","index":25},"identity":{"column":"OrderID","candidateId":"key:2"},"period":{"column":"InvoiceDate","semantic":"time_period","index":3},"bindingAmbiguous":false},
+    {"caseId":"fin.accounting_june_2026","revenue":{"column":"Revenue_Credit","semantic":"revenue","index":23},"cost":{"column":"COGS_Debit","semantic":"total_cost","index":25},"identity":{"column":"OrderID","candidateId":"key:2"},"period":{"column":"InvoiceDate","semantic":"time_period","index":3},"bindingAmbiguous":false}
+  ],
+  "semanticResolutionModified": false,
+  "grainPolicyModified": false,
+  "questionPolicyModified": false,
+  "filenameHashSampleIdExceptions": false
+}

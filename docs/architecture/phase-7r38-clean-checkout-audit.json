@@ -1,0 +1,33 @@
+{
+  "schemaVersion": "lightbi.phase-7r38-clean-checkout-audit.v1",
+  "phase": "7R3.8",
+  "head": "522c019623540581353d6668077ee0ab4395cec6",
+  "method": "detached_git_worktree_from_head_without_patch_copy_or_ignored_data",
+  "worktree": "/tmp/lightbi-phase7r38-clean-522c019",
+  "worktreeClean": true,
+  "requiredCandidateInventory": [
+    { "path": "apps/desktop/src/lib/understanding-core/canonical-source-evidence.ts", "present": false },
+    { "path": "apps/desktop/src/lib/understanding-core/phase-7-mvp-proof.test.ts", "present": false },
+    { "path": "apps/desktop/src/lib/understanding-core/phase-7r37-inventory-snapshot-evidence.test.ts", "present": false },
+    { "path": "sample-corpus/manifest.json", "present": true },
+    { "path": "sample-corpus/versions/1.3.0/corpus-manifest.json", "present": false },
+    { "path": "sample-corpus/tooling/phase-7r34/generate.cjs", "present": false },
+    { "path": "docs/architecture/phase-6b2-regression-repair.md", "present": false }
+  ],
+  "containsAllPhase6B2AndPhase7R1ThroughR37Implementation": false,
+  "containsAllRequiredTestsAndEvaluators": false,
+  "containsCorpus120": true,
+  "containsCorpus130": false,
+  "containsRequiredSourceFilesOrDeterministicGenerator": false,
+  "containsAllManifestsAndScenarioContracts": false,
+  "exactCandidateReconstructableFromHeadAlone": false,
+  "dependencyInstallAttempted": false,
+  "verificationRunAttempted": false,
+  "verificationNotRunReason": "HEAD does not contain the evaluated candidate, its Phase 7 evaluators, or corpus 1.3 inputs; installing dependencies cannot reconstruct missing repository content.",
+  "uncommittedPatchCopied": false,
+  "ignoredDataSupplied": false,
+  "commitStageCopyOrPackagePerformed": false,
+  "gate": "fail",
+  "owningLayer": "release_and_repository_state",
+  "classification": "not_ready_clean_machine_reproducibility"
+}

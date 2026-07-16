@@ -1,0 +1,27 @@
+{
+  "schemaVersion": "lightbi.phase-7-metric-correctness-audit.v1",
+  "phase": "7",
+  "comparisons": { "total": 12, "matched": 6, "mismatched": 6, "correctness": 0.5 },
+  "coverage": {
+    "executedVerifiedMetricIds": ["sales_revenue"],
+    "revenue": "partial",
+    "inventory": "no_executable_verified_comparison",
+    "delivery_operations": "no_executable_verified_comparison",
+    "conditional_finance": "blocked_or_not_advertised; no verified execution proof",
+    "gate": "fail"
+  },
+  "matchedBehavior": "sales_revenue grouped by product sums to the verified full-file total for both May and June sources",
+  "mismatches": [
+    { "sampleId": "rev.sales_erp_may_2026", "question": "commerce.sales_revenue.over_time", "expected": 22973896244, "actual": 1628754598 },
+    { "sampleId": "rev.sales_erp_june_2026", "question": "commerce.sales_revenue.over_time", "expected": 20637539164, "actual": 1271567827 },
+    { "sampleId": "multi.commerce_may_2026", "question": "commerce.sales_revenue.over_time", "expected": 22973896244, "actual": 1628754598 },
+    { "sampleId": "multi.commerce_june_2026", "question": "commerce.sales_revenue.over_time", "expected": 20637539164, "actual": 1271567827 },
+    { "sampleId": "multi.sales_period_pair:may", "question": "commerce.sales_revenue.over_time", "expected": 22973896244, "actual": 1628754598 },
+    { "sampleId": "multi.sales_period_pair:june", "question": "commerce.sales_revenue.over_time", "expected": 20637539164, "actual": 1271567827 }
+  ],
+  "interpretation": "The trend query returns a bounded time-series window; the governed executor compares the sum of returned rows with full-file truth. Phase 7 records the mismatch and does not change query or comparison behavior.",
+  "blockers": [
+    { "classification": "metric_correctness_defect", "reason": "Six revenue trend results do not match existing full-file ground truth." },
+    { "classification": "corpus_evidence_gap", "reason": "No current executable path supplies verified comparisons for inventory, delivery/operations, or conditional finance metrics." }
+  ]
+}

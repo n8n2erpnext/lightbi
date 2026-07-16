@@ -1,0 +1,27 @@
+{
+  "schemaVersion": "lightbi.phase7r35-action-runtime-audit.v1",
+  "phase": "7R3.5",
+  "status": "failed_explanation_completeness",
+  "questionsGenerated": 120,
+  "questionsShown": 120,
+  "explanationOnlyQuestions": 112,
+  "advertisedRunnableActions": 8,
+  "runtimePreflightPasses": 8,
+  "executedActions": 8,
+  "executionFailures": 0,
+  "falseExecutableActions": 0,
+  "advertisedActionExecutionRate": 1,
+  "blockedExplanationComplete": 111,
+  "blockedExplanationTotal": 112,
+  "blockedExplanationCompletenessRate": 0.9910714285714286,
+  "incompleteExplanation": {
+    "source": "derived.accounting_june_vnd",
+    "questionId": "commerce.gross_profit.over_time",
+    "blocker": "currency_basis_ambiguous_or_incompatible",
+    "missing": ["remediation"]
+  },
+  "decisionUseAuthorizedCount": 0,
+  "productionWiringExecutedCount": 0,
+  "runtimeGuardWeakened": false,
+  "owningLayer": "question_action_explanation_projection"
+}

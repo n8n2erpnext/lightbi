@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "lightbi.phase-7r31-gross-profit-readiness-audit.v1",
+  "phase": "7R3.1",
+  "family": "conditional_gross_profit",
+  "state": "not_covered",
+  "correction": "Repeated-measure safety is evaluated on bound revenue and cost measures when an exact selected identity proves one physical row per governed identity; unrelated repeated measures no longer poison gross-profit preflight.",
+  "accountingEvidence": [
+    {"caseId":"fin.accounting_may_2026","identity":"OrderID exact unique key:2","period":"InvoiceDate event/time_period","revenue":"Revenue_Credit additive, repeatedWithinParent=false","cost":"COGS_Debit additive, repeatedWithinParent=false","expected":3075721244,"m1":"conditionally_ready","m3":"blocked"},
+    {"caseId":"fin.accounting_june_2026","identity":"OrderID exact unique key:2","period":"InvoiceDate event/time_period","revenue":"Revenue_Credit additive, repeatedWithinParent=false","cost":"COGS_Debit additive, repeatedWithinParent=false","expected":2934640164,"m1":"conditionally_ready","m3":"blocked"}
+  ],
+  "remainingBlockers": [
+    {"code":"gross_profit_currency_compatibility_not_proved","classification":"correct_governed_blocker","owner":"M3 runtime preflight","reason":"No explicit currency binding proves compatible revenue and cost currency."},
+    {"code":"runtime_binding_ambiguous:gross_profit_revenue","classification":"metric_preflight_defect","owner":"M1/M3 binding contract","reason":"Both Revenue_Credit and InvoiceTotal satisfy the broad revenue requirement; Phase 7R3.1 does not invent a winner."},
+    {"code":"conditional_metric_not_permitted_for_runtime","classification":"correct_governed_blocker","owner":"runtime policy","reason":"Gross profit is not in the conditionally executable allowlist."}
+  ],
+  "otherSources": [
+    {"caseId":"fin.bhx_tender_reconciliation","state":"blocked","reason":"Revenue/cost semantics and frozen gross-profit truth absent."},
+    {"caseId":"fin.superstore_profit","state":"blocked","reason":"Direct Profit truth does not provide a compatible cost binding for governed revenue-minus-cost."},
+    {"caseId":"fin.sales_june_missing_cost","state":"blocked","reason":"Cost and frozen gross-profit truth absent."}
+  ],
+  "guards": {"repeatedTotalsSummed":false,"oneRowAssumedTransaction":false,"incompatibleCurrencySubtracted":false,"relationshipSafetyBypassed":false},
+  "executionProof": null
+}

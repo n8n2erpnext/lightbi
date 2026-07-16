@@ -1,16 +1,32 @@
 import { deterministicPolicySha256 } from "./contextual-evidence-policy";
-import { governedMetricQueryPlanIdentity } from "./governed-metric-query-planner";
+import { GOVERNED_FULL_SCOPE_TOTAL_COLUMN, governedMetricQueryPlanIdentity } from "./governed-metric-query-planner";
 import type { GovernedDuckDBBoundaryV1, GovernedExecutionEvidenceV1, GovernedMetricExecutionRequestV1, GovernedMetricExecutionResultV1 } from "./governed-runtime-contracts";
 
 function actualMetricValue(request: GovernedMetricExecutionRequestV1, rows: Record<string, unknown>[]): number | null {
+  const fullScopeValues = rows
+    .filter((row) => Object.prototype.hasOwnProperty.call(row, GOVERNED_FULL_SCOPE_TOTAL_COLUMN))
+    .map((row) => numericValue(row[GOVERNED_FULL_SCOPE_TOTAL_COLUMN]));
+  if (fullScopeValues.length > 0) {
+    const first = fullScopeValues[0];
+    if (first === null || fullScopeValues.some((value) => value === null || value !== first)) return null;
+    return first;
+  }
   let total = 0;
   for (const row of rows) {
-    const value = row[request.plan.metricId];
-    const numeric = typeof value === "number" ? value : typeof value === "bigint" ? Number(value) : typeof value === "string" && value.trim() ? Number(value) : Number.NaN;
-    if (!Number.isFinite(numeric)) return null;
+    const numeric = numericValue(row[request.plan.metricId]);
+    if (numeric === null) return null;
     total += numeric;
   }
   return rows.length ? total : null;
+}
+
+function numericValue(value: unknown): number | null {
+  const numeric = typeof value === "number" ? value : typeof value === "bigint" ? Number(value) : typeof value === "string" && value.trim() ? Number(value) : Number.NaN;
+  return Number.isFinite(numeric) ? numeric : null;
+}
+
+function visibleRows(rows: Record<string, unknown>[]): Record<string, unknown>[] {
+  return rows.map((row) => Object.fromEntries(Object.entries(row).filter(([key]) => key !== GOVERNED_FULL_SCOPE_TOTAL_COLUMN)));
 }
 
 function compareGroundTruth(request: GovernedMetricExecutionRequestV1, actual: number | null): GovernedMetricExecutionResultV1["groundTruthComparison"] {
@@ -38,13 +54,15 @@ export async function executeGovernedMetricRequest(request: GovernedMetricExecut
   const executed = output.engine === "duckdb" && output.status === "executed";
   const actual = executed ? actualMetricValue(request, output.rows) : null;
   const comparison = executed ? compareGroundTruth(request, actual) : { state: "unavailable" as const, expected: request.groundTruth.state === "verified" ? request.groundTruth.value : null, actual: null, tolerance: request.groundTruth.state === "verified" ? request.groundTruth.tolerance : null };
+  const rows = executed ? visibleRows(output.rows) : [];
+  const columns = output.columns.filter((column) => column !== GOVERNED_FULL_SCOPE_TOTAL_COLUMN);
   const executionEvidence: GovernedExecutionEvidenceV1 = { evidenceId: `duckdb:${plan.planId}`, kind: "duckdb_execution", references: [output.executionScope, output.status], provenance: "local_duckdb" };
-  const identityInput = { requestId: request.requestId, planId: plan.planId, status: output.status, columns: output.columns, rows: output.rows, comparison };
+  const identityInput = { requestId: request.requestId, planId: plan.planId, status: output.status, columns, rows, comparison };
   return {
     schemaVersion: "lightbi.governed-metric-execution-result.v1", resultId: `metric-result:${deterministicPolicySha256(identityInput)}`, requestId: request.requestId, actionId: plan.actionId,
     metricId: plan.metricId, metricVersion: plan.metricVersion, sourceReference: plan.sourceReference, queryPlanIdentity: plan.planId, operator: plan.operator,
-    dimensions: plan.groupingBindings.map((item) => item.semanticId), timeBasis: plan.asOfBasis ?? plan.timeBinding, status: executed ? "executed" : "failed", columns: output.columns,
-    rows: output.rows, rowCount: output.rows.length, resultShape: plan.timeBinding ? "trend" : plan.groupingBindings.length ? "grouped" : "summary", groundTruthComparison: comparison,
+    dimensions: plan.groupingBindings.map((item) => item.semanticId), timeBasis: plan.asOfBasis ?? plan.timeBinding, status: executed ? "executed" : "failed", columns,
+    rows, rowCount: rows.length, resultShape: plan.timeBinding ? "trend" : plan.groupingBindings.length ? "grouped" : "summary", groundTruthComparison: comparison,
     evidence: [...plan.evidence, executionEvidence], restrictions: plan.restrictions, limitations: executed ? [] : ["duckdb_execution_failed"], error: output.error,
     runtimeActionCreated: true, runtimeActionAuthorized: true, executionPerformed: executed, decisionUseAuthorized: false, productionWiring: { executed: false },
   };

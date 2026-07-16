@@ -1,0 +1,33 @@
+{
+  "schemaVersion": "lightbi.phase-7-clean-machine-reproducibility-audit.v1",
+  "phase": "7",
+  "baseCommit": "522c019623540581353d6668077ee0ab4395cec6",
+  "method": [
+    "Created detached worktree from base commit under /tmp/lightbi-phase7-clean.",
+    "Applied the exact candidate tracked diff and copied the new Phase 7 evaluation test.",
+    "Installed all workspace dependencies offline with pnpm --offline --frozen-lockfile.",
+    "Ran Phase 7 evaluation and repository TypeScript in the detached worktree.",
+    "Compared normalized observation output with the primary worktree."
+  ],
+  "artifacts": {
+    "candidatePatchSha256": "459f2eb13fb1f9eed6bb69840b412356a864b091929e2066b9ac48497bbaf9e8",
+    "lockfileSha256": "3a251c611b36675d265690f13e2144735774947cfefe4369847bac26cf9d7f92",
+    "phase7TestSha256": "f7559d9c3bb84425513fec9af748507e955aefbc11b59875fa3997e02429eb63",
+    "normalizedObservationSha256": "e8a628174fdadc267928e64f504a3030fae8abbae406c14058ec8d89e9fb2a03"
+  },
+  "results": {
+    "offlineFrozenInstall": "pass_with_nonblocking_arrow2csv_bin_warnings",
+    "phase7Evaluation": "pass",
+    "repositoryTypeScriptDiagnostics": 0,
+    "normalizedOutputsEqual": true,
+    "candidateReconstructionFromCleanWorktree": "pass",
+    "cleanCheckoutOfHeadAloneContainsCandidate": false
+  },
+  "gate": "fail",
+  "blockers": [
+    {
+      "classification": "clean_machine_reproducibility_defect",
+      "reason": "The candidate is reproducible from a clean worktree plus the hashed candidate patch, but the exact Phase 6B.2/Phase 7 state is not committed and therefore is absent from a clean checkout of HEAD alone."
+    }
+  ]
+}

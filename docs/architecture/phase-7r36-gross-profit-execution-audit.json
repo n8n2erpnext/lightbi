@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "lightbi.phase7r36-gross-profit-execution-audit.v1",
+  "phase": "7R3.6",
+  "status": "pass",
+  "operator": "governed_revenue_minus_cost",
+  "executions": [
+    {"sourceId": "derived.accounting_may_vnd", "expected": 3075721244, "actual": 3075721244, "exactMatch": true, "resultRows": 31},
+    {"sourceId": "derived.accounting_june_vnd", "expected": 2934640164, "actual": 2934640164, "exactMatch": true, "resultRows": 30}
+  ],
+  "duckdbExecutionUsed": true,
+  "silentSumOrCountFallback": false,
+  "falseExecutableActions": 0,
+  "decisionUseAuthorized": false,
+  "productionWiringExecuted": false
+}

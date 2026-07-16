@@ -93,6 +93,78 @@ function tokenContainmentMatch(header: string, surface: string): boolean {
   return surfaceTokens.every((token) => headerTokens.includes(token));
 }
 
+const ACCOUNTING_AMOUNT_QUALIFIERS = new Set(["amount", "balance", "credit", "debit", "total", "value"]);
+const GENERIC_TIME_SUFFIXES = new Set(["date", "month", "time", "year"]);
+
+function accountingMeasureHeadMatch(
+  header: string,
+  surface: string,
+  definition: SemanticSignalDefinition,
+): boolean {
+  if (definition.type !== "measure" || definition.semanticFamily !== "money") return false;
+  const headerTokens = header.split(" ").filter(Boolean);
+  const surfaceTokens = new Set(surface.split(" ").filter(Boolean));
+  if (surfaceTokens.size === 0 || ![...surfaceTokens].every((token) => headerTokens.includes(token))) return false;
+  const qualifiers = headerTokens.filter((token) => !surfaceTokens.has(token));
+  return qualifiers.length > 0 && qualifiers.every((token) => ACCOUNTING_AMOUNT_QUALIFIERS.has(token));
+}
+
+function genericTimeSuffixMatch(
+  header: string,
+  surface: string,
+  definition: SemanticSignalDefinition,
+): boolean {
+  if (definition.canonicalId !== "time_period") return false;
+  const tokens = header.split(" ").filter(Boolean);
+  const suffix = tokens[tokens.length - 1];
+  return tokens.length > 1 && suffix === surface && GENERIC_TIME_SUFFIXES.has(suffix);
+}
+
+function shipmentDocumentReferenceMatch(
+  header: string,
+  definition: SemanticSignalDefinition,
+): boolean {
+  if (definition.canonicalId !== "shipment") return false;
+  const tokens = new Set(header.split(" ").filter(Boolean));
+  const vietnameseReference = tokens.has("ma") && tokens.has("phieu") && tokens.has("gui");
+  const reference = ["code", "id", "no", "number"].some((token) => tokens.has(token));
+  const consignmentReference = reference && tokens.has("consignment") && (tokens.has("note") || tokens.has("slip"));
+  return vietnameseReference || consignmentReference;
+}
+
+function qualifiedBusinessHeaderMatch(
+  header: string,
+  definition: SemanticSignalDefinition,
+  allHeaders: readonly string[],
+): { surface: string; code: string } | null {
+  const tokens = header.split(" ").filter(Boolean);
+  const tokenSet = new Set(tokens);
+  const identityQualifier = ["id", "code", "no", "number"].some((token) => tokenSet.has(token));
+  const sourceTokenSets = allHeaders.map((value) => new Set(value.split(" ").filter(Boolean)));
+  const hasQualified = (heads: readonly string[]) => sourceTokenSets.some((set) => heads.some((head) => set.has(head)) && ["id", "code", "no", "number"].some((qualifier) => set.has(qualifier)));
+  const hasOnHand = sourceTokenSets.some((set) => (set.has("quantity") || set.has("qty")) && set.has("on") && set.has("hand"));
+  const hasAsOf = sourceTokenSets.some((set) => set.has("as") && set.has("of") && (set.has("date") || set.has("time")));
+  const hasUom = sourceTokenSets.some((set) => set.has("uom") || (set.has("unit") && set.has("measure")));
+  const explicitSnapshotSchema = hasQualified(["item", "product", "material"])
+    && hasQualified(["warehouse", "storage", "location"])
+    && hasOnHand
+    && hasAsOf
+    && hasUom;
+  if (!explicitSnapshotSchema) return null;
+  if (definition.canonicalId === "sku" && identityQualifier && ["item", "product", "material"].some((token) => tokenSet.has(token))) {
+    return { surface: "item-identity-composition", code: "header_matches_item_identity_composition" };
+  }
+  if (definition.canonicalId === "warehouse" && identityQualifier && ["warehouse", "storage", "location"].some((token) => tokenSet.has(token))) {
+    return { surface: "warehouse-identity-composition", code: "header_matches_warehouse_identity_composition" };
+  }
+  const onHandQuantity = (tokenSet.has("quantity") || tokenSet.has("qty")) && tokenSet.has("on") && tokenSet.has("hand");
+  const stockBalance = (tokenSet.has("stock") || tokenSet.has("inventory")) && (tokenSet.has("quantity") || tokenSet.has("qty") || tokenSet.has("balance"));
+  if (definition.canonicalId === "stock_qty" && (onHandQuantity || stockBalance)) {
+    return { surface: "stock-balance-composition", code: "header_matches_stock_balance_composition" };
+  }
+  return null;
+}
+
 function uniqueWitnesses(witnesses: EvidenceWitnessV1[]): EvidenceWitnessV1[] {
   const seen = new Set<string>();
   return witnesses.filter((witness) => {
@@ -128,7 +200,10 @@ function physicalTypes(column: ColumnPhysicalProfileV1): PhysicalTypeName[] {
 
 function registryTypeMatches(compatibleTypes: readonly string[], physicalType: PhysicalTypeName): boolean {
   const normalized = new Set(compatibleTypes.map((type) => type.toLowerCase()));
-  if (physicalType === "number" || physicalType === "numeric_string" || physicalType === "excel_serial_date") {
+  if (physicalType === "excel_serial_date") {
+    return ["date", "datetime", "timestamp"].some((type) => normalized.has(type));
+  }
+  if (physicalType === "number" || physicalType === "numeric_string") {
     return ["number", "integer", "float", "double", "decimal", "currency"].some((type) => normalized.has(type));
   }
   if (physicalType === "date" || physicalType === "date_string") {
@@ -231,6 +306,12 @@ function buildObservation(
     const canonicalLabel = normalizeSemanticSurface(definition.label);
     const matchedHeaderSurfaces: Array<{ type: SemanticEvidenceType; surface: string; code: string }> = [];
 
+    if (shipmentDocumentReferenceMatch(normalizedHeader, definition)) {
+      matchedHeaderSurfaces.push({ type: "alias_exact", surface: "document-reference-composition", code: "header_matches_shipment_document_reference_composition" });
+    }
+    const qualifiedHeader = qualifiedBusinessHeaderMatch(normalizedHeader, definition, allHeaders);
+    if (qualifiedHeader) matchedHeaderSurfaces.push({ type: "alias_exact", ...qualifiedHeader });
+
     if (normalizedHeader && (normalizedHeader === canonical || compactSurface(normalizedHeader) === compactSurface(canonical))) {
       matchedHeaderSurfaces.push({ type: "canonical_header_exact", surface: candidateId, code: "header_matches_canonical_id" });
     }
@@ -241,6 +322,10 @@ function buildObservation(
       const normalized = normalizeSemanticSurface(surface);
       if (normalizedHeader && normalizedHeader === normalized) {
         matchedHeaderSurfaces.push({ type: "header_alias_exact", surface, code: "header_matches_header_alias" });
+      } else if (genericTimeSuffixMatch(normalizedHeader, normalized, definition)) {
+        matchedHeaderSurfaces.push({ type: "header_alias_exact", surface, code: "generic_time_role_suffix" });
+      } else if (accountingMeasureHeadMatch(normalizedHeader, normalized, definition)) {
+        matchedHeaderSurfaces.push({ type: "header_alias_exact", surface, code: "header_matches_measure_head_with_accounting_qualifier" });
       } else if (tokenContainmentMatch(normalizedHeader, normalized)) {
         matchedHeaderSurfaces.push({ type: "alias_token_containment", surface, code: "header_contains_header_alias_tokens" });
       }
@@ -249,6 +334,8 @@ function buildObservation(
       const normalized = normalizeSemanticSurface(surface);
       if (normalizedHeader && normalizedHeader === normalized) {
         matchedHeaderSurfaces.push({ type: "alias_exact", surface, code: "header_matches_registry_alias" });
+      } else if (accountingMeasureHeadMatch(normalizedHeader, normalized, definition)) {
+        matchedHeaderSurfaces.push({ type: "alias_exact", surface, code: "header_matches_measure_head_with_accounting_qualifier" });
       } else if (tokenContainmentMatch(normalizedHeader, normalized)) {
         matchedHeaderSurfaces.push({ type: "alias_token_containment", surface, code: "header_contains_alias_tokens" });
       }
@@ -512,7 +599,23 @@ function appendStructuralCandidateEvidence(
       explanationCode: "column_contains_mixed_physical_types",
     }));
   }
-  const failures = column.parseEvidence.flatMap((parse) => parse.representativeFailures);
+  const physicalTypes = new Set(column.physicalTypeCandidates.map((candidateType) => candidateType.type));
+  const relevantParsers = candidate.definition.role === "identifier"
+    ? new Set(
+      physicalTypes.has("number")
+        ? ["numeric"]
+        : physicalTypes.has("string")
+          ? ["string"]
+          : physicalTypes.has("numeric_string")
+            ? ["numeric"]
+            : physicalTypes.has("date") || physicalTypes.has("date_string") || physicalTypes.has("excel_serial_date")
+              ? ["date"]
+              : [],
+    )
+    : null;
+  const failures = column.parseEvidence
+    .filter((parse) => relevantParsers == null || relevantParsers.has(parse.parser))
+    .flatMap((parse) => parse.representativeFailures);
   if (failures.length > 0) {
     candidate.evidence.push(makeEvidence({
       type: "parse_failure",

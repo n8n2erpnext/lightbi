@@ -1,0 +1,51 @@
+{
+  "schemaVersion": "lightbi.phase-7r32-gross-profit-blocker-audit.v1",
+  "phase": "7R3.2",
+  "corpusVersion": "1.2.0",
+  "records": [
+    {
+      "caseId": "fin.accounting_may_2026",
+      "source": {"path":"sample data/Accounting_ERP_May_2026.csv","sheet":"Sheet1","sha256":"3c59da1c10c67ab974dfd204b737402aff1c28d748665949942579fb5fb1a2fd"},
+      "selectedRevenueCandidates": [{"physicalColumn":"Revenue_Credit","semanticRole":"revenue","state":"probable","evidence":"canonical semantic accounting credit role"}],
+      "excludedRevenueCandidates": [{"physicalColumn":"InvoiceTotal","semanticRole":"invoice_total","reason":"tax-inclusive invoice total is not an eligible gross-profit revenue basis in metric contract 1.0.1"}],
+      "selectedCostCandidates": [{"physicalColumn":"COGS_Debit","semanticRole":"total_cost","state":"probable","evidence":"canonical semantic COGS debit role"}],
+      "identity": {"physicalColumn":"OrderID","candidateId":"key:2","state":"confirmed","cardinality":"exact","nullCount":0,"uniquenessRatio":1},
+      "grain": {"row":"line:confirmed","document":"OrderID exact one physical row per selected identity"},
+      "repeatedMeasureEvidence": {"Revenue_Credit":false,"COGS_Debit":false,"bothAdditiveCandidates":true},
+      "period": {"physicalColumn":"InvoiceDate","semanticRole":"time_period","temporalMode":"event","state":"probable"},
+      "currencyEvidence": null,
+      "m1": "conditionally_ready",
+      "m2": "explanation_only",
+      "m3": "blocked",
+      "runtimePermissionBlockers": [
+        {"code":"gross_profit_currency_compatibility_not_proved","classification":"currency_evidence_missing"},
+        {"code":"conditional_metric_not_permitted_for_runtime","classification":"correct_governed_blocker"}
+      ],
+      "resolvedBlockers": [{"code":"runtime_binding_ambiguous:gross_profit_revenue","classification":"metric_preflight_contract_defect","resolution":"gross-profit revenue requirement now accepts only revenue/net_revenue roles"}],
+      "frozenTruth": {"metric":"gross_profit_sum","value":3075721244,"provenance":"sample-corpus 1.2.0 independently frozen truth"}
+    },
+    {
+      "caseId": "fin.accounting_june_2026",
+      "source": {"path":"sample data/Accounting_ERP_June_2026.csv","sheet":"Sheet1","sha256":"b3a3b290d5f54ca5d7fc79b7aed0f287f539e665113331bb6d4764fa5fc6aaea"},
+      "selectedRevenueCandidates": [{"physicalColumn":"Revenue_Credit","semanticRole":"revenue","state":"probable","evidence":"canonical semantic accounting credit role"}],
+      "excludedRevenueCandidates": [{"physicalColumn":"InvoiceTotal","semanticRole":"invoice_total","reason":"tax-inclusive invoice total is not an eligible gross-profit revenue basis in metric contract 1.0.1"}],
+      "selectedCostCandidates": [{"physicalColumn":"COGS_Debit","semanticRole":"total_cost","state":"probable","evidence":"canonical semantic COGS debit role"}],
+      "identity": {"physicalColumn":"OrderID","candidateId":"key:2","state":"confirmed","cardinality":"exact","nullCount":0,"uniquenessRatio":1},
+      "grain": {"row":"line:confirmed","document":"OrderID exact one physical row per selected identity"},
+      "repeatedMeasureEvidence": {"Revenue_Credit":false,"COGS_Debit":false,"bothAdditiveCandidates":true},
+      "period": {"physicalColumn":"InvoiceDate","semanticRole":"time_period","temporalMode":"event","state":"probable"},
+      "currencyEvidence": null,
+      "m1": "conditionally_ready",
+      "m2": "explanation_only",
+      "m3": "blocked",
+      "runtimePermissionBlockers": [
+        {"code":"gross_profit_currency_compatibility_not_proved","classification":"currency_evidence_missing"},
+        {"code":"conditional_metric_not_permitted_for_runtime","classification":"correct_governed_blocker"}
+      ],
+      "resolvedBlockers": [{"code":"runtime_binding_ambiguous:gross_profit_revenue","classification":"metric_preflight_contract_defect","resolution":"gross-profit revenue requirement now accepts only revenue/net_revenue roles"}],
+      "frozenTruth": {"metric":"gross_profit_sum","value":2934640164,"provenance":"sample-corpus 1.2.0 independently frozen truth"}
+    }
+  ],
+  "remainingBlockerCounts": {"currency_evidence_missing":2,"correct_governed_blocker":2},
+  "unableToDetermine": 0
+}

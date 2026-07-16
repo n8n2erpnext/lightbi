@@ -7,7 +7,7 @@ import { createGovernedLocalDuckDBBoundary } from "./governed-local-duckdb-bound
 import { planGovernedMetricQuery } from "./governed-metric-query-planner";
 import { preflightGovernedRuntimeAction } from "./governed-runtime-preflight";
 import type { GovernedDuckDBBoundaryV1, GovernedMetricExecutionRequestV1 } from "./governed-runtime-contracts";
-import { RUNTIME_FIXTURES } from "./governed-runtime-test-support";
+import { createGovernedRuntimeFixture, RUNTIME_FIXTURES } from "./governed-runtime-test-support";
 
 const require = createRequire(import.meta.url);
 const duckdb = require("@duckdb/duckdb-wasm/dist/duckdb-node-blocking.cjs") as any;
@@ -67,7 +67,7 @@ describe("Phase 5M3 verified local DuckDB execution", () => {
       const request: GovernedMetricExecutionRequestV1 = { schemaVersion: "lightbi.governed-metric-execution-request.v1", requestId: `request:${fixture.id}`, plan: planned.plan, rows: fixture.rows, groundTruth: { state: "verified", value: expected, tolerance: 0, provenance: "controlled_fixture" } };
       const first = await executeGovernedMetricRequest(request, boundary);
       const second = await executeGovernedMetricRequest(request, boundary);
-      expect(first.status, fixture.id).toBe("executed");
+      expect(first.status, `${fixture.id}:${first.error ?? "no-error"}\n${planned.plan.sql}`).toBe("executed");
       expect(first.executionPerformed, fixture.id).toBe(true);
       expect(first.groundTruthComparison.state, fixture.id).toBe("exact_match");
       expect(first.resultId, fixture.id).toBe(second.resultId);
@@ -95,6 +95,81 @@ describe("Phase 5M3 verified local DuckDB execution", () => {
     expect(failed.status).toBe("failed");
     expect(failed.executionPerformed).toBe(false);
     expect(failed.decisionUseAuthorized).toBe(false);
+  });
+
+  it("compares grouped display results against the complete governed source scope", async () => {
+    const boundary = await actualDuckDBBoundary();
+    const rows = Array.from({ length: 150 }, (_, index) => ({
+      OrderID: `O-${index + 1}`,
+      OrderDate: `2026-${String(Math.floor(index / 28) + 1).padStart(2, "0")}-${String((index % 28) + 1).padStart(2, "0")}`,
+      Revenue: index + 1,
+      Currency: "USD",
+    }));
+    const fixture = createGovernedRuntimeFixture({
+      id: "phase7r3-full-scope-grouped-revenue",
+      metricId: "sales_revenue",
+      questionId: "commerce.sales_revenue.over_time",
+      columns: [
+        { physical: "OrderID", semantic: "order" },
+        { physical: "OrderDate", semantic: "report_date" },
+        { physical: "Revenue", semantic: "revenue", type: "number" },
+        { physical: "Currency", semantic: "currency" },
+      ],
+      rows,
+      currencyCompatible: true,
+    });
+    const planned = planGovernedMetricQuery(preflightGovernedRuntimeAction(fixture.runtimeInput));
+    expect(planned.state).toBe("planned");
+    if (planned.state !== "planned") return;
+
+    const expected = rows.reduce((total, row) => total + row.Revenue, 0);
+    const result = await executeGovernedMetricRequest({
+      schemaVersion: "lightbi.governed-metric-execution-request.v1",
+      requestId: "request:phase7r3-full-scope-grouped-revenue",
+      plan: planned.plan,
+      rows,
+      groundTruth: { state: "verified", value: expected, tolerance: 0, provenance: "controlled_full_scope_fixture" },
+    }, boundary);
+
+    expect(result.rowCount, `${result.error ?? "no-error"}\n${planned.plan.sql}`).toBe(100);
+    expect(result.groundTruthComparison).toEqual({ state: "exact_match", expected, actual: expected, tolerance: 0 });
+    expect(result.columns).not.toContain("__lightbi_full_scope_metric_total__");
+    expect(result.rows.every((row) => !("__lightbi_full_scope_metric_total__" in row))).toBe(true);
+    expect(result.decisionUseAuthorized).toBe(false);
+  });
+
+  it("keeps full-scope governed identity counts distinct across display groups", async () => {
+    const boundary = await actualDuckDBBoundary();
+    const fixture = createGovernedRuntimeFixture({
+      id: "phase7r3-full-scope-delivery-identity",
+      metricId: "delivery_count",
+      questionId: "commerce.delivery_count.by_status",
+      columns: [
+        { physical: "ShipmentID", semantic: "shipment" },
+        { physical: "DeliveryStatus", semantic: "delivery_status" },
+      ],
+      rows: [
+        { ShipmentID: "S-1", DeliveryStatus: "In transit" },
+        { ShipmentID: "S-1", DeliveryStatus: "Delivered" },
+        { ShipmentID: "S-2", DeliveryStatus: "Delivered" },
+      ],
+      identityIds: ["shipment"],
+    });
+    const planned = planGovernedMetricQuery(preflightGovernedRuntimeAction(fixture.runtimeInput));
+    expect(planned.state).toBe("planned");
+    if (planned.state !== "planned") return;
+
+    const result = await executeGovernedMetricRequest({
+      schemaVersion: "lightbi.governed-metric-execution-request.v1",
+      requestId: "request:phase7r3-full-scope-delivery-identity",
+      plan: planned.plan,
+      rows: fixture.rows,
+      groundTruth: { state: "verified", value: 2, tolerance: 0, provenance: "controlled_full_scope_fixture" },
+    }, boundary);
+
+    expect(result.rows.map((row) => row.delivery_count).reduce<number>((total, value) => total + Number(value), 0)).toBe(3);
+    expect(result.groundTruthComparison).toEqual({ state: "exact_match", expected: 2, actual: 2, tolerance: 0 });
+    expect(result.decisionUseAuthorized).toBe(false);
   });
 
   it("adapts a governed plan to the existing local DuckDB execution boundary", async () => {

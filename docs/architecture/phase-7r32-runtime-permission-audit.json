@@ -1,0 +1,12 @@
+{
+  "schemaVersion": "lightbi.phase-7r32-runtime-permission-audit.v1",
+  "phase": "7R3.2",
+  "requiredOperator": "governed_revenue_minus_cost",
+  "records": [
+    {"caseId":"fin.accounting_may_2026","m1":"conditionally_ready","m2":"explanation_only","m3":"blocked","actionRetained":false,"planningAllowed":false,"executionAllowed":false,"plan":null,"blockers":["gross_profit_currency_compatibility_not_proved","conditional_metric_not_permitted_for_runtime"]},
+    {"caseId":"fin.accounting_june_2026","m1":"conditionally_ready","m2":"explanation_only","m3":"blocked","actionRetained":false,"planningAllowed":false,"executionAllowed":false,"plan":null,"blockers":["gross_profit_currency_compatibility_not_proved","conditional_metric_not_permitted_for_runtime"]}
+  ],
+  "runtimeGuards": {"freeFormSqlIntroduced":false,"sumFallbackIntroduced":false,"countFallbackIntroduced":false,"crossSourceJoinIntroduced":false,"currencyGuardWeakened":false,"repeatedMeasureGuardWeakened":false,"relationshipGuardWeakened":false},
+  "decisionUseAuthorized": false,
+  "productionWiring": {"executed":false}
+}

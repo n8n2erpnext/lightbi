@@ -1,0 +1,28 @@
+{
+  "schemaVersion": "lightbi.phase-7r3-metric-root-cause-audit.v1",
+  "phase": "7R3",
+  "corpusVersion": "1.2.0",
+  "previousComparisons": {"total": 12, "matched": 6, "mismatched": 6},
+  "rootCause": {
+    "classification": ["bounded_preview_used_as_full_result", "comparison_scope_mismatch"],
+    "owningLayer": "governed_query_planning_and_metric_comparison",
+    "description": "Grouped queries applied LIMIT 100 before the executor derived the comparison total. Revenue-over-time therefore compared the sum of 100 display groups with full-file frozen truth.",
+    "metricFormulaDefect": false,
+    "semanticOrGrainDefect": false
+  },
+  "records": [
+    {"sampleId":"rev.sales_erp_may_2026","source":"sample data/Sales_ERP_May_2026.xlsx","questionId":"commerce.sales_revenue.over_time","metricId":"sales_revenue","truthKey":"revenue_sum","expected":22973896244,"previousActual":1628754598,"previousState":"mismatch","finalActual":22973896244,"finalState":"exact_match","rootCause":"bounded_preview_used_as_full_result"},
+    {"sampleId":"rev.sales_erp_may_2026","source":"sample data/Sales_ERP_May_2026.xlsx","questionId":"commerce.sales_revenue.by_product","metricId":"sales_revenue","truthKey":"revenue_sum","expected":22973896244,"previousActual":22973896244,"previousState":"exact_match","finalActual":22973896244,"finalState":"exact_match","rootCause":"no_defect"},
+    {"sampleId":"rev.sales_erp_june_2026","source":"sample data/Sales_ERP_June_2026.xlsx","questionId":"commerce.sales_revenue.over_time","metricId":"sales_revenue","truthKey":"revenue_sum","expected":20637539164,"previousActual":1271567827,"previousState":"mismatch","finalActual":20637539164,"finalState":"exact_match","rootCause":"bounded_preview_used_as_full_result"},
+    {"sampleId":"rev.sales_erp_june_2026","source":"sample data/Sales_ERP_June_2026.xlsx","questionId":"commerce.sales_revenue.by_product","metricId":"sales_revenue","truthKey":"revenue_sum","expected":20637539164,"previousActual":20637539164,"previousState":"exact_match","finalActual":20637539164,"finalState":"exact_match","rootCause":"no_defect"},
+    {"sampleId":"multi.commerce_may_2026","source":"sample data/Sales_ERP_May_2026.xlsx","questionId":"commerce.sales_revenue.over_time","metricId":"sales_revenue","truthKey":"sales_revenue_sum","expected":22973896244,"previousActual":1628754598,"previousState":"mismatch","finalActual":22973896244,"finalState":"exact_match","rootCause":"bounded_preview_used_as_full_result"},
+    {"sampleId":"multi.commerce_may_2026","source":"sample data/Sales_ERP_May_2026.xlsx","questionId":"commerce.sales_revenue.by_product","metricId":"sales_revenue","truthKey":"sales_revenue_sum","expected":22973896244,"previousActual":22973896244,"previousState":"exact_match","finalActual":22973896244,"finalState":"exact_match","rootCause":"no_defect"},
+    {"sampleId":"multi.commerce_june_2026","source":"sample data/Sales_ERP_June_2026.xlsx","questionId":"commerce.sales_revenue.over_time","metricId":"sales_revenue","truthKey":"sales_revenue_sum","expected":20637539164,"previousActual":1271567827,"previousState":"mismatch","finalActual":20637539164,"finalState":"exact_match","rootCause":"bounded_preview_used_as_full_result"},
+    {"sampleId":"multi.commerce_june_2026","source":"sample data/Sales_ERP_June_2026.xlsx","questionId":"commerce.sales_revenue.by_product","metricId":"sales_revenue","truthKey":"sales_revenue_sum","expected":20637539164,"previousActual":20637539164,"previousState":"exact_match","finalActual":20637539164,"finalState":"exact_match","rootCause":"no_defect"},
+    {"sampleId":"multi.sales_period_pair","source":"sample data/Sales_ERP_May_2026.xlsx","questionId":"commerce.sales_revenue.over_time","metricId":"sales_revenue","truthKey":"may_revenue","expected":22973896244,"previousActual":1628754598,"previousState":"mismatch","finalActual":22973896244,"finalState":"exact_match","rootCause":"bounded_preview_used_as_full_result"},
+    {"sampleId":"multi.sales_period_pair","source":"sample data/Sales_ERP_May_2026.xlsx","questionId":"commerce.sales_revenue.by_product","metricId":"sales_revenue","truthKey":"may_revenue","expected":22973896244,"previousActual":22973896244,"previousState":"exact_match","finalActual":22973896244,"finalState":"exact_match","rootCause":"no_defect"},
+    {"sampleId":"multi.sales_period_pair","source":"sample data/Sales_ERP_June_2026.xlsx","questionId":"commerce.sales_revenue.over_time","metricId":"sales_revenue","truthKey":"june_revenue","expected":20637539164,"previousActual":1271567827,"previousState":"mismatch","finalActual":20637539164,"finalState":"exact_match","rootCause":"bounded_preview_used_as_full_result"},
+    {"sampleId":"multi.sales_period_pair","source":"sample data/Sales_ERP_June_2026.xlsx","questionId":"commerce.sales_revenue.by_product","metricId":"sales_revenue","truthKey":"june_revenue","expected":20637539164,"previousActual":20637539164,"previousState":"exact_match","finalActual":20637539164,"finalState":"exact_match","rootCause":"no_defect"}
+  ],
+  "integrity": {"frozenTruthModified":false,"metricFormulaModified":false,"semanticResolutionModified":false,"runtimeBlockerWeakened":false}
+}

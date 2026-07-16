@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "lightbi.phase-7r31-inventory-evidence-audit.v1",
+  "phase": "7R3.1",
+  "family": "inventory_on_hand",
+  "state": "not_covered",
+  "classification": "corpus_evidence_gap",
+  "requirements": {"authenticSnapshot":false,"itemIdentity":false,"quantityOnHand":false,"explicitAsOf":false,"singleSnapshotAggregation":false,"independentFrozenTruth":false},
+  "sources": [
+    {"caseId":"inv.plu_product_master","role":"product_master","reason":"Item identity and UOM exist, but no stock balance or as-of basis."},
+    {"caseId":"inv.provincial_aging_20241228","role":"shipment_aging","reason":"Aging threshold and shipment age are not quantity on hand."},
+    {"caseId":"inv.hublan_expected_stock","role":"shipment_backlog_snapshot","reason":"Report date exists, but there is no product-level quantity-on-hand measure."},
+    {"caseId":"inv.logistics_may_item_flow","role":"shipment_movement","reason":"Qty=3050 is event-flow quantity and cannot be relabeled as stock on hand."},
+    {"caseId":"inv.logistics_june_item_flow","role":"shipment_movement","reason":"Qty=2964 is event-flow quantity and cannot be relabeled as stock on hand."}
+  ],
+  "safetyAssertions": {"movementQuantityUsedAsStock":false,"multipleSnapshotsSummed":false,"asOfInvented":false,"runtimeResultUsedAsTruth":false},
+  "executionProof": null
+}

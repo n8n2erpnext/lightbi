@@ -96,12 +96,18 @@ describe('Advanced canonical result handoff', () => {
     expect(canonicalConsumerCacheStats()).toEqual({ buildCount: 3, datasetStateCount: 3 });
   }, 60_000);
 
-  it.each([
+  const blockedSelections: Array<[string, {
+    actionCandidateId?: string;
+    metricId?: string;
+    operator?: string;
+  }]> = [
     ['SUM', { operator: 'SUM' }],
     ['COUNT', { operator: 'COUNT' }],
     ['unsupported metric', { metricId: 'advanced_ad_hoc_margin' }],
     ['unknown action', { actionCandidateId: 'advanced:invented-action' }],
-  ])('blocks an Advanced %s request instead of inventing authority', (_label, governedSelection) => {
+  ];
+
+  it.each(blockedSelections)('blocks an Advanced %s request instead of inventing authority', (_label, governedSelection) => {
     resetCanonicalConsumerCacheForTests();
     const initial = createAdvancedResultHandoff(source(), goldenResult());
     const selected = createAdvancedResultHandoff(source({

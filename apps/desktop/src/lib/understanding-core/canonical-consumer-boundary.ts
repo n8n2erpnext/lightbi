@@ -107,7 +107,7 @@ function unique(values: readonly string[]): string[] {
   return [...new Set(values.filter(Boolean))].sort();
 }
 
-function invalidArtifact(input: CanonicalDatasetStateInputV1, fingerprint: string, blockers: string[]): InvalidCanonicalConsumerArtifactV1 {
+function invalidArtifact(fingerprint: string, blockers: string[]): InvalidCanonicalConsumerArtifactV1 {
   const datasetStateIdentity = `dataset-state:${fingerprint}`;
   return {
     schemaVersion: CANONICAL_CONSUMER_ARTIFACT_VERSION,
@@ -134,7 +134,7 @@ function validateInput(input: CanonicalDatasetStateInputV1): string[] {
 
 function buildArtifact(input: CanonicalDatasetStateInputV1, fingerprint: string): CanonicalConsumerBuildResultV1 {
   const inputBlockers = validateInput(input);
-  if (inputBlockers.length) return invalidArtifact(input, fingerprint, inputBlockers);
+  if (inputBlockers.length) return invalidArtifact(fingerprint, inputBlockers);
 
   const datasetStateIdentity = `dataset-state:${fingerprint}`;
   try {
@@ -153,7 +153,7 @@ function buildArtifact(input: CanonicalDatasetStateInputV1, fingerprint: string)
       rawRows,
     });
     if (physical.sourceProfile.dataRegion.rowCount !== input.sourceRowCount || physical.sourceProfile.header.selectedHeaderRowIndex !== 0) {
-      return invalidArtifact(input, fingerprint, ["canonical_physical_profile_does_not_match_dataset_state"]);
+      return invalidArtifact(fingerprint, ["canonical_physical_profile_does_not_match_dataset_state"]);
     }
     const candidates = generateSemanticCandidateArtifact(physical, { registry: SEMANTIC_SIGNAL_REGISTRY_V1 });
     const semantic = resolveSemanticShadow(physical, candidates, aggregateContextualEvidence(physical, candidates));
@@ -207,7 +207,7 @@ function buildArtifact(input: CanonicalDatasetStateInputV1, fingerprint: string)
       decisionUseAuthorized: false,
     };
   } catch (error) {
-    return invalidArtifact(input, fingerprint, [`canonical_build_error:${error instanceof Error ? error.message : String(error)}`]);
+    return invalidArtifact(fingerprint, [`canonical_build_error:${error instanceof Error ? error.message : String(error)}`]);
   }
 }
 

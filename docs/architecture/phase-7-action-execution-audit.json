@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "lightbi.phase-7-action-execution-audit.v1",
+  "phase": "7",
+  "counts": {
+    "advertisedActionCandidates": 21,
+    "runtimeAllowed": 14,
+    "executed": 14,
+    "blockedAfterAdvertisement": 7,
+    "falseExecutable": 0
+  },
+  "precision": {
+    "runnableActionPrecision": 1.0,
+    "falseExecutableGate": "pass"
+  },
+  "success": {
+    "advertisedActionExecutionSuccess": 0.6666666667,
+    "threshold": 0.9,
+    "gate": "fail",
+    "runtimeAllowedSubsetExecutionSuccess": 1.0,
+    "denominatorPolicy": "All generated actionCandidates are advertised; blockedQuestions are not counted as advertised."
+  },
+  "byGroup": {
+    "golden": { "advertised": 3, "executed": 2, "blocked": 1 },
+    "holdout": { "advertised": 6, "executed": 4, "blocked": 2 },
+    "adversarial": { "advertised": 0, "executed": 0, "blocked": 0 },
+    "multi_file": { "advertised": 12, "executed": 8, "blocked": 4 }
+  },
+  "executionBoundary": {
+    "engine": "duckdb-node-blocking",
+    "queryPlanner": "canonical governed metric query planner",
+    "executor": "canonical governed metric executor",
+    "decisionUseAuthorized": false,
+    "productionPolicyModified": false
+  },
+  "blockers": [
+    { "classification": "action_generation_defect", "reason": "Seven generated action candidates cannot pass governed runtime planning." },
+    { "classification": "runtime_execution_defect", "reason": "Only 66.67% of advertised candidates execute, below 90%; all 14 runtime-allowed candidates do execute." }
+  ]
+}

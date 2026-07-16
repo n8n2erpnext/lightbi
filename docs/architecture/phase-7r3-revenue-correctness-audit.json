@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "lightbi.phase-7r3-revenue-correctness-audit.v1",
+  "phase": "7R3",
+  "metricId": "sales_revenue",
+  "operator": "governed_sum",
+  "before": {"compared":12,"matched":6,"mismatched":6,"correctness":0.5},
+  "after": {"compared":12,"matched":12,"mismatched":0,"correctness":1.0,"gate":"pass"},
+  "correction": {
+    "fullScopeAggregate": "The planner adds an internal scalar aggregate over the same governed source and filter scope before display limiting.",
+    "boundedDisplay": "Grouped and trend rows remain deterministically limited to 100 for presentation.",
+    "comparison": "The executor compares frozen truth with the internal full-scope aggregate and removes the internal column from visible output.",
+    "timeAndFilterScopePreserved": true,
+    "displayLimitAffectsMetricTotal": false
+  },
+  "safety": {"noSilentSumFallback":true,"decisionUseAuthorized":false,"fullScopeValueConsistencyRequired":true,"internalColumnExposed":false},
+  "evaluatorObservationSha256": "7b192300ef2f5b4813325ad685bd10f28c36fb47e3ee181dfd859ba25164866a"
+}

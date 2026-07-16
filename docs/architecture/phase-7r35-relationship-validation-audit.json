@@ -1,0 +1,33 @@
+{
+  "schemaVersion": "lightbi.phase7r35-relationship-validation-audit.v1",
+  "phase": "7R3.5",
+  "status": "failed_unresolved_relationships",
+  "declaredRelationshipCount": 10,
+  "independentOracle": {
+    "mayOrderSetsExact": true,
+    "juneOrderSetsExact": true,
+    "mayAccountingRowsPreserved": 1500,
+    "juneAccountingRowsPreserved": 1500,
+    "mayIssueRowsReconciled": 1500,
+    "juneIssueRowsReconciled": 1500,
+    "maySnapshotRows": 1266,
+    "juneSnapshotRows": 2198,
+    "mayToJuneContinuityMatches": 1266,
+    "allRelationshipsExact": true
+  },
+  "canonicalRelationshipResolution": [
+    { "contract": "Sales OrderID -> Shipment OrderID", "periods": ["2026-05", "2026-06"], "expectedCardinality": "one_to_one", "observedKeyState": "probable", "observedCardinality": "ambiguous", "status": "unresolved" },
+    { "contract": "Sales OrderID -> Accounting OrderID", "periods": ["2026-05", "2026-06"], "expectedCardinality": "one_to_one", "observedKeyState": "probable", "observedCardinality": "ambiguous", "status": "unresolved" },
+    { "contract": "Sales OrderID -> Inventory Issue SourceOrderID", "periods": ["2026-05", "2026-06"], "expectedCardinality": "one_to_one", "observedKeyState": "unknown", "observedCardinality": "unknown", "status": "unresolved" },
+    { "contract": "Item/Warehouse movement -> snapshot", "periods": ["2026-05", "2026-06"], "expectedCardinality": "many_to_one", "observedKeyState": "unknown", "observedCardinality": "unknown", "status": "unresolved" },
+    { "contract": "May snapshot -> June opening", "periods": ["2026-06"], "expectedCardinality": "one_to_one_for_carry_forward_pairs", "observedKeyState": "unknown", "observedCardinality": "unknown", "status": "unresolved" },
+    { "contract": "Scenario currency -> derived accounting", "periods": ["both"], "expectedCardinality": "one_to_many", "observedSemanticValue": "not_bound_by_metric_preflight", "status": "unresolved" }
+  ],
+  "missingKeys": "not_established_by_canonical_relationship_path",
+  "duplicateKeys": "not_established_by_canonical_relationship_path",
+  "orphanRecords": "not_established_by_canonical_relationship_path",
+  "undeclaredJoinAuthorized": false,
+  "relationshipExecutionAuthorized": false,
+  "owningLayer": "relationship_resolution",
+  "productionWiring": { "executed": false }
+}

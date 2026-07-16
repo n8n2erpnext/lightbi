@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "lightbi.phase-7r37-semantic-binding-audit.v1",
+  "phase": "7R3.7",
+  "status": "pass",
+  "genericRule": "Identity and on-hand compositions require an independently complete item, warehouse, on-hand, as-of and UOM source schema.",
+  "positiveBindings": {"ItemID":"sku", "WarehouseID":"warehouse", "QuantityOnHand":"stock_qty", "AsOfDate":"time_period", "UOM":"uom"},
+  "negativeSemanticProbes": ["sales Quantity", "ShipmentQuantity", "QuantityDelta", "StockThreshold", "BacklogQuantity", "InventoryCredit", "Qty"],
+  "negativeProbeResult": {"confidentStockQtyPromotions":0, "expected":0},
+  "corpus12CandidateTraceCount": 1225,
+  "corpus12BaselinePreserved": true,
+  "productionFileHashes": {
+    "apps/desktop/src/lib/understanding-core/semantic-candidate-engine.ts": "1a7473c7a4a555df2f8a3ef18dd221d496e6a93d1391187c322dee491ef22494",
+    "apps/desktop/src/lib/understanding-core/semantic-resolver.ts": "d80c3b6d4d5bb742ed8237bcfd156b01c6241dba3e7fc9d627f34194b8465904"
+  },
+  "prohibitedRuntimeInputsUsed": {"sourceId":false,"filename":false,"sourceHash":false,"sampleId":false,"expectedTotal":false,"exactRowCount":false}
+}

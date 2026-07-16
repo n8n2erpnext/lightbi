@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "lightbi.phase-7r11-metric-correctness-audit.v1",
+  "phase": "7R1.1",
+  "comparisons": {
+    "total": 12,
+    "matched": 6,
+    "mismatched": 6,
+    "correctness": 0.5,
+    "releaseThreshold": 1.0,
+    "gate": "fail"
+  },
+  "coverage": {
+    "executedVerifiedMetricIds": ["sales_revenue"],
+    "releaseRequiredFamilies": 4,
+    "familiesWithExecutableVerifiedComparison": 1,
+    "familyCoverage": 0.25,
+    "revenue": "partial",
+    "inventory": "no_executable_verified_comparison",
+    "delivery_operations": "no_executable_verified_comparison",
+    "conditional_finance": "blocked_or_not_advertised_no_verified_execution_proof",
+    "gate": "fail"
+  },
+  "matchedBehavior": "Grouped sales_revenue results match the frozen May and June full-file totals in six comparisons.",
+  "mismatches": [
+    {"sampleId": "rev.sales_erp_may_2026", "source": "sample data/Sales_ERP_May_2026.xlsx", "metricId": "sales_revenue", "truthKey": "revenue_sum", "expected": 22973896244, "actual": 1628754598},
+    {"sampleId": "rev.sales_erp_june_2026", "source": "sample data/Sales_ERP_June_2026.xlsx", "metricId": "sales_revenue", "truthKey": "revenue_sum", "expected": 20637539164, "actual": 1271567827},
+    {"sampleId": "multi.commerce_may_2026", "source": "sample data/Sales_ERP_May_2026.xlsx", "metricId": "sales_revenue", "truthKey": "sales_revenue_sum", "expected": 22973896244, "actual": 1628754598},
+    {"sampleId": "multi.commerce_june_2026", "source": "sample data/Sales_ERP_June_2026.xlsx", "metricId": "sales_revenue", "truthKey": "sales_revenue_sum", "expected": 20637539164, "actual": 1271567827},
+    {"sampleId": "multi.sales_period_pair", "source": "sample data/Sales_ERP_May_2026.xlsx", "metricId": "sales_revenue", "truthKey": "may_revenue", "expected": 22973896244, "actual": 1628754598},
+    {"sampleId": "multi.sales_period_pair", "source": "sample data/Sales_ERP_June_2026.xlsx", "metricId": "sales_revenue", "truthKey": "june_revenue", "expected": 20637539164, "actual": 1271567827}
+  ],
+  "evaluationIntegrity": {
+    "verifiedValuesModified": false,
+    "correctlyBlockedUnsupportedCountedAsFailure": false,
+    "productionBehaviorModified": false
+  },
+  "owningLayers": [
+    {"layer": "governed_query_execution_and_metric_comparison", "classification": "metric_correctness_defect", "reason": "Six bounded revenue-over-time results do not equal frozen full-file truth."},
+    {"layer": "metric_preflight_and_execution_coverage", "classification": "corpus_evidence_gap", "reason": "Inventory, delivery/operations, and conditional finance lack executable verified comparisons on the current canonical path."}
+  ],
+  "releaseGate": "fail"
+}

@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "lightbi.phase-7r31-delivery-identity-audit.v1",
+  "phase": "7R3.1",
+  "family": "delivery_operations",
+  "state": "covered",
+  "correction": "Metric-specific delivery identity now accepts a retained canonical shipment key only when full-file cardinality is exact, null count is zero, uniqueness is one, and both semantic identity and uniqueness evidence references exist.",
+  "sources": [
+    {"caseId":"ops.ttkt_20241219","state":"blocked","classification":"correct_governed_blocker","reason":"Shipment is not independently exact-unique and temporal mode is snapshot."},
+    {"caseId":"ops.ttkt_20241223","state":"blocked","classification":"correct_governed_blocker","reason":"Row/on-time/vehicle truths do not establish a governed delivery identity count; composite identity remains required."},
+    {"caseId":"ops.ttkt_20241224","state":"blocked","classification":"correct_governed_blocker","reason":"Shipment is not independently exact-unique and no frozen delivery-count truth exists."},
+    {"caseId":"ops.logistics_may_2026","state":"verified_executable","identity":"ShipmentID -> shipment confirmed; exact distinct=1500; null=0; uniqueness=1","eventTime":"DeliveredAt -> delivery_date probable; canonical temporal mode event","status":"DeliveryStatus -> delivery_status confirmed","operator":"governed_identity_count","expected":1500,"actual":1500,"comparison":"exact_match"},
+    {"caseId":"ops.logistics_june_2026","state":"verified_executable","identity":"ShipmentID -> shipment confirmed; exact distinct=1500; null=0; uniqueness=1","eventTime":"DeliveredAt -> delivery_date probable; canonical temporal mode event","status":"DeliveryStatus -> delivery_status confirmed","operator":"governed_identity_count","expected":1500,"actual":1500,"comparison":"exact_match"}
+  ],
+  "duplicateHandling": "COUNT(DISTINCT ShipmentID); arbitrary rows are never counted as deliveries.",
+  "proof": {"duckdb":"actual_local_duckdb","metricPreflight":"conditionally_ready","actionEligible":true,"runtimePreflight":"conditionally_executable","executionPerformed":true,"decisionUseAuthorized":false,"productionWiring":{"executed":false}}
+}

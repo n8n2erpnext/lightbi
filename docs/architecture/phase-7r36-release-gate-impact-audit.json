@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "lightbi.phase7r36-release-gate-impact-audit.v1",
+  "phase": "7R3.6",
+  "status": "pass",
+  "releaseGateImpact": {
+    "grossProfitCorrectness": "closed",
+    "grossProfitRuntimeExecution": "closed",
+    "advertisedActionExecutionRate": 1,
+    "falseExecutableActions": 0,
+    "blockedExplanationCompleteness": 1,
+    "inventoryMetricCorrectness": "still_blocked_out_of_scope",
+    "cleanCheckoutPackaging": "unchanged_out_of_scope"
+  },
+  "mappingPrecision": 1,
+  "heldoutCoreSignalRecall": 0.9090909091,
+  "domainActivationPrecision": 1,
+  "productionLegacyReachability": "canonical_only_with_governed_compatibility_type_adapters",
+  "typescriptDiagnostics": 0,
+  "fullDesktopSuite": {
+    "runCount": 1,
+    "status": "governed_baseline_conformant",
+    "testFilesTotal": 165,
+    "testFilesPassed": 161,
+    "testFilesFailed": 4,
+    "testsTotal": 1132,
+    "testsPassed": 1123,
+    "testsFailed": 9,
+    "deterministicBaselineFailures": 6,
+    "timingSensitiveTimeouts": 3,
+    "unexpectedFailures": 0,
+    "phase7r36OwnedFailures": 0,
+    "exitStatus": 1,
+    "completeLog": "/tmp/phase7r36-full-desktop-suite.log",
+    "completeLogSha256": "ed341bae7bde7f4d53fd6b1d0c3e40be009d8807b60ee21bddde9fa383ce080b",
+    "baselineAllowlistSha256": "baa86950582b7d758396abb0c69fdaffcd3c2cbbb22b71dd3bbdb3c0aed1c4f5"
+  },
+  "classification": "conditional_finance_execution_ready_for_inventory_remediation"
+}

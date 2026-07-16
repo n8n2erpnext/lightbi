@@ -5,6 +5,7 @@ import { governedRuntimePreflightIdentity } from "./governed-runtime-preflight";
 import { GOVERNED_RUNTIME_POLICY_V1, governedRuntimePolicyHash } from "./governed-runtime-policy";
 
 const TABLE = "__LIGHTBI_PREVIEW_TABLE__" as const;
+export const GOVERNED_FULL_SCOPE_TOTAL_COLUMN = "__lightbi_full_scope_metric_total__" as const;
 
 function quoteIdentifier(value: string): string { return `"${value.toLowerCase().replace(/"/g, '""')}"`; }
 function quoteAlias(value: string): string { return `"${value.replace(/"/g, '""')}"`; }
@@ -65,16 +66,21 @@ export function planGovernedMetricQuery(preflight: GovernedRuntimePreflightV1): 
     parameters.push(action.asOfBasis.value);
   }
   const select = [...selectDimensions, `${metricExpression} AS ${quoteAlias(action.metricId)}`].join(", ");
-  const groupBy = grouping.length ? `\nGROUP BY ${grouping.map((item) => quoteIdentifier(item.physicalColumn)).join(", ")}` : "";
-  const orderBy = grouping.length ? `\nORDER BY ${grouping.map((item) => quoteIdentifier(item.physicalColumn)).join(", ")}` : "";
   const where = predicates.length ? `\nWHERE ${predicates.join(" AND ")}` : "";
-  const limit = grouping.length ? "\nLIMIT 100" : "";
-  const sql = `SELECT ${select}\nFROM ${TABLE}${where}${groupBy}${orderBy}${limit};`;
+  const exactSnapshotIdentityGrouping = action.operator === "governed_point_in_time_snapshot_sum"
+    && action.groupingBindings.length === 2
+    && action.groupingBindings.some((item) => item.semanticId === "sku")
+    && action.groupingBindings.some((item) => item.semanticId === "warehouse");
+  const resultLimit = exactSnapshotIdentityGrouping ? "" : "\nLIMIT 100";
+  const sql = grouping.length
+    ? `SELECT ${select}, (SELECT ${metricExpression} FROM ${TABLE}${where}) AS ${quoteAlias(GOVERNED_FULL_SCOPE_TOTAL_COLUMN)}\nFROM ${TABLE}${where}\nGROUP BY ${grouping.map((item) => quoteIdentifier(item.physicalColumn)).join(", ")}\nORDER BY ${grouping.map((item) => quoteIdentifier(item.physicalColumn)).join(", ")}${resultLimit};`
+    : `SELECT ${select}\nFROM ${TABLE}${where};`;
+  const queryParameters = grouping.length ? [...parameters, ...parameters] : parameters;
   const base: Omit<GovernedMetricQueryPlanV1, "planId"> = {
     schemaVersion: "lightbi.governed-metric-query-plan.v1", runtimePreflightIdentity: preflight.identity, actionId: action.actionId, metricId: action.metricId, metricVersion: action.metricVersion,
     sourceReference: action.sourceReference, dialect: "duckdb", tableIdentity: TABLE, operator: action.operator, metricBindings: action.metricBindings.map((item) => ({ ...item })),
     groupingBindings: action.groupingBindings.map((item) => ({ ...item })), timeBinding: action.timeBinding ? { ...action.timeBinding } : null, asOfBasis: action.asOfBasis ? { ...action.asOfBasis } : null,
-    filters: action.filters.map((item) => ({ ...item })), sql, parameters, resultColumns: [...grouping.map((item) => item.semanticId), action.metricId], restrictions: action.restrictions.map((item) => ({ ...item, references: [...item.references] })),
+    filters: action.filters.map((item) => ({ ...item })), sql, parameters: queryParameters, resultColumns: [...grouping.map((item) => item.semanticId), action.metricId], restrictions: action.restrictions.map((item) => ({ ...item, references: [...item.references] })),
     evidence: action.evidence.map((item) => ({ ...item, references: [...item.references] })), deterministic: true, decisionUseAuthorized: false, productionWiring: { executed: false },
   };
   return { state: "planned", plan: { ...base, planId: governedMetricQueryPlanIdentity(base) }, blockers: [] };

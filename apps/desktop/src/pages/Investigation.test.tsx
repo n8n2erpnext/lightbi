@@ -1,394 +1,404 @@
 /**
  * @vitest-environment jsdom
  */
-import { render, screen, fireEvent, waitFor, cleanup } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-
+import fs from 'node:fs';
+import path from 'node:path';
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import type { AnalysisAction } from '../lib/analysis-opportunity-actions';
+import type { RuntimeIntent } from '../lib/analysis-runtime-contract';
+import type { InvestigationSession } from '../lib/investigation-session';
+import type { ResultValidationResult } from '../lib/result-validator-contract';
+import type { RuntimePlanPreview } from '../lib/runtime-planner-preview';
+import type { CanonicalInvestigationHandoffV1 } from '../lib/understanding-core/canonical-consumer-boundary';
+import type {
+  GovernedExecutionEvidenceV1,
+  GovernedExecutionRestrictionV1,
+  GovernedMetricExecutionResultV1,
+  GovernedMetricQueryPlanV1,
+  GovernedRuntimeActionV1,
+  GovernedRuntimePreflightV1,
+} from '../lib/understanding-core/governed-runtime-contracts';
 import { Investigation } from './Investigation';
 
-// Mock react-router-dom
-vi.mock('react-router-dom', () => ({
-  useNavigate: () => vi.fn(),
+vi.mock('react-router-dom', () => ({ useNavigate: () => vi.fn() }));
+vi.mock('../lib/investigation-session', () => ({ getCurrentInvestigationSession: vi.fn() }));
+vi.mock('../lib/workspace-session-api', () => ({
+  saveWorkspaceSession: vi.fn().mockResolvedValue({ id: 'saved-session' }),
 }));
-
-// Mock the investigation session
-vi.mock('../lib/investigation-session', () => ({
-  getCurrentInvestigationSession: vi.fn(),
+vi.mock('../lib/understanding-core/governed-metric-executor', () => ({
+  executeGovernedMetricRequest: vi.fn(),
 }));
-
-// Mock the preview executors
-vi.mock('../lib/backend-preview-executor', () => ({
-  executeBackendPreview: vi.fn(),
+vi.mock('../lib/understanding-core/governed-local-duckdb-boundary', () => ({
+  createGovernedLocalDuckDBBoundary: vi.fn(() => ({ execute: vi.fn() })),
 }));
-
-vi.mock('../lib/duckdb-preview-sandbox', () => ({
-  executeDuckDBPreviewSandbox: vi.fn(),
-}));
-
-// Mock the ChartPreviewRenderer to avoid ECharts/canvas crashes in jsdom
 vi.mock('../components/analysis/ChartPreviewRenderer', () => ({
-  ChartPreviewRenderer: () => <div data-testid="mock-chart-renderer">Mock Chart</div>
+  ChartPreviewRenderer: () => <div data-testid="canonical-chart-renderer">Canonical chart</div>,
 }));
-
-// Mock the validator to not interfere too aggressively unless we want it to
-vi.mock('../lib/result-validator-contract', async (importOriginal) => {
-  const actual = await importOriginal() as any;
-  return {
-    ...actual,
-    validatePreviewAgainstIntent: vi.fn().mockReturnValue({ status: 'passed', warnings: [] })
-  };
-});
+vi.mock('../lib/result-validator-contract', () => ({
+  validatePreviewAgainstIntent: vi.fn(),
+}));
 
 import { getCurrentInvestigationSession } from '../lib/investigation-session';
-import { executeBackendPreview } from '../lib/backend-preview-executor';
-import { executeDuckDBPreviewSandbox } from '../lib/duckdb-preview-sandbox';
 import { validatePreviewAgainstIntent } from '../lib/result-validator-contract';
+import { executeGovernedMetricRequest } from '../lib/understanding-core/governed-metric-executor';
 
-const mockSession = {
-  id: 'test-session',
-  datasetId: 'test-dataset',
-  createdAt: Date.now(),
-  analysisAction: {
-    id: 'test-action',
-    actionType: 'group_by',
-    opportunityName: 'Test Analysis',
-    dimensions: ['dim1'],
-    measures: ['meas1']
-  },
-  runtimeIntent: {
-    id: 'test-intent',
-    type: 'distribution',
-    dimensions: ['dim1'],
-    measures: ['meas1'],
-    expectedShape: 'bar_chart',
-    status: 'ready'
-  },
-  runtimePlanPreview: {
-    id: 'test-plan',
-    status: 'ready',
-    logicalOperations: [],
-    requiredColumns: [],
-    warnings: [],
-    blockedReasons: [],
-    expectedOutput: { 
-      shape: 'bar_chart',
-      dimensions: ['dim1'],
-      measures: ['meas1']
-    }
-  },
-  rows: []
+const restriction: GovernedExecutionRestrictionV1 = {
+  code: 'DECISION_USE_PROHIBITED',
+  severity: 'critical',
+  reason: 'Preview evidence cannot authorize decision use.',
+  references: ['canonical:test-source'],
+  decisionUseBlocked: true,
 };
 
-describe('Investigation Boundary Contract & Truth Truth', () => {
+const evidence: GovernedExecutionEvidenceV1 = {
+  evidenceId: 'canonical-evidence:test-source',
+  kind: 'runtime_policy',
+  references: ['canonical:test-source'],
+  provenance: 'governed_policy',
+};
+
+const metricBinding = {
+  requirementId: 'sales_revenue_value',
+  role: 'measure' as const,
+  semanticId: 'money.revenue',
+  sourceColumnIndex: 1,
+  physicalColumn: 'Revenue',
+  semanticState: 'confirmed' as const,
+};
+
+const dimensionBinding = {
+  requirementId: 'product_dimension',
+  role: 'dimension' as const,
+  semanticId: 'item.product',
+  sourceColumnIndex: 0,
+  physicalColumn: 'Product',
+  semanticState: 'confirmed' as const,
+};
+
+const runtimeAction: GovernedRuntimeActionV1 = {
+  schemaVersion: 'lightbi.governed-runtime-contract.v1',
+  actionId: 'runtime-action:test',
+  sourceActionCandidateId: 'action-candidate:test',
+  questionId: 'question:test',
+  domainPackId: 'commerce_distribution_mvp',
+  metricId: 'sales_revenue',
+  metricVersion: '1.0.0',
+  sourceReference: 'canonical:test-source',
+  operator: 'governed_sum',
+  metricBindings: [metricBinding],
+  groupingBindings: [dimensionBinding],
+  timeBinding: null,
+  asOfBasis: null,
+  filters: [],
+  restrictions: [restriction],
+  evidence: [evidence],
+  runtimeActionCreated: true,
+  runtimeActionAuthorized: true,
+  executionPerformed: false,
+  decisionUseAuthorized: false,
+  productionWiring: { executed: false },
+};
+
+const runtimePreflight: GovernedRuntimePreflightV1 = {
+  schemaVersion: 'lightbi.governed-runtime-preflight.v1',
+  identity: 'runtime-preflight:test',
+  state: 'conditionally_executable',
+  domainPackId: 'commerce_distribution_mvp',
+  sourceReference: 'canonical:test-source',
+  actionCandidateId: 'action-candidate:test',
+  metricId: 'sales_revenue',
+  metricVersion: '1.0.0',
+  runtimePolicyHash: 'runtime-policy:test',
+  metricPolicyHash: 'metric-policy:test',
+  questionPolicyHash: 'question-policy:test',
+  planningAllowed: true,
+  executionAllowed: true,
+  action: runtimeAction,
+  blockers: [],
+  restrictions: [restriction],
+  evidence: [evidence],
+  runtimeActionCreated: true,
+  runtimeActionAuthorized: true,
+  executionPerformed: false,
+  decisionUseAuthorized: false,
+  productionWiring: { executed: false },
+};
+
+const queryPlan: GovernedMetricQueryPlanV1 = {
+  schemaVersion: 'lightbi.governed-metric-query-plan.v1',
+  planId: 'metric-plan:test',
+  runtimePreflightIdentity: runtimePreflight.identity,
+  actionId: runtimeAction.actionId,
+  metricId: runtimeAction.metricId,
+  metricVersion: runtimeAction.metricVersion,
+  sourceReference: runtimeAction.sourceReference,
+  dialect: 'duckdb',
+  tableIdentity: '__LIGHTBI_PREVIEW_TABLE__',
+  operator: runtimeAction.operator,
+  metricBindings: [metricBinding],
+  groupingBindings: [dimensionBinding],
+  timeBinding: null,
+  asOfBasis: null,
+  filters: [],
+  sql: 'SELECT "product" AS "item.product", SUM(CAST("revenue" AS DOUBLE)) AS "sales_revenue" FROM __LIGHTBI_PREVIEW_TABLE__ GROUP BY "product";',
+  parameters: [],
+  resultColumns: ['item.product', 'sales_revenue'],
+  restrictions: [restriction],
+  evidence: [evidence],
+  deterministic: true,
+  decisionUseAuthorized: false,
+  productionWiring: { executed: false },
+};
+
+function plannedHandoff(): CanonicalInvestigationHandoffV1 {
+  return {
+    schemaVersion: 'lightbi.canonical-investigation-handoff.v1',
+    artifactIdentity: 'canonical-consumer:test',
+    datasetStateIdentity: 'dataset-state:test',
+    actionCandidate: null,
+    runtimePreflight,
+    queryPlanning: { state: 'planned', plan: queryPlan, blockers: [] },
+    blockers: [],
+    decisionUseAuthorized: false,
+  };
+}
+
+function blockedHandoff(reason: string): CanonicalInvestigationHandoffV1 {
+  return {
+    ...plannedHandoff(),
+    runtimePreflight: {
+      ...runtimePreflight,
+      state: 'blocked',
+      planningAllowed: false,
+      executionAllowed: false,
+      action: null,
+      blockers: [{ code: reason, severity: 'critical', source: 'integrity', references: ['canonical-consumer:test'] }],
+      runtimeActionCreated: false,
+      runtimeActionAuthorized: false,
+    },
+    queryPlanning: { state: 'blocked', plan: null, blockers: [reason] },
+    blockers: [reason],
+  };
+}
+
+const analysisAction: AnalysisAction = {
+  id: 'action:test',
+  opportunityName: 'Revenue by product',
+  label: 'Revenue by product',
+  description: 'Compare governed revenue by product.',
+  actionType: 'group_by',
+  dimensions: ['item.product'],
+  measures: ['sales_revenue'],
+  confidenceScore: 100,
+  source: 'dataset_understanding',
+};
+
+const runtimeIntent: RuntimeIntent = {
+  id: 'intent:test',
+  sourceActionId: analysisAction.id,
+  type: 'group_by',
+  dimensions: ['item.product'],
+  measures: ['sales_revenue'],
+  expectedShape: 'bar_chart',
+  status: 'ready',
+  warnings: [],
+  blockedReasons: [],
+  source: 'analysis_action',
+};
+
+const runtimePlanPreview: RuntimePlanPreview = {
+  id: 'runtime-plan:test',
+  sourceIntentId: runtimeIntent.id,
+  status: 'ready',
+  executionMode: 'preview_only',
+  logicalOperations: [],
+  requiredColumns: ['Product', 'Revenue'],
+  expectedOutput: { shape: 'bar_chart', dimensions: ['item.product'], measures: ['sales_revenue'] },
+  warnings: [],
+  blockedReasons: [],
+  source: 'runtime_intent',
+};
+
+function session(overrides: Partial<InvestigationSession> = {}): InvestigationSession {
+  return {
+    id: 'session:test',
+    datasetId: 'dataset:test',
+    createdAt: 1,
+    analysisAction,
+    runtimeIntent,
+    runtimePlanPreview,
+    rows: [{ Product: 'A', Revenue: 10 }],
+    rowScope: 'full_file',
+    canonicalHandoff: plannedHandoff(),
+    ...overrides,
+  };
+}
+
+function validation(status: ResultValidationResult['status'] = 'passed', warnings: string[] = []): ResultValidationResult {
+  return {
+    id: `validation:${status}`,
+    expectedResultId: 'expected:test',
+    previewRuntimeResultId: 'preview:test',
+    status,
+    score: status === 'passed' ? 100 : 0,
+    confidence: status === 'passed' ? 'HIGH' : 'LOW',
+    evidence: [],
+    warnings,
+  };
+}
+
+function governedResult(overrides: Partial<GovernedMetricExecutionResultV1> = {}): GovernedMetricExecutionResultV1 {
+  return {
+    schemaVersion: 'lightbi.governed-metric-execution-result.v1',
+    resultId: 'metric-result:test',
+    requestId: 'consumer:metric-plan:test',
+    actionId: runtimeAction.actionId,
+    metricId: 'sales_revenue',
+    metricVersion: '1.0.0',
+    sourceReference: 'canonical:test-source',
+    queryPlanIdentity: queryPlan.planId,
+    operator: 'governed_sum',
+    dimensions: ['item.product'],
+    timeBasis: null,
+    status: 'executed',
+    columns: ['item.product', 'sales_revenue'],
+    rows: [{ 'item.product': 'A', sales_revenue: 10 }],
+    rowCount: 1,
+    resultShape: 'grouped',
+    groundTruthComparison: { state: 'unavailable', expected: null, actual: 10, tolerance: null },
+    evidence: [evidence],
+    restrictions: [restriction],
+    limitations: [],
+    error: null,
+    runtimeActionCreated: true,
+    runtimeActionAuthorized: true,
+    executionPerformed: true,
+    decisionUseAuthorized: false,
+    productionWiring: { executed: false },
+    ...overrides,
+  };
+}
+
+const mockedSession = vi.mocked(getCurrentInvestigationSession);
+const mockedExecute = vi.mocked(executeGovernedMetricRequest);
+const mockedValidate = vi.mocked(validatePreviewAgainstIntent);
+
+describe('Investigation canonical consumer boundary', () => {
   beforeEach(() => {
-    vi.resetAllMocks();
-    (getCurrentInvestigationSession as any).mockReturnValue(mockSession);
-    (validatePreviewAgainstIntent as any).mockReturnValue({ status: 'passed', warnings: [] });
+    vi.clearAllMocks();
+    mockedSession.mockReturnValue(session());
+    mockedExecute.mockResolvedValue(governedResult());
+    mockedValidate.mockReturnValue(validation());
   });
 
-  afterEach(() => {
-    cleanup();
-  });
+  afterEach(cleanup);
 
-  it('0.1 renders Run preview when AI briefing uses current readiness contract', () => {
-    (getCurrentInvestigationSession as any).mockReturnValue({
-      ...mockSession,
+  it('renders current readiness without requiring a legacy execution contract', () => {
+    mockedSession.mockReturnValue(session({
+      rows: [],
+      canonicalHandoff: undefined,
       aiBriefing: {
-        datasetId: 'test-dataset',
-        generatedAt: '2026-06-14T00:00:00.000Z',
-        grain: 'event',
-        grainEvidence: 'Contains shipment rows',
-        readinessTier: 'caution',
-        readinessScore: 72,
-        semanticFields: [],
-        caveats: ['No stable time dimension detected.'],
-        safeActionHints: ['Can inspect dataset structure']
-      }
-    });
-
+        datasetId: 'dataset:test', generatedAt: '2026-06-14T00:00:00.000Z', grain: 'event', grainEvidence: 'Canonical event grain',
+        readinessTier: 'caution', readinessScore: 72, semanticFields: [], caveats: ['No stable time dimension detected.'], safeActionHints: [],
+      },
+    }));
     render(<Investigation />);
-
     expect(screen.getByRole('button', { name: /Run preview/i })).toBeDefined();
     expect(screen.getByText('Moderate Readiness (Caution)')).toBeDefined();
-    expect(screen.getAllByText(/No stable time dimension detected/)[0]).toBeDefined();
   });
 
-  it('1. Upgrades empty executed result to failed truth state', async () => {
-    (executeBackendPreview as any).mockResolvedValue({
-      status: 'executed',
-      rows: [],
-      rowCount: 0,
-      columns: ['dim1', 'meas1'],
-      source: 'backend_duckdb_preview',
-      warnings: [],
-      blockedReasons: []
-    });
-
+  it('presents canonical preflight blockers and stops before execution', async () => {
+    mockedSession.mockReturnValue(session({ canonicalHandoff: blockedHandoff('runtime_preflight_identity_mismatch') }));
     render(<Investigation />);
-    
-    // Click "Run preview"
-    const runBtn = screen.getByRole('button', { name: /Run preview/i });
-    fireEvent.click(runBtn);
-
-    // Wait for the empty state upgrade
-    await waitFor(() => {
-      expect(screen.getAllByText('Execution Failed')[0]).toBeDefined();
-    });
-    
-    expect(screen.getAllByText('Execution completed but returned an empty dataset. Analysis unavailable.')[0]).toBeDefined();
-    
-    // Should not render the actual chart area
-    expect(screen.queryByText('Ready to execute')).toBeNull(); 
+    await waitFor(() => expect(screen.getAllByText('Analysis Blocked').length).toBeGreaterThan(0));
+    expect(screen.getAllByText(/runtime_preflight_identity_mismatch/).length).toBeGreaterThan(0);
+    expect(mockedExecute).not.toHaveBeenCalled();
   });
 
-  it('2. distribution + DUCKDB_BOOTSTRAP_ERROR: allows fallback and expresses degraded messaging', async () => {
-    // Backend fails with bootstrap error
-    (executeBackendPreview as any).mockResolvedValue({
-      status: 'failed',
-      rows: [],
-      rowCount: 0,
-      columns: [],
-      source: 'backend_duckdb_preview',
-      warnings: [],
-      blockedReasons: [],
-      errorMessage: 'DUCKDB_BOOTSTRAP_ERROR: Worker is not defined'
-    });
-
-    // Fallback succeeds
-    (executeDuckDBPreviewSandbox as any).mockResolvedValue({
-      status: 'executed',
-      rows: [{ dim1: 'A', meas1: 10 }],
-      rowCount: 1,
-      columns: ['dim1', 'meas1'],
-      source: 'js_sandbox_fallback', // Critical to trigger degraded
-      warnings: [],
-      blockedReasons: []
-    });
-
+  it('blocks missing full rows without invoking execution', async () => {
+    mockedSession.mockReturnValue(session({ rows: [] }));
     render(<Investigation />);
-    
-    const runBtn = screen.getByRole('button', { name: /Run preview/i });
-    fireEvent.click(runBtn);
-
-    await waitFor(() => {
-      expect(screen.getByText(/Degraded Execution Mode/)).toBeDefined();
-    });
-    expect(screen.getByText('EXECUTED')).toBeDefined(); // The fallback succeeded
+    fireEvent.click(screen.getByRole('button', { name: /Run preview/i }));
+    await waitFor(() => expect(screen.getAllByText(/canonical_full_file_rows_required/).length).toBeGreaterThan(0));
+    expect(mockedExecute).not.toHaveBeenCalled();
   });
 
-  it('2.0.1 distribution + DUCKDB_PARSER_ERROR: never falls back for sql logic errors', async () => {
-    // Backend fails with parser error
-    (executeBackendPreview as any).mockResolvedValue({
-      status: 'failed',
-      rows: [],
-      rowCount: 0,
-      columns: [],
-      source: 'local_duckdb_preview',
-      warnings: [],
-      blockedReasons: [],
-      errorMessage: 'DUCKDB_PARSER_ERROR: syntax error'
-    });
-
+  it('presents stale artifact rejection from canonical blockers', async () => {
+    mockedSession.mockReturnValue(session({ canonicalHandoff: blockedHandoff('stale_artifact_identity') }));
     render(<Investigation />);
-    
-    const runBtn = screen.getByRole('button', { name: /Run preview/i });
-    fireEvent.click(runBtn);
-
-    await waitFor(() => {
-      expect(screen.getAllByText('Execution Failed')[0]).toBeDefined();
-    });
-    
-    expect(screen.getAllByText('DUCKDB_PARSER_ERROR: syntax error')[0]).toBeDefined();
-    expect(executeDuckDBPreviewSandbox).not.toHaveBeenCalled();
+    await waitFor(() => expect(screen.getAllByText(/stale_artifact_identity/).length).toBeGreaterThan(0));
+    expect(mockedExecute).not.toHaveBeenCalled();
   });
 
-  it('2.0.2 table_preview + DUCKDB_MEMORY_ERROR: allows fallback for simple intent with infra error', async () => {
-    (getCurrentInvestigationSession as any).mockReturnValue({
-      ...mockSession,
-      runtimeIntent: { ...mockSession.runtimeIntent, type: 'table_preview' }
-    });
-
-    // Backend fails with memory error
-    (executeBackendPreview as any).mockResolvedValue({
-      status: 'failed',
-      rows: [],
-      rowCount: 0,
-      columns: [],
-      source: 'backend_duckdb_preview',
-      warnings: [],
-      blockedReasons: [],
-      errorMessage: 'DUCKDB_MEMORY_ERROR: Out of Memory'
-    });
-
-    (executeDuckDBPreviewSandbox as any).mockResolvedValue({
-      status: 'executed',
-      rows: [{ dim1: 'A', meas1: 10 }],
-      rowCount: 1,
-      columns: ['dim1', 'meas1'],
-      source: 'js_sandbox_fallback',
-      warnings: [],
-      blockedReasons: []
-    });
-
+  it('rejects a missing canonical handoff without legacy fallback', async () => {
+    mockedSession.mockReturnValue(session({ canonicalHandoff: undefined }));
     render(<Investigation />);
-    const runBtn = screen.getByRole('button', { name: /Run preview/i });
-    fireEvent.click(runBtn);
-
-    await waitFor(() => {
-      expect(screen.getByText(/Degraded Execution Mode/)).toBeDefined();
-    });
+    fireEvent.click(screen.getByRole('button', { name: /Run preview/i }));
+    await waitFor(() => expect(screen.getAllByText(/canonical_handoff_required/).length).toBeGreaterThan(0));
+    expect(mockedExecute).not.toHaveBeenCalled();
   });
 
-  it('2.0 distribution + CANONICAL_PROJECTION_MISSING: never falls back for semantic schema errors', async () => {
-    // Backend fails with projection error
-    (executeBackendPreview as any).mockResolvedValue({
-      status: 'failed',
-      rows: [],
-      rowCount: 0,
-      columns: [],
-      source: 'local_duckdb_preview',
-      warnings: [],
-      blockedReasons: [],
-      errorMessage: 'CANONICAL_PROJECTION_MISSING: Required field "revenue" is missing from dataset'
+  it('surfaces a governed execution failure and retains restrictions', async () => {
+    const current = session();
+    mockedSession.mockReturnValue(current);
+    const failure = governedResult({
+      status: 'failed', rows: [], columns: [], rowCount: 0, error: 'DUCKDB_PARSER_ERROR: syntax error',
+      limitations: ['duckdb_execution_failed'], executionPerformed: false,
     });
-
+    mockedExecute.mockResolvedValue(failure);
     render(<Investigation />);
-    
-    const runBtn = screen.getByRole('button', { name: /Run preview/i });
-    fireEvent.click(runBtn);
-
-    await waitFor(() => {
-      // It should NOT fall back, so it should show the execution boundary failed
-      expect(screen.getAllByText('Execution Failed')[0]).toBeDefined();
-    });
-    
-    expect(screen.getAllByText('CANONICAL_PROJECTION_MISSING: Required field "revenue" is missing from dataset')[0]).toBeDefined();
-    expect(executeDuckDBPreviewSandbox).not.toHaveBeenCalled();
+    await waitFor(() => expect(screen.getAllByText('Execution Failed').length).toBeGreaterThan(0));
+    expect(screen.getAllByText('DUCKDB_PARSER_ERROR: syntax error').length).toBeGreaterThan(0);
+    expect(current.canonicalExecutionResult?.restrictions).toEqual([restriction]);
+    expect(current.canonicalExecutionResult?.decisionUseAuthorized).toBe(false);
   });
 
-  it('2.1 group_by + DUCKDB_BOOTSTRAP_ERROR: does not fallback and honestly surfaces backend failure for complex intent', async () => {
-    // Override the session to have a complex intent
-    (getCurrentInvestigationSession as any).mockReturnValue({
-      ...mockSession,
-      runtimeIntent: { ...mockSession.runtimeIntent, type: 'group_by' }
-    });
-
-    // Backend fails with BOOTSTRAP error
-    (executeBackendPreview as any).mockResolvedValue({
-      status: 'failed',
-      rows: [],
-      rowCount: 0,
-      columns: [],
-      source: 'backend_duckdb_preview',
-      warnings: [],
-      blockedReasons: [],
-      errorMessage: 'DUCKDB_BOOTSTRAP_ERROR: Worker not found'
-    });
-
+  it('surfaces a thrown canonical executor error without fallback', async () => {
+    mockedExecute.mockRejectedValue(new Error('LOCAL_DUCKDB_EXECUTION_FAILED'));
     render(<Investigation />);
-    
-    const runBtn = screen.getByRole('button', { name: /Run preview/i });
-    fireEvent.click(runBtn);
-
-    await waitFor(() => {
-      expect(screen.getAllByText('Execution Failed')[0]).toBeDefined();
-    });
-    
-    expect(screen.getAllByText('DUCKDB_BOOTSTRAP_ERROR: Worker not found')[0]).toBeDefined();
-    expect(executeDuckDBPreviewSandbox).not.toHaveBeenCalled();
+    await waitFor(() => expect(screen.getAllByText('LOCAL_DUCKDB_EXECUTION_FAILED').length).toBeGreaterThan(0));
+    expect(screen.getAllByText('Execution Failed').length).toBeGreaterThan(0);
   });
 
-  it('2.1b trend + LOCAL_EXECUTOR_UNAVAILABLE: does not fallback for complex intent even if infra error', async () => {
-    // Override the session to have a complex intent
-    (getCurrentInvestigationSession as any).mockReturnValue({
-      ...mockSession,
-      runtimeIntent: { ...mockSession.runtimeIntent, type: 'trend' }
-    });
-
-    // Backend fails with LOCAL_EXECUTOR_UNAVAILABLE
-    (executeBackendPreview as any).mockResolvedValue({
-      status: 'failed',
-      rows: [],
-      rowCount: 0,
-      columns: [],
-      source: 'local_duckdb_preview',
-      warnings: [],
-      blockedReasons: [],
-      errorMessage: 'LOCAL_EXECUTOR_UNAVAILABLE: WASM memory limit'
-    });
-
+  it('marks an empty governed execution as result unavailable', async () => {
+    mockedExecute.mockResolvedValue(governedResult({ rows: [], rowCount: 0 }));
     render(<Investigation />);
-    
-    const runBtn = screen.getByRole('button', { name: /Run preview/i });
-    fireEvent.click(runBtn);
-
-    await waitFor(() => {
-      expect(screen.getAllByText('Execution Failed')[0]).toBeDefined();
-    });
-    
-    expect(screen.getAllByText('LOCAL_EXECUTOR_UNAVAILABLE: WASM memory limit')[0]).toBeDefined();
-    expect(executeDuckDBPreviewSandbox).not.toHaveBeenCalled();
+    await waitFor(() => expect(screen.getAllByText('Execution completed but returned an empty dataset. Analysis unavailable.').length).toBeGreaterThan(0));
+    expect(screen.queryByTestId('canonical-chart-renderer')).toBeNull();
   });
 
-  it('2.3 Surfaces transparent local DuckDB unknown runtime error without fallback', async () => {
-    (getCurrentInvestigationSession as any).mockReturnValue({
-      ...mockSession,
-      runtimeIntent: { ...mockSession.runtimeIntent, type: 'distribution' }
-    });
-
-    (executeBackendPreview as any).mockResolvedValue({
-      status: 'failed',
-      rows: [],
-      rowCount: 0,
-      columns: [],
-      source: 'local_duckdb_preview',
-      warnings: [],
-      blockedReasons: [],
-      errorMessage: 'DUCKDB_UNKNOWN_RUNTIME_ERROR: some weird panic'
-    });
-
+  it('does not render a chart when canonical result validation fails', async () => {
+    mockedValidate.mockReturnValue(validation('failed', ['Insufficient quality']));
     render(<Investigation />);
-    const runBtn = screen.getByRole('button', { name: /Run preview/i });
-    fireEvent.click(runBtn);
-
-    await waitFor(() => {
-      expect(screen.getAllByText('Execution Failed')[0]).toBeDefined();
-    });
-    
-    expect(screen.getAllByText('DUCKDB_UNKNOWN_RUNTIME_ERROR: some weird panic')[0]).toBeDefined();
-    expect(executeDuckDBPreviewSandbox).not.toHaveBeenCalled();
-  });
-
-  it('3. Does not render chart placeholder as success when preview boundary fails', async () => {
-    (executeBackendPreview as any).mockResolvedValue({
-      status: 'executed',
-      rows: [{ dim1: 'A', meas1: 10 }],
-      rowCount: 1,
-      columns: ['dim1', 'meas1'],
-      source: 'backend_duckdb_preview',
-      warnings: [],
-      blockedReasons: []
-    });
-
-    // Validator rejects it!
-    (validatePreviewAgainstIntent as any).mockReturnValue({
-      status: 'failed',
-      warnings: ['Insufficient quality']
-    });
-
-    render(<Investigation />);
-    
-    const runBtn = screen.getByRole('button', { name: /Run preview/i });
-    fireEvent.click(runBtn);
-
-    await waitFor(() => {
-      expect(screen.getAllByText('Execution Failed')[0]).toBeDefined();
-    });
-    
-    expect(screen.getAllByText('Validation boundary rejected the preview result due to insufficient quality or missing required data.')[0]).toBeDefined();
+    await waitFor(() => expect(screen.getAllByText('Validation boundary rejected the preview result due to insufficient quality or missing required data.').length).toBeGreaterThan(0));
     expect(screen.getByText('Insufficient quality')).toBeDefined();
-    
-    // Chart placeholder should be gone/replaced by error
-    expect(screen.queryByText('Ready to execute')).toBeNull();
+    expect(screen.queryByTestId('canonical-chart-renderer')).toBeNull();
+  });
+
+  it('renders a successful governed result through the canonical chart path', async () => {
+    render(<Investigation />);
+    await waitFor(() => expect(screen.getByTestId('canonical-chart-renderer')).toBeDefined());
+    expect(screen.getByText('EXECUTED')).toBeDefined();
+    expect(mockedExecute).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps restriction and evidence references attached after successful execution', async () => {
+    const current = session();
+    mockedSession.mockReturnValue(current);
+    render(<Investigation />);
+    await waitFor(() => expect(current.canonicalExecutionResult).toBeDefined());
+    expect(current.canonicalExecutionResult?.restrictions).toEqual([restriction]);
+    expect(current.canonicalExecutionResult?.evidence).toEqual([evidence]);
+    expect(current.canonicalExecutionResult?.decisionUseAuthorized).toBe(false);
+  });
+
+  it('contains no backend, JavaScript sandbox, or mock preview invocation', () => {
+    const source = fs.readFileSync(path.resolve(__dirname, 'Investigation.tsx'), 'utf8');
+    expect(source).not.toContain('executeBackendPreview(');
+    expect(source).not.toContain('executeDuckDBPreviewSandbox(');
+    expect(source).not.toContain('executeDuckDBPreviewRuntime(');
+    expect(source).not.toContain('Degraded Execution Mode');
+    expect(source).toContain('executeGovernedMetricRequest');
   });
 });

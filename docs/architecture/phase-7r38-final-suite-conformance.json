@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "lightbi.phase-7r38-final-suite-conformance.v1",
+  "phase": "7R3.8",
+  "runCount": 1,
+  "testFilesTotal": 166,
+  "testFilesPassed": 162,
+  "testFilesFailed": 4,
+  "testsTotal": 1135,
+  "testsPassed": 1127,
+  "testsFailed": 8,
+  "deterministicBaselineFailuresObserved": 6,
+  "timingSensitiveFailuresObserved": 2,
+  "timingSensitiveCasesPassed": 1,
+  "unexpectedFailures": 0,
+  "phase7r38OwnedFailures": 0,
+  "processExitStatus": 1,
+  "completeLog": "/tmp/phase7r38-full-desktop-suite.log",
+  "completeLogBytes": 20602,
+  "completeLogSha256": "2765bf6c53846f662c48e7ba3afefb6ebcb9e4098091a3b4ca1c94855737a1ae",
+  "baselineAllowlistSha256": "baa86950582b7d758396abb0c69fdaffcd3c2cbbb22b71dd3bbdb3c0aed1c4f5",
+  "governedFailures": [
+    { "file": "src/lib/guided-investigation-pipeline.test.ts", "class": "deterministic", "observed": 1, "signatureConformant": true },
+    { "file": "src/lib/numeric-health-gate.test.ts", "class": "deterministic", "observed": 3, "signatureConformant": true },
+    { "file": "src/lib/virtual-dataset-planner.test.ts", "class": "deterministic", "observed": 2, "signatureConformant": true },
+    { "file": "src/lib/ba-comparison-engine.test.ts", "class": "timing_sensitive", "timeoutsObserved": 2, "permittedCasesPassed": 1, "signatureConformant": true }
+  ],
+  "conformance": "pass_by_governed_test_identity_and_signature",
+  "gate": "pass"
+}

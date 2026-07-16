@@ -1,0 +1,12 @@
+{
+  "schemaVersion": "lightbi.phase-7r37-snapshot-grain-readiness-audit.v1",
+  "phase": "7R3.7",
+  "status": "pass",
+  "identity": {"item":"ItemID", "warehouse":"WarehouseID", "candidate":"key:5+9", "state":"confirmed"},
+  "temporal": {"column":"AsOfDate", "semanticId":"time_period", "mode":"snapshot", "state":"probable"},
+  "measure": {"column":"QuantityOnHand", "semanticId":"stock_qty", "aggregationFormAlternative":"snapshot_values"},
+  "uom": {"column":"UOM", "may":"EA", "june":"EA", "compatible":true},
+  "sourceLevelSafeToAggregate": false,
+  "metricSpecificEligibility": true,
+  "blockedConditions": ["duplicate composite identity", "conflicting quantity", "multiple as-of values", "missing item", "missing warehouse", "mixed UOM", "movement grain"]
+}

@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "lightbi.phase-7r1-recall-denominator-audit.v1",
+  "phase": "7R1",
+  "corpusVersion": "1.2.0",
+  "canonicalReleaseGateCalculation": "heldout_required_core_signal_occurrence_recall",
+  "threshold": 0.9,
+  "population": {
+    "corpusGroups": ["holdout"],
+    "caseCount": 12,
+    "sourcePopulation": "all source occurrences belonging to the 12 holdout cases",
+    "signalPopulation": ["order", "time_period", "revenue", "product", "quantity", "sold_qty", "stock_qty", "shipment", "delivery_status", "total_cost"],
+    "requirementStatus": "requiredMappings only; optional and expected-ambiguous mappings excluded",
+    "acceptedFinalStates": ["probable", "confirmed"],
+    "duplicateHandling": "Each required physical-column mapping occurrence is counted once. Repeated canonical signals in different cases or columns remain separate observations; source reuse is not deduplicated across corpus cases."
+  },
+  "phase7Baseline": {
+    "numerator": 13,
+    "denominator": 22,
+    "recall": 0.5909090909
+  },
+  "phase7r1Result": {
+    "numerator": 20,
+    "denominator": 22,
+    "recall": 0.9090909091,
+    "gate": "pass"
+  },
+  "holdoutRequiredRecallReconciliation": {
+    "phase7Numerator": 42,
+    "phase7Denominator": 60,
+    "phase7Recall": 0.7,
+    "phase7r1Numerator": 50,
+    "phase7r1Denominator": 60,
+    "phase7r1Recall": 0.8333333333,
+    "difference": "The 60-item measure includes every required semantic mapping in holdout cases, including non-core and partially supported signals. It is a corpus coverage diagnostic, not the MVP release-gate denominator."
+  },
+  "releaseGateRationale": "The MVP roadmap explicitly gates core MVP signal recall on held-out in-domain files. The 22-occurrence calculation is therefore canonical and its 90% threshold is unchanged."
+}

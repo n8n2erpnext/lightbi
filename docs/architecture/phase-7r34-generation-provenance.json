@@ -1,0 +1,127 @@
+{
+  "schemaVersion": "lightbi.phase7r34-generation-provenance.v1",
+  "generator": {
+    "path": "sample-corpus/tooling/phase-7r34/generate.cjs",
+    "version": "1.0.0",
+    "sha256": "f514ae835149fd6f0c6b264fd0d9da02cde45e0ff559ad03c68b4fd1915e1b2a",
+    "seed": "lightbi-commerce-distribution-erp-v1-seed-20260716"
+  },
+  "evidencePolicy": {
+    "path": "sample-corpus/tooling/phase-7r34/evidence-policy.json",
+    "sha256": "5a62f444f594fe9edb32aac33e5e48ac7158024c65a23c5135553542cb9df745"
+  },
+  "scenarioContract": {
+    "path": "sample-corpus/tooling/phase-7r34/scenario-contract.json",
+    "sha256": "0cabb2156d30f42e59cf9a0e57e41a43140d90eea1f70d32e5036fe4a7da2023"
+  },
+  "anchorInventory": {
+    "path": "sample-corpus/tooling/phase-7r34/authentic-anchors.json",
+    "sha256": "b13a6beb1186d29458aa6ed21ad58918dc8c0ebca41b374c34eb38dd5c4e8ff5"
+  },
+  "anchors": [
+    {
+      "path": "sample data/Sales_ERP_May_2026.xlsx",
+      "sha256": "e2cad91d14cf4ae19daa09dd9c980ea57b6b9cc20a518a9fa6818c3b18aef9ae",
+      "rowCount": 1500,
+      "evidenceType": "repository_frozen_operational_anchor",
+      "corpus12SourceSystem": "synthetic_erp_export"
+    },
+    {
+      "path": "sample data/Sales_ERP_June_2026.xlsx",
+      "sha256": "a0a69a4d45531090ed5a829467d25ca89320d17792a72e4a91c55b95b9469e52",
+      "rowCount": 1500,
+      "evidenceType": "repository_frozen_operational_anchor",
+      "corpus12SourceSystem": "synthetic_erp_export"
+    },
+    {
+      "path": "sample data/Logistics_ERP_May_2026.csv",
+      "sha256": "e093e56ae6750a5ec3bbc98983f21409f373ee71d75b9cceb12c52b2d840ff72",
+      "rowCount": 1500,
+      "evidenceType": "repository_frozen_operational_anchor",
+      "corpus12SourceSystem": "synthetic_logistics_export"
+    },
+    {
+      "path": "sample data/Logistics_ERP_June_2026.csv",
+      "sha256": "ccc7f8036429a5c1b879a8a77dec843ef5ba65dbb88e3b2471a0aa70cd0bb216",
+      "rowCount": 1500,
+      "evidenceType": "repository_frozen_operational_anchor",
+      "corpus12SourceSystem": "synthetic_logistics_export"
+    },
+    {
+      "path": "sample data/Accounting_ERP_May_2026.csv",
+      "sha256": "3c59da1c10c67ab974dfd204b737402aff1c28d748665949942579fb5fb1a2fd",
+      "rowCount": 1500,
+      "evidenceType": "repository_frozen_operational_anchor",
+      "corpus12SourceSystem": "synthetic_accounting_export"
+    },
+    {
+      "path": "sample data/Accounting_ERP_June_2026.csv",
+      "sha256": "b3a3b290d5f54ca5d7fc79b7aed0f287f539e665113331bb6d4764fa5fc6aaea",
+      "rowCount": 1500,
+      "evidenceType": "repository_frozen_operational_anchor",
+      "corpus12SourceSystem": "synthetic_accounting_export"
+    }
+  ],
+  "outputs": [
+    {
+      "id": "derived.accounting_may_vnd",
+      "path": "derived/derived-accounting-may-vnd.csv",
+      "sha256": "30ef8bf1f4d6f703816d8e84b4d07824cb0a97688fc629461e625f71c4b0a252",
+      "rowCount": 1500,
+      "evidenceType": "authentic_anchored_semi_synthetic_evidence"
+    },
+    {
+      "id": "derived.accounting_june_vnd",
+      "path": "derived/derived-accounting-june-vnd.csv",
+      "sha256": "622a189248c1e7426f211045c75dcde3c6204bd478aa66463e82f18700da3172",
+      "rowCount": 1500,
+      "evidenceType": "authentic_anchored_semi_synthetic_evidence"
+    },
+    {
+      "id": "derived.inventory_movements_may",
+      "path": "derived/derived-inventory-movements-may.csv",
+      "sha256": "f6efebd08b5a4a482e9d4e1d4cc9bd98a9cbb60851826a0800adcc8370948dc3",
+      "rowCount": 4032,
+      "evidenceType": "authentic_anchored_semi_synthetic_evidence"
+    },
+    {
+      "id": "derived.inventory_movements_june",
+      "path": "derived/derived-inventory-movements-june.csv",
+      "sha256": "f3555de656980b1654e6d5054678ad291b9a7cef13dfb243fdbe75c0bd052b86",
+      "rowCount": 4984,
+      "evidenceType": "authentic_anchored_semi_synthetic_evidence"
+    },
+    {
+      "id": "derived.inventory_snapshot_may",
+      "path": "derived/derived-inventory-snapshot-may.csv",
+      "sha256": "92d32c8d930a2169f77c9bc23df07e34ed11cc1220a0e5c17d839836f23841b3",
+      "rowCount": 1266,
+      "evidenceType": "authentic_anchored_semi_synthetic_evidence"
+    },
+    {
+      "id": "derived.inventory_snapshot_june",
+      "path": "derived/derived-inventory-snapshot-june.csv",
+      "sha256": "ddb422c0b70dad5cf61dc6bea9e24639c6bc5556f7796de9820b41b82c77afca",
+      "rowCount": 2198,
+      "evidenceType": "authentic_anchored_semi_synthetic_evidence"
+    }
+  ],
+  "transformations": {
+    "accounting": "Original columns and values preserved; explicit scenario/provenance columns appended.",
+    "inventoryIssues": "One issue per authentic sales order using exact sold Qty and OrderID, joined to exact shipment SKU and warehouse.",
+    "openingAndReceipts": "Deterministically generated from scenario seed, period and item/warehouse key.",
+    "snapshots": "Deterministic ledger equation with explicit as-of date and one row per item/warehouse/as-of."
+  },
+  "externallyObservedTruthClaim": false,
+  "deterministicReproduction": {
+    "cleanTemporaryRuns": 2,
+    "tabularOutputsByteIdentical": true,
+    "allGeneratedOutputsByteIdentical": true,
+    "oracleResultsByteIdentical": true,
+    "runAOracleSha256": "f445451914cfabd3a4302684b4d78bbb6a7e7486f5934b1c0e779b190745dbda",
+    "runBOracleSha256": "f445451914cfabd3a4302684b4d78bbb6a7e7486f5934b1c0e779b190745dbda",
+    "corpusDirectoryHash": "c71a4ae1c2d06a6814b3e3146b38a3174712fcc561f900c7987e067ff35fb205",
+    "manifestSha256": "1dca495e0903a7d9e025d24e103bd6b64de20d13425e2284b6d73901ad6a7cec",
+    "finalCorpusMatchesRunA": true
+  }
+}

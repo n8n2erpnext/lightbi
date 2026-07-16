@@ -68,12 +68,41 @@ function trace(profile: CandidateEvidenceProfileV1, contextual: ContextualEviden
 }
 function applyDominance(traces: CandidateResolutionTraceV1[]) {
   const support = (t: CandidateResolutionTraceV1) => new Set(t.independence.independentSupportFamilies.filter((f) => f !== "sibling_context"));
+  const dominate = (left: CandidateResolutionTraceV1, right: CandidateResolutionTraceV1, ruleId: string) => {
+    left.dominance.dominates.push(right.candidateId);
+    left.dominance.comparable = true;
+    left.dominance.ruleIds = [ruleId];
+    right.dominance = { dominatedBy: left.candidateId, dominates: right.dominance.dominates, comparable: true, ruleIds: [ruleId] };
+    right.disposition = "dominated";
+    right.ruleIds.push(ruleId);
+  };
   for (const left of traces) for (const right of traces) {
     if (left === right || left.disposition !== "viable" || right.disposition !== "viable") continue;
-    const a=support(left), b=support(right); const strict=[...b].every((x)=>a.has(x)) && [...a].some((x)=>!b.has(x));
+    const a = support(left), b = support(right);
+    const thresholdStatusPair = left.candidateId === "stock_threshold" && right.candidateId === "stock_status";
+    const statusHasSemanticValues = right.completeEvidenceProfile.supportingEvidence.some((e) => e.type === "value_alias" || e.type === "value_pattern");
+    const thresholdSpecificity = thresholdStatusPair && !statusHasSemanticValues && lexicalStrength(left.lexicalClass) <= lexicalStrength(right.lexicalClass);
+    if (thresholdSpecificity) { dominate(left, right, "R-DOMINANCE"); continue; }
+    const inverseThresholdStatusPair = left.candidateId === "stock_status" && right.candidateId === "stock_threshold";
+    const leftStatusHasSemanticValues = left.completeEvidenceProfile.supportingEvidence.some((e) => e.type === "value_alias" || e.type === "value_pattern");
+    if (inverseThresholdStatusPair && !leftStatusHasSemanticValues && lexicalStrength(right.lexicalClass) <= lexicalStrength(left.lexicalClass)) continue;
+    const strict = [...b].every((x) => a.has(x)) && [...a].some((x) => !b.has(x));
     if (strict && left.materialConflictCodes.length <= right.materialConflictCodes.length && lexicalStrength(left.lexicalClass) <= lexicalStrength(right.lexicalClass)) {
-      left.dominance.dominates.push(right.candidateId); left.dominance.comparable=true; left.dominance.ruleIds=["R-DOMINANCE"];
-      right.dominance={ dominatedBy:left.candidateId, dominates:right.dominance.dominates, comparable:true, ruleIds:["R-DOMINANCE"] }; right.disposition="dominated"; right.ruleIds.push("R-DOMINANCE");
+      dominate(left,right,"R-DOMINANCE");
+      continue;
+    }
+    const qualifiedComposition = left.completeEvidenceProfile.supportingEvidence.some((item) => [
+      "header_matches_item_identity_composition",
+      "header_matches_warehouse_identity_composition",
+      "header_matches_stock_balance_composition",
+    ].includes(item.explanationCode));
+    const exactOverWeak = qualifiedComposition
+      && ["canonical_id_exact", "canonical_label_exact", "header_alias_exact", "alias_exact"].includes(left.lexicalClass)
+      && ["token_containment", "value_only", "none"].includes(right.lexicalClass)
+      && [...b].every((family) => a.has(family))
+      && left.materialConflictCodes.length <= right.materialConflictCodes.length;
+    if (exactOverWeak) {
+      dominate(left, right, "R-EXACT-LEXICAL-DOMINANCE");
     }
   }
 }

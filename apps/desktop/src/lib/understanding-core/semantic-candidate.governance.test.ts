@@ -105,6 +105,12 @@ describe("Phase 3A.2 acceptance truth governance", () => {
     const phase5m4Correction = readJson<{
       corrections: { productionFiles: Record<string, { beforeSha256: string; afterSha256: string }> };
     }>("docs/architecture/phase-5m4-real-golden-blocker-audit.json");
+    const phase7r1Correction = readJson<{
+      productionFileHashes: Record<string, string>;
+    }>("docs/architecture/phase-7r1-semantic-correction-audit.json");
+    const phase7r37Correction = readJson<{
+      productionFileHashes: Record<string, string>;
+    }>("docs/architecture/phase-7r37-semantic-binding-audit.json");
     const metricTruth = samples
       .map((sample) => ({ id: sample.id, verifiedMetricAnswers: sample.verifiedMetricAnswers }))
       .sort((left, right) => left.id.localeCompare(right.id));
@@ -126,7 +132,7 @@ describe("Phase 3A.2 acceptance truth governance", () => {
     for (const [relativePath, correction] of Object.entries(phase5m4Correction.corrections.productionFiles)) {
       expect(correction.beforeSha256).toMatch(/^[a-f0-9]{64}$/);
       expect(crypto.createHash("sha256").update(fs.readFileSync(path.join(REPO_ROOT, relativePath))).digest("hex"))
-        .toBe(correction.afterSha256);
+        .toBe(phase7r37Correction.productionFileHashes[relativePath] ?? phase7r1Correction.productionFileHashes[relativePath] ?? correction.afterSha256);
     }
   });
 

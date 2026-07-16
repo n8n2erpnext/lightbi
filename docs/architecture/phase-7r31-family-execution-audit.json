@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "lightbi.phase-7r31-family-execution-audit.v1",
+  "phase": "7R3.1",
+  "requiredFamilies": 4,
+  "coveredFamilies": ["revenue","delivery_operations"],
+  "coverage": 0.5,
+  "comparisons": {"available":20,"exactMatches":20,"mismatches":0,"revenueExact":12,"deliveryExact":8},
+  "independentProofs": [
+    {"family":"delivery_operations","caseId":"ops.logistics_may_2026","questionId":"commerce.delivery_count.summary","metricId":"delivery_count","operator":"governed_identity_count","identityBinding":"ShipmentID","sqlShape":"COUNT DISTINCT governed ShipmentID","expected":1500,"actual":1500,"comparison":"exact_match","duckdbExecution":"actual_local","restrictionsAttached":true,"decisionUseAuthorized":false,"productionWiring":{"executed":false}},
+    {"family":"delivery_operations","caseId":"ops.logistics_june_2026","questionId":"commerce.delivery_count.summary","metricId":"delivery_count","operator":"governed_identity_count","identityBinding":"ShipmentID","sqlShape":"COUNT DISTINCT governed ShipmentID","expected":1500,"actual":1500,"comparison":"exact_match","duckdbExecution":"actual_local","restrictionsAttached":true,"decisionUseAuthorized":false,"productionWiring":{"executed":false}}
+  ],
+  "uncovered": [
+    {"family":"inventory_on_hand","classification":"corpus_evidence_gap","reason":"No authentic item quantity-on-hand snapshot with explicit as-of and independent truth."},
+    {"family":"conditional_gross_profit","classification":"correct_governed_blocker","reason":"Currency compatibility and unique revenue binding are not proved at runtime."}
+  ]
+}

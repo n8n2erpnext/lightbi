@@ -1,0 +1,33 @@
+{
+  "schemaVersion": "lightbi.phase7r35-engine-input-isolation-audit.v1",
+  "phase": "7R3.5",
+  "evidenceType": "repository_fixture_anchored_semi_synthetic_evidence",
+  "status": "passed",
+  "engineInputsLoadedBeforeExecution": [
+    {
+      "path": "sample-corpus/tooling/phase-7r34/authentic-anchors.json",
+      "sha256": "b13a6beb1186d29458aa6ed21ad58918dc8c0ebca41b374c34eb38dd5c4e8ff5"
+    },
+    {
+      "path": "sample-corpus/versions/1.3.0/generation-provenance.json",
+      "sha256": "39b0334f0adfbbf8ec223ccd2fbddab3d0351b850e121b5f005ab3341fd7567d"
+    }
+  ],
+  "expectedTruthLoadedAfterAllExecution": [
+    {
+      "path": "docs/architecture/phase-7r34-independent-oracle-results.json",
+      "sha256": "477843d1a44d2905a26f792aed26ec0fb73299e7ad43f681b219ea1aae3959ea"
+    },
+    {
+      "path": "sample-corpus/versions/1.3.0/corpus-manifest.json",
+      "sha256": "1dca495e0903a7d9e025d24e103bd6b64de20d13425e2284b6d73901ad6a7cec"
+    }
+  ],
+  "forbiddenInputsReadByEngine": [],
+  "expectedExecutableStatesReadBeforeExecution": false,
+  "expectedMetricTotalsReadBeforeExecution": false,
+  "oracleSqlUsedForExecution": false,
+  "decisionUseAuthorized": false,
+  "productionWiring": { "executed": false },
+  "observationSha256": "620700347aac170ccc0ce88ac283bcacfea514f65e1bd8dcb0f579745de20039"
+}

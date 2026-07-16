@@ -1,6 +1,6 @@
 import { SEMANTIC_SIGNAL_REGISTRY_V1 } from "./semantic-registry";
 import type { CanonicalConsumerBuildResultV1 } from "./understanding-core/canonical-consumer-boundary";
-import type { DatasetUnderstandingResult, DomainId } from "./understanding-next/contracts";
+import type { AnalysisAction, DatasetUnderstandingResult, DomainId } from "./understanding-next/contracts";
 
 function nextDomain(value: string | undefined): DomainId {
   return (["operations", "revenue", "inventory", "customer", "performance", "finance"] as const).includes(value as DomainId)
@@ -50,7 +50,7 @@ export function projectCanonicalArtifactToUnderstandingNext(artifact: CanonicalC
     }];
   });
   const actionByQuestion = new Map(questionGeneration.actionCandidates.map((action) => [action.questionId, action]));
-  const toAction = (questionId: string) => {
+  const toAction = (questionId: string): AnalysisAction | undefined => {
     const action = actionByQuestion.get(questionId);
     if (!action || action.actionCandidateState === "blocked") return undefined;
     const actionKind = action.actionKind === "trend_candidate" ? "trend" : action.actionKind === "status_breakdown_candidate" ? "distribution" : "group_by";

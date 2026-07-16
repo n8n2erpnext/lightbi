@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "lightbi.phase7r35-release-gate-impact-audit.v1",
+  "phase": "7R3.5",
+  "status": "release_gate_not_ready",
+  "populationSeparation": {
+    "authenticCorpusVersion": "1.2.0",
+    "authenticCorpusAuthority": ["mapping_precision", "held_out_core_recall", "domain_activation_precision", "ambiguity_unknown_behavior"],
+    "scenarioCorpusVersion": "1.3.0",
+    "scenarioEvidenceType": "repository_fixture_anchored_semi_synthetic_evidence",
+    "scenarioCorpusEligibleClaims": ["metric_arithmetic", "runtime_guards", "relationship_consistency", "snapshot_currency_uom_validation", "metric_family_coverage"],
+    "populationsMixed": false,
+    "externalOperationalValidityClaim": false
+  },
+  "metricFamilyCoverage": {
+    "required": 4,
+    "executedThroughGovernedPath": 2,
+    "exactlyMatched": 2,
+    "blocked": ["conditional_gross_profit", "inventory_on_hand"],
+    "coverageSatisfied": false
+  },
+  "gates": {
+    "engineInputIsolation": "passed",
+    "revenueExecution": "passed",
+    "deliveryExecution": "passed",
+    "grossProfitExecution": "failed",
+    "inventoryExecution": "failed",
+    "relationshipValidation": "failed",
+    "actionExecution": "passed",
+    "blockedExplanationCompleteness": "failed",
+    "runtimeSafety": "passed",
+    "corpusByteIdentity": "passed",
+    "typescript": "passed",
+    "finalRegressionVerification": "passed_governed_baseline_conformance"
+  },
+  "fullDesktopSuite": {
+    "runCount": 1,
+    "testFilesTotal": 164,
+    "testFilesPassed": 160,
+    "testFilesFailed": 4,
+    "testsTotal": 1129,
+    "testsPassed": 1120,
+    "testsFailed": 9,
+    "governedDeterministicFailures": 6,
+    "governedTimingSensitiveTimeouts": 3,
+    "unexpectedFailures": 0,
+    "phase7R35OwnedFailures": 0,
+    "exitStatus": 1,
+    "logSha256": "7b21257ee19a91eb393ba26de5f0e630046e5aaa1ac06f2304d3a1eb401553fb",
+    "baselineAllowlistSha256": "baa86950582b7d758396abb0c69fdaffcd3c2cbbb22b71dd3bbdb3c0aed1c4f5",
+    "conformance": "passed_by_governed_test_identity_and_signature"
+  },
+  "classification": "not_ready_gross_profit_execution"
+}

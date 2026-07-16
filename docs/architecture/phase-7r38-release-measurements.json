@@ -1,0 +1,107 @@
+{
+  "schemaVersion": "lightbi.phase-7r38-release-measurements.v1",
+  "phase": "7R3.8",
+  "evaluationOnly": true,
+  "head": "522c019623540581353d6668077ee0ab4395cec6",
+  "finalState": {
+    "trackedDiffSha256": "985e18ed24180f75926a9b2fc823522ad8ed14e49daf1ffd74e7273042bdbd97",
+    "preArtifactStatusSha256": "627a9d76a0b3dd993a215d569e67337f3765a24c8abd6d6bbf53c515fc260413",
+    "candidateCommitted": false,
+    "productionCodeChangedByPhase7R38": false,
+    "testsChangedByPhase7R38": false,
+    "corpusChangedByPhase7R38": false
+  },
+  "governedHashes": {
+    "corpus120Manifest": "a36284c1f4655289ff832bb4102f9e153fdad329020df6972802802368d0adaa",
+    "corpus130Manifest": "1dca495e0903a7d9e025d24e103bd6b64de20d13425e2284b6d73901ad6a7cec",
+    "phase5B6BAllowlist": "baa86950582b7d758396abb0c69fdaffcd3c2cbbb22b71dd3bbdb3c0aed1c4f5"
+  },
+  "implementationHashes": {
+    "canonical-source-evidence.ts": "12fa11c71e982771fd68d45dd7061abba21f2f227d050e8fc338bb75f062bbb1",
+    "semantic-candidate-engine.ts": "1a7473c7a4a555df2f8a3ef18dd221d496e6a93d1391187c322dee491ef22494",
+    "semantic-resolver.ts": "d80c3b6d4d5bb742ed8237bcfd156b01c6241dba3e7fc9d627f34194b8465904",
+    "grain-candidate-engine.ts": "648703e8a53720e33a43116e06dc65f3c16759f2bbe48fb663fef3721775d320",
+    "grain-resolver.ts": "305e91e48ccadef4b014a49b42f6675f7a6fb532973ee0b3296dc73b474a33df",
+    "commerce-distribution-domain-pack.ts": "5e0bdcfb35fe01b3546b25679b5348eff02ca6b14588900b152b8bc156b9a016",
+    "commerce-distribution-question-policy.ts": "7528bd18cbb9b08c972fcdc2a127e9a27e9752b3c60f83aa60d4aa6335632d79",
+    "governed-domain-metric-contracts.ts": "5d7c9410f7049fe5fbc51677e5e11d7e2e6789de7724d4bf6752f00982987935",
+    "governed-metric-policy.ts": "a928fc8617d79ef7868fd9ad702b5455d8b63035aae76601f9626eaa0ee23b55",
+    "governed-metric-preflight.ts": "68f5827f2263d04eb9980fca953c117df2d4298be5459a70bf115d51a09819f5",
+    "governed-question-action-generator.ts": "f70b3b3497ad6a83ebf6bbe719628be929ed83ed2a72c02b4de1243bd7b478c8",
+    "governed-runtime-contracts.ts": "7e715314e82163cf014a147897bc43902a37acb9f1244a48f07723984164e892",
+    "governed-runtime-preflight.ts": "627aaad2c70fbffe66b68ee3f4f341799b70fb2ee021261acb896cad45912c9a",
+    "governed-metric-query-planner.ts": "e09a1129585b2adaff076f8e138b45b25b3c25942e89eb993c9db5d9a8d636f9",
+    "governed-metric-executor.ts": "c657d9bad63335e7724daaf01969eb2ca3a1fe678d95d9ccb48081ac67b26559",
+    "canonical-consumer-boundary.ts": "228b74f21fb4ad1ae15f1e2fa8dff3455681b0fe8bea1d37c2d20f1687c4c02e",
+    "advanced-result-handoff.ts": "a25be4c527d2a5191f4997ece96a6ce46a9f6f2822319856bf0123a05e703fa8",
+    "canonical-consumer-presentation-adapter.ts": "625e1065b2620620f5f5d778fbdb975e86f776ce196b932f97b20921f6874095",
+    "semantic-registry.ts": "df714442943dc7424304926675a8186056b4bf6a7f3cbea986f96d83756d9c18",
+    "Home.tsx": "352a18e0ac561cb6b07c78da2606d42e0b657b33ae24080580992caf6d5f69e9",
+    "Investigation.tsx": "51a09e2678cb4459a3a0c85721e7831ff914f81a1913d6cf6cb508aa02d6a9f3"
+  },
+  "measurements": {
+    "highConfidenceMappingPrecision": 1,
+    "heldoutCoreMvpSignalRecall": 0.9090909090909091,
+    "ambiguityUnknownRate": 0.538563829787234,
+    "grainAccuracy": 0.8648648648648649,
+    "domainActivation": {
+      "precision": 1,
+      "predicted": 20,
+      "truePositive": 20,
+      "falsePositive": 0,
+      "expectedInScopeCases": 25,
+      "coverage": 0.8
+    },
+    "advertisedActionExecution": {
+      "corpus120": { "advertised": 30, "runtimeAllowed": 30, "executed": 30, "rate": 1 },
+      "corpus130": { "advertised": 18, "runtimeAllowed": 18, "executed": 18, "rate": 1 },
+      "combined": { "advertised": 48, "executed": 48, "rate": 1 }
+    },
+    "verifiedMetricCorrectness": {
+      "corpus120": { "compared": 20, "matched": 20, "mismatched": 0, "rate": 1 },
+      "corpus130RequiredTotals": { "compared": 8, "matched": 8, "mismatched": 0, "rate": 1 },
+      "inventoryItemWarehouseKeys": { "compared": 3464, "matched": 3464, "mismatched": 0, "rate": 1 }
+    },
+    "requiredMetricFamilyCoverage": { "covered": 4, "required": 4, "rate": 1 },
+    "falseExecutableActions": 0,
+    "falseDecisionSupportCases": 0,
+    "blockedExplanation": { "blocked": 414, "explained": 414, "completeness": 1 },
+    "productionLegacyDeprecatedExecutionReachability": 0,
+    "cleanCheckoutReproducible": false,
+    "importToFirstValidResultMs": {
+      "observations": 11,
+      "minimum": 1112.2259450000056,
+      "median": 1510.1755649999977,
+      "maximum": 3527.7313429999995
+    }
+  },
+  "verification": {
+    "phase7R1ThroughR37": { "testFiles": 8, "tests": 31, "failed": 0 },
+    "phase5And6Regressions": { "testFiles": 12, "tests": 39, "failed": 0 },
+    "completeUnderstandingCore": { "testFiles": 73, "tests": 321, "failed": 0 },
+    "typescriptDiagnostics": 0,
+    "corpus130ByteIdentity": true,
+    "jsonAuditsParsedBeforeOutputs": 245,
+    "importReachabilityScan": "pass_canonical_production_path_only",
+    "gitDiffCheck": "pass"
+  },
+  "gates": [
+    { "gate": "mapping_precision", "value": 1, "threshold": 0.95, "result": "pass" },
+    { "gate": "heldout_core_recall", "value": 0.9090909090909091, "threshold": 0.9, "result": "pass" },
+    { "gate": "domain_activation_precision", "value": 1, "threshold": 0.95, "result": "pass" },
+    { "gate": "advertised_action_execution", "value": 1, "threshold": 0.9, "result": "pass" },
+    { "gate": "verified_metric_correctness", "value": 1, "threshold": 1, "result": "pass" },
+    { "gate": "required_metric_family_coverage", "value": 1, "threshold": 1, "result": "pass" },
+    { "gate": "false_executable_actions", "value": 0, "threshold": 0, "result": "pass" },
+    { "gate": "false_decision_support", "value": 0, "threshold": 0, "result": "pass" },
+    { "gate": "blocked_explanation_completeness", "value": 1, "threshold": 1, "result": "pass" },
+    { "gate": "legacy_deprecated_reachability", "value": 0, "threshold": 0, "result": "pass" },
+    { "gate": "typescript_diagnostics", "value": 0, "threshold": 0, "result": "pass" },
+    { "gate": "complete_understanding_core", "value": 321, "threshold": 321, "result": "pass" },
+    { "gate": "clean_checkout_reproducibility", "value": false, "threshold": true, "result": "fail", "owningLayer": "release_and_repository_state" },
+    { "gate": "full_suite_unexpected_failures", "value": 0, "threshold": 0, "result": "pass" }
+  ],
+  "releaseReady": false,
+  "failedGates": ["clean_checkout_reproducibility"],
+  "classification": "not_ready_clean_machine_reproducibility"
+}

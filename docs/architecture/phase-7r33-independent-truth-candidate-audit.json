@@ -1,0 +1,118 @@
+{
+  "schemaVersion": "lightbi.phase-7r33-independent-truth-candidate-audit.v1",
+  "phase": "7R3.3",
+  "oracleImplementation": "Standalone xlsx parsing and arithmetic in /tmp/phase7r33-oracle.cjs; no LightBI semantic resolver, metric preflight, query planner or executor imported.",
+  "runAHash": "db09bd30df2cd3ca55809d700c94e5cb021fc0b42e22971325b25f0b31036d17",
+  "runBHash": "db09bd30df2cd3ca55809d700c94e5cb021fc0b42e22971325b25f0b31036d17",
+  "deterministic": true,
+  "currencyCandidates": [],
+  "inventoryCandidates": [],
+  "reproducibleNonEligibilityFacts": {
+    "accountingArithmetic": [
+      {
+        "file": "Accounting_ERP_May_2026.csv",
+        "sha256": "3c59da1c10c67ab974dfd204b737402aff1c28d748665949942579fb5fb1a2fd",
+        "method": "SUM(Number(Revenue_Credit) - Number(COGS_Debit)) over all source rows",
+        "revenueCredit": 22973896244,
+        "cogsDebit": 19898175000,
+        "grossProfitDifference": 3075721244,
+        "note": "Arithmetic pair is reproducible but cannot freeze currency eligibility."
+      },
+      {
+        "file": "Accounting_ERP_June_2026.csv",
+        "sha256": "b3a3b290d5f54ca5d7fc79b7aed0f287f539e665113331bb6d4764fa5fc6aaea",
+        "method": "SUM(Number(Revenue_Credit) - Number(COGS_Debit)) over all source rows",
+        "revenueCredit": 20637539164,
+        "cogsDebit": 17702899000,
+        "grossProfitDifference": 2934640164,
+        "note": "Arithmetic pair is reproducible but cannot freeze currency eligibility."
+      }
+    ],
+    "inventoryExclusions": [
+      {
+        "file": "PLU ALL FRESH 22.03.2021.xlsx",
+        "sheet": "DATA",
+        "rows": 1219,
+        "itemIdentityDistinct": 1219,
+        "quantityColumns": [],
+        "asOfColumns": [],
+        "classification": "threshold_or_master_data_only"
+      },
+      {
+        "file": "Bao_cao_chi_tiet_Ton_kho_vung_tinh_28-12-2024.xlsx",
+        "sheet": "TonTaiKhoVungChiTiet",
+        "rows": 6386,
+        "parcelIdentityDistinct": 6386,
+        "itemColumns": [],
+        "quantityColumns": [],
+        "reportTimes": [
+          "09:12 28-12-2024"
+        ],
+        "classification": "backlog_or_aging_only"
+      },
+      {
+        "file": "TỒN DỰ KIẾN HUBLAN.xlsx",
+        "sheet": "TonChuaKetNoi",
+        "rows": 3612,
+        "parcelIdentityDistinct": 3612,
+        "itemColumns": [],
+        "quantityColumns": [
+          "Trọng lượng"
+        ],
+        "reportDates": [
+          "2025-02-07"
+        ],
+        "classification": "backlog_or_aging_only"
+      },
+      {
+        "file": "BHX_PHIEUXUAT.xlsx",
+        "sheet": "Sheet1",
+        "rows": 14862,
+        "documentIdentityDistinct": 14862,
+        "itemColumns": [],
+        "quantityColumns": [],
+        "dateRange": [
+          "2021-09-18",
+          "2021-09-20"
+        ],
+        "classification": "movement_only"
+      },
+      {
+        "file": "Logistics_ERP_May_2026.csv",
+        "sheet": "Sheet1",
+        "rows": 1500,
+        "itemIdentityDistinct": 545,
+        "quantityTotal": 3050,
+        "shipmentIdentityDistinct": 1500,
+        "classification": "movement_only"
+      },
+      {
+        "file": "Logistics_ERP_June_2026.csv",
+        "sheet": "Sheet1",
+        "rows": 1500,
+        "itemIdentityDistinct": 542,
+        "quantityTotal": 2964,
+        "shipmentIdentityDistinct": 1500,
+        "classification": "movement_only"
+      },
+      {
+        "file": "Accounting_ERP_May_2026.csv",
+        "sheet": "Sheet1",
+        "rows": 1500,
+        "itemIdentityDistinct": 545,
+        "inventoryCreditTotal": 19898175000,
+        "classification": "movement_only"
+      },
+      {
+        "file": "Accounting_ERP_June_2026.csv",
+        "sheet": "Sheet1",
+        "rows": 1500,
+        "itemIdentityDistinct": 542,
+        "inventoryCreditTotal": 17702899000,
+        "classification": "movement_only"
+      }
+    ]
+  },
+  "independentTruthReady": false,
+  "reason": "There is no valid closure candidate for which a currency or inventory oracle can be frozen."
+}

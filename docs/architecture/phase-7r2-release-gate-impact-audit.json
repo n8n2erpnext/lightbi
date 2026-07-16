@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "lightbi.phase-7r2-release-gate-impact-audit.v1",
+  "phase": "7R2",
+  "head": "522c019623540581353d6668077ee0ab4395cec6",
+  "actionExecutionGate": {
+    "before": {"advertised":28,"runtimeAllowed":14,"executed":14,"successRate":0.5},
+    "after": {"advertised":14,"runtimeAllowed":14,"executed":14,"successRate":1},
+    "target":0.9,
+    "pass":true
+  },
+  "runtimeSafetyGate": {
+    "falseExecutableActions": 0,
+    "runtimeBlockersWeakened": false,
+    "decisionUseAuthorized": false,
+    "pass": true
+  },
+  "explanationGate": {
+    "explained": 356,
+    "blocked": 356,
+    "completeness": 1,
+    "pass": true
+  },
+  "preservedReleaseMeasurements": {
+    "combinedHighConfidenceMappingPrecision": 1,
+    "heldoutCoreMvpSignalRecall": 0.9090909090909091,
+    "domainActivationPrecision": 1,
+    "falseDecisionSupport": 0
+  },
+  "explicitlyOutOfScopeDebt": {
+    "verifiedMetricCorrectness": {"value":0.5,"status":"unchanged_not_fixed"},
+    "cleanCheckoutReproducibility": {"status":"unchanged_not_fixed"}
+  },
+  "productionLegacyOrDeprecatedReachability": 0,
+  "baselineAllowlistSha256": "baa86950582b7d758396abb0c69fdaffcd3c2cbbb22b71dd3bbdb3c0aed1c4f5",
+  "fullDesktopSuite": {
+    "runCount": 1,
+    "testFiles": 161,
+    "passedTestFiles": 157,
+    "failedTestFiles": 4,
+    "tests": 1122,
+    "passedTests": 1113,
+    "failedTests": 9,
+    "deterministicGovernedBaselineFailures": 6,
+    "timingSensitiveGovernedTimeouts": 3,
+    "unexpectedFailures": 0,
+    "phase7r2OwnedFailures": 0,
+    "exitStatus": 1,
+    "completeLog": "logs/phase-7r2-full-desktop-suite.log",
+    "completeLogSha256": "3e8bed256506f25dbcba72770d25b48cbb2ed626e55ab038c4afa66f5a312077",
+    "conformance": "pass_by_governed_test_identity_and_signature"
+  },
+  "phase7r2Gate": "pass"
+}

@@ -1,0 +1,12 @@
+{
+  "schemaVersion": "lightbi.phase-7r37-corpus-regression-audit.v1",
+  "phase": "7R3.7",
+  "status": "pass",
+  "corpus130": {
+    "manifestSha256":"1dca495e0903a7d9e025d24e103bd6b64de20d13425e2284b6d73901ad6a7cec",
+    "revenueExact":true,"deliveryExact":true,"grossProfitExact":true,"inventoryMayExact":true,"inventoryJuneExact":true,
+    "detailedComparisonsComplete":true,"requiredMetricFamilyCoverage":"4/4","advertisedActions":18,"executedActions":18,"executionRate":1,"falseExecutableActions":0,"blockedExplanationCompleteness":1
+  },
+  "corpus120": {"highConfidenceMappingPrecision":1,"heldoutCoreRecall":0.9090909091,"domainActivationPrecision":1,"semanticCandidateTraces":1225,"movementBacklogThresholdPromotedToInventory":0},
+  "unexpectedRegressions": 0
+}

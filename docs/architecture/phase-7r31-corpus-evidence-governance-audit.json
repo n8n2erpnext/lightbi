@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "lightbi.phase-7r31-corpus-evidence-governance-audit.v1",
+  "phase": "7R3.1",
+  "baseCorpusVersion": "1.2.0",
+  "baseManifestSha256": "a36284c1f4655289ff832bb4102f9e153fdad329020df6972802802368d0adaa",
+  "baseTruthModified": false,
+  "extensionCreated": false,
+  "extensionVersion": null,
+  "reason": "Delivery already has independently frozen 1.2.0 truth. No authentic inventory-on-hand snapshot with independent truth exists. Existing finance files do not prove explicit currency compatibility, so no 1.2.1 truth extension can make them executable safely.",
+  "sourceHashesFrozen": true,
+  "syntheticDataAdded": false,
+  "holdoutOrAdversarialUsedForTuning": false,
+  "runtimeResultsUsedToCreateTruth": false,
+  "governedRegressionAllowlist": {"path":"docs/architecture/phase-5b6b-regression-baseline-allowlist.v1.json","sha256":"baa86950582b7d758396abb0c69fdaffcd3c2cbbb22b71dd3bbdb3c0aed1c4f5","modified":false}
+}

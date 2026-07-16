@@ -81,7 +81,7 @@ export const GOVERNED_METRIC_DEFINITIONS_V1 = [
     semanticMeaning: "Stock quantity at one compatible point-in-time basis.",
     measureRole: "snapshot_balance",
     aggregationOperator: "sum",
-    requirements: [{ requirementId: "inventory_snapshot_quantity", semanticSignals: ["inventory", "stock_qty"], semanticMode: "any", allowedSemanticStates: ["confirmed", "probable"], allowedStructuralForms: ["entity", "aggregate"], minimumGrainState: "probable", allowedTemporalModes: ["snapshot", "effective_time"], requiredReadinessCapabilities: ["physical_profile_ready", "semantic_labeling_ready", "grain_interpretation_ready", "temporal_analysis_ready", "measure_role_assessment_ready"], relationshipRequired: false }],
+    requirements: [{ requirementId: "inventory_snapshot_quantity", semanticSignals: ["inventory", "stock_qty"], semanticMode: "any", allowedSemanticStates: ["confirmed", "probable"], allowedStructuralForms: ["line", "entity", "aggregate"], minimumGrainState: "probable", allowedTemporalModes: ["snapshot", "effective_time"], requiredReadinessCapabilities: ["physical_profile_ready", "semantic_labeling_ready", "grain_interpretation_ready", "temporal_analysis_ready", "measure_role_assessment_ready"], relationshipRequired: false }],
     timeBehavior: "point_in_time_snapshot",
     additivity: "semi_additive",
     duplicateHandling: "Duplicate item-location-snapshot identities block aggregation.",
@@ -117,12 +117,13 @@ export const GOVERNED_METRIC_DEFINITIONS_V1 = [
   {
     ...base,
     metricId: "gross_profit",
+    version: "1.0.1",
     businessName: "Gross profit",
     semanticMeaning: "Governed compatible revenue less governed compatible cost.",
     measureRole: "derived_amount",
     aggregationOperator: "derive_subtraction",
     requirements: [
-      { requirementId: "gross_profit_revenue", semanticSignals: ["revenue", "net_revenue", "invoice_total"], semanticMode: "any", allowedSemanticStates: ["confirmed", "probable"], allowedStructuralForms: ["line", "document", "entity"], minimumGrainState: "probable", allowedTemporalModes: ["event", "reporting_period", "effective_time"], requiredReadinessCapabilities: ["physical_profile_ready", "semantic_labeling_ready", "grain_interpretation_ready", "measure_role_assessment_ready"], relationshipRequired: false },
+      { requirementId: "gross_profit_revenue", semanticSignals: ["revenue", "net_revenue"], semanticMode: "any", allowedSemanticStates: ["confirmed", "probable"], allowedStructuralForms: ["line", "document", "entity"], minimumGrainState: "probable", allowedTemporalModes: ["event", "reporting_period", "effective_time"], requiredReadinessCapabilities: ["physical_profile_ready", "semantic_labeling_ready", "grain_interpretation_ready", "measure_role_assessment_ready"], relationshipRequired: false },
       { requirementId: "gross_profit_cost", semanticSignals: ["cost", "total_cost"], semanticMode: "any", allowedSemanticStates: ["confirmed", "probable"], allowedStructuralForms: ["line", "document", "entity"], minimumGrainState: "probable", allowedTemporalModes: ["event", "reporting_period", "effective_time"], requiredReadinessCapabilities: ["physical_profile_ready", "semantic_labeling_ready", "grain_interpretation_ready", "measure_role_assessment_ready"], relationshipRequired: false },
     ],
     timeBehavior: "period_flow",

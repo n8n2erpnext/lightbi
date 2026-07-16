@@ -1,0 +1,43 @@
+{
+  "schemaVersion": "lightbi.phase-7r3-release-gate-impact-audit.v1",
+  "phase": "7R3",
+  "resolvedGates": [
+    {"gate":"verified_metric_correctness","before":0.5,"after":1.0,"threshold":1.0,"result":"pass","owningLayer":"governed_query_planning_and_metric_comparison"}
+  ],
+  "remainingFailedGates": [
+    {"gate":"verified_metric_family_coverage","value":0.25,"threshold":1.0,"result":"fail","classification":"metric_family_coverage_defect","owningLayer":"corpus_ground_truth_canonical_grain_identity_and_metric_preflight"},
+    {"gate":"clean_checkout_reproducibility","value":false,"threshold":true,"result":"not_retested_out_of_scope","classification":"clean_machine_reproducibility_defect","owningLayer":"release_and_corpus_packaging"}
+  ],
+  "preservedPassingGates": {"mappingPrecision":1.0,"heldoutSignalRecall":0.9090909091,"domainActivationPrecision":1.0,"advertisedActionExecution":1.0,"falseExecutableActions":0,"falseDecisionSupport":0,"blockedExplanationCompleteness":1.0},
+  "verification": {
+    "phase7R3Targeted": {"testFiles":3,"tests":12,"failed":0},
+    "phase5Phase6Phase7R1Phase7R2Regressions": {"testFiles":14,"tests":58,"failed":0},
+    "completeUnderstandingCore": {"testFiles":68,"tests":310,"failed":0},
+    "unchangedPhase7Evaluator": {"cases":30,"sourceOccurrences":37,"comparedMetrics":12,"matchedMetrics":12,"observationSha256":"7b192300ef2f5b4813325ad685bd10f28c36fb47e3ee181dfd859ba25164866a"},
+    "typescriptDiagnostics": 0,
+    "jsonAuditParsing": "pass",
+    "importAndProductionReachability": "pass_governed_canonical_path_unchanged",
+    "gitDiffCheck": "pass",
+    "fullDesktopSuite": {
+      "runs":1,
+      "testFiles":161,
+      "passedTestFiles":157,
+      "failedTestFiles":4,
+      "tests":1124,
+      "passedTests":1115,
+      "failedTests":9,
+      "governedDeterministicFailures":6,
+      "governedTimingSensitiveFailures":3,
+      "unexpectedFailures":0,
+      "phase7R3OwnedFailures":0,
+      "processExitStatus":1,
+      "completeLog":"logs/phase-7r3-full-desktop-suite.log",
+      "completeLogBytes":7489,
+      "completeLogSha256":"cec8dafe1f8c42d33e20a0be47ca917f98e507898c4c841712ad9a2eeb75f6ac",
+      "baselineAllowlistSha256":"baa86950582b7d758396abb0c69fdaffcd3c2cbbb22b71dd3bbdb3c0aed1c4f5",
+      "conformance":"pass"
+    }
+  },
+  "releaseReady": false,
+  "classification": "not_ready_metric_family_coverage"
+}

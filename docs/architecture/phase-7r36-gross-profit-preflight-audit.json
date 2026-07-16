@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "lightbi.phase7r36-gross-profit-preflight-audit.v1",
+  "phase": "7R3.6",
+  "status": "pass",
+  "cases": [
+    {
+      "sourceId": "derived.accounting_may_vnd",
+      "state": "ready",
+      "revenueBinding": "Revenue_Credit",
+      "costBinding": "COGS_Debit",
+      "identityBinding": "OrderID",
+      "timeBinding": "InvoiceDate",
+      "currencyCompatible": true,
+      "blockers": []
+    },
+    {
+      "sourceId": "derived.accounting_june_vnd",
+      "state": "ready",
+      "revenueBinding": "Revenue_Credit",
+      "costBinding": "COGS_Debit",
+      "identityBinding": "OrderID",
+      "timeBinding": "InvoiceDate",
+      "currencyCompatible": true,
+      "blockers": []
+    }
+  ],
+  "authenticAccountingWithoutExplicitCurrency": "conditionally_ready_explanation_only",
+  "corpus12BehaviorChanged": false
+}

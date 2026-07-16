@@ -3,9 +3,10 @@ import { deterministicPolicySha256 } from "./contextual-evidence-policy";
 import { GOVERNED_DOMAIN_SUPPORT_MANIFEST_V1 } from "./domain-support-manifest";
 import { generateGovernedCommerceQuestionsAndActions } from "./governed-question-action-generator";
 import type { CanonicalMetricSourceV1, GovernedMetricPreflightItemV1, GovernedMetricPreflightV1, GovernedMetricStateV1 } from "./governed-domain-metric-contracts";
-import { governedMetricPolicyHash } from "./governed-metric-policy";
+import { GOVERNED_METRIC_DEFINITIONS_V1, governedMetricPolicyHash } from "./governed-metric-policy";
 import type { GovernedRuntimePreflightInputV1 } from "./governed-runtime-contracts";
 import { governedRuntimePolicyHash } from "./governed-runtime-policy";
+import { createCanonicalSourceCurrencyEvidence, createCanonicalSourceInventorySnapshotEvidence } from "./canonical-source-evidence";
 
 type Column = { physical: string; semantic: string; type?: "number" | "string" | "date"; nullCount?: number; parseFailures?: number };
 type FixtureOptions = {
@@ -62,12 +63,42 @@ export function createGovernedRuntimeFixture(options: FixtureOptions) {
     },
     readiness: { capabilities: [], productionWiring: { executed: false } },
   } as unknown as CanonicalMetricSourceV1;
+  const grossProfitCurrencyEvidence = options.metricId === "gross_profit" ? createCanonicalSourceCurrencyEvidence({
+    sourceId: options.id,
+    sourceHash: { algorithm: "sha256", value: sourceHash },
+    currency: "USD",
+    provenance: { kind: "declared_source_metadata", reference: "governed-runtime-test-fixture", referenceHash: { algorithm: "sha256", value: deterministicPolicySha256("governed-runtime-test-fixture") } },
+    scope: "selected_columns",
+    applicableMonetaryColumns: options.columns.filter((column) => ["revenue", "net_revenue", "cost", "total_cost"].includes(column.semantic)).map((column) => column.physical),
+    reportingPeriod: "controlled-fixture-period",
+  }) : null;
+  if (grossProfitCurrencyEvidence) canonicalSource.sourceEvidence = { currency: [grossProfitCurrencyEvidence] };
+  const inventorySnapshotEvidence = options.metricId === "inventory_on_hand" ? createCanonicalSourceInventorySnapshotEvidence({
+    sourceId: options.id,
+    sourceHash: { algorithm: "sha256", value: sourceHash },
+    provenance: { kind: "declared_source_metadata", reference: "governed-runtime-test-fixture", referenceHash: { algorithm: "sha256", value: deterministicPolicySha256("governed-runtime-test-fixture") } },
+    scope: "one_item_warehouse_as_of_snapshot",
+    quantity: { physicalColumn: "StockQty", semanticId: "stock_qty" },
+    itemIdentity: { physicalColumn: "ItemID", semanticId: "sku" },
+    warehouseIdentity: { physicalColumn: "WarehouseID", semanticId: "warehouse" },
+    asOf: { physicalColumn: "AsOfDate", semanticId: "time_period", value: String(options.asOf?.value ?? "") },
+    unit: { physicalColumn: "UOM", semanticId: "uom", value: "EA" },
+  }) : null;
+  if (inventorySnapshotEvidence) canonicalSource.sourceEvidence = { currency: [], inventorySnapshots: [inventorySnapshotEvidence] };
   const blockers = options.blockers ?? [];
   const state = options.state ?? "ready";
+  const metricVersion = GOVERNED_METRIC_DEFINITIONS_V1.find((definition) => definition.metricId === options.metricId)?.version ?? "1.0.0";
   const metric: GovernedMetricPreflightItemV1 = {
-    metricId: options.metricId, metricVersion: "1.0.0", state, metricDefinitionAvailable: true, semanticRequirementsSatisfied: blockers.length === 0,
+    metricId: options.metricId, metricVersion, state, metricDefinitionAvailable: true, semanticRequirementsSatisfied: blockers.length === 0,
     grainCompatible: blockers.length === 0, operatorValid: true, timeCompatible: blockers.length === 0, unitCompatible: options.unitCompatible ?? null,
     currencyCompatible: options.currencyCompatible ?? null, duplicateHandlingSatisfied: !blockers.includes("repeated_or_unresolved_measure_aggregation"), relationshipRequirementsSatisfied: !blockers.includes("cross_source_metric_requires_governed_relationship"),
+    selectedBindings: options.metricId === "gross_profit" ? GOVERNED_METRIC_DEFINITIONS_V1.find((definition) => definition.metricId === "gross_profit")!.requirements.flatMap((requirement) => {
+      const requirementSignals: readonly string[] = requirement.semanticSignals;
+      const index = options.columns.findIndex((column) => requirementSignals.includes(column.semantic));
+      return index < 0 ? [] : [{ requirementId: requirement.requirementId, semanticId: options.columns[index].semantic, sourceReference: sourceReference(sourceHash), sourceColumnIndex: index, physicalColumn: options.columns[index].physical, semanticState: "confirmed" as const }];
+    }) : [],
+    selectedIdentityCandidateId: options.metricId === "gross_profit" || options.metricId === "inventory_on_hand" ? (options.identityIds ?? ["order"])[0] : null,
+    currencyEvidenceIds: grossProfitCurrencyEvidence ? [grossProfitCurrencyEvidence.evidenceId] : [], inventorySnapshotEvidenceIds: inventorySnapshotEvidence ? [inventorySnapshotEvidence.evidenceId] : [],
     evidence: [], blockers: blockers.map((code) => ({ code, severity: "critical", references: [] })), limitations: (options.limitations ?? []).map((code) => ({ code, references: [] })), remediation: [],
     metricDefinitionAvailableFlag: true, metricPreflightExecuted: true, runtimeActionCreated: false, runtimeActionAuthorized: false, metricExecutionExecuted: false, decisionUseAuthorized: false, result: null, productionWiring: { executed: false },
   };
@@ -96,7 +127,7 @@ export const RUNTIME_FIXTURES = {
   revenue: () => createGovernedRuntimeFixture({ id: "runtime-revenue", metricId: "sales_revenue", questionId: "commerce.sales_revenue.over_time", columns: [{ physical: "OrderID", semantic: "order" }, { physical: "Product", semantic: "product" }, { physical: "OrderDate", semantic: "report_date" }, { physical: "Revenue", semantic: "revenue", type: "number" }, { physical: "Currency", semantic: "currency" }], rows: [{ OrderID: "O-1", Product: "A", OrderDate: "2026-01-01", Revenue: 100, Currency: "USD" }, { OrderID: "O-2", Product: "B", OrderDate: "2026-01-02", Revenue: 75, Currency: "USD" }], currencyCompatible: true }),
   quantity: () => createGovernedRuntimeFixture({ id: "runtime-quantity", metricId: "quantity_sold", questionId: "commerce.quantity_sold.by_product", columns: [{ physical: "OrderID", semantic: "order" }, { physical: "Product", semantic: "product" }, { physical: "SoldQty", semantic: "sold_qty", type: "number" }, { physical: "UOM", semantic: "uom" }], rows: [{ OrderID: "O-1", Product: "A", SoldQty: 2, UOM: "pcs" }, { OrderID: "O-2", Product: "B", SoldQty: 3, UOM: "pcs" }], unitCompatible: true }),
   transaction: () => createGovernedRuntimeFixture({ id: "runtime-transaction", metricId: "transaction_count", questionId: "commerce.transaction_count.summary", columns: [{ physical: "OrderID", semantic: "order" }, { physical: "Revenue", semantic: "revenue", type: "number" }], rows: [{ OrderID: "O-1", Revenue: 100 }, { OrderID: "O-1", Revenue: 50 }, { OrderID: "O-2", Revenue: 75 }], identityIds: ["order"] }),
-  inventory: () => createGovernedRuntimeFixture({ id: "runtime-inventory", metricId: "inventory_on_hand", questionId: "commerce.inventory_on_hand.as_of", columns: [{ physical: "SKU", semantic: "product" }, { physical: "StockQty", semantic: "stock_qty", type: "number" }, { physical: "UOM", semantic: "uom" }], rows: [{ SKU: "A", StockQty: 10, UOM: "pcs" }, { SKU: "B", StockQty: 20, UOM: "pcs" }], temporalMode: "snapshot", aggregationForm: "snapshot_values", identityIds: ["product"], unitCompatible: true, asOf: { kind: "source_snapshot", sourceColumnIndex: null, semanticId: null, value: "source-snapshot" } }),
+  inventory: () => createGovernedRuntimeFixture({ id: "runtime-inventory", metricId: "inventory_on_hand", questionId: "commerce.inventory_on_hand.as_of", columns: [{ physical: "ItemID", semantic: "sku" }, { physical: "WarehouseID", semantic: "warehouse" }, { physical: "StockQty", semantic: "stock_qty", type: "number" }, { physical: "AsOfDate", semantic: "time_period" }, { physical: "UOM", semantic: "uom" }], rows: [{ ItemID: "A", WarehouseID: "WH-1", StockQty: 10, AsOfDate: "2026-05-31", UOM: "EA" }, { ItemID: "B", WarehouseID: "WH-1", StockQty: 20, AsOfDate: "2026-05-31", UOM: "EA" }], temporalMode: "snapshot", aggregationForm: "snapshot_values", identityIds: ["key:0+1"], unitCompatible: true, asOf: { kind: "column_value", sourceColumnIndex: 3, semanticId: "time_period", value: "2026-05-31" } }),
   delivery: () => createGovernedRuntimeFixture({ id: "runtime-delivery", metricId: "delivery_count", questionId: "commerce.delivery_count.summary", columns: [{ physical: "ShipmentID", semantic: "shipment" }, { physical: "DeliveryStatus", semantic: "delivery_status" }], rows: [{ ShipmentID: "S-1", DeliveryStatus: "Delivered" }, { ShipmentID: "S-1", DeliveryStatus: "Delivered" }, { ShipmentID: "S-2", DeliveryStatus: "Pending" }], identityIds: ["shipment"] }),
   profit: () => createGovernedRuntimeFixture({ id: "runtime-profit", metricId: "gross_profit", questionId: "commerce.gross_profit.over_time", columns: [{ physical: "OrderID", semantic: "order" }, { physical: "Period", semantic: "time_period" }, { physical: "Revenue", semantic: "revenue", type: "number" }, { physical: "TotalCost", semantic: "total_cost", type: "number" }, { physical: "Currency", semantic: "currency" }], rows: [{ OrderID: "O-1", Period: "2026-01", Revenue: 100, TotalCost: 60, Currency: "USD" }, { OrderID: "O-2", Period: "2026-02", Revenue: 200, TotalCost: 140, Currency: "USD" }], currencyCompatible: true }),
 };

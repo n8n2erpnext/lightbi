@@ -1,0 +1,22 @@
+{
+  "schemaVersion": "lightbi.phase7r36-currency-evidence-plumbing-audit.v1",
+  "phase": "7R3.6",
+  "status": "pass",
+  "sourceEvidenceContract": "lightbi.canonical-source-currency-evidence.v1",
+  "requirements": {
+    "sourceIdentityAndHashBound": true,
+    "currencyExplicit": "VND",
+    "reportingPeriodBound": true,
+    "monetaryColumnScopeBound": true,
+    "inferredEvidenceRejected": true,
+    "staleOrMutatedEvidenceRejectedAtRuntime": true
+  },
+  "propagation": ["canonical_source", "metric_preflight", "runtime_preflight", "query_plan", "execution_result"],
+  "positiveSources": [
+    {"sourceId": "derived.accounting_may_vnd", "period": "2026-05", "currency": "VND"},
+    {"sourceId": "derived.accounting_june_vnd", "period": "2026-06", "currency": "VND"}
+  ],
+  "negativeProbeCount": 15,
+  "negativeProbeFailures": 0,
+  "productionDecisionUseAuthorized": false
+}

@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "lightbi.phase-7r37-inventory-root-cause-audit.v1",
+  "phase": "7R3.7",
+  "status": "closed",
+  "sources": ["derived.inventory_snapshot_may", "derived.inventory_snapshot_june"],
+  "concepts": [
+    {"physicalColumn":"ItemID","generatedCandidates":["sku"],"selectedResolution":"sku:probable","evidence":["explicit_snapshot_schema","item_identity_composition"],"previousBlocker":"candidate_not_generated","owningLayer":"semantic_candidate_generation","classification":"candidate_not_generated","correction":"generic_schema-qualified identity composition"},
+    {"physicalColumn":"WarehouseID","generatedCandidates":["warehouse"],"selectedResolution":"warehouse:probable","evidence":["explicit_snapshot_schema","warehouse_identity_composition"],"previousBlocker":"not eligible as an exact grain identity","owningLayer":"grain_projection","classification":"warehouse_identity_binding_defect","correction":"schema-qualified warehouse identity participates in the exact composite key"},
+    {"physicalColumn":"QuantityOnHand","generatedCandidates":["stock_qty"],"selectedResolution":"stock_qty:probable","evidence":["explicit_snapshot_schema","stock_balance_composition"],"previousBlocker":"candidate_not_generated","owningLayer":"semantic_candidate_generation","classification":"snapshot_quantity_binding_defect","correction":"bounded on-hand token composition"},
+    {"physicalColumn":"AsOfDate","generatedCandidates":["time_period"],"selectedResolution":"time_period:probable","evidence":["date physical type","as-of tokens"],"previousBlocker":"camel-case header was not projected as snapshot time","owningLayer":"grain_projection","classification":"asof_binding_defect","correction":"canonical header normalization before temporal-role classification"},
+    {"physicalColumn":"UOM","generatedCandidates":["uom"],"selectedResolution":"uom:probable","evidence":["exact source cardinality=1","declared source-bound value EA"],"previousBlocker":"UOM was not attached to metric/runtime evidence","owningLayer":"metric_preflight","classification":"uom_evidence_plumbing_defect","correction":"source-bound inventory snapshot evidence"}
+  ],
+  "resolvedPath": ["physical_profile", "semantic_candidate", "semantic_resolution", "grain_resolution", "readiness", "domain_activation", "M1", "M2", "M3", "query_plan", "duckdb_execution"],
+  "remainingCorrectBlockers": ["movement-event sources", "missing or multiple as-of", "mixed UOM", "missing or duplicate identity", "cross-period snapshot aggregation"]
+}

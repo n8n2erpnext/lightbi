@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "lightbi.phase-6b2-investigation-regression-audit.v1",
+  "phase": "6B.2",
+  "baselineUnexpectedFailures": 9,
+  "finalUnexpectedFailures": 0,
+  "cases": [
+    {"id": 1, "formerTest": "Upgrades empty executed result to failed truth state", "classification": "canonical_error_state_missing", "proof": "governed executed result with zero rows previously retained executed presentation", "replacementAssertion": "empty governed result is failed as result unavailable and no chart is rendered", "status": "resolved"},
+    {"id": 2, "formerTest": "distribution + DUCKDB_BOOTSTRAP_ERROR: allows fallback and expresses degraded messaging", "classification": "obsolete_legacy_expectation", "proof": "Phase 6B explicitly retired backend-to-JavaScript fallback", "replacementAssertion": "thrown canonical executor failure is visible without fallback", "status": "resolved"},
+    {"id": 3, "formerTest": "distribution + DUCKDB_PARSER_ERROR: never falls back for sql logic errors", "classification": "stale_fixture_or_handoff_shape", "proof": "fixture mocked the removed backend executor instead of governed canonical execution", "replacementAssertion": "failed governed result displays its canonical execution error and restrictions", "status": "resolved"},
+    {"id": 4, "formerTest": "table_preview + DUCKDB_MEMORY_ERROR: allows fallback for simple intent", "classification": "obsolete_legacy_expectation", "proof": "intent complexity no longer authorizes a retired JavaScript fallback", "replacementAssertion": "no backend, sandbox or mock preview invocation exists", "status": "resolved"},
+    {"id": 5, "formerTest": "distribution + CANONICAL_PROJECTION_MISSING: never falls back", "classification": "stale_fixture_or_handoff_shape", "proof": "canonical projection failure is represented by handoff blockers, not a legacy backend mock", "replacementAssertion": "invalid or missing canonical handoff blocks before execution", "status": "resolved"},
+    {"id": 6, "formerTest": "group_by + DUCKDB_BOOTSTRAP_ERROR surfaces backend failure", "classification": "stale_fixture_or_handoff_shape", "proof": "backend preview is no longer the production executor", "replacementAssertion": "governed execution failure and thrown executor failure remain visible", "status": "resolved"},
+    {"id": 7, "formerTest": "trend + LOCAL_EXECUTOR_UNAVAILABLE does not fallback", "classification": "stale_fixture_or_handoff_shape", "proof": "fixture did not provide the Phase 6A canonical handoff/query plan", "replacementAssertion": "planned canonical handoff executes only through executeGovernedMetricRequest", "status": "resolved"},
+    {"id": 8, "formerTest": "Surfaces transparent local DuckDB unknown runtime error", "classification": "stale_fixture_or_handoff_shape", "proof": "fixture targeted the retired backend boundary", "replacementAssertion": "unknown thrown governed-executor error is displayed as canonical failure", "status": "resolved"},
+    {"id": 9, "formerTest": "Does not render chart placeholder as success when preview boundary fails", "classification": "canonical_presentation_regression", "proof": "validator failure was calculated but the executed chart model was still produced", "replacementAssertion": "validation failure upgrades presentation to failed and suppresses chart", "status": "resolved"}
+  ],
+  "tests": {
+    "file": "apps/desktop/src/pages/Investigation.test.tsx",
+    "testFiles": 1,
+    "tests": 12,
+    "passed": 12,
+    "failed": 0
+  },
+  "legacyFallbackRestored": false
+}

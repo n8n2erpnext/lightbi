@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "lightbi.phase-7r1-release-gate-impact-audit.v1",
+  "phase": "7R1",
+  "evaluatedCorpusVersion": "1.2.0",
+  "gates": {
+    "recallCalculationUnambiguous": { "value": true, "gate": "pass" },
+    "heldoutCoreSignalRecall": { "value": 0.9090909091, "threshold": 0.9, "gate": "pass" },
+    "confirmedPrecision": { "value": 1.0, "threshold": 0.95, "gate": "pass" },
+    "probablePrecision": { "value": 1.0, "threshold": 0.95, "gate": "pass" },
+    "combinedHighConfidencePrecision": { "value": 1.0, "threshold": 0.95, "gate": "pass" },
+    "newConfidentFalseMappings": { "value": 0, "gate": "pass" },
+    "grainForbiddenCertaintyViolations": { "value": 0, "gate": "pass" },
+    "typescriptDiagnostics": { "value": 0, "gate": "pass" },
+    "unexpectedFullSuiteFailures": { "value": 0, "gate": "pass" }
+  },
+  "verification": {
+    "phase7r1Targeted": { "testFiles": 1, "tests": 16, "failed": 0 },
+    "unchangedPhase7Evaluator": { "testFiles": 1, "tests": 1, "failed": 0 },
+    "phase5And6Regressions": { "testFiles": 11, "tests": 36, "failed": 0 },
+    "completeUnderstandingCore": { "testFiles": 67, "tests": 305, "failed": 0 },
+    "typescriptDiagnostics": 0,
+    "jsonFilesParsed": 175,
+    "importAndSpecificityScans": "pass",
+    "gitDiffCheck": "pass",
+    "fullDesktopSuite": {
+      "runs": 1,
+      "testFiles": 160,
+      "passedTestFiles": 156,
+      "failedTestFiles": 4,
+      "tests": 1119,
+      "passedTests": 1110,
+      "failedTests": 9,
+      "governedDeterministicFailures": 6,
+      "governedTimingSensitiveFailures": 3,
+      "unexpectedFailures": 0,
+      "phase7r1OwnedFailures": 0,
+      "processExitStatus": 1,
+      "completeLogSha256": "39fdebd91e75f9435f044f062dcc84f556b0f159e3d59facacdee27ee2e81b9a",
+      "baselineAllowlistConformance": true
+    }
+  },
+  "remainingReleaseDebtOutsidePhase7R1": [
+    "advertised_action_execution_success_below_90_percent",
+    "verified_metric_correctness_and_coverage_below_release_gate",
+    "clean_checkout_packaging_not_remediated"
+  ],
+  "phaseBoundary": "Phase 7R1 changes recall semantics only. Downstream failures are observations and were not remediated.",
+  "classification": "signal_recall_ready_for_release_gate_retest"
+}

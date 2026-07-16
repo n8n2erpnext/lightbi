@@ -1,0 +1,12 @@
+{
+  "schemaVersion": "lightbi.phase-7r37-negative-probe-audit.v1",
+  "phase": "7R3.7",
+  "status": "pass",
+  "probeCount": 15,
+  "failedClosedOrExplanationOnly": 15,
+  "probes": [
+    "movement_quantity_submitted_as_inventory_on_hand", "missing_as_of_date", "multiple_snapshot_dates_without_selection", "cross_period_snapshot_sum", "missing_item_identity", "missing_required_warehouse_identity", "duplicate_item_warehouse_as_of_key", "conflicting_quantity_for_one_identity", "mixed_uom", "stale_or_wrong_source_as_of_metadata", "quantity_binding_changed_after_preflight", "operator_changed_from_snapshot_sum", "oracle_truth_supplied_before_execution", "blocked_action_promoted_by_m2", "restriction_or_asof_evidence_removed_before_presentation"
+  ],
+  "falseExecutableActions": 0,
+  "blockedExplanationCompleteness": 1
+}

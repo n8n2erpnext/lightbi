@@ -1,0 +1,11 @@
+{
+  "schemaVersion": "lightbi.phase-7r32-currency-compatibility-audit.v1",
+  "phase": "7R3.2",
+  "requiredEvidence": ["canonical currency binding with one compatible value","frozen source metadata declaring one currency","existing governed same-currency contract with provenance"],
+  "records": [
+    {"caseId":"fin.accounting_may_2026","currencyColumn":null,"frozenSourceCurrencyMetadata":null,"governedSameCurrencyContract":null,"currencyCompatible":null,"classification":"currency_evidence_missing"},
+    {"caseId":"fin.accounting_june_2026","currencyColumn":null,"frozenSourceCurrencyMetadata":null,"governedSameCurrencyContract":null,"currencyCompatible":null,"classification":"currency_evidence_missing"}
+  ],
+  "forbiddenInferences": {"locale":false,"filename":false,"numberFormatting":false,"expectedValue":false,"countryAssumption":false,"absenceOfCurrencyColumn":false},
+  "conclusion": "Neither accounting source contains explicit governed currency evidence. Compatibility remains unknown and execution remains blocked."
+}

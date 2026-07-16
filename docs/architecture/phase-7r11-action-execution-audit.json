@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "lightbi.phase-7r11-action-execution-audit.v1",
+  "phase": "7R1.1",
+  "evaluator": "unchanged Phase 7 canonical production-path evaluator",
+  "denominatorPolicy": "Every post-7R1 generated action candidate is advertised. Correctly blocked questions and unsupported cases are not advertised and are not counted as failures.",
+  "counts": {
+    "advertisedActionCandidates": 28,
+    "runtimeAllowed": 14,
+    "executed": 14,
+    "blockedAfterAdvertisement": 14,
+    "falseExecutable": 0
+  },
+  "precision": {
+    "runnableActionPrecision": 1.0,
+    "falseExecutableGate": "pass"
+  },
+  "success": {
+    "advertisedActionExecutionSuccess": 0.5,
+    "threshold": 0.9,
+    "gate": "fail",
+    "runtimeAllowedSubsetExecutionSuccess": 1.0,
+    "phase7OldDenominatorRetained": false,
+    "phase7OldAdvertisedCount": 21,
+    "post7R1AdvertisedCount": 28
+  },
+  "evaluationIntegrity": {
+    "correctlyBlockedUnsupportedCountedAsFailure": false,
+    "holdoutAdversarialMultiFileUsedForTuning": false,
+    "productionBehaviorModified": false
+  },
+  "owningLayers": [
+    {
+      "layer": "action_generation_and_runtime_preflight",
+      "classification": "runtime_execution_defect",
+      "reason": "Fourteen generated and therefore advertised candidates do not pass governed runtime planning."
+    }
+  ],
+  "releaseGate": "fail"
+}

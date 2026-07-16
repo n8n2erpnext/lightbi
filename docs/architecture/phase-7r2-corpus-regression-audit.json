@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "lightbi.phase-7r2-corpus-regression-audit.v1",
+  "phase": "7R2",
+  "corpusCases": 30,
+  "sourceEvaluations": 37,
+  "evaluationObservationSha256": "de554ce93d345febb996ecec239f6fdd14cfb1fde2a2cbdb902d6f19f5719fff",
+  "groups": [
+    {"group":"golden","cases":8,"sources":8,"questionsShown":2,"explanationOnlyQuestions":78,"advertisedRunnableActions":2},
+    {"group":"holdout","cases":12,"sources":12,"questionsShown":4,"explanationOnlyQuestions":116,"advertisedRunnableActions":4},
+    {"group":"adversarial","cases":5,"sources":5,"questionsShown":0,"explanationOnlyQuestions":50,"advertisedRunnableActions":0},
+    {"group":"multi_file","cases":5,"sources":12,"questionsShown":8,"explanationOnlyQuestions":112,"advertisedRunnableActions":8}
+  ],
+  "measurements": {
+    "confirmedHighConfidenceMappingPrecision": 1,
+    "probableMappingPrecision": 1,
+    "combinedHighConfidenceMappingPrecision": 1,
+    "heldoutCoreMvpSignalRecall": 0.9090909090909091,
+    "ambiguityUnknownRate": 0.538563829787234,
+    "grainAccuracy": 0.8108108108108109,
+    "domainActivationPrecision": 1,
+    "advertisedRunnableActions": 14,
+    "runtimePreflightPasses": 14,
+    "executedActions": 14,
+    "advertisedActionExecutionRate": 1,
+    "falseExecutableActions": 0,
+    "blockedQuestions": 356,
+    "blockedExplanationCompleteness": 1,
+    "falseDecisionSupport": 0
+  },
+  "releaseThresholdPreservation": {
+    "mappingPrecisionAtLeast95Percent": true,
+    "heldoutCoreSignalRecallAtLeast90Percent": true,
+    "domainActivationPrecisionAtLeast95Percent": true
+  },
+  "groundTruthChanged": false,
+  "holdoutAdversarialOrMultiFileTuning": false,
+  "gate": "pass"
+}

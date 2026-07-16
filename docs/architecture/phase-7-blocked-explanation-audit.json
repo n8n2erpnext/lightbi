@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "lightbi.phase-7-blocked-explanation-audit.v1",
+  "phase": "7",
+  "blockedOrFailedOutcomes": 356,
+  "withStructuredExplanation": 356,
+  "completeness": 1.0,
+  "gate": "pass",
+  "acceptedStructures": ["runtime blockers", "runtime restrictions", "planning blockers", "question blockers", "limitations", "remediation"],
+  "falseDecisionSupportCount": 0,
+  "falseDecisionSupportGate": "pass",
+  "correctlyBlockedUnsupportedCasesCountedAsFailures": false,
+  "limitations": [
+    "Completeness proves presence of structured explanation, not end-user prose quality.",
+    "Decision use remains prohibited for every executed Phase 7 metric result."
+  ],
+  "blockers": []
+}
