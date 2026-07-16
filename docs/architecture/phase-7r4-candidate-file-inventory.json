@@ -1,0 +1,3076 @@
+{
+  "schemaVersion": "lightbi.phase-7r4-candidate-file-inventory.v1",
+  "phase": "7R4",
+  "inventoryCapturedAt": "2026-07-16T11:11:05.628Z",
+  "initialHead": "522c019623540581353d6668077ee0ab4395cec6",
+  "initialBranch": "main",
+  "initialTrackedDiffFiles": [
+    ".gitignore",
+    "apps/desktop/src/lib/advanced-result-handoff.test.ts",
+    "apps/desktop/src/lib/canonical-consumer-presentation-adapter.ts",
+    "apps/desktop/src/lib/semantic-registry.ts",
+    "apps/desktop/src/lib/understanding-core/canonical-consumer-boundary.ts",
+    "apps/desktop/src/lib/understanding-core/commerce-distribution-domain-pack.ts",
+    "apps/desktop/src/lib/understanding-core/commerce-distribution-question-policy.ts",
+    "apps/desktop/src/lib/understanding-core/contextual-evidence.corpus.test.ts",
+    "apps/desktop/src/lib/understanding-core/governed-domain-metric-contracts.ts",
+    "apps/desktop/src/lib/understanding-core/governed-metric-executor.test.ts",
+    "apps/desktop/src/lib/understanding-core/governed-metric-executor.ts",
+    "apps/desktop/src/lib/understanding-core/governed-metric-policy.ts",
+    "apps/desktop/src/lib/understanding-core/governed-metric-preflight.ts",
+    "apps/desktop/src/lib/understanding-core/governed-metric-query-planner.ts",
+    "apps/desktop/src/lib/understanding-core/governed-question-action-contracts.ts",
+    "apps/desktop/src/lib/understanding-core/governed-question-action-generator.test.ts",
+    "apps/desktop/src/lib/understanding-core/governed-question-action-generator.ts",
+    "apps/desktop/src/lib/understanding-core/governed-runtime-contracts.ts",
+    "apps/desktop/src/lib/understanding-core/governed-runtime-preflight.ts",
+    "apps/desktop/src/lib/understanding-core/governed-runtime-test-support.ts",
+    "apps/desktop/src/lib/understanding-core/grain-candidate-engine.ts",
+    "apps/desktop/src/lib/understanding-core/grain-candidate.corpus.test.ts",
+    "apps/desktop/src/lib/understanding-core/grain-candidate.coverage.corpus.test.ts",
+    "apps/desktop/src/lib/understanding-core/grain-resolution.corpus.test.ts",
+    "apps/desktop/src/lib/understanding-core/grain-resolution.validation.corpus.test.ts",
+    "apps/desktop/src/lib/understanding-core/grain-resolver.ts",
+    "apps/desktop/src/lib/understanding-core/phase-5m2-governance.test.ts",
+    "apps/desktop/src/lib/understanding-core/phase-5m3-governance.test.ts",
+    "apps/desktop/src/lib/understanding-core/phase-6a-governance.test.ts",
+    "apps/desktop/src/lib/understanding-core/phase-6b-governance.test.ts",
+    "apps/desktop/src/lib/understanding-core/semantic-candidate-engine.ts",
+    "apps/desktop/src/lib/understanding-core/semantic-candidate.corpus.test.ts",
+    "apps/desktop/src/lib/understanding-core/semantic-candidate.governance.test.ts",
+    "apps/desktop/src/lib/understanding-core/semantic-resolution.corpus.test.ts",
+    "apps/desktop/src/lib/understanding-core/semantic-resolution.validation.corpus.test.ts",
+    "apps/desktop/src/lib/understanding-core/semantic-resolver.ts",
+    "apps/desktop/src/pages/Home.tsx",
+    "apps/desktop/src/pages/Investigation.test.tsx",
+    "apps/desktop/src/pages/Investigation.tsx",
+    "docs/architecture/phase-5m2-question-action-policy-audit.json",
+    "docs/architecture/phase-5m2-ranking-audit.json"
+  ],
+  "initialTrackedDiffStat": " .gitignore                                         |   8 +-\n .../src/lib/advanced-result-handoff.test.ts        |  10 +-\n .../lib/canonical-consumer-presentation-adapter.ts |   4 +-\n apps/desktop/src/lib/semantic-registry.ts          |   2 +-\n .../canonical-consumer-boundary.ts                 |   8 +-\n .../commerce-distribution-domain-pack.ts           |   9 +-\n .../commerce-distribution-question-policy.ts       |   4 +-\n .../contextual-evidence.corpus.test.ts             |   2 +-\n .../governed-domain-metric-contracts.ts            |  56 +-\n .../governed-metric-executor.test.ts               |  79 ++-\n .../understanding-core/governed-metric-executor.ts |  32 +-\n .../understanding-core/governed-metric-policy.ts   |   5 +-\n .../governed-metric-preflight.ts                   | 201 +++++-\n .../governed-metric-query-planner.ts               |  16 +-\n .../governed-question-action-contracts.ts          |   2 +-\n .../governed-question-action-generator.test.ts     |  54 +-\n .../governed-question-action-generator.ts          |  91 ++-\n .../governed-runtime-contracts.ts                  |   4 +-\n .../governed-runtime-preflight.ts                  |  72 ++-\n .../governed-runtime-test-support.ts               |  37 +-\n .../understanding-core/grain-candidate-engine.ts   |  11 +-\n .../grain-candidate.corpus.test.ts                 |   2 +-\n .../grain-candidate.coverage.corpus.test.ts        |   2 +-\n .../grain-resolution.corpus.test.ts                |   2 +-\n .../grain-resolution.validation.corpus.test.ts     |   2 +-\n .../src/lib/understanding-core/grain-resolver.ts   |   2 +-\n .../phase-5m2-governance.test.ts                   |   2 +-\n .../phase-5m3-governance.test.ts                   |   3 +-\n .../understanding-core/phase-6a-governance.test.ts |   2 +-\n .../understanding-core/phase-6b-governance.test.ts |   2 +-\n .../semantic-candidate-engine.ts                   | 107 +++-\n .../semantic-candidate.corpus.test.ts              |   8 +-\n .../semantic-candidate.governance.test.ts          |   8 +-\n .../semantic-resolution.corpus.test.ts             |   2 +-\n .../semantic-resolution.validation.corpus.test.ts  |   2 +-\n .../lib/understanding-core/semantic-resolver.ts    |  35 +-\n apps/desktop/src/pages/Home.tsx                    |  30 +-\n apps/desktop/src/pages/Investigation.test.tsx      | 682 +++++++++++----------\n apps/desktop/src/pages/Investigation.tsx           | 124 +++-\n .../phase-5m2-question-action-policy-audit.json    |  18 +-\n docs/architecture/phase-5m2-ranking-audit.json     |   2 +-\n 41 files changed, 1288 insertions(+), 456 deletions(-)\n",
+  "initialStatusEntries": [
+    {
+      "status": "M ",
+      "path": ".gitignore",
+      "classifications": [
+        "required_manifest_or_policy"
+      ]
+    },
+    {
+      "status": " M",
+      "path": "apps/desktop/src/lib/advanced-result-handoff.test.ts",
+      "classifications": [
+        "required_candidate_test"
+      ]
+    },
+    {
+      "status": " M",
+      "path": "apps/desktop/src/lib/canonical-consumer-presentation-adapter.ts",
+      "classifications": [
+        "required_candidate_source"
+      ]
+    },
+    {
+      "status": " M",
+      "path": "apps/desktop/src/lib/semantic-registry.ts",
+      "classifications": [
+        "required_candidate_source"
+      ]
+    },
+    {
+      "status": " M",
+      "path": "apps/desktop/src/lib/understanding-core/canonical-consumer-boundary.ts",
+      "classifications": [
+        "required_candidate_source"
+      ]
+    },
+    {
+      "status": " M",
+      "path": "apps/desktop/src/lib/understanding-core/commerce-distribution-domain-pack.ts",
+      "classifications": [
+        "required_candidate_source"
+      ]
+    },
+    {
+      "status": " M",
+      "path": "apps/desktop/src/lib/understanding-core/commerce-distribution-question-policy.ts",
+      "classifications": [
+        "required_candidate_source"
+      ]
+    },
+    {
+      "status": " M",
+      "path": "apps/desktop/src/lib/understanding-core/contextual-evidence.corpus.test.ts",
+      "classifications": [
+        "required_candidate_test"
+      ]
+    },
+    {
+      "status": " M",
+      "path": "apps/desktop/src/lib/understanding-core/governed-domain-metric-contracts.ts",
+      "classifications": [
+        "required_candidate_source"
+      ]
+    },
+    {
+      "status": " M",
+      "path": "apps/desktop/src/lib/understanding-core/governed-metric-executor.test.ts",
+      "classifications": [
+        "required_candidate_test"
+      ]
+    },
+    {
+      "status": " M",
+      "path": "apps/desktop/src/lib/understanding-core/governed-metric-executor.ts",
+      "classifications": [
+        "required_candidate_source"
+      ]
+    },
+    {
+      "status": " M",
+      "path": "apps/desktop/src/lib/understanding-core/governed-metric-policy.ts",
+      "classifications": [
+        "required_candidate_source"
+      ]
+    },
+    {
+      "status": " M",
+      "path": "apps/desktop/src/lib/understanding-core/governed-metric-preflight.ts",
+      "classifications": [
+        "required_candidate_source"
+      ]
+    },
+    {
+      "status": " M",
+      "path": "apps/desktop/src/lib/understanding-core/governed-metric-query-planner.ts",
+      "classifications": [
+        "required_candidate_source"
+      ]
+    },
+    {
+      "status": " M",
+      "path": "apps/desktop/src/lib/understanding-core/governed-question-action-contracts.ts",
+      "classifications": [
+        "required_candidate_source"
+      ]
+    },
+    {
+      "status": " M",
+      "path": "apps/desktop/src/lib/understanding-core/governed-question-action-generator.test.ts",
+      "classifications": [
+        "required_candidate_test"
+      ]
+    },
+    {
+      "status": " M",
+      "path": "apps/desktop/src/lib/understanding-core/governed-question-action-generator.ts",
+      "classifications": [
+        "required_candidate_source"
+      ]
+    },
+    {
+      "status": " M",
+      "path": "apps/desktop/src/lib/understanding-core/governed-runtime-contracts.ts",
+      "classifications": [
+        "required_candidate_source"
+      ]
+    },
+    {
+      "status": " M",
+      "path": "apps/desktop/src/lib/understanding-core/governed-runtime-preflight.ts",
+      "classifications": [
+        "required_candidate_source"
+      ]
+    },
+    {
+      "status": " M",
+      "path": "apps/desktop/src/lib/understanding-core/governed-runtime-test-support.ts",
+      "classifications": [
+        "required_candidate_source"
+      ]
+    },
+    {
+      "status": " M",
+      "path": "apps/desktop/src/lib/understanding-core/grain-candidate-engine.ts",
+      "classifications": [
+        "required_candidate_source"
+      ]
+    },
+    {
+      "status": " M",
+      "path": "apps/desktop/src/lib/understanding-core/grain-candidate.corpus.test.ts",
+      "classifications": [
+        "required_candidate_test"
+      ]
+    },
+    {
+      "status": " M",
+      "path": "apps/desktop/src/lib/understanding-core/grain-candidate.coverage.corpus.test.ts",
+      "classifications": [
+        "required_candidate_test"
+      ]
+    },
+    {
+      "status": " M",
+      "path": "apps/desktop/src/lib/understanding-core/grain-resolution.corpus.test.ts",
+      "classifications": [
+        "required_candidate_test"
+      ]
+    },
+    {
+      "status": " M",
+      "path": "apps/desktop/src/lib/understanding-core/grain-resolution.validation.corpus.test.ts",
+      "classifications": [
+        "required_candidate_test"
+      ]
+    },
+    {
+      "status": " M",
+      "path": "apps/desktop/src/lib/understanding-core/grain-resolver.ts",
+      "classifications": [
+        "required_candidate_source"
+      ]
+    },
+    {
+      "status": " M",
+      "path": "apps/desktop/src/lib/understanding-core/phase-5m2-governance.test.ts",
+      "classifications": [
+        "required_candidate_test"
+      ]
+    },
+    {
+      "status": " M",
+      "path": "apps/desktop/src/lib/understanding-core/phase-5m3-governance.test.ts",
+      "classifications": [
+        "required_candidate_test"
+      ]
+    },
+    {
+      "status": " M",
+      "path": "apps/desktop/src/lib/understanding-core/phase-6a-governance.test.ts",
+      "classifications": [
+        "required_candidate_test"
+      ]
+    },
+    {
+      "status": " M",
+      "path": "apps/desktop/src/lib/understanding-core/phase-6b-governance.test.ts",
+      "classifications": [
+        "required_candidate_test"
+      ]
+    },
+    {
+      "status": " M",
+      "path": "apps/desktop/src/lib/understanding-core/semantic-candidate-engine.ts",
+      "classifications": [
+        "required_candidate_source"
+      ]
+    },
+    {
+      "status": " M",
+      "path": "apps/desktop/src/lib/understanding-core/semantic-candidate.corpus.test.ts",
+      "classifications": [
+        "required_candidate_test"
+      ]
+    },
+    {
+      "status": " M",
+      "path": "apps/desktop/src/lib/understanding-core/semantic-candidate.governance.test.ts",
+      "classifications": [
+        "required_candidate_test"
+      ]
+    },
+    {
+      "status": " M",
+      "path": "apps/desktop/src/lib/understanding-core/semantic-resolution.corpus.test.ts",
+      "classifications": [
+        "required_candidate_test"
+      ]
+    },
+    {
+      "status": " M",
+      "path": "apps/desktop/src/lib/understanding-core/semantic-resolution.validation.corpus.test.ts",
+      "classifications": [
+        "required_candidate_test"
+      ]
+    },
+    {
+      "status": " M",
+      "path": "apps/desktop/src/lib/understanding-core/semantic-resolver.ts",
+      "classifications": [
+        "required_candidate_source"
+      ]
+    },
+    {
+      "status": " M",
+      "path": "apps/desktop/src/pages/Home.tsx",
+      "classifications": [
+        "required_candidate_source"
+      ]
+    },
+    {
+      "status": " M",
+      "path": "apps/desktop/src/pages/Investigation.test.tsx",
+      "classifications": [
+        "required_candidate_test"
+      ]
+    },
+    {
+      "status": " M",
+      "path": "apps/desktop/src/pages/Investigation.tsx",
+      "classifications": [
+        "required_candidate_source"
+      ]
+    },
+    {
+      "status": " M",
+      "path": "docs/architecture/phase-5m2-question-action-policy-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": " M",
+      "path": "docs/architecture/phase-5m2-ranking-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "LightBI-code-docs-20260710-091720.zip",
+      "classifications": [
+        "unrelated_user_file",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "apps/desktop/src/lib/understanding-core/canonical-source-evidence.ts",
+      "classifications": [
+        "required_candidate_source"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "apps/desktop/src/lib/understanding-core/phase-7-mvp-proof.test.ts",
+      "classifications": [
+        "required_candidate_test"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "apps/desktop/src/lib/understanding-core/phase-7r1-semantic-recall.test.ts",
+      "classifications": [
+        "required_candidate_test"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "apps/desktop/src/lib/understanding-core/phase-7r2-action-runtime-alignment.test.ts",
+      "classifications": [
+        "required_candidate_test"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "apps/desktop/src/lib/understanding-core/phase-7r31-family-eligibility.test.ts",
+      "classifications": [
+        "required_candidate_test"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "apps/desktop/src/lib/understanding-core/phase-7r32-gross-profit-eligibility.test.ts",
+      "classifications": [
+        "required_candidate_test"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "apps/desktop/src/lib/understanding-core/phase-7r35-corpus-130-engine-validation.test.ts",
+      "classifications": [
+        "required_candidate_test"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "apps/desktop/src/lib/understanding-core/phase-7r36-currency-evidence.test.ts",
+      "classifications": [
+        "required_candidate_test"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "apps/desktop/src/lib/understanding-core/phase-7r37-inventory-snapshot-evidence.test.ts",
+      "classifications": [
+        "required_candidate_test"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-6b1-final-suite-conformance.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-6b1-verification-closure.md",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-6b2-canonical-error-state-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-6b2-final-suite-conformance.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-6b2-investigation-regression-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-6b2-production-path-preservation-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-6b2-regression-repair.md",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-6b2-typescript-diagnostic-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7-action-execution-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7-blocked-explanation-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7-clean-machine-reproducibility-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7-grain-domain-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7-mapping-quality-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7-metric-correctness-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7-mvp-proof-and-release-gate.md",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7-production-reachability-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7-release-gate-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r1-core-signal-recall-remediation.md",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r1-corpus-regression-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r1-import-isolation-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r1-missed-signal-root-cause-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r1-recall-denominator-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r1-release-gate-impact-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r1-semantic-correction-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r11-action-execution-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r11-clean-checkout-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r11-metric-correctness-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r11-mvp-release-gate-retest.md",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r11-release-gate-retest.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r2-action-classification-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r2-action-runtime-alignment.md",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r2-advertised-action-root-cause-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r2-corpus-regression-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r2-release-gate-impact-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r3-corpus-regression-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r3-metric-correctness-remediation.md",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r3-metric-root-cause-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r3-release-gate-impact-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r3-required-family-coverage-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r3-revenue-correctness-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r31-corpus-evidence-governance-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r31-delivery-identity-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r31-family-blocker-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r31-family-execution-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r31-gross-profit-readiness-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r31-inventory-evidence-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r31-release-gate-impact-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r31-required-family-closure.md",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r32-conditional-gross-profit-closure.md",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r32-corpus-regression-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r32-currency-compatibility-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r32-gross-profit-blocker-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r32-gross-profit-execution-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r32-metric-binding-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r32-release-gate-impact-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r32-runtime-permission-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r33-accounting-currency-evidence-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r33-authentic-operational-evidence-discovery.md",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r33-corpus-extension-candidate.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r33-independent-truth-candidate-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r33-inventory-snapshot-evidence-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r33-relationship-candidate-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r33-sample-data-file-inventory.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r34-authentic-anchor-inventory.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r34-authentic-anchored-corpus-construction.md",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r34-corpus-1.3.0-manifest.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r34-cross-file-relationship-manifest.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r34-evidence-policy.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r34-generation-provenance.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r34-independent-oracle-results.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r34-scenario-contract.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r35-action-runtime-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r35-canonical-path-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r35-corpus-130-engine-validation.md",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r35-engine-input-isolation-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r35-gross-profit-execution-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r35-inventory-execution-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r35-relationship-validation-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r35-release-gate-impact-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r35-revenue-delivery-execution-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r36-corpus-regression-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r36-currency-evidence-plumbing-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r36-explanation-completeness-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r36-gross-profit-execution-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r36-gross-profit-preflight-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r36-gross-profit-runtime-closure.md",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r36-release-gate-impact-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r36-repeated-measure-readiness-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r37-corpus-regression-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r37-detailed-balance-comparison-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r37-inventory-execution-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r37-inventory-preflight-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r37-inventory-root-cause-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r37-inventory-runtime-closure.md",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r37-negative-probe-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r37-release-gate-impact-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r37-semantic-binding-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r37-snapshot-grain-readiness-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r38-clean-checkout-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r38-evidence-population-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r38-final-suite-conformance.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r38-metric-family-audit.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r38-mvp-release-gate-retest.md",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "docs/architecture/phase-7r38-release-measurements.json",
+      "classifications": [
+        "required_architecture_evidence"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "logs/dev-backend.pid",
+      "classifications": [
+        "local_runtime_artifact",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "releases/",
+      "classifications": [
+        "release_binary_not_required",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "sample data/",
+      "classifications": [
+        "sensitive_or_operational_data",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "sample-corpus/anchors/",
+      "classifications": [
+        "required_corpus_input"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "sample-corpus/tooling/",
+      "classifications": [
+        "required_generator_or_oracle"
+      ]
+    },
+    {
+      "status": "??",
+      "path": "sample-corpus/versions/",
+      "classifications": [
+        "required_manifest_or_policy"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": ".phase6b2-ts-before.log",
+      "classifications": [
+        "local_runtime_artifact",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "apps/desktop/.env",
+      "classifications": [
+        "sensitive_or_operational_data",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "apps/desktop/dist/",
+      "classifications": [
+        "local_runtime_artifact",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "apps/desktop/node_modules/",
+      "classifications": [
+        "local_runtime_artifact",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "apps/desktop/ui-audit/live-0-home.png",
+      "classifications": [
+        "local_runtime_artifact",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "apps/desktop/ui-audit/live-1-upload-ready.png",
+      "classifications": [
+        "local_runtime_artifact",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "apps/desktop/ui-audit/live-2-understanding.png",
+      "classifications": [
+        "local_runtime_artifact",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "apps/desktop/ui-audit/live-3-investigation-loaded.png",
+      "classifications": [
+        "local_runtime_artifact",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "apps/desktop/ui-audit/live-4-investigation-result.png",
+      "classifications": [
+        "local_runtime_artifact",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "apps/desktop/ui-audit/live-error-screenshot.png",
+      "classifications": [
+        "local_runtime_artifact",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "apps/server/server.log",
+      "classifications": [
+        "local_runtime_artifact",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "backend.log",
+      "classifications": [
+        "local_runtime_artifact",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "backend_run.log",
+      "classifications": [
+        "local_runtime_artifact",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "backend_trace.log",
+      "classifications": [
+        "local_runtime_artifact",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "frontend.log",
+      "classifications": [
+        "local_runtime_artifact",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "logs/dev-backend.log",
+      "classifications": [
+        "local_runtime_artifact",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "logs/memory-investigation/backend-run.log",
+      "classifications": [
+        "local_runtime_artifact",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "logs/memory-investigation/backend.log",
+      "classifications": [
+        "local_runtime_artifact",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "logs/memory-investigation/build-watch.log",
+      "classifications": [
+        "local_runtime_artifact",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "logs/memory-investigation/frontend-dev.log",
+      "classifications": [
+        "local_runtime_artifact",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "logs/memory-investigation/frontend.log",
+      "classifications": [
+        "local_runtime_artifact",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "logs/memory-investigation/integrated-10m.log",
+      "classifications": [
+        "local_runtime_artifact",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "logs/memory-investigation/memory.log",
+      "classifications": [
+        "local_runtime_artifact",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "logs/memory-investigation/oom-killer.log",
+      "classifications": [
+        "local_runtime_artifact",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "logs/phase-7r2-full-desktop-suite.log",
+      "classifications": [
+        "local_runtime_artifact",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "logs/phase-7r3-full-desktop-suite.log",
+      "classifications": [
+        "local_runtime_artifact",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "migrate.js",
+      "classifications": [
+        "local_runtime_artifact",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "node_modules/",
+      "classifications": [
+        "local_runtime_artifact",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "packages/chart-schema/node_modules/",
+      "classifications": [
+        "local_runtime_artifact",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "packages/core-types/node_modules/",
+      "classifications": [
+        "local_runtime_artifact",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "packages/dashboard-schema/node_modules/",
+      "classifications": [
+        "local_runtime_artifact",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "packages/plugin-sdk/node_modules/",
+      "classifications": [
+        "local_runtime_artifact",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "packages/query-models/node_modules/",
+      "classifications": [
+        "local_runtime_artifact",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "packages/runtime/node_modules/",
+      "classifications": [
+        "local_runtime_artifact",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "packages/ui/node_modules/",
+      "classifications": [
+        "local_runtime_artifact",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "references/",
+      "classifications": [
+        "unrelated_user_file",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "sample data/2017-06-22 DANH SACH XEP HANG QUAN LY TOAN QUOC.xlsx",
+      "classifications": [
+        "sensitive_or_operational_data",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "sample data/3c5992d2e53f1c6714ee5184a407f6c8.mp4",
+      "classifications": [
+        "sensitive_or_operational_data",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "sample data/BHX_PHIEUXUAT.xlsx",
+      "classifications": [
+        "sensitive_or_operational_data",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "sample data/Bao_cao_chi_tiet_Ton_kho_vung_tinh_28-12-2024.xlsx",
+      "classifications": [
+        "sensitive_or_operational_data",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "sample data/DATA_XUAT.xlsx",
+      "classifications": [
+        "sensitive_or_operational_data",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "sample data/Group 9.svg",
+      "classifications": [
+        "sensitive_or_operational_data",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "sample data/PLU ALL FRESH 22.03.2021.xlsx",
+      "classifications": [
+        "sensitive_or_operational_data",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "sample data/Sample - Superstore for Tableau 9.x versions.xls",
+      "classifications": [
+        "sensitive_or_operational_data",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "sample data/T\\341\\273\\222N D\\341\\273\\260 KI\\341\\272\\276N HUBLAN.xlsx",
+      "classifications": [
+        "sensitive_or_operational_data",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "sample data/World Bank Indicators.xlsx",
+      "classifications": [
+        "sensitive_or_operational_data",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "sample data/WorldCupPlayers.xlsx",
+      "classifications": [
+        "sensitive_or_operational_data",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "sample data/bank-additional-full.xlsx",
+      "classifications": [
+        "sensitive_or_operational_data",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "sample data/bcctnhapTTKT_19122024.xlsx",
+      "classifications": [
+        "sensitive_or_operational_data",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "sample data/bcctnhapTTKT_23122024.xlsx",
+      "classifications": [
+        "sensitive_or_operational_data",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "sample data/bcctnhapTTKT_24122024.xlsx",
+      "classifications": [
+        "sensitive_or_operational_data",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "sample data/lightbi.svg",
+      "classifications": [
+        "sensitive_or_operational_data",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "sample data/motodetail.xlsx",
+      "classifications": [
+        "sensitive_or_operational_data",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "target/",
+      "classifications": [
+        "local_runtime_artifact",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "test_duck",
+      "classifications": [
+        "local_runtime_artifact",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "test_duck.rs",
+      "classifications": [
+        "local_runtime_artifact",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "ui-audit/bank-additional-full-probe-home.png",
+      "classifications": [
+        "local_runtime_artifact",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "ui-audit/bank-additional-full-probe-investigation-after.png",
+      "classifications": [
+        "local_runtime_artifact",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "ui-audit/bank-additional-full-probe-investigation-before.png",
+      "classifications": [
+        "local_runtime_artifact",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "ui-audit/bank-additional-full-probe-orientation.png",
+      "classifications": [
+        "local_runtime_artifact",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "ui-audit/bank-additional-full-trend-full-file.png",
+      "classifications": [
+        "local_runtime_artifact",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "ui-audit/online-source-intake-2026-06-18/",
+      "classifications": [
+        "local_runtime_artifact",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "ui-audit/real-sample-e2e-2026-06-14/",
+      "classifications": [
+        "local_runtime_artifact",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "ui-audit/real-sample-e2e-final-2026-06-14/",
+      "classifications": [
+        "local_runtime_artifact",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "ui-audit/real-sample-e2e-fixed-2026-06-14/",
+      "classifications": [
+        "local_runtime_artifact",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "ui-audit/real-sample-e2e-localfirst-runtime-2026-06-14/",
+      "classifications": [
+        "local_runtime_artifact",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "ui-audit/sample-data-domain-coverage-2026-06-15/",
+      "classifications": [
+        "local_runtime_artifact",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "ui-audit/superstore-probe-2026-06-16/",
+      "classifications": [
+        "local_runtime_artifact",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "ui-audit/table-preview-summary-and-chart.png",
+      "classifications": [
+        "local_runtime_artifact",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "ui-audit/understanding-core-runtime-2026-06-16/",
+      "classifications": [
+        "local_runtime_artifact",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "ui-audit/viettel-logistics-sample-acceptance-2026-06-15/",
+      "classifications": [
+        "local_runtime_artifact",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "ui-audit/world-bank-indicators-probe-2026-06-16/",
+      "classifications": [
+        "local_runtime_artifact",
+        "exclude_from_candidate"
+      ]
+    },
+    {
+      "status": "!!",
+      "path": "ui-audit/world-cup-players-probe-2026-06-17/",
+      "classifications": [
+        "local_runtime_artifact",
+        "exclude_from_candidate"
+      ]
+    }
+  ],
+  "initialClassificationCounts": {
+    "required_manifest_or_policy": 2,
+    "required_candidate_test": 25,
+    "required_candidate_source": 22,
+    "required_architecture_evidence": 106,
+    "unrelated_user_file": 2,
+    "exclude_from_candidate": 77,
+    "local_runtime_artifact": 55,
+    "release_binary_not_required": 1,
+    "sensitive_or_operational_data": 19,
+    "required_corpus_input": 1,
+    "required_generator_or_oracle": 1
+  },
+  "candidateCommit": "bbb9b997f7af4bb731a5b3197868bd19f49abfcd",
+  "candidateCommittedFileCount": 181,
+  "candidateClassificationCounts": {
+    "required_manifest_or_policy": 8,
+    "required_candidate_test": 25,
+    "required_candidate_source": 22,
+    "required_architecture_evidence": 106,
+    "required_corpus_input": 18,
+    "required_generator_or_oracle": 2
+  },
+  "candidateCommittedFiles": [
+    {
+      "path": ".gitattributes",
+      "classification": "required_manifest_or_policy",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "b22c5a8b55161aaf9944c1f4b378c619d691a538"
+    },
+    {
+      "path": ".gitignore",
+      "classification": "required_manifest_or_policy",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "3105700b8f8d98595b5afdf876447ffeacc06c2d"
+    },
+    {
+      "path": "apps/desktop/src/lib/advanced-result-handoff.test.ts",
+      "classification": "required_candidate_test",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "0e3d8da37f4cffff3db472e8dab49e802507407d"
+    },
+    {
+      "path": "apps/desktop/src/lib/canonical-consumer-presentation-adapter.ts",
+      "classification": "required_candidate_source",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "c9a1da48e019e2147ad89bc88421a74b82788674"
+    },
+    {
+      "path": "apps/desktop/src/lib/semantic-registry.ts",
+      "classification": "required_candidate_source",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "d4662a4f4dfdfc7e9eb8aaf2583586890a99c840"
+    },
+    {
+      "path": "apps/desktop/src/lib/understanding-core/canonical-consumer-boundary.ts",
+      "classification": "required_candidate_source",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "032580267c57b72e5006207fd8adc0e007f896cc"
+    },
+    {
+      "path": "apps/desktop/src/lib/understanding-core/canonical-source-evidence.ts",
+      "classification": "required_candidate_source",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "414d55ea1b96233b43d1a964fdb1ac1ec24531e8"
+    },
+    {
+      "path": "apps/desktop/src/lib/understanding-core/commerce-distribution-domain-pack.ts",
+      "classification": "required_candidate_source",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "5eeefaa3275fd8794fce66ffaaa711e56645469f"
+    },
+    {
+      "path": "apps/desktop/src/lib/understanding-core/commerce-distribution-question-policy.ts",
+      "classification": "required_candidate_source",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "8a5e2966f68b7193180717fe068af3c985d8fae6"
+    },
+    {
+      "path": "apps/desktop/src/lib/understanding-core/contextual-evidence.corpus.test.ts",
+      "classification": "required_candidate_test",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "680fac1181eb414b3170df6780e9f48632161c81"
+    },
+    {
+      "path": "apps/desktop/src/lib/understanding-core/governed-domain-metric-contracts.ts",
+      "classification": "required_candidate_source",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "38907f646762e0855f4ab7d89172831e04423285"
+    },
+    {
+      "path": "apps/desktop/src/lib/understanding-core/governed-metric-executor.test.ts",
+      "classification": "required_candidate_test",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "0adf10a38abe5cecbd64bf20ed55837ef19cbd79"
+    },
+    {
+      "path": "apps/desktop/src/lib/understanding-core/governed-metric-executor.ts",
+      "classification": "required_candidate_source",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "8d8f3411eab5541d7fb9510e66ab1a6eb6a73561"
+    },
+    {
+      "path": "apps/desktop/src/lib/understanding-core/governed-metric-policy.ts",
+      "classification": "required_candidate_source",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "1d19ae2b8d7b32c0acd8187286cf530149a7177f"
+    },
+    {
+      "path": "apps/desktop/src/lib/understanding-core/governed-metric-preflight.ts",
+      "classification": "required_candidate_source",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "68eb7fd268d24303c1dc02cfb5c2b57b82fcec8d"
+    },
+    {
+      "path": "apps/desktop/src/lib/understanding-core/governed-metric-query-planner.ts",
+      "classification": "required_candidate_source",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "2077f307889f9d4c3546f1fbb5cd94dbe272ccd0"
+    },
+    {
+      "path": "apps/desktop/src/lib/understanding-core/governed-question-action-contracts.ts",
+      "classification": "required_candidate_source",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "2c9bbaf9bf22dba86e034364cfc34be2123bb136"
+    },
+    {
+      "path": "apps/desktop/src/lib/understanding-core/governed-question-action-generator.test.ts",
+      "classification": "required_candidate_test",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "c1548c67293be7028a01cd62e50ac64138e91cc5"
+    },
+    {
+      "path": "apps/desktop/src/lib/understanding-core/governed-question-action-generator.ts",
+      "classification": "required_candidate_source",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "9dc7e336393eb0ad4a1f80813a444a167d526b2b"
+    },
+    {
+      "path": "apps/desktop/src/lib/understanding-core/governed-runtime-contracts.ts",
+      "classification": "required_candidate_source",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "1185f92199f7e7423c9f069e01ad325592f4f10e"
+    },
+    {
+      "path": "apps/desktop/src/lib/understanding-core/governed-runtime-preflight.ts",
+      "classification": "required_candidate_source",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "6fc8fe941ec410c2b676ed56ba9653d8b0fe96b5"
+    },
+    {
+      "path": "apps/desktop/src/lib/understanding-core/governed-runtime-test-support.ts",
+      "classification": "required_candidate_source",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "788124feb5d5d30685080a7c37f54b73dd2ed246"
+    },
+    {
+      "path": "apps/desktop/src/lib/understanding-core/grain-candidate-engine.ts",
+      "classification": "required_candidate_source",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "74607d0bcd4bd68ef39facca08e198a1e09f5fbc"
+    },
+    {
+      "path": "apps/desktop/src/lib/understanding-core/grain-candidate.corpus.test.ts",
+      "classification": "required_candidate_test",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "98db43915a6c6242d8261ceca81313ab07261599"
+    },
+    {
+      "path": "apps/desktop/src/lib/understanding-core/grain-candidate.coverage.corpus.test.ts",
+      "classification": "required_candidate_test",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "2308b05d641fb2c80b06b3f8d098817dabfff3cf"
+    },
+    {
+      "path": "apps/desktop/src/lib/understanding-core/grain-resolution.corpus.test.ts",
+      "classification": "required_candidate_test",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "41aefdebc7598d61c4e5c6579fdd9cf04dd898c2"
+    },
+    {
+      "path": "apps/desktop/src/lib/understanding-core/grain-resolution.validation.corpus.test.ts",
+      "classification": "required_candidate_test",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "48de8d8d77bdc9be4522730bd91eb89fb5e92ed9"
+    },
+    {
+      "path": "apps/desktop/src/lib/understanding-core/grain-resolver.ts",
+      "classification": "required_candidate_source",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "8f604c9dfca7d62139aa7e8b2837bbe2c397490b"
+    },
+    {
+      "path": "apps/desktop/src/lib/understanding-core/phase-5m2-governance.test.ts",
+      "classification": "required_candidate_test",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "2c118029a12423e6cdf5c0703b07e26f55811b9e"
+    },
+    {
+      "path": "apps/desktop/src/lib/understanding-core/phase-5m3-governance.test.ts",
+      "classification": "required_candidate_test",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "29a22bec96c669ece95af9ab83ee2dd6ad990d75"
+    },
+    {
+      "path": "apps/desktop/src/lib/understanding-core/phase-6a-governance.test.ts",
+      "classification": "required_candidate_test",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "caf8cd57101034f0522bbd351ff842afe499769b"
+    },
+    {
+      "path": "apps/desktop/src/lib/understanding-core/phase-6b-governance.test.ts",
+      "classification": "required_candidate_test",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "4b42410e044ecd518122d33acc21554afc984db6"
+    },
+    {
+      "path": "apps/desktop/src/lib/understanding-core/phase-7-mvp-proof.test.ts",
+      "classification": "required_candidate_test",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "551d97ffca63760341cbe1b86df3069bd0a97e79"
+    },
+    {
+      "path": "apps/desktop/src/lib/understanding-core/phase-7r1-semantic-recall.test.ts",
+      "classification": "required_candidate_test",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "556c3d25d9a906bd23ed0ad8df76685d4869c742"
+    },
+    {
+      "path": "apps/desktop/src/lib/understanding-core/phase-7r2-action-runtime-alignment.test.ts",
+      "classification": "required_candidate_test",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "d720115e8b5697ba343defafd5f233d167f4e308"
+    },
+    {
+      "path": "apps/desktop/src/lib/understanding-core/phase-7r31-family-eligibility.test.ts",
+      "classification": "required_candidate_test",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "5a6dfa82ec10571e853af21a319fcdc80f5db125"
+    },
+    {
+      "path": "apps/desktop/src/lib/understanding-core/phase-7r32-gross-profit-eligibility.test.ts",
+      "classification": "required_candidate_test",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "e17d5f39c8ecb85e0dcd3b451689d77d2243f953"
+    },
+    {
+      "path": "apps/desktop/src/lib/understanding-core/phase-7r35-corpus-130-engine-validation.test.ts",
+      "classification": "required_candidate_test",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "5aa8e6485781f00e9cbf3e25f1ea563e74ecf774"
+    },
+    {
+      "path": "apps/desktop/src/lib/understanding-core/phase-7r36-currency-evidence.test.ts",
+      "classification": "required_candidate_test",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "45156680560f5a0d64984bf2ad3a4055801c8172"
+    },
+    {
+      "path": "apps/desktop/src/lib/understanding-core/phase-7r37-inventory-snapshot-evidence.test.ts",
+      "classification": "required_candidate_test",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "85cad2476ca8cf63ecaf3f83dbecf5deedfa563e"
+    },
+    {
+      "path": "apps/desktop/src/lib/understanding-core/semantic-candidate-engine.ts",
+      "classification": "required_candidate_source",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "cc564f92152b3887cba08354b3f0ede03d579f23"
+    },
+    {
+      "path": "apps/desktop/src/lib/understanding-core/semantic-candidate.corpus.test.ts",
+      "classification": "required_candidate_test",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "56e230847426f367d0dbf7630bff4b99abc75112"
+    },
+    {
+      "path": "apps/desktop/src/lib/understanding-core/semantic-candidate.governance.test.ts",
+      "classification": "required_candidate_test",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "6aa6f22a1d666f4252388430b91aa973cf10e02a"
+    },
+    {
+      "path": "apps/desktop/src/lib/understanding-core/semantic-resolution.corpus.test.ts",
+      "classification": "required_candidate_test",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "6d08c41cea9f9fbe01e9375e69814824991c0beb"
+    },
+    {
+      "path": "apps/desktop/src/lib/understanding-core/semantic-resolution.validation.corpus.test.ts",
+      "classification": "required_candidate_test",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "decb2e0b788ba97c59ef75921a1102cacac6102c"
+    },
+    {
+      "path": "apps/desktop/src/lib/understanding-core/semantic-resolver.ts",
+      "classification": "required_candidate_source",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "dbc9c86d49debcc90e6c7bb612be8d645a4b4d1a"
+    },
+    {
+      "path": "apps/desktop/src/pages/Home.tsx",
+      "classification": "required_candidate_source",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "1be4ce1552d401010e26e2723f244d2f8539a19c"
+    },
+    {
+      "path": "apps/desktop/src/pages/Investigation.test.tsx",
+      "classification": "required_candidate_test",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "c0d69479c88dea0a14e3d4c2f36104aeb60e8897"
+    },
+    {
+      "path": "apps/desktop/src/pages/Investigation.tsx",
+      "classification": "required_candidate_source",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "50775f2faaa4cfe39566a421983526c474fa7aaa"
+    },
+    {
+      "path": "docs/architecture/phase-5m2-question-action-policy-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "71c85a6ef10a8ffd74fcd40d60c4da1055e4a372"
+    },
+    {
+      "path": "docs/architecture/phase-5m2-ranking-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "6cf6f26cdcc6169dee190c674702217ca147a378"
+    },
+    {
+      "path": "docs/architecture/phase-6b1-final-suite-conformance.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "1d10ce9a1d4721f16f9ea13b5f486b83de7646e8"
+    },
+    {
+      "path": "docs/architecture/phase-6b1-verification-closure.md",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "99d1f2a3487b05df6cea8e5f9bac51503887e8b8"
+    },
+    {
+      "path": "docs/architecture/phase-6b2-canonical-error-state-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "8f7006a26ce38ec07efa5a94dc5417f0cb20a408"
+    },
+    {
+      "path": "docs/architecture/phase-6b2-final-suite-conformance.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "8fa75e700c6feeaca7ed74367954d180c0132c21"
+    },
+    {
+      "path": "docs/architecture/phase-6b2-investigation-regression-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "75d0ce6104924c62c0ee0efc2fb1b3766867f3a1"
+    },
+    {
+      "path": "docs/architecture/phase-6b2-production-path-preservation-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "b5dc6ded9e79c436f53bdaa1d41ec9ce38efc506"
+    },
+    {
+      "path": "docs/architecture/phase-6b2-regression-repair.md",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "0c4ecfca3595778610765944b91f9349fb5433f5"
+    },
+    {
+      "path": "docs/architecture/phase-6b2-typescript-diagnostic-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "4efb5b2a3e1b6eed8c58a2df076f9ae373a16067"
+    },
+    {
+      "path": "docs/architecture/phase-7-action-execution-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "89e3c4f5b1fb1b38c77e144a25d012b7b69e3dc5"
+    },
+    {
+      "path": "docs/architecture/phase-7-blocked-explanation-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "a92306882f790d9462a6716d589d84fee2985907"
+    },
+    {
+      "path": "docs/architecture/phase-7-clean-machine-reproducibility-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "48148e8e30afe628f7fcefae31bd48068a4b497d"
+    },
+    {
+      "path": "docs/architecture/phase-7-grain-domain-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "d4b10364dde4d5d1cd81335f208ccfb8d31ce688"
+    },
+    {
+      "path": "docs/architecture/phase-7-mapping-quality-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "4a10296de5f84171595f10aaa94ee1167e7697fa"
+    },
+    {
+      "path": "docs/architecture/phase-7-metric-correctness-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "ce1de16c897b740bba3d36a62b42d7e9f0707d7b"
+    },
+    {
+      "path": "docs/architecture/phase-7-mvp-proof-and-release-gate.md",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "95babcc6be66b09bc11904c4b53e39ed3941e632"
+    },
+    {
+      "path": "docs/architecture/phase-7-production-reachability-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "a26ed4932bd99b5baa9c1a542622f9d44d4fdd73"
+    },
+    {
+      "path": "docs/architecture/phase-7-release-gate-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "670100cf70dc6e0226bfd43a85928bad18845bec"
+    },
+    {
+      "path": "docs/architecture/phase-7r1-core-signal-recall-remediation.md",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "d3ecf8b0d51081b7fe25419a1c81222f35963222"
+    },
+    {
+      "path": "docs/architecture/phase-7r1-corpus-regression-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "44ba4492de23b08a622af3314c0ebf3de6414cc2"
+    },
+    {
+      "path": "docs/architecture/phase-7r1-import-isolation-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "150d6e6658e4b8e986494e1f6d0f5fea258cdc91"
+    },
+    {
+      "path": "docs/architecture/phase-7r1-missed-signal-root-cause-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "706e624e3c086f5db74d9bb1ad5ba5558d6669f4"
+    },
+    {
+      "path": "docs/architecture/phase-7r1-recall-denominator-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "1f016ec277767f7b6b6005e9ca783d32f60fdfce"
+    },
+    {
+      "path": "docs/architecture/phase-7r1-release-gate-impact-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "f44883556d388a5bec46c936e0f84dfcff444842"
+    },
+    {
+      "path": "docs/architecture/phase-7r1-semantic-correction-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "ef2c5b7bb12bab223e488fdf13a99a03bc720164"
+    },
+    {
+      "path": "docs/architecture/phase-7r11-action-execution-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "bfd46766353d82c791e852838917fc6d76cf7f61"
+    },
+    {
+      "path": "docs/architecture/phase-7r11-clean-checkout-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "8934212b47d0c2b1e6244d7bf75d878c06f215cb"
+    },
+    {
+      "path": "docs/architecture/phase-7r11-metric-correctness-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "c2db9c1d9473d09fb61f15c383f6ab2839d354a6"
+    },
+    {
+      "path": "docs/architecture/phase-7r11-mvp-release-gate-retest.md",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "7d5fe42b4b883479ce42e530e3d74f04ac1ceef2"
+    },
+    {
+      "path": "docs/architecture/phase-7r11-release-gate-retest.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "299d1640fc53d3c80ddba27acc5714a32167591a"
+    },
+    {
+      "path": "docs/architecture/phase-7r2-action-classification-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "ef5e79a21b36773bebf4fab944d260764627b6d8"
+    },
+    {
+      "path": "docs/architecture/phase-7r2-action-runtime-alignment.md",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "cc87542a30b9ccc67e0e3939707169c0eae42365"
+    },
+    {
+      "path": "docs/architecture/phase-7r2-advertised-action-root-cause-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "82f8e9e692fe0ca021a18a21859130d00b50b731"
+    },
+    {
+      "path": "docs/architecture/phase-7r2-corpus-regression-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "7e04f8220730dec2b6701e6ef8fa1bebee8d87a0"
+    },
+    {
+      "path": "docs/architecture/phase-7r2-release-gate-impact-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "d7afc677f5ea553ccdf99725d45a88aca55bd4b8"
+    },
+    {
+      "path": "docs/architecture/phase-7r3-corpus-regression-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "d15d3067bcdccf7c53bf919361f59b047a0fe44f"
+    },
+    {
+      "path": "docs/architecture/phase-7r3-metric-correctness-remediation.md",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "879d4955508d57b015351a0e435e2e14427dbd78"
+    },
+    {
+      "path": "docs/architecture/phase-7r3-metric-root-cause-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "8f7bcadc7200ed351b78fb3f7c86849e8460d2d8"
+    },
+    {
+      "path": "docs/architecture/phase-7r3-release-gate-impact-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "66519d43df34b86c2495ee37d4752f4a0ff37883"
+    },
+    {
+      "path": "docs/architecture/phase-7r3-required-family-coverage-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "1aa6a92fb8374102f73ae473505179116c9dd05c"
+    },
+    {
+      "path": "docs/architecture/phase-7r3-revenue-correctness-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "1f3aba822d2629ca77f11755bd2f09db8595ea62"
+    },
+    {
+      "path": "docs/architecture/phase-7r31-corpus-evidence-governance-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "7785f85200013eef89833d1fb6f1778d58cfe6a1"
+    },
+    {
+      "path": "docs/architecture/phase-7r31-delivery-identity-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "e6ade01488cec7dcb0604e0e076e431f6047f613"
+    },
+    {
+      "path": "docs/architecture/phase-7r31-family-blocker-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "880d908c6b9980605c2590eed34bb0875d51cec5"
+    },
+    {
+      "path": "docs/architecture/phase-7r31-family-execution-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "9801d88b64cb2415c1001e8267137fb38bf7c15a"
+    },
+    {
+      "path": "docs/architecture/phase-7r31-gross-profit-readiness-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "8b2097dc38a8460c6eeccd8897f48b1387afd08a"
+    },
+    {
+      "path": "docs/architecture/phase-7r31-inventory-evidence-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "60954131e4502d531a72b045d19efe6146cf329a"
+    },
+    {
+      "path": "docs/architecture/phase-7r31-release-gate-impact-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "ec7862823753a567a27bc313aefd575a7f6954b6"
+    },
+    {
+      "path": "docs/architecture/phase-7r31-required-family-closure.md",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "b41fed72665590e69b88533c34fd0c68cf6314e3"
+    },
+    {
+      "path": "docs/architecture/phase-7r32-conditional-gross-profit-closure.md",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "2b9cbdd7bbbaaad10834e50bba92c9f635c1008f"
+    },
+    {
+      "path": "docs/architecture/phase-7r32-corpus-regression-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "9b4516629bbc082d2c9fd5a64fa81ba011e7b7b0"
+    },
+    {
+      "path": "docs/architecture/phase-7r32-currency-compatibility-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "10707ba51ad6b65f4c4e37ef6cb00e8b9a454fd8"
+    },
+    {
+      "path": "docs/architecture/phase-7r32-gross-profit-blocker-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "880224dbc8288688090b456d681e44e2a280a7fa"
+    },
+    {
+      "path": "docs/architecture/phase-7r32-gross-profit-execution-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "c6e6e63992434148217532bc1f3aa8a154c1e798"
+    },
+    {
+      "path": "docs/architecture/phase-7r32-metric-binding-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "a24878bb57a910536248228efd96b0e2b76005d0"
+    },
+    {
+      "path": "docs/architecture/phase-7r32-release-gate-impact-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "5fbcd76b841d4dd2210ac6ecaf1250e1feef16b3"
+    },
+    {
+      "path": "docs/architecture/phase-7r32-runtime-permission-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "9b84ead663dc4f6cb3082507ae0f75034e5a8b7e"
+    },
+    {
+      "path": "docs/architecture/phase-7r33-accounting-currency-evidence-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "a081761e9ae041c961b60785a7ba34025384457c"
+    },
+    {
+      "path": "docs/architecture/phase-7r33-authentic-operational-evidence-discovery.md",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "102ca9cd85281471d23d840f4bc7abb4d4e2a029"
+    },
+    {
+      "path": "docs/architecture/phase-7r33-corpus-extension-candidate.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "066a5ebecdcdbafa14b1879a89caec0c55132aa8"
+    },
+    {
+      "path": "docs/architecture/phase-7r33-independent-truth-candidate-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "133f167bef816f42e13132f4c3aea40d80a200f3"
+    },
+    {
+      "path": "docs/architecture/phase-7r33-inventory-snapshot-evidence-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "f7b5c209280dd8c5ea9800d21dc7b3a840fac338"
+    },
+    {
+      "path": "docs/architecture/phase-7r33-relationship-candidate-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "ee30ad9d498094fd65e918e0ae1cbc4172c78200"
+    },
+    {
+      "path": "docs/architecture/phase-7r33-sample-data-file-inventory.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "f5cad997188d3fc81672ac06f8c0ed9ee39502df"
+    },
+    {
+      "path": "docs/architecture/phase-7r34-authentic-anchor-inventory.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "2b687e7905040aed1d6fba773129d157524d4ce6"
+    },
+    {
+      "path": "docs/architecture/phase-7r34-authentic-anchored-corpus-construction.md",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "717c07be9c0f694d10396303e4684f96557ee4be"
+    },
+    {
+      "path": "docs/architecture/phase-7r34-corpus-1.3.0-manifest.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "ff615df5e1052313db8716914184a3e5782615a5"
+    },
+    {
+      "path": "docs/architecture/phase-7r34-cross-file-relationship-manifest.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "301eac4f030e888052d7ab15397c0d527a9c7eb9"
+    },
+    {
+      "path": "docs/architecture/phase-7r34-evidence-policy.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "69ba8acc3009a14c889de2879cf304e77904f7ab"
+    },
+    {
+      "path": "docs/architecture/phase-7r34-generation-provenance.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "1ad002cd123744572398db0aebd646a3adf535dc"
+    },
+    {
+      "path": "docs/architecture/phase-7r34-independent-oracle-results.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "ac4e3e03f0253520d89d4936949ff710ca181309"
+    },
+    {
+      "path": "docs/architecture/phase-7r34-scenario-contract.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "a360a19eb4fd67e12e345900a75db05eb5ac61e1"
+    },
+    {
+      "path": "docs/architecture/phase-7r35-action-runtime-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "d6ea5d6eb0c32402d284e05a166c42c98f3bd95b"
+    },
+    {
+      "path": "docs/architecture/phase-7r35-canonical-path-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "1a717e59806abdb827ba8c42115c5d272bd0dd90"
+    },
+    {
+      "path": "docs/architecture/phase-7r35-corpus-130-engine-validation.md",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "cf225f002a15f8fb5753711d8dade11ae6c244c5"
+    },
+    {
+      "path": "docs/architecture/phase-7r35-engine-input-isolation-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "a763b6b7de3586ca401e04c3a0f72e4f14f45777"
+    },
+    {
+      "path": "docs/architecture/phase-7r35-gross-profit-execution-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "d55abd8a15eaba80414d6cd648d89af8f596495c"
+    },
+    {
+      "path": "docs/architecture/phase-7r35-inventory-execution-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "af8a2294ef44b82cbd0954748e5f61d5cd7fb97f"
+    },
+    {
+      "path": "docs/architecture/phase-7r35-relationship-validation-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "ef9f3e32653ebd7ad929412ed6d3f3abfda9c40d"
+    },
+    {
+      "path": "docs/architecture/phase-7r35-release-gate-impact-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "b56350edd83bd7e8181c080a9c6905c924a5386c"
+    },
+    {
+      "path": "docs/architecture/phase-7r35-revenue-delivery-execution-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "50390ba941fa46abfae027277ef84596c364b227"
+    },
+    {
+      "path": "docs/architecture/phase-7r36-corpus-regression-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "93ee82b6b35e9b644e8be4b4ed4e241f6183c128"
+    },
+    {
+      "path": "docs/architecture/phase-7r36-currency-evidence-plumbing-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "8bb02a09243e5854e76f1c04d39aa7eda837fb94"
+    },
+    {
+      "path": "docs/architecture/phase-7r36-explanation-completeness-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "0f7e1d0ee6bbedde9585a5c4a2532c1702745cbf"
+    },
+    {
+      "path": "docs/architecture/phase-7r36-gross-profit-execution-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "51cc83bd37dbb6410c862172d7b330f0ac2b1f91"
+    },
+    {
+      "path": "docs/architecture/phase-7r36-gross-profit-preflight-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "fd5db7b1700bff01c48bd6b50d1e7f342f25fb1a"
+    },
+    {
+      "path": "docs/architecture/phase-7r36-gross-profit-runtime-closure.md",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "5bbee0e2b45bd1d2de5e4ea947c2267bf79b0a82"
+    },
+    {
+      "path": "docs/architecture/phase-7r36-release-gate-impact-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "a563958ac30236474f95019a11287995b65df652"
+    },
+    {
+      "path": "docs/architecture/phase-7r36-repeated-measure-readiness-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "3d9c384c67cd6734185ee2e0b82dbf4e78f71887"
+    },
+    {
+      "path": "docs/architecture/phase-7r37-corpus-regression-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "bba1bbb6f010a5dcde3c95f75b7504b802d4c1ec"
+    },
+    {
+      "path": "docs/architecture/phase-7r37-detailed-balance-comparison-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "342709f3ca01b5daebb03df63e551092e00d1ee7"
+    },
+    {
+      "path": "docs/architecture/phase-7r37-inventory-execution-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "5af1ff4f819d0b72290d1d0c78fa51ca4b3b1b9f"
+    },
+    {
+      "path": "docs/architecture/phase-7r37-inventory-preflight-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "80be0dbe0a67d90ae9ea8fda9da5b7f35149e912"
+    },
+    {
+      "path": "docs/architecture/phase-7r37-inventory-root-cause-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "aa134517b37967a91836a117aa7bb7efeec5cec6"
+    },
+    {
+      "path": "docs/architecture/phase-7r37-inventory-runtime-closure.md",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "63351b017bf1eb20b1be196afc6bba04468cdf3e"
+    },
+    {
+      "path": "docs/architecture/phase-7r37-negative-probe-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "b7239783763d1d8012ab65a62964f98f32884fbf"
+    },
+    {
+      "path": "docs/architecture/phase-7r37-release-gate-impact-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "9ba8f7df5863285b8a6f0673c386dacb5f8665ce"
+    },
+    {
+      "path": "docs/architecture/phase-7r37-semantic-binding-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "e06ec7a42b88168874f99fb72f46c16594f58535"
+    },
+    {
+      "path": "docs/architecture/phase-7r37-snapshot-grain-readiness-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "8cb4e0a5c6ff00b64ae1f5fd04192e6060ca15d0"
+    },
+    {
+      "path": "docs/architecture/phase-7r38-clean-checkout-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "4ed0c7cf21d7c76a1249d587cdaedbc315aee38f"
+    },
+    {
+      "path": "docs/architecture/phase-7r38-evidence-population-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "6492e1cb728a2b68c459d9b9bdf776e765971dfc"
+    },
+    {
+      "path": "docs/architecture/phase-7r38-final-suite-conformance.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "70ee3640ec1a931ffa267af57f008b94fbbb784f"
+    },
+    {
+      "path": "docs/architecture/phase-7r38-metric-family-audit.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "8bfd51e768ec70ffaedc1155510898cf339355c7"
+    },
+    {
+      "path": "docs/architecture/phase-7r38-mvp-release-gate-retest.md",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "2d05bb7f20bcf47c80e9017245537528a770072d"
+    },
+    {
+      "path": "docs/architecture/phase-7r38-release-measurements.json",
+      "classification": "required_architecture_evidence",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "c67080eb8e4e59138f2974b1c86b1679a7f64342"
+    },
+    {
+      "path": "sample data/Accounting_ERP_June_2026.csv",
+      "classification": "required_corpus_input",
+      "mode": "120000",
+      "objectType": "blob",
+      "gitObject": "c807086046f4bb1b78e18540062f1c91ccc9f062"
+    },
+    {
+      "path": "sample data/Accounting_ERP_May_2026.csv",
+      "classification": "required_corpus_input",
+      "mode": "120000",
+      "objectType": "blob",
+      "gitObject": "206eb9a86c33a5ea490d0989fead4f4a78f5f27d"
+    },
+    {
+      "path": "sample data/Logistics_ERP_June_2026.csv",
+      "classification": "required_corpus_input",
+      "mode": "120000",
+      "objectType": "blob",
+      "gitObject": "d64af801bdf9e66795a707921d56fa25e9f0f409"
+    },
+    {
+      "path": "sample data/Logistics_ERP_May_2026.csv",
+      "classification": "required_corpus_input",
+      "mode": "120000",
+      "objectType": "blob",
+      "gitObject": "e7b2d4621e36f255c98bebe784d2b261edd63725"
+    },
+    {
+      "path": "sample data/Sales_ERP_June_2026.xlsx",
+      "classification": "required_corpus_input",
+      "mode": "120000",
+      "objectType": "blob",
+      "gitObject": "985d8fe8570a15ffd42fac049d1a5741429bbdeb"
+    },
+    {
+      "path": "sample data/Sales_ERP_May_2026.xlsx",
+      "classification": "required_corpus_input",
+      "mode": "120000",
+      "objectType": "blob",
+      "gitObject": "5451eba144ae3fe476c064ce07b3bfa702dddec8"
+    },
+    {
+      "path": "sample-corpus/anchors/1.3.0/Accounting_ERP_June_2026.csv",
+      "classification": "required_corpus_input",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "b408d543bf7b1c9e9c61f1c727904982b311a88c"
+    },
+    {
+      "path": "sample-corpus/anchors/1.3.0/Accounting_ERP_May_2026.csv",
+      "classification": "required_corpus_input",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "6e01b5f1f0c0d13f3801d142f35ba53bbcc81e64"
+    },
+    {
+      "path": "sample-corpus/anchors/1.3.0/Logistics_ERP_June_2026.csv",
+      "classification": "required_corpus_input",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "2be6a33553b1d439f41d62a00a2b03a8e14074a2"
+    },
+    {
+      "path": "sample-corpus/anchors/1.3.0/Logistics_ERP_May_2026.csv",
+      "classification": "required_corpus_input",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "d6955645eada8ebbe554faff0db5cf46350e4696"
+    },
+    {
+      "path": "sample-corpus/anchors/1.3.0/Sales_ERP_June_2026.xlsx",
+      "classification": "required_corpus_input",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "544c23ea96b3c95a432dfcb7a206efe6ed0cf5b0"
+    },
+    {
+      "path": "sample-corpus/anchors/1.3.0/Sales_ERP_May_2026.xlsx",
+      "classification": "required_corpus_input",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "fbbcea0cde9257d78af8f6070d5a1b4f1004cefd"
+    },
+    {
+      "path": "sample-corpus/tooling/phase-7r34/authentic-anchors.json",
+      "classification": "required_manifest_or_policy",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "9fcd7cd0836508f4605e672c857f4603e7b118be"
+    },
+    {
+      "path": "sample-corpus/tooling/phase-7r34/evidence-policy.json",
+      "classification": "required_manifest_or_policy",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "69ba8acc3009a14c889de2879cf304e77904f7ab"
+    },
+    {
+      "path": "sample-corpus/tooling/phase-7r34/generate.cjs",
+      "classification": "required_generator_or_oracle",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "cc18104841274bad412d3c6006d31a13f15a32ca"
+    },
+    {
+      "path": "sample-corpus/tooling/phase-7r34/oracle.cjs",
+      "classification": "required_generator_or_oracle",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "d84e8b496708f8ffcb26ad091165ea6971dfd3bb"
+    },
+    {
+      "path": "sample-corpus/tooling/phase-7r34/scenario-contract.json",
+      "classification": "required_manifest_or_policy",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "a360a19eb4fd67e12e345900a75db05eb5ac61e1"
+    },
+    {
+      "path": "sample-corpus/versions/1.3.0/corpus-manifest.json",
+      "classification": "required_manifest_or_policy",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "2294b6837ec46464baa80cce6143867c6883625f"
+    },
+    {
+      "path": "sample-corpus/versions/1.3.0/cross-file-relationship-manifest.json",
+      "classification": "required_manifest_or_policy",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "301eac4f030e888052d7ab15397c0d527a9c7eb9"
+    },
+    {
+      "path": "sample-corpus/versions/1.3.0/derived/derived-accounting-june-vnd.csv",
+      "classification": "required_corpus_input",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "d8845332d473c3c2ca549ea012f1b1387b6c4a04"
+    },
+    {
+      "path": "sample-corpus/versions/1.3.0/derived/derived-accounting-may-vnd.csv",
+      "classification": "required_corpus_input",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "a4dd4c550286b0abeaa46889514bb14003743152"
+    },
+    {
+      "path": "sample-corpus/versions/1.3.0/derived/derived-inventory-movements-june.csv",
+      "classification": "required_corpus_input",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "3c5f026d878e0a9f82a209292ba5d63f6b342f9b"
+    },
+    {
+      "path": "sample-corpus/versions/1.3.0/derived/derived-inventory-movements-may.csv",
+      "classification": "required_corpus_input",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "99504f595cf487a0e001a329599b9ff9d00b5777"
+    },
+    {
+      "path": "sample-corpus/versions/1.3.0/derived/derived-inventory-snapshot-june.csv",
+      "classification": "required_corpus_input",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "1cb94cda69b5462118350534d9ff7623289cab57"
+    },
+    {
+      "path": "sample-corpus/versions/1.3.0/derived/derived-inventory-snapshot-may.csv",
+      "classification": "required_corpus_input",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "455514d2a2ea4c8162d16374eb440ca7436e929f"
+    },
+    {
+      "path": "sample-corpus/versions/1.3.0/generation-provenance.json",
+      "classification": "required_manifest_or_policy",
+      "mode": "100644",
+      "objectType": "blob",
+      "gitObject": "023adc705e1d3299b4fb8071791b42b69859a26b"
+    }
+  ],
+  "explicitlyExcludedAfterCommit": [
+    {
+      "path": "LightBI-code-docs-20260710-091720.zip",
+      "classification": "exclude_from_candidate"
+    },
+    {
+      "path": "logs/dev-backend.pid",
+      "classification": "local_runtime_artifact"
+    },
+    {
+      "path": "releases/windows/LightBI_0.1.0_x64-setup.exe",
+      "classification": "release_binary_not_required"
+    }
+  ],
+  "broadStageCommandUsed": false,
+  "gate": "pass"
+}

@@ -1,0 +1,45 @@
+{
+  "schemaVersion": "lightbi.phase-7r4-repository-input-audit.v1",
+  "phase": "7R4",
+  "candidateCommit": "bbb9b997f7af4bb731a5b3197868bd19f49abfcd",
+  "detachedWorktree": "/tmp/lightbi-phase7r4-clean-bbb9b99",
+  "corpus120": {
+    "manifestSha256": "a36284c1f4655289ff832bb4102f9e153fdad329020df6972802802368d0adaa",
+    "caseSourceReferences": 37,
+    "uniqueRequiredSourcePaths": 19,
+    "repositoryControlledPresent": 6,
+    "repositoryControlledMissing": 13,
+    "missingPaths": [
+      "sample data/2017-06-22 DANH SACH XEP HANG QUAN LY TOAN QUOC.xlsx",
+      "sample data/BHX_PHIEUXUAT.xlsx",
+      "sample data/Bao_cao_chi_tiet_Ton_kho_vung_tinh_28-12-2024.xlsx",
+      "sample data/PLU ALL FRESH 22.03.2021.xlsx",
+      "sample data/Sample - Superstore for Tableau 9.x versions.xls",
+      "sample data/TỒN DỰ KIẾN HUBLAN.xlsx",
+      "sample data/World Bank Indicators.xlsx",
+      "sample data/WorldCupPlayers.xlsx",
+      "sample data/bank-additional-full.xlsx",
+      "sample data/bcctnhapTTKT_19122024.xlsx",
+      "sample data/bcctnhapTTKT_23122024.xlsx",
+      "sample data/bcctnhapTTKT_24122024.xlsx",
+      "sample data/motodetail.xlsx"
+    ],
+    "hashMismatches": [],
+    "cleanCheckoutEvaluation": "fail_required_sources_missing"
+  },
+  "corpus130": {
+    "manifestSha256": "446f4456002ceadd2cbad80cde45dbcee43f3c3e2967b1b37ffc00957173d281",
+    "trackedFixtureAnchors": 6,
+    "fixtureHashesMatch": true,
+    "deterministicGeneration": "pass",
+    "byteIdenticalRegeneration": true,
+    "oracleDeterministic": true,
+    "oracleOutputSha256": "aa3c31861c56f3f7674dced87ac8447d65c07adf1a6638b45aba9094a316154d"
+  },
+  "copiedIntoDetachedWorktree": [],
+  "externalPathsReadDuringCleanVerification": [],
+  "ignoredInputsReadDuringCleanVerification": [],
+  "candidateInputClosure": "fail",
+  "blocker": "13 mandatory corpus 1.2 source files are ignored and absent from the candidate commit.",
+  "classification": "not_ready_repository_controlled_inputs"
+}

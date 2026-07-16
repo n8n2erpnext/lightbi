@@ -1,0 +1,139 @@
+{
+  "schemaVersion": "lightbi.phase-7r4-release-gate-audit.v1",
+  "phase": "7R4",
+  "candidateCommit": "bbb9b997f7af4bb731a5b3197868bd19f49abfcd",
+  "measurements": {
+    "mappingPrecision": {
+      "required": ">=95%",
+      "cleanCheckoutResult": null,
+      "state": "not_evaluable_corpus120_inputs_missing"
+    },
+    "heldOutCoreRecall": {
+      "required": ">=90%",
+      "cleanCheckoutResult": null,
+      "state": "not_evaluable_corpus120_inputs_missing"
+    },
+    "domainActivationPrecision": {
+      "required": ">=95%",
+      "cleanCheckoutResult": null,
+      "state": "not_evaluable_corpus120_inputs_missing"
+    },
+    "advertisedActionExecution": {
+      "required": ">=90%",
+      "cleanCheckoutResult": null,
+      "state": "not_evaluable_complete_population_missing"
+    },
+    "falseExecutableActions": {
+      "required": 0,
+      "cleanCheckoutResult": null,
+      "state": "not_evaluable_complete_population_missing"
+    },
+    "falseDecisionSupportCases": {
+      "required": 0,
+      "cleanCheckoutResult": null,
+      "state": "not_evaluable_complete_population_missing"
+    },
+    "blockerExplanationCompleteness": {
+      "required": "100%",
+      "cleanCheckoutResult": null,
+      "state": "not_evaluable_complete_population_missing"
+    },
+    "productionLegacyExecutionReachability": {
+      "required": 0,
+      "cleanCheckoutResult": 0,
+      "passed": true
+    },
+    "typescriptDiagnostics": {
+      "required": 0,
+      "cleanCheckoutResult": 0,
+      "passed": true
+    },
+    "unexpectedFullSuiteFailures": {
+      "required": 0,
+      "cleanCheckoutResult": 33,
+      "passed": false
+    },
+    "requiredMetricFamilyCoverage": {
+      "required": "4/4",
+      "corpus130Result": "4/4",
+      "passedForCorpus130": true
+    },
+    "inventoryDetailedBalances": {
+      "required": 3464,
+      "corpus130Exact": 3464,
+      "passedForCorpus130": true
+    }
+  },
+  "exactScenarioResults": {
+    "revenueMay": {
+      "expected": 22973896244,
+      "actual": 22973896244,
+      "exact": true
+    },
+    "revenueJune": {
+      "expected": 20637539164,
+      "actual": 20637539164,
+      "exact": true
+    },
+    "deliveryMay": {
+      "expected": 1500,
+      "actual": 1500,
+      "exact": true
+    },
+    "deliveryJune": {
+      "expected": 1500,
+      "actual": 1500,
+      "exact": true
+    },
+    "grossProfitMayVnd": {
+      "expected": 3075721244,
+      "actual": 3075721244,
+      "exact": true
+    },
+    "grossProfitJuneVnd": {
+      "expected": 2934640164,
+      "actual": 2934640164,
+      "exact": true
+    },
+    "inventoryMayEa": {
+      "expected": 211067,
+      "actual": 211067,
+      "exact": true
+    },
+    "inventoryJuneEa": {
+      "expected": 378041,
+      "actual": 378041,
+      "exact": true
+    }
+  },
+  "passingGates": [
+    "candidate_commit_created",
+    "sensitive_data_boundary",
+    "offline_frozen_install",
+    "corpus130_reproduction",
+    "oracle_determinism",
+    "typescript",
+    "json_parse",
+    "canonical_import_and_reachability",
+    "diff_check"
+  ],
+  "failingGates": [
+    {
+      "gate": "corpus120_clean_checkout_evaluation",
+      "owner": "release_and_repository_inputs",
+      "reason": "13 required source files absent from commit"
+    },
+    {
+      "gate": "complete_understanding_core",
+      "owner": "release_and_repository_inputs",
+      "reason": "32 failures caused directly or transitively by absent corpus 1.2 population"
+    },
+    {
+      "gate": "full_desktop_suite",
+      "owner": "release_and_repository_inputs",
+      "reason": "33 unexpected test failures plus six failed suites beyond governed baseline"
+    }
+  ],
+  "releaseGate": "fail",
+  "classification": "not_ready_repository_controlled_inputs"
+}

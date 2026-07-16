@@ -1,0 +1,165 @@
+{
+  "schemaVersion": "lightbi.phase-7r4-clean-checkout-reproduction-audit.v1",
+  "phase": "7R4",
+  "candidateCommit": "bbb9b997f7af4bb731a5b3197868bd19f49abfcd",
+  "candidateTree": "b3846735e847d1f76ca4db9536f4e7020205848e",
+  "detachedWorktree": "/tmp/lightbi-phase7r4-clean-bbb9b99",
+  "detachedAtCandidateDirectly": true,
+  "initialStatusClean": true,
+  "finalStatusClean": true,
+  "environment": {
+    "node": "22.23.1",
+    "pnpm": "11.6.0",
+    "git": "2.43.0",
+    "platform": "linux"
+  },
+  "frozenOfflineInstall": {
+    "attempted": true,
+    "passed": true,
+    "downloadedPackages": 0
+  },
+  "fixtureAnchors": {
+    "required": 6,
+    "present": 6,
+    "hashMatches": 6
+  },
+  "corpus130Regeneration": {
+    "passed": true,
+    "byteIdentical": true,
+    "diffBytes": 0
+  },
+  "oracle": {
+    "runs": 2,
+    "identical": true,
+    "sha256": "aa3c31861c56f3f7674dced87ac8447d65c07adf1a6638b45aba9094a316154d"
+  },
+  "corpus120Evaluation": {
+    "passed": false,
+    "reason": "13 mandatory repository source inputs missing"
+  },
+  "corpus130GovernedEvaluation": {
+    "passed": true
+  },
+  "completeUnderstandingCore": {
+    "passed": false,
+    "testFilesPassed": 55,
+    "testFilesFailed": 18,
+    "testsPassed": 289,
+    "testsFailed": 32
+  },
+  "typescript": {
+    "passed": true,
+    "diagnostics": 0
+  },
+  "jsonAuditParsing": {
+    "passed": true,
+    "parsed": 250,
+    "failures": 0
+  },
+  "importAndProductionReachability": {
+    "passed": true,
+    "testsPassed": 10,
+    "productionLegacyExecutionReachability": 0
+  },
+  "gitDiffCheck": {
+    "passed": true
+  },
+  "fullDesktopSuite": {
+    "runCount": 1,
+    "passed": false,
+    "exitStatus": 1
+  },
+  "commands": [
+    {
+      "id": "offline_install",
+      "command": "pnpm install --frozen-lockfile --offline",
+      "exitStatus": 0,
+      "log": "/tmp/phase7r4-offline-install.log",
+      "logSha256": "9acf013530b4189a6106fe9fb41afa208431937b1d1759e6a789fa6a41357289"
+    },
+    {
+      "id": "corpus_regeneration",
+      "command": "node sample-corpus/tooling/phase-7r34/generate.cjs --output /tmp/lightbi-phase7r4-clean-regenerated",
+      "exitStatus": 0,
+      "comparison": "byte_identical"
+    },
+    {
+      "id": "oracle_run_a",
+      "command": "node sample-corpus/tooling/phase-7r34/oracle.cjs",
+      "exitStatus": 0,
+      "output": "/tmp/phase7r4-clean-oracle-a.json",
+      "outputSha256": "aa3c31861c56f3f7674dced87ac8447d65c07adf1a6638b45aba9094a316154d"
+    },
+    {
+      "id": "oracle_run_b",
+      "command": "node sample-corpus/tooling/phase-7r34/oracle.cjs",
+      "exitStatus": 0,
+      "output": "/tmp/phase7r4-clean-oracle-b.json",
+      "outputSha256": "aa3c31861c56f3f7674dced87ac8447d65c07adf1a6638b45aba9094a316154d"
+    },
+    {
+      "id": "targeted_regressions",
+      "command": "pnpm exec vitest run <Phase 5/6 and Phase 7R1-R3.7 targeted files>",
+      "exitStatus": 1,
+      "log": "/tmp/phase7r4-targeted-tests.log",
+      "logSha256": "858b44d97a875d303cd474f5e0f8a6f5a05fd8e1543e0b3a4f39cc9941393b26",
+      "reason": "required corpus 1.2 source files absent"
+    },
+    {
+      "id": "complete_understanding_core",
+      "command": "pnpm exec vitest run src/lib/understanding-core --reporter=verbose",
+      "exitStatus": 1,
+      "log": "/tmp/phase7r4-clean-understanding-core.log",
+      "logSha256": "9796441ad4c0b3cf00570979dddaa702479f51b7312ebad66302a11c2fc705fd",
+      "aggregate": {
+        "testFilesTotal": 73,
+        "testFilesPassed": 55,
+        "testFilesFailed": 18,
+        "testsTotal": 321,
+        "testsPassed": 289,
+        "testsFailed": 32
+      }
+    },
+    {
+      "id": "typescript",
+      "command": "npx tsc --noEmit -p tsconfig.app.json",
+      "exitStatus": 0,
+      "log": "/tmp/phase7r4-clean-typescript.log",
+      "logSha256": "6c8332bcb4493f0dd7226e7818163e28d0cd18c2e63cabb99bb0d92cc2b8855c"
+    },
+    {
+      "id": "json_parse",
+      "command": "parse all committed JSON under docs and sample-corpus",
+      "exitStatus": 0,
+      "parsed": 250,
+      "failures": 0
+    },
+    {
+      "id": "import_reachability",
+      "command": "vitest Phase 5M4, Phase 6A and Phase 6B governance",
+      "exitStatus": 0,
+      "log": "/tmp/phase7r4-clean-import-reachability.log",
+      "logSha256": "4348779d5c3f09261e960699b45fe33460d047bfdaa157f8fe5a4daa1a52c7ce",
+      "aggregate": {
+        "testFilesPassed": 3,
+        "testsPassed": 10
+      }
+    },
+    {
+      "id": "diff_check",
+      "command": "git diff --check",
+      "exitStatus": 0
+    },
+    {
+      "id": "full_desktop_suite",
+      "command": "pnpm test -- --reporter=verbose",
+      "runCount": 1,
+      "exitStatus": 1,
+      "log": "/tmp/phase7r4-full-desktop-suite.log",
+      "logSha256": "2efa6d873000557a13f4596a72f649c22e5ac41160a35c71aa1a272e80898716"
+    }
+  ],
+  "externalOrIgnoredFileConsumed": false,
+  "reproductionGate": "fail",
+  "classification": "not_ready_repository_controlled_inputs"
+}

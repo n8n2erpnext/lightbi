@@ -1,0 +1,124 @@
+{
+  "schemaVersion": "lightbi.phase-7r4-sensitive-data-boundary-audit.v1",
+  "phase": "7R4",
+  "completeSampleDataDirectoryCommitted": false,
+  "approvedFixtureCount": 6,
+  "approvedFixtures": [
+    {
+      "anchorId": "sales_may_2026",
+      "repositoryPath": "sample-corpus/anchors/1.3.0/Sales_ERP_May_2026.xlsx",
+      "sha256": "e2cad91d14cf4ae19daa09dd9c980ea57b6b9cc20a518a9fa6818c3b18aef9ae",
+      "actualSha256": "e2cad91d14cf4ae19daa09dd9c980ea57b6b9cc20a518a9fa6818c3b18aef9ae",
+      "hashMatches": true,
+      "rowCount": 1500,
+      "evidenceClass": "repository_fixture_anchor",
+      "privacyReview": {
+        "secretOrCredentialMatch": false,
+        "emailAddressMatch": false,
+        "prohibitedPersonalNameField": false,
+        "phonePatternReview": "numeric identifier and timestamp false positives only"
+      }
+    },
+    {
+      "anchorId": "sales_june_2026",
+      "repositoryPath": "sample-corpus/anchors/1.3.0/Sales_ERP_June_2026.xlsx",
+      "sha256": "a0a69a4d45531090ed5a829467d25ca89320d17792a72e4a91c55b95b9469e52",
+      "actualSha256": "a0a69a4d45531090ed5a829467d25ca89320d17792a72e4a91c55b95b9469e52",
+      "hashMatches": true,
+      "rowCount": 1500,
+      "evidenceClass": "repository_fixture_anchor",
+      "privacyReview": {
+        "secretOrCredentialMatch": false,
+        "emailAddressMatch": false,
+        "prohibitedPersonalNameField": false,
+        "phonePatternReview": "numeric identifier and timestamp false positives only"
+      }
+    },
+    {
+      "anchorId": "logistics_may_2026",
+      "repositoryPath": "sample-corpus/anchors/1.3.0/Logistics_ERP_May_2026.csv",
+      "sha256": "e093e56ae6750a5ec3bbc98983f21409f373ee71d75b9cceb12c52b2d840ff72",
+      "actualSha256": "e093e56ae6750a5ec3bbc98983f21409f373ee71d75b9cceb12c52b2d840ff72",
+      "hashMatches": true,
+      "rowCount": 1500,
+      "evidenceClass": "repository_fixture_anchor",
+      "privacyReview": {
+        "secretOrCredentialMatch": false,
+        "emailAddressMatch": false,
+        "prohibitedPersonalNameField": false,
+        "phonePatternReview": "numeric identifier and timestamp false positives only"
+      }
+    },
+    {
+      "anchorId": "logistics_june_2026",
+      "repositoryPath": "sample-corpus/anchors/1.3.0/Logistics_ERP_June_2026.csv",
+      "sha256": "ccc7f8036429a5c1b879a8a77dec843ef5ba65dbb88e3b2471a0aa70cd0bb216",
+      "actualSha256": "ccc7f8036429a5c1b879a8a77dec843ef5ba65dbb88e3b2471a0aa70cd0bb216",
+      "hashMatches": true,
+      "rowCount": 1500,
+      "evidenceClass": "repository_fixture_anchor",
+      "privacyReview": {
+        "secretOrCredentialMatch": false,
+        "emailAddressMatch": false,
+        "prohibitedPersonalNameField": false,
+        "phonePatternReview": "numeric identifier and timestamp false positives only"
+      }
+    },
+    {
+      "anchorId": "accounting_may_2026",
+      "repositoryPath": "sample-corpus/anchors/1.3.0/Accounting_ERP_May_2026.csv",
+      "sha256": "3c59da1c10c67ab974dfd204b737402aff1c28d748665949942579fb5fb1a2fd",
+      "actualSha256": "3c59da1c10c67ab974dfd204b737402aff1c28d748665949942579fb5fb1a2fd",
+      "hashMatches": true,
+      "rowCount": 1500,
+      "evidenceClass": "repository_fixture_anchor",
+      "privacyReview": {
+        "secretOrCredentialMatch": false,
+        "emailAddressMatch": false,
+        "prohibitedPersonalNameField": false,
+        "phonePatternReview": "numeric identifier and timestamp false positives only"
+      }
+    },
+    {
+      "anchorId": "accounting_june_2026",
+      "repositoryPath": "sample-corpus/anchors/1.3.0/Accounting_ERP_June_2026.csv",
+      "sha256": "b3a3b290d5f54ca5d7fc79b7aed0f287f539e665113331bb6d4764fa5fc6aaea",
+      "actualSha256": "b3a3b290d5f54ca5d7fc79b7aed0f287f539e665113331bb6d4764fa5fc6aaea",
+      "hashMatches": true,
+      "rowCount": 1500,
+      "evidenceClass": "repository_fixture_anchor",
+      "privacyReview": {
+        "secretOrCredentialMatch": false,
+        "emailAddressMatch": false,
+        "prohibitedPersonalNameField": false,
+        "phonePatternReview": "numeric identifier and timestamp false positives only"
+      }
+    }
+  ],
+  "allApprovedFixtureHashesMatch": true,
+  "privacyMethod": [
+    "header inspection",
+    "representative-value inspection",
+    "email, IP, phone and credential pattern scan",
+    "manual false-positive review"
+  ],
+  "prohibitedFindings": [],
+  "excludedOperationalCorpus12Inputs": [
+    "sample data/2017-06-22 DANH SACH XEP HANG QUAN LY TOAN QUOC.xlsx",
+    "sample data/BHX_PHIEUXUAT.xlsx",
+    "sample data/Bao_cao_chi_tiet_Ton_kho_vung_tinh_28-12-2024.xlsx",
+    "sample data/PLU ALL FRESH 22.03.2021.xlsx",
+    "sample data/Sample - Superstore for Tableau 9.x versions.xls",
+    "sample data/TỒN DỰ KIẾN HUBLAN.xlsx",
+    "sample data/World Bank Indicators.xlsx",
+    "sample data/WorldCupPlayers.xlsx",
+    "sample data/bank-additional-full.xlsx",
+    "sample data/bcctnhapTTKT_19122024.xlsx",
+    "sample data/bcctnhapTTKT_23122024.xlsx",
+    "sample data/bcctnhapTTKT_24122024.xlsx",
+    "sample data/motodetail.xlsx"
+  ],
+  "excludedInputsConsumedDuringCleanVerification": false,
+  "boundaryGate": "pass",
+  "releaseImpact": "Corpus 1.2 remains unreproducible because excluded operational inputs are mandatory under its current manifest."
+}
