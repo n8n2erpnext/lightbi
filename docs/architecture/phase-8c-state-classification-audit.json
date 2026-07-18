@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "lightbi.phase8c.state-classification-audit.v1",
+  "states": {
+    "ready": "Exact M3 preflight permits execution and query planning is complete.",
+    "needs_user_evidence": "Supported analysis requires source-bound evidence through Phase 8B controls.",
+    "needs_mapping_review": "Supported analysis requires a physical-column mapping decision.",
+    "blocked_safety": "Canonical safety, grain, relationship or aggregation policy prevents execution.",
+    "unsupported_mvp": "Recognized concept has no supported current-MVP decision capability.",
+    "stale": "Artifact, overlay, source or handoff identity was superseded.",
+    "executing": "Governed runtime execution is in progress.",
+    "execution_failed": "M3 passed but governed execution failed.",
+    "completed": "Governed execution completed."
+  },
+  "invariants": {"nonReadyExecutable": 0, "unsupportedWithRemediation": 0, "safetyBlockedWithOverride": 0, "staleExecutable": 0},
+  "status": "pass"
+}

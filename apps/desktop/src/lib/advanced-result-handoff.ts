@@ -62,7 +62,7 @@ function sourceKind(provider: string): 'local_file' | 'database_table' | 'unknow
   return 'unknown';
 }
 
-function classifyCompleteness(result: AdvancedQueryResult): AdvancedResultHandoff['completeness'] {
+export function classifyAdvancedResultCompleteness(result: AdvancedQueryResult): AdvancedResultHandoff['completeness'] {
   const state = result.truncated
     ? 'truncated'
     : result.page.offset > 0
@@ -165,7 +165,7 @@ function projectGovernedAction(source: AdvancedResultSource, handoff: CanonicalI
 
 export function createAdvancedResultHandoff(source: AdvancedResultSource, result: AdvancedQueryResult): AdvancedResultHandoff {
   const rows = rowsAsObjects(result);
-  const completeness = classifyCompleteness(result);
+  const completeness = classifyAdvancedResultCompleteness(result);
   const partial = completeness.state !== 'complete';
   const declaredRowCount = partial
     ? Math.max(rows.length + 1, result.page.estimatedTotal ?? 0)

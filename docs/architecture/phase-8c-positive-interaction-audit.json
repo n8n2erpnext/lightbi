@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "lightbi.phase8c.positive-interaction-audit.v1",
+  "flows": [
+    {"id": 1, "name": "revenue_ready", "result": "pass", "evidence": "canonical M1/M2/M3 and Investigation regression"},
+    {"id": 2, "name": "gross_profit_remediation", "result": "pass", "evidence": "Phase 8B production interaction plus Phase 8C presentation routing; exact 3075721244 retained"},
+    {"id": 3, "name": "inventory_mapping_evidence", "result": "pass", "evidence": "Phase 8B production interaction; exact 211067 and detail oracle retained"},
+    {"id": 4, "name": "safety_blocked", "result": "pass", "evidence": "Phase 8C contract and card tests show no override or execution"},
+    {"id": 5, "name": "unsupported_mvp", "result": "pass", "evidence": "Phase 8C contract and card tests show recognition without fake remediation"},
+    {"id": 6, "name": "stale_investigation", "result": "pass", "evidence": "presentation stale projection and Investigation identity guard"},
+    {"id": 7, "name": "advanced_partial", "result": "pass", "evidence": "Advanced completeness classifier and production component interaction"}
+  ],
+  "passed": 7,
+  "failed": 0,
+  "status": "pass"
+}

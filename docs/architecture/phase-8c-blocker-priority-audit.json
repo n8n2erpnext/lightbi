@@ -1,0 +1,10 @@
+{
+  "schemaVersion": "lightbi.phase8c.blocker-priority-audit.v1",
+  "priority": ["stale_source_or_identity", "unsafe_or_invalid_state", "unsupported_capability", "missing_mapping", "missing_user_evidence", "grain_or_relationship_incompatibility", "runtime_unavailable", "limitation_or_caution"],
+  "deterministicTieBreak": "canonical blocker code lexical order",
+  "primaryRetained": true,
+  "secondaryRetained": true,
+  "fixtureDependentOrdering": false,
+  "verification": "Phase 8C presentation tests retain primary, secondary, evidence and restrictions.",
+  "status": "pass"
+}

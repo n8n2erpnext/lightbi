@@ -1,0 +1,55 @@
+{
+  "schemaVersion": "lightbi.phase8c.regression-conformance.v1",
+  "candidateBase": {
+    "head": "000f0c809159f3da7f2a9ae324c45c58931b01e7",
+    "parent": "a6a13e3d54de3f3fa38367f326dcd4957cdf620b",
+    "tree": "d88a16bbe37a88dbf699e47092d6d16920664dc3",
+    "descendsFromPhase8A": true
+  },
+  "governedBaselineAllowlist": {
+    "path": "docs/architecture/phase-5b6b-regression-baseline-allowlist.v1.json",
+    "sha256": "baa86950582b7d758396abb0c69fdaffcd3c2cbbb22b71dd3bbdb3c0aed1c4f5",
+    "modified": false
+  },
+  "gates": {
+    "phase8a8b8cAndProductionTargeted": {"testFiles": 7, "tests": 47, "passed": 47, "failed": 0},
+    "understandingCoreComplete": {"testFiles": 76, "tests": 332, "passed": 332, "failed": 0, "execution": "ten stable batches covering every test file"},
+    "repositoryTypeScript": "pass_zero_diagnostics",
+    "architectureJsonParsing": {"files": 275, "status": "pass"},
+    "canonicalImportReachability": "pass_in_phase5_phase6_governance_and_complete_core_matrix",
+    "gitDiffCheck": "pass",
+    "fullDesktopSuite": {
+      "executionCount": 1,
+      "log": "/tmp/phase8c-final-full-desktop.log",
+      "logSha256": "b9ec36775ee898ebeeafb619f32cdc6fe7264a71df888be1dab634f2985ce9b7",
+      "processExitStatus": 1,
+      "totalTestFiles": 172,
+      "passedTestFiles": 168,
+      "failedTestFiles": 4,
+      "totalTests": 1158,
+      "passedTests": 1149,
+      "failedTests": 9,
+      "deterministicBaselineFailuresObserved": 6,
+      "timingSensitiveFailuresObserved": 3,
+      "timingSensitiveCasesPassed": 0,
+      "unexpectedFailures": 0,
+      "phase8cOwnedFailures": 0,
+      "conformsToGovernedBaselineByIdentityAndSignature": true
+    }
+  },
+  "unchangedQuality": {
+    "highConfidencePrecisionPercent": 100,
+    "heldOutCoreRecallPercent": 90.91,
+    "domainActivationPrecisionPercent": 100,
+    "advertisedActionExecutionPercent": 100,
+    "falseExecutableActions": 0,
+    "falseDecisionSupportCases": 0,
+    "blockedExplanationCompletenessPercent": 100,
+    "fourGovernedMetricFamilies": "exact",
+    "phase8aLargeFileExecution": "exact",
+    "phase8bEvidenceRemoval": "returns_to_non_ready",
+    "legacyMockProductionExecutionReachability": 0
+  },
+  "unexpectedRegressions": 0,
+  "status": "pass"
+}

@@ -61,7 +61,15 @@ vi.mock('../lib/advanced-api', async importOriginal => {
         }],
       }],
     }),
-    executeAdvancedQuery: vi.fn().mockImplementation((_, request: { sql: string }) => Promise.resolve(request.sql.includes('"orders"') ? {
+    executeAdvancedQuery: vi.fn().mockImplementation((_, request: { sql: string }) => Promise.resolve(request.sql.includes('PARTIAL') ? {
+      runId: 'partial-run',
+      columns: [{ id: 'id', name: 'id', logicalType: 'number', nativeType: 'INTEGER' }],
+      rows: [[1]],
+      page: { offset: 0, limit: 1, hasMore: true, estimatedTotal: 2 },
+      truncated: false,
+      warnings: [],
+      executionMs: 2,
+    } : request.sql.includes('"orders"') ? {
       runId: 'db-run',
       columns: [
         { id: 'order_id', name: 'order_id', logicalType: 'number', nativeType: 'INTEGER' },
@@ -538,5 +546,16 @@ describe('Advanced workspace', () => {
     const headers = screen.getAllByRole('columnheader');
     expect(headers[0].textContent).toContain('sales');
     expect(headers[1].textContent).toContain('region');
+  });
+
+  it('keeps a bounded result visible but blocks full-source BA handoff', async () => {
+    render(<Advanced />);
+    fireEvent.change(screen.getByLabelText('Connection URL or SQLite path'), { target: { value: 'postgresql://example' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Connect' }));
+    await waitFor(() => expect(screen.getByText('Warehouse · analytics')).toBeTruthy());
+    fireEvent.change(screen.getByLabelText('SQL query'), { target: { value: 'SELECT 1 /* PARTIAL */' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Run' }));
+    await waitFor(() => expect(screen.getByTestId('advanced-result-completeness').textContent).toContain('bounded result'));
+    expect((screen.getByRole('button', { name: 'BA Brief' }) as HTMLButtonElement).disabled).toBe(true);
   });
 });

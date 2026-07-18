@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "lightbi.phase8c.remediation-routing-audit.v1",
+  "stateOwner": "Phase 8B canonical user overlay",
+  "routes": [
+    {"condition": "ambiguous mapping", "operation": "open_mapping_review", "binding": "source/sheet/physical column"},
+    {"condition": "missing currency", "operation": "open_currency_declaration", "binding": "source/sheet"},
+    {"condition": "missing UOM", "operation": "open_uom_declaration", "binding": "source/sheet/quantity column"},
+    {"condition": "missing period", "operation": "open_reporting_period_declaration", "binding": "source/sheet"},
+    {"condition": "missing snapshot evidence", "operation": "open_snapshot_declaration", "binding": "source/sheet"},
+    {"condition": "missing source role", "operation": "open_source_role_declaration", "binding": "source/sheet"},
+    {"condition": "missing identities", "operation": "open_item_identity_declaration|open_document_identity_declaration|open_warehouse_identity_declaration", "binding": "source/sheet/column"},
+    {"condition": "stale handoff", "operation": "return_to_current_dataset", "binding": "dataset/artifact/overlay identities"}
+  ],
+  "loop": ["overlay update", "artifact rebuild", "M1", "M2", "M3", "presentation refresh"],
+  "directExecutableMutation": false,
+  "focusReturn": "affected canonical analysis item",
+  "status": "pass"
+}

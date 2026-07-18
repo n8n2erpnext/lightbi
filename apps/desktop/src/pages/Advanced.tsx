@@ -142,7 +142,7 @@ import {
 } from '../lib/advanced-edit-session';
 import { useAdvancedSourceStore, type AdvancedWorkspaceSource } from '../stores/advanced-source-store';
 import { createInvestigationSession } from '../lib/investigation-session';
-import { createAdvancedResultHandoff } from '../lib/advanced-result-handoff';
+import { classifyAdvancedResultCompleteness, createAdvancedResultHandoff } from '../lib/advanced-result-handoff';
 import { AdvancedConnectionGate } from '../components/advanced/AdvancedConnectionGate';
 import { QueryPlanView, ResultChart, ResultJson, ResultStructure } from '../components/advanced/AdvancedResultViews';
 import { FavoritesPanel, HistoryPanel, SchemaTree } from '../components/advanced/AdvancedSidePanels';
@@ -377,6 +377,7 @@ export const Advanced: React.FC = () => {
       rows: visibleResult.rows.map(row => indexes.map(index => row[index] ?? null)),
     };
   }, [activeTab.columnOrder, visibleResult]);
+  const displayResultCompleteness = useMemo(() => displayResult ? classifyAdvancedResultCompleteness(displayResult) : null, [displayResult]);
   const visibleEditedKeys = useMemo(() => {
     if (!activeResult || !displayResult) return new Set<string>();
     const keys = Object.values(activeTab.editState.changes).flatMap(edit => {
@@ -796,6 +797,11 @@ export const Advanced: React.FC = () => {
     if (!displayResult) return;
     if (displayResult.rows.length === 0) {
       patchTab(activeTab.id, { warnings: ['Run a query with rows before creating a Simple BA brief.'] });
+      return;
+    }
+    const completeness = classifyAdvancedResultCompleteness(displayResult);
+    if (completeness.state !== 'complete') {
+      patchTab(activeTab.id, { warnings: [`This result is ${completeness.state}. Full-source governed analysis is unavailable until a complete result is materialized.`] });
       return;
     }
 
@@ -1608,7 +1614,8 @@ export const Advanced: React.FC = () => {
                 <button onClick={() => patchTab(activeTab.id, { resultView: 'json' })} className={`hidden h-7 items-center gap-1.5 px-3 text-[11px] sm:flex ${activeTab.resultView === 'json' ? 'bg-gray-200 font-medium text-gray-900' : 'text-gray-500 hover:bg-gray-100'}`}><Braces className="h-3.5 w-3.5" /> JSON</button>
                 <button onClick={() => patchTab(activeTab.id, { resultView: 'structure' })} className={`hidden h-7 items-center gap-1.5 px-3 text-[11px] md:flex ${activeTab.resultView === 'structure' ? 'bg-gray-200 font-medium text-gray-900' : 'text-gray-500 hover:bg-gray-100'}`}><ListTree className="h-3.5 w-3.5" /> Structure</button>
                 {activeTab.plan !== null && <button onClick={() => patchTab(activeTab.id, { resultView: 'plan' })} className={`flex h-7 items-center gap-1.5 px-3 text-[11px] ${activeTab.resultView === 'plan' ? 'bg-gray-200 font-medium text-gray-900' : 'text-gray-500 hover:bg-gray-100'}`}><FileSearch className="h-3.5 w-3.5" /> Plan</button>}
-                {displayResult && <button onClick={analyzeActiveResultInSimple} className="ml-1 flex h-7 items-center gap-1.5 border border-indigo-200 bg-indigo-50 px-3 text-[11px] font-medium text-indigo-700 hover:bg-indigo-100" title="Create a Simple mode BA decision brief from this result"><Sparkles className="h-3.5 w-3.5" /> BA Brief</button>}
+                {displayResult && <button onClick={analyzeActiveResultInSimple} disabled={displayResultCompleteness?.state !== 'complete'} aria-describedby={displayResultCompleteness?.state !== 'complete' ? 'advanced-result-completeness' : undefined} className="ml-1 flex h-7 items-center gap-1.5 border border-indigo-200 bg-indigo-50 px-3 text-[11px] font-medium text-indigo-700 hover:bg-indigo-100 disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-50 disabled:text-gray-400" title={displayResultCompleteness?.state === 'complete' ? 'Create a Simple mode BA decision brief from this complete result' : 'Full-source governed analysis requires a complete result'}><Sparkles className="h-3.5 w-3.5" /> BA Brief</button>}
+                {displayResultCompleteness && displayResultCompleteness.state !== 'complete' && <span id="advanced-result-completeness" role="status" data-testid="advanced-result-completeness" className="ml-2 text-[10px] text-amber-700">{displayResultCompleteness.state} result · {displayResultCompleteness.returnedRows} rows retained · full-source analysis unavailable</span>}
                 {activeResult && <div className="relative">
                   <button onClick={() => setShowColumnMenu(value => !value)} className="flex h-7 items-center gap-1 px-2 text-[10px] text-gray-500 hover:bg-gray-100" title="Manage visible columns"><EyeOff className="h-3.5 w-3.5" /> {visibleResult?.columns.length}/{activeResult.columns.length}</button>
                   {showColumnMenu && <div className="absolute left-0 top-8 z-30 max-h-64 w-56 overflow-auto border border-gray-200 bg-white py-1 shadow-lg">

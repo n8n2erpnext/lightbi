@@ -96,6 +96,7 @@ export type CanonicalInvestigationHandoffV1 = {
 };
 
 const cache = new Map<string, CanonicalConsumerBuildResultV1>();
+const latestByDatasetId = new Map<string, CanonicalConsumerBuildResultV1>();
 let buildOrdinal = 0;
 
 function normalizeRow(row: Record<string, unknown>, columns: readonly string[]): unknown[] {
@@ -262,10 +263,18 @@ export function getOrBuildCanonicalConsumerArtifact(input: CanonicalDatasetState
   const fingerprint = inputFingerprint(input);
   const identity = `dataset-state:${fingerprint}`;
   const retained = cache.get(identity);
-  if (retained) return retained;
+  if (retained) {
+    latestByDatasetId.set(input.datasetId, retained);
+    return retained;
+  }
   const artifact = buildArtifact(input, fingerprint);
   cache.set(identity, artifact);
+  latestByDatasetId.set(input.datasetId, artifact);
   return artifact;
+}
+
+export function getLatestCanonicalConsumerArtifact(datasetId: string): CanonicalConsumerBuildResultV1 | null {
+  return latestByDatasetId.get(datasetId) ?? null;
 }
 
 export function prepareCanonicalInvestigationHandoff(artifact: CanonicalConsumerBuildResultV1, actionCandidateId: string): CanonicalInvestigationHandoffV1 {
@@ -335,5 +344,6 @@ export function canonicalConsumerCacheStats(): { buildCount: number; datasetStat
 
 export function resetCanonicalConsumerCacheForTests(): void {
   cache.clear();
+  latestByDatasetId.clear();
   buildOrdinal = 0;
 }

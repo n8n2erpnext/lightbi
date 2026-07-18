@@ -33,6 +33,7 @@ import {
   prepareCanonicalInvestigationHandoff,
 } from '../lib/understanding-core/canonical-consumer-boundary';
 import { projectCanonicalArtifactToUnderstandingNext } from '../lib/canonical-consumer-presentation-adapter';
+import { presentCanonicalConsumerArtifact, type CanonicalRemediationOperationV1 } from '../lib/understanding-core/canonical-consumer-presentation-contract';
 import type { AnalysisAction } from '../lib/analysis-opportunity-actions';
 import { createRuntimeIntentFromAnalysisAction } from '../lib/analysis-runtime-contract';
 import { createRuntimePlanPreview } from '../lib/runtime-planner-preview';
@@ -296,6 +297,8 @@ export const Home: React.FC = () => {
   const [lastInspectedFamilies, setLastInspectedFamilies] = useState<DatasetFamily[] | null>(null);
   const [decisionTrustReport, setDecisionTrustReport] = useState<DecisionTrustReport | null>(null);
   const [canonicalOverlayRebuildState, setCanonicalOverlayRebuildState] = useState<'idle' | 'pending' | 'succeeded' | 'failed'>('idle');
+  const [canonicalReviewTarget, setCanonicalReviewTarget] = useState<CanonicalRemediationOperationV1 | null>(null);
+  const canonicalReviewReturnItem = useRef<string | null>(null);
   const inspectionRuns = useRef(new ExecutionRunCoordinator('simple-inspection'));
   const lastAutoSaveSignatureRef = useRef<string>("");
 
@@ -841,6 +844,12 @@ export const Home: React.FC = () => {
     () => canonicalArtifact ? projectCanonicalArtifactToUnderstandingNext(canonicalArtifact) : null,
     [canonicalArtifact]
   );
+  const canonicalPresentation = React.useMemo(
+    () => canonicalArtifact ? presentCanonicalConsumerArtifact(canonicalArtifact, {
+      stale: canonicalOverlayRebuildState === 'pending' || canonicalOverlayRebuildState === 'failed',
+    }) : null,
+    [canonicalArtifact, canonicalOverlayRebuildState]
+  );
 
   useEffect(() => {
     if (canonicalOverlayRebuildState !== 'pending') return;
@@ -849,12 +858,24 @@ export const Home: React.FC = () => {
     setCanonicalOverlayRebuildState(canonicalArtifact.status === 'valid' && canonicalArtifact.overlayValidation.valid ? 'succeeded' : 'failed');
   }, [canonicalArtifact, canonicalOverlayRebuildState, currentDataset?.canonicalUserOverlay]);
 
+  useEffect(() => {
+    if (canonicalOverlayRebuildState !== 'succeeded' || !canonicalReviewReturnItem.current) return;
+    const itemId = canonicalReviewReturnItem.current;
+    canonicalReviewReturnItem.current = null;
+    window.requestAnimationFrame(() => document.getElementById(`analysis-item-${itemId}`)?.focus());
+  }, [canonicalOverlayRebuildState, canonicalArtifact]);
+
   const handleCanonicalOverlayChange = useCallback((overlay: CanonicalUserOverlayV1) => {
     setCanonicalOverlayRebuildState('pending');
     setSelectedTopic(null);
     setResult(null);
     setPreviewActionId(null);
     setCurrentDataset((dataset: any) => dataset ? { ...dataset, canonicalUserOverlay: overlay } : dataset);
+  }, []);
+
+  const handleCanonicalRemediation = useCallback((operation: CanonicalRemediationOperationV1, itemId: string) => {
+    canonicalReviewReturnItem.current = itemId;
+    setCanonicalReviewTarget(operation);
   }, []);
 
   const activeBusinessViews = selectedPerspective && guidedInvestigationResult
@@ -1744,6 +1765,8 @@ export const Home: React.FC = () => {
                       <UnderstandingNextCard
                         understanding={datasetUnderstandingNext}
                         onSelectAction={handleSelectAnalysisAction}
+                        canonicalPresentation={canonicalPresentation ?? undefined}
+                        onRemediate={handleCanonicalRemediation}
                       />
                       {canonicalArtifact && (
                         <CanonicalEvidenceReview
@@ -1751,6 +1774,7 @@ export const Home: React.FC = () => {
                           overlay={parseCanonicalUserOverlay(currentDataset.canonicalUserOverlay)}
                           rebuildState={canonicalOverlayRebuildState}
                           onChange={handleCanonicalOverlayChange}
+                          target={canonicalReviewTarget}
                         />
                       )}
                     </>

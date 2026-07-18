@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "lightbi.phase8c.accessibility-interaction-baseline.v1",
+  "checks": {
+    "keyboardReachableNativeControls": "pass",
+    "semanticLabels": "pass",
+    "disabledStateExplanation": "pass",
+    "busyState": "pass",
+    "linkedErrorText": "pass",
+    "focusReturnAfterRemediation": "pass",
+    "hoverOnlyOperations": 0,
+    "semanticDeterministicTestSelectors": "pass"
+  },
+  "scope": "functional interaction baseline only; no visual or full accessibility redesign",
+  "status": "pass"
+}

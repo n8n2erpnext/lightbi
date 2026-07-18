@@ -1,6 +1,7 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { AlertTriangle, CheckCircle2, RefreshCw } from "lucide-react";
 import type { CanonicalConsumerBuildResultV1 } from "../../lib/understanding-core/canonical-consumer-boundary";
+import type { CanonicalRemediationOperationV1 } from "../../lib/understanding-core/canonical-consumer-presentation-contract";
 import {
   appendCanonicalEvidenceDeclaration,
   appendCanonicalMappingDecision,
@@ -16,10 +17,12 @@ type Props = {
   overlay: CanonicalUserOverlayV1 | null;
   rebuildState: "idle" | "pending" | "succeeded" | "failed";
   onChange: (overlay: CanonicalUserOverlayV1) => void;
+  target?: CanonicalRemediationOperationV1 | null;
 };
 
-export const CanonicalEvidenceReview: React.FC<Props> = ({ artifact, overlay, rebuildState, onChange }) => {
+export const CanonicalEvidenceReview: React.FC<Props> = ({ artifact, overlay, rebuildState, onChange, target }) => {
   const boundary = artifact.sourceBoundary;
+  const detailsRef = useRef<HTMLDetailsElement>(null);
   const [currency, setCurrency] = useState("VND");
   const [moneyColumns, setMoneyColumns] = useState("");
   const [periodStart, setPeriodStart] = useState("");
@@ -38,6 +41,21 @@ export const CanonicalEvidenceReview: React.FC<Props> = ({ artifact, overlay, re
     ? artifact.canonicalSource.semantic.columns.filter((column) => ["ambiguous", "unknown"].includes(column.finalState))
     : [], [artifact]);
   const columns = boundary?.semanticSample.columns ?? [];
+  useEffect(() => {
+    if (!target) return;
+    const details = detailsRef.current;
+    if (!details) return;
+    details.open = true;
+    const targetId = target.kind === "open_mapping_review" && target.physicalColumn
+      ? `mapping:${target.physicalColumn}`
+      : target.kind;
+    window.requestAnimationFrame(() => {
+      const destination = [...details.querySelectorAll<HTMLElement>("[data-remediation-target]")]
+        .find((element) => element.dataset.remediationTarget === targetId);
+      destination?.scrollIntoView({ block: "center" });
+      destination?.focus();
+    });
+  }, [target]);
   if (!boundary) return null;
   const current = overlay ?? createCanonicalUserOverlay(boundary);
   const activeMappings = [...current.mappingDecisions].sort((a, b) => b.createdAt.localeCompare(a.createdAt)).filter((item, index, all) => all.findIndex((candidate) => candidate.physicalColumn === item.physicalColumn) === index);
@@ -62,7 +80,7 @@ export const CanonicalEvidenceReview: React.FC<Props> = ({ artifact, overlay, re
   };
 
   return (
-    <details className="rounded-lg border border-gray-200 bg-white">
+    <details ref={detailsRef} className="rounded-lg border border-gray-200 bg-white" aria-busy={rebuildState === "pending"} data-testid="canonical-evidence-review">
       <summary className="cursor-pointer px-4 py-3 text-[13px] font-semibold text-gray-800">Review mappings and source evidence</summary>
       <div className="space-y-4 border-t border-gray-100 p-4">
         <div className="flex items-center justify-between gap-3 text-[12px]">
@@ -107,19 +125,19 @@ export const CanonicalEvidenceReview: React.FC<Props> = ({ artifact, overlay, re
         </div>}
 
         <div className="grid gap-3 md:grid-cols-2">
-          <label className="text-[12px] text-gray-600">Reporting currency<input value={currency} onChange={(event) => setCurrency(event.target.value)} className="mt-1 w-full rounded border border-gray-200 px-2 py-1.5" /></label>
+          <label tabIndex={-1} data-remediation-target="open_currency_declaration" className="text-[12px] text-gray-600">Reporting currency<input value={currency} onChange={(event) => setCurrency(event.target.value)} className="mt-1 w-full rounded border border-gray-200 px-2 py-1.5" /></label>
           <label className="text-[12px] text-gray-600">Monetary columns, comma separated<input value={moneyColumns} onChange={(event) => setMoneyColumns(event.target.value)} className="mt-1 w-full rounded border border-gray-200 px-2 py-1.5" /></label>
-          <label className="text-[12px] text-gray-600">Period start<input type="date" value={periodStart} onChange={(event) => setPeriodStart(event.target.value)} className="mt-1 w-full rounded border border-gray-200 px-2 py-1.5" /></label>
+          <label tabIndex={-1} data-remediation-target="open_reporting_period_declaration" className="text-[12px] text-gray-600">Period start<input type="date" value={periodStart} onChange={(event) => setPeriodStart(event.target.value)} className="mt-1 w-full rounded border border-gray-200 px-2 py-1.5" /></label>
           <label className="text-[12px] text-gray-600">Period end<input type="date" value={periodEnd} onChange={(event) => setPeriodEnd(event.target.value)} className="mt-1 w-full rounded border border-gray-200 px-2 py-1.5" /></label>
-          <Select label="Source role" value={role} onChange={setRole} options={["unknown_other", "sales", "accounting", "logistics", "inventory_snapshot", "inventory_movement"]} />
-          <Select label="Quantity column" value={quantityColumn} onChange={setQuantityColumn} options={["", ...columns]} />
-          <Select label="UOM column" value={uomColumn} onChange={setUomColumn} options={["", ...columns]} />
+          <Select target="open_source_role_declaration" label="Source role" value={role} onChange={setRole} options={["unknown_other", "sales", "accounting", "logistics", "inventory_snapshot", "inventory_movement"]} />
+          <Select target="open_snapshot_declaration" label="Quantity column" value={quantityColumn} onChange={setQuantityColumn} options={["", ...columns]} />
+          <Select target="open_uom_declaration" label="UOM column" value={uomColumn} onChange={setUomColumn} options={["", ...columns]} />
           <label className="text-[12px] text-gray-600">Unit of measure<input value={uom} onChange={(event) => setUom(event.target.value)} className="mt-1 w-full rounded border border-gray-200 px-2 py-1.5" /></label>
           <Select label="As-of column" value={asOfColumn} onChange={setAsOfColumn} options={["", ...columns]} />
           <label className="text-[12px] text-gray-600">Snapshot as-of date<input type="date" value={asOfDate} onChange={(event) => setAsOfDate(event.target.value)} className="mt-1 w-full rounded border border-gray-200 px-2 py-1.5" /></label>
-          <Select label="Item identity" value={itemColumn} onChange={setItemColumn} options={["", ...columns]} />
-          <Select label="Warehouse identity" value={warehouseColumn} onChange={setWarehouseColumn} options={["", ...columns]} />
-          <Select label="Document identity" value={documentColumn} onChange={setDocumentColumn} options={["", ...columns]} />
+          <Select target="open_item_identity_declaration" label="Item identity" value={itemColumn} onChange={setItemColumn} options={["", ...columns]} />
+          <Select target="open_warehouse_identity_declaration" label="Warehouse identity" value={warehouseColumn} onChange={setWarehouseColumn} options={["", ...columns]} />
+          <Select target="open_document_identity_declaration" label="Document identity" value={documentColumn} onChange={setDocumentColumn} options={["", ...columns]} />
         </div>
         <button type="button" onClick={applyEvidence} className="rounded border border-indigo-200 bg-indigo-50 px-3 py-2 text-[12px] font-semibold text-indigo-700">Apply evidence and rebuild</button>
       </div>
@@ -127,7 +145,7 @@ export const CanonicalEvidenceReview: React.FC<Props> = ({ artifact, overlay, re
   );
 };
 
-const Select: React.FC<{ label: string; value: string; options: string[]; onChange: (value: string) => void }> = ({ label, value, options, onChange }) => <label className="text-[12px] text-gray-600">{label}<select value={value} onChange={(event) => onChange(event.target.value)} className="mt-1 w-full rounded border border-gray-200 px-2 py-1.5">{options.map((option) => <option key={option || "none"} value={option}>{option || "Select..."}</option>)}</select></label>;
+const Select: React.FC<{ label: string; value: string; options: string[]; target?: string; onChange: (value: string) => void }> = ({ label, value, options, target, onChange }) => <label tabIndex={target ? -1 : undefined} data-remediation-target={target} className="text-[12px] text-gray-600">{label}<select value={value} onChange={(event) => onChange(event.target.value)} className="mt-1 w-full rounded border border-gray-200 px-2 py-1.5">{options.map((option) => <option key={option || "none"} value={option}>{option || "Select..."}</option>)}</select></label>;
 
 function scopeLabel(scope: CanonicalUserOverlayV1["sourceEvidenceDeclarations"][number]["scope"]): string {
   if (scope.level === "sheet_table") return `sheet/table ${scope.sheetOrTable}`;
@@ -139,7 +157,7 @@ function scopeLabel(scope: CanonicalUserOverlayV1["sourceEvidenceDeclarations"][
 const MappingRow: React.FC<{ column: string; state: string; candidates: string[]; traces: Array<{ id: string; supporting: string[]; contradicting: string[] }>; compatible: Array<{ id: string; label: string }>; onApply: (signal: string | null, type: "confirm_candidate" | "map_to_existing_signal" | "ignore_for_semantic_analysis" | "reset_to_inferred") => void }> = ({ column, state, candidates, traces, compatible, onApply }) => {
   const [signal, setSignal] = useState(candidates[0] ?? "");
   const isCandidate = candidates.includes(signal);
-  return <div className="rounded border border-gray-100 bg-gray-50 p-3 text-[12px]">
+  return <div tabIndex={-1} data-remediation-target={`mapping:${column}`} className="rounded border border-gray-100 bg-gray-50 p-3 text-[12px]">
     <div className="font-medium text-gray-800">{column} <span className="ml-1 text-gray-400">{state}</span></div>
     <div className="mt-1 text-gray-500">Inferred candidates: {candidates.join(", ") || "none"}.</div>
     {traces.map((trace) => <div key={trace.id} className="mt-1 text-[11px] text-gray-400">{trace.id}: supporting {trace.supporting.join(", ") || "none"}; contradicting {trace.contradicting.join(", ") || "none"}</div>)}

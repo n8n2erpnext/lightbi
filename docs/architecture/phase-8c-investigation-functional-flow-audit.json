@@ -1,0 +1,10 @@
+{
+  "schemaVersion": "lightbi.phase8c.investigation-functional-flow-audit.v1",
+  "module": "apps/desktop/src/pages/Investigation.tsx",
+  "states": ["ready", "executing", "completed", "stale", "execution_failed", "preflight_blocked"],
+  "guards": {"blockedAutoExecute": false, "staleAutoExecute": false, "previewFallback": false, "sampleRowAnswerFallback": false},
+  "recovery": {"resolvablePreflight": "return to mappings/evidence", "stale": "return to current dataset", "runtimeFailure": "retry only through current identity guard"},
+  "identityValidation": ["dataset", "artifact", "overlay", "source", "query plan"],
+  "verification": "src/pages/Investigation.test.tsx",
+  "status": "pass"
+}

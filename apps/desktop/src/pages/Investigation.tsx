@@ -34,6 +34,7 @@ import { profileColumns } from '../lib/column-profiler';
 import { executeGovernedMetricRequest } from '../lib/understanding-core/governed-metric-executor';
 import { createGovernedLocalDuckDBBoundary } from '../lib/understanding-core/governed-local-duckdb-boundary';
 import { sourceBindingsMatch } from '../lib/understanding-core/canonical-source-boundary';
+import { getLatestCanonicalConsumerArtifact, validateCanonicalInvestigationHandoff } from '../lib/understanding-core/canonical-consumer-boundary';
 
 const INVESTIGATION_SESSION_ROW_LIMIT = 250;
 
@@ -309,6 +310,16 @@ const BasicBAAnswerCard: React.FC<{
 export const Investigation: React.FC = () => {
   const navigate = useNavigate();
   const session = getCurrentInvestigationSession();
+  const currentCanonicalArtifact = session ? getLatestCanonicalConsumerArtifact(session.datasetId) : null;
+  const staleHandoffBlockers = session?.canonicalHandoff && currentCanonicalArtifact
+    ? validateCanonicalInvestigationHandoff(session.canonicalHandoff, currentCanonicalArtifact)
+    : [];
+  const handoffCanExecute = Boolean(
+    session?.canonicalHandoff
+    && staleHandoffBlockers.length === 0
+    && session.canonicalHandoff.runtimePreflight.executionAllowed
+    && session.canonicalHandoff.queryPlanning.state === 'planned'
+  );
   const { preferences } = useDisplayPreferences();
   const registerAdvancedSource = useAdvancedSourceStore(state => state.registerSource);
   const [showDiagnostics, setShowDiagnostics] = useState(false);
@@ -372,7 +383,7 @@ export const Investigation: React.FC = () => {
   }, [registerAdvancedSource, session]);
 
   useEffect(() => {
-    if (!session || !session.canonicalHandoff || autoPreviewStarted.current) return;
+    if (!session || !handoffCanExecute || autoPreviewStarted.current) return;
     const hasPreviewInput = (session.rows?.length ?? 0) > 0;
     if (!hasPreviewInput) return;
     autoPreviewStarted.current = true;
@@ -381,7 +392,7 @@ export const Investigation: React.FC = () => {
       button?.click();
     }, 0);
     return () => window.clearTimeout(timer);
-  }, [session]);
+  }, [session, handoffCanExecute]);
 
   if (!session) {
     return (
@@ -549,6 +560,19 @@ export const Investigation: React.FC = () => {
   };
 
   const handleRunPreview = async () => {
+      if (staleHandoffBlockers.length > 0) {
+        setPreviewResult({
+          id: `canonical-stale:${canonicalHandoff?.artifactIdentity ?? 'unknown'}`,
+          sourceSqlPreviewId: canonicalHandoff?.artifactIdentity ?? 'unknown',
+          status: 'blocked',
+          columns: [], rows: [], rowCount: 0, maxRows: 100,
+          warnings: [],
+          blockedReasons: staleHandoffBlockers,
+          errorMessage: 'This analysis handoff has been superseded. Return to the current dataset review.',
+          source: 'governed_duckdb_execution',
+        });
+        return;
+      }
     await persistWorkspaceSession();
     const run = executionRuns.current.begin();
     setIsExecuting(true);
@@ -852,6 +876,17 @@ export const Investigation: React.FC = () => {
           </div>
         )}
 
+        {staleHandoffBlockers.length > 0 && <div role="alert" data-testid="investigation-stale-handoff" className="rounded-[14px] border border-amber-200 bg-amber-50 p-4 text-amber-900">
+          <div className="text-sm font-semibold">This analysis is stale</div>
+          <p className="mt-1 text-xs">The dataset or source evidence changed after this analysis was created. The old action will not run.</p>
+          <button type="button" onClick={() => navigate('/')} className="mt-3 rounded border border-amber-300 bg-white px-3 py-1.5 text-xs font-semibold">Return to current dataset</button>
+        </div>}
+        {!handoffCanExecute && staleHandoffBlockers.length === 0 && <div role="status" data-testid="investigation-preflight-blocked" className="rounded-[14px] border border-amber-200 bg-amber-50 p-4 text-amber-900">
+          <div className="text-sm font-semibold">Analysis Blocked</div>
+          <p className="mt-1 text-xs">The governed runtime preflight did not authorize this action. ({canonicalHandoff?.blockers.join(', ') || 'canonical_handoff_required'})</p>
+          <button type="button" onClick={() => navigate('/')} className="mt-3 rounded border border-amber-300 bg-white px-3 py-1.5 text-xs font-semibold">Return to mappings and evidence</button>
+        </div>}
+
         {/* Primary Analysis Surface */}
         <div className="flex flex-col overflow-hidden rounded-[18px] border border-black/10 bg-white shadow-sm">
           <div className="flex flex-col gap-4 border-b border-black/5 bg-white px-6 py-5 lg:flex-row lg:items-center lg:justify-between">
@@ -893,7 +928,8 @@ export const Investigation: React.FC = () => {
               <button
                 data-run-preview="true"
                 onClick={handleRunPreview}
-                disabled={isExecuting}
+                disabled={isExecuting || !handoffCanExecute}
+                title={!handoffCanExecute ? 'Resolve the canonical preflight blockers before running this analysis.' : undefined}
                 className="rounded-[10px] bg-[#202123] px-3 py-2 text-xs font-medium text-white shadow-sm transition-colors hover:bg-black disabled:opacity-50"
               >
                 {isExecuting ? 'Running...' : previewResult ? 'Refresh preview' : 'Run preview'}

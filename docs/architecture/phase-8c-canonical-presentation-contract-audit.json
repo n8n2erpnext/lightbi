@@ -1,0 +1,11 @@
+{
+  "schemaVersion": "lightbi.phase8c.canonical-presentation-contract-audit.v1",
+  "contract": "lightbi.canonical-consumer-presentation.v1",
+  "implementation": "apps/desktop/src/lib/understanding-core/canonical-consumer-presentation-contract.ts",
+  "derivationInputs": ["canonical consumer artifact", "exact M3 investigation handoff", "source-bound overlay identity"],
+  "preservedFields": ["question/action ID", "metric ID", "state", "M1/M2/M3 state", "blocker scope/code/message/severity", "limitations", "remediation operations", "physical columns", "canonical signals", "source/sheet scope", "evidence provenance", "decision-use restrictions", "execution readiness", "artifact/overlay identity"],
+  "prohibitedAdapterDecisions": ["semantic inference", "domain activation", "metric eligibility", "grain reinterpretation", "new blocker reasons", "runnable authorization"],
+  "datasetBlockerPolicy": "Only invalid or stale canonical artifacts create dataset blockers; metric and action blockers remain item-scoped.",
+  "verification": {"test": "src/lib/phase-8c-canonical-presentation.test.ts", "passed": 4, "failed": 0},
+  "status": "pass"
+}

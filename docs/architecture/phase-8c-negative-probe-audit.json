@@ -1,0 +1,33 @@
+{
+  "schemaVersion": "lightbi.phase8c.negative-probe-audit.v1",
+  "probes": [
+    {"id": 1, "probe": "optional metric globally blocks dataset", "result": "fail_closed"},
+    {"id": 2, "probe": "empty missingSignals renders empty message", "result": "fail_closed"},
+    {"id": 3, "probe": "raw blocker code without explanation", "result": "fail_closed"},
+    {"id": 4, "probe": "remediation wrong source", "result": "fail_closed"},
+    {"id": 5, "probe": "remediation wrong sheet", "result": "fail_closed"},
+    {"id": 6, "probe": "remediation wrong physical column", "result": "fail_closed"},
+    {"id": 7, "probe": "unsupported shows confirmation form", "result": "fail_closed"},
+    {"id": 8, "probe": "safety blocker direct override", "result": "fail_closed"},
+    {"id": 9, "probe": "evidence control directly sets ready", "result": "fail_closed"},
+    {"id": 10, "probe": "mapping changes UI without rebuild", "result": "fail_closed"},
+    {"id": 11, "probe": "secondary blocker disappears", "result": "fail_closed"},
+    {"id": 12, "probe": "resolved metric mutates unrelated metric", "result": "fail_closed"},
+    {"id": 13, "probe": "blocked action opens runnable Investigation", "result": "fail_closed"},
+    {"id": 14, "probe": "stale handoff auto-executes", "result": "fail_closed"},
+    {"id": 15, "probe": "runtime failure shown as semantic evidence", "result": "fail_closed"},
+    {"id": 16, "probe": "partial Advanced result shown complete", "result": "fail_closed"},
+    {"id": 17, "probe": "paginated result auto-runs Investigation", "result": "fail_closed"},
+    {"id": 18, "probe": "observed and confirmed provenance conflated", "result": "fail_closed"},
+    {"id": 19, "probe": "stale overlay authoritative", "result": "fail_closed"},
+    {"id": 20, "probe": "reset fails to restore inferred state", "result": "fail_closed"},
+    {"id": 21, "probe": "rebuild failure leaves actions ready", "result": "fail_closed"},
+    {"id": 22, "probe": "retry uses superseded plan", "result": "fail_closed"},
+    {"id": 23, "probe": "adapter label-dependent priority", "result": "fail_closed"},
+    {"id": 24, "probe": "adapter drops decision restrictions", "result": "fail_closed"}
+  ],
+  "passed": 24,
+  "failed": 0,
+  "evidence": ["Phase 8B 24-probe overlay suite", "Phase 8C presentation contract tests", "UnderstandingNextCard Phase 8C tests", "Investigation tests", "Advanced tests"],
+  "status": "pass"
+}

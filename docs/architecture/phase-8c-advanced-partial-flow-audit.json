@@ -1,0 +1,9 @@
+{
+  "schemaVersion": "lightbi.phase8c.advanced-partial-flow-audit.v1",
+  "modules": ["apps/desktop/src/lib/advanced-result-handoff.ts", "apps/desktop/src/pages/Advanced.tsx"],
+  "classifiedStates": ["complete", "bounded", "paginated", "truncated", "unknown"],
+  "nonCompleteBehavior": {"completenessVisible": true, "fullSourceDecisionSupportAdvertised": false, "baBriefEnabled": false, "autoRunningInvestigation": false},
+  "newAdvancedExecutionCapability": false,
+  "verification": ["src/lib/phase-8c-advanced-completeness.test.ts", "src/pages/Advanced.test.tsx"],
+  "status": "pass"
+}

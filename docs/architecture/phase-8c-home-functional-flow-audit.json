@@ -1,0 +1,12 @@
+{
+  "schemaVersion": "lightbi.phase8c.home-functional-flow-audit.v1",
+  "module": "apps/desktop/src/pages/Home.tsx",
+  "exposes": ["dataset understanding summary", "ready analyses", "evidence-required analyses", "mapping-review analyses", "safety blockers", "unsupported capabilities", "source-bound remediation", "post-rebuild states"],
+  "globalBlockedForMetricSpecificIssue": false,
+  "investigateEligibility": "ready and exact M3 compatible only",
+  "recommendationLimitChanged": false,
+  "overlayOwnerDuplicated": false,
+  "rebuildStates": ["pending", "success", "failure/stale"],
+  "verification": ["UnderstandingNextCard.phase8c.test.tsx", "phase-8b-production-evidence-interaction.test.ts"],
+  "status": "pass"
+}

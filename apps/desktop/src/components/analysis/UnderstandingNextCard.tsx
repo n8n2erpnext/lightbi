@@ -1,6 +1,7 @@
 import React from 'react';
-import { AlertTriangle, Layers, CheckCircle2, XCircle, FileText } from 'lucide-react';
+import { AlertTriangle, Layers, CheckCircle2, XCircle, FileText, Wrench } from 'lucide-react';
 import type { DatasetUnderstandingResult } from '../../lib/understanding-next/contracts';
+import type { CanonicalAnalysisPresentationV1, CanonicalDatasetPresentationV1, CanonicalRemediationOperationV1 } from '../../lib/understanding-core/canonical-consumer-presentation-contract';
 import { adaptNextActionsToLegacy } from '../../lib/understanding-next/action-adapter';
 import { AnalysisOpportunityGrid } from './AnalysisOpportunityGrid';
 import type { AnalysisAction } from '../../lib/analysis-opportunity-actions';
@@ -42,12 +43,16 @@ export interface UnderstandingNextCardProps {
   understanding: DatasetUnderstandingResult;
   selectedActionId?: string;
   onSelectAction?: (action: AnalysisAction) => void;
+  canonicalPresentation?: CanonicalDatasetPresentationV1;
+  onRemediate?: (operation: CanonicalRemediationOperationV1, itemId: string) => void;
 }
 
 export const UnderstandingNextCard: React.FC<UnderstandingNextCardProps> = ({ 
   understanding, 
   selectedActionId, 
-  onSelectAction 
+  onSelectAction,
+  canonicalPresentation,
+  onRemediate,
 }) => {
   const getHeaderStatus = () => {
     if (understanding.quality.headerStatus === 'failed') return { text: 'BLOCKED (Schema Empty)', color: 'text-red-700', bg: 'bg-red-50', border: 'border-red-200', icon: XCircle };
@@ -184,7 +189,7 @@ export const UnderstandingNextCard: React.FC<UnderstandingNextCardProps> = ({
         </div>
       )}
 
-      {understanding.quality.blockedReasons.length > 0 && (
+      {!canonicalPresentation && understanding.quality.blockedReasons.length > 0 && (
         <div className="flex flex-col gap-2 p-3 bg-red-50 border border-red-200 rounded-lg text-red-800">
            <span className="text-[13px] font-semibold flex items-center"><XCircle className="w-4 h-4 mr-2" /> Blocked Analysis</span>
            <ul className="list-disc pl-6 text-[12px]">
@@ -193,8 +198,17 @@ export const UnderstandingNextCard: React.FC<UnderstandingNextCardProps> = ({
         </div>
       )}
 
+      {canonicalPresentation && (
+        <CanonicalAnalysisStates
+          presentation={canonicalPresentation}
+          understanding={understanding}
+          onSelectAction={onSelectAction}
+          onRemediate={onRemediate}
+        />
+      )}
+
       {/* Lens-first orientation */}
-      <div className="pt-4 border-t border-gray-100">
+      {!canonicalPresentation && <div className="pt-4 border-t border-gray-100">
         <div className="mb-3">
           <h4 className="text-[15px] font-semibold text-gray-900">Choose the decision angle to explore</h4>
           <p className="text-[12px] text-gray-500 mt-0.5">
@@ -294,9 +308,9 @@ export const UnderstandingNextCard: React.FC<UnderstandingNextCardProps> = ({
             </div>
           </details>
         )}
-      </div>
+      </div>}
 
-      <details className="pt-3 border-t border-gray-100 mt-1 group">
+      {!canonicalPresentation && <details className="pt-3 border-t border-gray-100 mt-1 group">
         <summary className="cursor-pointer select-none text-[12px] font-semibold text-gray-500 hover:text-gray-800">
           Show technical understanding details
         </summary>
@@ -364,7 +378,85 @@ export const UnderstandingNextCard: React.FC<UnderstandingNextCardProps> = ({
             )}
           </div>
         </div>
-      </details>
+      </details>}
     </div>
   );
+};
+
+const STATE_LABELS: Record<CanonicalAnalysisPresentationV1['state'], string> = {
+  ready: 'Ready',
+  needs_user_evidence: 'Needs confirmation',
+  needs_mapping_review: 'Needs mapping review',
+  blocked_safety: 'Safety blocked',
+  unsupported_mvp: 'Unsupported in MVP',
+  stale: 'Stale',
+  executing: 'Executing',
+  execution_failed: 'Execution failed',
+  completed: 'Completed',
+};
+
+const CanonicalAnalysisStates: React.FC<{
+  presentation: CanonicalDatasetPresentationV1;
+  understanding: DatasetUnderstandingResult;
+  onSelectAction?: (action: AnalysisAction) => void;
+  onRemediate?: (operation: CanonicalRemediationOperationV1, itemId: string) => void;
+}> = ({ presentation, understanding, onSelectAction, onRemediate }) => {
+  const actionById = new Map(understanding.availableActions.map(action => [action.id, action]));
+  const countRows: Array<[CanonicalAnalysisPresentationV1['state'], string]> = [
+    ['ready', 'Ready now'],
+    ['needs_user_evidence', 'Needs confirmation'],
+    ['needs_mapping_review', 'Needs mapping review'],
+    ['blocked_safety', 'Safety blocked'],
+    ['unsupported_mvp', 'Unsupported'],
+  ];
+  return <section className="border-t border-gray-100 pt-4" aria-labelledby="canonical-analysis-heading" data-testid="canonical-analysis-states">
+    <div className="flex flex-wrap items-start justify-between gap-3">
+      <div>
+        <h4 id="canonical-analysis-heading" className="text-[15px] font-semibold text-gray-900">Choose the decision angle to explore</h4>
+        <p className="mt-0.5 text-[12px] text-gray-500">Only analyses that pass the exact governed runtime preflight can be investigated.</p>
+      </div>
+      <div className="flex flex-wrap gap-2" aria-label="Canonical analysis state summary">
+        {countRows.map(([state, label]) => <span key={state} data-testid={`canonical-count-${state}`} className="rounded border border-gray-200 bg-gray-50 px-2 py-1 text-[11px] text-gray-600">{label}: <strong>{presentation.counts[state]}</strong></span>)}
+      </div>
+    </div>
+
+    {presentation.datasetBlockers.length > 0 && <div className="mt-3 rounded-lg border border-red-200 bg-red-50 p-3 text-red-800" role="alert" data-testid="canonical-dataset-blocker">
+      <div className="flex items-center gap-2 text-[13px] font-semibold"><XCircle className="h-4 w-4" /> Dataset unavailable</div>
+      {presentation.datasetBlockers.map(blocker => <p key={blocker.code} className="mt-1 text-[12px]">{blocker.message}</p>)}
+    </div>}
+
+    <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2">
+      {presentation.analyses.map(item => {
+        const action = item.actionCandidateId ? actionById.get(item.actionCandidateId) : undefined;
+        const canInvestigate = item.state === 'ready' && item.executionReadiness !== 'not_executable' && action;
+        return <article key={item.itemId} tabIndex={-1} id={`analysis-item-${item.itemId}`} data-testid={`canonical-analysis-${item.itemId}`} data-state={item.state} className="rounded-lg border border-gray-200 bg-white p-3 shadow-sm">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <div className="text-[13px] font-semibold text-gray-900">{item.title}</div>
+              <div className="mt-0.5 text-[12px] text-gray-500">{item.description}</div>
+            </div>
+            <span className="shrink-0 rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5 text-[10px] font-semibold uppercase text-gray-700">{STATE_LABELS[item.state]}</span>
+          </div>
+          {item.primaryBlocker && <div className="mt-2 text-[12px] text-amber-800" role="status" data-testid={`canonical-primary-blocker-${item.itemId}`}>
+            <span className="font-medium">{item.primaryBlocker.message}</span>
+            {(item.primaryBlocker.scope === 'source' || item.primaryBlocker.scope === 'physical_column') && <span className="mt-0.5 block text-[11px] text-gray-500">Scope: {item.sheetOrTable ? `${item.sheetOrTable} · ` : ''}{item.primaryBlocker.scope === 'physical_column' ? item.physicalColumns.join(', ') : item.sourceId}</span>}
+          </div>}
+          <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
+            <span className="text-[10px] uppercase text-gray-400">{item.metricId}</span>
+            {canInvestigate ? <button type="button" data-testid={`canonical-investigate-${item.itemId}`} onClick={() => onSelectAction?.(adaptNextActionsToLegacy([action])[0])} className="rounded border border-indigo-100 bg-indigo-50 px-2 py-1 text-[11px] font-semibold text-indigo-700 hover:bg-indigo-100">Investigate</button> : null}
+            {!canInvestigate && item.remediationOperations.length > 0 ? <div className="flex flex-wrap gap-1.5">
+              {item.remediationOperations.map(operation => <button key={operation.operationId} type="button" data-testid={`canonical-remediate-${item.itemId}-${operation.kind}`} onClick={() => onRemediate?.(operation, item.itemId)} className="flex items-center gap-1 rounded border border-amber-200 bg-amber-50 px-2 py-1 text-[11px] font-semibold text-amber-800"><Wrench className="h-3 w-3" />{operation.label}</button>)}
+            </div> : null}
+          </div>
+          {(item.secondaryBlockers.length > 0 || item.limitations.length > 0 || item.evidence.length > 0 || item.decisionUseRestrictions.length > 0) && <details className="mt-2 text-[11px] text-gray-500">
+            <summary className="cursor-pointer font-medium text-gray-600">Evidence and limitations</summary>
+            {item.secondaryBlockers.map(blocker => <p key={blocker.code} className="mt-1">{blocker.message}</p>)}
+            {item.limitations.map(code => <p key={code} className="mt-1">Limitation: {humanize(code)}</p>)}
+            {item.evidence.map(entry => <p key={`${entry.evidenceId}:${entry.provenance}`} className="mt-1">Evidence: {entry.evidenceId} ({entry.provenance})</p>)}
+            {item.decisionUseRestrictions.map(restriction => <p key={restriction.code} className="mt-1">Restriction: {restriction.reason}</p>)}
+          </details>}
+        </article>;
+      })}
+    </div>
+  </section>;
 };
