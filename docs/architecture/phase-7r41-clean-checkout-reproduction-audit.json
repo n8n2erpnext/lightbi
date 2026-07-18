@@ -1,0 +1,45 @@
+{
+  "schemaVersion": "lightbi.phase-7r41-clean-checkout-reproduction-audit.v1",
+  "phase": "7R4.1",
+  "candidateCommit": "11803066709d55a629de6c2576b9da9cd94da695",
+  "detachedWorktree": "/tmp/lightbi-phase7r41-clean-1180306",
+  "candidatePresentInCommittedRepository": true,
+  "descendsFromPhase7R4Candidate": true,
+  "dependencyReconstruction": {
+    "command": "pnpm install --offline --frozen-lockfile",
+    "lockfileSha256": "3a251c611b36675d265690f13e2144735774947cfefe4369847bac26cf9d7f92",
+    "packagesAdded": 367,
+    "packagesDownloaded": 0,
+    "passed": true
+  },
+  "repositoryInputs": {
+    "releaseCorpusVersion": "1.4.0",
+    "releaseManifestSha256": "fac4e25c497386514d6fbb8958d3c721b0ffa356940ac09758001a3fa17d0d12",
+    "trackedReleaseSources": 19,
+    "ignoredHistoricalWorkbooksPresent": 0,
+    "sampleDataFallbackUsedByReleaseEvaluator": false,
+    "absolutePathUsedByReleaseEvaluator": false,
+    "missingInputBehavior": "fail_closed"
+  },
+  "verification": {
+    "targetedTestFiles": 6,
+    "targetedTests": 69,
+    "targetedFailures": 0,
+    "understandingCoreTestFiles": 74,
+    "understandingCoreTests": 325,
+    "understandingCoreFailures": 0,
+    "typescriptDiagnostics": 0,
+    "architectureJsonParsed": 242,
+    "gitDiffCheckPassed": true,
+    "preSuiteGitStatusClean": true,
+    "postSuiteGitStatusClean": true,
+    "productionReachabilityCanonicalOnly": true
+  },
+  "corpus130Reconstruction": {
+    "generatorRunsCompared": 2,
+    "generatedTreesByteIdentical": true,
+    "oracleRunsByteIdentical": true,
+    "oracleSha256": "aa3c31861c56f3f7674dced87ac8447d65c07adf1a6638b45aba9094a316154d"
+  },
+  "cleanCheckoutReproducible": true
+}

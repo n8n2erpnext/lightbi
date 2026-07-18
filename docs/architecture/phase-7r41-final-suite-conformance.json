@@ -1,0 +1,45 @@
+{
+  "schemaVersion": "lightbi.phase-7r41-final-suite-conformance.v1",
+  "phase": "7R4.1",
+  "candidateCommit": "11803066709d55a629de6c2576b9da9cd94da695",
+  "executionCountOnFinalCandidate": 1,
+  "completeLog": {
+    "retainedPath": "/tmp/phase7r41-final-full-desktop.log",
+    "sizeBytes": 192000,
+    "sha256": "c10cc764d2e99b9ee73b42143f4f82bab16fda2e499aec6ac0fb501be28a8c25"
+  },
+  "aggregate": {
+    "totalTestFiles": 167,
+    "passedTestFiles": 163,
+    "failedTestFiles": 4,
+    "totalTests": 1139,
+    "passedTests": 1130,
+    "failedTests": 9,
+    "durationSeconds": 211.56,
+    "processExitStatus": 1
+  },
+  "governedBaseline": {
+    "allowlistSha256": "baa86950582b7d758396abb0c69fdaffcd3c2cbbb22b71dd3bbdb3c0aed1c4f5",
+    "deterministicFailuresExpected": 6,
+    "deterministicFailuresObserved": 6,
+    "timingSensitiveCasesExpected": 3,
+    "timingSensitiveFailuresObserved": 3,
+    "timingSensitiveCasesPassed": 0,
+    "unexpectedFailures": 0,
+    "phase7R41OwnedFailures": 0,
+    "totalFailureCountUsedAsGate": false
+  },
+  "observedFailureIdentities": [
+    "src/lib/ba-comparison-engine.test.ts|ba comparison engine > answers the real May vs June 2026 sales ERP comparison with revenue drivers and profit caveats",
+    "src/lib/ba-comparison-engine.test.ts|ba comparison engine > answers the real May vs June 2026 accounting ERP comparison with top 10 profit evidence",
+    "src/lib/ba-comparison-engine.test.ts|ba comparison engine > handles the real May vs June 2026 logistics ERP pair without pretending revenue is available",
+    "src/lib/guided-investigation-pipeline.test.ts|Guided Investigation Pipeline Orchestrator > Executes the entire end-to-end pipeline deterministically",
+    "src/lib/numeric-health-gate.test.ts|evaluateNumericHealth > blocks JS non-integer decimals",
+    "src/lib/numeric-health-gate.test.ts|evaluateNumericHealth > hard-blocks decimal-looking strings (US format)",
+    "src/lib/numeric-health-gate.test.ts|evaluateNumericHealth > hard-blocks decimal-looking strings (EU format)",
+    "src/lib/virtual-dataset-planner.test.ts|Virtual Dataset Planner > 2. Product Performance + inventory risk question",
+    "src/lib/virtual-dataset-planner.test.ts|Virtual Dataset Planner > 6. Many-to-many relationship"
+  ],
+  "finalWorktreeFullSuiteVerified": true,
+  "conformsToGovernedBaseline": true
+}

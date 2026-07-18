@@ -38,12 +38,12 @@ const fixtureHashes = Object.fromEntries(
 );
 const frozenFiles = {
   "sample-corpus/manifest.json": "a36284c1f4655289ff832bb4102f9e153fdad329020df6972802802368d0adaa",
-  "sample-corpus/ground-truth/adversarial-dirty.json": "5aa9ef43bb6c4b725b1c8439662e0b62331e5659d9a2397679cfd31a23134d40",
-  "sample-corpus/ground-truth/finance-accounting.json": "3d66394c68537bad5766fdad4ac11e4e7da1dbdc0fba2a02d301d0f1a6a3c3ea",
-  "sample-corpus/ground-truth/inventory.json": "1a6041f050e3697506033ec54bb33ea806ad113d9b87c24592f986934f131f91",
-  "sample-corpus/ground-truth/multi-file.json": "9bec48f493d11389489256e811f29af8d5dd62b09d462c59e1db30f0d9ba5ef",
-  "sample-corpus/ground-truth/operations-delivery.json": "34358dd3c36090264e09ab510b98206586bf82e610c8c4ff8e15afde7a87211",
-  "sample-corpus/ground-truth/revenue-sales.json": "15c74140a408b8ebf00f1ab2f4b9f9c7cdb930c032cd50308c1a3a83c0fe180f",
+  "sample-corpus/ground-truth/adversarial-dirty.json": "5aa9eb78ca5ace97f23af6b1edf21ad8616764d281180ef6f9273f43e4d287dc",
+  "sample-corpus/ground-truth/finance-accounting.json": "3d66360763825b7a70b440b1367f3cbd0ac57b3d57ebefac956ca73a3efdfc71",
+  "sample-corpus/ground-truth/inventory.json": "1a604479b6c9175224dacff892d50509a129f47e1c297dce58ea04c79626497a",
+  "sample-corpus/ground-truth/multi-file.json": "9bec416f7f66e768777387e2af963e496e410b6aeb4e1e1a70b7412993584b3f",
+  "sample-corpus/ground-truth/operations-delivery.json": "34358725ee416f0b26a4b72c15f2d8a324c5a38227a3756e2fb744a7cb22374b",
+  "sample-corpus/ground-truth/revenue-sales.json": "15c74119995414d497b94baf539672ac1ffd98a10e940561775c17769716685a",
 };
 
 writeJson("phase-7r41-missing-fixture-disposition-audit.json", {

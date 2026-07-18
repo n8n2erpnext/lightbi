@@ -1,0 +1,35 @@
+{
+  "schemaVersion": "lightbi.phase-7r41-candidate-commit-manifest.v1",
+  "phase": "7R4.1",
+  "candidateCommit": "11803066709d55a629de6c2576b9da9cd94da695",
+  "parentCommit": "a83f168bbda2d03ba4d67f1ce4325640831b14db",
+  "treeSha": "389efda46ffb27510c6428bddeef8e689e04bee7",
+  "message": "test(release): add repository-safe acceptance corpus",
+  "descendsFromPhase7R4Candidate": "bbb9b997f7af4bb731a5b3197868bd19f49abfcd",
+  "pushedToRemote": false,
+  "committedFileCount": 63,
+  "committedFileClassification": {
+    "tests": 31,
+    "fixtures": 13,
+    "groundTruthDocuments": 6,
+    "tooling": 4,
+    "architectureAudits": 7,
+    "otherCorpusOrTestEvidence": 2,
+    "productionSourceFiles": 0
+  },
+  "repositorySafety": {
+    "originalIgnoredWorkbooksCommitted": 0,
+    "zipPidOrReleaseArtifactsCommitted": 0,
+    "productionBehaviorChanged": false,
+    "semanticAliasesChanged": false,
+    "corpus120ManifestOrGroundTruthChanged": false,
+    "governedBaselineAllowlistChanged": false
+  },
+  "keyHashes": {
+    "corpus140Manifest": "fac4e25c497386514d6fbb8958d3c721b0ffa356940ac09758001a3fa17d0d12",
+    "corpus130Oracle": "aa3c31861c56f3f7674dced87ac8447d65c07adf1a6638b45aba9094a316154d",
+    "governedBaselineAllowlist": "baa86950582b7d758396abb0c69fdaffcd3c2cbbb22b71dd3bbdb3c0aed1c4f5",
+    "fullSuiteLog": "c10cc764d2e99b9ee73b42143f4f82bab16fda2e499aec6ac0fb501be28a8c25"
+  },
+  "evidenceCommitRequired": true
+}
