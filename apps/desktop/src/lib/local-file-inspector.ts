@@ -2,6 +2,15 @@ import * as XLSX from 'xlsx';
 import type { SourceCandidate, SourceInspectionResult } from './source-preflight';
 import { profileColumns } from './column-profiler';
 import { createUnderstandingSample, type SemanticSample } from './semantic-sampler';
+import { profilePhysicalSource } from './understanding-core/profiler';
+import { PHYSICAL_PROFILE_SCHEMA_VERSION } from './understanding-core/profiling-contracts';
+import type { CanonicalFullFileProfileV1 } from './understanding-core/canonical-source-boundary';
+import { SEMANTIC_SIGNAL_REGISTRY_V1 } from './semantic-registry';
+import { generateSemanticCandidateArtifact } from './understanding-core/semantic-candidate-engine';
+import { aggregateContextualEvidence } from './understanding-core/contextual-evidence-aggregator';
+import { resolveSemanticShadow } from './understanding-core/semantic-resolver';
+import { generateGrainCandidateArtifact } from './understanding-core/grain-candidate-engine';
+import { resolveGrainSignatureShadow } from './understanding-core/grain-resolver';
 
 const FULL_ANALYSIS_ROW_LIMIT = 20_000;
 
@@ -35,6 +44,51 @@ function semanticSampleMetadata<T>(sample: SemanticSample<T>) {
 
 function retainAnalysisRows<T>(rows: T[]): T[] | undefined {
   return rows.length <= FULL_ANALYSIS_ROW_LIMIT ? rows : undefined;
+}
+
+async function fileSha256(file: File): Promise<string> {
+  const bytes = await file.arrayBuffer();
+  const hash = await crypto.subtle.digest('SHA-256', bytes);
+  return [...new Uint8Array(hash)].map(value => value.toString(16).padStart(2, '0')).join('');
+}
+
+function createCanonicalFullFileProfile(args: {
+  file: File;
+  fingerprint: string;
+  sheetName?: string;
+  rawRows: readonly (readonly unknown[])[];
+  sourceRowCount: number;
+}): CanonicalFullFileProfileV1 & { fullFileUnderstanding: import('./understanding-core/canonical-source-boundary').CanonicalSourceBoundaryV1['fullFileUnderstanding'] } {
+  const sourceId = `local:${args.fingerprint}:${args.sheetName ?? 'data'}`;
+  const inspectionGeneration = `inspection:${args.fingerprint}`;
+  const profileGeneration = `profile:${args.fingerprint}:${args.sheetName ?? 'data'}:${PHYSICAL_PROFILE_SCHEMA_VERSION}`;
+  const artifact = profilePhysicalSource({
+    schemaVersion: 'lightbi.physical-source-input.v1',
+    source: {
+      sourceId,
+      kind: 'local_file',
+      label: args.file.name,
+      sheet: args.sheetName,
+      hash: { algorithm: 'sha256', value: args.fingerprint },
+    },
+    rawRows: args.rawRows,
+  });
+  const candidates = generateSemanticCandidateArtifact(artifact, { registry: SEMANTIC_SIGNAL_REGISTRY_V1 });
+  const semantic = resolveSemanticShadow(artifact, candidates, aggregateContextualEvidence(artifact, candidates));
+  const grainCandidates = generateGrainCandidateArtifact(artifact, semantic, args.rawRows);
+  const grain = resolveGrainSignatureShadow(grainCandidates, { sourceId, sourceHash: grainCandidates.sourceHash });
+  return {
+    scope: 'full_file',
+    datasetId: args.file.name,
+    sourceId,
+    sourceFingerprint: args.fingerprint,
+    sourceRowCount: args.sourceRowCount,
+    inspectionGeneration,
+    profileGeneration,
+    profilerVersion: PHYSICAL_PROFILE_SCHEMA_VERSION,
+    artifact,
+    fullFileUnderstanding: { semantic, grain },
+  };
 }
 
 /**
@@ -86,6 +140,7 @@ export async function inspectLocalFile(
 
 async function inspectExcel(file: File, candidate: SourceCandidate, signal?: AbortSignal): Promise<SourceInspectionResult> {
   const buffer = await file.arrayBuffer();
+  const fingerprint = await fileSha256(file);
   signal?.throwIfAborted();
   // Read workbook without cell dates to prevent parsing issues, keep it fast.
   const workbook = XLSX.read(buffer, { type: "array" });
@@ -149,6 +204,13 @@ async function inspectExcel(file: File, candidate: SourceCandidate, signal?: Abo
       semantic_sample: semanticSampleMetadata(semanticSample),
       analysis_rows: retainedAnalysisRows,
       analysis_row_scope: retainedAnalysisRows ? "full" : "not_retained",
+      canonical_full_file_profile: createCanonicalFullFileProfile({
+        file,
+        fingerprint,
+        sheetName,
+        rawRows: rows,
+        sourceRowCount: dataRows.length,
+      }),
       profiles
     };
   }
@@ -177,6 +239,7 @@ async function inspectExcel(file: File, candidate: SourceCandidate, signal?: Abo
 
 async function inspectDelimitedText(file: File, candidate: SourceCandidate, signal?: AbortSignal): Promise<SourceInspectionResult> {
   const text = await file.text();
+  const fingerprint = await fileSha256(file);
   signal?.throwIfAborted();
   const lines = text.split(/\r?\n/).filter(line => line.trim().length > 0);
   
@@ -234,6 +297,12 @@ async function inspectDelimitedText(file: File, candidate: SourceCandidate, sign
       semantic_sample: semanticSampleMetadata(semanticSample),
       analysis_rows: retainedAnalysisRows,
       analysis_row_scope: retainedAnalysisRows ? "full" : "not_retained",
+      canonical_full_file_profile: createCanonicalFullFileProfile({
+        file,
+        fingerprint,
+        rawRows: [columns, ...allObjects.map(row => columns.map(column => row[column]))],
+        sourceRowCount: dataLines.length,
+      }),
       detected_delimiter: delimiter === "\t" ? "tab" : delimiter,
       profiles
     },
@@ -243,6 +312,7 @@ async function inspectDelimitedText(file: File, candidate: SourceCandidate, sign
 
 async function inspectJson(file: File, candidate: SourceCandidate, signal?: AbortSignal): Promise<SourceInspectionResult> {
   const text = await file.text();
+  const fingerprint = await fileSha256(file);
   signal?.throwIfAborted();
   const json = JSON.parse(text);
 
@@ -272,6 +342,12 @@ async function inspectJson(file: File, candidate: SourceCandidate, signal?: Abor
     seed: sampleSeed(file.name, columns, dataArray.length)
   });
   const retainedAnalysisRows = retainAnalysisRows(dataArray);
+  const canonicalFullFileProfile = createCanonicalFullFileProfile({
+    file,
+    fingerprint,
+    rawRows: [columns, ...dataArray.map(row => columns.map(column => row?.[column]))],
+    sourceRowCount: dataArray.length,
+  });
 
   return {
     status: "accessible",
@@ -287,6 +363,7 @@ async function inspectJson(file: File, candidate: SourceCandidate, signal?: Abor
       semantic_sample: semanticSampleMetadata(semanticSample),
       analysis_rows: retainedAnalysisRows,
       analysis_row_scope: retainedAnalysisRows ? "full" : "not_retained",
+      canonical_full_file_profile: canonicalFullFileProfile,
       detected_fields: columns,
       profiles: profileColumns(columns, semanticSample.rows, dataArray.length)
     },

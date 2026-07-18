@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "lightbi.phase-8a-full-file-execution-evidence-audit.v1",
+  "phase": "8A",
+  "requiredEvidence": [
+    "executionScope",
+    "sourceId",
+    "sourceFingerprint",
+    "expectedSourceRowCount",
+    "actualMaterializedRowCount",
+    "metricId",
+    "actionId",
+    "queryPlanIdentity",
+    "artifactIdentity",
+    "limitations",
+    "restrictions"
+  ],
+  "actualCountMustBeObserved": true,
+  "expectedCountSubstitutionAllowed": false,
+  "failureCodes": [
+    "full_file_execution_scope_required",
+    "full_file_materialized_row_count_required",
+    "full_file_materialized_row_count_mismatch",
+    "RUNTIME_MATERIALIZATION_ROW_COUNT_SHORT",
+    "RUNTIME_MATERIALIZATION_ROW_COUNT_EXCESS"
+  ],
+  "sampleFallback": false,
+  "decisionUseAuthorized": false,
+  "gate": "pass"
+}

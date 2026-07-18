@@ -4,13 +4,14 @@ import type { SafeSqlPreview } from './safe-sql-preview';
 import { initDuckDbWasm } from './duckdb-wasm-loader';
 import { projectToCanonicalRows } from './canonical-row-projection';
 import { materializeRuntimeDatasetSource } from './full-file-runtime-materializer';
-import type { RuntimeDatasetSource, RuntimeRowScope } from './runtime-dataset-source';
+import type { RuntimeDatasetSource, RuntimeRowScope, RuntimeSourceBindingV1 } from './runtime-dataset-source';
 
 export interface LocalDuckDBInput {
   runtimePlan: RuntimePlanPreview;
   safeSqlPreview: SafeSqlPreview;
   rows?: Record<string, unknown>[];
   runtimeDatasetSource?: RuntimeDatasetSource;
+  expectedRuntimeBinding?: RuntimeSourceBindingV1;
   rowScope?: RuntimeRowScope;
   limit?: number;
   signal?: AbortSignal;
@@ -83,13 +84,17 @@ export async function executeLocalDuckDB(input: LocalDuckDBInput): Promise<DuckD
     // New local-first Question actions use physical upload headers directly.
     // Older legacy actions still rely on canonical aliases such as "route".
     let dataJson: string;
+    let materializedRowCount: number | undefined;
     let executionScope: RuntimeRowScope = input.rowScope ?? "retained_rows";
     if (input.runtimeDatasetSource) {
-      const materialized = await materializeRuntimeDatasetSource(input.runtimeDatasetSource, input.signal);
+      const materialized = input.expectedRuntimeBinding
+        ? await materializeRuntimeDatasetSource(input.runtimeDatasetSource, input.signal, input.expectedRuntimeBinding)
+        : await materializeRuntimeDatasetSource(input.runtimeDatasetSource, input.signal);
       if (materialized.rowCount === 0) {
         throw new Error("No data rows available to query.");
       }
       dataJson = materialized.jsonText;
+      materializedRowCount = materialized.rowCount;
       executionScope = "full_file";
     } else {
       const queryRows = createRowsForDuckDB(input.rows ?? [], input.runtimePlan.requiredColumns);
@@ -160,6 +165,7 @@ export async function executeLocalDuckDB(input: LocalDuckDBInput): Promise<DuckD
       warnings,
       blockedReasons: [],
       executionScope,
+      materializedRowCount,
       source: 'local_duckdb_preview' as any
     };
 

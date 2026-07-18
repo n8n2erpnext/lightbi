@@ -9,6 +9,7 @@
  */
 
 import type { ColumnProfile } from './column-profiler';
+import type { CanonicalFullFileProfileV1 } from './understanding-core/canonical-source-boundary';
 
 export type SourceType =
   | "google_sheets"
@@ -55,6 +56,7 @@ export type SourceInspectionResult =
         };
         analysis_rows?: any[];
         analysis_row_scope?: "full" | "not_retained";
+        canonical_full_file_profile?: CanonicalFullFileProfileV1 & { fullFileUnderstanding: import('./understanding-core/canonical-source-boundary').CanonicalSourceBoundaryV1['fullFileUnderstanding'] };
         profiles?: Record<string, ColumnProfile>;
         is_workbook?: boolean;
         sheets?: Record<string, {
@@ -70,6 +72,7 @@ export type SourceInspectionResult =
           };
           analysis_rows?: any[];
           analysis_row_scope?: "full" | "not_retained";
+          canonical_full_file_profile?: CanonicalFullFileProfileV1 & { fullFileUnderstanding: import('./understanding-core/canonical-source-boundary').CanonicalSourceBoundaryV1['fullFileUnderstanding'] };
           profiles?: Record<string, ColumnProfile>;
         }>;
         default_sheet?: string;

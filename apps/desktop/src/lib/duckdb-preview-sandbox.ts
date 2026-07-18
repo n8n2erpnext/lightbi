@@ -25,6 +25,7 @@ export interface DuckDBPreviewResult {
   blockedReasons: string[];
   errorMessage?: string;
   executionScope?: RuntimeRowScope;
+  materializedRowCount?: number;
   resultBuffer?: QueryResultBuffer;
   source: "duckdb_preview_sandbox" | "backend_duckdb_preview" | "js_sandbox_fallback" | "governed_duckdb_execution";
 }

@@ -10,7 +10,9 @@ import type { RuntimeIntent } from '../lib/analysis-runtime-contract';
 import type { InvestigationSession } from '../lib/investigation-session';
 import type { ResultValidationResult } from '../lib/result-validator-contract';
 import type { RuntimePlanPreview } from '../lib/runtime-planner-preview';
+import type { RuntimeDatasetSource, RuntimeSourceBindingV1 } from '../lib/runtime-dataset-source';
 import type { CanonicalInvestigationHandoffV1 } from '../lib/understanding-core/canonical-consumer-boundary';
+import type { CanonicalSourceBoundaryV1 } from '../lib/understanding-core/canonical-source-boundary';
 import type {
   GovernedExecutionEvidenceV1,
   GovernedExecutionRestrictionV1,
@@ -151,6 +153,32 @@ const queryPlan: GovernedMetricQueryPlanV1 = {
   productionWiring: { executed: false },
 };
 
+const sourceBinding: RuntimeSourceBindingV1 = {
+  datasetId: 'dataset:test',
+  sourceId: 'canonical:test-source',
+  sourceFingerprint: 'fingerprint:test-source',
+  inspectionGeneration: 'inspection:test-source',
+  profileGeneration: 'profile:test-source',
+};
+
+function runtimeSource(): RuntimeDatasetSource {
+  return {
+    kind: 'local_files',
+    files: [{ file: new File(['Product,Revenue\nA,10'], 'test.csv', { type: 'text/csv' }) }],
+    sourceRowCount: 1,
+    binding: sourceBinding,
+  };
+}
+
+function sourceBoundary(): CanonicalSourceBoundaryV1 {
+  return {
+    schemaVersion: 'lightbi.canonical-source-boundary.v1',
+    ...sourceBinding,
+    sourceRowCount: 1,
+    runtimeSource: runtimeSource(),
+  } as CanonicalSourceBoundaryV1;
+}
+
 function plannedHandoff(): CanonicalInvestigationHandoffV1 {
   return {
     schemaVersion: 'lightbi.canonical-investigation-handoff.v1',
@@ -161,6 +189,8 @@ function plannedHandoff(): CanonicalInvestigationHandoffV1 {
     queryPlanning: { state: 'planned', plan: queryPlan, blockers: [] },
     blockers: [],
     decisionUseAuthorized: false,
+    sourceFingerprint: sourceBinding.sourceFingerprint,
+    sourceBoundary: sourceBoundary(),
   };
 }
 
@@ -230,6 +260,7 @@ function session(overrides: Partial<InvestigationSession> = {}): InvestigationSe
     runtimePlanPreview,
     rows: [{ Product: 'A', Revenue: 10 }],
     rowScope: 'full_file',
+    runtimeDatasetSource: runtimeSource(),
     canonicalHandoff: plannedHandoff(),
     ...overrides,
   };
@@ -316,11 +347,11 @@ describe('Investigation canonical consumer boundary', () => {
     expect(mockedExecute).not.toHaveBeenCalled();
   });
 
-  it('blocks missing full rows without invoking execution', async () => {
-    mockedSession.mockReturnValue(session({ rows: [] }));
+  it('blocks a missing bound runtime source without invoking execution', async () => {
+    mockedSession.mockReturnValue(session({ rows: [], runtimeDatasetSource: undefined }));
     render(<Investigation />);
     fireEvent.click(screen.getByRole('button', { name: /Run preview/i }));
-    await waitFor(() => expect(screen.getAllByText(/canonical_full_file_rows_required/).length).toBeGreaterThan(0));
+    await waitFor(() => expect(screen.getAllByText(/canonical_full_file_runtime_source_required/).length).toBeGreaterThan(0));
     expect(mockedExecute).not.toHaveBeenCalled();
   });
 

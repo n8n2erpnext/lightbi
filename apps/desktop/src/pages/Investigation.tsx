@@ -33,6 +33,7 @@ import { advancedSourceId, useAdvancedSourceStore } from '../stores/advanced-sou
 import { profileColumns } from '../lib/column-profiler';
 import { executeGovernedMetricRequest } from '../lib/understanding-core/governed-metric-executor';
 import { createGovernedLocalDuckDBBoundary } from '../lib/understanding-core/governed-local-duckdb-boundary';
+import { sourceBindingsMatch } from '../lib/understanding-core/canonical-source-boundary';
 
 const INVESTIGATION_SESSION_ROW_LIMIT = 250;
 
@@ -400,6 +401,12 @@ export const Investigation: React.FC = () => {
   }
 
   const { analysisAction, runtimeIntent, runtimePlanPreview, rows, aiBriefing, runtimeDatasetSource, rowScope, businessFusionOverview, canonicalHandoff } = session;
+  const canonicalSourceBoundary = canonicalHandoff?.sourceBoundary;
+  const fullFileSourceReady = Boolean(
+    canonicalSourceBoundary
+    && sourceBindingsMatch(canonicalSourceBoundary, runtimeDatasetSource)
+    && canonicalHandoff?.sourceFingerprint === canonicalSourceBoundary.sourceFingerprint
+  );
   const fallbackWorkspaceSessionPayload = (): SaveWorkspaceSessionRequest => {
     const columns = rows?.[0] ? Object.keys(rows[0]) : [];
     const retainedRows = limitInvestigationRows(rows);
@@ -560,7 +567,7 @@ export const Investigation: React.FC = () => {
             ...(canonicalHandoff?.blockers ?? []),
             ...planningBlockers,
             ...(!canonicalHandoff ? ['canonical_handoff_required'] : []),
-            ...(!rows?.length ? ['canonical_full_file_rows_required'] : []),
+            ...(!fullFileSourceReady ? ['canonical_full_file_runtime_source_required'] : []),
           ])];
           const blocked: DuckDBPreviewResult = {
             id: `canonical-blocked:${canonicalHandoff?.artifactIdentity ?? 'canonical_handoff_required'}`,
@@ -580,7 +587,7 @@ export const Investigation: React.FC = () => {
           setChartModel(null);
           return;
       }
-      if (!rows?.length) {
+      if (!canonicalSourceBoundary || !runtimeDatasetSource || !fullFileSourceReady) {
           const blocked: DuckDBPreviewResult = {
             id: `canonical-blocked:${canonicalHandoff.artifactIdentity}`,
             sourceSqlPreviewId: 'canonical-governed-preflight',
@@ -590,8 +597,8 @@ export const Investigation: React.FC = () => {
               ...canonicalHandoff.runtimePreflight.restrictions.map(item => item.code),
               ...canonicalHandoff.runtimePreflight.evidence.map(item => item.evidenceId),
             ],
-            blockedReasons: ['canonical_full_file_rows_required'],
-            errorMessage: 'canonical_full_file_rows_required',
+            blockedReasons: ['canonical_full_file_runtime_source_required'],
+            errorMessage: 'canonical_full_file_runtime_source_required',
             source: 'governed_duckdb_execution',
           };
           setPreviewResult(blocked);
@@ -603,9 +610,16 @@ export const Investigation: React.FC = () => {
           schemaVersion: 'lightbi.governed-metric-execution-request.v1',
           requestId: `consumer:${canonicalHandoff.queryPlanning.plan.planId}`,
           plan: canonicalHandoff.queryPlanning.plan,
-          rows: rows || [],
+          rows: [],
+          runtimeSource: runtimeDatasetSource,
+          expectedRuntimeBinding: runtimeDatasetSource.binding,
+          artifactIdentity: canonicalHandoff.artifactIdentity,
+          expectedSourceRowCount: canonicalSourceBoundary.sourceRowCount,
           groundTruth: { state: 'unavailable', value: null, tolerance: null, provenance: 'production_consumer_no_ground_truth' },
-        }, createGovernedLocalDuckDBBoundary());
+        }, createGovernedLocalDuckDBBoundary({
+          runtimeSource: runtimeDatasetSource,
+          expectedRuntimeBinding: runtimeDatasetSource.binding,
+        }));
         session.canonicalExecutionResult = governed;
         const canonicalResult: DuckDBPreviewResult = {
           id: governed.resultId,
@@ -622,7 +636,7 @@ export const Investigation: React.FC = () => {
           ],
           blockedReasons: governed.status === 'blocked' ? governed.limitations : [],
           errorMessage: governed.error ?? undefined,
-          executionScope: rowScope,
+          executionScope: governed.fullFileExecution?.executionScope ?? rowScope,
           source: 'governed_duckdb_execution',
         };
         if (!executionRuns.current.isCurrent(run)) return;

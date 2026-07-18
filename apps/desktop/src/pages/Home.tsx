@@ -83,6 +83,7 @@ import { deleteWorkspaceSession, loadWorkspaceSessions, saveWorkspaceSession, ty
 import { downloadProjectSourceFile, uploadProjectSourceFile, type PersistedProjectSourceFile } from '../lib/project-source-file-api';
 import type { GuidedInvestigationResult } from '../lib/guided-investigation-pipeline';
 import type { DatasetUnderstanding } from '../lib/dataset-understanding-contract';
+import { createCanonicalSourceBoundary, type CanonicalFullFileProfileV1, type CanonicalSourceBoundaryV1 } from '../lib/understanding-core/canonical-source-boundary';
 
 const WORKSPACE_SESSION_ROW_LIMIT = 250;
 
@@ -163,6 +164,31 @@ function attachPersistedFile(
       persisted_file: persistedFile,
     },
   };
+}
+
+function createLocalCanonicalSourceBoundary(args: {
+  datasetId: string;
+  columns: string[];
+  semanticRows: Record<string, unknown>[];
+  semanticSample?: { strategy: 'full' | 'matrix_sample'; source_row_count: number; sample_row_count: number; row_indexes?: number[] };
+  profile?: CanonicalFullFileProfileV1 & { fullFileUnderstanding: CanonicalSourceBoundaryV1['fullFileUnderstanding'] };
+  file?: File;
+  sheetName?: string;
+}): CanonicalSourceBoundaryV1 | undefined {
+  if (!args.profile || !args.file || !args.semanticRows.length || !args.semanticSample) return undefined;
+  return createCanonicalSourceBoundary({
+    datasetId: args.datasetId,
+    columns: args.columns,
+    semanticRows: args.semanticRows,
+    semanticSample: {
+      strategy: args.semanticSample.strategy,
+      sourceRowCount: args.semanticSample.source_row_count,
+      rowIndexes: args.semanticSample.row_indexes,
+    },
+    fullFileProfile: args.profile,
+    fullFileUnderstanding: args.profile.fullFileUnderstanding,
+    runtimeFiles: [{ file: args.file, sheetName: args.sheetName }],
+  });
 }
 
 function unavailableGuidedInvestigation(): GuidedInvestigationResult | null {
@@ -804,6 +830,7 @@ export const Home: React.FC = () => {
       rows: canonicalRows,
       sourceRowCount: Number(currentDataset.understandingSourceRowCount ?? currentDataset.rows_count ?? canonicalRows.length),
       sheet: currentDataset.selected_sheet ?? undefined,
+      sourceBoundary: currentDataset.canonicalSourceBoundary,
     });
   }, [canonicalRows, currentDataset]);
 
@@ -1116,6 +1143,20 @@ export const Home: React.FC = () => {
     console.log("TRACE [HOME] currentDataset.previewRows.length:", finalPreviewRows.length);
 
     const sourceName = pendingLocalBatch.families.length > 1 ? family.name : (family.files.length > 1 ? `Combined dataset (${family.files.length} files)` : family.files[0].file.name);
+    const onlyItem = family.files.length === 1 && family.files[0].result.status === 'accessible' ? family.files[0] : null;
+    const onlyMetadata = onlyItem?.result.status === 'accessible' ? onlyItem.result.metadata : null;
+    const onlySheet = onlyMetadata?.is_workbook && onlyMetadata.default_sheet && onlyMetadata.sheets
+      ? onlyMetadata.sheets[onlyMetadata.default_sheet]
+      : null;
+    const canonicalSourceBoundary = createLocalCanonicalSourceBoundary({
+      datasetId: sourceName,
+      columns: family.columns,
+      semanticRows: rawSemanticRows,
+      semanticSample: onlySheet?.semantic_sample ?? onlyMetadata?.semantic_sample,
+      profile: onlySheet?.canonical_full_file_profile ?? onlyMetadata?.canonical_full_file_profile,
+      file: onlyItem?.file,
+      sheetName: onlyMetadata?.is_workbook ? onlyMetadata.default_sheet : undefined,
+    });
     registerAdvancedSource({
       id: advancedSourceId((family.files[0].result as any).sourceType, sourceName),
       name: sourceName,
@@ -1148,7 +1189,7 @@ export const Home: React.FC = () => {
       sourceFiles: sourceFiles as any, // Storing extended metadata format here
       selected_sheet: null,
       file_reference: family.files[0]?.file || null,
-      runtimeDatasetSource: {
+      runtimeDatasetSource: canonicalSourceBoundary?.runtimeSource ?? {
         kind: 'local_files',
         files: family.files.map(item => {
           const md = item.result.status === 'accessible' ? item.result.metadata : undefined;
@@ -1160,6 +1201,7 @@ export const Home: React.FC = () => {
         sourceRowCount: family.totalRows
       },
       semanticSample,
+      canonicalSourceBoundary,
       analysisRowScope: rawAnalysisRows.length >= family.totalRows ? 'full' : 'not_retained',
       semanticRows: rawSemanticRows,
       analysisRows: rawAnalysisRows,
@@ -1379,6 +1421,18 @@ export const Home: React.FC = () => {
           const selectedSemanticSample = md.is_workbook && md.default_sheet && md.sheets
             ? md.sheets[md.default_sheet]?.semantic_sample
             : md.semantic_sample;
+          const selectedCanonicalProfile = md.is_workbook && md.default_sheet && md.sheets
+            ? md.sheets[md.default_sheet]?.canonical_full_file_profile
+            : md.canonical_full_file_profile;
+          const canonicalSourceBoundary = createLocalCanonicalSourceBoundary({
+            datasetId: sourceLabel,
+            columns,
+            semanticRows: rawSemanticRows,
+            semanticSample: selectedSemanticSample,
+            profile: selectedCanonicalProfile,
+            file: inspectionResult.file,
+            sheetName: md.default_sheet,
+          });
 
           if (inspectionResult.file) {
             registerAdvancedSource({
@@ -1420,11 +1474,12 @@ export const Home: React.FC = () => {
             }] as any,
             selected_sheet: md.default_sheet || null,
             file_reference: inspectionResult.file || null,
-            runtimeDatasetSource: inspectionResult.file ? {
+            runtimeDatasetSource: canonicalSourceBoundary?.runtimeSource ?? (inspectionResult.file ? {
               kind: 'local_files',
               files: [{ file: inspectionResult.file, sheetName: md.default_sheet }],
               sourceRowCount: rows
-            } : undefined,
+            } : undefined),
+            canonicalSourceBoundary,
             semanticSample: selectedSemanticSample ? {
               strategy: selectedSemanticSample.strategy,
               sourceRowCount: selectedSemanticSample.source_row_count,

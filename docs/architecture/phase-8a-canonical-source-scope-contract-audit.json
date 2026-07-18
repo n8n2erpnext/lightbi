@@ -1,0 +1,28 @@
+{
+  "schemaVersion": "lightbi.phase-8a-canonical-source-scope-contract-audit.v1",
+  "phase": "8A",
+  "contract": "lightbi.canonical-source-boundary.v1",
+  "scopes": {
+    "semanticSample": {
+      "scope": "semantic_sample",
+      "bounded": true,
+      "allowedUses": ["semantic evidence", "examples", "preview", "candidate interpretation"],
+      "aggregateAuthority": false
+    },
+    "fullFileProfile": {
+      "scope": "full_file",
+      "requiredBindings": ["datasetId", "sourceId", "sourceFingerprint", "inspectionGeneration", "profileGeneration", "sourceRowCount"],
+      "physicalEvidence": ["columns", "physical types", "null/non-null counts", "parse health", "cardinality", "profiler version"],
+      "aggregateAuthority": false
+    },
+    "runtimeSource": {
+      "kind": "local_files",
+      "requiredBindings": ["datasetId", "sourceId", "sourceFingerprint", "inspectionGeneration", "profileGeneration", "sourceRowCount"],
+      "purpose": "worker-backed full-file materialization"
+    }
+  },
+  "validityRule": "bounded sample is valid only with matching verified full-file profile, full-file understanding and runtime source",
+  "legacyCompleteRowsPathPreservedForSmallAndAdvancedCompleteSources": true,
+  "sampleProfileRuntimeInterchangeable": false,
+  "gate": "pass"
+}

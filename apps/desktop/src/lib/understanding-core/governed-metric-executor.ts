@@ -51,19 +51,33 @@ export async function executeGovernedMetricRequest(request: GovernedMetricExecut
     };
   }
   const output = await boundary.execute(plan, request.rows);
-  const executed = output.engine === "duckdb" && output.status === "executed";
+  const boundaryExecuted = output.engine === "duckdb" && output.status === "executed";
+  const fullFileEvidenceRequired = request.expectedSourceRowCount != null || request.expectedRuntimeBinding != null || request.artifactIdentity != null;
+  const fullFileEvidenceError = fullFileEvidenceRequired && boundaryExecuted
+    ? output.executionScope !== "full_file"
+      ? "full_file_execution_scope_required"
+      : output.actualMaterializedRowCount == null
+        ? "full_file_materialized_row_count_required"
+        : output.actualMaterializedRowCount !== request.expectedSourceRowCount
+          ? "full_file_materialized_row_count_mismatch"
+          : null
+    : null;
+  const executed = boundaryExecuted && fullFileEvidenceError === null;
   const actual = executed ? actualMetricValue(request, output.rows) : null;
   const comparison = executed ? compareGroundTruth(request, actual) : { state: "unavailable" as const, expected: request.groundTruth.state === "verified" ? request.groundTruth.value : null, actual: null, tolerance: request.groundTruth.state === "verified" ? request.groundTruth.tolerance : null };
   const rows = executed ? visibleRows(output.rows) : [];
   const columns = output.columns.filter((column) => column !== GOVERNED_FULL_SCOPE_TOTAL_COLUMN);
-  const executionEvidence: GovernedExecutionEvidenceV1 = { evidenceId: `duckdb:${plan.planId}`, kind: "duckdb_execution", references: [output.executionScope, output.status], provenance: "local_duckdb" };
-  const identityInput = { requestId: request.requestId, planId: plan.planId, status: output.status, columns, rows, comparison };
+  const executionEvidence: GovernedExecutionEvidenceV1 = { evidenceId: `duckdb:${plan.planId}`, kind: "duckdb_execution", references: [output.executionScope, output.status, `materialized_rows:${output.actualMaterializedRowCount ?? "unknown"}`], provenance: "local_duckdb" };
+  const identityInput = { requestId: request.requestId, planId: plan.planId, status: executed ? output.status : "failed", columns, rows, comparison, fullFileEvidenceError };
   return {
     schemaVersion: "lightbi.governed-metric-execution-result.v1", resultId: `metric-result:${deterministicPolicySha256(identityInput)}`, requestId: request.requestId, actionId: plan.actionId,
     metricId: plan.metricId, metricVersion: plan.metricVersion, sourceReference: plan.sourceReference, queryPlanIdentity: plan.planId, operator: plan.operator,
     dimensions: plan.groupingBindings.map((item) => item.semanticId), timeBasis: plan.asOfBasis ?? plan.timeBinding, status: executed ? "executed" : "failed", columns,
     rows, rowCount: rows.length, resultShape: plan.timeBinding ? "trend" : plan.groupingBindings.length ? "grouped" : "summary", groundTruthComparison: comparison,
-    evidence: [...plan.evidence, executionEvidence], restrictions: plan.restrictions, limitations: executed ? [] : ["duckdb_execution_failed"], error: output.error,
+    evidence: [...plan.evidence, executionEvidence], restrictions: plan.restrictions, limitations: executed ? [] : [fullFileEvidenceError ?? "duckdb_execution_failed"], error: fullFileEvidenceError ?? output.error,
     runtimeActionCreated: true, runtimeActionAuthorized: true, executionPerformed: executed, decisionUseAuthorized: false, productionWiring: { executed: false },
+    fullFileExecution: executed && output.executionScope === "full_file" && request.expectedRuntimeBinding && request.artifactIdentity && request.expectedSourceRowCount != null
+      ? { executionScope: "full_file", sourceId: request.expectedRuntimeBinding.sourceId, sourceFingerprint: request.expectedRuntimeBinding.sourceFingerprint, expectedSourceRowCount: request.expectedSourceRowCount, actualMaterializedRowCount: output.actualMaterializedRowCount!, artifactIdentity: request.artifactIdentity }
+      : undefined,
   };
 }

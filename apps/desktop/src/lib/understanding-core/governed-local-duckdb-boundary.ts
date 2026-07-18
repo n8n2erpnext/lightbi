@@ -20,7 +20,10 @@ function materializeParameters(sql: string, parameters: Array<string | number | 
   return materialized;
 }
 
-export function createGovernedLocalDuckDBBoundary(): GovernedDuckDBBoundaryV1 {
+export function createGovernedLocalDuckDBBoundary(options: {
+  runtimeSource?: import("../runtime-dataset-source").RuntimeDatasetSource;
+  expectedRuntimeBinding?: import("../runtime-dataset-source").RuntimeSourceBindingV1;
+} = {}): GovernedDuckDBBoundaryV1 {
   return {
     async execute(plan, rows) {
       try {
@@ -30,10 +33,12 @@ export function createGovernedLocalDuckDBBoundary(): GovernedDuckDBBoundaryV1 {
           runtimePlan: { id: plan.planId, requiredColumns: [...new Set(requiredColumns)], warnings: [] } as never,
           safeSqlPreview: { id: `governed-sql:${plan.planId}`, sql } as never,
           rows,
-          rowScope: "retained_rows",
+          runtimeDatasetSource: options.runtimeSource,
+          expectedRuntimeBinding: options.expectedRuntimeBinding,
+          rowScope: options.runtimeSource ? "full_file" : "retained_rows",
           limit: 100,
         });
-        return { engine: "duckdb", status: result.status === "executed" ? "executed" : "failed", columns: result.columns, rows: result.rows, error: result.errorMessage ?? null, executionScope: result.executionScope === "full_file" ? "full_file" : "controlled_rows" };
+        return { engine: "duckdb", status: result.status === "executed" ? "executed" : "failed", columns: result.columns, rows: result.rows, error: result.errorMessage ?? null, executionScope: result.executionScope === "full_file" ? "full_file" : "controlled_rows", actualMaterializedRowCount: result.materializedRowCount };
       } catch (error) {
         return { engine: "duckdb", status: "failed", columns: [], rows: [], error: error instanceof Error ? error.message : String(error), executionScope: "controlled_rows" };
       }

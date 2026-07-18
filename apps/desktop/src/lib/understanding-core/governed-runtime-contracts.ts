@@ -1,5 +1,6 @@
 import type { CanonicalMetricSourceV1, GovernedMetricPreflightV1 } from "./governed-domain-metric-contracts";
 import type { GovernedActionCandidateV1, QuestionActionGenerationV1 } from "./governed-question-action-contracts";
+import type { RuntimeDatasetSource, RuntimeSourceBindingV1 } from "../runtime-dataset-source";
 
 export const GOVERNED_RUNTIME_CONTRACT_VERSION = "lightbi.governed-runtime-contract.v1" as const;
 export const GOVERNED_RUNTIME_POLICY_VERSION = "lightbi.governed-runtime-policy.v1" as const;
@@ -147,6 +148,10 @@ export type GovernedMetricExecutionRequestV1 = {
   requestId: string;
   plan: GovernedMetricQueryPlanV1;
   rows: Record<string, unknown>[];
+  runtimeSource?: RuntimeDatasetSource;
+  expectedRuntimeBinding?: RuntimeSourceBindingV1;
+  artifactIdentity?: string;
+  expectedSourceRowCount?: number;
   groundTruth: GovernedGroundTruthReferenceV1;
 };
 
@@ -177,6 +182,14 @@ export type GovernedMetricExecutionResultV1 = {
   executionPerformed: boolean;
   decisionUseAuthorized: false;
   productionWiring: { executed: false };
+  fullFileExecution?: {
+    executionScope: "full_file";
+    sourceId: string;
+    sourceFingerprint: string;
+    expectedSourceRowCount: number;
+    actualMaterializedRowCount: number;
+    artifactIdentity: string;
+  };
 };
 
 export type GovernedRuntimePolicyV1 = {
@@ -197,6 +210,7 @@ export type GovernedDuckDBBoundaryResultV1 = {
   rows: Record<string, unknown>[];
   error: string | null;
   executionScope: "controlled_rows" | "full_file";
+  actualMaterializedRowCount?: number;
 };
 
 export interface GovernedDuckDBBoundaryV1 {

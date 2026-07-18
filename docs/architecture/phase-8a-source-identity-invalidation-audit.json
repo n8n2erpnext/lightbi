@@ -1,0 +1,27 @@
+{
+  "schemaVersion": "lightbi.phase-8a-source-identity-invalidation-audit.v1",
+  "phase": "8A",
+  "identityChain": [
+    "datasetId",
+    "sourceId",
+    "SHA-256 source fingerprint",
+    "inspection generation",
+    "profile generation",
+    "dataset-state identity",
+    "canonical artifact identity",
+    "action candidate identity",
+    "Investigation handoff",
+    "runtime binding"
+  ],
+  "invalidation": {
+    "sourceReplacement": "RUNTIME_SOURCE_FILE_REPLACED",
+    "sourceIdentityMismatch": "RUNTIME_SOURCE_IDENTITY_MISMATCH",
+    "fingerprintMismatch": "RUNTIME_SOURCE_FINGERPRINT_MISMATCH",
+    "generationMismatch": "RUNTIME_SOURCE_GENERATION_MISMATCH",
+    "staleProfile": ["stale_inspection_generation", "stale_profile_generation"],
+    "staleHandoff": "canonical_full_file_runtime_source_required"
+  },
+  "asyncProtection": ["ExecutionRunCoordinator current-run check", "inspection abort signal", "execution current-run check"],
+  "cacheIdentityIncludesSourceAndGenerations": true,
+  "gate": "pass"
+}

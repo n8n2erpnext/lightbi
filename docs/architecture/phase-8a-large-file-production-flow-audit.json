@@ -1,0 +1,30 @@
+{
+  "schemaVersion": "lightbi.phase-8a-large-file-production-flow-audit.v1",
+  "phase": "8A",
+  "productionFlow": [
+    "raw local file",
+    "bounded representative semantic sample",
+    "source-bound full-file physical profile and canonical understanding",
+    "canonical consumer artifact",
+    "M1 metric preflight",
+    "M2 question/action generation",
+    "M3 runtime preflight and governed query plan",
+    "Investigation source-bound handoff",
+    "full-file worker materialization",
+    "governed local DuckDB",
+    "evidence-bearing result"
+  ],
+  "syntheticProof": {
+    "sourceRows": 20123,
+    "completeRowsStoredInReactState": false,
+    "artifactValid": true,
+    "action": "commerce.sales_revenue.by_product",
+    "actionAdvertised": true,
+    "materializedRows": 20123,
+    "oracleComparison": "exact_match",
+    "executionScope": "full_file"
+  },
+  "smallFileCompatibility": "valid legacy complete-row canonical path retained and tested",
+  "legacyProductionExecutionInvoked": false,
+  "gate": "pass"
+}

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "lightbi.phase-8a-negative-probe-audit.v1",
+  "phase": "8A",
+  "probeCount": 15,
+  "probes": [
+    {"id": 1, "case": "semantic sample without full-file profile", "blocker": "full_file_profile_required", "state": "pass"},
+    {"id": 2, "case": "full profile without runtime source", "blocker": "runtime_source_required", "state": "pass"},
+    {"id": 3, "case": "source/profile fingerprint mismatch", "blocker": "source_profile_fingerprint_mismatch", "state": "pass"},
+    {"id": 4, "case": "profile/source row-count mismatch", "blocker": "source_profile_row_count_mismatch", "state": "pass"},
+    {"id": 5, "case": "file replaced after understanding", "blocker": "RUNTIME_SOURCE_FILE_REPLACED", "state": "pass"},
+    {"id": 6, "case": "stale inspection generation", "blocker": "stale_inspection_generation", "state": "pass"},
+    {"id": 7, "case": "stale Investigation handoff", "blocker": "canonical_full_file_runtime_source_required", "state": "pass"},
+    {"id": 8, "case": "materialization fewer rows", "blocker": "RUNTIME_MATERIALIZATION_ROW_COUNT_SHORT", "state": "pass"},
+    {"id": 9, "case": "materialization additional rows", "blocker": "RUNTIME_MATERIALIZATION_ROW_COUNT_EXCESS", "state": "pass"},
+    {"id": 10, "case": "worker parsing failure", "blocker": "worker parser error", "state": "pass"},
+    {"id": 11, "case": "empty runtime source after preview", "blocker": "RUNTIME_MATERIALIZATION_ROW_COUNT_SHORT", "state": "pass"},
+    {"id": 12, "case": "paginated Advanced result", "blocker": "advanced_result_paginated", "state": "pass"},
+    {"id": 13, "case": "truncated Advanced result", "blocker": "advanced_result_truncated", "state": "pass"},
+    {"id": 14, "case": "preview-only online/database source", "blocker": "full_file_row_coverage_required", "state": "pass"},
+    {"id": 15, "case": "attempted fallback to sample rows", "blocker": "canonical_full_file_runtime_source_required or runtime materialization failure", "state": "pass"}
+  ],
+  "contractFailuresIncludeEvidenceAndRemediation": true,
+  "runtimeFailuresRetainStableErrorAndGovernedEvidence": true,
+  "unexpectedPasses": 0,
+  "gate": "pass"
+}

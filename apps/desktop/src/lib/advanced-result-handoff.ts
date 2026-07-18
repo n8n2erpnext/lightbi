@@ -44,6 +44,12 @@ export type AdvancedResultHandoff = Pick<
   canonicalHandoff: CanonicalInvestigationHandoffV1;
   blockers: string[];
   decisionUseAuthorized: false;
+  completeness: {
+    state: 'complete' | 'bounded' | 'paginated' | 'truncated' | 'unknown';
+    blocker: string | null;
+    returnedRows: number;
+    estimatedTotal: number | null;
+  };
 };
 
 function rowsAsObjects(result: AdvancedQueryResult): Record<string, unknown>[] {
@@ -56,8 +62,22 @@ function sourceKind(provider: string): 'local_file' | 'database_table' | 'unknow
   return 'unknown';
 }
 
-function isPartialResult(result: AdvancedQueryResult): boolean {
-  return result.truncated || result.page.hasMore || result.page.offset > 0;
+function classifyCompleteness(result: AdvancedQueryResult): AdvancedResultHandoff['completeness'] {
+  const state = result.truncated
+    ? 'truncated'
+    : result.page.offset > 0
+      ? 'paginated'
+      : result.page.hasMore
+        ? 'bounded'
+        : result.page.estimatedTotal == null && result.rows.length >= result.page.limit
+          ? 'unknown'
+          : 'complete';
+  return {
+    state,
+    blocker: state === 'complete' ? null : `advanced_result_${state}`,
+    returnedRows: result.rows.length,
+    estimatedTotal: result.page.estimatedTotal ?? null,
+  };
 }
 
 function unique(values: readonly string[]): string[] {
@@ -145,7 +165,8 @@ function projectGovernedAction(source: AdvancedResultSource, handoff: CanonicalI
 
 export function createAdvancedResultHandoff(source: AdvancedResultSource, result: AdvancedQueryResult): AdvancedResultHandoff {
   const rows = rowsAsObjects(result);
-  const partial = isPartialResult(result);
+  const completeness = classifyCompleteness(result);
+  const partial = completeness.state !== 'complete';
   const declaredRowCount = partial
     ? Math.max(rows.length + 1, result.page.estimatedTotal ?? 0)
     : rows.length;
@@ -165,7 +186,10 @@ export function createAdvancedResultHandoff(source: AdvancedResultSource, result
   });
   const selectedActionCandidateId = source.governedSelection?.actionCandidateId ?? defaultActionCandidateId(canonicalArtifact);
   const initialHandoff = prepareCanonicalInvestigationHandoff(canonicalArtifact, selectedActionCandidateId);
-  const selectionBlockers = blockForAdvancedSelection(canonicalArtifact, initialHandoff, source.governedSelection);
+  const selectionBlockers = [
+    ...blockForAdvancedSelection(canonicalArtifact, initialHandoff, source.governedSelection),
+    ...(completeness.blocker ? [completeness.blocker] : []),
+  ];
   const canonicalHandoff = withAdvancedBlockers(initialHandoff, selectionBlockers);
   const analysisAction = projectGovernedAction(source, canonicalHandoff);
   const runtimeIntent = createRuntimeIntentFromAnalysisAction(analysisAction);
@@ -178,10 +202,11 @@ export function createAdvancedResultHandoff(source: AdvancedResultSource, result
     runtimePlanPreview,
     rows,
     aiBriefing: generateCanonicalAIBriefing(canonicalArtifact),
-    rowScope: canonicalArtifact.status === 'valid' ? 'full_file' : 'retained_rows',
+    rowScope: canonicalArtifact.status === 'valid' && completeness.state === 'complete' ? 'full_file' : 'retained_rows',
     canonicalArtifact,
     canonicalHandoff,
     blockers: canonicalHandoff.blockers,
     decisionUseAuthorized: false,
+    completeness,
   };
 }

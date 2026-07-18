@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "lightbi.phase-8a-current-full-source-defect-audit.v1",
+  "phase": "8A",
+  "candidateCommit": "11803066709d55a629de6c2576b9da9cd94da695",
+  "reproduction": {
+    "fixture": "deterministic synthetic commerce CSV generated only in test memory",
+    "sourceRows": 20123,
+    "semanticRowsBounded": true,
+    "analysisRowsRetained": false,
+    "independentOracle": "sum of generated revenue values",
+    "preClosureStatus": "invalid",
+    "preClosureBlocker": "full_file_row_coverage_required"
+  },
+  "preClosureCallChain": [
+    "local-file-inspector retained bounded semantic rows",
+    "Home passed retained rows plus exact sourceRowCount",
+    "canonical-consumer-boundary required rows.length === sourceRowCount",
+    "M1/M2/M3 and Investigation handoff were unavailable",
+    "existing runtime local file could not reach governed DuckDB"
+  ],
+  "productionConstantsAddedFromFixture": 0,
+  "gate": "closed"
+}

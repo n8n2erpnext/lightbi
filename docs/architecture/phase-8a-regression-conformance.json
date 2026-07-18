@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "lightbi.phase-8a-regression-conformance.v1",
+  "phase": "8A",
+  "candidateCommit": "11803066709d55a629de6c2576b9da9cd94da695",
+  "governedAllowlistSha256": "baa86950582b7d758396abb0c69fdaffcd3c2cbbb22b71dd3bbdb3c0aed1c4f5",
+  "targetedMatrix": {"testFiles": 78, "passedTestFiles": 78, "tests": 363, "passedTests": 363},
+  "releaseMeasurementsPreserved": {
+    "highConfidenceMappingPrecision": 1,
+    "heldoutCoreSignalRecall": 0.9090909090909091,
+    "domainActivationPrecision": 1,
+    "advertisedActionExecutionSuccess": 1,
+    "falseExecutableActions": 0,
+    "falseDecisionSupportCases": 0,
+    "blockedExplanationCompleteness": 1,
+    "metricFamiliesExact": 4
+  },
+  "typescriptDiagnostics": 0,
+  "jsonDocumentsParsed": 274,
+  "legacyOrMockExecutorProductionReachability": 0,
+  "diffCheck": "pass",
+  "fullDesktopSuite": {
+    "executionCount": 1,
+    "completeLog": "/tmp/phase8a-final-full-desktop.log",
+    "completeLogBytes": 7194,
+    "completeLogSha256": "5d08726c36488014d9bb53eb44fedf754f067f2608175a8b8055bb18822132a4",
+    "processExitStatus": 1,
+    "totalTestFiles": 168,
+    "passedTestFiles": 164,
+    "failedTestFiles": 4,
+    "totalTests": 1143,
+    "passedTests": 1134,
+    "failedTests": 9,
+    "deterministicBaselineFailuresObserved": 6,
+    "timingSensitiveFailuresObserved": 3,
+    "unexpectedFailures": 0,
+    "phase8AOwnedFailures": 0,
+    "conformanceUsesGovernedIdentityNotRawExitCode": true
+  },
+  "unexpectedRegressions": 0,
+  "gate": "pass"
+}

@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "lightbi.phase-8a-advanced-result-completeness-audit.v1",
+  "phase": "8A",
+  "states": ["complete", "bounded", "paginated", "truncated", "unknown"],
+  "blockers": {
+    "bounded": "advanced_result_bounded",
+    "paginated": "advanced_result_paginated",
+    "truncated": "advanced_result_truncated",
+    "unknown": "advanced_result_unknown"
+  },
+  "partialRowScope": "retained_rows",
+  "partialDecisionSupport": "blocked",
+  "blockerSurvivesCanonicalHandoff": true,
+  "completeBehaviorPreserved": true,
+  "uiRedesignPerformed": false,
+  "gate": "pass"
+}

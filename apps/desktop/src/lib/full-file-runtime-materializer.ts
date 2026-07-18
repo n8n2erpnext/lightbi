@@ -1,5 +1,5 @@
 import type { MaterializedRuntimeData, RuntimeFilePayload } from "./full-file-runtime-parser";
-import type { RuntimeDatasetSource } from "./runtime-dataset-source";
+import type { RuntimeDatasetSource, RuntimeSourceBindingV1 } from "./runtime-dataset-source";
 
 type WorkerResponse =
   | { status: "success"; result: MaterializedRuntimeData }
@@ -7,9 +7,21 @@ type WorkerResponse =
 
 export async function materializeRuntimeDatasetSource(
   source: RuntimeDatasetSource,
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  expectedBinding?: RuntimeSourceBindingV1,
 ): Promise<MaterializedRuntimeData> {
   signal?.throwIfAborted();
+  if (expectedBinding) {
+    const actual = source.binding;
+    if (!actual) throw new Error("RUNTIME_SOURCE_BINDING_REQUIRED");
+    if (actual.datasetId !== expectedBinding.datasetId || actual.sourceId !== expectedBinding.sourceId) throw new Error("RUNTIME_SOURCE_IDENTITY_MISMATCH");
+    if (actual.sourceFingerprint !== expectedBinding.sourceFingerprint) throw new Error("RUNTIME_SOURCE_FINGERPRINT_MISMATCH");
+    if (actual.inspectionGeneration !== expectedBinding.inspectionGeneration || actual.profileGeneration !== expectedBinding.profileGeneration) throw new Error("RUNTIME_SOURCE_GENERATION_MISMATCH");
+    if (source.files.length !== 1) throw new Error("RUNTIME_SOURCE_FINGERPRINT_VERIFICATION_UNAVAILABLE");
+    const actualHash = await crypto.subtle.digest("SHA-256", await source.files[0].file.arrayBuffer());
+    const actualFingerprint = [...new Uint8Array(actualHash)].map(value => value.toString(16).padStart(2, "0")).join("");
+    if (actualFingerprint !== expectedBinding.sourceFingerprint) throw new Error("RUNTIME_SOURCE_FILE_REPLACED");
+  }
   const payloads: RuntimeFilePayload[] = await Promise.all(
     source.files.map(async item => ({
       name: item.file.name,
@@ -35,7 +47,11 @@ export async function materializeRuntimeDatasetSource(
       worker.terminate();
       cleanup();
       if (event.data.status === "success") {
-        resolve(event.data.result);
+        if (expectedBinding && event.data.result.rowCount !== source.sourceRowCount) {
+          reject(new Error(event.data.result.rowCount < source.sourceRowCount ? "RUNTIME_MATERIALIZATION_ROW_COUNT_SHORT" : "RUNTIME_MATERIALIZATION_ROW_COUNT_EXCESS"));
+        } else {
+          resolve(event.data.result);
+        }
       } else {
         reject(new Error(event.data.message));
       }
