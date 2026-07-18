@@ -1,0 +1,57 @@
+{
+  "schemaVersion": "lightbi.phase8b.regression-conformance.v1",
+  "candidateBase": "a6a13e3d54de3f3fa38367f326dcd4957cdf620b",
+  "governedBaselineAllowlist": {
+    "path": "docs/architecture/phase-5b6b-regression-baseline-allowlist.v1.json",
+    "sha256": "baa86950582b7d758396abb0c69fdaffcd3c2cbbb22b71dd3bbdb3c0aed1c4f5",
+    "modified": false
+  },
+  "gates": {
+    "phase8bTargeted": {"testFiles": 1, "tests": 3, "passed": 3, "failed": 0},
+    "productionPageProjection": {"testFiles": 3, "tests": 30, "passed": 30, "failed": 0},
+    "understandingCoreComplete": {"testFiles": 76, "tests": 332, "passed": 332, "failed": 0},
+    "phase8aFullSource": "pass_in_complete_matrix",
+    "phase7Corpus14ReleaseEvaluator": "pass_in_phase7_mvp_proof",
+    "phase7Corpus13FourFamily": "pass_exact_in_complete_matrix",
+    "phase7R1ThroughR41": "pass_in_complete_matrix",
+    "M1M2M3Governance": "pass_in_complete_matrix",
+    "semanticGrainRelationshipSafety": "pass_in_complete_matrix",
+    "canonicalImportReachability": "pass_in_complete_matrix",
+    "repositoryTypeScript": "pass_zero_diagnostics",
+    "jsonManifestParsing": "pass_292_files",
+    "gitDiffCheck": "pass",
+    "fullDesktopSuite": {
+      "executionCount": 1,
+      "log": "/tmp/phase8b-final-full-desktop.log",
+      "logSha256": "bd61d973edf97f237330817e7377fd2f639f311c452786cdca40f3e9f2e1b89d",
+      "processExitStatus": 1,
+      "totalTestFiles": 169,
+      "passedTestFiles": 165,
+      "failedTestFiles": 4,
+      "totalTests": 1146,
+      "passedTests": 1138,
+      "failedTests": 8,
+      "durationSeconds": 585.30,
+      "deterministicBaselineFailuresObserved": 6,
+      "timingSensitiveFailuresObserved": 2,
+      "timingSensitiveCasesPassed": 1,
+      "unexpectedFailures": 0,
+      "phase8bOwnedFailures": 0,
+      "conformsToGovernedBaselineByIdentityAndSignature": true
+    }
+  },
+  "unchangedQuality": {
+    "highConfidencePrecisionPercent": 100,
+    "heldOutCoreRecallPercent": 90.91,
+    "domainActivationPrecisionPercent": 100,
+    "advertisedActionExecutionPercent": 100,
+    "falseExecutableActions": 0,
+    "falseDecisionSupportCases": 0,
+    "blockedExplanationCompletenessPercent": 100,
+    "corpus13FourFamilyArithmetic": "exact",
+    "phase8aLargeFileResult": "exact",
+    "legacyProductionExecutionReachability": 0
+  },
+  "unexpectedRegressions": 0,
+  "status": "pass"
+}

@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "lightbi.phase8b.gross-profit-production-interaction-audit.v1",
+  "source": {
+    "path": "sample-corpus/versions/1.3.0/derived/derived-accounting-may-vnd.csv",
+    "sha256": "30ef8bf1f4d6f703816d8e84b4d07824cb0a97688fc629461e625f71c4b0a252"
+  },
+  "before": {
+    "grossProfitAdvertisedActions": 0,
+    "blockerOrLimitation": "currency_basis_not_explicit"
+  },
+  "overlay": {
+    "currency": "VND",
+    "monetaryColumns": ["Revenue_Credit", "COGS_Debit"],
+    "reportingPeriod": "2026-05-01/2026-05-31",
+    "scope": "selected_columns",
+    "provenance": "user_confirmed",
+    "sourceFingerprintBound": true
+  },
+  "after": {
+    "M1": "eligible",
+    "M2": "advertised_only_after_all_requirements",
+    "M3": "execution_allowed",
+    "queryPlanning": "planned",
+    "executionEngine": "duckdb",
+    "executionScope": "full_file",
+    "metricId": "gross_profit",
+    "metricAndPlanIdentitiesRetained": true,
+    "artifactIdentityRetainedInResult": true,
+    "decisionUseAuthorized": false
+  },
+  "oracle": {
+    "expected": 3075721244,
+    "actual": 3075721244,
+    "tolerance": 0,
+    "comparison": "exact_match"
+  },
+  "removeCurrency": {
+    "grossProfitAdvertisedActions": 0,
+    "financeWithoutCurrencyRemainsBlocked": true
+  },
+  "status": "pass"
+}

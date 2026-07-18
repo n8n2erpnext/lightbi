@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "lightbi.phase8b.persistence-and-recovery-audit.v1",
+  "persistence": {
+    "mechanism": "existing_local_workspace_session_snapshot",
+    "snapshotVersion": 2,
+    "networkDependency": false,
+    "rawDataUploadAdded": false,
+    "overlayVersioned": true,
+    "sourceFingerprintBound": true
+  },
+  "recovery": {
+    "validRoundTrip": "pass",
+    "unsupportedVersion": "returns_null",
+    "tamperedOverlayIdentity": "returns_null",
+    "corruptMappingDecision": "returns_null",
+    "corruptEvidenceDeclaration": "returns_null",
+    "staleBinding": "retained_but_not_applied",
+    "HomeCrashOnCorruption": false,
+    "resetCurrentSourceAvailable": true
+  },
+  "crossDatasetReusableMemoryAdded": false,
+  "status": "pass"
+}

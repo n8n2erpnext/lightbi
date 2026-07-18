@@ -20,6 +20,7 @@ import { generateSemanticCandidateArtifact } from "./semantic-candidate-engine";
 import { resolveSemanticShadow } from "./semantic-resolver";
 import type { CanonicalSourceBoundaryV1 } from "./canonical-source-boundary";
 import { validateCanonicalSourceBoundary } from "./canonical-source-boundary";
+import { applyCanonicalUserOverlay, emptyCanonicalOverlayProjection, type CanonicalOverlayValidationV1, type CanonicalUserOverlayV1 } from "./canonical-user-overlay";
 
 export const CANONICAL_CONSUMER_ARTIFACT_VERSION = "lightbi.canonical-consumer-artifact.v1" as const;
 
@@ -34,6 +35,7 @@ export type CanonicalDatasetStateInputV1 = {
   path?: string;
   sheet?: string;
   sourceBoundary?: CanonicalSourceBoundaryV1;
+  userOverlay?: CanonicalUserOverlayV1;
 };
 
 type BuildProvenanceV1 = {
@@ -51,6 +53,8 @@ export type CanonicalConsumerArtifactV1 = {
   datasetStateIdentity: string;
   sourceFingerprint: string;
   sourceBoundary?: CanonicalSourceBoundaryV1;
+  overlayIdentity: string | null;
+  overlayValidation: CanonicalOverlayValidationV1;
   canonicalSource: CanonicalMetricSourceV1;
   domainActivation: DomainActivationArtifactV1;
   metricPreflight: GovernedMetricPreflightV1;
@@ -68,6 +72,7 @@ export type InvalidCanonicalConsumerArtifactV1 = {
   datasetStateIdentity: string;
   sourceFingerprint: string;
   sourceBoundary?: CanonicalSourceBoundaryV1;
+  overlayIdentity: string | null;
   blockers: string[];
   caveats: string[];
   provenance: BuildProvenanceV1;
@@ -82,6 +87,7 @@ export type CanonicalInvestigationHandoffV1 = {
   datasetStateIdentity: string;
   sourceFingerprint?: string;
   sourceBoundary?: CanonicalSourceBoundaryV1;
+  overlayIdentity?: string | null;
   actionCandidate: GovernedActionCandidateV1 | null;
   runtimePreflight: GovernedRuntimePreflightV1;
   queryPlanning: GovernedMetricQueryPlanningResultV1;
@@ -105,6 +111,7 @@ function inputFingerprint(input: CanonicalDatasetStateInputV1): string {
       inspectionGeneration: input.sourceBoundary.inspectionGeneration,
       profileGeneration: input.sourceBoundary.profileGeneration,
       semanticSampleRows: input.sourceBoundary.semanticSample.rows,
+      overlayIdentity: input.userOverlay?.overlayId ?? null,
     });
   }
   return deterministicPolicySha256({
@@ -124,7 +131,7 @@ function unique(values: readonly string[]): string[] {
   return [...new Set(values.filter(Boolean))].sort();
 }
 
-function invalidArtifact(fingerprint: string, blockers: string[], sourceBoundary?: CanonicalSourceBoundaryV1): InvalidCanonicalConsumerArtifactV1 {
+function invalidArtifact(fingerprint: string, blockers: string[], sourceBoundary?: CanonicalSourceBoundaryV1, overlayIdentity: string | null = null): InvalidCanonicalConsumerArtifactV1 {
   const datasetStateIdentity = `dataset-state:${fingerprint}`;
   const sourceFingerprint = sourceBoundary?.sourceFingerprint ?? fingerprint;
   return {
@@ -134,6 +141,7 @@ function invalidArtifact(fingerprint: string, blockers: string[], sourceBoundary
     datasetStateIdentity,
     sourceFingerprint,
     sourceBoundary,
+    overlayIdentity,
     blockers: unique(blockers),
     caveats: ["Canonical consumer build failed closed; no question or execution authority is available."],
     provenance: { datasetStateIdentity, sourceFingerprint, buildOrdinal: ++buildOrdinal, cacheStatus: "built", legacyDetectorInvoked: false },
@@ -151,6 +159,7 @@ function validateInput(input: CanonicalDatasetStateInputV1): string[] {
     if (input.sourceBoundary.datasetId !== input.datasetId) blockers.push("canonical_boundary_dataset_mismatch");
     if (input.sourceBoundary.semanticSample.columns.join("\u0000") !== input.columns.join("\u0000")) blockers.push("semantic_sample_columns_mismatch");
   } else {
+    if (input.userOverlay) blockers.push("canonical_overlay_requires_source_boundary");
     if (input.rows.length === 0) blockers.push("full_file_rows_required");
     if (input.sourceRowCount !== input.rows.length) blockers.push("full_file_row_coverage_required");
   }
@@ -159,7 +168,7 @@ function validateInput(input: CanonicalDatasetStateInputV1): string[] {
 
 function buildArtifact(input: CanonicalDatasetStateInputV1, fingerprint: string): CanonicalConsumerBuildResultV1 {
   const inputBlockers = validateInput(input);
-  if (inputBlockers.length) return invalidArtifact(fingerprint, inputBlockers, input.sourceBoundary);
+  if (inputBlockers.length) return invalidArtifact(fingerprint, inputBlockers, input.sourceBoundary, input.userOverlay?.overlayId ?? null);
 
   const datasetStateIdentity = `dataset-state:${fingerprint}`;
   try {
@@ -179,18 +188,22 @@ function buildArtifact(input: CanonicalDatasetStateInputV1, fingerprint: string)
       rawRows,
     });
     if (physical.sourceProfile.dataRegion.rowCount !== input.sourceRowCount || physical.sourceProfile.header.selectedHeaderRowIndex !== 0) {
-      return invalidArtifact(fingerprint, ["canonical_physical_profile_does_not_match_dataset_state"], input.sourceBoundary);
+      return invalidArtifact(fingerprint, ["canonical_physical_profile_does_not_match_dataset_state"], input.sourceBoundary, input.userOverlay?.overlayId ?? null);
     }
     const candidates = input.sourceBoundary ? null : generateSemanticCandidateArtifact(physical, { registry: SEMANTIC_SIGNAL_REGISTRY_V1 });
-    const semantic = input.sourceBoundary
+    const inferredSemantic = input.sourceBoundary
       ? input.sourceBoundary.fullFileUnderstanding.semantic
       : resolveSemanticShadow(physical, candidates!, aggregateContextualEvidence(physical, candidates!));
+    const overlayProjection = input.sourceBoundary
+      ? applyCanonicalUserOverlay(input.sourceBoundary, inferredSemantic, input.userOverlay)
+      : emptyCanonicalOverlayProjection(inferredSemantic);
+    const semantic = overlayProjection.semantic;
     const grainCandidates = input.sourceBoundary ? null : generateGrainCandidateArtifact(physical, semantic, rawRows);
     const grain = input.sourceBoundary
       ? input.sourceBoundary.fullFileUnderstanding.grain
       : resolveGrainSignatureShadow(grainCandidates!, { sourceId: grainCandidates!.sourceId, sourceHash: grainCandidates!.sourceHash });
     const readiness = buildUnderstandingReadiness({ scope: "source", physical, semantic, grain });
-    const canonicalSource: CanonicalMetricSourceV1 = { physical, semantic, grain, readiness };
+    const canonicalSource: CanonicalMetricSourceV1 = { physical, semantic, grain, readiness, sourceEvidence: overlayProjection.sourceEvidence };
     const evaluationContext = { group: "production", tuningUse: "forbidden" } as const;
     const domainActivation = activateCommerceDistributionDomain({ schemaVersion: "lightbi.domain-activation-input.v1", sources: [canonicalSource], evaluationContext });
     const metricPreflight = preflightGovernedMetrics({
@@ -220,7 +233,7 @@ function buildArtifact(input: CanonicalDatasetStateInputV1, fingerprint: string)
       ...metricPreflight.limitations.map((item) => item.code),
       ...questionGeneration.limitations.map((item) => item.code),
     ]);
-    const identity = `canonical-consumer:${deterministicPolicySha256({ datasetStateIdentity, sourceId, domainActivation: domainActivation.identity, metricPreflight: metricPreflight.identity, questions: questionGeneration.identity })}`;
+    const identity = `canonical-consumer:${deterministicPolicySha256({ datasetStateIdentity, sourceId, overlayIdentity: overlayProjection.overlayIdentity, domainActivation: domainActivation.identity, metricPreflight: metricPreflight.identity, questions: questionGeneration.identity })}`;
     const sourceFingerprint = input.sourceBoundary?.sourceFingerprint ?? fingerprint;
     return {
       schemaVersion: CANONICAL_CONSUMER_ARTIFACT_VERSION,
@@ -229,6 +242,8 @@ function buildArtifact(input: CanonicalDatasetStateInputV1, fingerprint: string)
       datasetStateIdentity,
       sourceFingerprint,
       sourceBoundary: input.sourceBoundary,
+      overlayIdentity: overlayProjection.overlayIdentity,
+      overlayValidation: overlayProjection.validation,
       canonicalSource,
       domainActivation,
       metricPreflight,
@@ -239,7 +254,7 @@ function buildArtifact(input: CanonicalDatasetStateInputV1, fingerprint: string)
       decisionUseAuthorized: false,
     };
   } catch (error) {
-    return invalidArtifact(fingerprint, [`canonical_build_error:${error instanceof Error ? error.message : String(error)}`], input.sourceBoundary);
+    return invalidArtifact(fingerprint, [`canonical_build_error:${error instanceof Error ? error.message : String(error)}`], input.sourceBoundary, input.userOverlay?.overlayId ?? null);
   }
 }
 
@@ -279,9 +294,17 @@ export function prepareCanonicalInvestigationHandoff(artifact: CanonicalConsumer
       decisionUseAuthorized: false,
       productionWiring: { executed: false },
     };
-    return { schemaVersion: "lightbi.canonical-investigation-handoff.v1", artifactIdentity: artifact.identity, datasetStateIdentity: artifact.datasetStateIdentity, sourceFingerprint: artifact.sourceFingerprint, sourceBoundary: artifact.sourceBoundary, actionCandidate: null, runtimePreflight, queryPlanning: { state: "blocked", plan: null, blockers: artifact.blockers }, blockers: artifact.blockers, decisionUseAuthorized: false };
+    return { schemaVersion: "lightbi.canonical-investigation-handoff.v1", artifactIdentity: artifact.identity, datasetStateIdentity: artifact.datasetStateIdentity, sourceFingerprint: artifact.sourceFingerprint, sourceBoundary: artifact.sourceBoundary, overlayIdentity: artifact.overlayIdentity, actionCandidate: null, runtimePreflight, queryPlanning: { state: "blocked", plan: null, blockers: artifact.blockers }, blockers: artifact.blockers, decisionUseAuthorized: false };
   }
   const actionCandidate = artifact.questionGeneration.actionCandidates.find((item) => item.actionCandidateId === actionCandidateId) ?? null;
+  const snapshotEvidence = actionCandidate?.metricId === "inventory_on_hand"
+    ? artifact.canonicalSource.sourceEvidence?.inventorySnapshots?.[0]
+    : null;
+  const asOfColumn = snapshotEvidence
+    ? artifact.canonicalSource.semantic.columns.find((item) => item.physicalColumn === snapshotEvidence.asOf.physicalColumn
+      && item.selectedCandidateId === snapshotEvidence.asOf.semanticId
+      && ["confirmed", "probable"].includes(item.finalState))
+    : null;
   const runtimePreflight = preflightGovernedRuntimeAction({
     schemaVersion: "lightbi.governed-runtime-preflight-input.v1",
     canonicalSource: artifact.canonicalSource,
@@ -289,10 +312,21 @@ export function prepareCanonicalInvestigationHandoff(artifact: CanonicalConsumer
     questionGeneration: artifact.questionGeneration,
     actionCandidate,
     expectedRuntimePolicyHash: governedRuntimePolicyHash(),
+    asOfBasis: snapshotEvidence && asOfColumn
+      ? { kind: "column_value", sourceColumnIndex: asOfColumn.sourceColumnIndex, semanticId: snapshotEvidence.asOf.semanticId, value: snapshotEvidence.asOf.value }
+      : null,
   });
   const queryPlanning = planGovernedMetricQuery(runtimePreflight);
   const blockers = unique([...runtimePreflight.blockers.map((item) => item.code), ...(queryPlanning.state === "blocked" ? queryPlanning.blockers : [])]);
-  return { schemaVersion: "lightbi.canonical-investigation-handoff.v1", artifactIdentity: artifact.identity, datasetStateIdentity: artifact.datasetStateIdentity, sourceFingerprint: artifact.sourceFingerprint, sourceBoundary: artifact.sourceBoundary, actionCandidate, runtimePreflight, queryPlanning, blockers, decisionUseAuthorized: false };
+  return { schemaVersion: "lightbi.canonical-investigation-handoff.v1", artifactIdentity: artifact.identity, datasetStateIdentity: artifact.datasetStateIdentity, sourceFingerprint: artifact.sourceFingerprint, sourceBoundary: artifact.sourceBoundary, overlayIdentity: artifact.overlayIdentity, actionCandidate, runtimePreflight, queryPlanning, blockers, decisionUseAuthorized: false };
+}
+
+export function validateCanonicalInvestigationHandoff(handoff: CanonicalInvestigationHandoffV1, currentArtifact: CanonicalConsumerBuildResultV1): string[] {
+  const blockers: string[] = [];
+  if (handoff.artifactIdentity !== currentArtifact.identity) blockers.push("investigation_handoff_artifact_superseded");
+  if ((handoff.overlayIdentity ?? null) !== (currentArtifact.overlayIdentity ?? null)) blockers.push("investigation_handoff_overlay_superseded");
+  if (handoff.sourceFingerprint !== currentArtifact.sourceFingerprint) blockers.push("investigation_handoff_source_replaced");
+  return unique(blockers);
 }
 
 export function canonicalConsumerCacheStats(): { buildCount: number; datasetStateCount: number } {

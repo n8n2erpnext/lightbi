@@ -1,0 +1,44 @@
+{
+  "schemaVersion": "lightbi.phase8b.inventory-production-interaction-audit.v1",
+  "source": {
+    "path": "sample-corpus/versions/1.3.0/derived/derived-inventory-snapshot-may.csv",
+    "sha256": "92d32c8d930a2169f77c9bc23df07e34ed11cc1220a0e5c17d839836f23841b3",
+    "rowCount": 1266
+  },
+  "before": {
+    "inventoryAdvertisedActions": 0,
+    "blocker": "inventory_snapshot_as_of_basis_required"
+  },
+  "overlay": {
+    "mappings": {"ItemID": "sku", "WarehouseID": "warehouse", "QuantityOnHand": "stock_qty", "AsOfDate": "time_period", "UOM": "uom"},
+    "sourceRole": "inventory_snapshot",
+    "unit": "EA",
+    "asOf": "2026-05-31",
+    "itemIdentity": "ItemID",
+    "warehouseIdentity": "WarehouseID",
+    "provenance": "user_confirmed",
+    "sourceFingerprintBound": true
+  },
+  "after": {
+    "M1": "eligible",
+    "M2Question": "commerce.inventory_on_hand.by_item_warehouse",
+    "M3": "execution_allowed",
+    "queryPlanning": "planned",
+    "executionEngine": "duckdb",
+    "operator": "governed_point_in_time_snapshot_sum",
+    "decisionUseAuthorized": false
+  },
+  "oracle": {
+    "expectedTotal": 211067,
+    "actualTotal": 211067,
+    "comparison": "exact_match",
+    "itemWarehouseRowsMatch": true,
+    "missingKeys": 0,
+    "unexpectedKeys": 0,
+    "quantityMismatches": 0,
+    "duplicateIdentities": 0
+  },
+  "removeEachRequiredDeclaration": "returns_to_no_advertised_inventory_action",
+  "genericQuantityPromotionAllowed": false,
+  "status": "pass"
+}

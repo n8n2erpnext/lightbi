@@ -32,7 +32,7 @@ export type CanonicalSourceCurrencyEvidenceV1 = {
   sourceHash: { algorithm: "sha256"; value: string };
   currency: string;
   provenance: {
-    kind: "declared_scenario_metadata" | "declared_source_metadata";
+    kind: "declared_scenario_metadata" | "declared_source_metadata" | "user_confirmed";
     reference: string;
     referenceHash: { algorithm: "sha256"; value: string };
   };
@@ -49,7 +49,7 @@ export type CanonicalSourceInventorySnapshotEvidenceV1 = {
   sourceId: string;
   sourceHash: { algorithm: "sha256"; value: string };
   provenance: {
-    kind: "declared_scenario_metadata" | "declared_source_metadata";
+    kind: "declared_scenario_metadata" | "declared_source_metadata" | "user_confirmed";
     reference: string;
     referenceHash: { algorithm: "sha256"; value: string };
   };

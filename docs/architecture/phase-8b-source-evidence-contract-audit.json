@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "lightbi.phase8b.source-evidence-contract-audit.v1",
+  "supportedEvidence": ["reporting_currency", "unit_of_measure", "reporting_period", "snapshot_as_of_date", "source_role", "item_identity", "document_identity", "warehouse_location_identity"],
+  "allowedScopes": ["dataset", "source_file", "sheet_table", "physical_column", "canonical_signal_binding"],
+  "provenance": "user_confirmed",
+  "projectionTargets": ["CanonicalSourceCurrencyEvidenceV1", "CanonicalSourceInventorySnapshotEvidenceV1"],
+  "rules": {
+    "currencyRequiresExplicitMonetaryColumns": true,
+    "currencyInferredFromFilenameLocaleOrSymbol": false,
+    "uomRequiresCompatibleQuantityMeaning": true,
+    "snapshotRequiresRoleUomAsOfItemAndWarehouse": true,
+    "sourceRoleActivatesDomain": false,
+    "declarationAuthorizesAction": false,
+    "sourceHashPreserved": true
+  },
+  "status": "pass"
+}

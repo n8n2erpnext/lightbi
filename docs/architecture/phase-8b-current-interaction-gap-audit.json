@@ -1,0 +1,55 @@
+{
+  "schemaVersion": "lightbi.phase8b.current-interaction-gap-audit.v1",
+  "capturedFrom": {
+    "head": "a6a13e3d54de3f3fa38367f326dcd4957cdf620b",
+    "tree": "34770bcda295ea6f75f2d1d2f466e876f826daec",
+    "parent": "61e605201d5f3657e7ea3f3998c07e0e248ce1c3",
+    "descendsFrom": "11803066709d55a629de6c2576b9da9cd94da695",
+    "workingTreeTrackedClean": true
+  },
+  "gaps": [
+    {
+      "id": "canonical_mapping_not_writable",
+      "sourceIdentity": "canonical source boundary fingerprint and generations",
+      "artifactIdentity": "Phase 8A canonical consumer identity",
+      "mappingState": "ambiguous_or_unknown_read_only",
+      "m1State": "unchanged",
+      "m2State": "blocked_or_explanation_only",
+      "m3State": "not_advertised",
+      "uiControl": "legacy mapping control only",
+      "blockers": ["no_canonical_overlay_writer", "legacy_mapping_state_not_consumed_by_canonical_artifact"]
+    },
+    {
+      "id": "gross_profit_known_currency_not_enterable",
+      "sourceIdentity": "derived-accounting-may-vnd.csv@30ef8bf1f4d6f703816d8e84b4d07824cb0a97688fc629461e625f71c4b0a252",
+      "mappingState": "revenue_and_cost_detected",
+      "m1State": "conditional_without_explicit_currency",
+      "m2State": "no_advertised_gross_profit_action",
+      "m3State": "not_reached",
+      "uiControl": "none",
+      "blockers": ["currency_basis_not_explicit"]
+    },
+    {
+      "id": "inventory_known_snapshot_evidence_not_enterable",
+      "sourceIdentity": "derived-inventory-snapshot-may.csv@92d32c8d930a2169f77c9bc23df07e34ed11cc1220a0e5c17d839836f23841b3",
+      "mappingState": "generic_or_ambiguous_quantity_and_identity evidence",
+      "m1State": "blocked",
+      "m2State": "no_advertised_inventory_action",
+      "m3State": "not_reached",
+      "uiControl": "none",
+      "blockers": ["inventory_snapshot_as_of_basis_required"]
+    },
+    {
+      "id": "ui_state_not_persisted_or_rebuilt",
+      "sourceIdentity": "active Simple dataset",
+      "artifactIdentity": "unchanged by legacy UI mapping state",
+      "mappingState": "component_local_only",
+      "m1State": "stale",
+      "m2State": "stale",
+      "m3State": "stale",
+      "uiControl": "legacy independent state owner",
+      "blockers": ["workspace_snapshot_omits_canonical_overlay", "artifact_cache_key_omits_overlay"]
+    }
+  ],
+  "productionBehaviorChangedByThisAudit": false
+}

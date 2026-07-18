@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "lightbi.phase8b.mapping-overlay-contract-audit.v1",
+  "contractVersion": "lightbi.canonical-user-overlay.v1",
+  "implementation": "apps/desktop/src/lib/understanding-core/canonical-user-overlay.ts",
+  "sections": ["mappingDecisions", "sourceEvidenceDeclarations"],
+  "decisionTypes": ["confirm_candidate", "map_to_existing_signal", "ignore_for_semantic_analysis", "reset_to_inferred"],
+  "binding": ["datasetId", "sourceId", "sourceFingerprint", "inspectionGeneration", "profileGeneration", "sheetOrTable"],
+  "decisionFields": ["decisionId", "physicalColumn", "sourceColumnIndex", "selectedCanonicalSignal", "decisionType", "originalCandidateList", "rationaleSource", "createdAt", "supersededDecisionReference"],
+  "properties": {
+    "immutableRevision": true,
+    "nonDestructive": true,
+    "registrySignalCreationAllowed": false,
+    "derivedMetricTargetAllowed": false,
+    "originalCandidateLineageRetained": true,
+    "globalRegistryConfidenceMutation": false
+  },
+  "productionWiring": {
+    "writer": "CanonicalEvidenceReview",
+    "stateOwner": "Home currentDataset.canonicalUserOverlay",
+    "consumer": "getOrBuildCanonicalConsumerArtifact",
+    "legacyIndependentStateOwnerRemoved": true
+  },
+  "status": "pass"
+}

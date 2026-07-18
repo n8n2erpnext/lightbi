@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "lightbi.phase8b.overlay-validation-audit.v1",
+  "validation": {
+    "physicalColumnExistence": "enforced",
+    "registrySignalExistence": "enforced",
+    "fingerprintAndGenerationBinding": "enforced",
+    "derivedMetricTarget": "rejected",
+    "activeMappingConflict": "rejected",
+    "physicalTypeCompatibility": "enforced",
+    "candidateLineage": "enforced",
+    "currencyCodeAndScope": "enforced",
+    "uomAndQuantityCompatibility": "enforced",
+    "isoDateAndPeriodOrder": "enforced",
+    "sourceRoleAuthority": "context_only",
+    "corruptedSerialization": "fail_closed"
+  },
+  "invalidDraftBehavior": "retained for audit but not projected as authority",
+  "abstentionWeakened": false,
+  "status": "pass"
+}

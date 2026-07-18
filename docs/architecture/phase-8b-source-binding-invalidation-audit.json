@@ -1,0 +1,10 @@
+{
+  "schemaVersion": "lightbi.phase8b.source-binding-invalidation-audit.v1",
+  "identityInputs": ["datasetId", "sourceId", "sourceFingerprint", "inspectionGeneration", "profileGeneration", "sheetOrTable", "overlayId"],
+  "onOverlayRevision": ["new_overlay_identity", "new_dataset_state_identity", "new_artifact_identity", "rerun_M1", "rerun_M2", "rerun_M3_on_handoff"],
+  "onSourceReplacement": ["overlay_marked_stale", "overlay_not_projected", "old_handoff_rejected"],
+  "handoffBlockers": ["investigation_handoff_artifact_superseded", "investigation_handoff_overlay_superseded", "investigation_handoff_source_replaced"],
+  "staleAsyncOverwriteProbe": "pass",
+  "originalSourceRowsImmutableProbe": "pass",
+  "status": "pass"
+}

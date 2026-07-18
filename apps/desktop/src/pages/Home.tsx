@@ -27,6 +27,7 @@ import type { WorkspaceUnderstandingState } from '../lib/workspace-understanding
 import { createWorkspaceUnderstandingState, applyBusinessViewSelection, getActiveAnalysisContextLabel } from '../lib/workspace-understanding-state';
 import { DatasetUnderstandingCard } from '../components/analysis/DatasetUnderstandingCard';
 import { UnderstandingNextCard } from '../components/analysis/UnderstandingNextCard';
+import { CanonicalEvidenceReview } from '../components/analysis/CanonicalEvidenceReview';
 import {
   getOrBuildCanonicalConsumerArtifact,
   prepareCanonicalInvestigationHandoff,
@@ -70,8 +71,6 @@ import { calculateDatasetHealth } from '../lib/dataset-health-engine';
 import { DataQualityCard } from '../components/data-intake/DataQualityCard';
 import { DecisionTrustReportCard } from '../components/analysis/DecisionTrustReportCard';
 import { BusinessViewSummaryCard } from '../components/analysis/BusinessViewSummaryCard';
-import type { MappingOverlayAction } from '../lib/mapping-overlay-state';
-import { applyMappingAction } from '../lib/mapping-overlay-state';
 import { useDisplayPreferences } from '../stores/display-preferences-store';
 import { formatValue } from '../lib/display-formatter';
 import { ExecutionRunCoordinator } from '@lightbi/runtime';
@@ -84,6 +83,7 @@ import { downloadProjectSourceFile, uploadProjectSourceFile, type PersistedProje
 import type { GuidedInvestigationResult } from '../lib/guided-investigation-pipeline';
 import type { DatasetUnderstanding } from '../lib/dataset-understanding-contract';
 import { createCanonicalSourceBoundary, type CanonicalFullFileProfileV1, type CanonicalSourceBoundaryV1 } from '../lib/understanding-core/canonical-source-boundary';
+import { parseCanonicalUserOverlay, type CanonicalUserOverlayV1 } from '../lib/understanding-core/canonical-user-overlay';
 
 const WORKSPACE_SESSION_ROW_LIMIT = 250;
 
@@ -110,7 +110,7 @@ function createWorkspaceSessionSnapshot(dataset: any) {
   const semanticRows = limitSessionRows(dataset.semanticRows);
   const understandingRows = limitSessionRows(dataset.understandingRows);
   return {
-    version: 1,
+    version: 2,
     savedAt: new Date().toISOString(),
     rowRetentionLimit: WORKSPACE_SESSION_ROW_LIMIT,
     currentDataset: {
@@ -135,6 +135,7 @@ function createWorkspaceSessionSnapshot(dataset: any) {
       selectedBusinessView: dataset.selectedBusinessView,
       businessFusionOverview: dataset.businessFusionOverview,
       objectKey: dataset.objectKey,
+      canonicalUserOverlay: parseCanonicalUserOverlay(dataset.canonicalUserOverlay),
     },
   };
 }
@@ -294,7 +295,7 @@ export const Home: React.FC = () => {
   const [pendingLocalBatch, setPendingLocalBatch] = useState<PendingLocalFileBatch | null>(null);
   const [lastInspectedFamilies, setLastInspectedFamilies] = useState<DatasetFamily[] | null>(null);
   const [decisionTrustReport, setDecisionTrustReport] = useState<DecisionTrustReport | null>(null);
-  const [, setMappingOverlayActions] = useState<MappingOverlayAction[]>([]);
+  const [canonicalOverlayRebuildState, setCanonicalOverlayRebuildState] = useState<'idle' | 'pending' | 'succeeded' | 'failed'>('idle');
   const inspectionRuns = useRef(new ExecutionRunCoordinator('simple-inspection'));
   const lastAutoSaveSignatureRef = useRef<string>("");
 
@@ -353,6 +354,7 @@ export const Home: React.FC = () => {
     understandingRows: Array.isArray(dataset?.understandingRows) ? dataset.understandingRows.length : 0,
     objectKey: dataset?.objectKey,
     selectedView: dataset?.selectedBusinessView?.id,
+    canonicalOverlayId: parseCanonicalUserOverlay(dataset?.canonicalUserOverlay)?.overlayId ?? null,
   });
 
   const createWorkspaceSessionSaveRequest = (dataset: any): SaveWorkspaceSessionRequest => {
@@ -831,6 +833,7 @@ export const Home: React.FC = () => {
       sourceRowCount: Number(currentDataset.understandingSourceRowCount ?? currentDataset.rows_count ?? canonicalRows.length),
       sheet: currentDataset.selected_sheet ?? undefined,
       sourceBoundary: currentDataset.canonicalSourceBoundary,
+      userOverlay: parseCanonicalUserOverlay(currentDataset.canonicalUserOverlay) ?? undefined,
     });
   }, [canonicalRows, currentDataset]);
 
@@ -838,6 +841,21 @@ export const Home: React.FC = () => {
     () => canonicalArtifact ? projectCanonicalArtifactToUnderstandingNext(canonicalArtifact) : null,
     [canonicalArtifact]
   );
+
+  useEffect(() => {
+    if (canonicalOverlayRebuildState !== 'pending') return;
+    const expected = parseCanonicalUserOverlay(currentDataset?.canonicalUserOverlay)?.overlayId;
+    if (!expected || !canonicalArtifact || canonicalArtifact.overlayIdentity !== expected) return;
+    setCanonicalOverlayRebuildState(canonicalArtifact.status === 'valid' && canonicalArtifact.overlayValidation.valid ? 'succeeded' : 'failed');
+  }, [canonicalArtifact, canonicalOverlayRebuildState, currentDataset?.canonicalUserOverlay]);
+
+  const handleCanonicalOverlayChange = useCallback((overlay: CanonicalUserOverlayV1) => {
+    setCanonicalOverlayRebuildState('pending');
+    setSelectedTopic(null);
+    setResult(null);
+    setPreviewActionId(null);
+    setCurrentDataset((dataset: any) => dataset ? { ...dataset, canonicalUserOverlay: overlay } : dataset);
+  }, []);
 
   const activeBusinessViews = selectedPerspective && guidedInvestigationResult
     ? guidedInvestigationResult.businessViews.filter(v => v.perspectiveId === selectedPerspective)
@@ -947,7 +965,7 @@ export const Home: React.FC = () => {
     setCurrentDataset(null);
     setWorkspaceState(null);
     setDecisionTrustReport(null);
-    setMappingOverlayActions([]);
+    setCanonicalOverlayRebuildState('idle');
 
     // Close menus if they are open
     setIsPlusMenuOpen(false);
@@ -1722,17 +1740,24 @@ export const Home: React.FC = () => {
                   
                   {/* Dataset Understanding Layer */}
                   {datasetUnderstandingNext ? (
-                    <UnderstandingNextCard 
-                      understanding={datasetUnderstandingNext} 
-                      onSelectAction={handleSelectAnalysisAction}
-                    />
+                    <>
+                      <UnderstandingNextCard
+                        understanding={datasetUnderstandingNext}
+                        onSelectAction={handleSelectAnalysisAction}
+                      />
+                      {canonicalArtifact && (
+                        <CanonicalEvidenceReview
+                          artifact={canonicalArtifact}
+                          overlay={parseCanonicalUserOverlay(currentDataset.canonicalUserOverlay)}
+                          rebuildState={canonicalOverlayRebuildState}
+                          onChange={handleCanonicalOverlayChange}
+                        />
+                      )}
+                    </>
                   ) : datasetUnderstanding ? (
                     <DatasetUnderstandingCard 
                       understanding={datasetUnderstanding} 
                       onSelectAction={handleSelectAnalysisAction}
-                      onMappingAction={(action) => {
-                         setMappingOverlayActions(prev => applyMappingAction(prev, action));
-                      }}
                     />
                   ) : null}
 

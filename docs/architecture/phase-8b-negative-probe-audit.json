@@ -1,0 +1,12 @@
+{
+  "schemaVersion": "lightbi.phase8b.negative-probe-audit.v1",
+  "test": "apps/desktop/src/lib/understanding-core/phase-8b-production-evidence-interaction.test.ts",
+  "probeCount": 24,
+  "passed": 24,
+  "failed": 0,
+  "probes": [
+    "mapping_another_fingerprint", "mapping_stale_generation", "nonexistent_signal", "derived_metric_target", "text_identifier_to_money", "conflicting_mappings", "same_header_other_file", "invalid_currency", "currency_wrong_source", "currency_non_money", "uom_shipment_count", "uom_incompatible", "invalid_as_of", "reversed_period", "snapshot_date_on_movement", "role_cannot_activate_domain", "confirmation_cannot_mark_runnable", "file_replacement_invalidates", "stale_async_cannot_overwrite", "superseded_handoff", "reset_restores_inferred", "ignored_not_metric_eligible", "other_sheet_unchanged", "source_data_immutable"
+  ],
+  "outcome": "all_fail_closed_or_remain_non_authoritative",
+  "status": "pass"
+}
