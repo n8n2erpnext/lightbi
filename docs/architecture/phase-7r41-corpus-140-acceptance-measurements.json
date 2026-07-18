@@ -1,0 +1,86 @@
+{
+  "schemaVersion": "lightbi.phase7r41-corpus-140-acceptance-measurements.v1",
+  "corpusVersion": "1.4.0",
+  "cases": 30,
+  "sourceOccurrences": 37,
+  "groups": {
+    "golden": 8,
+    "holdout": 12,
+    "adversarial": 5,
+    "multi_file": 5
+  },
+  "measurements": {
+    "mappingPrecision": {
+      "confirmed": {
+        "correct": 24,
+        "incorrect": 0,
+        "unadjudicated": 20,
+        "precision": 1
+      },
+      "probable": {
+        "correct": 88,
+        "incorrect": 0,
+        "unadjudicated": 218,
+        "precision": 1
+      },
+      "combinedHighConfidence": {
+        "correct": 112,
+        "incorrect": 0,
+        "precision": 1
+      }
+    },
+    "requiredMappingRecall": 0.7578125,
+    "heldoutCoreSignalRecall": 0.9090909090909091,
+    "ambiguityUnknownRate": 0.5332446808510638,
+    "grainAccuracy": 0.8918918918918919,
+    "domainActivationPrecision": 1,
+    "domainActivation": {
+      "predicted": 16,
+      "truePositive": 16,
+      "falsePositive": 0
+    },
+    "runnableActionPrecision": 1,
+    "advertisedActionExecutionSuccess": 1,
+    "actionCounts": {
+      "advertised": 30,
+      "runtimeAllowed": 30,
+      "executed": 30,
+      "falseExecutable": 0
+    },
+    "metricCorrectness": 1,
+    "metricComparisonCounts": {
+      "compared": 20,
+      "matched": 20,
+      "mismatched": 0,
+      "coveredMetricIds": [
+        "delivery_count",
+        "sales_revenue"
+      ]
+    },
+    "falseDecisionSupport": 0,
+    "blockedExplanationCompleteness": 1,
+    "blockedCounts": {
+      "total": 414,
+      "explained": 414
+    },
+    "timeToFirstValidResultMs": {
+      "observations": 11,
+      "minimum": 1136.1879709999994,
+      "median": 1544.0458240000007,
+      "maximum": 3476.005038999996
+    }
+  },
+  "metricMismatches": [],
+  "releaseGates": {
+    "confirmedMappingPrecision": true,
+    "heldoutCoreSignalRecall": true,
+    "domainActivationPrecision": true,
+    "advertisedActionExecution": true,
+    "noFalseExecutableAction": true,
+    "noFalseDecisionSupport": true,
+    "verifiedMetricsExact": true,
+    "blockedExplanationComplete": true
+  },
+  "evaluationOnlyGroupsTuned": false,
+  "historicalCorpus120MeasurementsReclaimed": false
+}

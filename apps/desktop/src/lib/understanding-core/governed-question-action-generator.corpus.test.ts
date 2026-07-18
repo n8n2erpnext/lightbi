@@ -23,7 +23,7 @@ type SourceTruth = { path: string; sheet: string; required: boolean; sha256: str
 type SampleTruth = { id: string; group: Group; provenance: { tuningUse: "allowed" | "forbidden" }; sources: SourceTruth[]; verifiedMetricAnswers: Record<string, number> };
 
 const ROOT = path.resolve(__dirname, "../../../../..");
-const manifest = JSON.parse(fs.readFileSync(path.join(ROOT, "sample-corpus/manifest.json"), "utf8")) as { groundTruthFiles: Array<{ path: string }>; groups: Record<Group, { tuningAllowed: boolean }> };
+const manifest = JSON.parse(fs.readFileSync(path.join(ROOT, "sample-corpus/versions/1.4.0/manifest.json"), "utf8")) as { groundTruthFiles: Array<{ path: string }>; groups: Record<Group, { tuningAllowed: boolean }> };
 const samples = manifest.groundTruthFiles.flatMap((entry) => (JSON.parse(fs.readFileSync(path.join(ROOT, entry.path), "utf8")) as { samples: SampleTruth[] }).samples);
 const cache = new Map<string, CanonicalMetricSourceV1>();
 const stateOrder: Record<GovernedMetricStateV1, number> = { ready: 0, conditionally_ready: 1, blocked: 2, unknown: 3, unsupported: 4, not_applicable: 5 };

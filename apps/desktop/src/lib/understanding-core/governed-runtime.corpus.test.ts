@@ -23,7 +23,7 @@ const ROOT = path.resolve(__dirname, "../../../../..");
 
 describe("Phase 5M3 real-corpus runtime eligibility", () => {
   it("evaluates the verified May sales source without inventing an executable result", () => {
-    const truth = JSON.parse(fs.readFileSync(path.join(ROOT, "sample-corpus/ground-truth/revenue-sales.json"), "utf8")).samples.find((item: any) => item.id === "rev.sales_erp_may_2026");
+    const truth = JSON.parse(fs.readFileSync(path.join(ROOT, "sample-corpus/versions/1.4.0/ground-truth/revenue-sales.json"), "utf8")).samples.find((item: any) => item.id === "rev.sales_erp_may_2026");
     const source = truth.sources[0];
     const file = path.join(ROOT, source.path);
     expect(fs.existsSync(file)).toBe(true);

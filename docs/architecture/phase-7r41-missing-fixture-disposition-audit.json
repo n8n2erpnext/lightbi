@@ -1,0 +1,279 @@
+{
+  "schemaVersion": "lightbi.phase7r41-missing-fixture-disposition-audit.v1",
+  "inventoryCount": 13,
+  "classifications": {
+    "operational_fixture_requires_sanitization": 8,
+    "unsafe_or_unlicensed_for_repository": 4,
+    "unable_to_determine": 1
+  },
+  "sourceHashMatches": true,
+  "files": [
+    {
+      "historicalPath": "sample data/2017-06-22 DANH SACH XEP HANG QUAN LY TOAN QUOC.xlsx",
+      "frozenSha256": "ea15f8c666e75a6ea4117bbb235bf2ac3565d13e1eb06f1db56ad95ac2c9c989",
+      "sampleIds": [
+        "adv.management_merged_header"
+      ],
+      "classification": "operational_fixture_requires_sanitization",
+      "disposition": "deterministically_sanitized_fixture",
+      "acceptanceBehaviors": [
+        "ambiguity:Trung bình điểm 4 tiêu chí ",
+        "blocked:performance_recommendation:score_formula_unknown",
+        "executable:data_quality_review",
+        "grain:summary",
+        "mapping:MSNV Quản lý->employee_id"
+      ]
+    },
+    {
+      "historicalPath": "sample data/BHX_PHIEUXUAT.xlsx",
+      "frozenSha256": "48542ee8aa9d0b9069d329ffc3dc58d141028400257c3eb95f8e62867793641d",
+      "sampleIds": [
+        "fin.bhx_tender_reconciliation",
+        "rev.bhx_pos_export"
+      ],
+      "classification": "operational_fixture_requires_sanitization",
+      "disposition": "deterministically_sanitized_fixture",
+      "acceptanceBehaviors": [
+        "blocked:journal_correctness:unsupported_accounting_scope",
+        "blocked:profitability_analysis:missing_cost_basis",
+        "executable:payment_mix",
+        "executable:receipt_value_trend",
+        "executable:store_revenue_ranking",
+        "executable:tender_mix",
+        "executable:tender_reconciliation",
+        "grain:transaction",
+        "mapping:Khách hàng->customer",
+        "mapping:Ngày xuất->time_period",
+        "mapping:Tiền cà thẻ->payment_card",
+        "mapping:Tiền gửi ngân hàng->payment_bank",
+        "mapping:Tiền mặt khách đưa->payment_cash",
+        "mapping:Tiền phải thu->receivable",
+        "mapping:Tiền thối lại->change_amount",
+        "mapping:Tổng tiền->invoice_total"
+      ]
+    },
+    {
+      "historicalPath": "sample data/Bao_cao_chi_tiet_Ton_kho_vung_tinh_28-12-2024.xlsx",
+      "frozenSha256": "4329115eb0c53c679669303d79e7c12e1e2fa08eaef2b0b6f2537a464c3835cf",
+      "sampleIds": [
+        "inv.provincial_aging_20241228"
+      ],
+      "classification": "operational_fixture_requires_sanitization",
+      "disposition": "deterministically_sanitized_fixture",
+      "acceptanceBehaviors": [
+        "blocked:inventory_turnover:missing_sales_and_average_inventory",
+        "executable:inventory_aging",
+        "executable:location_value_exposure",
+        "grain:snapshot",
+        "mapping: Thời gian tồn ->stock_age",
+        "mapping:Bưu cục hiện tại->current_location",
+        "mapping:Mã phiếu gửi->shipment",
+        "mapping:Ngưỡng tồn->stock_threshold",
+        "mapping:Trạng thái->status",
+        "mapping:Tổng cước \n (đồng)->freight_fee"
+      ]
+    },
+    {
+      "historicalPath": "sample data/PLU ALL FRESH 22.03.2021.xlsx",
+      "frozenSha256": "bdd0a8638b9d126a0cf4c2dfe102a1ced3ed5aedfb9b53c73da196781a7c24a9",
+      "sampleIds": [
+        "inv.plu_product_master"
+      ],
+      "classification": "operational_fixture_requires_sanitization",
+      "disposition": "deterministically_sanitized_fixture",
+      "acceptanceBehaviors": [
+        "blocked:inventory_value:missing_stock_quantity",
+        "blocked:stock_movement:wrong_grain",
+        "executable:product_master_lookup",
+        "grain:master_data",
+        "mapping:Barcode->barcode",
+        "mapping:Mã sản phẩm->sku",
+        "mapping:Nhóm sản phẩm->category",
+        "mapping:Tên sản phẩm->product",
+        "mapping:Đơn vị tính->uom"
+      ]
+    },
+    {
+      "historicalPath": "sample data/Sample - Superstore for Tableau 9.x versions.xls",
+      "frozenSha256": "c6fe1da814aea2e10ad396c9a54cc6130d2365b867fcf99fe7fe39ac5a9afef3",
+      "sampleIds": [
+        "fin.superstore_profit",
+        "rev.superstore_orders"
+      ],
+      "classification": "unsafe_or_unlicensed_for_repository",
+      "disposition": "independent_synthetic_fixture",
+      "acceptanceBehaviors": [
+        "ambiguity:Quantity",
+        "ambiguity:Sales",
+        "blocked:gross_margin:missing_cost_or_margin_basis",
+        "blocked:payment_mix:missing_payment_method",
+        "executable:product_revenue_ranking",
+        "executable:profit_by_product",
+        "executable:profit_trend",
+        "executable:revenue_trend",
+        "grain:transaction",
+        "mapping:Discount->discount",
+        "mapping:Order Date->time_period",
+        "mapping:Order ID->order",
+        "mapping:Product Name->product",
+        "mapping:Profit->profit",
+        "mapping:Quantity->quantity"
+      ]
+    },
+    {
+      "historicalPath": "sample data/TỒN DỰ KIẾN HUBLAN.xlsx",
+      "frozenSha256": "b779e84c77ee80e6d2f8e02aa4a802a2a801b3fbf122929a0aeca1256096d593",
+      "sampleIds": [
+        "inv.hublan_expected_stock"
+      ],
+      "classification": "operational_fixture_requires_sanitization",
+      "disposition": "deterministically_sanitized_fixture",
+      "acceptanceBehaviors": [
+        "blocked:stock_movement:missing_movement_type",
+        "executable:backlog_age_review",
+        "executable:backlog_by_location",
+        "grain:snapshot",
+        "mapping:Bưu Cục Hiện Tại->current_location",
+        "mapping:Mã Phiếu Gửi->shipment",
+        "mapping:Ngày Báo Cáo->report_date",
+        "mapping:Tiền Cước->freight_fee",
+        "mapping:Trạng Thái->status",
+        "mapping:Trọng lượng->weight"
+      ]
+    },
+    {
+      "historicalPath": "sample data/World Bank Indicators.xlsx",
+      "frozenSha256": "4adb07d7d2ab2d41e5967503c70d079a69c086b05ef602c428af3709be850e6b",
+      "sampleIds": [
+        "adv.world_bank_cross_domain"
+      ],
+      "classification": "unsafe_or_unlicensed_for_repository",
+      "disposition": "independent_synthetic_fixture",
+      "acceptanceBehaviors": [
+        "blocked:commerce_decision_support:out_of_wedge_domain",
+        "executable:data_quality_review",
+        "grain:summary",
+        "mapping:Country Name->country",
+        "mapping:Date->time_period"
+      ]
+    },
+    {
+      "historicalPath": "sample data/WorldCupPlayers.xlsx",
+      "frozenSha256": "7d8a61d02b4fa70388cea363b967c1af9606f7259f8cf57152c044f5f461c0e5",
+      "sampleIds": [
+        "adv.world_cup_events"
+      ],
+      "classification": "unsafe_or_unlicensed_for_repository",
+      "disposition": "independent_synthetic_fixture",
+      "acceptanceBehaviors": [
+        "ambiguity:Position",
+        "blocked:commerce_decision_support:out_of_wedge_domain",
+        "executable:data_quality_review",
+        "grain:event",
+        "mapping:Player Name->person",
+        "mapping:Team Initials->team"
+      ]
+    },
+    {
+      "historicalPath": "sample data/bank-additional-full.xlsx",
+      "frozenSha256": "01e63f4291b069eb5dfb4124707aa8dfcca1f3ed3c070b18df0391bba50ee99d",
+      "sampleIds": [
+        "adv.bank_marketing_generic_headers"
+      ],
+      "classification": "unsafe_or_unlicensed_for_repository",
+      "disposition": "independent_synthetic_fixture",
+      "acceptanceBehaviors": [
+        "ambiguity:job",
+        "blocked:finance_decision_support:semantic_context_insufficient",
+        "blocked:marketing_attribution:advertised_only_domain",
+        "executable:data_quality_review",
+        "grain:event",
+        "mapping:campaign->campaign",
+        "mapping:contact->contact",
+        "mapping:duration->duration"
+      ]
+    },
+    {
+      "historicalPath": "sample data/bcctnhapTTKT_19122024.xlsx",
+      "frozenSha256": "2e871cd767c9fc03bca2a3f7e4a050ec6c679d934f124a006ddfa63f0739de8e",
+      "sampleIds": [
+        "ops.ttkt_20241219"
+      ],
+      "classification": "operational_fixture_requires_sanitization",
+      "disposition": "deterministically_sanitized_fixture",
+      "acceptanceBehaviors": [
+        "ambiguity:Đánh giá",
+        "blocked:carrier_cost_impact:missing_carrier_cost",
+        "executable:on_time_vehicle_lookup",
+        "executable:route_on_time_review",
+        "grain:event",
+        "mapping:Biển kiểm soát->vehicle",
+        "mapping:Chuyến xe->trip",
+        "mapping:Mã tải kiện->shipment",
+        "mapping:Tuyến xe->route",
+        "mapping:Tên lái xe->driver",
+        "mapping:Xe đến đúng hẹn->on_time_status"
+      ]
+    },
+    {
+      "historicalPath": "sample data/bcctnhapTTKT_23122024.xlsx",
+      "frozenSha256": "99373be1d5e2b4e67b46c3c1730650b0c38e0112a3b0ac550215313f95771b98",
+      "sampleIds": [
+        "ops.ttkt_20241223"
+      ],
+      "classification": "operational_fixture_requires_sanitization",
+      "disposition": "deterministically_sanitized_fixture",
+      "acceptanceBehaviors": [
+        "ambiguity:Đánh giá",
+        "blocked:carrier_cost_impact:missing_carrier_and_cost",
+        "executable:on_time_vehicle_lookup",
+        "executable:waiting_time_by_route",
+        "grain:event",
+        "mapping:Biển kiểm soát->vehicle",
+        "mapping:Chuyến xe->trip",
+        "mapping:Thời gian chờ->waiting_time",
+        "mapping:Tuyến xe->route",
+        "mapping:Xe đến đúng hẹn->on_time_status"
+      ]
+    },
+    {
+      "historicalPath": "sample data/bcctnhapTTKT_24122024.xlsx",
+      "frozenSha256": "9190c28d88d7a50759ecfa5622f2e31d20147a125dd90d6b40c2de00fd866630",
+      "sampleIds": [
+        "ops.ttkt_20241224"
+      ],
+      "classification": "operational_fixture_requires_sanitization",
+      "disposition": "deterministically_sanitized_fixture",
+      "acceptanceBehaviors": [
+        "ambiguity:Đánh giá thời gian chờ",
+        "blocked:carrier_cost_impact:missing_carrier_and_cost",
+        "executable:arrival_variance_review",
+        "executable:on_time_vehicle_lookup",
+        "grain:event",
+        "mapping:Biển kiểm soát->vehicle",
+        "mapping:Chuyến xe->trip",
+        "mapping:Ngày báo cáo->report_date",
+        "mapping:Thời gian dự kiến đến->eta",
+        "mapping:Xe đến đúng hẹn->on_time_status"
+      ]
+    },
+    {
+      "historicalPath": "sample data/motodetail.xlsx",
+      "frozenSha256": "2ebdd4c6a9f38ed2c7126c7b7426f6475ca9d5cdeb875f296692f50342f78cad",
+      "sampleIds": [
+        "adv.motodetail_dirty_export"
+      ],
+      "classification": "unable_to_determine",
+      "disposition": "independent_synthetic_fixture",
+      "acceptanceBehaviors": [
+        "blocked:aggregate_analysis:header_and_row_type_ambiguity",
+        "executable:data_quality_review",
+        "grain:unknown",
+        "mapping:CHARGE->fee",
+        "mapping:DATE->time_period",
+        "mapping:MET.\nID->row_type"
+      ]
+    }
+  ],
+  "rawValuesRetainedInAudit": false
+}

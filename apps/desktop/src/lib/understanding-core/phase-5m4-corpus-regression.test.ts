@@ -25,7 +25,7 @@ type SourceTruth = { path: string; sheet: string; required: boolean; sha256: str
 type SampleTruth = { id: string; group: Group; provenance: { tuningUse: "allowed" | "forbidden" }; sources: SourceTruth[] };
 
 const ROOT = path.resolve(__dirname, "../../../../..");
-const manifest = JSON.parse(fs.readFileSync(path.join(ROOT, "sample-corpus/manifest.json"), "utf8")) as {
+const manifest = JSON.parse(fs.readFileSync(path.join(ROOT, "sample-corpus/versions/1.4.0/manifest.json"), "utf8")) as {
   corpusVersion: string;
   groups: Record<Group, { tuningAllowed: boolean }>;
   groundTruthFiles: Array<{ path: string }>;

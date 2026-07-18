@@ -1,0 +1,4270 @@
+{
+  "aliasCollisionCases": [
+    {
+      "candidateSignals": [
+        "account",
+        "gl_account"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.001.account",
+      "inputHeader": "account",
+      "normalizedAlias": "account",
+      "registrySurfaces": [
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "achievement",
+        "actual"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.002.actual",
+      "inputHeader": "actual",
+      "normalizedAlias": "actual",
+      "registrySurfaces": [
+        "aliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "doctor",
+        "provider"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.003.bac_si",
+      "inputHeader": "bac si",
+      "normalizedAlias": "bac si",
+      "registrySurfaces": [
+        "aliases",
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "balance",
+        "closing_balance"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.004.balance",
+      "inputHeader": "balance",
+      "normalizedAlias": "balance",
+      "registrySurfaces": [
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "barcode",
+        "sku"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.005.barcode",
+      "inputHeader": "barcode",
+      "normalizedAlias": "barcode",
+      "registrySurfaces": [
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "margin",
+        "margin_pct"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.006.bien_loi_nhuan",
+      "inputHeader": "bien loi nhuan",
+      "normalizedAlias": "bien loi nhuan",
+      "registrySurfaces": [
+        "aliases",
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "buyer",
+        "customer"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.007.buyer",
+      "inputHeader": "buyer",
+      "normalizedAlias": "buyer",
+      "registrySurfaces": [
+        "aliases",
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "capacity",
+        "utilization"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.008.capacity",
+      "inputHeader": "capacity",
+      "normalizedAlias": "capacity",
+      "registrySurfaces": [
+        "aliases",
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "channel",
+        "sales_channel"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.009.channel",
+      "inputHeader": "channel",
+      "normalizedAlias": "channel",
+      "registrySurfaces": [
+        "aliases",
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "expense",
+        "target"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.010.chi_tieu",
+      "inputHeader": "chi tieu",
+      "normalizedAlias": "chi tieu",
+      "registrySurfaces": [
+        "aliases",
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "job_title",
+        "role"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.011.chuc_danh",
+      "inputHeader": "chuc danh",
+      "normalizedAlias": "chuc danh",
+      "registrySurfaces": [
+        "aliases",
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "churn",
+        "retention"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.012.churn",
+      "inputHeader": "churn",
+      "normalizedAlias": "churn",
+      "registrySurfaces": [
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "churn",
+        "retention"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.013.churn_rate",
+      "inputHeader": "churn rate",
+      "normalizedAlias": "churn rate",
+      "registrySurfaces": [
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "doctor",
+        "provider"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.014.clinician",
+      "inputHeader": "clinician",
+      "normalizedAlias": "clinician",
+      "registrySurfaces": [
+        "aliases",
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "cost",
+        "spend"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.015.cost",
+      "inputHeader": "cost",
+      "normalizedAlias": "cost",
+      "registrySurfaces": [
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "coupon",
+        "payment_voucher"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.016.coupon",
+      "inputHeader": "coupon",
+      "normalizedAlias": "coupon",
+      "registrySurfaces": [
+        "aliases",
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "carrier",
+        "driver"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.017.courier",
+      "inputHeader": "courier",
+      "normalizedAlias": "courier",
+      "registrySurfaces": [
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "credit",
+        "deposit_amount"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.018.credit_amount",
+      "inputHeader": "credit amount",
+      "normalizedAlias": "credit amount",
+      "registrySurfaces": [
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "achievement",
+        "actual"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.019.dat_duoc",
+      "inputHeader": "dat duoc",
+      "normalizedAlias": "dat duoc",
+      "registrySurfaces": [
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "debit",
+        "withdrawal_amount"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.020.debit_amount",
+      "inputHeader": "debit amount",
+      "normalizedAlias": "debit amount",
+      "registrySurfaces": [
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "delivery_date",
+        "report_date"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.021.delivery_date",
+      "inputHeader": "delivery date",
+      "normalizedAlias": "delivery date",
+      "registrySurfaces": [
+        "aliases",
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "doctor",
+        "provider"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.022.doctor",
+      "inputHeader": "doctor",
+      "normalizedAlias": "doctor",
+      "registrySurfaces": [
+        "aliases",
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "order",
+        "shipment"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.023.don_hang",
+      "inputHeader": "don hang",
+      "normalizedAlias": "don hang",
+      "registrySurfaces": [
+        "aliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "error_code",
+        "failure_code"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.024.error_code",
+      "inputHeader": "error code",
+      "normalizedAlias": "error code",
+      "registrySurfaces": [
+        "aliases",
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "error_code",
+        "failure_code"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.025.fault_code",
+      "inputHeader": "fault code",
+      "normalizedAlias": "fault code",
+      "registrySurfaces": [
+        "aliases",
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "delivery_fee",
+        "freight_fee"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.026.freight_fee",
+      "inputHeader": "freight fee",
+      "normalizedAlias": "freight fee",
+      "registrySurfaces": [
+        "aliases",
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "delivery_status",
+        "fulfillment_status"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.027.fulfillment_status",
+      "inputHeader": "fulfillment status",
+      "normalizedAlias": "fulfillment status",
+      "registrySurfaces": [
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "contribution",
+        "customer_value"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.028.gia_tri_khach_hang",
+      "inputHeader": "gia tri khach hang",
+      "normalizedAlias": "gia tri khach hang",
+      "registrySurfaces": [
+        "aliases",
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "cost",
+        "total_cost"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.029.gia_von",
+      "inputHeader": "gia von",
+      "normalizedAlias": "gia von",
+      "registrySurfaces": [
+        "aliases",
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "margin",
+        "margin_pct"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.030.gross_margin",
+      "inputHeader": "gross margin",
+      "normalizedAlias": "gross margin",
+      "registrySurfaces": [
+        "aliases",
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "contract_id",
+        "project"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.031.hop_dong",
+      "inputHeader": "hop dong",
+      "normalizedAlias": "hop dong",
+      "registrySurfaces": [
+        "aliases",
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "inbound",
+        "stock_movement"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.032.inbound",
+      "inputHeader": "inbound",
+      "normalizedAlias": "inbound",
+      "registrySurfaces": [
+        "aliases",
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "job_title",
+        "role"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.033.job_title",
+      "inputHeader": "job title",
+      "normalizedAlias": "job title",
+      "registrySurfaces": [
+        "aliases",
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "channel",
+        "sales_channel"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.034.kenh_ban",
+      "inputHeader": "kenh ban",
+      "normalizedAlias": "kenh ban",
+      "registrySurfaces": [
+        "aliases",
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "coach",
+        "lead"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.035.lead",
+      "inputHeader": "lead",
+      "normalizedAlias": "lead",
+      "registrySurfaces": [
+        "aliases",
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "duration",
+        "lead_time"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.036.lead_time",
+      "inputHeader": "lead time",
+      "normalizedAlias": "lead time",
+      "registrySurfaces": [
+        "aliases",
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "account",
+        "company_code"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.037.legal_entity",
+      "inputHeader": "legal entity",
+      "normalizedAlias": "legal entity",
+      "registrySurfaces": [
+        "aliases",
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "category",
+        "item_type"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.038.loai_hang",
+      "inputHeader": "loai hang",
+      "normalizedAlias": "loai hang",
+      "registrySurfaces": [
+        "aliases",
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "contribution",
+        "customer_value"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.039.ltv",
+      "inputHeader": "ltv",
+      "normalizedAlias": "ltv",
+      "registrySurfaces": [
+        "aliases",
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "margin",
+        "margin_pct"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.040.margin_pct",
+      "inputHeader": "margin pct",
+      "normalizedAlias": "margin pct",
+      "registrySurfaces": [
+        "aliases",
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "margin",
+        "margin_pct"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.041.margin_percent",
+      "inputHeader": "margin percent",
+      "normalizedAlias": "margin percent",
+      "registrySurfaces": [
+        "aliases",
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "material",
+        "product"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.042.mat_hang",
+      "inputHeader": "mat hang",
+      "normalizedAlias": "mat hang",
+      "registrySurfaces": [
+        "aliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "net_revenue",
+        "revenue"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.043.net_revenue",
+      "inputHeader": "net revenue",
+      "normalizedAlias": "net revenue",
+      "registrySurfaces": [
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "report_date",
+        "time_period"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.044.ngay",
+      "inputHeader": "ngay",
+      "normalizedAlias": "ngay",
+      "registrySurfaces": [
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "stock_status",
+        "stock_threshold"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.045.nguong_ton",
+      "inputHeader": "nguong ton",
+      "normalizedAlias": "nguong ton",
+      "registrySurfaces": [
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "on_time_rate",
+        "on_time_status"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.046.on_time",
+      "inputHeader": "on time",
+      "normalizedAlias": "on time",
+      "registrySurfaces": [
+        "aliases",
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "order",
+        "ordered_qty"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.047.order_qty",
+      "inputHeader": "order qty",
+      "normalizedAlias": "order qty",
+      "registrySurfaces": [
+        "aliases",
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "outbound",
+        "stock_movement"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.048.outbound",
+      "inputHeader": "outbound",
+      "normalizedAlias": "outbound",
+      "registrySurfaces": [
+        "aliases",
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "agent",
+        "owner"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.049.owner",
+      "inputHeader": "owner",
+      "normalizedAlias": "owner",
+      "registrySurfaces": [
+        "aliases",
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "plan_name",
+        "shipment"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.050.package",
+      "inputHeader": "package",
+      "normalizedAlias": "package",
+      "registrySurfaces": [
+        "aliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "plan_name",
+        "target"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.051.plan",
+      "inputHeader": "plan",
+      "normalizedAlias": "plan",
+      "registrySurfaces": [
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "job_title",
+        "role"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.052.position",
+      "inputHeader": "position",
+      "normalizedAlias": "position",
+      "registrySurfaces": [
+        "aliases",
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "eta",
+        "sla"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.053.promise_date",
+      "inputHeader": "promise date",
+      "normalizedAlias": "promise date",
+      "registrySurfaces": [
+        "aliases",
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "quantity",
+        "stock_qty"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.054.qty",
+      "inputHeader": "qty",
+      "normalizedAlias": "qty",
+      "registrySurfaces": [
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "quantity",
+        "stock_qty"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.055.quantity",
+      "inputHeader": "quantity",
+      "normalizedAlias": "quantity",
+      "registrySurfaces": [
+        "aliases",
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "rating_score",
+        "satisfaction"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.056.rating",
+      "inputHeader": "rating",
+      "normalizedAlias": "rating",
+      "registrySurfaces": [
+        "aliases",
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "inbound",
+        "receipt"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.057.receipt",
+      "inputHeader": "receipt",
+      "normalizedAlias": "receipt",
+      "registrySurfaces": [
+        "aliases",
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "change_amount",
+        "refund"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.058.refund",
+      "inputHeader": "refund",
+      "normalizedAlias": "refund",
+      "registrySurfaces": [
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "change_amount",
+        "refund"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.059.refund_amount",
+      "inputHeader": "refund amount",
+      "normalizedAlias": "refund amount",
+      "registrySurfaces": [
+        "aliases",
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "churn",
+        "retention"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.060.roi_bo",
+      "inputHeader": "roi bo",
+      "normalizedAlias": "roi bo",
+      "registrySurfaces": [
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "permission_role",
+        "role"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.061.role",
+      "inputHeader": "role",
+      "normalizedAlias": "role",
+      "registrySurfaces": [
+        "aliases",
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "endpoint",
+        "route"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.062.route",
+      "inputHeader": "route",
+      "normalizedAlias": "route",
+      "registrySurfaces": [
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "revenue",
+        "sales"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.063.sales",
+      "inputHeader": "sales",
+      "normalizedAlias": "sales",
+      "registrySurfaces": [
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "channel",
+        "sales_channel"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.064.sales_channel",
+      "inputHeader": "sales channel",
+      "normalizedAlias": "sales channel",
+      "registrySurfaces": [
+        "aliases",
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "pipeline_stage",
+        "stage_name"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.065.sales_stage",
+      "inputHeader": "sales stage",
+      "normalizedAlias": "sales stage",
+      "registrySurfaces": [
+        "aliases",
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "quality_score",
+        "rating_score"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.066.score",
+      "inputHeader": "score",
+      "normalizedAlias": "score",
+      "registrySurfaces": [
+        "aliases",
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "maintenance_cost",
+        "support_cost"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.067.service_cost",
+      "inputHeader": "service cost",
+      "normalizedAlias": "service cost",
+      "registrySurfaces": [
+        "aliases",
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "carrier",
+        "driver"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.068.shipper",
+      "inputHeader": "shipper",
+      "normalizedAlias": "shipper",
+      "registrySurfaces": [
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "quantity",
+        "stock_qty"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.069.sl",
+      "inputHeader": "sl",
+      "normalizedAlias": "sl",
+      "registrySurfaces": [
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "quantity",
+        "stock_qty"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.070.so_luong",
+      "inputHeader": "so luong",
+      "normalizedAlias": "so luong",
+      "registrySurfaces": [
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "inventory",
+        "stock_qty"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.071.so_luong_ton",
+      "inputHeader": "so luong ton",
+      "normalizedAlias": "so luong ton",
+      "registrySurfaces": [
+        "aliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "pipeline_stage",
+        "stage_name"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.072.stage",
+      "inputHeader": "stage",
+      "normalizedAlias": "stage",
+      "registrySurfaces": [
+        "aliases",
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "effective_date",
+        "hire_date"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.073.start_date",
+      "inputHeader": "start date",
+      "normalizedAlias": "start date",
+      "registrySurfaces": [
+        "aliases",
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "lead_status",
+        "status",
+        "ticket_status"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.074.status",
+      "inputHeader": "status",
+      "normalizedAlias": "status",
+      "registrySurfaces": [
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "bin_location",
+        "storage_location"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.075.storage_location",
+      "inputHeader": "storage location",
+      "normalizedAlias": "storage location",
+      "registrySurfaces": [
+        "aliases",
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "gl_account",
+        "user_login"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.076.tai_khoan",
+      "inputHeader": "tai khoan",
+      "normalizedAlias": "tai khoan",
+      "registrySurfaces": [
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "department",
+        "team"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.077.team",
+      "inputHeader": "team",
+      "normalizedAlias": "team",
+      "registrySurfaces": [
+        "aliases",
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "device_type",
+        "machine"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.078.thiet_bi",
+      "inputHeader": "thiet bi",
+      "normalizedAlias": "thiet bi",
+      "registrySurfaces": [
+        "aliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "lead_time",
+        "resolution_time"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.079.thoi_gian_xu_ly",
+      "inputHeader": "thoi gian xu ly",
+      "normalizedAlias": "thoi gian xu ly",
+      "registrySurfaces": [
+        "aliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "achievement",
+        "actual"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.080.thuc_te",
+      "inputHeader": "thuc te",
+      "normalizedAlias": "thuc te",
+      "registrySurfaces": [
+        "aliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "rent_amount",
+        "tax_amount"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.081.tien_thue",
+      "inputHeader": "tien thue",
+      "normalizedAlias": "tien thue",
+      "registrySurfaces": [
+        "aliases",
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "return_document",
+        "returns"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.082.tra_hang",
+      "inputHeader": "tra hang",
+      "normalizedAlias": "tra hang",
+      "registrySurfaces": [
+        "aliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "unit",
+        "uom"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.083.unit",
+      "inputHeader": "unit",
+      "normalizedAlias": "unit",
+      "registrySurfaces": [
+        "aliases",
+        "headerAliases"
+      ]
+    },
+    {
+      "candidateSignals": [
+        "quantity",
+        "stock_qty"
+      ],
+      "contextualResolution": {
+        "allowedFinalStates": [
+          "ambiguous",
+          "probable",
+          "confirmed"
+        ],
+        "forbiddenEvidence": [
+          "header_only"
+        ],
+        "policy": "may_resolve_with_context",
+        "requiredEvidence": [
+          "compatible_value_or_type",
+          "sibling_or_source_context",
+          "score_margin_or_user_mapping"
+        ]
+      },
+      "headerOnly": {
+        "expectedState": "ambiguous",
+        "forbiddenFinalStates": [
+          "probable",
+          "confirmed"
+        ],
+        "reasonCode": "normalized_alias_collision"
+      },
+      "id": "collision.084.units",
+      "inputHeader": "units",
+      "normalizedAlias": "units",
+      "registrySurfaces": [
+        "headerAliases"
+      ]
+    }
+  ],
+  "category": "adversarial_dirty",
+  "corpusVersion": "1.4.0",
+  "evidencePolicy": "repository_safe_release_acceptance",
+  "samples": [
+    {
+      "category": "adversarial_dirty",
+      "corpusVersion": "1.4.0",
+      "dataset": {
+        "expectedArchetype": "dirty_operational_export",
+        "expectedGrain": "unknown",
+        "grainTruth": {
+          "candidateKeys": [
+            [
+              "__PowerAppsId__"
+            ]
+          ],
+          "coarseGrain": "unknown",
+          "measureExpectations": [
+            {
+              "additiveAcrossRows": true,
+              "physicalColumn": "CHARGE",
+              "reasonCode": "row_additive_measure",
+              "repeatedWithinParent": true
+            }
+          ],
+          "parentEntity": "work_order",
+          "parentKeys": [
+            [
+              "ORD.\nCODE"
+            ]
+          ],
+          "rowEntity": "service_record"
+        }
+      },
+      "group": "adversarial",
+      "id": "adv.motodetail_dirty_export",
+      "profilingExpectations": {
+        "columnPhysicalTypes": [
+          {
+            "allowedParseExpectations": [
+              "mixed_type_must_be_reported"
+            ],
+            "allowedTypes": [
+              "excel_serial_date",
+              "number"
+            ],
+            "physicalColumn": "DATE",
+            "sourcePaths": [
+              "sample-corpus/versions/1.4.0/fixtures/service-detail-synthetic.xlsx"
+            ]
+          },
+          {
+            "allowedParseExpectations": [
+              "preserve_text"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "physicalColumn": "__PowerAppsId__",
+            "sourcePaths": [
+              "sample-corpus/versions/1.4.0/fixtures/service-detail-synthetic.xlsx"
+            ]
+          },
+          {
+            "allowedParseExpectations": [
+              "preserve_text"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "physicalColumn": "AREA\nCLASS",
+            "sourcePaths": [
+              "sample-corpus/versions/1.4.0/fixtures/service-detail-synthetic.xlsx"
+            ]
+          },
+          {
+            "allowedParseExpectations": [
+              "numeric"
+            ],
+            "allowedTypes": [
+              "number"
+            ],
+            "physicalColumn": "CHARGE",
+            "sourcePaths": [
+              "sample-corpus/versions/1.4.0/fixtures/service-detail-synthetic.xlsx"
+            ]
+          },
+          {
+            "allowedParseExpectations": [
+              "preserve_text"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "physicalColumn": "MET.\nID",
+            "sourcePaths": [
+              "sample-corpus/versions/1.4.0/fixtures/service-detail-synthetic.xlsx"
+            ]
+          }
+        ],
+        "issues": {
+          "allowed": [
+            {
+              "code": "mixed_type",
+              "physicalColumn": "DATE"
+            },
+            {
+              "code": "formula_error",
+              "physicalColumn": "AREA\nCLASS"
+            }
+          ],
+          "expected": [
+            {
+              "code": "technical_column",
+              "physicalColumn": "__PowerAppsId__"
+            }
+          ],
+          "forbidden": [
+            {
+              "code": "silent_parse_drop",
+              "physicalColumn": null
+            }
+          ]
+        },
+        "representativeEvidence": {
+          "minimumDistinctRegions": 4,
+          "mustPreservePhysicalColumnNames": true,
+          "mustReportUnparsedValues": true,
+          "requiredColumns": [
+            "DATE",
+            "__PowerAppsId__",
+            "AREA\nCLASS",
+            "CHARGE",
+            "MET.\nID"
+          ],
+          "requiredSamplingRegions": [
+            "head",
+            "middle",
+            "tail",
+            "deterministic_random"
+          ]
+        },
+        "sourceProfiles": [
+          {
+            "headerPosition": {
+              "basis": "verified_repository_release_fixture_read",
+              "zeroBasedRowIndex": 0
+            },
+            "sheet": "Bản sao của Moto Detail",
+            "sourcePath": "sample-corpus/versions/1.4.0/fixtures/service-detail-synthetic.xlsx",
+            "verifiedRowCount": 111
+          }
+        ],
+        "verifiedRowCount": 111
+      },
+      "provenance": {
+        "dataHandling": "repository_controlled_release_acceptance_data",
+        "evidenceClass": "synthetic_equivalent_acceptance_fixture",
+        "kind": "repository_release_fixture",
+        "notes": "Corpus 1.4.0 fixture with independent hashes and profiling truth. Acceptance-purpose lineage: adv.motodetail_dirty_export; no corpus 1.2.0 measurement is re-claimed.",
+        "sourceSystem": "powerapps_manual_export",
+        "tuningUse": "forbidden"
+      },
+      "recognition": {
+        "expectedAmbiguousMappings": [],
+        "expectedUnknownBusinessColumns": [
+          "NOTE"
+        ],
+        "forbiddenMappings": [
+          {
+            "canonicalSignal": "order",
+            "physicalColumn": "__PowerAppsId__",
+            "reasonCode": "semantic_mismatch"
+          },
+          {
+            "canonicalSignal": "status",
+            "physicalColumn": "__PowerAppsId__",
+            "reasonCode": "technical_column"
+          },
+          {
+            "canonicalSignal": "category",
+            "physicalColumn": "AREA\nCLASS",
+            "reasonCode": "semantic_mismatch"
+          }
+        ],
+        "requiredMappings": [
+          {
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ],
+            "canonicalSignal": "time_period",
+            "physicalColumn": "DATE"
+          },
+          {
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ],
+            "canonicalSignal": "fee",
+            "physicalColumn": "CHARGE"
+          },
+          {
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ],
+            "canonicalSignal": "row_type",
+            "physicalColumn": "MET.\nID"
+          }
+        ]
+      },
+      "sources": [
+        {
+          "path": "sample-corpus/versions/1.4.0/fixtures/service-detail-synthetic.xlsx",
+          "required": true,
+          "sha256": "4b8c9c6b1efcc3f51f9bcc7c6a3ac7b9a13c3640bc57f8145d48cf394d8b1afd",
+          "sheet": "Bản sao của Moto Detail"
+        }
+      ],
+      "support": {
+        "allowedDomainPacks": [],
+        "blockedDomainPacks": [
+          "revenue_sales",
+          "inventory_snapshot",
+          "inventory_movement",
+          "delivery_operations",
+          "finance_profitability",
+          "customer_contribution",
+          "performance_target_actual"
+        ],
+        "expectedBlockedActions": [
+          {
+            "actionId": "aggregate_analysis",
+            "reasonCode": "header_and_row_type_ambiguity"
+          }
+        ],
+        "expectedExecutableActions": [
+          "data_quality_review"
+        ]
+      },
+      "verifiedMetricAnswers": {}
+    },
+    {
+      "category": "adversarial_dirty",
+      "corpusVersion": "1.4.0",
+      "dataset": {
+        "expectedArchetype": "management_ranking_with_title_rows",
+        "expectedGrain": "summary",
+        "grainTruth": {
+          "candidateKeys": [
+            [
+              "MSNV Quản lý"
+            ]
+          ],
+          "coarseGrain": "summary",
+          "measureExpectations": [
+            {
+              "additiveAcrossRows": false,
+              "physicalColumn": "Tổng sao từ T6/2016 đến T05/2017",
+              "reasonCode": "non_additive_or_ratio_measure",
+              "repeatedWithinParent": false
+            }
+          ],
+          "parentEntity": null,
+          "parentKeys": [],
+          "rowEntity": "manager_ranking"
+        }
+      },
+      "group": "adversarial",
+      "id": "adv.management_merged_header",
+      "profilingExpectations": {
+        "columnPhysicalTypes": [
+          {
+            "allowedParseExpectations": [
+              "numeric"
+            ],
+            "allowedTypes": [
+              "number"
+            ],
+            "physicalColumn": "MSNV Quản lý",
+            "sourcePaths": [
+              "sample-corpus/versions/1.4.0/fixtures/management-ranking-sanitized.xlsx"
+            ]
+          },
+          {
+            "allowedParseExpectations": [
+              "numeric"
+            ],
+            "allowedTypes": [
+              "number"
+            ],
+            "physicalColumn": "Xếp hạng",
+            "sourcePaths": [
+              "sample-corpus/versions/1.4.0/fixtures/management-ranking-sanitized.xlsx"
+            ]
+          },
+          {
+            "allowedParseExpectations": [
+              "numeric"
+            ],
+            "allowedTypes": [
+              "number"
+            ],
+            "physicalColumn": "Tổng sao từ T6/2016 đến T05/2017",
+            "sourcePaths": [
+              "sample-corpus/versions/1.4.0/fixtures/management-ranking-sanitized.xlsx"
+            ]
+          },
+          {
+            "allowedParseExpectations": [
+              "numeric"
+            ],
+            "allowedTypes": [
+              "number"
+            ],
+            "physicalColumn": "Trung bình điểm 4 tiêu chí ",
+            "sourcePaths": [
+              "sample-corpus/versions/1.4.0/fixtures/management-ranking-sanitized.xlsx"
+            ]
+          }
+        ],
+        "issues": {
+          "allowed": [],
+          "expected": [
+            {
+              "code": "header_offset",
+              "physicalColumn": null
+            }
+          ],
+          "forbidden": [
+            {
+              "code": "silent_parse_drop",
+              "physicalColumn": null
+            }
+          ]
+        },
+        "representativeEvidence": {
+          "minimumDistinctRegions": 4,
+          "mustPreservePhysicalColumnNames": true,
+          "mustReportUnparsedValues": true,
+          "requiredColumns": [
+            "MSNV Quản lý",
+            "Xếp hạng",
+            "Tổng sao từ T6/2016 đến T05/2017",
+            "Trung bình điểm 4 tiêu chí "
+          ],
+          "requiredSamplingRegions": [
+            "head",
+            "middle",
+            "tail",
+            "deterministic_random"
+          ]
+        },
+        "sourceProfiles": [
+          {
+            "headerPosition": {
+              "basis": "verified_repository_release_fixture_read",
+              "zeroBasedRowIndex": 1
+            },
+            "sheet": "2200 Quản lý được ĐK Tỉnh",
+            "sourcePath": "sample-corpus/versions/1.4.0/fixtures/management-ranking-sanitized.xlsx",
+            "verifiedRowCount": 240
+          }
+        ],
+        "verifiedRowCount": 240
+      },
+      "provenance": {
+        "dataHandling": "repository_controlled_release_acceptance_data",
+        "evidenceClass": "privacy_sanitized_operational_shape_evidence",
+        "kind": "repository_release_fixture",
+        "notes": "Corpus 1.4.0 fixture with independent hashes and profiling truth. Acceptance-purpose lineage: adv.management_merged_header; no corpus 1.2.0 measurement is re-claimed.",
+        "sourceSystem": "manual_management_report",
+        "tuningUse": "forbidden"
+      },
+      "recognition": {
+        "expectedAmbiguousMappings": [
+          {
+            "candidateSignals": [
+              "rating_score",
+              "quality_score"
+            ],
+            "contextualResolution": {
+              "allowedFinalStates": [
+                "ambiguous",
+                "probable",
+                "confirmed"
+              ],
+              "forbiddenEvidence": [
+                "header_only"
+              ],
+              "policy": "may_resolve_with_context",
+              "requiredEvidence": [
+                "value_distribution",
+                "physical_type",
+                "dataset_grain",
+                "sibling_columns"
+              ],
+              "resolvedCanonicalSignal": null
+            },
+            "evidenceScope": "header_only",
+            "headerOnlyExpectedState": "ambiguous",
+            "physicalColumn": "Trung bình điểm 4 tiêu chí ",
+            "reasonCode": "normalized_alias_collision"
+          }
+        ],
+        "expectedUnknownBusinessColumns": [
+          "Xếp hạng"
+        ],
+        "forbiddenMappings": [
+          {
+            "canonicalSignal": "revenue",
+            "physicalColumn": "Xếp hạng",
+            "reasonCode": "semantic_mismatch"
+          },
+          {
+            "canonicalSignal": "sales",
+            "physicalColumn": "Tổng sao từ T6/2016 đến T05/2017",
+            "reasonCode": "semantic_mismatch"
+          }
+        ],
+        "requiredMappings": [
+          {
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ],
+            "canonicalSignal": "employee_id",
+            "physicalColumn": "MSNV Quản lý"
+          }
+        ]
+      },
+      "sources": [
+        {
+          "path": "sample-corpus/versions/1.4.0/fixtures/management-ranking-sanitized.xlsx",
+          "required": true,
+          "sha256": "506fad8af114ac88257587b632fbf0a3f7d94de6552c67b50ceee375f32aefdf",
+          "sheet": "2200 Quản lý được ĐK Tỉnh"
+        }
+      ],
+      "support": {
+        "allowedDomainPacks": [],
+        "blockedDomainPacks": [
+          "revenue_sales",
+          "inventory_snapshot",
+          "inventory_movement",
+          "delivery_operations",
+          "finance_profitability",
+          "customer_contribution",
+          "performance_target_actual"
+        ],
+        "expectedBlockedActions": [
+          {
+            "actionId": "performance_recommendation",
+            "reasonCode": "score_formula_unknown"
+          }
+        ],
+        "expectedExecutableActions": [
+          "data_quality_review"
+        ]
+      },
+      "verifiedMetricAnswers": {}
+    },
+    {
+      "category": "adversarial_dirty",
+      "corpusVersion": "1.4.0",
+      "dataset": {
+        "expectedArchetype": "country_indicator_panel",
+        "expectedGrain": "summary",
+        "grainTruth": {
+          "candidateKeys": [
+            [
+              "Country Name",
+              "Date"
+            ]
+          ],
+          "coarseGrain": "summary",
+          "measureExpectations": [
+            {
+              "additiveAcrossRows": false,
+              "physicalColumn": "Finance: GDP (current US$)",
+              "reasonCode": "non_additive_or_ratio_measure",
+              "repeatedWithinParent": true
+            }
+          ],
+          "parentEntity": "country",
+          "parentKeys": [
+            [
+              "Country Name"
+            ]
+          ],
+          "rowEntity": "country_period_indicator"
+        }
+      },
+      "group": "adversarial",
+      "id": "adv.world_bank_cross_domain",
+      "profilingExpectations": {
+        "columnPhysicalTypes": [
+          {
+            "allowedParseExpectations": [
+              "preserve_text"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "physicalColumn": "Country Name",
+            "sourcePaths": [
+              "sample-corpus/versions/1.4.0/fixtures/public-indicators-synthetic.xlsx"
+            ]
+          },
+          {
+            "allowedParseExpectations": [
+              "date_semantics_require_validation"
+            ],
+            "allowedTypes": [
+              "excel_serial_date",
+              "number"
+            ],
+            "physicalColumn": "Date",
+            "sourcePaths": [
+              "sample-corpus/versions/1.4.0/fixtures/public-indicators-synthetic.xlsx"
+            ]
+          },
+          {
+            "allowedParseExpectations": [
+              "numeric"
+            ],
+            "allowedTypes": [
+              "number"
+            ],
+            "physicalColumn": "Finance: GDP (current US$)",
+            "sourcePaths": [
+              "sample-corpus/versions/1.4.0/fixtures/public-indicators-synthetic.xlsx"
+            ]
+          },
+          {
+            "allowedParseExpectations": [
+              "numeric"
+            ],
+            "allowedTypes": [
+              "number"
+            ],
+            "physicalColumn": "Health: Health expenditure per capita (current US$)",
+            "sourcePaths": [
+              "sample-corpus/versions/1.4.0/fixtures/public-indicators-synthetic.xlsx"
+            ]
+          }
+        ],
+        "issues": {
+          "allowed": [
+            {
+              "code": "null_values",
+              "physicalColumn": null
+            }
+          ],
+          "expected": [],
+          "forbidden": [
+            {
+              "code": "silent_parse_drop",
+              "physicalColumn": null
+            }
+          ]
+        },
+        "representativeEvidence": {
+          "minimumDistinctRegions": 4,
+          "mustPreservePhysicalColumnNames": true,
+          "mustReportUnparsedValues": true,
+          "requiredColumns": [
+            "Country Name",
+            "Date",
+            "Finance: GDP (current US$)",
+            "Health: Health expenditure per capita (current US$)"
+          ],
+          "requiredSamplingRegions": [
+            "head",
+            "middle",
+            "tail",
+            "deterministic_random"
+          ]
+        },
+        "sourceProfiles": [
+          {
+            "headerPosition": {
+              "basis": "verified_repository_release_fixture_read",
+              "zeroBasedRowIndex": 0
+            },
+            "sheet": "Data by country",
+            "sourcePath": "sample-corpus/versions/1.4.0/fixtures/public-indicators-synthetic.xlsx",
+            "verifiedRowCount": 240
+          }
+        ],
+        "verifiedRowCount": 240
+      },
+      "provenance": {
+        "dataHandling": "repository_controlled_release_acceptance_data",
+        "evidenceClass": "synthetic_equivalent_acceptance_fixture",
+        "kind": "repository_release_fixture",
+        "notes": "Corpus 1.4.0 fixture with independent hashes and profiling truth. Acceptance-purpose lineage: adv.world_bank_cross_domain; no corpus 1.2.0 measurement is re-claimed.",
+        "sourceSystem": "public_statistical_dataset",
+        "tuningUse": "forbidden"
+      },
+      "recognition": {
+        "expectedAmbiguousMappings": [],
+        "expectedUnknownBusinessColumns": [],
+        "forbiddenMappings": [
+          {
+            "canonicalSignal": "revenue",
+            "physicalColumn": "Finance: GDP (current US$)",
+            "reasonCode": "semantic_mismatch"
+          },
+          {
+            "canonicalSignal": "expense",
+            "physicalColumn": "Health: Health expenditure per capita (current US$)",
+            "reasonCode": "semantic_mismatch"
+          }
+        ],
+        "requiredMappings": [
+          {
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ],
+            "canonicalSignal": "country",
+            "physicalColumn": "Country Name"
+          },
+          {
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ],
+            "canonicalSignal": "time_period",
+            "physicalColumn": "Date"
+          }
+        ]
+      },
+      "sources": [
+        {
+          "path": "sample-corpus/versions/1.4.0/fixtures/public-indicators-synthetic.xlsx",
+          "required": true,
+          "sha256": "b24a841cfc400fa746271729b96e95e090e005f9d99022415660824021071a58",
+          "sheet": "Data by country"
+        }
+      ],
+      "support": {
+        "allowedDomainPacks": [],
+        "blockedDomainPacks": [
+          "revenue_sales",
+          "inventory_snapshot",
+          "inventory_movement",
+          "delivery_operations",
+          "finance_profitability",
+          "customer_contribution",
+          "performance_target_actual"
+        ],
+        "expectedBlockedActions": [
+          {
+            "actionId": "commerce_decision_support",
+            "reasonCode": "out_of_wedge_domain"
+          }
+        ],
+        "expectedExecutableActions": [
+          "data_quality_review"
+        ]
+      },
+      "verifiedMetricAnswers": {}
+    },
+    {
+      "category": "adversarial_dirty",
+      "corpusVersion": "1.4.0",
+      "dataset": {
+        "expectedArchetype": "sports_lineup_events",
+        "expectedGrain": "event",
+        "grainTruth": {
+          "candidateKeys": [
+            [
+              "MatchID",
+              "Player Name"
+            ]
+          ],
+          "coarseGrain": "event",
+          "measureExpectations": [
+            {
+              "additiveAcrossRows": false,
+              "physicalColumn": "Shirt Number",
+              "reasonCode": "non_additive_or_ratio_measure",
+              "repeatedWithinParent": true
+            }
+          ],
+          "parentEntity": "match",
+          "parentKeys": [
+            [
+              "MatchID"
+            ]
+          ],
+          "rowEntity": "player_match_event"
+        }
+      },
+      "group": "adversarial",
+      "id": "adv.world_cup_events",
+      "profilingExpectations": {
+        "columnPhysicalTypes": [
+          {
+            "allowedParseExpectations": [
+              "preserve_text"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "physicalColumn": "Player Name",
+            "sourcePaths": [
+              "sample-corpus/versions/1.4.0/fixtures/event-participants-synthetic.xlsx"
+            ]
+          },
+          {
+            "allowedParseExpectations": [
+              "preserve_text"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "physicalColumn": "Team Initials",
+            "sourcePaths": [
+              "sample-corpus/versions/1.4.0/fixtures/event-participants-synthetic.xlsx"
+            ]
+          },
+          {
+            "allowedParseExpectations": [
+              "numeric"
+            ],
+            "allowedTypes": [
+              "number"
+            ],
+            "physicalColumn": "MatchID",
+            "sourcePaths": [
+              "sample-corpus/versions/1.4.0/fixtures/event-participants-synthetic.xlsx"
+            ]
+          },
+          {
+            "allowedParseExpectations": [
+              "numeric"
+            ],
+            "allowedTypes": [
+              "number"
+            ],
+            "physicalColumn": "Shirt Number",
+            "sourcePaths": [
+              "sample-corpus/versions/1.4.0/fixtures/event-participants-synthetic.xlsx"
+            ]
+          },
+          {
+            "allowedParseExpectations": [
+              "preserve_text"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "physicalColumn": "Position",
+            "sourcePaths": [
+              "sample-corpus/versions/1.4.0/fixtures/event-participants-synthetic.xlsx"
+            ]
+          },
+          {
+            "allowedParseExpectations": [
+              "preserve_text"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "physicalColumn": "Event",
+            "sourcePaths": [
+              "sample-corpus/versions/1.4.0/fixtures/event-participants-synthetic.xlsx"
+            ]
+          }
+        ],
+        "issues": {
+          "allowed": [],
+          "expected": [],
+          "forbidden": [
+            {
+              "code": "silent_parse_drop",
+              "physicalColumn": null
+            }
+          ]
+        },
+        "representativeEvidence": {
+          "minimumDistinctRegions": 4,
+          "mustPreservePhysicalColumnNames": true,
+          "mustReportUnparsedValues": true,
+          "requiredColumns": [
+            "Player Name",
+            "Team Initials",
+            "MatchID",
+            "Shirt Number",
+            "Position",
+            "Event"
+          ],
+          "requiredSamplingRegions": [
+            "head",
+            "middle",
+            "tail",
+            "deterministic_random"
+          ]
+        },
+        "sourceProfiles": [
+          {
+            "headerPosition": {
+              "basis": "verified_repository_release_fixture_read",
+              "zeroBasedRowIndex": 0
+            },
+            "sheet": "WorldCupPlayers",
+            "sourcePath": "sample-corpus/versions/1.4.0/fixtures/event-participants-synthetic.xlsx",
+            "verifiedRowCount": 240
+          }
+        ],
+        "verifiedRowCount": 240
+      },
+      "provenance": {
+        "dataHandling": "repository_controlled_release_acceptance_data",
+        "evidenceClass": "synthetic_equivalent_acceptance_fixture",
+        "kind": "repository_release_fixture",
+        "notes": "Corpus 1.4.0 fixture with independent hashes and profiling truth. Acceptance-purpose lineage: adv.world_cup_events; no corpus 1.2.0 measurement is re-claimed.",
+        "sourceSystem": "public_sports_dataset",
+        "tuningUse": "forbidden"
+      },
+      "recognition": {
+        "expectedAmbiguousMappings": [
+          {
+            "candidateSignals": [
+              "role",
+              "job_title"
+            ],
+            "contextualResolution": {
+              "allowedFinalStates": [
+                "ambiguous",
+                "probable",
+                "confirmed"
+              ],
+              "forbiddenEvidence": [
+                "header_only"
+              ],
+              "policy": "may_resolve_with_context",
+              "requiredEvidence": [
+                "value_distribution",
+                "physical_type",
+                "dataset_grain",
+                "sibling_columns"
+              ],
+              "resolvedCanonicalSignal": null
+            },
+            "evidenceScope": "header_only",
+            "headerOnlyExpectedState": "ambiguous",
+            "physicalColumn": "Position",
+            "reasonCode": "normalized_alias_collision"
+          }
+        ],
+        "expectedUnknownBusinessColumns": [
+          "Event"
+        ],
+        "forbiddenMappings": [
+          {
+            "canonicalSignal": "order",
+            "physicalColumn": "MatchID",
+            "reasonCode": "semantic_mismatch"
+          },
+          {
+            "canonicalSignal": "quantity",
+            "physicalColumn": "Shirt Number",
+            "reasonCode": "semantic_mismatch"
+          }
+        ],
+        "requiredMappings": [
+          {
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ],
+            "canonicalSignal": "person",
+            "physicalColumn": "Player Name"
+          },
+          {
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ],
+            "canonicalSignal": "team",
+            "physicalColumn": "Team Initials"
+          }
+        ]
+      },
+      "sources": [
+        {
+          "path": "sample-corpus/versions/1.4.0/fixtures/event-participants-synthetic.xlsx",
+          "required": true,
+          "sha256": "41ecb2b7776009901a9518476a1f0fc7e14a013ff5aea19b86862f52e724eb00",
+          "sheet": "WorldCupPlayers"
+        }
+      ],
+      "support": {
+        "allowedDomainPacks": [],
+        "blockedDomainPacks": [
+          "revenue_sales",
+          "inventory_snapshot",
+          "inventory_movement",
+          "delivery_operations",
+          "finance_profitability",
+          "customer_contribution",
+          "performance_target_actual"
+        ],
+        "expectedBlockedActions": [
+          {
+            "actionId": "commerce_decision_support",
+            "reasonCode": "out_of_wedge_domain"
+          }
+        ],
+        "expectedExecutableActions": [
+          "data_quality_review"
+        ]
+      },
+      "verifiedMetricAnswers": {}
+    },
+    {
+      "category": "adversarial_dirty",
+      "corpusVersion": "1.4.0",
+      "dataset": {
+        "expectedArchetype": "campaign_contact_events",
+        "expectedGrain": "event",
+        "grainTruth": {
+          "candidateKeys": [],
+          "coarseGrain": "event",
+          "measureExpectations": [
+            {
+              "additiveAcrossRows": true,
+              "physicalColumn": "campaign",
+              "reasonCode": "row_additive_measure",
+              "repeatedWithinParent": true
+            }
+          ],
+          "parentEntity": "contact_subject",
+          "parentKeys": [],
+          "rowEntity": "campaign_contact_event"
+        }
+      },
+      "group": "adversarial",
+      "id": "adv.bank_marketing_generic_headers",
+      "profilingExpectations": {
+        "columnPhysicalTypes": [
+          {
+            "allowedParseExpectations": [
+              "numeric"
+            ],
+            "allowedTypes": [
+              "number"
+            ],
+            "physicalColumn": "campaign",
+            "sourcePaths": [
+              "sample-corpus/versions/1.4.0/fixtures/campaign-outcomes-synthetic.xlsx"
+            ]
+          },
+          {
+            "allowedParseExpectations": [
+              "numeric"
+            ],
+            "allowedTypes": [
+              "number"
+            ],
+            "physicalColumn": "duration",
+            "sourcePaths": [
+              "sample-corpus/versions/1.4.0/fixtures/campaign-outcomes-synthetic.xlsx"
+            ]
+          },
+          {
+            "allowedParseExpectations": [
+              "preserve_text"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "physicalColumn": "contact",
+            "sourcePaths": [
+              "sample-corpus/versions/1.4.0/fixtures/campaign-outcomes-synthetic.xlsx"
+            ]
+          },
+          {
+            "allowedParseExpectations": [
+              "preserve_text"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "physicalColumn": "loan",
+            "sourcePaths": [
+              "sample-corpus/versions/1.4.0/fixtures/campaign-outcomes-synthetic.xlsx"
+            ]
+          },
+          {
+            "allowedParseExpectations": [
+              "preserve_text"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "physicalColumn": "default",
+            "sourcePaths": [
+              "sample-corpus/versions/1.4.0/fixtures/campaign-outcomes-synthetic.xlsx"
+            ]
+          },
+          {
+            "allowedParseExpectations": [
+              "preserve_text"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "physicalColumn": "job",
+            "sourcePaths": [
+              "sample-corpus/versions/1.4.0/fixtures/campaign-outcomes-synthetic.xlsx"
+            ]
+          },
+          {
+            "allowedParseExpectations": [
+              "preserve_text"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "physicalColumn": "y",
+            "sourcePaths": [
+              "sample-corpus/versions/1.4.0/fixtures/campaign-outcomes-synthetic.xlsx"
+            ]
+          }
+        ],
+        "issues": {
+          "allowed": [],
+          "expected": [],
+          "forbidden": [
+            {
+              "code": "silent_parse_drop",
+              "physicalColumn": null
+            }
+          ]
+        },
+        "representativeEvidence": {
+          "minimumDistinctRegions": 4,
+          "mustPreservePhysicalColumnNames": true,
+          "mustReportUnparsedValues": true,
+          "requiredColumns": [
+            "campaign",
+            "duration",
+            "contact",
+            "loan",
+            "default",
+            "job",
+            "y"
+          ],
+          "requiredSamplingRegions": [
+            "head",
+            "middle",
+            "tail",
+            "deterministic_random"
+          ]
+        },
+        "sourceProfiles": [
+          {
+            "headerPosition": {
+              "basis": "verified_repository_release_fixture_read",
+              "zeroBasedRowIndex": 0
+            },
+            "sheet": "Worksheet",
+            "sourcePath": "sample-corpus/versions/1.4.0/fixtures/campaign-outcomes-synthetic.xlsx",
+            "verifiedRowCount": 240
+          }
+        ],
+        "verifiedRowCount": 240
+      },
+      "provenance": {
+        "dataHandling": "repository_controlled_release_acceptance_data",
+        "evidenceClass": "synthetic_equivalent_acceptance_fixture",
+        "kind": "repository_release_fixture",
+        "notes": "Corpus 1.4.0 fixture with independent hashes and profiling truth. Acceptance-purpose lineage: adv.bank_marketing_generic_headers; no corpus 1.2.0 measurement is re-claimed.",
+        "sourceSystem": "public_marketing_dataset",
+        "tuningUse": "forbidden"
+      },
+      "recognition": {
+        "expectedAmbiguousMappings": [
+          {
+            "candidateSignals": [
+              "job_title",
+              "role"
+            ],
+            "contextualResolution": {
+              "allowedFinalStates": [
+                "ambiguous",
+                "probable",
+                "confirmed"
+              ],
+              "forbiddenEvidence": [
+                "header_only"
+              ],
+              "policy": "may_resolve_with_context",
+              "requiredEvidence": [
+                "value_distribution",
+                "physical_type",
+                "dataset_grain",
+                "sibling_columns"
+              ],
+              "resolvedCanonicalSignal": null
+            },
+            "evidenceScope": "header_only",
+            "headerOnlyExpectedState": "ambiguous",
+            "physicalColumn": "job",
+            "reasonCode": "normalized_alias_collision"
+          }
+        ],
+        "expectedUnknownBusinessColumns": [
+          "y"
+        ],
+        "forbiddenMappings": [
+          {
+            "canonicalSignal": "receivable",
+            "physicalColumn": "loan",
+            "reasonCode": "semantic_mismatch"
+          },
+          {
+            "canonicalSignal": "payment_status",
+            "physicalColumn": "default",
+            "reasonCode": "semantic_mismatch"
+          }
+        ],
+        "requiredMappings": [
+          {
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ],
+            "canonicalSignal": "campaign",
+            "physicalColumn": "campaign"
+          },
+          {
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ],
+            "canonicalSignal": "duration",
+            "physicalColumn": "duration"
+          },
+          {
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ],
+            "canonicalSignal": "contact",
+            "physicalColumn": "contact"
+          }
+        ]
+      },
+      "sources": [
+        {
+          "path": "sample-corpus/versions/1.4.0/fixtures/campaign-outcomes-synthetic.xlsx",
+          "required": true,
+          "sha256": "3f26d94b021f6fe7284c32de62b954739739fd7d4349f448f78f57ae408f7bb9",
+          "sheet": "Worksheet"
+        }
+      ],
+      "support": {
+        "allowedDomainPacks": [],
+        "blockedDomainPacks": [
+          "revenue_sales",
+          "inventory_snapshot",
+          "inventory_movement",
+          "delivery_operations",
+          "finance_profitability",
+          "customer_contribution",
+          "performance_target_actual"
+        ],
+        "expectedBlockedActions": [
+          {
+            "actionId": "marketing_attribution",
+            "reasonCode": "advertised_only_domain"
+          },
+          {
+            "actionId": "finance_decision_support",
+            "reasonCode": "semantic_context_insufficient"
+          }
+        ],
+        "expectedExecutableActions": [
+          "data_quality_review"
+        ]
+      },
+      "verifiedMetricAnswers": {}
+    }
+  ],
+  "schemaVersion": "lightbi.acceptance-ground-truth.v1.1"
+}

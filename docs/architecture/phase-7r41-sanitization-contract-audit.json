@@ -1,0 +1,45 @@
+{
+  "schemaVersion": "lightbi.phase7r41-sanitization-contract-audit.v1",
+  "algorithm": "deterministic_irreversible_shape_preserving_v1",
+  "seedSha256": "d4c0458366305b5a9b1403c7ab27df2ebda471ae9571e73b33cfce81cb75004a",
+  "deterministicReplay": {
+    "fixtureHashListsEqual": true,
+    "corpusHashListsEqual": true,
+    "runsCompared": 2
+  },
+  "retainedEvidence": [
+    "header_shape",
+    "physical_type_shape",
+    "null_and_cardinality_shape",
+    "head_middle_tail_and_seeded_positions"
+  ],
+  "removedEvidence": [
+    "raw_string_values",
+    "original_numeric_and_date_values",
+    "comments",
+    "formulas",
+    "hidden_sheets",
+    "external_links",
+    "workbook_metadata"
+  ],
+  "prohibitedDependencies": [
+    "semantic_mappings",
+    "expected_metric_totals",
+    "runtime_detector_outputs"
+  ],
+  "fixtures": {
+    "sample-corpus/versions/1.4.0/fixtures/management-ranking-sanitized.xlsx": "506fad8af114ac88257587b632fbf0a3f7d94de6552c67b50ceee375f32aefdf",
+    "sample-corpus/versions/1.4.0/fixtures/sales-issue-sanitized.xlsx": "ca2588fddc884e3febb92efc16089c2210dc67b06b44e68865c69d73d4dfabe0",
+    "sample-corpus/versions/1.4.0/fixtures/inventory-detail-sanitized.xlsx": "14c0d1018dd8822740bf7d0be5a46bb7465458b05409502ccf8dc780c4338d48",
+    "sample-corpus/versions/1.4.0/fixtures/product-list-sanitized.xlsx": "bbfb43477d3dd71ead8acf789d21d1a85a1bc97005ab3ecd64a1c80fd2b29a73",
+    "sample-corpus/versions/1.4.0/fixtures/inventory-projection-sanitized.xlsx": "f2a89f19647da4c2dce268c0f06ba1cbe965926bbf4f9af08a5ec249300cfb51",
+    "sample-corpus/versions/1.4.0/fixtures/delivery-1912-sanitized.xlsx": "18cde8322c959852d795259a73ea32de459062f11e6419625d6d1feb9497e22d",
+    "sample-corpus/versions/1.4.0/fixtures/delivery-2312-sanitized.xlsx": "c80374df7d3165976c30718dea0234b844ad056ebedd6ae084e87970bbf3ecde",
+    "sample-corpus/versions/1.4.0/fixtures/delivery-2412-sanitized.xlsx": "b71752e7b295ca3796d3c716c9e721564d128493e1d75f0b068abeb81e7f32ae",
+    "sample-corpus/versions/1.4.0/fixtures/commerce-orders-synthetic.xlsx": "d1158a901d115cf2e538eab5f9e2f4c65dfc4d62b800ad5e34cdd8b000e8d761",
+    "sample-corpus/versions/1.4.0/fixtures/public-indicators-synthetic.xlsx": "b24a841cfc400fa746271729b96e95e090e005f9d99022415660824021071a58",
+    "sample-corpus/versions/1.4.0/fixtures/event-participants-synthetic.xlsx": "41ecb2b7776009901a9518476a1f0fc7e14a013ff5aea19b86862f52e724eb00",
+    "sample-corpus/versions/1.4.0/fixtures/campaign-outcomes-synthetic.xlsx": "3f26d94b021f6fe7284c32de62b954739739fd7d4349f448f78f57ae408f7bb9",
+    "sample-corpus/versions/1.4.0/fixtures/service-detail-synthetic.xlsx": "4b8c9c6b1efcc3f51f9bcc7c6a3ac7b9a13c3640bc57f8145d48cf394d8b1afd"
+  }
+}

@@ -28,7 +28,7 @@ type AccountingTruth = {
 };
 
 const ROOT = path.resolve(__dirname, "../../../../..");
-const financeTruth = JSON.parse(fs.readFileSync(path.join(ROOT, "sample-corpus/ground-truth/finance-accounting.json"), "utf8")) as {
+const financeTruth = JSON.parse(fs.readFileSync(path.join(ROOT, "sample-corpus/versions/1.4.0/ground-truth/finance-accounting.json"), "utf8")) as {
   corpusVersion: string;
   samples: AccountingTruth[];
 };

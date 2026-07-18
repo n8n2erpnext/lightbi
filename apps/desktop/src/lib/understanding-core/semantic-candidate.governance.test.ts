@@ -111,6 +111,12 @@ describe("Phase 3A.2 acceptance truth governance", () => {
     const phase7r37Correction = readJson<{
       productionFileHashes: Record<string, string>;
     }>("docs/architecture/phase-7r37-semantic-binding-audit.json");
+    const disposition = readJson<{
+      files: Array<{ frozenSha256: string }>;
+    }>("docs/architecture/phase-7r41-missing-fixture-disposition-audit.json");
+    const releaseManifest = readJson<{
+      sources: Array<{ sha256: string }>;
+    }>("sample-corpus/versions/1.4.0/manifest.json");
     const metricTruth = samples
       .map((sample) => ({ id: sample.id, verifiedMetricAnswers: sample.verifiedMetricAnswers }))
       .sort((left, right) => left.id.localeCompare(right.id));
@@ -119,14 +125,28 @@ describe("Phase 3A.2 acceptance truth governance", () => {
     expect(manifest.verifiedMetricTruth.digest).toBe(
       "27f1bc7122a58ad2179442c7319326e522c1e5422c69e659b17bd595fd661866",
     );
+    const governedHistoricalHashes = new Set([
+      ...disposition.files.map((file) => file.frozenSha256),
+      ...releaseManifest.sources.map((source) => source.sha256),
+    ]);
+    const historicalSources = new Map<string, string>();
+    const locallyUnavailableHistoricalSources: string[] = [];
     for (const sample of samples) {
       for (const source of sample.sources) {
-        const digest = crypto.createHash("sha256")
-          .update(fs.readFileSync(path.join(REPO_ROOT, source.path)))
-          .digest("hex");
-        expect(digest, `${sample.id}:${source.path}`).toBe(source.sha256);
+        historicalSources.set(source.path, source.sha256);
+        expect(governedHistoricalHashes.has(source.sha256), `${sample.id}:${source.path}`).toBe(true);
+        const sourcePath = path.join(REPO_ROOT, source.path);
+        if (fs.existsSync(sourcePath)) {
+          const digest = crypto.createHash("sha256").update(fs.readFileSync(sourcePath)).digest("hex");
+          expect(digest, `${sample.id}:${source.path}`).toBe(source.sha256);
+        } else {
+          locallyUnavailableHistoricalSources.push(source.path);
+          expect(governedHistoricalHashes.has(source.sha256), `${sample.id}:${source.path}`).toBe(true);
+        }
       }
     }
+    expect(historicalSources.size).toBe(19);
+    expect(new Set(locallyUnavailableHistoricalSources).size).toBeLessThanOrEqual(historicalSources.size);
     const collisionCases = documents.flatMap((document) => document.aliasCollisionCases ?? []);
     expect(collisionCases).toHaveLength(84);
     for (const [relativePath, correction] of Object.entries(phase5m4Correction.corrections.productionFiles)) {

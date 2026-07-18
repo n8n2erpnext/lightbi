@@ -51,7 +51,7 @@ type CorpusSample = {
 };
 
 const REPO_ROOT = path.resolve(__dirname, "../../../../..");
-const manifest = JSON.parse(fs.readFileSync(path.join(REPO_ROOT, "sample-corpus/manifest.json"), "utf8")) as {
+const manifest = JSON.parse(fs.readFileSync(path.join(REPO_ROOT, "sample-corpus/versions/1.4.0/manifest.json"), "utf8")) as {
   groundTruthFiles: Array<{ path: string }>;
   groups: Record<CorpusGroup, { tuningAllowed: boolean }>;
 };

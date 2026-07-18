@@ -18,7 +18,7 @@ import {
 } from "./canonical-consumer-boundary";
 
 const ROOT = path.resolve(__dirname, "../../../../..");
-const SALES_PATH = path.join(ROOT, "sample data/Sales_ERP_May_2026.xlsx");
+const SALES_PATH = path.join(ROOT, "sample-corpus/anchors/1.3.0/Sales_ERP_May_2026.xlsx");
 const require = createRequire(import.meta.url);
 const duckdb = require("@duckdb/duckdb-wasm/dist/duckdb-node-blocking.cjs") as any;
 const duckdbDist = dirname(require.resolve("@duckdb/duckdb-wasm/dist/duckdb-node-blocking.cjs"));

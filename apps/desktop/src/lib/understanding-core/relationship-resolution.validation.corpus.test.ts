@@ -17,7 +17,7 @@ import {resolveSemanticShadow} from "./semantic-resolver";
 const ROOT=path.resolve(__dirname,"../../../../..");
 type Source={path:string;sheet:string;sha256:string};
 type Sample={id:string;provenance:{tuningUse:"forbidden"};sources:Source[]};
-const samples=(JSON.parse(fs.readFileSync(path.join(ROOT,"sample-corpus/ground-truth/multi-file.json"),"utf8")) as {samples:Sample[]}).samples;
+const samples=(JSON.parse(fs.readFileSync(path.join(ROOT,"sample-corpus/versions/1.4.0/ground-truth/multi-file.json"),"utf8")) as {samples:Sample[]}).samples;
 function load(source:Source){
   const bytes=fs.readFileSync(path.join(ROOT,source.path));expect(crypto.createHash("sha256").update(bytes).digest("hex")).toBe(source.sha256);
   const wb=XLSX.read(bytes,{raw:true}),sheet=wb.Sheets[source.sheet]??wb.Sheets[wb.SheetNames[0]];if(!sheet)throw new Error("missing corpus sheet");

@@ -383,20 +383,29 @@ describe('Phase 1 acceptance corpus infrastructure', () => {
   });
 
   it('fails explicitly when required sample files are missing or provenance hashes drift', () => {
-    const { samples } = loadCorpus();
-    const requiredSources = new Map<string, CorpusSource>();
-    for (const sample of samples) {
-      for (const source of sample.sources) {
-        if (source.required) requiredSources.set(source.path, source);
-      }
-    }
+    const releaseManifest = readJson<{
+      corpusVersion: string;
+      releaseAuthority: boolean;
+      sources: Array<{
+        path: string;
+        sha256: string;
+        trackedInput: boolean;
+        ignoredInputEligible: boolean;
+      }>;
+    }>(path.join(CORPUS_ROOT, 'versions/1.4.0/manifest.json'));
+    expect(releaseManifest.corpusVersion).toBe('1.4.0');
+    expect(releaseManifest.releaseAuthority).toBe(true);
+    expect(releaseManifest.sources).toHaveLength(19);
+    expect(releaseManifest.sources.every(source => source.trackedInput && !source.ignoredInputEligible)).toBe(true);
+    expect(releaseManifest.sources.every(source => !path.isAbsolute(source.path))).toBe(true);
+    expect(releaseManifest.sources.every(source => !source.path.startsWith('sample data/'))).toBe(true);
 
-    const missing = [...requiredSources.values()]
+    const missing = releaseManifest.sources
       .filter(source => !fs.existsSync(path.join(REPO_ROOT, source.path)))
       .map(source => source.path);
     expect(missing, `Required corpus samples are missing: ${missing.join(', ')}`).toEqual([]);
 
-    const changed = [...requiredSources.values()]
+    const changed = releaseManifest.sources
       .filter(source => fs.existsSync(path.join(REPO_ROOT, source.path)))
       .filter(source => sha256(path.join(REPO_ROOT, source.path)) !== source.sha256)
       .map(source => source.path);

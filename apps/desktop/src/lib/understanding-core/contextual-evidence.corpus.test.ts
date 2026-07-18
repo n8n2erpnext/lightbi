@@ -10,7 +10,7 @@ import { profilePhysicalSource } from "./profiler";
 import { generateSemanticCandidateArtifact } from "./semantic-candidate-engine";
 
 const ROOT = path.resolve(__dirname, "../../../../..");
-const manifest = JSON.parse(fs.readFileSync(path.join(ROOT, "sample-corpus/manifest.json"), "utf8")) as { groundTruthFiles: Array<{ path: string }> };
+const manifest = JSON.parse(fs.readFileSync(path.join(ROOT, "sample-corpus/versions/1.4.0/manifest.json"), "utf8")) as { groundTruthFiles: Array<{ path: string }> };
 type Sample = { id: string; sources: Array<{ path: string; sheet: string; sha256: string }>;
   recognition: { requiredMappings: Array<{ physicalColumn: string; canonicalSignal: string }>; expectedAmbiguousMappings: Array<{ physicalColumn: string; candidateSignals: string[] }> } };
 const documents = manifest.groundTruthFiles.map((entry) => JSON.parse(fs.readFileSync(path.join(ROOT, entry.path), "utf8")) as { samples: Sample[]; aliasCollisionCases?: Array<{ normalizedAlias: string; candidateSignals: string[] }> });
@@ -82,7 +82,7 @@ describe.sequential("Phase 3B1 governed corpus evidence aggregation", () => {
     expect(debts.filter((item) => item.reasonCode === "contextual_candidate_absent")).toHaveLength(10);
     expect(observations).toBeGreaterThan(0); expect(profiles).toBeGreaterThan(0);
     expect(Object.values(familyCounts).every((count) => count > 0)).toBe(true);
-    expect(broadOccurrences).toBe(18);
+    expect(broadOccurrences).toBe(15);
     expect(observedMandatoryColumns).toEqual(mandatoryColumns);
     expect({ unresolvedConflicts, representativeOnly, oneFamily, twoFamilies }).toBeDefined();
   }, 120_000);

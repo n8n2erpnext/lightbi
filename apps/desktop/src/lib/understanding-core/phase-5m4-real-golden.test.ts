@@ -70,7 +70,7 @@ async function actualDuckDBBoundary(): Promise<GovernedDuckDBBoundaryV1> {
 
 describe("Phase 5M4 real golden revenue acceptance closure", () => {
   it("executes the complete canonical governed path and matches verified revenue exactly", async () => {
-    const truthDocument = JSON.parse(fs.readFileSync(path.join(ROOT, "sample-corpus/ground-truth/revenue-sales.json"), "utf8"));
+    const truthDocument = JSON.parse(fs.readFileSync(path.join(ROOT, "sample-corpus/versions/1.4.0/ground-truth/revenue-sales.json"), "utf8"));
     const truth = truthDocument.samples.find((item: any) => item.id === "rev.sales_erp_may_2026");
     expect(truth).toBeDefined();
     const source = truth.sources[0];

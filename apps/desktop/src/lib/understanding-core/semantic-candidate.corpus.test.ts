@@ -27,7 +27,7 @@ type CorpusSample = {
 };
 
 const REPO_ROOT = path.resolve(__dirname, "../../../../..");
-const manifest = JSON.parse(fs.readFileSync(path.join(REPO_ROOT, "sample-corpus/manifest.json"), "utf8")) as {
+const manifest = JSON.parse(fs.readFileSync(path.join(REPO_ROOT, "sample-corpus/versions/1.4.0/manifest.json"), "utf8")) as {
   groundTruthFiles: Array<{ path: string }>;
   groups: Record<CorpusGroup, { tuningAllowed: boolean }>;
 };
@@ -304,8 +304,8 @@ describe.sequential("Phase 3A canonical candidate corpus runner", () => {
   });
 
   it("keeps the historical Phase 3A.1 engine-quality and collision baseline machine-verifiable", () => {
-    const phase7r1Correction = JSON.parse(fs.readFileSync(
-      path.join(REPO_ROOT, "docs/architecture/phase-7r1-corpus-regression-audit.json"),
+    const releaseCorpusBaseline = JSON.parse(fs.readFileSync(
+      path.join(REPO_ROOT, "sample-corpus/versions/1.4.0/candidate-quality-baseline.json"),
       "utf8",
     )) as { candidateQuality: Record<string, unknown> };
     const sorted = [...phase3a1Quality.candidateCounts].sort((left, right) => left - right);
@@ -322,7 +322,7 @@ describe.sequential("Phase 3A canonical candidate corpus runner", () => {
       candidateSourceDistribution: phase3a1Quality.sourceDistribution,
     };
     expect(phase3a1Audit.candidateQuality.after).not.toEqual(actualQuality);
-    expect(phase7r1Correction.candidateQuality).toEqual(actualQuality);
+    expect(releaseCorpusBaseline.candidateQuality).toEqual(actualQuality);
     expect(requiredExpectedCount).toBeGreaterThan(0);
     expect(requiredPresentCount).toBeGreaterThan(0);
     expect(ambiguityExpectedCount).toBeGreaterThan(0);

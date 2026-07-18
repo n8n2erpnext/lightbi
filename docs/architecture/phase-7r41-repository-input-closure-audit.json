@@ -1,0 +1,135 @@
+{
+  "schemaVersion": "lightbi.phase7r41-repository-input-closure-audit.v1",
+  "releaseCorpus": "1.4.0",
+  "historicalLocalCorpus": "1.2.0",
+  "arithmeticOracleCorpus": "1.3.0",
+  "resolver": "sample-corpus/tooling/corpus-fixture-resolver.cjs",
+  "releaseInputPolicy": {
+    "trackedOnly": true,
+    "absolutePathsAllowed": false,
+    "sampleDataFallbackAllowed": false,
+    "ignoredInputsAllowed": false,
+    "missingInputBehavior": "fail_closed"
+  },
+  "releaseSources": [
+    {
+      "path": "sample-corpus/anchors/1.3.0/Accounting_ERP_June_2026.csv",
+      "sha256": "b3a3b290d5f54ca5d7fc79b7aed0f287f539e665113331bb6d4764fa5fc6aaea",
+      "trackedInput": true,
+      "ignoredInputEligible": false
+    },
+    {
+      "path": "sample-corpus/anchors/1.3.0/Accounting_ERP_May_2026.csv",
+      "sha256": "3c59da1c10c67ab974dfd204b737402aff1c28d748665949942579fb5fb1a2fd",
+      "trackedInput": true,
+      "ignoredInputEligible": false
+    },
+    {
+      "path": "sample-corpus/anchors/1.3.0/Logistics_ERP_June_2026.csv",
+      "sha256": "ccc7f8036429a5c1b879a8a77dec843ef5ba65dbb88e3b2471a0aa70cd0bb216",
+      "trackedInput": true,
+      "ignoredInputEligible": false
+    },
+    {
+      "path": "sample-corpus/anchors/1.3.0/Logistics_ERP_May_2026.csv",
+      "sha256": "e093e56ae6750a5ec3bbc98983f21409f373ee71d75b9cceb12c52b2d840ff72",
+      "trackedInput": true,
+      "ignoredInputEligible": false
+    },
+    {
+      "path": "sample-corpus/anchors/1.3.0/Sales_ERP_June_2026.xlsx",
+      "sha256": "a0a69a4d45531090ed5a829467d25ca89320d17792a72e4a91c55b95b9469e52",
+      "trackedInput": true,
+      "ignoredInputEligible": false
+    },
+    {
+      "path": "sample-corpus/anchors/1.3.0/Sales_ERP_May_2026.xlsx",
+      "sha256": "e2cad91d14cf4ae19daa09dd9c980ea57b6b9cc20a518a9fa6818c3b18aef9ae",
+      "trackedInput": true,
+      "ignoredInputEligible": false
+    },
+    {
+      "path": "sample-corpus/versions/1.4.0/fixtures/campaign-outcomes-synthetic.xlsx",
+      "sha256": "3f26d94b021f6fe7284c32de62b954739739fd7d4349f448f78f57ae408f7bb9",
+      "trackedInput": true,
+      "ignoredInputEligible": false
+    },
+    {
+      "path": "sample-corpus/versions/1.4.0/fixtures/commerce-orders-synthetic.xlsx",
+      "sha256": "d1158a901d115cf2e538eab5f9e2f4c65dfc4d62b800ad5e34cdd8b000e8d761",
+      "trackedInput": true,
+      "ignoredInputEligible": false
+    },
+    {
+      "path": "sample-corpus/versions/1.4.0/fixtures/delivery-1912-sanitized.xlsx",
+      "sha256": "18cde8322c959852d795259a73ea32de459062f11e6419625d6d1feb9497e22d",
+      "trackedInput": true,
+      "ignoredInputEligible": false
+    },
+    {
+      "path": "sample-corpus/versions/1.4.0/fixtures/delivery-2312-sanitized.xlsx",
+      "sha256": "c80374df7d3165976c30718dea0234b844ad056ebedd6ae084e87970bbf3ecde",
+      "trackedInput": true,
+      "ignoredInputEligible": false
+    },
+    {
+      "path": "sample-corpus/versions/1.4.0/fixtures/delivery-2412-sanitized.xlsx",
+      "sha256": "b71752e7b295ca3796d3c716c9e721564d128493e1d75f0b068abeb81e7f32ae",
+      "trackedInput": true,
+      "ignoredInputEligible": false
+    },
+    {
+      "path": "sample-corpus/versions/1.4.0/fixtures/event-participants-synthetic.xlsx",
+      "sha256": "41ecb2b7776009901a9518476a1f0fc7e14a013ff5aea19b86862f52e724eb00",
+      "trackedInput": true,
+      "ignoredInputEligible": false
+    },
+    {
+      "path": "sample-corpus/versions/1.4.0/fixtures/inventory-detail-sanitized.xlsx",
+      "sha256": "14c0d1018dd8822740bf7d0be5a46bb7465458b05409502ccf8dc780c4338d48",
+      "trackedInput": true,
+      "ignoredInputEligible": false
+    },
+    {
+      "path": "sample-corpus/versions/1.4.0/fixtures/inventory-projection-sanitized.xlsx",
+      "sha256": "f2a89f19647da4c2dce268c0f06ba1cbe965926bbf4f9af08a5ec249300cfb51",
+      "trackedInput": true,
+      "ignoredInputEligible": false
+    },
+    {
+      "path": "sample-corpus/versions/1.4.0/fixtures/management-ranking-sanitized.xlsx",
+      "sha256": "506fad8af114ac88257587b632fbf0a3f7d94de6552c67b50ceee375f32aefdf",
+      "trackedInput": true,
+      "ignoredInputEligible": false
+    },
+    {
+      "path": "sample-corpus/versions/1.4.0/fixtures/product-list-sanitized.xlsx",
+      "sha256": "bbfb43477d3dd71ead8acf789d21d1a85a1bc97005ab3ecd64a1c80fd2b29a73",
+      "trackedInput": true,
+      "ignoredInputEligible": false
+    },
+    {
+      "path": "sample-corpus/versions/1.4.0/fixtures/public-indicators-synthetic.xlsx",
+      "sha256": "b24a841cfc400fa746271729b96e95e090e005f9d99022415660824021071a58",
+      "trackedInput": true,
+      "ignoredInputEligible": false
+    },
+    {
+      "path": "sample-corpus/versions/1.4.0/fixtures/sales-issue-sanitized.xlsx",
+      "sha256": "ca2588fddc884e3febb92efc16089c2210dc67b06b44e68865c69d73d4dfabe0",
+      "trackedInput": true,
+      "ignoredInputEligible": false
+    },
+    {
+      "path": "sample-corpus/versions/1.4.0/fixtures/service-detail-synthetic.xlsx",
+      "sha256": "4b8c9c6b1efcc3f51f9bcc7c6a3ac7b9a13c3640bc57f8145d48cf394d8b1afd",
+      "trackedInput": true,
+      "ignoredInputEligible": false
+    }
+  ],
+  "releaseTestsUseCorpus140": true,
+  "historicalGovernanceTestRetainsCorpus120": [
+    "semantic-candidate.governance.test.ts"
+  ],
+  "productionBehaviorChanged": false
+}

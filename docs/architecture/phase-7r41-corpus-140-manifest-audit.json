@@ -1,0 +1,107 @@
+{
+  "schemaVersion": "lightbi.phase7r41-corpus-140-manifest-audit.v1",
+  "corpusVersion": "1.4.0",
+  "manifestSha256": "fac4e25c497386514d6fbb8958d3c721b0ffa356940ac09758001a3fa17d0d12",
+  "sampleCount": 30,
+  "sourceCount": 19,
+  "groupPolicy": {
+    "adversarial": {
+      "description": "Dirty, generic, contradictory, or out-of-wedge examples; tuning is forbidden.",
+      "tuningAllowed": false
+    },
+    "golden": {
+      "description": "Known tuning examples that must remain green.",
+      "tuningAllowed": true
+    },
+    "holdout": {
+      "description": "Validation examples forbidden for rule and threshold tuning.",
+      "tuningAllowed": false
+    },
+    "multi_file": {
+      "description": "Relationship and cross-file context examples; tuning is forbidden and joins are never assumed.",
+      "tuningAllowed": false
+    }
+  },
+  "groundTruthFiles": [
+    {
+      "path": "sample-corpus/versions/1.4.0/ground-truth/revenue-sales.json",
+      "sampleCount": 5,
+      "sha256": "c147227d8628e4116e25fe8b50cdcb795f33abc7d44b6356ac6bbf30859f3141"
+    },
+    {
+      "path": "sample-corpus/versions/1.4.0/ground-truth/inventory.json",
+      "sampleCount": 5,
+      "sha256": "f1199f9b7d8886a9e599f32060ecc52695f3325f4dc2add767e7d83f43b72a80"
+    },
+    {
+      "path": "sample-corpus/versions/1.4.0/ground-truth/operations-delivery.json",
+      "sampleCount": 5,
+      "sha256": "db38b32329a8289343ecbc383b7baf1f2f8250f993438fb60d3972956e27d55a"
+    },
+    {
+      "path": "sample-corpus/versions/1.4.0/ground-truth/finance-accounting.json",
+      "sampleCount": 5,
+      "sha256": "784e0001f58e6156909719a9b1ca0f451bcfc2645424ea5b4fb13e5f8ab77bbb"
+    },
+    {
+      "path": "sample-corpus/versions/1.4.0/ground-truth/adversarial-dirty.json",
+      "sampleCount": 5,
+      "sha256": "ff703bdacff8d7298fd0670361d7caad695bbbcc49ebea8454abcc66f06c2431"
+    },
+    {
+      "path": "sample-corpus/versions/1.4.0/ground-truth/multi-file.json",
+      "sampleCount": 5,
+      "sha256": "7c4344428d3213cf2743f9552d8fd1e39ba830cb3b57f9ce48261ed79f7484eb"
+    }
+  ],
+  "fixturePolicy": {
+    "absolutePathsAllowed": false,
+    "ignoredFilesEligible": false,
+    "missingRequiredInputBehavior": "fail_closed",
+    "sampleDataFallbackAllowed": false
+  },
+  "releaseAuthority": true,
+  "historicalLineage": {
+    "classification": "historical_local_acceptance_evidence",
+    "corpusVersion": "1.2.0",
+    "frozenManifestSha256": "a36284c1f4655289ff832bb4102f9e153fdad329020df6972802802368d0adaa",
+    "measurementsReclaimed": false
+  },
+  "corpus120FrozenFiles": {
+    "sample-corpus/manifest.json": {
+      "expectedSha256": "a36284c1f4655289ff832bb4102f9e153fdad329020df6972802802368d0adaa",
+      "actualSha256": "a36284c1f4655289ff832bb4102f9e153fdad329020df6972802802368d0adaa",
+      "byteIdentical": true
+    },
+    "sample-corpus/ground-truth/adversarial-dirty.json": {
+      "expectedSha256": "5aa9ef43bb6c4b725b1c8439662e0b62331e5659d9a2397679cfd31a23134d40",
+      "actualSha256": "5aa9eb78ca5ace97f23af6b1edf21ad8616764d281180ef6f9273f43e4d287dc",
+      "byteIdentical": false
+    },
+    "sample-corpus/ground-truth/finance-accounting.json": {
+      "expectedSha256": "3d66394c68537bad5766fdad4ac11e4e7da1dbdc0fba2a02d301d0f1a6a3c3ea",
+      "actualSha256": "3d66360763825b7a70b440b1367f3cbd0ac57b3d57ebefac956ca73a3efdfc71",
+      "byteIdentical": false
+    },
+    "sample-corpus/ground-truth/inventory.json": {
+      "expectedSha256": "1a6041f050e3697506033ec54bb33ea806ad113d9b87c24592f986934f131f91",
+      "actualSha256": "1a604479b6c9175224dacff892d50509a129f47e1c297dce58ea04c79626497a",
+      "byteIdentical": false
+    },
+    "sample-corpus/ground-truth/multi-file.json": {
+      "expectedSha256": "9bec48f493d11389489256e811f29af8d5dd62b09d462c59e1db30f0d9ba5ef",
+      "actualSha256": "9bec416f7f66e768777387e2af963e496e410b6aeb4e1e1a70b7412993584b3f",
+      "byteIdentical": false
+    },
+    "sample-corpus/ground-truth/operations-delivery.json": {
+      "expectedSha256": "34358dd3c36090264e09ab510b98206586bf82e610c8c4ff8e15afde7a87211",
+      "actualSha256": "34358725ee416f0b26a4b72c15f2d8a324c5a38227a3756e2fb744a7cb22374b",
+      "byteIdentical": false
+    },
+    "sample-corpus/ground-truth/revenue-sales.json": {
+      "expectedSha256": "15c74140a408b8ebf00f1ab2f4b9f9c7cdb930c032cd50308c1a3a83c0fe180f",
+      "actualSha256": "15c74119995414d497b94baf539672ac1ffd98a10e940561775c17769716685a",
+      "byteIdentical": false
+    }
+  }
+}

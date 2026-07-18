@@ -43,7 +43,7 @@ const CORE_SIGNALS = new Set([
   "delivery_status",
   "total_cost",
 ]);
-const manifest = JSON.parse(fs.readFileSync(path.join(ROOT, "sample-corpus/manifest.json"), "utf8")) as Manifest;
+const manifest = JSON.parse(fs.readFileSync(path.join(ROOT, "sample-corpus/versions/1.4.0/manifest.json"), "utf8")) as Manifest;
 const samples = manifest.groundTruthFiles.flatMap((entry) =>
   (JSON.parse(fs.readFileSync(path.join(ROOT, entry.path), "utf8")) as { samples: SampleTruth[] }).samples,
 );

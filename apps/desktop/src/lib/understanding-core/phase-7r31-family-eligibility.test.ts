@@ -39,7 +39,7 @@ const ROOT = path.resolve(__dirname, "../../../../..");
 const require = createRequire(import.meta.url);
 const duckdb = require("@duckdb/duckdb-wasm/dist/duckdb-node-blocking.cjs") as any;
 const duckdbDist = dirname(require.resolve("@duckdb/duckdb-wasm/dist/duckdb-node-blocking.cjs"));
-const manifest = JSON.parse(fs.readFileSync(path.join(ROOT, "sample-corpus/manifest.json"), "utf8")) as {
+const manifest = JSON.parse(fs.readFileSync(path.join(ROOT, "sample-corpus/versions/1.4.0/manifest.json"), "utf8")) as {
   groundTruthFiles: Array<{ path: string }>;
 };
 const samples = manifest.groundTruthFiles.flatMap((entry) =>

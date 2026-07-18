@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "lightbi.corpus-1.4-candidate-quality-baseline.v1",
+  "corpusVersion": "1.4.0",
+  "candidateQuality": {
+    "averageCandidates": 1.5253,
+    "broadColumnCount": 15,
+    "candidateSourceDistribution": {
+      "alias": 408,
+      "canonicalId": 208,
+      "headerAlias": 492,
+      "label": 0,
+      "tokenContainment": 491,
+      "valueAlias": 84,
+      "valuePattern": 189
+    },
+    "maximumCandidates": 5,
+    "medianCandidates": 1,
+    "multipleCandidates": 360,
+    "oneCandidate": 288,
+    "totalPhysicalColumns": 752,
+    "zeroCandidates": 104
+  },
+  "classification": "repository_safe_release_fixture_baseline",
+  "productionPolicyChanged": false
+}

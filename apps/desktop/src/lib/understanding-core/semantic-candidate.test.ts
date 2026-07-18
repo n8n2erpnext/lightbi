@@ -6,7 +6,7 @@ import { generateSemanticCandidateArtifact } from "./semantic-candidate-engine";
 
 const REPO_ROOT = path.resolve(__dirname, "../../../../..");
 const collisionDocument = JSON.parse(
-  fs.readFileSync(path.join(REPO_ROOT, "sample-corpus/ground-truth/adversarial-dirty.json"), "utf8"),
+  fs.readFileSync(path.join(REPO_ROOT, "sample-corpus/versions/1.4.0/ground-truth/adversarial-dirty.json"), "utf8"),
 ) as {
   aliasCollisionCases: Array<{
     id: string;

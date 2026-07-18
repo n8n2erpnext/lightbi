@@ -1,6 +1,6 @@
 {
   "schemaVersion": "lightbi.phase-5m2-question-action-corpus-audit.v1",
-  "corpusVersion": "1.2.0",
+  "corpusVersion": "1.4.0",
   "caseCount": 30,
   "sourceCaseCount": 37,
   "groups": {

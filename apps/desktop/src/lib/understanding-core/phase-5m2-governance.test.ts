@@ -44,7 +44,7 @@ function productionImporters(): string[] {
 
 beforeAll(() => {
   const policyHash = questionActionPolicyHash();
-  const manifest = JSON.parse(fs.readFileSync(path.join(ROOT, "sample-corpus/manifest.json"), "utf8")) as { corpusVersion: string; groundTruthFiles: Array<{ path: string }>; groups: Record<string, { tuningAllowed: boolean }> };
+  const manifest = JSON.parse(fs.readFileSync(path.join(ROOT, "sample-corpus/versions/1.4.0/manifest.json"), "utf8")) as { corpusVersion: string; groundTruthFiles: Array<{ path: string }>; groups: Record<string, { tuningAllowed: boolean }> };
   const samples = manifest.groundTruthFiles.flatMap((entry) => (JSON.parse(fs.readFileSync(path.join(ROOT, entry.path), "utf8")) as { samples: Array<{ id: string; group: string; sources: unknown[] }> }).samples);
   const groupCounts = Object.fromEntries(Object.keys(manifest.groups).sort().map((group) => [group, { caseCount: samples.filter((sample) => sample.group === group).length, tuningAllowed: manifest.groups[group].tuningAllowed }]));
   const importers = productionImporters();

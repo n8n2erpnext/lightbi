@@ -66,12 +66,13 @@ type GrainExpectation = {
 
 const ROOT = path.resolve(__dirname, "../../../../..");
 const require = createRequire(import.meta.url);
+const corpusResolver = require(path.join(ROOT, "sample-corpus/tooling/corpus-fixture-resolver.cjs")) as {
+  loadGroundTruth(version: string): { manifest: Manifest; samples: SampleTruth[] };
+  resolveFixture(version: string, relativePath: string): string;
+};
 const duckdb = require("@duckdb/duckdb-wasm/dist/duckdb-node-blocking.cjs") as any;
 const duckdbDist = dirname(require.resolve("@duckdb/duckdb-wasm/dist/duckdb-node-blocking.cjs"));
-const manifest = JSON.parse(fs.readFileSync(path.join(ROOT, "sample-corpus/manifest.json"), "utf8")) as Manifest;
-const samples = manifest.groundTruthFiles.flatMap((entry) =>
-  (JSON.parse(fs.readFileSync(path.join(ROOT, entry.path), "utf8")) as { samples: SampleTruth[] }).samples,
-);
+const { manifest, samples } = corpusResolver.loadGroundTruth("1.4.0");
 const grainExpectations = new Map(
   (JSON.parse(fs.readFileSync(path.join(ROOT, "sample-corpus/grain-resolution-shadow-expectations.v1.json"), "utf8")) as { cases: GrainExpectation[] })
     .cases.map((entry) => [entry.id, entry]),
@@ -125,8 +126,7 @@ function rowsFromRegion(rawRows: unknown[][], source: CanonicalMetricSourceV1): 
 }
 
 function loadSource(source: SourceTruth) {
-  const file = path.join(ROOT, source.path);
-  if (!fs.existsSync(file)) throw new Error(`PHASE_7_REQUIRED_SOURCE_MISSING:${source.path}`);
+  const file = corpusResolver.resolveFixture("1.4.0", source.path);
   const bytes = fs.readFileSync(file);
   const actualHash = createHash("sha256").update(bytes).digest("hex");
   if (actualHash !== source.sha256) throw new Error(`PHASE_7_SOURCE_HASH_DRIFT:${source.path}`);

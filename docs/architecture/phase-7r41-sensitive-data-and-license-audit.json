@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "lightbi.phase7r41-sensitive-data-and-license-audit.v1",
+  "historicalInputsInspected": 13,
+  "historicalInputsCommitted": 0,
+  "explicitRedistributionRightsVerified": 0,
+  "privacyRiskPresent": 13,
+  "confidentialOperationalRiskPresent": 9,
+  "releaseFixtureScan": {
+    "fixtures": 13,
+    "personalDataPatterns": 0,
+    "comments": 0,
+    "hiddenSheets": 0,
+    "externalLinks": 0,
+    "unsafeMetadata": 0,
+    "verification": "phase-7r41-repository-corpus.test.ts"
+  },
+  "policy": "No original ignored operational or unlicensed workbook is release eligible.",
+  "rawValuesRetainedInAudit": false
+}

@@ -27,7 +27,7 @@ type CorpusSample = {
   sources: CorpusSource[];
 };
 const manifest = JSON.parse(
-  fs.readFileSync(path.join(ROOT, "sample-corpus/manifest.json"), "utf8"),
+  fs.readFileSync(path.join(ROOT, "sample-corpus/versions/1.4.0/manifest.json"), "utf8"),
 ) as { groundTruthFiles: Array<{ path: string }> };
 const samples = manifest.groundTruthFiles.flatMap((entry) =>
   (JSON.parse(fs.readFileSync(path.join(ROOT, entry.path), "utf8")) as {
