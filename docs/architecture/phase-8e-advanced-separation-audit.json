@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "lightbi.phase8e.advanced-separation-audit.v1",
+  "beforeLines": 2072,
+  "afterLines": 770,
+  "pageRole": "connection, schema, query, result and modal state composition",
+  "extractions": [
+    "AdvancedWorkspaceView.tsx: controlled existing Advanced presentation",
+    "useAdvancedResultTransferActions.ts: query, export and Simple handoff side effects",
+    "useAdvancedMutationActions.ts: mutation and import side effects",
+    "advanced-provider-support.ts: provider fallback and tab restoration helpers",
+    "advanced-command-palette.ts: deterministic command construction and filtering"
+  ],
+  "invariants": {
+    "completeBoundedPaginatedTruncatedUnknownPreserved": true,
+    "partialNeverClaimsFullSource": true,
+    "partialNeverAutoRunsInvestigation": true,
+    "unsupportedDriversAndWritesNotAdded": true,
+    "canonicalHandoffPathPreserved": true
+  },
+  "status": "pass"
+}

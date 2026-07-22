@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "lightbi.phase8e.dependency-graph-audit.v1",
+  "checkpoint": "eb93cefeaa779bb43ccf08e77d98dea414436d0a",
+  "direction": "pages -> feature components/hooks -> canonical application contracts -> understanding/runtime contracts",
+  "pageEdges": {
+    "Home.tsx": ["components/home/HomeWorkspaceView", "hooks/useHomeWorkspaceSessions", "hooks/useHomePlanningWorkflow", "hooks/useHomeOnlineSourceIntake", "hooks/useHomeSourcePicker", "hooks/useHomeQuestionApi", "lib/home-source-boundary", "lib/home-workspace-persistence", "understanding-core canonical contracts"],
+    "Investigation.tsx": ["components/investigation/*", "investigation-session", "understanding-core governed runtime contracts", "runtime"],
+    "Advanced.tsx": ["components/advanced/AdvancedWorkspaceView", "hooks/useAdvancedResultTransferActions", "hooks/useAdvancedMutationActions", "lib/advanced-provider-support", "lib/advanced-command-palette"]
+  },
+  "forbiddenEdgeChecks": {
+    "featureImportsPage": false,
+    "understandingCoreImportsReact": false,
+    "understandingCoreImportsPage": false,
+    "runtimeImportsUi": false,
+    "runtimeImportsReact": false,
+    "legacyFusionExecutorImportedByPage": false
+  },
+  "cycleRisks": [],
+  "test": "apps/desktop/src/lib/phase-8e-architecture.test.ts",
+  "status": "pass"
+}

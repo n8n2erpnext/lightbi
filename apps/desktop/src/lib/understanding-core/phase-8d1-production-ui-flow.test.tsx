@@ -45,10 +45,11 @@ describe("Phase 8D.1 production multi-source UI flow", () => {
   });
 
   it("persists only source-bound declarations and requires relationship rebuild after reload", () => {
-    const home = fs.readFileSync(join(process.cwd(), "src/pages/Home.tsx"), "utf8");
-    expect(home).toContain("canonicalMultiSourcePersistence");
-    expect(home).toContain("executableRestored: false");
-    expect(home).toContain("Rebuild the relationship before analysis; prior executable handoffs remain invalid.");
-    expect(home).toContain("Legacy fused sessions are production-ineligible");
+    const persistence = fs.readFileSync(join(process.cwd(), "src/lib/home-workspace-persistence.ts"), "utf8");
+    const sessions = fs.readFileSync(join(process.cwd(), "src/hooks/useHomeWorkspaceSessions.ts"), "utf8");
+    expect(persistence).toContain("canonicalMultiSourcePersistence");
+    expect(persistence).toContain("executableRestored: false");
+    expect(sessions).toContain("Rebuild the relationship before analysis; prior executable handoffs remain invalid.");
+    expect(sessions).toContain("Legacy fused sessions are production-ineligible");
   });
 });

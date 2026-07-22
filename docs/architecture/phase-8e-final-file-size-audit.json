@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "lightbi.phase8e.final-file-size-audit.v1",
+  "pages": [
+    {"path": "apps/desktop/src/pages/Home.tsx", "before": 2822, "after": 789, "gate": 800, "pass": true},
+    {"path": "apps/desktop/src/pages/Investigation.tsx", "before": 1550, "after": 799, "gate": 800, "pass": true},
+    {"path": "apps/desktop/src/pages/Advanced.tsx", "before": 2072, "after": 770, "gate": 800, "pass": true}
+  ],
+  "newModulesAbove800": [
+    {
+      "path": "apps/desktop/src/components/home/HomeWorkspaceView.tsx",
+      "lines": 925,
+      "responsibility": "single controlled presentation tree for the existing Home workspace",
+      "justification": "The Phase 8 DOM, wording, focus targets, modals and conditional render order are tightly coupled. Keeping one presentation owner avoids duplicating canonical state or changing observable UI while remaining below the absolute 1000-line gate."
+    }
+  ],
+  "newModulesAbove1000": [],
+  "preExistingOutOfScopeAbove1000": [
+    {"path": "apps/desktop/src/lib/understanding-next/question-fit-engine.ts", "lines": 1423, "reason": "pre-existing deprecated semantic implementation outside Phase 8E page boundary"},
+    {"path": "apps/desktop/src/lib/business-brain-brief.ts", "lines": 1353, "reason": "pre-existing BA module; behavior changes forbidden in Phase 8E"},
+    {"path": "apps/desktop/src/lib/ba-decision-engine.ts", "lines": 1238, "reason": "pre-existing BA module; behavior changes forbidden in Phase 8E"}
+  ],
+  "replacementMonolith": false,
+  "mixedPageResponsibilityFindings": 0,
+  "status": "pass"
+}

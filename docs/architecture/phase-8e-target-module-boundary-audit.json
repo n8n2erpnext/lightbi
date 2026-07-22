@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "lightbi.phase8e.target-module-boundary-audit.v1",
+  "boundaries": [
+    {"owner": "Home page shell", "path": "apps/desktop/src/pages/Home.tsx", "responsibility": "route composition and canonical source-local or multi-source selection"},
+    {"owner": "Home presentation", "path": "apps/desktop/src/components/home/HomeWorkspaceView.tsx", "responsibility": "controlled rendering of the existing Home workspace"},
+    {"owner": "workspace persistence", "path": "apps/desktop/src/hooks/useHomeWorkspaceSessions.ts", "responsibility": "session save, load, delete and restoration coordination"},
+    {"owner": "source intake", "path": "apps/desktop/src/hooks/useHomeOnlineSourceIntake.ts", "responsibility": "existing online-source intake lifecycle"},
+    {"owner": "planning workflow", "path": "apps/desktop/src/hooks/useHomePlanningWorkflow.ts", "responsibility": "existing preview-plan coordination"},
+    {"owner": "Investigation page shell", "path": "apps/desktop/src/pages/Investigation.tsx", "responsibility": "handoff validation and governed execution lifecycle"},
+    {"owner": "Investigation presentation", "path": "apps/desktop/src/components/investigation", "responsibility": "BA, diagnostics, drill-through, deep-analysis and semantic-context rendering"},
+    {"owner": "Advanced page shell", "path": "apps/desktop/src/pages/Advanced.tsx", "responsibility": "connection, query and result orchestration"},
+    {"owner": "Advanced presentation", "path": "apps/desktop/src/components/advanced/AdvancedWorkspaceView.tsx", "responsibility": "controlled rendering of the existing Advanced workspace"},
+    {"owner": "Advanced result transfer", "path": "apps/desktop/src/hooks/useAdvancedResultTransferActions.ts", "responsibility": "query/export and complete-result handoff side effects"},
+    {"owner": "Advanced mutations", "path": "apps/desktop/src/hooks/useAdvancedMutationActions.ts", "responsibility": "existing mutation/import side effects"}
+  ],
+  "replacementManagerMonolith": false,
+  "mixedPageResponsibilityFindings": 0,
+  "status": "pass"
+}

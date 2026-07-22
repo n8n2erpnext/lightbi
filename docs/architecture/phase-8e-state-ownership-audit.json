@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "lightbi.phase8e.state-ownership-audit.v1",
+  "states": [
+    {"state": "active source and source profile", "owner": "Home page composition", "coordinator": "source intake hooks", "duplicateOwner": false},
+    {"state": "runtime reference", "owner": "canonical source boundary", "coordinator": "Home page composition", "duplicateOwner": false},
+    {"state": "source-local canonical artifact", "owner": "Home page composition", "coordinator": "canonical consumer boundary", "duplicateOwner": false},
+    {"state": "user overlay", "owner": "active dataset workspace state", "coordinator": "Home evidence callback", "duplicateOwner": false},
+    {"state": "multi-source dataset", "owner": "Home page composition", "coordinator": "CanonicalMultiSourceReview", "duplicateOwner": false},
+    {"state": "relationship artifact", "owner": "canonical multi-source dataset", "coordinator": "Home page composition", "duplicateOwner": false},
+    {"state": "presentation state", "owner": "canonical presentation projection", "coordinator": "HomeWorkspaceView", "duplicateOwner": false},
+    {"state": "selected action", "owner": "Home page composition", "coordinator": "HomeWorkspaceView callbacks", "duplicateOwner": false},
+    {"state": "Investigation handoff", "owner": "investigation-session contract", "coordinator": "Home or Advanced handoff creator", "duplicateOwner": false},
+    {"state": "governed result", "owner": "Investigation page execution lifecycle", "coordinator": "governed runtime", "duplicateOwner": false},
+    {"state": "persisted workspace", "owner": "workspace-session API", "coordinator": "useHomeWorkspaceSessions", "duplicateOwner": false},
+    {"state": "Advanced connection/query/result", "owner": "Advanced page composition", "coordinator": "Advanced action controllers", "duplicateOwner": false}
+  ],
+  "invalidationParity": {
+    "sourceReplacement": "preserved",
+    "overlayUpdate": "preserved",
+    "relationshipRebuild": "preserved",
+    "staleAsyncGeneration": "preserved",
+    "supersededHandoff": "preserved"
+  },
+  "secondCanonicalStateOwner": false,
+  "status": "pass"
+}

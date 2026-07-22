@@ -1,0 +1,22 @@
+{
+  "schemaVersion": "lightbi.phase8e.investigation-separation-audit.v1",
+  "beforeLines": 1550,
+  "afterLines": 799,
+  "pageRole": "handoff validation, stale-state protection, governed execution lifecycle and top-level composition",
+  "extractions": [
+    "InvestigationBAReadouts.tsx: existing BA result rendering",
+    "InvestigationDiagnostics.tsx: runtime and validation diagnostics",
+    "InvestigationDrillThroughPanel.tsx: governed drill-through and export presentation",
+    "InvestigationDeepAnalysis.tsx: deep-analysis presentation after successful execution",
+    "InvestigationSemanticContext.tsx: semantic evidence and limitation presentation"
+  ],
+  "invariants": {
+    "blockedOrStaleCannotExecute": true,
+    "runtimeFailureDistinctFromSemanticBlock": true,
+    "sampleFallbackImpossible": true,
+    "multiSourceVerifiesEveryRequiredSource": true,
+    "deepAnalysisRequiresSuccessfulExecution": true,
+    "retryRejectsSupersededIdentity": true
+  },
+  "status": "pass"
+}

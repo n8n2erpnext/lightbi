@@ -1,0 +1,128 @@
+{
+  "schemaVersion": "lightbi.phase8e.baseline-file-and-responsibility-inventory.v1",
+  "capturedFrom": {
+    "phase8d1Checkpoint": "eb93cefeaa779bb43ccf08e77d98dea414436d0a",
+    "phase8d1Tree": "8625535d51f6c32790c2f3e94f3f8eab2f0edfb8",
+    "inspectionHead": "7bab14aa25426b315b79618de6b4da87a51b05bf",
+    "inspectionTree": "dd194042d329aa36cc254811cf72ec8b4286b93d",
+    "trackedWorktreeClean": true,
+    "indexClean": true,
+    "safetyBranch": "phase-8e-safety-eb93cef"
+  },
+  "productionInventory": {
+    "typescriptAndTsxTotalLines": 49018,
+    "filesAbove2000": [
+      {"path": "apps/desktop/src/pages/Home.tsx", "lines": 2822},
+      {"path": "apps/desktop/src/pages/Advanced.tsx", "lines": 2072}
+    ],
+    "filesAbove1000": [
+      {"path": "apps/desktop/src/pages/Investigation.tsx", "lines": 1550},
+      {"path": "apps/desktop/src/lib/understanding-next/question-fit-engine.ts", "lines": 1423},
+      {"path": "apps/desktop/src/lib/business-brain-brief.ts", "lines": 1353},
+      {"path": "apps/desktop/src/lib/ba-decision-engine.ts", "lines": 1238}
+    ],
+    "phase8ePageScope": ["apps/desktop/src/pages/Home.tsx", "apps/desktop/src/pages/Investigation.tsx", "apps/desktop/src/pages/Advanced.tsx"],
+    "preExistingOutOfScopeOversizedFiles": ["apps/desktop/src/lib/understanding-next/question-fit-engine.ts", "apps/desktop/src/lib/business-brain-brief.ts", "apps/desktop/src/lib/ba-decision-engine.ts"]
+  },
+  "auditedFiles": [
+    {
+      "path": "apps/desktop/src/pages/Home.tsx",
+      "lineCount": 2822,
+      "responsibilities": ["route composition", "source intake", "project file persistence", "workspace sessions", "canonical artifact composition", "source-bound evidence overlay", "multi-source review", "analysis discovery", "Investigation handoff", "legacy preview modal presentation"],
+      "exportedSymbols": ["Home"],
+      "directDependencyGroups": ["React/router", "source inspection", "workspace persistence", "understanding-core canonical consumer", "presentation projection", "runtime preview", "analysis components"],
+      "reverseDependencies": ["routes/index.tsx", "Phase 6 governance scanners", "Phase 8D/8D.1 production tests"],
+      "reactStateOwnership": ["active dataset", "workspace sessions", "source inspection batch", "canonical overlay rebuild", "multi-source draft/build", "analysis selection", "runtime preview pipeline", "data preview"],
+      "sideEffects": ["project API fetch", "file upload/download", "local file inspection", "session save/load/delete", "navigation", "focus restoration"],
+      "persistenceAccess": true,
+      "canonicalCoreAccess": true,
+      "runtimeAccess": true,
+      "testCoverage": ["phase-6a-canonical-consumer", "phase-6a/6b-governance", "phase-8a", "phase-8b", "phase-8d", "phase-8d1"],
+      "extractionRisk": "critical"
+    },
+    {
+      "path": "apps/desktop/src/pages/Investigation.tsx",
+      "lineCount": 1550,
+      "responsibilities": ["handoff validation", "M3 execution coordination", "full-source materialization", "multi-source execution", "result presentation", "BA presentation", "drill-through", "export", "session autosave", "return navigation"],
+      "exportedSymbols": ["Investigation"],
+      "directDependencyGroups": ["React/router", "canonical consumer", "governed runtime", "DuckDB boundary", "chart/BA presentation", "workspace persistence"],
+      "reverseDependencies": ["routes/index.tsx", "Investigation.test.tsx", "Phase 5/6 governance scanners", "Phase 8D/8D.1 tests"],
+      "reactStateOwnership": ["session", "execution state", "chart model", "result validation", "drill-through", "deep analysis", "display preferences"],
+      "sideEffects": ["governed execution", "workspace autosave", "CSV/XLSX download", "navigation"],
+      "persistenceAccess": true,
+      "canonicalCoreAccess": true,
+      "runtimeAccess": true,
+      "testCoverage": ["Investigation.test.tsx", "phase-5m3/m4-governance", "phase-6a/6b-governance", "phase-8d", "phase-8d1"],
+      "extractionRisk": "critical"
+    },
+    {
+      "path": "apps/desktop/src/pages/Advanced.tsx",
+      "lineCount": 2072,
+      "responsibilities": ["connection/profile form", "schema interaction", "query tabs", "query execution", "mutation/import workflows", "result editing", "result export", "complete-result Simple handoff", "partial-result safety"],
+      "exportedSymbols": ["Advanced"],
+      "directDependencyGroups": ["React", "advanced API/contracts/helpers", "runtime coordinator", "Advanced components", "Investigation handoff"],
+      "reverseDependencies": ["routes/index.tsx", "Advanced.test.tsx", "Phase 6B governance", "Phase 8C/8D tests"],
+      "reactStateOwnership": ["connection", "source", "schema", "tabs", "query run", "edits", "imports", "exports", "modals"],
+      "sideEffects": ["database connect/close", "query/mutation execution", "file session execution", "browser download", "sessionStorage tab persistence"],
+      "persistenceAccess": true,
+      "canonicalCoreAccess": false,
+      "runtimeAccess": true,
+      "testCoverage": ["Advanced.test.tsx", "phase-6b-advanced-cutover", "phase-8c-advanced-completeness", "phase-8d"],
+      "extractionRisk": "critical"
+    },
+    {
+      "path": "apps/desktop/src/components/analysis/CanonicalEvidenceReview.tsx",
+      "lineCount": 257,
+      "responsibilities": ["source-bound mapping and evidence input presentation"],
+      "exportedSymbols": ["CanonicalEvidenceReview"],
+      "directDependencyGroups": ["React", "canonical overlay contracts"],
+      "reverseDependencies": ["Home.tsx"],
+      "reactStateOwnership": ["local form drafts only"],
+      "sideEffects": ["callback emission only"],
+      "persistenceAccess": false,
+      "canonicalCoreAccess": true,
+      "runtimeAccess": false,
+      "testCoverage": ["phase-8b production evidence interaction"],
+      "extractionRisk": "medium"
+    },
+    {
+      "path": "apps/desktop/src/components/analysis/CanonicalMultiSourceReview.tsx",
+      "lineCount": 263,
+      "responsibilities": ["multi-source membership and relationship review presentation"],
+      "exportedSymbols": ["CanonicalMultiSourceReview", "MultiSourceDraftV1", "MultiSourceReviewSourceV1"],
+      "directDependencyGroups": ["React", "canonical multi-source contracts"],
+      "reverseDependencies": ["Home.tsx"],
+      "reactStateOwnership": ["none; controlled inputs"],
+      "sideEffects": ["callback emission only"],
+      "persistenceAccess": false,
+      "canonicalCoreAccess": true,
+      "runtimeAccess": false,
+      "testCoverage": ["phase-8d1 production UI flow"],
+      "extractionRisk": "medium"
+    },
+    {
+      "path": "apps/desktop/src/lib/investigation-session.ts",
+      "lineCount": 185,
+      "responsibilities": ["versioned Investigation handoff storage and validation"],
+      "exportedSymbols": ["createInvestigationSession", "getCurrentInvestigationSession", "InvestigationSession"],
+      "directDependencyGroups": ["canonical and runtime contracts"],
+      "reverseDependencies": ["Home.tsx", "Investigation.tsx", "Advanced.tsx", "tests"],
+      "reactStateOwnership": [],
+      "sideEffects": ["module-scoped current session"],
+      "persistenceAccess": false,
+      "canonicalCoreAccess": true,
+      "runtimeAccess": true,
+      "testCoverage": ["Investigation and Phase 8D.1 tests"],
+      "extractionRisk": "high"
+    }
+  ],
+  "findings": {
+    "mixedResponsibilityPages": 3,
+    "duplicatedCanonicalStateOwners": 0,
+    "presentationSemanticDecisionRisks": ["Investigation metric-intent text classifier is presentation-only legacy BA selection and must not affect canonical readiness"],
+    "circularDependencyRisks": ["feature extraction must not import pages", "runtime and understanding-core must remain React-free"],
+    "legacyCompatibilityBranches": ["workspace snapshot v2 loader", "small/complete-row canonical compatibility", "Advanced partial-result blockers"],
+    "provenDeadProductionPaths": ["legacy Home business_fusion_view construction already removed in Phase 8D.1"],
+    "baselineGate": "captured_before_refactor"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "lightbi.phase8e.home-separation-audit.v1",
+  "beforeLines": 2822,
+  "afterLines": 789,
+  "pageRole": "route composition, canonical dataset selection, artifact orchestration and lifecycle coordination",
+  "extractions": [
+    "HomeWorkspaceView.tsx: controlled existing presentation",
+    "HomeSessionHistoryPanel.tsx: session-list presentation",
+    "HomeResultView.tsx: result presentation",
+    "HomeDataPreviewDialog.tsx: data-preview presentation",
+    "HomePlanningDialogs.tsx: existing planning dialogs",
+    "HomeSourcePickerMenu.tsx: source-picker presentation",
+    "useHomeWorkspaceSessions.ts: workspace persistence coordination",
+    "useHomePlanningWorkflow.ts: plan-preview coordination",
+    "useHomeOnlineSourceIntake.ts: online intake coordination",
+    "useHomeSourcePicker.ts: source-picker local interaction",
+    "useHomeQuestionApi.ts: existing question API coordination",
+    "home-source-boundary.ts: deterministic source-boundary adaptation",
+    "home-workspace-persistence.ts: deterministic workspace serialization helpers",
+    "home-presentation.ts: pure existing formatting"
+  ],
+  "canonicalCompositionPoint": "apps/desktop/src/pages/Home.tsx",
+  "secondCanonicalOwnerCreated": false,
+  "wordingLayoutOrRankingChanged": false,
+  "status": "pass"
+}

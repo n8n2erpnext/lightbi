@@ -1,0 +1,30 @@
+{
+  "schemaVersion": "lightbi.phase8e.behavioral-parity-audit.v1",
+  "comparisonBaseline": "eb93cefeaa779bb43ccf08e77d98dea414436d0a",
+  "method": "byte-frozen contracts plus unchanged Phase 5-8 production tests exercised through extracted page owners",
+  "journeys": [
+    {"id": 1, "journey": "small-file revenue", "evidence": "Phase 8A and canonical presentation tests", "status": "pass"},
+    {"id": 2, "journey": "large-file revenue over 20,000 rows", "evidence": "phase-8a-full-source-boundary", "status": "pass"},
+    {"id": 3, "journey": "delivery", "evidence": "Phase 5M4 and Phase 7 family tests", "status": "pass"},
+    {"id": 4, "journey": "gross-profit evidence remediation", "evidence": "phase-8b-production-evidence-interaction", "status": "pass"},
+    {"id": 5, "journey": "inventory mapping and evidence remediation", "evidence": "phase-8b-production-evidence-interaction", "status": "pass"},
+    {"id": 6, "journey": "safety-blocked inventory movement", "evidence": "Phase 5M1-M3 governance", "status": "pass"},
+    {"id": 7, "journey": "unsupported capability", "evidence": "phase-8c-canonical-presentation", "status": "pass"},
+    {"id": 8, "journey": "stale Investigation handoff", "evidence": "Investigation production tests", "status": "pass"},
+    {"id": 9, "journey": "runtime execution failure", "evidence": "Investigation production tests", "status": "pass"},
+    {"id": 10, "journey": "additional supported action discovery", "evidence": "phase-8d-production-reachability", "status": "pass"},
+    {"id": 11, "journey": "Advanced complete handoff", "evidence": "Advanced tests and Phase 6B cutover", "status": "pass"},
+    {"id": 12, "journey": "Advanced partial-result boundary", "evidence": "phase-8c-advanced-completeness", "status": "pass"},
+    {"id": 13, "journey": "workspace persistence and reopen", "evidence": "workspace-understanding-state and Phase 8D.1 UI flow", "status": "pass"},
+    {"id": 14, "journey": "corrupted persisted-state recovery", "evidence": "workspace persistence tests", "status": "pass"},
+    {"id": 15, "journey": "multi-source Sales plus Accounting gross profit", "evidence": "Phase 8D.1 retained exact result and split-run current evidence", "status": "pass"},
+    {"id": 16, "journey": "multi-source source removal invalidation", "evidence": "Phase 8D.1 production multisource tests", "status": "pass"},
+    {"id": 17, "journey": "multi-source period mismatch", "evidence": "Phase 8D.1 production multisource tests", "status": "pass"},
+    {"id": 18, "journey": "multi-source currency mismatch", "evidence": "Phase 8D.1 production multisource tests", "status": "pass"},
+    {"id": 19, "journey": "source-local inventory isolation", "evidence": "Phase 8D.1 retained audit and Phase 7 inventory evidence tests", "status": "pass"},
+    {"id": 20, "journey": "result export and identity continuity", "evidence": "drill-through-export and Advanced tests", "status": "pass"}
+  ],
+  "canonicalIdentityContractsChanged": false,
+  "observableWordingOrOrderingChanged": false,
+  "status": "pass"
+}

@@ -1,0 +1,250 @@
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { classifyDatasetFamilies } from '../lib/batch-inspection';
+import { createBusinessFusionOverview } from '../lib/business-fusion-overview';
+import { createPreviewRows } from '../lib/data-intake-preview-rows';
+import { createFileSourceCandidate, type SourceCandidate, type SourceInspectionResult } from '../lib/source-preflight';
+import { inspectLocalFile } from '../lib/local-file-inspector';
+import { downloadProjectSourceFile } from '../lib/project-source-file-api';
+import { createWorkspaceUnderstandingState } from '../lib/workspace-understanding-state';
+import { deleteWorkspaceSession, loadWorkspaceSessions, saveWorkspaceSession, type SaveWorkspaceSessionRequest, type WorkspaceSessionRecord } from '../lib/workspace-session-api';
+import { attachPersistedFile, createWorkspaceSessionSnapshot, persistedFilesFromSession } from '../lib/home-workspace-persistence';
+import { parseCanonicalUserOverlay } from '../lib/understanding-core/canonical-user-overlay';
+import type { MultiSourceDraftV1 } from '../components/analysis/CanonicalMultiSourceReview';
+
+interface HomeWorkspaceSessionDependencies {
+  currentDataset: any;
+  setCurrentDataset: (value: any) => void;
+  setWorkspaceState: (value: any) => void;
+  setDecisionTrustReport: (value: any) => void;
+  setPendingLocalBatch: (value: any) => void;
+  setMultiSourceDrafts: (value: any) => void;
+  setMultiSourceBuildResult: (value: any) => void;
+  setSelectedTopic: (value: any) => void;
+  setResult: (value: any) => void;
+  setPreviewActionId: (value: any) => void;
+}
+
+export function useHomeWorkspaceSessions(deps: HomeWorkspaceSessionDependencies) {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [workspaceSessions, setWorkspaceSessions] = useState<WorkspaceSessionRecord[]>([]);
+  const [sessionStatus, setSessionStatus] = useState<string | null>(null);
+  const [isSavingSession, setIsSavingSession] = useState(false);
+  const lastAutoSaveSignatureRef = useRef('');
+  const returnSessionRestoredRef = useRef<string | null>(null);
+
+  const refreshWorkspaceSessions = useCallback(async () => {
+    try {
+      setWorkspaceSessions(await loadWorkspaceSessions());
+    } catch (error) {
+      setSessionStatus(error instanceof Error ? error.message : 'Could not load saved sessions.');
+    }
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    void loadWorkspaceSessions().then(records => {
+      if (!cancelled) setWorkspaceSessions(records);
+    }).catch(error => {
+      if (!cancelled) setSessionStatus(error instanceof Error ? error.message : 'Could not load saved sessions.');
+    });
+    return () => { cancelled = true; };
+  }, []);
+
+  useEffect(() => {
+    const handleFocus = () => void refreshWorkspaceSessions();
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') void refreshWorkspaceSessions();
+    };
+    window.addEventListener('focus', handleFocus);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [refreshWorkspaceSessions]);
+
+  const sessionSignature = (dataset: any) => JSON.stringify({
+    name: dataset?.file_name,
+    sourceType: dataset?.sourceType,
+    rows: dataset?.rows_count,
+    columns: Array.isArray(dataset?.columns) ? dataset.columns : [],
+    sourceFiles: (dataset?.sourceFiles || []).map((file: any) => ({
+      name: file?.name, rows: file?.rows, fileId: file?.persistedFile?.fileId, path: file?.persistedFile?.filePath,
+    })),
+    analysisRows: Array.isArray(dataset?.analysisRows) ? dataset.analysisRows.length : 0,
+    understandingRows: Array.isArray(dataset?.understandingRows) ? dataset.understandingRows.length : 0,
+    objectKey: dataset?.objectKey,
+    selectedView: dataset?.selectedBusinessView?.id,
+    canonicalOverlayId: parseCanonicalUserOverlay(dataset?.canonicalUserOverlay)?.overlayId ?? null,
+    canonicalMultiSourceIdentity: dataset?.canonicalMultiSourceDataset?.identity ?? null,
+  });
+
+  const createSaveRequest = (dataset: any): SaveWorkspaceSessionRequest => ({
+    id: dataset.restoredFromSessionId,
+    title: dataset.file_name || 'Untitled session',
+    sourceType: dataset.sourceType || 'dataset',
+    rowCount: Number(dataset.rows_count) || 0,
+    columnCount: Array.isArray(dataset.columns) ? dataset.columns.length : 0,
+    sourceSummary: dataset.sourceFiles || [],
+    snapshot: createWorkspaceSessionSnapshot(dataset),
+  });
+
+  const saveCurrentWorkspaceSession = async (dataset: any, options: { silent?: boolean } = {}) => {
+    if (dataset?.status !== 'ready') return null;
+    if (!options.silent) {
+      setIsSavingSession(true);
+      setSessionStatus(null);
+    }
+    try {
+      const saved = await saveWorkspaceSession(createSaveRequest(dataset));
+      setWorkspaceSessions(current => [saved, ...current.filter(item => item.id !== saved.id)].slice(0, 100));
+      deps.setCurrentDataset((current: any) => current ? { ...current, restoredFromSessionId: saved.id } : current);
+      if (!options.silent) setSessionStatus('Session saved.');
+      return saved;
+    } catch (error) {
+      setSessionStatus(error instanceof Error ? error.message : 'Could not save session.');
+      return null;
+    } finally {
+      if (!options.silent) setIsSavingSession(false);
+    }
+  };
+
+  const handleSaveWorkspaceSession = async () => {
+    const saved = await saveCurrentWorkspaceSession(deps.currentDataset);
+    if (saved && deps.currentDataset) {
+      lastAutoSaveSignatureRef.current = sessionSignature({ ...deps.currentDataset, restoredFromSessionId: saved.id });
+    }
+  };
+
+  const resetAnalysisState = (sessionId: string) => {
+    deps.setWorkspaceState(createWorkspaceUnderstandingState({ type: 'dataset', datasetId: sessionId }));
+    deps.setDecisionTrustReport(null);
+    deps.setPendingLocalBatch(null);
+    deps.setSelectedTopic(null);
+    deps.setResult(null);
+    deps.setPreviewActionId(null);
+  };
+
+  const handleOpenWorkspaceSession = async (session: WorkspaceSessionRecord) => {
+    const restoredDataset = (session.snapshot as any)?.currentDataset;
+    if (!restoredDataset) {
+      setSessionStatus('Saved session does not contain a dataset snapshot.');
+      return;
+    }
+    const persistedFiles = persistedFilesFromSession(session);
+    if (persistedFiles.length > 0) {
+      setSessionStatus('Reloading saved source files...');
+      try {
+        const files = await Promise.all(persistedFiles.map(downloadProjectSourceFile));
+        const results = await Promise.all(files.map((file, index) => {
+          const candidate = createFileSourceCandidate(file);
+          if ('status' in candidate) return Promise.resolve(candidate as SourceInspectionResult);
+          return inspectLocalFile(candidate as SourceCandidate).then(result => attachPersistedFile(result, persistedFiles[index]));
+        }));
+        if (results.filter(result => result.status === 'accessible').length !== files.length) {
+          throw new Error('One or more saved files could not be parsed after reload.');
+        }
+        const families = classifyDatasetFamilies(files.map((file, index) => ({ file, result: results[index] as SourceInspectionResult })), 'strict');
+        if (restoredDataset.sourceType === 'canonical_multisource') {
+          const memberships = restoredDataset.canonicalMultiSourcePersistence?.memberships ?? [];
+          const drafts = Object.fromEntries(files.map((file, index) => {
+            const membership = memberships.find((item: any) => item?.overlay?.binding?.datasetId === file.name);
+            const declarations = Array.isArray(membership?.overlay?.sourceEvidenceDeclarations) ? membership.overlay.sourceEvidenceDeclarations : [];
+            const latest = (kind: string) => declarations.filter((item: any) => item?.validationStatus === 'valid' && item?.value?.kind === kind).at(-1)?.value;
+            const role = latest('source_role');
+            const documentIdentity = latest('document_identity');
+            const period = latest('reporting_period');
+            const currency = latest('reporting_currency');
+            return [`${index}:${file.name}`, {
+              selected: Boolean(membership), role: role?.role ?? 'unknown_other', documentColumn: documentIdentity?.physicalColumn ?? '',
+              periodStart: period?.start ?? '', periodEnd: period?.end ?? '', currency: currency?.currency ?? '',
+              monetaryColumns: Array.isArray(currency?.monetaryColumns) ? currency.monetaryColumns.join(', ') : '',
+            } satisfies MultiSourceDraftV1];
+          }));
+          deps.setCurrentDataset(null);
+          deps.setMultiSourceDrafts(drafts);
+          deps.setMultiSourceBuildResult({ relationshipState: null, blockers: ['Saved evidence was reloaded. Rebuild the relationship before analysis; prior executable handoffs remain invalid.'] });
+          deps.setPendingLocalBatch({ files, status: 'ready', results, families, selectedFamilyId: null, isRestored: true, step: 'family_selection', businessOverview: createBusinessFusionOverview(families) });
+          setSessionStatus('Sources reloaded. Review source-bound evidence and rebuild the governed multi-source dataset.');
+          return;
+        }
+        if (restoredDataset.sourceType === 'business_fusion_view') {
+          throw new Error('Legacy fused sessions are production-ineligible. Re-import the original sources and build a governed multi-source dataset.');
+        }
+        const family = families[0];
+        const rawSemanticRows = family.files.flatMap(item => {
+          if (item.result.status !== 'accessible') return [];
+          const md = item.result.metadata;
+          return md?.is_workbook && md.default_sheet && md.sheets ? md.sheets[md.default_sheet]?.semantic_rows || md.sheets[md.default_sheet]?.preview_rows || [] : md?.semantic_rows || md?.preview_rows || [];
+        });
+        const rawAnalysisRows = family.files.flatMap(item => {
+          if (item.result.status !== 'accessible') return [];
+          const md = item.result.metadata;
+          return md?.is_workbook && md.default_sheet && md.sheets ? md.sheets[md.default_sheet]?.analysis_rows || [] : md?.analysis_rows || [];
+        });
+        const first = family.files.find(item => item.result.status === 'accessible');
+        const firstMd = first?.result.status === 'accessible' ? first.result.metadata : null;
+        const rawPreviewRows = firstMd?.is_workbook && firstMd.default_sheet && firstMd.sheets ? firstMd.sheets[firstMd.default_sheet]?.preview_rows || [] : firstMd?.preview_rows || [];
+        const sourceFiles = family.files.map(item => {
+          const md = item.result.status === 'accessible' ? item.result.metadata : null;
+          return {
+            name: item.file.name,
+            rows: md?.is_workbook && md.default_sheet && md.sheets?.[md.default_sheet] ? md.sheets[md.default_sheet].rows_count : md?.rows_count ?? 0,
+            columns: family.columns.length, fingerprint: family.schemaFingerprint, persistedFile: md?.persisted_file,
+            sheetNames: md?.is_workbook && md.default_sheet ? [md.default_sheet] : [],
+          };
+        });
+        deps.setCurrentDataset({
+          ...restoredDataset, status: 'ready', file_name: restoredDataset.file_name || family.name,
+          rows_count: family.totalRows, columns: family.columns, profiles: family.profiles,
+          sourceType: family.files[0]?.result.status === 'accessible' ? family.files[0].result.sourceType : restoredDataset.sourceType,
+          sourceFiles, file_reference: null, runtimeDatasetSource: undefined,
+          semanticSample: { strategy: rawSemanticRows.length >= family.totalRows ? 'full' : 'matrix_sample', sourceRowCount: family.totalRows, sampleRowCount: rawSemanticRows.length },
+          analysisRowScope: rawAnalysisRows.length >= family.totalRows ? 'full' : 'not_retained',
+          semanticRows: rawSemanticRows, analysisRows: rawAnalysisRows,
+          previewRows: createPreviewRows(rawPreviewRows, family.columns), restoredFromSessionId: session.id,
+        });
+        resetAnalysisState(session.id);
+        setSessionStatus('Session opened from saved source file.');
+        return;
+      } catch (error) {
+        const missingPath = persistedFiles.map(file => file.filePath).join(', ');
+        setSessionStatus(`${error instanceof Error ? error.message : 'Could not reload saved source file.'} Missing path: ${missingPath}. Showing saved snapshot.`);
+      }
+    }
+    deps.setCurrentDataset({ ...restoredDataset, status: 'ready', file_reference: null, runtimeDatasetSource: undefined, restoredFromSessionId: session.id });
+    resetAnalysisState(session.id);
+    setSessionStatus('Session opened.');
+  };
+
+  const handleDeleteWorkspaceSession = async (sessionId: string) => {
+    setSessionStatus(null);
+    try {
+      await deleteWorkspaceSession(sessionId);
+      setWorkspaceSessions(current => current.filter(session => session.id !== sessionId));
+      if (deps.currentDataset?.restoredFromSessionId === sessionId) {
+        deps.setCurrentDataset((dataset: any) => dataset ? { ...dataset, restoredFromSessionId: undefined } : dataset);
+      }
+      setSessionStatus('Session deleted.');
+    } catch (error) {
+      setSessionStatus(error instanceof Error ? error.message : 'Could not delete session.');
+    }
+  };
+
+  useEffect(() => {
+    const sessionId = (location.state as { restoreWorkspaceSessionId?: string } | null)?.restoreWorkspaceSessionId;
+    if (!sessionId || returnSessionRestoredRef.current === sessionId || workspaceSessions.length === 0) return;
+    const saved = workspaceSessions.find(item => item.id === sessionId);
+    if (!saved) return;
+    returnSessionRestoredRef.current = sessionId;
+    void handleOpenWorkspaceSession(saved).finally(() => navigate('/', { replace: true, state: null }));
+  }, [location.state, navigate, workspaceSessions]);
+
+  return {
+    workspaceSessions, sessionStatus, isSavingSession, lastAutoSaveSignatureRef, sessionSignature,
+    createWorkspaceSessionSaveRequest: createSaveRequest,
+    saveCurrentWorkspaceSession, handleSaveWorkspaceSession, handleOpenWorkspaceSession, handleDeleteWorkspaceSession,
+  };
+}

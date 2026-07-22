@@ -25,18 +25,22 @@ describe('Phase 6B production reachability governance', () => {
   it('keeps both production session creators on one canonical handoff path', () => {
     const home = fs.readFileSync(path.join(ROOT, 'apps/desktop/src/pages/Home.tsx'), 'utf8');
     const advanced = fs.readFileSync(path.join(ROOT, 'apps/desktop/src/pages/Advanced.tsx'), 'utf8');
+    const advancedTransferActions = fs.readFileSync(
+      path.join(ROOT, 'apps/desktop/src/hooks/useAdvancedResultTransferActions.ts'),
+      'utf8',
+    );
     const handoff = fs.readFileSync(path.join(ROOT, 'apps/desktop/src/lib/advanced-result-handoff.ts'), 'utf8');
     const investigation = fs.readFileSync(path.join(ROOT, 'apps/desktop/src/pages/Investigation.tsx'), 'utf8');
 
     expect(home).toContain('getOrBuildCanonicalConsumerArtifact(');
     expect(home).toContain('canonicalHandoff');
-    expect(advanced).toContain('handoff.canonicalHandoff');
+    expect(`${advanced}\n${advancedTransferActions}`).toContain('handoff.canonicalHandoff');
     expect(handoff).toContain('getOrBuildCanonicalConsumerArtifact(');
     expect(handoff).toContain('prepareCanonicalInvestigationHandoff(');
     expect(investigation).toContain('executeGovernedMetricRequest');
     expect(investigation).toContain('canonical_handoff_required');
 
-    for (const source of [home, advanced, investigation]) {
+    for (const source of [home, advanced, advancedTransferActions, investigation]) {
       for (const forbidden of [
         'runGuidedInvestigationPipeline(',
         'createDatasetUnderstanding(',

@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "lightbi.phase8e.dead-legacy-code-disposition-audit.v1",
+  "deletedProductionSymbols": [],
+  "movedOnly": true,
+  "reason": "Phase 8E used conservative extraction; no production symbol was deleted without independent reachability proof.",
+  "preservedCompatibility": [
+    "workspace snapshot v2 loading",
+    "small and complete-row canonical compatibility",
+    "Advanced partial-result safety blockers",
+    "stale Investigation handoff validation"
+  ],
+  "legacyFusionProductionReachable": false,
+  "status": "pass"
+}

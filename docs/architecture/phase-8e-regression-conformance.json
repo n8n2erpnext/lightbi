@@ -1,0 +1,52 @@
+{
+  "schemaVersion": "lightbi.phase8e.regression-conformance.v1",
+  "sourceStateFrozen": true,
+  "targeted": {
+    "phase8A": {"files": 1, "tests": 4, "status": "pass"},
+    "phase8B": {"files": 1, "tests": 3, "status": "pass"},
+    "phase8C": {"files": 2, "tests": 9, "status": "pass"},
+    "phase8D": {"files": 1, "tests": 3, "status": "pass"},
+    "phase8D1UiFlow": {"files": 1, "tests": 4, "status": "pass"},
+    "phase8D1Multisource": {"files": 1, "tests": 4, "status": "pass"},
+    "phase6": {"files": 4, "tests": 10, "status": "pass"},
+    "phase5M1M4": {"files": 6, "tests": 19, "status": "pass"},
+    "phase7LightRegressions": {"files": 6, "tests": 15, "status": "pass"},
+    "phase7FamilyEligibility": {"files": 1, "tests": 2, "status": "pass"},
+    "phase7HeavyEvaluators": {"files": 3, "status": "pass_isolated_file_runs"},
+    "relationshipAndGrain": {"files": 7, "tests": 62, "status": "pass"},
+    "pagePersistenceExportArchitecture": {"files": 6, "tests": 55, "status": "pass"}
+  },
+  "completeUnderstandingCore": {
+    "files": 78,
+    "passed": 78,
+    "failed": 0,
+    "incomplete": 0,
+    "logPath": "/tmp/phase8e-understanding-core-matrix.log",
+    "logSha256": "1089bb35510b3a477556f9978bea2428b356e8be6180412aad364482ca44b697",
+    "status": "pass"
+  },
+  "typescript": "pass_zero_diagnostics",
+  "architectureJson": "pass",
+  "canonicalReachability": "pass",
+  "diffCheck": "pass",
+  "fullDesktopSuite": {
+    "runCount": 1,
+    "testFilesTotal": 176,
+    "testFilesPassed": 172,
+    "testFilesFailed": 4,
+    "testsTotal": 1178,
+    "testsPassed": 1169,
+    "testsFailed": 9,
+    "deterministicBaselineFailures": 6,
+    "timingSensitiveTimeouts": 3,
+    "unexpectedFailures": 0,
+    "phase8EOwnedFailures": 0,
+    "processExitStatus": 1,
+    "logPath": "/tmp/phase8e-final-full-desktop.log",
+    "logSha256": "02e5a1a5084d4924fa2de06b032d067db235da7716e393fca8472fc2d9fd487d",
+    "conformance": "pass_by_governed_identity_and_signature"
+  },
+  "governedAllowlistSha256": "baa86950582b7d758396abb0c69fdaffcd3c2cbbb22b71dd3bbdb3c0aed1c4f5",
+  "unexpectedRegressions": 0,
+  "status": "pass"
+}

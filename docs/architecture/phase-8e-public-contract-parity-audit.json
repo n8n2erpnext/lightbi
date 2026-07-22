@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "lightbi.phase8e.public-contract-parity-audit.v1",
+  "checkpoint": "eb93cefeaa779bb43ccf08e77d98dea414436d0a",
+  "byteFrozenContracts": [
+    {"path": "apps/desktop/src/lib/understanding-core/canonical-source-boundary.ts", "sha256": "58882e0b9409a65d3735e296b18665f736bbd889fcfc613c1a2ba3ad2f04ea0b"},
+    {"path": "apps/desktop/src/lib/understanding-core/canonical-user-overlay.ts", "sha256": "2d86c74aca7c62d76a6c4301f972d35c3b44390373e2b2fdc0838bc86f220783"},
+    {"path": "apps/desktop/src/lib/understanding-core/canonical-multisource-boundary.ts", "sha256": "3c8371f11b5fd35909e09c88573ed94aa186f80373684e35a064fc2a38d71385"},
+    {"path": "apps/desktop/src/lib/investigation-session.ts", "sha256": "8156af5849ef10ddb71bf7bf1a8eac4a48338f3183e3efd97f67fe564dff1c0e"},
+    {"path": "apps/desktop/src/lib/advanced-result-handoff.ts", "sha256": "dc3d71356854af4a55ff920561932b097ea16d80d6dd647a61a8ee3778ff9830"},
+    {"path": "apps/desktop/src/lib/workspace-session-api.ts", "sha256": "95e121ce5c3f2e28a155ef3a539eb196cc111688a68faf1f0e7bf3e6b7bedf43"}
+  ],
+  "contractVersionsChanged": false,
+  "serializedKeysChanged": false,
+  "identityAlgorithmsChanged": false,
+  "persistenceSchemaChanged": false,
+  "governedAllowlistSha256": "baa86950582b7d758396abb0c69fdaffcd3c2cbbb22b71dd3bbdb3c0aed1c4f5",
+  "status": "pass"
+}
