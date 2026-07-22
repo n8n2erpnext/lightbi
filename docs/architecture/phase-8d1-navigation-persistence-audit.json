@@ -1,0 +1,12 @@
+{
+  "schemaVersion": "lightbi.phase8d1.navigation-persistence-audit.v1",
+  "persisted": ["logical_dataset_membership", "source_roles", "permitted_source_evidence", "source_and_overlay_bindings"],
+  "rawLocalFileBytesPersistedInSession": false,
+  "executableHandoffRestored": false,
+  "relationshipRebuildRequiredAfterReload": true,
+  "staleOrCorruptStateRejected": true,
+  "legacyFusionSessionRejected": true,
+  "sourceReselectionOrServerReloadReportedTruthfully": true,
+  "tests": {"files": 5, "passed": 41, "failed": 0},
+  "status": "pass"
+}

@@ -7,6 +7,8 @@ import type { BusinessFusionOverview } from './business-fusion-overview';
 import type { SaveWorkspaceSessionRequest } from './workspace-session-api';
 import type { CanonicalInvestigationHandoffV1 } from './understanding-core/canonical-consumer-boundary';
 import type { GovernedMetricExecutionResultV1 } from './understanding-core/governed-runtime-contracts';
+import type { CanonicalMultiSourceDatasetV1, CanonicalMultiSourceInvestigationHandoffV1 } from './understanding-core/canonical-multisource-boundary';
+import type { CanonicalMultiSourceExecutionResultV1 } from './understanding-core/governed-multisource-duckdb-boundary';
 
 export interface InvestigationSession {
   id: string;
@@ -21,8 +23,10 @@ export interface InvestigationSession {
   rowScope?: RuntimeRowScope;
   businessFusionOverview?: BusinessFusionOverview;
   workspaceSessionPayload?: SaveWorkspaceSessionRequest;
-  canonicalHandoff?: CanonicalInvestigationHandoffV1;
+  canonicalHandoff?: CanonicalInvestigationHandoffV1 | CanonicalMultiSourceInvestigationHandoffV1;
   canonicalExecutionResult?: GovernedMetricExecutionResultV1;
+  canonicalMultiSourceDataset?: CanonicalMultiSourceDatasetV1;
+  canonicalMultiSourceExecutionResult?: CanonicalMultiSourceExecutionResultV1;
 }
 
 // In-memory store for now, since we aren't using a real backend or persistent DB yet.
@@ -40,7 +44,8 @@ export function createInvestigationSession(
   rowScope?: RuntimeRowScope,
   businessFusionOverview?: BusinessFusionOverview,
   workspaceSessionPayload?: SaveWorkspaceSessionRequest,
-  canonicalHandoff?: CanonicalInvestigationHandoffV1
+  canonicalHandoff?: CanonicalInvestigationHandoffV1 | CanonicalMultiSourceInvestigationHandoffV1,
+  canonicalMultiSourceDataset?: CanonicalMultiSourceDatasetV1
 ): InvestigationSession {
   let safeRows = rows;
   // Deep clone to preserve original
@@ -60,7 +65,8 @@ export function createInvestigationSession(
     rowScope,
     businessFusionOverview,
     workspaceSessionPayload,
-    canonicalHandoff
+    canonicalHandoff,
+    canonicalMultiSourceDataset,
   };
   
   currentSession = session;

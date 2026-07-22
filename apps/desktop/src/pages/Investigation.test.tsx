@@ -23,7 +23,9 @@ import type {
 } from '../lib/understanding-core/governed-runtime-contracts';
 import { Investigation } from './Investigation';
 
-vi.mock('react-router-dom', () => ({ useNavigate: () => vi.fn() }));
+const { navigateMock } = vi.hoisted(() => ({ navigateMock: vi.fn() }));
+
+vi.mock('react-router-dom', () => ({ useNavigate: () => navigateMock }));
 vi.mock('../lib/investigation-session', () => ({ getCurrentInvestigationSession: vi.fn() }));
 vi.mock('../lib/workspace-session-api', () => ({
   saveWorkspaceSession: vi.fn().mockResolvedValue({ id: 'saved-session' }),
@@ -44,6 +46,7 @@ vi.mock('../lib/result-validator-contract', () => ({
 import { getCurrentInvestigationSession } from '../lib/investigation-session';
 import { validatePreviewAgainstIntent } from '../lib/result-validator-contract';
 import { executeGovernedMetricRequest } from '../lib/understanding-core/governed-metric-executor';
+import { saveWorkspaceSession } from '../lib/workspace-session-api';
 
 const restriction: GovernedExecutionRestrictionV1 = {
   code: 'DECISION_USE_PROHIBITED',
@@ -314,6 +317,7 @@ function governedResult(overrides: Partial<GovernedMetricExecutionResultV1> = {}
 const mockedSession = vi.mocked(getCurrentInvestigationSession);
 const mockedExecute = vi.mocked(executeGovernedMetricRequest);
 const mockedValidate = vi.mocked(validatePreviewAgainstIntent);
+const mockedSaveWorkspaceSession = vi.mocked(saveWorkspaceSession);
 
 describe('Investigation canonical consumer boundary', () => {
   beforeEach(() => {
@@ -344,6 +348,7 @@ describe('Investigation canonical consumer boundary', () => {
     render(<Investigation />);
     await waitFor(() => expect(screen.getAllByText('Analysis Blocked').length).toBeGreaterThan(0));
     expect(screen.getAllByText(/runtime_preflight_identity_mismatch/).length).toBeGreaterThan(0);
+    expect(screen.getAllByRole('button', { name: /Run preview|Execute preview|Analyze deeper/i }).every(button => (button as HTMLButtonElement).disabled)).toBe(true);
     expect(mockedExecute).not.toHaveBeenCalled();
   });
 
@@ -411,7 +416,24 @@ describe('Investigation canonical consumer boundary', () => {
     render(<Investigation />);
     await waitFor(() => expect(screen.getByTestId('canonical-chart-renderer')).toBeDefined());
     expect(screen.getByText('EXECUTED')).toBeDefined();
+    const context = screen.getByTestId('governed-result-context');
+    fireEvent.click(context.querySelector('summary')!);
+    expect(context.textContent).toContain('sales_revenue');
+    expect(context.textContent).toContain('runtime-action:test');
+    expect(context.textContent).toContain('metric-plan:test');
+    expect(context.textContent).toContain('canonical-evidence:test-source');
+    expect(context.textContent).toContain('Preview evidence cannot authorize decision use');
     expect(mockedExecute).toHaveBeenCalledTimes(1);
+  });
+
+  it('persists the current dataset and returns with the exact saved session identity', async () => {
+    render(<Investigation />);
+    await waitFor(() => expect(screen.getByTestId('canonical-chart-renderer')).toBeDefined());
+    mockedSaveWorkspaceSession.mockClear();
+    navigateMock.mockClear();
+    fireEvent.click(screen.getByTitle('Back to Home'));
+    await waitFor(() => expect(mockedSaveWorkspaceSession).toHaveBeenCalledTimes(1));
+    expect(navigateMock).toHaveBeenCalledWith('/', { state: { restoreWorkspaceSessionId: 'saved-session' } });
   });
 
   it('keeps restriction and evidence references attached after successful execution', async () => {

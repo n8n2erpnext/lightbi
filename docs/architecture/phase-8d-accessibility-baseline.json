@@ -1,0 +1,7 @@
+{
+  "schemaVersion": "lightbi.phase8d.accessibility-baseline.v1",
+  "newControls": {"keyboardAccessible": true, "semanticLabels": true, "nonHoverOperation": true, "disabledReason": true, "loadingState": true, "errorAssociation": true, "canonicalStableSelectors": true, "duplicateInteractiveIds": 0, "colorOnlyActions": 0},
+  "focus": {"mappingReviewReturn": "existing Phase 8C focus target", "resultNavigation": "route-level focus debt remains", "investigationReturn": "saved session restored"},
+  "deferredDebt": ["full WCAG audit", "responsive visual audit", "route-announcement and focus-heading standardization"],
+  "status": "pass_functional_baseline"
+}

@@ -6,10 +6,18 @@ import { deterministicPolicySha256 } from "./contextual-evidence-policy";
 import type { CanonicalMetricSourceV1, DomainActivationArtifactV1, GovernedMetricPreflightV1 } from "./governed-domain-metric-contracts";
 import { preflightGovernedMetrics } from "./governed-metric-preflight";
 import { governedMetricPolicyHash } from "./governed-metric-policy";
+import { executeGovernedMetricRequest } from "./governed-metric-executor";
 import { planGovernedMetricQuery, type GovernedMetricQueryPlanningResultV1 } from "./governed-metric-query-planner";
 import type { GovernedActionCandidateV1, QuestionActionGenerationV1 } from "./governed-question-action-contracts";
 import { generateGovernedCommerceQuestionsAndActions } from "./governed-question-action-generator";
-import type { GovernedRuntimePreflightV1 } from "./governed-runtime-contracts";
+import type {
+  GovernedDuckDBBoundaryResultV1,
+  GovernedDuckDBBoundaryV1,
+  GovernedMetricExecutionRequestV1,
+  GovernedMetricExecutionResultV1,
+  GovernedMetricQueryPlanV1,
+  GovernedRuntimePreflightV1,
+} from "./governed-runtime-contracts";
 import { preflightGovernedRuntimeAction } from "./governed-runtime-preflight";
 import { governedRuntimePolicyHash } from "./governed-runtime-policy";
 import { generateGrainCandidateArtifact } from "./grain-candidate-engine";
@@ -94,6 +102,21 @@ export type CanonicalInvestigationHandoffV1 = {
   blockers: string[];
   decisionUseAuthorized: false;
 };
+
+export type {
+  GovernedDuckDBBoundaryResultV1,
+  GovernedDuckDBBoundaryV1,
+  GovernedMetricExecutionRequestV1,
+  GovernedMetricExecutionResultV1,
+  GovernedMetricQueryPlanV1,
+};
+
+export function executeCanonicalConsumerMetricRequest(
+  request: GovernedMetricExecutionRequestV1,
+  boundary: GovernedDuckDBBoundaryV1,
+): Promise<GovernedMetricExecutionResultV1> {
+  return executeGovernedMetricRequest(request, boundary);
+}
 
 const cache = new Map<string, CanonicalConsumerBuildResultV1>();
 const latestByDatasetId = new Map<string, CanonicalConsumerBuildResultV1>();

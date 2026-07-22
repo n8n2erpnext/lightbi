@@ -199,12 +199,15 @@ export const UnderstandingNextCard: React.FC<UnderstandingNextCardProps> = ({
       )}
 
       {canonicalPresentation && (
-        <CanonicalAnalysisStates
-          presentation={canonicalPresentation}
-          understanding={understanding}
-          onSelectAction={onSelectAction}
-          onRemediate={onRemediate}
-        />
+        <>
+          <CanonicalUnderstandingSummary presentation={canonicalPresentation} />
+          <CanonicalAnalysisStates
+            presentation={canonicalPresentation}
+            understanding={understanding}
+            onSelectAction={onSelectAction}
+            onRemediate={onRemediate}
+          />
+        </>
       )}
 
       {/* Lens-first orientation */}
@@ -383,6 +386,44 @@ export const UnderstandingNextCard: React.FC<UnderstandingNextCardProps> = ({
   );
 };
 
+const CanonicalUnderstandingSummary: React.FC<{ presentation: CanonicalDatasetPresentationV1 }> = ({ presentation }) => {
+  const summary = presentation.understanding;
+  if (!summary) return null;
+  const mapped = summary.mappings.filter(item => item.canonicalSignal);
+  return <details className="rounded-lg border border-gray-200 bg-gray-50/50 p-3" data-testid="canonical-understanding-summary">
+    <summary className="cursor-pointer text-[13px] font-semibold text-gray-800">Inspect canonical understanding</summary>
+    <div className="mt-3 grid gap-3 text-[12px] text-gray-600 md:grid-cols-2">
+      <div>
+        <div className="font-semibold text-gray-800">Source and profile</div>
+        <p className="mt-1">{summary.source.connectedFiles.length} connected file{summary.source.connectedFiles.length === 1 ? '' : 's'} · {summary.source.sourceRowCount.toLocaleString()} full-source rows · {summary.source.columnCount} columns</p>
+        <p>Profile: {summary.source.profileScope}, {summary.source.profileConfidence} confidence · data region {humanize(summary.source.dataRegionState)}</p>
+        <p>Representative evidence: {summary.representativeEvidence.sampledRowCount.toLocaleString()} rows ({humanize(summary.representativeEvidence.strategy)}); never treated as full-file truth.</p>
+        <p className="mt-1 break-words">Sources: {summary.source.connectedFiles.join(', ')}</p>
+      </div>
+      <div>
+        <div className="font-semibold text-gray-800">Meaning and readiness</div>
+        <p className="mt-1">{mapped.length} mapped · {summary.unknownBusinessFields.length} ambiguous or unknown · {summary.ignoredFields.length} ignored</p>
+        <p>Grain: {humanize(summary.grain.structuralForm)} ({humanize(summary.grain.structuralState)}) · {humanize(summary.grain.temporalMode)} · {humanize(summary.grain.aggregationForm)}</p>
+        <p>Domain pack: {humanize(summary.domainSupport.packId)} · {humanize(summary.domainSupport.state)}</p>
+        <p>User-confirmed evidence: {summary.evidence.userConfirmedMappingCount} mappings · {summary.evidence.userConfirmedDeclarationCount} declarations</p>
+      </div>
+      <div>
+        <div className="font-semibold text-gray-800">Mappings</div>
+        <div className="mt-1 flex flex-wrap gap-1.5">
+          {summary.mappings.map(item => <span key={item.physicalColumn} className="rounded border border-gray-200 bg-white px-2 py-1" data-state={item.state}>{item.physicalColumn}: {item.canonicalSignal ?? humanize(item.state)}{item.provenance === 'user_confirmed' ? ' (confirmed)' : ''}</span>)}
+        </div>
+      </div>
+      <div>
+        <div className="font-semibold text-gray-800">Quality, relationships and restrictions</div>
+        <p className="mt-1">Quality findings: {summary.qualityIssues.length || 'none'} · Relationship state: {humanize(summary.relationships.state)}</p>
+        <p>{summary.relationships.explanation}</p>
+        {summary.unknownBusinessFields.length > 0 && <p className="mt-1">Needs review: {summary.unknownBusinessFields.join(', ')}</p>}
+        {summary.readinessRestrictions.length > 0 && <p className="mt-1">Restrictions retained: {summary.readinessRestrictions.map(humanize).join(', ')}</p>}
+      </div>
+    </div>
+  </details>;
+};
+
 const STATE_LABELS: Record<CanonicalAnalysisPresentationV1['state'], string> = {
   ready: 'Ready',
   needs_user_evidence: 'Needs confirmation',
@@ -409,6 +450,45 @@ const CanonicalAnalysisStates: React.FC<{
     ['blocked_safety', 'Safety blocked'],
     ['unsupported_mvp', 'Unsupported'],
   ];
+  const groups = [
+    { id: 'recommended', label: 'Recommended now', items: presentation.analyses.filter(item => item.state === 'ready' && item.advertisedAsDefault).sort((a, b) => (a.rank ?? 99) - (b.rank ?? 99)) },
+    { id: 'additional', label: 'Additional supported analyses', items: presentation.analyses.filter(item => item.state === 'ready' && !item.advertisedAsDefault) },
+    { id: 'resolvable', label: 'Resolvable analyses', items: presentation.analyses.filter(item => item.state === 'needs_user_evidence' || item.state === 'needs_mapping_review') },
+    { id: 'blocked', label: 'Safety-blocked analyses', items: presentation.analyses.filter(item => item.state === 'blocked_safety' || item.state === 'execution_failed') },
+    { id: 'unsupported', label: 'Unsupported MVP concepts', items: presentation.analyses.filter(item => item.state === 'unsupported_mvp') },
+    { id: 'stale', label: 'Stale analyses', items: presentation.analyses.filter(item => item.state === 'stale') },
+  ].filter(group => group.items.length > 0);
+  const renderItem = (item: CanonicalAnalysisPresentationV1) => {
+    const action = item.actionCandidateId ? actionById.get(item.actionCandidateId) : undefined;
+    const canInvestigate = item.state === 'ready' && item.executionReadiness !== 'not_executable' && action;
+    return <article key={item.itemId} tabIndex={-1} id={`analysis-item-${item.itemId}`} data-testid={`canonical-analysis-${item.itemId}`} data-state={item.state} className="rounded-lg border border-gray-200 bg-white p-3 shadow-sm">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <div className="text-[13px] font-semibold text-gray-900">{item.title}</div>
+          <div className="mt-0.5 text-[12px] text-gray-500">{item.description}</div>
+        </div>
+        <span className="shrink-0 rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5 text-[10px] font-semibold uppercase text-gray-700">{STATE_LABELS[item.state]}</span>
+      </div>
+      {item.primaryBlocker && <div className="mt-2 text-[12px] text-amber-800" role="status" data-testid={`canonical-primary-blocker-${item.itemId}`}>
+        <span className="font-medium">{item.primaryBlocker.message}</span>
+        {(item.primaryBlocker.scope === 'source' || item.primaryBlocker.scope === 'physical_column') && <span className="mt-0.5 block text-[11px] text-gray-500">Scope: {item.sheetOrTable ? `${item.sheetOrTable} · ` : ''}{item.primaryBlocker.scope === 'physical_column' ? item.physicalColumns.join(', ') : item.sourceId}</span>}
+      </div>}
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
+        <span className="text-[10px] uppercase text-gray-400">{item.metricId}</span>
+        {canInvestigate ? <button type="button" data-testid={`canonical-investigate-${item.itemId}`} onClick={() => onSelectAction?.(adaptNextActionsToLegacy([action])[0])} className="rounded border border-indigo-100 bg-indigo-50 px-2 py-1 text-[11px] font-semibold text-indigo-700 hover:bg-indigo-100">Investigate</button> : null}
+        {!canInvestigate && item.remediationOperations.length > 0 ? <div className="flex flex-wrap gap-1.5">
+          {item.remediationOperations.map(operation => <button key={operation.operationId} type="button" data-testid={`canonical-remediate-${item.itemId}-${operation.kind}`} onClick={() => onRemediate?.(operation, item.itemId)} className="flex items-center gap-1 rounded border border-amber-200 bg-amber-50 px-2 py-1 text-[11px] font-semibold text-amber-800"><Wrench className="h-3 w-3" />{operation.label}</button>)}
+        </div> : null}
+      </div>
+      {(item.secondaryBlockers.length > 0 || item.limitations.length > 0 || item.evidence.length > 0 || item.decisionUseRestrictions.length > 0) && <details className="mt-2 text-[11px] text-gray-500">
+        <summary className="cursor-pointer font-medium text-gray-600">Evidence and limitations</summary>
+        {item.secondaryBlockers.map(blocker => <p key={blocker.code} className="mt-1">{blocker.message}</p>)}
+        {item.limitations.map(code => <p key={code} className="mt-1">Limitation: {humanize(code)}</p>)}
+        {item.evidence.map(entry => <p key={`${entry.evidenceId}:${entry.provenance}`} className="mt-1">Evidence: {entry.evidenceId} ({entry.provenance})</p>)}
+        {item.decisionUseRestrictions.map(restriction => <p key={restriction.code} className="mt-1">Restriction: {restriction.reason}</p>)}
+      </details>}
+    </article>;
+  };
   return <section className="border-t border-gray-100 pt-4" aria-labelledby="canonical-analysis-heading" data-testid="canonical-analysis-states">
     <div className="flex flex-wrap items-start justify-between gap-3">
       <div>
@@ -425,38 +505,11 @@ const CanonicalAnalysisStates: React.FC<{
       {presentation.datasetBlockers.map(blocker => <p key={blocker.code} className="mt-1 text-[12px]">{blocker.message}</p>)}
     </div>}
 
-    <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2">
-      {presentation.analyses.map(item => {
-        const action = item.actionCandidateId ? actionById.get(item.actionCandidateId) : undefined;
-        const canInvestigate = item.state === 'ready' && item.executionReadiness !== 'not_executable' && action;
-        return <article key={item.itemId} tabIndex={-1} id={`analysis-item-${item.itemId}`} data-testid={`canonical-analysis-${item.itemId}`} data-state={item.state} className="rounded-lg border border-gray-200 bg-white p-3 shadow-sm">
-          <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0">
-              <div className="text-[13px] font-semibold text-gray-900">{item.title}</div>
-              <div className="mt-0.5 text-[12px] text-gray-500">{item.description}</div>
-            </div>
-            <span className="shrink-0 rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5 text-[10px] font-semibold uppercase text-gray-700">{STATE_LABELS[item.state]}</span>
-          </div>
-          {item.primaryBlocker && <div className="mt-2 text-[12px] text-amber-800" role="status" data-testid={`canonical-primary-blocker-${item.itemId}`}>
-            <span className="font-medium">{item.primaryBlocker.message}</span>
-            {(item.primaryBlocker.scope === 'source' || item.primaryBlocker.scope === 'physical_column') && <span className="mt-0.5 block text-[11px] text-gray-500">Scope: {item.sheetOrTable ? `${item.sheetOrTable} · ` : ''}{item.primaryBlocker.scope === 'physical_column' ? item.physicalColumns.join(', ') : item.sourceId}</span>}
-          </div>}
-          <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
-            <span className="text-[10px] uppercase text-gray-400">{item.metricId}</span>
-            {canInvestigate ? <button type="button" data-testid={`canonical-investigate-${item.itemId}`} onClick={() => onSelectAction?.(adaptNextActionsToLegacy([action])[0])} className="rounded border border-indigo-100 bg-indigo-50 px-2 py-1 text-[11px] font-semibold text-indigo-700 hover:bg-indigo-100">Investigate</button> : null}
-            {!canInvestigate && item.remediationOperations.length > 0 ? <div className="flex flex-wrap gap-1.5">
-              {item.remediationOperations.map(operation => <button key={operation.operationId} type="button" data-testid={`canonical-remediate-${item.itemId}-${operation.kind}`} onClick={() => onRemediate?.(operation, item.itemId)} className="flex items-center gap-1 rounded border border-amber-200 bg-amber-50 px-2 py-1 text-[11px] font-semibold text-amber-800"><Wrench className="h-3 w-3" />{operation.label}</button>)}
-            </div> : null}
-          </div>
-          {(item.secondaryBlockers.length > 0 || item.limitations.length > 0 || item.evidence.length > 0 || item.decisionUseRestrictions.length > 0) && <details className="mt-2 text-[11px] text-gray-500">
-            <summary className="cursor-pointer font-medium text-gray-600">Evidence and limitations</summary>
-            {item.secondaryBlockers.map(blocker => <p key={blocker.code} className="mt-1">{blocker.message}</p>)}
-            {item.limitations.map(code => <p key={code} className="mt-1">Limitation: {humanize(code)}</p>)}
-            {item.evidence.map(entry => <p key={`${entry.evidenceId}:${entry.provenance}`} className="mt-1">Evidence: {entry.evidenceId} ({entry.provenance})</p>)}
-            {item.decisionUseRestrictions.map(restriction => <p key={restriction.code} className="mt-1">Restriction: {restriction.reason}</p>)}
-          </details>}
-        </article>;
-      })}
+    <div className="mt-3 space-y-4">
+      {groups.map(group => <section key={group.id} aria-labelledby={`canonical-group-${group.id}`} data-testid={`canonical-group-${group.id}`}>
+        <h5 id={`canonical-group-${group.id}`} className="mb-2 text-[12px] font-semibold text-gray-700">{group.label} <span className="font-normal text-gray-400">({group.items.length})</span></h5>
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">{group.items.map(renderItem)}</div>
+      </section>)}
     </div>
   </section>;
 };

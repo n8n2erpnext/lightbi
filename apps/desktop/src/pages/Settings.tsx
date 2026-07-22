@@ -16,7 +16,7 @@ export const Settings: React.FC = () => {
               <div className="font-medium text-gray-800">Theme</div>
               <div className="text-sm text-gray-500">Select application theme</div>
             </div>
-            <select className="border border-gray-300 rounded px-3 py-1.5 text-sm bg-white focus:outline-none">
+            <select disabled title="Theme selection is not available in this MVP" className="cursor-not-allowed rounded border border-gray-300 bg-gray-50 px-3 py-1.5 text-sm text-gray-500">
               <option>Light (Default)</option>
               <option>Dark</option>
               <option>System</option>
@@ -32,7 +32,7 @@ export const Settings: React.FC = () => {
                 <div className="font-medium text-gray-800">Local Database Location</div>
                 <div className="text-sm text-gray-500">~/.lightbi/data.db</div>
               </div>
-              <button className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-1.5 rounded-md text-sm font-medium transition-colors">
+              <button disabled title="Database relocation is not available in this MVP" className="cursor-not-allowed rounded-md bg-gray-100 px-4 py-1.5 text-sm font-medium text-gray-400">
                 Change
               </button>
             </div>
@@ -41,7 +41,7 @@ export const Settings: React.FC = () => {
                 <div className="font-medium text-gray-800">DuckDB Engine Cache</div>
                 <div className="text-sm text-gray-500">128 MB used</div>
               </div>
-              <button className="text-red-600 hover:bg-red-50 px-4 py-1.5 rounded-md text-sm font-medium transition-colors">
+              <button disabled title="Cache clearing is not available in this MVP" className="cursor-not-allowed rounded-md px-4 py-1.5 text-sm font-medium text-gray-400">
                 Clear Cache
               </button>
             </div>

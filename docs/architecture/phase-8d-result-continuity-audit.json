@@ -1,0 +1,9 @@
+{
+  "schemaVersion": "lightbi.phase8d.result-continuity-audit.v1",
+  "investigation": {"exactAction": true, "progress": true, "metricResult": true, "chartOrTable": true, "runtimeFailure": true, "retryWhenValid": true},
+  "retainedIdentity": ["artifactIdentity", "overlayIdentity", "actionId", "metricId", "queryPlanIdentity", "executionScope", "sourceFingerprint", "rowCount", "evidence", "limitations", "restrictions"],
+  "return": {"persistsWorkspace": true, "passesSavedSessionIdentity": true, "homeRestoresExactSession": true, "reimportRequired": false},
+  "staleProtection": true,
+  "tests": ["Investigation canonical consumer boundary"],
+  "status": "pass"
+}

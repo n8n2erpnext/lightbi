@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "lightbi.phase8d1.governed-relationship-artifact-audit.v1",
+  "contract": "lightbi.governed-production-relationship.v1",
+  "policy": "lightbi.governed-production-relationship-policy.v1",
+  "states": ["confirmed", "conditional", "ambiguous", "rejected", "insufficient_evidence", "stale"],
+  "productionPositiveCase": {
+    "roles": ["sales", "accounting"],
+    "relationshipType": "identity_equivalence",
+    "identity": "document_identity",
+    "cardinality": "one_to_one",
+    "matchedDistinct": 1500,
+    "reportingPeriod": "2026-05-01/2026-05-31",
+    "currency": "VND",
+    "validationState": "confirmed"
+  },
+  "restrictions": ["identity_reconciliation_only", "cross_source_measure_join_prohibited", "source_structural_grains_differ"],
+  "uiCanConfirmRelationshipDirectly": false,
+  "decisionUseAuthorized": false,
+  "status": "pass"
+}

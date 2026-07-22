@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "lightbi.phase8d.navigation-state-audit.v1",
+  "transitions": {
+    "intake_to_understanding": "pass",
+    "understanding_to_mapping_or_evidence": "pass",
+    "ready_analysis_to_investigation": "pass",
+    "blocked_analysis_to_investigation": "prevented",
+    "investigation_to_current_dataset": "pass_saved_session_identity",
+    "direct_investigation_without_handoff": "fails_closed",
+    "source_replacement": "invalidates_previous_state",
+    "stale_session_restore": "rejected_or_rebuilt",
+    "simple_to_advanced": "user_initiated_only"
+  },
+  "blankOrInertSupportedRoutes": 0,
+  "tests": ["Investigation", "phase-8b-production-evidence-interaction", "phase-8c presentation"],
+  "status": "pass"
+}

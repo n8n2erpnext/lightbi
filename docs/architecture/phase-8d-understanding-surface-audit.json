@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "lightbi.phase8d.understanding-surface-audit.v1",
+  "canonicalOwner": "lightbi.canonical-consumer-presentation.v1",
+  "surface": "UnderstandingNextCard canonical details",
+  "fields": {
+    "connectedSources": "visible",
+    "sourceCompleteness": "visible",
+    "profileScope": "visible_full",
+    "exactFullSourceRowCount": "visible",
+    "representativeSampleScope": "visible_not_full_truth",
+    "dataQuality": "visible",
+    "concepts": "visible",
+    "mappingStates": "visible",
+    "grain": "visible",
+    "relationships": "visible_source_local_not_evaluated",
+    "domainSupport": "visible",
+    "observedEvidence": "visible",
+    "userConfirmedEvidence": "visible",
+    "decisionRestrictions": "visible"
+  },
+  "independentUiSemanticInference": false,
+  "rawCanonicalJsonUsedAsPrimaryUi": false,
+  "tests": ["phase-8d-production-reachability", "phase-8c-canonical-presentation"],
+  "status": "pass_with_multi_source_limitation"
+}

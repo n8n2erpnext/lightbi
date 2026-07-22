@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "lightbi.phase8d.analysis-discovery-audit.v1",
+  "groups": ["Recommended now", "Additional supported analyses", "Resolvable analyses", "Safety-blocked analyses", "Unsupported MVP concepts", "Stale analyses"],
+  "defaultLimit": 5,
+  "rankingPolicyChanged": false,
+  "allCandidateQuestionsProjected": true,
+  "nonDefaultGovernedActionDiscoverable": true,
+  "nonDefaultGovernedActionOperable": true,
+  "blockedActionAdvertisedRunnable": false,
+  "unsupportedActionAdvertisedRunnable": false,
+  "test": "apps/desktop/src/lib/phase-8d-production-reachability.test.tsx",
+  "status": "pass"
+}

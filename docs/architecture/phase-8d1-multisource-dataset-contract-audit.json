@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "lightbi.phase8d1.multisource-dataset-contract-audit.v1",
+  "contract": "lightbi.canonical-multisource-dataset.v1",
+  "implementation": "apps/desktop/src/lib/understanding-core/canonical-multisource-boundary.ts",
+  "deterministicIdentity": true,
+  "orderedMembershipIdentityIsOrderInvariant": true,
+  "requiredFields": ["multiSourceDatasetId", "stateGeneration", "identity", "orderedSourceMemberships", "relationshipArtifactId", "overlayIdentity", "createdAt", "supersededStateReference"],
+  "sourceLocalArtifactsRemainImmutable": true,
+  "sourcesFlattenedIntoPhysicalTable": false,
+  "supportedProductionCombination": ["sales", "accounting"],
+  "scope": "commerce_distribution_mvp_gross_profit_only",
+  "status": "pass"
+}

@@ -1,0 +1,12 @@
+{
+  "schemaVersion": "lightbi.phase8d1.gross-profit-production-journey-audit.v1",
+  "fixtures": ["sample-corpus/anchors/1.3.0/Sales_ERP_May_2026.xlsx", "sample-corpus/versions/1.3.0/derived/derived-accounting-may-vnd.csv"],
+  "journey": ["independent_import", "independent_full_profile", "explicit_source_roles", "source_bound_period_currency_identity", "governed_relationship", "canonical_multisource_artifact", "unchanged_m1", "unchanged_m2", "unchanged_m3", "investigation_handoff", "independent_full_source_materialization", "governed_duckdb_execution"],
+  "groundTruth": {"metricId": "gross_profit", "currency": "VND", "expected": 3075721244, "actual": 3075721244, "comparison": "exact_match", "tolerance": 0},
+  "allRequiredSourcesUsed": true,
+  "sourceLocalSubstituteCounted": false,
+  "filenameRoleInference": false,
+  "rowPositionJoin": false,
+  "legacyFusion": false,
+  "status": "pass"
+}

@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "lightbi.phase8d.dead-end-and-legacy-surface-audit.v1",
+  "removedOrClosed": [
+    "Home View Data inert handler replaced by representative-data dialog",
+    "non-default governed actions included in compatibility projection",
+    "workspace alerts disabled with reason",
+    "dataset creation disabled with reason",
+    "dataset row false click affordance removed",
+    "source edit/remove disabled with reason",
+    "unimplemented settings controls disabled with reason"
+  ],
+  "productionLegacyExecutors": 0,
+  "conflictingUnderstandingCards": 0,
+  "knownCleanupDeferredToPhase8E": ["legacy understanding-next compatibility adapter remains as projection boundary", "unused legacy App.tsx remains unreachable from main.tsx", "broader Advanced module decomposition"],
+  "tests": ["phase-8d-production-reachability"],
+  "status": "pass"
+}

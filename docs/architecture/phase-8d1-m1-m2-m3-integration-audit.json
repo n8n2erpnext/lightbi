@@ -1,0 +1,12 @@
+{
+  "schemaVersion": "lightbi.phase8d1.m1-m2-m3-integration-audit.v1",
+  "metricId": "gross_profit",
+  "formulaChanged": false,
+  "m1": {"state": "ready", "usesExistingMetricPreflight": true, "metricSourceRole": "accounting"},
+  "m2": {"usesExistingQuestionActionCandidate": true, "allRequiredSourcesReferenced": true, "explanationOnlyWhenBlocked": true},
+  "m3": {"executionAllowed": true, "queryPlanReferencesEveryRequiredSource": true, "sourceIdentityValidated": true, "relationshipIdentityValidated": true},
+  "runtimeImportsGovernedThroughCanonicalConsumer": true,
+  "phase5m3ImportIsolationPassed": true,
+  "decisionUseAuthorized": false,
+  "status": "pass"
+}

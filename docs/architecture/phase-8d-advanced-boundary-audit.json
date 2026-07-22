@@ -1,0 +1,9 @@
+{
+  "schemaVersion": "lightbi.phase8d.advanced-boundary-audit.v1",
+  "reachable": ["open supported Simple source on user request", "inspect schema", "execute existing query", "inspect bounded or paginated result", "current-page export", "paged full-result export", "complete result BA Brief handoff"],
+  "partialResult": {"scopeVisible": true, "baBriefDisabled": true, "fullSourceClaim": false, "resultScopeExportAvailable": true},
+  "autoOpenSimpleSource": false,
+  "newDriverOrExecutionCapability": false,
+  "tests": ["Advanced", "phase-8c-advanced-completeness"],
+  "status": "pass"
+}

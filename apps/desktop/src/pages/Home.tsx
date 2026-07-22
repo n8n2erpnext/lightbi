@@ -1,6 +1,6 @@
 import { getApiBaseUrl } from '../lib/api-base';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Search, Loader2, ChevronRight, Database, Plus, FileSpreadsheet, Link, Server, Code, Sparkles, Layers, Monitor, Globe, Save, Trash2, History, FolderOpen } from 'lucide-react';
+import { Search, Loader2, ChevronRight, Database, Plus, FileSpreadsheet, Link, Server, Code, Sparkles, Layers, Monitor, Globe, Save, Trash2, History, FolderOpen, X } from 'lucide-react';
 import ReactECharts from 'echarts-for-react';
 import { useDatasetUpload } from '../hooks/useDatasetUpload';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -17,21 +17,17 @@ import { classifyDatasetFamilies } from '../lib/batch-inspection';
 import type { DatasetFamily } from '../lib/batch-inspection';
 import { generateRecipePlan } from '../lib/recipe-planner';
 import type { RecipePlan } from '../lib/recipe-planner';
-import { detectKeyCandidates } from '../lib/business-key-detector';
-import { discoverCollections } from '../lib/relationship-discovery';
-import { generateBusinessViews } from '../lib/business-view-generator';
-import type { BusinessViewCandidate } from '../lib/business-view-generator';
-import type { RelationshipGraph } from '../lib/relationship-graph';
-import { BusinessViewReviewStep } from '../components/data-intake/BusinessViewReviewStep';
 import type { WorkspaceUnderstandingState } from '../lib/workspace-understanding-state';
-import { createWorkspaceUnderstandingState, applyBusinessViewSelection, getActiveAnalysisContextLabel } from '../lib/workspace-understanding-state';
+import { createWorkspaceUnderstandingState, getActiveAnalysisContextLabel } from '../lib/workspace-understanding-state';
 import { DatasetUnderstandingCard } from '../components/analysis/DatasetUnderstandingCard';
 import { UnderstandingNextCard } from '../components/analysis/UnderstandingNextCard';
 import { CanonicalEvidenceReview } from '../components/analysis/CanonicalEvidenceReview';
+import { CanonicalMultiSourceReview, type MultiSourceDraftV1, type MultiSourceReviewSourceV1 } from '../components/analysis/CanonicalMultiSourceReview';
 import {
   getOrBuildCanonicalConsumerArtifact,
   prepareCanonicalInvestigationHandoff,
 } from '../lib/understanding-core/canonical-consumer-boundary';
+import { buildCanonicalMultiSourceDataset, buildCanonicalMultiSourceMemberArtifact, prepareCanonicalMultiSourceInvestigationHandoff, type CanonicalMultiSourceDatasetV1 } from '../lib/understanding-core/canonical-multisource-boundary';
 import { projectCanonicalArtifactToUnderstandingNext } from '../lib/canonical-consumer-presentation-adapter';
 import { presentCanonicalConsumerArtifact, type CanonicalRemediationOperationV1 } from '../lib/understanding-core/canonical-consumer-presentation-contract';
 import type { AnalysisAction } from '../lib/analysis-opportunity-actions';
@@ -39,7 +35,7 @@ import { createRuntimeIntentFromAnalysisAction } from '../lib/analysis-runtime-c
 import { createRuntimePlanPreview } from '../lib/runtime-planner-preview';
 import { createInvestigationSession } from '../lib/investigation-session';
 import { generateCanonicalAIBriefing } from '../lib/canonical-ai-briefing';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { createVirtualDatasetPlan } from '../lib/virtual-dataset-planner';
 import type { VirtualDatasetPlan } from '../lib/virtual-dataset-planner';
 import { VirtualDatasetPlanPreview } from '../components/analysis/VirtualDatasetPlanPreview';
@@ -53,12 +49,10 @@ import { createDuckDBLogicalPlan } from '../lib/duckdb-logical-plan';
 import type { DuckDBLogicalPlan } from '../lib/duckdb-logical-plan';
 import { createRuntimeBoundaryArtifact } from '../lib/runtime-boundary-contract';
 import { DuckDBLogicalPlanPreview } from '../components/analysis/DuckDBLogicalPlanPreview';
-import { MultiFileUnderstandingProofPanel } from '../components/analysis/MultiFileUnderstandingProofPanel';
 import { createExpectedResultContract } from '../lib/expected-result-contract';
 import type { ExpectedResultContract } from '../lib/expected-result-contract';
 import { ExpectedResultPreview } from '../components/analysis/ExpectedResultPreview';
 import { selectFirstNonEmptyRows } from '../lib/row-surface';
-import { createUnderstandingSample } from '../lib/semantic-sampler';
 import { compileSafeQuery } from '../lib/safe-sql-compiler';
 import type { CompiledQueryContract } from '../lib/safe-sql-compiler';
 import { CompiledQueryPreview } from '../components/analysis/CompiledQueryPreview';
@@ -77,14 +71,14 @@ import { formatValue } from '../lib/display-formatter';
 import { ExecutionRunCoordinator } from '@lightbi/runtime';
 import { advancedSourceId, useAdvancedSourceStore } from '../stores/advanced-source-store';
 import { createDecisionTrustReport, type DecisionTrustReport } from '../lib/decision-trust-report';
-import { createBusinessFusionOverview, createBusinessFusionVirtualDataset, type BusinessFusionOverview } from '../lib/business-fusion-overview';
+import { createBusinessFusionOverview, type BusinessFusionOverview } from '../lib/business-fusion-overview';
 import { BusinessFusionOpportunityCard } from '../components/analysis/BusinessFusionOpportunityCard';
 import { deleteWorkspaceSession, loadWorkspaceSessions, saveWorkspaceSession, type SaveWorkspaceSessionRequest, type WorkspaceSessionRecord } from '../lib/workspace-session-api';
 import { downloadProjectSourceFile, uploadProjectSourceFile, type PersistedProjectSourceFile } from '../lib/project-source-file-api';
 import type { GuidedInvestigationResult } from '../lib/guided-investigation-pipeline';
 import type { DatasetUnderstanding } from '../lib/dataset-understanding-contract';
 import { createCanonicalSourceBoundary, type CanonicalFullFileProfileV1, type CanonicalSourceBoundaryV1 } from '../lib/understanding-core/canonical-source-boundary';
-import { parseCanonicalUserOverlay, type CanonicalUserOverlayV1 } from '../lib/understanding-core/canonical-user-overlay';
+import { appendCanonicalEvidenceDeclaration, createCanonicalUserOverlay, parseCanonicalUserOverlay, type CanonicalUserOverlayV1 } from '../lib/understanding-core/canonical-user-overlay';
 
 const WORKSPACE_SESSION_ROW_LIMIT = 250;
 
@@ -99,11 +93,6 @@ function compactSemanticSample(sample: any) {
     sourceRowCount: Number(sample.sourceRowCount) || 0,
     sampleRowCount: Number(sample.sampleRowCount) || 0,
   };
-}
-
-function safeWorkspaceFileStem(value: string): string {
-  const cleaned = value.trim().toLowerCase().replace(/[^a-z0-9_-]+/g, '-').replace(/^-+|-+$/g, '');
-  return cleaned || 'lightbi-session';
 }
 
 function createWorkspaceSessionSnapshot(dataset: any) {
@@ -137,6 +126,25 @@ function createWorkspaceSessionSnapshot(dataset: any) {
       businessFusionOverview: dataset.businessFusionOverview,
       objectKey: dataset.objectKey,
       canonicalUserOverlay: parseCanonicalUserOverlay(dataset.canonicalUserOverlay),
+      canonicalMultiSourcePersistence: dataset.canonicalMultiSourceDataset ? {
+        schemaVersion: dataset.canonicalMultiSourceDataset.schemaVersion,
+        multiSourceDatasetId: dataset.canonicalMultiSourceDataset.multiSourceDatasetId,
+        identity: dataset.canonicalMultiSourceDataset.identity,
+        stateGeneration: dataset.canonicalMultiSourceDataset.stateGeneration,
+        relationshipArtifactId: dataset.canonicalMultiSourceDataset.relationshipArtifactId,
+        relationshipState: dataset.canonicalMultiSourceDataset.relationship.validationState,
+        memberships: dataset.canonicalMultiSourceDataset.orderedSourceMemberships.map((member: any) => ({
+          sourceId: member.sourceId,
+          sourceFingerprint: member.sourceFingerprint,
+          inspectionGeneration: member.inspectionGeneration,
+          profileGeneration: member.profileGeneration,
+          sourceRole: member.sourceRole,
+          required: member.required,
+          overlay: member.overlay,
+        })),
+        executableRestored: false,
+        reselectionRequiredWhenRuntimeFilesUnavailable: true,
+      } : undefined,
     },
   };
 }
@@ -243,41 +251,13 @@ function familyFromInspectionResult(
 export const Home: React.FC = () => {
   const { preferences } = useDisplayPreferences();
   const navigate = useNavigate();
+  const location = useLocation();
   const [currentDataset, setCurrentDataset] = useState<any>(null);
+  const [isDataPreviewOpen, setIsDataPreviewOpen] = useState(false);
   const [workspaceSessions, setWorkspaceSessions] = useState<WorkspaceSessionRecord[]>([]);
   const [sessionStatus, setSessionStatus] = useState<string | null>(null);
   const [isSavingSession, setIsSavingSession] = useState(false);
   const registerAdvancedSource = useAdvancedSourceStore(state => state.registerSource);
-  const registerBusinessFusionAdvancedSource = useCallback((
-    sourceName: string,
-    fusion: NonNullable<ReturnType<typeof createBusinessFusionVirtualDataset>>,
-    semanticSample?: { strategy: string; sourceRowCount: number; sampleRowCount: number }
-  ) => {
-    const tableName = sourceName.length > 80 ? 'business_fusion' : sourceName;
-    const file = new File(
-      [JSON.stringify(fusion.rows)],
-      `${safeWorkspaceFileStem(sourceName)}.json`,
-      { type: 'application/json' }
-    );
-    registerAdvancedSource({
-      id: advancedSourceId('business_fusion_view', sourceName),
-      name: sourceName,
-      sourceType: 'business_fusion_view',
-      sourceKind: 'local_file',
-      tables: [{
-        id: '0:business_fusion',
-        name: tableName,
-        rowCount: fusion.rows.length,
-        columns: fusion.columns,
-        profiles: fusion.profiles,
-        file,
-      }],
-      semanticSample: semanticSample
-        ? compactSemanticSample(semanticSample)
-        : { strategy: 'full', sourceRowCount: fusion.rows.length, sampleRowCount: fusion.rows.length },
-      registeredAt: new Date().toISOString(),
-    });
-  }, [registerAdvancedSource]);
   const [workspaceState, setWorkspaceState] = useState<WorkspaceUnderstandingState | null>(null);
   const [inputValue, setInputValue] = useState("");
   const [analysisIntent, setAnalysisIntent] = useState<string | null>(null);
@@ -288,12 +268,13 @@ export const Home: React.FC = () => {
     families: DatasetFamily[];
     selectedFamilyId: string | null;
     isRestored?: boolean;
-    step: "family_selection" | "business_view_review";
-    graph?: RelationshipGraph;
-    businessViews?: BusinessViewCandidate[];
+    step: "family_selection";
     businessOverview?: BusinessFusionOverview | null;
   };
   const [pendingLocalBatch, setPendingLocalBatch] = useState<PendingLocalFileBatch | null>(null);
+  const [multiSourceDrafts, setMultiSourceDrafts] = useState<Record<string, MultiSourceDraftV1>>({});
+  const [multiSourceBuilding, setMultiSourceBuilding] = useState(false);
+  const [multiSourceBuildResult, setMultiSourceBuildResult] = useState<{ relationshipState: CanonicalMultiSourceDatasetV1['relationship']['validationState'] | null; blockers: string[] }>({ relationshipState: null, blockers: [] });
   const [lastInspectedFamilies, setLastInspectedFamilies] = useState<DatasetFamily[] | null>(null);
   const [decisionTrustReport, setDecisionTrustReport] = useState<DecisionTrustReport | null>(null);
   const [canonicalOverlayRebuildState, setCanonicalOverlayRebuildState] = useState<'idle' | 'pending' | 'succeeded' | 'failed'>('idle');
@@ -358,6 +339,7 @@ export const Home: React.FC = () => {
     objectKey: dataset?.objectKey,
     selectedView: dataset?.selectedBusinessView?.id,
     canonicalOverlayId: parseCanonicalUserOverlay(dataset?.canonicalUserOverlay)?.overlayId ?? null,
+    canonicalMultiSourceIdentity: dataset?.canonicalMultiSourceDataset?.identity ?? null,
   });
 
   const createWorkspaceSessionSaveRequest = (dataset: any): SaveWorkspaceSessionRequest => {
@@ -423,56 +405,37 @@ export const Home: React.FC = () => {
         const items = files.map((file, index) => ({ file, result: results[index] as SourceInspectionResult }));
         const families = classifyDatasetFamilies(items, 'strict');
 
-        if (restoredDataset.sourceType === 'business_fusion_view') {
-          const fusion = createBusinessFusionVirtualDataset(families);
-          if (!fusion) throw new Error('Saved files were found, but could not rebuild the fusion view.');
-          const semanticSample = createUnderstandingSample(fusion.rows, {
-            seed: `${fusion.id}:${session.id}`
-          });
-          registerBusinessFusionAdvancedSource(restoredDataset.file_name || fusion.name, fusion, semanticSample);
-          const sourceFiles = families.flatMap(fam =>
-            fam.files.map(item => {
-              const md = item.result.status === 'accessible' ? item.result.metadata : null;
-              const sheetRows = md?.is_workbook && md.default_sheet && md.sheets?.[md.default_sheet]
-                ? md.sheets[md.default_sheet].rows_count
-                : undefined;
-              return {
-                name: item.file.name,
-                rows: sheetRows ?? md?.rows_count ?? 0,
-                columns: fam.columns.length,
-                familyName: fam.name,
-                persistedFile: md?.persisted_file,
-                sheetNames: md?.is_workbook && md.default_sheet ? [md.default_sheet] : []
-              };
-            })
-          );
-          setCurrentDataset({
-            ...restoredDataset,
-            status: 'ready',
-            file_name: restoredDataset.file_name || fusion.name,
-            rows_count: fusion.rows.length,
-            columns: fusion.columns,
-            profiles: fusion.profiles,
-            sourceType: 'business_fusion_view',
-            normalizedUrl: fusion.id,
-            sourceFiles,
-            file_reference: null,
-            runtimeDatasetSource: undefined,
-            semanticSample,
-            analysisRowScope: 'full',
-            semanticRows: semanticSample.rows,
-            analysisRows: fusion.rows,
-            previewRows: fusion.rows.slice(0, 100),
-            understandingColumns: fusion.understandingColumns,
-            understandingRows: fusion.understandingRows,
-            understandingProfiles: fusion.understandingProfiles,
-            understandingSourceRowCount: fusion.understandingSourceRowCount,
-            businessFusionOverview: fusion.overview,
-            objectKey: fusion.objectKey,
-            evidenceBundles: fusion.evidenceBundles,
-            restoredFromSessionId: session.id,
-          });
-        } else {
+        if (restoredDataset.sourceType === 'canonical_multisource') {
+          const persistedMemberships = restoredDataset.canonicalMultiSourcePersistence?.memberships ?? [];
+          const restoredDrafts = Object.fromEntries(files.map((file, index) => {
+            const membership = persistedMemberships.find((item: any) => item?.overlay?.binding?.datasetId === file.name);
+            const declarations = Array.isArray(membership?.overlay?.sourceEvidenceDeclarations) ? membership.overlay.sourceEvidenceDeclarations : [];
+            const latest = (kind: string) => declarations.filter((item: any) => item?.validationStatus === 'valid' && item?.value?.kind === kind).at(-1)?.value;
+            const role = latest('source_role');
+            const documentIdentity = latest('document_identity');
+            const period = latest('reporting_period');
+            const currency = latest('reporting_currency');
+            return [`${index}:${file.name}`, {
+              selected: Boolean(membership),
+              role: role?.role ?? 'unknown_other',
+              documentColumn: documentIdentity?.physicalColumn ?? '',
+              periodStart: period?.start ?? '',
+              periodEnd: period?.end ?? '',
+              currency: currency?.currency ?? '',
+              monetaryColumns: Array.isArray(currency?.monetaryColumns) ? currency.monetaryColumns.join(', ') : '',
+            } satisfies MultiSourceDraftV1];
+          }));
+          setCurrentDataset(null);
+          setMultiSourceDrafts(restoredDrafts);
+          setMultiSourceBuildResult({ relationshipState: null, blockers: ['Saved evidence was reloaded. Rebuild the relationship before analysis; prior executable handoffs remain invalid.'] });
+          setPendingLocalBatch({ files, status: 'ready', results, families, selectedFamilyId: null, isRestored: true, step: 'family_selection', businessOverview: createBusinessFusionOverview(families) });
+          setSessionStatus('Sources reloaded. Review source-bound evidence and rebuild the governed multi-source dataset.');
+          return;
+        }
+
+        if (restoredDataset.sourceType === 'business_fusion_view') throw new Error('Legacy fused sessions are production-ineligible. Re-import the original sources and build a governed multi-source dataset.');
+
+        {
           const family = families[0];
           const rawSemanticRows = family.files.flatMap(item => {
             if (item.result.status !== 'accessible') return [];
@@ -574,6 +537,16 @@ export const Home: React.FC = () => {
     }
   };
 
+  const returnSessionRestoredRef = useRef<string | null>(null);
+  useEffect(() => {
+    const sessionId = (location.state as { restoreWorkspaceSessionId?: string } | null)?.restoreWorkspaceSessionId;
+    if (!sessionId || returnSessionRestoredRef.current === sessionId || workspaceSessions.length === 0) return;
+    const saved = workspaceSessions.find(item => item.id === sessionId);
+    if (!saved) return;
+    returnSessionRestoredRef.current = sessionId;
+    void handleOpenWorkspaceSession(saved).finally(() => navigate('/', { replace: true, state: null }));
+  }, [location.state, navigate, workspaceSessions]);
+
 
   const [isAsking, setIsAsking] = useState(false);
   const [result, setResult] = useState<any>(null);
@@ -657,9 +630,13 @@ export const Home: React.FC = () => {
     const datasetRows = canonicalRows;
     console.log("TRACE [OPPORTUNITY] selectedAction.id:", action.id);
 
-    const canonicalHandoff = canonicalArtifact
-      ? prepareCanonicalInvestigationHandoff(canonicalArtifact, action.id)
-      : undefined;
+    const multiSourceDataset = currentDataset?.canonicalMultiSourceDataset as CanonicalMultiSourceDatasetV1 | undefined;
+    const multiSourceAnalysis = multiSourceDataset?.analyses.find((item) => item.actionCandidateId === action.id && item.state === 'ready');
+    const canonicalHandoff = multiSourceDataset && multiSourceAnalysis
+      ? prepareCanonicalMultiSourceInvestigationHandoff(multiSourceDataset, multiSourceAnalysis.analysisId) ?? undefined
+      : canonicalArtifact
+        ? prepareCanonicalInvestigationHandoff(canonicalArtifact, action.id)
+        : undefined;
     const aiBriefing = canonicalArtifact
       ? generateCanonicalAIBriefing(canonicalArtifact)
       : undefined;
@@ -690,7 +667,8 @@ export const Home: React.FC = () => {
             : 'preview',
       currentDataset?.businessFusionOverview,
       datasetForSession?.status === 'ready' ? createWorkspaceSessionSaveRequest(datasetForSession) : undefined,
-      canonicalHandoff
+      canonicalHandoff,
+      multiSourceDataset
     );
     navigate('/investigation');
   };
@@ -1050,28 +1028,23 @@ export const Home: React.FC = () => {
     });
 
     if (!hasError) {
+      setMultiSourceDrafts(Object.fromEntries(files.map((file, index) => [`${index}:${file.name}`, {
+        selected: true,
+        role: 'unknown_other',
+        documentColumn: '',
+        periodStart: '',
+        periodEnd: '',
+        currency: '',
+        monetaryColumns: '',
+      } satisfies MultiSourceDraftV1])));
+      setMultiSourceBuildResult({ relationshipState: null, blockers: [] });
       const items = files.map((file, idx) => ({ file, result: results[idx] as SourceInspectionResult }));
       const families = classifyDatasetFamilies(items, 'strict');
       
-      let graph: RelationshipGraph | undefined = undefined;
-      let businessViews: BusinessViewCandidate[] | undefined = undefined;
       let businessOverview: BusinessFusionOverview | null = null;
-      let nextStep: "family_selection" | "business_view_review" = "family_selection";
 
       try {
         if (families.length > 1) {
-          const keyCandidatesMap: Record<string, any> = {};
-          const datasetMap: Record<string, DatasetFamily> = {};
-          for (const f of families) {
-            keyCandidatesMap[f.id] = detectKeyCandidates(f, {});
-            datasetMap[f.id] = f;
-          }
-          const { graph: g } = discoverCollections(families, keyCandidatesMap);
-          graph = g;
-          businessViews = generateBusinessViews(graph, datasetMap);
-          if (businessViews.length > 0) {
-            nextStep = "business_view_review";
-          }
           businessOverview = createBusinessFusionOverview(families);
         }
       } catch (e) {
@@ -1085,9 +1058,7 @@ export const Home: React.FC = () => {
         results,
         families,
         selectedFamilyId: families.length === 1 ? families[0].id : null,
-        step: nextStep,
-        graph,
-        businessViews,
+        step: "family_selection",
         businessOverview
       });
       setLastInspectedFamilies(families);
@@ -1102,6 +1073,118 @@ export const Home: React.FC = () => {
   const handleCancelInspection = () => {
     inspectionRuns.current.cancel();
     setPendingLocalBatch(null);
+  };
+
+  const multiSourceReviewSources = React.useMemo<MultiSourceReviewSourceV1[]>(() => {
+    if (!pendingLocalBatch || pendingLocalBatch.status !== 'ready') return [];
+    return pendingLocalBatch.files.flatMap((file, index) => {
+      const result = pendingLocalBatch.results[index];
+      if (!result || result.status !== 'accessible') return [];
+      const metadata = result.metadata;
+      const selected = metadata.is_workbook && metadata.default_sheet && metadata.sheets
+        ? metadata.sheets[metadata.default_sheet]
+        : metadata;
+      return [{ key: `${index}:${file.name}`, name: file.name, rowCount: selected.rows_count ?? 0, columns: selected.columns ?? [] }];
+    });
+  }, [pendingLocalBatch]);
+
+  const handleBuildCanonicalMultiSource = async () => {
+    if (!pendingLocalBatch || pendingLocalBatch.status !== 'ready') return;
+    setMultiSourceBuilding(true);
+    setMultiSourceBuildResult({ relationshipState: null, blockers: [] });
+    try {
+      const selected = pendingLocalBatch.files.flatMap((file, index) => {
+        const key = `${index}:${file.name}`;
+        const draft = multiSourceDrafts[key];
+        const result = pendingLocalBatch.results[index];
+        return draft?.selected && result?.status === 'accessible' ? [{ key, file, draft, result }] : [];
+      });
+      if (selected.length < 2) throw new Error('Select at least two accessible sources.');
+      const members = selected.map(({ file, draft, result }) => {
+        const metadata = result.metadata;
+        const source = metadata.is_workbook && metadata.default_sheet && metadata.sheets
+          ? metadata.sheets[metadata.default_sheet]
+          : metadata;
+        const boundary = createLocalCanonicalSourceBoundary({
+          datasetId: file.name,
+          columns: source.columns ?? [],
+          semanticRows: source.semantic_rows ?? [],
+          semanticSample: source.semantic_sample,
+          profile: source.canonical_full_file_profile,
+          file,
+          sheetName: metadata.is_workbook ? metadata.default_sheet : undefined,
+        });
+        if (!boundary) throw new Error(`Full-source canonical boundary unavailable for ${file.name}.`);
+        let overlay = createCanonicalUserOverlay(boundary);
+        overlay = appendCanonicalEvidenceDeclaration(overlay, boundary, { evidenceType: 'source_role', value: { kind: 'source_role', role: draft.role }, scope: { level: 'source_file' } });
+        if (draft.documentColumn) overlay = appendCanonicalEvidenceDeclaration(overlay, boundary, { evidenceType: 'document_identity', value: { kind: 'document_identity', physicalColumn: draft.documentColumn }, scope: { level: 'physical_column', physicalColumn: draft.documentColumn } });
+        if (draft.periodStart && draft.periodEnd) overlay = appendCanonicalEvidenceDeclaration(overlay, boundary, { evidenceType: 'reporting_period', value: { kind: 'reporting_period', start: draft.periodStart, end: draft.periodEnd }, scope: { level: 'source_file' } });
+        const monetaryColumns = draft.monetaryColumns.split(',').map((value) => value.trim()).filter(Boolean);
+        if (draft.currency && monetaryColumns.length) overlay = appendCanonicalEvidenceDeclaration(overlay, boundary, { evidenceType: 'reporting_currency', value: { kind: 'reporting_currency', currency: draft.currency, monetaryColumns }, scope: { level: 'source_file' } });
+        const built = buildCanonicalMultiSourceMemberArtifact({
+          datasetId: boundary.datasetId,
+          sourceKind: 'local_file',
+          sourceLabel: file.name,
+          columns: boundary.semanticSample.columns,
+          rows: boundary.semanticSample.rows,
+          sourceRowCount: boundary.sourceRowCount,
+          sheet: metadata.is_workbook ? metadata.default_sheet : undefined,
+          sourceBoundary: boundary,
+          userOverlay: overlay,
+        });
+        if (built.status !== 'valid') throw new Error(`${file.name}: ${built.blockers.join(', ')}`);
+        return { file, metadata, source, boundary, overlay, artifact: built, draft };
+      });
+      const built = await buildCanonicalMultiSourceDataset({
+        multiSourceDatasetId: `multisource:${members.map((item) => item.boundary.sourceId).sort().join('|')}`,
+        members: members.map((item) => ({ artifact: item.artifact, overlay: item.overlay, required: ['sales', 'accounting'].includes(item.draft.role) })),
+      });
+      if (built.status !== 'valid') throw new Error(built.blockers.join(', '));
+      const analysis = built.dataset.analyses[0];
+      const relationshipBlockers = [...new Set([...built.dataset.relationship.refusalReasons, ...analysis.blockers])];
+      setMultiSourceBuildResult({ relationshipState: built.dataset.relationship.validationState, blockers: relationshipBlockers });
+      const metricMember = built.dataset.orderedSourceMemberships.find((item) => item.sourceRole === 'accounting') ?? built.dataset.orderedSourceMemberships[0];
+      const sourceRecord = members.find((item) => item.boundary.sourceId === metricMember.sourceId)!;
+      const sourceFiles = members.map((item) => ({
+        name: item.file.name,
+        rows: item.boundary.sourceRowCount,
+        columns: item.boundary.semanticSample.columns.length,
+        sourceId: item.boundary.sourceId,
+        role: built.dataset.orderedSourceMemberships.find((member) => member.sourceId === item.boundary.sourceId)?.sourceRole,
+        persistedFile: item.metadata.persisted_file,
+        sheetNames: item.metadata.is_workbook && item.metadata.default_sheet ? [item.metadata.default_sheet] : [],
+      }));
+      setCurrentDataset({
+        status: 'ready',
+        file_name: `Governed multi-source dataset (${members.length} sources)`,
+        rows_count: built.dataset.orderedSourceMemberships.reduce((sum, item) => sum + item.boundary.sourceRowCount, 0),
+        columns: metricMember.boundary.semanticSample.columns,
+        profiles: sourceRecord.source.profiles ?? {},
+        sourceType: 'canonical_multisource',
+        sourceFiles,
+        selected_sheet: sourceRecord.metadata.is_workbook ? sourceRecord.metadata.default_sheet : null,
+        file_reference: sourceRecord.file,
+        runtimeDatasetSource: metricMember.runtimeSource,
+        semanticSample: {
+          strategy: metricMember.semanticSampleScope.strategy,
+          sourceRowCount: metricMember.semanticSampleScope.sourceRowCount,
+          sampleRowCount: metricMember.semanticSampleScope.rows.length,
+        },
+        canonicalSourceBoundary: metricMember.boundary,
+        canonicalUserOverlay: metricMember.overlay,
+        canonicalMultiSourceDataset: built.dataset,
+        analysisRowScope: 'not_retained',
+        semanticRows: metricMember.semanticSampleScope.rows,
+        analysisRows: [],
+        previewRows: metricMember.semanticSampleScope.rows.slice(0, 100),
+      });
+      setDecisionTrustReport(null);
+      setPendingLocalBatch(null);
+    } catch (error) {
+      setMultiSourceBuildResult({ relationshipState: null, blockers: [error instanceof Error ? error.message : String(error)] });
+    } finally {
+      setMultiSourceBuilding(false);
+    }
   };
 
   const handleUseLocalDataset = () => {
@@ -1249,65 +1332,6 @@ export const Home: React.FC = () => {
     setDecisionTrustReport(createDecisionTrustReport(family));
 
     handleCancelInspection();
-  };
-
-  const handleUseBusinessFusionDataset = () => {
-    if (!pendingLocalBatch) return;
-    const fusion = createBusinessFusionVirtualDataset(pendingLocalBatch.families);
-    if (!fusion) return;
-
-    const semanticSample = createUnderstandingSample(fusion.rows, {
-      seed: fusion.id
-    });
-    registerBusinessFusionAdvancedSource(fusion.name, fusion, semanticSample);
-    const sourceFiles = pendingLocalBatch.families.flatMap(fam =>
-      fam.files.map(item => {
-        const md = item.result.status === 'accessible' ? item.result.metadata : null;
-        const sheetRows = md?.is_workbook && md.default_sheet && md.sheets?.[md.default_sheet]
-          ? md.sheets[md.default_sheet].rows_count
-          : undefined;
-        return {
-          name: item.file.name,
-          rows: sheetRows ?? md?.rows_count ?? 0,
-          columns: fam.columns.length,
-          familyName: fam.name,
-          persistedFile: md?.persisted_file,
-          sheetNames: md?.is_workbook && md.default_sheet ? [md.default_sheet] : []
-        };
-      })
-    );
-
-    setCurrentDataset({
-      status: 'ready',
-      file_name: fusion.name,
-      rows_count: fusion.rows.length,
-      columns: fusion.columns,
-      profiles: fusion.profiles,
-      sourceType: 'business_fusion_view',
-      normalizedUrl: fusion.id,
-      sourceFiles,
-      selected_sheet: null,
-      file_reference: null,
-      runtimeDatasetSource: undefined,
-      semanticSample,
-      analysisRowScope: 'full',
-      semanticRows: semanticSample.rows,
-      analysisRows: fusion.rows,
-      previewRows: fusion.rows.slice(0, 100),
-      understandingColumns: fusion.understandingColumns,
-      understandingRows: fusion.understandingRows,
-      understandingProfiles: fusion.understandingProfiles,
-      understandingSourceRowCount: fusion.understandingSourceRowCount,
-      businessFusionOverview: fusion.overview,
-      objectKey: fusion.objectKey,
-      evidenceBundles: fusion.evidenceBundles
-    });
-    setWorkspaceState(createWorkspaceUnderstandingState({ type: 'dataset', datasetId: fusion.id }));
-    setDecisionTrustReport(null);
-    setPendingLocalBatch(null);
-    setSelectedTopic(null);
-    setResult(null);
-    setPreviewActionId(null);
   };
 
   const askQuestion = async (q: string) => {
@@ -1705,7 +1729,7 @@ export const Home: React.FC = () => {
                       {isSavingSession ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
                       Save session
                     </button>
-                    <button onClick={() => {}} className="rounded-[10px] border border-black/10 bg-white px-3 py-2 text-[12px] font-medium text-black/65 shadow-sm transition-colors hover:bg-black/[0.035]">View Data</button>
+                    <button onClick={() => setIsDataPreviewOpen(true)} className="rounded-[10px] border border-black/10 bg-white px-3 py-2 text-[12px] font-medium text-black/65 shadow-sm transition-colors hover:bg-black/[0.035]">View Data</button>
                     {currentDataset.sourceType !== 'virtual_business_view' && currentDataset.file_reference && (
                       <button onClick={() => navigate('/advanced')} className="flex items-center gap-1.5 rounded-[10px] bg-[#202123] px-3 py-2 text-[12px] font-medium text-white shadow-sm transition-colors hover:bg-black"><Code className="h-3.5 w-3.5" /> Open Advanced</button>
                     )}
@@ -1776,6 +1800,18 @@ export const Home: React.FC = () => {
                           onChange={handleCanonicalOverlayChange}
                           target={canonicalReviewTarget}
                         />
+                      )}
+                      {currentDataset?.canonicalMultiSourceDataset && (
+                        <section data-testid="active-canonical-multisource" className="rounded-xl border border-black/10 bg-white p-4 shadow-sm">
+                          <div className="flex flex-wrap items-center justify-between gap-2">
+                            <div><h3 className="text-[14px] font-semibold text-[#202123]">Governed multi-source relationship</h3><p className="mt-1 text-[12px] text-black/55">{currentDataset.canonicalMultiSourceDataset.orderedSourceMemberships.length} independently profiled sources participate.</p></div>
+                            <span className="rounded-md border border-black/10 bg-gray-50 px-2 py-1 text-[11px] font-semibold">{currentDataset.canonicalMultiSourceDataset.relationship.validationState}</span>
+                          </div>
+                          <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                            {currentDataset.canonicalMultiSourceDataset.orderedSourceMemberships.map((member: any) => <div key={member.sourceId} className="rounded-lg border border-black/5 bg-[#fbfbfa] p-2"><p className="truncate text-[12px] font-semibold">{member.boundary.datasetId}</p><p className="mt-1 text-[11px] text-black/50">{member.sourceRole} · {member.boundary.sourceRowCount.toLocaleString()} rows</p></div>)}
+                          </div>
+                          {currentDataset.canonicalMultiSourceDataset.relationship.refusalReasons.length > 0 && <p className="mt-3 break-words text-[12px] text-amber-700">{currentDataset.canonicalMultiSourceDataset.relationship.refusalReasons.join(', ')}</p>}
+                        </section>
                       )}
                     </>
                   ) : datasetUnderstanding ? (
@@ -1923,22 +1959,24 @@ export const Home: React.FC = () => {
                     </div>
                   )}
 
-                  {pendingLocalBatch.status === "ready" && pendingLocalBatch.families.length > 1 && pendingLocalBatch.graph && (
-                    <div className="w-full animate-in fade-in slide-in-from-bottom-4 duration-500 mt-4 mb-4">
-                      <MultiFileUnderstandingProofPanel 
-                        graph={pendingLocalBatch.graph}
-                        businessViews={pendingLocalBatch.businessViews}
-                        selectedViewId={pendingLocalBatch.businessViews?.[0]?.id}
-                        families={pendingLocalBatch.families} 
-                      />
-                    </div>
-                  )}
-
                   {pendingLocalBatch.status === "ready" && pendingLocalBatch.businessOverview && (
                     <div className="w-full animate-in fade-in slide-in-from-bottom-4 duration-500 mt-4 mb-4">
                       <BusinessFusionOpportunityCard
                         overview={pendingLocalBatch.businessOverview}
-                        onUseFusedDataset={handleUseBusinessFusionDataset}
+                      />
+                    </div>
+                  )}
+
+                  {pendingLocalBatch.status === "ready" && multiSourceReviewSources.length > 1 && (
+                    <div className="w-full animate-in fade-in slide-in-from-bottom-4 duration-500 mt-4 mb-4">
+                      <CanonicalMultiSourceReview
+                        sources={multiSourceReviewSources}
+                        drafts={multiSourceDrafts}
+                        onChange={(key, value) => setMultiSourceDrafts((current) => ({ ...current, [key]: value }))}
+                        onBuild={() => { void handleBuildCanonicalMultiSource(); }}
+                        building={multiSourceBuilding}
+                        relationshipState={multiSourceBuildResult.relationshipState}
+                        blockers={multiSourceBuildResult.blockers}
                       />
                     </div>
                   )}
@@ -2005,103 +2043,6 @@ export const Home: React.FC = () => {
                     </div>
                   )}
 
-                  {pendingLocalBatch.status === "ready" && pendingLocalBatch.step === "business_view_review" && pendingLocalBatch.graph && pendingLocalBatch.businessViews && (
-                    <div className="w-full animate-in fade-in slide-in-from-bottom-4 duration-500 mt-4 mb-8">
-                      <BusinessViewReviewStep
-                      graph={pendingLocalBatch.graph}
-                      initialViews={pendingLocalBatch.businessViews}
-                      datasetCount={pendingLocalBatch.families.length}
-                      onComplete={(views) => {
-                        const confirmedView = views.find(v => v.status === 'confirmed');
-                        if (confirmedView) {
-                          const initial = createWorkspaceUnderstandingState({ type: 'dataset_group', datasetGroupId: 'group-1' });
-                          const newState = applyBusinessViewSelection(initial, confirmedView, pendingLocalBatch.graph!);
-                          setWorkspaceState(newState);
-
-                          const fusion = createBusinessFusionVirtualDataset(pendingLocalBatch.families);
-                          if (fusion) {
-                            const semanticSample = createUnderstandingSample(fusion.rows, {
-                              seed: `${fusion.id}:${confirmedView.id}`
-                            });
-                            registerBusinessFusionAdvancedSource(confirmedView.title, fusion, semanticSample);
-                            const sourceFiles = pendingLocalBatch.families.flatMap(fam =>
-                              fam.files.map(item => {
-                                const md = item.result.status === 'accessible' ? item.result.metadata : null;
-                                const sheetRows = md?.is_workbook && md.default_sheet && md.sheets?.[md.default_sheet]
-                                  ? md.sheets[md.default_sheet].rows_count
-                                  : undefined;
-
-                                return {
-                                  name: item.file.name,
-                                  rows: sheetRows ?? md?.rows_count ?? 0,
-                                  columns: fam.columns,
-                                  familyName: fam.name,
-                                  persistedFile: md?.persisted_file,
-                                  sheetNames: md?.is_workbook && md.default_sheet ? [md.default_sheet] : []
-                                };
-                              })
-                            );
-
-                            setCurrentDataset({
-                              status: 'ready',
-                              file_name: confirmedView.title,
-                              rows_count: fusion.rows.length,
-                              columns: fusion.columns,
-                              profiles: fusion.profiles,
-                              sourceType: 'business_fusion_view',
-                              normalizedUrl: fusion.id,
-                              sourceFiles,
-                              selected_sheet: null,
-                              file_reference: null,
-                              runtimeDatasetSource: undefined,
-                              semanticSample,
-                              analysisRowScope: 'full',
-                              semanticRows: semanticSample.rows,
-                              analysisRows: fusion.rows,
-                              previewRows: fusion.rows.slice(0, 100),
-                              understandingColumns: fusion.understandingColumns,
-                              understandingRows: fusion.understandingRows,
-                              understandingProfiles: fusion.understandingProfiles,
-                              understandingSourceRowCount: fusion.understandingSourceRowCount,
-                              selectedBusinessView: confirmedView,
-                              businessFusionOverview: fusion.overview,
-                              objectKey: fusion.objectKey,
-                              evidenceBundles: fusion.evidenceBundles
-                            });
-                          } else {
-                            const allColumns: string[] = [];
-                            confirmedView.datasets.forEach(dsId => {
-                              const fam = pendingLocalBatch.families.find(f => f.id === dsId);
-                              if (fam) {
-                                fam.columns.forEach(c => allColumns.push(`${fam.name}.${c}`));
-                              }
-                            });
-
-                            setCurrentDataset({
-                              status: 'ready',
-                              file_name: confirmedView.title,
-                              rows_count: null,
-                              columns: allColumns,
-                              profiles: {},
-                              sourceType: "virtual_business_view",
-                              selectedBusinessView: confirmedView
-                            });
-                          }
-                          setDecisionTrustReport(null);
-                          setPendingLocalBatch(null);
-                          setSelectedTopic(null);
-                          setResult(null);
-                          setPreviewActionId(null);
-                        } else {
-                          setPendingLocalBatch({
-                            ...pendingLocalBatch,
-                            step: "family_selection"
-                          });
-                        }
-                      }}
-                    />
-                    </div>
-                  )}
                 </div>
               )}
 
@@ -2844,6 +2785,34 @@ export const Home: React.FC = () => {
                 setSelectedLogicalPlan(null);
               }}
             />
+          </div>
+        </div>
+      )}
+
+      {isDataPreviewOpen && currentDataset?.status === 'ready' && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/40 px-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="dataset-preview-title" data-testid="dataset-preview-dialog">
+          <div className="flex max-h-[85vh] w-full max-w-6xl flex-col rounded-xl border border-black/10 bg-white shadow-xl">
+            <div className="flex items-start justify-between gap-4 border-b border-black/10 px-5 py-4">
+              <div>
+                <h2 id="dataset-preview-title" className="text-[16px] font-semibold text-gray-900">Data preview</h2>
+                <p className="mt-1 text-[12px] text-gray-500">
+                  Showing {Math.min(canonicalRows.length, 100).toLocaleString()} retained representative rows from {Number(currentDataset.rows_count || 0).toLocaleString()} full-source rows. Analysis still runs against the governed full source when available.
+                </p>
+              </div>
+              <button type="button" onClick={() => setIsDataPreviewOpen(false)} className="rounded-md p-1.5 text-gray-500 hover:bg-gray-100" aria-label="Close data preview"><X className="h-4 w-4" /></button>
+            </div>
+            <div className="overflow-auto p-4">
+              {canonicalRows.length > 0 ? <table className="min-w-full divide-y divide-gray-200 text-left text-xs">
+                <thead className="sticky top-0 bg-gray-50">
+                  <tr>{(currentDataset.understandingColumns ?? currentDataset.columns ?? []).map((column: string) => <th key={column} className="whitespace-nowrap px-3 py-2 font-medium text-gray-600">{column}</th>)}</tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {canonicalRows.slice(0, 100).map((row, rowIndex) => <tr key={rowIndex}>
+                    {(currentDataset.understandingColumns ?? currentDataset.columns ?? []).map((column: string) => <td key={column} className="max-w-[280px] truncate px-3 py-2 text-gray-700" title={row[column] == null ? '' : String(row[column])}>{row[column] == null ? '—' : String(row[column])}</td>)}
+                  </tr>)}
+                </tbody>
+              </table> : <p className="py-8 text-center text-sm text-gray-500">No representative rows are retained for browser preview.</p>}
+            </div>
           </div>
         </div>
       )}

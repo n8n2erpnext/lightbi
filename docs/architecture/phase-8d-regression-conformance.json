@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "lightbi.phase8d.regression-conformance.v1",
+  "candidateBase": "788b277bdf6de1e19b24ee6d0e5dcc8d5eb0a8d7",
+  "governedAllowlist": {"path":"docs/architecture/phase-5b6b-regression-baseline-allowlist.v1.json","modified":false},
+  "gates": {
+    "phase8a8b8c8dAndProductionTargeted": {"testFiles":8,"tests":51,"passed":51,"failed":0},
+    "phase8dFocused": {"testFiles":2,"tests":16,"passed":16,"failed":0},
+    "understandingCoreComplete": {"testFiles":76,"tests":332,"passed":332,"failed":0},
+    "repositoryTypeScript": "pass_zero_diagnostics",
+    "architectureJsonParsing": {"files":289,"status":"pass"},
+    "canonicalImportReachability": "pass_canonical_home_and_governed_investigation_only",
+    "gitDiffCheck": "pass",
+    "fullDesktopSuite": {
+      "executionCount": 1,
+      "log": "/tmp/phase8d-final-full-desktop.log",
+      "logBytes": 7149,
+      "logSha256": "c8792a0097b693b56c1d00b4417ebd246125d74dcaeedf5bf4e6e7ba71062c11",
+      "processExitStatus": 1,
+      "totalTestFiles": 173,
+      "passedTestFiles": 169,
+      "failedTestFiles": 4,
+      "totalTests": 1162,
+      "passedTests": 1153,
+      "failedTests": 9,
+      "durationSeconds": 225.10,
+      "deterministicBaselineFailuresObserved": 6,
+      "timingSensitiveFailuresObserved": 3,
+      "timingSensitiveCasesPassed": 0,
+      "unexpectedFailures": 0,
+      "phase8dOwnedFailures": 0,
+      "conformsToGovernedBaselineByIdentityAndSignature": true
+    }
+  },
+  "unchangedThresholds": {"highConfidencePrecisionPercent":100,"heldOutCoreRecallPercent":90.91,"domainActivationPrecisionPercent":100,"advertisedActionExecutionPercent":100,"falseExecutableActions":0,"falseDecisionSupportCases":0,"blockedExplanationCompletenessPercent":100,"fourGovernedMetricFamilies":"exact"},
+  "unexpectedRegressions": 0,
+  "status": "pass_governed_regression_baseline"
+}

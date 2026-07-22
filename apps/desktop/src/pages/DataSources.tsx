@@ -70,8 +70,8 @@ export const DataSources: React.FC = () => {
             <p className="text-sm text-gray-500 mt-1">{source.type}</p>
             
             <div className="mt-4 pt-4 border-t border-gray-100 flex justify-end space-x-2 text-sm">
-              <button className="text-gray-600 hover:text-gray-900 px-3 py-1.5 rounded transition-colors">Edit</button>
-              <button className="text-red-600 hover:text-red-700 px-3 py-1.5 rounded transition-colors">Remove</button>
+              <button disabled title="Source editing is not available in this MVP" className="cursor-not-allowed rounded px-3 py-1.5 text-gray-400">Edit</button>
+              <button disabled title="Source removal is not available in this MVP" className="cursor-not-allowed rounded px-3 py-1.5 text-gray-400">Remove</button>
             </div>
           </div>
         ))}

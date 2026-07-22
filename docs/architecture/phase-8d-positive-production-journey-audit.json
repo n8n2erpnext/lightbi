@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "lightbi.phase8d.positive-production-journey-audit.v1",
+  "journeys": [
+    {"id":1,"name":"small-file revenue","status":"pass","evidence":["Phase 7 evaluator","Investigation"]},
+    {"id":2,"name":"large-file revenue over 20000 rows","status":"pass","evidence":["phase-8a-full-source-boundary"]},
+    {"id":3,"name":"delivery","status":"pass","evidence":["Phase 7 evaluator","M1/M2/M3 complete matrix"]},
+    {"id":4,"name":"gross profit related sources","status":"fail","evidence":["phase-8d-multifile-reachability-audit"],"reason":"no production canonical multi-source state"},
+    {"id":5,"name":"inventory snapshot","status":"pass","evidence":["phase-8b-production-evidence-interaction","phase-7r37"]},
+    {"id":6,"name":"additional supported analysis discovery","status":"pass","evidence":["phase-8d-production-reachability"]},
+    {"id":7,"name":"safety-blocked inventory movement","status":"pass","evidence":["Phase 7 evaluator","Phase 8C presentation"]},
+    {"id":8,"name":"unsupported concepts","status":"pass","evidence":["Phase 8C presentation"]},
+    {"id":9,"name":"stale state","status":"pass","evidence":["Phase 8B overlay tests","Investigation"]},
+    {"id":10,"name":"Advanced complete handoff","status":"pass","evidence":["phase-8c-advanced-completeness","Advanced"]},
+    {"id":11,"name":"Advanced partial path","status":"pass","evidence":["phase-8c-advanced-completeness","Advanced"]},
+    {"id":12,"name":"persistence and reopen","status":"pass","evidence":["workspace-session-api","Investigation return test"]}
+  ],
+  "passed": 11,
+  "failed": 1,
+  "status": "fail"
+}

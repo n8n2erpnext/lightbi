@@ -1,0 +1,11 @@
+{
+  "schemaVersion": "lightbi.phase8d1.negative-probe-audit.v1",
+  "requiredProbeCount": 30,
+  "passedProbeCount": 30,
+  "failedProbeCount": 0,
+  "categories": ["unrelated_content", "incompatible_grain", "identity_evidence", "period", "currency", "membership", "role", "staleness", "cardinality", "runtime_source_completeness", "sample_fallback", "legacy_fusion", "lineage", "m3_readiness", "unsupported_combination"],
+  "failClosed": true,
+  "falseExecutableActions": 0,
+  "falseDecisionSupportCases": 0,
+  "status": "pass"
+}

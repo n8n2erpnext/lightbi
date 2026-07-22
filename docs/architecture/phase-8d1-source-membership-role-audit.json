@@ -1,0 +1,11 @@
+{
+  "schemaVersion": "lightbi.phase8d1.source-membership-role-audit.v1",
+  "supportedRoles": ["sales", "accounting", "logistics", "inventory_snapshot", "inventory_movement", "unknown_other"],
+  "roleAuthority": "phase8b_source_bound_evidence_declaration",
+  "filenameRoleInference": false,
+  "eachMembershipRetains": ["sourceId", "sourceFingerprint", "inspectionGeneration", "profileGeneration", "sourceLocalArtifactId", "sourceRole", "sourceRoleProvenance", "required", "overlayIdentity", "semanticSampleScope", "fullFileProfile", "runtimeSource", "sourceEvidence", "restrictions", "completenessState"],
+  "incompatibleDuplicateRequiredRolesBlocked": true,
+  "unrelatedSourcesMayRemainOutsideDataset": true,
+  "sourceOrderChangesTruth": false,
+  "status": "pass"
+}

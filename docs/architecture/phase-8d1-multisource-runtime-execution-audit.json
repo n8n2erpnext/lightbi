@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "lightbi.phase8d1.multisource-runtime-execution-audit.v1",
+  "executor": "apps/desktop/src/lib/understanding-core/governed-multisource-duckdb-boundary.ts",
+  "executionScope": "full_file_multisource",
+  "sources": [
+    {"role": "sales", "expectedRows": 1500, "actualRows": 1500, "registeredIndependently": true},
+    {"role": "accounting", "expectedRows": 1500, "actualRows": 1500, "registeredIndependently": true}
+  ],
+  "fullSourceRelationshipRevalidated": true,
+  "semanticSampleFallback": false,
+  "previewFallback": false,
+  "legacyFusionFallback": false,
+  "requiredSourceOmissionAllowed": false,
+  "evidenceFields": ["multiSourceArtifactId", "relationshipArtifactId", "sourceIds", "sourceFingerprints", "sourceRoles", "rowCounts", "reportingPeriod", "currency", "metricId", "actionId", "queryPlanIdentity", "limitations", "prohibitedUses"],
+  "status": "pass"
+}

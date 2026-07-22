@@ -32,9 +32,12 @@ import { saveWorkspaceSession, type SaveWorkspaceSessionRequest } from '../lib/w
 import { advancedSourceId, useAdvancedSourceStore } from '../stores/advanced-source-store';
 import { profileColumns } from '../lib/column-profiler';
 import { executeGovernedMetricRequest } from '../lib/understanding-core/governed-metric-executor';
+import type { GovernedMetricExecutionRequestV1 } from '../lib/understanding-core/governed-runtime-contracts';
 import { createGovernedLocalDuckDBBoundary } from '../lib/understanding-core/governed-local-duckdb-boundary';
 import { sourceBindingsMatch } from '../lib/understanding-core/canonical-source-boundary';
 import { getLatestCanonicalConsumerArtifact, validateCanonicalInvestigationHandoff } from '../lib/understanding-core/canonical-consumer-boundary';
+import { validateCanonicalMultiSourceInvestigationHandoff, type CanonicalMultiSourceInvestigationHandoffV1 } from '../lib/understanding-core/canonical-multisource-boundary';
+import { executeCanonicalMultiSourceMetric } from '../lib/understanding-core/governed-multisource-duckdb-boundary';
 
 const INVESTIGATION_SESSION_ROW_LIMIT = 250;
 
@@ -238,7 +241,8 @@ const BusinessFusionAngleReadout: React.FC<{
 const BasicBAAnswerCard: React.FC<{
   brief: BADecisionBrief;
   onAnalyzeDeeper: () => void;
-}> = ({ brief, onAnalyzeDeeper }) => {
+  canAnalyzeDeeper: boolean;
+}> = ({ brief, onAnalyzeDeeper, canAnalyzeDeeper }) => {
   const primaryInsights = brief.insights.slice(0, 2);
   const trustClass = brief.decisionReadinessScore >= 70
     ? 'border-emerald-100 bg-emerald-50 text-emerald-800'
@@ -297,7 +301,9 @@ const BasicBAAnswerCard: React.FC<{
           </div>
           <button
             onClick={onAnalyzeDeeper}
-            className="rounded-[10px] bg-[#202123] px-3 py-2 text-xs font-medium text-white shadow-sm transition-colors hover:bg-black"
+            disabled={!canAnalyzeDeeper}
+            title={!canAnalyzeDeeper ? 'Run the governed analysis successfully before opening the deeper explanation.' : undefined}
+            className="rounded-[10px] bg-[#202123] px-3 py-2 text-xs font-medium text-white shadow-sm transition-colors hover:bg-black disabled:cursor-not-allowed disabled:opacity-40"
           >
             Analyze deeper
           </button>
@@ -310,10 +316,17 @@ const BasicBAAnswerCard: React.FC<{
 export const Investigation: React.FC = () => {
   const navigate = useNavigate();
   const session = getCurrentInvestigationSession();
+  const canonicalMultiSourceHandoff = session?.canonicalHandoff && 'multiSource' in session.canonicalHandoff
+    ? session.canonicalHandoff as CanonicalMultiSourceInvestigationHandoffV1
+    : null;
   const currentCanonicalArtifact = session ? getLatestCanonicalConsumerArtifact(session.datasetId) : null;
-  const staleHandoffBlockers = session?.canonicalHandoff && currentCanonicalArtifact
-    ? validateCanonicalInvestigationHandoff(session.canonicalHandoff, currentCanonicalArtifact)
-    : [];
+  const staleHandoffBlockers = canonicalMultiSourceHandoff && session?.canonicalMultiSourceDataset
+    ? validateCanonicalMultiSourceInvestigationHandoff(canonicalMultiSourceHandoff, session.canonicalMultiSourceDataset)
+    : session?.canonicalHandoff && currentCanonicalArtifact
+      ? validateCanonicalInvestigationHandoff(session.canonicalHandoff, currentCanonicalArtifact)
+      : canonicalMultiSourceHandoff
+        ? ['canonical_multisource_dataset_state_required']
+        : [];
   const handoffCanExecute = Boolean(
     session?.canonicalHandoff
     && staleHandoffBlockers.length === 0
@@ -413,11 +426,13 @@ export const Investigation: React.FC = () => {
 
   const { analysisAction, runtimeIntent, runtimePlanPreview, rows, aiBriefing, runtimeDatasetSource, rowScope, businessFusionOverview, canonicalHandoff } = session;
   const canonicalSourceBoundary = canonicalHandoff?.sourceBoundary;
-  const fullFileSourceReady = Boolean(
-    canonicalSourceBoundary
-    && sourceBindingsMatch(canonicalSourceBoundary, runtimeDatasetSource)
-    && canonicalHandoff?.sourceFingerprint === canonicalSourceBoundary.sourceFingerprint
-  );
+  const fullFileSourceReady = canonicalMultiSourceHandoff
+    ? canonicalMultiSourceHandoff.multiSource.requiredSourceIds.every((sourceId) => canonicalMultiSourceHandoff.multiSource.sourceMemberships.some((member) => member.sourceId === sourceId && member.runtimeSource.files.length > 0))
+    : Boolean(
+      canonicalSourceBoundary
+      && sourceBindingsMatch(canonicalSourceBoundary, runtimeDatasetSource)
+      && canonicalHandoff?.sourceFingerprint === canonicalSourceBoundary.sourceFingerprint
+    );
   const fallbackWorkspaceSessionPayload = (): SaveWorkspaceSessionRequest => {
     const columns = rows?.[0] ? Object.keys(rows[0]) : [];
     const retainedRows = limitInvestigationRows(rows);
@@ -457,6 +472,11 @@ export const Investigation: React.FC = () => {
       console.error('Could not save workspace session', error);
       return null;
     }
+  };
+
+  const returnToCurrentDataset = async () => {
+    const saved = await persistWorkspaceSession();
+    navigate('/', { state: saved?.id ? { restoreWorkspaceSessionId: saved.id } : null });
   };
 
   const readinessTier = aiBriefing?.readinessTier ?? 'exploratory_only';
@@ -611,7 +631,7 @@ export const Investigation: React.FC = () => {
           setChartModel(null);
           return;
       }
-      if (!canonicalSourceBoundary || !runtimeDatasetSource || !fullFileSourceReady) {
+      if ((!canonicalMultiSourceHandoff && (!canonicalSourceBoundary || !runtimeDatasetSource)) || !fullFileSourceReady) {
           const blocked: DuckDBPreviewResult = {
             id: `canonical-blocked:${canonicalHandoff.artifactIdentity}`,
             sourceSqlPreviewId: 'canonical-governed-preflight',
@@ -630,20 +650,30 @@ export const Investigation: React.FC = () => {
           setChartModel(null);
           return;
       }
-      const governed = await executeGovernedMetricRequest({
+      const governedRequest: GovernedMetricExecutionRequestV1 = {
           schemaVersion: 'lightbi.governed-metric-execution-request.v1',
           requestId: `consumer:${canonicalHandoff.queryPlanning.plan.planId}`,
           plan: canonicalHandoff.queryPlanning.plan,
           rows: [],
-          runtimeSource: runtimeDatasetSource,
-          expectedRuntimeBinding: runtimeDatasetSource.binding,
+          runtimeSource: runtimeDatasetSource!,
+          expectedRuntimeBinding: runtimeDatasetSource!.binding,
           artifactIdentity: canonicalHandoff.artifactIdentity,
-          expectedSourceRowCount: canonicalSourceBoundary.sourceRowCount,
+          expectedSourceRowCount: runtimeDatasetSource!.sourceRowCount,
           groundTruth: { state: 'unavailable', value: null, tolerance: null, provenance: 'production_consumer_no_ground_truth' },
-        }, createGovernedLocalDuckDBBoundary({
-          runtimeSource: runtimeDatasetSource,
-          expectedRuntimeBinding: runtimeDatasetSource.binding,
-        }));
+        };
+        const multiSourceExecution = canonicalMultiSourceHandoff && session.canonicalMultiSourceDataset
+          ? await executeCanonicalMultiSourceMetric({
+              dataset: session.canonicalMultiSourceDataset,
+              handoff: canonicalMultiSourceHandoff,
+              request: governedRequest,
+              signal: run.signal,
+            })
+          : null;
+        if (multiSourceExecution) session.canonicalMultiSourceExecutionResult = multiSourceExecution;
+        const governed = multiSourceExecution?.metricResult ?? await executeGovernedMetricRequest(governedRequest, createGovernedLocalDuckDBBoundary({
+              runtimeSource: runtimeDatasetSource!,
+              expectedRuntimeBinding: runtimeDatasetSource!.binding,
+            }));
         session.canonicalExecutionResult = governed;
         const canonicalResult: DuckDBPreviewResult = {
           id: governed.resultId,
@@ -767,7 +797,7 @@ export const Investigation: React.FC = () => {
       {/* Header */}
       <header className="sticky top-0 z-10 flex items-center gap-4 border-b border-black/10 bg-[#fbfbfa]/95 px-5 py-3 backdrop-blur">
         <button 
-          onClick={() => navigate('/')}
+          onClick={() => { void returnToCurrentDataset(); }}
           className="rounded-lg p-1.5 text-black/45 transition-colors hover:bg-black/[0.04] hover:text-[#202123]"
           title="Back to Home"
         >
@@ -879,12 +909,12 @@ export const Investigation: React.FC = () => {
         {staleHandoffBlockers.length > 0 && <div role="alert" data-testid="investigation-stale-handoff" className="rounded-[14px] border border-amber-200 bg-amber-50 p-4 text-amber-900">
           <div className="text-sm font-semibold">This analysis is stale</div>
           <p className="mt-1 text-xs">The dataset or source evidence changed after this analysis was created. The old action will not run.</p>
-          <button type="button" onClick={() => navigate('/')} className="mt-3 rounded border border-amber-300 bg-white px-3 py-1.5 text-xs font-semibold">Return to current dataset</button>
+          <button type="button" onClick={() => { void returnToCurrentDataset(); }} className="mt-3 rounded border border-amber-300 bg-white px-3 py-1.5 text-xs font-semibold">Return to current dataset</button>
         </div>}
         {!handoffCanExecute && staleHandoffBlockers.length === 0 && <div role="status" data-testid="investigation-preflight-blocked" className="rounded-[14px] border border-amber-200 bg-amber-50 p-4 text-amber-900">
           <div className="text-sm font-semibold">Analysis Blocked</div>
           <p className="mt-1 text-xs">The governed runtime preflight did not authorize this action. ({canonicalHandoff?.blockers.join(', ') || 'canonical_handoff_required'})</p>
-          <button type="button" onClick={() => navigate('/')} className="mt-3 rounded border border-amber-300 bg-white px-3 py-1.5 text-xs font-semibold">Return to mappings and evidence</button>
+          <button type="button" onClick={() => { void returnToCurrentDataset(); }} className="mt-3 rounded border border-amber-300 bg-white px-3 py-1.5 text-xs font-semibold">Return to mappings and evidence</button>
         </div>}
 
         {/* Primary Analysis Surface */}
@@ -909,7 +939,7 @@ export const Investigation: React.FC = () => {
               </button>
               <button
                 onClick={() => { void persistWorkspaceSession().finally(() => setShowDeepAnalysis(true)); }}
-                disabled={isExecuting || !baDecisionBrief}
+                disabled={isExecuting || previewResult?.status !== 'executed' || !handoffCanExecute}
                 className="inline-flex items-center gap-1.5 rounded-[10px] border border-violet-200 bg-violet-50 px-3 py-2 text-xs font-medium text-violet-700 shadow-sm transition-colors hover:bg-violet-100 disabled:cursor-not-allowed disabled:border-black/10 disabled:bg-white disabled:text-black/30"
                 title="Open a deeper BA explanation for this selected decision angle"
               >
@@ -996,6 +1026,8 @@ export const Investigation: React.FC = () => {
                    {!isExecuting && (
                      <button
                        onClick={handleRunPreview}
+                       disabled={!handoffCanExecute}
+                       title={!handoffCanExecute ? 'Resolve the canonical preflight blockers before running this analysis.' : undefined}
                        className="mt-4 rounded-md border border-black/10 bg-white px-3 py-1.5 text-xs font-medium text-black/65 shadow-sm transition-colors hover:bg-black/[0.035]"
                      >
                        Preview chart
@@ -1011,9 +1043,45 @@ export const Investigation: React.FC = () => {
                </div>
              )}
 
+             {previewResult?.status === 'executed' && session.canonicalExecutionResult && canonicalHandoff && (
+               <details className="mt-4 rounded-[14px] border border-black/10 bg-[#fbfbfa] p-4 text-xs text-black/60" data-testid="governed-result-context">
+                 <summary className="cursor-pointer font-semibold text-[#202123]">Governed result context</summary>
+                 <div className="mt-3 grid gap-3 md:grid-cols-2">
+                   <div>
+                     <p><span className="font-medium text-black/75">Metric:</span> {session.canonicalExecutionResult.metricId}</p>
+                     <p><span className="font-medium text-black/75">Action:</span> {session.canonicalExecutionResult.actionId}</p>
+                     <p className="break-all"><span className="font-medium text-black/75">Query plan:</span> {session.canonicalExecutionResult.queryPlanIdentity}</p>
+                     <p><span className="font-medium text-black/75">Result rows:</span> {session.canonicalExecutionResult.rowCount.toLocaleString()}</p>
+                   </div>
+                   <div>
+                     <p><span className="font-medium text-black/75">Execution scope:</span> {session.canonicalExecutionResult.fullFileExecution?.executionScope ?? previewResult.executionScope ?? 'unknown'}</p>
+                     <p><span className="font-medium text-black/75">Full-source rows:</span> {session.canonicalExecutionResult.fullFileExecution?.actualMaterializedRowCount.toLocaleString() ?? 'not verified'}</p>
+                     <p className="break-all"><span className="font-medium text-black/75">Artifact:</span> {canonicalHandoff.artifactIdentity}</p>
+                     <p className="break-all"><span className="font-medium text-black/75">Overlay:</span> {canonicalHandoff.overlayIdentity ?? 'none'}</p>
+                     <p className="break-all"><span className="font-medium text-black/75">Source fingerprint:</span> {session.canonicalExecutionResult.fullFileExecution?.sourceFingerprint ?? canonicalHandoff.sourceFingerprint ?? 'unavailable'}</p>
+                   </div>
+                 </div>
+                 <div className="mt-3 border-t border-black/5 pt-3">
+                   {session.canonicalMultiSourceExecutionResult?.evidence && <div data-testid="multisource-result-lineage" className="mb-3 rounded-lg border border-black/5 bg-white p-3">
+                     <p><span className="font-medium text-black/75">Multi-source artifact:</span> {session.canonicalMultiSourceExecutionResult.evidence.multiSourceArtifactId}</p>
+                     <p className="break-all"><span className="font-medium text-black/75">Relationship:</span> {session.canonicalMultiSourceExecutionResult.evidence.relationshipArtifactId}</p>
+                     <p><span className="font-medium text-black/75">Period / currency:</span> {session.canonicalMultiSourceExecutionResult.evidence.reportingPeriod ?? 'unavailable'} · {session.canonicalMultiSourceExecutionResult.evidence.currency ?? 'unavailable'}</p>
+                     <div className="mt-2 grid gap-1">{session.canonicalMultiSourceExecutionResult.evidence.rowCounts.map((row) => {
+                       const role = session.canonicalMultiSourceExecutionResult!.evidence!.sourceRoles.find((item) => item.sourceId === row.sourceId)?.role ?? 'unknown';
+                       return <p key={row.sourceId} className="break-all"><span className="font-medium text-black/75">{role}:</span> {row.actual.toLocaleString()} / {row.expected.toLocaleString()} rows · {row.sourceId}</p>;
+                     })}</div>
+                   </div>}
+                   <p><span className="font-medium text-black/75">Evidence:</span> {session.canonicalExecutionResult.evidence.map(item => `${item.evidenceId} (${item.provenance})`).join(', ') || 'none recorded'}</p>
+                   <p className="mt-1"><span className="font-medium text-black/75">Limitations:</span> {session.canonicalExecutionResult.limitations.join(', ') || 'none recorded'}</p>
+                   <p className="mt-1"><span className="font-medium text-black/75">Restrictions:</span> {session.canonicalExecutionResult.restrictions.map(item => item.reason).join(', ') || 'none recorded'}</p>
+                 </div>
+               </details>
+             )}
+
              {baDecisionBrief && (
                <BasicBAAnswerCard
                  brief={baDecisionBrief}
+                 canAnalyzeDeeper={previewResult?.status === 'executed' && handoffCanExecute}
                  onAnalyzeDeeper={() => { void persistWorkspaceSession().finally(() => setShowDeepAnalysis(true)); }}
                />
              )}
@@ -1166,7 +1234,8 @@ export const Investigation: React.FC = () => {
               <h3 className="text-sm font-semibold text-gray-900">Preview execution</h3>
               <button
                 onClick={handleRunPreview}
-                disabled={isExecuting}
+                disabled={isExecuting || !handoffCanExecute}
+                title={!handoffCanExecute ? 'Resolve the canonical preflight blockers before running this analysis.' : undefined}
                 className="rounded-md bg-[#202123] px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-black disabled:opacity-50"
               >
                 {isExecuting ? 'Running...' : 'Execute preview'}

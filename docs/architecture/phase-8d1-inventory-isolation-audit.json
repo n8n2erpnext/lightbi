@@ -1,0 +1,11 @@
+{
+  "schemaVersion": "lightbi.phase8d1.inventory-isolation-audit.v1",
+  "metricId": "inventory_on_hand",
+  "executionModel": "source_local_snapshot",
+  "multisourceForced": false,
+  "unrelatedSalesOrLogisticsChangesResult": false,
+  "inventoryMovementPromotedToSnapshotRelationship": false,
+  "futureStockReconciliationAdvertised": false,
+  "evidence": ["phase-7r37-inventory-snapshot-evidence", "complete_understanding_core_340_of_340"],
+  "status": "pass"
+}

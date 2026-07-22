@@ -60,7 +60,7 @@ export const AppLayout: React.FC = () => {
             )}
           </div>
           {isSidebarExpanded && (
-            <button className="hidden h-8 w-8 items-center justify-center rounded-lg border border-black/10 bg-white/70 text-black/45 shadow-sm transition-colors hover:bg-white hover:text-[#202123] md:flex" title="Workspace alerts">
+            <button disabled className="hidden h-8 w-8 cursor-not-allowed items-center justify-center rounded-lg border border-black/10 bg-white/70 text-black/30 shadow-sm md:flex" title="Workspace alerts are not available in this MVP" aria-label="Workspace alerts are not available in this MVP">
               <Bell className="h-4 w-4" strokeWidth={1.6} />
             </button>
           )}

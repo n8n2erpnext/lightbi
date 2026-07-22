@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "lightbi.phase8d.export-handoff-audit.v1",
+  "operations": [
+    {"id":"investigation.drill.csv","reachable":true,"scope":"selected displayed drill rows","fullSourceClaim":false,"staleCurrentClaim":false},
+    {"id":"investigation.drill.xlsx","reachable":true,"scope":"selected displayed drill rows","fullSourceClaim":false,"staleCurrentClaim":false},
+    {"id":"investigation.save_chart","reachable":true,"scope":"validated governed result","fullSourceClaim":false,"staleCurrentClaim":false},
+    {"id":"advanced.current_page.csv_xlsx_json_sql","reachable":true,"scope":"current page or edited page","fullSourceClaim":false,"staleCurrentClaim":false},
+    {"id":"advanced.full_result.csv_xlsx_json_sql","reachable":true,"scope":"explicit paged full export","fullSourceClaim":true,"staleCurrentClaim":false},
+    {"id":"advanced.complete_to_simple","reachable":true,"scope":"complete result only","fullSourceClaim":true,"staleCurrentClaim":false}
+  ],
+  "unsupported": ["generic Investigation JSON export", "generic Investigation image export", "prepared-data handoff outside existing paths"],
+  "newExportEngineAdded": false,
+  "status": "pass"
+}

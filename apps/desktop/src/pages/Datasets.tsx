@@ -10,7 +10,7 @@ export const Datasets: React.FC = () => {
     <div className="flex-1 p-4 flex flex-col overflow-hidden">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-semibold text-gray-800">Datasets</h1>
-        <button className="bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded-md text-sm font-medium flex items-center transition-colors">
+        <button disabled title="Dataset creation is not available in this MVP; import data from New brief" className="flex cursor-not-allowed items-center rounded-md bg-gray-300 px-4 py-2 text-sm font-medium text-white">
           <Plus className="w-4 h-4 mr-2" />
           New Dataset
         </button>
@@ -28,7 +28,7 @@ export const Datasets: React.FC = () => {
           <tbody>
             {datasets.map((ds) => (
               <tr key={ds.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                <td className="px-6 py-4 font-medium text-gray-900 cursor-pointer hover:text-gray-600">
+                <td className="px-6 py-4 font-medium text-gray-900">
                   {ds.name}
                 </td>
                 <td className="px-6 py-4">
@@ -44,7 +44,7 @@ export const Datasets: React.FC = () => {
         
         {/* Placeholder for Dataset Detail / Metadata View when one is clicked */}
         <div className="flex-1 border-t border-gray-200 bg-gray-50 flex flex-col items-center justify-center text-gray-400 p-4 text-sm">
-          Select a dataset to view columns and sample data.
+          Dataset detail editing is not available in this MVP. Import or review data from New brief.
         </div>
       </div>
     </div>

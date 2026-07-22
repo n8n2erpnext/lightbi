@@ -1,0 +1,9 @@
+{
+  "schemaVersion": "lightbi.phase8d1.relationship-invalidation-audit.v1",
+  "invalidatesOn": ["source_replacement", "source_fingerprint_change", "inspection_generation_change", "profile_generation_change", "source_local_artifact_change", "overlay_change", "role_change", "relationship_change", "required_source_removal"],
+  "invalidatedArtifacts": ["multisource_identity", "relationship_artifact", "m1_result", "m2_questions_actions", "m3_plan", "investigation_handoff", "execution_result"],
+  "oldHandoffRejected": true,
+  "sourceLocalUnaffectedArtifactMayRemainCurrent": true,
+  "negativeProbeCoverage": ["stale_source_fingerprint", "stale_source_generation", "stale_source_local_artifact", "stale_relationship", "old_handoff_after_rebuild"],
+  "status": "pass"
+}

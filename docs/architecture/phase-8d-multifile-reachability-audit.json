@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "lightbi.phase8d.multifile-reachability-audit.v1",
+  "intake": {"multipleFilesAccepted": true, "eachSourceInspected": true},
+  "productionCanonicalState": {"sourceCount": 1, "relationshipState": "source_local_not_evaluated", "multiSourceAssemblyReachable": false},
+  "grossProfitJourney": {"rolesVisible": false, "relationshipVisible": false, "permittedEvidenceAvailable": true, "actionReachableFromRelatedSalesAccountingSources": false, "exactExecutionProvenOnlyByEvaluatorOrSourceLocalDerivedInput": true},
+  "inventoryJourney": {"snapshotRole": true, "itemWarehouseIdentity": true, "uomAsOfEvidence": true, "actionReachable": true, "exactExecution": true},
+  "unsafeFallbackUsed": false,
+  "filenameUsedAsRoleTruth": false,
+  "legacyBusinessFusionClaimedCanonical": false,
+  "blocker": "canonical multi-source bundle and governed relationship artifact are not wired into the production Home consumer",
+  "owningLayer": "canonical production consumer boundary",
+  "status": "fail"
+}

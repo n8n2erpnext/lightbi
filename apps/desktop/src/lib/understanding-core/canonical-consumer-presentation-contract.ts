@@ -2,6 +2,7 @@ import {
   prepareCanonicalInvestigationHandoff,
   type CanonicalConsumerBuildResultV1,
 } from "./canonical-consumer-boundary";
+import type { CanonicalMultiSourceDatasetV1 } from "./canonical-multisource-boundary";
 
 type ValidCanonicalArtifact = Extract<CanonicalConsumerBuildResultV1, { status: "valid" }>;
 type CanonicalQuestionCandidate = ValidCanonicalArtifact["questionGeneration"]["candidateQuestions"][number];
@@ -81,6 +82,63 @@ export type CanonicalAnalysisPresentationV1 = {
   decisionUseRestrictions: Array<{ code: string; reason: string; severity: string }>;
   artifactIdentity: string;
   overlayIdentity: string | null;
+  advertisedAsDefault: boolean;
+  rank: number | null;
+};
+
+export type CanonicalUnderstandingPresentationV1 = {
+  source: {
+    label: string;
+    kind: string;
+    sheetOrTable: string | null;
+    connectedFiles: string[];
+    sourceRowCount: number;
+    profiledRowCount: number;
+    columnCount: number;
+    profileScope: "full";
+    profileConfidence: string;
+    dataRegionState: string;
+  };
+  representativeEvidence: {
+    strategy: string;
+    sampledRowCount: number;
+    fullFileTruth: false;
+    coveredRegions: string[];
+  };
+  qualityIssues: Array<{ code: string; severity: string; physicalColumn: string | null }>;
+  mappings: Array<{
+    physicalColumn: string;
+    state: string;
+    canonicalSignal: string | null;
+    provenance: "canonical_resolution" | "user_confirmed";
+  }>;
+  mappingStateCounts: Record<string, number>;
+  unknownBusinessFields: string[];
+  ignoredFields: string[];
+  grain: {
+    structuralForm: string;
+    structuralState: string;
+    identityBasis: string;
+    temporalMode: string;
+    aggregationForm: string;
+  };
+  relationships: {
+    state: "source_local_not_evaluated" | "unavailable";
+    sourceCount: number;
+    explanation: string;
+  };
+  domainSupport: {
+    packId: string;
+    state: string;
+    concepts: Array<{ conceptId: string; state: string }>;
+    metrics: Array<{ metricId: string; state: string }>;
+  };
+  evidence: {
+    observedEvidenceCount: number;
+    userConfirmedMappingCount: number;
+    userConfirmedDeclarationCount: number;
+  };
+  readinessRestrictions: string[];
 };
 
 export type CanonicalDatasetPresentationV1 = {
@@ -94,7 +152,54 @@ export type CanonicalDatasetPresentationV1 = {
   counts: Record<CanonicalPresentationStateV1, number>;
   analyses: CanonicalAnalysisPresentationV1[];
   prohibitedUses: string[];
+  understanding: CanonicalUnderstandingPresentationV1 | null;
 };
+
+export type CanonicalMultiSourceRelationshipPresentationV1 = {
+  schemaVersion: "lightbi.canonical-multisource-relationship-presentation.v1";
+  analysisScope: "multi_source";
+  state: "relationship_evidence_required" | "relationship_ambiguous" | "relationship_safety_blocked" | "unsupported_source_combination" | "stale_relationship" | "ready_multi_source_action";
+  relationshipArtifactId: string;
+  participatingSources: Array<{ sourceId: string; label: string; role: string; required: boolean }>;
+  blockers: string[];
+  remediationOperations: CanonicalRemediationOperationV1[];
+  readyAnalysisIds: string[];
+  restrictions: string[];
+};
+
+export function presentCanonicalMultiSourceRelationship(dataset: CanonicalMultiSourceDatasetV1): CanonicalMultiSourceRelationshipPresentationV1 {
+  const blockers = unique([...dataset.relationship.refusalReasons, ...dataset.analyses.flatMap((item) => item.blockers)]);
+  const state = dataset.relationship.validationState === "stale"
+    ? "stale_relationship"
+    : dataset.analyses.some((item) => item.state === "ready")
+      ? "ready_multi_source_action"
+      : blockers.some((code) => code.includes("source_role") || code.includes("document_identity") || code.includes("reporting_period") || code.includes("currency"))
+        ? "relationship_evidence_required"
+        : dataset.relationship.validationState === "ambiguous" || dataset.relationship.validationState === "insufficient_evidence"
+          ? "relationship_ambiguous"
+          : blockers.some((code) => code.includes("not_supported") || code.includes("required_sales_source_missing") || code.includes("required_accounting_source_missing"))
+            ? "unsupported_source_combination"
+            : "relationship_safety_blocked";
+  const remediationOperations = dataset.orderedSourceMemberships.flatMap((member) => {
+    const operations: CanonicalRemediationOperationV1[] = [];
+    if (!member.sourceRoleProvenance) operations.push(remediationOperation("confirm_source_role", member.sourceId, member.boundary.fullFileProfile.artifact.sourceProfile.source.sheet ?? null, null, null)!);
+    if (blockers.includes("source_bound_document_identity_required")) operations.push(remediationOperation("confirm_document_identity", member.sourceId, member.boundary.fullFileProfile.artifact.sourceProfile.source.sheet ?? null, null, null)!);
+    if (blockers.includes("source_bound_reporting_period_required") || blockers.includes("reporting_period_mismatch")) operations.push(remediationOperation("provide_period_semantics", member.sourceId, member.boundary.fullFileProfile.artifact.sourceProfile.source.sheet ?? null, null, null)!);
+    if (blockers.includes("source_bound_currency_required") || blockers.includes("currency_mismatch")) operations.push(remediationOperation("confirm_currency", member.sourceId, member.boundary.fullFileProfile.artifact.sourceProfile.source.sheet ?? null, null, null)!);
+    return operations;
+  }).filter(Boolean);
+  return {
+    schemaVersion: "lightbi.canonical-multisource-relationship-presentation.v1",
+    analysisScope: "multi_source",
+    state,
+    relationshipArtifactId: dataset.relationshipArtifactId,
+    participatingSources: dataset.orderedSourceMemberships.map((member) => ({ sourceId: member.sourceId, label: member.boundary.datasetId, role: member.sourceRole, required: member.required })),
+    blockers,
+    remediationOperations: remediationOperations.filter((item, index, all) => all.findIndex((candidate) => candidate.operationId === item.operationId) === index),
+    readyAnalysisIds: dataset.analyses.filter((item) => item.state === "ready").map((item) => item.analysisId),
+    restrictions: unique([...dataset.restrictions, ...dataset.relationship.restrictions]),
+  };
+}
 
 type PresentationOptions = {
   executionStates?: Record<string, "executing" | "execution_failed" | "completed">;
@@ -285,6 +390,82 @@ function questionPresentation(
     decisionUseRestrictions: (handoff?.runtimePreflight.restrictions ?? []).map((item) => ({ code: item.code, reason: item.reason, severity: item.severity })),
     artifactIdentity: artifact.identity,
     overlayIdentity: artifact.overlayIdentity,
+    advertisedAsDefault: question.advertisedAsDefault,
+    rank: question.rank,
+  };
+}
+
+function understandingPresentation(artifact: ValidCanonicalArtifact): CanonicalUnderstandingPresentationV1 {
+  const profile = artifact.canonicalSource.physical.sourceProfile;
+  const representative = artifact.canonicalSource.physical.representativeEvidence;
+  const semantic = artifact.canonicalSource.semantic;
+  const grain = artifact.canonicalSource.grain.signature;
+  const boundary = artifact.sourceBoundary;
+  const mappings = semantic.columns.map((column) => ({
+    physicalColumn: column.physicalColumn,
+    state: column.finalState,
+    canonicalSignal: column.selectedCandidateId,
+    provenance: column.ruleIds.includes("user_overlay.confirmed.v1") || column.ruleIds.includes("user_overlay.ignore.v1")
+      ? "user_confirmed" as const
+      : "canonical_resolution" as const,
+  }));
+  const observedEvidenceCount = semantic.columns.reduce((sum, column) => sum + column.columnEvidence.length, 0)
+    + artifact.domainActivation.concepts.reduce((sum, concept) => sum + concept.evidence.length, 0);
+  const connectedFiles = boundary?.runtimeSource.files.map((item) => item.file.name).filter(Boolean) ?? [profile.source.label];
+  return {
+    source: {
+      label: profile.source.label,
+      kind: profile.source.kind,
+      sheetOrTable: profile.source.sheet ?? null,
+      connectedFiles: unique(connectedFiles),
+      sourceRowCount: profile.dataRegion.rowCount,
+      profiledRowCount: profile.profiledRowCount,
+      columnCount: profile.columns.length,
+      profileScope: "full",
+      profileConfidence: profile.confidence.level,
+      dataRegionState: profile.dataRegion.selectionStatus,
+    },
+    representativeEvidence: {
+      strategy: representative.strategy,
+      sampledRowCount: representative.sampledRowCount,
+      fullFileTruth: false,
+      coveredRegions: [...representative.coveredRegions],
+    },
+    qualityIssues: profile.issues.map((issue) => ({ code: issue.code, severity: issue.severity, physicalColumn: issue.physicalColumn })),
+    mappings,
+    mappingStateCounts: { ...semantic.coverage.stateCounts },
+    unknownBusinessFields: semantic.columns.filter((column) => ["unknown", "ambiguous"].includes(column.finalState)).map((column) => column.physicalColumn),
+    ignoredFields: semantic.columns.filter((column) => column.ruleIds.includes("user_overlay.ignore.v1")).map((column) => column.physicalColumn),
+    grain: {
+      structuralForm: grain.structuralForm.value,
+      structuralState: grain.structuralForm.state,
+      identityBasis: grain.identityBasis.value,
+      temporalMode: grain.temporalMode.value,
+      aggregationForm: grain.aggregationForm.value,
+    },
+    relationships: {
+      state: boundary ? "source_local_not_evaluated" : "unavailable",
+      sourceCount: connectedFiles.length,
+      explanation: boundary
+        ? "This canonical artifact is source-bound. Cross-source relationships are shown only when a governed relationship artifact is available."
+        : "No governed source relationship is available for this dataset state.",
+    },
+    domainSupport: {
+      packId: artifact.domainActivation.packId,
+      state: artifact.domainActivation.state,
+      concepts: artifact.domainActivation.concepts.map((concept) => ({ conceptId: concept.conceptId, state: concept.state })),
+      metrics: artifact.metricPreflight.metrics.map((metric) => ({ metricId: metric.metricId, state: metric.state })),
+    },
+    evidence: {
+      observedEvidenceCount,
+      userConfirmedMappingCount: artifact.overlayValidation.mappingResults.filter((item) => item.valid).length,
+      userConfirmedDeclarationCount: artifact.overlayValidation.evidenceResults.filter((item) => item.valid).length,
+    },
+    readinessRestrictions: unique([
+      ...artifact.blockers,
+      ...artifact.caveats,
+      ...artifact.questionGeneration.candidateQuestions.flatMap((question) => question.prohibitedUses),
+    ]),
   };
 }
 
@@ -307,15 +488,15 @@ export function presentCanonicalConsumerArtifact(
       remediationOperations: state === "stale" ? [remediationOperation("rebuild_artifact", sourceId, null, null, null)!] : [],
       evidenceReferences: [],
     }));
-    return { schemaVersion: CANONICAL_CONSUMER_PRESENTATION_VERSION, artifactIdentity: artifact.identity, overlayIdentity: artifact.overlayIdentity, datasetStateIdentity: artifact.datasetStateIdentity, sourceId, datasetState: state === "stale" ? "stale" : "invalid", datasetBlockers, counts: emptyCounts(), analyses: [], prohibitedUses: ["decision_support", "runtime_execution"] };
+    return { schemaVersion: CANONICAL_CONSUMER_PRESENTATION_VERSION, artifactIdentity: artifact.identity, overlayIdentity: artifact.overlayIdentity, datasetStateIdentity: artifact.datasetStateIdentity, sourceId, datasetState: state === "stale" ? "stale" : "invalid", datasetBlockers, counts: emptyCounts(), analyses: [], prohibitedUses: ["decision_support", "runtime_execution"], understanding: null };
   }
   const analyses = artifact.questionGeneration.candidateQuestions.map((question) => questionPresentation(artifact, question, options));
   for (const concept of artifact.domainActivation.concepts.filter((item) => ["detect_only", "unsupported"].includes(item.state))) {
     if (analyses.some((item) => item.metricId === concept.conceptId)) continue;
     const blockers = concept.blockers.map((item) => ({ code: item.code, message: humanizeCode(item.code), severity: item.severity, scope: "capability" as const, source: "domain_activation", references: [...item.references], limitations: concept.limitations.map((entry) => entry.code), remediationOperations: [], evidenceReferences: concept.evidence.flatMap((entry) => entry.references) }));
-    analyses.push({ itemId: `concept:${concept.conceptId}`, questionId: `concept:${concept.conceptId}`, actionCandidateId: null, metricId: concept.conceptId, title: concept.conceptId.replaceAll("_", " "), description: "The source contains this concept, but decision support is not part of the current MVP.", state: options.stale ? "stale" : "unsupported_mvp", m1State: "unsupported", m2State: "not_generated", m3State: "unavailable", executionReadiness: "not_executable", primaryBlocker: blockers[0] ?? { code: "unsupported_mvp", message: "This capability is not supported by the current MVP.", severity: "material", scope: "capability", source: "domain_activation", references: [], limitations: [], remediationOperations: [], evidenceReferences: [] }, secondaryBlockers: blockers.slice(1), limitations: concept.limitations.map((item) => item.code), remediationOperations: [], physicalColumns: [], canonicalSignals: [concept.conceptId], sourceId: artifact.sourceBoundary?.sourceId ?? artifact.canonicalSource.physical.sourceProfile.source.sourceId, sheetOrTable: artifact.canonicalSource.physical.sourceProfile.source.sheet ?? null, evidence: concept.evidence.map((item) => ({ evidenceId: item.evidenceId, references: [...item.references], provenance: item.provenance })), decisionUseRestrictions: [], artifactIdentity: artifact.identity, overlayIdentity: artifact.overlayIdentity });
+    analyses.push({ itemId: `concept:${concept.conceptId}`, questionId: `concept:${concept.conceptId}`, actionCandidateId: null, metricId: concept.conceptId, title: concept.conceptId.replaceAll("_", " "), description: "The source contains this concept, but decision support is not part of the current MVP.", state: options.stale ? "stale" : "unsupported_mvp", m1State: "unsupported", m2State: "not_generated", m3State: "unavailable", executionReadiness: "not_executable", primaryBlocker: blockers[0] ?? { code: "unsupported_mvp", message: "This capability is not supported by the current MVP.", severity: "material", scope: "capability", source: "domain_activation", references: [], limitations: [], remediationOperations: [], evidenceReferences: [] }, secondaryBlockers: blockers.slice(1), limitations: concept.limitations.map((item) => item.code), remediationOperations: [], physicalColumns: [], canonicalSignals: [concept.conceptId], sourceId: artifact.sourceBoundary?.sourceId ?? artifact.canonicalSource.physical.sourceProfile.source.sourceId, sheetOrTable: artifact.canonicalSource.physical.sourceProfile.source.sheet ?? null, evidence: concept.evidence.map((item) => ({ evidenceId: item.evidenceId, references: [...item.references], provenance: item.provenance })), decisionUseRestrictions: [], artifactIdentity: artifact.identity, overlayIdentity: artifact.overlayIdentity, advertisedAsDefault: false, rank: null });
   }
   const counts = emptyCounts();
   analyses.forEach((item) => { counts[item.state] += 1; });
-  return { schemaVersion: CANONICAL_CONSUMER_PRESENTATION_VERSION, artifactIdentity: artifact.identity, overlayIdentity: artifact.overlayIdentity, datasetStateIdentity: artifact.datasetStateIdentity, sourceId: artifact.sourceBoundary?.sourceId ?? artifact.canonicalSource.physical.sourceProfile.source.sourceId, datasetState: options.stale ? "stale" : "understood", datasetBlockers: [], counts, analyses, prohibitedUses: unique(analyses.flatMap((item) => item.decisionUseRestrictions.map((restriction) => restriction.code))) };
+  return { schemaVersion: CANONICAL_CONSUMER_PRESENTATION_VERSION, artifactIdentity: artifact.identity, overlayIdentity: artifact.overlayIdentity, datasetStateIdentity: artifact.datasetStateIdentity, sourceId: artifact.sourceBoundary?.sourceId ?? artifact.canonicalSource.physical.sourceProfile.source.sourceId, datasetState: options.stale ? "stale" : "understood", datasetBlockers: [], counts, analyses, prohibitedUses: unique(analyses.flatMap((item) => item.decisionUseRestrictions.map((restriction) => restriction.code))), understanding: understandingPresentation(artifact) };
 }

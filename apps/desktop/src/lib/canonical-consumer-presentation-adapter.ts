@@ -79,8 +79,8 @@ export function projectCanonicalArtifactToUnderstandingNext(artifact: CanonicalC
     executionScope: "full_local_file" as const,
     caveats: question.limitations.map((item) => item.code),
   }));
-  const availableActions = defaultQuestions.flatMap((question) => {
-    const action = toAction(question.id);
+  const availableActions = questionGeneration.candidateQuestions.flatMap((question) => {
+    const action = toAction(question.questionId);
     return action ? [action] : [];
   });
   const lensQuestions = questionGeneration.candidateQuestions.map((question) => ({

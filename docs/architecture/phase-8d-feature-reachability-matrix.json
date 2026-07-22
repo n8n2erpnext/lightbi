@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "lightbi.phase8d.feature-reachability-matrix.v1",
+  "scope": "current commerce/distribution MVP",
+  "summary": {"reachable_and_operable": 28, "visible_but_not_operable": 0, "internal_only_not_product_supported": 0, "unsupported_mvp": 1, "operable_but_not_discoverable": 0, "stale_or_legacy_surface": 0, "unable_to_determine": 0},
+  "requiredFamilies": {
+    "revenue": "reachable_and_operable",
+    "delivery": "reachable_and_operable",
+    "conditional_gross_profit_source_local": "reachable_and_operable",
+    "inventory_snapshot": "reachable_and_operable",
+    "conditional_gross_profit_multi_source": "reachable_and_operable"
+  },
+  "zeroDeadEndGate": true,
+  "blockers": [],
+  "restrictions": ["commerce_distribution_mvp_only", "sales_accounting_identity_reconciliation_only", "cross_source_measure_join_prohibited", "generic_multisource_bi_not_claimed"],
+  "classification": "all_supported_features_reachable"
+}
