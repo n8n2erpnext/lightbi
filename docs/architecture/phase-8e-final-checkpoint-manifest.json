@@ -1,0 +1,200 @@
+{
+  "schemaVersion": "lightbi.phase8e.final-checkpoint-manifest.v1",
+  "scope": "Phase 8E repository checkpoint closure only",
+  "inspection": {
+    "branch": "main",
+    "head": "1ebf60b1ced9b31b104a3de972b172c1c8052436",
+    "headParent": "7bab14aa25426b315b79618de6b4da87a51b05bf",
+    "headTree": "580756054d32c170023b96d78861986d3ca9a62b",
+    "phase8D1Checkpoint": "eb93cefeaa779bb43ccf08e77d98dea414436d0a",
+    "inspectionDescendant": "7bab14aa25426b315b79618de6b4da87a51b05bf",
+    "safetyBranch": "phase-8e-safety-eb93cef",
+    "implementationAlreadyFullyCommitted": true,
+    "duplicateImplementationCommitCreated": false,
+    "trackedChangesAtInspection": [],
+    "unrelatedTrackedChanges": [],
+    "unrelatedUntrackedChanges": [],
+    "excludedUntrackedArtifactsOnly": true
+  },
+  "checkpoint": {
+    "parentSha": "7bab14aa25426b315b79618de6b4da87a51b05bf",
+    "commitSha": "1ebf60b1ced9b31b104a3de972b172c1c8052436",
+    "treeSha": "580756054d32c170023b96d78861986d3ca9a62b",
+    "commitMessage": "refactor(mvp): separate phase 8 production architecture",
+    "committedFileCount": 44,
+    "descendsFromPhase8D1": true,
+    "phase8D1ToCheckpointDiffPathCount": 46,
+    "phase8D1ToCheckpointInsertions": 4492,
+    "phase8D1ToCheckpointDeletions": 4254,
+    "phase8D1ToCheckpointBinaryDiffSha256": "ac569d647614ef3aee204dc9acbd5a4dc96905019158125be897b24d56be4d28"
+  },
+  "committedFiles": [
+    "apps/desktop/src/components/advanced/AdvancedWorkspaceView.tsx",
+    "apps/desktop/src/components/home/HomeDataPreviewDialog.tsx",
+    "apps/desktop/src/components/home/HomePlanningDialogs.tsx",
+    "apps/desktop/src/components/home/HomeResultView.tsx",
+    "apps/desktop/src/components/home/HomeSessionHistoryPanel.tsx",
+    "apps/desktop/src/components/home/HomeSourcePickerMenu.tsx",
+    "apps/desktop/src/components/home/HomeWorkspaceView.tsx",
+    "apps/desktop/src/components/investigation/InvestigationBAReadouts.tsx",
+    "apps/desktop/src/components/investigation/InvestigationDeepAnalysis.tsx",
+    "apps/desktop/src/components/investigation/InvestigationDiagnostics.tsx",
+    "apps/desktop/src/components/investigation/InvestigationDrillThroughPanel.tsx",
+    "apps/desktop/src/components/investigation/InvestigationSemanticContext.tsx",
+    "apps/desktop/src/hooks/useAdvancedMutationActions.ts",
+    "apps/desktop/src/hooks/useAdvancedResultTransferActions.ts",
+    "apps/desktop/src/hooks/useHomeOnlineSourceIntake.ts",
+    "apps/desktop/src/hooks/useHomePlanningWorkflow.ts",
+    "apps/desktop/src/hooks/useHomeQuestionApi.ts",
+    "apps/desktop/src/hooks/useHomeSourcePicker.ts",
+    "apps/desktop/src/hooks/useHomeWorkspaceSessions.ts",
+    "apps/desktop/src/lib/advanced-command-palette.ts",
+    "apps/desktop/src/lib/advanced-provider-support.ts",
+    "apps/desktop/src/lib/home-presentation.ts",
+    "apps/desktop/src/lib/home-source-boundary.ts",
+    "apps/desktop/src/lib/home-workspace-persistence.ts",
+    "apps/desktop/src/lib/phase-8e-architecture.test.ts",
+    "apps/desktop/src/lib/understanding-core/phase-6b-governance.test.ts",
+    "apps/desktop/src/lib/understanding-core/phase-8d1-production-ui-flow.test.tsx",
+    "apps/desktop/src/pages/Advanced.tsx",
+    "apps/desktop/src/pages/Home.tsx",
+    "apps/desktop/src/pages/Investigation.tsx",
+    "docs/architecture/phase-8e-advanced-separation-audit.json",
+    "docs/architecture/phase-8e-baseline-file-and-responsibility-inventory.json",
+    "docs/architecture/phase-8e-behavioral-parity-audit.json",
+    "docs/architecture/phase-8e-code-separation-and-cleanup-closure.md",
+    "docs/architecture/phase-8e-dead-legacy-code-disposition-audit.json",
+    "docs/architecture/phase-8e-dependency-graph-audit.json",
+    "docs/architecture/phase-8e-final-file-size-audit.json",
+    "docs/architecture/phase-8e-home-separation-audit.json",
+    "docs/architecture/phase-8e-investigation-separation-audit.json",
+    "docs/architecture/phase-8e-negative-probe-audit.json",
+    "docs/architecture/phase-8e-public-contract-parity-audit.json",
+    "docs/architecture/phase-8e-regression-conformance.json",
+    "docs/architecture/phase-8e-state-ownership-audit.json",
+    "docs/architecture/phase-8e-target-module-boundary-audit.json"
+  ],
+  "excludedArtifacts": [
+    {
+      "path": "LightBI-code-20260718-112845.zip",
+      "reason": "pre-existing unrelated ZIP archive"
+    },
+    {
+      "path": "LightBI-code-docs-20260710-091720.zip",
+      "reason": "pre-existing unrelated ZIP archive"
+    },
+    {
+      "path": "logs/dev-backend.pid",
+      "reason": "local runtime PID file"
+    },
+    {
+      "path": "releases/",
+      "reason": "pre-existing local release artifacts"
+    }
+  ],
+  "lineCounts": {
+    "pages": {
+      "apps/desktop/src/pages/Home.tsx": 789,
+      "apps/desktop/src/pages/Investigation.tsx": 799,
+      "apps/desktop/src/pages/Advanced.tsx": 770
+    },
+    "extractedModules": {
+      "apps/desktop/src/components/advanced/AdvancedWorkspaceView.tsx": 685,
+      "apps/desktop/src/components/home/HomeDataPreviewDialog.tsx": 31,
+      "apps/desktop/src/components/home/HomePlanningDialogs.tsx": 46,
+      "apps/desktop/src/components/home/HomeResultView.tsx": 65,
+      "apps/desktop/src/components/home/HomeSessionHistoryPanel.tsx": 62,
+      "apps/desktop/src/components/home/HomeSourcePickerMenu.tsx": 22,
+      "apps/desktop/src/components/home/HomeWorkspaceView.tsx": 925,
+      "apps/desktop/src/components/investigation/InvestigationBAReadouts.tsx": 163,
+      "apps/desktop/src/components/investigation/InvestigationDeepAnalysis.tsx": 33,
+      "apps/desktop/src/components/investigation/InvestigationDiagnostics.tsx": 77,
+      "apps/desktop/src/components/investigation/InvestigationDrillThroughPanel.tsx": 47,
+      "apps/desktop/src/components/investigation/InvestigationSemanticContext.tsx": 20,
+      "apps/desktop/src/hooks/useAdvancedMutationActions.ts": 279,
+      "apps/desktop/src/hooks/useAdvancedResultTransferActions.ts": 360,
+      "apps/desktop/src/hooks/useHomeOnlineSourceIntake.ts": 73,
+      "apps/desktop/src/hooks/useHomePlanningWorkflow.ts": 100,
+      "apps/desktop/src/hooks/useHomeQuestionApi.ts": 31,
+      "apps/desktop/src/hooks/useHomeSourcePicker.ts": 86,
+      "apps/desktop/src/hooks/useHomeWorkspaceSessions.ts": 250,
+      "apps/desktop/src/lib/advanced-command-palette.ts": 82,
+      "apps/desktop/src/lib/advanced-provider-support.ts": 53,
+      "apps/desktop/src/lib/home-presentation.ts": 27,
+      "apps/desktop/src/lib/home-source-boundary.ts": 41,
+      "apps/desktop/src/lib/home-workspace-persistence.ts": 63
+    },
+    "extractedModulesAbove1000": 0,
+    "documentedModuleAbove800": {
+      "path": "apps/desktop/src/components/home/HomeWorkspaceView.tsx",
+      "lines": 925,
+      "responsibility": "single controlled presentation tree for the existing Home workspace"
+    }
+  },
+  "retainedEvidence": {
+    "completeUnderstandingCore": {
+      "filesPassed": 78,
+      "filesTotal": 78,
+      "logPath": "/tmp/phase8e-understanding-core-matrix.log",
+      "logSha256": "1089bb35510b3a477556f9978bea2428b356e8be6180412aad364482ca44b697"
+    },
+    "finalFullDesktopSuite": {
+      "runCount": 1,
+      "testsPassed": 1169,
+      "testsTotal": 1178,
+      "governedFailures": 9,
+      "unexpectedFailures": 0,
+      "phase8EOwnedFailures": 0,
+      "logPath": "/tmp/phase8e-final-full-desktop.log",
+      "logSha256": "02e5a1a5084d4924fa2de06b032d067db235da7716e393fca8472fc2d9fd487d"
+    },
+    "governedAllowlistSha256": "baa86950582b7d758396abb0c69fdaffcd3c2cbbb22b71dd3bbdb3c0aed1c4f5"
+  },
+  "architectureEvidence": {
+    "secondCanonicalStateOwner": false,
+    "publicAndPersistedContractsChanged": false,
+    "dependencyBoundaryChecks": "pass",
+    "legacyFusionProductionReachable": false,
+    "visualRedesignStarted": false
+  },
+  "lightweightPostCheckpointVerification": {
+    "typescript": "pass_zero_diagnostics",
+    "dependencyAndReachability": {
+      "files": 3,
+      "tests": 15,
+      "status": "pass"
+    },
+    "phase8A": {
+      "tests": 4,
+      "status": "pass"
+    },
+    "phase8B": {
+      "tests": 3,
+      "status": "pass"
+    },
+    "phase8C": {
+      "tests": 9,
+      "status": "pass"
+    },
+    "phase8D1Multisource": {
+      "tests": 4,
+      "status": "pass_isolated_test_identities"
+    },
+    "pagePersistenceExportParity": {
+      "files": 5,
+      "tests": 47,
+      "status": "pass"
+    },
+    "architectureJsonParsing": "pass",
+    "canonicalImportReachability": "pass",
+    "diffCheck": "pass",
+    "unexpectedFailures": 0
+  },
+  "finalRepositoryProof": {
+    "trackedWorktreeCleanAfterClosureCommit": true,
+    "indexCleanAfterClosureCommit": true,
+    "excludedUntrackedArtifactsRemain": true
+  },
+  "pushOccurred": false,
+  "classification": "phase8_codebase_clean_ready_for_visual_ui_design"
+}
