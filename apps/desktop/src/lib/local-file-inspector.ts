@@ -11,6 +11,7 @@ import { aggregateContextualEvidence } from './understanding-core/contextual-evi
 import { resolveSemanticShadow } from './understanding-core/semantic-resolver';
 import { generateGrainCandidateArtifact } from './understanding-core/grain-candidate-engine';
 import { resolveGrainSignatureShadow } from './understanding-core/grain-resolver';
+import { browserSha256 } from './browser-sha256';
 
 const FULL_ANALYSIS_ROW_LIMIT = 20_000;
 
@@ -46,10 +47,8 @@ function retainAnalysisRows<T>(rows: T[]): T[] | undefined {
   return rows.length <= FULL_ANALYSIS_ROW_LIMIT ? rows : undefined;
 }
 
-async function fileSha256(file: File): Promise<string> {
-  const bytes = await file.arrayBuffer();
-  const hash = await crypto.subtle.digest('SHA-256', bytes);
-  return [...new Uint8Array(hash)].map(value => value.toString(16).padStart(2, '0')).join('');
+async function fileSha256(file: File, bytes?: ArrayBuffer): Promise<string> {
+  return browserSha256(bytes ?? await file.arrayBuffer());
 }
 
 function createCanonicalFullFileProfile(args: {
@@ -130,17 +129,38 @@ export async function inspectLocalFile(
   } catch (err: any) {
     if (options.signal?.aborted || err?.name === "AbortError") throw err;
     console.error("Local file inspection error:", err);
+    const extension = file.name.includes(".") ? file.name.slice(file.name.lastIndexOf(".")).toLowerCase() : "";
+    const parser = candidate.sourceType === "local_xlsx" || candidate.sourceType === "local_xls"
+      ? "sheetjs"
+      : candidate.sourceType === "local_json"
+        ? "json"
+        : candidate.sourceType === "local_csv" || candidate.sourceType === "local_tsv" || candidate.sourceType === "local_txt"
+          ? "delimited_text"
+          : "unknown";
     return {
       status: "invalid_format",
       sourceType: candidate.sourceType,
-      message: `Failed to parse file: ${err.message}`
+      label: file.name,
+      message: `Failed to parse file: ${err.message}`,
+      diagnostic: {
+        fileName: file.name,
+        extension,
+        mimeType: file.type || "application/octet-stream",
+        byteSize: file.size,
+        fileObjectAvailable: true,
+        parser,
+        workerRequestId: null,
+        exceptionName: err instanceof Error ? err.name : "Error",
+        exceptionMessage: err instanceof Error ? err.message : String(err),
+        exceptionStack: err instanceof Error ? err.stack : undefined,
+      },
     };
   }
 }
 
 async function inspectExcel(file: File, candidate: SourceCandidate, signal?: AbortSignal): Promise<SourceInspectionResult> {
   const buffer = await file.arrayBuffer();
-  const fingerprint = await fileSha256(file);
+  const fingerprint = await fileSha256(file, buffer);
   signal?.throwIfAborted();
   // Read workbook without cell dates to prevent parsing issues, keep it fast.
   const workbook = XLSX.read(buffer, { type: "array" });

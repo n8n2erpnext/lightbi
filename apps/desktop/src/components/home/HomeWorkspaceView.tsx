@@ -406,7 +406,7 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                         <h3 className="text-[13px] font-semibold text-[#202123]">
                           {pendingLocalBatch.isRestored ? "Choose dataset group" :
                            pendingLocalBatch.status === "reading" ? `Inspecting ${pendingLocalBatch.files.length} files...` :
-                           pendingLocalBatch.status === "error" ? "Inspection failed" : `${pendingLocalBatch.files.length} file${pendingLocalBatch.files.length === 1 ? '' : 's'} ready`}
+                           pendingLocalBatch.status === "error" ? "Inspection failed" : `${pendingLocalBatch.results.filter((item: any) => item?.status === "accessible").length} file${pendingLocalBatch.results.filter((item: any) => item?.status === "accessible").length === 1 ? '' : 's'} ready`}
                         </h3>
                         {!pendingLocalBatch.isRestored && pendingLocalBatch.files.length > 0 && (
                           <p className="truncate text-[12px] text-black/45">
@@ -429,9 +429,27 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                   )}
 
                   {pendingLocalBatch.status === "error" && (
-                    <div className="text-[13px] text-red-600 bg-red-50 p-3 rounded-lg border border-red-100 flex justify-between items-center">
-                      <p>Failed to read some files.</p>
+                    <div className="text-[13px] text-red-600 bg-red-50 p-3 rounded-lg border border-red-100 flex justify-between items-center gap-4">
+                      <div>
+                        <p className="font-medium">Failed to read the selected files.</p>
+                        {pendingLocalBatch.results.filter((item: any) => item && item.status !== "accessible").map((item: any, index: number) => (
+                          <p key={`${item.label ?? "file"}-${index}`} className="mt-1 break-words">
+                            {item.label ?? pendingLocalBatch.files[index]?.name ?? "File"}: {item.message}
+                          </p>
+                        ))}
+                      </div>
                       <button onClick={handleCancelInspection} className="px-3 py-1.5 bg-white text-red-700 border border-red-200 rounded-md shadow-sm font-medium hover:bg-red-50 transition-colors">Dismiss</button>
+                    </div>
+                  )}
+
+                  {pendingLocalBatch.status === "ready" && pendingLocalBatch.results.some((item: any) => item?.status !== "accessible") && (
+                    <div className="text-[13px] text-amber-800 bg-amber-50 p-3 rounded-lg border border-amber-200">
+                      <p className="font-medium">Some files were skipped; valid files remain available.</p>
+                      {pendingLocalBatch.results.map((item: any, index: number) => item?.status === "accessible" ? null : (
+                        <p key={`${item?.label ?? pendingLocalBatch.files[index]?.name ?? "file"}-${index}`} className="mt-1 break-words">
+                          {item?.label ?? pendingLocalBatch.files[index]?.name ?? "File"}: {item?.message ?? "Could not inspect this file."}
+                        </p>
+                      ))}
                     </div>
                   )}
 

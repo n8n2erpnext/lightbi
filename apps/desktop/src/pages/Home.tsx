@@ -413,7 +413,10 @@ export const Home: React.FC = () => {
       )).catch(error => {
         if (inspectionRun.signal.aborted) throw error;
         return {
-          status: 'not_found', sourceType: candidateOrError.sourceType, label: candidateOrError.label, message: "Error reading file."
+          status: 'not_found',
+          sourceType: candidateOrError.sourceType,
+          label: file.name,
+          message: error instanceof Error ? error.message : "Error reading file."
         } as SourceInspectionResult;
       });
     });

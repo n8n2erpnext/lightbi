@@ -92,8 +92,21 @@ export type SourceInspectionResult =
   | {
       status: "invalid_format";
       sourceType?: SourceType;
+      label?: string;
       message: string;
       expectedFormat?: string;
+      diagnostic?: {
+        fileName: string;
+        extension: string;
+        mimeType: string;
+        byteSize: number;
+        fileObjectAvailable: boolean;
+        parser: "sheetjs" | "delimited_text" | "json" | "unknown";
+        workerRequestId: null;
+        exceptionName: string;
+        exceptionMessage: string;
+        exceptionStack?: string;
+      };
     }
   | {
       status: "access_denied";
