@@ -11,7 +11,7 @@ import { useDisplayPreferences } from '../stores/display-preferences-store';
 import { Settings2 } from 'lucide-react';
 import { DisplayPreferencesModal } from '../components/settings/DisplayPreferencesModal';
 import { DatasetInsightSummary } from '../components/analysis/DatasetInsightSummary';
-import { createBADecisionBrief, createPreExecutionBADecisionBrief } from '../lib/ba-decision-engine';
+import { createBADecisionBrief } from '../lib/ba-decision-engine';
 import { BasicBAAnswerCard } from '../components/investigation/InvestigationBAReadouts';
 import { InvestigationDiagnostics } from '../components/investigation/InvestigationDiagnostics';
 import { InvestigationDrillThroughPanel } from '../components/investigation/InvestigationDrillThroughPanel';
@@ -34,7 +34,7 @@ import { sourceBindingsMatch } from '../lib/understanding-core/canonical-source-
 import { getLatestCanonicalConsumerArtifact, validateCanonicalInvestigationHandoff } from '../lib/understanding-core/canonical-consumer-boundary';
 import { validateCanonicalMultiSourceInvestigationHandoff, type CanonicalMultiSourceInvestigationHandoffV1 } from '../lib/understanding-core/canonical-multisource-boundary';
 import { executeCanonicalMultiSourceMetric } from '../lib/understanding-core/governed-multisource-duckdb-boundary';
-
+import { formatValue } from '../lib/display-formatter';
 const INVESTIGATION_SESSION_ROW_LIMIT = 250;
 
 function limitInvestigationRows(rows: Record<string, unknown>[] | undefined): Record<string, unknown>[] {
@@ -211,27 +211,18 @@ export const Investigation: React.FC = () => {
     navigate('/', { state: saved?.id ? { restoreWorkspaceSessionId: saved.id } : null });
   };
 
-  const readinessTier = aiBriefing?.readinessTier ?? 'exploratory_only';
-  const isHighReadiness = readinessTier === 'production_ready' || readinessTier === 'decision_support';
-  const isLowReadiness = readinessTier === 'exploratory_only';
-  const readinessLabel = isHighReadiness
-    ? 'High Readiness'
-    : isLowReadiness
-      ? 'Low Readiness (Exploratory Only)'
-      : 'Moderate Readiness (Caution)';
-  const readinessClass = isHighReadiness
-    ? 'text-emerald-600'
-    : isLowReadiness
-      ? 'text-red-600'
-      : 'text-amber-600';
-  const readinessBannerClass = isLowReadiness
-    ? 'bg-red-50 border-red-200 text-red-800'
-    : 'bg-amber-50 border-amber-200 text-amber-800';
-  const readinessIconClass = isLowReadiness ? 'text-red-500' : 'text-amber-500';
-  const briefingRationale = aiBriefing?.caveats?.length
-    ? aiBriefing.caveats.join(' ')
-    : `Readiness score: ${aiBriefing?.readinessScore ?? 0}`;
-  const safeActionHints = aiBriefing?.safeActionHints ?? [];
+  const readinessTier = staleHandoffBlockers.length > 0
+    ? 'stale'
+    : handoffCanExecute
+      ? 'runtime_preflight_ready'
+      : 'runtime_preflight_blocked';
+  const readinessClass = handoffCanExecute ? 'text-emerald-600' : 'text-amber-600';
+  const briefingRationale = staleHandoffBlockers.length > 0
+    ? 'The source or overlay identity changed after this handoff was created.'
+    : handoffCanExecute
+      ? 'The exact selected action passed the governed M3 runtime preflight.'
+      : `Runtime preflight blockers: ${canonicalHandoff?.blockers.join(', ') || 'canonical_handoff_required'}.`;
+  const safeActionHints = handoffCanExecute ? [analysisAction.opportunityName] : [];
   const safeSqlPreview: SafeSqlPreview = canonicalHandoff?.queryPlanning.state === 'planned'
     ? {
       id: `sql_${canonicalHandoff.queryPlanning.plan.planId}`,
@@ -261,7 +252,7 @@ export const Investigation: React.FC = () => {
       blockedReasons: canonicalHandoff?.blockers.length ? [...canonicalHandoff.blockers] : ['canonical_handoff_required'],
       source: 'runtime_plan_preview',
     };
-  const baDecisionBrief = previewResult
+  const baDecisionBrief = previewResult?.status === 'executed'
     ? createBADecisionBrief({
       datasetId: session.datasetId,
       previewResult,
@@ -269,13 +260,25 @@ export const Investigation: React.FC = () => {
       aiBriefing,
       runtimeIntent
     })
-    : createPreExecutionBADecisionBrief({
-      datasetId: session.datasetId,
-      rows,
-      aiBriefing,
-      runtimeIntent,
-      rowScope
-    });
+    : null;
+  const governedResultValues = previewResult?.status === 'executed' && session.canonicalExecutionResult
+    ? session.canonicalExecutionResult.rows.map((row) => Number(row[session.canonicalExecutionResult!.metricId]))
+    : [];
+  const canonicalFullScopeTotal = session.canonicalExecutionResult?.groundTruthComparison.actual;
+  const governedResultTotal = previewResult?.status === 'executed' && typeof canonicalFullScopeTotal === 'number' && Number.isFinite(canonicalFullScopeTotal)
+    ? canonicalFullScopeTotal
+    : governedResultValues.length > 0 && governedResultValues.every(Number.isFinite)
+      ? governedResultValues.reduce((sum, value) => sum + value, 0) : null;
+  const governedResultCurrency = session.canonicalMultiSourceExecutionResult?.evidence?.currency ?? null;
+  const governedResultTotalLabel = governedResultTotal === null
+    ? null
+    : governedResultCurrency
+      ? new Intl.NumberFormat(preferences.locale, {
+        style: 'currency',
+        currency: governedResultCurrency,
+        maximumFractionDigits: 2,
+      }).format(governedResultTotal)
+      : formatValue(governedResultTotal, 'number', preferences, { compact: false });
 
   const saveChartToLibrary = async () => {
     if (!chartModel || chartModel.status !== 'ready') return;
@@ -549,18 +552,6 @@ export const Investigation: React.FC = () => {
       </header>
 
       <main className="mx-auto flex w-full max-w-[1180px] flex-1 flex-col gap-5 p-5 pb-24 md:p-8">
-        {aiBriefing && !isHighReadiness && (
-          <div className={`flex items-start gap-3 rounded-lg border p-4 ${readinessBannerClass}`}>
-            <AlertTriangle className={`w-5 h-5 flex-shrink-0 mt-0.5 ${readinessIconClass}`} />
-            <div>
-              <h3 className="font-semibold text-sm">
-                {readinessLabel}
-              </h3>
-              <p className="text-xs mt-1 opacity-90">{briefingRationale}</p>
-            </div>
-          </div>
-        )}
-
         {aiBriefing && <InvestigationSemanticContext
           briefing={aiBriefing}
           briefingRationale={briefingRationale}
@@ -705,6 +696,16 @@ export const Investigation: React.FC = () => {
              {savedChartNotice && (
                <div className="mt-3 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-medium text-emerald-700">
                  {savedChartNotice}
+               </div>
+             )}
+
+             {governedResultTotal !== null && session.canonicalExecutionResult && (
+               <div data-testid="governed-result-summary" className="mt-4 rounded-[14px] border border-emerald-200 bg-emerald-50 p-4 text-emerald-950">
+                 <p className="text-[11px] font-semibold uppercase tracking-wide">Governed result total</p>
+                 <p className="mt-1 text-2xl font-semibold">{governedResultTotalLabel}</p>
+                 <p className="mt-1 text-xs text-emerald-900/70">
+                   {session.canonicalExecutionResult.metricId} across {governedResultValues.length.toLocaleString()} governed result group{governedResultValues.length === 1 ? '' : 's'}.
+                 </p>
                </div>
              )}
 

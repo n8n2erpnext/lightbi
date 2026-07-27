@@ -1,0 +1,77 @@
+{
+  "schemaVersion": "lightbi.phase8f.source-local-journey-audit.v1",
+  "servedApplication": "http://127.0.0.1:5176/",
+  "journeys": [
+    {
+      "family": "revenue",
+      "source": "sample-corpus/anchors/1.3.0/Sales_ERP_May_2026.xlsx",
+      "sourceFingerprint": "e2cad91d",
+      "artifactId": "canonical-consumer:93a866",
+      "overlayId": null,
+      "metricId": "sales_revenue",
+      "actionId": "runtime-action:68a5bc",
+      "queryPlanId": "metric-plan:f1bf36",
+      "executionScope": "full_file",
+      "fullSourceRows": 1500,
+      "displayRows": 100,
+      "expected": 22973896244,
+      "actual": 22973896244,
+      "screenshot": "/tmp/phase8f-revenue-final.png",
+      "status": "pass"
+    },
+    {
+      "family": "delivery",
+      "source": "sample-corpus/anchors/1.3.0/Logistics_ERP_May_2026.csv",
+      "sourceFingerprint": "e093e56",
+      "artifactId": "canonical-consumer:5e6a2e",
+      "overlayId": null,
+      "metricId": "delivery_count",
+      "actionId": "runtime-action:6e8bfe",
+      "queryPlanId": "metric-plan:9bcf57",
+      "executionScope": "full_file",
+      "fullSourceRows": 1500,
+      "displayRows": 1,
+      "expected": 1500,
+      "actual": 1500,
+      "screenshot": "/tmp/phase8f-delivery-final.png",
+      "status": "pass"
+    },
+    {
+      "family": "inventory",
+      "source": "sample-corpus/versions/1.3.0/derived/derived-inventory-snapshot-may.csv",
+      "sourceFingerprint": "92d32c",
+      "artifactId": "canonical-consumer:9e3fb3",
+      "overlayId": "canonical-overlay:09b07b",
+      "metricId": "inventory_on_hand",
+      "actionId": "runtime-action:7721d2",
+      "queryPlanId": "metric-plan:979b60",
+      "executionScope": "full_file",
+      "fullSourceRows": 1266,
+      "displayRows": 1,
+      "expected": 211067,
+      "actual": 211067,
+      "screenshot": "/tmp/phase8f-inventory-verified.png",
+      "status": "pass"
+    },
+    {
+      "family": "quantity_sold",
+      "source": "sample-corpus/anchors/1.3.0/Sales_ERP_May_2026.xlsx",
+      "expected": "explanation_only_when_physical_UOM_evidence_is_absent",
+      "actual": "blocked_by_M1_M2_M3_with_scoped_UOM_requirement",
+      "advertisedRunnable": false,
+      "status": "correctly_blocked"
+    },
+    {
+      "family": "transaction_count",
+      "source": "sample-corpus/anchors/1.3.0/Sales_ERP_May_2026.xlsx",
+      "expected": "explanation_only_until_document_identity_and_grain_requirements_pass",
+      "actual": "not_advertised_runnable_on_this_source",
+      "advertisedRunnable": false,
+      "status": "correctly_blocked"
+    }
+  ],
+  "exactOracleFamiliesPassed": 3,
+  "correctGovernedBlocks": 2,
+  "falseExecutableActions": 0,
+  "status": "pass"
+}

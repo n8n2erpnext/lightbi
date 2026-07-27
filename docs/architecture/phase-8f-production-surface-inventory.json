@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "lightbi.phase8f.production-surface-inventory.v1",
+  "surfaces": [
+    {"route":"/","component":"Home","owner":"canonical dataset workspace","functions":["import","inspect","mapping review","evidence review","multi-source builder","ranked analyses","session restore"],"truth":"canonical presentation only"},
+    {"route":"/investigation","component":"Investigation","owner":"governed action handoff and runtime result","functions":["M3 state","execute","retry","chart","table","evidence","restrictions","drill-through","export","return"],"truth":"current session and governed result"},
+    {"route":"/advanced","component":"Advanced","owner":"Advanced read-only/data workspace boundary","functions":["manual open","complete/partial source handoff","database session"],"truth":"explicit completeness; no auto-open"},
+    {"route":"/datasets","component":"Datasets","owner":"canonical workspace projection","functions":["dataset navigation"],"truth":"no competing builder"},
+    {"route":"/sources","component":"DataSources","owner":"canonical source projection","functions":["source navigation"],"truth":"source-bound facts"},
+    {"route":"/charts","component":"Charts","owner":"saved governed results","functions":["saved chart access"],"truth":"result identity required"},
+    {"route":"/decision-briefs","component":"DecisionBriefs","owner":"saved governed briefs","functions":["brief access"],"truth":"post-execution evidence only"}
+  ],
+  "removedOrDisconnected": [
+    "Home DataQualityCard",
+    "Home DecisionTrustReportCard",
+    "Home DatasetUnderstandingCard",
+    "Home BusinessFusionOpportunityCard",
+    "mock recent-insight list",
+    "legacy business-fusion constructor and executor",
+    "pre-execution BA decision narrative"
+  ],
+  "duplicateDatasetTruthOwners": 0,
+  "duplicateRelationshipBuilders": 0,
+  "inertProductionControlsDetected": 0,
+  "status": "pass"
+}

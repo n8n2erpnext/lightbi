@@ -23,14 +23,14 @@ type Props = {
 export const CanonicalEvidenceReview: React.FC<Props> = ({ artifact, overlay, rebuildState, onChange, target }) => {
   const boundary = artifact.sourceBoundary;
   const detailsRef = useRef<HTMLDetailsElement>(null);
-  const [currency, setCurrency] = useState("VND");
+  const [currency, setCurrency] = useState("");
   const [moneyColumns, setMoneyColumns] = useState("");
   const [periodStart, setPeriodStart] = useState("");
   const [periodEnd, setPeriodEnd] = useState("");
-  const [role, setRole] = useState("unknown_other");
+  const [role, setRole] = useState("");
   const [quantityColumn, setQuantityColumn] = useState("");
   const [uomColumn, setUomColumn] = useState("");
-  const [uom, setUom] = useState("EA");
+  const [uom, setUom] = useState("");
   const [asOfColumn, setAsOfColumn] = useState("");
   const [asOfDate, setAsOfDate] = useState("");
   const [itemColumn, setItemColumn] = useState("");
@@ -70,7 +70,7 @@ export const CanonicalEvidenceReview: React.FC<Props> = ({ artifact, overlay, re
     if (periodStart || periodEnd) next = appendCanonicalEvidenceDeclaration(next, boundary, { evidenceType: "reporting_period", value: { kind: "reporting_period", start: periodStart, end: periodEnd }, scope: { level: "source_file" } });
     const scopedMoney = moneyColumns.split(",").map((item) => item.trim()).filter(Boolean);
     if (currency.trim() && scopedMoney.length) next = appendCanonicalEvidenceDeclaration(next, boundary, { evidenceType: "reporting_currency", value: { kind: "reporting_currency", currency, monetaryColumns: scopedMoney }, scope: { level: "source_file" } });
-    next = appendCanonicalEvidenceDeclaration(next, boundary, { evidenceType: "source_role", value: { kind: "source_role", role: role as "sales" | "accounting" | "logistics" | "inventory_snapshot" | "inventory_movement" | "unknown_other" }, scope: { level: "source_file" } });
+    if (role) next = appendCanonicalEvidenceDeclaration(next, boundary, { evidenceType: "source_role", value: { kind: "source_role", role: role as "sales" | "accounting" | "logistics" | "inventory_snapshot" | "inventory_movement" }, scope: { level: "source_file" } });
     if (quantityColumn && uomColumn && uom) next = appendCanonicalEvidenceDeclaration(next, boundary, { evidenceType: "unit_of_measure", value: { kind: "unit_of_measure", unit: uom, quantityColumn, uomColumn }, scope: { level: "canonical_signal_binding", physicalColumn: quantityColumn, canonicalSignal: "stock_qty" } });
     if (asOfColumn && asOfDate) next = appendCanonicalEvidenceDeclaration(next, boundary, { evidenceType: "snapshot_as_of_date", value: { kind: "snapshot_as_of_date", date: asOfDate, physicalColumn: asOfColumn }, scope: { level: "physical_column", physicalColumn: asOfColumn } });
     if (itemColumn) next = appendCanonicalEvidenceDeclaration(next, boundary, { evidenceType: "item_identity", value: { kind: "item_identity", physicalColumn: itemColumn }, scope: { level: "canonical_signal_binding", physicalColumn: itemColumn, canonicalSignal: "sku" } });
@@ -125,14 +125,14 @@ export const CanonicalEvidenceReview: React.FC<Props> = ({ artifact, overlay, re
         </div>}
 
         <div className="grid gap-3 md:grid-cols-2">
-          <label tabIndex={-1} data-remediation-target="open_currency_declaration" className="text-[12px] text-gray-600">Reporting currency<input value={currency} onChange={(event) => setCurrency(event.target.value)} className="mt-1 w-full rounded border border-gray-200 px-2 py-1.5" /></label>
+          <label tabIndex={-1} data-remediation-target="open_currency_declaration" className="text-[12px] text-gray-600">Reporting currency<input value={currency} onChange={(event) => setCurrency(event.target.value)} placeholder="Enter currency code" className="mt-1 w-full rounded border border-gray-200 px-2 py-1.5" /></label>
           <label className="text-[12px] text-gray-600">Monetary columns, comma separated<input value={moneyColumns} onChange={(event) => setMoneyColumns(event.target.value)} className="mt-1 w-full rounded border border-gray-200 px-2 py-1.5" /></label>
           <label tabIndex={-1} data-remediation-target="open_reporting_period_declaration" className="text-[12px] text-gray-600">Period start<input type="date" value={periodStart} onChange={(event) => setPeriodStart(event.target.value)} className="mt-1 w-full rounded border border-gray-200 px-2 py-1.5" /></label>
           <label className="text-[12px] text-gray-600">Period end<input type="date" value={periodEnd} onChange={(event) => setPeriodEnd(event.target.value)} className="mt-1 w-full rounded border border-gray-200 px-2 py-1.5" /></label>
-          <Select target="open_source_role_declaration" label="Source role" value={role} onChange={setRole} options={["unknown_other", "sales", "accounting", "logistics", "inventory_snapshot", "inventory_movement"]} />
+          <Select target="open_source_role_declaration" label="Source role" value={role} onChange={setRole} options={["", "sales", "accounting", "logistics", "inventory_snapshot", "inventory_movement"]} />
           <Select target="open_snapshot_declaration" label="Quantity column" value={quantityColumn} onChange={setQuantityColumn} options={["", ...columns]} />
           <Select target="open_uom_declaration" label="UOM column" value={uomColumn} onChange={setUomColumn} options={["", ...columns]} />
-          <label className="text-[12px] text-gray-600">Unit of measure<input value={uom} onChange={(event) => setUom(event.target.value)} className="mt-1 w-full rounded border border-gray-200 px-2 py-1.5" /></label>
+          <label className="text-[12px] text-gray-600">Unit of measure<input value={uom} onChange={(event) => setUom(event.target.value)} placeholder="Enter unit code" className="mt-1 w-full rounded border border-gray-200 px-2 py-1.5" /></label>
           <Select label="As-of column" value={asOfColumn} onChange={setAsOfColumn} options={["", ...columns]} />
           <label className="text-[12px] text-gray-600">Snapshot as-of date<input type="date" value={asOfDate} onChange={(event) => setAsOfDate(event.target.value)} className="mt-1 w-full rounded border border-gray-200 px-2 py-1.5" /></label>
           <Select target="open_item_identity_declaration" label="Item identity" value={itemColumn} onChange={setItemColumn} options={["", ...columns]} />

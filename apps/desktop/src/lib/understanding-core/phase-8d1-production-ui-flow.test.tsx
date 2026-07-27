@@ -12,17 +12,19 @@ const sources = [
   { key: "0:a.xlsx", name: "a.xlsx", rowCount: 1500, columns: ["OrderID", "Revenue"] },
   { key: "1:b.csv", name: "b.csv", rowCount: 1500, columns: ["OrderID", "Revenue_Credit", "COGS_Debit"] },
 ];
-const empty = (): MultiSourceDraftV1 => ({ selected: true, role: "unknown_other", documentColumn: "", periodStart: "", periodEnd: "", currency: "", monetaryColumns: "" });
+const empty = (): MultiSourceDraftV1 => ({ selected: true, role: "", documentColumn: "", periodStart: "", periodEnd: "", currency: "", monetaryColumns: "" });
 
 describe("Phase 8D.1 production multi-source UI flow", () => {
   it("requires explicit source-bound role and evidence input without filename inference", () => {
     const onChange = vi.fn();
     const onBuild = vi.fn();
-    render(<CanonicalMultiSourceReview sources={sources} drafts={{ "0:a.xlsx": empty(), "1:b.csv": empty() }} onChange={onChange} onBuild={onBuild} building={false} />);
-    expect((screen.getByLabelText("Role for a.xlsx") as HTMLSelectElement).value).toBe("unknown_other");
-    expect((screen.getByLabelText("Role for b.csv") as HTMLSelectElement).value).toBe("unknown_other");
+    const view = render(<CanonicalMultiSourceReview sources={sources} drafts={{ "0:a.xlsx": empty(), "1:b.csv": empty() }} onChange={onChange} onBuild={onBuild} building={false} />);
+    expect((screen.getByLabelText("Role for a.xlsx") as HTMLSelectElement).value).toBe("");
+    expect((screen.getByLabelText("Role for b.csv") as HTMLSelectElement).value).toBe("");
+    expect(screen.getByText("Select an explicit role for every included source. A placeholder is not source evidence.")).toBeTruthy();
     fireEvent.change(screen.getByLabelText("Role for a.xlsx"), { target: { value: "sales" } });
     expect(onChange).toHaveBeenCalledWith("0:a.xlsx", expect.objectContaining({ role: "sales" }));
+    view.rerender(<CanonicalMultiSourceReview sources={sources} drafts={{ "0:a.xlsx": { ...empty(), role: "sales" }, "1:b.csv": { ...empty(), role: "accounting" } }} onChange={onChange} onBuild={onBuild} building={false} />);
     fireEvent.click(screen.getByTestId("build-canonical-multisource"));
     expect(onBuild).toHaveBeenCalledTimes(1);
   });

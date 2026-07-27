@@ -429,7 +429,7 @@ const STATE_LABELS: Record<CanonicalAnalysisPresentationV1['state'], string> = {
   needs_user_evidence: 'Needs confirmation',
   needs_mapping_review: 'Needs mapping review',
   blocked_safety: 'Safety blocked',
-  unsupported_mvp: 'Unsupported in MVP',
+  unsupported_mvp: 'Unsupported in current MVP',
   stale: 'Stale',
   executing: 'Executing',
   execution_failed: 'Execution failed',
@@ -454,8 +454,9 @@ const CanonicalAnalysisStates: React.FC<{
     { id: 'recommended', label: 'Recommended now', items: presentation.analyses.filter(item => item.state === 'ready' && item.advertisedAsDefault).sort((a, b) => (a.rank ?? 99) - (b.rank ?? 99)) },
     { id: 'additional', label: 'Additional supported analyses', items: presentation.analyses.filter(item => item.state === 'ready' && !item.advertisedAsDefault) },
     { id: 'resolvable', label: 'Resolvable analyses', items: presentation.analyses.filter(item => item.state === 'needs_user_evidence' || item.state === 'needs_mapping_review') },
-    { id: 'blocked', label: 'Safety-blocked analyses', items: presentation.analyses.filter(item => item.state === 'blocked_safety' || item.state === 'execution_failed') },
-    { id: 'unsupported', label: 'Unsupported MVP concepts', items: presentation.analyses.filter(item => item.state === 'unsupported_mvp') },
+    { id: 'blocked', label: 'Safety-blocked analyses', items: presentation.analyses.filter(item => item.state === 'blocked_safety') },
+    { id: 'execution-failed', label: 'Execution failed', items: presentation.analyses.filter(item => item.state === 'execution_failed') },
+    { id: 'unsupported', label: 'Unsupported in current MVP', items: presentation.analyses.filter(item => item.state === 'unsupported_mvp') },
     { id: 'stale', label: 'Stale analyses', items: presentation.analyses.filter(item => item.state === 'stale') },
   ].filter(group => group.items.length > 0);
   const renderItem = (item: CanonicalAnalysisPresentationV1) => {
@@ -477,15 +478,15 @@ const CanonicalAnalysisStates: React.FC<{
         <span className="text-[10px] uppercase text-gray-400">{item.metricId}</span>
         {canInvestigate ? <button type="button" data-testid={`canonical-investigate-${item.itemId}`} onClick={() => onSelectAction?.(adaptNextActionsToLegacy([action])[0])} className="rounded border border-indigo-100 bg-indigo-50 px-2 py-1 text-[11px] font-semibold text-indigo-700 hover:bg-indigo-100">Investigate</button> : null}
         {!canInvestigate && item.remediationOperations.length > 0 ? <div className="flex flex-wrap gap-1.5">
-          {item.remediationOperations.map(operation => <button key={operation.operationId} type="button" data-testid={`canonical-remediate-${item.itemId}-${operation.kind}`} onClick={() => onRemediate?.(operation, item.itemId)} className="flex items-center gap-1 rounded border border-amber-200 bg-amber-50 px-2 py-1 text-[11px] font-semibold text-amber-800"><Wrench className="h-3 w-3" />{operation.label}</button>)}
+          {item.remediationOperations.map((operation, index) => <button key={`${operation.operationId}:${index}`} type="button" data-testid={`canonical-remediate-${item.itemId}-${operation.kind}`} onClick={() => onRemediate?.(operation, item.itemId)} className="flex items-center gap-1 rounded border border-amber-200 bg-amber-50 px-2 py-1 text-[11px] font-semibold text-amber-800"><Wrench className="h-3 w-3" />{operation.label}</button>)}
         </div> : null}
       </div>
       {(item.secondaryBlockers.length > 0 || item.limitations.length > 0 || item.evidence.length > 0 || item.decisionUseRestrictions.length > 0) && <details className="mt-2 text-[11px] text-gray-500">
-        <summary className="cursor-pointer font-medium text-gray-600">Evidence and limitations</summary>
-        {item.secondaryBlockers.map(blocker => <p key={blocker.code} className="mt-1">{blocker.message}</p>)}
-        {item.limitations.map(code => <p key={code} className="mt-1">Limitation: {humanize(code)}</p>)}
-        {item.evidence.map(entry => <p key={`${entry.evidenceId}:${entry.provenance}`} className="mt-1">Evidence: {entry.evidenceId} ({entry.provenance})</p>)}
-        {item.decisionUseRestrictions.map(restriction => <p key={restriction.code} className="mt-1">Restriction: {restriction.reason}</p>)}
+        <summary className="cursor-pointer font-medium text-gray-600">{item.state === 'unsupported_mvp' ? 'View limitation' : 'Evidence and limitations'}</summary>
+        {item.secondaryBlockers.map((blocker, index) => <p key={`${blocker.code}:${index}`} className="mt-1">{blocker.message}</p>)}
+        {item.limitations.map((code, index) => <p key={`${code}:${index}`} className="mt-1">Limitation: {humanize(code)}</p>)}
+        {item.evidence.map((entry, index) => <p key={`${entry.evidenceId}:${entry.provenance}:${index}`} className="mt-1">Evidence: {entry.evidenceId} ({entry.provenance})</p>)}
+        {item.decisionUseRestrictions.map((restriction, index) => <p key={`${restriction.code}:${index}`} className="mt-1">Restriction: {restriction.reason}</p>)}
       </details>}
     </article>;
   };

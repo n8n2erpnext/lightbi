@@ -49,4 +49,23 @@ describe("UnderstandingNextCard Phase 8C functional states", () => {
     expect(article.textContent).toContain("canonical_artifact");
     expect(article.textContent).toContain("Review evidence before deciding.");
   });
+
+  it("keeps execution failure separate from safety and unsupported states", () => {
+    const failed: CanonicalDatasetPresentationV1 = {
+      ...presentation,
+      counts: { ...presentation.counts, ready: 0, execution_failed: 1 },
+      analyses: [{
+        ...presentation.analyses[0],
+        itemId: "q:failed",
+        questionId: "q:failed",
+        state: "execution_failed",
+        executionReadiness: "not_executable",
+        advertisedAsDefault: false,
+      }],
+    };
+    render(<UnderstandingNextCard understanding={understanding} canonicalPresentation={failed} />);
+    expect(screen.getByTestId("canonical-group-execution-failed")).toBeTruthy();
+    expect(screen.queryByTestId("canonical-group-blocked")).toBeNull();
+    expect(screen.queryByTestId("canonical-group-unsupported")).toBeNull();
+  });
 });

@@ -329,7 +329,7 @@ describe('Investigation canonical consumer boundary', () => {
 
   afterEach(cleanup);
 
-  it('renders current readiness without requiring a legacy execution contract', () => {
+  it('renders canonical runtime blocking without a legacy readiness score', () => {
     mockedSession.mockReturnValue(session({
       rows: [],
       canonicalHandoff: undefined,
@@ -340,7 +340,8 @@ describe('Investigation canonical consumer boundary', () => {
     }));
     render(<Investigation />);
     expect(screen.getByRole('button', { name: /Run preview/i })).toBeDefined();
-    expect(screen.getByText('Moderate Readiness (Caution)')).toBeDefined();
+    expect(screen.getByTestId('investigation-preflight-blocked')).toBeDefined();
+    expect(screen.queryByText('Moderate Readiness (Caution)')).toBeNull();
   });
 
   it('presents canonical preflight blockers and stops before execution', async () => {
@@ -424,6 +425,19 @@ describe('Investigation canonical consumer boundary', () => {
     expect(context.textContent).toContain('canonical-evidence:test-source');
     expect(context.textContent).toContain('Preview evidence cannot authorize decision use');
     expect(mockedExecute).toHaveBeenCalledTimes(1);
+  });
+
+  it('projects the canonical full-scope total when visible grouped rows are bounded', async () => {
+    mockedExecute.mockResolvedValue(governedResult({
+      rows: [{ 'item.product': 'A', sales_revenue: 25 }],
+      rowCount: 1,
+      groundTruthComparison: { state: 'unavailable', expected: null, actual: 250, tolerance: null },
+    }));
+    render(<Investigation />);
+
+    const summary = await screen.findByTestId('governed-result-summary');
+    expect(summary.textContent).toContain('250');
+    expect(summary.textContent).toContain('1 governed result group');
   });
 
   it('persists the current dataset and returns with the exact saved session identity', async () => {

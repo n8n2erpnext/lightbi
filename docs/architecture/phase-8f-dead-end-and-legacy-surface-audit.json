@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "lightbi.phase8f.dead-end-and-legacy-surface-audit.v1",
+  "productionScans": {
+    "legacyFusionConstructorsInPages": 0,
+    "legacyPreviewExecutorsInPages": 0,
+    "mockExecutionControls": 0,
+    "duplicateRelationshipBuilders": 0,
+    "duplicateDatasetSelectors": 0,
+    "buttonsWithoutHandlers": 0,
+    "placeholderEvidenceControls": 0
+  },
+  "dispositions": [
+    {"surface":"legacy Home quality/trust/understanding/fusion cards","disposition":"disconnected","replacement":"canonical consumer presentation"},
+    {"surface":"mock recent insights","disposition":"disconnected","replacement":"canonical ranked analyses"},
+    {"surface":"legacy fusion execution","disposition":"unreachable","replacement":"governed canonical multi-source boundary"},
+    {"surface":"pre-execution BA brief","disposition":"removed","replacement":"post-execution governed BA brief"},
+    {"surface":"automatic Advanced source open","disposition":"not used","replacement":"explicit user open"}
+  ],
+  "legacyOrMockProductionReachability": 0,
+  "status": "pass"
+}

@@ -1,0 +1,30 @@
+{
+  "schemaVersion": "lightbi.phase8f.core-to-ui-parity-matrix.v1",
+  "flow": "core capability ID -> presentation state -> rendered UI -> interaction -> rebuild/execution -> result",
+  "rows": [
+    {"capability":"source_intake","presentation":"canonical source state","surface":"Home import/source rows","operation":"select files","next":"artifact build","result":"per-source inspected/error state","status":"pass"},
+    {"capability":"physical_profile","presentation":"canonical source facts","surface":"Home dataset details","operation":"inspect","next":"none","result":"full-file counts/profile/limitations","status":"pass"},
+    {"capability":"mapping_overlay","presentation":"needs_mapping","surface":"CanonicalEvidenceReview","operation":"confirm/remap/ignore/reset","next":"artifact and M1/M2/M3 rebuild","result":"new overlay/artifact identity","status":"pass"},
+    {"capability":"evidence_overlay","presentation":"needs_evidence","surface":"CanonicalEvidenceReview","operation":"declare/remove evidence","next":"artifact and M1/M2/M3 rebuild","result":"new overlay/action state","status":"pass"},
+    {"capability":"multisource_relationship","presentation":"relationship_evidence_required","surface":"CanonicalMultiSourceReview","operation":"select sources/roles/evidence/build","next":"multi-source artifact and M1/M2/M3","result":"governed relationship identity or blockers","status":"pass"},
+    {"capability":"recommended_actions","presentation":"top five M2 ranking","surface":"Recommended analyses","operation":"review or investigate","next":"M3 handoff","result":"runnable Investigation only after M3","status":"pass"},
+    {"capability":"additional_actions","presentation":"remaining M2 actions","surface":"Additional supported analyses","operation":"discover/review/investigate","next":"M3 handoff","result":"same governed state as recommended","status":"pass"},
+    {"capability":"blocked_actions","presentation":"mapping/evidence/relationship/safety/unsupported","surface":"separate canonical sections","operation":"exact remediation or limitation view","next":"rebuild where permitted","result":"never runnable while blocked","status":"pass"},
+    {"capability":"source_local_execution","presentation":"M3 executable","surface":"Investigation","operation":"execute/retry","next":"canonical full-file executor","result":"chart/table/evidence same plan","status":"pass"},
+    {"capability":"multisource_execution","presentation":"M3 executable with relationship","surface":"Investigation","operation":"execute","next":"materialize all required sources","result":"governed gross-profit result","status":"pass"},
+    {"capability":"lifecycle","presentation":"canonical lifecycle","surface":"Home/Investigation","operation":"import/rebuild/execute/retry/replace","next":"state-specific","result":"distinct empty/importing/inspecting/rebuilding/ready/executing/completed/failed/stale","status":"pass"},
+    {"capability":"persistence_and_advanced","presentation":"current session/source completeness","surface":"Session history/Advanced","operation":"restore/open/export","next":"identity validation","result":"current, stale, missing-source, complete or partial state","status":"pass"}
+  ],
+  "detectedDefectsCorrected": [
+    "synthetic multi-source artifact was projected instead of the metric-owning member artifact",
+    "placeholder currency, UOM and unknown source role appeared as observed evidence",
+    "legacy trust/readiness/fusion cards competed with canonical truth",
+    "row count compact formatting rendered malformed N labels",
+    "Investigation summed the bounded display rows instead of using the governed full-scope total",
+    "pre-execution BA narrative and guessed currency could appear before governed execution",
+    "browser relationship hashing depended on node:crypto"
+  ],
+  "remainingMissingConnections": [],
+  "legacyProductionTruthReachable": false,
+  "status": "pass"
+}

@@ -147,12 +147,10 @@ export const BasicBAAnswerCard: React.FC<{
   canAnalyzeDeeper: boolean;
 }> = ({ brief, onAnalyzeDeeper, canAnalyzeDeeper }) => {
   const primaryInsights = brief.insights.slice(0, 2);
-  const trustClass = brief.decisionReadinessScore >= 70 ? 'border-emerald-100 bg-emerald-50 text-emerald-800' : brief.decisionReadinessScore >= 45 ? 'border-amber-100 bg-amber-50 text-amber-800' : 'border-red-100 bg-red-50 text-red-800';
   return (
     <section className="mt-5 rounded-[16px] border border-black/10 bg-white shadow-sm">
       <div className="flex flex-col gap-4 px-5 py-4 md:flex-row md:items-start md:justify-between">
         <div className="min-w-0 flex-1"><div className="mb-2 flex items-center gap-2"><div className="flex h-8 w-8 items-center justify-center rounded-[10px] bg-violet-50 text-violet-600"><ClipboardCheck className="h-4 w-4" /></div><div><h3 className="text-sm font-semibold text-[#202123]">BA answer</h3><p className="text-xs text-black/45">Basic answer for this selected decision angle.</p></div></div><p className="text-sm leading-6 text-slate-700">{brief.executiveSummary}</p></div>
-        <div className="grid min-w-[220px] grid-cols-2 gap-2"><div className="rounded-[12px] border border-black/10 bg-[#f7f7f6] p-3"><div className="text-[10px] font-semibold uppercase tracking-wide text-black/45">Data trust</div><div className="mt-1 text-xl font-semibold text-[#202123]">{brief.dataTrustScore}</div></div><div className={`rounded-[12px] border p-3 ${trustClass}`}><div className="text-[10px] font-semibold uppercase tracking-wide opacity-70">Readiness</div><div className="mt-1 text-xl font-semibold">{brief.decisionReadinessScore}</div></div></div>
       </div>
       <div className="grid gap-3 border-t border-black/5 px-5 py-4 md:grid-cols-[1fr_220px]">
         <div className="grid gap-3 md:grid-cols-2">{primaryInsights.length > 0 ? primaryInsights.map(insight => <div key={insight.id} className="rounded-[12px] border border-amber-100 bg-amber-50 p-3 text-amber-900"><div className="mb-1 text-xs font-semibold">{insight.title}</div><p className="text-xs leading-5 opacity-90">{insight.statement}</p></div>) : <div className="rounded-[12px] border border-slate-100 bg-slate-50 p-3 text-xs text-slate-600">No immediate insight was produced. Open the deeper analysis panel for caveats and diagnostics.</div>}</div>

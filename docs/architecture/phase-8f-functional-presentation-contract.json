@@ -1,0 +1,102 @@
+{
+  "schemaVersion": "lightbi.phase8f.functional-presentation-contract.v1",
+  "scope": "Frozen commerce/distribution MVP functional presentation boundary",
+  "canonicalFlow": [
+    "canonical_source_state",
+    "canonical_consumer_artifact",
+    "metric_preflight_M1",
+    "question_action_generation_M2",
+    "runtime_preflight_M3",
+    "canonical_presentation_model",
+    "production_UI",
+    "governed_runtime_result"
+  ],
+  "stateOwnership": {
+    "sourceAndArtifact": "understanding-core",
+    "metricEligibility": "M1 metric preflight",
+    "questionRanking": "M2 question/action generation",
+    "runtimeReadiness": "M3 runtime preflight",
+    "presentation": "canonical consumer presentation adapters",
+    "renderingAndIntentCaptureOnly": "Home, Investigation and Advanced production UI"
+  },
+  "uiProhibitions": [
+    "infer_source_role",
+    "infer_semantic_mapping",
+    "confirm_relationship",
+    "calculate_trust_or_readiness",
+    "generate_blocker_reason",
+    "rank_action",
+    "mark_action_runnable",
+    "calculate_business_metric"
+  ],
+  "analysisSections": {
+    "recommended": {"maximum": 5, "owner": "canonical_M2_ranking"},
+    "additionalSupported": {"discoverable": true, "owner": "canonical_M2"},
+    "needsMapping": {"target": "exact_physical_column_review"},
+    "needsEvidence": {"target": "exact_scoped_evidence_control"},
+    "relationshipEvidenceRequired": {"target": "exact_participating_sources"},
+    "safetyBlocked": {"overrideAllowed": false},
+    "unsupported": {
+      "title": "Unsupported in current MVP",
+      "action": "View limitation",
+      "remediationImplied": false
+    }
+  },
+  "lifecycleStates": [
+    "empty",
+    "importing",
+    "inspecting",
+    "rebuilding",
+    "ready",
+    "executing",
+    "completed",
+    "execution_failed",
+    "stale"
+  ],
+  "sourceLocalContract": {
+    "sourceIdentityRequired": true,
+    "fullFileReferenceRequired": true,
+    "artifactIdentityRequired": true,
+    "overlayIdentityPreserved": true,
+    "M3RequiredBeforeInvestigation": true
+  },
+  "multiSourceContract": {
+    "explicitRolePerIncludedSource": true,
+    "relationshipIdentityRequired": true,
+    "allRequiredSourcesMaterialized": true,
+    "legacyFusionFallbackAllowed": false,
+    "M3RequiredBeforeInvestigation": true
+  },
+  "resultContract": {
+    "requiredIdentities": [
+      "source_fingerprint",
+      "artifact_id",
+      "action_id",
+      "metric_id",
+      "query_plan_id",
+      "execution_scope"
+    ],
+    "tableAndChartUseSamePlan": true,
+    "preExecutionNarrativeAllowed": false,
+    "fullScopeTotalOwner": "governed_runtime_ground_truth_comparison",
+    "partialResultMayClaimComplete": false
+  },
+  "accessibilityFunctionalBaseline": {
+    "keyboardReachable": true,
+    "statusNotColorOnly": true,
+    "disabledControlsExplainWhy": true,
+    "focusReturnsAfterRemediation": true
+  },
+  "immutableGovernance": [
+    "semantic_registry",
+    "mapping_and_resolution_policy",
+    "grain_and_relationship_policy",
+    "domain_support",
+    "metric_formulas",
+    "M1_M2_M3_rules",
+    "query_operators",
+    "DuckDB_calculation",
+    "corpus_truth",
+    "governed_regression_allowlist"
+  ]
+}

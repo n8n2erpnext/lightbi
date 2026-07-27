@@ -1,15 +1,9 @@
 import React from 'react';
-import { AlertTriangle, BarChart3, CheckCircle2, ClipboardCheck, Lightbulb, ShieldCheck } from 'lucide-react';
+import { AlertTriangle, BarChart3, ClipboardCheck, Lightbulb } from 'lucide-react';
 import type { BADecisionBrief, BAInsightSeverity } from '../../lib/ba-decision-engine';
 
 interface BADecisionBriefPanelProps {
   brief: BADecisionBrief;
-}
-
-function scoreClass(score: number): string {
-  if (score >= 80) return 'text-emerald-700 bg-emerald-50 border-emerald-100';
-  if (score >= 60) return 'text-amber-700 bg-amber-50 border-amber-100';
-  return 'text-red-700 bg-red-50 border-red-100';
 }
 
 function severityClass(severity: BAInsightSeverity): string {
@@ -43,38 +37,6 @@ export const BADecisionBriefPanel: React.FC<BADecisionBriefPanelProps> = ({ brie
 
       <div className="grid gap-4 p-5 lg:grid-cols-[260px_1fr]">
         <div className="space-y-3">
-          <div className={`rounded-md border p-3 ${scoreClass(brief.dataTrustScore)}`}>
-            <div className="mb-1 flex items-center gap-1.5 text-xs font-medium">
-              <ShieldCheck className="h-3.5 w-3.5" />
-              Data Trust Score
-            </div>
-            <div className="text-2xl font-semibold leading-none">{brief.dataTrustScore}</div>
-          </div>
-
-          <div className={`rounded-md border p-3 ${scoreClass(brief.decisionReadinessScore)}`}>
-            <div className="mb-1 flex items-center gap-1.5 text-xs font-medium">
-              <CheckCircle2 className="h-3.5 w-3.5" />
-              Decision Readiness
-            </div>
-            <div className="text-2xl font-semibold leading-none">{brief.decisionReadinessScore}</div>
-          </div>
-
-          {brief.scoreBreakdown.length > 0 && (
-            <div className="rounded-md border border-slate-100 bg-slate-50 p-3">
-              <div className="mb-2 text-xs font-semibold text-slate-700">Score Breakdown</div>
-              <div className="space-y-1.5">
-                {brief.scoreBreakdown.slice(0, 5).map(item => (
-                  <div key={item.label} title={item.reason} className="flex items-center justify-between gap-3 text-[11px] text-slate-600">
-                    <span className="truncate">{item.label}</span>
-                    <span className={item.score < 0 ? 'font-mono text-red-600' : 'font-mono text-slate-900'}>
-                      {item.score > 0 ? '+' : ''}{item.score}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
           {brief.recommendedCharts.length > 0 && (
             <div className="rounded-md border border-slate-100 bg-slate-50 p-3">
               <div className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-slate-700">

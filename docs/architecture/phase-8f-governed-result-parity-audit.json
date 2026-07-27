@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "lightbi.phase8f.governed-result-parity-audit.v1",
+  "oracleMethod": "independent frozen corpus oracle compared with identity-bearing governed runtime result",
+  "families": [
+    {"metricId":"sales_revenue","sourceFingerprint":"e2cad91d","fullSourceRows":1500,"artifactId":"canonical-consumer:93a866","overlayId":null,"relationshipId":null,"actionId":"runtime-action:68a5bc","queryPlanId":"metric-plan:f1bf36","scope":"full_file","expected":22973896244,"actual":22973896244,"exact":true},
+    {"metricId":"delivery_count","sourceFingerprint":"e093e56","fullSourceRows":1500,"artifactId":"canonical-consumer:5e6a2e","overlayId":null,"relationshipId":null,"actionId":"runtime-action:6e8bfe","queryPlanId":"metric-plan:9bcf57","scope":"full_file","expected":1500,"actual":1500,"exact":true},
+    {"metricId":"gross_profit","sourceFingerprint":"30ef8b","fullSourceRows":3000,"artifactId":"canonical-consumer:f8ce72","overlayId":"canonical-overlay:e9bcdd","relationshipId":"governed-relationship:0325e5","actionId":"runtime-action:d3119b","queryPlanId":"metric-plan:fc36b2","scope":"full_file","expected":3075721244,"actual":3075721244,"exact":true},
+    {"metricId":"inventory_on_hand","sourceFingerprint":"92d32c","fullSourceRows":1266,"artifactId":"canonical-consumer:9e3fb3","overlayId":"canonical-overlay:09b07b","relationshipId":null,"actionId":"runtime-action:7721d2","queryPlanId":"metric-plan:979b60","scope":"full_file","expected":211067,"actual":211067,"exact":true}
+  ],
+  "exactFamilies": 4,
+  "passed": 4,
+  "failed": 0,
+  "identityComplete": true,
+  "status": "pass"
+}

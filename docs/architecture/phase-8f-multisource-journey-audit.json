@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "lightbi.phase8f.multisource-journey-audit.v1",
+  "servedApplication": "http://127.0.0.1:5176/",
+  "journey": {
+    "name": "Sales plus Accounting governed gross profit",
+    "sequence": [
+      "import Sales XLSX and Accounting CSV",
+      "inspect each source independently",
+      "select both sources",
+      "assign explicit sales and accounting roles",
+      "declare scoped period and VND currency evidence",
+      "build governed relationship",
+      "rebuild canonical multi-source artifact",
+      "allow Investigation only after M3",
+      "materialize both required full-file sources",
+      "execute governed gross_profit plan"
+    ],
+    "sources": [
+      {"role":"sales","rows":1500},
+      {"role":"accounting","rows":1500}
+    ],
+    "sourceFingerprint": "30ef8b",
+    "artifactId": "canonical-consumer:f8ce72",
+    "overlayId": "canonical-overlay:e9bcdd",
+    "multiSourceDatasetId": "canonical-multisource:c2fa60",
+    "relationshipId": "governed-relationship:0325e5",
+    "metricId": "gross_profit",
+    "actionId": "runtime-action:d3119b",
+    "queryPlanId": "metric-plan:fc36b2",
+    "executionScope": "full_file",
+    "period": {"start":"2026-05-01","end":"2026-05-31"},
+    "currency": "VND",
+    "resultRows": 31,
+    "expected": 3075721244,
+    "actual": 3075721244,
+    "allRequiredSourcesMaterialized": true,
+    "legacyFusionFallbackUsed": false,
+    "screenshot": "/tmp/phase8f-multisource-verified.png",
+    "status": "pass"
+  },
+  "status": "pass"
+}

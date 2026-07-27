@@ -2,14 +2,10 @@ import React from 'react';
 import { Search, Loader2, ChevronRight, Database, Plus, FileSpreadsheet, Link, Server, Code, Sparkles, Layers, Save } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { DataIntakeDrawer } from '../data-intake/DataIntakeDrawer';
-import { DataQualityCard } from '../data-intake/DataQualityCard';
-import { DatasetUnderstandingCard } from '../analysis/DatasetUnderstandingCard';
 import { UnderstandingNextCard } from '../analysis/UnderstandingNextCard';
 import { CanonicalEvidenceReview } from '../analysis/CanonicalEvidenceReview';
 import { CanonicalMultiSourceReview } from '../analysis/CanonicalMultiSourceReview';
-import { DecisionTrustReportCard } from '../analysis/DecisionTrustReportCard';
 import { BusinessViewSummaryCard } from '../analysis/BusinessViewSummaryCard';
-import { BusinessFusionOpportunityCard } from '../analysis/BusinessFusionOpportunityCard';
 import { homeGuidance } from '../../content/home-guidance';
 import { getActiveAnalysisContextLabel } from '../../lib/workspace-understanding-state';
 import { parseCanonicalUserOverlay } from '../../lib/understanding-core/canonical-user-overlay';
@@ -20,7 +16,20 @@ import { HomeDataPreviewDialog } from './HomeDataPreviewDialog';
 import { HomePlanningDialogs } from './HomePlanningDialogs';
 
 export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
-  const { activeConnection, setActiveConnection, handleOnlineSourceInspected, result, isAsking, selectedTopic, currentDataset, pendingLocalBatch, setPendingLocalBatch, isPlusMenuOpen, setIsPlusMenuOpen, isReplaceMenuOpen, setIsReplaceMenuOpen, greeting, navigate, questionInputRef, inputValue, setInputValue, setIsInputFocused, askQuestion, activeAnalysisIntent, questionPlaceholder, renderSourcePickerMenu, activeChips, setAnalysisIntent, openLocalFilePicker, openOnlineDataDrawer, openDatabaseDrawer, workspaceSessions, sessionStatus, preferences, handleOpenWorkspaceSession, handleDeleteWorkspaceSession, fileInputRef, handleFileChange, uploadError, isUploading, workspaceState, datasetTrustClass, datasetTrustScore, datasetTrustLabel, isSavingSession, handleSaveWorkspaceSession, isDataPreviewOpen, setIsDataPreviewOpen, decisionTrustReport, datasetHealthResult, datasetUnderstandingNext, canonicalArtifact, canonicalPresentation, handleCanonicalOverlayChange, handleCanonicalRemediation, canonicalOverlayRebuildState, canonicalReviewTarget, multiSourceBuildResult, multiSourceReviewSources, multiSourceDrafts, setMultiSourceDrafts, multiSourceBuilding, handleBuildCanonicalMultiSource, handleCancelInspection, handleUseLocalDataset, guidedInvestigationResult, datasetUnderstanding, activeBusinessViews, selectedPerspective, setSelectedPerspective, analysisMode, setAnalysisMode, selectedBusinessView, setSelectedBusinessView, visibleQuestionSuggestions, selectedViewData, previewActionId, setPreviewActionId, handleSelectAnalysisAction, handleLegacyQuestionSuggestion, lastInspectedFamilies, getEChartsOption, planningWorkflow, canonicalRows } = model;
+  const { activeConnection, setActiveConnection, handleOnlineSourceInspected, result, isAsking, selectedTopic, currentDataset, pendingLocalBatch, setPendingLocalBatch, isPlusMenuOpen, setIsPlusMenuOpen, isReplaceMenuOpen, setIsReplaceMenuOpen, greeting, navigate, questionInputRef, inputValue, setInputValue, setIsInputFocused, askQuestion, activeAnalysisIntent, questionPlaceholder, renderSourcePickerMenu, activeChips, setAnalysisIntent, openLocalFilePicker, openOnlineDataDrawer, openDatabaseDrawer, workspaceSessions, sessionStatus, preferences, handleOpenWorkspaceSession, handleDeleteWorkspaceSession, fileInputRef, handleFileChange, uploadError, isUploading, workspaceState, isSavingSession, handleSaveWorkspaceSession, isDataPreviewOpen, setIsDataPreviewOpen, datasetUnderstandingNext, canonicalArtifact, canonicalPresentation, canonicalMultiSourcePresentation, handleCanonicalOverlayChange, handleCanonicalRemediation, canonicalOverlayRebuildState, canonicalReviewTarget, multiSourceBuildResult, multiSourceReviewSources, multiSourceDrafts, setMultiSourceDrafts, multiSourceBuilding, handleBuildCanonicalMultiSource, handleCancelInspection, handleUseLocalDataset, guidedInvestigationResult, datasetUnderstanding, activeBusinessViews, selectedPerspective, setSelectedPerspective, analysisMode, setAnalysisMode, selectedBusinessView, setSelectedBusinessView, visibleQuestionSuggestions, selectedViewData, previewActionId, setPreviewActionId, handleSelectAnalysisAction, handleLegacyQuestionSuggestion, lastInspectedFamilies, getEChartsOption, planningWorkflow, canonicalRows } = model;
+  const canonicalDatasetState = canonicalOverlayRebuildState === 'pending'
+    ? { label: 'Rebuilding', className: 'border-blue-200 bg-blue-50 text-blue-700' }
+    : !canonicalArtifact || canonicalArtifact.status !== 'valid'
+      ? { label: canonicalArtifact ? 'Needs review' : 'Inspecting', className: 'border-amber-200 bg-amber-50 text-amber-800' }
+      : (canonicalPresentation?.counts.ready ?? 0) > 0
+        ? { label: 'Ready', className: 'border-emerald-200 bg-emerald-50 text-emerald-700' }
+        : (canonicalPresentation?.counts.needs_mapping_review ?? 0) > 0 || (canonicalPresentation?.counts.needs_user_evidence ?? 0) > 0
+          ? { label: 'Needs review', className: 'border-amber-200 bg-amber-50 text-amber-800' }
+          : (canonicalPresentation?.counts.blocked_safety ?? 0) > 0
+            ? { label: 'Safety blocked', className: 'border-red-200 bg-red-50 text-red-700' }
+            : (canonicalPresentation?.counts.unsupported_mvp ?? 0) > 0
+              ? { label: 'Unsupported in current MVP', className: 'border-gray-200 bg-gray-50 text-gray-700' }
+              : { label: 'Inspected', className: 'border-gray-200 bg-gray-50 text-gray-700' };
   return (
     <div className="flex-1 overflow-y-auto bg-[#fbfbfa] text-[#202123] font-sans" onClick={() => isPlusMenuOpen && setIsPlusMenuOpen(false)}>
 
@@ -133,8 +142,8 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                     sessions={workspaceSessions}
                     activeSessionId={currentDataset?.restoredFromSessionId}
                     status={sessionStatus}
-                    formatRowCount={value => formatValue(value, 'number', preferences, { compact: true })}
-                    formatColumnCount={value => formatValue(value, 'number', preferences, { compact: true })}
+                    formatRowCount={value => formatValue(value, 'number', preferences)}
+                    formatColumnCount={value => formatValue(value, 'number', preferences)}
                     onOpen={session => void handleOpenWorkspaceSession(session)}
                     onDelete={sessionId => void handleDeleteWorkspaceSession(sessionId)}
                   />
@@ -177,15 +186,15 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                           {(['virtual_business_view', 'business_fusion_view'].includes(currentDataset.sourceType) || workspaceState?.activeContext.type === "business_view") && (
                             <span className="rounded border border-violet-200 bg-violet-50 px-2 py-0.5 text-[11px] font-medium text-violet-700">Business View</span>
                           )}
-                          <span className={`rounded border px-2 py-0.5 text-[11px] font-semibold ${datasetTrustClass}`}>
-                            {datasetTrustScore === null ? datasetTrustLabel : `${datasetTrustLabel}: ${formatValue(datasetTrustScore, 'number', preferences)} / 100`}
+                          <span data-testid="canonical-dataset-state" className={`rounded border px-2 py-0.5 text-[11px] font-semibold ${canonicalDatasetState.className}`}>
+                            {canonicalDatasetState.label}
                           </span>
                         </div>
                         {(['virtual_business_view', 'business_fusion_view'].includes(currentDataset.sourceType) || workspaceState?.activeContext.type === "business_view") ? (
-                          <p className="text-[13px] text-black/50">Business view · {formatValue(currentDataset.businessFusionOverview?.sources?.length || currentDataset.selectedBusinessView?.datasets?.length || 0, 'number', preferences, { compact: true })} datasets · {formatValue(Array.isArray(currentDataset.columns) ? currentDataset.columns.length : 0, 'number', preferences, { compact: true })} columns</p>
+                          <p className="text-[13px] text-black/50">Business view · {formatValue(currentDataset.businessFusionOverview?.sources?.length || currentDataset.selectedBusinessView?.datasets?.length || 0, 'number', preferences)} datasets · {formatValue(Array.isArray(currentDataset.columns) ? currentDataset.columns.length : 0, 'number', preferences)} columns</p>
                         ) : (
                           <>
-                            <p className="text-[13px] text-black/50">{formatValue(currentDataset.rows_count, 'number', preferences, { compact: true })} rows · {formatValue(Array.isArray(currentDataset.columns) ? currentDataset.columns.length : 0, 'number', preferences, { compact: true })} columns</p>
+                            <p className="text-[13px] text-black/50">{formatValue(currentDataset.rows_count, 'number', preferences)} rows · {formatValue(Array.isArray(currentDataset.columns) ? currentDataset.columns.length : 0, 'number', preferences)} columns</p>
                             {currentDataset.semanticSample?.strategy === 'matrix_sample' && (
                               <p className="mt-1 text-[12px] text-blue-700">
                                 Understanding: {formatValue(currentDataset.semanticSample.sampleRowCount, 'number', preferences)} representative rows · Runtime: {currentDataset.runtimeDatasetSource ? 'full local file' : 'representative sample'}
@@ -236,15 +245,15 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                   <div className="mt-5 grid grid-cols-2 gap-3 border-t border-black/5 pt-4 md:grid-cols-4">
                     <div className="rounded-[14px] bg-[#f7f7f6] px-4 py-3">
                       <div className="text-[11px] font-medium uppercase tracking-wide text-black/40">Rows</div>
-                      <div className="mt-1 text-[20px] font-semibold text-[#202123]">{formatValue(currentDataset.rows_count, 'number', preferences, { compact: true })}</div>
+                      <div className="mt-1 text-[20px] font-semibold text-[#202123]">{formatValue(currentDataset.rows_count, 'number', preferences)}</div>
                     </div>
                     <div className="rounded-[14px] bg-[#f7f7f6] px-4 py-3">
                       <div className="text-[11px] font-medium uppercase tracking-wide text-black/40">Columns</div>
-                      <div className="mt-1 text-[20px] font-semibold text-[#202123]">{formatValue(Array.isArray(currentDataset.columns) ? currentDataset.columns.length : 0, 'number', preferences, { compact: true })}</div>
+                      <div className="mt-1 text-[20px] font-semibold text-[#202123]">{formatValue(Array.isArray(currentDataset.columns) ? currentDataset.columns.length : 0, 'number', preferences)}</div>
                     </div>
                     <div className="rounded-[14px] bg-[#f7f7f6] px-4 py-3">
-                      <div className="text-[11px] font-medium uppercase tracking-wide text-black/40">Data trust</div>
-                      <div className="mt-1 text-[20px] font-semibold text-[#202123]">{datasetTrustScore === null ? 'Review' : `${formatValue(datasetTrustScore, 'number', preferences)} / 100`}</div>
+                      <div className="text-[11px] font-medium uppercase tracking-wide text-black/40">Canonical state</div>
+                      <div className="mt-1 text-[20px] font-semibold text-[#202123]">{canonicalDatasetState.label}</div>
                     </div>
                     <div className="rounded-[14px] bg-[#f7f7f6] px-4 py-3">
                       <div className="text-[11px] font-medium uppercase tracking-wide text-black/40">Runtime</div>
@@ -254,11 +263,8 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                 </div>
               )}
 
-              {datasetHealthResult && (
+              {currentDataset?.status === 'ready' && canonicalArtifact && (
                 <div className="w-full animate-in fade-in slide-in-from-bottom-4 duration-500 flex flex-col gap-4">
-                  <DataQualityCard health={datasetHealthResult} />
-                  {decisionTrustReport && <DecisionTrustReportCard report={decisionTrustReport} />}
-
                   {/* Dataset Understanding Layer */}
                   {datasetUnderstandingNext ? (
                     <>
@@ -281,24 +287,20 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                         <section data-testid="active-canonical-multisource" className="rounded-xl border border-black/10 bg-white p-4 shadow-sm">
                           <div className="flex flex-wrap items-center justify-between gap-2">
                             <div><h3 className="text-[14px] font-semibold text-[#202123]">Governed multi-source relationship</h3><p className="mt-1 text-[12px] text-black/55">{currentDataset.canonicalMultiSourceDataset.orderedSourceMemberships.length} independently profiled sources participate.</p></div>
-                            <span className="rounded-md border border-black/10 bg-gray-50 px-2 py-1 text-[11px] font-semibold">{currentDataset.canonicalMultiSourceDataset.relationship.validationState}</span>
+                            <span className="rounded-md border border-black/10 bg-gray-50 px-2 py-1 text-[11px] font-semibold">{canonicalMultiSourcePresentation?.state ?? 'relationship_ambiguous'}</span>
                           </div>
                           <div className="mt-3 grid gap-2 sm:grid-cols-2">
                             {currentDataset.canonicalMultiSourceDataset.orderedSourceMemberships.map((member: any) => <div key={member.sourceId} className="rounded-lg border border-black/5 bg-[#fbfbfa] p-2"><p className="truncate text-[12px] font-semibold">{member.boundary.datasetId}</p><p className="mt-1 text-[11px] text-black/50">{member.sourceRole} · {member.boundary.sourceRowCount.toLocaleString()} rows</p></div>)}
                           </div>
-                          {currentDataset.canonicalMultiSourceDataset.relationship.refusalReasons.length > 0 && <p className="mt-3 break-words text-[12px] text-amber-700">{currentDataset.canonicalMultiSourceDataset.relationship.refusalReasons.join(', ')}</p>}
+                          {(canonicalMultiSourcePresentation?.blockers.length ?? 0) > 0 && <p className="mt-3 break-words text-[12px] text-amber-700">{canonicalMultiSourcePresentation.blockers.join(', ')}</p>}
+                          {(canonicalMultiSourcePresentation?.restrictions.length ?? 0) > 0 && <p className="mt-2 break-words text-[12px] text-black/55">Restrictions: {canonicalMultiSourcePresentation.restrictions.join(', ')}</p>}
                         </section>
                       )}
                     </>
-                  ) : datasetUnderstanding ? (
-                    <DatasetUnderstandingCard
-                      understanding={datasetUnderstanding}
-                      onSelectAction={handleSelectAnalysisAction}
-                    />
                   ) : null}
 
                   {/* Global Perspective Selector */}
-                  {!datasetUnderstandingNext && (
+                  {!datasetUnderstandingNext && canonicalArtifact && (
                   <>
                   <div className="w-full bg-white border border-gray-200 rounded-xl shadow-sm p-5 flex flex-col gap-4 animate-in fade-in zoom-in-95 duration-500 mt-2">
                     <div>
@@ -453,14 +455,6 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                     </div>
                   )}
 
-                  {pendingLocalBatch.status === "ready" && pendingLocalBatch.businessOverview && (
-                    <div className="w-full animate-in fade-in slide-in-from-bottom-4 duration-500 mt-4 mb-4">
-                      <BusinessFusionOpportunityCard
-                        overview={pendingLocalBatch.businessOverview}
-                      />
-                    </div>
-                  )}
-
                   {pendingLocalBatch.status === "ready" && multiSourceReviewSources.length > 1 && (
                     <div className="w-full animate-in fade-in slide-in-from-bottom-4 duration-500 mt-4 mb-4">
                       <CanonicalMultiSourceReview
@@ -511,13 +505,28 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                                     <span className="shrink-0 text-[11px] text-black/45">{fam.files.length} file{fam.files.length === 1 ? '' : 's'}</span>
                                   </div>
                                   <div className="flex flex-wrap gap-x-3 gap-y-1 text-[12px] text-black/50">
-                                    <span>{formatValue(fam.totalRows, 'number', preferences, { compact: true })} rows</span>
-                                    <span>{formatValue(fam.columns.length, 'number', preferences, { compact: true })} columns</span>
+                                    <span>{formatValue(fam.totalRows, 'number', preferences)} rows</span>
+                                    <span>{formatValue(fam.columns.length, 'number', preferences)} columns</span>
                                     {fam.files.length > 1 && <span className="text-emerald-600 flex items-center gap-1"><span className="text-emerald-500">✓</span> Compatible for append</span>}
                                   </div>
                                   <div className="mt-1 truncate text-[11px] text-black/35">
                                     {fam.files.map((f: any) => f.file.name).join(', ')}
                                   </div>
+                                  {fam.files.length > 1 && <div className="mt-2 flex flex-wrap gap-2">
+                                    {fam.files.filter((item: any) => item.result?.status === 'accessible').map((item: any) => (
+                                      <button
+                                        key={item.file.name}
+                                        type="button"
+                                        onClick={(event) => {
+                                          event.stopPropagation();
+                                          handleUseLocalDataset(fam.id, item.file.name);
+                                        }}
+                                        className="rounded border border-blue-200 bg-white px-2 py-1 text-[11px] font-medium text-blue-700"
+                                      >
+                                        Use {item.file.name}
+                                      </button>
+                                    ))}
+                                  </div>}
                                 </div>
                               </div>
                             </div>
@@ -525,10 +534,19 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                         </div>
                       </div>
 
-                      <div className="flex justify-end border-t border-gray-100 pt-3">
+                      <div className="flex flex-col items-end gap-2 border-t border-gray-100 pt-3">
+                        {(() => {
+                          const selected = pendingLocalBatch.families.find((family: any) => family.id === (pendingLocalBatch.selectedFamilyId ?? (pendingLocalBatch.families.length === 1 ? pendingLocalBatch.families[0].id : null)));
+                          return selected?.files.length > 1
+                            ? <p role="status" className="text-[12px] text-amber-700">Automatic file append is unsupported in current MVP. Use one source above or build a governed multi-source dataset.</p>
+                            : null;
+                        })()}
                         <button
-                          onClick={handleUseLocalDataset}
-                          disabled={!pendingLocalBatch.selectedFamilyId && pendingLocalBatch.families.length > 1}
+                          onClick={() => handleUseLocalDataset()}
+                          disabled={(() => {
+                            const selected = pendingLocalBatch.families.find((family: any) => family.id === (pendingLocalBatch.selectedFamilyId ?? (pendingLocalBatch.families.length === 1 ? pendingLocalBatch.families[0].id : null)));
+                            return !selected || selected.files.length !== 1;
+                          })()}
                           className="flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 text-[13px] font-medium text-white shadow-sm transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
                         >
                           {pendingLocalBatch.families.length === 1 ? 'Use this dataset' : 'Use selected dataset'} <ChevronRight className="w-4 h-4" />
@@ -542,7 +560,7 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
 
 
               {/* Detected Opportunities – only when currentDataset.status === 'ready' and domains exist */}
-              {!datasetUnderstandingNext && currentDataset?.status === 'ready' && currentDataset.columns && currentDataset.columns.length > 0 ? (
+              {!datasetUnderstandingNext && canonicalArtifact && currentDataset?.status === 'ready' && currentDataset.columns && currentDataset.columns.length > 0 ? (
                 <>
                   <div className="flex flex-col gap-4">
                     <div className="flex bg-gray-100 p-1 rounded-lg self-start">
@@ -773,7 +791,7 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
 
                 </>
               ) : (
-                currentDataset?.status === 'ready' && !datasetUnderstandingNext && (
+                currentDataset?.status === 'ready' && !datasetUnderstandingNext && canonicalArtifact && (
                   <div className="w-full p-4 bg-amber-50 border border-amber-200 rounded-xl shadow-sm">
                     <p className="text-sm text-amber-800 flex items-center">
                       <Search className="w-4 h-4 mr-2" />
@@ -867,48 +885,6 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                 </div>
               )}
             </div>
-
-            {/* Sidebar */}
-            {currentDataset?.status === 'ready' && (
-            <div className="lg:col-span-1 flex flex-col gap-6">
-              {currentDataset?.status === 'ready' && (
-              <div className="bg-white border border-transparent rounded-xl p-6 shadow-sm flex flex-col h-full">
-                <h3 className="text-[12px] font-semibold text-gray-500 uppercase tracking-wider mb-5 flex items-center">
-                  <Search className="w-4 h-4 mr-2 text-gray-400" /> {homeGuidance.recentInsights.title}
-                </h3>
-                {homeGuidance.recentInsights.items.length > 0 ? (
-                  <>
-                    <div className="flex flex-col gap-4">
-                      {homeGuidance.recentInsights.items.map((insight) => (
-                        <div key={insight.id} className="flex flex-col gap-1 pb-4 border-b border-gray-100 last:border-0 last:pb-0">
-                          <div className="flex justify-between items-start">
-                            <span className="text-[13px] font-semibold text-gray-900">{insight.title}</span>
-                            <span className="text-[11px] text-gray-400 whitespace-nowrap ml-2">{insight.timestamp}</span>
-                          </div>
-                          <p className="text-[13px] text-gray-500 leading-relaxed">{insight.description}</p>
-                        </div>
-                      ))}
-                    </div>
-                    <div className="mt-auto pt-4 border-t border-gray-100 text-center">
-                      <button className="text-[12px] font-medium text-emerald-600 hover:text-emerald-700 transition-colors">
-                        {homeGuidance.recentInsights.viewHistoryAction}
-                      </button>
-                    </div>
-                  </>
-                ) : (
-                  <div className="flex flex-col items-center justify-center py-8 text-center h-full opacity-60">
-                    <p className="text-[13px] font-medium text-gray-900 mb-2">
-                      {currentDataset ? homeGuidance.homeStates.dataLoaded.recentInsightsEmpty.title : homeGuidance.homeStates.noData.recentInsightsEmpty.title}
-                    </p>
-                    <p className="text-[12px] text-gray-500 max-w-[200px] leading-relaxed">
-                      {currentDataset ? homeGuidance.homeStates.dataLoaded.recentInsightsEmpty.message : homeGuidance.homeStates.noData.recentInsightsEmpty.message}
-                    </p>
-                  </div>
-                )}
-              </div>
-              )}
-            </div>
-            )}
 
           </div>
         )}

@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "lightbi.phase8f.contradictory-state-audit.v1",
+  "checks": [
+    {"id":"fusion_ready_with_unknown_roles","before":"possible","after":"explicit role required; unknown_other cannot be selected","status":"closed"},
+    {"id":"relationship_ready_before_evidence","before":"possible through competing fusion state","after":"canonical relationship blockers projected","status":"closed"},
+    {"id":"placeholder_as_observed","before":"VND, EA and unknown role defaults","after":"blank values are non-evidence","status":"closed"},
+    {"id":"multiple_dataset_truths","before":"legacy quality/trust/understanding/fusion cards","after":"canonical workspace projection only","status":"closed"},
+    {"id":"malformed_row_counts","before":"compact count could render 3 N rows","after":"exact non-compact counts","status":"closed"},
+    {"id":"action_state_disagreement","before":"legacy readiness versus M3","after":"M3 canonical presentation owns runnable state","status":"closed"},
+    {"id":"runtime_failure_as_safety","before":"shared blocked presentation","after":"execution_failed lifecycle is distinct","status":"closed"},
+    {"id":"preexecution_business_answer","before":"narrative could exist before runtime evidence","after":"BA brief requires executed result","status":"closed"},
+    {"id":"bounded_rows_as_full_total","before":"display rows were summed","after":"canonical ground-truth comparison supplies full-scope total","status":"closed"}
+  ],
+  "openContradictions": [],
+  "status": "pass"
+}

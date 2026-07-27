@@ -1,0 +1,47 @@
+{
+  "schemaVersion": "lightbi.phase8f.regression-conformance.v1",
+  "sourceStateFrozenBeforeFullSuite": true,
+  "gates": {
+    "phase8Targeted": {"testFiles":8,"tests":56,"passed":56,"failed":0,"status":"pass"},
+    "completeUnderstandingCore": {"testFiles":79,"tests":344,"passed":344,"failed":0,"status":"pass"},
+    "typescript": {"command":"npx tsc --noEmit -p tsconfig.app.json","diagnostics":0,"status":"pass"},
+    "productionBuild": {"modulesTransformed":2721,"status":"pass","warnings":["Tailwind content glob breadth","large production chunks"]},
+    "architectureJson": {"filesParsedBeforeFinalReport":329,"status":"pass"},
+    "canonicalProductionReachability": {"legacyFusionOrMockExecutorsInProductionPages":0,"status":"pass"},
+    "pageSizeGate": {"Home":800,"Investigation":800,"Advanced":770,"status":"pass"},
+    "diffCheck": {"status":"pass"}
+  },
+  "fullDesktopSuite": {
+    "runCount": 1,
+    "command": "npx vitest run",
+    "logPath": "/tmp/phase8f-final-full-desktop.log",
+    "logSha256": "1545e68f4ec2add56919c9f32c2e94027d0a652ddd4d728ac5660c96cdc52f1e",
+    "logBytes": 7150,
+    "processExitStatus": 1,
+    "testFiles": {"total":178,"passed":174,"failed":4},
+    "tests": {"total":1193,"passed":1184,"failed":9},
+    "governedDeterministicFailuresObserved": 6,
+    "governedTimingSensitiveFailuresObserved": 3,
+    "timingSensitiveCasesPassed": 0,
+    "unexpectedFailures": 0,
+    "phase8FOwnedFailures": 0,
+    "conformanceEvaluatedByTestIdentityAndSignature": true
+  },
+  "governedAllowlist": {
+    "path": "docs/architecture/phase-5b6b-regression-baseline-allowlist.v1.json",
+    "sha256": "baa86950582b7d758396abb0c69fdaffcd3c2cbbb22b71dd3bbdb3c0aed1c4f5",
+    "modified": false
+  },
+  "unchangedReleaseGates": {
+    "highConfidenceMappingPrecision": 1,
+    "heldOutRecall": 0.9091,
+    "domainActivationPrecision": 1,
+    "falseExecutableActions": 0,
+    "falseDecisionSupportCases": 0,
+    "blockedExplanationCompleteness": 1,
+    "governedMetricFamiliesExact": 4,
+    "legacyMockFusionExecutionReachability": 0,
+    "unexpectedRegressions": 0
+  },
+  "status": "pass"
+}

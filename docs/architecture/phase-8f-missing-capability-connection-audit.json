@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "lightbi.phase8f.missing-capability-connection-audit.v1",
+  "correctedConnections": [
+    {"capability":"browser relationship build","defect":"node:crypto was browser-unreachable","correction":"browser-safe deterministic SHA-256","verification":"deterministic-text-sha256.test.ts and real multi-source browser journey"},
+    {"capability":"multi-source metric action","defect":"synthetic dataset artifact did not own the metric mapping","correction":"select canonical member artifact identified by metricSourceId","verification":"gross-profit browser journey exact"},
+    {"capability":"full-scope result total","defect":"UI recomputed total from bounded result rows","correction":"consume governed runtime groundTruthComparison.actual","verification":"revenue browser oracle exact"},
+    {"capability":"explicit source roles","defect":"unknown_other could masquerade as confirmed role","correction":"empty role remains missing evidence","verification":"Phase 8F parity tests"},
+    {"capability":"evidence declarations","defect":"default values appeared observed","correction":"only non-empty explicit declarations create overlays","verification":"Phase 8B and Phase 8F tests"},
+    {"capability":"canonical lifecycle wording","defect":"unsupported and execution failure could share blocker semantics","correction":"separate unsupported limitation and execution_failed states","verification":"UnderstandingNextCard.phase8c.test.tsx"}
+  ],
+  "supportedButStillUnreachable": [],
+  "operableButNotVisible": [],
+  "visibleButNotOperable": [],
+  "notes": [
+    "Quantity sold and transaction count remain visible with governed blockers on authentic Sales data when required UOM or identity evidence is absent.",
+    "A correctly blocked action is not an advertised executable action and is not a missing UI connection."
+  ],
+  "status": "pass"
+}

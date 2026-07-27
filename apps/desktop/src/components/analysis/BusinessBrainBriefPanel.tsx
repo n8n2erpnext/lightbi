@@ -23,12 +23,6 @@ function formatKpiValue(kpi: BusinessBrainKpi, preferences: DisplayPreferences):
   return formatValue(value, 'number', preferences, { compact: true });
 }
 
-function readinessStyle(readiness: BusinessBrainBrief['readiness']): string {
-  if (readiness === 'ready') return 'border-emerald-200 bg-emerald-50 text-emerald-800';
-  if (readiness === 'partial') return 'border-amber-200 bg-amber-50 text-amber-800';
-  return 'border-red-200 bg-red-50 text-red-800';
-}
-
 const EvidenceLine: React.FC<{ kpi: BusinessBrainKpi; tone?: 'default' | 'indigo' }> = ({ kpi, tone = 'default' }) => {
   const textClass = tone === 'indigo' ? 'text-indigo-950/45' : 'text-black/45';
   const evidence = [
@@ -43,7 +37,7 @@ export const BusinessBrainBriefPanel: React.FC<BusinessBrainBriefPanelProps> = (
   return (
     <section className="mb-5 overflow-hidden rounded-[16px] border border-black/10 bg-white shadow-sm">
       <div className="border-b border-black/10 bg-[#101827] px-5 py-4 text-white">
-        <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+        <div>
           <div>
             <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-violet-200">
               <ClipboardCheck className="h-4 w-4" />
@@ -51,10 +45,6 @@ export const BusinessBrainBriefPanel: React.FC<BusinessBrainBriefPanelProps> = (
             </div>
             <h3 className="mt-2 text-xl font-semibold">{brief.angle}</h3>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-white/70">{brief.businessQuestion}</p>
-          </div>
-          <div className={`rounded-xl border px-4 py-3 text-center ${readinessStyle(brief.readiness)}`}>
-            <p className="text-2xl font-semibold">{brief.readiness.toUpperCase()}</p>
-            <p className="mt-1 text-[11px] font-semibold uppercase tracking-wide">Decision readiness</p>
           </div>
         </div>
       </div>

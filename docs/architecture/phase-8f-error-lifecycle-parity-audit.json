@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "lightbi.phase8f.error-lifecycle-parity-audit.v1",
+  "states": [
+    {"state":"empty","surface":"Home empty workspace","distinctFrom":[],"status":"pass"},
+    {"state":"importing","surface":"Home import progress","distinctFrom":["inspecting","execution_failed"],"status":"pass"},
+    {"state":"inspecting","surface":"per-source canonical inspection","distinctFrom":["unsupported","runtime failure"],"status":"pass"},
+    {"state":"rebuilding","surface":"mapping/evidence/relationship rebuild","distinctFrom":["executing"],"status":"pass"},
+    {"state":"ready","surface":"M3-approved Investigate action","distinctFrom":["needs evidence","safety blocked"],"status":"pass"},
+    {"state":"executing","surface":"Investigation runtime progress","distinctFrom":["rebuilding"],"status":"pass"},
+    {"state":"completed","surface":"governed chart/table/evidence","distinctFrom":["partial","stale"],"status":"pass"},
+    {"state":"execution_failed","surface":"Investigation runtime failure and retry","distinctFrom":["mapping","evidence","safety"],"status":"pass"},
+    {"state":"stale","surface":"identity mismatch/replacement state","distinctFrom":["current completed"],"status":"pass"}
+  ],
+  "fileSpecificFailureIsolation": true,
+  "partialAdvancedNeverClaimsComplete": true,
+  "unsupportedNeverClaimsRemediation": true,
+  "status": "pass"
+}

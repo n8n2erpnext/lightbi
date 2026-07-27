@@ -19,7 +19,7 @@ import {
 } from '../lib/understanding-core/canonical-consumer-boundary';
 import { buildCanonicalMultiSourceDataset, buildCanonicalMultiSourceMemberArtifact, prepareCanonicalMultiSourceInvestigationHandoff, type CanonicalMultiSourceDatasetV1 } from '../lib/understanding-core/canonical-multisource-boundary';
 import { projectCanonicalArtifactToUnderstandingNext } from '../lib/canonical-consumer-presentation-adapter';
-import { presentCanonicalConsumerArtifact, type CanonicalRemediationOperationV1 } from '../lib/understanding-core/canonical-consumer-presentation-contract';
+import { presentCanonicalConsumerArtifact, presentCanonicalMultiSourceRelationship, type CanonicalRemediationOperationV1 } from '../lib/understanding-core/canonical-consumer-presentation-contract';
 import type { AnalysisAction } from '../lib/analysis-opportunity-actions';
 import { createRuntimeIntentFromAnalysisAction } from '../lib/analysis-runtime-contract';
 import { createRuntimePlanPreview } from '../lib/runtime-planner-preview';
@@ -28,7 +28,6 @@ import { generateCanonicalAIBriefing } from '../lib/canonical-ai-briefing';
 import { useNavigate } from 'react-router-dom';
 import { createVirtualDatasetPlan } from '../lib/virtual-dataset-planner';
 import { selectFirstNonEmptyRows } from '../lib/row-surface';
-import { calculateDatasetHealth } from '../lib/dataset-health-engine';
 import { useDisplayPreferences } from '../stores/display-preferences-store';
 import { ExecutionRunCoordinator } from '@lightbi/runtime';
 import { advancedSourceId, useAdvancedSourceStore } from '../stores/advanced-source-store';
@@ -46,9 +45,8 @@ import { useHomeOnlineSourceIntake } from '../hooks/useHomeOnlineSourceIntake';
 import { HomeWorkspaceView } from '../components/home/HomeWorkspaceView';
 import { useHomeSourcePicker } from '../hooks/useHomeSourcePicker';
 import { HomeSourcePickerMenu } from '../components/home/HomeSourcePickerMenu';
-import { createHomeChartOption, getHomeGreeting, presentDatasetTrust, unavailableLegacyPresentation } from '../lib/home-presentation';
+import { createHomeChartOption, getHomeGreeting, unavailableLegacyPresentation } from '../lib/home-presentation';
 import { useHomeQuestionApi } from '../hooks/useHomeQuestionApi';
-
 export const Home: React.FC = () => {
   const { preferences } = useDisplayPreferences();
   const navigate = useNavigate();
@@ -77,7 +75,7 @@ export const Home: React.FC = () => {
   const [multiSourceBuilding, setMultiSourceBuilding] = useState(false);
   const [multiSourceBuildResult, setMultiSourceBuildResult] = useState<{ relationshipState: CanonicalMultiSourceDatasetV1["relationship"]["validationState"] | null; blockers: string[] }>({ relationshipState: null, blockers: [] });
   const [lastInspectedFamilies, setLastInspectedFamilies] = useState<DatasetFamily[] | null>(null);
-  const [decisionTrustReport, setDecisionTrustReport] = useState<DecisionTrustReport | null>(null);
+  const [, setDecisionTrustReport] = useState<DecisionTrustReport | null>(null);
   const [canonicalOverlayRebuildState, setCanonicalOverlayRebuildState] = useState<"idle" | "pending" | "succeeded" | "failed">("idle");
   const [canonicalReviewTarget, setCanonicalReviewTarget] = useState<CanonicalRemediationOperationV1 | null>(null);
   const [isAsking, setIsAsking] = useState(false);
@@ -152,28 +150,10 @@ export const Home: React.FC = () => {
   };
 
   const planningWorkflow = useHomePlanningWorkflow(workspaceState);
-
-  const datasetHealthResult = React.useMemo(() => {
-    if (currentDataset?.status === 'ready' && currentDataset.sourceType !== "virtual_business_view" && currentDataset.profiles) {
-      const pseudoFamily: DatasetFamily = {
-        id: currentDataset.file_name || 'dataset_1',
-        name: currentDataset.file_name || 'Dataset 1',
-        schemaFingerprint: "hash",
-        files: [],
-        columns: Object.keys(currentDataset.profiles),
-        profiles: currentDataset.profiles,
-        totalRows: 1000
-      };
-      return calculateDatasetHealth(pseudoFamily);
-    }
-    return null;
-  }, [currentDataset]);
-
   type AnalysisMode = "explore" | "investigate" | "ask";
   const [analysisMode, setAnalysisMode] = useState<AnalysisMode>("explore");
   const [selectedPerspective, setSelectedPerspective] = useState<string | null>(null);
   const [selectedBusinessView, setSelectedBusinessView] = useState<string | null>(null);
-  
   const activeAnalysisIntent = analysisIntent || selectedTopic || null;
 
   const renderSourcePickerMenu = (isOpen: boolean, positionClass: string) => {
@@ -182,18 +162,14 @@ export const Home: React.FC = () => {
     );
   };
 
-  // Pool selection ONLY uses real dataset columns (status === "ready").
   const selectedPoolKey = React.useMemo(() => {
     if (currentDataset?.status !== 'ready') return 'default';
     const columns = currentDataset?.columns || [];
     return selectHeroSuggestionPool({ dataColumns: columns });
   }, [currentDataset]);
 
-  // Legacy presentation branches remain mounted for compatibility, but no legacy
-  // detector or understanding-next orchestrator participates in the selected path.
   const guidedInvestigationResult = unavailableLegacyPresentation<GuidedInvestigationResult>();
   const datasetUnderstanding = unavailableLegacyPresentation<DatasetUnderstanding>();
-
   const canonicalRows = React.useMemo(
     () => selectFirstNonEmptyRows(
       currentDataset?.understandingRows,
@@ -207,6 +183,12 @@ export const Home: React.FC = () => {
 
   const canonicalArtifact = React.useMemo(() => {
     if (currentDataset?.status !== 'ready' || !Array.isArray(currentDataset.columns)) return null;
+    const multiSourceDataset = currentDataset.canonicalMultiSourceDataset as CanonicalMultiSourceDatasetV1 | undefined;
+    if (multiSourceDataset) {
+      const metricSourceId = multiSourceDataset.analyses.find((item) => item.metricSourceId)?.metricSourceId;
+      const metricSource = multiSourceDataset.orderedSourceMemberships.find((item) => item.sourceId === metricSourceId);
+      return metricSource?.artifact ?? null;
+    }
     const sourceType = String(currentDataset.sourceType || 'unknown');
     const sourceKind = ['postgresql', 'mysql', 'mariadb', 'mongodb_atlas', 'sqlite'].includes(sourceType)
       ? 'database_table'
@@ -239,6 +221,12 @@ export const Home: React.FC = () => {
       stale: canonicalOverlayRebuildState === 'pending' || canonicalOverlayRebuildState === 'failed',
     }) : null,
     [canonicalArtifact, canonicalOverlayRebuildState]
+  );
+  const canonicalMultiSourcePresentation = React.useMemo(
+    () => currentDataset?.canonicalMultiSourceDataset
+      ? presentCanonicalMultiSourceRelationship(currentDataset.canonicalMultiSourceDataset)
+      : null,
+    [currentDataset?.canonicalMultiSourceDataset]
   );
 
   useEffect(() => {
@@ -445,7 +433,7 @@ export const Home: React.FC = () => {
     if (!hasError) {
       setMultiSourceDrafts(Object.fromEntries(files.map((file, index) => [`${index}:${file.name}`, {
         selected: true,
-        role: 'unknown_other',
+        role: '',
         documentColumn: '',
         periodStart: '',
         periodEnd: '',
@@ -531,7 +519,7 @@ export const Home: React.FC = () => {
         });
         if (!boundary) throw new Error(`Full-source canonical boundary unavailable for ${file.name}.`);
         let overlay = createCanonicalUserOverlay(boundary);
-        overlay = appendCanonicalEvidenceDeclaration(overlay, boundary, { evidenceType: 'source_role', value: { kind: 'source_role', role: draft.role }, scope: { level: 'source_file' } });
+        if (draft.role) overlay = appendCanonicalEvidenceDeclaration(overlay, boundary, { evidenceType: 'source_role', value: { kind: 'source_role', role: draft.role }, scope: { level: 'source_file' } });
         if (draft.documentColumn) overlay = appendCanonicalEvidenceDeclaration(overlay, boundary, { evidenceType: 'document_identity', value: { kind: 'document_identity', physicalColumn: draft.documentColumn }, scope: { level: 'physical_column', physicalColumn: draft.documentColumn } });
         if (draft.periodStart && draft.periodEnd) overlay = appendCanonicalEvidenceDeclaration(overlay, boundary, { evidenceType: 'reporting_period', value: { kind: 'reporting_period', start: draft.periodStart, end: draft.periodEnd }, scope: { level: 'source_file' } });
         const monetaryColumns = draft.monetaryColumns.split(',').map((value) => value.trim()).filter(Boolean);
@@ -552,7 +540,7 @@ export const Home: React.FC = () => {
       });
       const built = await buildCanonicalMultiSourceDataset({
         multiSourceDatasetId: `multisource:${members.map((item) => item.boundary.sourceId).sort().join('|')}`,
-        members: members.map((item) => ({ artifact: item.artifact, overlay: item.overlay, required: ['sales', 'accounting'].includes(item.draft.role) })),
+        members: members.map((item) => ({ artifact: item.artifact, overlay: item.overlay, required: item.draft.role === 'sales' || item.draft.role === 'accounting' })),
       });
       if (built.status !== 'valid') throw new Error(built.blockers.join(', '));
       const analysis = built.dataset.analyses[0];
@@ -602,18 +590,37 @@ export const Home: React.FC = () => {
     }
   };
 
-  const handleUseLocalDataset = () => {
+  const handleUseLocalDataset = (familyIdOverride?: string, sourceNameOverride?: string) => {
     if (!pendingLocalBatch || pendingLocalBatch.status !== 'ready') return;
     
-    let familyId = pendingLocalBatch.selectedFamilyId;
+    let familyId = familyIdOverride ?? pendingLocalBatch.selectedFamilyId;
     if (!familyId && pendingLocalBatch.families.length === 1) {
       familyId = pendingLocalBatch.families[0].id;
     }
     
     if (!familyId) return;
 
-    const family = pendingLocalBatch.families.find(f => f.id === familyId);
-    if (!family) return;
+    const selectedFamily = pendingLocalBatch.families.find(f => f.id === familyId);
+    if (!selectedFamily) return;
+    const selectedSource = sourceNameOverride
+      ? selectedFamily.files.find((item) => item.file.name === sourceNameOverride)
+      : selectedFamily.files.length === 1
+        ? selectedFamily.files[0]
+        : null;
+    if (!selectedSource || selectedSource.result.status !== 'accessible') return;
+    const selectedMetadata = selectedSource.result.metadata;
+    const selectedData = selectedMetadata.is_workbook && selectedMetadata.default_sheet && selectedMetadata.sheets
+      ? selectedMetadata.sheets[selectedMetadata.default_sheet]
+      : selectedMetadata;
+    const family: DatasetFamily = {
+      ...selectedFamily,
+      id: `${selectedFamily.id}:${selectedSource.file.name}`,
+      name: selectedSource.file.name,
+      files: [selectedSource],
+      columns: selectedData.columns ?? selectedFamily.columns,
+      profiles: selectedData.profiles ?? selectedFamily.profiles,
+      totalRows: selectedData.rows_count ?? 0,
+    };
 
     const newState = createWorkspaceUnderstandingState({ type: 'dataset', datasetId: family.id });
     setWorkspaceState(newState);
@@ -635,11 +642,14 @@ export const Home: React.FC = () => {
           }
         }
       }
+      const profiledSource = md?.is_workbook && md.default_sheet && md.sheets
+        ? md.sheets[md.default_sheet]
+        : md;
       return {
         name: item.file.name,
         rows,
         columns: colsCount,
-        fingerprint: family.schemaFingerprint,
+        fingerprint: profiledSource?.canonical_full_file_profile?.sourceFingerprint ?? null,
         persistedFile: md?.persisted_file,
         sheetNames: md?.is_workbook && md.default_sheet ? [md.default_sheet] : []
       };
@@ -679,7 +689,7 @@ export const Home: React.FC = () => {
     };
     console.log("TRACE [HOME] currentDataset.previewRows.length:", finalPreviewRows.length);
 
-    const sourceName = pendingLocalBatch.families.length > 1 ? family.name : (family.files.length > 1 ? `Combined dataset (${family.files.length} files)` : family.files[0].file.name);
+    const sourceName = family.files[0].file.name;
     const onlyItem = family.files.length === 1 && family.files[0].result.status === 'accessible' ? family.files[0] : null;
     const onlyMetadata = onlyItem?.result.status === 'accessible' ? onlyItem.result.metadata : null;
     const onlySheet = onlyMetadata?.is_workbook && onlyMetadata.default_sheet && onlyMetadata.sheets
@@ -772,17 +782,15 @@ export const Home: React.FC = () => {
     planningWorkflow.setRecipePreview(generateRecipePlan(suggestion.text));
   };
 
-  const datasetTrustScore = datasetHealthResult?.overall ?? null;
-  const { label: datasetTrustLabel, className: datasetTrustClass } = presentDatasetTrust(datasetTrustScore);
-
   return <HomeWorkspaceView model={{
     activeConnection, setActiveConnection, handleOnlineSourceInspected, result, isAsking, selectedTopic, currentDataset, pendingLocalBatch,
     isPlusMenuOpen, setIsPlusMenuOpen, isReplaceMenuOpen, setIsReplaceMenuOpen, setPendingLocalBatch, greeting: getHomeGreeting(), navigate, questionInputRef, inputValue, setInputValue, setIsInputFocused, askQuestion,
     activeAnalysisIntent, questionPlaceholder, renderSourcePickerMenu, activeChips, setAnalysisIntent, openLocalFilePicker, openOnlineDataDrawer,
     openDatabaseDrawer, workspaceSessions, sessionStatus, preferences, handleOpenWorkspaceSession, handleDeleteWorkspaceSession, fileInputRef,
-    handleFileChange, uploadError, isUploading, workspaceState, datasetTrustClass, datasetTrustScore, datasetTrustLabel, isSavingSession,
-    handleSaveWorkspaceSession, isDataPreviewOpen, setIsDataPreviewOpen, decisionTrustReport, datasetHealthResult, datasetUnderstandingNext,
+    handleFileChange, uploadError, isUploading, workspaceState, isSavingSession,
+    handleSaveWorkspaceSession, isDataPreviewOpen, setIsDataPreviewOpen, datasetUnderstandingNext,
     canonicalArtifact, canonicalPresentation, handleCanonicalOverlayChange, handleCanonicalRemediation, canonicalOverlayRebuildState,
+    canonicalMultiSourcePresentation,
     canonicalReviewTarget, multiSourceBuildResult, multiSourceReviewSources, multiSourceDrafts, setMultiSourceDrafts, multiSourceBuilding,
     handleBuildCanonicalMultiSource, handleCancelInspection, handleUseLocalDataset, guidedInvestigationResult, datasetUnderstanding,
     activeBusinessViews, selectedPerspective, setSelectedPerspective, analysisMode, setAnalysisMode, selectedBusinessView, setSelectedBusinessView,

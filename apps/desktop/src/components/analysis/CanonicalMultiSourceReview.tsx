@@ -4,7 +4,7 @@ import type { CanonicalSourceRoleV1, GovernedRelationshipStateV1 } from "../../l
 
 export type MultiSourceDraftV1 = {
   selected: boolean;
-  role: CanonicalSourceRoleV1;
+  role: CanonicalSourceRoleV1 | "";
   documentColumn: string;
   periodStart: string;
   periodEnd: string;
@@ -27,11 +27,22 @@ type Props = {
   building: boolean;
   relationshipState?: GovernedRelationshipStateV1 | null;
   blockers?: string[];
+  relationshipPresentation?: {
+    state: string;
+    relationshipArtifactId: string;
+    participatingSources: Array<{ sourceId: string; label: string; role: string; required: boolean }>;
+    blockers: string[];
+    restrictions: string[];
+  } | null;
 };
 
-const roles: CanonicalSourceRoleV1[] = ["unknown_other", "sales", "accounting", "logistics", "inventory_snapshot", "inventory_movement"];
+const roles: Array<CanonicalSourceRoleV1 | ""> = ["", "sales", "accounting", "logistics", "inventory_snapshot", "inventory_movement"];
 
-export const CanonicalMultiSourceReview: React.FC<Props> = ({ sources, drafts, onChange, onBuild, building, relationshipState, blockers = [] }) => (
+export const CanonicalMultiSourceReview: React.FC<Props> = ({ sources, drafts, onChange, onBuild, building, relationshipState, blockers = [], relationshipPresentation = null }) => {
+  const selected = sources.filter((source) => drafts[source.key]?.selected);
+  const missingRoles = selected.filter((source) => !drafts[source.key]?.role);
+  const buildDisabled = building || selected.length < 2 || missingRoles.length > 0;
+  return (
   <section data-testid="canonical-multisource-review" className="rounded-xl border border-black/10 bg-white shadow-sm">
     <div className="border-b border-black/10 p-4">
       <div className="flex items-center gap-2"><Database className="h-4 w-4 text-blue-600" /><h3 className="text-[15px] font-semibold text-[#202123]">Build a governed multi-source dataset</h3></div>
@@ -47,7 +58,7 @@ export const CanonicalMultiSourceReview: React.FC<Props> = ({ sources, drafts, o
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center justify-between gap-2"><p className="truncate text-[13px] font-semibold text-[#202123]">{source.name}</p><span className="text-[11px] text-black/45">{source.rowCount.toLocaleString()} rows · {source.columns.length} columns</span></div>
               <div className="mt-3 grid gap-2 md:grid-cols-2 lg:grid-cols-3">
-                <label className="text-[11px] text-black/55">Source role<select aria-label={`Role for ${source.name}`} value={value.role} onChange={(event) => onChange(source.key, { ...value, role: event.target.value as CanonicalSourceRoleV1 })} className="mt-1 w-full rounded-md border border-black/10 bg-white px-2 py-2 text-[12px]">{roles.map((role) => <option key={role} value={role}>{role}</option>)}</select></label>
+                <label className="text-[11px] text-black/55">Source role<select aria-label={`Role for ${source.name}`} value={value.role} onChange={(event) => onChange(source.key, { ...value, role: event.target.value as CanonicalSourceRoleV1 | "" })} className="mt-1 w-full rounded-md border border-black/10 bg-white px-2 py-2 text-[12px]">{roles.map((role) => <option key={role || "none"} value={role}>{role || "Select role..."}</option>)}</select></label>
                 <label className="text-[11px] text-black/55">Document identity<select aria-label={`Document identity for ${source.name}`} value={value.documentColumn} onChange={(event) => onChange(source.key, { ...value, documentColumn: event.target.value })} className="mt-1 w-full rounded-md border border-black/10 bg-white px-2 py-2 text-[12px]"><option value="">Not declared</option>{source.columns.map((column) => <option key={column} value={column}>{column}</option>)}</select></label>
                 <label className="text-[11px] text-black/55">Currency<input aria-label={`Currency for ${source.name}`} value={value.currency} onChange={(event) => onChange(source.key, { ...value, currency: event.target.value.toUpperCase() })} placeholder="VND" className="mt-1 w-full rounded-md border border-black/10 bg-white px-2 py-2 text-[12px]" /></label>
                 <label className="text-[11px] text-black/55">Period start<input aria-label={`Period start for ${source.name}`} type="date" value={value.periodStart} onChange={(event) => onChange(source.key, { ...value, periodStart: event.target.value })} className="mt-1 w-full rounded-md border border-black/10 bg-white px-2 py-2 text-[12px]" /></label>
@@ -58,8 +69,15 @@ export const CanonicalMultiSourceReview: React.FC<Props> = ({ sources, drafts, o
           </div>
         </div>;
       })}
-      {(relationshipState || blockers.length > 0) && <div data-testid="multisource-relationship-state" className="rounded-lg border border-black/10 bg-gray-50 p-3 text-[12px] text-black/65"><div className="flex items-center gap-2 font-semibold text-[#202123]"><Link2 className="h-4 w-4" />Relationship: {relationshipState ?? "not built"}</div>{blockers.length > 0 && <p className="mt-1 break-words">{blockers.join(", ")}</p>}</div>}
-      <div className="flex justify-end"><button data-testid="build-canonical-multisource" type="button" onClick={onBuild} disabled={building || sources.filter((source) => drafts[source.key]?.selected).length < 2} className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-[12px] font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50">{building && <Loader2 className="h-4 w-4 animate-spin" />}Build governed dataset</button></div>
+      {(relationshipPresentation || relationshipState || blockers.length > 0) && <div data-testid="multisource-relationship-state" className="rounded-lg border border-black/10 bg-gray-50 p-3 text-[12px] text-black/65">
+        <div className="flex items-center gap-2 font-semibold text-[#202123]"><Link2 className="h-4 w-4" />Relationship: {relationshipPresentation?.state ?? relationshipState ?? "not built"}</div>
+        {relationshipPresentation && <p className="mt-1 break-all text-[11px] text-black/45">Artifact: {relationshipPresentation.relationshipArtifactId}</p>}
+        {(relationshipPresentation?.blockers.length || blockers.length > 0) ? <p className="mt-1 break-words">{(relationshipPresentation?.blockers ?? blockers).join(", ")}</p> : null}
+        {relationshipPresentation?.restrictions.length ? <p className="mt-1 break-words">Restrictions: {relationshipPresentation.restrictions.join(", ")}</p> : null}
+      </div>}
+      {missingRoles.length > 0 && <p role="status" className="text-[12px] text-amber-700">Select an explicit role for every included source. A placeholder is not source evidence.</p>}
+      <div className="flex justify-end"><button data-testid="build-canonical-multisource" type="button" onClick={onBuild} disabled={buildDisabled} title={missingRoles.length ? "Select a source role for every included source." : undefined} className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-[12px] font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50">{building && <Loader2 className="h-4 w-4 animate-spin" />}Build governed dataset</button></div>
     </div>
   </section>
-);
+  );
+};

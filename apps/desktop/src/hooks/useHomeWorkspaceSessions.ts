@@ -158,7 +158,7 @@ export function useHomeWorkspaceSessions(deps: HomeWorkspaceSessionDependencies)
             const period = latest('reporting_period');
             const currency = latest('reporting_currency');
             return [`${index}:${file.name}`, {
-              selected: Boolean(membership), role: role?.role ?? 'unknown_other', documentColumn: documentIdentity?.physicalColumn ?? '',
+              selected: Boolean(membership), role: role?.role === 'unknown_other' ? '' : role?.role ?? '', documentColumn: documentIdentity?.physicalColumn ?? '',
               periodStart: period?.start ?? '', periodEnd: period?.end ?? '', currency: currency?.currency ?? '',
               monetaryColumns: Array.isArray(currency?.monetaryColumns) ? currency.monetaryColumns.join(', ') : '',
             } satisfies MultiSourceDraftV1];
