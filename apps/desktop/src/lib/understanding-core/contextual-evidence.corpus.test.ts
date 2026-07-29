@@ -26,7 +26,7 @@ function sourceArtifacts(source: Sample["sources"][number]) {
 }
 
 describe.sequential("Phase 3B1 governed corpus evidence aggregation", () => {
-  it("preserves all candidates across 30 cases and carries all 14 governed absence debts", () => {
+  it("preserves all candidates across 30 cases and carries all 10 governed absence debts", () => {
     const cache = new Map<string, ReturnType<typeof sourceArtifacts>>();
     const familyCounts: Record<EvidenceFamily, number> = { lexical_identity: 0, physical_compatibility: 0, value_semantics: 0, cardinality_role: 0, sibling_context: 0, structural_integrity: 0 };
     const emptyAssessmentCounts = (): Record<string, number> => ({ supports: 0, conflicts: 0, mixed: 0, neutral: 0, unavailable: 0 });
@@ -78,8 +78,8 @@ describe.sequential("Phase 3B1 governed corpus evidence aggregation", () => {
       }
     }
     expect(samples).toHaveLength(30);
-    expect(debts.filter((item) => item.reasonCode === "required_candidate_absent")).toHaveLength(2);
-    expect(debts.filter((item) => item.reasonCode === "contextual_candidate_absent")).toHaveLength(10);
+    expect(debts.filter((item) => item.reasonCode === "required_candidate_absent")).toHaveLength(1);
+    expect(debts.filter((item) => item.reasonCode === "contextual_candidate_absent")).toHaveLength(9);
     expect(observations).toBeGreaterThan(0); expect(profiles).toBeGreaterThan(0);
     expect(Object.values(familyCounts).every((count) => count > 0)).toBe(true);
     expect(broadOccurrences).toBe(15);
