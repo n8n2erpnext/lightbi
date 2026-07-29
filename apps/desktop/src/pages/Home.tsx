@@ -57,6 +57,7 @@ import { useHomeQuestionApi } from '../hooks/useHomeQuestionApi';
 import { evaluateRuntimeSourceContinuity } from '../lib/runtime-source-continuity';
 import { projectCanonicalDomainPerspectives, projectGovernedBundleCandidates, type CanonicalBusinessPerspectiveCandidateV1, type GovernedBundleCandidateV1 } from '../lib/canonical-source-candidate-projection';
 import { findPendingSourceFamily, projectPendingMultiSourceReviewSources, selectGovernedBundleDrafts, type PendingLocalFileBatch } from '../lib/home-multisource-candidate-review';
+import { createDomainComparisonBrief, type BAComparisonPeriodInput } from '../lib/ba-comparison-engine';
 export const Home: React.FC = () => {
   const { preferences } = useDisplayPreferences();
   const navigate = useNavigate();
@@ -668,6 +669,34 @@ export const Home: React.FC = () => {
         });
         const analysisRows = [...combinedRows.values()].sort((left, right) =>
           String(left.reporting_period).localeCompare(String(right.reporting_period)));
+        const deepDiveRole = ["profitability", "finance_accounting", "executive_overview"].includes(perspectiveId)
+          ? "accounting"
+          : perspectiveId === "fulfillment_operations"
+            ? "logistics"
+            : "sales";
+        const deepDivePeriods: BAComparisonPeriodInput[] = members
+          .filter((item) => item.draft.role === deepDiveRole)
+          .map((item) => ({
+            id: item.boundary.sourceId,
+            label: item.draft.periodStart.slice(0, 7),
+            sourceName: item.file.name,
+            rows: (item.source.analysis_rows ?? item.boundary.semanticSample.rows) as Record<string, unknown>[],
+            labelConfidence: "high" as const,
+            labelReason: "Observed in the source and selected in this governed analysis.",
+            sortableKey: item.draft.periodStart.slice(0, 7),
+          }))
+          .filter((item) => item.rows.length > 0);
+        const canonicalPerspectiveBrief = deepDivePeriods.length >= 2
+          ? createDomainComparisonBrief({
+            datasetName: `${perspectiveId.replaceAll("_", " ")} analysis`,
+            periods: deepDivePeriods,
+            preferredDomain: deepDiveRole === "accounting"
+              ? "finance"
+              : deepDiveRole === "logistics"
+                ? "operations"
+                : "revenue",
+          })
+          : null;
         registerAdvancedSource({
           id: advancedSourceId("canonical_perspective_collection", perspectiveId),
           name: `${perspectiveId.replaceAll("_", " ")} · ${members.length} governed sources`,
@@ -717,6 +746,7 @@ export const Home: React.FC = () => {
           canonicalSourceBoundary: primary.boundary,
           canonicalUserOverlay: primary.overlay,
           canonicalPerspectiveId: perspectiveId,
+          canonicalPerspectiveBrief,
           canonicalPerspectiveExecutions: periodExecutions,
           canonicalPerspectiveMultiSourceExecutions: multiSourceExecutions,
           analysisRowScope: 'full_file_governed_collection',

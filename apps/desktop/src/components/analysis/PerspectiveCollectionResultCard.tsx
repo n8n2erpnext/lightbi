@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import ReactECharts from "echarts-for-react";
 import { ArrowDownRight, ArrowUpRight, CheckCircle2, ChevronRight, Lightbulb, ShieldCheck } from "lucide-react";
+import type { DomainComparisonBrief } from "../../lib/ba-comparison-engine";
+import { BusinessComparisonBriefCard } from "./BusinessComparisonBriefCard";
 
 type Row = Record<string, string | number>;
 
@@ -14,8 +16,9 @@ export const PerspectiveCollectionResultCard: React.FC<{
   perspectiveId: string;
   rows: Row[];
   sourceCount: number;
-  onExplore?: (question: string) => void;
-}> = ({ perspectiveId, rows, sourceCount, onExplore }) => {
+  deepDiveBrief?: DomainComparisonBrief | null;
+}> = ({ perspectiveId, rows, sourceCount, deepDiveBrief }) => {
+  const [showDeepDive, setShowDeepDive] = useState(false);
   if (rows.length === 0) return null;
   const metricIds = [...new Set(rows.flatMap((row) =>
     Object.keys(row).filter((key) => key !== "reporting_period")))];
@@ -123,9 +126,9 @@ export const PerspectiveCollectionResultCard: React.FC<{
                   <button
                     key={question}
                     type="button"
-                    onClick={() => onExplore?.(question)}
+                    onClick={() => setShowDeepDive(true)}
                     className="flex w-full items-center justify-between gap-3 rounded-lg border border-amber-200 bg-white/80 px-3 py-2 text-left text-[11px] font-medium leading-4 text-slate-700 transition hover:border-amber-400 hover:text-slate-950 disabled:cursor-default"
-                    disabled={!onExplore}
+                    disabled={!deepDiveBrief}
                   >
                     <span>{question}</span>
                     <ChevronRight className="h-3.5 w-3.5 shrink-0 text-amber-600" />
@@ -140,6 +143,17 @@ export const PerspectiveCollectionResultCard: React.FC<{
           </div>
         </div>
       </div>
+      {showDeepDive && deepDiveBrief && (
+        <div data-testid="governed-ba-deep-dive" className="border-t border-slate-100 bg-slate-50/60 p-5 md:p-6">
+          <div className="mb-3">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-blue-700">Deep analysis</p>
+            <p className="mt-1 text-[12px] leading-5 text-slate-600">
+              Driver rankings use the complete period sources behind this governed result. They are separated from observations that do not yet have causal evidence.
+            </p>
+          </div>
+          <BusinessComparisonBriefCard brief={deepDiveBrief} />
+        </div>
+      )}
     </section>
   );
 };

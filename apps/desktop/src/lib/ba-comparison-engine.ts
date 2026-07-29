@@ -7,6 +7,9 @@ export interface BAComparisonPeriodInput {
   label?: string;
   sourceName?: string;
   rows: Record<string, unknown>[];
+  labelConfidence?: 'high' | 'medium' | 'low';
+  labelReason?: string;
+  sortableKey?: string | null;
 }
 
 export interface BAComparisonInput {
@@ -110,6 +113,10 @@ export interface DomainComparisonBrief {
 }
 
 type SignalFieldMap = Record<string, string | null>;
+type ColumnProfile = {
+  numeric: number;
+  nonEmpty: number;
+};
 
 interface BATotals {
   revenue: number;
@@ -197,9 +204,19 @@ function aliasesForSignal(signalId: string): string[] {
   ].map(normalizeString);
 }
 
+const normalizedAliasesBySignal = new Map<string, string[]>();
+
+function cachedAliasesForSignal(signalId: string): string[] {
+  const cached = normalizedAliasesBySignal.get(signalId);
+  if (cached) return cached;
+  const aliases = aliasesForSignal(signalId);
+  normalizedAliasesBySignal.set(signalId, aliases);
+  return aliases;
+}
+
 function signalCandidateScore(column: string, signalId: string): number {
   const normalized = normalizeString(column);
-  const aliases = aliasesForSignal(signalId);
+  const aliases = cachedAliasesForSignal(signalId);
   if (aliases.includes(normalized)) return 100;
   if (aliases.some(alias => normalized.includes(alias))) return 80;
   if (normalized.length >= 6 && aliases.some(alias => alias.includes(normalized))) return 70;
@@ -218,13 +235,19 @@ function nonEmptyCoverage(rows: Record<string, unknown>[], column: string): numb
   return rows.filter(row => row[column] !== null && row[column] !== undefined && String(row[column]).trim() !== '').length / rows.length;
 }
 
-function findFieldForSignal(rows: Record<string, unknown>[], columns: string[], signalId: string, role: 'measure' | 'dimension' | 'any' = 'any'): string | null {
+function findFieldForSignal(
+  rows: Record<string, unknown>[],
+  columns: string[],
+  signalId: string,
+  role: 'measure' | 'dimension' | 'any' = 'any',
+  columnProfiles?: Map<string, ColumnProfile>,
+): string | null {
   const ranked = columns
     .map(column => ({
       column,
       score: signalCandidateScore(column, signalId),
-      numeric: numericCoverage(rows, column),
-      nonEmpty: nonEmptyCoverage(rows, column)
+      numeric: columnProfiles?.get(column)?.numeric ?? numericCoverage(rows, column),
+      nonEmpty: columnProfiles?.get(column)?.nonEmpty ?? nonEmptyCoverage(rows, column)
     }))
     .filter(item => item.score > 0)
     .filter(item => {
@@ -246,6 +269,13 @@ function findFieldForSignal(rows: Record<string, unknown>[], columns: string[], 
 
 function buildSignalFieldMap(rows: Record<string, unknown>[]): SignalFieldMap {
   const columns = inferColumns(rows);
+  const columnProfiles = new Map(columns.map(column => [
+    column,
+    {
+      numeric: numericCoverage(rows, column),
+      nonEmpty: nonEmptyCoverage(rows, column),
+    },
+  ]));
   const map: SignalFieldMap = {};
   const signals = new Set([
     ...Object.keys(TAXONOMY),
@@ -256,7 +286,7 @@ function buildSignalFieldMap(rows: Record<string, unknown>[]): SignalFieldMap {
   for (const signal of signals) {
     const type = TAXONOMY[signal]?.type;
     const role = type === 'measure' || ['quantity', 'unit_price'].includes(signal) ? 'measure' : type === 'dimension' ? 'dimension' : 'any';
-    map[signal] = findFieldForSignal(rows, columns, signal, role);
+    map[signal] = findFieldForSignal(rows, columns, signal, role, columnProfiles);
   }
 
   return map;
@@ -403,9 +433,9 @@ function inferPeriodInfo(period: BAComparisonPeriodInput, index: number): Period
       periodId: period.id,
       sourceName: period.sourceName,
       label: explicitLabel,
-      confidence: 'medium',
-      sortableKey: null,
-      reason: 'Provided by source metadata.'
+      confidence: period.labelConfidence ?? 'medium',
+      sortableKey: period.sortableKey ?? null,
+      reason: period.labelReason ?? 'Provided by source metadata.'
     };
   }
   const normalized = normalizeString(source);

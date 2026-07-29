@@ -329,11 +329,7 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                       perspectiveId={currentDataset.canonicalPerspectiveId}
                       rows={currentDataset.analysisRows}
                       sourceCount={currentDataset.sourceFiles?.length ?? 1}
-                      onExplore={(question) => {
-                        setInputValue(question);
-                        setAnalysisIntent(question);
-                        askQuestion(question);
-                      }}
+                      deepDiveBrief={currentDataset.canonicalPerspectiveBrief}
                     />
                   )}
                   {currentDataset.canonicalPeriodPartitionWorkspace && currentDataset.canonicalPeriodPartitionExecution && (

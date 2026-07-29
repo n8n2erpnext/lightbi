@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import * as XLSX from 'xlsx';
-import { createDomainComparisonBriefFromFamily, createTwoPeriodBusinessComparison } from './ba-comparison-engine';
+import { createDomainComparisonBrief, createDomainComparisonBriefFromFamily, createTwoPeriodBusinessComparison } from './ba-comparison-engine';
 import type { DatasetFamily } from './batch-inspection';
 
 function readWorkbookRows(path: string): Record<string, unknown>[] {
@@ -198,6 +198,33 @@ describe('ba comparison engine', () => {
     expect(brief.topGrowthDrivers).toHaveLength(10);
     expect(brief.topGrowthDrivers[0]?.key).toBe('P12');
     expect(brief.exportableEvidence).toHaveLength(10);
+  });
+
+  it('preserves governed period evidence as a high-confidence mapping', () => {
+    const brief = createDomainComparisonBrief({
+      periods: [
+        {
+          id: 'may',
+          label: '2026-05',
+          labelConfidence: 'high',
+          labelReason: 'Observed in the source and selected in this governed analysis.',
+          sortableKey: '2026-05',
+          rows: [{ Product: 'A', Revenue: 100 }],
+        },
+        {
+          id: 'june',
+          label: '2026-06',
+          labelConfidence: 'high',
+          labelReason: 'Observed in the source and selected in this governed analysis.',
+          sortableKey: '2026-06',
+          rows: [{ Product: 'A', Revenue: 90 }],
+        },
+      ],
+      preferredDomain: 'revenue',
+    });
+
+    expect(brief.periodMapping.map(period => period.confidence)).toEqual(['high', 'high']);
+    expect(brief.periodMappingNeedsReview).toBe(false);
   });
 
   it('answers the real May vs June 2026 sales ERP comparison with revenue drivers and profit caveats', () => {
