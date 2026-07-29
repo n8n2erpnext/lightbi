@@ -79,6 +79,32 @@ describe("Phase 5M3 governed runtime preflight and query planning", () => {
     }
   });
 
+  it("normalizes governed Excel serial time bindings before grouping", () => {
+    const fixture = createGovernedRuntimeFixture({
+      id: "excel-serial-revenue",
+      metricId: "sales_revenue",
+      questionId: "commerce.sales_revenue.over_time",
+      columns: [
+        { physical: "ReceiptNo", semantic: "receipt" },
+        { physical: "Ngày xuất", semantic: "time_period" },
+        { physical: "Tổng tiền", semantic: "invoice_total" },
+      ],
+      rows: [
+        { ReceiptNo: "R-1", "Ngày xuất": 44458.25, "Tổng tiền": 100 },
+        { ReceiptNo: "R-2", "Ngày xuất": 44458.75, "Tổng tiền": 200 },
+      ],
+    });
+    const timeProfile = fixture.canonicalSource.physical.sourceProfile.columns.find((item) => item.physicalColumnName === "Ngày xuất")!;
+    timeProfile.physicalTypeCandidates = [{ type: "excel_serial_date", confidence: 1, evidenceCount: 2, evidence: ["bounded serial date"] }];
+    const planned = planGovernedMetricQuery(preflightGovernedRuntimeAction(fixture.runtimeInput));
+    expect(planned.state).toBe("planned");
+    if (planned.state === "planned") {
+      expect(planned.plan.timeBinding?.physicalType).toBe("excel_serial_date");
+      expect(planned.plan.sql).toContain("DATE '1899-12-30'");
+      expect(planned.plan.sql).toContain("FLOOR(CAST(\"ngày xuất\" AS DOUBLE))");
+    }
+  });
+
   it("covers the mandatory negative runtime and planning probes", () => {
     const automaticSum = preflightGovernedRuntimeAction(RUNTIME_FIXTURES.transaction().runtimeInput);
     automaticSum.action!.operator = "governed_sum";

@@ -1,6 +1,6 @@
 import { SEMANTIC_SIGNAL_BY_ID, type SemanticSignalDefinition } from "../semantic-registry";
 import type { CanonicalSourceBoundaryV1 } from "./canonical-source-boundary";
-import { createCanonicalSourceCurrencyEvidence, createCanonicalSourceInventorySnapshotEvidence } from "./canonical-source-evidence";
+import { createCanonicalSourceCurrencyEvidence, createCanonicalSourceDocumentIdentityEvidence, createCanonicalSourceInventorySnapshotEvidence, createCanonicalSourceLineMeasureEvidence } from "./canonical-source-evidence";
 import { deterministicPolicySha256 } from "./contextual-evidence-policy";
 import type { CanonicalMetricSourceV1 } from "./governed-domain-metric-contracts";
 import type { ColumnSemanticResolutionV1, SemanticResolutionArtifactV1 } from "./semantic-resolution-contracts";
@@ -39,6 +39,7 @@ export type CanonicalEvidenceTypeV1 =
   | "source_role"
   | "item_identity"
   | "document_identity"
+  | "line_measure"
   | "warehouse_location_identity";
 
 export type CanonicalEvidenceScopeV1 =
@@ -56,6 +57,7 @@ export type CanonicalEvidenceValueV1 =
   | { kind: "source_role"; role: "sales" | "accounting" | "logistics" | "inventory_snapshot" | "inventory_movement" | "unknown_other" }
   | { kind: "item_identity"; physicalColumn: string }
   | { kind: "document_identity"; physicalColumn: string }
+  | { kind: "line_measure"; physicalColumn: string; semanticId: string; rowIdentityPhysicalColumn: string }
   | { kind: "warehouse_location_identity"; physicalColumn: string };
 
 export type CanonicalSourceEvidenceDeclarationV1 = {
@@ -243,6 +245,11 @@ function evidenceValidation(boundary: CanonicalSourceBoundaryV1, declaration: Ca
   } else if (value.kind === "snapshot_as_of_date") {
     if (!isoDate(value.date)) blockers.push("overlay_snapshot_as_of_invalid");
     if (!physicalColumn(boundary, value.physicalColumn)) blockers.push("overlay_snapshot_as_of_column_invalid");
+  } else if (value.kind === "line_measure") {
+    const measure = boundary.fullFileUnderstanding.semantic.columns.find((item) => item.physicalColumn === value.physicalColumn);
+    const identity = boundary.fullFileUnderstanding.semantic.columns.find((item) => item.physicalColumn === value.rowIdentityPhysicalColumn);
+    if (!measure?.candidateTraces.some((trace) => trace.candidateId === value.semanticId && SEMANTIC_SIGNAL_BY_ID.get(trace.candidateId)?.role === "measure")) blockers.push("overlay_line_measure_semantics_incompatible");
+    if (!identity?.candidateTraces.some((trace) => SEMANTIC_SIGNAL_BY_ID.get(trace.candidateId)?.role === "identifier")) blockers.push("overlay_line_measure_identity_incompatible");
   } else if (["item_identity", "document_identity", "warehouse_location_identity"].includes(value.kind)) {
     if (!("physicalColumn" in value) || !physicalColumn(boundary, value.physicalColumn)) blockers.push("overlay_identity_column_invalid");
   }
@@ -297,7 +304,7 @@ function activeValidDeclarations(overlay: CanonicalUserOverlayV1, validation: Ca
 export function applyCanonicalUserOverlay(boundary: CanonicalSourceBoundaryV1, inferred: SemanticResolutionArtifactV1, overlay?: CanonicalUserOverlayV1): CanonicalOverlayProjectionV1 {
   if (!overlay) return emptyCanonicalOverlayProjection(inferred);
   const validation = validateCanonicalUserOverlay(boundary, overlay);
-  if (validation.stale || overlay.schemaVersion !== CANONICAL_USER_OVERLAY_VERSION || validation.blockers.includes("overlay_conflicting_active_mappings")) return { overlayIdentity: overlay.overlayId, semantic: inferred, sourceEvidence: { currency: [], inventorySnapshots: [] }, validation, appliedDecisionIds: [], appliedDeclarationIds: [] };
+  if (validation.stale || overlay.schemaVersion !== CANONICAL_USER_OVERLAY_VERSION || validation.blockers.includes("overlay_conflicting_active_mappings")) return { overlayIdentity: overlay.overlayId, semantic: inferred, sourceEvidence: { currency: [], inventorySnapshots: [], documentIdentities: [], lineMeasures: [] }, validation, appliedDecisionIds: [], appliedDeclarationIds: [] };
   const validDecisionIds = new Set(validation.mappingResults.filter((item) => item.valid).map((item) => item.decisionId));
   const decisions = activeByKey(overlay.mappingDecisions, (item) => item.physicalColumn).filter((item) => validDecisionIds.has(item.decisionId));
   const decisionByColumn = new Map(decisions.map((item) => [item.physicalColumn, item]));
@@ -319,11 +326,43 @@ export function applyCanonicalUserOverlay(boundary: CanonicalSourceBoundaryV1, i
   const inventorySnapshots = role?.kind === "source_role" && role.role === "inventory_snapshot" && uom?.kind === "unit_of_measure" && asOf?.kind === "snapshot_as_of_date" && item?.kind === "item_identity" && warehouse?.kind === "warehouse_location_identity"
     ? [createCanonicalSourceInventorySnapshotEvidence({ sourceId: boundary.sourceId, sourceHash, provenance: { kind: "user_confirmed", reference: overlay.overlayId, referenceHash: { algorithm: "sha256", value: deterministicPolicySha256(declarations.map((entry) => entry.declarationId)) } }, scope: "one_item_warehouse_as_of_snapshot", quantity: { physicalColumn: uom.quantityColumn, semanticId: "stock_qty" }, itemIdentity: { physicalColumn: item.physicalColumn, semanticId: "sku" }, warehouseIdentity: { physicalColumn: warehouse.physicalColumn, semanticId: "warehouse" }, asOf: { physicalColumn: asOf.physicalColumn, semanticId: "time_period", value: asOf.date }, unit: { physicalColumn: uom.uomColumn, semanticId: "uom", value: uom.unit.trim().toUpperCase() } })]
     : [];
-  return { overlayIdentity: overlay.overlayId, semantic, sourceEvidence: { currency, inventorySnapshots }, validation, appliedDecisionIds: decisions.filter((item) => item.decisionType !== "reset_to_inferred").map((item) => item.decisionId), appliedDeclarationIds: declarations.map((item) => item.declarationId) };
+  const documentIdentities = declarations
+    .filter((entry) => entry.value.kind === "document_identity")
+    .flatMap((entry) => {
+      const value = entry.value as Extract<CanonicalEvidenceValueV1, { kind: "document_identity" }>;
+      const column = semantic.columns.find((item) =>
+        item.physicalColumn === value.physicalColumn
+        && item.selectedCandidateId
+        && ["confirmed", "probable"].includes(item.finalState)
+        && SEMANTIC_SIGNAL_BY_ID.get(item.selectedCandidateId)?.role === "identifier");
+      return column?.selectedCandidateId
+        ? [createCanonicalSourceDocumentIdentityEvidence({
+            sourceId: boundary.sourceId,
+            sourceHash,
+            provenance: { kind: "user_confirmed", reference: entry.declarationId, referenceHash: { algorithm: "sha256", value: deterministicPolicySha256(entry) } },
+            physicalColumn: value.physicalColumn,
+            semanticId: column.selectedCandidateId,
+          })]
+        : [];
+    });
+  const lineMeasures = declarations
+    .filter((entry) => entry.value.kind === "line_measure")
+    .map((entry) => {
+      const value = entry.value as Extract<CanonicalEvidenceValueV1, { kind: "line_measure" }>;
+      return createCanonicalSourceLineMeasureEvidence({
+        sourceId: boundary.sourceId,
+        sourceHash,
+        provenance: { kind: "user_confirmed", reference: entry.declarationId, referenceHash: { algorithm: "sha256", value: deterministicPolicySha256(entry) } },
+        physicalColumn: value.physicalColumn,
+        semanticId: value.semanticId,
+        rowIdentityPhysicalColumn: value.rowIdentityPhysicalColumn,
+      });
+    });
+  return { overlayIdentity: overlay.overlayId, semantic, sourceEvidence: { currency, inventorySnapshots, documentIdentities, lineMeasures }, validation, appliedDecisionIds: decisions.filter((item) => item.decisionType !== "reset_to_inferred").map((item) => item.decisionId), appliedDeclarationIds: declarations.map((item) => item.declarationId) };
 }
 
 export function emptyCanonicalOverlayProjection(inferred: SemanticResolutionArtifactV1): CanonicalOverlayProjectionV1 {
-  return { overlayIdentity: null, semantic: inferred, sourceEvidence: { currency: [], inventorySnapshots: [] }, validation: { valid: true, stale: false, blockers: [], mappingResults: [], evidenceResults: [] }, appliedDecisionIds: [], appliedDeclarationIds: [] };
+  return { overlayIdentity: null, semantic: inferred, sourceEvidence: { currency: [], inventorySnapshots: [], documentIdentities: [], lineMeasures: [] }, validation: { valid: true, stale: false, blockers: [], mappingResults: [], evidenceResults: [] }, appliedDecisionIds: [], appliedDeclarationIds: [] };
 }
 
 export function parseCanonicalUserOverlay(value: unknown): CanonicalUserOverlayV1 | null {
@@ -372,6 +411,7 @@ function isEvidenceValue(value: unknown): value is CanonicalEvidenceValueV1 {
   if (value.kind === "reporting_period") return typeof value.start === "string" && typeof value.end === "string";
   if (value.kind === "snapshot_as_of_date") return typeof value.date === "string" && typeof value.physicalColumn === "string";
   if (value.kind === "source_role") return ["sales", "accounting", "logistics", "inventory_snapshot", "inventory_movement", "unknown_other"].includes(String(value.role));
+  if (value.kind === "line_measure") return [value.physicalColumn, value.semanticId, value.rowIdentityPhysicalColumn].every((item) => typeof item === "string");
   return ["item_identity", "document_identity", "warehouse_location_identity"].includes(String(value.kind)) && typeof value.physicalColumn === "string";
 }
 
@@ -395,7 +435,7 @@ function isEvidenceDeclaration(value: unknown): value is CanonicalSourceEvidence
   return value.overlayVersion === CANONICAL_USER_OVERLAY_VERSION
     && typeof value.declarationId === "string"
     && isOverlayBinding(value.binding)
-    && ["reporting_currency", "unit_of_measure", "reporting_period", "snapshot_as_of_date", "source_role", "item_identity", "document_identity", "warehouse_location_identity"].includes(String(value.evidenceType))
+    && ["reporting_currency", "unit_of_measure", "reporting_period", "snapshot_as_of_date", "source_role", "item_identity", "document_identity", "line_measure", "warehouse_location_identity"].includes(String(value.evidenceType))
     && isEvidenceValue(value.value)
     && value.evidenceType === value.value.kind
     && isEvidenceScope(value.scope)

@@ -10,7 +10,7 @@ type SourceOptions = { semantics?: Array<{ id: string; index?: number; state?: "
 
 function source(options: SourceOptions = {}): CanonicalMetricSourceV1 {
   const semantics = options.semantics ?? [
-    { id: "report_date" }, { id: "product" }, { id: "delivery_status" },
+    { id: "report_date" }, { id: "product" }, { id: "warehouse" }, { id: "delivery_status" },
     { id: "order" }, { id: "revenue" }, { id: "sold_qty" },
     { id: "shipment" }, { id: "stock_qty" }, { id: "total_cost" },
     { id: "currency" }, { id: "uom" },
@@ -115,7 +115,7 @@ function activation(state: DomainActivationArtifactV1["state"] = "conditional"):
     schemaVersion: "lightbi.domain-activation.v1",
     packId: "commerce_distribution_mvp",
     packVersion: "1.0.0",
-    manifestPolicyHash: "7b18e323865c6058a780d5ef31527878a60c004a116ba600c95ec6a705b8f37c",
+    manifestPolicyHash: "2d411107a2be1c39eb53eec11368a5813419257ec38ca4ca75e4b6e48251055f",
     identity: "activation-fixture-v1",
     state,
     concepts: [], blockers: [], limitations: [], tuningAllowed: true,
@@ -153,10 +153,10 @@ describe("Phase 5M2 governed commerce question and action generation", () => {
     const metrics = [metric("gross_profit", "conditionally_ready"), metric("delivery_count"), metric("transaction_count"), metric("quantity_sold"), metric("sales_revenue")];
     const first = generated(metrics);
     const reorderedSource = source({ semantics: [
-      { id: "uom", index: 10 }, { id: "currency", index: 9 }, { id: "total_cost", index: 8 },
-      { id: "stock_qty", index: 7 }, { id: "shipment", index: 6 }, { id: "sold_qty", index: 5 },
-      { id: "revenue", index: 4 }, { id: "order", index: 3 }, { id: "delivery_status", index: 2 },
-      { id: "product", index: 1 }, { id: "report_date", index: 0 },
+      { id: "uom", index: 11 }, { id: "currency", index: 10 }, { id: "total_cost", index: 9 },
+      { id: "stock_qty", index: 8 }, { id: "shipment", index: 7 }, { id: "sold_qty", index: 6 },
+      { id: "revenue", index: 5 }, { id: "order", index: 4 }, { id: "delivery_status", index: 3 },
+      { id: "warehouse", index: 2 }, { id: "product", index: 1 }, { id: "report_date", index: 0 },
     ] });
     const second = generated([...metrics].reverse(), reorderedSource);
     expect(first.defaultQuestions).toHaveLength(5);

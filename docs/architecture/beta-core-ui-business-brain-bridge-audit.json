@@ -1,0 +1,54 @@
+{
+  "schemaVersion": "lightbi.beta-core-ui-business-brain-bridge-audit.v1",
+  "recordedAt": "2026-07-28T14:06:00.000Z",
+  "scope": "Canonical perspective selection, full-file chart handoff, and governed deep BA presentation",
+  "findings": [
+    {
+      "id": "BETA-UI-PERSPECTIVE-RECOMMENDATION",
+      "before": "Every perspective with a governed action was labeled Recommended.",
+      "after": "Exactly one deterministic ready perspective is recommended; all other perspectives remain explicit user choices."
+    },
+    {
+      "id": "BETA-UI-RECOGNIZED-ONLY-LABEL",
+      "before": "A recognized-only perspective was labeled Understood, which could imply analysis support.",
+      "after": "Recognized-only perspectives are labeled Evidence found and do not fabricate questions or charts."
+    },
+    {
+      "id": "BETA-UI-FULL-FILE-AUTORUN",
+      "before": "An authorized action could open Investigation without auto-running when preview rows were not retained, even though the full runtime source was available.",
+      "after": "Each authorized investigation session invokes the canonical execution handler exactly once; source continuity and runtime preflight remain authoritative."
+    },
+    {
+      "id": "BETA-BA-GOVERNED-CONTEXT",
+      "before": "Deep BA used governed result rows but did not receive the canonical metric, perspective, full-file scope, limitations, evidence, or decision-use restrictions.",
+      "after": "Deep BA carries governed execution context, prioritizes limitations and restrictions, caps non-authorized decision readiness, and requires business-owner validation before action."
+    }
+  ],
+  "browserEvidence": {
+    "source": "Sales_ERP_June_2026.xlsx",
+    "sourceRows": 1500,
+    "perspective": "revenue",
+    "question": "commerce.sales_revenue.by_product",
+    "resultGroups": 35,
+    "governedResultTotal": 20637539164,
+    "deepBA": {
+      "governedScopeVisible": true,
+      "perspectiveVisible": true,
+      "metricEvidenceVisible": true,
+      "decisionValidationRequired": true
+    }
+  },
+  "verification": {
+    "uiAndBAFocusedTests": "3 files, 34/34 passed",
+    "investigationTests": "15/15 passed",
+    "typescript": "passed",
+    "liveChromiumJourney": "passed"
+  },
+  "safetyPreserved": [
+    "No action is shown without governed question and runtime preflight",
+    "No auto-run when the handoff is not executable",
+    "No fallback executor",
+    "No decision-use authorization inferred from successful metric execution",
+    "No recognized-only perspective promoted to a chart"
+  ]
+}

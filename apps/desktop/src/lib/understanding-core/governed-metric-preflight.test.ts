@@ -82,7 +82,7 @@ describe("Phase 5M1 governed commerce domain and metric foundation", () => {
     expect(DOMAIN_SUPPORT_MANIFEST).toEqual([]);
     expect(GOVERNED_DOMAIN_SUPPORT_MANIFEST_V1).toHaveLength(1);
     expect(GOVERNED_DOMAIN_SUPPORT_MANIFEST_V1[0].packStatus).toBe("conditional");
-    expect(GOVERNED_METRIC_DEFINITIONS_V1).toHaveLength(6);
+    expect(GOVERNED_METRIC_DEFINITIONS_V1).toHaveLength(8);
     expect(GOVERNED_METRIC_DEFINITIONS_V1.every((metric) => metric.executionAuthorization === false && metric.requirements.length > 0)).toBe(true);
   });
 

@@ -5,6 +5,7 @@ import { DataIntakeDrawer } from '../data-intake/DataIntakeDrawer';
 import { UnderstandingNextCard } from '../analysis/UnderstandingNextCard';
 import { CanonicalEvidenceReview } from '../analysis/CanonicalEvidenceReview';
 import { CanonicalMultiSourceReview } from '../analysis/CanonicalMultiSourceReview';
+import { PeriodPartitionResultCard } from '../analysis/PeriodPartitionResultCard';
 import { BusinessViewSummaryCard } from '../analysis/BusinessViewSummaryCard';
 import { homeGuidance } from '../../content/home-guidance';
 import { getActiveAnalysisContextLabel } from '../../lib/workspace-understanding-state';
@@ -16,7 +17,7 @@ import { HomeDataPreviewDialog } from './HomeDataPreviewDialog';
 import { HomePlanningDialogs } from './HomePlanningDialogs';
 
 export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
-  const { activeConnection, setActiveConnection, handleOnlineSourceInspected, result, isAsking, selectedTopic, currentDataset, pendingLocalBatch, setPendingLocalBatch, isPlusMenuOpen, setIsPlusMenuOpen, isReplaceMenuOpen, setIsReplaceMenuOpen, greeting, navigate, questionInputRef, inputValue, setInputValue, setIsInputFocused, askQuestion, activeAnalysisIntent, questionPlaceholder, renderSourcePickerMenu, activeChips, setAnalysisIntent, openLocalFilePicker, openOnlineDataDrawer, openDatabaseDrawer, workspaceSessions, sessionStatus, preferences, handleOpenWorkspaceSession, handleDeleteWorkspaceSession, fileInputRef, handleFileChange, uploadError, isUploading, workspaceState, isSavingSession, handleSaveWorkspaceSession, isDataPreviewOpen, setIsDataPreviewOpen, datasetUnderstandingNext, canonicalArtifact, canonicalPresentation, canonicalMultiSourcePresentation, handleCanonicalOverlayChange, handleCanonicalRemediation, canonicalOverlayRebuildState, canonicalReviewTarget, multiSourceBuildResult, multiSourceReviewSources, multiSourceDrafts, setMultiSourceDrafts, multiSourceBuilding, handleBuildCanonicalMultiSource, handleCancelInspection, handleUseLocalDataset, guidedInvestigationResult, datasetUnderstanding, activeBusinessViews, selectedPerspective, setSelectedPerspective, analysisMode, setAnalysisMode, selectedBusinessView, setSelectedBusinessView, visibleQuestionSuggestions, selectedViewData, previewActionId, setPreviewActionId, handleSelectAnalysisAction, handleLegacyQuestionSuggestion, lastInspectedFamilies, getEChartsOption, planningWorkflow, canonicalRows } = model;
+  const { activeConnection, setActiveConnection, handleOnlineSourceInspected, result, isAsking, selectedTopic, currentDataset, pendingLocalBatch, setPendingLocalBatch, isPlusMenuOpen, setIsPlusMenuOpen, isReplaceMenuOpen, setIsReplaceMenuOpen, greeting, navigate, questionInputRef, inputValue, setInputValue, setIsInputFocused, askQuestion, activeAnalysisIntent, questionPlaceholder, renderSourcePickerMenu, activeChips, setAnalysisIntent, openLocalFilePicker, openOnlineDataDrawer, openDatabaseDrawer, workspaceSessions, sessionStatus, preferences, handleOpenWorkspaceSession, handleDeleteWorkspaceSession, fileInputRef, handleFileChange, uploadError, isUploading, workspaceState, isSavingSession, handleSaveWorkspaceSession, isDataPreviewOpen, setIsDataPreviewOpen, datasetUnderstandingNext, canonicalArtifact, canonicalPresentation, canonicalDomainPerspectives, canonicalMultiSourcePresentation, runtimeSourceContinuity, handleCanonicalOverlayChange, handleCanonicalRemediation, canonicalOverlayRebuildState, canonicalReviewTarget, multiSourceBuildResult, multiSourceReviewSources, multiSourceBundles, multiSourceDrafts, setMultiSourceDrafts, multiSourceBuilding, handleReviewMultiSourceBundle, handleUseMultiSourceReviewSource, handleBuildCanonicalMultiSource, handleCancelInspection, handleUseLocalDataset, guidedInvestigationResult, datasetUnderstanding, activeBusinessViews, selectedPerspective, setSelectedPerspective, analysisMode, setAnalysisMode, selectedBusinessView, setSelectedBusinessView, visibleQuestionSuggestions, selectedViewData, previewActionId, setPreviewActionId, handleSelectAnalysisAction, handleLegacyQuestionSuggestion, lastInspectedFamilies, getEChartsOption, planningWorkflow, canonicalRows } = model;
   const canonicalDatasetState = canonicalOverlayRebuildState === 'pending'
     ? { label: 'Rebuilding', className: 'border-blue-200 bg-blue-50 text-blue-700' }
     : !canonicalArtifact || canonicalArtifact.status !== 'valid'
@@ -41,9 +42,52 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
       />
 
       <div className="mx-auto flex w-full max-w-[1280px] flex-col px-5 py-8 md:px-8 lg:px-10" onClick={e => e.stopPropagation()}>
+        {!result && !isAsking && !selectedTopic && pendingLocalBatch && currentDataset?.status !== 'ready' && (
+          <section className="mb-6 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_16px_45px_rgba(15,23,42,0.05)]">
+            <div className="flex flex-col gap-5 px-5 py-5 md:px-6 lg:flex-row lg:items-center lg:justify-between">
+              <div className="max-w-3xl">
+                <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-blue-700">
+                  <Sparkles className="h-4 w-4" />
+                  Source understanding workspace
+                </div>
+                <h1 className="mt-2 text-[26px] font-semibold tracking-tight text-slate-950 md:text-[30px]">
+                  {pendingLocalBatch.status === 'reading' ? 'Understanding your sources' : 'Review what LightBI found'}
+                </h1>
+                <p className="mt-2 max-w-2xl text-[13px] leading-5 text-slate-600">
+                  {pendingLocalBatch.status === 'reading'
+                    ? 'LightBI is inspecting each complete source, separating schemas and preserving source identity.'
+                    : 'Choose a supported analysis, confirm only the missing evidence, then build a governed dataset. No source is combined automatically.'}
+                </p>
+              </div>
+              <div className="grid grid-cols-3 gap-2 lg:min-w-[360px]">
+                <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-3">
+                  <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">Sources</div>
+                  <div className="mt-1 text-[20px] font-semibold text-slate-950">
+                    {Math.max(pendingLocalBatch.files.length, multiSourceReviewSources.length)}
+                  </div>
+                </div>
+                <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-3">
+                  <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">Groups</div>
+                  <div className="mt-1 text-[20px] font-semibold text-slate-950">{pendingLocalBatch.families.length}</div>
+                </div>
+                <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-3">
+                  <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">Candidates</div>
+                  <div className="mt-1 text-[20px] font-semibold text-slate-950">{multiSourceBundles.length}</div>
+                </div>
+              </div>
+            </div>
+            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 bg-slate-50/70 px-5 py-3 md:px-6">
+              <p className="text-[11px] text-slate-500">Suggestions are evidence candidates, never confirmed facts.</p>
+              <button onClick={openLocalFilePicker} className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-[11px] font-semibold text-slate-700 shadow-sm hover:border-blue-300 hover:text-blue-800">
+                <Plus className="h-3.5 w-3.5" /> Add or replace sources
+              </button>
+            </div>
+          </section>
+        )}
+
         {!result && !isAsking && !selectedTopic && (
           <>
-            {currentDataset?.status !== 'ready' && (
+            {currentDataset?.status !== 'ready' && !pendingLocalBatch && (
               <div className={`flex w-full flex-col items-center justify-center text-center ${pendingLocalBatch ? 'min-h-0 pb-8 pt-10' : 'min-h-[calc(100vh-130px)] pb-12'}`}>
                 <div className="mb-4 rounded-full border border-black/10 bg-white/70 px-3 py-1.5 text-[13px] text-black/45 shadow-sm">{greeting}</div>
                 <div className="relative mb-8 flex w-full max-w-4xl justify-center">
@@ -166,9 +210,9 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
         {isUploading && <div className="mb-4 flex items-center text-sm text-gray-500"><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Uploading and analyzing data...</div>}
 
         {!result && !isAsking && !selectedTopic && (
-          <div className={`w-full grid grid-cols-1 lg:grid-cols-3 ${pendingLocalBatch && currentDataset?.status !== 'ready' ? 'gap-5' : 'gap-8'} items-start pb-12 animate-in fade-in slide-in-from-bottom-4 duration-500`}>
+          <div className={`w-full grid grid-cols-1 lg:grid-cols-3 ${pendingLocalBatch && currentDataset?.status !== 'ready' ? 'gap-4' : 'gap-8'} items-start pb-12 animate-in fade-in slide-in-from-bottom-4 duration-500`}>
             {/* Main Column */}
-            <div className={`flex flex-col gap-8 ${pendingLocalBatch && currentDataset?.status !== 'ready' ? 'mx-auto w-full max-w-3xl lg:col-span-3' : 'lg:col-span-2'}`}>
+            <div className={`flex flex-col gap-8 ${pendingLocalBatch && currentDataset?.status !== 'ready' ? 'w-full lg:col-span-3' : 'lg:col-span-2'}`}>
 
               {/* Data Status Card – only rendered when currentDataset.status === "ready" */}
               {currentDataset?.status === 'ready' && (
@@ -197,7 +241,7 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                             <p className="text-[13px] text-black/50">{formatValue(currentDataset.rows_count, 'number', preferences)} rows · {formatValue(Array.isArray(currentDataset.columns) ? currentDataset.columns.length : 0, 'number', preferences)} columns</p>
                             {currentDataset.semanticSample?.strategy === 'matrix_sample' && (
                               <p className="mt-1 text-[12px] text-blue-700">
-                                Understanding: {formatValue(currentDataset.semanticSample.sampleRowCount, 'number', preferences)} representative rows · Runtime: {currentDataset.runtimeDatasetSource ? 'full local file' : 'representative sample'}
+                                Understanding: {formatValue(currentDataset.semanticSample.sampleRowCount, 'number', preferences)} representative rows · Runtime: {runtimeSourceContinuity?.available ? 'full source available' : 'source reselection required'}
                               </p>
                             )}
                           </>
@@ -257,7 +301,7 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                     </div>
                     <div className="rounded-[14px] bg-[#f7f7f6] px-4 py-3">
                       <div className="text-[11px] font-medium uppercase tracking-wide text-black/40">Runtime</div>
-                      <div className="mt-1 text-[20px] font-semibold text-[#202123]">{currentDataset.runtimeDatasetSource ? 'Full file' : 'Sample'}</div>
+                      <div className="mt-1 text-[20px] font-semibold text-[#202123]">{runtimeSourceContinuity?.available ? 'Full source' : 'Reselect'}</div>
                     </div>
                   </div>
                 </div>
@@ -265,6 +309,12 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
 
               {currentDataset?.status === 'ready' && canonicalArtifact && (
                 <div className="w-full animate-in fade-in slide-in-from-bottom-4 duration-500 flex flex-col gap-4">
+                  {currentDataset.canonicalPeriodPartitionWorkspace && currentDataset.canonicalPeriodPartitionExecution && (
+                    <PeriodPartitionResultCard
+                      workspace={currentDataset.canonicalPeriodPartitionWorkspace}
+                      result={currentDataset.canonicalPeriodPartitionExecution}
+                    />
+                  )}
                   {/* Dataset Understanding Layer */}
                   {datasetUnderstandingNext ? (
                     <>
@@ -272,6 +322,13 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                         understanding={datasetUnderstandingNext}
                         onSelectAction={handleSelectAnalysisAction}
                         canonicalPresentation={canonicalPresentation ?? undefined}
+                        canonicalPerspectives={canonicalDomainPerspectives}
+                        selectedPerspectiveId={selectedPerspective}
+                        onSelectPerspective={(perspectiveId) => {
+                          setSelectedPerspective(perspectiveId);
+                          setSelectedBusinessView(null);
+                          setPreviewActionId(null);
+                        }}
                         onRemediate={handleCanonicalRemediation}
                       />
                       {canonicalArtifact && (
@@ -389,11 +446,15 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
 
               {/* Inline Pending Local Batch Inspection Card */}
               {pendingLocalBatch && (
-                <div className="w-full rounded-xl border border-black/10 bg-white p-4 shadow-sm animate-in fade-in zoom-in-95 flex flex-col gap-4 relative overflow-hidden">
+                <div className={`relative flex w-full flex-col gap-4 overflow-hidden animate-in fade-in zoom-in-95 ${
+                  pendingLocalBatch.status === 'ready' && multiSourceReviewSources.length > 1
+                    ? 'rounded-none border-0 bg-transparent p-0 shadow-none'
+                    : 'rounded-xl border border-black/10 bg-white p-4 shadow-sm'
+                }`}>
                   {pendingLocalBatch.status === "reading" && (
                     <div className="absolute top-0 left-0 h-1 bg-blue-500 w-full animate-pulse" />
                   )}
-                  <div className="flex items-start justify-between gap-4">
+                  {!(pendingLocalBatch.status === 'ready' && multiSourceReviewSources.length > 1) && <div className="flex items-start justify-between gap-4">
                     <div className="flex min-w-0 items-center gap-3">
                       <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-emerald-50">
                         {pendingLocalBatch.status === "reading" ? (
@@ -422,7 +483,7 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                         Cancel
                       </button>
                     )}
-                  </div>
+                  </div>}
 
                   {pendingLocalBatch.status === "reading" && (
                     <div className="text-[13px] text-gray-600 bg-gray-50 p-3 rounded-lg border border-gray-100">
@@ -460,7 +521,10 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                       <CanonicalMultiSourceReview
                         sources={multiSourceReviewSources}
                         drafts={multiSourceDrafts}
+                        bundles={multiSourceBundles}
                         onChange={(key, value) => setMultiSourceDrafts((current: any) => ({ ...current, [key]: value }))}
+                        onReviewBundle={handleReviewMultiSourceBundle}
+                        onUseSource={handleUseMultiSourceReviewSource}
                         onBuild={() => { void handleBuildCanonicalMultiSource(); }}
                         building={multiSourceBuilding}
                         relationshipState={multiSourceBuildResult.relationshipState}
@@ -469,7 +533,9 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                     </div>
                   )}
 
-                  {pendingLocalBatch.status === "ready" && pendingLocalBatch.step === "family_selection" && (
+                  {pendingLocalBatch.status === "ready"
+                    && pendingLocalBatch.step === "family_selection"
+                    && multiSourceReviewSources.length <= 1 && (
                     <div className="w-full animate-in fade-in slide-in-from-bottom-4 duration-500 flex flex-col gap-3 border-t border-gray-100 pt-3">
 
                       <div className="flex flex-col gap-2">
@@ -803,6 +869,13 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
 
 
               {currentDataset?.status !== 'ready' && (
+                currentDataset?.status === 'stale' ? (
+                  <div className="rounded-xl border border-amber-200 bg-amber-50 p-5" role="status" data-testid="runtime-source-reselection-required">
+                    <h3 className="text-[14px] font-semibold text-amber-900">Understood — source reselection required</h3>
+                    <p className="mt-1 text-[13px] text-amber-800">The saved representative sample is available for review, but it cannot execute an analysis.</p>
+                    <button type="button" onClick={openLocalFilePicker} className="mt-3 rounded-lg border border-amber-300 bg-white px-3 py-2 text-[12px] font-semibold text-amber-900">Reselect source</button>
+                  </div>
+                ) : (
                 <div className="hidden">
                   {/* Legacy suggested actions kept dormant until wired to real saved work. */}
                     <h3 className="text-[12px] font-semibold text-gray-500 uppercase tracking-wider mb-4">{homeGuidance.sections.suggestedActions}</h3>
@@ -883,6 +956,7 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                       )}
                     </AnimatePresence>
                 </div>
+                )
               )}
             </div>
 

@@ -211,7 +211,10 @@ function buildArtifact(input: CanonicalDatasetStateInputV1, fingerprint: string)
       },
       rawRows,
     });
-    if (physical.sourceProfile.dataRegion.rowCount !== input.sourceRowCount || physical.sourceProfile.header.selectedHeaderRowIndex !== 0) {
+    if (
+      physical.sourceProfile.dataRegion.rowCount !== input.sourceRowCount
+      || (!input.sourceBoundary && physical.sourceProfile.header.selectedHeaderRowIndex !== 0)
+    ) {
       return invalidArtifact(fingerprint, ["canonical_physical_profile_does_not_match_dataset_state"], input.sourceBoundary, input.userOverlay?.overlayId ?? null);
     }
     const candidates = input.sourceBoundary ? null : generateSemanticCandidateArtifact(physical, { registry: SEMANTIC_SIGNAL_REGISTRY_V1 });

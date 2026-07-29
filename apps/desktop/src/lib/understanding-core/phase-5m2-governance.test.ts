@@ -21,6 +21,7 @@ const isolatedCanonicalDownstream = [
   "governed-runtime-preflight.ts",
   "governed-runtime-test-support.ts",
   "canonical-consumer-boundary.ts",
+  "canonical-consumer-presentation-contract.ts",
 ] as const;
 
 function write(name: string, value: unknown): void { fs.writeFileSync(path.join(DOCS, name), `${JSON.stringify(value, null, 2)}\n`, "utf8"); }
@@ -121,11 +122,11 @@ beforeAll(() => {
 });
 
 describe("Phase 5M2 policy governance and import isolation", () => {
-  it("uses exactly the one governed pack and its six governed metrics", () => {
+  it("uses exactly the one governed pack and its eight governed metrics", () => {
     expect(GOVERNED_DOMAIN_SUPPORT_MANIFEST_V1).toHaveLength(1);
-    expect(GOVERNED_METRIC_DEFINITIONS_V1).toHaveLength(6);
+    expect(GOVERNED_METRIC_DEFINITIONS_V1).toHaveLength(8);
     const metricIds = new Set(GOVERNED_METRIC_DEFINITIONS_V1.map((item) => item.metricId));
-    expect(COMMERCE_DISTRIBUTION_QUESTION_POLICY_V1.questionFamilies).toHaveLength(12);
+    expect(COMMERCE_DISTRIBUTION_QUESTION_POLICY_V1.questionFamilies).toHaveLength(23);
     expect(COMMERCE_DISTRIBUTION_QUESTION_POLICY_V1.questionFamilies.every((item) => item.domainPackId === "commerce_distribution_mvp" && metricIds.has(item.metricId))).toBe(true);
     expect(COMMERCE_DISTRIBUTION_QUESTION_POLICY_V1.maxDefaultQuestions).toBe(5);
   });
@@ -135,6 +136,7 @@ describe("Phase 5M2 policy governance and import isolation", () => {
     for (const prohibited of ["retention", "churn", "lifetime value", "generic kpi"]) expect(policy).not.toContain(prohibited);
     expect(COMMERCE_DISTRIBUTION_QUESTION_POLICY_V1.forbiddenInference).toContain("question_authorizes_execution");
     expect(COMMERCE_DISTRIBUTION_QUESTION_POLICY_V1.questionFamilies.find((item) => item.metricId === "inventory_on_hand")?.prohibitedUses).toContain("inventory_movement_claim");
+    expect(COMMERCE_DISTRIBUTION_QUESTION_POLICY_V1.questionFamilies.find((item) => item.metricId === "trip_count")?.prohibitedUses).toContain("row_count_as_trip_count");
     expect(COMMERCE_DISTRIBUTION_QUESTION_POLICY_V1.questionFamilies.find((item) => item.metricId === "gross_profit")?.prohibitedUses).toContain("unreconciled_revenue_cost_subtraction");
   });
 

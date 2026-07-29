@@ -13,8 +13,9 @@ import type {
   GovernedMetricSelectedBindingV1,
   GovernedMetricStateV1,
 } from "./governed-domain-metric-contracts";
-import { currencyEvidenceMatchesSource, inventorySnapshotEvidenceMatchesSource } from "./canonical-source-evidence";
+import { currencyEvidenceMatchesSource, documentIdentityEvidenceMatchesSource, inventorySnapshotEvidenceMatchesSource, lineMeasureEvidenceMatchesSource } from "./canonical-source-evidence";
 import { GOVERNED_METRIC_DEFINITIONS_V1, GOVERNED_METRIC_POLICY_V1, governedMetricPolicyHash } from "./governed-metric-policy";
+import { SEMANTIC_SIGNAL_BY_ID } from "../semantic-registry";
 
 const USABLE_SEMANTIC_STATES = new Set(["confirmed", "probable"]);
 const USABLE_GRAIN_STATES = new Set(["confirmed", "probable"]);
@@ -109,6 +110,35 @@ function atomicMeasureColumns(source: CanonicalMetricSourceV1, columns: ReturnTy
   });
 }
 
+function averageMeasureColumns(source: CanonicalMetricSourceV1, columns: ReturnType<typeof matchingColumns>) {
+  const forbiddenBehaviors = new Set(["unresolved_measure_role", "repeated_measure_risk"]);
+  return columns.filter((column) => {
+    const profile = source.physical.sourceProfile.columns.find((item) => item.sourceColumnIndex === column.sourceColumnIndex);
+    const observation = source.grain.signature.measureSafety.observations.find((item) => item.physicalColumn === column.physicalColumn);
+    const numericShape = profile?.physicalTypeCandidates.some((item) =>
+      ["number", "integer", "float", "double", "decimal", "numeric_string"].includes(item.type)) === true;
+    const numericParseFailures = profile?.parseEvidence.find((item) => item.parser === "numeric")?.failureCount ?? 0;
+    const governedMeasureSemantic = column.selectedCandidateId !== null
+      && SEMANTIC_SIGNAL_BY_ID.get(column.selectedCandidateId)?.role === "measure";
+    return numericShape
+      && numericParseFailures === 0
+      && profile?.technicalColumnEvidence.length === 0
+      && observation !== undefined
+      && observation?.repeatedWithinParent !== true
+      && governedMeasureSemantic
+      && !observation?.behaviors.some((behavior) => forbiddenBehaviors.has(behavior));
+  });
+}
+
+function averageMeasureBindingsAreSafe(
+  source: CanonicalMetricSourceV1,
+  boundColumns: ReadonlySet<string>,
+): boolean {
+  if (boundColumns.size === 0) return false;
+  const semanticColumns = source.semantic.columns.filter((column) => boundColumns.has(column.physicalColumn));
+  return averageMeasureColumns(source, semanticColumns).length === boundColumns.size;
+}
+
 function exactSelectedIdentity(source: CanonicalMetricSourceV1): string | null {
   const identity = source.grain.signature.identityBasis;
   if (!USABLE_GRAIN_STATES.has(identity.state) || identity.selectedCandidateIds.length !== 1) return null;
@@ -158,6 +188,21 @@ function inventorySnapshotReadiness(source: CanonicalMetricSourceV1) {
   return { ready: semanticBindingsValid && sourceColumnsValid && singletonColumnsValid && identityReady && snapshotGrain, candidates, valid, evidence: snapshot, identityCandidateId };
 }
 
+function documentIdentityReadiness(source: CanonicalMetricSourceV1, signals: readonly string[]) {
+  const candidates = source.sourceEvidence?.documentIdentities ?? [];
+  const valid = candidates.filter((item) =>
+    signals.includes(item.semanticId)
+    && documentIdentityEvidenceMatchesSource(item, source));
+  if (valid.length !== 1) return { ready: false, candidates, valid, evidence: null };
+  const profile = source.physical.sourceProfile.columns.find((column) => column.physicalColumnName === valid[0].physicalColumn);
+  return {
+    ready: Boolean(profile && profile.nullCount === 0 && profile.technicalColumnEvidence.length === 0),
+    candidates,
+    valid,
+    evidence: valid[0],
+  };
+}
+
 function baseUnavailable(metricId: string, state: GovernedMetricStateV1, code: string, policyHash: string): GovernedMetricPreflightItemV1 {
   return {
     metricId,
@@ -197,11 +242,15 @@ function evaluateMetric(definition: GovernedMetricDefinitionV1, sources: readonl
   const remediations: GovernedMetricRemediationV1[] = [];
   const metricEvidence: GovernedMetricEvidenceV1[] = [evidence("policy:governed_metric_definition", "policy", [definition.metricId, definition.version, policyHash], "governed_policy")];
   const rawMatches = definition.requirements.map((requirement) => ({ requirement, matches: requirementSources(requirement, sources) }));
-  const matches = definition.metricId === "gross_profit"
+  const requiresAtomicMeasureBinding = definition.metricId === "gross_profit"
+    || definition.aggregationOperator === "average";
+  const matches = requiresAtomicMeasureBinding
     ? rawMatches.map((entry) => ({
         requirement: entry.requirement,
         matches: entry.matches.map((match) => {
-          const safeColumns = atomicMeasureColumns(match.source, match.columns);
+          const safeColumns = definition.aggregationOperator === "average"
+            ? averageMeasureColumns(match.source, match.columns)
+            : atomicMeasureColumns(match.source, match.columns);
           if (safeColumns.length !== 1) {
             blockers.push(blocker(
               safeColumns.length === 0 ? `metric_safe_binding_missing:${entry.requirement.requirementId}` : `metric_safe_binding_ambiguous:${entry.requirement.requirementId}`,
@@ -224,32 +273,76 @@ function evaluateMetric(definition: GovernedMetricDefinitionV1, sources: readonl
 
   const matchedSources = unique(matches.flatMap((entry) => entry.matches.map((match) => match.source)));
   const inventoryReadiness = definition.metricId === "inventory_on_hand" && matchedSources.length === 1 ? inventorySnapshotReadiness(matchedSources[0]) : null;
+  const documentIdentityReadinessBySource = definition.aggregationOperator === "count_governed_identity"
+    ? new Map(matchedSources.map((source) => [source, documentIdentityReadiness(source, definition.requirements[0].semanticSignals)]))
+    : new Map<CanonicalMetricSourceV1, ReturnType<typeof documentIdentityReadiness>>();
+  const validLineMeasuresBySource = new Map(matchedSources.map((source) => [
+    source,
+    (source.sourceEvidence?.lineMeasures ?? []).filter((item) => lineMeasureEvidenceMatchesSource(item, source)),
+  ]));
   for (const entry of matches) for (const match of entry.matches) for (const column of match.columns) {
     metricEvidence.push(evidence(`semantic:${column.selectedCandidateId}`, "semantic", [sourceRef(match.source), `column:${column.sourceColumnIndex}`], "canonical_resolution"));
   }
 
-  const grainCompatible = matches.every((entry) => entry.matches.some(({ source }) => entry.requirement.allowedStructuralForms.includes(source.grain.signature.structuralForm.value) && USABLE_GRAIN_STATES.has(source.grain.signature.structuralForm.state)));
+  const grainCompatible = matches.every((entry) => entry.matches.some(({ source }) => {
+    const atomicEntityAverage = definition.aggregationOperator === "average"
+      && exactSelectedIdentity(source) !== null
+      && source.grain.signature.aggregationForm.value === "atomic_rows"
+      && USABLE_GRAIN_STATES.has(source.grain.signature.aggregationForm.state);
+    const sourceBoundLineMeasure = definition.aggregationOperator === "sum"
+      && entry.matches.some((match) => match.source === source
+        && match.columns.every((column) => validLineMeasuresBySource.get(source)?.some((item) =>
+          item.physicalColumn === column.physicalColumn && item.semanticId === column.selectedCandidateId)));
+    return atomicEntityAverage
+      || sourceBoundLineMeasure
+      || (entry.requirement.allowedStructuralForms.includes(source.grain.signature.structuralForm.value)
+        && USABLE_GRAIN_STATES.has(source.grain.signature.structuralForm.state))
+      || documentIdentityReadinessBySource.get(source)?.ready === true;
+  }));
   if (semanticRequirementsSatisfied && !grainCompatible) { blockers.push(blocker("metric_grain_incompatible", matchedSources.map(sourceRef))); remediations.push(remediation("confirm_grain")); }
 
-  const timeCompatible = matches.every((entry) => entry.matches.some(({ source }) => entry.requirement.allowedTemporalModes.includes(source.grain.signature.temporalMode.value) && USABLE_GRAIN_STATES.has(source.grain.signature.temporalMode.state)));
+  const resolvedTimeCompatible = matches.every((entry) => entry.matches.some(({ source }) =>
+    entry.requirement.allowedTemporalModes.includes(source.grain.signature.temporalMode.value)
+    && USABLE_GRAIN_STATES.has(source.grain.signature.temporalMode.state)));
+  const descriptiveCountWithoutTimeGrouping = definition.additivity === "descriptive_count_only";
+  const timeCompatible = descriptiveCountWithoutTimeGrouping || resolvedTimeCompatible;
   if (semanticRequirementsSatisfied && !timeCompatible) { blockers.push(blocker("metric_time_basis_incompatible_or_missing", matchedSources.map(sourceRef))); remediations.push(remediation("provide_period_semantics")); }
+  if (semanticRequirementsSatisfied && descriptiveCountWithoutTimeGrouping && !resolvedTimeCompatible) {
+    limitations.push(limitation("temporal_basis_unresolved_for_descriptive_count", matchedSources.map(sourceRef)));
+  }
 
   let duplicateHandlingSatisfied = true;
   const metricBoundAtomicSources = new Set<CanonicalMetricSourceV1>();
-  if (["sum", "derive_subtraction"].includes(definition.aggregationOperator)) {
+  if (["sum", "average", "derive_subtraction"].includes(definition.aggregationOperator)) {
     for (const source of matchedSources) {
       const form = source.grain.signature.aggregationForm.value;
       const boundColumns = new Set(matches.flatMap((entry) => entry.matches.filter((match) => match.source === source).flatMap((match) => match.columns.map((column) => column.physicalColumn))));
       const boundMeasureRisks = source.grain.signature.measureSafety.observations
         .filter((observation) => boundColumns.has(observation.physicalColumn))
         .some((observation) => observation.behaviors.some((behavior) => ["non_additive_candidate", "semi_additive_candidate", "repeated_measure_risk", "unresolved_measure_role", "dimension_or_code_candidate"].includes(behavior)));
-      const metricBoundAtomic = definition.metricId === "gross_profit" && exactSelectedIdentity(source) !== null && metricBoundMeasuresAreAtomic(source, boundColumns);
+      const sourceBoundLineMeasures = [...boundColumns].every((physicalColumn) =>
+        validLineMeasuresBySource.get(source)?.some((item) => item.physicalColumn === physicalColumn));
+      const metricBoundAtomic = sourceBoundLineMeasures || (exactSelectedIdentity(source) !== null
+        && (definition.aggregationOperator === "average"
+          ? averageMeasureBindingsAreSafe(source, boundColumns)
+          : definition.metricId === "gross_profit" && metricBoundMeasuresAreAtomic(source, boundColumns)));
       if (metricBoundAtomic) {
         metricBoundAtomicSources.add(source);
-        metricEvidence.push(evidence("grain:metric_bound_atomic_measures", "grain", [sourceRef(source), exactSelectedIdentity(source)!, ...[...boundColumns].sort()], "canonical_resolution"));
+        if (sourceBoundLineMeasures) {
+          for (const item of validLineMeasuresBySource.get(source) ?? []) {
+            if (boundColumns.has(item.physicalColumn)) metricEvidence.push(evidence(item.evidenceId, "line_measure", [item.physicalColumn, item.rowIdentityPhysicalColumn, sourceRef(source)], "source_bound_contract"));
+          }
+        } else {
+          metricEvidence.push(evidence("grain:metric_bound_atomic_measures", "grain", [sourceRef(source), exactSelectedIdentity(source)!, ...[...boundColumns].sort()], "canonical_resolution"));
+        }
       }
       const inventorySnapshotProtected = definition.metricId === "inventory_on_hand" && inventoryReadiness?.ready === true;
-      const risk = (!inventorySnapshotProtected && boundMeasureRisks) || (!inventorySnapshotProtected && !metricBoundAtomic && ["repeated_parent_values", "mixed_aggregation", "unresolved"].includes(form));
+      const risk = sourceBoundLineMeasures
+        ? false
+        : definition.aggregationOperator === "average"
+        ? !metricBoundAtomic
+        : (!inventorySnapshotProtected && boundMeasureRisks)
+          || (!inventorySnapshotProtected && !metricBoundAtomic && ["repeated_parent_values", "mixed_aggregation", "unresolved"].includes(form));
       if (risk) {
         duplicateHandlingSatisfied = false;
         blockers.push(blocker("repeated_or_unresolved_measure_aggregation", [sourceRef(source)]));
@@ -258,15 +351,31 @@ function evaluateMetric(definition: GovernedMetricDefinitionV1, sources: readonl
     }
   }
 
-  if (["transaction_count", "delivery_count"].includes(definition.metricId)) {
-    const identityReady = definition.metricId === "delivery_count"
-      ? matches[0]?.matches.some(({ source }) => {
-          const exact = exactMetricIdentity(source, definition.requirements[0].semanticSignals);
-          if (exact) metricEvidence.push(evidence("identity:metric_specific_delivery", "grain", [sourceRef(source), exact.candidateId, exact.physicalColumn], "canonical_resolution"));
-          return exact !== null;
-        }) ?? false
-      : matchedSources.some((source) => USABLE_GRAIN_STATES.has(source.grain.signature.identityBasis.state) && source.grain.signature.identityBasis.selectedCandidateIds.length > 0);
-    if (!identityReady) { blockers.push(blocker("governed_identity_required_for_count", matchedSources.map(sourceRef))); remediations.push(remediation("select_or_confirm_key")); }
+  if (definition.aggregationOperator === "count_governed_identity") {
+    const sourceBoundIdentity = matchedSources.find((source) => documentIdentityReadinessBySource.get(source)?.ready);
+    const metricSpecificIdentityReady = matches[0]?.matches.some(({ source }) => {
+      const exact = exactMetricIdentity(source, definition.requirements[0].semanticSignals);
+      if (exact) {
+        metricEvidence.push(evidence(
+          `identity:metric_specific:${definition.metricId}`,
+          "grain",
+          [sourceRef(source), exact.candidateId, exact.physicalColumn],
+          "canonical_resolution",
+        ));
+      }
+      return exact !== null;
+    }) ?? false;
+    const identityReady = sourceBoundIdentity
+      ? true
+      : metricSpecificIdentityReady;
+    if (sourceBoundIdentity) {
+      const identityEvidence = documentIdentityReadinessBySource.get(sourceBoundIdentity)!.evidence!;
+      metricEvidence.push(evidence(identityEvidence.evidenceId, "document_identity", [sourceRef(sourceBoundIdentity), identityEvidence.physicalColumn, identityEvidence.semanticId], "source_bound_contract"));
+    }
+    if (!identityReady) {
+      blockers.push(blocker("governed_identity_required_for_count", matchedSources.map(sourceRef)));
+      remediations.push(remediation(definition.metricId === "trip_count" ? "confirm_document_identity" : "select_or_confirm_key"));
+    }
   }
 
   if (definition.metricId === "inventory_on_hand") {
@@ -288,7 +397,11 @@ function evaluateMetric(definition: GovernedMetricDefinitionV1, sources: readonl
     physicalColumn: column.physicalColumn,
     semanticState: column.finalState as "confirmed" | "probable",
   }))));
-  const selectedIdentityCandidateId = definition.metricId === "gross_profit" && matchedSources.length === 1 ? exactSelectedIdentity(matchedSources[0]) : definition.metricId === "inventory_on_hand" ? inventoryReadiness?.identityCandidateId ?? null : null;
+  const selectedIdentityCandidateId = (definition.metricId === "gross_profit" || definition.aggregationOperator === "average") && matchedSources.length === 1
+    ? exactSelectedIdentity(matchedSources[0])
+    : definition.metricId === "inventory_on_hand"
+      ? inventoryReadiness?.identityCandidateId ?? null
+      : null;
   let currencyCompatible: boolean | null = null;
   const currencyEvidenceIds: string[] = [];
   const inventorySnapshotEvidenceIds = inventoryReadiness?.ready ? [inventoryReadiness.evidence!.evidenceId] : [];
@@ -296,7 +409,7 @@ function evaluateMetric(definition: GovernedMetricDefinitionV1, sources: readonl
   const requiresCurrency = ["sales_revenue", "gross_profit"].includes(definition.metricId);
   const requiresUnit = ["quantity_sold", "inventory_on_hand"].includes(definition.metricId);
   if (requiresCurrency) {
-    const explicitGrossProfitEvidence = definition.metricId === "gross_profit" && matchedSources.length > 0
+    const explicitCurrencyEvidence = matchedSources.length > 0
       ? matchedSources.map((source) => {
           const selectedColumns = selectedBindings.filter((binding) => binding.sourceReference === sourceRef(source)).map((binding) => binding.physicalColumn);
           const candidates = source.sourceEvidence?.currency ?? [];
@@ -305,28 +418,28 @@ function evaluateMetric(definition: GovernedMetricDefinitionV1, sources: readonl
           return { source, candidates, valid };
         })
       : [];
-    if (explicitGrossProfitEvidence.some((item) => item.valid.length > 1)) {
+    if (explicitCurrencyEvidence.some((item) => item.valid.length > 1)) {
       currencyCompatible = false;
-      blockers.push(blocker("currency_basis_conflicting_or_multivalued", explicitGrossProfitEvidence.flatMap((item) => item.valid.map((evidenceItem) => evidenceItem.evidenceId)), "critical"));
+      blockers.push(blocker("currency_basis_conflicting_or_multivalued", explicitCurrencyEvidence.flatMap((item) => item.valid.map((evidenceItem) => evidenceItem.evidenceId)), "critical"));
       remediations.push(remediation("confirm_currency"));
-    } else if (explicitGrossProfitEvidence.length > 0 && explicitGrossProfitEvidence.every((item) => item.valid.length === 1)) {
-      const currencies = unique(explicitGrossProfitEvidence.map((item) => item.valid[0].currency));
-      const periods = unique(explicitGrossProfitEvidence.map((item) => item.valid[0].reportingPeriod));
+    } else if (explicitCurrencyEvidence.length > 0 && explicitCurrencyEvidence.every((item) => item.valid.length === 1)) {
+      const currencies = unique(explicitCurrencyEvidence.map((item) => item.valid[0].currency));
+      const periods = unique(explicitCurrencyEvidence.map((item) => item.valid[0].reportingPeriod));
       if (currencies.length === 1 && periods.length === 1) {
         currencyCompatible = true;
-        for (const item of explicitGrossProfitEvidence) {
+        for (const item of explicitCurrencyEvidence) {
           const currencyEvidence = item.valid[0];
           currencyEvidenceIds.push(currencyEvidence.evidenceId);
           metricEvidence.push(evidence(currencyEvidence.evidenceId, "currency", [sourceRef(item.source), currencyEvidence.currency, currencyEvidence.reportingPeriod, currencyEvidence.scope, ...currencyEvidence.applicableMonetaryColumns], "source_bound_contract"));
         }
       } else {
         currencyCompatible = false;
-        blockers.push(blocker("currency_basis_conflicting_or_multivalued", explicitGrossProfitEvidence.flatMap((item) => item.valid.map((evidenceItem) => evidenceItem.evidenceId)), "critical"));
+        blockers.push(blocker("currency_basis_conflicting_or_multivalued", explicitCurrencyEvidence.flatMap((item) => item.valid.map((evidenceItem) => evidenceItem.evidenceId)), "critical"));
         remediations.push(remediation("confirm_currency"));
       }
-    } else if (explicitGrossProfitEvidence.some((item) => item.candidates.length > 0)) {
+    } else if (explicitCurrencyEvidence.some((item) => item.candidates.length > 0)) {
       currencyCompatible = false;
-      blockers.push(blocker("source_bound_currency_evidence_invalid_or_stale", explicitGrossProfitEvidence.flatMap((item) => item.candidates.map((evidenceItem) => evidenceItem.evidenceId)), "critical"));
+      blockers.push(blocker("source_bound_currency_evidence_invalid_or_stale", explicitCurrencyEvidence.flatMap((item) => item.candidates.map((evidenceItem) => evidenceItem.evidenceId)), "critical"));
       remediations.push(remediation("confirm_currency"));
     } else if (matchedSources.some((source) => hasAmbiguousUnitOrCurrency(source, "currency") || signalColumnCount(source, "currency") > 1)) {
       currencyCompatible = false;
@@ -353,7 +466,7 @@ function evaluateMetric(definition: GovernedMetricDefinitionV1, sources: readonl
   for (const capabilityId of definition.requiredReadinessCapabilities) {
     const relevant = matchedSources.length > 0 ? matchedSources : sources;
     const states = relevant.map((source) => source.readiness.capabilities.find((item) => item.capabilityId === capabilityId)?.state ?? "unknown");
-    const metricBoundRepeatedProtection = definition.metricId === "gross_profit"
+    const metricBoundRepeatedProtection = ["sum", "derive_subtraction"].includes(definition.aggregationOperator)
       && capabilityId === "repeated_measure_protection_ready"
       && relevant.length > 0
       && relevant.every((source) => metricBoundAtomicSources.has(source));
@@ -365,7 +478,11 @@ function evaluateMetric(definition: GovernedMetricDefinitionV1, sources: readonl
       && currencyCompatible === true
       && ["semantic_labeling_ready", "measure_role_assessment_ready"].includes(capabilityId)
       && relevant.every((source) => metricBoundAtomicSources.has(source));
-    const metricSpecificProtection = metricBoundRepeatedProtection || metricSpecificGrossProfitProtection;
+    const sourceBoundDocumentIdentityProtection = definition.aggregationOperator === "count_governed_identity"
+      && capabilityId === "row_identity_ready"
+      && relevant.length > 0
+      && relevant.every((source) => documentIdentityReadinessBySource.get(source)?.ready === true);
+    const metricSpecificProtection = metricBoundRepeatedProtection || metricSpecificGrossProfitProtection || sourceBoundDocumentIdentityProtection;
     if (states.length > 0 && states.every((state) => BLOCKED_CAPABILITY_STATES.has(state)) && !metricSpecificProtection) blockers.push(blocker(`required_readiness_unavailable:${capabilityId}`, relevant.map(sourceRef)));
     else if (!metricSpecificProtection && states.some((state) => state !== "ready")) limitations.push(limitation(`required_readiness_conditional:${capabilityId}`, relevant.map(sourceRef)));
   }

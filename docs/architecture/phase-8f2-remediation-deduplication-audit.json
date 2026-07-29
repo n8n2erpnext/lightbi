@@ -1,0 +1,28 @@
+{
+  "schemaVersion": "lightbi.phase8f2.remediation-deduplication-audit.v1",
+  "canonicalScopeKey": [
+    "kind",
+    "remediationCode",
+    "sourceId",
+    "sheetOrTable",
+    "physicalColumn",
+    "canonicalSignal"
+  ],
+  "behavior": {
+    "sameOperationAndScopeCollapsed": true,
+    "distinctSourceScopesPreserved": true,
+    "distinctColumnScopesPreserved": true,
+    "unscopedCrossSourceMerge": false,
+    "blockersAndCaveatsPreserved": true
+  },
+  "presentation": {
+    "rawSourceHashInPrimaryCard": false,
+    "rawSourceHashInDeveloperDiagnostics": true
+  },
+  "tests": {
+    "duplicateOperationSameScope": "pass",
+    "distinctSourceScopes": "pass",
+    "primaryCardHashProbe": "pass"
+  },
+  "status": "pass"
+}

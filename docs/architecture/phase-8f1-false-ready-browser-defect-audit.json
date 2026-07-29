@@ -1,0 +1,46 @@
+{
+  "schemaVersion": "lightbi.phase8f1.false-ready-browser-defect-audit.v1",
+  "observedDefect": {
+    "dataset": "Sales_ERP_May_2026.xlsx",
+    "homeState": "ready",
+    "homeRuntimeLabel": "Sample",
+    "investigationResult": "canonical_full_file_runtime_source_required",
+    "classification": "false_executable_action"
+  },
+  "rootCauses": [
+    {
+      "boundary": "workspace_session_restore",
+      "cause": "A persisted semantic snapshot was restored as ready while runtimeDatasetSource was undefined."
+    },
+    {
+      "boundary": "persisted_file_restore",
+      "cause": "The complete saved file was re-inspected but its canonical source boundary and bound runtime source were not rebuilt."
+    },
+    {
+      "boundary": "dataset_group_selection",
+      "cause": "Home could create an unbound local_files runtime fallback when no canonical source boundary existed."
+    },
+    {
+      "boundary": "home_presentation",
+      "cause": "M3 presentation did not include current browser runtime-source continuity."
+    }
+  ],
+  "correction": {
+    "guardWeakened": false,
+    "representativeRowsExecutable": false,
+    "homeNavigationRequiresCurrentRuntimeContinuity": true,
+    "sessionWithoutCompleteSourceBecomes": "stale_reselection_required",
+    "completePersistedFileRebuildsCanonicalBoundary": true
+  },
+  "correctedBrowserProof": {
+    "servedApplication": "http://127.0.0.1:5177/",
+    "runtimeLabel": "Understanding: 932 representative rows · Runtime: full source available",
+    "homeActionState": "ready",
+    "investigationBlocked": false,
+    "executionScope": "full_file",
+    "governedRevenue": 22973896244,
+    "screenshotHome": "/tmp/phase8f1-live-home.png",
+    "screenshotResult": "/tmp/phase8f1-live-revenue-result.png"
+  },
+  "status": "pass"
+}

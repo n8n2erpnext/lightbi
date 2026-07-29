@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "lightbi.phase8f1.negative-probe-audit.v1",
+  "testPath": "apps/desktop/src/lib/phase-8f1-runtime-continuity-negative-probes.test.ts",
+  "probes": [
+    {"id":1,"case":"Home action ready with no runtime source","expected":"fail_closed","actual":"fail_closed"},
+    {"id":2,"case":"runtime source has another fingerprint","expected":"fail_closed","actual":"fail_closed"},
+    {"id":3,"case":"runtime source has stale generation","expected":"fail_closed","actual":"fail_closed"},
+    {"id":4,"case":"dataset group drops original File","expected":"fail_closed","actual":"fail_closed"},
+    {"id":5,"case":"persisted sample rows treated as runtime source","expected":"fail_closed","actual":"fail_closed"},
+    {"id":6,"case":"reload restores ready without complete file","expected":"stale_reselection_required","actual":"stale_reselection_required"},
+    {"id":7,"case":"Investigation handoff lacks runtime source","expected":"fail_closed","actual":"fail_closed"},
+    {"id":8,"case":"runtime source disappears after M3 before navigation","expected":"fail_closed","actual":"fail_closed"},
+    {"id":9,"case":"source replacement retains old ready action","expected":"fail_closed","actual":"fail_closed"},
+    {"id":10,"case":"one required multi-source member lacks runtime source","expected":"fail_closed","actual":"fail_closed"},
+    {"id":11,"case":"materialized row count differs from expected","expected":"fail_closed","actual":"fail_closed"},
+    {"id":12,"case":"fallback to representative rows","expected":"forbidden","actual":"forbidden"}
+  ],
+  "passed": 12,
+  "failed": 0,
+  "status": "pass"
+}

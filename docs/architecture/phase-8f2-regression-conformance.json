@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "lightbi.phase8f2.regression-conformance.v1",
+  "sourceStateFrozenBeforeFinalFullSuite": true,
+  "gates": {
+    "phase8Targeted": {"files":18,"tests":105,"status":"pass"},
+    "phase8F2NegativeProbes": {"tests":20,"status":"pass"},
+    "remoteOriginSyntheticBrowser": {"tests":2,"status":"pass"},
+    "authenticSixSourceRemoteBrowser": {"status":"blocked_not_executed"},
+    "completeUnderstandingCore": {"files":79,"tests":344,"status":"pass"},
+    "typescript": {"diagnostics":0,"status":"pass"},
+    "productionBuild": {"modules":2725,"status":"pass","warnings":["existing broad Tailwind content glob","existing large output chunks"]},
+    "architectureJson": {"status":"pass"},
+    "canonicalReachability": {"legacyFusionProductionReachable":false,"status":"pass"},
+    "diffCheck": {"status":"pass"}
+  },
+  "finalFullDesktopSuite": {
+    "runCountAfterFinalSourceState": 1,
+    "logPath": "/tmp/phase8f2-final-full-desktop.log",
+    "logSha256": "26dbf14eedbb669d2a5796f47eb6bccf9f124c1da2fde66da78e8c5967a639b5",
+    "logBytes": 7150,
+    "processExitStatus": 1,
+    "testFiles": {"total":185,"passed":181,"failed":4},
+    "tests": {"total":1240,"passed":1231,"failed":9},
+    "governedDeterministicFailuresObserved": 6,
+    "governedTimingSensitiveFailuresObserved": 3,
+    "unexpectedFailures": 0,
+    "phase8F2OwnedFailures": 0,
+    "conformanceEvaluatedByIdentityAndSignature": true
+  },
+  "governedAllowlist": {
+    "path": "docs/architecture/phase-5b6b-regression-baseline-allowlist.v1.json",
+    "sha256": "baa86950582b7d758396abb0c69fdaffcd3c2cbbb22b71dd3bbdb3c0aed1c4f5",
+    "modified": false
+  },
+  "overallGate": "fail",
+  "onlyBlocker": "authentic remote six-file operational journey was not authorized or executed",
+  "classification": "not_ready_six_file_operational_flow"
+}

@@ -1,0 +1,122 @@
+{
+  "schemaVersion": "lightbi.phase8f2.six-file-operational-journey-audit.v2",
+  "actualOrigin": "http://100.94.184.141:5173",
+  "verifiedAt": "2026-07-28",
+  "journeys": [
+    {
+      "id": "authentic_six_source_understanding",
+      "data": "sample-corpus anchors 1.3.0: two Sales, two Accounting and two Logistics ERP sources",
+      "roles": {
+        "sales": 2,
+        "accounting": 2,
+        "logistics": 2
+      },
+      "perspectivesVerified": [
+        "executive_overview",
+        "profitability",
+        "fulfillment_operations",
+        "sales_performance"
+      ],
+      "bundles": {
+        "grossProfit": 2,
+        "deliverySourceLocal": 2,
+        "revenuePeriodComparison": 1
+      },
+      "defaultSelectedSourceCount": 0,
+      "status": "pass"
+    },
+    {
+      "id": "authentic_may_profitability_e2e",
+      "data": "Sales_ERP_May_2026.xlsx plus Accounting_ERP_May_2026.csv selected from the authentic six-file import",
+      "explicitEvidence": {
+        "roles": [
+          "sales",
+          "accounting"
+        ],
+        "sharedDocumentIdentity": "OrderID",
+        "reportingPeriod": "2026-05",
+        "reportingCurrency": "VND"
+      },
+      "relationshipState": "confirmed",
+      "materializedRows": {
+        "sales": 1500,
+        "accounting": 1500
+      },
+      "metric": "gross_profit",
+      "governedResult": 3075721244,
+      "executionScope": "full_file_multisource",
+      "chartRendered": true,
+      "deepBAOpened": true,
+      "decisionUseAuthorized": false,
+      "status": "pass"
+    },
+    {
+      "id": "remote_generated_six_source_understanding",
+      "data": "generated non-sensitive two Sales, two Accounting and two Logistics sources",
+      "roles": {
+        "sales": 2,
+        "accounting": 2,
+        "logistics": 2
+      },
+      "revenuePeriodComparisonState": "needs_confirmation",
+      "allSixSelectedByDefault": false,
+      "status": "pass"
+    },
+    {
+      "id": "remote_generated_delivery",
+      "data": "generated non-sensitive 1500-row Logistics CSV",
+      "expected": 1500,
+      "actual": 1500,
+      "scope": "full_file",
+      "status": "pass"
+    }
+  ],
+  "controlledArchitectureEvolution": [
+    {
+      "gap": "Per-source top document identity could select InvoiceNo for Accounting even when OrderID was the unique canonical identity shared with Sales.",
+      "resolution": "The review surface now projects the unique shared identity from existing canonical candidates for the active governed bundle. It remains a suggestion and becomes evidence only after explicit user acceptance."
+    },
+    {
+      "gap": "A blocked relationship could leave the review surface and expose a source-local action that the multi-source wrapper had blocked.",
+      "resolution": "Blocked multi-source builds remain in review with exact blockers; only ready analyses transition to an active governed dataset."
+    },
+    {
+      "gap": "React Strict Mode could cancel the first auto-preview timer after the session was already marked as executed.",
+      "resolution": "The session is marked only when the surviving timer starts, preserving one execution per session."
+    },
+    {
+      "gap": "A defensive blocked result was rendered by the legacy result card and could crash on missing chart/template fields.",
+      "resolution": "Blocked results now render a source-review alert without touching legacy chart fields."
+    }
+  ],
+  "governanceRetained": [
+    "No filename inference becomes evidence.",
+    "No generic six-source join is authorized.",
+    "Every selected source is independently profiled and fully materialized.",
+    "Shared identity, role, period and currency remain explicit source-bound declarations.",
+    "Invalid identity, role, period, currency, cardinality and stale-source probes fail closed.",
+    "Decision use remains prohibited until separately reviewed and authorized."
+  ],
+  "verification": {
+    "focusedVitest": {
+      "files": 5,
+      "tests": 44,
+      "passed": 44
+    },
+    "typescriptDiagnostics": 0,
+    "sampleDataAudit": {
+      "files": 13,
+      "passed": 13
+    },
+    "canonicalCorpus130": {
+      "tests": 1,
+      "passed": 1
+    },
+    "actualOriginPlaywright": {
+      "tests": 4,
+      "passed": 4
+    }
+  },
+  "gate": "pass",
+  "classification": "ready_governed_six_file_perspective_flow"
+}

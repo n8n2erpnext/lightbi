@@ -12,7 +12,7 @@ import type {
   GovernedMetricLimitationV1,
   GovernedMetricRemediationV1,
 } from "./governed-domain-metric-contracts";
-import { inventorySnapshotEvidenceMatchesSource } from "./canonical-source-evidence";
+import { documentIdentityEvidenceMatchesSource, inventorySnapshotEvidenceMatchesSource } from "./canonical-source-evidence";
 
 const MANIFEST = GOVERNED_DOMAIN_SUPPORT_MANIFEST_V1[0];
 const SEMANTIC_USABLE = new Set(["confirmed", "probable"]);
@@ -80,13 +80,22 @@ function evaluateConcept(definition: DomainConceptDefinitionV1, sources: readonl
   const matchedSources = unique(matches.map((match) => match.source));
   const compatibleGrain = matchedSources.some((source) => {
     const grain = source.grain.signature;
+    const governedTripIdentity = definition.conceptId === "trip_event"
+      && (source.sourceEvidence?.documentIdentities ?? []).some((item) =>
+        item.semanticId === "trip" && documentIdentityEvidenceMatchesSource(item, source));
     const governedInventorySnapshot = definition.conceptId === "inventory_snapshot"
       && GRAIN_USABLE.has(grain.identityBasis.state)
       && GRAIN_USABLE.has(grain.temporalMode.state)
       && grain.temporalMode.value === "snapshot"
       && (grain.aggregationForm.value === "snapshot_values" || grain.aggregationForm.alternatives.includes("snapshot_values"))
       && (source.sourceEvidence?.inventorySnapshots ?? []).filter((item) => inventorySnapshotEvidenceMatchesSource(item, source)).length === 1;
-    return governedInventorySnapshot || (GRAIN_USABLE.has(grain.structuralForm.state) && GRAIN_USABLE.has(grain.aggregationForm.state));
+    const governedQualityAverage = definition.conceptId === "quality_performance_measure"
+      && GRAIN_USABLE.has(grain.identityBasis.state)
+      && grain.identityBasis.selectedCandidateIds.length === 1
+      && GRAIN_USABLE.has(grain.aggregationForm.state)
+      && grain.aggregationForm.value === "atomic_rows";
+    return governedTripIdentity || governedInventorySnapshot || governedQualityAverage
+      || (GRAIN_USABLE.has(grain.structuralForm.state) && GRAIN_USABLE.has(grain.aggregationForm.state));
   });
   if (!compatibleGrain) blockers.push(blocker("compatible_canonical_grain_not_proven", matchedSources.map(sourceReference)));
 

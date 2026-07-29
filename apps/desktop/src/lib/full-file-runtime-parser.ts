@@ -4,6 +4,7 @@ export type RuntimeFilePayload = {
   name: string;
   buffer: ArrayBuffer;
   sheetName?: string;
+  headerRowIndex?: number;
 };
 
 export type MaterializedRuntimeData = {
@@ -13,7 +14,15 @@ export type MaterializedRuntimeData = {
 
 function normalizeRow(row: Record<string, unknown>): Record<string, unknown> {
   return Object.fromEntries(
-    Object.entries(row).map(([key, value]) => [key.toLowerCase(), value])
+    Object.entries(row).map(([key, value]) => [key.trim().toLowerCase(), value])
+  );
+}
+
+function hasMaterialValue(row: Record<string, unknown>): boolean {
+  return Object.values(row).some(value =>
+    value !== null
+    && value !== undefined
+    && (typeof value !== "string" || value.trim() !== "")
   );
 }
 
@@ -91,7 +100,8 @@ function parseTabularPayload(payload: RuntimeFilePayload): Record<string, unknow
   if (!sheetName) return [];
   return XLSX.utils.sheet_to_json<Record<string, unknown>>(workbook.Sheets[sheetName], {
     defval: null,
-    raw: true
+    raw: true,
+    range: payload.headerRowIndex,
   });
 }
 
@@ -102,7 +112,7 @@ export function materializeRuntimeFilePayloads(
     const parsed = payload.name.toLowerCase().endsWith(".json")
       ? parseJsonPayload(payload)
       : parseTabularPayload(payload);
-    return parsed.map(normalizeRow);
+    return parsed.filter(hasMaterialValue).map(normalizeRow);
   });
 
   return {

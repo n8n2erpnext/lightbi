@@ -10,6 +10,15 @@ interface HomeResultViewProps {
 }
 
 export const HomeResultView: React.FC<HomeResultViewProps> = ({ result, chartOption, onFollowUp }) => (
+  result?.status === 'blocked' ? (
+    <div role="alert" data-testid="home-analysis-blocked" className="mt-4 w-full rounded-xl border border-amber-200 bg-amber-50 p-4 text-amber-900">
+      <h3 className="text-sm font-semibold">Analysis needs source review</h3>
+      <p className="mt-1 text-xs leading-5">{result.message || 'This analysis cannot run with the current governed source state.'}</p>
+      {Array.isArray(result.blockedReasons) && result.blockedReasons.length > 0 && (
+        <p className="mt-2 break-words text-[11px] text-amber-800">{result.blockedReasons.join(', ')}</p>
+      )}
+    </div>
+  ) : (
   <div className="w-full mt-4 animate-in fade-in slide-in-from-bottom-4 duration-500 flex flex-col gap-6 mb-16">
     <div className="flex flex-col bg-white p-4 rounded-md border border-gray-200 shadow-sm w-full relative">
       <div className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest mb-3">Execution Pipeline</div>
@@ -62,4 +71,5 @@ export const HomeResultView: React.FC<HomeResultViewProps> = ({ result, chartOpt
       </div>
     </div>
   </div>
+  )
 );

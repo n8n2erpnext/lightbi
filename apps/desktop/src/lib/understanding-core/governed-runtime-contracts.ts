@@ -6,7 +6,7 @@ export const GOVERNED_RUNTIME_CONTRACT_VERSION = "lightbi.governed-runtime-contr
 export const GOVERNED_RUNTIME_POLICY_VERSION = "lightbi.governed-runtime-policy.v1" as const;
 
 export type GovernedRuntimeStateV1 = "executable" | "conditionally_executable" | "blocked" | "unavailable" | "invalid";
-export type GovernedMetricOperatorV1 = "governed_sum" | "governed_identity_count" | "governed_point_in_time_snapshot_sum" | "governed_revenue_minus_cost";
+export type GovernedMetricOperatorV1 = "governed_sum" | "governed_average" | "governed_identity_count" | "governed_point_in_time_snapshot_sum" | "governed_revenue_minus_cost";
 
 export type GovernedExecutionRestrictionV1 = {
   code: string;
@@ -18,7 +18,7 @@ export type GovernedExecutionRestrictionV1 = {
 
 export type GovernedExecutionEvidenceV1 = {
   evidenceId: string;
-  kind: "metric_definition" | "metric_preflight" | "canonical_binding" | "grain" | "time" | "relationship" | "currency" | "inventory_snapshot" | "runtime_policy" | "duckdb_execution";
+  kind: "metric_definition" | "metric_preflight" | "canonical_binding" | "grain" | "time" | "relationship" | "currency" | "inventory_snapshot" | "document_identity" | "runtime_policy" | "duckdb_execution";
   references: string[];
   provenance: "governed_policy" | "canonical_artifact" | "governed_preflight" | "source_bound_contract" | "local_duckdb";
 };
@@ -36,6 +36,7 @@ export type GovernedColumnBindingV1 = {
   semanticId: string;
   sourceColumnIndex: number;
   physicalColumn: string;
+  physicalType?: string | null;
   semanticState: "confirmed" | "probable";
 };
 

@@ -11,6 +11,7 @@ import { deleteWorkspaceSession, loadWorkspaceSessions, saveWorkspaceSession, ty
 import { attachPersistedFile, createWorkspaceSessionSnapshot, persistedFilesFromSession } from '../lib/home-workspace-persistence';
 import { parseCanonicalUserOverlay } from '../lib/understanding-core/canonical-user-overlay';
 import type { MultiSourceDraftV1 } from '../components/analysis/CanonicalMultiSourceReview';
+import { createLocalCanonicalSourceBoundary } from '../lib/home-source-boundary';
 
 interface HomeWorkspaceSessionDependencies {
   currentDataset: any;
@@ -196,27 +197,45 @@ export function useHomeWorkspaceSessions(deps: HomeWorkspaceSessionDependencies)
             sheetNames: md?.is_workbook && md.default_sheet ? [md.default_sheet] : [],
           };
         });
+        const selectedSheet = firstMd?.is_workbook && firstMd.default_sheet && firstMd.sheets
+          ? firstMd.sheets[firstMd.default_sheet]
+          : null;
+        const canonicalSourceBoundary = first && family.files.length === 1
+          ? createLocalCanonicalSourceBoundary({
+            datasetId: restoredDataset.file_name || family.name,
+            columns: family.columns,
+            semanticRows: rawSemanticRows,
+            semanticSample: selectedSheet?.semantic_sample ?? firstMd?.semantic_sample,
+            profile: selectedSheet?.canonical_full_file_profile ?? firstMd?.canonical_full_file_profile,
+            file: first.file,
+            sheetName: firstMd?.is_workbook ? firstMd.default_sheet : undefined,
+          })
+          : undefined;
         deps.setCurrentDataset({
-          ...restoredDataset, status: 'ready', file_name: restoredDataset.file_name || family.name,
+          ...restoredDataset, status: canonicalSourceBoundary ? 'ready' : 'stale', file_name: restoredDataset.file_name || family.name,
           rows_count: family.totalRows, columns: family.columns, profiles: family.profiles,
           sourceType: family.files[0]?.result.status === 'accessible' ? family.files[0].result.sourceType : restoredDataset.sourceType,
-          sourceFiles, file_reference: null, runtimeDatasetSource: undefined,
+          sourceFiles, file_reference: first?.file ?? null,
+          runtimeDatasetSource: canonicalSourceBoundary?.runtimeSource,
+          canonicalSourceBoundary,
           semanticSample: { strategy: rawSemanticRows.length >= family.totalRows ? 'full' : 'matrix_sample', sourceRowCount: family.totalRows, sampleRowCount: rawSemanticRows.length },
           analysisRowScope: rawAnalysisRows.length >= family.totalRows ? 'full' : 'not_retained',
           semanticRows: rawSemanticRows, analysisRows: rawAnalysisRows,
           previewRows: createPreviewRows(rawPreviewRows, family.columns), restoredFromSessionId: session.id,
         });
         resetAnalysisState(session.id);
-        setSessionStatus('Session opened from saved source file.');
+        setSessionStatus(canonicalSourceBoundary
+          ? 'Session opened from the complete saved source file.'
+          : 'Saved sample restored. Reselect the complete source before analysis.');
         return;
       } catch (error) {
         const missingPath = persistedFiles.map(file => file.filePath).join(', ');
         setSessionStatus(`${error instanceof Error ? error.message : 'Could not reload saved source file.'} Missing path: ${missingPath}. Showing saved snapshot.`);
       }
     }
-    deps.setCurrentDataset({ ...restoredDataset, status: 'ready', file_reference: null, runtimeDatasetSource: undefined, restoredFromSessionId: session.id });
+    deps.setCurrentDataset({ ...restoredDataset, status: 'stale', file_reference: null, runtimeDatasetSource: undefined, canonicalSourceBoundary: undefined, restoredFromSessionId: session.id });
     resetAnalysisState(session.id);
-    setSessionStatus('Session opened.');
+    setSessionStatus('Saved sample restored. Reselect the complete source before analysis.');
   };
 
   const handleDeleteWorkspaceSession = async (sessionId: string) => {

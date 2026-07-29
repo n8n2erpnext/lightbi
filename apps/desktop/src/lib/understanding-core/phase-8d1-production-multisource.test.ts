@@ -22,6 +22,10 @@ import {
   type CanonicalUserOverlayV1,
 } from "./canonical-user-overlay";
 import { executeCanonicalMultiSourceMetric, type CanonicalMultiSourceRuntimeBoundaryV1 } from "./governed-multisource-duckdb-boundary";
+import {
+  buildCanonicalPeriodPartitionWorkspace,
+  executeCanonicalPeriodPartitionWorkspace,
+} from "./canonical-period-partition-boundary";
 
 const require = createRequire(import.meta.url);
 const duckdb = require("@duckdb/duckdb-wasm/dist/duckdb-node-blocking.cjs") as any;
@@ -98,11 +102,16 @@ function evidence(overlay: CanonicalUserOverlayV1, boundary: CanonicalSourceBoun
   });
 }
 
-function governedOverlay(boundary: CanonicalSourceBoundaryV1, role: "sales" | "accounting", moneyColumns: string[]): CanonicalUserOverlayV1 {
+function governedOverlay(
+  boundary: CanonicalSourceBoundaryV1,
+  role: "sales" | "accounting",
+  moneyColumns: string[],
+  period: { start: string; end: string } = { start: "2026-05-01", end: "2026-05-31" },
+): CanonicalUserOverlayV1 {
   let overlay = createCanonicalUserOverlay(boundary, "2026-07-22T00:00:00.000Z");
   overlay = evidence(overlay, boundary, { kind: "source_role", role }, "2026-07-22T00:00:01.000Z");
   overlay = evidence(overlay, boundary, { kind: "document_identity", physicalColumn: "OrderID" }, "2026-07-22T00:00:02.000Z");
-  overlay = evidence(overlay, boundary, { kind: "reporting_period", start: "2026-05-01", end: "2026-05-31" }, "2026-07-22T00:00:03.000Z");
+  overlay = evidence(overlay, boundary, { kind: "reporting_period", ...period }, "2026-07-22T00:00:03.000Z");
   overlay = evidence(overlay, boundary, { kind: "reporting_currency", currency: "VND", monetaryColumns: moneyColumns }, "2026-07-22T00:00:04.000Z");
   return overlay;
 }
@@ -177,6 +186,85 @@ describe("Phase 8D.1 canonical production multi-source boundary", () => {
       expect(reversed.dataset.identity).toBe(first.dataset.identity);
       expect(reversed.dataset.relationshipArtifactId).toBe(first.dataset.relationshipArtifactId);
     }
+  }, 120_000);
+
+  it("governs same-role files as independent period partitions and combines only metric results", async () => {
+    const may = await load("sample-corpus/anchors/1.3.0/Sales_ERP_May_2026.xlsx");
+    const june = await load("sample-corpus/anchors/1.3.0/Sales_ERP_June_2026.xlsx");
+    const mayOverlay = governedOverlay(may.boundary, "sales", ["Revenue"]);
+    const juneOverlay = governedOverlay(
+      june.boundary,
+      "sales",
+      ["Revenue"],
+      { start: "2026-06-01", end: "2026-06-30" },
+    );
+    const built = buildCanonicalPeriodPartitionWorkspace({
+      workspaceId: "sales-may-june-2026",
+      metricId: "sales_revenue",
+      members: [
+        { artifact: artifact(may, mayOverlay), overlay: mayOverlay },
+        { artifact: artifact(june, juneOverlay), overlay: juneOverlay },
+      ],
+    });
+    expect(built.status).toBe("valid");
+    if (built.status !== "valid") throw new Error(built.blockers.join(","));
+    expect(built.workspace.periodMembers.map((member) => member.period.label)).toEqual(["2026-05", "2026-06"]);
+    expect(built.workspace.restrictions).toContain("no_cross_period_row_join");
+
+    const totals = new Map([
+      [built.workspace.periodMembers[0].sourceId, 100],
+      [built.workspace.periodMembers[1].sourceId, 125],
+    ]);
+    const executed = await executeCanonicalPeriodPartitionWorkspace(built.workspace, {
+      executeMember: async (member) => ({
+        status: "executed",
+        rows: [{ sales_revenue: totals.get(member.sourceId)! }],
+      } as any),
+    });
+    expect(executed.status).toBe("executed");
+    expect(executed.rows).toEqual([
+      { reporting_period: "2026-05", sales_revenue: 100 },
+      { reporting_period: "2026-06", sales_revenue: 125 },
+    ]);
+    expect(executed.evidence).toMatchObject({
+      executionScope: "full_file_period_partitions",
+      sourceIds: expect.arrayContaining(built.workspace.periodMembers.map((member) => member.sourceId)),
+    });
+  }, 120_000);
+
+  it("supports logistics period partitions without inventing currency evidence", async () => {
+    const makeLogisticsOverlay = (
+      boundary: CanonicalSourceBoundaryV1,
+      period: { start: string; end: string },
+    ) => {
+      let overlay = createCanonicalUserOverlay(boundary, "2026-07-22T03:00:00.000Z");
+      overlay = evidence(overlay, boundary, { kind: "source_role", role: "logistics" }, "2026-07-22T03:00:01.000Z");
+      overlay = evidence(overlay, boundary, { kind: "document_identity", physicalColumn: "ShipmentID" }, "2026-07-22T03:00:02.000Z");
+      overlay = evidence(overlay, boundary, { kind: "reporting_period", ...period }, "2026-07-22T03:00:03.000Z");
+      return overlay;
+    };
+    const may = await load("sample-corpus/anchors/1.3.0/Logistics_ERP_May_2026.csv");
+    const june = await load("sample-corpus/anchors/1.3.0/Logistics_ERP_June_2026.csv");
+    const mayOverlay = makeLogisticsOverlay(may.boundary, { start: "2026-05-01", end: "2026-05-31" });
+    const juneOverlay = makeLogisticsOverlay(june.boundary, { start: "2026-06-01", end: "2026-06-30" });
+    const built = buildCanonicalPeriodPartitionWorkspace({
+      workspaceId: "logistics-may-june-2026",
+      metricId: "delivery_count",
+      members: [
+        { artifact: artifact(may, mayOverlay), overlay: mayOverlay },
+        { artifact: artifact(june, juneOverlay), overlay: juneOverlay },
+      ],
+    });
+    expect(built.status).toBe("valid");
+    if (built.status !== "valid") throw new Error(built.blockers.join(","));
+    expect(built.workspace).toMatchObject({
+      sourceRole: "logistics",
+      metricId: "delivery_count",
+      periodMembers: [
+        expect.objectContaining({ currency: null, period: expect.objectContaining({ label: "2026-05" }) }),
+        expect.objectContaining({ currency: null, period: expect.objectContaining({ label: "2026-06" }) }),
+      ],
+    });
   }, 120_000);
 
   it("materializes both complete sources and executes the unchanged exact gross-profit plan", async () => {

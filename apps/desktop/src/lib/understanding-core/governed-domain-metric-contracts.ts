@@ -12,7 +12,7 @@ export type DomainConceptSupportStateV1 = "active" | "conditional" | "detect_onl
 export type GovernedMetricStateV1 = CapabilityReadinessStateV1;
 export type MetricAdditivityV1 = "additive" | "semi_additive" | "non_additive" | "descriptive_count_only" | "unknown";
 export type MetricTimeBehaviorV1 = "transaction_flow" | "period_flow" | "point_in_time_snapshot" | "interval" | "timeless" | "unknown";
-export type MetricAggregationOperatorV1 = "sum" | "count_governed_identity" | "derive_subtraction";
+export type MetricAggregationOperatorV1 = "sum" | "average" | "count_governed_identity" | "derive_subtraction";
 export type MetricTuningProvenanceV1 = "contract" | "synthetic" | "golden_tuning" | "holdout_evaluation_only" | "adversarial_evaluation_only" | "multi_file_evaluation_only";
 
 export type GovernedMetricBlockerV1 = { code: string; severity: "material" | "critical"; references: string[] };
@@ -20,7 +20,7 @@ export type GovernedMetricLimitationV1 = { code: string; references: string[] };
 export type GovernedMetricRemediationV1 = { code: string; parameters: Record<string, string | number | boolean> };
 export type GovernedMetricEvidenceV1 = {
   evidenceId: string;
-  kind: "physical" | "semantic" | "grain" | "relationship" | "readiness" | "policy" | "currency" | "inventory_snapshot";
+  kind: "physical" | "semantic" | "grain" | "relationship" | "readiness" | "policy" | "currency" | "inventory_snapshot" | "document_identity" | "line_measure";
   references: string[];
   provenance: "full_file" | "canonical_resolution" | "canonical_readiness" | "governed_policy" | "source_bound_contract";
 };
@@ -63,6 +63,39 @@ export type CanonicalSourceInventorySnapshotEvidenceV1 = {
   attachedAt: "canonical_source";
 };
 
+export type CanonicalSourceDocumentIdentityEvidenceV1 = {
+  schemaVersion: "lightbi.canonical-source-document-identity-evidence.v1";
+  evidenceId: string;
+  sourceId: string;
+  sourceHash: { algorithm: "sha256"; value: string };
+  provenance: {
+    kind: "user_confirmed";
+    reference: string;
+    referenceHash: { algorithm: "sha256"; value: string };
+  };
+  physicalColumn: string;
+  semanticId: string;
+  inferred: false;
+  attachedAt: "canonical_source";
+};
+
+export type CanonicalSourceLineMeasureEvidenceV1 = {
+  schemaVersion: "lightbi.canonical-source-line-measure-evidence.v1";
+  evidenceId: string;
+  sourceId: string;
+  sourceHash: { algorithm: "sha256"; value: string };
+  provenance: {
+    kind: "user_confirmed";
+    reference: string;
+    referenceHash: { algorithm: "sha256"; value: string };
+  };
+  physicalColumn: string;
+  semanticId: string;
+  rowIdentityPhysicalColumn: string;
+  inferred: false;
+  attachedAt: "canonical_source";
+};
+
 export type GovernedMetricSelectedBindingV1 = {
   requirementId: string;
   semanticId: string;
@@ -91,7 +124,7 @@ export type GovernedMetricDefinitionV1 = {
   domainPackId: "commerce_distribution_mvp";
   businessName: string;
   semanticMeaning: string;
-  measureRole: "flow_amount" | "flow_quantity" | "entity_count" | "snapshot_balance" | "derived_amount";
+  measureRole: "flow_amount" | "flow_quantity" | "entity_count" | "snapshot_balance" | "derived_amount" | "average_score";
   aggregationOperator: MetricAggregationOperatorV1;
   requirements: readonly GovernedMetricRequirementV1[];
   groupingDimensions: readonly string[];
@@ -106,7 +139,7 @@ export type GovernedMetricDefinitionV1 = {
   requiredRelationships: readonly string[];
   requiredReadinessCapabilities: readonly CapabilityIdV1[];
   prohibitedEvidenceStates: readonly string[];
-  outputType: "amount" | "quantity" | "count";
+  outputType: "amount" | "quantity" | "count" | "score";
   limitations: readonly string[];
   provenance: readonly string[];
   approvalState: "governed_definition";
@@ -158,7 +191,12 @@ export type CanonicalMetricSourceV1 = {
   semantic: SemanticResolutionArtifactV1;
   grain: GrainResolutionArtifactV1;
   readiness: UnderstandingReadinessArtifactV1;
-  sourceEvidence?: { currency: CanonicalSourceCurrencyEvidenceV1[]; inventorySnapshots?: CanonicalSourceInventorySnapshotEvidenceV1[] };
+  sourceEvidence?: {
+    currency: CanonicalSourceCurrencyEvidenceV1[];
+    inventorySnapshots?: CanonicalSourceInventorySnapshotEvidenceV1[];
+    documentIdentities?: CanonicalSourceDocumentIdentityEvidenceV1[];
+    lineMeasures?: CanonicalSourceLineMeasureEvidenceV1[];
+  };
 };
 
 export type DomainMetricEvaluationContextV1 = {

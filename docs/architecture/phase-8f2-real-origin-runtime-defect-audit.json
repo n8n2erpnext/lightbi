@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "lightbi.phase8f2.real-origin-runtime-defect-audit.v1",
+  "observedOrigin": "http://100.94.184.141:5173",
+  "originalFailure": "DUCKDB_UNKNOWN_RUNTIME_ERROR: Cannot read properties of undefined (reading 'digest')",
+  "rootCause": {
+    "layer": "browser_runtime_identity_hashing",
+    "detail": "The full-file materializer called Web Crypto directly. Plain HTTP remote origins do not provide the localhost secure-context privilege and may expose crypto without a usable subtle.digest implementation."
+  },
+  "correction": {
+    "boundary": "apps/desktop/src/lib/browser-sha256.ts",
+    "consumer": "apps/desktop/src/lib/full-file-runtime-materializer.ts",
+    "webCryptoWhenUsable": true,
+    "deterministicFallbackWhenUnavailableOrThrowing": true,
+    "nodeOnlyBrowserDependency": false,
+    "fingerprintStrengthWeakened": false
+  },
+  "actualOriginProof": {
+    "origin": "http://100.94.184.141:5173",
+    "secureContext": false,
+    "generatedCsvRows": 1500,
+    "materializedRows": 1500,
+    "duckDbExecutionScope": "full_file",
+    "query": "SELECT COUNT(*) AS delivery_count FROM __LIGHTBI_PREVIEW_TABLE__",
+    "actual": 1500,
+    "expected": 1500,
+    "digestErrors": 0,
+    "workerErrors": 0,
+    "wasmErrors": 0,
+    "dynamicImportErrors": 0,
+    "status": "pass"
+  },
+  "authenticCorpusTransfer": {
+    "attempted": false,
+    "reason": "Explicit authorization to upload authentic corpus files to the remote HTTP origin was not provided.",
+    "dataTransferred": false
+  },
+  "status": "pass_with_authentic_journey_pending"
+}

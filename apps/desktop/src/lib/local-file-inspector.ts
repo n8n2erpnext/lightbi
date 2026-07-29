@@ -196,9 +196,25 @@ async function inspectExcel(file: File, candidate: SourceCandidate, signal?: Abo
       continue;
     }
 
-    const headerRow = rows[0] || [];
-    const columns = headerRow.map((col: any) => String(col).trim()).filter(Boolean);
-    const dataRows = rows.slice(1).filter(r => r.length > 0);
+    const provisionalProfile = createCanonicalFullFileProfile({
+      file,
+      fingerprint,
+      sheetName,
+      rawRows: rows,
+      sourceRowCount: Math.max(0, rows.length - 1),
+    });
+    const physical = provisionalProfile.artifact.sourceProfile;
+    const headerIndex = physical.header.selectedHeaderRowIndex;
+    const columns = physical.header.physicalColumnNames;
+    const dataRows = headerIndex === null
+      ? []
+      : rows
+          .slice(headerIndex + 1)
+          .filter(row => row.some(value => value !== null && value !== undefined && String(value).trim() !== ""));
+    const canonicalFullFileProfile = {
+      ...provisionalProfile,
+      sourceRowCount: physical.dataRegion.rowCount,
+    };
     
     // Create all objects for profiling
     const allObjects = dataRows.map(rowArray => {
@@ -224,13 +240,7 @@ async function inspectExcel(file: File, candidate: SourceCandidate, signal?: Abo
       semantic_sample: semanticSampleMetadata(semanticSample),
       analysis_rows: retainedAnalysisRows,
       analysis_row_scope: retainedAnalysisRows ? "full" : "not_retained",
-      canonical_full_file_profile: createCanonicalFullFileProfile({
-        file,
-        fingerprint,
-        sheetName,
-        rawRows: rows,
-        sourceRowCount: dataRows.length,
-      }),
+      canonical_full_file_profile: canonicalFullFileProfile,
       profiles
     };
   }

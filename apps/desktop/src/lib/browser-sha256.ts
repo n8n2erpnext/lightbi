@@ -89,8 +89,14 @@ export async function browserSha256(
   input: ArrayBuffer,
   subtle: SubtleCrypto | undefined = globalThis.crypto?.subtle,
 ): Promise<string> {
-  if (!subtle) return sha256Fallback(new Uint8Array(input));
+  if (!subtle || typeof subtle.digest !== 'function') {
+    return sha256Fallback(new Uint8Array(input));
+  }
 
-  const hash = await subtle.digest('SHA-256', input);
-  return [...new Uint8Array(hash)].map(value => value.toString(16).padStart(2, '0')).join('');
+  try {
+    const hash = await subtle.digest('SHA-256', input);
+    return [...new Uint8Array(hash)].map(value => value.toString(16).padStart(2, '0')).join('');
+  } catch {
+    return sha256Fallback(new Uint8Array(input));
+  }
 }

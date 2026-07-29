@@ -166,11 +166,12 @@ function createQuestion(policy: QuestionFamilyPolicyV1, input: QuestionActionGen
     evidence(`grain-time:${policy.metricId}`, "grain_time", [time.value.canonicalTemporalMode, time.value.metricTimeBehavior], "canonical_artifact"),
     ...dimension.bindings.map((binding) => evidence(`dimension:${binding.semanticId}:${binding.sourceColumnIndex}`, "semantic_dimension", [binding.semanticId, String(binding.sourceColumnIndex), binding.semanticState], "canonical_artifact")),
   ]);
-  const governedIdentity = deterministicPolicySha256({ questionId: policy.questionId, version: policy.version, domainPackId: policy.domainPackId, metricId: policy.metricId, sourceRef, metricPreflightReference: input.metricPreflight.identity, resolvedDimensions: dimension.bindings, timeBasis: time.value, questionState, policyHash });
+  const governedIdentity = deterministicPolicySha256({ questionId: policy.questionId, version: policy.version, domainPackId: policy.domainPackId, businessPerspectiveIds: policy.businessPerspectiveIds, metricId: policy.metricId, sourceRef, metricPreflightReference: input.metricPreflight.identity, resolvedDimensions: dimension.bindings, timeBasis: time.value, questionState, policyHash });
   return {
     contractVersion: "lightbi.governed-question-action-contract.v1",
     version: policy.version,
     domainPackId: policy.domainPackId,
+    businessPerspectiveIds: [...policy.businessPerspectiveIds],
     metricId: policy.metricId,
     title: policy.title,
     businessPurpose: policy.businessPurpose,
@@ -206,6 +207,7 @@ function actionFor(question: GovernedQuestionCandidateV1, policy: QuestionFamily
     contractVersion: question.contractVersion,
     version: question.version,
     domainPackId: question.domainPackId,
+    businessPerspectiveIds: [...question.businessPerspectiveIds],
     metricId: question.metricId,
     title: question.title,
     businessPurpose: question.businessPurpose,

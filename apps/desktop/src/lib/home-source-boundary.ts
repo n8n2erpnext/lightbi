@@ -19,7 +19,11 @@ export function createLocalCanonicalSourceBoundary(args: {
     semanticSample: { strategy: args.semanticSample.strategy, sourceRowCount: args.semanticSample.source_row_count, rowIndexes: args.semanticSample.row_indexes },
     fullFileProfile: args.profile,
     fullFileUnderstanding: args.profile.fullFileUnderstanding,
-    runtimeFiles: [{ file: args.file, sheetName: args.sheetName }],
+    runtimeFiles: [{
+      file: args.file,
+      sheetName: args.sheetName,
+      headerRowIndex: args.profile.artifact.sourceProfile.header.selectedHeaderRowIndex ?? undefined,
+    }],
   });
 }
 

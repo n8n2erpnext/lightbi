@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "lightbi.phase8f2.negative-probe-audit.v1",
+  "test": "apps/desktop/src/lib/phase-8f2-negative-probes.test.ts",
+  "total": 20,
+  "passed": 20,
+  "failed": 0,
+  "probes": [
+    "direct production subtle.digest outside provider",
+    "remote HTTP digest exception",
+    "placeholder currency treated as evidence",
+    "suggested role treated as confirmed",
+    "filename determines source role",
+    "filename determines reporting period",
+    "generic all-six governed dataset",
+    "May Sales paired with June Accounting",
+    "Logistics included in gross-profit execution",
+    "currency silently reused across sources",
+    "period silently reused across sources",
+    "duplicate remediation operation and scope",
+    "distinct remediation source scopes merged",
+    "candidate directly marks action ready",
+    "bundle ready without M3",
+    "Delivery runtime fails from hashing support",
+    "reload restores executable action without file",
+    "sample rows used as runtime fallback",
+    "raw source hash in primary card",
+    "governed metric differs from oracle"
+  ],
+  "allFailClosedOrTruthful": true,
+  "status": "pass"
+}

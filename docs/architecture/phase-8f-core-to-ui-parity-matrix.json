@@ -13,7 +13,12 @@
     {"capability":"source_local_execution","presentation":"M3 executable","surface":"Investigation","operation":"execute/retry","next":"canonical full-file executor","result":"chart/table/evidence same plan","status":"pass"},
     {"capability":"multisource_execution","presentation":"M3 executable with relationship","surface":"Investigation","operation":"execute","next":"materialize all required sources","result":"governed gross-profit result","status":"pass"},
     {"capability":"lifecycle","presentation":"canonical lifecycle","surface":"Home/Investigation","operation":"import/rebuild/execute/retry/replace","next":"state-specific","result":"distinct empty/importing/inspecting/rebuilding/ready/executing/completed/failed/stale","status":"pass"},
-    {"capability":"persistence_and_advanced","presentation":"current session/source completeness","surface":"Session history/Advanced","operation":"restore/open/export","next":"identity validation","result":"current, stale, missing-source, complete or partial state","status":"pass"}
+    {"capability":"persistence_and_advanced","presentation":"current session/source completeness","surface":"Session history/Advanced","operation":"restore/open/export","next":"identity validation","result":"current, stale, missing-source, complete or partial state","status":"pass"},
+    {"capability":"runtime_source_continuity","presentation":"full source available or source reselection required","surface":"Home and Investigation","operation":"investigate/reselect","next":"exact action-bound continuity validation","result":"ready only with complete source; snapshots remain non-runnable","status":"pass"},
+    {"capability":"browser_safe_hashing","presentation":"not user-facing","surface":"central browser SHA-256 provider","operation":"hash source and governed identities","next":"materialization and execution","result":"same SHA-256 with Web Crypto or deterministic fallback","status":"pass"},
+    {"capability":"source_candidate_evidence","presentation":"suggested, observed, confirmed or missing","surface":"CanonicalMultiSourceReview","operation":"accept, choose, confirm or reset","next":"source-bound overlay and canonical rebuild","result":"candidate never bypasses M1/M2/M3","status":"pass"},
+    {"capability":"governed_bundle_candidates","presentation":"purpose, period, sources, missing evidence and relationship state","surface":"CanonicalMultiSourceReview","operation":"review and explicitly confirm","next":"existing governed relationship path","result":"same-period gross-profit or source-local delivery; comparison truthfully unsupported","status":"pass"},
+    {"capability":"real_origin_authentic_six_file_proof","presentation":"verification only","surface":"actual remote HTTP origin","operation":"upload authentic corpus with explicit authorization","next":"complete remote browser journeys","result":"not executed because transfer authorization was not provided","status":"blocked"}
   ],
   "detectedDefectsCorrected": [
     "synthetic multi-source artifact was projected instead of the metric-owning member artifact",
@@ -22,9 +27,25 @@
     "row count compact formatting rendered malformed N labels",
     "Investigation summed the bounded display rows instead of using the governed full-scope total",
     "pre-execution BA narrative and guessed currency could appear before governed execution",
-    "browser relationship hashing depended on node:crypto"
+    "browser relationship hashing depended on node:crypto",
+    "restored sample-only sessions could remain ready without a complete runtime source",
+    "persisted complete files were re-inspected without rebuilding their canonical runtime boundary",
+    "dataset-group selection contained an unbound runtime-source fallback",
+    "Home readiness did not include current runtime-source identity and generation continuity",
+    "full-file materialization called Web Crypto directly on a non-secure remote HTTP origin",
+    "canonical detections were not projected as source-bound non-authoritative candidates",
+    "multi-source UI defaulted toward an unexplained generic selection instead of governed bundle purposes",
+    "duplicate blocker occurrences produced repeated remediation controls",
+    "raw source fingerprints appeared in the primary user-facing analysis surface"
   ],
-  "remainingMissingConnections": [],
+  "remainingMissingConnections": [
+    {
+      "capability": "real_origin_authentic_six_file_proof",
+      "reason": "Explicit authorization to upload the authentic corpus to http://100.94.184.141:5173 was not provided.",
+      "productionDefectProven": false,
+      "verificationGap": true
+    }
+  ],
   "legacyProductionTruthReachable": false,
-  "status": "pass"
+  "status": "blocked_on_authentic_remote_verification"
 }

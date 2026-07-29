@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "lightbi.phase8f2.source-confirmation-operation-audit.v1",
+  "operations": [
+    {"operation":"accept_role_candidate","sourceBound":true,"status":"implemented"},
+    {"operation":"select_supported_role","sourceBound":true,"status":"implemented"},
+    {"operation":"confirm_document_identity","sourceBound":true,"status":"implemented"},
+    {"operation":"confirm_reporting_period","sourceBound":true,"status":"implemented"},
+    {"operation":"enter_missing_currency","sourceBound":true,"status":"implemented"},
+    {"operation":"confirm_monetary_columns","sourceBound":true,"status":"implemented"},
+    {"operation":"reset_confirmation","sourceBound":true,"status":"implemented"}
+  ],
+  "governance": {
+    "candidateAutomaticallyAccepted": false,
+    "separateDeclarationPerSource": true,
+    "crossDatasetMappingMemory": false,
+    "oneSourceEvidenceReusedForAnother": false,
+    "groupSelectionDefaultsToAllSources": false,
+    "rebuildPath": [
+      "overlay update",
+      "artifact rebuild",
+      "relationship rebuild where applicable",
+      "M1",
+      "M2",
+      "M3"
+    ]
+  },
+  "uiSurface": "CanonicalMultiSourceReview",
+  "tests": {
+    "confirmationStateAndReset": "pass",
+    "candidateDoesNotBypassM3": "pass",
+    "sourceScopeIsolation": "pass"
+  },
+  "status": "pass"
+}

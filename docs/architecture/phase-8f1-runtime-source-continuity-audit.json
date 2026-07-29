@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "lightbi.phase8f1.runtime-source-continuity-audit.v1",
+  "invariant": "Home ready iff current runtime source exists, exact binding matches, and Investigation can materialize the complete source.",
+  "bindingFields": [
+    "datasetId",
+    "sourceId",
+    "sourceFingerprint",
+    "inspectionGeneration",
+    "profileGeneration",
+    "sourceRowCount"
+  ],
+  "boundaries": [
+    {"name":"file_selection_and_inspection","runtimeFileRetained":true,"status":"pass"},
+    {"name":"canonical_source_boundary","runtimeBindingRequired":true,"status":"pass"},
+    {"name":"dataset_group_selection","unboundFallbackRemoved":true,"status":"pass"},
+    {"name":"canonical_presentation","missingRuntimeMarksStale":true,"status":"pass"},
+    {"name":"action_selection","exactActionIdChecked":true,"navigationFailsClosed":true,"status":"pass"},
+    {"name":"investigation_session","runtimeSourceCarriedInMemory":true,"serializedAsRows":false,"status":"pass"},
+    {"name":"runtime_materialization","bindingAndRowCountVerified":true,"status":"pass"}
+  ],
+  "singleSourceBrowserProof": {
+    "sourceRows": 1500,
+    "understandingSampleRows": 932,
+    "actualExecutionScope": "full_file",
+    "actualRevenue": 22973896244,
+    "expectedRevenue": 22973896244,
+    "runtimeGuardObserved": false
+  },
+  "falseExecutableActions": 0,
+  "status": "pass"
+}

@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "lightbi.phase8f1.dataset-group-source-boundary-audit.v1",
+  "selectionPath": "file input -> inspection -> family selection -> Use this dataset -> currentDataset",
+  "singleMemberGroup": {
+    "canonicalBoundaryBuiltFromSelectedMember": true,
+    "originalBrowserFileRetained": true,
+    "runtimeSourceUsesCanonicalBoundary": true,
+    "unboundFallbackAllowed": false,
+    "browserRevenueExecution": "pass"
+  },
+  "ambiguousMultiMemberFamily": {
+    "implicitRuntimeFusionAllowed": false,
+    "explicitSourceSelectionRequired": true
+  },
+  "sourceReplacement": {
+    "oldFingerprintAccepted": false,
+    "oldGenerationAccepted": false,
+    "oldActionRemainsRunnable": false
+  },
+  "status": "pass"
+}

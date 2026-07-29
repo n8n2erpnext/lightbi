@@ -1,0 +1,43 @@
+{
+  "schemaVersion": "lightbi.phase8f2.governed-bundle-projection-audit.v1",
+  "projectionPolicy": {
+    "usesFilenameTruth": false,
+    "usesCanonicalRoleCandidate": true,
+    "usesObservedOrConfirmedPeriod": true,
+    "genericSixSourceBundle": false,
+    "crossPeriodGrossProfitPairing": false,
+    "logisticsIncludedInGrossProfit": false
+  },
+  "syntheticSixSourceProof": {
+    "salesSources": 2,
+    "accountingSources": 2,
+    "logisticsSources": 2,
+    "grossProfitBundles": 2,
+    "deliverySourceLocalBundles": 2,
+    "revenueComparisonBundles": 1,
+    "defaultSelectedSources": 0,
+    "status": "pass"
+  },
+  "bundleKinds": [
+    {
+      "kind": "gross_profit_period",
+      "sources": ["one Sales source", "same-period Accounting source"],
+      "relationshipState": "candidate_not_confirmed",
+      "state": "needs_confirmation"
+    },
+    {
+      "kind": "delivery_source_local",
+      "sources": ["one Logistics source"],
+      "relationshipState": "source_local",
+      "state": "needs_confirmation"
+    },
+    {
+      "kind": "revenue_period_comparison",
+      "sources": ["Sales sources from distinct observed periods"],
+      "relationshipState": "unsupported_current_mvp",
+      "state": "unsupported_current_mvp"
+    }
+  ],
+  "authenticSixSourceRemoteProof": "blocked_not_executed",
+  "status": "pass"
+}

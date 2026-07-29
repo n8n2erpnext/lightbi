@@ -76,6 +76,31 @@ describe('ba decision engine', () => {
     expect(brief.executiveSummary).toContain('sales.csv');
   });
 
+  it('carries governed execution scope and decision-use restrictions into the BA brief', () => {
+    const brief = createBADecisionBrief({
+      datasetId: 'sales.csv',
+      previewResult,
+      chartModel,
+      runtimeIntent,
+      governedContext: {
+        metricId: 'sales_revenue',
+        businessPerspectiveIds: ['revenue'],
+        evidenceIds: ['document-identity-evidence:test'],
+        limitations: ['metric_preflight_is_conditional'],
+        restrictions: ['Analytical evidence does not authorize a business decision.'],
+        fullFileRowCount: 9994,
+        decisionUseAuthorized: false,
+      },
+    });
+
+    expect(brief.insights.find(insight => insight.id === 'ba_governed_scope')?.statement).toContain('9,994');
+    expect(brief.decisionReadinessScore).toBeLessThanOrEqual(79);
+    expect(brief.caveats).toContain('Governed limitation: metric_preflight_is_conditional');
+    expect(brief.caveats).toContain('Governed restriction: Analytical evidence does not authorize a business decision.');
+    expect(brief.decisionSuggestions[0]?.title).toBe('Validate before operational action');
+    expect(brief.decisionSuggestions.some(item => item.title === 'Validate before deciding')).toBe(false);
+  });
+
   it('marks decision brief as blocked when preview execution fails', () => {
     const brief = createBADecisionBrief({
       datasetId: 'dirty.xlsx',
@@ -484,5 +509,50 @@ describe('ba decision engine', () => {
 
     const riskInsight = brief.insights.find(insight => insight.type === 'outlier' || insight.type === 'key_risk');
     expect(riskInsight?.evidenceRows?.length).toBeGreaterThan(0);
+  });
+
+  it('formats DuckDB date epochs as business-readable dates in BA findings', () => {
+    const brief = createBADecisionBrief({
+      datasetId: 'retail.xlsx',
+      previewResult: {
+        ...previewResult,
+        columns: ['time_period', 'sales_revenue'],
+        rows: [
+          { time_period: 1632009600000, sales_revenue: 300 },
+          { time_period: 1632096000000, sales_revenue: 200 },
+          { time_period: 1632182400000, sales_revenue: 100 },
+        ],
+        rowCount: 3,
+      },
+      chartModel: {
+        ...chartModel,
+        xField: 'time_period',
+        yField: 'sales_revenue',
+        seriesFields: ['sales_revenue'],
+      },
+      runtimeIntent: {
+        ...runtimeIntent,
+        type: 'trend',
+        dimensions: ['time_period'],
+        measures: ['sales_revenue'],
+        expectedShape: 'line_chart',
+      },
+      aiBriefing: {
+        datasetId: 'retail.xlsx',
+        generatedAt: '2026-07-28T00:00:00.000Z',
+        grain: 'transaction',
+        grainEvidence: 'receipt identity',
+        readinessTier: 'decision_support',
+        readinessScore: 88,
+        semanticFields: [],
+        caveats: [],
+        safeActionHints: [],
+      },
+    });
+
+    expect(brief.insights.find(insight => insight.type === 'top_concentration')?.statement).toContain('2021-09-19');
+    expect(brief.insights.find(insight => insight.id === 'ba_trend_direction')?.statement).toContain('2021-09-19');
+    expect(brief.insights.find(insight => insight.id === 'ba_trend_direction')?.statement).not.toContain('1632009600000');
+    expect(brief.executiveSummary).not.toContain('1632009600000');
   });
 });

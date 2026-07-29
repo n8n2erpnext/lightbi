@@ -40,10 +40,10 @@ describe("Phase 6A consumer cutover governance", () => {
   });
 
   it("keeps Phase 5 policy identities frozen", () => {
-    expect(GOVERNED_DOMAIN_SUPPORT_MANIFEST_V1[0].lastValidatedPolicyIdentity).toBe("7b18e323865c6058a780d5ef31527878a60c004a116ba600c95ec6a705b8f37c");
-    expect(governedMetricPolicyHash()).toBe("79b00e4aa7e97311da56db1f19a996c52c8034dc52da21b0dc6981dfd1282702");
-    expect(questionActionPolicyHash()).toBe("cc32c28851557fedb41ea87d9b873a1941b3808140d7f7608a6363170bd68b4e");
-    expect(governedRuntimePolicyHash()).toBe("9b5ef8acc2d6761b428b41713c4e0d87a9db3bb9c79d251e51026057d0ea00b4");
+    expect(GOVERNED_DOMAIN_SUPPORT_MANIFEST_V1[0].lastValidatedPolicyIdentity).toBe("2d411107a2be1c39eb53eec11368a5813419257ec38ca4ca75e4b6e48251055f");
+    expect(governedMetricPolicyHash()).toBe("e6d9acc403751fe3f04612ce84c83511efe538c76b15237cd49b32b9640b99c5");
+    expect(questionActionPolicyHash()).toBe("c0616218cfd676047387ea33a783403d1d12b8040cfa87ec5cf6b7fc4a49c1ff");
+    expect(governedRuntimePolicyHash()).toBe("7f553bc3d0041e8492173689efd70caa7ba6ffc8e5a64aae7175dc24576eef8e");
   });
 
   it("keeps independent legacy and next detectors out of the selected Home path", () => {

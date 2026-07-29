@@ -427,6 +427,13 @@ describe('Investigation canonical consumer boundary', () => {
     expect(mockedExecute).toHaveBeenCalledTimes(1);
   });
 
+  it('auto-runs an authorized full-file handoff even when preview rows are not retained in the session', async () => {
+    mockedSession.mockReturnValue(session({ rows: [] }));
+    render(<Investigation />);
+    await waitFor(() => expect(mockedExecute).toHaveBeenCalledTimes(1));
+    expect(await screen.findByTestId('canonical-chart-renderer')).toBeDefined();
+  });
+
   it('projects the canonical full-scope total when visible grouped rows are bounded', async () => {
     mockedExecute.mockResolvedValue(governedResult({
       rows: [{ 'item.product': 'A', sales_revenue: 25 }],

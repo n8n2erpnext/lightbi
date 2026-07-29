@@ -1,0 +1,43 @@
+{
+  "schemaVersion": "lightbi.phase8f2.canonical-candidate-evidence-audit.v1",
+  "contract": "lightbi.canonical-source-candidate-projection.v1",
+  "candidateKinds": [
+    "source role",
+    "document identity",
+    "reporting period",
+    "monetary column",
+    "observed currency"
+  ],
+  "requiredBinding": {
+    "sourceId": true,
+    "sourceFingerprint": true,
+    "sourceArtifactId": true,
+    "physicalColumnOrSourceScope": true,
+    "supportingEvidence": true,
+    "contradictingEvidence": true,
+    "confidence": true,
+    "provenance": "inferred_candidate"
+  },
+  "authorityRules": {
+    "candidateIsConfirmedEvidence": false,
+    "candidateCanDirectlyMarkActionReady": false,
+    "filenameDeterminesRole": false,
+    "filenameDeterminesPeriod": false,
+    "placeholderCurrencyAccepted": false,
+    "currencyRequiresObservedCurrencyColumnWithSingleIsoCode": true,
+    "periodRequiresFullProfileDateRange": true,
+    "mappingStatesUsed": ["confirmed", "probable"]
+  },
+  "presentationStates": [
+    "Suggested by LightBI",
+    "Observed in source",
+    "Confirmed by user",
+    "Missing"
+  ],
+  "tests": {
+    "canonicalProjection": "pass",
+    "candidateAuthorityNegativeProbes": "pass",
+    "authenticRemoteProjection": "blocked_not_executed"
+  },
+  "status": "pass"
+}

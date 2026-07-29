@@ -1,5 +1,6 @@
 import type { MaterializedRuntimeData, RuntimeFilePayload } from "./full-file-runtime-parser";
 import type { RuntimeDatasetSource, RuntimeSourceBindingV1 } from "./runtime-dataset-source";
+import { browserSha256 } from "./browser-sha256";
 
 type WorkerResponse =
   | { status: "success"; result: MaterializedRuntimeData }
@@ -18,15 +19,15 @@ export async function materializeRuntimeDatasetSource(
     if (actual.sourceFingerprint !== expectedBinding.sourceFingerprint) throw new Error("RUNTIME_SOURCE_FINGERPRINT_MISMATCH");
     if (actual.inspectionGeneration !== expectedBinding.inspectionGeneration || actual.profileGeneration !== expectedBinding.profileGeneration) throw new Error("RUNTIME_SOURCE_GENERATION_MISMATCH");
     if (source.files.length !== 1) throw new Error("RUNTIME_SOURCE_FINGERPRINT_VERIFICATION_UNAVAILABLE");
-    const actualHash = await crypto.subtle.digest("SHA-256", await source.files[0].file.arrayBuffer());
-    const actualFingerprint = [...new Uint8Array(actualHash)].map(value => value.toString(16).padStart(2, "0")).join("");
+    const actualFingerprint = await browserSha256(await source.files[0].file.arrayBuffer());
     if (actualFingerprint !== expectedBinding.sourceFingerprint) throw new Error("RUNTIME_SOURCE_FILE_REPLACED");
   }
   const payloads: RuntimeFilePayload[] = await Promise.all(
     source.files.map(async item => ({
       name: item.file.name,
       buffer: await item.file.arrayBuffer(),
-      sheetName: item.sheetName
+      sheetName: item.sheetName,
+      headerRowIndex: item.headerRowIndex,
     }))
   );
   signal?.throwIfAborted();

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "lightbi.phase8f1.reload-reselection-audit.v1",
+  "completePersistedSource": {
+    "downloaded": true,
+    "reinspected": true,
+    "canonicalBoundaryRebuilt": true,
+    "runtimeSourceRebound": true,
+    "browserState": "ready",
+    "browserRuntimeLabel": "full source available"
+  },
+  "snapshotWithoutCompleteSource": {
+    "browserState": "stale",
+    "readyActionCount": 0,
+    "investigateButtonCount": 0,
+    "reselectionOperationVisible": true,
+    "runtimeSampleAdvertisedAsExecutable": false,
+    "screenshot": "/tmp/phase8f1-missing-file-session.png"
+  },
+  "reselection": {
+    "operation": "Reselect source",
+    "reinspectionRequired": true,
+    "artifactM1M2M3RebuildRequired": true,
+    "priorReadyActionRetained": false
+  },
+  "status": "pass"
+}

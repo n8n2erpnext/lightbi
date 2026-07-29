@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "lightbi.phase8f2.remote-browser-runtime-audit.v1",
+  "origin": "http://100.94.184.141:5173",
+  "localhostSubstitutedAsFinalProof": false,
+  "syntheticPlaywrightRun": {
+    "spec": "apps/desktop/e2e/phase8f2_remote_origin.spec.ts",
+    "tests": 2,
+    "passed": 2,
+    "failed": 0,
+    "durationSeconds": 7.8
+  },
+  "runtimeEnvironment": {
+    "secureContext": false,
+    "browserSha256Length": 64,
+    "fullFileRows": 1500,
+    "duckDbRows": 1500,
+    "executionScope": "full_file"
+  },
+  "capturedFailures": {
+    "cryptoSubtleOrDigest": 0,
+    "worker": 0,
+    "wasm": 0,
+    "dynamicImport": 0
+  },
+  "coverage": {
+    "csvImportAndMaterialization": "pass",
+    "xlsxImport": "pass_generated_source",
+    "datasetGrouping": "pass",
+    "bundleProjection": "pass",
+    "duckDbExecution": "pass",
+    "resultEvidence": "pass",
+    "authenticCorpusJourney": "blocked_not_executed"
+  },
+  "authenticCorpusDataTransferred": false,
+  "status": "pass_with_authentic_journey_pending"
+}

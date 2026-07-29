@@ -1,0 +1,141 @@
+{
+  "schemaVersion": "lightbi.beta-revenue-line-measure-support-audit.v1",
+  "recordedAt": "2026-07-28T13:32:00.000Z",
+  "scope": "Beta revenue perspective and line-level additive measure bridge",
+  "source": {
+    "name": "Sample - Superstore for Tableau 9.x versions.xls",
+    "sourceRows": 9994,
+    "sheet": "Orders",
+    "recordIdentity": {
+      "semanticId": "record_id",
+      "physicalColumn": "Row ID",
+      "state": "confirmed",
+      "provenance": "canonical_registry"
+    },
+    "userMappings": [
+      {
+        "physicalColumn": "Sales",
+        "semanticId": "revenue"
+      },
+      {
+        "physicalColumn": "Quantity",
+        "semanticId": "quantity"
+      }
+    ],
+    "sourceBoundEvidence": {
+      "documentIdentity": "Order ID",
+      "lineMeasures": [
+        {
+          "physicalColumn": "Sales",
+          "semanticId": "revenue",
+          "rowIdentityPhysicalColumn": "Row ID"
+        },
+        {
+          "physicalColumn": "Quantity",
+          "semanticId": "quantity",
+          "rowIdentityPhysicalColumn": "Row ID"
+        }
+      ],
+      "reportingPeriod": "2014-01-01/2017-12-31",
+      "currency": "USD"
+    }
+  },
+  "governedMetrics": [
+    {
+      "metricId": "sales_revenue",
+      "state": "conditionally_ready",
+      "blockers": [],
+      "currencyEvidenceConsumed": true
+    },
+    {
+      "metricId": "quantity_sold",
+      "state": "conditionally_ready",
+      "blockers": []
+    },
+    {
+      "metricId": "transaction_count",
+      "state": "conditionally_ready",
+      "blockers": []
+    }
+  ],
+  "actions": [
+    "commerce.sales_revenue.over_time",
+    "commerce.sales_revenue.by_product",
+    "commerce.quantity_sold.over_time",
+    "commerce.quantity_sold.by_product",
+    "commerce.transaction_count.summary"
+  ],
+  "fullFileExecution": {
+    "questionId": "commerce.sales_revenue.by_product",
+    "status": "executed",
+    "actualMaterializedRowCount": 9994,
+    "columns": [
+      "product",
+      "sales_revenue"
+    ],
+    "resultRowCount": 100
+  },
+  "transactionCountExecution": {
+    "questionId": "commerce.transaction_count.summary",
+    "status": "executed",
+    "actualMaterializedRowCount": 9994,
+    "columns": [
+      "transaction_count"
+    ],
+    "resultRowCount": 1,
+    "transactionCount": 5009
+  },
+  "architectureEvolution": {
+    "semanticRegistry": {
+      "signalAdded": "record_id",
+      "signalCount": 324,
+      "reason": "A neutral unique source-row identity is required to distinguish atomic line measures from repeated document totals."
+    },
+    "lineMeasureEvidence": {
+      "added": true,
+      "sourceBound": true,
+      "hashBound": true,
+      "identityRequired": true,
+      "userConfirmationRequired": true,
+      "reason": "SUM remains blocked until the user confirms that a measure belongs to each unique source row."
+    },
+    "documentIdentityRuntimeBridge": {
+      "before": "Metric preflight accepted source-bound document identity evidence, but runtime required the document identity to also be the physical row-grain key.",
+      "after": "Runtime accepts exactly one source/hash-bound, non-null, non-technical document identity that matches the governed semantic binding.",
+      "safetyBoundary": "COUNT DISTINCT remains unavailable without explicit user-confirmed document identity evidence."
+    },
+    "currencyEvidenceBridge": {
+      "before": "Source-bound currency evidence was consumed only by gross profit.",
+      "after": "All governed currency-requiring metrics consume the same validated source-bound evidence."
+    },
+    "metricPolicyIdentity": {
+      "before": "The metric policy hash covered rules and metric order but omitted metric definitions.",
+      "after": "The hash covers both policy rules and complete governed metric definitions."
+    },
+    "safetyPreserved": [
+      "No SUM from numeric shape alone",
+      "No repeated document total treated as a line measure",
+      "No stale or cross-source evidence reuse",
+      "No implicit currency inference",
+      "No runtime execution before governed action planning"
+    ]
+  },
+  "policyIdentities": {
+    "manifest": "2d411107a2be1c39eb53eec11368a5813419257ec38ca4ca75e4b6e48251055f",
+    "metric": "e6d9acc403751fe3f04612ce84c83511efe538c76b15237cd49b32b9640b99c5",
+    "question": "c0616218cfd676047387ea33a783403d1d12b8040cfa87ec5cf6b7fc4a49c1ff",
+    "runtime": "7f553bc3d0041e8492173689efd70caa7ba6ffc8e5a64aae7175dc24576eef8e"
+  },
+  "productionFileHashes": {
+    "apps/desktop/src/lib/semantic-registry.ts": "5210653a0dbd5d4d42ba087583a5b4c8922226d7df4366385ce00e7afaeb7d42",
+    "apps/desktop/src/lib/understanding-core/governed-runtime-preflight.ts": "70e261f80dcdf26662b206a453e80f3cfc53e5c3fcc56b76c7513a7df4f12842",
+    "apps/desktop/src/lib/understanding-core/governed-runtime-contracts.ts": "5be9323381bdf385d0a82715975e90606eef5078f4bbac4cd7327979fd07491b"
+  },
+  "verification": {
+    "targetedSuperstore": "passed",
+    "semanticRegistry": "17/17 passed",
+    "governance": "8 files, 44/44 passed",
+    "fullCorpus": "13/13 passed",
+    "typescript": "passed"
+  }
+}

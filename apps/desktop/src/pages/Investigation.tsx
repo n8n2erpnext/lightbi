@@ -82,7 +82,7 @@ export const Investigation: React.FC = () => {
   const [savedChartNotice, setSavedChartNotice] = useState<string | null>(null);
   const executionRuns = useRef(new ExecutionRunCoordinator('simple-preview'));
   const drillRuns = useRef(new ExecutionRunCoordinator('simple-drill-through'));
-  const autoPreviewStarted = useRef(false);
+  const autoPreviewSessionId = useRef<string | null>(null);
   const workspaceSessionPersisted = useRef(false);
   const createChart = useAppRuntime(state => state.createChart);
 
@@ -128,13 +128,11 @@ export const Investigation: React.FC = () => {
   }, [registerAdvancedSource, session]);
 
   useEffect(() => {
-    if (!session || !handoffCanExecute || autoPreviewStarted.current) return;
-    const hasPreviewInput = (session.rows?.length ?? 0) > 0;
-    if (!hasPreviewInput) return;
-    autoPreviewStarted.current = true;
+    if (!session || !handoffCanExecute || autoPreviewSessionId.current === session.id) return;
     const timer = window.setTimeout(() => {
-      const button = document.querySelector<HTMLButtonElement>('[data-run-preview="true"]');
-      button?.click();
+      if (autoPreviewSessionId.current === session.id) return;
+      autoPreviewSessionId.current = session.id;
+      void handleRunPreview();
     }, 0);
     return () => window.clearTimeout(timer);
   }, [session, handoffCanExecute]);
@@ -258,7 +256,16 @@ export const Investigation: React.FC = () => {
       previewResult,
       chartModel,
       aiBriefing,
-      runtimeIntent
+      runtimeIntent,
+      governedContext: session.canonicalExecutionResult && canonicalHandoff ? {
+        metricId: session.canonicalExecutionResult.metricId,
+        businessPerspectiveIds: canonicalHandoff.actionCandidate?.businessPerspectiveIds ?? [],
+        evidenceIds: session.canonicalExecutionResult.evidence.map(item => item.evidenceId),
+        limitations: session.canonicalExecutionResult.limitations,
+        restrictions: session.canonicalExecutionResult.restrictions.map(item => item.reason),
+        fullFileRowCount: session.canonicalExecutionResult.fullFileExecution?.actualMaterializedRowCount ?? null,
+        decisionUseAuthorized: canonicalHandoff.decisionUseAuthorized,
+      } : undefined,
     })
     : null;
   const governedResultValues = previewResult?.status === 'executed' && session.canonicalExecutionResult
@@ -314,7 +321,8 @@ export const Investigation: React.FC = () => {
     setSavedChartNotice(`Saved to Chart Library: ${chartId}`);
   };
 
-  const handleRunPreview = async () => {
+  async function handleRunPreview() {
+      if (!session) return;
       if (staleHandoffBlockers.length > 0) {
         setPreviewResult({
           id: `canonical-stale:${canonicalHandoff?.artifactIdentity ?? 'unknown'}`,
@@ -481,7 +489,7 @@ export const Investigation: React.FC = () => {
         setIsExecuting(false);
       }
     }
-  };
+  }
 
   const handleDrillThrough = async (point: DrillThroughPoint) => {
     const run = drillRuns.current.begin();

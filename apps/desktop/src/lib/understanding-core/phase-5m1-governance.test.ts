@@ -29,12 +29,12 @@ describe("Phase 5M1 governance, preservation, and import isolation", () => {
     expect(pack.packId).toBe("commerce_distribution_mvp");
     expect(pack.packStatus).toBe("conditional");
     expect(pack.productionActive).toBe(false);
-    expect(pack.lastValidatedPolicyIdentity).toBe("7b18e323865c6058a780d5ef31527878a60c004a116ba600c95ec6a705b8f37c");
+    expect(pack.lastValidatedPolicyIdentity).toBe("2d411107a2be1c39eb53eec11368a5813419257ec38ca4ca75e4b6e48251055f");
   });
 
   it("has complete immutable definitions and no execution authority", () => {
-    expect(GOVERNED_METRIC_DEFINITIONS_V1).toHaveLength(6);
-    expect(new Set(GOVERNED_METRIC_DEFINITIONS_V1.map((metric) => metric.metricId)).size).toBe(6);
+    expect(GOVERNED_METRIC_DEFINITIONS_V1).toHaveLength(8);
+    expect(new Set(GOVERNED_METRIC_DEFINITIONS_V1.map((metric) => metric.metricId)).size).toBe(8);
     for (const metric of GOVERNED_METRIC_DEFINITIONS_V1) {
       expect(metric.requirements.length).toBeGreaterThan(0);
       expect(metric.requiredReadinessCapabilities.length).toBeGreaterThan(0);
@@ -46,7 +46,7 @@ describe("Phase 5M1 governance, preservation, and import isolation", () => {
       expect(metric.currencyBehavior).toBeTruthy();
       expect(metric.executionAuthorization).toBe(false);
     }
-    expect(governedMetricPolicyHash()).toBe("79b00e4aa7e97311da56db1f19a996c52c8034dc52da21b0dc6981dfd1282702");
+    expect(governedMetricPolicyHash()).toBe("e6d9acc403751fe3f04612ce84c83511efe538c76b15237cd49b32b9640b99c5");
     expect(GOVERNED_METRIC_POLICY_V1.forbiddenInference).toContain("numeric_parse_establishes_measure");
   });
 

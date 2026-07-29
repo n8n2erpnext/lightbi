@@ -74,6 +74,15 @@ export interface CreateBADecisionBriefInput {
   chartModel: ChartPreviewModel | null;
   aiBriefing?: AISafeBriefing;
   runtimeIntent: RuntimeIntent;
+  governedContext?: {
+    metricId: string;
+    businessPerspectiveIds: string[];
+    evidenceIds: string[];
+    limitations: string[];
+    restrictions: string[];
+    fullFileRowCount: number | null;
+    decisionUseAuthorized: boolean;
+  };
 }
 
 export interface CreatePreExecutionBADecisionBriefInput {
@@ -141,6 +150,21 @@ function normalizedName(value: string): string {
     .replace(/đ/g, 'd')
     .replace(/Đ/g, 'D')
     .toLowerCase();
+}
+
+function formatGroupLabel(value: unknown, field: string): string {
+  if (isEmpty(value)) return '(empty)';
+  const normalizedField = normalizedName(field);
+  const timeLike = ['date', 'time', 'period', 'month', 'year'].some(token => normalizedField.includes(token));
+  if (timeLike) {
+    const epoch = typeof value === 'number' ? value : typeof value === 'string' && /^\d{12,13}$/.test(value) ? Number(value) : null;
+    if (epoch !== null && Number.isFinite(epoch)) {
+      const date = new Date(epoch);
+      if (!Number.isNaN(date.getTime())) return date.toISOString().slice(0, 10);
+    }
+    if (value instanceof Date && !Number.isNaN(value.getTime())) return value.toISOString().slice(0, 10);
+  }
+  return String(value);
 }
 
 function normalizedLoose(value: string): string {
@@ -297,7 +321,7 @@ function buildPreExecutionRows(
   if (runtimeIntent.type === 'trend') {
     const grouped = new Map<string, Record<string, unknown>>();
     for (const row of sourceRows) {
-      const label = isEmpty(row[dimension]) ? '(empty)' : String(row[dimension]);
+      const label = formatGroupLabel(row[dimension], dimension);
       const current = grouped.get(label) ?? { [dimension]: label, [`${measure}_sum`]: 0 };
       current[`${measure}_sum`] = Number(current[`${measure}_sum`] ?? 0) + (toNumber(row[measure]) ?? 0);
       grouped.set(label, current);
@@ -400,7 +424,7 @@ function mineTopConcentrationInsight(
 
   const values = rows
     .map(row => ({
-      label: isEmpty(row[categoryField]) ? '(empty)' : String(row[categoryField]),
+      label: formatGroupLabel(row[categoryField], categoryField),
       value: toNumber(row[numericField]) ?? 0
     }))
     .filter(item => Number.isFinite(item.value));
@@ -456,7 +480,7 @@ function minePositiveRateInsight(
       const numerator = toNumber(row[numeratorField]) ?? 0;
       const denominator = toNumber(row[denominatorField]) ?? 0;
       return {
-        label: isEmpty(row[categoryField]) ? '(empty)' : String(row[categoryField]),
+        label: formatGroupLabel(row[categoryField], categoryField),
         numerator,
         denominator,
         rate: denominator > 0 ? numerator / denominator : 0
@@ -499,7 +523,7 @@ function mineBottomInsight(
 
   const values = rows
     .map(row => ({
-      label: isEmpty(row[categoryField]) ? '(empty)' : String(row[categoryField]),
+      label: formatGroupLabel(row[categoryField], categoryField),
       value: toNumber(row[numericField])
     }))
     .filter((item): item is { label: string; value: number } => item.value !== null);
@@ -536,7 +560,7 @@ function mineSegmentSpreadInsight(
 
   const values = rows
     .map(row => ({
-      label: isEmpty(row[categoryField]) ? '(empty)' : String(row[categoryField]),
+      label: formatGroupLabel(row[categoryField], categoryField),
       value: toNumber(row[numericField])
     }))
     .filter((item): item is { label: string; value: number } => item.value !== null)
@@ -579,7 +603,7 @@ function mineOutlierInsight(
   const values = rows
     .map((row, index) => ({
       index,
-      label: categoryField && !isEmpty(row[categoryField]) ? String(row[categoryField]) : `row ${index + 1}`,
+      label: categoryField ? formatGroupLabel(row[categoryField], categoryField) : `row ${index + 1}`,
       value: toNumber(row[numericField])
     }))
     .filter((item): item is { index: number; label: string; value: number } => item.value !== null)
@@ -721,8 +745,8 @@ function mineTrendInsight(
   const deltaRatio = start !== 0 ? delta / Math.abs(start) : 0;
   const direction = delta > 0 ? 'increased' : delta < 0 ? 'decreased' : 'remained flat';
   const severity: BAInsightSeverity = delta > 0 ? 'positive' : delta < 0 ? 'warning' : 'neutral';
-  const fromLabel = xField ? String(rows[0]?.[xField] ?? 'first period') : 'first period';
-  const toLabel = xField ? String(rows[rows.length - 1]?.[xField] ?? 'last period') : 'last period';
+  const fromLabel = xField ? formatGroupLabel(rows[0]?.[xField], xField) : 'first period';
+  const toLabel = xField ? formatGroupLabel(rows[rows.length - 1]?.[xField], xField) : 'last period';
 
   return {
     id: 'ba_trend_direction',
@@ -760,8 +784,8 @@ function minePeriodOverPeriodInsight(
   const ratio = previousValue !== 0 ? delta / Math.abs(previousValue) : 0;
   if (Math.abs(delta) < 1e-9) return null;
 
-  const latestLabel = xField ? String(latest?.[xField] ?? 'latest period') : 'latest period';
-  const previousLabel = xField ? String(previous?.[xField] ?? 'previous period') : 'previous period';
+  const latestLabel = xField ? formatGroupLabel(latest?.[xField], xField) : 'latest period';
+  const previousLabel = xField ? formatGroupLabel(previous?.[xField], xField) : 'previous period';
   const direction = delta > 0 ? 'increased' : 'decreased';
   const severity: BAInsightSeverity = delta > 0 ? 'positive' : 'warning';
 
@@ -1016,7 +1040,7 @@ function buildScoreBreakdown(input: {
 }
 
 export function createBADecisionBrief(input: CreateBADecisionBriefInput): BADecisionBrief {
-  const { datasetId, previewResult, chartModel, aiBriefing, runtimeIntent } = input;
+  const { datasetId, previewResult, chartModel, aiBriefing, runtimeIntent, governedContext } = input;
   const dataTrustScore = clampScore(aiBriefing?.readinessScore ?? 50);
 
   if (!previewResult || previewResult.status === 'failed' || previewResult.status === 'blocked') {
@@ -1068,6 +1092,19 @@ export function createBADecisionBrief(input: CreateBADecisionBriefInput): BADeci
   const categoryField = selectCategoryField(rows, columns, numericField, chartModel);
 
   const insights = [
+    governedContext ? {
+      id: 'ba_governed_scope',
+      type: 'coverage' as const,
+      title: 'Governed analysis scope',
+      statement: `${governedContext.metricId} was calculated${governedContext.fullFileRowCount !== null ? ` from ${formatNumber(governedContext.fullFileRowCount)} full-source rows` : ' from the governed runtime source'}.`,
+      severity: 'neutral' as const,
+      confidence: 100,
+      evidence: [
+        ...(governedContext.businessPerspectiveIds.length > 0 ? [`Perspective: ${governedContext.businessPerspectiveIds.join(', ')}`] : []),
+        ...governedContext.evidenceIds.slice(0, 3),
+      ],
+      chartHint: 'table' as const,
+    } : null,
     minePositiveRateInsight(rows, columns, categoryField, runtimeIntent),
     mineTopConcentrationInsight(rows, categoryField, numericField),
     mineBottomInsight(rows, categoryField, numericField),
@@ -1091,7 +1128,23 @@ export function createBADecisionBrief(input: CreateBADecisionBriefInput): BADeci
   const evidenceBonus = hasBusinessInsight ? 12 : 0;
   const chartBonus = hasChart ? 8 : 0;
   const executionBonus = previewResult.executionScope === 'full_file' ? 8 : previewResult.executionScope ? 3 : 0;
-  const decisionReadinessScore = clampScore(dataTrustScore * 0.55 + evidenceBonus + chartBonus + executionBonus - warningPenalty);
+  const rawDecisionReadinessScore = clampScore(dataTrustScore * 0.55 + evidenceBonus + chartBonus + executionBonus - warningPenalty);
+  const decisionReadinessScore = governedContext && !governedContext.decisionUseAuthorized
+    ? Math.min(79, rawDecisionReadinessScore)
+    : rawDecisionReadinessScore;
+  const governedCaveats = governedContext ? [
+    ...governedContext.limitations.map(item => `Governed limitation: ${item}`),
+    ...governedContext.restrictions.map(item => `Governed restriction: ${item}`),
+  ] : [];
+  let decisionSuggestions = buildDecisionSuggestions(dataTrustScore, decisionReadinessScore, insights, runtimeIntent);
+  if (governedContext && !governedContext.decisionUseAuthorized) {
+    decisionSuggestions = decisionSuggestions.filter(item => item.title !== 'Validate before deciding');
+    decisionSuggestions.unshift({
+      title: 'Validate before operational action',
+      action: 'Use this brief as analytical evidence. A business owner must review the governed limitations and approve any operational or financial decision.',
+      priority: 'high',
+    });
+  }
 
   return {
     dataTrustScore,
@@ -1107,11 +1160,12 @@ export function createBADecisionBrief(input: CreateBADecisionBriefInput): BADeci
     }),
     insights,
     recommendedCharts: buildRecommendedCharts(chartModel, insights),
-    decisionSuggestions: buildDecisionSuggestions(dataTrustScore, decisionReadinessScore, insights, runtimeIntent),
-    caveats: [
+    decisionSuggestions,
+    caveats: [...new Set([
+      ...governedCaveats,
       ...(aiBriefing?.caveats ?? []),
-      ...previewResult.warnings
-    ].slice(0, 6)
+      ...previewResult.warnings,
+    ])].slice(0, 10)
   };
 }
 

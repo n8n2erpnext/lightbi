@@ -5,8 +5,9 @@ export const QUESTION_ACTION_GENERATION_VERSION = "lightbi.question-action-gener
 export const QUESTION_ACTION_POLICY_VERSION = "lightbi.question-action-policy.v1" as const;
 
 export type GovernedQuestionIntentV1 = "trend" | "ranking" | "summary" | "point_in_time" | "status_breakdown";
-export type GovernedActionKindV1 = "trend_candidate" | "ranking_candidate" | "count_candidate" | "snapshot_candidate" | "status_breakdown_candidate";
+export type GovernedActionKindV1 = "trend_candidate" | "ranking_candidate" | "summary_candidate" | "count_candidate" | "snapshot_candidate" | "status_breakdown_candidate";
 export type GovernedTimeRequirementV1 = "not_required" | "event_or_period" | "point_in_time_as_of" | "compatible_period";
+export type GovernedBusinessPerspectiveIdV1 = "operations" | "revenue" | "inventory" | "customer" | "performance" | "finance";
 
 export type QuestionActionBlockerV1 = {
   code: string;
@@ -45,6 +46,7 @@ export type QuestionActionCommonV1 = {
   contractVersion: typeof GOVERNED_QUESTION_ACTION_CONTRACT_VERSION;
   version: "1.0.0";
   domainPackId: "commerce_distribution_mvp";
+  businessPerspectiveIds: GovernedBusinessPerspectiveIdV1[];
   metricId: string;
   title: string;
   businessPurpose: string;
@@ -88,6 +90,7 @@ export type QuestionFamilyPolicyV1 = {
   questionId: string;
   version: "1.0.0";
   domainPackId: "commerce_distribution_mvp";
+  businessPerspectiveIds: readonly GovernedBusinessPerspectiveIdV1[];
   metricId: string;
   title: string;
   businessPurpose: string;

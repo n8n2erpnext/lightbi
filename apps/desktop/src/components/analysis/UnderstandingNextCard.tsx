@@ -2,9 +2,12 @@ import React from 'react';
 import { AlertTriangle, Layers, CheckCircle2, XCircle, FileText, Wrench } from 'lucide-react';
 import type { DatasetUnderstandingResult } from '../../lib/understanding-next/contracts';
 import type { CanonicalAnalysisPresentationV1, CanonicalDatasetPresentationV1, CanonicalRemediationOperationV1 } from '../../lib/understanding-core/canonical-consumer-presentation-contract';
+import type { CanonicalDomainPerspectiveCandidateV1 } from '../../lib/canonical-source-candidate-projection';
+import { dedupeCanonicalRemediations } from '../../lib/canonical-remediation-dedup';
 import { adaptNextActionsToLegacy } from '../../lib/understanding-next/action-adapter';
 import { AnalysisOpportunityGrid } from './AnalysisOpportunityGrid';
 import type { AnalysisAction } from '../../lib/analysis-opportunity-actions';
+import { CanonicalPerspectiveSelector } from './CanonicalPerspectiveSelector';
 
 const DOCUMENT_TYPE_LABELS: Record<string, string> = {
   retail_sales_document: 'retail sales data',
@@ -44,6 +47,9 @@ export interface UnderstandingNextCardProps {
   selectedActionId?: string;
   onSelectAction?: (action: AnalysisAction) => void;
   canonicalPresentation?: CanonicalDatasetPresentationV1;
+  canonicalPerspectives?: CanonicalDomainPerspectiveCandidateV1[];
+  selectedPerspectiveId?: string | null;
+  onSelectPerspective?: (perspectiveId: string) => void;
   onRemediate?: (operation: CanonicalRemediationOperationV1, itemId: string) => void;
 }
 
@@ -52,6 +58,9 @@ export const UnderstandingNextCard: React.FC<UnderstandingNextCardProps> = ({
   selectedActionId, 
   onSelectAction,
   canonicalPresentation,
+  canonicalPerspectives = [],
+  selectedPerspectiveId = null,
+  onSelectPerspective,
   onRemediate,
 }) => {
   const getHeaderStatus = () => {
@@ -79,6 +88,9 @@ export const UnderstandingNextCard: React.FC<UnderstandingNextCardProps> = ({
   const readyQuestionCount = readyLenses.reduce((sum, lens) => sum + lens.questions.filter(question => question.defaultAction).length, 0);
   const blockedAnalysisCount = understanding.unavailableActions.length + partialLenses.reduce((sum, lens) => sum + lens.questions.filter(question => !question.defaultAction).length, 0);
   const documentLabel = DOCUMENT_TYPE_LABELS[understanding.profile.documentType] ?? humanize(understanding.profile.documentType);
+  const recommendedPerspectiveId = canonicalPerspectives.find(
+    perspective => perspective.state === 'governed_action_available'
+  )?.perspectiveId ?? null;
   const grainLabel = GRAIN_LABELS[understanding.profile.grain] ?? humanize(understanding.profile.grain);
 
 
@@ -201,9 +213,28 @@ export const UnderstandingNextCard: React.FC<UnderstandingNextCardProps> = ({
       {canonicalPresentation && (
         <>
           <CanonicalUnderstandingSummary presentation={canonicalPresentation} />
+          <div className="border-t border-gray-100 pt-4">
+            <CanonicalPerspectiveSelector
+              items={canonicalPerspectives.map((perspective) => ({
+                id: perspective.perspectiveId,
+                label: perspective.label,
+                question: perspective.purpose,
+                state: perspective.state === 'governed_action_available'
+                  ? 'ready'
+                  : perspective.state === 'governed_questions_available'
+                    ? 'partial'
+                    : 'recognized',
+                badges: perspective.matchedSignalIds,
+                recommended: perspective.perspectiveId === recommendedPerspectiveId,
+              }))}
+              selectedId={selectedPerspectiveId}
+              onSelect={(id) => onSelectPerspective?.(id)}
+            />
+          </div>
           <CanonicalAnalysisStates
             presentation={canonicalPresentation}
             understanding={understanding}
+            selectedPerspectiveId={selectedPerspectiveId}
             onSelectAction={onSelectAction}
             onRemediate={onRemediate}
           />
@@ -439,10 +470,14 @@ const STATE_LABELS: Record<CanonicalAnalysisPresentationV1['state'], string> = {
 const CanonicalAnalysisStates: React.FC<{
   presentation: CanonicalDatasetPresentationV1;
   understanding: DatasetUnderstandingResult;
+  selectedPerspectiveId?: string | null;
   onSelectAction?: (action: AnalysisAction) => void;
   onRemediate?: (operation: CanonicalRemediationOperationV1, itemId: string) => void;
-}> = ({ presentation, understanding, onSelectAction, onRemediate }) => {
+}> = ({ presentation, understanding, selectedPerspectiveId, onSelectAction, onRemediate }) => {
   const actionById = new Map(understanding.availableActions.map(action => [action.id, action]));
+  const perspectiveAnalyses = selectedPerspectiveId
+    ? presentation.analyses.filter(item => (item.businessPerspectiveIds ?? []).some(id => id === selectedPerspectiveId))
+    : [];
   const countRows: Array<[CanonicalAnalysisPresentationV1['state'], string]> = [
     ['ready', 'Ready now'],
     ['needs_user_evidence', 'Needs confirmation'],
@@ -451,34 +486,35 @@ const CanonicalAnalysisStates: React.FC<{
     ['unsupported_mvp', 'Unsupported'],
   ];
   const groups = [
-    { id: 'recommended', label: 'Recommended now', items: presentation.analyses.filter(item => item.state === 'ready' && item.advertisedAsDefault).sort((a, b) => (a.rank ?? 99) - (b.rank ?? 99)) },
-    { id: 'additional', label: 'Additional supported analyses', items: presentation.analyses.filter(item => item.state === 'ready' && !item.advertisedAsDefault) },
-    { id: 'resolvable', label: 'Resolvable analyses', items: presentation.analyses.filter(item => item.state === 'needs_user_evidence' || item.state === 'needs_mapping_review') },
-    { id: 'blocked', label: 'Safety-blocked analyses', items: presentation.analyses.filter(item => item.state === 'blocked_safety') },
-    { id: 'execution-failed', label: 'Execution failed', items: presentation.analyses.filter(item => item.state === 'execution_failed') },
-    { id: 'unsupported', label: 'Unsupported in current MVP', items: presentation.analyses.filter(item => item.state === 'unsupported_mvp') },
-    { id: 'stale', label: 'Stale analyses', items: presentation.analyses.filter(item => item.state === 'stale') },
+    { id: 'recommended', label: 'Recommended now', items: perspectiveAnalyses.filter(item => item.state === 'ready' && item.advertisedAsDefault).sort((a, b) => (a.rank ?? 99) - (b.rank ?? 99)) },
+    { id: 'additional', label: 'Additional supported analyses', items: perspectiveAnalyses.filter(item => item.state === 'ready' && !item.advertisedAsDefault) },
+    { id: 'resolvable', label: 'Resolvable analyses', items: perspectiveAnalyses.filter(item => item.state === 'needs_user_evidence' || item.state === 'needs_mapping_review') },
+    { id: 'blocked', label: 'Safety-blocked analyses', items: perspectiveAnalyses.filter(item => item.state === 'blocked_safety') },
+    { id: 'execution-failed', label: 'Execution failed', items: perspectiveAnalyses.filter(item => item.state === 'execution_failed') },
+    { id: 'unsupported', label: 'Unsupported in current MVP', items: perspectiveAnalyses.filter(item => item.state === 'unsupported_mvp') },
+    { id: 'stale', label: 'Stale analyses', items: perspectiveAnalyses.filter(item => item.state === 'stale') },
   ].filter(group => group.items.length > 0);
   const renderItem = (item: CanonicalAnalysisPresentationV1) => {
     const action = item.actionCandidateId ? actionById.get(item.actionCandidateId) : undefined;
     const canInvestigate = item.state === 'ready' && item.executionReadiness !== 'not_executable' && action;
-    return <article key={item.itemId} tabIndex={-1} id={`analysis-item-${item.itemId}`} data-testid={`canonical-analysis-${item.itemId}`} data-state={item.state} className="rounded-lg border border-gray-200 bg-white p-3 shadow-sm">
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <div className="text-[13px] font-semibold text-gray-900">{item.title}</div>
-          <div className="mt-0.5 text-[12px] text-gray-500">{item.description}</div>
+    const remediationOperations = dedupeCanonicalRemediations(item.remediationOperations);
+    return <article key={item.itemId} tabIndex={-1} id={`analysis-item-${item.itemId}`} data-testid={`canonical-analysis-${item.itemId}`} data-state={item.state} className="min-w-0 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+      <div>
+        <span className="inline-flex rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5 text-[10px] font-semibold uppercase text-gray-700">{STATE_LABELS[item.state]}</span>
+        <div className="mt-2 min-w-0">
+          <div className="break-words text-[13px] font-semibold leading-5 text-gray-900">{item.title}</div>
+          <div className="mt-1 text-[12px] leading-5 text-gray-500">{item.description}</div>
         </div>
-        <span className="shrink-0 rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5 text-[10px] font-semibold uppercase text-gray-700">{STATE_LABELS[item.state]}</span>
       </div>
       {item.primaryBlocker && <div className="mt-2 text-[12px] text-amber-800" role="status" data-testid={`canonical-primary-blocker-${item.itemId}`}>
         <span className="font-medium">{item.primaryBlocker.message}</span>
-        {(item.primaryBlocker.scope === 'source' || item.primaryBlocker.scope === 'physical_column') && <span className="mt-0.5 block text-[11px] text-gray-500">Scope: {item.sheetOrTable ? `${item.sheetOrTable} · ` : ''}{item.primaryBlocker.scope === 'physical_column' ? item.physicalColumns.join(', ') : item.sourceId}</span>}
+        {(item.primaryBlocker.scope === 'source' || item.primaryBlocker.scope === 'physical_column') && <span className="mt-0.5 block text-[11px] text-gray-500">Scope: {item.sheetOrTable ? `${item.sheetOrTable} · ` : ''}{item.primaryBlocker.scope === 'physical_column' ? item.physicalColumns.join(', ') : 'Current source'}</span>}
       </div>}
       <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
         <span className="text-[10px] uppercase text-gray-400">{item.metricId}</span>
         {canInvestigate ? <button type="button" data-testid={`canonical-investigate-${item.itemId}`} onClick={() => onSelectAction?.(adaptNextActionsToLegacy([action])[0])} className="rounded border border-indigo-100 bg-indigo-50 px-2 py-1 text-[11px] font-semibold text-indigo-700 hover:bg-indigo-100">Investigate</button> : null}
-        {!canInvestigate && item.remediationOperations.length > 0 ? <div className="flex flex-wrap gap-1.5">
-          {item.remediationOperations.map((operation, index) => <button key={`${operation.operationId}:${index}`} type="button" data-testid={`canonical-remediate-${item.itemId}-${operation.kind}`} onClick={() => onRemediate?.(operation, item.itemId)} className="flex items-center gap-1 rounded border border-amber-200 bg-amber-50 px-2 py-1 text-[11px] font-semibold text-amber-800"><Wrench className="h-3 w-3" />{operation.label}</button>)}
+        {!canInvestigate && remediationOperations.length > 0 ? <div className="flex flex-wrap gap-1.5">
+          {remediationOperations.map((operation) => <button key={operation.operationId} type="button" data-testid={`canonical-remediate-${item.itemId}-${operation.kind}`} onClick={() => onRemediate?.(operation, item.itemId)} className="flex items-center gap-1 rounded border border-amber-200 bg-amber-50 px-2 py-1 text-[11px] font-semibold text-amber-800"><Wrench className="h-3 w-3" />{operation.label}</button>)}
         </div> : null}
       </div>
       {(item.secondaryBlockers.length > 0 || item.limitations.length > 0 || item.evidence.length > 0 || item.decisionUseRestrictions.length > 0) && <details className="mt-2 text-[11px] text-gray-500">
@@ -493,13 +529,25 @@ const CanonicalAnalysisStates: React.FC<{
   return <section className="border-t border-gray-100 pt-4" aria-labelledby="canonical-analysis-heading" data-testid="canonical-analysis-states">
     <div className="flex flex-wrap items-start justify-between gap-3">
       <div>
-        <h4 id="canonical-analysis-heading" className="text-[15px] font-semibold text-gray-900">Choose the decision angle to explore</h4>
+        <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-blue-700">
+          <span className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-100 text-[10px]">2</span>
+          Choose a decision angle
+        </div>
+        <h4 id="canonical-analysis-heading" className="mt-1 text-[15px] font-semibold text-gray-900">What should LightBI calculate and visualize?</h4>
         <p className="mt-0.5 text-[12px] text-gray-500">Only analyses that pass the exact governed runtime preflight can be investigated.</p>
       </div>
       <div className="flex flex-wrap gap-2" aria-label="Canonical analysis state summary">
-        {countRows.map(([state, label]) => <span key={state} data-testid={`canonical-count-${state}`} className="rounded border border-gray-200 bg-gray-50 px-2 py-1 text-[11px] text-gray-600">{label}: <strong>{presentation.counts[state]}</strong></span>)}
+        {selectedPerspectiveId && countRows.map(([state, label]) => <span key={state} data-testid={`canonical-count-${state}`} className="rounded border border-gray-200 bg-gray-50 px-2 py-1 text-[11px] text-gray-600">{label}: <strong>{perspectiveAnalyses.filter(item => item.state === state).length}</strong></span>)}
       </div>
     </div>
+
+    {!selectedPerspectiveId && <div className="mt-3 rounded-lg border border-indigo-100 bg-indigo-50 p-3 text-[12px] text-indigo-800" data-testid="canonical-select-perspective-prompt">
+      Select a business perspective above to reveal its governed questions and analysis readiness.
+    </div>}
+
+    {selectedPerspectiveId && perspectiveAnalyses.length === 0 && <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-[12px] text-amber-800" data-testid="canonical-perspective-recognized-only">
+      LightBI recognizes this perspective from canonical business signals, but no governed question or metric contract is available for it yet. No chart will be fabricated.
+    </div>}
 
     {presentation.datasetBlockers.length > 0 && <div className="mt-3 rounded-lg border border-red-200 bg-red-50 p-3 text-red-800" role="alert" data-testid="canonical-dataset-blocker">
       <div className="flex items-center gap-2 text-[13px] font-semibold"><XCircle className="h-4 w-4" /> Dataset unavailable</div>
@@ -509,7 +557,7 @@ const CanonicalAnalysisStates: React.FC<{
     <div className="mt-3 space-y-4">
       {groups.map(group => <section key={group.id} aria-labelledby={`canonical-group-${group.id}`} data-testid={`canonical-group-${group.id}`}>
         <h5 id={`canonical-group-${group.id}`} className="mb-2 text-[12px] font-semibold text-gray-700">{group.label} <span className="font-normal text-gray-400">({group.items.length})</span></h5>
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">{group.items.map(renderItem)}</div>
+        <div className="grid grid-cols-1 gap-3 xl:grid-cols-2">{group.items.map(renderItem)}</div>
       </section>)}
     </div>
   </section>;

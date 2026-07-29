@@ -1,0 +1,90 @@
+{
+  "schemaVersion": "lightbi.beta-inventory-shipment-perspective-audit.v1",
+  "recordedAt": "2026-07-28T13:10:00.000Z",
+  "scope": "Beta sample-data Inventory perspective",
+  "decision": {
+    "inventoryOnHandClaimAllowed": false,
+    "shipmentPresenceAnalysisAllowed": true,
+    "reason": "The audited logistics workbooks contain governed shipment identities and inventory-adjacent dimensions, but do not prove an item-warehouse-as-of stock balance.",
+    "metricId": "delivery_count",
+    "interpretation": "On unresolved or snapshot-like sources, the metric counts governed shipment identities represented in the imported dataset. It does not claim deliveries completed during a period or inventory on hand."
+  },
+  "architectureEvolution": {
+    "questionFamiliesAdded": [
+      "inventory.shipment_count.by_current_location",
+      "inventory.shipment_count.by_service_group",
+      "inventory.shipment_count.by_load_status",
+      "inventory.shipment_count.by_stock_age"
+    ],
+    "groupingDimensionsAdded": [
+      "current_location",
+      "service_group",
+      "load_status",
+      "stock_age"
+    ],
+    "preflightBridge": "Descriptive governed identity counts do not require a resolved temporal business meaning when the question performs no time grouping. The unresolved temporal basis remains an explicit limitation.",
+    "safetyPreserved": [
+      "No arbitrary row count",
+      "No inferred COUNT DISTINCT identity",
+      "No inventory-on-hand claim",
+      "No delivery-completion-period claim",
+      "No time trend without governed time semantics"
+    ]
+  },
+  "sources": [
+    {
+      "name": "Bao_cao_chi_tiet_Ton_kho_vung_tinh_28-12-2024.xlsx",
+      "sourceRows": 6386,
+      "identity": {
+        "semanticId": "shipment",
+        "physicalColumn": "Mã phiếu gửi",
+        "provenance": "canonical_exact_identity"
+      },
+      "temporalMode": "unresolved",
+      "actions": [
+        "inventory.shipment_count.by_current_location",
+        "inventory.shipment_count.by_service_group",
+        "inventory.shipment_count.by_load_status",
+        "inventory.shipment_count.by_stock_age"
+      ],
+      "fullFileExecution": {
+        "questionId": "inventory.shipment_count.by_current_location",
+        "status": "executed",
+        "actualMaterializedRowCount": 6386,
+        "columns": [
+          "current_location",
+          "delivery_count"
+        ],
+        "resultRowCount": 1
+      }
+    },
+    {
+      "name": "TỒN DỰ KIẾN HUBLAN.xlsx",
+      "sourceRows": 3612,
+      "identity": {
+        "semanticId": "shipment",
+        "physicalColumn": "Mã Phiếu Gửi",
+        "provenance": "source_bound_user_confirmation"
+      },
+      "temporalMode": "event",
+      "actions": [
+        "inventory.shipment_count.by_current_location",
+        "inventory.shipment_count.by_service_group"
+      ],
+      "fullFileExecution": null
+    }
+  ],
+  "policyIdentities": {
+    "manifest": "2d411107a2be1c39eb53eec11368a5813419257ec38ca4ca75e4b6e48251055f",
+    "metric": "e6d9acc403751fe3f04612ce84c83511efe538c76b15237cd49b32b9640b99c5",
+    "question": "c0616218cfd676047387ea33a783403d1d12b8040cfa87ec5cf6b7fc4a49c1ff",
+    "runtime": "7f553bc3d0041e8492173689efd70caa7ba6ffc8e5a64aae7175dc24576eef8e"
+  },
+  "verification": {
+    "targetedBaoWorkbook": "passed",
+    "targetedHubLanWorkbook": "passed",
+    "fullCorpus": "13/13 passed",
+    "governance": "8 files, 44/44 passed",
+    "typescript": "passed"
+  }
+}

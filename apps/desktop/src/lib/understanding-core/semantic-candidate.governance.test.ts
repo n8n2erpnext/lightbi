@@ -111,6 +111,12 @@ describe("Phase 3A.2 acceptance truth governance", () => {
     const phase7r37Correction = readJson<{
       productionFileHashes: Record<string, string>;
     }>("docs/architecture/phase-7r37-semantic-binding-audit.json");
+    const betaOperationalCorrection = readJson<{
+      productionFileHashes: Record<string, string>;
+    }>("docs/architecture/beta-operational-semantic-support-audit.json");
+    const betaRevenueCorrection = readJson<{
+      productionFileHashes: Record<string, string>;
+    }>("docs/architecture/beta-revenue-line-measure-support-audit.json");
     const disposition = readJson<{
       files: Array<{ frozenSha256: string }>;
     }>("docs/architecture/phase-7r41-missing-fixture-disposition-audit.json");
@@ -152,7 +158,7 @@ describe("Phase 3A.2 acceptance truth governance", () => {
     for (const [relativePath, correction] of Object.entries(phase5m4Correction.corrections.productionFiles)) {
       expect(correction.beforeSha256).toMatch(/^[a-f0-9]{64}$/);
       expect(crypto.createHash("sha256").update(fs.readFileSync(path.join(REPO_ROOT, relativePath))).digest("hex"))
-        .toBe(phase7r37Correction.productionFileHashes[relativePath] ?? phase7r1Correction.productionFileHashes[relativePath] ?? correction.afterSha256);
+        .toBe(betaRevenueCorrection.productionFileHashes[relativePath] ?? betaOperationalCorrection.productionFileHashes[relativePath] ?? phase7r37Correction.productionFileHashes[relativePath] ?? phase7r1Correction.productionFileHashes[relativePath] ?? correction.afterSha256);
     }
   });
 

@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "lightbi.beta-operational-semantic-support-audit.v1",
+  "date": "2026-07-28",
+  "status": "pass",
+  "scope": "Generic canonical semantic corrections required by the repository BHX retail POS fixture.",
+  "corrections": [
+    {
+      "id": "BETA-PARSER-RELEVANCE-BY-SEMANTIC-TYPE",
+      "genericRule": "A candidate is conflicted only by failures from parsers relevant to its governed compatible physical types. A failed date interpretation cannot invalidate an otherwise complete numeric money column.",
+      "independentEvidence": [
+        "BHX money fields have numeric parse success 14862/14862",
+        "BHX money fields have irrelevant partial Excel serial-date matches",
+        "mixed-type and relevant-parser failures remain material"
+      ]
+    },
+    {
+      "id": "BETA-QUALIFIED-VIETNAMESE-OPERATIONAL-HEADERS",
+      "genericRule": "Exact full Vietnamese operational headers are registry aliases; partial token matches remain insufficient.",
+      "headers": [
+        "Ngày xuất",
+        "Mã phiếu xuất",
+        "Tiền mặt khách đưa",
+        "Tiền cà thẻ",
+        "Tên kho xuất"
+      ]
+    }
+  ],
+  "prohibitedRuntimeInputsUsed": {
+    "filename": false,
+    "sampleId": false,
+    "sourceHash": false,
+    "exactRowCount": false,
+    "expectedMetricAnswer": false
+  },
+  "corpusValidation": {
+    "physicalColumns": 752,
+    "candidateTraces": 1151,
+    "selectedResults": 355,
+    "finalConfirmed": 46,
+    "highSeverityViolations": 0,
+    "broadOccurrences": 15,
+    "candidateAbsenceDebt": 12
+  },
+  "productionFileHashes": {
+    "apps/desktop/src/lib/semantic-registry.ts": "c97c0c0c2c7b2f01bdb571f1ab7ac7ef008f1287a7b3f1edc97d09948a5fb1ab",
+    "apps/desktop/src/lib/understanding-core/semantic-candidate-engine.ts": "b7e6cec4e1ecaeac5ca64d767eabe54df7843c3c0a366a442f24d8dc9646c78a",
+    "apps/desktop/src/lib/understanding-core/semantic-resolver.ts": "d80c3b6d4d5bb742ed8237bcfd156b01c6241dba3e7fc9d627f34194b8465904"
+  }
+}

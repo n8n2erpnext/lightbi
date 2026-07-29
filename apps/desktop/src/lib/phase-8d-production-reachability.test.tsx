@@ -6,6 +6,7 @@ import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { UnderstandingNextCard } from "../components/analysis/UnderstandingNextCard";
 import { projectCanonicalArtifactToUnderstandingNext } from "./canonical-consumer-presentation-adapter";
+import { projectCanonicalDomainPerspectives } from "./canonical-source-candidate-projection";
 import { inspectLocalFile } from "./local-file-inspector";
 import { createFileSourceCandidate } from "./source-preflight";
 import { getOrBuildCanonicalConsumerArtifact, resetCanonicalConsumerCacheForTests } from "./understanding-core/canonical-consumer-boundary";
@@ -91,7 +92,9 @@ describe("Phase 8D production capability reachability", () => {
     expect(additional.every(item => item.actionCandidateId && availableIds.has(item.actionCandidateId))).toBe(true);
 
     const select = vi.fn();
-    render(<UnderstandingNextCard understanding={understanding} canonicalPresentation={presentation} onSelectAction={select} />);
+    const perspectives = projectCanonicalDomainPerspectives(artifact);
+    const selectedPerspectiveId = additional[0].businessPerspectiveIds?.[0] ?? null;
+    render(<UnderstandingNextCard understanding={understanding} canonicalPresentation={presentation} canonicalPerspectives={perspectives} selectedPerspectiveId={selectedPerspectiveId} onSelectAction={select} />);
     expect(screen.getByTestId("canonical-understanding-summary")).toBeTruthy();
     expect(screen.getByTestId("canonical-group-additional")).toBeTruthy();
     fireEvent.click(screen.getByTestId(`canonical-investigate-${additional[0].itemId}`));

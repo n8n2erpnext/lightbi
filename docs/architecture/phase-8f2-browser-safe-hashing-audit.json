@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "lightbi.phase8f2.browser-safe-hashing-audit.v1",
+  "approvedProvider": "apps/desktop/src/lib/browser-sha256.ts",
+  "providerBehavior": {
+    "webCryptoPreferred": true,
+    "missingCryptoFallback": true,
+    "missingDigestFallback": true,
+    "digestExceptionFallback": true,
+    "arrayBufferSupported": true,
+    "stringSupported": true,
+    "lowercaseHexLength": 64
+  },
+  "knownVector": {
+    "input": "abc",
+    "sha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+    "webCryptoAndFallbackIdentical": true
+  },
+  "productionArchitectureScan": {
+    "scope": "apps/desktop/src production TypeScript and TSX",
+    "directSubtleDigestOutsideProvider": 0,
+    "directCryptoSubtleOutsideProvider": 0,
+    "nodeCryptoInBrowserProduction": 0,
+    "test": "src/lib/phase-8f2-browser-hashing-architecture.test.ts",
+    "status": "pass"
+  },
+  "identityUsesRetained": [
+    "source fingerprint",
+    "artifact identity",
+    "overlay identity",
+    "relationship identity",
+    "query-plan and runtime identity"
+  ],
+  "status": "pass"
+}

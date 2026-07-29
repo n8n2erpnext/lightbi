@@ -84,7 +84,7 @@ export const CanonicalEvidenceReview: React.FC<Props> = ({ artifact, overlay, re
       <summary className="cursor-pointer px-4 py-3 text-[13px] font-semibold text-gray-800">Review mappings and source evidence</summary>
       <div className="space-y-4 border-t border-gray-100 p-4">
         <div className="flex items-center justify-between gap-3 text-[12px]">
-          <div className="min-w-0 text-gray-500">Source-bound to <span className="font-mono">{boundary.sourceFingerprint.slice(0, 12)}</span> · revision {current.revision}</div>
+          <div className="min-w-0 text-gray-500">Source-bound confirmation · revision {current.revision}</div>
           <div className="flex shrink-0 items-center gap-2">
             {rebuildState === "pending" && <span className="flex items-center gap-1 text-blue-700"><RefreshCw className="h-3.5 w-3.5 animate-spin" /> Rebuilding</span>}
             {rebuildState === "succeeded" && <span className="flex items-center gap-1 text-emerald-700"><CheckCircle2 className="h-3.5 w-3.5" /> Rebuilt</span>}
@@ -92,6 +92,10 @@ export const CanonicalEvidenceReview: React.FC<Props> = ({ artifact, overlay, re
             <button type="button" className="rounded border border-gray-200 px-2 py-1 text-gray-600" onClick={() => onChange(resetCanonicalUserOverlay(current, boundary))}>Reset current source</button>
           </div>
         </div>
+        <details className="text-[11px] text-gray-500">
+          <summary className="cursor-pointer font-medium text-gray-600">Developer diagnostics</summary>
+          <p className="mt-1 break-all"><span className="font-medium">Source fingerprint:</span> {boundary.sourceFingerprint}</p>
+        </details>
 
         {artifact.status === "valid" && artifact.overlayValidation.blockers.length > 0 && (
           <div className="rounded border border-amber-200 bg-amber-50 p-2 text-[12px] text-amber-800">Invalid or stale declarations were not applied: {artifact.overlayValidation.blockers.join(", ")}</div>

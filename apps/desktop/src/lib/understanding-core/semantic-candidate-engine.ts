@@ -600,21 +600,29 @@ function appendStructuralCandidateEvidence(
     }));
   }
   const physicalTypes = new Set(column.physicalTypeCandidates.map((candidateType) => candidateType.type));
-  const relevantParsers = candidate.definition.role === "identifier"
-    ? new Set(
-      physicalTypes.has("number")
-        ? ["numeric"]
-        : physicalTypes.has("string")
-          ? ["string"]
-          : physicalTypes.has("numeric_string")
-            ? ["numeric"]
-            : physicalTypes.has("date") || physicalTypes.has("date_string") || physicalTypes.has("excel_serial_date")
-              ? ["date"]
-              : [],
-    )
-    : null;
+  const compatibleTypes = new Set(candidate.definition.compatibleTypes);
+  const numericTypes = ["number", "integer", "float", "double", "decimal", "currency"];
+  const dateTypes = ["date", "datetime", "timestamp"];
+  const stringTypes = ["string", "varchar", "text"];
+  const acceptsNumericTypes = numericTypes.some((type) => compatibleTypes.has(type));
+  const acceptsStringTypes = stringTypes.some((type) => compatibleTypes.has(type));
+  // Business document identifiers legitimately mix numeric-only and prefixed string
+  // values. A failed numeric parse is not a structural conflict when the registry
+  // explicitly permits the same identifier to be represented as a string.
+  const flexibleDocumentIdentifier = candidate.definition.role === "identifier"
+    && acceptsNumericTypes
+    && acceptsStringTypes;
+  const relevantParsers = new Set<string>();
+  if (acceptsNumericTypes
+    && !flexibleDocumentIdentifier
+    && (physicalTypes.has("number") || physicalTypes.has("numeric_string"))) relevantParsers.add("numeric");
+  if ((candidate.definition.role === "time" || dateTypes.some((type) => compatibleTypes.has(type)))
+    && (physicalTypes.has("date") || physicalTypes.has("date_string") || physicalTypes.has("excel_serial_date"))) relevantParsers.add("date");
+  if (stringTypes.some((type) => compatibleTypes.has(type))
+    && physicalTypes.has("string")
+    && !physicalTypes.has("numeric_string")) relevantParsers.add("string");
   const failures = column.parseEvidence
-    .filter((parse) => relevantParsers == null || relevantParsers.has(parse.parser))
+    .filter((parse) => relevantParsers.has(parse.parser))
     .flatMap((parse) => parse.representativeFailures);
   if (failures.length > 0) {
     candidate.evidence.push(makeEvidence({

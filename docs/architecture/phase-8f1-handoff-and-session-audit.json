@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "lightbi.phase8f1.handoff-and-session-audit.v1",
+  "homeToInvestigation": {
+    "canonicalHandoffRequired": true,
+    "currentRuntimeContinuityRequiredBeforeNavigation": true,
+    "selectedActionBindingRequired": true,
+    "runtimeSourcePassedInMemory": true,
+    "rowScope": "full_file"
+  },
+  "investigationValidation": {
+    "canonicalSourceBoundaryRequired": true,
+    "sourceBindingsMatchRequired": true,
+    "sourceFingerprintRequired": true,
+    "expectedRuntimeBindingPassedToExecutor": true,
+    "expectedSourceRowCountPassedToExecutor": true,
+    "missingSourceBlocker": "canonical_full_file_runtime_source_required",
+    "sampleFallback": false
+  },
+  "serialization": {
+    "browserFileSerializedIntoSnapshot": false,
+    "sampleRowsCanRestoreRunnableState": false,
+    "persistedCompleteFileMayBeDownloadedAndReinspected": true
+  },
+  "status": "pass"
+}

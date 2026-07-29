@@ -1,0 +1,78 @@
+{
+  "schemaVersion": "lightbi.beta-performance-semantic-support-audit.v1",
+  "generatedOn": "2026-07-28",
+  "status": "controlled_evolution_validated",
+  "source": {
+    "file": "sample data/2017-06-22 DANH SACH XEP HANG QUAN LY TOAN QUOC.xlsx",
+    "sourceFingerprint": "ea15f8c666e75a6ea4117bbb235bf2ac3565d13e1eb06f1db56ad95ac2c9c989",
+    "canonicalDataRows": 2200,
+    "canonicalHeaderRowIndex": 1
+  },
+  "architectureFindings": [
+    {
+      "code": "performance_concepts_collapsed",
+      "finding": "Ordinal performance rank, accumulated stars, and average criteria score were not distinct canonical concepts.",
+      "resolution": "Added performance_rank and performance_star_total while retaining quality_score for the average criteria score."
+    },
+    {
+      "code": "numeric_employee_identifier_rejected",
+      "finding": "Employee identifiers exported as numbers conflicted with a string-only registry contract.",
+      "resolution": "Employee ID now explicitly permits string and numeric physical representations."
+    },
+    {
+      "code": "non_additive_score_blocked_from_average",
+      "finding": "The metric preflight reused SUM-oriented additivity rules and blocked a valid non-additive score average.",
+      "resolution": "Added a governed average safety path requiring a numeric canonical measure, no parse failures, no repeated score risk, atomic rows, and an independently proven entity identity."
+    },
+    {
+      "code": "runtime_header_boundary_drift",
+      "finding": "XLSX runtime materialization used the first worksheet row rather than the canonical selected header row.",
+      "resolution": "Propagated canonical headerRowIndex through the runtime source and parser."
+    },
+    {
+      "code": "runtime_header_whitespace_drift",
+      "finding": "Trailing workbook-header whitespace caused canonical bindings and DuckDB runtime identifiers to diverge.",
+      "resolution": "Runtime row keys and governed query identifiers now share trim-plus-lowercase normalization."
+    }
+  ],
+  "semanticBindings": [
+    { "physicalColumn": "Xếp hạng", "canonicalSignal": "performance_rank", "state": "probable" },
+    { "physicalColumn": "MSNV Quản lý", "canonicalSignal": "employee_id", "state": "confirmed" },
+    { "physicalColumn": "Họ tên Quản lý", "canonicalSignal": "manager", "state": "probable" },
+    { "physicalColumn": "Tổng sao từ T6/2016 đến T05/2017", "canonicalSignal": "performance_star_total", "state": "probable" },
+    { "physicalColumn": "Trung bình điểm 4 tiêu chí ", "canonicalSignal": "quality_score", "state": "probable" }
+  ],
+  "governedCapability": {
+    "perspectiveId": "performance",
+    "metricId": "average_quality_score",
+    "operator": "governed_average",
+    "questionIds": [
+      "performance.average_quality_score.summary",
+      "performance.average_quality_score.by_rank"
+    ],
+    "fullFileExecution": {
+      "status": "executed",
+      "actualMaterializedRowCount": 2200,
+      "resultColumns": ["performance_rank", "average_quality_score"],
+      "returnedRows": 100
+    }
+  },
+  "policyIdentities": {
+    "manifest": "2d411107a2be1c39eb53eec11368a5813419257ec38ca4ca75e4b6e48251055f",
+    "metric": "e6d9acc403751fe3f04612ce84c83511efe538c76b15237cd49b32b9640b99c5",
+    "question": "70eb2bd6ed47cf40a1dddae3ec4dcb9abebdf16064be04031d67db002633a1ae",
+    "runtime": "7f553bc3d0041e8492173689efd70caa7ba6ffc8e5a64aae7175dc24576eef8e"
+  },
+  "verification": {
+    "betaSampleWorkbooks": { "passed": 13, "failed": 0 },
+    "governanceTests": { "passed": 44, "failed": 0 },
+    "semanticParserAndUiTests": { "passed": 42, "failed": 0 },
+    "typescript": "passed"
+  },
+  "safety": {
+    "sumFallbackAllowed": false,
+    "rowCountFallbackAllowed": false,
+    "crossMetricIdentityBorrowingAllowed": false,
+    "decisionUseAuthorized": false
+  }
+}

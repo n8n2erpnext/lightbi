@@ -3,6 +3,7 @@ import {
   type CanonicalConsumerBuildResultV1,
 } from "./canonical-consumer-boundary";
 import type { CanonicalMultiSourceDatasetV1 } from "./canonical-multisource-boundary";
+import type { GovernedBusinessPerspectiveIdV1 } from "./governed-question-action-contracts";
 
 type ValidCanonicalArtifact = Extract<CanonicalConsumerBuildResultV1, { status: "valid" }>;
 type CanonicalQuestionCandidate = ValidCanonicalArtifact["questionGeneration"]["candidateQuestions"][number];
@@ -62,6 +63,7 @@ export type CanonicalAnalysisPresentationV1 = {
   itemId: string;
   questionId: string;
   actionCandidateId: string | null;
+  businessPerspectiveIds?: GovernedBusinessPerspectiveIdV1[];
   metricId: string;
   title: string;
   description: string;
@@ -370,6 +372,7 @@ function questionPresentation(
     itemId: question.questionId,
     questionId: question.questionId,
     actionCandidateId: action?.actionCandidateId ?? null,
+    businessPerspectiveIds: [...question.businessPerspectiveIds],
     metricId: question.metricId,
     title: question.title,
     description: question.businessPurpose,
@@ -494,7 +497,7 @@ export function presentCanonicalConsumerArtifact(
   for (const concept of artifact.domainActivation.concepts.filter((item) => ["detect_only", "unsupported"].includes(item.state))) {
     if (analyses.some((item) => item.metricId === concept.conceptId)) continue;
     const blockers = concept.blockers.map((item) => ({ code: item.code, message: humanizeCode(item.code), severity: item.severity, scope: "capability" as const, source: "domain_activation", references: [...item.references], limitations: concept.limitations.map((entry) => entry.code), remediationOperations: [], evidenceReferences: concept.evidence.flatMap((entry) => entry.references) }));
-    analyses.push({ itemId: `concept:${concept.conceptId}`, questionId: `concept:${concept.conceptId}`, actionCandidateId: null, metricId: concept.conceptId, title: concept.conceptId.replaceAll("_", " "), description: "The source contains this concept, but decision support is not part of the current MVP.", state: options.stale ? "stale" : "unsupported_mvp", m1State: "unsupported", m2State: "not_generated", m3State: "unavailable", executionReadiness: "not_executable", primaryBlocker: blockers[0] ?? { code: "unsupported_mvp", message: "This capability is not supported by the current MVP.", severity: "material", scope: "capability", source: "domain_activation", references: [], limitations: [], remediationOperations: [], evidenceReferences: [] }, secondaryBlockers: blockers.slice(1), limitations: concept.limitations.map((item) => item.code), remediationOperations: [], physicalColumns: [], canonicalSignals: [concept.conceptId], sourceId: artifact.sourceBoundary?.sourceId ?? artifact.canonicalSource.physical.sourceProfile.source.sourceId, sheetOrTable: artifact.canonicalSource.physical.sourceProfile.source.sheet ?? null, evidence: concept.evidence.map((item) => ({ evidenceId: item.evidenceId, references: [...item.references], provenance: item.provenance })), decisionUseRestrictions: [], artifactIdentity: artifact.identity, overlayIdentity: artifact.overlayIdentity, advertisedAsDefault: false, rank: null });
+    analyses.push({ itemId: `concept:${concept.conceptId}`, questionId: `concept:${concept.conceptId}`, actionCandidateId: null, businessPerspectiveIds: [], metricId: concept.conceptId, title: concept.conceptId.replaceAll("_", " "), description: "The source contains this concept, but decision support is not part of the current MVP.", state: options.stale ? "stale" : "unsupported_mvp", m1State: "unsupported", m2State: "not_generated", m3State: "unavailable", executionReadiness: "not_executable", primaryBlocker: blockers[0] ?? { code: "unsupported_mvp", message: "This capability is not supported by the current MVP.", severity: "material", scope: "capability", source: "domain_activation", references: [], limitations: [], remediationOperations: [], evidenceReferences: [] }, secondaryBlockers: blockers.slice(1), limitations: concept.limitations.map((item) => item.code), remediationOperations: [], physicalColumns: [], canonicalSignals: [concept.conceptId], sourceId: artifact.sourceBoundary?.sourceId ?? artifact.canonicalSource.physical.sourceProfile.source.sourceId, sheetOrTable: artifact.canonicalSource.physical.sourceProfile.source.sheet ?? null, evidence: concept.evidence.map((item) => ({ evidenceId: item.evidenceId, references: [...item.references], provenance: item.provenance })), decisionUseRestrictions: [], artifactIdentity: artifact.identity, overlayIdentity: artifact.overlayIdentity, advertisedAsDefault: false, rank: null });
   }
   const counts = emptyCounts();
   analyses.forEach((item) => { counts[item.state] += 1; });

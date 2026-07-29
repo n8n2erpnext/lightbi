@@ -6,6 +6,7 @@ import { describe, expect, it } from "vitest";
 import * as XLSX from "xlsx";
 import { generateCanonicalAIBriefing } from "../canonical-ai-briefing";
 import { projectCanonicalArtifactToUnderstandingNext } from "../canonical-consumer-presentation-adapter";
+import { projectCanonicalDomainPerspectives } from "../canonical-source-candidate-projection";
 import { executeGovernedMetricRequest } from "./governed-metric-executor";
 import type { GovernedDuckDBBoundaryV1 } from "./governed-runtime-contracts";
 import { planGovernedMetricQuery } from "./governed-metric-query-planner";
@@ -83,6 +84,15 @@ describe("Phase 6A canonical artifact consumer cutover", () => {
     const home = projectCanonicalArtifactToUnderstandingNext(first);
     expect(home.recommendedQuestions.length).toBeGreaterThan(0);
     expect(home.quality.blockedReasons).toEqual(first.blockers);
+    const perspectives = projectCanonicalDomainPerspectives(first);
+    expect(perspectives.find((item) => item.perspectiveId === "revenue")).toMatchObject({
+      state: "governed_action_available",
+      provenance: "inferred_candidate",
+    });
+    expect(perspectives.find((item) => item.perspectiveId === "customer")).toMatchObject({
+      state: "recognized_only",
+      actionCandidateIds: [],
+    });
     const revenueAction = first.questionGeneration.actionCandidates.find((item) => item.questionId === "commerce.sales_revenue.by_product");
     expect(revenueAction).toBeDefined();
     const handoff = prepareCanonicalInvestigationHandoff(first, revenueAction!.actionCandidateId);

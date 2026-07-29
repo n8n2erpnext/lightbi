@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import * as XLSX from "xlsx";
 import { materializeRuntimeFilePayloads } from "./full-file-runtime-parser";
 
 function textBuffer(value: string): ArrayBuffer {
@@ -45,5 +46,72 @@ describe("materializeRuntimeFilePayloads", () => {
       { region: "North" },
       { region: "South" }
     ]);
+  });
+
+  it("excludes fully empty workbook rows to match the canonical data region", () => {
+    const workbook = XLSX.utils.book_new();
+    const sheet = XLSX.utils.aoa_to_sheet([
+      ["Employee ID", "Quality Score"],
+      [101, 4.5],
+      [null, null],
+      [102, 4.8],
+    ]);
+    XLSX.utils.book_append_sheet(workbook, sheet, "Performance");
+    const bytes = XLSX.write(workbook, { type: "array", bookType: "xlsx" }) as ArrayBuffer;
+
+    const result = materializeRuntimeFilePayloads([{
+      name: "performance.xlsx",
+      buffer: bytes,
+      sheetName: "Performance",
+    }]);
+
+    expect(result.rowCount).toBe(2);
+    expect(JSON.parse(result.jsonText)).toEqual([
+      { "employee id": 101, "quality score": 4.5 },
+      { "employee id": 102, "quality score": 4.8 },
+    ]);
+  });
+
+  it("starts workbook materialization at the canonical header row", () => {
+    const workbook = XLSX.utils.book_new();
+    const sheet = XLSX.utils.aoa_to_sheet([
+      ["National manager performance report"],
+      ["Employee ID", "Quality Score"],
+      [101, 4.5],
+      [102, 4.8],
+    ]);
+    XLSX.utils.book_append_sheet(workbook, sheet, "Performance");
+    const bytes = XLSX.write(workbook, { type: "array", bookType: "xlsx" }) as ArrayBuffer;
+
+    const result = materializeRuntimeFilePayloads([{
+      name: "performance.xlsx",
+      buffer: bytes,
+      sheetName: "Performance",
+      headerRowIndex: 1,
+    }]);
+
+    expect(result.rowCount).toBe(2);
+    expect(JSON.parse(result.jsonText)[0]).toEqual({
+      "employee id": 101,
+      "quality score": 4.5,
+    });
+  });
+
+  it("normalizes surrounding workbook-header whitespace like the query planner", () => {
+    const workbook = XLSX.utils.book_new();
+    const sheet = XLSX.utils.aoa_to_sheet([
+      [" Quality Score "],
+      [4.5],
+    ]);
+    XLSX.utils.book_append_sheet(workbook, sheet, "Performance");
+    const bytes = XLSX.write(workbook, { type: "array", bookType: "xlsx" }) as ArrayBuffer;
+
+    const result = materializeRuntimeFilePayloads([{
+      name: "performance.xlsx",
+      buffer: bytes,
+      sheetName: "Performance",
+    }]);
+
+    expect(JSON.parse(result.jsonText)).toEqual([{ "quality score": 4.5 }]);
   });
 });

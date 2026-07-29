@@ -1,0 +1,45 @@
+{
+  "schemaVersion": "lightbi.phase8f1.regression-conformance.v1",
+  "sourceStateFrozenBeforeFinalFullSuite": true,
+  "gates": {
+    "phase8F1Targeted": {"status":"pass"},
+    "phase8AFullSource": {"status":"pass"},
+    "phase8FPresentationParity": {"status":"pass"},
+    "homeInvestigation": {"status":"pass"},
+    "datasetGroupAndSessionContinuity": {"status":"pass"},
+    "multiSourceExecution": {"status":"pass","grossProfit":3075721244,"requiredRowsMaterialized":[1500,1500]},
+    "completeUnderstandingCore": {"status":"pass"},
+    "typescript": {"diagnostics":0,"status":"pass"},
+    "productionBuild": {"status":"pass"},
+    "architectureJson": {"filesParsedBeforePhase8F1Reports":330,"status":"pass"},
+    "canonicalReachability": {"status":"pass"},
+    "pageSizeGate": {"Home":800,"Investigation":800,"Advanced":770,"status":"pass"},
+    "diffCheck": {"status":"pass"}
+  },
+  "preFinalDiagnosticRun": {
+    "purpose": "Detected and corrected a Home page-size gate regression before the final frozen-state run.",
+    "logPath": "/tmp/phase8f1-prefinal-full-desktop.log",
+    "logSha256": "e1ad261195d0905d928b088fabcfc0c5094db4135f929d637f5693e3785ef54f",
+    "retained": true
+  },
+  "finalFullDesktopSuite": {
+    "runCountAfterFinalCorrection": 1,
+    "logPath": "/tmp/phase8f1-final-full-desktop.log",
+    "logSha256": "bfe74968d2a2bcd1717643fffa88fe5fc31a3a6c9da744af323169cab7a4ad5d",
+    "logBytes": 7150,
+    "processExitStatus": 1,
+    "testFiles": {"total":180,"passed":176,"failed":4},
+    "tests": {"total":1211,"passed":1202,"failed":9},
+    "governedDeterministicFailuresObserved": 6,
+    "governedTimingSensitiveFailuresObserved": 3,
+    "unexpectedFailures": 0,
+    "phase8F1OwnedFailures": 0,
+    "conformanceEvaluatedByIdentityAndSignature": true
+  },
+  "governedAllowlist": {
+    "path": "docs/architecture/phase-5b6b-regression-baseline-allowlist.v1.json",
+    "sha256": "baa86950582b7d758396abb0c69fdaffcd3c2cbbb22b71dd3bbdb3c0aed1c4f5",
+    "modified": false
+  },
+  "status": "pass"
+}

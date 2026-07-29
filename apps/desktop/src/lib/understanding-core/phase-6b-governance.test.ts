@@ -54,9 +54,9 @@ describe('Phase 6B production reachability governance', () => {
   });
 
   it('keeps policy hashes frozen and all required audits machine-readable', () => {
-    expect(governedMetricPolicyHash()).toBe('79b00e4aa7e97311da56db1f19a996c52c8034dc52da21b0dc6981dfd1282702');
-    expect(questionActionPolicyHash()).toBe('cc32c28851557fedb41ea87d9b873a1941b3808140d7f7608a6363170bd68b4e');
-    expect(governedRuntimePolicyHash()).toBe('9b5ef8acc2d6761b428b41713c4e0d87a9db3bb9c79d251e51026057d0ea00b4');
+    expect(governedMetricPolicyHash()).toBe('e6d9acc403751fe3f04612ce84c83511efe538c76b15237cd49b32b9640b99c5');
+    expect(questionActionPolicyHash()).toBe('c0616218cfd676047387ea33a783403d1d12b8040cfa87ec5cf6b7fc4a49c1ff');
+    expect(governedRuntimePolicyHash()).toBe('7f553bc3d0041e8492173689efd70caa7ba6ffc8e5a64aae7175dc24576eef8e');
     for (const audit of AUDITS) expect(() => readAudit(audit), audit).not.toThrow();
     expect(readAudit('phase-6b-final-gate-audit.json')).toMatchObject({
       simpleCanonicalPath: true,

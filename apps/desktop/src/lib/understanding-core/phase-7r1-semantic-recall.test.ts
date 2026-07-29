@@ -293,8 +293,8 @@ describe.sequential("Phase 7R1 core signal recall remediation", () => {
   }, 240_000);
 
   it("does not mutate downstream metric, question, or runtime policies", () => {
-    expect(governedMetricPolicyHash()).toBe("79b00e4aa7e97311da56db1f19a996c52c8034dc52da21b0dc6981dfd1282702");
-    expect(questionActionPolicyHash()).toBe("cc32c28851557fedb41ea87d9b873a1941b3808140d7f7608a6363170bd68b4e");
-    expect(governedRuntimePolicyHash()).toBe("9b5ef8acc2d6761b428b41713c4e0d87a9db3bb9c79d251e51026057d0ea00b4");
+    expect(governedMetricPolicyHash()).toBe("e6d9acc403751fe3f04612ce84c83511efe538c76b15237cd49b32b9640b99c5");
+    expect(questionActionPolicyHash()).toBe("c0616218cfd676047387ea33a783403d1d12b8040cfa87ec5cf6b7fc4a49c1ff");
+    expect(governedRuntimePolicyHash()).toBe("7f553bc3d0041e8492173689efd70caa7ba6ffc8e5a64aae7175dc24576eef8e");
   });
 });
