@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { questionActionPolicyHash } from "./commerce-distribution-question-policy";
 import { deterministicPolicySha256 } from "./contextual-evidence-policy";
+import { GOVERNED_DOMAIN_SUPPORT_MANIFEST_V1 } from "./domain-support-manifest";
 import { generateGovernedCommerceQuestionsAndActions } from "./governed-question-action-generator";
 import type { CanonicalMetricSourceV1, DomainActivationArtifactV1, GovernedMetricPreflightItemV1, GovernedMetricPreflightV1, GovernedMetricStateV1 } from "./governed-domain-metric-contracts";
 import type { QuestionActionGenerationInputV1 } from "./governed-question-action-contracts";
@@ -115,7 +116,7 @@ function activation(state: DomainActivationArtifactV1["state"] = "conditional"):
     schemaVersion: "lightbi.domain-activation.v1",
     packId: "commerce_distribution_mvp",
     packVersion: "1.0.0",
-    manifestPolicyHash: "2d411107a2be1c39eb53eec11368a5813419257ec38ca4ca75e4b6e48251055f",
+    manifestPolicyHash: GOVERNED_DOMAIN_SUPPORT_MANIFEST_V1[0].lastValidatedPolicyIdentity,
     identity: "activation-fixture-v1",
     state,
     concepts: [], blockers: [], limitations: [], tuningAllowed: true,
