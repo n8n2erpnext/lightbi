@@ -15,22 +15,24 @@ const sources = [
 const empty = (): MultiSourceDraftV1 => ({ selected: true, role: "", documentColumn: "", periodStart: "", periodEnd: "", currency: "", monetaryColumns: "" });
 
 describe("Phase 8D.1 production multi-source UI flow", () => {
-  it("requires explicit source-bound role and evidence input without filename inference", () => {
+  it("keeps technical corrections optional in Easy Mode without filename inference", () => {
     const onChange = vi.fn();
     const onBuild = vi.fn();
     const view = render(<CanonicalMultiSourceReview sources={sources} drafts={{ "0:a.xlsx": empty(), "1:b.csv": empty() }} onChange={onChange} onBuild={onBuild} building={false} />);
     expect(screen.getByTestId("business-perspective-data_trust").getAttribute("aria-pressed")).toBe("false");
     fireEvent.click(screen.getByTestId("business-perspective-data_trust"));
     expect(screen.getByTestId("business-perspective-data_trust").getAttribute("aria-pressed")).toBe("true");
-    expect((screen.getByLabelText("Role for a.xlsx") as HTMLSelectElement).value).toBe("");
-    expect((screen.getByLabelText("Role for b.csv") as HTMLSelectElement).value).toBe("");
-    expect(screen.getByText("A placeholder is not source evidence.")).toBeTruthy();
-    expect(screen.getByTestId("build-canonical-multisource").getAttribute("title")).toBe("Select an explicit role for every included source.");
-    fireEvent.change(screen.getByLabelText("Role for a.xlsx"), { target: { value: "sales" } });
+    expect(screen.getByText("Review technical evidence")).toBeTruthy();
+    expect(screen.getByText("Optional. Use this only when LightBI asks for a clarification.")).toBeTruthy();
+    const roleSelectors = screen.getAllByRole("combobox") as HTMLSelectElement[];
+    expect(roleSelectors).toHaveLength(2);
+    expect(roleSelectors[0].value).toBe("");
+    expect(roleSelectors[1].value).toBe("");
+    fireEvent.change(roleSelectors[0], { target: { value: "sales" } });
     expect(onChange).toHaveBeenCalledWith("0:a.xlsx", expect.objectContaining({ role: "sales" }));
     view.rerender(<CanonicalMultiSourceReview sources={sources} drafts={{ "0:a.xlsx": { ...empty(), role: "sales" }, "1:b.csv": { ...empty(), role: "accounting" } }} onChange={onChange} onBuild={onBuild} building={false} />);
-    fireEvent.click(screen.getByTestId("build-canonical-multisource"));
-    expect(onBuild).toHaveBeenCalledTimes(1);
+    expect(screen.getByTestId("analyze-selected-perspective").hasAttribute("disabled")).toBe(true);
+    expect(onBuild).not.toHaveBeenCalled();
   });
 
   it("keeps the production handoff canonical-only and legacy fusion non-actionable", () => {

@@ -69,14 +69,17 @@ describe("Phase 8F.2 negative probes", () => {
 
   it("03 does not treat a currency placeholder as source evidence", () => {
     expect(home).toMatch(/currency:\s*''/);
-    expect(multiSourceReview).toContain("Currency: Missing");
+    expect(multiSourceReview).toContain('useState("")');
+    expect(multiSourceReview).toContain("observedCurrencyCandidates");
     expect(multiSourceReview).not.toMatch(/value=\{?["']VND["']\}?/);
   });
 
   it("04 keeps suggested roles separate from user confirmation", () => {
-    expect(multiSourceReview).toContain("Suggested by LightBI");
-    expect(multiSourceReview).toContain("Confirmed by user");
+    expect(multiSourceReview).toContain("role.value");
+    expect(multiSourceReview).toContain("draft.role");
+    expect(multiSourceReview).toContain("Correct role if needed");
     expect(home).toMatch(/role:\s*''/);
+    expect(home).toContain("if (draft.role) overlay = appendCanonicalEvidenceDeclaration");
   });
 
   it("05 does not use filenames to determine source role", () => {
@@ -107,12 +110,15 @@ describe("Phase 8F.2 negative probes", () => {
   });
 
   it("10 keeps currency confirmation source-bound", () => {
-    expect(multiSourceReview).toMatch(/onChange\(source\.key,\s*\{\s*\.\.\.value,\s*currency:/);
-    expect(multiSourceReview).not.toMatch(/sources\.map[\s\S]{0,120}currency:\s*currencyCandidate/);
+    expect(multiSourceReview).toContain("selectedPerspective.sourceKeys.includes(source.key)");
+    expect(multiSourceReview).toContain("observedCurrencyCandidates");
+    expect(multiSourceReview).not.toMatch(/onChange\(source\.key,[\s\S]{0,120}currency:/);
   });
 
   it("11 keeps period confirmation source-bound", () => {
-    expect(multiSourceReview).toMatch(/onChange\(source\.key,\s*\{\s*\.\.\.value,\s*periodStart:/);
+    expect(multiSourceReview).toContain("reportingPeriodCandidates");
+    expect(multiSourceReview).toContain("periodScope");
+    expect(multiSourceReview).not.toMatch(/onChange\(source\.key,[\s\S]{0,120}periodStart:/);
   });
 
   it("12 deduplicates the same remediation operation and scope", () => {
