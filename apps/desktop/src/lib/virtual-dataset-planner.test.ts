@@ -108,7 +108,8 @@ describe('Virtual Dataset Planner', () => {
       graph: mockGraph
     });
 
-    expect(plan.status).toBe('ready');
+    expect(plan.status).toBe('draft');
+    expect(plan.warnings.some(w => w.includes('many-to-many'))).toBe(true);
     expect(plan.steps.some(s => s.type === 'filter')).toBe(true);
     expect(plan.steps.some(s => s.type === 'sort')).toBe(true);
   });
@@ -195,7 +196,7 @@ describe('Virtual Dataset Planner', () => {
     });
 
     expect(plan.warnings.some(w => w.includes('many-to-many'))).toBe(true);
-    expect(plan.status).toBe('ready'); // Does not block
+    expect(plan.status).toBe('draft'); // Requires review before execution
   });
 
   it('7. Missing required domain', () => {
