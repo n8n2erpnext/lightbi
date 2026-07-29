@@ -50,7 +50,7 @@ export const CanonicalEvidenceReview: React.FC<Props> = ({ artifact, overlay, re
       ? `mapping:${target.physicalColumn}`
       : target.kind;
     window.requestAnimationFrame(() => {
-      const destination = [...details.querySelectorAll<HTMLElement>("[data-remediation-target]")]
+      const destination = Array.from(details.querySelectorAll<HTMLElement>("[data-remediation-target]"))
         .find((element) => element.dataset.remediationTarget === targetId);
       destination?.scrollIntoView({ block: "center" });
       destination?.focus();

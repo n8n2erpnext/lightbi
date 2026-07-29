@@ -4,6 +4,12 @@ export type DomainPackSupportLevel =
   | "detect_only"
   | "advertised_only";
 
+/**
+ * Domain-pack identities are deliberately open. The core must never require a
+ * source edit when a separately validated domain pack is introduced.
+ */
+export type DomainPackIdV1 = string;
+
 export type SupportedDatasetGrain =
   | "transaction"
   | "event"
@@ -31,7 +37,7 @@ export type DecisionSupportRule = {
 };
 
 export type DomainSupportManifest = {
-  id: string;
+  id: DomainPackIdV1;
   version: string;
   label: string;
   supportLevel: DomainPackSupportLevel;

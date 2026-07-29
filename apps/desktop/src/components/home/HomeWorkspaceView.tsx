@@ -6,6 +6,7 @@ import { UnderstandingNextCard } from '../analysis/UnderstandingNextCard';
 import { CanonicalEvidenceReview } from '../analysis/CanonicalEvidenceReview';
 import { CanonicalMultiSourceReview } from '../analysis/CanonicalMultiSourceReview';
 import { PeriodPartitionResultCard } from '../analysis/PeriodPartitionResultCard';
+import { PerspectiveCollectionResultCard } from '../analysis/PerspectiveCollectionResultCard';
 import { BusinessViewSummaryCard } from '../analysis/BusinessViewSummaryCard';
 import { homeGuidance } from '../../content/home-guidance';
 import { getActiveAnalysisContextLabel } from '../../lib/workspace-understanding-state';
@@ -17,7 +18,7 @@ import { HomeDataPreviewDialog } from './HomeDataPreviewDialog';
 import { HomePlanningDialogs } from './HomePlanningDialogs';
 
 export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
-  const { activeConnection, setActiveConnection, handleOnlineSourceInspected, result, isAsking, selectedTopic, currentDataset, pendingLocalBatch, setPendingLocalBatch, isPlusMenuOpen, setIsPlusMenuOpen, isReplaceMenuOpen, setIsReplaceMenuOpen, greeting, navigate, questionInputRef, inputValue, setInputValue, setIsInputFocused, askQuestion, activeAnalysisIntent, questionPlaceholder, renderSourcePickerMenu, activeChips, setAnalysisIntent, openLocalFilePicker, openOnlineDataDrawer, openDatabaseDrawer, workspaceSessions, sessionStatus, preferences, handleOpenWorkspaceSession, handleDeleteWorkspaceSession, fileInputRef, handleFileChange, uploadError, isUploading, workspaceState, isSavingSession, handleSaveWorkspaceSession, isDataPreviewOpen, setIsDataPreviewOpen, datasetUnderstandingNext, canonicalArtifact, canonicalPresentation, canonicalDomainPerspectives, canonicalMultiSourcePresentation, runtimeSourceContinuity, handleCanonicalOverlayChange, handleCanonicalRemediation, canonicalOverlayRebuildState, canonicalReviewTarget, multiSourceBuildResult, multiSourceReviewSources, multiSourceBundles, multiSourceDrafts, setMultiSourceDrafts, multiSourceBuilding, handleReviewMultiSourceBundle, handleUseMultiSourceReviewSource, handleBuildCanonicalMultiSource, handleCancelInspection, handleUseLocalDataset, guidedInvestigationResult, datasetUnderstanding, activeBusinessViews, selectedPerspective, setSelectedPerspective, analysisMode, setAnalysisMode, selectedBusinessView, setSelectedBusinessView, visibleQuestionSuggestions, selectedViewData, previewActionId, setPreviewActionId, handleSelectAnalysisAction, handleLegacyQuestionSuggestion, lastInspectedFamilies, getEChartsOption, planningWorkflow, canonicalRows } = model;
+  const { activeConnection, setActiveConnection, handleOnlineSourceInspected, result, isAsking, selectedTopic, currentDataset, pendingLocalBatch, setPendingLocalBatch, isPlusMenuOpen, setIsPlusMenuOpen, isReplaceMenuOpen, setIsReplaceMenuOpen, greeting, navigate, questionInputRef, inputValue, setInputValue, setIsInputFocused, askQuestion, activeAnalysisIntent, questionPlaceholder, renderSourcePickerMenu, activeChips, setAnalysisIntent, openLocalFilePicker, openOnlineDataDrawer, openDatabaseDrawer, workspaceSessions, sessionStatus, preferences, handleOpenWorkspaceSession, handleDeleteWorkspaceSession, fileInputRef, handleFileChange, uploadError, isUploading, workspaceState, isSavingSession, handleSaveWorkspaceSession, isDataPreviewOpen, setIsDataPreviewOpen, datasetUnderstandingNext, canonicalArtifact, canonicalPresentation, canonicalDomainPerspectives, canonicalMultiSourcePresentation, runtimeSourceContinuity, handleCanonicalOverlayChange, handleCanonicalRemediation, canonicalOverlayRebuildState, canonicalReviewTarget, multiSourceBuildResult, multiSourceReviewSources, multiSourceBundles, multiSourceDrafts, setMultiSourceDrafts, multiSourceBuilding, handleReviewMultiSourceBundle, handleUseMultiSourceReviewSource, handleBuildCanonicalMultiSource, handleAnalyzeMultiSourcePerspective, handleCancelInspection, handleUseLocalDataset, guidedInvestigationResult, datasetUnderstanding, activeBusinessViews, selectedPerspective, setSelectedPerspective, analysisMode, setAnalysisMode, selectedBusinessView, setSelectedBusinessView, visibleQuestionSuggestions, selectedViewData, previewActionId, setPreviewActionId, handleSelectAnalysisAction, handleLegacyQuestionSuggestion, lastInspectedFamilies, getEChartsOption, planningWorkflow, canonicalRows } = model;
   const canonicalDatasetState = canonicalOverlayRebuildState === 'pending'
     ? { label: 'Rebuilding', className: 'border-blue-200 bg-blue-50 text-blue-700' }
     : !canonicalArtifact || canonicalArtifact.status !== 'valid'
@@ -42,7 +43,8 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
       />
 
       <div className="mx-auto flex w-full max-w-[1280px] flex-col px-5 py-8 md:px-8 lg:px-10" onClick={e => e.stopPropagation()}>
-        {!result && !isAsking && !selectedTopic && pendingLocalBatch && currentDataset?.status !== 'ready' && (
+        {!result && !isAsking && !selectedTopic && pendingLocalBatch && currentDataset?.status !== 'ready'
+          && !(pendingLocalBatch.status === 'ready' && multiSourceReviewSources.length > 1) && (
           <section className="mb-6 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_16px_45px_rgba(15,23,42,0.05)]">
             <div className="flex flex-col gap-5 px-5 py-5 md:px-6 lg:flex-row lg:items-center lg:justify-between">
               <div className="max-w-3xl">
@@ -309,6 +311,18 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
 
               {currentDataset?.status === 'ready' && canonicalArtifact && (
                 <div className="w-full animate-in fade-in slide-in-from-bottom-4 duration-500 flex flex-col gap-4">
+                  {currentDataset.canonicalPerspectiveId && currentDataset.analysisRows?.length > 0 && (
+                    <PerspectiveCollectionResultCard
+                      perspectiveId={currentDataset.canonicalPerspectiveId}
+                      rows={currentDataset.analysisRows}
+                      sourceCount={currentDataset.sourceFiles?.length ?? 1}
+                      onExplore={(question) => {
+                        setInputValue(question);
+                        setAnalysisIntent(question);
+                        askQuestion(question);
+                      }}
+                    />
+                  )}
                   {currentDataset.canonicalPeriodPartitionWorkspace && currentDataset.canonicalPeriodPartitionExecution && (
                     <PeriodPartitionResultCard
                       workspace={currentDataset.canonicalPeriodPartitionWorkspace}
@@ -316,7 +330,7 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                     />
                   )}
                   {/* Dataset Understanding Layer */}
-                  {datasetUnderstandingNext ? (
+                  {datasetUnderstandingNext && currentDataset.sourceType !== 'canonical_perspective_collection' ? (
                     <>
                       <UnderstandingNextCard
                         understanding={datasetUnderstandingNext}
@@ -525,6 +539,7 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                         onChange={(key, value) => setMultiSourceDrafts((current: any) => ({ ...current, [key]: value }))}
                         onReviewBundle={handleReviewMultiSourceBundle}
                         onUseSource={handleUseMultiSourceReviewSource}
+                        onAnalyzePerspective={handleAnalyzeMultiSourcePerspective}
                         onBuild={() => { void handleBuildCanonicalMultiSource(); }}
                         building={multiSourceBuilding}
                         relationshipState={multiSourceBuildResult.relationshipState}

@@ -218,7 +218,10 @@ describe("Phase 8D.1 canonical production multi-source boundary", () => {
     const executed = await executeCanonicalPeriodPartitionWorkspace(built.workspace, {
       executeMember: async (member) => ({
         status: "executed",
-        rows: [{ sales_revenue: totals.get(member.sourceId)! }],
+        rows: [
+          { report_date: "2026-01-01", sales_revenue: 10, __lightbi_full_scope_metric_total__: totals.get(member.sourceId)! },
+          { report_date: "2026-01-02", sales_revenue: 20, __lightbi_full_scope_metric_total__: totals.get(member.sourceId)! },
+        ],
       } as any),
     });
     expect(executed.status).toBe("executed");

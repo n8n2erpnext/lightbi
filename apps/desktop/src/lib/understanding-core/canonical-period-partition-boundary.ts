@@ -10,6 +10,7 @@ import { validateCanonicalUserOverlay } from "./canonical-user-overlay";
 import { deterministicPolicySha256 } from "./contextual-evidence-policy";
 import { createGovernedLocalDuckDBBoundary } from "./governed-local-duckdb-boundary";
 import { executeGovernedMetricRequest } from "./governed-metric-executor";
+import { GOVERNED_FULL_SCOPE_TOTAL_COLUMN } from "./governed-metric-query-planner";
 
 export const CANONICAL_PERIOD_PARTITION_WORKSPACE_VERSION = "lightbi.canonical-period-partition-workspace.v1" as const;
 
@@ -212,6 +213,15 @@ export function buildCanonicalPeriodPartitionWorkspace(input: {
 }
 
 function metricTotal(result: GovernedMetricExecutionResultV1, metricId: string): number | null {
+  const governedActual = result.groundTruthComparison?.actual;
+  if (governedActual !== null && governedActual !== undefined && Number.isFinite(Number(governedActual))) return Number(governedActual);
+  const fullScopeTotals = result.rows
+    .map((row) => Number(row[GOVERNED_FULL_SCOPE_TOTAL_COLUMN]))
+    .filter(Number.isFinite);
+  if (fullScopeTotals.length) {
+    const uniqueTotals = [...new Set(fullScopeTotals)];
+    return uniqueTotals.length === 1 ? uniqueTotals[0] : null;
+  }
   const values = result.rows.map((row) => Number(row[metricId])).filter(Number.isFinite);
   return values.length ? values.reduce((sum, value) => sum + value, 0) : null;
 }

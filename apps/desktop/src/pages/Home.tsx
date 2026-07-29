@@ -19,6 +19,12 @@ import {
 } from '../lib/understanding-core/canonical-consumer-boundary';
 import { buildCanonicalMultiSourceDataset, buildCanonicalMultiSourceMemberArtifact, prepareCanonicalMultiSourceInvestigationHandoff, type CanonicalMultiSourceDatasetV1 } from '../lib/understanding-core/canonical-multisource-boundary';
 import { buildCanonicalPeriodPartitionWorkspace, executeCanonicalPeriodPartitionWorkspace } from '../lib/understanding-core/canonical-period-partition-boundary';
+import { executeCanonicalMultiSourceMetric } from '../lib/understanding-core/governed-multisource-duckdb-boundary';
+import { GOVERNED_FULL_SCOPE_TOTAL_COLUMN } from '../lib/understanding-core/governed-metric-query-planner';
+import {
+  suggestedDeclarationsForPerspective,
+  type ReportingPeriodScopeV1,
+} from '../lib/understanding-core/collection-understanding';
 import { projectCanonicalArtifactToUnderstandingNext } from '../lib/canonical-consumer-presentation-adapter';
 import { presentCanonicalConsumerArtifact, presentCanonicalMultiSourceRelationship, type CanonicalRemediationOperationV1 } from '../lib/understanding-core/canonical-consumer-presentation-contract';
 import type { AnalysisAction } from '../lib/analysis-opportunity-actions';
@@ -49,7 +55,7 @@ import { HomeSourcePickerMenu } from '../components/home/HomeSourcePickerMenu';
 import { createHomeChartOption, getHomeGreeting, unavailableLegacyPresentation } from '../lib/home-presentation';
 import { useHomeQuestionApi } from '../hooks/useHomeQuestionApi';
 import { evaluateRuntimeSourceContinuity } from '../lib/runtime-source-continuity';
-import { projectCanonicalDomainPerspectives, projectGovernedBundleCandidates, type GovernedBundleCandidateV1 } from '../lib/canonical-source-candidate-projection';
+import { projectCanonicalDomainPerspectives, projectGovernedBundleCandidates, type CanonicalBusinessPerspectiveCandidateV1, type GovernedBundleCandidateV1 } from '../lib/canonical-source-candidate-projection';
 import { findPendingSourceFamily, projectPendingMultiSourceReviewSources, selectGovernedBundleDrafts, type PendingLocalFileBatch } from '../lib/home-multisource-candidate-review';
 export const Home: React.FC = () => {
   const { preferences } = useDisplayPreferences();
@@ -511,14 +517,18 @@ export const Home: React.FC = () => {
     if (family) handleUseLocalDataset(family.id, source.name);
   };
 
-  const handleBuildCanonicalMultiSource = async () => {
+  const handleBuildCanonicalMultiSource = async (
+    draftsOverride?: Record<string, MultiSourceDraftV1>,
+    perspectiveId?: CanonicalBusinessPerspectiveCandidateV1["perspectiveId"],
+  ) => {
     if (!pendingLocalBatch || pendingLocalBatch.status !== 'ready') return;
     setMultiSourceBuilding(true);
     setMultiSourceBuildResult({ relationshipState: null, blockers: [] });
     try {
+      const activeDrafts = draftsOverride ?? multiSourceDrafts;
       const selected = pendingLocalBatch.files.flatMap((file, index) => {
         const key = `${index}:${file.name}`;
-        const draft = multiSourceDrafts[key];
+        const draft = activeDrafts[key];
         const result = pendingLocalBatch.results[index];
         return draft?.selected && result?.status === 'accessible' ? [{ key, file, draft, result }] : [];
       });
@@ -558,6 +568,168 @@ export const Home: React.FC = () => {
         if (built.status !== 'valid') throw new Error(`${file.name}: ${built.blockers.join(', ')}`);
         return { file, metadata, source, boundary, overlay, artifact: built, draft };
       });
+
+      if (perspectiveId && perspectiveId !== "data_trust") {
+        const periodExecutions: Array<{
+          workspace: NonNullable<ReturnType<typeof buildCanonicalPeriodPartitionWorkspace>["workspace"]>;
+          result: Awaited<ReturnType<typeof executeCanonicalPeriodPartitionWorkspace>>;
+        }> = [];
+        const multiSourceExecutions: Array<{
+          period: string;
+          dataset: CanonicalMultiSourceDatasetV1;
+          result: Awaited<ReturnType<typeof executeCanonicalMultiSourceMetric>>;
+        }> = [];
+        const requestedCapabilities = {
+          sales: ["executive_overview", "sales_performance", "period_comparison"].includes(perspectiveId),
+          logistics: ["executive_overview", "fulfillment_operations", "period_comparison"].includes(perspectiveId),
+          profitability: ["executive_overview", "profitability", "finance_accounting"].includes(perspectiveId),
+        };
+
+        const executeRolePeriods = async (role: "sales" | "logistics", metricId: "sales_revenue" | "delivery_count") => {
+          const roleMembers = members.filter((item) => item.draft.role === role);
+          if (roleMembers.length < 2) return;
+          const built = buildCanonicalPeriodPartitionWorkspace({
+            workspaceId: `perspective:${perspectiveId}:${role}:${roleMembers.map((item) => item.boundary.sourceId).sort().join('|')}`,
+            metricId,
+            members: roleMembers.map((item) => ({ artifact: item.artifact, overlay: item.overlay })),
+          });
+          if (built.status !== "valid") throw new Error(built.blockers.join(", "));
+          const result = await executeCanonicalPeriodPartitionWorkspace(built.workspace);
+          if (result.status !== "executed") throw new Error(result.blockers.join(", "));
+          periodExecutions.push({ workspace: built.workspace, result });
+        };
+
+        if (requestedCapabilities.sales) await executeRolePeriods("sales", "sales_revenue");
+        if (requestedCapabilities.logistics) await executeRolePeriods("logistics", "delivery_count");
+
+        if (requestedCapabilities.profitability) {
+          const periods = [...new Set(members.flatMap((item) =>
+            item.draft.periodStart ? [item.draft.periodStart.slice(0, 7)] : []))].sort();
+          for (const period of periods) {
+            const pair = members.filter((item) =>
+              item.draft.periodStart?.slice(0, 7) === period
+              && (item.draft.role === "sales" || item.draft.role === "accounting"));
+            if (pair.length !== 2 || !pair.some((item) => item.draft.role === "sales") || !pair.some((item) => item.draft.role === "accounting")) continue;
+            const built = await buildCanonicalMultiSourceDataset({
+              multiSourceDatasetId: `perspective:${perspectiveId}:gross-profit:${period}`,
+              members: pair.map((item) => ({ artifact: item.artifact, overlay: item.overlay, required: true })),
+            });
+            if (built.status !== "valid") throw new Error(built.blockers.join(", "));
+            const analysis = built.dataset.analyses.find((item) => item.metricId === "gross_profit" && item.state === "ready");
+            if (!analysis) throw new Error(built.dataset.analyses.flatMap((item) => item.blockers).join(", ") || "Gross profit is not ready.");
+            const handoff = prepareCanonicalMultiSourceInvestigationHandoff(built.dataset, analysis.analysisId);
+            if (!handoff || handoff.queryPlanning.state !== "planned" || !handoff.sourceBoundary) throw new Error("Gross-profit execution plan is unavailable.");
+            const result = await executeCanonicalMultiSourceMetric({
+              dataset: built.dataset,
+              handoff,
+              request: {
+                schemaVersion: "lightbi.governed-metric-execution-request.v1",
+                requestId: `easy-perspective:${perspectiveId}:${period}`,
+                plan: handoff.queryPlanning.plan,
+                rows: [],
+                runtimeSource: handoff.sourceBoundary.runtimeSource,
+                expectedRuntimeBinding: handoff.sourceBoundary.runtimeSource.binding,
+                artifactIdentity: handoff.artifactIdentity,
+                expectedSourceRowCount: handoff.sourceBoundary.sourceRowCount,
+                groundTruth: {
+                  state: "unavailable",
+                  value: null,
+                  tolerance: null,
+                  provenance: "easy_mode_no_external_ground_truth",
+                },
+              },
+            });
+            if (result.status !== "executed") throw new Error(result.blockers.join(", "));
+            multiSourceExecutions.push({ period, dataset: built.dataset, result });
+          }
+        }
+
+        if (periodExecutions.length === 0 && multiSourceExecutions.length === 0) {
+          throw new Error("This perspective needs evidence that is not executable yet.");
+        }
+        const primary = members[0];
+        const combinedRows = new Map<string, Record<string, string | number>>();
+        periodExecutions.forEach(({ workspace, result }) => result.rows.forEach((row) => {
+          const period = String(row.reporting_period);
+          combinedRows.set(period, { ...(combinedRows.get(period) ?? { reporting_period: period }), [workspace.metricId]: Number(row[workspace.metricId]) });
+        }));
+        multiSourceExecutions.forEach(({ period, result }) => {
+          const governedActual = result.metricResult.groundTruthComparison.actual;
+          const fullScopeTotals = result.metricResult.rows
+            .map((row) => Number(row[GOVERNED_FULL_SCOPE_TOTAL_COLUMN]))
+            .filter(Number.isFinite);
+          const values = result.metricResult.rows.map((row) => Number(row.gross_profit)).filter(Number.isFinite);
+          const total = governedActual !== null && Number.isFinite(Number(governedActual))
+            ? Number(governedActual)
+            : fullScopeTotals.length
+              ? fullScopeTotals[0]
+              : values.reduce((sum, value) => sum + value, 0);
+          combinedRows.set(period, { ...(combinedRows.get(period) ?? { reporting_period: period }), gross_profit: total });
+        });
+        const analysisRows = [...combinedRows.values()].sort((left, right) =>
+          String(left.reporting_period).localeCompare(String(right.reporting_period)));
+        registerAdvancedSource({
+          id: advancedSourceId("canonical_perspective_collection", perspectiveId),
+          name: `${perspectiveId.replaceAll("_", " ")} · ${members.length} governed sources`,
+          sourceType: "canonical_perspective_collection",
+          sourceKind: "local_file",
+          tables: members.map((item, index) => ({
+            id: `${index}:${item.draft.role}:${item.draft.periodStart.slice(0, 7)}`,
+            name: `${item.draft.role || "source"}_${item.draft.periodStart.slice(0, 7) || index + 1}`,
+            rowCount: item.boundary.sourceRowCount,
+            columns: item.boundary.semanticSample.columns,
+            profiles: item.source.profiles ?? {},
+            file: item.file,
+            sheetName: item.metadata.is_workbook ? item.metadata.default_sheet : undefined,
+          })),
+          semanticSample: {
+            strategy: "governed_collection",
+            sourceRowCount: members.reduce((sum, item) => sum + item.boundary.sourceRowCount, 0),
+            sampleRowCount: members.reduce((sum, item) => sum + item.boundary.semanticSample.rows.length, 0),
+          },
+          registeredAt: new Date().toISOString(),
+        });
+        setCurrentDataset({
+          status: 'ready',
+          file_name: `${perspectiveId.replaceAll("_", " ")} analysis`,
+          rows_count: members.reduce((sum, item) => sum + item.boundary.sourceRowCount, 0),
+          columns: ["reporting_period", ...new Set(analysisRows.flatMap((row) => Object.keys(row).filter((key) => key !== "reporting_period")))],
+          profiles: primary.source.profiles ?? {},
+          sourceType: 'canonical_perspective_collection',
+          sourceFiles: members.map((item) => ({
+            name: item.file.name,
+            rows: item.boundary.sourceRowCount,
+            columns: item.boundary.semanticSample.columns.length,
+            sourceId: item.boundary.sourceId,
+            role: item.draft.role,
+            reportingPeriod: item.draft.periodStart && item.draft.periodEnd ? `${item.draft.periodStart}/${item.draft.periodEnd}` : null,
+            persistedFile: item.metadata.persisted_file,
+            sheetNames: item.metadata.is_workbook && item.metadata.default_sheet ? [item.metadata.default_sheet] : [],
+          })),
+          selected_sheet: null,
+          file_reference: primary.file,
+          runtimeDatasetSource: primary.boundary.runtimeSource,
+          semanticSample: {
+            strategy: primary.boundary.semanticSample.strategy,
+            sourceRowCount: primary.boundary.semanticSample.sourceRowCount,
+            sampleRowCount: primary.boundary.semanticSample.rows.length,
+          },
+          canonicalSourceBoundary: primary.boundary,
+          canonicalUserOverlay: primary.overlay,
+          canonicalPerspectiveId: perspectiveId,
+          canonicalPerspectiveExecutions: periodExecutions,
+          canonicalPerspectiveMultiSourceExecutions: multiSourceExecutions,
+          analysisRowScope: 'full_file_governed_collection',
+          semanticRows: primary.boundary.semanticSample.rows,
+          analysisRows,
+          previewRows: analysisRows,
+        });
+        setMultiSourceBuildResult({ relationshipState: null, blockers: [] });
+        setDecisionTrustReport(null);
+        setPendingLocalBatch(null);
+        return;
+      }
+
       const selectedRoles = [...new Set(members.map((item) => item.draft.role).filter(Boolean))];
       const periodPartitionMetric = selectedRoles.length === 1 && selectedRoles[0] === 'sales'
         ? 'sales_revenue'
@@ -667,6 +839,72 @@ export const Home: React.FC = () => {
     } finally {
       setMultiSourceBuilding(false);
     }
+  };
+
+  const handleAnalyzeMultiSourcePerspective = (
+    perspective: CanonicalBusinessPerspectiveCandidateV1,
+    periodScope: ReportingPeriodScopeV1 | null,
+    options: { currency: string | null },
+  ) => {
+    const collectionSources = multiSourceReviewSources.map((source) => ({
+      key: source.key,
+      name: source.name,
+      rowCount: source.rowCount,
+      columns: source.columns,
+      candidates: source.candidates ?? null,
+    }));
+    const suggested = suggestedDeclarationsForPerspective(collectionSources, perspective);
+    const selectedPeriods = new Set(
+      periodScope?.mode === "single"
+        ? [periodScope.periodId]
+        : periodScope?.mode === "compare"
+          ? [periodScope.baselinePeriodId, periodScope.comparisonPeriodId]
+          : periodScope?.mode === "trend"
+            ? periodScope.periodIds
+            : [],
+    );
+    const selectedKeys = new Set(perspective.sourceKeys);
+    if (perspective.perspectiveId === "finance_accounting") {
+      multiSourceReviewSources.forEach((source) => {
+        if (source.candidates?.roleCandidates[0]?.value === "sales") selectedKeys.add(source.key);
+      });
+    }
+    const nextDrafts = Object.fromEntries(multiSourceReviewSources.map((source) => {
+      const suggestion = suggested[source.key] ?? {
+        selected: false,
+        role: "",
+        documentColumn: "",
+        periodStart: "",
+        periodEnd: "",
+        currency: "",
+        monetaryColumns: "",
+      };
+      const period = source.candidates?.reportingPeriodCandidates[0]?.value;
+      const periodId = period
+        ? (period.start.slice(0, 7) === period.end.slice(0, 7)
+          ? period.start.slice(0, 7)
+          : `${period.start}/${period.end}`)
+        : null;
+      const inScope = selectedPeriods.size === 0 || (periodId !== null && selectedPeriods.has(periodId));
+      const monetaryColumns = suggestion.monetaryColumns
+        || (source.candidates?.monetaryColumnCandidates ?? []).map((candidate) => candidate.value.physicalColumn).join(", ");
+      return [source.key, {
+        ...suggestion,
+        selected: selectedKeys.has(source.key) && inScope,
+        currency: monetaryColumns ? (suggestion.currency || options.currency || "") : "",
+        monetaryColumns,
+      } satisfies MultiSourceDraftV1];
+    }));
+    setMultiSourceDrafts(nextDrafts);
+    setMultiSourceBuildResult({ relationshipState: null, blockers: [] });
+    if (perspective.perspectiveId === "data_trust") {
+      setMultiSourceBuildResult({
+        relationshipState: null,
+        blockers: ["Technical evidence is available below. LightBI has not changed or joined any source."],
+      });
+      return;
+    }
+    void handleBuildCanonicalMultiSource(nextDrafts, perspective.perspectiveId);
   };
 
   const handleUseLocalDataset = (familyIdOverride?: string, sourceNameOverride?: string) => {
@@ -862,7 +1100,7 @@ export const Home: React.FC = () => {
     runtimeSourceContinuity,
     canonicalMultiSourcePresentation,
     canonicalReviewTarget, multiSourceBuildResult, multiSourceReviewSources, multiSourceBundles, multiSourceDrafts, setMultiSourceDrafts, multiSourceBuilding,
-    handleReviewMultiSourceBundle, handleUseMultiSourceReviewSource, handleBuildCanonicalMultiSource, handleCancelInspection, handleUseLocalDataset, guidedInvestigationResult, datasetUnderstanding,
+    handleReviewMultiSourceBundle, handleUseMultiSourceReviewSource, handleBuildCanonicalMultiSource, handleAnalyzeMultiSourcePerspective, handleCancelInspection, handleUseLocalDataset, guidedInvestigationResult, datasetUnderstanding,
     activeBusinessViews, selectedPerspective, setSelectedPerspective, analysisMode, setAnalysisMode, selectedBusinessView, setSelectedBusinessView,
     visibleQuestionSuggestions, selectedViewData, previewActionId, setPreviewActionId, handleSelectAnalysisAction, handleLegacyQuestionSuggestion,
     lastInspectedFamilies, getEChartsOption: createHomeChartOption, planningWorkflow, canonicalRows,
