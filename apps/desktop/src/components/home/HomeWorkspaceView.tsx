@@ -19,7 +19,16 @@ import { HomePlanningDialogs } from './HomePlanningDialogs';
 
 export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
   const { activeConnection, setActiveConnection, handleOnlineSourceInspected, result, isAsking, selectedTopic, currentDataset, pendingLocalBatch, setPendingLocalBatch, isPlusMenuOpen, setIsPlusMenuOpen, isReplaceMenuOpen, setIsReplaceMenuOpen, greeting, navigate, questionInputRef, inputValue, setInputValue, setIsInputFocused, askQuestion, activeAnalysisIntent, questionPlaceholder, renderSourcePickerMenu, activeChips, setAnalysisIntent, openLocalFilePicker, openOnlineDataDrawer, openDatabaseDrawer, workspaceSessions, sessionStatus, preferences, handleOpenWorkspaceSession, handleDeleteWorkspaceSession, fileInputRef, handleFileChange, uploadError, isUploading, workspaceState, isSavingSession, handleSaveWorkspaceSession, isDataPreviewOpen, setIsDataPreviewOpen, datasetUnderstandingNext, canonicalArtifact, canonicalPresentation, canonicalDomainPerspectives, canonicalMultiSourcePresentation, runtimeSourceContinuity, handleCanonicalOverlayChange, handleCanonicalRemediation, canonicalOverlayRebuildState, canonicalReviewTarget, multiSourceBuildResult, multiSourceReviewSources, multiSourceBundles, multiSourceDrafts, setMultiSourceDrafts, multiSourceBuilding, handleReviewMultiSourceBundle, handleUseMultiSourceReviewSource, handleBuildCanonicalMultiSource, handleAnalyzeMultiSourcePerspective, handleCancelInspection, handleUseLocalDataset, guidedInvestigationResult, datasetUnderstanding, activeBusinessViews, selectedPerspective, setSelectedPerspective, analysisMode, setAnalysisMode, selectedBusinessView, setSelectedBusinessView, visibleQuestionSuggestions, selectedViewData, previewActionId, setPreviewActionId, handleSelectAnalysisAction, handleLegacyQuestionSuggestion, lastInspectedFamilies, getEChartsOption, planningWorkflow, canonicalRows } = model;
-  const canonicalDatasetState = canonicalOverlayRebuildState === 'pending'
+  const isPerspectiveCollection = currentDataset?.sourceType === 'canonical_perspective_collection';
+  const collectionRoleCount = isPerspectiveCollection
+    ? new Set((currentDataset.sourceFiles ?? []).map((source: any) => source.role).filter(Boolean)).size
+    : 0;
+  const collectionPeriodCount = isPerspectiveCollection
+    ? new Set((currentDataset.analysisRows ?? []).map((row: any) => row.reporting_period).filter(Boolean)).size
+    : 0;
+  const canonicalDatasetState = isPerspectiveCollection
+    ? { label: 'Analysis ready', className: 'border-emerald-200 bg-emerald-50 text-emerald-700' }
+    : canonicalOverlayRebuildState === 'pending'
     ? { label: 'Rebuilding', className: 'border-blue-200 bg-blue-50 text-blue-700' }
     : !canonicalArtifact || canonicalArtifact.status !== 'valid'
       ? { label: canonicalArtifact ? 'Needs review' : 'Inspecting', className: 'border-amber-200 bg-amber-50 text-amber-800' }
@@ -240,8 +249,12 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                           <p className="text-[13px] text-black/50">Business view · {formatValue(currentDataset.businessFusionOverview?.sources?.length || currentDataset.selectedBusinessView?.datasets?.length || 0, 'number', preferences)} datasets · {formatValue(Array.isArray(currentDataset.columns) ? currentDataset.columns.length : 0, 'number', preferences)} columns</p>
                         ) : (
                           <>
-                            <p className="text-[13px] text-black/50">{formatValue(currentDataset.rows_count, 'number', preferences)} rows · {formatValue(Array.isArray(currentDataset.columns) ? currentDataset.columns.length : 0, 'number', preferences)} columns</p>
-                            {currentDataset.semanticSample?.strategy === 'matrix_sample' && (
+                            <p className="text-[13px] text-black/50">
+                              {isPerspectiveCollection
+                                ? `${formatValue(currentDataset.sourceFiles?.length ?? 0, 'number', preferences)} sources · ${formatValue(collectionRoleCount, 'number', preferences)} business roles · ${formatValue(collectionPeriodCount, 'number', preferences)} periods`
+                                : `${formatValue(currentDataset.rows_count, 'number', preferences)} rows · ${formatValue(Array.isArray(currentDataset.columns) ? currentDataset.columns.length : 0, 'number', preferences)} columns`}
+                            </p>
+                            {!isPerspectiveCollection && currentDataset.semanticSample?.strategy === 'matrix_sample' && (
                               <p className="mt-1 text-[12px] text-blue-700">
                                 Understanding: {formatValue(currentDataset.semanticSample.sampleRowCount, 'number', preferences)} representative rows · Runtime: {runtimeSourceContinuity?.available ? 'full source available' : 'source reselection required'}
                               </p>
@@ -290,20 +303,20 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                   </div>
                   <div className="mt-5 grid grid-cols-2 gap-3 border-t border-black/5 pt-4 md:grid-cols-4">
                     <div className="rounded-[14px] bg-[#f7f7f6] px-4 py-3">
-                      <div className="text-[11px] font-medium uppercase tracking-wide text-black/40">Rows</div>
-                      <div className="mt-1 text-[20px] font-semibold text-[#202123]">{formatValue(currentDataset.rows_count, 'number', preferences)}</div>
+                      <div className="text-[11px] font-medium uppercase tracking-wide text-black/40">{isPerspectiveCollection ? 'Sources' : 'Rows'}</div>
+                      <div className="mt-1 text-[20px] font-semibold text-[#202123]">{formatValue(isPerspectiveCollection ? currentDataset.sourceFiles?.length ?? 0 : currentDataset.rows_count, 'number', preferences)}</div>
                     </div>
                     <div className="rounded-[14px] bg-[#f7f7f6] px-4 py-3">
-                      <div className="text-[11px] font-medium uppercase tracking-wide text-black/40">Columns</div>
-                      <div className="mt-1 text-[20px] font-semibold text-[#202123]">{formatValue(Array.isArray(currentDataset.columns) ? currentDataset.columns.length : 0, 'number', preferences)}</div>
+                      <div className="text-[11px] font-medium uppercase tracking-wide text-black/40">{isPerspectiveCollection ? 'Business roles' : 'Columns'}</div>
+                      <div className="mt-1 text-[20px] font-semibold text-[#202123]">{formatValue(isPerspectiveCollection ? collectionRoleCount : Array.isArray(currentDataset.columns) ? currentDataset.columns.length : 0, 'number', preferences)}</div>
                     </div>
                     <div className="rounded-[14px] bg-[#f7f7f6] px-4 py-3">
-                      <div className="text-[11px] font-medium uppercase tracking-wide text-black/40">Canonical state</div>
-                      <div className="mt-1 text-[20px] font-semibold text-[#202123]">{canonicalDatasetState.label}</div>
+                      <div className="text-[11px] font-medium uppercase tracking-wide text-black/40">{isPerspectiveCollection ? 'Periods' : 'Canonical state'}</div>
+                      <div className="mt-1 text-[20px] font-semibold text-[#202123]">{isPerspectiveCollection ? collectionPeriodCount : canonicalDatasetState.label}</div>
                     </div>
                     <div className="rounded-[14px] bg-[#f7f7f6] px-4 py-3">
                       <div className="text-[11px] font-medium uppercase tracking-wide text-black/40">Runtime</div>
-                      <div className="mt-1 text-[20px] font-semibold text-[#202123]">{runtimeSourceContinuity?.available ? 'Full source' : 'Reselect'}</div>
+                      <div className="mt-1 text-[20px] font-semibold text-[#202123]">{isPerspectiveCollection ? 'Governed' : runtimeSourceContinuity?.available ? 'Full source' : 'Reselect'}</div>
                     </div>
                   </div>
                 </div>

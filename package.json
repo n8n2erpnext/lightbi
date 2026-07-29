@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "pnpm -r --parallel dev",
     "build": "pnpm -r build",
-    "lint": "pnpm -r lint"
+    "lint": "pnpm -r lint",
+    "build:native-beta": "node scripts/build-native-beta.mjs"
   },
   "devDependencies": {
     "typescript": "^5.2.2"

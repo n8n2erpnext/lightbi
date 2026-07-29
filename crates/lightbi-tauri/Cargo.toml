@@ -1,11 +1,12 @@
 [package]
 name = "lightbi-tauri"
-version = "0.1.0"
+version = "0.9.0-beta.1"
 edition = "2021"
 build = "build.rs"
 
 [dependencies]
 tauri = { version = "2", features = [] }
+serde = { version = "1", features = ["derive"] }
 
 [build-dependencies]
 tauri-build = { version = "2", features = [] }

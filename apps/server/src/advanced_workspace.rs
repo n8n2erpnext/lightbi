@@ -86,8 +86,8 @@ pub(crate) async fn initialize(pool: &SqlitePool) -> Result<(), sqlx::Error> {
 
 async fn vault_key() -> Result<[u8; 32], ApiError> {
     use tokio::io::AsyncWriteExt;
-    let path = "/tmp/lightbi-project-1/.vault-key";
-    if let Ok(bytes) = tokio::fs::read(path).await {
+    let path = crate::lightbi_data_dir().join(".vault-key");
+    if let Ok(bytes) = tokio::fs::read(&path).await {
         return bytes
             .try_into()
             .map_err(|_| ApiError::storage("Credential vault key has an invalid length."));
@@ -102,13 +102,13 @@ async fn vault_key() -> Result<[u8; 32], ApiError> {
     {
         options.mode(0o600);
     }
-    match options.open(path).await {
+    match options.open(&path).await {
         Ok(mut file) => file
             .write_all(&key)
             .await
             .map_err(|error| ApiError::storage(format!("Could not write vault key: {error}")))?,
         Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {
-            let bytes = tokio::fs::read(path)
+            let bytes = tokio::fs::read(&path)
                 .await
                 .map_err(|error| ApiError::storage(format!("Could not read vault key: {error}")))?;
             return bytes

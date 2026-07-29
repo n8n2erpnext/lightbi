@@ -48,7 +48,7 @@ use lightbi_vdataset_runtime::materializer::DatasetMaterializer;
 use lightbi_vdataset_runtime::registry::RuntimeDatasetRegistry;
 use lightbi_view::registry::DataViewRegistry;
 use lightbi_view::validator::ViewValidator;
-use sqlx::sqlite::SqlitePoolOptions;
+use sqlx::sqlite::{SqliteConnectOptions, SqlitePoolOptions};
 
 use lightbi_planner::model::{ExecutionPlan, ExecutionStep, StrategyType};
 use lightbi_render_contract::payloads::{ChartPayload, PayloadVersion};
@@ -171,11 +171,25 @@ struct OnlineExcelFetchError {
     message: String,
 }
 
+pub(crate) fn lightbi_data_dir() -> PathBuf {
+    std::env::var_os("LIGHTBI_DATA_DIR")
+        .map(PathBuf::from)
+        .unwrap_or_else(|| std::env::temp_dir().join("lightbi-project-1"))
+}
+
+pub(crate) fn lightbi_work_file(name: impl AsRef<std::path::Path>) -> PathBuf {
+    lightbi_data_dir().join("work").join(name)
+}
+
 async fn build_context() -> Arc<ProjectContext> {
-    let project_root = PathBuf::from("/tmp/lightbi-project-1");
+    let project_root = lightbi_data_dir();
     tokio::fs::create_dir_all(&project_root).await.unwrap();
+    tokio::fs::create_dir_all(project_root.join("work")).await.unwrap();
+    let sqlite_options = SqliteConnectOptions::new()
+        .filename(project_root.join("metadata.db"))
+        .create_if_missing(true);
     let pool = SqlitePoolOptions::new()
-        .connect("sqlite:///tmp/lightbi-project-1/metadata.db?mode=rwc")
+        .connect_with(sqlite_options)
         .await
         .unwrap();
     advanced_workspace::initialize(&pool).await.unwrap();
@@ -406,8 +420,10 @@ async fn main() {
         .layer(cors)
         .with_state(state);
 
-    let listener = TcpListener::bind("0.0.0.0:5172").await.unwrap();
-    println!("API Server running on http://0.0.0.0:5172");
+    let bind_address = std::env::var("LIGHTBI_BIND_ADDR")
+        .unwrap_or_else(|_| "0.0.0.0:5172".to_string());
+    let listener = TcpListener::bind(&bind_address).await.unwrap();
+    println!("API Server running on http://{bind_address}");
     axum::serve(listener, app).await.unwrap();
 }
 
@@ -1710,8 +1726,9 @@ async fn download_export(
         Err(e) => return (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": "Export query failed", "details": format!("{:?}", e), "generated_sql": sql_payload}))).into_response()
     };
 
-    let export_path = format!("/tmp/export-{}.xlsx", id);
-    if let Err(e) = ExcelGenerator::generate_from_resultset(&result_set, &export_path) {
+    let export_path = lightbi_work_file(format!("export-{id}.xlsx"));
+    let export_path_text = export_path.to_string_lossy().to_string();
+    if let Err(e) = ExcelGenerator::generate_from_resultset(&result_set, &export_path_text) {
         return (
             StatusCode::INTERNAL_SERVER_ERROR,
             Json(json!({"error": "Excel generation failed", "details": format!("{:?}", e)})),
@@ -1721,7 +1738,7 @@ async fn download_export(
 
     (
         StatusCode::OK,
-        Json(json!({ "status": "success", "download_url": format!("file://{}", export_path) })),
+        Json(json!({ "status": "success", "download_url": format!("file://{}", export_path_text) })),
     )
         .into_response()
 }

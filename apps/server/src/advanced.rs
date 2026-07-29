@@ -4556,7 +4556,9 @@ async fn run_export_job(
         output.extend_from_slice(b"\n]\n");
     }
     if format == "xlsx" {
-        let path = format!("/tmp/lightbi-advanced-export-{job_id}.xlsx");
+        let path = crate::lightbi_work_file(format!("lightbi-advanced-export-{job_id}.xlsx"))
+            .to_string_lossy()
+            .to_string();
         let result_set = ResultSet {
             columns: columns
                 .iter()
