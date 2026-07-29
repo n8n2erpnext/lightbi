@@ -21,8 +21,12 @@ const installerDirectory = join(repositoryRoot, "target", target, "release", "bu
 if (!existsSync(installerDirectory)) {
   throw new Error(`Native build completed without an NSIS output directory: ${installerDirectory}`);
 }
+const tauriConfig = JSON.parse(readFileSync(
+  join(repositoryRoot, "crates", "lightbi-tauri", "tauri.conf.json"),
+  "utf8",
+));
 const installers = readdirSync(installerDirectory)
-  .filter((name) => name.toLowerCase().endsWith(".exe"))
+  .filter((name) => name.toLowerCase().endsWith(".exe") && name.includes(`_${tauriConfig.version}_`))
   .map((name) => join(installerDirectory, name));
 if (installers.length === 0) {
   throw new Error(`Native build completed without an NSIS installer in ${installerDirectory}`);
