@@ -29,6 +29,34 @@ export function runGuidedInvestigationPipeline(input: DetectorInput): GuidedInve
   // 4. Generate abstract analytical Question Plans 
   const questionPlans = generateQuestionPlans(businessViews, signals);
 
+  // Bind generic plan slots to the actual source-bound signals before the
+  // projection safety check. Leaving "time", "entity", or "metric" as literal
+  // column names rejects otherwise executable plans even when the detector has
+  // already identified the required physical evidence.
+  for (const plan of questionPlans) {
+    const orderedSignals = [
+      ...plan.evidenceSignals
+        .map(id => signals.getSignal(id))
+        .filter((signal): signal is NonNullable<typeof signal> => Boolean(signal)),
+      ...signals.signals.filter(signal => !plan.evidenceSignals.includes(signal.canonicalId)),
+    ];
+    const timeSignals = orderedSignals.filter(signal => getSignalType(signal.canonicalId) === 'time');
+    const dimensionSignals = orderedSignals.filter(signal => getSignalType(signal.canonicalId) === 'dimension');
+    const measureSignals = orderedSignals.filter(signal => getSignalType(signal.canonicalId) === 'measure');
+
+    plan.dimensions = plan.dimensions.map(field => {
+      if (field === 'time') return timeSignals[0]?.canonicalId ?? field;
+      if (field === 'entity' || field === 'category') return dimensionSignals[0]?.canonicalId ?? field;
+      return field;
+    });
+    plan.measures = plan.measures.map((field, index) => {
+      if (field === 'metric') return measureSignals[0]?.canonicalId ?? field;
+      if (field === 'metric_1') return measureSignals[0]?.canonicalId ?? field;
+      if (field === 'metric_2') return measureSignals[1]?.canonicalId ?? field;
+      return measureSignals[index]?.canonicalId ?? field;
+    });
+  }
+
   // Phase 1 Honesty: Pre-flight validation against actual signals.
   // If the dataset lacks the fundamental dimensions or measures needed to run queries,
   // we must reject the plans to prevent the UI from overpromising capabilities.

@@ -9,6 +9,8 @@ function normalizeString(str: string): string {
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .replace(/đ/g, "d")
+    .replace(/[-_]/g, " ")
+    .replace(/\s+/g, " ")
     .trim();
 }
 

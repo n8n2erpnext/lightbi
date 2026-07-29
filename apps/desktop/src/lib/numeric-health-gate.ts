@@ -38,8 +38,10 @@ export function evaluateNumericHealth(columnName: string, sampleValues: any[], t
 
     validSampleCount++;
     
-    // If it's already a JS number, allow integers and decimals.
-    if (typeof rawVal === 'number' && !isNaN(rawVal)) {
+    // The downstream guarded SUM path is integer-only because its legacy
+    // cleansing expression removes separators. Accepting a JS decimal here
+    // would silently authorize a lossy aggregation.
+    if (typeof rawVal === 'number' && Number.isFinite(rawVal) && Number.isInteger(rawVal)) {
       successCount++;
       continue;
     }
@@ -62,12 +64,6 @@ export function evaluateNumericHealth(columnName: string, sampleValues: any[], t
 
     if (hasDot && hasComma) {
       continue; // Block: Mixed separators are too ambiguous to safely strip
-    }
-
-    if (/^-?\d+\.\d+$/.test(numStr) || /^-?\d+,\d+$/.test(numStr)) {
-      successCount++;
-      detectedCleansing = detectedCleansing || hasComma || /[đ$€£]|VNĐ/i.test(cleansed);
-      continue;
     }
 
     if (hasDot) {

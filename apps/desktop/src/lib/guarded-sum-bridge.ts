@@ -33,7 +33,7 @@ function extractSampleValues(measure: string, rawRows: any[]): any[] {
 /**
  * Enhances a RuntimePlanPreview with guarded SUM aggregations.
  * Evaluates each measure in group_by and trend operations against the Numeric Health Gate.
- * If the measure passes the 95% trust threshold, it is marked for SUM.
+ * If the measure passes the 80% trust threshold, it is marked for SUM.
  * Otherwise, it defaults to COUNT.
  */
 export function enhancePlanWithGuardedSum(plan: RuntimePlanPreview, rawRows: any[]): RuntimePlanPreview {

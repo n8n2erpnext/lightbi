@@ -37,7 +37,7 @@ describe('guarded-sum-bridge', () => {
     expect(gbOp.measureAggregations!['revenue']).toBe('SUM');
   });
 
-  it('promotes decimal numeric columns to SUM', () => {
+  it('does not auto-promote decimals through the integer cleansing path', () => {
     const rawRows = [
       { Sales: 261.96 },
       { Sales: 993.9 },
@@ -54,7 +54,7 @@ describe('guarded-sum-bridge', () => {
     const enhanced = enhancePlanWithGuardedSum(plan, rawRows);
     const trendOp = enhanced.logicalOperations[0] as LogicalRuntimeOperation & { type: 'trend' };
 
-    expect(trendOp.measureAggregations?.Sales).toBe('SUM');
+    expect(trendOp.measureAggregations?.Sales).toBe('COUNT');
   });
 
   it('preserves explicit SUM even when health evaluation would otherwise downgrade', () => {
