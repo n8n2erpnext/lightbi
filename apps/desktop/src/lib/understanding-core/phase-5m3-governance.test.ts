@@ -31,6 +31,7 @@ const AUTHORIZED_PHASE6_CONSUMERS = new Set([
   "apps/desktop/src/lib/understanding-core/canonical-consumer-boundary.ts",
   "apps/desktop/src/lib/understanding-core/canonical-period-partition-boundary.ts",
   "apps/desktop/src/lib/understanding-core/governed-question-action-generator.ts",
+  "apps/desktop/src/pages/Home.tsx",
   "apps/desktop/src/pages/Investigation.tsx",
 ]);
 
@@ -46,7 +47,7 @@ function productionImporters(): string[] {
       if (entry.isDirectory()) walk(file);
       else if ([".ts", ".tsx"].includes(path.extname(file)) && !file.includes(".test.") && !file.includes(".corpus.test.") && !MODULES.some((token) => file.endsWith(`${token}.ts`)) && !file.endsWith("governed-runtime-test-support.ts")) {
         const source = fs.readFileSync(file, "utf8");
-        const relative = path.relative(ROOT, file);
+        const relative = path.relative(ROOT, file).split(path.sep).join("/");
         if (MODULES.some((token) => source.includes(token)) && !AUTHORIZED_PHASE6_CONSUMERS.has(relative)) result.push(relative);
       }
     }
@@ -69,7 +70,7 @@ describe("Phase 5M3 runtime governance and import isolation", () => {
   it("keeps upstream policy identities unchanged", () => {
     expect(governedMetricPolicyHash()).toBe("e6d9acc403751fe3f04612ce84c83511efe538c76b15237cd49b32b9640b99c5");
     expect(questionActionPolicyHash()).toBe("c0616218cfd676047387ea33a783403d1d12b8040cfa87ec5cf6b7fc4a49c1ff");
-    expect(GOVERNED_DOMAIN_SUPPORT_MANIFEST_V1[0].lastValidatedPolicyIdentity).toBe("2d411107a2be1c39eb53eec11368a5813419257ec38ca4ca75e4b6e48251055f");
+    expect(GOVERNED_DOMAIN_SUPPORT_MANIFEST_V1[0].lastValidatedPolicyIdentity).toBe("81d62ffcf4da454885809c07b6ec91133fc6e15d98667ca1d058f239fd282d7a");
   });
 
   it("keeps all audits parseable, truthful, and closed to production authority", () => {

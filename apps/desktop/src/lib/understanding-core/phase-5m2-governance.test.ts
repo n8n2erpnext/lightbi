@@ -22,6 +22,7 @@ const isolatedCanonicalDownstream = [
   "governed-runtime-test-support.ts",
   "canonical-consumer-boundary.ts",
   "canonical-consumer-presentation-contract.ts",
+  "domain-pack-registry.ts",
 ] as const;
 
 function write(name: string, value: unknown): void { fs.writeFileSync(path.join(DOCS, name), `${JSON.stringify(value, null, 2)}\n`, "utf8"); }

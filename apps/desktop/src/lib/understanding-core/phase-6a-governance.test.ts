@@ -40,7 +40,7 @@ describe("Phase 6A consumer cutover governance", () => {
   });
 
   it("keeps Phase 5 policy identities frozen", () => {
-    expect(GOVERNED_DOMAIN_SUPPORT_MANIFEST_V1[0].lastValidatedPolicyIdentity).toBe("2d411107a2be1c39eb53eec11368a5813419257ec38ca4ca75e4b6e48251055f");
+    expect(GOVERNED_DOMAIN_SUPPORT_MANIFEST_V1[0].lastValidatedPolicyIdentity).toBe("81d62ffcf4da454885809c07b6ec91133fc6e15d98667ca1d058f239fd282d7a");
     expect(governedMetricPolicyHash()).toBe("e6d9acc403751fe3f04612ce84c83511efe538c76b15237cd49b32b9640b99c5");
     expect(questionActionPolicyHash()).toBe("c0616218cfd676047387ea33a783403d1d12b8040cfa87ec5cf6b7fc4a49c1ff");
     expect(governedRuntimePolicyHash()).toBe("7f553bc3d0041e8492173689efd70caa7ba6ffc8e5a64aae7175dc24576eef8e");

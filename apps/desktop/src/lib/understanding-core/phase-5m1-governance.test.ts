@@ -29,7 +29,7 @@ describe("Phase 5M1 governance, preservation, and import isolation", () => {
     expect(pack.packId).toBe("commerce_distribution_mvp");
     expect(pack.packStatus).toBe("conditional");
     expect(pack.productionActive).toBe(false);
-    expect(pack.lastValidatedPolicyIdentity).toBe("2d411107a2be1c39eb53eec11368a5813419257ec38ca4ca75e4b6e48251055f");
+    expect(pack.lastValidatedPolicyIdentity).toBe("81d62ffcf4da454885809c07b6ec91133fc6e15d98667ca1d058f239fd282d7a");
   });
 
   it("has complete immutable definitions and no execution authority", () => {

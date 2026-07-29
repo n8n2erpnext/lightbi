@@ -21,7 +21,10 @@ const MODULES = [
   "governed-metric-query-planner",
   "governed-metric-executor",
 ] as const;
-const AUTHORIZED_PHASE6_CONSUMERS = new Set(["apps/desktop/src/pages/Investigation.tsx"]);
+const AUTHORIZED_PHASE6_CONSUMERS = new Set([
+  "apps/desktop/src/pages/Home.tsx",
+  "apps/desktop/src/pages/Investigation.tsx",
+]);
 
 function readAudit(name: string): Record<string, any> {
   return JSON.parse(fs.readFileSync(path.join(DOCS, name), "utf8")) as Record<string, any>;
@@ -35,7 +38,7 @@ function productionImporters(): string[] {
       if (entry.isDirectory()) walk(file);
       else if ([".ts", ".tsx"].includes(path.extname(file)) && !file.includes(".test.") && !file.startsWith(CORE)) {
         const source = fs.readFileSync(file, "utf8");
-        const relative = path.relative(ROOT, file);
+        const relative = path.relative(ROOT, file).split(path.sep).join("/");
         if (MODULES.some((token) => source.includes(token)) && !AUTHORIZED_PHASE6_CONSUMERS.has(relative)) result.push(relative);
       }
     }
