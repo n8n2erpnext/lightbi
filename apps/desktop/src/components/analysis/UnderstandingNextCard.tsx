@@ -460,7 +460,7 @@ const STATE_LABELS: Record<CanonicalAnalysisPresentationV1['state'], string> = {
   needs_user_evidence: 'Needs confirmation',
   needs_mapping_review: 'Needs mapping review',
   blocked_safety: 'Safety blocked',
-  unsupported_mvp: 'Unsupported in current MVP',
+  unsupported_mvp: 'Not supported yet',
   stale: 'Stale',
   executing: 'Executing',
   execution_failed: 'Execution failed',
@@ -491,7 +491,7 @@ const CanonicalAnalysisStates: React.FC<{
     { id: 'resolvable', label: 'Resolvable analyses', items: perspectiveAnalyses.filter(item => item.state === 'needs_user_evidence' || item.state === 'needs_mapping_review') },
     { id: 'blocked', label: 'Safety-blocked analyses', items: perspectiveAnalyses.filter(item => item.state === 'blocked_safety') },
     { id: 'execution-failed', label: 'Execution failed', items: perspectiveAnalyses.filter(item => item.state === 'execution_failed') },
-    { id: 'unsupported', label: 'Unsupported in current MVP', items: perspectiveAnalyses.filter(item => item.state === 'unsupported_mvp') },
+    { id: 'unsupported', label: 'Not supported yet', items: perspectiveAnalyses.filter(item => item.state === 'unsupported_mvp') },
     { id: 'stale', label: 'Stale analyses', items: perspectiveAnalyses.filter(item => item.state === 'stale') },
   ].filter(group => group.items.length > 0);
   const renderItem = (item: CanonicalAnalysisPresentationV1) => {

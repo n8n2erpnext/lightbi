@@ -225,7 +225,7 @@ const GOVERNED_MANIFEST_BODY = {
   schemaVersion: "lightbi.governed-domain-support-manifest.v1",
   packId: "commerce_distribution_mvp",
   version: "1.0.0",
-  label: "Commerce and distribution MVP",
+  label: "Commerce and distribution",
   packStatus: "conditional",
   concepts: COMMERCE_CONCEPTS,
   governedMetricIds: ["sales_revenue", "quantity_sold", "transaction_count", "inventory_on_hand", "delivery_count", "trip_count", "average_quality_score", "gross_profit"],

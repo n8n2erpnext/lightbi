@@ -27,14 +27,15 @@ describe('Phase 8F core to production UI parity', () => {
     expect(view).not.toMatch(/rows_count,\s*'number',\s*preferences,\s*\{\s*compact:\s*true/);
   });
 
-  it('requires explicit source evidence and never promotes placeholders', () => {
+  it('keeps suggestions source-bound and never promotes placeholders', () => {
     const home = read('pages/Home.tsx');
     const review = read('components/analysis/CanonicalMultiSourceReview.tsx');
     const evidence = read('components/analysis/CanonicalEvidenceReview.tsx');
 
     expect(home).toContain("role: ''");
     expect(home).toContain('if (draft.role) overlay = appendCanonicalEvidenceDeclaration');
-    expect(review).toContain('Select an explicit role for every included source');
+    expect(review).toContain('Use LightBI suggestion');
+    expect(review).toContain('Review technical evidence');
     expect(review).not.toContain('<option value="unknown_other">');
     expect(evidence).not.toContain("useState('VND')");
     expect(evidence).not.toContain("useState('EA')");
@@ -44,7 +45,7 @@ describe('Phase 8F core to production UI parity', () => {
     const card = read('components/analysis/UnderstandingNextCard.tsx');
 
     expect(card).toContain("{ id: 'execution-failed', label: 'Execution failed'");
-    expect(card).toContain("{ id: 'unsupported', label: 'Unsupported in current MVP'");
+    expect(card).toContain("{ id: 'unsupported', label: 'Not supported yet'");
     expect(card).toContain("item.state === 'unsupported_mvp' ? 'View limitation'");
     expect(card).toContain("item.state === 'ready' && item.executionReadiness !== 'not_executable'");
   });

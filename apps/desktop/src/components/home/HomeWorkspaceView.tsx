@@ -39,7 +39,7 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
           : (canonicalPresentation?.counts.blocked_safety ?? 0) > 0
             ? { label: 'Safety blocked', className: 'border-red-200 bg-red-50 text-red-700' }
             : (canonicalPresentation?.counts.unsupported_mvp ?? 0) > 0
-              ? { label: 'Unsupported in current MVP', className: 'border-gray-200 bg-gray-50 text-gray-700' }
+              ? { label: 'Not supported yet', className: 'border-gray-200 bg-gray-50 text-gray-700' }
               : { label: 'Inspected', className: 'border-gray-200 bg-gray-50 text-gray-700' };
   return (
     <div className="flex-1 overflow-y-auto bg-[#fbfbfa] text-[#202123] font-sans" onClick={() => isPlusMenuOpen && setIsPlusMenuOpen(false)}>
@@ -251,7 +251,7 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                           <>
                             <p className="text-[13px] text-black/50">
                               {isPerspectiveCollection
-                                ? `${formatValue(currentDataset.sourceFiles?.length ?? 0, 'number', preferences)} sources · ${formatValue(collectionRoleCount, 'number', preferences)} business roles · ${formatValue(collectionPeriodCount, 'number', preferences)} periods`
+                                ? `${formatValue(currentDataset.sourceFiles?.length ?? 0, 'number', preferences)} source${(currentDataset.sourceFiles?.length ?? 0) === 1 ? '' : 's'} · ${formatValue(collectionRoleCount, 'number', preferences)} business role${collectionRoleCount === 1 ? '' : 's'} · ${formatValue(collectionPeriodCount, 'number', preferences)} period${collectionPeriodCount === 1 ? '' : 's'}`
                                 : `${formatValue(currentDataset.rows_count, 'number', preferences)} rows · ${formatValue(Array.isArray(currentDataset.columns) ? currentDataset.columns.length : 0, 'number', preferences)} columns`}
                             </p>
                             {!isPerspectiveCollection && currentDataset.semanticSample?.strategy === 'matrix_sample' && (
@@ -628,7 +628,7 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                         {(() => {
                           const selected = pendingLocalBatch.families.find((family: any) => family.id === (pendingLocalBatch.selectedFamilyId ?? (pendingLocalBatch.families.length === 1 ? pendingLocalBatch.families[0].id : null)));
                           return selected?.files.length > 1
-                            ? <p role="status" className="text-[12px] text-amber-700">Automatic file append is unsupported in current MVP. Use one source above or build a governed multi-source dataset.</p>
+                            ? <p role="status" className="text-[12px] text-amber-700">Automatic file append is not supported yet. Use one source above or build a governed multi-source dataset.</p>
                             : null;
                         })()}
                         <button

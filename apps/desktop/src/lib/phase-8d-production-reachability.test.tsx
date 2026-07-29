@@ -112,9 +112,9 @@ describe("Phase 8D production capability reachability", () => {
     expect(investigation).not.toContain("executeBackendPreview(");
     expect(investigation).not.toContain("executeDuckDBPreviewRuntime(");
     expect(investigation).toContain("governed-result-context");
-    expect(layout).toContain("Workspace alerts are not available in this MVP");
-    expect(datasets).toContain("Dataset creation is not available in this MVP");
-    expect(sources).toContain("Source editing is not available in this MVP");
-    expect(settings).toContain("Theme selection is not available in this MVP");
+    expect(layout).toContain("Workspace alerts are not available in this Beta");
+    expect(datasets).toContain("Dataset creation is not available in this Beta");
+    expect(sources).toContain("Source editing is not available in this Beta");
+    expect(settings).toContain("No license key or feature restriction during Beta");
   });
 });
