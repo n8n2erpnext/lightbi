@@ -177,31 +177,34 @@ export const CanonicalEvidenceReview: React.FC<Props> = ({ artifact, overlay, re
     onChange(next);
   };
 
+  const guidedSetupCard = guidedSetup && (
+    <section className="rounded-xl border border-blue-200 bg-blue-50 p-4" data-testid="canonical-guided-setup">
+      <div className="text-[13px] font-semibold text-blue-950">LightBI can prepare this perspective</div>
+      <p className="mt-1 text-[12px] leading-5 text-blue-800">
+        Confirm these source-bound meanings once. LightBI will rebuild the analysis and will still refuse any chart that fails the governed safety check.
+      </p>
+      <div className="mt-2 flex flex-wrap gap-1.5">
+        {guidedSetup.labels.map((label) => (
+          <span key={label} className="rounded-full border border-blue-200 bg-white px-2 py-1 text-[11px] text-blue-800">{label}</span>
+        ))}
+      </div>
+      <button
+        type="button"
+        disabled={rebuildState === "pending"}
+        onClick={applyGuidedSetup}
+        className="mt-3 rounded-lg bg-blue-700 px-3 py-2 text-[12px] font-semibold text-white disabled:opacity-50"
+      >
+        Confirm LightBI setup
+      </button>
+    </section>
+  );
+
   return (
+    <>
+    {guidedSetupCard}
     <details ref={detailsRef} className="rounded-lg border border-gray-200 bg-white" aria-busy={rebuildState === "pending"} data-testid="canonical-evidence-review">
       <summary className="cursor-pointer px-4 py-3 text-[13px] font-semibold text-gray-800">Review mappings and source evidence</summary>
       <div className="space-y-4 border-t border-gray-100 p-4">
-        {guidedSetup && (
-          <section className="rounded-xl border border-blue-200 bg-blue-50 p-4" data-testid="canonical-guided-setup">
-            <div className="text-[13px] font-semibold text-blue-950">LightBI can prepare this perspective</div>
-            <p className="mt-1 text-[12px] leading-5 text-blue-800">
-              Confirm these source-bound meanings once. LightBI will rebuild the analysis and will still refuse any chart that fails the governed safety check.
-            </p>
-            <div className="mt-2 flex flex-wrap gap-1.5">
-              {guidedSetup.labels.map((label) => (
-                <span key={label} className="rounded-full border border-blue-200 bg-white px-2 py-1 text-[11px] text-blue-800">{label}</span>
-              ))}
-            </div>
-            <button
-              type="button"
-              disabled={rebuildState === "pending"}
-              onClick={applyGuidedSetup}
-              className="mt-3 rounded-lg bg-blue-700 px-3 py-2 text-[12px] font-semibold text-white disabled:opacity-50"
-            >
-              Confirm LightBI setup
-            </button>
-          </section>
-        )}
         <div className="flex items-center justify-between gap-3 text-[12px]">
           <div className="min-w-0 text-gray-500">Source-bound confirmation · revision {current.revision}</div>
           <div className="flex shrink-0 items-center gap-2">
@@ -265,6 +268,7 @@ export const CanonicalEvidenceReview: React.FC<Props> = ({ artifact, overlay, re
         <button type="button" onClick={applyEvidence} className="rounded border border-indigo-200 bg-indigo-50 px-3 py-2 text-[12px] font-semibold text-indigo-700">Apply evidence and rebuild</button>
       </div>
     </details>
+    </>
   );
 };
 
