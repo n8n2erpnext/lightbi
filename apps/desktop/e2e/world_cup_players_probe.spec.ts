@@ -58,8 +58,8 @@ test.describe('WorldCupPlayers simple-mode probe', () => {
     }
 
     await page.getByRole('button', { name: /Evidence found Performance/ }).click();
-    await expect(page.getByTestId('canonical-perspective-recognized-only')).toBeVisible({ timeout: 10000 });
-    await expect(page.getByTestId('canonical-perspective-recognized-only')).toContainText('no governed question or metric contract');
+    await expect(page.getByTestId('canonical-count-unsupported_mvp')).toContainText('3', { timeout: 10000 });
+    await expect(page.getByTestId('canonical-guided-setup')).toContainText('Position = role');
     await expect(page.getByRole('button', { name: 'Investigate' })).toHaveCount(0);
   });
 });
