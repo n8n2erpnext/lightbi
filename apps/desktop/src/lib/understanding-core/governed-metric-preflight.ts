@@ -284,7 +284,11 @@ function evaluateMetric(definition: GovernedMetricDefinitionV1, sources: readonl
     metricEvidence.push(evidence(`semantic:${column.selectedCandidateId}`, "semantic", [sourceRef(match.source), `column:${column.sourceColumnIndex}`], "canonical_resolution"));
   }
 
-  const grainCompatible = matches.every((entry) => entry.matches.some(({ source }) => {
+  const grainCompatible = definition.aggregationOperator === "count_source_rows"
+    ? matchedSources.length === 1
+      && matchedSources[0].physical.sourceProfile.profilingScope === "full"
+      && matchedSources[0].physical.sourceProfile.dataRegion.selectionStatus === "selected"
+    : matches.every((entry) => entry.matches.some(({ source }) => {
     const atomicEntityAverage = definition.aggregationOperator === "average"
       && exactSelectedIdentity(source) !== null
       && source.grain.signature.aggregationForm.value === "atomic_rows"
@@ -298,7 +302,7 @@ function evaluateMetric(definition: GovernedMetricDefinitionV1, sources: readonl
       || (entry.requirement.allowedStructuralForms.includes(source.grain.signature.structuralForm.value)
         && USABLE_GRAIN_STATES.has(source.grain.signature.structuralForm.state))
       || documentIdentityReadinessBySource.get(source)?.ready === true;
-  }));
+    }));
   if (semanticRequirementsSatisfied && !grainCompatible) { blockers.push(blocker("metric_grain_incompatible", matchedSources.map(sourceRef))); remediations.push(remediation("confirm_grain")); }
 
   const resolvedTimeCompatible = matches.every((entry) => entry.matches.some(({ source }) =>

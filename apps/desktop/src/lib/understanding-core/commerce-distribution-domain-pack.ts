@@ -80,6 +80,9 @@ function evaluateConcept(definition: DomainConceptDefinitionV1, sources: readonl
   const matchedSources = unique(matches.map((match) => match.source));
   const compatibleGrain = matchedSources.some((source) => {
     const grain = source.grain.signature;
+    const governedSourceRecordDescription = definition.conceptId === "descriptive_source_records"
+      && source.physical.sourceProfile.profilingScope === "full"
+      && source.physical.sourceProfile.dataRegion.selectionStatus === "selected";
     const governedTripIdentity = definition.conceptId === "trip_event"
       && (source.sourceEvidence?.documentIdentities ?? []).some((item) =>
         item.semanticId === "trip" && documentIdentityEvidenceMatchesSource(item, source));
@@ -94,7 +97,7 @@ function evaluateConcept(definition: DomainConceptDefinitionV1, sources: readonl
       && grain.identityBasis.selectedCandidateIds.length === 1
       && GRAIN_USABLE.has(grain.aggregationForm.state)
       && grain.aggregationForm.value === "atomic_rows";
-    return governedTripIdentity || governedInventorySnapshot || governedQualityAverage
+    return governedSourceRecordDescription || governedTripIdentity || governedInventorySnapshot || governedQualityAverage
       || (GRAIN_USABLE.has(grain.structuralForm.state) && GRAIN_USABLE.has(grain.aggregationForm.state));
   });
   if (!compatibleGrain) blockers.push(blocker("compatible_canonical_grain_not_proven", matchedSources.map(sourceReference)));
