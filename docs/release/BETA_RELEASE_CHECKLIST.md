@@ -10,22 +10,22 @@ release gate, not an intermediate development milestone.
 - [ ] Understanding: supported roles, periods, relationships, metrics, and
   business perspectives are derived from domain packs and remain extensible by
   declaration.
-- [ ] Perspective analysis: the user can choose any available baseline and
+- [x] Perspective analysis: the user can choose any available baseline and
   comparison period.
-- [ ] BA deep dive: follow-up analysis stays bound to the governed source,
+- [x] BA deep dive: follow-up analysis stays bound to the governed source,
   metric, period, and lineage. It must never fall back to generic/mock insight
   text or an unsupported confidence claim.
-- [ ] Advanced Mode: governed sources remain available for technical analysis,
+- [x] Advanced Mode: governed sources remain available for technical analysis,
   clean-data handoff, and export.
 
 ## 2. Web QA and regression
 
-- [ ] Run the six-file ERP E2E with the real corpus files under
+- [x] Run the six-file ERP E2E with the real corpus files under
   `sample-corpus/anchors/1.3.0`.
 - [ ] Do not upload the small files under `sample data` as QA fixtures; they are
   repository path references to the real corpus.
-- [ ] Run supported-domain sample-corpus regression and automated tests.
-- [ ] Complete UI copy, responsive layout, error, empty, loading, and recovery
+- [x] Run supported-domain sample-corpus regression and automated tests.
+- [x] Complete UI copy, responsive layout, error, empty, loading, and recovery
   states before native packaging.
 
 ## 3. Local-first runtime
@@ -52,3 +52,24 @@ release gate, not an intermediate development milestone.
 - [ ] Preserve the verified installer and checksum.
 - [ ] Remove only regenerated build caches from the VPS.
 - [ ] Keep source fixtures, web QA runtime files, and release evidence intact.
+
+## Verification record — 2026-07-30
+
+- Desktop regression: 188 test files, 1,272 tests passed.
+- Rust/native workspace: all unit and documentation tests passed after adding
+  the missing DuckDB test-only `tokio` and `tempfile` dependencies.
+- Production web QA build: TypeScript and Vite build passed.
+- Single-file Easy Mode E2E: 3/3 passed.
+  - Superstore: Revenue perspective, one guided confirmation, five governed
+    analyses ready, full-file product revenue chart executed.
+  - Bank campaign: customer/performance/operations evidence recognized; no
+    chart is fabricated because its governed metric pack is not available.
+  - World Cup: person/coach/role evidence recognized; unsupported governed
+    analyses remain visibly unavailable.
+- Remaining product gap before Beta release: declarative governed packs and
+  runtime contracts are still required for the already-detected campaign and
+  participant/event perspectives. Detection alone is not treated as analysis
+  support.
+- Windows packaging remains intentionally deferred to the final gate. The
+  previous `libstdc++-6.dll` launch failure is recorded above with the complete
+  MinGW dependency-chain requirement.
