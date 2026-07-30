@@ -28,8 +28,8 @@ test.describe('WorldCupPlayers simple-mode probe', () => {
     await page.screenshot({ path: '../../ui-audit/world-cup-players-probe-2026-06-17/home.png', fullPage: true });
 
     await page.click('button:has-text("Use this dataset"), button:has-text("Use selected dataset")');
-    await expect(page.getByText('What do you want to understand?')).toBeVisible({ timeout: 30000 });
-    await page.getByText('What do you want to understand?').scrollIntoViewIfNeeded();
+    await expect(page.getByText('What do you want LightBI to investigate?')).toBeVisible({ timeout: 30000 });
+    await page.getByText('What do you want LightBI to investigate?').scrollIntoViewIfNeeded();
     await page.screenshot({ path: '../../ui-audit/world-cup-players-probe-2026-06-17/orientation.png', fullPage: true });
 
     const orientationText = await page.locator('body').innerText();
@@ -52,60 +52,15 @@ test.describe('WorldCupPlayers simple-mode probe', () => {
       }
     }
 
-    for (const expected of [
-      'Participation by team or group',
-      'Role or participation mix',
-      'Activity by person or participant'
-    ]) {
+    for (const expected of ['Performance', 'Operations', 'Customer', 'Person / Participant']) {
       if (!orientationText.includes(expected)) {
-        throw new Error(`WorldCupPlayers did not show expected people/team/event question: ${expected}`);
+        throw new Error(`WorldCupPlayers did not preserve expected understanding evidence: ${expected}`);
       }
     }
 
-    const firstAction = page
-      .locator('div')
-      .filter({ hasText: 'Participation by team or group' })
-      .getByRole('button', { name: 'Investigate' })
-      .first();
-    if (await firstAction.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await firstAction.click();
-      await page.waitForSelector('button:has-text("Run preview")', { timeout: 30000 });
-      await page.screenshot({ path: '../../ui-audit/world-cup-players-probe-2026-06-17/investigation_before.png', fullPage: true });
-
-      await page.getByRole('button', { name: 'Run preview' }).first().click();
-      await page.waitForFunction(() => {
-        const text = document.body.innerText;
-        return text.includes('EXECUTED') || text.includes('FAILED') || text.includes('Execution Failed');
-      }, null, { timeout: 30000 });
-      await page.screenshot({ path: '../../ui-audit/world-cup-players-probe-2026-06-17/investigation_after.png', fullPage: true });
-
-      const investigationText = await page.locator('body').innerText();
-      console.log('--- WORLD CUP INVESTIGATION START ---');
-      console.log(investigationText.split('\n').filter(Boolean).slice(0, 160).join('\n'));
-      console.log('--- WORLD CUP INVESTIGATION END ---');
-
-      for (const forbidden of [
-        'Something went wrong',
-        'Cannot convert a BigInt value to a number',
-        'Execution Boundary Failed',
-        'CANONICAL',
-        'DUCKDB',
-        'SQL preview is empty or blocked',
-        'money.rounding'
-      ]) {
-        if (investigationText.includes(forbidden)) {
-          throw new Error(`WorldCupPlayers leaked forbidden error in Investigation: ${forbidden}`);
-        }
-      }
-
-      if (!investigationText.includes('EXECUTED')) {
-        throw new Error('WorldCupPlayers participation preview did not execute.');
-      }
-      if (!investigationText.includes('Team Initials') || !investigationText.includes('record_count')) {
-        throw new Error('WorldCupPlayers participation preview did not use team + record_count output.');
-      }
-    } else {
-      throw new Error('WorldCupPlayers has no runnable Participation by team or group action.');
-    }
+    await page.getByRole('button', { name: /Evidence found Performance/ }).click();
+    await expect(page.getByTestId('canonical-perspective-recognized-only')).toBeVisible({ timeout: 10000 });
+    await expect(page.getByTestId('canonical-perspective-recognized-only')).toContainText('no governed question or metric contract');
+    await expect(page.getByRole('button', { name: 'Investigate' })).toHaveCount(0);
   });
 });

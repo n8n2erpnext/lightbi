@@ -23,44 +23,46 @@ test.describe('Sample Superstore probe', () => {
     await page.screenshot({ path: '../../ui-audit/superstore-probe-2026-06-16/home.png', fullPage: true });
 
     await page.click('button:has-text("Use this dataset"), button:has-text("Use selected dataset")');
-    await expect(page.getByText('What do you want to understand?')).toBeVisible({ timeout: 30000 });
-    await page.getByText('What do you want to understand?').scrollIntoViewIfNeeded();
+    await expect(page.getByText('What do you want LightBI to investigate?')).toBeVisible({ timeout: 30000 });
+    await page.getByText('What do you want LightBI to investigate?').scrollIntoViewIfNeeded();
     await page.screenshot({ path: '../../ui-audit/superstore-probe-2026-06-16/orientation.png', fullPage: true });
 
     const orientationText = await page.locator('body').innerText();
-    for (const expected of ['Money trend', 'Location performance', 'Item performance']) {
+    for (const expected of ['Revenue', 'Customer', 'Inventory', 'Finance']) {
       if (!orientationText.includes(expected)) {
-        throw new Error(`Missing Superstore retail/order lens: ${expected}`);
+        throw new Error(`Missing Superstore business perspective: ${expected}`);
       }
     }
 
+    await page.getByRole('button', { name: /Questions available Revenue/ }).click();
+    await expect(page.getByTestId('canonical-guided-setup')).toBeVisible({ timeout: 10000 });
+    await expect(page.getByTestId('canonical-guided-setup')).toContainText('Sales = revenue');
+    await page.getByRole('button', { name: 'Confirm LightBI setup' }).click();
+
+    await expect(page.getByTestId('canonical-count-ready')).toContainText('5', { timeout: 30000 });
     const actionCard = page
-      .locator('div.rounded-md')
-      .filter({ has: page.getByText('Money over time', { exact: true }) })
-      .filter({ has: page.getByRole('button', { name: 'Investigate' }) })
-      .first();
+      .locator('article')
+      .filter({ hasText: 'Which products contribute the most sales revenue?' });
     await expect(actionCard).toBeVisible({ timeout: 10000 });
     await actionCard.getByRole('button', { name: 'Investigate' }).click();
 
-    await page.waitForSelector('button:has-text("Run preview")', { timeout: 30000 });
-    await expect(page.getByText('Sales', { exact: true }).first()).toBeVisible({ timeout: 10000 });
+    await expect(page.getByRole('heading', { name: 'Which products contribute the most sales revenue?' })).toBeVisible({ timeout: 30000 });
     await page.screenshot({ path: '../../ui-audit/superstore-probe-2026-06-16/investigation_before.png', fullPage: true });
 
-    await page.getByRole('button', { name: 'Run preview' }).first().click();
     await expect(page.getByText('EXECUTED')).toBeVisible({ timeout: 30000 });
     await page.screenshot({ path: '../../ui-audit/superstore-probe-2026-06-16/investigation_after.png', fullPage: true });
 
     const pageText = await page.locator('body').innerText();
-    if (!pageText.includes('Sales')) {
-      throw new Error('Superstore runtime did not use Sales as the money measure');
+    if (!pageText.includes('sales_revenue')) {
+      throw new Error('Superstore runtime did not use the governed sales revenue metric');
     }
     await page.getByText('Raw rows evidence').click();
     const rawRowsText = await page.locator('table').last().innerText({ timeout: 10000 });
     console.log('--- SUPERSTORE RAW RESULT START ---');
     console.log(rawRowsText.split('\n').slice(0, 8).join('\n'));
     console.log('--- SUPERSTORE RAW RESULT END ---');
-    if (!/\bSales\b/i.test(rawRowsText)) {
-      throw new Error('Superstore raw result does not include Sales column');
+    if (!/\bsales_revenue\b/i.test(rawRowsText)) {
+      throw new Error('Superstore raw result does not include sales_revenue');
     }
     const currencyValues = [...rawRowsText.matchAll(/\$([0-9,]+\.\d{2})/g)]
       .map(match => Number(match[1].replace(/,/g, '')));
