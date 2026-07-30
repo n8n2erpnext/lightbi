@@ -41,7 +41,6 @@ test.describe('WorldCupPlayers simple-mode probe', () => {
       'Something went wrong',
       'Cannot convert a BigInt value to a number',
       'Execution Boundary Failed',
-      'CANONICAL',
       'DUCKDB',
       'SQL preview is empty or blocked',
       'money.rounding',

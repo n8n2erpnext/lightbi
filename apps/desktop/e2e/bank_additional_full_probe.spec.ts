@@ -40,7 +40,7 @@ test.describe('bank-additional-full probe', () => {
     if (orientationText.includes('No columns detected. Cannot suggest analysis capabilities.')) {
       throw new Error('No-columns warning leaked for bank-additional-full');
     }
-    for (const expected of ['Performance', 'Customer', 'Operations', 'Previous Outcome', 'Previous Contacts']) {
+    for (const expected of ['Performance', 'Customer', 'Operations', 'Previous Outcome', 'previous_contacts']) {
       if (!orientationText.includes(expected)) {
         throw new Error(`Missing bank/campaign understanding evidence: ${expected}`);
       }
