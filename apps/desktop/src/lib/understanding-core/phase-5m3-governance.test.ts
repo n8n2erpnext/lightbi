@@ -57,20 +57,20 @@ function productionImporters(): string[] {
 }
 
 describe("Phase 5M3 runtime governance and import isolation", () => {
-  it("freezes exactly eight governed metrics and five explicit operators", () => {
+  it("freezes exactly nine governed metrics and six explicit operators", () => {
     expect(GOVERNED_RUNTIME_POLICY_V1.domainPackId).toBe("commerce_distribution_mvp");
     expect(GOVERNED_RUNTIME_POLICY_V1.metricIds).toEqual(GOVERNED_DOMAIN_SUPPORT_MANIFEST_V1[0].governedMetricIds);
-    expect(GOVERNED_RUNTIME_POLICY_V1.metricIds).toHaveLength(8);
+    expect(GOVERNED_RUNTIME_POLICY_V1.metricIds).toHaveLength(9);
     expect(new Set(Object.values(GOVERNED_RUNTIME_POLICY_V1.operators))).toEqual(new Set([
-      "governed_sum", "governed_average", "governed_identity_count", "governed_point_in_time_snapshot_sum", "governed_revenue_minus_cost",
+      "governed_sum", "governed_average", "governed_identity_count", "governed_source_row_count", "governed_point_in_time_snapshot_sum", "governed_revenue_minus_cost",
     ]));
-    expect(governedRuntimePolicyHash()).toBe("7f553bc3d0041e8492173689efd70caa7ba6ffc8e5a64aae7175dc24576eef8e");
+    expect(governedRuntimePolicyHash()).toBe("0d2666545d20bd54fe4c2f3f7086e92c4fd32a63dd00ec1e2b81ed23b932605d");
   });
 
   it("keeps upstream policy identities unchanged", () => {
-    expect(governedMetricPolicyHash()).toBe("e6d9acc403751fe3f04612ce84c83511efe538c76b15237cd49b32b9640b99c5");
-    expect(questionActionPolicyHash()).toBe("c0616218cfd676047387ea33a783403d1d12b8040cfa87ec5cf6b7fc4a49c1ff");
-    expect(GOVERNED_DOMAIN_SUPPORT_MANIFEST_V1[0].lastValidatedPolicyIdentity).toBe("81d62ffcf4da454885809c07b6ec91133fc6e15d98667ca1d058f239fd282d7a");
+    expect(governedMetricPolicyHash()).toBe("26bd430cbca42fbb5a6c8fdf51f248fd40ebf9dc28bd29f458ee53d864de3f5c");
+    expect(questionActionPolicyHash()).toBe("f623f6adbef180d69d78e1f5f185ff62517df9f8d7093788da48d92661c8c808");
+    expect(GOVERNED_DOMAIN_SUPPORT_MANIFEST_V1[0].lastValidatedPolicyIdentity).toBe("3efa22d2210d2160bf27b1e16ae00da6617c1227e15a8310adbf9b04606a25fd");
   });
 
   it("keeps all audits parseable, truthful, and closed to production authority", () => {

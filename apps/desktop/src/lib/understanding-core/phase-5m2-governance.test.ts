@@ -123,11 +123,11 @@ beforeAll(() => {
 });
 
 describe("Phase 5M2 policy governance and import isolation", () => {
-  it("uses exactly the one governed pack and its eight governed metrics", () => {
+  it("uses exactly the one governed pack and its nine governed metrics", () => {
     expect(GOVERNED_DOMAIN_SUPPORT_MANIFEST_V1).toHaveLength(1);
-    expect(GOVERNED_METRIC_DEFINITIONS_V1).toHaveLength(8);
+    expect(GOVERNED_METRIC_DEFINITIONS_V1).toHaveLength(9);
     const metricIds = new Set(GOVERNED_METRIC_DEFINITIONS_V1.map((item) => item.metricId));
-    expect(COMMERCE_DISTRIBUTION_QUESTION_POLICY_V1.questionFamilies).toHaveLength(23);
+    expect(COMMERCE_DISTRIBUTION_QUESTION_POLICY_V1.questionFamilies).toHaveLength(31);
     expect(COMMERCE_DISTRIBUTION_QUESTION_POLICY_V1.questionFamilies.every((item) => item.domainPackId === "commerce_distribution_mvp" && metricIds.has(item.metricId))).toBe(true);
     expect(COMMERCE_DISTRIBUTION_QUESTION_POLICY_V1.maxDefaultQuestions).toBe(5);
   });
