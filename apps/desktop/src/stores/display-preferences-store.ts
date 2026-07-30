@@ -49,7 +49,7 @@ export const useDisplayPreferences = create<DisplayPreferencesState>()(
       version: 2,
       merge: (persisted, current) => {
         const persistedState = persisted as Partial<DisplayPreferencesState> | undefined;
-        const persistedPreferences = persistedState?.preferences ?? {};
+        const persistedPreferences: Partial<DisplayPreferences> = persistedState?.preferences ?? {};
         const locale = persistedPreferences.locale ?? current.preferences.locale;
         return {
           ...current,
