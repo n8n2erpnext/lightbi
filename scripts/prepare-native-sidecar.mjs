@@ -34,6 +34,30 @@ const targetName = targetTriple
   : `lightbi-server${executableSuffix}`;
 copyFileSync(source, join(sidecarDirectory, targetName));
 
+// Rust's Windows GNU target links the GCC runtime dynamically. Tauri bundles
+// these files beside the app/sidecar so a clean Windows machine never needs a
+// separate MinGW installation.
+if (targetTriple.includes("windows-gnu")) {
+  const compiler = process.env.CC_x86_64_pc_windows_gnu
+    || process.env.CC_X86_64_PC_WINDOWS_GNU
+    || "x86_64-w64-mingw32-gcc";
+  const runtimeDlls = [
+    "libstdc++-6.dll",
+    "libgcc_s_seh-1.dll",
+    "libwinpthread-1.dll",
+  ];
+  for (const dll of runtimeDlls) {
+    const resolved = execFileSync(compiler, [`-print-file-name=${dll}`], {
+      cwd: repositoryRoot,
+      encoding: "utf8",
+    }).trim();
+    if (!resolved || resolved === dll || !existsSync(resolved)) {
+      throw new Error(`${compiler} could not resolve required Windows runtime ${dll}`);
+    }
+    copyFileSync(resolved, join(sidecarDirectory, dll));
+  }
+}
+
 // Development launches resolve a sibling binary beside the Tauri executable.
 if (isDev) {
   const sibling = join(repositoryRoot, "target", profile, `lightbi-server${executableSuffix}`);

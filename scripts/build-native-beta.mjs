@@ -10,6 +10,11 @@ const defaultTarget = process.platform === "win32"
   ? "x86_64-pc-windows-msvc"
   : "x86_64-pc-windows-gnu";
 const target = explicitTarget || process.env.LIGHTBI_WINDOWS_TARGET || defaultTarget;
+const windowsGnuRuntimeDlls = [
+  "libstdc++-6.dll",
+  "libgcc_s_seh-1.dll",
+  "libwinpthread-1.dll",
+];
 
 execFileSync("cargo", ["tauri", "build", "--target", target], {
   cwd: join(repositoryRoot, "crates", "lightbi-tauri"),
@@ -32,6 +37,16 @@ if (installers.length === 0) {
   throw new Error(`Native build completed without an NSIS installer in ${installerDirectory}`);
 }
 
+const bundledRuntime = target.endsWith("windows-gnu")
+  ? windowsGnuRuntimeDlls.map((name) => {
+      const file = join(repositoryRoot, "crates", "lightbi-tauri", "bin", name);
+      if (!existsSync(file) || statSync(file).size === 0) {
+        throw new Error(`Windows GNU build did not stage required runtime DLL: ${file}`);
+      }
+      return { name, bytes: statSync(file).size, sha256: createHash("sha256").update(readFileSync(file)).digest("hex") };
+    })
+  : [];
+
 for (const installer of installers) {
   const bytes = readFileSync(installer);
   const sha256 = createHash("sha256").update(bytes).digest("hex");
@@ -40,5 +55,6 @@ for (const installer of installers) {
     bytes: statSync(installer).size,
     sha256,
     target,
+    bundledRuntime,
   })}\n`);
 }
