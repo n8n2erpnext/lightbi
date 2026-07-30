@@ -77,12 +77,12 @@ const grossProfit = canonicalSource("gross-profit", [
 ], { OrderID: "order", OrderDate: "time_period", Revenue: "revenue", TotalCost: "total_cost" });
 
 describe("Phase 5M1 governed commerce domain and metric foundation", () => {
-  it("defines exactly one conditional pack and six complete governed metrics", async () => {
+  it("defines exactly one conditional pack and the complete governed metric catalog", async () => {
     const { GOVERNED_DOMAIN_SUPPORT_MANIFEST_V1, DOMAIN_SUPPORT_MANIFEST } = await import("./domain-support-manifest");
     expect(DOMAIN_SUPPORT_MANIFEST).toEqual([]);
     expect(GOVERNED_DOMAIN_SUPPORT_MANIFEST_V1).toHaveLength(1);
     expect(GOVERNED_DOMAIN_SUPPORT_MANIFEST_V1[0].packStatus).toBe("conditional");
-    expect(GOVERNED_METRIC_DEFINITIONS_V1).toHaveLength(8);
+    expect(GOVERNED_METRIC_DEFINITIONS_V1).toHaveLength(9);
     expect(GOVERNED_METRIC_DEFINITIONS_V1.every((metric) => metric.executionAuthorization === false && metric.requirements.length > 0)).toBe(true);
   });
 

@@ -12,7 +12,7 @@ export type DomainConceptSupportStateV1 = "active" | "conditional" | "detect_onl
 export type GovernedMetricStateV1 = CapabilityReadinessStateV1;
 export type MetricAdditivityV1 = "additive" | "semi_additive" | "non_additive" | "descriptive_count_only" | "unknown";
 export type MetricTimeBehaviorV1 = "transaction_flow" | "period_flow" | "point_in_time_snapshot" | "interval" | "timeless" | "unknown";
-export type MetricAggregationOperatorV1 = "sum" | "average" | "count_governed_identity" | "derive_subtraction";
+export type MetricAggregationOperatorV1 = "sum" | "average" | "count_governed_identity" | "count_source_rows" | "derive_subtraction";
 export type MetricTuningProvenanceV1 = "contract" | "synthetic" | "golden_tuning" | "holdout_evaluation_only" | "adversarial_evaluation_only" | "multi_file_evaluation_only";
 
 export type GovernedMetricBlockerV1 = { code: string; severity: "material" | "critical"; references: string[] };
@@ -124,7 +124,7 @@ export type GovernedMetricDefinitionV1 = {
   domainPackId: "commerce_distribution_mvp";
   businessName: string;
   semanticMeaning: string;
-  measureRole: "flow_amount" | "flow_quantity" | "entity_count" | "snapshot_balance" | "derived_amount" | "average_score";
+  measureRole: "flow_amount" | "flow_quantity" | "entity_count" | "source_record_count" | "snapshot_balance" | "derived_amount" | "average_score";
   aggregationOperator: MetricAggregationOperatorV1;
   requirements: readonly GovernedMetricRequirementV1[];
   groupingDimensions: readonly string[];

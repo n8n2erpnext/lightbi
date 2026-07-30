@@ -6,7 +6,7 @@ export const GOVERNED_RUNTIME_CONTRACT_VERSION = "lightbi.governed-runtime-contr
 export const GOVERNED_RUNTIME_POLICY_VERSION = "lightbi.governed-runtime-policy.v1" as const;
 
 export type GovernedRuntimeStateV1 = "executable" | "conditionally_executable" | "blocked" | "unavailable" | "invalid";
-export type GovernedMetricOperatorV1 = "governed_sum" | "governed_average" | "governed_identity_count" | "governed_point_in_time_snapshot_sum" | "governed_revenue_minus_cost";
+export type GovernedMetricOperatorV1 = "governed_sum" | "governed_average" | "governed_identity_count" | "governed_source_row_count" | "governed_point_in_time_snapshot_sum" | "governed_revenue_minus_cost";
 
 export type GovernedExecutionRestrictionV1 = {
   code: string;

@@ -39,7 +39,7 @@ export function planGovernedMetricQuery(preflight: GovernedRuntimePreflightV1): 
   if (!definition) return { state: "blocked", plan: null, blockers: ["governed_metric_definition_missing"] };
   const governedOperator = (GOVERNED_RUNTIME_POLICY_V1.operators as Readonly<Record<string, GovernedMetricQueryPlanV1["operator"]>>)[action.metricId];
   if (!governedOperator || governedOperator !== action.operator) return { state: "blocked", plan: null, blockers: ["operator_differs_from_governed_metric_definition"] };
-  if ((definition.aggregationOperator === "sum" && !["governed_sum", "governed_point_in_time_snapshot_sum"].includes(action.operator)) || (definition.aggregationOperator === "average" && action.operator !== "governed_average") || (definition.aggregationOperator === "count_governed_identity" && action.operator !== "governed_identity_count") || (definition.aggregationOperator === "derive_subtraction" && action.operator !== "governed_revenue_minus_cost")) return { state: "blocked", plan: null, blockers: ["unsupported_metric_operator_combination"] };
+  if ((definition.aggregationOperator === "sum" && !["governed_sum", "governed_point_in_time_snapshot_sum"].includes(action.operator)) || (definition.aggregationOperator === "average" && action.operator !== "governed_average") || (definition.aggregationOperator === "count_governed_identity" && action.operator !== "governed_identity_count") || (definition.aggregationOperator === "count_source_rows" && action.operator !== "governed_source_row_count") || (definition.aggregationOperator === "derive_subtraction" && action.operator !== "governed_revenue_minus_cost")) return { state: "blocked", plan: null, blockers: ["unsupported_metric_operator_combination"] };
   if (action.metricBindings.length !== definition.requirements.length) return { state: "blocked", plan: null, blockers: ["metric_binding_count_mismatch"] };
   if (action.operator === "governed_point_in_time_snapshot_sum" && !action.asOfBasis) return { state: "blocked", plan: null, blockers: ["snapshot_as_of_basis_missing"] };
   if (action.operator !== "governed_point_in_time_snapshot_sum" && action.asOfBasis) return { state: "blocked", plan: null, blockers: ["as_of_basis_not_permitted_for_metric"] };
@@ -54,6 +54,8 @@ export function planGovernedMetricQuery(preflight: GovernedRuntimePreflightV1): 
     metricExpression = `SUM(${score}) / NULLIF(COUNT(${score}), 0)`;
   } else if (action.operator === "governed_identity_count") {
     metricExpression = `CAST(COUNT(DISTINCT CAST(${quoteIdentifier(action.metricBindings[0].physicalColumn)} AS VARCHAR)) AS BIGINT)`;
+  } else if (action.operator === "governed_source_row_count") {
+    metricExpression = "CAST(COUNT(*) AS BIGINT)";
   } else if (action.operator === "governed_revenue_minus_cost") {
     const revenue = action.metricBindings.find((item) => item.requirementId === "gross_profit_revenue");
     const cost = action.metricBindings.find((item) => item.requirementId === "gross_profit_cost");

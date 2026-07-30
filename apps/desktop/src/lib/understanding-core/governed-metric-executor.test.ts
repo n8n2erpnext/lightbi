@@ -53,11 +53,11 @@ async function actualDuckDBBoundary(): Promise<GovernedDuckDBBoundaryV1> {
 }
 
 describe("Phase 5M3 verified local DuckDB execution", () => {
-  it("executes all six governed metric forms and compares verified answers", async () => {
+  it("executes all governed metric forms and compares verified answers", async () => {
     const boundary = await actualDuckDBBoundary();
     const cases = [
       [RUNTIME_FIXTURES.revenue(), 175], [RUNTIME_FIXTURES.quantity(), 5], [RUNTIME_FIXTURES.transaction(), 2],
-      [RUNTIME_FIXTURES.inventory(), 30], [RUNTIME_FIXTURES.delivery(), 2], [RUNTIME_FIXTURES.profit(), 100],
+      [RUNTIME_FIXTURES.inventory(), 30], [RUNTIME_FIXTURES.delivery(), 2], [RUNTIME_FIXTURES.sourceRecords(), 3], [RUNTIME_FIXTURES.profit(), 100],
     ] as const;
     for (const [fixture, expected] of cases) {
       const preflight = preflightGovernedRuntimeAction(fixture.runtimeInput);
@@ -74,6 +74,11 @@ describe("Phase 5M3 verified local DuckDB execution", () => {
       expect(first.decisionUseAuthorized).toBe(false);
       expect(first.productionWiring.executed).toBe(false);
       expect(first.restrictions.map((item) => item.code)).toContain("DECISION_USE_PROHIBITED");
+      if (fixture.metricId === "source_record_count") {
+        expect(first.restrictions.map((item) => item.code)).toContain("SOURCE_RECORDS_ARE_NOT_BUSINESS_ENTITIES");
+        expect(planned.plan.sql).toContain("COUNT(*)");
+        expect(planned.plan.sql).not.toContain("DISTINCT");
+      }
       expect(first.evidence.some((item) => item.kind === "duckdb_execution")).toBe(true);
     }
   }, 30000);

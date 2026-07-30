@@ -104,12 +104,19 @@ function sourceBoundDocumentIdentity(
 
 function requirementBinding(source: CanonicalMetricSourceV1, definition: GovernedMetricDefinitionV1, requirementIndex: number, metric: GovernedMetricPreflightItemV1): { binding: GovernedColumnBindingV1 | null; blockers: GovernedRuntimeBlockerV1[] } {
   const requirement = definition.requirements[requirementIndex];
-  const role: GovernedColumnBindingV1["role"] = definition.aggregationOperator === "count_governed_identity" ? "identity" : "measure";
-  const matches = definition.metricId === "gross_profit" || definition.aggregationOperator === "average"
+  const role: GovernedColumnBindingV1["role"] = definition.aggregationOperator === "count_governed_identity"
+    ? "identity"
+    : definition.aggregationOperator === "count_source_rows"
+      ? "dimension"
+      : "measure";
+  const selectedBindingRequired = definition.metricId === "gross_profit"
+    || definition.aggregationOperator === "average"
+    || definition.aggregationOperator === "count_source_rows";
+  const matches = selectedBindingRequired
     ? metric.selectedBindings.filter((item) => item.requirementId === requirement.requirementId && item.sourceReference === sourceReference(source)).flatMap((selected) => {
         const exact = semanticBinding(source, selected.semanticId, role, requirement.requirementId).find((item) => item.sourceColumnIndex === selected.sourceColumnIndex && item.physicalColumn === selected.physicalColumn);
         return exact ? [exact] : [];
-      })
+      }).slice(0, definition.aggregationOperator === "count_source_rows" ? 1 : undefined)
     : requirement.semanticSignals.flatMap((semanticId) => semanticBinding(source, semanticId, role, requirement.requirementId));
   if (matches.length === 0) return { binding: null, blockers: [blocker(`runtime_binding_missing:${requirement.requirementId}`, "binding", [...requirement.semanticSignals], "critical")] };
   if (matches.length > 1) return { binding: null, blockers: [blocker(`runtime_binding_ambiguous:${requirement.requirementId}`, "binding", matches.map((item) => `${item.semanticId}:${item.sourceColumnIndex}`), "critical")] };
@@ -289,6 +296,9 @@ export function preflightGovernedRuntimeAction(input: GovernedRuntimePreflightIn
   const restrictions = dedupeRestrictions([
     restriction("DECISION_USE_PROHIBITED", "Successful metric execution is evidence only and cannot authorize a business decision."),
     restriction("PRODUCTION_WIRING_PROHIBITED", "Phase 5M3 remains isolated from production consumers."),
+    ...(metric.metricId === "source_record_count"
+      ? [restriction("SOURCE_RECORDS_ARE_NOT_BUSINESS_ENTITIES", "COUNT(*) describes physical source records only. It must not be relabeled as people, customers, events, campaigns, or other distinct business entities.", [metric.metricId], "critical")]
+      : []),
     ...metric.limitations.map((item) => restriction(`METRIC_LIMITATION:${item.code}`, "The metric preflight limitation remains active.", item.references)),
     ...actionCandidate.limitations.map((item) => restriction(`ACTION_LIMITATION:${item.code}`, "The action-candidate limitation remains active.", item.references)),
     ...(state === "conditionally_executable" ? [restriction("CONDITIONAL_EXECUTION_ONLY", "Execution is permitted only with all upstream limitations retained.", [metric.metricId], "critical")] : []),

@@ -105,6 +105,8 @@ export const COMMERCE_DISTRIBUTION_DOMAIN_PACK_V1 = {
     { id: "finance", label: "Finance and accounting", businessGoal: "Understand governed profitability and financial evidence.", requiredMetricIds: ["gross_profit"] },
     { id: "operations", label: "Fulfillment and logistics", businessGoal: "Understand delivery volume and operational exceptions.", requiredMetricIds: ["delivery_count"] },
     { id: "inventory", label: "Inventory", businessGoal: "Understand point-in-time stock only when snapshot evidence exists.", requiredMetricIds: ["inventory_on_hand"] },
+    { id: "performance", label: "People and participation", businessGoal: "Describe source-record patterns by people, teams and roles without inventing entity counts or performance claims.", requiredMetricIds: ["source_record_count"] },
+    { id: "customer", label: "Customer and campaign", businessGoal: "Describe source-record patterns by campaign evidence without inventing conversion or causality.", requiredMetricIds: ["source_record_count"] },
     { id: "data_trust", label: "Data trust", businessGoal: "Review evidence, ambiguity and decision readiness.", requiredMetricIds: [] },
   ],
   acceptanceCorpusIds: ["commerce-distribution-corpus-1.3.0"],
