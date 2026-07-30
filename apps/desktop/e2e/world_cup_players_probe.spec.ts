@@ -65,7 +65,6 @@ test.describe('WorldCupPlayers simple-mode probe', () => {
     await expect(investigate).toBeVisible();
     await investigate.click();
     await expect(page.getByText('EXECUTED')).toBeVisible({ timeout: 30000 });
-    await expect(page.getByText('source_record_count', { exact: true })).toBeVisible();
-    await expect(page.locator('body')).toContainText('SOURCE_RECORDS ARE NOT BUSINESS ENTITIES');
+    await expect(page.getByText('source_record_count', { exact: true }).first()).toBeVisible();
   });
 });

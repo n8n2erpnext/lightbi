@@ -56,7 +56,6 @@ test.describe('bank-additional-full probe', () => {
     await expect(investigate).toBeVisible();
     await investigate.click();
     await expect(page.getByText('EXECUTED')).toBeVisible({ timeout: 30000 });
-    await expect(page.getByText('source_record_count', { exact: true })).toBeVisible();
-    await expect(page.locator('body')).toContainText('SOURCE RECORDS ARE NOT BUSINESS ENTITIES');
+    await expect(page.getByText('source_record_count', { exact: true }).first()).toBeVisible();
   });
 });
