@@ -934,6 +934,14 @@ export const Home: React.FC = () => {
       });
       return;
     }
+    const selectedSourceKeys = Object.entries(nextDrafts)
+      .filter(([, draft]) => draft.selected)
+      .map(([key]) => key);
+    if (selectedSourceKeys.length === 1) {
+      setSelectedPerspective(perspective.perspectiveId);
+      handleUseMultiSourceReviewSource(selectedSourceKeys[0]);
+      return;
+    }
     void handleBuildCanonicalMultiSource(nextDrafts, perspective.perspectiveId);
   };
 

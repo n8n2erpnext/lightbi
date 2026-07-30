@@ -149,9 +149,13 @@ export function formatValue(value: unknown, semanticType: SemanticType, prefs: D
     }
 
     if (semanticType === 'currency' && prefs.currencyDisplay !== 'none') {
-      // For MVP, default to USD if en-US, VND if vi-VN, SAR if ar-SA. 
-      // In a real app, currency code might come from metadata.
-      options.currency = prefs.locale === 'vi-VN' ? 'VND' : prefs.locale === 'ar-SA' ? 'SAR' : 'USD';
+      options.currency = /^[A-Z]{3}$/.test(prefs.currencyCode)
+        ? prefs.currencyCode
+        : prefs.locale === 'vi-VN'
+          ? 'VND'
+          : prefs.locale === 'ar-SA'
+            ? 'SAR'
+            : 'USD';
       options.currencyDisplay = prefs.currencyDisplay;
     }
 

@@ -7,6 +7,8 @@ build = "build.rs"
 [dependencies]
 tauri = { version = "2", features = [] }
 serde = { version = "1", features = ["derive"] }
+tokio = { version = "1", features = ["rt-multi-thread"] }
+lightbi-server = { path = "../../apps/server" }
 
 [build-dependencies]
 tauri-build = { version = "2", features = [] }

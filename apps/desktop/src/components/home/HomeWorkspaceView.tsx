@@ -53,7 +53,7 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
 
       <div className="mx-auto flex w-full max-w-[1280px] flex-col px-5 py-8 md:px-8 lg:px-10" onClick={e => e.stopPropagation()}>
         {!result && !isAsking && !selectedTopic && pendingLocalBatch && currentDataset?.status !== 'ready'
-          && !(pendingLocalBatch.status === 'ready' && multiSourceReviewSources.length > 1) && (
+          && !(pendingLocalBatch.status === 'ready' && multiSourceReviewSources.length > 0) && (
           <section className="mb-6 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_16px_45px_rgba(15,23,42,0.05)]">
             <div className="flex flex-col gap-5 px-5 py-5 md:px-6 lg:flex-row lg:items-center lg:justify-between">
               <div className="max-w-3xl">
@@ -471,14 +471,14 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
               {/* Inline Pending Local Batch Inspection Card */}
               {pendingLocalBatch && (
                 <div className={`relative flex w-full flex-col gap-4 overflow-hidden animate-in fade-in zoom-in-95 ${
-                  pendingLocalBatch.status === 'ready' && multiSourceReviewSources.length > 1
+                  pendingLocalBatch.status === 'ready' && multiSourceReviewSources.length > 0
                     ? 'rounded-none border-0 bg-transparent p-0 shadow-none'
                     : 'rounded-xl border border-black/10 bg-white p-4 shadow-sm'
                 }`}>
                   {pendingLocalBatch.status === "reading" && (
                     <div className="absolute top-0 left-0 h-1 bg-blue-500 w-full animate-pulse" />
                   )}
-                  {!(pendingLocalBatch.status === 'ready' && multiSourceReviewSources.length > 1) && <div className="flex items-start justify-between gap-4">
+                  {!(pendingLocalBatch.status === 'ready' && multiSourceReviewSources.length > 0) && <div className="flex items-start justify-between gap-4">
                     <div className="flex min-w-0 items-center gap-3">
                       <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-emerald-50">
                         {pendingLocalBatch.status === "reading" ? (
@@ -540,7 +540,7 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                     </div>
                   )}
 
-                  {pendingLocalBatch.status === "ready" && multiSourceReviewSources.length > 1 && (
+                  {pendingLocalBatch.status === "ready" && multiSourceReviewSources.length > 0 && (
                     <div className="w-full animate-in fade-in slide-in-from-bottom-4 duration-500 mt-4 mb-4">
                       <CanonicalMultiSourceReview
                         sources={multiSourceReviewSources}
@@ -560,7 +560,7 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
 
                   {pendingLocalBatch.status === "ready"
                     && pendingLocalBatch.step === "family_selection"
-                    && multiSourceReviewSources.length <= 1 && (
+                    && multiSourceReviewSources.length === 0 && (
                     <div className="w-full animate-in fade-in slide-in-from-bottom-4 duration-500 flex flex-col gap-3 border-t border-gray-100 pt-3">
 
                       <div className="flex flex-col gap-2">

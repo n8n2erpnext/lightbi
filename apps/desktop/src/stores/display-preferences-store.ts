@@ -2,7 +2,9 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 export interface DisplayPreferences {
+  language: 'en' | 'vi';
   locale: string; // e.g., 'en-US', 'vi-VN', 'ar-SA'
+  currencyCode: string; // ISO 4217 reporting currency selected by the user
   timezone: string; // e.g., 'auto', 'UTC', 'Asia/Ho_Chi_Minh'
   numberStyle: 'plain' | 'accounting';
   currencyDisplay: 'none' | 'symbol' | 'code';
@@ -21,7 +23,9 @@ interface DisplayPreferencesState {
 }
 
 export const DEFAULT_PREFERENCES: DisplayPreferences = {
+  language: 'en',
   locale: 'en-US',
+  currencyCode: 'USD',
   timezone: 'auto',
   numberStyle: 'plain',
   currencyDisplay: 'symbol',
@@ -42,6 +46,23 @@ export const useDisplayPreferences = create<DisplayPreferencesState>()(
     }),
     {
       name: 'lightbi-display-preferences',
+      version: 2,
+      merge: (persisted, current) => {
+        const persistedState = persisted as Partial<DisplayPreferencesState> | undefined;
+        const persistedPreferences = persistedState?.preferences ?? {};
+        const locale = persistedPreferences.locale ?? current.preferences.locale;
+        return {
+          ...current,
+          ...persistedState,
+          preferences: {
+            ...current.preferences,
+            ...persistedPreferences,
+            language: persistedPreferences.language ?? (locale === 'vi-VN' ? 'vi' : 'en'),
+            currencyCode: persistedPreferences.currencyCode
+              ?? (locale === 'vi-VN' ? 'VND' : locale === 'ar-SA' ? 'SAR' : 'USD'),
+          },
+        };
+      },
     }
   )
 );

@@ -21,6 +21,8 @@ import {
   type ReportingPeriodScopeV1,
 } from "../../lib/understanding-core/collection-understanding";
 import { CanonicalPerspectiveSelector } from "./CanonicalPerspectiveSelector";
+import { useDisplayPreferences } from "../../stores/display-preferences-store";
+import { useUiLanguage } from "../../lib/ui-language";
 
 export type MultiSourceDraftV1 = {
   selected: boolean;
@@ -85,6 +87,8 @@ export const CanonicalMultiSourceReview: React.FC<Props> = ({
   blockers = [],
   relationshipPresentation = null,
 }) => {
+  const preferences = useDisplayPreferences((state) => state.preferences);
+  const { t } = useUiLanguage();
   const collectionSources = React.useMemo(
     () => sources.map((source) => ({
       key: source.key,
@@ -128,14 +132,25 @@ export const CanonicalMultiSourceReview: React.FC<Props> = ({
   const hasMoneyEvidence = selectedSources.some((source) => (source.candidates?.monetaryColumnCandidates.length ?? 0) > 0);
   const observedCurrencies = [...new Set(selectedSources.flatMap((source) =>
     source.candidates?.observedCurrencyCandidates.map((candidate) => candidate.value.currency) ?? []))];
+  const settingsCurrency = /^[A-Z]{3}$/.test(preferences.currencyCode)
+    ? preferences.currencyCode
+    : "";
+  const currencyConflict = observedCurrencies.length > 1
+    || (observedCurrencies.length === 1
+      && Boolean(settingsCurrency)
+      && observedCurrencies[0] !== settingsCurrency);
   const needsCurrency = Boolean(
     selectedPerspective
     && hasMoneyEvidence
     && selectedPerspective.capabilityIds.some((capability) =>
       capability === "sales_revenue" || capability === "gross_profit")
-    && observedCurrencies.length === 0,
+    && (currencyConflict || (observedCurrencies.length === 0 && !settingsCurrency)),
   );
-  const resolvedCurrency = observedCurrencies.length === 1 ? observedCurrencies[0] : currency.trim().toUpperCase();
+  const resolvedCurrency = currencyConflict
+    ? currency.trim().toUpperCase()
+    : observedCurrencies.length === 1
+      ? observedCurrencies[0]
+      : settingsCurrency || currency.trim().toUpperCase();
   const periodScope: ReportingPeriodScopeV1 | null = collection.observedPeriods.length === 0
     ? null
     : collection.observedPeriods.length === 1
@@ -159,7 +174,7 @@ export const CanonicalMultiSourceReview: React.FC<Props> = ({
           <div className="max-w-3xl">
             <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-sky-300">
               <Sparkles className="h-4 w-4" />
-              LightBI understood your data
+              {t('LightBI understood your data', 'LightBI đã hiểu dữ liệu của bạn')}
             </div>
             <h2 className="mt-3 text-[25px] font-semibold tracking-tight md:text-[30px]">
               {workflowLabels[collection.workflow]}
@@ -167,7 +182,10 @@ export const CanonicalMultiSourceReview: React.FC<Props> = ({
             <p className="mt-2 max-w-2xl text-[13px] leading-6 text-slate-300">
               {collection.sourceCount} sources contain {collection.roles.length || "unresolved"} business role{collection.roles.length === 1 ? "" : "s"}
               {collection.observedPeriods.length > 0 ? ` across ${collection.observedPeriods.length} reporting period${collection.observedPeriods.length === 1 ? "" : "s"}` : ""}.
-              Choose what you want to understand; LightBI will prepare the sources, metrics and charts.
+              {t(
+                ' Choose what you want to understand; LightBI will prepare the sources, metrics and charts.',
+                ' Chọn điều bạn muốn tìm hiểu; LightBI sẽ tự chuẩn bị nguồn, chỉ số và biểu đồ.',
+              )}
             </p>
           </div>
           <div className="grid grid-cols-3 gap-2 lg:min-w-[390px]">
@@ -203,28 +221,31 @@ export const CanonicalMultiSourceReview: React.FC<Props> = ({
           }))}
           selectedId={selectedPerspectiveId}
           onSelect={(id) => setSelectedPerspectiveId(id as CanonicalBusinessPerspectiveCandidateV1["perspectiveId"])}
-          description="Pick the business view that matches your job. LightBI handles source selection and analysis automatically."
+          description={t(
+            'Pick the business view that matches your job. LightBI handles source selection and analysis automatically.',
+            'Chọn góc nhìn phù hợp với vai trò của bạn. LightBI tự chọn nguồn và thực hiện phân tích.',
+          )}
         />
 
         {selectedPerspective && (
           <section className="rounded-2xl border border-blue-200 bg-gradient-to-br from-blue-50 to-white p-5 md:p-6">
             <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
               <div className="max-w-3xl">
-                <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-blue-700">Your analysis</div>
+                <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-blue-700">{t('Your analysis', 'Phân tích của bạn')}</div>
                 <h3 className="mt-2 text-[20px] font-semibold text-slate-950">{selectedPerspective.label}</h3>
                 <p className="mt-1 text-[13px] leading-6 text-slate-600">{selectedPerspective.purpose}</p>
 
                 {collection.observedPeriods.length > 1 && (
                   <div className="mt-5 flex flex-wrap items-end gap-3">
                     <label className="text-[11px] font-semibold text-slate-600">
-                      Compare
+                      {t('Compare', 'So sánh')}
                       <select value={baselinePeriod} onChange={(event) => setBaselinePeriod(event.target.value)} className="mt-1.5 block min-w-36 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-[12px] text-slate-900">
                         {collection.observedPeriods.map((period) => <option key={period} value={period}>{period}</option>)}
                       </select>
                     </label>
-                    <span className="pb-3 text-[12px] font-medium text-slate-400">with</span>
+                    <span className="pb-3 text-[12px] font-medium text-slate-400">{t('with', 'với')}</span>
                     <label className="text-[11px] font-semibold text-slate-600">
-                      Period
+                      {t('Period', 'Kỳ')}
                       <select value={comparisonPeriod} onChange={(event) => setComparisonPeriod(event.target.value)} className="mt-1.5 block min-w-36 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-[12px] text-slate-900">
                         {collection.observedPeriods.map((period) => <option key={period} value={period}>{period}</option>)}
                       </select>
@@ -234,7 +255,9 @@ export const CanonicalMultiSourceReview: React.FC<Props> = ({
 
                 {needsCurrency && (
                   <label className="mt-5 block max-w-sm text-[11px] font-semibold text-slate-600">
-                    What currency are the amounts in?
+                    {currencyConflict
+                      ? t('The source currency conflicts with Settings. Which currency should govern this analysis?', 'Tiền tệ trong nguồn mâu thuẫn với Cài đặt. Phân tích này phải dùng đơn vị nào?')
+                      : t('What currency are the amounts in?', 'Các giá trị tiền đang dùng đơn vị nào?')}
                     <div className="mt-1.5 flex items-center rounded-xl border border-slate-200 bg-white px-3">
                       <input
                         value={currency}
@@ -246,15 +269,29 @@ export const CanonicalMultiSourceReview: React.FC<Props> = ({
                       <span className="text-[10px] font-medium text-slate-400">3-letter code</span>
                     </div>
                     <span className="mt-1.5 block font-normal leading-5 text-slate-500">
-                      LightBI needs this once to compare monetary values safely.
+                      {t(
+                        'LightBI asks only because no reporting currency is configured or the source evidence conflicts.',
+                        'LightBI chỉ hỏi vì chưa có tiền tệ mặc định hoặc bằng chứng trong nguồn đang mâu thuẫn.',
+                      )}
                     </span>
                   </label>
+                )}
+                {!needsCurrency && hasMoneyEvidence && resolvedCurrency && (
+                  <p className="mt-4 inline-flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-[11px] font-medium text-emerald-800">
+                    <CheckCircle2 className="h-3.5 w-3.5" />
+                    {observedCurrencies.length === 1
+                      ? t(`Currency ${resolvedCurrency} confirmed by source evidence.`, `Tiền tệ ${resolvedCurrency} được xác nhận từ dữ liệu nguồn.`)
+                      : t(`Using ${resolvedCurrency} from Settings.`, `Đang dùng ${resolvedCurrency} từ Cài đặt.`)}
+                  </p>
                 )}
 
                 {unresolvedForSelection.length > 0 && (
                   <p className="mt-4 flex items-start gap-2 text-[11px] leading-5 text-amber-800">
                     <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-                    LightBI can start safely, but may ask one clarification before making a decision-level conclusion.
+                    {t(
+                      'LightBI can start safely, but may ask one clarification before making a decision-level conclusion.',
+                      'LightBI có thể bắt đầu an toàn, nhưng có thể hỏi thêm một điều trước khi đưa ra kết luận phục vụ quyết định.',
+                    )}
                   </p>
                 )}
               </div>
@@ -275,7 +312,9 @@ export const CanonicalMultiSourceReview: React.FC<Props> = ({
                 className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-blue-700 px-6 py-3 text-[13px] font-semibold text-white shadow-lg shadow-blue-700/15 transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:shadow-none"
               >
                 {building ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
-                {selectedPerspective.perspectiveId === "data_trust" ? "Review data trust" : "Analyze this perspective"}
+                {selectedPerspective.perspectiveId === "data_trust"
+                  ? t('Review data trust', 'Kiểm tra độ tin cậy')
+                  : t('Analyze this perspective', 'Phân tích góc nhìn này')}
                 {!building && <ArrowRight className="h-4 w-4" />}
               </button>
             </div>
@@ -286,8 +325,8 @@ export const CanonicalMultiSourceReview: React.FC<Props> = ({
           <summary className="flex cursor-pointer list-none items-center gap-3 px-5 py-4">
             <Settings2 className="h-4 w-4 text-slate-500" />
             <div className="flex-1">
-              <p className="text-[12px] font-semibold text-slate-800">Review technical evidence</p>
-              <p className="mt-0.5 text-[11px] text-slate-500">Optional. Use this only when LightBI asks for a clarification.</p>
+              <p className="text-[12px] font-semibold text-slate-800">{t('Review technical evidence', 'Kiểm tra bằng chứng kỹ thuật')}</p>
+              <p className="mt-0.5 text-[11px] text-slate-500">{t('Optional. Use this only when LightBI asks for a clarification.', 'Không bắt buộc. Chỉ dùng khi LightBI cần bạn xác nhận thêm.')}</p>
             </div>
             <ChevronDown className="h-4 w-4 text-slate-400 transition group-open:rotate-180" />
           </summary>
