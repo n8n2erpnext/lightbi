@@ -57,9 +57,15 @@ test.describe('WorldCupPlayers simple-mode probe', () => {
       }
     }
 
-    await page.getByRole('button', { name: /Evidence found Performance/ }).click();
-    await expect(page.getByTestId('canonical-count-unsupported_mvp')).toContainText('3', { timeout: 10000 });
-    await expect(page.getByTestId('canonical-guided-setup')).toContainText('Position = role');
-    await expect(page.getByRole('button', { name: 'Investigate' })).toHaveCount(0);
+    await page.getByTestId('business-perspective-performance').click();
+    await expect(page.getByTestId('canonical-count-ready')).not.toContainText('Ready now: 0', { timeout: 10000 });
+    await expect(page.getByText('How are source records distributed by person or participant?')).toBeVisible();
+    await expect(page.getByText('How are source records distributed by coach or lead?')).toBeVisible();
+    const investigate = page.getByRole('button', { name: 'Investigate' }).first();
+    await expect(investigate).toBeVisible();
+    await investigate.click();
+    await expect(page.getByText('EXECUTED')).toBeVisible({ timeout: 30000 });
+    await expect(page.getByText('source_record_count', { exact: true })).toBeVisible();
+    await expect(page.locator('body')).toContainText('SOURCE_RECORDS ARE NOT BUSINESS ENTITIES');
   });
 });

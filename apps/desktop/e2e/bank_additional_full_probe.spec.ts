@@ -49,9 +49,14 @@ test.describe('bank-additional-full probe', () => {
       throw new Error('Macro-economic field emp.var.rate was misclassified as receivable money');
     }
 
-    await page.getByRole('button', { name: /Evidence found Customer/ }).click();
-    await expect(page.getByTestId('canonical-perspective-recognized-only')).toBeVisible({ timeout: 10000 });
-    await expect(page.getByTestId('canonical-perspective-recognized-only')).toContainText('no governed question or metric contract');
-    await expect(page.getByRole('button', { name: 'Investigate' })).toHaveCount(0);
+    await page.getByTestId('business-perspective-customer').click();
+    await expect(page.getByTestId('canonical-count-ready')).not.toContainText('Ready now: 0', { timeout: 10000 });
+    await expect(page.getByText('How are source records distributed by previous campaign outcome?')).toBeVisible();
+    const investigate = page.getByRole('button', { name: 'Investigate' }).first();
+    await expect(investigate).toBeVisible();
+    await investigate.click();
+    await expect(page.getByText('EXECUTED')).toBeVisible({ timeout: 30000 });
+    await expect(page.getByText('source_record_count', { exact: true })).toBeVisible();
+    await expect(page.locator('body')).toContainText('SOURCE RECORDS ARE NOT BUSINESS ENTITIES');
   });
 });
