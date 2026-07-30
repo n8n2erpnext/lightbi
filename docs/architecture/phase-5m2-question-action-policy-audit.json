@@ -2,9 +2,9 @@
   "schemaVersion": "lightbi.phase-5m2-question-action-policy-audit.v1",
   "domainPackId": "commerce_distribution_mvp",
   "questionPolicyVersion": "lightbi.question-action-policy.v1",
-  "questionPolicyHash": "c0616218cfd676047387ea33a783403d1d12b8040cfa87ec5cf6b7fc4a49c1ff",
-  "metricPolicyHash": "e6d9acc403751fe3f04612ce84c83511efe538c76b15237cd49b32b9640b99c5",
-  "manifestPolicyHash": "81d62ffcf4da454885809c07b6ec91133fc6e15d98667ca1d058f239fd282d7a",
+  "questionPolicyHash": "f623f6adbef180d69d78e1f5f185ff62517df9f8d7093788da48d92661c8c808",
+  "metricPolicyHash": "26bd430cbca42fbb5a6c8fdf51f248fd40ebf9dc28bd29f458ee53d864de3f5c",
+  "manifestPolicyHash": "3efa22d2210d2160bf27b1e16ae00da6617c1227e15a8310adbf9b04606a25fd",
   "metricIds": [
     "sales_revenue",
     "quantity_sold",
@@ -13,6 +13,7 @@
     "delivery_count",
     "trip_count",
     "average_quality_score",
+    "source_record_count",
     "gross_profit"
   ],
   "questionFamilies": [
@@ -191,6 +192,70 @@
       "timeRequirement": "not_required",
       "sourceComplexity": "source_local",
       "priority": 82
+    },
+    {
+      "questionId": "descriptive.source_records.by_team",
+      "metricId": "source_record_count",
+      "intent": "ranking",
+      "timeRequirement": "not_required",
+      "sourceComplexity": "source_local",
+      "priority": 83
+    },
+    {
+      "questionId": "descriptive.source_records.by_role",
+      "metricId": "source_record_count",
+      "intent": "ranking",
+      "timeRequirement": "not_required",
+      "sourceComplexity": "source_local",
+      "priority": 84
+    },
+    {
+      "questionId": "descriptive.source_records.by_person",
+      "metricId": "source_record_count",
+      "intent": "ranking",
+      "timeRequirement": "not_required",
+      "sourceComplexity": "source_local",
+      "priority": 85
+    },
+    {
+      "questionId": "descriptive.source_records.by_coach",
+      "metricId": "source_record_count",
+      "intent": "ranking",
+      "timeRequirement": "not_required",
+      "sourceComplexity": "source_local",
+      "priority": 86
+    },
+    {
+      "questionId": "descriptive.source_records.by_previous_outcome",
+      "metricId": "source_record_count",
+      "intent": "status_breakdown",
+      "timeRequirement": "not_required",
+      "sourceComplexity": "source_local",
+      "priority": 87
+    },
+    {
+      "questionId": "descriptive.source_records.by_segment",
+      "metricId": "source_record_count",
+      "intent": "ranking",
+      "timeRequirement": "not_required",
+      "sourceComplexity": "source_local",
+      "priority": 88
+    },
+    {
+      "questionId": "descriptive.source_records.by_contact",
+      "metricId": "source_record_count",
+      "intent": "ranking",
+      "timeRequirement": "not_required",
+      "sourceComplexity": "source_local",
+      "priority": 89
+    },
+    {
+      "questionId": "descriptive.source_records.by_campaign",
+      "metricId": "source_record_count",
+      "intent": "ranking",
+      "timeRequirement": "not_required",
+      "sourceComplexity": "source_local",
+      "priority": 90
     },
     {
       "questionId": "commerce.gross_profit.over_time",
