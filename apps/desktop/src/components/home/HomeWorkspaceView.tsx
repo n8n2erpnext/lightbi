@@ -361,6 +361,7 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                           rebuildState={canonicalOverlayRebuildState}
                           onChange={handleCanonicalOverlayChange}
                           target={canonicalReviewTarget}
+                          perspectiveId={selectedPerspective}
                         />
                       )}
                       {currentDataset?.canonicalMultiSourceDataset && (

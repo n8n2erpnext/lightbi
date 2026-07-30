@@ -18,9 +18,26 @@ type Props = {
   rebuildState: "idle" | "pending" | "succeeded" | "failed";
   onChange: (overlay: CanonicalUserOverlayV1) => void;
   target?: CanonicalRemediationOperationV1 | null;
+  perspectiveId?: string | null;
 };
 
-export const CanonicalEvidenceReview: React.FC<Props> = ({ artifact, overlay, rebuildState, onChange, target }) => {
+const GUIDED_SIGNAL_PRIORITY: Record<string, readonly string[]> = {
+  revenue: ["revenue", "net_revenue", "invoice_total", "sales", "quantity", "sold_qty"],
+  finance: ["gross_profit", "profit", "revenue", "net_revenue", "invoice_total", "cost", "total_cost"],
+  inventory: ["stock_qty", "inventory", "sku", "product", "warehouse", "time_period"],
+  operations: ["shipment", "trip", "delivery_status", "warehouse", "report_date", "time_period"],
+  performance: ["quality_score", "performance_rank", "person", "team", "role"],
+  customer: ["customer", "segment", "contact", "previous_outcome", "previous_contacts"],
+};
+
+const USABLE_GUIDED_DISPOSITIONS = new Set(["selected", "viable"]);
+const LINE_MEASURE_SIGNALS = new Set([
+  "revenue", "net_revenue", "invoice_total", "sales", "quantity", "sold_qty",
+  "gross_profit", "profit", "cost", "total_cost",
+]);
+const DOCUMENT_SIGNALS = new Set(["order", "sales_order", "billing_document", "shipment", "trip"]);
+
+export const CanonicalEvidenceReview: React.FC<Props> = ({ artifact, overlay, rebuildState, onChange, target, perspectiveId }) => {
   const boundary = artifact.sourceBoundary;
   const detailsRef = useRef<HTMLDetailsElement>(null);
   const [currency, setCurrency] = useState("");
@@ -60,6 +77,47 @@ export const CanonicalEvidenceReview: React.FC<Props> = ({ artifact, overlay, re
   const current = overlay ?? createCanonicalUserOverlay(boundary);
   const activeMappings = [...current.mappingDecisions].sort((a, b) => b.createdAt.localeCompare(a.createdAt)).filter((item, index, all) => all.findIndex((candidate) => candidate.physicalColumn === item.physicalColumn) === index);
   const activeDeclarations = [...current.sourceEvidenceDeclarations].sort((a, b) => b.createdAt.localeCompare(a.createdAt)).filter((item, index, all) => all.findIndex((candidate) => candidate.evidenceType === item.evidenceType && JSON.stringify(candidate.scope) === JSON.stringify(item.scope)) === index);
+  const guidedSetup = (() => {
+    if (artifact.status !== "valid" || !perspectiveId) return null;
+    const priority = GUIDED_SIGNAL_PRIORITY[perspectiveId] ?? [];
+    const priorityIndex = new Map(priority.map((signal, index) => [signal, index]));
+    const recommendedMappings = reviewColumns.flatMap((column) => {
+      const candidates = column.candidateTraces
+        .filter((trace) => USABLE_GUIDED_DISPOSITIONS.has(trace.disposition) && priorityIndex.has(trace.candidateId))
+        .sort((left, right) =>
+          (priorityIndex.get(left.candidateId) ?? 999) - (priorityIndex.get(right.candidateId) ?? 999)
+          || left.candidateId.localeCompare(right.candidateId));
+      return candidates[0] ? [{ column, signal: candidates[0].candidateId }] : [];
+    });
+    if (recommendedMappings.length === 0) return null;
+    const semanticSignalFor = (column: typeof artifact.canonicalSource.semantic.columns[number]) =>
+      recommendedMappings.find((item) => item.column.physicalColumn === column.physicalColumn)?.signal
+      ?? column.selectedCandidateId;
+    const rowIdentity = artifact.canonicalSource.semantic.columns.find((column) => {
+      const signal = semanticSignalFor(column);
+      const profile = boundary.fullFileProfile.artifact.sourceProfile.columns[column.sourceColumnIndex];
+      return signal === "record_id" && profile?.uniqueness.isUnique === true && profile.nullCount === 0;
+    });
+    const documentIdentity = artifact.canonicalSource.semantic.columns.find((column) => {
+      const signal = semanticSignalFor(column);
+      const profile = boundary.fullFileProfile.artifact.sourceProfile.columns[column.sourceColumnIndex];
+      return Boolean(signal && DOCUMENT_SIGNALS.has(signal) && profile && profile.nullCount === 0);
+    });
+    const lineMeasures = rowIdentity
+      ? recommendedMappings.filter((item) => LINE_MEASURE_SIGNALS.has(item.signal))
+      : [];
+    return {
+      recommendedMappings,
+      rowIdentity,
+      documentIdentity,
+      lineMeasures,
+      labels: [
+        ...recommendedMappings.map((item) => `${item.column.physicalColumn} = ${item.signal.replaceAll("_", " ")}`),
+        ...(documentIdentity ? [`${documentIdentity.physicalColumn} = document identity`] : []),
+        ...lineMeasures.map((item) => `${item.column.physicalColumn} = value on each source row`),
+      ],
+    };
+  })();
 
   const updateMapping = (physicalColumn: string, sourceColumnIndex: number, signal: string | null, decisionType: "confirm_candidate" | "map_to_existing_signal" | "ignore_for_semantic_analysis" | "reset_to_inferred", candidates: string[]) => {
     onChange(appendCanonicalMappingDecision(current, boundary, { physicalColumn, sourceColumnIndex, selectedCanonicalSignal: signal, decisionType, originalCandidateList: candidates }));
@@ -79,10 +137,71 @@ export const CanonicalEvidenceReview: React.FC<Props> = ({ artifact, overlay, re
     onChange(next);
   };
 
+  const applyGuidedSetup = () => {
+    if (!guidedSetup) return;
+    let next = current;
+    for (const item of guidedSetup.recommendedMappings) {
+      next = appendCanonicalMappingDecision(next, boundary, {
+        physicalColumn: item.column.physicalColumn,
+        sourceColumnIndex: item.column.sourceColumnIndex,
+        selectedCanonicalSignal: item.signal,
+        decisionType: "confirm_candidate",
+        originalCandidateList: item.column.candidateTraces.map((trace) => trace.candidateId),
+      });
+    }
+    if (guidedSetup.documentIdentity) {
+      next = appendCanonicalEvidenceDeclaration(next, boundary, {
+        evidenceType: "document_identity",
+        value: { kind: "document_identity", physicalColumn: guidedSetup.documentIdentity.physicalColumn },
+        scope: { level: "physical_column", physicalColumn: guidedSetup.documentIdentity.physicalColumn },
+      });
+    }
+    if (guidedSetup.rowIdentity) {
+      for (const item of guidedSetup.lineMeasures) {
+        next = appendCanonicalEvidenceDeclaration(next, boundary, {
+          evidenceType: "line_measure",
+          value: {
+            kind: "line_measure",
+            physicalColumn: item.column.physicalColumn,
+            semanticId: item.signal,
+            rowIdentityPhysicalColumn: guidedSetup.rowIdentity.physicalColumn,
+          },
+          scope: {
+            level: "canonical_signal_binding",
+            physicalColumn: item.column.physicalColumn,
+            canonicalSignal: item.signal,
+          },
+        });
+      }
+    }
+    onChange(next);
+  };
+
   return (
     <details ref={detailsRef} className="rounded-lg border border-gray-200 bg-white" aria-busy={rebuildState === "pending"} data-testid="canonical-evidence-review">
       <summary className="cursor-pointer px-4 py-3 text-[13px] font-semibold text-gray-800">Review mappings and source evidence</summary>
       <div className="space-y-4 border-t border-gray-100 p-4">
+        {guidedSetup && (
+          <section className="rounded-xl border border-blue-200 bg-blue-50 p-4" data-testid="canonical-guided-setup">
+            <div className="text-[13px] font-semibold text-blue-950">LightBI can prepare this perspective</div>
+            <p className="mt-1 text-[12px] leading-5 text-blue-800">
+              Confirm these source-bound meanings once. LightBI will rebuild the analysis and will still refuse any chart that fails the governed safety check.
+            </p>
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {guidedSetup.labels.map((label) => (
+                <span key={label} className="rounded-full border border-blue-200 bg-white px-2 py-1 text-[11px] text-blue-800">{label}</span>
+              ))}
+            </div>
+            <button
+              type="button"
+              disabled={rebuildState === "pending"}
+              onClick={applyGuidedSetup}
+              className="mt-3 rounded-lg bg-blue-700 px-3 py-2 text-[12px] font-semibold text-white disabled:opacity-50"
+            >
+              Confirm LightBI setup
+            </button>
+          </section>
+        )}
         <div className="flex items-center justify-between gap-3 text-[12px]">
           <div className="min-w-0 text-gray-500">Source-bound confirmation · revision {current.revision}</div>
           <div className="flex shrink-0 items-center gap-2">
