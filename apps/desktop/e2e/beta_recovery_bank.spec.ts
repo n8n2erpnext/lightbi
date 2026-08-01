@@ -28,14 +28,21 @@ test.describe('Beta recovery capability ladder', () => {
     await expect(page).toHaveURL(/\/investigation/, { timeout: 30_000 });
     await expect(page.getByRole('heading', { name: /Decision workspace|Không gian phân tích quyết định/i })).toBeVisible({ timeout: 60_000 });
     await expect(page.getByTestId('investigation-preflight-blocked')).toHaveCount(0);
-    const chart = page.getByTestId('chart-preview-canvas');
+    const chart = page.getByTestId('chart-preview-canvas').first();
     await chart.waitFor({ state: 'visible', timeout: 90_000 }).catch(async () => {
       const runPreview = page.locator('[data-run-preview="true"]');
       await expect(runPreview).toBeEnabled();
       await runPreview.click();
       await chart.waitFor({ state: 'visible', timeout: 90_000 });
     });
-    await expect(page.getByRole('button', { name: /Analyze deeper|Phân tích sâu/i }).first()).toBeEnabled();
+    const primaryQuestion = (await page.locator('h1').first().innerText()).trim();
+    const analyzeDeeper = page.getByRole('button', { name: /Analyze deeper|Phân tích sâu/i }).first();
+    await expect(analyzeDeeper).toBeEnabled();
+    await analyzeDeeper.click();
+    await expect(page.locator('aside h2').filter({ hasText: primaryQuestion })).toBeVisible();
+    const deepBA = page.getByTestId('single-source-ba-overview');
+    await expect(deepBA).toBeVisible();
+    await expect(deepBA).toContainText(/Theo poutcome|previous campaign outcome/i);
     await page.screenshot({ path: '../../ui-audit/beta-recovery-bank-investigation.png', fullPage: true });
 
     const body = await page.locator('body').innerText();

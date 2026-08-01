@@ -63,7 +63,7 @@ export const SingleSourceBAOverviewCard: React.FC<{
             <div className="flex items-center justify-between gap-3"><h5 className="text-[14px] font-semibold text-slate-900">Theo {breakdown.label.toLowerCase()}</h5><span className="text-[10px] text-slate-400">{breakdown.physicalColumn}</span></div>
             <div className="mt-3 space-y-3">
               {breakdown.top.map((entry, index) => <div key={entry.label}>
-                <div className="mb-1 flex items-center justify-between gap-3 text-[12px]"><span className="min-w-0 truncate font-medium text-slate-700">{index + 1}. {entry.label}</span><span className="shrink-0 text-slate-500">{breakdown.valueKind === 'money' ? formatMoney(entry.value, preferences) : formatKpi({ id: '', label: '', value: entry.value, kind: 'number' }, preferences)} · {(entry.share * 100).toFixed(1)}%</span></div>
+                <div className="mb-1 flex items-center justify-between gap-3 text-[12px]"><span className="min-w-0 truncate font-medium text-slate-700">{index + 1}. {entry.label}</span><span className="shrink-0 text-slate-500">{breakdown.valueKind === 'money' ? formatMoney(entry.value, preferences) : formatKpi({ id: '', label: '', value: entry.value, kind: breakdown.valueKind === 'percent' ? 'percent' : 'number' }, preferences)} · {breakdown.valueKind === 'percent' ? `n=${entry.rowCount.toLocaleString(preferences.locale)}` : `${(entry.share * 100).toFixed(1)}%`}</span></div>
                 <div className="h-1.5 overflow-hidden rounded-full bg-slate-100"><div className="h-full rounded-full bg-blue-600" style={{ width: `${Math.max(2, entry.share * 100)}%` }} /></div>
               </div>)}
             </div>

@@ -87,4 +87,27 @@ describe('single source BA overview', () => {
     expect(commercial.mode).toBe('commercial');
     expect(commercial.kpis.some(item => item.id === 'revenue')).toBe(true);
   });
+
+  it('keeps the deep BA on the selected dimension and measure inside a perspective', () => {
+    const rows = [
+      { job: 'student', poutcome: 'success', y: 'yes', duration: 120 },
+      { job: 'student', poutcome: 'failure', y: 'no', duration: 80 },
+      { job: 'admin', poutcome: 'failure', y: 'yes', duration: 60 },
+      { job: 'admin', poutcome: 'failure', y: 'no', duration: 50 },
+    ];
+    const overview = createSingleSourceBAOverview(rows, {
+      analysisAction: {
+        id: 'universal:customer:previous-outcome-distribution',
+        opportunityName: 'How are source records distributed by previous campaign outcome?',
+        dimensions: ['previous_campaign_outcome'],
+        measures: ['record_count'],
+      },
+      semanticFields: [{ canonicalId: 'previous_campaign_outcome', physicalColumn: 'poutcome', role: 'dimension' }],
+    })!;
+
+    expect(overview.mode).toBe('customer');
+    expect(overview.kpis.some(item => item.id === 'outcome_rate')).toBe(false);
+    expect(overview.breakdowns[0]).toMatchObject({ physicalColumn: 'poutcome', valueKind: 'number' });
+    expect(overview.breakdowns[0].top[0]).toMatchObject({ label: 'failure', value: 3 });
+  });
 });

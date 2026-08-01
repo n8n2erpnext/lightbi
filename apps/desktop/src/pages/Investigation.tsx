@@ -228,6 +228,7 @@ export const Investigation: React.FC = () => {
   const singleSourceBAOverview = businessFusionOverview ? null : createSingleSourceBAOverview(rows ?? [], {
     sourceRowCount: runtimeDatasetSource?.sourceRowCount,
     analysisAction,
+    semanticFields: aiBriefing?.semanticFields ?? [],
   });
   const canonicalSourceBoundary = canonicalHandoff?.sourceBoundary;
   const fullFileSourceReady = canonicalMultiSourceHandoff

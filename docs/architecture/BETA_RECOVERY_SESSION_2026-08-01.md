@@ -99,6 +99,16 @@ remain the technical workspace for review, cleaning, mapping, query and export.
 - Support user-selected periods and unified single/multi presentation.
 - Gate: six ERP anchors pass without being the only supported collection shape.
 
+### R3B - Perspective dashboard composer
+
+- Add `Create dashboard from this perspective` after Deep BA.
+- Compose KPI cards, primary/supporting charts, breakdowns, filters, warnings and
+  provenance from the same perspective evidence bundle used by BA.
+- Keep the generated dashboard editable, responsive and saveable without
+  introducing a second analysis truth path.
+- Gate: dashboard title, KPIs, charts and filters retain the selected perspective,
+  metric bindings and source provenance; no sample or filename-specific layout.
+
 ### R5 ??? Clean data and downstream export
 
 - Add a non-destructive cleaning plan, before/after preview, audit trail, clean
@@ -187,4 +197,28 @@ remain the technical workspace for review, cleaning, mapping, query and export.
   Logistics ERP and Amazon JSON. Amazon also proves a visible supporting chart.
 - Scope note: content depth still requires the universal BA quality matrix in
   R3. A panel opening is not considered sufficient BA acceptance.
+- Disk checkpoint: 30 GB available, 76% used.
+
+## Execution checkpoint 4 - universal BA depth and exact angle alignment
+
+- Expanded the single-source BA contract beyond commerce/logistics/inventory to
+  outcome, customer and performance analysis using semantic-field declarations
+  plus bounded structural profiling.
+- Added bilingual operational/export aliases as domain dictionary evidence,
+  never filename conditions. Semantic briefing mappings remain authoritative.
+- Added outcome-rate, interaction-duration and campaign-contact KPIs; generated
+  group comparisons include sample sizes to prevent misleading small-group ranks.
+- Fixed exact-angle alignment inside a perspective: a count/distribution question
+  uses the selected dimension and count measure, while an outcome-rate question
+  uses the governed outcome label. Deep BA no longer switches from `poutcome` to
+  `y` merely because both exist in the bank source.
+- Permanent BA matrix now covers Logistics ERP, Amazon JSON, bcctnhapTTKT,
+  bank-additional-full, DATA_XUAT and BHX_PHIEUXUAT. Every accepted brief must
+  include multiple KPIs/breakdowns where evidence permits, findings, three next
+  actions and explicit limitations.
+- Browser gate: bank customer journey reaches an executable chart and Deep BA;
+  the panel is checked against the selected question and visibly ranks the exact
+  `poutcome` dimension. TypeScript and production build pass.
+- Added R3B dashboard composition to the plan as requested. It must reuse this
+  same evidence bundle rather than create a parallel analytics path.
 - Disk checkpoint: 30 GB available, 76% used.

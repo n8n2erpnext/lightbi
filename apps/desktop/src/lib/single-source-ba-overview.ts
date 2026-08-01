@@ -16,7 +16,7 @@ export interface SingleSourceBreakdown {
   id: string;
   label: string;
   physicalColumn: string;
-  valueKind: 'money' | 'number';
+  valueKind: 'money' | 'number' | 'percent';
   top: SingleSourceRankedValue[];
   bottom: SingleSourceRankedValue[];
 }
@@ -28,7 +28,7 @@ export interface SingleSourceTrendPoint {
 }
 
 export interface SingleSourceBAOverview {
-  mode: 'commercial' | 'operations' | 'inventory' | 'general';
+  mode: 'commercial' | 'operations' | 'inventory' | 'customer' | 'performance' | 'finance' | 'general';
   analysisLabel: string;
   breakdownHeading: string;
   rowCount: number;
@@ -49,37 +49,81 @@ export interface SingleSourceBAOverview {
 type Row = Record<string, unknown>;
 
 const ALIASES: Record<string, string[]> = {
-  revenue: ['revenue', 'salesrevenue', 'netrevenue', 'invoicetotal', 'totalamount', 'totalrevenue', 'amount'],
+  revenue: ['revenue', 'salesrevenue', 'netrevenue', 'invoicetotal', 'totalamount', 'totalrevenue', 'amount', 'tongtien', 'tienphaithu', 'thanhtien', 'doanhthu'],
   quantity: ['quantity', 'qty', 'soldqty', 'quantitysold', 'salesquantity'],
-  order: ['orderid', 'orderno', 'ordernumber', 'invoiceid', 'invoiceno'],
-  date: ['orderdate', 'salesdate', 'transactiondate', 'invoicedate', 'date', 'reportdate'],
+  order: ['orderid', 'orderno', 'ordernumber', 'invoiceid', 'invoiceno', 'madon', 'maphieuxuat', 'maphieunhap'],
+  date: ['orderdate', 'salesdate', 'transactiondate', 'invoicedate', 'date', 'reportdate', 'ngayxuat', 'ngaynhap', 'ngaybaocao'],
   product: ['product', 'productname', 'item', 'itemname', 'sku'],
   brand: ['brand', 'productbrand', 'manufacturer'],
   category: ['category', 'productcategory', 'itemcategory', 'group'],
-  branch: ['store', 'branch', 'warehouse', 'location', 'shop'],
-  salesperson: ['salesperson', 'salesrep', 'seller', 'employee', 'staff'],
+  branch: ['store', 'branch', 'warehouse', 'location', 'shop', 'makho', 'makhoxuat', 'tenkho', 'tenkhoxuat', 'chinhanh'],
+  salesperson: ['salesperson', 'salesrep', 'seller', 'employee', 'staff', 'nhanvien', 'nhanvienxuat', 'manhanvienxuat'],
   payment: ['paymentmethod', 'payment', 'paymenttype', 'tender'],
   status: ['status', 'orderstatus', 'salesstatus'],
   discount: ['discount', 'discountamount', 'discountvalue'],
   unitPrice: ['unitprice', 'price', 'sellingprice'],
-  shipment: ['shipmentid', 'shipmentno', 'trackingid', 'trackingno', 'deliveryid', 'matakien'],
+  shipment: ['shipmentid', 'shipmentno', 'trackingid', 'trackingno', 'deliveryid', 'matakien', 'madon', 'matai'],
   deliveryDate: ['deliverydate', 'delivereddate', 'shipdate', 'reportdate', 'ngaybaocao'],
   warehouse: ['warehouse', 'warehousecode', 'distributioncenter', 'hub', 'depot', 'kho'],
   carrier: ['carrier', 'shippingcompany', 'logisticspartner', 'donvivanchuyen'],
-  route: ['route', 'routename', 'tuyenxe'],
+  route: ['route', 'routename', 'tuyenxe', 'hanhtrinh', 'chuyentuyen'],
   driver: ['driver', 'drivername', 'taixe'],
   vehicle: ['vehicle', 'vehicleid', 'truck', 'licenseplate', 'chuyenxe'],
-  deliveryStatus: ['deliverystatus', 'shipmentstatus', 'ontimestatus', 'status', 'xedendunghen'],
+  deliveryStatus: ['deliverystatus', 'shipmentstatus', 'ontimestatus', 'status', 'xedendunghen', 'result', 'resultp', 'danhgia', 'xuandungtheocldv'],
   deliveryFee: ['deliveryfee', 'shippingfee', 'freightcost', 'transportcost'],
   waitingTime: ['waitingtime', 'delayminutes', 'deliverytime', 'leadtime', 'transittime'],
   stock: ['stockqty', 'onhandqty', 'inventoryqty', 'closingstock', 'tonkho'],
+  outcome: ['outcome', 'target', 'converted', 'conversion', 'subscribed', 'success', 'response', 'result', 'resultp', 'y', 'danhgia'],
+  duration: ['duration', 'callduration', 'waitingtime', 'leadtime', 'transittime', 'thoigian'],
+  campaignCount: ['campaign', 'contacts', 'contactcount', 'attempts', 'previous'],
+  channel: ['channel', 'contact', 'contactchannel', 'paymentmethod', 'dichvu', 'loaihang'],
+  segment: ['segment', 'customersegment', 'job', 'education', 'marital', 'nhom'],
+  customer: ['customerid', 'clientid', 'accountid', 'customer', 'khachhang'],
 };
 
 function normalize(value: string): string {
   return value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/đ/g, 'd').replace(/[^a-z0-9]/g, '');
 }
 
-function bindColumns(rows: Row[]): Record<string, string> {
+type SemanticFieldBinding = { canonicalId?: string; physicalColumn?: string; role?: string };
+
+function semanticKey(canonicalId: string): string | null {
+  const value = normalize(canonicalId);
+  for (const [semantic, aliases] of Object.entries(ALIASES)) {
+    if (aliases.some(alias => value === alias || value.includes(alias))) return semantic;
+  }
+  if (/outcome|conversion|converted|target|success|subscription/.test(value)) return 'outcome';
+  if (/customer|client|account/.test(value)) return 'customer';
+  if (/duration|waiting|leadtime|transit/.test(value)) return 'duration';
+  if (/channel|contactmethod/.test(value)) return 'channel';
+  if (/segment|demographic/.test(value)) return 'segment';
+  return null;
+}
+
+function actionPhysicalColumns(
+  requested: readonly string[] | undefined,
+  rows: Row[],
+  semanticFields: SemanticFieldBinding[],
+): string[] {
+  if (!requested?.length) return [];
+  const columns = [...new Set(rows.slice(0, 1000).flatMap(row => Object.keys(row)))];
+  const normalizedColumns = new Map(columns.map(column => [normalize(column), column]));
+  const resolved: string[] = [];
+  for (const requestedField of requested) {
+    const key = normalize(requestedField);
+    const semanticMatch = semanticFields.find(field => {
+      const canonical = normalize(field.canonicalId ?? '');
+      return Boolean(field.physicalColumn && canonical && (canonical === key || canonical.includes(key) || key.includes(canonical)));
+    });
+    const physical = semanticMatch?.physicalColumn
+      ?? normalizedColumns.get(key)
+      ?? columns.find(column => normalize(column).includes(key) || key.includes(normalize(column)));
+    if (physical && !resolved.includes(physical)) resolved.push(physical);
+  }
+  return resolved;
+}
+
+function bindColumns(rows: Row[], semanticFields: SemanticFieldBinding[] = []): Record<string, string> {
   // JSON and dirty operational exports are often sparse. Looking only at the
   // first record caused valid business fields later in the source to vanish.
   const columns = [...new Set(rows.slice(0, 2000).flatMap(row => Object.keys(row)))];
@@ -88,6 +132,11 @@ function bindColumns(rows: Row[]): Record<string, string> {
   for (const [semantic, aliases] of Object.entries(ALIASES)) {
     const exact = aliases.map(alias => normalized.get(alias)).find(Boolean);
     if (exact) bindings[semantic] = exact;
+  }
+  for (const field of semanticFields) {
+    if (!field.canonicalId || !field.physicalColumn || !columns.includes(field.physicalColumn)) continue;
+    const semantic = semanticKey(field.canonicalId);
+    if (semantic && !bindings[semantic]) bindings[semantic] = field.physicalColumn;
   }
   return bindings;
 }
@@ -162,6 +211,50 @@ function buildCountBreakdown(rows: Row[], dimensionColumn: string, identityColum
   return { id, label, physicalColumn: dimensionColumn, valueKind: 'number', top: ranked.slice(0, 5), bottom: [...ranked].reverse().slice(0, 3) };
 }
 
+function positiveOutcome(value: unknown): boolean {
+  const normalized = normalize(String(value ?? ''));
+  return /^(1|y|yes|true|success|successful|converted|subscribed|dung|dunghen|dat|hoanthanh|dagiao)$/.test(normalized);
+}
+
+function buildRateBreakdown(rows: Row[], dimensionColumn: string, outcomeColumn: string, id: string, label: string): SingleSourceBreakdown | null {
+  const groups = new Map<string, { positives: number; total: number }>();
+  for (const row of rows) {
+    const dimension = textValue(row[dimensionColumn]);
+    const outcome = textValue(row[outcomeColumn]);
+    if (!dimension || !outcome) continue;
+    const current = groups.get(dimension) ?? { positives: 0, total: 0 };
+    current.total += 1;
+    if (positiveOutcome(outcome)) current.positives += 1;
+    groups.set(dimension, current);
+  }
+  if (groups.size < 2) return null;
+  const ranked = [...groups.entries()]
+    .filter(([, entry]) => entry.total >= 3)
+    .map(([groupLabel, entry]) => ({ label: groupLabel, value: entry.positives / entry.total, share: entry.positives / entry.total, rowCount: entry.total }))
+    .sort((a, b) => b.value - a.value || b.rowCount - a.rowCount);
+  if (ranked.length < 2) return null;
+  return { id, label, physicalColumn: dimensionColumn, valueKind: 'percent', top: ranked.slice(0, 5), bottom: [...ranked].reverse().slice(0, 3) };
+}
+
+function usefulCategoricalColumns(rows: Row[], excluded: Set<string>): string[] {
+  const columns = [...new Set(rows.slice(0, 1000).flatMap(row => Object.keys(row)))];
+  return columns.filter(column => {
+    if (excluded.has(column)) return false;
+    const values = rows.slice(0, 1000).map(row => textValue(row[column])).filter((value): value is string => Boolean(value));
+    if (values.length < Math.min(20, rows.length * 0.2)) return false;
+    const distinct = new Set(values).size;
+    if (distinct < 2 || distinct > Math.min(60, Math.max(12, Math.floor(values.length * 0.35)))) return false;
+    const numericShare = values.filter(value => numberValue(value) !== null).length / values.length;
+    return numericShare < 0.8;
+  }).slice(0, 8);
+}
+
+function average(rows: Row[], column?: string): number | null {
+  if (!column) return null;
+  const values = rows.map(row => numberValue(row[column])).filter((value): value is number => value !== null);
+  return values.length ? values.reduce((total, value) => total + value, 0) / values.length : null;
+}
+
 function buildTrend(rows: Row[], dateColumn: string, measureColumn: string): SingleSourceTrendPoint[] {
   const groups = new Map<string, { value: number; rowCount: number }>();
   for (const row of rows) {
@@ -180,13 +273,14 @@ function buildTrend(rows: Row[], dateColumn: string, measureColumn: string): Sin
 
 export interface SingleSourceBAOverviewOptions {
   sourceRowCount?: number;
+  semanticFields?: SemanticFieldBinding[];
   analysisAction?: {
     id?: string;
     opportunityName?: string;
     label?: string;
     description?: string;
-    dimensions?: string[];
-    measures?: string[];
+    dimensions?: readonly string[];
+    measures?: readonly string[];
   };
 }
 
@@ -208,9 +302,13 @@ function requestedMode(
   ].filter(Boolean).join(' '));
   if (/inventory|stock|onhand|tonkho/.test(primarySignal)) return 'inventory';
   if (/operation|logistic|delivery|shipment|carrier|waiting|delay|ontime|fulfillment|vanchuyen|giaohang/.test(primarySignal)) return 'operations';
+  if (/customer|client|segment|retention|churn|conversion|subscriber|khachhang/.test(primarySignal)) return 'customer';
+  if (/performance|productivity|target|outcome|success|efficiency|hieusuat|ketqua/.test(primarySignal)) return 'performance';
   if (/revenue|sales|commercial|profit|margin|finance|account|invoice|payment|discount|doanhthu|loinhuan/.test(primarySignal)) return 'commercial';
   if (/inventory|stock|warehouse|onhand|sku|item|tonkho|kho/.test(signal)) return 'inventory';
   if (/operation|logistic|delivery|shipment|carrier|route|driver|vehicle|waiting|delay|ontime|fulfillment|vanchuyen|giaohang/.test(signal)) return 'operations';
+  if (/customer|client|segment|retention|churn|conversion|subscriber|khachhang/.test(signal)) return 'customer';
+  if (/performance|productivity|target|outcome|success|efficiency|hieusuat|ketqua/.test(signal)) return 'performance';
   if (bindings.revenue) return 'commercial';
   return null;
 }
@@ -219,11 +317,12 @@ export function createSingleSourceBAOverview(rows: Row[], options: SingleSourceB
   if (rows.length === 0) return null;
   const sourceRowCount = Math.max(rows.length, options.sourceRowCount ?? rows.length);
   const isRepresentativeSample = sourceRowCount > rows.length;
-  const bindings = bindColumns(rows);
+  const bindings = bindColumns(rows, options.semanticFields);
   const revenue = bindings.revenue;
   const operationalIdentity = bindings.shipment ?? bindings.order;
   const detectedOperations = Boolean(bindings.shipment || bindings.deliveryStatus || bindings.carrier || bindings.route || bindings.driver || bindings.vehicle);
   const detectedInventory = Boolean(bindings.stock || bindings.warehouse);
+  const detectedOutcome = Boolean(bindings.outcome || bindings.deliveryStatus);
   const preferredMode = requestedMode(options.analysisAction, bindings);
   const mode = preferredMode === 'inventory' && detectedInventory
     ? 'inventory'
@@ -231,16 +330,75 @@ export function createSingleSourceBAOverview(rows: Row[], options: SingleSourceB
       ? 'operations'
       : preferredMode === 'commercial' && revenue
         ? 'commercial'
+        : (preferredMode === 'customer' || preferredMode === 'performance' || preferredMode === 'finance') && detectedOutcome
+          ? preferredMode
         : revenue
           ? 'commercial'
           : detectedOperations
             ? 'operations'
             : detectedInventory
               ? 'inventory'
-              : null;
+              : detectedOutcome
+                ? preferredMode ?? 'performance'
+                : null;
   const isOperations = mode === 'operations';
   const isInventory = mode === 'inventory';
-  if (!revenue && !isOperations && !isInventory) return null;
+  const isOutcomeMode = mode === 'customer' || mode === 'performance' || mode === 'finance' || mode === 'general';
+  if (!revenue && !isOperations && !isInventory && !isOutcomeMode) return null;
+
+  if (isOutcomeMode) {
+    const outcomeColumn = bindings.outcome ?? bindings.deliveryStatus;
+    if (!outcomeColumn) return null;
+    const observedOutcomes = rows.map(row => textValue(row[outcomeColumn])).filter((value): value is string => Boolean(value));
+    const positiveCount = observedOutcomes.filter(positiveOutcome).length;
+    const actionSignal = normalize([
+      options.analysisAction?.opportunityName,
+      options.analysisAction?.description,
+      ...(options.analysisAction?.measures ?? []),
+    ].filter(Boolean).join(' '));
+    const isDistributionAngle = /recordcount|rowcount|countrecords|distribution|distributed|breakdown|composition/.test(actionSignal);
+    const requestedDimensions = actionPhysicalColumns(options.analysisAction?.dimensions, rows, options.semanticFields ?? []);
+    const kpis: SingleSourceKpi[] = [{ id: 'records', label: 'Số bản ghi', value: rows.length, kind: 'number' }];
+    if (!isDistributionAngle) kpis.push({ id: 'outcome_rate', label: 'Tỷ lệ kết quả tích cực', value: observedOutcomes.length ? positiveCount / observedOutcomes.length : 0, kind: 'percent' });
+    const durationAverage = average(rows, bindings.duration);
+    const campaignAverage = average(rows, bindings.campaignCount);
+    if (durationAverage !== null) kpis.push({ id: 'average_duration', label: 'Thời lượng bình quân', value: durationAverage, kind: 'number' });
+    if (campaignAverage !== null) kpis.push({ id: 'average_contacts', label: 'Số lần tương tác bình quân', value: campaignAverage, kind: 'number' });
+    const preferredDimensions = [...requestedDimensions, ...[bindings.segment, bindings.channel, bindings.branch, bindings.category, bindings.status].filter((column): column is string => Boolean(column))];
+    const dynamicDimensions = usefulCategoricalColumns(rows, new Set([outcomeColumn, ...preferredDimensions]));
+    const dimensions = [...new Set([...preferredDimensions, ...dynamicDimensions])].slice(0, 6);
+    const breakdowns = dimensions.flatMap((column, index) => {
+      const breakdown = isDistributionAngle
+        ? buildCountBreakdown(rows, column, bindings.customer, `distribution_${index}`, column)
+        : buildRateBreakdown(rows, column, outcomeColumn, `outcome_${index}`, column);
+      return breakdown ? [breakdown] : [];
+    });
+    const findings: string[] = [];
+    if (!isDistributionAngle && observedOutcomes.length) findings.push(`${positiveCount.toLocaleString()} trong ${observedOutcomes.length.toLocaleString()} bản ghi có kết quả tích cực (${((positiveCount / observedOutcomes.length) * 100).toFixed(1)}%).`);
+    if (breakdowns[0]?.top[0]) findings.push(isDistributionAngle
+      ? `${breakdowns[0].top[0].label} là nhóm lớn nhất trong chiều ${breakdowns[0].label} (${(breakdowns[0].top[0].share * 100).toFixed(1)}%, n=${breakdowns[0].top[0].rowCount}).`
+      : `${breakdowns[0].top[0].label} có tỷ lệ kết quả tích cực cao nhất trong chiều ${breakdowns[0].label} (${(breakdowns[0].top[0].value * 100).toFixed(1)}%, n=${breakdowns[0].top[0].rowCount}).`);
+    if (breakdowns[0]?.bottom[0]) findings.push(isDistributionAngle
+      ? `${breakdowns[0].bottom[0].label} là nhóm nhỏ nhất trong chiều ${breakdowns[0].label} (${(breakdowns[0].bottom[0].share * 100).toFixed(1)}%, n=${breakdowns[0].bottom[0].rowCount}).`
+      : `${breakdowns[0].bottom[0].label} là nhóm cần xem trước trong chiều ${breakdowns[0].label} (${(breakdowns[0].bottom[0].value * 100).toFixed(1)}%, n=${breakdowns[0].bottom[0].rowCount}).`);
+    return {
+      mode,
+      analysisLabel: mode === 'customer' ? 'Phân tích khách hàng & kết quả' : mode === 'finance' ? 'Phân tích tài chính & kết quả' : 'Phân tích hiệu suất & kết quả',
+      breakdownHeading: 'Kết quả khác nhau theo nhóm nào?',
+      rowCount: rows.length, sourceRowCount, isRepresentativeSample, bindings, kpis, trend: [], trendChange: null, breakdowns,
+      concentration: null, outlierCount: 0, findings,
+      recommendedActions: [
+        'So sánh nhóm có tỷ lệ kết quả cao và thấp, đồng thời kiểm tra cỡ mẫu trước khi hành động.',
+        'Kiểm tra kênh, phân khúc và mức tương tác có liên hệ với kết quả; không diễn giải thành quan hệ nhân quả.',
+        'Mở các bản ghi của nhóm yếu nhất để xác nhận chất lượng dữ liệu và tìm nguyên nhân vận hành.',
+      ],
+      limitations: [
+        'Tỷ lệ được tính từ nhãn kết quả có trong nguồn; cần xác nhận ý nghĩa nghiệp vụ của giá trị tích cực.',
+        'Dữ liệu mô tả mối liên hệ theo nhóm, không tự chứng minh tác động nhân quả.',
+        ...(!bindings.date ? ['Không có mốc thời gian đủ rõ để so sánh xu hướng theo kỳ.'] : []),
+      ],
+    };
+  }
 
   if (mode !== 'commercial') {
     const identityCount = operationalIdentity ? new Set(rows.map(row => textValue(row[operationalIdentity])).filter(Boolean)).size : rows.length;
@@ -252,7 +410,7 @@ export function createSingleSourceBAOverview(rows: Row[], options: SingleSourceB
     if (stockTotal !== null) kpis.push({ id: 'stock', label: 'Tổng lượng tồn', value: stockTotal, kind: 'number' });
     if (waitingValues.length) kpis.push({ id: 'average_waiting_time', label: 'Thời gian chờ bình quân', value: waitingValues.reduce((total, value) => total + value, 0) / waitingValues.length, kind: 'number' });
     const statusValues = bindings.deliveryStatus ? rows.map(row => textValue(row[bindings.deliveryStatus])).filter((value): value is string => Boolean(value)) : [];
-    const onTimeCount = statusValues.filter(value => /ontime|dunghen|completed|delivered|success|dagiao|giaothanhcong/i.test(normalize(value))).length;
+    const onTimeCount = statusValues.filter(value => positiveOutcome(value) || /ontime|dunghen|completed|delivered|success|dagiao|giaothanhcong/i.test(normalize(value))).length;
     if (statusValues.length) kpis.push({ id: 'on_time_rate', label: 'Tỷ lệ hoàn tất/đúng hẹn', value: onTimeCount / statusValues.length, kind: 'percent' });
     const dimensions: Array<[string, string]> = isInventory
       ? [['warehouse', 'Kho'], ['product', 'Sản phẩm'], ['category', 'Nhóm hàng'], ['status', 'Trạng thái']]
