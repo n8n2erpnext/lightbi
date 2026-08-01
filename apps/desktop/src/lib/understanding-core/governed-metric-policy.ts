@@ -5,7 +5,7 @@ const base = {
   schemaVersion: "lightbi.governed-domain-metric-contract.v1",
   domainPackId: "commerce_distribution_mvp",
   version: "1.0.0",
-  groupingDimensions: ["product", "sku", "customer", "warehouse", "report_date", "time_period", "route", "driver", "vehicle", "on_time_status", "manager", "employee_id", "performance_rank", "current_location", "service_group", "load_status", "stock_age", "team", "person", "coach", "role", "segment", "previous_outcome", "contact", "campaign"],
+  groupingDimensions: ["product", "sku", "category", "customer", "salesperson", "payment_method", "warehouse", "report_date", "time_period", "route", "driver", "vehicle", "on_time_status", "manager", "employee_id", "performance_rank", "current_location", "service_group", "load_status", "stock_age", "team", "person", "coach", "role", "segment", "previous_outcome", "contact", "campaign"],
   requiredRelationships: [],
   prohibitedEvidenceStates: ["ambiguous", "unknown", "technical", "unsupported_input"],
   provenance: ["contract", "synthetic", "golden_tuning"],

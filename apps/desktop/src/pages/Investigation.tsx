@@ -36,6 +36,7 @@ import { validateCanonicalMultiSourceInvestigationHandoff, type CanonicalMultiSo
 import { executeCanonicalMultiSourceMetric } from '../lib/understanding-core/governed-multisource-duckdb-boundary';
 import { formatValue } from '../lib/display-formatter';
 import { useUiLanguage } from '../lib/ui-language';
+import { createSingleSourceBAOverview } from '../lib/single-source-ba-overview';
 const INVESTIGATION_SESSION_ROW_LIMIT = 250;
 
 function limitInvestigationRows(rows: Record<string, unknown>[] | undefined): Record<string, unknown>[] {
@@ -157,6 +158,7 @@ export const Investigation: React.FC = () => {
   }
 
   const { analysisAction, runtimeIntent, runtimePlanPreview, rows, aiBriefing, runtimeDatasetSource, rowScope, businessFusionOverview, canonicalHandoff } = session;
+  const singleSourceBAOverview = businessFusionOverview ? null : createSingleSourceBAOverview(rows ?? []);
   const canonicalSourceBoundary = canonicalHandoff?.sourceBoundary;
   const fullFileSourceReady = canonicalMultiSourceHandoff
     ? canonicalMultiSourceHandoff.multiSource.requiredSourceIds.every((sourceId) => canonicalMultiSourceHandoff.multiSource.sourceMemberships.some((member) => member.sourceId === sourceId && member.runtimeSource.files.length > 0))
@@ -800,6 +802,7 @@ export const Investigation: React.FC = () => {
         action={analysisAction}
         brief={baDecisionBrief}
         businessFusionOverview={businessFusionOverview}
+        singleSourceBAOverview={singleSourceBAOverview}
         chartModel={chartModel}
         onClose={() => setShowDeepAnalysis(false)}
         preferences={preferences}

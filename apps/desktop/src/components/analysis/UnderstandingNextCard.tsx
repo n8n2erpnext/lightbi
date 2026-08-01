@@ -93,6 +93,9 @@ export const UnderstandingNextCard: React.FC<UnderstandingNextCardProps> = ({
   const recommendedPerspectiveId = canonicalPerspectives.find(
     perspective => perspective.state === 'governed_action_available'
   )?.perspectiveId ?? null;
+  const actionablePerspectives = canonicalPerspectives.filter(
+    perspective => perspective.state === 'governed_action_available'
+  );
   const grainLabel = GRAIN_LABELS[understanding.profile.grain] ?? humanize(understanding.profile.grain);
 
 
@@ -223,7 +226,7 @@ export const UnderstandingNextCard: React.FC<UnderstandingNextCardProps> = ({
           <CanonicalUnderstandingSummary presentation={canonicalPresentation} />
           <div className="border-t border-gray-100 pt-4">
             <CanonicalPerspectiveSelector
-              items={canonicalPerspectives.map((perspective) => ({
+              items={actionablePerspectives.map((perspective) => ({
                 id: perspective.perspectiveId,
                 label: perspective.label,
                 question: perspective.purpose,
@@ -238,6 +241,20 @@ export const UnderstandingNextCard: React.FC<UnderstandingNextCardProps> = ({
               selectedId={selectedPerspectiveId}
               onSelect={(id) => onSelectPerspective?.(id)}
             />
+            {canonicalPerspectives.some(perspective => perspective.state !== 'governed_action_available') && (
+              <details className="mt-3 rounded-xl border border-slate-200 bg-slate-50/60">
+                <summary className="cursor-pointer px-4 py-3 text-[12px] font-semibold text-slate-600">
+                  {t('Other signals LightBI found', 'CÃ¡c tÃ­n hiá»‡u khÃ¡c LightBI Ä‘Ã£ tÃ¬m tháº¥y')}
+                </summary>
+                <div className="flex flex-wrap gap-2 border-t border-slate-200 px-4 py-3">
+                  {canonicalPerspectives.filter(perspective => perspective.state !== 'governed_action_available').map(perspective => (
+                    <span key={perspective.perspectiveId} data-testid={`business-perspective-${perspective.perspectiveId}`} className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[11px] text-slate-600">
+                      {perspective.label} Â· {t('not enough evidence to analyze safely', 'chÆ°a Ä‘á»§ báº±ng chá»©ng Ä‘á»ƒ phÃ¢n tÃ­ch an toÃ n')}
+                    </span>
+                  ))}
+                </div>
+              </details>
+            )}
           </div>
           <CanonicalAnalysisStates
             presentation={canonicalPresentation}
@@ -507,6 +524,9 @@ const CanonicalAnalysisStates: React.FC<{
     .filter(item => item.state === 'ready' && item.executionReadiness !== 'not_executable' && item.actionCandidateId && actionById.has(item.actionCandidateId))
     .sort((left, right) => Number(right.advertisedAsDefault) - Number(left.advertisedAsDefault) || (left.rank ?? 99) - (right.rank ?? 99))[0] ?? null;
   const primaryAction = primaryAnalysis?.actionCandidateId ? actionById.get(primaryAnalysis.actionCandidateId) : undefined;
+  const readyExecutableAnalyses = perspectiveAnalyses
+    .filter(item => item.state === 'ready' && item.executionReadiness !== 'not_executable' && item.actionCandidateId && actionById.has(item.actionCandidateId))
+    .sort((left, right) => Number(right.advertisedAsDefault) - Number(left.advertisedAsDefault) || (left.rank ?? 99) - (right.rank ?? 99));
   const renderItem = (item: CanonicalAnalysisPresentationV1) => {
     const action = item.actionCandidateId ? actionById.get(item.actionCandidateId) : undefined;
     const canInvestigate = item.state === 'ready' && item.executionReadiness !== 'not_executable' && action;
@@ -576,6 +596,34 @@ const CanonicalAnalysisStates: React.FC<{
         </button>
       </div>
     </div>}
+
+    {selectedPerspectiveId && readyExecutableAnalyses.length > 1 && <section className="mt-4" aria-labelledby="canonical-ready-angles-heading">
+      <div className="mb-2 flex items-end justify-between gap-3">
+        <div>
+          <h5 id="canonical-ready-angles-heading" className="text-[13px] font-semibold text-slate-900">{t('Other questions this data can answer', 'CÃ¡c cÃ¢u há»i khÃ¡c dá»¯ liá»‡u nÃ y cÃ³ thá»ƒ tráº£ lá»i')}</h5>
+          <p className="mt-0.5 text-[11px] text-slate-500">{t('Every option below passed the same governed checks.', 'Má»—i lá»±a chá»n bÃªn dÆ°á»›i Ä‘á»u Ä‘Ã£ vÆ°á»£t qua cÃ¹ng má»™t bá»™ kiá»ƒm tra quáº£n trá»‹.')}</p>
+        </div>
+        <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[10px] font-semibold text-emerald-700">{readyExecutableAnalyses.length} {t('ready angles', 'gÃ³c nhÃ¬n sáºµn sÃ ng')}</span>
+      </div>
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
+        {readyExecutableAnalyses.slice(1).map(item => {
+          const action = actionById.get(item.actionCandidateId!);
+          return <button
+            key={item.itemId}
+            type="button"
+            onClick={() => action && onSelectAction?.(adaptNextActionsToLegacy([action])[0])}
+            className="min-h-[118px] rounded-xl border border-slate-200 bg-white p-4 text-left shadow-sm transition hover:border-blue-300 hover:bg-blue-50/40"
+          >
+            <div className="flex items-start justify-between gap-2">
+              <span className="text-[13px] font-semibold leading-5 text-slate-900">{item.title}</span>
+              <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-blue-600" />
+            </div>
+            <p className="mt-2 line-clamp-2 text-[11px] leading-4 text-slate-500">{item.description}</p>
+            <span className="mt-3 inline-flex text-[11px] font-semibold text-blue-700">{t('Analyze', 'PhÃ¢n tÃ­ch')} â†’</span>
+          </button>;
+        })}
+      </div>
+    </section>}
 
     {selectedPerspectiveId && perspectiveAnalyses.length === 0 && <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-[12px] text-amber-800" data-testid="canonical-perspective-recognized-only">
       LightBI recognizes this perspective from canonical business signals, but no governed question or metric contract is available for it yet. No chart will be fabricated.

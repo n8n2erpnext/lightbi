@@ -13,6 +13,7 @@ function source(options: SourceOptions = {}): CanonicalMetricSourceV1 {
   const semantics = options.semantics ?? [
     { id: "report_date" }, { id: "product" }, { id: "warehouse" }, { id: "delivery_status" },
     { id: "order" }, { id: "revenue" }, { id: "sold_qty" },
+    { id: "category" }, { id: "salesperson" }, { id: "payment_method" },
     { id: "shipment" }, { id: "stock_qty" }, { id: "total_cost" },
     { id: "currency" }, { id: "uom" },
   ];
@@ -154,8 +155,9 @@ describe("Phase 5M2 governed commerce question and action generation", () => {
     const metrics = [metric("gross_profit", "conditionally_ready"), metric("delivery_count"), metric("transaction_count"), metric("quantity_sold"), metric("sales_revenue")];
     const first = generated(metrics);
     const reorderedSource = source({ semantics: [
-      { id: "uom", index: 11 }, { id: "currency", index: 10 }, { id: "total_cost", index: 9 },
-      { id: "stock_qty", index: 8 }, { id: "shipment", index: 7 }, { id: "sold_qty", index: 6 },
+      { id: "uom", index: 14 }, { id: "currency", index: 13 }, { id: "total_cost", index: 12 },
+      { id: "stock_qty", index: 11 }, { id: "shipment", index: 10 }, { id: "payment_method", index: 9 },
+      { id: "salesperson", index: 8 }, { id: "category", index: 7 }, { id: "sold_qty", index: 6 },
       { id: "revenue", index: 5 }, { id: "order", index: 4 }, { id: "delivery_status", index: 3 },
       { id: "warehouse", index: 2 }, { id: "product", index: 1 }, { id: "report_date", index: 0 },
     ] });
