@@ -56,6 +56,44 @@ function confidenceFor(ruleMatched: boolean, healthNonEmpty: boolean): number {
   return 0.3;
 }
 
+const EXPLICIT_IDENTIFIER_HEADER = /(^|\s)(id|code|key|no|number|uuid|guid|ma)(\s|$)|identifier|reference|tracking/i;
+const EXPLICIT_ADDITIVE_HEADER = /amount|total|value|revenue|sales|cost|expense|fee|price|profit|margin|balance|discount|tax|cod|quantity|qty|weight|volume|distance|duration|(?:^|\s)(?:tiền|doanh thu|chi phí|giá|cước|phí|trọng lượng)(?:\s|$)/i;
+
+/**
+ * A broad dictionary can legitimately match more than one semantic role. Keep
+ * all candidates as evidence, but never let an identifier-looking physical
+ * column become a default additive measure merely because another broad alias
+ * also matched it (for example `Mã Phiếu Gửi` matching both shipment identity
+ * and a money-like rule).
+ */
+function resolveIdentifierMeasureConflicts(signals: UniversalSignal[]): UniversalSignal[] {
+  const identifierColumns = new Set(
+    signals
+      .filter(signal => signal.role === "identifier")
+      .filter(signal => {
+        const normalized = normalizeHeader(signal.physicalColumn);
+        const distinctRatio = signal.health.nonEmptyCount > 0
+          ? signal.health.distinctCount / signal.health.nonEmptyCount
+          : 0;
+        return !EXPLICIT_ADDITIVE_HEADER.test(normalized)
+          && (EXPLICIT_IDENTIFIER_HEADER.test(normalized) || distinctRatio >= 0.8);
+      })
+      .map(signal => signal.physicalColumn)
+  );
+
+  return signals.map(signal => {
+    if (signal.role !== "measure" || !identifierColumns.has(signal.physicalColumn)) return signal;
+    return {
+      ...signal,
+      usableForDefaultQuestion: false,
+      evidence: [
+        ...signal.evidence,
+        `Excluded from additive analysis because ${signal.physicalColumn} is an identifier candidate.`
+      ]
+    };
+  });
+}
+
 export function detectUniversalSignals(input: UnderstandingCoreInput): UniversalSignal[] {
   const columns = input.columns.map(column => String(column ?? "").trim()).filter(Boolean);
   const rowCount = input.sourceRowCount ?? input.rows.length;
@@ -129,7 +167,7 @@ export function detectUniversalSignals(input: UnderstandingCoreInput): Universal
     }
   }
 
-  return dedupeSignals(signals);
+  return resolveIdentifierMeasureConflicts(dedupeSignals(signals));
 }
 
 function dedupeSignals(signals: UniversalSignal[]): UniversalSignal[] {

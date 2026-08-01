@@ -42,4 +42,20 @@ describe('perspective analysis bundle', () => {
     expect(first.supportingActions.map(item => item.id)).toEqual(['universal:a2', 'universal:a3']);
     expect(second.supportingActions.map(item => item.id)).toEqual(first.supportingActions.map(item => item.id));
   });
+
+  it('includes registry and plugin actions without requiring a legacy universal prefix', () => {
+    const questions = [
+      question('shipment_backlog_by_location', 'operations', 'group_by', ['current_location'], ['record_count']),
+      question('shipment_backlog_by_status', 'operations', 'group_by', ['status'], ['record_count']),
+      question('shipment_value_exposure', 'operations', 'group_by', ['service'], ['cod']),
+    ];
+    const actions = [
+      action('shipment_backlog_by_location', questions[0].id, 'group_by', ['current_location'], ['record_count']),
+      action('shipment_backlog_by_status', questions[1].id, 'group_by', ['status'], ['record_count']),
+      action('plugin:postal:value-exposure', questions[2].id, 'group_by', ['service'], ['cod']),
+    ];
+
+    const bundle = createPerspectiveAnalysisBundle(understanding(actions, questions), actions[0].id, 'operations');
+    expect(bundle.supportingActions.map(item => item.id)).toEqual(['plugin:postal:value-exposure', 'shipment_backlog_by_status']);
+  });
 });

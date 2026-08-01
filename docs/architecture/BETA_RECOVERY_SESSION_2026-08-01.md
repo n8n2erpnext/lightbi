@@ -244,3 +244,55 @@ remain the technical workspace for review, cleaning, mapping, query and export.
   Dashboard. The resulting dashboard contains eight real cards in visual QA.
 - Gate status: desktop TypeScript passes; Playwright dashboard journey passes.
 - Disk checkpoint remains 30 GB available, 76% used.
+
+## Acceptance finding - HUB Long An projected backlog workbook
+
+- Added `TỒN DỰ KIẾN HUBLAN.xlsx` as a domain-neutral acceptance case, not a
+  filename-specific fixture. The workbook contains 3,612 postal/logistics
+  records with shipment identity, report/order dates, service, status, current
+  office/branch, route geography, COD, freight, weight and handling timestamps.
+- The understanding layer correctly recognized logistics/event evidence and
+  several operational signals, but the action bridge selected `Money over time`
+  for the Operations perspective and treated `Mã Phiếu Gửi` as an additive
+  measure. Deep BA therefore summed shipment identifiers and reported invalid
+  movements and outliers.
+- This exposes a cross-cutting semantic-role conflict: a physical column may be
+  classified as both document identity and measure, while the execution planner
+  currently defaults non-virtual measures to `SUM`.
+- Beta blockers added to the plan: resolve conflicting signal roles; enforce
+  the invariant that identifiers/codes are never additive; rank actions by the
+  selected perspective; and require Operations/Logistics BA to cover backlog,
+  aging, status, location, service/route, COD/freight exposure and evidence
+  limitations when those fields exist.
+- The regression gate must prove that shipment identity is counted distinctly,
+  never summed, and that the Deep BA question, chart and findings stay aligned
+  with the user's selected operational angle.
+
+## Execution checkpoint 6 - semantic-role invariants and logistics acceptance
+
+- Resolved identifier/measure conflicts in the understanding core. Numeric
+  document, shipment and transaction identifiers remain evidence candidates but
+  are never eligible as additive default measures. Explicit monetary headers
+  such as invoice total, COD and freight remain valid measures.
+- Removed value-label aliases from header matching. Value labels are now used
+  only as contextual evidence, preventing receiving geography such as
+  `Huyện Nhận` from being misclassified as delivery status.
+- Corrected domain routing and contextual question ranking. Operations now
+  prioritizes shipment backlog/status/location questions; inventory keeps aging
+  and stock questions above generic operational actions.
+- Added registry-driven shipment questions for backlog by status, backlog by
+  current location, and monetary exposure. No filename or sample-specific
+  condition was added.
+- Deep BA now binds specific canonical concepts before broad aliases, follows
+  the selected physical dimension, reports shipment count/COD/freight and
+  complementary operational breakdowns, and refuses to infer completion or
+  on-time rates from opaque status codes such as `200` and `565`.
+- Removed the legacy `universal:` prefix gate from perspective analysis bundles
+  and supporting chart execution. Registry and plugin actions are first-class,
+  so a selected perspective can render multiple related charts.
+- HUBLAN Chromium acceptance now produces `Shipment backlog by current
+  location`, two supporting charts, a full-source 3,612-row BA brief, location
+  and service rankings, COD/freight KPIs, and no identifier sums or invented
+  completion rate.
+- Gates: 93 understanding tests, 7 BA tests, 2 bundle tests and the full HUBLAN
+  Playwright journey pass. Disk remains 30 GB available, 76% used.

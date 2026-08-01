@@ -70,6 +70,8 @@ function domainForQuestion(question: QuestionCandidate): DomainId {
   if (/customer|patient|segment/.test(lens)) return "customer";
   if (/finance|profit|margin|cost|receivable|payable|balance/.test(lens)) return "finance";
   if (/revenue|sales|commercial|payment/.test(lens)) return "revenue";
+  if (/delivery|logistics|operation|control|status|document/.test(lens)) return "operations";
+  if (question.requiredFamilies.includes("money")) return "revenue";
   if (/performance|indicator|campaign|engagement|team|role/.test(lens)) return "performance";
   return "operations";
 }

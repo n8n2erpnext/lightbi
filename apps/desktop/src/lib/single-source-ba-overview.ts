@@ -72,6 +72,13 @@ const ALIASES: Record<string, string[]> = {
   deliveryStatus: ['deliverystatus', 'shipmentstatus', 'ontimestatus', 'status', 'xedendunghen', 'result', 'resultp', 'danhgia', 'xuandungtheocldv'],
   deliveryFee: ['deliveryfee', 'shippingfee', 'freightcost', 'transportcost'],
   waitingTime: ['waitingtime', 'delayminutes', 'deliverytime', 'leadtime', 'transittime'],
+  currentLocation: ['currentlocation', 'currentbranch', 'currenthub', 'currentwarehouse', 'currentoffice', 'buucuchientai', 'chinhanhhientai', 'khohientai'],
+  service: ['service', 'servicegroup', 'servicetype', 'shippingservice', 'dichvu', 'nhomdichvu'],
+  cod: ['cod', 'codamount', 'cashondelivery', 'tiencod', 'thuhocod'],
+  fee: ['fee', 'totalfee', 'shippingfee', 'deliveryfee', 'freight', 'freightcost', 'tiencuoc', 'cuocphi'],
+  origin: ['origin', 'source', 'senderlocation', 'originprovince', 'originbranch', 'tinhgui', 'buucucgui'],
+  destination: ['destination', 'receiverlocation', 'destinationprovince', 'destinationbranch', 'tinhnhan', 'buucucnhan'],
+  weight: ['weight', 'grossweight', 'actualweight', 'chargeableweight', 'trongluong', 'khoiluong'],
   stock: ['stockqty', 'onhandqty', 'inventoryqty', 'closingstock', 'tonkho'],
   outcome: ['outcome', 'target', 'converted', 'conversion', 'subscribed', 'success', 'response', 'result', 'resultp', 'y', 'danhgia'],
   duration: ['duration', 'callduration', 'waitingtime', 'leadtime', 'transittime', 'thoigian'],
@@ -89,12 +96,29 @@ type SemanticFieldBinding = { canonicalId?: string; physicalColumn?: string; rol
 
 function semanticKey(canonicalId: string): string | null {
   const value = normalize(canonicalId);
+  // Prefer the most specific canonical concepts before broad aliases such as
+  // "status" or "location". Otherwise status.lifecycle becomes generic status
+  // and current_location becomes a branch, losing the selected BA angle.
+  if (/deliverystatus|shipmentstatus|ontimestatus|lifecyclestatus|statuslifecycle/.test(value)) return 'deliveryStatus';
+  if (/currentlocation|currentbranch|currenthub|currentwarehouse|currentoffice/.test(value)) return 'currentLocation';
+  if (/servicegroup|servicetype|shippingservice/.test(value)) return 'service';
+  if (/moneycod|codamount|cashondelivery/.test(value)) return 'cod';
+  if (/moneyfee|deliveryfee|shippingfee|freightcost/.test(value)) return 'fee';
+  if (/shipment|tracking|consignment|parcel/.test(value)) return 'shipment';
   for (const [semantic, aliases] of Object.entries(ALIASES)) {
     if (aliases.some(alias => value === alias || value.includes(alias))) return semantic;
   }
   if (/outcome|conversion|converted|target|success|subscription/.test(value)) return 'outcome';
   if (/customer|client|account/.test(value)) return 'customer';
   if (/duration|waiting|leadtime|transit/.test(value)) return 'duration';
+  if (/currentlocation|currentbranch|currenthub|currentwarehouse|currentoffice/.test(value)) return 'currentLocation';
+  if (/servicegroup|servicetype|shippingservice/.test(value)) return 'service';
+  if (/moneycod|codamount|cashondelivery/.test(value)) return 'cod';
+  if (/moneyfee|deliveryfee|shippingfee|freightcost/.test(value)) return 'fee';
+  if (/origin|sourceprovince|senderlocation/.test(value)) return 'origin';
+  if (/destination|destinationprovince|receiverlocation/.test(value)) return 'destination';
+  if (/shipment|tracking|consignment|parcel/.test(value)) return 'shipment';
+  if (/deliverystatus|shipmentstatus|ontimestatus|lifecyclestatus|statuslifecycle/.test(value)) return 'deliveryStatus';
   if (/channel|contactmethod/.test(value)) return 'channel';
   if (/segment|demographic/.test(value)) return 'segment';
   return null;
@@ -216,6 +240,13 @@ function positiveOutcome(value: unknown): boolean {
   return /^(1|y|yes|true|success|successful|converted|subscribed|dung|dunghen|dat|hoanthanh|dagiao)$/.test(normalized);
 }
 
+function hasKnownOutcomeSemantics(values: string[]): boolean {
+  const normalized = new Set(values.map(normalize));
+  const knownPositive = [...normalized].some(value => /^(1|y|yes|true|success|successful|converted|subscribed|dung|dunghen|dat|hoanthanh|dagiao|giaothanhcong|ontime|completed|delivered)$/.test(value));
+  const knownNegative = [...normalized].some(value => /^(0|n|no|false|failure|failed|late|delayed|khong|khongdunghen|thatbai|huy|cancelled|canceled)$/.test(value));
+  return (knownPositive && knownNegative) || ([...normalized].every(value => value === '0' || value === '1') && normalized.size > 1);
+}
+
 function buildRateBreakdown(rows: Row[], dimensionColumn: string, outcomeColumn: string, id: string, label: string): SingleSourceBreakdown | null {
   const groups = new Map<string, { positives: number; total: number }>();
   for (const row of rows) {
@@ -320,7 +351,7 @@ export function createSingleSourceBAOverview(rows: Row[], options: SingleSourceB
   const bindings = bindColumns(rows, options.semanticFields);
   const revenue = bindings.revenue;
   const operationalIdentity = bindings.shipment ?? bindings.order;
-  const detectedOperations = Boolean(bindings.shipment || bindings.deliveryStatus || bindings.carrier || bindings.route || bindings.driver || bindings.vehicle);
+  const detectedOperations = Boolean(bindings.shipment || bindings.deliveryStatus || bindings.carrier || bindings.route || bindings.driver || bindings.vehicle || bindings.currentLocation || bindings.service);
   const detectedInventory = Boolean(bindings.stock || bindings.warehouse);
   const detectedOutcome = Boolean(bindings.outcome || bindings.deliveryStatus);
   const preferredMode = requestedMode(options.analysisAction, bindings);
@@ -403,32 +434,47 @@ export function createSingleSourceBAOverview(rows: Row[], options: SingleSourceB
   if (mode !== 'commercial') {
     const identityCount = operationalIdentity ? new Set(rows.map(row => textValue(row[operationalIdentity])).filter(Boolean)).size : rows.length;
     const kpis: SingleSourceKpi[] = [{ id: isInventory ? 'records' : 'deliveries', label: isInventory ? 'Bản ghi tồn kho' : 'Lượt giao hàng', value: identityCount, kind: 'number' }];
-    const deliveryFeeTotal = sum(rows, bindings.deliveryFee);
+    const deliveryFeeTotal = sum(rows, bindings.deliveryFee ?? bindings.fee);
+    const codTotal = sum(rows, bindings.cod);
     const stockTotal = sum(rows, bindings.stock);
     const waitingValues = bindings.waitingTime ? rows.map(row => numberValue(row[bindings.waitingTime])).filter((value): value is number => value !== null) : [];
     if (deliveryFeeTotal !== null) kpis.push({ id: 'delivery_fee', label: 'Tổng chi phí giao hàng', value: deliveryFeeTotal, kind: 'money' });
+    if (codTotal !== null) kpis.push({ id: 'cod_exposure', label: 'Tổng giá trị COD', value: codTotal, kind: 'money' });
     if (stockTotal !== null) kpis.push({ id: 'stock', label: 'Tổng lượng tồn', value: stockTotal, kind: 'number' });
     if (waitingValues.length) kpis.push({ id: 'average_waiting_time', label: 'Thời gian chờ bình quân', value: waitingValues.reduce((total, value) => total + value, 0) / waitingValues.length, kind: 'number' });
     const statusValues = bindings.deliveryStatus ? rows.map(row => textValue(row[bindings.deliveryStatus])).filter((value): value is string => Boolean(value)) : [];
+    const statusSemanticsKnown = hasKnownOutcomeSemantics(statusValues);
     const onTimeCount = statusValues.filter(value => positiveOutcome(value) || /ontime|dunghen|completed|delivered|success|dagiao|giaothanhcong/i.test(normalize(value))).length;
-    if (statusValues.length) kpis.push({ id: 'on_time_rate', label: 'Tỷ lệ hoàn tất/đúng hẹn', value: onTimeCount / statusValues.length, kind: 'percent' });
+    if (statusValues.length && statusSemanticsKnown) kpis.push({ id: 'on_time_rate', label: 'Tỷ lệ hoàn tất/đúng hẹn', value: onTimeCount / statusValues.length, kind: 'percent' });
+    const requestedDimensions = actionPhysicalColumns(options.analysisAction?.dimensions, rows, options.semanticFields ?? []);
+    const requestedMeasureSignal = normalize((options.analysisAction?.measures ?? []).join(' '));
+    const isCountAngle = /recordcount|rowcount|deliverycount|shipmentcount|count/.test(requestedMeasureSignal);
     const dimensions: Array<[string, string]> = isInventory
       ? [['warehouse', 'Kho'], ['product', 'Sản phẩm'], ['category', 'Nhóm hàng'], ['status', 'Trạng thái']]
-      : [['deliveryStatus', 'Trạng thái giao hàng'], ['carrier', 'Đơn vị vận chuyển'], ['warehouse', 'Kho / trung tâm'], ['route', 'Tuyến'], ['driver', 'Tài xế'], ['vehicle', 'Phương tiện']];
-    const breakdowns = dimensions.flatMap(([id, label]) => {
-      const column = bindings[id];
-      if (!column) return [];
-      const measure = isInventory ? bindings.stock : bindings.deliveryFee;
-      const breakdown = measure ? buildBreakdown(rows, column, measure, id, label) : buildCountBreakdown(rows, column, operationalIdentity, id, label);
-      return breakdown ? [breakdown] : [];
+      : [['deliveryStatus', 'Trạng thái giao hàng'], ['currentLocation', 'Vị trí hiện tại'], ['service', 'Dịch vụ'], ['carrier', 'Đơn vị vận chuyển'], ['warehouse', 'Kho / trung tâm'], ['route', 'Tuyến'], ['origin', 'Nơi gửi'], ['destination', 'Nơi nhận'], ['driver', 'Tài xế'], ['vehicle', 'Phương tiện']];
+    const defaultDefinitions: Array<[string, string, string]> = dimensions.flatMap(([id, label]) => bindings[id] ? [[id, label, bindings[id]]] : []);
+    const defaultByColumn = new Map(defaultDefinitions.map(definition => [definition[2], definition]));
+    const requestedDefinitions: Array<[string, string, string]> = requestedDimensions.map((column, index) => defaultByColumn.get(column) ?? [`selected_${index}`, column, column]);
+    const seenColumns = new Set<string>();
+    const breakdownDefinitions = [...requestedDefinitions, ...defaultDefinitions].filter(([, , column]) => {
+      if (seenColumns.has(column)) return false;
+      seenColumns.add(column);
+      return true;
     });
+    const breakdowns = breakdownDefinitions.flatMap(([id, label, column]) => {
+      if (!column) return [];
+      const measure = isInventory ? bindings.stock : (bindings.deliveryFee ?? bindings.fee);
+      const breakdown = measure && !isCountAngle ? buildBreakdown(rows, column, measure, id, label) : buildCountBreakdown(rows, column, operationalIdentity, id, label);
+      return breakdown ? [breakdown] : [];
+    }).slice(0, 8);
     const dateColumn = bindings.deliveryDate ?? bindings.date;
     const trendMeasure = bindings.deliveryFee ?? bindings.stock;
     const trend = dateColumn && trendMeasure ? buildTrend(rows, dateColumn, trendMeasure) : [];
     const trendChange = trend.length > 1 && trend[0].value !== 0 ? (trend.at(-1)!.value - trend[0].value) / Math.abs(trend[0].value) : null;
     const findings: string[] = [];
     if (breakdowns[0]?.top[0]) findings.push(`${breakdowns[0].top[0].label} là nhóm lớn nhất, chiếm ${(breakdowns[0].top[0].share * 100).toFixed(1)}% phạm vi đã phân tích.`);
-    if (statusValues.length) findings.push(`${onTimeCount.toLocaleString()} trong ${statusValues.length.toLocaleString()} bản ghi có trạng thái hoàn tất hoặc đúng hẹn.`);
+    if (statusValues.length && statusSemanticsKnown) findings.push(`${onTimeCount.toLocaleString()} trong ${statusValues.length.toLocaleString()} bản ghi có trạng thái hoàn tất hoặc đúng hẹn.`);
+    if (statusValues.length && !statusSemanticsKnown) findings.push(`Trạng thái có ${new Set(statusValues).size.toLocaleString()} giá trị; LightBI chỉ phân tích phân bố và không tự gán mã trạng thái thành hoàn tất/đúng hẹn.`);
     if (waitingValues.length) {
       const q1 = quantile(waitingValues, 0.25); const q3 = quantile(waitingValues, 0.75); const fence = q3 + 1.5 * (q3 - q1);
       const delayed = waitingValues.filter(value => value > fence).length;

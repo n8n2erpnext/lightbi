@@ -165,7 +165,11 @@ export const Investigation: React.FC = () => {
       return;
     }
     const candidates = session.supportingAnalyses
-      .filter(item => item.analysisAction.id.startsWith('universal:'))
+      // The perspective bundle has already ranked and scoped these actions.
+      // Restricting support charts to the old `universal:` prefix silently
+      // discarded newer registry-driven actions (shipment backlog, aging,
+      // value exposure, etc.) and left Easy Mode with one trivial chart.
+      .filter(item => item.analysisAction.id !== session.analysisAction.id)
       .filter(item => item.runtimePlanPreview.status !== 'blocked')
       .slice(0, 3);
     if (candidates.length === 0) {

@@ -89,6 +89,34 @@ function candidate(args: Omit<QuestionCandidate, "fitScore" | "blockedReasons"> 
   return { ...args, fitScore, blockedReasons };
 }
 
+function contextualQuestionPriority(question: QuestionCandidate, signals: UniversalSignal[]): number {
+  const overlays = new Set(inferOverlays(signals));
+  const priorities: Record<string, number> = {};
+
+  if (overlays.has("inventory")) {
+    priorities.inventory_aging_backlog = 120;
+    priorities.inventory_value_exposure = 115;
+    priorities.stock_movement = 110;
+    priorities.status_flow = 100;
+  } else if (overlays.has("logistics")) {
+    priorities.shipment_backlog_by_status = 120;
+    priorities.shipment_backlog_by_location = 115;
+    priorities.shipment_value_exposure = 110;
+    priorities.delivery_completion_mix = 105;
+    priorities.carrier_cost_impact = 100;
+    priorities.status_flow = 95;
+  }
+
+  if (overlays.has("campaign")) {
+    priorities.engagement_outcome_overview = 120;
+    priorities.engagement_by_segment = 115;
+    priorities.engagement_by_contact_channel = 110;
+    priorities.campaign_effort_review = 105;
+  }
+
+  return priorities[question.id] ?? 0;
+}
+
 export function generateUniversalQuestions(input: UnderstandingCoreInput, signals: UniversalSignal[]): QuestionCandidate[] {
   const scope = executionScope(input);
   const questions: QuestionCandidate[] = [];
@@ -130,6 +158,9 @@ export function generateUniversalQuestions(input: UnderstandingCoreInput, signal
     signal.health.nonEmptyCount > 0
   );
   const carrier = first(signals, byId("entity.carrier"));
+  const shipment = firstAny(signals, byId("document.shipment"));
+  const currentLocation = first(signals, byId("location.current")) ?? first(signals, byId("location.warehouse"));
+  const serviceGroup = first(signals, byId("item.service"));
   const deliveryStatus = first(signals, byId("status.delivery")) ?? first(signals, byId("status.fulfillment"));
   const deliveryFee = first(signals, byId("money.fee"));
   const quality = signals.filter(signal => signal.family === "quality");
@@ -546,6 +577,85 @@ export function generateUniversalQuestions(input: UnderstandingCoreInput, signal
   ].filter((signal, index, list): signal is UniversalSignal =>
     Boolean(signal) && list.findIndex(item => item?.physicalColumn === signal?.physicalColumn) === index
   );
+
+  questions.push(candidate({
+    id: "shipment_backlog_by_status",
+    label: "Shipment backlog and status",
+    prompt: "How many shipments are waiting in each lifecycle status, and which status needs attention first?",
+    lens: "Delivery and logistics",
+    intent: "ranking",
+    requiredFamilies: ["document", "status"],
+    requiredSignals: ["document.shipment", "status.*"],
+    optionalSignals: ["location.current", "item.service", "time.*", "money.cod"],
+    evidence: [shipment, status, currentLocation, serviceGroup].filter(Boolean).flatMap(signal => signal!.evidence),
+    action: makeAction(
+      "shipment_backlog_by_status",
+      "Shipment backlog and status",
+      "group_by",
+      shipment && status ? [status.physicalColumn] : [],
+      ["record_count"],
+      scope,
+      undefined,
+      { record_count: "COUNT" }
+    ),
+    blockedReasons: [
+      ...(!shipment ? ["A shipment or tracking identity is required."] : []),
+      ...(!status ? ["A lifecycle or delivery status is required."] : [])
+    ]
+  }));
+
+  questions.push(candidate({
+    id: "shipment_backlog_by_location",
+    label: "Shipment backlog by current location",
+    prompt: "Which current branch, hub, warehouse, or office holds the most shipments?",
+    lens: "Delivery and logistics",
+    intent: "ranking",
+    requiredFamilies: ["document", "location"],
+    requiredSignals: ["document.shipment", "location.current|location.warehouse"],
+    optionalSignals: ["status.*", "item.service", "money.cod", "quantity.weight"],
+    evidence: [shipment, currentLocation, status, serviceGroup].filter(Boolean).flatMap(signal => signal!.evidence),
+    action: makeAction(
+      "shipment_backlog_by_location",
+      "Shipment backlog by current location",
+      "group_by",
+      shipment && currentLocation ? [currentLocation.physicalColumn] : [],
+      ["record_count"],
+      scope,
+      undefined,
+      { record_count: "COUNT" }
+    ),
+    blockedReasons: [
+      ...(!shipment ? ["A shipment or tracking identity is required."] : []),
+      ...(!currentLocation ? ["A current branch, hub, warehouse, or office is required."] : [])
+    ]
+  }));
+
+  const codExposure = first(signals, byId("money.cod"));
+  questions.push(candidate({
+    id: "shipment_value_exposure",
+    label: "Shipment COD and fee exposure",
+    prompt: "Which current location or service holds the largest COD or freight exposure?",
+    lens: "Delivery and logistics",
+    intent: "ranking",
+    requiredFamilies: ["document", "money"],
+    requiredSignals: ["document.shipment", "money.cod|money.fee"],
+    optionalSignals: ["location.current", "item.service", "status.*"],
+    evidence: [shipment, codExposure, deliveryFee, currentLocation, serviceGroup].filter(Boolean).flatMap(signal => signal!.evidence),
+    action: makeAction(
+      "shipment_value_exposure",
+      "Shipment COD and fee exposure",
+      "group_by",
+      currentLocation ? [currentLocation.physicalColumn] : serviceGroup ? [serviceGroup.physicalColumn] : [],
+      codExposure ? [codExposure.physicalColumn] : deliveryFee ? [deliveryFee.physicalColumn] : [],
+      scope
+    ),
+    blockedReasons: [
+      ...(!shipment ? ["A shipment or tracking identity is required."] : []),
+      ...(!codExposure && !deliveryFee ? ["A COD or freight/fee measure is required."] : []),
+      ...(!currentLocation && !serviceGroup ? ["A current location or service dimension is required."] : [])
+    ]
+  }));
+
   questions.push(candidate({
     id: "carrier_cost_impact",
     label: "Carrier cost impact",
@@ -755,6 +865,10 @@ export function generateUniversalQuestions(input: UnderstandingCoreInput, signal
     .sort((a, b) => {
     const qualityFirst = Number(b.intent === "quality_review") - Number(a.intent === "quality_review");
     if (qualityFirst !== 0) return qualityFirst;
+    const executableFirst = Number(Boolean(b.action)) - Number(Boolean(a.action));
+    if (executableFirst !== 0) return executableFirst;
+    const contextual = contextualQuestionPriority(b, signals) - contextualQuestionPriority(a, signals);
+    if (contextual !== 0) return contextual;
     return b.fitScore - a.fitScore;
   });
 }

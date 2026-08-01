@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createUnderstandingCoreResult } from "./question-engine";
 import type { UnderstandingCoreInput } from "./contracts";
+import { adaptCoreToUnderstandingNext } from "./next-adapter";
 
 function makeRows<T extends Record<string, unknown>>(count: number, row: (index: number) => T): T[] {
   return Array.from({ length: count }, (_, index) => row(index));
@@ -404,6 +405,38 @@ describe("understanding-core universal signal ontology", () => {
     expect(questionIds(result)).toContain("inventory_value_exposure");
     expect(result.questions.find(question => question.id === "inventory_value_exposure")?.action?.dimensions).toContain("Bưu cục hiện tại");
     expect(questionIds(result)).not.toContain("sla_by_route");
+  });
+
+  it("never treats a numeric shipment identifier as an additive measure", () => {
+    const result = createUnderstandingCoreResult(input(
+      ["Ngày Báo Cáo", "Mã Phiếu Gửi", "Trạng Thái", "Bưu Cục Hiện Tại", "Mã Dịch vụ", "Ngày Tạo Đơn", "Tiền COD", "Trọng lượng", "Tiền Cước"],
+      makeRows(120, index => ({
+        "Ngày Báo Cáo": "2025-02-08",
+        "Mã Phiếu Gửi": 1770239946411 + index,
+        "Trạng Thái": index % 4 === 0 ? "Chưa kết nối" : "Đang xử lý",
+        "Bưu Cục Hiện Tại": `HUB-${index % 5}`,
+        "Mã Dịch vụ": ["LCOD", "VTK", "VCN"][index % 3],
+        "Ngày Tạo Đơn": `2025-02-${String((index % 7) + 1).padStart(2, "0")}`,
+        "Tiền COD": 100000 + index * 1000,
+        "Trọng lượng": 500 + index,
+        "Tiền Cước": 12000 + index * 10
+      }))
+    ));
+
+    expect(result.signals.some(signal => signal.id === "document.shipment" && signal.physicalColumn === "Mã Phiếu Gửi")).toBe(true);
+    expect(result.signals.filter(signal => signal.physicalColumn === "Mã Phiếu Gửi" && signal.role === "measure")
+      .every(signal => signal.usableForDefaultQuestion === false)).toBe(true);
+    expect(result.actions.flatMap(action => action.measures)).not.toContain("Mã Phiếu Gửi");
+    expect(result.questions.find(question => question.id === "money_over_time")?.action?.measures).not.toEqual(["Mã Phiếu Gửi"]);
+    expect(result.signals.some(signal => signal.id === "money.cod" && signal.physicalColumn === "Tiền COD" && signal.usableForDefaultQuestion)).toBe(true);
+    expect(result.signals.some(signal => signal.id === "money.fee" && signal.physicalColumn === "Tiền Cước" && signal.usableForDefaultQuestion)).toBe(true);
+    expect(result.signals.some(signal => signal.id === "status.delivery" && signal.physicalColumn === "Huyện Nhận")).toBe(false);
+    expect(result.questions.find(question => question.id === "shipment_backlog_by_status")?.action?.dimensions).toEqual(["Trạng Thái"]);
+    expect(result.questions.find(question => question.id === "shipment_backlog_by_status")?.action?.measures).toEqual(["record_count"]);
+    expect(result.questions.find(question => question.id === "shipment_backlog_by_location")?.action?.dimensions).toEqual(["Bưu Cục Hiện Tại"]);
+    const adapted = adaptCoreToUnderstandingNext(result);
+    expect(adapted.recommendedQuestions.find(question => question.id === "money_over_time")?.domain).toBe("revenue");
+    expect(adapted.recommendedQuestions.find(question => question.id === "delivery_completion_mix")?.domain).toBe("operations");
   });
 
   it("puts data quality review first for dirty manual exports", () => {

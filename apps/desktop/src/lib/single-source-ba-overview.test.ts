@@ -110,4 +110,36 @@ describe('single source BA overview', () => {
     expect(overview.breakdowns[0]).toMatchObject({ physicalColumn: 'poutcome', valueKind: 'number' });
     expect(overview.breakdowns[0].top[0]).toMatchObject({ label: 'failure', value: 3 });
   });
+
+  it('builds a shipment backlog brief from semantic bindings without treating opaque status codes as completion', () => {
+    const rows = [
+      { 'Mã Phiếu Gửi': 100001, 'Bưu Cục Hiện Tại': 'HUB A', 'Trạng Thái': 200, 'Dịch Vụ': 'Express', 'Tiền COD': 500000, 'Tiền Cước': 25000 },
+      { 'Mã Phiếu Gửi': 100002, 'Bưu Cục Hiện Tại': 'HUB A', 'Trạng Thái': 200, 'Dịch Vụ': 'Standard', 'Tiền COD': 200000, 'Tiền Cước': 15000 },
+      { 'Mã Phiếu Gửi': 100003, 'Bưu Cục Hiện Tại': 'HUB B', 'Trạng Thái': 565, 'Dịch Vụ': 'Express', 'Tiền COD': 300000, 'Tiền Cước': 20000 },
+    ];
+    const overview = createSingleSourceBAOverview(rows, {
+      analysisAction: {
+        id: 'shipment_backlog_by_location',
+        label: 'Shipment backlog by current location',
+        dimensions: ['current_location'],
+        measures: ['record_count'],
+      },
+      semanticFields: [
+        { canonicalId: 'document.shipment', physicalColumn: 'Mã Phiếu Gửi', role: 'identifier' },
+        { canonicalId: 'current_location', physicalColumn: 'Bưu Cục Hiện Tại', role: 'dimension' },
+        { canonicalId: 'status.lifecycle', physicalColumn: 'Trạng Thái', role: 'dimension' },
+        { canonicalId: 'service_group', physicalColumn: 'Dịch Vụ', role: 'dimension' },
+        { canonicalId: 'money.cod', physicalColumn: 'Tiền COD', role: 'measure' },
+        { canonicalId: 'money.fee', physicalColumn: 'Tiền Cước', role: 'measure' },
+      ],
+    })!;
+
+    expect(overview.mode).toBe('operations');
+    expect(overview.kpis.find(item => item.id === 'deliveries')?.value).toBe(3);
+    expect(overview.kpis.find(item => item.id === 'cod_exposure')?.value).toBe(1_000_000);
+    expect(overview.kpis.some(item => item.id === 'on_time_rate')).toBe(false);
+    expect(overview.breakdowns[0]).toMatchObject({ physicalColumn: 'Bưu Cục Hiện Tại', valueKind: 'number' });
+    expect(overview.breakdowns.map(item => item.physicalColumn)).toEqual(expect.arrayContaining(['Trạng Thái', 'Dịch Vụ']));
+    expect(overview.findings.some(item => item.includes('không tự gán mã trạng thái'))).toBe(true);
+  });
 });

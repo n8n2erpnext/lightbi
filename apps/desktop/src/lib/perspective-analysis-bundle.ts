@@ -30,7 +30,9 @@ export function createPerspectiveAnalysisBundle(
 
   const supportingActions = understanding.availableActions
     .filter(candidate => candidate.id !== primaryActionId)
-    .filter(candidate => candidate.id.startsWith('universal:'))
+    // Registry and plugin actions are first-class. The old prefix was an
+    // implementation detail, not a governance boundary; keeping it here made
+    // newly declared domain questions disappear from Easy Mode charts.
     .filter(candidate => candidate.executionScope !== 'not_supported')
     .filter(candidate => !selectedDomain || questionDomain.get(candidate.questionId) === selectedDomain)
     .sort((left, right) => {

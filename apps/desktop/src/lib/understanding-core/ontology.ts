@@ -216,9 +216,14 @@ function escapeRegExp(value: string): string {
 function aliasesToPatterns(signal: SemanticSignalDefinition): RegExp[] {
   const aliases = [...new Set([
     ...signal.headerAliases,
-    ...signal.aliases,
-    ...signal.valueAliases.filter(alias => alias.length >= 3)
+    ...signal.aliases
   ].map(alias => alias.trim()).filter(Boolean))];
+
+  // Value aliases describe cell values (for example "received" or "on time").
+  // Treating them as header aliases causes unrelated columns such as
+  // `Huyện Nhận` to become a delivery-status field merely because their header
+  // contains one translated status word. Value evidence belongs in contextual
+  // resolution, never in the header matcher.
 
   return aliases.map(alias => {
     const escaped = escapeRegExp(alias);
