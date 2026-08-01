@@ -1,13 +1,22 @@
+#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+
+use axum::{body::Body, Router};
+use http_body_util::BodyExt;
 use serde::Serialize;
-use std::sync::Mutex;
-use std::thread::JoinHandle;
-use std::time::{Duration, Instant};
+use std::sync::{Arc, Mutex};
 use tauri::{Manager, State};
+use tower::ServiceExt;
 
-const API_BASE_URL: &str = "http://127.0.0.1:5172";
-const API_BIND_ADDRESS: &str = "127.0.0.1:5172";
+const API_BASE_URL: &str = "lightbi://localhost";
 
-struct EmbeddedBackend(Mutex<Option<JoinHandle<Result<(), String>>>>);
+#[derive(Clone)]
+struct InProcessCore {
+    runtime: Arc<tokio::runtime::Runtime>,
+    router: Router,
+}
+
+#[derive(Clone)]
+struct EmbeddedCore(Arc<Mutex<Option<InProcessCore>>>);
 
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -46,67 +55,85 @@ fn license_state() -> LicenseState {
 }
 
 #[tauri::command]
-fn backend_status(state: State<'_, EmbeddedBackend>) -> bool {
-    let running = state
-        .0
-        .lock()
-        .map(|guard| guard.as_ref().is_some_and(|thread| !thread.is_finished()))
-        .unwrap_or(false);
-    running
-        && std::net::TcpStream::connect_timeout(
-            &API_BIND_ADDRESS.parse().expect("valid loopback address"),
-            Duration::from_millis(200),
-        )
-        .is_ok()
+fn backend_status(state: State<'_, EmbeddedCore>) -> bool {
+    state.0.lock().map(|core| core.is_some()).unwrap_or(false)
 }
 
-fn spawn_embedded_backend(app: &tauri::AppHandle) -> Result<JoinHandle<Result<(), String>>, String> {
-    let data_dir = app
-        .path()
-        .app_data_dir()
-        .map_err(|error| format!("Could not resolve the LightBI data directory: {error}"))?;
-    std::fs::create_dir_all(&data_dir)
-        .map_err(|error| format!("Could not create the LightBI data directory: {error}"))?;
-    std::env::set_var("LIGHTBI_DATA_DIR", data_dir);
-    let thread = std::thread::Builder::new()
-        .name("lightbi-embedded-core".to_string())
-        .spawn(|| {
-            let runtime = tokio::runtime::Builder::new_multi_thread()
-                .enable_all()
-                .build()
-                .map_err(|error| format!("Could not initialize the embedded LightBI runtime: {error}"))?;
-            runtime
-                .block_on(lightbi_server::run(API_BIND_ADDRESS))
-                .map_err(|error| format!("Embedded LightBI core stopped: {error}"))
-        })
-        .map_err(|error| format!("Could not start the embedded LightBI core: {error}"))?;
-    let deadline = Instant::now() + Duration::from_secs(15);
-    while Instant::now() < deadline {
-        if thread.is_finished() {
-            return match thread.join() {
-                Ok(Err(error)) => Err(error),
-                Ok(Ok(())) => Err("The embedded LightBI core stopped before becoming ready.".to_string()),
-                Err(_) => Err("The embedded LightBI core panicked during startup.".to_string()),
-            };
-        }
-        if std::net::TcpStream::connect_timeout(
-            &API_BIND_ADDRESS.parse().expect("valid loopback address"),
-            Duration::from_millis(200),
-        )
-        .is_ok()
-        {
-            return Ok(thread);
-        }
-        std::thread::sleep(Duration::from_millis(150));
-    }
-    Err("The embedded LightBI core did not become ready in time.".to_string())
+fn error_response(status: u16, message: &str) -> tauri::http::Response<Vec<u8>> {
+    tauri::http::Response::builder()
+        .status(status)
+        .header("content-type", "application/json")
+        .header("access-control-allow-origin", "*")
+        .body(format!(r#"{{"error":{}}}"#, serde_json::to_string(message).unwrap()).into_bytes())
+        .expect("valid LightBI error response")
 }
 
 fn main() {
+    let embedded_core = EmbeddedCore(Arc::new(Mutex::new(None)));
+    let protocol_core = embedded_core.clone();
+    let setup_core = embedded_core.clone();
+
     tauri::Builder::default()
-        .setup(|app| {
-            let thread = spawn_embedded_backend(app.handle())?;
-            app.manage(EmbeddedBackend(Mutex::new(Some(thread))));
+        .register_asynchronous_uri_scheme_protocol("lightbi", move |_context, request, responder| {
+            let core = protocol_core
+                .0
+                .lock()
+                .ok()
+                .and_then(|guard| guard.as_ref().cloned());
+            let Some(core) = core else {
+                responder.respond(error_response(503, "LightBI core is not ready."));
+                return;
+            };
+
+            let request = request.map(Body::from);
+            core.runtime.spawn(async move {
+                let response = match core.router.oneshot(request).await {
+                    Ok(response) => response,
+                    Err(error) => {
+                        responder.respond(error_response(500, &format!("LightBI core request failed: {error}")));
+                        return;
+                    }
+                };
+                let (parts, body) = response.into_parts();
+                let bytes = match body.collect().await {
+                    Ok(collected) => collected.to_bytes().to_vec(),
+                    Err(error) => {
+                        responder.respond(error_response(500, &format!("LightBI core response failed: {error}")));
+                        return;
+                    }
+                };
+                let mut builder = tauri::http::Response::builder().status(parts.status);
+                for (name, value) in &parts.headers {
+                    builder = builder.header(name, value);
+                }
+                match builder.body(bytes) {
+                    Ok(response) => responder.respond(response),
+                    Err(error) => responder.respond(error_response(500, &format!("LightBI response could not be built: {error}"))),
+                }
+            });
+        })
+        .setup(move |app| {
+            let data_dir = app
+                .path()
+                .app_data_dir()
+                .map_err(|error| format!("Could not resolve the LightBI data directory: {error}"))?;
+            std::fs::create_dir_all(&data_dir)
+                .map_err(|error| format!("Could not create the LightBI data directory: {error}"))?;
+            std::env::set_var("LIGHTBI_DATA_DIR", data_dir);
+
+            let runtime = Arc::new(
+                tokio::runtime::Builder::new_multi_thread()
+                    .enable_all()
+                    .build()
+                    .map_err(|error| format!("Could not initialize the embedded LightBI runtime: {error}"))?,
+            );
+            let router = runtime.block_on(lightbi_server::build_router());
+            *setup_core
+                .0
+                .lock()
+                .map_err(|_| "Could not initialize the LightBI core state.".to_string())? =
+                Some(InProcessCore { runtime, router });
+            app.manage(setup_core.clone());
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![

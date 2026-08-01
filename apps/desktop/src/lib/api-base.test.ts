@@ -16,7 +16,7 @@ describe('getApiBaseUrl', () => {
       },
     });
 
-    expect(getApiBaseUrl()).toBe('http://127.0.0.1:5172');
+    expect(getApiBaseUrl()).toBe('lightbi://localhost');
   });
 
   it('keeps ordinary web deployments on the same origin', () => {

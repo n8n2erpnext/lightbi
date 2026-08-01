@@ -2854,11 +2854,15 @@ dependencies = [
 name = "lightbi-tauri"
 version = "0.9.0-beta.1"
 dependencies = [
+ "axum",
+ "http-body-util",
  "lightbi-server",
  "serde",
+ "serde_json",
  "tauri",
  "tauri-build",
  "tokio",
+ "tower",
 ]
 
 [[package]]
