@@ -27,6 +27,11 @@ export interface InvestigationSession {
   canonicalExecutionResult?: GovernedMetricExecutionResultV1;
   canonicalMultiSourceDataset?: CanonicalMultiSourceDatasetV1;
   canonicalMultiSourceExecutionResult?: CanonicalMultiSourceExecutionResultV1;
+  supportingAnalyses?: Array<{
+    analysisAction: AnalysisAction;
+    runtimeIntent: RuntimeIntent;
+    runtimePlanPreview: RuntimePlanPreview;
+  }>;
 }
 
 // In-memory store for now, since we aren't using a real backend or persistent DB yet.
@@ -45,7 +50,8 @@ export function createInvestigationSession(
   businessFusionOverview?: BusinessFusionOverview,
   workspaceSessionPayload?: SaveWorkspaceSessionRequest,
   canonicalHandoff?: CanonicalInvestigationHandoffV1 | CanonicalMultiSourceInvestigationHandoffV1,
-  canonicalMultiSourceDataset?: CanonicalMultiSourceDatasetV1
+  canonicalMultiSourceDataset?: CanonicalMultiSourceDatasetV1,
+  supportingAnalyses?: InvestigationSession['supportingAnalyses']
 ): InvestigationSession {
   let safeRows = rows;
   // Deep clone to preserve original
@@ -67,6 +73,7 @@ export function createInvestigationSession(
     workspaceSessionPayload,
     canonicalHandoff,
     canonicalMultiSourceDataset,
+    supportingAnalyses,
   };
   
   currentSession = session;

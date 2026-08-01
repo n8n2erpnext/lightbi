@@ -6,7 +6,7 @@ const corpus = [
   { name: 'DATA_XUAT.xlsx', source: '../../sample data/DATA_XUAT.xlsx', expected: /revenue|inventory|operations|performance/i },
   { name: 'bcctnhapTTKT_19122024.xlsx', source: '../../sample data/bcctnhapTTKT_19122024.xlsx', expected: /operations|performance/i },
   { name: 'Logistics_ERP_June_2026.csv', source: '../../sample-corpus/anchors/1.3.0/Logistics_ERP_June_2026.csv', expected: /operations|performance/i },
-  { name: 'Amazon_1-level_46-MB_minified.json', source: '../../sample data/Amazon_1-level_46-MB_minified.json', expected: /revenue|inventory|finance|customer/i },
+  { name: 'Amazon_1-level_46-MB_minified.json', source: '../../sample data/Amazon_1-level_46-MB_minified.json', expected: /revenue|inventory|finance|customer/i, expectsSupportingAnalysis: true },
 ];
 
 test.describe('Beta recovery sample corpus', () => {
@@ -40,14 +40,22 @@ test.describe('Beta recovery sample corpus', () => {
       await expect(page.getByRole('heading', { name: /Decision workspace|Không gian phân tích quyết định/i })).toBeVisible({ timeout: 90_000 });
 
       await expect(page.getByTestId('investigation-preflight-blocked')).toHaveCount(0);
-      const chart = page.getByTestId('chart-preview-canvas');
+      const chart = page.getByTestId('chart-preview-canvas').first();
       await chart.waitFor({ state: 'visible', timeout: 90_000 }).catch(async () => {
         const runPreview = page.locator('[data-run-preview="true"]');
         await expect(runPreview).toBeEnabled();
         await runPreview.click();
         await chart.waitFor({ state: 'visible', timeout: 90_000 });
       });
-      await expect(page.getByRole('button', { name: /Analyze deeper|Phân tích sâu/i }).first()).toBeEnabled();
+      if (fixture.expectsSupportingAnalysis) {
+        const supportingBundle = page.getByTestId('perspective-analysis-bundle');
+        await expect(supportingBundle.getByTestId('supporting-analysis-chart').first()).toBeVisible({ timeout: 30_000 });
+      }
+      const primaryQuestion = (await page.locator('h1').first().innerText()).trim();
+      const analyzeDeeper = page.getByRole('button', { name: /Analyze deeper|Phân tích sâu/i }).first();
+      await expect(analyzeDeeper).toBeEnabled();
+      await analyzeDeeper.click();
+      await expect(page.locator('aside h2').filter({ hasText: primaryQuestion })).toBeVisible();
 
       const body = await page.locator('body').innerText();
       if (/Analysis Blocked|Execution Boundary Failed|DUCKDB error|Failed to fetch|Analysis unavailable/i.test(body)) {

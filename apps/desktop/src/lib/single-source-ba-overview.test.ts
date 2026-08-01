@@ -56,4 +56,35 @@ describe('single source BA overview', () => {
     expect(overview.findings.length).toBeGreaterThan(0);
     expect(overview.recommendedActions.length).toBe(3);
   });
+
+  it('keeps deep BA aligned with the selected operational perspective when the source also contains revenue', () => {
+    const rows = [
+      { ShipmentID: 'S-1', Route: 'North', Vehicle: 'V-1', DeliveryStatus: 'Late', DeliveryFee: 20, Revenue: 200 },
+      { ShipmentID: 'S-2', Route: 'South', Vehicle: 'V-2', DeliveryStatus: 'On time', DeliveryFee: 30, Revenue: 300 },
+      { ShipmentID: 'S-3', Route: 'North', Vehicle: 'V-1', DeliveryStatus: 'On time', DeliveryFee: 10, Revenue: 100 },
+    ];
+
+    const operations = createSingleSourceBAOverview(rows, {
+      analysisAction: {
+        id: 'universal:delivery_by_route',
+        label: 'Compare delivery performance by route and vehicle',
+        dimensions: ['route', 'vehicle', 'delivery_status'],
+        measures: ['delivery_count'],
+      },
+    })!;
+    const commercial = createSingleSourceBAOverview(rows, {
+      analysisAction: {
+        id: 'universal:revenue_by_route',
+        label: 'Compare revenue by route',
+        dimensions: ['route'],
+        measures: ['revenue'],
+      },
+    })!;
+
+    expect(operations.mode).toBe('operations');
+    expect(operations.kpis.some(item => item.id === 'deliveries')).toBe(true);
+    expect(operations.breakdowns.map(item => item.id)).toEqual(expect.arrayContaining(['deliveryStatus', 'route', 'vehicle']));
+    expect(commercial.mode).toBe('commercial');
+    expect(commercial.kpis.some(item => item.id === 'revenue')).toBe(true);
+  });
 });

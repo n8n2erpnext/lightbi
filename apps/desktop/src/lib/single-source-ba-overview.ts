@@ -178,18 +178,71 @@ function buildTrend(rows: Row[], dateColumn: string, measureColumn: string): Sin
   return [...groups.entries()].map(([period, entry]) => ({ period, ...entry })).sort((a, b) => a.period.localeCompare(b.period));
 }
 
-export function createSingleSourceBAOverview(rows: Row[], options: { sourceRowCount?: number } = {}): SingleSourceBAOverview | null {
+export interface SingleSourceBAOverviewOptions {
+  sourceRowCount?: number;
+  analysisAction?: {
+    id?: string;
+    opportunityName?: string;
+    label?: string;
+    description?: string;
+    dimensions?: string[];
+    measures?: string[];
+  };
+}
+
+function requestedMode(
+  action: SingleSourceBAOverviewOptions['analysisAction'],
+  bindings: Record<string, string>,
+): SingleSourceBAOverview['mode'] | null {
+  if (!action) return null;
+  const primarySignal = normalize([
+    action.id,
+    action.opportunityName,
+    action.label,
+    action.description,
+    ...(action.measures ?? []),
+  ].filter(Boolean).join(' '));
+  const signal = normalize([
+    primarySignal,
+    ...(action.dimensions ?? []),
+  ].filter(Boolean).join(' '));
+  if (/inventory|stock|onhand|tonkho/.test(primarySignal)) return 'inventory';
+  if (/operation|logistic|delivery|shipment|carrier|waiting|delay|ontime|fulfillment|vanchuyen|giaohang/.test(primarySignal)) return 'operations';
+  if (/revenue|sales|commercial|profit|margin|finance|account|invoice|payment|discount|doanhthu|loinhuan/.test(primarySignal)) return 'commercial';
+  if (/inventory|stock|warehouse|onhand|sku|item|tonkho|kho/.test(signal)) return 'inventory';
+  if (/operation|logistic|delivery|shipment|carrier|route|driver|vehicle|waiting|delay|ontime|fulfillment|vanchuyen|giaohang/.test(signal)) return 'operations';
+  if (bindings.revenue) return 'commercial';
+  return null;
+}
+
+export function createSingleSourceBAOverview(rows: Row[], options: SingleSourceBAOverviewOptions = {}): SingleSourceBAOverview | null {
   if (rows.length === 0) return null;
   const sourceRowCount = Math.max(rows.length, options.sourceRowCount ?? rows.length);
   const isRepresentativeSample = sourceRowCount > rows.length;
   const bindings = bindColumns(rows);
   const revenue = bindings.revenue;
   const operationalIdentity = bindings.shipment ?? bindings.order;
-  const isOperations = Boolean(bindings.shipment || bindings.deliveryStatus || bindings.carrier || bindings.route || bindings.driver || bindings.vehicle);
-  const isInventory = !revenue && !isOperations && Boolean(bindings.stock || bindings.warehouse);
+  const detectedOperations = Boolean(bindings.shipment || bindings.deliveryStatus || bindings.carrier || bindings.route || bindings.driver || bindings.vehicle);
+  const detectedInventory = Boolean(bindings.stock || bindings.warehouse);
+  const preferredMode = requestedMode(options.analysisAction, bindings);
+  const mode = preferredMode === 'inventory' && detectedInventory
+    ? 'inventory'
+    : preferredMode === 'operations' && detectedOperations
+      ? 'operations'
+      : preferredMode === 'commercial' && revenue
+        ? 'commercial'
+        : revenue
+          ? 'commercial'
+          : detectedOperations
+            ? 'operations'
+            : detectedInventory
+              ? 'inventory'
+              : null;
+  const isOperations = mode === 'operations';
+  const isInventory = mode === 'inventory';
   if (!revenue && !isOperations && !isInventory) return null;
 
-  if (!revenue) {
+  if (mode !== 'commercial') {
     const identityCount = operationalIdentity ? new Set(rows.map(row => textValue(row[operationalIdentity])).filter(Boolean)).size : rows.length;
     const kpis: SingleSourceKpi[] = [{ id: isInventory ? 'records' : 'deliveries', label: isInventory ? 'Bản ghi tồn kho' : 'Lượt giao hàng', value: identityCount, kind: 'number' }];
     const deliveryFeeTotal = sum(rows, bindings.deliveryFee);

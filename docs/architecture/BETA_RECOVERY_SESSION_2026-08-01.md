@@ -166,3 +166,25 @@ remain the technical workspace for review, cleaning, mapping, query and export.
   group distribution instead of a blocked placeholder.
 - Disk checkpoint: 30 GB available, 76% used. No broad or destructive cleanup
   performed.
+
+## Execution checkpoint 3 - perspective-aligned analysis bundle
+
+- Made the single-source BA overview explicitly action-aware. A mixed source
+  that contains both commercial and operational evidence now keeps the BA mode
+  aligned with the user's selected perspective instead of defaulting to revenue.
+- Added a regression test proving the same mixed dataset produces an operations
+  BA for an operations action and a commercial BA for a revenue action.
+- Added a domain-neutral perspective analysis bundle. Supporting analyses are
+  selected only from executable actions in the same detected perspective,
+  diversified by result shape, and remain independent of source filename.
+- Investigation sessions now preserve the primary analysis plus safe supporting
+  analyses. Supporting charts execute through the same full-source validation
+  boundary and failed preflights are omitted rather than rendered as evidence.
+- Browser acceptance now verifies that the Deep BA panel repeats the exact
+  primary decision question shown in the chart workspace.
+- Gates: six focused unit tests pass; desktop TypeScript and production Vite
+  build pass; VPS Chromium corpus passes 4/4 for DATA_XUAT, bcctnhapTTKT,
+  Logistics ERP and Amazon JSON. Amazon also proves a visible supporting chart.
+- Scope note: content depth still requires the universal BA quality matrix in
+  R3. A panel opening is not considered sufficient BA acceptance.
+- Disk checkpoint: 30 GB available, 76% used.

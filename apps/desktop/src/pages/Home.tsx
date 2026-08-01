@@ -31,6 +31,8 @@ import type { AnalysisAction } from '../lib/analysis-opportunity-actions';
 import { createRuntimeIntentFromAnalysisAction } from '../lib/analysis-runtime-contract';
 import { createRuntimePlanPreview } from '../lib/runtime-planner-preview';
 import { createInvestigationSession } from '../lib/investigation-session';
+import { createPerspectiveAnalysisBundle } from '../lib/perspective-analysis-bundle';
+import { adaptNextActionsToLegacy } from '../lib/understanding-next/action-adapter';
 import { generateCanonicalAIBriefing } from '../lib/canonical-ai-briefing';
 import { useNavigate } from 'react-router-dom';
 import { createVirtualDatasetPlan } from '../lib/virtual-dataset-planner';
@@ -126,6 +128,19 @@ export const Home: React.FC = () => {
     const aiBriefing = canonicalArtifact
       ? generateCanonicalAIBriefing(canonicalArtifact)
       : undefined;
+    const analysisBundle = datasetUnderstandingNext
+      ? createPerspectiveAnalysisBundle(datasetUnderstandingNext, action.id, selectedPerspective)
+      : null;
+    const supportingAnalyses = analysisBundle
+      ? adaptNextActionsToLegacy(analysisBundle.supportingActions).map(supportingAction => {
+          const supportingIntent = createRuntimeIntentFromAnalysisAction(supportingAction);
+          return {
+            analysisAction: supportingAction,
+            runtimeIntent: supportingIntent,
+            runtimePlanPreview: createRuntimePlanPreview(supportingIntent),
+          };
+        })
+      : [];
 
     let datasetForSession = currentDataset;
     if (currentDataset?.status === 'ready') {
@@ -154,7 +169,8 @@ export const Home: React.FC = () => {
       currentDataset?.businessFusionOverview,
       datasetForSession?.status === 'ready' ? createWorkspaceSessionSaveRequest(datasetForSession) : undefined,
       canonicalHandoff,
-      multiSourceDataset
+      multiSourceDataset,
+      supportingAnalyses
     );
     navigate('/investigation');
   };
