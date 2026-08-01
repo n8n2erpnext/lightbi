@@ -86,6 +86,7 @@ export const CanonicalMultiSourceReview: React.FC<Props> = ({
   drafts,
   onChange,
   bundles = [],
+  onUseSource,
   onAnalyzePerspective,
   onBuild,
   building,
@@ -213,6 +214,33 @@ export const CanonicalMultiSourceReview: React.FC<Props> = ({
       </header>
 
       <div className="space-y-7 p-5 md:p-8">
+        {sources.length === 1 && onUseSource && (
+          <section className="flex flex-col gap-4 rounded-2xl border border-emerald-200 bg-emerald-50/70 p-5 md:flex-row md:items-center md:justify-between">
+            <div className="max-w-3xl">
+              <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-emerald-800">
+                <CheckCircle2 className="h-4 w-4" />
+                {t("Source ready for understanding", "Nguồn đã sẵn sàng để phân tích")}
+              </div>
+              <p className="mt-2 text-[13px] leading-6 text-slate-700">
+                {t(
+                  "LightBI can analyze this source without making you choose a technical source role first. You can correct its interpretation later if needed.",
+                  "LightBI có thể phân tích nguồn này mà không bắt bạn chọn vai trò kỹ thuật trước. Bạn vẫn có thể sửa cách hiểu sau nếu cần.",
+                )}
+              </p>
+            </div>
+            <button
+              type="button"
+              data-testid="use-single-source"
+              disabled={building}
+              onClick={() => onUseSource(sources[0].key)}
+              className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-emerald-700 px-6 py-3 text-[13px] font-semibold text-white shadow-lg shadow-emerald-700/15 transition hover:bg-emerald-800 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:shadow-none"
+            >
+              {t("Analyze this source", "Phân tích nguồn này")}
+              <ArrowRight className="h-4 w-4" />
+            </button>
+          </section>
+        )}
+
         <CanonicalPerspectiveSelector
           items={perspectives.map((perspective) => ({
             id: perspective.perspectiveId,

@@ -121,3 +121,48 @@ remain the technical workspace for review, cleaning, mapping, query and export.
   two supporting analyses.
 - Charts are selected from result shape; no meaningless one-bar scalar chart.
 - Basic and deep BA agree on metrics and provenance.
+
+## Execution checkpoint 1 - capability continuity
+
+- Added a production capability ladder that preserves canonical governed
+  actions and fills uncovered domains with safe descriptive actions from the
+  existing generic question engine.
+- Universal fallback action identifiers are namespaced and never receive a
+  fabricated canonical handoff. Runtime source continuity is still required.
+- Domain perspectives are augmented from detected semantic signals and
+  executable actions, independent of filename.
+- Corrected the generic adapter so universal actions are assigned to the
+  detected lens domain instead of defaulting to revenue.
+- Removed the single-source intake dead end: one accessible source can enter
+  Easy Mode without first declaring an ERP source role. Role correction remains
+  available as optional technical evidence.
+- Unit gates: capability ladder held-out/metamorphic tests pass.
+- Build gate: desktop TypeScript and production Vite build pass.
+- Browser gate: bank-additional-full.xlsx now completes upload -> Easy Mode ->
+  Customer/Performance/Operations/Finance perspectives -> governed question ->
+  investigation workspace in Chromium on the VPS.
+- Corpus browser matrix is running next; any remaining one-perspective or
+  non-executable result is treated as a contract failure, not a fixture patch.
+
+## Execution checkpoint 2 - safe execution continuity
+
+- Found and eliminated a false-positive browser gate: reaching the investigation
+  route did not prove that an analysis could execute. Universal actions were
+  being rejected there because the page accepted only canonical handoffs.
+- Restored the existing safe SQL/full-source execution boundary only for
+  explicitly namespaced `universal:` descriptive actions. Canonical actions
+  continue to require their canonical handoff and governed preflight.
+- Universal execution still requires an active runtime source and a non-blocked
+  runtime plan. Validation rejects empty or structurally invalid results.
+- Strengthened the Chromium corpus gate: each fixture must have multiple useful
+  perspectives, enter investigation without a preflight block, execute against
+  data, render a chart, and enable deeper BA analysis.
+- Verified on VPS Chromium with real full-source execution:
+  `DATA_XUAT.xlsx`, `bcctnhapTTKT_19122024.xlsx`,
+  `Logistics_ERP_June_2026.csv`, and
+  `Amazon_1-level_46-MB_minified.json` (4/4 passed).
+- Visual review confirms the previously blocked operational workbook now renders
+  a multi-category stock/quantity chart, while `DATA_XUAT.xlsx` renders a real
+  group distribution instead of a blocked placeholder.
+- Disk checkpoint: 30 GB available, 76% used. No broad or destructive cleanup
+  performed.

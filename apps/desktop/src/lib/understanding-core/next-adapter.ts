@@ -64,13 +64,23 @@ function adaptIntent(intent: QuestionCandidate["intent"]): QuestionIntent {
   return intent;
 }
 
+function domainForQuestion(question: QuestionCandidate): DomainId {
+  const lens = question.lens.toLowerCase();
+  if (/inventory|stock|sku/.test(lens)) return "inventory";
+  if (/customer|patient|segment/.test(lens)) return "customer";
+  if (/finance|profit|margin|cost|receivable|payable|balance/.test(lens)) return "finance";
+  if (/revenue|sales|commercial|payment/.test(lens)) return "revenue";
+  if (/performance|indicator|campaign|engagement|team|role/.test(lens)) return "performance";
+  return "operations";
+}
+
 function adaptQuestionToBusinessQuestion(question: QuestionCandidate): BusinessQuestion {
   const firstAction = question.action;
   return {
     id: question.id,
     label: question.label,
     userPrompt: question.prompt,
-    domain: firstAction ? "revenue" : "operations",
+    domain: domainForQuestion(question),
     perspectiveId: question.lens,
     requiredSignals: question.requiredSignals,
     optionalSignals: question.optionalSignals,
@@ -138,11 +148,7 @@ export function adaptCoreToUnderstandingNext(core: UnderstandingCoreResult): Dat
 
   const lenses: BusinessLens[] = [...questionsByLens.entries()].map(([lens, questions], index) => ({
     id: lens.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "") || `lens_${index}`,
-    domain: questions.some(question => /inventory/i.test(question.lens))
-      ? "inventory"
-      : questions.some(question => /team|group|role|event|person|activity/i.test(question.lens))
-        ? "operations"
-        : "revenue",
+    domain: domainForQuestion(questions[0]),
     label: lens,
     description: questions[0]?.prompt ?? lens,
     priority: 100 - index,

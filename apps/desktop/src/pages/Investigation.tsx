@@ -2,8 +2,10 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, BarChart3, Activity, AlertTriangle, ClipboardCheck, FileSpreadsheet } from 'lucide-react';
 import { getCurrentInvestigationSession } from '../lib/investigation-session';
-import type { SafeSqlPreview } from '../lib/safe-sql-preview';
-import type { DuckDBPreviewResult } from '../lib/duckdb-preview-sandbox';
+import { createSafeSqlPreview, type SafeSqlPreview } from '../lib/safe-sql-preview';
+import { executeDuckDBPreviewSandbox, type DuckDBPreviewResult } from '../lib/duckdb-preview-sandbox';
+import { executeBackendPreview } from '../lib/backend-preview-executor';
+import { enhancePlanWithGuardedSum } from '../lib/guarded-sum-bridge';
 import { createChartPreviewModel, type ChartPreviewModel } from '../lib/chart-preview-model';
 import { ChartPreviewRenderer } from '../components/analysis/ChartPreviewRenderer';
 import { validatePreviewAgainstIntent, type ResultValidationResult } from '../lib/result-validator-contract';
@@ -51,6 +53,7 @@ export const Investigation: React.FC = () => {
   const { t } = useUiLanguage();
   const navigate = useNavigate();
   const session = getCurrentInvestigationSession();
+  const isUniversalDescriptiveAction = Boolean(session?.analysisAction.id.startsWith('universal:'));
   const canonicalMultiSourceHandoff = session?.canonicalHandoff && 'multiSource' in session.canonicalHandoff
     ? session.canonicalHandoff as CanonicalMultiSourceInvestigationHandoffV1
     : null;
@@ -68,6 +71,12 @@ export const Investigation: React.FC = () => {
     && session.canonicalHandoff.runtimePreflight.executionAllowed
     && session.canonicalHandoff.queryPlanning.state === 'planned'
   );
+  const universalCanExecute = Boolean(
+    isUniversalDescriptiveAction
+    && session?.runtimeDatasetSource
+    && session.runtimePlanPreview.status !== 'blocked'
+  );
+  const canExecute = handoffCanExecute || universalCanExecute;
   const { preferences } = useDisplayPreferences();
   const registerAdvancedSource = useAdvancedSourceStore(state => state.registerSource);
   const [showDiagnostics, setShowDiagnostics] = useState(false);
@@ -131,14 +140,14 @@ export const Investigation: React.FC = () => {
   }, [registerAdvancedSource, session]);
 
   useEffect(() => {
-    if (!session || !handoffCanExecute || autoPreviewSessionId.current === session.id) return;
+    if (!session || !canExecute || autoPreviewSessionId.current === session.id) return;
     const timer = window.setTimeout(() => {
       if (autoPreviewSessionId.current === session.id) return;
       autoPreviewSessionId.current = session.id;
       void handleRunPreview();
     }, 0);
     return () => window.clearTimeout(timer);
-  }, [session, handoffCanExecute]);
+  }, [session, canExecute]);
 
   if (!session) {
     return (
@@ -217,17 +226,23 @@ export const Investigation: React.FC = () => {
 
   const readinessTier = staleHandoffBlockers.length > 0
     ? 'stale'
-    : handoffCanExecute
+    : canExecute
       ? 'runtime_preflight_ready'
       : 'runtime_preflight_blocked';
-  const readinessClass = handoffCanExecute ? 'text-emerald-600' : 'text-amber-600';
+  const readinessClass = canExecute ? 'text-emerald-600' : 'text-amber-600';
   const briefingRationale = staleHandoffBlockers.length > 0
     ? 'The source or overlay identity changed after this handoff was created.'
-    : handoffCanExecute
-      ? 'The exact selected action passed the governed M3 runtime preflight.'
+    : canExecute
+      ? isUniversalDescriptiveAction
+        ? 'This descriptive action passed the safe universal runtime boundary.'
+        : 'The exact selected action passed the governed M3 runtime preflight.'
       : `Runtime preflight blockers: ${canonicalHandoff?.blockers.join(', ') || 'canonical_handoff_required'}.`;
-  const safeActionHints = handoffCanExecute ? [analysisAction.opportunityName] : [];
-  const safeSqlPreview: SafeSqlPreview = canonicalHandoff?.queryPlanning.state === 'planned'
+  const safeActionHints = canExecute ? [analysisAction.opportunityName] : [];
+  const enhancedRuntimePlan = enhancePlanWithGuardedSum(runtimePlanPreview, rows || []);
+  const universalSafeSqlPreview = createSafeSqlPreview(enhancedRuntimePlan);
+  const safeSqlPreview: SafeSqlPreview = isUniversalDescriptiveAction
+    ? universalSafeSqlPreview
+    : canonicalHandoff?.queryPlanning.state === 'planned'
     ? {
       id: `sql_${canonicalHandoff.queryPlanning.plan.planId}`,
       sourcePlanId: canonicalHandoff.queryPlanning.plan.planId,
@@ -352,6 +367,62 @@ export const Investigation: React.FC = () => {
     setSelectedDrillRows(new Set());
     setDrillError(null);
     try {
+      if (isUniversalDescriptiveAction) {
+        let result = await executeBackendPreview({
+          runtimePlan: enhancedRuntimePlan,
+          safeSqlPreview: universalSafeSqlPreview,
+          rows: rows || [],
+          runtimeDatasetSource,
+          rowScope,
+          signal: run.signal,
+        });
+        if (!executionRuns.current.isCurrent(run)) return;
+
+        const isInfrastructureFailure = result.status === 'failed' && (
+          result.errorMessage?.includes('NETWORK_UNAVAILABLE')
+          || result.errorMessage?.includes('LOCAL_EXECUTOR_UNAVAILABLE')
+          || result.errorMessage?.includes('DUCKDB_BOOTSTRAP_ERROR')
+          || result.errorMessage?.includes('DUCKDB_WORKER_ERROR')
+          || result.errorMessage?.includes('DUCKDB_MEMORY_ERROR')
+        );
+        const isMissingSourceWarning = result.status === 'blocked' && result.blockedReasons.some(reason =>
+          reason.includes('No active dataset source available') || reason.includes('Only CSV current source is supported')
+        );
+        const isSafeFallbackIntent = runtimeIntent.type === 'table_preview' || runtimeIntent.type === 'distribution';
+        if (isMissingSourceWarning || (isInfrastructureFailure && isSafeFallbackIntent)) {
+          result = await executeDuckDBPreviewSandbox({
+            runtimeIntent,
+            runtimePlan: enhancedRuntimePlan,
+            rows: rows || [],
+            safeSqlPreview: universalSafeSqlPreview,
+            signal: run.signal,
+          });
+          result.source = 'js_sandbox_fallback';
+        }
+        if (!executionRuns.current.isCurrent(run)) return;
+
+        const validation = validatePreviewAgainstIntent(runtimeIntent, result);
+        if (validation.status === 'failed' && result.status !== 'failed') {
+          result = {
+            ...result,
+            status: 'failed',
+            errorMessage: 'Validation boundary rejected the preview result due to insufficient quality or missing required data.',
+          };
+        }
+        if (result.status === 'executed' && result.rows.length === 0) {
+          result = {
+            ...result,
+            status: 'failed',
+            errorMessage: 'Execution completed but returned an empty dataset. Analysis unavailable.',
+          };
+        }
+        setPreviewResult(result);
+        setValidationResult(validation);
+        setChartModel(result.status === 'executed'
+          ? createChartPreviewModel({ previewResult: result, runtimePlan: enhancedRuntimePlan, analysisLabel: analysisAction.opportunityName })
+          : null);
+        return;
+      }
       if (!canonicalHandoff || canonicalHandoff.queryPlanning.state !== 'planned') {
           const planningBlockers = canonicalHandoff?.queryPlanning.state === 'blocked'
             ? canonicalHandoff.queryPlanning.blockers
@@ -581,7 +652,7 @@ export const Investigation: React.FC = () => {
           <p className="mt-1 text-xs">The dataset or source evidence changed after this analysis was created. The old action will not run.</p>
           <button type="button" onClick={() => { void returnToCurrentDataset(); }} className="mt-3 rounded border border-amber-300 bg-white px-3 py-1.5 text-xs font-semibold">Return to current dataset</button>
         </div>}
-        {!handoffCanExecute && staleHandoffBlockers.length === 0 && <div role="status" data-testid="investigation-preflight-blocked" className="rounded-[14px] border border-amber-200 bg-amber-50 p-4 text-amber-900">
+        {!canExecute && staleHandoffBlockers.length === 0 && <div role="status" data-testid="investigation-preflight-blocked" className="rounded-[14px] border border-amber-200 bg-amber-50 p-4 text-amber-900">
           <div className="text-sm font-semibold">Analysis Blocked</div>
           <p className="mt-1 text-xs">The governed runtime preflight did not authorize this action. ({canonicalHandoff?.blockers.join(', ') || 'canonical_handoff_required'})</p>
           <button type="button" onClick={() => { void returnToCurrentDataset(); }} className="mt-3 rounded border border-amber-300 bg-white px-3 py-1.5 text-xs font-semibold">Return to mappings and evidence</button>
@@ -609,7 +680,7 @@ export const Investigation: React.FC = () => {
               </button>
               <button
                 onClick={() => { void persistWorkspaceSession().finally(() => setShowDeepAnalysis(true)); }}
-                disabled={isExecuting || previewResult?.status !== 'executed' || !handoffCanExecute}
+                disabled={isExecuting || previewResult?.status !== 'executed' || !canExecute}
                 className="inline-flex items-center gap-1.5 rounded-[10px] border border-violet-200 bg-violet-50 px-3 py-2 text-xs font-medium text-violet-700 shadow-sm transition-colors hover:bg-violet-100 disabled:cursor-not-allowed disabled:border-black/10 disabled:bg-white disabled:text-black/30"
                 title="Open a deeper BA explanation for this selected decision angle"
               >
@@ -628,8 +699,8 @@ export const Investigation: React.FC = () => {
               <button
                 data-run-preview="true"
                 onClick={handleRunPreview}
-                disabled={isExecuting || !handoffCanExecute}
-                title={!handoffCanExecute ? 'Resolve the canonical preflight blockers before running this analysis.' : undefined}
+                disabled={isExecuting || !canExecute}
+                title={!canExecute ? 'Resolve the runtime preflight blockers before running this analysis.' : undefined}
                 className="rounded-[10px] bg-[#202123] px-3 py-2 text-xs font-medium text-white shadow-sm transition-colors hover:bg-black disabled:opacity-50"
               >
                 {isExecuting ? t('Running...', 'Đang chạy...') : previewResult ? t('Refresh preview', 'Làm mới kết quả') : t('Run preview', 'Chạy phân tích')}
@@ -696,8 +767,8 @@ export const Investigation: React.FC = () => {
                    {!isExecuting && (
                      <button
                        onClick={handleRunPreview}
-                       disabled={!handoffCanExecute}
-                       title={!handoffCanExecute ? 'Resolve the canonical preflight blockers before running this analysis.' : undefined}
+                      disabled={!canExecute}
+                      title={!canExecute ? 'Resolve the runtime preflight blockers before running this analysis.' : undefined}
                        className="mt-4 rounded-md border border-black/10 bg-white px-3 py-1.5 text-xs font-medium text-black/65 shadow-sm transition-colors hover:bg-black/[0.035]"
                      >
                        Preview chart
@@ -761,7 +832,7 @@ export const Investigation: React.FC = () => {
              {baDecisionBrief && (
                <BasicBAAnswerCard
                  brief={baDecisionBrief}
-                 canAnalyzeDeeper={previewResult?.status === 'executed' && handoffCanExecute}
+                canAnalyzeDeeper={previewResult?.status === 'executed' && canExecute}
                  onAnalyzeDeeper={() => { void persistWorkspaceSession().finally(() => setShowDeepAnalysis(true)); }}
                />
              )}
@@ -785,7 +856,7 @@ export const Investigation: React.FC = () => {
              />
           </div>
         <InvestigationDiagnostics
-          handoffCanExecute={handoffCanExecute}
+          handoffCanExecute={canExecute}
           isExecuting={isExecuting}
           onRunPreview={handleRunPreview}
           preferences={preferences}

@@ -509,6 +509,17 @@ const CanonicalAnalysisStates: React.FC<{
   const perspectiveAnalyses = selectedPerspectiveId
     ? presentation.analyses.filter(item => (item.businessPerspectiveIds ?? []).some(id => id === selectedPerspectiveId))
     : [];
+  const universalQuestions = selectedPerspectiveId
+    ? understanding.recommendedQuestions.filter((question) =>
+        question.id.startsWith('universal:')
+        && question.domain === selectedPerspectiveId
+        && question.executionScope !== 'not_supported')
+    : [];
+  const universalActions = universalQuestions.flatMap((question) => {
+    const action = understanding.availableActions.find((candidate) =>
+      candidate.id.startsWith('universal:') && candidate.questionId === question.id);
+    return action ? [{ question, action }] : [];
+  });
   const countRows: Array<[CanonicalAnalysisPresentationV1['state'], string]> = [
     ['ready', 'Ready now'],
     ['needs_user_evidence', 'Needs confirmation'],
@@ -602,6 +613,31 @@ const CanonicalAnalysisStates: React.FC<{
       </div>
     </div>}
 
+    {selectedPerspectiveId && !primaryAction && universalActions.length > 0 && <div className="mt-4 rounded-2xl border border-blue-200 bg-gradient-to-br from-blue-50 via-white to-emerald-50 p-5" data-testid="universal-primary-analysis">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div className="min-w-0">
+          <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-blue-700"><Sparkles className="h-4 w-4" />{t('Recommended by LightBI', 'LightBI đề xuất')}</div>
+          <h5 className="mt-2 text-[18px] font-semibold text-slate-950">{universalActions[0].question.label}</h5>
+          <p className="mt-1 max-w-3xl text-[13px] leading-5 text-slate-600">{universalActions[0].question.userPrompt}</p>
+          <p className="mt-2 text-[11px] text-slate-500">{t('Safe descriptive analysis from detected business signals; no causal claim is made.', 'Phân tích mô tả an toàn từ các tín hiệu kinh doanh đã nhận diện; không suy diễn quan hệ nhân quả.')}</p>
+        </div>
+        <button type="button" data-testid="universal-analyze-perspective" onClick={() => onSelectAction?.(adaptNextActionsToLegacy([universalActions[0].action])[0])} className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-blue-700 px-5 py-3 text-[13px] font-semibold text-white shadow-sm transition hover:bg-blue-800">
+          <Sparkles className="h-4 w-4" />{t('Analyze this perspective', 'Phân tích góc nhìn này')}
+        </button>
+      </div>
+    </div>}
+
+    {selectedPerspectiveId && universalActions.length > (primaryAction ? 0 : 1) && <section className="mt-4" data-testid="universal-ready-angles">
+      <div className="mb-2"><h5 className="text-[13px] font-semibold text-slate-900">{t('Other questions this data can answer', 'Các câu hỏi khác dữ liệu này có thể trả lời')}</h5></div>
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
+        {universalActions.slice(primaryAction ? 0 : 1).map(({ question, action }) => <button key={action.id} type="button" onClick={() => onSelectAction?.(adaptNextActionsToLegacy([action])[0])} className="min-h-[118px] rounded-xl border border-slate-200 bg-white p-4 text-left shadow-sm transition hover:border-blue-300 hover:bg-blue-50/40">
+          <div className="flex items-start justify-between gap-2"><span className="text-[13px] font-semibold leading-5 text-slate-900">{question.label}</span><Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-blue-600" /></div>
+          <p className="mt-2 line-clamp-2 text-[11px] leading-4 text-slate-500">{question.userPrompt}</p>
+          <span className="mt-3 inline-flex text-[11px] font-semibold text-blue-700">{t('Analyze', 'Phân tích')} →</span>
+        </button>)}
+      </div>
+    </section>}
+
     {selectedPerspectiveId && readyExecutableAnalyses.length > 1 && <section className="mt-4" aria-labelledby="canonical-ready-angles-heading" data-testid="canonical-ready-angles" data-ready-count={readyExecutableAnalyses.length}>
       <div className="mb-2 flex items-end justify-between gap-3">
         <div>
@@ -631,7 +667,7 @@ const CanonicalAnalysisStates: React.FC<{
       </div>
     </section>}
 
-    {selectedPerspectiveId && perspectiveAnalyses.length === 0 && <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-[12px] text-amber-800" data-testid="canonical-perspective-recognized-only">
+    {selectedPerspectiveId && perspectiveAnalyses.length === 0 && universalActions.length === 0 && <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-[12px] text-amber-800" data-testid="canonical-perspective-recognized-only">
       LightBI recognizes this perspective from canonical business signals, but no governed question or metric contract is available for it yet. No chart will be fabricated.
     </div>}
 

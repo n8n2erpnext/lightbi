@@ -25,7 +25,7 @@ import {
   suggestedDeclarationsForPerspective,
   type ReportingPeriodScopeV1,
 } from '../lib/understanding-core/collection-understanding';
-import { projectCanonicalArtifactToUnderstandingNext } from '../lib/canonical-consumer-presentation-adapter';
+import { projectCanonicalCapabilityLadder } from '../lib/canonical-capability-ladder';
 import { presentCanonicalConsumerArtifact, presentCanonicalMultiSourceRelationship, type CanonicalRemediationOperationV1 } from '../lib/understanding-core/canonical-consumer-presentation-contract';
 import type { AnalysisAction } from '../lib/analysis-opportunity-actions';
 import { createRuntimeIntentFromAnalysisAction } from '../lib/analysis-runtime-contract';
@@ -112,8 +112,14 @@ export const Home: React.FC = () => {
       : canonicalArtifact
         ? prepareCanonicalInvestigationHandoff(canonicalArtifact, action.id)
         : undefined;
-    const runtimeContinuity = evaluateRuntimeSourceContinuity({ artifact: canonicalArtifact, runtimeSource: currentDataset?.runtimeDatasetSource, multiSourceDataset, actionCandidateId: action.id });
-    if (!canonicalHandoff || !runtimeContinuity.available || !runtimeContinuity.runtimeSource) {
+    const isUniversalDescriptiveAction = action.id.startsWith('universal:');
+    const runtimeContinuity = evaluateRuntimeSourceContinuity({
+      artifact: canonicalArtifact,
+      runtimeSource: currentDataset?.runtimeDatasetSource,
+      multiSourceDataset,
+      actionCandidateId: isUniversalDescriptiveAction ? undefined : action.id,
+    });
+    if ((!canonicalHandoff && !isUniversalDescriptiveAction) || !runtimeContinuity.available || !runtimeContinuity.runtimeSource) {
       setResult({ status: 'blocked', blockedReasons: runtimeContinuity.blockers, message: 'The complete source is no longer available. Reselect the source before running this analysis.' });
       return;
     }
@@ -220,10 +226,6 @@ export const Home: React.FC = () => {
     });
   }, [canonicalRows, currentDataset]);
 
-  const datasetUnderstandingNext = React.useMemo(
-    () => canonicalArtifact ? projectCanonicalArtifactToUnderstandingNext(canonicalArtifact) : null,
-    [canonicalArtifact]
-  );
   const canonicalPresentation = React.useMemo(() => canonicalArtifact ? presentCanonicalConsumerArtifact(canonicalArtifact, {
     stale: canonicalOverlayRebuildState === 'pending' || canonicalOverlayRebuildState === 'failed' || !evaluateRuntimeSourceContinuity({
       artifact: canonicalArtifact, runtimeSource: currentDataset?.runtimeDatasetSource, multiSourceDataset: currentDataset?.canonicalMultiSourceDataset,
@@ -231,10 +233,24 @@ export const Home: React.FC = () => {
   }) : null,
     [canonicalArtifact, canonicalOverlayRebuildState, currentDataset?.runtimeDatasetSource, currentDataset?.canonicalMultiSourceDataset]
   );
-  const canonicalDomainPerspectives = React.useMemo(
-    () => canonicalArtifact ? projectCanonicalDomainPerspectives(canonicalArtifact) : [],
-    [canonicalArtifact],
+  const canonicalCapabilityLadder = React.useMemo(
+    () => canonicalArtifact ? projectCanonicalCapabilityLadder(
+      canonicalArtifact,
+      projectCanonicalDomainPerspectives(canonicalArtifact),
+      {
+        sourceKind: canonicalArtifact.status === 'valid' ? canonicalArtifact.canonicalSource.physical.sourceProfile.source.kind : 'unknown',
+        sourceLabel: currentDataset?.file_name || 'dataset',
+        fileNames: currentDataset?.file_name ? [currentDataset.file_name] : [],
+        sheetNames: currentDataset?.selected_sheet ? [currentDataset.selected_sheet] : [],
+        columns: (currentDataset?.understandingColumns ?? currentDataset?.columns ?? []).map((column: unknown) => String(column)),
+        rows: canonicalRows,
+        sourceRowCount: Number(currentDataset?.understandingSourceRowCount ?? currentDataset?.rows_count ?? canonicalRows.length),
+      },
+    ) : null,
+    [canonicalArtifact, canonicalRows, currentDataset],
   );
+  const datasetUnderstandingNext = canonicalCapabilityLadder?.understanding ?? null;
+  const canonicalDomainPerspectives = canonicalCapabilityLadder?.perspectives ?? [];
   const runtimeSourceContinuity = React.useMemo(() => evaluateRuntimeSourceContinuity({
     artifact: canonicalArtifact, runtimeSource: currentDataset?.runtimeDatasetSource, multiSourceDataset: currentDataset?.canonicalMultiSourceDataset,
   }), [canonicalArtifact, currentDataset?.runtimeDatasetSource, currentDataset?.canonicalMultiSourceDataset]);
