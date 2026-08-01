@@ -12,6 +12,8 @@ describe("declarative domain pack registry", () => {
     expect(pack).toEqual(COMMERCE_DISTRIBUTION_DOMAIN_PACK_V1);
     expect(pack?.metricIds).toContain("gross_profit");
     expect(pack?.perspectives.map((item) => item.id)).toEqual(expect.arrayContaining(["executive", "sales", "finance", "operations", "data_trust"]));
+    expect(pack?.perspectives.find((item) => item.id === "operations")?.requiredMetricIds).toEqual(["delivery_count", "trip_count"]);
+    expect(pack?.perspectives.find((item) => item.id === "performance")?.requiredMetricIds).toEqual(expect.arrayContaining(["delivery_count", "trip_count", "average_quality_score"]));
   });
 
   it("rejects undeclared signals and perspective metrics", () => {

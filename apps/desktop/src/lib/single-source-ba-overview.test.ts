@@ -44,4 +44,16 @@ describe('single source BA overview', () => {
     expect(overview.breakdowns.map(item => item.id)).toEqual(['product', 'category', 'brand', 'branch', 'salesperson', 'payment', 'status']);
     expect(overview.trend.length).toBeGreaterThan(1);
   });
+
+  it('produces a full operational BA overview for logistics data without revenue', () => {
+    const workbook = XLSX.readFile('../../sample-corpus/anchors/1.3.0/Logistics_ERP_June_2026.csv');
+    const rows = XLSX.utils.sheet_to_json<Record<string, unknown>>(workbook.Sheets[workbook.SheetNames[0]]);
+    const overview = createSingleSourceBAOverview(rows)!;
+    expect(overview.mode).toBe('operations');
+    expect(overview.rowCount).toBe(1500);
+    expect(overview.kpis.find(item => item.id === 'deliveries')?.value).toBeGreaterThan(0);
+    expect(overview.breakdowns.length).toBeGreaterThanOrEqual(3);
+    expect(overview.findings.length).toBeGreaterThan(0);
+    expect(overview.recommendedActions.length).toBe(3);
+  });
 });

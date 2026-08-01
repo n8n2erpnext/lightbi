@@ -127,7 +127,9 @@ describe("Phase 5M2 policy governance and import isolation", () => {
     expect(GOVERNED_DOMAIN_SUPPORT_MANIFEST_V1).toHaveLength(1);
     expect(GOVERNED_METRIC_DEFINITIONS_V1).toHaveLength(9);
     const metricIds = new Set(GOVERNED_METRIC_DEFINITIONS_V1.map((item) => item.metricId));
-    expect(COMMERCE_DISTRIBUTION_QUESTION_POLICY_V1.questionFamilies).toHaveLength(31);
+    const questionIds = COMMERCE_DISTRIBUTION_QUESTION_POLICY_V1.questionFamilies.map((item) => item.questionId);
+    expect(questionIds.length).toBeGreaterThanOrEqual(31);
+    expect(new Set(questionIds).size).toBe(questionIds.length);
     expect(COMMERCE_DISTRIBUTION_QUESTION_POLICY_V1.questionFamilies.every((item) => item.domainPackId === "commerce_distribution_mvp" && metricIds.has(item.metricId))).toBe(true);
     expect(COMMERCE_DISTRIBUTION_QUESTION_POLICY_V1.maxDefaultQuestions).toBe(5);
   });

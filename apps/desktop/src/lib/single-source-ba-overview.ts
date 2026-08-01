@@ -16,6 +16,7 @@ export interface SingleSourceBreakdown {
   id: string;
   label: string;
   physicalColumn: string;
+  valueKind: 'money' | 'number';
   top: SingleSourceRankedValue[];
   bottom: SingleSourceRankedValue[];
 }
@@ -27,7 +28,12 @@ export interface SingleSourceTrendPoint {
 }
 
 export interface SingleSourceBAOverview {
+  mode: 'commercial' | 'operations' | 'inventory' | 'general';
+  analysisLabel: string;
+  breakdownHeading: string;
   rowCount: number;
+  sourceRowCount: number;
+  isRepresentativeSample: boolean;
   bindings: Record<string, string>;
   kpis: SingleSourceKpi[];
   trend: SingleSourceTrendPoint[];
@@ -36,13 +42,14 @@ export interface SingleSourceBAOverview {
   concentration: { label: string; share: number } | null;
   outlierCount: number;
   findings: string[];
+  recommendedActions: string[];
   limitations: string[];
 }
 
 type Row = Record<string, unknown>;
 
 const ALIASES: Record<string, string[]> = {
-  revenue: ['revenue', 'salesrevenue', 'netrevenue', 'invoicetotal', 'totalrevenue', 'amount'],
+  revenue: ['revenue', 'salesrevenue', 'netrevenue', 'invoicetotal', 'totalamount', 'totalrevenue', 'amount'],
   quantity: ['quantity', 'qty', 'soldqty', 'quantitysold', 'salesquantity'],
   order: ['orderid', 'orderno', 'ordernumber', 'invoiceid', 'invoiceno'],
   date: ['orderdate', 'salesdate', 'transactiondate', 'invoicedate', 'date', 'reportdate'],
@@ -55,14 +62,27 @@ const ALIASES: Record<string, string[]> = {
   status: ['status', 'orderstatus', 'salesstatus'],
   discount: ['discount', 'discountamount', 'discountvalue'],
   unitPrice: ['unitprice', 'price', 'sellingprice'],
+  shipment: ['shipmentid', 'shipmentno', 'trackingid', 'trackingno', 'deliveryid', 'matakien'],
+  deliveryDate: ['deliverydate', 'delivereddate', 'shipdate', 'reportdate', 'ngaybaocao'],
+  warehouse: ['warehouse', 'warehousecode', 'distributioncenter', 'hub', 'depot', 'kho'],
+  carrier: ['carrier', 'shippingcompany', 'logisticspartner', 'donvivanchuyen'],
+  route: ['route', 'routename', 'tuyenxe'],
+  driver: ['driver', 'drivername', 'taixe'],
+  vehicle: ['vehicle', 'vehicleid', 'truck', 'licenseplate', 'chuyenxe'],
+  deliveryStatus: ['deliverystatus', 'shipmentstatus', 'ontimestatus', 'status', 'xedendunghen'],
+  deliveryFee: ['deliveryfee', 'shippingfee', 'freightcost', 'transportcost'],
+  waitingTime: ['waitingtime', 'delayminutes', 'deliverytime', 'leadtime', 'transittime'],
+  stock: ['stockqty', 'onhandqty', 'inventoryqty', 'closingstock', 'tonkho'],
 };
 
 function normalize(value: string): string {
-  return value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
+  return value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/đ/g, 'd').replace(/[^a-z0-9]/g, '');
 }
 
 function bindColumns(rows: Row[]): Record<string, string> {
-  const columns = rows[0] ? Object.keys(rows[0]) : [];
+  // JSON and dirty operational exports are often sparse. Looking only at the
+  // first record caused valid business fields later in the source to vanish.
+  const columns = [...new Set(rows.slice(0, 2000).flatMap(row => Object.keys(row)))];
   const normalized = new Map(columns.map(column => [normalize(column), column]));
   const bindings: Record<string, string> = {};
   for (const [semantic, aliases] of Object.entries(ALIASES)) {
@@ -123,7 +143,23 @@ function buildBreakdown(rows: Row[], dimensionColumn: string, measureColumn: str
   }
   if (groups.size < 2 || total === 0) return null;
   const ranked = [...groups.entries()].map(([groupLabel, entry]) => ({ label: groupLabel, value: entry.value, share: entry.value / total, rowCount: entry.rowCount })).sort((a, b) => b.value - a.value);
-  return { id, label, physicalColumn: dimensionColumn, top: ranked.slice(0, 5), bottom: [...ranked].reverse().slice(0, 3) };
+  return { id, label, physicalColumn: dimensionColumn, valueKind: 'money', top: ranked.slice(0, 5), bottom: [...ranked].reverse().slice(0, 3) };
+}
+
+function buildCountBreakdown(rows: Row[], dimensionColumn: string, identityColumn: string | undefined, id: string, label: string): SingleSourceBreakdown | null {
+  const groups = new Map<string, Set<string>>();
+  rows.forEach((row, index) => {
+    const dimension = textValue(row[dimensionColumn]);
+    if (!dimension) return;
+    const values = groups.get(dimension) ?? new Set<string>();
+    values.add((identityColumn ? textValue(row[identityColumn]) : null) ?? `row:${index}`);
+    groups.set(dimension, values);
+  });
+  if (groups.size < 2) return null;
+  const ranked = [...groups.entries()].map(([groupLabel, values]) => ({ label: groupLabel, value: values.size, rowCount: values.size, share: 0 })).sort((a, b) => b.value - a.value);
+  const total = ranked.reduce((result, entry) => result + entry.value, 0);
+  ranked.forEach(entry => { entry.share = total ? entry.value / total : 0; });
+  return { id, label, physicalColumn: dimensionColumn, valueKind: 'number', top: ranked.slice(0, 5), bottom: [...ranked].reverse().slice(0, 3) };
 }
 
 function buildTrend(rows: Row[], dateColumn: string, measureColumn: string): SingleSourceTrendPoint[] {
@@ -142,11 +178,64 @@ function buildTrend(rows: Row[], dateColumn: string, measureColumn: string): Sin
   return [...groups.entries()].map(([period, entry]) => ({ period, ...entry })).sort((a, b) => a.period.localeCompare(b.period));
 }
 
-export function createSingleSourceBAOverview(rows: Row[]): SingleSourceBAOverview | null {
+export function createSingleSourceBAOverview(rows: Row[], options: { sourceRowCount?: number } = {}): SingleSourceBAOverview | null {
   if (rows.length === 0) return null;
+  const sourceRowCount = Math.max(rows.length, options.sourceRowCount ?? rows.length);
+  const isRepresentativeSample = sourceRowCount > rows.length;
   const bindings = bindColumns(rows);
   const revenue = bindings.revenue;
-  if (!revenue) return null;
+  const operationalIdentity = bindings.shipment ?? bindings.order;
+  const isOperations = Boolean(bindings.shipment || bindings.deliveryStatus || bindings.carrier || bindings.route || bindings.driver || bindings.vehicle);
+  const isInventory = !revenue && !isOperations && Boolean(bindings.stock || bindings.warehouse);
+  if (!revenue && !isOperations && !isInventory) return null;
+
+  if (!revenue) {
+    const identityCount = operationalIdentity ? new Set(rows.map(row => textValue(row[operationalIdentity])).filter(Boolean)).size : rows.length;
+    const kpis: SingleSourceKpi[] = [{ id: isInventory ? 'records' : 'deliveries', label: isInventory ? 'Bản ghi tồn kho' : 'Lượt giao hàng', value: identityCount, kind: 'number' }];
+    const deliveryFeeTotal = sum(rows, bindings.deliveryFee);
+    const stockTotal = sum(rows, bindings.stock);
+    const waitingValues = bindings.waitingTime ? rows.map(row => numberValue(row[bindings.waitingTime])).filter((value): value is number => value !== null) : [];
+    if (deliveryFeeTotal !== null) kpis.push({ id: 'delivery_fee', label: 'Tổng chi phí giao hàng', value: deliveryFeeTotal, kind: 'money' });
+    if (stockTotal !== null) kpis.push({ id: 'stock', label: 'Tổng lượng tồn', value: stockTotal, kind: 'number' });
+    if (waitingValues.length) kpis.push({ id: 'average_waiting_time', label: 'Thời gian chờ bình quân', value: waitingValues.reduce((total, value) => total + value, 0) / waitingValues.length, kind: 'number' });
+    const statusValues = bindings.deliveryStatus ? rows.map(row => textValue(row[bindings.deliveryStatus])).filter((value): value is string => Boolean(value)) : [];
+    const onTimeCount = statusValues.filter(value => /ontime|dunghen|completed|delivered|success|dagiao|giaothanhcong/i.test(normalize(value))).length;
+    if (statusValues.length) kpis.push({ id: 'on_time_rate', label: 'Tỷ lệ hoàn tất/đúng hẹn', value: onTimeCount / statusValues.length, kind: 'percent' });
+    const dimensions: Array<[string, string]> = isInventory
+      ? [['warehouse', 'Kho'], ['product', 'Sản phẩm'], ['category', 'Nhóm hàng'], ['status', 'Trạng thái']]
+      : [['deliveryStatus', 'Trạng thái giao hàng'], ['carrier', 'Đơn vị vận chuyển'], ['warehouse', 'Kho / trung tâm'], ['route', 'Tuyến'], ['driver', 'Tài xế'], ['vehicle', 'Phương tiện']];
+    const breakdowns = dimensions.flatMap(([id, label]) => {
+      const column = bindings[id];
+      if (!column) return [];
+      const measure = isInventory ? bindings.stock : bindings.deliveryFee;
+      const breakdown = measure ? buildBreakdown(rows, column, measure, id, label) : buildCountBreakdown(rows, column, operationalIdentity, id, label);
+      return breakdown ? [breakdown] : [];
+    });
+    const dateColumn = bindings.deliveryDate ?? bindings.date;
+    const trendMeasure = bindings.deliveryFee ?? bindings.stock;
+    const trend = dateColumn && trendMeasure ? buildTrend(rows, dateColumn, trendMeasure) : [];
+    const trendChange = trend.length > 1 && trend[0].value !== 0 ? (trend.at(-1)!.value - trend[0].value) / Math.abs(trend[0].value) : null;
+    const findings: string[] = [];
+    if (breakdowns[0]?.top[0]) findings.push(`${breakdowns[0].top[0].label} là nhóm lớn nhất, chiếm ${(breakdowns[0].top[0].share * 100).toFixed(1)}% phạm vi đã phân tích.`);
+    if (statusValues.length) findings.push(`${onTimeCount.toLocaleString()} trong ${statusValues.length.toLocaleString()} bản ghi có trạng thái hoàn tất hoặc đúng hẹn.`);
+    if (waitingValues.length) {
+      const q1 = quantile(waitingValues, 0.25); const q3 = quantile(waitingValues, 0.75); const fence = q3 + 1.5 * (q3 - q1);
+      const delayed = waitingValues.filter(value => value > fence).length;
+      if (delayed) findings.push(`Có ${delayed.toLocaleString()} bản ghi thời gian chờ cao bất thường theo ngưỡng IQR.`);
+    }
+    return {
+      mode: isInventory ? 'inventory' : 'operations',
+      analysisLabel: isInventory ? 'Phân tích tồn kho' : 'Phân tích vận hành & logistics',
+      breakdownHeading: isInventory ? 'Tồn kho tập trung ở đâu?' : 'Hoạt động phân bố ở đâu?',
+      rowCount: rows.length, sourceRowCount, isRepresentativeSample, bindings, kpis, trend, trendChange, breakdowns,
+      concentration: breakdowns[0]?.top[0] ? { label: breakdowns[0].top[0].label, share: breakdowns[0].top[0].share } : null,
+      outlierCount: 0, findings,
+      recommendedActions: isInventory
+        ? ['Kiểm tra các kho và mặt hàng tập trung lớn nhất.', 'Đối chiếu nhóm tồn thấp, tồn cao và dữ liệu thiếu trước khi điều chuyển hàng.', 'Theo dõi biến động theo kỳ và xác nhận đơn vị đo.']
+        : ['Kiểm tra nhóm trạng thái, tuyến hoặc đơn vị vận chuyển có ngoại lệ lớn nhất.', 'Đối chiếu thời gian chờ, chi phí và tỷ lệ đúng hẹn theo kho hoặc tuyến.', 'Mở các bản ghi bất thường trước khi điều chỉnh năng lực vận hành.'],
+      limitations: ['Kết quả mô tả phân bố và ngoại lệ trong dữ liệu, không tự khẳng định quan hệ nhân quả.'],
+    };
+  }
 
   const revenueTotal = sum(rows, revenue) ?? 0;
   const quantityTotal = sum(rows, bindings.quantity);
@@ -197,5 +286,10 @@ export function createSingleSourceBAOverview(rows: Row[]): SingleSourceBAOvervie
     ...(trend.length < 2 ? ['File chưa có đủ nhiều kỳ thời gian để đánh giá xu hướng đáng tin cậy.'] : []),
     ...(!bindings.order ? ['Không tìm thấy định danh đơn hàng; số bản ghi không được diễn giải thành số đơn hàng.'] : []),
   ];
-  return { rowCount: rows.length, bindings, kpis, trend, trendChange, breakdowns, concentration, outlierCount, findings, limitations };
+  return {
+    mode: 'commercial', analysisLabel: 'Phân tích doanh thu', breakdownHeading: 'Doanh thu đến từ đâu?',
+    rowCount: rows.length, sourceRowCount, isRepresentativeSample, bindings, kpis, trend, trendChange, breakdowns, concentration, outlierCount, findings,
+    recommendedActions: ['Mở nhóm đóng góp lớn nhất để kiểm tra sản phẩm, cửa hàng và nhân viên tạo ra kết quả.', 'So sánh nhóm tăng trưởng với nhóm suy giảm trước khi thay đổi giá, chiết khấu hoặc phân bổ nguồn lực.', 'Kiểm tra các dòng bất thường và chất lượng dữ liệu trước khi dùng kết quả cho quyết định tài chính.'],
+    limitations,
+  };
 }

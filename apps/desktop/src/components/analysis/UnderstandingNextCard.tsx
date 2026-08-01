@@ -93,9 +93,10 @@ export const UnderstandingNextCard: React.FC<UnderstandingNextCardProps> = ({
   const recommendedPerspectiveId = canonicalPerspectives.find(
     perspective => perspective.state === 'governed_action_available'
   )?.perspectiveId ?? null;
-  const actionablePerspectives = canonicalPerspectives.filter(
-    perspective => perspective.state === 'governed_action_available'
-  );
+  // Easy Mode should show every evidence-backed business viewpoint. Whether a
+  // viewpoint can run now is communicated by its state; hiding it made the
+  // understanding layer appear much narrower than the data actually was.
+  const actionablePerspectives = canonicalPerspectives;
   const grainLabel = GRAIN_LABELS[understanding.profile.grain] ?? humanize(understanding.profile.grain);
 
 
@@ -197,20 +198,24 @@ export const UnderstandingNextCard: React.FC<UnderstandingNextCardProps> = ({
       </div>
 
       {/* Dirty Signals Banner */}
-      {understanding.quality.dirtySignals.length > 0 && (
-        <div className="flex flex-col gap-2">
-          {understanding.quality.dirtySignals.map((sig, i) => (
-             <div key={i} className={`flex items-start p-3 rounded-lg border ${sig.severity === 'blocking' ? 'bg-red-50 border-red-200 text-red-800' : 'bg-amber-50 border-amber-200 text-amber-800'}`}>
-                <AlertTriangle className="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" />
-                <div className="flex flex-col">
-                  <span className="text-[13px] font-semibold">{sig.kind} <span className="text-[11px] opacity-75 font-normal ml-2">Needs review</span></span>
-                  <span className="text-[12px] opacity-90 mt-0.5">{sig.message}</span>
-                  {sig.evidence.length > 0 && <span className="text-[11px] mt-1 font-mono bg-white/50 px-1.5 py-0.5 rounded">{sig.evidence[0]}</span>}
-                </div>
-             </div>
-          ))}
-        </div>
-      )}
+      {understanding.quality.dirtySignals.length > 0 && (() => {
+        const blocking = understanding.quality.dirtySignals.filter(signal => signal.severity === 'blocking');
+        const warnings = understanding.quality.dirtySignals.filter(signal => signal.severity !== 'blocking');
+        return <details className={`rounded-xl border ${blocking.length ? 'border-red-200 bg-red-50' : 'border-amber-200 bg-amber-50/70'}`}>
+          <summary className={`cursor-pointer px-4 py-3 text-[12px] font-semibold ${blocking.length ? 'text-red-800' : 'text-amber-800'}`}>
+            <span className="inline-flex items-center gap-2"><AlertTriangle className="h-4 w-4" />{t(
+              `${understanding.quality.dirtySignals.length} data-quality finding${understanding.quality.dirtySignals.length === 1 ? '' : 's'} retained`,
+              `Đã ghi nhận ${understanding.quality.dirtySignals.length} vấn đề chất lượng dữ liệu`,
+            )}</span>
+            <span className="ml-2 font-normal opacity-75">{t('Analysis continues with explicit limitations.', 'LightBI vẫn phân tích và giữ rõ các giới hạn.')}</span>
+          </summary>
+          <div className="space-y-2 border-t border-current/10 px-4 py-3">
+            {[...blocking, ...warnings].map((signal, index) => <div key={`${signal.kind}:${signal.column ?? ''}:${index}`} className="text-[12px] leading-5">
+              <span className="font-semibold">{humanize(signal.kind)}</span>{signal.column ? ` · ${signal.column}` : ''}: {signal.message}
+            </div>)}
+          </div>
+        </details>;
+      })()}
 
       {!canonicalPresentation && understanding.quality.blockedReasons.length > 0 && (
         <div className="flex flex-col gap-2 p-3 bg-red-50 border border-red-200 rounded-lg text-red-800">
@@ -597,13 +602,13 @@ const CanonicalAnalysisStates: React.FC<{
       </div>
     </div>}
 
-    {selectedPerspectiveId && readyExecutableAnalyses.length > 1 && <section className="mt-4" aria-labelledby="canonical-ready-angles-heading">
+    {selectedPerspectiveId && readyExecutableAnalyses.length > 1 && <section className="mt-4" aria-labelledby="canonical-ready-angles-heading" data-testid="canonical-ready-angles" data-ready-count={readyExecutableAnalyses.length}>
       <div className="mb-2 flex items-end justify-between gap-3">
         <div>
-          <h5 id="canonical-ready-angles-heading" className="text-[13px] font-semibold text-slate-900">{t('Other questions this data can answer', 'CÃ¡c cÃ¢u há»i khÃ¡c dá»¯ liá»‡u nÃ y cÃ³ thá»ƒ tráº£ lá»i')}</h5>
-          <p className="mt-0.5 text-[11px] text-slate-500">{t('Every option below passed the same governed checks.', 'Má»—i lá»±a chá»n bÃªn dÆ°á»›i Ä‘á»u Ä‘Ã£ vÆ°á»£t qua cÃ¹ng má»™t bá»™ kiá»ƒm tra quáº£n trá»‹.')}</p>
+          <h5 id="canonical-ready-angles-heading" className="text-[13px] font-semibold text-slate-900">{t('Other questions this data can answer', 'Các câu hỏi khác dữ liệu này có thể trả lời')}</h5>
+          <p className="mt-0.5 text-[11px] text-slate-500">{t('Every option below passed the same governed checks.', 'Mỗi lựa chọn bên dưới đều đã vượt qua cùng một bộ kiểm tra quản trị.')}</p>
         </div>
-        <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[10px] font-semibold text-emerald-700">{readyExecutableAnalyses.length} {t('ready angles', 'gÃ³c nhÃ¬n sáºµn sÃ ng')}</span>
+        <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[10px] font-semibold text-emerald-700">{readyExecutableAnalyses.length} {t('ready angles', 'góc nhìn sẵn sàng')}</span>
       </div>
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
         {readyExecutableAnalyses.slice(1).map(item => {
@@ -611,6 +616,7 @@ const CanonicalAnalysisStates: React.FC<{
           return <button
             key={item.itemId}
             type="button"
+            data-testid={`canonical-ready-angle-${item.itemId}`}
             onClick={() => action && onSelectAction?.(adaptNextActionsToLegacy([action])[0])}
             className="min-h-[118px] rounded-xl border border-slate-200 bg-white p-4 text-left shadow-sm transition hover:border-blue-300 hover:bg-blue-50/40"
           >
@@ -619,7 +625,7 @@ const CanonicalAnalysisStates: React.FC<{
               <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-blue-600" />
             </div>
             <p className="mt-2 line-clamp-2 text-[11px] leading-4 text-slate-500">{item.description}</p>
-            <span className="mt-3 inline-flex text-[11px] font-semibold text-blue-700">{t('Analyze', 'PhÃ¢n tÃ­ch')} â†’</span>
+            <span className="mt-3 inline-flex text-[11px] font-semibold text-blue-700">{t('Analyze', 'Phân tích')} →</span>
           </button>;
         })}
       </div>

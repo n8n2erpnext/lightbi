@@ -120,6 +120,20 @@ const MONEY_SIGNALS = new Set([
 ]);
 const ALLOWED_RESOLUTION_STATES = new Set(["confirmed", "probable"]);
 
+/**
+ * Cross-domain business relevance is deliberately declared here instead of in
+ * file-name or sample-specific rules. A signal keeps its canonical owner, while
+ * adjacent perspectives can still be offered as evidence-backed viewpoints.
+ */
+const RELATED_DOMAIN_SIGNALS: Partial<Record<DomainId, Set<string>>> = {
+  revenue: new Set(["order", "invoice", "product", "sku", "quantity", "sold_qty", "payment_method", "revenue", "net_revenue", "invoice_total"]),
+  finance: new Set(["revenue", "net_revenue", "invoice_total", "gross_profit", "cost", "total_cost", "unit_cost", "delivery_fee", "cod_amount", "receivable", "payable", "debit", "credit"]),
+  inventory: new Set(["product", "sku", "warehouse", "stock_qty", "inventory", "stock_status", "movement_qty", "received_qty", "issued_qty"]),
+  customer: new Set(["customer", "segment", "order", "payment_method", "delivery_status", "country", "region"]),
+  performance: new Set(["salesperson", "employee", "driver", "carrier", "warehouse", "route", "vehicle", "delivery_status", "delivery_date", "report_date", "waiting_time", "quantity", "sold_qty", "delivered_qty"]),
+  operations: new Set(["order", "shipment", "warehouse", "route", "vehicle", "driver", "carrier", "delivery_status", "delivery_date", "report_date", "waiting_time", "product", "sku"]),
+};
+
 function confidenceForState(state: string): number {
   return state === "confirmed" ? 1 : state === "probable" ? 0.78 : 0;
 }
@@ -148,8 +162,10 @@ export function projectCanonicalDomainPerspectives(
   } as const;
 
   return listDomainCatalogs().flatMap((catalog): CanonicalDomainPerspectiveCandidateV1[] => {
+    const relatedSignals = RELATED_DOMAIN_SIGNALS[catalog.id];
     const matches = selected.filter((column) =>
-      SEMANTIC_SIGNAL_BY_ID.get(column.selectedCandidateId!)?.domains.includes(catalog.id));
+      SEMANTIC_SIGNAL_BY_ID.get(column.selectedCandidateId!)?.domains.includes(catalog.id)
+      || relatedSignals?.has(column.selectedCandidateId!));
     if (matches.length === 0) return [];
     const questions = artifact.questionGeneration.candidateQuestions
       .filter((question) => {

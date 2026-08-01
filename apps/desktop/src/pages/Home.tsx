@@ -138,7 +138,7 @@ export const Home: React.FC = () => {
       datasetRows,
       aiBriefing,
       runtimeContinuity.runtimeSource,
-      runtimeContinuity.runtimeSource
+      runtimeContinuity.runtimeSource && datasetRows.length >= runtimeContinuity.runtimeSource.sourceRowCount
         ? 'full_file'
         : currentDataset?.analysisRows?.length
           ? 'retained_rows'

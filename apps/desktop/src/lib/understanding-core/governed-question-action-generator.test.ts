@@ -145,6 +145,20 @@ describe("Phase 5M2 governed commerce question and action generation", () => {
     expect(result.candidateQuestions.some((item) => item.questionId === "commerce.transaction_count.summary" && item.actionCandidateId)).toBe(true);
     expect(result.candidateQuestions.some((item) => item.questionId === "commerce.delivery_count.summary" && item.actionCandidateId)).toBe(true);
 
+    const operationalDelivery = generated([metric("delivery_count")], source({ semantics: [
+      { id: "shipment" }, { id: "report_date" }, { id: "route" }, { id: "vehicle" },
+      { id: "driver" }, { id: "on_time_status" },
+    ] }));
+    expect(operationalDelivery.actionCandidates.map((item) => item.questionId)).toEqual(expect.arrayContaining([
+      "operations.delivery_count.by_on_time_status",
+      "operations.delivery_count.by_route",
+      "operations.delivery_count.by_vehicle",
+      "operations.delivery_count.by_driver",
+      "operations.delivery_count.over_time",
+      "operations.delivery_count.by_vehicle_and_on_time_status",
+    ]));
+    expect(operationalDelivery.defaultQuestions[0]?.questionId).toBe("operations.delivery_count.by_on_time_status");
+
     const inventory = generated([metric("inventory_on_hand")], source({ semantics: [{ id: "product" }, { id: "stock_qty" }, { id: "uom" }], temporalMode: "snapshot" }));
     expect(inventory.candidateQuestions.find((item) => item.questionId === "commerce.inventory_on_hand.as_of")?.actionCandidateId).toBeNull();
     expect(inventory.candidateQuestions.find((item) => item.questionId === "commerce.inventory_on_hand.as_of")?.questionState).toBe("blocked");

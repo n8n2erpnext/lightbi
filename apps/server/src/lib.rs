@@ -294,7 +294,10 @@ pub async fn build_router() -> Router {
         )
         .route("/api/project/current-source", get(get_current_source))
         .route("/api/project/import-csv", post(import_csv))
-        .route("/api/project/source-files", post(save_project_source_file))
+        .route(
+            "/api/project/source-files",
+            post(save_project_source_file).layer(DefaultBodyLimit::max(512 * 1024 * 1024)),
+        )
         .route(
             "/api/project/source-files/:file_id/download",
             get(download_project_source_file),

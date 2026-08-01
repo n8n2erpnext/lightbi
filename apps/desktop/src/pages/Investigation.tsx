@@ -146,7 +146,7 @@ export const Investigation: React.FC = () => {
         <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm text-center max-w-md w-full">
           <h2 className="text-lg font-semibold text-gray-900 mb-2">No Active Session</h2>
           <p className="text-sm text-gray-500 mb-4">Please select an analysis from the Home page.</p>
-          <button 
+          <button
             onClick={() => navigate('/')}
             className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
           >
@@ -158,7 +158,9 @@ export const Investigation: React.FC = () => {
   }
 
   const { analysisAction, runtimeIntent, runtimePlanPreview, rows, aiBriefing, runtimeDatasetSource, rowScope, businessFusionOverview, canonicalHandoff } = session;
-  const singleSourceBAOverview = businessFusionOverview ? null : createSingleSourceBAOverview(rows ?? []);
+  const singleSourceBAOverview = businessFusionOverview ? null : createSingleSourceBAOverview(rows ?? [], {
+    sourceRowCount: runtimeDatasetSource?.sourceRowCount,
+  });
   const canonicalSourceBoundary = canonicalHandoff?.sourceBoundary;
   const fullFileSourceReady = canonicalMultiSourceHandoff
     ? canonicalMultiSourceHandoff.multiSource.requiredSourceIds.every((sourceId) => canonicalMultiSourceHandoff.multiSource.sourceMemberships.some((member) => member.sourceId === sourceId && member.runtimeSource.files.length > 0))
@@ -542,7 +544,7 @@ export const Investigation: React.FC = () => {
   return (
     <div className="flex h-full min-h-0 flex-col overflow-y-auto bg-[#fbfbfa]">
       <header className="sticky top-0 z-10 flex items-center gap-4 border-b border-black/10 bg-[#fbfbfa]/95 px-5 py-3 backdrop-blur">
-        <button 
+        <button
           onClick={() => { void returnToCurrentDataset(); }}
           className="rounded-lg p-1.5 text-black/45 transition-colors hover:bg-black/[0.04] hover:text-[#202123]"
           title={t('Back to Home', 'Quay lại')}
