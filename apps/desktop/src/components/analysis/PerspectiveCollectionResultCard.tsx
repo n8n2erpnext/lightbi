@@ -21,6 +21,28 @@ export const PerspectiveCollectionResultCard: React.FC<{
   const [showDeepDive, setShowDeepDive] = useState(false);
   const preferences = useDisplayPreferences((state) => state.preferences);
   const { t } = useUiLanguage();
+  const displayMetricLabel = (metricId: string) => {
+    const english = metricLabel(metricId);
+    const vietnamese: Record<string, string> = {
+      gross_profit: "Lợi nhuận gộp",
+      revenue: "Doanh thu",
+      quantity: "Sản lượng",
+      discount: "Chiết khấu",
+      profit: "Lợi nhuận",
+      delivery_count: "Số lượt giao hàng",
+    };
+    return t(english, vietnamese[metricId] ?? english);
+  };
+  const displayPerspectiveLabel = t(
+    metricLabel(perspectiveId),
+    ({
+      profitability: "Lợi nhuận",
+      sales_performance: "Hiệu quả bán hàng",
+      fulfillment_operations: "Hoàn tất đơn hàng & logistics",
+      period_comparison: "So sánh kỳ",
+      executive_overview: "Tổng quan điều hành",
+    } as Record<string, string>)[perspectiveId] ?? metricLabel(perspectiveId),
+  );
   const formatMetric = (metricId: string, value: number) => formatValue(
     value,
     /(revenue|profit|cost|amount|margin)/i.test(metricId) ? "currency" : "number",
@@ -47,9 +69,18 @@ export const PerspectiveCollectionResultCard: React.FC<{
   const firstPeriod = String(rows[0]?.reporting_period ?? "the first period");
   const lastPeriod = String(rows[rows.length - 1]?.reporting_period ?? "the latest period");
   const questions = largestMovement ? [
-    `What drove the change in ${metricLabel(largestMovement.metricId)} from ${firstPeriod} to ${lastPeriod}?`,
-    `Break down ${metricLabel(largestMovement.metricId)} by the most useful business dimensions.`,
-    `Which segments should I investigate first for ${metricLabel(largestMovement.metricId)}?`,
+    t(
+      `What drove the change in ${displayMetricLabel(largestMovement.metricId)} from ${firstPeriod} to ${lastPeriod}?`,
+      `Điều gì làm ${displayMetricLabel(largestMovement.metricId)} thay đổi từ ${firstPeriod} đến ${lastPeriod}?`,
+    ),
+    t(
+      `Break down ${displayMetricLabel(largestMovement.metricId)} by the most useful business dimensions.`,
+      `Phân rã ${displayMetricLabel(largestMovement.metricId)} theo các chiều kinh doanh hữu ích nhất.`,
+    ),
+    t(
+      `Which segments should I investigate first for ${displayMetricLabel(largestMovement.metricId)}?`,
+      `Nên kiểm tra phân khúc nào trước đối với ${displayMetricLabel(largestMovement.metricId)}?`,
+    ),
   ] : [];
   const option = {
     animation: false,
@@ -67,7 +98,7 @@ export const PerspectiveCollectionResultCard: React.FC<{
       splitLine: { lineStyle: { color: "#e2e8f0" } },
     },
     series: metricIds.map((metricId, index) => ({
-      name: metricLabel(metricId),
+      name: displayMetricLabel(metricId),
       type: "line",
       smooth: true,
       symbolSize: 8,
@@ -86,7 +117,7 @@ export const PerspectiveCollectionResultCard: React.FC<{
               <CheckCircle2 className="h-4 w-4" />
               {t('Analysis ready', 'Phân tích đã sẵn sàng')}
             </div>
-            <h3 className="mt-2 text-[21px] font-semibold">{metricLabel(perspectiveId)}</h3>
+            <h3 className="mt-2 text-[21px] font-semibold">{displayPerspectiveLabel}</h3>
             <p className="mt-1 text-[12px] text-slate-300">
               {t(
                 `LightBI analyzed ${sourceCount} complete source${sourceCount === 1 ? '' : 's'} across ${rows.length} reporting period${rows.length === 1 ? '' : 's'}.`,
@@ -110,7 +141,7 @@ export const PerspectiveCollectionResultCard: React.FC<{
             return (
               <article key={movement.metricId} className="rounded-xl border border-slate-200 p-4">
                 <div className="flex items-center justify-between gap-3">
-                  <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">{metricLabel(movement.metricId)}</p>
+                  <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">{displayMetricLabel(movement.metricId)}</p>
                   <Icon className={`h-4 w-4 ${movement.delta >= 0 ? "text-emerald-600" : "text-red-600"}`} />
                 </div>
                 <p className="mt-2 text-[22px] font-semibold text-slate-950">{formatMetric(movement.metricId, movement.last)}</p>
@@ -128,8 +159,14 @@ export const PerspectiveCollectionResultCard: React.FC<{
             </div>
             <p className="mt-2 text-[12px] leading-5 text-amber-900/80">
               {largestMovement
-                ? `${metricLabel(largestMovement.metricId)} has the largest relative movement (${Math.abs((largestMovement.percent ?? 0) * 100).toFixed(1)}%). This is the strongest place to begin; it is an observation, not yet a cause.`
-                : "No measurable period movement was found. Review mix, segments, and data coverage before drawing a conclusion."}
+                ? t(
+                  `${displayMetricLabel(largestMovement.metricId)} has the largest relative movement (${Math.abs((largestMovement.percent ?? 0) * 100).toFixed(1)}%). This is the strongest place to begin; it is an observation, not yet a cause.`,
+                  `${displayMetricLabel(largestMovement.metricId)} có mức biến động tương đối lớn nhất (${Math.abs((largestMovement.percent ?? 0) * 100).toFixed(1)}%). Đây là điểm nên bắt đầu tìm hiểu; hiện mới là quan sát, chưa phải kết luận nguyên nhân.`,
+                )
+                : t(
+                  "No measurable period movement was found. Review mix, segments, and data coverage before drawing a conclusion.",
+                  "Chưa tìm thấy biến động theo kỳ có thể đo lường. Hãy xem lại cơ cấu, phân khúc và độ bao phủ dữ liệu trước khi kết luận.",
+                )}
             </p>
             {questions.length > 0 && (
               <div className="mt-3 space-y-2">
@@ -162,7 +199,10 @@ export const PerspectiveCollectionResultCard: React.FC<{
           <div className="mb-3">
             <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-blue-700">{t('Deep analysis', 'Phân tích sâu')}</p>
             <p className="mt-1 text-[12px] leading-5 text-slate-600">
-              Driver rankings use the complete period sources behind this governed result. They are separated from observations that do not yet have causal evidence.
+              {t(
+                'Driver rankings use the complete period sources behind this governed result. They are separated from observations that do not yet have causal evidence.',
+                'Xếp hạng yếu tố tác động dùng toàn bộ nguồn dữ liệu của từng kỳ đứng sau kết quả đã quản trị. LightBI tách riêng các quan sát chưa có bằng chứng nhân quả.',
+              )}
             </p>
           </div>
           <BusinessComparisonBriefCard brief={deepDiveBrief} />
