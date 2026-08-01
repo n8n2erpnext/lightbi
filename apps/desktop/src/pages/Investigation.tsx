@@ -35,6 +35,7 @@ import { getLatestCanonicalConsumerArtifact, validateCanonicalInvestigationHando
 import { validateCanonicalMultiSourceInvestigationHandoff, type CanonicalMultiSourceInvestigationHandoffV1 } from '../lib/understanding-core/canonical-multisource-boundary';
 import { executeCanonicalMultiSourceMetric } from '../lib/understanding-core/governed-multisource-duckdb-boundary';
 import { formatValue } from '../lib/display-formatter';
+import { useUiLanguage } from '../lib/ui-language';
 const INVESTIGATION_SESSION_ROW_LIMIT = 250;
 
 function limitInvestigationRows(rows: Record<string, unknown>[] | undefined): Record<string, unknown>[] {
@@ -46,6 +47,7 @@ function safeFileStem(value: string): string {
 }
 
 export const Investigation: React.FC = () => {
+  const { t } = useUiLanguage();
   const navigate = useNavigate();
   const session = getCurrentInvestigationSession();
   const canonicalMultiSourceHandoff = session?.canonicalHandoff && 'multiSource' in session.canonicalHandoff
@@ -541,7 +543,7 @@ export const Investigation: React.FC = () => {
         <button 
           onClick={() => { void returnToCurrentDataset(); }}
           className="rounded-lg p-1.5 text-black/45 transition-colors hover:bg-black/[0.04] hover:text-[#202123]"
-          title="Back to Home"
+          title={t('Back to Home', 'Quay lại')}
         >
           <ArrowLeft className="w-5 h-5" />
         </button>
@@ -550,7 +552,7 @@ export const Investigation: React.FC = () => {
             {analysisAction.opportunityName}
           </h1>
           <div className="flex items-center gap-2 mt-0.5">
-            <span className="text-[11px] font-medium text-black/45">Dataset: {session.datasetId}</span>
+            <span className="text-[11px] font-medium text-black/45">{t('Dataset', 'Bộ dữ liệu')}: {session.datasetId}</span>
             <span className="text-black/20">•</span>
             <span className="rounded border border-black/10 bg-white px-1.5 py-0.5 text-[11px] font-medium text-black/60">
               {analysisAction.actionType}
@@ -585,13 +587,13 @@ export const Investigation: React.FC = () => {
         <div className="flex flex-col overflow-hidden rounded-[18px] border border-black/10 bg-white shadow-sm">
           <div className="flex flex-col gap-4 border-b border-black/5 bg-white px-6 py-5 lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <h2 className="mb-1 text-[16px] font-semibold text-[#202123]">Decision workspace</h2>
-              <p className="text-[13px] text-black/45">Chart preview, BA brief, and raw evidence stay together for review.</p>
+              <h2 className="mb-1 text-[16px] font-semibold text-[#202123]">{t('Decision workspace', 'Không gian phân tích quyết định')}</h2>
+              <p className="text-[13px] text-black/45">{t('Chart preview, BA brief, and raw evidence stay together for review.', 'Biểu đồ, bản phân tích BA và bằng chứng dữ liệu được trình bày cùng nhau.')}</p>
             </div>
             <div className="flex flex-wrap gap-2">
               <span className="inline-flex items-center gap-1.5 rounded-[10px] border border-black/10 bg-[#fbfbfa] px-3 py-2 text-xs font-medium text-black/65 shadow-sm">
                 <BarChart3 className="w-3.5 h-3.5 text-blue-500" />
-                Expected chart: {runtimeIntent.expectedShape.replace('_', ' ')}
+                {t('Expected chart', 'Biểu đồ phù hợp')}: {runtimeIntent.expectedShape.replace('_', ' ')}
               </span>
               <button
                 onClick={() => setIsSettingsOpen(true)}
@@ -599,7 +601,7 @@ export const Investigation: React.FC = () => {
                 title="Chart display preferences"
               >
                 <Settings2 className="h-3.5 w-3.5" strokeWidth={1.7} />
-                View
+                {t('View', 'Hiển thị')}
               </button>
               <button
                 onClick={() => { void persistWorkspaceSession().finally(() => setShowDeepAnalysis(true)); }}
@@ -608,7 +610,7 @@ export const Investigation: React.FC = () => {
                 title="Open a deeper BA explanation for this selected decision angle"
               >
                 <ClipboardCheck className="h-3.5 w-3.5" strokeWidth={1.7} />
-                Analyze deeper
+                {t('Analyze deeper', 'Phân tích sâu')}
               </button>
               <button
                 onClick={() => { void saveChartToLibrary(); }}
@@ -617,7 +619,7 @@ export const Investigation: React.FC = () => {
                 title="Save this executed chart as a reusable dashboard card"
               >
                 <FileSpreadsheet className="h-3.5 w-3.5" strokeWidth={1.7} />
-                Save chart
+                {t('Save chart', 'Lưu biểu đồ')}
               </button>
               <button
                 data-run-preview="true"
@@ -626,7 +628,7 @@ export const Investigation: React.FC = () => {
                 title={!handoffCanExecute ? 'Resolve the canonical preflight blockers before running this analysis.' : undefined}
                 className="rounded-[10px] bg-[#202123] px-3 py-2 text-xs font-medium text-white shadow-sm transition-colors hover:bg-black disabled:opacity-50"
               >
-                {isExecuting ? 'Running...' : previewResult ? 'Refresh preview' : 'Run preview'}
+                {isExecuting ? t('Running...', 'Đang chạy...') : previewResult ? t('Refresh preview', 'Làm mới kết quả') : t('Run preview', 'Chạy phân tích')}
               </button>
             </div>
           </div>
@@ -634,7 +636,7 @@ export const Investigation: React.FC = () => {
           <div className="border-b border-black/5 bg-white p-6">
              <div className="flex flex-wrap gap-4 mb-8">
                  <div className="flex flex-col gap-1.5">
-                   <span className="text-[10px] uppercase tracking-wider font-semibold text-gray-400">Dimensions</span>
+                   <span className="text-[10px] uppercase tracking-wider font-semibold text-gray-400">{t('Dimensions', 'Chiều phân tích')}</span>
                    <div className="flex flex-wrap gap-2">
                      {runtimeIntent.dimensions.map(d => (
                        <span key={d} className="rounded-[9px] border border-blue-100 bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700">
@@ -645,7 +647,7 @@ export const Investigation: React.FC = () => {
                  </div>
                  
                  <div className="flex flex-col gap-1.5">
-                   <span className="text-[10px] uppercase tracking-wider font-semibold text-gray-400">Measures</span>
+                   <span className="text-[10px] uppercase tracking-wider font-semibold text-gray-400">{t('Measures', 'Chỉ số')}</span>
                    <div className="flex flex-wrap gap-2">
                      {[...runtimeIntent.measures, ...(runtimeIntent.derivedMeasures ?? []).flatMap(m => [m.numeratorLabel, m.denominatorLabel, m.label])].map(m => (
                        <span key={m} className="rounded-[9px] border border-emerald-100 bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700">
@@ -709,7 +711,7 @@ export const Investigation: React.FC = () => {
 
              {governedResultTotal !== null && session.canonicalExecutionResult && (
                <div data-testid="governed-result-summary" className="mt-4 rounded-[14px] border border-emerald-200 bg-emerald-50 p-4 text-emerald-950">
-                 <p className="text-[11px] font-semibold uppercase tracking-wide">Governed result total</p>
+                 <p className="text-[11px] font-semibold uppercase tracking-wide">{t('Governed result total', 'Tổng kết quả đã quản trị')}</p>
                  <p className="mt-1 text-2xl font-semibold">{governedResultTotalLabel}</p>
                  <p className="mt-1 text-xs text-emerald-900/70">
                    {session.canonicalExecutionResult.metricId} across {governedResultValues.length.toLocaleString()} governed result group{governedResultValues.length === 1 ? '' : 's'}.
@@ -719,7 +721,7 @@ export const Investigation: React.FC = () => {
 
              {previewResult?.status === 'executed' && session.canonicalExecutionResult && canonicalHandoff && (
                <details className="mt-4 rounded-[14px] border border-black/10 bg-[#fbfbfa] p-4 text-xs text-black/60" data-testid="governed-result-context">
-                 <summary className="cursor-pointer font-semibold text-[#202123]">Governed result context</summary>
+                 <summary className="cursor-pointer font-semibold text-[#202123]">{t('Governed result context', 'Bối cảnh và bằng chứng kết quả')}</summary>
                  <div className="mt-3 grid gap-3 md:grid-cols-2">
                    <div>
                      <p><span className="font-medium text-black/75">Metric:</span> {session.canonicalExecutionResult.metricId}</p>

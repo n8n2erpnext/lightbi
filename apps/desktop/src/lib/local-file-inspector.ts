@@ -110,6 +110,17 @@ export async function inspectLocalFile(
   }
 
   try {
+    if (file.size < 1024) {
+      const smallFileText = await file.text();
+      if (smallFileText.startsWith("version https://git-lfs.github.com/spec/v1")) {
+        return {
+          status: "invalid_format",
+          sourceType: candidate.sourceType,
+          label: file.name,
+          message: "This is a Git LFS placeholder, not the actual data file. Download or restore the original file, then import it again.",
+        };
+      }
+    }
     if (candidate.sourceType === "local_xlsx" || candidate.sourceType === "local_xls") {
       return await inspectExcel(file, candidate, options.signal);
     }

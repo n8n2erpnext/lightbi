@@ -47,6 +47,9 @@ describe("UnderstandingNextCard Phase 8C functional states", () => {
     render(<UnderstandingNextCard understanding={understanding} canonicalPresentation={perspectivePresentation} canonicalPerspectives={canonicalPerspectives} selectedPerspectiveId="revenue" onSelectAction={investigate} onRemediate={remediate} />);
     expect(screen.queryByText("Blocked Analysis")).toBeNull();
     expect(screen.getByTestId("canonical-count-ready").textContent).toContain("1");
+    expect(screen.getByTestId("canonical-primary-analysis").textContent).toContain("Revenue");
+    fireEvent.click(screen.getByTestId("canonical-analyze-perspective"));
+    expect(investigate).toHaveBeenCalledWith(expect.objectContaining({ id: "action:revenue" }));
     expect(screen.getAllByRole("button", { name: "Investigate" })).toHaveLength(1);
     expect(screen.queryByTestId("canonical-analysis-q:unsafe")).toBeNull();
     expect(screen.queryByTestId("canonical-analysis-concept:forecast")).toBeNull();

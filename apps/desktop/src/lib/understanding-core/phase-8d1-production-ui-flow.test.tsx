@@ -2,11 +2,14 @@
 import fs from "node:fs";
 import { join } from "node:path";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { CanonicalMultiSourceReview, type MultiSourceDraftV1 } from "../../components/analysis/CanonicalMultiSourceReview";
 import { presentCanonicalMultiSourceRelationship } from "./canonical-consumer-presentation-contract";
+import type { CanonicalSourceCandidateProjectionV1 } from "../canonical-source-candidate-projection";
+import { useDisplayPreferences } from "../../stores/display-preferences-store";
 
 afterEach(cleanup);
+beforeEach(() => useDisplayPreferences.getState().resetPreferences());
 
 const sources = [
   { key: "0:a.xlsx", name: "a.xlsx", rowCount: 1500, columns: ["OrderID", "Revenue"] },
@@ -14,7 +17,35 @@ const sources = [
 ];
 const empty = (): MultiSourceDraftV1 => ({ selected: true, role: "", documentColumn: "", periodStart: "", periodEnd: "", currency: "", monetaryColumns: "" });
 
+const salesCandidates = (observedCurrency?: string): CanonicalSourceCandidateProjectionV1 => {
+  const base = { sourceId: "sales", sourceFingerprint: "hash-sales", sourceArtifactId: "artifact-sales" };
+  const candidate = <T,>(candidateId: string, value: T) => ({ candidateId, value, ...base, scope: { level: "source_file" as const, physicalColumn: null }, supportingEvidence: ["canonical"], contradictingEvidence: [], confidence: 0.94, provenance: "inferred_candidate" as const });
+  return {
+    schemaVersion: "lightbi.canonical-source-candidate-projection.v1",
+    ...base,
+    roleCandidates: [candidate("role-sales", "sales" as const)],
+    documentIdentityCandidates: [candidate("document-sales", { physicalColumn: "OrderID", canonicalSignal: "order" })],
+    reportingPeriodCandidates: [candidate("period-sales", { start: "2026-05-01", end: "2026-05-31", physicalColumn: "OrderDate" })],
+    monetaryColumnCandidates: [candidate("money-sales", { physicalColumn: "Revenue", canonicalSignal: "revenue" })],
+    observedCurrencyCandidates: observedCurrency ? [candidate("currency-sales", { currency: observedCurrency, physicalColumn: "Currency" })] : [],
+  };
+};
+
 describe("Phase 8D.1 production multi-source UI flow", () => {
+  it("uses the Settings currency automatically and asks only when source evidence conflicts", () => {
+    useDisplayPreferences.getState().updatePreferences({ currencyCode: "VND" });
+    const analyze = vi.fn();
+    const source = [{ key: "sales", name: "sales.xlsx", rowCount: 100, columns: ["OrderID", "OrderDate", "Revenue"], candidates: salesCandidates() }];
+    const view = render(<CanonicalMultiSourceReview sources={source} drafts={{ sales: empty() }} onChange={() => {}} onBuild={() => {}} onAnalyzePerspective={analyze} building={false} />);
+    expect(screen.queryByLabelText("Reporting currency")).toBeNull();
+    expect(screen.getByText("Using VND from Settings.")).toBeTruthy();
+    fireEvent.click(screen.getByTestId("analyze-selected-perspective"));
+    expect(analyze).toHaveBeenCalledWith(expect.anything(), expect.anything(), { currency: "VND" });
+
+    view.rerender(<CanonicalMultiSourceReview sources={[{ ...source[0], candidates: salesCandidates("USD") }]} drafts={{ sales: empty() }} onChange={() => {}} onBuild={() => {}} onAnalyzePerspective={analyze} building={false} />);
+    expect(screen.getByLabelText("Reporting currency")).toBeTruthy();
+  });
+
   it("keeps technical corrections optional in Easy Mode without filename inference", () => {
     const onChange = vi.fn();
     const onBuild = vi.fn();

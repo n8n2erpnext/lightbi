@@ -56,7 +56,7 @@ import { createHomeChartOption, getHomeGreeting, unavailableLegacyPresentation }
 import { useHomeQuestionApi } from '../hooks/useHomeQuestionApi';
 import { evaluateRuntimeSourceContinuity } from '../lib/runtime-source-continuity';
 import { projectCanonicalDomainPerspectives, projectGovernedBundleCandidates, type CanonicalBusinessPerspectiveCandidateV1, type GovernedBundleCandidateV1 } from '../lib/canonical-source-candidate-projection';
-import { findPendingSourceFamily, projectPendingMultiSourceReviewSources, selectGovernedBundleDrafts, type PendingLocalFileBatch } from '../lib/home-multisource-candidate-review';
+import { findPendingSourceFamily, mapCollectionPerspectiveToDatasetPerspective, projectPendingMultiSourceReviewSources, selectGovernedBundleDrafts, type PendingLocalFileBatch } from '../lib/home-multisource-candidate-review';
 import { createDomainComparisonBrief, type BAComparisonPeriodInput } from '../lib/ba-comparison-engine';
 export const Home: React.FC = () => {
   const { preferences } = useDisplayPreferences();
@@ -938,7 +938,7 @@ export const Home: React.FC = () => {
       .filter(([, draft]) => draft.selected)
       .map(([key]) => key);
     if (selectedSourceKeys.length === 1) {
-      setSelectedPerspective(perspective.perspectiveId);
+      setSelectedPerspective(mapCollectionPerspectiveToDatasetPerspective(perspective.perspectiveId));
       handleUseMultiSourceReviewSource(selectedSourceKeys[0]);
       return;
     }

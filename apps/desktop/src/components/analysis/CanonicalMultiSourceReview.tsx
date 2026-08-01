@@ -20,7 +20,7 @@ import {
   buildDatasetCollectionUnderstanding,
   type ReportingPeriodScopeV1,
 } from "../../lib/understanding-core/collection-understanding";
-import { CanonicalPerspectiveSelector } from "./CanonicalPerspectiveSelector";
+import { CanonicalPerspectiveSelector, getCanonicalPerspectiveDisplay } from "./CanonicalPerspectiveSelector";
 import { useDisplayPreferences } from "../../stores/display-preferences-store";
 import { useUiLanguage } from "../../lib/ui-language";
 
@@ -74,6 +74,12 @@ const workflowLabels = {
   multi_source_business_evidence: "Related business evidence",
   unresolved: "Sources need one clarification",
 } as const;
+const workflowLabelsVi: Record<keyof typeof workflowLabels, string> = {
+  order_to_cash_and_delivery: "Bán hàng → Kế toán → Giao hàng",
+  period_partition: "So sánh báo cáo giữa các kỳ",
+  multi_source_business_evidence: "Bằng chứng kinh doanh có liên quan",
+  unresolved: "Nguồn dữ liệu cần làm rõ một điểm",
+};
 
 export const CanonicalMultiSourceReview: React.FC<Props> = ({
   sources,
@@ -88,7 +94,7 @@ export const CanonicalMultiSourceReview: React.FC<Props> = ({
   relationshipPresentation = null,
 }) => {
   const preferences = useDisplayPreferences((state) => state.preferences);
-  const { t } = useUiLanguage();
+  const { language, t } = useUiLanguage();
   const collectionSources = React.useMemo(
     () => sources.map((source) => ({
       key: source.key,
@@ -126,6 +132,9 @@ export const CanonicalMultiSourceReview: React.FC<Props> = ({
   }, [baselinePeriod, collection.observedPeriods, comparisonPeriod]);
 
   const selectedPerspective = perspectives.find((item) => item.perspectiveId === selectedPerspectiveId) ?? null;
+  const selectedPerspectiveDisplay = selectedPerspective
+    ? getCanonicalPerspectiveDisplay(selectedPerspective.perspectiveId, selectedPerspective.label, selectedPerspective.purpose, language)
+    : null;
   const selectedSources = selectedPerspective
     ? sources.filter((source) => selectedPerspective.sourceKeys.includes(source.key))
     : [];
@@ -177,7 +186,7 @@ export const CanonicalMultiSourceReview: React.FC<Props> = ({
               {t('LightBI understood your data', 'LightBI đã hiểu dữ liệu của bạn')}
             </div>
             <h2 className="mt-3 text-[25px] font-semibold tracking-tight md:text-[30px]">
-              {workflowLabels[collection.workflow]}
+              {language === "vi" ? workflowLabelsVi[collection.workflow] : workflowLabels[collection.workflow]}
             </h2>
             <p className="mt-2 max-w-2xl text-[13px] leading-6 text-slate-300">
               {collection.sourceCount} sources contain {collection.roles.length || "unresolved"} business role{collection.roles.length === 1 ? "" : "s"}
@@ -190,9 +199,9 @@ export const CanonicalMultiSourceReview: React.FC<Props> = ({
           </div>
           <div className="grid grid-cols-3 gap-2 lg:min-w-[390px]">
             {[
-              ["Sources", collection.sourceCount.toLocaleString()],
-              ["Rows", collection.totalRows.toLocaleString()],
-              ["Periods", collection.observedPeriods.length.toLocaleString()],
+              [t("Sources", "Nguồn"), collection.sourceCount.toLocaleString()],
+              [t("Rows", "Dòng"), collection.totalRows.toLocaleString()],
+              [t("Periods", "Kỳ"), collection.observedPeriods.length.toLocaleString()],
             ].map(([label, value]) => (
               <div key={label} className="rounded-2xl border border-white/10 bg-white/[0.06] px-4 py-3">
                 <div className="text-[10px] uppercase tracking-wide text-slate-400">{label}</div>
@@ -232,8 +241,8 @@ export const CanonicalMultiSourceReview: React.FC<Props> = ({
             <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
               <div className="max-w-3xl">
                 <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-blue-700">{t('Your analysis', 'Phân tích của bạn')}</div>
-                <h3 className="mt-2 text-[20px] font-semibold text-slate-950">{selectedPerspective.label}</h3>
-                <p className="mt-1 text-[13px] leading-6 text-slate-600">{selectedPerspective.purpose}</p>
+                <h3 className="mt-2 text-[20px] font-semibold text-slate-950">{selectedPerspectiveDisplay?.label ?? selectedPerspective.label}</h3>
+                <p className="mt-1 text-[13px] leading-6 text-slate-600">{selectedPerspectiveDisplay?.question ?? selectedPerspective.purpose}</p>
 
                 {collection.observedPeriods.length > 1 && (
                   <div className="mt-5 flex flex-wrap items-end gap-3">

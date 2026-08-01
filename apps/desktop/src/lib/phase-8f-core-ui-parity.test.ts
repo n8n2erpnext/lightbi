@@ -79,4 +79,17 @@ describe('Phase 8F core to production UI parity', () => {
     expect(pages).not.toContain('executeBackendPreview(');
     expect(pages).not.toContain('executeDuckDBPreviewRuntime(');
   });
+
+  it('packages the native app with an embedded core instead of a server sidecar', () => {
+    const repoRoot = path.resolve(process.cwd(), '../..');
+    const tauriConfig = fs.readFileSync(path.join(repoRoot, 'crates/lightbi-tauri/tauri.conf.json'), 'utf8');
+    const tauriMain = fs.readFileSync(path.join(repoRoot, 'crates/lightbi-tauri/src/main.rs'), 'utf8');
+    const tauriManifest = fs.readFileSync(path.join(repoRoot, 'crates/lightbi-tauri/Cargo.toml'), 'utf8');
+
+    expect(tauriConfig).not.toContain('externalBin');
+    expect(tauriMain).toContain('lightbi_server::run');
+    expect(tauriMain).toContain('lightbi-embedded-core');
+    expect(tauriMain).not.toContain('std::process::Command');
+    expect(tauriManifest).toContain('lightbi-server = { path = "../../apps/server" }');
+  });
 });

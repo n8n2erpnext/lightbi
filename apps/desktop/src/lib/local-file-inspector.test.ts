@@ -10,6 +10,18 @@ afterEach(() => {
 });
 
 describe("inspectLocalFile", () => {
+  it("rejects a Git LFS pointer instead of presenting it as an empty dataset", async () => {
+    const pointer = "version https://git-lfs.github.com/spec/v1\noid sha256:abc\nsize 118492\n";
+    const file = new File([pointer], "sales.xlsx", { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+    const candidate = createFileSourceCandidate(file);
+    if ("status" in candidate) throw new Error("Expected local Excel candidate");
+
+    const result = await inspectLocalFile(candidate);
+
+    expect(result.status).toBe("invalid_format");
+    if (result.status === "invalid_format") expect(result.message).toContain("Git LFS placeholder");
+  });
+
   it("keeps full CSV rows for analysis while exposing bounded preview rows", async () => {
     const csv = [
       "contact,y",

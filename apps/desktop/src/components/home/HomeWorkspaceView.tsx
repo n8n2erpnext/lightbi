@@ -16,8 +16,23 @@ import { HomeSessionHistoryPanel } from './HomeSessionHistoryPanel';
 import { HomeResultView } from './HomeResultView';
 import { HomeDataPreviewDialog } from './HomeDataPreviewDialog';
 import { HomePlanningDialogs } from './HomePlanningDialogs';
+import { useUiLanguage } from '../../lib/ui-language';
+
+const VI_HERO_SUGGESTIONS: Record<string, string> = {
+  'Analyze sales performance': 'Phân tích hiệu quả bán hàng',
+  'Review sales performance': 'Xem hiệu quả bán hàng',
+  'Compare branch revenue': 'So sánh doanh thu chi nhánh',
+  'Combine Excel reports': 'Kết hợp các báo cáo Excel',
+  'Build executive summary': 'Tạo tổng quan điều hành',
+  'Review receivables aging': 'Xem tuổi nợ phải thu',
+  'Analyze student performance': 'Phân tích kết quả học tập',
+  'Review student performance': 'Xem kết quả học tập',
+  'Summarize support tickets': 'Tổng hợp yêu cầu hỗ trợ',
+  'Review employee attendance': 'Xem tình hình chấm công',
+};
 
 export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
+  const { language, t } = useUiLanguage();
   const { activeConnection, setActiveConnection, handleOnlineSourceInspected, result, isAsking, selectedTopic, currentDataset, pendingLocalBatch, setPendingLocalBatch, isPlusMenuOpen, setIsPlusMenuOpen, isReplaceMenuOpen, setIsReplaceMenuOpen, greeting, navigate, questionInputRef, inputValue, setInputValue, setIsInputFocused, askQuestion, activeAnalysisIntent, questionPlaceholder, renderSourcePickerMenu, activeChips, setAnalysisIntent, openLocalFilePicker, openOnlineDataDrawer, openDatabaseDrawer, workspaceSessions, sessionStatus, preferences, handleOpenWorkspaceSession, handleDeleteWorkspaceSession, fileInputRef, handleFileChange, uploadError, isUploading, workspaceState, isSavingSession, handleSaveWorkspaceSession, isDataPreviewOpen, setIsDataPreviewOpen, datasetUnderstandingNext, canonicalArtifact, canonicalPresentation, canonicalDomainPerspectives, canonicalMultiSourcePresentation, runtimeSourceContinuity, handleCanonicalOverlayChange, handleCanonicalRemediation, canonicalOverlayRebuildState, canonicalReviewTarget, multiSourceBuildResult, multiSourceReviewSources, multiSourceBundles, multiSourceDrafts, setMultiSourceDrafts, multiSourceBuilding, handleReviewMultiSourceBundle, handleUseMultiSourceReviewSource, handleBuildCanonicalMultiSource, handleAnalyzeMultiSourcePerspective, handleCancelInspection, handleUseLocalDataset, guidedInvestigationResult, datasetUnderstanding, activeBusinessViews, selectedPerspective, setSelectedPerspective, analysisMode, setAnalysisMode, selectedBusinessView, setSelectedBusinessView, visibleQuestionSuggestions, selectedViewData, previewActionId, setPreviewActionId, handleSelectAnalysisAction, handleLegacyQuestionSuggestion, lastInspectedFamilies, getEChartsOption, planningWorkflow, canonicalRows } = model;
   const isPerspectiveCollection = currentDataset?.sourceType === 'canonical_perspective_collection';
   const collectionRoleCount = isPerspectiveCollection
@@ -59,38 +74,38 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
               <div className="max-w-3xl">
                 <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-blue-700">
                   <Sparkles className="h-4 w-4" />
-                  Source understanding workspace
+                  {t('Source understanding workspace', 'Không gian hiểu dữ liệu')}
                 </div>
                 <h1 className="mt-2 text-[26px] font-semibold tracking-tight text-slate-950 md:text-[30px]">
-                  {pendingLocalBatch.status === 'reading' ? 'Understanding your sources' : 'Review what LightBI found'}
+                  {pendingLocalBatch.status === 'reading' ? t('Understanding your sources', 'Đang tìm hiểu các nguồn dữ liệu') : t('Review what LightBI found', 'Xem điều LightBI đã nhận diện')}
                 </h1>
                 <p className="mt-2 max-w-2xl text-[13px] leading-5 text-slate-600">
                   {pendingLocalBatch.status === 'reading'
-                    ? 'LightBI is inspecting each complete source, separating schemas and preserving source identity.'
-                    : 'Choose a supported analysis, confirm only the missing evidence, then build a governed dataset. No source is combined automatically.'}
+                    ? t('LightBI is inspecting each complete source, separating schemas and preserving source identity.', 'LightBI đang đọc toàn bộ từng nguồn, tách cấu trúc và giữ nguyên danh tính nguồn.')
+                    : t('Choose a supported analysis, confirm only the missing evidence, then build a governed dataset. No source is combined automatically.', 'Chọn phân tích phù hợp và chỉ xác nhận bằng chứng còn thiếu. LightBI không tự ý ghép nguồn.')}
                 </p>
               </div>
               <div className="grid grid-cols-3 gap-2 lg:min-w-[360px]">
                 <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-3">
-                  <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">Sources</div>
+                  <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">{t('Sources', 'Nguồn')}</div>
                   <div className="mt-1 text-[20px] font-semibold text-slate-950">
                     {Math.max(pendingLocalBatch.files.length, multiSourceReviewSources.length)}
                   </div>
                 </div>
                 <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-3">
-                  <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">Groups</div>
+                  <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">{t('Groups', 'Nhóm')}</div>
                   <div className="mt-1 text-[20px] font-semibold text-slate-950">{pendingLocalBatch.families.length}</div>
                 </div>
                 <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-3">
-                  <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">Candidates</div>
+                  <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">{t('Candidates', 'Đề xuất')}</div>
                   <div className="mt-1 text-[20px] font-semibold text-slate-950">{multiSourceBundles.length}</div>
                 </div>
               </div>
             </div>
             <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 bg-slate-50/70 px-5 py-3 md:px-6">
-              <p className="text-[11px] text-slate-500">Suggestions are evidence candidates, never confirmed facts.</p>
+              <p className="text-[11px] text-slate-500">{t('Suggestions are evidence candidates, never confirmed facts.', 'Các đề xuất dựa trên bằng chứng và chưa phải sự thật đã xác nhận.')}</p>
               <button onClick={openLocalFilePicker} className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-[11px] font-semibold text-slate-700 shadow-sm hover:border-blue-300 hover:text-blue-800">
-                <Plus className="h-3.5 w-3.5" /> Add or replace sources
+                <Plus className="h-3.5 w-3.5" /> {t('Add or replace sources', 'Thêm hoặc thay nguồn')}
               </button>
             </div>
           </section>
@@ -100,10 +115,10 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
           <>
             {currentDataset?.status !== 'ready' && !pendingLocalBatch && (
               <div className={`flex w-full flex-col items-center justify-center text-center ${pendingLocalBatch ? 'min-h-0 pb-8 pt-10' : 'min-h-[calc(100vh-130px)] pb-12'}`}>
-                <div className="mb-4 rounded-full border border-black/10 bg-white/70 px-3 py-1.5 text-[13px] text-black/45 shadow-sm">{greeting}</div>
+                <div className="mb-4 rounded-full border border-black/10 bg-white/70 px-3 py-1.5 text-[13px] text-black/45 shadow-sm">{language === 'vi' ? 'Xin chào 👋' : greeting}</div>
                 <div className="relative mb-8 flex w-full max-w-4xl justify-center">
                   <h1 className="text-[34px] font-medium tracking-normal text-[#202123] md:text-[44px]">
-                    What should LightBI understand?
+                    {t('What should LightBI understand?', 'Bạn muốn LightBI hiểu điều gì?')}
                   </h1>
                 </div>
 
@@ -112,7 +127,7 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                     <button
                       onClick={() => setIsPlusMenuOpen(!isPlusMenuOpen)}
                       className="source-picker-toggle absolute left-4 z-10 flex h-10 w-10 items-center justify-center rounded-xl text-black/55 transition-colors hover:bg-black/[0.04] hover:text-[#202123]"
-                      title="Add data source"
+                      title={t('Add data source', 'Thêm nguồn dữ liệu')}
                     >
                       <Plus className="h-5 w-5" />
                     </button>
@@ -132,7 +147,7 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                               setInputValue("");
                           }
                       }}
-                      placeholder={questionPlaceholder === "Ask a question about your data..." ? "Paste a sheet link, import a file, or ask what to analyze" : questionPlaceholder}
+                      placeholder={questionPlaceholder === "Ask a question about your data..." ? t("Paste a sheet link, import a file, or ask what to analyze", "Dán liên kết, nhập file hoặc hỏi điều bạn muốn phân tích") : questionPlaceholder}
                       className="h-[78px] w-full rounded-[24px] border-0 bg-transparent pl-16 pr-6 text-[16px] text-[#202123] outline-none placeholder:text-black/30"
                     />
                   </div>
@@ -157,7 +172,7 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                               className={`group flex items-center gap-2 whitespace-nowrap rounded-full border border-black/10 bg-white px-4 py-2 text-[13px] text-black/55 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-black/15 hover:bg-black/[0.025] hover:text-[#202123] hover:shadow-md ${style.hover}`}
                             >
                               <span className={`h-2 w-2 rounded-full flex-shrink-0 ${style.dot}`} />
-                              <span>{chip.text}</span>
+                              <span>{language === 'vi' ? (VI_HERO_SUGGESTIONS[chip.text] ?? chip.text) : chip.text}</span>
                             </motion.button>
                           </AnimatePresence>
                         </div>
@@ -171,24 +186,24 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                       className="group rounded-[16px] border border-black/10 bg-white p-5 text-left shadow-sm transition-all duration-200 hover:-translate-y-1 hover:bg-white hover:shadow-lg"
                     >
                       <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-[12px] bg-emerald-50 text-emerald-600 shadow-sm transition-transform duration-200 group-hover:scale-105"><FileSpreadsheet className="h-5 w-5" strokeWidth={1.7} /></div>
-                      <div className="text-[15px] font-medium text-[#202123]">Import local files</div>
-                      <div className="mt-1 text-[13px] leading-5 text-black/45">Excel, CSV, JSON, TSV with matrix sampling and quality score.</div>
+                      <div className="text-[15px] font-medium text-[#202123]">{t('Import local files', 'Nhập file từ máy')}</div>
+                      <div className="mt-1 text-[13px] leading-5 text-black/45">{t('Excel, CSV, JSON, TSV with matrix sampling and quality score.', 'Excel, CSV, JSON, TSV với lấy mẫu đại diện và đánh giá chất lượng.')}</div>
                     </button>
                     <button
                       onClick={openOnlineDataDrawer}
                       className="group rounded-[16px] border border-black/10 bg-white p-5 text-left shadow-sm transition-all duration-200 hover:-translate-y-1 hover:bg-white hover:shadow-lg"
                     >
                       <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-[12px] bg-blue-50 text-blue-600 shadow-sm transition-transform duration-200 group-hover:scale-105"><Link className="h-5 w-5" strokeWidth={1.7} /></div>
-                      <div className="text-[15px] font-medium text-[#202123]">Connect online sheet</div>
-                      <div className="mt-1 text-[13px] leading-5 text-black/45">Short or full links stay online-first, then LightBI builds a BA brief.</div>
+                      <div className="text-[15px] font-medium text-[#202123]">{t('Connect online sheet', 'Kết nối bảng tính online')}</div>
+                      <div className="mt-1 text-[13px] leading-5 text-black/45">{t('Short or full links stay online-first, then LightBI builds a BA brief.', 'Giữ dữ liệu online và để LightBI tạo bản phân tích BA.')}</div>
                     </button>
                     <button
                       onClick={openDatabaseDrawer}
                       className="group rounded-[16px] border border-black/10 bg-white p-5 text-left shadow-sm transition-all duration-200 hover:-translate-y-1 hover:bg-white hover:shadow-lg"
                     >
                       <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-[12px] bg-violet-50 text-violet-600 shadow-sm transition-transform duration-200 group-hover:scale-105"><Server className="h-5 w-5" strokeWidth={1.7} /></div>
-                      <div className="text-[15px] font-medium text-[#202123]">Connect database system</div>
-                      <div className="mt-1 text-[13px] leading-5 text-black/45">Postgres, MySQL, MariaDB, MongoDB, SQLite, then LightBI builds a BA brief.</div>
+                      <div className="text-[15px] font-medium text-[#202123]">{t('Connect database system', 'Kết nối cơ sở dữ liệu')}</div>
+                      <div className="mt-1 text-[13px] leading-5 text-black/45">{t('Postgres, MySQL, MariaDB, MongoDB, SQLite, then LightBI builds a BA brief.', 'Postgres, MySQL, MariaDB, MongoDB, SQLite; sau đó LightBI tạo bản phân tích BA.')}</div>
                     </button>
                   </div>
 

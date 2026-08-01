@@ -74,3 +74,26 @@ export function findPendingSourceFamily(
 ): DatasetFamily | undefined {
   return pending?.families.find((family) => family.files.some((entry) => entry.file.name === sourceName));
 }
+
+/**
+ * Collection perspectives describe a user's business role, while a single canonical
+ * dataset exposes domain perspectives. Keep that vocabulary boundary explicit when
+ * Easy Mode hands one selected source into the single-dataset workspace.
+ */
+export function mapCollectionPerspectiveToDatasetPerspective(perspectiveId: string): string | null {
+  switch (perspectiveId) {
+    case "sales_performance":
+    case "period_comparison":
+    case "executive_overview":
+      return "revenue";
+    case "profitability":
+    case "finance_accounting":
+      return "finance";
+    case "fulfillment_operations":
+      return "operations";
+    case "data_trust":
+      return null;
+    default:
+      return perspectiveId;
+  }
+}

@@ -1,6 +1,7 @@
 import React from 'react';
 import { FolderOpen, History, Trash2 } from 'lucide-react';
 import type { WorkspaceSessionRecord } from '../../lib/workspace-session-api';
+import { useUiLanguage } from '../../lib/ui-language';
 
 interface HomeSessionHistoryPanelProps {
   className?: string;
@@ -15,11 +16,13 @@ interface HomeSessionHistoryPanelProps {
 
 export const HomeSessionHistoryPanel: React.FC<HomeSessionHistoryPanelProps> = ({
   className = '', sessions, activeSessionId, status, formatRowCount, formatColumnCount, onOpen, onDelete,
-}) => (
+}) => {
+  const { t } = useUiLanguage();
+  return (
   <div className={`bg-white border border-black/10 rounded-xl p-5 shadow-sm ${className}`}>
     <div className="mb-4 flex items-center justify-between gap-3">
       <h3 className="flex items-center text-[12px] font-semibold uppercase tracking-wider text-gray-500">
-        <History className="mr-2 h-4 w-4 text-gray-400" /> Session history
+        <History className="mr-2 h-4 w-4 text-gray-400" /> {t('Session history', 'Lịch sử phân tích')}
       </h3>
       <span className="text-[11px] text-gray-400">{sessions.length}</span>
     </div>
@@ -33,8 +36,8 @@ export const HomeSessionHistoryPanel: React.FC<HomeSessionHistoryPanelProps> = (
                 <button onClick={() => onOpen(session)} className="min-w-0 flex-1 text-left" title="Open saved session">
                   <div className="truncate text-[13px] font-semibold text-gray-900">{session.title}</div>
                   <div className="mt-1 flex flex-wrap gap-x-2 gap-y-1 text-[11px] text-gray-500">
-                    <span>{formatRowCount(session.rowCount)} rows</span>
-                    <span>{formatColumnCount(session.columnCount)} columns</span>
+                    <span>{formatRowCount(session.rowCount)} {t('rows', 'dòng')}</span>
+                    <span>{formatColumnCount(session.columnCount)} {t('columns', 'cột')}</span>
                     <span>{session.sourceType}</span>
                   </div>
                 </button>
@@ -53,10 +56,11 @@ export const HomeSessionHistoryPanel: React.FC<HomeSessionHistoryPanelProps> = (
       </div>
     ) : (
       <div className="rounded-lg border border-dashed border-gray-200 px-3 py-5 text-center">
-        <div className="text-[13px] font-medium text-gray-700">No saved sessions yet</div>
-        <div className="mt-1 text-[12px] text-gray-400">LightBI saves when you start an analysis or preview a chart.</div>
+        <div className="text-[13px] font-medium text-gray-700">{t('No saved sessions yet', 'Chưa có phiên phân tích đã lưu')}</div>
+        <div className="mt-1 text-[12px] text-gray-400">{t('LightBI saves when you start an analysis or preview a chart.', 'LightBI sẽ lưu khi bạn bắt đầu phân tích hoặc xem biểu đồ.')}</div>
       </div>
     )}
     {status && <div className="mt-4 rounded-md bg-gray-50 px-3 py-2 text-[12px] text-gray-500">{status}</div>}
   </div>
-);
+  );
+};

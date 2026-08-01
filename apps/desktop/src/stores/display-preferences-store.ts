@@ -37,6 +37,20 @@ export const DEFAULT_PREFERENCES: DisplayPreferences = {
   datetimeFormat: 'locale'
 };
 
+export function migrateDisplayPreferences(
+  persistedPreferences: Partial<DisplayPreferences>,
+  defaults: DisplayPreferences = DEFAULT_PREFERENCES,
+): DisplayPreferences {
+  const locale = persistedPreferences.locale ?? defaults.locale;
+  return {
+    ...defaults,
+    ...persistedPreferences,
+    language: persistedPreferences.language ?? (locale === 'vi-VN' ? 'vi' : 'en'),
+    currencyCode: persistedPreferences.currencyCode
+      ?? (locale === 'vi-VN' ? 'VND' : locale === 'ar-SA' ? 'SAR' : 'USD'),
+  };
+}
+
 export const useDisplayPreferences = create<DisplayPreferencesState>()(
   persist(
     (set) => ({
@@ -50,17 +64,10 @@ export const useDisplayPreferences = create<DisplayPreferencesState>()(
       merge: (persisted, current) => {
         const persistedState = persisted as Partial<DisplayPreferencesState> | undefined;
         const persistedPreferences: Partial<DisplayPreferences> = persistedState?.preferences ?? {};
-        const locale = persistedPreferences.locale ?? current.preferences.locale;
         return {
           ...current,
           ...persistedState,
-          preferences: {
-            ...current.preferences,
-            ...persistedPreferences,
-            language: persistedPreferences.language ?? (locale === 'vi-VN' ? 'vi' : 'en'),
-            currencyCode: persistedPreferences.currencyCode
-              ?? (locale === 'vi-VN' ? 'VND' : locale === 'ar-SA' ? 'SAR' : 'USD'),
-          },
+          preferences: migrateDisplayPreferences(persistedPreferences, current.preferences),
         };
       },
     }

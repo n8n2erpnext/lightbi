@@ -63,9 +63,15 @@ describe('display-formatter formatValue', () => {
   });
 
   it('formats currency for VND', () => {
-    const formatted = formatValue(1000000, 'currency', { ...DEFAULT_PREFERENCES, locale: 'vi-VN' });
+    const formatted = formatValue(1000000, 'currency', { ...DEFAULT_PREFERENCES, locale: 'vi-VN', currencyCode: 'VND' });
     // VND usually renders as 1.000.000 ₫
     expect(formatted).toMatch(/1\.000\.000\s*₫/);
+  });
+
+  it('uses the reporting currency from Settings independently of UI locale', () => {
+    const formatted = formatValue(1000000, 'currency', { ...DEFAULT_PREFERENCES, locale: 'en-US', currencyCode: 'VND', currencyDisplay: 'code' });
+    expect(formatted).toContain('VND');
+    expect(formatted).not.toContain('$');
   });
 
   it('returns "-" for null or empty values', () => {
