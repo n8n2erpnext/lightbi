@@ -2,8 +2,8 @@
   "schemaVersion": "lightbi.phase-5m2-question-action-policy-audit.v1",
   "domainPackId": "commerce_distribution_mvp",
   "questionPolicyVersion": "lightbi.question-action-policy.v1",
-  "questionPolicyHash": "f623f6adbef180d69d78e1f5f185ff62517df9f8d7093788da48d92661c8c808",
-  "metricPolicyHash": "26bd430cbca42fbb5a6c8fdf51f248fd40ebf9dc28bd29f458ee53d864de3f5c",
+  "questionPolicyHash": "840d387ff5150407a0e672e9128936f502e8da9a002937488c1e11ee01218c25",
+  "metricPolicyHash": "389f209926cf7a62429c03c395b1f4c6a576b4ad16cacacb7162773352e22fd6",
   "manifestPolicyHash": "3efa22d2210d2160bf27b1e16ae00da6617c1227e15a8310adbf9b04606a25fd",
   "metricIds": [
     "sales_revenue",
@@ -40,6 +40,30 @@
       "timeRequirement": "not_required",
       "sourceComplexity": "source_local",
       "priority": 21
+    },
+    {
+      "questionId": "commerce.sales_revenue.by_category",
+      "metricId": "sales_revenue",
+      "intent": "ranking",
+      "timeRequirement": "not_required",
+      "sourceComplexity": "source_local",
+      "priority": 41
+    },
+    {
+      "questionId": "commerce.sales_revenue.by_salesperson",
+      "metricId": "sales_revenue",
+      "intent": "ranking",
+      "timeRequirement": "not_required",
+      "sourceComplexity": "source_local",
+      "priority": 42
+    },
+    {
+      "questionId": "commerce.sales_revenue.by_payment_method",
+      "metricId": "sales_revenue",
+      "intent": "ranking",
+      "timeRequirement": "not_required",
+      "sourceComplexity": "source_local",
+      "priority": 43
     },
     {
       "questionId": "commerce.quantity_sold.over_time",
@@ -103,7 +127,7 @@
       "intent": "summary",
       "timeRequirement": "not_required",
       "sourceComplexity": "source_local",
-      "priority": 70
+      "priority": 79
     },
     {
       "questionId": "commerce.delivery_count.by_status",
@@ -111,7 +135,55 @@
       "intent": "status_breakdown",
       "timeRequirement": "not_required",
       "sourceComplexity": "source_local",
+      "priority": 70
+    },
+    {
+      "questionId": "operations.delivery_count.by_on_time_status",
+      "metricId": "delivery_count",
+      "intent": "status_breakdown",
+      "timeRequirement": "not_required",
+      "sourceComplexity": "source_local",
+      "priority": 71
+    },
+    {
+      "questionId": "operations.delivery_count.by_route",
+      "metricId": "delivery_count",
+      "intent": "ranking",
+      "timeRequirement": "not_required",
+      "sourceComplexity": "source_local",
+      "priority": 72
+    },
+    {
+      "questionId": "operations.delivery_count.by_vehicle",
+      "metricId": "delivery_count",
+      "intent": "ranking",
+      "timeRequirement": "not_required",
+      "sourceComplexity": "source_local",
+      "priority": 73
+    },
+    {
+      "questionId": "operations.delivery_count.by_driver",
+      "metricId": "delivery_count",
+      "intent": "ranking",
+      "timeRequirement": "not_required",
+      "sourceComplexity": "source_local",
+      "priority": 74
+    },
+    {
+      "questionId": "operations.delivery_count.over_time",
+      "metricId": "delivery_count",
+      "intent": "trend",
+      "timeRequirement": "event_or_period",
+      "sourceComplexity": "source_local",
       "priority": 75
+    },
+    {
+      "questionId": "operations.delivery_count.by_vehicle_and_on_time_status",
+      "metricId": "delivery_count",
+      "intent": "status_breakdown",
+      "timeRequirement": "not_required",
+      "sourceComplexity": "source_local",
+      "priority": 76
     },
     {
       "questionId": "inventory.shipment_count.by_current_location",
