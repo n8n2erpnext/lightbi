@@ -272,7 +272,7 @@ async fn build_context() -> Arc<ProjectContext> {
     ))
 }
 
-pub async fn run(bind_address: &str) -> Result<(), std::io::Error> {
+pub async fn build_router() -> Router {
     let state = Arc::new(AppState {
         context: build_context().await,
         latest_csv_path: tokio::sync::Mutex::new(None),
@@ -419,9 +419,13 @@ pub async fn run(bind_address: &str) -> Result<(), std::io::Error> {
         .layer(cors)
         .with_state(state);
 
+    app
+}
+
+pub async fn run(bind_address: &str) -> Result<(), std::io::Error> {
     let listener = TcpListener::bind(bind_address).await?;
     println!("API Server running on http://{bind_address}");
-    axum::serve(listener, app).await
+    axum::serve(listener, build_router().await).await
 }
 
 fn is_allowed_microsoft_excel_host(host: &str) -> bool {

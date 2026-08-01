@@ -4,7 +4,7 @@ export function getApiBaseUrl(): string {
     return envVal.trim();
   }
   if (typeof window !== 'undefined' && isNativeWebview(window)) {
-    return 'http://127.0.0.1:5172';
+    return 'lightbi://localhost';
   }
   // Same-origin keeps credentials and API traffic behind the dev/prod reverse proxy.
   return typeof window === 'undefined' ? 'http://localhost:5172' : window.location.origin;

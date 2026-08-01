@@ -91,15 +91,15 @@ describe("UnderstandingNextCard Phase 8C functional states", () => {
     expect(screen.queryByTestId("canonical-group-unsupported")).toBeNull();
   });
 
-  it("requires a perspective and does not fabricate an action for recognized-only evidence", () => {
+  it("requires a perspective and keeps recognized-only evidence non-interactive", () => {
     const select = vi.fn();
     const { rerender } = render(<UnderstandingNextCard understanding={understanding} canonicalPresentation={perspectivePresentation} canonicalPerspectives={canonicalPerspectives} onSelectPerspective={select} />);
     expect(screen.getByTestId("canonical-select-perspective-prompt")).toBeTruthy();
     expect(screen.queryByRole("button", { name: "Investigate" })).toBeNull();
+    expect(screen.getByTestId("business-perspective-customer").textContent).toContain("not enough evidence");
     fireEvent.click(screen.getByTestId("business-perspective-customer"));
-    expect(select).toHaveBeenCalledWith("customer");
-    rerender(<UnderstandingNextCard understanding={understanding} canonicalPresentation={perspectivePresentation} canonicalPerspectives={canonicalPerspectives} selectedPerspectiveId="customer" onSelectPerspective={select} />);
-    expect(screen.getByTestId("canonical-perspective-recognized-only")).toBeTruthy();
+    expect(select).not.toHaveBeenCalled();
+    rerender(<UnderstandingNextCard understanding={understanding} canonicalPresentation={perspectivePresentation} canonicalPerspectives={canonicalPerspectives} selectedPerspectiveId={null} onSelectPerspective={select} />);
     expect(screen.queryByRole("button", { name: "Investigate" })).toBeNull();
   });
 
@@ -111,6 +111,6 @@ describe("UnderstandingNextCard Phase 8C functional states", () => {
     ] as CanonicalDomainPerspectiveCandidateV1[];
     render(<UnderstandingNextCard understanding={understanding} canonicalPresentation={perspectivePresentation} canonicalPerspectives={twoReady} />);
     expect(screen.getAllByText("Recommended")).toHaveLength(1);
-    expect(screen.getByTestId("business-perspective-customer").textContent).toContain("Evidence found");
+    expect(screen.getByTestId("business-perspective-customer").textContent).toContain("not enough evidence");
   });
 });
