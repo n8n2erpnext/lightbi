@@ -104,6 +104,8 @@ export const Investigation: React.FC = () => {
   const autoPreviewSessionId = useRef<string | null>(null);
   const workspaceSessionPersisted = useRef(false);
   const createChart = useAppRuntime(state => state.createChart);
+  const createDashboard = useAppRuntime(state => state.createDashboard);
+  const addChartToDashboard = useAppRuntime(state => state.addChartToDashboard);
 
   useEffect(() => () => {
     executionRuns.current.cancel();
@@ -368,38 +370,101 @@ export const Investigation: React.FC = () => {
       }).format(governedResultTotal)
       : formatValue(governedResultTotal, 'number', preferences, { compact: false });
 
-  const saveChartToLibrary = async () => {
-    if (!chartModel || chartModel.status !== 'ready') return;
-    await persistWorkspaceSession();
-    const chartType = chartModel.chartType === 'line'
+  const persistChartModel = (model: ChartPreviewModel, name: string, source: string) => {
+    const chartType = model.chartType === 'line'
       ? 'Line'
-      : chartModel.chartType === 'table'
+      : model.chartType === 'table'
         ? 'Table'
         : 'Bar';
-    const chartId = createChart({
+    return createChart({
       projectId: 'proj-1',
       datasetId: session.datasetId,
-      name: chartModel.title || analysisAction.opportunityName,
+      name,
       type: chartType,
-      xAxis: chartModel.xField ? [{ columnName: chartModel.xField }] : [],
-      yAxis: chartModel.seriesFields.map(columnName => ({ columnName, aggregation: 'None' })),
+      xAxis: model.xField ? [{ columnName: model.xField }] : [],
+      yAxis: model.seriesFields.map(columnName => ({ columnName, aggregation: 'None' })),
       filters: {},
       formatting: {
         lightbiData: {
-          source: 'simple_ba_preview',
+          source,
           datasetName: session.datasetId,
-          title: chartModel.title,
-          chartType: chartModel.chartType,
-          xField: chartModel.xField,
-          yField: chartModel.yField,
-          seriesFields: chartModel.seriesFields,
-          rows: chartModel.rows.slice(0, 500),
-          rowCount: previewResult?.rowCount ?? chartModel.rows.length,
+          actionId: analysisAction.id,
+          perspective: analysisAction.opportunityName,
+          title: model.title,
+          chartType: model.chartType,
+          xField: model.xField,
+          yField: model.yField,
+          seriesFields: model.seriesFields,
+          rows: model.rows.slice(0, 500),
+          rowCount: model.rows.length,
+          governed: true,
           savedAt: new Date().toISOString(),
         },
       },
     });
+  };
+
+  const saveChartToLibrary = async () => {
+    if (!chartModel || chartModel.status !== 'ready') return;
+    await persistWorkspaceSession();
+    const chartId = persistChartModel(chartModel, chartModel.title || analysisAction.opportunityName, 'simple_ba_preview');
     setSavedChartNotice(`Saved to Chart Library: ${chartId}`);
+  };
+
+  const createPerspectiveDashboard = async () => {
+    if (!chartModel || chartModel.status !== 'ready' || previewResult?.status !== 'executed') return;
+    await persistWorkspaceSession();
+    const dashboardId = createDashboard(`${analysisAction.opportunityName} — ${session.datasetId}`, {
+      source: 'easy_mode_perspective',
+      datasetId: session.datasetId,
+      actionId: analysisAction.id,
+      perspective: analysisAction.opportunityName,
+      governed: true,
+      evidenceScope: singleSourceBAOverview?.isRepresentativeSample ? 'governed_primary_with_representative_ba_sample' : 'full_source',
+      generatedAt: new Date().toISOString(),
+    });
+
+    if (governedResultTotal !== null) {
+      const metricName = session.canonicalExecutionResult?.metricId || chartModel.yField || analysisAction.measures[0] || t('Key result', 'Kết quả chính');
+      const kpiChartId = createChart({
+        projectId: 'proj-1', datasetId: session.datasetId, name: metricName, type: 'Number', xAxis: [],
+        yAxis: [{ columnName: 'value', aggregation: 'None' }], filters: {},
+        formatting: { lightbiData: { source: 'perspective_dashboard_kpi', actionId: analysisAction.id, perspective: analysisAction.opportunityName, yField: 'value', seriesFields: ['value'], rows: [{ value: governedResultTotal }], rowCount: 1, governed: true, savedAt: new Date().toISOString() } },
+      });
+      addChartToDashboard(dashboardId, kpiChartId);
+    }
+
+    singleSourceBAOverview?.kpis
+      .filter(kpi => !(kpi.id === 'records' && singleSourceBAOverview.isRepresentativeSample))
+      .filter(kpi => governedResultTotal === null || Math.abs(kpi.value - governedResultTotal) > 1e-9)
+      .slice(0, 4)
+      .forEach(kpi => {
+        const kpiChartId = createChart({
+          projectId: 'proj-1', datasetId: session.datasetId, name: kpi.label, type: 'Number', xAxis: [],
+          yAxis: [{ columnName: 'value', aggregation: 'None' }], filters: {},
+          formatting: { lightbiData: { source: 'perspective_dashboard_ba_kpi', actionId: analysisAction.id, perspective: analysisAction.opportunityName, valueKind: kpi.kind, yField: 'value', seriesFields: ['value'], rows: [{ value: kpi.value }], rowCount: 1, governed: true, savedAt: new Date().toISOString() } },
+        });
+        addChartToDashboard(dashboardId, kpiChartId);
+      });
+
+    const primaryChartId = persistChartModel(chartModel, chartModel.title || analysisAction.opportunityName, 'perspective_dashboard_primary');
+    addChartToDashboard(dashboardId, primaryChartId);
+    singleSourceBAOverview?.breakdowns.slice(0, 3).forEach(breakdown => {
+      if (breakdown.top.length === 0) return;
+      const rows = breakdown.top.slice(0, 10).map(item => ({ label: item.label, value: item.value, share: item.share, row_count: item.rowCount }));
+      const breakdownChartId = createChart({
+        projectId: 'proj-1', datasetId: session.datasetId, name: breakdown.label, type: 'Bar',
+        xAxis: [{ columnName: 'label' }], yAxis: [{ columnName: 'value', aggregation: 'None' }], filters: {},
+        formatting: { lightbiData: { source: 'perspective_dashboard_ba_breakdown', actionId: analysisAction.id, perspective: analysisAction.opportunityName, valueKind: breakdown.valueKind, xField: 'label', yField: 'value', seriesFields: ['value'], rows, rowCount: rows.length, governed: true, physicalColumn: breakdown.physicalColumn, savedAt: new Date().toISOString() } },
+      });
+      addChartToDashboard(dashboardId, breakdownChartId);
+    });
+    supportingCharts.forEach(item => {
+      const supportingChartId = persistChartModel(item.chartModel, item.label, 'perspective_dashboard_supporting');
+      addChartToDashboard(dashboardId, supportingChartId);
+    });
+    setShowDeepAnalysis(false);
+    navigate(`/dashboards/${dashboardId}`);
   };
 
   async function handleRunPreview() {
@@ -964,6 +1029,8 @@ export const Investigation: React.FC = () => {
         singleSourceBAOverview={singleSourceBAOverview}
         chartModel={chartModel}
         onClose={() => setShowDeepAnalysis(false)}
+        onCreateDashboard={() => { void createPerspectiveDashboard(); }}
+        canCreateDashboard={previewResult?.status === 'executed' && chartModel?.status === 'ready'}
         preferences={preferences}
       />}
       <DisplayPreferencesModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />

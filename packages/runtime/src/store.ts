@@ -22,6 +22,13 @@ const mockDatasets: Record<string, Dataset> = {};
 
 const mockDatasources: Record<string, Datasource> = {};
 
+const createEntityId = (prefix: string) => {
+  const randomPart = typeof crypto !== 'undefined' && 'randomUUID' in crypto
+    ? crypto.randomUUID()
+    : Math.random().toString(36).slice(2);
+  return `${prefix}-${Date.now()}-${randomPart}`;
+};
+
 export const useAppRuntime = create<AppRuntimeState>((set) => ({
   activeProjectId: null,
   activeDatasourceId: null,
@@ -58,8 +65,8 @@ export const useAppRuntime = create<AppRuntimeState>((set) => ({
   setActiveChart: (chartId) => set({ activeChartId: chartId }),
   setActiveDataset: (datasetId) => set({ activeDatasetId: datasetId }),
   setActiveDatasource: (datasourceId) => set({ activeDatasourceId: datasourceId }),
-  createDashboard: (name) => {
-    const id = `dash-${Date.now()}`;
+  createDashboard: (name, metadata = {}) => {
+    const id = createEntityId('dash');
     const now = new Date().toISOString();
     set((state) => ({
       dashboards: {
@@ -69,7 +76,7 @@ export const useAppRuntime = create<AppRuntimeState>((set) => ({
           projectId: state.activeProjectId || 'proj-1',
           name: name.trim() || 'Untitled dashboard',
           widgets: [],
-          metadata: {},
+          metadata,
           createdAt: now,
           updatedAt: now,
         },
@@ -79,7 +86,7 @@ export const useAppRuntime = create<AppRuntimeState>((set) => ({
     return id;
   },
   createChart: (chart) => {
-    const id = `chart-${Date.now()}`;
+    const id = createEntityId('chart');
     const now = new Date().toISOString();
     set((state) => ({
       charts: {

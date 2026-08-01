@@ -13,6 +13,7 @@ type SavedChartPayload = {
   seriesFields?: string[];
   rows?: Record<string, unknown>[];
   rowCount?: number;
+  valueKind?: 'money' | 'number' | 'percent';
 };
 
 const getSavedChartPayload = (chart: Chart): SavedChartPayload | null => {
@@ -30,12 +31,12 @@ const widgetGridStyle = (widget: DashboardWidget): React.CSSProperties => {
 
 const DashboardWidgetCard: React.FC<{ widget: DashboardWidget; chart?: Chart }> = ({ widget, chart }) => {
   if (!chart) {
-    return <div style={widgetGridStyle(widget)} className="rounded-md border border-dashed border-gray-200 bg-white p-4 text-sm text-gray-400">Missing chart</div>;
+    return <div data-testid="dashboard-widget" style={widgetGridStyle(widget)} className="rounded-md border border-dashed border-gray-200 bg-white p-4 text-sm text-gray-400">Missing chart</div>;
   }
   const payload = getSavedChartPayload(chart);
   if (!payload || !payload.rows?.length) {
     return (
-      <div style={widgetGridStyle(widget)} className="flex h-full flex-col justify-center rounded-md border border-dashed border-gray-200 bg-white p-4 text-sm text-gray-500">
+      <div data-testid="dashboard-widget" style={widgetGridStyle(widget)} className="flex h-full flex-col justify-center rounded-md border border-dashed border-gray-200 bg-white p-4 text-sm text-gray-500">
         <h3 className="font-semibold text-gray-800">{chart.name}</h3>
         <p className="mt-1 text-xs text-gray-400">Needs a saved BA or Advanced result before it can render real data.</p>
       </div>
@@ -47,12 +48,13 @@ const DashboardWidgetCard: React.FC<{ widget: DashboardWidget; chart?: Chart }> 
 
   if (chart.type === 'Number') {
     const value = Number(payload.rows[0]?.[seriesKey] ?? payload.rowCount ?? 0);
-    return <div style={widgetGridStyle(widget)}><DashboardKPIWidget title={chart.name} value={Number.isFinite(value) ? value : 0} valueType="number" className="h-full" colSpan={widget.layout.w} /></div>;
+    const valueType = payload.valueKind === 'money' ? 'currency' : payload.valueKind === 'percent' ? 'percent' : 'number';
+    return <div data-testid="dashboard-widget" style={widgetGridStyle(widget)}><DashboardKPIWidget title={chart.name} value={Number.isFinite(value) ? value : 0} valueType={valueType} className="h-full" colSpan={widget.layout.w} /></div>;
   }
   if (chart.type === 'Table') {
     const columns = Object.keys(payload.rows[0] ?? {}).slice(0, 6);
     return (
-      <div style={widgetGridStyle(widget)} className="rounded-md border border-gray-200 bg-white p-4 shadow-sm">
+      <div data-testid="dashboard-widget" style={widgetGridStyle(widget)} className="rounded-md border border-gray-200 bg-white p-4 shadow-sm">
         <h3 className="mb-3 text-[13px] font-semibold text-gray-800">{chart.name}</h3>
         <table className="w-full text-left text-[11px] text-gray-600">
           <thead className="text-gray-400"><tr>{columns.map(column => <th key={column} className="py-1 pr-2">{column}</th>)}</tr></thead>
@@ -62,7 +64,7 @@ const DashboardWidgetCard: React.FC<{ widget: DashboardWidget; chart?: Chart }> 
     );
   }
   return (
-    <div style={widgetGridStyle(widget)}>
+    <div data-testid="dashboard-widget" style={widgetGridStyle(widget)}>
       <DashboardChartWidget
         title={chart.name}
         chartType={chart.type === 'Line' ? 'line' : chart.type === 'Donut' || chart.type === 'Pie' ? 'donut' : 'bar'}
@@ -85,10 +87,10 @@ export const DashboardBuilder: React.FC = () => {
   const dashboard = dashboards[id || activeDashboardId || ''] ?? null;
 
   return (
-    <div className="flex h-full flex-1 flex-col bg-gray-50">
+    <div data-testid="perspective-dashboard" className="flex h-full flex-1 flex-col bg-gray-50">
       <header className="flex h-12 shrink-0 items-center justify-between border-b border-gray-200 bg-white px-4">
         <div className="flex items-center space-x-3 text-gray-900">
-          <h1 className="text-[15px] font-semibold">{dashboard ? dashboard.name : 'Select a dashboard'}</h1>
+          <div><h1 className="text-[15px] font-semibold">{dashboard ? dashboard.name : 'Select a dashboard'}</h1>{dashboard?.metadata?.perspective && <p className="mt-0.5 text-[11px] text-gray-500">Perspective: {String(dashboard.metadata.perspective)} · {String(dashboard.metadata.datasetId ?? '')}</p>}</div>
           <span className="rounded border border-gray-200 bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-widest text-gray-500">{dashboard?.widgets.length ?? 0} cards</span>
         </div>
         <div className="flex items-center space-x-2">
@@ -110,8 +112,11 @@ export const DashboardBuilder: React.FC = () => {
             <Link to="/charts" className="mt-4 rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white">Open Chart Library</Link>
           </div>
         ) : (
-          <div className="grid grid-cols-20 gap-3" style={{ gridAutoRows: '30px' }}>
-            {dashboard.widgets.map(widget => <DashboardWidgetCard key={widget.id} widget={widget} chart={widget.referenceId ? charts[widget.referenceId] : undefined} />)}
+          <div className="mx-auto max-w-[1500px]">
+            {dashboard.metadata?.source === 'easy_mode_perspective' && <div className="mb-4 flex flex-col gap-3 rounded-xl border border-emerald-200 bg-gradient-to-r from-emerald-50 to-blue-50 p-4 sm:flex-row sm:items-center sm:justify-between"><div><div className="text-[11px] font-semibold uppercase tracking-wider text-emerald-700">Governed perspective dashboard</div><p className="mt-1 text-sm text-gray-700">This dashboard was composed from the same selected perspective, executed results and BA evidence.</p></div><div className="flex gap-2"><span className="rounded-full border border-emerald-200 bg-white px-3 py-1 text-xs font-semibold text-emerald-700">Governed</span><span className="rounded-full border border-blue-200 bg-white px-3 py-1 text-xs font-semibold text-blue-700">{dashboard.metadata.evidenceScope === 'full_source' ? 'Full-source evidence' : 'Full-source result · representative BA sample'}</span></div></div>}
+            <div className="grid grid-cols-[repeat(20,minmax(0,1fr))] gap-3" style={{ gridAutoRows: '30px' }}>
+              {dashboard.widgets.map(widget => <DashboardWidgetCard key={widget.id} widget={widget} chart={widget.referenceId ? charts[widget.referenceId] : undefined} />)}
+            </div>
           </div>
         )}
       </div>

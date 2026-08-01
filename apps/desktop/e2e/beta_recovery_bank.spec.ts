@@ -43,6 +43,13 @@ test.describe('Beta recovery capability ladder', () => {
     const deepBA = page.getByTestId('single-source-ba-overview');
     await expect(deepBA).toBeVisible();
     await expect(deepBA).toContainText(/Theo poutcome|previous campaign outcome/i);
+    const dashboardCta = page.getByTestId('deep-analysis-dashboard-cta');
+    await expect(dashboardCta).toBeVisible();
+    await dashboardCta.getByRole('button', { name: /Create perspective dashboard|Tạo Dashboard theo góc nhìn/i }).click();
+    await expect(page).toHaveURL(/\/dashboards\//, { timeout: 30_000 });
+    await expect(page.getByTestId('perspective-dashboard')).toBeVisible();
+    expect(await page.getByTestId('dashboard-widget').count()).toBeGreaterThanOrEqual(2);
+    await expect(page.getByText(/Governed perspective dashboard/i)).toBeVisible();
     await page.screenshot({ path: '../../ui-audit/beta-recovery-bank-investigation.png', fullPage: true });
 
     const body = await page.locator('body').innerText();

@@ -222,3 +222,25 @@ remain the technical workspace for review, cleaning, mapping, query and export.
 - Added R3B dashboard composition to the plan as requested. It must reuse this
   same evidence bundle rather than create a parallel analytics path.
 - Disk checkpoint: 30 GB available, 76% used.
+
+## Execution checkpoint 5 - perspective dashboard bridge
+
+- Connected the existing Chart Library and Dashboard runtime to the final Easy
+  Mode BA step. The Deep BA panel now offers `Create perspective dashboard`
+  only after the selected action has an executed, renderable result.
+- Dashboard composition reuses the selected action identity, primary governed
+  result, BA KPI set, BA breakdowns and any completed supporting charts. It does
+  not re-infer a new perspective or start a parallel query path.
+- Each generated chart carries dataset, action, perspective, evidence scope and
+  generated-at metadata. Dashboard metadata states when the primary result is
+  full-source but BA breakdowns use a representative sample.
+- Fixed timestamp-only chart/dashboard identifiers, which could overwrite cards
+  created in the same millisecond during one-click composition.
+- Upgraded the dashboard presentation with perspective context, governance and
+  evidence-scope badges, responsive 20-column layout, KPI cards and ranked
+  breakdown charts.
+- Chromium gate: `bank-additional-full.xlsx` completes Customer perspective ->
+  selected `poutcome` question -> chart -> aligned Deep BA -> generated
+  Dashboard. The resulting dashboard contains eight real cards in visual QA.
+- Gate status: desktop TypeScript passes; Playwright dashboard journey passes.
+- Disk checkpoint remains 30 GB available, 76% used.

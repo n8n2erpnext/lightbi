@@ -5,7 +5,7 @@ import { formatValue } from '../../lib/display-formatter';
 export interface DashboardKPIWidgetProps {
   title: string;
   value: number | null | undefined;
-  valueType?: 'number' | 'currency';
+  valueType?: 'number' | 'currency' | 'percent';
   trend?: {
     value: number | null | undefined;
     label: string;
@@ -33,7 +33,9 @@ export const DashboardKPIWidget: React.FC<DashboardKPIWidgetProps> = ({
     <div className={`${className} bg-white border border-gray-200 rounded-md p-3.5 shadow-sm flex flex-col justify-center`}>
       <h3 className="text-[12px] font-medium text-gray-500 uppercase tracking-wider">{title}</h3>
       <div className="text-xl font-semibold text-gray-900 mt-1">
-        {formatValue(value, valueType, preferences, { compact: isCompact })}
+        {valueType === 'percent'
+          ? `${formatValue(Number(value ?? 0) * 100, 'number', preferences, { compact: false })}%`
+          : formatValue(value, valueType, preferences, { compact: isCompact })}
       </div>
       {trend && (
         <div className={`text-[11px] font-medium mt-1 flex items-center ${trend.isPositive !== false ? 'text-emerald-600' : 'text-rose-600'}`}>
