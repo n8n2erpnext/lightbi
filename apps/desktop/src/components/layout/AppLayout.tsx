@@ -80,6 +80,7 @@ export const AppLayout: React.FC = () => {
             <NavLink
               key={item.name}
               to={item.path}
+              reloadDocument={item.path === '/'}
               className={({ isActive }) =>
                 cn(
                   "group flex h-11 items-center rounded-[12px] px-3 text-[14px] font-medium transition-all duration-200",
