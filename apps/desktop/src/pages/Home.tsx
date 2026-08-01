@@ -511,11 +511,11 @@ export const Home: React.FC = () => {
     setMultiSourceBuildResult({ relationshipState: null, blockers: [] });
   };
 
-  const handleUseMultiSourceReviewSource = (key: string) => {
+  const handleUseMultiSourceReviewSource = (key: string, draftOverride?: MultiSourceDraftV1) => {
     const source = multiSourceReviewSources.find((item) => item.key === key);
     if (!source || !pendingLocalBatch) return;
     const family = findPendingSourceFamily(pendingLocalBatch, source.name);
-    if (family) handleUseLocalDataset(family.id, source.name);
+    if (family) handleUseLocalDataset(family.id, source.name, draftOverride);
   };
 
   const handleBuildCanonicalMultiSource = async (
@@ -939,13 +939,13 @@ export const Home: React.FC = () => {
       .map(([key]) => key);
     if (selectedSourceKeys.length === 1) {
       setSelectedPerspective(mapCollectionPerspectiveToDatasetPerspective(perspective.perspectiveId));
-      handleUseMultiSourceReviewSource(selectedSourceKeys[0]);
+      handleUseMultiSourceReviewSource(selectedSourceKeys[0], nextDrafts[selectedSourceKeys[0]]);
       return;
     }
     void handleBuildCanonicalMultiSource(nextDrafts, perspective.perspectiveId);
   };
 
-  const handleUseLocalDataset = (familyIdOverride?: string, sourceNameOverride?: string) => {
+  const handleUseLocalDataset = (familyIdOverride?: string, sourceNameOverride?: string, draftOverride?: MultiSourceDraftV1) => {
     if (!pendingLocalBatch || pendingLocalBatch.status !== 'ready') return;
     
     let familyId = familyIdOverride ?? pendingLocalBatch.selectedFamilyId;
@@ -1059,6 +1059,24 @@ export const Home: React.FC = () => {
       file: onlyItem?.file,
       sheetName: onlyMetadata?.is_workbook ? onlyMetadata.default_sheet : undefined,
     });
+    let canonicalUserOverlay: CanonicalUserOverlayV1 | undefined;
+    if (canonicalSourceBoundary && draftOverride) {
+      let overlay = createCanonicalUserOverlay(canonicalSourceBoundary);
+      if (draftOverride.role) overlay = appendCanonicalEvidenceDeclaration(overlay, canonicalSourceBoundary, {
+        evidenceType: 'source_role', value: { kind: 'source_role', role: draftOverride.role }, scope: { level: 'source_file' },
+      });
+      if (draftOverride.documentColumn) overlay = appendCanonicalEvidenceDeclaration(overlay, canonicalSourceBoundary, {
+        evidenceType: 'document_identity', value: { kind: 'document_identity', physicalColumn: draftOverride.documentColumn }, scope: { level: 'physical_column', physicalColumn: draftOverride.documentColumn },
+      });
+      if (draftOverride.periodStart && draftOverride.periodEnd) overlay = appendCanonicalEvidenceDeclaration(overlay, canonicalSourceBoundary, {
+        evidenceType: 'reporting_period', value: { kind: 'reporting_period', start: draftOverride.periodStart, end: draftOverride.periodEnd }, scope: { level: 'source_file' },
+      });
+      const monetaryColumns = draftOverride.monetaryColumns.split(',').map((value) => value.trim()).filter(Boolean);
+      if (draftOverride.currency && monetaryColumns.length) overlay = appendCanonicalEvidenceDeclaration(overlay, canonicalSourceBoundary, {
+        evidenceType: 'reporting_currency', value: { kind: 'reporting_currency', currency: draftOverride.currency, monetaryColumns }, scope: { level: 'source_file' },
+      });
+      canonicalUserOverlay = overlay;
+    }
     registerAdvancedSource({
       id: advancedSourceId((family.files[0].result as any).sourceType, sourceName),
       name: sourceName,
@@ -1094,6 +1112,7 @@ export const Home: React.FC = () => {
       runtimeDatasetSource: canonicalSourceBoundary?.runtimeSource,
       semanticSample,
       canonicalSourceBoundary,
+      canonicalUserOverlay,
       analysisRowScope: rawAnalysisRows.length >= family.totalRows ? 'full' : 'not_retained',
       semanticRows: rawSemanticRows,
       analysisRows: rawAnalysisRows,

@@ -23,4 +23,10 @@ describe("canonical remediation deduplication", () => {
   it("does not merge distinct source scopes", () => {
     expect(dedupeCanonicalRemediations([currency("source-a", "one"), currency("source-b", "two")])).toHaveLength(2);
   });
+
+  it("presents one source-level currency action even when preflight reports several money columns", () => {
+    const first = { ...currency("source-a", "one"), physicalColumn: "NetRevenue", canonicalSignal: "net_revenue" };
+    const second = { ...currency("source-a", "two"), physicalColumn: "GrossProfit", canonicalSignal: "gross_profit" };
+    expect(dedupeCanonicalRemediations([first, second])).toHaveLength(1);
+  });
 });

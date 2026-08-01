@@ -327,6 +327,7 @@ export function projectCanonicalBusinessPerspectives(
   const revenueComparison = bundles.filter((bundle) => bundle.kind === "revenue_period_comparison");
   const sales = byRole("sales");
   const accounting = byRole("accounting");
+  const accountingWithGrossProfit = accounting.filter((source) => source.signals.includes("gross_profit"));
   const logistics = byRole("logistics");
   const all = projected;
   const samePeriodCrossFunctional = periods(all).filter((period) =>
@@ -374,25 +375,33 @@ export function projectCanonicalBusinessPerspectives(
     });
   }
 
-  if (grossProfit.length || accounting.length) {
+  if (grossProfit.length || accountingWithGrossProfit.length) {
+    const profitabilitySources = grossProfit.length
+      ? unique(grossProfit.flatMap((bundle) => bundle.sourceKeys))
+      : sourceKeys(accountingWithGrossProfit);
+    const profitabilityPeriods = grossProfit.length
+      ? unique(grossProfit.flatMap((bundle) => bundle.period ? [bundle.period] : []))
+      : periods(accountingWithGrossProfit);
     candidates.push({
       perspectiveId: "profitability",
       label: "Profitability",
       businessQuestion: "Where is gross profit created, and how does it change by period?",
       purpose: "Use compatible Sales and Accounting evidence without silently subtracting unreconciled measures.",
-      sourceKeys: unique(grossProfit.flatMap((bundle) => bundle.sourceKeys)),
-      sourceRoles: ["sales", "accounting"],
-      periods: unique(grossProfit.flatMap((bundle) => bundle.period ? [bundle.period] : [])),
+      sourceKeys: profitabilitySources,
+      sourceRoles: grossProfit.length ? ["sales", "accounting"] : ["accounting"],
+      periods: profitabilityPeriods,
       bundleKinds: grossProfit.map((bundle) => bundle.kind),
       capabilityIds: ["gross_profit"],
-      state: grossProfit.length ? "needs_evidence" : "partial",
-      blockers: grossProfit.length ? [] : ["same_period_sales_accounting_pair_not_found"],
+      state: "needs_evidence",
+      blockers: [],
       evidence: evidence([...sales, ...accounting]),
-      recommended: grossProfit.length > 0,
+      recommended: true,
     });
   }
 
   if (accounting.length) {
+    const hasExecutableFinanceSignal = accounting.some((source) =>
+      source.signals.some((signal) => ["gross_profit", "net_revenue", "total_cost", "unit_cost"].includes(signal)));
     candidates.push({
       perspectiveId: "finance_accounting",
       label: "Finance & accounting",
@@ -403,8 +412,8 @@ export function projectCanonicalBusinessPerspectives(
       periods: periods(accounting),
       bundleKinds: grossProfit.map((bundle) => bundle.kind),
       capabilityIds: ["gross_profit"],
-      state: "partial",
-      blockers: ["receivable_vat_cogs_and_margin_actions_not_in_current_governed_metric_policy"],
+      state: hasExecutableFinanceSignal ? "needs_evidence" : "partial",
+      blockers: hasExecutableFinanceSignal ? [] : ["finance_metric_signal_not_found"],
       evidence: evidence(accounting),
       recommended: false,
     });

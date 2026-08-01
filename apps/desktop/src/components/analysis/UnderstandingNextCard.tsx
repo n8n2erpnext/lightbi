@@ -244,12 +244,12 @@ export const UnderstandingNextCard: React.FC<UnderstandingNextCardProps> = ({
             {canonicalPerspectives.some(perspective => perspective.state !== 'governed_action_available') && (
               <details className="mt-3 rounded-xl border border-slate-200 bg-slate-50/60">
                 <summary className="cursor-pointer px-4 py-3 text-[12px] font-semibold text-slate-600">
-                  {t('Other signals LightBI found', 'CÃ¡c tÃ­n hiá»‡u khÃ¡c LightBI Ä‘Ã£ tÃ¬m tháº¥y')}
+                  {t('Other signals LightBI found', 'Các tín hiệu khác LightBI đã tìm thấy')}
                 </summary>
                 <div className="flex flex-wrap gap-2 border-t border-slate-200 px-4 py-3">
                   {canonicalPerspectives.filter(perspective => perspective.state !== 'governed_action_available').map(perspective => (
                     <span key={perspective.perspectiveId} data-testid={`business-perspective-${perspective.perspectiveId}`} className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[11px] text-slate-600">
-                      {perspective.label} Â· {t('not enough evidence to analyze safely', 'chÆ°a Ä‘á»§ báº±ng chá»©ng Ä‘á»ƒ phÃ¢n tÃ­ch an toÃ n')}
+                      {perspective.label} · {t('not enough evidence to analyze safely', 'chưa đủ bằng chứng để phân tích an toàn')}
                     </span>
                   ))}
                 </div>

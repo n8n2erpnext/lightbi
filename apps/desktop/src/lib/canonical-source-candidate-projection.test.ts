@@ -15,6 +15,27 @@ function candidate(id: string, role: "sales" | "accounting" | "logistics", month
   };
 }
 
+function withMoney(
+  source: CanonicalSourceCandidateProjectionV1,
+  physicalColumn: string,
+  canonicalSignal: string,
+): CanonicalSourceCandidateProjectionV1 {
+  const base = { sourceId: source.sourceId, sourceFingerprint: source.sourceFingerprint, sourceArtifactId: source.sourceArtifactId };
+  return {
+    ...source,
+    monetaryColumnCandidates: [{
+      candidateId: `${source.sourceId}:money:${canonicalSignal}`,
+      value: { physicalColumn, canonicalSignal },
+      ...base,
+      scope: { level: "physical_column", physicalColumn },
+      supportingEvidence: ["canonical"],
+      contradictingEvidence: [],
+      confidence: 0.95,
+      provenance: "inferred_candidate",
+    }],
+  };
+}
+
 describe("canonical source candidates and governed bundles", () => {
   it("pairs compatible cross-functional periods and projects same-role period partitions", () => {
     const sources = [
@@ -89,6 +110,26 @@ describe("canonical source candidates and governed bundles", () => {
     expect(perspectives.find((item) => item.perspectiveId === "order_journey")).toMatchObject({
       state: "not_yet_executable",
       blockers: ["three_role_order_journey_relationship_policy_not_implemented"],
+    });
+  });
+
+  it("exposes source-local profitability for an accounting file with direct gross-profit evidence", () => {
+    const accounting = withMoney(candidate("accounting-june", "accounting", "2026-06"), "GrossProfit", "gross_profit");
+    const perspectives = projectCanonicalBusinessPerspectives([{ key: "accounting-june", candidates: accounting }], []);
+
+    expect(perspectives.find((item) => item.perspectiveId === "profitability")).toMatchObject({
+      sourceKeys: ["accounting-june"],
+      sourceRoles: ["accounting"],
+      periods: ["2026-06"],
+      capabilityIds: ["gross_profit"],
+      state: "needs_evidence",
+      blockers: [],
+      recommended: true,
+    });
+    expect(perspectives.find((item) => item.perspectiveId === "finance_accounting")).toMatchObject({
+      sourceKeys: ["accounting-june"],
+      state: "needs_evidence",
+      blockers: [],
     });
   });
 });
