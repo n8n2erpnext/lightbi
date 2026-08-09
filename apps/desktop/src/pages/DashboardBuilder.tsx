@@ -102,6 +102,7 @@ export const DashboardBuilder: React.FC = () => {
   const dashboard = dashboards[id || activeDashboardId || ''] ?? null;
   const ba = getDashboardBA(dashboard?.metadata);
   const primaryInsights = (ba.deep?.insights ?? []).slice(0, 6);
+  const perspectiveFindings = (ba.perspective?.findings ?? []).filter(Boolean).slice(0, 6);
   const actions = [...(ba.perspective?.recommendedActions ?? []), ...(ba.deep?.decisionSuggestions ?? []).map(item => item.action || item.title || '')].filter(Boolean).slice(0, 5);
   const caveats = [...(ba.perspective?.limitations ?? []), ...(ba.deep?.caveats ?? [])].filter(Boolean).slice(0, 5);
 
@@ -145,6 +146,23 @@ export const DashboardBuilder: React.FC = () => {
                   <div className="rounded-xl border border-emerald-100 bg-emerald-50 p-3"><div className="text-[10px] font-semibold uppercase tracking-wider text-emerald-700">{t('Decision readiness', 'Sẵn sàng quyết định')}</div><div className="mt-1 text-2xl font-bold text-emerald-800">{ba.deep.decisionReadinessScore ?? '—'}<span className="text-xs font-medium text-emerald-600">/100</span></div></div>
                   <div className="rounded-xl border border-blue-100 bg-blue-50 p-3"><div className="text-[10px] font-semibold uppercase tracking-wider text-blue-700">{t('Data trust', 'Độ tin cậy dữ liệu')}</div><div className="mt-1 text-2xl font-bold text-blue-800">{ba.deep.dataTrustScore ?? '—'}<span className="text-xs font-medium text-blue-600">/100</span></div></div>
                 </div>
+              </div>
+            </section>}
+            {(ba.perspective || ba.deep) && <section data-testid="dashboard-decision-context" className="mb-4 grid gap-3 lg:grid-cols-12">
+              <div className="rounded-2xl border border-slate-200 bg-slate-950 p-5 text-white shadow-sm lg:col-span-5">
+                <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-sky-300">{t('Selected decision perspective', 'Góc nhìn quyết định đã chọn')}</div>
+                <h2 className="mt-2 text-xl font-semibold">{localize(ba.perspective?.analysisLabel || String(dashboard.metadata?.perspective ?? dashboard.name))}</h2>
+                <p className="mt-3 text-sm leading-6 text-slate-300">{t('Every KPI, chart, finding and action below is scoped to this perspective and its governed evidence.', 'Mọi KPI, biểu đồ, phát hiện và hành động bên dưới đều bám theo góc nhìn này cùng bằng chứng đã được quản trị.')}</p>
+                <div className="mt-4 flex flex-wrap gap-2 text-xs"><span className="rounded-full border border-white/15 bg-white/10 px-3 py-1.5">{(ba.perspective?.sourceRowCount ?? 0).toLocaleString()} {t('source rows', 'dòng nguồn')}</span><span className="rounded-full border border-white/15 bg-white/10 px-3 py-1.5">{primaryInsights.length + perspectiveFindings.length} {t('BA findings', 'phát hiện BA')}</span><span className="rounded-full border border-white/15 bg-white/10 px-3 py-1.5">{actions.length} {t('recommended actions', 'hành động đề xuất')}</span></div>
+              </div>
+              <div className="rounded-2xl border border-amber-200 bg-amber-50 p-5 shadow-sm lg:col-span-4">
+                <div className="flex items-center gap-2"><Lightbulb className="h-4 w-4 text-amber-700" /><h2 className="text-sm font-semibold text-amber-950">{t('What the evidence says', 'Bằng chứng đang cho thấy gì')}</h2></div>
+                {perspectiveFindings.length > 0 ? <ol className="mt-3 space-y-2">{perspectiveFindings.slice(0, 4).map((finding, index) => <li key={index} className="flex gap-3 rounded-lg bg-white/75 p-3 text-xs leading-5 text-slate-700"><span className="font-bold text-amber-700">{index + 1}</span>{localize(finding)}</li>)}</ol> : <p className="mt-3 text-sm leading-6 text-amber-900">{localize(ba.deep?.executiveSummary) || t('Run the selected analysis to generate evidence-backed findings.', 'Hãy chạy phân tích đã chọn để tạo các phát hiện có bằng chứng.')}</p>}
+              </div>
+              <div className="rounded-2xl border border-blue-200 bg-blue-50 p-5 shadow-sm lg:col-span-3">
+                <div className="flex items-center gap-2"><Target className="h-4 w-4 text-blue-700" /><h2 className="text-sm font-semibold text-blue-950">{t('Decision priority', 'Ưu tiên quyết định')}</h2></div>
+                <p className="mt-3 text-sm leading-6 text-blue-950">{actions[0] ? localize(actions[0]) : t('Review the strongest driver first, then open its supporting rows before taking action.', 'Ưu tiên kiểm tra tác nhân mạnh nhất, sau đó mở các dòng bằng chứng trước khi hành động.')}</p>
+                <div className="mt-4 rounded-xl border border-blue-200 bg-white p-3 text-xs leading-5 text-slate-600">{caveats.length > 0 ? t(`${caveats.length} evidence limitations remain visible below.`, `Còn ${caveats.length} giới hạn bằng chứng được hiển thị bên dưới.`) : t('No additional evidence limitation was recorded for this dashboard.', 'Không ghi nhận thêm giới hạn bằng chứng cho Dashboard này.')}</div>
               </div>
             </section>}
             <div className="grid grid-cols-[repeat(20,minmax(0,1fr))] gap-3" style={{ gridAutoRows: '30px' }}>

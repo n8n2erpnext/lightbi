@@ -29,7 +29,7 @@ import { presentCanonicalConsumerArtifact, presentCanonicalMultiSourceRelationsh
 import type { AnalysisAction } from '../lib/analysis-opportunity-actions';
 import { createRuntimeIntentFromAnalysisAction } from '../lib/analysis-runtime-contract';
 import { createRuntimePlanPreview } from '../lib/runtime-planner-preview';
-import { createInvestigationSession } from '../lib/investigation-session';
+import { createInvestigationSession, getCurrentInvestigationSession } from '../lib/investigation-session';
 import { createPerspectiveAnalysisBundle } from '../lib/perspective-analysis-bundle';
 import { adaptNextActionsToLegacy } from '../lib/understanding-next/action-adapter';
 import { generateCanonicalAIBriefing } from '../lib/canonical-ai-briefing';
@@ -63,7 +63,10 @@ import { buildHomeCanonicalArtifact } from '../lib/home-canonical-artifact';
 export const Home: React.FC = () => {
   const { preferences } = useDisplayPreferences();
   const navigate = useNavigate();
-  const [currentDataset, setCurrentDataset] = useState<any>(null);
+  const [currentDataset, setCurrentDataset] = useState<any>(() => {
+    const transientDataset = getCurrentInvestigationSession()?.workspaceDataset as any;
+    return transientDataset?.status === 'ready' ? transientDataset : null;
+  });
   const [isDataPreviewOpen, setIsDataPreviewOpen] = useState(false);
   const registerAdvancedSource = useAdvancedSourceStore(state => state.registerSource);
   const [workspaceState, setWorkspaceState] = useState<WorkspaceUnderstandingState | null>(null);
@@ -171,7 +174,8 @@ export const Home: React.FC = () => {
       datasetForSession?.status === 'ready' ? createWorkspaceSessionSaveRequest(datasetForSession) : undefined,
       canonicalHandoff,
       multiSourceDataset,
-      supportingAnalyses
+      supportingAnalyses,
+      datasetForSession
     );
     navigate('/investigation');
   };

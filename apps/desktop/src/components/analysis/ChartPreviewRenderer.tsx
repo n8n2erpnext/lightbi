@@ -4,6 +4,7 @@ import type { ChartPreviewModel } from '../../lib/chart-preview-model';
 import type { DrillThroughPoint } from '../../lib/drill-through-export';
 import { useDisplayPreferences } from '../../stores/display-preferences-store';
 import { formatValue, inferSemanticType } from '../../lib/display-formatter';
+import { useUiLanguage } from '../../lib/ui-language';
 
 type ChartClickParams = {
   dataIndex?: number;
@@ -37,6 +38,7 @@ export const ChartPreviewRenderer: React.FC<{
 }> = ({ model, onDrillThrough }) => {
   const chartRef = useRef<HTMLDivElement>(null);
   const { preferences } = useDisplayPreferences();
+  const { t } = useUiLanguage();
 
   useEffect(() => {
     if (!chartRef.current) return;
@@ -86,7 +88,7 @@ export const ChartPreviewRenderer: React.FC<{
             <span style="display:flex;align-items:center;gap:7px;color:#6b7280;">${item.marker ?? ''}${field}</span>
             <span style="display:flex;align-items:center;gap:8px;">
               <strong style="font-size:18px;color:#111827;">${formatValue(value, sType, preferences)}</strong>
-              ${canShowSequentialDelta && dataIndex > 0 ? `<span title="Change vs previous time bucket" style="${deltaClass}border-radius:7px;padding:2px 6px;font-size:11px;font-weight:700;">${formatPercentDelta(delta)}</span>` : ''}
+              ${canShowSequentialDelta && dataIndex > 0 ? `<span title="${t('Change vs previous time bucket', 'Thay đổi so với kỳ trước')}" style="${deltaClass}border-radius:7px;padding:2px 6px;font-size:11px;font-weight:700;">${formatPercentDelta(delta)}</span>` : ''}
             </span>
           </div>
         `;
@@ -96,7 +98,7 @@ export const ChartPreviewRenderer: React.FC<{
         <div style="min-width:170px;">
           <div style="font-size:14px;font-weight:600;color:#4b5563;">${title}</div>
           ${rows}
-          ${onDrillThrough ? '<div style="margin-top:10px;border-top:1px solid #eef0f3;padding-top:8px;font-size:11px;color:#6d3ef2;font-weight:600;">Click bar to view/export rows</div>' : ''}
+          ${onDrillThrough ? `<div style="margin-top:10px;border-top:1px solid #eef0f3;padding-top:8px;font-size:11px;color:#6d3ef2;font-weight:600;">${t('Click bar to view/export rows', 'Nhấp cột để xem hoặc xuất các dòng')}</div>` : ''}
         </div>
       `;
     };

@@ -488,16 +488,16 @@ const CanonicalUnderstandingSummary: React.FC<{ presentation: CanonicalDatasetPr
   </details>;
 };
 
-const STATE_LABELS: Record<CanonicalAnalysisPresentationV1['state'], string> = {
-  ready: 'Ready',
-  needs_user_evidence: 'Needs confirmation',
-  needs_mapping_review: 'Needs mapping review',
-  blocked_safety: 'Safety blocked',
-  unsupported_mvp: 'Not supported yet',
-  stale: 'Stale',
-  executing: 'Executing',
-  execution_failed: 'Execution failed',
-  completed: 'Completed',
+const STATE_LABELS: Record<CanonicalAnalysisPresentationV1['state'], [string, string]> = {
+  ready: ['Ready', 'Sẵn sàng'],
+  needs_user_evidence: ['Needs confirmation', 'Cần xác nhận'],
+  needs_mapping_review: ['Needs mapping review', 'Cần xem lại ánh xạ'],
+  blocked_safety: ['Safety blocked', 'Đã chặn để an toàn'],
+  unsupported_mvp: ['Not supported yet', 'Chưa được hỗ trợ'],
+  stale: ['Stale', 'Cần làm mới'],
+  executing: ['Executing', 'Đang thực thi'],
+  execution_failed: ['Execution failed', 'Thực thi thất bại'],
+  completed: ['Completed', 'Đã hoàn tất'],
 };
 
 const CanonicalAnalysisStates: React.FC<{
@@ -523,12 +523,12 @@ const CanonicalAnalysisStates: React.FC<{
       candidate.id.startsWith('universal:') && candidate.questionId === question.id);
     return action ? [{ question, action }] : [];
   });
-  const countRows: Array<[CanonicalAnalysisPresentationV1['state'], string]> = [
-    ['ready', 'Ready now'],
-    ['needs_user_evidence', 'Needs confirmation'],
-    ['needs_mapping_review', 'Needs mapping review'],
-    ['blocked_safety', 'Safety blocked'],
-    ['unsupported_mvp', 'Unsupported'],
+  const countRows: Array<[CanonicalAnalysisPresentationV1['state'], string, string]> = [
+    ['ready', 'Ready now', 'Sẵn sàng'],
+    ['needs_user_evidence', 'Needs confirmation', 'Cần xác nhận'],
+    ['needs_mapping_review', 'Needs mapping review', 'Cần xem lại ánh xạ'],
+    ['blocked_safety', 'Safety blocked', 'Đã chặn để an toàn'],
+    ['unsupported_mvp', 'Unsupported', 'Chưa hỗ trợ'],
   ];
   const groups = [
     { id: 'recommended', label: 'Recommended now', items: perspectiveAnalyses.filter(item => item.state === 'ready' && item.advertisedAsDefault).sort((a, b) => (a.rank ?? 99) - (b.rank ?? 99)) },
@@ -552,7 +552,7 @@ const CanonicalAnalysisStates: React.FC<{
     const remediationOperations = dedupeCanonicalRemediations(item.remediationOperations);
     return <article key={item.itemId} tabIndex={-1} id={`analysis-item-${item.itemId}`} data-testid={`canonical-analysis-${item.itemId}`} data-state={item.state} className="min-w-0 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
       <div>
-        <span className="inline-flex rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5 text-[10px] font-semibold uppercase text-gray-700">{STATE_LABELS[item.state]}</span>
+        <span className="inline-flex rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5 text-[10px] font-semibold uppercase text-gray-700">{t(...STATE_LABELS[item.state])}</span>
         <div className="mt-2 min-w-0">
           <div className="break-words text-[13px] font-semibold leading-5 text-gray-900">{item.title}</div>
           <div className="mt-1 text-[12px] leading-5 text-gray-500">{item.description}</div>
@@ -589,7 +589,7 @@ const CanonicalAnalysisStates: React.FC<{
         <p className="mt-0.5 text-[12px] text-gray-500">{t('Only analyses that pass governed checks are available.', 'Chỉ những phân tích vượt qua kiểm tra quản trị mới được sử dụng.')}</p>
       </div>
       <div className="flex flex-wrap gap-2" aria-label="Canonical analysis state summary">
-        {selectedPerspectiveId && countRows.map(([state, label]) => <span key={state} data-testid={`canonical-count-${state}`} className="rounded border border-gray-200 bg-gray-50 px-2 py-1 text-[11px] text-gray-600">{label}: <strong>{perspectiveAnalyses.filter(item => item.state === state).length}</strong></span>)}
+        {selectedPerspectiveId && countRows.map(([state, en, vi]) => <span key={state} data-testid={`canonical-count-${state}`} className="rounded border border-gray-200 bg-gray-50 px-2 py-1 text-[11px] text-gray-600">{t(en, vi)}: <strong>{perspectiveAnalyses.filter(item => item.state === state).length}</strong></span>)}
       </div>
     </div>
 
@@ -683,7 +683,7 @@ const CanonicalAnalysisStates: React.FC<{
       <summary className="cursor-pointer px-4 py-3 text-[12px] font-semibold text-slate-700">{t('Explore another question or review evidence', 'Khám phá câu hỏi khác hoặc xem bằng chứng')}</summary>
       <div className="space-y-4 border-t border-slate-200 p-4">
         {groups.map(group => <section key={group.id} aria-labelledby={`canonical-group-${group.id}`} data-testid={`canonical-group-${group.id}`}>
-          <h5 id={`canonical-group-${group.id}`} className="mb-2 text-[12px] font-semibold text-gray-700">{group.label} <span className="font-normal text-gray-400">({group.items.length})</span></h5>
+          <h5 id={`canonical-group-${group.id}`} className="mb-2 text-[12px] font-semibold text-gray-700">{t(group.label, ({ 'Recommended now': 'Đề xuất hiện tại', 'Additional supported analyses': 'Phân tích hỗ trợ bổ sung', 'Resolvable analyses': 'Phân tích có thể chuẩn bị', 'Safety-blocked analyses': 'Phân tích đã chặn để an toàn', 'Execution failed': 'Thực thi thất bại', 'Not supported yet': 'Chưa được hỗ trợ', 'Stale analyses': 'Phân tích cần làm mới' } as Record<string, string>)[group.label] ?? group.label)} <span className="font-normal text-gray-400">({group.items.length})</span></h5>
           <div className="grid grid-cols-1 gap-3 xl:grid-cols-2">{group.items.map(renderItem)}</div>
         </section>)}
       </div>

@@ -35,6 +35,20 @@ describe("materializeRuntimeFilePayloads", () => {
     ]);
   });
 
+  it("keeps every duplicate and blank CSV column addressable at runtime", () => {
+    const result = materializeRuntimeFilePayloads([{
+      name: "messy.csv",
+      buffer: textBuffer('Name,"","",Name\n"North, Hub",A,B,"line 1\nline 2"')
+    }]);
+
+    expect(JSON.parse(result.jsonText)).toEqual([{
+      name: "North, Hub",
+      __empty_2: "A",
+      __empty_3: "B",
+      name__duplicate_2: "line 1\nline 2",
+    }]);
+  });
+
   it("combines JSON files without retaining rows in React state", () => {
     const result = materializeRuntimeFilePayloads([
       { name: "a.json", buffer: textBuffer('[{"Region":"North"}]') },

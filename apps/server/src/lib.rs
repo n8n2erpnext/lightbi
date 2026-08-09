@@ -156,6 +156,11 @@ struct OnlineExcelFetchRequest {
     url: String,
 }
 
+#[derive(Deserialize, Debug)]
+struct OnlineCsvFetchRequest {
+    url: String,
+}
+
 #[derive(Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
 struct ProjectSourceFile {
@@ -307,6 +312,7 @@ pub async fn build_router() -> Router {
         .route("/api/question/ask", post(ask_question))
         .route("/api/preview/execute", post(execute_preview))
         .route("/api/online-source/fetch-excel", post(fetch_online_excel))
+        .route("/api/online-source/fetch-csv", post(fetch_online_csv))
         .route(
             "/api/plugins/providers",
             get(plugin_host::list_provider_plugins),
@@ -621,6 +627,69 @@ async fn fetch_online_excel(Json(request): Json<OnlineExcelFetchRequest>) -> imp
             })),
         )
             .into_response(),
+    }
+}
+
+fn is_allowed_online_csv_host(host: &str) -> bool {
+    matches!(host.to_ascii_lowercase().as_str(), "docs.google.com")
+}
+
+async fn fetch_online_csv(Json(request): Json<OnlineCsvFetchRequest>) -> impl IntoResponse {
+    let parsed = match reqwest::Url::parse(&request.url) {
+        Ok(url) if url.scheme() == "https" => url,
+        _ => return (
+            StatusCode::BAD_REQUEST,
+            Json(json!({ "status": "error", "message": "Online CSV URL must use HTTPS." })),
+        ).into_response(),
+    };
+    if !is_allowed_online_csv_host(parsed.host_str().unwrap_or_default()) {
+        return (
+            StatusCode::BAD_REQUEST,
+            Json(json!({ "status": "error", "message": "This online CSV host is not supported by the secure connector." })),
+        ).into_response();
+    }
+
+    let client = match reqwest::Client::builder()
+        .redirect(reqwest::redirect::Policy::limited(10))
+        .user_agent("LightBI/0.9 Google-Sheets-Connector")
+        .build()
+    {
+        Ok(client) => client,
+        Err(error) => return (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({ "status": "error", "message": format!("Could not initialize online connector: {error}") })),
+        ).into_response(),
+    };
+    let response = match client.get(parsed).header(header::ACCEPT, "text/csv,*/*").send().await {
+        Ok(response) => response,
+        Err(error) => return (
+            StatusCode::BAD_GATEWAY,
+            Json(json!({ "status": "error", "message": format!("Could not reach online source: {error}") })),
+        ).into_response(),
+    };
+    let status = response.status();
+    if !status.is_success() {
+        let app_status = if status == StatusCode::FORBIDDEN || status == StatusCode::UNAUTHORIZED {
+            StatusCode::FORBIDDEN
+        } else {
+            StatusCode::BAD_GATEWAY
+        };
+        return (
+            app_status,
+            Json(json!({ "status": "error", "message": format!("Online source returned {status}. Check that the sheet is shared for link access.") })),
+        ).into_response();
+    }
+    match response.bytes().await {
+        Ok(bytes) => {
+            let mut headers = HeaderMap::new();
+            headers.insert(header::CONTENT_TYPE, HeaderValue::from_static("text/csv; charset=utf-8"));
+            headers.insert(header::CONTENT_DISPOSITION, HeaderValue::from_static("attachment; filename=\"lightbi-online-source.csv\""));
+            (StatusCode::OK, headers, bytes).into_response()
+        }
+        Err(error) => (
+            StatusCode::BAD_GATEWAY,
+            Json(json!({ "status": "error", "message": format!("Could not read online source: {error}") })),
+        ).into_response(),
     }
 }
 

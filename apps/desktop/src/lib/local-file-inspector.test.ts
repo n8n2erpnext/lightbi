@@ -51,6 +51,33 @@ describe("inspectLocalFile", () => {
     }
   });
 
+  it("preserves blank, duplicate, quoted and multiline CSV columns losslessly", async () => {
+    const csv = 'Name,"","",Name\n"North, Hub",A,B,"line 1\nline 2"';
+    const file = new File([csv], "messy.csv", { type: "text/csv" });
+    const candidate = createFileSourceCandidate(file);
+    if ("status" in candidate) throw new Error("Expected local CSV candidate");
+
+    const result = await inspectLocalFile(candidate);
+
+    expect(result.status).toBe("accessible");
+    if (result.status === "accessible") {
+      expect(result.metadata.columns).toEqual([
+        "Name", "__EMPTY_2", "__EMPTY_3", "Name__DUPLICATE_2"
+      ]);
+      expect(result.metadata.analysis_rows).toEqual([{
+        Name: "North, Hub",
+        __EMPTY_2: "A",
+        __EMPTY_3: "B",
+        Name__DUPLICATE_2: "line 1\nline 2",
+      }]);
+      expect(result.metadata.canonical_full_file_profile?.artifact.sourceProfile.issues)
+        .toEqual(expect.arrayContaining([
+          expect.objectContaining({ code: "duplicate_header" }),
+          expect.objectContaining({ code: "empty_header_column" }),
+        ]));
+    }
+  });
+
   it("uses matrix semantic sampling and avoids retaining oversized analysis rows", async () => {
     const rowCount = 20_050;
     const csv = [

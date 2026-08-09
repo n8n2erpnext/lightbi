@@ -18,6 +18,7 @@ import {
   type StructuralIssueV1
 } from "./profiling-contracts";
 import { createRepresentativeEvidence, type PhysicalDataRow } from "./representative-sampler";
+import { physicalHeaderCell, uniquePhysicalColumnNames } from "../physical-column-names";
 
 const DISTINCT_OBSERVATION_LIMIT = 50_000;
 const FORMULA_ERROR = /^(?:#REF!|#VALUE!|#DIV\/0!|#N\/A|#NAME\?|#NUM!|#NULL!)$/i;
@@ -39,10 +40,6 @@ function effectiveWidth(row: readonly unknown[]): number {
 
 function normalizedCell(value: unknown): string {
   return isNullish(value) ? "" : String(value).replace(/\s+/g, " ").trim();
-}
-
-function physicalHeaderCell(value: unknown): string {
-  return isNullish(value) ? "" : String(value);
 }
 
 function parseNumeric(value: unknown): number | null {
@@ -195,7 +192,7 @@ function detectHeader(input: CanonicalPhysicalSourceInputV1): HeaderRegionV1 {
     selectedHeaderRowIndex: selected.sourceRowIndex,
     selectionConfidence: Number(Math.max(0, Math.min(1, selected.score + Math.max(0, margin))).toFixed(6)),
     selectionStatus: status,
-    physicalColumnNames: headerRow.slice(0, width).map((value, columnIndex) => physicalHeaderCell(value) || `__EMPTY_${columnIndex + 1}`),
+    physicalColumnNames: uniquePhysicalColumnNames(headerRow, width),
     skippedRows: input.rawRows.slice(0, selected.sourceRowIndex).map((row, sourceRowIndex) => ({ sourceRowIndex, rawValues: [...row] })),
     candidates
   };
@@ -431,13 +428,16 @@ function structuralIssues(
     const headerRow = input.rawRows[header.selectedHeaderRowIndex];
     const namedWidth = effectiveWidth(headerRow);
     const maximumWidth = input.rawRows.reduce((maximum, row) => Math.max(maximum, row.length), 0);
-    const emptyHeaderIndexes = headerRow.slice(0, namedWidth).map((value, index) => isNullish(value) ? index : -1).filter(index => index >= 0);
+    const emptyHeaderIndexes = headerRow.slice(0, namedWidth).map((value, index) => physicalHeaderCell(value) === "" ? index : -1).filter(index => index >= 0);
     if (emptyHeaderIndexes.length > 0) issues.push(issue("empty_header_column", "warning", null, [header.selectedHeaderRowIndex], [`Empty header positions: ${emptyHeaderIndexes.join(", ")}.`]));
     if (maximumWidth > namedWidth) {
       const trailingHasData = input.rawRows.slice(header.selectedHeaderRowIndex + 1).some(row => row.slice(namedWidth).some(value => !isNullish(value)));
       if (!trailingHasData) issues.push(issue("empty_trailing_columns", "info", null, [header.selectedHeaderRowIndex], [`${maximumWidth - namedWidth} physically present trailing columns are empty.`]));
     }
-    const normalizedNames = header.physicalColumnNames.map(name => name.toLowerCase());
+    const normalizedNames = headerRow
+      .slice(0, namedWidth)
+      .map(value => physicalHeaderCell(value).trim().toLocaleLowerCase())
+      .filter(Boolean);
     const duplicateNames = [...new Set(normalizedNames.filter((name, index) => normalizedNames.indexOf(name) !== index))];
     if (duplicateNames.length > 0) issues.push(issue("duplicate_header", "warning", null, [header.selectedHeaderRowIndex], [`Duplicate headers: ${duplicateNames.join(", ")}.`]));
     const inconsistent = dataRows.filter(row => effectiveWidth(row.rawValues) > header.physicalColumnNames.length).map(row => row.sourceRowIndex);

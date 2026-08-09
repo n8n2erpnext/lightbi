@@ -12,6 +12,7 @@ import { resolveSemanticShadow } from './understanding-core/semantic-resolver';
 import { generateGrainCandidateArtifact } from './understanding-core/grain-candidate-engine';
 import { resolveGrainSignatureShadow } from './understanding-core/grain-resolver';
 import { browserSha256 } from './browser-sha256';
+import { parseDelimitedRows } from './physical-column-names';
 
 const FULL_ANALYSIS_ROW_LIMIT = 20_000;
 
@@ -57,6 +58,7 @@ function createCanonicalFullFileProfile(args: {
   sheetName?: string;
   rawRows: readonly (readonly unknown[])[];
   sourceRowCount: number;
+  maxHeaderScanRows?: number;
 }): CanonicalFullFileProfileV1 & { fullFileUnderstanding: import('./understanding-core/canonical-source-boundary').CanonicalSourceBoundaryV1['fullFileUnderstanding'] } {
   const sourceId = `local:${args.fingerprint}:${args.sheetName ?? 'data'}`;
   const inspectionGeneration = `inspection:${args.fingerprint}`;
@@ -71,6 +73,7 @@ function createCanonicalFullFileProfile(args: {
       hash: { algorithm: 'sha256', value: args.fingerprint },
     },
     rawRows: args.rawRows,
+    maxHeaderScanRows: args.maxHeaderScanRows,
   });
   const candidates = generateSemanticCandidateArtifact(artifact, { registry: SEMANTIC_SIGNAL_REGISTRY_V1 });
   const semantic = resolveSemanticShadow(artifact, candidates, aggregateContextualEvidence(artifact, candidates));
@@ -305,14 +308,20 @@ async function inspectDelimitedText(file: File, candidate: SourceCandidate, sign
     delimiter = Object.keys(counts).reduce((a, b) => counts[a as keyof typeof counts] > counts[b as keyof typeof counts] ? a : b);
   }
 
-  const columns = firstLine.split(delimiter).map(c => c.trim()).filter(Boolean);
-  const dataLines = lines.slice(1);
-  
-  const allObjects = dataLines.map(line => {
-    const values = line.split(delimiter);
+  const matrix = parseDelimitedRows(text.replace(/^\uFEFF/, ''), delimiter);
+  const rawDataRows = matrix.slice(1);
+  const canonicalFullFileProfile = createCanonicalFullFileProfile({
+    file,
+    fingerprint,
+    rawRows: matrix,
+    sourceRowCount: rawDataRows.length,
+    maxHeaderScanRows: 1,
+  });
+  const columns = canonicalFullFileProfile.artifact.sourceProfile.header.physicalColumnNames;
+  const allObjects = rawDataRows.map(values => {
     const obj: Record<string, string> = {};
     columns.forEach((col, idx) => {
-      obj[col] = values[idx]?.trim();
+      obj[col] = values[idx]?.trim() ?? '';
     });
     return obj;
   });
@@ -321,7 +330,7 @@ async function inspectDelimitedText(file: File, candidate: SourceCandidate, sign
   const semanticSample = createUnderstandingSample(allObjects, {
     seed: sampleSeed(file.name, columns, allObjects.length)
   });
-  const profiles = profileColumns(columns, semanticSample.rows, dataLines.length);
+  const profiles = profileColumns(columns, semanticSample.rows, rawDataRows.length);
   const retainedAnalysisRows = retainAnalysisRows(allObjects);
 
   return {
@@ -331,19 +340,14 @@ async function inspectDelimitedText(file: File, candidate: SourceCandidate, sign
     normalizedUrl: candidate.normalizedUrl,
     metadata: {
       name: file.name,
-      rows_count: dataLines.length,
+      rows_count: rawDataRows.length,
       columns,
       preview_rows,
       semantic_rows: semanticSample.rows,
       semantic_sample: semanticSampleMetadata(semanticSample),
       analysis_rows: retainedAnalysisRows,
       analysis_row_scope: retainedAnalysisRows ? "full" : "not_retained",
-      canonical_full_file_profile: createCanonicalFullFileProfile({
-        file,
-        fingerprint,
-        rawRows: [columns, ...allObjects.map(row => columns.map(column => row[column]))],
-        sourceRowCount: dataLines.length,
-      }),
+      canonical_full_file_profile: canonicalFullFileProfile,
       detected_delimiter: delimiter === "\t" ? "tab" : delimiter,
       profiles
     },

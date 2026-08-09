@@ -26,7 +26,10 @@ describe('online-source-inspector', () => {
 
     const result = await inspectOnlineSource(asCandidate('https://docs.google.com/spreadsheets/d/public-demo/edit#gid=123'));
 
-    expect(fetchMock).toHaveBeenCalledWith('https://docs.google.com/spreadsheets/d/public-demo/export?format=csv&gid=123');
+    expect(fetchMock).toHaveBeenCalledWith(expect.stringContaining('/api/online-source/fetch-csv'), expect.objectContaining({
+      method: 'POST',
+      body: JSON.stringify({ url: 'https://docs.google.com/spreadsheets/d/public-demo/export?format=csv&gid=123' })
+    }));
     expect(result.status).toBe('accessible');
     if (result.status === 'accessible') {
       expect(result.sourceType).toBe('google_sheets');
@@ -40,6 +43,9 @@ describe('online-source-inspector', () => {
         Profit: '20'
       });
       expect(result.metadata.profiles?.Sales.dataType).toBe('number');
+      expect(result.metadata.canonical_full_file_profile?.scope).toBe('full_file');
+      expect(result.metadata.canonical_full_file_profile?.sourceRowCount).toBe(2);
+      expect(result.metadata.canonical_full_file_profile?.fullFileUnderstanding).toBeTruthy();
       expect(result.file?.name).toBe('Google Sheet.csv');
       expect(await result.file?.text()).toContain('Vietnam,100,20');
     }
@@ -51,6 +57,7 @@ describe('online-source-inspector', () => {
       .mockResolvedValueOnce({
         ok: false,
         status: 400,
+        json: async () => ({ message: 'export failed' }),
         text: async () => ''
       })
       .mockResolvedValueOnce({
@@ -65,14 +72,8 @@ describe('online-source-inspector', () => {
     const url = 'https://docs.google.com/spreadsheets/d/19RjQTV6a2gh_migkKsgHtSUq8PFlUIfXI3m3Nbw7CfI/edit?usp=sharing';
     const result = await inspectOnlineSource(asCandidate(url));
 
-    expect(fetchMock).toHaveBeenNthCalledWith(
-      1,
-      'https://docs.google.com/spreadsheets/d/19RjQTV6a2gh_migkKsgHtSUq8PFlUIfXI3m3Nbw7CfI/export?format=csv&gid=0'
-    );
-    expect(fetchMock).toHaveBeenNthCalledWith(
-      2,
-      'https://docs.google.com/spreadsheets/d/19RjQTV6a2gh_migkKsgHtSUq8PFlUIfXI3m3Nbw7CfI/gviz/tq?tqx=out:csv&gid=0'
-    );
+    expect(JSON.parse(fetchMock.mock.calls[0][1].body).url).toBe('https://docs.google.com/spreadsheets/d/19RjQTV6a2gh_migkKsgHtSUq8PFlUIfXI3m3Nbw7CfI/export?format=csv&gid=0');
+    expect(JSON.parse(fetchMock.mock.calls[1][1].body).url).toBe('https://docs.google.com/spreadsheets/d/19RjQTV6a2gh_migkKsgHtSUq8PFlUIfXI3m3Nbw7CfI/gviz/tq?tqx=out:csv&gid=0');
     expect(result.status).toBe('accessible');
     if (result.status === 'accessible') {
       expect(result.metadata.columns).toEqual(['Mã phiếu xuất', 'Ngày xuất', 'Mã kho xuất', 'Tổng tiền', 'Tiền phải thu']);
@@ -106,6 +107,7 @@ describe('online-source-inspector', () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
       ok: false,
       status: 403,
+      json: async () => ({ message: 'private source' }),
       text: async () => ''
     }));
 

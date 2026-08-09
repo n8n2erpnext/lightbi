@@ -58,6 +58,23 @@ const VI_BUSINESS_TEXT: Record<string, string> = {
   'How are source records distributed by contact?': 'Các bản ghi phân bổ theo hình thức liên hệ như thế nào?',
   'How are source records distributed by campaign?': 'Các bản ghi phân bổ theo chiến dịch như thế nào?',
   'How is governed gross profit changing over compatible periods?': 'Lợi nhuận gộp thay đổi như thế nào giữa các kỳ có thể so sánh?',
+  'Status breakdown': 'Phân bổ theo trạng thái',
+  'Inventory aging and backlog risk': 'Tuổi tồn kho và rủi ro tồn đọng',
+  'Inventory value exposure': 'Giá trị tồn kho có rủi ro',
+  'Stock movement and quantity flow': 'Biến động kho và luồng số lượng',
+  'Catalog composition by category': 'Cơ cấu danh mục theo nhóm',
+  'Catalog records by product or item': 'Danh mục theo sản phẩm hoặc mặt hàng',
+  'Operational workload by owner or manager': 'Khối lượng vận hành theo người phụ trách',
+  'Review mappings and source evidence': 'Xem lại ánh xạ và bằng chứng nguồn',
+  'Ready now': 'Sẵn sàng',
+  'Needs confirmation': 'Cần xác nhận',
+  'Needs mapping review': 'Cần xem lại ánh xạ',
+  'Safety blocked': 'Đã chặn để an toàn',
+  'Unsupported': 'Chưa hỗ trợ',
+  'Filtered rows from chart': 'Các dòng được lọc từ biểu đồ',
+  'Clear selection': 'Bỏ lựa chọn',
+  'Record count': 'Số bản ghi',
+  'Row count': 'Số dòng',
 };
 
 /**
@@ -97,6 +114,12 @@ export function localizeBusinessText(language: UiLanguage, value: string | null 
     [/^Top 3 share: (.+)$/i, value => `Tỷ trọng 3 nhóm đầu: ${value}`],
     [/^Change: (.+)$/i, value => `Thay đổi: ${value}`],
     [/^Period change: (.+)$/i, value => `Thay đổi theo kỳ: ${value}`],
+    [/^Top (.+) drives (.+)$/i, (dimension, metric) => `${dimension} đóng góp cao nhất cho ${metric}`],
+    [/^Lowest (.+) by (.+)$/i, (dimension, metric) => `${dimension} thấp nhất theo ${metric}`],
+    [/^Segment spread in (.+)$/i, dimension => `Mức phân tán giữa các nhóm ${dimension}`],
+    [/^Outlier risk in (.+)$/i, metric => `Rủi ro giá trị bất thường của ${metric}`],
+    [/^How are governed (.+) distributed by (.+)\?$/i, (entity, dimension) => `${entity} hợp lệ phân bổ theo ${dimension} như thế nào?`],
+    [/^Which (.+) contains the most (.+)\?$/i, (dimension, metric) => `${dimension} nào có ${metric} lớn nhất?`],
   ];
 
   for (const [pattern, translate] of rules) {
@@ -109,7 +132,14 @@ export function localizeBusinessText(language: UiLanguage, value: string | null 
     .replace(/Primary chart generated from the executed preview result\.?/gi, 'Biểu đồ chính được tạo từ kết quả phân tích đã thực thi.')
     .replace(/full-source rows/gi, 'dòng của toàn bộ nguồn')
     .replace(/sales revenue/gi, 'doanh thu bán hàng')
-    .replace(/delivery count/gi, 'số lượt giao hàng');
+    .replace(/delivery count/gi, 'số lượt giao hàng')
+    .replace(/record_count/gi, 'số bản ghi')
+    .replace(/row_count/gi, 'số dòng')
+    .replace(/current location/gi, 'vị trí hiện tại')
+    .replace(/service group/gi, 'nhóm dịch vụ')
+    .replace(/load status/gi, 'trạng thái tải')
+    .replace(/stock age/gi, 'tuổi tồn')
+    .replace(/owner or manager/gi, 'người phụ trách');
 }
 
 export function useUiLanguage() {

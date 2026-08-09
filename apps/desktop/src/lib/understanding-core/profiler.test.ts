@@ -78,6 +78,26 @@ describe("understanding-core canonical physical profiler", () => {
     expect(issueCodes).not.toContain("silent_parse_drop");
   });
 
+  it("assigns stable unique physical identities to duplicate and blank source headers", () => {
+    const artifact = profilePhysicalSource(source([
+      ["Order", "Order", "", '""', "Order__DUPLICATE_2"],
+      ["A-1", "A-2", "left", "right", "A-3"]
+    ]));
+    const names = artifact.sourceProfile.header.physicalColumnNames;
+    const issueCodes = artifact.sourceProfile.issues.map(item => item.code);
+
+    expect(names).toEqual([
+      "Order",
+      "Order__DUPLICATE_2",
+      "__EMPTY_3",
+      "__EMPTY_4",
+      "Order__DUPLICATE_2__DUPLICATE_1"
+    ]);
+    expect(new Set(names.map(name => name.toLocaleLowerCase())).size).toBe(names.length);
+    expect(issueCodes).toContain("duplicate_header");
+    expect(issueCodes).toContain("empty_header_column");
+  });
+
   it("samples head, middle, tail, stable random, null, rare, and malformed evidence deterministically", () => {
     const rows = Array.from({ length: 500 }, (_, index) => ({
       id: `ID-${index}`,

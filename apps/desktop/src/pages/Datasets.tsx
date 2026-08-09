@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { CheckCircle2, Database, Download, FileSpreadsheet, ShieldCheck, Sparkles } from 'lucide-react';
-import { createCleanDataHandoff, downloadPowerBiWorkbook, type CleanDataHandoffResultV1 } from '../lib/clean-data-handoff';
+import { createCleanDataHandoff, savePowerBiWorkbook, type CleanDataHandoffResultV1 } from '../lib/clean-data-handoff';
 import { useAdvancedSourceStore } from '../stores/advanced-source-store';
 import { useDisplayPreferences } from '../stores/display-preferences-store';
 
@@ -16,6 +16,7 @@ export const Datasets: React.FC = () => {
   const [result, setResult] = useState<CleanDataHandoffResultV1 | null>(null);
   const [isBuilding, setIsBuilding] = useState(false);
   const [error, setError] = useState('');
+  const [saveNotice, setSaveNotice] = useState('');
 
   useEffect(() => {
     if (!source) return;
@@ -37,6 +38,19 @@ export const Datasets: React.FC = () => {
       setError(cause instanceof Error ? cause.message : t('Could not prepare the clean-data handoff.', 'Không thể chuẩn bị gói dữ liệu sạch.'));
     } finally {
       setIsBuilding(false);
+    }
+  };
+
+  const savePackage = async () => {
+    if (!result) return;
+    setError(''); setSaveNotice('');
+    try {
+      const saved = await savePowerBiWorkbook(result);
+      setSaveNotice(saved.usedSaveAs
+        ? t(`Saved as ${saved.locationLabel}.`, `Đã lưu tệp ${saved.locationLabel}.`)
+        : t(`Saved automatically to ${saved.locationLabel}.`, `Đã tự động lưu tại ${saved.locationLabel}.`));
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : t('Could not save the Power BI package.', 'Không thể lưu gói Power BI.'));
     }
   };
 
@@ -96,8 +110,9 @@ export const Datasets: React.FC = () => {
               <div className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-emerald-700"><CheckCircle2 className="h-5 w-5" />{t('Clean handoff ready', 'Gói dữ liệu sạch đã sẵn sàng')}</div>
               <h2 className="mt-2 text-2xl font-semibold text-gray-950">{result.artifact.output.rowCount.toLocaleString(preferences.language)} {t('rows prepared without changing the source', 'dòng đã được chuẩn bị mà không thay đổi nguồn')}</h2>
             </div>
-            <button data-testid="download-powerbi-package" onClick={() => downloadPowerBiWorkbook(result)} className="rounded-xl bg-emerald-600 px-5 py-3 font-semibold text-white hover:bg-emerald-700"><Download className="mr-2 inline h-4 w-4" />{t('Download Power BI package', 'Tải gói cho Power BI')}</button>
+            <button data-testid="download-powerbi-package" onClick={() => void savePackage()} className="rounded-xl bg-emerald-600 px-5 py-3 font-semibold text-white hover:bg-emerald-700"><Download className="mr-2 inline h-4 w-4" />{t('Save Power BI package as…', 'Lưu gói Power BI thành…')}</button>
           </div>
+          {saveNotice && <div role="status" data-testid="clean-handoff-save-notice" className="rounded-xl border border-emerald-200 bg-white p-4 text-sm font-medium text-emerald-800">{saveNotice}</div>}
 
           <div className="grid gap-4 md:grid-cols-4">
             <div className="rounded-2xl bg-white p-4"><div className="text-xs uppercase text-gray-400">{t('Clean rows', 'Dòng sạch')}</div><div className="mt-1 text-2xl font-semibold">{result.artifact.output.rowCount.toLocaleString(preferences.language)}</div></div>

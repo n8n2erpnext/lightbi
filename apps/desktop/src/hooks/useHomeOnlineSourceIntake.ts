@@ -5,6 +5,7 @@ import { createDecisionTrustReport } from '../lib/decision-trust-report';
 import type { SourceInspectionResult } from '../lib/source-preflight';
 import { createWorkspaceUnderstandingState } from '../lib/workspace-understanding-state';
 import { advancedSourceId, type AdvancedWorkspaceSource } from '../stores/advanced-source-store';
+import { uploadProjectSourceFile } from '../lib/project-source-file-api';
 
 interface HomeOnlineSourceIntakeDependencies {
   registerAdvancedSource: (source: AdvancedWorkspaceSource) => void;
@@ -15,7 +16,7 @@ interface HomeOnlineSourceIntakeDependencies {
 }
 
 export function useHomeOnlineSourceIntake(deps: HomeOnlineSourceIntakeDependencies) {
-  return useCallback((inspectionResult: SourceInspectionResult) => {
+  return useCallback(async (inspectionResult: SourceInspectionResult) => {
     if (inspectionResult.status !== 'accessible') return;
     const md = inspectionResult.metadata;
     let rows = md.rows_count || 0;
@@ -37,6 +38,7 @@ export function useHomeOnlineSourceIntake(deps: HomeOnlineSourceIntakeDependenci
       }
     }
     const sourceLabel = md.name || inspectionResult.label;
+    const persistedFile = inspectionResult.file ? await uploadProjectSourceFile(inspectionResult.file) : null;
     const selectedSemanticSample = md.is_workbook && md.default_sheet && md.sheets ? md.sheets[md.default_sheet]?.semantic_sample : md.semantic_sample;
     const selectedCanonicalProfile = md.is_workbook && md.default_sheet && md.sheets ? md.sheets[md.default_sheet]?.canonical_full_file_profile : md.canonical_full_file_profile;
     const canonicalSourceBoundary = createLocalCanonicalSourceBoundary({
@@ -57,7 +59,7 @@ export function useHomeOnlineSourceIntake(deps: HomeOnlineSourceIntakeDependenci
     deps.setCurrentDataset({
       status: 'ready', file_name: sourceLabel, rows_count: rows, columns, profiles,
       sourceType: inspectionResult.sourceType, normalizedUrl: inspectionResult.normalizedUrl,
-      sourceFiles: [{ name: sourceLabel, rows, columns: columns.length, fingerprint: `${inspectionResult.sourceType}:${columns.join('|')}`, url: inspectionResult.normalizedUrl, sheetNames }],
+      sourceFiles: [{ name: sourceLabel, rows, columns: columns.length, fingerprint: `${inspectionResult.sourceType}:${columns.join('|')}`, url: inspectionResult.normalizedUrl, sheetNames, persistedFile }],
       selected_sheet: md.default_sheet || null, file_reference: inspectionResult.file || null,
       runtimeDatasetSource: canonicalSourceBoundary?.runtimeSource ?? (inspectionResult.file ? { kind: 'local_files', files: [{ file: inspectionResult.file, sheetName: md.default_sheet }], sourceRowCount: rows } : undefined),
       canonicalSourceBoundary,

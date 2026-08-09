@@ -38,6 +38,7 @@ export function useHomeWorkspaceSessions(deps: HomeWorkspaceSessionDependencies)
   const refreshWorkspaceSessions = useCallback(async () => {
     try {
       setWorkspaceSessions(await loadWorkspaceSessions());
+      setSessionStatus(null);
     } catch (error) {
       setSessionStatus(error instanceof Error ? error.message : 'Could not load saved sessions.');
     }
@@ -262,7 +263,7 @@ export function useHomeWorkspaceSessions(deps: HomeWorkspaceSessionDependencies)
   }, [location.state, navigate, workspaceSessions]);
 
   return {
-    workspaceSessions, sessionStatus, isSavingSession, lastAutoSaveSignatureRef, sessionSignature,
+    workspaceSessions, sessionStatus, isSavingSession, lastAutoSaveSignatureRef, sessionSignature, refreshWorkspaceSessions,
     createWorkspaceSessionSaveRequest: createSaveRequest,
     saveCurrentWorkspaceSession, handleSaveWorkspaceSession, handleOpenWorkspaceSession, handleDeleteWorkspaceSession,
   };

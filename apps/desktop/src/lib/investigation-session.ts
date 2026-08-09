@@ -32,6 +32,12 @@ export interface InvestigationSession {
     runtimeIntent: RuntimeIntent;
     runtimePlanPreview: RuntimePlanPreview;
   }>;
+  /**
+   * The complete Easy-mode workspace kept only for the lifetime of the app.
+   * This lets Back return to the already-understood source without downloading
+   * and profiling the persisted file again. It is never serialized.
+   */
+  workspaceDataset?: unknown;
 }
 
 // In-memory store for now, since we aren't using a real backend or persistent DB yet.
@@ -51,7 +57,8 @@ export function createInvestigationSession(
   workspaceSessionPayload?: SaveWorkspaceSessionRequest,
   canonicalHandoff?: CanonicalInvestigationHandoffV1 | CanonicalMultiSourceInvestigationHandoffV1,
   canonicalMultiSourceDataset?: CanonicalMultiSourceDatasetV1,
-  supportingAnalyses?: InvestigationSession['supportingAnalyses']
+  supportingAnalyses?: InvestigationSession['supportingAnalyses'],
+  workspaceDataset?: unknown
 ): InvestigationSession {
   let safeRows = rows;
   // Deep clone to preserve original
@@ -74,6 +81,7 @@ export function createInvestigationSession(
     canonicalHandoff,
     canonicalMultiSourceDataset,
     supportingAnalyses,
+    workspaceDataset,
   };
   
   currentSession = session;

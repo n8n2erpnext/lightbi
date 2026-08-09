@@ -292,6 +292,14 @@ export const Investigation: React.FC = () => {
   };
 
   const returnToCurrentDataset = async () => {
+    const transientDataset = session.workspaceDataset as { status?: string } | undefined;
+    if (transientDataset?.status === 'ready') {
+      // The full source and its canonical bindings are still alive in this app
+      // process. Return immediately; persistence can finish in the background.
+      navigate('/', { state: null });
+      void persistWorkspaceSession();
+      return;
+    }
     const saved = await persistWorkspaceSession();
     navigate('/', { state: saved?.id ? { restoreWorkspaceSessionId: saved.id } : null });
   };
@@ -972,7 +980,7 @@ export const Investigation: React.FC = () => {
                    </div>
                    <div>
                      <p><span className="font-medium text-black/75">Execution scope:</span> {session.canonicalExecutionResult.fullFileExecution?.executionScope ?? previewResult.executionScope ?? 'unknown'}</p>
-                     <p><span className="font-medium text-black/75">Full-source rows:</span> {session.canonicalExecutionResult.fullFileExecution?.actualMaterializedRowCount.toLocaleString() ?? 'not verified'}</p>
+                     <p><span className="font-medium text-black/75">{t('Full-source rows', 'Dòng toàn bộ nguồn')}:</span> {session.canonicalExecutionResult.fullFileExecution?.actualMaterializedRowCount.toLocaleString() ?? t('not verified', 'chưa xác minh')}</p>
                      <p className="break-all"><span className="font-medium text-black/75">Artifact:</span> {canonicalHandoff.artifactIdentity}</p>
                      <p className="break-all"><span className="font-medium text-black/75">Overlay:</span> {canonicalHandoff.overlayIdentity ?? 'none'}</p>
                      <p className="break-all"><span className="font-medium text-black/75">Source fingerprint:</span> {session.canonicalExecutionResult.fullFileExecution?.sourceFingerprint ?? canonicalHandoff.sourceFingerprint ?? 'unavailable'}</p>
