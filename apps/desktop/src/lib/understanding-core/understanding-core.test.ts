@@ -471,4 +471,80 @@ describe("understanding-core universal signal ontology", () => {
     expect(a.signals.map(signal => signal.id).sort()).toEqual(b.signals.map(signal => signal.id).sort());
     expect(a.questions.map(question => question.id)).toEqual(b.questions.map(question => question.id));
   });
+
+  it("does not turn a reporting range embedded in a KPI header into a row-level time axis", () => {
+    const columns = ["Xếp hạng", "MSNV Quản lý", "Họ tên Quản lý", "Tổng sao từ T6/2016 đến T05/2017", "Trung bình điểm 4 tiêu chí", "Ghi chú"];
+    const rows = makeRows(40, index => ({
+      "Xếp hạng": index + 1,
+      "MSNV Quản lý": `QL-${index + 1}`,
+      "Họ tên Quản lý": `Quản lý ${index + 1}`,
+      "Tổng sao từ T6/2016 đến T05/2017": 90 - index,
+      "Trung bình điểm 4 tiêu chí": 9 - index / 20,
+      "Ghi chú": index % 2 ? "Đạt" : "Cần theo dõi",
+    }));
+    const result = createUnderstandingCoreResult(input(columns, rows));
+
+    expect(result.signals.filter(signal => signal.role === "time" && signal.usableForDefaultQuestion)).toHaveLength(0);
+    expect(result.questions.find(question => question.id === "indicator_over_time")?.action).toBeUndefined();
+    expect(result.questions.find(question => question.id === "performance_indicator_by_owner_or_team")?.action).toBeDefined();
+    expect(result.questions.find(question => question.id === "performance_indicator_by_owner_or_team")?.action?.dimensions).toEqual(["Họ tên Quản lý"]);
+    expect(result.questions.find(question => question.id === "secondary_indicator_by_owner_or_team")?.action).toBeDefined();
+  });
+
+  it("offers value and activity-volume views for item-level money data", () => {
+    const columns = ["Sản phẩm", "Doanh thu"];
+    const rows = makeRows(40, index => ({
+      "Sản phẩm": `Mặt hàng ${index % 5}`,
+      "Doanh thu": 100000 + index * 1000,
+    }));
+    const result = createUnderstandingCoreResult(input(columns, rows));
+
+    expect(result.questions.find(question => question.id === "item_value")?.action?.measures).toEqual(["Doanh thu"]);
+    expect(result.questions.find(question => question.id === "item_activity_volume")?.action).toMatchObject({
+      dimensions: ["Sản phẩm"],
+      measures: ["record_count"],
+    });
+    const adapted = adaptCoreToUnderstandingNext(result);
+    expect(adapted.recommendedQuestions.find(question => question.id === "item_activity_volume")?.domain).toBe("revenue");
+  });
+
+  it("creates reusable route and vehicle delivery comparisons from operational semantics", () => {
+    const columns = ["Ngày báo cáo", "Mã tải kiện", "Xe đến đúng hẹn", "Tuyến xe", "Chuyến xe", "Lái xe", "Thời gian chờ"];
+    const rows = makeRows(80, index => ({
+      "Ngày báo cáo": `2024-12-${String((index % 20) + 1).padStart(2, "0")}`,
+      "Mã tải kiện": `TK-${index + 1}`,
+      "Xe đến đúng hẹn": index % 5 === 0 ? "Không đúng hẹn" : "Đúng hẹn",
+      "Tuyến xe": `Tuyến ${index % 6}`,
+      "Chuyến xe": `Xe ${index % 8}`,
+      "Lái xe": `Tài xế ${index % 10}`,
+      "Thời gian chờ": 10 + (index % 15),
+    }));
+    const result = createUnderstandingCoreResult(input(columns, rows));
+
+    expect(result.signals.some(signal => signal.id === "entity.vehicle" && signal.physicalColumn === "Chuyến xe")).toBe(true);
+    expect(result.questions.find(question => question.id === "delivery_volume_by_route_or_resource")?.action?.dimensions).toEqual(["Tuyến xe"]);
+    expect(result.questions.find(question => question.id === "delivery_on_time_by_route_or_resource")?.action?.dimensions).toEqual(["Tuyến xe"]);
+    const adapted = adaptCoreToUnderstandingNext(result);
+    expect(adapted.recommendedQuestions.find(question => question.id === "delivery_on_time_by_route_or_resource")?.domain).toBe("performance");
+  });
+
+  it("creates reusable catalog breakdowns from product-master semantics", () => {
+    const columns = ["SKU", "Product Name", "Category", "Brand", "Supplier"];
+    const rows = makeRows(60, index => ({
+      SKU: `SKU-${index + 1}`,
+      "Product Name": `Product ${index + 1}`,
+      Category: `Category ${index % 5}`,
+      Brand: `Brand ${index % 4}`,
+      Supplier: `Supplier ${index % 3}`,
+    }));
+    const result = createUnderstandingCoreResult(input(columns, rows));
+
+    expect(result.signals.some(signal => signal.id === "item.category" && signal.physicalColumn === "Category")).toBe(true);
+    expect(result.signals.some(signal => signal.id === "item.brand" && signal.physicalColumn === "Brand")).toBe(true);
+    expect(result.questions.find(question => question.id === "catalog_composition_by_category")?.action?.dimensions).toEqual(["Category"]);
+    expect(result.questions.find(question => question.id === "catalog_composition_by_brand_or_supplier")?.action?.dimensions).toEqual(["Brand"]);
+    expect(result.questions.find(question => question.id === "catalog_records_by_item")?.action?.dimensions).toEqual(["Product Name"]);
+    const adapted = adaptCoreToUnderstandingNext(result);
+    expect(adapted.recommendedQuestions.find(question => question.id === "catalog_composition_by_category")?.domain).toBe("inventory");
+  });
 });

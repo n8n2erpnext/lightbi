@@ -42,7 +42,7 @@ test.describe('Beta recovery capability ladder', () => {
     await expect(page.locator('aside h2').filter({ hasText: primaryQuestion })).toBeVisible();
     const deepBA = page.getByTestId('single-source-ba-overview');
     await expect(deepBA).toBeVisible();
-    await expect(deepBA).toContainText(/Theo poutcome|previous campaign outcome/i);
+    await expect(deepBA).toContainText(/Theo poutcome|By poutcome|previous campaign outcome/i);
     const dashboardCta = page.getByTestId('deep-analysis-dashboard-cta');
     await expect(dashboardCta).toBeVisible();
     await dashboardCta.getByRole('button', { name: /Create perspective dashboard|Tạo Dashboard theo góc nhìn/i }).click();

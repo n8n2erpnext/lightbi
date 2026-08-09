@@ -22,7 +22,7 @@ function severityClass(severity: BAInsightSeverity): string {
 }
 
 export const BADecisionBriefPanel: React.FC<BADecisionBriefPanelProps> = ({ brief }) => {
-  const { t } = useUiLanguage();
+  const { t, localize } = useUiLanguage();
   return (
     <section className="mb-6 overflow-hidden rounded-2xl border border-emerald-200 bg-emerald-50/60 shadow-sm">
       <div className="border-b border-emerald-200 bg-emerald-50 px-5 py-5">
@@ -34,7 +34,7 @@ export const BADecisionBriefPanel: React.FC<BADecisionBriefPanelProps> = ({ brie
           <div className="min-w-0 flex-1">
             <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-emerald-700">{t('Business analysis brief', 'Bản phân tích nghiệp vụ')}</div>
             <h3 className="mt-1 text-lg font-semibold text-emerald-950">{t('Executive answer', 'Câu trả lời điều hành')}</h3>
-            <p className="mt-1 max-w-3xl text-sm leading-6 text-emerald-950/75">{brief.executiveSummary}</p>
+            <p className="mt-1 max-w-3xl text-sm leading-6 text-emerald-950/75">{localize(brief.executiveSummary)}</p>
           </div>
         </div>
           <div className="grid shrink-0 grid-cols-2 gap-2">
@@ -63,7 +63,7 @@ export const BADecisionBriefPanel: React.FC<BADecisionBriefPanelProps> = ({ brie
                   <div key={`${chart.title}-${chart.chartType}`} className="text-xs text-slate-600">
                     <span className="font-medium text-slate-900">{chart.chartType}</span>
                     <span className="text-slate-400"> - </span>
-                    {chart.reason}
+                    {localize(chart.reason)}
                   </div>
                 ))}
               </div>
@@ -77,18 +77,18 @@ export const BADecisionBriefPanel: React.FC<BADecisionBriefPanelProps> = ({ brie
             <div className="grid gap-3 md:grid-cols-2">
               {brief.insights.slice(0, 6).map(insight => (
                 <div key={insight.id} className={`rounded-lg border p-3 ${severityClass(insight.severity)}`}>
-                  <div className="mb-1 text-xs font-semibold">{insight.title}</div>
-                  <p className="text-xs leading-5 opacity-90">{insight.statement}</p>
+                  <div className="mb-1 text-xs font-semibold">{localize(insight.title)}</div>
+                  <p className="text-xs leading-5 opacity-90">{localize(insight.statement)}</p>
                   {insight.evidence.length > 0 && (
                     <ul className="mt-2 space-y-1 text-[11px] opacity-80">
                       {insight.evidence.slice(0, 3).map(item => (
-                        <li key={item}>- {item}</li>
+                        <li key={item}>- {localize(item)}</li>
                       ))}
                     </ul>
                   )}
                   {insight.evidenceRows && insight.evidenceRows.length > 0 && (
                     <div className="mt-2 rounded border border-white/70 bg-white/60 p-2 text-[11px]">
-                      <div className="mb-1 font-semibold opacity-80">Raw row pointers</div>
+                      <div className="mb-1 font-semibold opacity-80">{t('Raw row pointers', 'Dòng dữ liệu bằng chứng')}</div>
                       <div className="space-y-1">
                         {insight.evidenceRows.slice(0, 3).map(row => (
                           <div key={`${insight.id}-${row.rowIndex}`} className="font-mono opacity-80">
@@ -114,12 +114,12 @@ export const BADecisionBriefPanel: React.FC<BADecisionBriefPanelProps> = ({ brie
               {brief.decisionSuggestions.map(suggestion => (
                 <div key={suggestion.title} className="rounded-md border border-slate-100 bg-slate-50 p-3">
                   <div className="mb-1 flex items-center justify-between gap-3">
-                    <span className="text-xs font-semibold text-slate-900">{suggestion.title}</span>
+                    <span className="text-xs font-semibold text-slate-900">{localize(suggestion.title)}</span>
                     <span className="rounded bg-white px-1.5 py-0.5 text-[10px] font-medium uppercase text-slate-500 ring-1 ring-slate-200">
                       {suggestion.priority}
                     </span>
                   </div>
-                  <p className="text-xs leading-5 text-slate-600">{suggestion.action}</p>
+                  <p className="text-xs leading-5 text-slate-600">{localize(suggestion.action)}</p>
                 </div>
               ))}
             </div>
@@ -133,7 +133,7 @@ export const BADecisionBriefPanel: React.FC<BADecisionBriefPanelProps> = ({ brie
               </div>
               <ul className="space-y-1 text-xs text-amber-800">
                 {brief.caveats.slice(0, 4).map(caveat => (
-                  <li key={caveat}>- {caveat}</li>
+                  <li key={caveat}>- {localize(caveat)}</li>
                 ))}
               </ul>
             </div>

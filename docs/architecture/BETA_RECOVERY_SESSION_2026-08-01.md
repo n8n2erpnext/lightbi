@@ -296,3 +296,114 @@ remain the technical workspace for review, cleaning, mapping, query and export.
   completion rate.
 - Gates: 93 understanding tests, 7 BA tests, 2 bundle tests and the full HUBLAN
   Playwright journey pass. Disk remains 30 GB available, 76% used.
+
+## Execution checkpoint 7 - complete 52-file VPS sample matrix
+
+- Expanded the browser acceptance inventory from selected examples to every
+  user/sample dataset on the VPS: 15+ real operational files (including later
+  ERP copies), 13 governed corpus fixtures, 12 good/broken domain-audit files,
+  and the complete ERP May/June anchor set. Media, SVG assets and prior audit
+  result files are excluded. The discovered matrix contains 52 data files.
+- Every file is exercised through the actual Easy Mode path: import, canonical
+  understanding, evidence-backed perspectives, perspective selection,
+  governed execution, primary chart, supporting charts and Deep BA. Failures
+  are isolated per file so one timeout cannot hide the remainder of the corpus.
+- First complete run finished in 13.2 minutes: 49 journeys reached chart and
+  Deep BA; three hard failures remain:
+  1. `management-ranking-sanitized.xlsx` exposes three perspectives but none is executable.
+  2. `finance/good_finance.csv` incorrectly recommends Operations and times out before a chart.
+  3. `performance/broken_performance.csv` exposes only one perspective.
+- Passing the route is not Beta acceptance. Cross-cutting quality blockers were
+  also recorded: 49 journeys fell back to generic BA for the automatically
+  selected angle, 43 showed visible mojibake, six had no supporting chart,
+  three had a thin perspective set, and both public-indicator datasets were
+  falsely classified as Inventory/stock movement.
+- Additional semantic-priority defects are visible across related schemas:
+  delivery 1912/2412 and bcctnhap 1912/2412 prefer Inventory while their sibling
+  files prefer Operations; inventory detail selects generic Status; Superstore
+  selects Operations despite strong commercial evidence; PLU/product list is
+  treated as participation; DATA_XUAT defaults to team distribution; broken
+  finance/revenue/operations samples drift into unrelated perspectives.
+- Plan impact: R2 must add contextual semantic gating and deterministic domain
+  affinity; R3 must guarantee that every `ready` perspective owns an executable
+  primary action, supporting action family and angle-aligned specialized BA;
+  R4 must eliminate mojibake and keep VI/EN labels coherent. R7 remains open
+  until the complete matrix passes both hard and quality gates. No sample
+  filename may appear in runtime logic.
+- Artifact: `ui-audit/sample-beta-matrix.json`. Disk remains 30 GB available,
+  76% used.
+
+## Execution checkpoint 8 - unified workflow, handoff, dashboard and regression
+
+- Unified Home state now preserves the inspected canonical batch and selected
+  perspective when the user goes back from investigation. Returning to a prior
+  step no longer requires importing the same source again.
+- Extracted canonical Home artifact construction into
+  `apps/desktop/src/lib/home-canonical-artifact.ts`, removing duplicated
+  single/multi preparation logic while keeping the existing architecture gates
+  authoritative.
+- Added a non-destructive Clean Data handoff with cleaning plan, audit metadata,
+  data dictionary and analyst-ready Power BI workbook export. Raw sources are
+  retained unchanged.
+- Perspective dashboards now include the executed primary/supporting charts and
+  deep-BA KPI/breakdown evidence, together with governance, scope and provenance
+  metadata. The dashboard no longer represents a separate inference path.
+- Added one shared EN/VI presentation boundary for canonical question titles,
+  business-purpose text and deterministic BA evidence. Single-source BA labels,
+  findings, recommended actions and limitations respect the selected display
+  language; currency continues to come from Settings.
+- Corrected the DuckDB browser loader to import the explicit browser entry only
+  after confirming a Worker environment. Node/Vitest no longer evaluates the
+  package worker entry while the desktop browser runtime remains unchanged.
+- Gates: TypeScript passes; the complete unit/architecture suite passes 448/448
+  files and 1,324/1,324 tests. Selected Chromium E2E passes 5/5 for bank
+  recovery, Clean Data handoff, enterprise dashboard, authentic six-source
+  perspectives and May/June profitability analysis.
+- Added `BETA_RECOVERY_CODEBASE_MAP_2026-08-09.md` as the maintained production
+  path and release-invariant map.
+- A fresh 52-file sample matrix is running after these changes. Windows
+  packaging remains intentionally deferred until this final web/core corpus
+  gate completes.
+- Disk checkpoint: 29 GB available, 77% used.
+
+## Execution checkpoint 9 - final complete sample acceptance
+
+- Re-ran the complete VPS browser matrix after the unified workflow,
+  perspective BA, dashboard, Clean Data, DuckDB and localization changes.
+- Result: 52/52 source journeys passed. Every source exposes at least two
+  evidence-backed perspectives and at least one executable perspective.
+- Every journey rendered a governed primary chart and one or more supporting
+  charts. All 52 journeys reached specialized selected-angle BA; the shortest
+  accepted BA output contained 797 characters.
+- No source produced a hard failure, generic-BA fallback, missing supporting
+  chart, thin perspective set, false public-indicator inventory classification,
+  mojibake sample or other quality flag.
+- This includes real user samples, governed fixtures, good/broken domain-audit
+  sources and the complete May/June ERP anchor set. The runtime contains no
+  filename-specific branch for these results.
+- Final artifact: `ui-audit/sample-beta-matrix.json`, generated
+  `2026-08-09T01:35:31.733Z`.
+## Checkpoint 10 — Final production regression (2026-08-09)
+
+- TypeScript production typecheck: passed.
+- Unit/corpus regression: **197 test files, 1,325 tests passed**.
+- Production UI build: passed; 2,754 modules transformed.
+- Complete VPS sample matrix remains green: **52/52 files passed**, with at least two evidence-backed perspectives, at least one ready perspective, non-generic BA output, and no unsupported sample.
+- Runtime hardcode audit found no production references to individual sample filenames or sample families.
+
+## Checkpoint 11 - Windows native Beta package (2026-08-09)
+
+- Built the Windows x64 NSIS installer from the fully regressed Beta codebase.
+- Desktop runtime is a single application process: `lightbi-tauri.exe` links the
+  `lightbi-server` crate as an in-process library and mounts its router behind
+  the Tauri custom protocol. It does not launch `lightbi-server.exe`, expose a
+  fixed localhost port, or depend on a sidecar server process.
+- Release inspection found no `lightbi-server.exe` anywhere in the Windows
+  release or installer bundle tree.
+- Installer: `LightBI_0.9.0-beta.1_x64-setup.exe` (43,806,472 bytes).
+- SHA-256: `57C1A0F4C3890D50B5005D8F34DFA6DCDDF38E7AF8CDC412BEEFE85F1456E1F8`.
+- The installer was copied to
+  `C:\Users\Admin\Downloads\LightBI_0.9.0-beta.1_x64-setup.exe`; the local
+  Windows checksum exactly matches the build artifact.
+- Native launch/install remains the user's final Windows smoke test; the Linux
+  cross-build does not claim to replace execution on a real Windows host.

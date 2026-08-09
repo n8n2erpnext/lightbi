@@ -2,23 +2,23 @@
   "schemaVersion": "lightbi.corpus-1.4-candidate-quality-baseline.v1",
   "corpusVersion": "1.4.0",
   "candidateQuality": {
-    "averageCandidates": 1.5386,
+    "averageCandidates": 1.5878,
     "broadColumnCount": 15,
     "candidateSourceDistribution": {
-      "alias": 415,
-      "canonicalId": 208,
-      "headerAlias": 509,
+      "alias": 437,
+      "canonicalId": 230,
+      "headerAlias": 531,
       "label": 0,
-      "tokenContainment": 494,
+      "tokenContainment": 509,
       "valueAlias": 84,
       "valuePattern": 189
     },
     "maximumCandidates": 5,
-    "medianCandidates": 1,
-    "multipleCandidates": 363,
-    "oneCandidate": 290,
+    "medianCandidates": 2,
+    "multipleCandidates": 392,
+    "oneCandidate": 265,
     "totalPhysicalColumns": 752,
-    "zeroCandidates": 99
+    "zeroCandidates": 95
   },
   "classification": "repository_safe_release_fixture_baseline",
   "productionPolicyChanged": false

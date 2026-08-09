@@ -24,6 +24,10 @@ function readAudit(name: string): Record<string, unknown> {
 describe('Phase 6B production reachability governance', () => {
   it('keeps both production session creators on one canonical handoff path', () => {
     const home = fs.readFileSync(path.join(ROOT, 'apps/desktop/src/pages/Home.tsx'), 'utf8');
+    const homeCanonicalArtifact = fs.readFileSync(
+      path.join(ROOT, 'apps/desktop/src/lib/home-canonical-artifact.ts'),
+      'utf8',
+    );
     const advanced = fs.readFileSync(path.join(ROOT, 'apps/desktop/src/pages/Advanced.tsx'), 'utf8');
     const advancedTransferActions = fs.readFileSync(
       path.join(ROOT, 'apps/desktop/src/hooks/useAdvancedResultTransferActions.ts'),
@@ -32,7 +36,8 @@ describe('Phase 6B production reachability governance', () => {
     const handoff = fs.readFileSync(path.join(ROOT, 'apps/desktop/src/lib/advanced-result-handoff.ts'), 'utf8');
     const investigation = fs.readFileSync(path.join(ROOT, 'apps/desktop/src/pages/Investigation.tsx'), 'utf8');
 
-    expect(home).toContain('getOrBuildCanonicalConsumerArtifact(');
+    expect(home).toContain('buildHomeCanonicalArtifact(');
+    expect(homeCanonicalArtifact).toContain('getOrBuildCanonicalConsumerArtifact(');
     expect(home).toContain('canonicalHandoff');
     expect(`${advanced}\n${advancedTransferActions}`).toContain('handoff.canonicalHandoff');
     expect(handoff).toContain('getOrBuildCanonicalConsumerArtifact(');
@@ -40,7 +45,7 @@ describe('Phase 6B production reachability governance', () => {
     expect(investigation).toContain('executeGovernedMetricRequest');
     expect(investigation).toContain('canonical_handoff_required');
 
-    for (const source of [home, advanced, advancedTransferActions, investigation]) {
+    for (const source of [home, homeCanonicalArtifact, advanced, advancedTransferActions, investigation]) {
       for (const forbidden of [
         'runGuidedInvestigationPipeline(',
         'createDatasetUnderstanding(',
@@ -54,8 +59,8 @@ describe('Phase 6B production reachability governance', () => {
   });
 
   it('keeps policy hashes frozen and all required audits machine-readable', () => {
-    expect(governedMetricPolicyHash()).toBe('26bd430cbca42fbb5a6c8fdf51f248fd40ebf9dc28bd29f458ee53d864de3f5c');
-    expect(questionActionPolicyHash()).toBe('f623f6adbef180d69d78e1f5f185ff62517df9f8d7093788da48d92661c8c808');
+    expect(governedMetricPolicyHash()).toBe('389f209926cf7a62429c03c395b1f4c6a576b4ad16cacacb7162773352e22fd6');
+    expect(questionActionPolicyHash()).toBe('840d387ff5150407a0e672e9128936f502e8da9a002937488c1e11ee01218c25');
     expect(governedRuntimePolicyHash()).toBe('0d2666545d20bd54fe4c2f3f7086e92c4fd32a63dd00ec1e2b81ed23b932605d');
     for (const audit of AUDITS) expect(() => readAudit(audit), audit).not.toThrow();
     expect(readAudit('phase-6b-final-gate-audit.json')).toMatchObject({

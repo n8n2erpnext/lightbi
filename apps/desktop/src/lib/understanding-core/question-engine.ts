@@ -16,6 +16,11 @@ function firstAny(signals: UniversalSignal[], predicate: (signal: UniversalSigna
   return signals.find(predicate);
 }
 
+function looksLikeEntityCodeColumn(column: string): boolean {
+  const normalized = column.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/đ/g, 'd');
+  return /(^|[\s_.-])(id|code|no|number)([\s_.-]|$)|\bma\b|msnv|employee[\s_.-]*id|manager[\s_.-]*id/.test(normalized);
+}
+
 function byId(id: string) {
   return (signal: UniversalSignal) => signal.id === id;
 }
@@ -130,14 +135,37 @@ export function generateUniversalQuestions(input: UnderstandingCoreInput, signal
   const balance = first(signals, byId("money.closing_balance")) ?? first(signals, byId("money.balance")) ?? first(signals, byId("money.opening_balance"));
   const time = first(signals, signal => signal.family === "time" && signal.role === "time");
   const location = first(signals, signal => signal.family === "location");
-  const item = first(signals, signal => signal.family === "item" && signal.role !== "identifier");
-  const actor = first(signals, signal =>
+  // Prefer a concrete item/name dimension over the broad item family. A
+  // localized category header can legitimately emit both item.product and
+  // item.category evidence; selecting the first family match made catalog
+  // questions reuse the category column for product, category, and unit.
+  const itemIdentifierColumns = new Set(
+    // Exclude explicit SKU/code bindings, but do not discard a high-cardinality
+    // product-name field merely because profiling classified it as identifier-
+    // like. Ranking products by name is a valid descriptive catalog analysis.
+    signals.filter(signal => signal.id === "item.sku")
+      .map(signal => signal.physicalColumn)
+  );
+  const item = firstAny(signals, signal =>
+    ["item.product", "item.material", "item.service", "item.medicine"].includes(signal.id)
+      && signal.role !== "identifier"
+      && !itemIdentifierColumns.has(signal.physicalColumn)
+  ) ?? firstAny(signals, signal => signal.family === "item" && !itemIdentifierColumns.has(signal.physicalColumn) && signal.id !== "item.category");
+  const itemCategory = first(signals, byId("item.category"));
+  const itemBrand = first(signals, byId("item.brand"));
+  const itemUnit = first(signals, byId("item.unit"));
+  const isActorSignal = (signal: UniversalSignal) =>
     signal.id === "entity.employee" ||
     signal.id === "entity.salesperson" ||
     signal.id === "entity.manager" ||
     signal.id === "entity.doctor" ||
-    signal.id === "entity.driver"
-  );
+    signal.id === "entity.driver";
+  // Names are legitimate bounded ranking dimensions even when profiling marks
+  // them identifier-like. Prefer the human-readable field, while keeping an
+  // employee/manager code as a fallback only when no name exists.
+  const actor = firstAny(signals, signal => isActorSignal(signal) && !looksLikeEntityCodeColumn(signal.physicalColumn))
+    ?? first(signals, isActorSignal)
+    ?? firstAny(signals, isActorSignal);
   const customer = first(signals, byId("entity.customer")) ?? first(signals, byId("entity.patient"));
   const vendor = first(signals, byId("entity.vendor"));
   const documentType =
@@ -151,6 +179,9 @@ export function generateUniversalQuestions(input: UnderstandingCoreInput, signal
   const soldQty = first(signals, byId("quantity.sold"));
   const returnedQty = first(signals, byId("quantity.returned"));
   const orderedQty = first(signals, byId("quantity.ordered"));
+  const hasExplicitQuantityMovement = Boolean(receivedQty || soldQty || returnedQty || orderedQty);
+  const hasInventoryContext = inferOverlays(signals).includes("inventory");
+  const stockMovementQuantity = hasExplicitQuantityMovement || hasInventoryContext ? quantity : undefined;
   const paymentMethod = first(signals, byId("money.payment_method"));
   const payments = signals.filter(signal =>
     signal.id.startsWith("money.payment_") &&
@@ -158,6 +189,9 @@ export function generateUniversalQuestions(input: UnderstandingCoreInput, signal
     signal.health.nonEmptyCount > 0
   );
   const carrier = first(signals, byId("entity.carrier"));
+  const driver = first(signals, byId("entity.driver"));
+  const vehicle = first(signals, byId("entity.vehicle"));
+  const route = first(signals, byId("location.route"));
   const shipment = firstAny(signals, byId("document.shipment"));
   const currentLocation = first(signals, byId("location.current")) ?? first(signals, byId("location.warehouse"));
   const serviceGroup = first(signals, byId("item.service"));
@@ -171,6 +205,9 @@ export function generateUniversalQuestions(input: UnderstandingCoreInput, signal
   const previousContacts = first(signals, byId("engagement.previous_contacts"));
   const previousOutcome = first(signals, byId("engagement.previous_outcome"));
   const indicator = first(signals, byId("indicator.metric"));
+  const secondaryIndicator = signals.find(signal => signal.family === "indicator" && signal.role === "measure" && signal.physicalColumn !== indicator?.physicalColumn);
+  const economicIndicator = first(signals, byId("indicator.economic"));
+  const infrastructureIndicator = first(signals, byId("indicator.infrastructure"));
   const countryOrRegion = first(signals, byId("location.country")) ?? first(signals, byId("location.region"));
   const participant =
     first(signals, byId("entity.person")) ??
@@ -181,6 +218,7 @@ export function generateUniversalQuestions(input: UnderstandingCoreInput, signal
   const role = first(signals, byId("entity.role"));
   const activity = first(signals, byId("event.activity"));
   const lineup = first(signals, byId("event.lineup"));
+  const indicatorDimension = actor ?? team ?? countryOrRegion ?? location ?? item ?? status;
 
   if (quality.some(signal => signal.id === "quality.formula_error" || signal.id === "quality.technical_column")) {
     const columns = quality.map(signal => signal.physicalColumn);
@@ -202,7 +240,7 @@ export function generateUniversalQuestions(input: UnderstandingCoreInput, signal
     id: "participation_by_group",
     label: "Participation by team or group",
     prompt: "Do you want to compare participation or activity volume by team, group, department, or cohort?",
-    lens: "Team and group participation",
+    lens: "Operational workload by team or group",
     intent: "ranking",
     requiredFamilies: ["entity"],
     requiredSignals: ["entity.team|entity.department"],
@@ -262,6 +300,48 @@ export function generateUniversalQuestions(input: UnderstandingCoreInput, signal
   }));
 
   questions.push(candidate({
+    id: "operational_workload_by_actor",
+    label: "Operational workload by owner or manager",
+    prompt: "Which owner, manager, employee, driver, or responsible person handles the most records or activities?",
+    lens: "Operational workload",
+    intent: "ranking",
+    requiredFamilies: ["entity"],
+    requiredSignals: ["entity.manager|entity.employee|entity.driver|entity.salesperson"],
+    optionalSignals: ["time.*", "location.*", "status.*", "indicator.*"],
+    evidence: [actor, time, location, status].filter(Boolean).flatMap(signal => signal!.evidence),
+    action: makeAction(
+      "operational_workload_by_actor",
+      "Operational workload by owner or manager",
+      "group_by",
+      actor ? [actor.physicalColumn] : [],
+      ["record_count"],
+      scope
+    ),
+    blockedReasons: actor ? [] : ["An owner, manager, employee, driver, or responsible-person field is required."]
+  }));
+
+  questions.push(candidate({
+    id: "operational_volume_by_location",
+    label: "Operational volume by location",
+    prompt: "Which branch, area, warehouse, route, or operating location handles the most records?",
+    lens: "Operational workload",
+    intent: "ranking",
+    requiredFamilies: ["location"],
+    requiredSignals: ["location.*"],
+    optionalSignals: ["document.*", "entity.*", "time.*", "status.*"],
+    evidence: [location, documentType, actor, time, status].filter(Boolean).flatMap(signal => signal!.evidence),
+    action: makeAction(
+      "operational_volume_by_location",
+      "Operational volume by location",
+      "group_by",
+      location ? [location.physicalColumn] : [],
+      ["record_count"],
+      scope
+    ),
+    blockedReasons: location ? [] : ["A branch, area, warehouse, route, or location field is required."]
+  }));
+
+  questions.push(candidate({
     id: "indicator_over_time",
     label: "Indicator over time",
     prompt: "Do you want to see how a numeric indicator changes over time?",
@@ -310,6 +390,136 @@ export function generateUniversalQuestions(input: UnderstandingCoreInput, signal
     blockedReasons: [
       ...(!indicator ? ["A usable numeric indicator is required."] : []),
       ...(!countryOrRegion ? ["A country or region dimension is required."] : [])
+    ]
+  }));
+
+  questions.push(candidate({
+    id: "performance_indicator_by_owner_or_team",
+    label: "Performance indicators by owner or team",
+    prompt: "Which owner, manager, employee, team, or department has the strongest KPI, score, target, or actual result?",
+    lens: "Performance by owner or team",
+    intent: "ranking",
+    requiredFamilies: ["indicator", "entity"],
+    requiredSignals: ["indicator.*", "entity.manager|entity.employee|entity.team|entity.department"],
+    optionalSignals: ["time.*", "location.*"],
+    evidence: [indicator, actor, team, time].filter(Boolean).flatMap(signal => signal!.evidence),
+    action: makeAction(
+      "performance_indicator_by_owner_or_team",
+      "Performance indicators by owner or team",
+      "group_by",
+      actor ? [actor.physicalColumn] : team ? [team.physicalColumn] : [],
+      indicator ? [indicator.physicalColumn] : [],
+      scope,
+      undefined,
+      indicator ? { [indicator.physicalColumn]: "AVG" } : undefined
+    ),
+    blockedReasons: [
+      ...(!indicator ? ["A KPI, score, target, actual, or other performance indicator is required."] : []),
+      ...(!actor && !team ? ["An owner, manager, employee, team, or department is required."] : [])
+    ]
+  }));
+
+  questions.push(candidate({
+    id: "performance_indicator_by_business_dimension",
+    label: "Performance indicator by business group",
+    prompt: "Which business group, location, item, status, owner, or team has the strongest average indicator?",
+    lens: "Performance comparison",
+    intent: "ranking",
+    requiredFamilies: ["indicator"],
+    requiredSignals: ["indicator.*"],
+    optionalSignals: ["entity.*", "location.*", "item.*", "status.*"],
+    evidence: [indicator, indicatorDimension].filter(Boolean).flatMap(signal => signal!.evidence),
+    action: makeAction(
+      "performance_indicator_by_business_dimension",
+      "Performance indicator by business group",
+      "group_by",
+      indicator && indicatorDimension ? [indicatorDimension.physicalColumn] : [],
+      indicator ? [indicator.physicalColumn] : [],
+      scope,
+      undefined,
+      indicator ? { [indicator.physicalColumn]: "AVG" } : undefined
+    ),
+    blockedReasons: [
+      ...(!indicator ? ["A usable KPI, score, target, actual, or numeric indicator is required."] : []),
+      ...(!indicatorDimension ? ["A usable business grouping dimension is required."] : [])
+    ]
+  }));
+
+  questions.push(candidate({
+    id: "secondary_indicator_by_owner_or_team",
+    label: "Compare a second performance indicator",
+    prompt: "Does a second KPI or score tell the same story across owners, teams, or business groups?",
+    lens: "Performance comparison",
+    intent: "ranking",
+    requiredFamilies: ["indicator"],
+    requiredSignals: ["indicator.*"],
+    optionalSignals: ["entity.*", "location.*", "item.*", "status.*"],
+    evidence: [secondaryIndicator, indicatorDimension].filter(Boolean).flatMap(signal => signal!.evidence),
+    action: makeAction(
+      "secondary_indicator_by_owner_or_team",
+      "Compare a second performance indicator",
+      "group_by",
+      secondaryIndicator && indicatorDimension ? [indicatorDimension.physicalColumn] : [],
+      secondaryIndicator ? [secondaryIndicator.physicalColumn] : [],
+      scope,
+      undefined,
+      secondaryIndicator ? { [secondaryIndicator.physicalColumn]: "AVG" } : undefined
+    ),
+    blockedReasons: [
+      ...(!secondaryIndicator ? ["A second usable numeric indicator is required."] : []),
+      ...(!indicatorDimension ? ["A usable owner, team, location, item, or status dimension is required."] : [])
+    ]
+  }));
+
+  questions.push(candidate({
+    id: "economic_indicator_by_country_or_period",
+    label: "Economic and finance indicators",
+    prompt: "How do economic or finance indicators compare across countries, regions, or reporting periods?",
+    lens: "Finance indicator performance",
+    intent: time ? "trend" : "ranking",
+    requiredFamilies: ["indicator"],
+    requiredSignals: ["indicator.economic"],
+    optionalSignals: ["location.country", "location.region", "time.*"],
+    evidence: [economicIndicator, countryOrRegion, time].filter(Boolean).flatMap(signal => signal!.evidence),
+    action: makeAction(
+      "economic_indicator_by_country_or_period",
+      "Economic and finance indicators",
+      time ? "trend" : "group_by",
+      time ? [time.physicalColumn] : countryOrRegion ? [countryOrRegion.physicalColumn] : [],
+      economicIndicator ? [economicIndicator.physicalColumn] : [],
+      scope,
+      undefined,
+      economicIndicator ? { [economicIndicator.physicalColumn]: "AVG" } : undefined
+    ),
+    blockedReasons: [
+      ...(!economicIndicator ? ["An economic or finance indicator is required."] : []),
+      ...(!time && !countryOrRegion ? ["A reporting period, country, or region is required."] : [])
+    ]
+  }));
+
+  questions.push(candidate({
+    id: "infrastructure_indicator_by_country_or_period",
+    label: "Infrastructure and service indicators",
+    prompt: "How do transport, connectivity, or service indicators compare by country, region, or period?",
+    lens: "Operational indicator performance",
+    intent: time ? "trend" : "ranking",
+    requiredFamilies: ["indicator"],
+    requiredSignals: ["indicator.infrastructure"],
+    optionalSignals: ["location.country", "location.region", "time.*"],
+    evidence: [infrastructureIndicator, countryOrRegion, time].filter(Boolean).flatMap(signal => signal!.evidence),
+    action: makeAction(
+      "infrastructure_indicator_by_country_or_period",
+      "Infrastructure and service indicators",
+      time ? "trend" : "group_by",
+      time ? [time.physicalColumn] : countryOrRegion ? [countryOrRegion.physicalColumn] : [],
+      infrastructureIndicator ? [infrastructureIndicator.physicalColumn] : [],
+      scope,
+      undefined,
+      infrastructureIndicator ? { [infrastructureIndicator.physicalColumn]: "AVG" } : undefined
+    ),
+    blockedReasons: [
+      ...(!infrastructureIndicator ? ["A transport, connectivity, or service indicator is required."] : []),
+      ...(!time && !countryOrRegion ? ["A reporting period, country, or region is required."] : [])
     ]
   }));
 
@@ -438,13 +648,13 @@ export function generateUniversalQuestions(input: UnderstandingCoreInput, signal
       "profit_or_margin",
       "Profit or margin performance",
       "group_by",
-      location ? [location.physicalColumn] : item ? [item.physicalColumn] : actor ? [actor.physicalColumn] : [],
+      time ? [time.physicalColumn] : location ? [location.physicalColumn] : item ? [item.physicalColumn] : actor ? [actor.physicalColumn] : [],
       profit ? [profit.physicalColumn] : revenue && cost ? [revenue.physicalColumn] : [],
       scope
     ),
     blockedReasons: [
       ...(!profit && !(revenue && cost) ? ["A profit/margin field or revenue+cost pair is required."] : []),
-      ...(!location && !item && !actor ? ["A location, item, or actor dimension is required."] : [])
+      ...(!time && !location && !item && !actor ? ["A time, location, item, or actor dimension is required."] : [])
     ]
   }));
 
@@ -498,17 +708,17 @@ export function generateUniversalQuestions(input: UnderstandingCoreInput, signal
     requiredFamilies: ["quantity"],
     requiredSignals: ["quantity.ordered|quantity.received|quantity.sold|quantity.returned|quantity.units"],
     optionalSignals: ["item.*", "location.*", "document.*", "time.*"],
-    evidence: [orderedQty, receivedQty, soldQty, returnedQty, quantity].filter(Boolean).flatMap(signal => signal!.evidence),
+    evidence: [orderedQty, receivedQty, soldQty, returnedQty, stockMovementQuantity].filter(Boolean).flatMap(signal => signal!.evidence),
     action: makeAction(
       "stock_movement",
       "Stock movement and quantity flow",
       "group_by",
       item ? [item.physicalColumn] : location ? [location.physicalColumn] : documentType ? [documentType.physicalColumn] : time ? [time.physicalColumn] : [],
-      receivedQty ? [receivedQty.physicalColumn] : soldQty ? [soldQty.physicalColumn] : returnedQty ? [returnedQty.physicalColumn] : orderedQty ? [orderedQty.physicalColumn] : quantity ? [quantity.physicalColumn] : [],
+      receivedQty ? [receivedQty.physicalColumn] : soldQty ? [soldQty.physicalColumn] : returnedQty ? [returnedQty.physicalColumn] : orderedQty ? [orderedQty.physicalColumn] : stockMovementQuantity ? [stockMovementQuantity.physicalColumn] : [],
       scope
     ),
     blockedReasons: [
-      ...(!orderedQty && !receivedQty && !soldQty && !returnedQty && !quantity ? ["A quantity movement measure is required."] : []),
+      ...(!stockMovementQuantity ? ["An ordered, received, sold, returned, or inventory-scoped quantity measure is required."] : []),
       ...(!item && !location && !documentType && !time ? ["An item, location, document, or period dimension is required."] : [])
     ]
   }));
@@ -711,6 +921,63 @@ export function generateUniversalQuestions(input: UnderstandingCoreInput, signal
     blockedReasons: deliveryStatus ? [] : ["A delivery or fulfillment status field is required."]
   }));
 
+  const deliveryPerformanceDimension = route ?? driver ?? vehicle ?? carrier ?? currentLocation;
+  questions.push(candidate({
+    id: "delivery_volume_by_route_or_resource",
+    label: "Delivery workload by route or resource",
+    prompt: "Which route, driver, vehicle, carrier, or hub handles the most delivery records?",
+    lens: "Delivery and logistics",
+    intent: "ranking",
+    requiredFamilies: ["location", "entity"],
+    requiredSignals: ["location.route|entity.driver|entity.vehicle|entity.carrier|location.current"],
+    optionalSignals: ["status.delivery", "status.fulfillment", "time.*"],
+    evidence: [deliveryPerformanceDimension, deliveryStatus, time].filter(Boolean).flatMap(signal => signal!.evidence),
+    action: makeAction(
+      "delivery_volume_by_route_or_resource",
+      "Delivery workload by route or resource",
+      "group_by",
+      deliveryPerformanceDimension ? [deliveryPerformanceDimension.physicalColumn] : [],
+      ["record_count"],
+      scope,
+      undefined,
+      { record_count: "COUNT" }
+    ),
+    blockedReasons: deliveryPerformanceDimension ? [] : ["A route, driver, vehicle, carrier, or current location is required."]
+  }));
+
+  questions.push(candidate({
+    id: "delivery_on_time_by_route_or_resource",
+    label: "On-time delivery by route or resource",
+    prompt: "Which route, driver, vehicle, carrier, or hub has the strongest on-time or completion rate, and which needs attention?",
+    lens: "Service performance",
+    intent: "ranking",
+    requiredFamilies: ["status"],
+    requiredSignals: ["status.delivery|status.fulfillment"],
+    optionalSignals: ["location.route", "entity.driver", "entity.vehicle", "entity.carrier", "location.current"],
+    evidence: [deliveryStatus, deliveryPerformanceDimension].filter(Boolean).flatMap(signal => signal!.evidence),
+    action: makeAction(
+      "delivery_on_time_by_route_or_resource",
+      "On-time delivery by route or resource",
+      "group_by",
+      deliveryStatus && deliveryPerformanceDimension ? [deliveryPerformanceDimension.physicalColumn] : [],
+      [],
+      scope,
+      deliveryStatus ? [{
+        id: "delivery_on_time_rate",
+        label: "delivery_on_time_rate",
+        type: "positive_rate",
+        sourceColumn: deliveryStatus.physicalColumn,
+        positiveValues: ["Đã giao", "Da giao", "Hoàn tất", "Hoan tat", "Delivered", "Completed", "Complete", "Fulfilled", "Đúng hẹn", "Dung hen", "On time", "Ontime", "Timely"],
+        numeratorLabel: "on_time_or_completed",
+        denominatorLabel: "total_deliveries"
+      }] : undefined
+    ),
+    blockedReasons: [
+      ...(!deliveryStatus ? ["A delivery, fulfillment, or on-time status is required."] : []),
+      ...(!deliveryPerformanceDimension ? ["A route, driver, vehicle, carrier, or current location is required."] : [])
+    ]
+  }));
+
   questions.push(candidate({
     id: "approval_or_reconciliation_flow",
     label: "Approval or reconciliation flow",
@@ -733,6 +1000,90 @@ export function generateUniversalQuestions(input: UnderstandingCoreInput, signal
   }));
 
   questions.push(candidate({
+    id: "catalog_composition_by_category",
+    label: "Catalog composition by category",
+    prompt: "How is the product, material, service, or SKU catalog distributed across categories or item groups?",
+    lens: "Inventory catalog structure",
+    intent: "mix",
+    requiredFamilies: ["item"],
+    requiredSignals: ["item.category|item.product|item.service|item.medicine"],
+    optionalSignals: ["item.sku", "entity.vendor", "location.*"],
+    evidence: [itemCategory, item].filter(Boolean).flatMap(signal => signal!.evidence),
+    action: makeAction(
+      "catalog_composition_by_category",
+      "Catalog composition by category",
+      "group_by",
+      itemCategory ? [itemCategory.physicalColumn] : item ? [item.physicalColumn] : [],
+      ["record_count"],
+      scope
+    ),
+    blockedReasons: itemCategory || item ? [] : ["A category, item group, product, service, or medicine field is required."]
+  }));
+
+  questions.push(candidate({
+    id: "catalog_composition_by_brand_or_supplier",
+    label: "Catalog composition by brand or supplier",
+    prompt: "Which brand, supplier, or manufacturer contributes the most catalog records?",
+    lens: "Inventory catalog structure",
+    intent: "ranking",
+    requiredFamilies: ["item", "entity"],
+    requiredSignals: ["item.brand|entity.vendor"],
+    optionalSignals: ["item.category", "item.product", "item.sku"],
+    evidence: [itemBrand, vendor].filter(Boolean).flatMap(signal => signal!.evidence),
+    action: makeAction(
+      "catalog_composition_by_brand_or_supplier",
+      "Catalog composition by brand or supplier",
+      "group_by",
+      itemBrand ? [itemBrand.physicalColumn] : vendor ? [vendor.physicalColumn] : [],
+      ["record_count"],
+      scope
+    ),
+    blockedReasons: itemBrand || vendor ? [] : ["A brand, supplier, or manufacturer field is required."]
+  }));
+
+  questions.push(candidate({
+    id: "catalog_records_by_item",
+    label: "Catalog records by product or item",
+    prompt: "Which products, materials, services, or medicines occur most often in the catalog or source records?",
+    lens: "Inventory catalog structure",
+    intent: "ranking",
+    requiredFamilies: ["item"],
+    requiredSignals: ["item.product|item.service|item.medicine"],
+    optionalSignals: ["item.category", "item.brand", "item.sku", "entity.vendor"],
+    evidence: item ? item.evidence : [],
+    action: makeAction(
+      "catalog_records_by_item",
+      "Catalog records by product or item",
+      "group_by",
+      item ? [item.physicalColumn] : [],
+      ["record_count"],
+      scope
+    ),
+    blockedReasons: item ? [] : ["A product, material, service, or medicine field is required."]
+  }));
+
+  questions.push(candidate({
+    id: "catalog_composition_by_unit",
+    label: "Catalog composition by unit of measure",
+    prompt: "How are products or materials distributed by unit of measure?",
+    lens: "Inventory catalog structure",
+    intent: "mix",
+    requiredFamilies: ["item"],
+    requiredSignals: ["item.unit"],
+    optionalSignals: ["item.category", "item.product", "item.sku"],
+    evidence: itemUnit ? itemUnit.evidence : [],
+    action: makeAction(
+      "catalog_composition_by_unit",
+      "Catalog composition by unit of measure",
+      "group_by",
+      itemUnit ? [itemUnit.physicalColumn] : [],
+      ["record_count"],
+      scope
+    ),
+    blockedReasons: itemUnit ? [] : ["A unit-of-measure field is required."]
+  }));
+
+  questions.push(candidate({
     id: "item_value",
     label: "Value by product, service, medicine, or item",
     prompt: "Which product, service, medicine, or item contributes the most value?",
@@ -747,6 +1098,27 @@ export function generateUniversalQuestions(input: UnderstandingCoreInput, signal
       ...(!money ? ["A usable money measure is required."] : []),
       ...(!item ? ["A product/service/medicine/item dimension is required."] : [])
     ]
+  }));
+
+  questions.push(candidate({
+    id: "item_activity_volume",
+    label: "Activity volume by product, service, medicine, or item",
+    prompt: "Which products, services, medicines, or items appear most often in the governed source records?",
+    lens: "Revenue activity volume by item",
+    intent: "ranking",
+    requiredFamilies: ["item"],
+    requiredSignals: ["item.*"],
+    optionalSignals: ["money.*", "document.*", "time.*", "location.*"],
+    evidence: item ? item.evidence : [],
+    action: makeAction(
+      "item_activity_volume",
+      "Activity volume by item",
+      "group_by",
+      item ? [item.physicalColumn] : [],
+      ["record_count"],
+      scope
+    ),
+    blockedReasons: item ? [] : ["A product/service/medicine/item dimension is required."]
   }));
 
   questions.push(candidate({
@@ -815,11 +1187,11 @@ export function generateUniversalQuestions(input: UnderstandingCoreInput, signal
       "inventory_aging_backlog",
       "Inventory aging and backlog risk",
       "group_by",
-      inventoryAgeBucket ? [inventoryAgeBucket.physicalColumn] : inventoryLocation ? [inventoryLocation.physicalColumn] : [],
+      inventoryAgeBucket ? [inventoryAgeBucket.physicalColumn] : [],
       ["record_count"],
       scope
     ),
-    blockedReasons: inventoryAgeBucket || inventoryLocation ? [] : ["An inventory age bucket/status/current-location field is required."]
+    blockedReasons: inventoryAgeBucket ? [] : ["An inventory age bucket or stock-status field is required."]
   }));
 
   questions.push(candidate({

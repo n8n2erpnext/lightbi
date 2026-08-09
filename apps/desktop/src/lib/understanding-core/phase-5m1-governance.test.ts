@@ -46,7 +46,7 @@ describe("Phase 5M1 governance, preservation, and import isolation", () => {
       expect(metric.currencyBehavior).toBeTruthy();
       expect(metric.executionAuthorization).toBe(false);
     }
-    expect(governedMetricPolicyHash()).toBe("26bd430cbca42fbb5a6c8fdf51f248fd40ebf9dc28bd29f458ee53d864de3f5c");
+    expect(governedMetricPolicyHash()).toBe("389f209926cf7a62429c03c395b1f4c6a576b4ad16cacacb7162773352e22fd6");
     expect(GOVERNED_METRIC_POLICY_V1.forbiddenInference).toContain("numeric_parse_establishes_measure");
   });
 

@@ -58,4 +58,20 @@ describe('perspective analysis bundle', () => {
     const bundle = createPerspectiveAnalysisBundle(understanding(actions, questions), actions[0].id, 'operations');
     expect(bundle.supportingActions.map(item => item.id)).toEqual(['plugin:postal:value-exposure', 'shipment_backlog_by_status']);
   });
+
+  it('adds commercial value context to a selected finance perspective', () => {
+    const questions = [
+      question('profit', 'finance', 'group_by', ['period'], ['profit']),
+      question('money-trend', 'revenue', 'trend', ['period'], ['revenue']),
+      question('customer-mix', 'customer', 'group_by', ['customer'], ['revenue']),
+    ];
+    const actions = [
+      action('profit', 'profit', 'group_by', ['period'], ['profit']),
+      action('money-trend', 'money-trend', 'trend', ['period'], ['revenue']),
+      action('customer-mix', 'customer-mix', 'group_by', ['customer'], ['revenue']),
+    ];
+
+    const bundle = createPerspectiveAnalysisBundle(understanding(actions, questions), 'profit', 'finance');
+    expect(bundle.supportingActions.map(item => item.id)).toEqual(['money-trend']);
+  });
 });

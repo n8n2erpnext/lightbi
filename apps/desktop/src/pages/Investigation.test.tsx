@@ -452,7 +452,7 @@ describe('Investigation canonical consumer boundary', () => {
     await waitFor(() => expect(screen.getByTestId('canonical-chart-renderer')).toBeDefined());
     mockedSaveWorkspaceSession.mockClear();
     navigateMock.mockClear();
-    fireEvent.click(screen.getByTitle('Back to Home'));
+    fireEvent.click(screen.getByTestId('investigation-back-to-perspectives'));
     await waitFor(() => expect(mockedSaveWorkspaceSession).toHaveBeenCalledTimes(1));
     expect(navigateMock).toHaveBeenCalledWith('/', { state: { restoreWorkspaceSessionId: 'saved-session' } });
   });

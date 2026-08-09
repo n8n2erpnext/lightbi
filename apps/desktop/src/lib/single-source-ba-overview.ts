@@ -48,6 +48,25 @@ export interface SingleSourceBAOverview {
 
 type Row = Record<string, unknown>;
 
+export function sampleSingleSourceBARows(rows: Row[] | undefined, limit = 1000): Row[] {
+  if (!Array.isArray(rows) || rows.length === 0 || limit <= 0) return [];
+  if (rows.length <= limit) return rows;
+  if (limit === 1) return [rows[0]];
+
+  // Keep the BA input bounded without biasing it toward the beginning of a
+  // source. Operational exports are often sparse or sorted in batches, so a
+  // head-only slice can entirely miss a valid measure that the governed
+  // full-source chart has already executed.
+  const sampled: Row[] = [];
+  let previousIndex = -1;
+  for (let position = 0; position < limit; position += 1) {
+    const index = Math.round((position * (rows.length - 1)) / (limit - 1));
+    if (index !== previousIndex) sampled.push(rows[index]);
+    previousIndex = index;
+  }
+  return sampled;
+}
+
 const ALIASES: Record<string, string[]> = {
   revenue: ['revenue', 'salesrevenue', 'netrevenue', 'invoicetotal', 'totalamount', 'totalrevenue', 'amount', 'tongtien', 'tienphaithu', 'thanhtien', 'doanhthu'],
   quantity: ['quantity', 'qty', 'soldqty', 'quantitysold', 'salesquantity'],
@@ -106,7 +125,10 @@ function semanticKey(canonicalId: string): string | null {
   if (/moneyfee|deliveryfee|shippingfee|freightcost/.test(value)) return 'fee';
   if (/shipment|tracking|consignment|parcel/.test(value)) return 'shipment';
   for (const [semantic, aliases] of Object.entries(ALIASES)) {
-    if (aliases.some(alias => value === alias || value.includes(alias))) return semantic;
+    // One-letter source aliases such as the common campaign target `y` must
+    // only match exactly. Substring matching made every canonical id that
+    // contains that letter (for example entity.manager) become an outcome.
+    if (aliases.some(alias => value === alias || (alias.length >= 4 && value.includes(alias)))) return semantic;
   }
   if (/outcome|conversion|converted|target|success|subscription/.test(value)) return 'outcome';
   if (/customer|client|account/.test(value)) return 'customer';
@@ -217,6 +239,39 @@ function buildBreakdown(rows: Row[], dimensionColumn: string, measureColumn: str
   if (groups.size < 2 || total === 0) return null;
   const ranked = [...groups.entries()].map(([groupLabel, entry]) => ({ label: groupLabel, value: entry.value, share: entry.value / total, rowCount: entry.rowCount })).sort((a, b) => b.value - a.value);
   return { id, label, physicalColumn: dimensionColumn, valueKind: 'money', top: ranked.slice(0, 5), bottom: [...ranked].reverse().slice(0, 3) };
+}
+
+function buildAverageBreakdown(rows: Row[], dimensionColumn: string, measureColumn: string, id: string, label: string): SingleSourceBreakdown | null {
+  const groups = new Map<string, { total: number; rowCount: number }>();
+  for (const row of rows) {
+    const dimension = textValue(row[dimensionColumn]);
+    const value = numberValue(row[measureColumn]);
+    if (!dimension || value === null) continue;
+    const current = groups.get(dimension) ?? { total: 0, rowCount: 0 };
+    current.total += value;
+    current.rowCount += 1;
+    groups.set(dimension, current);
+  }
+  if (groups.size < 2) return null;
+  const ranked = [...groups.entries()]
+    .map(([groupLabel, entry]) => ({ label: groupLabel, value: entry.total / entry.rowCount, share: 0, rowCount: entry.rowCount }))
+    .sort((a, b) => b.value - a.value);
+  const positiveTotal = ranked.reduce((total, entry) => total + Math.max(0, entry.value), 0);
+  ranked.forEach(entry => { entry.share = positiveTotal ? Math.max(0, entry.value) / positiveTotal : 0; });
+  return { id, label, physicalColumn: dimensionColumn, valueKind: 'number', top: ranked.slice(0, 5), bottom: [...ranked].reverse().slice(0, 3) };
+}
+
+function usefulNumericColumns(rows: Row[], excluded: Set<string> = new Set()): string[] {
+  const columns = [...new Set(rows.slice(0, 1000).flatMap(row => Object.keys(row)))];
+  return columns.filter(column => {
+    if (excluded.has(column)) return false;
+    const values = rows.slice(0, 1000).map(row => row[column]).filter(value => value !== null && value !== undefined && String(value).trim() !== '');
+    if (values.length < Math.min(3, Math.max(1, rows.length))) return false;
+    const numeric = values.filter(value => numberValue(value) !== null).length;
+    const normalized = normalize(column);
+    const identifierLike = /(^|_)(id|code|no|number)$|uuid|guid|phone|postal|rank|ranking|xep hang|msnv/.test(normalized);
+    return !identifierLike && numeric / values.length >= 0.8;
+  });
 }
 
 function buildCountBreakdown(rows: Row[], dimensionColumn: string, identityColumn: string | undefined, id: string, label: string): SingleSourceBreakdown | null {
@@ -334,14 +389,17 @@ function requestedMode(
   if (/inventory|stock|onhand|tonkho/.test(primarySignal)) return 'inventory';
   if (/operation|logistic|delivery|shipment|carrier|waiting|delay|ontime|fulfillment|vanchuyen|giaohang/.test(primarySignal)) return 'operations';
   if (/customer|client|segment|retention|churn|conversion|subscriber|khachhang/.test(primarySignal)) return 'customer';
-  if (/performance|productivity|target|outcome|success|efficiency|hieusuat|ketqua/.test(primarySignal)) return 'performance';
+  if (/performance|productivity|target|outcome|success|efficiency|indicator|metric|score|rating|achievement|participation|participant|team|role|activity|hieusuat|ketqua/.test(primarySignal)) return 'performance';
   if (/revenue|sales|commercial|profit|margin|finance|account|invoice|payment|discount|doanhthu|loinhuan/.test(primarySignal)) return 'commercial';
   if (/inventory|stock|warehouse|onhand|sku|item|tonkho|kho/.test(signal)) return 'inventory';
   if (/operation|logistic|delivery|shipment|carrier|route|driver|vehicle|waiting|delay|ontime|fulfillment|vanchuyen|giaohang/.test(signal)) return 'operations';
   if (/customer|client|segment|retention|churn|conversion|subscriber|khachhang/.test(signal)) return 'customer';
-  if (/performance|productivity|target|outcome|success|efficiency|hieusuat|ketqua/.test(signal)) return 'performance';
+  if (/performance|productivity|target|outcome|success|efficiency|indicator|metric|score|rating|achievement|participation|participant|team|role|activity|hieusuat|ketqua/.test(signal)) return 'performance';
   if (bindings.revenue) return 'commercial';
-  return null;
+  // Every selected Easy Mode action deserves an angle-specific BA readout.
+  // Unknown domains remain descriptive and evidence-bound instead of falling
+  // through to the old generic decision brief.
+  return 'general';
 }
 
 export function createSingleSourceBAOverview(rows: Row[], options: SingleSourceBAOverviewOptions = {}): SingleSourceBAOverview | null {
@@ -351,18 +409,24 @@ export function createSingleSourceBAOverview(rows: Row[], options: SingleSourceB
   const bindings = bindColumns(rows, options.semanticFields);
   const revenue = bindings.revenue;
   const operationalIdentity = bindings.shipment ?? bindings.order;
-  const detectedOperations = Boolean(bindings.shipment || bindings.deliveryStatus || bindings.carrier || bindings.route || bindings.driver || bindings.vehicle || bindings.currentLocation || bindings.service);
+  const preferredMode = requestedMode(options.analysisAction, bindings);
+  const selectedOperationalDimension = preferredMode === 'operations' && Boolean(options.analysisAction?.dimensions?.length);
+  const detectedOperations = Boolean(bindings.shipment || bindings.deliveryStatus || bindings.carrier || bindings.route || bindings.driver || bindings.vehicle || bindings.currentLocation || bindings.service || selectedOperationalDimension);
   const detectedInventory = Boolean(bindings.stock || bindings.warehouse);
   const detectedOutcome = Boolean(bindings.outcome || bindings.deliveryStatus);
-  const preferredMode = requestedMode(options.analysisAction, bindings);
+  const requestedMeasures = actionPhysicalColumns(options.analysisAction?.measures, rows, options.semanticFields ?? []);
+  const genericNumericMeasures = usefulNumericColumns(rows);
+  const hasGenericMeasure = requestedMeasures.length > 0 || genericNumericMeasures.length > 0;
   const mode = preferredMode === 'inventory' && detectedInventory
     ? 'inventory'
     : preferredMode === 'operations' && detectedOperations
       ? 'operations'
       : preferredMode === 'commercial' && revenue
         ? 'commercial'
-        : (preferredMode === 'customer' || preferredMode === 'performance' || preferredMode === 'finance') && detectedOutcome
+        : (preferredMode === 'customer' || preferredMode === 'performance' || preferredMode === 'finance' || preferredMode === 'general')
           ? preferredMode
+        : preferredMode === 'commercial' && hasGenericMeasure
+          ? 'general'
         : revenue
           ? 'commercial'
           : detectedOperations
@@ -379,7 +443,99 @@ export function createSingleSourceBAOverview(rows: Row[], options: SingleSourceB
 
   if (isOutcomeMode) {
     const outcomeColumn = bindings.outcome ?? bindings.deliveryStatus;
-    if (!outcomeColumn) return null;
+    if (!outcomeColumn) {
+      const measureColumn = requestedMeasures[0] ?? genericNumericMeasures[0];
+      if (!measureColumn) {
+        const requestedDimensions = actionPhysicalColumns(options.analysisAction?.dimensions, rows, options.semanticFields ?? []);
+        const dimensions = [...new Set([...requestedDimensions, ...usefulCategoricalColumns(rows, new Set())])].slice(0, 6);
+        const breakdowns = dimensions.flatMap((column, index) => {
+          const breakdown = buildCountBreakdown(rows, column, bindings.customer ?? bindings.order ?? bindings.shipment, `distribution_${index}`, column);
+          return breakdown ? [breakdown] : [];
+        });
+        const columns = [...new Set(rows.slice(0, 1000).flatMap(row => Object.keys(row)))];
+        const nonEmptyCells = rows.reduce((total, row) => total + columns.filter(column => textValue(row[column]) !== null).length, 0);
+        const completeness = rows.length && columns.length ? nonEmptyCells / (rows.length * columns.length) : 0;
+        return {
+          mode,
+          analysisLabel: mode === 'performance' ? 'Phân tích hoạt động & hiệu suất' : 'Phân tích dữ liệu theo góc nhìn đã chọn',
+          breakdownHeading: 'Bản ghi tập trung ở nhóm nào?',
+          rowCount: rows.length,
+          sourceRowCount,
+          isRepresentativeSample,
+          bindings,
+          kpis: [
+            { id: 'records', label: 'Số bản ghi', value: rows.length, kind: 'number' },
+            { id: 'columns', label: 'Số trường dữ liệu', value: columns.length, kind: 'number' },
+            { id: 'completeness', label: 'Mức đầy đủ dữ liệu', value: completeness, kind: 'percent' },
+          ],
+          trend: [],
+          trendChange: null,
+          breakdowns,
+          concentration: breakdowns[0]?.top[0] ? { label: breakdowns[0].top[0].label, share: breakdowns[0].top[0].share } : null,
+          outlierCount: 0,
+          findings: [
+            ...(breakdowns[0]?.top[0] ? [`${breakdowns[0].top[0].label} là nhóm xuất hiện nhiều nhất theo chiều ${breakdowns[0].label} (${(breakdowns[0].top[0].share * 100).toFixed(1)}%, n=${breakdowns[0].top[0].rowCount.toLocaleString('vi-VN')}).`] : []),
+            `Mức đầy đủ quan sát được của ${columns.length.toLocaleString('vi-VN')} trường là ${(completeness * 100).toFixed(1)}%.`,
+          ],
+          recommendedActions: [
+            'Mở nhóm lớn nhất và nhóm ít xuất hiện để kiểm tra cấu trúc, ngoại lệ và tính đại diện.',
+            'Xác nhận ý nghĩa nghiệp vụ của các trường phân loại trước khi dùng phân bố để ra quyết định.',
+            'Chọn thêm một chỉ số số học hoặc mục tiêu nếu cần so sánh hiệu quả giữa các nhóm.',
+          ],
+          limitations: [
+            'Nguồn chưa có chỉ số số học phù hợp với góc nhìn này; LightBI chỉ mô tả cơ cấu bản ghi và chất lượng dữ liệu.',
+            'Phân bố số bản ghi không tự đại diện cho hiệu suất, giá trị hoặc tác động kinh doanh.',
+          ],
+        };
+      }
+      const values = rows.map(row => numberValue(row[measureColumn])).filter((value): value is number => value !== null);
+      if (values.length === 0) return null;
+      const requestedDimensions = actionPhysicalColumns(options.analysisAction?.dimensions, rows, options.semanticFields ?? []);
+      const dynamicDimensions = usefulCategoricalColumns(rows, new Set([measureColumn, ...requestedMeasures]));
+      const dimensions = [...new Set([...requestedDimensions, ...dynamicDimensions])].slice(0, 6);
+      const breakdowns = dimensions.flatMap((column, index) => {
+        const breakdown = buildAverageBreakdown(rows, column, measureColumn, `indicator_${index}`, column);
+        return breakdown ? [breakdown] : [];
+      });
+      const averageValue = values.reduce((total, value) => total + value, 0) / values.length;
+      const minValue = Math.min(...values);
+      const maxValue = Math.max(...values);
+      const findings = [
+        `Chỉ số ${measureColumn} có giá trị bình quân ${averageValue.toLocaleString('vi-VN')}, thấp nhất ${minValue.toLocaleString('vi-VN')} và cao nhất ${maxValue.toLocaleString('vi-VN')}.`,
+        ...(breakdowns[0]?.top[0] ? [`${breakdowns[0].top[0].label} có mức bình quân ${measureColumn} cao nhất trong chiều ${breakdowns[0].label} (${breakdowns[0].top[0].value.toLocaleString('vi-VN')}, n=${breakdowns[0].top[0].rowCount.toLocaleString('vi-VN')}).`] : []),
+        ...(breakdowns[0]?.bottom[0] ? [`${breakdowns[0].bottom[0].label} là nhóm cần kiểm tra trước trong chiều ${breakdowns[0].label} (${breakdowns[0].bottom[0].value.toLocaleString('vi-VN')}, n=${breakdowns[0].bottom[0].rowCount.toLocaleString('vi-VN')}).`] : []),
+      ];
+      return {
+        mode,
+        analysisLabel: mode === 'customer' ? 'Phân tích khách hàng' : mode === 'finance' ? 'Phân tích tài chính' : 'Phân tích hiệu suất',
+        breakdownHeading: `Chỉ số ${measureColumn} khác nhau theo nhóm nào?`,
+        rowCount: rows.length,
+        sourceRowCount,
+        isRepresentativeSample,
+        bindings: { ...bindings, selectedMeasure: measureColumn },
+        kpis: [
+          { id: 'records', label: 'Số bản ghi', value: rows.length, kind: 'number' },
+          { id: 'average_indicator', label: `Bình quân ${measureColumn}`, value: averageValue, kind: 'number' },
+          { id: 'minimum_indicator', label: `Thấp nhất ${measureColumn}`, value: minValue, kind: 'number' },
+          { id: 'maximum_indicator', label: `Cao nhất ${measureColumn}`, value: maxValue, kind: 'number' },
+        ],
+        trend: [],
+        trendChange: null,
+        breakdowns,
+        concentration: null,
+        outlierCount: values.filter(value => value > quantile(values, 0.75) + 1.5 * (quantile(values, 0.75) - quantile(values, 0.25))).length,
+        findings,
+        recommendedActions: [
+          'So sánh nhóm cao và thấp theo đúng chiều phân tích đã chọn; kiểm tra cỡ mẫu trước khi ưu tiên hành động.',
+          'Mở các bản ghi của nhóm chênh lệch lớn nhất để xác nhận chất lượng dữ liệu và bối cảnh vận hành.',
+          'Đối chiếu thêm mục tiêu hoặc kỳ chuẩn nếu nguồn có cung cấp; kết quả mô tả không tự chứng minh quan hệ nhân quả.',
+        ],
+        limitations: [
+          'Các chỉ số được mô tả theo dữ liệu nguồn và góc nhìn đã chọn; chưa có bằng chứng để suy luận quan hệ nhân quả.',
+          ...(!bindings.date ? ['Không có trường thời gian hàng-dòng đủ rõ để so sánh xu hướng theo kỳ.'] : []),
+        ],
+      };
+    }
     const observedOutcomes = rows.map(row => textValue(row[outcomeColumn])).filter((value): value is string => Boolean(value));
     const positiveCount = observedOutcomes.filter(positiveOutcome).length;
     const actionSignal = normalize([

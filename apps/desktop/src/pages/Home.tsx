@@ -14,7 +14,6 @@ import type { WorkspaceUnderstandingState } from '../lib/workspace-understanding
 import { createWorkspaceUnderstandingState } from '../lib/workspace-understanding-state';
 import type { MultiSourceDraftV1 } from '../components/analysis/CanonicalMultiSourceReview';
 import {
-  getOrBuildCanonicalConsumerArtifact,
   prepareCanonicalInvestigationHandoff,
 } from '../lib/understanding-core/canonical-consumer-boundary';
 import { buildCanonicalMultiSourceDataset, buildCanonicalMultiSourceMemberArtifact, prepareCanonicalMultiSourceInvestigationHandoff, type CanonicalMultiSourceDatasetV1 } from '../lib/understanding-core/canonical-multisource-boundary';
@@ -60,6 +59,7 @@ import { evaluateRuntimeSourceContinuity } from '../lib/runtime-source-continuit
 import { projectCanonicalDomainPerspectives, projectGovernedBundleCandidates, type CanonicalBusinessPerspectiveCandidateV1, type GovernedBundleCandidateV1 } from '../lib/canonical-source-candidate-projection';
 import { findPendingSourceFamily, mapCollectionPerspectiveToDatasetPerspective, projectPendingMultiSourceReviewSources, selectGovernedBundleDrafts, type PendingLocalFileBatch } from '../lib/home-multisource-candidate-review';
 import { createDomainComparisonBrief, type BAComparisonPeriodInput } from '../lib/ba-comparison-engine';
+import { buildHomeCanonicalArtifact } from '../lib/home-canonical-artifact';
 export const Home: React.FC = () => {
   const { preferences } = useDisplayPreferences();
   const navigate = useNavigate();
@@ -78,6 +78,7 @@ export const Home: React.FC = () => {
   const [multiSourceBuilding, setMultiSourceBuilding] = useState(false);
   const [multiSourceBuildResult, setMultiSourceBuildResult] = useState<{ relationshipState: CanonicalMultiSourceDatasetV1["relationship"]["validationState"] | null; blockers: string[] }>({ relationshipState: null, blockers: [] });
   const [lastInspectedFamilies, setLastInspectedFamilies] = useState<DatasetFamily[] | null>(null);
+  const [lastInspectedBatch, setLastInspectedBatch] = useState<PendingLocalFileBatch | null>(null);
   const [, setDecisionTrustReport] = useState<DecisionTrustReport | null>(null);
   const [canonicalOverlayRebuildState, setCanonicalOverlayRebuildState] = useState<"idle" | "pending" | "succeeded" | "failed">("idle");
   const [canonicalReviewTarget, setCanonicalReviewTarget] = useState<CanonicalRemediationOperationV1 | null>(null);
@@ -119,7 +120,7 @@ export const Home: React.FC = () => {
       artifact: canonicalArtifact,
       runtimeSource: currentDataset?.runtimeDatasetSource,
       multiSourceDataset,
-      actionCandidateId: isUniversalDescriptiveAction ? undefined : action.id,
+      actionCandidateId: action.id,
     });
     if ((!canonicalHandoff && !isUniversalDescriptiveAction) || !runtimeContinuity.available || !runtimeContinuity.runtimeSource) {
       setResult({ status: 'blocked', blockedReasons: runtimeContinuity.blockers, message: 'The complete source is no longer available. Reselect the source before running this analysis.' });
@@ -207,40 +208,10 @@ export const Home: React.FC = () => {
     [currentDataset]
   );
 
-  const canonicalArtifact = React.useMemo(() => {
-    if (currentDataset?.status !== 'ready' || !Array.isArray(currentDataset.columns)) return null;
-    const periodWorkspace = currentDataset.canonicalPeriodPartitionWorkspace;
-    if (periodWorkspace?.periodMembers?.length) {
-      return periodWorkspace.periodMembers[0].artifact ?? null;
-    }
-    const multiSourceDataset = currentDataset.canonicalMultiSourceDataset as CanonicalMultiSourceDatasetV1 | undefined;
-    if (multiSourceDataset) {
-      const metricSourceId = multiSourceDataset.analyses.find((item) => item.metricSourceId)?.metricSourceId;
-      const metricSource = multiSourceDataset.orderedSourceMemberships.find((item) => item.sourceId === metricSourceId);
-      return metricSource?.artifact ?? null;
-    }
-    const sourceType = String(currentDataset.sourceType || 'unknown');
-    const sourceKind = ['postgresql', 'mysql', 'mariadb', 'mongodb_atlas', 'sqlite'].includes(sourceType)
-      ? 'database_table'
-      : ['google_sheets', 'm365_excel', 'csv_url', 'excel_url'].includes(sourceType)
-        ? 'online_file'
-        : sourceType === 'local_xlsx' || sourceType === 'local_csv' || sourceType === 'local_json' || sourceType === 'local_file'
-          ? 'local_file'
-          : sourceType === 'api_response'
-            ? 'api_response'
-            : 'unknown';
-    return getOrBuildCanonicalConsumerArtifact({
-      datasetId: currentDataset.file_name || 'dataset',
-      sourceLabel: currentDataset.file_name || 'dataset',
-      sourceKind,
-      columns: currentDataset.understandingColumns ?? currentDataset.columns,
-      rows: canonicalRows,
-      sourceRowCount: Number(currentDataset.understandingSourceRowCount ?? currentDataset.rows_count ?? canonicalRows.length),
-      sheet: currentDataset.selected_sheet ?? undefined,
-      sourceBoundary: currentDataset.canonicalSourceBoundary,
-      userOverlay: parseCanonicalUserOverlay(currentDataset.canonicalUserOverlay) ?? undefined,
-    });
-  }, [canonicalRows, currentDataset]);
+  const canonicalArtifact = React.useMemo(
+    () => buildHomeCanonicalArtifact(currentDataset, canonicalRows),
+    [canonicalRows, currentDataset],
+  );
 
   const canonicalPresentation = React.useMemo(() => canonicalArtifact ? presentCanonicalConsumerArtifact(canonicalArtifact, {
     stale: canonicalOverlayRebuildState === 'pending' || canonicalOverlayRebuildState === 'failed' || !evaluateRuntimeSourceContinuity({
@@ -422,6 +393,7 @@ export const Home: React.FC = () => {
 
     // Clear any previously stored inspected families because we are starting a new batch.
     setLastInspectedFamilies(null);
+    setLastInspectedBatch(null);
 
     setPendingLocalBatch({
       files,
@@ -515,6 +487,15 @@ export const Home: React.FC = () => {
         businessOverview
       });
       setLastInspectedFamilies(families);
+      setLastInspectedBatch({
+        files,
+        status: "ready",
+        results,
+        families,
+        selectedFamilyId: families.length === 1 ? families[0].id : null,
+        step: "family_selection",
+        businessOverview,
+      });
     }
 
     if (fileInputRef.current) {
@@ -974,7 +955,22 @@ export const Home: React.FC = () => {
       handleUseMultiSourceReviewSource(selectedSourceKeys[0], nextDrafts[selectedSourceKeys[0]]);
       return;
     }
+    setSelectedPerspective(mapCollectionPerspectiveToDatasetPerspective(perspective.perspectiveId));
     void handleBuildCanonicalMultiSource(nextDrafts, perspective.perspectiveId);
+  };
+
+  const handleBackToImportedPerspectives = () => {
+    setResult(null);
+    setSelectedTopic(null);
+    setSelectedPerspective(null);
+    setSelectedBusinessView(null);
+    setPreviewActionId(null);
+    setCurrentDataset(null);
+    setWorkspaceState(null);
+    setDecisionTrustReport(null);
+    setCanonicalOverlayRebuildState('idle');
+    setMultiSourceBuildResult({ relationshipState: null, blockers: [] });
+    if (lastInspectedBatch) setPendingLocalBatch(lastInspectedBatch);
   };
 
   const handleUseLocalDataset = (familyIdOverride?: string, sourceNameOverride?: string, draftOverride?: MultiSourceDraftV1) => {
@@ -1127,6 +1123,8 @@ export const Home: React.FC = () => {
         return [{ id: `${fileIndex}:data`, name: family.files.length > 1 ? item.file.name : 'data', rowCount: metadata.rows_count || 0, columns: metadata.columns || [], profiles: metadata.profiles || {}, file: item.file }];
       }),
       semanticSample,
+      canonicalSourceBoundary,
+      canonicalUserOverlay,
       registeredAt: new Date().toISOString(),
     });
 
@@ -1189,7 +1187,7 @@ export const Home: React.FC = () => {
     runtimeSourceContinuity,
     canonicalMultiSourcePresentation,
     canonicalReviewTarget, multiSourceBuildResult, multiSourceReviewSources, multiSourceBundles, multiSourceDrafts, setMultiSourceDrafts, multiSourceBuilding,
-    handleReviewMultiSourceBundle, handleUseMultiSourceReviewSource, handleBuildCanonicalMultiSource, handleAnalyzeMultiSourcePerspective, handleCancelInspection, handleUseLocalDataset, guidedInvestigationResult, datasetUnderstanding,
+    handleReviewMultiSourceBundle, handleUseMultiSourceReviewSource, handleBuildCanonicalMultiSource, handleAnalyzeMultiSourcePerspective, handleBackToImportedPerspectives, handleCancelInspection, handleUseLocalDataset, guidedInvestigationResult, datasetUnderstanding,
     activeBusinessViews, selectedPerspective, setSelectedPerspective, analysisMode, setAnalysisMode, selectedBusinessView, setSelectedBusinessView,
     visibleQuestionSuggestions, selectedViewData, previewActionId, setPreviewActionId, handleSelectAnalysisAction, handleLegacyQuestionSuggestion,
     lastInspectedFamilies, getEChartsOption: createHomeChartOption, planningWorkflow, canonicalRows,

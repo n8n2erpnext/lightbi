@@ -77,7 +77,7 @@ describe('Phase 8E architecture and contract parity', () => {
       'apps/desktop/src/lib/understanding-core/canonical-source-boundary.ts': '58882e0b9409a65d3735e296b18665f736bbd889fcfc613c1a2ba3ad2f04ea0b',
       'apps/desktop/src/lib/understanding-core/canonical-user-overlay.ts': '0254062774db5491cc9f512f7e1079f709835b841594404e649deef75866adc6',
       'apps/desktop/src/lib/understanding-core/canonical-multisource-boundary.ts': '3c8371f11b5fd35909e09c88573ed94aa186f80373684e35a064fc2a38d71385',
-      'apps/desktop/src/lib/investigation-session.ts': '8156af5849ef10ddb71bf7bf1a8eac4a48338f3183e3efd97f67fe564dff1c0e',
+      'apps/desktop/src/lib/investigation-session.ts': '414ea6d4f4d46341e6d31b31552481357a155f73d3d511de98276e673c699087',
       'apps/desktop/src/lib/advanced-result-handoff.ts': 'dc3d71356854af4a55ff920561932b097ea16d80d6dd647a61a8ee3778ff9830',
       'apps/desktop/src/lib/workspace-session-api.ts': '95e121ce5c3f2e28a155ef3a539eb196cc111688a68faf1f0e7bf3e6b7bedf43',
     };

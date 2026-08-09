@@ -1,26 +1,26 @@
 {
   "schemaVersion": "phase0.registry-inventory.v1",
   "generatedFrom": "apps/desktop/src/lib/semantic-registry.ts",
-  "generatedOn": "2026-07-28",
-  "policy": "Conservative registry inventory updated by controlled Beta evolution for distinct performance rank, accumulated-star, and source-record identity semantics.",
-  "signalCount": 324,
+  "generatedOn": "2026-08-08",
+  "policy": "Registry inventory regenerated after controlled Beta expansion of universal item, brand, and indicator semantics; runtime authority remains governed by supported domain policies.",
+  "signalCount": 329,
   "coverageStatusCounts": {
     "supported": 63,
-    "partial": 261,
+    "partial": 266,
     "advertised_only": 0
   },
   "phase0RecognitionStatusCounts": {
     "mvp_proven": 0,
     "experimental": 63,
-    "research_only": 261
+    "research_only": 266
   },
   "primaryDomainCounts": {
     "core": 3,
     "customer": 41,
-    "finance": 61,
-    "inventory": 42,
-    "operations": 78,
-    "performance": 64,
+    "finance": 62,
+    "inventory": 43,
+    "operations": 79,
+    "performance": 66,
     "revenue": 35
   },
   "collisionCounts": {

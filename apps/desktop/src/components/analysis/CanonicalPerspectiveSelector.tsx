@@ -9,6 +9,7 @@ export type CanonicalPerspectiveSelectionItemV1 = {
   state: "ready" | "partial" | "recognized" | "not_executable";
   badges: string[];
   recommended?: boolean;
+  selectable?: boolean;
 };
 
 type Props = {
@@ -79,6 +80,7 @@ export const CanonicalPerspectiveSelector: React.FC<Props> = ({
       <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
         {items.map((item) => {
           const active = item.id === selectedId;
+          const selectable = item.selectable ?? (item.state === "ready" || item.state === "partial");
           const localized = getCanonicalPerspectiveDisplay(item.id, item.label, item.question, language);
           return (
             <button
@@ -86,11 +88,15 @@ export const CanonicalPerspectiveSelector: React.FC<Props> = ({
               type="button"
               data-testid={`business-perspective-${item.id}`}
               aria-pressed={active}
-              onClick={() => onSelect(item.id)}
+              aria-disabled={!selectable}
+              disabled={!selectable}
+              onClick={() => selectable && onSelect(item.id)}
               className={`min-h-[170px] min-w-0 overflow-hidden rounded-xl border p-4 text-left transition ${
                 active
                   ? "border-blue-500 bg-blue-50 shadow-sm ring-2 ring-blue-100"
-                  : "border-slate-200 bg-white hover:border-blue-300 hover:bg-slate-50"
+                  : selectable
+                    ? "border-slate-200 bg-white hover:border-blue-300 hover:bg-slate-50"
+                    : "cursor-not-allowed border-slate-200 bg-slate-50 opacity-75"
               }`}
             >
               <div className="flex items-start justify-between gap-3">

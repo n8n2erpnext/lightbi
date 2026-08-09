@@ -12,67 +12,57 @@ const SIX_ERP_FILES = [
   "Logistics_ERP_June_2026.csv",
 ].map((name) => path.join(ANCHORS, name));
 
-test("authentic six-source corpus projects canonical roles, periods, and governed bundles on the actual origin", async ({ page }) => {
-  test.setTimeout(180_000);
+async function importSixSources(page: import("@playwright/test").Page) {
   await page.goto(ORIGIN);
   await page.locator('input[type="file"]').setInputFiles(SIX_ERP_FILES);
   const review = page.getByTestId("canonical-multisource-review");
   await expect(review).toBeVisible({ timeout: 120_000 });
-  await expect(page.getByTestId("business-perspective-executive_overview")).toBeVisible();
+  return review;
+}
+
+test("authentic six-source corpus exposes governed cross-source perspectives", async ({ page }) => {
+  test.setTimeout(180_000);
+  const review = await importSixSources(page);
+  const selector = page.getByTestId("canonical-business-perspectives");
+  const perspectives = selector.locator('button[data-testid^="business-perspective-"]');
+
+  await expect(perspectives).toHaveCount(8);
   await page.getByTestId("business-perspective-profitability").click();
-  await expect(review.getByTestId("governed-bundle-gross_profit_period").first()).toBeVisible();
-  await expect(review.getByText("Suggested by LightBI: sales")).toHaveCount(2);
-  await expect(review.getByText("Suggested by LightBI: accounting")).toHaveCount(2);
-  await expect(review.getByText("Suggested by LightBI: logistics")).toHaveCount(2);
-  await expect(review.getByTestId("governed-bundle-gross_profit_period")).toHaveCount(2);
+  await expect(page.getByTestId("analyze-selected-perspective")).toBeEnabled();
+  await expect(review.getByLabel("Compare")).toHaveValue("2026-05");
+  await expect(review.getByLabel("Period")).toHaveValue("2026-06");
+
   await page.getByTestId("business-perspective-fulfillment_operations").click();
-  await expect(review.getByTestId("governed-bundle-delivery_source_local").first()).toBeVisible();
-  await expect(review.getByTestId("governed-bundle-delivery_source_local")).toHaveCount(2);
-  await expect(review.locator('input[type="checkbox"]:checked')).toHaveCount(0);
-  await expect(review.getByText("Currency: Missing")).toHaveCount(6);
+  await expect(page.getByTestId("analyze-selected-perspective")).toBeEnabled();
+
+  await review.getByText(/Review technical evidence/i).click();
+  for (const file of SIX_ERP_FILES) {
+    await expect(review.getByText(path.basename(file), { exact: true })).toBeVisible();
+  }
 });
 
-test("authentic six-source journey builds and executes the governed May profitability angle", async ({ page }) => {
-  test.setTimeout(240_000);
-  await page.goto(ORIGIN);
-  await page.locator('input[type="file"]').setInputFiles(SIX_ERP_FILES);
-  const review = page.getByTestId("canonical-multisource-review");
-  await expect(review).toBeVisible({ timeout: 120_000 });
+test("authentic six-source journey compares May with June and produces deep profitability BA", async ({ page }) => {
+  test.setTimeout(300_000);
+  const review = await importSixSources(page);
   await page.getByTestId("business-perspective-profitability").click();
+  await review.getByLabel("Compare").selectOption("2026-05");
+  await review.getByLabel("Period").selectOption("2026-06");
 
-  const mayBundle = review.getByTestId("governed-bundle-gross_profit_period").filter({ hasText: "2026-05" });
-  await expect(mayBundle).toBeVisible();
-  await mayBundle.getByRole("button", { name: "Review bundle" }).click();
-  await expect(review.locator('input[type="checkbox"]:checked')).toHaveCount(2);
-  await expect(review.getByText("Suggested shared identity: OrderID")).toHaveCount(2);
+  const analyze = page.getByTestId("analyze-selected-perspective");
+  await expect(analyze).toBeEnabled();
+  await analyze.click();
+  const result = page.getByTestId("perspective-collection-result");
+  await expect(result).toBeVisible({ timeout: 120_000 });
+  await expect(result).toContainText(/Gross Profit|Lợi nhuận gộp/i);
+  await expect(result.locator("canvas")).toBeVisible();
 
-  const selectedSources = review.locator('details:has(input[type="checkbox"]:checked)');
-  await expect(selectedSources).toHaveCount(2);
-  for (let index = 0; index < 2; index += 1) {
-    const source = selectedSources.nth(index);
-    await source.locator("summary").click();
-    await source.getByRole("button", { name: "Accept suggestions" }).click();
-    await source.locator('input[aria-label^="Currency for"]').fill("VND");
-  }
-
-  const build = review.getByTestId("build-canonical-multisource");
-  await expect(build).toBeEnabled();
-  await build.click();
-  await expect(page.getByTestId("active-canonical-multisource")).toBeVisible({ timeout: 120_000 });
-  await expect(page.getByTestId("active-canonical-multisource")).toContainText("2 independently profiled sources");
-
-  await page.getByTestId("business-perspective-finance").click();
-  const grossProfitAnalysis = page.getByTestId(/^canonical-analysis-/).filter({ hasText: /gross profit/i }).first();
-  await expect(grossProfitAnalysis).toBeVisible();
-  await grossProfitAnalysis.getByRole("button", { name: "Investigate" }).click();
-  await expect(page).toHaveURL(/\/investigation$/);
-  await expect(page.getByTestId("governed-result-summary")).toBeVisible({ timeout: 120_000 });
-  await expect(page.getByTestId("governed-result-summary")).toContainText("gross_profit");
-  await expect(page.getByTestId("governed-result-summary")).toContainText("3,075,721,244");
-  await expect(page.getByTestId("multisource-result-lineage")).toContainText("1,500 / 1,500 rows");
-  const analyzeDeeper = page.getByRole("button", { name: "Analyze deeper" }).first();
+  const analyzeDeeper = result.getByRole("button", { name: /What drove|Điều gì làm/i }).first();
   await expect(analyzeDeeper).toBeEnabled();
   await analyzeDeeper.click();
-  await expect(page.getByText("Deep BA Analysis")).toBeVisible();
-  await expect(page.getByText("Governed analysis scope").first()).toBeVisible();
+  const deepBA = page.getByTestId("governed-ba-deep-dive");
+  await expect(deepBA).toBeVisible();
+  expect((await deepBA.innerText()).length).toBeGreaterThan(300);
+
+  await page.getByTestId("easy-mode-back-to-perspectives").click();
+  await expect(page.getByTestId("canonical-business-perspectives")).toBeVisible();
 });

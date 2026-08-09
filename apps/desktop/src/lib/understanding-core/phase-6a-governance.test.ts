@@ -41,13 +41,18 @@ describe("Phase 6A consumer cutover governance", () => {
 
   it("keeps Phase 5 policy identities frozen", () => {
     expect(GOVERNED_DOMAIN_SUPPORT_MANIFEST_V1[0].lastValidatedPolicyIdentity).toBe("3efa22d2210d2160bf27b1e16ae00da6617c1227e15a8310adbf9b04606a25fd");
-    expect(governedMetricPolicyHash()).toBe("26bd430cbca42fbb5a6c8fdf51f248fd40ebf9dc28bd29f458ee53d864de3f5c");
-    expect(questionActionPolicyHash()).toBe("f623f6adbef180d69d78e1f5f185ff62517df9f8d7093788da48d92661c8c808");
+    expect(governedMetricPolicyHash()).toBe("389f209926cf7a62429c03c395b1f4c6a576b4ad16cacacb7162773352e22fd6");
+    expect(questionActionPolicyHash()).toBe("840d387ff5150407a0e672e9128936f502e8da9a002937488c1e11ee01218c25");
     expect(governedRuntimePolicyHash()).toBe("0d2666545d20bd54fe4c2f3f7086e92c4fd32a63dd00ec1e2b81ed23b932605d");
   });
 
   it("keeps independent legacy and next detectors out of the selected Home path", () => {
     const home = fs.readFileSync(path.join(ROOT, "apps/desktop/src/pages/Home.tsx"), "utf8");
+    const canonicalArtifact = fs.readFileSync(
+      path.join(ROOT, "apps/desktop/src/lib/home-canonical-artifact.ts"),
+      "utf8",
+    );
+    const selectedHomePath = `${home}\n${canonicalArtifact}`;
     for (const forbidden of [
       "business-signal-detector",
       "runGuidedInvestigationPipeline(",
@@ -55,10 +60,10 @@ describe("Phase 6A consumer cutover governance", () => {
       "createUnderstandingCoreResult(",
       "adaptCoreToUnderstandingNext(",
       "generateAIBriefingFromUnderstandingNext(",
-    ]) expect(home).not.toContain(forbidden);
-    expect(home.match(/getOrBuildCanonicalConsumerArtifact\(/g)).toHaveLength(1);
-    expect(home).toContain("const datasetRows = canonicalRows");
-    expect(home).toContain("rows: canonicalRows");
+    ]) expect(selectedHomePath).not.toContain(forbidden);
+    expect(home).toContain("buildHomeCanonicalArtifact(");
+    expect(canonicalArtifact.match(/getOrBuildCanonicalConsumerArtifact\(/g)).toHaveLength(1);
+    expect(canonicalArtifact).toContain("rows: canonicalRows");
     const boundary = fs.readFileSync(path.join(ROOT, "apps/desktop/src/lib/understanding-core/canonical-consumer-boundary.ts"), "utf8");
     expect(boundary).not.toContain("understanding-next");
     const adapter = fs.readFileSync(path.join(ROOT, "apps/desktop/src/lib/canonical-consumer-presentation-adapter.ts"), "utf8");

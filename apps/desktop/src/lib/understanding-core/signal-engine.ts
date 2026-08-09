@@ -40,6 +40,17 @@ function signalUsability(signal: UniversalSignal, rowCount: number): boolean {
   if (signal.role === "quality") return false;
   if (signal.role === "identifier") return false;
   if (signal.health.nonEmptyCount === 0) return false;
+  if (signal.role === "time") {
+    // A month/year mentioned inside a KPI label (for example
+    // "Total score from 06/2016 to 05/2017") is not a row-level time
+    // dimension. Only accept profiled date values, or a column whose whole
+    // header explicitly denotes a date/period field. This keeps the rule
+    // dictionary extensible without turning every dated report title into a
+    // trend axis.
+    const header = normalizeHeader(signal.physicalColumn).trim();
+    const explicitTimeHeader = /^(date|day|month|year|period|fiscal month|fiscal year|transaction date|invoice date|order date|report date|ngay|thang|nam|ky|ngay bao cao|ngay giao dich|ngày|tháng|năm|kỳ|ngày báo cáo|ngày giao dịch)$/i.test(header);
+    if (signal.health.inferredType !== "date" && !explicitTimeHeader) return false;
+  }
   if (signal.id === "engagement.outcome") {
     return signal.health.distinctCount >= 2 && signal.health.distinctCount <= 20;
   }

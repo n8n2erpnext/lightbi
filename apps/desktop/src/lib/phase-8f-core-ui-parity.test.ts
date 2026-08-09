@@ -11,10 +11,12 @@ function read(relativePath: string): string {
 describe('Phase 8F core to production UI parity', () => {
   it('keeps Home analysis source-bound and projects only canonical state', () => {
     const home = read('pages/Home.tsx');
+    const canonicalArtifact = read('lib/home-canonical-artifact.ts');
     const view = read('components/home/HomeWorkspaceView.tsx');
 
-    expect(home).toContain('const metricSourceId = multiSourceDataset.analyses.find');
-    expect(home).toContain('return metricSource?.artifact ?? null');
+    expect(home).toContain('buildHomeCanonicalArtifact(');
+    expect(canonicalArtifact).toContain('const metricSourceId = multiSourceDataset.analyses.find');
+    expect(canonicalArtifact).toContain('return metricSource?.artifact ?? null');
     expect(home).toContain('presentCanonicalConsumerArtifact');
     expect(home).toContain('presentCanonicalMultiSourceRelationship');
     expect(view).toContain('canonicalPresentation');
@@ -87,9 +89,12 @@ describe('Phase 8F core to production UI parity', () => {
     const tauriManifest = fs.readFileSync(path.join(repoRoot, 'crates/lightbi-tauri/Cargo.toml'), 'utf8');
 
     expect(tauriConfig).not.toContain('externalBin');
-    expect(tauriMain).toContain('lightbi_server::run');
-    expect(tauriMain).toContain('lightbi-embedded-core');
+    expect(tauriMain).toContain('lightbi_server::build_router');
+    expect(tauriMain).toContain('register_asynchronous_uri_scheme_protocol("lightbi"');
+    expect(tauriMain).toContain('InProcessCore');
     expect(tauriMain).not.toContain('std::process::Command');
+    expect(tauriMain).not.toContain('TcpListener');
+    expect(tauriMain).not.toContain('sidecar');
     expect(tauriManifest).toContain('lightbi-server = { path = "../../apps/server" }');
   });
 });

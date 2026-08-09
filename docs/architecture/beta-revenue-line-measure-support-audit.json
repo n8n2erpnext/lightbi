@@ -127,7 +127,7 @@
     "runtime": "7f553bc3d0041e8492173689efd70caa7ba6ffc8e5a64aae7175dc24576eef8e"
   },
   "productionFileHashes": {
-    "apps/desktop/src/lib/semantic-registry.ts": "5210653a0dbd5d4d42ba087583a5b4c8922226d7df4366385ce00e7afaeb7d42",
+    "apps/desktop/src/lib/semantic-registry.ts": "3e6643072f027e166d8d0d517a0da2592b0a71dcddbc9ac9f974590614e73197",
     "apps/desktop/src/lib/understanding-core/governed-runtime-preflight.ts": "70e261f80dcdf26662b206a453e80f3cfc53e5c3fcc56b76c7513a7df4f12842",
     "apps/desktop/src/lib/understanding-core/governed-runtime-contracts.ts": "5be9323381bdf385d0a82715975e90606eef5078f4bbac4cd7327979fd07491b"
   },

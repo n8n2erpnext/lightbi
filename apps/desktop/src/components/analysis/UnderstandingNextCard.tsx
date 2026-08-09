@@ -242,6 +242,9 @@ export const UnderstandingNextCard: React.FC<UnderstandingNextCardProps> = ({
                     : 'recognized',
                 badges: perspective.matchedSignalIds,
                 recommended: perspective.perspectiveId === recommendedPerspectiveId,
+                // Data trust is an evidence-review perspective, so it remains
+                // useful even when there is no governed chart action to run.
+                selectable: perspective.state !== 'recognized_only' || String(perspective.perspectiveId) === 'data_trust',
               }))}
               selectedId={selectedPerspectiveId}
               onSelect={(id) => onSelectPerspective?.(id)}
@@ -253,7 +256,7 @@ export const UnderstandingNextCard: React.FC<UnderstandingNextCardProps> = ({
                 </summary>
                 <div className="flex flex-wrap gap-2 border-t border-slate-200 px-4 py-3">
                   {canonicalPerspectives.filter(perspective => perspective.state !== 'governed_action_available').map(perspective => (
-                    <span key={perspective.perspectiveId} data-testid={`business-perspective-${perspective.perspectiveId}`} className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[11px] text-slate-600">
+                    <span key={perspective.perspectiveId} data-testid={`business-evidence-${perspective.perspectiveId}`} className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[11px] text-slate-600">
                       {perspective.label} · {t('not enough evidence to analyze safely', 'chưa đủ bằng chứng để phân tích an toàn')}
                     </span>
                   ))}

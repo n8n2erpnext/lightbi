@@ -1,8 +1,55 @@
 import { describe, expect, it } from 'vitest';
 import * as XLSX from 'xlsx';
-import { createSingleSourceBAOverview } from './single-source-ba-overview';
+import { createSingleSourceBAOverview, sampleSingleSourceBARows } from './single-source-ba-overview';
 
 describe('single source BA overview', () => {
+  it('samples large sorted or sparse sources across their complete extent', () => {
+    const rows = Array.from({ length: 5000 }, (_, index) => ({
+      Date: `2026-01-${String((index % 28) + 1).padStart(2, '0')}`,
+      Region: `Region ${index % 5}`,
+      SparseAmount: index >= 4500 ? index : null,
+    }));
+
+    const sampled = sampleSingleSourceBARows(rows, 1000);
+    expect(sampled).toHaveLength(1000);
+    expect(sampled[0]).toBe(rows[0]);
+    expect(sampled.at(-1)).toBe(rows.at(-1));
+    expect(sampled.some(row => row.SparseAmount !== null)).toBe(true);
+
+    const overview = createSingleSourceBAOverview(sampled, {
+      sourceRowCount: rows.length,
+      analysisAction: {
+        id: 'universal:action_money_over_time',
+        opportunityName: 'Money over time',
+        dimensions: ['Date'],
+        measures: ['SparseAmount'],
+      },
+    });
+    expect(overview).not.toBeNull();
+    expect(overview?.isRepresentativeSample).toBe(true);
+    expect(overview?.bindings.selectedMeasure).toBe('SparseAmount');
+  });
+  it('keeps a selected descriptive participant angle inside the specialized BA surface', () => {
+    const rows = Array.from({ length: 30 }, (_, index) => ({
+      Team: ['North', 'South', 'Central'][index % 3],
+      Participant: `Person ${index + 1}`,
+      Role: index % 2 ? 'Member' : 'Lead',
+    }));
+    const overview = createSingleSourceBAOverview(rows, {
+      analysisAction: {
+        id: 'universal:participation_by_team',
+        opportunityName: 'Participation by team or group',
+        dimensions: ['Team'],
+        measures: ['record_count'],
+      },
+    });
+
+    expect(overview).not.toBeNull();
+    expect(overview?.mode).toBe('performance');
+    expect(overview?.kpis.some(kpi => kpi.id === 'records')).toBe(true);
+    expect(overview?.breakdowns[0]?.physicalColumn).toBe('Team');
+    expect(overview?.findings.length).toBeGreaterThan(0);
+  });
   it('uses the complete sales source to produce KPIs, trends and business breakdowns', () => {
     const rows = [
       { OrderID: 'O-1', OrderDate: '2026-06-01', Product: 'A', Category: 'TV', Store: 'HCM', Salesperson: 'Lan', PaymentMethod: 'Card', Quantity: 2, Revenue: 200, Discount: 10 },
@@ -141,5 +188,32 @@ describe('single source BA overview', () => {
     expect(overview.breakdowns[0]).toMatchObject({ physicalColumn: 'Bưu Cục Hiện Tại', valueKind: 'number' });
     expect(overview.breakdowns.map(item => item.physicalColumn)).toEqual(expect.arrayContaining(['Trạng Thái', 'Dịch Vụ']));
     expect(overview.findings.some(item => item.includes('không tự gán mã trạng thái'))).toBe(true);
+  });
+
+  it('creates a selected-angle BA brief for generic management KPIs without an outcome column', () => {
+    const rows = Array.from({ length: 20 }, (_, index) => ({
+      Manager: `Manager ${index % 5}`,
+      Team: `Team ${index % 3}`,
+      Score: 70 + index,
+      Note: index % 2 ? 'Stable' : 'Review',
+    }));
+    const overview = createSingleSourceBAOverview(rows, {
+      analysisAction: {
+        id: 'performance_indicator_by_owner_or_team',
+        opportunityName: 'Performance indicators by owner or team',
+        dimensions: ['manager'],
+        measures: ['indicator.metric'],
+      },
+      semanticFields: [
+        { canonicalId: 'entity.manager', physicalColumn: 'Manager', role: 'dimension' },
+        { canonicalId: 'indicator.metric', physicalColumn: 'Score', role: 'measure' },
+      ],
+    })!;
+
+    expect(overview.mode).toBe('performance');
+    expect(overview.bindings.selectedMeasure).toBe('Score');
+    expect(overview.breakdowns[0]).toMatchObject({ physicalColumn: 'Manager' });
+    expect(overview.kpis.map(item => item.id)).toEqual(expect.arrayContaining(['average_indicator', 'minimum_indicator', 'maximum_indicator']));
+    expect(overview.findings.length).toBeGreaterThanOrEqual(2);
   });
 });

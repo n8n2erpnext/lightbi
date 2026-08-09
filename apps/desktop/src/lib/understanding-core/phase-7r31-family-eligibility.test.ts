@@ -192,7 +192,11 @@ describe.sequential("Phase 7R3.1 required-family eligibility", () => {
       expect(metric.timeCompatible, sampleId).toBe(true);
       expect(record.semantics.some((item) => item.selectedCandidateId === "shipment" && item.finalState === "confirmed"), sampleId).toBe(true);
       expect(record.temporalBehaviors.some((item) => item.physicalColumn === "DeliveredAt" && item.role === "event_time"), sampleId).toBe(true);
-      expect(record.actions.filter((item) => item.metricId === "delivery_count"), sampleId).toHaveLength(2);
+      expect(record.actions.filter((item) => item.metricId === "delivery_count").map((item) => item.questionId).sort(), sampleId).toEqual([
+        "commerce.delivery_count.by_status",
+        "commerce.delivery_count.summary",
+        "operations.delivery_count.over_time",
+      ]);
     }
     for (const sampleId of ["fin.accounting_may_2026", "fin.accounting_june_2026"]) {
       const record = records.find((item) => item.sampleId === sampleId)!;

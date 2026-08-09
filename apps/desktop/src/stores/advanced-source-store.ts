@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 import type { ColumnProfile } from '../lib/column-profiler';
+import type { CanonicalSourceBoundaryV1 } from '../lib/understanding-core/canonical-source-boundary';
+import type { CanonicalUserOverlayV1 } from '../lib/understanding-core/canonical-user-overlay';
 
 export type AdvancedSourceTable = {
   id: string;
@@ -19,6 +21,8 @@ export type AdvancedWorkspaceSource = {
   normalizedUrl?: string;
   tables: AdvancedSourceTable[];
   semanticSample?: { strategy: string; sourceRowCount: number; sampleRowCount: number };
+  canonicalSourceBoundary?: CanonicalSourceBoundaryV1;
+  canonicalUserOverlay?: CanonicalUserOverlayV1;
   registeredAt: string;
 };
 

@@ -5,6 +5,7 @@ import { adaptCoreToUnderstandingNext } from "./understanding-core/next-adapter"
 import { createUnderstandingCoreResult } from "./understanding-core/question-engine";
 import type { UnderstandingCoreInput } from "./understanding-core/contracts";
 import type { AnalysisAction, BusinessLens, BusinessQuestion, DatasetUnderstandingResult, DomainId } from "./understanding-next/contracts";
+import { inferSemanticDomainAffinities } from "./understanding-next/semantic-domain-affinity";
 
 export type CanonicalCapabilityLadderResult = {
   understanding: DatasetUnderstandingResult;
@@ -59,6 +60,7 @@ export function mergeCanonicalAndUniversalUnderstanding(
   universal: DatasetUnderstandingResult,
 ): DatasetUnderstandingResult {
   const canonicalHasSource = canonical.source.sourceColumnCount > 0;
+  const mergedSignals = uniqueBy([...canonical.signals, ...universal.signals], (signal) => `${signal.canonicalId}:${signal.physicalColumn}`);
   return {
     source: canonicalHasSource ? canonical.source : universal.source,
     quality: {
@@ -75,8 +77,12 @@ export function mergeCanonicalAndUniversalUnderstanding(
       detectedDomains: uniqueBy([...canonical.profile.detectedDomains, ...universal.profile.detectedDomains], (domain) => domain),
     },
     columns: canonical.columns?.length ? canonical.columns : universal.columns,
-    signals: uniqueBy([...canonical.signals, ...universal.signals], (signal) => `${signal.canonicalId}:${signal.physicalColumn}`),
-    domainAffinities: canonical.domainAffinities ?? universal.domainAffinities,
+    signals: mergedSignals,
+    domainAffinities: canonical.domainAffinities?.length
+      ? canonical.domainAffinities
+      : universal.domainAffinities?.length
+        ? universal.domainAffinities
+        : inferSemanticDomainAffinities(mergedSignals),
     stakeholderFits: uniqueBy([...canonical.stakeholderFits, ...universal.stakeholderFits], (fit) => fit.id),
     lenses: uniqueBy([...canonical.lenses, ...universal.lenses], (lens) => lens.id),
     perspectives: uniqueBy([...canonical.perspectives, ...universal.perspectives], (perspective) => perspective.id),
@@ -107,6 +113,7 @@ function augmentPerspectives(
     byDomain.set(question.domain, bucket);
   }
   const existing = new Map(canonicalPerspectives.map((perspective) => [perspective.perspectiveId, perspective]));
+  const affinityByDomain = new Map((understanding.domainAffinities ?? []).map((affinity) => [affinity.domain, affinity.score]));
   const labels: Record<DomainId, string> = {
     operations: "Operations", revenue: "Revenue", inventory: "Inventory",
     customer: "Customer", performance: "Performance", finance: "Finance",
@@ -130,8 +137,42 @@ function augmentPerspectives(
       provenance: "inferred_candidate",
     });
   }
+  const semanticFit = (perspective: CanonicalDomainPerspectiveCandidateV1): number => {
+    const actionIds = perspective.actionCandidateIds.join(" ");
+    const signalIds = perspective.matchedSignalIds.join(" ");
+    const allSignalIds = understanding.signals.map((signal) => signal.canonicalId).join(" ");
+    // Recommend the business perspective carried by the strongest semantic
+    // evidence in the source. Generic person/activity/location signals are
+    // useful secondary angles, but must not outrank explicit finance,
+    // inventory, commerce, customer, or logistics evidence.
+    const strongDomainBoost =
+      perspective.perspectiveId === "inventory" && /inventory\.|quantity\.(?:on_hand|stock)|stock/.test(allSignalIds) ? 90 :
+      perspective.perspectiveId === "finance" && /money\.(?:profit|margin)/.test(allSignalIds) && /money\.cost/.test(allSignalIds) ? 130 :
+      perspective.perspectiveId === "finance" && /money\.(?:profit|margin|cost|receivable|payable|balance|opening_balance|closing_balance|debt)/.test(allSignalIds) ? 85 :
+      perspective.perspectiveId === "operations" && /document\.(?:shipment|delivery)|status\.(?:delivery|fulfillment)|entity\.(?:carrier|driver|vehicle)|location\.current/.test(allSignalIds) ? 80 :
+      perspective.perspectiveId === "revenue" && /money\.(?:revenue|sales|invoice_total|amount)/.test(allSignalIds) ? 75 :
+      perspective.perspectiveId === "customer" && /entity\.(?:customer|patient)|engagement\.(?:segment|conversion|retention|churn)/.test(allSignalIds) ? 70 :
+      perspective.perspectiveId === "performance" && /indicator\.|engagement\.(?:outcome|achievement)|entity\.(?:team|coach)/.test(allSignalIds) ? 65 :
+      0;
+    const capabilityBoost =
+      perspective.perspectiveId === "inventory" && /inventory_aging|stock_movement|inventory_on_hand|catalog_composition|catalog_records/.test(actionIds) && /inventory|stock|sku|item|category|brand/.test(signalIds) ? 40 :
+      perspective.perspectiveId === "operations" && /shipment|delivery|carrier|operational_workload/.test(actionIds) ? 40 :
+      perspective.perspectiveId === "finance" && /economic_indicator|profit_or_margin|gross_profit|receivable|payable|balance/.test(actionIds) ? 40 :
+      perspective.perspectiveId === "revenue" && /sales_revenue|money_over_time|money_by_location|payment_mix|transaction_count|actor_value/.test(actionIds) ? 35 :
+      perspective.perspectiveId === "performance" && /indicator|performance|achievement|participation/.test(actionIds) ? 25 :
+      0;
+    // Affinity is useful supporting evidence, but it can grow with the width of
+    // a table. Cap it so many weak generic columns cannot outvote a smaller set
+    // of explicit domain semantics (for example profit + cost + margin).
+    const boundedAffinity = Math.min(
+      50,
+      affinityByDomain.get(perspective.perspectiveId) ?? Math.min(24, perspective.matchedSignalIds.length * 3),
+    );
+    return boundedAffinity + strongDomainBoost + capabilityBoost;
+  };
   return [...existing.values()].sort((left, right) =>
     Number(right.state === "governed_action_available") - Number(left.state === "governed_action_available")
+    || semanticFit(right) - semanticFit(left)
     || right.actionCandidateIds.length - left.actionCandidateIds.length
     || left.label.localeCompare(right.label));
 }

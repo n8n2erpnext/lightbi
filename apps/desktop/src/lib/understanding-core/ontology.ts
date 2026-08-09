@@ -73,6 +73,10 @@ const CORE_ID_BY_CANONICAL: Record<string, string> = {
   supplier: "entity.vendor",
   vendor: "entity.vendor",
   employee: "entity.employee",
+  economic_indicator: "indicator.economic",
+  infrastructure_indicator: "indicator.infrastructure",
+  population_indicator: "indicator.population",
+  health_indicator: "indicator.health",
   cashier: "entity.employee",
   owner: "entity.employee",
   agent: "entity.employee",
@@ -82,6 +86,7 @@ const CORE_ID_BY_CANONICAL: Record<string, string> = {
   team: "entity.team",
   carrier: "entity.carrier",
   driver: "entity.driver",
+  vehicle: "entity.vehicle",
   doctor: "entity.doctor",
   provider: "entity.vendor",
   person: "entity.person",
@@ -91,6 +96,11 @@ const CORE_ID_BY_CANONICAL: Record<string, string> = {
   product: "item.product",
   material: "item.product",
   crop: "item.product",
+  category: "item.category",
+  brand: "item.brand",
+  manufacturer: "item.brand",
+  unit: "item.unit",
+  uom: "item.unit",
   sku: "item.sku",
   barcode: "item.sku",
   batch: "item.sku",
@@ -112,7 +122,6 @@ const CORE_ID_BY_CANONICAL: Record<string, string> = {
   field: "location.region",
   plant: "location.warehouse",
   property: "location.store",
-  unit: "location.store",
 
   invoice: "document.invoice",
   receipt: "document.invoice",
@@ -329,7 +338,7 @@ const CORE_COMPAT_SIGNAL_RULES: SignalRule[] = [
 
   { id: "entity.customer", family: "entity", role: "dimension", label: "Customer", patterns: [/khách hàng|customer|client|buyer/i] },
   { id: "entity.vendor", family: "entity", role: "dimension", label: "Vendor / Supplier", patterns: [/nhà cung cấp|vendor|supplier/i] },
-  { id: "entity.employee", family: "entity", role: "dimension", label: "Employee / User", patterns: [/nhân viên|employee|staff|\buser\b|user id|username|người tạo|người xuất/i] },
+  { id: "entity.employee", family: "entity", role: "dimension", label: "Employee / User", patterns: [/nhân viên|employee|staff|\bemp(?:loyee)?[ ._-]?id\b|\buser\b|user id|username|người tạo|người xuất/i] },
   { id: "entity.salesperson", family: "entity", role: "dimension", label: "Salesperson", patterns: [/nhân viên bán|salesperson|sales rep/i] },
   { id: "entity.manager", family: "entity", role: "dimension", label: "Manager", patterns: [/quản lý|manager/i] },
   { id: "entity.department", family: "entity", role: "dimension", label: "Department", patterns: [/phòng ban|bộ phận|department|dept/i] },
@@ -337,12 +346,16 @@ const CORE_COMPAT_SIGNAL_RULES: SignalRule[] = [
   { id: "entity.patient", family: "entity", role: "dimension", label: "Patient", patterns: [/bệnh nhân|patient/i] },
   { id: "entity.doctor", family: "entity", role: "dimension", label: "Doctor / Clinician", patterns: [/bác sĩ|doctor|clinician|physician/i] },
   { id: "entity.driver", family: "entity", role: "dimension", label: "Driver", patterns: [/lái xe|driver/i] },
+  { id: "entity.vehicle", family: "entity", role: "dimension", label: "Vehicle / Trip", patterns: [/chuyến xe|phương tiện|biển số|xe tải|vehicle|truck|license.?plate|trip id/i] },
   { id: "entity.person", family: "entity", role: "dimension", label: "Person / Participant", patterns: [/person|participant|attendee|member|player name|player|athlete|cầu thủ|người tham gia/i] },
   { id: "entity.team", family: "entity", role: "dimension", label: "Team / Group", patterns: [/team initials|team|group|đội|nhóm|club/i] },
   { id: "entity.coach", family: "entity", role: "dimension", label: "Coach / Lead", patterns: [/coach|trainer|huấn luyện|leader|lead/i] },
   { id: "entity.role", family: "entity", role: "dimension", label: "Role / Position", patterns: [/position|role|vị trí|chức danh/i] },
 
   { id: "item.product", family: "item", role: "dimension", label: "Product / Item", patterns: [/sản phẩm|tên hàng|hàng hóa|product|item|material/i] },
+  { id: "item.category", family: "item", role: "dimension", label: "Category / Item Group", patterns: [/ngành hàng|nhóm hàng|loại hàng|nhóm sản phẩm|category|product group|item group/i] },
+  { id: "item.brand", family: "item", role: "dimension", label: "Brand / Manufacturer", patterns: [/thương hiệu|nhãn hiệu|hãng sản xuất|brand|manufacturer|maker/i] },
+  { id: "item.unit", family: "item", role: "dimension", label: "Unit of Measure", patterns: [/đơn vị tính|đvt|unit of measure|\buom\b|sales unit|base unit/i] },
   { id: "item.sku", family: "item", role: "identifier", label: "SKU / Product Code", patterns: [/\bsku\b|\bplu\b|mã hàng|mã sản phẩm|barcode|product code/i], defaultUsable: false },
   { id: "item.service", family: "item", role: "dimension", label: "Service", patterns: [/dịch vụ|service|service group/i] },
   { id: "item.medicine", family: "item", role: "dimension", label: "Medicine", patterns: [/thuốc|dược|medicine|drug|pharmacy/i] },
@@ -405,7 +418,11 @@ const CORE_COMPAT_SIGNAL_RULES: SignalRule[] = [
   // Generic indicator/benchmark columns cover wide public, KPI, survey, macro,
   // health, population, operations, and scientific datasets. These are numeric
   // measures but should generally be averaged or inspected, not summed as money.
-  { id: "indicator.metric", family: "indicator", role: "measure", label: "Indicator / Metric", patterns: [/^[a-z][^:]{1,48}:\s*.+/i, /per 100|per 1,000|% of|% gdp|index|rate|ratio|life expectancy|population/i] }
+  { id: "indicator.economic", family: "indicator", role: "measure", label: "Economic / Finance Indicator", patterns: [/^finance\s*:/i, /\bgdp\b|gross domestic product|economic output|income per capita/i] },
+  { id: "indicator.infrastructure", family: "indicator", role: "measure", label: "Infrastructure / Service Indicator", patterns: [/^(transit|business)\s*:/i, /passenger[- ]km|internet users|mobile phone subscribers/i] },
+  { id: "indicator.population", family: "indicator", role: "measure", label: "Population / Social Indicator", patterns: [/^population\s*:/i, /birth rate|population|ages?\s+\d/i] },
+  { id: "indicator.health", family: "indicator", role: "measure", label: "Health Indicator", patterns: [/^health\s*:/i, /mortality|life expectancy|health expenditure/i] },
+  { id: "indicator.metric", family: "indicator", role: "measure", label: "Indicator / Metric", patterns: [/^[a-z][^:]{1,48}:\s*.+/i, /per 100|per 1,000|% of|% gdp|index|rate|ratio|life expectancy|population|kpi|target|actual|achievement|productivity|utilization|efficiency|quality score|progress|xếp hạng|xep hang|thứ hạng|thu hang|điểm|diem|sao|rating|score/i] }
 ];
 
 function mergeUniversalRules(registryRules: SignalRule[], compatRules: SignalRule[]): {

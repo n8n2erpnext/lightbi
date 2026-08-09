@@ -14,6 +14,19 @@ export interface DashboardChartWidgetProps {
   colSpan: number;
 }
 
+export const formatDashboardCategory = (value: unknown, key: string, locale = 'en-US'): string => {
+  const timeLike = /(date|time|period|month|year|ngay|thang|nam)/.test(key.toLowerCase());
+  if (!timeLike) return String(value ?? '');
+  const epoch = typeof value === 'number'
+    ? value
+    : typeof value === 'string' && /^\d{12,13}$/.test(value.trim())
+      ? Number(value)
+      : null;
+  const parsed = epoch !== null ? new Date(epoch) : value instanceof Date ? value : new Date(String(value ?? ''));
+  if (Number.isNaN(parsed.getTime())) return String(value ?? '');
+  return new Intl.DateTimeFormat(locale, { year: 'numeric', month: 'short', day: '2-digit' }).format(parsed);
+};
+
 export const generateDashboardChartOptions = (
   props: DashboardChartWidgetProps,
   preferences: any,
@@ -83,7 +96,7 @@ export const generateDashboardChartOptions = (
     },
     xAxis: {
       type: 'category',
-      data: data.map(d => d[xAxisKey]),
+      data: data.map(d => formatDashboardCategory(d[xAxisKey], xAxisKey, preferences.locale)),
     },
     yAxis: {
       type: 'value',

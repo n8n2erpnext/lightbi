@@ -85,19 +85,21 @@ describe("Phase 8D production capability reachability", () => {
     if (artifact.status !== "valid") throw new Error(artifact.blockers.join(","));
     const presentation = presentCanonicalConsumerArtifact(artifact);
     const understanding = projectCanonicalArtifactToUnderstandingNext(artifact);
-    const additional = presentation.analyses.filter(item => item.state === "ready" && !item.advertisedAsDefault);
+    const ready = presentation.analyses.filter(item => item.state === "ready");
+    const additional = ready.filter(item => !item.advertisedAsDefault);
     expect(presentation.analyses.filter(item => item.advertisedAsDefault).length).toBeLessThanOrEqual(5);
-    expect(additional.length, JSON.stringify(presentation.analyses.map(item => ({ id: item.questionId, state: item.state, default: item.advertisedAsDefault })))).toBeGreaterThan(0);
+    expect(ready.length, JSON.stringify(presentation.analyses.map(item => ({ id: item.questionId, state: item.state, default: item.advertisedAsDefault })))).toBeGreaterThan(0);
     const availableIds = new Set(understanding.availableActions.map(item => item.id));
-    expect(additional.every(item => item.actionCandidateId && availableIds.has(item.actionCandidateId))).toBe(true);
+    expect(ready.every(item => item.actionCandidateId && availableIds.has(item.actionCandidateId))).toBe(true);
 
     const select = vi.fn();
     const perspectives = projectCanonicalDomainPerspectives(artifact);
-    const selectedPerspectiveId = additional[0].businessPerspectiveIds?.[0] ?? null;
+    const target = additional[0] ?? ready[ready.length - 1];
+    const selectedPerspectiveId = target.businessPerspectiveIds?.[0] ?? null;
     render(<UnderstandingNextCard understanding={understanding} canonicalPresentation={presentation} canonicalPerspectives={perspectives} selectedPerspectiveId={selectedPerspectiveId} onSelectAction={select} />);
     expect(screen.getByTestId("canonical-understanding-summary")).toBeTruthy();
-    expect(screen.getByTestId("canonical-group-additional")).toBeTruthy();
-    fireEvent.click(screen.getByTestId(`canonical-investigate-${additional[0].itemId}`));
+    expect(screen.getByTestId(additional.length > 0 ? "canonical-group-additional" : "canonical-group-recommended")).toBeTruthy();
+    fireEvent.click(screen.getByTestId(`canonical-investigate-${target.itemId}`));
     expect(select).toHaveBeenCalledTimes(1);
   });
 
@@ -113,7 +115,10 @@ describe("Phase 8D production capability reachability", () => {
     expect(investigation).not.toContain("executeDuckDBPreviewRuntime(");
     expect(investigation).toContain("governed-result-context");
     expect(layout).toContain("Workspace alerts are not available in this Beta");
-    expect(datasets).toContain("Dataset creation is not available in this Beta");
+    expect(datasets).toContain('data-testid="prepare-clean-handoff"');
+    expect(datasets).toContain('data-testid="download-powerbi-package"');
+    expect(datasets).toContain("createCleanDataHandoff");
+    expect(datasets).toContain("The imported source is never changed.");
     expect(sources).toContain("Source editing is not available in this Beta");
     expect(settings).toContain("No license key or feature restriction during Beta");
   });

@@ -255,6 +255,8 @@ export const CanonicalMultiSourceReview: React.FC<Props> = ({
                   : "ready",
             badges: [...perspective.sourceRoles.map(humanize), ...perspective.periods],
             recommended: perspective.recommended,
+            // Data trust reviews source evidence and does not require a chart action.
+            selectable: perspective.state !== "reviewable" || perspective.perspectiveId === "data_trust",
           }))}
           selectedId={selectedPerspectiveId}
           onSelect={(id) => setSelectedPerspectiveId(id as CanonicalBusinessPerspectiveCandidateV1["perspectiveId"])}

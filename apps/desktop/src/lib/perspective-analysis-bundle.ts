@@ -12,6 +12,17 @@ function diversityKey(action: AnalysisAction): string {
   return `${action.actionKind}:${action.dimensions[0] ?? 'none'}:${action.measures[0] ?? action.derivedMeasures?.[0]?.id ?? 'none'}`;
 }
 
+function supportsSelectedPerspective(candidateDomain: DomainId | undefined, selectedDomain: DomainId | null): boolean {
+  if (!selectedDomain) return true;
+  if (candidateDomain === selectedDomain) return true;
+  // Commercial value and financial outcome are two views of the same money
+  // evidence. A finance brief needs revenue/cost trends as context, while a
+  // revenue brief can use profit/margin as a guardrail. Keep every other
+  // domain isolated so the chart set still follows the user's chosen angle.
+  return (selectedDomain === 'finance' && candidateDomain === 'revenue')
+    || (selectedDomain === 'revenue' && candidateDomain === 'finance');
+}
+
 export function createPerspectiveAnalysisBundle(
   understanding: DatasetUnderstandingResult,
   primaryActionId: string,
@@ -34,7 +45,7 @@ export function createPerspectiveAnalysisBundle(
     // implementation detail, not a governance boundary; keeping it here made
     // newly declared domain questions disappear from Easy Mode charts.
     .filter(candidate => candidate.executionScope !== 'not_supported')
-    .filter(candidate => !selectedDomain || questionDomain.get(candidate.questionId) === selectedDomain)
+    .filter(candidate => supportsSelectedPerspective(questionDomain.get(candidate.questionId), selectedDomain))
     .sort((left, right) => {
       const kindPriority = (value: AnalysisAction) => value.actionKind === 'trend' ? 3 : value.actionKind === 'group_by' ? 2 : value.actionKind === 'distribution' ? 1 : 0;
       return kindPriority(right) - kindPriority(left)

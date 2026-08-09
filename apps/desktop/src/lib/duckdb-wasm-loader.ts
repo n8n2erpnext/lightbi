@@ -1,4 +1,4 @@
-import * as duckdb from '@duckdb/duckdb-wasm';
+import type { AsyncDuckDB, DuckDBBundles } from '@duckdb/duckdb-wasm';
 // @ts-ignore
 import duckdb_wasm from '@duckdb/duckdb-wasm/dist/duckdb-mvp.wasm?url';
 // @ts-ignore
@@ -13,7 +13,7 @@ export interface BootstrapError {
   message: string;
 }
 
-const MANUAL_BUNDLES: duckdb.DuckDBBundles = {
+const MANUAL_BUNDLES: DuckDBBundles = {
     mvp: {
         mainModule: duckdb_wasm,
         mainWorker: mvp_worker,
@@ -24,22 +24,28 @@ const MANUAL_BUNDLES: duckdb.DuckDBBundles = {
     },
 };
 
-let dbInstance: duckdb.AsyncDuckDB | null = null;
-let initPromise: Promise<duckdb.AsyncDuckDB> | null = null;
+let dbInstance: AsyncDuckDB | null = null;
+let initPromise: Promise<AsyncDuckDB> | null = null;
 
-export async function initDuckDbWasm(): Promise<duckdb.AsyncDuckDB> {
+export async function initDuckDbWasm(): Promise<AsyncDuckDB> {
     if (dbInstance) return dbInstance;
     if (initPromise) return initPromise;
 
     initPromise = (async () => {
         try {
+            // The package evaluates a Worker shim during module import. Guard
+            // first, then load the browser runtime only inside a real browser.
+            if (typeof Worker === 'undefined') {
+                 throw new Error("Worker is not defined in this environment (likely a Node test env).");
+            }
+            // @ts-expect-error The browser entry ships declarations that are not
+            // exposed through the package exports map; the import is intentionally
+            // deferred so Node-based tests never evaluate the Worker runtime.
+            const duckdb = await import('@duckdb/duckdb-wasm/dist/duckdb-browser');
             // Select a bundle based on browser checks
             const bundle = await duckdb.selectBundle(MANUAL_BUNDLES);
             if (!bundle.mainWorker) {
                  throw new Error("Missing mainWorker asset in selected bundle.");
-            }
-            if (typeof Worker === 'undefined') {
-                 throw new Error("Worker is not defined in this environment (likely a Node test env).");
             }
             // Instantiate the asynchronus version of DuckDB-wasm
             const worker = new Worker(bundle.mainWorker);

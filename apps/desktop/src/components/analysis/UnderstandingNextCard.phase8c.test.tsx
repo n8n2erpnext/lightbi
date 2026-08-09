@@ -96,7 +96,7 @@ describe("UnderstandingNextCard Phase 8C functional states", () => {
     const { rerender } = render(<UnderstandingNextCard understanding={understanding} canonicalPresentation={perspectivePresentation} canonicalPerspectives={canonicalPerspectives} onSelectPerspective={select} />);
     expect(screen.getByTestId("canonical-select-perspective-prompt")).toBeTruthy();
     expect(screen.queryByRole("button", { name: "Investigate" })).toBeNull();
-    expect(screen.getByTestId("business-perspective-customer").textContent).toContain("not enough evidence");
+    expect(screen.getByTestId("business-evidence-customer").textContent).toContain("not enough evidence");
     fireEvent.click(screen.getByTestId("business-perspective-customer"));
     expect(select).not.toHaveBeenCalled();
     rerender(<UnderstandingNextCard understanding={understanding} canonicalPresentation={perspectivePresentation} canonicalPerspectives={canonicalPerspectives} selectedPerspectiveId={null} onSelectPerspective={select} />);
@@ -111,6 +111,6 @@ describe("UnderstandingNextCard Phase 8C functional states", () => {
     ] as CanonicalDomainPerspectiveCandidateV1[];
     render(<UnderstandingNextCard understanding={understanding} canonicalPresentation={perspectivePresentation} canonicalPerspectives={twoReady} />);
     expect(screen.getAllByText("Recommended")).toHaveLength(1);
-    expect(screen.getByTestId("business-perspective-customer").textContent).toContain("not enough evidence");
+    expect(screen.getByTestId("business-evidence-customer").textContent).toContain("not enough evidence");
   });
 });

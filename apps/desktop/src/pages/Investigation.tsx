@@ -1,11 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, BarChart3, Activity, AlertTriangle, ClipboardCheck, FileSpreadsheet } from 'lucide-react';
 import { getCurrentInvestigationSession } from '../lib/investigation-session';
-import { createSafeSqlPreview, type SafeSqlPreview } from '../lib/safe-sql-preview';
-import { executeDuckDBPreviewSandbox, type DuckDBPreviewResult } from '../lib/duckdb-preview-sandbox';
-import { executeBackendPreview } from '../lib/backend-preview-executor';
-import { enhancePlanWithGuardedSum } from '../lib/guarded-sum-bridge';
+import type { SafeSqlPreview } from '../lib/safe-sql-preview';
+import type { DuckDBPreviewResult } from '../lib/duckdb-preview-sandbox';
+import { executeGovernedDescriptiveAnalysis, prepareGovernedDescriptiveAnalysis } from '../lib/governed-descriptive-executor';
 import { createChartPreviewModel, type ChartPreviewModel } from '../lib/chart-preview-model';
 import { ChartPreviewRenderer } from '../components/analysis/ChartPreviewRenderer';
 import { validatePreviewAgainstIntent, type ResultValidationResult } from '../lib/result-validator-contract';
@@ -38,8 +37,9 @@ import { validateCanonicalMultiSourceInvestigationHandoff, type CanonicalMultiSo
 import { executeCanonicalMultiSourceMetric } from '../lib/understanding-core/governed-multisource-duckdb-boundary';
 import { formatValue } from '../lib/display-formatter';
 import { useUiLanguage } from '../lib/ui-language';
-import { createSingleSourceBAOverview } from '../lib/single-source-ba-overview';
+import { createSingleSourceBAOverview, sampleSingleSourceBARows } from '../lib/single-source-ba-overview';
 const INVESTIGATION_SESSION_ROW_LIMIT = 250;
+const SINGLE_SOURCE_BA_OVERVIEW_ROW_LIMIT = 1000;
 
 function limitInvestigationRows(rows: Record<string, unknown>[] | undefined): Record<string, unknown>[] {
   return Array.isArray(rows) ? rows.slice(0, INVESTIGATION_SESSION_ROW_LIMIT) : [];
@@ -98,6 +98,18 @@ export const Investigation: React.FC = () => {
     chartModel: ChartPreviewModel;
   }>>([]);
   const [isLoadingSupportingCharts, setIsLoadingSupportingCharts] = useState(false);
+  // The overview is descriptive context beside a full-source governed result.
+  // Build it once from a bounded representative sample so wide operational
+  // files cannot block navigation by rescanning and sorting every row on each
+  // React render. sourceRowCount keeps that sampling boundary explicit in BA.
+  const singleSourceBAOverview = useMemo(() => {
+    if (!session || session.businessFusionOverview) return null;
+    return createSingleSourceBAOverview(sampleSingleSourceBARows(session.rows, SINGLE_SOURCE_BA_OVERVIEW_ROW_LIMIT), {
+      sourceRowCount: session.runtimeDatasetSource?.sourceRowCount ?? session.rows?.length,
+      analysisAction: session.analysisAction,
+      semanticFields: session.aiBriefing?.semanticFields ?? [],
+    });
+  }, [session]);
   const executionRuns = useRef(new ExecutionRunCoordinator('simple-preview'));
   const supportingRuns = useRef(new ExecutionRunCoordinator('supporting-previews'));
   const drillRuns = useRef(new ExecutionRunCoordinator('simple-drill-through'));
@@ -183,22 +195,21 @@ export const Investigation: React.FC = () => {
       const results: Array<{ actionId: string; label: string; chartModel: ChartPreviewModel }> = [];
       for (const item of candidates) {
         if (!supportingRuns.current.isCurrent(run)) return;
-        const plan = enhancePlanWithGuardedSum(item.runtimePlanPreview, session.rows || []);
-        const sqlPreview = createSafeSqlPreview(plan);
+        const preparation = prepareGovernedDescriptiveAnalysis(item.runtimePlanPreview, session.rows || []);
         try {
-          const result = await executeBackendPreview({
-            runtimePlan: plan,
-            safeSqlPreview: sqlPreview,
+          const result = await executeGovernedDescriptiveAnalysis({
+            preparation,
             rows: session.rows || [],
             runtimeDatasetSource: session.runtimeDatasetSource,
-            rowScope: session.rowScope,
+            sourceBoundary: currentCanonicalArtifact?.sourceBoundary,
+            artifactIdentity: currentCanonicalArtifact?.identity,
             signal: run.signal,
           });
           const validation = validatePreviewAgainstIntent(item.runtimeIntent, result);
           if (result.status !== 'executed' || result.rows.length === 0 || validation.status === 'failed') continue;
           const model = createChartPreviewModel({
             previewResult: result,
-            runtimePlan: plan,
+            runtimePlan: preparation.runtimePlan,
             analysisLabel: item.analysisAction.opportunityName,
           });
           if (model.status === 'ready') results.push({ actionId: item.analysisAction.id, label: item.analysisAction.opportunityName, chartModel: model });
@@ -231,11 +242,6 @@ export const Investigation: React.FC = () => {
   }
 
   const { analysisAction, runtimeIntent, runtimePlanPreview, rows, aiBriefing, runtimeDatasetSource, rowScope, businessFusionOverview, canonicalHandoff } = session;
-  const singleSourceBAOverview = businessFusionOverview ? null : createSingleSourceBAOverview(rows ?? [], {
-    sourceRowCount: runtimeDatasetSource?.sourceRowCount,
-    analysisAction,
-    semanticFields: aiBriefing?.semanticFields ?? [],
-  });
   const canonicalSourceBoundary = canonicalHandoff?.sourceBoundary;
   const fullFileSourceReady = canonicalMultiSourceHandoff
     ? canonicalMultiSourceHandoff.multiSource.requiredSourceIds.every((sourceId) => canonicalMultiSourceHandoff.multiSource.sourceMemberships.some((member) => member.sourceId === sourceId && member.runtimeSource.files.length > 0))
@@ -304,8 +310,9 @@ export const Investigation: React.FC = () => {
         : 'The exact selected action passed the governed M3 runtime preflight.'
       : `Runtime preflight blockers: ${canonicalHandoff?.blockers.join(', ') || 'canonical_handoff_required'}.`;
   const safeActionHints = canExecute ? [analysisAction.opportunityName] : [];
-  const enhancedRuntimePlan = enhancePlanWithGuardedSum(runtimePlanPreview, rows || []);
-  const universalSafeSqlPreview = createSafeSqlPreview(enhancedRuntimePlan);
+  const descriptivePreparation = prepareGovernedDescriptiveAnalysis(runtimePlanPreview, rows || []);
+  const enhancedRuntimePlan = descriptivePreparation.runtimePlan;
+  const universalSafeSqlPreview = descriptivePreparation.sqlPreview;
   const safeSqlPreview: SafeSqlPreview = isUniversalDescriptiveAction
     ? universalSafeSqlPreview
     : canonicalHandoff?.queryPlanning.state === 'planned'
@@ -426,6 +433,31 @@ export const Investigation: React.FC = () => {
       governed: true,
       evidenceScope: singleSourceBAOverview?.isRepresentativeSample ? 'governed_primary_with_representative_ba_sample' : 'full_source',
       generatedAt: new Date().toISOString(),
+      deepBA: baDecisionBrief ? {
+        executiveSummary: baDecisionBrief.executiveSummary,
+        dataTrustScore: baDecisionBrief.dataTrustScore,
+        decisionReadinessScore: baDecisionBrief.decisionReadinessScore,
+        insights: baDecisionBrief.insights.map(insight => ({
+          id: insight.id,
+          title: insight.title,
+          statement: insight.statement,
+          severity: insight.severity,
+          confidence: insight.confidence,
+          evidence: insight.evidence,
+        })),
+        decisionSuggestions: baDecisionBrief.decisionSuggestions,
+        caveats: baDecisionBrief.caveats,
+        recommendedCharts: baDecisionBrief.recommendedCharts,
+      } : null,
+      perspectiveBA: singleSourceBAOverview ? {
+        analysisLabel: singleSourceBAOverview.analysisLabel,
+        sourceRowCount: singleSourceBAOverview.sourceRowCount,
+        isRepresentativeSample: singleSourceBAOverview.isRepresentativeSample,
+        trendChange: singleSourceBAOverview.trendChange,
+        findings: singleSourceBAOverview.findings,
+        recommendedActions: singleSourceBAOverview.recommendedActions,
+        limitations: singleSourceBAOverview.limitations,
+      } : null,
     });
 
     if (governedResultTotal !== null) {
@@ -497,37 +529,14 @@ export const Investigation: React.FC = () => {
     setDrillError(null);
     try {
       if (isUniversalDescriptiveAction) {
-        let result = await executeBackendPreview({
-          runtimePlan: enhancedRuntimePlan,
-          safeSqlPreview: universalSafeSqlPreview,
+        let result = await executeGovernedDescriptiveAnalysis({
+          preparation: descriptivePreparation,
           rows: rows || [],
           runtimeDatasetSource,
-          rowScope,
+          sourceBoundary: currentCanonicalArtifact?.sourceBoundary,
+          artifactIdentity: currentCanonicalArtifact?.identity,
           signal: run.signal,
         });
-        if (!executionRuns.current.isCurrent(run)) return;
-
-        const isInfrastructureFailure = result.status === 'failed' && (
-          result.errorMessage?.includes('NETWORK_UNAVAILABLE')
-          || result.errorMessage?.includes('LOCAL_EXECUTOR_UNAVAILABLE')
-          || result.errorMessage?.includes('DUCKDB_BOOTSTRAP_ERROR')
-          || result.errorMessage?.includes('DUCKDB_WORKER_ERROR')
-          || result.errorMessage?.includes('DUCKDB_MEMORY_ERROR')
-        );
-        const isMissingSourceWarning = result.status === 'blocked' && result.blockedReasons.some(reason =>
-          reason.includes('No active dataset source available') || reason.includes('Only CSV current source is supported')
-        );
-        const isSafeFallbackIntent = runtimeIntent.type === 'table_preview' || runtimeIntent.type === 'distribution';
-        if (isMissingSourceWarning || (isInfrastructureFailure && isSafeFallbackIntent)) {
-          result = await executeDuckDBPreviewSandbox({
-            runtimeIntent,
-            runtimePlan: enhancedRuntimePlan,
-            rows: rows || [],
-            safeSqlPreview: universalSafeSqlPreview,
-            signal: run.signal,
-          });
-          result.source = 'js_sandbox_fallback';
-        }
         if (!executionRuns.current.isCurrent(run)) return;
 
         const validation = validatePreviewAgainstIntent(runtimeIntent, result);
@@ -745,11 +754,13 @@ export const Investigation: React.FC = () => {
     <div className="flex h-full min-h-0 flex-col overflow-y-auto bg-[#fbfbfa]">
       <header className="sticky top-0 z-10 flex items-center gap-4 border-b border-black/10 bg-[#fbfbfa]/95 px-5 py-3 backdrop-blur">
         <button
+          data-testid="investigation-back-to-perspectives"
           onClick={() => { void returnToCurrentDataset(); }}
-          className="rounded-lg p-1.5 text-black/45 transition-colors hover:bg-black/[0.04] hover:text-[#202123]"
-          title={t('Back to Home', 'Quay lại')}
+          className="inline-flex items-center gap-2 rounded-lg border border-black/10 bg-white px-3 py-2 text-xs font-semibold text-black/60 transition-colors hover:bg-black/[0.04] hover:text-[#202123]"
+          title={t('Back to perspectives', 'Quay lại chọn góc nhìn')}
         >
           <ArrowLeft className="w-5 h-5" />
+          <span>{t('Back to perspectives', 'Quay lại chọn góc nhìn')}</span>
         </button>
         <div className="flex-1">
           <h1 className="text-[15px] font-semibold leading-tight text-[#202123]">
