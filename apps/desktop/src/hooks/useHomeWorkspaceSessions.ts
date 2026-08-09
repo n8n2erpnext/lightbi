@@ -3,8 +3,9 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { classifyDatasetFamilies } from '../lib/batch-inspection';
 import { createBusinessFusionOverview } from '../lib/business-fusion-overview';
 import { createPreviewRows } from '../lib/data-intake-preview-rows';
-import { createFileSourceCandidate, type SourceCandidate, type SourceInspectionResult } from '../lib/source-preflight';
+import { createFileSourceCandidate, createSourceCandidate, type SourceCandidate, type SourceInspectionResult } from '../lib/source-preflight';
 import { inspectLocalFile } from '../lib/local-file-inspector';
+import { inspectOnlineSource } from '../lib/online-source-inspector';
 import { downloadProjectSourceFile } from '../lib/project-source-file-api';
 import { createWorkspaceUnderstandingState } from '../lib/workspace-understanding-state';
 import { deleteWorkspaceSession, loadWorkspaceSessions, saveWorkspaceSession, type SaveWorkspaceSessionRequest, type WorkspaceSessionRecord } from '../lib/workspace-session-api';
@@ -12,8 +13,11 @@ import { attachPersistedFile, createWorkspaceSessionSnapshot, persistedFilesFrom
 import { parseCanonicalUserOverlay } from '../lib/understanding-core/canonical-user-overlay';
 import type { MultiSourceDraftV1 } from '../components/analysis/CanonicalMultiSourceReview';
 import { createLocalCanonicalSourceBoundary } from '../lib/home-source-boundary';
+import { applyHomeOnlineSourceInspection } from './useHomeOnlineSourceIntake';
+import type { AdvancedWorkspaceSource } from '../stores/advanced-source-store';
 
 interface HomeWorkspaceSessionDependencies {
+  registerAdvancedSource: (source: AdvancedWorkspaceSource) => void;
   currentDataset: any;
   setCurrentDataset: (value: any) => void;
   setWorkspaceState: (value: any) => void;
@@ -134,6 +138,36 @@ export function useHomeWorkspaceSessions(deps: HomeWorkspaceSessionDependencies)
     if (!restoredDataset) {
       setSessionStatus('Saved session does not contain a dataset snapshot.');
       return;
+    }
+    const onlineUrl = restoredDataset.normalizedUrl
+      || restoredDataset.sourceFiles?.find((source: any) => typeof source?.url === 'string')?.url;
+    if (onlineUrl) {
+      setSessionStatus('Refreshing the saved online source...');
+      try {
+        const candidate = createSourceCandidate(onlineUrl);
+        if ('status' in candidate) throw new Error(('message' in candidate && candidate.message) || 'The saved online source URL is no longer valid.');
+        const inspection = await inspectOnlineSource(candidate);
+        if (inspection.status !== 'accessible') throw new Error(inspection.message || 'The saved online source is not accessible.');
+        const applied = await applyHomeOnlineSourceInspection(inspection, {
+          registerAdvancedSource: deps.registerAdvancedSource,
+          setCurrentDataset: value => deps.setCurrentDataset((current: any) => typeof value === 'function'
+            ? value(current)
+            : { ...value, restoredFromSessionId: session.id }),
+          setWorkspaceState: deps.setWorkspaceState,
+          setDecisionTrustReport: deps.setDecisionTrustReport,
+          resetAnalysis: () => {
+            deps.setPendingLocalBatch(null);
+            deps.setSelectedTopic(null);
+            deps.setResult(null);
+            deps.setPreviewActionId(null);
+          },
+        });
+        if (!applied) throw new Error('The saved online source could not be restored.');
+        setSessionStatus('Online source refreshed. The complete source is ready for analysis.');
+        return;
+      } catch (error) {
+        setSessionStatus(error instanceof Error ? error.message : 'Could not refresh the saved online source.');
+      }
     }
     const persistedFiles = persistedFilesFromSession(session);
     if (persistedFiles.length > 0) {

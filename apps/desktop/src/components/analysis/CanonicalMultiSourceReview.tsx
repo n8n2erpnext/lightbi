@@ -74,13 +74,6 @@ const workflowLabels = {
   multi_source_business_evidence: "Related business evidence",
   unresolved: "Sources need one clarification",
 } as const;
-const workflowLabelsVi: Record<keyof typeof workflowLabels, string> = {
-  order_to_cash_and_delivery: "Bán hàng → Kế toán → Giao hàng",
-  period_partition: "So sánh báo cáo giữa các kỳ",
-  multi_source_business_evidence: "Bằng chứng kinh doanh có liên quan",
-  unresolved: "Nguồn dữ liệu cần làm rõ một điểm",
-};
-
 export const CanonicalMultiSourceReview: React.FC<Props> = ({
   sources,
   drafts,
@@ -184,25 +177,24 @@ export const CanonicalMultiSourceReview: React.FC<Props> = ({
           <div className="max-w-3xl">
             <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-sky-300">
               <Sparkles className="h-4 w-4" />
-              {t('LightBI understood your data', 'LightBI đã hiểu dữ liệu của bạn')}
+              {t('LightBI understood your data')}
             </div>
             <h2 className="mt-3 text-[25px] font-semibold tracking-tight md:text-[30px]">
-              {language === "vi" ? workflowLabelsVi[collection.workflow] : workflowLabels[collection.workflow]}
+              {t(workflowLabels[collection.workflow])}
             </h2>
             <p className="mt-2 max-w-2xl text-[13px] leading-6 text-slate-300">
               {collection.sourceCount} sources contain {collection.roles.length || "unresolved"} business role{collection.roles.length === 1 ? "" : "s"}
               {collection.observedPeriods.length > 0 ? ` across ${collection.observedPeriods.length} reporting period${collection.observedPeriods.length === 1 ? "" : "s"}` : ""}.
               {t(
                 ' Choose what you want to understand; LightBI will prepare the sources, metrics and charts.',
-                ' Chọn điều bạn muốn tìm hiểu; LightBI sẽ tự chuẩn bị nguồn, chỉ số và biểu đồ.',
               )}
             </p>
           </div>
           <div className="grid grid-cols-3 gap-2 lg:min-w-[390px]">
             {[
-              [t("Sources", "Nguồn"), collection.sourceCount.toLocaleString()],
-              [t("Rows", "Dòng"), collection.totalRows.toLocaleString()],
-              [t("Periods", "Kỳ"), collection.observedPeriods.length.toLocaleString()],
+              [t("Sources"), collection.sourceCount.toLocaleString()],
+              [t("Rows"), collection.totalRows.toLocaleString()],
+              [t("Periods"), collection.observedPeriods.length.toLocaleString()],
             ].map(([label, value]) => (
               <div key={label} className="rounded-2xl border border-white/10 bg-white/[0.06] px-4 py-3">
                 <div className="text-[10px] uppercase tracking-wide text-slate-400">{label}</div>
@@ -219,12 +211,11 @@ export const CanonicalMultiSourceReview: React.FC<Props> = ({
             <div className="max-w-3xl">
               <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-emerald-800">
                 <CheckCircle2 className="h-4 w-4" />
-                {t("Source ready for understanding", "Nguồn đã sẵn sàng để phân tích")}
+                {t("Source ready for understanding")}
               </div>
               <p className="mt-2 text-[13px] leading-6 text-slate-700">
                 {t(
                   "LightBI can analyze this source without making you choose a technical source role first. You can correct its interpretation later if needed.",
-                  "LightBI có thể phân tích nguồn này mà không bắt bạn chọn vai trò kỹ thuật trước. Bạn vẫn có thể sửa cách hiểu sau nếu cần.",
                 )}
               </p>
             </div>
@@ -235,7 +226,7 @@ export const CanonicalMultiSourceReview: React.FC<Props> = ({
               onClick={() => onUseSource(sources[0].key)}
               className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-emerald-700 px-6 py-3 text-[13px] font-semibold text-white shadow-lg shadow-emerald-700/15 transition hover:bg-emerald-800 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:shadow-none"
             >
-              {t("Analyze this source", "Phân tích nguồn này")}
+              {t("Analyze this source")}
               <ArrowRight className="h-4 w-4" />
             </button>
           </section>
@@ -262,7 +253,6 @@ export const CanonicalMultiSourceReview: React.FC<Props> = ({
           onSelect={(id) => setSelectedPerspectiveId(id as CanonicalBusinessPerspectiveCandidateV1["perspectiveId"])}
           description={t(
             'Pick the business view that matches your job. LightBI handles source selection and analysis automatically.',
-            'Chọn góc nhìn phù hợp với vai trò của bạn. LightBI tự chọn nguồn và thực hiện phân tích.',
           )}
         />
 
@@ -270,21 +260,21 @@ export const CanonicalMultiSourceReview: React.FC<Props> = ({
           <section className="rounded-2xl border border-blue-200 bg-gradient-to-br from-blue-50 to-white p-5 md:p-6">
             <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
               <div className="max-w-3xl">
-                <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-blue-700">{t('Your analysis', 'Phân tích của bạn')}</div>
+                <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-blue-700">{t('Your analysis')}</div>
                 <h3 className="mt-2 text-[20px] font-semibold text-slate-950">{selectedPerspectiveDisplay?.label ?? selectedPerspective.label}</h3>
                 <p className="mt-1 text-[13px] leading-6 text-slate-600">{selectedPerspectiveDisplay?.question ?? selectedPerspective.purpose}</p>
 
                 {collection.observedPeriods.length > 1 && (
                   <div className="mt-5 flex flex-wrap items-end gap-3">
                     <label className="text-[11px] font-semibold text-slate-600">
-                      {t('Compare', 'So sánh')}
+                      {t('Compare')}
                       <select value={baselinePeriod} onChange={(event) => setBaselinePeriod(event.target.value)} className="mt-1.5 block min-w-36 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-[12px] text-slate-900">
                         {collection.observedPeriods.map((period) => <option key={period} value={period}>{period}</option>)}
                       </select>
                     </label>
-                    <span className="pb-3 text-[12px] font-medium text-slate-400">{t('with', 'với')}</span>
+                    <span className="pb-3 text-[12px] font-medium text-slate-400">{t('with')}</span>
                     <label className="text-[11px] font-semibold text-slate-600">
-                      {t('Period', 'Kỳ')}
+                      {t('Period')}
                       <select value={comparisonPeriod} onChange={(event) => setComparisonPeriod(event.target.value)} className="mt-1.5 block min-w-36 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-[12px] text-slate-900">
                         {collection.observedPeriods.map((period) => <option key={period} value={period}>{period}</option>)}
                       </select>
@@ -295,8 +285,8 @@ export const CanonicalMultiSourceReview: React.FC<Props> = ({
                 {needsCurrency && (
                   <label className="mt-5 block max-w-sm text-[11px] font-semibold text-slate-600">
                     {currencyConflict
-                      ? t('The source currency conflicts with Settings. Which currency should govern this analysis?', 'Tiền tệ trong nguồn mâu thuẫn với Cài đặt. Phân tích này phải dùng đơn vị nào?')
-                      : t('What currency are the amounts in?', 'Các giá trị tiền đang dùng đơn vị nào?')}
+                      ? t('The source currency conflicts with Settings. Which currency should govern this analysis?')
+                      : t('What currency are the amounts in?')}
                     <div className="mt-1.5 flex items-center rounded-xl border border-slate-200 bg-white px-3">
                       <input
                         value={currency}
@@ -310,7 +300,6 @@ export const CanonicalMultiSourceReview: React.FC<Props> = ({
                     <span className="mt-1.5 block font-normal leading-5 text-slate-500">
                       {t(
                         'LightBI asks only because no reporting currency is configured or the source evidence conflicts.',
-                        'LightBI chỉ hỏi vì chưa có tiền tệ mặc định hoặc bằng chứng trong nguồn đang mâu thuẫn.',
                       )}
                     </span>
                   </label>
@@ -319,8 +308,8 @@ export const CanonicalMultiSourceReview: React.FC<Props> = ({
                   <p className="mt-4 inline-flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-[11px] font-medium text-emerald-800">
                     <CheckCircle2 className="h-3.5 w-3.5" />
                     {observedCurrencies.length === 1
-                      ? t(`Currency ${resolvedCurrency} confirmed by source evidence.`, `Tiền tệ ${resolvedCurrency} được xác nhận từ dữ liệu nguồn.`)
-                      : t(`Using ${resolvedCurrency} from Settings.`, `Đang dùng ${resolvedCurrency} từ Cài đặt.`)}
+                      ? t(`Currency ${resolvedCurrency} confirmed by source evidence.`)
+                      : t(`Using ${resolvedCurrency} from Settings.`)}
                   </p>
                 )}
 
@@ -329,7 +318,6 @@ export const CanonicalMultiSourceReview: React.FC<Props> = ({
                     <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                     {t(
                       'LightBI can start safely, but may ask one clarification before making a decision-level conclusion.',
-                      'LightBI có thể bắt đầu an toàn, nhưng có thể hỏi thêm một điều trước khi đưa ra kết luận phục vụ quyết định.',
                     )}
                   </p>
                 )}
@@ -352,8 +340,8 @@ export const CanonicalMultiSourceReview: React.FC<Props> = ({
               >
                 {building ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
                 {selectedPerspective.perspectiveId === "data_trust"
-                  ? t('Review data trust', 'Kiểm tra độ tin cậy')
-                  : t('Analyze this perspective', 'Phân tích góc nhìn này')}
+                  ? t('Review data trust')
+                  : t('Analyze this perspective')}
                 {!building && <ArrowRight className="h-4 w-4" />}
               </button>
             </div>
@@ -364,8 +352,8 @@ export const CanonicalMultiSourceReview: React.FC<Props> = ({
           <summary className="flex cursor-pointer list-none items-center gap-3 px-5 py-4">
             <Settings2 className="h-4 w-4 text-slate-500" />
             <div className="flex-1">
-              <p className="text-[12px] font-semibold text-slate-800">{t('Review technical evidence', 'Kiểm tra bằng chứng kỹ thuật')}</p>
-              <p className="mt-0.5 text-[11px] text-slate-500">{t('Optional. Use this only when LightBI asks for a clarification.', 'Không bắt buộc. Chỉ dùng khi LightBI cần bạn xác nhận thêm.')}</p>
+              <p className="text-[12px] font-semibold text-slate-800">{t('Review technical evidence')}</p>
+              <p className="mt-0.5 text-[11px] text-slate-500">{t('Optional. Use this only when LightBI asks for a clarification.')}</p>
             </div>
             <ChevronDown className="h-4 w-4 text-slate-400 transition group-open:rotate-180" />
           </summary>

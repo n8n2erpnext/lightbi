@@ -32,22 +32,22 @@ export const DataSources: React.FC = () => {
         <div>
           <h1 className="text-2xl font-semibold text-gray-800 flex items-center">
             <ServerCog className="w-6 h-6 mr-3 text-gray-400" />
-            {t('Advanced Management', 'Quản lý nâng cao')}
+            {t('Advanced Management')}
           </h1>
-          <p className="text-[13px] text-gray-500 mt-1">{t('Manage imported datasets, optional connectors, and system health.', 'Quản lý bộ dữ liệu đã nhập, kết nối tùy chọn và trạng thái hệ thống.')}</p>
+          <p className="text-[13px] text-gray-500 mt-1">{t('Manage imported datasets, optional connectors, and system health.')}</p>
           <div className="flex items-center mt-3 space-x-3 text-[11px] text-gray-500">
             <span className="px-2 py-1 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-100 font-medium">
-              {t('Local file analysis: Available offline', 'Phân tích file cục bộ: Dùng được khi ngoại tuyến')}
+              {t('Local file analysis: Available offline')}
             </span>
             <span className="flex items-center">
               <Activity className="w-3 h-3 mr-1" />
-              {t('Connector API', 'API kết nối')}: {apiHealth === 'checking' ? t('Checking...', 'Đang kiểm tra...') : apiHealth === 'online' ? <span className="text-emerald-500 font-medium">{t('Online', 'Trực tuyến')}</span> : <span className="text-amber-600 font-medium">{t('Offline', 'Ngoại tuyến')}</span>}
+              {t('Connector API')}: {apiHealth === 'checking' ? t('Checking...') : apiHealth === 'online' ? <span className="text-emerald-500 font-medium">{t('Online')}</span> : <span className="text-amber-600 font-medium">{t('Offline')}</span>}
             </span>
-            <span>{t('Target', 'Đích')}: {API_BASE_URL}</span>
+            <span>{t('Target')}: {API_BASE_URL}</span>
           </div>
           {apiHealth === 'offline' && (
             <p className="text-[12px] text-gray-500 mt-2 max-w-2xl">
-              {t('Backend is only needed for ERP/database/API connectors, persistence, shared jobs, or server-side execution. Uploaded local files continue to parse and preview in-browser.', 'Backend chỉ cần cho kết nối ERP/cơ sở dữ liệu/API, lưu trữ, tác vụ chia sẻ hoặc xử lý phía máy chủ. File cục bộ vẫn được đọc và xem trước ngay trong ứng dụng.')}
+              {t('Backend is only needed for ERP/database/API connectors, persistence, shared jobs, or server-side execution. Uploaded local files continue to parse and preview in-browser.')}
             </p>
           )}
         </div>
@@ -72,8 +72,8 @@ export const DataSources: React.FC = () => {
             <p className="text-sm text-gray-500 mt-1">{source.type}</p>
             
             <div className="mt-4 pt-4 border-t border-gray-100 flex justify-end space-x-2 text-sm">
-              <button disabled title={t('Source editing is not available in this Beta', 'Chỉnh sửa nguồn chưa khả dụng trong bản Beta')} className="cursor-not-allowed rounded px-3 py-1.5 text-gray-400">{t('Edit', 'Sửa')}</button>
-              <button disabled title={t('Source removal is not available in this Beta', 'Xóa nguồn chưa khả dụng trong bản Beta')} className="cursor-not-allowed rounded px-3 py-1.5 text-gray-400">{t('Remove', 'Xóa')}</button>
+              <button disabled title={t('Source editing is not available in this Beta')} className="cursor-not-allowed rounded px-3 py-1.5 text-gray-400">{t('Edit')}</button>
+              <button disabled title={t('Source removal is not available in this Beta')} className="cursor-not-allowed rounded px-3 py-1.5 text-gray-400">{t('Remove')}</button>
             </div>
           </div>
         ))}

@@ -22,14 +22,6 @@ const chartTemplates: ChartTemplate[] = [
   { id: 'detail-table', name: 'Evidence table', type: 'Table', intent: 'Keep raw rows near the visual decision', bestFor: 'Exceptions, missing fields, duplicated records, drilldown', icon: Table2 },
 ];
 
-const viTemplateText: Record<string, { name: string; intent: string; bestFor: string }> = {
-  trend: { name: 'Xu hướng theo thời gian', intent: 'Theo dõi biến động theo ngày hoặc thời gian', bestFor: 'Doanh thu, tồn kho, thời gian giao hàng, yêu cầu đang mở' },
-  'group-bar': { name: 'So sánh các nhóm', intent: 'Xếp hạng nhóm và phát hiện mức độ tập trung', bestFor: 'Khách hàng, tuyến, chi nhánh, người dùng, mã hàng' },
-  share: { name: 'Tỷ trọng trong tổng thể', intent: 'Hiểu mức đóng góp của từng phân khúc', bestFor: 'Cơ cấu trạng thái, kênh, phương thức thanh toán, nhóm sản phẩm' },
-  kpi: { name: 'Thẻ chỉ số KPI', intent: 'Trình bày rõ một chỉ số phục vụ quyết định', bestFor: 'Tổng giá trị, số quá hạn, tỷ lệ hoàn thành, biên lợi nhuận' },
-  'detail-table': { name: 'Bảng bằng chứng', intent: 'Đặt dữ liệu chi tiết cạnh kết quả trực quan', bestFor: 'Ngoại lệ, trường thiếu, bản ghi trùng, phân tích chi tiết' },
-};
-
 const chartTypeClass = (type: string) => {
   const normalized = type.toLowerCase();
   if (normalized.includes('line')) return 'bg-blue-50 text-blue-700 border-blue-200';
@@ -111,7 +103,7 @@ const MiniChartPreview: React.FC<{ type: ChartType; payload?: SavedChartPayload 
 };
 
 export const Charts: React.FC = () => {
-  const { t, language } = useUiLanguage();
+  const { t } = useUiLanguage();
   const chartsObj = useAppRuntime(s => s.charts);
   const datasetsObj = useAppRuntime(s => s.datasets);
   const dashboardsObj = useAppRuntime(s => s.dashboards);
@@ -134,23 +126,23 @@ export const Charts: React.FC = () => {
 
   const ensureDashboard = () => {
     if (selectedDashboard?.id) return selectedDashboard.id;
-    const id = createDashboard(t('Decision dashboard', 'Dashboard quyết định'));
+    const id = createDashboard(t('Decision dashboard'));
     setSelectedDashboardId(id);
     return id;
   };
 
   const handleCreateDashboard = () => {
-    const id = createDashboard(newDashboardName || t('Decision dashboard', 'Dashboard quyết định'));
+    const id = createDashboard(newDashboardName || t('Decision dashboard'));
     setSelectedDashboardId(id);
     setNewDashboardName('');
-    setNotice(t('Dashboard created.', 'Đã tạo dashboard.'));
+    setNotice(t('Dashboard created.'));
   };
 
   const handleAddChart = (chartId: string) => {
     const dashboardId = ensureDashboard();
     addChartToDashboard(dashboardId, chartId);
     setSelectedDashboardId(dashboardId);
-    setNotice(t('Chart added to dashboard.', 'Đã thêm biểu đồ vào dashboard.'));
+    setNotice(t('Chart added to dashboard.'));
   };
 
   const handleCreateFromTemplate = (template: ChartTemplate) => {
@@ -166,7 +158,7 @@ export const Charts: React.FC = () => {
       filters: {},
     });
     handleAddChart(chartId);
-    setNotice(t('Template saved as a chart card and added to dashboard.', 'Đã lưu mẫu thành thẻ biểu đồ và thêm vào dashboard.'));
+    setNotice(t('Template saved as a chart card and added to dashboard.'));
   };
 
   return (
@@ -174,29 +166,29 @@ export const Charts: React.FC = () => {
       <div className="mx-auto flex w-full max-w-[1320px] flex-col gap-5 px-5 py-8 md:px-8 lg:px-10">
         <header className="flex flex-col gap-4 border-b border-black/10 pb-5 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <div className="mb-2 flex items-center gap-2 text-[12px] font-medium text-black/45"><BarChart3 className="h-4 w-4" strokeWidth={1.7} /> {t('Chart Library', 'Thư viện biểu đồ')}</div>
-            <h1 className="text-[28px] font-semibold tracking-normal text-[#202123]">{t('Reusable charts for decision dashboards', 'Biểu đồ tái sử dụng cho dashboard quyết định')}</h1>
-            <p className="mt-2 max-w-2xl text-[14px] leading-6 text-black/50">{t('Save chart cards from Easy BA or Advanced results, then place them into dashboards that refresh when the dataset changes.', 'Lưu biểu đồ từ phân tích BA hoặc chế độ Nâng cao, sau đó đưa vào dashboard tự làm mới khi dữ liệu thay đổi.')}</p>
+            <div className="mb-2 flex items-center gap-2 text-[12px] font-medium text-black/45"><BarChart3 className="h-4 w-4" strokeWidth={1.7} /> {t('Chart Library')}</div>
+            <h1 className="text-[28px] font-semibold tracking-normal text-[#202123]">{t('Reusable charts for decision dashboards')}</h1>
+            <p className="mt-2 max-w-2xl text-[14px] leading-6 text-black/50">{t('Save chart cards from Easy BA or Advanced results, then place them into dashboards that refresh when the dataset changes.')}</p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Link to="/investigation" className="rounded-md border border-black/10 bg-white px-3 py-2 text-[13px] font-medium text-black/65 shadow-sm transition-colors hover:bg-black/[0.035]">{t('Create from BA brief', 'Tạo từ bản phân tích BA')}</Link>
-            <Link to={selectedDashboard ? `/dashboards/${selectedDashboard.id}` : '/dashboards'} className="inline-flex items-center gap-2 rounded-md bg-[#202123] px-3 py-2 text-[13px] font-medium text-white transition-colors hover:bg-black"><LayoutDashboard className="h-4 w-4" strokeWidth={1.7} /> {t('Open dashboard', 'Mở dashboard')}</Link>
+            <Link to="/investigation" className="rounded-md border border-black/10 bg-white px-3 py-2 text-[13px] font-medium text-black/65 shadow-sm transition-colors hover:bg-black/[0.035]">{t('Create from BA brief')}</Link>
+            <Link to={selectedDashboard ? `/dashboards/${selectedDashboard.id}` : '/dashboards'} className="inline-flex items-center gap-2 rounded-md bg-[#202123] px-3 py-2 text-[13px] font-medium text-white transition-colors hover:bg-black"><LayoutDashboard className="h-4 w-4" strokeWidth={1.7} /> {t('Open dashboard')}</Link>
           </div>
         </header>
 
         {notice && <div className="flex items-center gap-2 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-[12px] font-medium text-emerald-700"><CheckCircle2 className="h-4 w-4" /> {notice}</div>}
 
         <section className="grid grid-cols-1 gap-3 md:grid-cols-3">
-          <div className="rounded-lg border border-black/10 bg-white p-4 shadow-sm"><div className="text-[12px] font-medium text-black/45">{t('Saved charts', 'Biểu đồ đã lưu')}</div><div className="mt-2 text-2xl font-semibold">{charts.length}</div></div>
-          <div className="rounded-lg border border-black/10 bg-white p-4 shadow-sm"><div className="text-[12px] font-medium text-black/45">{t('Chart templates', 'Mẫu biểu đồ')}</div><div className="mt-2 text-2xl font-semibold">{chartTemplates.length}</div></div>
-          <div className="rounded-lg border border-black/10 bg-white p-4 shadow-sm"><div className="text-[12px] font-medium text-black/45">{t('Dashboard cards placed', 'Thẻ đã đưa vào dashboard')}</div><div className="mt-2 text-2xl font-semibold">{selectedDashboard?.widgets.length ?? 0}</div></div>
+          <div className="rounded-lg border border-black/10 bg-white p-4 shadow-sm"><div className="text-[12px] font-medium text-black/45">{t('Saved charts')}</div><div className="mt-2 text-2xl font-semibold">{charts.length}</div></div>
+          <div className="rounded-lg border border-black/10 bg-white p-4 shadow-sm"><div className="text-[12px] font-medium text-black/45">{t('Chart templates')}</div><div className="mt-2 text-2xl font-semibold">{chartTemplates.length}</div></div>
+          <div className="rounded-lg border border-black/10 bg-white p-4 shadow-sm"><div className="text-[12px] font-medium text-black/45">{t('Dashboard cards placed')}</div><div className="mt-2 text-2xl font-semibold">{selectedDashboard?.widgets.length ?? 0}</div></div>
         </section>
 
         <section className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_360px]">
           <div className="rounded-lg border border-black/10 bg-white shadow-sm">
             <div className="flex flex-col gap-3 border-b border-black/5 px-5 py-4 md:flex-row md:items-center md:justify-between">
-              <div><h2 className="text-[15px] font-semibold">{t('Saved chart cards', 'Thẻ biểu đồ đã lưu')}</h2><p className="mt-1 text-[13px] text-black/45">{t('Pick a chart card, then add it to the selected dashboard.', 'Chọn một thẻ biểu đồ rồi thêm vào dashboard mong muốn.')}</p></div>
-              <div className="relative w-full md:w-80"><Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-black/35" strokeWidth={1.7} /><input value={search} onChange={event => setSearch(event.target.value)} placeholder={t('Search saved charts', 'Tìm biểu đồ đã lưu')} className="h-9 w-full rounded-md border border-black/10 bg-white pl-9 pr-3 text-[13px] outline-none placeholder:text-black/30 focus:border-black/25" /></div>
+              <div><h2 className="text-[15px] font-semibold">{t('Saved chart cards')}</h2><p className="mt-1 text-[13px] text-black/45">{t('Pick a chart card, then add it to the selected dashboard.')}</p></div>
+              <div className="relative w-full md:w-80"><Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-black/35" strokeWidth={1.7} /><input value={search} onChange={event => setSearch(event.target.value)} placeholder={t('Search saved charts')} className="h-9 w-full rounded-md border border-black/10 bg-white pl-9 pr-3 text-[13px] outline-none placeholder:text-black/30 focus:border-black/25" /></div>
             </div>
             <div className="grid grid-cols-1 gap-3 p-5 lg:grid-cols-2">
               {filteredCharts.map(chart => {
@@ -207,40 +199,40 @@ export const Charts: React.FC = () => {
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
                         <div className="mb-2 flex flex-wrap items-center gap-2"><h3 className="truncate text-[15px] font-semibold">{chart.name}</h3><span className={`rounded border px-2 py-0.5 text-[11px] font-medium ${chartTypeClass(chart.type)}`}>{chart.type}</span></div>
-                        <p className="text-[13px] text-black/45">{t('Dataset', 'Bộ dữ liệu')}: {dataset?.name ?? chart.datasetId}</p>
+                        <p className="text-[13px] text-black/45">{t('Dataset')}: {dataset?.name ?? chart.datasetId}</p>
                       </div>
-                      <button disabled={alreadyPlaced} onClick={() => handleAddChart(chart.id)} className="rounded-md border border-black/10 bg-white px-2.5 py-1.5 text-[12px] font-medium text-black/65 shadow-sm transition-colors hover:bg-black/[0.035] disabled:text-emerald-700 disabled:opacity-80">{alreadyPlaced ? t('Added', 'Đã thêm') : t('Add', 'Thêm')}</button>
+                      <button disabled={alreadyPlaced} onClick={() => handleAddChart(chart.id)} className="rounded-md border border-black/10 bg-white px-2.5 py-1.5 text-[12px] font-medium text-black/65 shadow-sm transition-colors hover:bg-black/[0.035] disabled:text-emerald-700 disabled:opacity-80">{alreadyPlaced ? t('Added') : t('Add')}</button>
                     </div>
                     <div className="mt-4 h-32 rounded-md border border-dashed border-black/10 bg-white">
                       {getSavedChartPayload(chart)
                         ? <MiniChartPreview type={chart.type} payload={getSavedChartPayload(chart)} />
-                        : <div className="flex h-full items-center justify-center px-4 text-center text-[12px] text-black/35">{t('Needs data binding from a BA or Advanced result.', 'Cần liên kết dữ liệu từ kết quả BA hoặc chế độ Nâng cao.')}</div>}
+                        : <div className="flex h-full items-center justify-center px-4 text-center text-[12px] text-black/35">{t('Needs data binding from a BA or Advanced result.')}</div>}
                     </div>
                   </div>
                 );
               })}
-              {filteredCharts.length === 0 && <div className="col-span-full flex min-h-40 flex-col items-center justify-center rounded-lg border border-dashed border-black/10 bg-[#fbfbfa] p-6 text-center"><Sparkles className="mb-3 h-5 w-5 text-black/35" strokeWidth={1.7} /><h3 className="text-[14px] font-semibold">{t('No saved chart matched', 'Không có biểu đồ phù hợp')}</h3><p className="mt-1 max-w-sm text-[13px] text-black/45">{t('Create a chart from a template below or save one from an analysis result.', 'Tạo biểu đồ từ mẫu bên dưới hoặc lưu từ một kết quả phân tích.')}</p></div>}
+              {filteredCharts.length === 0 && <div className="col-span-full flex min-h-40 flex-col items-center justify-center rounded-lg border border-dashed border-black/10 bg-[#fbfbfa] p-6 text-center"><Sparkles className="mb-3 h-5 w-5 text-black/35" strokeWidth={1.7} /><h3 className="text-[14px] font-semibold">{t('No saved chart matched')}</h3><p className="mt-1 max-w-sm text-[13px] text-black/45">{t('Create a chart from a template below or save one from an analysis result.')}</p></div>}
             </div>
           </div>
 
           <aside className="rounded-lg border border-black/10 bg-white shadow-sm">
             <div className="border-b border-black/5 px-5 py-4">
-              <h2 className="text-[15px] font-semibold">{t('Dashboard target', 'Dashboard đích')}</h2>
-              <p className="mt-1 text-[13px] text-black/45">{t('Choose where chart cards will be placed.', 'Chọn dashboard sẽ nhận các thẻ biểu đồ.')}</p>
+              <h2 className="text-[15px] font-semibold">{t('Dashboard target')}</h2>
+              <p className="mt-1 text-[13px] text-black/45">{t('Choose where chart cards will be placed.')}</p>
             </div>
             <div className="space-y-3 p-5">
               <select value={selectedDashboard?.id ?? ''} onChange={event => setSelectedDashboardId(event.target.value)} className="h-9 w-full rounded-md border border-black/10 bg-white px-3 text-[13px] outline-none">
                 {dashboards.map(dashboard => <option key={dashboard.id} value={dashboard.id}>{dashboard.name}</option>)}
               </select>
               <div className="flex gap-2">
-                <input value={newDashboardName} onChange={event => setNewDashboardName(event.target.value)} placeholder={t('New dashboard name', 'Tên dashboard mới')} className="h-9 min-w-0 flex-1 rounded-md border border-black/10 px-3 text-[13px] outline-none" />
-                <button onClick={handleCreateDashboard} className="inline-flex h-9 items-center gap-1 rounded-md bg-gray-900 px-3 text-[12px] font-medium text-white"><Plus className="h-3.5 w-3.5" /> {t('New', 'Tạo')}</button>
+                <input value={newDashboardName} onChange={event => setNewDashboardName(event.target.value)} placeholder={t('New dashboard name')} className="h-9 min-w-0 flex-1 rounded-md border border-black/10 px-3 text-[13px] outline-none" />
+                <button onClick={handleCreateDashboard} className="inline-flex h-9 items-center gap-1 rounded-md bg-gray-900 px-3 text-[12px] font-medium text-white"><Plus className="h-3.5 w-3.5" /> {t('New')}</button>
               </div>
               <div className="rounded-md border border-black/10 bg-[#fbfbfa] p-3">
-                <div className="mb-3 flex items-center justify-between text-[12px]"><span className="font-semibold">{selectedDashboard?.name ?? t('No dashboard', 'Chưa có dashboard')}</span><span className="text-black/40">{selectedDashboardCharts.length} {t('charts', 'biểu đồ')}</span></div>
+                <div className="mb-3 flex items-center justify-between text-[12px]"><span className="font-semibold">{selectedDashboard?.name ?? t('No dashboard')}</span><span className="text-black/40">{selectedDashboardCharts.length} {t('charts')}</span></div>
                 <div className="grid grid-cols-2 gap-2">
                   {selectedDashboardCharts.map(chart => <div key={chart.id} className="rounded border border-black/10 bg-white p-2"><div className="truncate text-[11px] font-semibold">{chart.name}</div><div className={`mt-1 inline-flex rounded border px-1.5 py-0.5 text-[10px] ${chartTypeClass(chart.type)}`}>{chart.type}</div></div>)}
-                  {selectedDashboardCharts.length === 0 && <div className="col-span-2 rounded border border-dashed border-black/10 bg-white p-4 text-center text-[12px] text-black/40">{t('No chart cards placed yet.', 'Chưa có thẻ biểu đồ nào.')}</div>}
+                  {selectedDashboardCharts.length === 0 && <div className="col-span-2 rounded border border-dashed border-black/10 bg-white p-4 text-center text-[12px] text-black/40">{t('No chart cards placed yet.')}</div>}
                 </div>
               </div>
             </div>
@@ -249,7 +241,7 @@ export const Charts: React.FC = () => {
 
         <section className="rounded-lg border border-black/10 bg-white shadow-sm">
           <div className="grid gap-3 border-b border-black/5 px-5 py-4 md:grid-cols-[1fr_240px] md:items-end">
-            <div><h2 className="text-[15px] font-semibold">{t('Chart templates', 'Mẫu biểu đồ')}</h2><p className="mt-1 text-[13px] text-black/45">{t('Create a reusable chart card from a pattern, then tune it later with real dataset fields.', 'Tạo thẻ biểu đồ tái sử dụng từ một mẫu rồi tinh chỉnh bằng các trường dữ liệu thực tế.')}</p></div>
+            <div><h2 className="text-[15px] font-semibold">{t('Chart templates')}</h2><p className="mt-1 text-[13px] text-black/45">{t('Create a reusable chart card from a pattern, then tune it later with real dataset fields.')}</p></div>
             <select value={selectedDataset?.id ?? ''} onChange={event => setSelectedDatasetId(event.target.value)} className="h-9 rounded-md border border-black/10 bg-white px-3 text-[13px] outline-none">
               {datasets.map(dataset => <option key={dataset.id} value={dataset.id}>{dataset.name}</option>)}
             </select>
@@ -260,10 +252,10 @@ export const Charts: React.FC = () => {
               return (
                 <div key={template.id} className="rounded-lg border border-black/10 bg-[#fbfbfa] p-4">
                   <div className="mb-4 flex items-start justify-between gap-3"><div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white text-black/65 shadow-sm"><Icon className="h-5 w-5" strokeWidth={1.7} /></div><span className={`rounded border px-2 py-0.5 text-[11px] font-medium ${chartTypeClass(template.type)}`}>{template.type}</span></div>
-                  <h3 className="text-[15px] font-semibold">{language === 'vi' ? viTemplateText[template.id]?.name : template.name}</h3>
-                  <p className="mt-1 text-[13px] leading-5 text-black/50">{language === 'vi' ? viTemplateText[template.id]?.intent : template.intent}</p>
-                  <div className="mt-4 rounded-md border border-black/5 bg-white p-3 text-[12px] leading-5 text-black/45">{t('Best for', 'Phù hợp với')}: {language === 'vi' ? viTemplateText[template.id]?.bestFor : template.bestFor}</div>
-                  <button disabled={!selectedDataset} onClick={() => handleCreateFromTemplate(template)} className="mt-4 h-9 w-full rounded-md bg-gray-900 text-[12px] font-medium text-white hover:bg-black disabled:opacity-40">{t('Create chart card', 'Tạo thẻ biểu đồ')}</button>
+                      <h3 className="text-[15px] font-semibold">{t(template.name)}</h3>
+                      <p className="mt-1 text-[13px] leading-5 text-black/50">{t(template.intent)}</p>
+                      <div className="mt-4 rounded-md border border-black/5 bg-white p-3 text-[12px] leading-5 text-black/45">{t('Best for')}: {t(template.bestFor)}</div>
+                  <button disabled={!selectedDataset} onClick={() => handleCreateFromTemplate(template)} className="mt-4 h-9 w-full rounded-md bg-gray-900 text-[12px] font-medium text-white hover:bg-black disabled:opacity-40">{t('Create chart card')}</button>
                 </div>
               );
             })}

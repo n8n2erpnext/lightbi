@@ -96,7 +96,7 @@ export const Home: React.FC = () => {
     createWorkspaceSessionSaveRequest,
     saveCurrentWorkspaceSession, handleSaveWorkspaceSession, handleOpenWorkspaceSession, handleDeleteWorkspaceSession,
   } = useHomeWorkspaceSessions({
-    currentDataset, setCurrentDataset, setWorkspaceState, setDecisionTrustReport, setPendingLocalBatch,
+    currentDataset, registerAdvancedSource, setCurrentDataset, setWorkspaceState, setDecisionTrustReport, setPendingLocalBatch,
     setMultiSourceDrafts, setMultiSourceBuildResult, setSelectedTopic, setResult, setPreviewActionId,
   });
 

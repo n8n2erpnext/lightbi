@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 export interface DisplayPreferences {
-  language: 'en' | 'vi';
+  language: string;
   locale: string; // e.g., 'en-US', 'vi-VN', 'ar-SA'
   currencyCode: string; // ISO 4217 reporting currency selected by the user
   timezone: string; // e.g., 'auto', 'UTC', 'Asia/Ho_Chi_Minh'

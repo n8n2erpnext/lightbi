@@ -1,0 +1,11 @@
+{
+  "$schema": "../language.schema.json",
+  "meta": {
+    "code": "en",
+    "label": "English",
+    "nativeLabel": "English",
+    "locale": "en-US",
+    "direction": "ltr"
+  },
+  "messages": {}
+}

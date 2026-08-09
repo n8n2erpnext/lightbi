@@ -55,7 +55,7 @@ const reportPath = path.resolve('../../ui-audit/sample-beta-matrix.json');
 
 function writeReport(): void {
   fs.mkdirSync(path.dirname(reportPath), { recursive: true });
-  const temporaryPath = `${reportPath}.tmp`;
+  const temporaryPath = `${reportPath}.${process.pid}.tmp`;
   fs.writeFileSync(temporaryPath, JSON.stringify({
     generatedAt: new Date().toISOString(),
     total: fixtures.length,

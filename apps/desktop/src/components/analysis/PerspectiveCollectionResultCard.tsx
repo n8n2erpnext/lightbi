@@ -23,25 +23,10 @@ export const PerspectiveCollectionResultCard: React.FC<{
   const { t } = useUiLanguage();
   const displayMetricLabel = (metricId: string) => {
     const english = metricLabel(metricId);
-    const vietnamese: Record<string, string> = {
-      gross_profit: "Lợi nhuận gộp",
-      revenue: "Doanh thu",
-      quantity: "Sản lượng",
-      discount: "Chiết khấu",
-      profit: "Lợi nhuận",
-      delivery_count: "Số lượt giao hàng",
-    };
-    return t(english, vietnamese[metricId] ?? english);
+    return t(english);
   };
   const displayPerspectiveLabel = t(
     metricLabel(perspectiveId),
-    ({
-      profitability: "Lợi nhuận",
-      sales_performance: "Hiệu quả bán hàng",
-      fulfillment_operations: "Hoàn tất đơn hàng & logistics",
-      period_comparison: "So sánh kỳ",
-      executive_overview: "Tổng quan điều hành",
-    } as Record<string, string>)[perspectiveId] ?? metricLabel(perspectiveId),
   );
   const formatMetric = (metricId: string, value: number) => formatValue(
     value,
@@ -71,15 +56,12 @@ export const PerspectiveCollectionResultCard: React.FC<{
   const questions = largestMovement ? [
     t(
       `What drove the change in ${displayMetricLabel(largestMovement.metricId)} from ${firstPeriod} to ${lastPeriod}?`,
-      `Điều gì làm ${displayMetricLabel(largestMovement.metricId)} thay đổi từ ${firstPeriod} đến ${lastPeriod}?`,
     ),
     t(
       `Break down ${displayMetricLabel(largestMovement.metricId)} by the most useful business dimensions.`,
-      `Phân rã ${displayMetricLabel(largestMovement.metricId)} theo các chiều kinh doanh hữu ích nhất.`,
     ),
     t(
       `Which segments should I investigate first for ${displayMetricLabel(largestMovement.metricId)}?`,
-      `Nên kiểm tra phân khúc nào trước đối với ${displayMetricLabel(largestMovement.metricId)}?`,
     ),
   ] : [];
   const option = {
@@ -115,18 +97,17 @@ export const PerspectiveCollectionResultCard: React.FC<{
           <div>
             <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-sky-300">
               <CheckCircle2 className="h-4 w-4" />
-              {t('Analysis ready', 'Phân tích đã sẵn sàng')}
+              {t('Analysis ready')}
             </div>
             <h3 className="mt-2 text-[21px] font-semibold">{displayPerspectiveLabel}</h3>
             <p className="mt-1 text-[12px] text-slate-300">
               {t(
                 `LightBI analyzed ${sourceCount} complete source${sourceCount === 1 ? '' : 's'} across ${rows.length} reporting period${rows.length === 1 ? '' : 's'}.`,
-                `LightBI đã phân tích ${sourceCount} nguồn đầy đủ trong ${rows.length} kỳ báo cáo.`,
               )}
             </p>
           </div>
           <span className="rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1.5 text-[10px] font-semibold text-emerald-200">
-            {t('Full-file governed', 'Toàn bộ file · có quản trị')}
+            {t('Full-file governed')}
           </span>
         </div>
       </div>
@@ -147,7 +128,7 @@ export const PerspectiveCollectionResultCard: React.FC<{
                 <p className="mt-2 text-[22px] font-semibold text-slate-950">{formatMetric(movement.metricId, movement.last)}</p>
                 <p className={`mt-1 text-[11px] ${movement.delta >= 0 ? "text-emerald-700" : "text-red-700"}`}>
                   {movement.delta >= 0 ? "+" : "−"}{formatMetric(movement.metricId, Math.abs(movement.delta))}
-                  {movement.percent === null ? "" : ` (${Math.abs(movement.percent * 100).toFixed(1)}%)`} {t('vs first period', 'so với kỳ đầu')}
+                  {movement.percent === null ? "" : ` (${Math.abs(movement.percent * 100).toFixed(1)}%)`} {t('vs first period')}
                 </p>
               </article>
             );
@@ -155,17 +136,15 @@ export const PerspectiveCollectionResultCard: React.FC<{
           <div className="rounded-xl border border-amber-100 bg-amber-50 p-4">
             <div className="flex items-center gap-2 text-amber-800">
               <Lightbulb className="h-4 w-4" />
-              <p className="text-[11px] font-semibold uppercase tracking-wide">{t('BA focus', 'Trọng tâm BA')}</p>
+              <p className="text-[11px] font-semibold uppercase tracking-wide">{t('BA focus')}</p>
             </div>
             <p className="mt-2 text-[12px] leading-5 text-amber-900/80">
               {largestMovement
                 ? t(
                   `${displayMetricLabel(largestMovement.metricId)} has the largest relative movement (${Math.abs((largestMovement.percent ?? 0) * 100).toFixed(1)}%). This is the strongest place to begin; it is an observation, not yet a cause.`,
-                  `${displayMetricLabel(largestMovement.metricId)} có mức biến động tương đối lớn nhất (${Math.abs((largestMovement.percent ?? 0) * 100).toFixed(1)}%). Đây là điểm nên bắt đầu tìm hiểu; hiện mới là quan sát, chưa phải kết luận nguyên nhân.`,
                 )
                 : t(
                   "No measurable period movement was found. Review mix, segments, and data coverage before drawing a conclusion.",
-                  "Chưa tìm thấy biến động theo kỳ có thể đo lường. Hãy xem lại cơ cấu, phân khúc và độ bao phủ dữ liệu trước khi kết luận.",
                 )}
             </p>
             {questions.length > 0 && (
@@ -189,7 +168,6 @@ export const PerspectiveCollectionResultCard: React.FC<{
             <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0" />
               {t(
                 'Results were computed per governed source relationship and period. LightBI combined metrics, not unrelated raw rows.',
-                'Kết quả được tính theo quan hệ nguồn và từng kỳ đã quản trị. LightBI kết hợp chỉ số, không ghép các dòng raw data không liên quan.',
               )}
           </div>
         </div>
@@ -197,11 +175,10 @@ export const PerspectiveCollectionResultCard: React.FC<{
       {showDeepDive && deepDiveBrief && (
         <div data-testid="governed-ba-deep-dive" className="border-t border-slate-100 bg-slate-50/60 p-5 md:p-6">
           <div className="mb-3">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-blue-700">{t('Deep analysis', 'Phân tích sâu')}</p>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-blue-700">{t('Deep analysis')}</p>
             <p className="mt-1 text-[12px] leading-5 text-slate-600">
               {t(
                 'Driver rankings use the complete period sources behind this governed result. They are separated from observations that do not yet have causal evidence.',
-                'Xếp hạng yếu tố tác động dùng toàn bộ nguồn dữ liệu của từng kỳ đứng sau kết quả đã quản trị. LightBI tách riêng các quan sát chưa có bằng chứng nhân quả.',
               )}
             </p>
           </div>

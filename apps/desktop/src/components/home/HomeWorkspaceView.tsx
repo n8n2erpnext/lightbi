@@ -19,19 +19,6 @@ import { HomePlanningDialogs } from './HomePlanningDialogs';
 import { useUiLanguage } from '../../lib/ui-language';
 import { getCanonicalPerspectiveDisplay } from '../analysis/CanonicalPerspectiveSelector';
 
-const VI_HERO_SUGGESTIONS: Record<string, string> = {
-  'Analyze sales performance': 'Phân tích hiệu quả bán hàng',
-  'Review sales performance': 'Xem hiệu quả bán hàng',
-  'Compare branch revenue': 'So sánh doanh thu chi nhánh',
-  'Combine Excel reports': 'Kết hợp các báo cáo Excel',
-  'Build executive summary': 'Tạo tổng quan điều hành',
-  'Review receivables aging': 'Xem tuổi nợ phải thu',
-  'Analyze student performance': 'Phân tích kết quả học tập',
-  'Review student performance': 'Xem kết quả học tập',
-  'Summarize support tickets': 'Tổng hợp yêu cầu hỗ trợ',
-  'Review employee attendance': 'Xem tình hình chấm công',
-};
-
 export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
   const { language, t } = useUiLanguage();
   const { activeConnection, setActiveConnection, handleOnlineSourceInspected, result, isAsking, selectedTopic, currentDataset, pendingLocalBatch, setPendingLocalBatch, isPlusMenuOpen, setIsPlusMenuOpen, isReplaceMenuOpen, setIsReplaceMenuOpen, greeting, navigate, questionInputRef, inputValue, setInputValue, setIsInputFocused, askQuestion, activeAnalysisIntent, questionPlaceholder, renderSourcePickerMenu, activeChips, setAnalysisIntent, openLocalFilePicker, openOnlineDataDrawer, openDatabaseDrawer, workspaceSessions, sessionStatus, refreshWorkspaceSessions, preferences, handleOpenWorkspaceSession, handleDeleteWorkspaceSession, fileInputRef, handleFileChange, uploadError, isUploading, workspaceState, isSavingSession, handleSaveWorkspaceSession, isDataPreviewOpen, setIsDataPreviewOpen, datasetUnderstandingNext, canonicalArtifact, canonicalPresentation, canonicalDomainPerspectives, canonicalMultiSourcePresentation, runtimeSourceContinuity, handleCanonicalOverlayChange, handleCanonicalRemediation, canonicalOverlayRebuildState, canonicalReviewTarget, multiSourceBuildResult, multiSourceReviewSources, multiSourceBundles, multiSourceDrafts, setMultiSourceDrafts, multiSourceBuilding, handleReviewMultiSourceBundle, handleUseMultiSourceReviewSource, handleBuildCanonicalMultiSource, handleAnalyzeMultiSourcePerspective, handleBackToImportedPerspectives, handleCancelInspection, handleUseLocalDataset, guidedInvestigationResult, datasetUnderstanding, activeBusinessViews, selectedPerspective, setSelectedPerspective, analysisMode, setAnalysisMode, selectedBusinessView, setSelectedBusinessView, visibleQuestionSuggestions, selectedViewData, previewActionId, setPreviewActionId, handleSelectAnalysisAction, handleLegacyQuestionSuggestion, lastInspectedFamilies, getEChartsOption, planningWorkflow, canonicalRows } = model;
@@ -51,20 +38,20 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
     ).label
     : null;
   const canonicalDatasetState = isPerspectiveCollection
-    ? { label: t('Analysis ready', 'Sẵn sàng phân tích'), className: 'border-emerald-200 bg-emerald-50 text-emerald-700' }
+    ? { label: t('Analysis ready'), className: 'border-emerald-200 bg-emerald-50 text-emerald-700' }
     : canonicalOverlayRebuildState === 'pending'
-    ? { label: t('Rebuilding', 'Đang cập nhật'), className: 'border-blue-200 bg-blue-50 text-blue-700' }
+    ? { label: t('Rebuilding'), className: 'border-blue-200 bg-blue-50 text-blue-700' }
     : !canonicalArtifact || canonicalArtifact.status !== 'valid'
-      ? { label: canonicalArtifact ? t('Needs review', 'Cần xem lại') : t('Inspecting', 'Đang tìm hiểu'), className: 'border-amber-200 bg-amber-50 text-amber-800' }
+      ? { label: canonicalArtifact ? t('Needs review') : t('Inspecting'), className: 'border-amber-200 bg-amber-50 text-amber-800' }
       : (canonicalPresentation?.counts.ready ?? 0) > 0
-        ? { label: t('Ready', 'Sẵn sàng'), className: 'border-emerald-200 bg-emerald-50 text-emerald-700' }
+        ? { label: t('Ready'), className: 'border-emerald-200 bg-emerald-50 text-emerald-700' }
         : (canonicalPresentation?.counts.needs_mapping_review ?? 0) > 0 || (canonicalPresentation?.counts.needs_user_evidence ?? 0) > 0
-          ? { label: t('Needs review', 'Cần xem lại'), className: 'border-amber-200 bg-amber-50 text-amber-800' }
+          ? { label: t('Needs review'), className: 'border-amber-200 bg-amber-50 text-amber-800' }
           : (canonicalPresentation?.counts.blocked_safety ?? 0) > 0
-            ? { label: t('Safety blocked', 'Đã chặn để an toàn'), className: 'border-red-200 bg-red-50 text-red-700' }
+            ? { label: t('Safety blocked'), className: 'border-red-200 bg-red-50 text-red-700' }
             : (canonicalPresentation?.counts.unsupported_mvp ?? 0) > 0
-              ? { label: t('Not supported yet', 'Chưa được hỗ trợ'), className: 'border-gray-200 bg-gray-50 text-gray-700' }
-              : { label: t('Inspected', 'Đã tìm hiểu'), className: 'border-gray-200 bg-gray-50 text-gray-700' };
+              ? { label: t('Not supported yet'), className: 'border-gray-200 bg-gray-50 text-gray-700' }
+              : { label: t('Inspected'), className: 'border-gray-200 bg-gray-50 text-gray-700' };
   return (
     <div className="flex-1 overflow-y-auto bg-[#fbfbfa] text-[#202123] font-sans" onClick={() => isPlusMenuOpen && setIsPlusMenuOpen(false)}>
 
@@ -83,38 +70,38 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
               <div className="max-w-3xl">
                 <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-blue-700">
                   <Sparkles className="h-4 w-4" />
-                  {t('Source understanding workspace', 'Không gian hiểu dữ liệu')}
+                  {t('Source understanding workspace')}
                 </div>
                 <h1 className="mt-2 text-[26px] font-semibold tracking-tight text-slate-950 md:text-[30px]">
-                  {pendingLocalBatch.status === 'reading' ? t('Understanding your sources', 'Đang tìm hiểu các nguồn dữ liệu') : t('Review what LightBI found', 'Xem điều LightBI đã nhận diện')}
+                  {pendingLocalBatch.status === 'reading' ? t('Understanding your sources') : t('Review what LightBI found')}
                 </h1>
                 <p className="mt-2 max-w-2xl text-[13px] leading-5 text-slate-600">
                   {pendingLocalBatch.status === 'reading'
-                    ? t('LightBI is inspecting each complete source, separating schemas and preserving source identity.', 'LightBI đang đọc toàn bộ từng nguồn, tách cấu trúc và giữ nguyên danh tính nguồn.')
-                    : t('Choose a supported analysis, confirm only the missing evidence, then build a governed dataset. No source is combined automatically.', 'Chọn phân tích phù hợp và chỉ xác nhận bằng chứng còn thiếu. LightBI không tự ý ghép nguồn.')}
+                    ? t('LightBI is inspecting each complete source, separating schemas and preserving source identity.')
+                    : t('Choose a supported analysis, confirm only the missing evidence, then build a governed dataset. No source is combined automatically.')}
                 </p>
               </div>
               <div className="grid grid-cols-3 gap-2 lg:min-w-[360px]">
                 <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-3">
-                  <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">{t('Sources', 'Nguồn')}</div>
+                  <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">{t('Sources')}</div>
                   <div className="mt-1 text-[20px] font-semibold text-slate-950">
                     {Math.max(pendingLocalBatch.files.length, multiSourceReviewSources.length)}
                   </div>
                 </div>
                 <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-3">
-                  <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">{t('Groups', 'Nhóm')}</div>
+                  <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">{t('Groups')}</div>
                   <div className="mt-1 text-[20px] font-semibold text-slate-950">{pendingLocalBatch.families.length}</div>
                 </div>
                 <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-3">
-                  <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">{t('Candidates', 'Đề xuất')}</div>
+                  <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">{t('Candidates')}</div>
                   <div className="mt-1 text-[20px] font-semibold text-slate-950">{multiSourceBundles.length}</div>
                 </div>
               </div>
             </div>
             <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 bg-slate-50/70 px-5 py-3 md:px-6">
-              <p className="text-[11px] text-slate-500">{t('Suggestions are evidence candidates, never confirmed facts.', 'Các đề xuất dựa trên bằng chứng và chưa phải sự thật đã xác nhận.')}</p>
+              <p className="text-[11px] text-slate-500">{t('Suggestions are evidence candidates, never confirmed facts.')}</p>
               <button onClick={openLocalFilePicker} className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-[11px] font-semibold text-slate-700 shadow-sm hover:border-blue-300 hover:text-blue-800">
-                <Plus className="h-3.5 w-3.5" /> {t('Add or replace sources', 'Thêm hoặc thay nguồn')}
+                <Plus className="h-3.5 w-3.5" /> {t('Add or replace sources')}
               </button>
             </div>
           </section>
@@ -124,10 +111,10 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
           <>
             {currentDataset?.status !== 'ready' && !pendingLocalBatch && (
               <div className={`flex w-full flex-col items-center justify-center text-center ${pendingLocalBatch ? 'min-h-0 pb-8 pt-10' : 'min-h-[calc(100vh-130px)] pb-12'}`}>
-                <div className="mb-4 rounded-full border border-black/10 bg-white/70 px-3 py-1.5 text-[13px] text-black/45 shadow-sm">{language === 'vi' ? 'Xin chào 👋' : greeting}</div>
+          <div className="mb-4 rounded-full border border-black/10 bg-white/70 px-3 py-1.5 text-[13px] text-black/45 shadow-sm">{t(greeting)}</div>
                 <div className="relative mb-8 flex w-full max-w-4xl justify-center">
                   <h1 className="text-[34px] font-medium tracking-normal text-[#202123] md:text-[44px]">
-                    {t('What should LightBI understand?', 'Bạn muốn LightBI hiểu điều gì?')}
+                    {t('What should LightBI understand?')}
                   </h1>
                 </div>
 
@@ -136,7 +123,7 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                     <button
                       onClick={() => setIsPlusMenuOpen(!isPlusMenuOpen)}
                       className="source-picker-toggle absolute left-4 z-10 flex h-10 w-10 items-center justify-center rounded-xl text-black/55 transition-colors hover:bg-black/[0.04] hover:text-[#202123]"
-                      title={t('Add data source', 'Thêm nguồn dữ liệu')}
+                      title={t('Add data source')}
                     >
                       <Plus className="h-5 w-5" />
                     </button>
@@ -156,7 +143,7 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                               setInputValue("");
                           }
                       }}
-                      placeholder={questionPlaceholder === "Ask a question about your data..." ? t("Paste a sheet link, import a file, or ask what to analyze", "Dán liên kết, nhập file hoặc hỏi điều bạn muốn phân tích") : questionPlaceholder}
+                      placeholder={questionPlaceholder === "Ask a question about your data..." ? t("Paste a sheet link, import a file, or ask what to analyze") : questionPlaceholder}
                       className="h-[78px] w-full rounded-[24px] border-0 bg-transparent pl-16 pr-6 text-[16px] text-[#202123] outline-none placeholder:text-black/30"
                     />
                   </div>
@@ -181,7 +168,7 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                               className={`group flex items-center gap-2 whitespace-nowrap rounded-full border border-black/10 bg-white px-4 py-2 text-[13px] text-black/55 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-black/15 hover:bg-black/[0.025] hover:text-[#202123] hover:shadow-md ${style.hover}`}
                             >
                               <span className={`h-2 w-2 rounded-full flex-shrink-0 ${style.dot}`} />
-                              <span>{language === 'vi' ? (VI_HERO_SUGGESTIONS[chip.text] ?? chip.text) : chip.text}</span>
+                    <span>{t(chip.text)}</span>
                             </motion.button>
                           </AnimatePresence>
                         </div>
@@ -195,24 +182,24 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                       className="group rounded-[16px] border border-black/10 bg-white p-5 text-left shadow-sm transition-all duration-200 hover:-translate-y-1 hover:bg-white hover:shadow-lg"
                     >
                       <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-[12px] bg-emerald-50 text-emerald-600 shadow-sm transition-transform duration-200 group-hover:scale-105"><FileSpreadsheet className="h-5 w-5" strokeWidth={1.7} /></div>
-                      <div className="text-[15px] font-medium text-[#202123]">{t('Import local files', 'Nhập file từ máy')}</div>
-                      <div className="mt-1 text-[13px] leading-5 text-black/45">{t('Excel, CSV, JSON, TSV with matrix sampling and quality score.', 'Excel, CSV, JSON, TSV với lấy mẫu đại diện và đánh giá chất lượng.')}</div>
+                      <div className="text-[15px] font-medium text-[#202123]">{t('Import local files')}</div>
+                      <div className="mt-1 text-[13px] leading-5 text-black/45">{t('Excel, CSV, JSON, TSV with matrix sampling and quality score.')}</div>
                     </button>
                     <button
                       onClick={openOnlineDataDrawer}
                       className="group rounded-[16px] border border-black/10 bg-white p-5 text-left shadow-sm transition-all duration-200 hover:-translate-y-1 hover:bg-white hover:shadow-lg"
                     >
                       <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-[12px] bg-blue-50 text-blue-600 shadow-sm transition-transform duration-200 group-hover:scale-105"><Link className="h-5 w-5" strokeWidth={1.7} /></div>
-                      <div className="text-[15px] font-medium text-[#202123]">{t('Connect online sheet', 'Kết nối bảng tính online')}</div>
-                      <div className="mt-1 text-[13px] leading-5 text-black/45">{t('Short or full links stay online-first, then LightBI builds a BA brief.', 'Giữ dữ liệu online và để LightBI tạo bản phân tích BA.')}</div>
+                      <div className="text-[15px] font-medium text-[#202123]">{t('Connect online sheet')}</div>
+                      <div className="mt-1 text-[13px] leading-5 text-black/45">{t('Short or full links stay online-first, then LightBI builds a BA brief.')}</div>
                     </button>
                     <button
                       onClick={openDatabaseDrawer}
                       className="group rounded-[16px] border border-black/10 bg-white p-5 text-left shadow-sm transition-all duration-200 hover:-translate-y-1 hover:bg-white hover:shadow-lg"
                     >
                       <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-[12px] bg-violet-50 text-violet-600 shadow-sm transition-transform duration-200 group-hover:scale-105"><Server className="h-5 w-5" strokeWidth={1.7} /></div>
-                      <div className="text-[15px] font-medium text-[#202123]">{t('Connect database system', 'Kết nối cơ sở dữ liệu')}</div>
-                      <div className="mt-1 text-[13px] leading-5 text-black/45">{t('Postgres, MySQL, MariaDB, MongoDB, SQLite, then LightBI builds a BA brief.', 'Postgres, MySQL, MariaDB, MongoDB, SQLite; sau đó LightBI tạo bản phân tích BA.')}</div>
+                      <div className="text-[15px] font-medium text-[#202123]">{t('Connect database system')}</div>
+                      <div className="mt-1 text-[13px] leading-5 text-black/45">{t('Postgres, MySQL, MariaDB, MongoDB, SQLite, then LightBI builds a BA brief.')}</div>
                     </button>
                   </div>
 
@@ -243,7 +230,7 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
         />
 
         {uploadError && <div className="mb-4 text-[13px] text-red-500 bg-red-50 px-3 py-1.5 rounded-md border border-red-100">{uploadError}</div>}
-        {isUploading && <div className="mb-4 flex items-center text-sm text-gray-500"><Loader2 className="w-4 h-4 mr-2 animate-spin" /> {t('Uploading and analyzing data...', 'Đang nhập và phân tích dữ liệu...')}</div>}
+        {isUploading && <div className="mb-4 flex items-center text-sm text-gray-500"><Loader2 className="w-4 h-4 mr-2 animate-spin" /> {t('Uploading and analyzing data...')}</div>}
 
         {!result && !isAsking && !selectedTopic && (
           <div className={`w-full grid grid-cols-1 lg:grid-cols-3 ${pendingLocalBatch && currentDataset?.status !== 'ready' ? 'gap-4' : 'gap-8'} items-start pb-12 animate-in fade-in slide-in-from-bottom-4 duration-500`}>
@@ -262,31 +249,30 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                         <div className="mb-1 flex flex-wrap items-center gap-2">
                           <p className="truncate text-[17px] font-semibold text-[#202123]">
                             {isPerspectiveCollection && activePerspectiveLabel
-                              ? t(`${activePerspectiveLabel} analysis`, `Phân tích ${activePerspectiveLabel}`)
+                              ? t(`${activePerspectiveLabel} analysis`)
                               : workspaceState ? getActiveAnalysisContextLabel(workspaceState, currentDataset.file_name) : currentDataset.file_name}
                           </p>
                           {(['virtual_business_view', 'business_fusion_view'].includes(currentDataset.sourceType) || workspaceState?.activeContext.type === "business_view") && (
-                            <span className="rounded border border-violet-200 bg-violet-50 px-2 py-0.5 text-[11px] font-medium text-violet-700">{t('Business View', 'Góc nhìn kinh doanh')}</span>
+                            <span className="rounded border border-violet-200 bg-violet-50 px-2 py-0.5 text-[11px] font-medium text-violet-700">{t('Business View')}</span>
                           )}
                           <span data-testid="canonical-dataset-state" className={`rounded border px-2 py-0.5 text-[11px] font-semibold ${canonicalDatasetState.className}`}>
                             {canonicalDatasetState.label}
                           </span>
                         </div>
                         {(['virtual_business_view', 'business_fusion_view'].includes(currentDataset.sourceType) || workspaceState?.activeContext.type === "business_view") ? (
-                          <p className="text-[13px] text-black/50">{t('Business view', 'Góc nhìn kinh doanh')} · {formatValue(currentDataset.businessFusionOverview?.sources?.length || currentDataset.selectedBusinessView?.datasets?.length || 0, 'number', preferences)} {t('datasets', 'bộ dữ liệu')} · {formatValue(Array.isArray(currentDataset.columns) ? currentDataset.columns.length : 0, 'number', preferences)} {t('columns', 'cột')}</p>
+                          <p className="text-[13px] text-black/50">{t('Business view')} · {formatValue(currentDataset.businessFusionOverview?.sources?.length || currentDataset.selectedBusinessView?.datasets?.length || 0, 'number', preferences)} {t('datasets')} · {formatValue(Array.isArray(currentDataset.columns) ? currentDataset.columns.length : 0, 'number', preferences)} {t('columns')}</p>
                         ) : (
                           <>
                             <p className="text-[13px] text-black/50">
                               {isPerspectiveCollection
                                 ? t(
                                   `${formatValue(currentDataset.sourceFiles?.length ?? 0, 'number', preferences)} source${(currentDataset.sourceFiles?.length ?? 0) === 1 ? '' : 's'} · ${formatValue(collectionRoleCount, 'number', preferences)} business role${collectionRoleCount === 1 ? '' : 's'} · ${formatValue(collectionPeriodCount, 'number', preferences)} period${collectionPeriodCount === 1 ? '' : 's'}`,
-                                  `${formatValue(currentDataset.sourceFiles?.length ?? 0, 'number', preferences)} nguồn · ${formatValue(collectionRoleCount, 'number', preferences)} vai trò kinh doanh · ${formatValue(collectionPeriodCount, 'number', preferences)} kỳ`,
                                 )
-                                : t(`${formatValue(currentDataset.rows_count, 'number', preferences)} rows · ${formatValue(Array.isArray(currentDataset.columns) ? currentDataset.columns.length : 0, 'number', preferences)} columns`, `${formatValue(currentDataset.rows_count, 'number', preferences)} dòng · ${formatValue(Array.isArray(currentDataset.columns) ? currentDataset.columns.length : 0, 'number', preferences)} cột`)}
+                                : t(`${formatValue(currentDataset.rows_count, 'number', preferences)} rows · ${formatValue(Array.isArray(currentDataset.columns) ? currentDataset.columns.length : 0, 'number', preferences)} columns`)}
                             </p>
                             {!isPerspectiveCollection && currentDataset.semanticSample?.strategy === 'matrix_sample' && (
                               <p className="mt-1 text-[12px] text-blue-700">
-                                {t(`Understanding: ${formatValue(currentDataset.semanticSample.sampleRowCount, 'number', preferences)} representative rows · Runtime: ${runtimeSourceContinuity?.available ? 'full source available' : 'source reselection required'}`, `Tầng hiểu: ${formatValue(currentDataset.semanticSample.sampleRowCount, 'number', preferences)} dòng đại diện · Phạm vi chạy: ${runtimeSourceContinuity?.available ? 'đã có toàn bộ nguồn' : 'cần chọn lại nguồn'}`)}
+                                {t(`Understanding: ${formatValue(currentDataset.semanticSample.sampleRowCount, 'number', preferences)} representative rows · Runtime: ${runtimeSourceContinuity?.available ? 'full source available' : 'source reselection required'}`)}
                               </p>
                             )}
                           </>
@@ -298,14 +284,14 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                       onClick={handleSaveWorkspaceSession}
                       disabled={isSavingSession}
                       className="flex items-center gap-1.5 rounded-[10px] border border-black/10 bg-white px-3 py-2 text-[12px] font-medium text-black/65 shadow-sm transition-colors hover:bg-black/[0.035] disabled:cursor-not-allowed disabled:opacity-60"
-                      title={t('Save current session', 'Lưu phiên hiện tại')}
+                      title={t('Save current session')}
                     >
                       {isSavingSession ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
-                      {t('Save session', 'Lưu phiên')}
+                      {t('Save session')}
                     </button>
-                    <button onClick={() => setIsDataPreviewOpen(true)} className="rounded-[10px] border border-black/10 bg-white px-3 py-2 text-[12px] font-medium text-black/65 shadow-sm transition-colors hover:bg-black/[0.035]">{t('View data', 'Xem dữ liệu')}</button>
+                    <button onClick={() => setIsDataPreviewOpen(true)} className="rounded-[10px] border border-black/10 bg-white px-3 py-2 text-[12px] font-medium text-black/65 shadow-sm transition-colors hover:bg-black/[0.035]">{t('View data')}</button>
                     {currentDataset.sourceType !== 'virtual_business_view' && currentDataset.file_reference && (
-                      <button onClick={() => navigate('/advanced')} className="flex items-center gap-1.5 rounded-[10px] bg-[#202123] px-3 py-2 text-[12px] font-medium text-white shadow-sm transition-colors hover:bg-black"><Code className="h-3.5 w-3.5" /> {t('Open Advanced', 'Mở chế độ nâng cao')}</button>
+                      <button onClick={() => navigate('/advanced')} className="flex items-center gap-1.5 rounded-[10px] bg-[#202123] px-3 py-2 text-[12px] font-medium text-white shadow-sm transition-colors hover:bg-black"><Code className="h-3.5 w-3.5" /> {t('Open Advanced')}</button>
                     )}
                     {lastInspectedFamilies && lastInspectedFamilies.length > 1 && (
                       <button
@@ -322,31 +308,31 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                         }}
                         className="rounded-[10px] border border-black/10 bg-white px-3 py-2 text-[12px] font-medium text-black/65 shadow-sm transition-colors hover:bg-black/[0.035]"
                       >
-                        {t('Change group', 'Đổi nhóm dữ liệu')}
+                        {t('Change group')}
                       </button>
                     )}
                     <div className="relative">
-                      <button onClick={() => setIsReplaceMenuOpen(!isReplaceMenuOpen)} className="source-picker-toggle rounded-[10px] border border-black/10 bg-white px-3 py-2 text-[12px] font-medium text-black/65 shadow-sm transition-colors hover:bg-black/[0.035]">{t('Replace data', 'Thay dữ liệu')}</button>
+                      <button onClick={() => setIsReplaceMenuOpen(!isReplaceMenuOpen)} className="source-picker-toggle rounded-[10px] border border-black/10 bg-white px-3 py-2 text-[12px] font-medium text-black/65 shadow-sm transition-colors hover:bg-black/[0.035]">{t('Replace data')}</button>
                       {renderSourcePickerMenu(isReplaceMenuOpen, "top-10 right-0")}
                     </div>
                     </div>
                   </div>
                   <div className="mt-5 grid grid-cols-2 gap-3 border-t border-black/5 pt-4 md:grid-cols-4">
                     <div className="rounded-[14px] bg-[#f7f7f6] px-4 py-3">
-                      <div className="text-[11px] font-medium uppercase tracking-wide text-black/40">{isPerspectiveCollection ? t('Sources', 'Nguồn') : t('Rows', 'Dòng')}</div>
+                      <div className="text-[11px] font-medium uppercase tracking-wide text-black/40">{isPerspectiveCollection ? t('Sources') : t('Rows')}</div>
                       <div className="mt-1 text-[20px] font-semibold text-[#202123]">{formatValue(isPerspectiveCollection ? currentDataset.sourceFiles?.length ?? 0 : currentDataset.rows_count, 'number', preferences)}</div>
                     </div>
                     <div className="rounded-[14px] bg-[#f7f7f6] px-4 py-3">
-                      <div className="text-[11px] font-medium uppercase tracking-wide text-black/40">{isPerspectiveCollection ? t('Business roles', 'Vai trò kinh doanh') : t('Columns', 'Cột')}</div>
+                      <div className="text-[11px] font-medium uppercase tracking-wide text-black/40">{isPerspectiveCollection ? t('Business roles') : t('Columns')}</div>
                       <div className="mt-1 text-[20px] font-semibold text-[#202123]">{formatValue(isPerspectiveCollection ? collectionRoleCount : Array.isArray(currentDataset.columns) ? currentDataset.columns.length : 0, 'number', preferences)}</div>
                     </div>
                     <div className="rounded-[14px] bg-[#f7f7f6] px-4 py-3">
-                      <div className="text-[11px] font-medium uppercase tracking-wide text-black/40">{isPerspectiveCollection ? t('Periods', 'Kỳ') : t('Canonical state', 'Trạng thái hiểu')}</div>
+                      <div className="text-[11px] font-medium uppercase tracking-wide text-black/40">{isPerspectiveCollection ? t('Periods') : t('Canonical state')}</div>
                       <div className="mt-1 text-[20px] font-semibold text-[#202123]">{isPerspectiveCollection ? collectionPeriodCount : canonicalDatasetState.label}</div>
                     </div>
                     <div className="rounded-[14px] bg-[#f7f7f6] px-4 py-3">
-                      <div className="text-[11px] font-medium uppercase tracking-wide text-black/40">{t('Runtime', 'Phạm vi chạy')}</div>
-                      <div className="mt-1 text-[20px] font-semibold text-[#202123]">{isPerspectiveCollection ? t('Governed', 'Đã quản trị') : runtimeSourceContinuity?.available ? t('Full source', 'Toàn bộ nguồn') : t('Reselect', 'Chọn lại')}</div>
+                      <div className="text-[11px] font-medium uppercase tracking-wide text-black/40">{t('Runtime')}</div>
+                      <div className="mt-1 text-[20px] font-semibold text-[#202123]">{isPerspectiveCollection ? t('Governed') : runtimeSourceContinuity?.available ? t('Full source') : t('Reselect')}</div>
                     </div>
                   </div>
                 </div>
@@ -355,7 +341,7 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
               {currentDataset?.status === 'ready' && canonicalArtifact && (
                 <div id="easy-mode-perspectives" className="w-full animate-in fade-in slide-in-from-bottom-4 duration-500 flex flex-col gap-4">
                   {selectedPerspective && <div className="flex items-center">
-                    <button data-testid="easy-mode-back-to-perspectives" onClick={() => { if (isPerspectiveCollection) handleBackToImportedPerspectives(); else setSelectedPerspective(null); requestAnimationFrame(() => document.getElementById('easy-mode-perspectives')?.scrollIntoView({ behavior: 'smooth', block: 'start' })); }} className="inline-flex items-center gap-2 rounded-lg border border-black/10 bg-white px-3 py-2 text-xs font-semibold text-black/60 shadow-sm hover:bg-black/[0.035] hover:text-black"><ArrowLeft className="h-4 w-4" />{t('Back to all perspectives', 'Quay lại tất cả góc nhìn')}</button>
+                    <button data-testid="easy-mode-back-to-perspectives" onClick={() => { if (isPerspectiveCollection) handleBackToImportedPerspectives(); else setSelectedPerspective(null); requestAnimationFrame(() => document.getElementById('easy-mode-perspectives')?.scrollIntoView({ behavior: 'smooth', block: 'start' })); }} className="inline-flex items-center gap-2 rounded-lg border border-black/10 bg-white px-3 py-2 text-xs font-semibold text-black/60 shadow-sm hover:bg-black/[0.035] hover:text-black"><ArrowLeft className="h-4 w-4" />{t('Back to all perspectives')}</button>
                   </div>}
                   {currentDataset.canonicalPerspectiveId && currentDataset.analysisRows?.length > 0 && (
                     <PerspectiveCollectionResultCard
@@ -400,14 +386,14 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                       {currentDataset?.canonicalMultiSourceDataset && (
                         <section data-testid="active-canonical-multisource" className="rounded-xl border border-black/10 bg-white p-4 shadow-sm">
                           <div className="flex flex-wrap items-center justify-between gap-2">
-                            <div><h3 className="text-[14px] font-semibold text-[#202123]">{t('Governed multi-source relationship', 'Liên kết đa nguồn có quản trị')}</h3><p className="mt-1 text-[12px] text-black/55">{t(`${currentDataset.canonicalMultiSourceDataset.orderedSourceMemberships.length} independently profiled sources participate.`, `${currentDataset.canonicalMultiSourceDataset.orderedSourceMemberships.length} nguồn đã được tìm hiểu độc lập cùng tham gia.`)}</p></div>
+                            <div><h3 className="text-[14px] font-semibold text-[#202123]">{t('Governed multi-source relationship')}</h3><p className="mt-1 text-[12px] text-black/55">{t(`${currentDataset.canonicalMultiSourceDataset.orderedSourceMemberships.length} independently profiled sources participate.`)}</p></div>
                             <span className="rounded-md border border-black/10 bg-gray-50 px-2 py-1 text-[11px] font-semibold">{canonicalMultiSourcePresentation?.state ?? 'relationship_ambiguous'}</span>
                           </div>
                           <div className="mt-3 grid gap-2 sm:grid-cols-2">
-                            {currentDataset.canonicalMultiSourceDataset.orderedSourceMemberships.map((member: any) => <div key={member.sourceId} className="rounded-lg border border-black/5 bg-[#fbfbfa] p-2"><p className="truncate text-[12px] font-semibold">{member.boundary.datasetId}</p><p className="mt-1 text-[11px] text-black/50">{member.sourceRole} · {member.boundary.sourceRowCount.toLocaleString()} {t('rows', 'dòng')}</p></div>)}
+                            {currentDataset.canonicalMultiSourceDataset.orderedSourceMemberships.map((member: any) => <div key={member.sourceId} className="rounded-lg border border-black/5 bg-[#fbfbfa] p-2"><p className="truncate text-[12px] font-semibold">{member.boundary.datasetId}</p><p className="mt-1 text-[11px] text-black/50">{member.sourceRole} · {member.boundary.sourceRowCount.toLocaleString()} {t('rows')}</p></div>)}
                           </div>
                           {(canonicalMultiSourcePresentation?.blockers.length ?? 0) > 0 && <p className="mt-3 break-words text-[12px] text-amber-700">{canonicalMultiSourcePresentation.blockers.join(', ')}</p>}
-                          {(canonicalMultiSourcePresentation?.restrictions.length ?? 0) > 0 && <p className="mt-2 break-words text-[12px] text-black/55">{t('Restrictions', 'Giới hạn')}: {canonicalMultiSourcePresentation.restrictions.join(', ')}</p>}
+                          {(canonicalMultiSourcePresentation?.restrictions.length ?? 0) > 0 && <p className="mt-2 break-words text-[12px] text-black/55">{t('Restrictions')}: {canonicalMultiSourcePresentation.restrictions.join(', ')}</p>}
                         </section>
                       )}
                     </>
@@ -524,50 +510,50 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                       </div>
                       <div className="min-w-0">
                         <h3 className="text-[13px] font-semibold text-[#202123]">
-                          {pendingLocalBatch.isRestored ? t('Choose dataset group', 'Chọn nhóm dữ liệu') :
-                           pendingLocalBatch.status === "reading" ? t(`Inspecting ${pendingLocalBatch.files.length} files...`, `Đang tìm hiểu ${pendingLocalBatch.files.length} file...`) :
-                           pendingLocalBatch.status === "error" ? t('Inspection failed', 'Không thể tìm hiểu dữ liệu') : t(`${pendingLocalBatch.results.filter((item: any) => item?.status === "accessible").length} file${pendingLocalBatch.results.filter((item: any) => item?.status === "accessible").length === 1 ? '' : 's'} ready`, `${pendingLocalBatch.results.filter((item: any) => item?.status === "accessible").length} file sẵn sàng`)}
+                          {pendingLocalBatch.isRestored ? t('Choose dataset group') :
+                           pendingLocalBatch.status === "reading" ? t(`Inspecting ${pendingLocalBatch.files.length} files...`) :
+                           pendingLocalBatch.status === "error" ? t('Inspection failed') : t(`${pendingLocalBatch.results.filter((item: any) => item?.status === "accessible").length} file${pendingLocalBatch.results.filter((item: any) => item?.status === "accessible").length === 1 ? '' : 's'} ready`)}
                         </h3>
                         {!pendingLocalBatch.isRestored && pendingLocalBatch.files.length > 0 && (
                           <p className="truncate text-[12px] text-black/45">
-                            {pendingLocalBatch.files.length === 1 ? pendingLocalBatch.files[0].name : t(`${pendingLocalBatch.files[0].name} and ${pendingLocalBatch.files.length - 1} more`, `${pendingLocalBatch.files[0].name} và ${pendingLocalBatch.files.length - 1} file khác`)}
+                            {pendingLocalBatch.files.length === 1 ? pendingLocalBatch.files[0].name : t(`${pendingLocalBatch.files[0].name} and ${pendingLocalBatch.files.length - 1} more`)}
                           </p>
                         )}
                       </div>
                     </div>
                     {pendingLocalBatch.status === "reading" && (
                       <button onClick={handleCancelInspection} className="text-[12px] text-gray-500 hover:text-gray-700 font-medium px-3 py-1.5 border border-gray-200 rounded-md transition-colors">
-                        {t('Cancel', 'Hủy')}
+                        {t('Cancel')}
                       </button>
                     )}
                   </div>}
 
                   {pendingLocalBatch.status === "reading" && (
                     <div className="text-[13px] text-gray-600 bg-gray-50 p-3 rounded-lg border border-gray-100">
-                      <p>{t('Large files may take a moment. You can cancel and keep your current dataset.', 'File lớn có thể cần thêm thời gian. Bạn có thể hủy và giữ nguyên bộ dữ liệu hiện tại.')}</p>
+                      <p>{t('Large files may take a moment. You can cancel and keep your current dataset.')}</p>
                     </div>
                   )}
 
                   {pendingLocalBatch.status === "error" && (
                     <div className="text-[13px] text-red-600 bg-red-50 p-3 rounded-lg border border-red-100 flex justify-between items-center gap-4">
                       <div>
-                        <p className="font-medium">{t('Failed to read the selected files.', 'Không thể đọc các file đã chọn.')}</p>
+                        <p className="font-medium">{t('Failed to read the selected files.')}</p>
                         {pendingLocalBatch.results.filter((item: any) => item && item.status !== "accessible").map((item: any, index: number) => (
                           <p key={`${item.label ?? "file"}-${index}`} className="mt-1 break-words">
                             {item.label ?? pendingLocalBatch.files[index]?.name ?? 'File'}: {item.message}
                           </p>
                         ))}
                       </div>
-                      <button onClick={handleCancelInspection} className="px-3 py-1.5 bg-white text-red-700 border border-red-200 rounded-md shadow-sm font-medium hover:bg-red-50 transition-colors">{t('Dismiss', 'Đóng')}</button>
+                      <button onClick={handleCancelInspection} className="px-3 py-1.5 bg-white text-red-700 border border-red-200 rounded-md shadow-sm font-medium hover:bg-red-50 transition-colors">{t('Dismiss')}</button>
                     </div>
                   )}
 
                   {pendingLocalBatch.status === "ready" && pendingLocalBatch.results.some((item: any) => item?.status !== "accessible") && (
                     <div className="text-[13px] text-amber-800 bg-amber-50 p-3 rounded-lg border border-amber-200">
-                      <p className="font-medium">{t('Some files were skipped; valid files remain available.', 'Một số file đã được bỏ qua; các file hợp lệ vẫn có thể sử dụng.')}</p>
+                      <p className="font-medium">{t('Some files were skipped; valid files remain available.')}</p>
                       {pendingLocalBatch.results.map((item: any, index: number) => item?.status === "accessible" ? null : (
                         <p key={`${item?.label ?? pendingLocalBatch.files[index]?.name ?? "file"}-${index}`} className="mt-1 break-words">
-                          {item?.label ?? pendingLocalBatch.files[index]?.name ?? 'File'}: {item?.message ?? t('Could not inspect this file.', 'Không thể tìm hiểu file này.')}
+                          {item?.label ?? pendingLocalBatch.files[index]?.name ?? 'File'}: {item?.message ?? t('Could not inspect this file.')}
                         </p>
                       ))}
                     </div>
@@ -598,17 +584,17 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
 
                       <div className="flex flex-col gap-2">
                         <label className="block text-[10px] font-semibold uppercase tracking-wide text-black/40">
-                          {t(`${pendingLocalBatch.families.length} dataset group${pendingLocalBatch.families.length === 1 ? '' : 's'} found`, `Đã tìm thấy ${pendingLocalBatch.families.length} nhóm dữ liệu`)}
+                          {t(`${pendingLocalBatch.families.length} dataset group${pendingLocalBatch.families.length === 1 ? '' : 's'} found`)}
                         </label>
 
                         {pendingLocalBatch.families.length > 1 && !pendingLocalBatch.isRestored && (
                           <div className="text-[13px] text-amber-700 bg-amber-50 p-3 rounded-lg border border-amber-200 mb-2">
-                            {t('Files use different schemas and will be analyzed separately. Please select a dataset group to use.', 'Các file có cấu trúc khác nhau và sẽ được phân tích riêng. Hãy chọn nhóm dữ liệu cần dùng.')}
+                            {t('Files use different schemas and will be analyzed separately. Please select a dataset group to use.')}
                           </div>
                         )}
                         {pendingLocalBatch.isRestored && (
                           <div className="text-[13px] text-blue-700 bg-blue-50 p-3 rounded-lg border border-blue-200 mb-2">
-                            {t('These groups come from your last inspected files. No files will be re-read.', 'Các nhóm này được khôi phục từ lần tìm hiểu trước. LightBI không đọc lại file.')}
+                            {t('These groups come from your last inspected files. No files will be re-read.')}
                           </div>
                         )}
 
@@ -629,9 +615,9 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                                     <span className="shrink-0 text-[11px] text-black/45">{fam.files.length} file</span>
                                   </div>
                                   <div className="flex flex-wrap gap-x-3 gap-y-1 text-[12px] text-black/50">
-                                    <span>{formatValue(fam.totalRows, 'number', preferences)} {t('rows', 'dòng')}</span>
-                                    <span>{formatValue(fam.columns.length, 'number', preferences)} {t('columns', 'cột')}</span>
-                                    {fam.files.length > 1 && <span className="text-emerald-600 flex items-center gap-1"><span className="text-emerald-500">✓</span> {t('Compatible for append', 'Có thể nối dữ liệu')}</span>}
+                                    <span>{formatValue(fam.totalRows, 'number', preferences)} {t('rows')}</span>
+                                    <span>{formatValue(fam.columns.length, 'number', preferences)} {t('columns')}</span>
+                                    {fam.files.length > 1 && <span className="text-emerald-600 flex items-center gap-1"><span className="text-emerald-500">✓</span> {t('Compatible for append')}</span>}
                                   </div>
                                   <div className="mt-1 truncate text-[11px] text-black/35">
                                     {fam.files.map((f: any) => f.file.name).join(', ')}
@@ -647,7 +633,7 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                                         }}
                                         className="rounded border border-blue-200 bg-white px-2 py-1 text-[11px] font-medium text-blue-700"
                                       >
-                                        {t('Use', 'Dùng')} {item.file.name}
+                                        {t('Use')} {item.file.name}
                                       </button>
                                     ))}
                                   </div>}
@@ -662,7 +648,7 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                         {(() => {
                           const selected = pendingLocalBatch.families.find((family: any) => family.id === (pendingLocalBatch.selectedFamilyId ?? (pendingLocalBatch.families.length === 1 ? pendingLocalBatch.families[0].id : null)));
                           return selected?.files.length > 1
-                            ? <p role="status" className="text-[12px] text-amber-700">{t('Automatic file append is not supported yet. Use one source above or build a governed multi-source dataset.', 'LightBI chưa tự động nối file. Hãy dùng một nguồn ở trên hoặc tạo bộ dữ liệu đa nguồn có quản trị.')}</p>
+                            ? <p role="status" className="text-[12px] text-amber-700">{t('Automatic file append is not supported yet. Use one source above or build a governed multi-source dataset.')}</p>
                             : null;
                         })()}
                         <button
@@ -673,7 +659,7 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                           })()}
                           className="flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 text-[13px] font-medium text-white shadow-sm transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
                         >
-                          {pendingLocalBatch.families.length === 1 ? t('Use this dataset', 'Dùng bộ dữ liệu này') : t('Use selected dataset', 'Dùng bộ dữ liệu đã chọn')} <ChevronRight className="w-4 h-4" />
+                          {pendingLocalBatch.families.length === 1 ? t('Use this dataset') : t('Use selected dataset')} <ChevronRight className="w-4 h-4" />
                         </button>
                       </div>
                     </div>

@@ -1,7 +1,8 @@
 export function physicalHeaderCell(value: unknown): string {
   if (value == null) return "";
-  const text = String(value).trim();
-  return text === '""' ? "" : text;
+  const text = String(value);
+  const normalized = text.trim();
+  return normalized === "" || normalized === '""' ? "" : text;
 }
 
 /**

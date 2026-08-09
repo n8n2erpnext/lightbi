@@ -2,7 +2,7 @@ import React from 'react';
 import { AlertTriangle, BarChart3, CheckCircle2, Lightbulb, TrendingDown, TrendingUp } from 'lucide-react';
 import type { SingleSourceBAOverview, SingleSourceKpi } from '../../lib/single-source-ba-overview';
 import type { DisplayPreferences } from '../../stores/display-preferences-store';
-import { useUiLanguage, type UiLanguage } from '../../lib/ui-language';
+import { pickUiText, useUiLanguage, type UiLanguage } from '../../lib/ui-language';
 
 const EN_SINGLE_SOURCE_TEXT: Record<string, string> = {
   'Phân tích hoạt động & hiệu suất': 'Activity & performance analysis',
@@ -90,9 +90,7 @@ const EN_SINGLE_SOURCE_TEXT: Record<string, string> = {
 };
 
 function overviewText(language: UiLanguage, value: string): string {
-  if (language === 'vi') return value;
-  if (EN_SINGLE_SOURCE_TEXT[value]) return EN_SINGLE_SOURCE_TEXT[value];
-  return value
+  const english = EN_SINGLE_SOURCE_TEXT[value] ?? value
     .replace(/^Bình quân (.+)$/i, 'Average $1')
     .replace(/^Thấp nhất (.+)$/i, 'Minimum $1')
     .replace(/^Cao nhất (.+)$/i, 'Maximum $1')
@@ -113,6 +111,7 @@ function overviewText(language: UiLanguage, value: string): string {
     .replace(/^(.+) có mức bình quân (.+) cao nhất trong chiều (.+) \((.+), n=(.+)\)\.$/i, '$1 has the highest average $2 in $3 ($4, n=$5).')
     .replace(/^(.+) là nhóm cần kiểm tra trước trong chiều (.+) \((.+), n=(.+)\)\.$/i, '$1 is the first group to review in $2 ($3, n=$4).')
     .replace(/^Theo (.+)$/i, 'By $1');
+  return pickUiText(language, english);
 }
 
 function formatKpi(kpi: SingleSourceKpi, preferences: DisplayPreferences): string {
@@ -141,19 +140,19 @@ export const SingleSourceBAOverviewCard: React.FC<{
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
           <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-emerald-700"><CheckCircle2 className="h-4 w-4" />{overviewText(language, overview.analysisLabel)}</div>
-          <h3 className="mt-2 text-xl font-semibold text-slate-950">{overview.isRepresentativeSample ? t(`Business analysis from a representative sample of ${overview.rowCount.toLocaleString(preferences.locale)} / ${overview.sourceRowCount.toLocaleString(preferences.locale)} rows`, `Bản phân tích nghiệp vụ từ mẫu đại diện ${overview.rowCount.toLocaleString(preferences.locale)} / ${overview.sourceRowCount.toLocaleString(preferences.locale)} dòng`) : t(`Business analysis from ${overview.rowCount.toLocaleString(preferences.locale)} data rows`, `Bản phân tích nghiệp vụ từ ${overview.rowCount.toLocaleString(preferences.locale)} dòng dữ liệu`)}</h3>
-          <p className="mt-1 max-w-3xl text-[13px] leading-5 text-slate-600">{overview.isRepresentativeSample ? t('The segments and exceptions below are inferred from a representative sample; chart metrics are still calculated by the governed engine over the full source.', 'Các phân khúc và bất thường dưới đây được suy ra từ mẫu đại diện; chỉ số trên biểu đồ vẫn được tính bằng bộ máy quản trị trên toàn bộ nguồn.') : t('LightBI summarized metrics, trends, contribution, and exceptions from the full file—not only the points visible in the chart.', 'LightBI đã tổng hợp chỉ số, xu hướng, mức đóng góp và bất thường từ toàn bộ file — không chỉ từ các điểm đang hiện trên biểu đồ.')}</p>
+          <h3 className="mt-2 text-xl font-semibold text-slate-950">{overview.isRepresentativeSample ? t(`Business analysis from a representative sample of ${overview.rowCount.toLocaleString(preferences.locale)} / ${overview.sourceRowCount.toLocaleString(preferences.locale)} rows`) : t(`Business analysis from ${overview.rowCount.toLocaleString(preferences.locale)} data rows`)}</h3>
+          <p className="mt-1 max-w-3xl text-[13px] leading-5 text-slate-600">{overview.isRepresentativeSample ? t('The segments and exceptions below are inferred from a representative sample; chart metrics are still calculated by the governed engine over the full source.') : t('LightBI summarized metrics, trends, contribution, and exceptions from the full file—not only the points visible in the chart.')}</p>
         </div>
         {overview.trendChange !== null && <div className={`flex min-w-[170px] items-center gap-3 rounded-xl border bg-white px-4 py-3 ${positiveTrend ? 'border-emerald-200' : 'border-red-200'}`}>
           {positiveTrend ? <TrendingUp className="h-5 w-5 text-emerald-600" /> : <TrendingDown className="h-5 w-5 text-red-600" />}
-          <div><div className="text-[10px] uppercase text-slate-400">{t('Final vs first period', 'Kỳ cuối so với kỳ đầu')}</div><div className={`text-lg font-bold ${positiveTrend ? 'text-emerald-700' : 'text-red-700'}`}>{positiveTrend ? '+' : ''}{(overview.trendChange * 100).toFixed(1)}%</div></div>
+          <div><div className="text-[10px] uppercase text-slate-400">{t('Final vs first period')}</div><div className={`text-lg font-bold ${positiveTrend ? 'text-emerald-700' : 'text-red-700'}`}>{positiveTrend ? '+' : ''}{(overview.trendChange * 100).toFixed(1)}%</div></div>
         </div>}
       </div>
     </header>
 
     <div className="space-y-5 p-5">
       <section>
-        <h4 className="mb-3 flex items-center gap-2 text-[12px] font-semibold uppercase tracking-wide text-slate-600"><BarChart3 className="h-4 w-4 text-blue-600" />{t('Key metrics', 'Các chỉ số chính')}</h4>
+        <h4 className="mb-3 flex items-center gap-2 text-[12px] font-semibold uppercase tracking-wide text-slate-600"><BarChart3 className="h-4 w-4 text-blue-600" />{t('Key metrics')}</h4>
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           {overview.kpis.map(kpi => <div key={kpi.id} className="rounded-xl border border-slate-200 bg-white p-4">
             <div className="text-[11px] font-semibold uppercase text-slate-400">{overviewText(language, kpi.label)}</div>
@@ -164,7 +163,7 @@ export const SingleSourceBAOverviewCard: React.FC<{
 
       {overview.findings.length > 0 && <section className="grid gap-3 lg:grid-cols-3">
         {overview.findings.map((finding, index) => <div key={finding} className="rounded-xl border border-amber-200 bg-amber-50 p-4">
-          <div className="flex items-center gap-2 text-[11px] font-semibold uppercase text-amber-700"><Lightbulb className="h-4 w-4" />{t('Finding', 'Phát hiện')} {index + 1}</div>
+          <div className="flex items-center gap-2 text-[11px] font-semibold uppercase text-amber-700"><Lightbulb className="h-4 w-4" />{t('Finding')} {index + 1}</div>
           <p className="mt-2 text-[13px] leading-5 text-amber-950">{overviewText(language, finding)}</p>
         </div>)}
       </section>}
@@ -173,7 +172,7 @@ export const SingleSourceBAOverviewCard: React.FC<{
         <h4 className="mb-3 text-[12px] font-semibold uppercase tracking-wide text-slate-600">{overviewText(language, overview.breakdownHeading)}</h4>
         <div className="grid gap-4 lg:grid-cols-2">
           {overview.breakdowns.map(breakdown => <article key={breakdown.id} className="rounded-xl border border-slate-200 bg-white p-4">
-            <div className="flex items-center justify-between gap-3"><h5 className="text-[14px] font-semibold text-slate-900">{t('By', 'Theo')} {overviewText(language, breakdown.label).toLocaleLowerCase(preferences.locale)}</h5><span className="text-[10px] text-slate-400">{breakdown.physicalColumn}</span></div>
+            <div className="flex items-center justify-between gap-3"><h5 className="text-[14px] font-semibold text-slate-900">{t('By')} {overviewText(language, breakdown.label).toLocaleLowerCase(preferences.locale)}</h5><span className="text-[10px] text-slate-400">{breakdown.physicalColumn}</span></div>
             <div className="mt-3 space-y-3">
               {breakdown.top.map((entry, index) => <div key={entry.label}>
                 <div className="mb-1 flex items-center justify-between gap-3 text-[12px]"><span className="min-w-0 truncate font-medium text-slate-700">{index + 1}. {entry.label}</span><span className="shrink-0 text-slate-500">{breakdown.valueKind === 'money' ? formatMoney(entry.value, preferences) : formatKpi({ id: '', label: '', value: entry.value, kind: breakdown.valueKind === 'percent' ? 'percent' : 'number' }, preferences)} · {breakdown.valueKind === 'percent' ? `n=${entry.rowCount.toLocaleString(preferences.locale)}` : `${(entry.share * 100).toFixed(1)}%`}</span></div>
@@ -186,13 +185,13 @@ export const SingleSourceBAOverviewCard: React.FC<{
 
       <section className="grid gap-4 lg:grid-cols-2">
         <div className="rounded-xl border border-emerald-200 bg-white p-4">
-          <h4 className="text-[12px] font-semibold uppercase tracking-wide text-emerald-700">{t('What should happen next?', 'Nên làm gì tiếp theo?')}</h4>
+          <h4 className="text-[12px] font-semibold uppercase tracking-wide text-emerald-700">{t('What should happen next?')}</h4>
           <ol className="mt-3 space-y-2 text-[13px] leading-5 text-slate-700">
             {overview.recommendedActions.map((item, index) => <li key={item}>{index + 1}. {overviewText(language, item)}</li>)}
           </ol>
         </div>
         <div className="rounded-xl border border-amber-200 bg-amber-50 p-4">
-          <h4 className="flex items-center gap-2 text-[12px] font-semibold uppercase tracking-wide text-amber-700"><AlertTriangle className="h-4 w-4" />{t('Evidence limitations', 'Giới hạn bằng chứng')}</h4>
+          <h4 className="flex items-center gap-2 text-[12px] font-semibold uppercase tracking-wide text-amber-700"><AlertTriangle className="h-4 w-4" />{t('Evidence limitations')}</h4>
           <ul className="mt-3 space-y-2 text-[12px] leading-5 text-amber-950">{overview.limitations.map(item => <li key={item}>• {overviewText(language, item)}</li>)}</ul>
         </div>
       </section>

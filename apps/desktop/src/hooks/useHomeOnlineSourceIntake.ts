@@ -7,7 +7,7 @@ import { createWorkspaceUnderstandingState } from '../lib/workspace-understandin
 import { advancedSourceId, type AdvancedWorkspaceSource } from '../stores/advanced-source-store';
 import { uploadProjectSourceFile } from '../lib/project-source-file-api';
 
-interface HomeOnlineSourceIntakeDependencies {
+export interface HomeOnlineSourceIntakeDependencies {
   registerAdvancedSource: (source: AdvancedWorkspaceSource) => void;
   setCurrentDataset: (value: any) => void;
   setWorkspaceState: (value: any) => void;
@@ -15,9 +15,11 @@ interface HomeOnlineSourceIntakeDependencies {
   resetAnalysis: () => void;
 }
 
-export function useHomeOnlineSourceIntake(deps: HomeOnlineSourceIntakeDependencies) {
-  return useCallback(async (inspectionResult: SourceInspectionResult) => {
-    if (inspectionResult.status !== 'accessible') return;
+export async function applyHomeOnlineSourceInspection(
+  inspectionResult: SourceInspectionResult,
+  deps: HomeOnlineSourceIntakeDependencies,
+) {
+    if (inspectionResult.status !== 'accessible') return false;
     const md = inspectionResult.metadata;
     let rows = md.rows_count || 0;
     let columns = md.columns || [];
@@ -71,5 +73,11 @@ export function useHomeOnlineSourceIntake(deps: HomeOnlineSourceIntakeDependenci
     const trustFamily = familyFromInspectionResult(inspectionResult, sourceLabel);
     deps.setDecisionTrustReport(trustFamily ? createDecisionTrustReport(trustFamily) : null);
     deps.resetAnalysis();
+    return true;
+}
+
+export function useHomeOnlineSourceIntake(deps: HomeOnlineSourceIntakeDependencies) {
+  return useCallback(async (inspectionResult: SourceInspectionResult) => {
+    await applyHomeOnlineSourceInspection(inspectionResult, deps);
   }, [deps]);
 }

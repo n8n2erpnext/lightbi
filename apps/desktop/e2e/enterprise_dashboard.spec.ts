@@ -35,6 +35,13 @@ test.describe('Perspective enterprise dashboard', () => {
     const cta = page.getByTestId('deep-analysis-dashboard-cta');
     await expect(cta).toBeVisible();
 
+    const imageDownload = page.waitForEvent('download');
+    await page.getByTestId('deep-analysis-export-image').click();
+    expect((await imageDownload).suggestedFilename()).toMatch(/-BA\.png$/i);
+    const pdfDownload = page.waitForEvent('download');
+    await page.getByTestId('deep-analysis-export-pdf').click();
+    expect((await pdfDownload).suggestedFilename()).toMatch(/-BA\.pdf$/i);
+
     // Closing the deep-analysis step must return to the executed analysis
     // without discarding the imported source or its generated result.
     const deepAnalysisBack = page.getByTestId('deep-analysis-back');

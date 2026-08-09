@@ -106,12 +106,12 @@ export const UnderstandingNextCard: React.FC<UnderstandingNextCardProps> = ({
       {/* Technical source facts stay available without leading the Easy Mode journey. */}
       <details className="rounded-xl border border-slate-200 bg-slate-50/60">
         <summary className="cursor-pointer list-none px-4 py-3 text-[13px] font-semibold text-slate-700">
-          {t('Review technical evidence', 'Xem bằng chứng kỹ thuật')}
+          {t('Review technical evidence')}
         </summary>
         <div className="flex justify-between items-start border-t border-slate-200 px-4 py-3">
           <div className="flex flex-col gap-2">
           <div className="flex items-center gap-3">
-            <h3 className="text-[16px] font-semibold text-gray-900">{t('Dataset profile', 'Hồ sơ dữ liệu')}</h3>
+            <h3 className="text-[16px] font-semibold text-gray-900">{t('Dataset profile')}</h3>
             <div className={`flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium ${statusConfig.bg} ${statusConfig.text} border ${statusConfig.border}`}>
               <StatusIcon className="w-3.5 h-3.5 mr-1" />
               {statusConfig.text}
@@ -136,7 +136,7 @@ export const UnderstandingNextCard: React.FC<UnderstandingNextCardProps> = ({
       <div className="rounded-xl border border-blue-100 bg-gradient-to-br from-blue-50 via-white to-emerald-50 p-4">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div className="min-w-0">
-            <div className="text-[11px] font-semibold uppercase tracking-wide text-blue-600">{t('LightBI understands this as', 'LightBI hiểu đây là')}</div>
+            <div className="text-[11px] font-semibold uppercase tracking-wide text-blue-600">{t('LightBI understands this as')}</div>
             <h4 className="mt-1 text-[18px] font-semibold text-gray-950">
               {documentLabel}
               <span className="text-gray-400"> · </span>
@@ -145,17 +145,16 @@ export const UnderstandingNextCard: React.FC<UnderstandingNextCardProps> = ({
             <p className="mt-1 max-w-2xl text-[13px] leading-5 text-gray-600">
               {t(
                 `LightBI sees ${understanding.source.sourceRowCount > 0 ? understanding.source.sourceRowCount.toLocaleString() : 'an unknown number of'} source rows, ${understanding.source.sourceColumnCount.toLocaleString()} columns, and enough business signals to offer ${readyQuestionCount} ready runtime action${readyQuestionCount === 1 ? '' : 's'}.${blockedAnalysisCount > 0 ? ` ${blockedAnalysisCount} other angle${blockedAnalysisCount === 1 ? '' : 's'} need more signals before they are safe to run.` : ''}`,
-                `LightBI đã đọc ${understanding.source.sourceRowCount > 0 ? understanding.source.sourceRowCount.toLocaleString() : 'số dòng chưa xác định'} dòng, ${understanding.source.sourceColumnCount.toLocaleString()} cột và tìm thấy ${readyQuestionCount} phân tích có thể chạy.${blockedAnalysisCount > 0 ? ` ${blockedAnalysisCount} góc nhìn khác cần thêm bằng chứng.` : ''}`,
               )}
             </p>
           </div>
           <div className="grid min-w-[220px] grid-cols-2 gap-2 text-[11px]">
             <div className="rounded-lg border border-white/80 bg-white/80 p-2">
-              <div className="text-gray-400">{t('Ready analyses', 'Phân tích sẵn sàng')}</div>
+              <div className="text-gray-400">{t('Ready analyses')}</div>
               <div className="mt-0.5 text-[18px] font-semibold text-emerald-700">{readyLenses.length}</div>
             </div>
             <div className="rounded-lg border border-white/80 bg-white/80 p-2">
-              <div className="text-gray-400">{t('Review needed', 'Cần xem lại')}</div>
+              <div className="text-gray-400">{t('Review needed')}</div>
               <div className="mt-0.5 text-[18px] font-semibold text-amber-700">{partialLenses.length}</div>
             </div>
           </div>
@@ -163,7 +162,7 @@ export const UnderstandingNextCard: React.FC<UnderstandingNextCardProps> = ({
 
         <div className="mt-4 grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
           <div>
-            <div className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-gray-500">{t('Business domains', 'Lĩnh vực kinh doanh')}</div>
+            <div className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-gray-500">{t('Business domains')}</div>
             <div className="flex flex-wrap gap-2">
               {topDomains.length > 0 ? topDomains.map(domain => (
                 <span key={domain} className="rounded-full border border-blue-100 bg-white px-2.5 py-1 text-[12px] font-medium text-blue-700">{domain}</span>
@@ -184,7 +183,7 @@ export const UnderstandingNextCard: React.FC<UnderstandingNextCardProps> = ({
             )}
           </div>
           <div>
-            <div className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-gray-500">{t('Key signals found', 'Tín hiệu chính đã tìm thấy')}</div>
+            <div className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-gray-500">{t('Key signals found')}</div>
             <div className="flex flex-wrap gap-2">
               {topSignals.length > 0 ? topSignals.map(signal => (
                 <span key={`${signal.canonicalId}:${signal.physicalColumn}`} className="rounded-full border border-gray-200 bg-white px-2.5 py-1 text-[12px] text-gray-700">
@@ -205,9 +204,8 @@ export const UnderstandingNextCard: React.FC<UnderstandingNextCardProps> = ({
           <summary className={`cursor-pointer px-4 py-3 text-[12px] font-semibold ${blocking.length ? 'text-red-800' : 'text-amber-800'}`}>
             <span className="inline-flex items-center gap-2"><AlertTriangle className="h-4 w-4" />{t(
               `${understanding.quality.dirtySignals.length} data-quality finding${understanding.quality.dirtySignals.length === 1 ? '' : 's'} retained`,
-              `Đã ghi nhận ${understanding.quality.dirtySignals.length} vấn đề chất lượng dữ liệu`,
             )}</span>
-            <span className="ml-2 font-normal opacity-75">{t('Analysis continues with explicit limitations.', 'LightBI vẫn phân tích và giữ rõ các giới hạn.')}</span>
+            <span className="ml-2 font-normal opacity-75">{t('Analysis continues with explicit limitations.')}</span>
           </summary>
           <div className="space-y-2 border-t border-current/10 px-4 py-3">
             {[...blocking, ...warnings].map((signal, index) => <div key={`${signal.kind}:${signal.column ?? ''}:${index}`} className="text-[12px] leading-5">
@@ -252,12 +250,12 @@ export const UnderstandingNextCard: React.FC<UnderstandingNextCardProps> = ({
             {canonicalPerspectives.some(perspective => perspective.state !== 'governed_action_available') && (
               <details className="mt-3 rounded-xl border border-slate-200 bg-slate-50/60">
                 <summary className="cursor-pointer px-4 py-3 text-[12px] font-semibold text-slate-600">
-                  {t('Other signals LightBI found', 'Các tín hiệu khác LightBI đã tìm thấy')}
+                  {t('Other signals LightBI found')}
                 </summary>
                 <div className="flex flex-wrap gap-2 border-t border-slate-200 px-4 py-3">
                   {canonicalPerspectives.filter(perspective => perspective.state !== 'governed_action_available').map(perspective => (
                     <span key={perspective.perspectiveId} data-testid={`business-evidence-${perspective.perspectiveId}`} className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[11px] text-slate-600">
-                      {perspective.label} · {t('not enough evidence to analyze safely', 'chưa đủ bằng chứng để phân tích an toàn')}
+                      {perspective.label} · {t('not enough evidence to analyze safely')}
                     </span>
                   ))}
                 </div>
@@ -488,16 +486,16 @@ const CanonicalUnderstandingSummary: React.FC<{ presentation: CanonicalDatasetPr
   </details>;
 };
 
-const STATE_LABELS: Record<CanonicalAnalysisPresentationV1['state'], [string, string]> = {
-  ready: ['Ready', 'Sẵn sàng'],
-  needs_user_evidence: ['Needs confirmation', 'Cần xác nhận'],
-  needs_mapping_review: ['Needs mapping review', 'Cần xem lại ánh xạ'],
-  blocked_safety: ['Safety blocked', 'Đã chặn để an toàn'],
-  unsupported_mvp: ['Not supported yet', 'Chưa được hỗ trợ'],
-  stale: ['Stale', 'Cần làm mới'],
-  executing: ['Executing', 'Đang thực thi'],
-  execution_failed: ['Execution failed', 'Thực thi thất bại'],
-  completed: ['Completed', 'Đã hoàn tất'],
+const STATE_LABELS: Record<CanonicalAnalysisPresentationV1['state'], string> = {
+  ready: 'Ready',
+  needs_user_evidence: 'Needs confirmation',
+  needs_mapping_review: 'Needs mapping review',
+  blocked_safety: 'Safety blocked',
+  unsupported_mvp: 'Not supported yet',
+  stale: 'Stale',
+  executing: 'Executing',
+  execution_failed: 'Execution failed',
+  completed: 'Completed',
 };
 
 const CanonicalAnalysisStates: React.FC<{
@@ -523,12 +521,12 @@ const CanonicalAnalysisStates: React.FC<{
       candidate.id.startsWith('universal:') && candidate.questionId === question.id);
     return action ? [{ question, action }] : [];
   });
-  const countRows: Array<[CanonicalAnalysisPresentationV1['state'], string, string]> = [
-    ['ready', 'Ready now', 'Sẵn sàng'],
-    ['needs_user_evidence', 'Needs confirmation', 'Cần xác nhận'],
-    ['needs_mapping_review', 'Needs mapping review', 'Cần xem lại ánh xạ'],
-    ['blocked_safety', 'Safety blocked', 'Đã chặn để an toàn'],
-    ['unsupported_mvp', 'Unsupported', 'Chưa hỗ trợ'],
+  const countRows: Array<[CanonicalAnalysisPresentationV1['state'], string]> = [
+    ['ready', 'Ready now'],
+    ['needs_user_evidence', 'Needs confirmation'],
+    ['needs_mapping_review', 'Needs mapping review'],
+    ['blocked_safety', 'Safety blocked'],
+    ['unsupported_mvp', 'Unsupported'],
   ];
   const groups = [
     { id: 'recommended', label: 'Recommended now', items: perspectiveAnalyses.filter(item => item.state === 'ready' && item.advertisedAsDefault).sort((a, b) => (a.rank ?? 99) - (b.rank ?? 99)) },
@@ -552,7 +550,7 @@ const CanonicalAnalysisStates: React.FC<{
     const remediationOperations = dedupeCanonicalRemediations(item.remediationOperations);
     return <article key={item.itemId} tabIndex={-1} id={`analysis-item-${item.itemId}`} data-testid={`canonical-analysis-${item.itemId}`} data-state={item.state} className="min-w-0 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
       <div>
-        <span className="inline-flex rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5 text-[10px] font-semibold uppercase text-gray-700">{t(...STATE_LABELS[item.state])}</span>
+        <span className="inline-flex rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5 text-[10px] font-semibold uppercase text-gray-700">{t(STATE_LABELS[item.state])}</span>
         <div className="mt-2 min-w-0">
           <div className="break-words text-[13px] font-semibold leading-5 text-gray-900">{item.title}</div>
           <div className="mt-1 text-[12px] leading-5 text-gray-500">{item.description}</div>
@@ -583,24 +581,24 @@ const CanonicalAnalysisStates: React.FC<{
       <div>
         <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-blue-700">
           <span className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-100 text-[10px]">2</span>
-          {t('Your analysis', 'Phân tích của bạn')}
+          {t('Your analysis')}
         </div>
-        <h4 id="canonical-analysis-heading" className="mt-1 text-[15px] font-semibold text-gray-900">{t('LightBI will calculate and visualize the best supported answer.', 'LightBI sẽ tính toán và trực quan hóa câu trả lời phù hợp nhất.')}</h4>
-        <p className="mt-0.5 text-[12px] text-gray-500">{t('Only analyses that pass governed checks are available.', 'Chỉ những phân tích vượt qua kiểm tra quản trị mới được sử dụng.')}</p>
+        <h4 id="canonical-analysis-heading" className="mt-1 text-[15px] font-semibold text-gray-900">{t('LightBI will calculate and visualize the best supported answer.')}</h4>
+        <p className="mt-0.5 text-[12px] text-gray-500">{t('Only analyses that pass governed checks are available.')}</p>
       </div>
       <div className="flex flex-wrap gap-2" aria-label="Canonical analysis state summary">
-        {selectedPerspectiveId && countRows.map(([state, en, vi]) => <span key={state} data-testid={`canonical-count-${state}`} className="rounded border border-gray-200 bg-gray-50 px-2 py-1 text-[11px] text-gray-600">{t(en, vi)}: <strong>{perspectiveAnalyses.filter(item => item.state === state).length}</strong></span>)}
+        {selectedPerspectiveId && countRows.map(([state, en]) => <span key={state} data-testid={`canonical-count-${state}`} className="rounded border border-gray-200 bg-gray-50 px-2 py-1 text-[11px] text-gray-600">{t(en)}: <strong>{perspectiveAnalyses.filter(item => item.state === state).length}</strong></span>)}
       </div>
     </div>
 
     {!selectedPerspectiveId && <div className="mt-3 rounded-lg border border-indigo-100 bg-indigo-50 p-3 text-[12px] text-indigo-800" data-testid="canonical-select-perspective-prompt">
-      {t('Choose a business perspective above. LightBI will select the best supported analysis for you.', 'Chọn một góc nhìn kinh doanh ở trên. LightBI sẽ tự chọn phân tích phù hợp nhất cho bạn.')}
+      {t('Choose a business perspective above. LightBI will select the best supported analysis for you.')}
     </div>}
 
     {selectedPerspectiveId && primaryAnalysis && primaryAction && <div className="mt-4 rounded-2xl border border-blue-200 bg-gradient-to-br from-blue-50 via-white to-emerald-50 p-5" data-testid="canonical-primary-analysis">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="min-w-0">
-          <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-blue-700"><Sparkles className="h-4 w-4" />{t('Recommended by LightBI', 'LightBI đề xuất')}</div>
+          <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-blue-700"><Sparkles className="h-4 w-4" />{t('Recommended by LightBI')}</div>
           <h5 className="mt-2 text-[18px] font-semibold text-slate-950">{primaryAnalysis.title}</h5>
           <p className="mt-1 max-w-3xl text-[13px] leading-5 text-slate-600">{primaryAnalysis.description}</p>
         </div>
@@ -611,7 +609,7 @@ const CanonicalAnalysisStates: React.FC<{
           className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-blue-700 px-5 py-3 text-[13px] font-semibold text-white shadow-sm transition hover:bg-blue-800"
         >
           <Sparkles className="h-4 w-4" />
-          {t('Analyze this perspective', 'Phân tích góc nhìn này')}
+          {t('Analyze this perspective')}
         </button>
       </div>
     </div>}
@@ -619,24 +617,24 @@ const CanonicalAnalysisStates: React.FC<{
     {selectedPerspectiveId && !primaryAction && universalActions.length > 0 && <div className="mt-4 rounded-2xl border border-blue-200 bg-gradient-to-br from-blue-50 via-white to-emerald-50 p-5" data-testid="universal-primary-analysis">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="min-w-0">
-          <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-blue-700"><Sparkles className="h-4 w-4" />{t('Recommended by LightBI', 'LightBI đề xuất')}</div>
+          <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-blue-700"><Sparkles className="h-4 w-4" />{t('Recommended by LightBI')}</div>
           <h5 className="mt-2 text-[18px] font-semibold text-slate-950">{universalActions[0].question.label}</h5>
           <p className="mt-1 max-w-3xl text-[13px] leading-5 text-slate-600">{universalActions[0].question.userPrompt}</p>
-          <p className="mt-2 text-[11px] text-slate-500">{t('Safe descriptive analysis from detected business signals; no causal claim is made.', 'Phân tích mô tả an toàn từ các tín hiệu kinh doanh đã nhận diện; không suy diễn quan hệ nhân quả.')}</p>
+          <p className="mt-2 text-[11px] text-slate-500">{t('Safe descriptive analysis from detected business signals; no causal claim is made.')}</p>
         </div>
         <button type="button" data-testid="universal-analyze-perspective" onClick={() => onSelectAction?.(adaptNextActionsToLegacy([universalActions[0].action])[0])} className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-blue-700 px-5 py-3 text-[13px] font-semibold text-white shadow-sm transition hover:bg-blue-800">
-          <Sparkles className="h-4 w-4" />{t('Analyze this perspective', 'Phân tích góc nhìn này')}
+          <Sparkles className="h-4 w-4" />{t('Analyze this perspective')}
         </button>
       </div>
     </div>}
 
     {selectedPerspectiveId && universalActions.length > (primaryAction ? 0 : 1) && <section className="mt-4" data-testid="universal-ready-angles">
-      <div className="mb-2"><h5 className="text-[13px] font-semibold text-slate-900">{t('Other questions this data can answer', 'Các câu hỏi khác dữ liệu này có thể trả lời')}</h5></div>
+      <div className="mb-2"><h5 className="text-[13px] font-semibold text-slate-900">{t('Other questions this data can answer')}</h5></div>
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
         {universalActions.slice(primaryAction ? 0 : 1).map(({ question, action }) => <button key={action.id} type="button" onClick={() => onSelectAction?.(adaptNextActionsToLegacy([action])[0])} className="min-h-[118px] rounded-xl border border-slate-200 bg-white p-4 text-left shadow-sm transition hover:border-blue-300 hover:bg-blue-50/40">
           <div className="flex items-start justify-between gap-2"><span className="text-[13px] font-semibold leading-5 text-slate-900">{question.label}</span><Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-blue-600" /></div>
           <p className="mt-2 line-clamp-2 text-[11px] leading-4 text-slate-500">{question.userPrompt}</p>
-          <span className="mt-3 inline-flex text-[11px] font-semibold text-blue-700">{t('Analyze', 'Phân tích')} →</span>
+          <span className="mt-3 inline-flex text-[11px] font-semibold text-blue-700">{t('Analyze')} →</span>
         </button>)}
       </div>
     </section>}
@@ -644,10 +642,10 @@ const CanonicalAnalysisStates: React.FC<{
     {selectedPerspectiveId && readyExecutableAnalyses.length > 1 && <section className="mt-4" aria-labelledby="canonical-ready-angles-heading" data-testid="canonical-ready-angles" data-ready-count={readyExecutableAnalyses.length}>
       <div className="mb-2 flex items-end justify-between gap-3">
         <div>
-          <h5 id="canonical-ready-angles-heading" className="text-[13px] font-semibold text-slate-900">{t('Other questions this data can answer', 'Các câu hỏi khác dữ liệu này có thể trả lời')}</h5>
-          <p className="mt-0.5 text-[11px] text-slate-500">{t('Every option below passed the same governed checks.', 'Mỗi lựa chọn bên dưới đều đã vượt qua cùng một bộ kiểm tra quản trị.')}</p>
+          <h5 id="canonical-ready-angles-heading" className="text-[13px] font-semibold text-slate-900">{t('Other questions this data can answer')}</h5>
+          <p className="mt-0.5 text-[11px] text-slate-500">{t('Every option below passed the same governed checks.')}</p>
         </div>
-        <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[10px] font-semibold text-emerald-700">{readyExecutableAnalyses.length} {t('ready angles', 'góc nhìn sẵn sàng')}</span>
+        <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[10px] font-semibold text-emerald-700">{readyExecutableAnalyses.length} {t('ready angles')}</span>
       </div>
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
         {readyExecutableAnalyses.slice(1).map(item => {
@@ -664,7 +662,7 @@ const CanonicalAnalysisStates: React.FC<{
               <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-blue-600" />
             </div>
             <p className="mt-2 line-clamp-2 text-[11px] leading-4 text-slate-500">{item.description}</p>
-            <span className="mt-3 inline-flex text-[11px] font-semibold text-blue-700">{t('Analyze', 'Phân tích')} →</span>
+            <span className="mt-3 inline-flex text-[11px] font-semibold text-blue-700">{t('Analyze')} →</span>
           </button>;
         })}
       </div>
@@ -680,10 +678,10 @@ const CanonicalAnalysisStates: React.FC<{
     </div>}
 
     {selectedPerspectiveId && groups.length > 0 && <details className="mt-4 rounded-xl border border-slate-200 bg-slate-50/60">
-      <summary className="cursor-pointer px-4 py-3 text-[12px] font-semibold text-slate-700">{t('Explore another question or review evidence', 'Khám phá câu hỏi khác hoặc xem bằng chứng')}</summary>
+      <summary className="cursor-pointer px-4 py-3 text-[12px] font-semibold text-slate-700">{t('Explore another question or review evidence')}</summary>
       <div className="space-y-4 border-t border-slate-200 p-4">
         {groups.map(group => <section key={group.id} aria-labelledby={`canonical-group-${group.id}`} data-testid={`canonical-group-${group.id}`}>
-          <h5 id={`canonical-group-${group.id}`} className="mb-2 text-[12px] font-semibold text-gray-700">{t(group.label, ({ 'Recommended now': 'Đề xuất hiện tại', 'Additional supported analyses': 'Phân tích hỗ trợ bổ sung', 'Resolvable analyses': 'Phân tích có thể chuẩn bị', 'Safety-blocked analyses': 'Phân tích đã chặn để an toàn', 'Execution failed': 'Thực thi thất bại', 'Not supported yet': 'Chưa được hỗ trợ', 'Stale analyses': 'Phân tích cần làm mới' } as Record<string, string>)[group.label] ?? group.label)} <span className="font-normal text-gray-400">({group.items.length})</span></h5>
+          <h5 id={`canonical-group-${group.id}`} className="mb-2 text-[12px] font-semibold text-gray-700">{t(group.label)} <span className="font-normal text-gray-400">({group.items.length})</span></h5>
           <div className="grid grid-cols-1 gap-3 xl:grid-cols-2">{group.items.map(renderItem)}</div>
         </section>)}
       </div>

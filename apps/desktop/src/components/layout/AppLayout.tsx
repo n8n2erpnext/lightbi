@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { useUiLanguage } from '../../lib/ui-language';
+import { UiTranslationBoundary } from './UiTranslationBoundary';
 
 export const AppLayout: React.FC = () => {
   const isSidebarExpanded = !useAppRuntime(s => s.workspacePreferences.sidebarCollapsed);
@@ -24,19 +25,20 @@ export const AppLayout: React.FC = () => {
   const { t } = useUiLanguage();
 
   const navItems = [
-    { name: t('New brief', 'Phân tích mới'), path: '/', icon: HomeIcon },
-    { name: t('Decision briefs', 'Báo cáo quyết định'), path: '/dashboards', icon: FileText },
-    { name: t('Charts', 'Biểu đồ'), path: '/charts', icon: BarChart3 },
-    { name: t('Datasets', 'Bộ dữ liệu'), path: '/datasets', icon: Database },
-    { name: t('Sources', 'Nguồn dữ liệu'), path: '/datasources', icon: Server },
-    { name: t('Advanced', 'Nâng cao'), path: '/advanced', icon: TerminalSquare },
+    { name: t('New brief'), path: '/', icon: HomeIcon },
+    { name: t('Decision briefs'), path: '/dashboards', icon: FileText },
+    { name: t('Charts'), path: '/charts', icon: BarChart3 },
+    { name: t('Datasets'), path: '/datasets', icon: Database },
+    { name: t('Sources'), path: '/datasources', icon: Server },
+    { name: t('Advanced'), path: '/advanced', icon: TerminalSquare },
   ];
 
   const bottomNavItems = [
-    { name: t('Settings', 'Cài đặt'), path: '/settings', icon: Settings },
+    { name: t('Settings'), path: '/settings', icon: Settings },
   ];
 
   return (
+    <UiTranslationBoundary>
     <div className="flex h-screen w-screen overflow-hidden bg-[#f5f5f4] text-[#202123]">
       {/* Sidebar */}
       <aside
@@ -72,7 +74,7 @@ export const AppLayout: React.FC = () => {
         <nav className="flex-1 overflow-y-auto px-3 py-4">
           {isSidebarExpanded && (
             <div className="mb-3 hidden px-2 text-[11px] font-medium text-black/40 md:block">
-              {t('Workspace', 'Không gian làm việc')}
+              {t('Workspace')}
             </div>
           )}
           <div className="flex flex-col gap-1.5">
@@ -107,7 +109,7 @@ export const AppLayout: React.FC = () => {
                 </div>
                 <div className="min-w-0">
                   <div className="truncate text-[13px] font-medium text-[#202123]">LightBI Desktop</div>
-                  <div className="truncate text-[11px] text-black/45">{t('BA decision workspace', 'Không gian quyết định BA')}</div>
+                  <div className="truncate text-[11px] text-black/45">{t('BA decision workspace')}</div>
                 </div>
               </div>
               <NavLink
@@ -115,7 +117,7 @@ export const AppLayout: React.FC = () => {
                 className="flex h-8 items-center gap-2 rounded-md px-2 text-[12px] font-medium text-black/65 hover:bg-black/[0.04] hover:text-[#202123]"
               >
                 <FolderOpen className="h-3.5 w-3.5" strokeWidth={1.5} />
-                {t('Project data', 'Dữ liệu dự án')}
+                {t('Project data')}
               </NavLink>
             </div>
           )}
@@ -142,7 +144,7 @@ export const AppLayout: React.FC = () => {
         <button
           onClick={toggleSidebar}
           className="absolute -right-3 top-[86px] z-10 hidden rounded-full border border-black/10 bg-white p-1.5 text-black/45 shadow-sm transition-colors hover:text-[#202123] focus:outline-none md:block"
-          aria-label={isSidebarExpanded ? t('Collapse sidebar', 'Thu gọn thanh bên') : t('Expand sidebar', 'Mở rộng thanh bên')}
+          aria-label={isSidebarExpanded ? t('Collapse sidebar') : t('Expand sidebar')}
         >
           {isSidebarExpanded ? <ChevronLeft className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
         </button>
@@ -153,5 +155,6 @@ export const AppLayout: React.FC = () => {
         <Outlet />
       </main>
     </div>
+    </UiTranslationBoundary>
   );
 };

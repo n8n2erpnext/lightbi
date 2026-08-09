@@ -50,7 +50,7 @@ export function GoogleSheetsStep({ config, onClose, initialUrl, onSourceInspecte
       await onSourceInspected?.(inspectionResult);
       onClose();
     } catch (error) {
-      setUseError(error instanceof Error ? localize(error.message) : t("Could not save this online source.", "Không thể lưu nguồn dữ liệu online này."));
+      setUseError(error instanceof Error ? localize(error.message) : t("Could not save this online source."));
     } finally {
       setIsUsingDataset(false);
     }
@@ -59,9 +59,9 @@ export function GoogleSheetsStep({ config, onClose, initialUrl, onSourceInspecte
   return (
     <div className="space-y-6 max-w-2xl mx-auto py-8">
       <div className="text-center space-y-2 mb-8">
-        <h2 className="text-2xl font-semibold text-gray-900">{t(config.title, "Kết nối dữ liệu online")}</h2>
+        <h2 className="text-2xl font-semibold text-gray-900">{t(config.title)}</h2>
         {config.description && (
-          <p className="text-gray-500">{t(config.description, "Dán liên kết bảng tính công khai để LightBI đọc, hiểu và phân tích dữ liệu.")}</p>
+          <p className="text-gray-500">{t(config.description)}</p>
         )}
       </div>
 
@@ -79,14 +79,14 @@ export function GoogleSheetsStep({ config, onClose, initialUrl, onSourceInspecte
           />
         </div>
         {config.example && (
-          <p className="text-sm text-gray-500 ml-1">{t("Example", "Ví dụ")}: {config.example}</p>
+          <p className="text-sm text-gray-500 ml-1">{t("Example")}: {config.example}</p>
         )}
       </div>
 
       {isInspecting && (
         <div className="flex items-center gap-2 rounded-lg border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-700">
           <Loader2 className="h-4 w-4 animate-spin" />
-          {t("Inspecting source and sampling rows...", "Đang đọc nguồn và lấy mẫu dữ liệu...")}
+          {t("Inspecting source and sampling rows...")}
         </div>
       )}
 
@@ -106,20 +106,20 @@ export function GoogleSheetsStep({ config, onClose, initialUrl, onSourceInspecte
         <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4">
           <div className="mb-3 flex items-center gap-2 text-emerald-800">
             <Check className="h-4 w-4" />
-            <span className="text-sm font-semibold">{t("Source inspected", "Đã đọc nguồn dữ liệu")}</span>
+            <span className="text-sm font-semibold">{t("Source inspected")}</span>
           </div>
           <div className="grid grid-cols-2 gap-3 text-sm">
             <div className="rounded-lg bg-white p-3">
-              <p className="text-xs font-medium uppercase tracking-wide text-gray-500">{t("Rows", "Dòng")}</p>
+              <p className="text-xs font-medium uppercase tracking-wide text-gray-500">{t("Rows")}</p>
               <p className="mt-1 text-lg font-semibold text-gray-900">{inspectedRowCount.toLocaleString()}</p>
             </div>
             <div className="rounded-lg bg-white p-3">
-              <p className="text-xs font-medium uppercase tracking-wide text-gray-500">{t("Columns", "Cột")}</p>
+              <p className="text-xs font-medium uppercase tracking-wide text-gray-500">{t("Columns")}</p>
               <p className="mt-1 text-lg font-semibold text-gray-900">{inspectedColumnCount.toLocaleString()}</p>
             </div>
           </div>
           <p className="mt-3 text-xs text-emerald-700">
-            {t("LightBI will use a representative sample for quick understanding.", "LightBI dùng mẫu đại diện để hiểu nhanh, sau đó phân tích trên toàn bộ nguồn khi thực thi.")}
+            {t("LightBI will use a representative sample for quick understanding.")}
           </p>
         </div>
       )}
@@ -133,7 +133,7 @@ export function GoogleSheetsStep({ config, onClose, initialUrl, onSourceInspecte
             disabled={isUsingDataset}
             className="px-6 py-3 bg-blue-600 text-white text-base font-medium rounded-lg hover:bg-blue-700 transition-colors w-full sm:w-auto"
           >
-            {isUsingDataset ? t("Saving source...", "Đang lưu nguồn...") : t("Use this dataset", "Sử dụng bộ dữ liệu này")}
+            {isUsingDataset ? t("Saving source...") : t("Use this dataset")}
           </button>
         ) : (
           <button
@@ -141,7 +141,7 @@ export function GoogleSheetsStep({ config, onClose, initialUrl, onSourceInspecte
           disabled={!inputValue || isInspecting}
           className="px-6 py-3 bg-gray-900 text-white text-base font-medium rounded-lg hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors w-full sm:w-auto"
         >
-            {isInspecting ? t("Inspecting...", "Đang kiểm tra...") : t(config.buttonText || "Continue", "Kiểm tra liên kết")}
+            {isInspecting ? t("Inspecting...") : t(config.buttonText || "Continue")}
           </button>
         )}
       </div>

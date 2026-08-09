@@ -407,3 +407,24 @@ remain the technical workspace for review, cleaning, mapping, query and export.
   Windows checksum exactly matches the build artifact.
 - Native launch/install remains the user's final Windows smoke test; the Linux
   cross-build does not claim to replace execution on a real Windows host.
+
+## Checkpoint 12 - Extensible localization and final web gate (2026-08-09)
+
+- Replaced component-scattered EN/VI copy with a language-package registry in
+  `apps/desktop/src/i18n/languages`. Each JSON package declares its language
+  code, display name, text direction, exact messages and optional patterns.
+- The Settings language list is discovered from the package directory during
+  the application build. Adding a valid package such as `zh-CN.json` requires
+  no page, component or dropdown change; regional fallback remains supported.
+- The rendered-copy boundary is language-neutral. English is the fallback
+  source language; every discovered non-English package follows the same path.
+- Vietnamese terminology is centralized for later Frappe/ERPNext-aligned
+  maintenance, rather than being embedded across React components.
+- Preserved meaningful whitespace in physical source headers while continuing
+  to reject blank headers. This generic profiler correction closed the remaining
+  messy-source corpus failures without sample filename branches.
+- Final gates: 199 unit test files and 1,335 tests passed; the focused language
+  registry passed 9/9; TypeScript and the production web build passed; focused
+  Chromium acceptance passed 5/5; the full VPS sample matrix passed 52/52.
+- Windows packaging was intentionally not rebuilt after this checkpoint. Web
+  and core remain the active user acceptance surface until explicitly requested.

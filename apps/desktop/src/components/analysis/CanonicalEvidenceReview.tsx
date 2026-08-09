@@ -196,7 +196,7 @@ export const CanonicalEvidenceReview: React.FC<Props> = ({ artifact, overlay, re
         onClick={applyGuidedSetup}
         className="mt-3 rounded-lg bg-blue-700 px-3 py-2 text-[12px] font-semibold text-white disabled:opacity-50"
       >
-        {t('Confirm LightBI setup', 'Xác nhận thiết lập của LightBI')}
+        {t('Confirm LightBI setup')}
       </button>
     </section>
   );
@@ -205,19 +205,19 @@ export const CanonicalEvidenceReview: React.FC<Props> = ({ artifact, overlay, re
     <>
     {guidedSetupCard}
     <details ref={detailsRef} className="rounded-lg border border-gray-200 bg-white" aria-busy={rebuildState === "pending"} data-testid="canonical-evidence-review">
-      <summary className="cursor-pointer px-4 py-3 text-[13px] font-semibold text-gray-800">{t('Review mappings and source evidence', 'Xem lại ánh xạ và bằng chứng nguồn')}</summary>
+      <summary className="cursor-pointer px-4 py-3 text-[13px] font-semibold text-gray-800">{t('Review mappings and source evidence')}</summary>
       <div className="space-y-4 border-t border-gray-100 p-4">
         <div className="flex items-center justify-between gap-3 text-[12px]">
-          <div className="min-w-0 text-gray-500">{t('Source-bound confirmation', 'Xác nhận gắn với nguồn')} · {t('revision', 'bản sửa')} {current.revision}</div>
+          <div className="min-w-0 text-gray-500">{t('Source-bound confirmation')} · {t('revision')} {current.revision}</div>
           <div className="flex shrink-0 items-center gap-2">
-            {rebuildState === "pending" && <span className="flex items-center gap-1 text-blue-700"><RefreshCw className="h-3.5 w-3.5 animate-spin" /> {t('Rebuilding', 'Đang dựng lại')}</span>}
-            {rebuildState === "succeeded" && <span className="flex items-center gap-1 text-emerald-700"><CheckCircle2 className="h-3.5 w-3.5" /> {t('Rebuilt', 'Đã dựng lại')}</span>}
-            {rebuildState === "failed" && <span className="flex items-center gap-1 text-red-700"><AlertTriangle className="h-3.5 w-3.5" /> {t('Rebuild failed', 'Dựng lại thất bại')}</span>}
-            <button type="button" className="rounded border border-gray-200 px-2 py-1 text-gray-600" onClick={() => onChange(resetCanonicalUserOverlay(current, boundary))}>{t('Reset current source', 'Đặt lại nguồn hiện tại')}</button>
+            {rebuildState === "pending" && <span className="flex items-center gap-1 text-blue-700"><RefreshCw className="h-3.5 w-3.5 animate-spin" /> {t('Rebuilding')}</span>}
+            {rebuildState === "succeeded" && <span className="flex items-center gap-1 text-emerald-700"><CheckCircle2 className="h-3.5 w-3.5" /> {t('Rebuilt')}</span>}
+            {rebuildState === "failed" && <span className="flex items-center gap-1 text-red-700"><AlertTriangle className="h-3.5 w-3.5" /> {t('Rebuild failed')}</span>}
+            <button type="button" className="rounded border border-gray-200 px-2 py-1 text-gray-600" onClick={() => onChange(resetCanonicalUserOverlay(current, boundary))}>{t('Reset current source')}</button>
           </div>
         </div>
         <details className="text-[11px] text-gray-500">
-          <summary className="cursor-pointer font-medium text-gray-600">{t('Developer diagnostics', 'Chẩn đoán dành cho nhà phát triển')}</summary>
+          <summary className="cursor-pointer font-medium text-gray-600">Developer diagnostics</summary>
           <p className="mt-1 break-all"><span className="font-medium">Source fingerprint:</span> {boundary.sourceFingerprint}</p>
         </details>
 
