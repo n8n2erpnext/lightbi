@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildDrillThroughSql, rowsToCsv } from './drill-through-export';
+import { buildDrillThroughSql, resolveDrillThroughPoint, rowsToCsv } from './drill-through-export';
 
 describe('drill-through export', () => {
   it('builds a safe DuckDB filter for a clicked chart segment', () => {
@@ -15,6 +15,29 @@ describe('drill-through export', () => {
     expect(sql).toContain('"ngưỡng tồn"');
     expect(sql).toContain("TRIM(CAST(\"ngưỡng tồn\" AS VARCHAR)) = 'ton>24h'");
     expect(sql).toContain('LIMIT 67');
+  });
+
+  it('resolves a canonical chart dimension to its physical source column', () => {
+    const point = resolveDrillThroughPoint(
+      { dimensionField: 'time_period', value: '2026-06-01 18:15', label: '01/06/2026 18:15' },
+      [{ canonicalId: 'time_period', physicalColumn: 'OrderDate', role: 'time', confidence: 96 }],
+      ['OrderID', 'OrderDate', 'Revenue'],
+    );
+
+    expect(point.sourceDimensionField).toBe('OrderDate');
+    expect(buildDrillThroughSql(point)).toContain('CAST("orderdate" AS VARCHAR)');
+    expect(buildDrillThroughSql(point)).not.toContain('CAST("time_period" AS VARCHAR)');
+  });
+
+  it('uses the only governed time binding for a generic time_period result', () => {
+    const point = resolveDrillThroughPoint(
+      { dimensionField: 'time_period', value: 1_632_009_600_000, label: '20/09/2021' },
+      [{ canonicalId: 'document.issue_date', physicalColumn: 'NGÀY XUẤT', role: 'time', confidence: 91 }],
+      ['MÃ PHIẾU XUẤT', 'NGÀY XUẤT'],
+    );
+
+    expect(point.sourceDimensionField).toBe('NGÀY XUẤT');
+    expect(buildDrillThroughSql(point)).toContain('CAST("ngày xuất" AS VARCHAR)');
   });
 
   it('escapes CSV cells and protects spreadsheet formulas', () => {

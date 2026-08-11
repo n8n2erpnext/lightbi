@@ -727,6 +727,7 @@ export const Investigation: React.FC = () => {
         rows: rows || [],
         runtimeDatasetSource,
         rowScope,
+        fieldBindings: session.aiBriefing?.semanticFields,
         limit: 50_000,
         signal: run.signal,
       });

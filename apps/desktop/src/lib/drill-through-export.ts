@@ -7,10 +7,20 @@ import { executeLocalDuckDB } from './local-duckdb-executor';
 
 export type DrillThroughPoint = {
   dimensionField: string;
+  /** Physical source column used to retrieve the raw rows behind a canonical chart point. */
+  sourceDimensionField?: string;
   value: unknown;
   label: string;
   measureField?: string;
   measureValue?: unknown;
+};
+
+export type DrillThroughFieldBinding = {
+  canonicalId: string;
+  physicalColumn?: string;
+  label?: string;
+  role?: string;
+  confidence?: number;
 };
 
 export type DrillThroughResult = DuckDBPreviewResult & {
@@ -23,9 +33,39 @@ export type DrillThroughInput = {
   rows?: Record<string, unknown>[];
   runtimeDatasetSource?: RuntimeDatasetSource;
   rowScope?: RuntimeRowScope;
+  fieldBindings?: DrillThroughFieldBinding[];
   limit?: number;
   signal?: AbortSignal;
 };
+
+function normalizedFieldName(value: string): string {
+  return value.normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '');
+}
+
+function isGenericTimeField(value: string): boolean {
+  return ['time', 'date', 'period', 'timeperiod', 'reportingperiod'].includes(normalizedFieldName(value));
+}
+
+export function resolveDrillThroughPoint(
+  point: DrillThroughPoint,
+  fieldBindings: DrillThroughFieldBinding[] = [],
+  sourceColumns: string[] = [],
+): DrillThroughPoint {
+  if (point.sourceDimensionField) return point;
+  const target = normalizedFieldName(point.dimensionField);
+  const usable = fieldBindings
+    .filter((binding) => binding.physicalColumn?.trim())
+    .sort((left, right) => (right.confidence ?? 0) - (left.confidence ?? 0));
+  const direct = usable.find((binding) => [binding.canonicalId, binding.physicalColumn!, binding.label ?? '']
+    .some((candidate) => normalizedFieldName(candidate) === target));
+  const sourceMatch = sourceColumns.find((column) => normalizedFieldName(column) === target);
+  const timeBindings = usable.filter((binding) => binding.role === 'time');
+  const timeFallback = isGenericTimeField(point.dimensionField) && timeBindings.length === 1
+    ? timeBindings[0]
+    : undefined;
+  const sourceDimensionField = direct?.physicalColumn ?? sourceMatch ?? timeFallback?.physicalColumn;
+  return sourceDimensionField ? { ...point, sourceDimensionField } : point;
+}
 
 function quoteLowercaseIdent(ident: string): string {
   return `"${ident.toLowerCase().replace(/"/g, '""')}"`;
@@ -36,7 +76,7 @@ function sqlString(value: unknown): string {
 }
 
 export function buildDrillThroughSql(point: DrillThroughPoint, limit = 50_000): string {
-  const field = quoteLowercaseIdent(point.dimensionField);
+  const field = quoteLowercaseIdent(point.sourceDimensionField ?? point.dimensionField);
   const safeLimit = Math.max(1, Math.min(100_000, Math.floor(limit)));
   const where = point.value === null || point.value === undefined
     ? `${field} IS NULL`
@@ -61,14 +101,15 @@ function createDrillPlan(runtimePlan: RuntimePlanPreview, point: DrillThroughPoi
 }
 
 function createDrillSqlPreview(runtimePlan: RuntimePlanPreview, point: DrillThroughPoint, limit: number): SafeSqlPreview {
+  const sourceDimensionField = point.sourceDimensionField ?? point.dimensionField;
   return {
     id: `sql_${runtimePlan.id}_drill`,
     sourcePlanId: runtimePlan.id,
     status: runtimePlan.status,
     dialect: 'duckdb',
     sql: runtimePlan.status === 'ready' ? buildDrillThroughSql(point, limit) : null,
-    parameters: { [point.dimensionField]: point.value },
-    referencedColumns: [point.dimensionField],
+    parameters: { [sourceDimensionField]: point.value },
+    referencedColumns: [sourceDimensionField],
     warnings: [...runtimePlan.warnings],
     blockedReasons: [...runtimePlan.blockedReasons],
     source: 'runtime_plan_preview',
@@ -77,8 +118,10 @@ function createDrillSqlPreview(runtimePlan: RuntimePlanPreview, point: DrillThro
 
 export async function executeDrillThrough(input: DrillThroughInput): Promise<DrillThroughResult> {
   const limit = input.limit ?? 50_000;
-  const runtimePlan = createDrillPlan(input.runtimePlan, input.point);
-  const safeSqlPreview = createDrillSqlPreview(runtimePlan, input.point, limit);
+  const sourceColumns = Object.keys(input.rows?.[0] ?? {});
+  const point = resolveDrillThroughPoint(input.point, input.fieldBindings, sourceColumns);
+  const runtimePlan = createDrillPlan(input.runtimePlan, point);
+  const safeSqlPreview = createDrillSqlPreview(runtimePlan, point, limit);
   const result = await executeLocalDuckDB({
     runtimePlan,
     safeSqlPreview,
@@ -88,7 +131,7 @@ export async function executeDrillThrough(input: DrillThroughInput): Promise<Dri
     limit,
     signal: input.signal,
   });
-  return { ...result, point: input.point };
+  return { ...result, point };
 }
 
 function csvCell(value: unknown): string {

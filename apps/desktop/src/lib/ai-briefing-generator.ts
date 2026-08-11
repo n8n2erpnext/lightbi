@@ -133,7 +133,8 @@ export function generateAIBriefingFromUnderstandingNext(
           : signal.role === "status" || signal.role === "identifier"
             ? "dimension"
             : "unknown",
-      confidence: signal.confidence
+      confidence: signal.confidence,
+      physicalColumn: signal.physicalColumn,
     }));
 
   const caveats = [
