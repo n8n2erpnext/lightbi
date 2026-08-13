@@ -120,7 +120,7 @@ export function buildCanonicalPeriodPartitionWorkspace(input: {
   const blockers: string[] = [];
   if (!input.workspaceId.trim()) blockers.push("period_partition_workspace_id_required");
   if (!input.metricId.trim()) blockers.push("period_partition_metric_required");
-  if (input.members.length < 2) blockers.push("period_partition_requires_two_sources");
+  if (input.members.length === 0) blockers.push("period_partition_requires_source");
 
   const projected = input.members.flatMap(({ artifact, overlay }) => {
     const boundary = artifact.sourceBoundary;

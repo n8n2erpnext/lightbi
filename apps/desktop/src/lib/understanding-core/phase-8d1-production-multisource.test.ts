@@ -235,6 +235,33 @@ describe("Phase 8D.1 canonical production multi-source boundary", () => {
     });
   }, 120_000);
 
+  it("executes a governed single-period snapshot without requiring a comparison period", async () => {
+    const june = await load("sample-corpus/anchors/1.3.0/Sales_ERP_June_2026.xlsx");
+    const juneOverlay = governedOverlay(
+      june.boundary,
+      "sales",
+      ["Revenue"],
+      { start: "2026-06-01", end: "2026-06-30" },
+    );
+    const built = buildCanonicalPeriodPartitionWorkspace({
+      workspaceId: "sales-june-2026-snapshot",
+      metricId: "sales_revenue",
+      members: [{ artifact: artifact(june, juneOverlay), overlay: juneOverlay }],
+    });
+    expect(built.status).toBe("valid");
+    if (built.status !== "valid") throw new Error(built.blockers.join(","));
+    expect(built.workspace.periodMembers).toHaveLength(1);
+
+    const executed = await executeCanonicalPeriodPartitionWorkspace(built.workspace, {
+      executeMember: async () => ({
+        status: "executed",
+        rows: [{ report_date: "2026-06-01", sales_revenue: 10, __lightbi_full_scope_metric_total__: 250 }],
+      } as any),
+    });
+    expect(executed.status).toBe("executed");
+    expect(executed.rows).toEqual([{ reporting_period: "2026-06", sales_revenue: 250 }]);
+  }, 120_000);
+
   it("supports logistics period partitions without inventing currency evidence", async () => {
     const makeLogisticsOverlay = (
       boundary: CanonicalSourceBoundaryV1,

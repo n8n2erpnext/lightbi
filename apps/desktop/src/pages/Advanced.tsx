@@ -178,12 +178,18 @@ export const Advanced: React.FC = () => {
   useEffect(() => {
     const controller = new AbortController();
     let active = true;
+    const canUpdateProviderPlugins = () => (
+      active
+      && !controller.signal.aborted
+      && typeof window !== 'undefined'
+    );
     void loadAdvancedProviderPlugins(controller.signal)
       .then(providers => {
-        if (active && providers.length > 0) setProviderPlugins(providers);
+        if (canUpdateProviderPlugins() && providers.length > 0) setProviderPlugins(providers);
       })
       .catch(error => {
-        if (active && !(error instanceof DOMException && error.name === 'AbortError')) {
+        const isAbortError = error instanceof Error && error.name === 'AbortError';
+        if (canUpdateProviderPlugins() && !isAbortError) {
           setProviderPlugins(FALLBACK_PROVIDER_PLUGINS);
         }
       });

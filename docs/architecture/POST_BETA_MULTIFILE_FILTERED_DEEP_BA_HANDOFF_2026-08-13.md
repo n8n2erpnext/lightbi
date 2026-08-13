@@ -11,6 +11,19 @@ The governed six-file ERP comparison flow now supports the same two-stage invest
 
 No new BA inference engine was introduced. Step 2 reuses `createSingleSourceBAOverview` and `SingleSourceBAOverviewCard` for each relevant governed source.
 
+The collection runtime now supports both generic temporal modes:
+
+- One reporting period: governed snapshot with independently executed role metrics; no fabricated 0% period movement.
+- Two or more reporting periods: governed comparison/trend.
+
+Single-period role sources no longer require a duplicate comparison-period file. This is based on governed role/period/metric declarations, never filenames or sample-specific months.
+
+Multi-file Deep BA now also supports the same downstream actions as the single-source flow:
+
+- PNG and PDF export of the visible deep-analysis surface.
+- Governed perspective Dashboard creation with metric KPIs and selected-scope BA breakdowns.
+- Clean-data handoff through the existing Datasets workflow. Collection tables remain separate during cleaning/export.
+
 ## Safety boundaries
 
 - Sources remain separate. LightBI never joins unrelated raw sales, accounting, and logistics rows.
@@ -28,6 +41,7 @@ No new BA inference engine was introduced. Step 2 reuses `createSingleSourceBAOv
 - `apps/desktop/src/components/analysis/BusinessComparisonBriefCard.tsx`
 - `apps/desktop/src/components/home/HomeWorkspaceView.tsx`
 - `apps/desktop/src/pages/Home.tsx`
+- `apps/desktop/src/lib/understanding-core/canonical-period-partition-boundary.ts`
 - `apps/desktop/e2e/phase8f2_authentic_six_source_remote.spec.ts`
 - `apps/desktop/src/i18n/languages/vi.json`
 
@@ -37,6 +51,7 @@ No new BA inference engine was introduced. Step 2 reuses `createSingleSourceBAOv
 - Full desktop unit suite: 206 files / 1,369 tests passed.
 - Six-source Playwright suite: 3/3 passed.
 - New exact journey: `2026-05 / sales_revenue` -> May sales source evidence -> Deep BA Step 2 passed.
+- Exact three-source/same-period journey: Sales + Accounting + Logistics for `2026-06` produced revenue, delivery count and gross profit; displayed a snapshot; exported PNG/PDF; and created a Dashboard.
 - Vietnamese language registry/coverage/UI tests: 17/17 passed.
 
 ## Regression invariants

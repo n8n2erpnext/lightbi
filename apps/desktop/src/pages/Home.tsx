@@ -595,7 +595,7 @@ export const Home: React.FC = () => {
 
         const executeRolePeriods = async (role: "sales" | "logistics", metricId: "sales_revenue" | "delivery_count") => {
           const roleMembers = members.filter((item) => item.draft.role === role);
-          if (roleMembers.length < 2) return;
+          if (roleMembers.length === 0) return;
           const built = buildCanonicalPeriodPartitionWorkspace({
             workspaceId: `perspective:${perspectiveId}:${role}:${roleMembers.map((item) => item.boundary.sourceId).sort().join('|')}`,
             metricId,

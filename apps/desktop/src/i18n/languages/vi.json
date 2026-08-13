@@ -950,6 +950,8 @@
     "Budget, cost, expense, profit, and margin analysis are not implemented yet.": "Phân tích ngân sách, chi phí, chi phí, lợi nhuận và tỷ suất lợi nhuận vẫn chưa được triển khai.",
     "Business Interpretation & Execution": "Phiên dịch và thực thi kinh doanh",
     "Business comparison brief": "Tóm tắt so sánh kinh doanh",
+    "Single-period snapshot": "Ảnh chụp một kỳ",
+    "Clean and export sources": "Làm sạch và xuất các nguồn",
     "Direct profit / margin available": "Có bằng chứng trực tiếp về lợi nhuận / biên lợi nhuận",
     "Estimated from cost-like fields": "Ước tính từ các trường mang tính chất chi phí",
     "Missing cost / profit evidence": "Thiếu bằng chứng về chi phí / lợi nhuận",
@@ -2920,6 +2922,14 @@
     { "source": "^Row ([\\d,.]+): (.+)$", "target": "Dòng $1: $2" },
     { "source": "^Row ([\\d,.]+)$", "target": "Dòng $1" },
     { "source": "^bar - (.+)$", "target": "Biểu đồ cột — $1" },
-    { "source": "^table - (.+)$", "target": "Bảng dữ liệu — $1" }
+    { "source": "^table - (.+)$", "target": "Bảng dữ liệu — $1" },
+    {
+      "source": "^What explains the composition of (.+) in (.+)\\?$",
+      "target": "Yếu tố nào giải thích cơ cấu của $1 trong kỳ $2?"
+    },
+    {
+      "source": "^This view contains one reporting period \\((.+)\\), so period movement cannot be calculated\\. Select a metric to inspect its governed source evidence and run Deep BA Step 2\\.$",
+      "target": "Góc nhìn này chỉ có một kỳ báo cáo ($1), nên không thể tính biến động giữa các kỳ. Hãy chọn một chỉ số để xem bằng chứng nguồn đã quản trị và chạy BA chuyên sâu bước 2."
+    }
   ]
 }

@@ -11,6 +11,11 @@ const SIX_ERP_FILES = [
   "Logistics_ERP_May_2026.csv",
   "Logistics_ERP_June_2026.csv",
 ].map((name) => path.join(ANCHORS, name));
+const JUNE_ERP_FILES = [
+  "Sales_ERP_June_2026.xlsx",
+  "Accounting_ERP_June_2026.csv",
+  "Logistics_ERP_June_2026.csv",
+].map((name) => path.join(ANCHORS, name));
 
 async function importSixSources(page: import("@playwright/test").Page) {
   await page.goto(ORIGIN);
@@ -88,4 +93,40 @@ test("authentic six-source executive chart opens period evidence and Deep BA ste
   await expect(subset).toBeVisible();
   await expect(subset.getByTestId("single-source-ba-overview")).toBeVisible();
   await expect(subset.getByTestId("deep-ba-selected-scope")).toBeVisible();
+});
+
+test("three same-period ERP sources render a governed snapshot and open Deep BA", async ({ page }) => {
+  test.setTimeout(300_000);
+  await page.goto(ORIGIN);
+  await page.locator('input[type="file"]').setInputFiles(JUNE_ERP_FILES);
+  const review = page.getByTestId("canonical-multisource-review");
+  await expect(review).toBeVisible({ timeout: 120_000 });
+  await page.getByTestId("business-perspective-executive_overview").click();
+  await page.getByTestId("analyze-selected-perspective").click();
+
+  const result = page.getByTestId("perspective-collection-result");
+  await expect(result).toBeVisible({ timeout: 120_000 });
+  await expect(result.getByTestId("collection-chart-point-2026-06-sales_revenue")).toBeVisible();
+  await expect(result.getByTestId("collection-chart-point-2026-06-delivery_count")).toBeVisible();
+  await expect(result.getByTestId("collection-chart-point-2026-06-gross_profit")).toBeVisible();
+  await expect(result).toContainText(/Single-period snapshot|Ảnh chụp một kỳ/i);
+  await expect(result).not.toContainText("0.0%");
+
+  const focus = result.getByRole("button", { name: /What explains the composition|Yếu tố nào giải thích cơ cấu/i }).first();
+  await expect(focus).toBeEnabled();
+  await focus.click();
+  await expect(page.getByTestId("collection-chart-drill")).toBeVisible();
+  await expect(page.getByTestId("collection-subset-deep-ba")).toBeVisible();
+  await expect(page.getByTestId("collection-deep-export-image")).toBeVisible();
+  await expect(page.getByTestId("collection-deep-export-pdf")).toBeVisible();
+  await expect(page.getByRole("button", { name: /Clean and export sources|Làm sạch và xuất các nguồn/i })).toBeVisible();
+  const imageDownload = page.waitForEvent("download");
+  await page.getByTestId("collection-deep-export-image").click();
+  expect((await imageDownload).suggestedFilename()).toMatch(/-BA\.png$/);
+  const pdfDownload = page.waitForEvent("download");
+  await page.getByTestId("collection-deep-export-pdf").click();
+  expect((await pdfDownload).suggestedFilename()).toMatch(/-BA\.pdf$/);
+  await page.getByTestId("collection-create-dashboard").click();
+  await expect(page.getByTestId("perspective-dashboard")).toBeVisible();
+  expect(await page.getByTestId("dashboard-widget").count()).toBeGreaterThanOrEqual(4);
 });

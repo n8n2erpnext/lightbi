@@ -1,6 +1,10 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import ReactECharts from "echarts-for-react";
-import { ArrowDownRight, ArrowUpRight, CheckCircle2, ChevronRight, Lightbulb, Search, ShieldCheck } from "lucide-react";
+import { ArrowDownRight, ArrowUpRight, CheckCircle2, ChevronRight, Download, FileImage, FileText, LayoutDashboard, Lightbulb, Search, ShieldCheck, Sparkles } from "lucide-react";
+import { toPng } from "html-to-image";
+import { jsPDF } from "jspdf";
+import { useNavigate } from "react-router-dom";
+import { useAppRuntime } from "@lightbi/runtime";
 import type { DomainComparisonBrief } from "../../lib/ba-comparison-engine";
 import type { AISemanticField } from "../../lib/ai-briefing-contract";
 import { createSingleSourceBAOverview, sampleSingleSourceBARows } from "../../lib/single-source-ba-overview";
@@ -59,6 +63,13 @@ export const PerspectiveCollectionResultCard: React.FC<{
   const [chartSelection, setChartSelection] = useState<ChartSelection | null>(null);
   const [showSubsetDeepDive, setShowSubsetDeepDive] = useState(false);
   const [activeEvidenceIndex, setActiveEvidenceIndex] = useState(0);
+  const [exportState, setExportState] = useState<"idle" | "image" | "pdf">("idle");
+  const [exportError, setExportError] = useState("");
+  const deepExportRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
+  const createDashboard = useAppRuntime(state => state.createDashboard);
+  const createChart = useAppRuntime(state => state.createChart);
+  const addChartToDashboard = useAppRuntime(state => state.addChartToDashboard);
   const preferences = useDisplayPreferences((state) => state.preferences);
   const { t } = useUiLanguage();
   const displayMetricLabel = (metricId: string) => {
@@ -77,6 +88,7 @@ export const PerspectiveCollectionResultCard: React.FC<{
   if (rows.length === 0) return null;
   const metricIds = [...new Set(rows.flatMap((row) =>
     Object.keys(row).filter((key) => key !== "reporting_period")))];
+  const hasPeriodComparison = rows.length >= 2;
   const movements = metricIds.map((metricId) => {
     const first = Number(rows[0]?.[metricId] ?? 0);
     const last = Number(rows[rows.length - 1]?.[metricId] ?? 0);
@@ -89,21 +101,24 @@ export const PerspectiveCollectionResultCard: React.FC<{
       percent: first === 0 ? null : delta / Math.abs(first),
     };
   });
-  const largestMovement = [...movements].sort((left, right) =>
-    Math.abs(right.percent ?? 0) - Math.abs(left.percent ?? 0))[0];
+  const largestMovement = hasPeriodComparison
+    ? [...movements].sort((left, right) => Math.abs(right.percent ?? 0) - Math.abs(left.percent ?? 0))[0]
+    : movements[0];
   const firstPeriod = String(rows[0]?.reporting_period ?? "the first period");
   const lastPeriod = String(rows[rows.length - 1]?.reporting_period ?? "the latest period");
-  const questions = largestMovement ? [
-    t(
-      `What drove the change in ${displayMetricLabel(largestMovement.metricId)} from ${firstPeriod} to ${lastPeriod}?`,
-    ),
-    t(
-      `Break down ${displayMetricLabel(largestMovement.metricId)} by the most useful business dimensions.`,
-    ),
-    t(
-      `Which segments should I investigate first for ${displayMetricLabel(largestMovement.metricId)}?`,
-    ),
-  ] : [];
+  const questions = largestMovement
+    ? hasPeriodComparison
+      ? [
+        t(`What drove the change in ${displayMetricLabel(largestMovement.metricId)} from ${firstPeriod} to ${lastPeriod}?`),
+        t(`Break down ${displayMetricLabel(largestMovement.metricId)} by the most useful business dimensions.`),
+        t(`Which segments should I investigate first for ${displayMetricLabel(largestMovement.metricId)}?`),
+      ]
+      : [
+        t(`What explains the composition of ${displayMetricLabel(largestMovement.metricId)} in ${firstPeriod}?`),
+        t(`Break down ${displayMetricLabel(largestMovement.metricId)} by the most useful business dimensions.`),
+        t(`Which segments should I investigate first for ${displayMetricLabel(largestMovement.metricId)}?`),
+      ]
+    : [];
   const option = {
     animation: false,
     tooltip: { trigger: "axis" },
@@ -121,9 +136,10 @@ export const PerspectiveCollectionResultCard: React.FC<{
     },
     series: metricIds.map((metricId, index) => ({
       name: displayMetricLabel(metricId),
-      type: "line",
-      smooth: true,
-      symbolSize: 8,
+      type: hasPeriodComparison ? "line" : "bar",
+      smooth: hasPeriodComparison,
+      symbolSize: hasPeriodComparison ? 8 : undefined,
+      barMaxWidth: hasPeriodComparison ? undefined : 56,
       data: rows.map((row) => Number(row[metricId] ?? 0)),
       lineStyle: { width: 3 },
       itemStyle: { color: ["#2563eb", "#059669", "#d97706"][index % 3] },
@@ -154,6 +170,102 @@ export const PerspectiveCollectionResultCard: React.FC<{
   }, [chartSelection, displayMetricLabel, perspectiveId, selectedEvidence, showSubsetDeepDive]);
   const previewRows = activeEvidence?.rows.slice(0, 100) ?? [];
   const previewColumns = [...new Set(previewRows.flatMap(row => Object.keys(row)))].slice(0, 12);
+  const hasVisibleDeepAnalysis = showDeepDive || (showSubsetDeepDive && subsetOverviews.length > 0);
+  const exportFileStem = `${displayPerspectiveLabel}${chartSelection ? `-${chartSelection.period}-${displayMetricLabel(chartSelection.metricId)}` : ""}`
+    .replace(/[\\/:*?"<>|]+/g, "-").slice(0, 100) || "LightBI-multifile-BA";
+
+  const renderAnalysisImage = async () => {
+    if (!deepExportRef.current) throw new Error(t("The analysis is not ready to export."));
+    return toPng(deepExportRef.current, { backgroundColor: "#fbfbfa", cacheBust: true, pixelRatio: 2 });
+  };
+  const exportImage = async () => {
+    setExportState("image"); setExportError("");
+    try {
+      const dataUrl = await renderAnalysisImage();
+      const anchor = document.createElement("a"); anchor.download = `${exportFileStem}-BA.png`; anchor.href = dataUrl; anchor.click();
+    } catch (cause) { setExportError(cause instanceof Error ? cause.message : t("Could not export the image.")); }
+    finally { setExportState("idle"); }
+  };
+  const exportPdf = async () => {
+    setExportState("pdf"); setExportError("");
+    try {
+      const dataUrl = await renderAnalysisImage();
+      const image = new Image(); image.src = dataUrl; await image.decode();
+      const pdf = new jsPDF({ unit: "mm", format: "a4", orientation: "portrait", compress: true });
+      const margin = 8; const pageWidth = pdf.internal.pageSize.getWidth(); const pageHeight = pdf.internal.pageSize.getHeight();
+      const width = pageWidth - margin * 2; const height = image.height * width / image.width; const printable = pageHeight - margin * 2;
+      for (let offset = 0, page = 0; offset < height; offset += printable, page += 1) {
+        if (page > 0) pdf.addPage();
+        pdf.addImage(dataUrl, "PNG", margin, margin - offset, width, height, undefined, "FAST");
+      }
+      pdf.save(`${exportFileStem}-BA.pdf`);
+    } catch (cause) { setExportError(cause instanceof Error ? cause.message : t("Could not export the PDF.")); }
+    finally { setExportState("idle"); }
+  };
+
+  const createCollectionDashboard = () => {
+    const scopedRows = chartSelection
+      ? rows.filter(row => String(row.reporting_period) === chartSelection.period).map(row => ({ reporting_period: row.reporting_period, [chartSelection.metricId]: row[chartSelection.metricId] }))
+      : rows;
+    const scopedMetricIds = chartSelection ? [chartSelection.metricId] : metricIds;
+    const scopeSources = chartSelection ? selectedEvidence : evidenceSources;
+    const overviewFindings = subsetOverviews.flatMap(item => item.overview.findings);
+    const overviewActions = subsetOverviews.flatMap(item => item.overview.recommendedActions);
+    const overviewLimitations = subsetOverviews.flatMap(item => item.overview.limitations);
+    const dashboardId = createDashboard(`${displayPerspectiveLabel}${chartSelection ? ` · ${chartSelection.period}` : ""}`, {
+      source: "easy_mode_perspective",
+      datasetId: `multifile:${perspectiveId}`,
+      perspective: displayPerspectiveLabel,
+      governed: true,
+      multiSource: true,
+      evidenceScope: chartSelection ? "governed_selected_period_source_evidence" : "full_source_metric_results",
+      generatedAt: new Date().toISOString(),
+      selectedScope: chartSelection ? { period: chartSelection.period, metricId: chartSelection.metricId, sources: scopeSources.map(source => ({ role: source.role, sourceName: source.sourceName, sourceRowCount: source.sourceRowCount })) } : null,
+      deepBA: deepDiveBrief ? {
+        executiveSummary: deepDiveBrief.headline,
+        dataTrustScore: deepDiveBrief.trustScore,
+        decisionReadinessScore: deepDiveBrief.decisionReadinessScore,
+        insights: deepDiveBrief.narrativeSections.map(section => ({ id: section.id, title: section.title, statement: section.summary, severity: section.severity, evidence: section.bullets })),
+        caveats: deepDiveBrief.caveats,
+      } : null,
+      perspectiveBA: {
+        analysisLabel: chartSelection ? `${displayMetricLabel(chartSelection.metricId)} · ${chartSelection.period}` : displayPerspectiveLabel,
+        sourceRowCount: scopeSources.reduce((sum, source) => sum + source.sourceRowCount, 0),
+        isRepresentativeSample: subsetOverviews.some(item => item.overview.isRepresentativeSample),
+        findings: overviewFindings,
+        recommendedActions: overviewActions,
+        limitations: overviewLimitations,
+      },
+    });
+    const chartId = createChart({
+      projectId: "proj-1", datasetId: `multifile:${perspectiveId}`, name: displayPerspectiveLabel,
+      type: scopedRows.length >= 2 ? "Line" : "Bar",
+      xAxis: [{ columnName: "reporting_period" }],
+      yAxis: scopedMetricIds.map(columnName => ({ columnName, aggregation: "None" as const })), filters: {},
+      formatting: { lightbiData: { source: "multifile_perspective_dashboard", perspective: displayPerspectiveLabel, chartType: scopedRows.length >= 2 ? "line" : "bar", xField: "reporting_period", yField: scopedMetricIds[0], seriesFields: scopedMetricIds, rows: scopedRows, rowCount: scopedRows.length, governed: true, evidenceScope: chartSelection ? "selected_period" : "full_source_metric_results", savedAt: new Date().toISOString() } },
+    });
+    addChartToDashboard(dashboardId, chartId);
+    const latest = scopedRows[scopedRows.length - 1];
+    scopedMetricIds.forEach(metricId => {
+      const value = Number(latest?.[metricId]);
+      if (!Number.isFinite(value)) return;
+      const kpiId = createChart({
+        projectId: "proj-1", datasetId: `multifile:${perspectiveId}`, name: displayMetricLabel(metricId), type: "Number", xAxis: [], yAxis: [{ columnName: "value", aggregation: "None" }], filters: {},
+        formatting: { lightbiData: { source: "multifile_perspective_dashboard_kpi", perspective: displayPerspectiveLabel, valueKind: /(revenue|profit|cost|amount|margin)/i.test(metricId) ? "money" : "number", yField: "value", seriesFields: ["value"], rows: [{ value }], rowCount: 1, governed: true, savedAt: new Date().toISOString() } },
+      });
+      addChartToDashboard(dashboardId, kpiId);
+    });
+    subsetOverviews.flatMap(item => item.overview.breakdowns.slice(0, 2).map(breakdown => ({ source: item.source, breakdown }))).slice(0, 4).forEach(({ source, breakdown }) => {
+      if (!breakdown.top.length) return;
+      const breakdownRows = breakdown.top.slice(0, 10).map(item => ({ label: item.label, value: item.value, share: item.share, row_count: item.rowCount }));
+      const breakdownId = createChart({
+        projectId: "proj-1", datasetId: `multifile:${perspectiveId}`, name: `${breakdown.label} · ${source.role}`, type: "Bar", xAxis: [{ columnName: "label" }], yAxis: [{ columnName: "value", aggregation: "None" }], filters: {},
+        formatting: { lightbiData: { source: "multifile_selected_scope_ba_breakdown", perspective: displayPerspectiveLabel, valueKind: breakdown.valueKind, xField: "label", yField: "value", seriesFields: ["value"], rows: breakdownRows, rowCount: breakdownRows.length, governed: false, evidenceScope: "representative_selected_source", physicalColumn: breakdown.physicalColumn, savedAt: new Date().toISOString() } },
+      });
+      addChartToDashboard(dashboardId, breakdownId);
+    });
+    navigate(`/dashboards/${dashboardId}`);
+  };
 
   return (
     <section data-testid="perspective-collection-result" className="overflow-hidden rounded-2xl border border-blue-100 bg-white shadow-sm">
@@ -204,17 +316,20 @@ export const PerspectiveCollectionResultCard: React.FC<{
         </div>
         <div className="space-y-3">
           {movements.map((movement) => {
-            const Icon = movement.delta >= 0 ? ArrowUpRight : ArrowDownRight;
+            const Icon = hasPeriodComparison
+              ? movement.delta >= 0 ? ArrowUpRight : ArrowDownRight
+              : CheckCircle2;
             return (
               <article key={movement.metricId} className="rounded-xl border border-slate-200 p-4">
                 <div className="flex items-center justify-between gap-3">
                   <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">{displayMetricLabel(movement.metricId)}</p>
-                  <Icon className={`h-4 w-4 ${movement.delta >= 0 ? "text-emerald-600" : "text-red-600"}`} />
+                  <Icon className={`h-4 w-4 ${!hasPeriodComparison || movement.delta >= 0 ? "text-emerald-600" : "text-red-600"}`} />
                 </div>
                 <p className="mt-2 text-[22px] font-semibold text-slate-950">{formatMetric(movement.metricId, movement.last)}</p>
-                <p className={`mt-1 text-[11px] ${movement.delta >= 0 ? "text-emerald-700" : "text-red-700"}`}>
-                  {movement.delta >= 0 ? "+" : "−"}{formatMetric(movement.metricId, Math.abs(movement.delta))}
-                  {movement.percent === null ? "" : ` (${Math.abs(movement.percent * 100).toFixed(1)}%)`} {t('vs first period')}
+                <p className={`mt-1 text-[11px] ${!hasPeriodComparison || movement.delta >= 0 ? "text-emerald-700" : "text-red-700"}`}>
+                  {hasPeriodComparison
+                    ? <>{movement.delta >= 0 ? "+" : "−"}{formatMetric(movement.metricId, Math.abs(movement.delta))}{movement.percent === null ? "" : ` (${Math.abs(movement.percent * 100).toFixed(1)}%)`} {t('vs first period')}</>
+                    : t('Single-period snapshot')}
                 </p>
               </article>
             );
@@ -226,9 +341,9 @@ export const PerspectiveCollectionResultCard: React.FC<{
             </div>
             <p className="mt-2 text-[12px] leading-5 text-amber-900/80">
               {largestMovement
-                ? t(
-                  `${displayMetricLabel(largestMovement.metricId)} has the largest relative movement (${Math.abs((largestMovement.percent ?? 0) * 100).toFixed(1)}%). This is the strongest place to begin; it is an observation, not yet a cause.`,
-                )
+                ? hasPeriodComparison
+                  ? t(`${displayMetricLabel(largestMovement.metricId)} has the largest relative movement (${Math.abs((largestMovement.percent ?? 0) * 100).toFixed(1)}%). This is the strongest place to begin; it is an observation, not yet a cause.`)
+                  : t(`This view contains one reporting period (${firstPeriod}), so period movement cannot be calculated. Select a metric to inspect its governed source evidence and run Deep BA Step 2.`)
                 : t(
                   "No measurable period movement was found. Review mix, segments, and data coverage before drawing a conclusion.",
                 )}
@@ -239,9 +354,19 @@ export const PerspectiveCollectionResultCard: React.FC<{
                   <button
                     key={question}
                     type="button"
-                    onClick={() => setShowDeepDive(true)}
+                    onClick={() => {
+                      if (deepDiveBrief) {
+                        setShowDeepDive(true);
+                        return;
+                      }
+                      if (!hasPeriodComparison && largestMovement) {
+                        setChartSelection({ period: firstPeriod, metricId: largestMovement.metricId });
+                        setActiveEvidenceIndex(0);
+                        setShowSubsetDeepDive(true);
+                      }
+                    }}
                     className="flex w-full items-center justify-between gap-3 rounded-lg border border-amber-200 bg-white/80 px-3 py-2 text-left text-[11px] font-medium leading-4 text-slate-700 transition hover:border-amber-400 hover:text-slate-950 disabled:cursor-default"
-                    disabled={!deepDiveBrief}
+                    disabled={!deepDiveBrief && (hasPeriodComparison || !largestMovement || evidenceSources.length === 0)}
                   >
                     <span>{question}</span>
                     <ChevronRight className="h-3.5 w-3.5 shrink-0 text-amber-600" />
@@ -258,6 +383,15 @@ export const PerspectiveCollectionResultCard: React.FC<{
           </div>
         </div>
       </div>
+      {hasVisibleDeepAnalysis && <div className="flex flex-wrap items-center justify-end gap-2 border-t border-slate-100 bg-white px-5 py-3 md:px-6">
+        <span className="mr-auto inline-flex items-center gap-2 text-xs text-slate-500"><Download className="h-4 w-4" />{t('Export this complete perspective analysis')}</span>
+        <button type="button" onClick={() => navigate('/datasets')} className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700"><Sparkles className="h-4 w-4" />{t('Clean and export sources')}</button>
+        <button data-testid="collection-deep-export-image" type="button" onClick={() => void exportImage()} disabled={exportState !== 'idle'} className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 disabled:opacity-50"><FileImage className="h-4 w-4" />{exportState === 'image' ? t('Exporting…') : t('Export image')}</button>
+        <button data-testid="collection-deep-export-pdf" type="button" onClick={() => void exportPdf()} disabled={exportState !== 'idle'} className="inline-flex items-center gap-2 rounded-lg bg-violet-600 px-3 py-2 text-xs font-semibold text-white disabled:opacity-50"><FileText className="h-4 w-4" />{exportState === 'pdf' ? t('Exporting…') : t('Export PDF')}</button>
+        <button data-testid="collection-create-dashboard" type="button" onClick={createCollectionDashboard} className="inline-flex items-center gap-2 rounded-lg bg-slate-950 px-3 py-2 text-xs font-semibold text-white"><LayoutDashboard className="h-4 w-4" />{t('Create perspective dashboard')}</button>
+      </div>}
+      {exportError && <p role="alert" className="border-t border-red-100 bg-red-50 px-5 py-2 text-xs text-red-700 md:px-6">{exportError}</p>}
+      <div ref={deepExportRef} data-testid="collection-deep-analysis-export-surface">
       {chartSelection && (
         <div data-testid="collection-chart-drill" className="border-t border-slate-100 bg-white p-5 md:p-6">
           <div className="rounded-xl border border-blue-100 bg-blue-50/50 p-4">
@@ -304,6 +438,7 @@ export const PerspectiveCollectionResultCard: React.FC<{
           <BusinessComparisonBriefCard brief={deepDiveBrief} />
         </div>
       )}
+      </div>
     </section>
   );
 };
