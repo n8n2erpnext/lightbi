@@ -1,13 +1,49 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import ReactECharts from "echarts-for-react";
-import { ArrowDownRight, ArrowUpRight, CheckCircle2, ChevronRight, Lightbulb, ShieldCheck } from "lucide-react";
+import { ArrowDownRight, ArrowUpRight, CheckCircle2, ChevronRight, Lightbulb, Search, ShieldCheck } from "lucide-react";
 import type { DomainComparisonBrief } from "../../lib/ba-comparison-engine";
+import type { AISemanticField } from "../../lib/ai-briefing-contract";
+import { createSingleSourceBAOverview, sampleSingleSourceBARows } from "../../lib/single-source-ba-overview";
 import { BusinessComparisonBriefCard } from "./BusinessComparisonBriefCard";
+import { SingleSourceBAOverviewCard } from "../investigation/SingleSourceBAOverviewCard";
 import { useDisplayPreferences } from "../../stores/display-preferences-store";
 import { formatValue } from "../../lib/display-formatter";
 import { useUiLanguage } from "../../lib/ui-language";
 
 type Row = Record<string, string | number>;
+
+export interface PerspectiveCollectionEvidenceSource {
+  period: string;
+  role: string;
+  sourceName: string;
+  sourceRowCount: number;
+  rows: Record<string, unknown>[];
+  semanticFields: AISemanticField[];
+}
+
+type ChartSelection = { period: string; metricId: string };
+
+function rolesForMetric(metricId: string): string[] {
+  if (metricId === "sales_revenue") return ["sales"];
+  if (metricId === "delivery_count") return ["logistics"];
+  if (metricId === "gross_profit") return ["sales", "accounting"];
+  return [];
+}
+
+function selectedMeasure(metricId: string, role: string, fields: AISemanticField[]): string {
+  if (metricId === "delivery_count") return "record_count";
+  const preferred = metricId === "gross_profit" && role === "accounting"
+    ? /cost|expense|purchase|payable|debit/i
+    : /revenue|sales|amount|total|profit|margin/i;
+  return fields.find(field => preferred.test(field.canonicalId))?.physicalColumn ?? "record_count";
+}
+
+function selectedDimensions(fields: AISemanticField[]): string[] {
+  const useful = /customer|product|sku|category|brand|branch|territory|region|warehouse|salesperson|employee|driver|route|status|channel|payment/i;
+  return [...new Set(fields
+    .filter(field => useful.test(field.canonicalId) && typeof field.physicalColumn === "string")
+    .map(field => field.physicalColumn as string))].slice(0, 4);
+}
 
 const metricLabel = (value: string) =>
   value.split("_").map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join(" ");
@@ -17,8 +53,12 @@ export const PerspectiveCollectionResultCard: React.FC<{
   rows: Row[];
   sourceCount: number;
   deepDiveBrief?: DomainComparisonBrief | null;
-}> = ({ perspectiveId, rows, sourceCount, deepDiveBrief }) => {
+  evidenceSources?: PerspectiveCollectionEvidenceSource[];
+}> = ({ perspectiveId, rows, sourceCount, deepDiveBrief, evidenceSources = [] }) => {
   const [showDeepDive, setShowDeepDive] = useState(false);
+  const [chartSelection, setChartSelection] = useState<ChartSelection | null>(null);
+  const [showSubsetDeepDive, setShowSubsetDeepDive] = useState(false);
+  const [activeEvidenceIndex, setActiveEvidenceIndex] = useState(0);
   const preferences = useDisplayPreferences((state) => state.preferences);
   const { t } = useUiLanguage();
   const displayMetricLabel = (metricId: string) => {
@@ -89,6 +129,31 @@ export const PerspectiveCollectionResultCard: React.FC<{
       itemStyle: { color: ["#2563eb", "#059669", "#d97706"][index % 3] },
     })),
   };
+  const selectedEvidence = useMemo(() => {
+    if (!chartSelection) return [];
+    const roles = rolesForMetric(chartSelection.metricId);
+    return evidenceSources.filter(source => source.period === chartSelection.period && (roles.length === 0 || roles.includes(source.role)));
+  }, [chartSelection, evidenceSources]);
+  const activeEvidence = selectedEvidence[Math.min(activeEvidenceIndex, Math.max(0, selectedEvidence.length - 1))];
+  const subsetOverviews = useMemo(() => {
+    if (!chartSelection || !showSubsetDeepDive) return [];
+    return selectedEvidence.flatMap(source => {
+      const overview = createSingleSourceBAOverview(sampleSingleSourceBARows(source.rows, 1000), {
+        sourceRowCount: source.sourceRowCount,
+        selectedPerspective: perspectiveId,
+        semanticFields: source.semanticFields,
+        analysisAction: {
+          id: `collection_subset_${source.role}_${chartSelection.metricId}`,
+          label: `${displayMetricLabel(chartSelection.metricId)} · ${source.role} · ${chartSelection.period}`,
+          dimensions: selectedDimensions(source.semanticFields),
+          measures: [selectedMeasure(chartSelection.metricId, source.role, source.semanticFields)],
+        },
+      });
+      return overview ? [{ source, overview }] : [];
+    });
+  }, [chartSelection, displayMetricLabel, perspectiveId, selectedEvidence, showSubsetDeepDive]);
+  const previewRows = activeEvidence?.rows.slice(0, 100) ?? [];
+  const previewColumns = [...new Set(previewRows.flatMap(row => Object.keys(row)))].slice(0, 12);
 
   return (
     <section data-testid="perspective-collection-result" className="overflow-hidden rounded-2xl border border-blue-100 bg-white shadow-sm">
@@ -113,8 +178,29 @@ export const PerspectiveCollectionResultCard: React.FC<{
       </div>
 
       <div className="grid gap-5 p-5 xl:grid-cols-[1.55fr_0.65fr] md:p-6">
-        <div className="h-[460px] min-w-0 rounded-xl border border-slate-100 bg-slate-50/40 p-3">
-          <ReactECharts option={option} style={{ height: "100%", width: "100%" }} notMerge />
+        <div className="min-h-[460px] min-w-0 rounded-xl border border-slate-100 bg-slate-50/40 p-3">
+          <ReactECharts
+            option={option}
+            style={{ height: "390px", width: "100%" }}
+            notMerge
+            onEvents={{
+              click: (params: { dataIndex?: number; seriesIndex?: number }) => {
+                const dataIndex = Number(params.dataIndex);
+                const seriesIndex = Number(params.seriesIndex);
+                if (!Number.isInteger(dataIndex) || !Number.isInteger(seriesIndex) || !metricIds[seriesIndex]) return;
+                setChartSelection({ period: String(rows[dataIndex]?.reporting_period ?? ""), metricId: metricIds[seriesIndex] });
+                setActiveEvidenceIndex(0);
+                setShowSubsetDeepDive(false);
+              },
+            }}
+          />
+          <div className="mt-2 flex flex-wrap items-center gap-1.5" aria-label={t('Select a chart point for step 2 analysis')}>
+            {rows.flatMap((row) => metricIds.map((metricId) => {
+              const period = String(row.reporting_period ?? '');
+              const active = chartSelection?.period === period && chartSelection.metricId === metricId;
+              return <button key={`${period}:${metricId}`} type="button" data-testid={`collection-chart-point-${period}-${metricId}`} onClick={() => { setChartSelection({ period, metricId }); setActiveEvidenceIndex(0); setShowSubsetDeepDive(false); }} className={`rounded-md border px-2 py-1 text-[10px] font-medium ${active ? 'border-blue-500 bg-blue-50 text-blue-800' : 'border-slate-200 bg-white text-slate-500 hover:border-blue-300'}`}>{period} · {displayMetricLabel(metricId)}</button>;
+            }))}
+          </div>
         </div>
         <div className="space-y-3">
           {movements.map((movement) => {
@@ -172,6 +258,39 @@ export const PerspectiveCollectionResultCard: React.FC<{
           </div>
         </div>
       </div>
+      {chartSelection && (
+        <div data-testid="collection-chart-drill" className="border-t border-slate-100 bg-white p-5 md:p-6">
+          <div className="rounded-xl border border-blue-100 bg-blue-50/50 p-4">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-blue-700"><Search className="h-4 w-4" />{t('Step 2 · Selected-data scope')}</div>
+                <h4 className="mt-1 text-base font-semibold text-slate-950">{chartSelection.period} · {displayMetricLabel(chartSelection.metricId)}</h4>
+                <p className="mt-1 text-xs leading-5 text-slate-600">{t('LightBI keeps each governed source separate and analyzes only the period and metric selected on the chart.')}</p>
+              </div>
+              <button type="button" disabled={selectedEvidence.length === 0} onClick={() => setShowSubsetDeepDive(true)} className="rounded-lg bg-slate-950 px-4 py-2.5 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-40">{t('Deep BA analysis · Step 2')}</button>
+            </div>
+            {selectedEvidence.length === 0 ? (
+              <p className="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800">{t('No source-bound row evidence is available for this chart point.')}</p>
+            ) : (
+              <>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {selectedEvidence.map((source, index) => <button key={`${source.period}:${source.role}:${source.sourceName}`} type="button" onClick={() => setActiveEvidenceIndex(index)} className={`rounded-lg border px-3 py-2 text-xs font-medium ${index === activeEvidenceIndex ? 'border-blue-500 bg-white text-blue-800' : 'border-slate-200 bg-slate-50 text-slate-600'}`}>{t(source.role)} · {source.sourceName} · {source.sourceRowCount.toLocaleString(preferences.locale)} {t('rows')}</button>)}
+                </div>
+                {activeEvidence && <div className="mt-4 max-h-[420px] overflow-auto rounded-lg border border-slate-200 bg-white">
+                  <table className="min-w-full text-left text-[11px]">
+                    <thead className="sticky top-0 bg-slate-50 text-slate-500"><tr>{previewColumns.map(column => <th key={column} className="whitespace-nowrap border-b border-slate-200 px-3 py-2 font-semibold">{column}</th>)}</tr></thead>
+                    <tbody>{previewRows.map((row, rowIndex) => <tr key={rowIndex} className="border-b border-slate-100 last:border-0">{previewColumns.map(column => <td key={column} className="max-w-[240px] truncate whitespace-nowrap px-3 py-2 text-slate-700">{String(row[column] ?? '')}</td>)}</tr>)}</tbody>
+                  </table>
+                  <p className="border-t border-slate-100 px-3 py-2 text-[11px] text-slate-500">{t('Preview shows the first 100 selected rows; Deep BA uses a representative sample with the full source-row scope disclosed.')}</p>
+                </div>}
+              </>
+            )}
+          </div>
+          {showSubsetDeepDive && subsetOverviews.length > 0 && <div className="mt-5 space-y-5" data-testid="collection-subset-deep-ba">
+            {subsetOverviews.map(({ source, overview }) => <div key={`${source.period}:${source.role}:${source.sourceName}`}><div className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">{t(source.role)} · {source.sourceName}</div><SingleSourceBAOverviewCard overview={overview} preferences={preferences} selectedDataScope /></div>)}
+          </div>}
+        </div>
+      )}
       {showDeepDive && deepDiveBrief && (
         <div data-testid="governed-ba-deep-dive" className="border-t border-slate-100 bg-slate-50/60 p-5 md:p-6">
           <div className="mb-3">

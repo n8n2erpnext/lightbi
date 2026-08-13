@@ -66,3 +66,26 @@ test("authentic six-source journey compares May with June and produces deep prof
   await page.getByTestId("easy-mode-back-to-perspectives").click();
   await expect(page.getByTestId("canonical-business-perspectives")).toBeVisible();
 });
+
+test("authentic six-source executive chart opens period evidence and Deep BA step 2", async ({ page }) => {
+  test.setTimeout(300_000);
+  const review = await importSixSources(page);
+  await page.getByTestId("business-perspective-executive_overview").click();
+  await review.getByLabel("Compare").selectOption("2026-05");
+  await review.getByLabel("Period").selectOption("2026-06");
+  await page.getByTestId("analyze-selected-perspective").click();
+
+  const result = page.getByTestId("perspective-collection-result");
+  await expect(result).toBeVisible({ timeout: 120_000 });
+  await result.getByTestId("collection-chart-point-2026-05-sales_revenue").click();
+
+  const drill = page.getByTestId("collection-chart-drill");
+  await expect(drill).toBeVisible();
+  await expect(drill).toContainText(/2026-05/);
+  await expect(drill).toContainText(/Sales_ERP_May_2026\.xlsx/);
+  await drill.getByRole("button", { name: /Deep BA analysis · Step 2|Phân tích BA chuyên sâu · Bước 2/i }).click();
+  const subset = page.getByTestId("collection-subset-deep-ba");
+  await expect(subset).toBeVisible();
+  await expect(subset.getByTestId("single-source-ba-overview")).toBeVisible();
+  await expect(subset.getByTestId("deep-ba-selected-scope")).toBeVisible();
+});

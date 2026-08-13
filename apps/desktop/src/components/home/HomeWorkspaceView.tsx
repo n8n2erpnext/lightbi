@@ -351,6 +351,7 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                       rows={currentDataset.analysisRows}
                       sourceCount={currentDataset.sourceFiles?.length ?? 1}
                       deepDiveBrief={currentDataset.canonicalPerspectiveBrief}
+                      evidenceSources={currentDataset.canonicalPerspectiveEvidenceSources}
                     />
                   )}
                   {currentDataset.canonicalPeriodPartitionWorkspace && currentDataset.canonicalPeriodPartitionExecution && (

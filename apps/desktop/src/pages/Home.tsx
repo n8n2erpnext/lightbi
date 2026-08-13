@@ -704,6 +704,14 @@ export const Home: React.FC = () => {
                 : "revenue",
           })
           : null;
+        const canonicalPerspectiveEvidenceSources = members.map((item) => ({
+          period: item.draft.periodStart?.slice(0, 7) ?? 'unavailable',
+          role: item.draft.role ?? 'source',
+          sourceName: item.file.name,
+          sourceRowCount: item.boundary.sourceRowCount,
+          rows: (item.source.analysis_rows ?? item.boundary.semanticSample.rows) as Record<string, unknown>[],
+          semanticFields: generateCanonicalAIBriefing(item.artifact).semanticFields,
+        }));
         registerAdvancedSource({
           id: advancedSourceId("canonical_perspective_collection", perspectiveId),
           name: `${perspectiveId.replaceAll("_", " ")} · ${members.length} governed sources`,
@@ -754,6 +762,7 @@ export const Home: React.FC = () => {
           canonicalUserOverlay: primary.overlay,
           canonicalPerspectiveId: perspectiveId,
           canonicalPerspectiveBrief,
+          canonicalPerspectiveEvidenceSources,
           canonicalPerspectiveExecutions: periodExecutions,
           canonicalPerspectiveMultiSourceExecutions: multiSourceExecutions,
           analysisRowScope: 'full_file_governed_collection',

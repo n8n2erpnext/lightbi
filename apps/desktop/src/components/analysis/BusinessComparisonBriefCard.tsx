@@ -2,14 +2,16 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { AlertTriangle, ArrowDownRight, ArrowUpRight, BarChart3, CheckCircle2, Download, FileDown, ShieldAlert, TrendingUp } from 'lucide-react';
 import type { DomainComparisonBrief, DriverContribution, MetricDelta, NarrativeSection } from '../../lib/ba-comparison-engine';
 import { exportRowsAsCsv, exportRowsAsXlsx } from '../../lib/drill-through-export';
+import { useUiLanguage } from '../../lib/ui-language';
+import { useDisplayPreferences } from '../../stores/display-preferences-store';
 
 interface BusinessComparisonBriefCardProps {
   brief: DomainComparisonBrief;
   onApplyPeriodLabels?: (labelsBySource: Record<string, string>) => void;
 }
 
-function formatNumber(value: number): string {
-  return new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 }).format(value);
+function formatNumber(value: number, locale: string): string {
+  return new Intl.NumberFormat(locale, { maximumFractionDigits: 2 }).format(value);
 }
 
 function formatPercent(value: number | null): string {
@@ -31,7 +33,7 @@ function metricTone(metric: MetricDelta): string {
   return 'text-slate-700 bg-slate-50 border-slate-100';
 }
 
-function DriverList({ title, drivers, mode }: { title: string; drivers: DriverContribution[]; mode: 'growth' | 'decline' | 'profit' }) {
+function DriverList({ title, drivers, mode, locale, t }: { title: string; drivers: DriverContribution[]; mode: 'growth' | 'decline' | 'profit'; locale: string; t: (value: string) => string }) {
   const Icon = mode === 'decline' ? ArrowDownRight : ArrowUpRight;
   const accent = mode === 'decline' ? 'text-red-600' : mode === 'profit' ? 'text-violet-600' : 'text-emerald-600';
   return (
@@ -41,7 +43,7 @@ function DriverList({ title, drivers, mode }: { title: string; drivers: DriverCo
         <h4 className="text-[12px] font-semibold uppercase tracking-wide text-black/55">{title}</h4>
       </div>
       {drivers.length === 0 ? (
-        <p className="text-[12px] text-black/45">No reliable drivers found.</p>
+        <p className="text-[12px] text-black/45">{t('No reliable drivers found.')}</p>
       ) : (
         <div className="space-y-2">
           {drivers.slice(0, 10).map((driver, index) => (
@@ -49,13 +51,13 @@ function DriverList({ title, drivers, mode }: { title: string; drivers: DriverCo
               <div className="min-w-0">
                 <p className="truncate text-[13px] font-medium text-[#202123]">{index + 1}. {driver.key}</p>
                 <p className="text-[11px] text-black/45">
-                  Revenue Δ {formatNumber(driver.revenueDelta)} · {formatPercent(driver.revenueDeltaPercent)}
+                  {t('Revenue Δ')} {formatNumber(driver.revenueDelta, locale)} · {formatPercent(driver.revenueDeltaPercent)}
                 </p>
               </div>
               {driver.currentProfit !== undefined && (
                 <div className="shrink-0 text-right">
-                  <p className="text-[12px] font-semibold text-black/70">{formatNumber(driver.currentProfit)}</p>
-                  <p className="text-[10px] uppercase text-black/35">profit</p>
+                  <p className="text-[12px] font-semibold text-black/70">{formatNumber(driver.currentProfit, locale)}</p>
+                  <p className="text-[10px] uppercase text-black/35">{t('profit')}</p>
                 </div>
               )}
             </div>
@@ -66,7 +68,7 @@ function DriverList({ title, drivers, mode }: { title: string; drivers: DriverCo
   );
 }
 
-function NarrativeSectionCard({ section }: { section: NarrativeSection }) {
+function NarrativeSectionCard({ section, t }: { section: NarrativeSection; t: (value: string) => string }) {
   const tone = section.severity === 'positive'
     ? 'border-emerald-100 bg-emerald-50'
     : section.severity === 'critical'
@@ -76,12 +78,12 @@ function NarrativeSectionCard({ section }: { section: NarrativeSection }) {
         : 'border-black/10 bg-white';
   return (
     <div className={`rounded-lg border p-3 ${tone}`}>
-      <p className="text-[13px] font-semibold text-[#202123]">{section.title}</p>
-      <p className="mt-1 text-[12px] leading-5 text-black/65">{section.summary}</p>
+      <p className="text-[13px] font-semibold text-[#202123]">{t(section.title)}</p>
+      <p className="mt-1 text-[12px] leading-5 text-black/65">{t(section.summary)}</p>
       {section.bullets.length > 0 && (
         <ul className="mt-2 space-y-1 text-[12px] leading-5 text-black/60">
           {section.bullets.slice(0, 22).map(bullet => (
-            <li key={bullet}>- {bullet}</li>
+            <li key={bullet}>- {t(bullet)}</li>
           ))}
         </ul>
       )}
@@ -90,6 +92,8 @@ function NarrativeSectionCard({ section }: { section: NarrativeSection }) {
 }
 
 export const BusinessComparisonBriefCard: React.FC<BusinessComparisonBriefCardProps> = ({ brief, onApplyPeriodLabels }) => {
+  const { t } = useUiLanguage();
+  const locale = useDisplayPreferences(state => state.preferences.locale);
   const initialLabels = useMemo(
     () => Object.fromEntries(brief.periodMapping.map(period => [period.periodId, period.label])),
     [brief.periodMapping]
@@ -111,26 +115,26 @@ export const BusinessComparisonBriefCard: React.FC<BusinessComparisonBriefCardPr
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             <TrendingUp className="h-5 w-5" />
-            <h3 className="text-[15px] font-semibold">Business comparison brief</h3>
-            <span className="rounded border border-white/70 bg-white/70 px-2 py-0.5 text-[11px] font-semibold">{brief.domainLabel}</span>
+            <h3 className="text-[15px] font-semibold">{t('Business comparison brief')}</h3>
+            <span className="rounded border border-white/70 bg-white/70 px-2 py-0.5 text-[11px] font-semibold">{t(brief.domainLabel)}</span>
           </div>
-          <p className="mt-1 text-[13px] leading-5 opacity-85">{brief.headline}</p>
+          <p className="mt-1 text-[13px] leading-5 opacity-85">{t(brief.headline)}</p>
           {brief.periods.length >= 2 && (
             <p className="mt-1 text-[12px] opacity-70">{brief.periods[0]} → {brief.periods[brief.periods.length - 1]}</p>
           )}
-          <p className="mt-1 text-[12px] opacity-70">{brief.businessQuestion}</p>
+          <p className="mt-1 text-[12px] opacity-70">{t(brief.businessQuestion)}</p>
         </div>
         <div className="flex gap-2">
           <div className="flex h-16 w-20 shrink-0 items-center justify-center rounded-lg border border-white/70 bg-white/70">
             <div className="text-center">
               <div className="text-2xl font-semibold leading-none">{brief.decisionReadinessScore}</div>
-              <div className="mt-1 text-[10px] font-semibold uppercase opacity-60">ready</div>
+              <div className="mt-1 text-[10px] font-semibold uppercase opacity-60">{t('ready')}</div>
             </div>
           </div>
           <div className="flex h-16 w-20 shrink-0 items-center justify-center rounded-lg border border-white/70 bg-white/70">
             <div className="text-center">
               <div className="text-2xl font-semibold leading-none">{brief.trustScore}</div>
-              <div className="mt-1 text-[10px] font-semibold uppercase opacity-60">trust</div>
+              <div className="mt-1 text-[10px] font-semibold uppercase opacity-60">{t('trust')}</div>
             </div>
           </div>
         </div>
@@ -140,7 +144,7 @@ export const BusinessComparisonBriefCard: React.FC<BusinessComparisonBriefCardPr
         <div className="rounded-lg border border-white/70 bg-white/70 p-3">
           <div className="mb-2 flex items-center gap-2">
             {brief.periodMappingNeedsReview ? <AlertTriangle className="h-4 w-4 text-amber-600" /> : <CheckCircle2 className="h-4 w-4 text-emerald-600" />}
-            <h4 className="text-[12px] font-semibold uppercase tracking-wide text-black/55">Period mapping</h4>
+            <h4 className="text-[12px] font-semibold uppercase tracking-wide text-black/55">{t('Period mapping')}</h4>
           </div>
           <div className="flex flex-wrap gap-2">
             {brief.periodMapping.map(period => (
@@ -151,7 +155,7 @@ export const BusinessComparisonBriefCard: React.FC<BusinessComparisonBriefCardPr
           </div>
           {brief.periodMappingNeedsReview && (
             <p className="mt-2 text-[12px] leading-5 text-amber-800">
-              Review period labels if filenames do not clearly represent the reporting months.
+              {t('Review period labels if filenames do not clearly represent the reporting months.')}
             </p>
           )}
           {onApplyPeriodLabels && (
@@ -164,7 +168,7 @@ export const BusinessComparisonBriefCard: React.FC<BusinessComparisonBriefCardPr
                       value={draftLabels[period.periodId] ?? period.label}
                       onChange={event => setDraftLabels(current => ({ ...current, [period.periodId]: event.target.value }))}
                       className="w-full rounded border border-black/10 px-2 py-1.5 text-[12px] text-[#202123] outline-none focus:border-blue-400"
-                      placeholder="Month / period label"
+                      placeholder={t('Month / period label')}
                     />
                   </label>
                 ))}
@@ -174,22 +178,22 @@ export const BusinessComparisonBriefCard: React.FC<BusinessComparisonBriefCardPr
                 onClick={() => onApplyPeriodLabels(draftLabels)}
                 className="mt-2 rounded-md bg-[#202123] px-3 py-1.5 text-[12px] font-medium text-white hover:bg-black"
               >
-                Apply period labels
+                {t('Apply period labels')}
               </button>
             </div>
           )}
         </div>
         <div className="rounded-lg border border-white/70 bg-white/70 p-3">
-          <h4 className="text-[12px] font-semibold uppercase tracking-wide text-black/55">Profit evidence</h4>
+          <h4 className="text-[12px] font-semibold uppercase tracking-wide text-black/55">{t('Profit evidence')}</h4>
           <p className="mt-1 text-[13px] font-semibold text-[#202123]">
             {brief.profitEvidenceStatus === 'available'
-              ? 'Direct profit / margin available'
+              ? t('Direct profit / margin available')
               : brief.profitEvidenceStatus === 'estimated_from_cost'
-                ? 'Estimated from cost-like fields'
-                : 'Missing cost / profit evidence'}
+                ? t('Estimated from cost-like fields')
+                : t('Missing cost / profit evidence')}
           </p>
           <p className="mt-1 text-[12px] leading-5 text-black/55">
-            Revenue: {brief.signalCoverage.revenueField ?? 'missing'} · Cost: {brief.signalCoverage.costFields.length ? brief.signalCoverage.costFields.join(', ') : 'missing'} · Dimension: {brief.signalCoverage.dimensionField ?? 'missing'}
+            {t('Revenue')}: {brief.signalCoverage.revenueField ?? t('missing')} · {t('Cost')}: {brief.signalCoverage.costFields.length ? brief.signalCoverage.costFields.join(', ') : t('missing')} · {t('Dimension')}: {brief.signalCoverage.dimensionField ?? t('missing')}
           </p>
         </div>
       </div>
@@ -197,13 +201,13 @@ export const BusinessComparisonBriefCard: React.FC<BusinessComparisonBriefCardPr
       <div className="mt-4 grid gap-3 md:grid-cols-2">
         {brief.metricDeltas.map(metric => (
           <div key={metric.metricId} className={`rounded-lg border p-3 ${metricTone(metric)}`}>
-            <p className="text-[12px] font-semibold uppercase opacity-70">{metric.label}</p>
+            <p className="text-[12px] font-semibold uppercase opacity-70">{t(metric.label)}</p>
             <div className="mt-1 flex items-end justify-between gap-3">
-              <p className="text-xl font-semibold">{formatNumber(metric.delta)}</p>
+              <p className="text-xl font-semibold">{formatNumber(metric.delta, locale)}</p>
               <p className="text-[12px] font-medium">{formatPercent(metric.deltaPercent)}</p>
             </div>
             <p className="mt-1 text-[11px] opacity-65">
-              {formatNumber(metric.previousValue)} → {formatNumber(metric.currentValue)}
+              {formatNumber(metric.previousValue, locale)} → {formatNumber(metric.currentValue, locale)}
             </p>
           </div>
         ))}
@@ -211,27 +215,27 @@ export const BusinessComparisonBriefCard: React.FC<BusinessComparisonBriefCardPr
 
       <div className="mt-4 grid gap-3 xl:grid-cols-2">
         {brief.narrativeSections.map(section => (
-          <NarrativeSectionCard key={section.id} section={section} />
+          <NarrativeSectionCard key={section.id} section={section} t={t} />
         ))}
       </div>
 
       <div className="mt-4 grid gap-3 xl:grid-cols-3">
-        <DriverList title="Top growth" drivers={brief.topGrowthDrivers} mode="growth" />
-        <DriverList title="Top decline" drivers={brief.topDeclineDrivers} mode="decline" />
-        <DriverList title="Top profit" drivers={brief.topProfitDrivers} mode="profit" />
+        <DriverList title={t('Top growth')} drivers={brief.topGrowthDrivers} mode="growth" locale={locale} t={t} />
+        <DriverList title={t('Top decline')} drivers={brief.topDeclineDrivers} mode="decline" locale={locale} t={t} />
+        <DriverList title={t('Top profit')} drivers={brief.topProfitDrivers} mode="profit" locale={locale} t={t} />
       </div>
 
       <div className="mt-4 grid gap-3 lg:grid-cols-2">
         <div className="rounded-lg border border-black/10 bg-white p-3">
           <div className="mb-2 flex items-center gap-2">
             <BarChart3 className="h-4 w-4 text-blue-600" />
-            <h4 className="text-[12px] font-semibold uppercase tracking-wide text-black/55">Why it changed</h4>
+            <h4 className="text-[12px] font-semibold uppercase tracking-wide text-black/55">{t('Why it changed')}</h4>
           </div>
           <div className="space-y-2">
             {brief.reasonCodes.map(reason => (
               <div key={reason.id} className="rounded-md bg-black/[0.025] p-2">
-                <p className="text-[13px] font-medium text-[#202123]">{reason.label}</p>
-                <p className="mt-0.5 text-[12px] leading-5 text-black/55">{reason.statement}</p>
+                <p className="text-[13px] font-medium text-[#202123]">{t(reason.label)}</p>
+                <p className="mt-0.5 text-[12px] leading-5 text-black/55">{t(reason.statement)}</p>
               </div>
             ))}
           </div>
@@ -240,17 +244,17 @@ export const BusinessComparisonBriefCard: React.FC<BusinessComparisonBriefCardPr
         <div className="rounded-lg border border-black/10 bg-white p-3">
           <div className="mb-2 flex items-center gap-2">
             <FileDown className="h-4 w-4 text-emerald-600" />
-            <h4 className="text-[12px] font-semibold uppercase tracking-wide text-black/55">Exportable evidence</h4>
+            <h4 className="text-[12px] font-semibold uppercase tracking-wide text-black/55">{t('Exportable evidence')}</h4>
           </div>
           {brief.exportableEvidence.length === 0 ? (
-            <p className="text-[12px] text-black/45">No row evidence available for export yet.</p>
+            <p className="text-[12px] text-black/45">{t('No row evidence available for export yet.')}</p>
           ) : (
             <div className="space-y-2">
               {brief.exportableEvidence.slice(0, 10).map(evidence => (
                 <div key={evidence.id} className="flex items-center justify-between gap-3 rounded-md bg-black/[0.025] p-2">
                   <div className="min-w-0">
                     <p className="truncate text-[12px] font-medium text-[#202123]">{evidence.label}</p>
-                    <p className="text-[11px] text-black/45">{formatNumber(evidence.rowCount)} rows</p>
+                    <p className="text-[11px] text-black/45">{formatNumber(evidence.rowCount, locale)} {t('rows')}</p>
                   </div>
                   <div className="flex shrink-0 items-center gap-1">
                     <button
@@ -280,10 +284,10 @@ export const BusinessComparisonBriefCard: React.FC<BusinessComparisonBriefCardPr
           <div className="flex items-start gap-2">
             {criticalReason ? <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0 text-red-600" /> : <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />}
             <div>
-              <p className="text-[13px] font-semibold text-[#202123]">{criticalReason ? 'Decision caveat' : 'Review before deciding'}</p>
+              <p className="text-[13px] font-semibold text-[#202123]">{t(criticalReason ? 'Decision caveat' : 'Review before deciding')}</p>
               <div className="mt-1 space-y-1 text-[12px] leading-5 text-black/60">
-                {criticalReason && <p>{criticalReason.statement}</p>}
-                {brief.caveats.map(caveat => <p key={caveat}>- {caveat}</p>)}
+                {criticalReason && <p>{t(criticalReason.statement)}</p>}
+                {brief.caveats.map(caveat => <p key={caveat}>- {t(caveat)}</p>)}
               </div>
             </div>
           </div>
