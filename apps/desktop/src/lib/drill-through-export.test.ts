@@ -40,6 +40,29 @@ describe('drill-through export', () => {
     expect(buildDrillThroughSql(point)).toContain('CAST("ngày xuất" AS VARCHAR)');
   });
 
+  it('reconciles an already-normalized chart field with the exact physical workbook header', () => {
+    const normalizedChartField = 'Thời gian tồn'.normalize('NFD');
+    const point = resolveDrillThroughPoint(
+      {
+        dimensionField: 'inventory.age',
+        sourceDimensionField: normalizedChartField,
+        value: 0.86,
+        label: '0.86',
+      },
+      [{
+        canonicalId: 'inventory.age',
+        physicalColumn: ' Thời gian tồn ',
+        role: 'measure',
+        confidence: 96,
+      }],
+      ['Mã phiếu gửi', ' Thời gian tồn ', 'Thời gian tác động'],
+    );
+
+    expect(point.sourceDimensionField).toBe(' Thời gian tồn ');
+    expect(buildDrillThroughSql(point)).toContain('CAST("thời gian tồn" AS VARCHAR)');
+    expect(buildDrillThroughSql(point)).not.toContain(normalizedChartField);
+  });
+
   it('escapes CSV cells and protects spreadsheet formulas', () => {
     const csv = rowsToCsv(
       ['Mã đơn', 'Ghi chú'],

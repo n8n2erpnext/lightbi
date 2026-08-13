@@ -26,3 +26,12 @@
 ## Invariant
 
 Language selection affects only LightBI-owned presentation copy. It must never translate or mutate source column names, source values, filenames, IDs, semantic evidence, query bindings, or governed execution contracts.
+
+## Drill-through physical-column follow-up
+
+- Reproduced the `DUCKDB_BINDER_ERROR` with `Bao_cao_chi_tiet_Ton_kho_vung_tinh_28-12-2024.xlsx` and its physical header `" Thời gian tồn "`.
+- Root cause: a chart point that already carried `sourceDimensionField` bypassed reconciliation with the physical source binding. Unicode composition and padded workbook headers could therefore reach SQL in a different form from the runtime column.
+- `resolveDrillThroughPoint` now always reconciles chart fields against governed bindings/source columns, even when a source field is already present.
+- SQL identifier normalization now mirrors the runtime materializer (`trim().toLowerCase()`).
+- Added a unit regression with decomposed Unicode plus a whitespace-padded physical header.
+- Added an E2E regression that imports the exact inventory-aging sample, selects the aging angle, clicks a chart point, and requires raw matching rows without a DuckDB binder error.

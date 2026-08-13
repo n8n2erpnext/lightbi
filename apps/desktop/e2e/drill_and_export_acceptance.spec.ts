@@ -37,6 +37,12 @@ test.describe('Drill-through detail and evidence export', () => {
     await page.goto('http://localhost:5173/');
     await page.waitForSelector('input[type="file"]', { state: 'attached' });
     await page.setInputFiles('input[type="file"]', fixture);
+    const analyzeSelectedSheets = page.getByTestId('analyze-selected-sheets');
+    await expect(page.locator('[data-testid="use-single-source"], [data-testid="analyze-selected-sheets"]').first())
+      .toBeVisible({ timeout: 180_000 });
+    if (await analyzeSelectedSheets.isVisible()) {
+      await analyzeSelectedSheets.click();
+    }
     await expect(page.getByTestId('use-single-source')).toBeVisible({ timeout: 180_000 });
     await page.getByTestId('use-single-source').click();
 
@@ -74,5 +80,42 @@ test.describe('Drill-through detail and evidence export', () => {
     const excelDownload = page.waitForEvent('download');
     await drill.getByRole('button', { name: 'Excel' }).click();
     expect((await excelDownload).suggestedFilename()).toMatch(/\.xlsx$/i);
+  });
+
+  test('binds an inventory-aging chart point back to a whitespace-padded physical column', async ({ page }) => {
+    await page.addInitScript(() => {
+      window.localStorage.setItem('lightbi-display-preferences', JSON.stringify({
+        state: { preferences: { language: 'vi', locale: 'vi-VN', currencyCode: 'VND' } },
+        version: 2,
+      }));
+    });
+    const fixture = path.resolve('../../sample data/Bao_cao_chi_tiet_Ton_kho_vung_tinh_28-12-2024.xlsx');
+    await page.goto('http://localhost:5173/');
+    await page.waitForSelector('input[type="file"]', { state: 'attached' });
+    await page.setInputFiles('input[type="file"]', fixture);
+    await expect(page.getByTestId('use-single-source')).toBeVisible({ timeout: 180_000 });
+    await page.getByTestId('use-single-source').click();
+
+    const selector = page.getByTestId('canonical-business-perspectives');
+    await expect(selector).toBeVisible({ timeout: 90_000 });
+    const inventory = selector.locator('button[data-testid^="business-perspective-"]')
+      .filter({ hasText: /Inventory|Tồn kho/i }).first();
+    await expect(inventory).toBeVisible();
+    await inventory.click();
+
+    const agingAngle = page.locator('[data-testid^="canonical-ready-angle-"]')
+      .filter({ hasText: /tuổi tồn|aging|stock age/i }).first();
+    await expect(agingAngle).toBeVisible({ timeout: 30_000 });
+    await agingAngle.click();
+
+    await expect(page).toHaveURL(/\/investigation/, { timeout: 60_000 });
+    const chart = page.getByTestId('chart-preview-canvas').first();
+    await expect(chart).toBeVisible({ timeout: 120_000 });
+    await clickADataPoint(page, chart);
+
+    const drill = page.getByTestId('investigation-drill-through');
+    await expect(drill).toBeVisible();
+    await expect(drill).not.toContainText('DUCKDB_BINDER_ERROR');
+    await expect(drill.locator('tbody tr').first()).toBeVisible({ timeout: 60_000 });
   });
 });

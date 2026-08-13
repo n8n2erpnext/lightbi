@@ -51,24 +51,34 @@ export function resolveDrillThroughPoint(
   fieldBindings: DrillThroughFieldBinding[] = [],
   sourceColumns: string[] = [],
 ): DrillThroughPoint {
-  if (point.sourceDimensionField) return point;
-  const target = normalizedFieldName(point.dimensionField);
+  const targets = new Set([
+    normalizedFieldName(point.dimensionField),
+    point.sourceDimensionField ? normalizedFieldName(point.sourceDimensionField) : '',
+  ].filter(Boolean));
   const usable = fieldBindings
     .filter((binding) => binding.physicalColumn?.trim())
     .sort((left, right) => (right.confidence ?? 0) - (left.confidence ?? 0));
   const direct = usable.find((binding) => [binding.canonicalId, binding.physicalColumn!, binding.label ?? '']
-    .some((candidate) => normalizedFieldName(candidate) === target));
-  const sourceMatch = sourceColumns.find((column) => normalizedFieldName(column) === target);
+    .some((candidate) => targets.has(normalizedFieldName(candidate))));
+  const sourceMatch = sourceColumns.find((column) => targets.has(normalizedFieldName(column)));
   const timeBindings = usable.filter((binding) => binding.role === 'time');
   const timeFallback = isGenericTimeField(point.dimensionField) && timeBindings.length === 1
     ? timeBindings[0]
     : undefined;
-  const sourceDimensionField = direct?.physicalColumn ?? sourceMatch ?? timeFallback?.physicalColumn;
+  // A chart point can already carry a sourceDimensionField derived from a
+  // normalized semantic label. Reconcile it again with the physical source
+  // binding because Unicode composition, surrounding whitespace, and casing
+  // are material when DuckDB binds the runtime JSON column.
+  const sourceDimensionField = direct?.physicalColumn
+    ?? sourceMatch
+    ?? timeFallback?.physicalColumn
+    ?? point.sourceDimensionField;
   return sourceDimensionField ? { ...point, sourceDimensionField } : point;
 }
 
 function quoteLowercaseIdent(ident: string): string {
-  return `"${ident.toLowerCase().replace(/"/g, '""')}"`;
+  // Keep this identical to full-file-runtime-parser.normalizeRow().
+  return `"${ident.trim().toLowerCase().replace(/"/g, '""')}"`;
 }
 
 function sqlString(value: unknown): string {
