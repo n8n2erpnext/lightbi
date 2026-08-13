@@ -11,6 +11,7 @@ use axum::{
     response::{IntoResponse, Response},
     Json,
 };
+use bigdecimal::BigDecimal;
 use chrono::{DateTime, NaiveDate, NaiveDateTime, NaiveTime, Utc};
 use lightbi_export::excel::ExcelGenerator;
 use lightbi_runtime_backend::model::{ColumnDef, ExecutionMetadata, ResultSet};
@@ -18,7 +19,6 @@ use mongodb::{
     bson::{Bson, Document},
     Client as MongoClient,
 };
-use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use sqlx::{
@@ -4867,7 +4867,7 @@ fn mysql_cell(row: &MySqlRow, index: usize, native: &str) -> Value {
     }
     if upper.contains("DECIMAL") {
         return row
-            .try_get::<Decimal, _>(index)
+            .try_get::<BigDecimal, _>(index)
             .map(|value| Value::String(value.to_string()))
             .unwrap_or(Value::Null);
     }
@@ -4956,7 +4956,7 @@ fn pg_cell(row: &PgRow, index: usize, native: &str) -> Value {
         "FLOAT4" => row.try_get::<f32, _>(index).map(|value| json!(value)),
         "FLOAT8" => row.try_get::<f64, _>(index).map(|value| json!(value)),
         "NUMERIC" => row
-            .try_get::<Decimal, _>(index)
+            .try_get::<BigDecimal, _>(index)
             .map(|value| Value::String(value.to_string())),
         "DATE" => row
             .try_get::<NaiveDate, _>(index)

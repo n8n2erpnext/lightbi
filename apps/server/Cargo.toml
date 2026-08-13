@@ -27,10 +27,10 @@ lightbi-question = { path = "../../crates/lightbi-question" }
 lightbi-insight = { path = "../../crates/lightbi-insight" }
 lightbi-chart = { path = "../../crates/lightbi-chart" }
 lightbi-dashboard = { path = "../../crates/lightbi-dashboard" }
-sqlx = { version = "0.7", features = ["sqlite", "postgres", "mysql", "runtime-tokio-rustls", "chrono", "uuid", "json", "rust_decimal"] }
+sqlx = { version = "0.9", default-features = false, features = ["sqlite", "postgres", "mysql", "runtime-tokio", "tls-rustls-ring", "chrono", "uuid", "json", "bigdecimal"] }
 uuid = { version = "1.8.0", features = ["v4"] }
 chrono = "0.4"
-rust_decimal = "1.36"
+bigdecimal = "0.4"
 ring = "0.17"
 base64 = "0.22"
 reqwest = { version = "0.12", features = ["cookies", "json", "rustls-tls"], default-features = false }
