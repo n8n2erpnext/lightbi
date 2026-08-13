@@ -1,0 +1,43 @@
+{
+  "schemaVersion": "lightbi.beta-inventory-workbook-semantic-support-audit.v1",
+  "recordedAt": "2026-08-13T03:32:00.000Z",
+  "status": "pass",
+  "scope": "Generic exact-header semantic support for dirty inventory workbooks without broadening token-containment inference.",
+  "corrections": [
+    {
+      "id": "BETA-INVENTORY-EXACT-HEADER-ALIASES",
+      "genericRule": "Short or operationally ambiguous inventory labels are eligible only on normalized whole-header equality. They do not participate in token containment.",
+      "signals": {
+        "product": ["tên vật tư", "material name"],
+        "material": ["mã vật tư", "MVT", "material code"],
+        "uom": ["ĐVT", "DVT"],
+        "inventory": ["đầu kỳ", "opening stock"],
+        "received_qty": ["nhập"],
+        "outbound": ["xuất"],
+        "stock_qty": ["cuối kỳ", "closing stock"]
+      }
+    }
+  ],
+  "prohibitedRuntimeInputsUsed": {
+    "filename": false,
+    "sheetName": false,
+    "sourceHash": false,
+    "exactRowCount": false,
+    "expectedMetricAnswer": false
+  },
+  "safetyPreserved": [
+    "The frozen release-corpus candidate quality and grain totals are unchanged.",
+    "Exact-header aliases cannot create substring matches on unrelated columns.",
+    "Workbook sheets still require independent grain and readiness validation.",
+    "No SUM authorization is inferred from a header alias alone."
+  ],
+  "productionFileHashes": {
+    "apps/desktop/src/lib/semantic-registry.ts": "ceb45482a2af65889866b89351b39fa48c49a9716a3c728f5988cc0483831f5b",
+    "apps/desktop/src/lib/understanding-core/semantic-candidate-engine.ts": "04def481120d46b4312ff901805feb82ff80b1c5806094a891575b5284e7f13a"
+  },
+  "verification": {
+    "realWorkbookSummarySheet": "passed",
+    "semanticCandidateAndGrainFrozenCorpus": "19/19 passed",
+    "broadTokenContainmentDelta": 0
+  }
+}

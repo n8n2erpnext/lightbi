@@ -8,6 +8,16 @@
     "direction": "ltr"
   },
   "messages": {
+    "Analyze full workbook": "Phân tích toàn bộ workbook",
+    "Choose sheets to analyze": "Chọn sheet cần phân tích",
+    "Each sheet is inspected as a separate source. LightBI will not append or join sheets unless their structure and business relationship are supported by evidence.": "Mỗi sheet được kiểm tra như một nguồn riêng. LightBI không tự nối hoặc ghép sheet khi chưa có bằng chứng về cấu trúc và quan hệ nghiệp vụ.",
+    "Sheet summary is ready.": "Đã sẵn sàng bản tóm tắt sheet.",
+    "The sheet contains a populated rectangular data region.": "Sheet có vùng dữ liệu dạng bảng.",
+    "The sheet is wide or uses a complex header and will be inspected independently.": "Sheet rộng hoặc có tiêu đề phức tạp và sẽ được kiểm tra riêng.",
+    "The sheet is sparse or appears to be a layout rather than one rectangular table.": "Sheet thưa hoặc có vẻ là bố cục trình bày, không phải một bảng dữ liệu duy nhất.",
+    "The sheet uses many merged presentation regions and does not look like one analytical table.": "Sheet có nhiều vùng trình bày được gộp ô và không giống một bảng phân tích duy nhất.",
+    "This sheet was not selected for full inspection.": "Sheet này chưa được chọn để kiểm tra đầy đủ.",
+    "sheets": "sheet",
     " Choose what you want to understand; LightBI will prepare the sources, metrics and charts.": " Chọn điều bạn muốn tìm hiểu; LightBI sẽ tự chuẩn bị nguồn, chỉ số và biểu đồ.",
     "A saved BA or Advanced result is required to render real data.": "Cần lưu kết quả BA hoặc Nâng cao để hiển thị dữ liệu thực.",
     "Accounts payable": "Công nợ phải trả",

@@ -176,10 +176,11 @@ export function generateUniversalQuestions(input: UnderstandingCoreInput, signal
   const reconciliationStatus = first(signals, byId("status.reconciliation"));
   const quantity = first(signals, signal => signal.family === "quantity");
   const receivedQty = first(signals, byId("quantity.received"));
+  const issuedQty = first(signals, byId("quantity.issued"));
   const soldQty = first(signals, byId("quantity.sold"));
   const returnedQty = first(signals, byId("quantity.returned"));
   const orderedQty = first(signals, byId("quantity.ordered"));
-  const hasExplicitQuantityMovement = Boolean(receivedQty || soldQty || returnedQty || orderedQty);
+  const hasExplicitQuantityMovement = Boolean(receivedQty || issuedQty || soldQty || returnedQty || orderedQty);
   const hasInventoryContext = inferOverlays(signals).includes("inventory");
   const stockMovementQuantity = hasExplicitQuantityMovement || hasInventoryContext ? quantity : undefined;
   const paymentMethod = first(signals, byId("money.payment_method"));
@@ -708,13 +709,13 @@ export function generateUniversalQuestions(input: UnderstandingCoreInput, signal
     requiredFamilies: ["quantity"],
     requiredSignals: ["quantity.ordered|quantity.received|quantity.sold|quantity.returned|quantity.units"],
     optionalSignals: ["item.*", "location.*", "document.*", "time.*"],
-    evidence: [orderedQty, receivedQty, soldQty, returnedQty, stockMovementQuantity].filter(Boolean).flatMap(signal => signal!.evidence),
+    evidence: [orderedQty, receivedQty, issuedQty, soldQty, returnedQty, stockMovementQuantity].filter(Boolean).flatMap(signal => signal!.evidence),
     action: makeAction(
       "stock_movement",
       "Stock movement and quantity flow",
       "group_by",
       item ? [item.physicalColumn] : location ? [location.physicalColumn] : documentType ? [documentType.physicalColumn] : time ? [time.physicalColumn] : [],
-      receivedQty ? [receivedQty.physicalColumn] : soldQty ? [soldQty.physicalColumn] : returnedQty ? [returnedQty.physicalColumn] : orderedQty ? [orderedQty.physicalColumn] : stockMovementQuantity ? [stockMovementQuantity.physicalColumn] : [],
+      receivedQty ? [receivedQty.physicalColumn] : issuedQty ? [issuedQty.physicalColumn] : soldQty ? [soldQty.physicalColumn] : returnedQty ? [returnedQty.physicalColumn] : orderedQty ? [orderedQty.physicalColumn] : stockMovementQuantity ? [stockMovementQuantity.physicalColumn] : [],
       scope
     ),
     blockedReasons: [

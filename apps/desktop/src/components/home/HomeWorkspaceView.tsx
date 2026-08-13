@@ -16,12 +16,13 @@ import { HomeSessionHistoryPanel } from './HomeSessionHistoryPanel';
 import { HomeResultView } from './HomeResultView';
 import { HomeDataPreviewDialog } from './HomeDataPreviewDialog';
 import { HomePlanningDialogs } from './HomePlanningDialogs';
+import { WorkbookSheetSelector } from './WorkbookSheetSelector';
 import { useUiLanguage } from '../../lib/ui-language';
 import { getCanonicalPerspectiveDisplay } from '../analysis/CanonicalPerspectiveSelector';
 
 export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
   const { language, t } = useUiLanguage();
-  const { activeConnection, setActiveConnection, handleOnlineSourceInspected, result, isAsking, selectedTopic, currentDataset, pendingLocalBatch, setPendingLocalBatch, isPlusMenuOpen, setIsPlusMenuOpen, isReplaceMenuOpen, setIsReplaceMenuOpen, greeting, navigate, questionInputRef, inputValue, setInputValue, setIsInputFocused, askQuestion, activeAnalysisIntent, questionPlaceholder, renderSourcePickerMenu, activeChips, setAnalysisIntent, openLocalFilePicker, openOnlineDataDrawer, openDatabaseDrawer, workspaceSessions, sessionStatus, refreshWorkspaceSessions, preferences, handleOpenWorkspaceSession, handleDeleteWorkspaceSession, fileInputRef, handleFileChange, uploadError, isUploading, workspaceState, isSavingSession, handleSaveWorkspaceSession, isDataPreviewOpen, setIsDataPreviewOpen, datasetUnderstandingNext, canonicalArtifact, canonicalPresentation, canonicalDomainPerspectives, canonicalMultiSourcePresentation, runtimeSourceContinuity, handleCanonicalOverlayChange, handleCanonicalRemediation, canonicalOverlayRebuildState, canonicalReviewTarget, multiSourceBuildResult, multiSourceReviewSources, multiSourceBundles, multiSourceDrafts, setMultiSourceDrafts, multiSourceBuilding, handleReviewMultiSourceBundle, handleUseMultiSourceReviewSource, handleBuildCanonicalMultiSource, handleAnalyzeMultiSourcePerspective, handleBackToImportedPerspectives, handleCancelInspection, handleUseLocalDataset, guidedInvestigationResult, datasetUnderstanding, activeBusinessViews, selectedPerspective, setSelectedPerspective, analysisMode, setAnalysisMode, selectedBusinessView, setSelectedBusinessView, visibleQuestionSuggestions, selectedViewData, previewActionId, setPreviewActionId, handleSelectAnalysisAction, handleLegacyQuestionSuggestion, lastInspectedFamilies, getEChartsOption, planningWorkflow, canonicalRows } = model;
+  const { activeConnection, setActiveConnection, handleOnlineSourceInspected, result, isAsking, selectedTopic, currentDataset, pendingLocalBatch, setPendingLocalBatch, isPlusMenuOpen, setIsPlusMenuOpen, isReplaceMenuOpen, setIsReplaceMenuOpen, greeting, navigate, questionInputRef, inputValue, setInputValue, setIsInputFocused, askQuestion, activeAnalysisIntent, questionPlaceholder, renderSourcePickerMenu, activeChips, setAnalysisIntent, openLocalFilePicker, openOnlineDataDrawer, openDatabaseDrawer, workspaceSessions, sessionStatus, refreshWorkspaceSessions, preferences, handleOpenWorkspaceSession, handleDeleteWorkspaceSession, fileInputRef, handleFileChange, uploadError, isUploading, workspaceState, isSavingSession, handleSaveWorkspaceSession, isDataPreviewOpen, setIsDataPreviewOpen, datasetUnderstandingNext, canonicalArtifact, canonicalPresentation, canonicalDomainPerspectives, canonicalMultiSourcePresentation, runtimeSourceContinuity, handleCanonicalOverlayChange, handleCanonicalRemediation, canonicalOverlayRebuildState, canonicalReviewTarget, multiSourceBuildResult, multiSourceReviewSources, multiSourceBundles, multiSourceDrafts, setMultiSourceDrafts, multiSourceBuilding, handleReviewMultiSourceBundle, handleUseMultiSourceReviewSource, handleBuildCanonicalMultiSource, handleAnalyzeMultiSourcePerspective, handleBackToImportedPerspectives, handleCancelInspection, handleToggleWorkbookSheet, handleAnalyzeSelectedWorkbookSheets, handleAnalyzeFullWorkbook, handleUseLocalDataset, guidedInvestigationResult, datasetUnderstanding, activeBusinessViews, selectedPerspective, setSelectedPerspective, analysisMode, setAnalysisMode, selectedBusinessView, setSelectedBusinessView, visibleQuestionSuggestions, selectedViewData, previewActionId, setPreviewActionId, handleSelectAnalysisAction, handleLegacyQuestionSuggestion, lastInspectedFamilies, getEChartsOption, planningWorkflow, canonicalRows } = model;
   const isPerspectiveCollection = currentDataset?.sourceType === 'canonical_perspective_collection';
   const collectionRoleCount = isPerspectiveCollection
     ? new Set((currentDataset.sourceFiles ?? []).map((source: any) => source.role).filter(Boolean)).size
@@ -37,13 +38,14 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
       language,
     ).label
     : null;
+  const executableActionCount = datasetUnderstandingNext?.availableActions?.filter((action: any) => action.executionScope !== 'not_supported').length ?? 0;
   const canonicalDatasetState = isPerspectiveCollection
     ? { label: t('Analysis ready'), className: 'border-emerald-200 bg-emerald-50 text-emerald-700' }
     : canonicalOverlayRebuildState === 'pending'
     ? { label: t('Rebuilding'), className: 'border-blue-200 bg-blue-50 text-blue-700' }
     : !canonicalArtifact || canonicalArtifact.status !== 'valid'
       ? { label: canonicalArtifact ? t('Needs review') : t('Inspecting'), className: 'border-amber-200 bg-amber-50 text-amber-800' }
-      : (canonicalPresentation?.counts.ready ?? 0) > 0
+      : (canonicalPresentation?.counts.ready ?? 0) > 0 || executableActionCount > 0
         ? { label: t('Ready'), className: 'border-emerald-200 bg-emerald-50 text-emerald-700' }
         : (canonicalPresentation?.counts.needs_mapping_review ?? 0) > 0 || (canonicalPresentation?.counts.needs_user_evidence ?? 0) > 0
           ? { label: t('Needs review'), className: 'border-amber-200 bg-amber-50 text-amber-800' }
@@ -559,7 +561,19 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                     </div>
                   )}
 
-                  {pendingLocalBatch.status === "ready" && multiSourceReviewSources.length > 0 && (
+                  {pendingLocalBatch.status === "ready" && pendingLocalBatch.step === "sheet_selection" && (
+                    <div className="mt-4 mb-4 w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
+                      <WorkbookSheetSelector
+                        pending={pendingLocalBatch}
+                        onToggle={handleToggleWorkbookSheet}
+                        onAnalyzeSelected={handleAnalyzeSelectedWorkbookSheets}
+                        onAnalyzeAll={handleAnalyzeFullWorkbook}
+                        onCancel={handleCancelInspection}
+                      />
+                    </div>
+                  )}
+
+                  {pendingLocalBatch.status === "ready" && pendingLocalBatch.step === "family_selection" && multiSourceReviewSources.length > 0 && (
                     <div className="w-full animate-in fade-in slide-in-from-bottom-4 duration-500 mt-4 mb-4">
                       <CanonicalMultiSourceReview
                         sources={multiSourceReviewSources}

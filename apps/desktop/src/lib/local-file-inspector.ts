@@ -99,7 +99,7 @@ function createCanonicalFullFileProfile(args: {
  */
 export async function inspectLocalFile(
   candidate: SourceCandidate,
-  options: { signal?: AbortSignal } = {}
+  options: { signal?: AbortSignal; selectedSheetNames?: string[]; workbookManifestOnly?: boolean } = {}
 ): Promise<SourceInspectionResult> {
   options.signal?.throwIfAborted();
   const file = candidate.file;
@@ -125,9 +125,9 @@ export async function inspectLocalFile(
       }
     }
     if (candidate.sourceType === "local_xlsx" || candidate.sourceType === "local_xls") {
-      return await inspectExcel(file, candidate, options.signal);
+      return await inspectExcel(file, candidate, options.signal, options.selectedSheetNames, options.workbookManifestOnly);
     }
-    
+
     if (candidate.sourceType === "local_csv" || candidate.sourceType === "local_tsv" || candidate.sourceType === "local_txt") {
       return await inspectDelimitedText(file, candidate, options.signal);
     }
@@ -172,7 +172,65 @@ export async function inspectLocalFile(
   }
 }
 
-async function inspectExcel(file: File, candidate: SourceCandidate, signal?: AbortSignal): Promise<SourceInspectionResult> {
+type WorkbookSheetSummary = NonNullable<Extract<SourceInspectionResult, { status: "accessible" }>["metadata"]["sheets"]>[string];
+
+function material(value: unknown): boolean {
+  return value !== null && value !== undefined && (typeof value !== "string" || value.trim() !== "");
+}
+
+function summarizeWorkbookSheet(rows: unknown[][], worksheet?: XLSX.WorkSheet): WorkbookSheetSummary {
+  if (rows.length === 0) {
+    return {
+      rows_count: 0,
+      columns: [],
+      preview_rows: [],
+      preview_matrix: [],
+      inspection_state: "summary",
+      suitability: "empty",
+      suitability_reasons: ["No populated cells were found."],
+      used_row_count: 0,
+      used_column_count: 0,
+    };
+  }
+  const widths = rows.map(row => row.reduce<number>((last, value, index) => material(value) ? index + 1 : last, 0));
+  const usedColumnCount = Math.max(0, ...widths);
+  const populatedRows = rows.filter(row => row.some(material));
+  const denseRows = populatedRows.filter(row => row.filter(material).length >= 2);
+  const density = populatedRows.length ? denseRows.length / populatedRows.length : 0;
+  const materialValues = populatedRows.flat().filter(material);
+  const numericRatio = materialValues.filter(value => typeof value === 'number').length / Math.max(1, materialValues.length);
+  const mergeCount = worksheet?.['!merges']?.length ?? 0;
+  const layoutEvidence = mergeCount >= 5 && numericRatio < 0.25;
+  const suitability = layoutEvidence || usedColumnCount < 2 || populatedRows.length < 3 || density < 0.35
+    ? "layout_or_sparse"
+    : usedColumnCount > 80
+      ? "complex_table"
+      : "tabular";
+  const reasons = suitability === "layout_or_sparse"
+    ? [layoutEvidence ? "The sheet uses many merged presentation regions and does not look like one analytical table." : "The sheet is sparse or appears to be a layout rather than one rectangular table."]
+    : suitability === "complex_table"
+      ? ["The sheet is wide or uses a complex header and will be inspected independently."]
+      : ["The sheet contains a populated rectangular data region."];
+  return {
+    rows_count: Math.max(0, populatedRows.length - 1),
+    columns: [],
+    preview_rows: [],
+    preview_matrix: populatedRows.slice(0, 8).map(row => row.slice(0, Math.min(12, usedColumnCount))),
+    inspection_state: "summary",
+    suitability,
+    suitability_reasons: reasons,
+    used_row_count: populatedRows.length,
+    used_column_count: usedColumnCount,
+  };
+}
+
+async function inspectExcel(
+  file: File,
+  candidate: SourceCandidate,
+  signal?: AbortSignal,
+  selectedSheetNames?: string[],
+  workbookManifestOnly = false,
+): Promise<SourceInspectionResult> {
   const buffer = await file.arrayBuffer();
   const fingerprint = await fileSha256(file, buffer);
   signal?.throwIfAborted();
@@ -184,39 +242,61 @@ async function inspectExcel(file: File, candidate: SourceCandidate, signal?: Abo
     throw new Error("Workbook has no sheets.");
   }
 
-  const sheetsData: Record<string, any> = {};
+  const sheetsData: Record<string, WorkbookSheetSummary> = {};
+  const requestedSheets = selectedSheetNames?.filter(name => sheetNames.includes(name));
+  const manifestOnly = workbookManifestOnly && sheetNames.length > 1 && !requestedSheets?.length;
 
   for (const sheetName of sheetNames) {
     signal?.throwIfAborted();
     const worksheet = workbook.Sheets[sheetName];
-    // sheet_to_json with header: 1 returns array of arrays
-    const rows = XLSX.utils.sheet_to_json<any[]>(worksheet, { header: 1 });
-    
-    if (rows.length === 0) {
+    if (requestedSheets?.length && !requestedSheets.includes(sheetName)) {
+      const range = worksheet['!ref'] ? XLSX.utils.decode_range(worksheet['!ref']) : null;
       sheetsData[sheetName] = {
-        rows_count: 0,
+        rows_count: range ? Math.max(0, range.e.r - range.s.r) : 0,
         columns: [],
         preview_rows: [],
-        semantic_rows: [],
-        semantic_sample: {
-          strategy: "full",
-          source_row_count: 0,
-          sample_row_count: 0,
-          row_indexes: []
-        },
-        analysis_rows: [],
-        analysis_row_scope: "full"
+        preview_matrix: [],
+        inspection_state: 'summary',
+        suitability: range && range.e.c - range.s.c + 1 >= 2 ? 'complex_table' : 'layout_or_sparse',
+        suitability_reasons: ['This sheet was not selected for full inspection.'],
+        used_row_count: range ? range.e.r - range.s.r + 1 : 0,
+        used_column_count: range ? range.e.c - range.s.c + 1 : 0,
       };
       continue;
     }
+    // Explicit workbook selection preserves blank positions. Legacy consumers keep the
+    // established SheetJS surface so their frozen corpus fingerprints remain stable.
+    const rows = XLSX.utils.sheet_to_json<any[]>(worksheet, requestedSheets?.length || manifestOnly
+      ? { header: 1, defval: null, raw: true, blankrows: false }
+      : { header: 1 });
+    const summary = summarizeWorkbookSheet(rows, worksheet);
 
-    const provisionalProfile = createCanonicalFullFileProfile({
-      file,
-      fingerprint,
-      sheetName,
-      rawRows: rows,
-      sourceRowCount: Math.max(0, rows.length - 1),
-    });
+    if (manifestOnly) {
+      sheetsData[sheetName] = summary;
+      continue;
+    }
+
+    if (rows.length === 0) {
+      sheetsData[sheetName] = summary;
+      continue;
+    }
+    let provisionalProfile;
+    try {
+      provisionalProfile = createCanonicalFullFileProfile({
+        file,
+        fingerprint,
+        sheetName,
+        rawRows: rows,
+        sourceRowCount: Math.max(0, rows.length - 1),
+      });
+    } catch (error) {
+      sheetsData[sheetName] = {
+        ...summary,
+        inspection_state: "profile_error",
+        profile_error: error instanceof Error ? error.message : String(error),
+      };
+      continue;
+    }
     const physical = provisionalProfile.artifact.sourceProfile;
     const headerIndex = physical.header.selectedHeaderRowIndex;
     const columns = physical.header.physicalColumnNames;
@@ -247,6 +327,7 @@ async function inspectExcel(file: File, candidate: SourceCandidate, signal?: Abo
     const retainedAnalysisRows = retainAnalysisRows(allObjects);
 
     sheetsData[sheetName] = {
+      ...summary,
       rows_count: dataRows.length,
       columns,
       preview_rows: previewObjects,
@@ -255,12 +336,14 @@ async function inspectExcel(file: File, candidate: SourceCandidate, signal?: Abo
       analysis_rows: retainedAnalysisRows,
       analysis_row_scope: retainedAnalysisRows ? "full" : "not_retained",
       canonical_full_file_profile: canonicalFullFileProfile,
-      profiles
+      profiles,
+      inspection_state: "profiled",
     };
   }
 
-  // Use the default sheet's profiles at the top level
-  const defaultSheet = sheetNames[0];
+  const profiledSheetNames = sheetNames.filter(name => sheetsData[name]?.inspection_state === "profiled");
+  // A multi-sheet workbook is a manifest until the user explicitly chooses one or more sheets.
+  const defaultSheet = profiledSheetNames[0];
   const defaultProfiles = sheetsData[defaultSheet]?.profiles || {};
 
   return {
@@ -274,6 +357,8 @@ async function inspectExcel(file: File, candidate: SourceCandidate, signal?: Abo
       sheet_count: sheetNames.length,
       sheet_names: sheetNames,
       default_sheet: defaultSheet,
+      requires_sheet_selection: manifestOnly,
+      selected_sheet_names: profiledSheetNames,
       sheets: sheetsData,
       profiles: defaultProfiles
     },

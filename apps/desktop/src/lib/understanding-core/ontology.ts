@@ -170,6 +170,8 @@ const CORE_ID_BY_CANONICAL: Record<string, string> = {
   quantity: "quantity.units",
   ordered_qty: "quantity.ordered",
   received_qty: "quantity.received",
+  inbound: "quantity.received",
+  outbound: "quantity.issued",
   sold_qty: "quantity.sold",
   returned_qty: "quantity.returned",
   weight: "quantity.weight",

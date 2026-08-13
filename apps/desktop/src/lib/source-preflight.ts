@@ -59,10 +59,19 @@ export type SourceInspectionResult =
         canonical_full_file_profile?: CanonicalFullFileProfileV1 & { fullFileUnderstanding: import('./understanding-core/canonical-source-boundary').CanonicalSourceBoundaryV1['fullFileUnderstanding'] };
         profiles?: Record<string, ColumnProfile>;
         is_workbook?: boolean;
+        requires_sheet_selection?: boolean;
+        selected_sheet_names?: string[];
         sheets?: Record<string, {
           rows_count: number;
           columns: string[];
           preview_rows: any[];
+          preview_matrix?: unknown[][];
+          inspection_state?: "summary" | "profiled" | "profile_error";
+          suitability?: "tabular" | "complex_table" | "layout_or_sparse" | "empty";
+          suitability_reasons?: string[];
+          used_row_count?: number;
+          used_column_count?: number;
+          profile_error?: string;
           semantic_rows?: any[];
           semantic_sample?: {
             strategy: "full" | "matrix_sample";

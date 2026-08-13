@@ -13,14 +13,15 @@ export type PendingLocalFileBatch = {
   families: DatasetFamily[];
   selectedFamilyId: string | null;
   isRestored?: boolean;
-  step: "family_selection";
+  step: "sheet_selection" | "family_selection";
+  selectedSheets?: Record<number, string[]>;
   businessOverview?: BusinessFusionOverview | null;
 };
 
 export function projectPendingMultiSourceReviewSources(
   pending: PendingLocalFileBatch | null,
 ): MultiSourceReviewSourceV1[] {
-  if (!pending || pending.status !== "ready") return [];
+  if (!pending || pending.status !== "ready" || pending.step !== "family_selection") return [];
   return pending.files.flatMap((file, index) => {
     const result = pending.results[index];
     if (!result || result.status !== "accessible") return [];

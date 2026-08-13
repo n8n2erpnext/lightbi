@@ -318,6 +318,11 @@ function buildObservation(
     if (normalizedHeader && normalizedHeader === canonicalLabel && canonicalLabel !== canonical) {
       matchedHeaderSurfaces.push({ type: "header_alias_exact", surface: definition.label, code: "header_matches_registry_label" });
     }
+    for (const surface of definition.exactHeaderAliases ?? []) {
+      if (normalizedHeader && normalizedHeader === normalizeSemanticSurface(surface)) {
+        matchedHeaderSurfaces.push({ type: "header_alias_exact", surface, code: "header_matches_exact_header_alias" });
+      }
+    }
     for (const surface of definition.headerAliases) {
       const normalized = normalizeSemanticSurface(surface);
       if (normalizedHeader && normalizedHeader === normalized) {

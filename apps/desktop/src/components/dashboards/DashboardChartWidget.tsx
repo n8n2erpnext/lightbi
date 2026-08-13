@@ -17,11 +17,19 @@ export interface DashboardChartWidgetProps {
 export const formatDashboardCategory = (value: unknown, key: string, locale = 'en-US'): string => {
   const timeLike = /(date|time|period|month|year|ngay|thang|nam)/.test(key.toLowerCase());
   if (!timeLike) return String(value ?? '');
-  const epoch = typeof value === 'number'
+  const numeric = typeof value === 'number'
     ? value
-    : typeof value === 'string' && /^\d{12,13}$/.test(value.trim())
+    : typeof value === 'string' && /^\d{9,13}$/.test(value.trim())
       ? Number(value)
       : null;
+  // A category such as 1..51 is often a bucket or row number, even when a dirty
+  // header happens to contain "month". Only accept plausible Unix seconds/ms.
+  const epoch = numeric !== null && numeric >= 946_684_800_000 && numeric <= 4_102_444_800_000
+    ? numeric
+    : numeric !== null && numeric >= 946_684_800 && numeric <= 4_102_444_800
+      ? numeric * 1000
+      : null;
+  if (numeric !== null && epoch === null) return String(value ?? '');
   const parsed = epoch !== null ? new Date(epoch) : value instanceof Date ? value : new Date(String(value ?? ''));
   if (Number.isNaN(parsed.getTime())) return String(value ?? '');
   return new Intl.DateTimeFormat(locale, { year: 'numeric', month: 'short', day: '2-digit' }).format(parsed);

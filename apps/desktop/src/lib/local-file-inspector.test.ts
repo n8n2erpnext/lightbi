@@ -145,6 +145,79 @@ describe("inspectLocalFile", () => {
     }
   });
 
+  it("returns a lightweight manifest for a multi-sheet workbook before profiling", async () => {
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, XLSX.utils.aoa_to_sheet([
+      ["Inventory report"],
+      ["February 2025"],
+      [],
+      ["Item", "UOM", "Opening", "In", "Out", "Closing"],
+      ["Bolt", "pcs", 10, 5, 2, 13],
+    ]), "Summary");
+    XLSX.utils.book_append_sheet(workbook, XLSX.utils.aoa_to_sheet([
+      ["ZONE A", null, "ZONE B"],
+      [null, "Door", null],
+    ]), "Warehouse map");
+    const bytes = XLSX.write(workbook, { type: "array", bookType: "xlsx" }) as ArrayBuffer;
+    const file = new File([bytes], "inventory.xlsx");
+    const candidate = createFileSourceCandidate(file);
+    if ("status" in candidate) throw new Error("Expected local XLSX candidate");
+
+    const result = await inspectLocalFile(candidate, { workbookManifestOnly: true });
+
+    expect(result.status).toBe("accessible");
+    if (result.status === "accessible") {
+      expect(result.metadata.requires_sheet_selection).toBe(true);
+      expect(result.metadata.default_sheet).toBeUndefined();
+      expect(result.metadata.sheets?.Summary.inspection_state).toBe("summary");
+      expect(result.metadata.sheets?.Summary.preview_matrix?.length).toBeGreaterThan(0);
+      expect(result.metadata.sheets?.["Warehouse map"].canonical_full_file_profile).toBeUndefined();
+    }
+  });
+
+  it("profiles only explicitly selected workbook sheets and preserves the detected header", async () => {
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, XLSX.utils.aoa_to_sheet([
+      ["COMPANY"],
+      ["INVENTORY REPORT"],
+      ["February 2025"],
+      [],
+      ["STT", "TÊN VẬT TƯ", "MVT", "ĐVT", "Đầu kỳ", "Nhập", "Xuất", "Cuối kỳ", "Ghi chú"],
+      [1, "Bolt", "B01", "Cái", 10, 5, 2, 13, null],
+      [2, "Nut", "N01", "Kg", 20, 4, 1, 23, null],
+    ]), "Tổng hợp");
+    XLSX.utils.book_append_sheet(workbook, XLSX.utils.aoa_to_sheet([["A"], [1]]), "Scratch");
+    const bytes = XLSX.write(workbook, { type: "array", bookType: "xlsx" }) as ArrayBuffer;
+    const file = new File([bytes], "inventory.xlsx");
+    const candidate = createFileSourceCandidate(file);
+    if ("status" in candidate) throw new Error("Expected local XLSX candidate");
+
+    const result = await inspectLocalFile(candidate, { selectedSheetNames: ["Tổng hợp"] });
+
+    expect(result.status).toBe("accessible");
+    if (result.status === "accessible") {
+      expect(result.metadata.requires_sheet_selection).toBe(false);
+      expect(result.metadata.default_sheet).toBe("Tổng hợp");
+      expect(result.metadata.selected_sheet_names).toEqual(["Tổng hợp"]);
+      expect(result.metadata.sheets?.["Tổng hợp"].inspection_state).toBe("profiled");
+      expect(result.metadata.sheets?.["Tổng hợp"].columns).toEqual([
+        "STT", "TÊN VẬT TƯ", "MVT", "ĐVT", "Đầu kỳ", "Nhập", "Xuất", "Cuối kỳ", "Ghi chú",
+      ]);
+      const semantic = result.metadata.sheets?.["Tổng hợp"].canonical_full_file_profile?.fullFileUnderstanding.semantic;
+      const mappings = Object.fromEntries(semantic?.columns.map(column => [column.physicalColumn, column.selectedCandidateId]) ?? []);
+      expect(mappings).toMatchObject({
+        'TÊN VẬT TƯ': 'product',
+        MVT: 'material',
+        'ĐVT': 'uom',
+        'Đầu kỳ': 'inventory',
+        'Nhập': 'received_qty',
+        'Xuất': 'outbound',
+        'Cuối kỳ': 'stock_qty',
+      });
+      expect(result.metadata.sheets?.Scratch.inspection_state).toBe("summary");
+    }
+  });
+
   it("keeps a valid sibling accessible when another XLSX is corrupt", async () => {
     vi.stubGlobal("crypto", undefined);
     const workbook = XLSX.utils.book_new();

@@ -38,6 +38,7 @@ import { executeCanonicalMultiSourceMetric } from '../lib/understanding-core/gov
 import { formatValue } from '../lib/display-formatter';
 import { useUiLanguage } from '../lib/ui-language';
 import { createSingleSourceBAOverview, sampleSingleSourceBARows } from '../lib/single-source-ba-overview';
+import { claimAnalysisShape } from '../lib/dashboard-evidence-dedup';
 const INVESTIGATION_SESSION_ROW_LIMIT = 250;
 const SINGLE_SOURCE_BA_OVERVIEW_ROW_LIMIT = 1000;
 
@@ -503,8 +504,15 @@ export const Investigation: React.FC = () => {
 
     const primaryChartId = persistChartModel(chartModel, chartModel.title || analysisAction.opportunityName, 'perspective_dashboard_primary');
     addChartToDashboard(dashboardId, primaryChartId);
+    const persistedShapes = new Set<string>();
+    claimAnalysisShape(persistedShapes, chartModel.xField, chartModel.yField ?? analysisAction.measures[0]);
     singleSourceBAOverview?.breakdowns.slice(0, 3).forEach(breakdown => {
       if (breakdown.top.length === 0) return;
+      if (!claimAnalysisShape(
+        persistedShapes,
+        breakdown.physicalColumn,
+        singleSourceBAOverview.bindings.selectedMeasure ?? analysisAction.measures[0] ?? 'record_count',
+      )) return;
       const rows = breakdown.top.slice(0, 10).map(item => ({ label: item.label, value: item.value, share: item.share, row_count: item.rowCount }));
       const breakdownChartId = createChart({
         projectId: 'proj-1', datasetId: session.datasetId, name: breakdown.label, type: 'Bar',
@@ -514,6 +522,12 @@ export const Investigation: React.FC = () => {
       addChartToDashboard(dashboardId, breakdownChartId);
     });
     supportingCharts.forEach(item => {
+      const supportingAction = session.supportingAnalyses?.find(candidate => candidate.analysisAction.id === item.actionId)?.analysisAction;
+      if (!claimAnalysisShape(
+        persistedShapes,
+        item.chartModel.xField,
+        item.chartModel.yField ?? supportingAction?.measures[0] ?? 'record_count',
+      )) return;
       const supportingChartId = persistChartModel(item.chartModel, item.label, 'perspective_dashboard_supporting');
       addChartToDashboard(dashboardId, supportingChartId);
     });

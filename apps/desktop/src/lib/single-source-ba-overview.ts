@@ -69,10 +69,10 @@ export function sampleSingleSourceBARows(rows: Row[] | undefined, limit = 1000):
 
 const ALIASES: Record<string, string[]> = {
   revenue: ['revenue', 'salesrevenue', 'netrevenue', 'invoicetotal', 'totalamount', 'totalrevenue', 'amount', 'tongtien', 'tienphaithu', 'thanhtien', 'doanhthu'],
-  quantity: ['quantity', 'qty', 'soldqty', 'quantitysold', 'salesquantity'],
+  quantity: ['quantity', 'qty', 'soldqty', 'quantitysold', 'salesquantity', 'receivedqty', 'issuedqty', 'openingstockqty', 'stockqty'],
   order: ['orderid', 'orderno', 'ordernumber', 'invoiceid', 'invoiceno', 'madon', 'maphieuxuat', 'maphieunhap'],
   date: ['orderdate', 'salesdate', 'transactiondate', 'invoicedate', 'date', 'reportdate', 'ngayxuat', 'ngaynhap', 'ngaybaocao'],
-  product: ['product', 'productname', 'item', 'itemname', 'sku'],
+  product: ['product', 'productname', 'item', 'itemname', 'sku', 'material', 'materialname', 'tenvattu'],
   brand: ['brand', 'productbrand', 'manufacturer'],
   category: ['category', 'productcategory', 'itemcategory', 'group'],
   branch: ['store', 'branch', 'warehouse', 'location', 'shop', 'makho', 'makhoxuat', 'tenkho', 'tenkhoxuat', 'chinhanh'],
@@ -98,7 +98,7 @@ const ALIASES: Record<string, string[]> = {
   origin: ['origin', 'source', 'senderlocation', 'originprovince', 'originbranch', 'tinhgui', 'buucucgui'],
   destination: ['destination', 'receiverlocation', 'destinationprovince', 'destinationbranch', 'tinhnhan', 'buucucnhan'],
   weight: ['weight', 'grossweight', 'actualweight', 'chargeableweight', 'trongluong', 'khoiluong'],
-  stock: ['stockqty', 'onhandqty', 'inventoryqty', 'closingstock', 'tonkho'],
+  stock: ['stockqty', 'onhandqty', 'inventoryqty', 'closingstock', 'endingstock', 'tonkho', 'cuoiky'],
   outcome: ['outcome', 'target', 'converted', 'conversion', 'subscribed', 'success', 'response', 'result', 'resultp', 'y', 'danhgia'],
   duration: ['duration', 'callduration', 'waitingtime', 'leadtime', 'transittime', 'thoigian'],
   campaignCount: ['campaign', 'contacts', 'contactcount', 'attempts', 'previous'],

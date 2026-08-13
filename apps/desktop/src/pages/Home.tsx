@@ -3,9 +3,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useDatasetUpload } from '../hooks/useDatasetUpload';
 import { selectHeroSuggestionPool, getStructuredPool } from '../lib/home-persona';
 import type { HeroSuggestionPrompt } from '../lib/home-persona';
-import { createFileSourceCandidate } from '../lib/source-preflight';
-import type { SourceCandidate, SourceInspectionResult } from '../lib/source-preflight';
-import { inspectLocalFile } from '../lib/local-file-inspector';
+import type { SourceInspectionResult } from '../lib/source-preflight';
 import { createPreviewRows } from '../lib/data-intake-preview-rows';
 import { classifyDatasetFamilies } from '../lib/batch-inspection';
 import type { DatasetFamily } from '../lib/batch-inspection';
@@ -41,12 +39,10 @@ import { ExecutionRunCoordinator } from '@lightbi/runtime';
 import { advancedSourceId, useAdvancedSourceStore } from '../stores/advanced-source-store';
 import { createDecisionTrustReport, type DecisionTrustReport } from '../lib/decision-trust-report';
 import { createBusinessFusionOverview, type BusinessFusionOverview } from '../lib/business-fusion-overview';
-import { uploadProjectSourceFile } from '../lib/project-source-file-api';
 import type { GuidedInvestigationResult } from '../lib/guided-investigation-pipeline';
 import type { DatasetUnderstanding } from '../lib/dataset-understanding-contract';
 import { createLocalCanonicalSourceBoundary } from '../lib/home-source-boundary';
 import { appendCanonicalEvidenceDeclaration, createCanonicalUserOverlay, parseCanonicalUserOverlay, type CanonicalUserOverlayV1 } from '../lib/understanding-core/canonical-user-overlay';
-import { attachPersistedFile } from '../lib/home-workspace-persistence';
 import { useHomeWorkspaceSessions } from '../hooks/useHomeWorkspaceSessions';
 import { useHomePlanningWorkflow } from '../hooks/useHomePlanningWorkflow';
 import { useHomeOnlineSourceIntake } from '../hooks/useHomeOnlineSourceIntake';
@@ -60,6 +56,7 @@ import { projectCanonicalDomainPerspectives, projectGovernedBundleCandidates, ty
 import { findPendingSourceFamily, mapCollectionPerspectiveToDatasetPerspective, projectPendingMultiSourceReviewSources, selectGovernedBundleDrafts, type PendingLocalFileBatch } from '../lib/home-multisource-candidate-review';
 import { createDomainComparisonBrief, type BAComparisonPeriodInput } from '../lib/ba-comparison-engine';
 import { buildHomeCanonicalArtifact } from '../lib/home-canonical-artifact';
+import { createWorkbookSheetSelectionBatch, expandWorkbookSheetSelection, inspectLocalFileBatch, toggleWorkbookSheet } from '../lib/workbook-sheet-intake';
 export const Home: React.FC = () => {
   const { preferences } = useDisplayPreferences();
   const navigate = useNavigate();
@@ -377,6 +374,46 @@ export const Home: React.FC = () => {
     return () => clearInterval(interval);
   }, [isInputFocused, activePool]);
 
+  const finalizeInspectedLocalBatch = (files: File[], results: SourceInspectionResult[]) => {
+    const hasError = results.every(result => result.status !== 'accessible');
+    if (hasError) {
+      setPendingLocalBatch({ files, status: 'error', results, families: [], selectedFamilyId: null, step: 'family_selection' });
+      return;
+    }
+
+    setMultiSourceDrafts(Object.fromEntries(files.map((file, index) => [`${index}:${file.name}`, {
+      selected: false,
+      role: '',
+      documentColumn: '',
+      periodStart: '',
+      periodEnd: '',
+      currency: '',
+      monetaryColumns: '',
+    } satisfies MultiSourceDraftV1])));
+    setMultiSourceBuildResult({ relationshipState: null, blockers: [] });
+    const items = files.map((file, index) => ({ file, result: results[index] }));
+    const families = classifyDatasetFamilies(items, 'strict');
+    let businessOverview: BusinessFusionOverview | null = null;
+    try {
+      if (families.length > 1) businessOverview = createBusinessFusionOverview(families);
+    } catch (error) {
+      console.error('Discovery error:', error);
+      businessOverview = createBusinessFusionOverview(families);
+    }
+    const completed: PendingLocalFileBatch = {
+      files,
+      status: 'ready',
+      results,
+      families,
+      selectedFamilyId: families.length === 1 ? families[0].id : null,
+      step: 'family_selection',
+      businessOverview,
+    };
+    setPendingLocalBatch(completed);
+    setLastInspectedFamilies(families);
+    setLastInspectedBatch(completed);
+  };
+
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
@@ -410,34 +447,9 @@ export const Home: React.FC = () => {
     
     const inspectionRun = inspectionRuns.current.begin();
 
-    // Persist and inspect files concurrently. Browser file inputs do not expose an absolute
-    // local path, so LightBI keeps a project-scoped copy for future session reloads.
-    const inspectionPromises = files.map(file => {
-      const candidateOrError = createFileSourceCandidate(file);
-      if ('status' in candidateOrError) {
-        return Promise.resolve(candidateOrError as SourceInspectionResult);
-      }
-      const persistedFilePromise = uploadProjectSourceFile(file).catch(error => {
-        console.warn("Could not persist project source file:", error);
-        return null;
-      });
-      const inspectionPromise = inspectLocalFile(candidateOrError as SourceCandidate, { signal: inspectionRun.signal });
-      return Promise.all([inspectionPromise, persistedFilePromise]).then(([result, persistedFile]) => (
-        attachPersistedFile(result, persistedFile)
-      )).catch(error => {
-        if (inspectionRun.signal.aborted) throw error;
-        return {
-          status: 'not_found',
-          sourceType: candidateOrError.sourceType,
-          label: file.name,
-          message: error instanceof Error ? error.message : "Error reading file."
-        } as SourceInspectionResult;
-      });
-    });
-
     let results: SourceInspectionResult[];
     try {
-      results = await Promise.all(inspectionPromises);
+      results = await inspectLocalFileBatch(files, inspectionRun.signal);
     } catch (error) {
       if (inspectionRun.signal.aborted) return;
       throw error;
@@ -445,62 +457,9 @@ export const Home: React.FC = () => {
     
     if (!inspectionRuns.current.isCurrent(inspectionRun)) return;
     
-    const hasError = results.every(r => r.status !== 'accessible');
-    
-    setPendingLocalBatch({
-      files,
-      status: hasError ? "error" : "ready",
-      results,
-      families: [],
-      selectedFamilyId: null,
-      step: "family_selection"
-    });
-
-    if (!hasError) {
-      setMultiSourceDrafts(Object.fromEntries(files.map((file, index) => [`${index}:${file.name}`, {
-        selected: false,
-        role: '',
-        documentColumn: '',
-        periodStart: '',
-        periodEnd: '',
-        currency: '',
-        monetaryColumns: '',
-      } satisfies MultiSourceDraftV1])));
-      setMultiSourceBuildResult({ relationshipState: null, blockers: [] });
-      const items = files.map((file, idx) => ({ file, result: results[idx] as SourceInspectionResult }));
-      const families = classifyDatasetFamilies(items, 'strict');
-      
-      let businessOverview: BusinessFusionOverview | null = null;
-
-      try {
-        if (families.length > 1) {
-          businessOverview = createBusinessFusionOverview(families);
-        }
-      } catch (e) {
-        console.error("Discovery error:", e);
-        businessOverview = createBusinessFusionOverview(families);
-      }
-      
-      setPendingLocalBatch({
-        files,
-        status: "ready",
-        results,
-        families,
-        selectedFamilyId: families.length === 1 ? families[0].id : null,
-        step: "family_selection",
-        businessOverview
-      });
-      setLastInspectedFamilies(families);
-      setLastInspectedBatch({
-        files,
-        status: "ready",
-        results,
-        families,
-        selectedFamilyId: families.length === 1 ? families[0].id : null,
-        step: "family_selection",
-        businessOverview,
-      });
-    }
+    const sheetSelectionBatch = createWorkbookSheetSelectionBatch(files, results);
+    if (sheetSelectionBatch) setPendingLocalBatch(sheetSelectionBatch);
+    else finalizeInspectedLocalBatch(files, results);
 
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -512,6 +471,37 @@ export const Home: React.FC = () => {
     inspectionRuns.current.cancel();
     setPendingLocalBatch(null);
   };
+
+  const handleToggleWorkbookSheet = (fileIndex: number, sheetName: string) => {
+    setPendingLocalBatch(current => {
+      if (!current || current.step !== 'sheet_selection') return current;
+      return toggleWorkbookSheet(current, fileIndex, sheetName);
+    });
+  };
+
+  const inspectWorkbookSelection = async (selectAll: boolean) => {
+    const current = pendingLocalBatch;
+    if (!current || current.status !== 'ready' || current.step !== 'sheet_selection') return;
+    const run = inspectionRuns.current.begin();
+    setPendingLocalBatch({ ...current, status: 'reading' });
+    try {
+      const expanded = await expandWorkbookSheetSelection(current, selectAll, run.signal);
+      if (!inspectionRuns.current.isCurrent(run)) return;
+      finalizeInspectedLocalBatch(expanded.files, expanded.results);
+    } catch (error) {
+      if (run.signal.aborted) return;
+      setPendingLocalBatch({
+        ...current,
+        status: 'error',
+        results: [{ status: 'invalid_format', message: error instanceof Error ? error.message : String(error) }],
+      });
+    } finally {
+      inspectionRuns.current.finish(run);
+    }
+  };
+
+  const handleAnalyzeSelectedWorkbookSheets = () => { void inspectWorkbookSelection(false); };
+  const handleAnalyzeFullWorkbook = () => { void inspectWorkbookSelection(true); };
 
   const multiSourceReviewSources = React.useMemo(
     () => projectPendingMultiSourceReviewSources(pendingLocalBatch),
@@ -1191,7 +1181,8 @@ export const Home: React.FC = () => {
     runtimeSourceContinuity,
     canonicalMultiSourcePresentation,
     canonicalReviewTarget, multiSourceBuildResult, multiSourceReviewSources, multiSourceBundles, multiSourceDrafts, setMultiSourceDrafts, multiSourceBuilding,
-    handleReviewMultiSourceBundle, handleUseMultiSourceReviewSource, handleBuildCanonicalMultiSource, handleAnalyzeMultiSourcePerspective, handleBackToImportedPerspectives, handleCancelInspection, handleUseLocalDataset, guidedInvestigationResult, datasetUnderstanding,
+    handleReviewMultiSourceBundle, handleUseMultiSourceReviewSource, handleBuildCanonicalMultiSource, handleAnalyzeMultiSourcePerspective, handleBackToImportedPerspectives, handleCancelInspection,
+    handleToggleWorkbookSheet, handleAnalyzeSelectedWorkbookSheets, handleAnalyzeFullWorkbook, handleUseLocalDataset, guidedInvestigationResult, datasetUnderstanding,
     activeBusinessViews, selectedPerspective, setSelectedPerspective, analysisMode, setAnalysisMode, selectedBusinessView, setSelectedBusinessView,
     visibleQuestionSuggestions, selectedViewData, previewActionId, setPreviewActionId, handleSelectAnalysisAction, handleLegacyQuestionSuggestion,
     lastInspectedFamilies, getEChartsOption: createHomeChartOption, planningWorkflow, canonicalRows,

@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { describe, it, expect } from 'vitest';
-import { generateDashboardChartOptions } from './DashboardChartWidget';
+import { formatDashboardCategory, generateDashboardChartOptions } from './DashboardChartWidget';
 
 describe('DashboardChartWidget formatting', () => {
   const mockPreferences = {
@@ -62,5 +62,15 @@ describe('DashboardChartWidget formatting', () => {
     // Executing the tooltip formatter with 1500000 should ALWAYS return '1,500,000' (full detail)
     const formattedValue = tooltipFormatter(1500000);
     expect(formattedValue).toBe('1,500,000');
+  });
+
+  it('does not turn ordinary numeric categories into dates in 1970', () => {
+    expect(formatDashboardCategory(1, 'reporting_period', 'vi-VN')).toBe('1');
+    expect(formatDashboardCategory(51, 'month_bucket', 'vi-VN')).toBe('51');
+  });
+
+  it('formats plausible epoch timestamps but leaves non-date strings unchanged', () => {
+    expect(formatDashboardCategory(1_735_689_600_000, 'event_date', 'en-US')).toContain('2025');
+    expect(formatDashboardCategory('not-a-date', 'event_date', 'en-US')).toBe('not-a-date');
   });
 });
