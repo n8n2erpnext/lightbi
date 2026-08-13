@@ -8,7 +8,10 @@ dưới. Không suy diễn trạng thái hiện tại chỉ từ ADR hoặc code
 
 - Nhánh làm việc: `codex/beta-recovery-20260801`.
 - HEAD trước đợt sửa này: `9de8e50`.
+- Implementation đã kiểm thử đầy đủ: `d023e537fd6b784d63239202fa425f68a05e829c`.
 - Backup trước sửa đã đẩy: `origin/backup/pre-multisheet-dirty-import-20260813`.
+- Backup sau sửa: `origin/backup/post-multisheet-dirty-import-20260813` (trỏ
+  tới commit bàn giao cuối có tài liệu này).
 - Backup cũ vẫn giữ: `origin/backup/pre-ba-dashboard-alignment-20260813` và
   `origin/backup/post-beta-fixes-20260813`.
 - Không chạm vào ZIP, PID/log và thư mục `releases/` đang untracked; đó là tài
