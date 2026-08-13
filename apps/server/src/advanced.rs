@@ -25,8 +25,8 @@ use sqlx::{
     mysql::{MySqlPoolOptions, MySqlRow},
     postgres::{PgPoolOptions, PgRow},
     sqlite::{SqliteConnectOptions, SqlitePoolOptions, SqliteRow},
-    Column, Executor, MySql, MySqlPool, PgPool, Postgres, QueryBuilder, Row, Sqlite, SqlitePool,
-    TypeInfo, ValueRef,
+    AssertSqlSafe, Column, Executor, MySql, MySqlPool, PgPool, Postgres, QueryBuilder, Row,
+    SqlSafeStr, Sqlite, SqlitePool, TypeInfo, ValueRef,
 };
 use tokio::{
     process::{Child, Command},
@@ -1342,10 +1342,10 @@ async fn discover_sqlite_schema(pool: &SqlitePool) -> Result<Vec<SchemaNode>, Ap
     for entity in entities {
         let name: String = entity.get("name");
         let kind: String = entity.get("type");
-        let columns = sqlx::query(&format!(
+        let columns = sqlx::query(AssertSqlSafe(format!(
             "PRAGMA table_info({})",
             quote_sql_identifier(&name)
-        ))
+        )))
         .fetch_all(pool)
         .await
         .map_err(|error| ApiError::database(format!("Could not load SQLite columns: {error}")))?
@@ -1381,20 +1381,20 @@ async fn discover_sqlite_schema(pool: &SqlitePool) -> Result<Vec<SchemaNode>, Ap
             indexes: Vec::new(),
             foreign_keys: Vec::new(),
         };
-        let index_rows = sqlx::query(&format!(
+        let index_rows = sqlx::query(AssertSqlSafe(format!(
             "PRAGMA index_list({})",
             quote_sql_identifier(&table.name)
-        ))
+        )))
         .fetch_all(pool)
         .await
         .unwrap_or_default();
         for index_row in index_rows {
             let index_name: String = index_row.get("name");
             let unique = index_row.get::<i64, _>("unique") != 0;
-            let column_rows = sqlx::query(&format!(
+            let column_rows = sqlx::query(AssertSqlSafe(format!(
                 "PRAGMA index_info({})",
                 quote_sql_identifier(&index_name)
-            ))
+            )))
             .fetch_all(pool)
             .await
             .unwrap_or_default();
@@ -1405,10 +1405,10 @@ async fn discover_sqlite_schema(pool: &SqlitePool) -> Result<Vec<SchemaNode>, Ap
                 definition: None,
             });
         }
-        let fk_rows = sqlx::query(&format!(
+        let fk_rows = sqlx::query(AssertSqlSafe(format!(
             "PRAGMA foreign_key_list({})",
             quote_sql_identifier(&table.name)
-        ))
+        )))
         .fetch_all(pool)
         .await
         .unwrap_or_default();
@@ -1684,7 +1684,7 @@ fn sqlite_push_condition(builder: &mut QueryBuilder<Sqlite>, column: &str, value
 fn sqlite_mutation_builder<'a>(
     request: &'a MutationRequest,
     row: &'a RowMutationRequest,
-) -> QueryBuilder<'a, Sqlite> {
+) -> QueryBuilder<Sqlite> {
     if row.action == MutationAction::Insert {
         let columns = sorted_keys(&row.changes);
         let mut builder = QueryBuilder::<Sqlite>::new(format!(
@@ -1786,7 +1786,7 @@ fn postgres_mutation_builder<'a>(
     request: &'a MutationRequest,
     row: &'a RowMutationRequest,
     table: &TableNode,
-) -> Result<QueryBuilder<'a, Postgres>, ApiError> {
+) -> Result<QueryBuilder<Postgres>, ApiError> {
     if row.action == MutationAction::Insert {
         let columns = sorted_keys(&row.changes);
         let mut builder = QueryBuilder::<Postgres>::new(format!(
@@ -1902,7 +1902,7 @@ fn mysql_push_condition(builder: &mut QueryBuilder<MySql>, column: &str, value: 
 fn mysql_mutation_builder<'a>(
     request: &'a MutationRequest,
     row: &'a RowMutationRequest,
-) -> QueryBuilder<'a, MySql> {
+) -> QueryBuilder<MySql> {
     if row.action == MutationAction::Insert {
         let columns = sorted_keys(&row.changes);
         let mut builder = QueryBuilder::<MySql>::new(format!(
@@ -1991,7 +1991,7 @@ pub(crate) async fn preview_mutation(
                 .iter()
                 .map(|row| {
                     postgres_mutation_builder(&request, row, table)
-                        .map(|builder| format!("{};", builder.sql()))
+                        .map(|builder| format!("{};", builder.sql().as_str()))
                 })
                 .collect::<Result<Vec<_>, _>>()?
         }
@@ -2012,7 +2012,7 @@ pub(crate) async fn preview_mutation(
             request
                 .rows
                 .iter()
-                .map(|row| format!("{};", mysql_mutation_builder(&request, row).sql()))
+                .map(|row| format!("{};", mysql_mutation_builder(&request, row).sql().as_str()))
                 .collect()
         }
         ConnectionBackend::Sqlite(pool) => {
@@ -2032,7 +2032,7 @@ pub(crate) async fn preview_mutation(
             request
                 .rows
                 .iter()
-                .map(|row| format!("{};", sqlite_mutation_builder(&request, row).sql()))
+                .map(|row| format!("{};", sqlite_mutation_builder(&request, row).sql().as_str()))
                 .collect()
         }
         ConnectionBackend::Mongo(_) => {
@@ -2321,7 +2321,10 @@ pub(crate) async fn commit_script(
                 ))
             })?;
             for statement in &statements {
-                if let Err(error) = sqlx::query(statement).execute(&mut *tx).await {
+                if let Err(error) = sqlx::query(AssertSqlSafe(statement.as_str()))
+                    .execute(&mut *tx)
+                    .await
+                {
                     tx.rollback().await.ok();
                     return Err(ApiError::database(format!(
                         "PostgreSQL script failed and was rolled back: {error}"
@@ -2342,7 +2345,10 @@ pub(crate) async fn commit_script(
                 ))
             })?;
             for statement in &statements {
-                if let Err(error) = sqlx::query(statement).execute(&mut *tx).await {
+                if let Err(error) = sqlx::query(AssertSqlSafe(statement.as_str()))
+                    .execute(&mut *tx)
+                    .await
+                {
                     tx.rollback().await.ok();
                     return Err(ApiError::database(format!(
                         "MySQL/MariaDB script failed and was rolled back: {error}"
@@ -2363,7 +2369,10 @@ pub(crate) async fn commit_script(
                 ))
             })?;
             for statement in &statements {
-                if let Err(error) = sqlx::query(statement).execute(&mut *tx).await {
+                if let Err(error) = sqlx::query(AssertSqlSafe(statement.as_str()))
+                    .execute(&mut *tx)
+                    .await
+                {
                     tx.rollback().await.ok();
                     return Err(ApiError::database(format!(
                         "SQLite script failed and was rolled back: {error}"
@@ -2642,17 +2651,17 @@ pub(crate) async fn get_table_count(
                 .map_err(|error| {
                     ApiError::database(format!("Could not enable read-only count: {error}"))
                 })?;
-            sqlx::query(&format!(
+            sqlx::query(AssertSqlSafe(format!(
                 "SET LOCAL statement_timeout = '{COUNT_TIMEOUT_MS}ms'"
-            ))
+            )))
             .execute(&mut *tx)
             .await
             .map_err(|error| ApiError::database(format!("Could not set count timeout: {error}")))?;
-            let count: i64 = sqlx::query_scalar(&format!(
+            let count: i64 = sqlx::query_scalar(AssertSqlSafe(format!(
                 "SELECT COUNT(*)::bigint FROM {}.{}",
                 quote_pg_identifier(&schema),
                 quote_pg_identifier(&table)
-            ))
+            )))
             .fetch_one(&mut *tx)
             .await
             .map_err(|error| {
@@ -2672,10 +2681,10 @@ pub(crate) async fn get_table_count(
             }
             let count: i64 = tokio::time::timeout(
                 Duration::from_millis(COUNT_TIMEOUT_MS),
-                sqlx::query_scalar(&format!(
+                sqlx::query_scalar(AssertSqlSafe(format!(
                     "SELECT COUNT(*) FROM {}",
                     quote_mysql_identifier(&table)
-                ))
+                )))
                 .fetch_one(pool),
             )
             .await
@@ -2685,10 +2694,10 @@ pub(crate) async fn get_table_count(
         }
         ConnectionBackend::Sqlite(pool) => tokio::time::timeout(
             Duration::from_millis(COUNT_TIMEOUT_MS),
-            sqlx::query_scalar(&format!(
+            sqlx::query_scalar(AssertSqlSafe(format!(
                 "SELECT COUNT(*) FROM {}",
                 quote_sql_identifier(&table)
-            ))
+            )))
             .fetch_one(pool),
         )
         .await
@@ -3210,16 +3219,16 @@ pub(crate) async fn explain_query(
         .map_err(|error| {
             ApiError::database(format!("Could not enable read-only explain: {error}"))
         })?;
-    sqlx::query(&format!(
+    sqlx::query(AssertSqlSafe(format!(
         "SET LOCAL statement_timeout = '{STATEMENT_TIMEOUT_MS}ms'"
-    ))
+    )))
     .execute(&mut *tx)
     .await
     .map_err(|error| ApiError::database(format!("Could not set explain timeout: {error}")))?;
     let started_at = Instant::now();
-    let plan: Value = sqlx::query_scalar(&format!(
+    let plan: Value = sqlx::query_scalar(AssertSqlSafe(format!(
         "EXPLAIN (FORMAT JSON, COSTS TRUE, VERBOSE FALSE) {sql}"
-    ))
+    )))
     .fetch_one(&mut *tx)
     .await
     .map_err(|error| ApiError::database(format!("PostgreSQL explain failed: {error}")))?;
@@ -3239,7 +3248,7 @@ fn split_filter_values(value: &str) -> Vec<String> {
         .collect()
 }
 
-fn push_pg_filter_condition(builder: &mut QueryBuilder<'_, Postgres>, filter: &QueryFilterRequest) {
+fn push_pg_filter_condition(builder: &mut QueryBuilder<Postgres>, filter: &QueryFilterRequest) {
     let column = quote_pg_identifier(&filter.column);
     let text_column = format!("CAST({column} AS TEXT)");
     match filter.operator {
@@ -3356,7 +3365,7 @@ fn push_pg_filter_condition(builder: &mut QueryBuilder<'_, Postgres>, filter: &Q
     };
 }
 
-fn push_pg_filter_node(builder: &mut QueryBuilder<'_, Postgres>, node: &QueryFilterNode) {
+fn push_pg_filter_node(builder: &mut QueryBuilder<Postgres>, node: &QueryFilterNode) {
     match node {
         QueryFilterNode::Condition(filter) => push_pg_filter_condition(builder, filter),
         QueryFilterNode::Group(group) => {
@@ -3393,15 +3402,15 @@ async fn run_postgres_query(
         .map_err(|error| {
             ApiError::database(format!("Could not enable read-only transaction: {error}"))
         })?;
-    sqlx::query(&format!(
+    sqlx::query(AssertSqlSafe(format!(
         "SET LOCAL statement_timeout = '{STATEMENT_TIMEOUT_MS}ms'"
-    ))
+    )))
     .execute(&mut *tx)
     .await
     .map_err(|error| ApiError::database(format!("Could not set query timeout: {error}")))?;
 
     let describe_sql = format!("SELECT * FROM ({sql}) AS __lightbi_query LIMIT 0");
-    let description = (&mut *tx).describe(&describe_sql).await.map_err(|error| {
+    let description = (&mut *tx).describe(AssertSqlSafe(describe_sql).into_sql_str()).await.map_err(|error| {
         ApiError::database(format!("Could not describe PostgreSQL result: {error}"))
     })?;
     let columns: Vec<QueryColumn> = description
@@ -3513,7 +3522,7 @@ fn validate_controls(
     Ok(())
 }
 
-fn push_mysql_filter_condition(builder: &mut QueryBuilder<'_, MySql>, filter: &QueryFilterRequest) {
+fn push_mysql_filter_condition(builder: &mut QueryBuilder<MySql>, filter: &QueryFilterRequest) {
     let column = quote_mysql_identifier(&filter.column);
     let text_column = format!("CAST({column} AS CHAR)");
     match filter.operator {
@@ -3630,7 +3639,7 @@ fn push_mysql_filter_condition(builder: &mut QueryBuilder<'_, MySql>, filter: &Q
     };
 }
 
-fn push_mysql_filter_node(builder: &mut QueryBuilder<'_, MySql>, node: &QueryFilterNode) {
+fn push_mysql_filter_node(builder: &mut QueryBuilder<MySql>, node: &QueryFilterNode) {
     match node {
         QueryFilterNode::Condition(filter) => push_mysql_filter_condition(builder, filter),
         QueryFilterNode::Group(group) => {
@@ -3650,7 +3659,7 @@ fn push_mysql_filter_node(builder: &mut QueryBuilder<'_, MySql>, node: &QueryFil
 }
 
 fn push_sqlite_filter_condition(
-    builder: &mut QueryBuilder<'_, Sqlite>,
+    builder: &mut QueryBuilder<Sqlite>,
     filter: &QueryFilterRequest,
 ) {
     let column = quote_sql_identifier(&filter.column);
@@ -3769,7 +3778,7 @@ fn push_sqlite_filter_condition(
     };
 }
 
-fn push_sqlite_filter_node(builder: &mut QueryBuilder<'_, Sqlite>, node: &QueryFilterNode) {
+fn push_sqlite_filter_node(builder: &mut QueryBuilder<Sqlite>, node: &QueryFilterNode) {
     match node {
         QueryFilterNode::Condition(filter) => push_sqlite_filter_condition(builder, filter),
         QueryFilterNode::Group(group) => {
@@ -3798,7 +3807,7 @@ async fn run_mysql_query(
     filter_tree: Option<QueryFilterGroup>,
 ) -> Result<QueryResponse, ApiError> {
     let describe_sql = format!("SELECT * FROM ({sql}) AS __lightbi_query LIMIT 0");
-    let description = pool.describe(&describe_sql).await.map_err(|error| {
+    let description = pool.describe(AssertSqlSafe(describe_sql).into_sql_str()).await.map_err(|error| {
         ApiError::database(format!("Could not describe MySQL/MariaDB result: {error}"))
     })?;
     let columns: Vec<QueryColumn> = description
@@ -3881,7 +3890,7 @@ async fn run_sqlite_query(
     filter_tree: Option<QueryFilterGroup>,
 ) -> Result<QueryResponse, ApiError> {
     let describe_sql = format!("SELECT * FROM ({sql}) AS __lightbi_query LIMIT 0");
-    let description = pool.describe(&describe_sql).await.map_err(|error| {
+    let description = pool.describe(AssertSqlSafe(describe_sql).into_sql_str()).await.map_err(|error| {
         ApiError::database(format!("Could not describe SQLite result: {error}"))
     })?;
     let columns: Vec<QueryColumn> = description
@@ -4103,7 +4112,10 @@ async fn run_sql_import_job(
                 ))
             })?;
             for statement in &statements {
-                if let Err(error) = sqlx::query(statement).execute(&mut *tx).await {
+                if let Err(error) = sqlx::query(AssertSqlSafe(statement.as_str()))
+                    .execute(&mut *tx)
+                    .await
+                {
                     tx.rollback().await.ok();
                     return Err(ApiError::database(format!(
                         "PostgreSQL import failed and was rolled back: {error}"
@@ -4124,7 +4136,10 @@ async fn run_sql_import_job(
                 ))
             })?;
             for statement in &statements {
-                if let Err(error) = sqlx::query(statement).execute(&mut *tx).await {
+                if let Err(error) = sqlx::query(AssertSqlSafe(statement.as_str()))
+                    .execute(&mut *tx)
+                    .await
+                {
                     tx.rollback().await.ok();
                     return Err(ApiError::database(format!(
                         "MySQL/MariaDB import failed and was rolled back: {error}"
@@ -4145,7 +4160,10 @@ async fn run_sql_import_job(
                 ))
             })?;
             for statement in &statements {
-                if let Err(error) = sqlx::query(statement).execute(&mut *tx).await {
+                if let Err(error) = sqlx::query(AssertSqlSafe(statement.as_str()))
+                    .execute(&mut *tx)
+                    .await
+                {
                     tx.rollback().await.ok();
                     return Err(ApiError::database(format!(
                         "SQLite import failed and was rolled back: {error}"
@@ -4655,7 +4673,7 @@ fn postgres_insert_builder<'a>(
     schema: &'a str,
     table: &'a str,
     row: &'a HashMap<String, Value>,
-) -> QueryBuilder<'a, Postgres> {
+) -> QueryBuilder<Postgres> {
     let columns = sorted_keys(row);
     let mut builder = QueryBuilder::<Postgres>::new(format!(
         "INSERT INTO {}.{} (",
@@ -4734,7 +4752,7 @@ fn mysql_insert_builder<'a>(
     schema: &'a str,
     table: &'a str,
     row: &'a HashMap<String, Value>,
-) -> QueryBuilder<'a, MySql> {
+) -> QueryBuilder<MySql> {
     let columns = sorted_keys(row);
     let mut builder = QueryBuilder::<MySql>::new(format!(
         "INSERT INTO {}.{} (",
@@ -4779,7 +4797,7 @@ async fn sqlite_insert_values_tx(
 fn sqlite_insert_builder<'a>(
     table: &'a str,
     row: &'a HashMap<String, Value>,
-) -> QueryBuilder<'a, Sqlite> {
+) -> QueryBuilder<Sqlite> {
     let columns = sorted_keys(row);
     let mut builder =
         QueryBuilder::<Sqlite>::new(format!("INSERT INTO {} (", quote_sql_identifier(table)));
@@ -5224,7 +5242,7 @@ mod tests {
         let request = mutation_test_request();
         let table = mutation_test_table("character varying");
         let postgres = match postgres_mutation_builder(&request, &request.rows[0], &table) {
-            Ok(builder) => builder.sql().to_string(),
+            Ok(builder) => builder.sql().as_str().to_string(),
             Err(error) => panic!("postgres builder failed: {}", error.message),
         };
         assert!(postgres.starts_with(
