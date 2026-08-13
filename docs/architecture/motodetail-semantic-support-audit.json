@@ -1,0 +1,27 @@
+{
+  "schemaVersion": "lightbi.motodetail-semantic-support-audit.v1",
+  "date": "2026-08-13",
+  "scope": "Generic abbreviated ERP headers and safe descriptive analysis",
+  "productionFileHashes": {
+    "apps/desktop/src/lib/semantic-registry.ts": "ec9515642809890c0c3b03c8f2fcd1bb57fd2a3ad646b7dc43b36ecbbf10129c"
+  },
+  "acceptedSemanticExpansion": {
+    "newCandidateTraces": 3,
+    "candidateTraceTotal": 1197,
+    "physicalColumnsCovered": 752,
+    "highSeverityViolations": 0,
+    "exactHeaderOnly": true,
+    "recognizedRoles": [
+      "warehouse",
+      "customer",
+      "order",
+      "employee"
+    ]
+  },
+  "safety": {
+    "fileNameOrSheetNameRulesAdded": false,
+    "measureAuthorizationChanged": false,
+    "decisionUseAuthorizationChanged": false,
+    "technicalColumnsRemainExcluded": true
+  }
+}

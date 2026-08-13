@@ -73,6 +73,7 @@ const CORE_ID_BY_CANONICAL: Record<string, string> = {
   supplier: "entity.vendor",
   vendor: "entity.vendor",
   employee: "entity.employee",
+  employee_id: "entity.employee",
   economic_indicator: "indicator.economic",
   infrastructure_indicator: "indicator.infrastructure",
   population_indicator: "indicator.population",
@@ -236,13 +237,16 @@ function aliasesToPatterns(signal: SemanticSignalDefinition): RegExp[] {
   // contains one translated status word. Value evidence belongs in contextual
   // resolution, never in the header matcher.
 
-  return aliases.map(alias => {
+  const broadPatterns = aliases.map(alias => {
     const escaped = escapeRegExp(alias);
     if (/^[a-z0-9]+$/i.test(alias) && alias.length <= 4) {
       return new RegExp(`\\b${escaped}\\b`, "i");
     }
     return new RegExp(escaped, "i");
   });
+  const exactPatterns = [...new Set(signal.exactHeaderAliases ?? [])]
+    .map(alias => new RegExp(`^\\s*${escapeRegExp(alias)}\\s*$`, "i"));
+  return [...broadPatterns, ...exactPatterns];
 }
 
 function semanticFamilyToCoreFamily(signal: SemanticSignalDefinition): SignalFamily {

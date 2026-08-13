@@ -120,6 +120,9 @@ describe("Phase 3A.2 acceptance truth governance", () => {
     const betaInventoryWorkbookCorrection = readJson<{
       productionFileHashes: Record<string, string>;
     }>("docs/architecture/beta-inventory-workbook-semantic-support-audit.json");
+    const motodetailSemanticCorrection = readJson<{
+      productionFileHashes: Record<string, string>;
+    }>("docs/architecture/motodetail-semantic-support-audit.json");
     const disposition = readJson<{
       files: Array<{ frozenSha256: string }>;
     }>("docs/architecture/phase-7r41-missing-fixture-disposition-audit.json");
@@ -161,7 +164,7 @@ describe("Phase 3A.2 acceptance truth governance", () => {
     for (const [relativePath, correction] of Object.entries(phase5m4Correction.corrections.productionFiles)) {
       expect(correction.beforeSha256).toMatch(/^[a-f0-9]{64}$/);
       expect(crypto.createHash("sha256").update(fs.readFileSync(path.join(REPO_ROOT, relativePath))).digest("hex"))
-        .toBe(betaInventoryWorkbookCorrection.productionFileHashes[relativePath] ?? betaRevenueCorrection.productionFileHashes[relativePath] ?? betaOperationalCorrection.productionFileHashes[relativePath] ?? phase7r37Correction.productionFileHashes[relativePath] ?? phase7r1Correction.productionFileHashes[relativePath] ?? correction.afterSha256);
+        .toBe(motodetailSemanticCorrection.productionFileHashes[relativePath] ?? betaInventoryWorkbookCorrection.productionFileHashes[relativePath] ?? betaRevenueCorrection.productionFileHashes[relativePath] ?? betaOperationalCorrection.productionFileHashes[relativePath] ?? phase7r37Correction.productionFileHashes[relativePath] ?? phase7r1Correction.productionFileHashes[relativePath] ?? correction.afterSha256);
     }
   });
 

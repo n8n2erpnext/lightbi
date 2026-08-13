@@ -456,6 +456,41 @@ describe("understanding-core universal signal ontology", () => {
     expect(result.questions[0].action?.actionKind).toBe("data_quality_review");
   });
 
+  it("recognizes abbreviated ERP customer, area, warehouse, employee, order, and Excel-date fields without treating technical columns as analysis dimensions", () => {
+    const columns = ["DATE", "WHA. ID", "ORD. TITLE", "ORD. CODE", "CUST. NAME", "AREA", "AREA ID", "AREA CLASS", "CHARGE", "MET. ID", "EMP. ID", "__PowerAppsId__"];
+    const rows = makeRows(120, index => ({
+      DATE: 43738 + (index % 26),
+      "WHA. ID": index % 3 === 0 ? "Q12" : "BT",
+      "ORD. TITLE": ["ATK", "NNQT", "RD"][index % 3],
+      "ORD. CODE": `ORD-${1000 + index}`,
+      "CUST. NAME": `Customer ${index % 24}`,
+      AREA: `Q${(index % 12) + 1}`,
+      "AREA ID": `BTQ${(index % 12) + 1}`,
+      "AREA CLASS": "#REF!",
+      CHARGE: index % 40 === 0 ? 15000 : 10000,
+      "MET. ID": ["MOTO", "PAY", "PAY+"][index % 3],
+      "EMP. ID": `EMP-${index % 14}`,
+      "__PowerAppsId__": `powerapps-${index}`,
+    }));
+    const result = createUnderstandingCoreResult(input(columns, rows));
+
+    expect(result.signals).toEqual(expect.arrayContaining([
+      expect.objectContaining({ id: "time.transaction_date", physicalColumn: "DATE", role: "time" }),
+      expect.objectContaining({ id: "location.warehouse", physicalColumn: "WHA. ID" }),
+      expect.objectContaining({ id: "document.order", physicalColumn: "ORD. CODE", role: "identifier" }),
+      expect.objectContaining({ id: "entity.customer", physicalColumn: "CUST. NAME" }),
+      expect.objectContaining({ id: "location.region", physicalColumn: "AREA" }),
+      expect.objectContaining({ id: "entity.employee", physicalColumn: "EMP. ID" }),
+      expect.objectContaining({ id: "quality.technical_column", physicalColumn: "__PowerAppsId__" }),
+    ]));
+    expect(result.questions.find(question => question.id === "customer_activity_volume")?.action).toMatchObject({ dimensions: ["CUST. NAME"], measures: ["record_count"] });
+    expect(result.questions.find(question => question.id === "operational_volume_by_location")?.action).toMatchObject({ dimensions: ["WHA. ID"], measures: ["record_count"] });
+    expect(result.questions.find(question => question.id === "operational_workload_by_actor")?.action).toMatchObject({ dimensions: ["EMP. ID"], measures: ["record_count"] });
+    expect(result.questions[0].id).not.toBe("quality_review_before_analysis");
+    expect(result.actions.flatMap(action => action.measures)).not.toContain("DATE");
+    expect(result.actions.filter(action => action.actionKind !== "data_quality_review").flatMap(action => action.dimensions)).not.toContain("__PowerAppsId__");
+  });
+
   it("is invariant to file names and sheet names for the same columns and values", () => {
     const columns = ["Ngày xuất", "Mã kho", "Tổng tiền", "Tiền mặt"];
     const rows = makeRows(40, index => ({

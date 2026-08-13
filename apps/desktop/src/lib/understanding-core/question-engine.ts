@@ -301,6 +301,27 @@ export function generateUniversalQuestions(input: UnderstandingCoreInput, signal
   }));
 
   questions.push(candidate({
+    id: "customer_activity_volume",
+    label: "Activity volume by customer",
+    prompt: "Which customer or patient appears most often in the source records?",
+    lens: "Customer activity",
+    intent: "ranking",
+    requiredFamilies: ["entity"],
+    requiredSignals: ["entity.customer|entity.patient"],
+    optionalSignals: ["document.*", "time.*", "location.*", "entity.employee"],
+    evidence: [customer, documentType, time, location, actor].filter(Boolean).flatMap(signal => signal!.evidence),
+    action: makeAction(
+      "customer_activity_volume",
+      "Activity volume by customer",
+      "group_by",
+      customer ? [customer.physicalColumn] : [],
+      ["record_count"],
+      scope
+    ),
+    blockedReasons: customer ? [] : ["A usable customer or patient dimension is required."]
+  }));
+
+  questions.push(candidate({
     id: "operational_workload_by_actor",
     label: "Operational workload by owner or manager",
     prompt: "Which owner, manager, employee, driver, or responsible person handles the most records or activities?",
@@ -1233,11 +1254,17 @@ export function generateUniversalQuestions(input: UnderstandingCoreInput, signal
     blockedReasons: status ? [] : ["A usable status field is required."]
   }));
 
-  return questions
-    .filter(question => question.action || question.evidence.length > 0)
+  const visibleQuestions = questions.filter(question => question.action || question.evidence.length > 0);
+  const qualityColumns = new Set(signals.filter(signal => signal.family === "quality").map(signal => signal.physicalColumn));
+  const hasExecutableBusinessQuestion = visibleQuestions.some(question => question.action
+    && question.intent !== "quality_review"
+    && [...question.action.dimensions, ...question.action.measures].some(column => !VIRTUAL_COUNT_MEASURES.has(column) && !qualityColumns.has(column)));
+  return visibleQuestions
     .sort((a, b) => {
-    const qualityFirst = Number(b.intent === "quality_review") - Number(a.intent === "quality_review");
-    if (qualityFirst !== 0) return qualityFirst;
+    const qualityOrder = hasExecutableBusinessQuestion
+      ? Number(a.intent === "quality_review") - Number(b.intent === "quality_review")
+      : Number(b.intent === "quality_review") - Number(a.intent === "quality_review");
+    if (qualityOrder !== 0) return qualityOrder;
     const executableFirst = Number(Boolean(b.action)) - Number(Boolean(a.action));
     if (executableFirst !== 0) return executableFirst;
     const contextual = contextualQuestionPriority(b, signals) - contextualQuestionPriority(a, signals);

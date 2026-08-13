@@ -3,6 +3,49 @@ import * as XLSX from 'xlsx';
 import { createSingleSourceBAOverview, sampleSingleSourceBARows } from './single-source-ba-overview';
 
 describe('single source BA overview', () => {
+  it('does not promote an Excel serial date or technical ID into a KPI during data-quality review', () => {
+    const rows = Array.from({ length: 40 }, (_, index) => ({
+      DATE: 43738 + (index % 20),
+      'AREA CLASS': '#REF!',
+      '__PowerAppsId__': `technical-${index}`,
+      'CUST. NAME': `Customer ${index % 5}`,
+    }));
+    const overview = createSingleSourceBAOverview(rows, {
+      analysisAction: {
+        id: 'universal:action_quality_review_before_analysis',
+        label: 'Review data quality before analysis',
+        dimensions: ['AREA CLASS', '__PowerAppsId__'],
+        measures: [],
+      },
+    })!;
+
+    expect(overview.bindings.selectedMeasure).toBe('record_count');
+    expect(overview.kpis.some(kpi => /DATE|PowerApps/i.test(kpi.label))).toBe(false);
+    expect(overview.breakdowns.some(breakdown => breakdown.physicalColumn === '__PowerAppsId__')).toBe(false);
+  });
+
+  it('counts source rows within a selected customer dimension instead of collapsing each customer group to one identity', () => {
+    const rows = [
+      { 'CUST. NAME': 'Store A', 'ORD. CODE': 'O-1' },
+      { 'CUST. NAME': 'Store A', 'ORD. CODE': 'O-2' },
+      { 'CUST. NAME': 'Store A', 'ORD. CODE': 'O-3' },
+      { 'CUST. NAME': 'Store B', 'ORD. CODE': 'O-4' },
+    ];
+    const overview = createSingleSourceBAOverview(rows, {
+      analysisAction: {
+        id: 'universal:action_customer_activity_volume',
+        label: 'Activity volume by customer',
+        dimensions: ['CUST. NAME'],
+        measures: ['record_count'],
+      },
+      semanticFields: [
+        { canonicalId: 'customer', physicalColumn: 'CUST. NAME' },
+        { canonicalId: 'order', physicalColumn: 'ORD. CODE' },
+      ],
+    })!;
+
+    expect(overview.breakdowns.find(breakdown => breakdown.physicalColumn === 'CUST. NAME')?.top[0]).toMatchObject({ label: 'Store A', value: 3, rowCount: 3 });
+  });
   it('samples large sorted or sparse sources across their complete extent', () => {
     const rows = Array.from({ length: 5000 }, (_, index) => ({
       Date: `2026-01-${String((index % 28) + 1).padStart(2, '0')}`,

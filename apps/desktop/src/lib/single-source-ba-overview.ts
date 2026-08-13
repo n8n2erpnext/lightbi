@@ -320,8 +320,9 @@ function usefulNumericColumns(rows: Row[], excluded: Set<string> = new Set()): s
     if (values.length < Math.min(3, Math.max(1, rows.length))) return false;
     const numeric = values.filter(value => numberValue(value) !== null).length;
     const normalized = normalize(column);
-    const identifierLike = /(^|_)(id|code|no|number)$|uuid|guid|phone|postal|rank|ranking|xep hang|msnv/.test(normalized);
-    return !identifierLike && numeric / values.length >= 0.8;
+    const identifierLike = /(^|_)(id|code|no|number)$|uuid|guid|powerapps|phone|postal|rank|ranking|xep hang|msnv/.test(normalized);
+    const timeLike = /^(date|day|month|year|period|fiscalmonth|fiscalyear|ngay|thang|nam|ky)$/.test(normalized);
+    return !identifierLike && !timeLike && numeric / values.length >= 0.8;
   });
 }
 
@@ -531,7 +532,6 @@ function createBaseSingleSourceBAOverview(rows: Row[], options: SingleSourceBAOv
   if (isOutcomeMode) {
     const outcomeColumn = bindings.outcome ?? bindings.deliveryStatus;
     if (!outcomeColumn) {
-      const requestedDimensions = actionPhysicalColumns(options.analysisAction?.dimensions, rows, options.semanticFields ?? []);
       const actionSignal = normalize([
         options.analysisAction?.id,
         options.analysisAction?.opportunityName,
@@ -539,12 +539,19 @@ function createBaseSingleSourceBAOverview(rows: Row[], options: SingleSourceBAOv
         options.analysisAction?.description,
         ...(options.analysisAction?.measures ?? []),
       ].filter(Boolean).join(' '));
-      const isCountAngle = /recordcount|rowcount|countrecords|sourcerecordcount|distribution|distributed|breakdown|composition/.test(actionSignal);
+      const isQualityReview = /qualityreview|dataquality|technicalfield|dirtyfield/.test(actionSignal);
+      const requestedDimensions = actionPhysicalColumns(options.analysisAction?.dimensions, rows, options.semanticFields ?? [])
+        .filter(column => !isQualityReview || !/^__.*__$|powerapps|area\s*class/i.test(column));
+      const isCountAngle = /recordcount|rowcount|countrecords|sourcerecordcount|distribution|distributed|breakdown|composition/.test(actionSignal) || isQualityReview;
       const measureColumn = isCountAngle ? undefined : requestedMeasures[0] ?? genericNumericMeasures[0];
       if (!measureColumn) {
         const dimensions = [...new Set([...requestedDimensions, ...usefulCategoricalColumns(rows, new Set())])].slice(0, 6);
         const breakdowns = dimensions.flatMap((column, index) => {
-          const breakdown = buildCountBreakdown(rows, column, bindings.customer ?? bindings.order ?? bindings.shipment, `distribution_${index}`, column);
+          // `record_count` is a row count. Passing the selected grouping column
+          // as the identity collapses every group to 1 (for example one unique
+          // customer name inside each customer group), which contradicts the
+          // governed full-source result.
+          const breakdown = buildCountBreakdown(rows, column, undefined, `distribution_${index}`, column);
           return breakdown ? [breakdown] : [];
         });
         const columns = [...new Set(rows.slice(0, 1000).flatMap(row => Object.keys(row)))];
