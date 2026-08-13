@@ -6,7 +6,6 @@ const TRANSLATABLE_ATTRIBUTES = ['aria-label', 'placeholder', 'title'] as const;
 const SKIP_SELECTOR = 'script,style,noscript,textarea,pre,code,[data-no-ui-translate]';
 
 function translateElement(root: HTMLElement, language: string) {
-  if (language === 'en') return;
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
   const textNodes: Text[] = [];
   while (walker.nextNode()) textNodes.push(walker.currentNode as Text);
@@ -42,7 +41,7 @@ export function UiTranslationBoundary({ children }: PropsWithChildren) {
     document.documentElement.lang = metadata.code;
     document.documentElement.dir = metadata.direction ?? 'ltr';
     const root = rootRef.current;
-    if (!root || language === 'en') return;
+    if (!root) return;
     translateElement(root, language);
     const observer = new MutationObserver((mutations) => {
       for (const mutation of mutations) {

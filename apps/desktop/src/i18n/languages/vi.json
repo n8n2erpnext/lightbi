@@ -2459,7 +2459,8 @@
     "Readiness improved: 40 -&gt;": "Mức sẵn sàng được cải thiện: 40 →",
     "); never treated as full-file truth.": "); không bao giờ được xem là kết luận đại diện cho toàn bộ tệp.",
     "Files, online sheets, and databases in one read-only workspace": "Tệp, bảng tính trực tuyến và cơ sở dữ liệu trong một không gian làm việc chỉ đọc",
-    "Donut": "Biểu đồ vành khuyên"
+    "Donut": "Biểu đồ vành khuyên",
+    "Review student performance": "Xem xét kết quả học tập"
   },
   "patterns": [
     {
@@ -2657,6 +2658,45 @@
     {
       "source": "^Which (.+) contains the most (.+)\\?$",
       "target": "$1 nào có $2 lớn nhất?"
+    }
+    ,{
+      "source": "^(.+) contributed the largest positive revenue movement \\((.+)\\)\\.$",
+      "target": "$1 đóng góp mức tăng doanh thu lớn nhất ($2)."
+    },
+    {
+      "source": "^(.+) had the largest negative revenue movement \\((.+)\\)\\.$",
+      "target": "$1 có mức giảm doanh thu lớn nhất ($2)."
+    },
+    {
+      "source": "^Quantity changed by (.+), so volume likely contributed to the movement\\.$",
+      "target": "Số lượng thay đổi $1, vì vậy biến động sản lượng có thể đã góp phần tạo ra thay đổi này."
+    },
+    {
+      "source": "^Cost increased by (.+), reducing how much revenue movement converted into profit\\.$",
+      "target": "Chi phí tăng $1, làm giảm phần biến động doanh thu chuyển thành lợi nhuận."
+    },
+    {
+      "source": "^Discount changed by (.+), which may affect realized revenue or margin\\.$",
+      "target": "Chiết khấu thay đổi $1, có thể ảnh hưởng đến doanh thu thực nhận hoặc biên lợi nhuận."
+    },
+    { "source": "^Previous quantity: (.+)$", "target": "Số lượng kỳ trước: $1" },
+    { "source": "^Current quantity: (.+)$", "target": "Số lượng kỳ hiện tại: $1" },
+    { "source": "^Previous discount: (.+)$", "target": "Chiết khấu kỳ trước: $1" },
+    { "source": "^Current discount: (.+)$", "target": "Chiết khấu kỳ hiện tại: $1" },
+    { "source": "^Profit change: (.+)$", "target": "Thay đổi lợi nhuận: $1" },
+    { "source": "^Revenue change: (.+)$", "target": "Thay đổi doanh thu: $1" },
+    { "source": "^Contribution share: (.+)$", "target": "Tỷ trọng đóng góp: $1" },
+    {
+      "source": "^(.+): revenue change (.+) \\((.+)\\)$",
+      "target": "$1: thay đổi doanh thu $2 ($3)"
+    },
+    {
+      "source": "^(.+): profit (.+), margin (.+), revenue (.+)$",
+      "target": "$1: lợi nhuận $2, biên lợi nhuận $3, doanh thu $4"
+    },
+    {
+      "source": "^(.+) currently ranks highest by profit\\.$",
+      "target": "$1 hiện đứng đầu về lợi nhuận."
     }
   ]
 }

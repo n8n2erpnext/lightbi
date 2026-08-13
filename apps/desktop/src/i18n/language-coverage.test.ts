@@ -4,14 +4,18 @@ import { fileURLToPath } from 'node:url';
 import ts from 'typescript';
 import { describe, expect, it } from 'vitest';
 
-type ViCatalog = { messages?: Record<string, string> };
+type LanguageCatalog = { messages?: Record<string, string>; patterns?: Array<{ source: string }> };
 
 const i18nDir = path.dirname(fileURLToPath(import.meta.url));
 const sourceRoot = path.resolve(i18nDir, '..');
 const catalog = JSON.parse(
   fs.readFileSync(path.join(i18nDir, 'languages', 'vi.json'), 'utf8'),
-) as ViCatalog;
+) as LanguageCatalog;
 const known = new Set(Object.keys(catalog.messages ?? {}));
+const englishCatalog = JSON.parse(
+  fs.readFileSync(path.join(i18nDir, 'languages', 'en.json'), 'utf8'),
+) as LanguageCatalog;
+const knownEnglishSources = new Set(Object.keys(englishCatalog.messages ?? {}));
 const mixedLanguagePattern = /\b(?:dashboard|file|online|server|native|metadata|core|license(?: key)?|backend|easy mode|raw data|read-only|runtime|governed)\b/i;
 const uiObjectKeys = new Set([
   'title', 'placeholder', 'aria-label', 'label', 'name', 'intent', 'bestFor',
@@ -93,6 +97,53 @@ describe('Vietnamese language coverage', () => {
     const report = [...missing.entries()]
       .sort(([left], [right]) => left.localeCompare(right))
       .map(([text, locations]) => `${JSON.stringify(text)} at ${locations.slice(0, 3).join(', ')}`);
+    expect(report, report.join('\n')).toEqual([]);
+  });
+});
+
+describe('English language coverage', () => {
+  it('catalogs static Vietnamese copy that reaches a visible translation boundary', () => {
+    if (sourceFiles.length === 0) walk(sourceRoot);
+    const missing = new Map<string, string[]>();
+    const add = (raw: string, file: string, node: ts.Node, sourceFile: ts.SourceFile) => {
+      const value = raw.replace(/\s+/g, ' ').trim();
+      if (!value || !/[À-ỹĐđ]/u.test(value) || knownEnglishSources.has(value)
+        || /^(?:×|Revenue Δ)$/.test(value)) return;
+      const line = sourceFile.getLineAndCharacterOfPosition(node.getStart(sourceFile)).line + 1;
+      const locations = missing.get(value) ?? [];
+      locations.push(`${path.relative(sourceRoot, file)}:${line}`);
+      missing.set(value, locations);
+    };
+
+    for (const file of sourceFiles) {
+      const sourceFile = ts.createSourceFile(
+        file,
+        fs.readFileSync(file, 'utf8'),
+        ts.ScriptTarget.Latest,
+        true,
+        file.endsWith('.tsx') ? ts.ScriptKind.TSX : ts.ScriptKind.TS,
+      );
+      const visit = (node: ts.Node) => {
+        if (ts.isCallExpression(node) && ts.isIdentifier(node.expression)
+          && ['t', 'localize', 'localizeUiSurfaceText'].includes(node.expression.text)) {
+          const argument = node.arguments[0];
+          if (argument && (ts.isStringLiteral(argument) || ts.isNoSubstitutionTemplateLiteral(argument))) {
+            add(argument.text, file, argument, sourceFile);
+          }
+        }
+        if (ts.isJsxText(node)) add(node.text, file, node, sourceFile);
+        if (ts.isJsxAttribute(node) && uiObjectKeys.has(node.name.text)
+          && node.initializer && ts.isStringLiteral(node.initializer)) {
+          add(node.initializer.text, file, node.initializer, sourceFile);
+        }
+        ts.forEachChild(node, visit);
+      };
+      visit(sourceFile);
+    }
+
+    const report = [...missing.entries()]
+      .sort(([left], [right]) => left.localeCompare(right))
+      .map(([value, locations]) => `${JSON.stringify(value)} at ${locations.slice(0, 3).join(', ')}`);
     expect(report, report.join('\n')).toEqual([]);
   });
 });

@@ -39,6 +39,14 @@ for (const catalog of Object.values(modules)) {
   });
 }
 
+const reverseToEnglish = new Map<string, string>();
+for (const catalog of catalogs.values()) {
+  if (catalog.meta.code === DEFAULT_LANGUAGE) continue;
+  for (const [source, translated] of Object.entries(catalog.messages)) {
+    if (translated && !reverseToEnglish.has(translated)) reverseToEnglish.set(translated, source);
+  }
+}
+
 function resolveCatalog(code: string): LanguageCatalog | undefined {
   const normalized = code.trim();
   if (!normalized) return catalogs.get(DEFAULT_LANGUAGE);
@@ -59,10 +67,19 @@ export function getLanguageMetadata(code: string): LanguageMetadata {
 }
 
 export function translateCatalogMessage(language: string, source: string): string {
-  if (!source || language === DEFAULT_LANGUAGE) return source;
+  if (!source) return source;
   const catalog = resolveCatalog(language);
   const exact = catalog?.messages[source];
   if (exact) return exact;
+  // English is the stable source language for catalogued UI copy. Legacy
+  // engines can still emit Vietnamese, and the presentation boundary may
+  // already contain Vietnamese text when users switch languages at runtime.
+  // Reversing exact catalog entries keeps both directions complete without
+  // duplicating thousands of strings and allowing the two JSON packages to drift.
+  if (catalog?.meta.code === DEFAULT_LANGUAGE) {
+    const reverse = reverseToEnglish.get(source);
+    if (reverse) return reverse;
+  }
   for (const pattern of catalog?.patterns ?? []) {
     try {
       const expression = new RegExp(pattern.source, pattern.flags ?? 'i');
