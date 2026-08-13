@@ -92,6 +92,7 @@ describe('language catalog registry', () => {
       ['Sales Revenue has the largest relative movement (10.2%). This is the strongest place to begin; it is an observation, not yet a cause.', 'Sales Revenue có mức biến động tương đối lớn nhất (10.2%). Đây là điểm nên kiểm tra đầu tiên; hiện mới là quan sát, chưa phải kết luận nguyên nhân.'],
       ['What drove the change in Sales Revenue from 2026-05 to 2026-06?', 'Yếu tố nào liên quan đến thay đổi của Sales Revenue từ 2026-05 đến 2026-06?'],
       ['Using VND from Settings.', 'Đang sử dụng VND từ Cài đặt.'],
+      ['Governed restriction: The action-candidate limitation remains active.', 'Hạn chế quản trị: Giới hạn đối với hành động đề xuất vẫn đang được áp dụng.'],
     ];
     for (const [source, expected] of cases) expect(translateCatalogMessage('vi', source)).toBe(expected);
   });
