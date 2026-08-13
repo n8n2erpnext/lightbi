@@ -2,7 +2,7 @@
 
 All notable public changes to LightBI are recorded here.
 
-## [0.9.0-beta.3] - 2026-08-13
+## [0.9.0-beta.4] - 2026-08-13
 
 ### Added
 
