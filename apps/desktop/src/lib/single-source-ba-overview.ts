@@ -157,13 +157,17 @@ function actionPhysicalColumns(
   const resolved: string[] = [];
   for (const requestedField of requested) {
     const key = normalize(requestedField);
+    const exactPhysical = normalizedColumns.get(key);
     const semanticMatch = semanticFields.find(field => {
       const canonical = normalize(field.canonicalId ?? '');
-      return Boolean(field.physicalColumn && canonical && (canonical === key || canonical.includes(key) || key.includes(canonical)));
+      if (!field.physicalColumn || !canonical) return false;
+      if (canonical === key) return true;
+      // Canonical ids commonly qualify a signal (for example measure.weight
+      // or money.fee). Only allow a suffix match, never arbitrary substring
+      // containment, so sibling concepts cannot steal the selected action.
+      return key.length >= 4 && canonical.endsWith(key);
     });
-    const physical = semanticMatch?.physicalColumn
-      ?? normalizedColumns.get(key)
-      ?? columns.find(column => normalize(column).includes(key) || key.includes(normalize(column)));
+    const physical = exactPhysical ?? semanticMatch?.physicalColumn;
     if (physical && !resolved.includes(physical)) resolved.push(physical);
   }
   return resolved;
@@ -223,7 +227,7 @@ function quantile(values: number[], q: number): number {
   return sorted[lower] + ((sorted[lower + 1] ?? sorted[lower]) - sorted[lower]) * fraction;
 }
 
-function buildBreakdown(rows: Row[], dimensionColumn: string, measureColumn: string, id: string, label: string): SingleSourceBreakdown | null {
+function buildBreakdown(rows: Row[], dimensionColumn: string, measureColumn: string, id: string, label: string, valueKind: SingleSourceBreakdown['valueKind'] = 'money'): SingleSourceBreakdown | null {
   const groups = new Map<string, { value: number; rowCount: number }>();
   let total = 0;
   for (const row of rows) {
@@ -238,10 +242,10 @@ function buildBreakdown(rows: Row[], dimensionColumn: string, measureColumn: str
   }
   if (groups.size < 2 || total === 0) return null;
   const ranked = [...groups.entries()].map(([groupLabel, entry]) => ({ label: groupLabel, value: entry.value, share: entry.value / total, rowCount: entry.rowCount })).sort((a, b) => b.value - a.value);
-  return { id, label, physicalColumn: dimensionColumn, valueKind: 'money', top: ranked.slice(0, 5), bottom: [...ranked].reverse().slice(0, 3) };
+  return { id, label, physicalColumn: dimensionColumn, valueKind, top: ranked.slice(0, 5), bottom: [...ranked].reverse().slice(0, 3) };
 }
 
-function buildAverageBreakdown(rows: Row[], dimensionColumn: string, measureColumn: string, id: string, label: string): SingleSourceBreakdown | null {
+function buildAverageBreakdown(rows: Row[], dimensionColumn: string, measureColumn: string, id: string, label: string, valueKind: SingleSourceBreakdown['valueKind'] = 'number'): SingleSourceBreakdown | null {
   const groups = new Map<string, { total: number; rowCount: number }>();
   for (const row of rows) {
     const dimension = textValue(row[dimensionColumn]);
@@ -258,7 +262,7 @@ function buildAverageBreakdown(rows: Row[], dimensionColumn: string, measureColu
     .sort((a, b) => b.value - a.value);
   const positiveTotal = ranked.reduce((total, entry) => total + Math.max(0, entry.value), 0);
   ranked.forEach(entry => { entry.share = positiveTotal ? Math.max(0, entry.value) / positiveTotal : 0; });
-  return { id, label, physicalColumn: dimensionColumn, valueKind: 'number', top: ranked.slice(0, 5), bottom: [...ranked].reverse().slice(0, 3) };
+  return { id, label, physicalColumn: dimensionColumn, valueKind, top: ranked.slice(0, 5), bottom: [...ranked].reverse().slice(0, 3) };
 }
 
 function usefulNumericColumns(rows: Row[], excluded: Set<string> = new Set()): string[] {
@@ -357,6 +361,40 @@ function buildTrend(rows: Row[], dateColumn: string, measureColumn: string): Sin
   return [...groups.entries()].map(([period, entry]) => ({ period, ...entry })).sort((a, b) => a.period.localeCompare(b.period));
 }
 
+function buildAverageTrend(rows: Row[], dateColumn: string, measureColumn: string): SingleSourceTrendPoint[] {
+  const groups = new Map<string, { total: number; rowCount: number }>();
+  for (const row of rows) {
+    const rawDate = row[dateColumn];
+    const parsed = rawDate instanceof Date ? rawDate : new Date(String(rawDate));
+    const value = numberValue(row[measureColumn]);
+    if (!Number.isFinite(parsed.getTime()) || value === null) continue;
+    const period = parsed.toISOString().slice(0, 10);
+    const current = groups.get(period) ?? { total: 0, rowCount: 0 };
+    current.total += value;
+    current.rowCount += 1;
+    groups.set(period, current);
+  }
+  return [...groups.entries()]
+    .map(([period, entry]) => ({ period, value: entry.total / entry.rowCount, rowCount: entry.rowCount }))
+    .sort((a, b) => a.period.localeCompare(b.period));
+}
+
+function buildCountTrend(rows: Row[], dateColumn: string, identityColumn?: string): SingleSourceTrendPoint[] {
+  const groups = new Map<string, Set<string>>();
+  rows.forEach((row, index) => {
+    const rawDate = row[dateColumn];
+    const parsed = rawDate instanceof Date ? rawDate : new Date(String(rawDate));
+    if (!Number.isFinite(parsed.getTime())) return;
+    const period = parsed.toISOString().slice(0, 10);
+    const values = groups.get(period) ?? new Set<string>();
+    values.add((identityColumn ? textValue(row[identityColumn]) : null) ?? `row:${index}`);
+    groups.set(period, values);
+  });
+  return [...groups.entries()]
+    .map(([period, values]) => ({ period, value: values.size, rowCount: values.size }))
+    .sort((a, b) => a.period.localeCompare(b.period));
+}
+
 export interface SingleSourceBAOverviewOptions {
   sourceRowCount?: number;
   semanticFields?: SemanticFieldBinding[];
@@ -367,6 +405,7 @@ export interface SingleSourceBAOverviewOptions {
     description?: string;
     dimensions?: readonly string[];
     measures?: readonly string[];
+    measureAggregations?: Readonly<Record<string, 'SUM' | 'COUNT' | 'AVG'>>;
   };
 }
 
@@ -589,7 +628,29 @@ export function createSingleSourceBAOverview(rows: Row[], options: SingleSourceB
 
   if (mode !== 'commercial') {
     const identityCount = operationalIdentity ? new Set(rows.map(row => textValue(row[operationalIdentity])).filter(Boolean)).size : rows.length;
-    const kpis: SingleSourceKpi[] = [{ id: isInventory ? 'records' : 'deliveries', label: isInventory ? 'Bản ghi tồn kho' : 'Lượt giao hàng', value: identityCount, kind: 'number' }];
+    const requestedMeasureId = options.analysisAction?.measures?.[0];
+    const requestedMeasure = requestedMeasures[0];
+    const requestedMeasureSignal = normalize((options.analysisAction?.measures ?? []).join(' '));
+    const configuredAggregation = Object.entries(options.analysisAction?.measureAggregations ?? {})
+      .find(([measure]) => normalize(measure) === normalize(requestedMeasureId ?? '') || normalize(measure) === normalize(requestedMeasure ?? ''))?.[1];
+    const isCountAngle = configuredAggregation === 'COUNT' || /recordcount|rowcount|deliverycount|shipmentcount|count/.test(requestedMeasureSignal);
+    const selectedAggregation = configuredAggregation ?? (isCountAngle ? 'COUNT' : 'SUM');
+    const selectedValueKind: SingleSourceKpi['kind'] = /revenue|money|amount|fee|cod|cost|price|discount/.test(requestedMeasureSignal) ? 'money' : 'number';
+    const selectedValue = isCountAngle
+      ? identityCount
+      : selectedAggregation === 'AVG'
+        ? average(rows, requestedMeasure)
+        : sum(rows, requestedMeasure);
+    const kpis: SingleSourceKpi[] = [];
+    if (selectedValue !== null) {
+      kpis.push({
+        id: isCountAngle ? (isInventory ? 'records' : 'deliveries') : 'selected_measure',
+        label: isCountAngle ? (isInventory ? 'Bản ghi tồn kho' : 'Lượt giao hàng') : `${selectedAggregation === 'AVG' ? 'Bình quân' : 'Tổng'} ${requestedMeasure}`,
+        value: selectedValue,
+        kind: selectedValueKind,
+      });
+    }
+    if (!isCountAngle) kpis.push({ id: isInventory ? 'records' : 'deliveries', label: isInventory ? 'Bản ghi tồn kho' : 'Lượt giao hàng', value: identityCount, kind: 'number' });
     const deliveryFeeTotal = sum(rows, bindings.deliveryFee ?? bindings.fee);
     const codTotal = sum(rows, bindings.cod);
     const stockTotal = sum(rows, bindings.stock);
@@ -603,8 +664,6 @@ export function createSingleSourceBAOverview(rows: Row[], options: SingleSourceB
     const onTimeCount = statusValues.filter(value => positiveOutcome(value) || /ontime|dunghen|completed|delivered|success|dagiao|giaothanhcong/i.test(normalize(value))).length;
     if (statusValues.length && statusSemanticsKnown) kpis.push({ id: 'on_time_rate', label: 'Tỷ lệ hoàn tất/đúng hẹn', value: onTimeCount / statusValues.length, kind: 'percent' });
     const requestedDimensions = actionPhysicalColumns(options.analysisAction?.dimensions, rows, options.semanticFields ?? []);
-    const requestedMeasureSignal = normalize((options.analysisAction?.measures ?? []).join(' '));
-    const isCountAngle = /recordcount|rowcount|deliverycount|shipmentcount|count/.test(requestedMeasureSignal);
     const dimensions: Array<[string, string]> = isInventory
       ? [['warehouse', 'Kho'], ['product', 'Sản phẩm'], ['category', 'Nhóm hàng'], ['status', 'Trạng thái']]
       : [['deliveryStatus', 'Trạng thái giao hàng'], ['currentLocation', 'Vị trí hiện tại'], ['service', 'Dịch vụ'], ['carrier', 'Đơn vị vận chuyển'], ['warehouse', 'Kho / trung tâm'], ['route', 'Tuyến'], ['origin', 'Nơi gửi'], ['destination', 'Nơi nhận'], ['driver', 'Tài xế'], ['vehicle', 'Phương tiện']];
@@ -619,13 +678,26 @@ export function createSingleSourceBAOverview(rows: Row[], options: SingleSourceB
     });
     const breakdowns = breakdownDefinitions.flatMap(([id, label, column]) => {
       if (!column) return [];
-      const measure = isInventory ? bindings.stock : (bindings.deliveryFee ?? bindings.fee);
-      const breakdown = measure && !isCountAngle ? buildBreakdown(rows, column, measure, id, label) : buildCountBreakdown(rows, column, operationalIdentity, id, label);
+      const fallbackMeasure = isInventory ? bindings.stock : (bindings.deliveryFee ?? bindings.fee);
+      const measure = requestedMeasure ?? fallbackMeasure;
+      const breakdown = measure && !isCountAngle
+        ? selectedAggregation === 'AVG'
+          ? buildAverageBreakdown(rows, column, measure, id, label, requestedMeasure ? selectedValueKind : 'number')
+          : buildBreakdown(rows, column, measure, id, label, requestedMeasure ? selectedValueKind : 'money')
+        : buildCountBreakdown(rows, column, operationalIdentity, id, label);
       return breakdown ? [breakdown] : [];
     }).slice(0, 8);
     const dateColumn = bindings.deliveryDate ?? bindings.date;
-    const trendMeasure = bindings.deliveryFee ?? bindings.stock;
-    const trend = dateColumn && trendMeasure ? buildTrend(rows, dateColumn, trendMeasure) : [];
+    const trendMeasure = requestedMeasure ?? bindings.deliveryFee ?? bindings.stock;
+    const trend = !dateColumn
+      ? []
+      : isCountAngle
+        ? buildCountTrend(rows, dateColumn, operationalIdentity)
+        : trendMeasure
+          ? selectedAggregation === 'AVG'
+            ? buildAverageTrend(rows, dateColumn, trendMeasure)
+            : buildTrend(rows, dateColumn, trendMeasure)
+          : [];
     const trendChange = trend.length > 1 && trend[0].value !== 0 ? (trend.at(-1)!.value - trend[0].value) / Math.abs(trend[0].value) : null;
     const findings: string[] = [];
     if (breakdowns[0]?.top[0]) findings.push(`${breakdowns[0].top[0].label} là nhóm lớn nhất, chiếm ${(breakdowns[0].top[0].share * 100).toFixed(1)}% phạm vi đã phân tích.`);
@@ -640,7 +712,11 @@ export function createSingleSourceBAOverview(rows: Row[], options: SingleSourceB
       mode: isInventory ? 'inventory' : 'operations',
       analysisLabel: isInventory ? 'Phân tích tồn kho' : 'Phân tích vận hành & logistics',
       breakdownHeading: isInventory ? 'Tồn kho tập trung ở đâu?' : 'Hoạt động phân bố ở đâu?',
-      rowCount: rows.length, sourceRowCount, isRepresentativeSample, bindings, kpis, trend, trendChange, breakdowns,
+      rowCount: rows.length, sourceRowCount, isRepresentativeSample, bindings: {
+        ...bindings,
+        ...(requestedMeasure ? { selectedMeasure: requestedMeasure } : {}),
+        ...Object.fromEntries(requestedDimensions.map((column, index) => [`selectedDimension${index + 1}`, column])),
+      }, kpis, trend, trendChange, breakdowns,
       concentration: breakdowns[0]?.top[0] ? { label: breakdowns[0].top[0].label, share: breakdowns[0].top[0].share } : null,
       outlierCount: 0, findings,
       recommendedActions: isInventory
@@ -650,6 +726,17 @@ export function createSingleSourceBAOverview(rows: Row[], options: SingleSourceB
     };
   }
 
+  const commercialRequestedMeasure = requestedMeasures[0] ?? revenue;
+  const commercialRequestedId = options.analysisAction?.measures?.[0];
+  const commercialAggregation = Object.entries(options.analysisAction?.measureAggregations ?? {})
+    .find(([measure]) => normalize(measure) === normalize(commercialRequestedId ?? '') || normalize(measure) === normalize(commercialRequestedMeasure))?.[1] ?? 'SUM';
+  const commercialSignal = normalize(commercialRequestedId ?? commercialRequestedMeasure);
+  const commercialValueKind: SingleSourceKpi['kind'] = /revenue|money|amount|fee|cod|cost|price|discount/.test(commercialSignal) ? 'money' : 'number';
+  const commercialSelectedValue = commercialAggregation === 'AVG'
+    ? average(rows, commercialRequestedMeasure) ?? 0
+    : commercialAggregation === 'COUNT'
+      ? rows.filter(row => textValue(row[commercialRequestedMeasure]) !== null).length
+      : sum(rows, commercialRequestedMeasure) ?? 0;
   const revenueTotal = sum(rows, revenue) ?? 0;
   const quantityTotal = sum(rows, bindings.quantity);
   const discountValues = bindings.discount
@@ -658,11 +745,16 @@ export function createSingleSourceBAOverview(rows: Row[], options: SingleSourceB
   const orderCount = bindings.order
     ? new Set(rows.map(row => textValue(row[bindings.order])).filter(Boolean)).size
     : rows.length;
-  const kpis: SingleSourceKpi[] = [
-    { id: 'revenue', label: 'Doanh thu', value: revenueTotal, kind: 'money' },
-    { id: 'orders', label: bindings.order ? 'Số đơn hàng' : 'Số bản ghi', value: orderCount, kind: 'number' },
-  ];
-  if (quantityTotal !== null) kpis.push({ id: 'quantity', label: 'Số lượng bán', value: quantityTotal, kind: 'number' });
+  const usesDefaultRevenueAngle = commercialRequestedMeasure === revenue;
+  const kpis: SingleSourceKpi[] = [{
+    id: usesDefaultRevenueAngle ? 'revenue' : 'selected_measure',
+    label: usesDefaultRevenueAngle ? 'Doanh thu' : `${commercialAggregation === 'AVG' ? 'Bình quân' : commercialAggregation === 'COUNT' ? 'Số bản ghi' : 'Tổng'} ${commercialRequestedMeasure}`,
+    value: commercialSelectedValue,
+    kind: commercialValueKind,
+  }];
+  if (!usesDefaultRevenueAngle) kpis.push({ id: 'revenue', label: 'Doanh thu', value: revenueTotal, kind: 'money' });
+  kpis.push({ id: 'orders', label: bindings.order ? 'Số đơn hàng' : 'Số bản ghi', value: orderCount, kind: 'number' });
+  if (quantityTotal !== null && commercialRequestedMeasure !== bindings.quantity) kpis.push({ id: 'quantity', label: 'Số lượng bán', value: quantityTotal, kind: 'number' });
   if (orderCount > 0) kpis.push({ id: 'average_order_value', label: 'Doanh thu bình quân/đơn', value: revenueTotal / orderCount, kind: 'money' });
   if (discountValues.length > 0) {
     const discountIsRate = discountValues.every(value => Math.abs(value) <= 1);
@@ -675,24 +767,43 @@ export function createSingleSourceBAOverview(rows: Row[], options: SingleSourceB
     ['product', 'Sản phẩm'], ['category', 'Ngành hàng'], ['brand', 'Thương hiệu'], ['branch', 'Chi nhánh / cửa hàng'],
     ['salesperson', 'Nhân viên bán hàng'], ['payment', 'Phương thức thanh toán'], ['status', 'Trạng thái đơn hàng'],
   ];
-  const breakdowns = dimensionDefinitions.flatMap(([id, label]) => {
-    const column = bindings[id];
-    const breakdown = column ? buildBreakdown(rows, column, revenue, id, label) : null;
+  const requestedCommercialDimensions = actionPhysicalColumns(options.analysisAction?.dimensions, rows, options.semanticFields ?? []);
+  const defaultCommercialDefinitions: Array<[string, string, string]> = dimensionDefinitions.flatMap(([id, label]) => bindings[id] ? [[id, label, bindings[id]]] : []);
+  const defaultCommercialByColumn = new Map(defaultCommercialDefinitions.map(definition => [definition[2], definition]));
+  const requestedCommercialDefinitions: Array<[string, string, string]> = requestedCommercialDimensions.map((column, index) => defaultCommercialByColumn.get(column) ?? [`selected_${index}`, column, column]);
+  const seenCommercialColumns = new Set<string>();
+  const breakdowns = [...requestedCommercialDefinitions, ...defaultCommercialDefinitions].filter(([, , column]) => {
+    if (seenCommercialColumns.has(column)) return false;
+    seenCommercialColumns.add(column);
+    return true;
+  }).flatMap(([id, label, column]) => {
+    const breakdown = commercialAggregation === 'AVG'
+      ? buildAverageBreakdown(rows, column, commercialRequestedMeasure, id, label, commercialValueKind)
+      : commercialAggregation === 'COUNT'
+        ? buildCountBreakdown(rows, column, commercialRequestedMeasure, id, label)
+        : buildBreakdown(rows, column, commercialRequestedMeasure, id, label, commercialValueKind);
     return breakdown ? [breakdown] : [];
   });
-  const trend = bindings.date ? buildTrend(rows, bindings.date, revenue) : [];
+  const trend = bindings.date
+    ? commercialAggregation === 'AVG'
+      ? buildAverageTrend(rows, bindings.date, commercialRequestedMeasure)
+      : commercialAggregation === 'COUNT'
+        ? buildCountTrend(rows, bindings.date, commercialRequestedMeasure)
+        : buildTrend(rows, bindings.date, commercialRequestedMeasure)
+    : [];
   const trendChange = trend.length > 1 && trend[0].value !== 0 ? (trend.at(-1)!.value - trend[0].value) / Math.abs(trend[0].value) : null;
-  const revenueValues = rows.map(row => numberValue(row[revenue])).filter((value): value is number => value !== null);
+  const revenueValues = rows.map(row => numberValue(row[commercialRequestedMeasure])).filter((value): value is number => value !== null);
   const q1 = quantile(revenueValues, 0.25);
   const q3 = quantile(revenueValues, 0.75);
   const upperFence = q3 + 1.5 * (q3 - q1);
   const outlierCount = revenueValues.filter(value => value > upperFence).length;
   const primaryBreakdown = breakdowns[0] ?? null;
   const concentration = primaryBreakdown?.top[0] ? { label: primaryBreakdown.top[0].label, share: primaryBreakdown.top[0].share } : null;
+  const commercialAngleLabel = usesDefaultRevenueAngle ? 'Doanh thu' : commercialRequestedMeasure;
   const findings: string[] = [];
-  if (trendChange !== null) findings.push(`Doanh thu kỳ cuối ${trendChange >= 0 ? 'tăng' : 'giảm'} ${Math.abs(trendChange * 100).toFixed(1)}% so với kỳ đầu trong file.`);
-  if (concentration) findings.push(`${concentration.label} đóng góp ${(concentration.share * 100).toFixed(1)}% doanh thu, là nhóm đóng góp lớn nhất.`);
-  if (outlierCount > 0) findings.push(`Có ${outlierCount.toLocaleString()} dòng doanh thu cao bất thường theo ngưỡng IQR, nên kiểm tra trước khi ra quyết định.`);
+  if (trendChange !== null) findings.push(`${commercialAngleLabel} kỳ cuối ${trendChange >= 0 ? 'tăng' : 'giảm'} ${Math.abs(trendChange * 100).toFixed(1)}% so với kỳ đầu trong file.`);
+  if (concentration) findings.push(`${concentration.label} đóng góp ${(concentration.share * 100).toFixed(1)}% ${commercialAngleLabel}, là nhóm đóng góp lớn nhất.`);
+  if (outlierCount > 0) findings.push(`Có ${outlierCount.toLocaleString()} dòng ${commercialAngleLabel} cao bất thường theo ngưỡng IQR, nên kiểm tra trước khi ra quyết định.`);
 
   const limitations = [
     'Kết quả mô tả mối liên hệ và mức đóng góp trong dữ liệu, không tự khẳng định quan hệ nhân quả.',
@@ -700,8 +811,12 @@ export function createSingleSourceBAOverview(rows: Row[], options: SingleSourceB
     ...(!bindings.order ? ['Không tìm thấy định danh đơn hàng; số bản ghi không được diễn giải thành số đơn hàng.'] : []),
   ];
   return {
-    mode: 'commercial', analysisLabel: 'Phân tích doanh thu', breakdownHeading: 'Doanh thu đến từ đâu?',
-    rowCount: rows.length, sourceRowCount, isRepresentativeSample, bindings, kpis, trend, trendChange, breakdowns, concentration, outlierCount, findings,
+    mode: 'commercial', analysisLabel: usesDefaultRevenueAngle ? 'Phân tích doanh thu' : `Phân tích ${commercialRequestedMeasure}`, breakdownHeading: `${commercialRequestedMeasure} đến từ đâu?`,
+    rowCount: rows.length, sourceRowCount, isRepresentativeSample, bindings: {
+      ...bindings,
+      selectedMeasure: commercialRequestedMeasure,
+      ...Object.fromEntries(requestedCommercialDimensions.map((column, index) => [`selectedDimension${index + 1}`, column])),
+    }, kpis, trend, trendChange, breakdowns, concentration, outlierCount, findings,
     recommendedActions: ['Mở nhóm đóng góp lớn nhất để kiểm tra sản phẩm, cửa hàng và nhân viên tạo ra kết quả.', 'So sánh nhóm tăng trưởng với nhóm suy giảm trước khi thay đổi giá, chiết khấu hoặc phân bổ nguồn lực.', 'Kiểm tra các dòng bất thường và chất lượng dữ liệu trước khi dùng kết quả cho quyết định tài chính.'],
     limitations,
   };

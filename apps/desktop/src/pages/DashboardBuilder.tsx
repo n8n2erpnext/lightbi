@@ -84,7 +84,7 @@ const DashboardWidgetCard: React.FC<{ widget: DashboardWidget; chart?: Chart }> 
         data={payload.rows}
         xAxisKey={xAxisKey}
         seriesKey={seriesKey}
-        valueType="number"
+        valueType={payload.valueKind === 'money' ? 'currency' : 'number'}
         className="h-full"
         colSpan={widget.layout.w}
       />
@@ -134,7 +134,7 @@ export const DashboardBuilder: React.FC = () => {
           </div>
         ) : (
           <div className="mx-auto max-w-[1500px]">
-            {dashboard.metadata?.source === 'easy_mode_perspective' && <div className="mb-4 flex flex-col gap-3 rounded-xl border border-emerald-200 bg-gradient-to-r from-emerald-50 to-blue-50 p-4 sm:flex-row sm:items-center sm:justify-between"><div><div className="text-[11px] font-semibold uppercase tracking-wider text-emerald-700">{t('Governed perspective dashboard')}</div><p className="mt-1 text-sm text-gray-700">{t('This dashboard was composed from the selected perspective, executed results, and BA evidence.')}</p></div><div className="flex gap-2"><span className="rounded-full border border-emerald-200 bg-white px-3 py-1 text-xs font-semibold text-emerald-700">{t('Governed')}</span><span className="rounded-full border border-blue-200 bg-white px-3 py-1 text-xs font-semibold text-blue-700">{dashboard.metadata.evidenceScope === 'full_source' ? t('Full-source evidence') : t('Full-source result · representative BA sample')}</span></div></div>}
+            {dashboard.metadata?.source === 'easy_mode_perspective' && <div className="mb-4 flex flex-col gap-3 rounded-lg border border-gray-200 bg-white p-4 sm:flex-row sm:items-center sm:justify-between"><div><div className="text-[11px] font-semibold uppercase tracking-wider text-gray-600">{t('Governed perspective dashboard')}</div><p className="mt-1 text-sm text-gray-700">{t('This dashboard was composed from the selected perspective, executed results, and BA evidence.')}</p></div><div className="flex gap-2"><span className="rounded border border-gray-200 bg-gray-50 px-3 py-1 text-xs font-semibold text-gray-700">{t('Governed')}</span><span className="rounded border border-gray-200 bg-gray-50 px-3 py-1 text-xs font-semibold text-gray-700">{dashboard.metadata.evidenceScope === 'full_source' ? t('Full-source evidence') : t('Full-source result · representative BA sample')}</span></div></div>}
             {ba.deep && <section data-testid="dashboard-executive-brief" className="mb-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
               <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                 <div className="max-w-4xl">

@@ -135,6 +135,68 @@ describe('single source BA overview', () => {
     expect(commercial.kpis.some(item => item.id === 'revenue')).toBe(true);
   });
 
+  it('uses the selected operational measure for KPIs, breakdowns and trend', () => {
+    const rows = [
+      { ShipmentID: 'S-1', Date: '2026-06-01', Route: 'North', Weight: 10, DeliveryFee: 100 },
+      { ShipmentID: 'S-2', Date: '2026-06-01', Route: 'South', Weight: 20, DeliveryFee: 200 },
+      { ShipmentID: 'S-3', Date: '2026-06-02', Route: 'North', Weight: 30, DeliveryFee: 300 },
+    ];
+    const overview = createSingleSourceBAOverview(rows, {
+      analysisAction: {
+        id: 'universal:operations:weight_by_route',
+        opportunityName: 'Cargo weight by route',
+        dimensions: ['dimension.route'],
+        measures: ['measure.weight'],
+        measureAggregations: { 'measure.weight': 'SUM' },
+      },
+      semanticFields: [
+        { canonicalId: 'dimension.route', physicalColumn: 'Route', role: 'dimension' },
+        { canonicalId: 'measure.weight', physicalColumn: 'Weight', role: 'measure' },
+      ],
+    })!;
+
+    expect(overview.mode).toBe('operations');
+    expect(overview.bindings).toMatchObject({ selectedMeasure: 'Weight', selectedDimension1: 'Route' });
+    expect(overview.kpis[0]).toMatchObject({ id: 'selected_measure', value: 60, kind: 'number' });
+    expect(overview.breakdowns[0]).toMatchObject({ physicalColumn: 'Route', valueKind: 'number' });
+    expect(overview.breakdowns[0].top).toEqual(expect.arrayContaining([
+      expect.objectContaining({ label: 'North', value: 40 }),
+      expect.objectContaining({ label: 'South', value: 20 }),
+    ]));
+    expect(overview.trend).toEqual([
+      { period: '2026-06-01', value: 30, rowCount: 2 },
+      { period: '2026-06-02', value: 30, rowCount: 1 },
+    ]);
+  });
+
+  it('keeps a selected commercial quantity angle out of the revenue fallback', () => {
+    const rows = [
+      { OrderID: 'O-1', Date: '2026-06-01', Product: 'A', Quantity: 2, Revenue: 200 },
+      { OrderID: 'O-2', Date: '2026-06-01', Product: 'B', Quantity: 1, Revenue: 100 },
+      { OrderID: 'O-3', Date: '2026-06-02', Product: 'A', Quantity: 3, Revenue: 300 },
+    ];
+    const overview = createSingleSourceBAOverview(rows, {
+      analysisAction: {
+        id: 'universal:commercial:quantity_by_product',
+        opportunityName: 'Sales quantity by product',
+        dimensions: ['product'],
+        measures: ['quantity'],
+        measureAggregations: { quantity: 'SUM' },
+      },
+    })!;
+
+    expect(overview.mode).toBe('commercial');
+    expect(overview.bindings).toMatchObject({ selectedMeasure: 'Quantity', selectedDimension1: 'Product' });
+    expect(overview.kpis[0]).toMatchObject({ id: 'selected_measure', value: 6, kind: 'number' });
+    expect(overview.breakdowns[0]).toMatchObject({ physicalColumn: 'Product' });
+    expect(overview.breakdowns[0].top[0]).toMatchObject({ label: 'A', value: 5 });
+    expect(overview.trend).toEqual([
+      { period: '2026-06-01', value: 3, rowCount: 2 },
+      { period: '2026-06-02', value: 3, rowCount: 1 },
+    ]);
+    expect(overview.findings.join(' ')).not.toContain('Doanh thu kỳ cuối');
+  });
+
   it('keeps the deep BA on the selected dimension and measure inside a perspective', () => {
     const rows = [
       { job: 'student', poutcome: 'success', y: 'yes', duration: 120 },

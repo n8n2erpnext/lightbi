@@ -441,6 +441,15 @@ export const Investigation: React.FC = () => {
       governed: true,
       evidenceScope: singleSourceBAOverview?.isRepresentativeSample ? 'governed_primary_with_representative_ba_sample' : 'full_source',
       generatedAt: new Date().toISOString(),
+      analysisContract: {
+        actionId: analysisAction.id,
+        perspective: analysisAction.opportunityName,
+        dimensions: analysisAction.dimensions,
+        measures: analysisAction.measures,
+        measureAggregations: analysisAction.measureAggregations ?? {},
+        resolvedBindings: singleSourceBAOverview?.bindings ?? {},
+        evidenceScope: singleSourceBAOverview?.isRepresentativeSample ? 'governed_primary_with_representative_ba_sample' : 'full_source',
+      },
       deepBA: baDecisionBrief ? {
         executiveSummary: baDecisionBrief.executiveSummary,
         dataTrustScore: baDecisionBrief.dataTrustScore,
@@ -462,6 +471,7 @@ export const Investigation: React.FC = () => {
         sourceRowCount: singleSourceBAOverview.sourceRowCount,
         isRepresentativeSample: singleSourceBAOverview.isRepresentativeSample,
         trendChange: singleSourceBAOverview.trendChange,
+        bindings: singleSourceBAOverview.bindings,
         findings: singleSourceBAOverview.findings,
         recommendedActions: singleSourceBAOverview.recommendedActions,
         limitations: singleSourceBAOverview.limitations,
@@ -486,7 +496,7 @@ export const Investigation: React.FC = () => {
         const kpiChartId = createChart({
           projectId: 'proj-1', datasetId: session.datasetId, name: kpi.label, type: 'Number', xAxis: [],
           yAxis: [{ columnName: 'value', aggregation: 'None' }], filters: {},
-          formatting: { lightbiData: { source: 'perspective_dashboard_ba_kpi', actionId: analysisAction.id, perspective: analysisAction.opportunityName, valueKind: kpi.kind, yField: 'value', seriesFields: ['value'], rows: [{ value: kpi.value }], rowCount: 1, governed: true, savedAt: new Date().toISOString() } },
+          formatting: { lightbiData: { source: 'perspective_dashboard_ba_kpi', actionId: analysisAction.id, perspective: analysisAction.opportunityName, valueKind: kpi.kind, yField: 'value', seriesFields: ['value'], rows: [{ value: kpi.value }], rowCount: 1, governed: false, evidenceScope: singleSourceBAOverview.isRepresentativeSample ? 'representative_sample' : 'full_source', savedAt: new Date().toISOString() } },
         });
         addChartToDashboard(dashboardId, kpiChartId);
       });
@@ -499,7 +509,7 @@ export const Investigation: React.FC = () => {
       const breakdownChartId = createChart({
         projectId: 'proj-1', datasetId: session.datasetId, name: breakdown.label, type: 'Bar',
         xAxis: [{ columnName: 'label' }], yAxis: [{ columnName: 'value', aggregation: 'None' }], filters: {},
-        formatting: { lightbiData: { source: 'perspective_dashboard_ba_breakdown', actionId: analysisAction.id, perspective: analysisAction.opportunityName, valueKind: breakdown.valueKind, xField: 'label', yField: 'value', seriesFields: ['value'], rows, rowCount: rows.length, governed: true, physicalColumn: breakdown.physicalColumn, savedAt: new Date().toISOString() } },
+        formatting: { lightbiData: { source: 'perspective_dashboard_ba_breakdown', actionId: analysisAction.id, perspective: analysisAction.opportunityName, valueKind: breakdown.valueKind, xField: 'label', yField: 'value', seriesFields: ['value'], rows, rowCount: rows.length, governed: false, evidenceScope: singleSourceBAOverview.isRepresentativeSample ? 'representative_sample' : 'full_source', physicalColumn: breakdown.physicalColumn, savedAt: new Date().toISOString() } },
       });
       addChartToDashboard(dashboardId, breakdownChartId);
     });

@@ -34,6 +34,7 @@ test.describe('Perspective enterprise dashboard', () => {
     await deeper.click();
     const cta = page.getByTestId('deep-analysis-dashboard-cta');
     await expect(cta).toBeVisible();
+    await expect(page.getByTestId('deep-analysis-export-surface').getByTestId('deep-analysis-dashboard-cta')).toHaveCount(0);
 
     const imageDownload = page.waitForEvent('download');
     await page.getByTestId('deep-analysis-export-image').click();
@@ -59,7 +60,7 @@ test.describe('Perspective enterprise dashboard', () => {
     await expect(page.getByTestId('dashboard-executive-summary')).not.toBeEmpty();
     const deepBA = page.getByTestId('dashboard-deep-ba');
     await expect(deepBA).toBeVisible();
-    await expect(page.getByText('Dashboard theo góc nhìn có quản trị')).toBeVisible();
+    await expect(page.getByText('Bảng điều khiển theo góc nhìn có quản trị')).toBeVisible();
     const dashboardText = await page.locator('[data-testid="perspective-dashboard"]').innerText();
     expect(dashboardText).not.toContain('Governed perspective dashboard');
     expect(dashboardText).not.toContain('Recommended actions');
