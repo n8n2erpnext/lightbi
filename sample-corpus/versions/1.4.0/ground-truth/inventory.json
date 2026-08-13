@@ -1,0 +1,1364 @@
+{
+  "category": "inventory",
+  "corpusVersion": "1.4.0",
+  "evidencePolicy": "repository_safe_release_acceptance",
+  "samples": [
+    {
+      "category": "inventory",
+      "corpusVersion": "1.4.0",
+      "dataset": {
+        "expectedArchetype": "product_master",
+        "expectedGrain": "master_data",
+        "grainTruth": {
+          "candidateKeys": [
+            [
+              "Mã sản phẩm"
+            ],
+            [
+              "Barcode"
+            ]
+          ],
+          "coarseGrain": "master_data",
+          "measureExpectations": [],
+          "parentEntity": null,
+          "parentKeys": [],
+          "rowEntity": "product"
+        }
+      },
+      "group": "golden",
+      "id": "inv.plu_product_master",
+      "profilingExpectations": {
+        "columnPhysicalTypes": [
+          {
+            "allowedParseExpectations": [
+              "numeric_coercible"
+            ],
+            "allowedTypes": [
+              "numeric_string"
+            ],
+            "physicalColumn": "Mã sản phẩm",
+            "sourcePaths": [
+              "sample-corpus/versions/1.4.0/fixtures/product-list-sanitized.xlsx"
+            ]
+          },
+          {
+            "allowedParseExpectations": [
+              "preserve_text"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "physicalColumn": "Tên sản phẩm",
+            "sourcePaths": [
+              "sample-corpus/versions/1.4.0/fixtures/product-list-sanitized.xlsx"
+            ]
+          },
+          {
+            "allowedParseExpectations": [
+              "preserve_text"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "physicalColumn": "Nhóm sản phẩm",
+            "sourcePaths": [
+              "sample-corpus/versions/1.4.0/fixtures/product-list-sanitized.xlsx"
+            ]
+          },
+          {
+            "allowedParseExpectations": [
+              "preserve_text"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "physicalColumn": "Đơn vị tính",
+            "sourcePaths": [
+              "sample-corpus/versions/1.4.0/fixtures/product-list-sanitized.xlsx"
+            ]
+          },
+          {
+            "allowedParseExpectations": [
+              "numeric"
+            ],
+            "allowedTypes": [
+              "number"
+            ],
+            "physicalColumn": "Barcode",
+            "sourcePaths": [
+              "sample-corpus/versions/1.4.0/fixtures/product-list-sanitized.xlsx"
+            ]
+          }
+        ],
+        "issues": {
+          "allowed": [],
+          "expected": [
+            {
+              "code": "empty_trailing_columns",
+              "physicalColumn": null
+            }
+          ],
+          "forbidden": [
+            {
+              "code": "silent_parse_drop",
+              "physicalColumn": null
+            }
+          ]
+        },
+        "representativeEvidence": {
+          "minimumDistinctRegions": 4,
+          "mustPreservePhysicalColumnNames": true,
+          "mustReportUnparsedValues": true,
+          "requiredColumns": [
+            "Mã sản phẩm",
+            "Tên sản phẩm",
+            "Nhóm sản phẩm",
+            "Đơn vị tính",
+            "Barcode"
+          ],
+          "requiredSamplingRegions": [
+            "head",
+            "middle",
+            "tail",
+            "deterministic_random"
+          ]
+        },
+        "sourceProfiles": [
+          {
+            "headerPosition": {
+              "basis": "verified_repository_release_fixture_read",
+              "zeroBasedRowIndex": 0
+            },
+            "sheet": "DATA",
+            "sourcePath": "sample-corpus/versions/1.4.0/fixtures/product-list-sanitized.xlsx",
+            "verifiedRowCount": 240
+          }
+        ],
+        "verifiedRowCount": 240
+      },
+      "provenance": {
+        "dataHandling": "repository_controlled_release_acceptance_data",
+        "evidenceClass": "privacy_sanitized_operational_shape_evidence",
+        "kind": "repository_release_fixture",
+        "notes": "Corpus 1.4.0 fixture with independent hashes and profiling truth. Acceptance-purpose lineage: inv.plu_product_master; no corpus 1.2.0 measurement is re-claimed.",
+        "sourceSystem": "retail_product_master",
+        "tuningUse": "allowed"
+      },
+      "recognition": {
+        "expectedAmbiguousMappings": [],
+        "expectedUnknownBusinessColumns": [],
+        "forbiddenMappings": [
+          {
+            "canonicalSignal": "revenue",
+            "physicalColumn": "Mã sản phẩm",
+            "reasonCode": "semantic_mismatch"
+          },
+          {
+            "canonicalSignal": "stock_qty",
+            "physicalColumn": "Barcode",
+            "reasonCode": "semantic_mismatch"
+          }
+        ],
+        "requiredMappings": [
+          {
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ],
+            "canonicalSignal": "sku",
+            "physicalColumn": "Mã sản phẩm"
+          },
+          {
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ],
+            "canonicalSignal": "product",
+            "physicalColumn": "Tên sản phẩm"
+          },
+          {
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ],
+            "canonicalSignal": "category",
+            "physicalColumn": "Nhóm sản phẩm"
+          },
+          {
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ],
+            "canonicalSignal": "uom",
+            "physicalColumn": "Đơn vị tính"
+          },
+          {
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ],
+            "canonicalSignal": "barcode",
+            "physicalColumn": "Barcode"
+          }
+        ]
+      },
+      "sources": [
+        {
+          "path": "sample-corpus/versions/1.4.0/fixtures/product-list-sanitized.xlsx",
+          "required": true,
+          "sha256": "bbfb43477d3dd71ead8acf789d21d1a85a1bc97005ab3ecd64a1c80fd2b29a73",
+          "sheet": "DATA"
+        }
+      ],
+      "support": {
+        "allowedDomainPacks": [
+          "inventory_snapshot"
+        ],
+        "blockedDomainPacks": [
+          "revenue_sales",
+          "inventory_movement",
+          "delivery_operations",
+          "finance_profitability",
+          "customer_contribution",
+          "performance_target_actual"
+        ],
+        "expectedBlockedActions": [
+          {
+            "actionId": "inventory_value",
+            "reasonCode": "missing_stock_quantity"
+          },
+          {
+            "actionId": "stock_movement",
+            "reasonCode": "wrong_grain"
+          }
+        ],
+        "expectedExecutableActions": [
+          "product_master_lookup"
+        ]
+      },
+      "verifiedMetricAnswers": {}
+    },
+    {
+      "category": "inventory",
+      "corpusVersion": "1.4.0",
+      "dataset": {
+        "expectedArchetype": "inventory_aging_snapshot",
+        "expectedGrain": "snapshot",
+        "grainTruth": {
+          "candidateKeys": [
+            [
+              "Mã phiếu gửi"
+            ]
+          ],
+          "coarseGrain": "snapshot",
+          "measureExpectations": [
+            {
+              "additiveAcrossRows": true,
+              "physicalColumn": "Tổng cước \n (đồng)",
+              "reasonCode": "row_additive_measure",
+              "repeatedWithinParent": true
+            },
+            {
+              "additiveAcrossRows": false,
+              "physicalColumn": " Thời gian tồn ",
+              "reasonCode": "non_additive_or_ratio_measure",
+              "repeatedWithinParent": true
+            }
+          ],
+          "parentEntity": "inventory_snapshot",
+          "parentKeys": [
+            [
+              "Thời gian báo cáo"
+            ]
+          ],
+          "rowEntity": "shipment_snapshot"
+        }
+      },
+      "group": "holdout",
+      "id": "inv.provincial_aging_20241228",
+      "profilingExpectations": {
+        "columnPhysicalTypes": [
+          {
+            "allowedParseExpectations": [
+              "preserve_text"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "physicalColumn": "Mã phiếu gửi",
+            "sourcePaths": [
+              "sample-corpus/versions/1.4.0/fixtures/inventory-detail-sanitized.xlsx"
+            ]
+          },
+          {
+            "allowedParseExpectations": [
+              "preserve_text"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "physicalColumn": "Bưu cục hiện tại",
+            "sourcePaths": [
+              "sample-corpus/versions/1.4.0/fixtures/inventory-detail-sanitized.xlsx"
+            ]
+          },
+          {
+            "allowedParseExpectations": [
+              "preserve_text"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "physicalColumn": "Ngưỡng tồn",
+            "sourcePaths": [
+              "sample-corpus/versions/1.4.0/fixtures/inventory-detail-sanitized.xlsx"
+            ]
+          },
+          {
+            "allowedParseExpectations": [
+              "date_semantics_require_validation"
+            ],
+            "allowedTypes": [
+              "excel_serial_date",
+              "number"
+            ],
+            "physicalColumn": " Thời gian tồn ",
+            "sourcePaths": [
+              "sample-corpus/versions/1.4.0/fixtures/inventory-detail-sanitized.xlsx"
+            ]
+          },
+          {
+            "allowedParseExpectations": [
+              "numeric"
+            ],
+            "allowedTypes": [
+              "number"
+            ],
+            "physicalColumn": "Tổng cước \n (đồng)",
+            "sourcePaths": [
+              "sample-corpus/versions/1.4.0/fixtures/inventory-detail-sanitized.xlsx"
+            ]
+          },
+          {
+            "allowedParseExpectations": [
+              "numeric"
+            ],
+            "allowedTypes": [
+              "number"
+            ],
+            "physicalColumn": "Trạng thái",
+            "sourcePaths": [
+              "sample-corpus/versions/1.4.0/fixtures/inventory-detail-sanitized.xlsx"
+            ]
+          }
+        ],
+        "issues": {
+          "allowed": [],
+          "expected": [],
+          "forbidden": [
+            {
+              "code": "silent_parse_drop",
+              "physicalColumn": null
+            }
+          ]
+        },
+        "representativeEvidence": {
+          "minimumDistinctRegions": 4,
+          "mustPreservePhysicalColumnNames": true,
+          "mustReportUnparsedValues": true,
+          "requiredColumns": [
+            "Mã phiếu gửi",
+            "Bưu cục hiện tại",
+            "Ngưỡng tồn",
+            " Thời gian tồn ",
+            "Tổng cước \n (đồng)",
+            "Trạng thái"
+          ],
+          "requiredSamplingRegions": [
+            "head",
+            "middle",
+            "tail",
+            "deterministic_random"
+          ]
+        },
+        "sourceProfiles": [
+          {
+            "headerPosition": {
+              "basis": "verified_repository_release_fixture_read",
+              "zeroBasedRowIndex": 0
+            },
+            "sheet": "TonTaiKhoVungChiTiet",
+            "sourcePath": "sample-corpus/versions/1.4.0/fixtures/inventory-detail-sanitized.xlsx",
+            "verifiedRowCount": 240
+          }
+        ],
+        "verifiedRowCount": 240
+      },
+      "provenance": {
+        "dataHandling": "repository_controlled_release_acceptance_data",
+        "evidenceClass": "privacy_sanitized_operational_shape_evidence",
+        "kind": "repository_release_fixture",
+        "notes": "Corpus 1.4.0 fixture with independent hashes and profiling truth. Acceptance-purpose lineage: inv.provincial_aging_20241228; no corpus 1.2.0 measurement is re-claimed.",
+        "sourceSystem": "postal_inventory_export",
+        "tuningUse": "forbidden"
+      },
+      "recognition": {
+        "expectedAmbiguousMappings": [],
+        "expectedUnknownBusinessColumns": [],
+        "forbiddenMappings": [
+          {
+            "canonicalSignal": "quantity",
+            "physicalColumn": "Mã phiếu gửi",
+            "reasonCode": "semantic_mismatch"
+          },
+          {
+            "canonicalSignal": "payment_status",
+            "physicalColumn": "Trạng thái",
+            "reasonCode": "semantic_mismatch"
+          }
+        ],
+        "requiredMappings": [
+          {
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ],
+            "canonicalSignal": "shipment",
+            "physicalColumn": "Mã phiếu gửi"
+          },
+          {
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ],
+            "canonicalSignal": "current_location",
+            "physicalColumn": "Bưu cục hiện tại"
+          },
+          {
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ],
+            "canonicalSignal": "stock_threshold",
+            "physicalColumn": "Ngưỡng tồn"
+          },
+          {
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ],
+            "canonicalSignal": "stock_age",
+            "physicalColumn": " Thời gian tồn "
+          },
+          {
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ],
+            "canonicalSignal": "freight_fee",
+            "physicalColumn": "Tổng cước \n (đồng)"
+          },
+          {
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ],
+            "canonicalSignal": "status",
+            "physicalColumn": "Trạng thái"
+          }
+        ]
+      },
+      "sources": [
+        {
+          "path": "sample-corpus/versions/1.4.0/fixtures/inventory-detail-sanitized.xlsx",
+          "required": true,
+          "sha256": "14c0d1018dd8822740bf7d0be5a46bb7465458b05409502ccf8dc780c4338d48",
+          "sheet": "TonTaiKhoVungChiTiet"
+        }
+      ],
+      "support": {
+        "allowedDomainPacks": [
+          "inventory_snapshot",
+          "delivery_operations"
+        ],
+        "blockedDomainPacks": [
+          "revenue_sales",
+          "inventory_movement",
+          "finance_profitability",
+          "customer_contribution",
+          "performance_target_actual"
+        ],
+        "expectedBlockedActions": [
+          {
+            "actionId": "inventory_turnover",
+            "reasonCode": "missing_sales_and_average_inventory"
+          }
+        ],
+        "expectedExecutableActions": [
+          "inventory_aging",
+          "location_value_exposure"
+        ]
+      },
+      "verifiedMetricAnswers": {}
+    },
+    {
+      "category": "inventory",
+      "corpusVersion": "1.4.0",
+      "dataset": {
+        "expectedArchetype": "shipment_backlog_snapshot",
+        "expectedGrain": "snapshot",
+        "grainTruth": {
+          "candidateKeys": [
+            [
+              "Mã Phiếu Gửi"
+            ]
+          ],
+          "coarseGrain": "snapshot",
+          "measureExpectations": [
+            {
+              "additiveAcrossRows": true,
+              "physicalColumn": "Tiền Cước",
+              "reasonCode": "row_additive_measure",
+              "repeatedWithinParent": true
+            },
+            {
+              "additiveAcrossRows": true,
+              "physicalColumn": "Trọng lượng",
+              "reasonCode": "row_additive_measure",
+              "repeatedWithinParent": true
+            }
+          ],
+          "parentEntity": "inventory_snapshot",
+          "parentKeys": [
+            [
+              "Ngày Báo Cáo"
+            ]
+          ],
+          "rowEntity": "shipment_snapshot"
+        }
+      },
+      "group": "holdout",
+      "id": "inv.hublan_expected_stock",
+      "profilingExpectations": {
+        "columnPhysicalTypes": [
+          {
+            "allowedParseExpectations": [
+              "date_coercible"
+            ],
+            "allowedTypes": [
+              "date_string"
+            ],
+            "physicalColumn": "Ngày Báo Cáo",
+            "sourcePaths": [
+              "sample-corpus/versions/1.4.0/fixtures/inventory-projection-sanitized.xlsx"
+            ]
+          },
+          {
+            "allowedParseExpectations": [
+              "preserve_text"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "physicalColumn": "Mã Phiếu Gửi",
+            "sourcePaths": [
+              "sample-corpus/versions/1.4.0/fixtures/inventory-projection-sanitized.xlsx"
+            ]
+          },
+          {
+            "allowedParseExpectations": [
+              "preserve_text"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "physicalColumn": "Bưu Cục Hiện Tại",
+            "sourcePaths": [
+              "sample-corpus/versions/1.4.0/fixtures/inventory-projection-sanitized.xlsx"
+            ]
+          },
+          {
+            "allowedParseExpectations": [
+              "mixed_type_must_be_reported"
+            ],
+            "allowedTypes": [
+              "mixed"
+            ],
+            "physicalColumn": "Trọng lượng",
+            "sourcePaths": [
+              "sample-corpus/versions/1.4.0/fixtures/inventory-projection-sanitized.xlsx"
+            ]
+          },
+          {
+            "allowedParseExpectations": [
+              "numeric_coercible"
+            ],
+            "allowedTypes": [
+              "numeric_string"
+            ],
+            "physicalColumn": "Tiền Cước",
+            "sourcePaths": [
+              "sample-corpus/versions/1.4.0/fixtures/inventory-projection-sanitized.xlsx"
+            ]
+          },
+          {
+            "allowedParseExpectations": [
+              "numeric_coercible"
+            ],
+            "allowedTypes": [
+              "numeric_string"
+            ],
+            "physicalColumn": "Tiền COD",
+            "sourcePaths": [
+              "sample-corpus/versions/1.4.0/fixtures/inventory-projection-sanitized.xlsx"
+            ]
+          },
+          {
+            "allowedParseExpectations": [
+              "numeric_coercible"
+            ],
+            "allowedTypes": [
+              "numeric_string"
+            ],
+            "physicalColumn": "Trạng Thái",
+            "sourcePaths": [
+              "sample-corpus/versions/1.4.0/fixtures/inventory-projection-sanitized.xlsx"
+            ]
+          }
+        ],
+        "issues": {
+          "allowed": [],
+          "expected": [],
+          "forbidden": [
+            {
+              "code": "silent_parse_drop",
+              "physicalColumn": null
+            }
+          ]
+        },
+        "representativeEvidence": {
+          "minimumDistinctRegions": 4,
+          "mustPreservePhysicalColumnNames": true,
+          "mustReportUnparsedValues": true,
+          "requiredColumns": [
+            "Ngày Báo Cáo",
+            "Mã Phiếu Gửi",
+            "Bưu Cục Hiện Tại",
+            "Trọng lượng",
+            "Tiền Cước",
+            "Tiền COD",
+            "Trạng Thái"
+          ],
+          "requiredSamplingRegions": [
+            "head",
+            "middle",
+            "tail",
+            "deterministic_random"
+          ]
+        },
+        "sourceProfiles": [
+          {
+            "headerPosition": {
+              "basis": "verified_repository_release_fixture_read",
+              "zeroBasedRowIndex": 0
+            },
+            "sheet": "TonChuaKetNoi",
+            "sourcePath": "sample-corpus/versions/1.4.0/fixtures/inventory-projection-sanitized.xlsx",
+            "verifiedRowCount": 240
+          }
+        ],
+        "verifiedRowCount": 240
+      },
+      "provenance": {
+        "dataHandling": "repository_controlled_release_acceptance_data",
+        "evidenceClass": "privacy_sanitized_operational_shape_evidence",
+        "kind": "repository_release_fixture",
+        "notes": "Corpus 1.4.0 fixture with independent hashes and profiling truth. Acceptance-purpose lineage: inv.hublan_expected_stock; no corpus 1.2.0 measurement is re-claimed.",
+        "sourceSystem": "postal_inventory_export",
+        "tuningUse": "forbidden"
+      },
+      "recognition": {
+        "expectedAmbiguousMappings": [],
+        "expectedUnknownBusinessColumns": [],
+        "forbiddenMappings": [
+          {
+            "canonicalSignal": "stock_qty",
+            "physicalColumn": "Mã Phiếu Gửi",
+            "reasonCode": "semantic_mismatch"
+          },
+          {
+            "canonicalSignal": "revenue",
+            "physicalColumn": "Tiền COD",
+            "reasonCode": "semantic_mismatch"
+          }
+        ],
+        "requiredMappings": [
+          {
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ],
+            "canonicalSignal": "report_date",
+            "physicalColumn": "Ngày Báo Cáo"
+          },
+          {
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ],
+            "canonicalSignal": "shipment",
+            "physicalColumn": "Mã Phiếu Gửi"
+          },
+          {
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ],
+            "canonicalSignal": "current_location",
+            "physicalColumn": "Bưu Cục Hiện Tại"
+          },
+          {
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ],
+            "canonicalSignal": "weight",
+            "physicalColumn": "Trọng lượng"
+          },
+          {
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ],
+            "canonicalSignal": "freight_fee",
+            "physicalColumn": "Tiền Cước"
+          },
+          {
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ],
+            "canonicalSignal": "status",
+            "physicalColumn": "Trạng Thái"
+          }
+        ]
+      },
+      "sources": [
+        {
+          "path": "sample-corpus/versions/1.4.0/fixtures/inventory-projection-sanitized.xlsx",
+          "required": true,
+          "sha256": "f2a89f19647da4c2dce268c0f06ba1cbe965926bbf4f9af08a5ec249300cfb51",
+          "sheet": "TonChuaKetNoi"
+        }
+      ],
+      "support": {
+        "allowedDomainPacks": [
+          "inventory_snapshot",
+          "delivery_operations"
+        ],
+        "blockedDomainPacks": [
+          "revenue_sales",
+          "inventory_movement",
+          "finance_profitability",
+          "customer_contribution",
+          "performance_target_actual"
+        ],
+        "expectedBlockedActions": [
+          {
+            "actionId": "stock_movement",
+            "reasonCode": "missing_movement_type"
+          }
+        ],
+        "expectedExecutableActions": [
+          "backlog_by_location",
+          "backlog_age_review"
+        ]
+      },
+      "verifiedMetricAnswers": {}
+    },
+    {
+      "category": "inventory",
+      "corpusVersion": "1.4.0",
+      "dataset": {
+        "expectedArchetype": "shipment_lines",
+        "expectedGrain": "event",
+        "grainTruth": {
+          "candidateKeys": [
+            [
+              "ShipmentID",
+              "SKU"
+            ]
+          ],
+          "coarseGrain": "event",
+          "measureExpectations": [
+            {
+              "additiveAcrossRows": true,
+              "physicalColumn": "Qty",
+              "reasonCode": "row_additive_measure",
+              "repeatedWithinParent": true
+            },
+            {
+              "additiveAcrossRows": true,
+              "physicalColumn": "TotalCost",
+              "reasonCode": "row_additive_measure",
+              "repeatedWithinParent": true
+            },
+            {
+              "additiveAcrossRows": false,
+              "physicalColumn": "DeliveryFee",
+              "reasonCode": "non_additive_or_ratio_measure",
+              "repeatedWithinParent": true
+            }
+          ],
+          "parentEntity": "shipment",
+          "parentKeys": [
+            [
+              "ShipmentID"
+            ]
+          ],
+          "rowEntity": "shipment_line"
+        }
+      },
+      "group": "golden",
+      "id": "inv.logistics_may_item_flow",
+      "profilingExpectations": {
+        "columnPhysicalTypes": [
+          {
+            "allowedParseExpectations": [
+              "preserve_text"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "physicalColumn": "ShipmentID",
+            "sourcePaths": [
+              "sample-corpus/anchors/1.3.0/Logistics_ERP_May_2026.csv"
+            ]
+          },
+          {
+            "allowedParseExpectations": [
+              "preserve_text"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "physicalColumn": "SKU",
+            "sourcePaths": [
+              "sample-corpus/anchors/1.3.0/Logistics_ERP_May_2026.csv"
+            ]
+          },
+          {
+            "allowedParseExpectations": [
+              "preserve_text"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "physicalColumn": "Warehouse",
+            "sourcePaths": [
+              "sample-corpus/anchors/1.3.0/Logistics_ERP_May_2026.csv"
+            ]
+          },
+          {
+            "allowedParseExpectations": [
+              "numeric_coercible"
+            ],
+            "allowedTypes": [
+              "numeric_string"
+            ],
+            "physicalColumn": "Qty",
+            "sourcePaths": [
+              "sample-corpus/anchors/1.3.0/Logistics_ERP_May_2026.csv"
+            ]
+          },
+          {
+            "allowedParseExpectations": [
+              "date_coercible"
+            ],
+            "allowedTypes": [
+              "date_string"
+            ],
+            "physicalColumn": "DeliveredAt",
+            "sourcePaths": [
+              "sample-corpus/anchors/1.3.0/Logistics_ERP_May_2026.csv"
+            ]
+          }
+        ],
+        "issues": {
+          "allowed": [
+            {
+              "code": "duplicate_parent_key",
+              "physicalColumn": "ShipmentID"
+            }
+          ],
+          "expected": [],
+          "forbidden": [
+            {
+              "code": "silent_parse_drop",
+              "physicalColumn": null
+            }
+          ]
+        },
+        "representativeEvidence": {
+          "minimumDistinctRegions": 4,
+          "mustPreservePhysicalColumnNames": true,
+          "mustReportUnparsedValues": true,
+          "requiredColumns": [
+            "ShipmentID",
+            "SKU",
+            "Warehouse",
+            "Qty",
+            "DeliveredAt"
+          ],
+          "requiredSamplingRegions": [
+            "head",
+            "middle",
+            "tail",
+            "deterministic_random"
+          ]
+        },
+        "sourceProfiles": [
+          {
+            "headerPosition": {
+              "basis": "verified_repository_release_fixture_read",
+              "zeroBasedRowIndex": 0
+            },
+            "sheet": "Sheet1",
+            "sourcePath": "sample-corpus/anchors/1.3.0/Logistics_ERP_May_2026.csv",
+            "verifiedRowCount": 1500
+          }
+        ],
+        "verifiedRowCount": 1500
+      },
+      "provenance": {
+        "dataHandling": "repository_controlled_release_acceptance_data",
+        "evidenceClass": "approved_repository_synthetic_fixture",
+        "kind": "repository_release_fixture",
+        "notes": "Corpus 1.4.0 fixture with independent hashes and profiling truth. Acceptance-purpose lineage: inv.logistics_may_item_flow; no corpus 1.2.0 measurement is re-claimed.",
+        "sourceSystem": "synthetic_logistics_export",
+        "tuningUse": "allowed"
+      },
+      "recognition": {
+        "expectedAmbiguousMappings": [
+          {
+            "candidateSignals": [
+              "quantity",
+              "stock_qty"
+            ],
+            "contextualResolution": {
+              "allowedFinalStates": [
+                "probable",
+                "confirmed"
+              ],
+              "forbiddenEvidence": [
+                "header_only"
+              ],
+              "policy": "may_resolve_with_context",
+              "requiredEvidence": [
+                "value_distribution",
+                "physical_type",
+                "dataset_grain",
+                "sibling_columns"
+              ],
+              "resolvedCanonicalSignal": "quantity"
+            },
+            "evidenceScope": "header_only",
+            "headerOnlyExpectedState": "ambiguous",
+            "physicalColumn": "Qty",
+            "reasonCode": "normalized_alias_collision"
+          }
+        ],
+        "expectedUnknownBusinessColumns": [],
+        "forbiddenMappings": [
+          {
+            "canonicalSignal": "stock_qty",
+            "physicalColumn": "ShipmentID",
+            "reasonCode": "semantic_mismatch"
+          },
+          {
+            "canonicalSignal": "product",
+            "physicalColumn": "Warehouse",
+            "reasonCode": "semantic_mismatch"
+          }
+        ],
+        "requiredMappings": [
+          {
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ],
+            "canonicalSignal": "shipment",
+            "physicalColumn": "ShipmentID"
+          },
+          {
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ],
+            "canonicalSignal": "sku",
+            "physicalColumn": "SKU"
+          },
+          {
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ],
+            "canonicalSignal": "warehouse",
+            "physicalColumn": "Warehouse"
+          },
+          {
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ],
+            "canonicalSignal": "quantity",
+            "physicalColumn": "Qty"
+          },
+          {
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ],
+            "canonicalSignal": "delivery_date",
+            "physicalColumn": "DeliveredAt"
+          }
+        ]
+      },
+      "sources": [
+        {
+          "path": "sample-corpus/anchors/1.3.0/Logistics_ERP_May_2026.csv",
+          "required": true,
+          "sha256": "e093e56ae6750a5ec3bbc98983f21409f373ee71d75b9cceb12c52b2d840ff72",
+          "sheet": "Sheet1"
+        }
+      ],
+      "support": {
+        "allowedDomainPacks": [
+          "inventory_movement",
+          "delivery_operations"
+        ],
+        "blockedDomainPacks": [
+          "revenue_sales",
+          "inventory_snapshot",
+          "finance_profitability",
+          "customer_contribution",
+          "performance_target_actual"
+        ],
+        "expectedBlockedActions": [
+          {
+            "actionId": "inventory_snapshot",
+            "reasonCode": "wrong_grain"
+          },
+          {
+            "actionId": "inventory_turnover",
+            "reasonCode": "missing_average_inventory"
+          }
+        ],
+        "expectedExecutableActions": [
+          "shipment_quantity_flow"
+        ]
+      },
+      "verifiedMetricAnswers": {
+        "quantity_sum": 3050,
+        "row_count": 1500
+      }
+    },
+    {
+      "category": "inventory",
+      "corpusVersion": "1.4.0",
+      "dataset": {
+        "expectedArchetype": "shipment_lines",
+        "expectedGrain": "event",
+        "grainTruth": {
+          "candidateKeys": [
+            [
+              "ShipmentID",
+              "SKU"
+            ]
+          ],
+          "coarseGrain": "event",
+          "measureExpectations": [
+            {
+              "additiveAcrossRows": true,
+              "physicalColumn": "Qty",
+              "reasonCode": "row_additive_measure",
+              "repeatedWithinParent": true
+            },
+            {
+              "additiveAcrossRows": true,
+              "physicalColumn": "TotalCost",
+              "reasonCode": "row_additive_measure",
+              "repeatedWithinParent": true
+            },
+            {
+              "additiveAcrossRows": false,
+              "physicalColumn": "DeliveryFee",
+              "reasonCode": "non_additive_or_ratio_measure",
+              "repeatedWithinParent": true
+            }
+          ],
+          "parentEntity": "shipment",
+          "parentKeys": [
+            [
+              "ShipmentID"
+            ]
+          ],
+          "rowEntity": "shipment_line"
+        }
+      },
+      "group": "holdout",
+      "id": "inv.logistics_june_item_flow",
+      "profilingExpectations": {
+        "columnPhysicalTypes": [
+          {
+            "allowedParseExpectations": [
+              "preserve_text"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "physicalColumn": "ShipmentID",
+            "sourcePaths": [
+              "sample-corpus/anchors/1.3.0/Logistics_ERP_June_2026.csv"
+            ]
+          },
+          {
+            "allowedParseExpectations": [
+              "preserve_text"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "physicalColumn": "SKU",
+            "sourcePaths": [
+              "sample-corpus/anchors/1.3.0/Logistics_ERP_June_2026.csv"
+            ]
+          },
+          {
+            "allowedParseExpectations": [
+              "preserve_text"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "physicalColumn": "Warehouse",
+            "sourcePaths": [
+              "sample-corpus/anchors/1.3.0/Logistics_ERP_June_2026.csv"
+            ]
+          },
+          {
+            "allowedParseExpectations": [
+              "numeric_coercible"
+            ],
+            "allowedTypes": [
+              "numeric_string"
+            ],
+            "physicalColumn": "Qty",
+            "sourcePaths": [
+              "sample-corpus/anchors/1.3.0/Logistics_ERP_June_2026.csv"
+            ]
+          },
+          {
+            "allowedParseExpectations": [
+              "preserve_text"
+            ],
+            "allowedTypes": [
+              "string"
+            ],
+            "physicalColumn": "DeliveryStatus",
+            "sourcePaths": [
+              "sample-corpus/anchors/1.3.0/Logistics_ERP_June_2026.csv"
+            ]
+          },
+          {
+            "allowedParseExpectations": [
+              "numeric_coercible"
+            ],
+            "allowedTypes": [
+              "numeric_string"
+            ],
+            "physicalColumn": "UnitCost",
+            "sourcePaths": [
+              "sample-corpus/anchors/1.3.0/Logistics_ERP_June_2026.csv"
+            ]
+          }
+        ],
+        "issues": {
+          "allowed": [
+            {
+              "code": "duplicate_parent_key",
+              "physicalColumn": "ShipmentID"
+            }
+          ],
+          "expected": [],
+          "forbidden": [
+            {
+              "code": "silent_parse_drop",
+              "physicalColumn": null
+            }
+          ]
+        },
+        "representativeEvidence": {
+          "minimumDistinctRegions": 4,
+          "mustPreservePhysicalColumnNames": true,
+          "mustReportUnparsedValues": true,
+          "requiredColumns": [
+            "ShipmentID",
+            "SKU",
+            "Warehouse",
+            "Qty",
+            "DeliveryStatus",
+            "UnitCost"
+          ],
+          "requiredSamplingRegions": [
+            "head",
+            "middle",
+            "tail",
+            "deterministic_random"
+          ]
+        },
+        "sourceProfiles": [
+          {
+            "headerPosition": {
+              "basis": "verified_repository_release_fixture_read",
+              "zeroBasedRowIndex": 0
+            },
+            "sheet": "Sheet1",
+            "sourcePath": "sample-corpus/anchors/1.3.0/Logistics_ERP_June_2026.csv",
+            "verifiedRowCount": 1500
+          }
+        ],
+        "verifiedRowCount": 1500
+      },
+      "provenance": {
+        "dataHandling": "repository_controlled_release_acceptance_data",
+        "evidenceClass": "approved_repository_synthetic_fixture",
+        "kind": "repository_release_fixture",
+        "notes": "Corpus 1.4.0 fixture with independent hashes and profiling truth. Acceptance-purpose lineage: inv.logistics_june_item_flow; no corpus 1.2.0 measurement is re-claimed.",
+        "sourceSystem": "synthetic_logistics_export",
+        "tuningUse": "forbidden"
+      },
+      "recognition": {
+        "expectedAmbiguousMappings": [
+          {
+            "candidateSignals": [
+              "quantity",
+              "stock_qty"
+            ],
+            "contextualResolution": {
+              "allowedFinalStates": [
+                "probable",
+                "confirmed"
+              ],
+              "forbiddenEvidence": [
+                "header_only"
+              ],
+              "policy": "may_resolve_with_context",
+              "requiredEvidence": [
+                "value_distribution",
+                "physical_type",
+                "dataset_grain",
+                "sibling_columns"
+              ],
+              "resolvedCanonicalSignal": "quantity"
+            },
+            "evidenceScope": "header_only",
+            "headerOnlyExpectedState": "ambiguous",
+            "physicalColumn": "Qty",
+            "reasonCode": "normalized_alias_collision"
+          }
+        ],
+        "expectedUnknownBusinessColumns": [],
+        "forbiddenMappings": [
+          {
+            "canonicalSignal": "stock_qty",
+            "physicalColumn": "ShipmentID",
+            "reasonCode": "semantic_mismatch"
+          },
+          {
+            "canonicalSignal": "stock_qty",
+            "physicalColumn": "UnitCost",
+            "reasonCode": "semantic_mismatch"
+          }
+        ],
+        "requiredMappings": [
+          {
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ],
+            "canonicalSignal": "shipment",
+            "physicalColumn": "ShipmentID"
+          },
+          {
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ],
+            "canonicalSignal": "sku",
+            "physicalColumn": "SKU"
+          },
+          {
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ],
+            "canonicalSignal": "warehouse",
+            "physicalColumn": "Warehouse"
+          },
+          {
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ],
+            "canonicalSignal": "quantity",
+            "physicalColumn": "Qty"
+          },
+          {
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ],
+            "canonicalSignal": "delivery_status",
+            "physicalColumn": "DeliveryStatus"
+          }
+        ]
+      },
+      "sources": [
+        {
+          "path": "sample-corpus/anchors/1.3.0/Logistics_ERP_June_2026.csv",
+          "required": true,
+          "sha256": "ccc7f8036429a5c1b879a8a77dec843ef5ba65dbb88e3b2471a0aa70cd0bb216",
+          "sheet": "Sheet1"
+        }
+      ],
+      "support": {
+        "allowedDomainPacks": [
+          "inventory_movement",
+          "delivery_operations"
+        ],
+        "blockedDomainPacks": [
+          "revenue_sales",
+          "inventory_snapshot",
+          "finance_profitability",
+          "customer_contribution",
+          "performance_target_actual"
+        ],
+        "expectedBlockedActions": [
+          {
+            "actionId": "inventory_snapshot",
+            "reasonCode": "wrong_grain"
+          }
+        ],
+        "expectedExecutableActions": [
+          "shipment_quantity_flow"
+        ]
+      },
+      "verifiedMetricAnswers": {
+        "quantity_sum": 2964,
+        "row_count": 1500
+      }
+    }
+  ],
+  "schemaVersion": "lightbi.acceptance-ground-truth.v1.1"
+}

@@ -1,0 +1,38 @@
+node_modules/
+dist/
+build/
+coverage/
+target/
+.svelte-kit/
+.DS_Store
+*.log
+*.pid
+.env
+.env.*
+!.env.example
+
+# Native build output and staged runtime binaries
+crates/lightbi-tauri/bin/
+releases/
+
+# Local research and generated QA artifacts
+references/
+ui-audit/
+apps/desktop/ui-audit/
+apps/desktop/test-results/
+apps/desktop/playwright-report/
+sample-data-audit/screenshots-runtime-ui/
+
+# Private operational fixtures; only the sanitized ERP anchors below are public
+sample data/*
+!sample data/Sales_ERP_May_2026.xlsx
+!sample data/Sales_ERP_June_2026.xlsx
+!sample data/Logistics_ERP_May_2026.csv
+!sample data/Logistics_ERP_June_2026.csv
+!sample data/Accounting_ERP_May_2026.csv
+!sample data/Accounting_ERP_June_2026.csv
+
+# Local probes and temporary migration helpers
+test_duck
+test_duck.rs
+migrate.js

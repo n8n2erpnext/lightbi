@@ -1,0 +1,90 @@
+{
+  "schemaVersion": "lightbi.phase7r34-authentic-anchors.v1",
+  "corpus12ProvenancePreserved": true,
+  "anchors": [
+    {
+      "anchorId": "sales_may_2026",
+      "path": "sample data/Sales_ERP_May_2026.xlsx",
+      "repositoryPath": "sample-corpus/anchors/1.3.0/Sales_ERP_May_2026.xlsx",
+      "sha256": "e2cad91d14cf4ae19daa09dd9c980ea57b6b9cc20a518a9fa6818c3b18aef9ae",
+      "rowCount": 1500,
+      "sheet": "Sales",
+      "identityFields": ["OrderID"],
+      "productFields": ["Category", "Product", "Brand"],
+      "relationshipFields": ["OrderID"],
+      "revenueCostQuantityFields": ["Revenue", "Qty", "UnitPrice", "Discount"],
+      "periodFields": ["OrderDate"],
+      "corpus12SourceSystem": "synthetic_erp_export"
+    },
+    {
+      "anchorId": "sales_june_2026",
+      "path": "sample data/Sales_ERP_June_2026.xlsx",
+      "repositoryPath": "sample-corpus/anchors/1.3.0/Sales_ERP_June_2026.xlsx",
+      "sha256": "a0a69a4d45531090ed5a829467d25ca89320d17792a72e4a91c55b95b9469e52",
+      "rowCount": 1500,
+      "sheet": "Sales",
+      "identityFields": ["OrderID"],
+      "productFields": ["Category", "Product", "Brand"],
+      "relationshipFields": ["OrderID"],
+      "revenueCostQuantityFields": ["Revenue", "Qty", "UnitPrice", "Discount"],
+      "periodFields": ["OrderDate"],
+      "corpus12SourceSystem": "synthetic_erp_export"
+    },
+    {
+      "anchorId": "logistics_may_2026",
+      "path": "sample data/Logistics_ERP_May_2026.csv",
+      "repositoryPath": "sample-corpus/anchors/1.3.0/Logistics_ERP_May_2026.csv",
+      "sha256": "e093e56ae6750a5ec3bbc98983f21409f373ee71d75b9cceb12c52b2d840ff72",
+      "rowCount": 1500,
+      "sheet": "Sheet1",
+      "identityFields": ["ShipmentID", "PickNo", "OrderID"],
+      "productFields": ["SKU", "Category", "Product", "Brand"],
+      "relationshipFields": ["OrderID", "ShipmentID", "SKU", "Warehouse"],
+      "revenueCostQuantityFields": ["Qty", "UnitCost", "TotalCost", "DeliveryFee"],
+      "periodFields": ["OrderDate", "ShippedAt", "DeliveredAt"],
+      "corpus12SourceSystem": "synthetic_logistics_export"
+    },
+    {
+      "anchorId": "logistics_june_2026",
+      "path": "sample data/Logistics_ERP_June_2026.csv",
+      "repositoryPath": "sample-corpus/anchors/1.3.0/Logistics_ERP_June_2026.csv",
+      "sha256": "ccc7f8036429a5c1b879a8a77dec843ef5ba65dbb88e3b2471a0aa70cd0bb216",
+      "rowCount": 1500,
+      "sheet": "Sheet1",
+      "identityFields": ["ShipmentID", "PickNo", "OrderID"],
+      "productFields": ["SKU", "Category", "Product", "Brand"],
+      "relationshipFields": ["OrderID", "ShipmentID", "SKU", "Warehouse"],
+      "revenueCostQuantityFields": ["Qty", "UnitCost", "TotalCost", "DeliveryFee"],
+      "periodFields": ["OrderDate", "ShippedAt", "DeliveredAt"],
+      "corpus12SourceSystem": "synthetic_logistics_export"
+    },
+    {
+      "anchorId": "accounting_may_2026",
+      "path": "sample data/Accounting_ERP_May_2026.csv",
+      "repositoryPath": "sample-corpus/anchors/1.3.0/Accounting_ERP_May_2026.csv",
+      "sha256": "3c59da1c10c67ab974dfd204b737402aff1c28d748665949942579fb5fb1a2fd",
+      "rowCount": 1500,
+      "sheet": "Sheet1",
+      "identityFields": ["InvoiceNo", "JournalNo", "OrderID"],
+      "productFields": ["SKU", "Category", "Product", "Brand"],
+      "relationshipFields": ["OrderID", "SKU"],
+      "revenueCostQuantityFields": ["Qty", "NetRevenue", "InvoiceTotal", "TotalCost", "GrossProfit", "Revenue_Credit", "COGS_Debit"],
+      "periodFields": ["InvoiceDate"],
+      "corpus12SourceSystem": "synthetic_accounting_export"
+    },
+    {
+      "anchorId": "accounting_june_2026",
+      "path": "sample data/Accounting_ERP_June_2026.csv",
+      "repositoryPath": "sample-corpus/anchors/1.3.0/Accounting_ERP_June_2026.csv",
+      "sha256": "b3a3b290d5f54ca5d7fc79b7aed0f287f539e665113331bb6d4764fa5fc6aaea",
+      "rowCount": 1500,
+      "sheet": "Sheet1",
+      "identityFields": ["InvoiceNo", "JournalNo", "OrderID"],
+      "productFields": ["SKU", "Category", "Product", "Brand"],
+      "relationshipFields": ["OrderID", "SKU"],
+      "revenueCostQuantityFields": ["Qty", "NetRevenue", "InvoiceTotal", "TotalCost", "GrossProfit", "Revenue_Credit", "COGS_Debit"],
+      "periodFields": ["InvoiceDate"],
+      "corpus12SourceSystem": "synthetic_accounting_export"
+    }
+  ]
+}

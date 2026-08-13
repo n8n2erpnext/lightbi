@@ -1,0 +1,44 @@
+{
+  "schemaVersion": "lightbi.readiness-validation-expectations.v2",
+  "corpusVersion": "1.2.0",
+  "policy": {
+    "version": "lightbi.readiness-policy.v2",
+    "sha256": "50c546791c8a8df182f1e8b1a7c74dfd0fa420c71cd2bb8b4aea31ba107a0c7f"
+  },
+  "coverage": {
+    "sourceOccurrences": 37,
+    "bundles": 5,
+    "pairs": 9,
+    "capabilities": 34,
+    "counterfactualMutations": 42
+  },
+  "requiredInvariants": {
+    "invalidScopeStates": 0,
+    "criticalBlockerCancellations": 0,
+    "mandatoryDependencyCycles": 0,
+    "duplicateBlockersPerCapability": 0,
+    "duplicateRemediationsPerCapability": 0,
+    "safeToAggregatePromotions": 0,
+    "operationApprovals": 0,
+    "operationExecutions": 0,
+    "productionWirings": 0,
+    "summaryPercentage": null,
+    "domainSupportManifestEmpty": true
+  },
+  "scopeCorrections": {
+    "numericAggregationWithoutMeasures": "not_applicable",
+    "sourceLocalPairCapabilities": "not_applicable",
+    "unimplementedDomainCapabilities": "unsupported",
+    "zeroDenominatorRatio": null
+  },
+  "governance": {
+    "goldenTuning": "allowed",
+    "holdoutTuning": "forbidden",
+    "adversarialTuning": "forbidden",
+    "multiFileTuning": "forbidden",
+    "accuracyClaim": false,
+    "mvpProvenClaim": false,
+    "runtimeAuthority": false
+  },
+  "freezeClassification": "freeze_ready_with_documented_debt"
+}

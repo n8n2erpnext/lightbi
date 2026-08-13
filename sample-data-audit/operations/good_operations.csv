@@ -1,0 +1,16 @@
+driver_id,driver_name,route_code,shipment_no,delivery_status,sla_met,warehouse_id,delay_minutes,vehicle_plate
+DRV001,John Doe,RT-N01,SHP-1001,Delivered,Yes,WH-10,0,V-8812
+DRV002,Jane Smith,RT-S02,SHP-1002,In Transit,Yes,WH-12,0,V-3311
+DRV001,John Doe,RT-N01,SHP-1003,Delayed,No,WH-10,45,V-8812
+DRV003,Bob Lee,RT-E05,SHP-1004,Delivered,Yes,WH-11,0,V-9922
+DRV004,Alice Kim,RT-W03,SHP-1005,Failed,No,WH-10,120,V-1100
+DRV002,Jane Smith,RT-S02,SHP-1006,Delivered,Yes,WH-12,0,V-3311
+DRV005,Tom Hank,RT-N02,SHP-1007,In Transit,Yes,WH-11,0,V-5544
+DRV003,Bob Lee,RT-E05,SHP-1008,Delivered,Yes,WH-11,0,V-9922
+DRV001,John Doe,RT-N01,SHP-1009,Delayed,No,WH-10,30,V-8812
+DRV004,Alice Kim,RT-W03,SHP-1010,Delivered,Yes,WH-10,0,V-1100
+DRV006,Eve Smith,RT-S03,SHP-1011,Delivered,Yes,WH-12,0,V-2211
+DRV005,Tom Hank,RT-N02,SHP-1012,Delivered,Yes,WH-11,0,V-5544
+DRV002,Jane Smith,RT-S02,SHP-1013,Delayed,No,WH-12,60,V-3311
+DRV003,Bob Lee,RT-E05,SHP-1014,Delivered,Yes,WH-11,0,V-9922
+DRV001,John Doe,RT-N01,SHP-1015,Delivered,Yes,WH-10,0,V-8812

@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "lightbi.shadow-resolution-expectations.v1",
+  "corpusVersion": "1.2.0",
+  "tuningPolicy": { "golden": "allowed", "holdout": "forbidden", "adversarial": "forbidden", "multi_file": "forbidden" },
+  "governance": {
+    "derivedAutomaticallyFromCandidateTruth": false,
+    "unknownAndAmbiguousAreValid": true,
+    "confirmationMinimum": null,
+    "productionWiring": false
+  },
+  "probes": [
+    { "id": "exact-canonical-id", "allowedFinalStates": ["probable", "confirmed"], "forbiddenFinalStates": ["unsupported_input"], "confirmationPermitted": true, "evidenceRequirements": ["exact_lexical", "independent_non_lexical"], "structuralLimitations": [], "tuningProvenance": "synthetic_golden", "reasonCode": "exact_requires_corroboration" },
+    { "id": "exact-unambiguous-alias", "allowedFinalStates": ["probable", "confirmed", "unknown"], "forbiddenFinalStates": ["technical"], "confirmationPermitted": true, "evidenceRequirements": ["exact_alias", "independent_non_lexical"], "structuralLimitations": [], "tuningProvenance": "synthetic_golden", "reasonCode": "alias_requires_corroboration" },
+    { "id": "exact-header-alias", "allowedFinalStates": ["probable", "confirmed", "unknown"], "forbiddenFinalStates": ["technical"], "confirmationPermitted": true, "evidenceRequirements": ["exact_header_alias", "independent_non_lexical"], "structuralLimitations": [], "tuningProvenance": "synthetic_golden", "reasonCode": "header_alias_requires_corroboration" },
+    { "id": "containment-only", "allowedFinalStates": ["unknown", "ambiguous"], "forbiddenFinalStates": ["confirmed", "probable"], "confirmationPermitted": false, "evidenceRequirements": ["containment_only"], "structuralLimitations": [], "tuningProvenance": "policy", "reasonCode": "weak_lexical_abstention" },
+    { "id": "value-only", "allowedFinalStates": ["unknown", "ambiguous"], "forbiddenFinalStates": ["confirmed", "probable"], "confirmationPermitted": false, "evidenceRequirements": ["representative_only"], "structuralLimitations": ["representative_not_full_file"], "tuningProvenance": "policy", "reasonCode": "representative_abstention" },
+    { "id": "alias-collisions-84", "allowedFinalStates": ["ambiguous", "unknown"], "forbiddenFinalStates": ["confirmed"], "confirmationPermitted": false, "evidenceRequirements": ["candidate_specific_independence_to_separate"], "structuralLimitations": ["header_only_collision"], "tuningProvenance": "validation_only", "reasonCode": "collision_preserved" },
+    { "id": "generic-status", "allowedFinalStates": ["ambiguous", "unknown"], "forbiddenFinalStates": ["confirmed"], "confirmationPermitted": false, "evidenceRequirements": ["domain_specific_independence_missing"], "structuralLimitations": [], "tuningProvenance": "validation_only", "reasonCode": "generic_status_abstention" },
+    { "id": "delivery-status-timestamp", "allowedFinalStates": ["probable", "ambiguous", "unknown"], "forbiddenFinalStates": [], "confirmationPermitted": false, "evidenceRequirements": ["exact_lexical", "non_bootstrapped_context"], "structuralLimitations": [], "tuningProvenance": "validation_only", "reasonCode": "context_corroborates_only" },
+    { "id": "opaque-y", "allowedFinalStates": ["unknown", "ambiguous"], "forbiddenFinalStates": ["confirmed", "probable"], "confirmationPermitted": false, "evidenceRequirements": [], "structuralLimitations": ["opaque_header"], "tuningProvenance": "validation_only", "reasonCode": "opaque_abstention" },
+    { "id": "sports-event", "allowedFinalStates": ["unknown", "ambiguous", "probable"], "forbiddenFinalStates": ["confirmed"], "confirmationPermitted": false, "evidenceRequirements": ["candidate_specific_context"], "structuralLimitations": [], "tuningProvenance": "validation_only", "reasonCode": "event_collision_guard" },
+    { "id": "unit-cost", "allowedFinalStates": ["unknown", "ambiguous", "probable"], "forbiddenFinalStates": ["confirmed"], "confirmationPermitted": false, "evidenceRequirements": ["not_containment_only"], "structuralLimitations": [], "tuningProvenance": "validation_only", "reasonCode": "unit_uom_false_positive_guard" },
+    { "id": "technical-column", "allowedFinalStates": ["technical"], "forbiddenFinalStates": ["confirmed", "probable", "ambiguous"], "confirmationPermitted": false, "evidenceRequirements": ["technical_profile"], "structuralLimitations": [], "tuningProvenance": "policy", "reasonCode": "technical_isolation" },
+    { "id": "mixed-parse-conflict", "allowedFinalStates": ["unknown", "ambiguous", "technical"], "forbiddenFinalStates": ["confirmed"], "confirmationPermitted": false, "evidenceRequirements": ["material_conflict"], "structuralLimitations": ["mixed_type", "parse_failure"], "tuningProvenance": "validation_only", "reasonCode": "structural_conflict_blocks" },
+    { "id": "blank-unsupported", "allowedFinalStates": ["unsupported_input"], "forbiddenFinalStates": ["confirmed", "probable"], "confirmationPermitted": false, "evidenceRequirements": [], "structuralLimitations": ["unsupported_header"], "tuningProvenance": "policy", "reasonCode": "unsupported_preserved" },
+    { "id": "candidate-absence", "allowedFinalStates": ["unknown", "ambiguous"], "forbiddenFinalStates": ["confirmed"], "confirmationPermitted": false, "evidenceRequirements": ["absence_debt_visible"], "structuralLimitations": [], "tuningProvenance": "validation_only", "reasonCode": "absence_never_supports" }
+  ],
+  "mandatoryPhysicalColumns": ["Khách hàng", "Đơn vị tính", "CHARGE", "campaign", "Event", "Xếp hạng", "UnitCost", "Sub-Category", "Country Name", "Mã phiếu xuất", "Mã phiếu gửi", "Mã Phiếu Gửi", "Thời gian dự kiến đến", "MSNV Quản lý", "Đánh giá"]
+}

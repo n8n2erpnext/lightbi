@@ -1,0 +1,1503 @@
+{
+  "schemaVersion": "lightbi.grain-candidate-expectations.v1",
+  "corpusVersionRef": "1.2.0",
+  "assertionMode": "candidate_and_evidence_preservation_only",
+  "governance": {
+    "finalGrainAssertionsForbidden": true,
+    "sourceBySourceOnly": true,
+    "validationGroupsTuningForbidden": [
+      "holdout",
+      "adversarial",
+      "multi_file"
+    ],
+    "truthStatus": "audited_non_infallible"
+  },
+  "samples": [
+    {
+      "id": "adv.bank_marketing_generic_headers",
+      "group": "adversarial",
+      "expectedArchetype": "campaign_contact_events",
+      "coarseGrain": "event",
+      "rowEntity": "campaign_contact_event",
+      "parentEntity": "contact_subject",
+      "candidateKeys": [],
+      "parentKeys": [],
+      "measureExpectations": [
+        {
+          "physicalColumn": "campaign",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        }
+      ],
+      "requiredCandidateClasses": [
+        "unknown"
+      ],
+      "allowedCandidateClasses": [
+        "entity_record",
+        "event_record",
+        "document_record",
+        "line_record",
+        "snapshot_record",
+        "interval_record",
+        "aggregate_record",
+        "mapping_record",
+        "mixed_structure",
+        "unknown"
+      ]
+    },
+    {
+      "id": "adv.management_merged_header",
+      "group": "adversarial",
+      "expectedArchetype": "management_ranking_with_title_rows",
+      "coarseGrain": "summary",
+      "rowEntity": "manager_ranking",
+      "parentEntity": null,
+      "candidateKeys": [
+        [
+          "MSNV Quản lý"
+        ]
+      ],
+      "parentKeys": [],
+      "measureExpectations": [
+        {
+          "physicalColumn": "Tổng sao từ T6/2016 đến T05/2017",
+          "repeatedWithinParent": false,
+          "additiveAcrossRows": false,
+          "reasonCode": "non_additive_or_ratio_measure"
+        }
+      ],
+      "requiredCandidateClasses": [
+        "unknown"
+      ],
+      "allowedCandidateClasses": [
+        "entity_record",
+        "event_record",
+        "document_record",
+        "line_record",
+        "snapshot_record",
+        "interval_record",
+        "aggregate_record",
+        "mapping_record",
+        "mixed_structure",
+        "unknown"
+      ]
+    },
+    {
+      "id": "adv.motodetail_dirty_export",
+      "group": "adversarial",
+      "expectedArchetype": "dirty_operational_export",
+      "coarseGrain": "unknown",
+      "rowEntity": "service_record",
+      "parentEntity": "work_order",
+      "candidateKeys": [
+        [
+          "__PowerAppsId__"
+        ]
+      ],
+      "parentKeys": [
+        [
+          "ORD.\nCODE"
+        ]
+      ],
+      "measureExpectations": [
+        {
+          "physicalColumn": "CHARGE",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        }
+      ],
+      "requiredCandidateClasses": [
+        "unknown"
+      ],
+      "allowedCandidateClasses": [
+        "entity_record",
+        "event_record",
+        "document_record",
+        "line_record",
+        "snapshot_record",
+        "interval_record",
+        "aggregate_record",
+        "mapping_record",
+        "mixed_structure",
+        "unknown"
+      ]
+    },
+    {
+      "id": "adv.world_bank_cross_domain",
+      "group": "adversarial",
+      "expectedArchetype": "country_indicator_panel",
+      "coarseGrain": "summary",
+      "rowEntity": "country_period_indicator",
+      "parentEntity": "country",
+      "candidateKeys": [
+        [
+          "Country Name",
+          "Date"
+        ]
+      ],
+      "parentKeys": [
+        [
+          "Country Name"
+        ]
+      ],
+      "measureExpectations": [
+        {
+          "physicalColumn": "Finance: GDP (current US$)",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": false,
+          "reasonCode": "non_additive_or_ratio_measure"
+        }
+      ],
+      "requiredCandidateClasses": [
+        "unknown"
+      ],
+      "allowedCandidateClasses": [
+        "entity_record",
+        "event_record",
+        "document_record",
+        "line_record",
+        "snapshot_record",
+        "interval_record",
+        "aggregate_record",
+        "mapping_record",
+        "mixed_structure",
+        "unknown"
+      ]
+    },
+    {
+      "id": "adv.world_cup_events",
+      "group": "adversarial",
+      "expectedArchetype": "sports_lineup_events",
+      "coarseGrain": "event",
+      "rowEntity": "player_match_event",
+      "parentEntity": "match",
+      "candidateKeys": [
+        [
+          "MatchID",
+          "Player Name"
+        ]
+      ],
+      "parentKeys": [
+        [
+          "MatchID"
+        ]
+      ],
+      "measureExpectations": [
+        {
+          "physicalColumn": "Shirt Number",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": false,
+          "reasonCode": "non_additive_or_ratio_measure"
+        }
+      ],
+      "requiredCandidateClasses": [
+        "unknown"
+      ],
+      "allowedCandidateClasses": [
+        "entity_record",
+        "event_record",
+        "document_record",
+        "line_record",
+        "snapshot_record",
+        "interval_record",
+        "aggregate_record",
+        "mapping_record",
+        "mixed_structure",
+        "unknown"
+      ]
+    },
+    {
+      "id": "fin.accounting_june_2026",
+      "group": "holdout",
+      "expectedArchetype": "posted_sales_invoice_lines",
+      "coarseGrain": "transaction",
+      "rowEntity": "invoice_line",
+      "parentEntity": "invoice",
+      "candidateKeys": [
+        [
+          "InvoiceNo",
+          "SKU"
+        ]
+      ],
+      "parentKeys": [
+        [
+          "InvoiceNo"
+        ]
+      ],
+      "measureExpectations": [
+        {
+          "physicalColumn": "NetRevenue",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        },
+        {
+          "physicalColumn": "TotalCost",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        },
+        {
+          "physicalColumn": "GrossProfit",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        },
+        {
+          "physicalColumn": "MarginPct",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": false,
+          "reasonCode": "non_additive_or_ratio_measure"
+        }
+      ],
+      "requiredCandidateClasses": [
+        "unknown"
+      ],
+      "allowedCandidateClasses": [
+        "entity_record",
+        "event_record",
+        "document_record",
+        "line_record",
+        "snapshot_record",
+        "interval_record",
+        "aggregate_record",
+        "mapping_record",
+        "mixed_structure",
+        "unknown"
+      ]
+    },
+    {
+      "id": "fin.accounting_may_2026",
+      "group": "golden",
+      "expectedArchetype": "posted_sales_invoice_lines",
+      "coarseGrain": "transaction",
+      "rowEntity": "invoice_line",
+      "parentEntity": "invoice",
+      "candidateKeys": [
+        [
+          "InvoiceNo",
+          "SKU"
+        ]
+      ],
+      "parentKeys": [
+        [
+          "InvoiceNo"
+        ]
+      ],
+      "measureExpectations": [
+        {
+          "physicalColumn": "NetRevenue",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        },
+        {
+          "physicalColumn": "TotalCost",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        },
+        {
+          "physicalColumn": "GrossProfit",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        },
+        {
+          "physicalColumn": "MarginPct",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": false,
+          "reasonCode": "non_additive_or_ratio_measure"
+        }
+      ],
+      "requiredCandidateClasses": [
+        "unknown"
+      ],
+      "allowedCandidateClasses": [
+        "entity_record",
+        "event_record",
+        "document_record",
+        "line_record",
+        "snapshot_record",
+        "interval_record",
+        "aggregate_record",
+        "mapping_record",
+        "mixed_structure",
+        "unknown"
+      ]
+    },
+    {
+      "id": "fin.bhx_tender_reconciliation",
+      "group": "golden",
+      "expectedArchetype": "retail_receipt_headers",
+      "coarseGrain": "transaction",
+      "rowEntity": "receipt",
+      "parentEntity": null,
+      "candidateKeys": [
+        [
+          "Mã phiếu xuất"
+        ]
+      ],
+      "parentKeys": [],
+      "measureExpectations": [
+        {
+          "physicalColumn": "Tổng tiền",
+          "repeatedWithinParent": false,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        },
+        {
+          "physicalColumn": "Tiền phải thu",
+          "repeatedWithinParent": false,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        }
+      ],
+      "requiredCandidateClasses": [
+        "unknown"
+      ],
+      "allowedCandidateClasses": [
+        "entity_record",
+        "event_record",
+        "document_record",
+        "line_record",
+        "snapshot_record",
+        "interval_record",
+        "aggregate_record",
+        "mapping_record",
+        "mixed_structure",
+        "unknown"
+      ]
+    },
+    {
+      "id": "fin.sales_june_missing_cost",
+      "group": "holdout",
+      "expectedArchetype": "sales_transaction_lines",
+      "coarseGrain": "transaction",
+      "rowEntity": "order_line",
+      "parentEntity": "sales_order",
+      "candidateKeys": [
+        [
+          "OrderID"
+        ]
+      ],
+      "parentKeys": [
+        [
+          "OrderID"
+        ]
+      ],
+      "measureExpectations": [
+        {
+          "physicalColumn": "Qty",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        },
+        {
+          "physicalColumn": "Revenue",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        },
+        {
+          "physicalColumn": "Discount",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        }
+      ],
+      "requiredCandidateClasses": [
+        "unknown"
+      ],
+      "allowedCandidateClasses": [
+        "entity_record",
+        "event_record",
+        "document_record",
+        "line_record",
+        "snapshot_record",
+        "interval_record",
+        "aggregate_record",
+        "mapping_record",
+        "mixed_structure",
+        "unknown"
+      ]
+    },
+    {
+      "id": "fin.superstore_profit",
+      "group": "holdout",
+      "expectedArchetype": "sales_order_lines",
+      "coarseGrain": "transaction",
+      "rowEntity": "order_line",
+      "parentEntity": "sales_order",
+      "candidateKeys": [
+        [
+          "Row ID"
+        ]
+      ],
+      "parentKeys": [
+        [
+          "Order ID"
+        ]
+      ],
+      "measureExpectations": [
+        {
+          "physicalColumn": "Sales",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        },
+        {
+          "physicalColumn": "Quantity",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        },
+        {
+          "physicalColumn": "Profit",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        }
+      ],
+      "requiredCandidateClasses": [
+        "unknown"
+      ],
+      "allowedCandidateClasses": [
+        "entity_record",
+        "event_record",
+        "document_record",
+        "line_record",
+        "snapshot_record",
+        "interval_record",
+        "aggregate_record",
+        "mapping_record",
+        "mixed_structure",
+        "unknown"
+      ]
+    },
+    {
+      "id": "inv.hublan_expected_stock",
+      "group": "holdout",
+      "expectedArchetype": "shipment_backlog_snapshot",
+      "coarseGrain": "snapshot",
+      "rowEntity": "shipment_snapshot",
+      "parentEntity": "inventory_snapshot",
+      "candidateKeys": [
+        [
+          "Mã Phiếu Gửi"
+        ]
+      ],
+      "parentKeys": [
+        [
+          "Ngày Báo Cáo"
+        ]
+      ],
+      "measureExpectations": [
+        {
+          "physicalColumn": "Tiền Cước",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        },
+        {
+          "physicalColumn": "Trọng lượng",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        }
+      ],
+      "requiredCandidateClasses": [
+        "unknown"
+      ],
+      "allowedCandidateClasses": [
+        "entity_record",
+        "event_record",
+        "document_record",
+        "line_record",
+        "snapshot_record",
+        "interval_record",
+        "aggregate_record",
+        "mapping_record",
+        "mixed_structure",
+        "unknown"
+      ]
+    },
+    {
+      "id": "inv.logistics_june_item_flow",
+      "group": "holdout",
+      "expectedArchetype": "shipment_lines",
+      "coarseGrain": "event",
+      "rowEntity": "shipment_line",
+      "parentEntity": "shipment",
+      "candidateKeys": [
+        [
+          "ShipmentID",
+          "SKU"
+        ]
+      ],
+      "parentKeys": [
+        [
+          "ShipmentID"
+        ]
+      ],
+      "measureExpectations": [
+        {
+          "physicalColumn": "Qty",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        },
+        {
+          "physicalColumn": "TotalCost",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        },
+        {
+          "physicalColumn": "DeliveryFee",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": false,
+          "reasonCode": "non_additive_or_ratio_measure"
+        }
+      ],
+      "requiredCandidateClasses": [
+        "unknown"
+      ],
+      "allowedCandidateClasses": [
+        "entity_record",
+        "event_record",
+        "document_record",
+        "line_record",
+        "snapshot_record",
+        "interval_record",
+        "aggregate_record",
+        "mapping_record",
+        "mixed_structure",
+        "unknown"
+      ]
+    },
+    {
+      "id": "inv.logistics_may_item_flow",
+      "group": "golden",
+      "expectedArchetype": "shipment_lines",
+      "coarseGrain": "event",
+      "rowEntity": "shipment_line",
+      "parentEntity": "shipment",
+      "candidateKeys": [
+        [
+          "ShipmentID",
+          "SKU"
+        ]
+      ],
+      "parentKeys": [
+        [
+          "ShipmentID"
+        ]
+      ],
+      "measureExpectations": [
+        {
+          "physicalColumn": "Qty",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        },
+        {
+          "physicalColumn": "TotalCost",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        },
+        {
+          "physicalColumn": "DeliveryFee",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": false,
+          "reasonCode": "non_additive_or_ratio_measure"
+        }
+      ],
+      "requiredCandidateClasses": [
+        "unknown"
+      ],
+      "allowedCandidateClasses": [
+        "entity_record",
+        "event_record",
+        "document_record",
+        "line_record",
+        "snapshot_record",
+        "interval_record",
+        "aggregate_record",
+        "mapping_record",
+        "mixed_structure",
+        "unknown"
+      ]
+    },
+    {
+      "id": "inv.plu_product_master",
+      "group": "golden",
+      "expectedArchetype": "product_master",
+      "coarseGrain": "master_data",
+      "rowEntity": "product",
+      "parentEntity": null,
+      "candidateKeys": [
+        [
+          "Mã sản phẩm"
+        ],
+        [
+          "Barcode"
+        ]
+      ],
+      "parentKeys": [],
+      "measureExpectations": [],
+      "requiredCandidateClasses": [
+        "unknown"
+      ],
+      "allowedCandidateClasses": [
+        "entity_record",
+        "event_record",
+        "document_record",
+        "line_record",
+        "snapshot_record",
+        "interval_record",
+        "aggregate_record",
+        "mapping_record",
+        "mixed_structure",
+        "unknown"
+      ]
+    },
+    {
+      "id": "inv.provincial_aging_20241228",
+      "group": "holdout",
+      "expectedArchetype": "inventory_aging_snapshot",
+      "coarseGrain": "snapshot",
+      "rowEntity": "shipment_snapshot",
+      "parentEntity": "inventory_snapshot",
+      "candidateKeys": [
+        [
+          "Mã phiếu gửi"
+        ]
+      ],
+      "parentKeys": [
+        [
+          "Thời gian báo cáo"
+        ]
+      ],
+      "measureExpectations": [
+        {
+          "physicalColumn": "Tổng cước \n (đồng)",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        },
+        {
+          "physicalColumn": " Thời gian tồn ",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": false,
+          "reasonCode": "non_additive_or_ratio_measure"
+        }
+      ],
+      "requiredCandidateClasses": [
+        "unknown"
+      ],
+      "allowedCandidateClasses": [
+        "entity_record",
+        "event_record",
+        "document_record",
+        "line_record",
+        "snapshot_record",
+        "interval_record",
+        "aggregate_record",
+        "mapping_record",
+        "mixed_structure",
+        "unknown"
+      ]
+    },
+    {
+      "id": "multi.accounting_period_pair",
+      "group": "multi_file",
+      "expectedArchetype": "cross_function_commerce_bundle",
+      "coarseGrain": "transaction",
+      "rowEntity": "cross_file_record",
+      "parentEntity": "business_period",
+      "candidateKeys": [],
+      "parentKeys": [],
+      "measureExpectations": [
+        {
+          "physicalColumn": "Revenue",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        },
+        {
+          "physicalColumn": "NetRevenue",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        },
+        {
+          "physicalColumn": "GrossProfit",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        },
+        {
+          "physicalColumn": "DeliveryFee",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        }
+      ],
+      "requiredCandidateClasses": [
+        "unknown"
+      ],
+      "allowedCandidateClasses": [
+        "entity_record",
+        "event_record",
+        "document_record",
+        "line_record",
+        "snapshot_record",
+        "interval_record",
+        "aggregate_record",
+        "mapping_record",
+        "mixed_structure",
+        "unknown"
+      ]
+    },
+    {
+      "id": "multi.commerce_june_2026",
+      "group": "multi_file",
+      "expectedArchetype": "cross_function_commerce_bundle",
+      "coarseGrain": "transaction",
+      "rowEntity": "cross_file_record",
+      "parentEntity": "business_period",
+      "candidateKeys": [],
+      "parentKeys": [],
+      "measureExpectations": [
+        {
+          "physicalColumn": "Revenue",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        },
+        {
+          "physicalColumn": "NetRevenue",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        },
+        {
+          "physicalColumn": "GrossProfit",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        },
+        {
+          "physicalColumn": "DeliveryFee",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        }
+      ],
+      "requiredCandidateClasses": [
+        "unknown"
+      ],
+      "allowedCandidateClasses": [
+        "entity_record",
+        "event_record",
+        "document_record",
+        "line_record",
+        "snapshot_record",
+        "interval_record",
+        "aggregate_record",
+        "mapping_record",
+        "mixed_structure",
+        "unknown"
+      ]
+    },
+    {
+      "id": "multi.commerce_may_2026",
+      "group": "multi_file",
+      "expectedArchetype": "cross_function_commerce_bundle",
+      "coarseGrain": "transaction",
+      "rowEntity": "cross_file_record",
+      "parentEntity": "business_period",
+      "candidateKeys": [],
+      "parentKeys": [],
+      "measureExpectations": [
+        {
+          "physicalColumn": "Revenue",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        },
+        {
+          "physicalColumn": "NetRevenue",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        },
+        {
+          "physicalColumn": "GrossProfit",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        },
+        {
+          "physicalColumn": "DeliveryFee",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        }
+      ],
+      "requiredCandidateClasses": [
+        "unknown"
+      ],
+      "allowedCandidateClasses": [
+        "entity_record",
+        "event_record",
+        "document_record",
+        "line_record",
+        "snapshot_record",
+        "interval_record",
+        "aggregate_record",
+        "mapping_record",
+        "mixed_structure",
+        "unknown"
+      ]
+    },
+    {
+      "id": "multi.logistics_period_pair",
+      "group": "multi_file",
+      "expectedArchetype": "cross_function_commerce_bundle",
+      "coarseGrain": "transaction",
+      "rowEntity": "cross_file_record",
+      "parentEntity": "business_period",
+      "candidateKeys": [],
+      "parentKeys": [],
+      "measureExpectations": [
+        {
+          "physicalColumn": "Revenue",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        },
+        {
+          "physicalColumn": "NetRevenue",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        },
+        {
+          "physicalColumn": "GrossProfit",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        },
+        {
+          "physicalColumn": "DeliveryFee",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        }
+      ],
+      "requiredCandidateClasses": [
+        "unknown"
+      ],
+      "allowedCandidateClasses": [
+        "entity_record",
+        "event_record",
+        "document_record",
+        "line_record",
+        "snapshot_record",
+        "interval_record",
+        "aggregate_record",
+        "mapping_record",
+        "mixed_structure",
+        "unknown"
+      ]
+    },
+    {
+      "id": "multi.sales_period_pair",
+      "group": "multi_file",
+      "expectedArchetype": "cross_function_commerce_bundle",
+      "coarseGrain": "transaction",
+      "rowEntity": "cross_file_record",
+      "parentEntity": "business_period",
+      "candidateKeys": [],
+      "parentKeys": [],
+      "measureExpectations": [
+        {
+          "physicalColumn": "Revenue",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        },
+        {
+          "physicalColumn": "NetRevenue",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        },
+        {
+          "physicalColumn": "GrossProfit",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        },
+        {
+          "physicalColumn": "DeliveryFee",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        }
+      ],
+      "requiredCandidateClasses": [
+        "unknown"
+      ],
+      "allowedCandidateClasses": [
+        "entity_record",
+        "event_record",
+        "document_record",
+        "line_record",
+        "snapshot_record",
+        "interval_record",
+        "aggregate_record",
+        "mapping_record",
+        "mixed_structure",
+        "unknown"
+      ]
+    },
+    {
+      "id": "ops.logistics_june_2026",
+      "group": "holdout",
+      "expectedArchetype": "shipment_lines",
+      "coarseGrain": "event",
+      "rowEntity": "shipment_line",
+      "parentEntity": "shipment",
+      "candidateKeys": [
+        [
+          "ShipmentID",
+          "SKU"
+        ]
+      ],
+      "parentKeys": [
+        [
+          "ShipmentID"
+        ]
+      ],
+      "measureExpectations": [
+        {
+          "physicalColumn": "Qty",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        },
+        {
+          "physicalColumn": "TotalCost",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        },
+        {
+          "physicalColumn": "DeliveryFee",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": false,
+          "reasonCode": "non_additive_or_ratio_measure"
+        }
+      ],
+      "requiredCandidateClasses": [
+        "unknown"
+      ],
+      "allowedCandidateClasses": [
+        "entity_record",
+        "event_record",
+        "document_record",
+        "line_record",
+        "snapshot_record",
+        "interval_record",
+        "aggregate_record",
+        "mapping_record",
+        "mixed_structure",
+        "unknown"
+      ]
+    },
+    {
+      "id": "ops.logistics_may_2026",
+      "group": "golden",
+      "expectedArchetype": "shipment_lines",
+      "coarseGrain": "event",
+      "rowEntity": "shipment_line",
+      "parentEntity": "shipment",
+      "candidateKeys": [
+        [
+          "ShipmentID",
+          "SKU"
+        ]
+      ],
+      "parentKeys": [
+        [
+          "ShipmentID"
+        ]
+      ],
+      "measureExpectations": [
+        {
+          "physicalColumn": "Qty",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        },
+        {
+          "physicalColumn": "TotalCost",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        },
+        {
+          "physicalColumn": "DeliveryFee",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": false,
+          "reasonCode": "non_additive_or_ratio_measure"
+        }
+      ],
+      "requiredCandidateClasses": [
+        "unknown"
+      ],
+      "allowedCandidateClasses": [
+        "entity_record",
+        "event_record",
+        "document_record",
+        "line_record",
+        "snapshot_record",
+        "interval_record",
+        "aggregate_record",
+        "mapping_record",
+        "mixed_structure",
+        "unknown"
+      ]
+    },
+    {
+      "id": "ops.ttkt_20241219",
+      "group": "golden",
+      "expectedArchetype": "vehicle_arrival_events",
+      "coarseGrain": "event",
+      "rowEntity": "transfer_event",
+      "parentEntity": "trip",
+      "candidateKeys": [
+        [
+          "Mã tải kiện",
+          "Thời gian checkin"
+        ]
+      ],
+      "parentKeys": [
+        [
+          "Chuyến xe"
+        ]
+      ],
+      "measureExpectations": [
+        {
+          "physicalColumn": "Số lượng",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        },
+        {
+          "physicalColumn": "Trọng lượng (Gam)",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        },
+        {
+          "physicalColumn": "Thời gian chờ",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": false,
+          "reasonCode": "non_additive_or_ratio_measure"
+        }
+      ],
+      "requiredCandidateClasses": [
+        "unknown"
+      ],
+      "allowedCandidateClasses": [
+        "entity_record",
+        "event_record",
+        "document_record",
+        "line_record",
+        "snapshot_record",
+        "interval_record",
+        "aggregate_record",
+        "mapping_record",
+        "mixed_structure",
+        "unknown"
+      ]
+    },
+    {
+      "id": "ops.ttkt_20241223",
+      "group": "holdout",
+      "expectedArchetype": "vehicle_arrival_events",
+      "coarseGrain": "event",
+      "rowEntity": "transfer_event",
+      "parentEntity": "trip",
+      "candidateKeys": [
+        [
+          "Mã tải kiện",
+          "Thời gian checkin"
+        ]
+      ],
+      "parentKeys": [
+        [
+          "Chuyến xe"
+        ]
+      ],
+      "measureExpectations": [
+        {
+          "physicalColumn": "Số lượng",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        },
+        {
+          "physicalColumn": "Trọng lượng (Gam)",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        },
+        {
+          "physicalColumn": "Thời gian chờ",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": false,
+          "reasonCode": "non_additive_or_ratio_measure"
+        }
+      ],
+      "requiredCandidateClasses": [
+        "unknown"
+      ],
+      "allowedCandidateClasses": [
+        "entity_record",
+        "event_record",
+        "document_record",
+        "line_record",
+        "snapshot_record",
+        "interval_record",
+        "aggregate_record",
+        "mapping_record",
+        "mixed_structure",
+        "unknown"
+      ]
+    },
+    {
+      "id": "ops.ttkt_20241224",
+      "group": "holdout",
+      "expectedArchetype": "vehicle_arrival_events",
+      "coarseGrain": "event",
+      "rowEntity": "transfer_event",
+      "parentEntity": "trip",
+      "candidateKeys": [
+        [
+          "Mã tải kiện",
+          "Thời gian checkin"
+        ]
+      ],
+      "parentKeys": [
+        [
+          "Chuyến xe"
+        ]
+      ],
+      "measureExpectations": [
+        {
+          "physicalColumn": "Số lượng",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        },
+        {
+          "physicalColumn": "Trọng lượng (Gam)",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        },
+        {
+          "physicalColumn": "Thời gian chờ",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": false,
+          "reasonCode": "non_additive_or_ratio_measure"
+        }
+      ],
+      "requiredCandidateClasses": [
+        "unknown"
+      ],
+      "allowedCandidateClasses": [
+        "entity_record",
+        "event_record",
+        "document_record",
+        "line_record",
+        "snapshot_record",
+        "interval_record",
+        "aggregate_record",
+        "mapping_record",
+        "mixed_structure",
+        "unknown"
+      ]
+    },
+    {
+      "id": "rev.accounting_may_sales_basis",
+      "group": "holdout",
+      "expectedArchetype": "posted_sales_invoice_lines",
+      "coarseGrain": "transaction",
+      "rowEntity": "invoice_line",
+      "parentEntity": "invoice",
+      "candidateKeys": [
+        [
+          "InvoiceNo",
+          "SKU"
+        ]
+      ],
+      "parentKeys": [
+        [
+          "InvoiceNo"
+        ]
+      ],
+      "measureExpectations": [
+        {
+          "physicalColumn": "NetRevenue",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        },
+        {
+          "physicalColumn": "TotalCost",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        },
+        {
+          "physicalColumn": "GrossProfit",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        },
+        {
+          "physicalColumn": "MarginPct",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": false,
+          "reasonCode": "non_additive_or_ratio_measure"
+        }
+      ],
+      "requiredCandidateClasses": [
+        "unknown"
+      ],
+      "allowedCandidateClasses": [
+        "entity_record",
+        "event_record",
+        "document_record",
+        "line_record",
+        "snapshot_record",
+        "interval_record",
+        "aggregate_record",
+        "mapping_record",
+        "mixed_structure",
+        "unknown"
+      ]
+    },
+    {
+      "id": "rev.bhx_pos_export",
+      "group": "golden",
+      "expectedArchetype": "retail_receipt_headers",
+      "coarseGrain": "transaction",
+      "rowEntity": "receipt",
+      "parentEntity": null,
+      "candidateKeys": [
+        [
+          "Mã phiếu xuất"
+        ]
+      ],
+      "parentKeys": [],
+      "measureExpectations": [
+        {
+          "physicalColumn": "Tổng tiền",
+          "repeatedWithinParent": false,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        },
+        {
+          "physicalColumn": "Tiền phải thu",
+          "repeatedWithinParent": false,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        }
+      ],
+      "requiredCandidateClasses": [
+        "unknown"
+      ],
+      "allowedCandidateClasses": [
+        "entity_record",
+        "event_record",
+        "document_record",
+        "line_record",
+        "snapshot_record",
+        "interval_record",
+        "aggregate_record",
+        "mapping_record",
+        "mixed_structure",
+        "unknown"
+      ]
+    },
+    {
+      "id": "rev.sales_erp_june_2026",
+      "group": "holdout",
+      "expectedArchetype": "sales_transaction_lines",
+      "coarseGrain": "transaction",
+      "rowEntity": "order_line",
+      "parentEntity": "sales_order",
+      "candidateKeys": [
+        [
+          "OrderID"
+        ]
+      ],
+      "parentKeys": [
+        [
+          "OrderID"
+        ]
+      ],
+      "measureExpectations": [
+        {
+          "physicalColumn": "Qty",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        },
+        {
+          "physicalColumn": "Revenue",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        },
+        {
+          "physicalColumn": "Discount",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        }
+      ],
+      "requiredCandidateClasses": [
+        "unknown"
+      ],
+      "allowedCandidateClasses": [
+        "entity_record",
+        "event_record",
+        "document_record",
+        "line_record",
+        "snapshot_record",
+        "interval_record",
+        "aggregate_record",
+        "mapping_record",
+        "mixed_structure",
+        "unknown"
+      ]
+    },
+    {
+      "id": "rev.sales_erp_may_2026",
+      "group": "golden",
+      "expectedArchetype": "sales_transaction_lines",
+      "coarseGrain": "transaction",
+      "rowEntity": "order_line",
+      "parentEntity": "sales_order",
+      "candidateKeys": [
+        [
+          "OrderID"
+        ]
+      ],
+      "parentKeys": [
+        [
+          "OrderID"
+        ]
+      ],
+      "measureExpectations": [
+        {
+          "physicalColumn": "Qty",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        },
+        {
+          "physicalColumn": "Revenue",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        },
+        {
+          "physicalColumn": "Discount",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        }
+      ],
+      "requiredCandidateClasses": [
+        "unknown"
+      ],
+      "allowedCandidateClasses": [
+        "entity_record",
+        "event_record",
+        "document_record",
+        "line_record",
+        "snapshot_record",
+        "interval_record",
+        "aggregate_record",
+        "mapping_record",
+        "mixed_structure",
+        "unknown"
+      ]
+    },
+    {
+      "id": "rev.superstore_orders",
+      "group": "holdout",
+      "expectedArchetype": "sales_order_lines",
+      "coarseGrain": "transaction",
+      "rowEntity": "order_line",
+      "parentEntity": "sales_order",
+      "candidateKeys": [
+        [
+          "Row ID"
+        ]
+      ],
+      "parentKeys": [
+        [
+          "Order ID"
+        ]
+      ],
+      "measureExpectations": [
+        {
+          "physicalColumn": "Sales",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        },
+        {
+          "physicalColumn": "Quantity",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        },
+        {
+          "physicalColumn": "Profit",
+          "repeatedWithinParent": true,
+          "additiveAcrossRows": true,
+          "reasonCode": "row_additive_measure"
+        }
+      ],
+      "requiredCandidateClasses": [
+        "unknown"
+      ],
+      "allowedCandidateClasses": [
+        "entity_record",
+        "event_record",
+        "document_record",
+        "line_record",
+        "snapshot_record",
+        "interval_record",
+        "aggregate_record",
+        "mapping_record",
+        "mixed_structure",
+        "unknown"
+      ]
+    }
+  ]
+}

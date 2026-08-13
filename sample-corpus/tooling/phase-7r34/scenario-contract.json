@@ -1,0 +1,57 @@
+{
+  "schemaVersion": "lightbi.erp-scenario-contract.v1",
+  "scenarioId": "commerce_distribution_erp_scenario_v1",
+  "scenarioVersion": "1.0.0",
+  "legalEntityId": "LIGHTBI_SCENARIO_ENTITY_001",
+  "scenarioCurrency": "VND",
+  "currencyScope": {
+    "appliesTo": [
+      "NetRevenue",
+      "VATOutput",
+      "InvoiceTotal",
+      "UnitCost",
+      "TotalCost",
+      "GrossProfit",
+      "AR_Debit",
+      "Revenue_Credit",
+      "VATOutput_Credit",
+      "COGS_Debit",
+      "Inventory_Credit"
+    ],
+    "basis": "declared_scenario_metadata",
+    "discoveredFromAuthenticAccounting": false,
+    "conversionAllowed": false
+  },
+  "baseUom": "EA",
+  "reportingTimezone": "Asia/Ho_Chi_Minh",
+  "reportingPeriods": [
+    {
+      "periodId": "2026-05",
+      "startDate": "2026-05-01",
+      "endDate": "2026-05-31",
+      "inventorySnapshotDate": "2026-05-31"
+    },
+    {
+      "periodId": "2026-06",
+      "startDate": "2026-06-01",
+      "endDate": "2026-06-30",
+      "inventorySnapshotDate": "2026-06-30"
+    }
+  ],
+  "inventoryPolicy": {
+    "openingBufferMinimum": 50,
+    "openingBufferRange": 151,
+    "receiptBaseMinimum": 10,
+    "receiptBaseRange": 61,
+    "minimumClosingBuffer": 20,
+    "minimumClosingBufferRange": 31,
+    "customerReturns": 0,
+    "supplierReturns": 0,
+    "damageAdjustments": 0,
+    "stockDeficitScenario": false,
+    "juneContinuity": "Existing item/warehouse opening quantity equals the May closing quantity; new item/warehouse pairs receive an explicitly generated opening balance."
+  },
+  "deterministicGeneratorSeed": "lightbi-commerce-distribution-erp-v1-seed-20260716",
+  "generationPolicyVersion": "1.0.0",
+  "evidenceType": "authentic_anchored_semi_synthetic_evidence"
+}

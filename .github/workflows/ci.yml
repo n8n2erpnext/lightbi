@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  desktop:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.4.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Build desktop web surface
+        run: pnpm --filter @lightbi/desktop build
+      - name: Run public governed regression gates
+        working-directory: apps/desktop
+        run: >-
+          pnpm vitest run
+          src/lib/understanding-core/phase-8d1-production-multisource.test.ts
+          src/components/analysis/PerspectiveCollectionResultCard.test.tsx
+          src/lib/understanding-core/phase-7r41-repository-corpus.test.ts
+          src/lib/runtime-source-continuity.test.ts
+          --maxWorkers=2

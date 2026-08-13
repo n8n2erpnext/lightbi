@@ -1,0 +1,16 @@
+tên tài xế,tuyến,mã_đơn,tình_trạng,sla,kho,chậm,xe,tuyến_2
+John Doe,RT-N01,1001,Delivered,1,WH-10,0,V-8812,RT-N01
+Jane Smith,,1002,In Transit,1,WH-12,,V-3311,
+John Doe,RT-N01,1003,Delayed,0,,45,V-8812,RT-N01
+Bob Lee,RT-E05,,Delivered,1,WH-11,0,V-9922,RT-E05
+Alice Kim,RT-W03,1005,Failed,0,WH-10,120,,RT-W03
+Jane Smith,RT-S02,1006,Delivered,1,WH-12,0,V-3311,RT-S02
+Tom Hank,RT-N02,1007,In Transit,1,WH-11,0,V-5544,RT-N02
+Bob Lee,,1008,Delivered,1,WH-11,0,V-9922,
+John Doe,RT-N01,1009,Delayed,0,WH-10,30,V-8812,RT-N01
+Alice Kim,RT-W03,1010,Delivered,1,WH-10,,V-1100,RT-W03
+Eve Smith,RT-S03,1011,Delivered,1,WH-12,0,V-2211,RT-S03
+Tom Hank,RT-N02,1012,,1,WH-11,0,V-5544,RT-N02
+Jane Smith,RT-S02,1013,Delayed,0,WH-12,60,V-3311,RT-S02
+Bob Lee,RT-E05,1014,Delivered,1,,0,V-9922,RT-E05
+John Doe,RT-N01,1015,Delivered,1,WH-10,0,V-8812,RT-N01

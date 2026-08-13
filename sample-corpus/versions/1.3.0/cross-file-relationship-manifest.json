@@ -1,0 +1,99 @@
+{
+  "schemaVersion": "lightbi.phase7r34-cross-file-relationships.v1",
+  "scenarioId": "commerce_distribution_erp_scenario_v1",
+  "relationships": [
+    {
+      "period": "2026-05",
+      "from": "sales_order.OrderID",
+      "to": "shipment.OrderID",
+      "cardinality": "one_to_one",
+      "count": 1500,
+      "anchorBound": true
+    },
+    {
+      "period": "2026-05",
+      "from": "sales_order.OrderID",
+      "to": "accounting_entry.OrderID",
+      "cardinality": "one_to_one",
+      "count": 1500,
+      "anchorBound": true
+    },
+    {
+      "period": "2026-05",
+      "from": "sales_order.OrderID",
+      "to": "inventory_issue.SourceOrderID",
+      "cardinality": "one_to_one",
+      "count": 1500,
+      "anchorBound": true
+    },
+    {
+      "period": "2026-06",
+      "from": "sales_order.OrderID",
+      "to": "shipment.OrderID",
+      "cardinality": "one_to_one",
+      "count": 1500,
+      "anchorBound": true
+    },
+    {
+      "period": "2026-06",
+      "from": "sales_order.OrderID",
+      "to": "accounting_entry.OrderID",
+      "cardinality": "one_to_one",
+      "count": 1500,
+      "anchorBound": true
+    },
+    {
+      "period": "2026-06",
+      "from": "sales_order.OrderID",
+      "to": "inventory_issue.SourceOrderID",
+      "cardinality": "one_to_one",
+      "count": 1500,
+      "anchorBound": true
+    },
+    {
+      "period": "2026-05",
+      "from": "inventory_issue.ItemID+WarehouseID",
+      "to": "inventory_snapshot.ItemID+WarehouseID+AsOfDate",
+      "cardinality": "many_to_one",
+      "snapshotRows": 1266,
+      "anchorOrScenarioEvent": true
+    },
+    {
+      "period": "2026-06",
+      "from": "inventory_issue.ItemID+WarehouseID",
+      "to": "inventory_snapshot.ItemID+WarehouseID+AsOfDate",
+      "cardinality": "many_to_one",
+      "snapshotRows": 2198,
+      "anchorOrScenarioEvent": true
+    },
+    {
+      "period": "2026-06",
+      "from": "may_snapshot.ItemID+WarehouseID",
+      "to": "june_opening.ItemID+WarehouseID",
+      "cardinality": "one_to_one_for_carry_forward_pairs",
+      "count": 1266,
+      "scenarioGenerated": true
+    },
+    {
+      "period": "both",
+      "from": "scenario_contract.scenarioCurrency",
+      "to": "derived_accounting.ScenarioCurrency",
+      "cardinality": "one_to_many",
+      "value": "VND",
+      "scenarioGenerated": true
+    }
+  ],
+  "relationshipKeys": {
+    "order": "OrderID",
+    "shipment": "ShipmentID",
+    "item": "ItemID",
+    "warehouse": "WarehouseID",
+    "period": "ReportingPeriod",
+    "snapshot": [
+      "ItemID",
+      "WarehouseID",
+      "AsOfDate"
+    ],
+    "currency": "ScenarioCurrency"
+  }
+}

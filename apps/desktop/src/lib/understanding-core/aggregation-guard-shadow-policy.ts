@@ -1,0 +1,4 @@
+import {deterministicPolicySha256} from "./contextual-evidence-policy";
+import {AGGREGATION_GUARD_POLICY_VERSION,type AggregationGuardPolicyV1} from "./aggregation-guard-shadow-contracts";
+export const AGGREGATION_GUARD_POLICY:AggregationGuardPolicyV1={schemaVersion:AGGREGATION_GUARD_POLICY_VERSION,precedence:["invalid_canonical_envelope","no_measure_not_applicable","repeated_total_protection_required","snapshot_time_rule_required","non_additive_measure_rule_required","grain_confirmation_required","metric_semantics_required","automatic_sum_would_be_blocked","explicit_aggregation_requires_confirmation","physical_operator_only","unsupported_or_unknown","observe_only_no_conflict"],forbiddenEffects:["mutate_plan","change_sql","approve_aggregation","authorize_execution","wire_production","infer_metric_definition","replace_sum_with_count"]};
+export const aggregationGuardPolicyHash=()=>deterministicPolicySha256(AGGREGATION_GUARD_POLICY);

@@ -1,0 +1,51 @@
+{
+  "schemaVersion": "lightbi.grain-resolution-shadow-expectations.v1",
+  "corpusVersion": "1.2.0",
+  "governance": {
+    "axisLevelOnly": true,
+    "recognitionTruthOverwritten": false,
+    "candidateTruthOverwritten": false,
+    "unknownAndAmbiguousAreValid": true,
+    "mvpProvenClaim": false,
+    "tuningAllowedGroups": ["golden"]
+  },
+  "defaults": {
+    "allowedStates": ["confirmed", "probable", "ambiguous", "unknown"],
+    "forbiddenStates": ["unsupported_input"],
+    "confirmationPermission": "evidence_gated",
+    "requiredProvenance": ["full_file"],
+    "measureSafety": false
+  },
+  "cases": [
+    {"id":"adv.motodetail_dirty_export","group":"adversarial","tuningUse":"forbidden","coarseReference":"unknown","requiredStructuralAlternatives":["unknown","mixed","line"],"reasonCodes":["dirty_structure_non_infallible_reference"]},
+    {"id":"adv.management_merged_header","group":"adversarial","tuningUse":"forbidden","coarseReference":"summary","requiredStructuralAlternatives":["aggregate","mixed","unknown"],"reasonCodes":["merged_header_limits_confirmation"]},
+    {"id":"adv.world_bank_cross_domain","group":"adversarial","tuningUse":"forbidden","coarseReference":"summary","requiredStructuralAlternatives":["aggregate","unknown"],"reasonCodes":["reporting_rows_possible"]},
+    {"id":"adv.world_cup_events","group":"adversarial","tuningUse":"forbidden","coarseReference":"event","requiredTemporalAlternatives":["event","unresolved"],"reasonCodes":["event_reference_validation_only"]},
+    {"id":"adv.bank_marketing_generic_headers","group":"adversarial","tuningUse":"forbidden","coarseReference":"event","requiredTemporalAlternatives":["event","unresolved"],"reasonCodes":["generic_headers_validation_only"]},
+    {"id":"fin.accounting_may_2026","group":"golden","tuningUse":"allowed","coarseReference":"transaction","requiredStructuralAlternatives":["line","document","unknown"],"reasonCodes":["transaction_reference_not_final_signature"]},
+    {"id":"fin.accounting_june_2026","group":"holdout","tuningUse":"forbidden","coarseReference":"transaction","requiredStructuralAlternatives":["line","document","unknown"],"reasonCodes":["validation_only"]},
+    {"id":"fin.bhx_tender_reconciliation","group":"golden","tuningUse":"allowed","coarseReference":"transaction","requiredStructuralAlternatives":["entity","document","unknown"],"reasonCodes":["receipt_structure_requires_independent_evidence"]},
+    {"id":"fin.superstore_profit","group":"holdout","tuningUse":"forbidden","coarseReference":"transaction","requiredStructuralAlternatives":["line","document","unknown"],"reasonCodes":["validation_only"]},
+    {"id":"fin.sales_june_missing_cost","group":"holdout","tuningUse":"forbidden","coarseReference":"transaction","requiredStructuralAlternatives":["line","document","unknown"],"reasonCodes":["missing_measure_does_not_change_grain"]},
+    {"id":"inv.plu_product_master","group":"golden","tuningUse":"allowed","coarseReference":"master_data","requiredStructuralAlternatives":["entity","unknown"],"reasonCodes":["master_identity_reference"]},
+    {"id":"inv.provincial_aging_20241228","group":"holdout","tuningUse":"forbidden","coarseReference":"snapshot","requiredTemporalAlternatives":["snapshot","reporting_period","unresolved"],"reasonCodes":["snapshot_validation_only"]},
+    {"id":"inv.hublan_expected_stock","group":"holdout","tuningUse":"forbidden","coarseReference":"snapshot","requiredTemporalAlternatives":["snapshot","reporting_period","unresolved"],"reasonCodes":["snapshot_validation_only"]},
+    {"id":"inv.logistics_may_item_flow","group":"golden","tuningUse":"allowed","coarseReference":"event","requiredStructuralAlternatives":["line","document","unknown"],"requiredTemporalAlternatives":["event","unresolved"],"reasonCodes":["line_event_are_compatible"]},
+    {"id":"inv.logistics_june_item_flow","group":"holdout","tuningUse":"forbidden","coarseReference":"event","requiredStructuralAlternatives":["line","document","unknown"],"requiredTemporalAlternatives":["event","unresolved"],"reasonCodes":["validation_only"]},
+    {"id":"multi.commerce_may_2026","group":"multi_file","tuningUse":"forbidden","coarseReference":"transaction","requiredStructuralAlternatives":["line","document","entity","unknown"],"reasonCodes":["sources_resolve_independently_no_relationships"]},
+    {"id":"multi.commerce_june_2026","group":"multi_file","tuningUse":"forbidden","coarseReference":"transaction","requiredStructuralAlternatives":["line","document","entity","unknown"],"reasonCodes":["sources_resolve_independently_no_relationships"]},
+    {"id":"multi.sales_period_pair","group":"multi_file","tuningUse":"forbidden","coarseReference":"transaction","requiredStructuralAlternatives":["line","document","entity","unknown"],"reasonCodes":["no_cross_source_resolution"]},
+    {"id":"multi.logistics_period_pair","group":"multi_file","tuningUse":"forbidden","coarseReference":"transaction","requiredStructuralAlternatives":["line","document","entity","unknown"],"reasonCodes":["no_cross_source_resolution"]},
+    {"id":"multi.accounting_period_pair","group":"multi_file","tuningUse":"forbidden","coarseReference":"transaction","requiredStructuralAlternatives":["line","document","entity","unknown"],"reasonCodes":["no_cross_source_resolution"]},
+    {"id":"ops.ttkt_20241219","group":"golden","tuningUse":"allowed","coarseReference":"event","requiredTemporalAlternatives":["event","unresolved"],"reasonCodes":["event_reference"]},
+    {"id":"ops.ttkt_20241223","group":"holdout","tuningUse":"forbidden","coarseReference":"event","requiredTemporalAlternatives":["event","unresolved"],"reasonCodes":["validation_only"]},
+    {"id":"ops.ttkt_20241224","group":"holdout","tuningUse":"forbidden","coarseReference":"event","requiredTemporalAlternatives":["event","unresolved"],"reasonCodes":["validation_only"]},
+    {"id":"ops.logistics_may_2026","group":"golden","tuningUse":"allowed","coarseReference":"event","requiredStructuralAlternatives":["line","document","unknown"],"requiredTemporalAlternatives":["event","unresolved"],"reasonCodes":["line_event_are_compatible"]},
+    {"id":"ops.logistics_june_2026","group":"holdout","tuningUse":"forbidden","coarseReference":"event","requiredStructuralAlternatives":["line","document","unknown"],"requiredTemporalAlternatives":["event","unresolved"],"reasonCodes":["validation_only"]},
+    {"id":"rev.sales_erp_may_2026","group":"golden","tuningUse":"allowed","coarseReference":"transaction","requiredStructuralAlternatives":["line","document","unknown"],"reasonCodes":["transaction_reference_not_final_signature"]},
+    {"id":"rev.sales_erp_june_2026","group":"holdout","tuningUse":"forbidden","coarseReference":"transaction","requiredStructuralAlternatives":["line","document","unknown"],"reasonCodes":["validation_only"]},
+    {"id":"rev.bhx_pos_export","group":"golden","tuningUse":"allowed","coarseReference":"transaction","requiredStructuralAlternatives":["entity","document","unknown"],"reasonCodes":["receipt_structure_requires_independent_evidence"]},
+    {"id":"rev.superstore_orders","group":"holdout","tuningUse":"forbidden","coarseReference":"transaction","requiredStructuralAlternatives":["line","document","unknown"],"reasonCodes":["validation_only"]},
+    {"id":"rev.accounting_may_sales_basis","group":"holdout","tuningUse":"forbidden","coarseReference":"transaction","requiredStructuralAlternatives":["line","document","unknown"],"reasonCodes":["validation_only"]}
+  ]
+}

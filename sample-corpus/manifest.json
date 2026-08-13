@@ -1,0 +1,171 @@
+{
+  "schemaVersion": "lightbi.acceptance-corpus.v1.1",
+  "corpusVersion": "1.2.0",
+  "createdOn": "2026-07-10",
+  "objective": "Machine-readable ground truth for recognition, scoped ambiguity resolution, grain, profiling, relationships, domain-pack eligibility, actions, and verified metrics. This corpus does not claim current support.",
+  "canonicalFutureRunner": "understanding-core",
+  "requiredInCI": true,
+  "groups": {
+    "golden": {
+      "tuningAllowed": true,
+      "description": "Known tuning examples that must remain green."
+    },
+    "holdout": {
+      "tuningAllowed": false,
+      "description": "Validation examples forbidden for rule and threshold tuning."
+    },
+    "adversarial": {
+      "tuningAllowed": false,
+      "description": "Dirty, generic, contradictory, or out-of-wedge examples; tuning is forbidden."
+    },
+    "multi_file": {
+      "tuningAllowed": false,
+      "description": "Relationship and cross-file context examples; tuning is forbidden and joins are never assumed."
+    }
+  },
+  "groundTruthFiles": [
+    {
+      "path": "sample-corpus/ground-truth/revenue-sales.json",
+      "category": "revenue_sales",
+      "required": true,
+      "sampleCount": 5
+    },
+    {
+      "path": "sample-corpus/ground-truth/inventory.json",
+      "category": "inventory",
+      "required": true,
+      "sampleCount": 5
+    },
+    {
+      "path": "sample-corpus/ground-truth/operations-delivery.json",
+      "category": "operations_delivery",
+      "required": true,
+      "sampleCount": 5
+    },
+    {
+      "path": "sample-corpus/ground-truth/finance-accounting.json",
+      "category": "finance_accounting",
+      "required": true,
+      "sampleCount": 5
+    },
+    {
+      "path": "sample-corpus/ground-truth/adversarial-dirty.json",
+      "category": "adversarial_dirty",
+      "required": true,
+      "sampleCount": 5
+    },
+    {
+      "path": "sample-corpus/ground-truth/multi-file.json",
+      "category": "multi_file",
+      "required": true,
+      "sampleCount": 5
+    }
+  ],
+  "minimumCoverage": {
+    "revenue_sales": 5,
+    "inventory": 5,
+    "operations_delivery": 5,
+    "finance_accounting": 5,
+    "adversarial_dirty": 5,
+    "multi_file": 5,
+    "minimumHoldoutShareOfDomainValidation": 0.5
+  },
+  "entryContract": {
+    "requiredSections": [
+      "provenance",
+      "sources",
+      "dataset",
+      "recognition",
+      "profilingExpectations",
+      "support",
+      "verifiedMetricAnswers"
+    ],
+    "recognitionFields": [
+      "requiredMappings",
+      "forbiddenMappings",
+      "expectedAmbiguousMappings",
+      "expectedUnknownBusinessColumns"
+    ],
+    "supportFields": [
+      "allowedDomainPacks",
+      "blockedDomainPacks",
+      "expectedExecutableActions",
+      "expectedBlockedActions"
+    ],
+    "mappingStates": [
+      "probable",
+      "confirmed",
+      "ambiguous",
+      "rejected"
+    ],
+    "grains": [
+      "transaction",
+      "event",
+      "snapshot",
+      "master_data",
+      "summary",
+      "unknown"
+    ],
+    "mappingExpectation": {
+      "requiredMappingsUse": "allowedFinalStates",
+      "ambiguousMappingsUse": "headerOnlyExpectedState_and_contextualResolution",
+      "minimumStateForbidden": true,
+      "physicalColumnSignalPairsMustBeDisjointAcrossRequiredAndForbidden": true
+    },
+    "grainTruthFields": [
+      "coarseGrain",
+      "rowEntity",
+      "parentEntity",
+      "candidateKeys",
+      "parentKeys",
+      "measureExpectations"
+    ],
+    "profilingExpectationFields": [
+      "sourceProfiles",
+      "verifiedRowCount",
+      "columnPhysicalTypes",
+      "issues",
+      "representativeEvidence"
+    ],
+    "multiFileRelationshipFields": [
+      "expectedRelationships",
+      "forbiddenRelationships",
+      "timeAlignment",
+      "duplicationRisk"
+    ]
+  },
+  "supportTruth": {
+    "domainSupportManifestMustRemainEmpty": true,
+    "mvpProvenClaimsAllowed": false,
+    "recognitionDoesNotImplyDomainSupport": true
+  },
+  "tuningPolicy": {
+    "allowedGroups": [
+      "golden"
+    ],
+    "forbiddenGroups": [
+      "holdout",
+      "adversarial",
+      "multi_file"
+    ],
+    "groupPolicyMustMatchSampleProvenance": true
+  },
+  "verifiedMetricTruth": {
+    "algorithm": "sha256",
+    "canonicalization": "samples_sorted_by_id_with_verifiedMetricAnswers_only",
+    "digest": "27f1bc7122a58ad2179442c7319326e522c1e5422c69e659b17bd595fd661866",
+    "changedInPhase1B": false
+  },
+  "acceptanceTruthGovernance": {
+    "phase": "3A.2",
+    "candidateQuestion": "Is this semantic signal a genuinely plausible candidate given physical and representative context?",
+    "finalMappingClaimsForbidden": true,
+    "freshHoldoutRequiredBeforeMvpProven": true,
+    "inspectedGroupsNoLongerPristine": [
+      "holdout",
+      "adversarial",
+      "multi_file"
+    ],
+    "auditPath": "docs/architecture/phase-3a2-acceptance-truth-audit.json"
+  }
+}

@@ -1,0 +1,183 @@
+import { TAXONOMY } from './business-signal-detector';
+import { VIRTUAL_MEASURE_FIELDS } from './runtime-planner-preview';
+
+// Helper to normalize strings similar to what the detector does
+function normalizeString(str: string): string {
+  if (!str) return "";
+  return str
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/đ/g, "d")
+    .replace(/[-_]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function normalizedHeaderMap(rawHeaders: string[]): Map<string, string> {
+  const map = new Map<string, string>();
+  for (const rawHeader of rawHeaders) {
+    const normalized = normalizeString(rawHeader);
+    if (!map.has(normalized)) map.set(normalized, rawHeader);
+  }
+  return map;
+}
+
+/**
+ * Projects an array of raw row objects into an array of canonical row objects,
+ * mapping raw column headers to their corresponding canonical semantic field names.
+ *
+ * @param rows The raw data rows (e.g. { "Tuyến xe": "A", "Mã tài kiện": "B" })
+ * @param requiredCanonicalFields The fields required by the SQL query (e.g. ["route", "shipment"])
+ * @returns A new array of projected row objects.
+ */
+export function getUnprojectableCanonicalFields(
+  rawHeaders: string[],
+  requiredCanonicalFields: string[]
+): string[] {
+  if (requiredCanonicalFields.length === 0) return [];
+  if (rawHeaders.length === 0) return requiredCanonicalFields.filter(f => !VIRTUAL_MEASURE_FIELDS.has(f));
+
+  const unprojectable: string[] = [];
+  const directNormalizedHeaders = normalizedHeaderMap(rawHeaders);
+  
+  for (const requiredField of requiredCanonicalFields) {
+    if (VIRTUAL_MEASURE_FIELDS.has(requiredField)) {
+      continue;
+    }
+
+    const taxonomyInfo = TAXONOMY[requiredField.toLowerCase()];
+    // Source-neutral physical headers that are not canonical taxonomy keys can
+    // map directly. Canonical keys still go through taxonomy so conflicts such
+    // as Route + Tuyến xe remain visible.
+    if (!taxonomyInfo && rawHeaders.includes(requiredField)) {
+      continue;
+    }
+
+    if (!taxonomyInfo && directNormalizedHeaders.has(normalizeString(requiredField))) {
+      continue;
+    }
+
+    if (!taxonomyInfo) {
+      unprojectable.push(requiredField);
+      continue;
+    }
+
+    let aliases = [...taxonomyInfo.aliases];
+    // Contextual promotions inheritance
+    if (requiredField.toLowerCase() === 'stock_status') {
+      if (requiredCanonicalFields.includes('sku') || requiredCanonicalFields.includes('warehouse')) {
+        const genericStatus = TAXONOMY['status'];
+        if (genericStatus) aliases = [...aliases, ...genericStatus.aliases];
+      }
+    } else if (requiredField.toLowerCase() === 'delivery_status') {
+      if (requiredCanonicalFields.includes('route') || requiredCanonicalFields.includes('driver') || requiredCanonicalFields.includes('shipment')) {
+        const genericStatus = TAXONOMY['status'];
+        if (genericStatus) aliases = [...aliases, ...genericStatus.aliases];
+      }
+    }
+
+    let mappedRawHeader: string | null = null;
+    for (const rawHeader of rawHeaders) {
+      const normalizedHeader = normalizeString(rawHeader);
+      if (aliases.includes(normalizedHeader)) {
+        if (mappedRawHeader !== null) {
+          // Conflict means we can't reliably project this field natively
+          mappedRawHeader = "CONFLICT";
+          break;
+        }
+        mappedRawHeader = rawHeader;
+      }
+    }
+
+    if (mappedRawHeader === null || mappedRawHeader === "CONFLICT") {
+      unprojectable.push(requiredField);
+    }
+  }
+
+  return unprojectable;
+}
+
+export function projectToCanonicalRows(
+  rows: Record<string, unknown>[],
+  requiredCanonicalFields: string[]
+): Record<string, unknown>[] {
+  if (rows.length === 0) return [];
+  if (requiredCanonicalFields.length === 0) return rows.map(r => ({ ...r }));
+
+  // Inspect the first row to determine the schema mapping
+  const rawHeaders = Object.keys(rows[0]);
+  const directNormalizedHeaders = normalizedHeaderMap(rawHeaders);
+  const mapping = new Map<string, string>(); // Canonical Field -> Raw Header
+
+  // Build the mapping dictionary
+  for (const requiredField of requiredCanonicalFields) {
+    const taxonomyInfo = TAXONOMY[requiredField.toLowerCase()];
+    // Source-neutral physical headers that are not canonical taxonomy keys can
+    // map directly. Canonical keys still go through taxonomy so conflicts such
+    // as Route + Tuyến xe remain visible.
+    if (!taxonomyInfo && rawHeaders.includes(requiredField)) {
+        mapping.set(requiredField, requiredField);
+        continue;
+    }
+
+    const directNormalizedHeader = directNormalizedHeaders.get(normalizeString(requiredField));
+    if (!taxonomyInfo && directNormalizedHeader) {
+        mapping.set(requiredField, directNormalizedHeader);
+        continue;
+    }
+
+    if (!taxonomyInfo) {
+      if (VIRTUAL_MEASURE_FIELDS.has(requiredField)) {
+        // Virtual fields are generated by SQL, not projected from raw rows
+        continue;
+      }
+      throw new Error(`CANONICAL_PROJECTION_MISSING: Field '${requiredField}' is required but not found in Taxonomy.`);
+    }
+
+    let aliases = [...taxonomyInfo.aliases];
+    // Inherit base status aliases if this is a contextually promoted status AND context is proven
+    if (requiredField.toLowerCase() === 'stock_status') {
+      if (requiredCanonicalFields.includes('sku') || requiredCanonicalFields.includes('warehouse')) {
+        const genericStatus = TAXONOMY['status'];
+        if (genericStatus) aliases = [...aliases, ...genericStatus.aliases];
+      }
+    } else if (requiredField.toLowerCase() === 'delivery_status') {
+      if (requiredCanonicalFields.includes('route') || requiredCanonicalFields.includes('driver') || requiredCanonicalFields.includes('shipment')) {
+        const genericStatus = TAXONOMY['status'];
+        if (genericStatus) aliases = [...aliases, ...genericStatus.aliases];
+      }
+    }
+
+    let mappedRawHeader: string | null = null;
+
+    for (const rawHeader of rawHeaders) {
+      const normalizedHeader = normalizeString(rawHeader);
+      // If the raw header matches an alias for the required field
+      if (aliases.includes(normalizedHeader)) {
+        if (mappedRawHeader !== null) {
+          throw new Error(`CANONICAL_PROJECTION_CONFLICT: Multiple raw headers ('${mappedRawHeader}', '${rawHeader}') map to canonical field '${requiredField}'.`);
+        }
+        mappedRawHeader = rawHeader;
+      }
+    }
+
+    if (mappedRawHeader === null) {
+      throw new Error(`CANONICAL_PROJECTION_MISSING: Could not map canonical field '${requiredField}' to any raw header.`);
+    }
+
+    mapping.set(requiredField, mappedRawHeader);
+  }
+
+  // Perform the projection mapping non-destructively
+  return rows.map(rawRow => {
+    const projectedRow: Record<string, unknown> = {};
+    for (const requiredField of requiredCanonicalFields) {
+      if (VIRTUAL_MEASURE_FIELDS.has(requiredField)) continue;
+      const rawHeader = mapping.get(requiredField)!;
+      // Enforce Lowercase Bottleneck
+      projectedRow[requiredField.toLowerCase()] = rawRow[rawHeader];
+    }
+    return projectedRow;
+  });
+}
