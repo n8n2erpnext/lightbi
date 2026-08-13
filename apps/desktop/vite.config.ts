@@ -16,6 +16,7 @@ export default defineConfig({
   },
   test: {
     exclude: ['**/node_modules/**', '**/dist/**', 'verify.spec.ts', 'concurrency.spec.ts', '**/e2e/**'],
+    setupFiles: ['./src/test/vitest.setup.ts'],
   },
   optimizeDeps: {
     exclude: ['@duckdb/duckdb-wasm']

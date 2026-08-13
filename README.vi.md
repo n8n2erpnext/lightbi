@@ -10,7 +10,7 @@
   <a href="README.md">English</a>
 </p>
 
-![Trang chủ LightBI](assets/screenshots/lightbi-home.png)
+![Tổng quan điều hành multi-file có quản trị](assets/screenshots/lightbi-multifile-executive.png)
 
 LightBI biến bảng tính, tệp phân cách, bảng tính trực tuyến và cơ sở dữ liệu thành một quy trình phân tích kinh doanh có quản trị. Hệ thống lập hồ sơ nguồn vật lý, giải nghĩa nghiệp vụ bằng bằng chứng có thể truy vết, đề xuất câu hỏi an toàn, thực thi trên đúng nguồn đã ràng buộc và giữ giới hạn hiển thị xuyên suốt từ biểu đồ đến Dashboard.
 
@@ -28,17 +28,39 @@ LightBI được xây cho dữ liệu người dùng thực sự gặp: workbook
 
 ## Xem nhanh sản phẩm
 
-### Workbook nhiều sheet luôn minh bạch
+### Một báo cáo ERP được hiểu thành bằng chứng kinh doanh
 
-Mỗi sheet được kiểm tra độc lập. Người dùng có thể phân tích một sheet, chọn nhiều sheet hoặc xem toàn bộ workbook mà LightBI không âm thầm nối các bảng không tương thích.
+LightBI lập hồ sơ toàn bộ nguồn, giải nghĩa các khái niệm như doanh thu, sản phẩm, chi nhánh, nhân viên bán hàng, thanh toán và trạng thái; sau đó chỉ đề xuất các câu hỏi có thể thực thi an toàn trên đúng nguồn.
 
-![Chọn sheet trong LightBI](assets/screenshots/lightbi-sheet-selection.png)
+![Không gian phân tích đơn nguồn](assets/screenshots/lightbi-decision-workspace.png)
 
-### Cách LightBI hiểu dữ liệu luôn nhìn thấy được
+### Sáu báo cáo ERP liên quan trong một workspace multi-file có quản trị
 
-LightBI hiển thị dạng dữ liệu suy luận, lĩnh vực nghiệp vụ được hỗ trợ, tín hiệu đã giải nghĩa, phân tích sẵn sàng, vấn đề chất lượng và giới hạn chưa giải quyết trước khi dùng cho quyết định.
+Bộ sample công khai gồm báo cáo Sales, Accounting và Logistics của hai kỳ. LightBI nhận diện 6 nguồn, 3 vai trò nghiệp vụ, 9.000 dòng và 2 kỳ mà không san phẳng các dòng dữ liệu không liên quan vào một bảng.
 
-![Không gian hiểu dữ liệu](assets/screenshots/lightbi-understanding.png)
+![LightBI hiểu bộ sáu file ERP](assets/screenshots/lightbi-multifile-erp.png)
+
+Tổng quan điều hành có quản trị so sánh doanh thu, lợi nhuận gộp và hoạt động giao hàng theo kỳ, đồng thời giữ nguyên biên của từng nguồn.
+
+![Phân tích điều hành multi-file](assets/screenshots/lightbi-multifile-executive.png)
+
+### Deep BA bước 1: điều tra toàn bộ phạm vi phân tích
+
+Deep BA được tổ chức như một cuộc điều tra, không phải chú thích biểu đồ sinh tự động: chuyện gì xảy ra, xảy ra ở đâu, yếu tố nào có thể liên quan, bất thường ở đâu, điều gì quan trọng nhất, cần kiểm tra gì tiếp, hành động khả dĩ và điều gì vẫn chưa biết. Mỗi phát hiện giữ dòng bằng chứng, độ tin cậy và giới hạn.
+
+![Deep BA bước 1](assets/screenshots/lightbi-deep-ba-step1.png)
+
+### Deep BA bước 2: tính lại trên tập con đã chọn
+
+Chọn một điểm trên biểu đồ, xem hoặc lọc thêm các dòng phù hợp, sau đó chạy cùng khung BA trên tập con. KPI, phân rã, phát hiện và khuyến nghị được tính lại cho phạm vi đã chọn, không lặp lại kết quả của toàn file.
+
+![Deep BA bước 2](assets/screenshots/lightbi-deep-ba-step2.png)
+
+### Advanced Mode cho nhà phân tích cần kiểm soát trực tiếp
+
+Advanced Mode cung cấp workspace read-only cho file, bảng tính trực tuyến, PostgreSQL, MySQL, MariaDB, SQLite và MongoDB; kèm safe mode, SSH tùy chọn, khám phá schema, lịch sử truy vấn, quy trình chỉnh sửa kết quả và handoff có quản trị về Simple BA khi kết quả đã đầy đủ.
+
+![Advanced Mode](assets/screenshots/lightbi-advanced-mode.png)
 
 ## Quy trình cốt lõi
 

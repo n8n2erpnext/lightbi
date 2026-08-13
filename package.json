@@ -1,6 +1,6 @@
 {
   "name": "lightbi",
-  "version": "0.9.0-beta.2",
+  "version": "0.9.0-beta.3",
   "private": true,
   "scripts": {
     "dev": "pnpm -r --parallel dev",
@@ -9,6 +9,6 @@
     "build:native-beta": "node scripts/build-native-beta.mjs"
   },
   "devDependencies": {
-    "typescript": "^5.2.2"
+    "typescript": "^5.9.3"
   }
 }

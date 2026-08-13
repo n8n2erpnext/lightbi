@@ -33,7 +33,7 @@ jobs:
         run: pnpm --filter @lightbi/desktop build
       - name: Build native Windows installer
         working-directory: crates/lightbi-tauri
-        run: pnpm dlx @tauri-apps/cli@2.8.5 build --target x86_64-pc-windows-msvc --config tauri.windows.conf.json
+        run: pnpm dlx @tauri-apps/cli@2.11.4 build --target x86_64-pc-windows-msvc --config tauri.windows.conf.json
       - name: Generate SHA-256 checksum
         shell: pwsh
         run: |

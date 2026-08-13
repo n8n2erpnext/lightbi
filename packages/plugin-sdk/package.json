@@ -7,8 +7,7 @@
   "scripts": {
     "lint": "eslint ."
   },
-  "dependencies": {},
   "devDependencies": {
-    "typescript": "^5.2.2"
+    "typescript": "^5.9.3"
   }
 }

@@ -17,7 +17,7 @@
   <img alt="Languages" src="https://img.shields.io/badge/UI-English%20%7C%20Vietnamese-7c3aed">
 </p>
 
-![LightBI home](assets/screenshots/lightbi-home.png)
+![LightBI governed multi-file executive overview](assets/screenshots/lightbi-multifile-executive.png)
 
 LightBI turns spreadsheets, delimited files, online sheets, and databases into a governed business-analysis workflow. It profiles the physical source, resolves business meaning with traceable evidence, proposes safe questions, executes against the bound source, and keeps limitations visible from chart to dashboard.
 
@@ -35,17 +35,39 @@ It is built for the files people actually use: multi-sheet workbooks, inconsiste
 
 ## Product tour
 
-### Multi-sheet workbooks stay explicit
+### One ERP report, understood as business evidence
 
-Every sheet is inspected independently. Users can analyze one sheet, select several sheets, or review the complete workbook without silently appending incompatible tables.
+LightBI profiles the full source, resolves business concepts such as revenue, product, branch, salesperson, payment, and status, then offers only questions that can be executed safely against that source.
 
-![LightBI sheet selection](assets/screenshots/lightbi-sheet-selection.png)
+![LightBI single-source decision workspace](assets/screenshots/lightbi-decision-workspace.png)
 
-### Canonical understanding stays visible
+### Six related ERP reports, governed as a multi-file workspace
 
-LightBI shows the inferred data form, supported business domains, resolved signals, ready analyses, quality findings, and unresolved limitations before decision use.
+The public sample pack contains Sales, Accounting, and Logistics reports for two periods. LightBI recognizes six sources, three business roles, 9,000 rows, and two periods without flattening unrelated raw rows into one table.
 
-![LightBI understanding](assets/screenshots/lightbi-understanding.png)
+![LightBI six-file ERP understanding](assets/screenshots/lightbi-multifile-erp.png)
+
+The governed executive view compares revenue, gross profit, and delivery activity by reporting period while preserving each source boundary.
+
+![LightBI multi-file executive analysis](assets/screenshots/lightbi-multifile-executive.png)
+
+### Deep BA step 1: investigate the full analytical scope
+
+Deep BA is organized as an investigation, not a generated chart caption: what happened, where it happened, why it may have happened, what is unusual, what matters most, what to check next, possible actions, and remaining unknowns. Findings retain evidence rows, confidence, and limitations.
+
+![LightBI Deep BA step 1](assets/screenshots/lightbi-deep-ba-step1.png)
+
+### Deep BA step 2: recalculate on the selected subset
+
+Select a chart point, inspect or further filter the matching rows, then run the same BA framework on that subset. KPIs, breakdowns, findings, and recommendations are recalculated for the selected scope rather than repeated from the full file.
+
+![LightBI Deep BA step 2](assets/screenshots/lightbi-deep-ba-step2.png)
+
+### Advanced Mode for analysts who need direct control
+
+Advanced Mode provides a read-only workspace for files, online sheets, PostgreSQL, MySQL, MariaDB, SQLite, and MongoDB, with safe-mode controls, optional SSH connectivity, schema discovery, query history, editable result workflows, and governed handoff back to Simple BA when the result is complete.
+
+![LightBI Advanced Mode](assets/screenshots/lightbi-advanced-mode.png)
 
 ## Core workflow
 
