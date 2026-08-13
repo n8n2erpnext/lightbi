@@ -278,4 +278,27 @@ describe('single source BA overview', () => {
     expect(overview.kpis.map(item => item.id)).toEqual(expect.arrayContaining(['average_indicator', 'minimum_indicator', 'maximum_indicator']));
     expect(overview.findings.length).toBeGreaterThanOrEqual(2);
   });
+
+  it('keeps a selected record-count angle instead of falling back to an unrelated numeric identifier', () => {
+    const rows = [
+      { STT: 1, 'ĐVT': 'Cái', MVT: 'A01' },
+      { STT: 2, 'ĐVT': 'Cái', MVT: 'A02' },
+      { STT: 3, 'ĐVT': 'Kg', MVT: 'B01' },
+    ];
+    const overview = createSingleSourceBAOverview(rows, {
+      analysisAction: {
+        id: 'universal:catalog-composition-by-uom',
+        opportunityName: 'Catalog composition by category',
+        dimensions: ['uom'],
+        measures: ['record_count'],
+      },
+      semanticFields: [{ canonicalId: 'uom', physicalColumn: 'ĐVT', role: 'dimension' }],
+    })!;
+
+    expect(overview.bindings.selectedMeasure).toBe('record_count');
+    expect(overview.bindings.selectedDimension1).toBe('ĐVT');
+    expect(overview.kpis.some(item => item.id === 'average_indicator')).toBe(false);
+    expect(overview.breakdowns[0]).toMatchObject({ physicalColumn: 'ĐVT' });
+    expect(overview.breakdowns[0].top[0]).toMatchObject({ label: 'Cái', value: 2 });
+  });
 });

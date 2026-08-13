@@ -23,6 +23,7 @@ export function createLocalCanonicalSourceBoundary(args: {
       file: args.file,
       sheetName: args.sheetName,
       headerRowIndex: args.profile.artifact.sourceProfile.header.selectedHeaderRowIndex ?? undefined,
+      physicalColumnCount: args.columns.length,
     }],
   });
 }

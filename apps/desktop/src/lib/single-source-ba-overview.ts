@@ -483,9 +483,17 @@ export function createSingleSourceBAOverview(rows: Row[], options: SingleSourceB
   if (isOutcomeMode) {
     const outcomeColumn = bindings.outcome ?? bindings.deliveryStatus;
     if (!outcomeColumn) {
-      const measureColumn = requestedMeasures[0] ?? genericNumericMeasures[0];
+      const requestedDimensions = actionPhysicalColumns(options.analysisAction?.dimensions, rows, options.semanticFields ?? []);
+      const actionSignal = normalize([
+        options.analysisAction?.id,
+        options.analysisAction?.opportunityName,
+        options.analysisAction?.label,
+        options.analysisAction?.description,
+        ...(options.analysisAction?.measures ?? []),
+      ].filter(Boolean).join(' '));
+      const isCountAngle = /recordcount|rowcount|countrecords|sourcerecordcount|distribution|distributed|breakdown|composition/.test(actionSignal);
+      const measureColumn = isCountAngle ? undefined : requestedMeasures[0] ?? genericNumericMeasures[0];
       if (!measureColumn) {
-        const requestedDimensions = actionPhysicalColumns(options.analysisAction?.dimensions, rows, options.semanticFields ?? []);
         const dimensions = [...new Set([...requestedDimensions, ...usefulCategoricalColumns(rows, new Set())])].slice(0, 6);
         const breakdowns = dimensions.flatMap((column, index) => {
           const breakdown = buildCountBreakdown(rows, column, bindings.customer ?? bindings.order ?? bindings.shipment, `distribution_${index}`, column);
@@ -501,7 +509,11 @@ export function createSingleSourceBAOverview(rows: Row[], options: SingleSourceB
           rowCount: rows.length,
           sourceRowCount,
           isRepresentativeSample,
-          bindings,
+          bindings: {
+            ...bindings,
+            ...(isCountAngle ? { selectedMeasure: 'record_count' } : {}),
+            ...Object.fromEntries(requestedDimensions.map((column, index) => [`selectedDimension${index + 1}`, column])),
+          },
           kpis: [
             { id: 'records', label: 'Số bản ghi', value: rows.length, kind: 'number' },
             { id: 'columns', label: 'Số trường dữ liệu', value: columns.length, kind: 'number' },
@@ -529,7 +541,6 @@ export function createSingleSourceBAOverview(rows: Row[], options: SingleSourceB
       }
       const values = rows.map(row => numberValue(row[measureColumn])).filter((value): value is number => value !== null);
       if (values.length === 0) return null;
-      const requestedDimensions = actionPhysicalColumns(options.analysisAction?.dimensions, rows, options.semanticFields ?? []);
       const dynamicDimensions = usefulCategoricalColumns(rows, new Set([measureColumn, ...requestedMeasures]));
       const dimensions = [...new Set([...requestedDimensions, ...dynamicDimensions])].slice(0, 6);
       const breakdowns = dimensions.flatMap((column, index) => {

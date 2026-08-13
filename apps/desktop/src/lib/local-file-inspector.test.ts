@@ -203,6 +203,9 @@ describe("inspectLocalFile", () => {
       expect(result.metadata.sheets?.["Tổng hợp"].columns).toEqual([
         "STT", "TÊN VẬT TƯ", "MVT", "ĐVT", "Đầu kỳ", "Nhập", "Xuất", "Cuối kỳ", "Ghi chú",
       ]);
+      expect(result.metadata.sheets?.["Tổng hợp"].canonical_full_file_profile?.artifact.sourceProfile.header.selectedHeaderRowIndex).toBe(4);
+      expect(result.metadata.sheets?.["Tổng hợp"].canonical_full_file_profile?.sourceRowCount).toBe(2);
+      expect(result.metadata.sheets?.["Tổng hợp"].rows_count).toBe(2);
       const semantic = result.metadata.sheets?.["Tổng hợp"].canonical_full_file_profile?.fullFileUnderstanding.semantic;
       const mappings = Object.fromEntries(semantic?.columns.map(column => [column.physicalColumn, column.selectedCandidateId]) ?? []);
       expect(mappings).toMatchObject({

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Activity, Download, FileSpreadsheet, Plus, SlidersHorizontal, X } from 'lucide-react';
+import { Activity, ClipboardCheck, Download, FileSpreadsheet, Plus, SlidersHorizontal, X } from 'lucide-react';
 import { formatValue, inferSemanticType } from '../../lib/display-formatter';
 import { exportRowsAsCsv, exportRowsAsXlsx, type DrillThroughResult } from '../../lib/drill-through-export';
 import type { DisplayPreferences } from '../../stores/display-preferences-store';
@@ -12,11 +12,23 @@ import {
   type DrillThroughFilterOperator,
 } from '../../lib/drill-through-filter';
 
+export interface FilteredDeepAnalysisScope {
+  rows: Record<string, unknown>[];
+  filters: DrillThroughFilter[];
+  point: DrillThroughResult['point'];
+  matchedRowCount: number;
+  selectedRowCount: number;
+  sourceResultRowCount: number;
+  maxRows: number;
+  isTruncated: boolean;
+}
+
 export interface InvestigationDrillThroughPanelProps {
   drillError: string | null;
   drillExportBaseName: string;
   drillResult: DrillThroughResult | null;
   isDrilling: boolean;
+  onAnalyzeSelection?: (scope: FilteredDeepAnalysisScope) => void;
   onClose: () => void;
   preferences: DisplayPreferences;
   selectedDrillRows: Set<number>;
@@ -29,6 +41,7 @@ export const InvestigationDrillThroughPanel: React.FC<InvestigationDrillThroughP
   drillExportBaseName,
   drillResult,
   isDrilling,
+  onAnalyzeSelection,
   onClose,
   preferences,
   selectedDrillRows,
@@ -86,7 +99,7 @@ export const InvestigationDrillThroughPanel: React.FC<InvestigationDrillThroughP
   return <div data-testid="investigation-drill-through" className="mt-5 rounded-lg border border-black/10 bg-white shadow-sm">
     <div className="flex flex-col gap-3 border-b border-black/10 px-4 py-3 md:flex-row md:items-center md:justify-between">
       <div className="min-w-0"><div className="flex items-center gap-2"><FileSpreadsheet className="h-4 w-4 text-emerald-600" /><h3 className="text-sm font-semibold text-gray-900">{t('Analysis of the selected chart group')}</h3></div><p className="mt-1 text-xs text-gray-500">{isDrilling ? t('Loading matching source rows...') : drillResult ? `${formatValue(drillResult.rowCount, 'number', preferences)} ${t('records matched')}: ${drillResult.point.dimensionField} = ${drillResult.point.label}` : t('Unable to load matching rows.')}</p></div>
-      <div className="flex flex-wrap items-center gap-2">{drillResult && drillResult.rows.length > 0 && <><button onClick={() => selectAll(!allSelected)} className="rounded-md border border-black/10 bg-white px-3 py-1.5 text-xs font-medium text-black/65 transition-colors hover:bg-black/[0.035]">{allSelected ? t('Clear selection') : t('Select all')}</button><button onClick={() => exportRowsAsCsv(`${drillExportBaseName}.csv`, drillResult.columns, selectedFilteredRows)} disabled={selectedFilteredRows.length === 0} className="inline-flex items-center gap-1.5 rounded-md border border-black/10 bg-white px-3 py-1.5 text-xs font-medium text-black/65 transition-colors hover:bg-black/[0.035] disabled:opacity-40"><Download className="h-3.5 w-3.5" /> CSV</button><button onClick={() => exportRowsAsXlsx(`${drillExportBaseName}.xlsx`, drillResult.columns, selectedFilteredRows)} disabled={selectedFilteredRows.length === 0} className="inline-flex items-center gap-1.5 rounded-md bg-[#202123] px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-black disabled:opacity-40"><Download className="h-3.5 w-3.5" /> Excel</button></>}<button onClick={onClose} className="rounded-md p-1.5 text-black/45 transition-colors hover:bg-black/[0.04] hover:text-[#202123]" title={t('Close')}><X className="h-4 w-4" /></button></div>
+      <div className="flex flex-wrap items-center gap-2">{drillResult && drillResult.rows.length > 0 && <><button data-testid="analyze-selected-rows" onClick={() => onAnalyzeSelection?.({ rows: selectedFilteredRows, filters: [...filters], point: drillResult.point, matchedRowCount: filteredRows.length, selectedRowCount: selectedFilteredRows.length, sourceResultRowCount: drillResult.rowCount, maxRows: drillResult.maxRows, isTruncated: drillResult.rows.length >= drillResult.maxRows })} disabled={!onAnalyzeSelection || selectedFilteredRows.length === 0} className="inline-flex items-center gap-1.5 rounded-md bg-violet-600 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-violet-700 disabled:opacity-40"><ClipboardCheck className="h-3.5 w-3.5" />{t('Deep analysis of selected data')}</button><button onClick={() => selectAll(!allSelected)} className="rounded-md border border-black/10 bg-white px-3 py-1.5 text-xs font-medium text-black/65 transition-colors hover:bg-black/[0.035]">{allSelected ? t('Clear selection') : t('Select all')}</button><button onClick={() => exportRowsAsCsv(`${drillExportBaseName}.csv`, drillResult.columns, selectedFilteredRows)} disabled={selectedFilteredRows.length === 0} className="inline-flex items-center gap-1.5 rounded-md border border-black/10 bg-white px-3 py-1.5 text-xs font-medium text-black/65 transition-colors hover:bg-black/[0.035] disabled:opacity-40"><Download className="h-3.5 w-3.5" /> CSV</button><button onClick={() => exportRowsAsXlsx(`${drillExportBaseName}.xlsx`, drillResult.columns, selectedFilteredRows)} disabled={selectedFilteredRows.length === 0} className="inline-flex items-center gap-1.5 rounded-md bg-[#202123] px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-black disabled:opacity-40"><Download className="h-3.5 w-3.5" /> Excel</button></>}<button onClick={onClose} className="rounded-md p-1.5 text-black/45 transition-colors hover:bg-black/[0.04] hover:text-[#202123]" title={t('Close')}><X className="h-4 w-4" /></button></div>
     </div>
     {drillError && <div className="m-4 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">{drillError}</div>}
     {isDrilling && <div className="flex h-32 items-center justify-center text-sm text-gray-500"><Activity className="mr-2 h-4 w-4 animate-pulse" />{t('Filtering source rows...')}</div>}

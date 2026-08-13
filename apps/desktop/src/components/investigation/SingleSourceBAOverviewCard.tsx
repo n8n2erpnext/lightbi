@@ -132,7 +132,8 @@ function formatMoney(value: number, preferences: DisplayPreferences): string {
 export const SingleSourceBAOverviewCard: React.FC<{
   overview: SingleSourceBAOverview;
   preferences: DisplayPreferences;
-}> = ({ overview, preferences }) => {
+  selectedDataScope?: boolean;
+}> = ({ overview, preferences, selectedDataScope = false }) => {
   const { language, t } = useUiLanguage();
   const positiveTrend = (overview.trendChange ?? 0) >= 0;
   const selectedMeasure = overview.bindings.selectedMeasure;
@@ -146,7 +147,7 @@ export const SingleSourceBAOverviewCard: React.FC<{
         <div>
           <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-emerald-700"><CheckCircle2 className="h-4 w-4" />{overviewText(language, overview.analysisLabel)}</div>
           <h3 className="mt-2 text-xl font-semibold text-slate-950">{overview.isRepresentativeSample ? t(`Business analysis from a representative sample of ${overview.rowCount.toLocaleString(preferences.locale)} / ${overview.sourceRowCount.toLocaleString(preferences.locale)} rows`) : t(`Business analysis from ${overview.rowCount.toLocaleString(preferences.locale)} data rows`)}</h3>
-          <p className="mt-1 max-w-3xl text-[13px] leading-5 text-slate-600">{overview.isRepresentativeSample ? t('The segments and exceptions below are inferred from a representative sample; chart metrics are still calculated by the governed engine over the full source.') : t('LightBI summarized metrics, trends, contribution, and exceptions from the full file—not only the points visible in the chart.')}</p>
+          <p className="mt-1 max-w-3xl text-[13px] leading-5 text-slate-600">{selectedDataScope ? t('LightBI recalculated this existing BA analysis from the rows selected in step 2; it does not describe the full source.') : overview.isRepresentativeSample ? t('The segments and exceptions below are inferred from a representative sample; chart metrics are still calculated by the governed engine over the full source.') : t('LightBI summarized metrics, trends, contribution, and exceptions from the full file—not only the points visible in the chart.')}</p>
         </div>
         {overview.trendChange !== null && <div className={`flex min-w-[170px] items-center gap-3 rounded-xl border bg-white px-4 py-3 ${positiveTrend ? 'border-emerald-200' : 'border-red-200'}`}>
           {positiveTrend ? <TrendingUp className="h-5 w-5 text-emerald-600" /> : <TrendingDown className="h-5 w-5 text-red-600" />}

@@ -6,6 +6,7 @@ export type RuntimeFilePayload = {
   buffer: ArrayBuffer;
   sheetName?: string;
   headerRowIndex?: number;
+  physicalColumnCount?: number;
 };
 
 export type MaterializedRuntimeData = {
@@ -69,10 +70,18 @@ function parseTabularPayload(payload: RuntimeFilePayload): Record<string, unknow
     ? payload.sheetName
     : workbook.SheetNames[0];
   if (!sheetName) return [];
-  return XLSX.utils.sheet_to_json<Record<string, unknown>>(workbook.Sheets[sheetName], {
+  const sheet = workbook.Sheets[sheetName];
+  const usedRange = sheet['!ref'] ? XLSX.utils.decode_range(sheet['!ref']) : null;
+  const runtimeRange = payload.physicalColumnCount && usedRange
+    ? {
+      s: { r: payload.headerRowIndex ?? usedRange.s.r, c: usedRange.s.c },
+      e: { r: usedRange.e.r, c: usedRange.s.c + payload.physicalColumnCount - 1 },
+    }
+    : payload.headerRowIndex;
+  return XLSX.utils.sheet_to_json<Record<string, unknown>>(sheet, {
     defval: null,
     raw: true,
-    range: payload.headerRowIndex,
+    range: runtimeRange,
   });
 }
 

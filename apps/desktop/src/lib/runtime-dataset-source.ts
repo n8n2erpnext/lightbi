@@ -2,6 +2,7 @@ export type LocalRuntimeFileSource = {
   file: File;
   sheetName?: string;
   headerRowIndex?: number;
+  physicalColumnCount?: number;
 };
 
 export type RuntimeSourceBindingV1 = {

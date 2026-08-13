@@ -28,6 +28,7 @@ export async function materializeRuntimeDatasetSource(
       buffer: await item.file.arrayBuffer(),
       sheetName: item.sheetName,
       headerRowIndex: item.headerRowIndex,
+      physicalColumnCount: item.physicalColumnCount,
     }))
   );
   signal?.throwIfAborted();

@@ -264,10 +264,13 @@ async function inspectExcel(
       };
       continue;
     }
-    // Explicit workbook selection preserves blank positions. Legacy consumers keep the
-    // established SheetJS surface so their frozen corpus fingerprints remain stable.
+    // Explicit workbook selection must preserve physical worksheet row positions.
+    // The selected header index is handed to the full-file runtime parser later, so
+    // removing blank rows here would turn that physical index into a compressed one.
+    // Legacy consumers keep the established SheetJS surface so their frozen corpus
+    // fingerprints remain stable.
     const rows = XLSX.utils.sheet_to_json<any[]>(worksheet, requestedSheets?.length || manifestOnly
-      ? { header: 1, defval: null, raw: true, blankrows: false }
+      ? { header: 1, defval: null, raw: true, blankrows: true }
       : { header: 1 });
     const summary = summarizeWorkbookSheet(rows, worksheet);
 

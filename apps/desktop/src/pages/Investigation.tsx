@@ -15,7 +15,7 @@ import { DatasetInsightSummary } from '../components/analysis/DatasetInsightSumm
 import { createBADecisionBrief } from '../lib/ba-decision-engine';
 import { BasicBAAnswerCard } from '../components/investigation/InvestigationBAReadouts';
 import { InvestigationDiagnostics } from '../components/investigation/InvestigationDiagnostics';
-import { InvestigationDrillThroughPanel } from '../components/investigation/InvestigationDrillThroughPanel';
+import { InvestigationDrillThroughPanel, type FilteredDeepAnalysisScope } from '../components/investigation/InvestigationDrillThroughPanel';
 import { InvestigationDeepAnalysis } from '../components/investigation/InvestigationDeepAnalysis';
 import { InvestigationSemanticContext } from '../components/investigation/InvestigationSemanticContext';
 import { useAppRuntime } from '@lightbi/runtime';
@@ -92,6 +92,7 @@ export const Investigation: React.FC = () => {
   const [isExecuting, setIsExecuting] = useState(false);
   const [showAiContext, setShowAiContext] = useState(false);
   const [showDeepAnalysis, setShowDeepAnalysis] = useState(false);
+  const [filteredDeepAnalysisScope, setFilteredDeepAnalysisScope] = useState<FilteredDeepAnalysisScope | null>(null);
   const [savedChartNotice, setSavedChartNotice] = useState<string | null>(null);
   const [supportingCharts, setSupportingCharts] = useState<Array<{
     actionId: string;
@@ -111,6 +112,17 @@ export const Investigation: React.FC = () => {
       semanticFields: session.aiBriefing?.semanticFields ?? [],
     });
   }, [session]);
+  const filteredSingleSourceBAOverview = useMemo(() => {
+    if (!session || !filteredDeepAnalysisScope || session.businessFusionOverview) return null;
+    return createSingleSourceBAOverview(
+      sampleSingleSourceBARows(filteredDeepAnalysisScope.rows, SINGLE_SOURCE_BA_OVERVIEW_ROW_LIMIT),
+      {
+        sourceRowCount: filteredDeepAnalysisScope.selectedRowCount,
+        analysisAction: session.analysisAction,
+        semanticFields: session.aiBriefing?.semanticFields ?? [],
+      },
+    );
+  }, [session, filteredDeepAnalysisScope]);
   const executionRuns = useRef(new ExecutionRunCoordinator('simple-preview'));
   const supportingRuns = useRef(new ExecutionRunCoordinator('supporting-previews'));
   const drillRuns = useRef(new ExecutionRunCoordinator('simple-drill-through'));
@@ -1032,7 +1044,7 @@ export const Investigation: React.FC = () => {
                <BasicBAAnswerCard
                  brief={baDecisionBrief}
                 canAnalyzeDeeper={previewResult?.status === 'executed' && canExecute}
-                 onAnalyzeDeeper={() => { void persistWorkspaceSession().finally(() => setShowDeepAnalysis(true)); }}
+                 onAnalyzeDeeper={() => { setFilteredDeepAnalysisScope(null); void persistWorkspaceSession().finally(() => setShowDeepAnalysis(true)); }}
                />
              )}
 
@@ -1041,6 +1053,10 @@ export const Investigation: React.FC = () => {
                drillExportBaseName={drillExportBaseName}
                drillResult={drillResult}
                isDrilling={isDrilling}
+               onAnalyzeSelection={(scope) => {
+                 setFilteredDeepAnalysisScope(scope);
+                 setShowDeepAnalysis(true);
+               }}
                preferences={preferences}
                selectedDrillRows={selectedDrillRows}
                selectedRows={selectedRows}
@@ -1072,13 +1088,14 @@ export const Investigation: React.FC = () => {
       </main>
       {showDeepAnalysis && <InvestigationDeepAnalysis
         action={analysisAction}
-        brief={baDecisionBrief}
+        brief={filteredDeepAnalysisScope ? null : baDecisionBrief}
         businessFusionOverview={businessFusionOverview}
-        singleSourceBAOverview={singleSourceBAOverview}
+        singleSourceBAOverview={filteredDeepAnalysisScope ? filteredSingleSourceBAOverview : singleSourceBAOverview}
         chartModel={chartModel}
+        filteredScope={filteredDeepAnalysisScope}
         onClose={() => setShowDeepAnalysis(false)}
-        onCreateDashboard={() => { void createPerspectiveDashboard(); }}
-        canCreateDashboard={previewResult?.status === 'executed' && chartModel?.status === 'ready'}
+        onCreateDashboard={filteredDeepAnalysisScope ? undefined : () => { void createPerspectiveDashboard(); }}
+        canCreateDashboard={!filteredDeepAnalysisScope && previewResult?.status === 'executed' && chartModel?.status === 'ready'}
         preferences={preferences}
       />}
       <DisplayPreferencesModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />

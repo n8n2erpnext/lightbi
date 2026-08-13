@@ -111,6 +111,32 @@ describe("materializeRuntimeFilePayloads", () => {
     });
   });
 
+  it("limits workbook materialization to the canonical physical columns", () => {
+    const workbook = XLSX.utils.book_new();
+    const sheet = XLSX.utils.aoa_to_sheet([
+      ["Item", "Stock"],
+      ["Bolt", 12],
+      ["Nut", 8],
+    ]);
+    // Dirty operational workbooks can retain formatting far beyond the data table.
+    sheet['!ref'] = 'A1:DN3';
+    XLSX.utils.book_append_sheet(workbook, sheet, "Inventory");
+    const bytes = XLSX.write(workbook, { type: "array", bookType: "xlsx" }) as ArrayBuffer;
+
+    const result = materializeRuntimeFilePayloads([{
+      name: "inventory.xlsx",
+      buffer: bytes,
+      sheetName: "Inventory",
+      headerRowIndex: 0,
+      physicalColumnCount: 2,
+    }]);
+
+    expect(JSON.parse(result.jsonText)).toEqual([
+      { item: "Bolt", stock: 12 },
+      { item: "Nut", stock: 8 },
+    ]);
+  });
+
   it("normalizes surrounding workbook-header whitespace like the query planner", () => {
     const workbook = XLSX.utils.book_new();
     const sheet = XLSX.utils.aoa_to_sheet([
