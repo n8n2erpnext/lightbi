@@ -172,7 +172,7 @@ export const Home: React.FC = () => {
       canonicalHandoff,
       multiSourceDataset,
       supportingAnalyses,
-      datasetForSession
+      datasetForSession ? { ...datasetForSession, selectedPerspective } : datasetForSession
     );
     navigate('/investigation');
   };

@@ -1,5 +1,5 @@
 import React from 'react';
-import { AlertTriangle, BarChart3, CheckCircle2, Lightbulb, TrendingDown, TrendingUp } from 'lucide-react';
+import { AlertTriangle, BarChart3, CheckCircle2, ChevronDown, Lightbulb, Search, TrendingDown, TrendingUp } from 'lucide-react';
 import type { SingleSourceBAOverview, SingleSourceKpi } from '../../lib/single-source-ba-overview';
 import type { DisplayPreferences } from '../../stores/display-preferences-store';
 import { pickUiText, useUiLanguage, type UiLanguage } from '../../lib/ui-language';
@@ -129,6 +129,18 @@ function formatMoney(value: number, preferences: DisplayPreferences): string {
   return formatKpi({ id: '', label: '', value, kind: 'money' }, preferences);
 }
 
+const BASIS_LABELS = {
+  evidence_backed: 'Evidence-backed',
+  hypothesis: 'Hypothesis',
+  needs_verification: 'Needs verification',
+} as const;
+
+const CONFIDENCE_STYLES = {
+  high: 'border-emerald-200 bg-emerald-50 text-emerald-800',
+  medium: 'border-amber-200 bg-amber-50 text-amber-800',
+  low: 'border-slate-200 bg-slate-50 text-slate-700',
+} as const;
+
 export const SingleSourceBAOverviewCard: React.FC<{
   overview: SingleSourceBAOverview;
   preferences: DisplayPreferences;
@@ -164,6 +176,72 @@ export const SingleSourceBAOverviewCard: React.FC<{
           {selectedDimensions.map(column => <span key={column} className="rounded-md border border-slate-200 bg-slate-50 px-3 py-1.5 text-slate-700">{t('Dimension')}: {column}</span>)}
         </div>
         <p className="mt-3 text-xs leading-5 text-slate-500">{t('The KPI, trend and ranked groups below are calculated for this selected measure and these dimensions. Other domain metrics are supporting context only.')}</p>
+      </section>}
+
+      {overview.investigation && <section data-testid="deep-ba-investigation" className="rounded-xl border border-slate-200 bg-white">
+        <div className="border-b border-slate-200 px-5 py-4">
+          <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-blue-700"><Search className="h-4 w-4" />{t('Business investigation')}</div>
+          <h4 className="mt-1 text-base font-semibold text-slate-950">{t('From result to evidence, drivers, and next decisions')}</h4>
+          <p className="mt-1 text-xs leading-5 text-slate-500">{t('Open each layer as the investigation deepens. Findings retain source-row evidence and recommendations disclose their evidence basis.')}</p>
+        </div>
+        <div className="divide-y divide-slate-100">
+          {[
+            { id: 'what', title: '1. What happened?', items: overview.investigation.whatHappened },
+            { id: 'where', title: '2. Where did it happen?', items: overview.investigation.whereItHappened },
+            { id: 'why', title: '3. Why may it have happened?', items: overview.investigation.whyItMayHaveHappened },
+            { id: 'unusual', title: '4. What is unusual?', items: overview.investigation.unusual },
+            { id: 'priority', title: '5. What matters most?', items: overview.investigation.priorities },
+          ].map((layer, layerIndex) => <details key={layer.id} open={layerIndex === 0} className="group px-5 py-4" data-testid={`deep-ba-layer-${layer.id}`}>
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-semibold text-slate-900">
+              <span>{t(layer.title)}</span><ChevronDown className="h-4 w-4 text-slate-400 transition-transform group-open:rotate-180" />
+            </summary>
+            <div className="mt-3 grid gap-3 lg:grid-cols-2">
+              {layer.items.length === 0 && <div className="rounded-lg border border-dashed border-slate-200 p-3 text-xs text-slate-500">{t('No safe claim is available for this layer from the current evidence.')}</div>}
+              {layer.items.map(item => <article key={item.id} className="rounded-lg border border-slate-200 p-3">
+                <div className="flex flex-wrap items-center gap-2">
+                  <strong className="text-xs text-slate-900">{t(item.title)}</strong>
+                  <span className={`rounded border px-1.5 py-0.5 text-[9px] font-semibold uppercase ${CONFIDENCE_STYLES[item.confidence]}`}>{t(`${item.confidence} confidence`)}</span>
+                  <span className="rounded border border-blue-100 bg-blue-50 px-1.5 py-0.5 text-[9px] font-semibold uppercase text-blue-700">{t(BASIS_LABELS[item.basis])}</span>
+                  {item.priorityScore !== undefined && <span className="text-[10px] text-slate-500">{t('Priority score')}: {item.priorityScore}</span>}
+                </div>
+                <p className="mt-2 text-xs leading-5 text-slate-700">{t(item.statement)}</p>
+                {item.evidenceRows.length > 0 && <details className="mt-2">
+                  <summary className="cursor-pointer text-[10px] font-semibold text-blue-700">{t('View evidence rows')} ({item.evidenceRows.length})</summary>
+                  <div className="mt-2 space-y-1">{item.evidenceRows.map(row => <div key={`${item.id}-${row.rowIndex}`} className="rounded bg-slate-50 px-2 py-1.5 text-[10px] text-slate-600"><span className="font-semibold">{row.label}</span> · {Object.entries(row.values).map(([field, value]) => `${field}=${String(value ?? '∅')}`).join(' · ')}</div>)}</div>
+                </details>}
+              </article>)}
+            </div>
+          </details>)}
+
+          <details className="group px-5 py-4" data-testid="deep-ba-domain-decomposition">
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-semibold text-slate-900"><span>{t('Domain-specific decomposition')}</span><ChevronDown className="h-4 w-4 text-slate-400 transition-transform group-open:rotate-180" /></summary>
+            <div className="mt-3 grid gap-3 lg:grid-cols-2">{overview.investigation.decompositions.map(item => <article key={item.id} className="rounded-lg border border-slate-200 p-3">
+              <div className="flex items-center justify-between gap-2"><strong className="text-xs text-slate-900">{t(item.label)}</strong><span className="text-[10px] uppercase text-slate-500">{t(item.status)}</span></div>
+              <div className="mt-2 space-y-1">{item.components.map(component => <div key={component.label} className="flex justify-between gap-3 text-[11px]"><span className="text-slate-700">{t(component.label)}</span><span className={component.status === 'observed' ? 'text-emerald-700' : 'text-amber-700'}>{component.field ?? t('Missing')}</span></div>)}</div>
+              {item.caveat && <p className="mt-2 text-[10px] leading-4 text-amber-700">{t(item.caveat)}</p>}
+            </article>)}</div>
+          </details>
+
+          <details className="group px-5 py-4" data-testid="deep-ba-comparisons">
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-semibold text-slate-900"><span>{t('Comparison context')}</span><ChevronDown className="h-4 w-4 text-slate-400 transition-transform group-open:rotate-180" /></summary>
+            <div className="mt-3 grid gap-2 sm:grid-cols-2">{overview.investigation.comparisons.map(item => <div key={item.kind} className="rounded-lg border border-slate-200 p-3 text-xs"><div className="flex justify-between gap-2"><strong>{t(item.label)}</strong><span className={item.status === 'available' ? 'text-emerald-700' : 'text-slate-400'}>{t(item.status)}</span></div><p className="mt-1 text-slate-600">{t(item.statement)}</p></div>)}</div>
+          </details>
+
+          <details className="group px-5 py-4" data-testid="deep-ba-next-questions">
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-semibold text-slate-900"><span>{t('6. What should be checked next?')}</span><ChevronDown className="h-4 w-4 text-slate-400 transition-transform group-open:rotate-180" /></summary>
+            <ol className="mt-3 space-y-2">{overview.investigation.followUpQuestions.map((item, index) => <li key={`${index}-${item.question}`} className="rounded-lg border border-slate-200 p-3 text-xs"><strong>{index + 1}. {t(item.question)}</strong><p className="mt-1 text-slate-500">{t(item.rationale)}</p></li>)}</ol>
+          </details>
+
+          <details className="group px-5 py-4" data-testid="deep-ba-actions">
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-semibold text-slate-900"><span>{t('7. What can be done?')}</span><ChevronDown className="h-4 w-4 text-slate-400 transition-transform group-open:rotate-180" /></summary>
+            <div className="mt-3 space-y-2">{overview.investigation.actions.map(item => <article key={`${item.priority}-${item.title}`} className="rounded-lg border border-slate-200 p-3 text-xs"><div className="flex flex-wrap gap-2"><strong>{t(item.priority.toUpperCase())} · {t(item.title)}</strong><span className="rounded bg-blue-50 px-1.5 py-0.5 text-[9px] uppercase text-blue-700">{t(BASIS_LABELS[item.basis])}</span></div><p className="mt-1 text-slate-700">{overviewText(language, item.action)}</p><p className="mt-1 text-[10px] text-slate-500">{t('Verify')}: {t(item.verification)}</p></article>)}</div>
+          </details>
+
+          <details className="group px-5 py-4" data-testid="deep-ba-unknowns">
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-semibold text-slate-900"><span>{t('8. What is still unknown?')}</span><ChevronDown className="h-4 w-4 text-slate-400 transition-transform group-open:rotate-180" /></summary>
+            <div className="mt-3 space-y-2">{overview.investigation.unknowns.map((item, index) => <div key={`${index}-${item.label}`} className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs"><strong className="text-amber-900">{t(item.label)}</strong><p className="mt-1 text-amber-800">{t(item.impact)}</p>{item.missingSignals.length > 0 && <div className="mt-1 text-[10px] text-amber-700">{t('Missing')}: {item.missingSignals.join(', ')}</div>}</div>)}</div>
+          </details>
+        </div>
       </section>}
 
       <section>

@@ -110,6 +110,9 @@ export const Investigation: React.FC = () => {
       sourceRowCount: session.runtimeDatasetSource?.sourceRowCount ?? session.rows?.length,
       analysisAction: session.analysisAction,
       semanticFields: session.aiBriefing?.semanticFields ?? [],
+      selectedPerspective: session.workspaceDataset && typeof session.workspaceDataset === 'object' && 'selectedPerspective' in session.workspaceDataset
+        ? String((session.workspaceDataset as { selectedPerspective?: unknown }).selectedPerspective ?? '') || null
+        : null,
     });
   }, [session]);
   const filteredSingleSourceBAOverview = useMemo(() => {
@@ -120,6 +123,9 @@ export const Investigation: React.FC = () => {
         sourceRowCount: filteredDeepAnalysisScope.selectedRowCount,
         analysisAction: session.analysisAction,
         semanticFields: session.aiBriefing?.semanticFields ?? [],
+        selectedPerspective: session.workspaceDataset && typeof session.workspaceDataset === 'object' && 'selectedPerspective' in session.workspaceDataset
+          ? String((session.workspaceDataset as { selectedPerspective?: unknown }).selectedPerspective ?? '') || null
+          : null,
       },
     );
   }, [session, filteredDeepAnalysisScope]);

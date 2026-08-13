@@ -1,3 +1,5 @@
+import { buildDeepBAInvestigation } from './deep-ba-investigation';
+
 export interface SingleSourceKpi {
   id: string;
   label: string;
@@ -44,6 +46,51 @@ export interface SingleSourceBAOverview {
   findings: string[];
   recommendedActions: string[];
   limitations: string[];
+  investigation?: DeepBAInvestigation;
+}
+
+export type DeepBAConfidence = 'high' | 'medium' | 'low';
+export type DeepBABasis = 'evidence_backed' | 'hypothesis' | 'needs_verification';
+
+export interface DeepBAEvidenceRow {
+  rowIndex: number;
+  label: string;
+  values: Record<string, string | number | boolean | null>;
+}
+
+export interface DeepBAFinding {
+  id: string;
+  title: string;
+  statement: string;
+  confidence: DeepBAConfidence;
+  basis: DeepBABasis;
+  evidenceFields: string[];
+  evidenceRows: DeepBAEvidenceRow[];
+  contribution?: number;
+  businessImpact?: 'high' | 'medium' | 'low';
+  priorityScore?: number;
+}
+
+export interface DeepBADecomposition {
+  id: string;
+  label: string;
+  status: 'supported' | 'partial' | 'unavailable';
+  components: Array<{ label: string; field?: string; status: 'observed' | 'missing'; note: string }>;
+  caveat?: string;
+}
+
+export interface DeepBAInvestigation {
+  domain: string;
+  whatHappened: DeepBAFinding[];
+  whereItHappened: DeepBAFinding[];
+  whyItMayHaveHappened: DeepBAFinding[];
+  unusual: DeepBAFinding[];
+  priorities: DeepBAFinding[];
+  decompositions: DeepBADecomposition[];
+  comparisons: Array<{ kind: 'period' | 'peer' | 'baseline' | 'target'; label: string; status: 'available' | 'unavailable'; statement: string }>;
+  followUpQuestions: Array<{ question: string; rationale: string; evidenceFields: string[] }>;
+  actions: Array<{ priority: 'high' | 'medium' | 'low'; basis: DeepBABasis; title: string; action: string; verification: string }>;
+  unknowns: Array<{ label: string; missingSignals: string[]; impact: string }>;
 }
 
 type Row = Record<string, unknown>;
@@ -397,6 +444,7 @@ function buildCountTrend(rows: Row[], dateColumn: string, identityColumn?: strin
 
 export interface SingleSourceBAOverviewOptions {
   sourceRowCount?: number;
+  selectedPerspective?: string | null;
   semanticFields?: SemanticFieldBinding[];
   analysisAction?: {
     id?: string;
@@ -441,7 +489,7 @@ function requestedMode(
   return 'general';
 }
 
-export function createSingleSourceBAOverview(rows: Row[], options: SingleSourceBAOverviewOptions = {}): SingleSourceBAOverview | null {
+function createBaseSingleSourceBAOverview(rows: Row[], options: SingleSourceBAOverviewOptions = {}): SingleSourceBAOverview | null {
   if (rows.length === 0) return null;
   const sourceRowCount = Math.max(rows.length, options.sourceRowCount ?? rows.length);
   const isRepresentativeSample = sourceRowCount > rows.length;
@@ -830,5 +878,14 @@ export function createSingleSourceBAOverview(rows: Row[], options: SingleSourceB
     }, kpis, trend, trendChange, breakdowns, concentration, outlierCount, findings,
     recommendedActions: ['Mở nhóm đóng góp lớn nhất để kiểm tra sản phẩm, cửa hàng và nhân viên tạo ra kết quả.', 'So sánh nhóm tăng trưởng với nhóm suy giảm trước khi thay đổi giá, chiết khấu hoặc phân bổ nguồn lực.', 'Kiểm tra các dòng bất thường và chất lượng dữ liệu trước khi dùng kết quả cho quyết định tài chính.'],
     limitations,
+  };
+}
+
+export function createSingleSourceBAOverview(rows: Row[], options: SingleSourceBAOverviewOptions = {}): SingleSourceBAOverview | null {
+  const overview = createBaseSingleSourceBAOverview(rows, options);
+  if (!overview) return null;
+  return {
+    ...overview,
+    investigation: buildDeepBAInvestigation(rows, overview, options.semanticFields ?? [], options.selectedPerspective),
   };
 }

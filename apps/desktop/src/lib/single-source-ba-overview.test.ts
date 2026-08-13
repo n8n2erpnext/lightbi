@@ -301,4 +301,64 @@ describe('single source BA overview', () => {
     expect(overview.breakdowns[0]).toMatchObject({ physicalColumn: 'ĐVT' });
     expect(overview.breakdowns[0].top[0]).toMatchObject({ label: 'Cái', value: 2 });
   });
+
+  it('builds an evidence-bound investigation without inventing missing inventory drivers', () => {
+    const rows = [
+      { Warehouse: 'A', Product: 'Bolt', Stock: 80 },
+      { Warehouse: 'A', Product: 'Nut', Stock: 20 },
+      { Warehouse: 'B', Product: 'Bolt', Stock: 10 },
+    ];
+    const overview = createSingleSourceBAOverview(rows, {
+      analysisAction: { id: 'inventory_risk', dimensions: ['warehouse'], measures: ['stock_qty'] },
+      semanticFields: [
+        { canonicalId: 'warehouse', physicalColumn: 'Warehouse', role: 'dimension', confidence: 0.95 },
+        { canonicalId: 'product', physicalColumn: 'Product', role: 'dimension', confidence: 0.95 },
+        { canonicalId: 'stock_qty', physicalColumn: 'Stock', role: 'measure', confidence: 0.95 },
+      ],
+    })!;
+
+    expect(overview.investigation?.domain).toBe('inventory');
+    expect(overview.investigation?.whereItHappened[0].evidenceRows.length).toBeGreaterThan(0);
+    expect(overview.investigation?.whereItHappened[0].evidenceRows.every(row => row.values.Warehouse === 'A')).toBe(true);
+    expect(overview.investigation?.decompositions.find(item => item.id === 'inventory_health')?.status).toBe('partial');
+    expect(overview.investigation?.unknowns.some(item => item.missingSignals.includes('Aging / dead stock'))).toBe(true);
+    expect(overview.investigation?.whyItMayHaveHappened.every(item => item.basis !== 'evidence_backed')).toBe(true);
+  });
+
+  it('keeps evidence rows inside the filtered subset used by step-two BA', () => {
+    const selectedRows = [
+      { Store: 'A', Product: 'SKU-1', Revenue: 100 },
+      { Store: 'A', Product: 'SKU-2', Revenue: 50 },
+    ];
+    const overview = createSingleSourceBAOverview(selectedRows, {
+      sourceRowCount: selectedRows.length,
+      analysisAction: { id: 'revenue_by_store', dimensions: ['store'], measures: ['revenue'] },
+      semanticFields: [
+        { canonicalId: 'branch', physicalColumn: 'Store', role: 'dimension', confidence: 0.9 },
+        { canonicalId: 'product', physicalColumn: 'Product', role: 'dimension', confidence: 0.9 },
+        { canonicalId: 'revenue', physicalColumn: 'Revenue', role: 'measure', confidence: 0.9 },
+      ],
+    })!;
+
+    const evidence = Object.values(overview.investigation ?? {}).flatMap(value => Array.isArray(value) ? value : []).flatMap((item: any) => item.evidenceRows ?? []);
+    expect(evidence.length).toBeGreaterThan(0);
+    expect(evidence.every((row: any) => row.values.Store === undefined || row.values.Store === 'A')).toBe(true);
+    expect(overview.investigation?.comparisons.find(item => item.kind === 'period')?.status).toBe('unavailable');
+  });
+
+  it('preserves the selected business perspective for a universal catalog action', () => {
+    const overview = createSingleSourceBAOverview([{ MVT: 'A01', 'ĐVT': 'Cái', 'Cuối kỳ': 12 }], {
+      selectedPerspective: 'inventory',
+      analysisAction: { id: 'universal:catalog-by-uom', dimensions: ['uom'], measures: ['record_count'] },
+      semanticFields: [
+        { canonicalId: 'material', physicalColumn: 'MVT', role: 'dimension' },
+        { canonicalId: 'uom', physicalColumn: 'ĐVT', role: 'dimension' },
+        { canonicalId: 'stock_qty', physicalColumn: 'Cuối kỳ', role: 'measure' },
+      ],
+    })!;
+
+    expect(overview.investigation?.domain).toBe('inventory');
+    expect(overview.investigation?.decompositions.map(item => item.id)).toContain('inventory_health');
+    expect(overview.investigation?.decompositions.map(item => item.id)).not.toContain('performance_gap');
+  });
 });
