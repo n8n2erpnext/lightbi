@@ -12,7 +12,7 @@ type Props = {
 };
 
 export const WorkbookSheetSelector: React.FC<Props> = ({ pending, onToggle, onAnalyzeSelected, onAnalyzeAll, onCancel }) => {
-  const { language, t } = useUiLanguage();
+  const { t } = useUiLanguage();
   const selectedCount = Object.values(pending.selectedSheets ?? {}).reduce((sum, names) => sum + names.length, 0);
   return (
     <div className="w-full rounded-xl border border-slate-200 bg-white p-4" data-testid="workbook-sheet-selector">
@@ -81,7 +81,7 @@ export const WorkbookSheetSelector: React.FC<Props> = ({ pending, onToggle, onAn
           {t('Analyze full workbook')}
         </button>
         <button disabled={selectedCount === 0} onClick={onAnalyzeSelected} className="rounded-md bg-slate-950 px-4 py-2 text-[12px] font-semibold text-white disabled:cursor-not-allowed disabled:opacity-40" data-testid="analyze-selected-sheets">
-          {language === 'vi' ? `Phân tích ${selectedCount} sheet đã chọn` : `Analyze ${selectedCount} selected sheet${selectedCount === 1 ? '' : 's'}`}
+          {t(`Analyze ${selectedCount} selected sheet${selectedCount === 1 ? '' : 's'}`)}
         </button>
       </div>
     </div>

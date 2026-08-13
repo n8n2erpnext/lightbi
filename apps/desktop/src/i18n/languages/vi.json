@@ -86,16 +86,16 @@
     "Observed result": "Kết quả quan sát được",
     "Observed change": "Thay đổi quan sát được",
     "This decomposition is not treated as causal until all required components and a valid comparison basis are present.": "Phân rã này chưa được xem là quan hệ nhân quả cho tới khi đủ thành phần cần thiết và có cơ sở so sánh hợp lệ.",
-    "Analyze full workbook": "Phân tích toàn bộ workbook",
-    "Choose sheets to analyze": "Chọn sheet cần phân tích",
-    "Each sheet is inspected as a separate source. LightBI will not append or join sheets unless their structure and business relationship are supported by evidence.": "Mỗi sheet được kiểm tra như một nguồn riêng. LightBI không tự nối hoặc ghép sheet khi chưa có bằng chứng về cấu trúc và quan hệ nghiệp vụ.",
-    "Sheet summary is ready.": "Đã sẵn sàng bản tóm tắt sheet.",
-    "The sheet contains a populated rectangular data region.": "Sheet có vùng dữ liệu dạng bảng.",
-    "The sheet is wide or uses a complex header and will be inspected independently.": "Sheet rộng hoặc có tiêu đề phức tạp và sẽ được kiểm tra riêng.",
-    "The sheet is sparse or appears to be a layout rather than one rectangular table.": "Sheet thưa hoặc có vẻ là bố cục trình bày, không phải một bảng dữ liệu duy nhất.",
-    "The sheet uses many merged presentation regions and does not look like one analytical table.": "Sheet có nhiều vùng trình bày được gộp ô và không giống một bảng phân tích duy nhất.",
-    "This sheet was not selected for full inspection.": "Sheet này chưa được chọn để kiểm tra đầy đủ.",
-    "sheets": "sheet",
+    "Analyze full workbook": "Phân tích toàn bộ sổ làm việc",
+    "Choose sheets to analyze": "Chọn trang tính cần phân tích",
+    "Each sheet is inspected as a separate source. LightBI will not append or join sheets unless their structure and business relationship are supported by evidence.": "Mỗi trang tính được kiểm tra như một nguồn riêng. LightBI không tự nối hoặc ghép các trang tính khi chưa có bằng chứng về cấu trúc và quan hệ nghiệp vụ.",
+    "Sheet summary is ready.": "Đã sẵn sàng bản tóm tắt trang tính.",
+    "The sheet contains a populated rectangular data region.": "Trang tính có vùng dữ liệu dạng bảng.",
+    "The sheet is wide or uses a complex header and will be inspected independently.": "Trang tính rộng hoặc có tiêu đề phức tạp và sẽ được kiểm tra riêng.",
+    "The sheet is sparse or appears to be a layout rather than one rectangular table.": "Trang tính thưa hoặc có vẻ là bố cục trình bày, không phải một bảng dữ liệu duy nhất.",
+    "The sheet uses many merged presentation regions and does not look like one analytical table.": "Trang tính có nhiều vùng trình bày được gộp ô và không giống một bảng phân tích duy nhất.",
+    "This sheet was not selected for full inspection.": "Trang tính này chưa được chọn để kiểm tra đầy đủ.",
+    "sheets": "trang tính",
     " Choose what you want to understand; LightBI will prepare the sources, metrics and charts.": " Chọn điều bạn muốn tìm hiểu; LightBI sẽ tự chuẩn bị nguồn, chỉ số và biểu đồ.",
     "A saved BA or Advanced result is required to render real data.": "Cần lưu kết quả BA hoặc Nâng cao để hiển thị dữ liệu thực.",
     "Accounts payable": "Công nợ phải trả",
@@ -2460,9 +2460,113 @@
     "); never treated as full-file truth.": "); không bao giờ được xem là kết luận đại diện cho toàn bộ tệp.",
     "Files, online sheets, and databases in one read-only workspace": "Tệp, bảng tính trực tuyến và cơ sở dữ liệu trong một không gian làm việc chỉ đọc",
     "Donut": "Biểu đồ vành khuyên",
-    "Review student performance": "Xem xét kết quả học tập"
+    "Review student performance": "Xem xét kết quả học tập",
+    "Numeric outliers": "Giá trị số bất thường",
+    "No reliable previous-period comparison is available.": "Không có dữ liệu so sánh kỳ trước đủ tin cậy.",
+    "Comparable groups exist in the selected dimension.": "Có các nhóm tương đồng để so sánh trong chiều phân tích đã chọn.",
+    "The selected scope has no comparable peer groups.": "Phạm vi đã chọn không có nhóm tương đồng để so sánh.",
+    "No governed baseline is declared in the source.": "Nguồn chưa khai báo mức cơ sở được quản trị.",
+    "A target field is available for validation.": "Có trường mục tiêu để đối chiếu.",
+    "No target field is available.": "Không có trường mục tiêu.",
+    "How does this scope compare with the previous equivalent period?": "Phạm vi này thay đổi thế nào so với kỳ tương đương trước đó?",
+    "A point-in-time result cannot establish direction of change.": "Kết quả tại một thời điểm chưa thể xác định chiều hướng thay đổi.",
+    "The domain decomposition is currently partial.": "Phân rã theo nghiệp vụ hiện chưa đầy đủ.",
+    "Inspect the highest-priority driver": "Kiểm tra yếu tố ưu tiên cao nhất",
+    "Open the attached evidence rows and confirm business context before acting.": "Mở các dòng bằng chứng đính kèm và xác nhận bối cảnh nghiệp vụ trước khi hành động.",
+    "Validate with an owner, comparison period, or target before execution.": "Xác nhận với người phụ trách, kỳ so sánh hoặc mục tiêu trước khi thực hiện.",
+    "LightBI will not present the missing components as causes.": "LightBI không diễn giải các thành phần còn thiếu thành nguyên nhân."
+    ,"Previous period unavailable": "Chưa có kỳ trước"
+    ,"Peer groups unavailable": "Chưa có nhóm tương đồng"
+    ,"Baseline unavailable": "Chưa có mức cơ sở"
+    ,"Target unavailable": "Chưa có mục tiêu"
+    ,"Related business evidence": "Bằng chứng nghiệp vụ liên quan"
+    ,"What do you want LightBI to investigate?": "Bạn muốn LightBI phân tích điều gì?"
+    ,"What does LightBI know, and what evidence is still missing?": "LightBI đã biết gì và còn thiếu bằng chứng nào?"
+    ,"Perspectives are derived from canonical business evidence. Choose one before reviewing questions or generating a chart.": "Các góc nhìn được tạo từ bằng chứng nghiệp vụ đã xác thực. Hãy chọn một góc nhìn trước khi xem câu hỏi hoặc tạo biểu đồ."
+    ,"general business table · event-level": "bảng dữ liệu nghiệp vụ tổng quát · cấp độ sự kiện"
+    ,"Analyze stock levels, movement, and warehouse health.": "Phân tích mức tồn, biến động và tình trạng kho."
+    ,"Analyze sales, revenue generation, and product performance.": "Phân tích bán hàng, nguồn tạo doanh thu và hiệu quả sản phẩm."
+    ,"Analyze operational performance, logistics, and supply chain execution.": "Phân tích hiệu quả vận hành, logistics và thực thi chuỗi cung ứng."
+    ,"inventory snapshot": "ảnh chụp tồn kho"
+    ,"product": "sản phẩm"
+    ,"material": "vật liệu"
+    ,"uom": "đơn vị đo"
+    ,"inventory": "tồn kho"
+    ,"received_qty": "số lượng nhập"
+    ,"outbound": "xuất kho"
+    ,"stock_qty": "lượng tồn"
+    ,"Execute preview": "Thực thi bản xem trước"
+    ,"EXECUTED": "ĐÃ THỰC THI"
+    ,"Show developer diagnostics": "Hiển thị chẩn đoán kỹ thuật"
+    ,"Sales Performance": "Hiệu suất bán hàng"
+    ,"Sales Revenue": "Doanh thu bán hàng"
+    ,"sales performance analysis": "phân tích hiệu suất bán hàng"
+    ,"What changed across the business, and where should I focus?": "Hoạt động kinh doanh đã thay đổi thế nào và tôi nên tập trung vào đâu?"
+    ,"Combine the available commercial, financial, and operational evidence into one decision-oriented overview.": "Kết hợp bằng chứng thương mại, tài chính và vận hành hiện có thành một tổng quan phục vụ quyết định."
+    ,"How are revenue, orders, and quantity changing—and what drives the movement?": "Doanh thu, đơn hàng và số lượng đang thay đổi thế nào, và yếu tố nào liên quan đến biến động đó?"
+    ,"Review governed sales metrics by period and supported business dimensions.": "Xem xét các chỉ số bán hàng đã quản trị theo kỳ và các chiều nghiệp vụ được hỗ trợ."
+    ,"Where is gross profit created, and how does it change by period?": "Lợi nhuận gộp được tạo ra ở đâu và thay đổi thế nào theo kỳ?"
+    ,"What do revenue, cost, margin, and receivable evidence say?": "Bằng chứng về doanh thu, chi phí, biên lợi nhuận và khoản phải thu cho thấy điều gì?"
+    ,"How are deliveries performing, and where are operational exceptions?": "Hoạt động giao hàng đang diễn ra thế nào và ngoại lệ vận hành nằm ở đâu?"
+    ,"How does each order move from sale to accounting and delivery?": "Mỗi đơn hàng đi từ bán hàng qua kế toán đến giao hàng như thế nào?"
+    ,"What changed between the available reporting periods?": "Điều gì đã thay đổi giữa các kỳ báo cáo hiện có?"
+    ,"Using VND from Settings.": "Đang sử dụng VND từ Cài đặt."
+    ,"bar chart": "biểu đồ cột"
+    ,"table": "bảng dữ liệu"
+    ,"HIGH": "CAO"
+    ,"MEDIUM": "TRUNG BÌNH"
+    ,"LOW": "THẤP"
+    ,"high": "cao"
+    ,"medium": "trung bình"
+    ,"low": "thấp"
+    ,"Inspect unusual values before using totals or averages for business decisions.": "Kiểm tra các giá trị bất thường trước khi dùng tổng hoặc trung bình để ra quyết định nghiệp vụ."
+    ,"period": "kỳ"
+    ,"baseline": "mức cơ sở"
+    ,"target": "mục tiêu"
+    ,"Aging / dead stock": "Tuổi tồn / hàng chết"
+    ,"Stock-out risk": "Rủi ro hết hàng"
+    ,"Turnover": "Vòng quay tồn kho"
+    ,"Outbound": "Xuất kho"
+    ,"Warehouse": "Kho"
+    ,"Cost / value": "Chi phí / giá trị"
   },
   "patterns": [
+    {
+      "source": "^([\\d,.]+) sources contain ([\\d,.]+|unresolved) business roles? across ([\\d,.]+) reporting periods?\\.$",
+      "target": "$1 nguồn chứa $2 vai trò nghiệp vụ trong $3 kỳ báo cáo."
+    },
+    {
+      "source": "^([\\d,.]+) sources? · ([\\d,.]+) business roles? · ([\\d,.]+) periods?$",
+      "target": "$1 nguồn · $2 vai trò nghiệp vụ · $3 kỳ"
+    },
+    {
+      "source": "^LightBI analyzed ([\\d,.]+) complete sources? across ([\\d,.]+) reporting periods?\\.$",
+      "target": "LightBI đã phân tích đầy đủ $1 nguồn trong $2 kỳ báo cáo."
+    },
+    {
+      "source": "^(.+) has the largest relative movement \\((.+)%\\)\\. This is the strongest place to begin; it is an observation, not yet a cause\\.$",
+      "target": "$1 có mức biến động tương đối lớn nhất ($2%). Đây là điểm nên kiểm tra đầu tiên; hiện mới là quan sát, chưa phải kết luận nguyên nhân."
+    },
+    {
+      "source": "^What drove the change in (.+) from (.+) to (.+)\\?$",
+      "target": "Yếu tố nào liên quan đến thay đổi của $1 từ $2 đến $3?"
+    },
+    {
+      "source": "^Break down (.+) by the most useful business dimensions\\.$",
+      "target": "Phân rã $1 theo các chiều nghiệp vụ hữu ích nhất."
+    },
+    {
+      "source": "^Which segments should I investigate first for (.+)\\?$",
+      "target": "Nên kiểm tra phân khúc nào trước đối với $1?"
+    },
+    {
+      "source": "^Using (.+) from Settings\\.$",
+      "target": "Đang sử dụng $1 từ Cài đặt."
+    },
+    {
+      "source": "^(.+) has (low|moderate|high) data trust and is exploratory only\\. Main finding: (.+) is the largest contributor for (.+)\\.$",
+      "target": "$1 có độ tin cậy dữ liệu ở mức cần thận trọng và kết quả chỉ mang tính khám phá. Phát hiện chính: $3 là nhóm đóng góp lớn nhất cho $4."
+    },
     {
       "source": "^Showing first ([\\d,.]+) rows in the browser table\\. Export includes all selected rows loaded in this drill-through result\\.$",
       "target": "Đang hiển thị $1 dòng đầu tiên. Tệp xuất bao gồm toàn bộ dòng đã chọn trong kết quả xem chi tiết."
@@ -2574,6 +2678,22 @@
     {
       "source": "^(.+) decreased in the latest period compared with the previous period\\.$",
       "target": "$1 giảm ở kỳ mới nhất so với kỳ trước."
+    },
+    {
+      "source": "^(.+) has (low|moderate|high) data trust and is exploratory only\\. Main finding: (.+) is the largest contributor for (.+)\\.$",
+      "target": "$1 có độ tin cậy dữ liệu ở mức cần thận trọng và kết quả chỉ mang tính khám phá. Phát hiện chính: $3 là nhóm đóng góp lớn nhất cho $4."
+    },
+    {
+      "source": "^(.+) has low data trust and is exploratory only\\. Main finding: (.+)$",
+      "target": "$1 có độ tin cậy dữ liệu thấp và kết quả chỉ mang tính khám phá. Phát hiện chính: $2"
+    },
+    {
+      "source": "^(.+) has moderate data trust and is exploratory only\\. Main finding: (.+)$",
+      "target": "$1 có độ tin cậy dữ liệu trung bình và kết quả chỉ mang tính khám phá. Phát hiện chính: $2"
+    },
+    {
+      "source": "^(.+) has high data trust and is exploratory only\\. Main finding: (.+)$",
+      "target": "$1 có độ tin cậy dữ liệu cao và kết quả chỉ mang tính khám phá. Phát hiện chính: $2"
     },
     {
       "source": "^(.+) has low data trust and is exploratory only\\.(.*)$",
@@ -2698,5 +2818,89 @@
       "source": "^(.+) currently ranks highest by profit\\.$",
       "target": "$1 hiện đứng đầu về lợi nhuận."
     }
+    ,{
+      "source": "^Largest contribution by (.+)$",
+      "target": "Mức đóng góp lớn nhất theo $1"
+    },
+    {
+      "source": "^(.+) leads this breakdown with (.+)% across (.+) rows\\.$",
+      "target": "$1 đứng đầu phân rã này với $2% trên $3 dòng."
+    },
+    {
+      "source": "^(.+) is only partially testable\\. Verify (.+) before attributing the result to these drivers\\.$",
+      "target": "Phân rã này hiện chỉ kiểm chứng được một phần. Cần bổ sung các tín hiệu còn thiếu trước khi quy kết kết quả cho các yếu tố này."
+    },
+    {
+      "source": "^(.+) has the required fields for decomposition; compare component contributions before making a causal claim\\.$",
+      "target": "Phân rã này có đủ trường cần thiết; hãy so sánh mức đóng góp của từng thành phần trước khi đưa ra kết luận nhân quả."
+    },
+    {
+      "source": "^([\\d,.]+) rows are above the IQR threshold and should be reviewed individually\\.$",
+      "target": "$1 dòng vượt ngưỡng IQR và cần được kiểm tra riêng."
+    },
+    {
+      "source": "^(.+) represents (.+)% of the analyzed scope\\.$",
+      "target": "$1 chiếm $2% phạm vi đã phân tích."
+    },
+    {
+      "source": "^Compared (.+) with (.+)\\.$",
+      "target": "Đã so sánh $1 với $2."
+    },
+    {
+      "source": "^Which records and sub-groups explain (.+)\\?$",
+      "target": "Những bản ghi và nhóm con nào giải thích phát hiện này?"
+    },
+    {
+      "source": "^Can we add (.+) to test the driver hypothesis\\?$",
+      "target": "Có thể bổ sung các tín hiệu còn thiếu để kiểm chứng giả thuyết về yếu tố tác động không?"
+    },
+    {
+      "source": "^Follow-up ([\\d,.]+)$",
+      "target": "Kiểm tra tiếp $1"
+    },
+    {
+      "source": "^(.+) decomposition is incomplete$",
+      "target": "Phân rã nghiệp vụ chưa đầy đủ"
+    },
+    {
+      "source": "^(.+) unavailable$",
+      "target": "Chưa có $1"
+    },
+    {
+      "source": "^Evidence limitation ([\\d,.]+)$",
+      "target": "Giới hạn bằng chứng $1"
+    },
+    {
+      "source": "^Observed in (.+)$",
+      "target": "Quan sát được trong $1"
+    },
+    {
+      "source": "^Missing (.+)$",
+      "target": "Thiếu $1"
+    },
+    { "source": "^([\\d,.]+) file ready$", "target": "$1 tệp sẵn sàng" },
+    { "source": "^· ([\\d,.]+) sheets?$", "target": "· $1 trang tính" },
+    { "source": "^Analyze ([\\d,.]+) selected sheets?$", "target": "Phân tích $1 trang tính đã chọn" },
+    { "source": "^([\\d,.]+) rows · ([\\d,.]+) columns$", "target": "$1 dòng · $2 cột" },
+    { "source": "^([\\d,.]+) evidence-backed perspectives?$", "target": "$1 góc nhìn dựa trên bằng chứng" },
+    { "source": "^([\\d,.]+) data-quality findings retained$", "target": "Đã ghi nhận $1 phát hiện về chất lượng dữ liệu" },
+    {
+      "source": "^LightBI sees ([\\d,.]+) source rows, ([\\d,.]+) columns, and enough business signals to offer ([\\d,.]+) ready runtime actions\\. ([\\d,.]+) other angles need more signals before they are safe to run\\.$",
+      "target": "LightBI nhận diện $1 dòng nguồn, $2 cột và đủ tín hiệu nghiệp vụ để cung cấp $3 phân tích sẵn sàng. $4 góc nhìn khác cần thêm tín hiệu trước khi có thể chạy an toàn."
+    },
+    { "source": "^Business analysis from a representative sample of ([\\d,.]+) / ([\\d,.]+) rows$", "target": "Phân tích nghiệp vụ từ mẫu đại diện $1 / $2 dòng" },
+    { "source": "^Business analysis from ([\\d,.]+) data rows$", "target": "Phân tích nghiệp vụ từ $1 dòng dữ liệu" },
+    {
+      "source": "^(.+) has (low|moderate|high) data trust and is exploratory only\\. Main finding: (.+)$",
+      "target": "$1 có độ tin cậy dữ liệu ở mức cần thận trọng và kết quả chỉ mang tính khám phá. Phát hiện chính: $3"
+    },
+    { "source": "^([\\d,.]+) unusual values may distort this analysis\\.$", "target": "$1 giá trị bất thường có thể làm sai lệch kết quả phân tích." },
+    { "source": "^Most extreme: (.+)$", "target": "Bất thường nhất: $1" },
+    { "source": "^Expected range: (.+)$", "target": "Khoảng dự kiến: $1" },
+    { "source": "^Outlier ratio: (.+)$", "target": "Tỷ lệ bất thường: $1" },
+    { "source": "^Row ([\\d,.]+): (.+)$", "target": "Dòng $1: $2" },
+    { "source": "^Row ([\\d,.]+)$", "target": "Dòng $1" },
+    { "source": "^bar - (.+)$", "target": "Biểu đồ cột — $1" },
+    { "source": "^table - (.+)$", "target": "Bảng dữ liệu — $1" }
   ]
 }

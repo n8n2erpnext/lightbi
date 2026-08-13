@@ -101,7 +101,7 @@ export const SingleSourceBAOverviewCard: React.FC<{
                 <p className="mt-2 text-xs leading-5 text-slate-700">{t(item.statement)}</p>
                 {item.evidenceRows.length > 0 && <details className="mt-2">
                   <summary className="cursor-pointer text-[10px] font-semibold text-blue-700">{t('View evidence rows')} ({item.evidenceRows.length})</summary>
-                  <div className="mt-2 space-y-1">{item.evidenceRows.map(row => <div key={`${item.id}-${row.rowIndex}`} className="rounded bg-slate-50 px-2 py-1.5 text-[10px] text-slate-600"><span className="font-semibold">{row.label}</span> · {Object.entries(row.values).map(([field, value]) => `${field}=${String(value ?? '∅')}`).join(' · ')}</div>)}</div>
+                  <div className="mt-2 space-y-1">{item.evidenceRows.map(row => <div key={`${item.id}-${row.rowIndex}`} className="rounded bg-slate-50 px-2 py-1.5 text-[10px] text-slate-600"><span className="font-semibold">{t(row.label)}</span> · {Object.entries(row.values).map(([field, value]) => `${field}=${String(value ?? '∅')}`).join(' · ')}</div>)}</div>
                 </details>}
               </article>)}
             </div>
@@ -133,7 +133,7 @@ export const SingleSourceBAOverviewCard: React.FC<{
 
           <details className="group px-5 py-4" data-testid="deep-ba-unknowns">
             <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-semibold text-slate-900"><span>{t('8. What is still unknown?')}</span><ChevronDown className="h-4 w-4 text-slate-400 transition-transform group-open:rotate-180" /></summary>
-            <div className="mt-3 space-y-2">{overview.investigation.unknowns.map((item, index) => <div key={`${index}-${item.label}`} className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs"><strong className="text-amber-900">{t(item.label)}</strong><p className="mt-1 text-amber-800">{t(item.impact)}</p>{item.missingSignals.length > 0 && <div className="mt-1 text-[10px] text-amber-700">{t('Missing')}: {item.missingSignals.join(', ')}</div>}</div>)}</div>
+            <div className="mt-3 space-y-2">{overview.investigation.unknowns.map((item, index) => <div key={`${index}-${item.label}`} className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs"><strong className="text-amber-900">{t(item.label)}</strong><p className="mt-1 text-amber-800">{t(item.impact)}</p>{item.missingSignals.length > 0 && <div className="mt-1 text-[10px] text-amber-700">{t('Missing')}: {item.missingSignals.map(signal => t(signal)).join(', ')}</div>}</div>)}</div>
           </details>
         </div>
       </section>}

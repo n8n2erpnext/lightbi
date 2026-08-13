@@ -52,4 +52,47 @@ describe('language catalog registry', () => {
     expect(translateCatalogMessage('vi', 'Quantity changed by -86, so volume likely contributed to the movement.'))
       .toBe('Số lượng thay đổi -86, vì vậy biến động sản lượng có thể đã góp phần tạo ra thay đổi này.');
   });
+
+  it('translates every dynamic layer of the deep BA investigation framework', () => {
+    const cases: Array<[string, string]> = [
+      ['Largest contribution by branch', 'Mức đóng góp lớn nhất theo branch'],
+      ['Store A leads this breakdown with 42.5% across 170 rows.', 'Store A đứng đầu phân rã này với 42.5% trên 170 dòng.'],
+      ['Inventory health is only partially testable. Verify Aging / dead stock, Turnover before attributing the result to these drivers.', 'Phân rã này hiện chỉ kiểm chứng được một phần. Cần bổ sung các tín hiệu còn thiếu trước khi quy kết kết quả cho các yếu tố này.'],
+      ['12 rows are above the IQR threshold and should be reviewed individually.', '12 dòng vượt ngưỡng IQR và cần được kiểm tra riêng.'],
+      ['Store A represents 55.0% of the analyzed scope.', 'Store A chiếm 55.0% phạm vi đã phân tích.'],
+      ['Which records and sub-groups explain concentration risk?', 'Những bản ghi và nhóm con nào giải thích phát hiện này?'],
+      ['Can we add Aging / dead stock, Turnover to test the driver hypothesis?', 'Có thể bổ sung các tín hiệu còn thiếu để kiểm chứng giả thuyết về yếu tố tác động không?'],
+      ['Inventory / Stock decomposition is incomplete', 'Phân rã nghiệp vụ chưa đầy đủ'],
+      ['Previous period unavailable', 'Chưa có kỳ trước'],
+      ['Evidence limitation 2', 'Giới hạn bằng chứng 2'],
+    ];
+    for (const [source, expected] of cases) expect(translateCatalogMessage('vi', source)).toBe(expected);
+  });
+
+  it('keeps generated workbook, perspective, and BA result copy fully Vietnamese', () => {
+    const cases: Array<[string, string]> = [
+      ['1 file ready', '1 tệp sẵn sàng'],
+      ['· 6 sheets', '· 6 trang tính'],
+      ['Analyze 2 selected sheets', 'Phân tích 2 trang tính đã chọn'],
+      ['331 rows · 9 columns', '331 dòng · 9 cột'],
+      ['3 evidence-backed perspectives', '3 góc nhìn dựa trên bằng chứng'],
+      ['Business analysis from 331 data rows', 'Phân tích nghiệp vụ từ 331 dòng dữ liệu'],
+      ['Business analysis from a representative sample of 1,000 / 14,862 rows', 'Phân tích nghiệp vụ từ mẫu đại diện 1,000 / 14,862 dòng'],
+      ['Inventory has moderate data trust and is exploratory only. Main finding: Store A is the largest contributor for record_count.', 'Inventory có độ tin cậy dữ liệu ở mức cần thận trọng và kết quả chỉ mang tính khám phá. Phát hiện chính: Store A là nhóm đóng góp lớn nhất cho record_count.'],
+      ['2 unusual values may distort this analysis.', '2 giá trị bất thường có thể làm sai lệch kết quả phân tích.'],
+      ['Most extreme: 272,015.23', 'Bất thường nhất: 272,015.23'],
+      ['Row 2: 272,015.23', 'Dòng 2: 272,015.23'],
+      ['bar chart', 'biểu đồ cột'],
+      ['table', 'bảng dữ liệu'],
+      ['Aging / dead stock', 'Tuổi tồn / hàng chết'],
+      ['HIGH', 'CAO'],
+      ['6 sources contain 3 business roles across 2 reporting periods.', '6 nguồn chứa 3 vai trò nghiệp vụ trong 2 kỳ báo cáo.'],
+      ['2 sources · 1 business role · 2 periods', '2 nguồn · 1 vai trò nghiệp vụ · 2 kỳ'],
+      ['LightBI analyzed 2 complete sources across 2 reporting periods.', 'LightBI đã phân tích đầy đủ 2 nguồn trong 2 kỳ báo cáo.'],
+      ['Sales Revenue has the largest relative movement (10.2%). This is the strongest place to begin; it is an observation, not yet a cause.', 'Sales Revenue có mức biến động tương đối lớn nhất (10.2%). Đây là điểm nên kiểm tra đầu tiên; hiện mới là quan sát, chưa phải kết luận nguyên nhân.'],
+      ['What drove the change in Sales Revenue from 2026-05 to 2026-06?', 'Yếu tố nào liên quan đến thay đổi của Sales Revenue từ 2026-05 đến 2026-06?'],
+      ['Using VND from Settings.', 'Đang sử dụng VND từ Cài đặt.'],
+    ];
+    for (const [source, expected] of cases) expect(translateCatalogMessage('vi', source)).toBe(expected);
+  });
 });

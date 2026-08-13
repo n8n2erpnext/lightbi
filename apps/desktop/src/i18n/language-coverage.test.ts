@@ -21,6 +21,7 @@ const uiObjectKeys = new Set([
   'title', 'placeholder', 'aria-label', 'label', 'name', 'intent', 'bestFor',
   'description', 'subtitle', 'heading', 'action', 'emptyMessage',
 ]);
+const deepBAObjectKeys = new Set(['statement', 'question', 'rationale', 'verification', 'impact', 'caveat']);
 
 const sourceFiles: string[] = [];
 function walk(directory: string) {
@@ -84,7 +85,7 @@ describe('Vietnamese language coverage', () => {
         }
         if (ts.isPropertyAssignment(node)) {
           const key = ts.isIdentifier(node.name) || ts.isStringLiteral(node.name) ? node.name.text : '';
-          if (uiObjectKeys.has(key)
+          if ((uiObjectKeys.has(key) || (file.endsWith('deep-ba-investigation.ts') && deepBAObjectKeys.has(key)))
             && (ts.isStringLiteral(node.initializer) || ts.isNoSubstitutionTemplateLiteral(node.initializer))) {
             add(node.initializer.text, file, node.initializer, sourceFile);
           }
