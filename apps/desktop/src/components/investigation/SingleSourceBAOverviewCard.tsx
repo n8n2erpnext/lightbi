@@ -135,6 +135,11 @@ export const SingleSourceBAOverviewCard: React.FC<{
 }> = ({ overview, preferences }) => {
   const { language, t } = useUiLanguage();
   const positiveTrend = (overview.trendChange ?? 0) >= 0;
+  const selectedMeasure = overview.bindings.selectedMeasure;
+  const selectedDimensions = Object.entries(overview.bindings)
+    .filter(([key]) => /^selectedDimension\d+$/.test(key))
+    .sort(([left], [right]) => left.localeCompare(right))
+    .map(([, column]) => column);
   return <div className="mb-5 overflow-hidden rounded-[20px] border border-emerald-200 bg-emerald-50/50 shadow-sm" data-testid="single-source-ba-overview">
     <header className="border-b border-emerald-200 bg-gradient-to-r from-emerald-50 via-white to-blue-50 px-6 py-5">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
@@ -151,6 +156,15 @@ export const SingleSourceBAOverviewCard: React.FC<{
     </header>
 
     <div className="space-y-5 p-5">
+      {(selectedMeasure || selectedDimensions.length > 0) && <section data-testid="deep-ba-selected-scope" className="rounded-xl border border-slate-200 bg-white p-4">
+        <div className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">{t('Selected analysis scope')}</div>
+        <div className="mt-3 flex flex-wrap gap-2 text-xs">
+          {selectedMeasure && <span className="rounded-md border border-slate-200 bg-slate-50 px-3 py-1.5 font-semibold text-slate-800">{t('Measure')}: {selectedMeasure}</span>}
+          {selectedDimensions.map(column => <span key={column} className="rounded-md border border-slate-200 bg-slate-50 px-3 py-1.5 text-slate-700">{t('Dimension')}: {column}</span>)}
+        </div>
+        <p className="mt-3 text-xs leading-5 text-slate-500">{t('The KPI, trend and ranked groups below are calculated for this selected measure and these dimensions. Other domain metrics are supporting context only.')}</p>
+      </section>}
+
       <section>
         <h4 className="mb-3 flex items-center gap-2 text-[12px] font-semibold uppercase tracking-wide text-slate-600"><BarChart3 className="h-4 w-4 text-blue-600" />{t('Key metrics')}</h4>
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
@@ -168,6 +182,27 @@ export const SingleSourceBAOverviewCard: React.FC<{
         </div>)}
       </section>}
 
+      {(overview.concentration || overview.trend.length > 0 || overview.outlierCount > 0) && <section data-testid="deep-ba-decision-diagnostics">
+        <h4 className="mb-3 text-[12px] font-semibold uppercase tracking-wide text-slate-600">{t('Decision diagnostics')}</h4>
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          {overview.concentration && <div className="rounded-xl border border-slate-200 bg-white p-4">
+            <div className="text-[11px] font-semibold uppercase text-slate-400">{t('Largest group concentration')}</div>
+            <div className="mt-1 text-lg font-bold text-slate-950">{overview.concentration.label}</div>
+            <div className="mt-1 text-sm text-slate-600">{(overview.concentration.share * 100).toFixed(1)}%</div>
+          </div>}
+          {overview.trend.length > 0 && <div className="rounded-xl border border-slate-200 bg-white p-4">
+            <div className="text-[11px] font-semibold uppercase text-slate-400">{t('Observed time coverage')}</div>
+            <div className="mt-1 text-lg font-bold text-slate-950">{overview.trend.length.toLocaleString(preferences.locale)} {t('periods')}</div>
+            <div className="mt-1 text-xs text-slate-500">{overview.trend[0]?.period} → {overview.trend.at(-1)?.period}</div>
+          </div>}
+          {overview.outlierCount > 0 && <div className="rounded-xl border border-amber-200 bg-amber-50 p-4">
+            <div className="text-[11px] font-semibold uppercase text-amber-700">{t('Rows above the IQR threshold')}</div>
+            <div className="mt-1 text-lg font-bold text-amber-950">{overview.outlierCount.toLocaleString(preferences.locale)}</div>
+            <div className="mt-1 text-xs text-amber-800">{t('Review these source rows before acting on the aggregate result.')}</div>
+          </div>}
+        </div>
+      </section>}
+
       {overview.breakdowns.length > 0 && <section>
         <h4 className="mb-3 text-[12px] font-semibold uppercase tracking-wide text-slate-600">{overviewText(language, overview.breakdownHeading)}</h4>
         <div className="grid gap-4 lg:grid-cols-2">
@@ -179,6 +214,15 @@ export const SingleSourceBAOverviewCard: React.FC<{
                 <div className="h-1.5 overflow-hidden rounded-full bg-slate-100"><div className="h-full rounded-full bg-blue-600" style={{ width: `${Math.max(2, entry.share * 100)}%` }} /></div>
               </div>)}
             </div>
+            {breakdown.bottom.length > 0 && <div data-testid={`deep-ba-low-groups-${breakdown.id}`} className="mt-4 border-t border-slate-100 pt-3">
+              <div className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-slate-400">{t('Lowest groups to inspect')}</div>
+              <div className="grid gap-2 sm:grid-cols-2">
+                {breakdown.bottom.slice(0, 2).map(entry => <div key={`bottom-${entry.label}`} className="rounded-md bg-slate-50 px-3 py-2 text-xs">
+                  <div className="truncate font-medium text-slate-700">{entry.label}</div>
+                  <div className="mt-0.5 text-slate-500">{breakdown.valueKind === 'money' ? formatMoney(entry.value, preferences) : formatKpi({ id: '', label: '', value: entry.value, kind: breakdown.valueKind === 'percent' ? 'percent' : 'number' }, preferences)} · {t('Rows')}: {entry.rowCount.toLocaleString(preferences.locale)}</div>
+                </div>)}
+              </div>
+            </div>}
           </article>)}
         </div>
       </section>}
