@@ -23,7 +23,9 @@ Exports are created only after a user action. PNG/PDF analysis exports, CSV/Exce
 
 ## Telemetry
 
-The current public Beta does not require an analytics account or license key. Repository builds do not embed a mandatory remote telemetry service.
+The public Beta creates a random installation identifier and may pair it with the LightBI distribution service. Pairing sends only the random identifier, application version, platform, and Basic/Pro tier. It never sends imported files, source URLs, database credentials, column names, query results, charts, or BA findings.
+
+Anonymous pairing can be disabled in Settings. A Pro activation sends the entered license key and the random installation identifier only to validate the license and device allowance.
 
 ## Operational guidance
 

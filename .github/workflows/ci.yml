@@ -23,6 +23,10 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - name: Verify distribution portal
+        run: |
+          pnpm --dir apps/distribution test
+          pnpm --dir apps/distribution build
       - name: Build desktop web surface
         run: pnpm --filter @lightbi/desktop build
       - name: Run public governed regression gates
@@ -33,4 +37,7 @@ jobs:
           src/components/analysis/PerspectiveCollectionResultCard.test.tsx
           src/lib/understanding-core/phase-7r41-repository-corpus.test.ts
           src/lib/runtime-source-continuity.test.ts
+          src/lib/distribution-pairing.test.ts
+          src/lib/understanding-core/semantic-capability-matrix.test.ts
+          src/lib/understanding-core/xomdata-sql-semantic.corpus.test.ts
           --maxWorkers=2

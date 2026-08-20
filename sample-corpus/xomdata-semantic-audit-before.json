@@ -1,0 +1,2369 @@
+{
+  "generatedOn": "2026-08-20T11:01:15.153Z",
+  "corpus": "lightbi.xomdata-sql-semantic-corpus.v1",
+  "totals": {
+    "schemas": 17,
+    "tables": 63,
+    "columns": 690,
+    "recognizedColumns": 249,
+    "unresolvedColumns": 441,
+    "tablesWithExecutableQuestions": 53
+  },
+  "tables": [
+    {
+      "schema": "adventure_works",
+      "table": "calendar",
+      "columns": 1,
+      "sampledRows": 5,
+      "recognizedColumns": 1,
+      "unresolvedColumns": 0,
+      "selectedSignals": [
+        "time_period"
+      ],
+      "capabilityDomains": [
+        "core"
+      ],
+      "universalSignals": [
+        "time.transaction_date",
+        "time.period"
+      ],
+      "executableQuestions": []
+    },
+    {
+      "schema": "adventure_works",
+      "table": "customers",
+      "columns": 13,
+      "sampledRows": 5,
+      "recognizedColumns": 2,
+      "unresolvedColumns": 11,
+      "selectedSignals": [
+        "customer",
+        "gender"
+      ],
+      "capabilityDomains": [
+        "customer",
+        "performance",
+        "revenue"
+      ],
+      "universalSignals": [
+        "entity.customer",
+        "time.transaction_date",
+        "status.lifecycle",
+        "engagement.segment",
+        "entity.gender",
+        "engagement.segment",
+        "engagement.segment",
+        "entity.employee"
+      ],
+      "executableQuestions": [
+        "activity_by_participant",
+        "customer_activity_volume",
+        "customer_profile_distribution",
+        "operational_workload_by_actor",
+        "campaign_effort_review",
+        "approval_or_reconciliation_flow",
+        "status_flow"
+      ]
+    },
+    {
+      "schema": "adventure_works",
+      "table": "product_categories",
+      "columns": 2,
+      "sampledRows": 4,
+      "recognizedColumns": 1,
+      "unresolvedColumns": 1,
+      "selectedSignals": [
+        "category"
+      ],
+      "capabilityDomains": [
+        "inventory",
+        "revenue"
+      ],
+      "universalSignals": [
+        "item.product",
+        "item.category",
+        "item.category"
+      ],
+      "executableQuestions": [
+        "catalog_composition_by_category",
+        "catalog_records_by_item",
+        "item_activity_volume"
+      ]
+    },
+    {
+      "schema": "adventure_works",
+      "table": "product_subcategories",
+      "columns": 3,
+      "sampledRows": 5,
+      "recognizedColumns": 0,
+      "unresolvedColumns": 3,
+      "selectedSignals": [],
+      "capabilityDomains": [],
+      "universalSignals": [
+        "item.product",
+        "item.category",
+        "item.category",
+        "item.product",
+        "item.category"
+      ],
+      "executableQuestions": [
+        "catalog_composition_by_category",
+        "catalog_records_by_item",
+        "item_activity_volume"
+      ]
+    },
+    {
+      "schema": "adventure_works",
+      "table": "products",
+      "columns": 11,
+      "sampledRows": 5,
+      "recognizedColumns": 3,
+      "unresolvedColumns": 8,
+      "selectedSignals": [
+        "product",
+        "cost",
+        "unit_price"
+      ],
+      "capabilityDomains": [
+        "finance",
+        "inventory",
+        "revenue"
+      ],
+      "universalSignals": [
+        "item.product",
+        "item.product",
+        "item.category",
+        "item.product",
+        "item.product",
+        "item.product",
+        "money.transaction_description",
+        "item.product",
+        "item.product",
+        "item.product",
+        "money.cost",
+        "item.product",
+        "item.product",
+        "money.unit_price"
+      ],
+      "executableQuestions": [
+        "profit_or_margin",
+        "catalog_composition_by_category",
+        "catalog_records_by_item",
+        "item_value",
+        "item_activity_volume",
+        "inventory_value_exposure"
+      ]
+    },
+    {
+      "schema": "adventure_works",
+      "table": "returns",
+      "columns": 4,
+      "sampledRows": 5,
+      "recognizedColumns": 2,
+      "unresolvedColumns": 2,
+      "selectedSignals": [
+        "time_period",
+        "return_quantity"
+      ],
+      "capabilityDomains": [
+        "core",
+        "inventory",
+        "operations",
+        "revenue"
+      ],
+      "universalSignals": [
+        "time.transaction_date",
+        "location.region",
+        "item.product",
+        "quantity.units"
+      ],
+      "executableQuestions": [
+        "operational_volume_by_location",
+        "catalog_composition_by_category",
+        "catalog_records_by_item",
+        "item_activity_volume"
+      ]
+    },
+    {
+      "schema": "adventure_works",
+      "table": "sales",
+      "columns": 8,
+      "sampledRows": 5,
+      "recognizedColumns": 5,
+      "unresolvedColumns": 3,
+      "selectedSignals": [
+        "time_period",
+        "time_period",
+        "order",
+        "customer",
+        "order"
+      ],
+      "capabilityDomains": [
+        "core",
+        "customer",
+        "revenue"
+      ],
+      "universalSignals": [
+        "time.transaction_date",
+        "document.order",
+        "time.transaction_date",
+        "inventory.age_bucket",
+        "document.order",
+        "item.product",
+        "entity.customer",
+        "location.region",
+        "document.order",
+        "item.product",
+        "document.order",
+        "quantity.units"
+      ],
+      "executableQuestions": [
+        "inventory_aging_backlog",
+        "activity_by_participant",
+        "customer_activity_volume",
+        "customer_geographic_distribution",
+        "operational_volume_by_location",
+        "catalog_composition_by_category",
+        "catalog_records_by_item",
+        "item_activity_volume",
+        "document_coverage"
+      ]
+    },
+    {
+      "schema": "adventure_works",
+      "table": "territories",
+      "columns": 4,
+      "sampledRows": 5,
+      "recognizedColumns": 1,
+      "unresolvedColumns": 3,
+      "selectedSignals": [
+        "country"
+      ],
+      "capabilityDomains": [
+        "customer",
+        "operations",
+        "performance",
+        "revenue"
+      ],
+      "universalSignals": [
+        "money.revenue",
+        "location.region",
+        "location.route",
+        "location.region",
+        "location.country"
+      ],
+      "executableQuestions": [
+        "operational_volume_by_location",
+        "money_by_location",
+        "delivery_volume_by_route_or_resource",
+        "inventory_value_exposure"
+      ]
+    },
+    {
+      "schema": "banking",
+      "table": "cards",
+      "columns": 12,
+      "sampledRows": 5,
+      "recognizedColumns": 2,
+      "unresolvedColumns": 10,
+      "selectedSignals": [
+        "customer",
+        "time_period"
+      ],
+      "capabilityDomains": [
+        "core",
+        "customer",
+        "revenue"
+      ],
+      "universalSignals": [
+        "entity.customer",
+        "money.payment_card",
+        "item.brand",
+        "money.payment_card",
+        "money.payment_card",
+        "money.payment_card",
+        "quantity.issued",
+        "money.credit",
+        "time.transaction_date",
+        "money.refund_or_change",
+        "time.period"
+      ],
+      "executableQuestions": [
+        "activity_by_participant",
+        "customer_activity_volume",
+        "stock_movement",
+        "payment_mix",
+        "catalog_composition_by_category",
+        "catalog_composition_by_brand_or_supplier",
+        "catalog_records_by_item",
+        "item_value",
+        "item_activity_volume",
+        "customer_or_patient_value",
+        "inventory_value_exposure"
+      ]
+    },
+    {
+      "schema": "banking",
+      "table": "mcc_codes",
+      "columns": 2,
+      "sampledRows": 5,
+      "recognizedColumns": 1,
+      "unresolvedColumns": 1,
+      "selectedSignals": [
+        "transaction_description"
+      ],
+      "capabilityDomains": [
+        "customer",
+        "finance",
+        "revenue"
+      ],
+      "universalSignals": [
+        "money.transaction_description"
+      ],
+      "executableQuestions": []
+    },
+    {
+      "schema": "banking",
+      "table": "transactions",
+      "columns": 12,
+      "sampledRows": 5,
+      "recognizedColumns": 5,
+      "unresolvedColumns": 7,
+      "selectedSignals": [
+        "time_period",
+        "customer",
+        "city",
+        "state_province",
+        "postal_code"
+      ],
+      "capabilityDomains": [
+        "core",
+        "customer",
+        "operations",
+        "performance",
+        "revenue"
+      ],
+      "universalSignals": [
+        "time.transaction_date",
+        "time.period",
+        "entity.customer",
+        "money.payment_card",
+        "entity.merchant",
+        "entity.merchant",
+        "status.lifecycle",
+        "entity.merchant",
+        "location.postal_code"
+      ],
+      "executableQuestions": [
+        "activity_by_participant",
+        "customer_activity_volume",
+        "money_over_time",
+        "payment_mix",
+        "approval_or_reconciliation_flow",
+        "customer_or_patient_value",
+        "status_flow"
+      ]
+    },
+    {
+      "schema": "banking",
+      "table": "users",
+      "columns": 14,
+      "sampledRows": 5,
+      "recognizedColumns": 5,
+      "unresolvedColumns": 9,
+      "selectedSignals": [
+        "person_age",
+        "gender",
+        "latitude",
+        "longitude",
+        "debt"
+      ],
+      "capabilityDomains": [
+        "customer",
+        "finance",
+        "operations",
+        "performance",
+        "revenue"
+      ],
+      "universalSignals": [
+        "time.period",
+        "time.period",
+        "entity.gender",
+        "location.latitude",
+        "location.longitude",
+        "time.period",
+        "money.debt",
+        "indicator.metric",
+        "money.credit",
+        "engagement.rating_score",
+        "money.payment_card",
+        "money.credit"
+      ],
+      "executableQuestions": [
+        "operational_volume_by_location",
+        "performance_indicator_by_business_dimension",
+        "money_by_location",
+        "payment_mix",
+        "inventory_value_exposure"
+      ]
+    },
+    {
+      "schema": "coffee_shop",
+      "table": "transactions",
+      "columns": 11,
+      "sampledRows": 5,
+      "recognizedColumns": 6,
+      "unresolvedColumns": 5,
+      "selectedSignals": [
+        "bank_transaction",
+        "time_period",
+        "time_period",
+        "branch",
+        "branch",
+        "category"
+      ],
+      "capabilityDomains": [
+        "core",
+        "customer",
+        "finance",
+        "inventory",
+        "operations",
+        "performance",
+        "revenue"
+      ],
+      "universalSignals": [
+        "event.audit_action",
+        "time.transaction_date",
+        "event.audit_action",
+        "status.delivery",
+        "event.audit_action",
+        "quantity.units",
+        "event.audit_action",
+        "location.store",
+        "location.store",
+        "item.product",
+        "money.unit_price",
+        "item.product",
+        "item.category",
+        "item.product",
+        "item.product"
+      ],
+      "executableQuestions": [
+        "delivery_completion_mix",
+        "status_flow",
+        "approval_or_reconciliation_flow",
+        "catalog_composition_by_category",
+        "catalog_records_by_item",
+        "item_value",
+        "item_activity_volume",
+        "inventory_value_exposure"
+      ]
+    },
+    {
+      "schema": "crm_analytics",
+      "table": "deals",
+      "columns": 17,
+      "sampledRows": 5,
+      "recognizedColumns": 7,
+      "unresolvedColumns": 10,
+      "selectedSignals": [
+        "account",
+        "country",
+        "latitude",
+        "longitude",
+        "product",
+        "expected_revenue",
+        "probability"
+      ],
+      "capabilityDomains": [
+        "customer",
+        "inventory",
+        "operations",
+        "performance",
+        "revenue"
+      ],
+      "universalSignals": [
+        "entity.customer",
+        "location.country",
+        "location.latitude",
+        "location.longitude",
+        "entity.customer",
+        "entity.employee",
+        "time.transaction_date",
+        "entity.coach",
+        "item.product",
+        "status.lifecycle",
+        "status.lifecycle",
+        "status.lifecycle",
+        "status.lifecycle",
+        "indicator.probability",
+        "time.transaction_date",
+        "time.transaction_date"
+      ],
+      "executableQuestions": [
+        "activity_by_participant",
+        "customer_activity_volume",
+        "customer_geographic_distribution",
+        "operational_workload_by_actor",
+        "operational_volume_by_location",
+        "secondary_indicator_by_owner_or_team",
+        "catalog_composition_by_category",
+        "catalog_records_by_item",
+        "item_activity_volume"
+      ]
+    },
+    {
+      "schema": "e_commerce",
+      "table": "customer",
+      "columns": 11,
+      "sampledRows": 5,
+      "recognizedColumns": 2,
+      "unresolvedColumns": 9,
+      "selectedSignals": [
+        "customer",
+        "gender"
+      ],
+      "capabilityDomains": [
+        "customer",
+        "performance",
+        "revenue"
+      ],
+      "universalSignals": [
+        "entity.customer",
+        "time.transaction_date",
+        "status.lifecycle",
+        "engagement.segment",
+        "entity.gender",
+        "engagement.segment",
+        "engagement.segment",
+        "entity.employee"
+      ],
+      "executableQuestions": [
+        "activity_by_participant",
+        "customer_activity_volume",
+        "customer_profile_distribution",
+        "operational_workload_by_actor",
+        "campaign_effort_review",
+        "approval_or_reconciliation_flow",
+        "status_flow"
+      ]
+    },
+    {
+      "schema": "e_commerce",
+      "table": "ecom_sales",
+      "columns": 11,
+      "sampledRows": 5,
+      "recognizedColumns": 7,
+      "unresolvedColumns": 4,
+      "selectedSignals": [
+        "order",
+        "time_period",
+        "customer",
+        "segment",
+        "sku",
+        "discount",
+        "profit"
+      ],
+      "capabilityDomains": [
+        "core",
+        "customer",
+        "finance",
+        "inventory",
+        "revenue"
+      ],
+      "universalSignals": [
+        "document.order",
+        "time.transaction_date",
+        "document.order",
+        "entity.customer",
+        "engagement.segment",
+        "location.route",
+        "location.region",
+        "item.product",
+        "quantity.units",
+        "money.revenue",
+        "money.discount",
+        "money.profit"
+      ],
+      "executableQuestions": [
+        "activity_by_participant",
+        "customer_activity_volume",
+        "customer_geographic_distribution",
+        "operational_volume_by_location",
+        "profit_or_margin",
+        "money_by_location",
+        "delivery_volume_by_route_or_resource",
+        "catalog_composition_by_category",
+        "catalog_records_by_item",
+        "item_value",
+        "item_activity_volume",
+        "customer_or_patient_value",
+        "document_coverage",
+        "inventory_value_exposure"
+      ]
+    },
+    {
+      "schema": "e_commerce",
+      "table": "product",
+      "columns": 4,
+      "sampledRows": 5,
+      "recognizedColumns": 3,
+      "unresolvedColumns": 1,
+      "selectedSignals": [
+        "sku",
+        "product",
+        "category"
+      ],
+      "capabilityDomains": [
+        "inventory",
+        "revenue"
+      ],
+      "universalSignals": [
+        "item.product",
+        "item.product",
+        "item.category",
+        "item.category"
+      ],
+      "executableQuestions": [
+        "catalog_composition_by_category",
+        "catalog_records_by_item",
+        "item_activity_volume"
+      ]
+    },
+    {
+      "schema": "e_commerce",
+      "table": "region",
+      "columns": 8,
+      "sampledRows": 5,
+      "recognizedColumns": 4,
+      "unresolvedColumns": 4,
+      "selectedSignals": [
+        "city",
+        "country",
+        "latitude",
+        "longitude"
+      ],
+      "capabilityDomains": [
+        "customer",
+        "operations",
+        "performance",
+        "revenue"
+      ],
+      "universalSignals": [
+        "location.route",
+        "location.region",
+        "location.city",
+        "status.lifecycle",
+        "location.state_province",
+        "location.country",
+        "location.country",
+        "location.latitude",
+        "location.country",
+        "location.longitude",
+        "location.route",
+        "location.region"
+      ],
+      "executableQuestions": [
+        "operational_volume_by_location",
+        "delivery_volume_by_route_or_resource"
+      ]
+    },
+    {
+      "schema": "education",
+      "table": "grading_groups",
+      "columns": 4,
+      "sampledRows": 5,
+      "recognizedColumns": 0,
+      "unresolvedColumns": 4,
+      "selectedSignals": [],
+      "capabilityDomains": [],
+      "universalSignals": [
+        "entity.team",
+        "engagement.rating_score"
+      ],
+      "executableQuestions": [
+        "participation_by_group"
+      ]
+    },
+    {
+      "schema": "education",
+      "table": "school",
+      "columns": 3,
+      "sampledRows": 5,
+      "recognizedColumns": 1,
+      "unresolvedColumns": 2,
+      "selectedSignals": [
+        "city"
+      ],
+      "capabilityDomains": [
+        "customer",
+        "operations",
+        "performance",
+        "revenue"
+      ],
+      "universalSignals": [
+        "location.city"
+      ],
+      "executableQuestions": [
+        "operational_volume_by_location"
+      ]
+    },
+    {
+      "schema": "education",
+      "table": "students",
+      "columns": 5,
+      "sampledRows": 5,
+      "recognizedColumns": 3,
+      "unresolvedColumns": 2,
+      "selectedSignals": [
+        "student",
+        "birth_date",
+        "gender"
+      ],
+      "capabilityDomains": [
+        "customer",
+        "performance"
+      ],
+      "universalSignals": [
+        "entity.student",
+        "time.transaction_date",
+        "entity.gender",
+        "entity.student"
+      ],
+      "executableQuestions": []
+    },
+    {
+      "schema": "education",
+      "table": "teachers",
+      "columns": 5,
+      "sampledRows": 5,
+      "recognizedColumns": 4,
+      "unresolvedColumns": 1,
+      "selectedSignals": [
+        "course",
+        "course",
+        "time_period",
+        "employee_id"
+      ],
+      "capabilityDomains": [
+        "core",
+        "customer",
+        "performance"
+      ],
+      "universalSignals": [
+        "entity.course",
+        "entity.course",
+        "time.period"
+      ],
+      "executableQuestions": []
+    },
+    {
+      "schema": "education",
+      "table": "test_details",
+      "columns": 4,
+      "sampledRows": 3,
+      "recognizedColumns": 2,
+      "unresolvedColumns": 2,
+      "selectedSignals": [
+        "transaction_description",
+        "cost"
+      ],
+      "capabilityDomains": [
+        "customer",
+        "finance",
+        "revenue"
+      ],
+      "universalSignals": [
+        "entity.team",
+        "money.transaction_description",
+        "money.cost"
+      ],
+      "executableQuestions": [
+        "participation_by_group"
+      ]
+    },
+    {
+      "schema": "education",
+      "table": "tests",
+      "columns": 12,
+      "sampledRows": 5,
+      "recognizedColumns": 2,
+      "unresolvedColumns": 10,
+      "selectedSignals": [
+        "student",
+        "time_period"
+      ],
+      "capabilityDomains": [
+        "core",
+        "customer",
+        "performance"
+      ],
+      "universalSignals": [
+        "indicator.metric",
+        "engagement.rating_score",
+        "entity.student",
+        "entity.student",
+        "time.transaction_date",
+        "time.period",
+        "entity.course",
+        "indicator.grade",
+        "time.period"
+      ],
+      "executableQuestions": []
+    },
+    {
+      "schema": "employees_churn",
+      "table": "employee_info",
+      "columns": 22,
+      "sampledRows": 5,
+      "recognizedColumns": 13,
+      "unresolvedColumns": 9,
+      "selectedSignals": [
+        "employee_id",
+        "person_age",
+        "gender",
+        "duration",
+        "job_title",
+        "department",
+        "salary",
+        "rating_score",
+        "work_hours",
+        "work_hours",
+        "satisfaction",
+        "work_hours",
+        "quality_score"
+      ],
+      "capabilityDomains": [
+        "customer",
+        "finance",
+        "operations",
+        "performance"
+      ],
+      "universalSignals": [
+        "entity.employee",
+        "entity.person_age",
+        "entity.gender",
+        "engagement.segment",
+        "status.lifecycle",
+        "engagement.segment",
+        "time.duration",
+        "engagement.segment",
+        "entity.role",
+        "entity.department",
+        "money.salary",
+        "engagement.satisfaction",
+        "indicator.metric",
+        "engagement.rating_score",
+        "entity.project",
+        "time.completed_at",
+        "engagement.satisfaction",
+        "event.audit_action",
+        "money.balance",
+        "money.closing_balance",
+        "time.period",
+        "quantity.units",
+        "money.fee",
+        "entity.manager",
+        "indicator.metric",
+        "engagement.rating_score",
+        "engagement.outcome",
+        "engagement.churn"
+      ],
+      "executableQuestions": [
+        "campaign_effort_review",
+        "participation_by_group",
+        "role_or_lineup_mix",
+        "activity_by_participant",
+        "operational_workload_by_actor",
+        "performance_indicator_by_owner_or_team",
+        "performance_indicator_by_business_dimension",
+        "secondary_indicator_by_owner_or_team",
+        "approval_or_reconciliation_flow",
+        "actor_value",
+        "status_flow"
+      ]
+    },
+    {
+      "schema": "fmcg_sales",
+      "table": "categories",
+      "columns": 2,
+      "sampledRows": 5,
+      "recognizedColumns": 1,
+      "unresolvedColumns": 1,
+      "selectedSignals": [
+        "category"
+      ],
+      "capabilityDomains": [
+        "inventory",
+        "revenue"
+      ],
+      "universalSignals": [
+        "item.category",
+        "item.category"
+      ],
+      "executableQuestions": [
+        "catalog_composition_by_category"
+      ]
+    },
+    {
+      "schema": "fmcg_sales",
+      "table": "cities",
+      "columns": 4,
+      "sampledRows": 5,
+      "recognizedColumns": 2,
+      "unresolvedColumns": 2,
+      "selectedSignals": [
+        "city",
+        "postal_code"
+      ],
+      "capabilityDomains": [
+        "customer",
+        "operations",
+        "performance",
+        "revenue"
+      ],
+      "universalSignals": [
+        "location.city",
+        "location.postal_code",
+        "location.country"
+      ],
+      "executableQuestions": [
+        "operational_volume_by_location"
+      ]
+    },
+    {
+      "schema": "fmcg_sales",
+      "table": "countries",
+      "columns": 3,
+      "sampledRows": 5,
+      "recognizedColumns": 1,
+      "unresolvedColumns": 2,
+      "selectedSignals": [
+        "country"
+      ],
+      "capabilityDomains": [
+        "customer",
+        "operations",
+        "performance",
+        "revenue"
+      ],
+      "universalSignals": [
+        "location.country",
+        "location.country",
+        "location.country"
+      ],
+      "executableQuestions": [
+        "operational_volume_by_location"
+      ]
+    },
+    {
+      "schema": "fmcg_sales",
+      "table": "customers",
+      "columns": 6,
+      "sampledRows": 5,
+      "recognizedColumns": 1,
+      "unresolvedColumns": 5,
+      "selectedSignals": [
+        "customer"
+      ],
+      "capabilityDomains": [
+        "customer",
+        "revenue"
+      ],
+      "universalSignals": [
+        "entity.customer"
+      ],
+      "executableQuestions": [
+        "activity_by_participant",
+        "customer_activity_volume"
+      ]
+    },
+    {
+      "schema": "fmcg_sales",
+      "table": "employees",
+      "columns": 8,
+      "sampledRows": 5,
+      "recognizedColumns": 2,
+      "unresolvedColumns": 6,
+      "selectedSignals": [
+        "employee_id",
+        "gender"
+      ],
+      "capabilityDomains": [
+        "customer",
+        "performance"
+      ],
+      "universalSignals": [
+        "entity.employee",
+        "time.transaction_date",
+        "entity.gender",
+        "time.transaction_date"
+      ],
+      "executableQuestions": [
+        "activity_by_participant",
+        "operational_workload_by_actor"
+      ]
+    },
+    {
+      "schema": "fmcg_sales",
+      "table": "products",
+      "columns": 9,
+      "sampledRows": 5,
+      "recognizedColumns": 3,
+      "unresolvedColumns": 6,
+      "selectedSignals": [
+        "product",
+        "unit_price",
+        "time_period"
+      ],
+      "capabilityDomains": [
+        "core",
+        "finance",
+        "inventory",
+        "revenue"
+      ],
+      "universalSignals": [
+        "item.product",
+        "item.product",
+        "money.unit_price",
+        "item.category",
+        "item.product",
+        "entity.course",
+        "time.transaction_date"
+      ],
+      "executableQuestions": [
+        "catalog_composition_by_category",
+        "catalog_records_by_item",
+        "item_value",
+        "item_activity_volume",
+        "inventory_value_exposure"
+      ]
+    },
+    {
+      "schema": "fmcg_sales",
+      "table": "sales",
+      "columns": 9,
+      "sampledRows": 5,
+      "recognizedColumns": 5,
+      "unresolvedColumns": 4,
+      "selectedSignals": [
+        "employee_id",
+        "customer",
+        "discount",
+        "unit_price",
+        "time_period"
+      ],
+      "capabilityDomains": [
+        "core",
+        "customer",
+        "finance",
+        "performance",
+        "revenue"
+      ],
+      "universalSignals": [
+        "money.revenue",
+        "money.revenue",
+        "entity.salesperson",
+        "entity.person",
+        "entity.customer",
+        "item.product",
+        "quantity.units",
+        "money.discount",
+        "money.unit_price",
+        "time.transaction_date",
+        "money.revenue",
+        "event.audit_action"
+      ],
+      "executableQuestions": [
+        "activity_by_participant",
+        "customer_activity_volume",
+        "operational_workload_by_actor",
+        "catalog_composition_by_category",
+        "catalog_records_by_item",
+        "item_value",
+        "item_activity_volume",
+        "actor_value",
+        "customer_or_patient_value",
+        "inventory_value_exposure"
+      ]
+    },
+    {
+      "schema": "hospital_survey",
+      "table": "measures",
+      "columns": 3,
+      "sampledRows": 5,
+      "recognizedColumns": 0,
+      "unresolvedColumns": 3,
+      "selectedSignals": [],
+      "capabilityDomains": [],
+      "universalSignals": [],
+      "executableQuestions": []
+    },
+    {
+      "schema": "hospital_survey",
+      "table": "national_results",
+      "columns": 5,
+      "sampledRows": 5,
+      "recognizedColumns": 1,
+      "unresolvedColumns": 4,
+      "selectedSignals": [
+        "release_date"
+      ],
+      "capabilityDomains": [
+        "customer",
+        "performance",
+        "revenue"
+      ],
+      "universalSignals": [
+        "document.order",
+        "time.period"
+      ],
+      "executableQuestions": [
+        "document_coverage"
+      ]
+    },
+    {
+      "schema": "hospital_survey",
+      "table": "questions",
+      "columns": 6,
+      "sampledRows": 5,
+      "recognizedColumns": 1,
+      "unresolvedColumns": 5,
+      "selectedSignals": [
+        "survey_question"
+      ],
+      "capabilityDomains": [
+        "customer",
+        "performance"
+      ],
+      "universalSignals": [
+        "engagement.survey_question",
+        "engagement.survey_question"
+      ],
+      "executableQuestions": []
+    },
+    {
+      "schema": "hospital_survey",
+      "table": "reports",
+      "columns": 3,
+      "sampledRows": 5,
+      "recognizedColumns": 1,
+      "unresolvedColumns": 2,
+      "selectedSignals": [
+        "release_date"
+      ],
+      "capabilityDomains": [
+        "customer",
+        "performance",
+        "revenue"
+      ],
+      "universalSignals": [
+        "document.order",
+        "time.period",
+        "time.transaction_date",
+        "time.transaction_date"
+      ],
+      "executableQuestions": [
+        "document_coverage"
+      ]
+    },
+    {
+      "schema": "hospital_survey",
+      "table": "responses",
+      "columns": 5,
+      "sampledRows": 5,
+      "recognizedColumns": 2,
+      "unresolvedColumns": 3,
+      "selectedSignals": [
+        "release_date",
+        "response_rate"
+      ],
+      "capabilityDomains": [
+        "customer",
+        "performance",
+        "revenue"
+      ],
+      "universalSignals": [
+        "document.order",
+        "time.period",
+        "status.lifecycle",
+        "location.state_province",
+        "time.completed_at",
+        "engagement.outcome",
+        "indicator.metric"
+      ],
+      "executableQuestions": [
+        "engagement_outcome_overview",
+        "campaign_effort_review",
+        "document_coverage"
+      ]
+    },
+    {
+      "schema": "hospital_survey",
+      "table": "state_results",
+      "columns": 6,
+      "sampledRows": 5,
+      "recognizedColumns": 1,
+      "unresolvedColumns": 5,
+      "selectedSignals": [
+        "release_date"
+      ],
+      "capabilityDomains": [
+        "customer",
+        "performance",
+        "revenue"
+      ],
+      "universalSignals": [
+        "document.order",
+        "time.period",
+        "status.lifecycle",
+        "location.state_province"
+      ],
+      "executableQuestions": [
+        "document_coverage"
+      ]
+    },
+    {
+      "schema": "hospital_survey",
+      "table": "states",
+      "columns": 3,
+      "sampledRows": 5,
+      "recognizedColumns": 1,
+      "unresolvedColumns": 2,
+      "selectedSignals": [
+        "state_province"
+      ],
+      "capabilityDomains": [
+        "customer",
+        "operations",
+        "performance",
+        "revenue"
+      ],
+      "universalSignals": [
+        "status.lifecycle",
+        "location.state_province",
+        "status.lifecycle",
+        "location.state_province",
+        "location.route",
+        "location.region"
+      ],
+      "executableQuestions": [
+        "operational_volume_by_location",
+        "delivery_volume_by_route_or_resource"
+      ]
+    },
+    {
+      "schema": "logistics",
+      "table": "shipments",
+      "columns": 28,
+      "sampledRows": 5,
+      "recognizedColumns": 16,
+      "unresolvedColumns": 12,
+      "selectedSignals": [
+        "time_period",
+        "vehicle",
+        "origin_location",
+        "destination_location",
+        "time_period",
+        "eta",
+        "current_location",
+        "latitude",
+        "longitude",
+        "on_time_status",
+        "time_period",
+        "time_period",
+        "distance",
+        "driver",
+        "customer",
+        "merchant"
+      ],
+      "capabilityDomains": [
+        "core",
+        "customer",
+        "finance",
+        "inventory",
+        "operations",
+        "performance",
+        "revenue"
+      ],
+      "universalSignals": [
+        "entity.vendor",
+        "document.order",
+        "document.shipment",
+        "time.transaction_date",
+        "document.order",
+        "entity.vehicle",
+        "location.route",
+        "location.route",
+        "location.country",
+        "location.route",
+        "location.route",
+        "status.delivery",
+        "time.transaction_date",
+        "time.transaction_date",
+        "quantity.units",
+        "entity.vehicle",
+        "entity.driver",
+        "entity.driver",
+        "entity.customer",
+        "entity.vendor",
+        "item.product"
+      ],
+      "executableQuestions": [
+        "customer_geographic_distribution",
+        "operational_workload_by_actor",
+        "operational_volume_by_location",
+        "delivery_volume_by_route_or_resource",
+        "catalog_composition_by_category",
+        "catalog_composition_by_brand_or_supplier",
+        "catalog_records_by_item",
+        "item_activity_volume",
+        "document_coverage"
+      ]
+    },
+    {
+      "schema": "mobile_games",
+      "table": "games",
+      "columns": 16,
+      "sampledRows": 5,
+      "recognizedColumns": 6,
+      "unresolvedColumns": 10,
+      "selectedSignals": [
+        "rating_score",
+        "unit_price",
+        "transaction_description",
+        "developer",
+        "genre",
+        "genre"
+      ],
+      "capabilityDomains": [
+        "customer",
+        "finance",
+        "performance",
+        "revenue"
+      ],
+      "universalSignals": [
+        "engagement.satisfaction",
+        "indicator.metric",
+        "engagement.rating_score",
+        "engagement.satisfaction",
+        "indicator.metric",
+        "engagement.rating_score",
+        "money.unit_price",
+        "money.transaction_description",
+        "entity.developer",
+        "engagement.satisfaction",
+        "engagement.rating_score",
+        "item.genre",
+        "item.genre",
+        "time.transaction_date",
+        "document.order"
+      ],
+      "executableQuestions": [
+        "performance_indicator_by_business_dimension",
+        "secondary_indicator_by_owner_or_team",
+        "catalog_composition_by_category",
+        "catalog_records_by_item",
+        "item_value",
+        "item_activity_volume",
+        "document_coverage",
+        "inventory_value_exposure"
+      ]
+    },
+    {
+      "schema": "nyc_green_taxi",
+      "table": "payment_types",
+      "columns": 2,
+      "sampledRows": 5,
+      "recognizedColumns": 0,
+      "unresolvedColumns": 2,
+      "selectedSignals": [],
+      "capabilityDomains": [],
+      "universalSignals": [
+        "money.payment_method",
+        "money.payment_method"
+      ],
+      "executableQuestions": []
+    },
+    {
+      "schema": "nyc_green_taxi",
+      "table": "trips",
+      "columns": 20,
+      "sampledRows": 5,
+      "recognizedColumns": 4,
+      "unresolvedColumns": 16,
+      "selectedSignals": [
+        "distance",
+        "tax_amount",
+        "tax_amount",
+        "invoice_total"
+      ],
+      "capabilityDomains": [
+        "finance",
+        "operations",
+        "performance",
+        "revenue"
+      ],
+      "universalSignals": [
+        "entity.vendor",
+        "time.transaction_date",
+        "time.transaction_date",
+        "location.store",
+        "indicator.metric",
+        "quantity.units",
+        "money.tax",
+        "money.fee",
+        "money.fee",
+        "money.payment_method"
+      ],
+      "executableQuestions": []
+    },
+    {
+      "schema": "nyc_green_taxi",
+      "table": "zones",
+      "columns": 4,
+      "sampledRows": 5,
+      "recognizedColumns": 1,
+      "unresolvedColumns": 3,
+      "selectedSignals": [
+        "route"
+      ],
+      "capabilityDomains": [
+        "operations"
+      ],
+      "universalSignals": [
+        "location.route",
+        "item.service",
+        "event.service_name"
+      ],
+      "executableQuestions": [
+        "operational_volume_by_location",
+        "delivery_volume_by_route_or_resource",
+        "catalog_composition_by_category",
+        "catalog_records_by_item",
+        "item_activity_volume"
+      ]
+    },
+    {
+      "schema": "retails",
+      "table": "customers",
+      "columns": 10,
+      "sampledRows": 5,
+      "recognizedColumns": 7,
+      "unresolvedColumns": 3,
+      "selectedSignals": [
+        "customer",
+        "gender",
+        "city",
+        "state_province",
+        "postal_code",
+        "country",
+        "birth_date"
+      ],
+      "capabilityDomains": [
+        "customer",
+        "operations",
+        "performance",
+        "revenue"
+      ],
+      "universalSignals": [
+        "entity.customer",
+        "entity.gender",
+        "location.city",
+        "status.lifecycle",
+        "location.state_province",
+        "status.lifecycle",
+        "location.state_province",
+        "location.postal_code",
+        "location.country",
+        "time.birth_date"
+      ],
+      "executableQuestions": [
+        "activity_by_participant",
+        "customer_activity_volume",
+        "customer_geographic_distribution",
+        "customer_profile_distribution",
+        "operational_volume_by_location"
+      ]
+    },
+    {
+      "schema": "retails",
+      "table": "products",
+      "columns": 10,
+      "sampledRows": 5,
+      "recognizedColumns": 3,
+      "unresolvedColumns": 7,
+      "selectedSignals": [
+        "product",
+        "brand",
+        "category"
+      ],
+      "capabilityDomains": [
+        "inventory",
+        "revenue"
+      ],
+      "universalSignals": [
+        "item.product",
+        "item.product",
+        "item.brand",
+        "money.cost",
+        "money.unit_price",
+        "item.category",
+        "item.category",
+        "item.category",
+        "item.category"
+      ],
+      "executableQuestions": [
+        "profit_or_margin",
+        "catalog_composition_by_category",
+        "catalog_records_by_item",
+        "item_value",
+        "item_activity_volume",
+        "inventory_value_exposure"
+      ]
+    },
+    {
+      "schema": "retails",
+      "table": "sales",
+      "columns": 8,
+      "sampledRows": 5,
+      "recognizedColumns": 4,
+      "unresolvedColumns": 4,
+      "selectedSignals": [
+        "order",
+        "time_period",
+        "customer",
+        "branch"
+      ],
+      "capabilityDomains": [
+        "core",
+        "customer",
+        "performance",
+        "revenue"
+      ],
+      "universalSignals": [
+        "document.order",
+        "item.product",
+        "time.transaction_date",
+        "document.order",
+        "time.transaction_date",
+        "money.fee",
+        "entity.customer",
+        "location.store",
+        "item.product",
+        "quantity.units"
+      ],
+      "executableQuestions": [
+        "activity_by_participant",
+        "customer_activity_volume",
+        "operational_volume_by_location",
+        "catalog_composition_by_category",
+        "catalog_records_by_item",
+        "item_activity_volume",
+        "document_coverage"
+      ]
+    },
+    {
+      "schema": "retails",
+      "table": "stores",
+      "columns": 5,
+      "sampledRows": 5,
+      "recognizedColumns": 3,
+      "unresolvedColumns": 2,
+      "selectedSignals": [
+        "branch",
+        "country",
+        "time_period"
+      ],
+      "capabilityDomains": [
+        "core",
+        "customer",
+        "operations",
+        "performance",
+        "revenue"
+      ],
+      "universalSignals": [
+        "location.store",
+        "location.country",
+        "status.lifecycle",
+        "location.state_province",
+        "time.transaction_date"
+      ],
+      "executableQuestions": [
+        "operational_volume_by_location"
+      ]
+    },
+    {
+      "schema": "skytrax",
+      "table": "airline_reviews",
+      "columns": 26,
+      "sampledRows": 5,
+      "recognizedColumns": 2,
+      "unresolvedColumns": 24,
+      "selectedSignals": [
+        "record_id",
+        "customer"
+      ],
+      "capabilityDomains": [
+        "customer",
+        "finance",
+        "inventory",
+        "operations",
+        "performance",
+        "revenue"
+      ],
+      "universalSignals": [
+        "entity.airline",
+        "time.transaction_date",
+        "time.transaction_date",
+        "entity.customer",
+        "location.country",
+        "entity.aircraft",
+        "location.route",
+        "location.route",
+        "location.airport",
+        "location.route",
+        "location.country",
+        "location.route",
+        "location.country",
+        "location.airport",
+        "location.airport",
+        "entity.employee",
+        "item.service",
+        "event.service_name",
+        "item.service",
+        "event.service_name",
+        "time.transaction_date"
+      ],
+      "executableQuestions": [
+        "activity_by_participant",
+        "customer_activity_volume",
+        "customer_geographic_distribution",
+        "operational_workload_by_actor",
+        "operational_volume_by_location",
+        "catalog_composition_by_category",
+        "catalog_records_by_item",
+        "item_activity_volume"
+      ]
+    },
+    {
+      "schema": "skytrax",
+      "table": "airlines",
+      "columns": 2,
+      "sampledRows": 5,
+      "recognizedColumns": 1,
+      "unresolvedColumns": 1,
+      "selectedSignals": [
+        "airline"
+      ],
+      "capabilityDomains": [
+        "customer",
+        "operations",
+        "performance"
+      ],
+      "universalSignals": [
+        "entity.airline",
+        "entity.airline"
+      ],
+      "executableQuestions": []
+    },
+    {
+      "schema": "skytrax",
+      "table": "airport_reviews",
+      "columns": 20,
+      "sampledRows": 5,
+      "recognizedColumns": 3,
+      "unresolvedColumns": 17,
+      "selectedSignals": [
+        "record_id",
+        "customer",
+        "trip_type"
+      ],
+      "capabilityDomains": [
+        "customer",
+        "finance",
+        "inventory",
+        "operations",
+        "performance",
+        "revenue"
+      ],
+      "universalSignals": [
+        "location.airport",
+        "time.transaction_date",
+        "time.transaction_date",
+        "entity.customer",
+        "location.country",
+        "location.airport",
+        "event.pos_terminal",
+        "event.pos_terminal",
+        "event.pos_terminal",
+        "location.airport",
+        "entity.employee",
+        "location.airport",
+        "time.transaction_date"
+      ],
+      "executableQuestions": [
+        "activity_by_participant",
+        "customer_activity_volume",
+        "customer_geographic_distribution",
+        "operational_workload_by_actor",
+        "operational_volume_by_location"
+      ]
+    },
+    {
+      "schema": "skytrax",
+      "table": "airports",
+      "columns": 2,
+      "sampledRows": 5,
+      "recognizedColumns": 1,
+      "unresolvedColumns": 1,
+      "selectedSignals": [
+        "airport"
+      ],
+      "capabilityDomains": [
+        "customer",
+        "operations",
+        "performance"
+      ],
+      "universalSignals": [
+        "location.airport",
+        "location.airport"
+      ],
+      "executableQuestions": [
+        "operational_volume_by_location"
+      ]
+    },
+    {
+      "schema": "skytrax",
+      "table": "lounge_reviews",
+      "columns": 21,
+      "sampledRows": 5,
+      "recognizedColumns": 4,
+      "unresolvedColumns": 17,
+      "selectedSignals": [
+        "record_id",
+        "airport",
+        "trip_type",
+        "customer"
+      ],
+      "capabilityDomains": [
+        "customer",
+        "finance",
+        "inventory",
+        "operations",
+        "performance",
+        "revenue"
+      ],
+      "universalSignals": [
+        "entity.airline",
+        "location.airport",
+        "time.transaction_date",
+        "time.transaction_date",
+        "entity.customer",
+        "location.country",
+        "entity.employee",
+        "item.service",
+        "event.service_name",
+        "time.transaction_date"
+      ],
+      "executableQuestions": [
+        "activity_by_participant",
+        "customer_activity_volume",
+        "customer_geographic_distribution",
+        "operational_workload_by_actor",
+        "operational_volume_by_location",
+        "catalog_composition_by_category",
+        "catalog_records_by_item",
+        "item_activity_volume"
+      ]
+    },
+    {
+      "schema": "skytrax",
+      "table": "seat_reviews",
+      "columns": 26,
+      "sampledRows": 5,
+      "recognizedColumns": 4,
+      "unresolvedColumns": 22,
+      "selectedSignals": [
+        "record_id",
+        "trip_type",
+        "aircraft",
+        "customer"
+      ],
+      "capabilityDomains": [
+        "customer",
+        "finance",
+        "inventory",
+        "operations",
+        "performance",
+        "revenue"
+      ],
+      "universalSignals": [
+        "entity.airline",
+        "entity.aircraft",
+        "time.transaction_date",
+        "time.transaction_date",
+        "entity.customer",
+        "location.country",
+        "item.unit",
+        "time.transaction_date"
+      ],
+      "executableQuestions": [
+        "activity_by_participant",
+        "customer_activity_volume",
+        "customer_geographic_distribution",
+        "operational_volume_by_location",
+        "catalog_composition_by_category",
+        "catalog_records_by_item",
+        "catalog_composition_by_unit",
+        "item_activity_volume"
+      ]
+    },
+    {
+      "schema": "social_media",
+      "table": "posts",
+      "columns": 24,
+      "sampledRows": 5,
+      "recognizedColumns": 15,
+      "unresolvedColumns": 9,
+      "selectedSignals": [
+        "record_id",
+        "channel",
+        "content_type",
+        "category",
+        "content_type",
+        "engagement",
+        "impressions",
+        "likes",
+        "shares",
+        "engagement_rate",
+        "impressions",
+        "clicks",
+        "ctr",
+        "time_period",
+        "time_period"
+      ],
+      "capabilityDomains": [
+        "core",
+        "customer",
+        "finance",
+        "inventory",
+        "operations",
+        "performance",
+        "revenue"
+      ],
+      "universalSignals": [
+        "event.channel",
+        "item.category",
+        "location.route",
+        "location.region",
+        "location.longitude",
+        "location.latitude",
+        "engagement.engagement",
+        "engagement.impressions",
+        "engagement.likes",
+        "engagement.shares",
+        "indicator.metric",
+        "engagement.engagement",
+        "engagement.impressions",
+        "engagement.impressions",
+        "engagement.impressions",
+        "engagement.clicks",
+        "indicator.metric",
+        "engagement.clicks",
+        "time.transaction_date",
+        "engagement.engagement"
+      ],
+      "executableQuestions": [
+        "operational_volume_by_location",
+        "indicator_by_country_or_region",
+        "performance_indicator_by_business_dimension",
+        "secondary_indicator_by_owner_or_team",
+        "delivery_volume_by_route_or_resource",
+        "catalog_composition_by_category"
+      ]
+    },
+    {
+      "schema": "vietnam_ecommerce",
+      "table": "shopee_orders",
+      "columns": 84,
+      "sampledRows": 5,
+      "recognizedColumns": 22,
+      "unresolvedColumns": 62,
+      "selectedSignals": [
+        "user_login",
+        "time_period",
+        "time_period",
+        "time_period",
+        "time_period",
+        "carrier",
+        "payment_method",
+        "city",
+        "country",
+        "product",
+        "unit_price",
+        "fee",
+        "fee",
+        "fee",
+        "fee",
+        "currency",
+        "time_period",
+        "return_quantity",
+        "fee",
+        "postal_code",
+        "time_period",
+        "return_quantity"
+      ],
+      "capabilityDomains": [
+        "core",
+        "customer",
+        "finance",
+        "inventory",
+        "operations",
+        "performance",
+        "revenue"
+      ],
+      "universalSignals": [
+        "document.user_login",
+        "document.order",
+        "document.order",
+        "status.lifecycle",
+        "time.completed_at",
+        "entity.customer",
+        "entity.buyer",
+        "entity.carrier",
+        "money.fee",
+        "money.payment_method",
+        "time.transaction_date",
+        "money.fee",
+        "document.quotation",
+        "entity.customer",
+        "entity.employee",
+        "entity.buyer",
+        "document.user_login",
+        "status.lifecycle",
+        "location.state_province",
+        "location.city",
+        "location.country",
+        "item.product",
+        "item.product",
+        "quantity.units",
+        "location.route",
+        "money.unit_price",
+        "money.discount",
+        "money.unit_price",
+        "item.product",
+        "quantity.weight",
+        "document.order",
+        "entity.customer",
+        "entity.buyer",
+        "money.discount",
+        "money.discount",
+        "money.payment_voucher",
+        "money.payment_voucher",
+        "money.fee",
+        "money.commission",
+        "money.fee",
+        "item.service",
+        "event.service_name",
+        "money.fee",
+        "event.audit_action",
+        "money.fee",
+        "indicator.metric",
+        "location.route",
+        "location.region",
+        "money.currency",
+        "document.order",
+        "status.lifecycle",
+        "document.fulfillment",
+        "status.fulfillment",
+        "money.cod",
+        "entity.customer",
+        "entity.buyer",
+        "document.user_login",
+        "time.transaction_date",
+        "money.fee",
+        "money.payment_method",
+        "document.shipment",
+        "engagement.plan_name",
+        "quantity.units",
+        "quantity.returns",
+        "quantity.weight",
+        "money.fee",
+        "document.quotation",
+        "money.fee",
+        "item.product",
+        "location.postal_code",
+        "time.transaction_date",
+        "entity.customer",
+        "entity.buyer",
+        "item.product",
+        "quantity.units",
+        "quantity.units",
+        "quantity.units",
+        "quantity.units",
+        "item.product",
+        "document.order",
+        "document.order",
+        "entity.customer",
+        "document.related",
+        "entity.buyer",
+        "document.order",
+        "document.shipment",
+        "engagement.plan_name"
+      ],
+      "executableQuestions": [
+        "shipment_value_exposure",
+        "carrier_cost_impact",
+        "activity_by_participant",
+        "customer_activity_volume",
+        "operational_workload_by_actor",
+        "operational_volume_by_location",
+        "performance_indicator_by_owner_or_team",
+        "performance_indicator_by_business_dimension",
+        "money_by_location",
+        "payment_mix",
+        "payment_profitability_receivable_mix",
+        "delivery_volume_by_route_or_resource",
+        "catalog_composition_by_category",
+        "catalog_records_by_item",
+        "item_value",
+        "item_activity_volume",
+        "actor_value",
+        "customer_or_patient_value",
+        "document_coverage",
+        "inventory_value_exposure"
+      ]
+    },
+    {
+      "schema": "vietnam_ecommerce",
+      "table": "tiktok_orders",
+      "columns": 71,
+      "sampledRows": 5,
+      "recognizedColumns": 32,
+      "unresolvedColumns": 39,
+      "selectedSignals": [
+        "user_login",
+        "time_period",
+        "order",
+        "status",
+        "time_period",
+        "time_period",
+        "time_period",
+        "time_period",
+        "time_period",
+        "time_period",
+        "time_period",
+        "time_period",
+        "time_period",
+        "time_period",
+        "currency",
+        "invoice_total",
+        "payment_method",
+        "delivery_fee",
+        "fee",
+        "tax_amount",
+        "tax_amount",
+        "tax_amount",
+        "fee",
+        "carrier",
+        "warehouse",
+        "customer",
+        "state_province",
+        "city",
+        "product",
+        "status",
+        "unit_price",
+        "status"
+      ],
+      "capabilityDomains": [
+        "core",
+        "customer",
+        "finance",
+        "inventory",
+        "operations",
+        "performance",
+        "revenue"
+      ],
+      "universalSignals": [
+        "document.user_login",
+        "time.created_at",
+        "time.transaction_date",
+        "document.order",
+        "document.order",
+        "status.lifecycle",
+        "document.order",
+        "time.created_at",
+        "time.completed_at",
+        "time.transaction_date",
+        "money.fee",
+        "money.currency",
+        "location.route",
+        "document.order",
+        "money.unit_price",
+        "money.payment_method",
+        "money.fee",
+        "location.route",
+        "money.fee",
+        "money.tax",
+        "item.product",
+        "money.tax",
+        "money.fee",
+        "money.tax",
+        "money.fee",
+        "document.order",
+        "money.fee",
+        "money.fee",
+        "money.discount",
+        "money.discount",
+        "event.channel",
+        "money.fee",
+        "money.discount",
+        "money.fee",
+        "money.discount",
+        "event.channel",
+        "document.fulfillment",
+        "status.fulfillment",
+        "money.fee",
+        "money.fee",
+        "money.fee",
+        "entity.vendor",
+        "document.shipment",
+        "location.warehouse",
+        "entity.customer",
+        "entity.buyer",
+        "entity.customer",
+        "entity.buyer",
+        "entity.customer",
+        "entity.buyer",
+        "location.postal_code",
+        "location.route",
+        "status.lifecycle",
+        "location.region",
+        "item.product",
+        "quantity.units",
+        "item.product",
+        "status.lifecycle",
+        "item.product",
+        "money.unit_price",
+        "location.route",
+        "item.product",
+        "money.unit_price",
+        "item.product",
+        "event.channel",
+        "item.product",
+        "item.product",
+        "document.shipment",
+        "engagement.plan_name",
+        "document.shipment",
+        "status.lifecycle",
+        "engagement.plan_name",
+        "item.product"
+      ],
+      "executableQuestions": [
+        "shipment_backlog_by_status",
+        "shipment_backlog_by_location",
+        "shipment_value_exposure",
+        "status_flow",
+        "activity_by_participant",
+        "customer_activity_volume",
+        "customer_geographic_distribution",
+        "operational_volume_by_location",
+        "money_by_location",
+        "delivery_volume_by_route_or_resource",
+        "approval_or_reconciliation_flow",
+        "catalog_composition_by_category",
+        "catalog_records_by_item",
+        "item_value",
+        "item_activity_volume",
+        "customer_or_patient_value",
+        "document_coverage",
+        "inventory_value_exposure"
+      ]
+    },
+    {
+      "schema": "web_analytics",
+      "table": "order_item_refunds",
+      "columns": 5,
+      "sampledRows": 5,
+      "recognizedColumns": 2,
+      "unresolvedColumns": 3,
+      "selectedSignals": [
+        "time_period",
+        "order"
+      ],
+      "capabilityDomains": [
+        "core",
+        "revenue"
+      ],
+      "universalSignals": [
+        "document.order",
+        "money.refund_or_change",
+        "item.product",
+        "money.refund",
+        "time.created_at",
+        "document.order",
+        "item.product",
+        "document.order",
+        "money.refund_or_change",
+        "money.refund"
+      ],
+      "executableQuestions": [
+        "catalog_composition_by_category",
+        "catalog_records_by_item",
+        "item_activity_volume",
+        "document_coverage"
+      ]
+    },
+    {
+      "schema": "web_analytics",
+      "table": "order_items",
+      "columns": 7,
+      "sampledRows": 5,
+      "recognizedColumns": 4,
+      "unresolvedColumns": 3,
+      "selectedSignals": [
+        "time_period",
+        "order",
+        "unit_price",
+        "cost"
+      ],
+      "capabilityDomains": [
+        "core",
+        "finance",
+        "revenue"
+      ],
+      "universalSignals": [
+        "document.order",
+        "item.product",
+        "time.created_at",
+        "document.order",
+        "item.product",
+        "item.product",
+        "money.unit_price"
+      ],
+      "executableQuestions": [
+        "catalog_composition_by_category",
+        "catalog_records_by_item",
+        "item_activity_volume",
+        "document_coverage"
+      ]
+    },
+    {
+      "schema": "web_analytics",
+      "table": "orders",
+      "columns": 8,
+      "sampledRows": 5,
+      "recognizedColumns": 4,
+      "unresolvedColumns": 4,
+      "selectedSignals": [
+        "order",
+        "time_period",
+        "unit_price",
+        "cost"
+      ],
+      "capabilityDomains": [
+        "core",
+        "finance",
+        "revenue"
+      ],
+      "universalSignals": [
+        "document.order",
+        "time.created_at",
+        "document.session_id",
+        "document.user_login",
+        "item.product",
+        "document.order",
+        "item.product",
+        "money.unit_price"
+      ],
+      "executableQuestions": [
+        "catalog_composition_by_category",
+        "catalog_records_by_item",
+        "item_activity_volume",
+        "document_coverage"
+      ]
+    },
+    {
+      "schema": "web_analytics",
+      "table": "products",
+      "columns": 3,
+      "sampledRows": 4,
+      "recognizedColumns": 2,
+      "unresolvedColumns": 1,
+      "selectedSignals": [
+        "time_period",
+        "product"
+      ],
+      "capabilityDomains": [
+        "core",
+        "inventory",
+        "revenue"
+      ],
+      "universalSignals": [
+        "item.product",
+        "time.created_at",
+        "item.product"
+      ],
+      "executableQuestions": [
+        "catalog_composition_by_category",
+        "catalog_records_by_item",
+        "item_activity_volume"
+      ]
+    },
+    {
+      "schema": "web_analytics",
+      "table": "website_pageviews",
+      "columns": 4,
+      "sampledRows": 5,
+      "recognizedColumns": 1,
+      "unresolvedColumns": 3,
+      "selectedSignals": [
+        "time_period"
+      ],
+      "capabilityDomains": [
+        "core"
+      ],
+      "universalSignals": [
+        "time.created_at",
+        "document.session_id"
+      ],
+      "executableQuestions": [
+        "document_coverage"
+      ]
+    },
+    {
+      "schema": "web_analytics",
+      "table": "website_sessions",
+      "columns": 9,
+      "sampledRows": 5,
+      "recognizedColumns": 4,
+      "unresolvedColumns": 5,
+      "selectedSignals": [
+        "time_period",
+        "source_medium",
+        "campaign",
+        "device_type"
+      ],
+      "capabilityDomains": [
+        "core",
+        "customer",
+        "performance",
+        "revenue"
+      ],
+      "universalSignals": [
+        "document.session_id",
+        "time.created_at",
+        "document.user_login",
+        "document.session_id",
+        "engagement.contact_channel",
+        "engagement.campaign_attempts",
+        "engagement.contact_channel",
+        "engagement.device_type"
+      ],
+      "executableQuestions": [
+        "document_coverage"
+      ]
+    }
+  ]
+}

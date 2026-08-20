@@ -2,6 +2,28 @@
 
 All notable public changes to LightBI are recorded here.
 
+## [0.9.0-beta.7] - 2026-08-20
+
+### Added
+
+- Native read-only SQL Server intake with exact full-table runtime snapshots.
+- A 17-schema, 63-table cross-domain semantic regression corpus built from read-only Xóm Data samples.
+- Evidence-based context × capability matrix so healthcare, commerce, logistics, education, workforce, finance, and digital sources can expose intersecting customer, inventory, revenue, operations, finance, and performance angles.
+- LightBI Distribution Portal with Basic/Pro plans, anonymous installation pairing, license activation, download statistics, and a Stripe Checkout adapter.
+- New LightBI application mark and automated Tauri icon generation in the Windows release workflow.
+
+### Improved
+
+- Generic underscore, dot, slash, and hyphen normalization for database and local-file headers.
+- Semantic coverage for finance, education, healthcare survey, taxi, aviation review, social, mobile app, and web analytics sources.
+- Customer geography and profile analysis without unsafe grouping by high-cardinality customer keys.
+
+### Fixed
+
+- Database Easy Mode now materializes exact row coverage instead of failing at governed execution.
+- Geographic state/province fields no longer become lifecycle status.
+- Release-period and product-code fields no longer drift into unsafe date or product-name analyses.
+
 ## [0.9.0-beta.6] - 2026-08-13
 
 ### Added

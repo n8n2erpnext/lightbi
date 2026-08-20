@@ -5,6 +5,8 @@ import { createAdvancedId } from '../../lib/advanced-workspace';
 import { profileColumns } from '../../lib/column-profiler';
 import type { SourceInspectionResult, SourceType } from '../../lib/source-preflight';
 import { homeGuidance } from '../../content/home-guidance';
+import { inspectLocalFile } from '../../lib/local-file-inspector';
+import { materializeDatabaseRows } from '../../lib/database-runtime-snapshot';
 
 interface DatabaseStepProps {
   config: DatabaseConnectionConfig;
@@ -87,33 +89,55 @@ export function DatabaseStep({ config, onClose, onSourceInspected }: DatabaseSte
       const targetSchema = catalog.schemas.find(schema => schema.name === (schemaName.trim() || session!.database)) ?? catalog.schemas[0];
       const target = targetSchema?.tables.find(table => table.name === entityName);
       if (!target) throw new Error(`${isMongo ? 'Collection' : 'Table'} ${entityName} was not found in the discovered catalog.`);
+      const pageSize = Math.max(1, Math.min(sampleLimit, 1000));
+      const sql = provider === 'mysql' || provider === 'mariadb'
+        ? `SELECT * FROM \`${targetSchema.name.replaceAll('`', '``')}\`.\`${entityName.replaceAll('`', '``')}\``
+        : provider === 'sqlite'
+          ? `SELECT * FROM "${entityName.replaceAll('"', '""')}"`
+          : provider === 'sqlserver'
+            ? `SELECT * FROM [${targetSchema.name.replaceAll(']', ']]')}].[${entityName.replaceAll(']', ']]')}]`
+          : `SELECT * FROM "${targetSchema.name.replaceAll('"', '""')}"."${entityName.replaceAll('"', '""')}"`;
+      const primarySortColumn = target.columns.find(column => column.primaryKey)?.name;
       const result = isMongo
-        ? await executeAdvancedDocumentQuery(session.connectionId, { runId: createAdvancedId(), collection: entityName, filter: {}, limit: sampleLimit })
+        ? await executeAdvancedDocumentQuery(session.connectionId, { runId: createAdvancedId(), collection: entityName, filter: {}, limit: pageSize })
         : await executeAdvancedQuery(session.connectionId, {
-            runId: createAdvancedId(), limit: sampleLimit,
-            sql: provider === 'mysql' || provider === 'mariadb'
-              ? `SELECT * FROM \`${targetSchema.name.replaceAll('`', '``')}\`.\`${entityName.replaceAll('`', '``')}\``
-              : provider === 'sqlite'
-                ? `SELECT * FROM "${entityName.replaceAll('"', '""')}"`
-                : provider === 'sqlserver'
-                  ? `SELECT * FROM [${targetSchema.name.replaceAll(']', ']]')}].[${entityName.replaceAll(']', ']]')}]`
-                : `SELECT * FROM "${targetSchema.name.replaceAll('"', '""')}"."${entityName.replaceAll('"', '""')}"`,
+            runId: createAdvancedId(), limit: pageSize, sql,
+            sort: primarySortColumn ? { column: primarySortColumn, direction: 'asc' } : undefined,
           });
-      const columns = result.columns.map(column => column.name);
-      const rows = result.rows.map(row => Object.fromEntries(columns.map((column, index) => [column, row[index] ?? null])));
       const exact = await loadAdvancedTableCount(session.connectionId, targetSchema.name, entityName).catch(() => null);
-      const inspection = {
-        status: 'accessible' as const,
+      const complete = await materializeDatabaseRows({
+        firstPage: result,
+        expectedRows: exact?.exactRows,
+        pageSize,
+        fetchPage: (offset, limit) => isMongo
+          ? executeAdvancedDocumentQuery(session!.connectionId, { runId: createAdvancedId(), collection: entityName, filter: {}, limit, offset })
+          : executeAdvancedQuery(session!.connectionId, {
+              runId: createAdvancedId(), sql, limit, offset,
+              sort: primarySortColumn ? { column: primarySortColumn, direction: 'asc' } : undefined,
+            }),
+      });
+      const columns = complete.columns.map(column => column.name);
+      const rows = complete.rows.map(row => Object.fromEntries(columns.map((column, index) => [column, row[index] ?? null])));
+      const snapshotName = `${targetSchema.name}.${entityName}.lightbi.json`.replace(/[^a-zA-Z0-9._-]+/g, '_');
+      const snapshotFile = new File([JSON.stringify(rows)], snapshotName, { type: 'application/json', lastModified: Date.now() });
+      const snapshotInspection = await inspectLocalFile({
+        sourceType: 'local_json', label: snapshotName, rawUrl: snapshotName,
+        normalizedUrl: snapshotName, file: snapshotFile,
+      });
+      if (snapshotInspection.status !== 'accessible') {
+        throw new Error('LightBI could not prepare the complete database snapshot for analysis.');
+      }
+      const inspection: SourceInspectionResult = {
+        ...snapshotInspection,
         sourceType: driver,
         label: activeConfig.title,
-        normalizedUrl: `${provider}://connected`,
+        normalizedUrl: `${provider}://connected/${targetSchema.name}.${entityName}`,
         metadata: {
+          ...snapshotInspection.metadata,
           name: `${activeConfig.title} ${targetSchema.name}.${entityName}`,
-          rows_count: exact?.exactRows ?? rows.length,
-          sampled_rows_count: rows.length,
+          rows_count: rows.length,
           columns,
-          preview_rows: rows,
-          profiles: profileColumns(columns, rows, exact?.exactRows ?? rows.length),
+          profiles: profileColumns(columns, rows.slice(0, pageSize), rows.length),
         },
       };
       setInspectionResult(inspection);

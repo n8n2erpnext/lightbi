@@ -1,7 +1,11 @@
 import type { ColumnHealth } from "./contracts";
 
 export function normalizeHeader(value: string): string {
-  return value.replace(/\s+/g, " ").trim().toLowerCase();
+  return value
+    .replace(/[_./-]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toLowerCase();
 }
 
 export function stringifyCell(value: unknown): string {

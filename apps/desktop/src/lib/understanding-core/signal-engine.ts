@@ -105,6 +105,26 @@ function resolveIdentifierMeasureConflicts(signals: UniversalSignal[]): Universa
   });
 }
 
+function resolveGeographicStatusConflicts(signals: UniversalSignal[]): UniversalSignal[] {
+  const geographicStateColumns = new Set(
+    signals
+      .filter(signal => signal.id === "location.state_province")
+      .map(signal => signal.physicalColumn)
+  );
+
+  return signals.map(signal => {
+    if (signal.id !== "status.lifecycle" || !geographicStateColumns.has(signal.physicalColumn)) return signal;
+    return {
+      ...signal,
+      usableForDefaultQuestion: false,
+      evidence: [
+        ...signal.evidence,
+        `Excluded from lifecycle analysis because ${signal.physicalColumn} is geographic state/province evidence.`
+      ]
+    };
+  });
+}
+
 export function detectUniversalSignals(input: UnderstandingCoreInput): UniversalSignal[] {
   const columns = input.columns.map(column => String(column ?? "").trim()).filter(Boolean);
   const rowCount = input.sourceRowCount ?? input.rows.length;
@@ -178,7 +198,7 @@ export function detectUniversalSignals(input: UnderstandingCoreInput): Universal
     }
   }
 
-  return resolveIdentifierMeasureConflicts(dedupeSignals(signals));
+  return resolveGeographicStatusConflicts(resolveIdentifierMeasureConflicts(dedupeSignals(signals)));
 }
 
 function dedupeSignals(signals: UniversalSignal[]): UniversalSignal[] {

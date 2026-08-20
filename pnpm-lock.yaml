@@ -145,6 +145,8 @@ importers:
         specifier: ^4.1.10
         version: 4.1.10(@types/node@24.13.3)(jsdom@29.1.1)(vite@8.2.1(@types/node@24.13.3)(jiti@1.21.7))
 
+  apps/distribution: {}
+
   packages/chart-schema:
     devDependencies:
       typescript:

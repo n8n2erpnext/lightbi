@@ -4,6 +4,12 @@ import { readNativeRuntime, type NativeLicenseState, type NativeRuntimeConfig } 
 import { useDisplayPreferences } from '../stores/display-preferences-store';
 import { useUiLanguage } from '../lib/ui-language';
 import { getAvailableLanguages, getLanguageMetadata } from '../i18n/language-registry';
+import {
+  activateLightBILicense,
+  anonymousPairingEnabled,
+  currentLicenseTier,
+  setAnonymousPairingEnabled,
+} from '../lib/distribution-pairing';
 
 export const Settings: React.FC = () => {
   const { preferences, updatePreferences } = useDisplayPreferences();
@@ -14,6 +20,10 @@ export const Settings: React.FC = () => {
     backendReady: boolean;
   } | null>(null);
   const availableLanguages = getAvailableLanguages();
+  const [pairingEnabled, setPairingEnabled] = useState(() => anonymousPairingEnabled());
+  const [licenseTier, setLicenseTier] = useState(() => currentLicenseTier());
+  const [licenseKey, setLicenseKey] = useState('');
+  const [licenseMessage, setLicenseMessage] = useState('');
 
   useEffect(() => {
     void readNativeRuntime().then(setNativeState);
@@ -43,6 +53,53 @@ export const Settings: React.FC = () => {
                 <div className="font-medium text-emerald-900">{nativeState?.license.edition ?? 'Loading Beta status…'}</div>
                 <div className="mt-1 text-sm text-emerald-800/70">{t('No license key or feature restriction during Beta.')}</div>
               </div>
+            </div>
+          </div>
+          <div className="mt-3 grid gap-3 md:grid-cols-2">
+            <label className="flex items-start justify-between gap-4 rounded-lg border border-slate-200 p-4">
+              <span>
+                <span className="block font-medium text-slate-800">{t('Anonymous installation pairing')}</span>
+                <span className="mt-1 block text-sm text-slate-500">{t('Sends only a random installation ID, app version, platform, and license tier.')}</span>
+              </span>
+              <input
+                type="checkbox"
+                checked={pairingEnabled}
+                onChange={(event) => {
+                  setPairingEnabled(event.target.checked);
+                  setAnonymousPairingEnabled(event.target.checked);
+                }}
+                className="mt-1 h-4 w-4"
+              />
+            </label>
+            <div className="rounded-lg border border-slate-200 p-4">
+              <div className="flex items-center justify-between gap-3">
+                <span className="font-medium text-slate-800">{t('License tier')}</span>
+                <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold uppercase text-slate-700">{licenseTier}</span>
+              </div>
+              <div className="mt-3 flex gap-2">
+                <input
+                  value={licenseKey}
+                  onChange={(event) => setLicenseKey(event.target.value)}
+                  placeholder={t('Enter a Pro license key')}
+                  className="min-w-0 flex-1 rounded-md border border-slate-200 px-3 py-2 text-sm"
+                />
+                <button
+                  type="button"
+                  onClick={async () => {
+                    const tier = await activateLightBILicense(licenseKey);
+                    if (tier) {
+                      setLicenseTier(tier);
+                      setLicenseKey('');
+                      setLicenseMessage(t('Pro license activated.'));
+                    } else setLicenseMessage(t('License activation failed.'));
+                  }}
+                  className="rounded-md bg-slate-900 px-3 py-2 text-sm font-semibold text-white"
+                >
+                  {t('Activate')}
+                </button>
+              </div>
+              {licenseMessage && <div className="mt-2 text-xs text-slate-500">{licenseMessage}</div>}
+              <a href="https://lightbi.thaiduy.digital/distribution/#plans" className="mt-2 inline-block text-xs font-semibold text-blue-700">{t('View Basic and Pro plans')}</a>
             </div>
           </div>
         </div>

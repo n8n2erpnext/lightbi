@@ -8,6 +8,11 @@ export default defineConfig({
   server: {
     allowedHosts: ['lightbi.thaiduy.digital'],
     proxy: {
+      '/distribution': {
+        target: 'http://127.0.0.1:5174',
+        changeOrigin: true,
+        rewrite: path => path.replace(/^\/distribution/, '') || '/',
+      },
       '/api': {
         target: 'http://127.0.0.1:5172',
         changeOrigin: true
@@ -19,6 +24,6 @@ export default defineConfig({
     setupFiles: ['./src/test/vitest.setup.ts'],
   },
   optimizeDeps: {
-    exclude: ['@duckdb/duckdb-wasm']
+    include: ['@duckdb/duckdb-wasm/dist/duckdb-browser']
   }
 })

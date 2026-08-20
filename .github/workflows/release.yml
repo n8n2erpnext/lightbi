@@ -29,7 +29,16 @@ jobs:
         with:
           workspaces: . -> target
       - run: pnpm install --frozen-lockfile
+      - name: Verify distribution portal
+        run: |
+          pnpm --dir apps/distribution test
+          pnpm --dir apps/distribution build
+      - name: Generate branded application icons
+        run: pnpm dlx @tauri-apps/cli@2.11.4 icon apps/desktop/public/branding/lightbi-icon.svg --output crates/lightbi-tauri/icons
       - name: Build web surface
+        env:
+          VITE_LIGHTBI_DISTRIBUTION_URL: https://lightbi.thaiduy.digital/distribution
+          VITE_LIGHTBI_VERSION: 0.9.0-beta.7
         run: pnpm --filter @lightbi/desktop build
       - name: Build native Windows installer
         working-directory: crates/lightbi-tauri

@@ -92,6 +92,35 @@ export type IndustryOverlay =
   | "management"
   | "dirty_manual";
 
+export type BusinessContext =
+  | "commerce"
+  | "healthcare"
+  | "education"
+  | "workforce"
+  | "logistics"
+  | "financial_services"
+  | "digital"
+  | "generic_business";
+
+export type BusinessCapability =
+  | "customer"
+  | "inventory"
+  | "revenue"
+  | "operations"
+  | "finance"
+  | "performance";
+
+export type SemanticCapabilityMatrix = {
+  contexts: Array<{ context: BusinessContext; score: number; evidence: string[] }>;
+  capabilities: Array<{
+    capability: BusinessCapability;
+    state: "ready" | "evidence_only" | "unavailable";
+    score: number;
+    evidence: string[];
+    missingEvidence: string[];
+  }>;
+};
+
 export type QuestionCandidate = {
   id: string;
   label: string;
@@ -140,6 +169,7 @@ export type UnderstandingCoreResult = {
     columnCount: number;
   };
   overlays: IndustryOverlay[];
+  capabilityMatrix: SemanticCapabilityMatrix;
   signals: UniversalSignal[];
   questions: QuestionCandidate[];
   actions: CoreAction[];

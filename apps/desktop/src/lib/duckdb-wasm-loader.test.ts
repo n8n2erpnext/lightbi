@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { initDuckDbWasm } from './duckdb-wasm-loader';
 
@@ -19,6 +21,12 @@ describe('duckdb-wasm-loader', () => {
     } catch (error: any) {
       expect(error.message).toContain('DUCKDB_WASM_BOOTSTRAP_FAILED');
     }
+  });
+
+  it('prebundles the browser runtime instead of exposing a package-internal dynamic module URL', () => {
+    const config = readFileSync(join(process.cwd(), 'vite.config.ts'), 'utf8');
+    expect(config).toContain("include: ['@duckdb/duckdb-wasm/dist/duckdb-browser']");
+    expect(config).not.toContain("exclude: ['@duckdb/duckdb-wasm']");
   });
 
   // NOTE: In a true E2E or browser test, Worker and fetch are available, 

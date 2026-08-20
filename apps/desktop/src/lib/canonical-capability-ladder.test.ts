@@ -177,4 +177,52 @@ describe("canonical capability ladder", () => {
     expect(ready).toEqual(expect.arrayContaining(["finance", "operations", "performance"]));
     expect(result.understanding.availableActions.some((action) => action.questionId.includes("stock_movement"))).toBe(false);
   });
+
+  it("offers governed customer geography and profile analyses without grouping by customer keys", () => {
+    const columns = ["customer_key", "name", "gender", "city", "state_code", "state", "zip_code", "country", "continent", "birthday"];
+    const rows = Array.from({ length: 240 }, (_, index) => ({
+      customer_key: `C${String(index + 1).padStart(4, "0")}`,
+      name: `Customer ${index + 1}`,
+      gender: index % 2 === 0 ? "Female" : "Male",
+      city: ["Hanoi", "Da Nang", "Ho Chi Minh City"][index % 3],
+      state_code: ["HN", "DN", "HCM"][index % 3],
+      state: ["Ha Noi", "Da Nang", "Ho Chi Minh"][index % 3],
+      zip_code: ["100000", "500000", "700000"][index % 3],
+      country: "Vietnam",
+      continent: "Asia",
+      birthday: `19${70 + (index % 25)}-01-01`,
+    }));
+    const build = (sourceKind: "local_file" | "database_table") => {
+      const artifact = getOrBuildCanonicalConsumerArtifact({
+        datasetId: `customer-master-${sourceKind}`,
+        sourceKind,
+        sourceLabel: sourceKind === "local_file" ? "customers.json" : "retails.customers",
+        columns,
+        rows,
+        sourceRowCount: rows.length,
+      });
+      return projectCanonicalCapabilityLadder(
+        artifact,
+        projectCanonicalDomainPerspectives(artifact),
+        { sourceKind, sourceLabel: "customers", columns, rows, sourceRowCount: rows.length },
+      );
+    };
+
+    const local = build("local_file");
+    const database = build("database_table");
+    const localCustomer = local.perspectives.find((perspective) => perspective.perspectiveId === "customer");
+    const customerActions = local.understanding.availableActions.filter((action) =>
+      action.questionId.includes("customer_geographic_distribution") || action.questionId.includes("customer_profile_distribution"),
+    );
+
+    expect(localCustomer?.state).toBe("governed_action_available");
+    expect(localCustomer?.actionCandidateIds.length).toBeGreaterThanOrEqual(2);
+    expect(customerActions.map((action) => action.dimensions[0])).toEqual(expect.arrayContaining(["city", "gender"]));
+    expect(customerActions.flatMap((action) => action.dimensions)).not.toContain("customer_key");
+    expect(local.understanding.signals.some((signal) => signal.canonicalId === "location.state_province" && signal.physicalColumn === "state_code")).toBe(true);
+    expect(local.understanding.signals.some((signal) => signal.canonicalId === "location.postal_code" && signal.physicalColumn === "zip_code")).toBe(true);
+    expect(local.understanding.signals.find((signal) => signal.canonicalId === "status.lifecycle" && signal.physicalColumn === "state")?.usableForDefaultQuestion).toBe(false);
+    expect(local.perspectives.find((perspective) => perspective.state === "governed_action_available")?.perspectiveId).toBe("customer");
+    expect(database.understanding.availableActions.map((action) => action.questionId)).toEqual(local.understanding.availableActions.map((action) => action.questionId));
+  });
 });

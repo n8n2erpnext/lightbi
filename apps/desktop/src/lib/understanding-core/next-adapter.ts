@@ -18,9 +18,14 @@ import type {
 } from "./contracts";
 
 function familyToDomain(signal: UniversalSignal): DomainId {
-  if (signal.family === "money" || signal.family === "document") return "revenue";
-  if (signal.family === "inventory" || signal.id.startsWith("item.sku")) return "inventory";
-  if (signal.family === "engagement") return "performance";
+  if (signal.family === "money") {
+    return /^money\.(profit|margin|cost|debt|balance|payable|tax|credit|limit|income)/.test(signal.id) ? "finance" : "revenue";
+  }
+  if (signal.family === "document") {
+    return /^document\.(shipment|stock_transfer)/.test(signal.id) ? "operations" : "revenue";
+  }
+  if (signal.family === "inventory" || signal.family === "item") return "inventory";
+  if (signal.family === "engagement") return /^engagement\.(segment|outcome|churn|retention)/.test(signal.id) ? "customer" : "performance";
   if (signal.family === "indicator") return "performance";
   if (signal.family === "event") return "operations";
   if (signal.family === "entity") return signal.id.includes("customer") || signal.id.includes("patient") ? "customer" : "performance";
@@ -135,10 +140,8 @@ function adaptDirtySignals(core: UnderstandingCoreResult): DirtySignal[] {
 export function adaptCoreToUnderstandingNext(core: UnderstandingCoreResult): DatasetUnderstandingResult {
   const domains = new Set<DomainId>();
   for (const signal of core.signals) domains.add(familyToDomain(signal));
-  if (core.overlays.includes("healthcare")) {
-    domains.add("revenue");
-    domains.add("customer");
-    domains.add("performance");
+  for (const capability of core.capabilityMatrix.capabilities) {
+    if (capability.state === 'ready') domains.add(capability.capability);
   }
 
   const questionsByLens = new Map<string, QuestionCandidate[]>();
@@ -200,7 +203,13 @@ export function adaptCoreToUnderstandingNext(core: UnderstandingCoreResult): Dat
     perspectives: core.overlays.map<BusinessPerspective>(overlay => ({
       id: overlay,
       label: overlay.replace(/_/g, " "),
-      domain: overlay === "inventory" ? "inventory" : overlay === "logistics" ? "operations" : "revenue",
+      domain: overlay === "inventory"
+        ? "inventory"
+        : overlay === "logistics"
+          ? "operations"
+          : overlay === "healthcare"
+            ? core.capabilityMatrix.capabilities.find((item) => item.state === 'ready' && ['customer', 'performance', 'inventory', 'revenue', 'operations', 'finance'].includes(item.capability))?.capability ?? 'customer'
+            : "revenue",
       reason: "Detected from universal business signals.",
       signalIds: core.signals.map(signal => signal.id)
     })),

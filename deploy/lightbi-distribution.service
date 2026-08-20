@@ -1,0 +1,17 @@
+[Unit]
+Description=LightBI Distribution Portal
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/ubuntu/n8n2erpnext/LightBI/apps/distribution
+EnvironmentFile=/home/ubuntu/.config/lightbi-distribution.env
+ExecStart=/usr/bin/node --experimental-sqlite server.mjs
+Restart=always
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=default.target

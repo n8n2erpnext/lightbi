@@ -7,6 +7,7 @@ import type {
   UniversalSignal
 } from "./contracts";
 import { detectUniversalSignals, inferOverlays } from "./signal-engine";
+import { projectSemanticCapabilityMatrix } from './semantic-capability-matrix';
 
 function first(signals: UniversalSignal[], predicate: (signal: UniversalSignal) => boolean): UniversalSignal | undefined {
   return signals.find(signal => signal.usableForDefaultQuestion && predicate(signal));
@@ -167,6 +168,21 @@ export function generateUniversalQuestions(input: UnderstandingCoreInput, signal
     ?? first(signals, isActorSignal)
     ?? firstAny(signals, isActorSignal);
   const customer = first(signals, byId("entity.customer")) ?? first(signals, byId("entity.patient"));
+  // Customer master data commonly has a unique customer key, so the customer
+  // identity is valid context but deliberately unusable as a default grouping
+  // dimension. Keep that context separate from the bounded profile dimensions
+  // that can safely answer useful customer questions.
+  const customerContext = firstAny(signals, byId("entity.customer")) ?? firstAny(signals, byId("entity.patient"));
+  const customerGeography =
+    first(signals, byId("location.city")) ??
+    first(signals, byId("location.state_province")) ??
+    first(signals, byId("location.region")) ??
+    first(signals, byId("location.country")) ??
+    first(signals, byId("location.postal_code"));
+  const customerProfileDimension =
+    first(signals, byId("entity.gender")) ??
+    first(signals, byId("entity.person_age")) ??
+    first(signals, byId("engagement.segment"));
   const vendor = first(signals, byId("entity.vendor"));
   const documentType =
     first(signals, signal => signal.family === "document" && signal.role === "dimension") ??
@@ -319,6 +335,54 @@ export function generateUniversalQuestions(input: UnderstandingCoreInput, signal
       scope
     ),
     blockedReasons: customer ? [] : ["A usable customer or patient dimension is required."]
+  }));
+
+  questions.push(candidate({
+    id: "customer_geographic_distribution",
+    label: "Customer distribution by geography",
+    prompt: "How are customers distributed across cities, states, regions, or countries?",
+    lens: "Customer geography",
+    intent: "ranking",
+    requiredFamilies: ["entity", "location"],
+    requiredSignals: ["entity.customer|entity.patient", "location.city|location.state_province|location.region|location.country|location.postal_code"],
+    optionalSignals: ["entity.gender", "entity.person_age", "engagement.segment"],
+    evidence: [customerContext, customerGeography].filter(Boolean).flatMap(signal => signal!.evidence),
+    action: makeAction(
+      "customer_geographic_distribution",
+      "Customer distribution by geography",
+      "group_by",
+      customerContext && customerGeography ? [customerGeography.physicalColumn] : [],
+      ["record_count"],
+      scope
+    ),
+    blockedReasons: [
+      ...(!customerContext ? ["Customer or patient context is required."] : []),
+      ...(!customerGeography ? ["A usable city, state, region, country, or postal dimension is required."] : [])
+    ]
+  }));
+
+  questions.push(candidate({
+    id: "customer_profile_distribution",
+    label: "Customer profile distribution",
+    prompt: "How does the customer base break down by demographic or business segment?",
+    lens: "Customer profile",
+    intent: "mix",
+    requiredFamilies: ["entity"],
+    requiredSignals: ["entity.customer|entity.patient", "entity.gender|entity.person_age|engagement.segment"],
+    optionalSignals: ["location.city", "location.state_province", "location.country"],
+    evidence: [customerContext, customerProfileDimension].filter(Boolean).flatMap(signal => signal!.evidence),
+    action: makeAction(
+      "customer_profile_distribution",
+      "Customer profile distribution",
+      "distribution",
+      customerContext && customerProfileDimension ? [customerProfileDimension.physicalColumn] : [],
+      [],
+      scope
+    ),
+    blockedReasons: [
+      ...(!customerContext ? ["Customer or patient context is required."] : []),
+      ...(!customerProfileDimension ? ["A usable gender, age, or customer-segment dimension is required."] : [])
+    ]
   }));
 
   questions.push(candidate({
@@ -1276,6 +1340,7 @@ export function generateUniversalQuestions(input: UnderstandingCoreInput, signal
 export function createUnderstandingCoreResult(input: UnderstandingCoreInput): UnderstandingCoreResult {
   const signals = detectUniversalSignals(input);
   const overlays = inferOverlays(signals);
+  const capabilityMatrix = projectSemanticCapabilityMatrix(signals);
   const questions = generateUniversalQuestions(input, signals);
   const actions = questions.flatMap(question => question.action ? [question.action] : []);
   const blockedReasons = questions
@@ -1293,6 +1358,7 @@ export function createUnderstandingCoreResult(input: UnderstandingCoreInput): Un
       columnCount: input.columns.length
     },
     overlays,
+    capabilityMatrix,
     signals,
     questions,
     actions,

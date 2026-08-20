@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="https://lightbi.thaiduy.digital">Live demo</a> ·
-  <a href="https://github.com/n8n2erpnext/lightbi/releases">Download Beta</a> ·
+  <a href="https://lightbi.thaiduy.digital/distribution/">Download Beta</a> ·
   <a href="README.vi.md">Tiếng Việt</a>
 </p>
 
@@ -92,7 +92,7 @@ The canonical source boundary carries source identity, fingerprint, inspection/p
 | CSV / TSV / text | Physical parsing, profiling, and local execution |
 | JSON | Structured local inspection |
 | Google Sheets / public online files | Online-first intake through the same canonical boundary |
-| PostgreSQL, MySQL, MariaDB, SQLite, MongoDB | Advanced workspace; Easy Mode handoff requires complete results |
+| SQL Server, PostgreSQL, MySQL, MariaDB, SQLite, MongoDB | Read-only inspection and Advanced workspace; SQL Server supports exact full-table Easy Mode snapshots |
 | Related ERP exports | Governed role/period analysis; no speculative joins |
 
 ## BA capabilities
@@ -111,6 +111,7 @@ LightBI is a TypeScript + Rust monorepo:
 
 ```text
 apps/desktop/          React 19 desktop and web QA interface
+apps/distribution/     Basic/Pro download, license, payment, and anonymous activation portal
 apps/server/           Embedded/standalone Axum backend and Advanced APIs
 packages/              Shared UI, runtime, schemas, and query contracts
 crates/                Rust domain, runtime, DuckDB, export, and Tauri crates
@@ -152,7 +153,7 @@ Tagged releases are built on GitHub Actions using a Windows runner. The release 
 - SHA-256 checksums;
 - the exact source tag used to build the artifact.
 
-Download the latest installer from [GitHub Releases](https://github.com/n8n2erpnext/lightbi/releases).
+Download from the [LightBI Distribution Portal](https://lightbi.thaiduy.digital/distribution/) or directly from [GitHub Releases](https://github.com/n8n2erpnext/lightbi/releases).
 
 ## Beta boundaries
 

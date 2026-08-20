@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="https://lightbi.thaiduy.digital">Demo trực tuyến</a> ·
-  <a href="https://github.com/n8n2erpnext/lightbi/releases">Tải bản Beta</a> ·
+  <a href="https://lightbi.thaiduy.digital/distribution/">Tải bản Beta</a> ·
   <a href="README.md">English</a>
 </p>
 
@@ -58,7 +58,7 @@ Chọn một điểm trên biểu đồ, xem hoặc lọc thêm các dòng phù 
 
 ### Advanced Mode cho nhà phân tích cần kiểm soát trực tiếp
 
-Advanced Mode cung cấp workspace read-only cho file, bảng tính trực tuyến, PostgreSQL, MySQL, MariaDB, SQLite và MongoDB; kèm safe mode, SSH tùy chọn, khám phá schema, lịch sử truy vấn, quy trình chỉnh sửa kết quả và handoff có quản trị về Simple BA khi kết quả đã đầy đủ.
+Advanced Mode cung cấp workspace read-only cho file, bảng tính trực tuyến, SQL Server, PostgreSQL, MySQL, MariaDB, SQLite và MongoDB; kèm safe mode, SSH tùy chọn, khám phá schema, lịch sử truy vấn, quy trình chỉnh sửa kết quả và handoff có quản trị về Simple BA khi kết quả đã đầy đủ.
 
 ![Advanced Mode](assets/screenshots/lightbi-advanced-mode.png)
 
@@ -85,7 +85,7 @@ Biên nguồn canonical mang theo danh tính nguồn, fingerprint, thế hệ ki
 | CSV / TSV / text | Phân tích vật lý, lập hồ sơ và thực thi cục bộ |
 | JSON | Kiểm tra dữ liệu có cấu trúc cục bộ |
 | Google Sheets / tệp trực tuyến công khai | Online-first qua cùng biên canonical |
-| PostgreSQL, MySQL, MariaDB, SQLite, MongoDB | Advanced workspace; Easy Mode chỉ nhận kết quả đầy đủ |
+| SQL Server, PostgreSQL, MySQL, MariaDB, SQLite, MongoDB | Kiểm tra read-only và Advanced; SQL Server hỗ trợ snapshot Easy Mode đầy đủ chính xác |
 | Bộ tệp ERP liên quan | Phân tích vai trò/kỳ có quản trị; không ghép nguồn bằng suy đoán |
 
 ## Năng lực BA
@@ -104,6 +104,7 @@ LightBI là monorepo TypeScript + Rust:
 
 ```text
 apps/desktop/          Giao diện React 19 cho desktop và web QA
+apps/distribution/     Portal tải Basic/Pro, license, thanh toán và kích hoạt ẩn danh
 apps/server/           Axum backend nhúng/độc lập và Advanced APIs
 packages/              UI, runtime, schema và query contract dùng chung
 crates/                Domain, runtime, DuckDB, export và Tauri bằng Rust
@@ -145,7 +146,7 @@ Mỗi tag phát hành được GitHub Actions build trên Windows. Release bao g
 - checksum SHA-256;
 - tag nguồn chính xác dùng để tạo artifact.
 
-Tải bản mới nhất tại [GitHub Releases](https://github.com/n8n2erpnext/lightbi/releases).
+Tải từ [LightBI Distribution Portal](https://lightbi.thaiduy.digital/distribution/) hoặc trực tiếp tại [GitHub Releases](https://github.com/n8n2erpnext/lightbi/releases).
 
 ## Giới hạn Beta
 
