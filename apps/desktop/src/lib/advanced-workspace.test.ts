@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { buildRenamedResultSql } from './advanced-workspace-helpers';
-import { advancedResultToCsv, createAdvancedTab, prependAdvancedHistory, restoreAdvancedTabs, serializeAdvancedTabs, splitAdvancedStatements } from './advanced-workspace';
+import { advancedResultToCsv, createAdvancedId, createAdvancedTab, prependAdvancedHistory, restoreAdvancedTabs, serializeAdvancedTabs, splitAdvancedStatements } from './advanced-workspace';
 
 describe('advanced workspace persistence boundary', () => {
   afterEach(() => vi.unstubAllGlobals());
@@ -16,6 +16,11 @@ describe('advanced workspace persistence boundary', () => {
   it('recovers safely from invalid persisted state', () => {
     vi.stubGlobal('crypto', { randomUUID: () => 'recovered-tab' });
     expect(restoreAdvancedTabs('{broken')[0].id).toBe('recovered-tab');
+  });
+
+  it('creates a run id when randomUUID is unavailable on an insecure origin', () => {
+    vi.stubGlobal('crypto', {});
+    expect(createAdvancedId()).toMatch(/^advanced-\d+-[a-z0-9]+$/);
   });
 
   it('bounds history independently from result buffers', () => {

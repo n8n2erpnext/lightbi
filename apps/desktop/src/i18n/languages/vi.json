@@ -2559,6 +2559,8 @@
     ,"City": "Thành phố"
     ,"Connect SQL Server": "Kết nối máy chủ SQL"
     ,"Connection URL, ADO string, or SQLite path": "URL kết nối, chuỗi ADO hoặc đường dẫn SQLite"
+    ,"Show connection URL": "Hiện URL kết nối"
+    ,"Hide connection URL": "Ẩn URL kết nối"
     ,"Content Type": "Loại nội dung"
     ,"Developer / Creator": "Nhà phát triển / Nhà sáng tạo"
     ,"Engagement": "Mức tương tác"

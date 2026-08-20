@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { AlertTriangle, Check, Database, Loader2 } from 'lucide-react';
+import { AlertTriangle, Check, Database, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { closeAdvancedConnection, createAdvancedConnection, executeAdvancedDocumentQuery, executeAdvancedQuery, loadAdvancedSchema, loadAdvancedTableCount, type AdvancedConnection } from '../../lib/advanced-api';
+import { createAdvancedId } from '../../lib/advanced-workspace';
 import { profileColumns } from '../../lib/column-profiler';
 import type { SourceInspectionResult, SourceType } from '../../lib/source-preflight';
 import { homeGuidance } from '../../content/home-guidance';
@@ -37,6 +38,7 @@ export function DatabaseStep({ config, onClose, onSourceInspected }: DatabaseSte
   const isMongo = driver === 'mongodb_atlas';
   const isSql = Boolean(driver && SQL_DRIVERS.has(driver));
   const [connectionUrl, setConnectionUrl] = useState('');
+  const [showConnectionUrl, setShowConnectionUrl] = useState(false);
   const [schemaName, setSchemaName] = useState(activeConfig.schemaPlaceholder === 'public' ? 'public' : '');
   const [tableName, setTableName] = useState('');
   const [databaseName, setDatabaseName] = useState('');
@@ -86,9 +88,9 @@ export function DatabaseStep({ config, onClose, onSourceInspected }: DatabaseSte
       const target = targetSchema?.tables.find(table => table.name === entityName);
       if (!target) throw new Error(`${isMongo ? 'Collection' : 'Table'} ${entityName} was not found in the discovered catalog.`);
       const result = isMongo
-        ? await executeAdvancedDocumentQuery(session.connectionId, { runId: crypto.randomUUID(), collection: entityName, filter: {}, limit: sampleLimit })
+        ? await executeAdvancedDocumentQuery(session.connectionId, { runId: createAdvancedId(), collection: entityName, filter: {}, limit: sampleLimit })
         : await executeAdvancedQuery(session.connectionId, {
-            runId: crypto.randomUUID(), limit: sampleLimit,
+            runId: createAdvancedId(), limit: sampleLimit,
             sql: provider === 'mysql' || provider === 'mariadb'
               ? `SELECT * FROM \`${targetSchema.name.replaceAll('`', '``')}\`.\`${entityName.replaceAll('`', '``')}\``
               : provider === 'sqlite'
@@ -186,13 +188,24 @@ export function DatabaseStep({ config, onClose, onSourceInspected }: DatabaseSte
         )}
         <label className="block">
           <span className="text-sm font-medium text-gray-700">Connection URI</span>
-          <input
-            type="password"
-            value={connectionUrl}
-            onChange={(event) => setConnectionUrl(event.target.value)}
-            placeholder={activeConfig.uriPlaceholder}
-            className="mt-2 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900"
-          />
+          <div className="relative mt-2">
+            <input
+              type={showConnectionUrl ? 'text' : 'password'}
+              value={connectionUrl}
+              onChange={(event) => setConnectionUrl(event.target.value)}
+              placeholder={activeConfig.uriPlaceholder}
+              className="block w-full rounded-lg border border-gray-300 py-2 pl-3 pr-11 font-mono text-sm focus:border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900"
+            />
+            <button
+              type="button"
+              aria-label={showConnectionUrl ? 'Hide connection URL' : 'Show connection URL'}
+              title={showConnectionUrl ? 'Hide connection URL' : 'Show connection URL'}
+              onClick={() => setShowConnectionUrl(current => !current)}
+              className="absolute inset-y-0 right-0 flex w-10 items-center justify-center rounded-r-lg text-gray-500 hover:bg-gray-50 hover:text-gray-800 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-900"
+            >
+              {showConnectionUrl ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </button>
+          </div>
         </label>
 
         {isSql && (
