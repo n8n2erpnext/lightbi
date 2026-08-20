@@ -58,7 +58,7 @@ function rowsAsObjects(result: AdvancedQueryResult): Record<string, unknown>[] {
 
 function sourceKind(provider: string): 'local_file' | 'database_table' | 'unknown' {
   if (provider === 'duckdb') return 'local_file';
-  if (['postgresql', 'mysql', 'mariadb', 'sqlite', 'mongodb'].includes(provider)) return 'database_table';
+  if (['postgresql', 'mysql', 'mariadb', 'sqlite', 'mongodb', 'sqlserver'].includes(provider)) return 'database_table';
   return 'unknown';
 }
 

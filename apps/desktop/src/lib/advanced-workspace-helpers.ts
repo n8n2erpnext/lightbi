@@ -201,8 +201,13 @@ export function quoteMysqlIdentifier(value: string): string {
   return `\`${value.replaceAll('`', '``')}\``;
 }
 
+export function quoteSqlServerIdentifier(value: string): string {
+  return `[${value.replaceAll(']', ']]')}]`;
+}
+
 export function qualifiedTableReference(provider: AdvancedConnection['provider'] | 'duckdb', schemaName: string, tableName: string): string {
   if (provider === 'mysql' || provider === 'mariadb') return `${quoteMysqlIdentifier(schemaName)}.${quoteMysqlIdentifier(tableName)}`;
+  if (provider === 'sqlserver') return `${quoteSqlServerIdentifier(schemaName)}.${quoteSqlServerIdentifier(tableName)}`;
   if (provider === 'sqlite' || provider === 'duckdb') return quoteIdentifier(tableName);
   return `${quoteIdentifier(schemaName)}.${quoteIdentifier(tableName)}`;
 }

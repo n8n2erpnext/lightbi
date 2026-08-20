@@ -161,7 +161,7 @@ impl PluginRegistry {
         registry.register(mysql_manifest("mariadb", "MariaDB", 3306), "core_builtin");
         registry.register(sqlite_manifest(), "core_builtin");
         registry.register(mongodb_manifest(), "core_builtin");
-        registry.register(sqlserver_planned_manifest(), "planned_plugin");
+        registry.register(sqlserver_manifest(), "core_builtin");
         registry
     }
 
@@ -423,14 +423,14 @@ fn mongodb_manifest() -> ProviderManifest {
     }
 }
 
-fn sqlserver_planned_manifest() -> ProviderManifest {
+fn sqlserver_manifest() -> ProviderManifest {
     ProviderManifest {
         api_version: PLUGIN_API_VERSION.to_string(),
         id: "sqlserver".to_string(),
         display_name: "SQL Server".to_string(),
         version: "0.1.0".to_string(),
         provider_kind: ProviderKind::Relational,
-        description: "Planned first enterprise provider plugin. Hidden until a real driver host is implemented.".to_string(),
+        description: "Built-in read-only SQL Server provider with schema discovery, cancellable queries, and export.".to_string(),
         icon_name: None,
         default_port: Some(1433),
         url_schemes: vec!["sqlserver".to_string(), "mssql".to_string()],
@@ -442,15 +442,15 @@ fn sqlserver_planned_manifest() -> ProviderManifest {
             password_field("password", "Password"),
         ],
         capabilities: ProviderCapabilities {
-            connect: false,
-            schema_discovery: false,
-            read_only_query: false,
-            cancellable_query: false,
+            connect: true,
+            schema_discovery: true,
+            read_only_query: true,
+            cancellable_query: true,
             streaming_query: false,
             writeback: false,
             ddl: false,
             import_rows: false,
-            export_rows: false,
+            export_rows: true,
             explain: false,
             server_dashboard: false,
             semantic_hints: false,
@@ -462,8 +462,32 @@ fn sqlserver_planned_manifest() -> ProviderManifest {
             default_schema: Some("dbo".to_string()),
             supports_schemas: true,
             supports_transactions: true,
-            supports_explain: true,
-            supports_savepoints: true,
+            supports_explain: false,
+            supports_savepoints: false,
         }),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::PluginRegistry;
+
+    #[test]
+    fn sql_server_is_exposed_as_read_only_provider() {
+        let registry = PluginRegistry::built_in();
+        let entry = registry
+            .all()
+            .into_iter()
+            .find(|entry| entry.manifest.id == "sqlserver")
+            .expect("SQL Server provider should be registered");
+
+        assert!(entry.exposure_gate.can_expose);
+        assert!(entry.manifest.capabilities.connect);
+        assert!(entry.manifest.capabilities.schema_discovery);
+        assert!(entry.manifest.capabilities.read_only_query);
+        assert!(entry.manifest.capabilities.export_rows);
+        assert!(!entry.manifest.capabilities.writeback);
+        assert!(!entry.manifest.capabilities.ddl);
+        assert!(!entry.manifest.capabilities.import_rows);
     }
 }

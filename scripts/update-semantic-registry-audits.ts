@@ -40,8 +40,8 @@ const inventory = JSON.parse(fs.readFileSync(inventoryPath, 'utf8'));
 const countBy = (field: 'coverageStatus' | 'domain', value: string) =>
   SEMANTIC_SIGNAL_REGISTRY_V1.filter(signal => signal[field] === value).length;
 
-inventory.generatedOn = '2026-08-08';
-inventory.policy = 'Registry inventory regenerated after controlled Beta expansion of universal item, brand, and indicator semantics; runtime authority remains governed by supported domain policies.';
+inventory.generatedOn = '2026-08-20';
+inventory.policy = 'Registry inventory regenerated after a metadata-only cross-domain schema audit; dataset names and observed values are excluded from recognition rules, and runtime authority remains governed by supported domain policies.';
 inventory.signalCount = SEMANTIC_SIGNAL_REGISTRY_V1.length;
 inventory.coverageStatusCounts = {
   supported: countBy('coverageStatus', 'supported'),

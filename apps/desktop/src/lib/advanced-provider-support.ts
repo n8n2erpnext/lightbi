@@ -15,7 +15,7 @@ function createFallbackProviderPlugin(id: AdvancedProviderId, displayName: strin
       version: '0.1.0',
       providerKind: id === 'mongodb' ? 'document' : 'relational',
       description: 'Fallback built-in provider manifest used when the backend plugin registry is unavailable.',
-      defaultPort: id === 'postgresql' ? 5432 : id === 'mysql' || id === 'mariadb' ? 3306 : id === 'mongodb' ? 27017 : null,
+      defaultPort: id === 'postgresql' ? 5432 : id === 'mysql' || id === 'mariadb' ? 3306 : id === 'mongodb' ? 27017 : id === 'sqlserver' ? 1433 : null,
       urlSchemes: [id],
       connectionFields: [],
       capabilities: {
@@ -24,9 +24,9 @@ function createFallbackProviderPlugin(id: AdvancedProviderId, displayName: strin
         readOnlyQuery: true,
         cancellableQuery: true,
         streamingQuery: false,
-        writeback: id !== 'mongodb',
-        ddl: id !== 'mongodb',
-        importRows: id !== 'mongodb',
+        writeback: id !== 'mongodb' && id !== 'sqlserver',
+        ddl: id !== 'mongodb' && id !== 'sqlserver',
+        importRows: id !== 'mongodb' && id !== 'sqlserver',
         exportRows: true,
         explain: id !== 'mongodb',
         serverDashboard: false,
@@ -44,6 +44,7 @@ export const FALLBACK_PROVIDER_PLUGINS: AdvancedProviderPlugin[] = [
   createFallbackProviderPlugin('mariadb', 'MariaDB'),
   createFallbackProviderPlugin('sqlite', 'SQLite'),
   createFallbackProviderPlugin('mongodb', 'MongoDB'),
+  createFallbackProviderPlugin('sqlserver', 'SQL Server'),
 ];
 
 export function providerDisplayName(providers: AdvancedProviderPlugin[], providerId: AdvancedProviderId): string {

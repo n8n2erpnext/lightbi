@@ -7,6 +7,9 @@ use std::sync::{Arc, Mutex};
 use tauri::{Manager, State};
 use tower::ServiceExt;
 
+#[cfg(target_os = "windows")]
+const API_BASE_URL: &str = "http://lightbi.localhost";
+#[cfg(not(target_os = "windows"))]
 const API_BASE_URL: &str = "lightbi://localhost";
 
 #[derive(Clone)]

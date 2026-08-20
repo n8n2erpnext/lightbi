@@ -23,7 +23,7 @@ export function buildHomeCanonicalArtifact(
   }
 
   const sourceType = String(currentDataset.sourceType || 'unknown');
-  const sourceKind = ['postgresql', 'mysql', 'mariadb', 'mongodb_atlas', 'sqlite'].includes(sourceType)
+  const sourceKind = ['postgresql', 'mysql', 'mariadb', 'sqlserver', 'mongodb_atlas', 'sqlite'].includes(sourceType)
     ? 'database_table'
     : ['google_sheets', 'm365_excel', 'csv_url', 'excel_url'].includes(sourceType)
       ? 'online_file'

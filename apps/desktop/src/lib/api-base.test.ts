@@ -16,6 +16,18 @@ describe('getApiBaseUrl', () => {
       },
     });
 
+    expect(getApiBaseUrl()).toBe('http://lightbi.localhost');
+  });
+
+  it('keeps the native custom scheme on non-Windows Tauri origins', () => {
+    vi.stubGlobal('window', {
+      location: {
+        origin: 'tauri://localhost',
+        hostname: 'localhost',
+        protocol: 'tauri:',
+      },
+    });
+
     expect(getApiBaseUrl()).toBe('lightbi://localhost');
   });
 

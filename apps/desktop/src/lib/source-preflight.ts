@@ -25,6 +25,7 @@ export type SourceType =
   | "postgresql"
   | "mysql"
   | "mariadb"
+  | "sqlserver"
   | "mongodb_atlas"
   | "sqlite";
 

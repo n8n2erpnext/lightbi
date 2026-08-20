@@ -566,7 +566,7 @@ pub(crate) async fn save_profile(
 ) -> Result<(StatusCode, Json<ConnectionProfile>), ApiError> {
     let name = request.name.trim();
     let url = request.connection_url.trim();
-    let providers = ["postgresql", "mysql", "mariadb", "sqlite", "mongodb"];
+    let providers = ["postgresql", "mysql", "mariadb", "sqlite", "mongodb", "sqlserver"];
     if name.is_empty()
         || name.len() > 120
         || url.is_empty()

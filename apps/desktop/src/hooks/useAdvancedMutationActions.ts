@@ -130,7 +130,7 @@ export function createAdvancedMutationActions(context: AdvancedMutationContext) 
   };
 
   const reviewSqlScript = async () => {
-    if (!connection || connection.provider === 'mongodb' || !activeTab.sql.trim()) return;
+    if (!connection || connection.provider === 'mongodb' || connection.provider === 'sqlserver' || !activeTab.sql.trim()) return;
     try {
       const sql = materializeSqlParameters(activeTab.sql, activeTab.parameters);
       const preview = await previewAdvancedScript(connection.connectionId, sql);
@@ -143,7 +143,7 @@ export function createAdvancedMutationActions(context: AdvancedMutationContext) 
   const importSqlFile = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     event.target.value = '';
-    if (!file || !connection || connection.provider === 'mongodb') return;
+    if (!file || !connection || connection.provider === 'mongodb' || connection.provider === 'sqlserver') return;
     const title = file.name.replace(/\.(sql|txt)$/i, '') || 'SQL import';
     const tab = addTab({ title, sql: '', limit: activeTab.limit, parameters: {} });
     try {
@@ -179,7 +179,7 @@ export function createAdvancedMutationActions(context: AdvancedMutationContext) 
   const openFileImportDraft = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     event.target.value = '';
-    if (!file || !connection || !activeTab.tableContext || connection.provider === 'mongodb') return;
+    if (!file || !connection || !activeTab.tableContext || connection.provider === 'mongodb' || connection.provider === 'sqlserver') return;
     try {
       const normalized = await normalizeImportFile(file);
       const targetColumns = activeTableNode?.columns.filter(column => !column.primaryKey) ?? [];

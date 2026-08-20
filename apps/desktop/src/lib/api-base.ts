@@ -4,6 +4,12 @@ export function getApiBaseUrl(): string {
     return envVal.trim();
   }
   if (typeof window !== 'undefined' && isNativeWebview(window)) {
+    // Tauri maps custom protocols to http://<scheme>.localhost on Windows
+    // (and Android). Calling lightbi:// directly from WebView2 causes fetch()
+    // to fail before the request reaches the embedded Axum router.
+    if (window.location.protocol === 'http:' && window.location.hostname === 'tauri.localhost') {
+      return 'http://lightbi.localhost';
+    }
     return 'lightbi://localhost';
   }
   // Same-origin keeps credentials and API traffic behind the dev/prod reverse proxy.

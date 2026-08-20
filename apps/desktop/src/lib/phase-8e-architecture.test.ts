@@ -78,7 +78,7 @@ describe('Phase 8E architecture and contract parity', () => {
       'apps/desktop/src/lib/understanding-core/canonical-user-overlay.ts': '0254062774db5491cc9f512f7e1079f709835b841594404e649deef75866adc6',
       'apps/desktop/src/lib/understanding-core/canonical-multisource-boundary.ts': '3c8371f11b5fd35909e09c88573ed94aa186f80373684e35a064fc2a38d71385',
       'apps/desktop/src/lib/investigation-session.ts': '4242872f5b6d1b941fa8040ef981c1929ddf39dab44e38484b6f1feef2ac1d8b',
-      'apps/desktop/src/lib/advanced-result-handoff.ts': 'dc3d71356854af4a55ff920561932b097ea16d80d6dd647a61a8ee3778ff9830',
+      'apps/desktop/src/lib/advanced-result-handoff.ts': '1666fb0fe1ca2d3b8119c03f58be611cceff44fc7267854e6f3a32ca595ba838',
       'apps/desktop/src/lib/workspace-session-api.ts': '95e121ce5c3f2e28a155ef3a539eb196cc111688a68faf1f0e7bf3e6b7bedf43',
     };
     for (const [file, hash] of Object.entries(expected)) expect(sha256(file), file).toBe(hash);

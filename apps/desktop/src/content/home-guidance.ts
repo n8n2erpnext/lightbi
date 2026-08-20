@@ -551,6 +551,7 @@ export const homeGuidance = {
         { id: "postgresql", label: "PostgreSQL" },
         { id: "mysql", label: "MySQL" },
         { id: "mariadb", label: "MariaDB" },
+        { id: "sqlserver", label: "SQL Server" },
         { id: "mongodb_atlas", label: "MongoDB Atlas" },
         { id: "sqlite", label: "SQLite" }
       ],
@@ -579,6 +580,15 @@ export const homeGuidance = {
       driver: "mariadb",
       uriPlaceholder: "mysql://user:password@host:3306/database",
       tablePlaceholder: "orders",
+      buttonText: "Inspect table"
+    },
+    sqlserver: {
+      title: "Connect SQL Server",
+      description: "Inspect one read-only table sample",
+      driver: "sqlserver",
+      uriPlaceholder: "server=tcp:host,1433;database=database;user=user;password=password;TrustServerCertificate=true",
+      tablePlaceholder: "customers",
+      schemaPlaceholder: "dbo",
       buttonText: "Inspect table"
     },
     mongodb_atlas: {

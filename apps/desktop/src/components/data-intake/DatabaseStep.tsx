@@ -12,7 +12,7 @@ interface DatabaseStepProps {
 }
 
 type InspectStatus = SourceInspectionResult | null;
-type DatabaseDriver = Extract<SourceType, 'postgresql' | 'mysql' | 'mariadb' | 'mongodb_atlas' | 'sqlite'>;
+type DatabaseDriver = Extract<SourceType, 'postgresql' | 'mysql' | 'mariadb' | 'sqlserver' | 'mongodb_atlas' | 'sqlite'>;
 type DatabaseConnectionConfig = {
   title: string;
   description?: string;
@@ -26,7 +26,7 @@ type DatabaseConnectionConfig = {
   options?: { id: DatabaseDriver; label: string }[];
 };
 
-const SQL_DRIVERS = new Set(['postgresql', 'mysql', 'mariadb', 'sqlite']);
+const SQL_DRIVERS = new Set(['postgresql', 'mysql', 'mariadb', 'sqlserver', 'sqlite']);
 
 export function DatabaseStep({ config, onClose, onSourceInspected }: DatabaseStepProps) {
   const [selectedDriver, setSelectedDriver] = useState<DatabaseDriver | null>(config.driver ?? null);
@@ -93,6 +93,8 @@ export function DatabaseStep({ config, onClose, onSourceInspected }: DatabaseSte
               ? `SELECT * FROM \`${targetSchema.name.replaceAll('`', '``')}\`.\`${entityName.replaceAll('`', '``')}\``
               : provider === 'sqlite'
                 ? `SELECT * FROM "${entityName.replaceAll('"', '""')}"`
+                : provider === 'sqlserver'
+                  ? `SELECT * FROM [${targetSchema.name.replaceAll(']', ']]')}].[${entityName.replaceAll(']', ']]')}]`
                 : `SELECT * FROM "${targetSchema.name.replaceAll('"', '""')}"."${entityName.replaceAll('"', '""')}"`,
           });
       const columns = result.columns.map(column => column.name);

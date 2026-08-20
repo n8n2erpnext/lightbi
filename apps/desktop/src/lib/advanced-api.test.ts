@@ -95,31 +95,38 @@ describe('advanced api', () => {
           displayName: 'SQL Server',
           version: '0.1.0',
           providerKind: 'relational',
-          description: 'Planned',
-          urlSchemes: ['sqlserver'],
+          description: 'Built-in read-only provider',
+          urlSchemes: ['sqlserver', 'mssql'],
           connectionFields: [],
           capabilities: {
-            connect: false,
-            schemaDiscovery: false,
-            readOnlyQuery: false,
-            cancellableQuery: false,
+            connect: true,
+            schemaDiscovery: true,
+            readOnlyQuery: true,
+            cancellableQuery: true,
             streamingQuery: false,
             writeback: false,
             ddl: false,
             importRows: false,
-            exportRows: false,
+            exportRows: true,
             explain: false,
             serverDashboard: false,
             semanticHints: false,
           },
         },
-        exposureGate: { canExpose: false, missingCapabilities: ['connect'], warnings: [] },
-        source: 'planned_plugin',
+        exposureGate: { canExpose: true, missingCapabilities: [], warnings: [] },
+        source: 'core_builtin',
       },
     ]), { status: 200, headers: { 'content-type': 'application/json' } }));
 
     const providers = await loadAdvancedProviderPlugins();
 
-    expect(providers.map(provider => provider.manifest.id)).toEqual(['postgresql']);
+    expect(providers.map(provider => provider.manifest.id)).toEqual(['postgresql', 'sqlserver']);
+    expect(providers[1].manifest.capabilities).toMatchObject({
+      readOnlyQuery: true,
+      writeback: false,
+      ddl: false,
+      importRows: false,
+      exportRows: true,
+    });
   });
 });

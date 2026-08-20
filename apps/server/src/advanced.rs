@@ -29,10 +29,13 @@ use sqlx::{
     SqlSafeStr, Sqlite, SqlitePool, TypeInfo, ValueRef,
 };
 use tokio::{
+    net::TcpStream,
     process::{Child, Command},
     sync::{Mutex, RwLock},
     task::AbortHandle,
 };
+use tokio_util::compat::{Compat, TokioAsyncWriteCompatExt};
+use tiberius::{Client as SqlServerClient, ColumnData as SqlServerColumnData, Config as SqlServerConfig};
 use url::Url;
 use uuid::Uuid;
 
@@ -119,6 +122,31 @@ enum ConnectionBackend {
     MySql(MySqlPool),
     Sqlite(SqlitePool),
     Mongo(MongoClient),
+    SqlServer(SqlServerConnection),
+}
+
+#[derive(Clone)]
+struct SqlServerConnection {
+    connection_string: String,
+}
+
+type ConnectedSqlServer = SqlServerClient<Compat<TcpStream>>;
+
+async fn connect_sql_server(connection: &SqlServerConnection) -> Result<ConnectedSqlServer, ApiError> {
+    let config = SqlServerConfig::from_ado_string(&connection.connection_string)
+        .map_err(|error| ApiError::bad_request(
+            "ADVANCED_CONNECTION_INVALID",
+            format!("Invalid SQL Server ADO connection string: {error}"),
+        ))?;
+    let tcp = tokio::time::timeout(Duration::from_secs(10), TcpStream::connect(config.get_addr()))
+        .await
+        .map_err(|_| ApiError::database("SQL Server connection timed out."))?
+        .map_err(|error| ApiError::database(format!("Could not reach SQL Server: {error}")))?;
+    tcp.set_nodelay(true)
+        .map_err(|error| ApiError::database(format!("Could not configure SQL Server socket: {error}")))?;
+    SqlServerClient::connect(config, tcp.compat_write())
+        .await
+        .map_err(|error| ApiError::database(format!("Could not connect to SQL Server: {error}")))
 }
 
 impl AdvancedState {
@@ -911,10 +939,34 @@ pub(crate) async fn create_connection(
             database,
             ConnectionBackend::Mongo(client),
         )
+    } else if requested_provider == "sqlserver" {
+        let connection = SqlServerConnection {
+            connection_string: connection_url.to_string(),
+        };
+        let mut client = connect_sql_server(&connection).await?;
+        let stream = client
+            .simple_query("SELECT DB_NAME() AS database_name")
+            .await
+            .map_err(|error| ApiError::database(format!("Could not identify SQL Server database: {error}")))?;
+        let row = stream
+            .into_row()
+            .await
+            .map_err(|error| ApiError::database(format!("Could not read SQL Server database identity: {error}")))?
+            .ok_or_else(|| ApiError::database("SQL Server did not return the active database."))?;
+        let database = row
+            .get::<&str, _>("database_name")
+            .map(str::to_string)
+            .or_else(|| request.database_name.clone())
+            .ok_or_else(|| ApiError::database("SQL Server did not identify the active database."))?;
+        (
+            "sqlserver".to_string(),
+            database,
+            ConnectionBackend::SqlServer(connection),
+        )
     } else {
         return Err(ApiError::bad_request(
             "ADVANCED_CONNECTION_PROVIDER_UNSUPPORTED",
-            "Use a PostgreSQL, MySQL/MariaDB, SQLite, or MongoDB URL.",
+            "Use a PostgreSQL, MySQL/MariaDB, SQLite, MongoDB URL, or SQL Server ADO connection string.",
         ));
     };
 
@@ -987,6 +1039,7 @@ pub(crate) async fn delete_connection(
         ConnectionBackend::MySql(pool) => pool.close().await,
         ConnectionBackend::Sqlite(pool) => pool.close().await,
         ConnectionBackend::Mongo(_) => {}
+        ConnectionBackend::SqlServer(_) => {}
     }
     if let Some(tunnel) = session.ssh_tunnel {
         let mut child = tunnel.lock().await;
@@ -1057,6 +1110,7 @@ pub(crate) async fn get_schema(
         ConnectionBackend::Mongo(client) => {
             discover_mongo_schema(client, &session.database).await?
         }
+        ConnectionBackend::SqlServer(connection) => discover_sql_server_schema(connection).await?,
     };
     state.advanced.schema_cache.write().await.insert(
         connection_id,
@@ -1479,6 +1533,74 @@ async fn discover_mongo_schema(
         tables,
         routines: Vec::new(),
     }])
+}
+
+async fn discover_sql_server_schema(
+    connection: &SqlServerConnection,
+) -> Result<Vec<SchemaNode>, ApiError> {
+    let mut client = connect_sql_server(connection).await?;
+    let rows = client
+        .simple_query(
+            r#"SELECT c.TABLE_SCHEMA, c.TABLE_NAME, t.TABLE_TYPE, c.COLUMN_NAME,
+                      c.DATA_TYPE, c.IS_NULLABLE, c.COLUMN_DEFAULT,
+                      CASE WHEN EXISTS (
+                        SELECT 1 FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS tc
+                        JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE kcu
+                          ON kcu.CONSTRAINT_NAME = tc.CONSTRAINT_NAME
+                         AND kcu.TABLE_SCHEMA = tc.TABLE_SCHEMA
+                         AND kcu.TABLE_NAME = tc.TABLE_NAME
+                        WHERE tc.CONSTRAINT_TYPE = 'PRIMARY KEY'
+                          AND tc.TABLE_SCHEMA = c.TABLE_SCHEMA
+                          AND tc.TABLE_NAME = c.TABLE_NAME
+                          AND kcu.COLUMN_NAME = c.COLUMN_NAME
+                      ) THEN 1 ELSE 0 END AS primary_key
+               FROM INFORMATION_SCHEMA.COLUMNS c
+               JOIN INFORMATION_SCHEMA.TABLES t
+                 ON t.TABLE_SCHEMA = c.TABLE_SCHEMA AND t.TABLE_NAME = c.TABLE_NAME
+               WHERE c.TABLE_SCHEMA NOT IN ('sys', 'INFORMATION_SCHEMA')
+               ORDER BY c.TABLE_SCHEMA, c.TABLE_NAME, c.ORDINAL_POSITION"#,
+        )
+        .await
+        .map_err(|error| ApiError::database(format!("Could not load SQL Server schema: {error}")))?
+        .into_first_result()
+        .await
+        .map_err(|error| ApiError::database(format!("Could not read SQL Server schema: {error}")))?;
+
+    let mut schemas = Vec::<SchemaNode>::new();
+    for row in rows {
+        let schema_name = row.get::<&str, _>("TABLE_SCHEMA").unwrap_or_default().to_string();
+        let table_name = row.get::<&str, _>("TABLE_NAME").unwrap_or_default().to_string();
+        let schema_index = schemas.iter().position(|item| item.name == schema_name).unwrap_or_else(|| {
+            schemas.push(SchemaNode { name: schema_name.clone(), tables: Vec::new(), routines: Vec::new() });
+            schemas.len() - 1
+        });
+        let tables = &mut schemas[schema_index].tables;
+        let table_type = row.get::<&str, _>("TABLE_TYPE").unwrap_or("BASE TABLE");
+        let table_index = tables.iter().position(|item| item.name == table_name).unwrap_or_else(|| {
+            tables.push(TableNode {
+                name: table_name.clone(),
+                kind: table_type.to_ascii_lowercase().replace(' ', "_"),
+                estimated_rows: None,
+                table_size_bytes: None,
+                comment: None,
+                ddl: None,
+                writable: false,
+                columns: Vec::new(),
+                indexes: Vec::new(),
+                foreign_keys: Vec::new(),
+            });
+            tables.len() - 1
+        });
+        tables[table_index].columns.push(ColumnNode {
+            name: row.get::<&str, _>("COLUMN_NAME").unwrap_or_default().to_string(),
+            native_type: row.get::<&str, _>("DATA_TYPE").unwrap_or("unknown").to_string(),
+            nullable: row.get::<&str, _>("IS_NULLABLE").unwrap_or("YES") == "YES",
+            primary_key: row.get::<i32, _>("primary_key").unwrap_or(0) != 0,
+            default_value: row.get::<&str, _>("COLUMN_DEFAULT").map(str::to_string),
+            comment: None,
+        });
+    }
+    Ok(schemas)
 }
 
 fn bson_type(value: &Bson) -> &'static str {
@@ -2041,6 +2163,12 @@ pub(crate) async fn preview_mutation(
                 "MongoDB source commit is not enabled.",
             ))
         }
+        ConnectionBackend::SqlServer(_) => {
+            return Err(ApiError::bad_request(
+                "ADVANCED_MUTATION_PROVIDER_UNSUPPORTED",
+                "SQL Server is read-only in this beta provider.",
+            ))
+        }
     };
     Ok(Json(MutationPreviewResponse {
         statements,
@@ -2238,6 +2366,12 @@ pub(crate) async fn commit_mutation(
                 "MongoDB source commit is not enabled.",
             ))
         }
+        ConnectionBackend::SqlServer(_) => {
+            return Err(ApiError::bad_request(
+                "ADVANCED_MUTATION_PROVIDER_UNSUPPORTED",
+                "SQL Server is read-only in this beta provider.",
+            ))
+        }
     };
     invalidate_mutation_caches(&state, &connection_id).await;
     Ok(Json(MutationCommitResponse { updated_rows }))
@@ -2288,10 +2422,10 @@ pub(crate) async fn preview_script(
     Json(request): Json<ScriptRequest>,
 ) -> Result<Json<ScriptPreviewResponse>, ApiError> {
     let session = connection(&state, &connection_id).await?;
-    if matches!(session.backend, ConnectionBackend::Mongo(_)) {
+    if matches!(session.backend, ConnectionBackend::Mongo(_) | ConnectionBackend::SqlServer(_)) {
         return Err(ApiError::bad_request(
             "ADVANCED_SCRIPT_PROVIDER_UNSUPPORTED",
-            "MongoDB SQL script commit is not enabled.",
+            "SQL script commit is not enabled for this read-only provider.",
         ));
     }
     let statements = split_script_statements(&request.sql)?;
@@ -2390,6 +2524,12 @@ pub(crate) async fn commit_script(
             return Err(ApiError::bad_request(
                 "ADVANCED_SCRIPT_PROVIDER_UNSUPPORTED",
                 "MongoDB SQL script commit is not enabled.",
+            ))
+        }
+        ConnectionBackend::SqlServer(_) => {
+            return Err(ApiError::bad_request(
+                "ADVANCED_SCRIPT_PROVIDER_UNSUPPORTED",
+                "SQL Server is read-only in this beta provider.",
             ))
         }
     };
@@ -2716,6 +2856,43 @@ pub(crate) async fn get_table_count(
             .map_err(|error| ApiError::database(format!("Exact document count failed: {error}")))?;
             i64::try_from(count).unwrap_or(i64::MAX)
         }
+        ConnectionBackend::SqlServer(connection) => {
+            let mut client = connect_sql_server(connection).await?;
+            let exists = client
+                .query(
+                    "SELECT COUNT_BIG(*) AS entity_count FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = @P1 AND TABLE_NAME = @P2",
+                    &[&schema, &table],
+                )
+                .await
+                .map_err(|error| ApiError::database(format!("Could not validate SQL Server table: {error}")))?
+                .into_row()
+                .await
+                .map_err(|error| ApiError::database(format!("Could not read SQL Server table validation: {error}")))?
+                .and_then(|row| row.get::<i64, _>("entity_count"))
+                .unwrap_or(0);
+            if exists == 0 {
+                return Err(ApiError::bad_request(
+                    "ADVANCED_COUNT_ENTITY_INVALID",
+                    "Table is not present in the current SQL Server catalog.",
+                ));
+            }
+            let sql = format!(
+                "SELECT COUNT_BIG(*) AS exact_rows FROM {}.{}",
+                quote_sql_server_identifier(&schema),
+                quote_sql_server_identifier(&table),
+            );
+            tokio::time::timeout(
+                Duration::from_millis(COUNT_TIMEOUT_MS),
+                async {
+                    client.simple_query(sql).await?.into_row().await
+                },
+            )
+            .await
+            .map_err(|_| ApiError::database("SQL Server exact count timed out."))?
+            .map_err(|error| ApiError::database(format!("SQL Server exact count failed: {error}")))?
+            .and_then(|row| row.get::<i64, _>("exact_rows"))
+            .unwrap_or(0)
+        }
     };
 
     state.advanced.count_cache.write().await.insert(
@@ -2739,6 +2916,10 @@ fn quote_pg_identifier(value: &str) -> String {
 
 fn quote_mysql_identifier(value: &str) -> String {
     format!("`{}`", value.replace('`', "``"))
+}
+
+fn quote_sql_server_identifier(value: &str) -> String {
+    format!("[{}]", value.replace(']', "]]"))
 }
 
 fn normalized_read_query(sql: &str) -> Result<String, ApiError> {
@@ -2827,6 +3008,18 @@ pub(crate) async fn execute_query(
             ConnectionBackend::Sqlite(pool) => {
                 run_sqlite_query(
                     pool,
+                    task_run_id,
+                    sql,
+                    limit,
+                    offset,
+                    request.sort,
+                    filter_tree,
+                )
+                .await
+            }
+            ConnectionBackend::SqlServer(connection) => {
+                run_sql_server_query(
+                    connection,
                     task_run_id,
                     sql,
                     limit,
@@ -3963,6 +4156,198 @@ async fn run_sqlite_query(
     ))
 }
 
+async fn run_sql_server_query(
+    connection: SqlServerConnection,
+    run_id: String,
+    sql: String,
+    limit: usize,
+    offset: usize,
+    sort: Option<QuerySortRequest>,
+    filter_tree: Option<QueryFilterGroup>,
+) -> Result<QueryResponse, ApiError> {
+    let mut client = connect_sql_server(&connection).await?;
+    let describe_sql = format!("SELECT TOP (0) * FROM ({sql}) AS [__lightbi_query]");
+    let mut describe = client
+        .simple_query(describe_sql)
+        .await
+        .map_err(|error| ApiError::database(format!("Could not describe SQL Server result: {error}")))?;
+    let metadata = describe
+        .columns()
+        .await
+        .map_err(|error| ApiError::database(format!("Could not read SQL Server result metadata: {error}")))?
+        .unwrap_or(&[]);
+    let columns = metadata
+        .iter()
+        .enumerate()
+        .map(|(index, column)| {
+            let native_type = format!("{:?}", column.column_type());
+            QueryColumn {
+                id: format!("column:{index}:{}", column.name()),
+                name: column.name().to_string(),
+                logical_type: logical_type(&native_type),
+                native_type,
+            }
+        })
+        .collect::<Vec<_>>();
+    let names = columns.iter().map(|column| column.name.clone()).collect::<Vec<_>>();
+    validate_controls(&names, &sort, &filter_tree)?;
+    describe
+        .into_first_result()
+        .await
+        .map_err(|error| ApiError::database(format!("Could not complete SQL Server result description: {error}")))?;
+
+    let order = if let Some(sort) = sort {
+        format!(
+            "{} {}",
+            quote_sql_server_identifier(&sort.column),
+            match sort.direction { SortDirection::Asc => "ASC", SortDirection::Desc => "DESC" },
+        )
+    } else {
+        "(SELECT NULL)".to_string()
+    };
+    let filter = filter_tree
+        .as_ref()
+        .map(|group| format!(" WHERE {}", sql_server_filter_group(group)))
+        .unwrap_or_default();
+    let paged_sql = format!(
+        "SELECT * FROM ({sql}) AS [__lightbi_query]{filter} ORDER BY {order} OFFSET {offset} ROWS FETCH NEXT {} ROWS ONLY",
+        limit + 1,
+    );
+    let started_at = Instant::now();
+    let mut rows = tokio::time::timeout(
+        Duration::from_millis(STATEMENT_TIMEOUT_MS),
+        async { client.simple_query(paged_sql).await?.into_first_result().await },
+    )
+    .await
+    .map_err(|_| ApiError::database("SQL Server query timed out."))?
+    .map_err(|error| ApiError::database(format!("SQL Server query failed: {error}")))?;
+    let truncated = rows.len() > limit;
+    rows.truncate(limit);
+    let values = rows
+        .iter()
+        .map(|row| row.cells().map(|(_, value)| sql_server_cell(value)).collect())
+        .collect();
+    Ok(query_response(
+        run_id,
+        columns,
+        values,
+        offset,
+        limit,
+        truncated,
+        started_at.elapsed(),
+    ))
+}
+
+fn sql_server_filter_group(group: &QueryFilterGroup) -> String {
+    let separator = match group.combinator {
+        FilterCombinator::And => " AND ",
+        FilterCombinator::Or => " OR ",
+    };
+    format!(
+        "({})",
+        group
+            .children
+            .iter()
+            .map(sql_server_filter_node)
+            .collect::<Vec<_>>()
+            .join(separator)
+    )
+}
+
+fn sql_server_filter_node(node: &QueryFilterNode) -> String {
+    match node {
+        QueryFilterNode::Condition(filter) => sql_server_filter_condition(filter),
+        QueryFilterNode::Group(group) => sql_server_filter_group(group),
+    }
+}
+
+fn sql_server_filter_condition(filter: &QueryFilterRequest) -> String {
+    let column = quote_sql_server_identifier(&filter.column);
+    let text_column = format!("CAST({column} AS NVARCHAR(MAX))");
+    let value = sql_server_string_literal(&filter.value);
+    match filter.operator {
+        FilterOperator::Contains => format!("{text_column} LIKE {}", sql_server_string_literal(&format!("%{}%", filter.value))),
+        FilterOperator::NotContains => format!("({text_column} NOT LIKE {} OR {column} IS NULL)", sql_server_string_literal(&format!("%{}%", filter.value))),
+        FilterOperator::Equals => format!("{text_column} = {value}"),
+        FilterOperator::NotEquals => format!("({text_column} <> {value} OR {column} IS NULL)"),
+        FilterOperator::StartsWith => format!("{text_column} LIKE {}", sql_server_string_literal(&format!("{}%", filter.value))),
+        FilterOperator::EndsWith => format!("{text_column} LIKE {}", sql_server_string_literal(&format!("%{}", filter.value))),
+        FilterOperator::GreaterThan => format!("{text_column} > {value}"),
+        FilterOperator::GreaterOrEqual => format!("{text_column} >= {value}"),
+        FilterOperator::LessThan => format!("{text_column} < {value}"),
+        FilterOperator::LessOrEqual => format!("{text_column} <= {value}"),
+        FilterOperator::IsBlank => format!("({column} IS NULL OR {text_column} = N'')"),
+        FilterOperator::IsNotBlank => format!("({column} IS NOT NULL AND {text_column} <> N'')"),
+        FilterOperator::In | FilterOperator::NotIn => {
+            let values = split_filter_values(&filter.value);
+            let values = if values.is_empty() { vec![String::new()] } else { values };
+            let list = values.iter().map(|value| sql_server_string_literal(value)).collect::<Vec<_>>().join(", ");
+            if matches!(filter.operator, FilterOperator::NotIn) {
+                format!("({text_column} NOT IN ({list}) OR {column} IS NULL)")
+            } else {
+                format!("{text_column} IN ({list})")
+            }
+        }
+    }
+}
+
+fn sql_server_string_literal(value: &str) -> String {
+    format!("N'{}'", value.replace('\'', "''"))
+}
+
+fn sql_server_cell(value: &SqlServerColumnData<'static>) -> Value {
+    match value {
+        SqlServerColumnData::U8(value) => value.map(|value| json!(value)).unwrap_or(Value::Null),
+        SqlServerColumnData::I16(value) => value.map(|value| json!(value)).unwrap_or(Value::Null),
+        SqlServerColumnData::I32(value) => value.map(|value| json!(value)).unwrap_or(Value::Null),
+        SqlServerColumnData::I64(value) => value.map(|value| json!(value)).unwrap_or(Value::Null),
+        SqlServerColumnData::F32(value) => value.map(|value| json!(value)).unwrap_or(Value::Null),
+        SqlServerColumnData::F64(value) => value.map(|value| json!(value)).unwrap_or(Value::Null),
+        SqlServerColumnData::Bit(value) => value.map(|value| json!(value)).unwrap_or(Value::Null),
+        SqlServerColumnData::String(value) => value.as_ref().map(|value| json!(value.as_ref())).unwrap_or(Value::Null),
+        SqlServerColumnData::Guid(value) => value.map(|value| json!(value.to_string())).unwrap_or(Value::Null),
+        SqlServerColumnData::Binary(value) => value.as_ref().map(|value| json!(format!("{:02x?}", value.as_ref()))).unwrap_or(Value::Null),
+        SqlServerColumnData::Numeric(value) => value.as_ref().map(|value| json!(value.to_string())).unwrap_or(Value::Null),
+        SqlServerColumnData::Xml(value) => value.as_ref().map(|value| json!(value.to_string())).unwrap_or(Value::Null),
+        SqlServerColumnData::DateTime(_)
+        | SqlServerColumnData::SmallDateTime(_)
+        | SqlServerColumnData::DateTime2(_) => {
+            sql_server_temporal_cell::<chrono::NaiveDateTime>(value, |value| {
+                value.format("%Y-%m-%dT%H:%M:%S%.f").to_string()
+            })
+        }
+        SqlServerColumnData::Date(_) => {
+            sql_server_temporal_cell::<chrono::NaiveDate>(value, |value| {
+                value.format("%Y-%m-%d").to_string()
+            })
+        }
+        SqlServerColumnData::Time(_) => {
+            sql_server_temporal_cell::<chrono::NaiveTime>(value, |value| {
+                value.format("%H:%M:%S%.f").to_string()
+            })
+        }
+        SqlServerColumnData::DateTimeOffset(_) => {
+            sql_server_temporal_cell::<chrono::DateTime<chrono::FixedOffset>>(value, |value| {
+                value.to_rfc3339()
+            })
+        }
+    }
+}
+
+fn sql_server_temporal_cell<T>(
+    value: &SqlServerColumnData<'static>,
+    format: impl FnOnce(T) -> String,
+) -> Value
+where
+    T: for<'a> tiberius::FromSql<'a>,
+{
+    match T::from_sql(value) {
+        Ok(Some(value)) => Value::String(format(value)),
+        Ok(None) => Value::Null,
+        Err(error) => Value::String(format!("SQL Server temporal conversion failed: {error}")),
+    }
+}
+
 fn query_response(
     run_id: String,
     columns: Vec<QueryColumn>,
@@ -4183,6 +4568,12 @@ async fn run_sql_import_job(
                 "MongoDB SQL script import is not enabled.",
             ))
         }
+        ConnectionBackend::SqlServer(_) => {
+            return Err(ApiError::bad_request(
+                "ADVANCED_IMPORT_PROVIDER_UNSUPPORTED",
+                "SQL Server import is not enabled for this read-only beta provider.",
+            ))
+        }
     }
     invalidate_mutation_caches(&state, &connection_id).await;
     Ok(())
@@ -4364,6 +4755,12 @@ async fn run_csv_import_job(
                 "CSV import targets relational database sessions only.",
             ))
         }
+        ConnectionBackend::SqlServer(_) => {
+            return Err(ApiError::bad_request(
+                "ADVANCED_IMPORT_PROVIDER_UNSUPPORTED",
+                "SQL Server import is not enabled for this read-only beta provider.",
+            ))
+        }
     }
     invalidate_mutation_caches(&state, &connection_id).await;
     Ok(None)
@@ -4472,6 +4869,18 @@ async fn run_export_job(
             ConnectionBackend::Sqlite(pool) => {
                 run_sqlite_query(
                     pool,
+                    format!("export:{job_id}:{page_index}"),
+                    sql.clone(),
+                    EXPORT_PAGE_SIZE,
+                    offset,
+                    sort.clone(),
+                    filter_tree.clone(),
+                )
+                .await?
+            }
+            ConnectionBackend::SqlServer(connection) => {
+                run_sql_server_query(
+                    connection,
                     format!("export:{job_id}:{page_index}"),
                     sql.clone(),
                     EXPORT_PAGE_SIZE,
@@ -5252,6 +5661,7 @@ mod tests {
         assert!(!postgres.contains("Alicia"));
         let mysql = mysql_mutation_builder(&request, &request.rows[0])
             .sql()
+            .as_str()
             .to_string();
         assert!(mysql.starts_with("UPDATE `public`.`people` SET `name` = ?"));
         assert!(mysql.contains("`id` = ?"));
@@ -5267,6 +5677,7 @@ mod tests {
         insert.rows[0].changes.insert("id".into(), json!(3));
         let sqlite_insert = sqlite_mutation_builder(&insert, &insert.rows[0])
             .sql()
+            .as_str()
             .to_string();
         assert!(sqlite_insert.starts_with("INSERT INTO \"people\""));
         assert!(!sqlite_insert.contains("Alicia"));
@@ -5277,6 +5688,7 @@ mod tests {
         delete.rows[0].expected.clear();
         let sqlite_delete = sqlite_mutation_builder(&delete, &delete.rows[0])
             .sql()
+            .as_str()
             .to_string();
         assert!(sqlite_delete.starts_with("DELETE FROM \"people\" WHERE"));
         assert!(!sqlite_delete.contains("Alicia"));
@@ -5294,5 +5706,30 @@ mod tests {
             Err(error) => error,
         };
         assert_eq!(error.code, "ADVANCED_MUTATION_TYPE_UNSUPPORTED");
+    }
+
+    #[test]
+    fn compiles_sql_server_filters_without_exposing_unescaped_literals() {
+        let group = QueryFilterGroup {
+            combinator: FilterCombinator::And,
+            children: vec![
+                QueryFilterNode::Condition(QueryFilterRequest {
+                    column: "customer'name".into(),
+                    operator: FilterOperator::Equals,
+                    value: "O'Brien".into(),
+                }),
+                QueryFilterNode::Condition(QueryFilterRequest {
+                    column: "city".into(),
+                    operator: FilterOperator::In,
+                    value: "Hà Nội,Đà Nẵng".into(),
+                }),
+            ],
+        };
+
+        let sql = sql_server_filter_group(&group);
+        assert!(sql.contains("[customer'name]"));
+        assert!(sql.contains("N'O''Brien'"));
+        assert!(sql.contains("N'Hà Nội', N'Đà Nẵng'"));
+        assert!(!sql.contains("N'O'Brien'"));
     }
 }

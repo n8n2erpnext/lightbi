@@ -328,6 +328,8 @@ export const Advanced: React.FC = () => {
             ? 'SELECT sqlite_version() AS sqlite_version'
             : nextConnection.provider === 'mysql' || nextConnection.provider === 'mariadb'
               ? 'SELECT DATABASE() AS database_name, CURRENT_USER() AS user_name, NOW() AS server_time'
+              : nextConnection.provider === 'sqlserver'
+                ? 'SELECT DB_NAME() AS database_name, CURRENT_USER AS user_name, SYSDATETIME() AS server_time'
               : 'SELECT current_database() AS database, current_user AS user_name, now() AS server_time';
         patchTab(activeTab.id, { sql: defaultSql, plan: null, result: null, filters: [], parameters: {} });
       }

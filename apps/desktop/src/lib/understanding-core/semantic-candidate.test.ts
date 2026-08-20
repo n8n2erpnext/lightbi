@@ -79,7 +79,7 @@ describe("Phase 3A canonical semantic candidates and evidence", () => {
     }
   });
 
-  it("preserves type and technical conflicts instead of discarding candidates", () => {
+  it("preserves genuine type conflicts without rejecting numeric customer identifiers", () => {
     const artifact = artifactFor([
       ["revenue", "customer"],
       ["not numeric", 100],
@@ -91,7 +91,7 @@ describe("Phase 3A canonical semantic candidates and evidence", () => {
     expect(revenue).toBeDefined();
     expect(revenue?.conflictEvidence.some((evidence) => evidence.type === "physical_type_conflict")).toBe(true);
     expect(customer).toBeDefined();
-    expect(customer?.conflictEvidence.some((evidence) => evidence.type === "physical_type_conflict")).toBe(true);
+    expect(customer?.conflictEvidence.some((evidence) => evidence.type === "physical_type_conflict")).toBe(false);
   });
 
   it("applies generic multilingual registry corrections without source-specific rules", () => {

@@ -8,7 +8,7 @@ export type AdvancedConnection = {
   provider: AdvancedProviderId;
 };
 
-export type AdvancedProviderId = 'postgresql' | 'mysql' | 'mariadb' | 'sqlite' | 'mongodb';
+export type AdvancedProviderId = 'postgresql' | 'mysql' | 'mariadb' | 'sqlite' | 'mongodb' | 'sqlserver';
 
 export type AdvancedProviderCapabilityMap = {
   connect: boolean;
@@ -196,7 +196,7 @@ export async function loadAdvancedProviderPlugins(signal?: AbortSignal): Promise
   const providers = await readResponse<Array<Omit<AdvancedProviderPlugin, 'manifest'> & { manifest: Omit<AdvancedProviderPlugin['manifest'], 'id'> & { id: string } }>>(response);
   return providers.filter((provider): provider is AdvancedProviderPlugin => (
     provider.exposureGate.canExpose
-    && ['postgresql', 'mysql', 'mariadb', 'sqlite', 'mongodb'].includes(provider.manifest.id)
+    && ['postgresql', 'mysql', 'mariadb', 'sqlite', 'mongodb', 'sqlserver'].includes(provider.manifest.id)
   ));
 }
 
