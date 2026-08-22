@@ -58,7 +58,7 @@ Chọn một điểm trên biểu đồ, xem hoặc lọc thêm các dòng phù 
 
 ### Advanced Mode cho nhà phân tích cần kiểm soát trực tiếp
 
-Advanced Mode cung cấp workspace có quản trị cho file, bảng tính trực tuyến, SQL Server, PostgreSQL, MySQL, MariaDB, SQLite và MongoDB; mặc định read-only, kèm safe mode, SSH tùy chọn, khám phá schema, lịch sử truy vấn, chỉnh sửa cơ sở dữ liệu theo transaction có bước duyệt và handoff có quản trị về Simple BA.
+Advanced Mode cung cấp workspace có quản trị cho file, bảng tính trực tuyến, SQL Server, PostgreSQL, MySQL, MariaDB, SQLite và MongoDB; mặc định read-only, kèm safe mode, SSH tùy chọn, khám phá schema, lịch sử truy vấn, chỉnh sửa database theo transaction có bước duyệt và refresh toàn nguồn sau chỉnh sửa để quay lại Easy mà không cần export/import lại.
 
 ![Advanced Mode](assets/screenshots/lightbi-advanced-mode.png)
 

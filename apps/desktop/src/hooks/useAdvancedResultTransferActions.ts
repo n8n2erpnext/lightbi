@@ -7,7 +7,7 @@ import { CREATE_NEW_IMPORT_TARGET, copyTextToClipboard, hydrateTab, importColumn
 import type { AdvancedWorkspaceSource } from '../stores/advanced-source-store';
 import type { AdvancedFileSession } from '../lib/advanced-file-session';
 import { createInvestigationSession } from '../lib/investigation-session';
-import { classifyAdvancedResultCompleteness, createAdvancedResultHandoff } from '../lib/advanced-result-handoff';
+import { classifyAdvancedResultCompleteness, createAdvancedResultHandoff, materializeAdvancedResultPages } from '../lib/advanced-result-handoff';
 
 type TabPatch = Partial<WorkspaceTab> | ((tab: WorkspaceTab) => Partial<WorkspaceTab>);
 
@@ -192,23 +192,12 @@ export function createAdvancedResultTransferActions(context: AdvancedResultTrans
     downloadBlob(`${baseName}.csv`, new Blob([advancedResultToCsv(displayResult.columns, displayResult.rows)], { type: 'text/csv;charset=utf-8' }));
   };
 
-  const analyzeActiveResultInSimple = () => {
-    if (!displayResult) return;
-    if (displayResult.rows.length === 0) {
-      patchTab(activeTab.id, { warnings: ['Run a query with rows before creating a Simple BA brief.'] });
-      return;
-    }
-    const completeness = classifyAdvancedResultCompleteness(displayResult);
-    if (completeness.state !== 'complete') {
-      patchTab(activeTab.id, { warnings: [`This result is ${completeness.state}. Full-source governed analysis is unavailable until a complete result is materialized.`] });
-      return;
-    }
-
+  const openResultInSimple = (result: AdvancedQueryResult, sql: string, title = activeTab.title) => {
     const handoff = createAdvancedResultHandoff({
-      datasetId: `advanced:${activeTab.title}`,
-      title: activeTab.title,
+      datasetId: `advanced:${title}:${Date.now()}`,
+      title,
       provider: workspaceProvider,
-      sql: materializeSqlParameters(activeTab.sql, activeTab.parameters),
+      sql,
       configuration: {
         resultView: activeTab.resultView,
         visibleColumns: displayResult.columns.map(column => column.name),
@@ -217,7 +206,7 @@ export function createAdvancedResultTransferActions(context: AdvancedResultTrans
         sort: activeTab.sort ? { ...activeTab.sort } : null,
         tableContext: activeTab.tableContext ? { ...activeTab.tableContext } : null,
       },
-    }, displayResult);
+    }, result);
     createInvestigationSession(
       handoff.datasetId,
       handoff.analysisAction,
@@ -231,8 +220,23 @@ export function createAdvancedResultTransferActions(context: AdvancedResultTrans
       undefined,
       handoff.canonicalHandoff
     );
-    window.history.pushState(null, '', '/investigation');
+    const investigationPath = window.location.pathname.startsWith('/app') ? '/app/investigation' : '/investigation';
+    window.history.pushState(null, '', investigationPath);
     window.dispatchEvent(new PopStateEvent('popstate'));
+  };
+
+  const analyzeActiveResultInSimple = () => {
+    if (!displayResult) return;
+    if (displayResult.rows.length === 0) {
+      patchTab(activeTab.id, { warnings: ['Run a query with rows before creating a Simple BA brief.'] });
+      return;
+    }
+    const completeness = classifyAdvancedResultCompleteness(displayResult);
+    if (completeness.state !== 'complete') {
+      patchTab(activeTab.id, { warnings: [`This result is ${completeness.state}. Full-source governed analysis is unavailable until a complete result is materialized.`] });
+      return;
+    }
+    openResultInSimple(displayResult, materializeSqlParameters(activeTab.sql, activeTab.parameters));
   };
 
   const fetchQueryPage = async (tab: WorkspaceTab, offset: number, limit: number, runId: string): Promise<AdvancedQueryResult> => {
@@ -243,6 +247,40 @@ export function createAdvancedResultTransferActions(context: AdvancedResultTrans
     if (!connection) throw new Error('No active connection.');
     if (connection.provider === 'mongodb') return executeAdvancedDocumentQuery(connection.connectionId, { ...JSON.parse(tab.sql), runId, limit, offset });
     return executeAdvancedQuery(connection.connectionId, { runId, sql: executableSql, limit, offset, sort: tab.sort, filters, filterTree });
+  };
+
+  const returnFullSourceToEasy = async () => {
+    if (hasActivePendingChanges) {
+      patchTab(activeTab.id, { warnings: ['Commit or discard pending edits before returning to Easy analysis.'] });
+      return;
+    }
+    if (!activeTab.tableContext) {
+      patchTab(activeTab.id, { warnings: ['Choose a source table before returning to Easy analysis.'] });
+      return;
+    }
+    const sql = workspaceProvider === 'mongodb'
+      ? activeTab.sql
+      : `SELECT * FROM ${qualifiedTableReference(workspaceProvider, activeTab.tableContext.schema, activeTab.tableContext.table)}`;
+    const materializeTab = { ...activeTab, sql, filters: [], sort: undefined, offset: 0 } as WorkspaceTab;
+    patchTab(activeTab.id, { isRunning: true, warnings: ['Refreshing the complete post-edit source for Easy analysis…'], error: '' });
+    try {
+      const pages: AdvancedQueryResult[] = [];
+      let offset = 0;
+      const pageSize = 1000;
+      for (let pageIndex = 0; pageIndex < 1000; pageIndex += 1) {
+        const page = await fetchQueryPage(materializeTab, offset, pageSize, createAdvancedId());
+        pages.push(page);
+        if (!page.page.hasMore) break;
+        offset += page.rows.length;
+        if (page.rows.length === 0 || pageIndex === 999) throw new Error('The refreshed source exceeds the safe full-source materialization boundary.');
+      }
+      const complete = materializeAdvancedResultPages(pages);
+      if (complete.rows.length === 0) throw new Error('The refreshed source contains no rows to analyze.');
+      patchTab(activeTab.id, { isRunning: false, result: complete, warnings: [`Refreshed ${complete.rows.length.toLocaleString('en')} post-edit rows and returned them to Easy analysis.`] });
+      openResultInSimple(complete, sql, `${activeTab.tableContext.schema}.${activeTab.tableContext.table}`);
+    } catch (cause) {
+      patchTab(activeTab.id, { isRunning: false, error: cause instanceof Error ? cause.message : 'Could not refresh the post-edit source for Easy analysis.' });
+    }
   };
 
   const exportAllResult = async (format: 'csv' | 'xlsx' | 'json' | 'sql' = 'csv') => {
@@ -356,5 +394,5 @@ export function createAdvancedResultTransferActions(context: AdvancedResultTrans
   };
 
 
-  return { analyzeActiveResultInSimple, cancelFullExport, cancelSqlImport, copyResult, exportAllResult, exportResult, importSourceIntoTable, runAllStatements };
+  return { analyzeActiveResultInSimple, cancelFullExport, cancelSqlImport, copyResult, exportAllResult, exportResult, importSourceIntoTable, returnFullSourceToEasy, runAllStatements };
 }

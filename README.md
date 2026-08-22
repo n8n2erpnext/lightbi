@@ -65,7 +65,7 @@ Select a chart point, inspect or further filter the matching rows, then run the 
 
 ### Advanced Mode for analysts who need direct control
 
-Advanced Mode provides a governed workspace for files, online sheets, PostgreSQL, MySQL, MariaDB, SQLite, and MongoDB, with read-only defaults, safe-mode controls, optional SSH connectivity, schema discovery, query history, reviewed transactional database edits, and governed handoff back to Simple BA when the result is complete.
+Advanced Mode provides a governed workspace for files, online sheets, PostgreSQL, MySQL, MariaDB, SQLite, and MongoDB, with read-only defaults, safe-mode controls, optional SSH connectivity, schema discovery, query history, reviewed transactional database edits, and a full-source post-edit refresh back to Easy analysis without export/re-import.
 
 ![LightBI Advanced Mode](assets/screenshots/lightbi-advanced-mode.png)
 

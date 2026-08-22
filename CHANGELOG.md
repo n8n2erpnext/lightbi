@@ -12,6 +12,7 @@ All notable public changes to LightBI are recorded here.
 
 - Added opt-out-aware native app session duration and whitelisted Easy/Advanced feature-use telemetry.
 - Added governed `advanced_database_edit` usage events without collecting SQL, database identity, schema, table, column, file, or business data.
+- Added full-source post-edit refresh and direct Advanced-to-Easy handoff so Easy analysis sees committed database changes without export/re-import.
 
 ## Distribution Portal [0.1.3] - 2026-08-22
 

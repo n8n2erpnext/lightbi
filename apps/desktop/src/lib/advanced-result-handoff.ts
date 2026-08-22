@@ -80,6 +80,28 @@ export function classifyAdvancedResultCompleteness(result: AdvancedQueryResult):
   };
 }
 
+export function materializeAdvancedResultPages(pages: AdvancedQueryResult[]): AdvancedQueryResult {
+  if (pages.length === 0) throw new Error('advanced_full_source_pages_missing');
+  const first = pages[0];
+  let expectedOffset = 0;
+  for (const page of pages) {
+    if (page.truncated || page.page.offset !== expectedOffset) throw new Error('advanced_full_source_page_continuity_failed');
+    if (page.columns.map(column => column.id).join('|') !== first.columns.map(column => column.id).join('|')) throw new Error('advanced_full_source_schema_changed');
+    expectedOffset += page.rows.length;
+  }
+  if (pages[pages.length - 1].page.hasMore) throw new Error('advanced_full_source_incomplete');
+  const rows = pages.flatMap(page => page.rows);
+  return {
+    ...first,
+    rows,
+    rowIds: undefined,
+    page: { offset: 0, limit: Math.max(rows.length, 1), hasMore: false, estimatedTotal: rows.length },
+    truncated: false,
+    executionMs: pages.reduce((sum, page) => sum + page.executionMs, 0),
+    warnings: [...new Set(pages.flatMap(page => page.warnings))],
+  };
+}
+
 function unique(values: readonly string[]): string[] {
   return [...new Set(values.filter(Boolean))].sort();
 }
