@@ -4,7 +4,23 @@ import react from '@vitejs/plugin-react'
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    {
+      name: 'lightbi-distribution-trailing-slash',
+      configureServer(server) {
+        server.middlewares.use((request, response, next) => {
+          if (request.url === '/distribution') {
+            response.statusCode = 308;
+            response.setHeader('location', '/distribution/');
+            response.end();
+            return;
+          }
+          next();
+        });
+      },
+    },
+  ],
   server: {
     allowedHosts: ['lightbi.thaiduy.digital'],
     proxy: {

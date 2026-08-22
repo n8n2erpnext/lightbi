@@ -27,6 +27,8 @@ describe('duckdb-wasm-loader', () => {
     const config = readFileSync(join(process.cwd(), 'vite.config.ts'), 'utf8');
     expect(config).toContain("include: ['@duckdb/duckdb-wasm/dist/duckdb-browser']");
     expect(config).not.toContain("exclude: ['@duckdb/duckdb-wasm']");
+    expect(config).toContain("request.url === '/distribution'");
+    expect(config).toContain("response.statusCode = 308");
   });
 
   // NOTE: In a true E2E or browser test, Worker and fetch are available, 
