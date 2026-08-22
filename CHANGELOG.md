@@ -2,18 +2,18 @@
 
 All notable public changes to LightBI are recorded here.
 
-## [0.9.3-beta.7] - 2026-08-22
+## Distribution Portal [0.1.3] - 2026-08-22
 
 - Replaced the shared admin token prompt with a single PostgreSQL-backed administrator account, scrypt password hashing, Redis sessions, secure HttpOnly cookies, and login throttling.
 - Added a protected Pro Revenue tab with period filters, paid-order, active-license, currency, average-order, and revenue-series views ready for Stripe activation after Beta.
 
-## [0.9.2-beta.7] - 2026-08-22
+## Distribution Portal [0.1.2] - 2026-08-22
 
 - Added week, month, quarter, and year views to distribution analytics.
 - Added privacy-safe visits, bounce rate, duration, active visitors, pages, sources, browser, OS, device, language, and timezone-offset reporting inspired by Umami metric definitions.
 - Added monthly rotating HMAC network counts from coarse `/24` IPv4 and `/48` IPv6 prefixes; raw client IPs are never stored.
 
-## [0.9.1-beta.7] - 2026-08-22
+## Distribution Portal [0.1.1] - 2026-08-22
 
 - Added privacy-safe distribution analytics backed by PostgreSQL with Redis summary caching.
 - Separated web visitors from real desktop installation pairing.
