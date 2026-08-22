@@ -5,8 +5,8 @@
 </p>
 
 <p align="center">
-  <a href="https://lightbi.thaiduy.digital">Live demo</a> ·
-  <a href="https://lightbi.thaiduy.digital/distribution/">Download Beta</a> ·
+  <a href="https://lightbi.thaiduy.digital/app">Live demo</a> ·
+  <a href="https://lightbi.thaiduy.digital/">Download Beta</a> ·
   <a href="README.vi.md">Tiếng Việt</a>
 </p>
 
@@ -65,7 +65,7 @@ Select a chart point, inspect or further filter the matching rows, then run the 
 
 ### Advanced Mode for analysts who need direct control
 
-Advanced Mode provides a read-only workspace for files, online sheets, PostgreSQL, MySQL, MariaDB, SQLite, and MongoDB, with safe-mode controls, optional SSH connectivity, schema discovery, query history, editable result workflows, and governed handoff back to Simple BA when the result is complete.
+Advanced Mode provides a governed workspace for files, online sheets, PostgreSQL, MySQL, MariaDB, SQLite, and MongoDB, with read-only defaults, safe-mode controls, optional SSH connectivity, schema discovery, query history, reviewed transactional database edits, and governed handoff back to Simple BA when the result is complete.
 
 ![LightBI Advanced Mode](assets/screenshots/lightbi-advanced-mode.png)
 
@@ -111,7 +111,7 @@ LightBI is a TypeScript + Rust monorepo:
 
 ```text
 apps/desktop/          React 19 desktop and web QA interface
-apps/distribution/     Basic/Pro download, license, payment, and anonymous activation portal
+apps/distribution/     Distribution analytics, admin auth, Pro revenue, license lifecycle, SMTP, and payment adapter
 apps/server/           Embedded/standalone Axum backend and Advanced APIs
 packages/              Shared UI, runtime, schemas, and query contracts
 crates/                Rust domain, runtime, DuckDB, export, and Tauri crates
@@ -134,7 +134,7 @@ pnpm install --frozen-lockfile
 pnpm --filter @lightbi/desktop dev
 ```
 
-Open `http://localhost:5173`.
+Open `http://localhost:5173/app` for the web interface. When the distribution service is running, `http://localhost:5173/` serves the download portal.
 
 ### Validate
 
@@ -153,7 +153,7 @@ Tagged releases are built on GitHub Actions using a Windows runner. The release 
 - SHA-256 checksums;
 - the exact source tag used to build the artifact.
 
-Download from the [LightBI Distribution Portal](https://lightbi.thaiduy.digital/distribution/) or directly from [GitHub Releases](https://github.com/n8n2erpnext/lightbi/releases).
+Download from the [LightBI Distribution Portal](https://lightbi.thaiduy.digital/) or directly from [GitHub Releases](https://github.com/n8n2erpnext/lightbi/releases).
 
 ## Beta boundaries
 
@@ -166,6 +166,8 @@ Download from the [LightBI Distribution Portal](https://lightbi.thaiduy.digital/
 ## Security and privacy
 
 Please read [SECURITY.md](SECURITY.md) before reporting a vulnerability. The local-first boundary and credential handling model are described in [docs/PRIVACY.md](docs/PRIVACY.md).
+
+The native Beta may send opt-out-aware anonymous installation/session duration and whitelisted feature identifiers such as Easy Mode, Advanced Mode, Deep BA, and governed database-edit events. It never sends imported files, SQL text, database URLs, schema/table/column identity, cell values, charts, or BA findings. Distribution administrators can issue, email, rotate, or revoke hashed Pro keys, including complimentary and partner-discount licenses.
 
 ## Contributing
 

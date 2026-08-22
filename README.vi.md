@@ -5,8 +5,8 @@
 </p>
 
 <p align="center">
-  <a href="https://lightbi.thaiduy.digital">Demo trực tuyến</a> ·
-  <a href="https://lightbi.thaiduy.digital/distribution/">Tải bản Beta</a> ·
+  <a href="https://lightbi.thaiduy.digital/app">Demo trực tuyến</a> ·
+  <a href="https://lightbi.thaiduy.digital/">Tải bản Beta</a> ·
   <a href="README.md">English</a>
 </p>
 
@@ -58,7 +58,7 @@ Chọn một điểm trên biểu đồ, xem hoặc lọc thêm các dòng phù 
 
 ### Advanced Mode cho nhà phân tích cần kiểm soát trực tiếp
 
-Advanced Mode cung cấp workspace read-only cho file, bảng tính trực tuyến, SQL Server, PostgreSQL, MySQL, MariaDB, SQLite và MongoDB; kèm safe mode, SSH tùy chọn, khám phá schema, lịch sử truy vấn, quy trình chỉnh sửa kết quả và handoff có quản trị về Simple BA khi kết quả đã đầy đủ.
+Advanced Mode cung cấp workspace có quản trị cho file, bảng tính trực tuyến, SQL Server, PostgreSQL, MySQL, MariaDB, SQLite và MongoDB; mặc định read-only, kèm safe mode, SSH tùy chọn, khám phá schema, lịch sử truy vấn, chỉnh sửa cơ sở dữ liệu theo transaction có bước duyệt và handoff có quản trị về Simple BA.
 
 ![Advanced Mode](assets/screenshots/lightbi-advanced-mode.png)
 
@@ -104,7 +104,7 @@ LightBI là monorepo TypeScript + Rust:
 
 ```text
 apps/desktop/          Giao diện React 19 cho desktop và web QA
-apps/distribution/     Portal tải Basic/Pro, license, thanh toán và kích hoạt ẩn danh
+apps/distribution/     Analytics phân phối, đăng nhập admin, doanh thu Pro, vòng đời license, SMTP và payment adapter
 apps/server/           Axum backend nhúng/độc lập và Advanced APIs
 packages/              UI, runtime, schema và query contract dùng chung
 crates/                Domain, runtime, DuckDB, export và Tauri bằng Rust
@@ -127,7 +127,7 @@ pnpm install --frozen-lockfile
 pnpm --filter @lightbi/desktop dev
 ```
 
-Mở `http://localhost:5173`.
+Mở `http://localhost:5173/app` để dùng giao diện web. Khi dịch vụ phân phối chạy, `http://localhost:5173/` là portal tải ứng dụng.
 
 ### Kiểm tra
 
@@ -146,7 +146,7 @@ Mỗi tag phát hành được GitHub Actions build trên Windows. Release bao g
 - checksum SHA-256;
 - tag nguồn chính xác dùng để tạo artifact.
 
-Tải từ [LightBI Distribution Portal](https://lightbi.thaiduy.digital/distribution/) hoặc trực tiếp tại [GitHub Releases](https://github.com/n8n2erpnext/lightbi/releases).
+Tải từ [LightBI Distribution Portal](https://lightbi.thaiduy.digital/) hoặc trực tiếp tại [GitHub Releases](https://github.com/n8n2erpnext/lightbi/releases).
 
 ## Giới hạn Beta
 
@@ -159,6 +159,8 @@ Tải từ [LightBI Distribution Portal](https://lightbi.thaiduy.digital/distrib
 ## Bảo mật và riêng tư
 
 Đọc [SECURITY.md](SECURITY.md) trước khi báo cáo lỗ hổng. Biên local-first và mô hình xử lý thông tin xác thực được trình bày tại [docs/PRIVACY.md](docs/PRIVACY.md).
+
+Bản native Beta có thể gửi installation ID ẩn danh, thời lượng phiên và mã tính năng thuộc whitelist như Easy Mode, Advanced Mode, Deep BA hoặc sự kiện chỉnh sửa database có quản trị; người dùng có thể tắt pairing. LightBI không gửi file đã nhập, nội dung SQL, URL database, tên schema/bảng/cột, giá trị ô, biểu đồ hoặc phát hiện BA. Admin phân phối có thể cấp, gửi mail, rotate hoặc thu hồi Pro key dạng hash, gồm key miễn phí và key partner-discount.
 
 ## Đóng góp
 

@@ -7,6 +7,8 @@ import { isNativeLightBI } from './lib/native-runtime';
 import { startAppUsageTelemetry } from './lib/app-usage-telemetry';
 import './index.css';
 
+document.title = window.location.pathname.startsWith('/app') ? 'LightBI — Live Demo' : 'LightBI Desktop';
+
 if (isNativeLightBI()) {
   void pairLightBIInstallation();
   startAppUsageTelemetry();
