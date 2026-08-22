@@ -1,5 +1,6 @@
 const state = { config: null };
-const routeBase = location.pathname.startsWith('/distribution') ? '/distribution' : '';
+const portalBase = location.pathname.startsWith('/distribution') ? '/distribution' : '';
+const routeBase = portalBase || '/distribution-api';
 
 function installationId() {
   let id = localStorage.getItem('lightbi-distribution-installation-id');
@@ -131,9 +132,22 @@ async function admin() {
   const params = new URLSearchParams(location.search);
   const requestedDays = Number(params.get('days'));
   const days = [7, 30, 90, 365].includes(requestedDays) ? requestedDays : 30;
+  const resetToken = params.get('reset');
+  if (resetToken) {
+    document.body.innerHTML = `<main class="login-shell"><form class="login-card" id="admin-reset"><span class="eyebrow">LIGHTBI DISTRIBUTION</span><h1>Set a new password</h1><p>Use at least 16 characters. This reset link works once and expires after 15 minutes.</p><label>New password<input name="password" type="password" autocomplete="new-password" minlength="16" required></label><label>Confirm password<input name="confirm" type="password" autocomplete="new-password" minlength="16" required></label><button class="button dark" type="submit">Update password</button><small id="login-error" role="alert"></small></form></main>`;
+    document.querySelector('#admin-reset').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const form = new FormData(event.currentTarget);
+      if (form.get('password') !== form.get('confirm')) return document.querySelector('#login-error').textContent = 'Passwords do not match.';
+      const response = await fetch(`${routeBase}/api/admin/password/reset`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ token: resetToken, password: form.get('password') }) });
+      if (response.ok) location.href = `${portalBase}/admin`;
+      else document.querySelector('#login-error').textContent = 'This reset link is invalid or expired.';
+    });
+    return true;
+  }
   const sessionResponse = await fetch(`${routeBase}/api/admin/session`);
   if (!sessionResponse.ok) {
-    document.body.innerHTML = `<main class="login-shell"><form class="login-card" id="admin-login"><span class="eyebrow">LIGHTBI DISTRIBUTION</span><h1>Admin sign in</h1><p>One protected account for analytics, installs, licenses and Pro revenue.</p><label>Email<input name="email" type="email" autocomplete="username" required value="me@thaiduy.digital"></label><label>Password<input name="password" type="password" autocomplete="current-password" required></label><button class="button dark" type="submit">Sign in</button><small id="login-error" role="alert"></small></form></main>`;
+    document.body.innerHTML = `<main class="login-shell"><form class="login-card" id="admin-login"><span class="eyebrow">LIGHTBI DISTRIBUTION</span><h1>Admin sign in</h1><p>One protected account for analytics, installs, licenses and Pro revenue.</p><label>Email<input name="email" type="email" autocomplete="username" required value="me@thaiduy.digital"></label><label>Password<input name="password" type="password" autocomplete="current-password" required></label><button class="button dark" type="submit">Sign in</button><button class="login-link" type="button" id="forgot-password">Email a reset link</button><small id="login-error" role="alert"></small></form></main>`;
     document.querySelector('#admin-login').addEventListener('submit', async (event) => {
       event.preventDefault();
       const form = new FormData(event.currentTarget);
@@ -141,9 +155,52 @@ async function admin() {
       if (response.ok) location.reload();
       else document.querySelector('#login-error').textContent = response.status === 429 ? 'Too many attempts. Try again later.' : 'Email or password is incorrect.';
     });
+    document.querySelector('#forgot-password').addEventListener('click', async () => {
+      const email = document.querySelector('input[name="email"]').value;
+      const response = await fetch(`${routeBase}/api/admin/password/request`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ email }) });
+      document.querySelector('#login-error').textContent = response.ok ? 'If the account exists, a reset link has been sent.' : 'Email service is temporarily unavailable.';
+    });
     return true;
   }
-  const tab = params.get('tab') === 'revenue' ? 'revenue' : 'analytics';
+  const tab = params.get('tab') === 'revenue' ? 'revenue' : params.get('tab') === 'app' ? 'app' : params.get('tab') === 'licenses' ? 'licenses' : 'analytics';
+  if (tab === 'licenses') {
+    const response = await fetch(`${routeBase}/api/admin/licenses`);
+    if (!response.ok) return true;
+    const data = await response.json();
+    const safe = (value) => String(value ?? '').replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
+    const rows = (data.licenses || []).map((item) => `<tr><td>${safe(item.label||'—')}</td><td>${safe(String(item.kind).replaceAll('_',' '))}</td><td>${safe(item.status)}</td><td>${safe(item.discount_percent??'—')}%</td><td>${safe(item.devices)}/${safe(item.max_devices)}</td><td>${safe(item.expires_at?String(item.expires_at).slice(0,10):'Never')}</td><td>${item.status==='active'?`<button class="table-action" data-license-action="rotate" data-license-id="${safe(item.id)}">Rotate</button><button class="table-action danger" data-license-action="revoke" data-license-id="${safe(item.id)}">Revoke</button>`:'—'}</td></tr>`).join('');
+    document.body.innerHTML = `<main class="admin-shell"><div class="admin-head"><div><span class="eyebrow">LIGHTBI DISTRIBUTION</span><h1>License management</h1><p>Create, email, rotate and revoke Pro keys. Plaintext keys are never stored.</p><nav class="admin-tabs"><a href="${portalBase}/admin">Analytics</a><a href="${portalBase}/admin?tab=app">App usage</a><a class="active" href="${portalBase}/admin?tab=licenses">Licenses</a><a href="${portalBase}/admin?tab=revenue">Pro revenue</a></nav></div><button class="button" data-admin-logout>Sign out</button></div><section class="license-create"><form id="license-create"><label>Campaign/partner label<input name="label" required maxlength="120" placeholder="Beta partner campaign"></label><label>Key type<select name="kind"><option value="complimentary">Complimentary Pro</option><option value="partner_discount">Partner discount</option></select></label><label>Discount %<input name="discountPercent" type="number" min="1" max="100" value="100"></label><label>Max devices<input name="maxDevices" type="number" min="1" max="100" value="3"></label><label>Expires<input name="expiresAt" type="date"></label><label>Email key to<input name="email" type="email" placeholder="customer@example.com"></label><button class="button dark" type="submit">Generate Pro key</button></form><div class="one-time-key" id="one-time-key">New keys appear here once.</div></section><section class="chart-card"><h2>Issued licenses</h2><div class="table-scroll"><table><thead><tr><th>Label</th><th>Type</th><th>Status</th><th>Discount</th><th>Devices</th><th>Expires</th><th>Actions</th></tr></thead><tbody>${rows}</tbody></table></div></section></main>`;
+    document.querySelector('#license-create').addEventListener('submit', async (event) => {
+      event.preventDefault(); const form = Object.fromEntries(new FormData(event.currentTarget));
+      const result = await fetch(`${routeBase}/api/admin/licenses`, { method:'POST', headers:{'content-type':'application/json','x-lightbi-admin-action':'1'}, body:JSON.stringify(form) });
+      const payload = await result.json();
+      document.querySelector('#one-time-key').textContent = result.ok ? `Copy now: ${payload.licenseKey}${form.email?' · emailed':''}` : `Could not generate key: ${payload.error||'request failed'}`;
+    });
+    document.querySelectorAll('[data-license-action]').forEach((button) => button.addEventListener('click', async () => {
+      const action = button.dataset.licenseAction; if (action==='revoke' && !confirm('Revoke this key and downgrade its paired machines to Basic?')) return;
+      const email = action==='rotate' ? prompt('Email the replacement key to (optional):') : null;
+      const result = await fetch(`${routeBase}/api/admin/licenses/${encodeURIComponent(button.dataset.licenseId)}/${action}`, { method:'POST', headers:{'content-type':'application/json','x-lightbi-admin-action':'1'}, body:JSON.stringify({email}) });
+      const payload = await result.json();
+      if (result.ok && payload.licenseKey) alert(`Replacement key (copy now): ${payload.licenseKey}`);
+      if (result.ok) location.reload(); else alert(payload.error||'License action failed');
+    }));
+    document.querySelector('[data-admin-logout]').addEventListener('click', async () => { await fetch(`${routeBase}/api/admin/logout`, { method: 'POST' }); location.reload(); });
+    return true;
+  }
+  if (tab === 'app') {
+    const response = await fetch(`${routeBase}/api/admin/app-usage?days=${days}`);
+    if (!response.ok) return true;
+    const usage = await response.json();
+    const safe = (value) => String(value ?? '').replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
+    const totals = usage.totals || {};
+    const duration = Number(totals.average_duration_seconds || 0);
+    const usageChart = lineChart(usage.daily || [], [{ key: 'sessions', name: 'App sessions', color: '#315bea', area: true }, { key: 'active_machines', name: 'Active machines', color: '#12a779' }], 'App sessions and active machines');
+    const rangeLinks = [{d:7,l:'Week'},{d:30,l:'Month'},{d:90,l:'Quarter'},{d:365,l:'Year'}].map((item) => `<a class="range-link ${days===item.d?'active':''}" href="${portalBase}/admin?tab=app&days=${item.d}">${item.l}</a>`).join('');
+    const featureRows = (usage.features || []).map((row) => `<tr><td>${safe(String(row.label).replaceAll('_',' '))}</td><td>${safe(row.value)}</td><td>${safe(row.machines)}</td></tr>`).join('');
+    document.body.innerHTML = `<main class="admin-shell"><div class="admin-head"><div><span class="eyebrow">LIGHTBI DISTRIBUTION</span><h1>App usage</h1><p>${days}-day privacy-safe native-app activity · no file names, SQL, table names or business data</p><nav class="admin-tabs"><a href="${portalBase}/admin?days=${days}">Analytics</a><a class="active" href="${portalBase}/admin?tab=app&days=${days}">App usage</a><a href="${portalBase}/admin?tab=licenses">Licenses</a><a href="${portalBase}/admin?tab=revenue&days=${days}">Pro revenue</a></nav><nav class="range-nav">${rangeLinks}</nav></div><button class="button" data-admin-logout>Sign out</button></div><section class="admin-metrics"><article><small>APP SESSIONS</small><strong>${safe(totals.sessions||0)}</strong></article><article><small>ACTIVE MACHINES</small><strong>${safe(totals.machines||0)}</strong></article><article><small>AVG OPEN TIME</small><strong>${safe(duration>=60?`${Math.floor(duration/60)}m ${duration%60}s`:`${duration}s`)}</strong></article><article><small>EASY MODE</small><strong>${safe(totals.easy_mode||0)}</strong></article><article><small>ADVANCED MODE</small><strong>${safe(totals.advanced_mode||0)}</strong></article><article><small>DATABASE EDITS</small><strong>${safe(totals.database_edits||0)}</strong></article></section><section class="chart-card"><span class="chart-kicker">NATIVE APP</span><h2>Sessions and active machines</h2>${usageChart}</section><section class="admin-grid"><article><h2>Feature use</h2><div class="table-scroll"><table><thead><tr><th>Feature</th><th>Uses</th><th>Machines</th></tr></thead><tbody>${featureRows}</tbody></table></div></article><article><h2>Platforms</h2>${donut((usage.platforms||[]).map((row)=>({label:safe(row.label),value:Number(row.value)||0})))}</article></section><section class="admin-grid"><article><h2>Versions</h2>${donut((usage.versions||[]).map((row)=>({label:safe(row.label),value:Number(row.value)||0})))}</article><article><h2>Governed telemetry</h2><div class="signal-list"><span>Easy/Advanced <b>mode only</b></span><span>DB edit <b>event only</b></span><span>SQL/data <b>never sent</b></span></div></article></section></main>`;
+    document.querySelector('[data-admin-logout]').addEventListener('click', async () => { await fetch(`${routeBase}/api/admin/logout`, { method: 'POST' }); location.reload(); });
+    return true;
+  }
   if (tab === 'revenue') {
     const response = await fetch(`${routeBase}/api/admin/revenue?days=${days}`);
     if (!response.ok) return true;
@@ -154,8 +211,8 @@ async function admin() {
     const firstCurrency = revenue.currencies?.[0]?.currency;
     const revenueSeries = (revenue.daily || []).filter((row) => !firstCurrency || row.currency === firstCurrency).map((row) => ({ day: row.day, gross: Number(row.gross_minor) / 100 }));
     const revenueChart = lineChart(revenueSeries, [{ key: 'gross', name: firstCurrency ? `Revenue ${firstCurrency}` : 'Revenue', color: '#12a779', area: true }], 'Pro revenue over time');
-    const rangeLinks = [{d:7,l:'Week'},{d:30,l:'Month'},{d:90,l:'Quarter'},{d:365,l:'Year'}].map((item) => `<a class="range-link ${days===item.d?'active':''}" href="${routeBase}/admin?tab=revenue&days=${item.d}">${item.l}</a>`).join('');
-    document.body.innerHTML = `<main class="admin-shell"><div class="admin-head"><div><span class="eyebrow">LIGHTBI DISTRIBUTION</span><h1>Pro revenue</h1><p>${days}-day view · payment adapter ${revenue.paymentConfigured?'active':'waiting for Stripe configuration'}</p><nav class="admin-tabs"><a href="${routeBase}/admin?days=${days}">Analytics</a><a class="active" href="${routeBase}/admin?tab=revenue&days=${days}">Pro revenue</a></nav><nav class="range-nav">${rangeLinks}</nav></div><button class="button" data-admin-logout>Sign out</button></div><section class="admin-metrics">${currencyCards}<article><small>PAID ORDERS</small><strong>${safe(revenue.paidOrders)}</strong></article><article><small>ACTIVE LICENSES</small><strong>${safe(revenue.activeLicenses)}</strong></article></section><section class="chart-card"><span class="chart-kicker">REVENUE</span><h2>Paid Pro revenue</h2>${revenueChart}</section><section class="chart-card"><h2>Revenue records</h2><div class="table-scroll"><table><thead><tr><th>Day</th><th>Currency</th><th>Gross</th><th>Orders</th></tr></thead><tbody>${(revenue.daily||[]).map((row)=>`<tr><td>${safe(row.day)}</td><td>${safe(row.currency)}</td><td>${safe(money(row.gross_minor,row.currency))}</td><td>${safe(row.orders)}</td></tr>`).join('')}</tbody></table></div></section></main>`;
+    const rangeLinks = [{d:7,l:'Week'},{d:30,l:'Month'},{d:90,l:'Quarter'},{d:365,l:'Year'}].map((item) => `<a class="range-link ${days===item.d?'active':''}" href="${portalBase}/admin?tab=revenue&days=${item.d}">${item.l}</a>`).join('');
+    document.body.innerHTML = `<main class="admin-shell"><div class="admin-head"><div><span class="eyebrow">LIGHTBI DISTRIBUTION</span><h1>Pro revenue</h1><p>${days}-day view · payment adapter ${revenue.paymentConfigured?'active':'waiting for Stripe configuration'}</p><nav class="admin-tabs"><a href="${portalBase}/admin?days=${days}">Analytics</a><a href="${portalBase}/admin?tab=app&days=${days}">App usage</a><a href="${portalBase}/admin?tab=licenses">Licenses</a><a class="active" href="${portalBase}/admin?tab=revenue&days=${days}">Pro revenue</a></nav><nav class="range-nav">${rangeLinks}</nav></div><button class="button" data-admin-logout>Sign out</button></div><section class="admin-metrics">${currencyCards}<article><small>PAID ORDERS</small><strong>${safe(revenue.paidOrders)}</strong></article><article><small>ACTIVE LICENSES</small><strong>${safe(revenue.activeLicenses)}</strong></article></section><section class="chart-card"><span class="chart-kicker">REVENUE</span><h2>Paid Pro revenue</h2>${revenueChart}</section><section class="chart-card"><h2>Revenue records</h2><div class="table-scroll"><table><thead><tr><th>Day</th><th>Currency</th><th>Gross</th><th>Orders</th></tr></thead><tbody>${(revenue.daily||[]).map((row)=>`<tr><td>${safe(row.day)}</td><td>${safe(row.currency)}</td><td>${safe(money(row.gross_minor,row.currency))}</td><td>${safe(row.orders)}</td></tr>`).join('')}</tbody></table></div></section></main>`;
     document.querySelector('[data-admin-logout]').addEventListener('click', async () => { await fetch(`${routeBase}/api/admin/logout`, { method: 'POST' }); location.reload(); });
     return true;
   }
@@ -178,8 +235,8 @@ async function admin() {
   const safeItems = (items) => items.map((row) => ({ label: safe(row.label), value: Number(row.value) || 0 }));
   const timezoneItems = (d.timezones || []).map((row) => ({ label: safe(timezoneLabel(row.label)), value: Number(row.value) || 0 }));
   const formatDuration = (seconds) => seconds >= 60 ? `${Math.floor(seconds/60)}m ${seconds%60}s` : `${seconds || 0}s`;
-  const rangeLinks = [{d:7,l:'Week'},{d:30,l:'Month'},{d:90,l:'Quarter'},{d:365,l:'Year'}].map((item) => `<a class="range-link ${days===item.d?'active':''}" href="${routeBase}/admin?days=${item.d}">${item.l}</a>`).join('');
-  document.body.innerHTML = `<main class="admin-shell"><div class="admin-head"><div><span class="eyebrow">LIGHTBI DISTRIBUTION</span><h1>Privacy-safe release signals</h1><p>${days}-day view · PostgreSQL source · ${safe(d.cache || 'no')} cache · no raw IP or business-data collection</p><nav class="admin-tabs"><a class="active" href="${routeBase}/admin?days=${days}">Analytics</a><a href="${routeBase}/admin?tab=revenue&days=${days}">Pro revenue</a></nav><nav class="range-nav">${rangeLinks}</nav></div><button class="button" data-admin-logout>Sign out</button></div>
+  const rangeLinks = [{d:7,l:'Week'},{d:30,l:'Month'},{d:90,l:'Quarter'},{d:365,l:'Year'}].map((item) => `<a class="range-link ${days===item.d?'active':''}" href="${portalBase}/admin?days=${item.d}">${item.l}</a>`).join('');
+  document.body.innerHTML = `<main class="admin-shell"><div class="admin-head"><div><span class="eyebrow">LIGHTBI DISTRIBUTION</span><h1>Privacy-safe release signals</h1><p>${days}-day view · PostgreSQL source · ${safe(d.cache || 'no')} cache · no raw IP or business-data collection</p><nav class="admin-tabs"><a class="active" href="${portalBase}/admin?days=${days}">Analytics</a><a href="${portalBase}/admin?tab=app&days=${days}">App usage</a><a href="${portalBase}/admin?tab=licenses">Licenses</a><a href="${portalBase}/admin?tab=revenue&days=${days}">Pro revenue</a></nav><nav class="range-nav">${rangeLinks}</nav></div><button class="button" data-admin-logout>Sign out</button></div>
     <section class="admin-metrics"><article><small>VISITORS</small><strong>${safe(totals.unique_visitors || 0)}</strong></article><article><small>VISITS</small><strong>${safe(totals.visits || 0)}</strong></article><article><small>VIEWS</small><strong>${safe(totals.page_views || 0)}</strong></article><article><small>ANON NETWORKS</small><strong>${safe(totals.anonymous_networks || 0)}</strong></article><article><small>BOUNCE RATE</small><strong>${safe(totals.bounce_rate || 0)}%</strong></article><article><small>VISIT DURATION</small><strong>${safe(formatDuration(totals.visit_duration_seconds || 0))}</strong></article><article><small>ACTIVE NOW</small><strong>${safe(totals.active_visitors || 0)}</strong></article><article><small>DOWNLOAD CLICKS</small><strong>${safe(totals.downloads || 0)}</strong></article><article><small>TOTAL MACHINES</small><strong>${safe(totals.total_machines || 0)}</strong></article><article><small>BASIC INSTALLS</small><strong>${safe(totals.basic_installs || 0)}</strong></article><article><small>PRO INSTALLS</small><strong>${safe(totals.pro_installs || 0)}</strong></article><article><small>ACTIVE MACHINES TODAY</small><strong>${safe(totals.daily_active || 0)}</strong></article></section>
     <section class="chart-card hero-chart"><div><span class="chart-kicker">WEBSITE</span><h2>Page views and visitors</h2></div>${trafficChart}</section>
     <section class="admin-grid charts"><article><span class="chart-kicker">PRODUCT</span><h2>Daily active machines</h2>${activeChart}</article><article><span class="chart-kicker">CONVERSION</span><h2>Distribution funnel</h2>${funnelChart}</article></section>

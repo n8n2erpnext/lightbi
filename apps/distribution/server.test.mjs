@@ -102,6 +102,19 @@ test('accepts anonymous visit-end duration signals', async () => {
   assert.deepEqual(await response.json(), { recorded: false });
 });
 
+test('accepts only whitelisted native-app usage events', async () => {
+  const valid = await fetch(`${serverBaseUrl()}/api/app/event`, {
+    method: 'POST', headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ event: 'feature_use', feature: 'advanced_database_edit', installationId: 'native-installation-1234567890', sessionId: 'native-session-1234567890', environment: 'test' }),
+  });
+  assert.equal(valid.status, 202);
+  const invalid = await fetch(`${serverBaseUrl()}/api/app/event`, {
+    method: 'POST', headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ event: 'feature_use', feature: 'SELECT * FROM private_table', installationId: 'native-installation-1234567890' }),
+  });
+  assert.equal(invalid.status, 400);
+});
+
 test('serves the admin shell under the proxied route target', async () => {
   const response = await fetch(`${serverBaseUrl()}/admin`);
   assert.equal(response.status, 200);
@@ -114,4 +127,14 @@ test('keeps revenue empty and payment dormant before Stripe configuration', () =
   assert.equal(revenue.activeLicenses, 0);
   assert.deepEqual(revenue.currencies, []);
   assert.equal(revenue.paymentConfigured, false);
+});
+
+test('creates and revokes a manual Pro key without storing plaintext', async () => {
+  const created = await module.createManualLicense({ kind: 'complimentary', label: 'Test partner', maxDevices: 2 });
+  assert.match(created.licenseKey, /^LBI-PRO-/);
+  const stored = module.db.prepare('SELECT license_hash,delivery_value,status FROM licenses WHERE id=?').get(created.license.id);
+  assert.equal(stored.delivery_value, null);
+  assert.equal(stored.license_hash.includes(created.licenseKey), false);
+  assert.equal(module.revokeLicense(created.license.id), true);
+  assert.equal(module.db.prepare('SELECT status FROM licenses WHERE id=?').get(created.license.id).status, 'revoked');
 });

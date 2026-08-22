@@ -31,6 +31,10 @@ The public Beta desktop app creates a separate random installation identifier an
 
 Neither path sends imported files, source URLs, database credentials, column names, query results, charts, or BA findings. PostgreSQL is the durable aggregate source and Redis caches only derived dashboard summaries.
 
+Native app-usage telemetry is restricted to a server whitelist: app open/close, anonymous session duration, Easy/Advanced mode, governed feature identifiers, and a boolean-style `advanced_database_edit` event. It never includes SQL text, database URLs, schema/table/column names, row counts, cell values, file names, source names, chart contents, or analytical findings.
+
+When a Pro license is purchased or manually issued with an email recipient, the email address is passed transiently to the configured SMTP sender and is not stored in the distribution databases. License keys are stored as hashes; manually generated plaintext keys are returned or emailed once.
+
 Anonymous pairing can be disabled in Settings. A Pro activation sends the entered license key and the random installation identifier only to validate the license and device allowance.
 
 ## Operational guidance

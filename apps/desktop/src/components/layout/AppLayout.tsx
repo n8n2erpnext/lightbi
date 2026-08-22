@@ -1,5 +1,5 @@
-import React from 'react';
-import { NavLink, Outlet } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { useAppRuntime } from '@lightbi/runtime';
 import {
   BarChart3,
@@ -18,11 +18,23 @@ import {
 import { cn } from '../../lib/utils';
 import { useUiLanguage } from '../../lib/ui-language';
 import { UiTranslationBoundary } from './UiTranslationBoundary';
+import { trackFeatureUsage, type LightBIFeature } from '../../lib/app-usage-telemetry';
 
 export const AppLayout: React.FC = () => {
+  const location = useLocation();
   const isSidebarExpanded = !useAppRuntime(s => s.workspacePreferences.sidebarCollapsed);
   const toggleSidebar = useAppRuntime(s => s.toggleSidebar);
   const { t } = useUiLanguage();
+
+  useEffect(() => {
+    const feature: LightBIFeature = location.pathname.startsWith('/advanced') ? 'advanced_mode'
+      : location.pathname.startsWith('/investigation') ? 'deep_ba'
+      : location.pathname.startsWith('/dashboards') ? 'dashboard'
+      : location.pathname.startsWith('/charts') ? 'chart'
+      : location.pathname.startsWith('/datasources') ? 'database_connect'
+      : location.pathname.startsWith('/datasets') ? 'data_import' : 'easy_mode';
+    trackFeatureUsage(feature);
+  }, [location.pathname]);
 
   const navItems = [
     { name: t('New brief'), path: '/', icon: HomeIcon },

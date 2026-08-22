@@ -4,9 +4,13 @@ import { RouterProvider } from 'react-router-dom';
 import { router } from './routes';
 import { pairLightBIInstallation } from './lib/distribution-pairing';
 import { isNativeLightBI } from './lib/native-runtime';
+import { startAppUsageTelemetry } from './lib/app-usage-telemetry';
 import './index.css';
 
-if (isNativeLightBI()) void pairLightBIInstallation();
+if (isNativeLightBI()) {
+  void pairLightBIInstallation();
+  startAppUsageTelemetry();
+}
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

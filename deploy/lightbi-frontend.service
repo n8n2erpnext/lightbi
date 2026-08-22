@@ -1,0 +1,16 @@
+[Unit]
+Description=LightBI web demo and distribution edge router
+After=network-online.target lightbi-distribution.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/ubuntu/n8n2erpnext/LightBI/apps/desktop
+ExecStart=/usr/bin/corepack pnpm exec vite --host 0.0.0.0 --port 5173 --strictPort --force
+Restart=always
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=default.target

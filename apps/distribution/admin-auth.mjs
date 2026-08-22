@@ -63,5 +63,30 @@ export async function createAdminAuth({ databaseUrl, redisUrl, sessionSecret }) 
     if (token) await redis.del(`lightbi:admin:session:${tokenHash(token)}`);
   }
 
-  return { enabled: true, login, logout, session, upsertAdmin, close: async () => { if (redis.isReady) await redis.quit(); await pool.end(); } };
+  async function requestPasswordReset(email, networkHash, resetBaseUrl, sendMail) {
+    const normalized = String(email || '').trim().toLowerCase();
+    const rateKey = `lightbi:admin:reset:${networkHash || 'unknown'}`;
+    const attempts = await redis.incr(rateKey);
+    if (attempts === 1) await redis.expire(rateKey, 900);
+    if (attempts > 4) return;
+    const exists = await pool.query('SELECT 1 FROM distribution_admins WHERE email=$1', [normalized]);
+    if (!exists.rows[0]) return;
+    const token = randomBytes(32).toString('base64url');
+    await redis.set(`lightbi:admin:reset-token:${tokenHash(token)}`, normalized, { EX: 900 });
+    await sendMail({ to: normalized, resetUrl: `${resetBaseUrl}?reset=${encodeURIComponent(token)}` });
+  }
+
+  async function resetPassword(token, password) {
+    if (String(password || '').length < 16) return false;
+    const key = `lightbi:admin:reset-token:${tokenHash(String(token || ''))}`;
+    const email = await redis.get(key);
+    if (!email) return false;
+    await upsertAdmin(email, password);
+    await redis.del(key);
+    const sessions = await redis.keys('lightbi:admin:session:*');
+    if (sessions.length) await redis.del(sessions);
+    return true;
+  }
+
+  return { enabled: true, login, logout, requestPasswordReset, resetPassword, session, upsertAdmin, close: async () => { if (redis.isReady) await redis.quit(); await pool.end(); } };
 }

@@ -55,4 +55,4 @@ export const router = createBrowserRouter([
       { path: '*', element: <Navigate to="/" replace /> },
     ],
   },
-]);
+], { basename: typeof window !== 'undefined' && window.location.pathname.startsWith('/app') ? '/app' : '/' });

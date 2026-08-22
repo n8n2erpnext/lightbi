@@ -5,6 +5,7 @@ import type { QueryCellValue } from '@lightbi/core-types';
 import { commitAdvancedMutation, loadAdvancedImportJob, previewAdvancedMutation, previewAdvancedScript, startAdvancedCsvImport, startAdvancedSqlImport, type AdvancedConnection, type AdvancedMutationPreview, type AdvancedMutationRequest, type AdvancedQueryResult, type AdvancedSchema, type AdvancedScriptPreview, type AdvancedTableNode } from '../lib/advanced-api';
 import { buildAdvancedMutationRows, EMPTY_ADVANCED_EDIT_STATE, recordAdvancedCellEdit } from '../lib/advanced-edit-session';
 import { buildDeleteMutationRows, buildInsertMutationRows, buildManualInsertMutationRows, coerceInsertDraftValue, materializeSqlParameters, type FileTableImportDraft, type WorkspaceTab } from '../lib/advanced-workspace-helpers';
+import { trackFeatureUsage } from '../lib/app-usage-telemetry';
 
 type MutationReview = { request: AdvancedMutationRequest; preview: AdvancedMutationPreview } | null;
 type ScriptReview = { sql: string; preview: AdvancedScriptPreview } | null;
@@ -118,6 +119,7 @@ export function createAdvancedMutationActions(context: AdvancedMutationContext) 
     setIsCommitting(true);
     try {
       const committed = await commitAdvancedMutation(connection.connectionId, mutationReview.request);
+      trackFeatureUsage('advanced_database_edit');
       setMutationReview(null);
       patchTab(activeTab.id, { editState: EMPTY_ADVANCED_EDIT_STATE, insertRowIndexes: [], insertRows: [], deletedRowIndexes: [], editMode: false, result: null, warnings: [`Committed ${committed.updatedRows} row${committed.updatedRows === 1 ? '' : 's'} in one transaction. Run the query to reload source data.`], error: '' });
       await refreshSchema();
@@ -262,6 +264,7 @@ export function createAdvancedMutationActions(context: AdvancedMutationContext) 
         await new Promise(resolve => setTimeout(resolve, 400));
       }
       setScriptReview(null);
+      trackFeatureUsage('advanced_database_edit');
       patchTab(activeTab.id, { result: null, warnings: [`Executed ${committed} statement${committed === 1 ? '' : 's'} in one import transaction.`], error: '' });
       await refreshSchema();
     } catch (cause) {

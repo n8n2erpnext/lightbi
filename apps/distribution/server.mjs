@@ -6,6 +6,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createDistributionAnalytics } from './analytics.mjs';
 import { createAdminAuth } from './admin-auth.mjs';
+import { createMailer } from './mailer.mjs';
 
 const appDir = path.dirname(fileURLToPath(import.meta.url));
 const publicDir = path.join(appDir, 'public');
@@ -25,6 +26,8 @@ const adminAuth = await createAdminAuth({
   redisUrl: process.env.REDIS_URL,
   sessionSecret: process.env.LIGHTBI_ADMIN_SESSION_SECRET,
 });
+const mailer = await createMailer({ host: process.env.SMTP_HOST, port: process.env.SMTP_PORT, secure: process.env.SMTP_SECURE, user: process.env.SMTP_USER, password: process.env.SMTP_PASSWORD, from: process.env.SMTP_FROM });
+const appFeatures = new Set(['easy_mode', 'advanced_mode', 'advanced_query', 'advanced_database_edit', 'deep_ba', 'subset_analysis', 'dashboard', 'chart', 'export', 'data_import', 'database_connect', 'google_sheets']);
 
 mkdirSync(dataDir, { recursive: true });
 const db = new DatabaseSync(path.join(dataDir, 'distribution.sqlite'));
@@ -74,7 +77,7 @@ db.exec(`
 if (!db.prepare('PRAGMA table_info(licenses)').all().some((column) => column.name === 'installation_hash')) {
   db.exec('ALTER TABLE licenses ADD COLUMN installation_hash TEXT');
 }
-for (const [name, type] of [['amount_total', 'INTEGER'], ['currency', 'TEXT'], ['paid_at', 'TEXT']]) {
+for (const [name, type] of [['amount_total', 'INTEGER'], ['currency', 'TEXT'], ['paid_at', 'TEXT'], ['kind', 'TEXT'], ['label', 'TEXT'], ['discount_percent', 'INTEGER'], ['expires_at', 'TEXT'], ['revoked_at', 'TEXT']]) {
   if (!db.prepare('PRAGMA table_info(licenses)').all().some((column) => column.name === name)) db.exec(`ALTER TABLE licenses ADD COLUMN ${name} ${type}`);
 }
 
@@ -152,7 +155,7 @@ function licenseKey() {
   return `LBI-PRO-${randomBytes(20).toString('base64url').toUpperCase()}`;
 }
 
-function fulfillCheckout(session) {
+async function fulfillCheckout(session) {
   if (!session?.id || session.payment_status === 'unpaid') return;
   const exists = db.prepare('SELECT session_id FROM fulfilled_checkout_sessions WHERE session_id = ?').get(session.id);
   if (exists) return;
@@ -169,6 +172,8 @@ function fulfillCheckout(session) {
     db.exec('ROLLBACK');
     throw error;
   }
+  const recipient = session.customer_details?.email || session.customer_email;
+  if (recipient && mailer.enabled) await mailer.sendProLicense({ to: recipient, licenseKey: key, template: 'automatic' });
 }
 
 function revenueSummary(days) {
@@ -179,6 +184,34 @@ function revenueSummary(days) {
   const currencies = db.prepare("SELECT COALESCE(currency,'N/A') AS currency, COALESCE(SUM(amount_total),0) AS gross_minor, COUNT(*) AS orders, COALESCE(ROUND(AVG(amount_total)),0) AS average_minor FROM licenses WHERE paid_at >= ? AND status='active' GROUP BY currency ORDER BY gross_minor DESC").all(since);
   const daily = db.prepare("SELECT substr(paid_at,1,10) AS day, COALESCE(currency,'N/A') AS currency, COALESCE(SUM(amount_total),0) AS gross_minor, COUNT(*) AS orders FROM licenses WHERE paid_at >= ? AND status='active' GROUP BY day,currency ORDER BY day,currency").all(since);
   return { days: windowDays, paidOrders, activeLicenses, currencies, daily, paymentConfigured: Boolean(process.env.STRIPE_SECRET_KEY && process.env.STRIPE_PRICE_ID && process.env.STRIPE_WEBHOOK_SECRET) };
+}
+
+function listLicenses() {
+  return db.prepare(`SELECT l.id,l.tier,l.status,COALESCE(l.kind,'paid') AS kind,l.label,l.discount_percent,l.max_devices,l.expires_at,l.revoked_at,l.created_at,l.paid_at,l.currency,l.amount_total,
+    (SELECT COUNT(*) FROM license_installations li WHERE li.license_id=l.id) AS devices FROM licenses l ORDER BY l.created_at DESC`).all();
+}
+
+async function createManualLicense(input) {
+  const kind = input.kind === 'partner_discount' ? 'partner_discount' : 'complimentary';
+  const key = licenseKey();
+  const id = `lic_${randomBytes(12).toString('hex')}`;
+  const now = new Date().toISOString();
+  const maxDevices = Math.min(100, Math.max(1, Number(input.maxDevices) || 3));
+  const discount = kind === 'partner_discount' ? Math.min(100, Math.max(1, Number(input.discountPercent) || 1)) : 100;
+  const expiresAt = input.expiresAt && !Number.isNaN(Date.parse(input.expiresAt)) ? new Date(input.expiresAt).toISOString() : null;
+  db.prepare(`INSERT INTO licenses (id,license_hash,tier,status,max_devices,kind,label,discount_percent,expires_at,created_at)
+    VALUES (?,?, 'pro','active',?,?,?,?,?,?)`).run(id, sha(key), maxDevices, kind, String(input.label || '').slice(0, 120) || null, discount, expiresAt, now);
+  if (input.email && mailer.enabled) await mailer.sendProLicense({ to: String(input.email).trim(), licenseKey: key, template: 'manual', label: input.label, discountPercent: discount, expiresAt });
+  return { licenseKey: key, license: listLicenses().find((item) => item.id === id) };
+}
+
+function revokeLicense(id) {
+  const now = new Date().toISOString();
+  const result = db.prepare("UPDATE licenses SET status='revoked',revoked_at=?,delivery_value=NULL WHERE id=? AND status='active'").run(now, id);
+  if (!result.changes) return false;
+  db.prepare("UPDATE installations SET tier='basic',license_id=NULL WHERE license_id=?").run(id);
+  db.prepare('DELETE FROM license_installations WHERE license_id=?').run(id);
+  return true;
 }
 
 async function createCheckout({ installationId }) {
@@ -274,6 +307,15 @@ const server = createServer(async (request, response) => {
       await analytics.record({ ...payload, kind: 'visit_end', networkHash: anonymousNetworkHash(request) });
       return sendJson(response, 202, { recorded: analytics.enabled });
     }
+    if (request.method === 'POST' && url.pathname === '/api/app/event') {
+      const payload = JSON.parse((await body(request, 24_000)).toString('utf8') || '{}');
+      if (!validInstallationId(payload.installationId)) return sendJson(response, 400, { error: 'invalid_installation_id' });
+      const kind = ['app_open', 'app_close', 'feature_use'].includes(payload.event) ? payload.event : null;
+      const feature = kind === 'feature_use' && appFeatures.has(payload.feature) ? payload.feature : null;
+      if (!kind || (kind === 'feature_use' && !feature)) return sendJson(response, 400, { error: 'unsupported_app_event' });
+      await analytics.record({ kind, feature, installationId: payload.installationId, visitId: payload.sessionId, durationSeconds: payload.durationSeconds, appVersion: payload.appVersion, platform: payload.platform, environment: payload.environment });
+      return sendJson(response, 202, { recorded: analytics.enabled });
+    }
     if (request.method === 'POST' && url.pathname === '/api/pair') {
       const payload = JSON.parse((await body(request)).toString('utf8'));
       if (!validInstallationId(payload.installationId)) return sendJson(response, 400, { error: 'invalid_installation_id' });
@@ -301,7 +343,7 @@ const server = createServer(async (request, response) => {
     if (request.method === 'POST' && url.pathname === '/api/license/activate') {
       const payload = JSON.parse((await body(request)).toString('utf8'));
       if (!validInstallationId(payload.installationId) || typeof payload.licenseKey !== 'string') return sendJson(response, 400, { error: 'invalid_activation' });
-      const license = db.prepare("SELECT id, tier, max_devices FROM licenses WHERE license_hash = ? AND status = 'active'").get(sha(payload.licenseKey));
+      const license = db.prepare("SELECT id, tier, max_devices FROM licenses WHERE license_hash = ? AND status = 'active' AND (expires_at IS NULL OR expires_at > ?)").get(sha(payload.licenseKey), new Date().toISOString());
       if (!license) return sendJson(response, 404, { error: 'license_not_found' });
       const installationHash = sha(payload.installationId);
       const current = db.prepare('SELECT COUNT(*) AS count FROM license_installations WHERE license_id = ?').get(license.id)?.count || 0;
@@ -324,7 +366,7 @@ const server = createServer(async (request, response) => {
       const secret = process.env.STRIPE_WEBHOOK_SECRET;
       if (!secret || !verifyStripeSignature(raw, request.headers['stripe-signature'], secret)) return sendJson(response, 400, { error: 'invalid_signature' });
       const event = JSON.parse(raw.toString('utf8'));
-      if (['checkout.session.completed', 'checkout.session.async_payment_succeeded'].includes(event.type)) fulfillCheckout(event.data?.object);
+      if (['checkout.session.completed', 'checkout.session.async_payment_succeeded'].includes(event.type)) await fulfillCheckout(event.data?.object);
       return sendJson(response, 200, { received: true });
     }
     if (request.method === 'POST' && url.pathname === '/api/admin/login') {
@@ -333,7 +375,7 @@ const server = createServer(async (request, response) => {
       const result = await adminAuth.login(payload.email, payload.password, anonymousNetworkHash(request));
       if (!result.ok) return sendJson(response, result.reason === 'rate_limited' ? 429 : 401, { error: result.reason });
       return sendJson(response, 200, { authenticated: true, email: result.email }, {
-        'set-cookie': `lightbi_admin=${encodeURIComponent(result.token)}; HttpOnly; Secure; SameSite=Strict; Path=/distribution; Max-Age=43200`,
+        'set-cookie': `lightbi_admin=${encodeURIComponent(result.token)}; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=43200`,
       });
     }
     if (request.method === 'GET' && url.pathname === '/api/admin/session') {
@@ -343,8 +385,20 @@ const server = createServer(async (request, response) => {
     if (request.method === 'POST' && url.pathname === '/api/admin/logout') {
       if (adminAuth.enabled) await adminAuth.logout(cookie(request, 'lightbi_admin'));
       return sendJson(response, 200, { authenticated: false }, {
-        'set-cookie': 'lightbi_admin=; HttpOnly; Secure; SameSite=Strict; Path=/distribution; Max-Age=0',
+        'set-cookie': 'lightbi_admin=; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=0',
       });
+    }
+    if (request.method === 'POST' && url.pathname === '/api/admin/password/request') {
+      const payload = JSON.parse((await body(request, 8_000)).toString('utf8') || '{}');
+      if (adminAuth.enabled && mailer.enabled) {
+        await adminAuth.requestPasswordReset(payload.email, anonymousNetworkHash(request), new URL('/admin', publicBaseUrl).toString(), mailer.sendPasswordReset);
+      }
+      return sendJson(response, 202, { accepted: true, emailAvailable: Boolean(mailer.enabled) });
+    }
+    if (request.method === 'POST' && url.pathname === '/api/admin/password/reset') {
+      const payload = JSON.parse((await body(request, 12_000)).toString('utf8') || '{}');
+      const changed = adminAuth.enabled ? await adminAuth.resetPassword(payload.token, payload.password) : false;
+      return changed ? sendJson(response, 200, { changed: true }) : sendJson(response, 400, { error: 'invalid_or_expired_reset' });
     }
     if (request.method === 'GET' && url.pathname === '/api/checkout/status') {
       const sessionId = url.searchParams.get('session_id');
@@ -373,6 +427,32 @@ const server = createServer(async (request, response) => {
       if (!await authorizedAdmin(request)) return sendJson(response, 401, { error: 'unauthorized' });
       return sendJson(response, 200, revenueSummary(url.searchParams.get('days')));
     }
+    if (request.method === 'GET' && url.pathname === '/api/admin/app-usage') {
+      if (!await authorizedAdmin(request)) return sendJson(response, 401, { error: 'unauthorized' });
+      return sendJson(response, 200, await analytics.appUsage(url.searchParams.get('days')));
+    }
+    if (request.method === 'GET' && url.pathname === '/api/admin/licenses') {
+      if (!await authorizedAdmin(request)) return sendJson(response, 401, { error: 'unauthorized' });
+      return sendJson(response, 200, { licenses: listLicenses(), mailAvailable: Boolean(mailer.enabled) });
+    }
+    if (request.method === 'POST' && url.pathname === '/api/admin/licenses') {
+      if (!await authorizedAdmin(request)) return sendJson(response, 401, { error: 'unauthorized' });
+      if (request.headers['x-lightbi-admin-action'] !== '1') return sendJson(response, 403, { error: 'admin_action_header_required' });
+      const payload = JSON.parse((await body(request, 16_000)).toString('utf8') || '{}');
+      return sendJson(response, 201, await createManualLicense(payload));
+    }
+    const licenseAction = url.pathname.match(/^\/api\/admin\/licenses\/([^/]+)\/(revoke|rotate)$/);
+    if (request.method === 'POST' && licenseAction) {
+      if (!await authorizedAdmin(request)) return sendJson(response, 401, { error: 'unauthorized' });
+      if (request.headers['x-lightbi-admin-action'] !== '1') return sendJson(response, 403, { error: 'admin_action_header_required' });
+      const current = listLicenses().find((item) => item.id === licenseAction[1]);
+      if (!current) return sendJson(response, 404, { error: 'license_not_found' });
+      const payload = licenseAction[2] === 'rotate' ? JSON.parse((await body(request, 16_000)).toString('utf8') || '{}') : {};
+      if (!revokeLicense(current.id)) return sendJson(response, 409, { error: 'license_not_active' });
+      if (licenseAction[2] === 'revoke') return sendJson(response, 200, { revoked: true });
+      const replacement = await createManualLicense({ kind: current.kind, label: current.label, discountPercent: current.discount_percent, maxDevices: current.max_devices, expiresAt: current.expires_at, email: payload.email });
+      return sendJson(response, 201, { rotated: true, ...replacement });
+    }
     if (request.method === 'GET' && serveStatic(url.pathname, response)) return;
     sendJson(response, 404, { error: 'not_found' });
   } catch (error) {
@@ -382,4 +462,4 @@ const server = createServer(async (request, response) => {
 
 server.listen(port, '0.0.0.0', () => console.log(`LightBI Distribution listening on ${port}`));
 
-export { adminAuth, analytics, anonymousNetworkHash, db, imageContentType, revenueSummary, server, sha, validInstallationId, verifyStripeSignature };
+export { adminAuth, analytics, anonymousNetworkHash, createManualLicense, db, imageContentType, listLicenses, mailer, revenueSummary, revokeLicense, server, sha, validInstallationId, verifyStripeSignature };

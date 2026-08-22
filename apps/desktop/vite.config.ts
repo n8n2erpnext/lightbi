@@ -9,12 +9,32 @@ export default defineConfig({
     {
       name: 'lightbi-distribution-trailing-slash',
       configureServer(server) {
-        server.middlewares.use((request, response, next) => {
-          if (request.url === '/distribution') {
+        server.middlewares.use(async (request, response, next) => {
+          const current = new URL(request.url || '/', 'http://lightbi.local');
+          if (request.method === 'GET' && (current.pathname === '/distribution' || current.pathname === '/distribution/')) {
             response.statusCode = 308;
-            response.setHeader('location', '/distribution/');
+            response.setHeader('location', `/${current.search}`);
             response.end();
             return;
+          }
+          if (request.method === 'GET' && current.pathname === '/distribution/admin') {
+            response.statusCode = 308;
+            response.setHeader('location', `/admin${current.search}`);
+            response.end();
+            return;
+          }
+          if (request.method === 'GET' && (current.pathname === '/' || current.pathname === '/admin')) {
+            try {
+              const upstream = await fetch(`http://127.0.0.1:5174${current.pathname}${current.search}`);
+              response.statusCode = upstream.status;
+              upstream.headers.forEach((value, key) => response.setHeader(key, value));
+              response.end(Buffer.from(await upstream.arrayBuffer()));
+              return;
+            } catch {
+              response.statusCode = 503;
+              response.end('Distribution portal is starting.');
+              return;
+            }
           }
           next();
         });
@@ -24,6 +44,16 @@ export default defineConfig({
   server: {
     allowedHosts: ['lightbi.thaiduy.digital'],
     proxy: {
+      '/distribution-assets': {
+        target: 'http://127.0.0.1:5174',
+        changeOrigin: true,
+        rewrite: path => path.replace(/^\/distribution-assets/, '') || '/',
+      },
+      '/distribution-api': {
+        target: 'http://127.0.0.1:5174',
+        changeOrigin: true,
+        rewrite: path => path.replace(/^\/distribution-api/, '') || '/',
+      },
       '/distribution': {
         target: 'http://127.0.0.1:5174',
         changeOrigin: true,

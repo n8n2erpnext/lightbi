@@ -2,6 +2,17 @@
 
 All notable public changes to LightBI are recorded here.
 
+## Distribution Portal [0.1.4] - 2026-08-22
+
+- Moved the distribution portal to `/`, the web demo to `/app`, and the protected console to `/admin` without changing the NetBird domain target.
+- Added Zoho SMTP password reset, automatic purchase-key delivery, branded manual-key delivery, and protected license creation, rotation, revocation, complimentary, and partner-discount workflows.
+- Added App Usage reporting for privacy-governed native telemetry.
+
+## [0.9.1-beta.7] - 2026-08-22
+
+- Added opt-out-aware native app session duration and whitelisted Easy/Advanced feature-use telemetry.
+- Added governed `advanced_database_edit` usage events without collecting SQL, database identity, schema, table, column, file, or business data.
+
 ## Distribution Portal [0.1.3] - 2026-08-22
 
 - Replaced the shared admin token prompt with a single PostgreSQL-backed administrator account, scrypt password hashing, Redis sessions, secure HttpOnly cookies, and login throttling.

@@ -77,6 +77,7 @@ import { createAdvancedMutationActions } from '../hooks/useAdvancedMutationActio
 import { AdvancedWorkspaceView } from '../components/advanced/AdvancedWorkspaceView';
 import { FALLBACK_PROVIDER_PLUGINS, loadAdvancedTabs, providerDisplayName } from '../lib/advanced-provider-support';
 import { buildAdvancedQuickCommands, filterAdvancedQuickCommands } from '../lib/advanced-command-palette';
+import { trackFeatureUsage } from '../lib/app-usage-telemetry';
 
 export const Advanced: React.FC = () => {
   const coordinators = useRef(new Map<string, ExecutionRunCoordinator>());
@@ -414,6 +415,7 @@ export const Advanced: React.FC = () => {
   };
 
   const runQuery = async (tabId = activeTab.id, options?: { offset?: number; sort?: AdvancedSort; filters?: AdvancedFilter[]; sql?: string }) => {
+    trackFeatureUsage('advanced_query');
     if (!connection && !fileSource) return;
     const tab = tabs.find(candidate => candidate.id === tabId);
     const sql = options?.sql ?? tab?.sql ?? '';
