@@ -28,14 +28,15 @@ describe('distribution pairing', () => {
     const storage = memoryStorage();
     const fetcher = vi.fn(async (_url: string | URL | Request, init?: RequestInit) => {
       const payload = JSON.parse(String(init?.body));
-      expect(Object.keys(payload).sort()).toEqual(['appVersion', 'installationId', 'platform', 'telemetryConsent']);
+      expect(Object.keys(payload).sort()).toEqual(['appVersion', 'environment', 'installationId', 'platform', 'telemetryConsent']);
+      expect(payload.environment).toBe('test');
       expect(payload).not.toHaveProperty('file');
       expect(payload).not.toHaveProperty('columns');
       return new Response(JSON.stringify({ tier: 'basic' }), { status: 200 });
     });
     await expect(pairLightBIInstallation({
       endpoint: 'https://distribution.example', storage, fetcher: fetcher as typeof fetch,
-      version: '0.9.0-beta.7', platform: 'Windows',
+      version: '0.9.1-beta.7', platform: 'Windows',
     })).resolves.toBe('basic');
     expect(fetcher).toHaveBeenCalledOnce();
   });

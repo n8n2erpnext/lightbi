@@ -3,9 +3,10 @@ import ReactDOM from 'react-dom/client';
 import { RouterProvider } from 'react-router-dom';
 import { router } from './routes';
 import { pairLightBIInstallation } from './lib/distribution-pairing';
+import { isNativeLightBI } from './lib/native-runtime';
 import './index.css';
 
-void pairLightBIInstallation();
+if (isNativeLightBI()) void pairLightBIInstallation();
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

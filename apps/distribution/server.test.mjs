@@ -66,3 +66,22 @@ test('returns a clean 404 when a static asset is unavailable', async () => {
   assert.equal(response.status, 404);
   assert.deepEqual(await response.json(), { error: 'not_found' });
 });
+
+test('accepts privacy-safe visit signals without requiring analytics infrastructure', async () => {
+  const response = await fetch(`${serverBaseUrl()}/api/visit`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({
+      visitorId: 'anonymous-browser-id-1234567890', path: '/distribution/',
+      utmSource: 'test', environment: 'test',
+    }),
+  });
+  assert.equal(response.status, 202);
+  assert.deepEqual(await response.json(), { recorded: false });
+});
+
+test('serves the admin shell under the proxied route target', async () => {
+  const response = await fetch(`${serverBaseUrl()}/admin`);
+  assert.equal(response.status, 200);
+  assert.match(await response.text(), /LightBI/);
+});

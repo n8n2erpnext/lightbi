@@ -1,12 +1,16 @@
 {
   "name": "@lightbi/distribution",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.9.1-beta.7",
   "type": "module",
   "scripts": {
     "dev": "node --experimental-sqlite server.mjs",
     "start": "node --experimental-sqlite server.mjs",
     "build": "node --check server.mjs && node --check public/app.js",
     "test": "node --experimental-sqlite --test server.test.mjs"
+  },
+  "dependencies": {
+    "pg": "^8.16.3",
+    "redis": "^5.8.2"
   }
 }

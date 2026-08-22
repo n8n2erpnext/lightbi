@@ -2,6 +2,13 @@
 
 All notable public changes to LightBI are recorded here.
 
+## [0.9.1-beta.7] - 2026-08-22
+
+- Added privacy-safe distribution analytics backed by PostgreSQL with Redis summary caching.
+- Separated web visitors from real desktop installation pairing.
+- Added page-view, download, daily-active, Basic/Pro, version, platform, and campaign signals to the protected admin dashboard.
+- Kept payment integration dormant until production Stripe configuration is supplied.
+
 ## [0.9.0-beta.7] - 2026-08-20
 
 ### Added

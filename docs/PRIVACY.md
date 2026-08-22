@@ -23,7 +23,11 @@ Exports are created only after a user action. PNG/PDF analysis exports, CSV/Exce
 
 ## Telemetry
 
-The public Beta creates a random installation identifier and may pair it with the LightBI distribution service. Pairing sends only the random identifier, application version, platform, and Basic/Pro tier. It never sends imported files, source URLs, database credentials, column names, query results, charts, or BA findings.
+The distribution portal creates a random first-party visitor identifier and records page views, download clicks, referrer host, and explicit `utm_source`, `utm_medium`, and `utm_campaign` values. The service hashes the identifier before PostgreSQL persistence. It does not persist raw IP addresses, email addresses, names, or cross-site advertising identifiers.
+
+The public Beta desktop app creates a separate random installation identifier and may pair it with the LightBI distribution service. Pairing runs only in the native Tauri application—not in the browser demo—and sends only the random identifier, application version, platform, and Basic/Pro tier. The service hashes the identifier before persistence.
+
+Neither path sends imported files, source URLs, database credentials, column names, query results, charts, or BA findings. PostgreSQL is the durable aggregate source and Redis caches only derived dashboard summaries.
 
 Anonymous pairing can be disabled in Settings. A Pro activation sends the entered license key and the random installation identifier only to validate the license and device allowance.
 

@@ -4,6 +4,7 @@ import { createServer } from 'node:http';
 import { DatabaseSync } from 'node:sqlite';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { createDistributionAnalytics } from './analytics.mjs';
 
 const appDir = path.dirname(fileURLToPath(import.meta.url));
 const publicDir = path.join(appDir, 'public');
@@ -13,6 +14,11 @@ const publicBaseUrl = (process.env.LIGHTBI_DISTRIBUTION_PUBLIC_URL || `http://lo
 const releaseUrl = process.env.LIGHTBI_RELEASE_URL || 'https://github.com/n8n2erpnext/lightbi/releases/latest';
 const proPriceLabel = process.env.LIGHTBI_PRO_PRICE_LABEL || 'Early access';
 const installPepper = process.env.LIGHTBI_INSTALLATION_PEPPER || 'lightbi-public-installation-v1';
+const analytics = await createDistributionAnalytics({
+  databaseUrl: process.env.DATABASE_URL,
+  redisUrl: process.env.REDIS_URL,
+  pepper: installPepper,
+});
 
 mkdirSync(dataDir, { recursive: true });
 const db = new DatabaseSync(path.join(dataDir, 'distribution.sqlite'));
@@ -185,7 +191,11 @@ function serveStatic(requestPath, response) {
   if (!file.startsWith(publicDir)) return false;
   try {
     const content = readFileSync(file);
-    response.writeHead(200, { 'content-type': mime[path.extname(file)] || 'application/octet-stream' });
+    const extension = path.extname(file);
+    response.writeHead(200, {
+      'content-type': mime[extension] || 'application/octet-stream',
+      'cache-control': ['.html', '.js', '.css'].includes(extension) ? 'no-cache' : 'public, max-age=3600',
+    });
     response.end(content);
     return true;
   } catch {
@@ -208,7 +218,13 @@ const server = createServer(async (request, response) => {
       return sendJson(response, 200, {
         productId: 'digital.thaiduy.lightbi', releaseUrl, proPriceLabel,
         checkoutAvailable: Boolean(process.env.STRIPE_SECRET_KEY && process.env.STRIPE_PRICE_ID),
+        analyticsAvailable: analytics.enabled,
       });
+    }
+    if (request.method === 'POST' && url.pathname === '/api/visit') {
+      const payload = JSON.parse((await body(request)).toString('utf8') || '{}');
+      await analytics.record({ ...payload, kind: 'page_view' });
+      return sendJson(response, 202, { recorded: analytics.enabled });
     }
     if (request.method === 'POST' && url.pathname === '/api/pair') {
       const payload = JSON.parse((await body(request)).toString('utf8'));
@@ -221,12 +237,17 @@ const server = createServer(async (request, response) => {
         ON CONFLICT(installation_hash) DO UPDATE SET app_version=excluded.app_version, platform=excluded.platform, last_seen_at=excluded.last_seen_at`)
         .run(installationHash, 'digital.thaiduy.lightbi', String(payload.appVersion || ''), String(payload.platform || ''), now, now);
       const installation = db.prepare('SELECT tier FROM installations WHERE installation_hash = ?').get(installationHash);
+      await analytics.record({
+        kind: 'install_pair', installationId: payload.installationId, tier: installation?.tier || 'basic',
+        appVersion: payload.appVersion, platform: payload.platform, environment: payload.environment,
+      });
       return sendJson(response, 200, { paired: true, tier: installation?.tier || 'basic' });
     }
     if (request.method === 'POST' && url.pathname === '/api/download') {
       const payload = JSON.parse((await body(request)).toString('utf8') || '{}');
       db.prepare('INSERT INTO events (kind, tier, app_version, platform, created_at) VALUES (?, ?, ?, ?, ?)')
         .run('download', payload.tier === 'pro' ? 'pro' : 'basic', String(payload.appVersion || ''), String(payload.platform || 'windows'), new Date().toISOString());
+      await analytics.record({ ...payload, kind: 'download' });
       return sendJson(response, 202, { releaseUrl });
     }
     if (request.method === 'POST' && url.pathname === '/api/license/activate') {
@@ -241,6 +262,7 @@ const server = createServer(async (request, response) => {
       const now = new Date().toISOString();
       db.prepare('INSERT OR IGNORE INTO license_installations (license_id, installation_hash, paired_at) VALUES (?, ?, ?)').run(license.id, installationHash, now);
       db.prepare("UPDATE installations SET tier = 'pro', license_id = ?, last_seen_at = ? WHERE installation_hash = ?").run(license.id, now, installationHash);
+      await analytics.record({ kind: 'license_activation', installationId: payload.installationId, tier: 'pro' });
       return sendJson(response, 200, { tier: 'pro', active: true });
     }
     if (request.method === 'POST' && url.pathname === '/api/checkout') {
@@ -275,7 +297,12 @@ const server = createServer(async (request, response) => {
       const tiers = Object.fromEntries(db.prepare('SELECT tier, COUNT(*) AS count FROM installations GROUP BY tier').all().map((row) => [row.tier, row.count]));
       const downloads = db.prepare("SELECT COUNT(*) AS count FROM events WHERE kind = 'download'").get()?.count || 0;
       const activeLicenses = db.prepare("SELECT COUNT(*) AS count FROM licenses WHERE status = 'active'").get()?.count || 0;
-      return sendJson(response, 200, { installations: { basic: tiers.basic || 0, pro: tiers.pro || 0 }, downloads, activeLicenses });
+      const period = Math.min(365, Math.max(1, Number(url.searchParams.get('days')) || 30));
+      const distribution = await analytics.summary(period);
+      return sendJson(response, 200, {
+        installations: { basic: tiers.basic || 0, pro: tiers.pro || 0 }, downloads, activeLicenses,
+        distribution,
+      });
     }
     if (request.method === 'GET' && serveStatic(url.pathname, response)) return;
     sendJson(response, 404, { error: 'not_found' });
@@ -286,4 +313,4 @@ const server = createServer(async (request, response) => {
 
 server.listen(port, '0.0.0.0', () => console.log(`LightBI Distribution listening on ${port}`));
 
-export { db, imageContentType, server, sha, validInstallationId, verifyStripeSignature };
+export { analytics, db, imageContentType, server, sha, validInstallationId, verifyStripeSignature };
