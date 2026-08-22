@@ -79,6 +79,11 @@ function validInstallationId(value) {
   return typeof value === 'string' && /^[a-z0-9-]{20,80}$/i.test(value);
 }
 
+function imageContentType(content) {
+  if (content[0] === 0xff && content[1] === 0xd8 && content[2] === 0xff) return 'image/jpeg';
+  return 'image/png';
+}
+
 async function body(request, limit = 256_000) {
   const chunks = [];
   let size = 0;
@@ -153,24 +158,35 @@ function serveStatic(requestPath, response) {
   const route = requestPath === '/' || requestPath === '/admin' ? '/index.html' : requestPath;
   if (route === '/logo.svg') {
     const file = path.resolve(appDir, '..', 'desktop', 'public', 'branding', 'lightbi-icon.svg');
-    response.writeHead(200, { 'content-type': 'image/svg+xml', 'cache-control': 'public, max-age=3600' });
-    response.end(readFileSync(file));
-    return true;
+    try {
+      const content = readFileSync(file);
+      response.writeHead(200, { 'content-type': 'image/svg+xml', 'cache-control': 'public, max-age=3600' });
+      response.end(content);
+      return true;
+    } catch {
+      return false;
+    }
   }
   if (route.startsWith('/screenshots/')) {
     const allowed = new Set(['lightbi-deep-ba-step1.png', 'lightbi-deep-ba-step2.png', 'lightbi-multifile-executive.png', 'lightbi-advanced-mode.png']);
     const name = path.basename(route);
     if (!allowed.has(name)) return false;
     const file = path.resolve(appDir, '..', '..', 'assets', 'screenshots', name);
-    response.writeHead(200, { 'content-type': 'image/png', 'cache-control': 'public, max-age=3600' });
-    response.end(readFileSync(file));
-    return true;
+    try {
+      const content = readFileSync(file);
+      response.writeHead(200, { 'content-type': imageContentType(content), 'cache-control': 'public, max-age=3600' });
+      response.end(content);
+      return true;
+    } catch {
+      return false;
+    }
   }
   const file = path.resolve(publicDir, `.${route}`);
   if (!file.startsWith(publicDir)) return false;
   try {
+    const content = readFileSync(file);
     response.writeHead(200, { 'content-type': mime[path.extname(file)] || 'application/octet-stream' });
-    response.end(readFileSync(file));
+    response.end(content);
     return true;
   } catch {
     return false;
@@ -270,4 +286,4 @@ const server = createServer(async (request, response) => {
 
 server.listen(port, '0.0.0.0', () => console.log(`LightBI Distribution listening on ${port}`));
 
-export { db, server, sha, validInstallationId, verifyStripeSignature };
+export { db, imageContentType, server, sha, validInstallationId, verifyStripeSignature };

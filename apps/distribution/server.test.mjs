@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { createHmac } from 'node:crypto';
+import { once } from 'node:events';
 import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
@@ -9,6 +10,13 @@ const temp = mkdtempSync(path.join(tmpdir(), 'lightbi-distribution-'));
 process.env.PORT = '0';
 process.env.LIGHTBI_DISTRIBUTION_DATA_DIR = temp;
 const module = await import('./server.mjs');
+if (!module.server.listening) await once(module.server, 'listening');
+
+function serverBaseUrl() {
+  const address = module.server.address();
+  assert.ok(address && typeof address !== 'string');
+  return `http://127.0.0.1:${address.port}`;
+}
 
 after(() => {
   module.server.close();
@@ -34,4 +42,27 @@ test('verifies Stripe webhook signatures with replay tolerance', () => {
   const signature = createHmac('sha256', secret).update(`${timestamp}.${payload}`).digest('hex');
   assert.equal(module.verifyStripeSignature(Buffer.from(payload), `t=${timestamp},v1=${signature}`, secret), true);
   assert.equal(module.verifyStripeSignature(Buffer.from(`${payload}x`), `t=${timestamp},v1=${signature}`, secret), false);
+});
+
+test('serves every distribution screenshot with its real image type', async () => {
+  for (const name of [
+    'lightbi-deep-ba-step1.png',
+    'lightbi-deep-ba-step2.png',
+    'lightbi-multifile-executive.png',
+    'lightbi-advanced-mode.png',
+  ]) {
+    const response = await fetch(`${serverBaseUrl()}/screenshots/${name}`);
+    assert.equal(response.status, 200, name);
+    const bytes = new Uint8Array(await response.arrayBuffer());
+    const isPng = bytes[0] === 137 && bytes[1] === 80 && bytes[2] === 78 && bytes[3] === 71;
+    const isJpeg = bytes[0] === 255 && bytes[1] === 216 && bytes[2] === 255;
+    assert.equal(isPng || isJpeg, true, name);
+    assert.equal(response.headers.get('content-type'), isJpeg ? 'image/jpeg' : 'image/png', name);
+  }
+});
+
+test('returns a clean 404 when a static asset is unavailable', async () => {
+  const response = await fetch(`${serverBaseUrl()}/screenshots/not-allowed.png`);
+  assert.equal(response.status, 404);
+  assert.deepEqual(await response.json(), { error: 'not_found' });
 });
