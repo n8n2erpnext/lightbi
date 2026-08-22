@@ -85,6 +85,18 @@ function validInstallationId(value) {
   return typeof value === 'string' && /^[a-z0-9-]{20,80}$/i.test(value);
 }
 
+function anonymousNetworkHash(request, now = new Date()) {
+  const forwarded = String(request.headers['x-forwarded-for'] || '').split(',')[0].trim();
+  const raw = forwarded || request.socket?.remoteAddress || '';
+  const ipv4 = raw.replace(/^::ffff:/, '').match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
+  let prefix = null;
+  if (ipv4 && ipv4.slice(1).every((part) => Number(part) <= 255)) prefix = `${ipv4[1]}.${ipv4[2]}.${ipv4[3]}.0/24`;
+  else if (raw.includes(':')) prefix = `${raw.split(':').slice(0, 3).join(':')}::/48`;
+  if (!prefix) return null;
+  const month = now.toISOString().slice(0, 7);
+  return createHmac('sha256', installPepper).update(`${month}:${prefix}`).digest('hex');
+}
+
 function imageContentType(content) {
   if (content[0] === 0xff && content[1] === 0xd8 && content[2] === 0xff) return 'image/jpeg';
   return 'image/png';
@@ -223,7 +235,12 @@ const server = createServer(async (request, response) => {
     }
     if (request.method === 'POST' && url.pathname === '/api/visit') {
       const payload = JSON.parse((await body(request)).toString('utf8') || '{}');
-      await analytics.record({ ...payload, kind: 'page_view' });
+      await analytics.record({ ...payload, kind: 'page_view', networkHash: anonymousNetworkHash(request) });
+      return sendJson(response, 202, { recorded: analytics.enabled });
+    }
+    if (request.method === 'POST' && url.pathname === '/api/visit/end') {
+      const payload = JSON.parse((await body(request)).toString('utf8') || '{}');
+      await analytics.record({ ...payload, kind: 'visit_end', networkHash: anonymousNetworkHash(request) });
       return sendJson(response, 202, { recorded: analytics.enabled });
     }
     if (request.method === 'POST' && url.pathname === '/api/pair') {
@@ -247,7 +264,7 @@ const server = createServer(async (request, response) => {
       const payload = JSON.parse((await body(request)).toString('utf8') || '{}');
       db.prepare('INSERT INTO events (kind, tier, app_version, platform, created_at) VALUES (?, ?, ?, ?, ?)')
         .run('download', payload.tier === 'pro' ? 'pro' : 'basic', String(payload.appVersion || ''), String(payload.platform || 'windows'), new Date().toISOString());
-      await analytics.record({ ...payload, kind: 'download' });
+      await analytics.record({ ...payload, kind: 'download', networkHash: anonymousNetworkHash(request) });
       return sendJson(response, 202, { releaseUrl });
     }
     if (request.method === 'POST' && url.pathname === '/api/license/activate') {
@@ -313,4 +330,4 @@ const server = createServer(async (request, response) => {
 
 server.listen(port, '0.0.0.0', () => console.log(`LightBI Distribution listening on ${port}`));
 
-export { analytics, db, imageContentType, server, sha, validInstallationId, verifyStripeSignature };
+export { analytics, anonymousNetworkHash, db, imageContentType, server, sha, validInstallationId, verifyStripeSignature };

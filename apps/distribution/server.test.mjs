@@ -35,6 +35,19 @@ test('hashes installation ids before persistence', () => {
   assert.equal(module.sha(value), module.sha(value));
 });
 
+test('stores only a rotating HMAC of the coarse client network', () => {
+  const request = (ip) => ({ headers: { 'x-forwarded-for': `${ip}, 127.0.0.1` }, socket: {} });
+  const january = new Date('2026-01-15T00:00:00Z');
+  const sameNetworkA = module.anonymousNetworkHash(request('203.0.113.10'), january);
+  const sameNetworkB = module.anonymousNetworkHash(request('203.0.113.240'), january);
+  const otherNetwork = module.anonymousNetworkHash(request('203.0.114.10'), january);
+  const rotated = module.anonymousNetworkHash(request('203.0.113.10'), new Date('2026-02-01T00:00:00Z'));
+  assert.equal(sameNetworkA, sameNetworkB);
+  assert.notEqual(sameNetworkA, otherNetwork);
+  assert.notEqual(sameNetworkA, rotated);
+  assert.equal(sameNetworkA.includes('203.0.113'), false);
+});
+
 test('verifies Stripe webhook signatures with replay tolerance', () => {
   const payload = JSON.stringify({ type: 'checkout.session.completed' });
   const timestamp = Math.floor(Date.now() / 1000);
@@ -75,6 +88,15 @@ test('accepts privacy-safe visit signals without requiring analytics infrastruct
       visitorId: 'anonymous-browser-id-1234567890', path: '/distribution/',
       utmSource: 'test', environment: 'test',
     }),
+  });
+  assert.equal(response.status, 202);
+  assert.deepEqual(await response.json(), { recorded: false });
+});
+
+test('accepts anonymous visit-end duration signals', async () => {
+  const response = await fetch(`${serverBaseUrl()}/api/visit/end`, {
+    method: 'POST', headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ visitorId: 'anonymous-browser-id-1234567890', visitId: 'anonymous-visit-id-1234567890', durationSeconds: 42, environment: 'test' }),
   });
   assert.equal(response.status, 202);
   assert.deepEqual(await response.json(), { recorded: false });
