@@ -2,6 +2,11 @@
 
 All notable public changes to LightBI are recorded here.
 
+## [0.9.3-beta.7] - 2026-08-22
+
+- Replaced the shared admin token prompt with a single PostgreSQL-backed administrator account, scrypt password hashing, Redis sessions, secure HttpOnly cookies, and login throttling.
+- Added a protected Pro Revenue tab with period filters, paid-order, active-license, currency, average-order, and revenue-series views ready for Stripe activation after Beta.
+
 ## [0.9.2-beta.7] - 2026-08-22
 
 - Added week, month, quarter, and year views to distribution analytics.

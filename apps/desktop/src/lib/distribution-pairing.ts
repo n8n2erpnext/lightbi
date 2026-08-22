@@ -36,7 +36,7 @@ export async function pairLightBIInstallation(options?: {
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({
         installationId,
-        appVersion: options?.version ?? import.meta.env.VITE_LIGHTBI_VERSION ?? '0.9.2-beta.7',
+        appVersion: options?.version ?? import.meta.env.VITE_LIGHTBI_VERSION ?? '0.9.3-beta.7',
         platform: options?.platform ?? navigator.platform ?? 'unknown',
         telemetryConsent: true,
         environment: import.meta.env.MODE === 'test' ? 'test' : 'production',

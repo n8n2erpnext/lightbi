@@ -128,11 +128,38 @@ async function showCheckoutResult() {
 
 async function admin() {
   if (!location.pathname.endsWith('/admin')) return false;
-  const requestedDays = Number(new URLSearchParams(location.search).get('days'));
+  const params = new URLSearchParams(location.search);
+  const requestedDays = Number(params.get('days'));
   const days = [7, 30, 90, 365].includes(requestedDays) ? requestedDays : 30;
-  const token = prompt('Distribution admin token');
-  if (!token) return true;
-  const response = await fetch(`${routeBase}/api/admin/stats?days=${days}`, { headers: { authorization: `Bearer ${token}` } });
+  const sessionResponse = await fetch(`${routeBase}/api/admin/session`);
+  if (!sessionResponse.ok) {
+    document.body.innerHTML = `<main class="login-shell"><form class="login-card" id="admin-login"><span class="eyebrow">LIGHTBI DISTRIBUTION</span><h1>Admin sign in</h1><p>One protected account for analytics, installs, licenses and Pro revenue.</p><label>Email<input name="email" type="email" autocomplete="username" required value="me@thaiduy.digital"></label><label>Password<input name="password" type="password" autocomplete="current-password" required></label><button class="button dark" type="submit">Sign in</button><small id="login-error" role="alert"></small></form></main>`;
+    document.querySelector('#admin-login').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const form = new FormData(event.currentTarget);
+      const response = await fetch(`${routeBase}/api/admin/login`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ email: form.get('email'), password: form.get('password') }) });
+      if (response.ok) location.reload();
+      else document.querySelector('#login-error').textContent = response.status === 429 ? 'Too many attempts. Try again later.' : 'Email or password is incorrect.';
+    });
+    return true;
+  }
+  const tab = params.get('tab') === 'revenue' ? 'revenue' : 'analytics';
+  if (tab === 'revenue') {
+    const response = await fetch(`${routeBase}/api/admin/revenue?days=${days}`);
+    if (!response.ok) return true;
+    const revenue = await response.json();
+    const safe = (value) => String(value ?? '').replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
+    const money = (minor, currency) => currency === 'N/A' ? String(minor || 0) : new Intl.NumberFormat(undefined, { style: 'currency', currency }).format((Number(minor) || 0) / 100);
+    const currencyCards = (revenue.currencies || []).map((row) => `<article><small>GROSS ${safe(row.currency)}</small><strong>${safe(money(row.gross_minor,row.currency))}</strong><span>${safe(row.orders)} paid orders · avg ${safe(money(row.average_minor,row.currency))}</span></article>`).join('') || '<article><small>GROSS REVENUE</small><strong>0</strong><span>No Pro payments yet</span></article>';
+    const firstCurrency = revenue.currencies?.[0]?.currency;
+    const revenueSeries = (revenue.daily || []).filter((row) => !firstCurrency || row.currency === firstCurrency).map((row) => ({ day: row.day, gross: Number(row.gross_minor) / 100 }));
+    const revenueChart = lineChart(revenueSeries, [{ key: 'gross', name: firstCurrency ? `Revenue ${firstCurrency}` : 'Revenue', color: '#12a779', area: true }], 'Pro revenue over time');
+    const rangeLinks = [{d:7,l:'Week'},{d:30,l:'Month'},{d:90,l:'Quarter'},{d:365,l:'Year'}].map((item) => `<a class="range-link ${days===item.d?'active':''}" href="${routeBase}/admin?tab=revenue&days=${item.d}">${item.l}</a>`).join('');
+    document.body.innerHTML = `<main class="admin-shell"><div class="admin-head"><div><span class="eyebrow">LIGHTBI DISTRIBUTION</span><h1>Pro revenue</h1><p>${days}-day view · payment adapter ${revenue.paymentConfigured?'active':'waiting for Stripe configuration'}</p><nav class="admin-tabs"><a href="${routeBase}/admin?days=${days}">Analytics</a><a class="active" href="${routeBase}/admin?tab=revenue&days=${days}">Pro revenue</a></nav><nav class="range-nav">${rangeLinks}</nav></div><button class="button" data-admin-logout>Sign out</button></div><section class="admin-metrics">${currencyCards}<article><small>PAID ORDERS</small><strong>${safe(revenue.paidOrders)}</strong></article><article><small>ACTIVE LICENSES</small><strong>${safe(revenue.activeLicenses)}</strong></article></section><section class="chart-card"><span class="chart-kicker">REVENUE</span><h2>Paid Pro revenue</h2>${revenueChart}</section><section class="chart-card"><h2>Revenue records</h2><div class="table-scroll"><table><thead><tr><th>Day</th><th>Currency</th><th>Gross</th><th>Orders</th></tr></thead><tbody>${(revenue.daily||[]).map((row)=>`<tr><td>${safe(row.day)}</td><td>${safe(row.currency)}</td><td>${safe(money(row.gross_minor,row.currency))}</td><td>${safe(row.orders)}</td></tr>`).join('')}</tbody></table></div></section></main>`;
+    document.querySelector('[data-admin-logout]').addEventListener('click', async () => { await fetch(`${routeBase}/api/admin/logout`, { method: 'POST' }); location.reload(); });
+    return true;
+  }
+  const response = await fetch(`${routeBase}/api/admin/stats?days=${days}`);
   if (!response.ok) {
     document.body.innerHTML = '<main class="admin-shell"><h1>Admin access denied</h1><p>Reload and enter the configured distribution token.</p></main>';
     return true;
@@ -152,7 +179,7 @@ async function admin() {
   const timezoneItems = (d.timezones || []).map((row) => ({ label: safe(timezoneLabel(row.label)), value: Number(row.value) || 0 }));
   const formatDuration = (seconds) => seconds >= 60 ? `${Math.floor(seconds/60)}m ${seconds%60}s` : `${seconds || 0}s`;
   const rangeLinks = [{d:7,l:'Week'},{d:30,l:'Month'},{d:90,l:'Quarter'},{d:365,l:'Year'}].map((item) => `<a class="range-link ${days===item.d?'active':''}" href="${routeBase}/admin?days=${item.d}">${item.l}</a>`).join('');
-  document.body.innerHTML = `<main class="admin-shell"><div class="admin-head"><div><span class="eyebrow">LIGHTBI DISTRIBUTION</span><h1>Privacy-safe release signals</h1><p>${days}-day view · PostgreSQL source · ${safe(d.cache || 'no')} cache · no IP, email or business-data collection</p><nav class="range-nav">${rangeLinks}</nav></div><a class="button" href="${routeBase}/">Back to portal</a></div>
+  document.body.innerHTML = `<main class="admin-shell"><div class="admin-head"><div><span class="eyebrow">LIGHTBI DISTRIBUTION</span><h1>Privacy-safe release signals</h1><p>${days}-day view · PostgreSQL source · ${safe(d.cache || 'no')} cache · no raw IP or business-data collection</p><nav class="admin-tabs"><a class="active" href="${routeBase}/admin?days=${days}">Analytics</a><a href="${routeBase}/admin?tab=revenue&days=${days}">Pro revenue</a></nav><nav class="range-nav">${rangeLinks}</nav></div><button class="button" data-admin-logout>Sign out</button></div>
     <section class="admin-metrics"><article><small>VISITORS</small><strong>${safe(totals.unique_visitors || 0)}</strong></article><article><small>VISITS</small><strong>${safe(totals.visits || 0)}</strong></article><article><small>VIEWS</small><strong>${safe(totals.page_views || 0)}</strong></article><article><small>ANON NETWORKS</small><strong>${safe(totals.anonymous_networks || 0)}</strong></article><article><small>BOUNCE RATE</small><strong>${safe(totals.bounce_rate || 0)}%</strong></article><article><small>VISIT DURATION</small><strong>${safe(formatDuration(totals.visit_duration_seconds || 0))}</strong></article><article><small>ACTIVE NOW</small><strong>${safe(totals.active_visitors || 0)}</strong></article><article><small>DOWNLOAD CLICKS</small><strong>${safe(totals.downloads || 0)}</strong></article><article><small>TOTAL MACHINES</small><strong>${safe(totals.total_machines || 0)}</strong></article><article><small>BASIC INSTALLS</small><strong>${safe(totals.basic_installs || 0)}</strong></article><article><small>PRO INSTALLS</small><strong>${safe(totals.pro_installs || 0)}</strong></article><article><small>ACTIVE MACHINES TODAY</small><strong>${safe(totals.daily_active || 0)}</strong></article></section>
     <section class="chart-card hero-chart"><div><span class="chart-kicker">WEBSITE</span><h2>Page views and visitors</h2></div>${trafficChart}</section>
     <section class="admin-grid charts"><article><span class="chart-kicker">PRODUCT</span><h2>Daily active machines</h2>${activeChart}</article><article><span class="chart-kicker">CONVERSION</span><h2>Distribution funnel</h2>${funnelChart}</article></section>
@@ -161,6 +188,7 @@ async function admin() {
     <section class="admin-grid three charts"><article><span class="chart-kicker">CLIENT</span><h2>Browsers</h2>${donut(safeItems(d.browsers || []))}</article><article><span class="chart-kicker">CLIENT</span><h2>Operating systems</h2>${donut(safeItems(d.operatingSystems || []))}</article><article><span class="chart-kicker">CLIENT</span><h2>Devices</h2>${donut(safeItems(d.devices || []))}</article></section>
     <section class="admin-grid"><article><h2>Campaign attribution</h2><div class="table-scroll"><table><thead><tr><th>Campaign/source</th><th>Visits</th><th>Downloads</th></tr></thead><tbody>${campaignRows}</tbody></table></div></article><article><h2>Languages</h2>${donut(safeItems(d.languages || []))}</article></section>
     <details class="detail-table"><summary>View daily source table</summary><div class="table-scroll"><table><thead><tr><th>Day</th><th>Views</th><th>Visitors</th><th>Downloads</th><th>Active machines</th></tr></thead><tbody>${dailyRows}</tbody></table></div></details></main>`;
+  document.querySelector('[data-admin-logout]').addEventListener('click', async () => { await fetch(`${routeBase}/api/admin/logout`, { method: 'POST' }); location.reload(); });
   return true;
 }
 

@@ -36,7 +36,7 @@ describe('distribution pairing', () => {
     });
     await expect(pairLightBIInstallation({
       endpoint: 'https://distribution.example', storage, fetcher: fetcher as typeof fetch,
-      version: '0.9.2-beta.7', platform: 'Windows',
+      version: '0.9.3-beta.7', platform: 'Windows',
     })).resolves.toBe('basic');
     expect(fetcher).toHaveBeenCalledOnce();
   });

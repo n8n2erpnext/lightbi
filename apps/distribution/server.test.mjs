@@ -107,3 +107,11 @@ test('serves the admin shell under the proxied route target', async () => {
   assert.equal(response.status, 200);
   assert.match(await response.text(), /LightBI/);
 });
+
+test('keeps revenue empty and payment dormant before Stripe configuration', () => {
+  const revenue = module.revenueSummary(30);
+  assert.equal(revenue.paidOrders, 0);
+  assert.equal(revenue.activeLicenses, 0);
+  assert.deepEqual(revenue.currencies, []);
+  assert.equal(revenue.paymentConfigured, false);
+});

@@ -5,6 +5,7 @@ import { DatabaseSync } from 'node:sqlite';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createDistributionAnalytics } from './analytics.mjs';
+import { createAdminAuth } from './admin-auth.mjs';
 
 const appDir = path.dirname(fileURLToPath(import.meta.url));
 const publicDir = path.join(appDir, 'public');
@@ -18,6 +19,11 @@ const analytics = await createDistributionAnalytics({
   databaseUrl: process.env.DATABASE_URL,
   redisUrl: process.env.REDIS_URL,
   pepper: installPepper,
+});
+const adminAuth = await createAdminAuth({
+  databaseUrl: process.env.DATABASE_URL,
+  redisUrl: process.env.REDIS_URL,
+  sessionSecret: process.env.LIGHTBI_ADMIN_SESSION_SECRET,
 });
 
 mkdirSync(dataDir, { recursive: true });
@@ -68,12 +74,15 @@ db.exec(`
 if (!db.prepare('PRAGMA table_info(licenses)').all().some((column) => column.name === 'installation_hash')) {
   db.exec('ALTER TABLE licenses ADD COLUMN installation_hash TEXT');
 }
+for (const [name, type] of [['amount_total', 'INTEGER'], ['currency', 'TEXT'], ['paid_at', 'TEXT']]) {
+  if (!db.prepare('PRAGMA table_info(licenses)').all().some((column) => column.name === name)) db.exec(`ALTER TABLE licenses ADD COLUMN ${name} ${type}`);
+}
 
 const jsonHeaders = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', 'access-control-allow-origin': '*' };
 const mime = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png' };
 
-function sendJson(response, status, body) {
-  response.writeHead(status, jsonHeaders);
+function sendJson(response, status, body, extraHeaders = {}) {
+  response.writeHead(status, { ...jsonHeaders, ...extraHeaders });
   response.end(JSON.stringify(body));
 }
 
@@ -119,6 +128,18 @@ function safeEqual(left, right) {
   return a.length === b.length && timingSafeEqual(a, b);
 }
 
+function cookie(request, name) {
+  const values = Object.fromEntries(String(request.headers.cookie || '').split(';').map((part) => part.trim().split('=', 2)).filter((part) => part.length === 2));
+  return values[name] ? decodeURIComponent(values[name]) : null;
+}
+
+async function authorizedAdmin(request) {
+  const supplied = String(request.headers.authorization || '').replace(/^Bearer\s+/i, '');
+  const breakGlass = process.env.LIGHTBI_DISTRIBUTION_ADMIN_TOKEN;
+  if (breakGlass && supplied && safeEqual(breakGlass, supplied)) return { email: 'break-glass' };
+  return adminAuth.enabled ? adminAuth.session(cookie(request, 'lightbi_admin')) : null;
+}
+
 function verifyStripeSignature(payload, header, secret) {
   const values = Object.fromEntries(String(header || '').split(',').map((part) => part.split('=', 2)));
   const timestamp = Number(values.t);
@@ -140,14 +161,24 @@ function fulfillCheckout(session) {
   const now = new Date().toISOString();
   db.exec('BEGIN IMMEDIATE');
   try {
-    db.prepare('INSERT INTO licenses (id, license_hash, tier, status, stripe_session_id, installation_hash, delivery_value, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)')
-      .run(id, sha(key), 'pro', 'active', session.id, session.client_reference_id || null, key, now);
+    db.prepare('INSERT INTO licenses (id, license_hash, tier, status, stripe_session_id, installation_hash, delivery_value, amount_total, currency, paid_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
+      .run(id, sha(key), 'pro', 'active', session.id, session.client_reference_id || null, key, Number(session.amount_total || 0), String(session.currency || '').toUpperCase() || null, now, now);
     db.prepare('INSERT INTO fulfilled_checkout_sessions (session_id, fulfilled_at) VALUES (?, ?)').run(session.id, now);
     db.exec('COMMIT');
   } catch (error) {
     db.exec('ROLLBACK');
     throw error;
   }
+}
+
+function revenueSummary(days) {
+  const windowDays = Math.min(365, Math.max(1, Number(days) || 30));
+  const since = new Date(Date.now() - windowDays * 86_400_000).toISOString();
+  const paidOrders = db.prepare("SELECT COUNT(*) AS count FROM licenses WHERE paid_at >= ? AND status='active'").get(since)?.count || 0;
+  const activeLicenses = db.prepare("SELECT COUNT(*) AS count FROM licenses WHERE status='active'").get()?.count || 0;
+  const currencies = db.prepare("SELECT COALESCE(currency,'N/A') AS currency, COALESCE(SUM(amount_total),0) AS gross_minor, COUNT(*) AS orders, COALESCE(ROUND(AVG(amount_total)),0) AS average_minor FROM licenses WHERE paid_at >= ? AND status='active' GROUP BY currency ORDER BY gross_minor DESC").all(since);
+  const daily = db.prepare("SELECT substr(paid_at,1,10) AS day, COALESCE(currency,'N/A') AS currency, COALESCE(SUM(amount_total),0) AS gross_minor, COUNT(*) AS orders FROM licenses WHERE paid_at >= ? AND status='active' GROUP BY day,currency ORDER BY day,currency").all(since);
+  return { days: windowDays, paidOrders, activeLicenses, currencies, daily, paymentConfigured: Boolean(process.env.STRIPE_SECRET_KEY && process.env.STRIPE_PRICE_ID && process.env.STRIPE_WEBHOOK_SECRET) };
 }
 
 async function createCheckout({ installationId }) {
@@ -296,6 +327,25 @@ const server = createServer(async (request, response) => {
       if (['checkout.session.completed', 'checkout.session.async_payment_succeeded'].includes(event.type)) fulfillCheckout(event.data?.object);
       return sendJson(response, 200, { received: true });
     }
+    if (request.method === 'POST' && url.pathname === '/api/admin/login') {
+      if (!adminAuth.enabled) return sendJson(response, 503, { error: 'admin_auth_unavailable' });
+      const payload = JSON.parse((await body(request, 16_000)).toString('utf8') || '{}');
+      const result = await adminAuth.login(payload.email, payload.password, anonymousNetworkHash(request));
+      if (!result.ok) return sendJson(response, result.reason === 'rate_limited' ? 429 : 401, { error: result.reason });
+      return sendJson(response, 200, { authenticated: true, email: result.email }, {
+        'set-cookie': `lightbi_admin=${encodeURIComponent(result.token)}; HttpOnly; Secure; SameSite=Strict; Path=/distribution; Max-Age=43200`,
+      });
+    }
+    if (request.method === 'GET' && url.pathname === '/api/admin/session') {
+      const session = await authorizedAdmin(request);
+      return session ? sendJson(response, 200, { authenticated: true, email: session.email }) : sendJson(response, 401, { authenticated: false });
+    }
+    if (request.method === 'POST' && url.pathname === '/api/admin/logout') {
+      if (adminAuth.enabled) await adminAuth.logout(cookie(request, 'lightbi_admin'));
+      return sendJson(response, 200, { authenticated: false }, {
+        'set-cookie': 'lightbi_admin=; HttpOnly; Secure; SameSite=Strict; Path=/distribution; Max-Age=0',
+      });
+    }
     if (request.method === 'GET' && url.pathname === '/api/checkout/status') {
       const sessionId = url.searchParams.get('session_id');
       const installationId = url.searchParams.get('installation_id');
@@ -308,9 +358,7 @@ const server = createServer(async (request, response) => {
       return sendJson(response, 200, { ready: true, tier: license.tier, licenseKey: value });
     }
     if (request.method === 'GET' && url.pathname === '/api/admin/stats') {
-      const expected = process.env.LIGHTBI_DISTRIBUTION_ADMIN_TOKEN;
-      const supplied = String(request.headers.authorization || '').replace(/^Bearer\s+/i, '');
-      if (!expected || !safeEqual(expected, supplied)) return sendJson(response, 401, { error: 'unauthorized' });
+      if (!await authorizedAdmin(request)) return sendJson(response, 401, { error: 'unauthorized' });
       const tiers = Object.fromEntries(db.prepare('SELECT tier, COUNT(*) AS count FROM installations GROUP BY tier').all().map((row) => [row.tier, row.count]));
       const downloads = db.prepare("SELECT COUNT(*) AS count FROM events WHERE kind = 'download'").get()?.count || 0;
       const activeLicenses = db.prepare("SELECT COUNT(*) AS count FROM licenses WHERE status = 'active'").get()?.count || 0;
@@ -321,6 +369,10 @@ const server = createServer(async (request, response) => {
         distribution,
       });
     }
+    if (request.method === 'GET' && url.pathname === '/api/admin/revenue') {
+      if (!await authorizedAdmin(request)) return sendJson(response, 401, { error: 'unauthorized' });
+      return sendJson(response, 200, revenueSummary(url.searchParams.get('days')));
+    }
     if (request.method === 'GET' && serveStatic(url.pathname, response)) return;
     sendJson(response, 404, { error: 'not_found' });
   } catch (error) {
@@ -330,4 +382,4 @@ const server = createServer(async (request, response) => {
 
 server.listen(port, '0.0.0.0', () => console.log(`LightBI Distribution listening on ${port}`));
 
-export { analytics, anonymousNetworkHash, db, imageContentType, server, sha, validInstallationId, verifyStripeSignature };
+export { adminAuth, analytics, anonymousNetworkHash, db, imageContentType, revenueSummary, server, sha, validInstallationId, verifyStripeSignature };
