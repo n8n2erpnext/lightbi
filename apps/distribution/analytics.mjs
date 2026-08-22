@@ -27,8 +27,10 @@ export async function createDistributionAnalytics({ databaseUrl, redisUrl, peppe
       utm_source TEXT,
       utm_medium TEXT,
       utm_campaign TEXT,
+      timezone TEXT,
       occurred_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     );
+    ALTER TABLE distribution_events ADD COLUMN IF NOT EXISTS timezone TEXT;
     CREATE INDEX IF NOT EXISTS distribution_events_time_idx ON distribution_events (occurred_at DESC);
     CREATE INDEX IF NOT EXISTS distribution_events_kind_time_idx ON distribution_events (kind, occurred_at DESC);
     CREATE TABLE IF NOT EXISTS distribution_installations (
@@ -79,10 +81,10 @@ export async function createDistributionAnalytics({ databaseUrl, redisUrl, peppe
     const visitorHash = hash(clean(input.visitorId, 100));
     const installationHash = hash(clean(input.installationId, 100));
     const tier = input.tier === 'pro' ? 'pro' : 'basic';
-    const values = [input.kind, visitorHash, installationHash, tier, clean(input.appVersion, 40), clean(input.platform, 60), clean(input.path, 200), clean(input.referrerHost, 120), clean(input.utmSource, 80), clean(input.utmMedium, 80), clean(input.utmCampaign, 120)];
+    const values = [input.kind, visitorHash, installationHash, tier, clean(input.appVersion, 40), clean(input.platform, 60), clean(input.path, 200), clean(input.referrerHost, 120), clean(input.utmSource, 80), clean(input.utmMedium, 80), clean(input.utmCampaign, 120), clean(input.timezone, 80)];
     await pool.query(`INSERT INTO distribution_events
-      (kind, visitor_hash, installation_hash, tier, app_version, platform, path, referrer_host, utm_source, utm_medium, utm_campaign)
-      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`, values);
+      (kind, visitor_hash, installation_hash, tier, app_version, platform, path, referrer_host, utm_source, utm_medium, utm_campaign, timezone)
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`, values);
     if (input.kind === 'page_view' && visitorHash) {
       await pool.query(`INSERT INTO distribution_unique_visits (visitor_hash, visit_date) VALUES ($1, CURRENT_DATE)
         ON CONFLICT (visitor_hash, visit_date) DO NOTHING`, [visitorHash]);
@@ -105,7 +107,7 @@ export async function createDistributionAnalytics({ databaseUrl, redisUrl, peppe
     const cacheKey = `lightbi:distribution:summary:${windowDays}`;
     const cached = redis?.isReady ? await redis.get(cacheKey) : null;
     if (cached) return JSON.parse(cached);
-    const [totals, daily, campaigns, platforms, versions] = await Promise.all([
+    const [totals, daily, campaigns, platforms, versions, timezones] = await Promise.all([
       pool.query(`SELECT
         (SELECT COUNT(*) FROM distribution_events WHERE kind='page_view')::int AS page_views,
         (SELECT COUNT(DISTINCT visitor_hash) FROM distribution_events WHERE kind='page_view' AND visitor_hash IS NOT NULL)::int AS unique_visitors,
@@ -128,8 +130,11 @@ export async function createDistributionAnalytics({ databaseUrl, redisUrl, peppe
         GROUP BY 1 ORDER BY visits DESC, downloads DESC LIMIT 12`, [windowDays]),
       pool.query(`SELECT COALESCE(platform,'unknown') AS label, COUNT(*)::int AS value FROM distribution_installations GROUP BY 1 ORDER BY value DESC LIMIT 12`),
       pool.query(`SELECT COALESCE(app_version,'unknown') AS label, COUNT(*)::int AS value FROM distribution_installations GROUP BY 1 ORDER BY value DESC LIMIT 12`),
+      pool.query(`SELECT COALESCE(timezone,'Unknown') AS label, COUNT(DISTINCT visitor_hash)::int AS value
+        FROM distribution_events WHERE kind='page_view' AND occurred_at >= NOW()-($1::int*INTERVAL '1 day')
+        GROUP BY 1 ORDER BY value DESC LIMIT 12`, [windowDays]),
     ]);
-    const result = { enabled: true, cache: redis?.isReady ? 'redis' : 'none', days: windowDays, totals: totals.rows[0], daily: daily.rows, campaigns: campaigns.rows, platforms: platforms.rows, versions: versions.rows };
+    const result = { enabled: true, cache: redis?.isReady ? 'redis' : 'none', days: windowDays, totals: totals.rows[0], daily: daily.rows, campaigns: campaigns.rows, platforms: platforms.rows, versions: versions.rows, timezones: timezones.rows };
     if (redis?.isReady) await redis.set(cacheKey, JSON.stringify(result), { EX: 30 });
     return result;
   }

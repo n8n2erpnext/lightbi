@@ -23,7 +23,7 @@ Exports are created only after a user action. PNG/PDF analysis exports, CSV/Exce
 
 ## Telemetry
 
-The distribution portal creates a random first-party visitor identifier and records page views, download clicks, referrer host, and explicit `utm_source`, `utm_medium`, and `utm_campaign` values. The service hashes the identifier before PostgreSQL persistence. It does not persist raw IP addresses, email addresses, names, or cross-site advertising identifiers.
+The distribution portal creates a random first-party visitor identifier and records page views, download clicks, browser-reported IANA time zone, referrer host, and explicit `utm_source`, `utm_medium`, and `utm_campaign` values. The time zone provides only a coarse audience distribution and is not presented as a country or precise location. The service hashes the identifier before PostgreSQL persistence. It does not persist raw IP addresses, email addresses, names, or cross-site advertising identifiers.
 
 The public Beta desktop app creates a separate random installation identifier and may pair it with the LightBI distribution service. Pairing runs only in the native Tauri application—not in the browser demo—and sends only the random identifier, application version, platform, and Basic/Pro tier. The service hashes the identifier before persistence.
 
