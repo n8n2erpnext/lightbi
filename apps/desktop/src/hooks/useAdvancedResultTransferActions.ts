@@ -200,7 +200,7 @@ export function createAdvancedResultTransferActions(context: AdvancedResultTrans
       sql,
       configuration: {
         resultView: activeTab.resultView,
-        visibleColumns: displayResult.columns.map(column => column.name),
+        visibleColumns: result.columns.map(column => column.name),
         filters: activeTab.filters.map(filter => ({ ...filter })),
         filterCombinator: activeTab.filterCombinator,
         sort: activeTab.sort ? { ...activeTab.sort } : null,
