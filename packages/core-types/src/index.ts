@@ -7,3 +7,4 @@ export * from './question';
 export * from './capabilities';
 export * from './perspective';
 export * from './execution';
+export * from './release';

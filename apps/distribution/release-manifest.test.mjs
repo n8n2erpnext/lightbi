@@ -1,0 +1,29 @@
+import assert from 'node:assert/strict';
+import test from 'node:test';
+import { compareVersions, loadReleaseCatalog, selectArtifact, updateReleaseIndex, validateReleaseManifest } from './release-manifest.mjs';
+
+const manifest = (version = '0.9.2-beta.7') => ({
+  schema_version: 'lightbi.release.v1', product: 'digital.thaiduy.lightbi', version, channel: 'beta',
+  published_at: '2026-08-24T00:00:00.000Z', release_notes: 'Beta update', minimum_updater_version: '0.9.1-beta.7',
+  artifacts: [{ platform: 'windows', architecture: 'x86_64', kind: 'exe', filename: 'LightBI.exe', url: `https://drive.thaiduy.store/release/lightbi/${version}/LightBI.exe`, size: 100, sha256: 'a'.repeat(64) }],
+});
+
+test('validates one cross-platform release contract', () => {
+  assert.equal(validateReleaseManifest(manifest()).version, '0.9.2-beta.7');
+  assert.equal(selectArtifact(manifest(), 'windows').filename, 'LightBI.exe');
+  assert.throws(() => validateReleaseManifest({ ...manifest(), artifacts: [{ ...manifest().artifacts[0], url: 'http://unsafe.test/a' }] }));
+});
+
+test('orders semver releases and replaces the same immutable version identity', () => {
+  assert.equal(compareVersions('0.9.2-beta.7', '0.9.1-beta.7'), 1);
+  const index = updateReleaseIndex(null, manifest('0.9.1-beta.7'));
+  const next = updateReleaseIndex(index, manifest('0.9.2-beta.7'));
+  assert.deepEqual(next.releases.map((item) => item.version), ['0.9.2-beta.7', '0.9.1-beta.7']);
+});
+
+test('fails over without advertising an incomplete R2 release', async () => {
+  const catalog = await loadReleaseCatalog({ manifestUrl: 'https://r2/latest.json', indexUrl: 'https://r2/index.json', fallbackUrl: 'https://github.com/releases', fetchImpl: async () => new Response('', { status: 503 }) });
+  assert.equal(catalog.available, false);
+  assert.equal(catalog.latest, null);
+  assert.equal(catalog.fallbackUrl, 'https://github.com/releases');
+});

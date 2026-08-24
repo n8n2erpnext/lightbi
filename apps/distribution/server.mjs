@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { createDistributionAnalytics } from './analytics.mjs';
 import { createAdminAuth } from './admin-auth.mjs';
 import { createMailer } from './mailer.mjs';
+import { loadReleaseCatalog, selectArtifact } from './release-manifest.mjs';
 
 const appDir = path.dirname(fileURLToPath(import.meta.url));
 const publicDir = path.join(appDir, 'public');
@@ -14,6 +15,8 @@ const dataDir = process.env.LIGHTBI_DISTRIBUTION_DATA_DIR || path.join(appDir, '
 const port = Number(process.env.PORT || 5174);
 const publicBaseUrl = (process.env.LIGHTBI_DISTRIBUTION_PUBLIC_URL || `http://localhost:${port}`).replace(/\/$/, '');
 const releaseUrl = process.env.LIGHTBI_RELEASE_URL || 'https://github.com/n8n2erpnext/lightbi/releases/latest';
+const releaseManifestUrl = process.env.LIGHTBI_RELEASE_MANIFEST_URL || 'https://drive.thaiduy.store/release/lightbi/beta/latest.json';
+const releaseIndexUrl = process.env.LIGHTBI_RELEASE_INDEX_URL || 'https://drive.thaiduy.store/release/lightbi/index.json';
 const proPriceLabel = process.env.LIGHTBI_PRO_PRICE_LABEL || 'Early access';
 const installPepper = process.env.LIGHTBI_INSTALLATION_PEPPER || 'lightbi-public-installation-v1';
 const analytics = await createDistributionAnalytics({
@@ -28,6 +31,15 @@ const adminAuth = await createAdminAuth({
 });
 const mailer = await createMailer({ host: process.env.SMTP_HOST, port: process.env.SMTP_PORT, secure: process.env.SMTP_SECURE, user: process.env.SMTP_USER, password: process.env.SMTP_PASSWORD, from: process.env.SMTP_FROM });
 const appFeatures = new Set(['easy_mode', 'advanced_mode', 'advanced_query', 'advanced_database_edit', 'deep_ba', 'subset_analysis', 'dashboard', 'chart', 'export', 'data_import', 'database_connect', 'google_sheets']);
+let releaseCatalogCache = null;
+let releaseCatalogCachedAt = 0;
+
+async function releaseCatalog(refresh = false) {
+  if (!refresh && releaseCatalogCache && Date.now() - releaseCatalogCachedAt < 60_000) return releaseCatalogCache;
+  releaseCatalogCache = await loadReleaseCatalog({ manifestUrl: releaseManifestUrl, indexUrl: releaseIndexUrl, fallbackUrl: releaseUrl });
+  releaseCatalogCachedAt = Date.now();
+  return releaseCatalogCache;
+}
 
 mkdirSync(dataDir, { recursive: true });
 const db = new DatabaseSync(path.join(dataDir, 'distribution.sqlite'));
@@ -291,11 +303,22 @@ const server = createServer(async (request, response) => {
       return response.end();
     }
     if (request.method === 'GET' && url.pathname === '/api/config') {
+      const catalog = await releaseCatalog();
+      const windows = catalog.latest ? selectArtifact(catalog.latest, 'windows') : null;
       return sendJson(response, 200, {
-        productId: 'digital.thaiduy.lightbi', releaseUrl, proPriceLabel,
+        productId: 'digital.thaiduy.lightbi', releaseUrl: windows?.url || releaseUrl, releaseManifestUrl, proPriceLabel,
+        latestVersion: catalog.latest?.version || null, releaseCatalogAvailable: catalog.available,
         checkoutAvailable: Boolean(process.env.STRIPE_SECRET_KEY && process.env.STRIPE_PRICE_ID),
         analyticsAvailable: analytics.enabled,
       });
+    }
+    if (request.method === 'GET' && url.pathname === '/api/releases/latest') {
+      const catalog = await releaseCatalog(url.searchParams.get('refresh') === '1');
+      return sendJson(response, catalog.available ? 200 : 503, catalog);
+    }
+    if (request.method === 'GET' && url.pathname === '/api/releases') {
+      const catalog = await releaseCatalog();
+      return sendJson(response, 200, { ...catalog, releases: catalog.releases.slice(0, 3) });
     }
     if (request.method === 'POST' && url.pathname === '/api/visit') {
       const payload = JSON.parse((await body(request)).toString('utf8') || '{}');
@@ -338,7 +361,10 @@ const server = createServer(async (request, response) => {
       db.prepare('INSERT INTO events (kind, tier, app_version, platform, created_at) VALUES (?, ?, ?, ?, ?)')
         .run('download', payload.tier === 'pro' ? 'pro' : 'basic', String(payload.appVersion || ''), String(payload.platform || 'windows'), new Date().toISOString());
       await analytics.record({ ...payload, kind: 'download', networkHash: anonymousNetworkHash(request) });
-      return sendJson(response, 202, { releaseUrl });
+      const catalog = await releaseCatalog();
+      const platform = ['windows', 'linux', 'macos'].includes(payload.platform) ? payload.platform : 'windows';
+      const artifact = catalog.latest ? selectArtifact(catalog.latest, platform, payload.architecture) : null;
+      return sendJson(response, 202, { releaseUrl: artifact?.url || releaseUrl, manifest: catalog.latest, artifact, fallback: !artifact });
     }
     if (request.method === 'POST' && url.pathname === '/api/license/activate') {
       const payload = JSON.parse((await body(request)).toString('utf8'));

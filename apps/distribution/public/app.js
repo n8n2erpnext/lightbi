@@ -1,6 +1,7 @@
-const state = { config: null };
+const state = { config: null, catalog: null };
 const portalBase = location.pathname.startsWith('/distribution') ? '/distribution' : '';
 const routeBase = portalBase || '/distribution-api';
+const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
 
 function installationId() {
   let id = localStorage.getItem('lightbi-distribution-installation-id');
@@ -98,9 +99,30 @@ async function api(route, options) {
   return body;
 }
 
-async function download() {
-  const result = await api('/api/download', { method: 'POST', body: JSON.stringify({ ...trafficContext(), tier: 'basic', platform: 'windows' }) }).catch(() => ({ releaseUrl: state.config?.releaseUrl }));
+function preferredPlatform() {
+  const profile = clientProfile();
+  return profile.os === 'Windows' ? 'windows' : profile.os === 'Linux' ? 'linux' : profile.os === 'macOS' ? 'macos' : null;
+}
+
+function platformLabel(platform) {
+  return platform === 'windows' ? 'Windows' : platform === 'linux' ? 'Linux' : platform === 'macos' ? 'macOS' : platform;
+}
+
+async function download(platform = preferredPlatform() || 'windows', architecture = null) {
+  const result = await api('/api/download', { method: 'POST', body: JSON.stringify({ ...trafficContext(), tier: 'basic', platform, architecture }) }).catch(() => ({ releaseUrl: state.config?.releaseUrl }));
   if (result.releaseUrl) location.href = result.releaseUrl;
+}
+
+function renderReleaseCatalog() {
+  const target = document.querySelector('#release-list');
+  if (!target) return;
+  const releases = state.catalog?.releases || [];
+  if (!releases.length) {
+    target.innerHTML = `<article class="release-card"><h3>Release catalog temporarily unavailable</h3><p>Use the GitHub archive while the primary mirror reconnects.</p><a class="button dark" href="${state.config?.releaseUrl || 'https://github.com/n8n2erpnext/lightbi/releases'}">GitHub download</a></article>`;
+    return;
+  }
+  target.innerHTML = releases.slice(0,3).map((release) => `<article class="release-card"><span class="pill">${escapeHtml(release.channel)}</span><h3>LightBI ${escapeHtml(release.version)}</h3><p>${escapeHtml(String(release.published_at).slice(0,10))} · ${escapeHtml(release.release_notes || 'Release update')}</p><div class="artifact-actions">${(release.artifacts||[]).map((artifact) => `<a class="button dark" href="${escapeHtml(artifact.url)}" data-release-download data-platform="${escapeHtml(artifact.platform)}">${platformLabel(artifact.platform)} · ${escapeHtml(artifact.architecture)}</a>`).join('')}</div></article>`).join('');
+  target.querySelectorAll('[data-release-download]').forEach((link) => link.addEventListener('click', () => { void api('/api/download', { method:'POST', body:JSON.stringify({ ...trafficContext(), tier:'basic', platform:link.dataset.platform }) }).catch(()=>null); }));
 }
 
 async function checkout() {
@@ -251,12 +273,19 @@ async function admin() {
 
 const isAdmin = location.pathname.endsWith('/admin');
 state.config = await api('/api/config').catch(() => null);
+state.catalog = await api('/api/releases').catch(() => null);
+renderReleaseCatalog();
+const recommended = preferredPlatform();
+document.querySelectorAll('[data-download],#download').forEach((button) => {
+  if (recommended) button.textContent = `Download for ${platformLabel(recommended)}`;
+  else button.textContent = 'Choose a download';
+});
 if (state.config) {
   document.querySelector('#pro-price').textContent = state.config.proPriceLabel;
   if (!state.config.checkoutAvailable) document.querySelector('#checkout-note').textContent = 'Payment adapter ready; Stripe keys are not configured yet.';
 }
-document.querySelectorAll('[data-download]').forEach((button) => button.addEventListener('click', download));
-document.querySelector('#download')?.addEventListener('click', (event) => { event.preventDefault(); download(); });
+document.querySelectorAll('[data-download]').forEach((button) => button.addEventListener('click', () => { if (recommended) void download(recommended); else location.hash = 'other-downloads'; }));
+document.querySelector('#download')?.addEventListener('click', (event) => { event.preventDefault(); if (recommended) void download(recommended); else location.hash = 'other-downloads'; });
 document.querySelector('#checkout')?.addEventListener('click', checkout);
 await showCheckoutResult();
 if (isAdmin) await admin();
