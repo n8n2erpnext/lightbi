@@ -307,6 +307,7 @@ export const ChartPreviewRenderer: React.FC<{
         dimensionField: model.xField,
         value: rawValue,
         label,
+        dimensionSemanticType: xSType,
         measureField: typeof params.seriesName === 'string' ? params.seriesName : model.yField,
         measureValue: typeof params.dataIndex === 'number' && params.seriesName ? row[params.seriesName] : undefined,
       });

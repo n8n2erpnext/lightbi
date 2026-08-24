@@ -63,6 +63,26 @@ describe('drill-through export', () => {
     expect(buildDrillThroughSql(point)).not.toContain(normalizedChartField);
   });
 
+  it('matches a chart date against ISO, epoch milliseconds, epoch seconds, or Excel serial source values', () => {
+    const sql = buildDrillThroughSql({
+      dimensionField: 'OrderDate',
+      sourceDimensionField: 'OrderDate',
+      value: '2024-12-11T00:00:00.000Z',
+      label: '12/11/2024',
+      dimensionSemanticType: 'date',
+    });
+    expect(sql).toContain("DATE '2024-12-11'");
+    expect(sql).toContain('epoch_ms');
+    expect(sql).toContain('to_timestamp');
+    expect(sql).toContain("DATE '1899-12-30'");
+  });
+
+  it('keeps non-temporal dimension matching strict', () => {
+    const sql = buildDrillThroughSql({ dimensionField: 'store', value: 'A', label: 'A', dimensionSemanticType: 'string' });
+    expect(sql).toContain(`= 'A'`);
+    expect(sql).not.toContain('epoch_ms');
+  });
+
   it('escapes CSV cells and protects spreadsheet formulas', () => {
     const csv = rowsToCsv(
       ['Mã đơn', 'Ghi chú'],

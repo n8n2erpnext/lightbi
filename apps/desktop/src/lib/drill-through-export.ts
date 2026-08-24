@@ -11,6 +11,8 @@ export type DrillThroughPoint = {
   sourceDimensionField?: string;
   value: unknown;
   label: string;
+  /** Display semantic used by the chart so raw temporal values can be matched without comparing localized labels. */
+  dimensionSemanticType?: string;
   measureField?: string;
   measureValue?: unknown;
 };
@@ -85,12 +87,57 @@ function sqlString(value: unknown): string {
   return String(value).replace(/'/g, "''");
 }
 
+function temporalDate(value: unknown): Date | null {
+  if (value instanceof Date && Number.isFinite(value.getTime())) return value;
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    if (Math.abs(value) >= 100_000_000_000) return new Date(value);
+    if (Math.abs(value) >= 1_000_000_000) return new Date(value * 1000);
+    if (value >= 20_000 && value <= 80_000) return new Date(Date.UTC(1899, 11, 30) + value * 86_400_000);
+  }
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    if (/^-?\d+(?:\.\d+)?$/.test(trimmed)) return temporalDate(Number(trimmed));
+    const parsed = Date.parse(trimmed);
+    if (Number.isFinite(parsed)) return new Date(parsed);
+  }
+  return null;
+}
+
+function buildTemporalPredicate(field: string, point: DrillThroughPoint): string | null {
+  const semantic = point.dimensionSemanticType?.toLowerCase();
+  const normalizedField = normalizedFieldName(point.sourceDimensionField ?? point.dimensionField);
+  const isTemporalField = semantic === 'date' || semantic === 'datetime' || semantic === 'time'
+    || /(date|time|timestamp|datetime|period|ngay|thang|nam)/.test(normalizedField);
+  if (!isTemporalField) return null;
+  const target = temporalDate(point.value);
+  if (!target || !Number.isFinite(target.getTime())) return null;
+  const numeric = `TRY_CAST(${field} AS DOUBLE)`;
+  const targetDate = target.toISOString().slice(0, 10);
+  const dateOnly = semantic === 'date' || (!semantic && !/\d{1,2}:\d{2}/.test(point.label));
+  if (dateOnly) {
+    return `(
+      CAST(TRY_CAST(${field} AS TIMESTAMP) AS DATE) = DATE '${targetDate}'
+      OR CASE WHEN ABS(${numeric}) BETWEEN 100000000000 AND 9999999999999 THEN CAST(epoch_ms(TRY_CAST(${field} AS BIGINT)) AS DATE) END = DATE '${targetDate}'
+      OR CASE WHEN ABS(${numeric}) BETWEEN 1000000000 AND 99999999999 THEN CAST(to_timestamp(${numeric}) AS DATE) END = DATE '${targetDate}'
+      OR CASE WHEN ${numeric} BETWEEN 20000 AND 80000 THEN DATE '1899-12-30' + TRY_CAST(${field} AS INTEGER) END = DATE '${targetDate}'
+    )`;
+  }
+  const targetTimestamp = target.toISOString().replace('T', ' ').replace('Z', '');
+  return `(
+    TRY_CAST(${field} AS TIMESTAMP) = TIMESTAMP '${targetTimestamp}'
+    OR CASE WHEN ABS(${numeric}) BETWEEN 100000000000 AND 9999999999999 THEN epoch_ms(TRY_CAST(${field} AS BIGINT)) END = TIMESTAMP '${targetTimestamp}'
+    OR CASE WHEN ABS(${numeric}) BETWEEN 1000000000 AND 99999999999 THEN CAST(to_timestamp(${numeric}) AS TIMESTAMP) END = TIMESTAMP '${targetTimestamp}'
+  )`;
+}
+
 export function buildDrillThroughSql(point: DrillThroughPoint, limit = 50_000): string {
   const field = quoteLowercaseIdent(point.sourceDimensionField ?? point.dimensionField);
   const safeLimit = Math.max(1, Math.min(100_000, Math.floor(limit)));
-  const where = point.value === null || point.value === undefined
+  const direct = point.value === null || point.value === undefined
     ? `${field} IS NULL`
     : `TRIM(CAST(${field} AS VARCHAR)) = '${sqlString(point.value).trim()}'`;
+  const temporal = point.value === null || point.value === undefined ? null : buildTemporalPredicate(field, point);
+  const where = temporal ? `(${direct} OR ${temporal})` : direct;
   return `SELECT *\nFROM __LIGHTBI_PREVIEW_TABLE__\nWHERE ${where}\nLIMIT ${safeLimit};`;
 }
 
