@@ -147,6 +147,11 @@ jobs:
           R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
         run: |
           set -euo pipefail
+          export AWS_ACCESS_KEY_ID="$(printf '%s' "$AWS_ACCESS_KEY_ID" | tr -d '\r\n')"
+          export AWS_SECRET_ACCESS_KEY="$(printf '%s' "$AWS_SECRET_ACCESS_KEY" | tr -d '\r\n')"
+          export R2_ACCOUNT_ID="$(printf '%s' "$R2_ACCOUNT_ID" | tr -d '\r\n')"
+          export R2_BUCKET="$(printf '%s' "$R2_BUCKET" | tr -d '\r\n')"
+          export R2_PUBLIC_URL="$(printf '%s' "$R2_PUBLIC_URL" | tr -d '\r\n')"
           python -m pip install --disable-pip-version-check --quiet awscli
           version="${GITHUB_REF_NAME#v}"
           channel=stable
