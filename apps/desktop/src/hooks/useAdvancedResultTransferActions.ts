@@ -254,13 +254,14 @@ export function createAdvancedResultTransferActions(context: AdvancedResultTrans
       patchTab(activeTab.id, { warnings: ['Commit or discard pending edits before returning to Easy analysis.'] });
       return;
     }
-    if (!activeTab.tableContext) {
+    const sourceContext = activeTab.tableContext ?? (fileSource?.tables.length === 1 ? { schema: 'workspace', table: fileSource.tables[0].name } : null);
+    if (!sourceContext) {
       patchTab(activeTab.id, { warnings: ['Choose a source table before returning to Easy analysis.'] });
       return;
     }
     const sql = workspaceProvider === 'mongodb'
       ? activeTab.sql
-      : `SELECT * FROM ${qualifiedTableReference(workspaceProvider, activeTab.tableContext.schema, activeTab.tableContext.table)}`;
+      : `SELECT * FROM ${qualifiedTableReference(workspaceProvider, sourceContext.schema, sourceContext.table)}`;
     const materializeTab = { ...activeTab, sql, filters: [], sort: undefined, offset: 0 } as WorkspaceTab;
     patchTab(activeTab.id, { isRunning: true, warnings: ['Refreshing the complete post-edit source for Easy analysis…'], error: '' });
     try {
@@ -277,7 +278,7 @@ export function createAdvancedResultTransferActions(context: AdvancedResultTrans
       const complete = materializeAdvancedResultPages(pages);
       if (complete.rows.length === 0) throw new Error('The refreshed source contains no rows to analyze.');
       patchTab(activeTab.id, { isRunning: false, result: complete, warnings: [`Refreshed ${complete.rows.length.toLocaleString('en')} post-edit rows and returned them to Easy analysis.`] });
-      openResultInSimple(complete, sql, `${activeTab.tableContext.schema}.${activeTab.tableContext.table}`);
+      openResultInSimple(complete, sql, `${sourceContext.schema}.${sourceContext.table}`);
     } catch (cause) {
       patchTab(activeTab.id, { isRunning: false, error: cause instanceof Error ? cause.message : 'Could not refresh the post-edit source for Easy analysis.' });
     }

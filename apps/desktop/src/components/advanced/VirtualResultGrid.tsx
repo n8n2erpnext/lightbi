@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import type { QueryCellValue } from '@lightbi/core-types';
 import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, Braces, Columns, Copy, Database, Filter, ListTree, Pencil, Plus, Table2, Trash2 } from 'lucide-react';
 import type { AdvancedQueryResult, AdvancedSort } from '../../lib/advanced-api';
@@ -45,10 +45,29 @@ export const VirtualResultGrid: React.FC<{
   onRenameColumn?: (columnId: string, currentName: string) => void;
 }> = ({ result, sort, onSort, columnWidths = {}, onColumnResize, onColumnMove, editable = false, editedKeys = new Set(), deletedRows = new Set(), onEdit, onDuplicateRow, onDeleteRow, onRestoreRow, copyTableName, foreignKeyActions = [], onRenameColumn }) => {
   const gridRef = useRef<HTMLDivElement | null>(null);
+  const contextMenuRef = useRef<HTMLDivElement | null>(null);
   const [scrollTop, setScrollTop] = useState(0);
   const [editing, setEditing] = useState<{ rowIndex: number; columnIndex: number; value: string } | null>(null);
   const [selection, setSelection] = useState<GridSelection | null>(null);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; rowIndex: number; columnIndex: number } | null>(null);
+  useEffect(() => {
+    if (!contextMenu) return;
+    const dismissOutside = (event: PointerEvent) => {
+      if (!contextMenuRef.current?.contains(event.target as Node)) setContextMenu(null);
+    };
+    const dismissEscape = (event: KeyboardEvent) => { if (event.key === 'Escape') setContextMenu(null); };
+    const dismissViewport = () => setContextMenu(null);
+    document.addEventListener('pointerdown', dismissOutside, true);
+    document.addEventListener('keydown', dismissEscape);
+    window.addEventListener('resize', dismissViewport);
+    window.addEventListener('scroll', dismissViewport, true);
+    return () => {
+      document.removeEventListener('pointerdown', dismissOutside, true);
+      document.removeEventListener('keydown', dismissEscape);
+      window.removeEventListener('resize', dismissViewport);
+      window.removeEventListener('scroll', dismissViewport, true);
+    };
+  }, [contextMenu]);
   const start = Math.max(0, Math.floor(scrollTop / ROW_HEIGHT) - OVERSCAN);
   const visibleCount = Math.ceil(GRID_HEIGHT / ROW_HEIGHT) + OVERSCAN * 2;
   const end = Math.min(result.rows.length, start + visibleCount);
@@ -208,7 +227,7 @@ export const VirtualResultGrid: React.FC<{
       aria-colcount={result.columns.length}
       tabIndex={0}
       className="h-full min-h-0 overflow-auto bg-white outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
-      onScroll={event => setScrollTop(event.currentTarget.scrollTop)}
+      onScroll={event => { setScrollTop(event.currentTarget.scrollTop); setContextMenu(null); }}
       onKeyDown={event => {
         if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'c') {
           event.preventDefault();
@@ -320,7 +339,7 @@ export const VirtualResultGrid: React.FC<{
         </div>
       </div>
       {contextMenu && (
-        <div className="fixed z-50 w-52 border border-gray-200 bg-white py-1 text-[11px] text-gray-700 shadow-lg" style={{ left: contextMenu.x, top: contextMenu.y }}>
+        <div ref={contextMenuRef} role="menu" className="fixed z-50 w-52 border border-gray-200 bg-white py-1 text-[11px] text-gray-700 shadow-lg" style={{ left: contextMenu.x, top: contextMenu.y }}>
           {foreignKeyActions.filter(action => action.columnNames.includes(result.columns[contextMenu.columnIndex]?.name || '')).map(action => (
             <button key={action.id} className="flex h-7 w-full items-center gap-2 px-2 text-left hover:bg-purple-50 hover:text-purple-700" onClick={() => { action.onNavigate(result.rows[contextMenu.rowIndex] ?? [], result); setContextMenu(null); }}><ArrowRight className="h-3.5 w-3.5 text-purple-400" /> {action.label}</button>
           ))}

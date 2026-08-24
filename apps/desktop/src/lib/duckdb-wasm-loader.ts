@@ -38,9 +38,8 @@ export async function initDuckDbWasm(): Promise<AsyncDuckDB> {
             if (typeof Worker === 'undefined') {
                  throw new Error("Worker is not defined in this environment (likely a Node test env).");
             }
-            // @ts-expect-error The browser entry ships declarations that are not
-            // exposed through the package exports map; the import is intentionally
-            // deferred so Node-based tests never evaluate the Worker runtime.
+            // Keep this import deferred so Node-based tests never evaluate the
+            // browser Worker runtime.
             const duckdb = await import('@duckdb/duckdb-wasm/dist/duckdb-browser');
             // Select a bundle based on browser checks
             const bundle = await duckdb.selectBundle(MANUAL_BUNDLES);

@@ -15,6 +15,12 @@ import { AdvancedConnectionGate } from './AdvancedConnectionGate';
 import { QueryPlanView, ResultChart, ResultJson, ResultStructure } from './AdvancedResultViews';
 import { FavoritesPanel, HistoryPanel, SchemaTree } from './AdvancedSidePanels';
 import { VirtualResultGrid, type GridForeignKeyAction } from './VirtualResultGrid';
+import { currentLicenseTier } from '../../lib/distribution-pairing';
+
+const AdvancedSqlEditor = React.lazy(async () => {
+  const module = await import('./AdvancedSqlEditor');
+  return { default: module.AdvancedSqlEditor };
+});
 
 type TabPatch = Partial<WorkspaceTab> | ((tab: WorkspaceTab) => Partial<WorkspaceTab>);
 type MutationReview = { request: AdvancedMutationRequest; preview: AdvancedMutationPreview } | null;
@@ -97,6 +103,7 @@ export const AdvancedWorkspaceView: React.FC<{ model: AdvancedWorkspaceViewModel
     writableTables, setImportDraft, importSourceIntoTable,
   } = model;
   const databaseReadOnly = connection?.provider === 'mongodb' || connection?.provider === 'sqlserver';
+  const proSqlSuggestions = currentLicenseTier() === 'pro';
   return (
     <div className="flex h-full min-h-0 flex-col bg-white">
       <header className="flex h-14 shrink-0 items-center justify-between border-b border-gray-200 px-4">
@@ -197,10 +204,11 @@ export const AdvancedWorkspaceView: React.FC<{ model: AdvancedWorkspaceViewModel
             </div>
 
             <div className="h-[210px] shrink-0 border-b border-gray-200">
-              <textarea aria-label={workspaceProvider === 'mongodb' ? 'MongoDB document query' : 'SQL query'} spellCheck={false} value={activeTab.sql} onChange={event => {
-                const sql = event.target.value;
-                patchTab(activeTab.id, tab => ({ sql, offset: 0, sort: undefined, filters: [], filterValue: '', plan: null, tableContext: undefined, parameters: reconcileSqlParameters(sql, tab.parameters) }));
-              }} onKeyDown={event => { if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') { event.preventDefault(); void runQuery(); } }} className="h-full w-full resize-none bg-[#fbfbfc] p-4 font-mono text-[13px] leading-6 text-gray-800 outline-none" />
+              <React.Suspense fallback={<div className="h-full bg-[#fbfbfc] p-4 font-mono text-[12px] text-gray-400">Loading local SQL editor...</div>}>
+                <AdvancedSqlEditor value={activeTab.sql} provider={workspaceProvider} schema={schema} proSuggestions={proSqlSuggestions} onChange={sql => {
+                  patchTab(activeTab.id, tab => ({ sql, offset: 0, sort: undefined, filters: [], filterValue: '', plan: null, tableContext: undefined, parameters: reconcileSqlParameters(sql, tab.parameters) }));
+                }} onRun={() => { void runQuery(); }} onRunAll={() => { void runAllStatements(); }} />
+              </React.Suspense>
             </div>
 
             <div className="flex min-h-0 flex-1 flex-col">
@@ -229,7 +237,7 @@ export const AdvancedWorkspaceView: React.FC<{ model: AdvancedWorkspaceViewModel
                 <button onClick={() => patchTab(activeTab.id, { resultView: 'structure' })} className={`hidden h-7 items-center gap-1.5 px-3 text-[11px] md:flex ${activeTab.resultView === 'structure' ? 'bg-gray-200 font-medium text-gray-900' : 'text-gray-500 hover:bg-gray-100'}`}><ListTree className="h-3.5 w-3.5" /> Structure</button>
                 {activeTab.plan !== null && <button onClick={() => patchTab(activeTab.id, { resultView: 'plan' })} className={`flex h-7 items-center gap-1.5 px-3 text-[11px] ${activeTab.resultView === 'plan' ? 'bg-gray-200 font-medium text-gray-900' : 'text-gray-500 hover:bg-gray-100'}`}><FileSearch className="h-3.5 w-3.5" /> Plan</button>}
                 {displayResult && <button onClick={analyzeActiveResultInSimple} disabled={displayResultCompleteness?.state !== 'complete'} aria-describedby={displayResultCompleteness?.state !== 'complete' ? 'advanced-result-completeness' : undefined} className="ml-1 flex h-7 items-center gap-1.5 border border-indigo-200 bg-indigo-50 px-3 text-[11px] font-medium text-indigo-700 hover:bg-indigo-100 disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-50 disabled:text-gray-400" title={displayResultCompleteness?.state === 'complete' ? 'Create a Simple mode BA decision brief from this complete result' : 'Full-source governed analysis requires a complete result'}><Sparkles className="h-3.5 w-3.5" /> BA Brief</button>}
-                {activeTab.tableContext && <button onClick={() => void returnFullSourceToEasy()} disabled={activeTab.isRunning || hasActivePendingChanges} className="ml-1 flex h-7 items-center gap-1.5 border border-emerald-200 bg-emerald-50 px-3 text-[11px] font-medium text-emerald-800 hover:bg-emerald-100 disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-50 disabled:text-gray-400" title={hasActivePendingChanges ? 'Commit or discard pending edits first' : 'Refresh the complete post-edit source and return to Easy analysis'}><ArrowLeft className="h-3.5 w-3.5" /> Return to Easy</button>}
+                {(activeTab.tableContext || fileSource?.tables.length === 1) && <button onClick={() => void returnFullSourceToEasy()} disabled={activeTab.isRunning || hasActivePendingChanges} className="ml-1 flex h-7 items-center gap-1.5 border border-emerald-200 bg-emerald-50 px-3 text-[11px] font-medium text-emerald-800 hover:bg-emerald-100 disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-50 disabled:text-gray-400" title={hasActivePendingChanges ? 'Commit or discard pending edits first' : 'Refresh the complete post-edit source and return to Easy analysis'}><ArrowLeft className="h-3.5 w-3.5" /> Return to Easy</button>}
                 {displayResultCompleteness && displayResultCompleteness.state !== 'complete' && <span id="advanced-result-completeness" role="status" data-testid="advanced-result-completeness" className="ml-2 text-[10px] text-amber-700">{displayResultCompleteness.state} result · {displayResultCompleteness.returnedRows} rows retained · full-source analysis unavailable</span>}
                 {activeResult && <div className="relative">
                   <button onClick={() => setShowColumnMenu(value => !value)} className="flex h-7 items-center gap-1 px-2 text-[10px] text-gray-500 hover:bg-gray-100" title="Manage visible columns"><EyeOff className="h-3.5 w-3.5" /> {visibleResult?.columns.length}/{activeResult.columns.length}</button>
