@@ -6,10 +6,10 @@ import { createPreviewRows } from '../lib/data-intake-preview-rows';
 import { createFileSourceCandidate, createSourceCandidate, type SourceCandidate, type SourceInspectionResult } from '../lib/source-preflight';
 import { inspectLocalFile } from '../lib/local-file-inspector';
 import { inspectOnlineSource } from '../lib/online-source-inspector';
-import { downloadProjectSourceFile } from '../lib/project-source-file-api';
+import { downloadProjectSourceFile, uploadProjectSourceFile } from '../lib/project-source-file-api';
 import { createWorkspaceUnderstandingState } from '../lib/workspace-understanding-state';
 import { deleteWorkspaceSession, loadWorkspaceSessions, saveWorkspaceSession, type SaveWorkspaceSessionRequest, type WorkspaceSessionRecord } from '../lib/workspace-session-api';
-import { attachPersistedFile, createWorkspaceSessionSnapshot, persistedFilesFromSession } from '../lib/home-workspace-persistence';
+import { attachPersistedFile, attachPersistedPrimarySource, createWorkspaceSessionSnapshot, persistedFilesFromSession } from '../lib/home-workspace-persistence';
 import { parseCanonicalUserOverlay } from '../lib/understanding-core/canonical-user-overlay';
 import type { MultiSourceDraftV1 } from '../components/analysis/CanonicalMultiSourceReview';
 import { createLocalCanonicalSourceBoundary } from '../lib/home-source-boundary';
@@ -28,6 +28,7 @@ interface HomeWorkspaceSessionDependencies {
   setSelectedTopic: (value: any) => void;
   setResult: (value: any) => void;
   setPreviewActionId: (value: any) => void;
+  requestLocalFileReselection?: (session: WorkspaceSessionRecord) => void;
 }
 
 export function useHomeWorkspaceSessions(deps: HomeWorkspaceSessionDependencies) {
@@ -97,6 +98,25 @@ export function useHomeWorkspaceSessions(deps: HomeWorkspaceSessionDependencies)
     snapshot: createWorkspaceSessionSnapshot(dataset),
   });
 
+  const ensureLocalSourcesPersisted = async (dataset: any) => {
+    if (dataset?.normalizedUrl || typeof File === 'undefined') return dataset;
+    const sourceFiles = Array.isArray(dataset?.sourceFiles) ? dataset.sourceFiles.map((source: any) => ({ ...source })) : [];
+    const runtimeFiles = Array.isArray(dataset?.runtimeFileReferences)
+      ? dataset.runtimeFileReferences.filter((file: unknown): file is File => file instanceof File)
+      : dataset?.file_reference instanceof File ? [dataset.file_reference] : [];
+    if (runtimeFiles.length === 0) return dataset;
+    if (sourceFiles.length === 0 && runtimeFiles.length === 1) {
+      return attachPersistedPrimarySource(dataset, await uploadProjectSourceFile(runtimeFiles[0]));
+    }
+    for (let index = 0; index < sourceFiles.length; index += 1) {
+      if (sourceFiles[index]?.persistedFile?.fileId) continue;
+      const file = runtimeFiles.find(candidate => candidate.name === sourceFiles[index]?.name) ?? runtimeFiles[index];
+      if (!file) continue;
+      sourceFiles[index] = { ...sourceFiles[index], persistedFile: await uploadProjectSourceFile(file) };
+    }
+    return { ...dataset, sourceFiles };
+  };
+
   const saveCurrentWorkspaceSession = async (dataset: any, options: { silent?: boolean } = {}) => {
     if (dataset?.status !== 'ready') return null;
     if (!options.silent) {
@@ -104,9 +124,10 @@ export function useHomeWorkspaceSessions(deps: HomeWorkspaceSessionDependencies)
       setSessionStatus(null);
     }
     try {
-      const saved = await saveWorkspaceSession(createSaveRequest(dataset));
+      const durableDataset = await ensureLocalSourcesPersisted(dataset);
+      const saved = await saveWorkspaceSession(createSaveRequest(durableDataset));
       setWorkspaceSessions(current => [saved, ...current.filter(item => item.id !== saved.id)].slice(0, 100));
-      deps.setCurrentDataset((current: any) => current ? { ...current, restoredFromSessionId: saved.id } : current);
+      deps.setCurrentDataset((current: any) => current ? { ...current, sourceFiles: durableDataset.sourceFiles, restoredFromSessionId: saved.id } : current);
       if (!options.silent) setSessionStatus('Session saved.');
       return saved;
     } catch (error) {
@@ -270,7 +291,8 @@ export function useHomeWorkspaceSessions(deps: HomeWorkspaceSessionDependencies)
     }
     deps.setCurrentDataset({ ...restoredDataset, status: 'stale', file_reference: null, runtimeDatasetSource: undefined, canonicalSourceBoundary: undefined, restoredFromSessionId: session.id });
     resetAnalysisState(session.id);
-    setSessionStatus('Saved sample restored. Reselect the complete source before analysis.');
+    setSessionStatus('This legacy session needs its original local file. Choose the same source to relink and update the saved session.');
+    deps.requestLocalFileReselection?.(session);
   };
 
   const handleDeleteWorkspaceSession = async (sessionId: string) => {

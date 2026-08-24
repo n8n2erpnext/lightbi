@@ -4,7 +4,7 @@ import * as monaco from 'monaco-editor/editor/editor.api';
 import 'monaco-editor/languages/definitions/sql/register';
 import EditorWorker from 'monaco-editor/editor/editor.worker?worker';
 import type { AdvancedConnection, AdvancedSchema } from '../../lib/advanced-api';
-import { buildProSqlSuggestions, type SqlSuggestion } from '../../lib/advanced-sql-suggestions';
+import { buildProSqlSuggestions, buildSqlLanguageSuggestions, type SqlSuggestion } from '../../lib/advanced-sql-suggestions';
 
 const workerScope = globalThis as typeof globalThis & {
   MonacoEnvironment?: { getWorker: () => Worker };
@@ -17,6 +17,8 @@ const completionKind = (instance: Monaco, kind: SqlSuggestion['kind']) => {
   if (kind === 'schema') return instance.languages.CompletionItemKind.Module;
   if (kind === 'table') return instance.languages.CompletionItemKind.Struct;
   if (kind === 'column') return instance.languages.CompletionItemKind.Field;
+  if (kind === 'keyword') return instance.languages.CompletionItemKind.Keyword;
+  if (kind === 'function') return instance.languages.CompletionItemKind.Function;
   return instance.languages.CompletionItemKind.Snippet;
 };
 
@@ -40,10 +42,13 @@ export function AdvancedSqlEditor({
   const editorRef = useRef<Parameters<OnMount>[0] | null>(null);
   const monacoRef = useRef<Monaco | null>(null);
   const [editorReady, setEditorReady] = useState(false);
-  const suggestions = useMemo(() => buildProSqlSuggestions(schema, provider), [provider, schema]);
+  const suggestions = useMemo(() => [
+    ...buildSqlLanguageSuggestions(provider),
+    ...(proSuggestions ? buildProSqlSuggestions(schema, provider) : []),
+  ], [proSuggestions, provider, schema]);
 
   useEffect(() => {
-    if (!proSuggestions || provider === 'mongodb' || !monacoRef.current) return;
+    if (provider === 'mongodb' || !monacoRef.current) return;
     const instance = monacoRef.current;
     const disposable = instance.languages.registerCompletionItemProvider('sql', {
       triggerCharacters: ['.', ' '],
@@ -60,7 +65,7 @@ export function AdvancedSqlEditor({
             label: item.label,
             detail: item.detail,
             insertText: item.insertText,
-            insertTextRules: item.kind === 'snippet' ? instance.languages.CompletionItemInsertTextRule.InsertAsSnippet : undefined,
+            insertTextRules: item.kind === 'snippet' || item.kind === 'function' ? instance.languages.CompletionItemInsertTextRule.InsertAsSnippet : undefined,
             kind: completionKind(instance, item.kind),
             range,
           })),
@@ -99,8 +104,8 @@ export function AdvancedSqlEditor({
           scrollBeyondLastLine: false,
           tabSize: 2,
           wordWrap: 'off',
-          quickSuggestions: proSuggestions && provider !== 'mongodb',
-          suggestOnTriggerCharacters: proSuggestions && provider !== 'mongodb',
+          quickSuggestions: provider !== 'mongodb',
+          suggestOnTriggerCharacters: provider !== 'mongodb',
           fixedOverflowWidgets: true,
           padding: { top: 10, bottom: 10 },
           ariaLabel: provider === 'mongodb' ? 'MongoDB document query' : 'SQL query',
@@ -108,7 +113,7 @@ export function AdvancedSqlEditor({
       />
       {provider !== 'mongodb' && (
         <span className={`pointer-events-none absolute bottom-2 right-3 rounded px-1.5 py-0.5 text-[9px] font-semibold uppercase ${proSuggestions ? 'bg-violet-50 text-violet-700' : 'bg-gray-100 text-gray-500'}`}>
-          {proSuggestions ? 'Pro schema suggestions' : 'SQL editor'}
+          {proSuggestions ? 'Pro schema suggestions' : 'SQL suggestions'}
         </span>
       )}
     </div>

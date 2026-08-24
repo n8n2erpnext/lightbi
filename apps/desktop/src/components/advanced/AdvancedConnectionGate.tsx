@@ -92,14 +92,14 @@ export const AdvancedConnectionGate: React.FC<AdvancedConnectionGateProps> = ({
         </div>
       </section>}
       <form className="w-full border border-gray-200 bg-white p-4 shadow-sm sm:p-6" onSubmit={onSubmit}>
-        <div className="mb-5 flex items-center gap-3"><div className="flex h-9 w-9 items-center justify-center bg-blue-50 text-blue-700"><Plug className="h-4 w-4" /></div><div><h2 className="text-sm font-semibold text-gray-900">Open database session</h2><p className="text-[12px] text-gray-500">Credentials stay in backend memory for this server session.</p></div></div>
+        <div className="mb-5 flex items-center gap-3"><div className="flex h-9 w-9 items-center justify-center bg-blue-50 text-blue-700"><Plug className="h-4 w-4" /></div><div><h2 className="text-sm font-semibold text-gray-900">Open database session</h2><p className="text-[12px] text-gray-500">New connections can be stored in the local encrypted vault; saved profiles never expose their URL or password in the UI.</p></div></div>
         <label className="mb-1 block text-[11px] font-medium text-gray-600" htmlFor="advanced-provider">Provider</label>
         <select id="advanced-provider" className="mb-4 h-9 w-full border border-gray-300 bg-white px-3 text-sm" value={connectionProvider} onChange={event => onProviderChange(event.target.value as AdvancedConnection['provider'])}>
           {providerPlugins.map(provider => (
             <option key={provider.manifest.id} value={provider.manifest.id}>{provider.manifest.displayName}</option>
           ))}
         </select>
-        {profiles.length > 0 && <><label className="mb-1 block text-[11px] font-medium text-gray-600" htmlFor="advanced-profile">Saved profile</label><select id="advanced-profile" className="mb-4 h-9 w-full border border-gray-300 bg-white px-3 text-sm" value={selectedProfileId} onChange={event => onProfileChange(event.target.value)}><option value="">New connection</option>{profiles.map(profile => <option key={profile.id} value={profile.id}>{profile.groupName ? `${profile.groupName} / ` : ''}{profile.name} · {profile.provider}{profile.tagName ? ` · ${profile.tagName}` : ''}</option>)}</select></>}
+        {profiles.length > 0 && <><label className="mb-1 block text-[11px] font-medium text-gray-600" htmlFor="advanced-profile">Recent encrypted connections</label><select id="advanced-profile" className="mb-4 h-9 w-full border border-gray-300 bg-white px-3 text-sm" value={selectedProfileId} onChange={event => onProfileChange(event.target.value)}><option value="">New connection</option>{profiles.map(profile => <option key={profile.id} value={profile.id}>{profile.groupName ? `${profile.groupName} / ` : ''}{profile.name} · {profile.provider}{profile.tagName ? ` · ${profile.tagName}` : ''}</option>)}</select></>}
         <label className="mb-1 block text-[11px] font-medium text-gray-600" htmlFor="advanced-name">Connection name</label>
         <input id="advanced-name" className="mb-4 h-9 w-full border border-gray-300 px-3 text-sm outline-none focus:border-blue-500" value={connectionName} onChange={event => onConnectionNameChange(event.target.value)} required />
         <label className="mb-1 block text-[11px] font-medium text-gray-600" htmlFor="advanced-url">Connection URL, ADO string, or SQLite path</label>
@@ -112,7 +112,7 @@ export const AdvancedConnectionGate: React.FC<AdvancedConnectionGateProps> = ({
           <input className="h-8 border border-gray-300 px-2 text-[11px]" value={profileTagName} onChange={event => onProfileTagNameChange(event.target.value)} placeholder="Profile tag" />
           <input className="h-8 border border-gray-300 px-2 text-[11px]" value={sshHost} onChange={event => onSshHostChange(event.target.value)} placeholder="SSH host" />
           <div className="flex gap-2"><input className="h-8 min-w-0 flex-1 border border-gray-300 px-2 text-[11px]" value={sshUser} onChange={event => onSshUserChange(event.target.value)} placeholder="SSH user" /><input type="number" className="h-8 w-16 border border-gray-300 px-2 text-[11px]" value={sshPort} onChange={event => onSshPortChange(Number(event.target.value) || 22)} /></div>
-          <label className="col-span-2 flex items-center gap-2 text-[11px] text-gray-600"><input type="checkbox" checked={saveProfile} onChange={event => onSaveProfileChange(event.target.checked)} /> Save encrypted profile</label>
+          <label className="col-span-2 flex items-center gap-2 text-[11px] text-gray-600"><input type="checkbox" checked={saveProfile} onChange={event => onSaveProfileChange(event.target.checked)} /> Remember this connection in the encrypted local vault</label>
         </div>}
         {connectionError && <div className="mt-3 border-l-2 border-red-500 bg-red-50 px-3 py-2 text-[12px] text-red-700">{connectionError}</div>}
         <button type="submit" disabled={isConnecting} className="mt-5 flex h-9 items-center gap-2 bg-gray-900 px-4 text-[12px] font-medium text-white hover:bg-gray-800 disabled:opacity-50">{isConnecting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plug className="h-4 w-4" />} Connect</button>

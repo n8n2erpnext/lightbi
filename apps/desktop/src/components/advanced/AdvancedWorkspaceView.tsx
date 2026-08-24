@@ -103,7 +103,10 @@ export const AdvancedWorkspaceView: React.FC<{ model: AdvancedWorkspaceViewModel
     writableTables, setImportDraft, importSourceIntoTable,
   } = model;
   const databaseReadOnly = connection?.provider === 'mongodb' || connection?.provider === 'sqlserver';
-  const proSqlSuggestions = currentLicenseTier() === 'pro';
+  const proSqlSuggestions = currentLicenseTier() === 'pro' || window.location.pathname.startsWith('/app');
+  const updateActiveSql = (sql: string) => {
+    patchTab(activeTab.id, tab => ({ sql, offset: 0, sort: undefined, filters: [], filterValue: '', plan: null, tableContext: undefined, parameters: reconcileSqlParameters(sql, tab.parameters) }));
+  };
   return (
     <div className="flex h-full min-h-0 flex-col bg-white">
       <header className="flex h-14 shrink-0 items-center justify-between border-b border-gray-200 px-4">
@@ -204,10 +207,8 @@ export const AdvancedWorkspaceView: React.FC<{ model: AdvancedWorkspaceViewModel
             </div>
 
             <div className="h-[210px] shrink-0 border-b border-gray-200">
-              <React.Suspense fallback={<div className="h-full bg-[#fbfbfc] p-4 font-mono text-[12px] text-gray-400">Loading local SQL editor...</div>}>
-                <AdvancedSqlEditor value={activeTab.sql} provider={workspaceProvider} schema={schema} proSuggestions={proSqlSuggestions} onChange={sql => {
-                  patchTab(activeTab.id, tab => ({ sql, offset: 0, sort: undefined, filters: [], filterValue: '', plan: null, tableContext: undefined, parameters: reconcileSqlParameters(sql, tab.parameters) }));
-                }} onRun={() => { void runQuery(); }} onRunAll={() => { void runAllStatements(); }} />
+              <React.Suspense fallback={<textarea aria-label={workspaceProvider === 'mongodb' ? 'MongoDB document query' : 'SQL query'} spellCheck={false} value={activeTab.sql} onChange={event => updateActiveSql(event.target.value)} onKeyDown={event => { if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') { event.preventDefault(); void runQuery(); } }} className="h-full w-full resize-none bg-[#fbfbfc] p-4 font-mono text-[13px] leading-6 text-gray-800 outline-none" />}>
+                <AdvancedSqlEditor value={activeTab.sql} provider={workspaceProvider} schema={schema} proSuggestions={proSqlSuggestions} onChange={updateActiveSql} onRun={() => { void runQuery(); }} onRunAll={() => { void runAllStatements(); }} />
               </React.Suspense>
             </div>
 

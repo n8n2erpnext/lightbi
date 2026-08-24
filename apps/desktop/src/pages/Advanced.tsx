@@ -72,6 +72,8 @@ import {
 import { useAdvancedSourceStore, type AdvancedWorkspaceSource } from '../stores/advanced-source-store';
 import { classifyAdvancedResultCompleteness } from '../lib/advanced-result-handoff';
 import type { GridForeignKeyAction } from '../components/advanced/VirtualResultGrid';
+
+const ADVANCED_LAST_PROFILE_STORAGE_KEY = 'lightbi.advanced.last-profile.v1';
 import { createAdvancedResultTransferActions } from '../hooks/useAdvancedResultTransferActions';
 import { createAdvancedMutationActions } from '../hooks/useAdvancedMutationActions';
 import { AdvancedWorkspaceView } from '../components/advanced/AdvancedWorkspaceView';
@@ -100,8 +102,8 @@ export const Advanced: React.FC = () => {
   const [providerPlugins, setProviderPlugins] = useState<AdvancedProviderPlugin[]>(FALLBACK_PROVIDER_PLUGINS);
   const [databaseName, setDatabaseName] = useState('');
   const [profiles, setProfiles] = useState<AdvancedConnectionProfile[]>([]);
-  const [selectedProfileId, setSelectedProfileId] = useState('');
-  const [saveProfile, setSaveProfile] = useState(false);
+  const [selectedProfileId, setSelectedProfileId] = useState(() => localStorage.getItem(ADVANCED_LAST_PROFILE_STORAGE_KEY) ?? '');
+  const [saveProfile, setSaveProfile] = useState(true);
   const [tlsMode, setTlsMode] = useState('driver-default');
   const [sshHost, setSshHost] = useState('');
   const [sshUser, setSshUser] = useState('');
@@ -173,6 +175,20 @@ export const Advanced: React.FC = () => {
       })));
       setFavorites(favoriteRows);
       setProfiles(profileRows);
+      const remembered = profileRows.find(profile => profile.id === localStorage.getItem(ADVANCED_LAST_PROFILE_STORAGE_KEY));
+      if (remembered) {
+        setSelectedProfileId(remembered.id);
+        setConnectionName(remembered.name);
+        setConnectionProvider(remembered.provider);
+        setDatabaseName(remembered.database);
+        setTlsMode(remembered.tlsMode);
+        setSshHost(remembered.sshHost || '');
+        setSshPort(remembered.sshPort || 22);
+        setSshUser(remembered.sshUser || '');
+        setProfileGroupName(remembered.groupName || '');
+        setProfileTagName(remembered.tagName || '');
+        setSafeMode(remembered.safeMode || 'confirm_writes');
+      }
     }).catch(() => undefined);
   }, []);
 
@@ -310,16 +326,8 @@ export const Advanced: React.FC = () => {
           sshUser: sshUser || undefined,
           safeMode,
         });
-      if (!profile && saveProfile) {
-        const saved = await saveAdvancedProfile({
-          name: connectionName, provider: connectionProvider, database: databaseName, connectionUrl, tlsMode,
-          sshHost: sshHost || undefined, sshPort: sshHost ? sshPort : undefined, sshUser: sshUser || undefined,
-          groupName: profileGroupName || undefined, tagName: profileTagName || undefined, safeMode,
-        });
-        setProfiles(current => [saved, ...current]);
-      }
+      if (profile) localStorage.setItem(ADVANCED_LAST_PROFILE_STORAGE_KEY, profile.id);
       setConnection(nextConnection);
-      setConnectionUrl('');
       const nextSchema = await loadAdvancedSchema(nextConnection.connectionId);
       setSchema(nextSchema);
       if (activeTab.title.startsWith('Query ') && !activeTab.result) {
@@ -334,6 +342,21 @@ export const Advanced: React.FC = () => {
               : 'SELECT current_database() AS database, current_user AS user_name, now() AS server_time';
         patchTab(activeTab.id, { sql: defaultSql, plan: null, result: null, filters: [], parameters: {} });
       }
+      if (!profile && saveProfile) {
+        try {
+          const saved = await saveAdvancedProfile({
+            name: connectionName, provider: connectionProvider, database: databaseName, connectionUrl, tlsMode,
+            sshHost: sshHost || undefined, sshPort: sshHost ? sshPort : undefined, sshUser: sshUser || undefined,
+            groupName: profileGroupName || undefined, tagName: profileTagName || undefined, safeMode,
+          });
+          setProfiles(current => [saved, ...current]);
+          setSelectedProfileId(saved.id);
+          localStorage.setItem(ADVANCED_LAST_PROFILE_STORAGE_KEY, saved.id);
+        } catch (profileError) {
+          setConnectionError(`Connected, but the encrypted profile could not be saved: ${profileError instanceof Error ? profileError.message : 'unknown error'}`);
+        }
+      }
+      setConnectionUrl('');
     } catch (cause) {
       setConnectionError(cause instanceof Error ? cause.message : 'Could not open database session.');
     } finally {
@@ -762,6 +785,8 @@ export const Advanced: React.FC = () => {
 
   const handleProfileChange = (profileId: string) => {
     setSelectedProfileId(profileId);
+    if (!profileId) localStorage.removeItem(ADVANCED_LAST_PROFILE_STORAGE_KEY);
+    else localStorage.setItem(ADVANCED_LAST_PROFILE_STORAGE_KEY, profileId);
     const profile = profiles.find(item => item.id === profileId);
     if (!profile) return;
     setConnectionName(profile.name);

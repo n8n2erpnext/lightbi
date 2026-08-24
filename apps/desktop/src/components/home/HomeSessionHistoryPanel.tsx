@@ -22,7 +22,7 @@ export const HomeSessionHistoryPanel: React.FC<HomeSessionHistoryPanelProps> = (
   const isConnectionFailure = Boolean(status && /failed to fetch|network|connection|api returned 5/i.test(status));
   const visibleStatus = isConnectionFailure
     ? t('Session history is temporarily unavailable. Check the local LightBI core, then try again.')
-    : status;
+    : status ? t(status) : status;
   return (
   <div data-testid="session-history" className={`bg-white border border-black/10 rounded-xl p-5 shadow-sm ${className}`}>
     <div className="mb-4 flex items-center justify-between gap-3">

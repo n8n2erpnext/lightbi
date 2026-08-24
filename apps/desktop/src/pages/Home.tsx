@@ -57,6 +57,7 @@ import { findPendingSourceFamily, mapCollectionPerspectiveToDatasetPerspective, 
 import { createDomainComparisonBrief, type BAComparisonPeriodInput } from '../lib/ba-comparison-engine';
 import { buildHomeCanonicalArtifact } from '../lib/home-canonical-artifact';
 import { createWorkbookSheetSelectionBatch, expandWorkbookSheetSelection, inspectLocalFileBatch, toggleWorkbookSheet } from '../lib/workbook-sheet-intake';
+import type { WorkspaceSessionRecord } from '../lib/workspace-session-api';
 export const Home: React.FC = () => {
   const { preferences } = useDisplayPreferences();
   const navigate = useNavigate();
@@ -88,6 +89,7 @@ export const Home: React.FC = () => {
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
   const canonicalReviewReturnItem = useRef<string | null>(null);
   const inspectionRuns = useRef(new ExecutionRunCoordinator("simple-inspection"));
+  const pendingSessionReselectionRef = useRef<WorkspaceSessionRecord | null>(null);
   const {
     workspaceSessions, sessionStatus, isSavingSession, lastAutoSaveSignatureRef, sessionSignature,
     createWorkspaceSessionSaveRequest,
@@ -95,7 +97,31 @@ export const Home: React.FC = () => {
   } = useHomeWorkspaceSessions({
     currentDataset, registerAdvancedSource, setCurrentDataset, setWorkspaceState, setDecisionTrustReport, setPendingLocalBatch,
     setMultiSourceDrafts, setMultiSourceBuildResult, setSelectedTopic, setResult, setPreviewActionId,
+    requestLocalFileReselection: session => {
+      pendingSessionReselectionRef.current = session;
+      openLocalFilePicker();
+    },
   });
+
+  useEffect(() => {
+    const pending = pendingSessionReselectionRef.current;
+    if (!pending || currentDataset?.status !== 'ready') return;
+    const expectedNames = new Set([
+      pending.title,
+      ...(Array.isArray(pending.sourceSummary) ? pending.sourceSummary.map((source: any) => source?.name).filter(Boolean) : []),
+    ]);
+    const selectedNames = Array.isArray(currentDataset.sourceFiles)
+      ? currentDataset.sourceFiles.map((source: any) => source?.name).filter(Boolean)
+      : [currentDataset.file_name].filter(Boolean);
+    if (!selectedNames.some((name: string) => expectedNames.has(name))) {
+      pendingSessionReselectionRef.current = null;
+      return;
+    }
+    pendingSessionReselectionRef.current = null;
+    const rebound = { ...currentDataset, restoredFromSessionId: pending.id };
+    setCurrentDataset(rebound);
+    void saveCurrentWorkspaceSession(rebound, { silent: true });
+  }, [currentDataset, saveCurrentWorkspaceSession]);
 
   useEffect(() => () => inspectionRuns.current.cancel(), []);
   const { isUploading, uploadError } = useDatasetUpload();
@@ -752,6 +778,7 @@ export const Home: React.FC = () => {
           })),
           selected_sheet: null,
           file_reference: primary.file,
+          runtimeFileReferences: members.map(item => item.file),
           runtimeDatasetSource: primary.boundary.runtimeSource,
           semanticSample: {
             strategy: primary.boundary.semanticSample.strategy,
@@ -814,6 +841,7 @@ export const Home: React.FC = () => {
           sourceFiles,
           selected_sheet: primary.metadata.is_workbook ? primary.metadata.default_sheet : null,
           file_reference: primary.file,
+          runtimeFileReferences: members.map(item => item.file),
           runtimeDatasetSource: primary.boundary.runtimeSource,
           semanticSample: {
             strategy: primary.boundary.semanticSample.strategy,
@@ -864,6 +892,7 @@ export const Home: React.FC = () => {
         sourceFiles,
         selected_sheet: sourceRecord.metadata.is_workbook ? sourceRecord.metadata.default_sheet : null,
         file_reference: sourceRecord.file,
+        runtimeFileReferences: members.map(item => item.file),
         runtimeDatasetSource: metricMember.runtimeSource,
         semanticSample: {
           strategy: metricMember.semanticSampleScope.strategy,
@@ -1142,6 +1171,7 @@ export const Home: React.FC = () => {
       sourceFiles: sourceFiles as any, // Storing extended metadata format here
       selected_sheet: null,
       file_reference: family.files[0]?.file || null,
+      runtimeFileReferences: family.files.map(item => item.file),
       runtimeDatasetSource: canonicalSourceBoundary?.runtimeSource,
       semanticSample,
       canonicalSourceBoundary,

@@ -61,3 +61,13 @@ export function attachPersistedFile(result: SourceInspectionResult, persistedFil
   if (result.status !== 'accessible' || !persistedFile) return result;
   return { ...result, metadata: { ...result.metadata, persisted_file: persistedFile } };
 }
+
+export function attachPersistedPrimarySource(dataset: any, persistedFile: PersistedProjectSourceFile) {
+  const existing = Array.isArray(dataset?.sourceFiles) ? dataset.sourceFiles : [];
+  const sourceFiles = existing.length > 0
+    ? existing.map((source: any, index: number) => index === 0 || source?.name === persistedFile.originalName
+      ? { ...source, persistedFile }
+      : source)
+    : [{ name: persistedFile.originalName, rows: Number(dataset?.rows_count) || 0, columns: Array.isArray(dataset?.columns) ? dataset.columns.length : 0, persistedFile }];
+  return { ...dataset, sourceFiles };
+}
