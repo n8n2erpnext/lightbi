@@ -360,8 +360,8 @@ const server = createServer(async (request, response) => {
     if (request.method === 'POST' && url.pathname === '/api/account/register') {
       if(!accountAuth.enabled||!mailer.enabled)return sendJson(response,503,{error:'account_registration_unavailable'});
       const payload=JSON.parse((await body(request,16000)).toString('utf8')||'{}');
-      try { await accountAuth.registerEmail({email:payload.email,password:payload.password,displayName:payload.displayName,sendVerification:mailer.sendAccountVerification}); }
-      catch(error){if(error?.message==='invalid_registration')return sendJson(response,400,{error:'invalid_registration'});}
+      try { await accountAuth.registerEmail({email:payload.email,password:payload.password,displayName:payload.displayName,sendVerification:mailer.sendAccountVerification,networkHash:anonymousNetworkHash(request)}); }
+      catch(error){if(error?.message==='invalid_registration')return sendJson(response,400,{error:'invalid_registration'});if(error?.message==='rate_limited')return sendJson(response,429,{error:'rate_limited'});throw error;}
       return sendJson(response,202,{accepted:true});
     }
     if (request.method === 'GET' && url.pathname === '/api/account/verify') {
@@ -381,7 +381,7 @@ const server = createServer(async (request, response) => {
     }
     if (request.method === 'POST' && url.pathname === '/api/account/password/request') {
       const payload=JSON.parse((await body(request,8000)).toString('utf8')||'{}');
-      if(accountAuth.enabled&&mailer.enabled)await accountAuth.requestPasswordReset(payload.email,mailer.sendAccountPasswordReset);
+      if(accountAuth.enabled&&mailer.enabled)await accountAuth.requestPasswordReset(payload.email,mailer.sendAccountPasswordReset,anonymousNetworkHash(request));
       return sendJson(response,202,{accepted:true});
     }
     if (request.method === 'POST' && url.pathname === '/api/account/password/reset') {

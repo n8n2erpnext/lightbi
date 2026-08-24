@@ -173,9 +173,17 @@ export async function createAccountAuth({ databaseUrl, redisUrl, sessionSecret, 
     return token;
   }
 
-  async function registerEmail({email,password,displayName,sendVerification}) {
+  async function emailActionAllowed(kind, identity, maximum = 5, seconds = 900) {
+    const key = `lightbi:account:${kind}-limit:${tokenHash(String(identity || 'network'), sessionSecret)}`;
+    const attempts = await redis.incr(key);
+    if (attempts === 1) await redis.expire(key, seconds);
+    return attempts <= maximum;
+  }
+
+  async function registerEmail({email,password,displayName,sendVerification,networkHash=null}) {
     const normalized=cleanEmail(email);
     if(!/^\S+@\S+\.\S+$/.test(normalized)||String(password||'').length<12)throw new Error('invalid_registration');
+    if(!await emailActionAllowed('register',`${networkHash||'network'}:${normalized}`,5,900))throw new Error('rate_limited');
     let account=await pool.query('SELECT id FROM lightbi_accounts WHERE email=$1',[normalized]);
     const accountId=account.rows[0]?.id||randomId('acct');
     const hash=await passwordHash(password);
@@ -205,8 +213,9 @@ export async function createAccountAuth({ databaseUrl, redisUrl, sessionSecret, 
     await audit(account.id,'account_login_email',deviceId);return {token:await createSession(account.id,installationHash?'native':'web',deviceId),accountId:account.id};
   }
 
-  async function requestPasswordReset(email,sendReset) {
+  async function requestPasswordReset(email,sendReset,networkHash=null) {
     const normalized=cleanEmail(email);const result=await pool.query('SELECT id FROM lightbi_accounts WHERE email=$1 AND password_hash IS NOT NULL',[normalized]);if(!result.rows[0])return;
+    if(!await emailActionAllowed('password-reset',`${networkHash||'network'}:${normalized}`,4,900))return;
     const token=await issueEmailToken('reset',{email:normalized});await sendReset({to:normalized,resetUrl:`${publicBaseUrl}/account?reset=${encodeURIComponent(token)}`});
   }
 
