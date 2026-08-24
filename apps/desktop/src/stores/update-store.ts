@@ -13,6 +13,14 @@ export function compareAppVersions(left: string, right: string): number {
   if(a.pre===b.pre)return 0;if(!a.pre)return 1;if(!b.pre)return -1;return a.pre.localeCompare(b.pre,undefined,{numeric:true});
 }
 
+export function currentReleasePlatform(userAgent = navigator.userAgent, platform = navigator.platform): 'windows' | 'linux' | 'macos' | null {
+  const value = `${userAgent} ${platform}`.toLowerCase();
+  if (value.includes('windows') || value.includes('win32') || value.includes('win64')) return 'windows';
+  if (value.includes('linux') || value.includes('x11')) return 'linux';
+  if (value.includes('macintosh') || value.includes('mac os') || value.includes('macintel')) return 'macos';
+  return null;
+}
+
 type UpdateStore = {
   status: UpdateStatus;
   manifest: LightBIReleaseManifest | null;
@@ -35,8 +43,10 @@ export const useUpdateStore = create<UpdateStore>((set,get)=>({
       const catalog=await response.json() as {latest?:LightBIReleaseManifest};
       const manifest=catalog.latest;
       if(!manifest||manifest.schema_version!=='lightbi.release.v1')throw new Error('Update manifest is invalid.');
-      const artifact=manifest.artifacts.find(item=>item.platform==='windows'&&item.architecture==='x86_64')??null;
-      if(!artifact)throw new Error('No compatible Windows artifact is available.');
+      const platform=currentReleasePlatform();
+      if(!platform)throw new Error('This operating system is not supported by the native updater.');
+      const artifact=manifest.artifacts.find(item=>item.platform===platform&&item.architecture==='x86_64')??manifest.artifacts.find(item=>item.platform===platform)??null;
+      if(!artifact)throw new Error(`No compatible ${platform} artifact is available.`);
       const current=import.meta.env.VITE_LIGHTBI_VERSION??'0.9.1-beta.7';
       const available=compareAppVersions(manifest.version,current)>0;
       set({status:available?'available':'up_to_date',manifest,artifact,checkedAt:Date.now(),error:''});

@@ -3,13 +3,20 @@ import { basename } from 'node:path';
 import { updateReleaseIndex, validateReleaseManifest } from '../apps/distribution/release-manifest.mjs';
 
 const args = Object.fromEntries(process.argv.slice(2).map((value, index, all) => value.startsWith('--') ? [value.slice(2), all[index + 1]] : null).filter(Boolean));
-const required = ['version', 'channel', 'artifact', 'artifact-url', 'sha256', 'output'];
+const required = args['artifacts-json'] ? ['version', 'channel', 'output'] : ['version', 'channel', 'artifact', 'artifact-url', 'sha256', 'output'];
 for (const key of required) if (!args[key]) throw new Error(`Missing --${key}`);
+let artifacts;
+if (args['artifacts-json']) {
+  artifacts = JSON.parse(readFileSync(args['artifacts-json'], 'utf8'));
+  if (!Array.isArray(artifacts) || artifacts.length === 0) throw new Error('Release artifacts JSON must contain a non-empty array');
+} else {
+  artifacts = [{ platform: args.platform || 'windows', architecture: args.architecture || 'x86_64', kind: args.kind || 'exe', filename: basename(args.artifact), url: args['artifact-url'], size: Number(args.size) || null, sha256: args.sha256 }];
+}
 const manifest = validateReleaseManifest({
   schema_version: 'lightbi.release.v1', product: 'digital.thaiduy.lightbi', version: args.version.replace(/^v/, ''), channel: args.channel,
   published_at: new Date().toISOString(), release_notes: args['release-notes'] || `LightBI ${args.version}`,
   minimum_updater_version: args['minimum-updater-version'] || null,
-  artifacts: [{ platform: args.platform || 'windows', architecture: args.architecture || 'x86_64', kind: args.kind || 'exe', filename: basename(args.artifact), url: args['artifact-url'], size: Number(args.size) || null, sha256: args.sha256 }],
+  artifacts,
 });
 writeFileSync(args.output, `${JSON.stringify(manifest, null, 2)}\n`);
 if (args['index-output']) {

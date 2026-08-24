@@ -103,8 +103,14 @@ async fn install_verified_update(app: AppHandle, url: String, sha256: String) ->
     }
     let directory = std::env::temp_dir().join("lightbi-updates");
     std::fs::create_dir_all(&directory).map_err(|error| format!("Could not prepare the updater directory: {error}"))?;
-    let path = directory.join(format!("LightBI-update-{}.exe", &actual[..12]));
-    let partial = path.with_extension("exe.partial");
+    #[cfg(target_os = "windows")]
+    let extension = "exe";
+    #[cfg(target_os = "linux")]
+    let extension = "deb";
+    #[cfg(not(any(target_os = "windows", target_os = "linux")))]
+    let extension = "package";
+    let path = directory.join(format!("LightBI-update-{}.{}", &actual[..12], extension));
+    let partial = path.with_extension(format!("{extension}.partial"));
     std::fs::write(&partial, &bytes).map_err(|error| format!("Could not write the update: {error}"))?;
     std::fs::rename(&partial, &path).map_err(|error| format!("Could not finalize the verified update: {error}"))?;
     #[cfg(target_os = "windows")]
@@ -113,11 +119,17 @@ async fn install_verified_update(app: AppHandle, url: String, sha256: String) ->
         app.exit(0);
         Ok(())
     }
-    #[cfg(not(target_os = "windows"))]
+    #[cfg(target_os = "linux")]
+    {
+        let _ = app;
+        std::process::Command::new("xdg-open").arg(&path).spawn().map_err(|error| format!("Could not open the verified Debian package: {error}"))?;
+        Ok(())
+    }
+    #[cfg(not(any(target_os = "windows", target_os = "linux")))]
     {
         let _ = app;
         let _ = std::fs::remove_file(path);
-        Err("Automatic installation is currently available only on Windows.".to_string())
+        Err("Automatic installation is not available for this operating system.".to_string())
     }
 }
 

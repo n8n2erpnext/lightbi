@@ -1,4 +1,8 @@
 import assert from 'node:assert/strict';
+import { execFileSync } from 'node:child_process';
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join, resolve } from 'node:path';
 import test from 'node:test';
 import { compareVersions, loadReleaseCatalog, selectArtifact, updateReleaseIndex, validateReleaseManifest } from './release-manifest.mjs';
 
@@ -9,8 +13,13 @@ const manifest = (version = '0.9.2-beta.7') => ({
 });
 
 test('validates one cross-platform release contract', () => {
-  assert.equal(validateReleaseManifest(manifest()).version, '0.9.2-beta.7');
-  assert.equal(selectArtifact(manifest(), 'windows').filename, 'LightBI.exe');
+  const crossPlatform = { ...manifest(), artifacts: [
+    manifest().artifacts[0],
+    { platform: 'linux', architecture: 'x86_64', kind: 'deb', filename: 'LightBI.deb', url: 'https://drive.thaiduy.store/release/lightbi/0.9.2-beta.7/LightBI.deb', size: 200, sha256: 'b'.repeat(64) },
+  ] };
+  assert.equal(validateReleaseManifest(crossPlatform).version, '0.9.2-beta.7');
+  assert.equal(selectArtifact(crossPlatform, 'windows').filename, 'LightBI.exe');
+  assert.equal(selectArtifact(crossPlatform, 'linux').filename, 'LightBI.deb');
   assert.throws(() => validateReleaseManifest({ ...manifest(), artifacts: [{ ...manifest().artifacts[0], url: 'http://unsafe.test/a' }] }));
 });
 
@@ -26,4 +35,21 @@ test('fails over without advertising an incomplete R2 release', async () => {
   assert.equal(catalog.available, false);
   assert.equal(catalog.latest, null);
   assert.equal(catalog.fallbackUrl, 'https://github.com/releases');
+});
+
+test('builds one manifest from Windows and Debian artifacts', () => {
+  const folder = mkdtempSync(join(tmpdir(), 'lightbi-release-'));
+  try {
+    const artifactsPath = join(folder, 'artifacts.json');
+    const outputPath = join(folder, 'manifest.json');
+    writeFileSync(artifactsPath, JSON.stringify([
+      manifest().artifacts[0],
+      { platform: 'linux', architecture: 'x86_64', kind: 'deb', filename: 'LightBI.deb', url: 'https://drive.thaiduy.store/release/lightbi/0.9.2-beta.7/LightBI.deb', size: 200, sha256: 'b'.repeat(64) },
+    ]));
+    execFileSync(process.execPath, [resolve('../../scripts/build-release-manifest.mjs'), '--version', '0.9.2-beta.7', '--channel', 'beta', '--artifacts-json', artifactsPath, '--output', outputPath], { cwd: import.meta.dirname });
+    const built = JSON.parse(readFileSync(outputPath, 'utf8'));
+    assert.deepEqual(built.artifacts.map((item) => item.platform), ['windows', 'linux']);
+  } finally {
+    rmSync(folder, { recursive: true, force: true });
+  }
 });

@@ -141,3 +141,16 @@ This file is the detailed, credential-free continuation record for maintainers a
 - Live `/api/config` reports both `googleAccountAvailable` and `emailAccountAvailable`; invalid registration is rejected with HTTP 400.
 - The broad private/frozen corpus run still reports the documented missing private audit/corpus artifacts and byte-freeze mismatches. It was stopped after confirming those historical gates; focused public tests and CI remain the release gates for this work.
 - Version is still `0.9.1-beta.7`. Do not tag or build the next Beta until the remaining V1 matrix and Windows GitHub build validation pass.
+
+## Admin, Settings, and cross-platform release additions
+
+- Consolidated the duplicate sidebar Settings action into the account/profile card. The card opens a ChatGPT-style menu with Project data, Settings, Sign in/Log out; outside click and Escape close it.
+- Settings now opens as a dedicated full-screen workspace with Back to app, search, and separate General, Account, Appearance, Privacy/local data, and Updates sections.
+- Distribution admin now manages account status, global session revocation, Pro entitlement, device-slot counts, and assigned licenses. Disabling an account revokes its sessions without deleting audit history.
+- Admin license and account tables expose only `LBI-PRO-••••••••••••<suffix>`. Permanent storage still contains only the derived hash and six-character suffix; there is no reveal endpoint.
+- Fixed `/admin?tab=licenses` and Accounts falling back visually to the public home page when their protected API failed. The PostgreSQL account listing now uses a lateral device aggregate instead of an invalid grouped entitlement query, and admin surfaces a safe load error instead of leaving the landing page visible.
+- Extended the release contract tooling to build one manifest containing Windows `.exe` and Debian/Ubuntu `.deb` artifacts.
+- Reworked the release workflow into Windows build, Linux Debian build, and a gated publication job. GitHub Release and immutable R2 publication happen only after both platforms pass; `latest.json` is still the final publication step.
+- The distribution portal already detects Windows/Linux/macOS as a recommendation and resolves the matching artifact from the shared manifest. Other Downloads remains available so OS detection never locks the user in.
+
+Verification: live admin route now presents the admin login instead of the public portal; live Settings and account-menu behavior were inspected; distribution has 19 passing tests, YAML lint passed, desktop TypeScript passed, and the production Vite build passed. Version remains unchanged pending native GitHub build validation.
