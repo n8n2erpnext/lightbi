@@ -40,6 +40,8 @@ export async function initDuckDbWasm(): Promise<AsyncDuckDB> {
             }
             // Keep this import deferred so Node-based tests never evaluate the
             // browser Worker runtime.
+            // @ts-ignore DuckDB's browser declarations are omitted from the
+            // exports map in some supported package-manager/TypeScript pairs.
             const duckdb = await import('@duckdb/duckdb-wasm/dist/duckdb-browser');
             // Select a bundle based on browser checks
             const bundle = await duckdb.selectBundle(MANUAL_BUNDLES);

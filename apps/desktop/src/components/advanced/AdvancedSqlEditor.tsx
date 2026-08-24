@@ -47,7 +47,7 @@ export function AdvancedSqlEditor({
     const instance = monacoRef.current;
     const disposable = instance.languages.registerCompletionItemProvider('sql', {
       triggerCharacters: ['.', ' '],
-      provideCompletionItems(model, position) {
+      provideCompletionItems(model: monaco.editor.ITextModel, position: monaco.Position) {
         const word = model.getWordUntilPosition(position);
         const range = {
           startLineNumber: position.lineNumber,
