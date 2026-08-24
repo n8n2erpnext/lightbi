@@ -1,0 +1,30 @@
+name: Validate R2 Release Storage
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-r2:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Validate configured release bucket without writing objects
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: auto
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+          R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
+        run: |
+          set -euo pipefail
+          test -n "$AWS_ACCESS_KEY_ID" && test -n "$AWS_SECRET_ACCESS_KEY" && test -n "$R2_ACCOUNT_ID" && test -n "$R2_BUCKET" && test -n "$R2_PUBLIC_URL"
+          [[ "$R2_BUCKET" != */* ]]
+          [[ "$R2_PUBLIC_URL" == https://* ]]
+          python -m pip install --disable-pip-version-check --quiet awscli
+          endpoint="https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com"
+          aws s3api list-objects-v2 --bucket "$R2_BUCKET" --prefix "release/lightbi/" --max-items 1 --endpoint-url "$endpoint" >/dev/null
+          echo "R2 release storage credentials, bucket, and namespace are valid."

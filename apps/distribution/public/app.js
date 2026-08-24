@@ -351,6 +351,17 @@ async function admin() {
   return true;
 }
 
+function ensureAdminAccountNavigation() {
+  document.querySelectorAll('.admin-tabs').forEach((navigation) => {
+    if (navigation.querySelector('a[href*="tab=accounts"]')) return;
+    const link = document.createElement('a');
+    link.href = `${portalBase}/admin?tab=accounts`;
+    link.textContent = 'Accounts';
+    const licenses = navigation.querySelector('a[href*="tab=licenses"]');
+    navigation.insertBefore(link, licenses || null);
+  });
+}
+
 const isAdmin = location.pathname.endsWith('/admin');
 const isAccount = location.pathname.endsWith('/account');
 state.config = await api('/api/config').catch(() => null);
@@ -369,7 +380,7 @@ document.querySelectorAll('[data-download]').forEach((button) => button.addEvent
 document.querySelector('#download')?.addEventListener('click', (event) => { event.preventDefault(); if (recommended) void download(recommended); else location.hash = 'other-downloads'; });
 document.querySelector('#checkout')?.addEventListener('click', checkout);
 await showCheckoutResult();
-if (isAdmin) await admin();
+if (isAdmin) { await admin(); ensureAdminAccountNavigation(); }
 else if (isAccount) await account();
 else await api('/api/visit', { method: 'POST', body: JSON.stringify(trafficContext()) }).catch(() => null);
 
