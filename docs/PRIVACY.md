@@ -29,11 +29,19 @@ The server never stores a raw client IP. It reduces IPv4 to a `/24` network and 
 
 The public Beta desktop app creates a separate random installation identifier and may pair it with the LightBI distribution service. Pairing runs only in the native Tauri application—not in the browser demo—and sends only the random identifier, application version, platform, and Basic/Pro tier. The service hashes the identifier before persistence.
 
+## Accounts, entitlements, and devices
+
+When a user explicitly creates or signs into a LightBI account, the distribution service stores the minimum identity and authorization records needed for that account: email address, optional display name/avatar URL from the chosen identity provider, linked provider subject, account status, password hash when email/password is enabled, entitlement, and privacy-safe device metadata. Passwords, Google tokens, raw machine identifiers, and native session tokens are never stored in plaintext. Session and one-time verification/reset tokens are stored only as derived hashes or short-lived Redis values.
+
+Google and verified email/password identities with the same normalized email may link to one account. Email/password is attached only after the one-time verification link is used; merely knowing an existing Google account email cannot add a password.
+
+Device records contain a server-derived installation hash, user-facing device label, platform, app version, status, and first/last-seen timestamps. They do not contain hardware serial numbers, host files, SQL, schemas, or business data. Account owners may revoke their devices; an administrator may disable an account or revoke all sessions without deleting the audit trail.
+
 Neither path sends imported files, source URLs, database credentials, column names, query results, charts, or BA findings. PostgreSQL is the durable aggregate source and Redis caches only derived dashboard summaries.
 
 Native app-usage telemetry is restricted to a server whitelist: app open/close, anonymous session duration, Easy/Advanced mode, governed feature identifiers, and a boolean-style `advanced_database_edit` event. It never includes SQL text, database URLs, schema/table/column names, row counts, cell values, file names, source names, chart contents, or analytical findings.
 
-When a Pro license is purchased or manually issued with an email recipient, the email address is passed transiently to the configured SMTP sender and is not stored in the distribution databases. License keys are stored as hashes; manually generated plaintext keys are returned or emailed once.
+When a Pro license is purchased or manually issued, the recipient email is retained with the license record so administrators can identify assignment and resend only while the short-lived one-time secret remains available. License keys are permanently stored only as derived hashes plus a safe six-character suffix. Admin views show a fixed product prefix, a masked middle, and that suffix; there is no endpoint to recover plaintext. Newly issued/rotated plaintext may exist in Redis for at most the configured short delivery window, after which Rotate & Resend is required.
 
 Anonymous pairing can be disabled in Settings. A Pro activation sends the entered license key and the random installation identifier only to validate the license and device allowance.
 
