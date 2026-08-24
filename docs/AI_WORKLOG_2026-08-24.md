@@ -9,7 +9,7 @@ This file is the detailed, credential-free continuation record for maintainers a
 - Released desktop version remains `0.9.1-beta.7`.
 - Distribution portal version remains `0.1.4`.
 - Do **not** bump, tag, or build the next Windows release until the owner asks after live testing.
-- Current feature checkpoint: `c363eab` (`fix: restore durable source and connection history`), followed by portability fix `3aa344b`.
+- Current feature checkpoints: `c363eab`/`3aa344b` for durable history and portability, followed by `0d7dace` for temporal chart drill-through.
 - Previous Monaco checkpoint: `78bdfc0`; initial Monaco feature: `70d671c`.
 - User-owned untracked files `audit-before.json` and `audit-after.json` must not be deleted or committed accidentally.
 
@@ -41,6 +41,7 @@ This file is the detailed, credential-free continuation record for maintainers a
 - Added context × capability reasoning so domains may overlap: for example healthcare can expose patient/customer, medicine/inventory, revenue, operations, finance, and performance when evidence exists.
 - Enriched Deep BA into structured What/Where/Who/When/Why/How much/What next/Unknown layers with evidence, confidence, limitations, and domain playbooks.
 - Added chart-selected subset analysis (Step 2) and supported repeated drill-down without inventing a new analytical contract.
+- Fixed Step 2 drill-through for temporal dimensions. Chart values formatted as localized dates now map back to ISO timestamps, epoch milliseconds, epoch seconds, or Excel serial dates in the raw source; non-temporal dimensions remain strict equality matches.
 - Added multi-file BA comparison, chart selection, Step 2 subset analysis, dashboards, export, cleaning, and BI handoff parity with single-file flows.
 
 ### Advanced Mode
