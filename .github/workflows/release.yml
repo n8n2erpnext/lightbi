@@ -34,7 +34,9 @@ jobs:
           pnpm --dir apps/distribution test
           pnpm --dir apps/distribution build
       - name: Generate branded application icons
-        run: pnpm dlx @tauri-apps/cli@2.11.4 icon apps/desktop/public/branding/lightbi-icon.svg --output crates/lightbi-tauri/icons
+        run: |
+          pnpm dlx @tauri-apps/cli@2.11.4 icon apps/desktop/public/branding/lightbi-app-icon.png --output crates/lightbi-tauri/icons
+          node scripts/validate-native-icons.mjs
       - name: Build web surface
         env:
           VITE_LIGHTBI_DISTRIBUTION_URL: https://lightbi.thaiduy.digital/distribution
