@@ -110,7 +110,7 @@ export function useHomeWorkspaceSessions(deps: HomeWorkspaceSessionDependencies)
     }
     for (let index = 0; index < sourceFiles.length; index += 1) {
       if (sourceFiles[index]?.persistedFile?.fileId) continue;
-      const file = runtimeFiles.find(candidate => candidate.name === sourceFiles[index]?.name) ?? runtimeFiles[index];
+      const file = runtimeFiles.find((candidate: File) => candidate.name === sourceFiles[index]?.name) ?? runtimeFiles[index];
       if (!file) continue;
       sourceFiles[index] = { ...sourceFiles[index], persistedFile: await uploadProjectSourceFile(file) };
     }
