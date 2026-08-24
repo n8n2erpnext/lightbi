@@ -23,7 +23,7 @@ export default defineConfig({
             response.end();
             return;
           }
-          if (request.method === 'GET' && (current.pathname === '/' || current.pathname === '/admin')) {
+          if (request.method === 'GET' && (current.pathname === '/' || current.pathname === '/admin' || current.pathname === '/account')) {
             try {
               const upstream = await fetch(`http://127.0.0.1:5174${current.pathname}${current.search}`);
               response.statusCode = upstream.status;

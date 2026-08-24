@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 
 const clean = (value, max = 120) => typeof value === 'string' ? value.trim().slice(0, max) || null : null;
-const allowedKinds = new Set(['page_view', 'visit_end', 'download', 'install_pair', 'license_activation', 'app_open', 'app_close', 'feature_use']);
+const allowedKinds = new Set(['page_view', 'visit_end', 'download', 'install_pair', 'license_activation', 'app_open', 'app_close', 'feature_use', 'update_available', 'update_download_started', 'update_download_success', 'update_download_failed', 'update_install_started']);
 
 export async function createDistributionAnalytics({ databaseUrl, redisUrl, pepper }) {
   if (!databaseUrl) return {

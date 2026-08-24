@@ -4,8 +4,9 @@ use axum::{body::Body, Router};
 use http_body_util::BodyExt;
 use serde::Serialize;
 use std::sync::{Arc, Mutex};
-use tauri::{Manager, State};
+use tauri::{AppHandle, Manager, State};
 use tower::ServiceExt;
+use sha2::{Digest, Sha256};
 
 #[cfg(target_os = "windows")]
 const API_BASE_URL: &str = "http://lightbi.localhost";
@@ -62,6 +63,64 @@ fn backend_status(state: State<'_, EmbeddedCore>) -> bool {
     state.0.lock().map(|core| core.is_some()).unwrap_or(false)
 }
 
+#[tauri::command]
+fn account_session_token() -> Result<Option<String>, String> {
+    let entry = keyring::Entry::new("digital.thaiduy.lightbi", "account-session")
+        .map_err(|error| format!("Could not open the operating-system credential vault: {error}"))?;
+    match entry.get_password() {
+        Ok(value) => Ok(Some(value)),
+        Err(keyring::Error::NoEntry) => Ok(None),
+        Err(error) => Err(format!("Could not read the account session: {error}")),
+    }
+}
+
+#[tauri::command]
+fn store_account_session_token(token: Option<String>) -> Result<(), String> {
+    let entry = keyring::Entry::new("digital.thaiduy.lightbi", "account-session")
+        .map_err(|error| format!("Could not open the operating-system credential vault: {error}"))?;
+    match token.filter(|value| !value.trim().is_empty()) {
+        Some(value) => entry.set_password(&value).map_err(|error| format!("Could not store the account session: {error}")),
+        None => match entry.delete_credential() {
+            Ok(()) | Err(keyring::Error::NoEntry) => Ok(()),
+            Err(error) => Err(format!("Could not clear the account session: {error}")),
+        },
+    }
+}
+
+#[tauri::command]
+async fn install_verified_update(app: AppHandle, url: String, sha256: String) -> Result<(), String> {
+    if !url.starts_with("https://") || sha256.len() != 64 || !sha256.chars().all(|value| value.is_ascii_hexdigit()) {
+        return Err("Update metadata is invalid.".to_string());
+    }
+    let response = reqwest::get(&url).await.map_err(|error| format!("Update download failed: {error}"))?;
+    if !response.status().is_success() {
+        return Err(format!("Update download returned HTTP {}.", response.status()));
+    }
+    let bytes = response.bytes().await.map_err(|error| format!("Update download failed: {error}"))?;
+    let actual = format!("{:x}", Sha256::digest(&bytes));
+    if !actual.eq_ignore_ascii_case(&sha256) {
+        return Err("Update verification failed. The downloaded installer was discarded.".to_string());
+    }
+    let directory = std::env::temp_dir().join("lightbi-updates");
+    std::fs::create_dir_all(&directory).map_err(|error| format!("Could not prepare the updater directory: {error}"))?;
+    let path = directory.join(format!("LightBI-update-{}.exe", &actual[..12]));
+    let partial = path.with_extension("exe.partial");
+    std::fs::write(&partial, &bytes).map_err(|error| format!("Could not write the update: {error}"))?;
+    std::fs::rename(&partial, &path).map_err(|error| format!("Could not finalize the verified update: {error}"))?;
+    #[cfg(target_os = "windows")]
+    {
+        std::process::Command::new(&path).spawn().map_err(|error| format!("Could not start the verified installer: {error}"))?;
+        app.exit(0);
+        Ok(())
+    }
+    #[cfg(not(target_os = "windows"))]
+    {
+        let _ = app;
+        let _ = std::fs::remove_file(path);
+        Err("Automatic installation is currently available only on Windows.".to_string())
+    }
+}
+
 fn error_response(status: u16, message: &str) -> tauri::http::Response<Vec<u8>> {
     tauri::http::Response::builder()
         .status(status)
@@ -77,6 +136,7 @@ fn main() {
     let setup_core = embedded_core.clone();
 
     tauri::Builder::default()
+        .plugin(tauri_plugin_opener::init())
         .register_asynchronous_uri_scheme_protocol("lightbi", move |_context, request, responder| {
             let core = protocol_core
                 .0
@@ -142,7 +202,10 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             runtime_config,
             license_state,
-            backend_status
+            backend_status,
+            account_session_token,
+            store_account_session_token,
+            install_verified_update
         ])
         .run(tauri::generate_context!())
         .expect("failed to run LightBI desktop shell");

@@ -149,6 +149,72 @@ async function showCheckoutResult() {
   }
 }
 
+async function account() {
+  if (!location.pathname.endsWith('/account')) return false;
+  const accountParams = new URLSearchParams(location.search);
+  const resetToken = accountParams.get('reset');
+  if (resetToken) {
+    document.body.innerHTML = `<main class="login-shell"><form class="login-card" id="account-reset"><span class="eyebrow">LIGHTBI ACCOUNT</span><h1>Set a new password</h1><p>Use at least 12 characters. This link works once and expires after 15 minutes.</p><label>New password<input name="password" type="password" autocomplete="new-password" minlength="12" required></label><label>Confirm password<input name="confirm" type="password" autocomplete="new-password" minlength="12" required></label><button class="button dark" type="submit">Update password</button><small id="account-auth-message" role="alert"></small><a class="login-link" href="/account">Back to sign in</a></form></main>`;
+    document.querySelector('#account-reset').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const form = new FormData(event.currentTarget);
+      const message = document.querySelector('#account-auth-message');
+      if (form.get('password') !== form.get('confirm')) { message.textContent = 'Passwords do not match.'; return; }
+      const result = await fetch(`${routeBase}/api/account/password/reset`, { method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify({ token:resetToken, password:form.get('password') }) });
+      if (result.ok) { message.textContent = 'Password updated. You can sign in now.'; setTimeout(() => { location.href = '/account'; }, 900); }
+      else message.textContent = 'This reset link is invalid or expired.';
+    });
+    return true;
+  }
+  const response = await fetch(`${routeBase}/api/account/session`);
+  if (!response.ok) {
+    const error = accountParams.get('auth_error');
+    const verified = accountParams.get('verified');
+    document.body.innerHTML = `<main class="login-shell"><section class="login-card account-login-card"><span class="eyebrow">LIGHTBI ACCOUNT</span><h1>Sign in to LightBI</h1><p>Use Google or email and password to manage Pro entitlement and devices. Business files, SQL and analysis remain local.</p>${error?`<small role="alert">Google sign-in failed: ${escapeHtml(error)}</small>`:''}${verified?'<small class="success-note">Email verified. Your account is ready.</small>':''}<a class="button dark wide" href="${routeBase}/api/auth/google/start?return_to=${encodeURIComponent('/account')}">Continue with Google</a><div class="login-separator"><span>or use email</span></div><div class="account-auth-tabs"><button class="active" type="button" data-account-auth-tab="login">Sign in</button><button type="button" data-account-auth-tab="register">Create account</button></div><form id="account-email-auth"><label data-register-field hidden>Display name<input name="displayName" autocomplete="name" maxlength="120"></label><label>Email<input name="email" type="email" autocomplete="email" required></label><label>Password<input name="password" type="password" autocomplete="current-password" required></label><button class="button dark" type="submit">Sign in with email</button><button class="login-link" type="button" id="account-forgot">Forgot password?</button><small id="account-auth-message" role="status"></small></form><a class="login-link" href="/">Back to LightBI</a></section></main>`;
+    let mode = 'login';
+    const form = document.querySelector('#account-email-auth');
+    const message = document.querySelector('#account-auth-message');
+    const password = form.querySelector('input[name="password"]');
+    const syncMode = () => {
+      document.querySelectorAll('[data-account-auth-tab]').forEach(button => button.classList.toggle('active', button.dataset.accountAuthTab === mode));
+      document.querySelector('[data-register-field]').hidden = mode !== 'register';
+      form.querySelector('button[type="submit"]').textContent = mode === 'register' ? 'Create account' : 'Sign in with email';
+      document.querySelector('#account-forgot').hidden = mode !== 'login';
+      password.minLength = mode === 'register' ? 12 : 0;
+      password.autocomplete = mode === 'register' ? 'new-password' : 'current-password';
+      password.placeholder = mode === 'register' ? '12 or more characters' : '';
+      message.textContent = '';
+    };
+    document.querySelectorAll('[data-account-auth-tab]').forEach(button => button.addEventListener('click', () => { mode = button.dataset.accountAuthTab; syncMode(); }));
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault(); message.textContent = '';
+      const values = Object.fromEntries(new FormData(form));
+      const result = await fetch(`${routeBase}/api/account/${mode === 'register' ? 'register' : 'login'}`, { method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify(values) });
+      if (result.ok && mode === 'login') { location.href = '/account'; return; }
+      if (result.ok) { message.textContent = 'Check your email to verify the account, then sign in.'; mode = 'login'; form.reset(); syncMode(); message.textContent = 'Check your email to verify the account, then sign in.'; return; }
+      const payload = await result.json().catch(() => ({}));
+      message.textContent = payload.error === 'rate_limited' ? 'Too many attempts. Try again later.' : mode === 'login' ? 'Email or password is incorrect, or the email is not verified.' : 'Registration could not be completed.';
+    });
+    document.querySelector('#account-forgot').addEventListener('click', async () => {
+      const email = form.querySelector('input[name="email"]').value;
+      if (!email) { message.textContent = 'Enter your email first.'; return; }
+      await fetch(`${routeBase}/api/account/password/request`, { method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify({ email }) });
+      message.textContent = 'If this email has a password account, a reset link has been sent.';
+    });
+    return true;
+  }
+  const data = await response.json();
+  const profile = data.account || {};
+  const entitlement = data.entitlement || { tier:'basic',status:'active',max_devices:1 };
+  const devices = data.devices || [];
+  const deviceRows = devices.map((device) => `<tr><td>${escapeHtml(device.display_name||'LightBI device')}</td><td>${escapeHtml(device.platform||'—')}</td><td>${escapeHtml(device.app_version||'—')}</td><td>${escapeHtml(device.status)}</td><td>${escapeHtml(String(device.last_seen_at||'').slice(0,10))}</td><td>${device.status==='active'?`<button class="table-action danger" data-device-revoke="${escapeHtml(device.id)}">Revoke</button>`:'—'}</td></tr>`).join('');
+  document.body.innerHTML = `<main class="account-shell"><header class="account-head"><a class="brand" href="/"><span class="mark"><img src="/distribution-assets/logo.svg" alt=""></span><span>Light<span>BI</span></span></a><button class="button" data-account-logout>Sign out</button></header><section class="account-profile"><div>${profile.avatar_url?`<img src="${escapeHtml(profile.avatar_url)}" alt="">`:'<span>LB</span>'}</div><article><span class="eyebrow">LIGHTBI ACCOUNT</span><h1>${escapeHtml(profile.display_name||profile.email)}</h1><p>${escapeHtml(profile.email)}</p></article><aside><small>PLAN</small><strong>${escapeHtml(String(entitlement.tier||'basic').toUpperCase())}</strong><span>${escapeHtml(entitlement.status||'active')} · ${escapeHtml(entitlement.max_devices||1)} device slots</span></aside></section><section class="account-grid"><article class="chart-card"><h2>Redeem a Pro key</h2><p>Existing Beta, complimentary and partner keys can be attached to this account once.</p><form id="account-redeem" class="inline-form"><input name="licenseKey" type="password" placeholder="LBI-PRO-…" required><button class="button dark" type="submit">Redeem key</button></form><small id="account-message" role="status"></small></article><article class="chart-card"><h2>Privacy boundary</h2><p>Account services receive account ID, entitlement, random device identity, platform and app version only. Files, SQL, database URLs and BA results stay local.</p></article></section><section class="chart-card"><h2>Devices</h2><div class="table-scroll"><table><thead><tr><th>Device</th><th>Platform</th><th>Version</th><th>Status</th><th>Last seen</th><th></th></tr></thead><tbody>${deviceRows||'<tr><td colspan="6">No native devices connected yet.</td></tr>'}</tbody></table></div></section></main>`;
+  document.querySelector('#account-redeem').addEventListener('submit', async (event) => { event.preventDefault(); const form=new FormData(event.currentTarget); const result=await fetch(`${routeBase}/api/account/redeem`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({licenseKey:form.get('licenseKey')})}); const payload=await result.json(); document.querySelector('#account-message').textContent=result.ok?'Pro entitlement attached to your account.':String(payload.error||'Key could not be redeemed.'); if(result.ok)setTimeout(()=>location.reload(),700); });
+  document.querySelectorAll('[data-device-revoke]').forEach((button)=>button.addEventListener('click',async()=>{ if(!confirm('Revoke this device? It will lose future Pro authorization.'))return; const result=await fetch(`${routeBase}/api/account/devices/${encodeURIComponent(button.dataset.deviceRevoke)}/revoke`,{method:'POST'}); if(result.ok)location.reload(); }));
+  document.querySelector('[data-account-logout]').addEventListener('click',async()=>{await fetch(`${routeBase}/api/account/logout`,{method:'POST'});location.reload();});
+  return true;
+}
+
 async function admin() {
   if (!location.pathname.endsWith('/admin')) return false;
   const params = new URLSearchParams(location.search);
@@ -184,14 +250,22 @@ async function admin() {
     });
     return true;
   }
-  const tab = params.get('tab') === 'revenue' ? 'revenue' : params.get('tab') === 'app' ? 'app' : params.get('tab') === 'licenses' ? 'licenses' : 'analytics';
+  const tab = params.get('tab') === 'revenue' ? 'revenue' : params.get('tab') === 'app' ? 'app' : params.get('tab') === 'licenses' ? 'licenses' : params.get('tab') === 'accounts' ? 'accounts' : 'analytics';
+  if (tab === 'accounts') {
+    const response = await fetch(`${routeBase}/api/admin/accounts`); if(!response.ok)return true;
+    const data=await response.json();const safe=escapeHtml;
+    const rows=(data.accounts||[]).map(item=>`<tr><td>${safe(item.display_name||'—')}</td><td>${safe(item.email)}</td><td>${safe(item.provider)}</td><td>${safe(item.tier)} · ${safe(item.entitlement_status)}</td><td>${safe(item.active_devices||0)}/${safe(item.max_devices||1)}</td><td>${safe(item.expires_at?String(item.expires_at).slice(0,10):'—')}</td><td>${item.tier==='pro'&&item.entitlement_status==='active'?`<button class="table-action danger" data-account-entitlement-revoke="${safe(item.id)}">Revoke Pro</button>`:'—'}</td></tr>`).join('');
+    document.body.innerHTML=`<main class="admin-shell"><div class="admin-head"><div><span class="eyebrow">LIGHTBI DISTRIBUTION</span><h1>Accounts & entitlements</h1><p>Google accounts, Pro grants and privacy-safe device slots.</p><nav class="admin-tabs"><a href="${portalBase}/admin">Analytics</a><a href="${portalBase}/admin?tab=app">App usage</a><a class="active" href="${portalBase}/admin?tab=accounts">Accounts</a><a href="${portalBase}/admin?tab=licenses">Licenses</a><a href="${portalBase}/admin?tab=revenue">Pro revenue</a></nav></div><button class="button" data-admin-logout>Sign out</button></div><section class="chart-card"><h2>Registered users</h2><div class="table-scroll"><table><thead><tr><th>Name</th><th>Email</th><th>Provider</th><th>Entitlement</th><th>Devices</th><th>Expires</th><th></th></tr></thead><tbody>${rows||'<tr><td colspan="7">No LightBI accounts yet.</td></tr>'}</tbody></table></div></section></main>`;
+    document.querySelectorAll('[data-account-entitlement-revoke]').forEach(button=>button.addEventListener('click',async()=>{if(!confirm('Revoke this account Pro entitlement?'))return;const result=await fetch(`${routeBase}/api/admin/accounts/${encodeURIComponent(button.dataset.accountEntitlementRevoke)}/entitlement/revoke`,{method:'POST',headers:{'x-lightbi-admin-action':'1'}});if(result.ok)location.reload();}));
+    document.querySelector('[data-admin-logout]').addEventListener('click',async()=>{await fetch(`${routeBase}/api/admin/logout`,{method:'POST'});location.reload();});return true;
+  }
   if (tab === 'licenses') {
     const response = await fetch(`${routeBase}/api/admin/licenses`);
     if (!response.ok) return true;
     const data = await response.json();
     const safe = (value) => String(value ?? '').replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
-    const rows = (data.licenses || []).map((item) => `<tr><td>${safe(item.label||'—')}</td><td>${safe(String(item.kind).replaceAll('_',' '))}</td><td>${safe(item.status)}</td><td>${safe(item.discount_percent??'—')}%</td><td>${safe(item.devices)}/${safe(item.max_devices)}</td><td>${safe(item.expires_at?String(item.expires_at).slice(0,10):'Never')}</td><td>${item.status==='active'?`<button class="table-action" data-license-action="rotate" data-license-id="${safe(item.id)}">Rotate</button><button class="table-action danger" data-license-action="revoke" data-license-id="${safe(item.id)}">Revoke</button>`:'—'}</td></tr>`).join('');
-    document.body.innerHTML = `<main class="admin-shell"><div class="admin-head"><div><span class="eyebrow">LIGHTBI DISTRIBUTION</span><h1>License management</h1><p>Create, email, rotate and revoke Pro keys. Plaintext keys are never stored.</p><nav class="admin-tabs"><a href="${portalBase}/admin">Analytics</a><a href="${portalBase}/admin?tab=app">App usage</a><a class="active" href="${portalBase}/admin?tab=licenses">Licenses</a><a href="${portalBase}/admin?tab=revenue">Pro revenue</a></nav></div><button class="button" data-admin-logout>Sign out</button></div><section class="license-create"><form id="license-create"><label>Campaign/partner label<input name="label" required maxlength="120" placeholder="Beta partner campaign"></label><label>Key type<select name="kind"><option value="complimentary">Complimentary Pro</option><option value="partner_discount">Partner discount</option></select></label><label>Discount %<input name="discountPercent" type="number" min="1" max="100" value="100"></label><label>Max devices<input name="maxDevices" type="number" min="1" max="100" value="3"></label><label>Expires<input name="expiresAt" type="date"></label><label>Email key to<input name="email" type="email" placeholder="customer@example.com"></label><button class="button dark" type="submit">Generate Pro key</button></form><div class="one-time-key" id="one-time-key">New keys appear here once.</div></section><section class="chart-card"><h2>Issued licenses</h2><div class="table-scroll"><table><thead><tr><th>Label</th><th>Type</th><th>Status</th><th>Discount</th><th>Devices</th><th>Expires</th><th>Actions</th></tr></thead><tbody>${rows}</tbody></table></div></section></main>`;
+    const rows = (data.licenses || []).map((item) => `<tr><td>${safe(item.label||'—')}<small class="cell-note">…${safe(item.key_suffix||'')}</small></td><td>${safe(String(item.kind).replaceAll('_',' '))}</td><td>${safe(item.status)}</td><td>${safe(item.discount_percent??'—')}%</td><td>${safe(item.devices)}/${safe(item.max_devices)}</td><td>${safe(item.expires_at?String(item.expires_at).slice(0,10):'Never')}</td><td>${item.status==='active'?`<button class="table-action" data-license-action="resend" data-license-id="${safe(item.id)}" data-license-email="${safe(item.recipient_email||'')}">Resend</button><button class="table-action" data-license-action="rotate" data-license-id="${safe(item.id)}">Rotate</button><button class="table-action danger" data-license-action="revoke" data-license-id="${safe(item.id)}">Revoke</button>`:'—'}</td></tr>`).join('');
+    document.body.innerHTML = `<main class="admin-shell"><div class="admin-head"><div><span class="eyebrow">LIGHTBI DISTRIBUTION</span><h1>License management</h1><p>Create, email, rotate and revoke Pro keys. Plaintext keys are never stored.</p><nav class="admin-tabs"><a href="${portalBase}/admin">Analytics</a><a href="${portalBase}/admin?tab=app">App usage</a><a href="${portalBase}/admin?tab=accounts">Accounts</a><a class="active" href="${portalBase}/admin?tab=licenses">Licenses</a><a href="${portalBase}/admin?tab=revenue">Pro revenue</a></nav></div><button class="button" data-admin-logout>Sign out</button></div><section class="license-create"><form id="license-create"><label>Campaign/partner label<input name="label" required maxlength="120" placeholder="Beta partner campaign"></label><label>Key type<select name="kind"><option value="complimentary">Complimentary Pro</option><option value="partner_discount">Partner discount</option></select></label><label>Discount %<input name="discountPercent" type="number" min="1" max="100" value="100"></label><label>Max devices<input name="maxDevices" type="number" min="1" max="100" value="3"></label><label>Expires<input name="expiresAt" type="date"></label><label>Email key to<input name="email" type="email" placeholder="customer@example.com"></label><button class="button dark" type="submit">Generate Pro key</button></form><div class="one-time-key" id="one-time-key">New keys appear here once.</div></section><section class="chart-card"><h2>Issued licenses</h2><div class="table-scroll"><table><thead><tr><th>Label</th><th>Type</th><th>Status</th><th>Discount</th><th>Devices</th><th>Expires</th><th>Actions</th></tr></thead><tbody>${rows}</tbody></table></div></section></main>`;
     document.querySelector('#license-create').addEventListener('submit', async (event) => {
       event.preventDefault(); const form = Object.fromEntries(new FormData(event.currentTarget));
       const result = await fetch(`${routeBase}/api/admin/licenses`, { method:'POST', headers:{'content-type':'application/json','x-lightbi-admin-action':'1'}, body:JSON.stringify(form) });
@@ -200,9 +274,10 @@ async function admin() {
     });
     document.querySelectorAll('[data-license-action]').forEach((button) => button.addEventListener('click', async () => {
       const action = button.dataset.licenseAction; if (action==='revoke' && !confirm('Revoke this key and downgrade its paired machines to Basic?')) return;
-      const email = action==='rotate' ? prompt('Email the replacement key to (optional):') : null;
+      const email = action==='rotate' ? prompt('Email the replacement key to (optional):') : action==='resend' ? prompt('Resend the existing one-time key while available:',button.dataset.licenseEmail||'') : null;
       const result = await fetch(`${routeBase}/api/admin/licenses/${encodeURIComponent(button.dataset.licenseId)}/${action}`, { method:'POST', headers:{'content-type':'application/json','x-lightbi-admin-action':'1'}, body:JSON.stringify({email}) });
       const payload = await result.json();
+      if(action==='resend'){alert(result.ok?'License email sent.':payload.error==='plaintext_expired_rotate_required'?'The one-time key expired from Redis. Use Rotate to issue a replacement.':payload.error||'Resend failed');return;}
       if (result.ok && payload.licenseKey) alert(`Replacement key (copy now): ${payload.licenseKey}`);
       if (result.ok) location.reload(); else alert(payload.error||'License action failed');
     }));
@@ -272,6 +347,7 @@ async function admin() {
 }
 
 const isAdmin = location.pathname.endsWith('/admin');
+const isAccount = location.pathname.endsWith('/account');
 state.config = await api('/api/config').catch(() => null);
 state.catalog = await api('/api/releases').catch(() => null);
 renderReleaseCatalog();
@@ -289,9 +365,10 @@ document.querySelector('#download')?.addEventListener('click', (event) => { even
 document.querySelector('#checkout')?.addEventListener('click', checkout);
 await showCheckoutResult();
 if (isAdmin) await admin();
+else if (isAccount) await account();
 else await api('/api/visit', { method: 'POST', body: JSON.stringify(trafficContext()) }).catch(() => null);
 
-if (!isAdmin) addEventListener('pagehide', () => {
+if (!isAdmin && !isAccount) addEventListener('pagehide', () => {
   const startedAt = Number(sessionStorage.getItem('lightbi-distribution-visit-start')) || Date.now();
   fetch(`${routeBase}/api/visit/end`, {
     method: 'POST', headers: { 'content-type': 'application/json' }, keepalive: true,

@@ -8,6 +8,8 @@ import { createDistributionAnalytics } from './analytics.mjs';
 import { createAdminAuth } from './admin-auth.mjs';
 import { createMailer } from './mailer.mjs';
 import { loadReleaseCatalog, selectArtifact } from './release-manifest.mjs';
+import { createAccountAuth } from './account-auth.mjs';
+import { createLicenseSecretCache } from './license-secret-cache.mjs';
 
 const appDir = path.dirname(fileURLToPath(import.meta.url));
 const publicDir = path.join(appDir, 'public');
@@ -29,7 +31,17 @@ const adminAuth = await createAdminAuth({
   redisUrl: process.env.REDIS_URL,
   sessionSecret: process.env.LIGHTBI_ADMIN_SESSION_SECRET,
 });
+const accountAuth = await createAccountAuth({
+  databaseUrl: process.env.DATABASE_URL,
+  redisUrl: process.env.REDIS_URL,
+  sessionSecret: process.env.LIGHTBI_ACCOUNT_SESSION_SECRET || process.env.LIGHTBI_ADMIN_SESSION_SECRET,
+  googleClientId: process.env.GOOGLE_CLIENT_ID,
+  googleClientSecret: process.env.GOOGLE_CLIENT_SECRET,
+  googleRedirectUrl: process.env.LIGHTBI_GOOGLE_REDIRECT_URL,
+  publicBaseUrl,
+});
 const mailer = await createMailer({ host: process.env.SMTP_HOST, port: process.env.SMTP_PORT, secure: process.env.SMTP_SECURE, user: process.env.SMTP_USER, password: process.env.SMTP_PASSWORD, from: process.env.SMTP_FROM });
+const licenseSecrets = await createLicenseSecretCache(process.env.REDIS_URL);
 const appFeatures = new Set(['easy_mode', 'advanced_mode', 'advanced_query', 'advanced_database_edit', 'deep_ba', 'subset_analysis', 'dashboard', 'chart', 'export', 'data_import', 'database_connect', 'google_sheets']);
 let releaseCatalogCache = null;
 let releaseCatalogCachedAt = 0;
@@ -89,7 +101,7 @@ db.exec(`
 if (!db.prepare('PRAGMA table_info(licenses)').all().some((column) => column.name === 'installation_hash')) {
   db.exec('ALTER TABLE licenses ADD COLUMN installation_hash TEXT');
 }
-for (const [name, type] of [['amount_total', 'INTEGER'], ['currency', 'TEXT'], ['paid_at', 'TEXT'], ['kind', 'TEXT'], ['label', 'TEXT'], ['discount_percent', 'INTEGER'], ['expires_at', 'TEXT'], ['revoked_at', 'TEXT']]) {
+for (const [name, type] of [['amount_total', 'INTEGER'], ['currency', 'TEXT'], ['paid_at', 'TEXT'], ['kind', 'TEXT'], ['label', 'TEXT'], ['discount_percent', 'INTEGER'], ['expires_at', 'TEXT'], ['revoked_at', 'TEXT'], ['recipient_email','TEXT'], ['key_suffix','TEXT']]) {
   if (!db.prepare('PRAGMA table_info(licenses)').all().some((column) => column.name === name)) db.exec(`ALTER TABLE licenses ADD COLUMN ${name} ${type}`);
 }
 
@@ -148,6 +160,15 @@ function cookie(request, name) {
   return values[name] ? decodeURIComponent(values[name]) : null;
 }
 
+function bearer(request) {
+  return String(request.headers.authorization || '').replace(/^Bearer\s+/i, '').trim() || null;
+}
+
+async function authorizedAccount(request) {
+  if (!accountAuth.enabled) return null;
+  return accountAuth.session(bearer(request) || cookie(request, 'lightbi_account'));
+}
+
 async function authorizedAdmin(request) {
   const supplied = String(request.headers.authorization || '').replace(/^Bearer\s+/i, '');
   const breakGlass = process.env.LIGHTBI_DISTRIBUTION_ADMIN_TOKEN;
@@ -176,14 +197,16 @@ async function fulfillCheckout(session) {
   const now = new Date().toISOString();
   db.exec('BEGIN IMMEDIATE');
   try {
-    db.prepare('INSERT INTO licenses (id, license_hash, tier, status, stripe_session_id, installation_hash, delivery_value, amount_total, currency, paid_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
-      .run(id, sha(key), 'pro', 'active', session.id, session.client_reference_id || null, key, Number(session.amount_total || 0), String(session.currency || '').toUpperCase() || null, now, now);
+    const recipient = session.customer_details?.email || session.customer_email || null;
+    db.prepare('INSERT INTO licenses (id, license_hash, tier, status, stripe_session_id, installation_hash, delivery_value, amount_total, currency, paid_at, recipient_email, key_suffix, created_at) VALUES (?, ?, ?, ?, ?, ?, NULL, ?, ?, ?, ?, ?, ?)')
+      .run(id, sha(key), 'pro', 'active', session.id, session.client_reference_id || null, Number(session.amount_total || 0), String(session.currency || '').toUpperCase() || null, now, recipient, key.slice(-6), now);
     db.prepare('INSERT INTO fulfilled_checkout_sessions (session_id, fulfilled_at) VALUES (?, ?)').run(session.id, now);
     db.exec('COMMIT');
   } catch (error) {
     db.exec('ROLLBACK');
     throw error;
   }
+  await licenseSecrets.put(id,key);
   const recipient = session.customer_details?.email || session.customer_email;
   if (recipient && mailer.enabled) await mailer.sendProLicense({ to: recipient, licenseKey: key, template: 'automatic' });
 }
@@ -199,7 +222,7 @@ function revenueSummary(days) {
 }
 
 function listLicenses() {
-  return db.prepare(`SELECT l.id,l.tier,l.status,COALESCE(l.kind,'paid') AS kind,l.label,l.discount_percent,l.max_devices,l.expires_at,l.revoked_at,l.created_at,l.paid_at,l.currency,l.amount_total,
+  return db.prepare(`SELECT l.id,l.tier,l.status,COALESCE(l.kind,'paid') AS kind,l.label,l.discount_percent,l.max_devices,l.expires_at,l.revoked_at,l.created_at,l.paid_at,l.currency,l.amount_total,l.recipient_email,l.key_suffix,
     (SELECT COUNT(*) FROM license_installations li WHERE li.license_id=l.id) AS devices FROM licenses l ORDER BY l.created_at DESC`).all();
 }
 
@@ -211,9 +234,11 @@ async function createManualLicense(input) {
   const maxDevices = Math.min(100, Math.max(1, Number(input.maxDevices) || 3));
   const discount = kind === 'partner_discount' ? Math.min(100, Math.max(1, Number(input.discountPercent) || 1)) : 100;
   const expiresAt = input.expiresAt && !Number.isNaN(Date.parse(input.expiresAt)) ? new Date(input.expiresAt).toISOString() : null;
-  db.prepare(`INSERT INTO licenses (id,license_hash,tier,status,max_devices,kind,label,discount_percent,expires_at,created_at)
-    VALUES (?,?, 'pro','active',?,?,?,?,?,?)`).run(id, sha(key), maxDevices, kind, String(input.label || '').slice(0, 120) || null, discount, expiresAt, now);
-  if (input.email && mailer.enabled) await mailer.sendProLicense({ to: String(input.email).trim(), licenseKey: key, template: 'manual', label: input.label, discountPercent: discount, expiresAt });
+  const recipient = input.email ? String(input.email).trim().toLowerCase().slice(0,254) : null;
+  db.prepare(`INSERT INTO licenses (id,license_hash,tier,status,max_devices,kind,label,discount_percent,expires_at,recipient_email,key_suffix,created_at)
+    VALUES (?,?, 'pro','active',?,?,?,?,?,?,?,?)`).run(id, sha(key), maxDevices, kind, String(input.label || '').slice(0, 120) || null, discount, expiresAt, recipient, key.slice(-6), now);
+  await licenseSecrets.put(id,key);
+  if (recipient && mailer.enabled) await mailer.sendProLicense({ to: recipient, licenseKey: key, template: 'manual', label: input.label, discountPercent: discount, expiresAt });
   return { licenseKey: key, license: listLicenses().find((item) => item.id === id) };
 }
 
@@ -223,6 +248,7 @@ function revokeLicense(id) {
   if (!result.changes) return false;
   db.prepare("UPDATE installations SET tier='basic',license_id=NULL WHERE license_id=?").run(id);
   db.prepare('DELETE FROM license_installations WHERE license_id=?').run(id);
+  void licenseSecrets.remove(id);
   return true;
 }
 
@@ -249,7 +275,7 @@ async function createCheckout({ installationId }) {
 }
 
 function serveStatic(requestPath, response) {
-  const route = requestPath === '/' || requestPath === '/admin' ? '/index.html' : requestPath;
+  const route = requestPath === '/' || requestPath === '/admin' || requestPath === '/account' ? '/index.html' : requestPath;
   if (route === '/logo.svg') {
     const file = path.resolve(appDir, '..', 'desktop', 'public', 'branding', 'lightbi-icon.svg');
     try {
@@ -308,9 +334,121 @@ const server = createServer(async (request, response) => {
       return sendJson(response, 200, {
         productId: 'digital.thaiduy.lightbi', releaseUrl: windows?.url || releaseUrl, releaseManifestUrl, proPriceLabel,
         latestVersion: catalog.latest?.version || null, releaseCatalogAvailable: catalog.available,
+        googleAccountAvailable: Boolean(accountAuth.googleEnabled),
+        emailAccountAvailable: Boolean(accountAuth.enabled && mailer.enabled),
         checkoutAvailable: Boolean(process.env.STRIPE_SECRET_KEY && process.env.STRIPE_PRICE_ID),
         analyticsAvailable: analytics.enabled,
       });
+    }
+    if (request.method === 'GET' && url.pathname === '/api/auth/google/start') {
+      if (!accountAuth.googleEnabled) return sendJson(response, 503, { error: 'google_auth_unavailable' });
+      const returnTo = url.searchParams.get('return_to')?.startsWith('/') ? url.searchParams.get('return_to') : '/account';
+      const started = await accountAuth.beginGoogle({ returnTo });
+      response.writeHead(302, {
+        location: started.authorizationUrl,
+        'set-cookie': `lightbi_oauth_state=${encodeURIComponent(started.state)}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=600`,
+        'cache-control': 'no-store',
+      });
+      return response.end();
+    }
+    if (request.method === 'POST' && url.pathname === '/api/account/register') {
+      if(!accountAuth.enabled||!mailer.enabled)return sendJson(response,503,{error:'account_registration_unavailable'});
+      const payload=JSON.parse((await body(request,16000)).toString('utf8')||'{}');
+      try { await accountAuth.registerEmail({email:payload.email,password:payload.password,displayName:payload.displayName,sendVerification:mailer.sendAccountVerification}); }
+      catch(error){if(error?.message==='invalid_registration')return sendJson(response,400,{error:'invalid_registration'});}
+      return sendJson(response,202,{accepted:true});
+    }
+    if (request.method === 'GET' && url.pathname === '/api/account/verify') {
+      const token=await accountAuth.verifyEmailToken(url.searchParams.get('token'));
+      if(!token){response.writeHead(302,{location:'/account?verify_error=invalid_or_expired'});return response.end();}
+      response.writeHead(302,{location:'/account?verified=1','set-cookie':`lightbi_account=${encodeURIComponent(token)}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=86400`});return response.end();
+    }
+    if (request.method === 'POST' && url.pathname === '/api/account/login') {
+      if(!accountAuth.enabled)return sendJson(response,503,{error:'account_login_unavailable'});
+      const payload=JSON.parse((await body(request,16000)).toString('utf8')||'{}');
+      try{
+        const installationHash=validInstallationId(payload.installationId)?sha(payload.installationId):null;
+        const result=await accountAuth.loginEmail({email:payload.email,password:payload.password,installationHash,device:{displayName:payload.deviceName,platform:payload.platform,appVersion:payload.appVersion},networkHash:anonymousNetworkHash(request)});
+        const extra=installationHash?{}:{'set-cookie':`lightbi_account=${encodeURIComponent(result.token)}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=86400`};
+        return sendJson(response,200,{authenticated:true,token:installationHash?result.token:undefined},extra);
+      }catch(error){return sendJson(response,error?.message==='rate_limited'?429:401,{error:error?.message==='rate_limited'?'rate_limited':'invalid_credentials'});}
+    }
+    if (request.method === 'POST' && url.pathname === '/api/account/password/request') {
+      const payload=JSON.parse((await body(request,8000)).toString('utf8')||'{}');
+      if(accountAuth.enabled&&mailer.enabled)await accountAuth.requestPasswordReset(payload.email,mailer.sendAccountPasswordReset);
+      return sendJson(response,202,{accepted:true});
+    }
+    if (request.method === 'POST' && url.pathname === '/api/account/password/reset') {
+      const payload=JSON.parse((await body(request,12000)).toString('utf8')||'{}');const changed=accountAuth.enabled&&await accountAuth.resetPassword(payload.token,payload.password);
+      return changed?sendJson(response,200,{changed:true}):sendJson(response,400,{error:'invalid_or_expired_reset'});
+    }
+    if (request.method === 'GET' && url.pathname === '/api/auth/google/callback') {
+      if (!accountAuth.googleEnabled) return sendJson(response, 503, { error: 'google_auth_unavailable' });
+      try {
+        const finished = await accountAuth.finishGoogle({ code: url.searchParams.get('code'), state: url.searchParams.get('state'), cookieState: cookie(request, 'lightbi_oauth_state') });
+        const headers = { location: finished.returnTo || '/account', 'cache-control': 'no-store' };
+        if (!finished.native && finished.token) headers['set-cookie'] = `lightbi_account=${encodeURIComponent(finished.token)}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=86400`;
+        response.writeHead(302, headers);
+        return response.end();
+      } catch (error) {
+        response.writeHead(302, { location: `/account?auth_error=${encodeURIComponent(error instanceof Error ? error.message : 'google_login_failed')}`, 'cache-control': 'no-store' });
+        return response.end();
+      }
+    }
+    if (request.method === 'POST' && url.pathname === '/api/account/device-login/start') {
+      if (!accountAuth.googleEnabled) return sendJson(response, 503, { error: 'google_auth_unavailable' });
+      const payload = JSON.parse((await body(request, 16_000)).toString('utf8') || '{}');
+      if (!validInstallationId(payload.installationId)) return sendJson(response, 400, { error: 'invalid_installation_id' });
+      const started = await accountAuth.startNativeLogin({ installationHash: sha(payload.installationId), device: { displayName: payload.deviceName, platform: payload.platform, appVersion: payload.appVersion } });
+      return sendJson(response, 200, started);
+    }
+    if (request.method === 'POST' && url.pathname === '/api/account/device-login/status') {
+      if (!accountAuth.googleEnabled) return sendJson(response, 503, { error: 'google_auth_unavailable' });
+      const payload = JSON.parse((await body(request, 16_000)).toString('utf8') || '{}');
+      if (!validInstallationId(payload.installationId) || typeof payload.loginId !== 'string') return sendJson(response, 400, { error: 'invalid_device_login' });
+      try {
+        return sendJson(response, 200, await accountAuth.finishNativeLogin({ loginId: payload.loginId, installationHash: sha(payload.installationId) }));
+      } catch (error) {
+        return sendJson(response, error?.message === 'device_limit_reached' ? 409 : 400, { error: error instanceof Error ? error.message : 'device_login_failed' });
+      }
+    }
+    if (request.method === 'GET' && url.pathname === '/api/account/session') {
+      const current = await authorizedAccount(request);
+      if (!current) return sendJson(response, 401, { authenticated: false });
+      return sendJson(response, 200, { authenticated: true, ...(await accountAuth.accountSummary(current.account_id)) });
+    }
+    if (request.method === 'POST' && url.pathname === '/api/account/logout') {
+      const token = bearer(request) || cookie(request, 'lightbi_account');
+      if (accountAuth.enabled) await accountAuth.logout(token);
+      return sendJson(response, 200, { authenticated: false }, { 'set-cookie': 'lightbi_account=; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=0' });
+    }
+    if (request.method === 'POST' && url.pathname === '/api/account/redeem') {
+      const current = await authorizedAccount(request);
+      if (!current) return sendJson(response, 401, { error: 'unauthorized' });
+      const payload = JSON.parse((await body(request, 16_000)).toString('utf8') || '{}');
+      if (typeof payload.licenseKey !== 'string') return sendJson(response, 400, { error: 'invalid_license_key' });
+      const license = db.prepare("SELECT id,tier,status,max_devices,expires_at FROM licenses WHERE license_hash=? AND status='active' AND (expires_at IS NULL OR expires_at>?)").get(sha(payload.licenseKey), new Date().toISOString());
+      if (!license) return sendJson(response, 404, { error: 'license_not_found' });
+      try {
+        const installationHash = validInstallationId(payload.installationId) ? sha(payload.installationId) : null;
+        const summary = await accountAuth.grantLicense(current.account_id, license, installationHash, { displayName: payload.deviceName, platform: payload.platform, appVersion: payload.appVersion });
+        if (installationHash) {
+          const now = new Date().toISOString();
+          db.prepare(`INSERT INTO installations(installation_hash,product_id,tier,app_version,platform,first_seen_at,last_seen_at,license_id)
+            VALUES(?,?,'pro',?,?,?,?,?) ON CONFLICT(installation_hash) DO UPDATE SET tier='pro',license_id=excluded.license_id,last_seen_at=excluded.last_seen_at`).run(installationHash, 'digital.thaiduy.lightbi', String(payload.appVersion || ''), String(payload.platform || ''), now, now, license.id);
+          db.prepare('INSERT OR IGNORE INTO license_installations(license_id,installation_hash,paired_at) VALUES(?,?,?)').run(license.id, installationHash, now);
+        }
+        return sendJson(response, 200, summary);
+      } catch (error) {
+        return sendJson(response, error?.message === 'license_already_redeemed' ? 409 : 400, { error: error instanceof Error ? error.message : 'license_redeem_failed' });
+      }
+    }
+    const deviceAction = url.pathname.match(/^\/api\/account\/devices\/([^/]+)\/revoke$/);
+    if (request.method === 'POST' && deviceAction) {
+      const current = await authorizedAccount(request);
+      if (!current) return sendJson(response, 401, { error: 'unauthorized' });
+      return await accountAuth.revokeDevice(current.account_id, decodeURIComponent(deviceAction[1]))
+        ? sendJson(response, 200, { revoked: true }) : sendJson(response, 404, { error: 'device_not_found' });
     }
     if (request.method === 'GET' && url.pathname === '/api/releases/latest') {
       const catalog = await releaseCatalog(url.searchParams.get('refresh') === '1');
@@ -333,7 +471,7 @@ const server = createServer(async (request, response) => {
     if (request.method === 'POST' && url.pathname === '/api/app/event') {
       const payload = JSON.parse((await body(request, 24_000)).toString('utf8') || '{}');
       if (!validInstallationId(payload.installationId)) return sendJson(response, 400, { error: 'invalid_installation_id' });
-      const kind = ['app_open', 'app_close', 'feature_use'].includes(payload.event) ? payload.event : null;
+      const kind = ['app_open', 'app_close', 'feature_use', 'update_available', 'update_download_started', 'update_download_success', 'update_download_failed', 'update_install_started'].includes(payload.event) ? payload.event : null;
       const feature = kind === 'feature_use' && appFeatures.has(payload.feature) ? payload.feature : null;
       if (!kind || (kind === 'feature_use' && !feature)) return sendJson(response, 400, { error: 'unsupported_app_event' });
       await analytics.record({ kind, feature, installationId: payload.installationId, visitId: payload.sessionId, durationSeconds: payload.durationSeconds, appVersion: payload.appVersion, platform: payload.platform, environment: payload.environment });
@@ -433,8 +571,8 @@ const server = createServer(async (request, response) => {
       const license = sessionId && db.prepare('SELECT id, tier, installation_hash, delivery_value, delivered_at FROM licenses WHERE stripe_session_id = ?').get(sessionId);
       if (!license) return sendJson(response, 202, { ready: false });
       if (!license.installation_hash || !safeEqual(license.installation_hash, sha(installationId))) return sendJson(response, 403, { error: 'installation_mismatch' });
-      const value = license.delivered_at ? null : license.delivery_value;
-      if (value) db.prepare('UPDATE licenses SET delivered_at = ?, delivery_value = NULL WHERE id = ?').run(new Date().toISOString(), license.id);
+      const value = license.delivered_at ? null : (await licenseSecrets.get(license.id) || license.delivery_value);
+      if (value) { db.prepare('UPDATE licenses SET delivered_at = ?, delivery_value = NULL WHERE id = ?').run(new Date().toISOString(), license.id); await licenseSecrets.remove(license.id); }
       return sendJson(response, 200, { ready: true, tier: license.tier, licenseKey: value });
     }
     if (request.method === 'GET' && url.pathname === '/api/admin/stats') {
@@ -461,6 +599,17 @@ const server = createServer(async (request, response) => {
       if (!await authorizedAdmin(request)) return sendJson(response, 401, { error: 'unauthorized' });
       return sendJson(response, 200, { licenses: listLicenses(), mailAvailable: Boolean(mailer.enabled) });
     }
+    if (request.method === 'GET' && url.pathname === '/api/admin/accounts') {
+      if (!await authorizedAdmin(request)) return sendJson(response, 401, { error: 'unauthorized' });
+      return sendJson(response, 200, { accounts: accountAuth.enabled ? await accountAuth.listAccounts() : [], enabled: accountAuth.enabled });
+    }
+    const accountAction = url.pathname.match(/^\/api\/admin\/accounts\/([^/]+)\/entitlement\/revoke$/);
+    if (request.method === 'POST' && accountAction) {
+      if (!await authorizedAdmin(request)) return sendJson(response, 401, { error: 'unauthorized' });
+      if (request.headers['x-lightbi-admin-action'] !== '1') return sendJson(response, 403, { error: 'admin_action_header_required' });
+      const revoked = accountAuth.enabled && await accountAuth.revokeAccountEntitlement(decodeURIComponent(accountAction[1]));
+      return revoked ? sendJson(response, 200, { revoked: true }) : sendJson(response, 404, { error: 'active_entitlement_not_found' });
+    }
     if (request.method === 'POST' && url.pathname === '/api/admin/licenses') {
       if (!await authorizedAdmin(request)) return sendJson(response, 401, { error: 'unauthorized' });
       if (request.headers['x-lightbi-admin-action'] !== '1') return sendJson(response, 403, { error: 'admin_action_header_required' });
@@ -475,9 +624,24 @@ const server = createServer(async (request, response) => {
       if (!current) return sendJson(response, 404, { error: 'license_not_found' });
       const payload = licenseAction[2] === 'rotate' ? JSON.parse((await body(request, 16_000)).toString('utf8') || '{}') : {};
       if (!revokeLicense(current.id)) return sendJson(response, 409, { error: 'license_not_active' });
-      if (licenseAction[2] === 'revoke') return sendJson(response, 200, { revoked: true });
+      if (licenseAction[2] === 'revoke') {
+        if (accountAuth.enabled) await accountAuth.revokeLicenseEntitlement(current.id);
+        return sendJson(response, 200, { revoked: true });
+      }
       const replacement = await createManualLicense({ kind: current.kind, label: current.label, discountPercent: current.discount_percent, maxDevices: current.max_devices, expiresAt: current.expires_at, email: payload.email });
+      if (accountAuth.enabled) await accountAuth.replaceLicenseEntitlement(current.id, replacement.license);
       return sendJson(response, 201, { rotated: true, ...replacement });
+    }
+    const resendAction = url.pathname.match(/^\/api\/admin\/licenses\/([^/]+)\/resend$/);
+    if (request.method === 'POST' && resendAction) {
+      if (!await authorizedAdmin(request)) return sendJson(response,401,{error:'unauthorized'});
+      if(request.headers['x-lightbi-admin-action']!=='1')return sendJson(response,403,{error:'admin_action_header_required'});
+      const current=listLicenses().find(item=>item.id===resendAction[1]);if(!current)return sendJson(response,404,{error:'license_not_found'});
+      const payload=JSON.parse((await body(request,8000)).toString('utf8')||'{}');const recipient=String(payload.email||current.recipient_email||'').trim();
+      const key=await licenseSecrets.get(current.id);if(!key)return sendJson(response,410,{error:'plaintext_expired_rotate_required'});
+      if(!recipient||!mailer.enabled)return sendJson(response,503,{error:'mail_unavailable'});
+      await mailer.sendProLicense({to:recipient,licenseKey:key,template:'manual',label:current.label,discountPercent:current.discount_percent,expiresAt:current.expires_at});
+      return sendJson(response,200,{resent:true});
     }
     if (request.method === 'GET' && serveStatic(url.pathname, response)) return;
     sendJson(response, 404, { error: 'not_found' });

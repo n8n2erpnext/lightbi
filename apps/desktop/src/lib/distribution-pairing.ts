@@ -85,3 +85,11 @@ export async function activateLightBILicense(licenseKey: string, options?: {
 export function currentLicenseTier(storage: Pick<Storage, 'getItem'> = localStorage): 'basic' | 'pro' {
   return storage.getItem(TIER_KEY) === 'pro' ? 'pro' : 'basic';
 }
+
+export function setCurrentLicenseTier(tier: 'basic' | 'pro', storage: Pick<Storage, 'setItem'> = localStorage): void {
+  storage.setItem(TIER_KEY, tier);
+}
+
+export function lightBIDistributionEndpoint(override?: string): string {
+  return (override ?? import.meta.env.VITE_LIGHTBI_DISTRIBUTION_URL ?? DEFAULT_DISTRIBUTION_URL).replace(/\/$/, '');
+}

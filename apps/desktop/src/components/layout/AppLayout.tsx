@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { useAppRuntime } from '@lightbi/runtime';
 import {
@@ -19,12 +19,21 @@ import { cn } from '../../lib/utils';
 import { useUiLanguage } from '../../lib/ui-language';
 import { UiTranslationBoundary } from './UiTranslationBoundary';
 import { trackFeatureUsage, type LightBIFeature } from '../../lib/app-usage-telemetry';
+import { useLightBIAccount } from '../../hooks/useLightBIAccount';
+import { useUpdateStore } from '../../stores/update-store';
 
 export const AppLayout: React.FC = () => {
   const location = useLocation();
   const isSidebarExpanded = !useAppRuntime(s => s.workspacePreferences.sidebarCollapsed);
   const toggleSidebar = useAppRuntime(s => s.toggleSidebar);
   const { t } = useUiLanguage();
+  const lightbiAccount = useLightBIAccount();
+  const updater = useUpdateStore();
+  const [notificationsOpen,setNotificationsOpen]=useState(false);
+  const notificationRef=useRef<HTMLDivElement>(null);
+
+  useEffect(()=>{void updater.check();const timer=window.setInterval(()=>void updater.check(),6*60*60*1000);return()=>window.clearInterval(timer);},[]);
+  useEffect(()=>{if(!notificationsOpen)return;const close=(event:MouseEvent)=>{if(!notificationRef.current?.contains(event.target as Node))setNotificationsOpen(false);};document.addEventListener('mousedown',close);return()=>document.removeEventListener('mousedown',close);},[notificationsOpen]);
 
   useEffect(() => {
     const feature: LightBIFeature = location.pathname.startsWith('/advanced') ? 'advanced_mode'
@@ -76,9 +85,7 @@ export const AppLayout: React.FC = () => {
             )}
           </div>
           {isSidebarExpanded && (
-            <button disabled className="hidden h-8 w-8 cursor-not-allowed items-center justify-center rounded-lg border border-black/10 bg-white/70 text-black/30 shadow-sm md:flex" title="Workspace alerts are not available in this Beta" aria-label="Workspace alerts are not available in this Beta">
-              <Bell className="h-4 w-4" strokeWidth={1.6} />
-            </button>
+            <div ref={notificationRef} className="relative hidden md:block"><button onClick={()=>setNotificationsOpen(value=>!value)} className="relative flex h-8 w-8 items-center justify-center rounded-lg border border-black/10 bg-white/70 text-black/55 shadow-sm hover:bg-white" title="LightBI notifications" aria-label="LightBI notifications"><Bell className="h-4 w-4" strokeWidth={1.6} />{updater.status==='available'&&<span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-blue-600 ring-2 ring-white"/>}</button>{notificationsOpen&&<div className="absolute left-0 top-10 z-50 w-80 rounded-xl border border-black/10 bg-white p-4 shadow-2xl"><div className="text-xs font-semibold uppercase tracking-wider text-black/40">Notifications</div>{updater.status==='available'?<div className="mt-3 rounded-lg border border-blue-100 bg-blue-50 p-3"><div className="font-semibold text-slate-900">LightBI {updater.manifest?.version} is available</div><p className="mt-1 text-xs leading-5 text-slate-600">{updater.manifest?.release_notes||'A new verified Beta is ready.'}</p><div className="mt-3 flex gap-2"><button onClick={()=>{if(window.confirm('Save or finish any unsaved work before continuing. Start the verified installer and close LightBI?'))void updater.install();}} className="rounded-md bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white">Update & Restart</button><button onClick={()=>setNotificationsOpen(false)} className="rounded-md border border-blue-200 bg-white px-3 py-1.5 text-xs font-semibold text-blue-700">Later</button></div></div>:<div className="mt-3 text-sm text-slate-500">{updater.status==='checking'?'Checking for updates…':updater.status==='failed'?updater.error:'You are up to date.'}</div>}</div>}</div>
           )}
         </div>
 
@@ -114,24 +121,21 @@ export const AppLayout: React.FC = () => {
         {/* Bottom Navigation */}
         <div className="flex flex-col gap-2 p-3">
           {isSidebarExpanded && (
-            <div className="hidden rounded-[14px] border border-black/10 bg-white/80 p-3 shadow-sm md:block">
+            <NavLink to="/settings" className="hidden rounded-[14px] border border-black/10 bg-white/80 p-3 shadow-sm hover:bg-white md:block">
               <div className="mb-2 flex items-center gap-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-400 text-[11px] font-semibold text-black shadow-sm">
-                  <Sparkles className="h-4 w-4" strokeWidth={1.8} />
+                <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-amber-400 text-[11px] font-semibold text-black shadow-sm">
+                  {lightbiAccount.account?.account.avatar_url ? <img src={lightbiAccount.account.account.avatar_url} alt="" className="h-full w-full object-cover" /> : <Sparkles className="h-4 w-4" strokeWidth={1.8} />}
                 </div>
                 <div className="min-w-0">
-                  <div className="truncate text-[13px] font-medium text-[#202123]">LightBI Desktop</div>
-                  <div className="truncate text-[11px] text-black/45">{t('BA decision workspace')}</div>
+                  <div className="truncate text-[13px] font-medium text-[#202123]">{lightbiAccount.account?.account.display_name || lightbiAccount.account?.account.email || 'LightBI Desktop'}</div>
+                  <div className="truncate text-[11px] text-black/45">{lightbiAccount.account ? `${lightbiAccount.account.entitlement.tier.toUpperCase()} · ${lightbiAccount.account.account.email}` : t('BA decision workspace')}</div>
                 </div>
               </div>
-              <NavLink
-                to="/datasets"
-                className="flex h-8 items-center gap-2 rounded-md px-2 text-[12px] font-medium text-black/65 hover:bg-black/[0.04] hover:text-[#202123]"
-              >
+              <div className="flex h-8 items-center gap-2 rounded-md px-2 text-[12px] font-medium text-black/65">
                 <FolderOpen className="h-3.5 w-3.5" strokeWidth={1.5} />
-                {t('Project data')}
-              </NavLink>
-            </div>
+                {lightbiAccount.account ? t('Settings') : t('Project data')}
+              </div>
+            </NavLink>
           )}
           {bottomNavItems.map((item) => (
             <NavLink

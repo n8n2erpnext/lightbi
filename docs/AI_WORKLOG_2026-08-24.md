@@ -118,3 +118,26 @@ This file is the detailed, credential-free continuation record for maintainers a
 - Monaco is correctly code-split but its Advanced-only chunk is large; future optimization may replace the broad editor API with a narrower custom build if installer size becomes material.
 - Legacy sessions cannot recover an original local file that was never copied. One explicit reselection is unavoidable; the new relink migration makes subsequent opens durable.
 - Stripe remains intentionally dormant until production credentials and post-beta commercial policy are configured.
+
+## V1 account, updater, and installer checkpoint — in progress, version unchanged
+
+- Added the shared `lightbi.release.v1` manifest and release index used by the distribution portal, R2 publication, and the native updater. GitHub Releases remain the fallback/archive; immutable R2 objects live only below `/release/lightbi/<version>/`.
+- Added an explicit native update flow with semantic-version comparison, release notes, SHA-256 verification, temporary partial artifacts, and user-confirmed **Update & Restart**. The app never silently installs or terminates while the user is working.
+- Added PostgreSQL-backed LightBI accounts, identities, account sessions, entitlements, and device slots. Google OAuth uses authorization code + PKCE; native session tokens use Windows Credential Manager rather than browser storage.
+- Added email/password registration and login alongside Google. Registration always sends a one-time verification link before a password is attached, including when the same email already has a Google identity. This prevents same-email account takeover while still linking both identities to one account.
+- Added generic forgot-password responses, single-use 15-minute reset tokens, session revocation after reset, login throttling, and branded SMTP verification/reset mail. Raw passwords and reset/session tokens are not logged or stored in plaintext.
+- Added account UI directly in LightBI Settings and on `/account`: Google, email sign-in, account creation, forgot/reset password, Pro redemption, devices, revocation, and logout. The web demo confirmed a real Google account login on 2026-08-24.
+- Added ephemeral Redis plaintext retention for newly issued/rotated license keys. Permanent storage remains hash + safe suffix/metadata only; after Redis expiry, admin must rotate rather than reveal a key.
+- Replaced the broken black native icon resource with the supplied yellow/black LightBI app mark. The Windows release workflow now regenerates all Tauri icon sizes from the branded PNG and fails before packaging if the PNG/ICO set is missing, malformed, undersized, or not multi-resolution.
+- Live demo deployment was backed up to `/home/ubuntu/lightbi-deploy-backups/account-email-20260824-1219.tar.gz` before the account overlay. `lightbi-frontend.service` and `lightbi-distribution.service` remained active.
+
+### Verification for this in-progress checkpoint
+
+- Desktop TypeScript and production Vite build passed.
+- Focused account/update tests: 6 tests passed after adding email registration/login/reset client coverage.
+- Distribution portal: 17 tests passed; syntax checks passed.
+- Dependency install with frozen lockfile passed; `pnpm audit --prod` reports no known vulnerabilities.
+- Native icon contract validation passed.
+- Live `/api/config` reports both `googleAccountAvailable` and `emailAccountAvailable`; invalid registration is rejected with HTTP 400.
+- The broad private/frozen corpus run still reports the documented missing private audit/corpus artifacts and byte-freeze mismatches. It was stopped after confirming those historical gates; focused public tests and CI remain the release gates for this work.
+- Version is still `0.9.1-beta.7`. Do not tag or build the next Beta until the remaining V1 matrix and Windows GitHub build validation pass.

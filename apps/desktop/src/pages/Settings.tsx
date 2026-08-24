@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { CheckCircle2, Coins, Globe2, HardDrive, Laptop, ShieldCheck } from 'lucide-react';
+import { CheckCircle2, Coins, Globe2, HardDrive, KeyRound, Laptop, LogOut, Monitor, ShieldCheck, UserRound } from 'lucide-react';
 import { readNativeRuntime, type NativeLicenseState, type NativeRuntimeConfig } from '../lib/native-runtime';
 import { useDisplayPreferences } from '../stores/display-preferences-store';
 import { useUiLanguage } from '../lib/ui-language';
@@ -10,6 +10,45 @@ import {
   currentLicenseTier,
   setAnonymousPairingEnabled,
 } from '../lib/distribution-pairing';
+import { useLightBIAccount } from '../hooks/useLightBIAccount';
+import { useUpdateStore } from '../stores/update-store';
+
+const AccountAccess: React.FC<{ account: ReturnType<typeof useLightBIAccount> }> = ({ account }) => {
+  const [mode, setMode] = useState<'login' | 'register'>('login');
+  const [message, setMessage] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [displayName, setDisplayName] = useState('');
+
+  const submit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setMessage('');
+    if (mode === 'register') {
+      const accepted = await account.registerEmail(email, password, displayName);
+      if (accepted) {
+        setMessage('Check your email to verify the account, then sign in here.');
+        setMode('login');
+        setPassword('');
+      }
+      return;
+    }
+    await account.loginEmail(email, password);
+  };
+
+  return <div className="rounded-xl border border-slate-200 bg-slate-50 p-5">
+    <div className="flex items-start gap-3"><UserRound className="mt-0.5 h-5 w-5 text-blue-600" /><div><div className="font-semibold text-slate-900">Sign in to LightBI</div><p className="mt-1 text-sm leading-6 text-slate-500">Use Google or email and password to manage Pro access and devices. Files, SQL and analysis results stay local.</p></div></div>
+    <button type="button" disabled={account.loading} onClick={() => void account.login()} className="mt-4 w-full rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50">{account.loading ? 'Checking account…' : 'Continue with Google'}</button>
+    <div className="my-4 flex items-center gap-3 text-xs uppercase tracking-wider text-slate-400"><span className="h-px flex-1 bg-slate-200" />or use email<span className="h-px flex-1 bg-slate-200" /></div>
+    <div className="mb-3 flex rounded-lg bg-slate-200/70 p-1 text-sm"><button type="button" onClick={() => { setMode('login'); setMessage(''); }} className={`flex-1 rounded-md px-3 py-2 font-semibold ${mode === 'login' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'}`}>Sign in</button><button type="button" onClick={() => { setMode('register'); setMessage(''); }} className={`flex-1 rounded-md px-3 py-2 font-semibold ${mode === 'register' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'}`}>Create account</button></div>
+    <form onSubmit={submit} className="space-y-3">
+      {mode === 'register' && <input aria-label="Display name" value={displayName} onChange={event => setDisplayName(event.target.value)} autoComplete="name" placeholder="Display name" maxLength={120} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm" />}
+      <input aria-label="Email" value={email} onChange={event => setEmail(event.target.value)} type="email" autoComplete="email" placeholder="Email" required className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm" />
+      <input aria-label="Password" value={password} onChange={event => setPassword(event.target.value)} type="password" autoComplete={mode === 'login' ? 'current-password' : 'new-password'} placeholder={mode === 'register' ? 'Password (12+ characters)' : 'Password'} minLength={mode === 'register' ? 12 : undefined} required className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm" />
+      <div className="flex flex-wrap items-center justify-between gap-2"><button type="submit" disabled={account.loading} className="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50">{mode === 'register' ? 'Create account' : 'Sign in with email'}</button>{mode === 'login' && <button type="button" disabled={!email || account.loading} onClick={async () => { setMessage(''); if (await account.requestPasswordReset(email)) setMessage('If this email has a password account, a reset link has been sent.'); }} className="text-sm font-semibold text-blue-700 disabled:text-slate-400">Forgot password?</button>}</div>
+    </form>
+    {message && <div className="mt-3 rounded-md bg-emerald-50 px-3 py-2 text-sm text-emerald-800">{message}</div>}
+  </div>;
+};
 
 export const Settings: React.FC = () => {
   const { preferences, updatePreferences } = useDisplayPreferences();
@@ -24,6 +63,9 @@ export const Settings: React.FC = () => {
   const [licenseTier, setLicenseTier] = useState(() => currentLicenseTier());
   const [licenseKey, setLicenseKey] = useState('');
   const [licenseMessage, setLicenseMessage] = useState('');
+  const [accountLicenseKey, setAccountLicenseKey] = useState('');
+  const lightbiAccount = useLightBIAccount();
+  const updater = useUpdateStore();
 
   useEffect(() => {
     void readNativeRuntime().then(setNativeState);
@@ -37,6 +79,11 @@ export const Settings: React.FC = () => {
       </div>
       
       <div className="flex-1 overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-sm">
+        <div className="border-b border-slate-200 p-6">
+          <div className="mb-4 flex items-center justify-between gap-3"><div><h2 className="text-lg font-medium text-slate-900">{t('Account')}</h2><p className="mt-1 text-sm text-slate-500">Your Google or verified email identity anchors entitlement and device slots. Business data stays local.</p></div>{lightbiAccount.account && <button type="button" onClick={() => void lightbiAccount.logout()} className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"><LogOut className="h-4 w-4" />{t('Log out')}</button>}</div>
+          {!lightbiAccount.account ? <AccountAccess account={lightbiAccount} /> : <div className="space-y-4"><div className="flex flex-col gap-4 rounded-xl border border-slate-200 p-5 sm:flex-row sm:items-center"><div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-amber-400 font-semibold text-slate-900">{lightbiAccount.account.account.avatar_url ? <img src={lightbiAccount.account.account.avatar_url} alt="" className="h-full w-full object-cover" /> : (lightbiAccount.account.account.display_name || lightbiAccount.account.account.email).slice(0,2).toUpperCase()}</div><div className="min-w-0 flex-1"><div className="truncate font-semibold text-slate-900">{lightbiAccount.account.account.display_name || lightbiAccount.account.account.email}</div><div className="truncate text-sm text-slate-500">{lightbiAccount.account.account.email}</div></div><div className="rounded-lg bg-slate-900 px-4 py-3 text-white"><div className="text-[10px] uppercase tracking-wider text-slate-400">Plan</div><div className="font-semibold uppercase">{lightbiAccount.account.entitlement.tier}</div><div className="text-xs text-slate-400">{lightbiAccount.account.entitlement.max_devices} device slots</div></div></div><div className="grid gap-4 lg:grid-cols-2"><div className="rounded-xl border border-slate-200 p-4"><div className="flex items-center gap-2 font-semibold text-slate-900"><KeyRound className="h-4 w-4 text-violet-600" />Redeem Pro key</div><div className="mt-3 flex gap-2"><input type="password" value={accountLicenseKey} onChange={event=>setAccountLicenseKey(event.target.value)} placeholder="LBI-PRO-…" className="min-w-0 flex-1 rounded-md border border-slate-200 px-3 py-2 text-sm"/><button type="button" onClick={async()=>{await lightbiAccount.redeem(accountLicenseKey);setAccountLicenseKey('');}} className="rounded-md bg-violet-600 px-3 py-2 text-sm font-semibold text-white">Redeem</button></div></div><div className="rounded-xl border border-slate-200 p-4"><div className="flex items-center gap-2 font-semibold text-slate-900"><Monitor className="h-4 w-4 text-emerald-600" />Devices</div><div className="mt-2 space-y-2">{lightbiAccount.account.devices.length ? lightbiAccount.account.devices.map(device=><div key={device.id} className="flex items-center justify-between gap-2 rounded-md bg-slate-50 px-3 py-2 text-xs"><span className="min-w-0 truncate">{device.display_name || device.platform || 'LightBI device'} · {device.status}</span>{device.status==='active'&&<button type="button" onClick={()=>void lightbiAccount.revokeDevice(device.id)} className="font-semibold text-red-600">Revoke</button>}</div>) : <div className="text-sm text-slate-500">No native devices connected.</div>}</div></div></div></div>}
+          {lightbiAccount.error && <div className="mt-3 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{lightbiAccount.error}</div>}
+        </div>
         <div className="border-b border-slate-200 p-6">
           <h2 className="mb-4 text-lg font-medium text-slate-900">{t('Application')}</h2>
           <div className="grid gap-3 md:grid-cols-2">
@@ -102,6 +149,7 @@ export const Settings: React.FC = () => {
               <a href="https://lightbi.thaiduy.digital/distribution/#plans" className="mt-2 inline-block text-xs font-semibold text-blue-700">{t('View Basic and Pro plans')}</a>
             </div>
           </div>
+          <div className="mt-3 flex flex-col justify-between gap-3 rounded-lg border border-slate-200 p-4 sm:flex-row sm:items-center"><div><div className="font-medium text-slate-800">Updates</div><div className="mt-1 text-sm text-slate-500">{updater.status==='available'?`Version ${updater.manifest?.version} is available · ${updater.manifest?.release_notes||'Beta update'}`:updater.status==='checking'?'Checking for updates…':updater.status==='failed'?updater.error:'LightBI is up to date.'}</div></div><div className="flex gap-2">{updater.status==='available'&&<button type="button" onClick={()=>{if(window.confirm('Save or finish any unsaved work before continuing. Start the verified installer and close LightBI?'))void updater.install();}} className="rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white">Update & Restart</button>}<button type="button" onClick={()=>void updater.check(true)} className="rounded-md border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-700">Check now</button></div></div>
         </div>
 
         <div className="border-b border-slate-200 p-6">

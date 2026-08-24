@@ -121,6 +121,13 @@ test('serves the admin shell under the proxied route target', async () => {
   assert.match(await response.text(), /LightBI/);
 });
 
+test('fails closed when end-user Google account infrastructure is not configured', async () => {
+  const session = await fetch(`${serverBaseUrl()}/api/account/session`);
+  assert.equal(session.status, 401);
+  const google = await fetch(`${serverBaseUrl()}/api/auth/google/start`, { redirect: 'manual' });
+  assert.equal(google.status, 503);
+});
+
 test('keeps revenue empty and payment dormant before Stripe configuration', () => {
   const revenue = module.revenueSummary(30);
   assert.equal(revenue.paidOrders, 0);
