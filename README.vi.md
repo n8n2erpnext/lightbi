@@ -58,7 +58,9 @@ Chọn một điểm trên biểu đồ, xem hoặc lọc thêm các dòng phù 
 
 ### Advanced Mode cho nhà phân tích cần kiểm soát trực tiếp
 
-Advanced Mode cung cấp workspace có quản trị cho file, bảng tính trực tuyến, SQL Server, PostgreSQL, MySQL, MariaDB, SQLite và MongoDB; mặc định read-only, kèm safe mode, SSH tùy chọn, khám phá schema, lịch sử truy vấn, chỉnh sửa database theo transaction có bước duyệt và refresh toàn nguồn sau chỉnh sửa để quay lại Easy mà không cần export/import lại. Mini-IDE Monaco chạy nội bộ hỗ trợ soạn SQL và phím tắt cho mọi gói; Pro mở thêm gợi ý theo dialect, schema, bảng, cột và mẫu truy vấn mà không truyền nội dung SQL hay định danh database ra ngoài.
+Advanced Mode cung cấp workspace có quản trị cho file, bảng tính trực tuyến, SQL Server, PostgreSQL, MySQL, MariaDB, SQLite và MongoDB; mặc định read-only, kèm safe mode, SSH tùy chọn, khám phá schema, lịch sử truy vấn, chỉnh sửa database theo transaction có bước duyệt và refresh toàn nguồn sau chỉnh sửa để quay lại Easy mà không cần export/import lại. Mini-IDE Monaco chạy nội bộ cung cấp từ khóa, hàm, mẫu SQL an toàn và phím tắt cho mọi gói; Pro mở thêm gợi ý theo dialect, schema, bảng và cột mà không truyền nội dung SQL hay định danh database ra ngoài. Hồ sơ kết nối được mã hóa cục bộ giúp không phải nhập lại thông tin mà không để lộ secret trong lịch sử hoặc phản hồi giao diện.
+
+Phiên đã lưu giữ URL trực tuyến chuẩn hóa và bản sao nguồn local thuộc vùng dữ liệu của ứng dụng. Phiên cũ chỉ có mẫu sẽ yêu cầu liên kết lại nguồn một lần có kiểm tra, sau đó những lần mở tiếp theo dùng toàn bộ nguồn đã lưu.
 
 ![Advanced Mode](assets/screenshots/lightbi-advanced-mode.png)
 

@@ -65,7 +65,9 @@ Select a chart point, inspect or further filter the matching rows, then run the 
 
 ### Advanced Mode for analysts who need direct control
 
-Advanced Mode provides a governed workspace for files, online sheets, SQL Server, PostgreSQL, MySQL, MariaDB, SQLite, and MongoDB, with read-only defaults, safe-mode controls, optional SSH connectivity, schema discovery, query history, reviewed transactional database edits, and a full-source post-edit refresh back to Easy analysis without export/re-import. Its local Monaco mini-IDE adds SQL editing and keyboard workflows for every tier; Pro unlocks dialect-aware schema, table, column, and query-template suggestions without transmitting SQL or database identity.
+Advanced Mode provides a governed workspace for files, online sheets, SQL Server, PostgreSQL, MySQL, MariaDB, SQLite, and MongoDB, with read-only defaults, safe-mode controls, optional SSH connectivity, schema discovery, query history, reviewed transactional database edits, and a full-source post-edit refresh back to Easy analysis without export/re-import. Its local Monaco mini-IDE gives every tier SQL keywords, functions, safe templates and keyboard workflows; Pro unlocks dialect-aware schema, table and column suggestions without transmitting SQL or database identity. Encrypted local connection profiles avoid repeated credential entry without exposing secrets in history or UI responses.
+
+Saved sessions retain normalized online URLs and durable application-owned copies of local source files. Legacy sample-only sessions use a one-time guarded source relink, then reopen from the complete persisted source on later launches.
 
 ![LightBI Advanced Mode](assets/screenshots/lightbi-advanced-mode.png)
 

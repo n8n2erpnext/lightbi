@@ -2,6 +2,8 @@
 
 This is the short operational handoff for maintainers and future AI sessions. It contains no credentials or private data.
 
+For the detailed chronological implementation ledger and the exact next-phase checkpoint, also read [`AI_WORKLOG_2026-08-24.md`](AI_WORKLOG_2026-08-24.md).
+
 ## Release identity
 
 - Version: `0.9.1-beta.7`
