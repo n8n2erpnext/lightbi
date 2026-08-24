@@ -32,10 +32,13 @@ export async function createAccountAuth({ databaseUrl, redisUrl, sessionSecret, 
       id TEXT PRIMARY KEY, email TEXT UNIQUE NOT NULL, display_name TEXT, avatar_url TEXT,
       provider TEXT NOT NULL, provider_subject TEXT UNIQUE NOT NULL,
       password_hash TEXT, email_verified_at TIMESTAMPTZ,
+      status TEXT NOT NULL DEFAULT 'active', disabled_at TIMESTAMPTZ,
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     );
     ALTER TABLE lightbi_accounts ADD COLUMN IF NOT EXISTS password_hash TEXT;
     ALTER TABLE lightbi_accounts ADD COLUMN IF NOT EXISTS email_verified_at TIMESTAMPTZ;
+    ALTER TABLE lightbi_accounts ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT 'active';
+    ALTER TABLE lightbi_accounts ADD COLUMN IF NOT EXISTS disabled_at TIMESTAMPTZ;
     CREATE TABLE IF NOT EXISTS lightbi_account_identities (
       provider TEXT NOT NULL, subject TEXT NOT NULL, account_id TEXT NOT NULL REFERENCES lightbi_accounts(id) ON DELETE CASCADE,
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), PRIMARY KEY(provider,subject)
@@ -90,7 +93,7 @@ export async function createAccountAuth({ databaseUrl, redisUrl, sessionSecret, 
     if (!token) return null;
     const result = await pool.query(`SELECT s.account_id,s.device_id,s.kind,a.email,a.display_name,a.avatar_url
       FROM lightbi_account_sessions s JOIN lightbi_accounts a ON a.id=s.account_id
-      WHERE s.token_hash=$1 AND s.revoked_at IS NULL AND s.expires_at>NOW()`, [tokenHash(token, sessionSecret)]);
+      WHERE s.token_hash=$1 AND s.revoked_at IS NULL AND s.expires_at>NOW() AND a.status='active'`, [tokenHash(token, sessionSecret)]);
     return result.rows[0] || null;
   }
 
@@ -138,6 +141,7 @@ export async function createAccountAuth({ databaseUrl, redisUrl, sessionSecret, 
     let account = await pool.query(`SELECT a.id FROM lightbi_account_identities i JOIN lightbi_accounts a ON a.id=i.account_id WHERE i.provider='google' AND i.subject=$1`, [info.sub]);
     if(!account.rows[0])account=await pool.query('SELECT id FROM lightbi_accounts WHERE email=$1',[email]);
     const accountId = account.rows[0]?.id || randomId('acct');
+    if(account.rows[0]){const state=await pool.query('SELECT status FROM lightbi_accounts WHERE id=$1',[accountId]);if(state.rows[0]?.status!=='active')throw new Error('account_disabled');}
     await pool.query(`INSERT INTO lightbi_accounts(id,email,display_name,avatar_url,provider,provider_subject)
       VALUES($1,$2,$3,$4,'google',$5) ON CONFLICT(email) DO UPDATE SET display_name=EXCLUDED.display_name,avatar_url=EXCLUDED.avatar_url,email_verified_at=COALESCE(lightbi_accounts.email_verified_at,NOW()),updated_at=NOW()`,
     [accountId, email, String(info.name || '').slice(0,120), String(info.picture || '').slice(0,500), info.sub]);
@@ -186,7 +190,7 @@ export async function createAccountAuth({ databaseUrl, redisUrl, sessionSecret, 
     let pending;try{pending=JSON.parse(raw);}catch{return null;}
     const email=cleanEmail(pending.email);if(!email||!pending.passwordHash)return null;
     const result=await pool.query(`UPDATE lightbi_accounts SET password_hash=$2,email_verified_at=COALESCE(email_verified_at,NOW()),
-      display_name=COALESCE(NULLIF($3,''),display_name),updated_at=NOW() WHERE email=$1 RETURNING id`,[email,pending.passwordHash,String(pending.displayName||'').slice(0,120)]);
+      display_name=COALESCE(NULLIF($3,''),display_name),updated_at=NOW() WHERE email=$1 AND status='active' RETURNING id`,[email,pending.passwordHash,String(pending.displayName||'').slice(0,120)]);
     if(!result.rows[0])return null;
     await pool.query("INSERT INTO lightbi_account_identities(provider,subject,account_id) VALUES('password',$1,$2) ON CONFLICT(provider,subject) DO NOTHING",[email,result.rows[0].id]);
     await audit(result.rows[0].id,'account_email_verified');return createSession(result.rows[0].id,'web');
@@ -195,8 +199,8 @@ export async function createAccountAuth({ databaseUrl, redisUrl, sessionSecret, 
   async function loginEmail({email,password,installationHash=null,device={},networkHash=null}) {
     const normalized=cleanEmail(email);const rateKey=`lightbi:account:login-limit:${tokenHash(`${networkHash||'network'}:${normalized}`,sessionSecret)}`;
     const attempts=await redis.incr(rateKey);if(attempts===1)await redis.expire(rateKey,900);if(attempts>8)throw new Error('rate_limited');
-    const result=await pool.query('SELECT id,password_hash,email_verified_at FROM lightbi_accounts WHERE email=$1',[normalized]);const account=result.rows[0];
-    if(!account||!account.email_verified_at||!await verifyPassword(password,account.password_hash))throw new Error('invalid_credentials');
+    const result=await pool.query('SELECT id,password_hash,email_verified_at,status FROM lightbi_accounts WHERE email=$1',[normalized]);const account=result.rows[0];
+    if(!account||account.status!=='active'||!account.email_verified_at||!await verifyPassword(password,account.password_hash))throw new Error('invalid_credentials');
     await redis.del(rateKey);let deviceId=null;if(installationHash)deviceId=await ensureDevice(account.id,installationHash,device);
     await audit(account.id,'account_login_email',deviceId);return {token:await createSession(account.id,installationHash?'native':'web',deviceId),accountId:account.id};
   }
@@ -229,7 +233,7 @@ export async function createAccountAuth({ databaseUrl, redisUrl, sessionSecret, 
 
   async function accountSummary(accountId) {
     const [account, entitlement, devices] = await Promise.all([
-      pool.query('SELECT id,email,display_name,avatar_url,provider,created_at FROM lightbi_accounts WHERE id=$1', [accountId]),
+      pool.query('SELECT id,email,display_name,avatar_url,provider,status,created_at FROM lightbi_accounts WHERE id=$1', [accountId]),
       activeEntitlement(accountId),
       pool.query('SELECT id,display_name,platform,app_version,status,created_at,last_seen_at,revoked_at FROM lightbi_account_devices WHERE account_id=$1 ORDER BY last_seen_at DESC', [accountId]),
     ]);
@@ -268,11 +272,12 @@ export async function createAccountAuth({ databaseUrl, redisUrl, sessionSecret, 
   }
 
   async function listAccounts() {
-    const result = await pool.query(`SELECT a.id,a.email,a.display_name,a.provider,a.created_at,a.updated_at,
+    const result = await pool.query(`SELECT a.id,a.email,a.display_name,a.provider,a.status,a.disabled_at,a.created_at,a.updated_at,
       COALESCE(e.tier,'basic') AS tier,COALESCE(e.status,'active') AS entitlement_status,e.source_license_id,e.max_devices,e.expires_at,
-      COUNT(d.id) FILTER (WHERE d.status='active')::int AS active_devices
+      COALESCE(d.active_devices,0)::int AS active_devices
       FROM lightbi_accounts a LEFT JOIN LATERAL (SELECT * FROM lightbi_entitlements WHERE account_id=a.id ORDER BY created_at DESC LIMIT 1) e ON TRUE
-      LEFT JOIN lightbi_account_devices d ON d.account_id=a.id GROUP BY a.id,e.id ORDER BY a.created_at DESC LIMIT 500`);
+      LEFT JOIN LATERAL (SELECT COUNT(*)::int AS active_devices FROM lightbi_account_devices WHERE account_id=a.id AND status='active') d ON TRUE
+      ORDER BY a.created_at DESC LIMIT 500`);
     return result.rows;
   }
 
@@ -282,10 +287,28 @@ export async function createAccountAuth({ databaseUrl, redisUrl, sessionSecret, 
     return rows.rowCount > 0;
   }
 
+  async function setAccountStatus(accountId, status) {
+    const next = status === 'disabled' ? 'disabled' : 'active';
+    const result = await pool.query(`UPDATE lightbi_accounts SET status=$2,disabled_at=CASE WHEN $2='disabled' THEN NOW() ELSE NULL END,updated_at=NOW()
+      WHERE id=$1 RETURNING id`, [accountId, next]);
+    if (!result.rows[0]) return false;
+    if (next === 'disabled') await pool.query('UPDATE lightbi_account_sessions SET revoked_at=NOW() WHERE account_id=$1 AND revoked_at IS NULL', [accountId]);
+    await audit(accountId, next === 'disabled' ? 'account_disabled_admin' : 'account_enabled_admin');
+    return true;
+  }
+
+  async function revokeAccountSessions(accountId) {
+    const account = await pool.query('SELECT id FROM lightbi_accounts WHERE id=$1', [accountId]);
+    if (!account.rows[0]) return false;
+    await pool.query('UPDATE lightbi_account_sessions SET revoked_at=NOW() WHERE account_id=$1 AND revoked_at IS NULL', [accountId]);
+    await audit(accountId, 'account_sessions_revoked_admin');
+    return true;
+  }
+
   async function logout(token) {
     if (!token) return;
     await pool.query('UPDATE lightbi_account_sessions SET revoked_at=NOW() WHERE token_hash=$1', [tokenHash(token, sessionSecret)]);
   }
 
-  return { enabled: true, googleEnabled, beginGoogle, finishGoogle, startNativeLogin, finishNativeLogin, registerEmail, verifyEmailToken, loginEmail, requestPasswordReset, resetPassword, session, accountSummary, grantLicense, revokeDevice, revokeLicenseEntitlement, replaceLicenseEntitlement, listAccounts, revokeAccountEntitlement, logout, close: async () => { if (redis.isReady) await redis.quit(); await pool.end(); } };
+  return { enabled: true, googleEnabled, beginGoogle, finishGoogle, startNativeLogin, finishNativeLogin, registerEmail, verifyEmailToken, loginEmail, requestPasswordReset, resetPassword, session, accountSummary, grantLicense, revokeDevice, revokeLicenseEntitlement, replaceLicenseEntitlement, listAccounts, revokeAccountEntitlement, setAccountStatus, revokeAccountSessions, logout, close: async () => { if (redis.isReady) await redis.quit(); await pool.end(); } };
 }

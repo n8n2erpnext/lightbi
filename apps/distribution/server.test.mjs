@@ -139,9 +139,17 @@ test('keeps revenue empty and payment dormant before Stripe configuration', () =
 test('creates and revokes a manual Pro key without storing plaintext', async () => {
   const created = await module.createManualLicense({ kind: 'complimentary', label: 'Test partner', maxDevices: 2 });
   assert.match(created.licenseKey, /^LBI-PRO-/);
+  assert.match(created.license.masked_key, /^LBI-PRO-•+[A-Z0-9_-]{6}$/);
+  assert.equal(created.license.masked_key.endsWith(created.licenseKey.slice(-6)), true);
+  assert.equal(created.license.masked_key.includes(created.licenseKey.slice(8, -6)), false);
   const stored = module.db.prepare('SELECT license_hash,delivery_value,status FROM licenses WHERE id=?').get(created.license.id);
   assert.equal(stored.delivery_value, null);
   assert.equal(stored.license_hash.includes(created.licenseKey), false);
   assert.equal(module.revokeLicense(created.license.id), true);
   assert.equal(module.db.prepare('SELECT status FROM licenses WHERE id=?').get(created.license.id).status, 'revoked');
+});
+
+test('masks license keys with a visible product prefix and safe suffix only', () => {
+  assert.equal(module.maskedLicenseKey('AB12CD'), 'LBI-PRO-••••••••••••AB12CD');
+  assert.equal(module.maskedLicenseKey(''), 'LBI-PRO-••••••••••••');
 });

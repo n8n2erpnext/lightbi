@@ -188,6 +188,11 @@ function licenseKey() {
   return `LBI-PRO-${randomBytes(20).toString('base64url').toUpperCase()}`;
 }
 
+function maskedLicenseKey(suffix) {
+  const tail = String(suffix || '').replace(/[^A-Z0-9_-]/gi, '').slice(-6).toUpperCase();
+  return tail ? `LBI-PRO-${'•'.repeat(12)}${tail}` : 'LBI-PRO-••••••••••••';
+}
+
 async function fulfillCheckout(session) {
   if (!session?.id || session.payment_status === 'unpaid') return;
   const exists = db.prepare('SELECT session_id FROM fulfilled_checkout_sessions WHERE session_id = ?').get(session.id);
@@ -223,7 +228,8 @@ function revenueSummary(days) {
 
 function listLicenses() {
   return db.prepare(`SELECT l.id,l.tier,l.status,COALESCE(l.kind,'paid') AS kind,l.label,l.discount_percent,l.max_devices,l.expires_at,l.revoked_at,l.created_at,l.paid_at,l.currency,l.amount_total,l.recipient_email,l.key_suffix,
-    (SELECT COUNT(*) FROM license_installations li WHERE li.license_id=l.id) AS devices FROM licenses l ORDER BY l.created_at DESC`).all();
+    (SELECT COUNT(*) FROM license_installations li WHERE li.license_id=l.id) AS devices FROM licenses l ORDER BY l.created_at DESC`).all()
+    .map((item) => ({ ...item, masked_key: maskedLicenseKey(item.key_suffix) }));
 }
 
 async function createManualLicense(input) {
@@ -597,11 +603,15 @@ const server = createServer(async (request, response) => {
     }
     if (request.method === 'GET' && url.pathname === '/api/admin/licenses') {
       if (!await authorizedAdmin(request)) return sendJson(response, 401, { error: 'unauthorized' });
-      return sendJson(response, 200, { licenses: listLicenses(), mailAvailable: Boolean(mailer.enabled) });
+      const accounts = accountAuth.enabled ? await accountAuth.listAccounts() : [];
+      const owners = new Map(accounts.filter((item) => item.source_license_id).map((item) => [item.source_license_id, { accountId: item.id, email: item.email, displayName: item.display_name }]));
+      return sendJson(response, 200, { licenses: listLicenses().map((item) => ({ ...item, assignedAccount: owners.get(item.id) || null })), mailAvailable: Boolean(mailer.enabled) });
     }
     if (request.method === 'GET' && url.pathname === '/api/admin/accounts') {
       if (!await authorizedAdmin(request)) return sendJson(response, 401, { error: 'unauthorized' });
-      return sendJson(response, 200, { accounts: accountAuth.enabled ? await accountAuth.listAccounts() : [], enabled: accountAuth.enabled });
+      const accounts = accountAuth.enabled ? await accountAuth.listAccounts() : [];
+      const licenses = new Map(listLicenses().map((item) => [item.id, item]));
+      return sendJson(response, 200, { accounts: accounts.map((item) => ({ ...item, license: item.source_license_id ? licenses.get(item.source_license_id) || null : null })), enabled: accountAuth.enabled });
     }
     const accountAction = url.pathname.match(/^\/api\/admin\/accounts\/([^/]+)\/entitlement\/revoke$/);
     if (request.method === 'POST' && accountAction) {
@@ -609,6 +619,22 @@ const server = createServer(async (request, response) => {
       if (request.headers['x-lightbi-admin-action'] !== '1') return sendJson(response, 403, { error: 'admin_action_header_required' });
       const revoked = accountAuth.enabled && await accountAuth.revokeAccountEntitlement(decodeURIComponent(accountAction[1]));
       return revoked ? sendJson(response, 200, { revoked: true }) : sendJson(response, 404, { error: 'active_entitlement_not_found' });
+    }
+    const accountStatusAction = url.pathname.match(/^\/api\/admin\/accounts\/([^/]+)\/status$/);
+    if (request.method === 'POST' && accountStatusAction) {
+      if (!await authorizedAdmin(request)) return sendJson(response, 401, { error: 'unauthorized' });
+      if (request.headers['x-lightbi-admin-action'] !== '1') return sendJson(response, 403, { error: 'admin_action_header_required' });
+      const payload = JSON.parse((await body(request, 4_000)).toString('utf8') || '{}');
+      if (!['active','disabled'].includes(payload.status)) return sendJson(response, 400, { error: 'invalid_account_status' });
+      const changed = accountAuth.enabled && await accountAuth.setAccountStatus(decodeURIComponent(accountStatusAction[1]), payload.status);
+      return changed ? sendJson(response, 200, { status: payload.status }) : sendJson(response, 404, { error: 'account_not_found' });
+    }
+    const accountSessionsAction = url.pathname.match(/^\/api\/admin\/accounts\/([^/]+)\/sessions\/revoke$/);
+    if (request.method === 'POST' && accountSessionsAction) {
+      if (!await authorizedAdmin(request)) return sendJson(response, 401, { error: 'unauthorized' });
+      if (request.headers['x-lightbi-admin-action'] !== '1') return sendJson(response, 403, { error: 'admin_action_header_required' });
+      const changed = accountAuth.enabled && await accountAuth.revokeAccountSessions(decodeURIComponent(accountSessionsAction[1]));
+      return changed ? sendJson(response, 200, { revoked: true }) : sendJson(response, 404, { error: 'account_not_found' });
     }
     if (request.method === 'POST' && url.pathname === '/api/admin/licenses') {
       if (!await authorizedAdmin(request)) return sendJson(response, 401, { error: 'unauthorized' });
@@ -652,4 +678,4 @@ const server = createServer(async (request, response) => {
 
 server.listen(port, '0.0.0.0', () => console.log(`LightBI Distribution listening on ${port}`));
 
-export { adminAuth, analytics, anonymousNetworkHash, createManualLicense, db, imageContentType, listLicenses, mailer, revenueSummary, revokeLicense, server, sha, validInstallationId, verifyStripeSignature };
+export { adminAuth, analytics, anonymousNetworkHash, createManualLicense, db, imageContentType, listLicenses, mailer, maskedLicenseKey, revenueSummary, revokeLicense, server, sha, validInstallationId, verifyStripeSignature };

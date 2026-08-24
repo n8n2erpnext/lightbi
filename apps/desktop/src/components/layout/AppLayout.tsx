@@ -10,6 +10,7 @@ import {
   FileText,
   FolderOpen,
   Home as HomeIcon,
+  LogOut,
   Server,
   Settings,
   Sparkles,
@@ -30,10 +31,13 @@ export const AppLayout: React.FC = () => {
   const lightbiAccount = useLightBIAccount();
   const updater = useUpdateStore();
   const [notificationsOpen,setNotificationsOpen]=useState(false);
+  const [accountMenuOpen,setAccountMenuOpen]=useState(false);
   const notificationRef=useRef<HTMLDivElement>(null);
+  const accountMenuRef=useRef<HTMLDivElement>(null);
 
   useEffect(()=>{void updater.check();const timer=window.setInterval(()=>void updater.check(),6*60*60*1000);return()=>window.clearInterval(timer);},[]);
   useEffect(()=>{if(!notificationsOpen)return;const close=(event:MouseEvent)=>{if(!notificationRef.current?.contains(event.target as Node))setNotificationsOpen(false);};document.addEventListener('mousedown',close);return()=>document.removeEventListener('mousedown',close);},[notificationsOpen]);
+  useEffect(()=>{if(!accountMenuOpen)return;const outside=(event:MouseEvent)=>{if(!accountMenuRef.current?.contains(event.target as Node))setAccountMenuOpen(false);};const escape=(event:KeyboardEvent)=>{if(event.key==='Escape')setAccountMenuOpen(false);};document.addEventListener('mousedown',outside);document.addEventListener('keydown',escape);return()=>{document.removeEventListener('mousedown',outside);document.removeEventListener('keydown',escape);};},[accountMenuOpen]);
 
   useEffect(() => {
     const feature: LightBIFeature = location.pathname.startsWith('/advanced') ? 'advanced_mode'
@@ -54,9 +58,9 @@ export const AppLayout: React.FC = () => {
     { name: t('Advanced'), path: '/advanced', icon: TerminalSquare },
   ];
 
-  const bottomNavItems = [
-    { name: t('Settings'), path: '/settings', icon: Settings },
-  ];
+  if (location.pathname === '/settings') {
+    return <UiTranslationBoundary><main className="flex h-screen w-screen overflow-hidden bg-[#fbfbfa] text-[#202123]"><Outlet /></main></UiTranslationBoundary>;
+  }
 
   return (
     <UiTranslationBoundary>
@@ -120,8 +124,15 @@ export const AppLayout: React.FC = () => {
 
         {/* Bottom Navigation */}
         <div className="flex flex-col gap-2 p-3">
-          {isSidebarExpanded && (
-            <NavLink to="/settings" className="hidden rounded-[14px] border border-black/10 bg-white/80 p-3 shadow-sm hover:bg-white md:block">
+          <div ref={accountMenuRef} className="relative">
+            {accountMenuOpen && <div className={cn("absolute bottom-[calc(100%+8px)] z-50 rounded-2xl border border-black/10 bg-white p-2 shadow-2xl",isSidebarExpanded?"left-0 right-0":"left-0 w-64")}>
+              <div className="border-b border-black/8 px-3 py-2"><div className="truncate text-sm font-semibold">{lightbiAccount.account?.account.display_name || lightbiAccount.account?.account.email || 'LightBI Desktop'}</div><div className="truncate text-xs text-black/45">{lightbiAccount.account ? `${lightbiAccount.account.entitlement.tier.toUpperCase()} · ${lightbiAccount.account.account.email}` : t('BA decision workspace')}</div></div>
+              <NavLink to="/datasets" onClick={()=>setAccountMenuOpen(false)} className="mt-1 flex h-10 items-center gap-3 rounded-xl px-3 text-sm text-black/75 hover:bg-black/[0.05]"><FolderOpen className="h-4 w-4" />{t('Project data')}</NavLink>
+              <NavLink to="/settings" onClick={()=>setAccountMenuOpen(false)} className="flex h-10 items-center gap-3 rounded-xl px-3 text-sm text-black/75 hover:bg-black/[0.05]"><Settings className="h-4 w-4" />{t('Settings')}</NavLink>
+              {lightbiAccount.account ? <button type="button" onClick={()=>{setAccountMenuOpen(false);void lightbiAccount.logout();}} className="flex h-10 w-full items-center gap-3 rounded-xl px-3 text-sm text-black/75 hover:bg-black/[0.05]"><LogOut className="h-4 w-4" />{t('Log out')}</button> : <NavLink to="/settings?section=account" onClick={()=>setAccountMenuOpen(false)} className="flex h-10 items-center gap-3 rounded-xl px-3 text-sm text-black/75 hover:bg-black/[0.05]"><Sparkles className="h-4 w-4" />Sign in</NavLink>}
+            </div>}
+            {isSidebarExpanded ? (
+            <button type="button" onClick={()=>setAccountMenuOpen(value=>!value)} aria-expanded={accountMenuOpen} className="hidden w-full rounded-[14px] border border-black/10 bg-white/80 p-3 text-left shadow-sm hover:bg-white md:block">
               <div className="mb-2 flex items-center gap-2">
                 <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-amber-400 text-[11px] font-semibold text-black shadow-sm">
                   {lightbiAccount.account?.account.avatar_url ? <img src={lightbiAccount.account.account.avatar_url} alt="" className="h-full w-full object-cover" /> : <Sparkles className="h-4 w-4" strokeWidth={1.8} />}
@@ -135,25 +146,8 @@ export const AppLayout: React.FC = () => {
                 <FolderOpen className="h-3.5 w-3.5" strokeWidth={1.5} />
                 {lightbiAccount.account ? t('Settings') : t('Project data')}
               </div>
-            </NavLink>
-          )}
-          {bottomNavItems.map((item) => (
-            <NavLink
-              key={item.name}
-              to={item.path}
-              className={({ isActive }) =>
-                cn(
-                  "flex h-11 items-center rounded-[12px] px-3 text-[14px] font-medium transition-colors",
-                  isActive ? "bg-white text-[#202123] shadow-sm ring-1 ring-black/[0.06]" : "text-black/65 hover:bg-white/65 hover:text-[#202123]",
-                  !isSidebarExpanded ? "justify-center" : "justify-center md:justify-start"
-                )
-              }
-              title={item.name}
-            >
-              <item.icon className="h-4 w-4 flex-shrink-0" strokeWidth={1.6} />
-              {isSidebarExpanded && <span className="ml-3 hidden truncate md:block">{item.name}</span>}
-            </NavLink>
-          ))}
+            </button>) : <button type="button" onClick={()=>setAccountMenuOpen(value=>!value)} className="flex h-11 w-full items-center justify-center rounded-xl hover:bg-white/70" title={lightbiAccount.account?.account.email || 'LightBI account'}>{lightbiAccount.account?.account.avatar_url?<img src={lightbiAccount.account.account.avatar_url} alt="" className="h-8 w-8 rounded-full object-cover"/>:<Sparkles className="h-5 w-5"/>}</button>}
+          </div>
         </div>
 
         {/* Toggle Button */}
