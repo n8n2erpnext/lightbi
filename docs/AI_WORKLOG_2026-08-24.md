@@ -129,6 +129,7 @@ This file is the detailed, credential-free continuation record for maintainers a
 - Added account UI directly in LightBI Settings and on `/account`: Google, email sign-in, account creation, forgot/reset password, Pro redemption, devices, revocation, and logout. The web demo confirmed a real Google account login on 2026-08-24.
 - Added ephemeral Redis plaintext retention for newly issued/rotated license keys. Permanent storage remains hash + safe suffix/metadata only; after Redis expiry, admin must rotate rather than reveal a key.
 - Replaced the broken black native icon resource with the supplied yellow/black LightBI app mark. The Windows release workflow now regenerates all Tauri icon sizes from the branded PNG and fails before packaging if the PNG/ICO set is missing, malformed, undersized, or not multi-resolution.
+- A later artifact inspection found that NSIS still embedded its generic globe/shield icon even though the application icon set was correct. `bundle.windows.nsis.installerIcon` and `uninstallerIcon` now explicitly use the LightBI ICO, and the Windows workflow extracts the icon from the built installer and enforces a branded yellow-pixel threshold before accepting the artifact.
 - Live demo deployment was backed up to `/home/ubuntu/lightbi-deploy-backups/account-email-20260824-1219.tar.gz` before the account overlay. `lightbi-frontend.service` and `lightbi-distribution.service` remained active.
 
 ### Verification for this in-progress checkpoint

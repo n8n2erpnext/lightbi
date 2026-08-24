@@ -12,7 +12,7 @@
 
 <p align="center">
   <img alt="LightBI Beta" src="https://img.shields.io/badge/status-public_beta-f2b705">
-  <img alt="Desktop" src="https://img.shields.io/badge/desktop-Windows-2563eb">
+  <img alt="Desktop" src="https://img.shields.io/badge/desktop-Windows%20%7C%20Linux-2563eb">
   <img alt="Local first" src="https://img.shields.io/badge/analysis-local--first-059669">
   <img alt="Languages" src="https://img.shields.io/badge/UI-English%20%7C%20Vietnamese-7c3aed">
 </p>
@@ -149,13 +149,15 @@ Some extended acceptance suites use private operational fixtures that are delibe
 
 ## Desktop Beta
 
-Tagged releases are built on GitHub Actions using a Windows runner. The release contains:
+Tagged releases are built on GitHub Actions using isolated Windows and Ubuntu runners. Publication waits for both platforms. The release contains:
 
-- a per-machine NSIS installer;
+- a branded per-machine Windows NSIS `.exe`;
+- a Debian/Ubuntu x86_64 `.deb`;
 - SHA-256 checksums;
+- one cross-platform release manifest mirrored to the immutable LightBI R2 namespace;
 - the exact source tag used to build the artifact.
 
-Download from the [LightBI Distribution Portal](https://lightbi.thaiduy.digital/) or directly from [GitHub Releases](https://github.com/n8n2erpnext/lightbi/releases).
+Download from the [LightBI Distribution Portal](https://lightbi.thaiduy.digital/) or directly from [GitHub Releases](https://github.com/n8n2erpnext/lightbi/releases). The portal recommends the matching Windows/Linux artifact from the manifest while keeping Other Downloads available.
 
 ## Beta boundaries
 
@@ -163,13 +165,13 @@ Download from the [LightBI Distribution Portal](https://lightbi.thaiduy.digital/
 - Causal language is withheld unless the available evidence supports it.
 - Dashboards and investigation sessions are currently optimized for an active desktop session.
 - Database Easy Mode requires a complete governed handoff; bounded/paginated results remain blocked for decision use.
-- The public Beta targets Windows first. Web access is provided for evaluation.
+- Windows is the primary native Beta target; Debian/Ubuntu packages are built and validated as a public test target. Web access remains available for evaluation.
 
 ## Security and privacy
 
 Please read [SECURITY.md](SECURITY.md) before reporting a vulnerability. The local-first boundary and credential handling model are described in [docs/PRIVACY.md](docs/PRIVACY.md).
 
-The native Beta may send opt-out-aware anonymous installation/session duration and whitelisted feature identifiers such as Easy Mode, Advanced Mode, Deep BA, and governed database-edit events. It never sends imported files, SQL text, database URLs, schema/table/column identity, cell values, charts, or BA findings. Distribution administrators can issue, email, rotate, or revoke hashed Pro keys, including complimentary and partner-discount licenses.
+The native Beta may send opt-out-aware anonymous installation/session duration and whitelisted feature identifiers such as Easy Mode, Advanced Mode, Deep BA, and governed database-edit events. It never sends imported files, SQL text, database URLs, schema/table/column identity, cell values, charts, or BA findings. Google or verified email/password accounts anchor entitlement/device slots. Distribution administrators can issue, email, rotate, or revoke hashed Pro keys, including complimentary and partner-discount licenses; stored/admin-visible keys expose only a masked prefix and suffix.
 
 ## Contributing
 

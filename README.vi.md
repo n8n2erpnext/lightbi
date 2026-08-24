@@ -142,13 +142,15 @@ Một số acceptance suite mở rộng sử dụng fixture vận hành riêng t
 
 ## Desktop Beta
 
-Mỗi tag phát hành được GitHub Actions build trên Windows. Release bao gồm:
+Mỗi tag phát hành được GitHub Actions build tách biệt trên runner Windows và Ubuntu; chỉ phát hành khi cả hai đạt. Release bao gồm:
 
-- bộ cài NSIS per-machine;
+- bộ cài Windows NSIS `.exe` có icon LightBI;
+- gói Debian/Ubuntu x86_64 `.deb`;
 - checksum SHA-256;
+- một release manifest đa nền tảng được mirror vào namespace R2 bất biến của LightBI;
 - tag nguồn chính xác dùng để tạo artifact.
 
-Tải từ [LightBI Distribution Portal](https://lightbi.thaiduy.digital/) hoặc trực tiếp tại [GitHub Releases](https://github.com/n8n2erpnext/lightbi/releases).
+Tải từ [LightBI Distribution Portal](https://lightbi.thaiduy.digital/) hoặc trực tiếp tại [GitHub Releases](https://github.com/n8n2erpnext/lightbi/releases). Portal nhận diện Windows/Linux để đề xuất đúng artifact từ manifest nhưng luôn giữ mục Other Downloads.
 
 ## Giới hạn Beta
 
@@ -156,13 +158,13 @@ Tải từ [LightBI Distribution Portal](https://lightbi.thaiduy.digital/) hoặ
 - Ngôn ngữ nhân quả bị chặn khi dữ liệu chưa đủ bằng chứng.
 - Dashboard và investigation session hiện được tối ưu cho một phiên desktop đang hoạt động.
 - Database Easy Mode cần handoff đầy đủ có quản trị; kết quả bị giới hạn/phân trang không được dùng cho quyết định.
-- Public Beta ưu tiên Windows. Bản web phục vụ đánh giá sản phẩm.
+- Windows là native target chính; Debian/Ubuntu là target public test có build/kiểm chứng riêng. Bản web tiếp tục phục vụ đánh giá sản phẩm.
 
 ## Bảo mật và riêng tư
 
 Đọc [SECURITY.md](SECURITY.md) trước khi báo cáo lỗ hổng. Biên local-first và mô hình xử lý thông tin xác thực được trình bày tại [docs/PRIVACY.md](docs/PRIVACY.md).
 
-Bản native Beta có thể gửi installation ID ẩn danh, thời lượng phiên và mã tính năng thuộc whitelist như Easy Mode, Advanced Mode, Deep BA hoặc sự kiện chỉnh sửa database có quản trị; người dùng có thể tắt pairing. LightBI không gửi file đã nhập, nội dung SQL, URL database, tên schema/bảng/cột, giá trị ô, biểu đồ hoặc phát hiện BA. Admin phân phối có thể cấp, gửi mail, rotate hoặc thu hồi Pro key dạng hash, gồm key miễn phí và key partner-discount.
+Bản native Beta có thể gửi installation ID ẩn danh, thời lượng phiên và mã tính năng thuộc whitelist như Easy Mode, Advanced Mode, Deep BA hoặc sự kiện chỉnh sửa database có quản trị; người dùng có thể tắt pairing. LightBI không gửi file đã nhập, nội dung SQL, URL database, tên schema/bảng/cột, giá trị ô, biểu đồ hoặc phát hiện BA. Tài khoản Google hoặc email/mật khẩu đã xác minh là điểm neo entitlement/device. Admin phân phối có thể cấp, gửi mail, rotate hoặc thu hồi Pro key dạng hash; key lưu trữ/hiển thị quản trị chỉ lộ prefix và suffix đã che phần giữa.
 
 ## Đóng góp
 

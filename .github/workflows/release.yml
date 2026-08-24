@@ -51,6 +51,24 @@ jobs:
         run: |
           $installer = Get-ChildItem "target/x86_64-pc-windows-msvc/release/bundle/nsis/*.exe" | Select-Object -First 1
           if (-not $installer) { throw "NSIS installer was not produced" }
+          Add-Type -AssemblyName System.Drawing
+          $icon = [System.Drawing.Icon]::ExtractAssociatedIcon($installer.FullName)
+          if (-not $icon) { throw "NSIS installer has no embedded icon" }
+          $bitmap = $icon.ToBitmap()
+          $yellow = 0
+          $opaque = 0
+          for ($x = 0; $x -lt $bitmap.Width; $x++) {
+            for ($y = 0; $y -lt $bitmap.Height; $y++) {
+              $pixel = $bitmap.GetPixel($x, $y)
+              if ($pixel.A -gt 32) {
+                $opaque++
+                if ($pixel.R -gt 180 -and $pixel.G -gt 120 -and $pixel.B -lt 100) { $yellow++ }
+              }
+            }
+          }
+          $bitmap.Dispose()
+          $icon.Dispose()
+          if ($opaque -eq 0 -or ($yellow / $opaque) -lt 0.20) { throw "NSIS installer does not contain the branded LightBI icon" }
           $hash = (Get-FileHash -Algorithm SHA256 $installer.FullName).Hash.ToLowerInvariant()
           "$hash  $($installer.Name)" | Set-Content -NoNewline "$($installer.FullName).sha256"
       - uses: actions/upload-artifact@v4
