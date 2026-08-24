@@ -9,7 +9,7 @@ This file is the detailed, credential-free continuation record for maintainers a
 - Released desktop version remains `0.9.1-beta.7`.
 - Distribution portal version remains `0.1.4`.
 - Do **not** bump, tag, or build the next Windows release until the owner asks after live testing.
-- Current feature checkpoint: `c363eab` (`fix: restore durable source and connection history`).
+- Current feature checkpoint: `c363eab` (`fix: restore durable source and connection history`), followed by portability fix `3aa344b`.
 - Previous Monaco checkpoint: `78bdfc0`; initial Monaco feature: `70d671c`.
 - User-owned untracked files `audit-before.json` and `audit-after.json` must not be deleted or committed accidentally.
 
