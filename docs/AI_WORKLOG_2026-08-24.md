@@ -167,3 +167,11 @@ Verification: live admin route now presents the admin login instead of the publi
 - Windows launches the re-verified NSIS installer and exits only after the user chooses Update & Restart. Linux opens the re-verified `.deb` with the system package installer and does not claim silent privilege escalation.
 - Added focused frontend gates for newer/same/older versions, cross-platform artifact selection, duplicate coalescing, non-blocking preparation, failure never reaching READY, apply tamper rejection, and READY-only buttons. Added native filesystem tests for safe identity/path validation, partial artifacts, restart reuse, checksum replacement, and staged-file tampering.
 - Manifest format, R2 namespace, release publication ordering and installer formats remain unchanged.
+
+## Cross-platform staged-updater release candidate — 2026-08-26
+
+- Checkpoint `a9d97cd` was pushed without a version bump so GitHub could validate the updater on real Windows and Ubuntu runners first.
+- Cross-platform workflow run `32914975625` passed both native updater integrity suites and produced internal Windows NSIS and Debian `.deb` artifacts.
+- Downloaded artifact checksums matched their generated SHA-256 files. Windows metadata reported LightBI `0.9.1-beta.7`, and the installer-executable icon inspection showed the supplied yellow/black LightBI mark.
+- After those gates passed, the release candidate was bumped consistently to `0.9.2-beta.7`. The updater minimum remains `0.9.1-beta.7`, allowing the currently published Beta 7 build to discover and stage this release.
+- The tagged release must still pass both platform jobs before the publish job may create the GitHub prerelease, upload immutable R2 artifacts, update the release index, and publish `latest.json` last.

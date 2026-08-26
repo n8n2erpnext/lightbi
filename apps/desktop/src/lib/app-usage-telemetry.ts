@@ -24,7 +24,7 @@ async function send(event: 'app_open' | 'app_close' | 'feature_use', feature?: L
     method: 'POST', headers: { 'content-type': 'application/json' }, keepalive: event === 'app_close',
     body: JSON.stringify({
       event, feature, durationSeconds, installationId: getOrCreateInstallationId(), sessionId: sessionId(),
-      appVersion: import.meta.env.VITE_LIGHTBI_VERSION ?? '0.9.1-beta.7', platform: navigator.platform ?? 'unknown', environment: import.meta.env.MODE === 'test' ? 'test' : 'production',
+      appVersion: import.meta.env.VITE_LIGHTBI_VERSION ?? '0.9.2-beta.7', platform: navigator.platform ?? 'unknown', environment: import.meta.env.MODE === 'test' ? 'test' : 'production',
     }),
   }).catch(() => null);
 }
@@ -45,5 +45,5 @@ export function trackFeatureUsage(feature: LightBIFeature) {
 export function trackUpdateEvent(event: LightBIUpdateEvent) {
   if (!isNativeLightBI() || !anonymousPairingEnabled()) return;
   const endpoint = (import.meta.env.VITE_LIGHTBI_DISTRIBUTION_URL ?? DEFAULT_DISTRIBUTION_URL).replace(/\/$/, '');
-  void fetch(`${endpoint}/api/app/event`, { method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({event,installationId:getOrCreateInstallationId(),sessionId:sessionId(),appVersion:import.meta.env.VITE_LIGHTBI_VERSION??'0.9.1-beta.7',platform:navigator.platform??'unknown',environment:import.meta.env.MODE==='test'?'test':'production'}) }).catch(()=>null);
+  void fetch(`${endpoint}/api/app/event`, { method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({event,installationId:getOrCreateInstallationId(),sessionId:sessionId(),appVersion:import.meta.env.VITE_LIGHTBI_VERSION??'0.9.2-beta.7',platform:navigator.platform??'unknown',environment:import.meta.env.MODE==='test'?'test':'production'}) }).catch(()=>null);
 }

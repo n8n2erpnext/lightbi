@@ -21,6 +21,15 @@ const manifest = validateReleaseManifest({
 writeFileSync(args.output, `${JSON.stringify(manifest, null, 2)}\n`);
 if (args['index-output']) {
   let existing = null;
-  try { existing = JSON.parse(readFileSync(args['index-input'], 'utf8')); } catch {}
+  try {
+    existing = JSON.parse(readFileSync(args['index-input'], 'utf8'));
+  } catch {
+    throw new Error('invalid_release_index_json');
+  }
+  if (existing !== null && (
+    existing.schema_version !== 'lightbi.release-index.v1'
+    || existing.product !== 'digital.thaiduy.lightbi'
+    || !Array.isArray(existing.releases)
+  )) throw new Error('invalid_release_index');
   writeFileSync(args['index-output'], `${JSON.stringify(updateReleaseIndex(existing, manifest), null, 2)}\n`);
 }

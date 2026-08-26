@@ -151,7 +151,7 @@ export const useUpdateStore = create<UpdateStore>((set, get) => ({
           throw new Error(
             "No compatible update artifact is available for this operating system.",
           );
-        const current = import.meta.env.VITE_LIGHTBI_VERSION ?? "0.9.1-beta.7";
+        const current = import.meta.env.VITE_LIGHTBI_VERSION ?? "0.9.2-beta.7";
         if (compareAppVersions(manifest.version, current) <= 0) {
           set({
             status: "up_to_date",
@@ -197,7 +197,7 @@ export const useUpdateStore = create<UpdateStore>((set, get) => ({
       !artifact ||
       compareAppVersions(
         manifest.version,
-        import.meta.env.VITE_LIGHTBI_VERSION ?? "0.9.1-beta.7",
+        import.meta.env.VITE_LIGHTBI_VERSION ?? "0.9.2-beta.7",
       ) <= 0
     )
       return Promise.resolve();

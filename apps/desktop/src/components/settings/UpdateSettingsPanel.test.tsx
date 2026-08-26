@@ -9,7 +9,7 @@ import { UpdateSettingsPanel } from "./UpdateSettingsPanel";
 const manifest: LightBIReleaseManifest = {
   schema_version: "lightbi.release.v1",
   product: "digital.thaiduy.lightbi",
-  version: "0.9.2-beta.7",
+  version: "0.9.3-beta.7",
   channel: "beta",
   published_at: "2026-08-25T00:00:00Z",
   release_notes: "Update",

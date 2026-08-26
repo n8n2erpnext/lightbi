@@ -175,8 +175,10 @@ async fn valid_staged_update(
         Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(None),
         Err(error) => return Err(format!("Could not read staged update metadata: {error}")),
     };
-    let metadata: PreparedUpdateMetadata = serde_json::from_slice(&raw)
-        .map_err(|_| "Staged update metadata is invalid.".to_string())?;
+    let metadata: PreparedUpdateMetadata = match serde_json::from_slice(&raw) {
+        Ok(value) => value,
+        Err(_) => return Ok(None),
+    };
     if metadata.version == expected.version
         && metadata.platform == expected.platform
         && metadata.architecture == expected.architecture
@@ -643,5 +645,30 @@ mod updater_tests {
             .block_on(valid_staged_update(folder.path(), &replaced))
             .expect_err("replaced immutable version must fail");
         assert!(error.contains("different checksum"));
+    }
+
+    #[test]
+    fn malformed_or_stale_metadata_is_invalidated_without_becoming_ready() {
+        let folder = tempfile::tempdir().expect("temp folder");
+        let bytes = b"verified LightBI update";
+        let expected = expected(bytes);
+        std::fs::write(folder.path().join(&expected.artifact), bytes).expect("artifact");
+        std::fs::write(folder.path().join("staged.json"), b"{partial").expect("metadata");
+        assert!(runtime()
+            .block_on(valid_staged_update(folder.path(), &expected))
+            .expect("malformed metadata check")
+            .is_none());
+
+        let mut stale = expected.clone();
+        stale.version = "0.9.1-beta.7".to_string();
+        std::fs::write(
+            folder.path().join("staged.json"),
+            serde_json::to_vec(&stale).expect("stale metadata"),
+        )
+        .expect("metadata file");
+        assert!(runtime()
+            .block_on(valid_staged_update(folder.path(), &expected))
+            .expect("stale metadata check")
+            .is_none());
     }
 }

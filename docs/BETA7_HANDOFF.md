@@ -6,12 +6,12 @@ For the detailed chronological implementation ledger and the exact next-phase ch
 
 ## Release identity
 
-- Version: `0.9.1-beta.7`
+- Version: `0.9.2-beta.7`
 - Public repository: `https://github.com/n8n2erpnext/lightbi`
 - Web demo: `https://lightbi.thaiduy.digital/app`
 - Distribution portal: `https://lightbi.thaiduy.digital/`
 - Distribution admin: `https://lightbi.thaiduy.digital/admin`
-- Windows artifacts: GitHub Actions builds the tagged source on `windows-latest`, generates branded Tauri icons, creates an NSIS installer and SHA-256 checksum, then attaches both to the prerelease.
+- Windows and Linux artifacts: GitHub Actions builds the tagged source on `windows-latest` and Ubuntu 24.04, creates a branded NSIS installer plus Debian `.deb`, verifies both checksums, then attaches them to the prerelease and publishes the shared manifest last.
 
 ## Product spine
 

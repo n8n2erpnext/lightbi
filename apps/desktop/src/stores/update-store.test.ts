@@ -34,7 +34,7 @@ import {
 } from "./update-store";
 import type { LightBIReleaseManifest } from "@lightbi/core-types";
 
-const manifest = (version = "0.9.2-beta.7"): LightBIReleaseManifest => ({
+const manifest = (version = "0.9.3-beta.7"): LightBIReleaseManifest => ({
   schema_version: "lightbi.release.v1",
   product: "digital.thaiduy.lightbi",
   version,
@@ -127,7 +127,7 @@ describe("staged native updater", () => {
         },
       });
       return {
-        version: "0.9.2-beta.7",
+        version: "0.9.3-beta.7",
         artifact: "LightBI-setup.exe",
         sha256: "a".repeat(64),
         reused: false,
@@ -182,7 +182,7 @@ describe("staged native updater", () => {
     );
     expect(useUpdateStore.getState().prepared).toBeNull();
     resolvePrepare({
-      version: "0.9.2-beta.7",
+      version: "0.9.3-beta.7",
       artifact: "LightBI-setup.exe",
       sha256: "a".repeat(64),
       reused: false,
@@ -210,6 +210,26 @@ describe("staged native updater", () => {
     });
   });
 
+  it("fails closed on network or malformed manifest errors without invoking native update code", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("offline")));
+    await useUpdateStore.getState().check(true);
+    expect(useUpdateStore.getState().status).toBe("failed");
+    expect(mocks.invoke).not.toHaveBeenCalled();
+
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(
+        new Response(JSON.stringify({ latest: { schema_version: "partial" } }), {
+          status: 200,
+          headers: { "content-type": "application/json" },
+        }),
+      ),
+    );
+    await useUpdateStore.getState().check(true);
+    expect(useUpdateStore.getState().status).toBe("failed");
+    expect(mocks.invoke).not.toHaveBeenCalled();
+  });
+
   it("ignores an older manifest without starting a download", async () => {
     vi.stubGlobal(
       "fetch",
@@ -231,7 +251,7 @@ describe("staged native updater", () => {
       manifest: manifest(),
       artifact: manifest().artifacts[0],
       prepared: {
-        version: "0.9.2-beta.7",
+        version: "0.9.3-beta.7",
         artifact: "LightBI-setup.exe",
         sha256: "a".repeat(64),
         reused: true,
@@ -245,7 +265,7 @@ describe("staged native updater", () => {
     expect(mocks.invoke).toHaveBeenCalledWith(
       "apply_prepared_update",
       expect.objectContaining({
-        version: "0.9.2-beta.7",
+        version: "0.9.3-beta.7",
         filename: "LightBI-setup.exe",
       }),
     );

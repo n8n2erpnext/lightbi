@@ -8,7 +8,7 @@ export type LightBIAccountSummary = {
   devices: Array<{ id: string; display_name?: string | null; platform?: string | null; app_version?: string | null; status: string; created_at: string; last_seen_at: string; revoked_at?: string | null }>;
 };
 
-const version = () => import.meta.env.VITE_LIGHTBI_VERSION ?? '0.9.1-beta.7';
+const version = () => import.meta.env.VITE_LIGHTBI_VERSION ?? '0.9.2-beta.7';
 const platform = () => navigator.platform || 'unknown';
 const ENTITLEMENT_CHECK_KEY = 'lightbi-account-entitlement-checked-at';
 const OFFLINE_GRACE_MS = 7 * 24 * 60 * 60 * 1000;

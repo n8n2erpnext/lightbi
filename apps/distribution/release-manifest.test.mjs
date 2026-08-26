@@ -53,3 +53,37 @@ test('builds one manifest from Windows and Debian artifacts', () => {
     rmSync(folder, { recursive: true, force: true });
   }
 });
+
+test('refuses to publish a malformed or partial release index', () => {
+  const folder = mkdtempSync(join(tmpdir(), 'lightbi-release-index-'));
+  try {
+    const artifactsPath = join(folder, 'artifacts.json');
+    const indexPath = join(folder, 'index.json');
+    const outputPath = join(folder, 'manifest.json');
+    const nextIndexPath = join(folder, 'next-index.json');
+    writeFileSync(artifactsPath, JSON.stringify(manifest().artifacts));
+    writeFileSync(indexPath, '{partial');
+    assert.throws(() => execFileSync(process.execPath, [
+      resolve('../../scripts/build-release-manifest.mjs'),
+      '--version', '0.9.2-beta.7',
+      '--channel', 'beta',
+      '--artifacts-json', artifactsPath,
+      '--output', outputPath,
+      '--index-input', indexPath,
+      '--index-output', nextIndexPath,
+    ], { cwd: import.meta.dirname, stdio: 'pipe' }));
+
+    writeFileSync(indexPath, JSON.stringify({ schema_version: 'lightbi.release-index.v1', releases: [] }));
+    assert.throws(() => execFileSync(process.execPath, [
+      resolve('../../scripts/build-release-manifest.mjs'),
+      '--version', '0.9.2-beta.7',
+      '--channel', 'beta',
+      '--artifacts-json', artifactsPath,
+      '--output', outputPath,
+      '--index-input', indexPath,
+      '--index-output', nextIndexPath,
+    ], { cwd: import.meta.dirname, stdio: 'pipe' }));
+  } finally {
+    rmSync(folder, { recursive: true, force: true });
+  }
+});

@@ -2,6 +2,15 @@
 
 All notable public changes to LightBI are recorded here.
 
+## [0.9.2-beta.7] - 2026-08-26
+
+- Added a non-blocking staged updater: detect, notify, stream-download, SHA-256 verify, atomically stage, and wait for an explicit **Update & Restart** action.
+- Added deterministic update recovery across restarts, duplicate-download coalescing, partial-file rejection, staged-file re-verification, and suspicious same-version checksum blocking.
+- Added matching update progress/retry/ready controls in the notification menu and Settings without auto-installing or forcing a restart.
+- Added native updater integrity tests to both Windows and Linux release jobs.
+- Added cross-platform release artifacts: a branded Windows NSIS installer and a Debian/Ubuntu `.deb`, published through one manifest only after both builds pass.
+- Fixed the Windows installer executable icon so File Explorer displays the LightBI yellow/black mark instead of the generic NSIS icon.
+
 ## Distribution Portal [0.1.4] - 2026-08-22
 
 - Moved the distribution portal to `/`, the web demo to `/app`, and the protected console to `/admin` without changing the NetBird domain target.
