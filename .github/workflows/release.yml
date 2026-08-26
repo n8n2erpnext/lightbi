@@ -37,6 +37,8 @@ jobs:
         run: |
           pnpm dlx @tauri-apps/cli@2.11.4 icon apps/desktop/public/branding/lightbi-app-icon.png --output crates/lightbi-tauri/icons
           node scripts/validate-native-icons.mjs
+      - name: Verify staged updater integrity gates
+        run: cargo test -p lightbi-tauri updater_tests --target x86_64-pc-windows-msvc
       - name: Build native Windows installer
         working-directory: crates/lightbi-tauri
         shell: pwsh
@@ -108,6 +110,8 @@ jobs:
         run: |
           pnpm dlx @tauri-apps/cli@2.11.4 icon apps/desktop/public/branding/lightbi-app-icon.png --output crates/lightbi-tauri/icons
           node scripts/validate-native-icons.mjs
+      - name: Verify staged updater integrity gates
+        run: cargo test -p lightbi-tauri updater_tests
       - name: Build Debian package
         working-directory: crates/lightbi-tauri
         env:

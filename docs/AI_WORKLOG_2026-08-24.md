@@ -155,3 +155,15 @@ This file is the detailed, credential-free continuation record for maintainers a
 - The distribution portal already detects Windows/Linux/macOS as a recommendation and resolves the matching artifact from the shared manifest. Other Downloads remains available so OS detection never locks the user in.
 
 Verification: live admin route now presents the admin login instead of the public portal; live Settings and account-menu behavior were inspected; distribution has 19 passing tests, YAML lint passed, desktop TypeScript passed, and the production Vite build passed. Version remains unchanged pending native GitHub build validation.
+
+## Staged background updater correction
+
+- Replaced the old one-shot `install_verified_update` command, which buffered the full installer in memory and launched it immediately, with two native responsibilities:
+  - `prepare_verified_update`: streams HTTPS chunks into an app-owned version cache, hashes while writing, rejects oversized/interrupted/mismatched downloads, atomically renames the artifact, and atomically writes `staged.json`.
+  - `apply_prepared_update`: validates deterministic version/platform/architecture/filename metadata, reloads `staged.json`, re-hashes the staged file, rejects missing/stale/partial/tampered artifacts, then launches the installer only after an explicit user action.
+- Exact staged artifacts are reused across app restarts only when version, platform, architecture, URL, filename, expected SHA, metadata and actual file SHA all match. The same immutable version with a different checksum is blocked as suspicious.
+- The frontend state machine is now `idle → checking → available → downloading → verifying → ready → installing`, with `failed` and `up_to_date` terminal UI states. Manifest and preparation calls coalesce to prevent duplicate background downloads.
+- Startup checking is delayed 2.5 seconds and then polls every six hours. A detected update downloads in the background; the user can continue working, choose Later, and sees install controls only after READY.
+- Windows launches the re-verified NSIS installer and exits only after the user chooses Update & Restart. Linux opens the re-verified `.deb` with the system package installer and does not claim silent privilege escalation.
+- Added focused frontend gates for newer/same/older versions, cross-platform artifact selection, duplicate coalescing, non-blocking preparation, failure never reaching READY, apply tamper rejection, and READY-only buttons. Added native filesystem tests for safe identity/path validation, partial artifacts, restart reuse, checksum replacement, and staged-file tampering.
+- Manifest format, R2 namespace, release publication ordering and installer formats remain unchanged.

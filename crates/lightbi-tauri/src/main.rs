@@ -2,11 +2,16 @@
 
 use axum::{body::Body, Router};
 use http_body_util::BodyExt;
-use serde::Serialize;
-use std::sync::{Arc, Mutex};
-use tauri::{AppHandle, Manager, State};
-use tower::ServiceExt;
+use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
+use std::{
+    path::{Path, PathBuf},
+    sync::{Arc, Mutex},
+    time::Duration,
+};
+use tauri::{AppHandle, Emitter, Manager, State};
+use tokio::io::{AsyncReadExt, AsyncWriteExt};
+use tower::ServiceExt;
 
 #[cfg(target_os = "windows")]
 const API_BASE_URL: &str = "http://lightbi.localhost";
@@ -63,10 +68,145 @@ fn backend_status(state: State<'_, EmbeddedCore>) -> bool {
     state.0.lock().map(|core| core.is_some()).unwrap_or(false)
 }
 
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+struct PreparedUpdateMetadata {
+    version: String,
+    platform: String,
+    architecture: String,
+    artifact: String,
+    source_url: String,
+    sha256: String,
+    verified: bool,
+}
+
+#[derive(Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct PreparedUpdateResult {
+    version: String,
+    artifact: String,
+    sha256: String,
+    reused: bool,
+    ready: bool,
+}
+
+#[derive(Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct UpdateProgress {
+    phase: &'static str,
+    downloaded_bytes: u64,
+    total_bytes: Option<u64>,
+    percent: Option<u8>,
+}
+
+fn valid_update_version(value: &str) -> bool {
+    !value.is_empty()
+        && value.len() <= 80
+        && value
+            .chars()
+            .all(|character| character.is_ascii_alphanumeric() || matches!(character, '.' | '-'))
+}
+
+fn valid_update_filename(value: &str) -> bool {
+    !value.is_empty()
+        && value.len() <= 180
+        && !value.starts_with('.')
+        && value.chars().all(|character| {
+            character.is_ascii_alphanumeric() || matches!(character, '.' | '-' | '_')
+        })
+}
+
+fn validate_update_request(
+    version: &str,
+    platform: &str,
+    architecture: &str,
+    url: &str,
+    sha256: &str,
+    filename: &str,
+) -> Result<(), String> {
+    if !valid_update_version(version)
+        || !valid_update_filename(filename)
+        || !url.starts_with("https://")
+        || sha256.len() != 64
+        || !sha256.chars().all(|value| value.is_ascii_hexdigit())
+    {
+        return Err("Update metadata is invalid.".to_string());
+    }
+    if platform != std::env::consts::OS || architecture != std::env::consts::ARCH {
+        return Err("Update artifact does not match this device.".to_string());
+    }
+    #[cfg(target_os = "windows")]
+    if !filename.to_ascii_lowercase().ends_with(".exe") {
+        return Err("Windows update artifact must be an executable installer.".to_string());
+    }
+    #[cfg(target_os = "linux")]
+    if !filename.to_ascii_lowercase().ends_with(".deb") {
+        return Err("Linux update artifact must be a Debian package.".to_string());
+    }
+    Ok(())
+}
+
+async fn sha256_file(path: &Path) -> Result<String, String> {
+    let mut file = tokio::fs::File::open(path)
+        .await
+        .map_err(|error| format!("Could not open the staged update: {error}"))?;
+    let mut digest = Sha256::new();
+    let mut buffer = vec![0_u8; 128 * 1024];
+    loop {
+        let read = file
+            .read(&mut buffer)
+            .await
+            .map_err(|error| format!("Could not verify the staged update: {error}"))?;
+        if read == 0 {
+            break;
+        }
+        digest.update(&buffer[..read]);
+    }
+    Ok(format!("{:x}", digest.finalize()))
+}
+
+async fn valid_staged_update(
+    directory: &Path,
+    expected: &PreparedUpdateMetadata,
+) -> Result<Option<PreparedUpdateMetadata>, String> {
+    let metadata_path = directory.join("staged.json");
+    let raw = match tokio::fs::read(&metadata_path).await {
+        Ok(value) => value,
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(None),
+        Err(error) => return Err(format!("Could not read staged update metadata: {error}")),
+    };
+    let metadata: PreparedUpdateMetadata = serde_json::from_slice(&raw)
+        .map_err(|_| "Staged update metadata is invalid.".to_string())?;
+    if metadata.version == expected.version
+        && metadata.platform == expected.platform
+        && metadata.architecture == expected.architecture
+        && !metadata.sha256.eq_ignore_ascii_case(&expected.sha256)
+    {
+        return Err(
+            "The immutable release version now has a different checksum. Update was blocked."
+                .to_string(),
+        );
+    }
+    if metadata != *expected || !metadata.verified || !valid_update_filename(&metadata.artifact) {
+        return Ok(None);
+    }
+    let artifact_path = directory.join(&metadata.artifact);
+    let actual = match sha256_file(&artifact_path).await {
+        Ok(value) => value,
+        Err(_) => return Ok(None),
+    };
+    if !actual.eq_ignore_ascii_case(&expected.sha256) {
+        return Ok(None);
+    }
+    Ok(Some(metadata))
+}
+
 #[tauri::command]
 fn account_session_token() -> Result<Option<String>, String> {
-    let entry = keyring::Entry::new("digital.thaiduy.lightbi", "account-session")
-        .map_err(|error| format!("Could not open the operating-system credential vault: {error}"))?;
+    let entry =
+        keyring::Entry::new("digital.thaiduy.lightbi", "account-session").map_err(|error| {
+            format!("Could not open the operating-system credential vault: {error}")
+        })?;
     match entry.get_password() {
         Ok(value) => Ok(Some(value)),
         Err(keyring::Error::NoEntry) => Ok(None),
@@ -76,10 +216,14 @@ fn account_session_token() -> Result<Option<String>, String> {
 
 #[tauri::command]
 fn store_account_session_token(token: Option<String>) -> Result<(), String> {
-    let entry = keyring::Entry::new("digital.thaiduy.lightbi", "account-session")
-        .map_err(|error| format!("Could not open the operating-system credential vault: {error}"))?;
+    let entry =
+        keyring::Entry::new("digital.thaiduy.lightbi", "account-session").map_err(|error| {
+            format!("Could not open the operating-system credential vault: {error}")
+        })?;
     match token.filter(|value| !value.trim().is_empty()) {
-        Some(value) => entry.set_password(&value).map_err(|error| format!("Could not store the account session: {error}")),
+        Some(value) => entry
+            .set_password(&value)
+            .map_err(|error| format!("Could not store the account session: {error}")),
         None => match entry.delete_credential() {
             Ok(()) | Err(keyring::Error::NoEntry) => Ok(()),
             Err(error) => Err(format!("Could not clear the account session: {error}")),
@@ -88,48 +232,225 @@ fn store_account_session_token(token: Option<String>) -> Result<(), String> {
 }
 
 #[tauri::command]
-async fn install_verified_update(app: AppHandle, url: String, sha256: String) -> Result<(), String> {
-    if !url.starts_with("https://") || sha256.len() != 64 || !sha256.chars().all(|value| value.is_ascii_hexdigit()) {
-        return Err("Update metadata is invalid.".to_string());
+async fn prepare_verified_update(
+    app: AppHandle,
+    version: String,
+    platform: String,
+    architecture: String,
+    url: String,
+    sha256: String,
+    filename: String,
+) -> Result<PreparedUpdateResult, String> {
+    validate_update_request(&version, &platform, &architecture, &url, &sha256, &filename)?;
+    let update_root = app
+        .path()
+        .app_cache_dir()
+        .map_err(|error| format!("Could not resolve the LightBI update cache: {error}"))?
+        .join("updates");
+    let directory = update_root.join(&version);
+    tokio::fs::create_dir_all(&directory)
+        .await
+        .map_err(|error| format!("Could not prepare the updater directory: {error}"))?;
+    let expected = PreparedUpdateMetadata {
+        version: version.clone(),
+        platform,
+        architecture,
+        artifact: filename.clone(),
+        source_url: url.clone(),
+        sha256: sha256.to_ascii_lowercase(),
+        verified: true,
+    };
+    if valid_staged_update(&directory, &expected).await?.is_some() {
+        return Ok(PreparedUpdateResult {
+            version,
+            artifact: filename,
+            sha256: expected.sha256,
+            reused: true,
+            ready: true,
+        });
     }
-    let response = reqwest::get(&url).await.map_err(|error| format!("Update download failed: {error}"))?;
+
+    let metadata_path = directory.join("staged.json");
+    if let Ok(raw) = tokio::fs::read(&metadata_path).await {
+        if let Ok(previous) = serde_json::from_slice::<PreparedUpdateMetadata>(&raw) {
+            if valid_update_filename(&previous.artifact) {
+                let _ = tokio::fs::remove_file(directory.join(previous.artifact)).await;
+            }
+        }
+        let _ = tokio::fs::remove_file(&metadata_path).await;
+    }
+    let artifact_path = directory.join(&filename);
+    let partial_path = directory.join(format!("{filename}.tmp"));
+    let metadata_partial = directory.join("staged.json.tmp");
+    let _ = tokio::fs::remove_file(&partial_path).await;
+    let _ = tokio::fs::remove_file(&metadata_partial).await;
+    let _ = tokio::fs::remove_file(&artifact_path).await;
+
+    let client = reqwest::Client::builder()
+        .connect_timeout(Duration::from_secs(15))
+        .timeout(Duration::from_secs(30 * 60))
+        .build()
+        .map_err(|error| format!("Could not initialize update download: {error}"))?;
+    let mut response = client
+        .get(&url)
+        .send()
+        .await
+        .map_err(|error| format!("Update download failed: {error}"))?;
     if !response.status().is_success() {
-        return Err(format!("Update download returned HTTP {}.", response.status()));
+        return Err(format!(
+            "Update download returned HTTP {}.",
+            response.status()
+        ));
     }
-    let bytes = response.bytes().await.map_err(|error| format!("Update download failed: {error}"))?;
-    let actual = format!("{:x}", Sha256::digest(&bytes));
+    if response.url().scheme() != "https" {
+        return Err("Update download redirected to an insecure URL.".to_string());
+    }
+    let total = response.content_length();
+    if total.is_some_and(|size| size > 1024 * 1024 * 1024) {
+        return Err("Update artifact exceeds the 1 GiB safety limit.".to_string());
+    }
+    let mut file = tokio::fs::File::create(&partial_path)
+        .await
+        .map_err(|error| format!("Could not create the partial update: {error}"))?;
+    let mut digest = Sha256::new();
+    let mut downloaded = 0_u64;
+    loop {
+        let chunk = match response.chunk().await {
+            Ok(value) => value,
+            Err(error) => {
+                let _ = tokio::fs::remove_file(&partial_path).await;
+                return Err(format!("Update download was interrupted: {error}"));
+            }
+        };
+        let Some(chunk) = chunk else {
+            break;
+        };
+        if let Err(error) = file.write_all(&chunk).await {
+            let _ = tokio::fs::remove_file(&partial_path).await;
+            return Err(format!("Could not write the partial update: {error}"));
+        }
+        digest.update(&chunk);
+        downloaded += chunk.len() as u64;
+        if downloaded > 1024 * 1024 * 1024 {
+            let _ = tokio::fs::remove_file(&partial_path).await;
+            return Err("Update artifact exceeded the 1 GiB safety limit.".to_string());
+        }
+        let percent = total
+            .filter(|value| *value > 0)
+            .map(|value| ((downloaded.saturating_mul(100) / value).min(100)) as u8);
+        let _ = app.emit(
+            "lightbi://update-progress",
+            UpdateProgress {
+                phase: "downloading",
+                downloaded_bytes: downloaded,
+                total_bytes: total,
+                percent,
+            },
+        );
+    }
+    file.flush()
+        .await
+        .map_err(|error| format!("Could not flush the partial update: {error}"))?;
+    file.sync_all()
+        .await
+        .map_err(|error| format!("Could not sync the partial update: {error}"))?;
+    drop(file);
+    let _ = app.emit(
+        "lightbi://update-progress",
+        UpdateProgress {
+            phase: "verifying",
+            downloaded_bytes: downloaded,
+            total_bytes: total,
+            percent: Some(100),
+        },
+    );
+    let actual = format!("{:x}", digest.finalize());
     if !actual.eq_ignore_ascii_case(&sha256) {
-        return Err("Update verification failed. The downloaded installer was discarded.".to_string());
+        let _ = tokio::fs::remove_file(&partial_path).await;
+        return Err("Update verification failed. The partial artifact was discarded.".to_string());
     }
-    let directory = std::env::temp_dir().join("lightbi-updates");
-    std::fs::create_dir_all(&directory).map_err(|error| format!("Could not prepare the updater directory: {error}"))?;
-    #[cfg(target_os = "windows")]
-    let extension = "exe";
-    #[cfg(target_os = "linux")]
-    let extension = "deb";
-    #[cfg(not(any(target_os = "windows", target_os = "linux")))]
-    let extension = "package";
-    let path = directory.join(format!("LightBI-update-{}.{}", &actual[..12], extension));
-    let partial = path.with_extension(format!("{extension}.partial"));
-    std::fs::write(&partial, &bytes).map_err(|error| format!("Could not write the update: {error}"))?;
-    std::fs::rename(&partial, &path).map_err(|error| format!("Could not finalize the verified update: {error}"))?;
+    tokio::fs::rename(&partial_path, &artifact_path)
+        .await
+        .map_err(|error| format!("Could not atomically stage the verified update: {error}"))?;
+    let metadata_bytes = serde_json::to_vec_pretty(&expected)
+        .map_err(|error| format!("Could not serialize staged update metadata: {error}"))?;
+    tokio::fs::write(&metadata_partial, metadata_bytes)
+        .await
+        .map_err(|error| format!("Could not write staged update metadata: {error}"))?;
+    tokio::fs::rename(&metadata_partial, &metadata_path)
+        .await
+        .map_err(|error| format!("Could not finalize staged update metadata: {error}"))?;
+    let _ = app.emit(
+        "lightbi://update-progress",
+        UpdateProgress {
+            phase: "ready",
+            downloaded_bytes: downloaded,
+            total_bytes: total,
+            percent: Some(100),
+        },
+    );
+    Ok(PreparedUpdateResult {
+        version,
+        artifact: filename,
+        sha256: expected.sha256,
+        reused: false,
+        ready: true,
+    })
+}
+
+#[tauri::command]
+async fn apply_prepared_update(
+    app: AppHandle,
+    version: String,
+    platform: String,
+    architecture: String,
+    url: String,
+    sha256: String,
+    filename: String,
+) -> Result<(), String> {
+    validate_update_request(&version, &platform, &architecture, &url, &sha256, &filename)?;
+    let directory = app
+        .path()
+        .app_cache_dir()
+        .map_err(|error| format!("Could not resolve the LightBI update cache: {error}"))?
+        .join("updates")
+        .join(&version);
+    let expected = PreparedUpdateMetadata {
+        version,
+        platform,
+        architecture,
+        artifact: filename,
+        source_url: url,
+        sha256: sha256.to_ascii_lowercase(),
+        verified: true,
+    };
+    let metadata = valid_staged_update(&directory, &expected)
+        .await?
+        .ok_or_else(|| {
+            "The prepared update is missing, stale, partial, or modified.".to_string()
+        })?;
+    let path = directory.join(metadata.artifact);
     #[cfg(target_os = "windows")]
     {
-        std::process::Command::new(&path).spawn().map_err(|error| format!("Could not start the verified installer: {error}"))?;
+        std::process::Command::new(&path)
+            .spawn()
+            .map_err(|error| format!("Could not start the verified installer: {error}"))?;
         app.exit(0);
         Ok(())
     }
     #[cfg(target_os = "linux")]
     {
         let _ = app;
-        std::process::Command::new("xdg-open").arg(&path).spawn().map_err(|error| format!("Could not open the verified Debian package: {error}"))?;
+        std::process::Command::new("xdg-open")
+            .arg(&path)
+            .spawn()
+            .map_err(|error| format!("Could not open the verified Debian package: {error}"))?;
         Ok(())
     }
     #[cfg(not(any(target_os = "windows", target_os = "linux")))]
     {
         let _ = app;
-        let _ = std::fs::remove_file(path);
-        Err("Automatic installation is not available for this operating system.".to_string())
+        Err("Applying prepared updates is not available for this operating system.".to_string())
     }
 }
 
@@ -149,49 +470,60 @@ fn main() {
 
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
-        .register_asynchronous_uri_scheme_protocol("lightbi", move |_context, request, responder| {
-            let core = protocol_core
-                .0
-                .lock()
-                .ok()
-                .and_then(|guard| guard.as_ref().cloned());
-            let Some(core) = core else {
-                responder.respond(error_response(503, "LightBI core is not ready."));
-                return;
-            };
+        .register_asynchronous_uri_scheme_protocol(
+            "lightbi",
+            move |_context, request, responder| {
+                let core = protocol_core
+                    .0
+                    .lock()
+                    .ok()
+                    .and_then(|guard| guard.as_ref().cloned());
+                let Some(core) = core else {
+                    responder.respond(error_response(503, "LightBI core is not ready."));
+                    return;
+                };
 
-            let request = request.map(Body::from);
-            core.runtime.spawn(async move {
-                let response = match core.router.oneshot(request).await {
-                    Ok(response) => response,
-                    Err(error) => {
-                        responder.respond(error_response(500, &format!("LightBI core request failed: {error}")));
-                        return;
+                let request = request.map(Body::from);
+                core.runtime.spawn(async move {
+                    let response = match core.router.oneshot(request).await {
+                        Ok(response) => response,
+                        Err(error) => {
+                            responder.respond(error_response(
+                                500,
+                                &format!("LightBI core request failed: {error}"),
+                            ));
+                            return;
+                        }
+                    };
+                    let (parts, body) = response.into_parts();
+                    let bytes = match body.collect().await {
+                        Ok(collected) => collected.to_bytes().to_vec(),
+                        Err(error) => {
+                            responder.respond(error_response(
+                                500,
+                                &format!("LightBI core response failed: {error}"),
+                            ));
+                            return;
+                        }
+                    };
+                    let mut builder = tauri::http::Response::builder().status(parts.status);
+                    for (name, value) in &parts.headers {
+                        builder = builder.header(name, value);
                     }
-                };
-                let (parts, body) = response.into_parts();
-                let bytes = match body.collect().await {
-                    Ok(collected) => collected.to_bytes().to_vec(),
-                    Err(error) => {
-                        responder.respond(error_response(500, &format!("LightBI core response failed: {error}")));
-                        return;
+                    match builder.body(bytes) {
+                        Ok(response) => responder.respond(response),
+                        Err(error) => responder.respond(error_response(
+                            500,
+                            &format!("LightBI response could not be built: {error}"),
+                        )),
                     }
-                };
-                let mut builder = tauri::http::Response::builder().status(parts.status);
-                for (name, value) in &parts.headers {
-                    builder = builder.header(name, value);
-                }
-                match builder.body(bytes) {
-                    Ok(response) => responder.respond(response),
-                    Err(error) => responder.respond(error_response(500, &format!("LightBI response could not be built: {error}"))),
-                }
-            });
-        })
+                });
+            },
+        )
         .setup(move |app| {
-            let data_dir = app
-                .path()
-                .app_data_dir()
-                .map_err(|error| format!("Could not resolve the LightBI data directory: {error}"))?;
+            let data_dir = app.path().app_data_dir().map_err(|error| {
+                format!("Could not resolve the LightBI data directory: {error}")
+            })?;
             std::fs::create_dir_all(&data_dir)
                 .map_err(|error| format!("Could not create the LightBI data directory: {error}"))?;
             std::env::set_var("LIGHTBI_DATA_DIR", data_dir);
@@ -200,7 +532,9 @@ fn main() {
                 tokio::runtime::Builder::new_multi_thread()
                     .enable_all()
                     .build()
-                    .map_err(|error| format!("Could not initialize the embedded LightBI runtime: {error}"))?,
+                    .map_err(|error| {
+                        format!("Could not initialize the embedded LightBI runtime: {error}")
+                    })?,
             );
             let router = runtime.block_on(lightbi_server::build_router());
             *setup_core
@@ -217,8 +551,97 @@ fn main() {
             backend_status,
             account_session_token,
             store_account_session_token,
-            install_verified_update
+            prepare_verified_update,
+            apply_prepared_update
         ])
         .run(tauri::generate_context!())
         .expect("failed to run LightBI desktop shell");
+}
+
+#[cfg(test)]
+mod updater_tests {
+    use super::*;
+
+    fn runtime() -> tokio::runtime::Runtime {
+        tokio::runtime::Builder::new_current_thread()
+            .enable_all()
+            .build()
+            .expect("test runtime")
+    }
+
+    fn expected(bytes: &[u8]) -> PreparedUpdateMetadata {
+        let extension = if cfg!(target_os = "windows") {
+            "exe"
+        } else if cfg!(target_os = "linux") {
+            "deb"
+        } else {
+            "package"
+        };
+        PreparedUpdateMetadata {
+            version: "0.9.2-beta.7".to_string(),
+            platform: std::env::consts::OS.to_string(),
+            architecture: std::env::consts::ARCH.to_string(),
+            artifact: format!("LightBI-setup.{extension}"),
+            source_url: "https://drive.thaiduy.store/release/lightbi/0.9.2-beta.7/LightBI"
+                .to_string(),
+            sha256: format!("{:x}", Sha256::digest(bytes)),
+            verified: true,
+        }
+    }
+
+    #[test]
+    fn rejects_unsafe_update_identity_and_filename() {
+        assert!(!valid_update_version("../beta"));
+        assert!(!valid_update_filename("../LightBI.exe"));
+        assert!(valid_update_version("0.9.2-beta.7"));
+    }
+
+    #[test]
+    fn exact_staged_artifact_survives_restart_and_partial_never_counts() {
+        let folder = tempfile::tempdir().expect("temp folder");
+        let bytes = b"verified LightBI update";
+        let expected = expected(bytes);
+        std::fs::write(
+            folder.path().join(format!("{}.tmp", expected.artifact)),
+            b"partial",
+        )
+        .expect("partial");
+        assert!(runtime()
+            .block_on(valid_staged_update(folder.path(), &expected))
+            .expect("partial check")
+            .is_none());
+        std::fs::write(folder.path().join(&expected.artifact), bytes).expect("artifact");
+        std::fs::write(
+            folder.path().join("staged.json"),
+            serde_json::to_vec(&expected).expect("metadata"),
+        )
+        .expect("metadata file");
+        assert!(runtime()
+            .block_on(valid_staged_update(folder.path(), &expected))
+            .expect("staged check")
+            .is_some());
+    }
+
+    #[test]
+    fn tampered_or_replaced_staged_artifact_is_rejected() {
+        let folder = tempfile::tempdir().expect("temp folder");
+        let bytes = b"verified LightBI update";
+        let expected = expected(bytes);
+        std::fs::write(folder.path().join(&expected.artifact), b"tampered").expect("artifact");
+        std::fs::write(
+            folder.path().join("staged.json"),
+            serde_json::to_vec(&expected).expect("metadata"),
+        )
+        .expect("metadata file");
+        assert!(runtime()
+            .block_on(valid_staged_update(folder.path(), &expected))
+            .expect("tamper check")
+            .is_none());
+        let mut replaced = expected.clone();
+        replaced.sha256 = "f".repeat(64);
+        let error = runtime()
+            .block_on(valid_staged_update(folder.path(), &replaced))
+            .expect_err("replaced immutable version must fail");
+        assert!(error.contains("different checksum"));
+    }
 }

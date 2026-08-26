@@ -1,65 +1,277 @@
-import { create } from 'zustand';
-import type { LightBIReleaseArtifact, LightBIReleaseManifest } from '@lightbi/core-types';
-import { lightBIDistributionEndpoint } from '../lib/distribution-pairing';
-import { isNativeLightBI } from '../lib/native-runtime';
-import { trackUpdateEvent } from '../lib/app-usage-telemetry';
+import { create } from "zustand";
+import type {
+  LightBIReleaseArtifact,
+  LightBIReleaseManifest,
+} from "@lightbi/core-types";
+import { lightBIDistributionEndpoint } from "../lib/distribution-pairing";
+import { isNativeLightBI } from "../lib/native-runtime";
+import { trackUpdateEvent } from "../lib/app-usage-telemetry";
 
-export type UpdateStatus = 'idle' | 'checking' | 'up_to_date' | 'available' | 'downloading' | 'failed';
+export type UpdateStatus =
+  | "idle"
+  | "checking"
+  | "up_to_date"
+  | "available"
+  | "downloading"
+  | "verifying"
+  | "ready"
+  | "installing"
+  | "failed";
+
+export type PreparedUpdate = {
+  version: string;
+  artifact: string;
+  sha256: string;
+  reused: boolean;
+  ready: boolean;
+};
+
+type NativeProgress = {
+  phase: "downloading" | "verifying" | "ready";
+  downloadedBytes: number;
+  totalBytes?: number | null;
+  percent?: number | null;
+};
+
+let manifestCheckPromise: Promise<void> | null = null;
+let preparePromise: Promise<void> | null = null;
 
 export function compareAppVersions(left: string, right: string): number {
-  const parse = (value: string) => { const [core, pre=''] = value.replace(/^v/,'').split('-',2); return { core:core.split('.').map(Number), pre }; };
-  const a=parse(left),b=parse(right);
-  for(let index=0;index<3;index+=1){const av=a.core[index]||0,bv=b.core[index]||0;if(av!==bv)return av>bv?1:-1;}
-  if(a.pre===b.pre)return 0;if(!a.pre)return 1;if(!b.pre)return -1;return a.pre.localeCompare(b.pre,undefined,{numeric:true});
+  const parse = (value: string) => {
+    const [core, pre = ""] = value.replace(/^v/, "").split("-", 2);
+    return { core: core.split(".").map(Number), pre };
+  };
+  const a = parse(left),
+    b = parse(right);
+  for (let index = 0; index < 3; index += 1) {
+    const av = a.core[index] || 0,
+      bv = b.core[index] || 0;
+    if (av !== bv) return av > bv ? 1 : -1;
+  }
+  if (a.pre === b.pre) return 0;
+  if (!a.pre) return 1;
+  if (!b.pre) return -1;
+  return a.pre.localeCompare(b.pre, undefined, { numeric: true });
 }
 
-export function currentReleasePlatform(userAgent = navigator.userAgent, platform = navigator.platform): 'windows' | 'linux' | 'macos' | null {
+export function currentReleasePlatform(
+  userAgent = navigator.userAgent,
+  platform = navigator.platform,
+): "windows" | "linux" | "macos" | null {
   const value = `${userAgent} ${platform}`.toLowerCase();
-  if (value.includes('windows') || value.includes('win32') || value.includes('win64')) return 'windows';
-  if (value.includes('linux') || value.includes('x11')) return 'linux';
-  if (value.includes('macintosh') || value.includes('mac os') || value.includes('macintel')) return 'macos';
+  if (
+    value.includes("windows") ||
+    value.includes("win32") ||
+    value.includes("win64")
+  )
+    return "windows";
+  if (value.includes("linux") || value.includes("x11")) return "linux";
+  if (
+    value.includes("macintosh") ||
+    value.includes("mac os") ||
+    value.includes("macintel")
+  )
+    return "macos";
   return null;
+}
+
+export function selectNativeUpdateArtifact(
+  manifest: LightBIReleaseManifest,
+  platform = currentReleasePlatform(),
+): LightBIReleaseArtifact | null {
+  if (!platform) return null;
+  return (
+    manifest.artifacts.find(
+      (item) => item.platform === platform && item.architecture === "x86_64",
+    ) ??
+    manifest.artifacts.find((item) => item.platform === platform) ??
+    null
+  );
 }
 
 type UpdateStore = {
   status: UpdateStatus;
   manifest: LightBIReleaseManifest | null;
   artifact: LightBIReleaseArtifact | null;
+  prepared: PreparedUpdate | null;
+  progress: number | null;
   error: string;
   checkedAt: number | null;
   check: (force?: boolean) => Promise<void>;
+  prepare: () => Promise<void>;
   install: () => Promise<void>;
 };
 
-export const useUpdateStore = create<UpdateStore>((set,get)=>({
-  status:'idle',manifest:null,artifact:null,error:'',checkedAt:null,
-  check:async(force=false)=>{
-    if(!isNativeLightBI())return;
-    if(!force&&get().checkedAt&&Date.now()-get().checkedAt!<6*60*60*1000)return;
-    set({status:'checking',error:''});
-    try{
-      const response=await fetch(`${lightBIDistributionEndpoint()}/api/releases/latest`);
-      if(!response.ok)throw new Error('Update service is temporarily unavailable.');
-      const catalog=await response.json() as {latest?:LightBIReleaseManifest};
-      const manifest=catalog.latest;
-      if(!manifest||manifest.schema_version!=='lightbi.release.v1')throw new Error('Update manifest is invalid.');
-      const platform=currentReleasePlatform();
-      if(!platform)throw new Error('This operating system is not supported by the native updater.');
-      const artifact=manifest.artifacts.find(item=>item.platform===platform&&item.architecture==='x86_64')??manifest.artifacts.find(item=>item.platform===platform)??null;
-      if(!artifact)throw new Error(`No compatible ${platform} artifact is available.`);
-      const current=import.meta.env.VITE_LIGHTBI_VERSION??'0.9.1-beta.7';
-      const available=compareAppVersions(manifest.version,current)>0;
-      set({status:available?'available':'up_to_date',manifest,artifact,checkedAt:Date.now(),error:''});
-      if(available)trackUpdateEvent('update_available');
-    }catch(cause){set({status:'failed',error:cause instanceof Error?cause.message:'Update check failed.',checkedAt:Date.now()});}
+const invokeArgs = (
+  manifest: LightBIReleaseManifest,
+  artifact: LightBIReleaseArtifact,
+) => ({
+  version: manifest.version,
+  platform: artifact.platform,
+  architecture: artifact.architecture,
+  url: artifact.url,
+  sha256: artifact.sha256,
+  filename: artifact.filename,
+});
+
+export const useUpdateStore = create<UpdateStore>((set, get) => ({
+  status: "idle",
+  manifest: null,
+  artifact: null,
+  prepared: null,
+  progress: null,
+  error: "",
+  checkedAt: null,
+  check: (force = false) => {
+    if (!isNativeLightBI()) return Promise.resolve();
+    if (manifestCheckPromise) return manifestCheckPromise;
+    if (
+      !force &&
+      get().checkedAt &&
+      Date.now() - Number(get().checkedAt) < 6 * 60 * 60 * 1000
+    )
+      return Promise.resolve();
+    manifestCheckPromise = (async () => {
+      set({ status: "checking", error: "", progress: null });
+      try {
+        const response = await fetch(
+          `${lightBIDistributionEndpoint()}/api/releases/latest`,
+          { cache: force ? "no-store" : "default" },
+        );
+        if (!response.ok)
+          throw new Error("Update service is temporarily unavailable.");
+        const catalog = (await response.json()) as {
+          latest?: LightBIReleaseManifest;
+        };
+        const manifest = catalog.latest;
+        if (!manifest || manifest.schema_version !== "lightbi.release.v1")
+          throw new Error("Update manifest is invalid.");
+        const artifact = selectNativeUpdateArtifact(manifest);
+        if (!artifact)
+          throw new Error(
+            "No compatible update artifact is available for this operating system.",
+          );
+        const current = import.meta.env.VITE_LIGHTBI_VERSION ?? "0.9.1-beta.7";
+        if (compareAppVersions(manifest.version, current) <= 0) {
+          set({
+            status: "up_to_date",
+            manifest,
+            artifact: null,
+            prepared: null,
+            checkedAt: Date.now(),
+            error: "",
+            progress: null,
+          });
+          return;
+        }
+        set({
+          status: "available",
+          manifest,
+          artifact,
+          prepared: null,
+          checkedAt: Date.now(),
+          error: "",
+          progress: 0,
+        });
+        trackUpdateEvent("update_available");
+        await get().prepare();
+      } catch (cause) {
+        set({
+          status: "failed",
+          error:
+            cause instanceof Error ? cause.message : "Update check failed.",
+          checkedAt: Date.now(),
+          progress: null,
+        });
+      } finally {
+        manifestCheckPromise = null;
+      }
+    })();
+    return manifestCheckPromise;
   },
-  install:async()=>{
-    const {artifact}=get();if(!artifact)return;
-    set({status:'downloading',error:''});trackUpdateEvent('update_download_started');
-    try{
-      const {invoke}=await import('@tauri-apps/api/core');
-      await invoke('install_verified_update',{url:artifact.url,sha256:artifact.sha256});
-      trackUpdateEvent('update_install_started');
-    }catch(cause){trackUpdateEvent('update_download_failed');set({status:'failed',error:cause instanceof Error?cause.message:'Update failed.'});}
+  prepare: () => {
+    if (preparePromise) return preparePromise;
+    const { manifest, artifact } = get();
+    if (
+      !manifest ||
+      !artifact ||
+      compareAppVersions(
+        manifest.version,
+        import.meta.env.VITE_LIGHTBI_VERSION ?? "0.9.1-beta.7",
+      ) <= 0
+    )
+      return Promise.resolve();
+    preparePromise = (async () => {
+      set({ status: "downloading", error: "", progress: 0 });
+      trackUpdateEvent("update_download_started");
+      let unlisten: undefined | (() => void);
+      try {
+        const [{ invoke }, { listen }] = await Promise.all([
+          import("@tauri-apps/api/core"),
+          import("@tauri-apps/api/event"),
+        ]);
+        unlisten = await listen<NativeProgress>(
+          "lightbi://update-progress",
+          (event) => {
+            const progress =
+              typeof event.payload.percent === "number"
+                ? event.payload.percent
+                : null;
+            set({
+              status:
+                event.payload.phase === "verifying"
+                  ? "verifying"
+                  : event.payload.phase === "ready"
+                    ? "ready"
+                    : "downloading",
+              progress,
+            });
+          },
+        );
+        const prepared = await invoke<PreparedUpdate>(
+          "prepare_verified_update",
+          invokeArgs(manifest, artifact),
+        );
+        if (!prepared.ready)
+          throw new Error("The update could not be staged safely.");
+        set({ status: "ready", prepared, progress: 100, error: "" });
+        trackUpdateEvent("update_download_success");
+      } catch (cause) {
+        trackUpdateEvent("update_download_failed");
+        set({
+          status: "failed",
+          prepared: null,
+          progress: null,
+          error:
+            cause instanceof Error
+              ? cause.message
+              : "Update preparation failed.",
+        });
+      } finally {
+        unlisten?.();
+        preparePromise = null;
+      }
+    })();
+    return preparePromise;
+  },
+  install: async () => {
+    const { manifest, artifact, prepared, status } = get();
+    if (status !== "ready" || !manifest || !artifact || !prepared?.ready)
+      return;
+    set({ status: "installing", error: "" });
+    try {
+      const { invoke } = await import("@tauri-apps/api/core");
+      await invoke("apply_prepared_update", invokeArgs(manifest, artifact));
+      trackUpdateEvent("update_install_started");
+      if (artifact.kind === "deb") set({ status: "ready" });
+    } catch (cause) {
+      set({
+        status: "failed",
+        error:
+          cause instanceof Error
+            ? cause.message
+            : "Prepared update could not be applied.",
+      });
+    }
   },
 }));

@@ -12,7 +12,7 @@ import {
   setAnonymousPairingEnabled,
 } from '../lib/distribution-pairing';
 import { useLightBIAccount } from '../hooks/useLightBIAccount';
-import { useUpdateStore } from '../stores/update-store';
+import { UpdateSettingsPanel } from '../components/settings/UpdateSettingsPanel';
 
 const AccountAccess: React.FC<{ account: ReturnType<typeof useLightBIAccount> }> = ({ account }) => {
   const [mode, setMode] = useState<'login' | 'register'>('login');
@@ -67,7 +67,6 @@ export const Settings: React.FC = () => {
   const [licenseMessage, setLicenseMessage] = useState('');
   const [accountLicenseKey, setAccountLicenseKey] = useState('');
   const lightbiAccount = useLightBIAccount();
-  const updater = useUpdateStore();
   const requestedSection = new URLSearchParams(location.search).get('section');
   const [settingsSection, setSettingsSection] = useState<'general' | 'account' | 'appearance' | 'privacy' | 'updates'>(requestedSection === 'account' ? 'account' : 'general');
   const [settingsSearch, setSettingsSearch] = useState('');
@@ -262,7 +261,7 @@ export const Settings: React.FC = () => {
             </div>
           </div>
         </div>}
-        {settingsSection === 'updates' && <div className="p-6"><h2 className="mb-4 text-lg font-medium text-slate-900">{t('Updates')}</h2><div className="flex flex-col justify-between gap-4 rounded-xl border border-slate-200 p-5 sm:flex-row sm:items-center"><div><div className="font-semibold text-slate-900">LightBI {updater.status==='available'?updater.manifest?.version:'Beta'}</div><div className="mt-1 text-sm leading-6 text-slate-500">{updater.status==='available'?updater.manifest?.release_notes||'A verified update is ready.':updater.status==='checking'?'Checking for updates…':updater.status==='failed'?updater.error:'LightBI is up to date.'}</div></div><div className="flex gap-2">{updater.status==='available'&&<button type="button" onClick={()=>{if(window.confirm('Save or finish any unsaved work before continuing. Start the verified installer and close LightBI?'))void updater.install();}} className="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white">Update & Restart</button>}<button type="button" onClick={()=>void updater.check(true)} className="rounded-lg border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700">Check now</button></div></div></div>}
+        {settingsSection === 'updates' && <UpdateSettingsPanel />}
         </div></div>
       </section>
     </div>
