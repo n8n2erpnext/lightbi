@@ -80,6 +80,29 @@ test('returns a clean 404 when a static asset is unavailable', async () => {
   assert.deepEqual(await response.json(), { error: 'not_found' });
 });
 
+test('serves the deterministic Hero data with explicit JSON and CSV types', async () => {
+  const script = await fetch(`${serverBaseUrl()}/distribution-assets/hero-demo.js`);
+  assert.equal(script.status, 200);
+  assert.match(script.headers.get('content-type'), /^text\/javascript/);
+  const json = await fetch(`${serverBaseUrl()}/distribution-assets/demo-data/retail-sales.json`);
+  assert.equal(json.status, 200);
+  assert.match(json.headers.get('content-type'), /^application\/json/);
+  assert.equal((await json.json()).previewRows.length, 5);
+  const csv = await fetch(`${serverBaseUrl()}/distribution-assets/demo-data/retail-sales.csv`);
+  assert.equal(csv.status, 200);
+  assert.match(csv.headers.get('content-type'), /^text\/csv/);
+  assert.match(await csv.text(), /^date,store,product/);
+});
+
+test('keeps alternate releases in a closed Hero disclosure instead of page flow', async () => {
+  const response = await fetch(`${serverBaseUrl()}/`);
+  const html = await response.text();
+  assert.match(html, /data-other-downloads[^>]+aria-expanded="false"/);
+  assert.match(html, /id="other-downloads-panel"[^>]+hidden/);
+  assert.doesNotMatch(html, /<section id="other-downloads"/);
+  assert.doesNotMatch(html, /Loading release catalog/);
+});
+
 test('accepts privacy-safe visit signals without requiring analytics infrastructure', async () => {
   const response = await fetch(`${serverBaseUrl()}/api/visit`, {
     method: 'POST',

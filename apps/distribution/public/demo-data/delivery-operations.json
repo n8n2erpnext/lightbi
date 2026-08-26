@@ -1,0 +1,59 @@
+{
+  "id": "delivery-operations",
+  "label": "Delivery operations",
+  "theme": "Delivery performance",
+  "columns": [
+    { "key": "date", "label": "Date" },
+    { "key": "shipment", "label": "Shipment" },
+    { "key": "route", "label": "Route" },
+    { "key": "hub", "label": "Hub" },
+    { "key": "carrier", "label": "Carrier" },
+    { "key": "delay_min", "label": "Delay" }
+  ],
+  "previewRows": [
+    { "date": "2026-06-01", "shipment": "SHP10294", "route": "HCM-DN", "hub": "Hub South", "carrier": "VTPost", "delay_min": "168m" },
+    { "date": "2026-06-01", "shipment": "SHP10295", "route": "HN-HP", "hub": "Hub North", "carrier": "GHN", "delay_min": "142m" },
+    { "date": "2026-06-01", "shipment": "SHP10296", "route": "DN-HUE", "hub": "Hub Central", "carrier": "GHTK", "delay_min": "81m" },
+    { "date": "2026-06-08", "shipment": "SHP10318", "route": "HCM-DN", "hub": "Hub South", "carrier": "VTPost", "delay_min": "149m" },
+    { "date": "2026-06-08", "shipment": "SHP10319", "route": "HN-HP", "hub": "Hub North", "carrier": "GHN", "delay_min": "156m" }
+  ],
+  "rawTokens": ["grain=shipment", "scope=3 hubs", "uom=minutes", "status=governed", "evidence=9 rows"],
+  "frames": [
+    {
+      "timestampLabel": "Cycle 1",
+      "total": { "label": "Delay exposure", "value": 391, "formattedValue": "391 min", "deltaPct": 6.8, "detail": "delay minutes reviewed" },
+      "whereDetail": "highest delay exposure",
+      "entities": [
+        { "name": "Hub South", "value": 168, "formattedValue": "168m", "deltaPct": 8.1 },
+        { "name": "Hub North", "value": 142, "formattedValue": "142m", "deltaPct": 5.6 },
+        { "name": "Hub Central", "value": 81, "formattedValue": "81m", "deltaPct": -2.0 }
+      ],
+      "checks": { "count": 3, "label": "routes ranked by evidence" },
+      "packets": { "primary": ["Delay=391m", "Hub=South"], "secondaryA": ["Shipment=SHP10294", "Weight=182kg"], "secondaryB": ["Carrier=VTPost", "Route=HCM-DN"] }
+    },
+    {
+      "timestampLabel": "Cycle 2",
+      "total": { "label": "Delay exposure", "value": 393, "formattedValue": "393 min", "deltaPct": 0.5, "detail": "delay minutes reviewed" },
+      "whereDetail": "risk ranking crossed over",
+      "entities": [
+        { "name": "Hub South", "value": 149, "formattedValue": "149m", "deltaPct": -11.3 },
+        { "name": "Hub North", "value": 156, "formattedValue": "156m", "deltaPct": 9.9 },
+        { "name": "Hub Central", "value": 88, "formattedValue": "88m", "deltaPct": 8.6 }
+      ],
+      "checks": { "count": 4, "label": "1 new carrier signal" },
+      "packets": { "primary": ["Delay=393m", "Hub=North"], "secondaryA": ["Shipment=SHP10319", "Weight=102kg"], "secondaryB": ["RankChange=North→1", "Carrier=GHN"] }
+    },
+    {
+      "timestampLabel": "Cycle 3",
+      "total": { "label": "Delay exposure", "value": 390, "formattedValue": "390 min", "deltaPct": -0.8, "detail": "delay minutes reviewed" },
+      "whereDetail": "persistent carrier hotspot",
+      "entities": [
+        { "name": "Hub South", "value": 126, "formattedValue": "126m", "deltaPct": -15.4 },
+        { "name": "Hub North", "value": 171, "formattedValue": "171m", "deltaPct": 9.6 },
+        { "name": "Hub Central", "value": 93, "formattedValue": "93m", "deltaPct": 5.7 }
+      ],
+      "checks": { "count": 2, "label": "priority narrowed" },
+      "packets": { "primary": ["Delay=390m", "Hub=North"], "secondaryA": ["Shipment=SHP10343", "Weight=117kg"], "secondaryB": ["Carrier=GHN", "Route=HN-HP"] }
+    }
+  ]
+}

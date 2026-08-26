@@ -1,3 +1,5 @@
+import { initHeroDemo, releaseCatalogMarkup } from './hero-demo.js';
+
 const state = { config: null, catalog: null };
 const portalBase = location.pathname.startsWith('/distribution') ? '/distribution' : '';
 const routeBase = portalBase || '/distribution-api';
@@ -116,13 +118,39 @@ async function download(platform = preferredPlatform() || 'windows', architectur
 function renderReleaseCatalog() {
   const target = document.querySelector('#release-list');
   if (!target) return;
-  const releases = state.catalog?.releases || [];
-  if (!releases.length) {
-    target.innerHTML = `<article class="release-card"><h3>Release catalog temporarily unavailable</h3><p>Use the GitHub archive while the primary mirror reconnects.</p><a class="button dark" href="${state.config?.releaseUrl || 'https://github.com/n8n2erpnext/lightbi/releases'}">GitHub download</a></article>`;
-    return;
-  }
-  target.innerHTML = releases.slice(0,3).map((release) => `<article class="release-card"><span class="pill">${escapeHtml(release.channel)}</span><h3>LightBI ${escapeHtml(release.version)}</h3><p>${escapeHtml(String(release.published_at).slice(0,10))} · ${escapeHtml(release.release_notes || 'Release update')}</p><div class="artifact-actions">${(release.artifacts||[]).map((artifact) => `<a class="button dark" href="${escapeHtml(artifact.url)}" data-release-download data-platform="${escapeHtml(artifact.platform)}">${platformLabel(artifact.platform)} · ${escapeHtml(artifact.architecture)}</a>`).join('')}</div></article>`).join('');
+  target.innerHTML = releaseCatalogMarkup(state.catalog, state.config?.releaseUrl);
   target.querySelectorAll('[data-release-download]').forEach((link) => link.addEventListener('click', () => { void api('/api/download', { method:'POST', body:JSON.stringify({ ...trafficContext(), tier:'basic', platform:link.dataset.platform }) }).catch(()=>null); }));
+}
+
+let releaseCatalogPromise = null;
+let openOtherDownloads = () => {};
+
+function setupOtherDownloads() {
+  const trigger = document.querySelector('[data-other-downloads]');
+  const panel = document.querySelector('#other-downloads-panel');
+  const target = document.querySelector('#release-list');
+  if (!trigger || !panel || !target) return;
+  const load = () => {
+    if (state.catalog || releaseCatalogPromise) return releaseCatalogPromise;
+    target.innerHTML = '<div class="release-loading">Loading releases…</div>';
+    releaseCatalogPromise = api('/api/releases')
+      .then((catalog) => { state.catalog = catalog; })
+      .catch(() => { state.catalog = null; })
+      .finally(() => { releaseCatalogPromise = null; renderReleaseCatalog(); });
+    return releaseCatalogPromise;
+  };
+  const setOpen = (open) => {
+    panel.hidden = !open;
+    trigger.setAttribute('aria-expanded', String(open));
+    if (open) void load();
+  };
+  openOtherDownloads = () => setOpen(true);
+  trigger.addEventListener('click', () => setOpen(panel.hidden));
+  document.querySelector('[data-other-downloads-close]')?.addEventListener('click', () => setOpen(false));
+  document.addEventListener('mousedown', (event) => {
+    if (!panel.hidden && !panel.contains(event.target) && !trigger.contains(event.target)) setOpen(false);
+  });
+  document.addEventListener('keydown', (event) => { if (event.key === 'Escape') setOpen(false); });
 }
 
 async function checkout() {
@@ -365,8 +393,6 @@ function ensureAdminAccountNavigation() {
 const isAdmin = location.pathname.endsWith('/admin');
 const isAccount = location.pathname.endsWith('/account');
 state.config = await api('/api/config').catch(() => null);
-state.catalog = await api('/api/releases').catch(() => null);
-renderReleaseCatalog();
 const recommended = preferredPlatform();
 document.querySelectorAll('[data-download],#download').forEach((button) => {
   if (recommended) button.textContent = `Download for ${platformLabel(recommended)}`;
@@ -376,8 +402,14 @@ if (state.config) {
   document.querySelector('#pro-price').textContent = state.config.proPriceLabel;
   if (!state.config.checkoutAvailable) document.querySelector('#checkout-note').textContent = 'Payment adapter ready; Stripe keys are not configured yet.';
 }
-document.querySelectorAll('[data-download]').forEach((button) => button.addEventListener('click', () => { if (recommended) void download(recommended); else location.hash = 'other-downloads'; }));
-document.querySelector('#download')?.addEventListener('click', (event) => { event.preventDefault(); if (recommended) void download(recommended); else location.hash = 'other-downloads'; });
+if (!isAdmin && !isAccount) {
+  setupOtherDownloads();
+  void initHeroDemo().catch(() => {
+    document.querySelector('[data-hero-visual]')?.setAttribute('data-demo-status', 'static-fallback');
+  });
+}
+document.querySelectorAll('[data-download]').forEach((button) => button.addEventListener('click', () => { if (recommended) void download(recommended); else openOtherDownloads(); }));
+document.querySelector('#download')?.addEventListener('click', (event) => { event.preventDefault(); if (recommended) void download(recommended); else openOtherDownloads(); });
 document.querySelector('#checkout')?.addEventListener('click', checkout);
 await showCheckoutResult();
 if (isAdmin) { await admin(); ensureAdminAccountNavigation(); }

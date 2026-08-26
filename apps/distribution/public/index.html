@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="description" content="Download LightBI and turn operational files into evidence-backed business analysis.">
   <title>LightBI — Evidence-backed business analysis</title>
-    <link rel="stylesheet" href="/distribution-assets/styles.css?v=distribution-0.1.4">
-    <link rel="stylesheet" href="/distribution-assets/admin.css?v=distribution-0.1.4">
+    <link rel="stylesheet" href="/distribution-assets/styles.css?v=distribution-0.2.0">
+    <link rel="stylesheet" href="/distribution-assets/admin.css?v=distribution-0.2.0">
   <style>.mark:after{display:none}.mark img{width:34px;height:34px;display:block}</style>
 </head>
 <body>
@@ -22,13 +22,32 @@
         <div class="eyebrow"><span></span> Public beta · Windows desktop</div>
         <h1>Turn operational data into a decision brief you can defend.</h1>
         <p>LightBI reads spreadsheets, online sheets, databases and related ERP exports, then builds governed charts and BA analysis without hiding the evidence.</p>
-        <div class="hero-actions"><a id="download" class="button primary" href="#plans">Download LightBI</a><a class="button ghost" href="/app">Explore live demo</a><a class="button ghost" href="#other-downloads">Other downloads</a></div>
+        <div class="hero-actions"><a id="download" class="button primary" href="#plans">Download LightBI</a><a class="button ghost" href="/app">Explore live demo</a><div class="download-disclosure"><button type="button" class="button ghost tertiary" data-other-downloads aria-expanded="false" aria-controls="other-downloads-panel">Other downloads <span aria-hidden="true">⌄</span></button><div id="other-downloads-panel" class="other-downloads-panel" hidden><div class="other-downloads-head"><div><span class="eyebrow">RELEASES</span><strong>Other downloads</strong></div><button type="button" data-other-downloads-close aria-label="Close other downloads">×</button></div><div id="release-list" class="release-list" aria-live="polite"></div><a class="archive-link" href="https://github.com/n8n2erpnext/lightbi/releases">View all GitHub releases →</a></div></div></div>
         <div class="trust-row"><span>Local-first analysis</span><span>Evidence-linked findings</span><span>English + Vietnamese</span></div>
+        <div class="sample-control" aria-label="Try sample data">
+          <span>Try sample data</span>
+          <div class="sample-tabs" role="tablist">
+            <button type="button" role="tab" data-hero-scenario="retail-sales" aria-selected="true">Retail sales</button>
+            <button type="button" role="tab" data-hero-scenario="inventory-aging" aria-selected="false">Inventory aging</button>
+            <button type="button" role="tab" data-hero-scenario="delivery-operations" aria-selected="false">Delivery operations</button>
+          </div>
+          <div class="sample-actions"><button type="button" class="text-action" data-sample-preview-toggle aria-expanded="false">Preview data</button><a class="text-action" data-sample-download download>Download CSV</a></div>
+        </div>
+        <div class="raw-data-field" aria-live="polite"><span class="raw-data-label">VISIBLE SOURCE ROWS</span><div data-raw-data-tokens></div></div>
+        <div class="sample-preview" data-sample-preview hidden><div class="sample-preview-head"><strong data-sample-preview-title>Sample rows</strong><button type="button" data-sample-preview-close aria-label="Close sample preview">×</button></div><div class="sample-preview-table" data-sample-preview-table></div></div>
       </div>
-      <div class="hero-visual">
-        <div class="visual-head"><span>DECISION INVESTIGATION</span><b>Inventory risk</b><small>Full source · governed</small></div>
-        <div class="metric-grid"><article><small>WHAT</small><strong>14.8k</strong><span>records reviewed</span></article><article><small>WHERE</small><strong>Store A</strong><span>highest exposure</span></article><article class="accent"><small>WHAT NEXT</small><strong>3 checks</strong><span>ranked by evidence</span></article></div>
-        <div class="bars"><i style="--v:82%"></i><i style="--v:61%"></i><i style="--v:47%"></i><i style="--v:29%"></i><i style="--v:18%"></i></div>
+      <svg class="hero-transmission" viewBox="0 0 1180 660" preserveAspectRatio="none" aria-hidden="true">
+        <path id="hero-wave-primary" d="M 385 335 C 500 260, 590 430, 730 315 S 885 260, 950 300"></path>
+        <path id="hero-wave-secondary-a" d="M 390 380 C 520 465, 590 240, 735 350 S 875 420, 950 340"></path>
+        <path id="hero-wave-secondary-b" d="M 400 420 C 520 330, 625 510, 745 385 S 870 315, 950 380"></path>
+        <text class="stream-packet primary"><textPath href="#hero-wave-primary" startOffset="0%" data-stream-primary></textPath></text>
+        <text class="stream-packet secondary"><textPath href="#hero-wave-secondary-a" startOffset="0%" data-stream-secondary-a></textPath></text>
+        <text class="stream-packet secondary tertiary-stream"><textPath href="#hero-wave-secondary-b" startOffset="0%" data-stream-secondary-b></textPath></text>
+      </svg>
+      <div class="hero-visual" data-hero-visual>
+        <div class="visual-head"><span>DECISION INVESTIGATION</span><b data-hero-theme>Sales performance</b><small><span data-hero-frame-label>Week 1</span> · governed source</small></div>
+        <div class="metric-grid"><article><small>WHAT</small><strong data-hero-what>82.1M</strong><span data-hero-what-detail>revenue reviewed</span><em data-hero-what-delta class="metric-delta positive">↑ +2.0%</em></article><article><small>WHERE</small><strong data-hero-where>Store A</strong><span data-hero-where-detail>highest contribution</span><em data-hero-where-delta class="metric-delta positive">↑ +2.0%</em></article><article class="accent"><small>WHAT NEXT</small><strong data-hero-next>3 checks</strong><span data-hero-next-detail>ranked by evidence</span></article></div>
+        <div class="ranked-bars" data-hero-ranking aria-label="Top three ranked evidence groups"></div>
         <p>Every finding retains its source scope, confidence and limitation.</p>
       </div>
     </section>
@@ -62,12 +81,10 @@
         <article class="plan featured"><span class="pill gold">PRO</span><h3>LightBI Pro</h3><div class="price" id="pro-price">Early access</div><p>For teams turning LightBI into a repeatable decision-analysis workspace.</p><ul><li>Everything in Basic</li><li>Commercial license and managed activation</li><li>Priority release channel</li><li>Team-ready governance features</li></ul><button class="button primary wide" id="checkout">Join Pro</button><small id="checkout-note">Checkout activates when payment configuration is available.</small></article>
       </div>
     </section>
-    <section id="other-downloads" class="section shell downloads-section"><div class="section-head"><span class="eyebrow">RELEASES</span><h2>Other downloads</h2><p>Choose another platform or one of the latest three releases. GitHub remains the complete public archive.</p></div><div id="release-list" class="release-list"><article class="release-card"><h3>Loading release catalog…</h3><p>The main download remains available through the GitHub fallback.</p></article></div><a class="button ghost" href="https://github.com/n8n2erpnext/lightbi/releases">All GitHub releases</a></section>
-
     <section class="privacy shell"><div><span class="eyebrow">LOCAL DATA STAYS LOCAL</span><h2>Your business files are not telemetry.</h2></div><p>The portal records a random anonymous visitor ID, campaign tags and download clicks. Desktop pairing sends only a random installation ID, app version, platform and license tier. LightBI never sends IP-derived identity, imported files, column names, query results or BA findings.</p></section>
   </main>
 
   <footer class="shell"><div class="brand"><span class="mark"><img src="/distribution-assets/logo.svg" alt=""></span><span>Light<span>BI</span></span></div><p>Evidence-governed business analysis for real operational data.</p><div><a href="https://github.com/n8n2erpnext/lightbi">GitHub</a><a href="/app">Demo</a><a href="/account">Account</a><a href="/admin">Admin</a></div></footer>
-    <script type="module" src="/distribution-assets/app.js?v=distribution-0.1.4"></script>
+    <script type="module" src="/distribution-assets/app.js?v=distribution-0.2.0"></script>
 </body>
 </html>

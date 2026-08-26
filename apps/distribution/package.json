@@ -1,12 +1,12 @@
 {
   "name": "@lightbi/distribution",
   "private": true,
-  "version": "0.1.4",
+  "version": "0.2.0",
   "type": "module",
   "scripts": {
     "dev": "node --experimental-sqlite server.mjs",
     "start": "node --experimental-sqlite server.mjs",
-    "build": "node --check server.mjs && node --check public/app.js",
+    "build": "node --check server.mjs && node --check public/app.js && node --check public/hero-demo.js",
     "test": "node --experimental-sqlite --test *.test.mjs"
   },
   "dependencies": {

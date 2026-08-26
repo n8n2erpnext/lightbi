@@ -1,0 +1,59 @@
+{
+  "id": "retail-sales",
+  "label": "Retail sales",
+  "theme": "Sales performance",
+  "columns": [
+    { "key": "date", "label": "Date" },
+    { "key": "store", "label": "Store" },
+    { "key": "product", "label": "Product" },
+    { "key": "revenue_m", "label": "Revenue (M)" },
+    { "key": "qty", "label": "Qty" },
+    { "key": "margin_pct", "label": "Margin" }
+  ],
+  "previewRows": [
+    { "date": "2026-06-01", "store": "Store A", "product": "TV Samsung 55", "revenue_m": "34.1", "qty": "14", "margin_pct": "18.2%" },
+    { "date": "2026-06-01", "store": "Store B", "product": "Aircon LG 1.5HP", "revenue_m": "29.8", "qty": "9", "margin_pct": "19.5%" },
+    { "date": "2026-06-01", "store": "Store C", "product": "Panasonic Blender", "revenue_m": "18.2", "qty": "22", "margin_pct": "18.1%" },
+    { "date": "2026-06-08", "store": "Store A", "product": "TV Samsung 55", "revenue_m": "31.2", "qty": "13", "margin_pct": "17.3%" },
+    { "date": "2026-06-08", "store": "Store B", "product": "Aircon LG 1.5HP", "revenue_m": "30.6", "qty": "10", "margin_pct": "19.9%" }
+  ],
+  "rawTokens": ["date=2026-06", "grain=sale_line", "currency=VND", "scope=3 stores", "evidence=9 rows"],
+  "frames": [
+    {
+      "timestampLabel": "Week 1",
+      "total": { "label": "Revenue", "value": 82.1, "formattedValue": "₫82.1M", "deltaPct": 2.0, "detail": "revenue reviewed" },
+      "whereDetail": "highest revenue contribution",
+      "entities": [
+        { "name": "Store A", "value": 34.1, "formattedValue": "₫34.1M", "deltaPct": 2.0 },
+        { "name": "Store B", "value": 29.8, "formattedValue": "₫29.8M", "deltaPct": 2.4 },
+        { "name": "Store C", "value": 18.2, "formattedValue": "₫18.2M", "deltaPct": -0.4 }
+      ],
+      "checks": { "count": 3, "label": "ranked by evidence" },
+      "packets": { "primary": ["Revenue=₫82.1M", "Store=Store A"], "secondaryA": ["Qty=45", "Margin=18.7%"], "secondaryB": ["SKU=TV-SS55", "Period=Week 1"] }
+    },
+    {
+      "timestampLabel": "Week 2",
+      "total": { "label": "Revenue", "value": 80.5, "formattedValue": "₫80.5M", "deltaPct": -2.0, "detail": "revenue reviewed" },
+      "whereDetail": "lead narrowed to 0.6M",
+      "entities": [
+        { "name": "Store A", "value": 31.2, "formattedValue": "₫31.2M", "deltaPct": -5.0 },
+        { "name": "Store B", "value": 30.6, "formattedValue": "₫30.6M", "deltaPct": 3.1 },
+        { "name": "Store C", "value": 18.7, "formattedValue": "₫18.7M", "deltaPct": 0.8 }
+      ],
+      "checks": { "count": 4, "label": "1 new margin signal" },
+      "packets": { "primary": ["Revenue=₫80.5M", "Store=Store A"], "secondaryA": ["Qty=46", "Margin=18.6%"], "secondaryB": ["Gap=₫0.6M", "Period=Week 2"] }
+    },
+    {
+      "timestampLabel": "Week 3",
+      "total": { "label": "Revenue", "value": 80.4, "formattedValue": "₫80.4M", "deltaPct": -0.1, "detail": "revenue reviewed" },
+      "whereDetail": "new highest contribution",
+      "entities": [
+        { "name": "Store A", "value": 28.9, "formattedValue": "₫28.9M", "deltaPct": -4.3 },
+        { "name": "Store B", "value": 32.4, "formattedValue": "₫32.4M", "deltaPct": 4.1 },
+        { "name": "Store C", "value": 19.1, "formattedValue": "₫19.1M", "deltaPct": 1.1 }
+      ],
+      "checks": { "count": 2, "label": "priority narrowed" },
+      "packets": { "primary": ["Revenue=₫80.4M", "Store=Store B"], "secondaryA": ["Qty=47", "Margin=19.0%"], "secondaryB": ["RankChange=B→1", "Period=Week 3"] }
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "id": "inventory-aging",
+  "label": "Inventory aging",
+  "theme": "Inventory risk",
+  "columns": [
+    { "key": "snapshot_date", "label": "Snapshot" },
+    { "key": "warehouse", "label": "Warehouse" },
+    { "key": "sku", "label": "SKU" },
+    { "key": "on_hand", "label": "On hand" },
+    { "key": "stock_value_m", "label": "Value (M)" },
+    { "key": "age_days", "label": "Age days" }
+  ],
+  "previewRows": [
+    { "snapshot_date": "2026-06-01", "warehouse": "WH-A", "sku": "AC-LG12", "on_hand": "87", "stock_value_m": "418", "age_days": "142" },
+    { "snapshot_date": "2026-06-01", "warehouse": "WH-B", "sku": "TV-SS55", "on_hand": "64", "stock_value_m": "367", "age_days": "96" },
+    { "snapshot_date": "2026-06-01", "warehouse": "WH-C", "sku": "BL-PN03", "on_hand": "121", "stock_value_m": "244", "age_days": "73" },
+    { "snapshot_date": "2026-06-08", "warehouse": "WH-A", "sku": "AC-LG12", "on_hand": "82", "stock_value_m": "392", "age_days": "151" },
+    { "snapshot_date": "2026-06-08", "warehouse": "WH-B", "sku": "TV-SS55", "on_hand": "71", "stock_value_m": "405", "age_days": "105" }
+  ],
+  "rawTokens": ["grain=sku_snapshot", "scope=3 warehouses", "uom=units", "currency=VND", "evidence=9 rows"],
+  "frames": [
+    {
+      "timestampLabel": "Snapshot 1",
+      "total": { "label": "Stock value", "value": 1029, "formattedValue": "₫1.03B", "deltaPct": 3.2, "detail": "stock value reviewed" },
+      "whereDetail": "highest aged-stock exposure",
+      "entities": [
+        { "name": "WH-A", "value": 418, "formattedValue": "₫418M", "deltaPct": 5.4 },
+        { "name": "WH-B", "value": 367, "formattedValue": "₫367M", "deltaPct": 1.9 },
+        { "name": "WH-C", "value": 244, "formattedValue": "₫244M", "deltaPct": -1.2 }
+      ],
+      "checks": { "count": 4, "label": "aging evidence ranked" },
+      "packets": { "primary": ["StockValue=₫1.03B", "Warehouse=WH-A"], "secondaryA": ["OnHand=272", "AgeDays=142"], "secondaryB": ["SKU=AC-LG12", "Turnover=1.8"] }
+    },
+    {
+      "timestampLabel": "Snapshot 2",
+      "total": { "label": "Stock value", "value": 1035, "formattedValue": "₫1.04B", "deltaPct": 0.6, "detail": "stock value reviewed" },
+      "whereDetail": "risk ranking crossed over",
+      "entities": [
+        { "name": "WH-A", "value": 392, "formattedValue": "₫392M", "deltaPct": -6.2 },
+        { "name": "WH-B", "value": 405, "formattedValue": "₫405M", "deltaPct": 10.4 },
+        { "name": "WH-C", "value": 238, "formattedValue": "₫238M", "deltaPct": -2.5 }
+      ],
+      "checks": { "count": 3, "label": "turnover check added" },
+      "packets": { "primary": ["StockValue=₫1.04B", "Warehouse=WH-B"], "secondaryA": ["OnHand=271", "AgeDays=151"], "secondaryB": ["RankChange=WH-B→1", "Turnover=2.0"] }
+    },
+    {
+      "timestampLabel": "Snapshot 3",
+      "total": { "label": "Stock value", "value": 1038, "formattedValue": "₫1.04B", "deltaPct": 0.3, "detail": "stock value reviewed" },
+      "whereDetail": "concentration increased",
+      "entities": [
+        { "name": "WH-A", "value": 361, "formattedValue": "₫361M", "deltaPct": -7.9 },
+        { "name": "WH-B", "value": 446, "formattedValue": "₫446M", "deltaPct": 10.1 },
+        { "name": "WH-C", "value": 231, "formattedValue": "₫231M", "deltaPct": -2.9 }
+      ],
+      "checks": { "count": 2, "label": "priority narrowed" },
+      "packets": { "primary": ["StockValue=₫1.04B", "Warehouse=WH-B"], "secondaryA": ["OnHand=270", "AgeDays=160"], "secondaryB": ["Concentration=43%", "Turnover=1.7"] }
+    }
+  ]
+}

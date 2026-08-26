@@ -106,7 +106,7 @@ for (const [name, type] of [['amount_total', 'INTEGER'], ['currency', 'TEXT'], [
 }
 
 const jsonHeaders = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', 'access-control-allow-origin': '*' };
-const mime = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png' };
+const mime = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.json': 'application/json; charset=utf-8', '.csv': 'text/csv; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png' };
 
 function sendJson(response, status, body, extraHeaders = {}) {
   response.writeHead(status, { ...jsonHeaders, ...extraHeaders });
@@ -281,7 +281,8 @@ async function createCheckout({ installationId }) {
 }
 
 function serveStatic(requestPath, response) {
-  const route = requestPath === '/' || requestPath === '/admin' || requestPath === '/account' ? '/index.html' : requestPath;
+  const assetRoute = requestPath.startsWith('/distribution-assets/') ? requestPath.slice('/distribution-assets'.length) : requestPath;
+  const route = assetRoute === '/' || assetRoute === '/admin' || assetRoute === '/account' ? '/index.html' : assetRoute;
   if (route === '/logo.svg') {
     const file = path.resolve(appDir, '..', 'desktop', 'public', 'branding', 'lightbi-icon.svg');
     try {
