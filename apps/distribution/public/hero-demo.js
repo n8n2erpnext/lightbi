@@ -48,12 +48,20 @@ export function deriveHeroView(frame) {
   };
 }
 
+export function heroMotionPolicy(reducedMotion) {
+  return {
+    animatePackets: !reducedMotion,
+    cycleFrames: true,
+    resultDelayMs: reducedMotion ? 240 : 1420,
+  };
+}
+
 export function releaseCatalogMarkup(catalog, fallbackUrl = 'https://github.com/n8n2erpnext/lightbi/releases') {
   const releases = catalog?.releases || [];
   if (!releases.length) {
     return `<div class="release-fallback"><h3>Need another platform or version?</h3><p>Browse the complete LightBI release archive on GitHub.</p><a class="button dark" href="${safe(fallbackUrl)}">View GitHub releases</a></div>`;
   }
-  return releases.slice(0, 3).map((release) => `
+  return `${releases.slice(0, 3).map((release) => `
     <article class="release-card">
       <span class="pill">${safe(release.channel)}</span>
       <h3>LightBI ${safe(release.version)}</h3>
@@ -62,7 +70,7 @@ export function releaseCatalogMarkup(catalog, fallbackUrl = 'https://github.com/
         <a class="button dark" href="${safe(artifact.url)}" data-release-download data-platform="${safe(artifact.platform)}">${safe(artifact.platform === 'windows' ? 'Windows' : artifact.platform === 'linux' ? 'Linux' : artifact.platform === 'macos' ? 'macOS' : artifact.platform)} · ${safe(artifact.architecture)}</a>
       `).join('')}</div>
     </article>
-  `).join('');
+  `).join('')}<a class="archive-link" href="${safe(fallbackUrl)}">View all GitHub releases →</a>`;
 }
 
 function previewMarkup(scenario) {
@@ -163,6 +171,19 @@ function animatePacket(root, selector, values, duration, delay, rafs) {
   schedule();
 }
 
+function renderStaticPackets(root, packets) {
+  [
+    ['[data-stream-primary]', packets.primary, '34%'],
+    ['[data-stream-secondary-a]', packets.secondaryA, '43%'],
+    ['[data-stream-secondary-b]', packets.secondaryB, '52%'],
+  ].forEach(([selector, values, offset]) => {
+    const textPath = root.querySelector(selector);
+    if (!textPath) return;
+    textPath.textContent = (values || []).join(' · ');
+    textPath.setAttribute('startOffset', offset);
+  });
+}
+
 export async function initHeroDemo({ root = globalThis.document, fetchImpl = globalThis.fetch } = {}) {
   if (!root?.querySelector('[data-hero-visual]')) return null;
   const scenarioBase = new URL('./demo-data/', import.meta.url);
@@ -179,6 +200,7 @@ export async function initHeroDemo({ root = globalThis.document, fetchImpl = glo
   let resultTimer = null;
   const rafs = new Set();
   const reducedMotion = globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches === true;
+  const motion = heroMotionPolicy(reducedMotion);
 
   const cancelMotion = () => {
     if (cycleTimer) clearTimeout(cycleTimer);
@@ -199,7 +221,7 @@ export async function initHeroDemo({ root = globalThis.document, fetchImpl = glo
   };
 
   const scheduleFrame = (delay = 2800) => {
-    if (reducedMotion || globalThis.document?.hidden) return;
+    if (!motion.cycleFrames || globalThis.document?.hidden) return;
     cycleTimer = setTimeout(runFrame, delay);
   };
 
@@ -211,13 +233,17 @@ export async function initHeroDemo({ root = globalThis.document, fetchImpl = glo
     renderRawTokens(root, scenario, frame);
     const visual = root.querySelector('[data-hero-visual]');
     visual.classList.add('is-updating');
-    animatePacket(root, '[data-stream-primary]', frame.packets.primary, 1450, 0, rafs);
-    animatePacket(root, '[data-stream-secondary-a]', frame.packets.secondaryA, 1500, 160, rafs);
-    animatePacket(root, '[data-stream-secondary-b]', frame.packets.secondaryB, 1580, 280, rafs);
+    if (motion.animatePackets) {
+      animatePacket(root, '[data-stream-primary]', frame.packets.primary, 1450, 0, rafs);
+      animatePacket(root, '[data-stream-secondary-a]', frame.packets.secondaryA, 1500, 160, rafs);
+      animatePacket(root, '[data-stream-secondary-b]', frame.packets.secondaryB, 1580, 280, rafs);
+    } else {
+      renderStaticPackets(root, frame.packets);
+    }
     resultTimer = setTimeout(() => {
       renderFrame(root, scenario, frame);
       visual.classList.remove('is-updating');
-    }, 1420);
+    }, motion.resultDelayMs);
     scheduleFrame(5200);
   };
 

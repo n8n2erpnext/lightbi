@@ -10,12 +10,15 @@ import { createMailer } from './mailer.mjs';
 import { loadReleaseCatalog, selectArtifact } from './release-manifest.mjs';
 import { createAccountAuth } from './account-auth.mjs';
 import { createLicenseSecretCache } from './license-secret-cache.mjs';
+import { accountPublicUrls, normalizePublicOrigin } from './public-url-contract.mjs';
+import { licenseGrantsPro } from './license-policy.mjs';
 
 const appDir = path.dirname(fileURLToPath(import.meta.url));
 const publicDir = path.join(appDir, 'public');
 const dataDir = process.env.LIGHTBI_DISTRIBUTION_DATA_DIR || path.join(appDir, 'data');
 const port = Number(process.env.PORT || 5174);
-const publicBaseUrl = (process.env.LIGHTBI_DISTRIBUTION_PUBLIC_URL || `http://localhost:${port}`).replace(/\/$/, '');
+const publicBaseUrl = normalizePublicOrigin(process.env.LIGHTBI_DISTRIBUTION_PUBLIC_URL, `http://localhost:${port}`);
+const publicUrls = accountPublicUrls(publicBaseUrl);
 const releaseUrl = process.env.LIGHTBI_RELEASE_URL || 'https://github.com/n8n2erpnext/lightbi/releases/latest';
 const releaseManifestUrl = process.env.LIGHTBI_RELEASE_MANIFEST_URL || 'https://drive.thaiduy.store/release/lightbi/beta/latest.json';
 const releaseIndexUrl = process.env.LIGHTBI_RELEASE_INDEX_URL || 'https://drive.thaiduy.store/release/lightbi/index.json';
@@ -37,7 +40,7 @@ const accountAuth = await createAccountAuth({
   sessionSecret: process.env.LIGHTBI_ACCOUNT_SESSION_SECRET || process.env.LIGHTBI_ADMIN_SESSION_SECRET,
   googleClientId: process.env.GOOGLE_CLIENT_ID,
   googleClientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  googleRedirectUrl: process.env.LIGHTBI_GOOGLE_REDIRECT_URL,
+  googleRedirectUrl: publicUrls.googleCallback,
   publicBaseUrl,
 });
 const mailer = await createMailer({ host: process.env.SMTP_HOST, port: process.env.SMTP_PORT, secure: process.env.SMTP_SECURE, user: process.env.SMTP_USER, password: process.env.SMTP_PASSWORD, from: process.env.SMTP_FROM });
@@ -103,6 +106,11 @@ if (!db.prepare('PRAGMA table_info(licenses)').all().some((column) => column.nam
 }
 for (const [name, type] of [['amount_total', 'INTEGER'], ['currency', 'TEXT'], ['paid_at', 'TEXT'], ['kind', 'TEXT'], ['label', 'TEXT'], ['discount_percent', 'INTEGER'], ['expires_at', 'TEXT'], ['revoked_at', 'TEXT'], ['recipient_email','TEXT'], ['key_suffix','TEXT']]) {
   if (!db.prepare('PRAGMA table_info(licenses)').all().some((column) => column.name === name)) db.exec(`ALTER TABLE licenses ADD COLUMN ${name} ${type}`);
+}
+if (accountAuth.enabled) {
+  for (const offer of db.prepare("SELECT id FROM licenses WHERE COALESCE(kind,'paid')='partner_discount'").all()) {
+    await accountAuth.revokeLicenseEntitlement(offer.id);
+  }
 }
 
 const jsonHeaders = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', 'access-control-allow-origin': '*' };
@@ -220,7 +228,7 @@ function revenueSummary(days) {
   const windowDays = Math.min(365, Math.max(1, Number(days) || 30));
   const since = new Date(Date.now() - windowDays * 86_400_000).toISOString();
   const paidOrders = db.prepare("SELECT COUNT(*) AS count FROM licenses WHERE paid_at >= ? AND status='active'").get(since)?.count || 0;
-  const activeLicenses = db.prepare("SELECT COUNT(*) AS count FROM licenses WHERE status='active'").get()?.count || 0;
+  const activeLicenses = db.prepare("SELECT COUNT(*) AS count FROM licenses WHERE status='active' AND COALESCE(kind,'paid') IN ('paid','complimentary')").get()?.count || 0;
   const currencies = db.prepare("SELECT COALESCE(currency,'N/A') AS currency, COALESCE(SUM(amount_total),0) AS gross_minor, COUNT(*) AS orders, COALESCE(ROUND(AVG(amount_total)),0) AS average_minor FROM licenses WHERE paid_at >= ? AND status='active' GROUP BY currency ORDER BY gross_minor DESC").all(since);
   const daily = db.prepare("SELECT substr(paid_at,1,10) AS day, COALESCE(currency,'N/A') AS currency, COALESCE(SUM(amount_total),0) AS gross_minor, COUNT(*) AS orders FROM licenses WHERE paid_at >= ? AND status='active' GROUP BY day,currency ORDER BY day,currency").all(since);
   return { days: windowDays, paidOrders, activeLicenses, currencies, daily, paymentConfigured: Boolean(process.env.STRIPE_SECRET_KEY && process.env.STRIPE_PRICE_ID && process.env.STRIPE_WEBHOOK_SECRET) };
@@ -241,10 +249,11 @@ async function createManualLicense(input) {
   const discount = kind === 'partner_discount' ? Math.min(100, Math.max(1, Number(input.discountPercent) || 1)) : 100;
   const expiresAt = input.expiresAt && !Number.isNaN(Date.parse(input.expiresAt)) ? new Date(input.expiresAt).toISOString() : null;
   const recipient = input.email ? String(input.email).trim().toLowerCase().slice(0,254) : null;
+  const tier = kind === 'partner_discount' ? 'offer' : 'pro';
   db.prepare(`INSERT INTO licenses (id,license_hash,tier,status,max_devices,kind,label,discount_percent,expires_at,recipient_email,key_suffix,created_at)
-    VALUES (?,?, 'pro','active',?,?,?,?,?,?,?,?)`).run(id, sha(key), maxDevices, kind, String(input.label || '').slice(0, 120) || null, discount, expiresAt, recipient, key.slice(-6), now);
+    VALUES (?,?,?,'active',?,?,?,?,?,?,?,?)`).run(id, sha(key), tier, maxDevices, kind, String(input.label || '').slice(0, 120) || null, discount, expiresAt, recipient, key.slice(-6), now);
   await licenseSecrets.put(id,key);
-  if (recipient && mailer.enabled) await mailer.sendProLicense({ to: recipient, licenseKey: key, template: 'manual', label: input.label, discountPercent: discount, expiresAt });
+  if (recipient && mailer.enabled) await mailer.sendProLicense({ to: recipient, licenseKey: key, template: 'manual', kind, label: input.label, discountPercent: discount, expiresAt });
   return { licenseKey: key, license: listLicenses().find((item) => item.id === id) };
 }
 
@@ -434,8 +443,9 @@ const server = createServer(async (request, response) => {
       if (!current) return sendJson(response, 401, { error: 'unauthorized' });
       const payload = JSON.parse((await body(request, 16_000)).toString('utf8') || '{}');
       if (typeof payload.licenseKey !== 'string') return sendJson(response, 400, { error: 'invalid_license_key' });
-      const license = db.prepare("SELECT id,tier,status,max_devices,expires_at FROM licenses WHERE license_hash=? AND status='active' AND (expires_at IS NULL OR expires_at>?)").get(sha(payload.licenseKey), new Date().toISOString());
+      const license = db.prepare("SELECT id,tier,status,max_devices,expires_at,COALESCE(kind,'paid') AS kind,discount_percent FROM licenses WHERE license_hash=? AND status='active' AND (expires_at IS NULL OR expires_at>?)").get(sha(payload.licenseKey), new Date().toISOString());
       if (!license) return sendJson(response, 404, { error: 'license_not_found' });
+      if (!licenseGrantsPro(license)) return sendJson(response, 409, { error: 'partner_discount_requires_checkout', offer: { discountPercent: license.discount_percent } });
       try {
         const installationHash = validInstallationId(payload.installationId) ? sha(payload.installationId) : null;
         const summary = await accountAuth.grantLicense(current.account_id, license, installationHash, { displayName: payload.deviceName, platform: payload.platform, appVersion: payload.appVersion });
@@ -514,8 +524,9 @@ const server = createServer(async (request, response) => {
     if (request.method === 'POST' && url.pathname === '/api/license/activate') {
       const payload = JSON.parse((await body(request)).toString('utf8'));
       if (!validInstallationId(payload.installationId) || typeof payload.licenseKey !== 'string') return sendJson(response, 400, { error: 'invalid_activation' });
-      const license = db.prepare("SELECT id, tier, max_devices FROM licenses WHERE license_hash = ? AND status = 'active' AND (expires_at IS NULL OR expires_at > ?)").get(sha(payload.licenseKey), new Date().toISOString());
+      const license = db.prepare("SELECT id,tier,max_devices,COALESCE(kind,'paid') AS kind,discount_percent FROM licenses WHERE license_hash = ? AND status = 'active' AND (expires_at IS NULL OR expires_at > ?)").get(sha(payload.licenseKey), new Date().toISOString());
       if (!license) return sendJson(response, 404, { error: 'license_not_found' });
+      if (!licenseGrantsPro(license)) return sendJson(response, 409, { error: 'partner_discount_requires_checkout', offer: { discountPercent: license.discount_percent } });
       const installationHash = sha(payload.installationId);
       const current = db.prepare('SELECT COUNT(*) AS count FROM license_installations WHERE license_id = ?').get(license.id)?.count || 0;
       const already = db.prepare('SELECT 1 FROM license_installations WHERE license_id = ? AND installation_hash = ?').get(license.id, installationHash);
@@ -586,7 +597,7 @@ const server = createServer(async (request, response) => {
       if (!await authorizedAdmin(request)) return sendJson(response, 401, { error: 'unauthorized' });
       const tiers = Object.fromEntries(db.prepare('SELECT tier, COUNT(*) AS count FROM installations GROUP BY tier').all().map((row) => [row.tier, row.count]));
       const downloads = db.prepare("SELECT COUNT(*) AS count FROM events WHERE kind = 'download'").get()?.count || 0;
-      const activeLicenses = db.prepare("SELECT COUNT(*) AS count FROM licenses WHERE status = 'active'").get()?.count || 0;
+      const activeLicenses = db.prepare("SELECT COUNT(*) AS count FROM licenses WHERE status='active' AND COALESCE(kind,'paid') IN ('paid','complimentary')").get()?.count || 0;
       const period = Math.min(365, Math.max(1, Number(url.searchParams.get('days')) || 30));
       const distribution = await analytics.summary(period);
       return sendJson(response, 200, {
@@ -656,7 +667,10 @@ const server = createServer(async (request, response) => {
         return sendJson(response, 200, { revoked: true });
       }
       const replacement = await createManualLicense({ kind: current.kind, label: current.label, discountPercent: current.discount_percent, maxDevices: current.max_devices, expiresAt: current.expires_at, email: payload.email });
-      if (accountAuth.enabled) await accountAuth.replaceLicenseEntitlement(current.id, replacement.license);
+      if (accountAuth.enabled) {
+        if (licenseGrantsPro(replacement.license)) await accountAuth.replaceLicenseEntitlement(current.id, replacement.license);
+        else await accountAuth.revokeLicenseEntitlement(current.id);
+      }
       return sendJson(response, 201, { rotated: true, ...replacement });
     }
     const resendAction = url.pathname.match(/^\/api\/admin\/licenses\/([^/]+)\/resend$/);
@@ -667,7 +681,7 @@ const server = createServer(async (request, response) => {
       const payload=JSON.parse((await body(request,8000)).toString('utf8')||'{}');const recipient=String(payload.email||current.recipient_email||'').trim();
       const key=await licenseSecrets.get(current.id);if(!key)return sendJson(response,410,{error:'plaintext_expired_rotate_required'});
       if(!recipient||!mailer.enabled)return sendJson(response,503,{error:'mail_unavailable'});
-      await mailer.sendProLicense({to:recipient,licenseKey:key,template:'manual',label:current.label,discountPercent:current.discount_percent,expiresAt:current.expires_at});
+      await mailer.sendProLicense({to:recipient,licenseKey:key,template:'manual',kind:current.kind,label:current.label,discountPercent:current.discount_percent,expiresAt:current.expires_at});
       return sendJson(response,200,{resent:true});
     }
     if (request.method === 'GET' && serveStatic(url.pathname, response)) return;

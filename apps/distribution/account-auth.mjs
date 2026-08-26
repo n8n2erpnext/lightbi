@@ -1,5 +1,7 @@
 import { createHash, randomBytes, scrypt, timingSafeEqual } from 'node:crypto';
 import { promisify } from 'node:util';
+import { accountPublicUrls } from './public-url-contract.mjs';
+import { assertLicenseGrantsPro } from './license-policy.mjs';
 
 const cleanEmail = (value) => String(value || '').trim().toLowerCase();
 const tokenHash = (value, secret) => createHash('sha256').update(`${secret}:${value}`).digest('hex');
@@ -22,6 +24,7 @@ export async function createAccountAuth({ databaseUrl, redisUrl, sessionSecret, 
     return { enabled: false, close: async () => {} };
   }
   const googleEnabled = Boolean(googleClientId && googleClientSecret && googleRedirectUrl);
+  const publicUrls = accountPublicUrls(publicBaseUrl);
   const [{ Pool }, { createClient }] = await Promise.all([import('pg'), import('redis')]);
   const pool = new Pool({ connectionString: databaseUrl, max: 6, idleTimeoutMillis: 30_000 });
   const redis = createClient({ url: redisUrl });
@@ -189,7 +192,8 @@ export async function createAccountAuth({ databaseUrl, redisUrl, sessionSecret, 
     const hash=await passwordHash(password);
     await pool.query(`INSERT INTO lightbi_accounts(id,email,display_name,provider,provider_subject)
       VALUES($1,$2,$3,'password',$2) ON CONFLICT(email) DO NOTHING`,[accountId,normalized,String(displayName||'').slice(0,120)]);
-    const token=await issueEmailToken('verify',{email:normalized,passwordHash:hash,displayName:String(displayName||'').slice(0,120)});await sendVerification({to:normalized,verifyUrl:`${publicBaseUrl}/distribution-api/api/account/verify?token=${encodeURIComponent(token)}`});
+    const token=await issueEmailToken('verify',{email:normalized,passwordHash:hash,displayName:String(displayName||'').slice(0,120)});
+    const verifyUrl=new URL(publicUrls.verify);verifyUrl.searchParams.set('token',token);await sendVerification({to:normalized,verifyUrl:verifyUrl.toString()});
     await audit(accountId,'account_registered_email');return {accepted:true};
   }
 
@@ -216,7 +220,7 @@ export async function createAccountAuth({ databaseUrl, redisUrl, sessionSecret, 
   async function requestPasswordReset(email,sendReset,networkHash=null) {
     const normalized=cleanEmail(email);const result=await pool.query('SELECT id FROM lightbi_accounts WHERE email=$1 AND password_hash IS NOT NULL',[normalized]);if(!result.rows[0])return;
     if(!await emailActionAllowed('password-reset',`${networkHash||'network'}:${normalized}`,4,900))return;
-    const token=await issueEmailToken('reset',{email:normalized});await sendReset({to:normalized,resetUrl:`${publicBaseUrl}/account?reset=${encodeURIComponent(token)}`});
+    const token=await issueEmailToken('reset',{email:normalized});const resetUrl=new URL(publicUrls.account);resetUrl.searchParams.set('reset',token);await sendReset({to:normalized,resetUrl:resetUrl.toString()});
   }
 
   async function resetPassword(token,password) {
@@ -251,6 +255,7 @@ export async function createAccountAuth({ databaseUrl, redisUrl, sessionSecret, 
   }
 
   async function grantLicense(accountId, license, installationHash = null, device = {}) {
+    assertLicenseGrantsPro(license);
     const id = randomId('ent');
     await pool.query(`INSERT INTO lightbi_entitlements(id,account_id,tier,status,source_license_id,max_devices,expires_at)
       VALUES($1,$2,'pro','active',$3,$4,$5) ON CONFLICT(source_license_id) DO NOTHING`, [id, accountId, license.id, license.max_devices, license.expires_at]);

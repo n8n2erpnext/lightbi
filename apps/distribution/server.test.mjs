@@ -99,6 +99,10 @@ test('keeps alternate releases in a closed Hero disclosure instead of page flow'
   const html = await response.text();
   assert.match(html, /data-other-downloads[^>]+aria-expanded="false"/);
   assert.match(html, /id="other-downloads-panel"[^>]+hidden/);
+  assert.match(html, /Public beta · Windows \+ Linux desktop/);
+  assert.match(html, />Other downloads<\/button>/);
+  assert.match(html, /data-other-downloads-backdrop/);
+  assert.doesNotMatch(html, /Other downloads[^<]*⌄/);
   assert.doesNotMatch(html, /<section id="other-downloads"/);
   assert.doesNotMatch(html, /Loading release catalog/);
 });
@@ -170,6 +174,37 @@ test('creates and revokes a manual Pro key without storing plaintext', async () 
   assert.equal(stored.license_hash.includes(created.licenseKey), false);
   assert.equal(module.revokeLicense(created.license.id), true);
   assert.equal(module.db.prepare('SELECT status FROM licenses WHERE id=?').get(created.license.id).status, 'revoked');
+});
+
+test('keeps Complimentary Pro activatable while every partner discount remains a non-entitlement offer', async () => {
+  const complimentary = await module.createManualLicense({ kind: 'complimentary', label: 'QA complimentary', maxDevices: 2 });
+  assert.equal(complimentary.license.kind, 'complimentary');
+  assert.equal(complimentary.license.tier, 'pro');
+  const complimentaryInstallation = 'complimentary-installation-0001';
+  await fetch(`${serverBaseUrl()}/api/pair`, {
+    method: 'POST', headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ installationId: complimentaryInstallation, appVersion: '0.9.2-beta.7', platform: 'windows', environment: 'test' }),
+  });
+  const activation = await fetch(`${serverBaseUrl()}/api/license/activate`, {
+    method: 'POST', headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ installationId: complimentaryInstallation, licenseKey: complimentary.licenseKey }),
+  });
+  assert.equal(activation.status, 200);
+  assert.deepEqual(await activation.json(), { tier: 'pro', active: true });
+  assert.equal(module.db.prepare('SELECT tier FROM installations WHERE installation_hash=?').get(module.sha(complimentaryInstallation)).tier, 'pro');
+
+  for (const discountPercent of [10, 50, 90, 100]) {
+    const offer = await module.createManualLicense({ kind: 'partner_discount', label: `Partner ${discountPercent}`, discountPercent });
+    assert.equal(offer.license.kind, 'partner_discount');
+    assert.equal(offer.license.tier, 'offer');
+    const response = await fetch(`${serverBaseUrl()}/api/license/activate`, {
+      method: 'POST', headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ installationId: `partner-offer-installation-${discountPercent}`, licenseKey: offer.licenseKey }),
+    });
+    assert.equal(response.status, 409);
+    assert.deepEqual(await response.json(), { error: 'partner_discount_requires_checkout', offer: { discountPercent } });
+    assert.equal(module.db.prepare('SELECT COUNT(*) AS count FROM license_installations WHERE license_id=?').get(offer.license.id).count, 0);
+  }
 });
 
 test('masks license keys with a visible product prefix and safe suffix only', () => {

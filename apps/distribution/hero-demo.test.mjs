@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
-import { deriveHeroView, HERO_SCENARIOS, releaseCatalogMarkup } from './public/hero-demo.js';
+import { deriveHeroView, HERO_SCENARIOS, heroMotionPolicy, releaseCatalogMarkup } from './public/hero-demo.js';
 
 const here = dirname(fileURLToPath(import.meta.url));
 
@@ -48,5 +48,10 @@ test('does not fetch the release catalog during initial homepage startup', () =>
   const application = readFileSync(join(here, 'public', 'app.js'), 'utf8');
   assert.doesNotMatch(application, /state\.catalog\s*=\s*await api\(['"]\/api\/releases/);
   assert.match(application, /setupOtherDownloads\(\)/);
-  assert.match(application, /if \(open\) void load\(\)/);
+  assert.match(application, /if \(open\) \{[\s\S]*?void load\(\)/);
+});
+
+test('reduced motion keeps semantic frame cycling while disabling packet travel', () => {
+  assert.deepEqual(heroMotionPolicy(false), { animatePackets: true, cycleFrames: true, resultDelayMs: 1420 });
+  assert.deepEqual(heroMotionPolicy(true), { animatePackets: false, cycleFrames: true, resultDelayMs: 240 });
 });

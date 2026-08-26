@@ -2,6 +2,13 @@
 
 All notable public changes to LightBI are recorded here.
 
+## Distribution Portal [0.2.1] - 2026-08-26
+
+- Normalized the configured public URL to its origin and separated frontend routes from `/distribution-api`, fixing duplicated account verification paths and keeping Google callbacks canonical.
+- Preserved animated analysis frame changes under reduced-motion preferences while replacing traveling packets with a minimal static evidence stream.
+- Replaced the Hero download popover with a toggleable full-height drawer and updated public-beta platform copy for Windows and Linux.
+- Locked license semantics across backend policy and activation routes: paid and Complimentary licenses grant Pro, while partner discounts from 10% through 100% remain checkout offers only.
+
 ## [0.9.2-beta.7] - 2026-08-26
 
 - Added a non-blocking staged updater: detect, notify, stream-download, SHA-256 verify, atomically stage, and wait for an explicit **Update & Restart** action.

@@ -187,3 +187,13 @@ Verification: live admin route now presents the admin login instead of the publi
 - The broader historical `advanced-result-handoff.test.ts` still has its pre-existing four canonical-artifact fixture failures; 62 neighboring Advanced tests passed. This file was not changed by the stabilization batch.
 - A third beta-test blocker was mentioned but no exact symptom or reproduction exists in the supplied plan or branch context. It remains intentionally unimplemented until the observed path is provided.
 - Version remains `0.9.2-beta.7`; do not tag. Produce untagged Windows/Linux test artifacts for another manual A/B/C workflow pass first.
+
+## Distribution cross-layer cleanup — 2026-08-26
+
+- Portal-only version `0.2.1`; desktop version remains `0.9.2-beta.7` and no tag/release was created.
+- Added a canonical public URL contract: deployment configuration is normalized to an origin, frontend account/reset paths stay on that origin, and verification/Google callback endpoints use the separate `/distribution-api/api/...` path exactly once.
+- Added a shared backend license policy used by account entitlements and activation routes. `paid` and `complimentary` grant Pro; `partner_discount` at 10/50/90/100 percent is an offer only and returns `partner_discount_requires_checkout`. Historical partner entitlements are revoked at service startup.
+- Partner delivery email and admin copy now call the credential an offer code and state that it does not activate Pro. Complimentary delivery remains a directly activatable Pro license.
+- Windows reduced-motion no longer freezes the Hero: source values and static evidence streams remain visible and WHAT/WHERE/WHAT NEXT/Top 3 continue cycling from the same deterministic frame state.
+- Other Downloads is now a full-height, backdrop-separated drawer. The same button toggles it closed, Escape/backdrop/close button dismiss it, and the old down arrow was removed.
+- Distribution test/build gate: 30 tests passed, including exact URL output, reduced-motion policy, drawer markup, Complimentary activation and partner-discount rejection.

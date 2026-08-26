@@ -128,8 +128,11 @@ let openOtherDownloads = () => {};
 function setupOtherDownloads() {
   const trigger = document.querySelector('[data-other-downloads]');
   const panel = document.querySelector('#other-downloads-panel');
+  const backdrop = document.querySelector('[data-other-downloads-backdrop]');
   const target = document.querySelector('#release-list');
-  if (!trigger || !panel || !target) return;
+  if (!trigger || !panel || !backdrop || !target) return;
+  let opened = false;
+  let closeTimer = null;
   const load = () => {
     if (state.catalog || releaseCatalogPromise) return releaseCatalogPromise;
     target.innerHTML = '<div class="release-loading">Loading releases…</div>';
@@ -140,16 +143,33 @@ function setupOtherDownloads() {
     return releaseCatalogPromise;
   };
   const setOpen = (open) => {
-    panel.hidden = !open;
+    opened = open;
     trigger.setAttribute('aria-expanded', String(open));
-    if (open) void load();
+    document.body.classList.toggle('drawer-open', open);
+    if (closeTimer) clearTimeout(closeTimer);
+    if (open) {
+      panel.hidden = false;
+      backdrop.hidden = false;
+      requestAnimationFrame(() => {
+        panel.classList.add('is-open');
+        backdrop.classList.add('is-open');
+      });
+      void load();
+      return;
+    }
+    panel.classList.remove('is-open');
+    backdrop.classList.remove('is-open');
+    closeTimer = setTimeout(() => {
+      if (!opened) {
+        panel.hidden = true;
+        backdrop.hidden = true;
+      }
+    }, 280);
   };
   openOtherDownloads = () => setOpen(true);
-  trigger.addEventListener('click', () => setOpen(panel.hidden));
+  trigger.addEventListener('click', () => setOpen(!opened));
   document.querySelector('[data-other-downloads-close]')?.addEventListener('click', () => setOpen(false));
-  document.addEventListener('mousedown', (event) => {
-    if (!panel.hidden && !panel.contains(event.target) && !trigger.contains(event.target)) setOpen(false);
-  });
+  backdrop.addEventListener('click', () => setOpen(false));
   document.addEventListener('keydown', (event) => { if (event.key === 'Escape') setOpen(false); });
 }
 
@@ -298,7 +318,7 @@ async function admin() {
     const data = await response.json();
     const safe = (value) => String(value ?? '').replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
     const rows = (data.licenses || []).map((item) => `<tr><td>${safe(item.label||'—')}<code class="masked-key cell-note">${safe(item.masked_key)}</code></td><td>${safe(String(item.kind).replaceAll('_',' '))}</td><td><span class="status-pill ${safe(item.status)}">${safe(item.status)}</span></td><td>${safe(item.assignedAccount?.email||item.recipient_email||'Unassigned')}<small class="cell-note">${safe(item.assignedAccount?.displayName||'')}</small></td><td>${safe(item.discount_percent??'—')}%</td><td>${safe(item.devices)}/${safe(item.max_devices)}</td><td>${safe(item.expires_at?String(item.expires_at).slice(0,10):'Never')}</td><td>${item.status==='active'?`<div class="table-actions"><button class="table-action" data-license-action="resend" data-license-id="${safe(item.id)}" data-license-email="${safe(item.recipient_email||'')}">Resend</button><button class="table-action" data-license-action="rotate" data-license-id="${safe(item.id)}">Rotate</button><button class="table-action danger" data-license-action="revoke" data-license-id="${safe(item.id)}">Revoke</button></div>`:'—'}</td></tr>`).join('');
-    document.body.innerHTML = `<main class="admin-shell"><div class="admin-head"><div><span class="eyebrow">LIGHTBI DISTRIBUTION</span><h1>License management</h1><p>Create, email, assign, rotate and revoke Pro keys. Only the prefix and suffix are visible after issuance.</p><nav class="admin-tabs"><a href="${portalBase}/admin">Analytics</a><a href="${portalBase}/admin?tab=app">App usage</a><a href="${portalBase}/admin?tab=accounts">Accounts</a><a class="active" href="${portalBase}/admin?tab=licenses">Licenses</a><a href="${portalBase}/admin?tab=revenue">Pro revenue</a></nav></div><button class="button" data-admin-logout>Sign out</button></div><section class="license-create"><form id="license-create"><label>Campaign/partner label<input name="label" required maxlength="120" placeholder="Beta partner campaign"></label><label>Key type<select name="kind"><option value="complimentary">Complimentary Pro</option><option value="partner_discount">Partner discount</option></select></label><label>Discount %<input name="discountPercent" type="number" min="1" max="100" value="100"></label><label>Max devices<input name="maxDevices" type="number" min="1" max="100" value="3"></label><label>Expires<input name="expiresAt" type="date"></label><label>Email key to<input name="email" type="email" placeholder="customer@example.com"></label><button class="button dark" type="submit">Generate Pro key</button></form><div class="one-time-key" id="one-time-key">A new plaintext key appears once, then only its masked prefix and suffix remain.</div></section><section class="chart-card"><h2>Issued licenses</h2><div class="table-scroll"><table><thead><tr><th>Label / masked key</th><th>Type</th><th>Status</th><th>Assigned user</th><th>Discount</th><th>Devices</th><th>Expires</th><th>Actions</th></tr></thead><tbody>${rows}</tbody></table></div></section></main>`;
+    document.body.innerHTML = `<main class="admin-shell"><div class="admin-head"><div><span class="eyebrow">LIGHTBI DISTRIBUTION</span><h1>License and offer management</h1><p>Complimentary keys grant Pro; partner-discount codes are checkout offers only. Only the prefix and suffix remain visible after issuance.</p><nav class="admin-tabs"><a href="${portalBase}/admin">Analytics</a><a href="${portalBase}/admin?tab=app">App usage</a><a href="${portalBase}/admin?tab=accounts">Accounts</a><a class="active" href="${portalBase}/admin?tab=licenses">Licenses</a><a href="${portalBase}/admin?tab=revenue">Pro revenue</a></nav></div><button class="button" data-admin-logout>Sign out</button></div><section class="license-create"><form id="license-create"><label>Campaign/partner label<input name="label" required maxlength="120" placeholder="Beta partner campaign"></label><label>Key type<select name="kind"><option value="complimentary">Complimentary Pro</option><option value="partner_discount">Partner discount offer</option></select></label><label>Discount %<input name="discountPercent" type="number" min="1" max="100" value="100"></label><label>Max devices<input name="maxDevices" type="number" min="1" max="100" value="3"></label><label>Expires<input name="expiresAt" type="date"></label><label>Email code to<input name="email" type="email" placeholder="customer@example.com"></label><button class="button dark" type="submit">Generate license / offer</button></form><div class="one-time-key" id="one-time-key">A new plaintext license or offer code appears once, then only its masked prefix and suffix remain.</div></section><section class="chart-card"><h2>Issued licenses and offers</h2><div class="table-scroll"><table><thead><tr><th>Label / masked code</th><th>Type</th><th>Status</th><th>Assigned user</th><th>Discount</th><th>Devices</th><th>Expires</th><th>Actions</th></tr></thead><tbody>${rows}</tbody></table></div></section></main>`;
     document.querySelector('#license-create').addEventListener('submit', async (event) => {
       event.preventDefault(); const form = Object.fromEntries(new FormData(event.currentTarget));
       const result = await fetch(`${routeBase}/api/admin/licenses`, { method:'POST', headers:{'content-type':'application/json','x-lightbi-admin-action':'1'}, body:JSON.stringify(form) });
