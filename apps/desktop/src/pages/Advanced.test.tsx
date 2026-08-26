@@ -340,6 +340,9 @@ describe('Advanced workspace', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Open' }));
 
     await waitFor(() => expect(screen.getByText(/inherited Simple understanding/)).toBeTruthy());
+    expect(screen.queryByText(/\d+ changed/)).toBeNull();
+    expect(screen.queryByText(/\d+ insert/)).toBeNull();
+    expect(screen.queryByText(/\d+ delete/)).toBeNull();
     expect((screen.getByLabelText('SQL query') as HTMLTextAreaElement).value).toBe('SELECT *\nFROM "Orders"');
 
     fireEvent.click(screen.getByRole('button', { name: 'Run' }));

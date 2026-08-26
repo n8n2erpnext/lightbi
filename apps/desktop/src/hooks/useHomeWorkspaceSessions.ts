@@ -9,7 +9,7 @@ import { inspectOnlineSource } from '../lib/online-source-inspector';
 import { downloadProjectSourceFile, uploadProjectSourceFile } from '../lib/project-source-file-api';
 import { createWorkspaceUnderstandingState } from '../lib/workspace-understanding-state';
 import { deleteWorkspaceSession, loadWorkspaceSessions, saveWorkspaceSession, type SaveWorkspaceSessionRequest, type WorkspaceSessionRecord } from '../lib/workspace-session-api';
-import { attachPersistedFile, attachPersistedPrimarySource, createWorkspaceSessionSnapshot, persistedFilesFromSession } from '../lib/home-workspace-persistence';
+import { attachPersistedFile, createWorkspaceSessionSnapshot, persistedFilesFromSession } from '../lib/home-workspace-persistence';
 import { parseCanonicalUserOverlay } from '../lib/understanding-core/canonical-user-overlay';
 import type { MultiSourceDraftV1 } from '../components/analysis/CanonicalMultiSourceReview';
 import { createLocalCanonicalSourceBoundary } from '../lib/home-source-boundary';
@@ -99,20 +99,46 @@ export function useHomeWorkspaceSessions(deps: HomeWorkspaceSessionDependencies)
   });
 
   const ensureLocalSourcesPersisted = async (dataset: any) => {
-    if (dataset?.normalizedUrl || typeof File === 'undefined') return dataset;
+    if (typeof File === 'undefined') return dataset;
     const sourceFiles = Array.isArray(dataset?.sourceFiles) ? dataset.sourceFiles.map((source: any) => ({ ...source })) : [];
     const runtimeFiles = Array.isArray(dataset?.runtimeFileReferences)
       ? dataset.runtimeFileReferences.filter((file: unknown): file is File => file instanceof File)
       : dataset?.file_reference instanceof File ? [dataset.file_reference] : [];
-    if (runtimeFiles.length === 0) return dataset;
-    if (sourceFiles.length === 0 && runtimeFiles.length === 1) {
-      return attachPersistedPrimarySource(dataset, await uploadProjectSourceFile(runtimeFiles[0]));
+    const normalizedUrl = typeof dataset?.normalizedUrl === 'string' ? dataset.normalizedUrl : '';
+    const sourceType = typeof dataset?.sourceType === 'string' ? dataset.sourceType : '';
+    const isLocalSource = normalizedUrl.startsWith('file://')
+      || sourceType.startsWith('local_')
+      || runtimeFiles.length > 0
+      || sourceFiles.some((source: any) => !source?.url && source?.persistedFile?.fileId);
+    if (!isLocalSource) return dataset;
+    if (sourceFiles.length > 0 && sourceFiles.every((source: any) => source?.persistedFile?.fileId)) {
+      return { ...dataset, sourceFiles };
+    }
+    if (runtimeFiles.length === 0) {
+      throw new Error('Local session was not saved because its complete source file is no longer available for durable persistence.');
+    }
+    if (sourceFiles.length === 0) {
+      const persisted = await Promise.all(runtimeFiles.map(uploadProjectSourceFile));
+      return {
+        ...dataset,
+        sourceFiles: persisted.map((persistedFile, index) => ({
+          name: persistedFile.originalName,
+          rows: runtimeFiles.length === 1 ? Number(dataset?.rows_count) || 0 : 0,
+          columns: runtimeFiles.length === 1 && Array.isArray(dataset?.columns) ? dataset.columns.length : 0,
+          persistedFile,
+          runtimeIndex: index,
+        })),
+      };
     }
     for (let index = 0; index < sourceFiles.length; index += 1) {
       if (sourceFiles[index]?.persistedFile?.fileId) continue;
       const file = runtimeFiles.find((candidate: File) => candidate.name === sourceFiles[index]?.name) ?? runtimeFiles[index];
       if (!file) continue;
       sourceFiles[index] = { ...sourceFiles[index], persistedFile: await uploadProjectSourceFile(file) };
+    }
+    const missing = sourceFiles.filter((source: any) => !source?.persistedFile?.fileId);
+    if (missing.length > 0) {
+      throw new Error(`Local session was not saved because ${missing.length} complete source file${missing.length === 1 ? '' : 's'} could not be persisted.`);
     }
     return { ...dataset, sourceFiles };
   };
@@ -160,8 +186,9 @@ export function useHomeWorkspaceSessions(deps: HomeWorkspaceSessionDependencies)
       setSessionStatus('Saved session does not contain a dataset snapshot.');
       return;
     }
-    const onlineUrl = restoredDataset.normalizedUrl
-      || restoredDataset.sourceFiles?.find((source: any) => typeof source?.url === 'string')?.url;
+    const restoredUrl = typeof restoredDataset.normalizedUrl === 'string' ? restoredDataset.normalizedUrl : '';
+    const onlineUrl = (!restoredUrl.startsWith('file://') ? restoredUrl : '')
+      || restoredDataset.sourceFiles?.find((source: any) => typeof source?.url === 'string' && !source.url.startsWith('file://'))?.url;
     if (onlineUrl) {
       setSessionStatus('Refreshing the saved online source...');
       try {

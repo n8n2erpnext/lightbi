@@ -10,6 +10,8 @@ All notable public changes to LightBI are recorded here.
 - Added native updater integrity tests to both Windows and Linux release jobs.
 - Added cross-platform release artifacts: a branded Windows NSIS installer and a Debian/Ubuntu `.deb`, published through one manifest only after both builds pass.
 - Fixed the Windows installer executable icon so File Explorer displays the LightBI yellow/black mark instead of the generic NSIS icon.
+- Fixed newly saved local-file history sessions so `file://` source identity no longer bypasses durable internal source persistence; a session now fails to save rather than pretending a retained sample is restorable.
+- Fixed Advanced local-file pagination so `hasMore` means another page is recoverable while `truncated` remains reserved for irreversible row loss, allowing complete 1,500-row Advanced-to-Easy round trips.
 
 ## Distribution Portal [0.1.4] - 2026-08-22
 

@@ -175,3 +175,15 @@ Verification: live admin route now presents the admin login instead of the publi
 - Downloaded artifact checksums matched their generated SHA-256 files. Windows metadata reported LightBI `0.9.1-beta.7`, and the installer-executable icon inspection showed the supplied yellow/black LightBI mark.
 - After those gates passed, the release candidate was bumped consistently to `0.9.2-beta.7`. The updater minimum remains `0.9.1-beta.7`, allowing the currently published Beta 7 build to discover and stage this release.
 - The tagged release must still pass both platform jobs before the publish job may create the GitHub prerelease, upload immutable R2 artifacts, update the release index, and publish `latest.json` last.
+
+## Downloaded-artifact runtime stabilization — 2026-08-26
+
+- Real Windows artifact testing paused the tag. No GitHub Release or R2 mutable release pointer was published.
+- Session History root cause: local candidates intentionally use `file://<name>` as normalized identity, but `ensureLocalSourcesPersisted` treated every normalized URL as online and returned before persisting the runtime `File`. New local saves now require all source summaries to contain durable internal file identities; missing runtime and persisted identities fail the save instead of creating a false-restorable history record.
+- Restore now excludes `file://` identities from online-source refresh, downloads the persisted internal copy, re-inspects the complete file, reconstructs canonical runtime continuity and reaches `ready` without requesting local reselection. True legacy snapshots still request reselection.
+- Advanced-to-Easy root cause: `AdvancedFileSession.execute` equated `hasMore` with `truncated`. Ordinary pagination now returns `hasMore=true, truncated=false`; true irreversible truncation remains rejected by `materializeAdvancedResultPages`.
+- Lifecycle regressions cover a 1,500-row local save/restart/restore, failure to save when no durable source survives, two-page 1,500-row materialization with no gaps/duplicates, zero-edit local return, post-commit database refresh, and pending-edit refusal.
+- Focused affected gates: 30 tests passed. Desktop TypeScript and production build passed. Distribution tests remain 26/26 and its syntax build passed.
+- The broader historical `advanced-result-handoff.test.ts` still has its pre-existing four canonical-artifact fixture failures; 62 neighboring Advanced tests passed. This file was not changed by the stabilization batch.
+- A third beta-test blocker was mentioned but no exact symptom or reproduction exists in the supplied plan or branch context. It remains intentionally unimplemented until the observed path is provided.
+- Version remains `0.9.2-beta.7`; do not tag. Produce untagged Windows/Linux test artifacts for another manual A/B/C workflow pass first.

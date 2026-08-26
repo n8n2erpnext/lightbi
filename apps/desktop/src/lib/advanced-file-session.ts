@@ -158,8 +158,8 @@ export class AdvancedFileSession {
       columns: fields.map((field, index) => ({ id: `column:${index}:${field.name}`, name: field.name, logicalType: logicalType(String(field.type)), nativeType: String(field.type) })),
       rows,
       page: { offset, limit, hasMore },
-      truncated: hasMore,
-      warnings: hasMore ? [`Result limited to ${limit} rows.`] : [],
+      truncated: false,
+      warnings: hasMore ? ['More rows are available on the next page.'] : [],
       executionMs: Math.round(performance.now() - startedAt),
     };
   }
