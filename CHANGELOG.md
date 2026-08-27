@@ -6,7 +6,8 @@ All notable public changes to LightBI are recorded here.
 
 - Normalized the configured public URL to its origin and separated frontend routes from `/distribution-api`, fixing duplicated account verification paths and keeping Google callbacks canonical.
 - Preserved animated analysis frame changes under reduced-motion preferences while replacing traveling packets with a minimal static evidence stream.
-- Kept the SVG evidence waves visibly moving on Windows; reduced-motion mode now slows their drift instead of freezing the lines.
+- Kept the SVG evidence waves visibly moving on Windows with direct path morphing, extended them left to the download CTA, and strengthened the primary evidence line; reduced-motion mode slows rather than freezes the motion.
+- Separated the permanent GitHub release archive URL from platform-specific R2 artifact URLs so **View all GitHub releases** never becomes a direct installer download.
 - Replaced the Hero download popover with a full-width horizontal release panel that opens in page flow, pushes the content below it down, and closes from the same trigger; updated public-beta platform copy for Windows and Linux.
 - Locked license semantics across backend policy and activation routes: paid and Complimentary licenses grant Pro, while partner discounts from 10% through 100% remain checkout offers only.
 

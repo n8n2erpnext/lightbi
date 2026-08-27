@@ -58,7 +58,7 @@ export async function loadReleaseCatalog({ manifestUrl, indexUrl, fallbackUrl, f
       const index = await read(indexUrl);
       if (index?.schema_version === 'lightbi.release-index.v1' && Array.isArray(index.releases)) releases = updateReleaseIndex(index, latest, 12).releases;
     } catch {}
-    return { available: true, source: 'r2', latest, releases };
+    return { available: true, source: 'r2', latest, releases, fallbackUrl };
   } catch (error) {
     return { available: false, source: 'fallback', latest: null, releases: [], fallbackUrl, error: error instanceof Error ? error.message : 'release_unavailable' };
   }

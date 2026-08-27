@@ -348,7 +348,7 @@ const server = createServer(async (request, response) => {
       const catalog = await releaseCatalog();
       const windows = catalog.latest ? selectArtifact(catalog.latest, 'windows') : null;
       return sendJson(response, 200, {
-        productId: 'digital.thaiduy.lightbi', releaseUrl: windows?.url || releaseUrl, releaseManifestUrl, proPriceLabel,
+        productId: 'digital.thaiduy.lightbi', releaseUrl: windows?.url || releaseUrl, releaseArchiveUrl: releaseUrl, releaseManifestUrl, proPriceLabel,
         latestVersion: catalog.latest?.version || null, releaseCatalogAvailable: catalog.available,
         googleAccountAvailable: Boolean(accountAuth.googleEnabled),
         emailAccountAvailable: Boolean(accountAuth.enabled && mailer.enabled),

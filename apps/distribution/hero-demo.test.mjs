@@ -58,8 +58,18 @@ test('reduced motion keeps semantic frame cycling while disabling packet travel'
 
 test('keeps the evidence waves moving on Windows while slowing reduced motion', () => {
   const css = readFileSync(join(here, 'public', 'styles.css'), 'utf8');
+  const html = readFileSync(join(here, 'public', 'index.html'), 'utf8');
   assert.match(css, /@keyframes hero-wave-drift/);
   assert.match(css, /\.hero-transmission path\{[^}]*animation:hero-wave-drift/);
   assert.match(css, /prefers-reduced-motion:reduce\)\{\.hero-transmission path\{animation-duration:14s!important/);
   assert.doesNotMatch(css, /\.hero-transmission path\{[^}]*animation:none/);
+  assert.match(css, /#hero-wave-primary\{stroke-width:1\.45;opacity:\.22/);
+  assert.match(html, /id="hero-wave-primary" d="M 240 430[^>]*><animate attributeName="d"[^>]+repeatCount="indefinite"/);
+});
+
+test('keeps the GitHub archive link separate from R2 download artifacts', () => {
+  const archive = 'https://github.com/n8n2erpnext/lightbi/releases';
+  const markup = releaseCatalogMarkup({ releases: [{ channel: 'beta', version: '0.9.2-beta.7', published_at: '2026-08-27', release_notes: 'Beta', artifacts: [{ platform: 'windows', architecture: 'x86_64', url: 'https://drive.example/LightBI.exe' }] }] }, archive);
+  assert.match(markup, new RegExp(`class="archive-link" href="${archive}"`));
+  assert.doesNotMatch(markup, /class="archive-link" href="https:\/\/drive\.example/);
 });

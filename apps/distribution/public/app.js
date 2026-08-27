@@ -118,7 +118,8 @@ async function download(platform = preferredPlatform() || 'windows', architectur
 function renderReleaseCatalog() {
   const target = document.querySelector('#release-list');
   if (!target) return;
-  target.innerHTML = releaseCatalogMarkup(state.catalog, state.config?.releaseUrl);
+  const archiveUrl = state.catalog?.fallbackUrl || state.config?.releaseArchiveUrl || 'https://github.com/n8n2erpnext/lightbi/releases';
+  target.innerHTML = releaseCatalogMarkup(state.catalog, archiveUrl);
   target.querySelectorAll('[data-release-download]').forEach((link) => link.addEventListener('click', () => { void api('/api/download', { method:'POST', body:JSON.stringify({ ...trafficContext(), tier:'basic', platform:link.dataset.platform }) }).catch(()=>null); }));
 }
 
