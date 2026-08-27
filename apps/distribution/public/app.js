@@ -128,9 +128,8 @@ let openOtherDownloads = () => {};
 function setupOtherDownloads() {
   const trigger = document.querySelector('[data-other-downloads]');
   const panel = document.querySelector('#other-downloads-panel');
-  const backdrop = document.querySelector('[data-other-downloads-backdrop]');
   const target = document.querySelector('#release-list');
-  if (!trigger || !panel || !backdrop || !target) return;
+  if (!trigger || !panel || !target) return;
   let opened = false;
   let closeTimer = null;
   const load = () => {
@@ -145,31 +144,21 @@ function setupOtherDownloads() {
   const setOpen = (open) => {
     opened = open;
     trigger.setAttribute('aria-expanded', String(open));
-    document.body.classList.toggle('drawer-open', open);
     if (closeTimer) clearTimeout(closeTimer);
     if (open) {
       panel.hidden = false;
-      backdrop.hidden = false;
-      requestAnimationFrame(() => {
-        panel.classList.add('is-open');
-        backdrop.classList.add('is-open');
-      });
+      requestAnimationFrame(() => panel.classList.add('is-open'));
       void load();
       return;
     }
     panel.classList.remove('is-open');
-    backdrop.classList.remove('is-open');
     closeTimer = setTimeout(() => {
-      if (!opened) {
-        panel.hidden = true;
-        backdrop.hidden = true;
-      }
-    }, 280);
+      if (!opened) panel.hidden = true;
+    }, 360);
   };
   openOtherDownloads = () => setOpen(true);
   trigger.addEventListener('click', () => setOpen(!opened));
   document.querySelector('[data-other-downloads-close]')?.addEventListener('click', () => setOpen(false));
-  backdrop.addEventListener('click', () => setOpen(false));
   document.addEventListener('keydown', (event) => { if (event.key === 'Escape') setOpen(false); });
 }
 

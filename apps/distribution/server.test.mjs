@@ -94,16 +94,17 @@ test('serves the deterministic Hero data with explicit JSON and CSV types', asyn
   assert.match(await csv.text(), /^date,store,product/);
 });
 
-test('keeps alternate releases in a closed Hero disclosure instead of page flow', async () => {
+test('keeps alternate releases in a closed full-width split panel', async () => {
   const response = await fetch(`${serverBaseUrl()}/`);
   const html = await response.text();
   assert.match(html, /data-other-downloads[^>]+aria-expanded="false"/);
   assert.match(html, /id="other-downloads-panel"[^>]+hidden/);
   assert.match(html, /Public beta · Windows \+ Linux desktop/);
   assert.match(html, />Other downloads<\/button>/);
-  assert.match(html, /data-other-downloads-backdrop/);
+  assert.doesNotMatch(html, /data-other-downloads-backdrop/);
   assert.doesNotMatch(html, /Other downloads[^<]*⌄/);
-  assert.doesNotMatch(html, /<section id="other-downloads"/);
+  assert.match(html, /<section id="other-downloads-panel"[^>]+hidden/);
+  assert.match(html, /class="shell other-downloads-content"/);
   assert.doesNotMatch(html, /Loading release catalog/);
 });
 
