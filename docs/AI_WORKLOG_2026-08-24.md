@@ -195,5 +195,14 @@ Verification: live admin route now presents the admin login instead of the publi
 - Added a shared backend license policy used by account entitlements and activation routes. `paid` and `complimentary` grant Pro; `partner_discount` at 10/50/90/100 percent is an offer only and returns `partner_discount_requires_checkout`. Historical partner entitlements are revoked at service startup.
 - Partner delivery email and admin copy now call the credential an offer code and state that it does not activate Pro. Complimentary delivery remains a directly activatable Pro license.
 - Windows reduced-motion no longer freezes the Hero: source values and static evidence streams remain visible and WHAT/WHERE/WHAT NEXT/Top 3 continue cycling from the same deterministic frame state.
-- Other Downloads is now a full-height, backdrop-separated drawer. The same button toggles it closed, Escape/backdrop/close button dismiss it, and the old down arrow was removed.
-- Distribution test/build gate: 30 tests passed, including exact URL output, reduced-motion policy, drawer markup, Complimentary activation and partner-discount rejection.
+- Other Downloads is now a full-width horizontal panel inserted between the Hero and proof strip. It opens in normal document flow and pushes the lower page down without an overlay, backdrop, or scroll lock. The same button, Escape, and the close button dismiss it; the old down arrow was removed.
+- Distribution test/build gate: 30 tests passed, including exact URL output, reduced-motion policy, horizontal release-panel markup, Complimentary activation and partner-discount rejection.
+
+## Approved `v0.9.2-beta.7` publication gate — 2026-08-27
+
+- The owner approved tagging and cross-platform publication after manual Windows testing confirmed the early Beta blockers were resolved.
+- GitHub **Validate R2 Release Storage** run `33027422180` passed against all five configured secrets before publication. The bucket value is a bucket name, while `release/lightbi/<version>/` remains workflow-owned object namespace.
+- Distribution contracts and syntax passed with 30/30 tests. Focused desktop release gates covering the staged updater, Settings notification surface, durable local history restore, complete Advanced pagination/return-to-Easy, and chart subset drill-through passed with 66/66 tests.
+- Desktop TypeScript and production Vite build passed; the branded native icon contract passed. The local Windows machine lacks the Visual Studio linker, so the Rust updater target remains enforced on the official GitHub Windows and Ubuntu release runners.
+- The broad historical private/frozen corpus suite still reports its documented missing private inputs, byte-freeze drift, and legacy fixture failures. Those gates are not release authority for this public Beta and were not reclassified as product regressions.
+- Desktop version remains consistently `0.9.2-beta.7`; the approved release tag is `v0.9.2-beta.7`. GitHub Release and R2 publication remain gated on both native platform jobs succeeding.
