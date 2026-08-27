@@ -20,6 +20,7 @@ const port = Number(process.env.PORT || 5174);
 const publicBaseUrl = normalizePublicOrigin(process.env.LIGHTBI_DISTRIBUTION_PUBLIC_URL, `http://localhost:${port}`);
 const publicUrls = accountPublicUrls(publicBaseUrl);
 const releaseUrl = process.env.LIGHTBI_RELEASE_URL || 'https://github.com/n8n2erpnext/lightbi/releases/latest';
+const releaseArchiveUrl = process.env.LIGHTBI_RELEASE_ARCHIVE_URL || 'https://github.com/n8n2erpnext/lightbi/releases';
 const releaseManifestUrl = process.env.LIGHTBI_RELEASE_MANIFEST_URL || 'https://drive.thaiduy.store/release/lightbi/beta/latest.json';
 const releaseIndexUrl = process.env.LIGHTBI_RELEASE_INDEX_URL || 'https://drive.thaiduy.store/release/lightbi/index.json';
 const proPriceLabel = process.env.LIGHTBI_PRO_PRICE_LABEL || 'Early access';
@@ -51,7 +52,7 @@ let releaseCatalogCachedAt = 0;
 
 async function releaseCatalog(refresh = false) {
   if (!refresh && releaseCatalogCache && Date.now() - releaseCatalogCachedAt < 60_000) return releaseCatalogCache;
-  releaseCatalogCache = await loadReleaseCatalog({ manifestUrl: releaseManifestUrl, indexUrl: releaseIndexUrl, fallbackUrl: releaseUrl });
+  releaseCatalogCache = await loadReleaseCatalog({ manifestUrl: releaseManifestUrl, indexUrl: releaseIndexUrl, fallbackUrl: releaseArchiveUrl });
   releaseCatalogCachedAt = Date.now();
   return releaseCatalogCache;
 }
@@ -348,7 +349,7 @@ const server = createServer(async (request, response) => {
       const catalog = await releaseCatalog();
       const windows = catalog.latest ? selectArtifact(catalog.latest, 'windows') : null;
       return sendJson(response, 200, {
-        productId: 'digital.thaiduy.lightbi', releaseUrl: windows?.url || releaseUrl, releaseArchiveUrl: releaseUrl, releaseManifestUrl, proPriceLabel,
+        productId: 'digital.thaiduy.lightbi', releaseUrl: windows?.url || releaseUrl, releaseArchiveUrl, releaseManifestUrl, proPriceLabel,
         latestVersion: catalog.latest?.version || null, releaseCatalogAvailable: catalog.available,
         googleAccountAvailable: Boolean(accountAuth.googleEnabled),
         emailAccountAvailable: Boolean(accountAuth.enabled && mailer.enabled),

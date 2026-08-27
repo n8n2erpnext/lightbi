@@ -108,6 +108,14 @@ test('keeps alternate releases in a closed full-width split panel', async () => 
   assert.doesNotMatch(html, /Loading release catalog/);
 });
 
+test('keeps the GitHub archive separate from the configured installer fallback', async () => {
+  const response = await fetch(`${serverBaseUrl()}/api/config`);
+  assert.equal(response.status, 200);
+  const config = await response.json();
+  assert.equal(config.releaseArchiveUrl, 'https://github.com/n8n2erpnext/lightbi/releases');
+  assert.doesNotMatch(config.releaseArchiveUrl, /\.exe(?:$|\?)/);
+});
+
 test('accepts privacy-safe visit signals without requiring analytics infrastructure', async () => {
   const response = await fetch(`${serverBaseUrl()}/api/visit`, {
     method: 'POST',

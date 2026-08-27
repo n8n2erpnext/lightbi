@@ -63,7 +63,7 @@ test('keeps the evidence waves moving on Windows while slowing reduced motion', 
   assert.match(css, /\.hero-transmission path\{[^}]*animation:hero-wave-drift/);
   assert.match(css, /prefers-reduced-motion:reduce\)\{\.hero-transmission path\{animation-duration:14s!important/);
   assert.doesNotMatch(css, /\.hero-transmission path\{[^}]*animation:none/);
-  assert.match(css, /#hero-wave-primary\{stroke-width:1\.45;opacity:\.22/);
+  assert.match(css, /#hero-wave-primary\{stroke-width:1\.45;opacity:\.25/);
   assert.match(html, /id="hero-wave-primary" d="M 240 430[^>]*><animate attributeName="d"[^>]+repeatCount="indefinite"/);
 });
 
