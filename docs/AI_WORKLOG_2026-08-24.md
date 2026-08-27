@@ -206,3 +206,13 @@ Verification: live admin route now presents the admin login instead of the publi
 - Desktop TypeScript and production Vite build passed; the branded native icon contract passed. The local Windows machine lacks the Visual Studio linker, so the Rust updater target remains enforced on the official GitHub Windows and Ubuntu release runners.
 - The broad historical private/frozen corpus suite still reports its documented missing private inputs, byte-freeze drift, and legacy fixture failures. Those gates are not release authority for this public Beta and were not reclassified as product regressions.
 - Desktop version remains consistently `0.9.2-beta.7`; the approved release tag is `v0.9.2-beta.7`. GitHub Release and R2 publication remain gated on both native platform jobs succeeding.
+
+## Published `v0.9.2-beta.7` verification — 2026-08-27
+
+- GitHub release workflow `33028417121` completed successfully and published the prerelease with four binary/checksum assets: Windows x64 NSIS and Debian/Ubuntu amd64 packages plus their SHA-256 files.
+- The GitHub release body was replaced with structured **Release Notes for v0.9.2-beta.7**, including What's New, platform builds, safe updates, workflow fixes, accounts/licensing, downloads, and Beta guidance.
+- R2 versioned manifest, `beta/latest.json`, and global `latest.json` are byte-identical and expose two artifacts. `index.json` lists `0.9.2-beta.7` as the newest release.
+- Direct R2 downloads were verified byte-for-byte: Windows `a9cc6e81ae7c1113f79a1ad7810d87c13dfabd12c105ffec9e05f56d4c479362`; Debian `548fc8783f88543d25ebf475dceb5d3036d02cd8fc77e89b3feb95f576a81229`. Manifest sizes, downloaded sizes, and checksum sidecars all match.
+- R2 immutable artifacts use one-year immutable caching; latest pointers use 60-second revalidation. The distribution API reports `source: r2` and returns the Windows `.exe` or Linux `.deb` matching the requested platform.
+- Dependabot alert `GHSA-wrw7-89jp-8q8g` was triaged as `not_used`: LightBI contains no `VariantStrIter`/`VariantStr` usage. Vulnerable `glib 0.18.5` is indirect through Tauri 2's official WebKitGTK/GTK3 Linux stack, whose current ABI cannot be replaced with `glib 0.20` independently. The alert records this upstream constraint and must be reopened if the affected iterator path is introduced or Tauri supplies a compatible migration.
+- Post-release portal correction: the three SVG evidence waves now use explicit cross-browser transform animations. Windows reduced-motion preferences retain a subtle 14–20 second drift rather than freezing the lines; normal motion uses staggered 5.8–8.6 second movement. Distribution verification increased to 31/31 tests.

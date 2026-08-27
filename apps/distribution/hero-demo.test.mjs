@@ -55,3 +55,11 @@ test('reduced motion keeps semantic frame cycling while disabling packet travel'
   assert.deepEqual(heroMotionPolicy(false), { animatePackets: true, cycleFrames: true, resultDelayMs: 1420 });
   assert.deepEqual(heroMotionPolicy(true), { animatePackets: false, cycleFrames: true, resultDelayMs: 240 });
 });
+
+test('keeps the evidence waves moving on Windows while slowing reduced motion', () => {
+  const css = readFileSync(join(here, 'public', 'styles.css'), 'utf8');
+  assert.match(css, /@keyframes hero-wave-drift/);
+  assert.match(css, /\.hero-transmission path\{[^}]*animation:hero-wave-drift/);
+  assert.match(css, /prefers-reduced-motion:reduce\)\{\.hero-transmission path\{animation-duration:14s!important/);
+  assert.doesNotMatch(css, /\.hero-transmission path\{[^}]*animation:none/);
+});
