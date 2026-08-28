@@ -33,7 +33,7 @@ For the detailed chronological implementation ledger and the exact next-phase ch
 
 ## Distribution and licensing
 
-- `apps/distribution` is a Node service on port 5174 using PostgreSQL for privacy-safe analytics, Redis for cache/admin sessions, and SQLite WAL for license fulfillment.
+- The distribution/account Node service on port 5174 is now implemented and deployed from the private `lightbi-control-plane` repository. This public repository retains only its client contracts.
 - The Vite edge router serves Distribution at `/`, the protected console at `/admin`, the web demo at `/app`, and retains `/distribution/api/*` compatibility for released desktop clients.
 - Each desktop installation creates a random installation ID. The server stores only an HMAC hash plus version, platform and Basic/Pro tier.
 - Pairing can be disabled in Settings. No imported file, column, query result, chart or BA finding is telemetry.
@@ -42,7 +42,7 @@ For the detailed chronological implementation ledger and the exact next-phase ch
 - Zoho SMTP sends branded automatic-purchase and manual-partner license templates. Recipient email is transient and is not stored by LightBI.
 - Native usage telemetry accepts only whitelisted app/mode/feature identifiers and durations; it never accepts SQL text or business-data identity.
 - Stripe Checkout is an environment-configured adapter. Webhook fulfillment is signature-checked and idempotent; the one-time license response is bound to the checkout installation.
-- Required production variables are documented by `apps/distribution/server.mjs`. Never commit their values.
+- Required production variables are documented and managed in the private control-plane repository. Never copy their values into this public repository.
 
 ## Validation evidence
 

@@ -1,6 +1,6 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { basename } from 'node:path';
-import { updateReleaseIndex, validateReleaseManifest } from '../apps/distribution/release-manifest.mjs';
+import { updateReleaseIndex, validateReleaseManifest } from './lib/release-manifest.mjs';
 
 const args = Object.fromEntries(process.argv.slice(2).map((value, index, all) => value.startsWith('--') ? [value.slice(2), all[index + 1]] : null).filter(Boolean));
 const required = args['artifacts-json'] ? ['version', 'channel', 'output'] : ['version', 'channel', 'artifact', 'artifact-url', 'sha256', 'output'];

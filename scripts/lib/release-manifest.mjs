@@ -44,22 +44,3 @@ export function selectArtifact(manifest, platform, architecture = null) {
   const candidates = validateReleaseManifest(manifest).artifacts.filter((artifact) => artifact.platform === platform);
   return candidates.find((artifact) => !architecture || artifact.architecture === architecture) || candidates[0] || null;
 }
-
-export async function loadReleaseCatalog({ manifestUrl, indexUrl, fallbackUrl, fetchImpl = fetch }) {
-  const read = async (url) => {
-    const response = await fetchImpl(url, { headers: { accept: 'application/json' }, signal: AbortSignal.timeout(5000) });
-    if (!response.ok) throw new Error(`release_http_${response.status}`);
-    return response.json();
-  };
-  try {
-    const latest = validateReleaseManifest(await read(manifestUrl));
-    let releases = [latest];
-    try {
-      const index = await read(indexUrl);
-      if (index?.schema_version === 'lightbi.release-index.v1' && Array.isArray(index.releases)) releases = updateReleaseIndex(index, latest, 12).releases;
-    } catch {}
-    return { available: true, source: 'r2', latest, releases, fallbackUrl };
-  } catch (error) {
-    return { available: false, source: 'fallback', latest: null, releases: [], fallbackUrl, error: error instanceof Error ? error.message : 'release_unavailable' };
-  }
-}

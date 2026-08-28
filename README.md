@@ -113,7 +113,6 @@ LightBI is a TypeScript + Rust monorepo:
 
 ```text
 apps/desktop/          React 19 desktop and web QA interface
-apps/distribution/     Distribution analytics, admin auth, Pro revenue, license lifecycle, SMTP, and payment adapter
 apps/server/           Embedded/standalone Axum backend and Advanced APIs
 packages/              Shared UI, runtime, schemas, and query contracts
 crates/                Rust domain, runtime, DuckDB, export, and Tauri crates
@@ -136,7 +135,7 @@ pnpm install --frozen-lockfile
 pnpm --filter @lightbi/desktop dev
 ```
 
-Open `http://localhost:5173/app` for the web interface. When the distribution service is running, `http://localhost:5173/` serves the download portal.
+Open `http://localhost:5173/app` for the web interface. The official download/account portal is operated from the private LightBI control plane and is not implemented in this public Basic repository.
 
 ### Validate
 

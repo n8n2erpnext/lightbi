@@ -29,10 +29,10 @@ jobs:
         with:
           workspaces: . -> target
       - run: pnpm install --frozen-lockfile
-      - name: Verify portal and release contract
+      - name: Verify public Basic release contract
         run: |
-          pnpm --dir apps/distribution test
-          pnpm --dir apps/distribution build
+          pnpm test:release-contract
+          pnpm test:public-boundary
       - name: Verify desktop updater state machine
         run: pnpm --dir apps/desktop exec vitest run src/stores/update-store.test.ts src/components/settings/UpdateSettingsPanel.test.tsx
       - name: Generate branded application icons
@@ -104,10 +104,10 @@ jobs:
         with:
           workspaces: . -> target
       - run: pnpm install --frozen-lockfile
-      - name: Verify portal and release contract
+      - name: Verify public Basic release contract
         run: |
-          pnpm --dir apps/distribution test
-          pnpm --dir apps/distribution build
+          pnpm test:release-contract
+          pnpm test:public-boundary
       - name: Verify desktop updater state machine
         run: pnpm --dir apps/desktop exec vitest run src/stores/update-store.test.ts src/components/settings/UpdateSettingsPanel.test.tsx
       - name: Generate branded application icons

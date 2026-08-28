@@ -1,5 +1,5 @@
 [Unit]
-Description=LightBI web demo and distribution edge router
+Description=LightBI public web demo and private control-plane edge router
 After=network-online.target lightbi-distribution.service
 Wants=network-online.target
 
