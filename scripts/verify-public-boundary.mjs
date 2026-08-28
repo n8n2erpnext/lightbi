@@ -1,19 +1,18 @@
-import { existsSync, readFileSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 const root = resolve(import.meta.dirname, '..');
-const forbiddenPaths = [
-  'apps/distribution/server.mjs',
-  'apps/distribution/account-auth.mjs',
-  'apps/distribution/admin-auth.mjs',
-  'apps/distribution/license-policy.mjs',
-  'apps/distribution/mailer.mjs',
-  'apps/distribution/package.json',
+const visibleFiles = execFileSync('git', ['ls-files', '--cached', '--others', '--exclude-standard'], { cwd: root, encoding: 'utf8' })
+  .split(/\r?\n/u)
+  .filter(Boolean)
+  .map((path) => path.replaceAll('\\', '/'));
+const forbiddenExactPaths = new Set([
   'deploy/lightbi-distribution.service',
   'deploy/distribution-data.compose.yml',
-];
+]);
 
-const present = forbiddenPaths.filter((path) => existsSync(resolve(root, path)));
+const present = visibleFiles.filter((path) => path.startsWith('apps/distribution/') || forbiddenExactPaths.has(path));
 if (present.length) {
   throw new Error(`Private control-plane implementation must not exist in public source: ${present.join(', ')}`);
 }
