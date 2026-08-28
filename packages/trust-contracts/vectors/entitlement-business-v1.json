@@ -1,0 +1,9 @@
+{
+  "purpose": "entitlement",
+  "payload": {"schema":1,"kid":"ent-2026-01","entitlement_id":"ent_org_vector_001","subject":{"type":"organization","id":"org_vector_001"},"tier":"business","capabilities":["pro_runtime","dashboard","advanced_scale"],"issued_at":"2026-08-29T05:17:00Z","valid_until":"2027-08-29T05:17:00Z","entitlement_version":3,"source":"internal","seat_limit":20},
+  "canonical_text": "{\"capabilities\":[\"advanced_scale\",\"dashboard\",\"pro_runtime\"],\"entitlement_id\":\"ent_org_vector_001\",\"entitlement_version\":3,\"issued_at\":\"2026-08-29T05:17:00Z\",\"kid\":\"ent-2026-01\",\"schema\":1,\"seat_limit\":20,\"source\":\"internal\",\"subject\":{\"id\":\"org_vector_001\",\"type\":\"organization\"},\"tier\":\"business\",\"valid_until\":\"2027-08-29T05:17:00Z\"}",
+  "canonical_utf8_hex": "7b226361706162696c6974696573223a5b22616476616e6365645f7363616c65222c2264617368626f617264222c2270726f5f72756e74696d65225d2c22656e7469746c656d656e745f6964223a22656e745f6f72675f766563746f725f303031222c22656e7469746c656d656e745f76657273696f6e223a332c226973737565645f6174223a22323032362d30382d32395430353a31373a30305a222c226b6964223a22656e742d323032362d3031222c22736368656d61223a312c22736561745f6c696d6974223a32302c22736f75726365223a22696e7465726e616c222c227375626a656374223a7b226964223a226f72675f766563746f725f303031222c2274797065223a226f7267616e697a6174696f6e227d2c2274696572223a22627573696e657373222c2276616c69645f756e74696c223a22323032372d30382d32395430353a31373a30305a227d",
+  "sha256": "e4322e9efe6deea4712bbb7d1b170d6cf9a7bc32c1a10de32fbb708a67ebd078",
+  "public_key": "11qYAYKxCrfVS_7TyWQHOg7hcvPapiMlrwIaaPcHURo",
+  "signature": "8frFm-jg4fCo2MLCACVUfIeCBOomRjqnBmvnRUpMdFIPYWgsMFyeQWUUg2Rmm0fwLg9rBMbqYvDs030UE2fTCw"
+}

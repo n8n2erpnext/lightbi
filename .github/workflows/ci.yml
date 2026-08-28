@@ -27,6 +27,12 @@ jobs:
         run: pnpm test:release-contract
       - name: Verify public/private source boundary
         run: pnpm test:public-boundary
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Verify public trust contracts and canonical vectors
+        run: |
+          pnpm --filter @lightbi/trust-contracts lint
+          pnpm --filter @lightbi/trust-contracts test
+          cargo test -p lightbi-trust-contracts
       - name: Build desktop web surface
         run: pnpm --filter @lightbi/desktop build
       - name: Run public governed regression gates

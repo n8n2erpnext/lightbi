@@ -1,0 +1,8 @@
+import { createPublicKey, verify } from 'node:crypto'; import type { ZodType } from 'zod';
+import { canonicalizeSignedPayload } from './canonical.js'; import { issuerKeysetPayloadV1Schema, signedEnvelopeSchema } from './schemas.js'; import type { KeyPurpose } from './types.js';
+const SPKI_ED25519_PREFIX=Buffer.from('302a300506032b6570032100','hex');
+export function verifyEd25519Signature(payload:unknown,publicKey:string,signatureValue:string):boolean { const raw=Buffer.from(publicKey,'base64url'); const signature=Buffer.from(signatureValue,'base64url'); if(raw.length!==32||signature.length!==64)return false; const key=createPublicKey({key:Buffer.concat([SPKI_ED25519_PREFIX,raw]),format:'der',type:'spki'}); return verify(null,canonicalizeSignedPayload(payload),key,signature); }
+export function verifySignedPayload<T>({envelope,payloadSchema,trustedKeyset,purpose,at=new Date()}:{envelope:unknown;payloadSchema:ZodType<T>;trustedKeyset:unknown;purpose:KeyPurpose;at?:Date}):T {
+  const parsed=signedEnvelopeSchema(payloadSchema).parse(envelope); const keyset=issuerKeysetPayloadV1Schema.parse(trustedKeyset); const key=keyset.keys.find((candidate)=>candidate.kid===parsed.kid); if(!key)throw new Error('unknown_kid'); if(key.purpose!==purpose)throw new Error('wrong_key_purpose'); if(key.status==='revoked')throw new Error('revoked_key'); if(key.status==='expired')throw new Error('expired_key'); const now=at.getTime(); if(now<Date.parse(key.not_before)||now>Date.parse(key.not_after))throw new Error('key_outside_validity');
+  if(!verifyEd25519Signature(parsed.payload,key.public_key,parsed.signature))throw new Error('invalid_signature'); return parsed.payload;
+}
