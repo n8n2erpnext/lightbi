@@ -141,3 +141,14 @@ inventory
 
 Cutover must precede removal. Phase 0–1 stops before offline roots, issuer keys, signing, attestation, request challenges, device encryption, native capability authority, Pro runtime, or private Pro delivery.
 
+## Execution checkpoint — 2026-08-28
+
+- Private repository created: `n8n2erpnext/lightbi-control-plane` with private visibility.
+- Private control-plane tests pass 34/34; syntax/build and private GitHub CI pass.
+- A localhost-only staging service on port 5175 passed release/download, account/admin guard, Google callback, pairing, telemetry-off, payment-dormant, PostgreSQL, Redis, and SMTP transport checks.
+- Production cutover completed without changing public URLs or the compatibility service name. `lightbi-distribution.service` now runs from `/home/ubuntu/services/lightbi-control-plane/apps/distribution` and reads `/home/ubuntu/.config/lightbi-control-plane.env`.
+- The former service unit, environment file, and SQLite data were backed up under `/home/ubuntu/lightbi-deploy-backups/control-plane-cutover-20260828-phase01` before cutover. The temporary staging unit is disabled.
+- PostgreSQL password, Redis password, admin session secret, account session secret, and installation pepper were rotated. The old PostgreSQL and Redis credentials were tested and rejected. R2 credential variables and the legacy Google redirect override were removed from the control-plane runtime.
+- PostgreSQL, authenticated Redis, SMTP transport, the public release catalog, Windows/Linux R2 selection, account/admin authorization guards, pairing, and telemetry-disabled behavior pass after rotation.
+- External rotations remain pending for the Google OAuth client secret, SMTP provider credential, and Basic-release R2 GitHub Actions credential. Their current values remain active to prevent login, mail, or update outage. Public server implementation must not be removed until replacements are installed and old values are revoked.
+- This work does not promote LightBI to stable 1.0. Desktop remains `0.9.2-beta.7`; future tags remain Beta until explicit owner approval.
