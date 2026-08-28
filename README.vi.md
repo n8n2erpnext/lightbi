@@ -106,7 +106,6 @@ LightBI là monorepo TypeScript + Rust:
 
 ```text
 apps/desktop/          Giao diện React 19 cho desktop và web QA
-apps/distribution/     Analytics phân phối, đăng nhập admin, doanh thu Pro, vòng đời license, SMTP và payment adapter
 apps/server/           Axum backend nhúng/độc lập và Advanced APIs
 packages/              UI, runtime, schema và query contract dùng chung
 crates/                Domain, runtime, DuckDB, export và Tauri bằng Rust
@@ -129,7 +128,7 @@ pnpm install --frozen-lockfile
 pnpm --filter @lightbi/desktop dev
 ```
 
-Mở `http://localhost:5173/app` để dùng giao diện web. Khi dịch vụ phân phối chạy, `http://localhost:5173/` là portal tải ứng dụng.
+Mở `http://localhost:5173/app` để dùng giao diện web. Portal tải ứng dụng/tài khoản chính thức được vận hành từ LightBI control plane riêng tư và không còn implementation trong repository Basic công khai này.
 
 ### Kiểm tra
 

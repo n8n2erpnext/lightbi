@@ -4,7 +4,7 @@ Review date: 2026-08-24. This is a release-readiness audit, not a request to red
 
 ## Outcome
 
-The repository retains a coherent product spine: local-first intake/canonical analysis, governed runtime, Advanced data workspace, native shell, and a separate distribution/account service. The V1 account/release work remains additive and does not move business data to the distribution backend.
+The repository retains a coherent public Basic product spine: local-first intake/canonical analysis, governed runtime, Advanced data workspace, native shell, and public account/release client contracts. The private distribution/account control plane does not receive business data.
 
 No critical/high production dependency issue was found by `pnpm audit --prod`. One moderate Rust advisory remains upstream-blocked through Tauri's GTK3 stack; see Risks.
 
@@ -19,7 +19,7 @@ No critical/high production dependency issue was found by `pnpm audit --prod`. O
 
 ### Distribution and release
 
-- `apps/distribution`: public portal, privacy-safe analytics, account/entitlement/device administration, transactional mail, license lifecycle.
+- Distribution/account server implementation moved to the private `lightbi-control-plane` repository after verified production cutover and credential handling. Only its public client and Basic release contracts remain here.
 - `packages/core-types/src/release.ts`: shared release contract.
 - `scripts/build-release-manifest.mjs`: deterministic manifest/index generation.
 - `.github/workflows/release.yml`: Windows/Linux build and gated GitHub/R2 publication.

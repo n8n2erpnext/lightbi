@@ -16,8 +16,8 @@ All server-side control-plane source previously committed to the public LightBI 
 - Public repository: `n8n2erpnext/lightbi`.
 - Migration branch: `codex/trust-boundary-phase-0-1` based on public `main` commit `653122eb48ff7132fa9b0d56089fa815da84d7ee`.
 - Current desktop release remains `v0.9.2-beta.7`.
-- Production control plane currently runs from `/home/ubuntu/n8n2erpnext/LightBI/apps/distribution` under the user service `lightbi-distribution.service`.
-- Production runtime configuration is loaded from `/home/ubuntu/.config/lightbi-distribution.env`.
+- Production control plane runs from the private checkout `/home/ubuntu/services/lightbi-control-plane/apps/distribution` under the compatibility user service `lightbi-distribution.service`.
+- Production runtime configuration is loaded from `/home/ubuntu/.config/lightbi-control-plane.env`.
 - PostgreSQL and Redis are active dependencies. License issuance/audit state also uses the application-owned SQLite WAL data directory.
 - No actual Google, Stripe, private-key, PostgreSQL-URL, or Redis-password credential was found in the tracked tree/history by the Phase 0 pattern audit. The only `whsec_` match is a deterministic test fixture. This is not a guarantee that a credential was never disclosed through another channel; rotation remains mandatory where listed below.
 
@@ -60,7 +60,7 @@ The following server implementation moves to private `lightbi-control-plane`:
 | `deploy/lightbi-distribution.service` | Production service working directory and environment boundary. |
 | `deploy/distribution-data.compose.yml` | Production PostgreSQL/Redis topology and credentials interface. |
 
-`apps/distribution/release-manifest.mjs` contains a public Basic release contract, not commercial authority. Before removing `apps/distribution`, its validation/index/artifact-selection logic must be extracted to a public release-tooling module and consumed by `scripts/build-release-manifest.mjs`. A copy may remain private for the portal, but the public release workflow must not import the private repository.
+The former `apps/distribution/release-manifest.mjs` contained a public Basic release contract, not commercial authority. Its validation/index/artifact-selection logic now lives in `scripts/lib/release-manifest.mjs` and is consumed by `scripts/build-release-manifest.mjs`. The public release workflow does not import the private repository.
 
 ## C. Website and marketing assets — reviewed
 
@@ -150,5 +150,6 @@ Cutover must precede removal. Phase 0–1 stops before offline roots, issuer key
 - The former service unit, environment file, and SQLite data were backed up under `/home/ubuntu/lightbi-deploy-backups/control-plane-cutover-20260828-phase01` before cutover. The temporary staging unit is disabled.
 - PostgreSQL password, Redis password, admin session secret, account session secret, and installation pepper were rotated. The old PostgreSQL and Redis credentials were tested and rejected. R2 credential variables and the legacy Google redirect override were removed from the control-plane runtime.
 - PostgreSQL, authenticated Redis, SMTP transport, the public release catalog, Windows/Linux R2 selection, account/admin authorization guards, pairing, and telemetry-disabled behavior pass after rotation.
-- External rotations remain pending for the Google OAuth client secret, SMTP provider credential, and Basic-release R2 GitHub Actions credential. Their current values remain active to prevent login, mail, or update outage. Public server implementation must not be removed until replacements are installed and old values are revoked.
+- A replacement Google OAuth secret was installed, verified with a real login, and the former secret was revoked. The owner explicitly retained the validated Zoho SMTP and Basic-release R2 credentials; SMTP delivery plus R2 CI/read/write/delete validation passed.
+- The public server, account/admin/payment/license/mail/static-portal implementation and its production unit/compose definitions were removed from this branch after the private cutover and credential gate completed. Public account/update clients and the standalone Basic release contract remain.
 - This work does not promote LightBI to stable 1.0. Desktop remains `0.9.2-beta.7`; future tags remain Beta until explicit owner approval.

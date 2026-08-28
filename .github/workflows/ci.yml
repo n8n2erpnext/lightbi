@@ -25,10 +25,8 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - name: Verify public Basic release contract
         run: pnpm test:release-contract
-      - name: Verify distribution portal
-        run: |
-          pnpm --dir apps/distribution test
-          pnpm --dir apps/distribution build
+      - name: Verify public/private source boundary
+        run: pnpm test:public-boundary
       - name: Build desktop web surface
         run: pnpm --filter @lightbi/desktop build
       - name: Run public governed regression gates
