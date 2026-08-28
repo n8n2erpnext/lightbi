@@ -6,6 +6,7 @@
     "dev": "pnpm -r --parallel dev",
     "build": "pnpm -r build",
     "lint": "pnpm -r lint",
+    "test:release-contract": "node --test scripts/release-manifest.test.mjs",
     "validate:native-icons": "node scripts/validate-native-icons.mjs",
     "build:native-beta": "node scripts/build-native-beta.mjs"
   },

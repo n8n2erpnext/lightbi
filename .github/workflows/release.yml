@@ -31,6 +31,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - name: Verify portal and release contract
         run: |
+          pnpm test:release-contract
           pnpm --dir apps/distribution test
           pnpm --dir apps/distribution build
       - name: Verify desktop updater state machine
@@ -106,6 +107,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - name: Verify portal and release contract
         run: |
+          pnpm test:release-contract
           pnpm --dir apps/distribution test
           pnpm --dir apps/distribution build
       - name: Verify desktop updater state machine

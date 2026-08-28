@@ -23,6 +23,8 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - name: Verify public Basic release contract
+        run: pnpm test:release-contract
       - name: Verify distribution portal
         run: |
           pnpm --dir apps/distribution test
