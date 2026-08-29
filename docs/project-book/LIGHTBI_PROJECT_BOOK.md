@@ -136,7 +136,7 @@ The central differentiator is that LightBI tries to make messy operational data 
 
 ### Primary source bookmarks
 
-- [`../architecture/ADR-117-business-understanding-engine-product-boundary.md`](../architecture/ADR-117-business-understanding-engine-product-boundary.md)
+- [`../architecture/ADR-117-business-understanding-engine-product-boundary.md`](../adr/ADR-117-business-understanding-engine-product-boundary.md)
 - [`../product/product-direction-and-pricing-v1.md`](../product/product-direction-and-pricing-v1.md)
 - [`../MVP_sol.md`](../MVP_sol.md)
 - [`../history/project-memory/memory.md`](../history/project-memory/memory.md) — historical project memory; use with precedence rules below.
@@ -214,11 +214,11 @@ Core decisions introduced local-first operation, SQLite metadata, DuckDB analyti
 
 Primary historical bookmarks:
 
-- [`../changelog/2026-06-01-phase2-domain-model.md`](../changelog/2026-06-01-phase2-domain-model.md)
-- [`../changelog/2026-06-01-phase4-storage-architecture.md`](../changelog/2026-06-01-phase4-storage-architecture.md)
-- [`../progress/phase-13-source-registry.md`](../progress/phase-13-source-registry.md)
-- [`../progress/phase-20-runtime-foundation.md`](../progress/phase-20-runtime-foundation.md)
-- [`../progress/phase-27-render-contract.md`](../progress/phase-27-render-contract.md)
+- [`../changelog/2026-06-01-phase2-domain-model.md`](../history/changelog/2026-06-01-phase2-domain-model.md)
+- [`../changelog/2026-06-01-phase4-storage-architecture.md`](../history/changelog/2026-06-01-phase4-storage-architecture.md)
+- [`../progress/phase-13-source-registry.md`](../history/progress/phase-13-source-registry.md)
+- [`../progress/phase-20-runtime-foundation.md`](../history/progress/phase-20-runtime-foundation.md)
+- [`../progress/phase-27-render-contract.md`](../history/progress/phase-27-render-contract.md)
 ### 4.2 Question First reduced BI complexity, but later proved too restrictive
 
 The early UX direction intentionally inverted classic BI:
@@ -235,8 +235,8 @@ Historical bookmarks:
 
 - [`../architecture/question-first-model.md`](../architecture/question-first-model.md)
 - [`../architecture/question-template-model.md`](../architecture/question-template-model.md)
-- [`../progress/milestone-2-question-first.md`](../progress/milestone-2-question-first.md)
-- [`../changelog/2026-06-01-phase6-question-first.md`](../changelog/2026-06-01-phase6-question-first.md)
+- [`../progress/milestone-2-question-first.md`](../history/progress/milestone-2-question-first.md)
+- [`../changelog/2026-06-01-phase6-question-first.md`](../history/changelog/2026-06-01-phase6-question-first.md)
 
 ### 4.3 Relationship discovery and Business Views expanded multi-file understanding
 
@@ -247,8 +247,8 @@ The critical historical boundary was that this layer initially **did not execute
 Bookmarks:
 
 - [`../architecture/relationship-discovery-scoring.md`](../architecture/relationship-discovery-scoring.md)
-- [`../progress/milestone-5-relationship-discovery.md`](../progress/milestone-5-relationship-discovery.md)
-- [`../progress/milestone-5-summary.md`](../progress/milestone-5-summary.md)
+- [`../progress/milestone-5-relationship-discovery.md`](../history/progress/milestone-5-relationship-discovery.md)
+- [`../progress/milestone-5-summary.md`](../history/progress/milestone-5-summary.md)
 ### 4.4 BVQ became too strict; Dataset Understanding became first-class
 
 The project later observed a practical failure mode: if complete Business Views and Questions were required before showing value, sparse SME data could produce:
@@ -276,7 +276,7 @@ The Home experience was repositioned around **what LightBI found**, **what can b
 
 Key bookmarks:
 
-- [`../progress/milestone-8-5-guided-investigation.md`](../progress/milestone-8-5-guided-investigation.md)
+- [`../progress/milestone-8-5-guided-investigation.md`](../history/progress/milestone-8-5-guided-investigation.md)
 - [`../history/project-memory/memory.md`](../history/project-memory/memory.md) sections “BVQ Reset”, “Dataset Understanding”, and “Home Freeze”
 - Search the source catalog for `ADR-097-dataset-understanding-before-questions.md`, `dataset-understanding-layer.md`, and `BVQ-RESET-DECISION.md`.
 ### 4.5 Business Brain shifted Simple Mode toward a BA workflow
@@ -306,7 +306,7 @@ Business recommendations are typed so the system can distinguish an evidence-bac
 
 Primary bookmark:
 
-- [`../progress/phase-28-business-brain-orchestrator.md`](../progress/phase-28-business-brain-orchestrator.md)
+- [`../progress/phase-28-business-brain-orchestrator.md`](../history/progress/phase-28-business-brain-orchestrator.md)
 - [`../history/project-memory/memory.md`](../history/project-memory/memory.md) — Business Brain checkpoints and UI visibility fixes.
 ### 4.6 Semantic Dictionary and Registry attacked “semantic blindness” upstream
 
@@ -330,8 +330,8 @@ The product guarantee is deliberately weaker and safer than “understand arbitr
 
 Primary bookmarks:
 
-- [`../progress/phase-29-context-aware-semantic-dictionary.md`](../progress/phase-29-context-aware-semantic-dictionary.md)
-- [`../progress/phase-30-semantic-registry-unification.md`](../progress/phase-30-semantic-registry-unification.md)
+- [`../progress/phase-29-context-aware-semantic-dictionary.md`](../history/progress/phase-29-context-aware-semantic-dictionary.md)
+- [`../progress/phase-30-semantic-registry-unification.md`](../history/progress/phase-30-semantic-registry-unification.md)
 - [`../history/project-memory/memory.md`](../history/project-memory/memory.md) — Phase 29/30 checkpoints.
 ---
 
@@ -657,7 +657,7 @@ Risk rules documented in V1 include low margin, high AR, deferred-payment exposu
 
 A recommendation must not overclaim. `do_now` is appropriate only when the evidence and risk state support it; otherwise the system should use `investigate` or `need_more_data`.
 
-Primary bookmark: [`../progress/phase-28-business-brain-orchestrator.md`](../progress/phase-28-business-brain-orchestrator.md).
+Primary bookmark: [`../progress/phase-28-business-brain-orchestrator.md`](../history/progress/phase-28-business-brain-orchestrator.md).
 ## 16. AI is an optional consumer, not the analytical authority
 
 The project repeatedly draws a hard line around AI responsibility.
@@ -716,7 +716,7 @@ The registry owns or bridges:
 
 A new signal may be recognized as partial/research-level without immediately receiving a BA playbook, governed metric, or executable action.
 
-Primary bookmark: [`../progress/phase-30-semantic-registry-unification.md`](../progress/phase-30-semantic-registry-unification.md).
+Primary bookmark: [`../progress/phase-30-semantic-registry-unification.md`](../history/progress/phase-30-semantic-registry-unification.md).
 ## 18. Domain Knowledge Catalog separates business knowledge from execution code
 
 The domain catalog is intentionally documentation-first knowledge. The documented knowledge flow is:
@@ -773,7 +773,7 @@ This is a critical future website/distribution rule. Product claims should be ba
 Source bookmark:
 
 - [`../history/project-memory/memory.md`](../history/project-memory/memory.md), section “2026-07-10 Semantic Dictionary Expansion + Domain Affinity Safepoint”.
-- [`../progress/phase-30-semantic-registry-unification.md`](../progress/phase-30-semantic-registry-unification.md).
+- [`../progress/phase-30-semantic-registry-unification.md`](../history/progress/phase-30-semantic-registry-unification.md).
 ---
 
 # Part VI — Planning, Runtime, Storage, and Connectors
@@ -824,8 +824,8 @@ The product rule also shapes privacy:
 Primary bookmarks:
 
 - [`../architecture/storage-model.md`](../architecture/storage-model.md)
-- [`../changelog/2026-06-01-phase11-persistence.md`](../changelog/2026-06-01-phase11-persistence.md)
-- [`../changelog/2026-06-01-phase12-project-runtime.md`](../changelog/2026-06-01-phase12-project-runtime.md)
+- [`../changelog/2026-06-01-phase11-persistence.md`](../history/changelog/2026-06-01-phase11-persistence.md)
+- [`../changelog/2026-06-01-phase12-project-runtime.md`](../history/changelog/2026-06-01-phase12-project-runtime.md)
 - [`../product/product-direction-and-pricing-v1.md`](../product/product-direction-and-pricing-v1.md)
 ## 21. Provider/plugin expansion must not bloat core or fake support
 
@@ -879,7 +879,7 @@ Primary bookmarks:
 - [`../architecture/visualization-contract.md`](../architecture/visualization-contract.md)
 - [`../architecture/visualization-engine.md`](../architecture/visualization-engine.md)
 - [`../architecture/render-contract.md`](../architecture/render-contract.md)
-- [`../progress/phase-25-chart-runtime.md`](../progress/phase-25-chart-runtime.md)
+- [`../progress/phase-25-chart-runtime.md`](../history/progress/phase-25-chart-runtime.md)
 ## 23. Dashboards are downstream analytical workspaces
 
 Dashboards were originally modeled as perspective-aware containers of existing analytical assets rather than query engines. They should compose charts, insights, exports, and actions while preserving the governance of the underlying assets.
@@ -891,7 +891,7 @@ A normal LightBI flow may reach a useful answer without ever constructing a dash
 Primary bookmarks:
 
 - [`../architecture/workspace-model.md`](../architecture/workspace-model.md)
-- [`../progress/phase-26-dashboard-workspace.md`](../progress/phase-26-dashboard-workspace.md)
+- [`../progress/phase-26-dashboard-workspace.md`](../history/progress/phase-26-dashboard-workspace.md)
 
 ## 24. Export is a governed artifact boundary
 
@@ -903,7 +903,7 @@ The important invariant is that export must preserve the truth about its scope a
 
 Primary bookmarks:
 
-- [`../progress/phase-24-export-foundation.md`](../progress/phase-24-export-foundation.md)
+- [`../progress/phase-24-export-foundation.md`](../history/progress/phase-24-export-foundation.md)
 - [`../architecture/phase-8d-export-handoff-audit.json`](../architecture/phase-8d-export-handoff-audit.json)
 ## 25. Historical visual baseline
 
@@ -1284,15 +1284,15 @@ Need an explicit current decision for Basic/Pro/Team feature boundaries and pric
 
 | Question | First source to open | Then inspect |
 |---|---|---|
-| What is the product? | [`ADR-117`](../architecture/ADR-117-business-understanding-engine-product-boundary.md) | [`product-direction-and-pricing-v1.md`](../product/product-direction-and-pricing-v1.md), [`MVP_sol.md`](../MVP_sol.md) |
+| What is the product? | [`ADR-117`](../adr/ADR-117-business-understanding-engine-product-boundary.md) | [`product-direction-and-pricing-v1.md`](../product/product-direction-and-pricing-v1.md), [`MVP_sol.md`](../MVP_sol.md) |
 | Why Understanding First? | `ADR-097` via source catalog | `dataset-understanding-layer.md`, BVQ reset docs, milestone 8.5 |
 | What is the latest canonical UI/runtime flow? | [`phase-8f-core-ui-functional-parity-closure.md`](../architecture/phase-8f-core-ui-functional-parity-closure.md) | Phase 8F/8F1/8F2 JSON audits |
 | How is full-source continuity enforced? | [`phase-8f1-ready-action-runtime-closure.md`](../architecture/phase-8f1-ready-action-runtime-closure.md) | `phase-8f1-*source*` audits |
 | How are user mappings/evidence stored? | [`phase-8b-production-evidence-interaction-closure.md`](../architecture/phase-8b-production-evidence-interaction-closure.md) | Phase 8B overlay/evidence JSON |
 | How does multi-source work? | [`phase-8d1-production-multisource-closure.md`](../architecture/phase-8d1-production-multisource-closure.md) | Phase 8D.1 contract/runtime/relationship audits |
 | What proves the six-file flow? | [`phase-8f2-six-file-operational-journey-audit.json`](../architecture/phase-8f2-six-file-operational-journey-audit.json) | Phase 8F.2 closure/regression audits |
-| What owns semantic signals? | [`phase-30-semantic-registry-unification.md`](../progress/phase-30-semantic-registry-unification.md) | Phase 29 dictionary docs, registry tests in code later |
-| How does Business Brain work? | [`phase-28-business-brain-orchestrator.md`](../progress/phase-28-business-brain-orchestrator.md) | Business Brain tests/code later |
+| What owns semantic signals? | [`phase-30-semantic-registry-unification.md`](../history/progress/phase-30-semantic-registry-unification.md) | Phase 29 dictionary docs, registry tests in code later |
+| How does Business Brain work? | [`phase-28-business-brain-orchestrator.md`](../history/progress/phase-28-business-brain-orchestrator.md) | Business Brain tests/code later |
 | What is domain knowledge? | [`domain-catalog/README.md`](../domain-catalog/README.md) | six domain catalog files |
 | What is provider/plugin policy? | [`provider-plugin-manual.md`](../plugin-sdk/provider-plugin-manual.md) | `packages/plugin-sdk/README.md` and later code map |
 | What is the historical visual baseline? | [`ui-baseline.md`](../design/ui-baseline.md) | Phase 8E/8F functional parity before redesign |

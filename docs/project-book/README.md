@@ -1,30 +1,34 @@
 # LightBI Project Book
 
-> Documentation knowledge base and provenance map for LightBI.
+> Stable onboarding, provenance, and retrieval entry point for humans and AI agents.
 
-## Purpose
+## Read in this order
 
-This directory is the stable entry point for humans and AI agents that need to understand LightBI before touching code.
-
-Read in this order:
-
-1. [`LIGHTBI_PROJECT_BOOK.md`](./LIGHTBI_PROJECT_BOOK.md) — current docs-derived model of the product and architecture.
+1. [`LIGHTBI_PROJECT_BOOK.md`](./LIGHTBI_PROJECT_BOOK.md) — docs-derived model of the product and architecture.
 2. [`LIGHTBI_WORKLOG.md`](./LIGHTBI_WORKLOG.md) — chronological work journal and architecture evolution.
-3. [`SOURCE_CATALOG.md`](./SOURCE_CATALOG.md) — exhaustive human-readable bookmark catalog.
-4. [`source_catalog.json`](./source_catalog.json) — machine-readable catalog for tooling and AI retrieval.
+3. [`DOCUMENT_LIBRARY_MAP.md`](./DOCUMENT_LIBRARY_MAP.md) — shelf/authority map for the reorganized documentation library.
+4. [`SOURCE_CATALOG.md`](./SOURCE_CATALOG.md) — exhaustive human-readable source bookmark catalog.
+5. [`source_catalog.json`](./source_catalog.json) — machine-readable source catalog with checksums/metadata.
+6. [`PATH_MIGRATION_INDEX.md`](./PATH_MIGRATION_INDEX.md) — second-pass old-path → current-path lookup.
+7. [`../history/LEGACY_ROOT_INDEX.md`](../history/LEGACY_ROOT_INDEX.md) — first-pass legacy root filename lookup.
+8. `LIGHTBI_CODE_MAP.md` — code map draft; do not treat as complete until the codebase audit phase is closed.
 
 ## Snapshot boundary
 
-- Snapshot date: **2026-08-29**.
-- Repository branch at capture: `codex/beta-recovery-20260801`.
-- HEAD at capture: `0142e92c75e9fd3e190f82fe2a67cf255180cfca`.
-- The worktree was **not clean** at capture time.
-- These files describe the working-tree documentation corpus; they do not claim that HEAD alone contains every described state.
+- Initial documentation snapshot: **2026-08-29**.
+- Repository branch at initial capture: `codex/beta-recovery-20260801`.
+- Initial HEAD: `0142e92c75e9fd3e190f82fe2a67cf255180cfca`.
+- The original working tree was not clean; the book distinguishes working-tree knowledge from committed repository truth.
+- Library cleanup occurs on `docs/project-library-cleanup-20260829` so Beta-recovery work remains untouched.
 
-## Safety rule
+## Source-precedence rule
 
-Do not reorganize, delete, rename, or normalize legacy documents until the Project Book and Source Catalog have been reviewed. The next cleanup phase must preserve provenance links or update them atomically.
-## Integrity manifest
+The Project Book is synthesis, not magical authority. When claims conflict, prefer current code + latest verified closure/audit, then current canonical contracts, then recent handoffs/ADRs, and finally older progress/changelog/history. The later Git/CI audit may revise docs-derived conclusions.
 
-[`PROJECT_BOOK_MANIFEST.json`](./PROJECT_BOOK_MANIFEST.json) records the SHA-256 and size of the Project Book baseline files before any documentation reorganization. Regenerate it after an intentional book update; do not silently overwrite the baseline during file moves.
-- [`EXTERNAL_SOURCE_REGISTER.md`](./EXTERNAL_SOURCE_REGISTER.md) — provenance for important non-repository session/source inputs.
+## Integrity and provenance
+
+- [`PROJECT_BOOK_MANIFEST.json`](./PROJECT_BOOK_MANIFEST.json) preserves the original book baseline checksum set.
+- [`EXTERNAL_SOURCE_REGISTER.md`](./EXTERNAL_SOURCE_REGISTER.md) records important non-repository session/source inputs.
+- [`DOC_REORGANIZATION_PLAN.json`](./DOC_REORGANIZATION_PLAN.json) records the first root-document cleanup.
+- [`DOC_LIBRARY_REORGANIZATION_2026-08-30.json`](./DOC_LIBRARY_REORGANIZATION_2026-08-30.json) records the second library cleanup.
+- [`KNOWN_HISTORICAL_LINK_DEBT.json`](./KNOWN_HISTORICAL_LINK_DEBT.json) records links that were already missing historically and must not be silently fabricated.

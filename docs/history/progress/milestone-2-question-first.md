@@ -8,7 +8,7 @@ Replaced the traditional dashboard-centric landing page with a calm, analytical 
 
 ### Added Files
 - `apps/desktop/src/pages/Home.tsx`: The new Question-First landing page containing the search interface, suggested questions, and the visual pipeline rendering logic.
-- `docs/progress/milestone-2-question-first.md`: This progress documentation file.
+- `docs/history/progress/milestone-2-question-first.md`: This progress documentation file.
 
 ### Modified Files
 - `apps/desktop/src/routes/index.tsx`: Re-routed `/` to point to `Home`, and moved the existing `Dashboards` component to `/dashboards`.

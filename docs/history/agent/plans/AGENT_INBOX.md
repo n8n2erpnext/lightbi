@@ -12,8 +12,8 @@ Before changing code, read:
 NEXT_ARCHITECTURE_DOMAIN_UNDERSTANDING_RECOVERY_2026-06-15.md
 docs/adr/ADR-002-local-first-architecture.md
 docs/adr/ADR-011-question-first-analytics.md
-docs/architecture/ADR-097-dataset-understanding-before-questions.md
-docs/architecture/ADR-096-guided-investigation-pipeline.md
+docs/adr/ADR-097-dataset-understanding-before-questions.md
+docs/adr/ADR-096-guided-investigation-pipeline.md
 ```
 
 ## User Escalation

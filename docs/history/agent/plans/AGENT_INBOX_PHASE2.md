@@ -5,9 +5,9 @@ Implement **ROADMAP-MVP-V1 Phase 2: Grain hint in Dataset Understanding** only.
 
 This task must strictly follow:
 - `memory.md`
-- `docs/architecture/ADR-110-mvp-v1-product-modes-and-priorities.md`
-- `docs/architecture/ADR-111-multi-evidence-understanding-engine.md`
-- `docs/architecture/ROADMAP-MVP-V1.md`
+- `docs/adr/ADR-110-mvp-v1-product-modes-and-priorities.md`
+- `docs/adr/ADR-111-multi-evidence-understanding-engine.md`
+- `docs/history/project-memory/roadmaps/ROADMAP-MVP-V1.md`
 
 ## Goal
 Add a lightweight, deterministic `grainHint` to `DatasetUnderstanding` so LightBI can answer:

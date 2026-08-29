@@ -17,7 +17,7 @@ Established the core architecture and domain model for LightBI. Shifted the appl
 - `packages/core-types/src/chart.ts`
 - `packages/core-types/src/dashboard.ts`
 - `packages/core-types/src/index.ts`
-- `docs/changelog/2026-06-01-phase2-domain-model.md`
+- `docs/history/changelog/2026-06-01-phase2-domain-model.md`
 
 ## Architecture Decisions
 - **ADR-001:** Adopted Dataset-centric model over Query-centric model.

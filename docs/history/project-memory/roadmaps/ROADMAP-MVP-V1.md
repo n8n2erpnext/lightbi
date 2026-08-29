@@ -37,9 +37,9 @@ These are already decided and must not be reopened casually:
 7. Runtime execution must remain structurally separated from semantic understanding.
 
 Key references:
-- [memory.md](/home/ubuntu/n8n2erpnext/LightBI/memory.md)
-- [ADR-110-mvp-v1-product-modes-and-priorities.md](/home/ubuntu/n8n2erpnext/LightBI/docs/architecture/ADR-110-mvp-v1-product-modes-and-priorities.md)
-- [ADR-111-multi-evidence-understanding-engine.md](/home/ubuntu/n8n2erpnext/LightBI/docs/architecture/ADR-111-multi-evidence-understanding-engine.md)
+- [memory.md](../memory.md)
+- [ADR-110-mvp-v1-product-modes-and-priorities.md](../../../adr/ADR-110-mvp-v1-product-modes-and-priorities.md)
+- [ADR-111-multi-evidence-understanding-engine.md](../../../adr/ADR-111-multi-evidence-understanding-engine.md)
 
 ## Current Checkpoint
 
@@ -227,8 +227,8 @@ If no:
 ## Resume Protocol
 If work resumes after interruption:
 
-1. Read [memory.md](/home/ubuntu/n8n2erpnext/LightBI/memory.md)
-2. Read [AGENT_HANDOFF.md](/home/ubuntu/n8n2erpnext/LightBI/AGENT_HANDOFF.md)
+1. Read [memory.md](../memory.md)
+2. Read [AGENT_HANDOFF.md](../../agent/handoffs/AGENT_HANDOFF.md)
 3. Read this roadmap
 4. Check whether DU-8 proofs are still green
 5. Continue from the earliest incomplete roadmap phase

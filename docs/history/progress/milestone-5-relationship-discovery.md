@@ -1,9 +1,9 @@
 # Milestone 5: Relationship Discovery & Dataset Collections (COMPLETED)
 
 **See [Milestone 5 Summary](milestone-5-summary.md) for final architecture review and handoff.**
-- **ADR-059**: [Relationship Graph Source of Truth](../architecture/ADR-059-relationship-graph-source-of-truth.md)
-- **ADR-060**: [Business View Before Execution](../architecture/ADR-060-business-view-before-execution.md)
-- **ADR-061**: [Virtual Dataset Plan Contract](../architecture/ADR-061-virtual-dataset-plan-contract.md)
+- **ADR-059**: [Relationship Graph Source of Truth](../../adr/ADR-059-relationship-graph-source-of-truth.md)
+- **ADR-060**: [Business View Before Execution](../../adr/ADR-060-business-view-before-execution.md)
+- **ADR-061**: [Virtual Dataset Plan Contract](../../adr/ADR-061-virtual-dataset-plan-contract.md)
 
 ## Overview
 This milestone transitions LightBI from handling independent Dataset Groups to automatically discovering relationships across disparate datasets. This enables multi-file, cross-domain querying without requiring manual data modeling.

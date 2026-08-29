@@ -1004,7 +1004,7 @@ Freeze the current architecture and stop semantic/domain claims from expanding w
 
 Create:
 
-- `docs/architecture/ADR-122-canonical-understanding-pipeline.md`;
+- `docs/adr/ADR-122-canonical-understanding-pipeline.md`;
 - `apps/desktop/src/lib/understanding-core/OWNERSHIP.md`;
 - `apps/desktop/src/lib/understanding-core/domain-support-manifest.ts` as a contract/skeleton only;
 - machine-readable registry inventory report.
@@ -1389,7 +1389,7 @@ Freeze semantic/domain support claims and document one future canonical understa
 
 ## Allowed files
 - MVP.md
-- docs/architecture/ADR-122-canonical-understanding-pipeline.md
+- docs/adr/ADR-122-canonical-understanding-pipeline.md
 - apps/desktop/src/lib/understanding-core/OWNERSHIP.md
 - apps/desktop/src/lib/understanding-core/domain-support-manifest.ts
 - apps/desktop/src/lib/semantic-registry.test.ts

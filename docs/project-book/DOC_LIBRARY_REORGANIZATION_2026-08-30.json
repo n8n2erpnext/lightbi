@@ -1,0 +1,748 @@
+{
+  "schemaVersion": "lightbi.docs.library-reorganization.v2",
+  "date": "2026-08-30",
+  "branch": "docs/project-library-cleanup-20260829",
+  "baseHead": "61aa3c39fc5253fd4b0210545ba0cb92e508dd72",
+  "policy": {
+    "moveHumanOnlyDocs": true,
+    "preserveHistoricalMeaning": true,
+    "lockedMachineEvidenceGlob": "docs/architecture/*.json",
+    "renumberHistoricalAdr": false
+  },
+  "notes": [
+    "ADR-023 is absent in the corpus.",
+    "ADR-089 has two historical documents and is intentionally not renumbered."
+  ],
+  "moves": [
+    {
+      "old": "docs/architecture/ADR-059-relationship-graph-source-of-truth.md",
+      "new": "docs/adr/ADR-059-relationship-graph-source-of-truth.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-060-business-view-before-execution.md",
+      "new": "docs/adr/ADR-060-business-view-before-execution.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-061-virtual-dataset-plan-contract.md",
+      "new": "docs/adr/ADR-061-virtual-dataset-plan-contract.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-062-runtime-preview-before-execution.md",
+      "new": "docs/adr/ADR-062-runtime-preview-before-execution.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-063-execution-guard-before-runtime.md",
+      "new": "docs/adr/ADR-063-execution-guard-before-runtime.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-064-duckdb-logical-plan-before-sql.md",
+      "new": "docs/adr/ADR-064-duckdb-logical-plan-before-sql.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-065-runtime-boundary-contract.md",
+      "new": "docs/adr/ADR-065-runtime-boundary-contract.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-066-expected-result-contract-before-sql.md",
+      "new": "docs/adr/ADR-066-expected-result-contract-before-sql.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-067-safe-sql-compiler-contract.md",
+      "new": "docs/adr/ADR-067-safe-sql-compiler-contract.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-068-sandbox-before-runtime.md",
+      "new": "docs/adr/ADR-068-sandbox-before-runtime.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-069-preview-result-contract-before-runtime.md",
+      "new": "docs/adr/ADR-069-preview-result-contract-before-runtime.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-070-business-confidence-engine.md",
+      "new": "docs/adr/ADR-070-business-confidence-engine.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-071-dataset-health-model.md",
+      "new": "docs/adr/ADR-071-dataset-health-model.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-072-insight-contract.md",
+      "new": "docs/adr/ADR-072-insight-contract.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-073-dataset-health-engine.md",
+      "new": "docs/adr/ADR-073-dataset-health-engine.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-074-business-confidence-formula.md",
+      "new": "docs/adr/ADR-074-business-confidence-formula.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-075-confidence-signal-registry.md",
+      "new": "docs/adr/ADR-075-confidence-signal-registry.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-076-business-confidence-engine.md",
+      "new": "docs/adr/ADR-076-business-confidence-engine.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-077-duckdb-preview-runtime.md",
+      "new": "docs/adr/ADR-077-duckdb-preview-runtime.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-078-result-validator-integration.md",
+      "new": "docs/adr/ADR-078-result-validator-integration.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-079-data-quality-vs-business-confidence.md",
+      "new": "docs/adr/ADR-079-data-quality-vs-business-confidence.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-080-explore-investigate-ask-navigation.md",
+      "new": "docs/adr/ADR-080-explore-investigate-ask-navigation.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-081-learning-first-question-discovery.md",
+      "new": "docs/adr/ADR-081-learning-first-question-discovery.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-082-perspective-before-question.md",
+      "new": "docs/adr/ADR-082-perspective-before-question.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-083-business-view-summary-layer.md",
+      "new": "docs/adr/ADR-083-business-view-summary-layer.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-084-business-view-driven-question-pipeline.md",
+      "new": "docs/adr/ADR-084-business-view-driven-question-pipeline.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-085-business-signal-registry.md",
+      "new": "docs/adr/ADR-085-business-signal-registry.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-086-business-concept-canonicalization.md",
+      "new": "docs/adr/ADR-086-business-concept-canonicalization.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-087-signal-taxonomy.md",
+      "new": "docs/adr/ADR-087-signal-taxonomy.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-088-signal-driven-perspective-generation.md",
+      "new": "docs/adr/ADR-088-signal-driven-perspective-generation.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-089-business-view-registry-v1.md",
+      "new": "docs/adr/ADR-089-business-view-registry-v1.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-089-signal-driven-business-view-generation.md",
+      "new": "docs/adr/ADR-089-signal-driven-business-view-generation.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-090-domain-knowledge-preservation.md",
+      "new": "docs/adr/ADR-090-domain-knowledge-preservation.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-091-domain-knowledge-catalog.md",
+      "new": "docs/adr/ADR-091-domain-knowledge-catalog.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-092-machine-readable-domain-catalog.md",
+      "new": "docs/adr/ADR-092-machine-readable-domain-catalog.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-093-registry-driven-business-view-generation.md",
+      "new": "docs/adr/ADR-093-registry-driven-business-view-generation.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-094-question-plan-before-question.md",
+      "new": "docs/adr/ADR-094-question-plan-before-question.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-095-question-suggestion-renderer.md",
+      "new": "docs/adr/ADR-095-question-suggestion-renderer.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-096-guided-investigation-pipeline.md",
+      "new": "docs/adr/ADR-096-guided-investigation-pipeline.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-097-dataset-understanding-before-questions.md",
+      "new": "docs/adr/ADR-097-dataset-understanding-before-questions.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-098-dataset-understanding-contract.md",
+      "new": "docs/adr/ADR-098-dataset-understanding-contract.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-099-analysis-action-runtime-contract.md",
+      "new": "docs/adr/ADR-099-analysis-action-runtime-contract.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-100-runtime-planner-preview.md",
+      "new": "docs/adr/ADR-100-runtime-planner-preview.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-101-home-investigation-separation.md",
+      "new": "docs/adr/ADR-101-home-investigation-separation.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-102-safe-sql-preview-before-execution.md",
+      "new": "docs/adr/ADR-102-safe-sql-preview-before-execution.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-103-investigation-workspace-layout.md",
+      "new": "docs/adr/ADR-103-investigation-workspace-layout.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-104-duckdb-preview-sandbox.md",
+      "new": "docs/adr/ADR-104-duckdb-preview-sandbox.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-105-chart-preview-renderer.md",
+      "new": "docs/adr/ADR-105-chart-preview-renderer.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-106-dataset-rows-preview-wiring.md",
+      "new": "docs/adr/ADR-106-dataset-rows-preview-wiring.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-107-preview-row-retention.md",
+      "new": "docs/adr/ADR-107-preview-row-retention.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-108-axum-preview-execution-endpoint.md",
+      "new": "docs/adr/ADR-108-axum-preview-execution-endpoint.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-109-frontend-backend-preview-adapter.md",
+      "new": "docs/adr/ADR-109-frontend-backend-preview-adapter.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-110-mvp-v1-product-modes-and-priorities.md",
+      "new": "docs/adr/ADR-110-mvp-v1-product-modes-and-priorities.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-111-multi-evidence-understanding-engine.md",
+      "new": "docs/adr/ADR-111-multi-evidence-understanding-engine.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-112-global-display-preferences.md",
+      "new": "docs/adr/ADR-112-global-display-preferences.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-113-shared-simple-advanced-execution-core.md",
+      "new": "docs/adr/ADR-113-shared-simple-advanced-execution-core.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-114-advanced-mode-inheritance-blueprint.md",
+      "new": "docs/adr/ADR-114-advanced-mode-inheritance-blueprint.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-115-ba-decision-engine-simple-mode.md",
+      "new": "docs/adr/ADR-115-ba-decision-engine-simple-mode.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-116-plugin-first-system-expansion.md",
+      "new": "docs/adr/ADR-116-plugin-first-system-expansion.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-117-business-understanding-engine-product-boundary.md",
+      "new": "docs/adr/ADR-117-business-understanding-engine-product-boundary.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-118-domain-ba-playbooks.md",
+      "new": "docs/adr/ADR-118-domain-ba-playbooks.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-119-business-brain-orchestrator.md",
+      "new": "docs/adr/ADR-119-business-brain-orchestrator.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-120-context-aware-semantic-dictionary.md",
+      "new": "docs/adr/ADR-120-context-aware-semantic-dictionary.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-121-semantic-registry-source-of-truth.md",
+      "new": "docs/adr/ADR-121-semantic-registry-source-of-truth.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ADR-122-canonical-understanding-pipeline.md",
+      "new": "docs/adr/ADR-122-canonical-understanding-pipeline.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/POST_BETA_AI_HANDOFF_2026-08-13.md",
+      "new": "docs/history/agent/handoffs/post-beta/POST_BETA_AI_HANDOFF_2026-08-13.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/POST_BETA_DEEP_BA_INVESTIGATION_HANDOFF_2026-08-13.md",
+      "new": "docs/history/agent/handoffs/post-beta/POST_BETA_DEEP_BA_INVESTIGATION_HANDOFF_2026-08-13.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/POST_BETA_DEEP_BA_VI_COMPLETION_HANDOFF_2026-08-13.md",
+      "new": "docs/history/agent/handoffs/post-beta/POST_BETA_DEEP_BA_VI_COMPLETION_HANDOFF_2026-08-13.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/POST_BETA_FILTERED_DEEP_BA_HANDOFF_2026-08-13.md",
+      "new": "docs/history/agent/handoffs/post-beta/POST_BETA_FILTERED_DEEP_BA_HANDOFF_2026-08-13.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/POST_BETA_I18N_SEPARATION_HANDOFF_2026-08-13.md",
+      "new": "docs/history/agent/handoffs/post-beta/POST_BETA_I18N_SEPARATION_HANDOFF_2026-08-13.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/POST_BETA_MOTODETAIL_SEMANTIC_HANDOFF_2026-08-13.md",
+      "new": "docs/history/agent/handoffs/post-beta/POST_BETA_MOTODETAIL_SEMANTIC_HANDOFF_2026-08-13.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/POST_BETA_MULTIFILE_FILTERED_DEEP_BA_HANDOFF_2026-08-13.md",
+      "new": "docs/history/agent/handoffs/post-beta/POST_BETA_MULTIFILE_FILTERED_DEEP_BA_HANDOFF_2026-08-13.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/POST_BETA_MULTISHEET_DIRTY_DATA_HANDOFF_2026-08-13.md",
+      "new": "docs/history/agent/handoffs/post-beta/POST_BETA_MULTISHEET_DIRTY_DATA_HANDOFF_2026-08-13.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/AUDIT-backend-duckdb-preview-failure.md",
+      "new": "docs/history/audits/architecture/AUDIT-backend-duckdb-preview-failure.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/AUDIT-business-knowledge-vs-execution-gap.md",
+      "new": "docs/history/audits/architecture/AUDIT-business-knowledge-vs-execution-gap.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/AUDIT-business-signal-dependencies.md",
+      "new": "docs/history/audits/architecture/AUDIT-business-signal-dependencies.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/AUDIT-business-view-reality-gap.md",
+      "new": "docs/history/audits/architecture/AUDIT-business-view-reality-gap.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/AUDIT-cross-domain-validation-suite.md",
+      "new": "docs/history/audits/architecture/AUDIT-cross-domain-validation-suite.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/AUDIT-data-intake-row-retention.md",
+      "new": "docs/history/audits/architecture/AUDIT-data-intake-row-retention.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/AUDIT-dataset-source-registration.md",
+      "new": "docs/history/audits/architecture/AUDIT-dataset-source-registration.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/AUDIT-delivery-performance-live-trace.md",
+      "new": "docs/history/audits/architecture/AUDIT-delivery-performance-live-trace.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/AUDIT-domain-general-analysis.md",
+      "new": "docs/history/audits/architecture/AUDIT-domain-general-analysis.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/AUDIT-domain-general-ui-verification.md",
+      "new": "docs/history/audits/architecture/AUDIT-domain-general-ui-verification.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/AUDIT-domain-knowledge-inventory.md",
+      "new": "docs/history/audits/architecture/AUDIT-domain-knowledge-inventory.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/AUDIT-duckdb-infrastructure.md",
+      "new": "docs/history/audits/architecture/AUDIT-duckdb-infrastructure.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/AUDIT-end-to-end-product-readiness.md",
+      "new": "docs/history/audits/architecture/AUDIT-end-to-end-product-readiness.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/AUDIT-execution-integrity.md",
+      "new": "docs/history/audits/architecture/AUDIT-execution-integrity.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/AUDIT-existing-business-domain-coverage.md",
+      "new": "docs/history/audits/architecture/AUDIT-existing-business-domain-coverage.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/AUDIT-guided-investigation-purity.md",
+      "new": "docs/history/audits/architecture/AUDIT-guided-investigation-purity.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/AUDIT-home-freeze-regression-verification.md",
+      "new": "docs/history/audits/architecture/AUDIT-home-freeze-regression-verification.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/AUDIT-home-freeze-remnants.md",
+      "new": "docs/history/audits/architecture/AUDIT-home-freeze-remnants.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/AUDIT-home-guided-investigation-final.md",
+      "new": "docs/history/audits/architecture/AUDIT-home-guided-investigation-final.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/AUDIT-home-information-density.md",
+      "new": "docs/history/audits/architecture/AUDIT-home-information-density.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/AUDIT-home-information-hierarchy.md",
+      "new": "docs/history/audits/architecture/AUDIT-home-information-hierarchy.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/AUDIT-home-vs-investigation-boundary.md",
+      "new": "docs/history/audits/architecture/AUDIT-home-vs-investigation-boundary.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/AUDIT-jivedb-public-product-evidence.md",
+      "new": "docs/history/audits/architecture/AUDIT-jivedb-public-product-evidence.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/AUDIT-perspective-business-view-question.md",
+      "new": "docs/history/audits/architecture/AUDIT-perspective-business-view-question.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/AUDIT-raw-understanding-algorithm.md",
+      "new": "docs/history/audits/architecture/AUDIT-raw-understanding-algorithm.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/AUDIT-regression-guided-investigation-vs-legacy.md",
+      "new": "docs/history/audits/architecture/AUDIT-regression-guided-investigation-vs-legacy.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/AUDIT-runtime-execution-boundary.md",
+      "new": "docs/history/audits/architecture/AUDIT-runtime-execution-boundary.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/AUDIT-signal-coverage-report.md",
+      "new": "docs/history/audits/architecture/AUDIT-signal-coverage-report.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/AUDIT-tablepro-advanced-data-workspace.md",
+      "new": "docs/history/audits/architecture/AUDIT-tablepro-advanced-data-workspace.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/changelog/2026-06-01-phase10-perspective-layer.md",
+      "new": "docs/history/changelog/2026-06-01-phase10-perspective-layer.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/changelog/2026-06-01-phase11-persistence.md",
+      "new": "docs/history/changelog/2026-06-01-phase11-persistence.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/changelog/2026-06-01-phase12-project-runtime.md",
+      "new": "docs/history/changelog/2026-06-01-phase12-project-runtime.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/changelog/2026-06-01-phase2-domain-model.md",
+      "new": "docs/history/changelog/2026-06-01-phase2-domain-model.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/changelog/2026-06-01-phase3-runtime.md",
+      "new": "docs/history/changelog/2026-06-01-phase3-runtime.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/changelog/2026-06-01-phase4-storage-architecture.md",
+      "new": "docs/history/changelog/2026-06-01-phase4-storage-architecture.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/changelog/2026-06-01-phase5-dataset-recipe.md",
+      "new": "docs/history/changelog/2026-06-01-phase5-dataset-recipe.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/changelog/2026-06-01-phase6-question-first.md",
+      "new": "docs/history/changelog/2026-06-01-phase6-question-first.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/changelog/2026-06-01-phase7-question-template.md",
+      "new": "docs/history/changelog/2026-06-01-phase7-question-template.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/changelog/2026-06-01-phase8-recipe-planner.md",
+      "new": "docs/history/changelog/2026-06-01-phase8-recipe-planner.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/changelog/2026-06-01-phase9-source-capabilities.md",
+      "new": "docs/history/changelog/2026-06-01-phase9-source-capabilities.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/BVQ-RESET-DECISION.md",
+      "new": "docs/history/checkpoints/architecture-resets/BVQ-RESET-DECISION.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/BVQ-RESET.md",
+      "new": "docs/history/checkpoints/architecture-resets/BVQ-RESET.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/BETA_RECOVERY_CODEBASE_MAP_2026-08-09.md",
+      "new": "docs/history/checkpoints/beta-recovery/BETA_RECOVERY_CODEBASE_MAP_2026-08-09.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/BETA_RECOVERY_SESSION_2026-08-01.md",
+      "new": "docs/history/checkpoints/beta-recovery/BETA_RECOVERY_SESSION_2026-08-01.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/progress/milestone-1.md",
+      "new": "docs/history/progress/milestone-1.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/progress/milestone-2-question-first.md",
+      "new": "docs/history/progress/milestone-2-question-first.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/progress/milestone-3-real-csv-import.md",
+      "new": "docs/history/progress/milestone-3-real-csv-import.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/progress/milestone-4-guided-home.md",
+      "new": "docs/history/progress/milestone-4-guided-home.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/progress/milestone-5-relationship-discovery.md",
+      "new": "docs/history/progress/milestone-5-relationship-discovery.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/progress/milestone-5-summary.md",
+      "new": "docs/history/progress/milestone-5-summary.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/progress/milestone-6-runtime-preview.md",
+      "new": "docs/history/progress/milestone-6-runtime-preview.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/progress/milestone-7-result-understanding.md",
+      "new": "docs/history/progress/milestone-7-result-understanding.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/progress/milestone-8-5-guided-investigation.md",
+      "new": "docs/history/progress/milestone-8-5-guided-investigation.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/progress/milestone-8-business-confidence.md",
+      "new": "docs/history/progress/milestone-8-business-confidence.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/progress/phase-13-source-registry.md",
+      "new": "docs/history/progress/phase-13-source-registry.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/progress/phase-14-dataset-foundation.md",
+      "new": "docs/history/progress/phase-14-dataset-foundation.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/progress/phase-15-schema-foundation.md",
+      "new": "docs/history/progress/phase-15-schema-foundation.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/progress/phase-16-perspective-layer.md",
+      "new": "docs/history/progress/phase-16-perspective-layer.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/progress/phase-17-recipe-foundation.md",
+      "new": "docs/history/progress/phase-17-recipe-foundation.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/progress/phase-18-planner-foundation.md",
+      "new": "docs/history/progress/phase-18-planner-foundation.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/progress/phase-19-question-template.md",
+      "new": "docs/history/progress/phase-19-question-template.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/progress/phase-20-runtime-foundation.md",
+      "new": "docs/history/progress/phase-20-runtime-foundation.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/progress/phase-21-vdataset-runtime.md",
+      "new": "docs/history/progress/phase-21-vdataset-runtime.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/progress/phase-22-data-view.md",
+      "new": "docs/history/progress/phase-22-data-view.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/progress/phase-23-insight-foundation.md",
+      "new": "docs/history/progress/phase-23-insight-foundation.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/progress/phase-24-export-foundation.md",
+      "new": "docs/history/progress/phase-24-export-foundation.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/progress/phase-25-chart-runtime.md",
+      "new": "docs/history/progress/phase-25-chart-runtime.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/progress/phase-26-dashboard-workspace.md",
+      "new": "docs/history/progress/phase-26-dashboard-workspace.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/progress/phase-27-render-contract.md",
+      "new": "docs/history/progress/phase-27-render-contract.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/progress/phase-28-business-brain-orchestrator.md",
+      "new": "docs/history/progress/phase-28-business-brain-orchestrator.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/progress/phase-29-context-aware-semantic-dictionary.md",
+      "new": "docs/history/progress/phase-29-context-aware-semantic-dictionary.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/progress/phase-30-semantic-registry-unification.md",
+      "new": "docs/history/progress/phase-30-semantic-registry-unification.md",
+      "similarity": "R100"
+    },
+    {
+      "old": "docs/architecture/ROADMAP-MVP-V1.md",
+      "new": "docs/history/project-memory/roadmaps/ROADMAP-MVP-V1.md",
+      "similarity": "R100"
+    }
+  ]
+}

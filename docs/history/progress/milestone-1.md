@@ -40,7 +40,7 @@ Prove the existing architecture can produce a visible result before adding new a
 
 ## Screenshots
 *(Replace with actual paths when capturing screens during QA)*
-- ![CSV Import](./images/csv-import.png)
-- ![Dataset Creation](./images/dataset-creation.png)
-- ![Chart Rendering](./images/chart-rendering.png)
-- ![Excel Export](./images/excel-export.png)
+- ![CSV Import](../../progress/images/csv-import.png)
+- ![Dataset Creation](../../progress/images/dataset-creation.png)
+- ![Chart Rendering](../../progress/images/chart-rendering.png)
+- ![Excel Export](../../progress/images/excel-export.png)

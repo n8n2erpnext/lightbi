@@ -1384,7 +1384,7 @@ cd apps/desktop && npx tsc --noEmit --pretty false
 
 ### Detailed Audit
 
-See `docs/architecture/AUDIT-tablepro-advanced-data-workspace.md`.
+See `docs/history/audits/architecture/AUDIT-tablepro-advanced-data-workspace.md`.
 
 ---
 
@@ -1428,7 +1428,7 @@ cd apps/desktop && npx vitest run src/lib/shared-execution-core.test.ts src/lib/
 
 ### Architecture Record
 
-See `docs/architecture/ADR-113-shared-simple-advanced-execution-core.md`.
+See `docs/adr/ADR-113-shared-simple-advanced-execution-core.md`.
 
 ---
 
@@ -1466,8 +1466,8 @@ See `docs/architecture/ADR-113-shared-simple-advanced-execution-core.md`.
 
 ### Documents
 
-- `docs/architecture/AUDIT-jivedb-public-product-evidence.md`
-- `docs/architecture/ADR-114-advanced-mode-inheritance-blueprint.md`
+- `docs/history/audits/architecture/AUDIT-jivedb-public-product-evidence.md`
+- `docs/adr/ADR-114-advanced-mode-inheritance-blueprint.md`
 
 ---
 
@@ -1704,7 +1704,7 @@ Decision:
 
 Implemented:
 
-- Added `docs/architecture/ADR-116-plugin-first-system-expansion.md`.
+- Added `docs/adr/ADR-116-plugin-first-system-expansion.md`.
 - Added interface-only `@lightbi/plugin-sdk` scaffold under `packages/plugin-sdk`.
 - Removed the stale SQL Server source item from legacy `homeGuidance.sourceMenu.database` so the UI does not promise unsupported core SQL Server.
 
@@ -2088,7 +2088,7 @@ User direction: pause the DA-heavy/TablePro track and push Simple mode toward a 
 
 Architecture anchor added:
 
-- `docs/architecture/ADR-115-ba-decision-engine-simple-mode.md`
+- `docs/adr/ADR-115-ba-decision-engine-simple-mode.md`
 - Defines the Simple mode path as `Data Understanding -> Data Trust Scoring -> Insight Mining -> Chart Recommendation -> Decision Briefing -> Action Suggestions`.
 - Keeps the core deterministic first. LLM can later rewrite wording, but cannot invent facts or evidence.
 - Establishes Advanced as DA/pro workspace and Simple as BA decision workspace, with a future Advanced -> Analyze in Simple loop.
@@ -2196,9 +2196,9 @@ Next BA slice:
 
 User direction: continue the BA track and read docs if needed. Re-read:
 
-- `docs/architecture/ADR-115-ba-decision-engine-simple-mode.md`
-- `docs/architecture/ADR-079-data-quality-vs-business-confidence.md`
-- `docs/architecture/ADR-072-insight-contract.md`
+- `docs/adr/ADR-115-ba-decision-engine-simple-mode.md`
+- `docs/adr/ADR-079-data-quality-vs-business-confidence.md`
+- `docs/adr/ADR-072-insight-contract.md`
 
 Confirmed direction:
 
@@ -2886,7 +2886,7 @@ Decision:
 
 Docs added:
 
-- `docs/architecture/ADR-117-business-understanding-engine-product-boundary.md`
+- `docs/adr/ADR-117-business-understanding-engine-product-boundary.md`
 - `docs/product/product-direction-and-pricing-v1.md`
 
 Important invariant for future work:
@@ -2912,7 +2912,7 @@ Implemented:
   - `defineLightBIProviderPlugin()` helper for plugin authors.
 - Added `packages/plugin-sdk/README.md` with product boundary, minimum provider contract, and starter SQL Server-style example.
 - Added `docs/plugin-sdk/provider-plugin-manual.md` with lifecycle, UI exposure gate, manifest rules, SQL dialect guidance, schema metadata expectations, query/import/export/writeback/DDL/diagnostics rules, Simple Mode handoff, SQL Server first-plugin notes, deployment checklist, and release readiness criteria.
-- Updated `docs/architecture/ADR-116-plugin-first-system-expansion.md` to point to the SDK manual.
+- Updated `docs/adr/ADR-116-plugin-first-system-expansion.md` to point to the SDK manual.
 
 Current status:
 
@@ -3145,7 +3145,7 @@ User clarified the near-term product target after ADR-118:
 - LightBI's market differentiation is not only Advanced/TablePro-style data workspace parity, but Simple Mode's ability to answer business questions like a real BA for each covered domain.
 - Existing covered domains such as Revenue/Sales, Finance/Profitability, Inventory, Logistics/Operations, Customer, and Performance should go deeper before adding many new domains.
 - For Beta, prioritize:
-  1. Domain BA Playbooks (`docs/architecture/ADR-118-domain-ba-playbooks.md`).
+  1. Domain BA Playbooks (`docs/adr/ADR-118-domain-ba-playbooks.md`).
   2. Multi-period comparison for business reports.
   3. Revenue/profit/cost/driver explanations with caveats when evidence is missing.
   4. Exportable evidence rows behind each answer.
@@ -3297,7 +3297,7 @@ Implemented:
   - Keeps CSV/XLSX export on evidence groups.
 - Updated `apps/desktop/src/lib/domain-ba-playbooks.test.ts` and `apps/desktop/src/lib/ba-comparison-engine.test.ts`.
   - Tests now cover signal tiers, top 10 drivers, period inference from filenames, narrative sections, profit guardrails, and evidence row period tagging.
-- Updated `docs/architecture/ADR-118-domain-ba-playbooks.md` with the five-phase implementation status.
+- Updated `docs/adr/ADR-118-domain-ba-playbooks.md` with the five-phase implementation status.
 
 Verification:
 

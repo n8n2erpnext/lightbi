@@ -1,140 +1,180 @@
 {
-  "schemaVersion": "lightbi.docs.known-link-debt.v1",
-  "snapshot": "2026-08-29",
+  "schemaVersion": "lightbi.docs.known-link-debt.v2",
+  "snapshot": "2026-08-30",
+  "policy": "All unresolved/non-portable links must originate from docs/history; any unresolved link outside history fails cleanup integrity.",
   "issues": [
     {
-      "source": "docs/progress/milestone-1.md",
-      "target": "./images/csv-import.png",
+      "source": "docs/history/sample-evidence/SAMPLE_DATA_DOMAIN_COVERAGE_2026-06-15.md",
+      "line": 15,
+      "target": "file:/home/ubuntu/n8n2erpnext/LightBI/ui-audit/sample-data-domain-coverage-2026-06-15/BHX_PHIEUXUAT_xlsx_home.png",
+      "classification": "historical-external-or-placeholder"
+    },
+    {
+      "source": "docs/history/sample-evidence/SAMPLE_DATA_DOMAIN_COVERAGE_2026-06-15.md",
+      "line": 15,
+      "target": "file:/home/ubuntu/n8n2erpnext/LightBI/ui-audit/sample-data-domain-coverage-2026-06-15/BHX_PHIEUXUAT_xlsx_investigation_after.png",
+      "classification": "historical-external-or-placeholder"
+    },
+    {
+      "source": "docs/history/sample-evidence/SAMPLE_DATA_DOMAIN_COVERAGE_2026-06-15.md",
+      "line": 16,
+      "target": "file:/home/ubuntu/n8n2erpnext/LightBI/ui-audit/sample-data-domain-coverage-2026-06-15/PLU_ALL_FRESH_22_03_2021_xlsx_home.png",
+      "classification": "historical-external-or-placeholder"
+    },
+    {
+      "source": "docs/history/sample-evidence/SAMPLE_DATA_DOMAIN_COVERAGE_2026-06-15.md",
+      "line": 16,
+      "target": "file:/home/ubuntu/n8n2erpnext/LightBI/ui-audit/sample-data-domain-coverage-2026-06-15/PLU_ALL_FRESH_22_03_2021_xlsx_investigation_after.png",
+      "classification": "historical-external-or-placeholder"
+    },
+    {
+      "source": "docs/history/sample-evidence/SAMPLE_DATA_DOMAIN_COVERAGE_2026-06-15.md",
+      "line": 17,
+      "target": "file:/home/ubuntu/n8n2erpnext/LightBI/ui-audit/sample-data-domain-coverage-2026-06-15/2017_06_22_DANH_SACH_XEP_HANG_QUAN_LY_TOAN_QUOC_xlsx_home.png",
+      "classification": "historical-external-or-placeholder"
+    },
+    {
+      "source": "docs/history/progress/milestone-1.md",
+      "line": 43,
+      "target": "../../progress/images/csv-import.png",
       "classification": "missing-repo-target"
     },
     {
-      "source": "docs/progress/milestone-1.md",
-      "target": "./images/dataset-creation.png",
+      "source": "docs/history/progress/milestone-1.md",
+      "line": 44,
+      "target": "../../progress/images/dataset-creation.png",
       "classification": "missing-repo-target"
     },
     {
-      "source": "docs/progress/milestone-1.md",
-      "target": "./images/chart-rendering.png",
+      "source": "docs/history/progress/milestone-1.md",
+      "line": 45,
+      "target": "../../progress/images/chart-rendering.png",
       "classification": "missing-repo-target"
     },
     {
-      "source": "docs/progress/milestone-1.md",
-      "target": "./images/excel-export.png",
+      "source": "docs/history/progress/milestone-1.md",
+      "line": 46,
+      "target": "../../progress/images/excel-export.png",
       "classification": "missing-repo-target"
     },
     {
-      "source": "docs/architecture/AUDIT-end-to-end-product-readiness.md",
-      "target": "/absolute/path/to/delivery_performance_chart.png",
+      "source": "docs/history/audits/AUDIT-real-file-preview-validation.md",
+      "line": 25,
+      "target": "/home/ubuntu/.gemini/antigravity-ide/brain/0b95c9db-012f-4f7d-bd5a-644bc2d63d00/delivery_performance_chart.png",
       "classification": "historical-external-or-placeholder"
     },
     {
-      "source": "docs/architecture/AUDIT-end-to-end-product-readiness.md",
-      "target": "/absolute/path/to/inventory_aging_chart.png",
-      "classification": "historical-external-or-placeholder"
-    },
-    {
-      "source": "docs/history/sample-evidence/SAMPLE_DATA_DOMAIN_COVERAGE_2026-06-15.md",
-      "target": "file:///home/ubuntu/n8n2erpnext/LightBI/ui-audit/sample-data-domain-coverage-2026-06-15/BHX_PHIEUXUAT_xlsx_home.png",
-      "classification": "historical-external-or-placeholder"
-    },
-    {
-      "source": "docs/history/sample-evidence/SAMPLE_DATA_DOMAIN_COVERAGE_2026-06-15.md",
-      "target": "file:///home/ubuntu/n8n2erpnext/LightBI/ui-audit/sample-data-domain-coverage-2026-06-15/BHX_PHIEUXUAT_xlsx_investigation_after.png",
-      "classification": "historical-external-or-placeholder"
-    },
-    {
-      "source": "docs/history/sample-evidence/SAMPLE_DATA_DOMAIN_COVERAGE_2026-06-15.md",
-      "target": "file:///home/ubuntu/n8n2erpnext/LightBI/ui-audit/sample-data-domain-coverage-2026-06-15/PLU_ALL_FRESH_22_03_2021_xlsx_home.png",
-      "classification": "historical-external-or-placeholder"
-    },
-    {
-      "source": "docs/history/sample-evidence/SAMPLE_DATA_DOMAIN_COVERAGE_2026-06-15.md",
-      "target": "file:///home/ubuntu/n8n2erpnext/LightBI/ui-audit/sample-data-domain-coverage-2026-06-15/PLU_ALL_FRESH_22_03_2021_xlsx_investigation_after.png",
-      "classification": "historical-external-or-placeholder"
-    },
-    {
-      "source": "docs/history/sample-evidence/SAMPLE_DATA_DOMAIN_COVERAGE_2026-06-15.md",
-      "target": "file:///home/ubuntu/n8n2erpnext/LightBI/ui-audit/sample-data-domain-coverage-2026-06-15/2017_06_22_DANH_SACH_XEP_HANG_QUAN_LY_TOAN_QUOC_xlsx_home.png",
+      "source": "docs/history/audits/AUDIT-real-file-preview-validation.md",
+      "line": 39,
+      "target": "/home/ubuntu/.gemini/antigravity-ide/brain/0b95c9db-012f-4f7d-bd5a-644bc2d63d00/inventory_aging_chart.png",
       "classification": "historical-external-or-placeholder"
     },
     {
       "source": "docs/history/reports/VISUAL_REGRESSION_QA_PHASE1_REPORT.md",
+      "line": 36,
       "target": "/C:/Users/Admin/.gemini/antigravity/brain/0667851f-6164-42f7-86ba-64a0b5c9169d/visual-regression-phase1/desktop-en-standard-01-home.png",
       "classification": "historical-external-or-placeholder"
     },
     {
       "source": "docs/history/reports/VISUAL_REGRESSION_QA_PHASE1_REPORT.md",
+      "line": 38,
       "target": "/C:/Users/Admin/.gemini/antigravity/brain/0667851f-6164-42f7-86ba-64a0b5c9169d/visual-regression-phase1/desktop-en-standard-02-investigation-executed.png",
       "classification": "historical-external-or-placeholder"
     },
     {
       "source": "docs/history/reports/VISUAL_REGRESSION_QA_PHASE1_REPORT.md",
+      "line": 40,
       "target": "/C:/Users/Admin/.gemini/antigravity/brain/0667851f-6164-42f7-86ba-64a0b5c9169d/visual-regression-phase1/desktop-en-standard-03-dashboard-builder.png",
       "classification": "historical-external-or-placeholder"
     },
     {
       "source": "docs/history/reports/VISUAL_REGRESSION_QA_PHASE1_REPORT.md",
+      "line": 42,
       "target": "/C:/Users/Admin/.gemini/antigravity/brain/0667851f-6164-42f7-86ba-64a0b5c9169d/visual-regression-phase1/desktop-en-standard-04-display-preferences-modal.png",
       "classification": "historical-external-or-placeholder"
     },
     {
       "source": "docs/history/reports/VISUAL_REGRESSION_QA_PHASE1_REPORT.md",
+      "line": 47,
       "target": "/C:/Users/Admin/.gemini/antigravity/brain/0667851f-6164-42f7-86ba-64a0b5c9169d/visual-regression-phase1/desktop-vi-accounting-01-home.png",
       "classification": "historical-external-or-placeholder"
     },
     {
       "source": "docs/history/reports/VISUAL_REGRESSION_QA_PHASE1_REPORT.md",
+      "line": 49,
       "target": "/C:/Users/Admin/.gemini/antigravity/brain/0667851f-6164-42f7-86ba-64a0b5c9169d/visual-regression-phase1/desktop-vi-accounting-02-investigation-executed.png",
       "classification": "historical-external-or-placeholder"
     },
     {
       "source": "docs/history/reports/VISUAL_REGRESSION_QA_PHASE1_REPORT.md",
+      "line": 51,
       "target": "/C:/Users/Admin/.gemini/antigravity/brain/0667851f-6164-42f7-86ba-64a0b5c9169d/visual-regression-phase1/desktop-vi-accounting-03-dashboard-builder.png",
       "classification": "historical-external-or-placeholder"
     },
     {
       "source": "docs/history/reports/VISUAL_REGRESSION_QA_PHASE1_REPORT.md",
+      "line": 53,
       "target": "/C:/Users/Admin/.gemini/antigravity/brain/0667851f-6164-42f7-86ba-64a0b5c9169d/visual-regression-phase1/desktop-vi-accounting-04-display-preferences-modal.png",
       "classification": "historical-external-or-placeholder"
     },
     {
       "source": "docs/history/reports/VISUAL_REGRESSION_QA_PHASE1_REPORT.md",
+      "line": 58,
       "target": "/C:/Users/Admin/.gemini/antigravity/brain/0667851f-6164-42f7-86ba-64a0b5c9169d/visual-regression-phase1/desktop-ar-compact-01-home.png",
       "classification": "historical-external-or-placeholder"
     },
     {
       "source": "docs/history/reports/VISUAL_REGRESSION_QA_PHASE1_REPORT.md",
+      "line": 60,
       "target": "/C:/Users/Admin/.gemini/antigravity/brain/0667851f-6164-42f7-86ba-64a0b5c9169d/visual-regression-phase1/desktop-ar-compact-02-investigation-executed.png",
       "classification": "historical-external-or-placeholder"
     },
     {
       "source": "docs/history/reports/VISUAL_REGRESSION_QA_PHASE1_REPORT.md",
+      "line": 62,
       "target": "/C:/Users/Admin/.gemini/antigravity/brain/0667851f-6164-42f7-86ba-64a0b5c9169d/visual-regression-phase1/desktop-ar-compact-03-dashboard-builder.png",
       "classification": "historical-external-or-placeholder"
     },
     {
       "source": "docs/history/reports/VISUAL_REGRESSION_QA_PHASE1_REPORT.md",
+      "line": 64,
       "target": "/C:/Users/Admin/.gemini/antigravity/brain/0667851f-6164-42f7-86ba-64a0b5c9169d/visual-regression-phase1/desktop-ar-compact-04-display-preferences-modal.png",
       "classification": "historical-external-or-placeholder"
     },
     {
       "source": "docs/history/reports/VISUAL_REGRESSION_QA_PHASE1_REPORT.md",
+      "line": 69,
       "target": "/C:/Users/Admin/.gemini/antigravity/brain/0667851f-6164-42f7-86ba-64a0b5c9169d/visual-regression-phase1/mobile-en-standard-01-home.png",
       "classification": "historical-external-or-placeholder"
     },
     {
       "source": "docs/history/reports/VISUAL_REGRESSION_QA_PHASE1_REPORT.md",
+      "line": 71,
       "target": "/C:/Users/Admin/.gemini/antigravity/brain/0667851f-6164-42f7-86ba-64a0b5c9169d/visual-regression-phase1/mobile-en-standard-02-investigation-executed.png",
       "classification": "historical-external-or-placeholder"
     },
     {
       "source": "docs/history/reports/VISUAL_REGRESSION_QA_PHASE1_REPORT.md",
+      "line": 73,
       "target": "/C:/Users/Admin/.gemini/antigravity/brain/0667851f-6164-42f7-86ba-64a0b5c9169d/visual-regression-phase1/mobile-en-standard-03-dashboard-builder.png",
       "classification": "historical-external-or-placeholder"
     },
     {
       "source": "docs/history/reports/VISUAL_REGRESSION_QA_PHASE1_REPORT.md",
+      "line": 75,
       "target": "/C:/Users/Admin/.gemini/antigravity/brain/0667851f-6164-42f7-86ba-64a0b5c9169d/visual-regression-phase1/mobile-en-standard-04-display-preferences-modal.png",
+      "classification": "historical-external-or-placeholder"
+    },
+    {
+      "source": "docs/history/audits/architecture/AUDIT-end-to-end-product-readiness.md",
+      "line": 22,
+      "target": "/absolute/path/to/delivery_performance_chart.png",
+      "classification": "historical-external-or-placeholder"
+    },
+    {
+      "source": "docs/history/audits/architecture/AUDIT-end-to-end-product-readiness.md",
+      "line": 33,
+      "target": "/absolute/path/to/inventory_aging_chart.png",
       "classification": "historical-external-or-placeholder"
     }
   ]

@@ -33,8 +33,8 @@ Rules:
 
 Canonical docs:
 
-* `docs/architecture/ADR-119-business-brain-orchestrator.md`
-* `docs/progress/phase-28-business-brain-orchestrator.md`
+* `docs/adr/ADR-119-business-brain-orchestrator.md`
+* `docs/history/progress/phase-28-business-brain-orchestrator.md`
 
 ## 2026-07-04 Context-Aware Semantic Dictionary Direction
 
@@ -54,8 +54,8 @@ Accepted direction:
 
 Canonical docs:
 
-* `docs/architecture/ADR-120-context-aware-semantic-dictionary.md`
-* `docs/progress/phase-29-context-aware-semantic-dictionary.md`
+* `docs/adr/ADR-120-context-aware-semantic-dictionary.md`
+* `docs/history/progress/phase-29-context-aware-semantic-dictionary.md`
 
 Implementation checkpoint 2026-07-04:
 
@@ -163,7 +163,7 @@ Clarifications:
 
 Canonical docs:
 
-* `docs/architecture/ADR-117-business-understanding-engine-product-boundary.md`
+* `docs/adr/ADR-117-business-understanding-engine-product-boundary.md`
 * `docs/product/product-direction-and-pricing-v1.md`
 
 ## 2026-06-28 Plugin SDK Phase
@@ -175,7 +175,7 @@ Current SDK docs:
 * `packages/plugin-sdk/src/index.ts`
 * `packages/plugin-sdk/README.md`
 * `docs/plugin-sdk/provider-plugin-manual.md`
-* `docs/architecture/ADR-116-plugin-first-system-expansion.md`
+* `docs/adr/ADR-116-plugin-first-system-expansion.md`
 
 Important SDK rules:
 

@@ -1,0 +1,136 @@
+# Architecture Decision Records
+
+> Historical decision sequence. ADRs explain why architecture changed; they do not automatically outrank later canonical contracts, closure evidence, or current code.
+
+## Numbering integrity
+
+- Files: **122**
+- Unique ADR numbers: **121**
+- Range: **1–122**
+- Historical gap: **ADR-023 is absent from the repository corpus**.
+- Historical collision: **ADR-089 has two distinct documents**. They are preserved as-is; cleanup does not renumber history.
+
+## Index
+
+- [`ADR-001-core-domain-model.md`](./ADR-001-core-domain-model.md) — ADR-001 Core Domain Model
+- [`ADR-002-local-first-architecture.md`](./ADR-002-local-first-architecture.md) — ADR-002 Local First Architecture
+- [`ADR-003-rust-core-engine.md`](./ADR-003-rust-core-engine.md) — ADR-003 Rust Core Engine
+- [`ADR-004-application-runtime.md`](./ADR-004-application-runtime.md) — ADR-004 Application Runtime Layer
+- [`ADR-005-storage-architecture.md`](./ADR-005-storage-architecture.md) — ADR-005 Storage Architecture
+- [`ADR-006-visual-data-canvas.md`](./ADR-006-visual-data-canvas.md) — ADR-006 Visual Data Canvas
+- [`ADR-007-multi-source-dataset-recipe.md`](./ADR-007-multi-source-dataset-recipe.md) — ADR-007 Multi-Source Dataset Recipe
+- [`ADR-008-optional-ai-assistant.md`](./ADR-008-optional-ai-assistant.md) — ADR-008 Optional AI Assistant
+- [`ADR-009-dataset-recipe-engine.md`](./ADR-009-dataset-recipe-engine.md) — ADR-009 Dataset Recipe Engine
+- [`ADR-010-dataset-lineage.md`](./ADR-010-dataset-lineage.md) — ADR-010 Dataset Lineage
+- [`ADR-011-question-first-analytics.md`](./ADR-011-question-first-analytics.md) — ADR-011 Question First Analytics
+- [`ADR-012-virtual-dataset-first.md`](./ADR-012-virtual-dataset-first.md) — ADR-012 Virtual Dataset First
+- [`ADR-013-question-template-engine.md`](./ADR-013-question-template-engine.md) — ADR-013 Question Template Engine
+- [`ADR-014-insight-generation-model.md`](./ADR-014-insight-generation-model.md) — ADR-014 Insight Generation Model
+- [`ADR-015-recipe-planner.md`](./ADR-015-recipe-planner.md) — ADR-015 Recipe Planner
+- [`ADR-016-refresh-revalidation-model.md`](./ADR-016-refresh-revalidation-model.md) — ADR-016 Refresh & Revalidation Model
+- [`ADR-017-source-capability-model.md`](./ADR-017-source-capability-model.md) — ADR-017 Source Capability Model
+- [`ADR-018-connector-contract.md`](./ADR-018-connector-contract.md) — ADR-018 Connector Contract
+- [`ADR-019-perspective-layer.md`](./ADR-019-perspective-layer.md) — ADR-019 Perspective Layer
+- [`ADR-020-semantic-view-model.md`](./ADR-020-semantic-view-model.md) — ADR-020 Semantic View Model
+- [`ADR-021-metadata-persistence-model.md`](./ADR-021-metadata-persistence-model.md) — ADR-021 Metadata Persistence Model
+- [`ADR-022-project-file-format.md`](./ADR-022-project-file-format.md) — ADR-022 Project File Format
+- [`ADR-024-project-lifecycle.md`](./ADR-024-project-lifecycle.md) — ADR-024 Project Lifecycle & Workspace Runtime
+- [`ADR-025-source-registry-architecture.md`](./ADR-025-source-registry-architecture.md) — ADR-025 Source Registry Architecture
+- [`ADR-026-connector-contract.md`](./ADR-026-connector-contract.md) — ADR-026 Connector Contract
+- [`ADR-027-dataset-architecture.md`](./ADR-027-dataset-architecture.md) — ADR-027 Dataset Architecture
+- [`ADR-028-virtual-dataset-model.md`](./ADR-028-virtual-dataset-model.md) — ADR-028 Virtual Dataset Model
+- [`ADR-029-schema-discovery-architecture.md`](./ADR-029-schema-discovery-architecture.md) — ADR-029 Schema Discovery Architecture
+- [`ADR-030-semantic-model-foundation.md`](./ADR-030-semantic-model-foundation.md) — ADR-030 Semantic Model Foundation
+- [`ADR-031-perspective-resolution-model.md`](./ADR-031-perspective-resolution-model.md) — ADR-031 Perspective Resolution Model
+- [`ADR-032-question-context-model.md`](./ADR-032-question-context-model.md) — ADR-032 Question Context Model
+- [`ADR-033-recipe-architecture.md`](./ADR-033-recipe-architecture.md) — ADR-033 Recipe Architecture
+- [`ADR-034-analytical-intent-model.md`](./ADR-034-analytical-intent-model.md) — ADR-034 Analytical Intent Model
+- [`ADR-035-planner-architecture.md`](./ADR-035-planner-architecture.md) — ADR-035 Planner Architecture
+- [`ADR-036-execution-strategy-model.md`](./ADR-036-execution-strategy-model.md) — ADR-036 Execution Strategy Model
+- [`ADR-037-question-template-architecture.md`](./ADR-037-question-template-architecture.md) — ADR-037 Question Template Architecture
+- [`ADR-038-question-classification-model.md`](./ADR-038-question-classification-model.md) — ADR-038 Question Classification Model
+- [`ADR-039-runtime-architecture.md`](./ADR-039-runtime-architecture.md) — ADR-039 Runtime Architecture
+- [`ADR-040-execution-backend-contract.md`](./ADR-040-execution-backend-contract.md) — ADR-040 Execution Backend Contract
+- [`ADR-041-runtime-virtual-dataset-model.md`](./ADR-041-runtime-virtual-dataset-model.md) — ADR-041 Runtime Virtual Dataset Model
+- [`ADR-042-materialization-strategy.md`](./ADR-042-materialization-strategy.md) — ADR-042 Materialization Strategy
+- [`ADR-043-data-view-architecture.md`](./ADR-043-data-view-architecture.md) — ADR-043 Data View Architecture
+- [`ADR-044-visualization-contract-model.md`](./ADR-044-visualization-contract-model.md) — ADR-044 Visualization Contract Model
+- [`ADR-045-insight-architecture.md`](./ADR-045-insight-architecture.md) — ADR-045 Insight Architecture
+- [`ADR-046-analytical-narrative-model.md`](./ADR-046-analytical-narrative-model.md) — ADR-046 Analytical Narrative Model
+- [`ADR-047-export-architecture.md`](./ADR-047-export-architecture.md) — ADR-047 Export Architecture
+- [`ADR-048-export-artifact-model.md`](./ADR-048-export-artifact-model.md) — ADR-048 Export Artifact Model
+- [`ADR-049-chart-architecture.md`](./ADR-049-chart-architecture.md) — ADR-049 Chart Architecture
+- [`ADR-050-visualization-engine-model.md`](./ADR-050-visualization-engine-model.md) — ADR-050 Visualization Engine Model
+- [`ADR-051-dashboard-architecture.md`](./ADR-051-dashboard-architecture.md) — ADR-051 Dashboard Architecture
+- [`ADR-052-analytical-workspace-model.md`](./ADR-052-analytical-workspace-model.md) — ADR-052 Analytical Workspace Model
+- [`ADR-053-rendering-contract-architecture.md`](./ADR-053-rendering-contract-architecture.md) — ADR-053 Rendering Contract Architecture
+- [`ADR-054-frontend-asset-model.md`](./ADR-054-frontend-asset-model.md) — ADR-054 Frontend Asset Model
+- [`ADR-055-business-key-detection.md`](./ADR-055-business-key-detection.md) — ADR 055: Business Key Detection Engine
+- [`ADR-056-relationship-discovery.md`](./ADR-056-relationship-discovery.md) — ADR 056: Relationship Discovery Engine
+- [`ADR-057-dataset-collection.md`](./ADR-057-dataset-collection.md) — ADR 057: Dataset Collection Framework
+- [`ADR-058-virtual-dataset-layer.md`](./ADR-058-virtual-dataset-layer.md) — ADR 058: Virtual Dataset Layer
+- [`ADR-059-relationship-graph-source-of-truth.md`](./ADR-059-relationship-graph-source-of-truth.md) — ADR-059: Relationship Graph as the Source of Truth
+- [`ADR-060-business-view-before-execution.md`](./ADR-060-business-view-before-execution.md) — ADR-060: Business View Before Execution
+- [`ADR-061-virtual-dataset-plan-contract.md`](./ADR-061-virtual-dataset-plan-contract.md) — ADR-061: Virtual Dataset Plan Contract
+- [`ADR-062-runtime-preview-before-execution.md`](./ADR-062-runtime-preview-before-execution.md) — ADR-062: Runtime Preview Before Execution
+- [`ADR-063-execution-guard-before-runtime.md`](./ADR-063-execution-guard-before-runtime.md) — ADR-063: Execution Guard Before Runtime
+- [`ADR-064-duckdb-logical-plan-before-sql.md`](./ADR-064-duckdb-logical-plan-before-sql.md) — ADR-064: DuckDB Logical Plan Before SQL Execution
+- [`ADR-065-runtime-boundary-contract.md`](./ADR-065-runtime-boundary-contract.md) — ADR-065: Runtime Boundary Contract
+- [`ADR-066-expected-result-contract-before-sql.md`](./ADR-066-expected-result-contract-before-sql.md) — ADR-066: Expected Result Contract Before SQL
+- [`ADR-067-safe-sql-compiler-contract.md`](./ADR-067-safe-sql-compiler-contract.md) — ADR-067: Safe SQL Compiler Contract
+- [`ADR-068-sandbox-before-runtime.md`](./ADR-068-sandbox-before-runtime.md) — ADR-068: Sandbox Before Runtime
+- [`ADR-069-preview-result-contract-before-runtime.md`](./ADR-069-preview-result-contract-before-runtime.md) — ADR-069: Preview Result Contract Before Runtime
+- [`ADR-070-business-confidence-engine.md`](./ADR-070-business-confidence-engine.md) — ADR-070: Business Confidence Engine
+- [`ADR-071-dataset-health-model.md`](./ADR-071-dataset-health-model.md) — ADR-071: Dataset Health Model
+- [`ADR-072-insight-contract.md`](./ADR-072-insight-contract.md) — ADR-072: Insight Contract
+- [`ADR-073-dataset-health-engine.md`](./ADR-073-dataset-health-engine.md) — ADR-073: Dataset Health Engine
+- [`ADR-074-business-confidence-formula.md`](./ADR-074-business-confidence-formula.md) — ADR-074: Business Confidence Formula Design
+- [`ADR-075-confidence-signal-registry.md`](./ADR-075-confidence-signal-registry.md) — ADR-075: Confidence Signal Registry
+- [`ADR-076-business-confidence-engine.md`](./ADR-076-business-confidence-engine.md) — ADR-076: Business Confidence Engine
+- [`ADR-077-duckdb-preview-runtime.md`](./ADR-077-duckdb-preview-runtime.md) — ADR-077: DuckDB Preview Runtime
+- [`ADR-078-result-validator-integration.md`](./ADR-078-result-validator-integration.md) — ADR 078: Result Validator Integration
+- [`ADR-079-data-quality-vs-business-confidence.md`](./ADR-079-data-quality-vs-business-confidence.md) — ADR 079: Data Quality vs Business Confidence
+- [`ADR-080-explore-investigate-ask-navigation.md`](./ADR-080-explore-investigate-ask-navigation.md) — ADR 080: Explore, Investigate, Ask Navigation
+- [`ADR-081-learning-first-question-discovery.md`](./ADR-081-learning-first-question-discovery.md) — ADR 081: Learning First Question Discovery
+- [`ADR-082-perspective-before-question.md`](./ADR-082-perspective-before-question.md) — ADR 082: Perspective Before Question
+- [`ADR-083-business-view-summary-layer.md`](./ADR-083-business-view-summary-layer.md) — ADR 083: Business View Summary Layer
+- [`ADR-084-business-view-driven-question-pipeline.md`](./ADR-084-business-view-driven-question-pipeline.md) — ADR 084: Business View Driven Question Pipeline
+- [`ADR-085-business-signal-registry.md`](./ADR-085-business-signal-registry.md) — ADR 085: Business Signal Registry
+- [`ADR-086-business-concept-canonicalization.md`](./ADR-086-business-concept-canonicalization.md) — ADR 086: Business Concept Canonicalization
+- [`ADR-087-signal-taxonomy.md`](./ADR-087-signal-taxonomy.md) — ADR 087: Signal Taxonomy
+- [`ADR-088-signal-driven-perspective-generation.md`](./ADR-088-signal-driven-perspective-generation.md) — ADR 088: Signal-Driven Perspective Generation
+- [`ADR-089-business-view-registry-v1.md`](./ADR-089-business-view-registry-v1.md) — ADR 089: Business View Registry V1
+- [`ADR-089-signal-driven-business-view-generation.md`](./ADR-089-signal-driven-business-view-generation.md) — ADR 089: Signal-Driven Business View Generation
+- [`ADR-090-domain-knowledge-preservation.md`](./ADR-090-domain-knowledge-preservation.md) — ADR 090: Domain Knowledge Preservation
+- [`ADR-091-domain-knowledge-catalog.md`](./ADR-091-domain-knowledge-catalog.md) — ADR 091: Domain Knowledge Catalog
+- [`ADR-092-machine-readable-domain-catalog.md`](./ADR-092-machine-readable-domain-catalog.md) — ADR 092: Machine-Readable Domain Catalog
+- [`ADR-093-registry-driven-business-view-generation.md`](./ADR-093-registry-driven-business-view-generation.md) — ADR 093: Registry-Driven Business View Generation
+- [`ADR-094-question-plan-before-question.md`](./ADR-094-question-plan-before-question.md) — ADR-094: Question Plan Before Question
+- [`ADR-095-question-suggestion-renderer.md`](./ADR-095-question-suggestion-renderer.md) — ADR-095: Question Suggestion Renderer
+- [`ADR-096-guided-investigation-pipeline.md`](./ADR-096-guided-investigation-pipeline.md) — ADR-096: Guided Investigation Pipeline Orchestrator
+- [`ADR-097-dataset-understanding-before-questions.md`](./ADR-097-dataset-understanding-before-questions.md) — ADR 097: Dataset Understanding Before Questions
+- [`ADR-098-dataset-understanding-contract.md`](./ADR-098-dataset-understanding-contract.md) — ADR 098: Dataset Understanding Contract
+- [`ADR-099-analysis-action-runtime-contract.md`](./ADR-099-analysis-action-runtime-contract.md) — ADR 099: Analysis Action Runtime Contract
+- [`ADR-100-runtime-planner-preview.md`](./ADR-100-runtime-planner-preview.md) — ADR 100: Runtime Planner Preview
+- [`ADR-101-home-investigation-separation.md`](./ADR-101-home-investigation-separation.md) — ADR 101: Home and Investigation Workspace Separation
+- [`ADR-102-safe-sql-preview-before-execution.md`](./ADR-102-safe-sql-preview-before-execution.md) — ADR 102: Safe SQL Preview Before Execution
+- [`ADR-103-investigation-workspace-layout.md`](./ADR-103-investigation-workspace-layout.md) — ADR 103: Investigation Workspace Layout Cleanup
+- [`ADR-104-duckdb-preview-sandbox.md`](./ADR-104-duckdb-preview-sandbox.md) — ADR-104: DuckDB Preview Sandbox
+- [`ADR-105-chart-preview-renderer.md`](./ADR-105-chart-preview-renderer.md) — ADR-105: Chart Preview Renderer
+- [`ADR-106-dataset-rows-preview-wiring.md`](./ADR-106-dataset-rows-preview-wiring.md) — ADR-106: Dataset Rows Preview Wiring
+- [`ADR-107-preview-row-retention.md`](./ADR-107-preview-row-retention.md) — ADR-107: Preview Row Retention
+- [`ADR-108-axum-preview-execution-endpoint.md`](./ADR-108-axum-preview-execution-endpoint.md) — ADR 108: Axum Preview Execution Endpoint Contract
+- [`ADR-109-frontend-backend-preview-adapter.md`](./ADR-109-frontend-backend-preview-adapter.md) — ADR 109: Frontend Backend Preview Adapter
+- [`ADR-110-mvp-v1-product-modes-and-priorities.md`](./ADR-110-mvp-v1-product-modes-and-priorities.md) — ADR 110: MVP v1 Product Modes and Priorities
+- [`ADR-111-multi-evidence-understanding-engine.md`](./ADR-111-multi-evidence-understanding-engine.md) — ADR 111: Multi-Evidence Understanding Engine
+- [`ADR-112-global-display-preferences.md`](./ADR-112-global-display-preferences.md) — ADR-112: Global Display Preferences
+- [`ADR-113-shared-simple-advanced-execution-core.md`](./ADR-113-shared-simple-advanced-execution-core.md) — ADR-113: Shared Simple/Advanced Execution Core
+- [`ADR-114-advanced-mode-inheritance-blueprint.md`](./ADR-114-advanced-mode-inheritance-blueprint.md) — ADR-114: Advanced Mode Inherits the Shared Data Platform
+- [`ADR-115-ba-decision-engine-simple-mode.md`](./ADR-115-ba-decision-engine-simple-mode.md) — ADR-115: BA Decision Engine for Simple Mode
+- [`ADR-116-plugin-first-system-expansion.md`](./ADR-116-plugin-first-system-expansion.md) — ADR-116: Plugin-First System Expansion
+- [`ADR-117-business-understanding-engine-product-boundary.md`](./ADR-117-business-understanding-engine-product-boundary.md) — ADR-117: Business Understanding Engine Product Boundary
+- [`ADR-118-domain-ba-playbooks.md`](./ADR-118-domain-ba-playbooks.md) — ADR-118: Domain BA Playbooks for Simple Mode
+- [`ADR-119-business-brain-orchestrator.md`](./ADR-119-business-brain-orchestrator.md) — ADR-119: Business Brain Orchestrator for Simple Mode
+- [`ADR-120-context-aware-semantic-dictionary.md`](./ADR-120-context-aware-semantic-dictionary.md) — ADR-120: Context-Aware Semantic Dictionary and Evidence Engine
+- [`ADR-121-semantic-registry-source-of-truth.md`](./ADR-121-semantic-registry-source-of-truth.md) — ADR-121: Runtime Semantic Registry Source of Truth
+- [`ADR-122-canonical-understanding-pipeline.md`](./ADR-122-canonical-understanding-pipeline.md) — ADR-122: Canonical Understanding Pipeline

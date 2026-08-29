@@ -195,7 +195,7 @@ Actual sample binaries may be referenced from their existing local locations or 
 
 ## Phase 0 changed files
 
-1. `docs/architecture/ADR-122-canonical-understanding-pipeline.md`
+1. `docs/adr/ADR-122-canonical-understanding-pipeline.md`
 2. `apps/desktop/src/lib/understanding-core/OWNERSHIP.md`
 3. `apps/desktop/src/lib/understanding-core/domain-support-manifest.ts`
 4. `docs/architecture/phase-0-semantic-registry-inventory.json`

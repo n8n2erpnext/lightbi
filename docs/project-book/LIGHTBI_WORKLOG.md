@@ -57,7 +57,7 @@
 
 This is a chronological journal, not the canonical specification.
 
-For current behavior, read [`LIGHTBI_PROJECT_BOOK.md`](./LIGHTBI_PROJECT_BOOK.md) first and use this journal to understand evolution and provenance.
+For current behavior, read [`LIGHTBI_PROJECT_BOOK.md`](LIGHTBI_PROJECT_BOOK.md) first and use this journal to understand evolution and provenance.
 
 Each entry records:
 
@@ -122,7 +122,7 @@ Prove architecture could produce a real visible analytical result before adding 
 
 ### Bookmark
 
-- [`../progress/milestone-1.md`](../progress/milestone-1.md)
+- [`../progress/milestone-1.md`](../history/progress/milestone-1.md)
 ## Early June 2026 — Milestone 2: Question First landing
 
 ### Goal
@@ -147,7 +147,7 @@ Question First remains useful history and an optional intent layer, but later BV
 
 ### Bookmarks
 
-- [`../progress/milestone-2-question-first.md`](../progress/milestone-2-question-first.md)
+- [`../progress/milestone-2-question-first.md`](../history/progress/milestone-2-question-first.md)
 - [`../design/ui-baseline.md`](../design/ui-baseline.md)
 ## June 2026 — Milestone 3: real CSV intake
 
@@ -171,7 +171,7 @@ The backend still had a single active `current_source` concept. This was explici
 
 ### Bookmark
 
-- [`../progress/milestone-3-real-csv-import.md`](../progress/milestone-3-real-csv-import.md)
+- [`../progress/milestone-3-real-csv-import.md`](../history/progress/milestone-3-real-csv-import.md)
 
 ---
 
@@ -179,7 +179,7 @@ The backend still had a single active `current_source` concept. This was explici
 
 Home evolved from a bare question box into a progressive workspace with contextual upload/connect/sample actions, schema-aware suggestions, capability detection, an intake drawer, dataset summary, and explicit separation of analysis intent from source attachment.
 
-Bookmark: [`../progress/milestone-4-guided-home.md`](../progress/milestone-4-guided-home.md).
+Bookmark: [`../progress/milestone-4-guided-home.md`](../history/progress/milestone-4-guided-home.md).
 ## June 2026 — Milestone 5: relationship discovery and planning
 
 ### Goal
@@ -202,8 +202,8 @@ No physical DuckDB join was authorized by this milestone. Discovery/planning and
 
 ### Bookmarks
 
-- [`../progress/milestone-5-relationship-discovery.md`](../progress/milestone-5-relationship-discovery.md)
-- [`../progress/milestone-5-summary.md`](../progress/milestone-5-summary.md)
+- [`../progress/milestone-5-relationship-discovery.md`](../history/progress/milestone-5-relationship-discovery.md)
+- [`../progress/milestone-5-summary.md`](../history/progress/milestone-5-summary.md)
 - [`../architecture/relationship-discovery-scoring.md`](../architecture/relationship-discovery-scoring.md)
 ## June 2026 — Milestones 6–7: runtime boundary and safe compilation
 
@@ -232,8 +232,8 @@ Planner ≠ Executor. SQL preview/explainability is not automatically the execut
 
 ### Bookmarks
 
-- [`../progress/milestone-6-runtime-preview.md`](../progress/milestone-6-runtime-preview.md)
-- [`../progress/milestone-7-result-understanding.md`](../progress/milestone-7-result-understanding.md)
+- [`../progress/milestone-6-runtime-preview.md`](../history/progress/milestone-6-runtime-preview.md)
+- [`../progress/milestone-7-result-understanding.md`](../history/progress/milestone-7-result-understanding.md)
 ## June 2026 — Milestone 8: trust/business confidence
 
 ### Goal
@@ -252,7 +252,7 @@ Prevent LightBI from presenting structurally valid query results as trustworthy 
 
 ### Bookmark
 
-- [`../progress/milestone-8-business-confidence.md`](../progress/milestone-8-business-confidence.md)
+- [`../progress/milestone-8-business-confidence.md`](../history/progress/milestone-8-business-confidence.md)
 
 This line later feeds directly into the stricter canonical readiness/decision-use architecture of Phase 4–8.
 ## Late June 2026 — Guided Investigation pipeline, then BVQ reset
@@ -283,7 +283,7 @@ Home was simplified around positive understanding and runnable opportunities. Bu
 
 ### Bookmark
 
-- [`../progress/milestone-8-5-guided-investigation.md`](../progress/milestone-8-5-guided-investigation.md)
+- [`../progress/milestone-8-5-guided-investigation.md`](../history/progress/milestone-8-5-guided-investigation.md)
 - Historical reset details are indexed in `SOURCE_CATALOG.md` under `ADR-097`, `BVQ-RESET`, and `dataset-understanding-layer`.
 ## 2026-06-28 — Product boundary formalized as Business Understanding Engine
 
@@ -313,7 +313,7 @@ A Draft v1.0 Basic/Pro/Ultra packaging and pricing proposal was recorded. It rem
 
 ### Bookmarks
 
-- [`../architecture/ADR-117-business-understanding-engine-product-boundary.md`](../architecture/ADR-117-business-understanding-engine-product-boundary.md)
+- [`../architecture/ADR-117-business-understanding-engine-product-boundary.md`](../adr/ADR-117-business-understanding-engine-product-boundary.md)
 - [`../product/product-direction-and-pricing-v1.md`](../product/product-direction-and-pricing-v1.md)
 ## 2026-06-28 — Plugin-first provider expansion
 
@@ -367,7 +367,7 @@ Semantic Coverage
 
 ### Bookmark
 
-- [`../progress/phase-28-business-brain-orchestrator.md`](../progress/phase-28-business-brain-orchestrator.md)
+- [`../progress/phase-28-business-brain-orchestrator.md`](../history/progress/phase-28-business-brain-orchestrator.md)
 ## 2026-07-04 — Phase 29 Context-Aware Semantic Dictionary
 
 ### Problem
@@ -390,7 +390,7 @@ The dictionary expanded across all six runtime BA domains and then into broader 
 
 ### Bookmark
 
-- [`../progress/phase-29-context-aware-semantic-dictionary.md`](../progress/phase-29-context-aware-semantic-dictionary.md)
+- [`../progress/phase-29-context-aware-semantic-dictionary.md`](../history/progress/phase-29-context-aware-semantic-dictionary.md)
 
 ---
 
@@ -398,7 +398,7 @@ The dictionary expanded across all six runtime BA domains and then into broader 
 
 The project centralized runtime semantic definitions into `semantic-registry.ts`, made detector/dictionary/core/next layers registry-backed, and added drift guards so supported signals could not silently diverge across engines.
 
-Bookmark: [`../progress/phase-30-semantic-registry-unification.md`](../progress/phase-30-semantic-registry-unification.md).
+Bookmark: [`../progress/phase-30-semantic-registry-unification.md`](../history/progress/phase-30-semantic-registry-unification.md).
 ---
 
 ## Canonical research era — Phase 0 through Phase 4

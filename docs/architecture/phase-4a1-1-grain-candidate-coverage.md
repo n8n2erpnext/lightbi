@@ -35,7 +35,7 @@ Aggregate facts:
 - 78 temporal observations, including unresolved physical date bases;
 - 305 aggregation risks.
 
-No source emitted only unknown. Twenty-three sources emitted one non-unknown alternative and fourteen emitted multiple non-unknown alternatives. This is candidate distribution, not grain accuracy. Full records are in [the machine audit](./phase-4a1-1-grain-candidate-coverage-audit.json).
+No source emitted only unknown. Twenty-three sources emitted one non-unknown alternative and fourteen emitted multiple non-unknown alternatives. This is candidate distribution, not grain accuracy. Full records are in [the machine audit](phase-4a1-1-grain-candidate-coverage-audit.json).
 
 ## Identity and false-positive audit
 
