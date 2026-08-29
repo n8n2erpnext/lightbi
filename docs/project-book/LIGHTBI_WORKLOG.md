@@ -899,3 +899,22 @@ A separate audit of `docs/architecture/*.json` found 129 of 354 files directly c
 The clean worktree catalog contains 924 tracked Markdown/JSON sources versus 1,077 sources in the original dirty working-tree snapshot. The difference is preserved as provenance evidence that working-tree knowledge included non-HEAD/untracked/reference material.
 
 All Project Book, Worklog and current Source Catalog links resolve after the move. Twenty-seven pre-existing historical link debts remain separately recorded; none were introduced by the reorganization.
+
+## 2026-08-30 — Documentation library governance established
+
+The second library-cleanup pass was checkpointed as commit `6f74635` (`docs: reorganize documentation library`). It consolidated ADRs, historical audits, post-Beta handoffs, progress/changelog chronology, architecture resets, and the superseded MVP v1 roadmap into authority-oriented shelves while preserving machine-consumed architecture JSON paths.
+
+A permanent documentation governance contract was then added as [`LIBRARY_RULES.md`](./LIBRARY_RULES.md), with [`DOCUMENT_TEMPLATE.md`](./DOCUMENT_TEMPLATE.md) as the standard starting structure for justified new durable documents.
+
+The governance contract requires future humans and AI agents to:
+
+- read the Project Book entry point before writing;
+- search for an existing document owner before creating another file;
+- classify authority explicitly;
+- follow naming and shelf rules;
+- keep repository root free of arbitrary documentation;
+- preserve historical identity and machine-evidence path contracts;
+- update navigation/index surfaces after documentation changes;
+- verify links and isolate documentation commits from product/code changes.
+
+This turns documentation organization from a one-time cleanup into an ongoing engineering contract.
