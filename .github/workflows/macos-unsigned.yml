@@ -1,0 +1,157 @@
+name: macOS Unsigned Beta Validation
+
+on:
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: "Publish the validated macOS artifact to the existing GitHub/R2 Beta release"
+        required: true
+        type: boolean
+        default: false
+      version:
+        description: "Existing Beta version to extend with macOS"
+        required: true
+        type: string
+        default: "0.9.2-beta.7"
+  pull_request:
+    paths:
+      - ".github/workflows/macos-unsigned.yml"
+      - "apps/desktop/**"
+      - "apps/server/**"
+      - "crates/**"
+      - "packages/**"
+      - "scripts/prepare-native-sidecar.mjs"
+      - "pnpm-lock.yaml"
+
+permissions:
+  contents: read
+
+jobs:
+  build-macos-universal:
+    runs-on: macos-14
+    timeout-minutes: 120
+    env:
+      MACOSX_DEPLOYMENT_TARGET: "11.0"
+      APPLE_SIGNING_IDENTITY: "-"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.4.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-apple-darwin,aarch64-apple-darwin
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: . -> target
+      - run: pnpm install --frozen-lockfile
+      - name: Verify public release and updater contracts
+        run: |
+          pnpm test:release-contract
+          pnpm test:public-boundary
+          pnpm --dir apps/desktop exec vitest run src/stores/update-store.test.ts src/components/settings/UpdateSettingsPanel.test.tsx
+      - name: Generate branded macOS icon
+        run: |
+          pnpm dlx @tauri-apps/cli@2.11.4 icon apps/desktop/public/branding/lightbi-app-icon.png --output crates/lightbi-tauri/icons
+          test -s crates/lightbi-tauri/icons/icon.icns
+      - name: Build universal ad-hoc signed DMG
+        working-directory: crates/lightbi-tauri
+        env:
+          VITE_LIGHTBI_DISTRIBUTION_URL: https://lightbi.thaiduy.digital/distribution
+          VITE_LIGHTBI_VERSION: 0.9.2-beta.7
+        run: pnpm dlx @tauri-apps/cli@2.11.4 build --target universal-apple-darwin --config tauri.macos.conf.json --bundles dmg
+      - name: Validate Big Sur metadata, architectures and ad-hoc signature
+        run: |
+          set -euo pipefail
+          dmg=$(find target/universal-apple-darwin/release/bundle/dmg -maxdepth 1 -type f -name '*.dmg' | head -1)
+          test -n "$dmg"
+          hdiutil verify "$dmg"
+          mount=$(mktemp -d)
+          cleanup() { hdiutil detach "$mount" -quiet || true; rmdir "$mount" || true; }
+          trap cleanup EXIT
+          hdiutil attach "$dmg" -nobrowse -readonly -mountpoint "$mount" -quiet
+          app=$(find "$mount" -maxdepth 1 -type d -name '*.app' | head -1)
+          test -n "$app"
+          minimum=$(/usr/libexec/PlistBuddy -c 'Print :LSMinimumSystemVersion' "$app/Contents/Info.plist")
+          test "$minimum" = "11.0"
+          executable=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "$app/Contents/Info.plist")
+          lipo "$app/Contents/MacOS/$executable" -verify_arch x86_64 arm64
+          codesign --verify --deep --strict "$app"
+          codesign -dv --verbose=4 "$app" 2>&1 | grep -q 'Signature=adhoc'
+          shasum -a 256 "$dmg" > "$dmg.sha256"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: LightBI-macOS-Universal-BigSur-Unsigned-Beta
+          path: |
+            target/universal-apple-darwin/release/bundle/dmg/*.dmg
+            target/universal-apple-darwin/release/bundle/dmg/*.sha256
+          if-no-files-found: error
+
+  publish-macos:
+    if: github.event_name == 'workflow_dispatch' && inputs.publish
+    needs: build-macos-universal
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: auto
+      R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+      R2_BUCKET: ${{ secrets.R2_BUCKET }}
+      R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/download-artifact@v4
+        with:
+          name: LightBI-macOS-Universal-BigSur-Unsigned-Beta
+          path: .artifacts/macos
+      - name: Publish additive macOS artifact and release catalogs
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+          export AWS_ACCESS_KEY_ID="$(printf '%s' "$AWS_ACCESS_KEY_ID" | tr -d '\r\n')"
+          export AWS_SECRET_ACCESS_KEY="$(printf '%s' "$AWS_SECRET_ACCESS_KEY" | tr -d '\r\n')"
+          export R2_ACCOUNT_ID="$(printf '%s' "$R2_ACCOUNT_ID" | tr -d '\r\n')"
+          export R2_BUCKET="$(printf '%s' "$R2_BUCKET" | tr -d '\r\n')"
+          export R2_PUBLIC_URL="$(printf '%s' "$R2_PUBLIC_URL" | tr -d '\r\n')"
+          [[ "$VERSION" == *-beta.* ]]
+          [[ "$R2_BUCKET" != */* ]]
+          python -m pip install --disable-pip-version-check --quiet awscli
+          dmg=$(find .artifacts/macos -type f -name '*.dmg' | head -1)
+          checksum="$dmg.sha256"
+          test -n "$dmg" && test -s "$checksum"
+          expected=$(awk '{print tolower($1)}' "$checksum")
+          actual=$(sha256sum "$dmg" | awk '{print $1}')
+          test "$expected" = "$actual"
+          endpoint="https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com"
+          public="${R2_PUBLIC_URL%/}"
+          mac_key="release/lightbi/$VERSION/$(basename "$dmg")"
+          if aws s3api head-object --bucket "$R2_BUCKET" --key "$mac_key" --endpoint-url "$endpoint" >/dev/null 2>&1; then
+            echo "Immutable macOS object already exists: $mac_key"
+            exit 1
+          fi
+          mkdir -p .release
+          curl --fail --silent --show-error "$public/release/lightbi/$VERSION/manifest.json" -o .release/manifest.previous.json
+          curl --fail --silent --show-error "$public/release/lightbi/index.json" -o .release/index.previous.json
+          jq --arg filename "$(basename "$dmg")" --arg url "$public/$mac_key" --arg sha "$actual" --argjson size "$(stat -c%s "$dmg")" \
+            '.artifacts | map(select(.platform != "macos")) + [{platform:"macos",architecture:"universal",kind:"dmg",filename:$filename,url:$url,size:$size,sha256:$sha}]' \
+            .release/manifest.previous.json > .release/artifacts.json
+          node scripts/build-release-manifest.mjs --version "$VERSION" --channel beta --artifacts-json .release/artifacts.json --minimum-updater-version 0.9.1-beta.7 --release-notes "LightBI $VERSION · Windows, Linux and macOS Big Sur+" --output .release/manifest.json --index-input .release/index.previous.json --index-output .release/index.json
+          gh release upload "v$VERSION" "$dmg" "$checksum" --clobber
+          aws s3 cp "$dmg" "s3://$R2_BUCKET/$mac_key" --endpoint-url "$endpoint" --cache-control "public,max-age=31536000,immutable" --content-type "application/x-apple-diskimage"
+          aws s3 cp "$checksum" "s3://$R2_BUCKET/$mac_key.sha256" --endpoint-url "$endpoint" --cache-control "public,max-age=31536000,immutable" --content-type "text/plain"
+          aws s3 cp .release/manifest.json "s3://$R2_BUCKET/release/lightbi/$VERSION/manifest.json" --endpoint-url "$endpoint" --cache-control "public,max-age=60,must-revalidate" --content-type "application/json"
+          aws s3 cp .release/index.json "s3://$R2_BUCKET/release/lightbi/index.json" --endpoint-url "$endpoint" --cache-control "public,max-age=60,must-revalidate" --content-type "application/json"
+          aws s3 cp .release/manifest.json "s3://$R2_BUCKET/release/lightbi/beta/latest.json" --endpoint-url "$endpoint" --cache-control "public,max-age=60,must-revalidate" --content-type "application/json"
+          aws s3 cp .release/manifest.json "s3://$R2_BUCKET/release/lightbi/latest.json" --endpoint-url "$endpoint" --cache-control "public,max-age=60,must-revalidate" --content-type "application/json"
