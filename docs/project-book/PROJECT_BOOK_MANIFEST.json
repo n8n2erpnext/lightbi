@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "lightbi.project-book.manifest.v1",
+  "snapshot": "2026-08-29",
+  "files": [
+    {
+      "path": "docs/project-book/EXTERNAL_SOURCE_REGISTER.md",
+      "bytes": 847,
+      "sha256": "11a90da0a6c51cd82f976cd187aba037b2b5cd563fae5e7003edbe5dd1629fa6"
+    },
+    {
+      "path": "docs/project-book/LIGHTBI_PROJECT_BOOK.md",
+      "bytes": 93078,
+      "sha256": "4a3e48f5d89527596401508ef9b01987097ffe11e553ab24fb141497fe8f039b"
+    },
+    {
+      "path": "docs/project-book/LIGHTBI_WORKLOG.md",
+      "bytes": 42163,
+      "sha256": "f8b023a2f6c8a9713bc6c955bc9de9b6704a482c087716b97521718be190e1fa"
+    },
+    {
+      "path": "docs/project-book/README.md",
+      "bytes": 1687,
+      "sha256": "9969af81d32127fc420fcb323ba6f005b0a486d8a2dfb2257a7cab9b7fd8c929"
+    },
+    {
+      "path": "docs/project-book/SOURCE_CATALOG.md",
+      "bytes": 275610,
+      "sha256": "3385340880c8b653cb98e3800115bd4cc0e058fac2bd34ec4165f416e32ed4f0"
+    },
+    {
+      "path": "docs/project-book/source_catalog.json",
+      "bytes": 375077,
+      "sha256": "20764e1c1217bd07817973b821a6f3f1f55c35025a3758f6ccbade7f569976a7"
+    }
+  ]
+}
