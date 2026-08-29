@@ -1,0 +1,890 @@
+{
+  "schemaVersion": "lightbi.docs.reorganization-plan.v1",
+  "phase": "root-human-only",
+  "lockedRootFiles": [
+    "DOMAIN_CORE_AUDIT_REPORT.md",
+    "validation_report.md"
+  ],
+  "moves": [
+    {
+      "old": "AGENT_HANDOFF.md",
+      "new": "docs/history/agent/handoffs/AGENT_HANDOFF.md",
+      "category": "docs/history/agent/handoffs"
+    },
+    {
+      "old": "AGENT_HANDOFF_ALIAS_BATCH2.md",
+      "new": "docs/history/agent/handoffs/AGENT_HANDOFF_ALIAS_BATCH2.md",
+      "category": "docs/history/agent/handoffs"
+    },
+    {
+      "old": "AGENT_HANDOFF_ANALYSIS_OPPORTUNITY_VALIDATION_AUDIT.md",
+      "new": "docs/history/agent/handoffs/AGENT_HANDOFF_ANALYSIS_OPPORTUNITY_VALIDATION_AUDIT.md",
+      "category": "docs/history/agent/handoffs"
+    },
+    {
+      "old": "AGENT_HANDOFF_CANONICAL_SCHEMA_PROJECTION_PHASE1.md",
+      "new": "docs/history/agent/handoffs/AGENT_HANDOFF_CANONICAL_SCHEMA_PROJECTION_PHASE1.md",
+      "category": "docs/history/agent/handoffs"
+    },
+    {
+      "old": "AGENT_HANDOFF_CANONICAL_SCHEMA_PROJECTION_PHASE2.md",
+      "new": "docs/history/agent/handoffs/AGENT_HANDOFF_CANONICAL_SCHEMA_PROJECTION_PHASE2.md",
+      "category": "docs/history/agent/handoffs"
+    },
+    {
+      "old": "AGENT_HANDOFF_DUCKDB_RUNTIME_ERROR_CLASSIFICATION_PHASE1.md",
+      "new": "docs/history/agent/handoffs/AGENT_HANDOFF_DUCKDB_RUNTIME_ERROR_CLASSIFICATION_PHASE1.md",
+      "category": "docs/history/agent/handoffs"
+    },
+    {
+      "old": "AGENT_HANDOFF_EXECUTION_BOUNDARY_LEGACY_MAPPING_AUDIT.md",
+      "new": "docs/history/agent/handoffs/AGENT_HANDOFF_EXECUTION_BOUNDARY_LEGACY_MAPPING_AUDIT.md",
+      "category": "docs/history/agent/handoffs"
+    },
+    {
+      "old": "AGENT_HANDOFF_EXECUTION_BOUNDARY_LEGACY_MAPPING_FIX.md",
+      "new": "docs/history/agent/handoffs/AGENT_HANDOFF_EXECUTION_BOUNDARY_LEGACY_MAPPING_FIX.md",
+      "category": "docs/history/agent/handoffs"
+    },
+    {
+      "old": "AGENT_HANDOFF_EXECUTION_BOUNDARY_LEGACY_MAPPING_FIX_VERIFICATION.md",
+      "new": "docs/history/agent/handoffs/AGENT_HANDOFF_EXECUTION_BOUNDARY_LEGACY_MAPPING_FIX_VERIFICATION.md",
+      "category": "docs/history/agent/handoffs"
+    },
+    {
+      "old": "AGENT_HANDOFF_EXECUTION_PATH_UNIFICATION_PHASE1.md",
+      "new": "docs/history/agent/handoffs/AGENT_HANDOFF_EXECUTION_PATH_UNIFICATION_PHASE1.md",
+      "category": "docs/history/agent/handoffs"
+    },
+    {
+      "old": "AGENT_HANDOFF_EXECUTION_PATH_UNIFICATION_PHASE2.md",
+      "new": "docs/history/agent/handoffs/AGENT_HANDOFF_EXECUTION_PATH_UNIFICATION_PHASE2.md",
+      "category": "docs/history/agent/handoffs"
+    },
+    {
+      "old": "AGENT_HANDOFF_FALLBACK_POLICY_ALIGNMENT_PHASE1.md",
+      "new": "docs/history/agent/handoffs/AGENT_HANDOFF_FALLBACK_POLICY_ALIGNMENT_PHASE1.md",
+      "category": "docs/history/agent/handoffs"
+    },
+    {
+      "old": "AGENT_HANDOFF_FRONTEND_RUNTIME_ACTION_WIRING_PHASE1.md",
+      "new": "docs/history/agent/handoffs/AGENT_HANDOFF_FRONTEND_RUNTIME_ACTION_WIRING_PHASE1.md",
+      "category": "docs/history/agent/handoffs"
+    },
+    {
+      "old": "AGENT_HANDOFF_GLOBAL_DISPLAY_PREFERENCES_PHASE1.md",
+      "new": "docs/history/agent/handoffs/AGENT_HANDOFF_GLOBAL_DISPLAY_PREFERENCES_PHASE1.md",
+      "category": "docs/history/agent/handoffs"
+    },
+    {
+      "old": "AGENT_HANDOFF_GLOBAL_DISPLAY_PREFERENCES_PHASE2A.md",
+      "new": "docs/history/agent/handoffs/AGENT_HANDOFF_GLOBAL_DISPLAY_PREFERENCES_PHASE2A.md",
+      "category": "docs/history/agent/handoffs"
+    },
+    {
+      "old": "AGENT_HANDOFF_GLOBAL_DISPLAY_PREFERENCES_PHASE2B.md",
+      "new": "docs/history/agent/handoffs/AGENT_HANDOFF_GLOBAL_DISPLAY_PREFERENCES_PHASE2B.md",
+      "category": "docs/history/agent/handoffs"
+    },
+    {
+      "old": "AGENT_HANDOFF_GLOBAL_DISPLAY_PREFERENCES_PHASE3.md",
+      "new": "docs/history/agent/handoffs/AGENT_HANDOFF_GLOBAL_DISPLAY_PREFERENCES_PHASE3.md",
+      "category": "docs/history/agent/handoffs"
+    },
+    {
+      "old": "AGENT_HANDOFF_GLOBAL_DISPLAY_PREFERENCES_PHASE4.md",
+      "new": "docs/history/agent/handoffs/AGENT_HANDOFF_GLOBAL_DISPLAY_PREFERENCES_PHASE4.md",
+      "category": "docs/history/agent/handoffs"
+    },
+    {
+      "old": "AGENT_HANDOFF_GLOBAL_DISPLAY_PREFERENCES_PHASE5.md",
+      "new": "docs/history/agent/handoffs/AGENT_HANDOFF_GLOBAL_DISPLAY_PREFERENCES_PHASE5.md",
+      "category": "docs/history/agent/handoffs"
+    },
+    {
+      "old": "AGENT_HANDOFF_GUARDED_SUM_DECIMAL_AMBIGUITY_PHASE1.md",
+      "new": "docs/history/agent/handoffs/AGENT_HANDOFF_GUARDED_SUM_DECIMAL_AMBIGUITY_PHASE1.md",
+      "category": "docs/history/agent/handoffs"
+    },
+    {
+      "old": "AGENT_HANDOFF_GUARDED_SUM_PHASE_B_CORRECTIVE.md",
+      "new": "docs/history/agent/handoffs/AGENT_HANDOFF_GUARDED_SUM_PHASE_B_CORRECTIVE.md",
+      "category": "docs/history/agent/handoffs"
+    },
+    {
+      "old": "AGENT_HANDOFF_GUARDED_SUM_WIRING_PHASE1.md",
+      "new": "docs/history/agent/handoffs/AGENT_HANDOFF_GUARDED_SUM_WIRING_PHASE1.md",
+      "category": "docs/history/agent/handoffs"
+    },
+    {
+      "old": "AGENT_HANDOFF_INVESTIGATION_E2E_RUNTIME_PROBE_PHASE1.md",
+      "new": "docs/history/agent/handoffs/AGENT_HANDOFF_INVESTIGATION_E2E_RUNTIME_PROBE_PHASE1.md",
+      "category": "docs/history/agent/handoffs"
+    },
+    {
+      "old": "AGENT_HANDOFF_LOCAL_DUCKDB_EXECUTOR_PHASE1.md",
+      "new": "docs/history/agent/handoffs/AGENT_HANDOFF_LOCAL_DUCKDB_EXECUTOR_PHASE1.md",
+      "category": "docs/history/agent/handoffs"
+    },
+    {
+      "old": "AGENT_HANDOFF_LOCAL_DUCKDB_EXECUTOR_PHASE2A.md",
+      "new": "docs/history/agent/handoffs/AGENT_HANDOFF_LOCAL_DUCKDB_EXECUTOR_PHASE2A.md",
+      "category": "docs/history/agent/handoffs"
+    },
+    {
+      "old": "AGENT_HANDOFF_LOCAL_DUCKDB_EXECUTOR_PHASE2B.md",
+      "new": "docs/history/agent/handoffs/AGENT_HANDOFF_LOCAL_DUCKDB_EXECUTOR_PHASE2B.md",
+      "category": "docs/history/agent/handoffs"
+    },
+    {
+      "old": "AGENT_HANDOFF_NUMERIC_HEALTH_GATE_PHASE1.md",
+      "new": "docs/history/agent/handoffs/AGENT_HANDOFF_NUMERIC_HEALTH_GATE_PHASE1.md",
+      "category": "docs/history/agent/handoffs"
+    },
+    {
+      "old": "AGENT_HANDOFF_PHASE1_MULTI_EVIDENCE_COMPLETED.md",
+      "new": "docs/history/agent/handoffs/AGENT_HANDOFF_PHASE1_MULTI_EVIDENCE_COMPLETED.md",
+      "category": "docs/history/agent/handoffs"
+    },
+    {
+      "old": "AGENT_HANDOFF_PHASE5.md",
+      "new": "docs/history/agent/handoffs/AGENT_HANDOFF_PHASE5.md",
+      "category": "docs/history/agent/handoffs"
+    },
+    {
+      "old": "AGENT_HANDOFF_PRODUCTION_API_BOUNDARY_FIX_PHASE1.md",
+      "new": "docs/history/agent/handoffs/AGENT_HANDOFF_PRODUCTION_API_BOUNDARY_FIX_PHASE1.md",
+      "category": "docs/history/agent/handoffs"
+    },
+    {
+      "old": "AGENT_HANDOFF_REAL_SAMPLE_DATA_E2E_AUDIT_2026-06-14.md",
+      "new": "docs/history/agent/handoffs/AGENT_HANDOFF_REAL_SAMPLE_DATA_E2E_AUDIT_2026-06-14.md",
+      "category": "docs/history/agent/handoffs"
+    },
+    {
+      "old": "AGENT_HANDOFF_REAL_SAMPLE_LOCALFIRST_RUNTIME_PROOF_2026-06-14.md",
+      "new": "docs/history/agent/handoffs/AGENT_HANDOFF_REAL_SAMPLE_LOCALFIRST_RUNTIME_PROOF_2026-06-14.md",
+      "category": "docs/history/agent/handoffs"
+    },
+    {
+      "old": "AGENT_HANDOFF_RUNTIME_RECLASSIFICATION_2026-06-15.md",
+      "new": "docs/history/agent/handoffs/AGENT_HANDOFF_RUNTIME_RECLASSIFICATION_2026-06-15.md",
+      "category": "docs/history/agent/handoffs"
+    },
+    {
+      "old": "AGENT_HANDOFF_RUNTIME_TRUTH_PHASE1.md",
+      "new": "docs/history/agent/handoffs/AGENT_HANDOFF_RUNTIME_TRUTH_PHASE1.md",
+      "category": "docs/history/agent/handoffs"
+    },
+    {
+      "old": "AGENT_HANDOFF_RUNTIME_TRUTH_PHASE2.md",
+      "new": "docs/history/agent/handoffs/AGENT_HANDOFF_RUNTIME_TRUTH_PHASE2.md",
+      "category": "docs/history/agent/handoffs"
+    },
+    {
+      "old": "AGENT_HANDOFF_SAFE_SQL_QUERY_FAILURE_FIX_PHASE1.md",
+      "new": "docs/history/agent/handoffs/AGENT_HANDOFF_SAFE_SQL_QUERY_FAILURE_FIX_PHASE1.md",
+      "category": "docs/history/agent/handoffs"
+    },
+    {
+      "old": "AGENT_HANDOFF_SAFE_SQL_QUERY_FAILURE_FIX_PHASE2.md",
+      "new": "docs/history/agent/handoffs/AGENT_HANDOFF_SAFE_SQL_QUERY_FAILURE_FIX_PHASE2.md",
+      "category": "docs/history/agent/handoffs"
+    },
+    {
+      "old": "AGENT_HANDOFF_SAMPLE_DATA_DOMAIN_COVERAGE_2026-06-15.md",
+      "new": "docs/history/agent/handoffs/AGENT_HANDOFF_SAMPLE_DATA_DOMAIN_COVERAGE_2026-06-15.md",
+      "category": "docs/history/agent/handoffs"
+    },
+    {
+      "old": "AGENT_HANDOFF_SEMANTIC_GRAPH_PHASE1.md",
+      "new": "docs/history/agent/handoffs/AGENT_HANDOFF_SEMANTIC_GRAPH_PHASE1.md",
+      "category": "docs/history/agent/handoffs"
+    },
+    {
+      "old": "AGENT_HANDOFF_SEMANTIC_GRAPH_PHASE2.md",
+      "new": "docs/history/agent/handoffs/AGENT_HANDOFF_SEMANTIC_GRAPH_PHASE2.md",
+      "category": "docs/history/agent/handoffs"
+    },
+    {
+      "old": "AGENT_HANDOFF_TAXONOMY_EXPANSION_PHASE1.md",
+      "new": "docs/history/agent/handoffs/AGENT_HANDOFF_TAXONOMY_EXPANSION_PHASE1.md",
+      "category": "docs/history/agent/handoffs"
+    },
+    {
+      "old": "AGENT_HANDOFF_TAXONOMY_EXPANSION_PHASE2.md",
+      "new": "docs/history/agent/handoffs/AGENT_HANDOFF_TAXONOMY_EXPANSION_PHASE2.md",
+      "category": "docs/history/agent/handoffs"
+    },
+    {
+      "old": "AGENT_HANDOFF_TRUST_MAPPING_PHASE1.md",
+      "new": "docs/history/agent/handoffs/AGENT_HANDOFF_TRUST_MAPPING_PHASE1.md",
+      "category": "docs/history/agent/handoffs"
+    },
+    {
+      "old": "AGENT_HANDOFF_TRUST_MAPPING_PHASE2.md",
+      "new": "docs/history/agent/handoffs/AGENT_HANDOFF_TRUST_MAPPING_PHASE2.md",
+      "category": "docs/history/agent/handoffs"
+    },
+    {
+      "old": "AGENT_HANDOFF_VIETTEL_LOGISTICS_SAMPLE_ACCEPTANCE_2026-06-15.md",
+      "new": "docs/history/agent/handoffs/AGENT_HANDOFF_VIETTEL_LOGISTICS_SAMPLE_ACCEPTANCE_2026-06-15.md",
+      "category": "docs/history/agent/handoffs"
+    },
+    {
+      "old": "AGENT_HANDOFF_VIRTUAL_BUSINESS_VIEW_REAL_DATA_AUDIT.md",
+      "new": "docs/history/agent/handoffs/AGENT_HANDOFF_VIRTUAL_BUSINESS_VIEW_REAL_DATA_AUDIT.md",
+      "category": "docs/history/agent/handoffs"
+    },
+    {
+      "old": "AGENT_HANDOFF_VIRTUAL_BUSINESS_VIEW_REAL_DATA_EXECUTION_2026-06-15.md",
+      "new": "docs/history/agent/handoffs/AGENT_HANDOFF_VIRTUAL_BUSINESS_VIEW_REAL_DATA_EXECUTION_2026-06-15.md",
+      "category": "docs/history/agent/handoffs"
+    },
+    {
+      "old": "AGENT_HANDOFF_VISUAL_REGRESSION_QA_PHASE1.md",
+      "new": "docs/history/agent/handoffs/AGENT_HANDOFF_VISUAL_REGRESSION_QA_PHASE1.md",
+      "category": "docs/history/agent/handoffs"
+    },
+    {
+      "old": "AGENT_HANDOFF_WARNING_PROPAGATION_GUARDED_SUM_PHASE1B.md",
+      "new": "docs/history/agent/handoffs/AGENT_HANDOFF_WARNING_PROPAGATION_GUARDED_SUM_PHASE1B.md",
+      "category": "docs/history/agent/handoffs"
+    },
+    {
+      "old": "AGENT_IMPLEMENTATION_PLAN.md",
+      "new": "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN.md",
+      "category": "docs/history/agent/plans"
+    },
+    {
+      "old": "AGENT_IMPLEMENTATION_PLAN_ADVANCED_EXPORT.md",
+      "new": "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_ADVANCED_EXPORT.md",
+      "category": "docs/history/agent/plans"
+    },
+    {
+      "old": "AGENT_IMPLEMENTATION_PLAN_ALIAS_BATCH2.md",
+      "new": "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_ALIAS_BATCH2.md",
+      "category": "docs/history/agent/plans"
+    },
+    {
+      "old": "AGENT_IMPLEMENTATION_PLAN_BACKEND_RUNTIME_HARDENING_NEXT.md",
+      "new": "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_BACKEND_RUNTIME_HARDENING_NEXT.md",
+      "category": "docs/history/agent/plans"
+    },
+    {
+      "old": "AGENT_IMPLEMENTATION_PLAN_CANONICAL_SCHEMA_PROJECTION_PHASE2.md",
+      "new": "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_CANONICAL_SCHEMA_PROJECTION_PHASE2.md",
+      "category": "docs/history/agent/plans"
+    },
+    {
+      "old": "AGENT_IMPLEMENTATION_PLAN_DOMAIN_AUDIT.md",
+      "new": "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DOMAIN_AUDIT.md",
+      "category": "docs/history/agent/plans"
+    },
+    {
+      "old": "AGENT_IMPLEMENTATION_PLAN_DUCKDB_RUNTIME_ERROR_CLASSIFICATION_PHASE1.md",
+      "new": "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DUCKDB_RUNTIME_ERROR_CLASSIFICATION_PHASE1.md",
+      "category": "docs/history/agent/plans"
+    },
+    {
+      "old": "AGENT_IMPLEMENTATION_PLAN_DUCKDB_WASM_BOOTSTRAP.md",
+      "new": "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DUCKDB_WASM_BOOTSTRAP.md",
+      "category": "docs/history/agent/plans"
+    },
+    {
+      "old": "AGENT_IMPLEMENTATION_PLAN_EXECUTION_PATH_UNIFICATION_PHASE1.md",
+      "new": "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_EXECUTION_PATH_UNIFICATION_PHASE1.md",
+      "category": "docs/history/agent/plans"
+    },
+    {
+      "old": "AGENT_IMPLEMENTATION_PLAN_FALLBACK_POLICY_ALIGNMENT_PHASE1.md",
+      "new": "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_FALLBACK_POLICY_ALIGNMENT_PHASE1.md",
+      "category": "docs/history/agent/plans"
+    },
+    {
+      "old": "AGENT_IMPLEMENTATION_PLAN_GLOBAL_DISPLAY_PREFERENCES.md",
+      "new": "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_GLOBAL_DISPLAY_PREFERENCES.md",
+      "category": "docs/history/agent/plans"
+    },
+    {
+      "old": "AGENT_IMPLEMENTATION_PLAN_GLOBAL_DISPLAY_PREFERENCES_PHASE3.md",
+      "new": "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_GLOBAL_DISPLAY_PREFERENCES_PHASE3.md",
+      "category": "docs/history/agent/plans"
+    },
+    {
+      "old": "AGENT_IMPLEMENTATION_PLAN_GLOBAL_DISPLAY_PREFERENCES_PHASE4.md",
+      "new": "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_GLOBAL_DISPLAY_PREFERENCES_PHASE4.md",
+      "category": "docs/history/agent/plans"
+    },
+    {
+      "old": "AGENT_IMPLEMENTATION_PLAN_GLOBAL_DISPLAY_PREFERENCES_PHASE5.md",
+      "new": "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_GLOBAL_DISPLAY_PREFERENCES_PHASE5.md",
+      "category": "docs/history/agent/plans"
+    },
+    {
+      "old": "AGENT_IMPLEMENTATION_PLAN_GUARDED_SUM_ROLLOUT_AUDIT.md",
+      "new": "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_GUARDED_SUM_ROLLOUT_AUDIT.md",
+      "category": "docs/history/agent/plans"
+    },
+    {
+      "old": "AGENT_IMPLEMENTATION_PLAN_GUARDED_SUM_WIRING_PHASE1.md",
+      "new": "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_GUARDED_SUM_WIRING_PHASE1.md",
+      "category": "docs/history/agent/plans"
+    },
+    {
+      "old": "AGENT_IMPLEMENTATION_PLAN_HOME_READINESS.md",
+      "new": "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_HOME_READINESS.md",
+      "category": "docs/history/agent/plans"
+    },
+    {
+      "old": "AGENT_IMPLEMENTATION_PLAN_INVESTIGATION_UI.md",
+      "new": "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_INVESTIGATION_UI.md",
+      "category": "docs/history/agent/plans"
+    },
+    {
+      "old": "AGENT_IMPLEMENTATION_PLAN_LOCAL_DUCKDB_EXECUTOR_PHASE1.md",
+      "new": "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_LOCAL_DUCKDB_EXECUTOR_PHASE1.md",
+      "category": "docs/history/agent/plans"
+    },
+    {
+      "old": "AGENT_IMPLEMENTATION_PLAN_LOCAL_DUCKDB_EXECUTOR_PHASE2.md",
+      "new": "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_LOCAL_DUCKDB_EXECUTOR_PHASE2.md",
+      "category": "docs/history/agent/plans"
+    },
+    {
+      "old": "AGENT_IMPLEMENTATION_PLAN_MEASURE_TYPING_FEASIBILITY_AUDIT_PHASE1.md",
+      "new": "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_MEASURE_TYPING_FEASIBILITY_AUDIT_PHASE1.md",
+      "category": "docs/history/agent/plans"
+    },
+    {
+      "old": "AGENT_IMPLEMENTATION_PLAN_MEASURE_TYPING_GUARDED_SUM.md",
+      "new": "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_MEASURE_TYPING_GUARDED_SUM.md",
+      "category": "docs/history/agent/plans"
+    },
+    {
+      "old": "AGENT_IMPLEMENTATION_PLAN_MULTI_FILE_UNDERSTANDING_PROOF_2026-06-15.md",
+      "new": "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_MULTI_FILE_UNDERSTANDING_PROOF_2026-06-15.md",
+      "category": "docs/history/agent/plans"
+    },
+    {
+      "old": "AGENT_IMPLEMENTATION_PLAN_NEXT_STREAM_NUMERIC_TRUST.md",
+      "new": "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_NEXT_STREAM_NUMERIC_TRUST.md",
+      "category": "docs/history/agent/plans"
+    },
+    {
+      "old": "AGENT_IMPLEMENTATION_PLAN_NUMERIC_HEALTH_GATE_FEASIBILITY.md",
+      "new": "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_NUMERIC_HEALTH_GATE_FEASIBILITY.md",
+      "category": "docs/history/agent/plans"
+    },
+    {
+      "old": "AGENT_IMPLEMENTATION_PLAN_PHASE2_ALIAS.md",
+      "new": "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_PHASE2_ALIAS.md",
+      "category": "docs/history/agent/plans"
+    },
+    {
+      "old": "AGENT_IMPLEMENTATION_PLAN_PHASE3.md",
+      "new": "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_PHASE3.md",
+      "category": "docs/history/agent/plans"
+    },
+    {
+      "old": "AGENT_IMPLEMENTATION_PLAN_PHASE4.md",
+      "new": "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_PHASE4.md",
+      "category": "docs/history/agent/plans"
+    },
+    {
+      "old": "AGENT_IMPLEMENTATION_PLAN_PHASE5.md",
+      "new": "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_PHASE5.md",
+      "category": "docs/history/agent/plans"
+    },
+    {
+      "old": "AGENT_IMPLEMENTATION_PLAN_PHASE6.md",
+      "new": "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_PHASE6.md",
+      "category": "docs/history/agent/plans"
+    },
+    {
+      "old": "AGENT_IMPLEMENTATION_PLAN_RUNTIME_TRUTH.md",
+      "new": "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_RUNTIME_TRUTH.md",
+      "category": "docs/history/agent/plans"
+    },
+    {
+      "old": "AGENT_IMPLEMENTATION_PLAN_RUNTIME_TRUTH_PHASE1.md",
+      "new": "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_RUNTIME_TRUTH_PHASE1.md",
+      "category": "docs/history/agent/plans"
+    },
+    {
+      "old": "AGENT_IMPLEMENTATION_PLAN_RUNTIME_TRUTH_PHASE2.md",
+      "new": "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_RUNTIME_TRUTH_PHASE2.md",
+      "category": "docs/history/agent/plans"
+    },
+    {
+      "old": "AGENT_IMPLEMENTATION_PLAN_SAFE_SQL_QUERY_FAILURE_AUDIT_PHASE1.md",
+      "new": "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_SAFE_SQL_QUERY_FAILURE_AUDIT_PHASE1.md",
+      "category": "docs/history/agent/plans"
+    },
+    {
+      "old": "AGENT_IMPLEMENTATION_PLAN_SAFE_SQL_QUERY_FAILURE_FIX_PHASE2.md",
+      "new": "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_SAFE_SQL_QUERY_FAILURE_FIX_PHASE2.md",
+      "category": "docs/history/agent/plans"
+    },
+    {
+      "old": "AGENT_IMPLEMENTATION_PLAN_TAXONOMY_EXPANSION_PHASE1.md",
+      "new": "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_TAXONOMY_EXPANSION_PHASE1.md",
+      "category": "docs/history/agent/plans"
+    },
+    {
+      "old": "AGENT_IMPLEMENTATION_PLAN_TAXONOMY_EXPANSION_PHASE2.md",
+      "new": "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_TAXONOMY_EXPANSION_PHASE2.md",
+      "category": "docs/history/agent/plans"
+    },
+    {
+      "old": "AGENT_IMPLEMENTATION_PLAN_TRUST_MAPPING_PHASE2.md",
+      "new": "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_TRUST_MAPPING_PHASE2.md",
+      "category": "docs/history/agent/plans"
+    },
+    {
+      "old": "AGENT_IMPLEMENTATION_PLAN_TRUST_MAPPING_REVIEW.md",
+      "new": "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_TRUST_MAPPING_REVIEW.md",
+      "category": "docs/history/agent/plans"
+    },
+    {
+      "old": "AGENT_IMPLEMENTATION_PLAN_UNDERSTANDING_NEXT_UI_WIRING.md",
+      "new": "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_UNDERSTANDING_NEXT_UI_WIRING.md",
+      "category": "docs/history/agent/plans"
+    },
+    {
+      "old": "AGENT_INBOX.md",
+      "new": "docs/history/agent/plans/AGENT_INBOX.md",
+      "category": "docs/history/agent/plans"
+    },
+    {
+      "old": "AGENT_INBOX_PHASE2.md",
+      "new": "docs/history/agent/plans/AGENT_INBOX_PHASE2.md",
+      "category": "docs/history/agent/plans"
+    },
+    {
+      "old": "AGENT_OUTBOX.md",
+      "new": "docs/history/agent/handoffs/AGENT_OUTBOX.md",
+      "category": "docs/history/agent/handoffs"
+    },
+    {
+      "old": "AGENT_TASK.md",
+      "new": "docs/history/agent/plans/AGENT_TASK.md",
+      "category": "docs/history/agent/plans"
+    },
+    {
+      "old": "AGENT_WALKTHROUGH.md",
+      "new": "docs/history/agent/walkthroughs/AGENT_WALKTHROUGH.md",
+      "category": "docs/history/agent/walkthroughs"
+    },
+    {
+      "old": "AGENT_WALKTHROUGH_PHASE2.md",
+      "new": "docs/history/agent/walkthroughs/AGENT_WALKTHROUGH_PHASE2.md",
+      "category": "docs/history/agent/walkthroughs"
+    },
+    {
+      "old": "AGENT_WALKTHROUGH_PHASE3.md",
+      "new": "docs/history/agent/walkthroughs/AGENT_WALKTHROUGH_PHASE3.md",
+      "category": "docs/history/agent/walkthroughs"
+    },
+    {
+      "old": "ALIAS_BATCH2_CHECKPOINT.md",
+      "new": "docs/history/checkpoints/ALIAS_BATCH2_CHECKPOINT.md",
+      "category": "docs/history/checkpoints"
+    },
+    {
+      "old": "ALIAS_BATCH2_VERIFICATION.md",
+      "new": "docs/history/verifications/ALIAS_BATCH2_VERIFICATION.md",
+      "category": "docs/history/verifications"
+    },
+    {
+      "old": "AUDIT-bvq-remnants.md",
+      "new": "docs/history/audits/AUDIT-bvq-remnants.md",
+      "category": "docs/history/audits"
+    },
+    {
+      "old": "AUDIT-home-simplification.md",
+      "new": "docs/history/audits/AUDIT-home-simplification.md",
+      "category": "docs/history/audits"
+    },
+    {
+      "old": "AUDIT-real-file-preview-validation.md",
+      "new": "docs/history/audits/AUDIT-real-file-preview-validation.md",
+      "category": "docs/history/audits"
+    },
+    {
+      "old": "BACKEND_RUNTIME_HARDENING_VERIFICATION.md",
+      "new": "docs/history/verifications/BACKEND_RUNTIME_HARDENING_VERIFICATION.md",
+      "category": "docs/history/verifications"
+    },
+    {
+      "old": "CANONICAL_SCHEMA_PROJECTION_CHECKPOINT.md",
+      "new": "docs/history/checkpoints/CANONICAL_SCHEMA_PROJECTION_CHECKPOINT.md",
+      "category": "docs/history/checkpoints"
+    },
+    {
+      "old": "CANONICAL_SCHEMA_PROJECTION_PHASE1_VERIFICATION.md",
+      "new": "docs/history/verifications/CANONICAL_SCHEMA_PROJECTION_PHASE1_VERIFICATION.md",
+      "category": "docs/history/verifications"
+    },
+    {
+      "old": "CANONICAL_SCHEMA_PROJECTION_PHASE2_CHECKPOINT.md",
+      "new": "docs/history/checkpoints/CANONICAL_SCHEMA_PROJECTION_PHASE2_CHECKPOINT.md",
+      "category": "docs/history/checkpoints"
+    },
+    {
+      "old": "CANONICAL_SCHEMA_PROJECTION_PHASE2_VERIFICATION.md",
+      "new": "docs/history/verifications/CANONICAL_SCHEMA_PROJECTION_PHASE2_VERIFICATION.md",
+      "category": "docs/history/verifications"
+    },
+    {
+      "old": "CHANGELOG.md",
+      "new": "docs/history/project-memory/CHANGELOG.md",
+      "category": "docs/history/project-memory"
+    },
+    {
+      "old": "CODEX_QA_ORCHESTRATION_CONTRACT.md",
+      "new": "docs/history/agent/contracts/CODEX_QA_ORCHESTRATION_CONTRACT.md",
+      "category": "docs/history/agent/contracts"
+    },
+    {
+      "old": "COMPETITOR_NOTE_JIVEDB.md",
+      "new": "docs/history/foundation-notes/COMPETITOR_NOTE_JIVEDB.md",
+      "category": "docs/history/foundation-notes"
+    },
+    {
+      "old": "DESKTOP_COMPILE_HYGIENE.md",
+      "new": "docs/history/foundation-notes/DESKTOP_COMPILE_HYGIENE.md",
+      "category": "docs/history/foundation-notes"
+    },
+    {
+      "old": "DOMAIN_RUNTIME_UI_AUDIT_REPORT.md",
+      "new": "docs/history/audits/DOMAIN_RUNTIME_UI_AUDIT_REPORT.md",
+      "category": "docs/history/audits"
+    },
+    {
+      "old": "DOMAIN_SAMPLE_MATRIX.md",
+      "new": "docs/history/foundation-notes/DOMAIN_SAMPLE_MATRIX.md",
+      "category": "docs/history/foundation-notes"
+    },
+    {
+      "old": "DU-8-SCOPE.md",
+      "new": "docs/history/foundation-notes/DU-8-SCOPE.md",
+      "category": "docs/history/foundation-notes"
+    },
+    {
+      "old": "DUCKDB_RUNTIME_ERROR_CLASSIFICATION_PHASE1_CHECKPOINT.md",
+      "new": "docs/history/checkpoints/DUCKDB_RUNTIME_ERROR_CLASSIFICATION_PHASE1_CHECKPOINT.md",
+      "category": "docs/history/checkpoints"
+    },
+    {
+      "old": "DUCKDB_RUNTIME_ERROR_CLASSIFICATION_PHASE1_VERIFICATION.md",
+      "new": "docs/history/verifications/DUCKDB_RUNTIME_ERROR_CLASSIFICATION_PHASE1_VERIFICATION.md",
+      "category": "docs/history/verifications"
+    },
+    {
+      "old": "DUCKDB_WASM_BOOTSTRAP_VERIFICATION.md",
+      "new": "docs/history/verifications/DUCKDB_WASM_BOOTSTRAP_VERIFICATION.md",
+      "category": "docs/history/verifications"
+    },
+    {
+      "old": "EXECUTION_BOUNDARY_LEGACY_MAPPING_FIX_VERIFICATION.md",
+      "new": "docs/history/verifications/EXECUTION_BOUNDARY_LEGACY_MAPPING_FIX_VERIFICATION.md",
+      "category": "docs/history/verifications"
+    },
+    {
+      "old": "EXECUTION_PATH_UNIFICATION_CHECKPOINT.md",
+      "new": "docs/history/checkpoints/EXECUTION_PATH_UNIFICATION_CHECKPOINT.md",
+      "category": "docs/history/checkpoints"
+    },
+    {
+      "old": "EXECUTION_PATH_UNIFICATION_PHASE2_VERIFICATION.md",
+      "new": "docs/history/verifications/EXECUTION_PATH_UNIFICATION_PHASE2_VERIFICATION.md",
+      "category": "docs/history/verifications"
+    },
+    {
+      "old": "FALLBACK_POLICY_ALIGNMENT_PHASE1_CHECKPOINT.md",
+      "new": "docs/history/checkpoints/FALLBACK_POLICY_ALIGNMENT_PHASE1_CHECKPOINT.md",
+      "category": "docs/history/checkpoints"
+    },
+    {
+      "old": "FALLBACK_POLICY_ALIGNMENT_PHASE1_VERIFICATION.md",
+      "new": "docs/history/verifications/FALLBACK_POLICY_ALIGNMENT_PHASE1_VERIFICATION.md",
+      "category": "docs/history/verifications"
+    },
+    {
+      "old": "FRONTEND_RUNTIME_ACTION_WIRING_PHASE1_VERIFICATION.md",
+      "new": "docs/history/verifications/FRONTEND_RUNTIME_ACTION_WIRING_PHASE1_VERIFICATION.md",
+      "category": "docs/history/verifications"
+    },
+    {
+      "old": "GEMINI.md",
+      "new": "docs/history/agent/contracts/GEMINI.md",
+      "category": "docs/history/agent/contracts"
+    },
+    {
+      "old": "GLOBAL_DISPLAY_PREFERENCES_FINAL_VERIFICATION_SWEEP.md",
+      "new": "docs/history/verifications/GLOBAL_DISPLAY_PREFERENCES_FINAL_VERIFICATION_SWEEP.md",
+      "category": "docs/history/verifications"
+    },
+    {
+      "old": "GLOBAL_DISPLAY_PREFERENCES_PHASE1_CHECKPOINT.md",
+      "new": "docs/history/checkpoints/GLOBAL_DISPLAY_PREFERENCES_PHASE1_CHECKPOINT.md",
+      "category": "docs/history/checkpoints"
+    },
+    {
+      "old": "GLOBAL_DISPLAY_PREFERENCES_PHASE1_VERIFICATION.md",
+      "new": "docs/history/verifications/GLOBAL_DISPLAY_PREFERENCES_PHASE1_VERIFICATION.md",
+      "category": "docs/history/verifications"
+    },
+    {
+      "old": "GLOBAL_DISPLAY_PREFERENCES_PHASE2A_CHECKPOINT.md",
+      "new": "docs/history/checkpoints/GLOBAL_DISPLAY_PREFERENCES_PHASE2A_CHECKPOINT.md",
+      "category": "docs/history/checkpoints"
+    },
+    {
+      "old": "GLOBAL_DISPLAY_PREFERENCES_PHASE2A_VERIFICATION.md",
+      "new": "docs/history/verifications/GLOBAL_DISPLAY_PREFERENCES_PHASE2A_VERIFICATION.md",
+      "category": "docs/history/verifications"
+    },
+    {
+      "old": "GLOBAL_DISPLAY_PREFERENCES_PHASE2B_CHECKPOINT.md",
+      "new": "docs/history/checkpoints/GLOBAL_DISPLAY_PREFERENCES_PHASE2B_CHECKPOINT.md",
+      "category": "docs/history/checkpoints"
+    },
+    {
+      "old": "GLOBAL_DISPLAY_PREFERENCES_PHASE2B_VERIFICATION.md",
+      "new": "docs/history/verifications/GLOBAL_DISPLAY_PREFERENCES_PHASE2B_VERIFICATION.md",
+      "category": "docs/history/verifications"
+    },
+    {
+      "old": "GLOBAL_DISPLAY_PREFERENCES_PHASE3_CHECKPOINT.md",
+      "new": "docs/history/checkpoints/GLOBAL_DISPLAY_PREFERENCES_PHASE3_CHECKPOINT.md",
+      "category": "docs/history/checkpoints"
+    },
+    {
+      "old": "GLOBAL_DISPLAY_PREFERENCES_PHASE3_VERIFICATION.md",
+      "new": "docs/history/verifications/GLOBAL_DISPLAY_PREFERENCES_PHASE3_VERIFICATION.md",
+      "category": "docs/history/verifications"
+    },
+    {
+      "old": "GLOBAL_DISPLAY_PREFERENCES_PHASE4_CHECKPOINT.md",
+      "new": "docs/history/checkpoints/GLOBAL_DISPLAY_PREFERENCES_PHASE4_CHECKPOINT.md",
+      "category": "docs/history/checkpoints"
+    },
+    {
+      "old": "GLOBAL_DISPLAY_PREFERENCES_PHASE4_VERIFICATION.md",
+      "new": "docs/history/verifications/GLOBAL_DISPLAY_PREFERENCES_PHASE4_VERIFICATION.md",
+      "category": "docs/history/verifications"
+    },
+    {
+      "old": "GLOBAL_DISPLAY_PREFERENCES_PHASE5_VERIFICATION.md",
+      "new": "docs/history/verifications/GLOBAL_DISPLAY_PREFERENCES_PHASE5_VERIFICATION.md",
+      "category": "docs/history/verifications"
+    },
+    {
+      "old": "GLOBAL_DISPLAY_PREFERENCES_STREAM_CLOSURE.md",
+      "new": "docs/history/misc/GLOBAL_DISPLAY_PREFERENCES_STREAM_CLOSURE.md",
+      "category": "docs/history/misc"
+    },
+    {
+      "old": "GUARDED_SUM_DECIMAL_AMBIGUITY_PHASE1_VERIFICATION.md",
+      "new": "docs/history/verifications/GUARDED_SUM_DECIMAL_AMBIGUITY_PHASE1_VERIFICATION.md",
+      "category": "docs/history/verifications"
+    },
+    {
+      "old": "GUARDED_SUM_PHASE_B_CORRECTIVE_VERIFICATION.md",
+      "new": "docs/history/verifications/GUARDED_SUM_PHASE_B_CORRECTIVE_VERIFICATION.md",
+      "category": "docs/history/verifications"
+    },
+    {
+      "old": "GUARDED_SUM_STRESS_TEST_PHASE1.md",
+      "new": "docs/history/reports/GUARDED_SUM_STRESS_TEST_PHASE1.md",
+      "category": "docs/history/reports"
+    },
+    {
+      "old": "GUARDED_SUM_WIRING_PHASE1_VERIFICATION.md",
+      "new": "docs/history/verifications/GUARDED_SUM_WIRING_PHASE1_VERIFICATION.md",
+      "category": "docs/history/verifications"
+    },
+    {
+      "old": "INVESTIGATION_E2E_RUNTIME_PROBE_PHASE1_VERIFICATION.md",
+      "new": "docs/history/verifications/INVESTIGATION_E2E_RUNTIME_PROBE_PHASE1_VERIFICATION.md",
+      "category": "docs/history/verifications"
+    },
+    {
+      "old": "LIGHTBI_INFRASTRUCTURE_BRIEF.md",
+      "new": "docs/history/foundation-notes/LIGHTBI_INFRASTRUCTURE_BRIEF.md",
+      "category": "docs/history/foundation-notes"
+    },
+    {
+      "old": "LIGHTBI_REAL_DATA_QUALITY_GATE.md",
+      "new": "docs/history/foundation-notes/LIGHTBI_REAL_DATA_QUALITY_GATE.md",
+      "category": "docs/history/foundation-notes"
+    },
+    {
+      "old": "LOCAL_DUCKDB_EXECUTOR_CHECKPOINT.md",
+      "new": "docs/history/checkpoints/LOCAL_DUCKDB_EXECUTOR_CHECKPOINT.md",
+      "category": "docs/history/checkpoints"
+    },
+    {
+      "old": "LOCAL_DUCKDB_EXECUTOR_PHASE1_VERIFICATION.md",
+      "new": "docs/history/verifications/LOCAL_DUCKDB_EXECUTOR_PHASE1_VERIFICATION.md",
+      "category": "docs/history/verifications"
+    },
+    {
+      "old": "LOCAL_DUCKDB_EXECUTOR_PHASE2A_VERIFICATION.md",
+      "new": "docs/history/verifications/LOCAL_DUCKDB_EXECUTOR_PHASE2A_VERIFICATION.md",
+      "category": "docs/history/verifications"
+    },
+    {
+      "old": "LOCAL_DUCKDB_EXECUTOR_PHASE2B_VERIFICATION.md",
+      "new": "docs/history/verifications/LOCAL_DUCKDB_EXECUTOR_PHASE2B_VERIFICATION.md",
+      "category": "docs/history/verifications"
+    },
+    {
+      "old": "MEASURE_TYPING_FEASIBILITY_PROBE_PHASE1B.md",
+      "new": "docs/history/reports/MEASURE_TYPING_FEASIBILITY_PROBE_PHASE1B.md",
+      "category": "docs/history/reports"
+    },
+    {
+      "old": "MVP_CHECKPOINT.md",
+      "new": "docs/history/checkpoints/MVP_CHECKPOINT.md",
+      "category": "docs/history/checkpoints"
+    },
+    {
+      "old": "MVP_STABILIZATION_MEMO.md",
+      "new": "docs/history/project-memory/MVP_STABILIZATION_MEMO.md",
+      "category": "docs/history/project-memory"
+    },
+    {
+      "old": "NEXT_ARCHITECTURE_DOMAIN_UNDERSTANDING_RECOVERY_2026-06-15.md",
+      "new": "docs/history/project-memory/NEXT_ARCHITECTURE_DOMAIN_UNDERSTANDING_RECOVERY_2026-06-15.md",
+      "category": "docs/history/project-memory"
+    },
+    {
+      "old": "NUMERIC_HEALTH_GATE_PHASE1_CHECKPOINT.md",
+      "new": "docs/history/checkpoints/NUMERIC_HEALTH_GATE_PHASE1_CHECKPOINT.md",
+      "category": "docs/history/checkpoints"
+    },
+    {
+      "old": "NUMERIC_HEALTH_GATE_PHASE1_VERIFICATION.md",
+      "new": "docs/history/verifications/NUMERIC_HEALTH_GATE_PHASE1_VERIFICATION.md",
+      "category": "docs/history/verifications"
+    },
+    {
+      "old": "PHASE2_ALIAS_VERIFICATION.md",
+      "new": "docs/history/verifications/PHASE2_ALIAS_VERIFICATION.md",
+      "category": "docs/history/verifications"
+    },
+    {
+      "old": "PRODUCTION_API_BOUNDARY_FIX_PHASE1_VERIFICATION.md",
+      "new": "docs/history/verifications/PRODUCTION_API_BOUNDARY_FIX_PHASE1_VERIFICATION.md",
+      "category": "docs/history/verifications"
+    },
+    {
+      "old": "REAL_SAMPLE_DATA_E2E_AUDIT_2026-06-14.md",
+      "new": "docs/history/audits/REAL_SAMPLE_DATA_E2E_AUDIT_2026-06-14.md",
+      "category": "docs/history/audits"
+    },
+    {
+      "old": "REAL_SAMPLE_LOCALFIRST_RUNTIME_PROOF_2026-06-14.md",
+      "new": "docs/history/verifications/REAL_SAMPLE_LOCALFIRST_RUNTIME_PROOF_2026-06-14.md",
+      "category": "docs/history/verifications"
+    },
+    {
+      "old": "REAL_SAMPLE_LOCALFIRST_RUNTIME_RECLASSIFICATION_2026-06-15.md",
+      "new": "docs/history/sample-evidence/REAL_SAMPLE_LOCALFIRST_RUNTIME_RECLASSIFICATION_2026-06-15.md",
+      "category": "docs/history/sample-evidence"
+    },
+    {
+      "old": "RUNTIME_TRUTH_CHECKPOINT.md",
+      "new": "docs/history/checkpoints/RUNTIME_TRUTH_CHECKPOINT.md",
+      "category": "docs/history/checkpoints"
+    },
+    {
+      "old": "SAFE_SQL_QUERY_FAILURE_FIX_PHASE1_CHECKPOINT.md",
+      "new": "docs/history/checkpoints/SAFE_SQL_QUERY_FAILURE_FIX_PHASE1_CHECKPOINT.md",
+      "category": "docs/history/checkpoints"
+    },
+    {
+      "old": "SAFE_SQL_QUERY_FAILURE_FIX_PHASE1_VERIFICATION.md",
+      "new": "docs/history/verifications/SAFE_SQL_QUERY_FAILURE_FIX_PHASE1_VERIFICATION.md",
+      "category": "docs/history/verifications"
+    },
+    {
+      "old": "SAFE_SQL_QUERY_FAILURE_FIX_PHASE2_CHECKPOINT.md",
+      "new": "docs/history/checkpoints/SAFE_SQL_QUERY_FAILURE_FIX_PHASE2_CHECKPOINT.md",
+      "category": "docs/history/checkpoints"
+    },
+    {
+      "old": "SAFE_SQL_QUERY_FAILURE_FIX_PHASE2_VERIFICATION.md",
+      "new": "docs/history/verifications/SAFE_SQL_QUERY_FAILURE_FIX_PHASE2_VERIFICATION.md",
+      "category": "docs/history/verifications"
+    },
+    {
+      "old": "SAMPLE_DATA_DOMAIN_COVERAGE_2026-06-15.md",
+      "new": "docs/history/sample-evidence/SAMPLE_DATA_DOMAIN_COVERAGE_2026-06-15.md",
+      "category": "docs/history/sample-evidence"
+    },
+    {
+      "old": "SAMPLE_DATA_PACK_NOTES.md",
+      "new": "docs/history/sample-evidence/SAMPLE_DATA_PACK_NOTES.md",
+      "category": "docs/history/sample-evidence"
+    },
+    {
+      "old": "SESSION_MASTER_HANDOFF_AND_ROADMAP_2026-06-12.md",
+      "new": "docs/history/agent/handoffs/SESSION_MASTER_HANDOFF_AND_ROADMAP_2026-06-12.md",
+      "category": "docs/history/agent/handoffs"
+    },
+    {
+      "old": "TAXONOMY_EXPANSION_CHECKPOINT.md",
+      "new": "docs/history/checkpoints/TAXONOMY_EXPANSION_CHECKPOINT.md",
+      "category": "docs/history/checkpoints"
+    },
+    {
+      "old": "TAXONOMY_EXPANSION_PHASE2_VERIFICATION.md",
+      "new": "docs/history/verifications/TAXONOMY_EXPANSION_PHASE2_VERIFICATION.md",
+      "category": "docs/history/verifications"
+    },
+    {
+      "old": "TRUST_MAPPING_CHECKPOINT.md",
+      "new": "docs/history/checkpoints/TRUST_MAPPING_CHECKPOINT.md",
+      "category": "docs/history/checkpoints"
+    },
+    {
+      "old": "UI_UX_AUDIT_REPORT.md",
+      "new": "docs/history/audits/UI_UX_AUDIT_REPORT.md",
+      "category": "docs/history/audits"
+    },
+    {
+      "old": "VIETTEL_LOGISTICS_SAMPLE_ACCEPTANCE_2026-06-15.md",
+      "new": "docs/history/reports/VIETTEL_LOGISTICS_SAMPLE_ACCEPTANCE_2026-06-15.md",
+      "category": "docs/history/reports"
+    },
+    {
+      "old": "VIRTUAL_BUSINESS_VIEW_REAL_DATA_EXECUTION_2026-06-15.md",
+      "new": "docs/history/sample-evidence/VIRTUAL_BUSINESS_VIEW_REAL_DATA_EXECUTION_2026-06-15.md",
+      "category": "docs/history/sample-evidence"
+    },
+    {
+      "old": "VISUAL_REGRESSION_QA_PHASE1_REPORT.md",
+      "new": "docs/history/reports/VISUAL_REGRESSION_QA_PHASE1_REPORT.md",
+      "category": "docs/history/reports"
+    },
+    {
+      "old": "WARNING_PROPAGATION_GUARDED_SUM_PHASE1B_CHECKPOINT.md",
+      "new": "docs/history/checkpoints/WARNING_PROPAGATION_GUARDED_SUM_PHASE1B_CHECKPOINT.md",
+      "category": "docs/history/checkpoints"
+    },
+    {
+      "old": "WARNING_PROPAGATION_GUARDED_SUM_PHASE1B_VERIFICATION.md",
+      "new": "docs/history/verifications/WARNING_PROPAGATION_GUARDED_SUM_PHASE1B_VERIFICATION.md",
+      "category": "docs/history/verifications"
+    },
+    {
+      "old": "memory.md",
+      "new": "docs/history/project-memory/memory.md",
+      "category": "docs/history/project-memory"
+    }
+  ]
+}

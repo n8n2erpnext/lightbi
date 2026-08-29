@@ -1,0 +1,141 @@
+{
+  "schemaVersion": "lightbi.docs.known-link-debt.v1",
+  "snapshot": "2026-08-29",
+  "issues": [
+    {
+      "source": "docs/progress/milestone-1.md",
+      "target": "./images/csv-import.png",
+      "classification": "missing-repo-target"
+    },
+    {
+      "source": "docs/progress/milestone-1.md",
+      "target": "./images/dataset-creation.png",
+      "classification": "missing-repo-target"
+    },
+    {
+      "source": "docs/progress/milestone-1.md",
+      "target": "./images/chart-rendering.png",
+      "classification": "missing-repo-target"
+    },
+    {
+      "source": "docs/progress/milestone-1.md",
+      "target": "./images/excel-export.png",
+      "classification": "missing-repo-target"
+    },
+    {
+      "source": "docs/architecture/AUDIT-end-to-end-product-readiness.md",
+      "target": "/absolute/path/to/delivery_performance_chart.png",
+      "classification": "historical-external-or-placeholder"
+    },
+    {
+      "source": "docs/architecture/AUDIT-end-to-end-product-readiness.md",
+      "target": "/absolute/path/to/inventory_aging_chart.png",
+      "classification": "historical-external-or-placeholder"
+    },
+    {
+      "source": "docs/history/sample-evidence/SAMPLE_DATA_DOMAIN_COVERAGE_2026-06-15.md",
+      "target": "file:///home/ubuntu/n8n2erpnext/LightBI/ui-audit/sample-data-domain-coverage-2026-06-15/BHX_PHIEUXUAT_xlsx_home.png",
+      "classification": "historical-external-or-placeholder"
+    },
+    {
+      "source": "docs/history/sample-evidence/SAMPLE_DATA_DOMAIN_COVERAGE_2026-06-15.md",
+      "target": "file:///home/ubuntu/n8n2erpnext/LightBI/ui-audit/sample-data-domain-coverage-2026-06-15/BHX_PHIEUXUAT_xlsx_investigation_after.png",
+      "classification": "historical-external-or-placeholder"
+    },
+    {
+      "source": "docs/history/sample-evidence/SAMPLE_DATA_DOMAIN_COVERAGE_2026-06-15.md",
+      "target": "file:///home/ubuntu/n8n2erpnext/LightBI/ui-audit/sample-data-domain-coverage-2026-06-15/PLU_ALL_FRESH_22_03_2021_xlsx_home.png",
+      "classification": "historical-external-or-placeholder"
+    },
+    {
+      "source": "docs/history/sample-evidence/SAMPLE_DATA_DOMAIN_COVERAGE_2026-06-15.md",
+      "target": "file:///home/ubuntu/n8n2erpnext/LightBI/ui-audit/sample-data-domain-coverage-2026-06-15/PLU_ALL_FRESH_22_03_2021_xlsx_investigation_after.png",
+      "classification": "historical-external-or-placeholder"
+    },
+    {
+      "source": "docs/history/sample-evidence/SAMPLE_DATA_DOMAIN_COVERAGE_2026-06-15.md",
+      "target": "file:///home/ubuntu/n8n2erpnext/LightBI/ui-audit/sample-data-domain-coverage-2026-06-15/2017_06_22_DANH_SACH_XEP_HANG_QUAN_LY_TOAN_QUOC_xlsx_home.png",
+      "classification": "historical-external-or-placeholder"
+    },
+    {
+      "source": "docs/history/reports/VISUAL_REGRESSION_QA_PHASE1_REPORT.md",
+      "target": "/C:/Users/Admin/.gemini/antigravity/brain/0667851f-6164-42f7-86ba-64a0b5c9169d/visual-regression-phase1/desktop-en-standard-01-home.png",
+      "classification": "historical-external-or-placeholder"
+    },
+    {
+      "source": "docs/history/reports/VISUAL_REGRESSION_QA_PHASE1_REPORT.md",
+      "target": "/C:/Users/Admin/.gemini/antigravity/brain/0667851f-6164-42f7-86ba-64a0b5c9169d/visual-regression-phase1/desktop-en-standard-02-investigation-executed.png",
+      "classification": "historical-external-or-placeholder"
+    },
+    {
+      "source": "docs/history/reports/VISUAL_REGRESSION_QA_PHASE1_REPORT.md",
+      "target": "/C:/Users/Admin/.gemini/antigravity/brain/0667851f-6164-42f7-86ba-64a0b5c9169d/visual-regression-phase1/desktop-en-standard-03-dashboard-builder.png",
+      "classification": "historical-external-or-placeholder"
+    },
+    {
+      "source": "docs/history/reports/VISUAL_REGRESSION_QA_PHASE1_REPORT.md",
+      "target": "/C:/Users/Admin/.gemini/antigravity/brain/0667851f-6164-42f7-86ba-64a0b5c9169d/visual-regression-phase1/desktop-en-standard-04-display-preferences-modal.png",
+      "classification": "historical-external-or-placeholder"
+    },
+    {
+      "source": "docs/history/reports/VISUAL_REGRESSION_QA_PHASE1_REPORT.md",
+      "target": "/C:/Users/Admin/.gemini/antigravity/brain/0667851f-6164-42f7-86ba-64a0b5c9169d/visual-regression-phase1/desktop-vi-accounting-01-home.png",
+      "classification": "historical-external-or-placeholder"
+    },
+    {
+      "source": "docs/history/reports/VISUAL_REGRESSION_QA_PHASE1_REPORT.md",
+      "target": "/C:/Users/Admin/.gemini/antigravity/brain/0667851f-6164-42f7-86ba-64a0b5c9169d/visual-regression-phase1/desktop-vi-accounting-02-investigation-executed.png",
+      "classification": "historical-external-or-placeholder"
+    },
+    {
+      "source": "docs/history/reports/VISUAL_REGRESSION_QA_PHASE1_REPORT.md",
+      "target": "/C:/Users/Admin/.gemini/antigravity/brain/0667851f-6164-42f7-86ba-64a0b5c9169d/visual-regression-phase1/desktop-vi-accounting-03-dashboard-builder.png",
+      "classification": "historical-external-or-placeholder"
+    },
+    {
+      "source": "docs/history/reports/VISUAL_REGRESSION_QA_PHASE1_REPORT.md",
+      "target": "/C:/Users/Admin/.gemini/antigravity/brain/0667851f-6164-42f7-86ba-64a0b5c9169d/visual-regression-phase1/desktop-vi-accounting-04-display-preferences-modal.png",
+      "classification": "historical-external-or-placeholder"
+    },
+    {
+      "source": "docs/history/reports/VISUAL_REGRESSION_QA_PHASE1_REPORT.md",
+      "target": "/C:/Users/Admin/.gemini/antigravity/brain/0667851f-6164-42f7-86ba-64a0b5c9169d/visual-regression-phase1/desktop-ar-compact-01-home.png",
+      "classification": "historical-external-or-placeholder"
+    },
+    {
+      "source": "docs/history/reports/VISUAL_REGRESSION_QA_PHASE1_REPORT.md",
+      "target": "/C:/Users/Admin/.gemini/antigravity/brain/0667851f-6164-42f7-86ba-64a0b5c9169d/visual-regression-phase1/desktop-ar-compact-02-investigation-executed.png",
+      "classification": "historical-external-or-placeholder"
+    },
+    {
+      "source": "docs/history/reports/VISUAL_REGRESSION_QA_PHASE1_REPORT.md",
+      "target": "/C:/Users/Admin/.gemini/antigravity/brain/0667851f-6164-42f7-86ba-64a0b5c9169d/visual-regression-phase1/desktop-ar-compact-03-dashboard-builder.png",
+      "classification": "historical-external-or-placeholder"
+    },
+    {
+      "source": "docs/history/reports/VISUAL_REGRESSION_QA_PHASE1_REPORT.md",
+      "target": "/C:/Users/Admin/.gemini/antigravity/brain/0667851f-6164-42f7-86ba-64a0b5c9169d/visual-regression-phase1/desktop-ar-compact-04-display-preferences-modal.png",
+      "classification": "historical-external-or-placeholder"
+    },
+    {
+      "source": "docs/history/reports/VISUAL_REGRESSION_QA_PHASE1_REPORT.md",
+      "target": "/C:/Users/Admin/.gemini/antigravity/brain/0667851f-6164-42f7-86ba-64a0b5c9169d/visual-regression-phase1/mobile-en-standard-01-home.png",
+      "classification": "historical-external-or-placeholder"
+    },
+    {
+      "source": "docs/history/reports/VISUAL_REGRESSION_QA_PHASE1_REPORT.md",
+      "target": "/C:/Users/Admin/.gemini/antigravity/brain/0667851f-6164-42f7-86ba-64a0b5c9169d/visual-regression-phase1/mobile-en-standard-02-investigation-executed.png",
+      "classification": "historical-external-or-placeholder"
+    },
+    {
+      "source": "docs/history/reports/VISUAL_REGRESSION_QA_PHASE1_REPORT.md",
+      "target": "/C:/Users/Admin/.gemini/antigravity/brain/0667851f-6164-42f7-86ba-64a0b5c9169d/visual-regression-phase1/mobile-en-standard-03-dashboard-builder.png",
+      "classification": "historical-external-or-placeholder"
+    },
+    {
+      "source": "docs/history/reports/VISUAL_REGRESSION_QA_PHASE1_REPORT.md",
+      "target": "/C:/Users/Admin/.gemini/antigravity/brain/0667851f-6164-42f7-86ba-64a0b5c9169d/visual-regression-phase1/mobile-en-standard-04-display-preferences-modal.png",
+      "classification": "historical-external-or-placeholder"
+    }
+  ]
+}

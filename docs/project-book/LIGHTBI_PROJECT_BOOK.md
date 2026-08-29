@@ -7,6 +7,8 @@
 
 
 
+
+
 <!-- AUTO_TOC_START -->
 ## Table of Contents
 
@@ -81,6 +83,7 @@
   - [54. Update and install lifecycle invariants](#54-update-and-install-lifecycle-invariants)
   - [55. Open-core legal/technical boundary](#55-open-core-legaltechnical-boundary)
   - [56. Frozen versus provisional road-to-1.0 decisions](#56-frozen-versus-provisional-road-to-1-0-decisions)
+  - [57. Documentation-library cleanup state](#57-documentation-library-cleanup-state)
 <!-- AUTO_TOC_END -->
 
 ---
@@ -136,7 +139,7 @@ The central differentiator is that LightBI tries to make messy operational data 
 - [`../architecture/ADR-117-business-understanding-engine-product-boundary.md`](../architecture/ADR-117-business-understanding-engine-product-boundary.md)
 - [`../product/product-direction-and-pricing-v1.md`](../product/product-direction-and-pricing-v1.md)
 - [`../MVP_sol.md`](../MVP_sol.md)
-- [`../../memory.md`](../../memory.md) — historical project memory; use with precedence rules below.
+- [`../history/project-memory/memory.md`](../history/project-memory/memory.md) — historical project memory; use with precedence rules below.
 ## 2. Source precedence and conflict resolution
 
 The repository is a historical record, not a flat specification. Many old documents describe architectures that were later superseded.
@@ -274,7 +277,7 @@ The Home experience was repositioned around **what LightBI found**, **what can b
 Key bookmarks:
 
 - [`../progress/milestone-8-5-guided-investigation.md`](../progress/milestone-8-5-guided-investigation.md)
-- [`../../memory.md`](../../memory.md) sections “BVQ Reset”, “Dataset Understanding”, and “Home Freeze”
+- [`../history/project-memory/memory.md`](../history/project-memory/memory.md) sections “BVQ Reset”, “Dataset Understanding”, and “Home Freeze”
 - Search the source catalog for `ADR-097-dataset-understanding-before-questions.md`, `dataset-understanding-layer.md`, and `BVQ-RESET-DECISION.md`.
 ### 4.5 Business Brain shifted Simple Mode toward a BA workflow
 
@@ -304,7 +307,7 @@ Business recommendations are typed so the system can distinguish an evidence-bac
 Primary bookmark:
 
 - [`../progress/phase-28-business-brain-orchestrator.md`](../progress/phase-28-business-brain-orchestrator.md)
-- [`../../memory.md`](../../memory.md) — Business Brain checkpoints and UI visibility fixes.
+- [`../history/project-memory/memory.md`](../history/project-memory/memory.md) — Business Brain checkpoints and UI visibility fixes.
 ### 4.6 Semantic Dictionary and Registry attacked “semantic blindness” upstream
 
 Business Brain exposed a deeper problem: downstream BA logic can only be good if the intake layer notices the business evidence in the first place.
@@ -329,7 +332,7 @@ Primary bookmarks:
 
 - [`../progress/phase-29-context-aware-semantic-dictionary.md`](../progress/phase-29-context-aware-semantic-dictionary.md)
 - [`../progress/phase-30-semantic-registry-unification.md`](../progress/phase-30-semantic-registry-unification.md)
-- [`../../memory.md`](../../memory.md) — Phase 29/30 checkpoints.
+- [`../history/project-memory/memory.md`](../history/project-memory/memory.md) — Phase 29/30 checkpoints.
 ---
 
 # Part III — Current Canonical Understanding and Execution Model
@@ -769,7 +772,7 @@ This is a critical future website/distribution rule. Product claims should be ba
 
 Source bookmark:
 
-- [`../../memory.md`](../../memory.md), section “2026-07-10 Semantic Dictionary Expansion + Domain Affinity Safepoint”.
+- [`../history/project-memory/memory.md`](../history/project-memory/memory.md), section “2026-07-10 Semantic Dictionary Expansion + Domain Affinity Safepoint”.
 - [`../progress/phase-30-semantic-registry-unification.md`](../progress/phase-30-semantic-registry-unification.md).
 ---
 
@@ -1145,7 +1148,7 @@ Primary bookmarks:
 
 - [`../plugin-sdk/provider-plugin-manual.md`](../plugin-sdk/provider-plugin-manual.md)
 - [`../architecture/phase-8b-source-binding-invalidation-audit.json`](../architecture/phase-8b-source-binding-invalidation-audit.json)
-- [`../../memory.md`](../../memory.md), Trust & Mapping Review and product-boundary sections.
+- [`../history/project-memory/memory.md`](../history/project-memory/memory.md), Trust & Mapping Review and product-boundary sections.
 ---
 
 # Part X — Superseded Models and Historical Traps
@@ -1655,3 +1658,16 @@ Still provisional or explicitly unfinished:
 - final legal packaging boundary after dependency/license audit;
 - macOS signing/notarization and production packaging;
 - Windows native parity issues such as session persistence, Advanced→Easy source-boundary continuity, and OAuth bootstrap must be verified against current code.
+## 57. Documentation-library cleanup state
+
+Documentation reorganization now runs in a dedicated clean worktree rather than the dirty Beta-recovery tree.
+
+First safe move class:
+
+- 176 repository-root human-only Markdown files moved under `docs/history/` by type/provenance;
+- `DOMAIN_CORE_AUDIT_REPORT.md` remains at root because `apps/desktop/src/audit-runner.ts` consumes it;
+- `validation_report.md` remains at root because perspective-isolation scripts consume it.
+
+Architecture JSON is intentionally not moved yet. A path-consumer audit found 129/354 `docs/architecture/*.json` files directly referenced by tests/scripts. Their location is therefore part of the current executable governance surface until the Code Map/CI audit proves otherwise.
+
+This is the governing cleanup rule: **documentation organization may improve human navigation, but must never silently invalidate machine-governed evidence.**

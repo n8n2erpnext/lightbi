@@ -3,19 +3,29 @@
   "snapshot": "2026-08-29",
   "files": [
     {
+      "path": "docs/project-book/DOC_REORGANIZATION_PLAN.json",
+      "bytes": 36950,
+      "sha256": "9dc78a7db8e3ecc2fdbb3d1d74992a2d887fba33ca7e223c9dcc6e2d19fac2bb"
+    },
+    {
       "path": "docs/project-book/EXTERNAL_SOURCE_REGISTER.md",
       "bytes": 847,
       "sha256": "11a90da0a6c51cd82f976cd187aba037b2b5cd563fae5e7003edbe5dd1629fa6"
     },
     {
+      "path": "docs/project-book/KNOWN_HISTORICAL_LINK_DEBT.json",
+      "bytes": 7846,
+      "sha256": "435f0a3b82aa48e3f97dcce8b21bfdf922c04c1402b62fbfc629756ab4b114aa"
+    },
+    {
       "path": "docs/project-book/LIGHTBI_PROJECT_BOOK.md",
-      "bytes": 93078,
-      "sha256": "4a3e48f5d89527596401508ef9b01987097ffe11e553ab24fb141497fe8f039b"
+      "bytes": 94319,
+      "sha256": "cf6a9e3963610d77f2f33c1f469b16709788a33d86f89460d08660ce5fa6971d"
     },
     {
       "path": "docs/project-book/LIGHTBI_WORKLOG.md",
-      "bytes": 42163,
-      "sha256": "f8b023a2f6c8a9713bc6c955bc9de9b6704a482c087716b97521718be190e1fa"
+      "bytes": 43700,
+      "sha256": "7a5de2d6da3e60907117f31a7d421d0e3e0feb0371fa7b3f41ed130ebc30ffe5"
     },
     {
       "path": "docs/project-book/README.md",
@@ -24,13 +34,13 @@
     },
     {
       "path": "docs/project-book/SOURCE_CATALOG.md",
-      "bytes": 275610,
-      "sha256": "3385340880c8b653cb98e3800115bd4cc0e058fac2bd34ec4165f416e32ed4f0"
+      "bytes": 148944,
+      "sha256": "c905c5598d3a2aea66821c548d0afb6251b108a612ee5ac82f2c20ab07e3a4cc"
     },
     {
       "path": "docs/project-book/source_catalog.json",
-      "bytes": 375077,
-      "sha256": "20764e1c1217bd07817973b821a6f3f1f55c35025a3758f6ccbade7f569976a7"
+      "bytes": 401861,
+      "sha256": "dc94c51815ec49fdbdbbf57d56935c5ca2073fb9df71efc04bfc0b43b18dc135"
     }
   ]
 }

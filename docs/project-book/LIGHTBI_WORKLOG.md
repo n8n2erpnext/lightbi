@@ -5,6 +5,8 @@
 **Purpose:** Reconstruct the work history so future humans/AI can see not only what LightBI is, but **why each architecture exists and what previous failure it corrected**.
 
 
+
+
 <!-- AUTO_TOC_START -->
 ## Timeline Index
 
@@ -46,6 +48,7 @@
   - [2026-07-30 — Beta release checklist snapshot](#2026-07-30-beta-release-checklist-snapshot)
   - [2026-08-29 — documentation archaeology and Project Book creation](#2026-08-29-documentation-archaeology-and-project-book-creation)
   - [2026-08-29 — Road-to-1.0 technical direction handoff ingested](#2026-08-29-road-to-1-0-technical-direction-handoff-ingested)
+  - [2026-08-29 — Documentation cleanup isolated in a dedicated worktree](#2026-08-29-documentation-cleanup-isolated-in-a-dedicated-worktree)
 <!-- AUTO_TOC_END -->
 
 ---
@@ -882,3 +885,17 @@ Newly captured design authority includes:
 - Phase 2A independent audit blockers and freeze gate;
 - updater and installation lifecycle invariants;
 - open-core licensing direction and remaining platform parity debt.
+
+## 2026-08-29 — Documentation cleanup isolated in a dedicated worktree
+
+A clean worktree was created at `/home/ubuntu/n8n2erpnext/LightBI-docs-cleanup` on branch `docs/project-library-cleanup-20260829`, starting from HEAD `0142e92c75e9fd3e190f82fe2a67cf255180cfca`.
+
+Project Book baseline was checkpointed first as commit `a7b3e32`.
+
+Move-safety audit then classified repository-root Markdown by actual non-doc consumers. Of 178 root Markdown files, only `DOMAIN_CORE_AUDIT_REPORT.md` and `validation_report.md` are read by code/scripts, so they remain at root. The other 176 human-only files were moved with `git mv` into `docs/history/` categories.
+
+A separate audit of `docs/architecture/*.json` found 129 of 354 files directly consumed by tests/scripts. Therefore architecture JSON paths remain frozen during documentation-only cleanup; the other JSON files also stay put until the code/CI map proves safe movement.
+
+The clean worktree catalog contains 924 tracked Markdown/JSON sources versus 1,077 sources in the original dirty working-tree snapshot. The difference is preserved as provenance evidence that working-tree knowledge included non-HEAD/untracked/reference material.
+
+All Project Book, Worklog and current Source Catalog links resolve after the move. Twenty-seven pre-existing historical link debts remain separately recorded; none were introduced by the reorganization.

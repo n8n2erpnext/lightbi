@@ -1,1214 +1,1032 @@
 # LightBI Source Catalog
 
-> Exhaustive bookmark/provenance catalog generated from the 2026-08-29 working tree.
+Generated: `2026-08-29T16:58:52.639673+00:00`
+Branch: `docs/project-library-cleanup-20260829`
+HEAD: `a7b3e32d8181245d0aa1a0e3542ec79ee11f06ce`
 
-- Branch: `codex/beta-recovery-20260801`
-- HEAD: `0142e92c75e9fd3e190f82fe2a67cf255180cfca`
-- Worktree dirty at generation: `true`
-- Total indexed: **1077** — Markdown **566**, JSON **511**.
-- Scope excludes `.git`, dependency/build directories, and `docs/project-book` itself.
+Indexed **924** sources: **507 Markdown + 417 JSON**.
 
-The `suggestedCategory` field is a cleanup aid, not a canonicality verdict. SHA-256 is the provenance identity.
+This catalog is a provenance/navigation index. Category labels are organizational hints, not architecture authority.
 
-## adr (57)
+## adr
 
-| Source | Title / status | Bytes | SHA-256 |
-|---|---|---:|---|
-| [`docs/adr/ADR-001-core-domain-model.md`](../adr/ADR-001-core-domain-model.md) | ADR-001 Core Domain Model; status=Accepted | 888 | `a6e5e5e1d54168261ac17c22f44cf4daf82b01f628c8db48836c8c207d23cc3c` |
-| [`docs/adr/ADR-002-local-first-architecture.md`](../adr/ADR-002-local-first-architecture.md) | ADR-002 Local First Architecture; status=Accepted | 742 | `4886ccf6da89289113b04c62660c635795248644bef16c5f8fe2680fa679467b` |
-| [`docs/adr/ADR-003-rust-core-engine.md`](../adr/ADR-003-rust-core-engine.md) | ADR-003 Rust Core Engine; status=Accepted | 852 | `a79910de628b2e744170abd77ed20b6fd5b22cf896227507167b0de0724c8d6d` |
-| [`docs/adr/ADR-004-application-runtime.md`](../adr/ADR-004-application-runtime.md) | ADR-004 Application Runtime Layer; status=Accepted | 1639 | `d03b415b4a29bba26b9a58844b299f285be383471b420d1e554f8856ab30ccb1` |
-| [`docs/adr/ADR-005-storage-architecture.md`](../adr/ADR-005-storage-architecture.md) | ADR-005 Storage Architecture; status=Accepted | 774 | `54798dab29395e96e0d74ac730d250b78c4c7981803bc0608792543d8a2c4cf9` |
-| [`docs/adr/ADR-006-visual-data-canvas.md`](../adr/ADR-006-visual-data-canvas.md) | ADR-006 Visual Data Canvas; status=Proposed | 789 | `786fb454a729ae1fae71091a739e3f66ef14e2d4332b954532657e7ae7a09688` |
-| [`docs/adr/ADR-007-multi-source-dataset-recipe.md`](../adr/ADR-007-multi-source-dataset-recipe.md) | ADR-007 Multi-Source Dataset Recipe; status=Proposed | 820 | `51c16b95cb6f245e68135d98e378369a16a1ed7d60d656e3ec112cb9b9af8672` |
-| [`docs/adr/ADR-008-optional-ai-assistant.md`](../adr/ADR-008-optional-ai-assistant.md) | ADR-008 Optional AI Assistant; status=Proposed | 924 | `59eb6ff0efbf2493d1ab1f1ccb19c7b5efe1cdb61d30cddacecaa8831991dd4f` |
-| [`docs/adr/ADR-009-dataset-recipe-engine.md`](../adr/ADR-009-dataset-recipe-engine.md) | ADR-009 Dataset Recipe Engine; status=Accepted | 1436 | `0a1f6750503714c83f8d852bc61b588fb79a046f93b3beb34107e72257384649` |
-| [`docs/adr/ADR-010-dataset-lineage.md`](../adr/ADR-010-dataset-lineage.md) | ADR-010 Dataset Lineage; status=Accepted | 657 | `a10c263b5fd25b5173c787d5319c103cffbf51b703e4412b30f008c100d4796d` |
-| [`docs/adr/ADR-011-question-first-analytics.md`](../adr/ADR-011-question-first-analytics.md) | ADR-011 Question First Analytics; status=Accepted | 838 | `9bbb6351070a7f63606f5ea9bd7edde88b5f354d5a83e6e496963e5374faf538` |
-| [`docs/adr/ADR-012-virtual-dataset-first.md`](../adr/ADR-012-virtual-dataset-first.md) | ADR-012 Virtual Dataset First; status=Accepted | 966 | `f08d88d37fc41be7fe6c4bef6b2d13c3a125322b7d0e3a1738e6b9e631da9972` |
-| [`docs/adr/ADR-013-question-template-engine.md`](../adr/ADR-013-question-template-engine.md) | ADR-013 Question Template Engine; status=Accepted | 940 | `22c7a7a469a87b7c67d61fa61af04190a1dfbc386b07d86b854edac713f2d588` |
-| [`docs/adr/ADR-014-insight-generation-model.md`](../adr/ADR-014-insight-generation-model.md) | ADR-014 Insight Generation Model; status=Proposed | 677 | `db826950ab4581d92e1bc9c03517ef6e4d41017f4e476caf805558f27cd248ce` |
-| [`docs/adr/ADR-015-recipe-planner.md`](../adr/ADR-015-recipe-planner.md) | ADR-015 Recipe Planner; status=Accepted | 962 | `211ae42bcff294bc7fdb6625d35c0bbe282c3bf72472a1d053fad65efb9afa63` |
-| [`docs/adr/ADR-016-refresh-revalidation-model.md`](../adr/ADR-016-refresh-revalidation-model.md) | ADR-016 Refresh & Revalidation Model; status=Accepted | 1043 | `5cabb372f904055872ab4cd730fd443b0d9b06505e2351df93a2c1edd7f45531` |
-| [`docs/adr/ADR-017-source-capability-model.md`](../adr/ADR-017-source-capability-model.md) | ADR-017 Source Capability Model; status=Accepted | 1179 | `1ea9b7d9a98cde4675113d55ef56495fb5c83c28634d936f6f23cde51c58df9a` |
-| [`docs/adr/ADR-018-connector-contract.md`](../adr/ADR-018-connector-contract.md) | ADR-018 Connector Contract; status=Accepted | 823 | `adb65a859eedcf9c76737ff0f0d4f4910a5f03305db884545513a979cb23b7e6` |
-| [`docs/adr/ADR-019-perspective-layer.md`](../adr/ADR-019-perspective-layer.md) | ADR-019 Perspective Layer; status=Accepted | 871 | `749c5f266bd19cf1abec8a5ded5a0a856500026c835c578be2ef924c798e262c` |
-| [`docs/adr/ADR-020-semantic-view-model.md`](../adr/ADR-020-semantic-view-model.md) | ADR-020 Semantic View Model; status=Accepted | 949 | `18d686c447281ecf66ac0de996f4bf2c3bb71485752cb1ea8f21b9b89b83f1c8` |
-| [`docs/adr/ADR-021-metadata-persistence-model.md`](../adr/ADR-021-metadata-persistence-model.md) | ADR-021 Metadata Persistence Model; status=Accepted | 1002 | `22fff3f9982fb608935d3f2ea6109908d82ff9f49152d7c0999513e2b3b2c979` |
-| [`docs/adr/ADR-022-project-file-format.md`](../adr/ADR-022-project-file-format.md) | ADR-022 Project File Format; status=Accepted | 1062 | `d8f30574afbc745eaaaa9a34fde7782fe93d19ee981c1dba486abc25f6900ec9` |
-| [`docs/adr/ADR-024-project-lifecycle.md`](../adr/ADR-024-project-lifecycle.md) | ADR-024 Project Lifecycle & Workspace Runtime; status=Accepted | 1435 | `8081fbd47600d9e12fe3c30e7e297b95606dd569b3c458a62a0169b7640197a1` |
-| [`docs/adr/ADR-025-source-registry-architecture.md`](../adr/ADR-025-source-registry-architecture.md) | ADR-025 Source Registry Architecture; status=Accepted | 1134 | `1b8fc227a3b7021ce7f6baf02291e7170b02d83c29fb02c390e96a1eb6471458` |
-| [`docs/adr/ADR-026-connector-contract.md`](../adr/ADR-026-connector-contract.md) | ADR-026 Connector Contract; status=Accepted | 1142 | `90beeeb57a00e32077fea98c2f99cf2753122420735805daf5f483acb0385c77` |
-| [`docs/adr/ADR-027-dataset-architecture.md`](../adr/ADR-027-dataset-architecture.md) | ADR-027 Dataset Architecture; status=Accepted | 990 | `4708ec32e2c89293708a22e90f57ace7cde089044069389aae5c62fcfd02e198` |
-| [`docs/adr/ADR-028-virtual-dataset-model.md`](../adr/ADR-028-virtual-dataset-model.md) | ADR-028 Virtual Dataset Model; status=Accepted | 950 | `ef55cdfe50dead50745635662efa792c38612dc9152241148e1f317f4cce22f1` |
-| [`docs/adr/ADR-029-schema-discovery-architecture.md`](../adr/ADR-029-schema-discovery-architecture.md) | ADR-029 Schema Discovery Architecture; status=Accepted | 1065 | `81acde28f9430a55c181e0e9e6561915721e5cb730f507f7413425c8bc212b71` |
-| [`docs/adr/ADR-030-semantic-model-foundation.md`](../adr/ADR-030-semantic-model-foundation.md) | ADR-030 Semantic Model Foundation; status=Accepted | 955 | `77e9d5f8d2f538b3651a2fc7d57b0000001e747d3e3b2dd4ca8e928b0b07a3ae` |
-| [`docs/adr/ADR-031-perspective-resolution-model.md`](../adr/ADR-031-perspective-resolution-model.md) | ADR-031 Perspective Resolution Model; status=Accepted | 1112 | `b2d7bd7712e2518f9ebc674d2325a3dff7e406f43894dfc0d8b53eb2e80cbb41` |
-| [`docs/adr/ADR-032-question-context-model.md`](../adr/ADR-032-question-context-model.md) | ADR-032 Question Context Model; status=Accepted | 964 | `e0d53cdf84353022ba57baa6412833923191c211263b9a34733357a7dba3c44a` |
-| [`docs/adr/ADR-033-recipe-architecture.md`](../adr/ADR-033-recipe-architecture.md) | ADR-033 Recipe Architecture; status=Accepted | 1069 | `59c98a59793b8bb8b6a668571761dc74791d967fcd0997aaccc51da1653d72e2` |
-| [`docs/adr/ADR-034-analytical-intent-model.md`](../adr/ADR-034-analytical-intent-model.md) | ADR-034 Analytical Intent Model; status=Accepted | 847 | `e25e8eae0fff62a1649c58226187cd98ad57b2aa67544a538fa421bc51ffe214` |
-| [`docs/adr/ADR-035-planner-architecture.md`](../adr/ADR-035-planner-architecture.md) | ADR-035 Planner Architecture; status=Accepted | 1102 | `1b043601a5a20758153ff6551d3c2385fedba44ace0e67aa0ad523f3a6f9fea1` |
-| [`docs/adr/ADR-036-execution-strategy-model.md`](../adr/ADR-036-execution-strategy-model.md) | ADR-036 Execution Strategy Model; status=Accepted | 1210 | `df1607f0d30fff11deb7cfbcaafb2869a95d1baa30ff436e7ef3a177f7eb0eae` |
-| [`docs/adr/ADR-037-question-template-architecture.md`](../adr/ADR-037-question-template-architecture.md) | ADR-037 Question Template Architecture; status=Accepted | 1051 | `1d39650efd7b7610f9c8bdcfff77a0dab0393dd1059ab8bbd9f0f285e02878b6` |
-| [`docs/adr/ADR-038-question-classification-model.md`](../adr/ADR-038-question-classification-model.md) | ADR-038 Question Classification Model; status=Accepted | 965 | `07ccc2ebab23a25d8f121827e24f2c9d2f9b5ae2988ff1e6dd3a8d7d1169bc21` |
-| [`docs/adr/ADR-039-runtime-architecture.md`](../adr/ADR-039-runtime-architecture.md) | ADR-039 Runtime Architecture; status=Accepted | 973 | `8fa3eff851d23b77a65be13f77737023eb67b35fa4a4f44bc04d8cf3615d380d` |
-| [`docs/adr/ADR-040-execution-backend-contract.md`](../adr/ADR-040-execution-backend-contract.md) | ADR-040 Execution Backend Contract; status=Accepted | 988 | `82619855e7cc15e309e9b7e59cb2d9d3961ee3464527b14b8c95141398ed926f` |
-| [`docs/adr/ADR-041-runtime-virtual-dataset-model.md`](../adr/ADR-041-runtime-virtual-dataset-model.md) | ADR-041 Runtime Virtual Dataset Model; status=Accepted | 835 | `d3f66b7fbc0e49943a61fa0a3b962a17fabc0d617dbf129d61f57aa86fa1e9f2` |
-| [`docs/adr/ADR-042-materialization-strategy.md`](../adr/ADR-042-materialization-strategy.md) | ADR-042 Materialization Strategy; status=Accepted | 960 | `949f6fde3c2fa63ab06343352679199b41e59dc9e2bba08f227c0f56f8bc6faf` |
-| [`docs/adr/ADR-043-data-view-architecture.md`](../adr/ADR-043-data-view-architecture.md) | ADR-043 Data View Architecture; status=Accepted | 776 | `4e230ac50f4e23376adca3b2e67f2b777ef1dcf9f8b5ce030ce1136540987e4f` |
-| [`docs/adr/ADR-044-visualization-contract-model.md`](../adr/ADR-044-visualization-contract-model.md) | ADR-044 Visualization Contract Model; status=Accepted | 790 | `8425ee8276a0cfe20f34f4316efeaa5efd6cc9352bd0f66d36f34c46ad1939f4` |
-| [`docs/adr/ADR-045-insight-architecture.md`](../adr/ADR-045-insight-architecture.md) | ADR-045 Insight Architecture; status=Accepted | 826 | `5525f7bb886ac6e56d1fcdb736efefa6dd28a3c034f337e24df34d7c9858f8e4` |
-| [`docs/adr/ADR-046-analytical-narrative-model.md`](../adr/ADR-046-analytical-narrative-model.md) | ADR-046 Analytical Narrative Model; status=Accepted | 981 | `bd5f4ac7eefc0e6bb6b9a4fd0a9555a5a864ab125c7f96ca2d1faaa7b7915c11` |
-| [`docs/adr/ADR-047-export-architecture.md`](../adr/ADR-047-export-architecture.md) | ADR-047 Export Architecture; status=Accepted | 842 | `e159a0930fb25dc1bc41271a4a9b07a9a19edde589ada2933cd51a15c05768d7` |
-| [`docs/adr/ADR-048-export-artifact-model.md`](../adr/ADR-048-export-artifact-model.md) | ADR-048 Export Artifact Model; status=Accepted | 761 | `4c0f7466a4c707dccbc7e191158ec32b9800ac0bcfc329d1b52d7b1fc641d60a` |
-| [`docs/adr/ADR-049-chart-architecture.md`](../adr/ADR-049-chart-architecture.md) | ADR-049 Chart Architecture; status=Accepted | 862 | `3137712860f6e51cb58bd1d9b45bb1619f9fc7cb469af4a2acdc261945992eab` |
-| [`docs/adr/ADR-050-visualization-engine-model.md`](../adr/ADR-050-visualization-engine-model.md) | ADR-050 Visualization Engine Model; status=Accepted | 903 | `37f2b7912daf6abac210dd0388af6ba30a8335c226410dcdce8eefa34a0ccf34` |
-| [`docs/adr/ADR-051-dashboard-architecture.md`](../adr/ADR-051-dashboard-architecture.md) | ADR-051 Dashboard Architecture; status=Accepted | 966 | `66c8cd0f25fc8d4b0fc278e054cf645e223cf2299361c1abc332147f50b2ef6d` |
-| [`docs/adr/ADR-052-analytical-workspace-model.md`](../adr/ADR-052-analytical-workspace-model.md) | ADR-052 Analytical Workspace Model; status=Accepted | 954 | `3a7d230eaaf5aebea785a09378d4f778d9183b839d7b331ec45c4a1fbfc1eebf` |
-| [`docs/adr/ADR-053-rendering-contract-architecture.md`](../adr/ADR-053-rendering-contract-architecture.md) | ADR-053 Rendering Contract Architecture; status=Accepted | 932 | `17040044f1c1614d605aedf8bb6a63a6d0f64d4e1bd0188fe801839b3eb74efb` |
-| [`docs/adr/ADR-054-frontend-asset-model.md`](../adr/ADR-054-frontend-asset-model.md) | ADR-054 Frontend Asset Model; status=Accepted | 833 | `d7884fc5c2b73e04f7929ef9cf87921965583021acc70f50d291666f8ae6e46c` |
-| [`docs/adr/ADR-055-business-key-detection.md`](../adr/ADR-055-business-key-detection.md) | ADR 055: Business Key Detection Engine | 1805 | `d1b5277cb179bb326965cd15dbe41d3aaee41a4058cafb1dc93feffee510fac5` |
-| [`docs/adr/ADR-056-relationship-discovery.md`](../adr/ADR-056-relationship-discovery.md) | ADR 056: Relationship Discovery Engine | 1600 | `bb6f50526811988b5e9c9c8a5204a1ef373d936d98ea432bbe29f072f7934373` |
-| [`docs/adr/ADR-057-dataset-collection.md`](../adr/ADR-057-dataset-collection.md) | ADR 057: Dataset Collection Framework | 1404 | `7e964cd6ac4104f72f1efe722df3009265e948524f2f2d77719bca10cc5327c0` |
-| [`docs/adr/ADR-058-virtual-dataset-layer.md`](../adr/ADR-058-virtual-dataset-layer.md) | ADR 058: Virtual Dataset Layer | 1411 | `78731f325b17e3f6d3aeb209767dcb278ce38d96acc5ed226db9e35d40f3a890` |
+- [`docs/adr/ADR-001-core-domain-model.md`](../../docs/adr/ADR-001-core-domain-model.md) — ADR-001 Core Domain Model
+- [`docs/adr/ADR-002-local-first-architecture.md`](../../docs/adr/ADR-002-local-first-architecture.md) — ADR-002 Local First Architecture
+- [`docs/adr/ADR-003-rust-core-engine.md`](../../docs/adr/ADR-003-rust-core-engine.md) — ADR-003 Rust Core Engine
+- [`docs/adr/ADR-004-application-runtime.md`](../../docs/adr/ADR-004-application-runtime.md) — ADR-004 Application Runtime Layer
+- [`docs/adr/ADR-005-storage-architecture.md`](../../docs/adr/ADR-005-storage-architecture.md) — ADR-005 Storage Architecture
+- [`docs/adr/ADR-006-visual-data-canvas.md`](../../docs/adr/ADR-006-visual-data-canvas.md) — ADR-006 Visual Data Canvas
+- [`docs/adr/ADR-007-multi-source-dataset-recipe.md`](../../docs/adr/ADR-007-multi-source-dataset-recipe.md) — ADR-007 Multi-Source Dataset Recipe
+- [`docs/adr/ADR-008-optional-ai-assistant.md`](../../docs/adr/ADR-008-optional-ai-assistant.md) — ADR-008 Optional AI Assistant
+- [`docs/adr/ADR-009-dataset-recipe-engine.md`](../../docs/adr/ADR-009-dataset-recipe-engine.md) — ADR-009 Dataset Recipe Engine
+- [`docs/adr/ADR-010-dataset-lineage.md`](../../docs/adr/ADR-010-dataset-lineage.md) — ADR-010 Dataset Lineage
+- [`docs/adr/ADR-011-question-first-analytics.md`](../../docs/adr/ADR-011-question-first-analytics.md) — ADR-011 Question First Analytics
+- [`docs/adr/ADR-012-virtual-dataset-first.md`](../../docs/adr/ADR-012-virtual-dataset-first.md) — ADR-012 Virtual Dataset First
+- [`docs/adr/ADR-013-question-template-engine.md`](../../docs/adr/ADR-013-question-template-engine.md) — ADR-013 Question Template Engine
+- [`docs/adr/ADR-014-insight-generation-model.md`](../../docs/adr/ADR-014-insight-generation-model.md) — ADR-014 Insight Generation Model
+- [`docs/adr/ADR-015-recipe-planner.md`](../../docs/adr/ADR-015-recipe-planner.md) — ADR-015 Recipe Planner
+- [`docs/adr/ADR-016-refresh-revalidation-model.md`](../../docs/adr/ADR-016-refresh-revalidation-model.md) — ADR-016 Refresh & Revalidation Model
+- [`docs/adr/ADR-017-source-capability-model.md`](../../docs/adr/ADR-017-source-capability-model.md) — ADR-017 Source Capability Model
+- [`docs/adr/ADR-018-connector-contract.md`](../../docs/adr/ADR-018-connector-contract.md) — ADR-018 Connector Contract
+- [`docs/adr/ADR-019-perspective-layer.md`](../../docs/adr/ADR-019-perspective-layer.md) — ADR-019 Perspective Layer
+- [`docs/adr/ADR-020-semantic-view-model.md`](../../docs/adr/ADR-020-semantic-view-model.md) — ADR-020 Semantic View Model
+- [`docs/adr/ADR-021-metadata-persistence-model.md`](../../docs/adr/ADR-021-metadata-persistence-model.md) — ADR-021 Metadata Persistence Model
+- [`docs/adr/ADR-022-project-file-format.md`](../../docs/adr/ADR-022-project-file-format.md) — ADR-022 Project File Format
+- [`docs/adr/ADR-024-project-lifecycle.md`](../../docs/adr/ADR-024-project-lifecycle.md) — ADR-024 Project Lifecycle & Workspace Runtime
+- [`docs/adr/ADR-025-source-registry-architecture.md`](../../docs/adr/ADR-025-source-registry-architecture.md) — ADR-025 Source Registry Architecture
+- [`docs/adr/ADR-026-connector-contract.md`](../../docs/adr/ADR-026-connector-contract.md) — ADR-026 Connector Contract
+- [`docs/adr/ADR-027-dataset-architecture.md`](../../docs/adr/ADR-027-dataset-architecture.md) — ADR-027 Dataset Architecture
+- [`docs/adr/ADR-028-virtual-dataset-model.md`](../../docs/adr/ADR-028-virtual-dataset-model.md) — ADR-028 Virtual Dataset Model
+- [`docs/adr/ADR-029-schema-discovery-architecture.md`](../../docs/adr/ADR-029-schema-discovery-architecture.md) — ADR-029 Schema Discovery Architecture
+- [`docs/adr/ADR-030-semantic-model-foundation.md`](../../docs/adr/ADR-030-semantic-model-foundation.md) — ADR-030 Semantic Model Foundation
+- [`docs/adr/ADR-031-perspective-resolution-model.md`](../../docs/adr/ADR-031-perspective-resolution-model.md) — ADR-031 Perspective Resolution Model
+- [`docs/adr/ADR-032-question-context-model.md`](../../docs/adr/ADR-032-question-context-model.md) — ADR-032 Question Context Model
+- [`docs/adr/ADR-033-recipe-architecture.md`](../../docs/adr/ADR-033-recipe-architecture.md) — ADR-033 Recipe Architecture
+- [`docs/adr/ADR-034-analytical-intent-model.md`](../../docs/adr/ADR-034-analytical-intent-model.md) — ADR-034 Analytical Intent Model
+- [`docs/adr/ADR-035-planner-architecture.md`](../../docs/adr/ADR-035-planner-architecture.md) — ADR-035 Planner Architecture
+- [`docs/adr/ADR-036-execution-strategy-model.md`](../../docs/adr/ADR-036-execution-strategy-model.md) — ADR-036 Execution Strategy Model
+- [`docs/adr/ADR-037-question-template-architecture.md`](../../docs/adr/ADR-037-question-template-architecture.md) — ADR-037 Question Template Architecture
+- [`docs/adr/ADR-038-question-classification-model.md`](../../docs/adr/ADR-038-question-classification-model.md) — ADR-038 Question Classification Model
+- [`docs/adr/ADR-039-runtime-architecture.md`](../../docs/adr/ADR-039-runtime-architecture.md) — ADR-039 Runtime Architecture
+- [`docs/adr/ADR-040-execution-backend-contract.md`](../../docs/adr/ADR-040-execution-backend-contract.md) — ADR-040 Execution Backend Contract
+- [`docs/adr/ADR-041-runtime-virtual-dataset-model.md`](../../docs/adr/ADR-041-runtime-virtual-dataset-model.md) — ADR-041 Runtime Virtual Dataset Model
+- [`docs/adr/ADR-042-materialization-strategy.md`](../../docs/adr/ADR-042-materialization-strategy.md) — ADR-042 Materialization Strategy
+- [`docs/adr/ADR-043-data-view-architecture.md`](../../docs/adr/ADR-043-data-view-architecture.md) — ADR-043 Data View Architecture
+- [`docs/adr/ADR-044-visualization-contract-model.md`](../../docs/adr/ADR-044-visualization-contract-model.md) — ADR-044 Visualization Contract Model
+- [`docs/adr/ADR-045-insight-architecture.md`](../../docs/adr/ADR-045-insight-architecture.md) — ADR-045 Insight Architecture
+- [`docs/adr/ADR-046-analytical-narrative-model.md`](../../docs/adr/ADR-046-analytical-narrative-model.md) — ADR-046 Analytical Narrative Model
+- [`docs/adr/ADR-047-export-architecture.md`](../../docs/adr/ADR-047-export-architecture.md) — ADR-047 Export Architecture
+- [`docs/adr/ADR-048-export-artifact-model.md`](../../docs/adr/ADR-048-export-artifact-model.md) — ADR-048 Export Artifact Model
+- [`docs/adr/ADR-049-chart-architecture.md`](../../docs/adr/ADR-049-chart-architecture.md) — ADR-049 Chart Architecture
+- [`docs/adr/ADR-050-visualization-engine-model.md`](../../docs/adr/ADR-050-visualization-engine-model.md) — ADR-050 Visualization Engine Model
+- [`docs/adr/ADR-051-dashboard-architecture.md`](../../docs/adr/ADR-051-dashboard-architecture.md) — ADR-051 Dashboard Architecture
+- [`docs/adr/ADR-052-analytical-workspace-model.md`](../../docs/adr/ADR-052-analytical-workspace-model.md) — ADR-052 Analytical Workspace Model
+- [`docs/adr/ADR-053-rendering-contract-architecture.md`](../../docs/adr/ADR-053-rendering-contract-architecture.md) — ADR-053 Rendering Contract Architecture
+- [`docs/adr/ADR-054-frontend-asset-model.md`](../../docs/adr/ADR-054-frontend-asset-model.md) — ADR-054 Frontend Asset Model
+- [`docs/adr/ADR-055-business-key-detection.md`](../../docs/adr/ADR-055-business-key-detection.md) — ADR 055: Business Key Detection Engine
+- [`docs/adr/ADR-056-relationship-discovery.md`](../../docs/adr/ADR-056-relationship-discovery.md) — ADR 056: Relationship Discovery Engine
+- [`docs/adr/ADR-057-dataset-collection.md`](../../docs/adr/ADR-057-dataset-collection.md) — ADR 057: Dataset Collection Framework
+- [`docs/adr/ADR-058-virtual-dataset-layer.md`](../../docs/adr/ADR-058-virtual-dataset-layer.md) — ADR 058: Virtual Dataset Layer
 
-## agent-handoff-history (49)
+## agent-contract-history
 
-| Source | Title / status | Bytes | SHA-256 |
-|---|---|---:|---|
-| [`AGENT_HANDOFF.md`](../../AGENT_HANDOFF.md) | Agent Handoff: understanding-next UI Wiring — 2026-06-16; status=- Master signal layer is broader and less sample-bound. | 200548 | `76f1daf2fdaa2b3c65990b3bd68e135635d7817bb8bb11784a4fa6805a81822e` |
-| [`AGENT_HANDOFF_ALIAS_BATCH2.md`](../../AGENT_HANDOFF_ALIAS_BATCH2.md) | Agent Handoff: Alias Batch 2 | 1627 | `c5714c24d5c59ca8528dd224d1b7d2a905c5489f071f956e856e9a20716cc705` |
-| [`AGENT_HANDOFF_ANALYSIS_OPPORTUNITY_VALIDATION_AUDIT.md`](../../AGENT_HANDOFF_ANALYSIS_OPPORTUNITY_VALIDATION_AUDIT.md) | AGENT HANDOFF: Analysis Opportunity Validation Audit | 4272 | `45fb98ee3e7d644e594443abf6e3bc9ed2a126caf7f682678cd80bd0f54adb2d` |
-| [`AGENT_HANDOFF_CANONICAL_SCHEMA_PROJECTION_PHASE1.md`](../../AGENT_HANDOFF_CANONICAL_SCHEMA_PROJECTION_PHASE1.md) | Handoff: Canonical Schema Projection Phase 1 | 1651 | `7467be32c0b6544641d43016240441a4988c216ab20701d53563878e43cc3afe` |
-| [`AGENT_HANDOFF_CANONICAL_SCHEMA_PROJECTION_PHASE2.md`](../../AGENT_HANDOFF_CANONICAL_SCHEMA_PROJECTION_PHASE2.md) | Execution Handoff: Canonical Schema Projection Phase 2 | 1648 | `3a04247716507d9744f5de3291c13d44ac538befa26ed5957dbe641b2d824ac2` |
-| [`AGENT_HANDOFF_DUCKDB_RUNTIME_ERROR_CLASSIFICATION_PHASE1.md`](../../AGENT_HANDOFF_DUCKDB_RUNTIME_ERROR_CLASSIFICATION_PHASE1.md) | DuckDB Runtime Error Classification Phase 1 Handoff | 1540 | `ca5859c9d5d3b2f6b5ec47e261137a5e4998eae02795333df197061f48c518eb` |
-| [`AGENT_HANDOFF_EXECUTION_BOUNDARY_LEGACY_MAPPING_AUDIT.md`](../../AGENT_HANDOFF_EXECUTION_BOUNDARY_LEGACY_MAPPING_AUDIT.md) | AGENT HANDOFF — Execution Boundary & Legacy Mapping Audit | 5014 | `00fb471fb6781f2cca6be65d8c61f28309a7521c09f2022f3d43028d801cf120` |
-| [`AGENT_HANDOFF_EXECUTION_BOUNDARY_LEGACY_MAPPING_FIX.md`](../../AGENT_HANDOFF_EXECUTION_BOUNDARY_LEGACY_MAPPING_FIX.md) | AGENT HANDOFF — Execution Boundary & Legacy Mapping Fix | 1994 | `ed997dadfbf654d4c432e04fd226ca55fe4d61ca399cd3ebec52bf079855670f` |
-| [`AGENT_HANDOFF_EXECUTION_BOUNDARY_LEGACY_MAPPING_FIX_VERIFICATION.md`](../../AGENT_HANDOFF_EXECUTION_BOUNDARY_LEGACY_MAPPING_FIX_VERIFICATION.md) | AGENT HANDOFF — Execution Boundary & Legacy Mapping Fix Verification | 2540 | `c856b9ff5a0087ea9e29cbdcb7f5faef29245e782863da8edf4032d043bf529c` |
-| [`AGENT_HANDOFF_EXECUTION_PATH_UNIFICATION_PHASE1.md`](../../AGENT_HANDOFF_EXECUTION_PATH_UNIFICATION_PHASE1.md) | Agent Handoff: Execution Path Unification Phase 1 | 2207 | `a8385fa72edc49a5110cc842dea9ca00d1c7ea8ad5008575f8d8f94b700ee028` |
-| [`AGENT_HANDOFF_EXECUTION_PATH_UNIFICATION_PHASE2.md`](../../AGENT_HANDOFF_EXECUTION_PATH_UNIFICATION_PHASE2.md) | Handoff: Execution Path Unification Phase 2 | 1151 | `dde75457e3f86d6cf38198f730ca622d3e716934752b35f23bb919239fbb8ec1` |
-| [`AGENT_HANDOFF_FALLBACK_POLICY_ALIGNMENT_PHASE1.md`](../../AGENT_HANDOFF_FALLBACK_POLICY_ALIGNMENT_PHASE1.md) | Fallback Policy Alignment Phase 1 Handoff | 1502 | `489bcbdec337dfcf2650f6e0003beea35f2e281ff507654acce6d13901d0d090` |
-| [`AGENT_HANDOFF_FRONTEND_RUNTIME_ACTION_WIRING_PHASE1.md`](../../AGENT_HANDOFF_FRONTEND_RUNTIME_ACTION_WIRING_PHASE1.md) | Agent Handoff — Frontend Runtime Action Wiring Phase 1; status=**Code-level crash fix complete; production E2E pending approval** | 2068 | `15608aa1811b3ed0e995f922aac54e701dd25cd4c3c354da93c2e8a88685db7f` |
-| [`AGENT_HANDOFF_GLOBAL_DISPLAY_PREFERENCES_PHASE1.md`](../../AGENT_HANDOFF_GLOBAL_DISPLAY_PREFERENCES_PHASE1.md) | Global Display Preferences Phase 1 Handoff | 2238 | `6e03b488d0f61c76397acb17de78f4dc0f77c19498de60009d0d6117aa58d797` |
-| [`AGENT_HANDOFF_GLOBAL_DISPLAY_PREFERENCES_PHASE2A.md`](../../AGENT_HANDOFF_GLOBAL_DISPLAY_PREFERENCES_PHASE2A.md) | Global Display Preferences Phase 2A Handoff | 2014 | `a8abf674ef32b8306558a1d8a75f515dea0b7c8c39a5a122d0bbc1421c2a1202` |
-| [`AGENT_HANDOFF_GLOBAL_DISPLAY_PREFERENCES_PHASE2B.md`](../../AGENT_HANDOFF_GLOBAL_DISPLAY_PREFERENCES_PHASE2B.md) | Global Display Preferences Phase 2B Handoff | 1625 | `9fb68785dd9e9fa34a9c039f7f9e8482d6cff490b5a362b3f6644dce7500f7a5` |
-| [`AGENT_HANDOFF_GLOBAL_DISPLAY_PREFERENCES_PHASE3.md`](../../AGENT_HANDOFF_GLOBAL_DISPLAY_PREFERENCES_PHASE3.md) | Global Display Preferences Phase 3 Handoff | 1802 | `5e9246ff07b1a06a48ea4f56bb0a800c6abdc15069a70a2b931767878dde21ef` |
-| [`AGENT_HANDOFF_GLOBAL_DISPLAY_PREFERENCES_PHASE4.md`](../../AGENT_HANDOFF_GLOBAL_DISPLAY_PREFERENCES_PHASE4.md) | Global Display Preferences Phase 4 Handoff | 1533 | `117e19d534caefd5c2fc5234e7da2060f39fb2e3bc78ce08734fa820bfbb1914` |
-| [`AGENT_HANDOFF_GLOBAL_DISPLAY_PREFERENCES_PHASE5.md`](../../AGENT_HANDOFF_GLOBAL_DISPLAY_PREFERENCES_PHASE5.md) | Global Display Preferences Phase 5 Handoff | 1918 | `709ea2c9d6d6570d9b56dcb95a9cab7f6ea184ace7bcd44d9b3e5311086b2124` |
-| [`AGENT_HANDOFF_GUARDED_SUM_DECIMAL_AMBIGUITY_PHASE1.md`](../../AGENT_HANDOFF_GUARDED_SUM_DECIMAL_AMBIGUITY_PHASE1.md) | Guarded SUM Decimal Ambiguity Phase 1 Handoff | 1553 | `d175057341fc0e153df790553f801d8691da2460008dcec43890f93a0e44c5a7` |
-| [`AGENT_HANDOFF_GUARDED_SUM_PHASE_B_CORRECTIVE.md`](../../AGENT_HANDOFF_GUARDED_SUM_PHASE_B_CORRECTIVE.md) | AGENT HANDOFF: Guarded SUM Phase B Corrective Pass | 161771 | `ed780c466a538927cf5e4d1652a09f54f485e8b8ab925cf46cacbabb16b8b91d` |
-| [`AGENT_HANDOFF_GUARDED_SUM_WIRING_PHASE1.md`](../../AGENT_HANDOFF_GUARDED_SUM_WIRING_PHASE1.md) | Guarded SUM Wiring Phase 1 Handoff | 1918 | `14ac867daa466d3bf56160bc945bf8391f998f7866e8b437c764d9a88efe1a4d` |
-| [`AGENT_HANDOFF_INVESTIGATION_E2E_RUNTIME_PROBE_PHASE1.md`](../../AGENT_HANDOFF_INVESTIGATION_E2E_RUNTIME_PROBE_PHASE1.md) | Handoff: Investigation E2E Runtime Probe Phase 1 | 1159 | `1ef2067750a82511e5d6ea99f282db9d23733b898590e450f6d508f4fca46c6c` |
-| [`AGENT_HANDOFF_LOCAL_DUCKDB_EXECUTOR_PHASE1.md`](../../AGENT_HANDOFF_LOCAL_DUCKDB_EXECUTOR_PHASE1.md) | Handoff: Local DuckDB Executor Phase 1 | 1665 | `bef20b3459e89f7b1b1735341152183fdcc9e4372d56057017270189f4d4f964` |
-| [`AGENT_HANDOFF_LOCAL_DUCKDB_EXECUTOR_PHASE2A.md`](../../AGENT_HANDOFF_LOCAL_DUCKDB_EXECUTOR_PHASE2A.md) | Handoff: Local DuckDB Executor Phase 2A | 1048 | `327f26a14b7789cfa0dd2551fe6dd88679e192d348cf1244737e51bded9504a2` |
-| [`AGENT_HANDOFF_LOCAL_DUCKDB_EXECUTOR_PHASE2B.md`](../../AGENT_HANDOFF_LOCAL_DUCKDB_EXECUTOR_PHASE2B.md) | Handoff: Local DuckDB Executor Phase 2B | 1106 | `3a9c18d7409344512a33f730fdc339ed30bed86520481a811ca9cf7851b3417c` |
-| [`AGENT_HANDOFF_NUMERIC_HEALTH_GATE_PHASE1.md`](../../AGENT_HANDOFF_NUMERIC_HEALTH_GATE_PHASE1.md) | Numeric Health Gate Phase 1 Handoff | 1586 | `0213ff6e827e73826b3eee40f9ca1fc454099021d7ebfea83b4b49be58226e9e` |
-| [`AGENT_HANDOFF_PHASE1_MULTI_EVIDENCE_COMPLETED.md`](../../AGENT_HANDOFF_PHASE1_MULTI_EVIDENCE_COMPLETED.md) | Agent Handoff: Phase 1 Multi-Evidence Signal Strengthening Completed | 2187 | `3e8304c42ee57f49f5fbf2d014e6a7d435976f107736ebd041758cd7f05e24e2` |
-| [`AGENT_HANDOFF_PHASE5.md`](../../AGENT_HANDOFF_PHASE5.md) | AGENT HANDOFF | 979 | `1c7b0bcff42ffec2e82345224166e6a3703dead9391d921fe4fb53fc1fc68fcc` |
-| [`AGENT_HANDOFF_PRODUCTION_API_BOUNDARY_FIX_PHASE1.md`](../../AGENT_HANDOFF_PRODUCTION_API_BOUNDARY_FIX_PHASE1.md) | Agent Handoff — Production API Boundary Fix Phase 1; status=**API boundary improved; runtime execution still blocked by UI/action wiring** | 1165 | `bd8e06f84d520042540c23b2aeb76f0b2ca09f710c293340f64f67919a5f4742` |
-| [`AGENT_HANDOFF_REAL_SAMPLE_DATA_E2E_AUDIT_2026-06-14.md`](../../AGENT_HANDOFF_REAL_SAMPLE_DATA_E2E_AUDIT_2026-06-14.md) | Agent Handoff — Real Sample Data E2E Audit; status=**Audit completed, production runtime not proven** | 1986 | `37fc8243d8c9cab39a9d9f808aad99df574802aca8244d18ea1e257557819cdf` |
-| [`AGENT_HANDOFF_REAL_SAMPLE_LOCALFIRST_RUNTIME_PROOF_2026-06-14.md`](../../AGENT_HANDOFF_REAL_SAMPLE_LOCALFIRST_RUNTIME_PROOF_2026-06-14.md) | AGENT HANDOFF: Local-First Real Sample Runtime Proof | 2468 | `79ad8b71134448ab77e66b3a2436388bbfb6e1942c4d2b3ac43298a66c4542b1` |
-| [`AGENT_HANDOFF_RUNTIME_RECLASSIFICATION_2026-06-15.md`](../../AGENT_HANDOFF_RUNTIME_RECLASSIFICATION_2026-06-15.md) | AGENT HANDOFF — Runtime Evidence Reclassification | 3157 | `0d0543dcfbaaa852a71353056dfe4d6a1564cb8c76df50c42958d661243bfb84` |
-| [`AGENT_HANDOFF_RUNTIME_TRUTH_PHASE1.md`](../../AGENT_HANDOFF_RUNTIME_TRUTH_PHASE1.md) | Agent Handoff: Runtime Truth Phase 1 | 2133 | `7407c0281f8b979fd26c796340c0767a1cea7f9a6b6ca8d0ea3d90a70c597357` |
-| [`AGENT_HANDOFF_RUNTIME_TRUTH_PHASE2.md`](../../AGENT_HANDOFF_RUNTIME_TRUTH_PHASE2.md) | Runtime Truth Phase 2: Backend & Boundary Hardening | 2265 | `12925486b3a3ab2e97687ed375e9829adb5a1990bdad592bc603b143431b3aa7` |
-| [`AGENT_HANDOFF_SAFE_SQL_QUERY_FAILURE_FIX_PHASE1.md`](../../AGENT_HANDOFF_SAFE_SQL_QUERY_FAILURE_FIX_PHASE1.md) | Safe SQL Query Failure Fix Phase 1 Handoff | 1395 | `9934962ffd02feaf24287a542f40431e00f6d96f2ab0e0f5ca4415bf3af1f685` |
-| [`AGENT_HANDOFF_SAFE_SQL_QUERY_FAILURE_FIX_PHASE2.md`](../../AGENT_HANDOFF_SAFE_SQL_QUERY_FAILURE_FIX_PHASE2.md) | Safe SQL Query Failure Fix Phase 2 Handoff | 1550 | `48f7642d95d75848104e984afb773774926f7f25684e5ae365ac8c2b190c1d49` |
-| [`AGENT_HANDOFF_SAMPLE_DATA_DOMAIN_COVERAGE_2026-06-15.md`](../../AGENT_HANDOFF_SAMPLE_DATA_DOMAIN_COVERAGE_2026-06-15.md) | Agent Handoff: Generic ERP/Retail Sample Regression & Domain Coverage Gate (2026-06-15) | 2968 | `f1b38daac2c583b8d5b974daa0faf94230f791843a48e8c77f57812c492a5ac6` |
-| [`AGENT_HANDOFF_SEMANTIC_GRAPH_PHASE1.md`](../../AGENT_HANDOFF_SEMANTIC_GRAPH_PHASE1.md) | AGENT HANDOFF: DU-9 Semantic Graph Phase 1 | 901 | `afa35d84771dd356195b3b40c0c6d0d70d09dbf1ba98f6899d569ddd669f816b` |
-| [`AGENT_HANDOFF_SEMANTIC_GRAPH_PHASE2.md`](../../AGENT_HANDOFF_SEMANTIC_GRAPH_PHASE2.md) | AGENT HANDOFF: DU-9 Semantic Graph Phase 2 | 1170 | `4b3b3554cfad1d054175cf066b6f4f64137c08035c1e7bd6542bbe1c0b490c91` |
-| [`AGENT_HANDOFF_TAXONOMY_EXPANSION_PHASE1.md`](../../AGENT_HANDOFF_TAXONOMY_EXPANSION_PHASE1.md) | Agent Handoff: Taxonomy Expansion Phase 1 | 1667 | `4dc508821f266779d248368285db435bc4130485d05f7efc0c055f14f721f95b` |
-| [`AGENT_HANDOFF_TAXONOMY_EXPANSION_PHASE2.md`](../../AGENT_HANDOFF_TAXONOMY_EXPANSION_PHASE2.md) | Agent Handoff: Taxonomy Expansion Phase 2 | 1758 | `1e5fb48642845c7d22e36eb5d75b16da6e3edc3c516e197febb6610af79efe33` |
-| [`AGENT_HANDOFF_TRUST_MAPPING_PHASE1.md`](../../AGENT_HANDOFF_TRUST_MAPPING_PHASE1.md) | Agent Handoff: Trust & Mapping Review Phase 1 | 2607 | `6adcc230912afa78edc4307f3cefb460f171c9d50aef3b7a2297d757b1cbc2b5` |
-| [`AGENT_HANDOFF_TRUST_MAPPING_PHASE2.md`](../../AGENT_HANDOFF_TRUST_MAPPING_PHASE2.md) | Agent Handoff: Trust & Mapping Review Phase 2 | 2162 | `baabb832894f965454d81768d019a66d3b8eb1b8eccc21c6f5bd7e6607318fe1` |
-| [`AGENT_HANDOFF_VIETTEL_LOGISTICS_SAMPLE_ACCEPTANCE_2026-06-15.md`](../../AGENT_HANDOFF_VIETTEL_LOGISTICS_SAMPLE_ACCEPTANCE_2026-06-15.md) | Agent Handoff: Viettel Logistics Sample Acceptance (2026-06-15) | 2090 | `762f422e7b813bda4f9a276a4544c9cc8cd856eed7f6944376e033b4d005d7f5` |
-| [`AGENT_HANDOFF_VIRTUAL_BUSINESS_VIEW_REAL_DATA_AUDIT.md`](../../AGENT_HANDOFF_VIRTUAL_BUSINESS_VIEW_REAL_DATA_AUDIT.md) | Virtual Business View Real Data Audit | 4107 | `a05aa6e9ef569aad0635227cf15a3ab8b004b0f83686e4ad3a5a0aca9e49dd06` |
-| [`AGENT_HANDOFF_VIRTUAL_BUSINESS_VIEW_REAL_DATA_EXECUTION_2026-06-15.md`](../../AGENT_HANDOFF_VIRTUAL_BUSINESS_VIEW_REAL_DATA_EXECUTION_2026-06-15.md) | Agent Handoff: Virtual Business View Real Data Execution | 2203 | `97465a354d38e90bacf1b5d1d15fb268c7dc9a58a5dce24c2b0bcb479e862745` |
-| [`AGENT_HANDOFF_VISUAL_REGRESSION_QA_PHASE1.md`](../../AGENT_HANDOFF_VISUAL_REGRESSION_QA_PHASE1.md) | AGENT HANDOFF: VISUAL REGRESSION QA PHASE 1 | 1227 | `2563ae102ccdd1fc37f825799d3d3fb7541c92a37329b9d04c53d8fa5b523ded` |
-| [`AGENT_HANDOFF_WARNING_PROPAGATION_GUARDED_SUM_PHASE1B.md`](../../AGENT_HANDOFF_WARNING_PROPAGATION_GUARDED_SUM_PHASE1B.md) | Warning Propagation for Guarded SUM (Phase 1B) Handoff | 1985 | `93f136c2e86a834cc9a7ba74fcbcf4cfcbb47fb3454f9fe0c556a5eaed3e7cf0` |
+- [`docs/history/agent/contracts/CODEX_QA_ORCHESTRATION_CONTRACT.md`](../../docs/history/agent/contracts/CODEX_QA_ORCHESTRATION_CONTRACT.md) — Codex QA Orchestration Contract
+- [`docs/history/agent/contracts/GEMINI.md`](../../docs/history/agent/contracts/GEMINI.md) — Gemini Coordination Notes
 
-## agent-plan-history (40)
+## agent-handoff-history
 
-| Source | Title / status | Bytes | SHA-256 |
-|---|---|---:|---|
-| [`AGENT_IMPLEMENTATION_PLAN.md`](../../AGENT_IMPLEMENTATION_PLAN.md) | Implementation Plan: ROADMAP-MVP-V1 Phase 1 | 2332 | `c984d7ef515a5e1b72b409ff36aa671f3a10bcf82dedb506d0b7993b83f87f48` |
-| [`AGENT_IMPLEMENTATION_PLAN_ADVANCED_EXPORT.md`](../../AGENT_IMPLEMENTATION_PLAN_ADVANCED_EXPORT.md) | Advanced Mode Export Mechanism (Implementation Plan) | 2079 | `d3bff68093e6fd9370931abe3121710861fea0de39b2d238bd8fdabc919ceac9` |
-| [`AGENT_IMPLEMENTATION_PLAN_ALIAS_BATCH2.md`](../../AGENT_IMPLEMENTATION_PLAN_ALIAS_BATCH2.md) | Agent Implementation Plan: Alias Batch 2 | 3915 | `92dc6a46a7cbf868aa5ad683fd53be1c077866189f2f832438fbbd22c38aba1f` |
-| [`AGENT_IMPLEMENTATION_PLAN_BACKEND_RUNTIME_HARDENING_NEXT.md`](../../AGENT_IMPLEMENTATION_PLAN_BACKEND_RUNTIME_HARDENING_NEXT.md) | Implementation Plan: Backend Runtime Hardening Next | 4169 | `99095d407f263d5f1e5326578f9e84f326daeee700c6e1c5511d3d9e5d710c63` |
-| [`AGENT_IMPLEMENTATION_PLAN_CANONICAL_SCHEMA_PROJECTION_PHASE2.md`](../../AGENT_IMPLEMENTATION_PLAN_CANONICAL_SCHEMA_PROJECTION_PHASE2.md) | Implementation Plan: Canonical Schema Projection Phase 2 | 1628 | `b21958af48ad0f5e14755deaf96beda8d84f9c995edddbe919d8a07062488080` |
-| [`AGENT_IMPLEMENTATION_PLAN_DOMAIN_AUDIT.md`](../../AGENT_IMPLEMENTATION_PLAN_DOMAIN_AUDIT.md) | Domain Sample Data Pack & Core Behavior Audit (Implementation Plan) | 2803 | `2c54bfdb86a722b41038828d6fc35ed857478015cb2fc46188d1acb8c1fd165a` |
-| [`AGENT_IMPLEMENTATION_PLAN_DUCKDB_RUNTIME_ERROR_CLASSIFICATION_PHASE1.md`](../../AGENT_IMPLEMENTATION_PLAN_DUCKDB_RUNTIME_ERROR_CLASSIFICATION_PHASE1.md) | Implementation Plan: DuckDB Runtime Error Classification Phase 1 | 3651 | `b13fad56a913c25b64355ff5dfcdac963bd1791aaa664abdb81504854f8bf544` |
-| [`AGENT_IMPLEMENTATION_PLAN_DUCKDB_WASM_BOOTSTRAP.md`](../../AGENT_IMPLEMENTATION_PLAN_DUCKDB_WASM_BOOTSTRAP.md) | Implementation Plan: DuckDB WASM Feasibility Bootstrap | 2824 | `5cf1e3aa0e41775fd1774fc8213ee5004d9b33f986589b6f38c4ef6f28f48fd8` |
-| [`AGENT_IMPLEMENTATION_PLAN_EXECUTION_PATH_UNIFICATION_PHASE1.md`](../../AGENT_IMPLEMENTATION_PLAN_EXECUTION_PATH_UNIFICATION_PHASE1.md) | Implementation Plan: Execution Path Unification Phase 1 | 3550 | `5f1982a8ef7457548cae397f9d12d71c1c1d5f89cec769256000f7284f32ffbf` |
-| [`AGENT_IMPLEMENTATION_PLAN_FALLBACK_POLICY_ALIGNMENT_PHASE1.md`](../../AGENT_IMPLEMENTATION_PLAN_FALLBACK_POLICY_ALIGNMENT_PHASE1.md) | Implementation Plan: Fallback Policy Alignment Phase 1 | 3582 | `04e173b1193366e96a6d233ca7f56771aad3addb8bc52bdad7fc1a9ec82216cd` |
-| [`AGENT_IMPLEMENTATION_PLAN_GLOBAL_DISPLAY_PREFERENCES.md`](../../AGENT_IMPLEMENTATION_PLAN_GLOBAL_DISPLAY_PREFERENCES.md) | Implementation Plan: Global Display Preferences | 2724 | `66b1242fdc4011874ff6a49a652e9f871c68915ba731f93f0d0511606be5bb34` |
-| [`AGENT_IMPLEMENTATION_PLAN_GLOBAL_DISPLAY_PREFERENCES_PHASE3.md`](../../AGENT_IMPLEMENTATION_PLAN_GLOBAL_DISPLAY_PREFERENCES_PHASE3.md) | Implementation Plan: Global Display Preferences Phase 3 (Home Summaries) | 3462 | `e8c02a3d90d27fd1bcd38a70a4cad2ef68dc5ad786585b18e4e6a2df0b51ebb8` |
-| [`AGENT_IMPLEMENTATION_PLAN_GLOBAL_DISPLAY_PREFERENCES_PHASE4.md`](../../AGENT_IMPLEMENTATION_PLAN_GLOBAL_DISPLAY_PREFERENCES_PHASE4.md) | Implementation Plan: Global Display Preferences Phase 4 (Dashboards KPI Cards) | 3082 | `8ca2f7d7dcebdebab44a1b33c5c86cbe04e312eda6c3d7f1384ef1dfa3ea7095` |
-| [`AGENT_IMPLEMENTATION_PLAN_GLOBAL_DISPLAY_PREFERENCES_PHASE5.md`](../../AGENT_IMPLEMENTATION_PLAN_GLOBAL_DISPLAY_PREFERENCES_PHASE5.md) | Implementation Plan: Global Display Preferences Phase 5 (Dashboard Charts) | 3062 | `e23805c83c2e0a866dad5054a3d6e72e3fd2d5642471750d7af743be87818734` |
-| [`AGENT_IMPLEMENTATION_PLAN_GUARDED_SUM_ROLLOUT_AUDIT.md`](../../AGENT_IMPLEMENTATION_PLAN_GUARDED_SUM_ROLLOUT_AUDIT.md) | Guarded SUM Rollout Audit | 6134 | `62d21ed85d2b15722e2c14bf9c035a6fa210d6c08eedc7a0e0996b392a66c3e9` |
-| [`AGENT_IMPLEMENTATION_PLAN_GUARDED_SUM_WIRING_PHASE1.md`](../../AGENT_IMPLEMENTATION_PLAN_GUARDED_SUM_WIRING_PHASE1.md) | Implementation Plan: Guarded SUM Wiring Phase 1 | 3301 | `877baf13e444e11993fe9cff15ee48eec56c9cf9c522ec9a0873bd1539c782b5` |
-| [`AGENT_IMPLEMENTATION_PLAN_HOME_READINESS.md`](../../AGENT_IMPLEMENTATION_PLAN_HOME_READINESS.md) | Home Readiness Visibility (Implementation Plan) | 2516 | `0b6e5fbe8ace446f5c4b45eec68101e1549de75c5224eda23c55bb7ffe3e0d55` |
-| [`AGENT_IMPLEMENTATION_PLAN_INVESTIGATION_UI.md`](../../AGENT_IMPLEMENTATION_PLAN_INVESTIGATION_UI.md) | Investigation Fallback Warning (Implementation Plan) | 1761 | `efceea62d678d16c4ad2bb1f812e2a48ccac80d11e8c576338749ff459a71085` |
-| [`AGENT_IMPLEMENTATION_PLAN_LOCAL_DUCKDB_EXECUTOR_PHASE1.md`](../../AGENT_IMPLEMENTATION_PLAN_LOCAL_DUCKDB_EXECUTOR_PHASE1.md) | Implementation Plan: Local DuckDB Executor Phase 1 | 2994 | `7817a3f7feac3670614dc9fee172c49f567058deb94e4270558cd57132edbaa7` |
-| [`AGENT_IMPLEMENTATION_PLAN_LOCAL_DUCKDB_EXECUTOR_PHASE2.md`](../../AGENT_IMPLEMENTATION_PLAN_LOCAL_DUCKDB_EXECUTOR_PHASE2.md) | Implementation Plan: Local DuckDB Executor Phase 2 | 3461 | `625b26fcb0bae01a83d6a3bd92eedda665f11e89c69a03b53d4f45164c645f62` |
-| [`AGENT_IMPLEMENTATION_PLAN_MEASURE_TYPING_FEASIBILITY_AUDIT_PHASE1.md`](../../AGENT_IMPLEMENTATION_PLAN_MEASURE_TYPING_FEASIBILITY_AUDIT_PHASE1.md) | Implementation Plan: Measure Typing Feasibility Audit Phase 1 | 3687 | `5c6db1643c1fbceeb276c108c3092292f05dc640b3e3e34108f6491d3d20334e` |
-| [`AGENT_IMPLEMENTATION_PLAN_MEASURE_TYPING_GUARDED_SUM.md`](../../AGENT_IMPLEMENTATION_PLAN_MEASURE_TYPING_GUARDED_SUM.md) | Implementation Plan: Measure Typing Guarded SUM | 3225 | `1509f037c3e7a54505f4cb0ed450f702f22f0e0d4cf8930b735821957a22e543` |
-| [`AGENT_IMPLEMENTATION_PLAN_MULTI_FILE_UNDERSTANDING_PROOF_2026-06-15.md`](../../AGENT_IMPLEMENTATION_PLAN_MULTI_FILE_UNDERSTANDING_PROOF_2026-06-15.md) | Multi-File Understanding Proof UX + Honest Runtime QA Implementation Plan | 4891 | `23899077d00b28420142668e31d28b2cefdd2304c4ebb98a0b6b6134d96481c9` |
-| [`AGENT_IMPLEMENTATION_PLAN_NEXT_STREAM_NUMERIC_TRUST.md`](../../AGENT_IMPLEMENTATION_PLAN_NEXT_STREAM_NUMERIC_TRUST.md) | Next Stream Plan: Safe SQL / Numeric Trust Continuation | 3030 | `fb4a40bda95762ad9d38e5bd01e1bbbc67a655146d7e6bd56e4c90a2ef016278` |
-| [`AGENT_IMPLEMENTATION_PLAN_NUMERIC_HEALTH_GATE_FEASIBILITY.md`](../../AGENT_IMPLEMENTATION_PLAN_NUMERIC_HEALTH_GATE_FEASIBILITY.md) | Implementation Plan: Numeric Health Gate Feasibility | 3084 | `ff7d935bd53b8ab27867e5102a92f313fe7c04be4ac62b0b0d5a9cfe02076f37` |
-| [`AGENT_IMPLEMENTATION_PLAN_PHASE2_ALIAS.md`](../../AGENT_IMPLEMENTATION_PLAN_PHASE2_ALIAS.md) | Phase 2: Alias Resolution Implementation Plan | 3621 | `5673d13fc11a7c5f561aedc9357151a52d2c5b0d331e272676ddc73545c5ea83` |
-| [`AGENT_IMPLEMENTATION_PLAN_PHASE3.md`](../../AGENT_IMPLEMENTATION_PLAN_PHASE3.md) | Implementation Plan: ROADMAP-MVP-V1 Phase 3 (Wiring Step) | 2270 | `dd2cdcb41f4118db49d422d0c0bdedc80400007bc72ea6a37445546954169556` |
-| [`AGENT_IMPLEMENTATION_PLAN_PHASE4.md`](../../AGENT_IMPLEMENTATION_PLAN_PHASE4.md) | Implementation Plan: ROADMAP-MVP-V1 Phase 4 (Revised) | 3650 | `bdf3d1aef1b82a032d57fad24b7b708d60ee5e46551c8dd741725e3a4360041c` |
-| [`AGENT_IMPLEMENTATION_PLAN_PHASE5.md`](../../AGENT_IMPLEMENTATION_PLAN_PHASE5.md) | ROADMAP-MVP-V1 Phase 5: Lightweight Advanced Handoff Artifact (Revised Plan) | 3953 | `ce3186f4e2bbb069c3a0a75500973bd8786e5f2c28038c49df8148f8639dd2e9` |
-| [`AGENT_IMPLEMENTATION_PLAN_PHASE6.md`](../../AGENT_IMPLEMENTATION_PLAN_PHASE6.md) | ROADMAP-MVP-V1 Phase 6: AI Semantic Briefing Contract (Implementation Plan) | 2502 | `157b7e5df571108b9f50b37cf5310768b7fa13587d5002c6dce2ff60e0e66b5c` |
-| [`AGENT_IMPLEMENTATION_PLAN_RUNTIME_TRUTH.md`](../../AGENT_IMPLEMENTATION_PLAN_RUNTIME_TRUTH.md) | AGENT_IMPLEMENTATION_PLAN_RUNTIME_TRUTH | 2012 | `82e718bfdb6fee6277e5ce1e2e473fc168e1aafd0d2d200c14d701268d6a47ac` |
-| [`AGENT_IMPLEMENTATION_PLAN_RUNTIME_TRUTH_PHASE1.md`](../../AGENT_IMPLEMENTATION_PLAN_RUNTIME_TRUTH_PHASE1.md) | Agent Implementation Plan: Runtime Truth Phase 1 (Revised) | 3273 | `d56f338add8af5dcaf25ce1c7437f50f5095d92d4efd9a97771a3cecff17639b` |
-| [`AGENT_IMPLEMENTATION_PLAN_RUNTIME_TRUTH_PHASE2.md`](../../AGENT_IMPLEMENTATION_PLAN_RUNTIME_TRUTH_PHASE2.md) | Agent Implementation Plan: Runtime Truth Phase 2 (Backend Hardening) | 3164 | `0df72558d1f43aa9b919a737063912e824ef7fea169979337193100d7564f7e6` |
-| [`AGENT_IMPLEMENTATION_PLAN_SAFE_SQL_QUERY_FAILURE_AUDIT_PHASE1.md`](../../AGENT_IMPLEMENTATION_PLAN_SAFE_SQL_QUERY_FAILURE_AUDIT_PHASE1.md) | Implementation Plan: Safe SQL Query Failure Audit Phase 1 | 4047 | `c6dace0e24405441c0f95bdc2292138039e4fedb417683795cb2455d879a94c5` |
-| [`AGENT_IMPLEMENTATION_PLAN_SAFE_SQL_QUERY_FAILURE_FIX_PHASE2.md`](../../AGENT_IMPLEMENTATION_PLAN_SAFE_SQL_QUERY_FAILURE_FIX_PHASE2.md) | Implementation Plan: Safe SQL Query Failure Fix Phase 2 (Case-Sensitivity Normalization) | 3228 | `b31323c798cc3ad71687ada64d21bd2e3901e6adb484607f441655c73337a0f4` |
-| [`AGENT_IMPLEMENTATION_PLAN_TAXONOMY_EXPANSION_PHASE1.md`](../../AGENT_IMPLEMENTATION_PLAN_TAXONOMY_EXPANSION_PHASE1.md) | Implementation Plan: Taxonomy Expansion Phase 1 | 3322 | `d942f768bb87274397aadbf428f09cfe4f56695315ff69509f5845abf7044dbb` |
-| [`AGENT_IMPLEMENTATION_PLAN_TAXONOMY_EXPANSION_PHASE2.md`](../../AGENT_IMPLEMENTATION_PLAN_TAXONOMY_EXPANSION_PHASE2.md) | Implementation Plan: Taxonomy Expansion Phase 2 | 3493 | `854c589b0a0cd92838b75e883f8e68497ba47b4dc0599b477540b2e069417e11` |
-| [`AGENT_IMPLEMENTATION_PLAN_TRUST_MAPPING_PHASE2.md`](../../AGENT_IMPLEMENTATION_PLAN_TRUST_MAPPING_PHASE2.md) | Agent Implementation Plan: Trust & Mapping Phase 2 | 3140 | `900ad8f4ae4e7983e42c552a4228b74f356d02b706785ce15b8eef8f26ad30c4` |
-| [`AGENT_IMPLEMENTATION_PLAN_TRUST_MAPPING_REVIEW.md`](../../AGENT_IMPLEMENTATION_PLAN_TRUST_MAPPING_REVIEW.md) | AGENT_IMPLEMENTATION_PLAN_TRUST_MAPPING_REVIEW | 4584 | `001a854d86729b839ebb98bfb83f798207069cad86a53469f628a4f077803b8b` |
-| [`AGENT_IMPLEMENTATION_PLAN_UNDERSTANDING_NEXT_UI_WIRING.md`](../../AGENT_IMPLEMENTATION_PLAN_UNDERSTANDING_NEXT_UI_WIRING.md) | AGENT_IMPLEMENTATION_PLAN_UNDERSTANDING_NEXT_UI_WIRING.md | 2134 | `61bd0f4766da7226075e8df1673f69cd2da72b8131e3d4c7f2975c7e49ae1abd` |
+- [`docs/history/agent/handoffs/AGENT_HANDOFF.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF.md) — Agent Handoff: understanding-next UI Wiring — 2026-06-16
+- [`docs/history/agent/handoffs/AGENT_HANDOFF_ALIAS_BATCH2.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_ALIAS_BATCH2.md) — Agent Handoff: Alias Batch 2
+- [`docs/history/agent/handoffs/AGENT_HANDOFF_ANALYSIS_OPPORTUNITY_VALIDATION_AUDIT.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_ANALYSIS_OPPORTUNITY_VALIDATION_AUDIT.md) — AGENT HANDOFF: Analysis Opportunity Validation Audit
+- [`docs/history/agent/handoffs/AGENT_HANDOFF_CANONICAL_SCHEMA_PROJECTION_PHASE1.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_CANONICAL_SCHEMA_PROJECTION_PHASE1.md) — Handoff: Canonical Schema Projection Phase 1
+- [`docs/history/agent/handoffs/AGENT_HANDOFF_CANONICAL_SCHEMA_PROJECTION_PHASE2.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_CANONICAL_SCHEMA_PROJECTION_PHASE2.md) — Execution Handoff: Canonical Schema Projection Phase 2
+- [`docs/history/agent/handoffs/AGENT_HANDOFF_DUCKDB_RUNTIME_ERROR_CLASSIFICATION_PHASE1.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_DUCKDB_RUNTIME_ERROR_CLASSIFICATION_PHASE1.md) — DuckDB Runtime Error Classification Phase 1 Handoff
+- [`docs/history/agent/handoffs/AGENT_HANDOFF_EXECUTION_BOUNDARY_LEGACY_MAPPING_AUDIT.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_EXECUTION_BOUNDARY_LEGACY_MAPPING_AUDIT.md) — AGENT HANDOFF — Execution Boundary & Legacy Mapping Audit
+- [`docs/history/agent/handoffs/AGENT_HANDOFF_EXECUTION_BOUNDARY_LEGACY_MAPPING_FIX.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_EXECUTION_BOUNDARY_LEGACY_MAPPING_FIX.md) — AGENT HANDOFF — Execution Boundary & Legacy Mapping Fix
+- [`docs/history/agent/handoffs/AGENT_HANDOFF_EXECUTION_BOUNDARY_LEGACY_MAPPING_FIX_VERIFICATION.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_EXECUTION_BOUNDARY_LEGACY_MAPPING_FIX_VERIFICATION.md) — AGENT HANDOFF — Execution Boundary & Legacy Mapping Fix Verification
+- [`docs/history/agent/handoffs/AGENT_HANDOFF_EXECUTION_PATH_UNIFICATION_PHASE1.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_EXECUTION_PATH_UNIFICATION_PHASE1.md) — Agent Handoff: Execution Path Unification Phase 1
+- [`docs/history/agent/handoffs/AGENT_HANDOFF_EXECUTION_PATH_UNIFICATION_PHASE2.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_EXECUTION_PATH_UNIFICATION_PHASE2.md) — Handoff: Execution Path Unification Phase 2
+- [`docs/history/agent/handoffs/AGENT_HANDOFF_FALLBACK_POLICY_ALIGNMENT_PHASE1.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_FALLBACK_POLICY_ALIGNMENT_PHASE1.md) — Fallback Policy Alignment Phase 1 Handoff
+- [`docs/history/agent/handoffs/AGENT_HANDOFF_FRONTEND_RUNTIME_ACTION_WIRING_PHASE1.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_FRONTEND_RUNTIME_ACTION_WIRING_PHASE1.md) — Agent Handoff — Frontend Runtime Action Wiring Phase 1
+- [`docs/history/agent/handoffs/AGENT_HANDOFF_GLOBAL_DISPLAY_PREFERENCES_PHASE1.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_GLOBAL_DISPLAY_PREFERENCES_PHASE1.md) — Global Display Preferences Phase 1 Handoff
+- [`docs/history/agent/handoffs/AGENT_HANDOFF_GLOBAL_DISPLAY_PREFERENCES_PHASE2A.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_GLOBAL_DISPLAY_PREFERENCES_PHASE2A.md) — Global Display Preferences Phase 2A Handoff
+- [`docs/history/agent/handoffs/AGENT_HANDOFF_GLOBAL_DISPLAY_PREFERENCES_PHASE2B.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_GLOBAL_DISPLAY_PREFERENCES_PHASE2B.md) — Global Display Preferences Phase 2B Handoff
+- [`docs/history/agent/handoffs/AGENT_HANDOFF_GLOBAL_DISPLAY_PREFERENCES_PHASE3.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_GLOBAL_DISPLAY_PREFERENCES_PHASE3.md) — Global Display Preferences Phase 3 Handoff
+- [`docs/history/agent/handoffs/AGENT_HANDOFF_GLOBAL_DISPLAY_PREFERENCES_PHASE4.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_GLOBAL_DISPLAY_PREFERENCES_PHASE4.md) — Global Display Preferences Phase 4 Handoff
+- [`docs/history/agent/handoffs/AGENT_HANDOFF_GLOBAL_DISPLAY_PREFERENCES_PHASE5.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_GLOBAL_DISPLAY_PREFERENCES_PHASE5.md) — Global Display Preferences Phase 5 Handoff
+- [`docs/history/agent/handoffs/AGENT_HANDOFF_GUARDED_SUM_DECIMAL_AMBIGUITY_PHASE1.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_GUARDED_SUM_DECIMAL_AMBIGUITY_PHASE1.md) — Guarded SUM Decimal Ambiguity Phase 1 Handoff
+- [`docs/history/agent/handoffs/AGENT_HANDOFF_GUARDED_SUM_PHASE_B_CORRECTIVE.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_GUARDED_SUM_PHASE_B_CORRECTIVE.md) — AGENT HANDOFF: Guarded SUM Phase B Corrective Pass
+- [`docs/history/agent/handoffs/AGENT_HANDOFF_GUARDED_SUM_WIRING_PHASE1.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_GUARDED_SUM_WIRING_PHASE1.md) — Guarded SUM Wiring Phase 1 Handoff
+- [`docs/history/agent/handoffs/AGENT_HANDOFF_INVESTIGATION_E2E_RUNTIME_PROBE_PHASE1.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_INVESTIGATION_E2E_RUNTIME_PROBE_PHASE1.md) — Handoff: Investigation E2E Runtime Probe Phase 1
+- [`docs/history/agent/handoffs/AGENT_HANDOFF_LOCAL_DUCKDB_EXECUTOR_PHASE1.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_LOCAL_DUCKDB_EXECUTOR_PHASE1.md) — Handoff: Local DuckDB Executor Phase 1
+- [`docs/history/agent/handoffs/AGENT_HANDOFF_LOCAL_DUCKDB_EXECUTOR_PHASE2A.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_LOCAL_DUCKDB_EXECUTOR_PHASE2A.md) — Handoff: Local DuckDB Executor Phase 2A
+- [`docs/history/agent/handoffs/AGENT_HANDOFF_LOCAL_DUCKDB_EXECUTOR_PHASE2B.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_LOCAL_DUCKDB_EXECUTOR_PHASE2B.md) — Handoff: Local DuckDB Executor Phase 2B
+- [`docs/history/agent/handoffs/AGENT_HANDOFF_NUMERIC_HEALTH_GATE_PHASE1.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_NUMERIC_HEALTH_GATE_PHASE1.md) — Numeric Health Gate Phase 1 Handoff
+- [`docs/history/agent/handoffs/AGENT_HANDOFF_PHASE1_MULTI_EVIDENCE_COMPLETED.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_PHASE1_MULTI_EVIDENCE_COMPLETED.md) — Agent Handoff: Phase 1 Multi-Evidence Signal Strengthening Completed
+- [`docs/history/agent/handoffs/AGENT_HANDOFF_PHASE5.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_PHASE5.md) — AGENT HANDOFF
+- [`docs/history/agent/handoffs/AGENT_HANDOFF_PRODUCTION_API_BOUNDARY_FIX_PHASE1.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_PRODUCTION_API_BOUNDARY_FIX_PHASE1.md) — Agent Handoff — Production API Boundary Fix Phase 1
+- [`docs/history/agent/handoffs/AGENT_HANDOFF_REAL_SAMPLE_DATA_E2E_AUDIT_2026-06-14.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_REAL_SAMPLE_DATA_E2E_AUDIT_2026-06-14.md) — Agent Handoff — Real Sample Data E2E Audit
+- [`docs/history/agent/handoffs/AGENT_HANDOFF_REAL_SAMPLE_LOCALFIRST_RUNTIME_PROOF_2026-06-14.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_REAL_SAMPLE_LOCALFIRST_RUNTIME_PROOF_2026-06-14.md) — AGENT HANDOFF: Local-First Real Sample Runtime Proof
+- [`docs/history/agent/handoffs/AGENT_HANDOFF_RUNTIME_RECLASSIFICATION_2026-06-15.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_RUNTIME_RECLASSIFICATION_2026-06-15.md) — AGENT HANDOFF — Runtime Evidence Reclassification
+- [`docs/history/agent/handoffs/AGENT_HANDOFF_RUNTIME_TRUTH_PHASE1.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_RUNTIME_TRUTH_PHASE1.md) — Agent Handoff: Runtime Truth Phase 1
+- [`docs/history/agent/handoffs/AGENT_HANDOFF_RUNTIME_TRUTH_PHASE2.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_RUNTIME_TRUTH_PHASE2.md) — Runtime Truth Phase 2: Backend & Boundary Hardening
+- [`docs/history/agent/handoffs/AGENT_HANDOFF_SAFE_SQL_QUERY_FAILURE_FIX_PHASE1.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_SAFE_SQL_QUERY_FAILURE_FIX_PHASE1.md) — Safe SQL Query Failure Fix Phase 1 Handoff
+- [`docs/history/agent/handoffs/AGENT_HANDOFF_SAFE_SQL_QUERY_FAILURE_FIX_PHASE2.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_SAFE_SQL_QUERY_FAILURE_FIX_PHASE2.md) — Safe SQL Query Failure Fix Phase 2 Handoff
+- [`docs/history/agent/handoffs/AGENT_HANDOFF_SAMPLE_DATA_DOMAIN_COVERAGE_2026-06-15.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_SAMPLE_DATA_DOMAIN_COVERAGE_2026-06-15.md) — Agent Handoff: Generic ERP/Retail Sample Regression & Domain Coverage Gate (2026-06-15)
+- [`docs/history/agent/handoffs/AGENT_HANDOFF_SEMANTIC_GRAPH_PHASE1.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_SEMANTIC_GRAPH_PHASE1.md) — AGENT HANDOFF: DU-9 Semantic Graph Phase 1
+- [`docs/history/agent/handoffs/AGENT_HANDOFF_SEMANTIC_GRAPH_PHASE2.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_SEMANTIC_GRAPH_PHASE2.md) — AGENT HANDOFF: DU-9 Semantic Graph Phase 2
+- [`docs/history/agent/handoffs/AGENT_HANDOFF_TAXONOMY_EXPANSION_PHASE1.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_TAXONOMY_EXPANSION_PHASE1.md) — Agent Handoff: Taxonomy Expansion Phase 1
+- [`docs/history/agent/handoffs/AGENT_HANDOFF_TAXONOMY_EXPANSION_PHASE2.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_TAXONOMY_EXPANSION_PHASE2.md) — Agent Handoff: Taxonomy Expansion Phase 2
+- [`docs/history/agent/handoffs/AGENT_HANDOFF_TRUST_MAPPING_PHASE1.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_TRUST_MAPPING_PHASE1.md) — Agent Handoff: Trust & Mapping Review Phase 1
+- [`docs/history/agent/handoffs/AGENT_HANDOFF_TRUST_MAPPING_PHASE2.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_TRUST_MAPPING_PHASE2.md) — Agent Handoff: Trust & Mapping Review Phase 2
+- [`docs/history/agent/handoffs/AGENT_HANDOFF_VIETTEL_LOGISTICS_SAMPLE_ACCEPTANCE_2026-06-15.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_VIETTEL_LOGISTICS_SAMPLE_ACCEPTANCE_2026-06-15.md) — Agent Handoff: Viettel Logistics Sample Acceptance (2026-06-15)
+- [`docs/history/agent/handoffs/AGENT_HANDOFF_VIRTUAL_BUSINESS_VIEW_REAL_DATA_AUDIT.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_VIRTUAL_BUSINESS_VIEW_REAL_DATA_AUDIT.md) — Virtual Business View Real Data Audit
+- [`docs/history/agent/handoffs/AGENT_HANDOFF_VIRTUAL_BUSINESS_VIEW_REAL_DATA_EXECUTION_2026-06-15.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_VIRTUAL_BUSINESS_VIEW_REAL_DATA_EXECUTION_2026-06-15.md) — Agent Handoff: Virtual Business View Real Data Execution
+- [`docs/history/agent/handoffs/AGENT_HANDOFF_VISUAL_REGRESSION_QA_PHASE1.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_VISUAL_REGRESSION_QA_PHASE1.md) — AGENT HANDOFF: VISUAL REGRESSION QA PHASE 1
+- [`docs/history/agent/handoffs/AGENT_HANDOFF_WARNING_PROPAGATION_GUARDED_SUM_PHASE1B.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_WARNING_PROPAGATION_GUARDED_SUM_PHASE1B.md) — Warning Propagation for Guarded SUM (Phase 1B) Handoff
+- [`docs/history/agent/handoffs/AGENT_OUTBOX.md`](../../docs/history/agent/handoffs/AGENT_OUTBOX.md) — AGENT OUTBOX — Phase 6 Complete
+- [`docs/history/agent/handoffs/SESSION_MASTER_HANDOFF_AND_ROADMAP_2026-06-12.md`](../../docs/history/agent/handoffs/SESSION_MASTER_HANDOFF_AND_ROADMAP_2026-06-12.md) — LightBI Session Master Handoff and Roadmap
 
-## app-local-doc-or-config (20)
+## agent-plan-history
 
-| Source | Title / status | Bytes | SHA-256 |
-|---|---|---:|---|
-| [`apps/desktop/after.json`](../../apps/desktop/after.json) | — | 7189 | `bd37f489d2c6064dbf9b7fe07ebdd35296a089236542021b2029178481562788` |
-| [`apps/desktop/before.json`](../../apps/desktop/before.json) | — | 6851 | `85c89e8b5b53a372bb761d3ab2ddf028d1f35864f10a718d78e9621b9005f816` |
-| [`apps/desktop/package.json`](../../apps/desktop/package.json) | @lightbi/desktop | 1883 | `fb6498fe2968f86757693300dd36314b83383f267e40aeb1995c1ab60b819ce0` |
-| [`apps/desktop/README.md`](../../apps/desktop/README.md) | React + TypeScript + Vite | 2425 | `8dc9e0ee2281acb3324624fbe6eb7e1377cc626f616ea4dc90e3a90ae094374d` |
-| [`apps/desktop/src/i18n/language.schema.json`](../../apps/desktop/src/i18n/language.schema.json) | LightBI language package | 1244 | `2c691247a40bd8a483f199e7c8c0077afe8e7d9c9203c5410a82ee3bf6c40f45` |
-| [`apps/desktop/src/i18n/languages/en.json`](../../apps/desktop/src/i18n/languages/en.json) | — | 13929 | `ac7f742789e7e55720443f13ecc7cf1f1c1b58b4acda443258e4e847ef7f2d77` |
-| [`apps/desktop/src/i18n/languages/vi.json`](../../apps/desktop/src/i18n/languages/vi.json) | — | 220969 | `ebd9cf0858b6494ec1dd76ee68a96860c4849c7b455acdddf19388a79d77ca83` |
-| [`apps/desktop/src/i18n/README.md`](../../apps/desktop/src/i18n/README.md) | LightBI language packages | 1405 | `aa7c1ed0b36b639ed5f92932d532740a96e960431b9db877a8b425f7f5011f57` |
-| [`apps/desktop/src/lib/understanding-core/OWNERSHIP.md`](../../apps/desktop/src/lib/understanding-core/OWNERSHIP.md) | Understanding Ownership Freeze; status=Phase 0 architecture freeze. This document classifies the current modules; it does not change runtime behavior. | 15290 | `4417f974dcfe0f61552b67819ed36836d02869f03498564af40bf64ee8e8fbc4` |
-| [`apps/desktop/src/lib/understanding-core/README.md`](../../apps/desktop/src/lib/understanding-core/README.md) | understanding-core | 2401 | `d4f3870a87369e4283c089b9aba3321dc6e91374b56fbe88b4bd2129e02e9763` |
-| [`apps/desktop/src/lib/understanding-next/README.md`](../../apps/desktop/src/lib/understanding-next/README.md) | Understanding Next | 1837 | `c10d96c08a9aa90507333e93a7c429aa452a0e1cf7f2ee70babcca3e1e0621b8` |
-| [`apps/desktop/test-results/.last-run.json`](../../apps/desktop/test-results/.last-run.json) | status=passed | 45 | `91d1c43004802cd49950d78eb11c8fa7d05da8ffffe219a8b13b2f561bc00903` |
-| [`apps/desktop/tsconfig.app.json`](../../apps/desktop/tsconfig.app.json) | — | 796 | `d6885a52ececd6fcdf8cf4c8b61105003df462eadb7845ff1b81d52e9707f60f` |
-| [`apps/desktop/tsconfig.json`](../../apps/desktop/tsconfig.json) | — | 119 | `770b4140bbb581e2dfd9ea9946ffc9c75a1d86ba7d2db5f77c83e37cbdf9d808` |
-| [`apps/desktop/tsconfig.node.json`](../../apps/desktop/tsconfig.node.json) | — | 591 | `90a22c920cbc14624fb4658b58f15c875abf3234224f3933f211849c3ada3242` |
-| [`apps/distribution/package-lock.json`](../../apps/distribution/package-lock.json) | @lightbi/distribution | 9373 | `07518459ce5437f7b2bf3da5ccbbf26d9882b818dc52c4140569e1961aaed32d` |
-| [`apps/distribution/package.json`](../../apps/distribution/package.json) | @lightbi/distribution | 611 | `a1b5f21545ff4716bad715097d525a858fc2d23b4ecbb7f528c7049ed77d7629` |
-| [`apps/distribution/public/demo-data/delivery-operations.json`](../../apps/distribution/public/demo-data/delivery-operations.json) | — | 3557 | `f1257a2b1c8c2d20adb6255d022691e1d309ad30cd4da0f393bdc320beddd3a0` |
-| [`apps/distribution/public/demo-data/inventory-aging.json`](../../apps/distribution/public/demo-data/inventory-aging.json) | — | 3603 | `3cd75a6c81213d72466e3a0e426752719a11725bb621565e7d4dd3842297b397` |
-| [`apps/distribution/public/demo-data/retail-sales.json`](../../apps/distribution/public/demo-data/retail-sales.json) | — | 3540 | `1c4b0747b8030ad73338ac650fd30ba00f5b52505bb2e94d00655f9169d34b17` |
+- [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN.md) — Implementation Plan: ROADMAP-MVP-V1 Phase 1
+- [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_ADVANCED_EXPORT.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_ADVANCED_EXPORT.md) — Advanced Mode Export Mechanism (Implementation Plan)
+- [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_ALIAS_BATCH2.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_ALIAS_BATCH2.md) — Agent Implementation Plan: Alias Batch 2
+- [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_BACKEND_RUNTIME_HARDENING_NEXT.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_BACKEND_RUNTIME_HARDENING_NEXT.md) — Implementation Plan: Backend Runtime Hardening Next
+- [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_CANONICAL_SCHEMA_PROJECTION_PHASE2.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_CANONICAL_SCHEMA_PROJECTION_PHASE2.md) — Implementation Plan: Canonical Schema Projection Phase 2
+- [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DOMAIN_AUDIT.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DOMAIN_AUDIT.md) — Domain Sample Data Pack & Core Behavior Audit (Implementation Plan)
+- [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DUCKDB_RUNTIME_ERROR_CLASSIFICATION_PHASE1.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DUCKDB_RUNTIME_ERROR_CLASSIFICATION_PHASE1.md) — Implementation Plan: DuckDB Runtime Error Classification Phase 1
+- [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DUCKDB_WASM_BOOTSTRAP.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DUCKDB_WASM_BOOTSTRAP.md) — Implementation Plan: DuckDB WASM Feasibility Bootstrap
+- [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_EXECUTION_PATH_UNIFICATION_PHASE1.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_EXECUTION_PATH_UNIFICATION_PHASE1.md) — Implementation Plan: Execution Path Unification Phase 1
+- [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_FALLBACK_POLICY_ALIGNMENT_PHASE1.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_FALLBACK_POLICY_ALIGNMENT_PHASE1.md) — Implementation Plan: Fallback Policy Alignment Phase 1
+- [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_GLOBAL_DISPLAY_PREFERENCES.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_GLOBAL_DISPLAY_PREFERENCES.md) — Implementation Plan: Global Display Preferences
+- [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_GLOBAL_DISPLAY_PREFERENCES_PHASE3.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_GLOBAL_DISPLAY_PREFERENCES_PHASE3.md) — Implementation Plan: Global Display Preferences Phase 3 (Home Summaries)
+- [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_GLOBAL_DISPLAY_PREFERENCES_PHASE4.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_GLOBAL_DISPLAY_PREFERENCES_PHASE4.md) — Implementation Plan: Global Display Preferences Phase 4 (Dashboards KPI Cards)
+- [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_GLOBAL_DISPLAY_PREFERENCES_PHASE5.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_GLOBAL_DISPLAY_PREFERENCES_PHASE5.md) — Implementation Plan: Global Display Preferences Phase 5 (Dashboard Charts)
+- [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_GUARDED_SUM_ROLLOUT_AUDIT.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_GUARDED_SUM_ROLLOUT_AUDIT.md) — Guarded SUM Rollout Audit
+- [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_GUARDED_SUM_WIRING_PHASE1.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_GUARDED_SUM_WIRING_PHASE1.md) — Implementation Plan: Guarded SUM Wiring Phase 1
+- [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_HOME_READINESS.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_HOME_READINESS.md) — Home Readiness Visibility (Implementation Plan)
+- [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_INVESTIGATION_UI.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_INVESTIGATION_UI.md) — Investigation Fallback Warning (Implementation Plan)
+- [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_LOCAL_DUCKDB_EXECUTOR_PHASE1.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_LOCAL_DUCKDB_EXECUTOR_PHASE1.md) — Implementation Plan: Local DuckDB Executor Phase 1
+- [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_LOCAL_DUCKDB_EXECUTOR_PHASE2.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_LOCAL_DUCKDB_EXECUTOR_PHASE2.md) — Implementation Plan: Local DuckDB Executor Phase 2
+- [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_MEASURE_TYPING_FEASIBILITY_AUDIT_PHASE1.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_MEASURE_TYPING_FEASIBILITY_AUDIT_PHASE1.md) — Implementation Plan: Measure Typing Feasibility Audit Phase 1
+- [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_MEASURE_TYPING_GUARDED_SUM.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_MEASURE_TYPING_GUARDED_SUM.md) — Implementation Plan: Measure Typing Guarded SUM
+- [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_MULTI_FILE_UNDERSTANDING_PROOF_2026-06-15.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_MULTI_FILE_UNDERSTANDING_PROOF_2026-06-15.md) — Multi-File Understanding Proof UX + Honest Runtime QA Implementation Plan
+- [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_NEXT_STREAM_NUMERIC_TRUST.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_NEXT_STREAM_NUMERIC_TRUST.md) — Next Stream Plan: Safe SQL / Numeric Trust Continuation
+- [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_NUMERIC_HEALTH_GATE_FEASIBILITY.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_NUMERIC_HEALTH_GATE_FEASIBILITY.md) — Implementation Plan: Numeric Health Gate Feasibility
+- [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_PHASE2_ALIAS.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_PHASE2_ALIAS.md) — Phase 2: Alias Resolution Implementation Plan
+- [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_PHASE3.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_PHASE3.md) — Implementation Plan: ROADMAP-MVP-V1 Phase 3 (Wiring Step)
+- [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_PHASE4.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_PHASE4.md) — Implementation Plan: ROADMAP-MVP-V1 Phase 4 (Revised)
+- [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_PHASE5.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_PHASE5.md) — ROADMAP-MVP-V1 Phase 5: Lightweight Advanced Handoff Artifact (Revised Plan)
+- [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_PHASE6.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_PHASE6.md) — ROADMAP-MVP-V1 Phase 6: AI Semantic Briefing Contract (Implementation Plan)
+- [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_RUNTIME_TRUTH.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_RUNTIME_TRUTH.md) — AGENT_IMPLEMENTATION_PLAN_RUNTIME_TRUTH
+- [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_RUNTIME_TRUTH_PHASE1.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_RUNTIME_TRUTH_PHASE1.md) — Agent Implementation Plan: Runtime Truth Phase 1 (Revised)
+- [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_RUNTIME_TRUTH_PHASE2.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_RUNTIME_TRUTH_PHASE2.md) — Agent Implementation Plan: Runtime Truth Phase 2 (Backend Hardening)
+- [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_SAFE_SQL_QUERY_FAILURE_AUDIT_PHASE1.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_SAFE_SQL_QUERY_FAILURE_AUDIT_PHASE1.md) — Implementation Plan: Safe SQL Query Failure Audit Phase 1
+- [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_SAFE_SQL_QUERY_FAILURE_FIX_PHASE2.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_SAFE_SQL_QUERY_FAILURE_FIX_PHASE2.md) — Implementation Plan: Safe SQL Query Failure Fix Phase 2 (Case-Sensitivity Normalization)
+- [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_TAXONOMY_EXPANSION_PHASE1.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_TAXONOMY_EXPANSION_PHASE1.md) — Implementation Plan: Taxonomy Expansion Phase 1
+- [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_TAXONOMY_EXPANSION_PHASE2.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_TAXONOMY_EXPANSION_PHASE2.md) — Implementation Plan: Taxonomy Expansion Phase 2
+- [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_TRUST_MAPPING_PHASE2.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_TRUST_MAPPING_PHASE2.md) — Agent Implementation Plan: Trust & Mapping Phase 2
+- [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_TRUST_MAPPING_REVIEW.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_TRUST_MAPPING_REVIEW.md) — AGENT_IMPLEMENTATION_PLAN_TRUST_MAPPING_REVIEW
+- [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_UNDERSTANDING_NEXT_UI_WIRING.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_UNDERSTANDING_NEXT_UI_WIRING.md) — AGENT_IMPLEMENTATION_PLAN_UNDERSTANDING_NEXT_UI_WIRING.md
+- [`docs/history/agent/plans/AGENT_INBOX.md`](../../docs/history/agent/plans/AGENT_INBOX.md) — AGENT INBOX — CRITICAL: Domain Understanding Recovery Architecture
+- [`docs/history/agent/plans/AGENT_INBOX_PHASE2.md`](../../docs/history/agent/plans/AGENT_INBOX_PHASE2.md) — AGENT INBOX PHASE 2
+- [`docs/history/agent/plans/AGENT_TASK.md`](../../docs/history/agent/plans/AGENT_TASK.md)
 
-## architecture-audit (30)
+## agent-walkthrough-history
 
-| Source | Title / status | Bytes | SHA-256 |
-|---|---|---:|---|
-| [`docs/architecture/AUDIT-backend-duckdb-preview-failure.md`](../architecture/AUDIT-backend-duckdb-preview-failure.md) | AUDIT: Backend DuckDB Preview Failure (DU-7F) | 2887 | `dc9cfea93730ae8f77bf5d1275044775b000f7e5f0f9141d15c31a4efeacbe62` |
-| [`docs/architecture/AUDIT-business-knowledge-vs-execution-gap.md`](../architecture/AUDIT-business-knowledge-vs-execution-gap.md) | Knowledge vs Execution Gap | 1374 | `39aafa7a5d93f908cd9c44122e4d4118a104f7004c34af23a07bc5e9b1a95e29` |
-| [`docs/architecture/AUDIT-business-signal-dependencies.md`](../architecture/AUDIT-business-signal-dependencies.md) | Mandatory Audit: Business Signal Dependencies | 2444 | `8297cd37847d2caa1755188e2872ab3e6a9a4147c63c0af687d0484929feff6b` |
-| [`docs/architecture/AUDIT-business-view-reality-gap.md`](../architecture/AUDIT-business-view-reality-gap.md) | Business View Reality Audit; status=Audit Complete. No code modifications. | 5716 | `2fe0b269ad67400f404d6ed34be83bbe558fc490411ef5c4978fc10e24377865` |
-| [`docs/architecture/AUDIT-cross-domain-validation-suite.md`](../architecture/AUDIT-cross-domain-validation-suite.md) | Audit: Cross-Domain Validation Suite; status=🟢 **GREEN (PASSED)** | 2970 | `166b2fdacb8b8b6f0d2981b1c9434251eaa7f232734d4bfc83f20ea7139e43d9` |
-| [`docs/architecture/AUDIT-data-intake-row-retention.md`](../architecture/AUDIT-data-intake-row-retention.md) | AUDIT: Data Intake Row Retention | 1667 | `a8d6e251f4a9a0fdfa9bc00df64a1a247cde2277f413b084d7cdfeff785e8f38` |
-| [`docs/architecture/AUDIT-dataset-source-registration.md`](../architecture/AUDIT-dataset-source-registration.md) | AUDIT: Dataset Source Registration (Phase DU-7H) | 3090 | `b0353d5d8fdb660749d9c71a5ddcd005a46e4d6fe4e67a2c1c331552b1ec9a0e` |
-| [`docs/architecture/AUDIT-delivery-performance-live-trace.md`](../architecture/AUDIT-delivery-performance-live-trace.md) | Live Trace Audit: Delivery Performance Reports; status=Audit & Patch Complete. | 3058 | `b8ed0bac76e8380281acffa1150ecd9420b6cb228f2f959a31c31885fd11b99f` |
-| [`docs/architecture/AUDIT-domain-general-analysis.md`](../architecture/AUDIT-domain-general-analysis.md) | AUDIT: Domain-General Analysis Opportunities | 2401 | `3b3b53beea881692a4889caa7bd94c1382cd5d3a82a76b2bdf24811c884f105e` |
-| [`docs/architecture/AUDIT-domain-general-ui-verification.md`](../architecture/AUDIT-domain-general-ui-verification.md) | AUDIT: Domain-General UI Verification | 2992 | `5d339bc60fbe974330526b28ab7e4957d2863ad932b79d583712920ee1dd0425` |
-| [`docs/architecture/AUDIT-domain-knowledge-inventory.md`](../architecture/AUDIT-domain-knowledge-inventory.md) | AUDIT: Domain Knowledge Inventory | 3731 | `271f3b0090446231bd88a6623c39a2d8bc974142eee381f3277f16fdb49a459d` |
-| [`docs/architecture/AUDIT-duckdb-infrastructure.md`](../architecture/AUDIT-duckdb-infrastructure.md) | AUDIT: DuckDB Infrastructure | 3994 | `8778032a2dd02a7c9e895fbd396229b921e172041dbdb5d1c93a88920c60bb61` |
-| [`docs/architecture/AUDIT-end-to-end-product-readiness.md`](../architecture/AUDIT-end-to-end-product-readiness.md) | AUDIT: End-to-End Product Readiness (DU-8A) | 2711 | `a5b4630156cec87f8a4801efde63e1c38e976dbde6aee74b37a00f36065ef3e6` |
-| [`docs/architecture/AUDIT-execution-integrity.md`](../architecture/AUDIT-execution-integrity.md) | AUDIT: Execution Integrity (DU-7D) | 4069 | `f57d7e2d6d496692422e8267d28c0b51a585013924ecedb939286ef364f2babe` |
-| [`docs/architecture/AUDIT-existing-business-domain-coverage.md`](../architecture/AUDIT-existing-business-domain-coverage.md) | AUDIT: Existing Business Domain Coverage | 3181 | `1594795e07f8c34e89bf8378d3cdc52912ea31e2ed53e092f0be7bf0fb916cdd` |
-| [`docs/architecture/AUDIT-guided-investigation-purity.md`](../architecture/AUDIT-guided-investigation-purity.md) | AUDIT: Guided Investigation Purity | 4545 | `52dbebd6358a54b9d473b5631af5c104c61f49b272b468af6310960b3e69b661` |
-| [`docs/architecture/AUDIT-home-freeze-regression-verification.md`](../architecture/AUDIT-home-freeze-regression-verification.md) | Home Freeze Regression Verification Audit; status=- Home is safe to freeze: **Yes** | 2726 | `178293030a8d17244118ddb3d3a575c96faaa5b7452a2760b77eebc017076e61` |
-| [`docs/architecture/AUDIT-home-freeze-remnants.md`](../architecture/AUDIT-home-freeze-remnants.md) | AUDIT: Home Freeze Remnants (UX-6); status=Ready for implementation. All remnants listed above will be purged to freeze the Home screen as a pure Understanding-First entry point. | 2997 | `8fa94e2d64169fd1203750d589c2fb6ce93bb445375f65cbcba812fc66404ae6` |
-| [`docs/architecture/AUDIT-home-guided-investigation-final.md`](../architecture/AUDIT-home-guided-investigation-final.md) | Final Home Purity Audit: Guided Investigation; status=🟢 **GREEN (Fully Compliant)** | 2736 | `496430ab91783f8f09aaecb8aa7b01a0909b184592434a9a2cfbe85cedb4529c` |
-| [`docs/architecture/AUDIT-home-information-density.md`](../architecture/AUDIT-home-information-density.md) | AUDIT: Home Information Density Review | 3025 | `2c6a9016551505aac360b190acf15f05fc6791d3dbc4e02024a1361832a52b99` |
-| [`docs/architecture/AUDIT-home-information-hierarchy.md`](../architecture/AUDIT-home-information-hierarchy.md) | AUDIT: Home Information Hierarchy (UX-6) | 2220 | `1a884c6864b1e466ad2ebdea03369ef8d99b0ff02ae5edf68ae557752e7c5961` |
-| [`docs/architecture/AUDIT-home-vs-investigation-boundary.md`](../architecture/AUDIT-home-vs-investigation-boundary.md) | AUDIT: Home vs Investigation Boundary | 2672 | `233bb5881917efed84dfb9365771e10ca4537690c2e2eb3719f22bc241961e1d` |
-| [`docs/architecture/AUDIT-jivedb-public-product-evidence.md`](../architecture/AUDIT-jivedb-public-product-evidence.md) | JiveDB Public Product Evidence Audit | 4208 | `95433594a71475be82b63935ba95669401564ecc5d5b4d2f024f2402c289b591` |
-| [`docs/architecture/AUDIT-perspective-business-view-question.md`](../architecture/AUDIT-perspective-business-view-question.md) | Architecture Audit: Perspective -> Business View -> Question | 5875 | `1c4ef158da9f4c3b1be44564e8524a4d6038abcd26e351718c1ce9f7e8325b80` |
-| [`docs/architecture/AUDIT-raw-understanding-algorithm.md`](../architecture/AUDIT-raw-understanding-algorithm.md) | AUDIT: Raw Understanding Algorithm | 10691 | `43fc5927d06ab6aae3f0407a3e57f940792caf2cc98a096c7526e8b3733af4ab` |
-| [`docs/architecture/AUDIT-regression-guided-investigation-vs-legacy.md`](../architecture/AUDIT-regression-guided-investigation-vs-legacy.md) | Regression Audit: Guided Investigation Pipeline vs Legacy Behavior; status=Audit Complete (No code modifications). | 4206 | `c3b2de91b86f074d02a5c9038c3075890f75c813f7ed0c0a1e7337e6908196bf` |
-| [`docs/architecture/AUDIT-runtime-execution-boundary.md`](../architecture/AUDIT-runtime-execution-boundary.md) | AUDIT: Runtime Execution Boundary | 2925 | `b565cfd7713a8195f8c5c416cbbba330466b54a11a1aff31c5faf8618a991c10` |
-| [`docs/architecture/AUDIT-signal-coverage-report.md`](../architecture/AUDIT-signal-coverage-report.md) | Audit: Signal Coverage Report; status=🟢 **100% GREEN (Gap Closed)** | 3120 | `dd8724486655e67397992757cd497873cc6b37739ccf74fcfd2e827cda2cc80f` |
-| [`docs/architecture/AUDIT-tablepro-advanced-data-workspace.md`](../architecture/AUDIT-tablepro-advanced-data-workspace.md) | TablePro Architecture Audit for LightBI Advanced Mode | 11080 | `19aaa7f953ae7e04e4309a3e6cee5ca9db0be46384528811bbe03db607513a26` |
-| [`docs/architecture/phase-0-semantic-support-audit.md`](../architecture/phase-0-semantic-support-audit.md) | Phase 0 Semantic and Support Audit | 12922 | `8596150e4c824b81192633fec2e06c01f259340feb6f2a062fae8db03be2dd4b` |
+- [`docs/history/agent/walkthroughs/AGENT_WALKTHROUGH.md`](../../docs/history/agent/walkthroughs/AGENT_WALKTHROUGH.md) — ROADMAP-MVP-V1 Phase 1: Multi-evidence signal strengthening
+- [`docs/history/agent/walkthroughs/AGENT_WALKTHROUGH_PHASE2.md`](../../docs/history/agent/walkthroughs/AGENT_WALKTHROUGH_PHASE2.md) — ROADMAP-MVP-V1 Phase 2: Grain hint in Dataset Understanding
+- [`docs/history/agent/walkthroughs/AGENT_WALKTHROUGH_PHASE3.md`](../../docs/history/agent/walkthroughs/AGENT_WALKTHROUGH_PHASE3.md) — ROADMAP-MVP-V1 Phase 3: Decision Readiness Guidance
 
-## architecture-decision (65)
+## app-local-doc-or-config
 
-| Source | Title / status | Bytes | SHA-256 |
-|---|---|---:|---|
-| [`docs/architecture/ADR-059-relationship-graph-source-of-truth.md`](../architecture/ADR-059-relationship-graph-source-of-truth.md) | ADR-059: Relationship Graph as the Source of Truth | 1586 | `da7f863c96e5172c5ce58c9540cd8e7a023c59dbeea23f883eafabfc6785737d` |
-| [`docs/architecture/ADR-060-business-view-before-execution.md`](../architecture/ADR-060-business-view-before-execution.md) | ADR-060: Business View Before Execution | 1363 | `6ff7708c335df48d0d072407f3770aa4e3f4e738662aa4bb6980eac5a7d5d9f9` |
-| [`docs/architecture/ADR-061-virtual-dataset-plan-contract.md`](../architecture/ADR-061-virtual-dataset-plan-contract.md) | ADR-061: Virtual Dataset Plan Contract | 1415 | `327dbefd124dae7855bd8612f096683f32ace87d2ad7ae9f7a0d447073dfb208` |
-| [`docs/architecture/ADR-062-runtime-preview-before-execution.md`](../architecture/ADR-062-runtime-preview-before-execution.md) | ADR-062: Runtime Preview Before Execution | 1671 | `7604ae902c5c497d41b720427f95146262beaf7819a939580a8f756ac936791e` |
-| [`docs/architecture/ADR-063-execution-guard-before-runtime.md`](../architecture/ADR-063-execution-guard-before-runtime.md) | ADR-063: Execution Guard Before Runtime | 1750 | `c8aee26eaeb9e19ab9cade60ff5ce1f7d1ffdbef6c55926ba72702c6c695ec7c` |
-| [`docs/architecture/ADR-064-duckdb-logical-plan-before-sql.md`](../architecture/ADR-064-duckdb-logical-plan-before-sql.md) | ADR-064: DuckDB Logical Plan Before SQL Execution | 1816 | `faa970afda6d8b3c17c68a5c7e9fdfdb327e58c291b4950dd891ce6b258c0ae9` |
-| [`docs/architecture/ADR-065-runtime-boundary-contract.md`](../architecture/ADR-065-runtime-boundary-contract.md) | ADR-065: Runtime Boundary Contract | 1663 | `0e15e1368270a35aaea401ea8af6667401e9189080cb191c80df11e5a1f64772` |
-| [`docs/architecture/ADR-066-expected-result-contract-before-sql.md`](../architecture/ADR-066-expected-result-contract-before-sql.md) | ADR-066: Expected Result Contract Before SQL | 1270 | `08a6816ffac457a7cbdfc22f59a705d1a0c71332f449753363a38d9446e86350` |
-| [`docs/architecture/ADR-067-safe-sql-compiler-contract.md`](../architecture/ADR-067-safe-sql-compiler-contract.md) | ADR-067: Safe SQL Compiler Contract | 1898 | `ee9360bf54e3270d67cca04a987823bf05f9b3760f9fcb01c424399f7a01a62d` |
-| [`docs/architecture/ADR-068-sandbox-before-runtime.md`](../architecture/ADR-068-sandbox-before-runtime.md) | ADR-068: Sandbox Before Runtime | 1317 | `e5c527be2df42a8b3693128b6c33fd034eb99313a70f7f594e8462e78b0bf557` |
-| [`docs/architecture/ADR-069-preview-result-contract-before-runtime.md`](../architecture/ADR-069-preview-result-contract-before-runtime.md) | ADR-069: Preview Result Contract Before Runtime | 1621 | `276e7f345a509fef3ad927f62536df4fa86c5b3d5cc13dfb9f2ebf58d686fb7f` |
-| [`docs/architecture/ADR-070-business-confidence-engine.md`](../architecture/ADR-070-business-confidence-engine.md) | ADR-070: Business Confidence Engine | 2527 | `97e433ee754abac55f8e24398c7d450aa84278ab6d48ef120646017c54279103` |
-| [`docs/architecture/ADR-071-dataset-health-model.md`](../architecture/ADR-071-dataset-health-model.md) | ADR-071: Dataset Health Model | 2108 | `9428f759ec5d4b64cc29e058221237726b37242147726389be5557f2bb984b94` |
-| [`docs/architecture/ADR-072-insight-contract.md`](../architecture/ADR-072-insight-contract.md) | ADR-072: Insight Contract | 2325 | `69e64b12639aaaa13479ddd27bc56524b9de387eeffb5cae7258b60510ab743c` |
-| [`docs/architecture/ADR-073-dataset-health-engine.md`](../architecture/ADR-073-dataset-health-engine.md) | ADR-073: Dataset Health Engine | 1452 | `614cf2c0567c867f9d364661e1d28f7fc4da600169ebe000cad3f25f7664caa0` |
-| [`docs/architecture/ADR-074-business-confidence-formula.md`](../architecture/ADR-074-business-confidence-formula.md) | ADR-074: Business Confidence Formula Design | 5973 | `aa9621db9baede96343a0b085e1932c73f64fda6dd9bccab4647db0ae1d8bbc2` |
-| [`docs/architecture/ADR-075-confidence-signal-registry.md`](../architecture/ADR-075-confidence-signal-registry.md) | ADR-075: Confidence Signal Registry | 3297 | `d21d0d99064dc4c65048963b55f98b1799741926b943569b27857cc73acb2cad` |
-| [`docs/architecture/ADR-076-business-confidence-engine.md`](../architecture/ADR-076-business-confidence-engine.md) | ADR-076: Business Confidence Engine | 1608 | `071725b4b405e3f4800c3a993d3a32b0e020e5d15f3dc82a77ee67ea6be8d0b3` |
-| [`docs/architecture/ADR-077-duckdb-preview-runtime.md`](../architecture/ADR-077-duckdb-preview-runtime.md) | ADR-077: DuckDB Preview Runtime | 1756 | `ff4e27618ce9bcbba5ccc61571e895f1103be18b206e71c68c3646322196a016` |
-| [`docs/architecture/ADR-078-result-validator-integration.md`](../architecture/ADR-078-result-validator-integration.md) | ADR 078: Result Validator Integration | 2182 | `3b8fbdcd111f3b0eba7b2418e66c83402812995d04092c5316d33e6714466f59` |
-| [`docs/architecture/ADR-079-data-quality-vs-business-confidence.md`](../architecture/ADR-079-data-quality-vs-business-confidence.md) | ADR 079: Data Quality vs Business Confidence | 1614 | `baa8cd50b29ada104ddfa593c33c7e42c626369cb0e8b482f8f5657282760b3f` |
-| [`docs/architecture/ADR-080-explore-investigate-ask-navigation.md`](../architecture/ADR-080-explore-investigate-ask-navigation.md) | ADR 080: Explore, Investigate, Ask Navigation | 1354 | `c0776f333e57db3602802fa6422ffa4214bf9e1fe0547f47ab383dca9389f97b` |
-| [`docs/architecture/ADR-081-learning-first-question-discovery.md`](../architecture/ADR-081-learning-first-question-discovery.md) | ADR 081: Learning First Question Discovery | 1796 | `1abd732ace19ed5cdd2a2882d332a13e30be3bccabad7b4d1035b1528b58626e` |
-| [`docs/architecture/ADR-082-perspective-before-question.md`](../architecture/ADR-082-perspective-before-question.md) | ADR 082: Perspective Before Question | 1871 | `50ec49936b9b3dee8a254589240ebbc2b670eea6701cbfed8550a2fd7e522cbf` |
-| [`docs/architecture/ADR-083-business-view-summary-layer.md`](../architecture/ADR-083-business-view-summary-layer.md) | ADR 083: Business View Summary Layer | 1994 | `645a6ae21c05c6cb2ec200d89f8dfa28abf03d473858842813a67cdfa99f63f1` |
-| [`docs/architecture/ADR-084-business-view-driven-question-pipeline.md`](../architecture/ADR-084-business-view-driven-question-pipeline.md) | ADR 084: Business View Driven Question Pipeline | 3295 | `1f13811603ae8e4fc3b9049e8e49c84ad582c2b1afe828e7d8ec139d49c91dce` |
-| [`docs/architecture/ADR-085-business-signal-registry.md`](../architecture/ADR-085-business-signal-registry.md) | ADR 085: Business Signal Registry | 2080 | `14718057d352a3848252583db0cda5e311b3099e31c4bdbd139d55a9b0f93347` |
-| [`docs/architecture/ADR-086-business-concept-canonicalization.md`](../architecture/ADR-086-business-concept-canonicalization.md) | ADR 086: Business Concept Canonicalization | 1898 | `8f27fcb921451c3a424c6a2602b77a1d0d8e29737e82d070a636b72fa4d38d54` |
-| [`docs/architecture/ADR-087-signal-taxonomy.md`](../architecture/ADR-087-signal-taxonomy.md) | ADR 087: Signal Taxonomy | 2059 | `f4d35bdd8e7140d1ebb6f4fb7cfde5d63b76c0209bfa6af49ae754819967f55b` |
-| [`docs/architecture/ADR-088-signal-driven-perspective-generation.md`](../architecture/ADR-088-signal-driven-perspective-generation.md) | ADR 088: Signal-Driven Perspective Generation | 1730 | `0b93bd7e10f1bae5c949901bdc42c9cd5a983da2a523c9266544ff43c9f76315` |
-| [`docs/architecture/ADR-089-business-view-registry-v1.md`](../architecture/ADR-089-business-view-registry-v1.md) | ADR 089: Business View Registry V1 | 1869 | `c8752f716105ae7a20d5cd96f73cb63b9dc7f95a249e57900eafb900a57e5ba3` |
-| [`docs/architecture/ADR-089-signal-driven-business-view-generation.md`](../architecture/ADR-089-signal-driven-business-view-generation.md) | ADR 089: Signal-Driven Business View Generation | 2221 | `eb329d29b6b9d891485d1df0f67e7423de42a63274ae486e857cc003ee8605f1` |
-| [`docs/architecture/ADR-090-domain-knowledge-preservation.md`](../architecture/ADR-090-domain-knowledge-preservation.md) | ADR 090: Domain Knowledge Preservation | 1680 | `b26e4dbcd5b3984549811be750b34546d18fb893a7408c2ac3eade07447a1f3a` |
-| [`docs/architecture/ADR-091-domain-knowledge-catalog.md`](../architecture/ADR-091-domain-knowledge-catalog.md) | ADR 091: Domain Knowledge Catalog | 2173 | `47375e56b5661f9c4b57ee051dfdbb891ddbdd905e83fb401df68a89a4341e46` |
-| [`docs/architecture/ADR-092-machine-readable-domain-catalog.md`](../architecture/ADR-092-machine-readable-domain-catalog.md) | ADR 092: Machine-Readable Domain Catalog | 2071 | `cd61c6b51843d19193f5334d09f498db866c97fad51a07a5415914b4da16d896` |
-| [`docs/architecture/ADR-093-registry-driven-business-view-generation.md`](../architecture/ADR-093-registry-driven-business-view-generation.md) | ADR 093: Registry-Driven Business View Generation | 1559 | `8f80352060cb80da990de24b8719327dde1f7519b062b6575003ab8e2e68e6a6` |
-| [`docs/architecture/ADR-094-question-plan-before-question.md`](../architecture/ADR-094-question-plan-before-question.md) | ADR-094: Question Plan Before Question | 2241 | `436e8e00d95d44cc7772be0c2405c2ec4d97ffd75b98712fb032532af8e4df0d` |
-| [`docs/architecture/ADR-095-question-suggestion-renderer.md`](../architecture/ADR-095-question-suggestion-renderer.md) | ADR-095: Question Suggestion Renderer | 2184 | `3a6f99452aa4a7d0681b7295ecd0ab230358270261c2ea6e3ff9a56886d10d51` |
-| [`docs/architecture/ADR-096-guided-investigation-pipeline.md`](../architecture/ADR-096-guided-investigation-pipeline.md) | ADR-096: Guided Investigation Pipeline Orchestrator | 1762 | `18c56cc1deadd075f08168952ceb1d3fcf0ee6502bad6607205280d85f64d474` |
-| [`docs/architecture/ADR-097-dataset-understanding-before-questions.md`](../architecture/ADR-097-dataset-understanding-before-questions.md) | ADR 097: Dataset Understanding Before Questions | 2941 | `10d6609686ddacb703f85bd0b81224b67eea56c194c1b5622b229d51fa9d8c1f` |
-| [`docs/architecture/ADR-098-dataset-understanding-contract.md`](../architecture/ADR-098-dataset-understanding-contract.md) | ADR 098: Dataset Understanding Contract | 1856 | `13bb93763779a9ab3feae5b09dbfc341fe5d6f218545df41966ee0a736ccf0f7` |
-| [`docs/architecture/ADR-099-analysis-action-runtime-contract.md`](../architecture/ADR-099-analysis-action-runtime-contract.md) | ADR 099: Analysis Action Runtime Contract | 1977 | `46b42840ecf418e220f9c43f28a98659ade1a87eecf569b1d0eacbe92f6ff2f7` |
-| [`docs/architecture/ADR-100-runtime-planner-preview.md`](../architecture/ADR-100-runtime-planner-preview.md) | ADR 100: Runtime Planner Preview | 1552 | `e1e99e017a35d5e5d2268e1a40016571a73d14fc41f02df9d79318ba9450757e` |
-| [`docs/architecture/ADR-101-home-investigation-separation.md`](../architecture/ADR-101-home-investigation-separation.md) | ADR 101: Home and Investigation Workspace Separation | 1579 | `6a8a8808b8eda3a47b65caf7a4be4623d19aec1fde5bebabf6f35deff121750a` |
-| [`docs/architecture/ADR-102-safe-sql-preview-before-execution.md`](../architecture/ADR-102-safe-sql-preview-before-execution.md) | ADR 102: Safe SQL Preview Before Execution | 1467 | `a52e5d22f6a0c6a8c6efc25aad09b3af247d0aced0b768b711e7a99881dec26f` |
-| [`docs/architecture/ADR-103-investigation-workspace-layout.md`](../architecture/ADR-103-investigation-workspace-layout.md) | ADR 103: Investigation Workspace Layout Cleanup | 1399 | `2f5c9e27dc83307b72421be5393ea76acec425878f113ed236f274b898e73fe0` |
-| [`docs/architecture/ADR-104-duckdb-preview-sandbox.md`](../architecture/ADR-104-duckdb-preview-sandbox.md) | ADR-104: DuckDB Preview Sandbox | 1960 | `1efdaa4a56f7e16e4a62888a5393b25929fcefa3d061852f2f3027f81bddf93e` |
-| [`docs/architecture/ADR-105-chart-preview-renderer.md`](../architecture/ADR-105-chart-preview-renderer.md) | ADR-105: Chart Preview Renderer | 1883 | `b75ed3789e66d9de9bece08e60b3dac13d8253b2bf9689f47894669d80c70d3b` |
-| [`docs/architecture/ADR-106-dataset-rows-preview-wiring.md`](../architecture/ADR-106-dataset-rows-preview-wiring.md) | ADR-106: Dataset Rows Preview Wiring | 2158 | `701e42bb0379cb11e6d5d8831350c5f590ed8ca1dc9f4718b292d84a7368f204` |
-| [`docs/architecture/ADR-107-preview-row-retention.md`](../architecture/ADR-107-preview-row-retention.md) | ADR-107: Preview Row Retention | 2328 | `c825acc9d04bbe1c4f39c8378a10c39417d7f4975c82ef01c58b8de870600727` |
-| [`docs/architecture/ADR-108-axum-preview-execution-endpoint.md`](../architecture/ADR-108-axum-preview-execution-endpoint.md) | ADR 108: Axum Preview Execution Endpoint Contract | 1955 | `477bdfd81532f10e6b0679d05226b4f7739bc449530a6e8b97e1d8224cce3ab0` |
-| [`docs/architecture/ADR-109-frontend-backend-preview-adapter.md`](../architecture/ADR-109-frontend-backend-preview-adapter.md) | ADR 109: Frontend Backend Preview Adapter | 1659 | `79bca48aee4ab458146ca79175f1344aad2b7f0ac0f4658ca8bb710d619a15e6` |
-| [`docs/architecture/ADR-110-mvp-v1-product-modes-and-priorities.md`](../architecture/ADR-110-mvp-v1-product-modes-and-priorities.md) | ADR 110: MVP v1 Product Modes and Priorities | 5870 | `7413ff002922f02da6a3a612f78ed1529b64f0cd36bbb1e187972eb489d9610c` |
-| [`docs/architecture/ADR-111-multi-evidence-understanding-engine.md`](../architecture/ADR-111-multi-evidence-understanding-engine.md) | ADR 111: Multi-Evidence Understanding Engine | 8087 | `984e915726e833f75f2af79851de423f8d994011f0728122b80b5e1e2ac8f5d2` |
-| [`docs/architecture/ADR-112-global-display-preferences.md`](../architecture/ADR-112-global-display-preferences.md) | ADR-112: Global Display Preferences | 2497 | `6d824485146352bd0292b6be2cd091932dd0f8283aa507d038087790cd34961b` |
-| [`docs/architecture/ADR-113-shared-simple-advanced-execution-core.md`](../architecture/ADR-113-shared-simple-advanced-execution-core.md) | ADR-113: Shared Simple/Advanced Execution Core; status=Accepted, phase 1 implemented | 4064 | `6398ec4f6d15a1b2d00b74067aec80875c9dd7ac06994828a3a311dce54d132e` |
-| [`docs/architecture/ADR-114-advanced-mode-inheritance-blueprint.md`](../architecture/ADR-114-advanced-mode-inheritance-blueprint.md) | ADR-114: Advanced Mode Inherits the Shared Data Platform; status=Accepted; Phase B foundation implemented | 18066 | `942baa3d54a80777128b2d8d8775148f133a97b01f021934109eba9babbdfb7d` |
-| [`docs/architecture/ADR-115-ba-decision-engine-simple-mode.md`](../architecture/ADR-115-ba-decision-engine-simple-mode.md) | ADR-115: BA Decision Engine for Simple Mode | 5322 | `50a1ecb67241115ec6258345b8c0a35711ddd23725a076b095e43c8bd42adb93` |
-| [`docs/architecture/ADR-116-plugin-first-system-expansion.md`](../architecture/ADR-116-plugin-first-system-expansion.md) | ADR-116: Plugin-First System Expansion; status=Accepted, SDK contract scaffolded | 3729 | `efd61523d2400ca980b7c5b06850621d15ab30b2d7a80471ea552df4fac40f2e` |
-| [`docs/architecture/ADR-117-business-understanding-engine-product-boundary.md`](../architecture/ADR-117-business-understanding-engine-product-boundary.md) | ADR-117: Business Understanding Engine Product Boundary; status=Accepted | 5840 | `2ee700f3e5d9cdee52dd9c559398caebad92383448165d09e8793e09007dfc1c` |
-| [`docs/architecture/ADR-118-domain-ba-playbooks.md`](../architecture/ADR-118-domain-ba-playbooks.md) | ADR-118: Domain BA Playbooks for Simple Mode | 11813 | `7bef106c5d6f6e4718a86bd23d4868f10c3cd0bd12f70c24c34f44f673eac3fb` |
-| [`docs/architecture/ADR-119-business-brain-orchestrator.md`](../architecture/ADR-119-business-brain-orchestrator.md) | ADR-119: Business Brain Orchestrator for Simple Mode | 9801 | `ddee3feefa8e42f96467a0487e9ac6672026fea8054cca6810b429148a13522f` |
-| [`docs/architecture/ADR-120-context-aware-semantic-dictionary.md`](../architecture/ADR-120-context-aware-semantic-dictionary.md) | ADR-120: Context-Aware Semantic Dictionary and Evidence Engine | 4856 | `f1fef1cb5dac4fbe0af24916ff578832d52265e9379f34d9617f868dba172b01` |
-| [`docs/architecture/ADR-121-semantic-registry-source-of-truth.md`](../architecture/ADR-121-semantic-registry-source-of-truth.md) | ADR-121: Runtime Semantic Registry Source of Truth | 2035 | `e5557e54d0c3e3637742fcf702f9a3bc7e4f5033591e74cdf601eff4f2722e78` |
-| [`docs/architecture/ADR-122-canonical-understanding-pipeline.md`](../architecture/ADR-122-canonical-understanding-pipeline.md) | ADR-122: Canonical Understanding Pipeline | 4552 | `9e5aeb48469dc41dc8f96f4b8bc7c751059c3247c6ba7b24df4d85bea73d87f3` |
+- [`apps/desktop/after.json`](../../apps/desktop/after.json)
+- [`apps/desktop/before.json`](../../apps/desktop/before.json)
+- [`apps/desktop/package.json`](../../apps/desktop/package.json)
+- [`apps/desktop/README.md`](../../apps/desktop/README.md) — React + TypeScript + Vite
+- [`apps/desktop/src/i18n/language.schema.json`](../../apps/desktop/src/i18n/language.schema.json)
+- [`apps/desktop/src/i18n/languages/en.json`](../../apps/desktop/src/i18n/languages/en.json)
+- [`apps/desktop/src/i18n/languages/vi.json`](../../apps/desktop/src/i18n/languages/vi.json)
+- [`apps/desktop/src/i18n/README.md`](../../apps/desktop/src/i18n/README.md) — LightBI language packages
+- [`apps/desktop/src/lib/understanding-core/OWNERSHIP.md`](../../apps/desktop/src/lib/understanding-core/OWNERSHIP.md) — Understanding Ownership Freeze
+- [`apps/desktop/src/lib/understanding-core/README.md`](../../apps/desktop/src/lib/understanding-core/README.md) — understanding-core
+- [`apps/desktop/src/lib/understanding-next/README.md`](../../apps/desktop/src/lib/understanding-next/README.md) — Understanding Next
+- [`apps/desktop/test-results/.last-run.json`](../../apps/desktop/test-results/.last-run.json) — status='passed'
+- [`apps/desktop/tsconfig.app.json`](../../apps/desktop/tsconfig.app.json)
+- [`apps/desktop/tsconfig.json`](../../apps/desktop/tsconfig.json)
+- [`apps/desktop/tsconfig.node.json`](../../apps/desktop/tsconfig.node.json)
 
-## architecture-doc (95)
+## architecture-audit
 
-| Source | Title / status | Bytes | SHA-256 |
-|---|---|---:|---|
-| [`docs/architecture/artifact-model.md`](../architecture/artifact-model.md) | Export Artifact Model | 834 | `c444e449c8bb69aac589a0c0f35ea93e864f2a90c4b14a1e51e716737342b0e6` |
-| [`docs/architecture/BETA_RECOVERY_CODEBASE_MAP_2026-08-09.md`](../architecture/BETA_RECOVERY_CODEBASE_MAP_2026-08-09.md) | LightBI Beta Recovery Codebase Map | 7726 | `8ec680030fe0e5f1c97ce4c7c72003a06490537012a76bcfada4b848888704c9` |
-| [`docs/architecture/BETA_RECOVERY_SESSION_2026-08-01.md`](../architecture/BETA_RECOVERY_SESSION_2026-08-01.md) | LightBI Beta Recovery Session ??? 2026-08-01 | 25476 | `363b22fc1bbb477992f569bac4ba047c4a2ed811fe9116d55d3a75796e9d2e1c` |
-| [`docs/architecture/business-signal-registry-contract.md`](../architecture/business-signal-registry-contract.md) | Business Signal Registry Contract | 2326 | `eb5e56aee9c93a1cdbcbfcf6dc5b416860731e806c0c08dafa7ddce131edd311` |
-| [`docs/architecture/business-view-question-pipeline-contract.md`](../architecture/business-view-question-pipeline-contract.md) | Business View Question Pipeline Contract | 3225 | `12ffdc2ae8bbf54f2730caa63f3af26b9e481b1822090867748908ec503337d0` |
-| [`docs/architecture/business-view-registry-v1.md`](../architecture/business-view-registry-v1.md) | Business View Registry V1 Design | 2759 | `b2e38b9d94e3e377895b26c1c092b82f87eba387b3444b037095c9e560941f5b` |
-| [`docs/architecture/BVQ-RESET-DECISION.md`](../architecture/BVQ-RESET-DECISION.md) | Reset Decision: BVQ Pipeline | 1677 | `e6e776bf89b911ad3b5b06a7f773a34b210a45d5ba44743c7c15ae1821aacf1e` |
-| [`docs/architecture/BVQ-RESET.md`](../architecture/BVQ-RESET.md) | BVQ RESET: Architecture Analysis | 4715 | `595f30a5181669e5703ad52b5592fb8687ce5c46c6445d573db269d01da1e1cb` |
-| [`docs/architecture/chart-model.md`](../architecture/chart-model.md) | Chart Architecture Model | 960 | `10f5feea82d6046413c2613888a67d827e395f124bdb538e3909f4825cdeb257` |
-| [`docs/architecture/dashboard-model.md`](../architecture/dashboard-model.md) | Dashboard Architecture Model | 1207 | `09523ec89d2490b64e56307088c0b587c4663888cf69fb66e39b3cc64f37f7a5` |
-| [`docs/architecture/data-view-model.md`](../architecture/data-view-model.md) | Data View Architecture | 1099 | `ff1388c55b3e830b935b0248a4e6527c05b2db10f0f594a4130bab6bb4257295` |
-| [`docs/architecture/dataset-model.md`](../architecture/dataset-model.md) | Dataset Model Architecture | 1207 | `ceea70ed0d4c4633a78ffd103fc1ee07ad2930fa0cb1917043c5516b61ea70cb` |
-| [`docs/architecture/dataset-recipe-model.md`](../architecture/dataset-recipe-model.md) | LightBI Dataset Recipe Model | 1314 | `f32dceb3e8ae339d2d102ceb9287c036e2ea5427444b05dc40ebf9e7eed6228d` |
-| [`docs/architecture/dataset-understanding-layer.md`](../architecture/dataset-understanding-layer.md) | Dataset Understanding Layer | 3587 | `f48841fd4fec53db9207e824c2565b1400c39bcb87d644a85cc120a03b8ea35a` |
-| [`docs/architecture/domain-knowledge-catalog-v1.md`](../architecture/domain-knowledge-catalog-v1.md) | Domain Knowledge Catalog V1 | 4086 | `d66d87f66592e1bdfbf424f329886d70fdc9c214070c084630991e54e0ec0813` |
-| [`docs/architecture/domain-knowledge-coverage-matrix-v1.md`](../architecture/domain-knowledge-coverage-matrix-v1.md) | Domain Knowledge Coverage Matrix V1 | 2077 | `fc4d171821d0890f79fd3977697b82014aaa35373333338af8a31d71bdabafd4` |
-| [`docs/architecture/domain-model.md`](../architecture/domain-model.md) | LightBI Domain Model | 2414 | `de4ac11a66435c188d7bd4f0f739e056a728184e67931984c81ee8081b331afc` |
-| [`docs/architecture/execution-backend-model.md`](../architecture/execution-backend-model.md) | Execution Backend Model | 872 | `44f410570582ccbbfa0ec15e4221c7f0493b91c9cdbd8ba380601e4fdd04d0f3` |
-| [`docs/architecture/execution-strategy.md`](../architecture/execution-strategy.md) | Execution Strategy Model | 962 | `69a95d971098bead71ee930422d539d69b9722d210b09507b88653da3caed64e` |
-| [`docs/architecture/export-model.md`](../architecture/export-model.md) | Export Architecture Model | 1018 | `2e0d694bdee79ab95e6f3752d9f95851462247df9675a60c285954e1fb4d49c1` |
-| [`docs/architecture/frontend-boundary.md`](../architecture/frontend-boundary.md) | Frontend Boundary Model | 833 | `b8b3083c914a1f95bfe9c1b340b002d84ef9269ce359daca19ad849ce2a3bf12` |
-| [`docs/architecture/insight-model.md`](../architecture/insight-model.md) | Insight Architecture Model | 1061 | `b65012acafe379496400afb29a7e07c9175ffcde2b1f5b9ebecec94481ed5bd6` |
-| [`docs/architecture/intent-model.md`](../architecture/intent-model.md) | Analytical Intent Model | 1012 | `a775be1d16b314719c107d7dbdea314fd7bc50cd62d4e9a9083400095ea34057` |
-| [`docs/architecture/materialization-model.md`](../architecture/materialization-model.md) | Materialization Strategy Model | 1110 | `72c76c230a22271735c0753ffbed3db382aaf3aa5e173a2c175baf3c00314cdb` |
-| [`docs/architecture/narrative-model.md`](../architecture/narrative-model.md) | Analytical Narrative Model | 927 | `932fb62b61913e7f7cdce93cc090daa6e1d7586d88443d91f58872478a6dc593` |
-| [`docs/architecture/persistence-model.md`](../architecture/persistence-model.md) | Persistence Model Architecture | 1254 | `567c50bcce1318f1424ec74359222ed41a0016415b89f1876a28a6012ba0406a` |
-| [`docs/architecture/perspective-model.md`](../architecture/perspective-model.md) | Perspective Model Architecture | 1073 | `2d246742c24e2279646837fc85759704720c958b2ee131df88bdb49d6e66fabf` |
-| [`docs/architecture/phase-1-corpus-verification.md`](../architecture/phase-1-corpus-verification.md) | Phase 1 / 1B Acceptance Corpus Verification | 7726 | `7b8de0a9ed3849df4d54320b24d6014439c70e23f5616ba196723e391af92c68` |
-| [`docs/architecture/phase-2-profiler-sampling-verification.md`](../architecture/phase-2-profiler-sampling-verification.md) | Phase 2 Canonical Profiler and Sampling Verification | 9198 | `5d3a6b5b2297cdf8b4c930a6b64e4f307703207a5384683e4cac98da7a8c035b` |
-| [`docs/architecture/phase-3a-semantic-candidate-evidence-verification.md`](../architecture/phase-3a-semantic-candidate-evidence-verification.md) | Phase 3A Semantic Candidate and Evidence Verification | 8854 | `1af77d84aaf1ee3080f6fc7e2926eb532cea51e86d01a90827b609d9e94cd0cb` |
-| [`docs/architecture/phase-3a1-candidate-coverage-reconciliation.md`](../architecture/phase-3a1-candidate-coverage-reconciliation.md) | Phase 3A.1 Candidate Coverage Reconciliation | 11289 | `7d5bbbcc980b9d9c64bd39a57ff17862e2c4f1cc72b79e22a015630c766f3da8` |
-| [`docs/architecture/phase-3a2-acceptance-truth-governance.md`](../architecture/phase-3a2-acceptance-truth-governance.md) | Phase 3A.2 Acceptance Truth Governance | 10218 | `6ba65ef85938af2aa9ba95bee55711893daa7875113d8106f7f4a3f88c52dabe` |
-| [`docs/architecture/phase-3b1-1-context-discriminativeness.md`](../architecture/phase-3b1-1-context-discriminativeness.md) | Phase 3B1.1 Context Discriminativeness And Policy Hash Hardening | 7457 | `56aa3e2edf3a334dd8b5e288b709e79aada21ff98d5300ea215c04bc8841d426` |
-| [`docs/architecture/phase-3b1-contextual-evidence-aggregation.md`](../architecture/phase-3b1-contextual-evidence-aggregation.md) | Phase 3B1 Contextual Evidence Aggregation | 7761 | `10e24f2793b5cb2fae943b2467f8678aec09f2b1e20b94424282dbee4b80e917` |
-| [`docs/architecture/phase-3b2a-semantic-resolution-shadow.md`](../architecture/phase-3b2a-semantic-resolution-shadow.md) | Phase 3B2A Semantic Resolution Shadow Verification | 8791 | `fe014075465dfdb975625cafd603721b9fd3c6f8af5d27f34cdf647ae0fa0ad8` |
-| [`docs/architecture/phase-3b2b-resolution-validation-policy-freeze.md`](../architecture/phase-3b2b-resolution-validation-policy-freeze.md) | Phase 3B2B Resolution Validation And Policy Freeze | 10057 | `1f53ec3c9f37d373829cf41c0c85daabd527cd2296b91434ba5006cff461c4b7` |
-| [`docs/architecture/phase-4a1-1-grain-candidate-coverage.md`](../architecture/phase-4a1-1-grain-candidate-coverage.md) | Phase 4A1.1 Grain Candidate Coverage and Universal Primitive Completeness | 9185 | `64d0a7ad780ccc2049c8702e65f44592223559313bf7f5caf7079ad9e4ffb371` |
-| [`docs/architecture/phase-4a1-grain-candidate-evidence.md`](../architecture/phase-4a1-grain-candidate-evidence.md) | Phase 4A1 Universal Grain Candidate and Evidence Foundation; status=Complete as an isolated canonical shadow layer | 8044 | `33042d6b4dd5616228c7731cc967a9414b468ea231e7de8e4a58ab314b5477ad` |
-| [`docs/architecture/phase-4a2a-compositional-grain-shadow-resolution.md`](../architecture/phase-4a2a-compositional-grain-shadow-resolution.md) | Phase 4A2A Compositional Grain Shadow Resolution | 7763 | `74e21e436a7240a3798eacb703c571e5cc3c696ab25291932a7dc9b4cc78d08a` |
-| [`docs/architecture/phase-4a2b-grain-resolution-validation-policy-freeze.md`](../architecture/phase-4a2b-grain-resolution-validation-policy-freeze.md) | Phase 4A2B Grain Resolution Validation And Policy Freeze | 7966 | `ed7e35932dfe5119ad0a5c1a393ebacb951c6b397b6e1ef6d0c327d176d3122c` |
-| [`docs/architecture/phase-4b1-cross-source-relationship-candidates.md`](../architecture/phase-4b1-cross-source-relationship-candidates.md) | Phase 4B1 Cross-Source Relationship Candidates | 7880 | `9e394122ccee7478932013d737f8103f28874089c7dd01694bd9227022c8ce7e` |
-| [`docs/architecture/phase-4b2a-compositional-relationship-shadow-resolution.md`](../architecture/phase-4b2a-compositional-relationship-shadow-resolution.md) | Phase 4B2A: Compositional Relationship Shadow Resolution | 8126 | `9e3697f610c67ecf8407bfc5ba2afa07bb517c8f5b9ba171aaaf4f5a9be91e6b` |
-| [`docs/architecture/phase-4b2b-relationship-validation-policy-freeze.md`](../architecture/phase-4b2b-relationship-validation-policy-freeze.md) | Phase 4B2B Relationship Validation And Policy Freeze | 7557 | `f165c73c60a835a646ee3930a0a51fa7addc92c87e7d5124393f2d2a09dcf1ef` |
-| [`docs/architecture/phase-4c1-canonical-readiness-trust-foundation.md`](../architecture/phase-4c1-canonical-readiness-trust-foundation.md) | Phase 4C1 Canonical Readiness And Trust Foundation | 7689 | `d7974db91f41b0eda3f5db8983568b403702267a58cdf085742d4407f9074270` |
-| [`docs/architecture/phase-4c2-readiness-validation-policy-freeze.md`](../architecture/phase-4c2-readiness-validation-policy-freeze.md) | Phase 4C2 Readiness Validation And Policy Freeze | 7076 | `6fced836d7e7d2ac5d043f8d300f38b693dc1b56ef563bfb9d8ffe7f15541cc4` |
-| [`docs/architecture/phase-5a-canonical-runtime-adapter.md`](../architecture/phase-5a-canonical-runtime-adapter.md) | Phase 5A Canonical Runtime Adapter | 6183 | `54485518bccc5affdcebb2b474ba598db68c21be62e74781903e0e225259bcac` |
-| [`docs/architecture/phase-5b-controlled-legacy-canonical-comparison.md`](../architecture/phase-5b-controlled-legacy-canonical-comparison.md) | Phase 5B Controlled Legacy And Canonical Comparison | 5641 | `287127ce399967fcc3a16ecee2359806eabd41caffa783fe68926f25cbeff667` |
-| [`docs/architecture/phase-5b2-aggregation-authority-divergence-disposition.md`](../architecture/phase-5b2-aggregation-authority-divergence-disposition.md) | Phase 5B2 Aggregation Authority And Divergence Disposition | 6058 | `7cc5a8b4012d9b9fa069b1179c8c708d4501756de7324038c8312c225f63b1ff` |
-| [`docs/architecture/phase-5b3-aggregation-guard-shadow-design.md`](../architecture/phase-5b3-aggregation-guard-shadow-design.md) | Phase 5B3 Aggregation Guard Shadow Design | 5186 | `7af742d6ff19c99ac491bc24f096e4e54a4990f05a6a62103b10fd8c8adb062a` |
-| [`docs/architecture/phase-5b4-aggregation-intent-and-decision-use-policy.md`](../architecture/phase-5b4-aggregation-intent-and-decision-use-policy.md) | Phase 5B4 Aggregation Intent And Decision-Use Policy | 7591 | `0ec3021271763fef7b3b59bce609a07393396e350aba5fed3bfb3c7957e7742f` |
-| [`docs/architecture/phase-5b5-aggregation-restriction-projection.md`](../architecture/phase-5b5-aggregation-restriction-projection.md) | Phase 5B5 Aggregation Restriction Projection | 7000 | `0715bc05e712691c1256c1cb331d960fbc8919c6ab85b7a59bacf40803a8dd9e` |
-| [`docs/architecture/phase-5b6-actual-contract-shadow-sidecar.md`](../architecture/phase-5b6-actual-contract-shadow-sidecar.md) | Phase 5B6 Actual Runtime Contract Shadow Sidecar | 5283 | `e35c06d098699d8c243fb1dcda9549e08105e1c51e73405017bab9c59f8ce601` |
-| [`docs/architecture/phase-5b6a-build-and-capture-feasibility.md`](../architecture/phase-5b6a-build-and-capture-feasibility.md) | Phase 5B6A Build and Capture Feasibility | 8980 | `fe1c835cbb8526a84099b0c117ee35a052e154c93cc98fdfff14dcd2873bca1b` |
-| [`docs/architecture/phase-5b6b-build-integrity-restoration.md`](../architecture/phase-5b6b-build-integrity-restoration.md) | Phase 5B6B Build Integrity Restoration | 9613 | `91d47a0652f60e57a8c3687dd895d0b924bedd960a12fde8b30667b2046f48cd` |
-| [`docs/architecture/phase-5m1-commerce-domain-and-metric-foundation.md`](../architecture/phase-5m1-commerce-domain-and-metric-foundation.md) | Phase 5M1 Commerce Domain And Metric Foundation | 11062 | `d93aef9792f2ff2e7691fe316814004432a71752676842dff2458118fccbd69d` |
-| [`docs/architecture/phase-5m2-commerce-question-action-generation.md`](../architecture/phase-5m2-commerce-question-action-generation.md) | Phase 5M2 Canonical Commerce Question And Action Generation | 8565 | `95124e0983082f5820a49fd97718aa85d44393103023c01bd00725a7bc71cd2d` |
-| [`docs/architecture/phase-5m3-governed-runtime-execution.md`](../architecture/phase-5m3-governed-runtime-execution.md) | Phase 5M3 Governed Runtime Execution | 6313 | `85e5ec888c4920c62e19c00f94155abd953f2f28625136b1b60c475491a050b2` |
-| [`docs/architecture/phase-6a-canonical-consumer-cutover.md`](../architecture/phase-6a-canonical-consumer-cutover.md) | Phase 6A Canonical Artifact Consumer Cutover | 4391 | `d66601ce67cc45f8e570be75db5459ad33a75849f26fcc15455ab982b24a440d` |
-| [`docs/architecture/phase-6b-advanced-cutover-and-legacy-retirement.md`](../architecture/phase-6b-advanced-cutover-and-legacy-retirement.md) | Phase 6B Advanced Canonical Cutover And Legacy Production Retirement | 6010 | `f9988a34ad4e887c06afbf8536283412e38db262d0ae2dbff117f9b6b1f7c804` |
-| [`docs/architecture/phase-6b2-regression-repair.md`](../architecture/phase-6b2-regression-repair.md) | Phase 6B.2 Canonical Consumer Boundary Regression Repair | 4174 | `a9858fc13441cf0f91e270b79e26c1856699d995c411eb9bcf9eaf842a951a98` |
-| [`docs/architecture/phase-7-mvp-proof-and-release-gate.md`](../architecture/phase-7-mvp-proof-and-release-gate.md) | Phase 7 MVP Proof And Release Gate | 5223 | `d418f1779236d6975b3eb6705d7b541c3ca2d9f022d969947b370293b375a97e` |
-| [`docs/architecture/phase-7r1-core-signal-recall-remediation.md`](../architecture/phase-7r1-core-signal-recall-remediation.md) | Phase 7R1 Core Signal Recall Remediation | 4168 | `ea832e0ed32edf592c479e987a88f1a2df6fb48dc323ce32962993dc37b5d97d` |
-| [`docs/architecture/phase-7r11-mvp-release-gate-retest.md`](../architecture/phase-7r11-mvp-release-gate-retest.md) | Phase 7R1.1 MVP Release Gate Retest | 4156 | `967eec26b453dcbcd71fbb6371b3fb42a5c96afb540d942c23d08d9c37085c6c` |
-| [`docs/architecture/phase-7r2-action-runtime-alignment.md`](../architecture/phase-7r2-action-runtime-alignment.md) | Phase 7R2 - Advertised Action And Runtime Preflight Alignment | 3159 | `5ca3d09d1da0d26697c3b7c9f25c9ab2c11c6d06cdfc0900d70afaf252cf4c89` |
-| [`docs/architecture/phase-7r3-metric-correctness-remediation.md`](../architecture/phase-7r3-metric-correctness-remediation.md) | Phase 7R3 - Verified Metric Correctness And Required Family Coverage | 4048 | `82591ac2ee8aecff8e0b6d22c09ba4283403f6da26047e1a4d7d4787223c1323` |
-| [`docs/architecture/phase-7r33-authentic-operational-evidence-discovery.md`](../architecture/phase-7r33-authentic-operational-evidence-discovery.md) | Phase 7R3.3 - Authentic Operational Evidence Discovery And Candidate Freeze | 3144 | `dcc408a514d4d0fe9a009e18fc5c06b3e5b5bd48aa8da6a7e4270c6400938d6e` |
-| [`docs/architecture/phase-7r34-authentic-anchored-corpus-construction.md`](../architecture/phase-7r34-authentic-anchored-corpus-construction.md) | Phase 7R3.4 - Authentic-Anchored Semi-Synthetic ERP Corpus Construction | 5936 | `0bd739b5f4b21e3103dfc5bfebd43e716fb0116172dc27de4d444279ed6e0ce2` |
-| [`docs/architecture/phase-7r35-corpus-130-engine-validation.md`](../architecture/phase-7r35-corpus-130-engine-validation.md) | Phase 7R3.5 - Corpus 1.3.0 Governed Engine Validation | 4798 | `071f724afdbfc6811f70c223743c2c371014dc4784b87480c24597b4ca8429d0` |
-| [`docs/architecture/phase-7r38-mvp-release-gate-retest.md`](../architecture/phase-7r38-mvp-release-gate-retest.md) | Phase 7R3.8 - Complete MVP Release Gate Retest | 3407 | `3a1d83cc76b99c35331fca31cbf5bc061fcf68c0dbbafb9f8a49f86ee70837c0` |
-| [`docs/architecture/POST_BETA_AI_HANDOFF_2026-08-13.md`](../architecture/POST_BETA_AI_HANDOFF_2026-08-13.md) | LightBI Post-Beta AI Handoff — 2026-08-13 | 8069 | `78fc605115ab0b6ce474c6e8cfce65191a5258b6e15c84e50a41285b22f12874` |
-| [`docs/architecture/POST_BETA_DEEP_BA_INVESTIGATION_HANDOFF_2026-08-13.md`](../architecture/POST_BETA_DEEP_BA_INVESTIGATION_HANDOFF_2026-08-13.md) | Post-Beta Deep BA Investigation Handoff — 2026-08-13 | 4060 | `f734fc4cc6d7c7abe8ec6775bff5b0eefd6dbdf4cb8a2855469a1bc90fe08929` |
-| [`docs/architecture/POST_BETA_DEEP_BA_VI_COMPLETION_HANDOFF_2026-08-13.md`](../architecture/POST_BETA_DEEP_BA_VI_COMPLETION_HANDOFF_2026-08-13.md) | Post-Beta Deep BA Vietnamese completion — 2026-08-13 | 2586 | `edafca8cc7c5701e9f933a8859f1c9aaf414bf1f2b85542b1095185a3daa39d7` |
-| [`docs/architecture/POST_BETA_FILTERED_DEEP_BA_HANDOFF_2026-08-13.md`](../architecture/POST_BETA_FILTERED_DEEP_BA_HANDOFF_2026-08-13.md) | Post-Beta filtered Deep BA handoff — 2026-08-13 | 5533 | `4c8a930845fd894fdadd0a88751eb359d0cd47eb07158e48870107540df7c85b` |
-| [`docs/architecture/POST_BETA_I18N_SEPARATION_HANDOFF_2026-08-13.md`](../architecture/POST_BETA_I18N_SEPARATION_HANDOFF_2026-08-13.md) | Post-Beta EN/VI Language Separation Handoff — 2026-08-13 | 2238 | `36e6e3df713b0836b541d9c84343f7dcb23530ce6621166481f0c5de8a234f50` |
-| [`docs/architecture/POST_BETA_MOTODETAIL_SEMANTIC_HANDOFF_2026-08-13.md`](../architecture/POST_BETA_MOTODETAIL_SEMANTIC_HANDOFF_2026-08-13.md) | Post-Beta MotoDetail Semantic Handoff — 2026-08-13 | 2988 | `38dd9f85871180f1556e0ea60e6cbf8abeb542548d9a74eb9938d7d893c347a3` |
-| [`docs/architecture/POST_BETA_MULTIFILE_FILTERED_DEEP_BA_HANDOFF_2026-08-13.md`](../architecture/POST_BETA_MULTIFILE_FILTERED_DEEP_BA_HANDOFF_2026-08-13.md) | Post-Beta multi-file filtered Deep BA handoff — 2026-08-13 | 3388 | `a1c22270557849a731e21a8bcbefe11aa19d72b38bbc1b2f6d6f847818d7bc0f` |
-| [`docs/architecture/POST_BETA_MULTISHEET_DIRTY_DATA_HANDOFF_2026-08-13.md`](../architecture/POST_BETA_MULTISHEET_DIRTY_DATA_HANDOFF_2026-08-13.md) | LightBI Post-Beta Multi-sheet & Dirty-data Handoff — 2026-08-13 | 7401 | `fd2aadc99bf6bc7f37ea9b615b133193b3b109026b6c7900788dffc6572f136c` |
-| [`docs/architecture/question-classification.md`](../architecture/question-classification.md) | Question Classification Model | 850 | `29b430c2c02400b40b9a7a6f15152265840b27da1cd98ca9d2ab3e311cc5cb8b` |
-| [`docs/architecture/question-context.md`](../architecture/question-context.md) | Question Context Model | 982 | `f8ba268e962c4240120a6c78f10a9d21d2235c6e9918e5872096fbfd78391f51` |
-| [`docs/architecture/question-first-model.md`](../architecture/question-first-model.md) | LightBI Question-First UX Model | 1584 | `bae6044f91a258d0e596e1f749c8fb523c5f093d2cdecc5e4a969109a4d89189` |
-| [`docs/architecture/question-template-model.md`](../architecture/question-template-model.md) | Question Template Architecture | 1011 | `4953fdbac7e84e57dd44e65a35a15a0ee016d4eb8116722241f6af15876990e2` |
-| [`docs/architecture/recipe-model.md`](../architecture/recipe-model.md) | Recipe Model Architecture | 959 | `fe5ed4333b8027c60f4a5681d474f5e9e571f820e5f56d00860b378a64a0b8ae` |
-| [`docs/architecture/relationship-discovery-scoring.md`](../architecture/relationship-discovery-scoring.md) | Relationship Discovery Scoring | 7514 | `06d8a751cfd49c84ba08174a99c02cb4d0e0115854bde6414c76bebc31e84184` |
-| [`docs/architecture/render-contract.md`](../architecture/render-contract.md) | Rendering Contract Architecture Model | 1064 | `92d0eefce2d744878c8715a9c8a2fb4940d65baa2d76f9725d1e385095cb4710` |
-| [`docs/architecture/ROADMAP-MVP-V1.md`](../architecture/ROADMAP-MVP-V1.md) | LightBI MVP v1 Roadmap | 7211 | `8f4f0290d12df99c264152855f5f64e569bdaa8901f25836484b51ef198034b8` |
-| [`docs/architecture/runtime-dataset-model.md`](../architecture/runtime-dataset-model.md) | Runtime Virtual Dataset Model | 1066 | `7cd4908cb9c316c200d4df2609693b985dc9c91dd7bf7f9324c96909eb6fd1d0` |
-| [`docs/architecture/runtime-model.md`](../architecture/runtime-model.md) | Runtime Model Architecture | 992 | `3e83e8e6782bd5aaae9e1ca6b4ff3c3a5c40213c1be49818d8b8968324431749` |
-| [`docs/architecture/schema-model.md`](../architecture/schema-model.md) | Schema Model Architecture | 756 | `26a69c6190963afc9a0160efecaf835334223af0472763b5b46bf92cb8f8cf44` |
-| [`docs/architecture/semantic-model.md`](../architecture/semantic-model.md) | Semantic Model Architecture | 763 | `75a181946778e6a5bc94893a293a77d86f3385155743f25082162da8789255ac` |
-| [`docs/architecture/source-capability-model.md`](../architecture/source-capability-model.md) | Source Capability Model Architecture | 1955 | `2eea0898ddbc0e3282dc820c4683562257eef3be4af62c192de00239fed24cce` |
-| [`docs/architecture/source-registry.md`](../architecture/source-registry.md) | Source Registry Architecture | 1172 | `900bc24a2be49188d2a6cfc585fc75335f8bf71d2bf40ccc883f92e99c7a8bc7` |
-| [`docs/architecture/storage-model.md`](../architecture/storage-model.md) | LightBI Storage Architecture Model | 1841 | `4a14baa701481570c0ba04cebe6aa76ec144b55a453af8be88655b5bb4558c0c` |
-| [`docs/architecture/visualization-contract.md`](../architecture/visualization-contract.md) | Visualization Contract Model | 1065 | `869bc14655cd8f41d29ae82181141c0e74822d006ce343d8b977205c36f1efab` |
-| [`docs/architecture/visualization-engine.md`](../architecture/visualization-engine.md) | Visualization Engine Model | 800 | `c05929a346ef776226258b0d8f8676f1931f2e715443192fcd0a6458bfdcf9db` |
-| [`docs/architecture/workspace-model.md`](../architecture/workspace-model.md) | Analytical Workspace Model | 821 | `30bb1af92ee702793b0c69dbd21f90001dc93cfd075d6e3a0e0230ec81c42367` |
+- [`docs/architecture/AUDIT-backend-duckdb-preview-failure.md`](../../docs/architecture/AUDIT-backend-duckdb-preview-failure.md) — AUDIT: Backend DuckDB Preview Failure (DU-7F)
+- [`docs/architecture/AUDIT-business-knowledge-vs-execution-gap.md`](../../docs/architecture/AUDIT-business-knowledge-vs-execution-gap.md) — Knowledge vs Execution Gap
+- [`docs/architecture/AUDIT-business-signal-dependencies.md`](../../docs/architecture/AUDIT-business-signal-dependencies.md) — Mandatory Audit: Business Signal Dependencies
+- [`docs/architecture/AUDIT-business-view-reality-gap.md`](../../docs/architecture/AUDIT-business-view-reality-gap.md) — Business View Reality Audit
+- [`docs/architecture/AUDIT-cross-domain-validation-suite.md`](../../docs/architecture/AUDIT-cross-domain-validation-suite.md) — Audit: Cross-Domain Validation Suite
+- [`docs/architecture/AUDIT-data-intake-row-retention.md`](../../docs/architecture/AUDIT-data-intake-row-retention.md) — AUDIT: Data Intake Row Retention
+- [`docs/architecture/AUDIT-dataset-source-registration.md`](../../docs/architecture/AUDIT-dataset-source-registration.md) — AUDIT: Dataset Source Registration (Phase DU-7H)
+- [`docs/architecture/AUDIT-delivery-performance-live-trace.md`](../../docs/architecture/AUDIT-delivery-performance-live-trace.md) — Live Trace Audit: Delivery Performance Reports
+- [`docs/architecture/AUDIT-domain-general-analysis.md`](../../docs/architecture/AUDIT-domain-general-analysis.md) — AUDIT: Domain-General Analysis Opportunities
+- [`docs/architecture/AUDIT-domain-general-ui-verification.md`](../../docs/architecture/AUDIT-domain-general-ui-verification.md) — AUDIT: Domain-General UI Verification
+- [`docs/architecture/AUDIT-domain-knowledge-inventory.md`](../../docs/architecture/AUDIT-domain-knowledge-inventory.md) — AUDIT: Domain Knowledge Inventory
+- [`docs/architecture/AUDIT-duckdb-infrastructure.md`](../../docs/architecture/AUDIT-duckdb-infrastructure.md) — AUDIT: DuckDB Infrastructure
+- [`docs/architecture/AUDIT-end-to-end-product-readiness.md`](../../docs/architecture/AUDIT-end-to-end-product-readiness.md) — AUDIT: End-to-End Product Readiness (DU-8A)
+- [`docs/architecture/AUDIT-execution-integrity.md`](../../docs/architecture/AUDIT-execution-integrity.md) — AUDIT: Execution Integrity (DU-7D)
+- [`docs/architecture/AUDIT-existing-business-domain-coverage.md`](../../docs/architecture/AUDIT-existing-business-domain-coverage.md) — AUDIT: Existing Business Domain Coverage
+- [`docs/architecture/AUDIT-guided-investigation-purity.md`](../../docs/architecture/AUDIT-guided-investigation-purity.md) — AUDIT: Guided Investigation Purity
+- [`docs/architecture/AUDIT-home-freeze-regression-verification.md`](../../docs/architecture/AUDIT-home-freeze-regression-verification.md) — Home Freeze Regression Verification Audit
+- [`docs/architecture/AUDIT-home-freeze-remnants.md`](../../docs/architecture/AUDIT-home-freeze-remnants.md) — AUDIT: Home Freeze Remnants (UX-6)
+- [`docs/architecture/AUDIT-home-guided-investigation-final.md`](../../docs/architecture/AUDIT-home-guided-investigation-final.md) — Final Home Purity Audit: Guided Investigation
+- [`docs/architecture/AUDIT-home-information-density.md`](../../docs/architecture/AUDIT-home-information-density.md) — AUDIT: Home Information Density Review
+- [`docs/architecture/AUDIT-home-information-hierarchy.md`](../../docs/architecture/AUDIT-home-information-hierarchy.md) — AUDIT: Home Information Hierarchy (UX-6)
+- [`docs/architecture/AUDIT-home-vs-investigation-boundary.md`](../../docs/architecture/AUDIT-home-vs-investigation-boundary.md) — AUDIT: Home vs Investigation Boundary
+- [`docs/architecture/AUDIT-jivedb-public-product-evidence.md`](../../docs/architecture/AUDIT-jivedb-public-product-evidence.md) — JiveDB Public Product Evidence Audit
+- [`docs/architecture/AUDIT-perspective-business-view-question.md`](../../docs/architecture/AUDIT-perspective-business-view-question.md) — Architecture Audit: Perspective -> Business View -> Question
+- [`docs/architecture/AUDIT-raw-understanding-algorithm.md`](../../docs/architecture/AUDIT-raw-understanding-algorithm.md) — AUDIT: Raw Understanding Algorithm
+- [`docs/architecture/AUDIT-regression-guided-investigation-vs-legacy.md`](../../docs/architecture/AUDIT-regression-guided-investigation-vs-legacy.md) — Regression Audit: Guided Investigation Pipeline vs Legacy Behavior
+- [`docs/architecture/AUDIT-runtime-execution-boundary.md`](../../docs/architecture/AUDIT-runtime-execution-boundary.md) — AUDIT: Runtime Execution Boundary
+- [`docs/architecture/AUDIT-signal-coverage-report.md`](../../docs/architecture/AUDIT-signal-coverage-report.md) — Audit: Signal Coverage Report
+- [`docs/architecture/AUDIT-tablepro-advanced-data-workspace.md`](../../docs/architecture/AUDIT-tablepro-advanced-data-workspace.md) — TablePro Architecture Audit for LightBI Advanced Mode
+- [`docs/architecture/phase-0-semantic-support-audit.md`](../../docs/architecture/phase-0-semantic-support-audit.md) — Phase 0 Semantic and Support Audit
 
-## architecture-plan (3)
+## architecture-decision
 
-| Source | Title / status | Bytes | SHA-256 |
-|---|---|---:|---|
-| [`docs/architecture/planner-model.md`](../architecture/planner-model.md) | Planner Model Architecture | 1085 | `1085c0f7203c341d518bd3124a62457ccaaecb9a0ff61082bbdb532860461142` |
-| [`docs/architecture/recipe-planner-model.md`](../architecture/recipe-planner-model.md) | Recipe Planner Model | 1301 | `09da2a94961a7fbc76d7ae2cd43b749811abcc663816960b44e88654249b257f` |
-| [`docs/architecture/virtual-dataset-planner.md`](../architecture/virtual-dataset-planner.md) | Virtual Dataset Planner Architecture | 1766 | `9bf11c8d2f3ba0ae7aca3e1513184011f2f833da9c18441c9d5340244672eee1` |
+- [`docs/architecture/ADR-059-relationship-graph-source-of-truth.md`](../../docs/architecture/ADR-059-relationship-graph-source-of-truth.md) — ADR-059: Relationship Graph as the Source of Truth
+- [`docs/architecture/ADR-060-business-view-before-execution.md`](../../docs/architecture/ADR-060-business-view-before-execution.md) — ADR-060: Business View Before Execution
+- [`docs/architecture/ADR-061-virtual-dataset-plan-contract.md`](../../docs/architecture/ADR-061-virtual-dataset-plan-contract.md) — ADR-061: Virtual Dataset Plan Contract
+- [`docs/architecture/ADR-062-runtime-preview-before-execution.md`](../../docs/architecture/ADR-062-runtime-preview-before-execution.md) — ADR-062: Runtime Preview Before Execution
+- [`docs/architecture/ADR-063-execution-guard-before-runtime.md`](../../docs/architecture/ADR-063-execution-guard-before-runtime.md) — ADR-063: Execution Guard Before Runtime
+- [`docs/architecture/ADR-064-duckdb-logical-plan-before-sql.md`](../../docs/architecture/ADR-064-duckdb-logical-plan-before-sql.md) — ADR-064: DuckDB Logical Plan Before SQL Execution
+- [`docs/architecture/ADR-065-runtime-boundary-contract.md`](../../docs/architecture/ADR-065-runtime-boundary-contract.md) — ADR-065: Runtime Boundary Contract
+- [`docs/architecture/ADR-066-expected-result-contract-before-sql.md`](../../docs/architecture/ADR-066-expected-result-contract-before-sql.md) — ADR-066: Expected Result Contract Before SQL
+- [`docs/architecture/ADR-067-safe-sql-compiler-contract.md`](../../docs/architecture/ADR-067-safe-sql-compiler-contract.md) — ADR-067: Safe SQL Compiler Contract
+- [`docs/architecture/ADR-068-sandbox-before-runtime.md`](../../docs/architecture/ADR-068-sandbox-before-runtime.md) — ADR-068: Sandbox Before Runtime
+- [`docs/architecture/ADR-069-preview-result-contract-before-runtime.md`](../../docs/architecture/ADR-069-preview-result-contract-before-runtime.md) — ADR-069: Preview Result Contract Before Runtime
+- [`docs/architecture/ADR-070-business-confidence-engine.md`](../../docs/architecture/ADR-070-business-confidence-engine.md) — ADR-070: Business Confidence Engine
+- [`docs/architecture/ADR-071-dataset-health-model.md`](../../docs/architecture/ADR-071-dataset-health-model.md) — ADR-071: Dataset Health Model
+- [`docs/architecture/ADR-072-insight-contract.md`](../../docs/architecture/ADR-072-insight-contract.md) — ADR-072: Insight Contract
+- [`docs/architecture/ADR-073-dataset-health-engine.md`](../../docs/architecture/ADR-073-dataset-health-engine.md) — ADR-073: Dataset Health Engine
+- [`docs/architecture/ADR-074-business-confidence-formula.md`](../../docs/architecture/ADR-074-business-confidence-formula.md) — ADR-074: Business Confidence Formula Design
+- [`docs/architecture/ADR-075-confidence-signal-registry.md`](../../docs/architecture/ADR-075-confidence-signal-registry.md) — ADR-075: Confidence Signal Registry
+- [`docs/architecture/ADR-076-business-confidence-engine.md`](../../docs/architecture/ADR-076-business-confidence-engine.md) — ADR-076: Business Confidence Engine
+- [`docs/architecture/ADR-077-duckdb-preview-runtime.md`](../../docs/architecture/ADR-077-duckdb-preview-runtime.md) — ADR-077: DuckDB Preview Runtime
+- [`docs/architecture/ADR-078-result-validator-integration.md`](../../docs/architecture/ADR-078-result-validator-integration.md) — ADR 078: Result Validator Integration
+- [`docs/architecture/ADR-079-data-quality-vs-business-confidence.md`](../../docs/architecture/ADR-079-data-quality-vs-business-confidence.md) — ADR 079: Data Quality vs Business Confidence
+- [`docs/architecture/ADR-080-explore-investigate-ask-navigation.md`](../../docs/architecture/ADR-080-explore-investigate-ask-navigation.md) — ADR 080: Explore, Investigate, Ask Navigation
+- [`docs/architecture/ADR-081-learning-first-question-discovery.md`](../../docs/architecture/ADR-081-learning-first-question-discovery.md) — ADR 081: Learning First Question Discovery
+- [`docs/architecture/ADR-082-perspective-before-question.md`](../../docs/architecture/ADR-082-perspective-before-question.md) — ADR 082: Perspective Before Question
+- [`docs/architecture/ADR-083-business-view-summary-layer.md`](../../docs/architecture/ADR-083-business-view-summary-layer.md) — ADR 083: Business View Summary Layer
+- [`docs/architecture/ADR-084-business-view-driven-question-pipeline.md`](../../docs/architecture/ADR-084-business-view-driven-question-pipeline.md) — ADR 084: Business View Driven Question Pipeline
+- [`docs/architecture/ADR-085-business-signal-registry.md`](../../docs/architecture/ADR-085-business-signal-registry.md) — ADR 085: Business Signal Registry
+- [`docs/architecture/ADR-086-business-concept-canonicalization.md`](../../docs/architecture/ADR-086-business-concept-canonicalization.md) — ADR 086: Business Concept Canonicalization
+- [`docs/architecture/ADR-087-signal-taxonomy.md`](../../docs/architecture/ADR-087-signal-taxonomy.md) — ADR 087: Signal Taxonomy
+- [`docs/architecture/ADR-088-signal-driven-perspective-generation.md`](../../docs/architecture/ADR-088-signal-driven-perspective-generation.md) — ADR 088: Signal-Driven Perspective Generation
+- [`docs/architecture/ADR-089-business-view-registry-v1.md`](../../docs/architecture/ADR-089-business-view-registry-v1.md) — ADR 089: Business View Registry V1
+- [`docs/architecture/ADR-089-signal-driven-business-view-generation.md`](../../docs/architecture/ADR-089-signal-driven-business-view-generation.md) — ADR 089: Signal-Driven Business View Generation
+- [`docs/architecture/ADR-090-domain-knowledge-preservation.md`](../../docs/architecture/ADR-090-domain-knowledge-preservation.md) — ADR 090: Domain Knowledge Preservation
+- [`docs/architecture/ADR-091-domain-knowledge-catalog.md`](../../docs/architecture/ADR-091-domain-knowledge-catalog.md) — ADR 091: Domain Knowledge Catalog
+- [`docs/architecture/ADR-092-machine-readable-domain-catalog.md`](../../docs/architecture/ADR-092-machine-readable-domain-catalog.md) — ADR 092: Machine-Readable Domain Catalog
+- [`docs/architecture/ADR-093-registry-driven-business-view-generation.md`](../../docs/architecture/ADR-093-registry-driven-business-view-generation.md) — ADR 093: Registry-Driven Business View Generation
+- [`docs/architecture/ADR-094-question-plan-before-question.md`](../../docs/architecture/ADR-094-question-plan-before-question.md) — ADR-094: Question Plan Before Question
+- [`docs/architecture/ADR-095-question-suggestion-renderer.md`](../../docs/architecture/ADR-095-question-suggestion-renderer.md) — ADR-095: Question Suggestion Renderer
+- [`docs/architecture/ADR-096-guided-investigation-pipeline.md`](../../docs/architecture/ADR-096-guided-investigation-pipeline.md) — ADR-096: Guided Investigation Pipeline Orchestrator
+- [`docs/architecture/ADR-097-dataset-understanding-before-questions.md`](../../docs/architecture/ADR-097-dataset-understanding-before-questions.md) — ADR 097: Dataset Understanding Before Questions
+- [`docs/architecture/ADR-098-dataset-understanding-contract.md`](../../docs/architecture/ADR-098-dataset-understanding-contract.md) — ADR 098: Dataset Understanding Contract
+- [`docs/architecture/ADR-099-analysis-action-runtime-contract.md`](../../docs/architecture/ADR-099-analysis-action-runtime-contract.md) — ADR 099: Analysis Action Runtime Contract
+- [`docs/architecture/ADR-100-runtime-planner-preview.md`](../../docs/architecture/ADR-100-runtime-planner-preview.md) — ADR 100: Runtime Planner Preview
+- [`docs/architecture/ADR-101-home-investigation-separation.md`](../../docs/architecture/ADR-101-home-investigation-separation.md) — ADR 101: Home and Investigation Workspace Separation
+- [`docs/architecture/ADR-102-safe-sql-preview-before-execution.md`](../../docs/architecture/ADR-102-safe-sql-preview-before-execution.md) — ADR 102: Safe SQL Preview Before Execution
+- [`docs/architecture/ADR-103-investigation-workspace-layout.md`](../../docs/architecture/ADR-103-investigation-workspace-layout.md) — ADR 103: Investigation Workspace Layout Cleanup
+- [`docs/architecture/ADR-104-duckdb-preview-sandbox.md`](../../docs/architecture/ADR-104-duckdb-preview-sandbox.md) — ADR-104: DuckDB Preview Sandbox
+- [`docs/architecture/ADR-105-chart-preview-renderer.md`](../../docs/architecture/ADR-105-chart-preview-renderer.md) — ADR-105: Chart Preview Renderer
+- [`docs/architecture/ADR-106-dataset-rows-preview-wiring.md`](../../docs/architecture/ADR-106-dataset-rows-preview-wiring.md) — ADR-106: Dataset Rows Preview Wiring
+- [`docs/architecture/ADR-107-preview-row-retention.md`](../../docs/architecture/ADR-107-preview-row-retention.md) — ADR-107: Preview Row Retention
+- [`docs/architecture/ADR-108-axum-preview-execution-endpoint.md`](../../docs/architecture/ADR-108-axum-preview-execution-endpoint.md) — ADR 108: Axum Preview Execution Endpoint Contract
+- [`docs/architecture/ADR-109-frontend-backend-preview-adapter.md`](../../docs/architecture/ADR-109-frontend-backend-preview-adapter.md) — ADR 109: Frontend Backend Preview Adapter
+- [`docs/architecture/ADR-110-mvp-v1-product-modes-and-priorities.md`](../../docs/architecture/ADR-110-mvp-v1-product-modes-and-priorities.md) — ADR 110: MVP v1 Product Modes and Priorities
+- [`docs/architecture/ADR-111-multi-evidence-understanding-engine.md`](../../docs/architecture/ADR-111-multi-evidence-understanding-engine.md) — ADR 111: Multi-Evidence Understanding Engine
+- [`docs/architecture/ADR-112-global-display-preferences.md`](../../docs/architecture/ADR-112-global-display-preferences.md) — ADR-112: Global Display Preferences
+- [`docs/architecture/ADR-113-shared-simple-advanced-execution-core.md`](../../docs/architecture/ADR-113-shared-simple-advanced-execution-core.md) — ADR-113: Shared Simple/Advanced Execution Core
+- [`docs/architecture/ADR-114-advanced-mode-inheritance-blueprint.md`](../../docs/architecture/ADR-114-advanced-mode-inheritance-blueprint.md) — ADR-114: Advanced Mode Inherits the Shared Data Platform
+- [`docs/architecture/ADR-115-ba-decision-engine-simple-mode.md`](../../docs/architecture/ADR-115-ba-decision-engine-simple-mode.md) — ADR-115: BA Decision Engine for Simple Mode
+- [`docs/architecture/ADR-116-plugin-first-system-expansion.md`](../../docs/architecture/ADR-116-plugin-first-system-expansion.md) — ADR-116: Plugin-First System Expansion
+- [`docs/architecture/ADR-117-business-understanding-engine-product-boundary.md`](../../docs/architecture/ADR-117-business-understanding-engine-product-boundary.md) — ADR-117: Business Understanding Engine Product Boundary
+- [`docs/architecture/ADR-118-domain-ba-playbooks.md`](../../docs/architecture/ADR-118-domain-ba-playbooks.md) — ADR-118: Domain BA Playbooks for Simple Mode
+- [`docs/architecture/ADR-119-business-brain-orchestrator.md`](../../docs/architecture/ADR-119-business-brain-orchestrator.md) — ADR-119: Business Brain Orchestrator for Simple Mode
+- [`docs/architecture/ADR-120-context-aware-semantic-dictionary.md`](../../docs/architecture/ADR-120-context-aware-semantic-dictionary.md) — ADR-120: Context-Aware Semantic Dictionary and Evidence Engine
+- [`docs/architecture/ADR-121-semantic-registry-source-of-truth.md`](../../docs/architecture/ADR-121-semantic-registry-source-of-truth.md) — ADR-121: Runtime Semantic Registry Source of Truth
+- [`docs/architecture/ADR-122-canonical-understanding-pipeline.md`](../../docs/architecture/ADR-122-canonical-understanding-pipeline.md) — ADR-122: Canonical Understanding Pipeline
 
-## auxiliary-json (17)
+## architecture-doc
 
-| Source | Title / status | Bytes | SHA-256 |
-|---|---|---:|---|
-| [`.vscode/extensions.json`](../../.vscode/extensions.json) | — | 61 | `7d472e1afa21dea992300ab327ab1173613bad4f2762eba0876d38e59abe91c4` |
-| [`.vscode/settings.json`](../../.vscode/settings.json) | — | 662 | `66139a0776a8e60ff816d7d727afa0ca5f3a227e6511f5e14b8d4e62f3b60b08` |
-| [`crates/lightbi-tauri/gen/schemas/acl-manifests.json`](../../crates/lightbi-tauri/gen/schemas/acl-manifests.json) | — | 69499 | `4d93885b464518dae2a2ed75ec63efc2c9d5a8991f51c26e6764dcb4264623c5` |
-| [`crates/lightbi-tauri/gen/schemas/capabilities.json`](../../crates/lightbi-tauri/gen/schemas/capabilities.json) | — | 2 | `44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a` |
-| [`crates/lightbi-tauri/gen/schemas/desktop-schema.json`](../../crates/lightbi-tauri/gen/schemas/desktop-schema.json) | CapabilityFile | 129129 | `623c82e1cf0b1093b61b4b0900f8e2f06fbef272b8e5c24cc90dde35b063da97` |
-| [`crates/lightbi-tauri/gen/schemas/linux-schema.json`](../../crates/lightbi-tauri/gen/schemas/linux-schema.json) | CapabilityFile | 129129 | `623c82e1cf0b1093b61b4b0900f8e2f06fbef272b8e5c24cc90dde35b063da97` |
-| [`crates/lightbi-tauri/gen/schemas/windows-schema.json`](../../crates/lightbi-tauri/gen/schemas/windows-schema.json) | CapabilityFile | 116049 | `f68a9c570ecff07ac6826145d33b966d6fc02f7d680967f44437268b08a6ba78` |
-| [`crates/lightbi-tauri/tauri.conf.json`](../../crates/lightbi-tauri/tauri.conf.json) | — | 1030 | `afb2ba26c2267f795b5912c242c9373a5d2450532a8c48697965f6ee46b62043` |
-| [`execute_resp.json`](../../execute_resp.json) | — | 226 | `94550382ef3a159f7e549fc2232c117a4d796596ed9a86e3e89cd02bbf5767fb` |
-| [`import_resp.json`](../../import_resp.json) | status=success | 620 | `a421ada087f560ca45b17a2b018afa53043e233f10ec751c63e85e6019cffca1` |
-| [`inv_execute.json`](../../inv_execute.json) | status=executed | 258 | `b87cf844c24c9e99839c06f6f595f9b584dcb949072f47296d6722d7237f434f` |
-| [`inv_import.json`](../../inv_import.json) | status=success | 543 | `687e2223d6dbecd78e6229c723e95dff289fc1bad403d3d5a32bb7c07a4eaab9` |
-| [`inv_req.json`](../../inv_req.json) | — | 452 | `3b771c63e05840eff335a648dfb1cb5ea44771e213bb26ab3dd3eb3eeaeebaa1` |
-| [`package.json`](../../package.json) | lightbi | 304 | `65f3248c3ce502a6853310e1c9d4cb579c3576b325f0807f84bb218772604ca4` |
-| [`req.json`](../../req.json) | — | 381 | `c6601e24ea87c61fb1bfdc8bafd0271a095340036c7dc520f4359cc7e81498ea` |
-| [`req_valid.json`](../../req_valid.json) | — | 508 | `0f85a78137e6220a9bb3145217a042a879adbf429af26cb6887be21530c581c3` |
-| [`sample data/Amazon_1-level_46-MB_minified.json`](../../sample data/Amazon_1-level_46-MB_minified.json) | — | 48677392 | `ea14196e39c24d10d6b83865c23f19c614e0b8e33000b44ed49bfe86f308968c` |
+- [`docs/architecture/artifact-model.md`](../../docs/architecture/artifact-model.md) — Export Artifact Model
+- [`docs/architecture/BETA_RECOVERY_CODEBASE_MAP_2026-08-09.md`](../../docs/architecture/BETA_RECOVERY_CODEBASE_MAP_2026-08-09.md) — LightBI Beta Recovery Codebase Map
+- [`docs/architecture/BETA_RECOVERY_SESSION_2026-08-01.md`](../../docs/architecture/BETA_RECOVERY_SESSION_2026-08-01.md) — LightBI Beta Recovery Session ??? 2026-08-01
+- [`docs/architecture/business-signal-registry-contract.md`](../../docs/architecture/business-signal-registry-contract.md) — Business Signal Registry Contract
+- [`docs/architecture/business-view-question-pipeline-contract.md`](../../docs/architecture/business-view-question-pipeline-contract.md) — Business View Question Pipeline Contract
+- [`docs/architecture/business-view-registry-v1.md`](../../docs/architecture/business-view-registry-v1.md) — Business View Registry V1 Design
+- [`docs/architecture/BVQ-RESET-DECISION.md`](../../docs/architecture/BVQ-RESET-DECISION.md) — Reset Decision: BVQ Pipeline
+- [`docs/architecture/BVQ-RESET.md`](../../docs/architecture/BVQ-RESET.md) — BVQ RESET: Architecture Analysis
+- [`docs/architecture/chart-model.md`](../../docs/architecture/chart-model.md) — Chart Architecture Model
+- [`docs/architecture/dashboard-model.md`](../../docs/architecture/dashboard-model.md) — Dashboard Architecture Model
+- [`docs/architecture/data-view-model.md`](../../docs/architecture/data-view-model.md) — Data View Architecture
+- [`docs/architecture/dataset-model.md`](../../docs/architecture/dataset-model.md) — Dataset Model Architecture
+- [`docs/architecture/dataset-recipe-model.md`](../../docs/architecture/dataset-recipe-model.md) — LightBI Dataset Recipe Model
+- [`docs/architecture/dataset-understanding-layer.md`](../../docs/architecture/dataset-understanding-layer.md) — Dataset Understanding Layer
+- [`docs/architecture/domain-knowledge-catalog-v1.md`](../../docs/architecture/domain-knowledge-catalog-v1.md) — Domain Knowledge Catalog V1
+- [`docs/architecture/domain-knowledge-coverage-matrix-v1.md`](../../docs/architecture/domain-knowledge-coverage-matrix-v1.md) — Domain Knowledge Coverage Matrix V1
+- [`docs/architecture/domain-model.md`](../../docs/architecture/domain-model.md) — LightBI Domain Model
+- [`docs/architecture/execution-backend-model.md`](../../docs/architecture/execution-backend-model.md) — Execution Backend Model
+- [`docs/architecture/execution-strategy.md`](../../docs/architecture/execution-strategy.md) — Execution Strategy Model
+- [`docs/architecture/export-model.md`](../../docs/architecture/export-model.md) — Export Architecture Model
+- [`docs/architecture/frontend-boundary.md`](../../docs/architecture/frontend-boundary.md) — Frontend Boundary Model
+- [`docs/architecture/insight-model.md`](../../docs/architecture/insight-model.md) — Insight Architecture Model
+- [`docs/architecture/intent-model.md`](../../docs/architecture/intent-model.md) — Analytical Intent Model
+- [`docs/architecture/materialization-model.md`](../../docs/architecture/materialization-model.md) — Materialization Strategy Model
+- [`docs/architecture/narrative-model.md`](../../docs/architecture/narrative-model.md) — Analytical Narrative Model
+- [`docs/architecture/persistence-model.md`](../../docs/architecture/persistence-model.md) — Persistence Model Architecture
+- [`docs/architecture/perspective-model.md`](../../docs/architecture/perspective-model.md) — Perspective Model Architecture
+- [`docs/architecture/phase-1-corpus-verification.md`](../../docs/architecture/phase-1-corpus-verification.md) — Phase 1 / 1B Acceptance Corpus Verification
+- [`docs/architecture/phase-2-profiler-sampling-verification.md`](../../docs/architecture/phase-2-profiler-sampling-verification.md) — Phase 2 Canonical Profiler and Sampling Verification
+- [`docs/architecture/phase-3a-semantic-candidate-evidence-verification.md`](../../docs/architecture/phase-3a-semantic-candidate-evidence-verification.md) — Phase 3A Semantic Candidate and Evidence Verification
+- [`docs/architecture/phase-3a1-candidate-coverage-reconciliation.md`](../../docs/architecture/phase-3a1-candidate-coverage-reconciliation.md) — Phase 3A.1 Candidate Coverage Reconciliation
+- [`docs/architecture/phase-3a2-acceptance-truth-governance.md`](../../docs/architecture/phase-3a2-acceptance-truth-governance.md) — Phase 3A.2 Acceptance Truth Governance
+- [`docs/architecture/phase-3b1-1-context-discriminativeness.md`](../../docs/architecture/phase-3b1-1-context-discriminativeness.md) — Phase 3B1.1 Context Discriminativeness And Policy Hash Hardening
+- [`docs/architecture/phase-3b1-contextual-evidence-aggregation.md`](../../docs/architecture/phase-3b1-contextual-evidence-aggregation.md) — Phase 3B1 Contextual Evidence Aggregation
+- [`docs/architecture/phase-3b2a-semantic-resolution-shadow.md`](../../docs/architecture/phase-3b2a-semantic-resolution-shadow.md) — Phase 3B2A Semantic Resolution Shadow Verification
+- [`docs/architecture/phase-3b2b-resolution-validation-policy-freeze.md`](../../docs/architecture/phase-3b2b-resolution-validation-policy-freeze.md) — Phase 3B2B Resolution Validation And Policy Freeze
+- [`docs/architecture/phase-4a1-1-grain-candidate-coverage.md`](../../docs/architecture/phase-4a1-1-grain-candidate-coverage.md) — Phase 4A1.1 Grain Candidate Coverage and Universal Primitive Completeness
+- [`docs/architecture/phase-4a1-grain-candidate-evidence.md`](../../docs/architecture/phase-4a1-grain-candidate-evidence.md) — Phase 4A1 Universal Grain Candidate and Evidence Foundation
+- [`docs/architecture/phase-4a2a-compositional-grain-shadow-resolution.md`](../../docs/architecture/phase-4a2a-compositional-grain-shadow-resolution.md) — Phase 4A2A Compositional Grain Shadow Resolution
+- [`docs/architecture/phase-4a2b-grain-resolution-validation-policy-freeze.md`](../../docs/architecture/phase-4a2b-grain-resolution-validation-policy-freeze.md) — Phase 4A2B Grain Resolution Validation And Policy Freeze
+- [`docs/architecture/phase-4b1-cross-source-relationship-candidates.md`](../../docs/architecture/phase-4b1-cross-source-relationship-candidates.md) — Phase 4B1 Cross-Source Relationship Candidates
+- [`docs/architecture/phase-4b2a-compositional-relationship-shadow-resolution.md`](../../docs/architecture/phase-4b2a-compositional-relationship-shadow-resolution.md) — Phase 4B2A: Compositional Relationship Shadow Resolution
+- [`docs/architecture/phase-4b2b-relationship-validation-policy-freeze.md`](../../docs/architecture/phase-4b2b-relationship-validation-policy-freeze.md) — Phase 4B2B Relationship Validation And Policy Freeze
+- [`docs/architecture/phase-4c1-canonical-readiness-trust-foundation.md`](../../docs/architecture/phase-4c1-canonical-readiness-trust-foundation.md) — Phase 4C1 Canonical Readiness And Trust Foundation
+- [`docs/architecture/phase-4c2-readiness-validation-policy-freeze.md`](../../docs/architecture/phase-4c2-readiness-validation-policy-freeze.md) — Phase 4C2 Readiness Validation And Policy Freeze
+- [`docs/architecture/phase-5a-canonical-runtime-adapter.md`](../../docs/architecture/phase-5a-canonical-runtime-adapter.md) — Phase 5A Canonical Runtime Adapter
+- [`docs/architecture/phase-5b-controlled-legacy-canonical-comparison.md`](../../docs/architecture/phase-5b-controlled-legacy-canonical-comparison.md) — Phase 5B Controlled Legacy And Canonical Comparison
+- [`docs/architecture/phase-5b2-aggregation-authority-divergence-disposition.md`](../../docs/architecture/phase-5b2-aggregation-authority-divergence-disposition.md) — Phase 5B2 Aggregation Authority And Divergence Disposition
+- [`docs/architecture/phase-5b3-aggregation-guard-shadow-design.md`](../../docs/architecture/phase-5b3-aggregation-guard-shadow-design.md) — Phase 5B3 Aggregation Guard Shadow Design
+- [`docs/architecture/phase-5b4-aggregation-intent-and-decision-use-policy.md`](../../docs/architecture/phase-5b4-aggregation-intent-and-decision-use-policy.md) — Phase 5B4 Aggregation Intent And Decision-Use Policy
+- [`docs/architecture/phase-5b5-aggregation-restriction-projection.md`](../../docs/architecture/phase-5b5-aggregation-restriction-projection.md) — Phase 5B5 Aggregation Restriction Projection
+- [`docs/architecture/phase-5b6-actual-contract-shadow-sidecar.md`](../../docs/architecture/phase-5b6-actual-contract-shadow-sidecar.md) — Phase 5B6 Actual Runtime Contract Shadow Sidecar
+- [`docs/architecture/phase-5b6a-build-and-capture-feasibility.md`](../../docs/architecture/phase-5b6a-build-and-capture-feasibility.md) — Phase 5B6A Build and Capture Feasibility
+- [`docs/architecture/phase-5b6b-build-integrity-restoration.md`](../../docs/architecture/phase-5b6b-build-integrity-restoration.md) — Phase 5B6B Build Integrity Restoration
+- [`docs/architecture/phase-5m1-commerce-domain-and-metric-foundation.md`](../../docs/architecture/phase-5m1-commerce-domain-and-metric-foundation.md) — Phase 5M1 Commerce Domain And Metric Foundation
+- [`docs/architecture/phase-5m2-commerce-question-action-generation.md`](../../docs/architecture/phase-5m2-commerce-question-action-generation.md) — Phase 5M2 Canonical Commerce Question And Action Generation
+- [`docs/architecture/phase-5m3-governed-runtime-execution.md`](../../docs/architecture/phase-5m3-governed-runtime-execution.md) — Phase 5M3 Governed Runtime Execution
+- [`docs/architecture/phase-6a-canonical-consumer-cutover.md`](../../docs/architecture/phase-6a-canonical-consumer-cutover.md) — Phase 6A Canonical Artifact Consumer Cutover
+- [`docs/architecture/phase-6b-advanced-cutover-and-legacy-retirement.md`](../../docs/architecture/phase-6b-advanced-cutover-and-legacy-retirement.md) — Phase 6B Advanced Canonical Cutover And Legacy Production Retirement
+- [`docs/architecture/phase-6b2-regression-repair.md`](../../docs/architecture/phase-6b2-regression-repair.md) — Phase 6B.2 Canonical Consumer Boundary Regression Repair
+- [`docs/architecture/phase-7-mvp-proof-and-release-gate.md`](../../docs/architecture/phase-7-mvp-proof-and-release-gate.md) — Phase 7 MVP Proof And Release Gate
+- [`docs/architecture/phase-7r1-core-signal-recall-remediation.md`](../../docs/architecture/phase-7r1-core-signal-recall-remediation.md) — Phase 7R1 Core Signal Recall Remediation
+- [`docs/architecture/phase-7r11-mvp-release-gate-retest.md`](../../docs/architecture/phase-7r11-mvp-release-gate-retest.md) — Phase 7R1.1 MVP Release Gate Retest
+- [`docs/architecture/phase-7r2-action-runtime-alignment.md`](../../docs/architecture/phase-7r2-action-runtime-alignment.md) — Phase 7R2 - Advertised Action And Runtime Preflight Alignment
+- [`docs/architecture/phase-7r3-metric-correctness-remediation.md`](../../docs/architecture/phase-7r3-metric-correctness-remediation.md) — Phase 7R3 - Verified Metric Correctness And Required Family Coverage
+- [`docs/architecture/phase-7r33-authentic-operational-evidence-discovery.md`](../../docs/architecture/phase-7r33-authentic-operational-evidence-discovery.md) — Phase 7R3.3 - Authentic Operational Evidence Discovery And Candidate Freeze
+- [`docs/architecture/phase-7r34-authentic-anchored-corpus-construction.md`](../../docs/architecture/phase-7r34-authentic-anchored-corpus-construction.md) — Phase 7R3.4 - Authentic-Anchored Semi-Synthetic ERP Corpus Construction
+- [`docs/architecture/phase-7r35-corpus-130-engine-validation.md`](../../docs/architecture/phase-7r35-corpus-130-engine-validation.md) — Phase 7R3.5 - Corpus 1.3.0 Governed Engine Validation
+- [`docs/architecture/phase-7r38-mvp-release-gate-retest.md`](../../docs/architecture/phase-7r38-mvp-release-gate-retest.md) — Phase 7R3.8 - Complete MVP Release Gate Retest
+- [`docs/architecture/POST_BETA_AI_HANDOFF_2026-08-13.md`](../../docs/architecture/POST_BETA_AI_HANDOFF_2026-08-13.md) — LightBI Post-Beta AI Handoff — 2026-08-13
+- [`docs/architecture/POST_BETA_DEEP_BA_INVESTIGATION_HANDOFF_2026-08-13.md`](../../docs/architecture/POST_BETA_DEEP_BA_INVESTIGATION_HANDOFF_2026-08-13.md) — Post-Beta Deep BA Investigation Handoff — 2026-08-13
+- [`docs/architecture/POST_BETA_DEEP_BA_VI_COMPLETION_HANDOFF_2026-08-13.md`](../../docs/architecture/POST_BETA_DEEP_BA_VI_COMPLETION_HANDOFF_2026-08-13.md) — Post-Beta Deep BA Vietnamese completion — 2026-08-13
+- [`docs/architecture/POST_BETA_FILTERED_DEEP_BA_HANDOFF_2026-08-13.md`](../../docs/architecture/POST_BETA_FILTERED_DEEP_BA_HANDOFF_2026-08-13.md) — Post-Beta filtered Deep BA handoff — 2026-08-13
+- [`docs/architecture/POST_BETA_I18N_SEPARATION_HANDOFF_2026-08-13.md`](../../docs/architecture/POST_BETA_I18N_SEPARATION_HANDOFF_2026-08-13.md) — Post-Beta EN/VI Language Separation Handoff — 2026-08-13
+- [`docs/architecture/POST_BETA_MOTODETAIL_SEMANTIC_HANDOFF_2026-08-13.md`](../../docs/architecture/POST_BETA_MOTODETAIL_SEMANTIC_HANDOFF_2026-08-13.md) — Post-Beta MotoDetail Semantic Handoff — 2026-08-13
+- [`docs/architecture/POST_BETA_MULTIFILE_FILTERED_DEEP_BA_HANDOFF_2026-08-13.md`](../../docs/architecture/POST_BETA_MULTIFILE_FILTERED_DEEP_BA_HANDOFF_2026-08-13.md) — Post-Beta multi-file filtered Deep BA handoff — 2026-08-13
+- [`docs/architecture/POST_BETA_MULTISHEET_DIRTY_DATA_HANDOFF_2026-08-13.md`](../../docs/architecture/POST_BETA_MULTISHEET_DIRTY_DATA_HANDOFF_2026-08-13.md) — LightBI Post-Beta Multi-sheet & Dirty-data Handoff — 2026-08-13
+- [`docs/architecture/question-classification.md`](../../docs/architecture/question-classification.md) — Question Classification Model
+- [`docs/architecture/question-context.md`](../../docs/architecture/question-context.md) — Question Context Model
+- [`docs/architecture/question-first-model.md`](../../docs/architecture/question-first-model.md) — LightBI Question-First UX Model
+- [`docs/architecture/question-template-model.md`](../../docs/architecture/question-template-model.md) — Question Template Architecture
+- [`docs/architecture/recipe-model.md`](../../docs/architecture/recipe-model.md) — Recipe Model Architecture
+- [`docs/architecture/relationship-discovery-scoring.md`](../../docs/architecture/relationship-discovery-scoring.md) — Relationship Discovery Scoring
+- [`docs/architecture/render-contract.md`](../../docs/architecture/render-contract.md) — Rendering Contract Architecture Model
+- [`docs/architecture/ROADMAP-MVP-V1.md`](../../docs/architecture/ROADMAP-MVP-V1.md) — LightBI MVP v1 Roadmap
+- [`docs/architecture/runtime-dataset-model.md`](../../docs/architecture/runtime-dataset-model.md) — Runtime Virtual Dataset Model
+- [`docs/architecture/runtime-model.md`](../../docs/architecture/runtime-model.md) — Runtime Model Architecture
+- [`docs/architecture/schema-model.md`](../../docs/architecture/schema-model.md) — Schema Model Architecture
+- [`docs/architecture/semantic-model.md`](../../docs/architecture/semantic-model.md) — Semantic Model Architecture
+- [`docs/architecture/source-capability-model.md`](../../docs/architecture/source-capability-model.md) — Source Capability Model Architecture
+- [`docs/architecture/source-registry.md`](../../docs/architecture/source-registry.md) — Source Registry Architecture
+- [`docs/architecture/storage-model.md`](../../docs/architecture/storage-model.md) — LightBI Storage Architecture Model
+- [`docs/architecture/visualization-contract.md`](../../docs/architecture/visualization-contract.md) — Visualization Contract Model
+- [`docs/architecture/visualization-engine.md`](../../docs/architecture/visualization-engine.md) — Visualization Engine Model
+- [`docs/architecture/workspace-model.md`](../../docs/architecture/workspace-model.md) — Analytical Workspace Model
 
-## changelog-history (11)
+## architecture-plan
 
-| Source | Title / status | Bytes | SHA-256 |
-|---|---|---:|---|
-| [`docs/changelog/2026-06-01-phase10-perspective-layer.md`](../changelog/2026-06-01-phase10-perspective-layer.md) | Development Log: Phase 10 - Perspective Layer Architecture | 1649 | `abf4ede648262c9e1c9e5901a33de57f9d2cfc9bbc503488ccffea58d6a9ecc1` |
-| [`docs/changelog/2026-06-01-phase11-persistence.md`](../changelog/2026-06-01-phase11-persistence.md) | Development Log: Phase 11 - Persistence Architecture | 1451 | `749c5844598e2f9038de73eb26af0b0966bab77be65756c128001ff58abfc3f6` |
-| [`docs/changelog/2026-06-01-phase12-project-runtime.md`](../changelog/2026-06-01-phase12-project-runtime.md) | Development Log: Phase 12 - Project Runtime & Workspace Lifecycle | 1583 | `363d21c9cdd8edeab773643c281a33fd1baa21908beed050d5a9efc8985a9da5` |
-| [`docs/changelog/2026-06-01-phase2-domain-model.md`](../changelog/2026-06-01-phase2-domain-model.md) | Development Log: Phase 2 - Domain Model | 1497 | `878668797a334270757ef9e08707727f8929376058b460fdaa8b0fb5e78262b0` |
-| [`docs/changelog/2026-06-01-phase3-runtime.md`](../changelog/2026-06-01-phase3-runtime.md) | Development Log: Phase 3 - Runtime Foundation | 1701 | `70826134ddd787d82a7c62c3be7a6d7b2d50481993f110219313499037e611dd` |
-| [`docs/changelog/2026-06-01-phase4-storage-architecture.md`](../changelog/2026-06-01-phase4-storage-architecture.md) | Development Log: Phase 4 - Storage & Future Architecture Lock | 1406 | `9b089deb5d61e965a2394d017521e993ea02b03be09fb40e1393168d0016418a` |
-| [`docs/changelog/2026-06-01-phase5-dataset-recipe.md`](../changelog/2026-06-01-phase5-dataset-recipe.md) | Development Log: Phase 5 - Dataset Recipe Engine | 1793 | `28a0206afd0c8c5d5d7363fbf0e9a68e18248e002d50b3b8499918632d8d04fd` |
-| [`docs/changelog/2026-06-01-phase6-question-first.md`](../changelog/2026-06-01-phase6-question-first.md) | Development Log: Phase 6 - Question First Analytics | 1372 | `137b6f56ebf3ae248dcafae7d5b82f6fca2a26b49a8b087588f49585739baa20` |
-| [`docs/changelog/2026-06-01-phase7-question-template.md`](../changelog/2026-06-01-phase7-question-template.md) | Development Log: Phase 7 - Question Template Engine | 1368 | `dfe5d1153b3ab9fcec8f45086704edb522c62805ad9644375cfeb9fbbe586548` |
-| [`docs/changelog/2026-06-01-phase8-recipe-planner.md`](../changelog/2026-06-01-phase8-recipe-planner.md) | Development Log: Phase 8 - Recipe Planner Architecture | 1406 | `a4b5f31b3191da53622bac01c5b8380ac264ce3b3bb04b5eecdd58e07576cf9c` |
-| [`docs/changelog/2026-06-01-phase9-source-capabilities.md`](../changelog/2026-06-01-phase9-source-capabilities.md) | Development Log: Phase 9 - Source Capability Architecture | 1599 | `76f6ca6d16cd7a361828e2a29014420f505d20abdcb771fc6b2a4fb34f011d33` |
+- [`docs/architecture/planner-model.md`](../../docs/architecture/planner-model.md) — Planner Model Architecture
+- [`docs/architecture/recipe-planner-model.md`](../../docs/architecture/recipe-planner-model.md) — Recipe Planner Model
+- [`docs/architecture/virtual-dataset-planner.md`](../../docs/architecture/virtual-dataset-planner.md) — Virtual Dataset Planner Architecture
 
-## checkpoint-history (20)
+## audit-history
 
-| Source | Title / status | Bytes | SHA-256 |
-|---|---|---:|---|
-| [`ALIAS_BATCH2_CHECKPOINT.md`](../../ALIAS_BATCH2_CHECKPOINT.md) | Alias Batch 2 Checkpoint | 991 | `7f388c0dc7007dd4f9174de9a8a1939d6c3ef27c5c70424b0588cde1f24d5acc` |
-| [`CANONICAL_SCHEMA_PROJECTION_CHECKPOINT.md`](../../CANONICAL_SCHEMA_PROJECTION_CHECKPOINT.md) | Checkpoint: Canonical Schema Projection Phase 1 | 2279 | `9144121667914d32a6d0678ebc26d83281eb9c1c414e7a4480ea6f9b9bb82b1b` |
-| [`CANONICAL_SCHEMA_PROJECTION_PHASE2_CHECKPOINT.md`](../../CANONICAL_SCHEMA_PROJECTION_PHASE2_CHECKPOINT.md) | Canonical Schema Projection Phase 2 - Checkpoint | 1039 | `c069cd6a2b98b1aaa82c9e82e83771b202ad1fe08b2053c81722fe2652ff3ca2` |
-| [`DUCKDB_RUNTIME_ERROR_CLASSIFICATION_PHASE1_CHECKPOINT.md`](../../DUCKDB_RUNTIME_ERROR_CLASSIFICATION_PHASE1_CHECKPOINT.md) | DuckDB Runtime Error Classification Phase 1 - Checkpoint | 1226 | `859e094e95e2930a974158e2ce00bb45b8ccb6784da24d44a215ba15670d4b8b` |
-| [`EXECUTION_PATH_UNIFICATION_CHECKPOINT.md`](../../EXECUTION_PATH_UNIFICATION_CHECKPOINT.md) | Checkpoint: Execution Path Unification | 1133 | `3385fd8c531412df46b23c56e2e4934026fc198acfb82baeee2fd75714aa9552` |
-| [`FALLBACK_POLICY_ALIGNMENT_PHASE1_CHECKPOINT.md`](../../FALLBACK_POLICY_ALIGNMENT_PHASE1_CHECKPOINT.md) | Fallback Policy Alignment Phase 1 - Checkpoint | 1049 | `d91187d0b1d56b3f10ec91fc9ee3222abdf7d1bd8a395b2b8bad40f9d3c66c81` |
-| [`GLOBAL_DISPLAY_PREFERENCES_PHASE1_CHECKPOINT.md`](../../GLOBAL_DISPLAY_PREFERENCES_PHASE1_CHECKPOINT.md) | Global Display Preferences Phase 1 Checkpoint | 1146 | `76d74783cd7896b735a7b1c0635a9fa092fba3fec7c50ffeb53cf448126759b4` |
-| [`GLOBAL_DISPLAY_PREFERENCES_PHASE2A_CHECKPOINT.md`](../../GLOBAL_DISPLAY_PREFERENCES_PHASE2A_CHECKPOINT.md) | Global Display Preferences Phase 2A Checkpoint | 1206 | `0ca094d01dfd4507195ce273449f6031782c37ddbabba0d4dcbae7b603d4b031` |
-| [`GLOBAL_DISPLAY_PREFERENCES_PHASE2B_CHECKPOINT.md`](../../GLOBAL_DISPLAY_PREFERENCES_PHASE2B_CHECKPOINT.md) | Global Display Preferences Phase 2B Checkpoint | 1111 | `a49433a70aa3e4bcbdec831f529d0dbe31cb8b13572a04963b212f3f8426fdca` |
-| [`GLOBAL_DISPLAY_PREFERENCES_PHASE3_CHECKPOINT.md`](../../GLOBAL_DISPLAY_PREFERENCES_PHASE3_CHECKPOINT.md) | Checkpoint: Global Display Preferences Phase 3 | 1163 | `7e9f007ca59f898cf6daea6f64e1fbcb878156a41d44b0a742e8ed80d13039d9` |
-| [`GLOBAL_DISPLAY_PREFERENCES_PHASE4_CHECKPOINT.md`](../../GLOBAL_DISPLAY_PREFERENCES_PHASE4_CHECKPOINT.md) | Checkpoint: Global Display Preferences Phase 4 | 981 | `3daa8fc3d631e43ed5a9a3a680908768b33be267e04bb4b184366372ab90e5ab` |
-| [`LOCAL_DUCKDB_EXECUTOR_CHECKPOINT.md`](../../LOCAL_DUCKDB_EXECUTOR_CHECKPOINT.md) | Checkpoint: Local DuckDB Executor Phase 1 | 2256 | `c41d618c92d40cabbb45bd3da346c6e04dd26f5001f16a10bcec218043d9cac9` |
-| [`MVP_CHECKPOINT.md`](../../MVP_CHECKPOINT.md) | LightBI MVP v1 Checkpoint & Closure Note | 4150 | `91763b93086fd9091724bff21ce88b066aa9aedb9e72a977285e089f599b8edc` |
-| [`NUMERIC_HEALTH_GATE_PHASE1_CHECKPOINT.md`](../../NUMERIC_HEALTH_GATE_PHASE1_CHECKPOINT.md) | Numeric Health Gate Phase 1 - Checkpoint | 910 | `456bb199d9769f9134c2e04c98fd7c29afbc6f3d94197d6f0142c4c9a33b977d` |
-| [`RUNTIME_TRUTH_CHECKPOINT.md`](../../RUNTIME_TRUTH_CHECKPOINT.md) | Runtime Truth Checkpoint | 1140 | `d75395e457cdf91fd2ab3ef74670d8aeabeebdb75b8058e9e8941dc35c6fa5a4` |
-| [`SAFE_SQL_QUERY_FAILURE_FIX_PHASE1_CHECKPOINT.md`](../../SAFE_SQL_QUERY_FAILURE_FIX_PHASE1_CHECKPOINT.md) | Safe SQL Query Failure Fix Phase 1 - Checkpoint | 1074 | `ecefbf8b03d7e12129105ad86f0e679a560445e8f9fb77451941ecb0c50c1560` |
-| [`SAFE_SQL_QUERY_FAILURE_FIX_PHASE2_CHECKPOINT.md`](../../SAFE_SQL_QUERY_FAILURE_FIX_PHASE2_CHECKPOINT.md) | Safe SQL Query Failure Fix Phase 2 - Checkpoint | 1082 | `8a95546bb2e0df0386deec9435567e3e59f0faa5f9c5f19d1aecc0b102a2b61b` |
-| [`TAXONOMY_EXPANSION_CHECKPOINT.md`](../../TAXONOMY_EXPANSION_CHECKPOINT.md) | Taxonomy Expansion Phase 1 Checkpoint | 1095 | `0dc82476e6f7c23b206fb1dfd1b80c77cf975ecdf073f57cc5dadce2ca94d22f` |
-| [`TRUST_MAPPING_CHECKPOINT.md`](../../TRUST_MAPPING_CHECKPOINT.md) | Trust Mapping Checkpoint | 1458 | `d14e73930d9eff1f70cd1fc7441e32a44dc65e393c828fcbd86ad4fb46be5990` |
-| [`WARNING_PROPAGATION_GUARDED_SUM_PHASE1B_CHECKPOINT.md`](../../WARNING_PROPAGATION_GUARDED_SUM_PHASE1B_CHECKPOINT.md) | Checkpoint: Warning Propagation for Guarded SUM (Phase 1B) | 1207 | `262b1cd865931450da7c535a1bc8d5db85769f7e8eff9ad2ce837fba14411b3c` |
+- [`docs/history/audits/AUDIT-bvq-remnants.md`](../../docs/history/audits/AUDIT-bvq-remnants.md) — AUDIT: BVQ Remnants on Home Screen (UX-5)
+- [`docs/history/audits/AUDIT-home-simplification.md`](../../docs/history/audits/AUDIT-home-simplification.md) — AUDIT: Home Simplification (UX-5)
+- [`docs/history/audits/AUDIT-real-file-preview-validation.md`](../../docs/history/audits/AUDIT-real-file-preview-validation.md) — AUDIT: Real File Preview Validation (DU-6B)
+- [`docs/history/audits/DOMAIN_RUNTIME_UI_AUDIT_REPORT.md`](../../docs/history/audits/DOMAIN_RUNTIME_UI_AUDIT_REPORT.md) — Domain Runtime & UI Audit Report
+- [`docs/history/audits/REAL_SAMPLE_DATA_E2E_AUDIT_2026-06-14.md`](../../docs/history/audits/REAL_SAMPLE_DATA_E2E_AUDIT_2026-06-14.md) — Real Sample Data E2E Audit — Production Truth Snapshot
+- [`docs/history/audits/UI_UX_AUDIT_REPORT.md`](../../docs/history/audits/UI_UX_AUDIT_REPORT.md) — LightBI UI/UX Audit Report
 
-## corpus-or-qa-evidence (37)
+## auxiliary-json
 
-| Source | Title / status | Bytes | SHA-256 |
-|---|---|---:|---|
-| [`sample-corpus/grain-candidate-expectations.v1.json`](../../sample-corpus/grain-candidate-expectations.v1.json) | schemaVersion=lightbi.grain-candidate-expectations.v1 | 39032 | `49d939749341cbc76b5dbe237e732017a6983ddc7a5338b9cebfb843f58c37fc` |
-| [`sample-corpus/grain-resolution-shadow-expectations.v1.json`](../../sample-corpus/grain-resolution-shadow-expectations.v1.json) | schemaVersion=lightbi.grain-resolution-shadow-expectations.v1; corpusVersion=1.2.0 | 7452 | `d7724125d37073e030986aff8cdd9870b21b904ea3c05bd54f2fc052af0ec92c` |
-| [`sample-corpus/ground-truth/adversarial-dirty.json`](../../sample-corpus/ground-truth/adversarial-dirty.json) | schemaVersion=lightbi.acceptance-ground-truth.v1.1; corpusVersion=1.2.0 | 109374 | `5aa9eb78ca5ace97f23af6b1edf21ad8616764d281180ef6f9273f43e4d287dc` |
-| [`sample-corpus/ground-truth/finance-accounting.json`](../../sample-corpus/ground-truth/finance-accounting.json) | schemaVersion=lightbi.acceptance-ground-truth.v1.1; corpusVersion=1.2.0 | 42307 | `3d66360763825b7a70b440b1367f3cbd0ac57b3d57ebefac956ca73a3efdfc71` |
-| [`sample-corpus/ground-truth/inventory.json`](../../sample-corpus/ground-truth/inventory.json) | schemaVersion=lightbi.acceptance-ground-truth.v1.1; corpusVersion=1.2.0 | 38526 | `1a604479b6c9175224dacff892d50509a129f47e1c297dce58ea04c79626497a` |
-| [`sample-corpus/ground-truth/multi-file.json`](../../sample-corpus/ground-truth/multi-file.json) | schemaVersion=lightbi.acceptance-ground-truth.v1.1; corpusVersion=1.2.0 | 53138 | `9bec416f7f66e768777387e2af963e496e410b6aeb4e1e1a70b7412993584b3f` |
-| [`sample-corpus/ground-truth/operations-delivery.json`](../../sample-corpus/ground-truth/operations-delivery.json) | schemaVersion=lightbi.acceptance-ground-truth.v1.1; corpusVersion=1.2.0 | 41575 | `34358725ee416f0b26a4b72c15f2d8a324c5a38227a3756e2fb744a7cb22374b` |
-| [`sample-corpus/ground-truth/revenue-sales.json`](../../sample-corpus/ground-truth/revenue-sales.json) | schemaVersion=lightbi.acceptance-ground-truth.v1.1; corpusVersion=1.2.0 | 44348 | `15c74119995414d497b94baf539672ac1ffd98a10e940561775c17769716685a` |
-| [`sample-corpus/ground-truth/xomdata-sql-corpus.json`](../../sample-corpus/ground-truth/xomdata-sql-corpus.json) | schemaVersion=lightbi.xomdata-sql-semantic-corpus.v1; generatedOn=2026-08-20T10:54:40.818Z | 323624 | `d5de732b6307933163335c092b061084fd298b178b3c3541c3d7bdda00cc39ee` |
-| [`sample-corpus/manifest.json`](../../sample-corpus/manifest.json) | schemaVersion=lightbi.acceptance-corpus.v1.1; corpusVersion=1.2.0 | 4853 | `a36284c1f4655289ff832bb4102f9e153fdad329020df6972802802368d0adaa` |
-| [`sample-corpus/readiness-shadow-expectations.v1.json`](../../sample-corpus/readiness-shadow-expectations.v1.json) | schemaVersion=lightbi.readiness-shadow-expectations.v1; corpusVersion=1.2.0 | 880 | `380d499fc21e02304ec5ca3c4e0010b6645740fdb575b90cf309ab6372cac0e1` |
-| [`sample-corpus/readiness-validation-expectations.v2.json`](../../sample-corpus/readiness-validation-expectations.v2.json) | schemaVersion=lightbi.readiness-validation-expectations.v2; corpusVersion=1.2.0 | 1340 | `67668cbe48d3dc573fa8f41ef69777ec7b34a2ecd671b6c766bf43d54632ca00` |
-| [`sample-corpus/relationship-candidate-expectations.v1.json`](../../sample-corpus/relationship-candidate-expectations.v1.json) | schemaVersion=lightbi.relationship-candidate-expectations.v1; corpusVersion=1.2.0 | 2587 | `20d9452a34c55f7b7472e33424dd316550c30678749c08f8be0f34a96a413e3c` |
-| [`sample-corpus/relationship-resolution-expectations.v1.json`](../../sample-corpus/relationship-resolution-expectations.v1.json) | schemaVersion=lightbi.relationship-resolution-expectations.v1; corpusVersion=1.2.0 | 1171 | `5e4371d51b3a15b88e3c6c3ee4fce4731bc4970cc932e0d5acfaeacd00087534` |
-| [`sample-corpus/relationship-resolution-validation-expectations.v1.json`](../../sample-corpus/relationship-resolution-validation-expectations.v1.json) | schemaVersion=lightbi.relationship-resolution-validation-expectations.v1; corpusVersion=1.2.0 | 1025 | `6c93e5a76a23b8b242b127f19e54e5a14dda66e5d79bcd452f9a4bac57fc4936` |
-| [`sample-corpus/shadow-resolution-expectations.v1.json`](../../sample-corpus/shadow-resolution-expectations.v1.json) | schemaVersion=lightbi.shadow-resolution-expectations.v1; corpusVersion=1.2.0 | 5691 | `5d41318e60c73f1225341ee654214d4b5d25b437925ddfedf50fa199f7c94787` |
-| [`sample-corpus/tooling/phase-7r34/authentic-anchors.json`](../../sample-corpus/tooling/phase-7r34/authentic-anchors.json) | schemaVersion=lightbi.phase7r34-authentic-anchors.v1 | 4301 | `81e0e9fdda286d1024566972d5d16bc76a2fbbe59338e1e922cd2a632b24ad0f` |
-| [`sample-corpus/tooling/phase-7r34/evidence-policy.json`](../../sample-corpus/tooling/phase-7r34/evidence-policy.json) | schemaVersion=lightbi.evaluation-evidence-policy.v1 | 2618 | `5a62f444f594fe9edb32aac33e5e48ac7158024c65a23c5135553542cb9df745` |
-| [`sample-corpus/tooling/phase-7r34/scenario-contract.json`](../../sample-corpus/tooling/phase-7r34/scenario-contract.json) | schemaVersion=lightbi.erp-scenario-contract.v1 | 1713 | `0cabb2156d30f42e59cf9a0e57e41a43140d90eea1f70d32e5036fe4a7da2023` |
-| [`sample-corpus/versions/1.3.0/corpus-manifest.json`](../../sample-corpus/versions/1.3.0/corpus-manifest.json) | schemaVersion=lightbi.acceptance-corpus.v1.3; corpusVersion=1.3.0 | 101492 | `446f4456002ceadd2cbad80cde45dbcee43f3c3e2967b1b37ffc00957173d281` |
-| [`sample-corpus/versions/1.3.0/cross-file-relationship-manifest.json`](../../sample-corpus/versions/1.3.0/cross-file-relationship-manifest.json) | schemaVersion=lightbi.phase7r34-cross-file-relationships.v1 | 2611 | `1e4de975f4e3e377845de3194a387651c8c2979a59cc12a934fa3386ceec46cf` |
-| [`sample-corpus/versions/1.3.0/generation-provenance.json`](../../sample-corpus/versions/1.3.0/generation-provenance.json) | schemaVersion=lightbi.phase7r34-generation-provenance.v1 | 5460 | `6f468f58280c157143264392701f3afdf4aad7a04f73241eb6e867f256386138` |
-| [`sample-corpus/versions/1.4.0/candidate-quality-baseline.json`](../../sample-corpus/versions/1.4.0/candidate-quality-baseline.json) | classification=repository_safe_release_fixture_baseline; schemaVersion=lightbi.corpus-1.4-candidate-quality-baseline.v1; corpusVersion=1.4.0 | 693 | `d1320559ae2cc6e21d2c7212cbb4b01965d457587add13ba596d207037720982` |
-| [`sample-corpus/versions/1.4.0/ground-truth/adversarial-dirty.json`](../../sample-corpus/versions/1.4.0/ground-truth/adversarial-dirty.json) | schemaVersion=lightbi.acceptance-ground-truth.v1.1; corpusVersion=1.4.0 | 111563 | `ff703bdacff8d7298fd0670361d7caad695bbbcc49ebea8454abcc66f06c2431` |
-| [`sample-corpus/versions/1.4.0/ground-truth/finance-accounting.json`](../../sample-corpus/versions/1.4.0/ground-truth/finance-accounting.json) | schemaVersion=lightbi.acceptance-ground-truth.v1.1; corpusVersion=1.4.0 | 43946 | `784e0001f58e6156909719a9b1ca0f451bcfc2645424ea5b4fb13e5f8ab77bbb` |
-| [`sample-corpus/versions/1.4.0/ground-truth/inventory.json`](../../sample-corpus/versions/1.4.0/ground-truth/inventory.json) | schemaVersion=lightbi.acceptance-ground-truth.v1.1; corpusVersion=1.4.0 | 40307 | `f1199f9b7d8886a9e599f32060ecc52695f3325f4dc2add767e7d83f43b72a80` |
-| [`sample-corpus/versions/1.4.0/ground-truth/multi-file.json`](../../sample-corpus/versions/1.4.0/ground-truth/multi-file.json) | schemaVersion=lightbi.acceptance-ground-truth.v1.1; corpusVersion=1.4.0 | 55790 | `7c4344428d3213cf2743f9552d8fd1e39ba830cb3b57f9ce48261ed79f7484eb` |
-| [`sample-corpus/versions/1.4.0/ground-truth/operations-delivery.json`](../../sample-corpus/versions/1.4.0/ground-truth/operations-delivery.json) | schemaVersion=lightbi.acceptance-ground-truth.v1.1; corpusVersion=1.4.0 | 43411 | `db38b32329a8289343ecbc383b7baf1f2f8250f993438fb60d3972956e27d55a` |
-| [`sample-corpus/versions/1.4.0/ground-truth/revenue-sales.json`](../../sample-corpus/versions/1.4.0/ground-truth/revenue-sales.json) | schemaVersion=lightbi.acceptance-ground-truth.v1.1; corpusVersion=1.4.0 | 45951 | `c147227d8628e4116e25fe8b50cdcb795f33abc7d44b6356ac6bbf30859f3141` |
-| [`sample-corpus/versions/1.4.0/manifest.json`](../../sample-corpus/versions/1.4.0/manifest.json) | schemaVersion=lightbi.acceptance-corpus.v1.4; corpusVersion=1.4.0 | 7093 | `fac4e25c497386514d6fbb8958d3c721b0ffa356940ac09758001a3fa17d0d12` |
-| [`sample-data-audit/domain-audit-results.json`](../../sample-data-audit/domain-audit-results.json) | — | 7841 | `8014282695544707f41bf537410d59550574c9a9a47a4a9daca7a2fd5be9e8d0` |
-| [`ui-audit/hublan-probe.json`](../../ui-audit/hublan-probe.json) | — | 5043 | `dde10e8a0334d1c721b677a39278d278d18285c78ebb011375f6381bfd495701` |
-| [`ui-audit/real-sample-e2e-2026-06-14/results.json`](../../ui-audit/real-sample-e2e-2026-06-14/results.json) | — | 92597 | `ad775c59e9e103d9ee0d17a50be055a20cb6ace21684b684fd72460588159fe6` |
-| [`ui-audit/real-sample-e2e-final-2026-06-14/results.json`](../../ui-audit/real-sample-e2e-final-2026-06-14/results.json) | — | 6912 | `7d68a48def45ea7d131cc0dcf464e4f9d4e479bbe7cdd7e745879cebd1a692eb` |
-| [`ui-audit/real-sample-e2e-fixed-2026-06-14/results.json`](../../ui-audit/real-sample-e2e-fixed-2026-06-14/results.json) | — | 21031 | `ce1187e8b3b98153503b289f0a97cae4a002492070dfdcb4a6638260f1133050` |
-| [`ui-audit/real-sample-e2e-localfirst-runtime-2026-06-14/results.json`](../../ui-audit/real-sample-e2e-localfirst-runtime-2026-06-14/results.json) | — | 25926 | `e66803717a1c8b5fab52e04b6d063cc367d7b2245b5c9b07dd16ce65c50f1ab2` |
-| [`ui-audit/sample-beta-matrix.json`](../../ui-audit/sample-beta-matrix.json) | — | 22759 | `23c5955e76bc81df3ed11ac892312958b96a44a6ca270f13e234f3dd2ada0916` |
+- [`.vscode/extensions.json`](../../.vscode/extensions.json)
+- [`.vscode/settings.json`](../../.vscode/settings.json)
+- [`crates/lightbi-tauri/gen/schemas/acl-manifests.json`](../../crates/lightbi-tauri/gen/schemas/acl-manifests.json)
+- [`crates/lightbi-tauri/gen/schemas/capabilities.json`](../../crates/lightbi-tauri/gen/schemas/capabilities.json)
+- [`crates/lightbi-tauri/gen/schemas/desktop-schema.json`](../../crates/lightbi-tauri/gen/schemas/desktop-schema.json)
+- [`crates/lightbi-tauri/gen/schemas/linux-schema.json`](../../crates/lightbi-tauri/gen/schemas/linux-schema.json)
+- [`crates/lightbi-tauri/gen/schemas/windows-schema.json`](../../crates/lightbi-tauri/gen/schemas/windows-schema.json)
+- [`crates/lightbi-tauri/tauri.conf.json`](../../crates/lightbi-tauri/tauri.conf.json)
+- [`execute_resp.json`](../../execute_resp.json)
+- [`import_resp.json`](../../import_resp.json) — status='success'
+- [`inv_execute.json`](../../inv_execute.json) — status='executed'
+- [`inv_import.json`](../../inv_import.json) — status='success'
+- [`inv_req.json`](../../inv_req.json)
+- [`package.json`](../../package.json)
+- [`req.json`](../../req.json)
+- [`req_valid.json`](../../req_valid.json)
+- [`sample-data-audit/domain-audit-results.json`](../../sample-data-audit/domain-audit-results.json)
 
-## design (1)
+## changelog-history
 
-| Source | Title / status | Bytes | SHA-256 |
-|---|---|---:|---|
-| [`docs/design/ui-baseline.md`](../design/ui-baseline.md) | LightBI UI Visual Baseline | 3910 | `e11a1ac58f3e27c41fd8bc726207698e7b7e7cc4748cb135afc6e13b4624c37d` |
+- [`docs/changelog/2026-06-01-phase10-perspective-layer.md`](../../docs/changelog/2026-06-01-phase10-perspective-layer.md) — Development Log: Phase 10 - Perspective Layer Architecture
+- [`docs/changelog/2026-06-01-phase11-persistence.md`](../../docs/changelog/2026-06-01-phase11-persistence.md) — Development Log: Phase 11 - Persistence Architecture
+- [`docs/changelog/2026-06-01-phase12-project-runtime.md`](../../docs/changelog/2026-06-01-phase12-project-runtime.md) — Development Log: Phase 12 - Project Runtime & Workspace Lifecycle
+- [`docs/changelog/2026-06-01-phase2-domain-model.md`](../../docs/changelog/2026-06-01-phase2-domain-model.md) — Development Log: Phase 2 - Domain Model
+- [`docs/changelog/2026-06-01-phase3-runtime.md`](../../docs/changelog/2026-06-01-phase3-runtime.md) — Development Log: Phase 3 - Runtime Foundation
+- [`docs/changelog/2026-06-01-phase4-storage-architecture.md`](../../docs/changelog/2026-06-01-phase4-storage-architecture.md) — Development Log: Phase 4 - Storage & Future Architecture Lock
+- [`docs/changelog/2026-06-01-phase5-dataset-recipe.md`](../../docs/changelog/2026-06-01-phase5-dataset-recipe.md) — Development Log: Phase 5 - Dataset Recipe Engine
+- [`docs/changelog/2026-06-01-phase6-question-first.md`](../../docs/changelog/2026-06-01-phase6-question-first.md) — Development Log: Phase 6 - Question First Analytics
+- [`docs/changelog/2026-06-01-phase7-question-template.md`](../../docs/changelog/2026-06-01-phase7-question-template.md) — Development Log: Phase 7 - Question Template Engine
+- [`docs/changelog/2026-06-01-phase8-recipe-planner.md`](../../docs/changelog/2026-06-01-phase8-recipe-planner.md) — Development Log: Phase 8 - Recipe Planner Architecture
+- [`docs/changelog/2026-06-01-phase9-source-capabilities.md`](../../docs/changelog/2026-06-01-phase9-source-capabilities.md) — Development Log: Phase 9 - Source Capability Architecture
 
-## domain-knowledge (8)
+## checkpoint-history
 
-| Source | Title / status | Bytes | SHA-256 |
-|---|---|---:|---|
-| [`docs/domain-catalog/customer.md`](../domain-catalog/customer.md) | Customer Domain | 660 | `ec6812598cb8f25039f252c3ed85c24a5ecd809bd318d67b65f2949baba6f8fd` |
-| [`docs/domain-catalog/finance.md`](../domain-catalog/finance.md) | Finance Domain | 661 | `6468663c71c19cb73adade780b78a8b85c82169f7f3aa197697ae031a6a60cfa` |
-| [`docs/domain-catalog/future-domain-pack-template.md`](../domain-catalog/future-domain-pack-template.md) | Future Domain Pack Template | 1197 | `fc511191977d4ec0bda9873f56ea8caee37bc6e1721305814747732215c1c63a` |
-| [`docs/domain-catalog/inventory.md`](../domain-catalog/inventory.md) | Inventory Domain | 737 | `dd0aabce8571e167021aab2ebe2c5226b13f02d9d35bcc2fdab8f106214cd062` |
-| [`docs/domain-catalog/operations.md`](../domain-catalog/operations.md) | Operations Domain | 625 | `a9b70ac19dcbc9622a11f0d442bb5552a9ffbf2308c6c11756714632a0d8edce` |
-| [`docs/domain-catalog/performance.md`](../domain-catalog/performance.md) | Performance Domain | 644 | `98d7e01ab267ee511dfc39c3b1e480a45e1fc54e47508f676bff0c1363796017` |
-| [`docs/domain-catalog/README.md`](../domain-catalog/README.md) | Domain Knowledge Catalog | 1456 | `2b7b7d341ca242c54dbb3900175377a9cd9ef968ae14a1191f81c7c98a87a1f8` |
-| [`docs/domain-catalog/revenue.md`](../domain-catalog/revenue.md) | Revenue Domain | 670 | `cf2d5f26770984cb3e29e869fc298f93adcbb819fd992e551bf4d84a0083a3f7` |
+- [`docs/history/checkpoints/ALIAS_BATCH2_CHECKPOINT.md`](../../docs/history/checkpoints/ALIAS_BATCH2_CHECKPOINT.md) — Alias Batch 2 Checkpoint
+- [`docs/history/checkpoints/CANONICAL_SCHEMA_PROJECTION_CHECKPOINT.md`](../../docs/history/checkpoints/CANONICAL_SCHEMA_PROJECTION_CHECKPOINT.md) — Checkpoint: Canonical Schema Projection Phase 1
+- [`docs/history/checkpoints/CANONICAL_SCHEMA_PROJECTION_PHASE2_CHECKPOINT.md`](../../docs/history/checkpoints/CANONICAL_SCHEMA_PROJECTION_PHASE2_CHECKPOINT.md) — Canonical Schema Projection Phase 2 - Checkpoint
+- [`docs/history/checkpoints/DUCKDB_RUNTIME_ERROR_CLASSIFICATION_PHASE1_CHECKPOINT.md`](../../docs/history/checkpoints/DUCKDB_RUNTIME_ERROR_CLASSIFICATION_PHASE1_CHECKPOINT.md) — DuckDB Runtime Error Classification Phase 1 - Checkpoint
+- [`docs/history/checkpoints/EXECUTION_PATH_UNIFICATION_CHECKPOINT.md`](../../docs/history/checkpoints/EXECUTION_PATH_UNIFICATION_CHECKPOINT.md) — Checkpoint: Execution Path Unification
+- [`docs/history/checkpoints/FALLBACK_POLICY_ALIGNMENT_PHASE1_CHECKPOINT.md`](../../docs/history/checkpoints/FALLBACK_POLICY_ALIGNMENT_PHASE1_CHECKPOINT.md) — Fallback Policy Alignment Phase 1 - Checkpoint
+- [`docs/history/checkpoints/GLOBAL_DISPLAY_PREFERENCES_PHASE1_CHECKPOINT.md`](../../docs/history/checkpoints/GLOBAL_DISPLAY_PREFERENCES_PHASE1_CHECKPOINT.md) — Global Display Preferences Phase 1 Checkpoint
+- [`docs/history/checkpoints/GLOBAL_DISPLAY_PREFERENCES_PHASE2A_CHECKPOINT.md`](../../docs/history/checkpoints/GLOBAL_DISPLAY_PREFERENCES_PHASE2A_CHECKPOINT.md) — Global Display Preferences Phase 2A Checkpoint
+- [`docs/history/checkpoints/GLOBAL_DISPLAY_PREFERENCES_PHASE2B_CHECKPOINT.md`](../../docs/history/checkpoints/GLOBAL_DISPLAY_PREFERENCES_PHASE2B_CHECKPOINT.md) — Global Display Preferences Phase 2B Checkpoint
+- [`docs/history/checkpoints/GLOBAL_DISPLAY_PREFERENCES_PHASE3_CHECKPOINT.md`](../../docs/history/checkpoints/GLOBAL_DISPLAY_PREFERENCES_PHASE3_CHECKPOINT.md) — Checkpoint: Global Display Preferences Phase 3
+- [`docs/history/checkpoints/GLOBAL_DISPLAY_PREFERENCES_PHASE4_CHECKPOINT.md`](../../docs/history/checkpoints/GLOBAL_DISPLAY_PREFERENCES_PHASE4_CHECKPOINT.md) — Checkpoint: Global Display Preferences Phase 4
+- [`docs/history/checkpoints/LOCAL_DUCKDB_EXECUTOR_CHECKPOINT.md`](../../docs/history/checkpoints/LOCAL_DUCKDB_EXECUTOR_CHECKPOINT.md) — Checkpoint: Local DuckDB Executor Phase 1
+- [`docs/history/checkpoints/MVP_CHECKPOINT.md`](../../docs/history/checkpoints/MVP_CHECKPOINT.md) — LightBI MVP v1 Checkpoint & Closure Note
+- [`docs/history/checkpoints/NUMERIC_HEALTH_GATE_PHASE1_CHECKPOINT.md`](../../docs/history/checkpoints/NUMERIC_HEALTH_GATE_PHASE1_CHECKPOINT.md) — Numeric Health Gate Phase 1 - Checkpoint
+- [`docs/history/checkpoints/RUNTIME_TRUTH_CHECKPOINT.md`](../../docs/history/checkpoints/RUNTIME_TRUTH_CHECKPOINT.md) — Runtime Truth Checkpoint
+- [`docs/history/checkpoints/SAFE_SQL_QUERY_FAILURE_FIX_PHASE1_CHECKPOINT.md`](../../docs/history/checkpoints/SAFE_SQL_QUERY_FAILURE_FIX_PHASE1_CHECKPOINT.md) — Safe SQL Query Failure Fix Phase 1 - Checkpoint
+- [`docs/history/checkpoints/SAFE_SQL_QUERY_FAILURE_FIX_PHASE2_CHECKPOINT.md`](../../docs/history/checkpoints/SAFE_SQL_QUERY_FAILURE_FIX_PHASE2_CHECKPOINT.md) — Safe SQL Query Failure Fix Phase 2 - Checkpoint
+- [`docs/history/checkpoints/TAXONOMY_EXPANSION_CHECKPOINT.md`](../../docs/history/checkpoints/TAXONOMY_EXPANSION_CHECKPOINT.md) — Taxonomy Expansion Phase 1 Checkpoint
+- [`docs/history/checkpoints/TRUST_MAPPING_CHECKPOINT.md`](../../docs/history/checkpoints/TRUST_MAPPING_CHECKPOINT.md) — Trust Mapping Checkpoint
+- [`docs/history/checkpoints/WARNING_PROPAGATION_GUARDED_SUM_PHASE1B_CHECKPOINT.md`](../../docs/history/checkpoints/WARNING_PROPAGATION_GUARDED_SUM_PHASE1B_CHECKPOINT.md) — Checkpoint: Warning Propagation for Guarded SUM (Phase 1B)
 
-## machine-audit-evidence (354)
+## corpus-or-qa-evidence
 
-| Source | Title / status | Bytes | SHA-256 |
-|---|---|---:|---|
-| [`docs/architecture/beta-core-ui-business-brain-bridge-audit.json`](../architecture/beta-core-ui-business-brain-bridge-audit.json) | Canonical perspective selection, full-file chart handoff, and governed deep BA presentation; schemaVersion=lightbi.beta-core-ui-business-brain-bridge-audit.v1; recordedAt=2026-07-28T14:06:00.000Z | 2548 | `fb0076e78482530c1f747e09fa105c86110923f19e713ae3ef913a9416908205` |
-| [`docs/architecture/beta-inventory-shipment-perspective-audit.json`](../architecture/beta-inventory-shipment-perspective-audit.json) | Beta sample-data Inventory perspective; schemaVersion=lightbi.beta-inventory-shipment-perspective-audit.v1; recordedAt=2026-07-28T13:10:00.000Z | 3456 | `7afb233b5fc3a90452ba8b8f1d7b474554582d60916b3b7c54f41f6574e719ef` |
-| [`docs/architecture/beta-inventory-workbook-semantic-support-audit.json`](../architecture/beta-inventory-workbook-semantic-support-audit.json) | Generic exact-header semantic support for dirty inventory workbooks without broadening token-containment inference.; status=pass; schemaVersion=lightbi.beta-inventory-workbook-semantic-support-audit.v1; recordedAt=2026-08-13T03:32:00.000Z | 1865 | `ddfd36a0d9fd573bb0e82601813e68bb8489738c07dbe860110b8f40ade30e12` |
-| [`docs/architecture/beta-operational-semantic-support-audit.json`](../architecture/beta-operational-semantic-support-audit.json) | Generic canonical semantic corrections required by the repository BHX retail POS fixture.; status=pass; schemaVersion=lightbi.beta-operational-semantic-support-audit.v1; date=2026-07-28 | 1998 | `0607f24d9b79eb7bc97386f1a336d9996f9903f7c03ec968de49489c7df96906` |
-| [`docs/architecture/beta-performance-semantic-support-audit.json`](../architecture/beta-performance-semantic-support-audit.json) | status=controlled_evolution_validated; schemaVersion=lightbi.beta-performance-semantic-support-audit.v1; generatedOn=2026-07-28 | 3846 | `4112c267ed0c25214fe8bfd57498b119a7ad94091aa75dfaa50ca43ee03d2115` |
-| [`docs/architecture/beta-revenue-line-measure-support-audit.json`](../architecture/beta-revenue-line-measure-support-audit.json) | Beta revenue perspective and line-level additive measure bridge; schemaVersion=lightbi.beta-revenue-line-measure-support-audit.v1; recordedAt=2026-07-28T13:32:00.000Z | 5074 | `ba0bfe92829537d47ea25d5e48403534b57e6a6ce714885363ef7b664c7b6cd9` |
-| [`docs/architecture/motodetail-semantic-support-audit.json`](../architecture/motodetail-semantic-support-audit.json) | Generic abbreviated ERP headers and safe descriptive analysis; schemaVersion=lightbi.motodetail-semantic-support-audit.v1; date=2026-08-13 | 810 | `9cb7f2abe5328177f2d286721e14172d8195b348db3047e2f82803b17a861035` |
-| [`docs/architecture/phase-0-semantic-registry-inventory.json`](../architecture/phase-0-semantic-registry-inventory.json) | schemaVersion=phase0.registry-inventory.v1; generatedOn=2026-08-20 | 73650 | `2d47fe45df8d9edfac2e00e491975cfbd4386fc1d1dc77cfa00c717d10897ee7` |
-| [`docs/architecture/phase-3a1-candidate-gap-audit.json`](../architecture/phase-3a1-candidate-gap-audit.json) | schemaVersion=lightbi.phase-3a1-candidate-gap-audit.v1; generatedOn=2026-07-10 | 25612 | `00afbc2aa82280f9f36b9df922f815a61240552713b7a9b88243cccf7eff3a63` |
-| [`docs/architecture/phase-3a2-acceptance-truth-audit.json`](../architecture/phase-3a2-acceptance-truth-audit.json) | schemaVersion=lightbi.phase-3a2-acceptance-truth-audit.v1 | 55739 | `9968ffa86f93c45ef5421625f20a95f93a54b693702b85e4420837bed700e510` |
-| [`docs/architecture/phase-3b1-1-context-evidence-flow-audit.json`](../architecture/phase-3b1-1-context-evidence-flow-audit.json) | schemaVersion=lightbi.phase-3b1-1-context-flow-audit.v1 | 4227 | `159aa43e028a124d4450063b70dbc52c8d29e293e96c44d36991bba44511430a` |
-| [`docs/architecture/phase-3b2a-resolution-audit.json`](../architecture/phase-3b2a-resolution-audit.json) | Phase 3B2A shadow semantic resolution only; schemaVersion=lightbi.phase-3b2a-resolution-audit.v1; date=2026-07-11 | 4148 | `7cab72a0700a90519f9862552658bf125dacd63db8ef9ca474b4bb596ccfe208` |
-| [`docs/architecture/phase-3b2b-counterfactual-audit.json`](../architecture/phase-3b2b-counterfactual-audit.json) | schemaVersion=lightbi.phase-3b2b-counterfactual-audit.v1; date=2026-07-11 | 8447 | `fda6c0ed009ae0b09e0027e85047fb845a904aa450b2b0a410ed238a8e9b8ed9` |
-| [`docs/architecture/phase-3b2b-selected-resolution-audit.json`](../architecture/phase-3b2b-selected-resolution-audit.json) | schemaVersion=lightbi.phase-3b2b-selected-resolution-audit.v1; date=2026-07-11 | 298204 | `7657b4ce3f92aadc79a9f55b2bd8b70763beeb1c343a49e701bec97266e6e9f3` |
-| [`docs/architecture/phase-4a1-1-grain-candidate-coverage-audit.json`](../architecture/phase-4a1-1-grain-candidate-coverage-audit.json) | schemaVersion=lightbi.phase-4a1-1-grain-candidate-coverage-audit.v1; date=2026-07-12; corpusVersion=1.2.0 | 1313009 | `81bb0e37567687108a37ab58304f257afaee6d5d9c41b5898469fdf17fa4fdf8` |
-| [`docs/architecture/phase-4a1-grain-candidate-audit.json`](../architecture/phase-4a1-grain-candidate-audit.json) | candidate_and_evidence_only; schemaVersion=lightbi.phase-4a1-grain-candidate-audit.v1; date=2026-07-12 | 2536 | `3748fb1c9294b45dbad974cf9d0aed37ec47bf19c774ef2b02017b99f6c6e428` |
-| [`docs/architecture/phase-4a2a-grain-axis-taxonomy-audit.json`](../architecture/phase-4a2a-grain-axis-taxonomy-audit.json) | schemaVersion=lightbi.phase-4a2a-grain-axis-taxonomy-audit.v1 | 4458 | `3fda5382e25eca668e5221b5cc877553f79d5ec1baf870601771bd4beebe18ae` |
-| [`docs/architecture/phase-4a2a-grain-resolution-audit.json`](../architecture/phase-4a2a-grain-resolution-audit.json) | schemaVersion=lightbi.phase-4a2a-grain-resolution-audit.v1; date=2026-07-12; corpusVersion=1.2.0 | 2276861 | `6327d38b0468f437eb376bb8008eac059d78d1160adc14f0d8d51884d085b1d5` |
-| [`docs/architecture/phase-4a2b-abstention-audit.json`](../architecture/phase-4a2b-abstention-audit.json) | schemaVersion=lightbi.phase-4a2b-abstention-audit.v1; date=2026-07-12; corpusVersion=1.2.0 | 105527 | `7bc36da88a5c6faa5d92cb1a305b105ae1a51ee3afd164a7b0c8f954882950e6` |
-| [`docs/architecture/phase-4a2b-axis-resolution-audit.json`](../architecture/phase-4a2b-axis-resolution-audit.json) | schemaVersion=lightbi.phase-4a2b-axis-resolution-audit.v1; date=2026-07-12; corpusVersion=1.2.0 | 313204 | `3b9d8e0506f3be685c007e7d99d0bc448527a3bce12b5646c75ebda25534952b` |
-| [`docs/architecture/phase-4a2b-counterfactual-audit.json`](../architecture/phase-4a2b-counterfactual-audit.json) | schemaVersion=lightbi.phase-4a2b-counterfactual-audit.v1; date=2026-07-12 | 20415 | `e9baa26c57e4f049b4843dfb29a635f2127bcf72fefe2929fce31ee2e911ab20` |
-| [`docs/architecture/phase-4b1-pair-evidence-audit.json`](../architecture/phase-4b1-pair-evidence-audit.json) | schemaVersion=lightbi.phase-4b1-pair-evidence-audit.v1; date=2026-07-12; corpusVersion=1.2.0 | 104445 | `cd1031de841ca55195217444789d881adecf63511f56b34c8c376cd4363f71ad` |
-| [`docs/architecture/phase-4b1-relationship-candidate-audit.json`](../architecture/phase-4b1-relationship-candidate-audit.json) | schemaVersion=lightbi.phase-4b1-relationship-candidate-audit.v1; date=2026-07-12; corpusVersion=1.2.0 | 142455 | `a8b982b705c68c3eb0d7a2b5465e5fbc620d30b5c81930569fa34656e017ab5f` |
-| [`docs/architecture/phase-4b2a-relationship-axis-taxonomy-audit.json`](../architecture/phase-4b2a-relationship-axis-taxonomy-audit.json) | schemaVersion=lightbi.phase-4b2a-axis-taxonomy-audit.v1 | 1566 | `e8c5b3c5d57d837f072aa4389980854c0bc659ad3c3879dda01a0f015ef7d7e9` |
-| [`docs/architecture/phase-4b2a-relationship-resolution-audit.json`](../architecture/phase-4b2a-relationship-resolution-audit.json) | schemaVersion=lightbi.phase-4b2a-relationship-resolution-audit.v1; date=2026-07-13; corpusVersion=1.2.0 | 120164 | `e521b9fb0f7a9ea1e4294e8d786ff5d9ab091af09dcad787c42d965665618be2` |
-| [`docs/architecture/phase-4b2b-axis-resolution-audit.json`](../architecture/phase-4b2b-axis-resolution-audit.json) | schemaVersion=lightbi.phase-4b2b-axis-audit.v1; date=2026-07-13 | 59375 | `d887df5ec0e755051a99b71aee7dc1d3c26b3596f7f0d37e31481b5eac1dab46` |
-| [`docs/architecture/phase-4b2b-cardinality-scoping-audit.json`](../architecture/phase-4b2b-cardinality-scoping-audit.json) | schemaVersion=lightbi.phase-4b2b-cardinality-audit.v1; date=2026-07-13 | 8655 | `ed7687f93652145954456727da2a4c6370421273c49081b668fc075789b8f3c5` |
-| [`docs/architecture/phase-4b2b-counterfactual-audit.json`](../architecture/phase-4b2b-counterfactual-audit.json) | schemaVersion=lightbi.phase-4b2b-counterfactual-audit.v1; date=2026-07-13 | 23381 | `341110b5c2a42d2851d4b5b81a384ff07ce7213f52641f808290639ee07097b1` |
-| [`docs/architecture/phase-4b2b-temporal-debt-audit.json`](../architecture/phase-4b2b-temporal-debt-audit.json) | schemaVersion=lightbi.phase-4b2b-temporal-audit.v1; date=2026-07-13 | 5528 | `3bdaaa5a47d1201af2015a1e6f78bc62225b4c3883b09539d543555af1da0756` |
-| [`docs/architecture/phase-4c1-capability-dependency-audit.json`](../architecture/phase-4c1-capability-dependency-audit.json) | schemaVersion=lightbi.phase-4c1-capability-dependency-audit.v1; date=2026-07-13 | 810 | `55648fd4d0922e03b65fa8a270876475c9587a5b1571faadc7a3ec6dc5c78c36` |
-| [`docs/architecture/phase-4c1-readiness-corpus-audit.json`](../architecture/phase-4c1-readiness-corpus-audit.json) | schemaVersion=lightbi.phase-4c1-readiness-corpus-audit.v1; date=2026-07-13 | 1586704 | `dd995a9703fb378849256a2ecb57792c564a56dfb43aed9f9dfd2a4ac4732746` |
-| [`docs/architecture/phase-4c1-readiness-ownership-audit.json`](../architecture/phase-4c1-readiness-ownership-audit.json) | schemaVersion=lightbi.phase-4c1-readiness-ownership-audit.v1; date=2026-07-13 | 2900 | `ce8b1eee319b3816d310c66ef239671f0549ae7116388cdc45980c9aecd6eeab` |
-| [`docs/architecture/phase-4c2-capability-scope-audit.json`](../architecture/phase-4c2-capability-scope-audit.json) | schemaVersion=lightbi.phase-4c2-scope-audit.v1; date=2026-07-13 | 9592 | `9b72ce871c1c35e4a9f95376891d03edc32ada44a9560435bf0a0022ce449019` |
-| [`docs/architecture/phase-4c2-counterfactual-audit.json`](../architecture/phase-4c2-counterfactual-audit.json) | schemaVersion=lightbi.phase-4c2-counterfactual-audit.v1; date=2026-07-13 | 22375 | `d3d7a896a7590f8cd34957e81163e52bbd88779dc806670da9766ecde64cd056` |
-| [`docs/architecture/phase-4c2-readiness-decision-audit.json`](../architecture/phase-4c2-readiness-decision-audit.json) | schemaVersion=lightbi.phase-4c2-decision-audit.v1; date=2026-07-13 | 1639954 | `89b1a9bb02ba2c549b8b07e24f5a062782a465c5b999908b184f01999a3bd8be` |
-| [`docs/architecture/phase-4c2-remediation-audit.json`](../architecture/phase-4c2-remediation-audit.json) | schemaVersion=lightbi.phase-4c2-remediation-audit.v1; date=2026-07-13 | 169345 | `4bd64218da8b1ffb0d6f8859c14528ef0112e9e48d6c028de9ebdfc2938a055a` |
-| [`docs/architecture/phase-4c2-trust-ratio-audit.json`](../architecture/phase-4c2-trust-ratio-audit.json) | schemaVersion=lightbi.phase-4c2-trust-ratio-audit.v1; date=2026-07-13 | 363254 | `330c0a856bbd0d53afc3c0f83d6aa15de9755a57cd6880566f49affce97ef747` |
-| [`docs/architecture/phase-5a-readiness-validation-debt-gate.json`](../architecture/phase-5a-readiness-validation-debt-gate.json) | schemaVersion=lightbi.phase-5a-readiness-validation-debt-gate.v1 | 1485 | `6fb22de0ae93db3c3337401ed74dfda2244bda338c1cb4f55bab75620d6ffec3` |
-| [`docs/architecture/phase-5a-runtime-adapter-projection-audit.json`](../architecture/phase-5a-runtime-adapter-projection-audit.json) | schemaVersion=lightbi.phase-5a-projection-audit.v1; date=2026-07-13 | 504 | `fca1c3f473f43642178e536bc8ec6593c64207514ab2257904cebd5042550e2b` |
-| [`docs/architecture/phase-5a-runtime-consumer-ownership-audit.json`](../architecture/phase-5a-runtime-consumer-ownership-audit.json) | schemaVersion=lightbi.phase-5a-runtime-consumer-ownership-audit.v1; date=2026-07-13 | 5194 | `4ff736c291077aefeb22cfeed054abddba6333854fc9afe6c87ef93dc1352e3d` |
-| [`docs/architecture/phase-5a-runtime-envelope-corpus-audit.json`](../architecture/phase-5a-runtime-envelope-corpus-audit.json) | schemaVersion=lightbi.phase-5a-envelope-corpus-audit.v1; date=2026-07-13 | 1659 | `c466617e988c868586569dc4fc298b556e259cf743c0140d26637c575d3a7a2a` |
-| [`docs/architecture/phase-5a-runtime-import-isolation-audit.json`](../architecture/phase-5a-runtime-import-isolation-audit.json) | schemaVersion=lightbi.phase-5a-import-isolation-audit.v1; date=2026-07-13 | 616 | `6488b5143bcdf2ed241f7e64cc2dce0d2bdbfbc2d8b66734f9a02b9d5da838f6` |
-| [`docs/architecture/phase-5b-authority-migration-gate.json`](../architecture/phase-5b-authority-migration-gate.json) | schemaVersion=lightbi.phase-5b-migration-gate.v1; date=2026-07-13 | 614 | `1a105c23a63d836555653837bb89919adb82b2ee8e5d33d2ee28dbabb67de784` |
-| [`docs/architecture/phase-5b-comparison-mapping-audit.json`](../architecture/phase-5b-comparison-mapping-audit.json) | schemaVersion=lightbi.phase-5b-mapping-audit.v1; date=2026-07-13 | 4898 | `21e2d7bcbe64e3fc446b477b83975576ac098acf14348775772dd42e190b220b` |
-| [`docs/architecture/phase-5b-executable-debt-coverage.json`](../architecture/phase-5b-executable-debt-coverage.json) | schemaVersion=lightbi.phase-5b-debt-coverage.v1; date=2026-07-13 | 1725 | `3d228f90c66056673f7d28f1b57885bafc2947c1e058c22667857dfb839801ea` |
-| [`docs/architecture/phase-5b-import-isolation-audit.json`](../architecture/phase-5b-import-isolation-audit.json) | schemaVersion=lightbi.phase-5b-import-isolation-audit.v1; date=2026-07-13 | 596 | `f3724a5d7965127245a70d83eb201056ef328cb4c94168a9e375a7cd4e7246bf` |
-| [`docs/architecture/phase-5b-legacy-output-ownership-audit.json`](../architecture/phase-5b-legacy-output-ownership-audit.json) | schemaVersion=lightbi.phase-5b-legacy-output-ownership-audit.v1; date=2026-07-13 | 2750 | `dcce977a6eba4e120a9f90d6ca35aca347d4837f6036bf58f0192e2b520cb5f4` |
-| [`docs/architecture/phase-5b-safety-divergence-audit.json`](../architecture/phase-5b-safety-divergence-audit.json) | schemaVersion=lightbi.phase-5b-safety-audit.v1; date=2026-07-13 | 683 | `989f52a3c1855248cbcc497013a5e1145c5680772c1c596cf0aedf7c2ae637ff` |
-| [`docs/architecture/phase-5b-shadow-comparison-corpus-audit.json`](../architecture/phase-5b-shadow-comparison-corpus-audit.json) | schemaVersion=lightbi.phase-5b-corpus-audit.v1; date=2026-07-13 | 1079 | `cf44eb721603248ae08d00251e01f8efe7047843759a7b5348a6389426f93cb0` |
-| [`docs/architecture/phase-5b1-authority-migration-evidence-gate.json`](../architecture/phase-5b1-authority-migration-evidence-gate.json) | schemaVersion=lightbi.phase-5b1-authority-migration-evidence-gate.v1; date=2026-07-13 | 588 | `04396c8377b3f09760774c78e841613a2677adf293b052c5317e1f72c87a48cd` |
-| [`docs/architecture/phase-5b1-executable-migration-debt-audit.json`](../architecture/phase-5b1-executable-migration-debt-audit.json) | schemaVersion=lightbi.phase-5b1-executable-migration-debt-audit.v1; date=2026-07-13 | 2038 | `97fb5de785c35197e5eba7f984dbf2f78a14b298b9a2bdb6172a9f2ce59239fd` |
-| [`docs/architecture/phase-5b1-import-isolation-audit.json`](../architecture/phase-5b1-import-isolation-audit.json) | schemaVersion=lightbi.phase-5b1-import-isolation-audit.v1; date=2026-07-13 | 290 | `092529401cd523ada01dc9054f2602d210e7c6131bedb4e52b1cf3e5cc0ec214` |
-| [`docs/architecture/phase-5b1-input-equivalence-audit.json`](../architecture/phase-5b1-input-equivalence-audit.json) | schemaVersion=lightbi.phase-5b1-input-equivalence-audit.v1; date=2026-07-13 | 764 | `d07749c34aa742c9e3ce2f9740656e78e14a259b2b28b92cd04b05d97fb6a985` |
-| [`docs/architecture/phase-5b1-legacy-invocation-feasibility-audit.json`](../architecture/phase-5b1-legacy-invocation-feasibility-audit.json) | schemaVersion=lightbi.phase-5b1-legacy-invocation-feasibility-audit.v1; date=2026-07-13 | 2238 | `f35b35aa04654cb76c357bc2856d0ed9777d6d4755c77ff196b276b63d881031` |
-| [`docs/architecture/phase-5b1-paired-observation-replay-audit.json`](../architecture/phase-5b1-paired-observation-replay-audit.json) | schemaVersion=lightbi.phase-5b1-paired-replay-audit.v1; date=2026-07-13 | 690 | `5edbc545780656df17578fe3615095ca6f6ba61ae1c2f486df7a1cb762dcfa8b` |
-| [`docs/architecture/phase-5b1-safety-divergence-replay.json`](../architecture/phase-5b1-safety-divergence-replay.json) | schemaVersion=lightbi.phase-5b1-safety-replay.v1; date=2026-07-13 | 768 | `97062de9b5ae8909b5389543016deaabf056a7e3ebed2441505adcd7eafcc462` |
-| [`docs/architecture/phase-5b2-aggregation-authority-callpath-audit.json`](../architecture/phase-5b2-aggregation-authority-callpath-audit.json) | schemaVersion=lightbi.phase-5b2-callpath-audit.v1 | 992 | `1f6e3a649f3e93fcef2e690f4e338b12d06d79e5a382a5e2219275a488126755` |
-| [`docs/architecture/phase-5b2-aggregation-divergence-dedup-audit.json`](../architecture/phase-5b2-aggregation-divergence-dedup-audit.json) | schemaVersion=lightbi.phase-5b2-dedup-audit.v1 | 331 | `6e7493997cf9ffe766fb7d0dd440b444fcf6c4fbb5ff15e2dc39f01a24cfcd2a` |
-| [`docs/architecture/phase-5b2-aggregation-divergence-disposition.json`](../architecture/phase-5b2-aggregation-divergence-disposition.json) | schemaVersion=lightbi.phase-5b2-disposition.v1 | 267783 | `ac1612db4707d951f261715654413297bce6501d55b111ebb58b9d7ae127758d` |
-| [`docs/architecture/phase-5b2-aggregation-mapping-audit.json`](../architecture/phase-5b2-aggregation-mapping-audit.json) | schemaVersion=lightbi.phase-5b2-mapping-audit.v1 | 706 | `57e344db0c1574b98ae7bb4a5d76cb5be3b78c3a82e5e033adb6c58fb3b67eb2` |
-| [`docs/architecture/phase-5b2-import-isolation-audit.json`](../architecture/phase-5b2-import-isolation-audit.json) | schemaVersion=lightbi.phase-5b2-import-isolation-audit.v1 | 271 | `f57c0bd9740d08e29028e6c9a4e197b4477abdda6f38940c899906bd75480fba` |
-| [`docs/architecture/phase-5b2-legacy-aggregation-signal-inventory.json`](../architecture/phase-5b2-legacy-aggregation-signal-inventory.json) | schemaVersion=lightbi.phase-5b2-signal-inventory.v1 | 2009 | `11a2e2fb48777c3fc3f46914329bedf15cb703e98a570f5ddf8995420338464c` |
-| [`docs/architecture/phase-5b2-migration-gate-audit.json`](../architecture/phase-5b2-migration-gate-audit.json) | schemaVersion=lightbi.phase-5b2-migration-gate.v1 | 435 | `cc71311d3a93693ea619b74f7607062ebf20055fa5b8a6bc27b62f5a764c5487` |
-| [`docs/architecture/phase-5b3-aggregation-guard-shadow-replay.json`](../architecture/phase-5b3-aggregation-guard-shadow-replay.json) | schemaVersion=lightbi.phase-5b3-shadow-replay.v1 | 334820 | `3e70dbf6da48a5a1c965bd0fec13ac704c754c4cecac490ff31df906c44867ba` |
-| [`docs/architecture/phase-5b3-aggregation-strategy-audit.json`](../architecture/phase-5b3-aggregation-strategy-audit.json) | schemaVersion=lightbi.phase-5b3-strategy-audit.v1 | 2787 | `9a77b307050be684d28d896d759975b381676b27bb54baf257e217b19842ac2f` |
-| [`docs/architecture/phase-5b3-import-isolation-audit.json`](../architecture/phase-5b3-import-isolation-audit.json) | schemaVersion=lightbi.phase-5b3-import-isolation-audit.v1 | 362 | `07a65531a7b06ca5dc3383842be868b586c4bdcde49176d21a58dcd0449f674f` |
-| [`docs/architecture/phase-5b3-migration-gate-audit.json`](../architecture/phase-5b3-migration-gate-audit.json) | schemaVersion=lightbi.phase-5b3-migration-gate.v1 | 721 | `a449691d61d12db0b84164ec74ac47bfb36d51459222f6b6cf2000346a375c29` |
-| [`docs/architecture/phase-5b3-preview-execution-authority-audit.json`](../architecture/phase-5b3-preview-execution-authority-audit.json) | schemaVersion=lightbi.phase-5b3-authority-audit.v1 | 1657 | `71773d11bea6a8b36240b830680243c6604547bda756589092571f9bda5b74b7` |
-| [`docs/architecture/phase-5b4-aggregation-authority-taxonomy.json`](../architecture/phase-5b4-aggregation-authority-taxonomy.json) | schemaVersion=lightbi.phase-5b4-authority-taxonomy.v1 | 6848 | `adc84740d0a947d4a7de09fa3c6a9e1af8a8d9bf3b1aa0aeea20a854c531bc83` |
-| [`docs/architecture/phase-5b4-import-isolation-audit.json`](../architecture/phase-5b4-import-isolation-audit.json) | schemaVersion=lightbi.phase-5b4-import-isolation-audit.v1 | 390 | `f6c3ceef859108f085a43fa6ef53d9118b51ce12d3917b9189ca366125e83cc3` |
-| [`docs/architecture/phase-5b4-intent-policy-audit.json`](../architecture/phase-5b4-intent-policy-audit.json) | schemaVersion=lightbi.phase-5b4-intent-policy-audit.v1 | 9129 | `b87a0d47b482d2aa4d4b1519b9c2f82de078db82b25a4a7cddb20b923b352259` |
-| [`docs/architecture/phase-5b4-migration-gate-audit.json`](../architecture/phase-5b4-migration-gate-audit.json) | schemaVersion=lightbi.phase-5b4-migration-gate.v1 | 703 | `7c3491b2ad5ff520c783f715e8a4e473697da57ec569d751cb9e041b36e548ed` |
-| [`docs/architecture/phase-5b4-result-use-restriction-audit.json`](../architecture/phase-5b4-result-use-restriction-audit.json) | schemaVersion=lightbi.phase-5b4-result-use-restriction-audit.v1 | 1482 | `42c3844b41c539cb38fc1de26e75911f4e2fd0371b69d2c5f5a5cc204849fe81` |
-| [`docs/architecture/phase-5b4-strategy-decision-audit.json`](../architecture/phase-5b4-strategy-decision-audit.json) | schemaVersion=lightbi.phase-5b4-strategy-decision-audit.v1 | 3855 | `3f9a06e5a03c573d3697ff649be8969f8742eaab9cae16d16879e211bf063b5e` |
-| [`docs/architecture/phase-5b4-unique-divergence-policy-replay.json`](../architecture/phase-5b4-unique-divergence-policy-replay.json) | schemaVersion=lightbi.phase-5b4-unique-replay.v1 | 807054 | `c9979741f466e28562c5e80cf6c2b73c44c2381f61879e6693adbca90407923e` |
-| [`docs/architecture/phase-5b5-aggregation-restriction-projection-replay.json`](../architecture/phase-5b5-aggregation-restriction-projection-replay.json) | schemaVersion=lightbi.phase-5b5-projection-replay.v1 | 7368456 | `909201d592594bd9c3f4c3bc149d689699ab4cb924b5442aa8066447bc663d20` |
-| [`docs/architecture/phase-5b5-consumer-compatibility-matrix.json`](../architecture/phase-5b5-consumer-compatibility-matrix.json) | schemaVersion=lightbi.phase-5b5-consumer-compatibility-matrix.v1 | 7632 | `fa3c933864d9e1884a1dc3268b28be179654b9b4da74fb4e0441dccffe8d7f83` |
-| [`docs/architecture/phase-5b5-import-isolation-audit.json`](../architecture/phase-5b5-import-isolation-audit.json) | schemaVersion=lightbi.phase-5b5-import-isolation-audit.v1 | 686 | `ef47302e12d2b2af3378421c8f88512ca80967866fc7a663418ebfde45e1888c` |
-| [`docs/architecture/phase-5b5-migration-gate-audit.json`](../architecture/phase-5b5-migration-gate-audit.json) | schemaVersion=lightbi.phase-5b5-migration-gate.v1 | 827 | `d5841441c9f1df2e0c11ec6145624ecda6ed5831cd2f475c16b06a0e65e1b344` |
-| [`docs/architecture/phase-5b5-production-contract-loss-audit.json`](../architecture/phase-5b5-production-contract-loss-audit.json) | schemaVersion=lightbi.phase-5b5-production-contract-loss-audit.v1 | 5575 | `43332618b30f37f95f68bbf9ae8dae5b7c68cf1b871ce22b8465a6732307daaa` |
-| [`docs/architecture/phase-5b5-projection-strategy-audit.json`](../architecture/phase-5b5-projection-strategy-audit.json) | schemaVersion=lightbi.phase-5b5-projection-strategy-audit.v1 | 55300 | `d687864a4d1e2770855c6514c4cd702ff8622b9a383a1916598b4b98a5ead9d4` |
-| [`docs/architecture/phase-5b5-requirement-intersection-audit.json`](../architecture/phase-5b5-requirement-intersection-audit.json) | schemaVersion=lightbi.phase-5b5-requirement-intersection.v1 | 32672 | `a30da1a9f2ffe803e8d8b9d93404bb95f915f36cb0c035928b89f53eef8bc9aa` |
-| [`docs/architecture/phase-5b6-actual-contract-binding-audit.json`](../architecture/phase-5b6-actual-contract-binding-audit.json) | schemaVersion=lightbi.phase-5b6-actual-contract-binding-audit.v1 | 1778 | `4ab8e63a17119236eefb72b7dd0577b909c0ff0695393ed41b3991c0a9524f9d` |
-| [`docs/architecture/phase-5b6-concurrency-binding-audit.json`](../architecture/phase-5b6-concurrency-binding-audit.json) | schemaVersion=lightbi.phase-5b6-concurrency-binding-audit.v1 | 1136 | `dc2539b745810389e36f098b6c095f84d889dc4f4cb8f75ccc36e594fce3fa72` |
-| [`docs/architecture/phase-5b6-consumer-migration-debt.json`](../architecture/phase-5b6-consumer-migration-debt.json) | schemaVersion=lightbi.phase-5b6-consumer-migration-debt.v1 | 4372 | `328c61d2a26fe9045c05602cd1f7654aa9a80cbe4400e696ebd240143d54b28e` |
-| [`docs/architecture/phase-5b6-import-isolation-audit.json`](../architecture/phase-5b6-import-isolation-audit.json) | schemaVersion=lightbi.phase-5b6-import-isolation-audit.v1 | 755 | `553fc0779b67df792ff97a4b034964ab62e87c0f283ab710fc410232a9a8abbd` |
-| [`docs/architecture/phase-5b6-migration-gate-audit.json`](../architecture/phase-5b6-migration-gate-audit.json) | schemaVersion=lightbi.phase-5b6-migration-gate-audit.v1 | 1014 | `097c34843ebba8911007190f852d61cdc9aaa40fa88e6550af29a9bdfa0027e4` |
-| [`docs/architecture/phase-5b6-sidecar-replay-audit.json`](../architecture/phase-5b6-sidecar-replay-audit.json) | schemaVersion=lightbi.phase-5b6-sidecar-replay-audit.v1 | 13841 | `21bb717a0f8df345d9f2beafee48271cc658e435b9eae2079ee3e94c90198148` |
-| [`docs/architecture/phase-5b6-typescript-build-integrity-audit.json`](../architecture/phase-5b6-typescript-build-integrity-audit.json) | schemaVersion=lightbi.phase-5b6-typescript-build-integrity-audit.v1 | 23197 | `5a59d0e3e8fa3f91ca489f8bcfafa23e4139727a97e27c2db2f8424df4d05b54` |
-| [`docs/architecture/phase-5b6a-authentic-plan-capture-feasibility.json`](../architecture/phase-5b6a-authentic-plan-capture-feasibility.json) | schemaVersion=lightbi.phase-5b6a-authentic-plan-capture-feasibility.v1 | 183244 | `3562d015c2d398f3cd50b6246ebc60c338bab2a289d51a3292356a002dfe8565` |
-| [`docs/architecture/phase-5b6a-build-baseline-decision.json`](../architecture/phase-5b6a-build-baseline-decision.json) | schemaVersion=lightbi.phase-5b6a-build-baseline-decision.v1 | 1651 | `ebe94316c7be71d3a3a1be514eff96a0574ffc5f4550f7588cad56de2cc7d007` |
-| [`docs/architecture/phase-5b6a-import-isolation-audit.json`](../architecture/phase-5b6a-import-isolation-audit.json) | schemaVersion=lightbi.phase-5b6a-import-isolation-audit.v1 | 604 | `75bf413d411e3ee4bf804419a54f171a7e22efa10d25d19d18b6578728dab042` |
-| [`docs/architecture/phase-5b6a-migration-gate-correction.json`](../architecture/phase-5b6a-migration-gate-correction.json) | schemaVersion=lightbi.phase-5b6a-migration-gate-correction.v1 | 1804 | `39e72956c4510843f4cd80f084d932a9785e20ab66752045f80491c6a1a9a237` |
-| [`docs/architecture/phase-5b6a-request-result-identity-audit.json`](../architecture/phase-5b6a-request-result-identity-audit.json) | schemaVersion=lightbi.phase-5b6a-request-result-identity-audit.v1 | 5626 | `b527a45211c47adf08abc53b211a4cce2f2c3e07f21dfc1911fcad4ac3840e47` |
-| [`docs/architecture/phase-5b6a-retained-legacy-input-audit.json`](../architecture/phase-5b6a-retained-legacy-input-audit.json) | schemaVersion=lightbi.phase-5b6a-retained-legacy-input-audit.v1 | 4274 | `b0f29b7ba84a4289d5f496b2eb9fa5559e05b5d8089a6938d77dabe3628fddcd` |
-| [`docs/architecture/phase-5b6a-runtime-plan-producer-audit.json`](../architecture/phase-5b6a-runtime-plan-producer-audit.json) | schemaVersion=lightbi.phase-5b6a-runtime-plan-producer-audit.v1 | 4051 | `d7567f70056358b8474963f6ea05eff3c497e10accbb6a9a8b562d778786e266` |
-| [`docs/architecture/phase-5b6a-typescript-provenance-audit.json`](../architecture/phase-5b6a-typescript-provenance-audit.json) | schemaVersion=lightbi.phase-5b6a-typescript-provenance-audit.v1 | 26251 | `50c92f9fba3fc6cb6ba6d27a8e8b5096a42d64c1e1ffe51039729e94c7d5d2ab` |
-| [`docs/architecture/phase-5b6a-working-tree-manifest.json`](../architecture/phase-5b6a-working-tree-manifest.json) | schemaVersion=lightbi.phase-5b6a-working-tree-manifest.v1 | 174381 | `01c5a789da065fa589b83a0480f4b44945e2e09fb9c1025ad56c8d6e822eb77b` |
-| [`docs/architecture/phase-5b6b-build-restoration-audit.json`](../architecture/phase-5b6b-build-restoration-audit.json) | schemaVersion=lightbi.phase-5b6b-build-restoration-audit.v1 | 1349 | `c6cd7347874b449664ba15accfabdd654b5c4180f13ca8e943305131995d6e82` |
-| [`docs/architecture/phase-5b6b-diagnostic-ownership-audit.json`](../architecture/phase-5b6b-diagnostic-ownership-audit.json) | schemaVersion=lightbi.phase-5b6b-diagnostic-ownership-audit.v1 | 21399 | `8a35ef794475fc38d8555515b3aa9c2009f8aaa88e095b788f83bdf50a2a7ae5` |
-| [`docs/architecture/phase-5b6b-final-suite-conformance.json`](../architecture/phase-5b6b-final-suite-conformance.json) | classification=build_integrity_restored_with_governed_baseline_debt; schemaVersion=lightbi.phase-5b6b-final-suite-conformance.v1 | 4235 | `e0a3c627eabc4bda47a469a6760a8bb793c3533791ee94ea672b4c1b03b88729` |
-| [`docs/architecture/phase-5b6b-import-isolation-audit.json`](../architecture/phase-5b6b-import-isolation-audit.json) | schemaVersion=lightbi.phase-5b6b-import-isolation-audit.v1 | 687 | `f0d1bc03e9c941b7f653ddafaab54381f0fe6bc8f223d65d109563004578e67f` |
-| [`docs/architecture/phase-5b6b-migration-gate-audit.json`](../architecture/phase-5b6b-migration-gate-audit.json) | schemaVersion=lightbi.phase-5b6b-migration-gate-audit.v1 | 729 | `e3c381649ad893529064e8aba26782d5f1a0b5cbea8516fe7ab002766749e471` |
-| [`docs/architecture/phase-5b6b-regression-baseline-allowlist.v1.json`](../architecture/phase-5b6b-regression-baseline-allowlist.v1.json) | schemaVersion=lightbi.phase-5b6b-regression-baseline-allowlist.v1 | 4448 | `baa86950582b7d758396abb0c69fdaffcd3c2cbbb22b71dd3bbdb3c0aed1c4f5` |
-| [`docs/architecture/phase-5b6b-root-cause-audit.json`](../architecture/phase-5b6b-root-cause-audit.json) | schemaVersion=lightbi.phase-5b6b-root-cause-audit.v1 | 2678 | `4b10a1ddab8df27e8666f5de2497833d3e7fa2a39f8c7b10b5687bd678fd5421` |
-| [`docs/architecture/phase-5b6b-semantic-preservation-audit.json`](../architecture/phase-5b6b-semantic-preservation-audit.json) | schemaVersion=lightbi.phase-5b6b-semantic-preservation-audit.v1 | 5071 | `71180b0a25f1c1d5eb9885e0c5a91ed518b81fd84276bb96294b6dc0cf4352b5` |
-| [`docs/architecture/phase-5m1-commerce-pack-activation-audit.json`](../architecture/phase-5m1-commerce-pack-activation-audit.json) | schemaVersion=lightbi.phase-5m1-commerce-pack-activation-audit.v1 | 1244 | `9a0c43c0e06257f8fea89792f468b367214e2de166cf945c085ce89031a184bd` |
-| [`docs/architecture/phase-5m1-domain-metric-policy-audit.json`](../architecture/phase-5m1-domain-metric-policy-audit.json) | schemaVersion=lightbi.phase-5m1-domain-metric-policy-audit.v1 | 1114 | `d177b0ec83ea5e2ebd066131ef7bb912a6e2c3c99afb6a13fdec9538d9e93708` |
-| [`docs/architecture/phase-5m1-domain-ownership-audit.json`](../architecture/phase-5m1-domain-ownership-audit.json) | phase=5M1; schemaVersion=lightbi.phase-5m1-domain-ownership-audit.v1 | 2802 | `045d3b65bf98f669d94cec49a30aec0d86f95a3708f26554de586a9f67442cd6` |
-| [`docs/architecture/phase-5m1-governed-metric-catalog.json`](../architecture/phase-5m1-governed-metric-catalog.json) | schemaVersion=lightbi.phase-5m1-governed-metric-catalog.v1 | 1612 | `2ba69c04245ee5b7401918ab17205af2d3a4974fabbb65fb6ab392b8153930db` |
-| [`docs/architecture/phase-5m1-import-isolation-audit.json`](../architecture/phase-5m1-import-isolation-audit.json) | schemaVersion=lightbi.phase-5m1-import-isolation-audit.v1 | 697 | `9d87e1f3c98e76b420d44eb773c6178fb1634beaf5c50a19e39360c6bf9b3e89` |
-| [`docs/architecture/phase-5m1-metric-ground-truth-audit.json`](../architecture/phase-5m1-metric-ground-truth-audit.json) | schemaVersion=lightbi.phase-5m1-metric-ground-truth-audit.v1 | 928 | `9598046595c2ada0b13bcb7071b79e8d470831da6249bdcc2ecc486f33236ed9` |
-| [`docs/architecture/phase-5m1-metric-preflight-corpus-audit.json`](../architecture/phase-5m1-metric-preflight-corpus-audit.json) | schemaVersion=lightbi.phase-5m1-metric-preflight-corpus-audit.v1; corpusVersion=1.2.0 | 873 | `36177a51fc880a41f61aa69b0ff6349ad7c0f49a5a85ee90646f6278a02d357b` |
-| [`docs/architecture/phase-5m1-migration-gate-audit.json`](../architecture/phase-5m1-migration-gate-audit.json) | phase=5M1; schemaVersion=lightbi.phase-5m1-migration-gate-audit.v1 | 711 | `e5c7dd85d3379e50834599343b602e80061608d3a563afa987935f12df2ffbe3` |
-| [`docs/architecture/phase-5m2-import-isolation-audit.json`](../architecture/phase-5m2-import-isolation-audit.json) | schemaVersion=lightbi.phase-5m2-import-isolation-audit.v1 | 838 | `55f359aa875082cdf3b030b6d89c0304f8d7d680dd9c2ae3abb42b5720f54fdb` |
-| [`docs/architecture/phase-5m2-migration-gate-audit.json`](../architecture/phase-5m2-migration-gate-audit.json) | phase=5M2; schemaVersion=lightbi.phase-5m2-migration-gate-audit.v1 | 838 | `ec256a0e6f32220aaaae857c069a87e20506b4504c10f7e405720429c9a8c053` |
-| [`docs/architecture/phase-5m2-question-action-corpus-audit.json`](../architecture/phase-5m2-question-action-corpus-audit.json) | schemaVersion=lightbi.phase-5m2-question-action-corpus-audit.v1; corpusVersion=1.4.0 | 947 | `d5846fbce453be982665276a53f12ad83a3ac87fd98ba4e8c9ef8b2096832aae` |
-| [`docs/architecture/phase-5m2-question-action-policy-audit.json`](../architecture/phase-5m2-question-action-policy-audit.json) | schemaVersion=lightbi.phase-5m2-question-action-policy-audit.v1 | 10788 | `08d7f49312b439327ae262673552ea2846925ee50ab0bcee44d28b0f18fbfdad` |
-| [`docs/architecture/phase-5m2-ranking-audit.json`](../architecture/phase-5m2-ranking-audit.json) | schemaVersion=lightbi.phase-5m2-ranking-audit.v1 | 610 | `ece403ec7ebc7fd4fc6f4a954ae351608ba8db86c538e15b651f786dd03b5042` |
-| [`docs/architecture/phase-5m3-corpus-execution-audit.json`](../architecture/phase-5m3-corpus-execution-audit.json) | phase=5M3; schemaVersion=lightbi.phase-5m3-corpus-execution-audit.v1 | 1882 | `5f1d7415ad338894c5df63aed7033f13b85a06fc3121ca07a4be9809c9176dd1` |
-| [`docs/architecture/phase-5m3-ground-truth-comparison-audit.json`](../architecture/phase-5m3-ground-truth-comparison-audit.json) | phase=5M3; schemaVersion=lightbi.phase-5m3-ground-truth-comparison-audit.v1 | 898 | `2df233799b67227d99ba543e511233186c4f20fdc349f4e951d97c7d41f960cd` |
-| [`docs/architecture/phase-5m3-import-isolation-audit.json`](../architecture/phase-5m3-import-isolation-audit.json) | phase=5M3; schemaVersion=lightbi.phase-5m3-import-isolation-audit.v1 | 847 | `6dc1a1d1020f0522e8b14a6d5cb05637f014f14868e6cefe62644ca516aeb0d1` |
-| [`docs/architecture/phase-5m3-migration-gate-audit.json`](../architecture/phase-5m3-migration-gate-audit.json) | phase=5M3; schemaVersion=lightbi.phase-5m3-migration-gate-audit.v1 | 1386 | `9adf650fbfccdba8bdbb7530c41d341743c86a6d9cc92b418bb5625b53d800cd` |
-| [`docs/architecture/phase-5m3-query-plan-audit.json`](../architecture/phase-5m3-query-plan-audit.json) | phase=5M3; schemaVersion=lightbi.phase-5m3-query-plan-audit.v1 | 1095 | `ef3288ac751671cf58cd379ee41d7dbf198d376e1988491e9b858277126bc8e4` |
-| [`docs/architecture/phase-5m3-runtime-preflight-audit.json`](../architecture/phase-5m3-runtime-preflight-audit.json) | phase=5M3; schemaVersion=lightbi.phase-5m3-runtime-preflight-audit.v1 | 1699 | `937a62e716516a5417c54424a8409a16c1eafac865cd802af30190c06caf74a8` |
-| [`docs/architecture/phase-5m3-runtime-safety-audit.json`](../architecture/phase-5m3-runtime-safety-audit.json) | phase=5M3; schemaVersion=lightbi.phase-5m3-runtime-safety-audit.v1 | 1915 | `b786b09c82953ef1c17e913108b8f655e950c4cdf3750111a85c082bf792c506` |
-| [`docs/architecture/phase-5m4-corpus-regression-audit.json`](../architecture/phase-5m4-corpus-regression-audit.json) | phase=5M4; schemaVersion=lightbi.phase-5m4-corpus-regression-audit.v1; corpusVersion=1.2.0 | 887186 | `7666b1145eb80cecf0c90b35cc726aeb3f250d88b7c0d1639f2a12e53e271796` |
-| [`docs/architecture/phase-5m4-final-gate-audit.json`](../architecture/phase-5m4-final-gate-audit.json) | classification=phase5_core_ready_for_phase6_cutover; phase=5M4; schemaVersion=lightbi.phase-5m4-final-gate-audit.v1 | 1209 | `d9a148cffcdfc06d9a6bd9b064ace368654a2fae9ee14b5e49e0640dfd9f4a88` |
-| [`docs/architecture/phase-5m4-import-isolation-audit.json`](../architecture/phase-5m4-import-isolation-audit.json) | phase=5M4; schemaVersion=lightbi.phase-5m4-import-isolation-audit.v1 | 677 | `1b1e7b6a82df643abcc17cfd93c5cb13c40a9235519fde0d4e34791f89ce11ea` |
-| [`docs/architecture/phase-5m4-phase5-acceptance-audit.json`](../architecture/phase-5m4-phase5-acceptance-audit.json) | phase=5M4; schemaVersion=lightbi.phase-5m4-phase5-acceptance-audit.v1 | 2086 | `40baaf5a8f82caf7c24846a4ad1249558e2bb74e8b9555db7de76a899eecfdc5` |
-| [`docs/architecture/phase-5m4-real-golden-blocker-audit.json`](../architecture/phase-5m4-real-golden-blocker-audit.json) | phase=5M4; schemaVersion=lightbi.phase-5m4-real-golden-blocker-audit.v1 | 5371 | `33fdbba4110ed56d15bcd73739e7bca5e22eff94a44743633ef54daecd133aa8` |
-| [`docs/architecture/phase-5m4-real-golden-execution-audit.json`](../architecture/phase-5m4-real-golden-execution-audit.json) | phase=5M4; schemaVersion=lightbi.phase-5m4-real-golden-execution-audit.v1 | 2173 | `8b03e9709ce30e0346a8b5e67a167f0d324a8ececcb4c9219882f004e4d4e5cd` |
-| [`docs/architecture/phase-6a-artifact-identity-audit.json`](../architecture/phase-6a-artifact-identity-audit.json) | schemaVersion=lightbi.phase-6a-artifact-identity-audit.v1 | 550 | `ae3711de7ccf6b8f774aa978a9eba86ffcdb9f7f9ed871a949be5db2cbeab9a9` |
-| [`docs/architecture/phase-6a-consumer-path-audit.json`](../architecture/phase-6a-consumer-path-audit.json) | schemaVersion=lightbi.phase-6a-consumer-path-audit.v1 | 580 | `9e26f47b1598649cf8498d0d5386b887f0d703c0fe0612837df3becb102309ef` |
-| [`docs/architecture/phase-6a-end-to-end-audit.json`](../architecture/phase-6a-end-to-end-audit.json) | schemaVersion=lightbi.phase-6a-end-to-end-audit.v1 | 680 | `3c6ed18c907a5bb7643ae405c94c8b761d28c52560bec766c6fdd8dfdc8e5c77` |
-| [`docs/architecture/phase-6a-home-cutover-audit.json`](../architecture/phase-6a-home-cutover-audit.json) | schemaVersion=lightbi.phase-6a-home-cutover-audit.v1 | 693 | `0841e9eb31a0cf4fa8a4e7e1c8ff0748a771205fdef2199a7ef156a485266ffa` |
-| [`docs/architecture/phase-6a-import-isolation-audit.json`](../architecture/phase-6a-import-isolation-audit.json) | schemaVersion=lightbi.phase-6a-import-isolation-audit.v1 | 765 | `c5a5622547391015f89654dd085bf8750710cd0ad1b545d49a655dd1ac156e0c` |
-| [`docs/architecture/phase-6a-investigation-cutover-audit.json`](../architecture/phase-6a-investigation-cutover-audit.json) | schemaVersion=lightbi.phase-6a-investigation-cutover-audit.v1 | 768 | `e563522170b3996d7434ac9c4726cdd8e5dc756e27617586d7711c883e25d8d7` |
-| [`docs/architecture/phase-6a-legacy-reachability-audit.json`](../architecture/phase-6a-legacy-reachability-audit.json) | schemaVersion=lightbi.phase-6a-legacy-reachability-audit.v1 | 1403 | `5a41a4b665d247b571e1b5166fba72ac6d9df68fc5fa342f6924311af9ed3c03` |
-| [`docs/architecture/phase-6a-migration-gate-audit.json`](../architecture/phase-6a-migration-gate-audit.json) | classification=canonical_consumer_cutover_ready_with_documented_debt; phase=6A; schemaVersion=lightbi.phase-6a-migration-gate-audit.v1 | 1466 | `465df445bc790f59d38f626bb0127550a1d97eaa39c73e738e1392f41f81edb5` |
-| [`docs/architecture/phase-6b-advanced-cutover-audit.json`](../architecture/phase-6b-advanced-cutover-audit.json) | phase=6B; schemaVersion=lightbi.phase-6b-advanced-cutover-audit.v1 | 999 | `24ca5332268c8da968c93d8b9fdee20a4423f05fb1e1dea2b4fec147b8c008b7` |
-| [`docs/architecture/phase-6b-end-to-end-audit.json`](../architecture/phase-6b-end-to-end-audit.json) | schemaVersion=lightbi.phase-6b-end-to-end-audit.v1 | 705 | `b918eaf1b3ddeb2e75e40c1bbc308facc85b407bcafd96b83b0fbafb3924457f` |
-| [`docs/architecture/phase-6b-final-gate-audit.json`](../architecture/phase-6b-final-gate-audit.json) | classification=phase6_cutover_ready_with_documented_debt; phase=6B; schemaVersion=lightbi.phase-6b-final-gate-audit.v1 | 1736 | `8bf467f1649291bdf802cf6e46ef788899d8656deb08ceb0188499da771b2712` |
-| [`docs/architecture/phase-6b-import-isolation-audit.json`](../architecture/phase-6b-import-isolation-audit.json) | schemaVersion=lightbi.phase-6b-import-isolation-audit.v1 | 836 | `b55e7f816dcc386c4be4be834898b9731e5e4f9a9bc3fa6847c25a0e98c81bba` |
-| [`docs/architecture/phase-6b-legacy-retirement-audit.json`](../architecture/phase-6b-legacy-retirement-audit.json) | schemaVersion=lightbi.phase-6b-legacy-retirement-audit.v1 | 2316 | `5265579f88cbb690039c85b1203c975f97329b07cf3656647f2ae02f85500532` |
-| [`docs/architecture/phase-6b-production-reachability-audit.json`](../architecture/phase-6b-production-reachability-audit.json) | schemaVersion=lightbi.phase-6b-production-reachability-audit.v1 | 812 | `2ab1de5488c772b84797a8f940778d6d43c27102a73e2ecf76172fe7a2a9dbce` |
-| [`docs/architecture/phase-6b-single-path-audit.json`](../architecture/phase-6b-single-path-audit.json) | schemaVersion=lightbi.phase-6b-single-path-audit.v1 | 667 | `4d285110b1b0de732944c5e9d8f669ed69e2fc3d6c995dc8093baedc79e35c2d` |
-| [`docs/architecture/phase-6b1-final-suite-conformance.json`](../architecture/phase-6b1-final-suite-conformance.json) | classification=not_ready_unexpected_regression; phase=6B.1; schemaVersion=lightbi.phase-6b1-final-suite-conformance.v1 | 223343 | `934eafa9bffbd5a765c18f0f8ebeda556da55159ee4d79b3432b342b061902ed` |
-| [`docs/architecture/phase-6b2-canonical-error-state-audit.json`](../architecture/phase-6b2-canonical-error-state-audit.json) | phase=6B.2; schemaVersion=lightbi.phase-6b2-canonical-error-state-audit.v1 | 1995 | `38d105ad52b7287afcc4e19439362c834bce208b2792b3b861bcb10528538406` |
-| [`docs/architecture/phase-6b2-final-suite-conformance.json`](../architecture/phase-6b2-final-suite-conformance.json) | classification=phase6_canonical_cutover_complete_ready_for_mvp_proof; phase=6B.2; schemaVersion=lightbi.phase-6b2-final-suite-conformance.v1 | 3729 | `4be74ec2380ec7547fa902e8eb30142f0d40a0868269f620fd990aee3cb9c771` |
-| [`docs/architecture/phase-6b2-investigation-regression-audit.json`](../architecture/phase-6b2-investigation-regression-audit.json) | phase=6B.2; schemaVersion=lightbi.phase-6b2-investigation-regression-audit.v1 | 3513 | `d7ff4e2b460c3670cc89422f119e81eb8df6d1a76ace8afd47dddfd394df5baa` |
-| [`docs/architecture/phase-6b2-production-path-preservation-audit.json`](../architecture/phase-6b2-production-path-preservation-audit.json) | phase=6B.2; schemaVersion=lightbi.phase-6b2-production-path-preservation-audit.v1 | 1378 | `ba1758081d71365402b8cb40db85bd00ac515e8d39f164f23a509def5c3b99c7` |
-| [`docs/architecture/phase-6b2-typescript-diagnostic-audit.json`](../architecture/phase-6b2-typescript-diagnostic-audit.json) | phase=6B.2; schemaVersion=lightbi.phase-6b2-typescript-diagnostic-audit.v1 | 10252 | `96a88afbe1e5c7b4c79377ce8cd55f38a97ba80bd9ed1f28420023c14ebe6427` |
-| [`docs/architecture/phase-7-action-execution-audit.json`](../architecture/phase-7-action-execution-audit.json) | phase=7; schemaVersion=lightbi.phase-7-action-execution-audit.v1 | 1501 | `0ff6c4462743d8c4244bffe3441a9e757e0c4a0159021ec8d257ea899ebcf057` |
-| [`docs/architecture/phase-7-blocked-explanation-audit.json`](../architecture/phase-7-blocked-explanation-audit.json) | phase=7; schemaVersion=lightbi.phase-7-blocked-explanation-audit.v1 | 686 | `cfb3a76bc5ff0f7a22a838ca387119eb91e885d83a6d9c5c0dfd98b8cc0a592a` |
-| [`docs/architecture/phase-7-clean-machine-reproducibility-audit.json`](../architecture/phase-7-clean-machine-reproducibility-audit.json) | phase=7; schemaVersion=lightbi.phase-7-clean-machine-reproducibility-audit.v1 | 1649 | `dce3e7f0fb35928d01d6412b396b89e1d10e784f5c5e23eb18563d11581502b6` |
-| [`docs/architecture/phase-7-grain-domain-audit.json`](../architecture/phase-7-grain-domain-audit.json) | phase=7; schemaVersion=lightbi.phase-7-grain-domain-audit.v1 | 1981 | `946f6eb9b2383e839db7df96ea1c7fe486648da88e635e1d216e01a582217f6d` |
-| [`docs/architecture/phase-7-mapping-quality-audit.json`](../architecture/phase-7-mapping-quality-audit.json) | phase=7; schemaVersion=lightbi.phase-7-mapping-quality-audit.v1; corpusVersion=1.2.0 | 1809 | `9eae4c769bec45bb2d85a7a8faa9290c8637ccee4b1a73a17174437605a600a1` |
-| [`docs/architecture/phase-7-metric-correctness-audit.json`](../architecture/phase-7-metric-correctness-audit.json) | phase=7; schemaVersion=lightbi.phase-7-metric-correctness-audit.v1 | 2079 | `830b215d1900c4a06f6db409c25de941e1c7804242b12e5a13e29992dca0c8ec` |
-| [`docs/architecture/phase-7-production-reachability-audit.json`](../architecture/phase-7-production-reachability-audit.json) | phase=7; schemaVersion=lightbi.phase-7-production-reachability-audit.v1 | 1120 | `307b86729f51ccf43bb8f7ae8104af73968ef0f1564a292f729d0af8834be4e2` |
-| [`docs/architecture/phase-7-release-gate-audit.json`](../architecture/phase-7-release-gate-audit.json) | phase=7; schemaVersion=lightbi.phase-7-release-gate-audit.v1; corpusVersion=1.2.0 | 3058 | `44eb261716fe76d44d19dd2da8252ed82c411c40ffd482052d3016176ee90bef` |
-| [`docs/architecture/phase-7r1-corpus-regression-audit.json`](../architecture/phase-7r1-corpus-regression-audit.json) | phase=7R1; schemaVersion=lightbi.phase-7r1-corpus-regression-audit.v1; corpusVersion=1.2.0 | 3328 | `c288a64fdb7c80895119d42d2d0b6853b4112157ef76469be3299ee4e3c433f1` |
-| [`docs/architecture/phase-7r1-import-isolation-audit.json`](../architecture/phase-7r1-import-isolation-audit.json) | phase=7R1; schemaVersion=lightbi.phase-7r1-import-isolation-audit.v1 | 1304 | `276487aad7599c25806ee94d323f298889deb87dfb752933429c1b24313beeb8` |
-| [`docs/architecture/phase-7r1-missed-signal-root-cause-audit.json`](../architecture/phase-7r1-missed-signal-root-cause-audit.json) | phase=7R1; schemaVersion=lightbi.phase-7r1-missed-signal-root-cause-audit.v1; corpusVersion=1.2.0 | 5538 | `afe827cf4f45e431ea3b03c748d5a5bacea6475cb648988f3966a034e7efe330` |
-| [`docs/architecture/phase-7r1-recall-denominator-audit.json`](../architecture/phase-7r1-recall-denominator-audit.json) | phase=7R1; schemaVersion=lightbi.phase-7r1-recall-denominator-audit.v1; corpusVersion=1.2.0 | 1797 | `720156bead5b885b3375ec0cf72d4071cdcb3c9320f5759756a618fb0e5b7525` |
-| [`docs/architecture/phase-7r1-release-gate-impact-audit.json`](../architecture/phase-7r1-release-gate-impact-audit.json) | classification=signal_recall_ready_for_release_gate_retest; phase=7R1; schemaVersion=lightbi.phase-7r1-release-gate-impact-audit.v1 | 2215 | `bd64a0e11cdb1751693e3a46e39ccaaebbfe1e6664cacaa47f7383cea6476e02` |
-| [`docs/architecture/phase-7r1-semantic-correction-audit.json`](../architecture/phase-7r1-semantic-correction-audit.json) | phase=7R1; schemaVersion=lightbi.phase-7r1-semantic-correction-audit.v1; corpusVersion=1.2.0 | 3574 | `4664cf2e53168a2771d49508f5a68a0bbb54614740e4675c97d5db6ae037da13` |
-| [`docs/architecture/phase-7r11-action-execution-audit.json`](../architecture/phase-7r11-action-execution-audit.json) | phase=7R1.1; schemaVersion=lightbi.phase-7r11-action-execution-audit.v1 | 1341 | `68009c6a644934503944c5b18235a199deb9b6bc0fe67d7fd40f9e9f764b23f1` |
-| [`docs/architecture/phase-7r11-clean-checkout-audit.json`](../architecture/phase-7r11-clean-checkout-audit.json) | phase=7R1.1; schemaVersion=lightbi.phase-7r11-clean-checkout-audit.v1 | 1915 | `e50d9874680ceb7f9ae88da0bf18e85b6d48fbf35c051545af2b2e508e58acfb` |
-| [`docs/architecture/phase-7r11-metric-correctness-audit.json`](../architecture/phase-7r11-metric-correctness-audit.json) | phase=7R1.1; schemaVersion=lightbi.phase-7r11-metric-correctness-audit.v1 | 2670 | `64904cfa3749ef95d89a2d0f297262ef9f4f216de90783f6d111ccd4418c4f98` |
-| [`docs/architecture/phase-7r11-release-gate-retest.json`](../architecture/phase-7r11-release-gate-retest.json) | classification=not_ready_multiple_release_blockers; phase=7R1.1; schemaVersion=lightbi.phase-7r11-release-gate-retest.v1; corpusVersion=1.2.0 | 5484 | `b689dcf5436c37bdf0c57b18ba1d19164ac36ce168e766f9ca79b5084d574c69` |
-| [`docs/architecture/phase-7r2-action-classification-audit.json`](../architecture/phase-7r2-action-classification-audit.json) | phase=7R2; schemaVersion=lightbi.phase-7r2-action-classification-audit.v1 | 6488 | `e36e9199ef9ef92c5d4e41d0daac8b8ad94ff88352463abf7599fec7c52176fe` |
-| [`docs/architecture/phase-7r2-advertised-action-root-cause-audit.json`](../architecture/phase-7r2-advertised-action-root-cause-audit.json) | phase=7R2; schemaVersion=lightbi.phase-7r2-advertised-action-root-cause-audit.v1 | 6968 | `740adcf209c36c85eb27f9c6f29f39250abf4e852d7b99870e81016af36b3ac4` |
-| [`docs/architecture/phase-7r2-corpus-regression-audit.json`](../architecture/phase-7r2-corpus-regression-audit.json) | phase=7R2; schemaVersion=lightbi.phase-7r2-corpus-regression-audit.v1 | 1669 | `29d65f0b8c6a4c5fa8de0c9eae296ccda6d642c7647bc5247c02bf1a125412aa` |
-| [`docs/architecture/phase-7r2-release-gate-impact-audit.json`](../architecture/phase-7r2-release-gate-impact-audit.json) | phase=7R2; schemaVersion=lightbi.phase-7r2-release-gate-impact-audit.v1 | 1789 | `a6c28a265ffce2e54542e793d915bb0a60b5c6d021837ecc929d8235cafbefcf` |
-| [`docs/architecture/phase-7r3-corpus-regression-audit.json`](../architecture/phase-7r3-corpus-regression-audit.json) | phase=7R3; schemaVersion=lightbi.phase-7r3-corpus-regression-audit.v1; corpusVersion=1.2.0 | 870 | `0e73cdf66871819005aca01aa3b2be494b523d491a3f7624655cc82556f63e61` |
-| [`docs/architecture/phase-7r3-metric-root-cause-audit.json`](../architecture/phase-7r3-metric-root-cause-audit.json) | phase=7R3; schemaVersion=lightbi.phase-7r3-metric-root-cause-audit.v1; corpusVersion=1.2.0 | 5171 | `2ca7c91a3886c1b0aeaa07aa352da05adcc7df2c08f63003d7f58b74047759e3` |
-| [`docs/architecture/phase-7r3-release-gate-impact-audit.json`](../architecture/phase-7r3-release-gate-impact-audit.json) | classification=not_ready_metric_family_coverage; phase=7R3; schemaVersion=lightbi.phase-7r3-release-gate-impact-audit.v1 | 2376 | `bab4caf1ce35000a7f0d3e67b76adf32462209943b7471f3ed5134dcece18624` |
-| [`docs/architecture/phase-7r3-required-family-coverage-audit.json`](../architecture/phase-7r3-required-family-coverage-audit.json) | phase=7R3; schemaVersion=lightbi.phase-7r3-required-family-coverage-audit.v1 | 1826 | `1e1b8c677c028d70d572b7c79c739afb4d6d78e480e70859a59b23b22084cb21` |
-| [`docs/architecture/phase-7r3-revenue-correctness-audit.json`](../architecture/phase-7r3-revenue-correctness-audit.json) | phase=7R3; schemaVersion=lightbi.phase-7r3-revenue-correctness-audit.v1 | 1065 | `45df0e9ae15b3101746f4a22705380a8a4f79cf3e58d3beef572cdbf2f3dc7ba` |
-| [`docs/architecture/phase-7r31-corpus-evidence-governance-audit.json`](../architecture/phase-7r31-corpus-evidence-governance-audit.json) | phase=7R3.1; schemaVersion=lightbi.phase-7r31-corpus-evidence-governance-audit.v1 | 938 | `00f28e5f943e0e8c5660a5fb7a0a60c9f47dcdd3635b95cf7e8a40d0608ea87f` |
-| [`docs/architecture/phase-7r31-delivery-identity-audit.json`](../architecture/phase-7r31-delivery-identity-audit.json) | phase=7R3.1; schemaVersion=lightbi.phase-7r31-delivery-identity-audit.v1 | 2154 | `3da15301435981083ed5f4a6baeb587c2edd86790a730023de7093c70b731d8e` |
-| [`docs/architecture/phase-7r31-family-blocker-audit.json`](../architecture/phase-7r31-family-blocker-audit.json) | phase=7R3.1; schemaVersion=lightbi.phase-7r31-family-blocker-audit.v1; corpusVersion=1.2.0 | 14241 | `17486f3b2876cc9bee3550d2e5df80588c244ac10fe0b9ebf217b03e4c5f260a` |
-| [`docs/architecture/phase-7r31-family-execution-audit.json`](../architecture/phase-7r31-family-execution-audit.json) | phase=7R3.1; schemaVersion=lightbi.phase-7r31-family-execution-audit.v1 | 1591 | `256c835545e472779a6b19744fdb1a11c9917dda0e87c53d95e894e9d6ddf107` |
-| [`docs/architecture/phase-7r31-gross-profit-readiness-audit.json`](../architecture/phase-7r31-gross-profit-readiness-audit.json) | phase=7R3.1; schemaVersion=lightbi.phase-7r31-gross-profit-readiness-audit.v1 | 2390 | `50513e16e8ecd6fe35a8cc8f3d9d01ceb004e4581822f2971eb791b134b21ade` |
-| [`docs/architecture/phase-7r31-inventory-evidence-audit.json`](../architecture/phase-7r31-inventory-evidence-audit.json) | classification=corpus_evidence_gap; phase=7R3.1; schemaVersion=lightbi.phase-7r31-inventory-evidence-audit.v1 | 1330 | `38b2945c9a15fe5a9f3f43f7f8dc5397e0806b62933950297d68c990b04e77c5` |
-| [`docs/architecture/phase-7r31-release-gate-impact-audit.json`](../architecture/phase-7r31-release-gate-impact-audit.json) | phase=7R3.1; schemaVersion=lightbi.phase-7r31-release-gate-impact-audit.v1 | 2632 | `e251a111ce858f589528826fd2d9e664a81b746c958c5c071462c1b8d918e1e9` |
-| [`docs/architecture/phase-7r32-corpus-regression-audit.json`](../architecture/phase-7r32-corpus-regression-audit.json) | phase=7R3.2; schemaVersion=lightbi.phase-7r32-corpus-regression-audit.v1; corpusVersion=1.2.0 | 1459 | `681f060aa09fb8fdc2dec1656262539b847b10697076ab970ff9aeb679ba0f9e` |
-| [`docs/architecture/phase-7r32-currency-compatibility-audit.json`](../architecture/phase-7r32-currency-compatibility-audit.json) | phase=7R3.2; schemaVersion=lightbi.phase-7r32-currency-compatibility-audit.v1 | 1034 | `d1fcf189570d92181def6a93f4b615e8a3d039371d499a212e485871f6b34a86` |
-| [`docs/architecture/phase-7r32-gross-profit-blocker-audit.json`](../architecture/phase-7r32-gross-profit-blocker-audit.json) | phase=7R3.2; schemaVersion=lightbi.phase-7r32-gross-profit-blocker-audit.v1; corpusVersion=1.2.0 | 4253 | `4617b587c043c53c6098413f83b6eb5fa8500fdbbeaccfec765bb516300c320b` |
-| [`docs/architecture/phase-7r32-gross-profit-execution-audit.json`](../architecture/phase-7r32-gross-profit-execution-audit.json) | phase=7R3.2; schemaVersion=lightbi.phase-7r32-gross-profit-execution-audit.v1 | 796 | `3c1ba92514a548b5dc9716e9107f2cce5a0ad83488b679d2932209b43f48b413` |
-| [`docs/architecture/phase-7r32-metric-binding-audit.json`](../architecture/phase-7r32-metric-binding-audit.json) | phase=7R3.2; schemaVersion=lightbi.phase-7r32-metric-binding-audit.v1 | 1481 | `0ec4cce2e039c3a3c7ec34c783996293bc0ad23d84566e96e89753c3594c1cf8` |
-| [`docs/architecture/phase-7r32-release-gate-impact-audit.json`](../architecture/phase-7r32-release-gate-impact-audit.json) | classification=not_ready_currency_compatibility; phase=7R3.2; schemaVersion=lightbi.phase-7r32-release-gate-impact-audit.v1 | 1833 | `023bbced4a780b4a5a291c5a15ee7509ef8d8b488e39ed6f5dd36e27c0716411` |
-| [`docs/architecture/phase-7r32-runtime-permission-audit.json`](../architecture/phase-7r32-runtime-permission-audit.json) | phase=7R3.2; schemaVersion=lightbi.phase-7r32-runtime-permission-audit.v1 | 1092 | `6ef6069b50fab937a860ff36230c16056159b76b798db1760e524785aa1d60ba` |
-| [`docs/architecture/phase-7r33-accounting-currency-evidence-audit.json`](../architecture/phase-7r33-accounting-currency-evidence-audit.json) | phase=7R3.3; schemaVersion=lightbi.phase-7r33-accounting-currency-evidence-audit.v1 | 3164 | `e25039d05f3fd22e0cd08120c47d905abe4dbd957c0847aed87fd617608e5f9a` |
-| [`docs/architecture/phase-7r33-corpus-extension-candidate.json`](../architecture/phase-7r33-corpus-extension-candidate.json) | phase=7R3.3; schemaVersion=lightbi.phase-7r33-corpus-extension-candidate.v1 | 883 | `0f37ed8a7a7b66454fd4a6c5f63f7b8aca98b61a3ab7bd56431dc81a6e3d6700` |
-| [`docs/architecture/phase-7r33-independent-truth-candidate-audit.json`](../architecture/phase-7r33-independent-truth-candidate-audit.json) | phase=7R3.3; schemaVersion=lightbi.phase-7r33-independent-truth-candidate-audit.v1 | 4011 | `42b53d521849890e18ddf45bfa88f72f275a2cad30741fe678aaf477c8622405` |
-| [`docs/architecture/phase-7r33-inventory-snapshot-evidence-audit.json`](../architecture/phase-7r33-inventory-snapshot-evidence-audit.json) | phase=7R3.3; schemaVersion=lightbi.phase-7r33-inventory-snapshot-evidence-audit.v1 | 4582 | `41e9b3b7d5a4f669a30c8d39d084a5a98b96cc5910cea43a94371cf5c0ba1409` |
-| [`docs/architecture/phase-7r33-relationship-candidate-audit.json`](../architecture/phase-7r33-relationship-candidate-audit.json) | phase=7R3.3; schemaVersion=lightbi.phase-7r33-relationship-candidate-audit.v1 | 3143 | `80b933e4d5dd428bd36b54a21d52f4fa77c25a75dfff184028d922dec05985b8` |
-| [`docs/architecture/phase-7r33-sample-data-file-inventory.json`](../architecture/phase-7r33-sample-data-file-inventory.json) | phase=7R3.3; schemaVersion=lightbi.phase-7r33-sample-data-file-inventory.v1 | 80551 | `2bc6517f3b301b9665c34d44e465566b739195be64d8b23cc8a1bb33206a34f4` |
-| [`docs/architecture/phase-7r34-authentic-anchor-inventory.json`](../architecture/phase-7r34-authentic-anchor-inventory.json) | schemaVersion=lightbi.phase7r34-authentic-anchors.v1 | 3810 | `b13a6beb1186d29458aa6ed21ad58918dc8c0ebca41b374c34eb38dd5c4e8ff5` |
-| [`docs/architecture/phase-7r34-corpus-1.3.0-manifest.json`](../architecture/phase-7r34-corpus-1.3.0-manifest.json) | schemaVersion=lightbi.acceptance-corpus.v1.3; corpusVersion=1.3.0 | 101001 | `1dca495e0903a7d9e025d24e103bd6b64de20d13425e2284b6d73901ad6a7cec` |
-| [`docs/architecture/phase-7r34-cross-file-relationship-manifest.json`](../architecture/phase-7r34-cross-file-relationship-manifest.json) | schemaVersion=lightbi.phase7r34-cross-file-relationships.v1 | 2611 | `1e4de975f4e3e377845de3194a387651c8c2979a59cc12a934fa3386ceec46cf` |
-| [`docs/architecture/phase-7r34-evidence-policy.json`](../architecture/phase-7r34-evidence-policy.json) | schemaVersion=lightbi.evaluation-evidence-policy.v1 | 2618 | `5a62f444f594fe9edb32aac33e5e48ac7158024c65a23c5135553542cb9df745` |
-| [`docs/architecture/phase-7r34-generation-provenance.json`](../architecture/phase-7r34-generation-provenance.json) | schemaVersion=lightbi.phase7r34-generation-provenance.v1 | 5567 | `be27ea3ac4ad508500ed611f028a4ae1eb1a5dce72c3a0e4d459d35c1b318cf1` |
-| [`docs/architecture/phase-7r34-independent-oracle-results.json`](../architecture/phase-7r34-independent-oracle-results.json) | schemaVersion=lightbi.phase7r34-independent-oracle-results.v1 | 715864 | `345d0edb3842fbf9b49884df0781adfe7ad73070692eda5a8a94566c7e150075` |
-| [`docs/architecture/phase-7r34-scenario-contract.json`](../architecture/phase-7r34-scenario-contract.json) | schemaVersion=lightbi.erp-scenario-contract.v1 | 1713 | `0cabb2156d30f42e59cf9a0e57e41a43140d90eea1f70d32e5036fe4a7da2023` |
-| [`docs/architecture/phase-7r35-action-runtime-audit.json`](../architecture/phase-7r35-action-runtime-audit.json) | status=failed_explanation_completeness; phase=7R3.5; schemaVersion=lightbi.phase7r35-action-runtime-audit.v1 | 925 | `89f2f326c527eeec0f6f9505235ef384b1723b1765ac507584169ca0dab900c5` |
-| [`docs/architecture/phase-7r35-canonical-path-audit.json`](../architecture/phase-7r35-canonical-path-audit.json) | status=completed_with_blocked_families; phase=7R3.5; schemaVersion=lightbi.phase7r35-canonical-path-audit.v1 | 983 | `9a75e84f78dadda951e8450d9ab69891481cf4b341ed491253c71ce5f6b303e0` |
-| [`docs/architecture/phase-7r35-engine-input-isolation-audit.json`](../architecture/phase-7r35-engine-input-isolation-audit.json) | status=passed; phase=7R3.5; schemaVersion=lightbi.phase7r35-engine-input-isolation-audit.v1 | 1311 | `054de4817832d583cdf293c831d3fa1cb81b5211d4759157d0380b3ff9bed866` |
-| [`docs/architecture/phase-7r35-gross-profit-execution-audit.json`](../architecture/phase-7r35-gross-profit-execution-audit.json) | status=failed_not_executed; phase=7R3.5; schemaVersion=lightbi.phase7r35-gross-profit-execution-audit.v1 | 1289 | `9735dce279bd851f08a13fbf48a5eb92ea76b4f41429792e00321794fbf22327` |
-| [`docs/architecture/phase-7r35-inventory-execution-audit.json`](../architecture/phase-7r35-inventory-execution-audit.json) | status=failed_not_executed; phase=7R3.5; schemaVersion=lightbi.phase7r35-inventory-execution-audit.v1 | 1705 | `cd5e4590be0ecd9a6e2886a68124df877fc739a4dad2364810312e6a7da25823` |
-| [`docs/architecture/phase-7r35-relationship-validation-audit.json`](../architecture/phase-7r35-relationship-validation-audit.json) | status=failed_unresolved_relationships; phase=7R3.5; schemaVersion=lightbi.phase7r35-relationship-validation-audit.v1 | 2302 | `86ea666bf1d6742d61debd306d78709a78dd06c90b1b88838d337fe4ad85970c` |
-| [`docs/architecture/phase-7r35-release-gate-impact-audit.json`](../architecture/phase-7r35-release-gate-impact-audit.json) | status=release_gate_not_ready; classification=not_ready_gross_profit_execution; phase=7R3.5; schemaVersion=lightbi.phase7r35-release-gate-impact-audit.v1 | 2081 | `fd66cc9a6a72bdbfb01047f23f7de391fa7a923846dbb182260dd2f146e0fe91` |
-| [`docs/architecture/phase-7r35-revenue-delivery-execution-audit.json`](../architecture/phase-7r35-revenue-delivery-execution-audit.json) | status=passed; phase=7R3.5; schemaVersion=lightbi.phase7r35-revenue-delivery-execution-audit.v1 | 1122 | `fbf9a1b778890f603b72ee89c620eba2e3de1240ad0f4e53d3d7f5d8d2e108dc` |
-| [`docs/architecture/phase-7r36-corpus-regression-audit.json`](../architecture/phase-7r36-corpus-regression-audit.json) | status=pass; phase=7R3.6; schemaVersion=lightbi.phase7r36-corpus-regression-audit.v1; corpusVersion=1.3.0 | 1155 | `189072bfa8a2126374c1d15c15bb4ef43f93d94dbcad389689b1a3aa3623cc17` |
-| [`docs/architecture/phase-7r36-currency-evidence-plumbing-audit.json`](../architecture/phase-7r36-currency-evidence-plumbing-audit.json) | status=pass; phase=7R3.6; schemaVersion=lightbi.phase7r36-currency-evidence-plumbing-audit.v1 | 874 | `1d38b54686b6aaa549786954cc81af1f8b1a75f0e123a97f53a6c9e5777c107c` |
-| [`docs/architecture/phase-7r36-explanation-completeness-audit.json`](../architecture/phase-7r36-explanation-completeness-audit.json) | status=pass; phase=7R3.6; schemaVersion=lightbi.phase7r36-explanation-completeness-audit.v1 | 454 | `22c92b11e8dfe08dd03debc3f0d49058c3744a9036bef3c488700c52877f9fb2` |
-| [`docs/architecture/phase-7r36-gross-profit-execution-audit.json`](../architecture/phase-7r36-gross-profit-execution-audit.json) | status=pass; phase=7R3.6; schemaVersion=lightbi.phase7r36-gross-profit-execution-audit.v1 | 617 | `1bd33c4e6c29ff84c469f911d6b64878293021be4b06fcdc7afd6f30102b7f0b` |
-| [`docs/architecture/phase-7r36-gross-profit-preflight-audit.json`](../architecture/phase-7r36-gross-profit-preflight-audit.json) | status=pass; phase=7R3.6; schemaVersion=lightbi.phase7r36-gross-profit-preflight-audit.v1 | 835 | `b562929fd43cacf16c31de3041e41bd2b1139c83470e880044b4629362ab0e9f` |
-| [`docs/architecture/phase-7r36-release-gate-impact-audit.json`](../architecture/phase-7r36-release-gate-impact-audit.json) | status=pass; classification=conditional_finance_execution_ready_for_inventory_remediation; phase=7R3.6; schemaVersion=lightbi.phase7r36-release-gate-impact-audit.v1 | 1425 | `45321806487526420f660fadebc91c0dc95a8f18cbba9e63d5f3ba32d9347b86` |
-| [`docs/architecture/phase-7r36-repeated-measure-readiness-audit.json`](../architecture/phase-7r36-repeated-measure-readiness-audit.json) | gross_profit_metric_specific; status=pass; phase=7R3.6; schemaVersion=lightbi.phase7r36-repeated-measure-readiness-audit.v1 | 626 | `25c548eeb785d5c88b0e93c2fe8b6c07fe0ecf863df54627ff5c8b8a8868281a` |
-| [`docs/architecture/phase-7r37-corpus-regression-audit.json`](../architecture/phase-7r37-corpus-regression-audit.json) | status=pass; phase=7R3.7; schemaVersion=lightbi.phase-7r37-corpus-regression-audit.v1 | 768 | `cc3e927748962028171724b6b21af9052fb85a767a5e776b026580197e904c52` |
-| [`docs/architecture/phase-7r37-detailed-balance-comparison-audit.json`](../architecture/phase-7r37-detailed-balance-comparison-audit.json) | status=pass; phase=7R3.7; schemaVersion=lightbi.phase-7r37-detailed-balance-comparison-audit.v1 | 766 | `e455e5cbce7d55e66e3dbf7474091865ac067dbea2036f07b2a906af769f44af` |
-| [`docs/architecture/phase-7r37-inventory-execution-audit.json`](../architecture/phase-7r37-inventory-execution-audit.json) | status=pass; phase=7R3.7; schemaVersion=lightbi.phase-7r37-inventory-execution-audit.v1 | 1310 | `0c61e10bc9746a06d4571bddb96189901c32cb2ea6f2b311f65176b3c26100f3` |
-| [`docs/architecture/phase-7r37-inventory-preflight-audit.json`](../architecture/phase-7r37-inventory-preflight-audit.json) | status=pass; phase=7R3.7; schemaVersion=lightbi.phase-7r37-inventory-preflight-audit.v1 | 808 | `6ae56d33169e3b14def87a769a672783e2bfa3050f956f1d19aa6f64e673200b` |
-| [`docs/architecture/phase-7r37-inventory-root-cause-audit.json`](../architecture/phase-7r37-inventory-root-cause-audit.json) | status=closed; phase=7R3.7; schemaVersion=lightbi.phase-7r37-inventory-root-cause-audit.v1 | 2515 | `673e6403d31f6518c8831e39e6e73df727ead4fea8e1294f3811ea741c98c3b2` |
-| [`docs/architecture/phase-7r37-negative-probe-audit.json`](../architecture/phase-7r37-negative-probe-audit.json) | status=pass; phase=7R3.7; schemaVersion=lightbi.phase-7r37-negative-probe-audit.v1 | 820 | `86a21b10ab99f941f72962aad64605d7c40b45272812d3f5dc9019ed6a99a034` |
-| [`docs/architecture/phase-7r37-release-gate-impact-audit.json`](../architecture/phase-7r37-release-gate-impact-audit.json) | status=pass; classification=inventory_execution_ready_for_release_gate_retest; phase=7R3.7; schemaVersion=lightbi.phase-7r37-release-gate-impact-audit.v1 | 1562 | `1508535d1756216e8a1954337dc212adbc525bc9dcf951f3fe7589a8dbcea095` |
-| [`docs/architecture/phase-7r37-semantic-binding-audit.json`](../architecture/phase-7r37-semantic-binding-audit.json) | status=pass; phase=7R3.7; schemaVersion=lightbi.phase-7r37-semantic-binding-audit.v1 | 1149 | `cb3171b14dca0b7315968d079a52dee40a6f1e0d6748ba3aec1523dc72e8669f` |
-| [`docs/architecture/phase-7r37-snapshot-grain-readiness-audit.json`](../architecture/phase-7r37-snapshot-grain-readiness-audit.json) | status=pass; phase=7R3.7; schemaVersion=lightbi.phase-7r37-snapshot-grain-readiness-audit.v1 | 763 | `a2f53e8ffe91d33cee191ebf50a287514bc0abf50fe5301e04bc5b7d54d5c731` |
-| [`docs/architecture/phase-7r38-clean-checkout-audit.json`](../architecture/phase-7r38-clean-checkout-audit.json) | classification=not_ready_clean_machine_reproducibility; phase=7R3.8; schemaVersion=lightbi.phase-7r38-clean-checkout-audit.v1 | 1858 | `6e580e66e9e972a1f4669140acf3b6e6d8fcd0038fc045206a56f9869f198640` |
-| [`docs/architecture/phase-7r38-evidence-population-audit.json`](../architecture/phase-7r38-evidence-population-audit.json) | status=pass; phase=7R3.8; schemaVersion=lightbi.phase-7r38-evidence-population-audit.v1 | 1891 | `854b17f3fabdf0307eada4601b87cf063b8c5969507387f19384de79ca11b3da` |
-| [`docs/architecture/phase-7r38-final-suite-conformance.json`](../architecture/phase-7r38-final-suite-conformance.json) | phase=7R3.8; schemaVersion=lightbi.phase-7r38-final-suite-conformance.v1 | 1392 | `d4125aba783556979c04120f6368240fef0b030dd134edf940178e6f725224b8` |
-| [`docs/architecture/phase-7r38-metric-family-audit.json`](../architecture/phase-7r38-metric-family-audit.json) | status=pass; phase=7R3.8; schemaVersion=lightbi.phase-7r38-metric-family-audit.v1 | 2118 | `69a6d8dc7a9009b3462f9f7fb5c207c74d356a988c65e982660ea751ceb30c7c` |
-| [`docs/architecture/phase-7r38-release-measurements.json`](../architecture/phase-7r38-release-measurements.json) | classification=not_ready_clean_machine_reproducibility; phase=7R3.8; schemaVersion=lightbi.phase-7r38-release-measurements.v1 | 6552 | `7381a26c68c637a2b6d8dcff70a8b309405810283b2424515494b4ae5f2212e8` |
-| [`docs/architecture/phase-7r4-candidate-commit-manifest.json`](../architecture/phase-7r4-candidate-commit-manifest.json) | phase=7R4; schemaVersion=lightbi.phase-7r4-candidate-commit-manifest.v1 | 51338 | `e8a7b43a9628633ad015e7c960578c25219b023e9d6519bf1990822ffdc5e6b0` |
-| [`docs/architecture/phase-7r4-candidate-file-inventory.json`](../architecture/phase-7r4-candidate-file-inventory.json) | phase=7R4; schemaVersion=lightbi.phase-7r4-candidate-file-inventory.v1 | 98733 | `675a9469cee3f0b5582e39197f00f73c1d0aec2a789fa1a9bd67301820c3f5d6` |
-| [`docs/architecture/phase-7r4-clean-checkout-reproduction-audit.json`](../architecture/phase-7r4-clean-checkout-reproduction-audit.json) | classification=not_ready_repository_controlled_inputs; phase=7R4; schemaVersion=lightbi.phase-7r4-clean-checkout-reproduction-audit.v1 | 4926 | `ef34da4e7fe8990065a52329a15764f521e84ad6bef22277c14135b706c1b2aa` |
-| [`docs/architecture/phase-7r4-final-suite-conformance.json`](../architecture/phase-7r4-final-suite-conformance.json) | phase=7R4; schemaVersion=lightbi.phase-7r4-final-suite-conformance.v1 | 2651 | `c1cc49fe935c854c6bc36a84c8407644f17e6e29a3b688ba3d362fd7691dfebc` |
-| [`docs/architecture/phase-7r4-release-gate-audit.json`](../architecture/phase-7r4-release-gate-audit.json) | classification=not_ready_repository_controlled_inputs; phase=7R4; schemaVersion=lightbi.phase-7r4-release-gate-audit.v1 | 3710 | `6ed36ed4aa0128c9e0ce1535bca23cd3d9a358ba773fcc48c622e2238c1d34b1` |
-| [`docs/architecture/phase-7r4-repository-input-audit.json`](../architecture/phase-7r4-repository-input-audit.json) | classification=not_ready_repository_controlled_inputs; phase=7R4; schemaVersion=lightbi.phase-7r4-repository-input-audit.v1 | 1980 | `e698eb2349666b13a3fac79e9d737ec4484c067f62ac2597cadb7749748787b2` |
-| [`docs/architecture/phase-7r4-sensitive-data-boundary-audit.json`](../architecture/phase-7r4-sensitive-data-boundary-audit.json) | phase=7R4; schemaVersion=lightbi.phase-7r4-sensitive-data-boundary-audit.v1 | 5285 | `6a67b9af9a6dd924a5212b9d6c78611fd5a5a6700e0f01fc085846adc218dbbe` |
-| [`docs/architecture/phase-7r41-candidate-commit-manifest.json`](../architecture/phase-7r41-candidate-commit-manifest.json) | phase=7R4.1; schemaVersion=lightbi.phase-7r41-candidate-commit-manifest.v1 | 1422 | `8a181d8a2e2e41210455fd49da474ee835c81b5f19f9ef7c1094158069ef492a` |
-| [`docs/architecture/phase-7r41-clean-checkout-reproduction-audit.json`](../architecture/phase-7r41-clean-checkout-reproduction-audit.json) | phase=7R4.1; schemaVersion=lightbi.phase-7r41-clean-checkout-reproduction-audit.v1 | 1668 | `50d76d097ee7836ad4bb06dd8c877a0568ff0170a2e7b377cf24a561c479b344` |
-| [`docs/architecture/phase-7r41-corpus-140-acceptance-measurements.json`](../architecture/phase-7r41-corpus-140-acceptance-measurements.json) | schemaVersion=lightbi.phase7r41-corpus-140-acceptance-measurements.v1; corpusVersion=1.4.0 | 2187 | `af6549f3c89b3a534bdfebe29454ad9d9bf2dea6eefb59e5e063522b883fc66e` |
-| [`docs/architecture/phase-7r41-corpus-140-manifest-audit.json`](../architecture/phase-7r41-corpus-140-manifest-audit.json) | schemaVersion=lightbi.phase7r41-corpus-140-manifest-audit.v1; corpusVersion=1.4.0 | 4463 | `db3c54f7c0e0997906e61d17ca6a97a41db525e51ec72507832c5fddaaf82918` |
-| [`docs/architecture/phase-7r41-final-suite-conformance.json`](../architecture/phase-7r41-final-suite-conformance.json) | phase=7R4.1; schemaVersion=lightbi.phase-7r41-final-suite-conformance.v1 | 2341 | `23af777a807e04e047ed6445d13407cf1a4b9d27aad16b70dd7200ba14535ed2` |
-| [`docs/architecture/phase-7r41-missing-fixture-disposition-audit.json`](../architecture/phase-7r41-missing-fixture-disposition-audit.json) | schemaVersion=lightbi.phase7r41-missing-fixture-disposition-audit.v1 | 10931 | `71ef87e750768e7c7e02ae6fc8aef4d81f8832d74efa840fab57418c4f460e1b` |
-| [`docs/architecture/phase-7r41-repository-input-closure-audit.json`](../architecture/phase-7r41-repository-input-closure-audit.json) | schemaVersion=lightbi.phase7r41-repository-input-closure-audit.v1 | 5260 | `91e19f4a2fe1dd322b9f30a286d6431ae96065bef103825b4338a7cd0da24904` |
-| [`docs/architecture/phase-7r41-sanitization-contract-audit.json`](../architecture/phase-7r41-sanitization-contract-audit.json) | schemaVersion=lightbi.phase7r41-sanitization-contract-audit.v1 | 2707 | `0a92aa4a634325edf26bcfa7bc57a0cb4fa6aaf47fc0d8861217c8b7f047c081` |
-| [`docs/architecture/phase-7r41-sensitive-data-and-license-audit.json`](../architecture/phase-7r41-sensitive-data-and-license-audit.json) | schemaVersion=lightbi.phase7r41-sensitive-data-and-license-audit.v1 | 624 | `dcb0f074e08d71ea4686c8aa155954a67c8352338770f1f112f32eccca14bf12` |
-| [`docs/architecture/phase-8a-advanced-result-completeness-audit.json`](../architecture/phase-8a-advanced-result-completeness-audit.json) | phase=8A; schemaVersion=lightbi.phase-8a-advanced-result-completeness-audit.v1 | 574 | `760145efa0d8ee0766396c0464f9d300ccb6c2e678f04cf266136e27f218b427` |
-| [`docs/architecture/phase-8a-canonical-source-scope-contract-audit.json`](../architecture/phase-8a-canonical-source-scope-contract-audit.json) | phase=8A; schemaVersion=lightbi.phase-8a-canonical-source-scope-contract-audit.v1 | 1285 | `0d1805cefab76cd8f43c5c04c71904985566266c6b97c7a13ab56412a936f11d` |
-| [`docs/architecture/phase-8a-current-full-source-defect-audit.json`](../architecture/phase-8a-current-full-source-defect-audit.json) | phase=8A; schemaVersion=lightbi.phase-8a-current-full-source-defect-audit.v1 | 931 | `166c6d429ec83b8a58e16de549897220009945d6fe478a9930fbd4d33246446f` |
-| [`docs/architecture/phase-8a-full-file-execution-evidence-audit.json`](../architecture/phase-8a-full-file-execution-evidence-audit.json) | phase=8A; schemaVersion=lightbi.phase-8a-full-file-execution-evidence-audit.v1 | 792 | `f3dd789ca247a9f8addd0502932c04de9d464490e77fdc923407603e67806e72` |
-| [`docs/architecture/phase-8a-large-file-production-flow-audit.json`](../architecture/phase-8a-large-file-production-flow-audit.json) | phase=8A; schemaVersion=lightbi.phase-8a-large-file-production-flow-audit.v1 | 1021 | `4912aa95fdee188f5c7afb511dc02b63d7a4f7ede0060b023de9096a1438e2d3` |
-| [`docs/architecture/phase-8a-negative-probe-audit.json`](../architecture/phase-8a-negative-probe-audit.json) | phase=8A; schemaVersion=lightbi.phase-8a-negative-probe-audit.v1 | 2148 | `7cbf26464e18b320009bb65339157ee9502fe60391130a8447041555a540e609` |
-| [`docs/architecture/phase-8a-regression-conformance.json`](../architecture/phase-8a-regression-conformance.json) | phase=8A; schemaVersion=lightbi.phase-8a-regression-conformance.v1 | 1499 | `1b2099f3c0a9d39f04668105720dc3855c2ebc92c800c0efbab0877b798bc3cc` |
-| [`docs/architecture/phase-8a-source-identity-invalidation-audit.json`](../architecture/phase-8a-source-identity-invalidation-audit.json) | phase=8A; schemaVersion=lightbi.phase-8a-source-identity-invalidation-audit.v1 | 1016 | `342c4a87870fbc5b51fdd0b4db9a14fa81dfcc8197b575d103f5bb35d2cabec5` |
-| [`docs/architecture/phase-8b-current-interaction-gap-audit.json`](../architecture/phase-8b-current-interaction-gap-audit.json) | schemaVersion=lightbi.phase8b.current-interaction-gap-audit.v1 | 2368 | `4c694dd49620707e9a1bf4d4dbcd2e4675b11d08889b8227f889945a0a1f577e` |
-| [`docs/architecture/phase-8b-gross-profit-production-interaction-audit.json`](../architecture/phase-8b-gross-profit-production-interaction-audit.json) | status=pass; schemaVersion=lightbi.phase8b.gross-profit-production-interaction-audit.v1 | 1277 | `dbeee3804c9c89e052a267ad04bf8231dccdf818917b7e12b4a5b12e5b55f7f9` |
-| [`docs/architecture/phase-8b-inventory-production-interaction-audit.json`](../architecture/phase-8b-inventory-production-interaction-audit.json) | status=pass; schemaVersion=lightbi.phase8b.inventory-production-interaction-audit.v1 | 1470 | `5e020f9ff45b80af598936a758e5802268866c6e21f9f582fa4d205e20348102` |
-| [`docs/architecture/phase-8b-mapping-overlay-contract-audit.json`](../architecture/phase-8b-mapping-overlay-contract-audit.json) | status=pass; schemaVersion=lightbi.phase8b.mapping-overlay-contract-audit.v1 | 1250 | `e42a2c819a0cfdc73c3a9538b8f596e9369d9a6135d12d5325272e73c3454c38` |
-| [`docs/architecture/phase-8b-negative-probe-audit.json`](../architecture/phase-8b-negative-probe-audit.json) | status=pass; schemaVersion=lightbi.phase8b.negative-probe-audit.v1 | 940 | `dc9eb2aa18e2bcdecf0011fd21cf8976db341c38e0496c4478d5c48906c17066` |
-| [`docs/architecture/phase-8b-overlay-validation-audit.json`](../architecture/phase-8b-overlay-validation-audit.json) | status=pass; schemaVersion=lightbi.phase8b.overlay-validation-audit.v1 | 735 | `40076177e07b9370feac348fa455431bd841c93aa7e3bea9e61369a84908b99d` |
-| [`docs/architecture/phase-8b-persistence-and-recovery-audit.json`](../architecture/phase-8b-persistence-and-recovery-audit.json) | status=pass; schemaVersion=lightbi.phase8b.persistence-and-recovery-audit.v1 | 741 | `af007b2cf594efa7e606c8f702be2f67195caa85780ee96e7c0bb6d80e794e6a` |
-| [`docs/architecture/phase-8b-regression-conformance.json`](../architecture/phase-8b-regression-conformance.json) | status=pass; schemaVersion=lightbi.phase8b.regression-conformance.v1 | 2362 | `95f333333db305116eee39311a66abdbd9d922d3e14b35f7632e7ab4c75226ea` |
-| [`docs/architecture/phase-8b-source-binding-invalidation-audit.json`](../architecture/phase-8b-source-binding-invalidation-audit.json) | status=pass; schemaVersion=lightbi.phase8b.source-binding-invalidation-audit.v1 | 728 | `e3d405a635719507693f3946792c2a77d0ba899dd6760747c9640d8bcfabc5ab` |
-| [`docs/architecture/phase-8b-source-evidence-contract-audit.json`](../architecture/phase-8b-source-evidence-contract-audit.json) | status=pass; schemaVersion=lightbi.phase8b.source-evidence-contract-audit.v1 | 888 | `8bc3b00431d0fc61af5164df5cfee0440ba35cb419447fe997647563c4555e6e` |
-| [`docs/architecture/phase-8c-accessibility-interaction-baseline.json`](../architecture/phase-8c-accessibility-interaction-baseline.json) | functional interaction baseline only; no visual or full accessibility redesign; status=pass; schemaVersion=lightbi.phase8c.accessibility-interaction-baseline.v1 | 506 | `bc1704adb278ed31b5bf1d5cd11d9d9d17f782b814768e0a0bd1794cb3ea338a` |
-| [`docs/architecture/phase-8c-advanced-partial-flow-audit.json`](../architecture/phase-8c-advanced-partial-flow-audit.json) | status=pass; schemaVersion=lightbi.phase8c.advanced-partial-flow-audit.v1 | 587 | `a24f0481cc01d2193756d020d29096dca598d58cc382743aa7865f1739ede0f3` |
-| [`docs/architecture/phase-8c-blocker-priority-audit.json`](../architecture/phase-8c-blocker-priority-audit.json) | status=pass; schemaVersion=lightbi.phase8c.blocker-priority-audit.v1 | 580 | `9e4d6713d7b94a0579c62b497ff96b462c386462839c8e5d39d79e51ed8b9729` |
-| [`docs/architecture/phase-8c-canonical-presentation-contract-audit.json`](../architecture/phase-8c-canonical-presentation-contract-audit.json) | status=pass; schemaVersion=lightbi.phase8c.canonical-presentation-contract-audit.v1 | 1145 | `91dc83f00ab38775432c9f2ee898d0e07abfc7ee2240e93ad446f2aad2249de5` |
-| [`docs/architecture/phase-8c-current-blocker-ux-defect-audit.json`](../architecture/phase-8c-current-blocker-ux-defect-audit.json) | schemaVersion=lightbi.phase-8c-current-blocker-ux-defect-audit.v1 | 7375 | `01ea5d99ba04a5836953249cd7f3d4b0a73cf3c4f4a1a911eaa308d29ac999dd` |
-| [`docs/architecture/phase-8c-home-functional-flow-audit.json`](../architecture/phase-8c-home-functional-flow-audit.json) | status=pass; schemaVersion=lightbi.phase8c.home-functional-flow-audit.v1 | 721 | `c7f96739e3729730060f87bb04c04742730bf813ce0b38d97d3c02dcb3ddb466` |
-| [`docs/architecture/phase-8c-investigation-functional-flow-audit.json`](../architecture/phase-8c-investigation-functional-flow-audit.json) | status=pass; schemaVersion=lightbi.phase8c.investigation-functional-flow-audit.v1 | 694 | `95f14e430588bc6de18b6397262f8efff9ef974895f723916359bdbe0fb95c0f` |
-| [`docs/architecture/phase-8c-negative-probe-audit.json`](../architecture/phase-8c-negative-probe-audit.json) | status=pass; schemaVersion=lightbi.phase8c.negative-probe-audit.v1 | 2419 | `b037a52608b4cde127558c4b7843e79512706c4d37a23b34f098f1b922699a5f` |
-| [`docs/architecture/phase-8c-positive-interaction-audit.json`](../architecture/phase-8c-positive-interaction-audit.json) | status=pass; schemaVersion=lightbi.phase8c.positive-interaction-audit.v1 | 1171 | `a6c96a5a4050847c7bcc520dd3c1ddc1376158d463407a251ec4a602b4965308` |
-| [`docs/architecture/phase-8c-regression-conformance.json`](../architecture/phase-8c-regression-conformance.json) | status=pass; schemaVersion=lightbi.phase8c.regression-conformance.v1 | 2243 | `bada899897ace4380a10d0b0046d7e5530c55925649f514e7180d914dda707b9` |
-| [`docs/architecture/phase-8c-remediation-routing-audit.json`](../architecture/phase-8c-remediation-routing-audit.json) | status=pass; schemaVersion=lightbi.phase8c.remediation-routing-audit.v1 | 1348 | `d37fa12e439b9d006870bbd5aba0ce39647377e28975d7fe2e8de192a750340f` |
-| [`docs/architecture/phase-8c-state-classification-audit.json`](../architecture/phase-8c-state-classification-audit.json) | status=pass; schemaVersion=lightbi.phase8c.state-classification-audit.v1 | 985 | `aec0f588f35eea2dc5f1033818cc0e134ff553cbea55e38d63c271223623b0cb` |
-| [`docs/architecture/phase-8d-accessibility-baseline.json`](../architecture/phase-8d-accessibility-baseline.json) | status=pass_functional_baseline; schemaVersion=lightbi.phase8d.accessibility-baseline.v1 | 659 | `3107e65e76be5104f1544e033094210788372721e53bb0ee631c8925d5c5180d` |
-| [`docs/architecture/phase-8d-advanced-boundary-audit.json`](../architecture/phase-8d-advanced-boundary-audit.json) | status=pass; schemaVersion=lightbi.phase8d.advanced-boundary-audit.v1 | 588 | `d12f21bee02865715ed4a5a5dfb54c087a59f2a1bd845c9e28b1afd0b313d5d0` |
-| [`docs/architecture/phase-8d-analysis-discovery-audit.json`](../architecture/phase-8d-analysis-discovery-audit.json) | status=pass; schemaVersion=lightbi.phase8d.analysis-discovery-audit.v1 | 607 | `b8746e0d26152697150ffca11b4b3c959a01d4a385204dc71f82703b183ac622` |
-| [`docs/architecture/phase-8d-dead-end-and-legacy-surface-audit.json`](../architecture/phase-8d-dead-end-and-legacy-surface-audit.json) | status=pass; schemaVersion=lightbi.phase8d.dead-end-and-legacy-surface-audit.v1 | 860 | `41c5c638b8909fdc25b9f906d510db1d9ff80d3382ea55b51a83a32ba178d852` |
-| [`docs/architecture/phase-8d-export-handoff-audit.json`](../architecture/phase-8d-export-handoff-audit.json) | status=pass; schemaVersion=lightbi.phase8d.export-handoff-audit.v1 | 1169 | `33c0d79bb34067d70ba71c335b6d181df77b2eafc4b39d48d7b623feb1753c3b` |
-| [`docs/architecture/phase-8d-feature-reachability-matrix.json`](../architecture/phase-8d-feature-reachability-matrix.json) | current commerce/distribution MVP; classification=all_supported_features_reachable; schemaVersion=lightbi.phase8d.feature-reachability-matrix.v1 | 939 | `82479156771caebdce43c3cebbf8d226e2cc8876565a5cf108dc9d3c5e13c277` |
-| [`docs/architecture/phase-8d-multifile-reachability-audit.json`](../architecture/phase-8d-multifile-reachability-audit.json) | status=fail; schemaVersion=lightbi.phase8d.multifile-reachability-audit.v1 | 1006 | `f8a4a58c6c6e7fc688f27ed9edfc578644722487896c2ae7d3ffb8b9d984cdbe` |
-| [`docs/architecture/phase-8d-navigation-state-audit.json`](../architecture/phase-8d-navigation-state-audit.json) | status=pass; schemaVersion=lightbi.phase8d.navigation-state-audit.v1 | 725 | `530da270492fa1e7690ac63ad2175cf3f3209c15ebc8599c79e2e4baafe7d3a7` |
-| [`docs/architecture/phase-8d-negative-probe-audit.json`](../architecture/phase-8d-negative-probe-audit.json) | status=pass; schemaVersion=lightbi.phase8d.negative-probe-audit.v1 | 1810 | `946f2863740a17a8ff79d056b40b392dffe2fb62f78bcfc2153c6ce1ec412a0c` |
-| [`docs/architecture/phase-8d-positive-production-journey-audit.json`](../architecture/phase-8d-positive-production-journey-audit.json) | status=fail; schemaVersion=lightbi.phase8d.positive-production-journey-audit.v1 | 1614 | `998cc0cc781ace8603e508246e1fdcb1cb7f19b25de8e6c7418b1e9c7b207399` |
-| [`docs/architecture/phase-8d-production-capability-inventory.json`](../architecture/phase-8d-production-capability-inventory.json) | commerce_distribution_mvp; schemaVersion=lightbi.phase8d.production-capability-inventory.v1 | 10432 | `fdf7da52d07e06678613b60a52824b3178f924fb7c3ea4a47c6d79af72f35e3f` |
-| [`docs/architecture/phase-8d-regression-conformance.json`](../architecture/phase-8d-regression-conformance.json) | status=pass_governed_regression_baseline; schemaVersion=lightbi.phase8d.regression-conformance.v1 | 1855 | `515fe159a912c35b3c460c627f9ca8b1f06ad8acc7f193c23b5ff1a26dafc32a` |
-| [`docs/architecture/phase-8d-result-continuity-audit.json`](../architecture/phase-8d-result-continuity-audit.json) | status=pass; schemaVersion=lightbi.phase8d.result-continuity-audit.v1 | 665 | `add20a81cbb036f71d591f2f549f27a7af6e4b27ee07ef3d39ad0e0383289c10` |
-| [`docs/architecture/phase-8d-understanding-surface-audit.json`](../architecture/phase-8d-understanding-surface-audit.json) | status=pass_with_multi_source_limitation; schemaVersion=lightbi.phase8d.understanding-surface-audit.v1 | 959 | `28591918bb5fe3223a2e2c798d6a140976573755b02c4bb2d23652c7884cac1e` |
-| [`docs/architecture/phase-8d1-current-multisource-defect-audit.json`](../architecture/phase-8d1-current-multisource-defect-audit.json) | schemaVersion=lightbi.phase-8d1-current-multisource-defect-audit.v1 | 3005 | `1d27ff64f480d4495a162e3c33ef930aef5350c45640d130d5d91ee4c79cfda1` |
-| [`docs/architecture/phase-8d1-final-checkpoint-manifest.json`](../architecture/phase-8d1-final-checkpoint-manifest.json) | Phase 8D and Phase 8D.1 checkpoint closure only; classification=mvp_functional_ui_reachability_complete_ready_for_code_cleanup; schemaVersion=lightbi.phase8d1.final-checkpoint-manifest.v1 | 5738 | `6dd342457519c94437eab7e7d1857f7b28ae5e2e94ef761577a74ede042785b4` |
-| [`docs/architecture/phase-8d1-governed-relationship-artifact-audit.json`](../architecture/phase-8d1-governed-relationship-artifact-audit.json) | status=pass; schemaVersion=lightbi.phase8d1.governed-relationship-artifact-audit.v1 | 862 | `36133f57a959dfbb7c3b11179a35406f65f6a3777b8ed7d6400362ae717d9ab9` |
-| [`docs/architecture/phase-8d1-gross-profit-production-journey-audit.json`](../architecture/phase-8d1-gross-profit-production-journey-audit.json) | status=pass; schemaVersion=lightbi.phase8d1.gross-profit-production-journey-audit.v1 | 899 | `5d1826679f1cca7034bf048558d9478c2c0f13f28573dc94111d8e9f10ef8a6a` |
-| [`docs/architecture/phase-8d1-inventory-isolation-audit.json`](../architecture/phase-8d1-inventory-isolation-audit.json) | status=pass; schemaVersion=lightbi.phase8d1.inventory-isolation-audit.v1 | 460 | `51e234cd3f2afe537100ea8c5dcc29d7a0582952a24ce76ee2db5dbc14bb5ae5` |
-| [`docs/architecture/phase-8d1-m1-m2-m3-integration-audit.json`](../architecture/phase-8d1-m1-m2-m3-integration-audit.json) | status=pass; schemaVersion=lightbi.phase8d1.m1-m2-m3-integration-audit.v1 | 666 | `70749952843e00f66f478f4bd41a89608ebd8057d2ed43f37d95adead9b9580f` |
-| [`docs/architecture/phase-8d1-multisource-dataset-contract-audit.json`](../architecture/phase-8d1-multisource-dataset-contract-audit.json) | commerce_distribution_mvp_gross_profit_only; status=pass; schemaVersion=lightbi.phase8d1.multisource-dataset-contract-audit.v1 | 744 | `19335022644a8c01cdaa13af0cb72374e8bcca037695e64d8d4fd0b2c9d653e5` |
-| [`docs/architecture/phase-8d1-multisource-runtime-execution-audit.json`](../architecture/phase-8d1-multisource-runtime-execution-audit.json) | status=pass; schemaVersion=lightbi.phase8d1.multisource-runtime-execution-audit.v1 | 891 | `f5d3aaea208c303b1039aa5ab9321e8ca74394999b3d564076e9ec10ded92593` |
-| [`docs/architecture/phase-8d1-navigation-persistence-audit.json`](../architecture/phase-8d1-navigation-persistence-audit.json) | status=pass; schemaVersion=lightbi.phase8d1.navigation-persistence-audit.v1 | 544 | `ccdbb3932d0e15d9260826aa125218f2a04d9a36550561ee8b7ac24b856764c5` |
-| [`docs/architecture/phase-8d1-negative-probe-audit.json`](../architecture/phase-8d1-negative-probe-audit.json) | status=pass; schemaVersion=lightbi.phase8d1.negative-probe-audit.v1 | 527 | `72cf9e2bbe2776239f0cbf84dc9ad40df8f61268f0a00ecde9f017a9424d3e34` |
-| [`docs/architecture/phase-8d1-regression-conformance.json`](../architecture/phase-8d1-regression-conformance.json) | status=pass; schemaVersion=lightbi.phase8d1.regression-conformance.v1 | 1668 | `d8a0094c6e4a840738abd34e9a71d8d34920bf5e046ba4936855583652f67ea8` |
-| [`docs/architecture/phase-8d1-relationship-invalidation-audit.json`](../architecture/phase-8d1-relationship-invalidation-audit.json) | status=pass; schemaVersion=lightbi.phase8d1.relationship-invalidation-audit.v1 | 768 | `a125e4fd7c7362ef3627c1f08bd54de091eb1c6ddd21d93ef6d2e0de856b80cb` |
-| [`docs/architecture/phase-8d1-source-membership-role-audit.json`](../architecture/phase-8d1-source-membership-role-audit.json) | status=pass; schemaVersion=lightbi.phase8d1.source-membership-role-audit.v1 | 766 | `af0de180cdacce04fd77cc906a3929348dac178b16c733a67cb86d49fd6b2865` |
-| [`docs/architecture/phase-8e-advanced-separation-audit.json`](../architecture/phase-8e-advanced-separation-audit.json) | status=pass; schemaVersion=lightbi.phase8e.advanced-separation-audit.v1 | 907 | `1e1f229659c49e39c6c35ae0046e739836db2d2fcf46dbd865e2484c0e666b23` |
-| [`docs/architecture/phase-8e-baseline-file-and-responsibility-inventory.json`](../architecture/phase-8e-baseline-file-and-responsibility-inventory.json) | schemaVersion=lightbi.phase8e.baseline-file-and-responsibility-inventory.v1 | 8056 | `1d982d6dd09e72f715508eb20316b8210aa2800438aa0d08537a3dd180376049` |
-| [`docs/architecture/phase-8e-behavioral-parity-audit.json`](../architecture/phase-8e-behavioral-parity-audit.json) | status=pass; schemaVersion=lightbi.phase8e.behavioral-parity-audit.v1 | 3051 | `53ca4db6754ad14a1cae52f47b15cdb6f34870eb445615563882f23ff35127cd` |
-| [`docs/architecture/phase-8e-dead-legacy-code-disposition-audit.json`](../architecture/phase-8e-dead-legacy-code-disposition-audit.json) | status=pass; schemaVersion=lightbi.phase8e.dead-legacy-code-disposition-audit.v1 | 543 | `f0dee90008ed28d0233ea48a2b9c808ec005936c75ad051e645ac43615cdb360` |
-| [`docs/architecture/phase-8e-dependency-graph-audit.json`](../architecture/phase-8e-dependency-graph-audit.json) | status=pass; schemaVersion=lightbi.phase8e.dependency-graph-audit.v1 | 1309 | `c520132d3a7c8695def68e9199615faf3c3e3e21439f0d6b5b8f0dee8ca37da6` |
-| [`docs/architecture/phase-8e-final-checkpoint-manifest.json`](../architecture/phase-8e-final-checkpoint-manifest.json) | Phase 8E repository checkpoint closure only; classification=phase8_codebase_clean_ready_for_visual_ui_design; schemaVersion=lightbi.phase8e.final-checkpoint-manifest.v1 | 8800 | `8c0db4c3f75b123c80254ac9415cab31289ef919f931a97e6ce1eb163382291f` |
-| [`docs/architecture/phase-8e-final-file-size-audit.json`](../architecture/phase-8e-final-file-size-audit.json) | status=pass; schemaVersion=lightbi.phase8e.final-file-size-audit.v1 | 1564 | `30a4be40fca9691d635d3b8a7b0f67266b25dd8012f6833f847ad19de3c50959` |
-| [`docs/architecture/phase-8e-home-separation-audit.json`](../architecture/phase-8e-home-separation-audit.json) | status=pass; schemaVersion=lightbi.phase8e.home-separation-audit.v1 | 1301 | `e4f359e5563e8aebc9a7413630d0e257012d36198a20366685ed201ab857f5c5` |
-| [`docs/architecture/phase-8e-investigation-separation-audit.json`](../architecture/phase-8e-investigation-separation-audit.json) | status=pass; schemaVersion=lightbi.phase8e.investigation-separation-audit.v1 | 987 | `452990dd181dc73ce712c40c3bf34e9c60d748a3571563ba29639ae6b702d2f7` |
-| [`docs/architecture/phase-8e-negative-probe-audit.json`](../architecture/phase-8e-negative-probe-audit.json) | status=pass; schemaVersion=lightbi.phase8e.negative-probe-audit.v1 | 4213 | `f817593b88ee6eed7282562b510442c03e602c4109b0b0b2bb216868d2650a90` |
-| [`docs/architecture/phase-8e-public-contract-parity-audit.json`](../architecture/phase-8e-public-contract-parity-audit.json) | status=pass; schemaVersion=lightbi.phase8e.public-contract-parity-audit.v1 | 1345 | `617f3c978103f1e2ba45f0b1e24cde94895c5a45e58f22a89c2f2daed4ddf798` |
-| [`docs/architecture/phase-8e-regression-conformance.json`](../architecture/phase-8e-regression-conformance.json) | status=pass; schemaVersion=lightbi.phase8e.regression-conformance.v1 | 2116 | `73b7eeb5ec03ea8bcc46dcaa45f6dec11d661cf671be5840c7ff32550e321279` |
-| [`docs/architecture/phase-8e-state-ownership-audit.json`](../architecture/phase-8e-state-ownership-audit.json) | status=pass; schemaVersion=lightbi.phase8e.state-ownership-audit.v1 | 2123 | `e0eb47f8291e8c0992f1bc6b643136518ed44480d0d585c342eefd8e8e0935bd` |
-| [`docs/architecture/phase-8e-target-module-boundary-audit.json`](../architecture/phase-8e-target-module-boundary-audit.json) | status=pass; schemaVersion=lightbi.phase8e.target-module-boundary-audit.v1 | 2078 | `4193ed33454599f6c38375f8a2d4a283acf4fba40a24b8ad3e9581553fbbcd25` |
-| [`docs/architecture/phase-8f-browser-production-journey-audit.json`](../architecture/phase-8f-browser-production-journey-audit.json) | status=pass; schemaVersion=lightbi.phase8f.browser-production-journey-audit.v1 | 11022 | `450108cfb27c27e5ee4fd3b4d0572530c8cb401e630ac9b49581e53480bc911c` |
-| [`docs/architecture/phase-8f-contradictory-state-audit.json`](../architecture/phase-8f-contradictory-state-audit.json) | status=pass; schemaVersion=lightbi.phase8f.contradictory-state-audit.v1 | 1519 | `6dc87857fb09667fcd481cf2c73d42515b13b5e1a67014a7ede03dfda3ef115c` |
-| [`docs/architecture/phase-8f-core-capability-inventory.json`](../architecture/phase-8f-core-capability-inventory.json) | schemaVersion=lightbi.phase8f.core-capability-inventory.v1 | 16799 | `7d1dafeabad0fa0e95408e0a3b60576a33926a9f27bb7220d95bcb32c21998fc` |
-| [`docs/architecture/phase-8f-core-to-ui-parity-matrix.json`](../architecture/phase-8f-core-to-ui-parity-matrix.json) | status=blocked_on_authentic_remote_verification; schemaVersion=lightbi.phase8f.core-to-ui-parity-matrix.v1 | 6672 | `1f2b668e36c17bc07fc4a477d5fb4b1ad3eecdcaabccc265f00e54bc93e07e44` |
-| [`docs/architecture/phase-8f-dead-end-and-legacy-surface-audit.json`](../architecture/phase-8f-dead-end-and-legacy-surface-audit.json) | status=pass; schemaVersion=lightbi.phase8f.dead-end-and-legacy-surface-audit.v1 | 1066 | `1384463aaa9bd2d112d22aad5625109b75935a6be5fc56b01f38511d7f4046ab` |
-| [`docs/architecture/phase-8f-error-lifecycle-parity-audit.json`](../architecture/phase-8f-error-lifecycle-parity-audit.json) | status=pass; schemaVersion=lightbi.phase8f.error-lifecycle-parity-audit.v1 | 1359 | `0816227537895e831bd2ad01458c986c5cdf1701319d952e91f30159a26a6c94` |
-| [`docs/architecture/phase-8f-functional-presentation-contract.json`](../architecture/phase-8f-functional-presentation-contract.json) | Frozen commerce/distribution MVP functional presentation boundary; schemaVersion=lightbi.phase8f.functional-presentation-contract.v1 | 3160 | `df7a39e59ef4e4426f84189daf50f9db7bf3787789e49755418d915441dcb676` |
-| [`docs/architecture/phase-8f-governed-result-parity-audit.json`](../architecture/phase-8f-governed-result-parity-audit.json) | status=pass; schemaVersion=lightbi.phase8f.governed-result-parity-audit.v1 | 1601 | `ef6a2cd2f1c8727f7a5bf2513e9f4037d641fbbd22612a681bc5ab3a110f9c94` |
-| [`docs/architecture/phase-8f-missing-capability-connection-audit.json`](../architecture/phase-8f-missing-capability-connection-audit.json) | status=pass; schemaVersion=lightbi.phase8f.missing-capability-connection-audit.v1 | 1863 | `35eb8a15f78ec6e4b3b3e6f7ade76f2f70e1fcfac711324ce15da3bb1a85ee57` |
-| [`docs/architecture/phase-8f-multisource-journey-audit.json`](../architecture/phase-8f-multisource-journey-audit.json) | status=pass; schemaVersion=lightbi.phase8f.multisource-journey-audit.v1 | 1504 | `c157102f344a6a36791bb948b52657e53aef5ce3df3fb73d6a42aac5042a1f67` |
-| [`docs/architecture/phase-8f-negative-probe-audit.json`](../architecture/phase-8f-negative-probe-audit.json) | status=pass; schemaVersion=lightbi.phase8f.negative-probe-audit.v1 | 4073 | `bf0cbfed5e6fb92b1ae671e8bfbe1afb377428ce120af4d1b831deacd8c477f4` |
-| [`docs/architecture/phase-8f-production-surface-inventory.json`](../architecture/phase-8f-production-surface-inventory.json) | status=pass; schemaVersion=lightbi.phase8f.production-surface-inventory.v1 | 1904 | `8a0253d42588a0e6058b8833d644321fd92a7b647aa5d271b0dbeac1717029f7` |
-| [`docs/architecture/phase-8f-regression-conformance.json`](../architecture/phase-8f-regression-conformance.json) | status=pass; schemaVersion=lightbi.phase8f.regression-conformance.v1 | 2105 | `d81cdebe4cfb5f935337abffa41114f8084c08d350f3d74c8b83db1a3024cfd2` |
-| [`docs/architecture/phase-8f-source-local-journey-audit.json`](../architecture/phase-8f-source-local-journey-audit.json) | status=pass; schemaVersion=lightbi.phase8f.source-local-journey-audit.v1 | 2678 | `6cf77e296b6b270c0fe99881aca616726886b9b536bdd44bb0333f656f38df3a` |
-| [`docs/architecture/phase-8f1-dataset-group-source-boundary-audit.json`](../architecture/phase-8f1-dataset-group-source-boundary-audit.json) | status=pass; schemaVersion=lightbi.phase8f1.dataset-group-source-boundary-audit.v1 | 721 | `45e98762359ba54a9ab682ddc352cb81522fd18affa19dcb8f715ece56936323` |
-| [`docs/architecture/phase-8f1-false-ready-browser-defect-audit.json`](../architecture/phase-8f1-false-ready-browser-defect-audit.json) | status=pass; schemaVersion=lightbi.phase8f1.false-ready-browser-defect-audit.v1 | 1776 | `a59ce8da951bc9af593ac9f5eb8cc00e6c3a5b00976ca9b123d2a68d1c146ebd` |
-| [`docs/architecture/phase-8f1-handoff-and-session-audit.json`](../architecture/phase-8f1-handoff-and-session-audit.json) | status=pass; schemaVersion=lightbi.phase8f1.handoff-and-session-audit.v1 | 888 | `f6ff4a9b59a94a69ecf8a91adbe8d6d58faca4761995aa6bc087eb2c3e9550cc` |
-| [`docs/architecture/phase-8f1-negative-probe-audit.json`](../architecture/phase-8f1-negative-probe-audit.json) | status=pass; schemaVersion=lightbi.phase8f1.negative-probe-audit.v1 | 1620 | `a138fe51207a34586fe85ad4334c118e180b8a9658220345bbc603a32fe2c83f` |
-| [`docs/architecture/phase-8f1-regression-conformance.json`](../architecture/phase-8f1-regression-conformance.json) | status=pass; schemaVersion=lightbi.phase8f1.regression-conformance.v1 | 2015 | `d8e5d165a8a80af5fa8b993a39a0e63201c3567e106ccc4c22fa1bff4fa4763c` |
-| [`docs/architecture/phase-8f1-reload-reselection-audit.json`](../architecture/phase-8f1-reload-reselection-audit.json) | status=pass; schemaVersion=lightbi.phase8f1.reload-reselection-audit.v1 | 783 | `28dd17e79187011fd926e0f51a379bf213a5fb346fe2555fc9c8e11557ce9d74` |
-| [`docs/architecture/phase-8f1-runtime-source-continuity-audit.json`](../architecture/phase-8f1-runtime-source-continuity-audit.json) | status=pass; schemaVersion=lightbi.phase8f1.runtime-source-continuity-audit.v1 | 1353 | `6fd9f93914d6db12ed972ba4c1e1db91689c1f3c32e6601272d4959db83d4244` |
-| [`docs/architecture/phase-8f2-browser-safe-hashing-audit.json`](../architecture/phase-8f2-browser-safe-hashing-audit.json) | status=pass; schemaVersion=lightbi.phase8f2.browser-safe-hashing-audit.v1 | 1080 | `d4c4cb537962aa1551f9cb5d882266d24dcc385394694bb1d7a051a0547e5fc1` |
-| [`docs/architecture/phase-8f2-canonical-candidate-evidence-audit.json`](../architecture/phase-8f2-canonical-candidate-evidence-audit.json) | status=pass; schemaVersion=lightbi.phase8f2.canonical-candidate-evidence-audit.v1 | 1277 | `41cf403016c4bf503f07f0d51947eb10fc353299220af880985eaab99c5c873b` |
-| [`docs/architecture/phase-8f2-governed-bundle-projection-audit.json`](../architecture/phase-8f2-governed-bundle-projection-audit.json) | status=pass; schemaVersion=lightbi.phase8f2.governed-bundle-projection-audit.v1 | 1322 | `10ef785d6c71fdc14206ef0925c60ee93d8cf25ab67ebf9de5f0153fe3a5067b` |
-| [`docs/architecture/phase-8f2-negative-probe-audit.json`](../architecture/phase-8f2-negative-probe-audit.json) | status=pass; schemaVersion=lightbi.phase8f2.negative-probe-audit.v1 | 1153 | `15f52558258d152100c65cd321e3b52240cf6749622b2bf371e7774bdfcd4192` |
-| [`docs/architecture/phase-8f2-real-origin-runtime-defect-audit.json`](../architecture/phase-8f2-real-origin-runtime-defect-audit.json) | status=pass_with_authentic_journey_pending; schemaVersion=lightbi.phase8f2.real-origin-runtime-defect-audit.v1 | 1558 | `511f1322ec1723b4f66863086ff62245ee304b7d35764b67062bba4caef5d814` |
-| [`docs/architecture/phase-8f2-regression-conformance.json`](../architecture/phase-8f2-regression-conformance.json) | classification=not_ready_six_file_operational_flow; schemaVersion=lightbi.phase8f2.regression-conformance.v1 | 1817 | `34692020f61e21bd9c38d026e70ba5dd2aac6208ec4d93a2ee79131f41afa004` |
-| [`docs/architecture/phase-8f2-remediation-deduplication-audit.json`](../architecture/phase-8f2-remediation-deduplication-audit.json) | status=pass; schemaVersion=lightbi.phase8f2.remediation-deduplication-audit.v1 | 718 | `811694cefea156bfabd2f99f9fdb7a989972e7b23211101f4adac69fba182c7d` |
-| [`docs/architecture/phase-8f2-remote-browser-runtime-audit.json`](../architecture/phase-8f2-remote-browser-runtime-audit.json) | status=pass_with_authentic_journey_pending; schemaVersion=lightbi.phase8f2.remote-browser-runtime-audit.v1 | 1003 | `a825b6f6fd5bda5cd17c31a051ca9349a5821aa72e55533fc8c8314148c23800` |
-| [`docs/architecture/phase-8f2-six-file-operational-journey-audit.json`](../architecture/phase-8f2-six-file-operational-journey-audit.json) | classification=ready_governed_six_file_perspective_flow; schemaVersion=lightbi.phase8f2.six-file-operational-journey-audit.v2; verifiedAt=2026-07-28 | 4327 | `ff7bef4101094c90a6948a4d04c6302427bc902f4336921506f18a4ba88e226d` |
-| [`docs/architecture/phase-8f2-source-confirmation-operation-audit.json`](../architecture/phase-8f2-source-confirmation-operation-audit.json) | status=pass; schemaVersion=lightbi.phase8f2.source-confirmation-operation-audit.v1 | 1311 | `eb5e2ffef70e3a10d727881c22c49eb77b6b4e2741df1780845ed0a5fdf254a6` |
+- [`sample-corpus/grain-candidate-expectations.v1.json`](../../sample-corpus/grain-candidate-expectations.v1.json)
+- [`sample-corpus/grain-resolution-shadow-expectations.v1.json`](../../sample-corpus/grain-resolution-shadow-expectations.v1.json)
+- [`sample-corpus/ground-truth/adversarial-dirty.json`](../../sample-corpus/ground-truth/adversarial-dirty.json)
+- [`sample-corpus/ground-truth/finance-accounting.json`](../../sample-corpus/ground-truth/finance-accounting.json)
+- [`sample-corpus/ground-truth/inventory.json`](../../sample-corpus/ground-truth/inventory.json)
+- [`sample-corpus/ground-truth/multi-file.json`](../../sample-corpus/ground-truth/multi-file.json)
+- [`sample-corpus/ground-truth/operations-delivery.json`](../../sample-corpus/ground-truth/operations-delivery.json)
+- [`sample-corpus/ground-truth/revenue-sales.json`](../../sample-corpus/ground-truth/revenue-sales.json)
+- [`sample-corpus/manifest.json`](../../sample-corpus/manifest.json)
+- [`sample-corpus/readiness-shadow-expectations.v1.json`](../../sample-corpus/readiness-shadow-expectations.v1.json)
+- [`sample-corpus/readiness-validation-expectations.v2.json`](../../sample-corpus/readiness-validation-expectations.v2.json)
+- [`sample-corpus/relationship-candidate-expectations.v1.json`](../../sample-corpus/relationship-candidate-expectations.v1.json)
+- [`sample-corpus/relationship-resolution-expectations.v1.json`](../../sample-corpus/relationship-resolution-expectations.v1.json)
+- [`sample-corpus/relationship-resolution-validation-expectations.v1.json`](../../sample-corpus/relationship-resolution-validation-expectations.v1.json)
+- [`sample-corpus/shadow-resolution-expectations.v1.json`](../../sample-corpus/shadow-resolution-expectations.v1.json)
+- [`sample-corpus/tooling/phase-7r34/authentic-anchors.json`](../../sample-corpus/tooling/phase-7r34/authentic-anchors.json)
+- [`sample-corpus/tooling/phase-7r34/evidence-policy.json`](../../sample-corpus/tooling/phase-7r34/evidence-policy.json)
+- [`sample-corpus/tooling/phase-7r34/scenario-contract.json`](../../sample-corpus/tooling/phase-7r34/scenario-contract.json)
+- [`sample-corpus/versions/1.3.0/corpus-manifest.json`](../../sample-corpus/versions/1.3.0/corpus-manifest.json)
+- [`sample-corpus/versions/1.3.0/cross-file-relationship-manifest.json`](../../sample-corpus/versions/1.3.0/cross-file-relationship-manifest.json)
+- [`sample-corpus/versions/1.3.0/generation-provenance.json`](../../sample-corpus/versions/1.3.0/generation-provenance.json)
+- [`sample-corpus/versions/1.4.0/candidate-quality-baseline.json`](../../sample-corpus/versions/1.4.0/candidate-quality-baseline.json) — repository_safe_release_fixture_baseline
+- [`sample-corpus/versions/1.4.0/ground-truth/adversarial-dirty.json`](../../sample-corpus/versions/1.4.0/ground-truth/adversarial-dirty.json)
+- [`sample-corpus/versions/1.4.0/ground-truth/finance-accounting.json`](../../sample-corpus/versions/1.4.0/ground-truth/finance-accounting.json)
+- [`sample-corpus/versions/1.4.0/ground-truth/inventory.json`](../../sample-corpus/versions/1.4.0/ground-truth/inventory.json)
+- [`sample-corpus/versions/1.4.0/ground-truth/multi-file.json`](../../sample-corpus/versions/1.4.0/ground-truth/multi-file.json)
+- [`sample-corpus/versions/1.4.0/ground-truth/operations-delivery.json`](../../sample-corpus/versions/1.4.0/ground-truth/operations-delivery.json)
+- [`sample-corpus/versions/1.4.0/ground-truth/revenue-sales.json`](../../sample-corpus/versions/1.4.0/ground-truth/revenue-sales.json)
+- [`sample-corpus/versions/1.4.0/manifest.json`](../../sample-corpus/versions/1.4.0/manifest.json)
 
-## package-doc-or-config (8)
+## design
 
-| Source | Title / status | Bytes | SHA-256 |
-|---|---|---:|---|
-| [`packages/chart-schema/package.json`](../../packages/chart-schema/package.json) | @lightbi/chart-schema | 198 | `c766641deba213e72fba374f06e80765f494c4d7443bbc2424e3426a8e283cd7` |
-| [`packages/core-types/package.json`](../../packages/core-types/package.json) | @lightbi/core-types | 227 | `340dd39f735f2c96648cf9e44ad9da26aaf8b35f8a528425ca87bffb9b287b3b` |
-| [`packages/dashboard-schema/package.json`](../../packages/dashboard-schema/package.json) | @lightbi/dashboard-schema | 202 | `fbaa1b2c1a8f296e7cfa456fd167d18ba16f2208fd4263594664aec3f3bf6788` |
-| [`packages/plugin-sdk/package.json`](../../packages/plugin-sdk/package.json) | @lightbi/plugin-sdk | 228 | `e30fede6242e49fca63b7c0dd67ca00a1aa74352b288ee3f3aaeef31b34da595` |
-| [`packages/plugin-sdk/README.md`](../../packages/plugin-sdk/README.md) | @lightbi/plugin-sdk | 3108 | `c73b21bd33c803c8681414d7dd0631b3c9602363fc89bccb41ab76c71ae2c54a` |
-| [`packages/query-models/package.json`](../../packages/query-models/package.json) | @lightbi/query-models | 295 | `8d2669f438fb512d7ee53b6b8bbe48149a7d281694cd98df02ea32e6efd0e0d2` |
-| [`packages/runtime/package.json`](../../packages/runtime/package.json) | @lightbi/runtime | 290 | `229bbd1ba3d67fa58a9013585f241d39e6fbceb677aeb35ef0948c67ee5a1935` |
-| [`packages/ui/package.json`](../../packages/ui/package.json) | @lightbi/ui | 406 | `8bbb60923585ca334da91145f80e8f87dbba65e2443020a892ddb0c76357ef1b` |
+- [`docs/design/ui-baseline.md`](../../docs/design/ui-baseline.md) — LightBI UI Visual Baseline
 
-## phase-closure (20)
+## domain-knowledge
 
-| Source | Title / status | Bytes | SHA-256 |
-|---|---|---:|---|
-| [`docs/architecture/phase-5b1-paired-legacy-replay-and-gate-closure.md`](../architecture/phase-5b1-paired-legacy-replay-and-gate-closure.md) | Phase 5B1 Paired Legacy Replay And Gate Closure | 6104 | `f159cef7aabde6c76a70d1aa47d17d541b7abbe9aa461bf4310aabf5fa63bb1e` |
-| [`docs/architecture/phase-5m4-phase5-acceptance-closure.md`](../architecture/phase-5m4-phase5-acceptance-closure.md) | Phase 5M4 Acceptance Closure | 2694 | `7d6ca986e0c652e97e7e148f537a677a899242363eb41ba1bc730626e5bd7093` |
-| [`docs/architecture/phase-6b1-verification-closure.md`](../architecture/phase-6b1-verification-closure.md) | Phase 6B.1 Final Regression Verification Closure | 2666 | `a6a9e23aeb214685247633c999603b1ac5d364040f884083b532e413d9a47582` |
-| [`docs/architecture/phase-7r31-required-family-closure.md`](../architecture/phase-7r31-required-family-closure.md) | — | 3770 | `20fea7edb2bf7855bf9c57cff2ba11efaab7bb383e0a3cf275cf093699ebeec0` |
-| [`docs/architecture/phase-7r32-conditional-gross-profit-closure.md`](../architecture/phase-7r32-conditional-gross-profit-closure.md) | Phase 7R3.2 - Conditional Gross Profit Eligibility And Execution Closure | 3851 | `268f658776c439fdd05193db3cd89058dffdd88dcd2cd430b34a73b428bff277` |
-| [`docs/architecture/phase-7r36-gross-profit-runtime-closure.md`](../architecture/phase-7r36-gross-profit-runtime-closure.md) | Phase 7R3.6 Gross-Profit Runtime Closure | 2402 | `6192ea7704e46210473f9ef1559715975f016d0142ca3e0e2e118680d8e87e1c` |
-| [`docs/architecture/phase-7r37-inventory-runtime-closure.md`](../architecture/phase-7r37-inventory-runtime-closure.md) | Phase 7R3.7 - Governed Inventory Snapshot Eligibility And Execution Closure | 3193 | `cf25e1a31413bd58df3d5b793ffd3d28b7ad522bb9f045aca8f3d7d36872cd67` |
-| [`docs/architecture/phase-7r4-mvp-candidate-packaging-and-release-closure.md`](../architecture/phase-7r4-mvp-candidate-packaging-and-release-closure.md) | Phase 7R4 - MVP Candidate Packaging And Release Closure | 5057 | `47f2a0d6a4ba6b422f8a661422bc5a7cc781bac1937a20669210092d855e8624` |
-| [`docs/architecture/phase-7r41-repository-safe-corpus-release-closure.md`](../architecture/phase-7r41-repository-safe-corpus-release-closure.md) | Phase 7R4.1 Repository-Safe Corpus Release Closure | 3838 | `1f776581076a81bd0f1e0396480565739a364e852be80e4d2778eebb4f6bea58` |
-| [`docs/architecture/phase-8a-production-full-source-boundary-closure.md`](../architecture/phase-8a-production-full-source-boundary-closure.md) | Phase 8A Production Full-Source Boundary Closure | 3144 | `c0fd966658c50e5aabe55393d964eb33f7422b6925efd6596de7baa72e27b803` |
-| [`docs/architecture/phase-8b-production-evidence-interaction-closure.md`](../architecture/phase-8b-production-evidence-interaction-closure.md) | Phase 8B Production Evidence Interaction Closure | 3753 | `c138b26bb0882d93d04590db6b7009df3048cfd9b8181b13b54618d96d6fd677` |
-| [`docs/architecture/phase-8c-functional-blocker-remediation-closure.md`](../architecture/phase-8c-functional-blocker-remediation-closure.md) | Phase 8C Functional Blocker And Remediation Closure | 3595 | `1e6d31c45374056ec8317d4db74a6074b58962c6e16749e989e0671e2084d1f6` |
-| [`docs/architecture/phase-8d-functional-ui-feature-closure.md`](../architecture/phase-8d-functional-ui-feature-closure.md) | Phase 8D Production MVP Feature Reachability And Functional UI Closure | 3102 | `dcb5a603b5406fd1212814c618fe463acd70826b1aa015dd46768a3cb2ddc7c6` |
-| [`docs/architecture/phase-8d1-final-checkpoint-closure.md`](../architecture/phase-8d1-final-checkpoint-closure.md) | Phase 8D.1 Final Checkpoint Closure | 2359 | `308e4235ceae28bf914bff5dabec8cb2104a0d3343e2342f22475a1702cd1f50` |
-| [`docs/architecture/phase-8d1-production-multisource-closure.md`](../architecture/phase-8d1-production-multisource-closure.md) | Phase 8D.1 Production Multi-Source Canonical Dataset And Relationship Closure | 4152 | `0f8b996383862fa7273feb69b637406fa39f3ed8e3fe4d9b3e7da62f88febc97` |
-| [`docs/architecture/phase-8e-code-separation-and-cleanup-closure.md`](../architecture/phase-8e-code-separation-and-cleanup-closure.md) | Phase 8E Code Separation And Cleanup Closure | 3027 | `4b32b5d62f5d774c2c5ffbc3934d9f137633d7d08b1ec75024c8fcbfb7cf693d` |
-| [`docs/architecture/phase-8e-final-checkpoint-closure.md`](../architecture/phase-8e-final-checkpoint-closure.md) | Phase 8E Final Checkpoint And Classification Closure | 3197 | `e14c823bdff3f0a85467bb82e5e69dd008879377c8f93d3d5d7f1e8b711aa9d6` |
-| [`docs/architecture/phase-8f-core-ui-functional-parity-closure.md`](../architecture/phase-8f-core-ui-functional-parity-closure.md) | Phase 8F Core/UI Functional Parity Closure | 6979 | `927f3864355c16b64ff047f23a31c12db6e5b9b7077257c74247a858e57fb957` |
-| [`docs/architecture/phase-8f1-ready-action-runtime-closure.md`](../architecture/phase-8f1-ready-action-runtime-closure.md) | Phase 8F.1 Ready-Action Runtime Source Continuity Closure | 3788 | `3493c54907e478ecfee3709150471a80a8e1624ee920593411d8b63964433b72` |
-| [`docs/architecture/phase-8f2-multifile-operational-parity-closure.md`](../architecture/phase-8f2-multifile-operational-parity-closure.md) | Phase 8F.2 Multi-File Operational Parity Closure | 3906 | `0d42f0c1161524562e7b8c3cb61507f22da176c17094f6570accf23a33ac4b0f` |
+- [`docs/domain-catalog/customer.md`](../../docs/domain-catalog/customer.md) — Customer Domain
+- [`docs/domain-catalog/finance.md`](../../docs/domain-catalog/finance.md) — Finance Domain
+- [`docs/domain-catalog/future-domain-pack-template.md`](../../docs/domain-catalog/future-domain-pack-template.md) — Future Domain Pack Template
+- [`docs/domain-catalog/inventory.md`](../../docs/domain-catalog/inventory.md) — Inventory Domain
+- [`docs/domain-catalog/operations.md`](../../docs/domain-catalog/operations.md) — Operations Domain
+- [`docs/domain-catalog/performance.md`](../../docs/domain-catalog/performance.md) — Performance Domain
+- [`docs/domain-catalog/README.md`](../../docs/domain-catalog/README.md) — Domain Knowledge Catalog
+- [`docs/domain-catalog/revenue.md`](../../docs/domain-catalog/revenue.md) — Revenue Domain
 
-## plugin-doc (1)
+## foundation-note-history
 
-| Source | Title / status | Bytes | SHA-256 |
-|---|---|---:|---|
-| [`docs/plugin-sdk/provider-plugin-manual.md`](../plugin-sdk/provider-plugin-manual.md) | LightBI Provider Plugin SDK Manual; status=Draft v0.1 | 10171 | `88d34555d2d8c06d41e562532699a8a1a5ff8f0fb0ffd0e29d27087190b3e5a1` |
+- [`docs/history/foundation-notes/COMPETITOR_NOTE_JIVEDB.md`](../../docs/history/foundation-notes/COMPETITOR_NOTE_JIVEDB.md) — COMPETITOR NOTE: JiveDB vs. LightBI
+- [`docs/history/foundation-notes/DESKTOP_COMPILE_HYGIENE.md`](../../docs/history/foundation-notes/DESKTOP_COMPILE_HYGIENE.md) — Desktop Compile Hygiene
+- [`docs/history/foundation-notes/DOMAIN_SAMPLE_MATRIX.md`](../../docs/history/foundation-notes/DOMAIN_SAMPLE_MATRIX.md) — Domain Sample Matrix
+- [`docs/history/foundation-notes/DU-8-SCOPE.md`](../../docs/history/foundation-notes/DU-8-SCOPE.md) — DU-8: Multi-Dataset Execution & Architecture Scaling (Revised Scope)
+- [`docs/history/foundation-notes/LIGHTBI_INFRASTRUCTURE_BRIEF.md`](../../docs/history/foundation-notes/LIGHTBI_INFRASTRUCTURE_BRIEF.md) — LightBI Infrastructure Brief — Stop Guessing The Runtime
+- [`docs/history/foundation-notes/LIGHTBI_REAL_DATA_QUALITY_GATE.md`](../../docs/history/foundation-notes/LIGHTBI_REAL_DATA_QUALITY_GATE.md) — LightBI Real Data Quality Gate
 
-## product (1)
+## history
 
-| Source | Title / status | Bytes | SHA-256 |
-|---|---|---:|---|
-| [`docs/product/product-direction-and-pricing-v1.md`](../product/product-direction-and-pricing-v1.md) | LightBI Product Direction and Pricing Strategy | 4687 | `bcca7ed04fad0873be70afa0e681e0f87dad89e4d4de34d2d71cc507293063ff` |
+- [`docs/history/LEGACY_ROOT_INDEX.md`](../../docs/history/LEGACY_ROOT_INDEX.md) — Legacy Root Documentation Index
+- [`docs/history/misc/GLOBAL_DISPLAY_PREFERENCES_STREAM_CLOSURE.md`](../../docs/history/misc/GLOBAL_DISPLAY_PREFERENCES_STREAM_CLOSURE.md) — Global Display Preferences: Stream Closure
 
-## progress-history (28)
+## machine-audit-evidence
 
-| Source | Title / status | Bytes | SHA-256 |
-|---|---|---:|---|
-| [`docs/progress/milestone-1.md`](../progress/milestone-1.md) | Milestone 1: First Visible Analytics | 3047 | `05a3320548deaf750f2ccee73d492dbf730b8be0db00107c99e831c679564fa9` |
-| [`docs/progress/milestone-2-question-first.md`](../progress/milestone-2-question-first.md) | Milestone 2: Question First Landing Experience | 5653 | `e20c577e25d519e64a742315996c30c69f9b4a571943ca58bbfe45ac4641bb76` |
-| [`docs/progress/milestone-3-real-csv-import.md`](../progress/milestone-3-real-csv-import.md) | Milestone 3: Real CSV Import Flow | 5123 | `3382eb9a6c1e49cd848e052e8b7ef989ee95a39a49fdbb030d57078f7f6f7ea1` |
-| [`docs/progress/milestone-4-guided-home.md`](../progress/milestone-4-guided-home.md) | Milestone 4: Guided Home Experience & Conversational Entry Point | 10383 | `674e264f1e7146aa628c3ea0e4fc3a46f6406a69b4885f85212634e55525bf07` |
-| [`docs/progress/milestone-5-relationship-discovery.md`](../progress/milestone-5-relationship-discovery.md) | Milestone 5: Relationship Discovery & Dataset Collections (COMPLETED) | 3529 | `6aca6800db15e0ddba541481473ed4599ebb5bbe1d72c6cc2592c94c26250d99` |
-| [`docs/progress/milestone-5-summary.md`](../progress/milestone-5-summary.md) | Milestone 5 Summary: Relationship Discovery & Planning | 3074 | `6e5b2bec594a7bc71d6c191598e655d3595dc4ba821a31a7af460fed198a29ec` |
-| [`docs/progress/milestone-6-runtime-preview.md`](../progress/milestone-6-runtime-preview.md) | Milestone 6: Runtime Preview & Execution Guard | 2285 | `6d784c95ecce43106eeca76da3c47e21b17fe7203e929e7823f6cbd780275880` |
-| [`docs/progress/milestone-7-result-understanding.md`](../progress/milestone-7-result-understanding.md) | Milestone 7: Result Understanding & SQL Compilation | 1248 | `7aa21760af93895b6fc181144066838ba6902180e56fd93d17fbf13a133f50e2` |
-| [`docs/progress/milestone-8-5-guided-investigation.md`](../progress/milestone-8-5-guided-investigation.md) | Milestone 8.5: Guided Investigation (Business View Pipeline) | 8213 | `fadbcf7ea6059130de629b4680162c1c8b66788768f3993e1e4b0b2b8a24c0fb` |
-| [`docs/progress/milestone-8-business-confidence.md`](../progress/milestone-8-business-confidence.md) | Milestone 8: Business Confidence & Trust Layer | 1804 | `2f3aef34088d5681af59b27a940703a2dfe80cefec0011aa8b7f858d7cdf0961` |
-| [`docs/progress/phase-13-source-registry.md`](../progress/phase-13-source-registry.md) | LightBI Phase 13 - Source Registry & Connector Contract Foundation | 1287 | `c741968f08dd802b4fb421942837d13b95f56558357796b2ac8a53feaea90af3` |
-| [`docs/progress/phase-14-dataset-foundation.md`](../progress/phase-14-dataset-foundation.md) | LightBI Phase 14 - Dataset Model & Virtual Dataset Foundation | 1576 | `2de1c9bd2ee76c1b81f7ab21102c0833396b71c9a16754648d51dac17589d34b` |
-| [`docs/progress/phase-15-schema-foundation.md`](../progress/phase-15-schema-foundation.md) | LightBI Phase 15 - Schema Discovery & Semantic Model Foundation | 1421 | `333c70906614f5ee14672e63e31fa102460b89464b18a3f6556cf9b9e7e6fbee` |
-| [`docs/progress/phase-16-perspective-layer.md`](../progress/phase-16-perspective-layer.md) | LightBI Phase 16 - Perspective Layer & Question Context Foundation | 1487 | `a376a7a7424a0ac1cca12cc747eab1e0e0549148f1797f91af04ee99d2c9a1ef` |
-| [`docs/progress/phase-17-recipe-foundation.md`](../progress/phase-17-recipe-foundation.md) | LightBI Phase 17 - Recipe Foundation & Analytical Intent Model | 1341 | `12fe1638241679c185c12bf254956700cbcca35bab920b8e972747b41dc5ccd0` |
-| [`docs/progress/phase-18-planner-foundation.md`](../progress/phase-18-planner-foundation.md) | LightBI Phase 18 - Planner & Execution Strategy Foundation | 1359 | `cb429b2bbcd826a984c8fd2f30d06e528b38b8920045c344d924826559cb0ddd` |
-| [`docs/progress/phase-19-question-template.md`](../progress/phase-19-question-template.md) | LightBI Phase 19 - Question Template Foundation | 1414 | `1080b5b7eb7dbaa3b4ef5855f2b4f8d75dcabbbbbbf55bc2ce7540b5fa7a901d` |
-| [`docs/progress/phase-20-runtime-foundation.md`](../progress/phase-20-runtime-foundation.md) | LightBI Phase 20 - Runtime Contract & Execution Backend Foundation | 1462 | `464e8d9b4bb1a535f5816b84d5c0e584ffbfa023ff626d345e42470b9839b5bc` |
-| [`docs/progress/phase-21-vdataset-runtime.md`](../progress/phase-21-vdataset-runtime.md) | LightBI Phase 21 - Virtual Dataset Runtime & Materialization Foundation | 1296 | `c19bbce501eb2ecd38cb59636f6b2300d22f58e54f0ab2d7141778ef5b622e03` |
-| [`docs/progress/phase-22-data-view.md`](../progress/phase-22-data-view.md) | LightBI Phase 22 - Data View & Visualization Contract Foundation | 1399 | `7cd177f7cc85f6d78bbc5eb7ed8b28166358c47a037909055d723c81c1e62f5b` |
-| [`docs/progress/phase-23-insight-foundation.md`](../progress/phase-23-insight-foundation.md) | LightBI Phase 23 - Insight Foundation & Analytical Narrative Model | 1482 | `5fb6611001f626241cd15f022602450d76252e5cd37b25bce4ef5f212f358b11` |
-| [`docs/progress/phase-24-export-foundation.md`](../progress/phase-24-export-foundation.md) | LightBI Phase 24 - Export Foundation & Artifact Governance | 1352 | `a351a93986ff209d50694236cbe187354b3a70d4dedaeb6966717d43241b9eac` |
-| [`docs/progress/phase-25-chart-runtime.md`](../progress/phase-25-chart-runtime.md) | LightBI Phase 25 - Chart Runtime & Visualization Engine Foundation | 1286 | `aa1ba3a36c733f3bcefcecb37d38af76ab99a7c1b6be5a65e7e91bd9c3fd3bc1` |
-| [`docs/progress/phase-26-dashboard-workspace.md`](../progress/phase-26-dashboard-workspace.md) | LightBI Phase 26 - Dashboard Workspace Foundation | 1391 | `74a4a5244d32a4cd9dd64982856fec859bfeab3e50ca6a76b0638708c13e86c8` |
-| [`docs/progress/phase-27-render-contract.md`](../progress/phase-27-render-contract.md) | LightBI Phase 27 - Frontend Rendering Contract Foundation | 1372 | `a94a9258af1948c18605b15e5aca204ee6e83c1da290441f4a546a083b66f556` |
-| [`docs/progress/phase-28-business-brain-orchestrator.md`](../progress/phase-28-business-brain-orchestrator.md) | Phase 28: Business Brain Orchestrator Direction | 15694 | `a0e0b8b157afae9fee9ea8774f7b73f4bf23fd10a5c9978f43d05a5021bfd9dd` |
-| [`docs/progress/phase-29-context-aware-semantic-dictionary.md`](../progress/phase-29-context-aware-semantic-dictionary.md) | Phase 29: Context-Aware Semantic Dictionary | 9723 | `f7d38debf766f3ed03b408824f670f4a5ae5866da8264b96b854f746e5bf65a5` |
-| [`docs/progress/phase-30-semantic-registry-unification.md`](../progress/phase-30-semantic-registry-unification.md) | Phase 30: Semantic Registry Unification | 6388 | `6c36cf275c537ba316f78fe8a6f61c1fd3fb61c0994ad00aab21e83bd27d36c8` |
+- [`docs/architecture/beta-core-ui-business-brain-bridge-audit.json`](../../docs/architecture/beta-core-ui-business-brain-bridge-audit.json)
+- [`docs/architecture/beta-inventory-shipment-perspective-audit.json`](../../docs/architecture/beta-inventory-shipment-perspective-audit.json)
+- [`docs/architecture/beta-inventory-workbook-semantic-support-audit.json`](../../docs/architecture/beta-inventory-workbook-semantic-support-audit.json) — status='pass'
+- [`docs/architecture/beta-operational-semantic-support-audit.json`](../../docs/architecture/beta-operational-semantic-support-audit.json) — status='pass'
+- [`docs/architecture/beta-performance-semantic-support-audit.json`](../../docs/architecture/beta-performance-semantic-support-audit.json) — status='controlled_evolution_validated'
+- [`docs/architecture/beta-revenue-line-measure-support-audit.json`](../../docs/architecture/beta-revenue-line-measure-support-audit.json)
+- [`docs/architecture/motodetail-semantic-support-audit.json`](../../docs/architecture/motodetail-semantic-support-audit.json)
+- [`docs/architecture/phase-0-semantic-registry-inventory.json`](../../docs/architecture/phase-0-semantic-registry-inventory.json)
+- [`docs/architecture/phase-3a1-candidate-gap-audit.json`](../../docs/architecture/phase-3a1-candidate-gap-audit.json)
+- [`docs/architecture/phase-3a2-acceptance-truth-audit.json`](../../docs/architecture/phase-3a2-acceptance-truth-audit.json)
+- [`docs/architecture/phase-3b1-1-context-evidence-flow-audit.json`](../../docs/architecture/phase-3b1-1-context-evidence-flow-audit.json)
+- [`docs/architecture/phase-3b2a-resolution-audit.json`](../../docs/architecture/phase-3b2a-resolution-audit.json)
+- [`docs/architecture/phase-3b2b-counterfactual-audit.json`](../../docs/architecture/phase-3b2b-counterfactual-audit.json)
+- [`docs/architecture/phase-3b2b-selected-resolution-audit.json`](../../docs/architecture/phase-3b2b-selected-resolution-audit.json)
+- [`docs/architecture/phase-4a1-1-grain-candidate-coverage-audit.json`](../../docs/architecture/phase-4a1-1-grain-candidate-coverage-audit.json)
+- [`docs/architecture/phase-4a1-grain-candidate-audit.json`](../../docs/architecture/phase-4a1-grain-candidate-audit.json)
+- [`docs/architecture/phase-4a2a-grain-axis-taxonomy-audit.json`](../../docs/architecture/phase-4a2a-grain-axis-taxonomy-audit.json) — decision='candidate taxonomy mixes orthogonal axes; resolve compositionally without changing candidate generation'
+- [`docs/architecture/phase-4a2a-grain-resolution-audit.json`](../../docs/architecture/phase-4a2a-grain-resolution-audit.json)
+- [`docs/architecture/phase-4a2b-abstention-audit.json`](../../docs/architecture/phase-4a2b-abstention-audit.json)
+- [`docs/architecture/phase-4a2b-axis-resolution-audit.json`](../../docs/architecture/phase-4a2b-axis-resolution-audit.json)
+- [`docs/architecture/phase-4a2b-counterfactual-audit.json`](../../docs/architecture/phase-4a2b-counterfactual-audit.json)
+- [`docs/architecture/phase-4b1-pair-evidence-audit.json`](../../docs/architecture/phase-4b1-pair-evidence-audit.json)
+- [`docs/architecture/phase-4b1-relationship-candidate-audit.json`](../../docs/architecture/phase-4b1-relationship-candidate-audit.json)
+- [`docs/architecture/phase-4b2a-relationship-axis-taxonomy-audit.json`](../../docs/architecture/phase-4b2a-relationship-axis-taxonomy-audit.json)
+- [`docs/architecture/phase-4b2a-relationship-resolution-audit.json`](../../docs/architecture/phase-4b2a-relationship-resolution-audit.json)
+- [`docs/architecture/phase-4b2b-axis-resolution-audit.json`](../../docs/architecture/phase-4b2b-axis-resolution-audit.json)
+- [`docs/architecture/phase-4b2b-cardinality-scoping-audit.json`](../../docs/architecture/phase-4b2b-cardinality-scoping-audit.json)
+- [`docs/architecture/phase-4b2b-counterfactual-audit.json`](../../docs/architecture/phase-4b2b-counterfactual-audit.json)
+- [`docs/architecture/phase-4b2b-temporal-debt-audit.json`](../../docs/architecture/phase-4b2b-temporal-debt-audit.json)
+- [`docs/architecture/phase-4c1-capability-dependency-audit.json`](../../docs/architecture/phase-4c1-capability-dependency-audit.json)
+- [`docs/architecture/phase-4c1-readiness-corpus-audit.json`](../../docs/architecture/phase-4c1-readiness-corpus-audit.json)
+- [`docs/architecture/phase-4c1-readiness-ownership-audit.json`](../../docs/architecture/phase-4c1-readiness-ownership-audit.json)
+- [`docs/architecture/phase-4c2-capability-scope-audit.json`](../../docs/architecture/phase-4c2-capability-scope-audit.json)
+- [`docs/architecture/phase-4c2-counterfactual-audit.json`](../../docs/architecture/phase-4c2-counterfactual-audit.json)
+- [`docs/architecture/phase-4c2-readiness-decision-audit.json`](../../docs/architecture/phase-4c2-readiness-decision-audit.json)
+- [`docs/architecture/phase-4c2-remediation-audit.json`](../../docs/architecture/phase-4c2-remediation-audit.json)
+- [`docs/architecture/phase-4c2-trust-ratio-audit.json`](../../docs/architecture/phase-4c2-trust-ratio-audit.json)
+- [`docs/architecture/phase-5a-readiness-validation-debt-gate.json`](../../docs/architecture/phase-5a-readiness-validation-debt-gate.json)
+- [`docs/architecture/phase-5a-runtime-adapter-projection-audit.json`](../../docs/architecture/phase-5a-runtime-adapter-projection-audit.json)
+- [`docs/architecture/phase-5a-runtime-consumer-ownership-audit.json`](../../docs/architecture/phase-5a-runtime-consumer-ownership-audit.json)
+- [`docs/architecture/phase-5a-runtime-envelope-corpus-audit.json`](../../docs/architecture/phase-5a-runtime-envelope-corpus-audit.json)
+- [`docs/architecture/phase-5a-runtime-import-isolation-audit.json`](../../docs/architecture/phase-5a-runtime-import-isolation-audit.json)
+- [`docs/architecture/phase-5b-authority-migration-gate.json`](../../docs/architecture/phase-5b-authority-migration-gate.json)
+- [`docs/architecture/phase-5b-comparison-mapping-audit.json`](../../docs/architecture/phase-5b-comparison-mapping-audit.json)
+- [`docs/architecture/phase-5b-executable-debt-coverage.json`](../../docs/architecture/phase-5b-executable-debt-coverage.json)
+- [`docs/architecture/phase-5b-import-isolation-audit.json`](../../docs/architecture/phase-5b-import-isolation-audit.json)
+- [`docs/architecture/phase-5b-legacy-output-ownership-audit.json`](../../docs/architecture/phase-5b-legacy-output-ownership-audit.json)
+- [`docs/architecture/phase-5b-safety-divergence-audit.json`](../../docs/architecture/phase-5b-safety-divergence-audit.json)
+- [`docs/architecture/phase-5b-shadow-comparison-corpus-audit.json`](../../docs/architecture/phase-5b-shadow-comparison-corpus-audit.json)
+- [`docs/architecture/phase-5b1-authority-migration-evidence-gate.json`](../../docs/architecture/phase-5b1-authority-migration-evidence-gate.json)
+- [`docs/architecture/phase-5b1-executable-migration-debt-audit.json`](../../docs/architecture/phase-5b1-executable-migration-debt-audit.json)
+- [`docs/architecture/phase-5b1-import-isolation-audit.json`](../../docs/architecture/phase-5b1-import-isolation-audit.json)
+- [`docs/architecture/phase-5b1-input-equivalence-audit.json`](../../docs/architecture/phase-5b1-input-equivalence-audit.json)
+- [`docs/architecture/phase-5b1-legacy-invocation-feasibility-audit.json`](../../docs/architecture/phase-5b1-legacy-invocation-feasibility-audit.json)
+- [`docs/architecture/phase-5b1-paired-observation-replay-audit.json`](../../docs/architecture/phase-5b1-paired-observation-replay-audit.json)
+- [`docs/architecture/phase-5b1-safety-divergence-replay.json`](../../docs/architecture/phase-5b1-safety-divergence-replay.json)
+- [`docs/architecture/phase-5b2-aggregation-authority-callpath-audit.json`](../../docs/architecture/phase-5b2-aggregation-authority-callpath-audit.json)
+- [`docs/architecture/phase-5b2-aggregation-divergence-dedup-audit.json`](../../docs/architecture/phase-5b2-aggregation-divergence-dedup-audit.json)
+- [`docs/architecture/phase-5b2-aggregation-divergence-disposition.json`](../../docs/architecture/phase-5b2-aggregation-divergence-disposition.json)
+- [`docs/architecture/phase-5b2-aggregation-mapping-audit.json`](../../docs/architecture/phase-5b2-aggregation-mapping-audit.json)
+- [`docs/architecture/phase-5b2-import-isolation-audit.json`](../../docs/architecture/phase-5b2-import-isolation-audit.json)
+- [`docs/architecture/phase-5b2-legacy-aggregation-signal-inventory.json`](../../docs/architecture/phase-5b2-legacy-aggregation-signal-inventory.json)
+- [`docs/architecture/phase-5b2-migration-gate-audit.json`](../../docs/architecture/phase-5b2-migration-gate-audit.json)
+- [`docs/architecture/phase-5b3-aggregation-guard-shadow-replay.json`](../../docs/architecture/phase-5b3-aggregation-guard-shadow-replay.json)
+- [`docs/architecture/phase-5b3-aggregation-strategy-audit.json`](../../docs/architecture/phase-5b3-aggregation-strategy-audit.json)
+- [`docs/architecture/phase-5b3-import-isolation-audit.json`](../../docs/architecture/phase-5b3-import-isolation-audit.json)
+- [`docs/architecture/phase-5b3-migration-gate-audit.json`](../../docs/architecture/phase-5b3-migration-gate-audit.json)
+- [`docs/architecture/phase-5b3-preview-execution-authority-audit.json`](../../docs/architecture/phase-5b3-preview-execution-authority-audit.json)
+- [`docs/architecture/phase-5b4-aggregation-authority-taxonomy.json`](../../docs/architecture/phase-5b4-aggregation-authority-taxonomy.json)
+- [`docs/architecture/phase-5b4-import-isolation-audit.json`](../../docs/architecture/phase-5b4-import-isolation-audit.json)
+- [`docs/architecture/phase-5b4-intent-policy-audit.json`](../../docs/architecture/phase-5b4-intent-policy-audit.json)
+- [`docs/architecture/phase-5b4-migration-gate-audit.json`](../../docs/architecture/phase-5b4-migration-gate-audit.json)
+- [`docs/architecture/phase-5b4-result-use-restriction-audit.json`](../../docs/architecture/phase-5b4-result-use-restriction-audit.json)
+- [`docs/architecture/phase-5b4-strategy-decision-audit.json`](../../docs/architecture/phase-5b4-strategy-decision-audit.json)
+- [`docs/architecture/phase-5b4-unique-divergence-policy-replay.json`](../../docs/architecture/phase-5b4-unique-divergence-policy-replay.json)
+- [`docs/architecture/phase-5b5-aggregation-restriction-projection-replay.json`](../../docs/architecture/phase-5b5-aggregation-restriction-projection-replay.json)
+- [`docs/architecture/phase-5b5-consumer-compatibility-matrix.json`](../../docs/architecture/phase-5b5-consumer-compatibility-matrix.json)
+- [`docs/architecture/phase-5b5-import-isolation-audit.json`](../../docs/architecture/phase-5b5-import-isolation-audit.json)
+- [`docs/architecture/phase-5b5-migration-gate-audit.json`](../../docs/architecture/phase-5b5-migration-gate-audit.json)
+- [`docs/architecture/phase-5b5-production-contract-loss-audit.json`](../../docs/architecture/phase-5b5-production-contract-loss-audit.json)
+- [`docs/architecture/phase-5b5-projection-strategy-audit.json`](../../docs/architecture/phase-5b5-projection-strategy-audit.json)
+- [`docs/architecture/phase-5b5-requirement-intersection-audit.json`](../../docs/architecture/phase-5b5-requirement-intersection-audit.json)
+- [`docs/architecture/phase-5b6-actual-contract-binding-audit.json`](../../docs/architecture/phase-5b6-actual-contract-binding-audit.json)
+- [`docs/architecture/phase-5b6-concurrency-binding-audit.json`](../../docs/architecture/phase-5b6-concurrency-binding-audit.json)
+- [`docs/architecture/phase-5b6-consumer-migration-debt.json`](../../docs/architecture/phase-5b6-consumer-migration-debt.json)
+- [`docs/architecture/phase-5b6-import-isolation-audit.json`](../../docs/architecture/phase-5b6-import-isolation-audit.json)
+- [`docs/architecture/phase-5b6-migration-gate-audit.json`](../../docs/architecture/phase-5b6-migration-gate-audit.json)
+- [`docs/architecture/phase-5b6-sidecar-replay-audit.json`](../../docs/architecture/phase-5b6-sidecar-replay-audit.json)
+- [`docs/architecture/phase-5b6-typescript-build-integrity-audit.json`](../../docs/architecture/phase-5b6-typescript-build-integrity-audit.json)
+- [`docs/architecture/phase-5b6a-authentic-plan-capture-feasibility.json`](../../docs/architecture/phase-5b6a-authentic-plan-capture-feasibility.json)
+- [`docs/architecture/phase-5b6a-build-baseline-decision.json`](../../docs/architecture/phase-5b6a-build-baseline-decision.json) — decision='build_regression_owned_by_concurrent_changes'
+- [`docs/architecture/phase-5b6a-import-isolation-audit.json`](../../docs/architecture/phase-5b6a-import-isolation-audit.json)
+- [`docs/architecture/phase-5b6a-migration-gate-correction.json`](../../docs/architecture/phase-5b6a-migration-gate-correction.json)
+- [`docs/architecture/phase-5b6a-request-result-identity-audit.json`](../../docs/architecture/phase-5b6a-request-result-identity-audit.json)
+- [`docs/architecture/phase-5b6a-retained-legacy-input-audit.json`](../../docs/architecture/phase-5b6a-retained-legacy-input-audit.json)
+- [`docs/architecture/phase-5b6a-runtime-plan-producer-audit.json`](../../docs/architecture/phase-5b6a-runtime-plan-producer-audit.json)
+- [`docs/architecture/phase-5b6a-typescript-provenance-audit.json`](../../docs/architecture/phase-5b6a-typescript-provenance-audit.json)
+- [`docs/architecture/phase-5b6a-working-tree-manifest.json`](../../docs/architecture/phase-5b6a-working-tree-manifest.json)
+- [`docs/architecture/phase-5b6b-build-restoration-audit.json`](../../docs/architecture/phase-5b6b-build-restoration-audit.json)
+- [`docs/architecture/phase-5b6b-diagnostic-ownership-audit.json`](../../docs/architecture/phase-5b6b-diagnostic-ownership-audit.json)
+- [`docs/architecture/phase-5b6b-final-suite-conformance.json`](../../docs/architecture/phase-5b6b-final-suite-conformance.json) — build_integrity_restored_with_governed_baseline_debt
+- [`docs/architecture/phase-5b6b-import-isolation-audit.json`](../../docs/architecture/phase-5b6b-import-isolation-audit.json)
+- [`docs/architecture/phase-5b6b-migration-gate-audit.json`](../../docs/architecture/phase-5b6b-migration-gate-audit.json)
+- [`docs/architecture/phase-5b6b-regression-baseline-allowlist.v1.json`](../../docs/architecture/phase-5b6b-regression-baseline-allowlist.v1.json)
+- [`docs/architecture/phase-5b6b-root-cause-audit.json`](../../docs/architecture/phase-5b6b-root-cause-audit.json)
+- [`docs/architecture/phase-5b6b-semantic-preservation-audit.json`](../../docs/architecture/phase-5b6b-semantic-preservation-audit.json)
+- [`docs/architecture/phase-5m1-commerce-pack-activation-audit.json`](../../docs/architecture/phase-5m1-commerce-pack-activation-audit.json)
+- [`docs/architecture/phase-5m1-domain-metric-policy-audit.json`](../../docs/architecture/phase-5m1-domain-metric-policy-audit.json)
+- [`docs/architecture/phase-5m1-domain-ownership-audit.json`](../../docs/architecture/phase-5m1-domain-ownership-audit.json) — decision='understanding-core is the sole future canonical owner; no legacy implementation was deleted or rewired'
+- [`docs/architecture/phase-5m1-governed-metric-catalog.json`](../../docs/architecture/phase-5m1-governed-metric-catalog.json)
+- [`docs/architecture/phase-5m1-import-isolation-audit.json`](../../docs/architecture/phase-5m1-import-isolation-audit.json)
+- [`docs/architecture/phase-5m1-metric-ground-truth-audit.json`](../../docs/architecture/phase-5m1-metric-ground-truth-audit.json)
+- [`docs/architecture/phase-5m1-metric-preflight-corpus-audit.json`](../../docs/architecture/phase-5m1-metric-preflight-corpus-audit.json)
+- [`docs/architecture/phase-5m1-migration-gate-audit.json`](../../docs/architecture/phase-5m1-migration-gate-audit.json) — phase='5M1'
+- [`docs/architecture/phase-5m2-import-isolation-audit.json`](../../docs/architecture/phase-5m2-import-isolation-audit.json)
+- [`docs/architecture/phase-5m2-migration-gate-audit.json`](../../docs/architecture/phase-5m2-migration-gate-audit.json) — phase='5M2'
+- [`docs/architecture/phase-5m2-question-action-corpus-audit.json`](../../docs/architecture/phase-5m2-question-action-corpus-audit.json)
+- [`docs/architecture/phase-5m2-question-action-policy-audit.json`](../../docs/architecture/phase-5m2-question-action-policy-audit.json)
+- [`docs/architecture/phase-5m2-ranking-audit.json`](../../docs/architecture/phase-5m2-ranking-audit.json)
+- [`docs/architecture/phase-5m3-corpus-execution-audit.json`](../../docs/architecture/phase-5m3-corpus-execution-audit.json) — phase='5M3'
+- [`docs/architecture/phase-5m3-ground-truth-comparison-audit.json`](../../docs/architecture/phase-5m3-ground-truth-comparison-audit.json) — phase='5M3'
+- [`docs/architecture/phase-5m3-import-isolation-audit.json`](../../docs/architecture/phase-5m3-import-isolation-audit.json) — phase='5M3'
+- [`docs/architecture/phase-5m3-migration-gate-audit.json`](../../docs/architecture/phase-5m3-migration-gate-audit.json) — phase='5M3'
+- [`docs/architecture/phase-5m3-query-plan-audit.json`](../../docs/architecture/phase-5m3-query-plan-audit.json) — phase='5M3'
+- [`docs/architecture/phase-5m3-runtime-preflight-audit.json`](../../docs/architecture/phase-5m3-runtime-preflight-audit.json) — phase='5M3'
+- [`docs/architecture/phase-5m3-runtime-safety-audit.json`](../../docs/architecture/phase-5m3-runtime-safety-audit.json) — phase='5M3'
+- [`docs/architecture/phase-5m4-corpus-regression-audit.json`](../../docs/architecture/phase-5m4-corpus-regression-audit.json) — phase='5M4'
+- [`docs/architecture/phase-5m4-final-gate-audit.json`](../../docs/architecture/phase-5m4-final-gate-audit.json) — phase='5M4'
+- [`docs/architecture/phase-5m4-import-isolation-audit.json`](../../docs/architecture/phase-5m4-import-isolation-audit.json) — phase='5M4'
+- [`docs/architecture/phase-5m4-phase5-acceptance-audit.json`](../../docs/architecture/phase-5m4-phase5-acceptance-audit.json) — phase='5M4'
+- [`docs/architecture/phase-5m4-real-golden-blocker-audit.json`](../../docs/architecture/phase-5m4-real-golden-blocker-audit.json) — phase='5M4'
+- [`docs/architecture/phase-5m4-real-golden-execution-audit.json`](../../docs/architecture/phase-5m4-real-golden-execution-audit.json) — phase='5M4'
+- [`docs/architecture/phase-6a-artifact-identity-audit.json`](../../docs/architecture/phase-6a-artifact-identity-audit.json)
+- [`docs/architecture/phase-6a-consumer-path-audit.json`](../../docs/architecture/phase-6a-consumer-path-audit.json)
+- [`docs/architecture/phase-6a-end-to-end-audit.json`](../../docs/architecture/phase-6a-end-to-end-audit.json)
+- [`docs/architecture/phase-6a-home-cutover-audit.json`](../../docs/architecture/phase-6a-home-cutover-audit.json)
+- [`docs/architecture/phase-6a-import-isolation-audit.json`](../../docs/architecture/phase-6a-import-isolation-audit.json)
+- [`docs/architecture/phase-6a-investigation-cutover-audit.json`](../../docs/architecture/phase-6a-investigation-cutover-audit.json)
+- [`docs/architecture/phase-6a-legacy-reachability-audit.json`](../../docs/architecture/phase-6a-legacy-reachability-audit.json)
+- [`docs/architecture/phase-6a-migration-gate-audit.json`](../../docs/architecture/phase-6a-migration-gate-audit.json) — phase='6A'
+- [`docs/architecture/phase-6b-advanced-cutover-audit.json`](../../docs/architecture/phase-6b-advanced-cutover-audit.json) — phase='6B'
+- [`docs/architecture/phase-6b-end-to-end-audit.json`](../../docs/architecture/phase-6b-end-to-end-audit.json)
+- [`docs/architecture/phase-6b-final-gate-audit.json`](../../docs/architecture/phase-6b-final-gate-audit.json) — phase='6B'
+- [`docs/architecture/phase-6b-import-isolation-audit.json`](../../docs/architecture/phase-6b-import-isolation-audit.json)
+- [`docs/architecture/phase-6b-legacy-retirement-audit.json`](../../docs/architecture/phase-6b-legacy-retirement-audit.json)
+- [`docs/architecture/phase-6b-production-reachability-audit.json`](../../docs/architecture/phase-6b-production-reachability-audit.json)
+- [`docs/architecture/phase-6b-single-path-audit.json`](../../docs/architecture/phase-6b-single-path-audit.json)
+- [`docs/architecture/phase-6b1-final-suite-conformance.json`](../../docs/architecture/phase-6b1-final-suite-conformance.json) — phase='6B.1'
+- [`docs/architecture/phase-6b2-canonical-error-state-audit.json`](../../docs/architecture/phase-6b2-canonical-error-state-audit.json) — phase='6B.2'
+- [`docs/architecture/phase-6b2-final-suite-conformance.json`](../../docs/architecture/phase-6b2-final-suite-conformance.json) — phase='6B.2'
+- [`docs/architecture/phase-6b2-investigation-regression-audit.json`](../../docs/architecture/phase-6b2-investigation-regression-audit.json) — phase='6B.2'
+- [`docs/architecture/phase-6b2-production-path-preservation-audit.json`](../../docs/architecture/phase-6b2-production-path-preservation-audit.json) — phase='6B.2'
+- [`docs/architecture/phase-6b2-typescript-diagnostic-audit.json`](../../docs/architecture/phase-6b2-typescript-diagnostic-audit.json) — phase='6B.2'
+- [`docs/architecture/phase-7-action-execution-audit.json`](../../docs/architecture/phase-7-action-execution-audit.json) — phase='7'
+- [`docs/architecture/phase-7-blocked-explanation-audit.json`](../../docs/architecture/phase-7-blocked-explanation-audit.json) — gate='pass'
+- [`docs/architecture/phase-7-clean-machine-reproducibility-audit.json`](../../docs/architecture/phase-7-clean-machine-reproducibility-audit.json) — gate='fail'
+- [`docs/architecture/phase-7-grain-domain-audit.json`](../../docs/architecture/phase-7-grain-domain-audit.json) — phase='7'
+- [`docs/architecture/phase-7-mapping-quality-audit.json`](../../docs/architecture/phase-7-mapping-quality-audit.json) — phase='7'
+- [`docs/architecture/phase-7-metric-correctness-audit.json`](../../docs/architecture/phase-7-metric-correctness-audit.json) — phase='7'
+- [`docs/architecture/phase-7-production-reachability-audit.json`](../../docs/architecture/phase-7-production-reachability-audit.json) — gate='pass'
+- [`docs/architecture/phase-7-release-gate-audit.json`](../../docs/architecture/phase-7-release-gate-audit.json) — releaseReady=False
+- [`docs/architecture/phase-7r1-corpus-regression-audit.json`](../../docs/architecture/phase-7r1-corpus-regression-audit.json) — phase='7R1'
+- [`docs/architecture/phase-7r1-import-isolation-audit.json`](../../docs/architecture/phase-7r1-import-isolation-audit.json) — phase='7R1'
+- [`docs/architecture/phase-7r1-missed-signal-root-cause-audit.json`](../../docs/architecture/phase-7r1-missed-signal-root-cause-audit.json) — phase='7R1'
+- [`docs/architecture/phase-7r1-recall-denominator-audit.json`](../../docs/architecture/phase-7r1-recall-denominator-audit.json) — phase='7R1'
+- [`docs/architecture/phase-7r1-release-gate-impact-audit.json`](../../docs/architecture/phase-7r1-release-gate-impact-audit.json) — phase='7R1'
+- [`docs/architecture/phase-7r1-semantic-correction-audit.json`](../../docs/architecture/phase-7r1-semantic-correction-audit.json) — phase='7R1'
+- [`docs/architecture/phase-7r11-action-execution-audit.json`](../../docs/architecture/phase-7r11-action-execution-audit.json) — phase='7R1.1'
+- [`docs/architecture/phase-7r11-clean-checkout-audit.json`](../../docs/architecture/phase-7r11-clean-checkout-audit.json) — gate='fail'
+- [`docs/architecture/phase-7r11-metric-correctness-audit.json`](../../docs/architecture/phase-7r11-metric-correctness-audit.json) — phase='7R1.1'
+- [`docs/architecture/phase-7r11-release-gate-retest.json`](../../docs/architecture/phase-7r11-release-gate-retest.json) — releaseReady=False
+- [`docs/architecture/phase-7r2-action-classification-audit.json`](../../docs/architecture/phase-7r2-action-classification-audit.json) — phase='7R2'
+- [`docs/architecture/phase-7r2-advertised-action-root-cause-audit.json`](../../docs/architecture/phase-7r2-advertised-action-root-cause-audit.json) — phase='7R2'
+- [`docs/architecture/phase-7r2-corpus-regression-audit.json`](../../docs/architecture/phase-7r2-corpus-regression-audit.json) — gate='pass'
+- [`docs/architecture/phase-7r2-release-gate-impact-audit.json`](../../docs/architecture/phase-7r2-release-gate-impact-audit.json) — phase='7R2'
+- [`docs/architecture/phase-7r3-corpus-regression-audit.json`](../../docs/architecture/phase-7r3-corpus-regression-audit.json) — phase='7R3'
+- [`docs/architecture/phase-7r3-metric-root-cause-audit.json`](../../docs/architecture/phase-7r3-metric-root-cause-audit.json) — phase='7R3'
+- [`docs/architecture/phase-7r3-release-gate-impact-audit.json`](../../docs/architecture/phase-7r3-release-gate-impact-audit.json) — releaseReady=False
+- [`docs/architecture/phase-7r3-required-family-coverage-audit.json`](../../docs/architecture/phase-7r3-required-family-coverage-audit.json) — gate='fail'
+- [`docs/architecture/phase-7r3-revenue-correctness-audit.json`](../../docs/architecture/phase-7r3-revenue-correctness-audit.json) — phase='7R3'
+- [`docs/architecture/phase-7r31-corpus-evidence-governance-audit.json`](../../docs/architecture/phase-7r31-corpus-evidence-governance-audit.json) — phase='7R3.1'
+- [`docs/architecture/phase-7r31-delivery-identity-audit.json`](../../docs/architecture/phase-7r31-delivery-identity-audit.json) — phase='7R3.1'
+- [`docs/architecture/phase-7r31-family-blocker-audit.json`](../../docs/architecture/phase-7r31-family-blocker-audit.json) — phase='7R3.1'
+- [`docs/architecture/phase-7r31-family-execution-audit.json`](../../docs/architecture/phase-7r31-family-execution-audit.json) — phase='7R3.1'
+- [`docs/architecture/phase-7r31-gross-profit-readiness-audit.json`](../../docs/architecture/phase-7r31-gross-profit-readiness-audit.json) — phase='7R3.1'
+- [`docs/architecture/phase-7r31-inventory-evidence-audit.json`](../../docs/architecture/phase-7r31-inventory-evidence-audit.json) — phase='7R3.1'
+- [`docs/architecture/phase-7r31-release-gate-impact-audit.json`](../../docs/architecture/phase-7r31-release-gate-impact-audit.json) — phase='7R3.1'
+- [`docs/architecture/phase-7r32-corpus-regression-audit.json`](../../docs/architecture/phase-7r32-corpus-regression-audit.json) — phase='7R3.2'
+- [`docs/architecture/phase-7r32-currency-compatibility-audit.json`](../../docs/architecture/phase-7r32-currency-compatibility-audit.json) — phase='7R3.2'
+- [`docs/architecture/phase-7r32-gross-profit-blocker-audit.json`](../../docs/architecture/phase-7r32-gross-profit-blocker-audit.json) — phase='7R3.2'
+- [`docs/architecture/phase-7r32-gross-profit-execution-audit.json`](../../docs/architecture/phase-7r32-gross-profit-execution-audit.json) — phase='7R3.2'
+- [`docs/architecture/phase-7r32-metric-binding-audit.json`](../../docs/architecture/phase-7r32-metric-binding-audit.json) — phase='7R3.2'
+- [`docs/architecture/phase-7r32-release-gate-impact-audit.json`](../../docs/architecture/phase-7r32-release-gate-impact-audit.json) — phase='7R3.2'
+- [`docs/architecture/phase-7r32-runtime-permission-audit.json`](../../docs/architecture/phase-7r32-runtime-permission-audit.json) — phase='7R3.2'
+- [`docs/architecture/phase-7r33-accounting-currency-evidence-audit.json`](../../docs/architecture/phase-7r33-accounting-currency-evidence-audit.json) — phase='7R3.3'
+- [`docs/architecture/phase-7r33-corpus-extension-candidate.json`](../../docs/architecture/phase-7r33-corpus-extension-candidate.json) — phase='7R3.3'
+- [`docs/architecture/phase-7r33-independent-truth-candidate-audit.json`](../../docs/architecture/phase-7r33-independent-truth-candidate-audit.json) — phase='7R3.3'
+- [`docs/architecture/phase-7r33-inventory-snapshot-evidence-audit.json`](../../docs/architecture/phase-7r33-inventory-snapshot-evidence-audit.json) — phase='7R3.3'
+- [`docs/architecture/phase-7r33-relationship-candidate-audit.json`](../../docs/architecture/phase-7r33-relationship-candidate-audit.json) — phase='7R3.3'
+- [`docs/architecture/phase-7r33-sample-data-file-inventory.json`](../../docs/architecture/phase-7r33-sample-data-file-inventory.json) — phase='7R3.3'
+- [`docs/architecture/phase-7r34-authentic-anchor-inventory.json`](../../docs/architecture/phase-7r34-authentic-anchor-inventory.json)
+- [`docs/architecture/phase-7r34-corpus-1.3.0-manifest.json`](../../docs/architecture/phase-7r34-corpus-1.3.0-manifest.json)
+- [`docs/architecture/phase-7r34-cross-file-relationship-manifest.json`](../../docs/architecture/phase-7r34-cross-file-relationship-manifest.json)
+- [`docs/architecture/phase-7r34-evidence-policy.json`](../../docs/architecture/phase-7r34-evidence-policy.json)
+- [`docs/architecture/phase-7r34-generation-provenance.json`](../../docs/architecture/phase-7r34-generation-provenance.json)
+- [`docs/architecture/phase-7r34-independent-oracle-results.json`](../../docs/architecture/phase-7r34-independent-oracle-results.json)
+- [`docs/architecture/phase-7r34-scenario-contract.json`](../../docs/architecture/phase-7r34-scenario-contract.json)
+- [`docs/architecture/phase-7r35-action-runtime-audit.json`](../../docs/architecture/phase-7r35-action-runtime-audit.json) — status='failed_explanation_completeness'
+- [`docs/architecture/phase-7r35-canonical-path-audit.json`](../../docs/architecture/phase-7r35-canonical-path-audit.json) — status='completed_with_blocked_families'
+- [`docs/architecture/phase-7r35-engine-input-isolation-audit.json`](../../docs/architecture/phase-7r35-engine-input-isolation-audit.json) — status='passed'
+- [`docs/architecture/phase-7r35-gross-profit-execution-audit.json`](../../docs/architecture/phase-7r35-gross-profit-execution-audit.json) — status='failed_not_executed'
+- [`docs/architecture/phase-7r35-inventory-execution-audit.json`](../../docs/architecture/phase-7r35-inventory-execution-audit.json) — status='failed_not_executed'
+- [`docs/architecture/phase-7r35-relationship-validation-audit.json`](../../docs/architecture/phase-7r35-relationship-validation-audit.json) — status='failed_unresolved_relationships'
+- [`docs/architecture/phase-7r35-release-gate-impact-audit.json`](../../docs/architecture/phase-7r35-release-gate-impact-audit.json) — status='release_gate_not_ready'
+- [`docs/architecture/phase-7r35-revenue-delivery-execution-audit.json`](../../docs/architecture/phase-7r35-revenue-delivery-execution-audit.json) — status='passed'
+- [`docs/architecture/phase-7r36-corpus-regression-audit.json`](../../docs/architecture/phase-7r36-corpus-regression-audit.json) — status='pass'
+- [`docs/architecture/phase-7r36-currency-evidence-plumbing-audit.json`](../../docs/architecture/phase-7r36-currency-evidence-plumbing-audit.json) — status='pass'
+- [`docs/architecture/phase-7r36-explanation-completeness-audit.json`](../../docs/architecture/phase-7r36-explanation-completeness-audit.json) — status='pass'
+- [`docs/architecture/phase-7r36-gross-profit-execution-audit.json`](../../docs/architecture/phase-7r36-gross-profit-execution-audit.json) — status='pass'
+- [`docs/architecture/phase-7r36-gross-profit-preflight-audit.json`](../../docs/architecture/phase-7r36-gross-profit-preflight-audit.json) — status='pass'
+- [`docs/architecture/phase-7r36-release-gate-impact-audit.json`](../../docs/architecture/phase-7r36-release-gate-impact-audit.json) — status='pass'
+- [`docs/architecture/phase-7r36-repeated-measure-readiness-audit.json`](../../docs/architecture/phase-7r36-repeated-measure-readiness-audit.json) — status='pass'
+- [`docs/architecture/phase-7r37-corpus-regression-audit.json`](../../docs/architecture/phase-7r37-corpus-regression-audit.json) — status='pass'
+- [`docs/architecture/phase-7r37-detailed-balance-comparison-audit.json`](../../docs/architecture/phase-7r37-detailed-balance-comparison-audit.json) — status='pass'
+- [`docs/architecture/phase-7r37-inventory-execution-audit.json`](../../docs/architecture/phase-7r37-inventory-execution-audit.json) — status='pass'
+- [`docs/architecture/phase-7r37-inventory-preflight-audit.json`](../../docs/architecture/phase-7r37-inventory-preflight-audit.json) — status='pass'
+- [`docs/architecture/phase-7r37-inventory-root-cause-audit.json`](../../docs/architecture/phase-7r37-inventory-root-cause-audit.json) — status='closed'
+- [`docs/architecture/phase-7r37-negative-probe-audit.json`](../../docs/architecture/phase-7r37-negative-probe-audit.json) — status='pass'
+- [`docs/architecture/phase-7r37-release-gate-impact-audit.json`](../../docs/architecture/phase-7r37-release-gate-impact-audit.json) — status='pass'
+- [`docs/architecture/phase-7r37-semantic-binding-audit.json`](../../docs/architecture/phase-7r37-semantic-binding-audit.json) — status='pass'
+- [`docs/architecture/phase-7r37-snapshot-grain-readiness-audit.json`](../../docs/architecture/phase-7r37-snapshot-grain-readiness-audit.json) — status='pass'
+- [`docs/architecture/phase-7r38-clean-checkout-audit.json`](../../docs/architecture/phase-7r38-clean-checkout-audit.json) — gate='fail'
+- [`docs/architecture/phase-7r38-evidence-population-audit.json`](../../docs/architecture/phase-7r38-evidence-population-audit.json) — status='pass'
+- [`docs/architecture/phase-7r38-final-suite-conformance.json`](../../docs/architecture/phase-7r38-final-suite-conformance.json) — gate='pass'
+- [`docs/architecture/phase-7r38-metric-family-audit.json`](../../docs/architecture/phase-7r38-metric-family-audit.json) — status='pass'
+- [`docs/architecture/phase-7r38-release-measurements.json`](../../docs/architecture/phase-7r38-release-measurements.json) — releaseReady=False
+- [`docs/architecture/phase-7r4-candidate-commit-manifest.json`](../../docs/architecture/phase-7r4-candidate-commit-manifest.json) — phase='7R4'
+- [`docs/architecture/phase-7r4-candidate-file-inventory.json`](../../docs/architecture/phase-7r4-candidate-file-inventory.json) — gate='pass'
+- [`docs/architecture/phase-7r4-clean-checkout-reproduction-audit.json`](../../docs/architecture/phase-7r4-clean-checkout-reproduction-audit.json) — phase='7R4'
+- [`docs/architecture/phase-7r4-final-suite-conformance.json`](../../docs/architecture/phase-7r4-final-suite-conformance.json) — gate='fail'
+- [`docs/architecture/phase-7r4-release-gate-audit.json`](../../docs/architecture/phase-7r4-release-gate-audit.json) — phase='7R4'
+- [`docs/architecture/phase-7r4-repository-input-audit.json`](../../docs/architecture/phase-7r4-repository-input-audit.json) — phase='7R4'
+- [`docs/architecture/phase-7r4-sensitive-data-boundary-audit.json`](../../docs/architecture/phase-7r4-sensitive-data-boundary-audit.json) — phase='7R4'
+- [`docs/architecture/phase-7r41-candidate-commit-manifest.json`](../../docs/architecture/phase-7r41-candidate-commit-manifest.json) — phase='7R4.1'
+- [`docs/architecture/phase-7r41-clean-checkout-reproduction-audit.json`](../../docs/architecture/phase-7r41-clean-checkout-reproduction-audit.json) — phase='7R4.1'
+- [`docs/architecture/phase-7r41-corpus-140-acceptance-measurements.json`](../../docs/architecture/phase-7r41-corpus-140-acceptance-measurements.json)
+- [`docs/architecture/phase-7r41-corpus-140-manifest-audit.json`](../../docs/architecture/phase-7r41-corpus-140-manifest-audit.json)
+- [`docs/architecture/phase-7r41-final-suite-conformance.json`](../../docs/architecture/phase-7r41-final-suite-conformance.json) — phase='7R4.1'
+- [`docs/architecture/phase-7r41-missing-fixture-disposition-audit.json`](../../docs/architecture/phase-7r41-missing-fixture-disposition-audit.json)
+- [`docs/architecture/phase-7r41-repository-input-closure-audit.json`](../../docs/architecture/phase-7r41-repository-input-closure-audit.json)
+- [`docs/architecture/phase-7r41-sanitization-contract-audit.json`](../../docs/architecture/phase-7r41-sanitization-contract-audit.json)
+- [`docs/architecture/phase-7r41-sensitive-data-and-license-audit.json`](../../docs/architecture/phase-7r41-sensitive-data-and-license-audit.json)
+- [`docs/architecture/phase-8a-advanced-result-completeness-audit.json`](../../docs/architecture/phase-8a-advanced-result-completeness-audit.json) — gate='pass'
+- [`docs/architecture/phase-8a-canonical-source-scope-contract-audit.json`](../../docs/architecture/phase-8a-canonical-source-scope-contract-audit.json) — gate='pass'
+- [`docs/architecture/phase-8a-current-full-source-defect-audit.json`](../../docs/architecture/phase-8a-current-full-source-defect-audit.json) — gate='closed'
+- [`docs/architecture/phase-8a-full-file-execution-evidence-audit.json`](../../docs/architecture/phase-8a-full-file-execution-evidence-audit.json) — gate='pass'
+- [`docs/architecture/phase-8a-large-file-production-flow-audit.json`](../../docs/architecture/phase-8a-large-file-production-flow-audit.json) — gate='pass'
+- [`docs/architecture/phase-8a-negative-probe-audit.json`](../../docs/architecture/phase-8a-negative-probe-audit.json) — gate='pass'
+- [`docs/architecture/phase-8a-regression-conformance.json`](../../docs/architecture/phase-8a-regression-conformance.json) — gate='pass'
+- [`docs/architecture/phase-8a-source-identity-invalidation-audit.json`](../../docs/architecture/phase-8a-source-identity-invalidation-audit.json) — gate='pass'
+- [`docs/architecture/phase-8b-current-interaction-gap-audit.json`](../../docs/architecture/phase-8b-current-interaction-gap-audit.json)
+- [`docs/architecture/phase-8b-gross-profit-production-interaction-audit.json`](../../docs/architecture/phase-8b-gross-profit-production-interaction-audit.json) — status='pass'
+- [`docs/architecture/phase-8b-inventory-production-interaction-audit.json`](../../docs/architecture/phase-8b-inventory-production-interaction-audit.json) — status='pass'
+- [`docs/architecture/phase-8b-mapping-overlay-contract-audit.json`](../../docs/architecture/phase-8b-mapping-overlay-contract-audit.json) — status='pass'
+- [`docs/architecture/phase-8b-negative-probe-audit.json`](../../docs/architecture/phase-8b-negative-probe-audit.json) — status='pass'
+- [`docs/architecture/phase-8b-overlay-validation-audit.json`](../../docs/architecture/phase-8b-overlay-validation-audit.json) — status='pass'
+- [`docs/architecture/phase-8b-persistence-and-recovery-audit.json`](../../docs/architecture/phase-8b-persistence-and-recovery-audit.json) — status='pass'
+- [`docs/architecture/phase-8b-regression-conformance.json`](../../docs/architecture/phase-8b-regression-conformance.json) — status='pass'
+- [`docs/architecture/phase-8b-source-binding-invalidation-audit.json`](../../docs/architecture/phase-8b-source-binding-invalidation-audit.json) — status='pass'
+- [`docs/architecture/phase-8b-source-evidence-contract-audit.json`](../../docs/architecture/phase-8b-source-evidence-contract-audit.json) — status='pass'
+- [`docs/architecture/phase-8c-accessibility-interaction-baseline.json`](../../docs/architecture/phase-8c-accessibility-interaction-baseline.json) — status='pass'
+- [`docs/architecture/phase-8c-advanced-partial-flow-audit.json`](../../docs/architecture/phase-8c-advanced-partial-flow-audit.json) — status='pass'
+- [`docs/architecture/phase-8c-blocker-priority-audit.json`](../../docs/architecture/phase-8c-blocker-priority-audit.json) — status='pass'
+- [`docs/architecture/phase-8c-canonical-presentation-contract-audit.json`](../../docs/architecture/phase-8c-canonical-presentation-contract-audit.json) — status='pass'
+- [`docs/architecture/phase-8c-current-blocker-ux-defect-audit.json`](../../docs/architecture/phase-8c-current-blocker-ux-defect-audit.json)
+- [`docs/architecture/phase-8c-home-functional-flow-audit.json`](../../docs/architecture/phase-8c-home-functional-flow-audit.json) — status='pass'
+- [`docs/architecture/phase-8c-investigation-functional-flow-audit.json`](../../docs/architecture/phase-8c-investigation-functional-flow-audit.json) — status='pass'
+- [`docs/architecture/phase-8c-negative-probe-audit.json`](../../docs/architecture/phase-8c-negative-probe-audit.json) — status='pass'
+- [`docs/architecture/phase-8c-positive-interaction-audit.json`](../../docs/architecture/phase-8c-positive-interaction-audit.json) — status='pass'
+- [`docs/architecture/phase-8c-regression-conformance.json`](../../docs/architecture/phase-8c-regression-conformance.json) — status='pass'
+- [`docs/architecture/phase-8c-remediation-routing-audit.json`](../../docs/architecture/phase-8c-remediation-routing-audit.json) — status='pass'
+- [`docs/architecture/phase-8c-state-classification-audit.json`](../../docs/architecture/phase-8c-state-classification-audit.json) — status='pass'
+- [`docs/architecture/phase-8d-accessibility-baseline.json`](../../docs/architecture/phase-8d-accessibility-baseline.json) — status='pass_functional_baseline'
+- [`docs/architecture/phase-8d-advanced-boundary-audit.json`](../../docs/architecture/phase-8d-advanced-boundary-audit.json) — status='pass'
+- [`docs/architecture/phase-8d-analysis-discovery-audit.json`](../../docs/architecture/phase-8d-analysis-discovery-audit.json) — status='pass'
+- [`docs/architecture/phase-8d-dead-end-and-legacy-surface-audit.json`](../../docs/architecture/phase-8d-dead-end-and-legacy-surface-audit.json) — status='pass'
+- [`docs/architecture/phase-8d-export-handoff-audit.json`](../../docs/architecture/phase-8d-export-handoff-audit.json) — status='pass'
+- [`docs/architecture/phase-8d-feature-reachability-matrix.json`](../../docs/architecture/phase-8d-feature-reachability-matrix.json) — all_supported_features_reachable
+- [`docs/architecture/phase-8d-multifile-reachability-audit.json`](../../docs/architecture/phase-8d-multifile-reachability-audit.json) — status='fail'
+- [`docs/architecture/phase-8d-navigation-state-audit.json`](../../docs/architecture/phase-8d-navigation-state-audit.json) — status='pass'
+- [`docs/architecture/phase-8d-negative-probe-audit.json`](../../docs/architecture/phase-8d-negative-probe-audit.json) — status='pass'
+- [`docs/architecture/phase-8d-positive-production-journey-audit.json`](../../docs/architecture/phase-8d-positive-production-journey-audit.json) — status='fail'
+- [`docs/architecture/phase-8d-production-capability-inventory.json`](../../docs/architecture/phase-8d-production-capability-inventory.json)
+- [`docs/architecture/phase-8d-regression-conformance.json`](../../docs/architecture/phase-8d-regression-conformance.json) — status='pass_governed_regression_baseline'
+- [`docs/architecture/phase-8d-result-continuity-audit.json`](../../docs/architecture/phase-8d-result-continuity-audit.json) — status='pass'
+- [`docs/architecture/phase-8d-understanding-surface-audit.json`](../../docs/architecture/phase-8d-understanding-surface-audit.json) — status='pass_with_multi_source_limitation'
+- [`docs/architecture/phase-8d1-current-multisource-defect-audit.json`](../../docs/architecture/phase-8d1-current-multisource-defect-audit.json)
+- [`docs/architecture/phase-8d1-final-checkpoint-manifest.json`](../../docs/architecture/phase-8d1-final-checkpoint-manifest.json) — mvp_functional_ui_reachability_complete_ready_for_code_cleanup
+- [`docs/architecture/phase-8d1-governed-relationship-artifact-audit.json`](../../docs/architecture/phase-8d1-governed-relationship-artifact-audit.json) — status='pass'
+- [`docs/architecture/phase-8d1-gross-profit-production-journey-audit.json`](../../docs/architecture/phase-8d1-gross-profit-production-journey-audit.json) — status='pass'
+- [`docs/architecture/phase-8d1-inventory-isolation-audit.json`](../../docs/architecture/phase-8d1-inventory-isolation-audit.json) — status='pass'
+- [`docs/architecture/phase-8d1-m1-m2-m3-integration-audit.json`](../../docs/architecture/phase-8d1-m1-m2-m3-integration-audit.json) — status='pass'
+- [`docs/architecture/phase-8d1-multisource-dataset-contract-audit.json`](../../docs/architecture/phase-8d1-multisource-dataset-contract-audit.json) — status='pass'
+- [`docs/architecture/phase-8d1-multisource-runtime-execution-audit.json`](../../docs/architecture/phase-8d1-multisource-runtime-execution-audit.json) — status='pass'
+- [`docs/architecture/phase-8d1-navigation-persistence-audit.json`](../../docs/architecture/phase-8d1-navigation-persistence-audit.json) — status='pass'
+- [`docs/architecture/phase-8d1-negative-probe-audit.json`](../../docs/architecture/phase-8d1-negative-probe-audit.json) — status='pass'
+- [`docs/architecture/phase-8d1-regression-conformance.json`](../../docs/architecture/phase-8d1-regression-conformance.json) — status='pass'
+- [`docs/architecture/phase-8d1-relationship-invalidation-audit.json`](../../docs/architecture/phase-8d1-relationship-invalidation-audit.json) — status='pass'
+- [`docs/architecture/phase-8d1-source-membership-role-audit.json`](../../docs/architecture/phase-8d1-source-membership-role-audit.json) — status='pass'
+- [`docs/architecture/phase-8e-advanced-separation-audit.json`](../../docs/architecture/phase-8e-advanced-separation-audit.json) — status='pass'
+- [`docs/architecture/phase-8e-baseline-file-and-responsibility-inventory.json`](../../docs/architecture/phase-8e-baseline-file-and-responsibility-inventory.json)
+- [`docs/architecture/phase-8e-behavioral-parity-audit.json`](../../docs/architecture/phase-8e-behavioral-parity-audit.json) — status='pass'
+- [`docs/architecture/phase-8e-dead-legacy-code-disposition-audit.json`](../../docs/architecture/phase-8e-dead-legacy-code-disposition-audit.json) — status='pass'
+- [`docs/architecture/phase-8e-dependency-graph-audit.json`](../../docs/architecture/phase-8e-dependency-graph-audit.json) — status='pass'
+- [`docs/architecture/phase-8e-final-checkpoint-manifest.json`](../../docs/architecture/phase-8e-final-checkpoint-manifest.json) — phase8_codebase_clean_ready_for_visual_ui_design
+- [`docs/architecture/phase-8e-final-file-size-audit.json`](../../docs/architecture/phase-8e-final-file-size-audit.json) — status='pass'
+- [`docs/architecture/phase-8e-home-separation-audit.json`](../../docs/architecture/phase-8e-home-separation-audit.json) — status='pass'
+- [`docs/architecture/phase-8e-investigation-separation-audit.json`](../../docs/architecture/phase-8e-investigation-separation-audit.json) — status='pass'
+- [`docs/architecture/phase-8e-negative-probe-audit.json`](../../docs/architecture/phase-8e-negative-probe-audit.json) — status='pass'
+- [`docs/architecture/phase-8e-public-contract-parity-audit.json`](../../docs/architecture/phase-8e-public-contract-parity-audit.json) — status='pass'
+- [`docs/architecture/phase-8e-regression-conformance.json`](../../docs/architecture/phase-8e-regression-conformance.json) — status='pass'
+- [`docs/architecture/phase-8e-state-ownership-audit.json`](../../docs/architecture/phase-8e-state-ownership-audit.json) — status='pass'
+- [`docs/architecture/phase-8e-target-module-boundary-audit.json`](../../docs/architecture/phase-8e-target-module-boundary-audit.json) — status='pass'
+- [`docs/architecture/phase-8f-browser-production-journey-audit.json`](../../docs/architecture/phase-8f-browser-production-journey-audit.json) — status='pass'
+- [`docs/architecture/phase-8f-contradictory-state-audit.json`](../../docs/architecture/phase-8f-contradictory-state-audit.json) — status='pass'
+- [`docs/architecture/phase-8f-core-capability-inventory.json`](../../docs/architecture/phase-8f-core-capability-inventory.json)
+- [`docs/architecture/phase-8f-core-to-ui-parity-matrix.json`](../../docs/architecture/phase-8f-core-to-ui-parity-matrix.json) — status='blocked_on_authentic_remote_verification'
+- [`docs/architecture/phase-8f-dead-end-and-legacy-surface-audit.json`](../../docs/architecture/phase-8f-dead-end-and-legacy-surface-audit.json) — status='pass'
+- [`docs/architecture/phase-8f-error-lifecycle-parity-audit.json`](../../docs/architecture/phase-8f-error-lifecycle-parity-audit.json) — status='pass'
+- [`docs/architecture/phase-8f-functional-presentation-contract.json`](../../docs/architecture/phase-8f-functional-presentation-contract.json)
+- [`docs/architecture/phase-8f-governed-result-parity-audit.json`](../../docs/architecture/phase-8f-governed-result-parity-audit.json) — status='pass'
+- [`docs/architecture/phase-8f-missing-capability-connection-audit.json`](../../docs/architecture/phase-8f-missing-capability-connection-audit.json) — status='pass'
+- [`docs/architecture/phase-8f-multisource-journey-audit.json`](../../docs/architecture/phase-8f-multisource-journey-audit.json) — status='pass'
+- [`docs/architecture/phase-8f-negative-probe-audit.json`](../../docs/architecture/phase-8f-negative-probe-audit.json) — status='pass'
+- [`docs/architecture/phase-8f-production-surface-inventory.json`](../../docs/architecture/phase-8f-production-surface-inventory.json) — status='pass'
+- [`docs/architecture/phase-8f-regression-conformance.json`](../../docs/architecture/phase-8f-regression-conformance.json) — status='pass'
+- [`docs/architecture/phase-8f-source-local-journey-audit.json`](../../docs/architecture/phase-8f-source-local-journey-audit.json) — status='pass'
+- [`docs/architecture/phase-8f1-dataset-group-source-boundary-audit.json`](../../docs/architecture/phase-8f1-dataset-group-source-boundary-audit.json) — status='pass'
+- [`docs/architecture/phase-8f1-false-ready-browser-defect-audit.json`](../../docs/architecture/phase-8f1-false-ready-browser-defect-audit.json) — status='pass'
+- [`docs/architecture/phase-8f1-handoff-and-session-audit.json`](../../docs/architecture/phase-8f1-handoff-and-session-audit.json) — status='pass'
+- [`docs/architecture/phase-8f1-negative-probe-audit.json`](../../docs/architecture/phase-8f1-negative-probe-audit.json) — status='pass'
+- [`docs/architecture/phase-8f1-regression-conformance.json`](../../docs/architecture/phase-8f1-regression-conformance.json) — status='pass'
+- [`docs/architecture/phase-8f1-reload-reselection-audit.json`](../../docs/architecture/phase-8f1-reload-reselection-audit.json) — status='pass'
+- [`docs/architecture/phase-8f1-runtime-source-continuity-audit.json`](../../docs/architecture/phase-8f1-runtime-source-continuity-audit.json) — status='pass'
+- [`docs/architecture/phase-8f2-browser-safe-hashing-audit.json`](../../docs/architecture/phase-8f2-browser-safe-hashing-audit.json) — status='pass'
+- [`docs/architecture/phase-8f2-canonical-candidate-evidence-audit.json`](../../docs/architecture/phase-8f2-canonical-candidate-evidence-audit.json) — status='pass'
+- [`docs/architecture/phase-8f2-governed-bundle-projection-audit.json`](../../docs/architecture/phase-8f2-governed-bundle-projection-audit.json) — status='pass'
+- [`docs/architecture/phase-8f2-negative-probe-audit.json`](../../docs/architecture/phase-8f2-negative-probe-audit.json) — status='pass'
+- [`docs/architecture/phase-8f2-real-origin-runtime-defect-audit.json`](../../docs/architecture/phase-8f2-real-origin-runtime-defect-audit.json) — status='pass_with_authentic_journey_pending'
+- [`docs/architecture/phase-8f2-regression-conformance.json`](../../docs/architecture/phase-8f2-regression-conformance.json) — not_ready_six_file_operational_flow
+- [`docs/architecture/phase-8f2-remediation-deduplication-audit.json`](../../docs/architecture/phase-8f2-remediation-deduplication-audit.json) — status='pass'
+- [`docs/architecture/phase-8f2-remote-browser-runtime-audit.json`](../../docs/architecture/phase-8f2-remote-browser-runtime-audit.json) — status='pass_with_authentic_journey_pending'
+- [`docs/architecture/phase-8f2-six-file-operational-journey-audit.json`](../../docs/architecture/phase-8f2-six-file-operational-journey-audit.json) — gate='pass'
+- [`docs/architecture/phase-8f2-source-confirmation-operation-audit.json`](../../docs/architecture/phase-8f2-source-confirmation-operation-audit.json) — status='pass'
 
-## project-memory-history (1)
+## package-doc-or-config
 
-| Source | Title / status | Bytes | SHA-256 |
-|---|---|---:|---|
-| [`memory.md`](../../memory.md) | PROJECT_MEMORY.md — LightBI | 49234 | `7d5ba86c1a606c051706cbccbe9e67676e948430a6db5103c162a982a448dd98` |
+- [`packages/chart-schema/package.json`](../../packages/chart-schema/package.json)
+- [`packages/core-types/package.json`](../../packages/core-types/package.json)
+- [`packages/dashboard-schema/package.json`](../../packages/dashboard-schema/package.json)
+- [`packages/plugin-sdk/package.json`](../../packages/plugin-sdk/package.json)
+- [`packages/plugin-sdk/README.md`](../../packages/plugin-sdk/README.md) — @lightbi/plugin-sdk
+- [`packages/query-models/package.json`](../../packages/query-models/package.json)
+- [`packages/runtime/package.json`](../../packages/runtime/package.json)
+- [`packages/ui/package.json`](../../packages/ui/package.json)
 
-## release (1)
+## phase-closure
 
-| Source | Title / status | Bytes | SHA-256 |
-|---|---|---:|---|
-| [`docs/release/BETA_RELEASE_CHECKLIST.md`](../release/BETA_RELEASE_CHECKLIST.md) | LightBI Beta release checklist | 4474 | `e1aee3914355a4f4f3e1343d023fc922609b5932b8409598aa3f6b6d25f5e1f1` |
+- [`docs/architecture/phase-5b1-paired-legacy-replay-and-gate-closure.md`](../../docs/architecture/phase-5b1-paired-legacy-replay-and-gate-closure.md) — Phase 5B1 Paired Legacy Replay And Gate Closure
+- [`docs/architecture/phase-5m4-phase5-acceptance-closure.md`](../../docs/architecture/phase-5m4-phase5-acceptance-closure.md) — Phase 5M4 Acceptance Closure
+- [`docs/architecture/phase-6b1-verification-closure.md`](../../docs/architecture/phase-6b1-verification-closure.md) — Phase 6B.1 Final Regression Verification Closure
+- [`docs/architecture/phase-7r31-required-family-closure.md`](../../docs/architecture/phase-7r31-required-family-closure.md)
+- [`docs/architecture/phase-7r32-conditional-gross-profit-closure.md`](../../docs/architecture/phase-7r32-conditional-gross-profit-closure.md) — Phase 7R3.2 - Conditional Gross Profit Eligibility And Execution Closure
+- [`docs/architecture/phase-7r36-gross-profit-runtime-closure.md`](../../docs/architecture/phase-7r36-gross-profit-runtime-closure.md) — Phase 7R3.6 Gross-Profit Runtime Closure
+- [`docs/architecture/phase-7r37-inventory-runtime-closure.md`](../../docs/architecture/phase-7r37-inventory-runtime-closure.md) — Phase 7R3.7 - Governed Inventory Snapshot Eligibility And Execution Closure
+- [`docs/architecture/phase-7r4-mvp-candidate-packaging-and-release-closure.md`](../../docs/architecture/phase-7r4-mvp-candidate-packaging-and-release-closure.md) — Phase 7R4 - MVP Candidate Packaging And Release Closure
+- [`docs/architecture/phase-7r41-repository-safe-corpus-release-closure.md`](../../docs/architecture/phase-7r41-repository-safe-corpus-release-closure.md) — Phase 7R4.1 Repository-Safe Corpus Release Closure
+- [`docs/architecture/phase-8a-production-full-source-boundary-closure.md`](../../docs/architecture/phase-8a-production-full-source-boundary-closure.md) — Phase 8A Production Full-Source Boundary Closure
+- [`docs/architecture/phase-8b-production-evidence-interaction-closure.md`](../../docs/architecture/phase-8b-production-evidence-interaction-closure.md) — Phase 8B Production Evidence Interaction Closure
+- [`docs/architecture/phase-8c-functional-blocker-remediation-closure.md`](../../docs/architecture/phase-8c-functional-blocker-remediation-closure.md) — Phase 8C Functional Blocker And Remediation Closure
+- [`docs/architecture/phase-8d-functional-ui-feature-closure.md`](../../docs/architecture/phase-8d-functional-ui-feature-closure.md) — Phase 8D Production MVP Feature Reachability And Functional UI Closure
+- [`docs/architecture/phase-8d1-final-checkpoint-closure.md`](../../docs/architecture/phase-8d1-final-checkpoint-closure.md) — Phase 8D.1 Final Checkpoint Closure
+- [`docs/architecture/phase-8d1-production-multisource-closure.md`](../../docs/architecture/phase-8d1-production-multisource-closure.md) — Phase 8D.1 Production Multi-Source Canonical Dataset And Relationship Closure
+- [`docs/architecture/phase-8e-code-separation-and-cleanup-closure.md`](../../docs/architecture/phase-8e-code-separation-and-cleanup-closure.md) — Phase 8E Code Separation And Cleanup Closure
+- [`docs/architecture/phase-8e-final-checkpoint-closure.md`](../../docs/architecture/phase-8e-final-checkpoint-closure.md) — Phase 8E Final Checkpoint And Classification Closure
+- [`docs/architecture/phase-8f-core-ui-functional-parity-closure.md`](../../docs/architecture/phase-8f-core-ui-functional-parity-closure.md) — Phase 8F Core/UI Functional Parity Closure
+- [`docs/architecture/phase-8f1-ready-action-runtime-closure.md`](../../docs/architecture/phase-8f1-ready-action-runtime-closure.md) — Phase 8F.1 Ready-Action Runtime Source Continuity Closure
+- [`docs/architecture/phase-8f2-multifile-operational-parity-closure.md`](../../docs/architecture/phase-8f2-multifile-operational-parity-closure.md) — Phase 8F.2 Multi-File Operational Parity Closure
 
-## research-reference (141)
+## plugin-doc
 
-| Source | Title / status | Bytes | SHA-256 |
-|---|---|---:|---|
-| [`references/JiveDBApp/db/seeds/multidb-mysql/README.md`](../../references/JiveDBApp/db/seeds/multidb-mysql/README.md) | MySQL Multi-Domain Test Seed | 4468 | `c6d67c483f3431adb92b0b2f937a17cfa0af3cb6e0b7416ccd3374e5a2799346` |
-| [`references/JiveDBApp/db/seeds/multidb-postgres/README.md`](../../references/JiveDBApp/db/seeds/multidb-postgres/README.md) | PostgreSQL Multi-Domain Test Seed | 4742 | `ec2534f7ca256caf82105c4ffdfebfc23b5d150321a4d5ba78b809e9526795d1` |
-| [`references/JiveDBApp/db/seeds/mysql/README.md`](../../references/JiveDBApp/db/seeds/mysql/README.md) | Seed — MySQL | 1894 | `ba511587c8b65cb8705a5cfa520145b02ced9e1e347238c2ee0a30c993958dd4` |
-| [`references/JiveDBApp/db/seeds/postgres/README.md`](../../references/JiveDBApp/db/seeds/postgres/README.md) | Seed — PostgreSQL | 2196 | `329571d28b74d6a3409681cf4749a9f68d7d482a927c389a39ec31203fb62027` |
-| [`references/JiveDBApp/db/seeds/README.md`](../../references/JiveDBApp/db/seeds/README.md) | Dữ liệu mẫu (Seeds) | 4303 | `3186e551aaece057a7c2c4a0f00daeb5bf17d8bb97d84ad1f8a38455741dda29` |
-| [`references/JiveDBApp/db/seeds/redis/README.md`](../../references/JiveDBApp/db/seeds/redis/README.md) | Seed — Redis | 1469 | `c68bebd631e2fcfac5f20a2845d7df0034410a2148e2a3eb0345b70e15f1473b` |
-| [`references/JiveDBApp/db/seeds/sqlite/README.md`](../../references/JiveDBApp/db/seeds/sqlite/README.md) | Seed — SQLite | 1582 | `8c520d2a8ee0042c8ecea0ac58e4dbd946def33ce99a224d045b15d8383e6f8c` |
-| [`references/JiveDBApp/docs/brand/BRAND.md`](../../references/JiveDBApp/docs/brand/BRAND.md) | JiveDB — Brand Guidelines | 6885 | `896f81fcbe43baac2fa1fd7eee44bdcb71d0abab72b504bdff431c39b629846d` |
-| [`references/JiveDBApp/README.md`](../../references/JiveDBApp/README.md) | JiveDB — a lightweight, modern database management tool | 15120 | `a7440f1ff06f82ce311c2646a33744792455adb79ebc0e2512f576047770d377` |
-| [`references/JiveDBApp/README_vi.md`](../../references/JiveDBApp/README_vi.md) | JiveDB — Công cụ quản lý cơ sở dữ liệu gọn nhẹ, hiện đại | 16105 | `9879fe7e49fe916800774f06ad28a916d129a2cd5e1ae300c7f7600b2c07a2de` |
-| [`references/JiveDBApp/releases/RELEASE_NOTES_v1.0.0.md`](../../references/JiveDBApp/releases/RELEASE_NOTES_v1.0.0.md) | JiveDB 1.0.0 | 712 | `d7a475d0bdb5ad6534d2121e6d3dbd91c8f368e50674dfd9d3a3ffa0b8708038` |
-| [`references/JiveDBApp/releases/RELEASE_NOTES_v1.1.0.md`](../../references/JiveDBApp/releases/RELEASE_NOTES_v1.1.0.md) | JiveDB 1.1.0 | 1366 | `06c8f30bfaa22564e5d341b459c1c78ed811dd667c76e40e2623c9f1ad91ff91` |
-| [`references/JiveDBApp/releases/RELEASE_NOTES_v1.2.0.md`](../../references/JiveDBApp/releases/RELEASE_NOTES_v1.2.0.md) | JiveDB 1.2.0 | 1507 | `2122d495fa27ec4eb5d752e06287b950b1deb282e975702d1169ff5e064190c5` |
-| [`references/JiveDBApp/releases/RELEASE_NOTES_v1.3.0.md`](../../references/JiveDBApp/releases/RELEASE_NOTES_v1.3.0.md) | JiveDB 1.3.0 | 1805 | `22e86135ebe7bd413e72b20ac6f02b5a6a6bb32f743374bf4442cbf18a7f1314` |
-| [`references/JiveDBApp/releases/RELEASE_NOTES_v1.3.1.md`](../../references/JiveDBApp/releases/RELEASE_NOTES_v1.3.1.md) | JiveDB 1.3.1 | 1003 | `5752a42f43c3e62a7688ef3dcf66c7a3a73df38796bb78b8b5c5933654f119fb` |
-| [`references/JiveDBApp/releases/RELEASE_NOTES_v1.4.0.md`](../../references/JiveDBApp/releases/RELEASE_NOTES_v1.4.0.md) | JiveDB 1.4.0 | 3490 | `5e341d3e4e79401af6da9284b66a203314ce0f19638c58998ea7a361cbf727e4` |
-| [`references/JiveDBApp/releases/RELEASE_NOTES_v1.4.1.md`](../../references/JiveDBApp/releases/RELEASE_NOTES_v1.4.1.md) | JiveDB 1.4.1 | 2790 | `d1031bb748413e1fed0113de0b33c0c2b53656558f217292b69db75399630c37` |
-| [`references/JiveDBApp/releases/RELEASE_NOTES_v1.4.2.md`](../../references/JiveDBApp/releases/RELEASE_NOTES_v1.4.2.md) | JiveDB 1.4.2 | 805 | `c1ffee2b74fa754e52848c097f2d6ea6654a7bebdb758aa170934f99d03b4e9d` |
-| [`references/JiveDBApp/secure/README.md`](../../references/JiveDBApp/secure/README.md) | Hạ tầng test kết nối bảo mật (TLS/SSL + SSH Tunnel) | 6012 | `f0312881ff38fac5b284395afae25477a2f517afdc1e5be930f65c4faed9090e` |
-| [`references/TablePro/.claude/settings.json`](../../references/TablePro/.claude/settings.json) | — | 165 | `f79181b6d535f15087d92e3d881a6a56280157b61983990610667677126437a0` |
-| [`references/TablePro/.claude/skills/fix-issue/evals/evals.json`](../../references/TablePro/.claude/skills/fix-issue/evals/evals.json) | — | 4790 | `8ab93a6d5e57690f815e35c5abf17045ce22088b11fcc0dc542a548bdfe7e029` |
-| [`references/TablePro/.claude/skills/fix-issue/references/quality-bar.md`](../../references/TablePro/.claude/skills/fix-issue/references/quality-bar.md) | Quality Bar | 4858 | `80f09fccd4ffe2aab9d349166440229c9604f6c392d3513c21d8ca9d4549c7f2` |
-| [`references/TablePro/.claude/skills/fix-issue/references/research-sources.md`](../../references/TablePro/.claude/skills/fix-issue/references/research-sources.md) | Research Sources | 2907 | `6a5508eee1e8885885a33e8e4e9c094ff9a34934890330abecfcb3edbb41ef3f` |
-| [`references/TablePro/.claude/skills/fix-issue/references/team-roles.md`](../../references/TablePro/.claude/skills/fix-issue/references/team-roles.md) | Team Roles | 6716 | `2e0a458fefa99372b8c72e1dd2d270e7457f475a87b7544a65216b1ea12cb0b8` |
-| [`references/TablePro/.claude/skills/fix-issue/SKILL.md`](../../references/TablePro/.claude/skills/fix-issue/SKILL.md) | Fix Issue | 10209 | `36cbaa8f5e1bfdce7831f330ee65432a8c34e24a43d6659e6910135121d1d970` |
-| [`references/TablePro/.claude/skills/release/SKILL.md`](../../references/TablePro/.claude/skills/release/SKILL.md) | Release Version | 11934 | `17f3dd91b768f9e670821914c593fa503fc2f25b4a7682d717e5daacf68a0738` |
-| [`references/TablePro/.claude/skills/swiftdata/references/class-inheritance.md`](../../references/TablePro/.claude/skills/swiftdata/references/class-inheritance.md) | Class inheritance | 3804 | `05b22c87e9864a47517ba095c9a870dc320f0e6f4cd85ff9f0b54c5ca356a41d` |
-| [`references/TablePro/.claude/skills/swiftdata/references/cloudkit.md`](../../references/TablePro/.claude/skills/swiftdata/references/cloudkit.md) | Using SwiftData with CloudKit | 662 | `52a549b1713d55be183b79af595d37729426af0abea36ed05f932b718d8ee11f` |
-| [`references/TablePro/.claude/skills/swiftdata/references/core-rules.md`](../../references/TablePro/.claude/skills/swiftdata/references/core-rules.md) | Core rules | 3977 | `8bf45a2af28bfb0648303bb520d3d317d2794b56fcfabe599c4785ccdf02f80a` |
-| [`references/TablePro/.claude/skills/swiftdata/references/indexing.md`](../../references/TablePro/.claude/skills/swiftdata/references/indexing.md) | Indexing | 800 | `909167e538461bf517f8fc6b00bfe70d1c8ea19b12a4749088823c275de52a82` |
-| [`references/TablePro/.claude/skills/swiftdata/references/predicates.md`](../../references/TablePro/.claude/skills/swiftdata/references/predicates.md) | Working with predicates | 2454 | `623c3195fccdec0ec95c0291223ced7491025b04e59c0b4f4fe5ffd23eb1019b` |
-| [`references/TablePro/.claude/skills/swiftdata/SKILL.md`](../../references/TablePro/.claude/skills/swiftdata/SKILL.md) | — | 3656 | `6bb1875c5fe863bd44d43ed751cab0cd8398d82c7b28c78510f927e0e0906dd4` |
-| [`references/TablePro/.claude/skills/swiftui/references/accessibility.md`](../../references/TablePro/.claude/skills/swiftui/references/accessibility.md) | Accessibility | 2377 | `708d09a35c950fd4c118bbb3cfcab13bb146e7d02084615307bbabc19e00a0e3` |
-| [`references/TablePro/.claude/skills/swiftui/references/api.md`](../../references/TablePro/.claude/skills/swiftui/references/api.md) | Using modern SwiftUI API | 3090 | `12fa73d65a19c9d08224f925801db8eec914b1cedf5b2f86a38cdda04a66377a` |
-| [`references/TablePro/.claude/skills/swiftui/references/data.md`](../../references/TablePro/.claude/skills/swiftui/references/data.md) | Data flow, shared state, and property wrappers | 2987 | `5cc50484c525f748839e12174c065f7ea5fdd4380ce04b6885a906ecd6e6a318` |
-| [`references/TablePro/.claude/skills/swiftui/references/design.md`](../../references/TablePro/.claude/skills/swiftui/references/design.md) | Design | 2683 | `03e35d46865cc6807255f3c8481cdbac7b3b0f61924185af84c1913d6c983c69` |
-| [`references/TablePro/.claude/skills/swiftui/references/hygiene.md`](../../references/TablePro/.claude/skills/swiftui/references/hygiene.md) | Hygiene | 1082 | `91d96f45f3ffa02f5553c288415f3c3d5f317cab7d8d9c6c60240ea6c44a2b01` |
-| [`references/TablePro/.claude/skills/swiftui/references/navigation.md`](../../references/TablePro/.claude/skills/swiftui/references/navigation.md) | Navigation and presentation | 1300 | `a3adb302455993aff85bbb6b5845ed2fcffa137c8b2ded99c937f3e4b7fcd77b` |
-| [`references/TablePro/.claude/skills/swiftui/references/performance.md`](../../references/TablePro/.claude/skills/swiftui/references/performance.md) | Performance | 2781 | `1b503e3807e216d6b34b45f18bfba89214cea2fa1b88dd7ae8f482ebf0f03616` |
-| [`references/TablePro/.claude/skills/swiftui/references/swift.md`](../../references/TablePro/.claude/skills/swiftui/references/swift.md) | Swift | 4138 | `8c31c5f5f99b3fa9586f0260cd1a4b1688dc7bda5e8de2891eb3f9d6a791125a` |
-| [`references/TablePro/.claude/skills/swiftui/references/views.md`](../../references/TablePro/.claude/skills/swiftui/references/views.md) | SwiftUI Views | 3240 | `79a166f6507e86744c0f73cfb583100f61a5da37e313ef4586b3b31136a73627` |
-| [`references/TablePro/.claude/skills/swiftui/SKILL.md`](../../references/TablePro/.claude/skills/swiftui/SKILL.md) | — | 4079 | `37c4cba654ee823066ac054bd124a0985ca43a4837656ab575879f3208174d1c` |
-| [`references/TablePro/CHANGELOG.md`](../../references/TablePro/CHANGELOG.md) | Changelog | 171977 | `dedddf3640f33f07286533014f1e43359e7febda5fa17f93461fb184284e2fc4` |
-| [`references/TablePro/CLA.md`](../../references/TablePro/CLA.md) | Contributor License Agreement | 1586 | `236ce274f323d3bb05486d9f859344704d868b33656beb24e1e85cf4307ed7de` |
-| [`references/TablePro/CLAUDE.md`](../../references/TablePro/CLAUDE.md) | CLAUDE.md | 25400 | `6acd83544933f4691f20f5cbf97aa346fda051f78e2452c4873f1b66d5288b9e` |
-| [`references/TablePro/CODE_OF_CONDUCT.md`](../../references/TablePro/CODE_OF_CONDUCT.md) | Contributor Covenant Code of Conduct | 5221 | `47ac2935fd017b26b309f225c891273142419ef60e2a6434b83e6da2c8c4c1b8` |
-| [`references/TablePro/CONTRIBUTING.md`](../../references/TablePro/CONTRIBUTING.md) | Contributing to TablePro | 3677 | `33a0bc19d271c26d72009c5f24c2309a0ae6cf253d936f4518c1b7a2fcb690ae` |
-| [`references/TablePro/docs/docs.json`](../../references/TablePro/docs/docs.json) | TablePro | 7191 | `62f83c1dd799e8b227b589bdbaa048c36e7c50648fd3ca75f892b6f4082ddef6` |
-| [`references/TablePro/docs/README.md`](../../references/TablePro/docs/README.md) | TablePro Documentation | 1077 | `de2a2783744e229e96dbe6ccd230a83f8998d16e32f43c324bee7a6ed287c16b` |
-| [`references/TablePro/LocalPackages/CodeEditSourceEditor/.github/pull_request_template.md`](../../references/TablePro/LocalPackages/CodeEditSourceEditor/.github/pull_request_template.md) | — | 1123 | `ed2f811be417b756509430bc300e88b57aa070f9227b85982f04f2f779160476` |
-| [`references/TablePro/LocalPackages/CodeEditSourceEditor/Example/CodeEditSourceEditorExample/CodeEditSourceEditorExample/Assets.xcassets/AccentColor.colorset/Contents.json`](../../references/TablePro/LocalPackages/CodeEditSourceEditor/Example/CodeEditSourceEditorExample/CodeEditSourceEditorExample/Assets.xcassets/AccentColor.colorset/Contents.json) | — | 123 | `9af65086fa30b49252fae1a1225731691de794f7775af74d71befeb507d12b7c` |
-| [`references/TablePro/LocalPackages/CodeEditSourceEditor/Example/CodeEditSourceEditorExample/CodeEditSourceEditorExample/Assets.xcassets/AppIcon.appiconset/Contents.json`](../../references/TablePro/LocalPackages/CodeEditSourceEditor/Example/CodeEditSourceEditorExample/CodeEditSourceEditorExample/Assets.xcassets/AppIcon.appiconset/Contents.json) | — | 1460 | `2b590f3f4f62f2d8193ea763f3e7b8ffe228b45cdee7468175f3a34c5b3a4b51` |
-| [`references/TablePro/LocalPackages/CodeEditSourceEditor/Example/CodeEditSourceEditorExample/CodeEditSourceEditorExample/Assets.xcassets/Contents.json`](../../references/TablePro/LocalPackages/CodeEditSourceEditor/Example/CodeEditSourceEditorExample/CodeEditSourceEditorExample/Assets.xcassets/Contents.json) | — | 63 | `0fd49ba3c3585c709678e0046a821c3c60685ec7063720d30d3a3448be3a208b` |
-| [`references/TablePro/LocalPackages/CodeEditSourceEditor/Example/CodeEditSourceEditorExample/CodeEditSourceEditorExample/Preview Content/Preview Assets.xcassets/Contents.json`](../../references/TablePro/LocalPackages/CodeEditSourceEditor/Example/CodeEditSourceEditorExample/CodeEditSourceEditorExample/Preview Content/Preview Assets.xcassets/Contents.json) | — | 63 | `0fd49ba3c3585c709678e0046a821c3c60685ec7063720d30d3a3448be3a208b` |
-| [`references/TablePro/LocalPackages/CodeEditSourceEditor/LICENSE.md`](../../references/TablePro/LocalPackages/CodeEditSourceEditor/LICENSE.md) | — | 1065 | `a1c7f7ef3f326384c8edb428c9698654a4df4a4339149b4eccdac532f832678e` |
-| [`references/TablePro/LocalPackages/CodeEditSourceEditor/README.md`](../../references/TablePro/LocalPackages/CodeEditSourceEditor/README.md) | — | 7753 | `7dadf09297b0b24949b021b25702cac58be737bf43639499217c210ac0a0113d` |
-| [`references/TablePro/LocalPackages/CodeEditSourceEditor/Sources/CodeEditSourceEditor/Documentation.docc/Documentation.md`](../../references/TablePro/LocalPackages/CodeEditSourceEditor/Sources/CodeEditSourceEditor/Documentation.docc/Documentation.md) | ``CodeEditSourceEditor`` | 1920 | `4efc24f0754e7bf3a01696b75085f0e21b02b24fe3e1de2c9aef660f0c7acf83` |
-| [`references/TablePro/LocalPackages/CodeEditSourceEditor/Sources/CodeEditSourceEditor/Documentation.docc/SourceEditorView.md`](../../references/TablePro/LocalPackages/CodeEditSourceEditor/Sources/CodeEditSourceEditor/Documentation.docc/SourceEditorView.md) | Source Editor View | 4505 | `a0314cf579a6335f6509be454555ba93e45e3267be726e859dbe20dbe454bb1b` |
-| [`references/TablePro/LocalPackages/CodeEditSourceEditor/Sources/CodeEditSourceEditor/Documentation.docc/TextViewCoordinators.md`](../../references/TablePro/LocalPackages/CodeEditSourceEditor/Sources/CodeEditSourceEditor/Documentation.docc/TextViewCoordinators.md) | TextView Coordinators | 3593 | `1fc0611380465d4596237438cc72167e53df80c299bf0886b988c5aafddf449f` |
-| [`references/TablePro/LocalPackages/CodeEditTextView/.github/pull_request_template.md`](../../references/TablePro/LocalPackages/CodeEditTextView/.github/pull_request_template.md) | — | 1123 | `ed2f811be417b756509430bc300e88b57aa070f9227b85982f04f2f779160476` |
-| [`references/TablePro/LocalPackages/CodeEditTextView/Example/CodeEditTextViewExample/CodeEditTextViewExample/Assets.xcassets/AccentColor.colorset/Contents.json`](../../references/TablePro/LocalPackages/CodeEditTextView/Example/CodeEditTextViewExample/CodeEditTextViewExample/Assets.xcassets/AccentColor.colorset/Contents.json) | — | 123 | `9af65086fa30b49252fae1a1225731691de794f7775af74d71befeb507d12b7c` |
-| [`references/TablePro/LocalPackages/CodeEditTextView/Example/CodeEditTextViewExample/CodeEditTextViewExample/Assets.xcassets/AppIcon.appiconset/Contents.json`](../../references/TablePro/LocalPackages/CodeEditTextView/Example/CodeEditTextViewExample/CodeEditTextViewExample/Assets.xcassets/AppIcon.appiconset/Contents.json) | — | 1420 | `e60aa1950ca3f4b5b7daeb1266dc42da4ed2d4135153226f6913d1f47b6f5a6b` |
-| [`references/TablePro/LocalPackages/CodeEditTextView/Example/CodeEditTextViewExample/CodeEditTextViewExample/Assets.xcassets/Contents.json`](../../references/TablePro/LocalPackages/CodeEditTextView/Example/CodeEditTextViewExample/CodeEditTextViewExample/Assets.xcassets/Contents.json) | — | 63 | `0fd49ba3c3585c709678e0046a821c3c60685ec7063720d30d3a3448be3a208b` |
-| [`references/TablePro/LocalPackages/CodeEditTextView/LICENSE.md`](../../references/TablePro/LocalPackages/CodeEditTextView/LICENSE.md) | — | 1065 | `960d8436f97cac8fdf01cb011cee5bda3d292777c41840137b754f1d43f023dc` |
-| [`references/TablePro/LocalPackages/CodeEditTextView/README.md`](../../references/TablePro/LocalPackages/CodeEditTextView/README.md) | — | 7000 | `1608f722832350c9e8b8f02dbb5f5943f9c28729d808c4084d39697d67d2e255` |
-| [`references/TablePro/LocalPackages/CodeEditTextView/Sources/CodeEditTextView/Documentation.docc/Documentation.md`](../../references/TablePro/LocalPackages/CodeEditTextView/Sources/CodeEditTextView/Documentation.docc/Documentation.md) | ``CodeEditTextView`` | 1695 | `a00c800e2bf34f0e4a1a01b53f9a7a98c031fcc9b070c5b7cde2f4e0a4730bbc` |
-| [`references/TablePro/README.md`](../../references/TablePro/README.md) | — | 6515 | `88c346039530d84ba46a8092d1505af961cf625ad98bbebd719cca037f614d4d` |
-| [`references/TablePro/README.vi.md`](../../references/TablePro/README.vi.md) | — | 6166 | `828e3659ead17e20ce99fea6bfbe9fe4f9c78806405d712bee6c9000eb4dcdd3` |
-| [`references/TablePro/README.zh.md`](../../references/TablePro/README.zh.md) | — | 5542 | `c6e921c1017dd58fc99722efcc5955bd1cf5b0730c2ab149d2a82fa7a84e8a25` |
-| [`references/TablePro/signatures/cla.json`](../../references/TablePro/signatures/cla.json) | — | 5075 | `c05580fd71526aec6f471e33437a389b3c506f3a3086bd73df4dd7a5cb2a0b41` |
-| [`references/TablePro/TablePro/AppIcon.icon/icon.json`](../../references/TablePro/TablePro/AppIcon.icon/icon.json) | — | 778 | `946e52ab63d8787902f1eb0694d1701c70aabc51627e68207d60413204795fec` |
-| [`references/TablePro/TablePro/Assets.xcassets/AppIcon.appiconset/Contents.json`](../../references/TablePro/TablePro/Assets.xcassets/AppIcon.appiconset/Contents.json) | — | 6259 | `de9e9ef0370b21348ceb45fe88fa45d15c331eab745d98bd3d5ad7fbd2207d14` |
-| [`references/TablePro/TablePro/Assets.xcassets/bigquery-icon.imageset/Contents.json`](../../references/TablePro/TablePro/Assets.xcassets/bigquery-icon.imageset/Contents.json) | — | 264 | `7a3ee3804ed573754af5915f3fd223db1c5b213c0021de0582e0a0c0142444e3` |
-| [`references/TablePro/TablePro/Assets.xcassets/cassandra-icon.imageset/Contents.json`](../../references/TablePro/TablePro/Assets.xcassets/cassandra-icon.imageset/Contents.json) | — | 274 | `3ac415f551047067f72c0b343f4a182dd3a7052c056bda3758ebe5c01c624bdb` |
-| [`references/TablePro/TablePro/Assets.xcassets/clickhouse-icon.imageset/Contents.json`](../../references/TablePro/TablePro/Assets.xcassets/clickhouse-icon.imageset/Contents.json) | — | 275 | `8334c442c5653971d977826e52398ec6570bd57fe412332b0d9adf1a4b64f8f1` |
-| [`references/TablePro/TablePro/Assets.xcassets/cloudflare-d1-icon.imageset/Contents.json`](../../references/TablePro/TablePro/Assets.xcassets/cloudflare-d1-icon.imageset/Contents.json) | — | 278 | `f99d65e9464f3125cd1d6630c779fa59af5282b2c47652b7493a82bb5d118c6d` |
-| [`references/TablePro/TablePro/Assets.xcassets/cockroachdb-icon.imageset/Contents.json`](../../references/TablePro/TablePro/Assets.xcassets/cockroachdb-icon.imageset/Contents.json) | — | 276 | `65436e94062c3bcb201e29f314f8df5fdc660215761a9aa19578c5edb5d2c733` |
-| [`references/TablePro/TablePro/Assets.xcassets/Contents.json`](../../references/TablePro/TablePro/Assets.xcassets/Contents.json) | — | 63 | `0fd49ba3c3585c709678e0046a821c3c60685ec7063720d30d3a3448be3a208b` |
-| [`references/TablePro/TablePro/Assets.xcassets/duckdb-icon.imageset/Contents.json`](../../references/TablePro/TablePro/Assets.xcassets/duckdb-icon.imageset/Contents.json) | — | 271 | `270b1bfc46db5d0a0e5f0aef33e61a948f22c52f49199152348333bce235b4be` |
-| [`references/TablePro/TablePro/Assets.xcassets/dynamodb-icon.imageset/Contents.json`](../../references/TablePro/TablePro/Assets.xcassets/dynamodb-icon.imageset/Contents.json) | — | 264 | `251266c6429a56ef3e4cd1ba089f9361ea28ac81283fd2c898654790286886a6` |
-| [`references/TablePro/TablePro/Assets.xcassets/etcd-icon.imageset/Contents.json`](../../references/TablePro/TablePro/Assets.xcassets/etcd-icon.imageset/Contents.json) | — | 269 | `7393900a68d8f01df0211da8fed217f62df3663db105dcce7d12740d919398c9` |
-| [`references/TablePro/TablePro/Assets.xcassets/libsql-icon.imageset/Contents.json`](../../references/TablePro/TablePro/Assets.xcassets/libsql-icon.imageset/Contents.json) | — | 271 | `a12496130c24aa2891ed7a8e0cf10ade0d60cc2384f9f01151ef7f23198803fb` |
-| [`references/TablePro/TablePro/Assets.xcassets/mariadb-icon.imageset/Contents.json`](../../references/TablePro/TablePro/Assets.xcassets/mariadb-icon.imageset/Contents.json) | — | 272 | `dfbb3edb2d3c7872481776026b4a6264ca143acbc1d4e412dfc4c3e19a4a949a` |
-| [`references/TablePro/TablePro/Assets.xcassets/mongodb-icon.imageset/Contents.json`](../../references/TablePro/TablePro/Assets.xcassets/mongodb-icon.imageset/Contents.json) | — | 263 | `b45d9270424ce802a70a75ad2ca59118c535f393e41b92d95657184e29e725db` |
-| [`references/TablePro/TablePro/Assets.xcassets/mssql-icon.imageset/Contents.json`](../../references/TablePro/TablePro/Assets.xcassets/mssql-icon.imageset/Contents.json) | — | 270 | `a2e7dcba721dc0b6a16e0acc62d9d5ef9956c7a3e308e5bf310805a2fadeadbf` |
-| [`references/TablePro/TablePro/Assets.xcassets/mysql-icon.imageset/Contents.json`](../../references/TablePro/TablePro/Assets.xcassets/mysql-icon.imageset/Contents.json) | — | 270 | `a5064d0743a3a594b8cf1a895f669af0ca9b5e95c63aba35b3426141811d2aa4` |
-| [`references/TablePro/TablePro/Assets.xcassets/oracle-icon.imageset/Contents.json`](../../references/TablePro/TablePro/Assets.xcassets/oracle-icon.imageset/Contents.json) | — | 271 | `5335ddea6f485fd2cbf173769bd2382c042a91f88562ef72e33244538344fea8` |
-| [`references/TablePro/TablePro/Assets.xcassets/postgresql-icon.imageset/Contents.json`](../../references/TablePro/TablePro/Assets.xcassets/postgresql-icon.imageset/Contents.json) | — | 275 | `f2c11f405c96393a65b57b308c3abbcc21bf718ba79e31ff68eb669fca019da6` |
-| [`references/TablePro/TablePro/Assets.xcassets/redis-icon.imageset/Contents.json`](../../references/TablePro/TablePro/Assets.xcassets/redis-icon.imageset/Contents.json) | — | 270 | `a7ea36fbc50a7d78510efc8d781ded1a375953fdb9e5618086e2b1259b5c2cc1` |
-| [`references/TablePro/TablePro/Assets.xcassets/redshift-icon.imageset/Contents.json`](../../references/TablePro/TablePro/Assets.xcassets/redshift-icon.imageset/Contents.json) | — | 273 | `4315d408fe67c10f3a211978a36a6b46d0aec8e4de9a3ebcf0acdaee3a9f2806` |
-| [`references/TablePro/TablePro/Assets.xcassets/scylladb-icon.imageset/Contents.json`](../../references/TablePro/TablePro/Assets.xcassets/scylladb-icon.imageset/Contents.json) | — | 273 | `19ebb36fa6401bf2d69f020945956bf20d86503a1117ca20a7ec414bba1355b9` |
-| [`references/TablePro/TablePro/Assets.xcassets/snowflake-icon.imageset/Contents.json`](../../references/TablePro/TablePro/Assets.xcassets/snowflake-icon.imageset/Contents.json) | — | 265 | `ba25f4b471d1c2c1139330daffff2285947dfebadfd61317360afb0c3072a0a7` |
-| [`references/TablePro/TablePro/Assets.xcassets/sqlite-icon.imageset/Contents.json`](../../references/TablePro/TablePro/Assets.xcassets/sqlite-icon.imageset/Contents.json) | — | 271 | `a89e5b77ccbfd8fd8968de6727adb84833f40f5a401eae3908835440f1c35674` |
-| [`references/TablePro/TablePro/Resources/Themes/tablepro.default-dark.json`](../../references/TablePro/TablePro/Resources/Themes/tablepro.default-dark.json) | Default Dark | 1629 | `a4afb28596ded31b6eeab8cf3156de0ad53cc6e307e392b446c5805f4717c745` |
-| [`references/TablePro/TablePro/Resources/Themes/tablepro.default-light.json`](../../references/TablePro/TablePro/Resources/Themes/tablepro.default-light.json) | Default Light | 1630 | `5923b94580b2840a7ed8515fcb468388cad0bd51e8830bb0490cc7dd38261193` |
-| [`references/TablePro/TablePro/Resources/Themes/tablepro.dracula.json`](../../references/TablePro/TablePro/Resources/Themes/tablepro.dracula.json) | Dracula | 2228 | `e2c626dc509dd0b88d2ed3429acbccb1ba074c81f5e8adf33a5956f97a991c1d` |
-| [`references/TablePro/TablePro/Resources/Themes/tablepro.nord.json`](../../references/TablePro/TablePro/Resources/Themes/tablepro.nord.json) | Nord | 2224 | `62cafc0ad0e3f956619b38d18faa6e82a08420f0af42ebbab2b9038b59f04eeb` |
-| [`references/TablePro/TableProMobile/TableProMobile/AppIcon.icon/icon.json`](../../references/TablePro/TableProMobile/TableProMobile/AppIcon.icon/icon.json) | — | 778 | `946e52ab63d8787902f1eb0694d1701c70aabc51627e68207d60413204795fec` |
-| [`references/TablePro/TableProMobile/TableProMobile/Assets.xcassets/AccentColor.colorset/Contents.json`](../../references/TablePro/TableProMobile/TableProMobile/Assets.xcassets/AccentColor.colorset/Contents.json) | — | 123 | `9af65086fa30b49252fae1a1225731691de794f7775af74d71befeb507d12b7c` |
-| [`references/TablePro/TableProMobile/TableProMobile/Assets.xcassets/bigquery-icon.imageset/Contents.json`](../../references/TablePro/TableProMobile/TableProMobile/Assets.xcassets/bigquery-icon.imageset/Contents.json) | — | 264 | `7a3ee3804ed573754af5915f3fd223db1c5b213c0021de0582e0a0c0142444e3` |
-| [`references/TablePro/TableProMobile/TableProMobile/Assets.xcassets/cassandra-icon.imageset/Contents.json`](../../references/TablePro/TableProMobile/TableProMobile/Assets.xcassets/cassandra-icon.imageset/Contents.json) | — | 274 | `3ac415f551047067f72c0b343f4a182dd3a7052c056bda3758ebe5c01c624bdb` |
-| [`references/TablePro/TableProMobile/TableProMobile/Assets.xcassets/clickhouse-icon.imageset/Contents.json`](../../references/TablePro/TableProMobile/TableProMobile/Assets.xcassets/clickhouse-icon.imageset/Contents.json) | — | 275 | `8334c442c5653971d977826e52398ec6570bd57fe412332b0d9adf1a4b64f8f1` |
-| [`references/TablePro/TableProMobile/TableProMobile/Assets.xcassets/cloudflare-d1-icon.imageset/Contents.json`](../../references/TablePro/TableProMobile/TableProMobile/Assets.xcassets/cloudflare-d1-icon.imageset/Contents.json) | — | 278 | `f99d65e9464f3125cd1d6630c779fa59af5282b2c47652b7493a82bb5d118c6d` |
-| [`references/TablePro/TableProMobile/TableProMobile/Assets.xcassets/Contents.json`](../../references/TablePro/TableProMobile/TableProMobile/Assets.xcassets/Contents.json) | — | 63 | `0fd49ba3c3585c709678e0046a821c3c60685ec7063720d30d3a3448be3a208b` |
-| [`references/TablePro/TableProMobile/TableProMobile/Assets.xcassets/duckdb-icon.imageset/Contents.json`](../../references/TablePro/TableProMobile/TableProMobile/Assets.xcassets/duckdb-icon.imageset/Contents.json) | — | 271 | `270b1bfc46db5d0a0e5f0aef33e61a948f22c52f49199152348333bce235b4be` |
-| [`references/TablePro/TableProMobile/TableProMobile/Assets.xcassets/dynamodb-icon.imageset/Contents.json`](../../references/TablePro/TableProMobile/TableProMobile/Assets.xcassets/dynamodb-icon.imageset/Contents.json) | — | 264 | `ee0f21c0ef231005c7a61e6fb537020e7fc2d79f0537325d5ef2c9d6122a870e` |
-| [`references/TablePro/TableProMobile/TableProMobile/Assets.xcassets/etcd-icon.imageset/Contents.json`](../../references/TablePro/TableProMobile/TableProMobile/Assets.xcassets/etcd-icon.imageset/Contents.json) | — | 269 | `7393900a68d8f01df0211da8fed217f62df3663db105dcce7d12740d919398c9` |
-| [`references/TablePro/TableProMobile/TableProMobile/Assets.xcassets/libsql-icon.imageset/Contents.json`](../../references/TablePro/TableProMobile/TableProMobile/Assets.xcassets/libsql-icon.imageset/Contents.json) | — | 271 | `a12496130c24aa2891ed7a8e0cf10ade0d60cc2384f9f01151ef7f23198803fb` |
-| [`references/TablePro/TableProMobile/TableProMobile/Assets.xcassets/mariadb-icon.imageset/Contents.json`](../../references/TablePro/TableProMobile/TableProMobile/Assets.xcassets/mariadb-icon.imageset/Contents.json) | — | 272 | `dfbb3edb2d3c7872481776026b4a6264ca143acbc1d4e412dfc4c3e19a4a949a` |
-| [`references/TablePro/TableProMobile/TableProMobile/Assets.xcassets/mongodb-icon.imageset/Contents.json`](../../references/TablePro/TableProMobile/TableProMobile/Assets.xcassets/mongodb-icon.imageset/Contents.json) | — | 263 | `6498b190f0a0fbcf6d54972221fb37eee90bb1da7db9e1195dd5a29ed1767481` |
-| [`references/TablePro/TableProMobile/TableProMobile/Assets.xcassets/mssql-icon.imageset/Contents.json`](../../references/TablePro/TableProMobile/TableProMobile/Assets.xcassets/mssql-icon.imageset/Contents.json) | — | 270 | `a2e7dcba721dc0b6a16e0acc62d9d5ef9956c7a3e308e5bf310805a2fadeadbf` |
-| [`references/TablePro/TableProMobile/TableProMobile/Assets.xcassets/mysql-icon.imageset/Contents.json`](../../references/TablePro/TableProMobile/TableProMobile/Assets.xcassets/mysql-icon.imageset/Contents.json) | — | 270 | `a5064d0743a3a594b8cf1a895f669af0ca9b5e95c63aba35b3426141811d2aa4` |
-| [`references/TablePro/TableProMobile/TableProMobile/Assets.xcassets/oracle-icon.imageset/Contents.json`](../../references/TablePro/TableProMobile/TableProMobile/Assets.xcassets/oracle-icon.imageset/Contents.json) | — | 271 | `5335ddea6f485fd2cbf173769bd2382c042a91f88562ef72e33244538344fea8` |
-| [`references/TablePro/TableProMobile/TableProMobile/Assets.xcassets/postgresql-icon.imageset/Contents.json`](../../references/TablePro/TableProMobile/TableProMobile/Assets.xcassets/postgresql-icon.imageset/Contents.json) | — | 275 | `f2c11f405c96393a65b57b308c3abbcc21bf718ba79e31ff68eb669fca019da6` |
-| [`references/TablePro/TableProMobile/TableProMobile/Assets.xcassets/redis-icon.imageset/Contents.json`](../../references/TablePro/TableProMobile/TableProMobile/Assets.xcassets/redis-icon.imageset/Contents.json) | — | 270 | `a7ea36fbc50a7d78510efc8d781ded1a375953fdb9e5618086e2b1259b5c2cc1` |
-| [`references/TablePro/TableProMobile/TableProMobile/Assets.xcassets/redshift-icon.imageset/Contents.json`](../../references/TablePro/TableProMobile/TableProMobile/Assets.xcassets/redshift-icon.imageset/Contents.json) | — | 273 | `4315d408fe67c10f3a211978a36a6b46d0aec8e4de9a3ebcf0acdaee3a9f2806` |
-| [`references/TablePro/TableProMobile/TableProMobile/Assets.xcassets/scylladb-icon.imageset/Contents.json`](../../references/TablePro/TableProMobile/TableProMobile/Assets.xcassets/scylladb-icon.imageset/Contents.json) | — | 273 | `19ebb36fa6401bf2d69f020945956bf20d86503a1117ca20a7ec414bba1355b9` |
-| [`references/TablePro/TableProMobile/TableProMobile/Assets.xcassets/sqlite-icon.imageset/Contents.json`](../../references/TablePro/TableProMobile/TableProMobile/Assets.xcassets/sqlite-icon.imageset/Contents.json) | — | 271 | `a89e5b77ccbfd8fd8968de6727adb84833f40f5a401eae3908835440f1c35674` |
-| [`references/TablePro/TableProMobile/TableProMobileTests/README.md`](../../references/TablePro/TableProMobile/TableProMobileTests/README.md) | TableProMobileTests | 1368 | `fa90941b7b3c23872d6f5067950947f5ba42368ca201dc7fd9d115198ac6c0a8` |
-| [`references/TablePro/TableProMobile/TableProWidget/Assets.xcassets/AccentColor.colorset/Contents.json`](../../references/TablePro/TableProMobile/TableProWidget/Assets.xcassets/AccentColor.colorset/Contents.json) | — | 123 | `9af65086fa30b49252fae1a1225731691de794f7775af74d71befeb507d12b7c` |
-| [`references/TablePro/TableProMobile/TableProWidget/Assets.xcassets/AppIcon.appiconset/Contents.json`](../../references/TablePro/TableProMobile/TableProWidget/Assets.xcassets/AppIcon.appiconset/Contents.json) | — | 607 | `d776cfae1b33325f70befa1b0fc5e5420c660655603409e8588d94fd8fc6e112` |
-| [`references/TablePro/TableProMobile/TableProWidget/Assets.xcassets/bigquery-icon.imageset/Contents.json`](../../references/TablePro/TableProMobile/TableProWidget/Assets.xcassets/bigquery-icon.imageset/Contents.json) | — | 264 | `7a3ee3804ed573754af5915f3fd223db1c5b213c0021de0582e0a0c0142444e3` |
-| [`references/TablePro/TableProMobile/TableProWidget/Assets.xcassets/cassandra-icon.imageset/Contents.json`](../../references/TablePro/TableProMobile/TableProWidget/Assets.xcassets/cassandra-icon.imageset/Contents.json) | — | 274 | `3ac415f551047067f72c0b343f4a182dd3a7052c056bda3758ebe5c01c624bdb` |
-| [`references/TablePro/TableProMobile/TableProWidget/Assets.xcassets/clickhouse-icon.imageset/Contents.json`](../../references/TablePro/TableProMobile/TableProWidget/Assets.xcassets/clickhouse-icon.imageset/Contents.json) | — | 275 | `8334c442c5653971d977826e52398ec6570bd57fe412332b0d9adf1a4b64f8f1` |
-| [`references/TablePro/TableProMobile/TableProWidget/Assets.xcassets/cloudflare-d1-icon.imageset/Contents.json`](../../references/TablePro/TableProMobile/TableProWidget/Assets.xcassets/cloudflare-d1-icon.imageset/Contents.json) | — | 278 | `f99d65e9464f3125cd1d6630c779fa59af5282b2c47652b7493a82bb5d118c6d` |
-| [`references/TablePro/TableProMobile/TableProWidget/Assets.xcassets/Contents.json`](../../references/TablePro/TableProMobile/TableProWidget/Assets.xcassets/Contents.json) | — | 63 | `0fd49ba3c3585c709678e0046a821c3c60685ec7063720d30d3a3448be3a208b` |
-| [`references/TablePro/TableProMobile/TableProWidget/Assets.xcassets/duckdb-icon.imageset/Contents.json`](../../references/TablePro/TableProMobile/TableProWidget/Assets.xcassets/duckdb-icon.imageset/Contents.json) | — | 271 | `270b1bfc46db5d0a0e5f0aef33e61a948f22c52f49199152348333bce235b4be` |
-| [`references/TablePro/TableProMobile/TableProWidget/Assets.xcassets/dynamodb-icon.imageset/Contents.json`](../../references/TablePro/TableProMobile/TableProWidget/Assets.xcassets/dynamodb-icon.imageset/Contents.json) | — | 264 | `ee0f21c0ef231005c7a61e6fb537020e7fc2d79f0537325d5ef2c9d6122a870e` |
-| [`references/TablePro/TableProMobile/TableProWidget/Assets.xcassets/etcd-icon.imageset/Contents.json`](../../references/TablePro/TableProMobile/TableProWidget/Assets.xcassets/etcd-icon.imageset/Contents.json) | — | 269 | `7393900a68d8f01df0211da8fed217f62df3663db105dcce7d12740d919398c9` |
-| [`references/TablePro/TableProMobile/TableProWidget/Assets.xcassets/libsql-icon.imageset/Contents.json`](../../references/TablePro/TableProMobile/TableProWidget/Assets.xcassets/libsql-icon.imageset/Contents.json) | — | 271 | `a12496130c24aa2891ed7a8e0cf10ade0d60cc2384f9f01151ef7f23198803fb` |
-| [`references/TablePro/TableProMobile/TableProWidget/Assets.xcassets/mariadb-icon.imageset/Contents.json`](../../references/TablePro/TableProMobile/TableProWidget/Assets.xcassets/mariadb-icon.imageset/Contents.json) | — | 272 | `dfbb3edb2d3c7872481776026b4a6264ca143acbc1d4e412dfc4c3e19a4a949a` |
-| [`references/TablePro/TableProMobile/TableProWidget/Assets.xcassets/mongodb-icon.imageset/Contents.json`](../../references/TablePro/TableProMobile/TableProWidget/Assets.xcassets/mongodb-icon.imageset/Contents.json) | — | 263 | `6498b190f0a0fbcf6d54972221fb37eee90bb1da7db9e1195dd5a29ed1767481` |
-| [`references/TablePro/TableProMobile/TableProWidget/Assets.xcassets/mssql-icon.imageset/Contents.json`](../../references/TablePro/TableProMobile/TableProWidget/Assets.xcassets/mssql-icon.imageset/Contents.json) | — | 270 | `a2e7dcba721dc0b6a16e0acc62d9d5ef9956c7a3e308e5bf310805a2fadeadbf` |
-| [`references/TablePro/TableProMobile/TableProWidget/Assets.xcassets/mysql-icon.imageset/Contents.json`](../../references/TablePro/TableProMobile/TableProWidget/Assets.xcassets/mysql-icon.imageset/Contents.json) | — | 270 | `a5064d0743a3a594b8cf1a895f669af0ca9b5e95c63aba35b3426141811d2aa4` |
-| [`references/TablePro/TableProMobile/TableProWidget/Assets.xcassets/oracle-icon.imageset/Contents.json`](../../references/TablePro/TableProMobile/TableProWidget/Assets.xcassets/oracle-icon.imageset/Contents.json) | — | 271 | `5335ddea6f485fd2cbf173769bd2382c042a91f88562ef72e33244538344fea8` |
-| [`references/TablePro/TableProMobile/TableProWidget/Assets.xcassets/postgresql-icon.imageset/Contents.json`](../../references/TablePro/TableProMobile/TableProWidget/Assets.xcassets/postgresql-icon.imageset/Contents.json) | — | 275 | `f2c11f405c96393a65b57b308c3abbcc21bf718ba79e31ff68eb669fca019da6` |
-| [`references/TablePro/TableProMobile/TableProWidget/Assets.xcassets/redis-icon.imageset/Contents.json`](../../references/TablePro/TableProMobile/TableProWidget/Assets.xcassets/redis-icon.imageset/Contents.json) | — | 270 | `a7ea36fbc50a7d78510efc8d781ded1a375953fdb9e5618086e2b1259b5c2cc1` |
-| [`references/TablePro/TableProMobile/TableProWidget/Assets.xcassets/redshift-icon.imageset/Contents.json`](../../references/TablePro/TableProMobile/TableProWidget/Assets.xcassets/redshift-icon.imageset/Contents.json) | — | 273 | `4315d408fe67c10f3a211978a36a6b46d0aec8e4de9a3ebcf0acdaee3a9f2806` |
-| [`references/TablePro/TableProMobile/TableProWidget/Assets.xcassets/scylladb-icon.imageset/Contents.json`](../../references/TablePro/TableProMobile/TableProWidget/Assets.xcassets/scylladb-icon.imageset/Contents.json) | — | 273 | `19ebb36fa6401bf2d69f020945956bf20d86503a1117ca20a7ec414bba1355b9` |
-| [`references/TablePro/TableProMobile/TableProWidget/Assets.xcassets/sqlite-icon.imageset/Contents.json`](../../references/TablePro/TableProMobile/TableProWidget/Assets.xcassets/sqlite-icon.imageset/Contents.json) | — | 271 | `a89e5b77ccbfd8fd8968de6727adb84833f40f5a401eae3908835440f1c35674` |
-| [`references/TablePro/TableProMobile/TableProWidget/Assets.xcassets/WidgetBackground.colorset/Contents.json`](../../references/TablePro/TableProMobile/TableProWidget/Assets.xcassets/WidgetBackground.colorset/Contents.json) | — | 123 | `9af65086fa30b49252fae1a1225731691de794f7775af74d71befeb507d12b7c` |
+- [`docs/plugin-sdk/provider-plugin-manual.md`](../../docs/plugin-sdk/provider-plugin-manual.md) — LightBI Provider Plugin SDK Manual
 
-## root-or-general-doc (38)
+## product
 
-| Source | Title / status | Bytes | SHA-256 |
-|---|---|---:|---|
-| [`AGENT_INBOX.md`](../../AGENT_INBOX.md) | AGENT INBOX — CRITICAL: Domain Understanding Recovery Architecture; status=FAILED | 65308 | `b7c379cf80255cb2899f24985f10de55c9d7bac6695dd43d510256c6a6f202e9` |
-| [`AGENT_INBOX_PHASE2.md`](../../AGENT_INBOX_PHASE2.md) | AGENT INBOX PHASE 2 | 4703 | `d27ef0973af28780ced1cfba95dc915c2aa61ef571b6d54e57d3b94a362f7eb5` |
-| [`AGENT_OUTBOX.md`](../../AGENT_OUTBOX.md) | AGENT OUTBOX — Phase 6 Complete | 291 | `a6d5d6f61ddad853959728c1a41757828d0ec85d0422cc8d01844cc917b1199f` |
-| [`AGENT_TASK.md`](../../AGENT_TASK.md) | — | 349 | `f42cedb986737b45c39795b740bbe175adf56ebd573aa8b1f4458116589ee569` |
-| [`AGENT_WALKTHROUGH.md`](../../AGENT_WALKTHROUGH.md) | ROADMAP-MVP-V1 Phase 1: Multi-evidence signal strengthening | 1626 | `1600050fd886d0f1bc1a268cc045b18c3211cf65162205712ac362d8bacd5306` |
-| [`AGENT_WALKTHROUGH_PHASE2.md`](../../AGENT_WALKTHROUGH_PHASE2.md) | ROADMAP-MVP-V1 Phase 2: Grain hint in Dataset Understanding | 1750 | `81266c4ee260754d0e18dc93c508b5ae7d8325dd905dfeee7e307ac15056ee9f` |
-| [`AGENT_WALKTHROUGH_PHASE3.md`](../../AGENT_WALKTHROUGH_PHASE3.md) | ROADMAP-MVP-V1 Phase 3: Decision Readiness Guidance | 1832 | `7a97737d8f07b144227d707b2414eee061538318a52e441ad2e8455bf35181fd` |
-| [`AUDIT-bvq-remnants.md`](../../AUDIT-bvq-remnants.md) | AUDIT: BVQ Remnants on Home Screen (UX-5) | 3233 | `346c864a6be360d592c19f148cca3832e305d3de68a1d2d8f9ec7a26f55c4ef9` |
-| [`AUDIT-home-simplification.md`](../../AUDIT-home-simplification.md) | AUDIT: Home Simplification (UX-5) | 4682 | `828d8be7013a209345ba587cb667055b2a832adfb2257342eafa0cf6a3787791` |
-| [`AUDIT-real-file-preview-validation.md`](../../AUDIT-real-file-preview-validation.md) | AUDIT: Real File Preview Validation (DU-6B) | 2486 | `93ac2d90852ea040685e36dcb4821b1ab255bdc2748303c7aac4c668ed007a97` |
-| [`CHANGELOG.md`](../../CHANGELOG.md) | Changelog | 57130 | `5a4f1809e01130af273978002c8b68a7c3c3d3b3a218fd4b39edfd0bb931fdb1` |
-| [`CODEX_QA_ORCHESTRATION_CONTRACT.md`](../../CODEX_QA_ORCHESTRATION_CONTRACT.md) | Codex QA Orchestration Contract | 5244 | `3926f159280b943b64689f2846aab12d166e9ebe05d8a4d8192819eeeeb0b69b` |
-| [`COMPETITOR_NOTE_JIVEDB.md`](../../COMPETITOR_NOTE_JIVEDB.md) | COMPETITOR NOTE: JiveDB vs. LightBI | 3009 | `97b6230233a427b09a5237038a5b7f38aac4a02f7f7b7f1ecd9eba04bb2af61e` |
-| [`DESKTOP_COMPILE_HYGIENE.md`](../../DESKTOP_COMPILE_HYGIENE.md) | Desktop Compile Hygiene | 3706 | `df5ae607efc038c8dd8c478e25e65bcfd6db788d61e25a2a4e9030662ba13f30` |
-| [`docs/MVP_sol.md`](../MVP_sol.md) | LightBI MVP — Canonical Understanding, Context Dictionary & Domain Support Plan | 44486 | `d04a6ce0d0c46cc1d37041b3036ef2cf9f32fb20ef71460879d1f80ab8633a6e` |
-| [`DOMAIN_CORE_AUDIT_REPORT.md`](../../DOMAIN_CORE_AUDIT_REPORT.md) | Domain Core Audit Report (Repaired Row-Aware Evaluation) | 8981 | `028c053e6e70e2ff3574cfc2b8024e2f55ae1e4eca34bfac55809edd591d8801` |
-| [`DOMAIN_RUNTIME_UI_AUDIT_REPORT.md`](../../DOMAIN_RUNTIME_UI_AUDIT_REPORT.md) | Domain Runtime & UI Audit Report | 4223 | `6107515e33f07fe327adb4b747bbbbfc087cc8f936af6114e59e202843be2c56` |
-| [`DOMAIN_SAMPLE_MATRIX.md`](../../DOMAIN_SAMPLE_MATRIX.md) | Domain Sample Matrix; status=descriptive index only. This file does not prove signal recognition, domain support, action executability, or metric correctness. | 2323 | `346fafd231e1bd44654fa48697bc0fd221cd99260318469d72b56a9a0d623d7d` |
-| [`DU-8-SCOPE.md`](../../DU-8-SCOPE.md) | DU-8: Multi-Dataset Execution & Architecture Scaling (Revised Scope) | 1921 | `c34f0d44577183fcc648145f6202a853d861027fae44f8fa402fce61afb1a5ab` |
-| [`GEMINI.md`](../../GEMINI.md) | Gemini Coordination Notes | 825 | `d786e772d19fc9b5870a870aa59c0f3c8f2223705703c91289bbc42714558a08` |
-| [`GLOBAL_DISPLAY_PREFERENCES_STREAM_CLOSURE.md`](../../GLOBAL_DISPLAY_PREFERENCES_STREAM_CLOSURE.md) | Global Display Preferences: Stream Closure | 1729 | `3ecea3c3ae763956905aae5b32ad832d4bb98bc01bbb225bdbfd4513bb092c01` |
-| [`GUARDED_SUM_STRESS_TEST_PHASE1.md`](../../GUARDED_SUM_STRESS_TEST_PHASE1.md) | Guarded SUM Stress Test Phase 1 Report | 4687 | `d1bc277583b0c93cea0955527311ee569d6134e377787b99ba1023d28e919710` |
-| [`LIGHTBI_INFRASTRUCTURE_BRIEF.md`](../../LIGHTBI_INFRASTRUCTURE_BRIEF.md) | LightBI Infrastructure Brief — Stop Guessing The Runtime | 3582 | `344ebb10c914622b5bc4b9f073c2b2be103cf2692bbc26b34aec06cad76e08d5` |
-| [`LIGHTBI_REAL_DATA_QUALITY_GATE.md`](../../LIGHTBI_REAL_DATA_QUALITY_GATE.md) | LightBI Real Data Quality Gate | 9541 | `3217f23247e9bccff3f5aed1a8ad037938469cb7471b69498ff056ebb0822750` |
-| [`MEASURE_TYPING_FEASIBILITY_PROBE_PHASE1B.md`](../../MEASURE_TYPING_FEASIBILITY_PROBE_PHASE1B.md) | Measure Typing Feasibility Audit Phase 1B: Numeric Trust Probe | 3502 | `5a07936891a3a2b59643208cbc83069d3ca7b8d71ab5d729332bce6b1dd1bc9d` |
-| [`MVP_STABILIZATION_MEMO.md`](../../MVP_STABILIZATION_MEMO.md) | MVP Stabilization Memo | 6762 | `f871248badd1b798c209aeb791865848c5f4c7a30b48aa4f301c6b0a64237f61` |
-| [`NEXT_ARCHITECTURE_DOMAIN_UNDERSTANDING_RECOVERY_2026-06-15.md`](../../NEXT_ARCHITECTURE_DOMAIN_UNDERSTANDING_RECOVERY_2026-06-15.md) | NEXT ARCHITECTURE — Domain Understanding Recovery | 13576 | `5e08153683d82c19d9a1e4f1ea0cb304b1df10a043ad5b7ed712faf29d509f5c` |
-| [`REAL_SAMPLE_DATA_E2E_AUDIT_2026-06-14.md`](../../REAL_SAMPLE_DATA_E2E_AUDIT_2026-06-14.md) | Real Sample Data E2E Audit — Production Truth Snapshot; status=PARTIAL | 6206 | `2afdc8fdd4b8f689009a65c565b95c58293e6e4327ad07cee1eadc44ae2fe155` |
-| [`REAL_SAMPLE_LOCALFIRST_RUNTIME_PROOF_2026-06-14.md`](../../REAL_SAMPLE_LOCALFIRST_RUNTIME_PROOF_2026-06-14.md) | Local-First Real Sample Runtime Proof | 9006 | `ae9c8af26b24c7144c57b8f592b1e72d9fe2fcb153cf4d36ac364bf75c2cface` |
-| [`REAL_SAMPLE_LOCALFIRST_RUNTIME_RECLASSIFICATION_2026-06-15.md`](../../REAL_SAMPLE_LOCALFIRST_RUNTIME_RECLASSIFICATION_2026-06-15.md) | Local-First Real Sample Runtime Evidence Reclassification | 8808 | `4c037ab1a0924c4188de92b225bf8c3a3d8a4b71a49697a24364ff27d930c426` |
-| [`SAMPLE_DATA_DOMAIN_COVERAGE_2026-06-15.md`](../../SAMPLE_DATA_DOMAIN_COVERAGE_2026-06-15.md) | Sample Data Domain Coverage (2026-06-15) | 1730 | `a222e1a86fbf9db57e55ffaea78ea171d67ff98c2d57061812f4c6a7ca43174b` |
-| [`SAMPLE_DATA_PACK_NOTES.md`](../../SAMPLE_DATA_PACK_NOTES.md) | Sample Data Pack Notes | 4153 | `0bf98d699de3d003dcb765ec049ca83f1ee3c05f8717c396c0ddbd248a25cacb` |
-| [`SESSION_MASTER_HANDOFF_AND_ROADMAP_2026-06-12.md`](../../SESSION_MASTER_HANDOFF_AND_ROADMAP_2026-06-12.md) | LightBI Session Master Handoff and Roadmap | 19627 | `ab4768d490a6b578564ea8345f7e16d11975817a50e80a53fcdf8d89b9d3009d` |
-| [`UI_UX_AUDIT_REPORT.md`](../../UI_UX_AUDIT_REPORT.md) | LightBI UI/UX Audit Report | 1999 | `2f6fe9f9a36505f988962507e4ea219265ab2a9ed2d133909975fac1ba6facd0` |
-| [`validation_report.md`](../../validation_report.md) | Perspective Isolation Validation Report | 4937 | `97f0554a30cbcf3f5ad0594f8ab31cdbdebfc411fbf722000be9808637f578e3` |
-| [`VIETTEL_LOGISTICS_SAMPLE_ACCEPTANCE_2026-06-15.md`](../../VIETTEL_LOGISTICS_SAMPLE_ACCEPTANCE_2026-06-15.md) | Viettel Logistics Sample Acceptance Report (2026-06-15) | 3969 | `cad6a7803f949722ef97328dc642d0605a9f45059c56594664b4115a86b8c9f3` |
-| [`VIRTUAL_BUSINESS_VIEW_REAL_DATA_EXECUTION_2026-06-15.md`](../../VIRTUAL_BUSINESS_VIEW_REAL_DATA_EXECUTION_2026-06-15.md) | Virtual Business View Real Data Execution Audit Report | 3381 | `1d7d7d14a3085f7b51c55f642ea33a90f939c0b3e94a9211de71ca4bddf2023f` |
-| [`VISUAL_REGRESSION_QA_PHASE1_REPORT.md`](../../VISUAL_REGRESSION_QA_PHASE1_REPORT.md) | VISUAL REGRESSION QA PHASE 1 REPORT (Corrective Capture) | 5635 | `b232af7f3ae2ecd38b3ae03e71ffacb2b4edc7ff529fefde0e4f101ba1f44f5e` |
+- [`docs/product/product-direction-and-pricing-v1.md`](../../docs/product/product-direction-and-pricing-v1.md) — LightBI Product Direction and Pricing Strategy
 
-## verification-history (31)
+## progress-history
 
-| Source | Title / status | Bytes | SHA-256 |
-|---|---|---:|---|
-| [`ALIAS_BATCH2_VERIFICATION.md`](../../ALIAS_BATCH2_VERIFICATION.md) | Alias Batch 2 Verification Report | 3576 | `0f5ff2f40f1f4bf3be09d911097a8d2eb2ee1c005e44837bcf7489d2ec4cbf50` |
-| [`BACKEND_RUNTIME_HARDENING_VERIFICATION.md`](../../BACKEND_RUNTIME_HARDENING_VERIFICATION.md) | Backend Runtime Hardening — Verification Report | 3597 | `4a35e0ed95c01d1a1ad7dd2b67d8f6b46d938bda497cd65392b9ff73ef4c9349` |
-| [`CANONICAL_SCHEMA_PROJECTION_PHASE1_VERIFICATION.md`](../../CANONICAL_SCHEMA_PROJECTION_PHASE1_VERIFICATION.md) | Verification: Canonical Schema Projection Phase 1 | 2115 | `21ed0a5d769176ea047650df97ed1498e8ea63d2b57d7ce3b0cf586a387faa7f` |
-| [`CANONICAL_SCHEMA_PROJECTION_PHASE2_VERIFICATION.md`](../../CANONICAL_SCHEMA_PROJECTION_PHASE2_VERIFICATION.md) | Verification: Canonical Schema Projection Phase 2 | 2027 | `83ceb73ff0c7de8a1289ae84555f8aa6080f73fb190509035770fb2ce3fc08d2` |
-| [`DUCKDB_RUNTIME_ERROR_CLASSIFICATION_PHASE1_VERIFICATION.md`](../../DUCKDB_RUNTIME_ERROR_CLASSIFICATION_PHASE1_VERIFICATION.md) | DuckDB Runtime Error Classification Phase 1 Verification | 2075 | `eef3402041e116d1f1c50f1aed9a6f0aef8d1439d0de283650cda81e62099f7e` |
-| [`DUCKDB_WASM_BOOTSTRAP_VERIFICATION.md`](../../DUCKDB_WASM_BOOTSTRAP_VERIFICATION.md) | Verification: DuckDB WASM Bootstrap | 1832 | `45f2f1fea4b47108cf9f4145c225d8ecb316e7b145a3965dcc07e6ec29ff4eaa` |
-| [`EXECUTION_BOUNDARY_LEGACY_MAPPING_FIX_VERIFICATION.md`](../../EXECUTION_BOUNDARY_LEGACY_MAPPING_FIX_VERIFICATION.md) | Execution Boundary & Legacy Mapping Fix Verification | 1237 | `8b27305e68ffa3eec0ac476bb63984ef01ae0502b7d6b5a63c39570d8f637709` |
-| [`EXECUTION_PATH_UNIFICATION_PHASE2_VERIFICATION.md`](../../EXECUTION_PATH_UNIFICATION_PHASE2_VERIFICATION.md) | Verification: Execution Path Unification Phase 2 | 1722 | `3d875987aad8de8daf74c467988efc6776d90901e8779586da2d00817d428074` |
-| [`FALLBACK_POLICY_ALIGNMENT_PHASE1_VERIFICATION.md`](../../FALLBACK_POLICY_ALIGNMENT_PHASE1_VERIFICATION.md) | Fallback Policy Alignment Phase 1 Verification | 2086 | `29d75a2cbc4f77fa97a6d2804d05ac7b616ef92fca3ba446a9e451f388d817fd` |
-| [`FRONTEND_RUNTIME_ACTION_WIRING_PHASE1_VERIFICATION.md`](../../FRONTEND_RUNTIME_ACTION_WIRING_PHASE1_VERIFICATION.md) | Frontend Runtime Action Wiring Phase 1 — Verification; status=**Crash blocker fixed at component/contract level; production E2E rerun requires explicit data-egress approval** | 3651 | `5a669dfb94629bead03476a2fbf5d7da4765119f6ec5359938d5db561ba2ef0a` |
-| [`GLOBAL_DISPLAY_PREFERENCES_FINAL_VERIFICATION_SWEEP.md`](../../GLOBAL_DISPLAY_PREFERENCES_FINAL_VERIFICATION_SWEEP.md) | Global Display Preferences: Final Verification Sweep | 4831 | `ba933f30ded9345f69c3dc69b2dec0eeb07b7fb652a47df3f13ed73bc70c2508` |
-| [`GLOBAL_DISPLAY_PREFERENCES_PHASE1_VERIFICATION.md`](../../GLOBAL_DISPLAY_PREFERENCES_PHASE1_VERIFICATION.md) | Global Display Preferences Phase 1 Verification | 1449 | `fe2047b906cba4797339d3301af61d02f665889f6e766e7d1b33ff609a26f053` |
-| [`GLOBAL_DISPLAY_PREFERENCES_PHASE2A_VERIFICATION.md`](../../GLOBAL_DISPLAY_PREFERENCES_PHASE2A_VERIFICATION.md) | Global Display Preferences Phase 2A Verification | 1627 | `64e9ef691bef960a37e34ae9a1c78006e695b71cf0325b756e2d73925c2b5936` |
-| [`GLOBAL_DISPLAY_PREFERENCES_PHASE2B_VERIFICATION.md`](../../GLOBAL_DISPLAY_PREFERENCES_PHASE2B_VERIFICATION.md) | Global Display Preferences Phase 2B Verification | 1412 | `93e8aa02d2947219b2443d39219950404cbbfa3248608d49fff5426d2b89986d` |
-| [`GLOBAL_DISPLAY_PREFERENCES_PHASE3_VERIFICATION.md`](../../GLOBAL_DISPLAY_PREFERENCES_PHASE3_VERIFICATION.md) | Global Display Preferences Phase 3 Verification | 1522 | `86c3de554011f1e3885fe1723b95a0045a42cfd48f24a334968a5778dfeaa837` |
-| [`GLOBAL_DISPLAY_PREFERENCES_PHASE4_VERIFICATION.md`](../../GLOBAL_DISPLAY_PREFERENCES_PHASE4_VERIFICATION.md) | Global Display Preferences Phase 4 Verification | 1436 | `83136f1914b4f652961e7654fb2f1cc900130c1761df51ddbc428c8bce76ea90` |
-| [`GLOBAL_DISPLAY_PREFERENCES_PHASE5_VERIFICATION.md`](../../GLOBAL_DISPLAY_PREFERENCES_PHASE5_VERIFICATION.md) | Global Display Preferences Phase 5 Verification | 1560 | `47fd91c06fcaafc8312535513a65feee9ea793cdd4ae1cc2ac7777ae5c60d0c5` |
-| [`GUARDED_SUM_DECIMAL_AMBIGUITY_PHASE1_VERIFICATION.md`](../../GUARDED_SUM_DECIMAL_AMBIGUITY_PHASE1_VERIFICATION.md) | Guarded SUM Decimal Ambiguity Phase 1 Verification | 1245 | `73cb46b5ca17f924e65a8a4e752291c3faa4e7d1f677d960d1ff4e58d133da76` |
-| [`GUARDED_SUM_PHASE_B_CORRECTIVE_VERIFICATION.md`](../../GUARDED_SUM_PHASE_B_CORRECTIVE_VERIFICATION.md) | GUARDED SUM PHASE B CORRECTIVE VERIFICATION | 2005 | `a2bdff953bf63608771415f125f8ed2a54ae160ab253f98aab2c7b83c0e270da` |
-| [`GUARDED_SUM_WIRING_PHASE1_VERIFICATION.md`](../../GUARDED_SUM_WIRING_PHASE1_VERIFICATION.md) | Guarded SUM Wiring Phase 1 Verification | 1732 | `43ee868689e8182a631fef567d32f4fbd7dad6c0ca95b75c0b7d5cf0dd0f0e7e` |
-| [`INVESTIGATION_E2E_RUNTIME_PROBE_PHASE1_VERIFICATION.md`](../../INVESTIGATION_E2E_RUNTIME_PROBE_PHASE1_VERIFICATION.md) | Verification: Investigation E2E Runtime Probe Phase 1 | 1790 | `75a09bdec0d8b119ef4c911e3255c4647337f20516da2108c3142b570bd96201` |
-| [`LOCAL_DUCKDB_EXECUTOR_PHASE1_VERIFICATION.md`](../../LOCAL_DUCKDB_EXECUTOR_PHASE1_VERIFICATION.md) | Local DuckDB Executor Phase 1 — Verification | 1995 | `8de42f7e341cc4ae234de03938aea896ad403f50cf7091e2e0bc4b0ff79061c1` |
-| [`LOCAL_DUCKDB_EXECUTOR_PHASE2A_VERIFICATION.md`](../../LOCAL_DUCKDB_EXECUTOR_PHASE2A_VERIFICATION.md) | Verification: Local DuckDB Executor Phase 2A | 1554 | `da1f7d3133354c224bf874e2029e7a106cc567c42c6599658f32dd1687b37bb3` |
-| [`LOCAL_DUCKDB_EXECUTOR_PHASE2B_VERIFICATION.md`](../../LOCAL_DUCKDB_EXECUTOR_PHASE2B_VERIFICATION.md) | Verification: Local DuckDB Executor Phase 2B | 1520 | `1337fd7477de8595dd723b974f4ab4ea0f59ce02cac43801e594c0dea4118e47` |
-| [`NUMERIC_HEALTH_GATE_PHASE1_VERIFICATION.md`](../../NUMERIC_HEALTH_GATE_PHASE1_VERIFICATION.md) | Numeric Health Gate Phase 1 Verification | 1627 | `55bdf4bc148307aa2b64c7fefc570306c39745772981a4b7cc196fc426fe8368` |
-| [`PHASE2_ALIAS_VERIFICATION.md`](../../PHASE2_ALIAS_VERIFICATION.md) | Phase 2: Alias Resolution Verification | 2915 | `e2ee36c4f7cc86e6e49f8ee7cfd4b2ca07733c7ca9a221e151435d8937acf2f7` |
-| [`PRODUCTION_API_BOUNDARY_FIX_PHASE1_VERIFICATION.md`](../../PRODUCTION_API_BOUNDARY_FIX_PHASE1_VERIFICATION.md) | Production API Boundary Fix Phase 1 — Verification; status=**Infrastructure blocker improved, product acceptance still not met** | 2664 | `ea0e3bbcf348e0c2cdafe79c90c7c16c285fd063f8dc75c612d0fddb98eded91` |
-| [`SAFE_SQL_QUERY_FAILURE_FIX_PHASE1_VERIFICATION.md`](../../SAFE_SQL_QUERY_FAILURE_FIX_PHASE1_VERIFICATION.md) | Safe SQL Query Failure Fix Phase 1 Verification | 1707 | `9145efd7a9e370f9f6c2cd43167d761c83b1b3d4b5d4e1b6008c84e5e98bc17f` |
-| [`SAFE_SQL_QUERY_FAILURE_FIX_PHASE2_VERIFICATION.md`](../../SAFE_SQL_QUERY_FAILURE_FIX_PHASE2_VERIFICATION.md) | Safe SQL Query Failure Fix Phase 2 Verification | 2056 | `619e4540b264e1c510d85c691f410f4f78a31819c0e7f246e10bbfb1965d2a8b` |
-| [`TAXONOMY_EXPANSION_PHASE2_VERIFICATION.md`](../../TAXONOMY_EXPANSION_PHASE2_VERIFICATION.md) | Taxonomy Expansion Phase 2 Verification Report | 2272 | `042d9097f11ec3098eb734283ede16a3427b420dd03c99e08d0c45f8bff50976` |
-| [`WARNING_PROPAGATION_GUARDED_SUM_PHASE1B_VERIFICATION.md`](../../WARNING_PROPAGATION_GUARDED_SUM_PHASE1B_VERIFICATION.md) | Warning Propagation for Guarded SUM (Phase 1B) Verification | 1493 | `38fad261cc3f480efebf76fd4a90ad610c84c2847a530a69405816438b2e4c43` |
+- [`docs/progress/milestone-1.md`](../../docs/progress/milestone-1.md) — Milestone 1: First Visible Analytics
+- [`docs/progress/milestone-2-question-first.md`](../../docs/progress/milestone-2-question-first.md) — Milestone 2: Question First Landing Experience
+- [`docs/progress/milestone-3-real-csv-import.md`](../../docs/progress/milestone-3-real-csv-import.md) — Milestone 3: Real CSV Import Flow
+- [`docs/progress/milestone-4-guided-home.md`](../../docs/progress/milestone-4-guided-home.md) — Milestone 4: Guided Home Experience & Conversational Entry Point
+- [`docs/progress/milestone-5-relationship-discovery.md`](../../docs/progress/milestone-5-relationship-discovery.md) — Milestone 5: Relationship Discovery & Dataset Collections (COMPLETED)
+- [`docs/progress/milestone-5-summary.md`](../../docs/progress/milestone-5-summary.md) — Milestone 5 Summary: Relationship Discovery & Planning
+- [`docs/progress/milestone-6-runtime-preview.md`](../../docs/progress/milestone-6-runtime-preview.md) — Milestone 6: Runtime Preview & Execution Guard
+- [`docs/progress/milestone-7-result-understanding.md`](../../docs/progress/milestone-7-result-understanding.md) — Milestone 7: Result Understanding & SQL Compilation
+- [`docs/progress/milestone-8-5-guided-investigation.md`](../../docs/progress/milestone-8-5-guided-investigation.md) — Milestone 8.5: Guided Investigation (Business View Pipeline)
+- [`docs/progress/milestone-8-business-confidence.md`](../../docs/progress/milestone-8-business-confidence.md) — Milestone 8: Business Confidence & Trust Layer
+- [`docs/progress/phase-13-source-registry.md`](../../docs/progress/phase-13-source-registry.md) — LightBI Phase 13 - Source Registry & Connector Contract Foundation
+- [`docs/progress/phase-14-dataset-foundation.md`](../../docs/progress/phase-14-dataset-foundation.md) — LightBI Phase 14 - Dataset Model & Virtual Dataset Foundation
+- [`docs/progress/phase-15-schema-foundation.md`](../../docs/progress/phase-15-schema-foundation.md) — LightBI Phase 15 - Schema Discovery & Semantic Model Foundation
+- [`docs/progress/phase-16-perspective-layer.md`](../../docs/progress/phase-16-perspective-layer.md) — LightBI Phase 16 - Perspective Layer & Question Context Foundation
+- [`docs/progress/phase-17-recipe-foundation.md`](../../docs/progress/phase-17-recipe-foundation.md) — LightBI Phase 17 - Recipe Foundation & Analytical Intent Model
+- [`docs/progress/phase-18-planner-foundation.md`](../../docs/progress/phase-18-planner-foundation.md) — LightBI Phase 18 - Planner & Execution Strategy Foundation
+- [`docs/progress/phase-19-question-template.md`](../../docs/progress/phase-19-question-template.md) — LightBI Phase 19 - Question Template Foundation
+- [`docs/progress/phase-20-runtime-foundation.md`](../../docs/progress/phase-20-runtime-foundation.md) — LightBI Phase 20 - Runtime Contract & Execution Backend Foundation
+- [`docs/progress/phase-21-vdataset-runtime.md`](../../docs/progress/phase-21-vdataset-runtime.md) — LightBI Phase 21 - Virtual Dataset Runtime & Materialization Foundation
+- [`docs/progress/phase-22-data-view.md`](../../docs/progress/phase-22-data-view.md) — LightBI Phase 22 - Data View & Visualization Contract Foundation
+- [`docs/progress/phase-23-insight-foundation.md`](../../docs/progress/phase-23-insight-foundation.md) — LightBI Phase 23 - Insight Foundation & Analytical Narrative Model
+- [`docs/progress/phase-24-export-foundation.md`](../../docs/progress/phase-24-export-foundation.md) — LightBI Phase 24 - Export Foundation & Artifact Governance
+- [`docs/progress/phase-25-chart-runtime.md`](../../docs/progress/phase-25-chart-runtime.md) — LightBI Phase 25 - Chart Runtime & Visualization Engine Foundation
+- [`docs/progress/phase-26-dashboard-workspace.md`](../../docs/progress/phase-26-dashboard-workspace.md) — LightBI Phase 26 - Dashboard Workspace Foundation
+- [`docs/progress/phase-27-render-contract.md`](../../docs/progress/phase-27-render-contract.md) — LightBI Phase 27 - Frontend Rendering Contract Foundation
+- [`docs/progress/phase-28-business-brain-orchestrator.md`](../../docs/progress/phase-28-business-brain-orchestrator.md) — Phase 28: Business Brain Orchestrator Direction
+- [`docs/progress/phase-29-context-aware-semantic-dictionary.md`](../../docs/progress/phase-29-context-aware-semantic-dictionary.md) — Phase 29: Context-Aware Semantic Dictionary
+- [`docs/progress/phase-30-semantic-registry-unification.md`](../../docs/progress/phase-30-semantic-registry-unification.md) — Phase 30: Semantic Registry Unification
 
+## project-memory-history
+
+- [`docs/history/project-memory/CHANGELOG.md`](../../docs/history/project-memory/CHANGELOG.md) — Changelog
+- [`docs/history/project-memory/memory.md`](../../docs/history/project-memory/memory.md) — PROJECT_MEMORY.md — LightBI
+- [`docs/history/project-memory/MVP_STABILIZATION_MEMO.md`](../../docs/history/project-memory/MVP_STABILIZATION_MEMO.md) — MVP Stabilization Memo
+- [`docs/history/project-memory/NEXT_ARCHITECTURE_DOMAIN_UNDERSTANDING_RECOVERY_2026-06-15.md`](../../docs/history/project-memory/NEXT_ARCHITECTURE_DOMAIN_UNDERSTANDING_RECOVERY_2026-06-15.md) — NEXT ARCHITECTURE — Domain Understanding Recovery
+
+## release
+
+- [`docs/release/BETA_RELEASE_CHECKLIST.md`](../../docs/release/BETA_RELEASE_CHECKLIST.md) — LightBI Beta release checklist
+
+## report-history
+
+- [`docs/history/reports/GUARDED_SUM_STRESS_TEST_PHASE1.md`](../../docs/history/reports/GUARDED_SUM_STRESS_TEST_PHASE1.md) — Guarded SUM Stress Test Phase 1 Report
+- [`docs/history/reports/MEASURE_TYPING_FEASIBILITY_PROBE_PHASE1B.md`](../../docs/history/reports/MEASURE_TYPING_FEASIBILITY_PROBE_PHASE1B.md) — Measure Typing Feasibility Audit Phase 1B: Numeric Trust Probe
+- [`docs/history/reports/VIETTEL_LOGISTICS_SAMPLE_ACCEPTANCE_2026-06-15.md`](../../docs/history/reports/VIETTEL_LOGISTICS_SAMPLE_ACCEPTANCE_2026-06-15.md) — Viettel Logistics Sample Acceptance Report (2026-06-15)
+- [`docs/history/reports/VISUAL_REGRESSION_QA_PHASE1_REPORT.md`](../../docs/history/reports/VISUAL_REGRESSION_QA_PHASE1_REPORT.md) — VISUAL REGRESSION QA PHASE 1 REPORT (Corrective Capture)
+
+## root-or-general-doc
+
+- [`docs/MVP_sol.md`](../../docs/MVP_sol.md) — LightBI MVP — Canonical Understanding, Context Dictionary & Domain Support Plan
+- [`DOMAIN_CORE_AUDIT_REPORT.md`](../../DOMAIN_CORE_AUDIT_REPORT.md) — Domain Core Audit Report (Repaired Row-Aware Evaluation)
+- [`validation_report.md`](../../validation_report.md) — Perspective Isolation Validation Report
+
+## sample-evidence-history
+
+- [`docs/history/sample-evidence/REAL_SAMPLE_LOCALFIRST_RUNTIME_RECLASSIFICATION_2026-06-15.md`](../../docs/history/sample-evidence/REAL_SAMPLE_LOCALFIRST_RUNTIME_RECLASSIFICATION_2026-06-15.md) — Local-First Real Sample Runtime Evidence Reclassification
+- [`docs/history/sample-evidence/SAMPLE_DATA_DOMAIN_COVERAGE_2026-06-15.md`](../../docs/history/sample-evidence/SAMPLE_DATA_DOMAIN_COVERAGE_2026-06-15.md) — Sample Data Domain Coverage (2026-06-15)
+- [`docs/history/sample-evidence/SAMPLE_DATA_PACK_NOTES.md`](../../docs/history/sample-evidence/SAMPLE_DATA_PACK_NOTES.md) — Sample Data Pack Notes
+- [`docs/history/sample-evidence/VIRTUAL_BUSINESS_VIEW_REAL_DATA_EXECUTION_2026-06-15.md`](../../docs/history/sample-evidence/VIRTUAL_BUSINESS_VIEW_REAL_DATA_EXECUTION_2026-06-15.md) — Virtual Business View Real Data Execution Audit Report
+
+## verification-history
+
+- [`docs/history/verifications/ALIAS_BATCH2_VERIFICATION.md`](../../docs/history/verifications/ALIAS_BATCH2_VERIFICATION.md) — Alias Batch 2 Verification Report
+- [`docs/history/verifications/BACKEND_RUNTIME_HARDENING_VERIFICATION.md`](../../docs/history/verifications/BACKEND_RUNTIME_HARDENING_VERIFICATION.md) — Backend Runtime Hardening — Verification Report
+- [`docs/history/verifications/CANONICAL_SCHEMA_PROJECTION_PHASE1_VERIFICATION.md`](../../docs/history/verifications/CANONICAL_SCHEMA_PROJECTION_PHASE1_VERIFICATION.md) — Verification: Canonical Schema Projection Phase 1
+- [`docs/history/verifications/CANONICAL_SCHEMA_PROJECTION_PHASE2_VERIFICATION.md`](../../docs/history/verifications/CANONICAL_SCHEMA_PROJECTION_PHASE2_VERIFICATION.md) — Verification: Canonical Schema Projection Phase 2
+- [`docs/history/verifications/DUCKDB_RUNTIME_ERROR_CLASSIFICATION_PHASE1_VERIFICATION.md`](../../docs/history/verifications/DUCKDB_RUNTIME_ERROR_CLASSIFICATION_PHASE1_VERIFICATION.md) — DuckDB Runtime Error Classification Phase 1 Verification
+- [`docs/history/verifications/DUCKDB_WASM_BOOTSTRAP_VERIFICATION.md`](../../docs/history/verifications/DUCKDB_WASM_BOOTSTRAP_VERIFICATION.md) — Verification: DuckDB WASM Bootstrap
+- [`docs/history/verifications/EXECUTION_BOUNDARY_LEGACY_MAPPING_FIX_VERIFICATION.md`](../../docs/history/verifications/EXECUTION_BOUNDARY_LEGACY_MAPPING_FIX_VERIFICATION.md) — Execution Boundary & Legacy Mapping Fix Verification
+- [`docs/history/verifications/EXECUTION_PATH_UNIFICATION_PHASE2_VERIFICATION.md`](../../docs/history/verifications/EXECUTION_PATH_UNIFICATION_PHASE2_VERIFICATION.md) — Verification: Execution Path Unification Phase 2
+- [`docs/history/verifications/FALLBACK_POLICY_ALIGNMENT_PHASE1_VERIFICATION.md`](../../docs/history/verifications/FALLBACK_POLICY_ALIGNMENT_PHASE1_VERIFICATION.md) — Fallback Policy Alignment Phase 1 Verification
+- [`docs/history/verifications/FRONTEND_RUNTIME_ACTION_WIRING_PHASE1_VERIFICATION.md`](../../docs/history/verifications/FRONTEND_RUNTIME_ACTION_WIRING_PHASE1_VERIFICATION.md) — Frontend Runtime Action Wiring Phase 1 — Verification
+- [`docs/history/verifications/GLOBAL_DISPLAY_PREFERENCES_FINAL_VERIFICATION_SWEEP.md`](../../docs/history/verifications/GLOBAL_DISPLAY_PREFERENCES_FINAL_VERIFICATION_SWEEP.md) — Global Display Preferences: Final Verification Sweep
+- [`docs/history/verifications/GLOBAL_DISPLAY_PREFERENCES_PHASE1_VERIFICATION.md`](../../docs/history/verifications/GLOBAL_DISPLAY_PREFERENCES_PHASE1_VERIFICATION.md) — Global Display Preferences Phase 1 Verification
+- [`docs/history/verifications/GLOBAL_DISPLAY_PREFERENCES_PHASE2A_VERIFICATION.md`](../../docs/history/verifications/GLOBAL_DISPLAY_PREFERENCES_PHASE2A_VERIFICATION.md) — Global Display Preferences Phase 2A Verification
+- [`docs/history/verifications/GLOBAL_DISPLAY_PREFERENCES_PHASE2B_VERIFICATION.md`](../../docs/history/verifications/GLOBAL_DISPLAY_PREFERENCES_PHASE2B_VERIFICATION.md) — Global Display Preferences Phase 2B Verification
+- [`docs/history/verifications/GLOBAL_DISPLAY_PREFERENCES_PHASE3_VERIFICATION.md`](../../docs/history/verifications/GLOBAL_DISPLAY_PREFERENCES_PHASE3_VERIFICATION.md) — Global Display Preferences Phase 3 Verification
+- [`docs/history/verifications/GLOBAL_DISPLAY_PREFERENCES_PHASE4_VERIFICATION.md`](../../docs/history/verifications/GLOBAL_DISPLAY_PREFERENCES_PHASE4_VERIFICATION.md) — Global Display Preferences Phase 4 Verification
+- [`docs/history/verifications/GLOBAL_DISPLAY_PREFERENCES_PHASE5_VERIFICATION.md`](../../docs/history/verifications/GLOBAL_DISPLAY_PREFERENCES_PHASE5_VERIFICATION.md) — Global Display Preferences Phase 5 Verification
+- [`docs/history/verifications/GUARDED_SUM_DECIMAL_AMBIGUITY_PHASE1_VERIFICATION.md`](../../docs/history/verifications/GUARDED_SUM_DECIMAL_AMBIGUITY_PHASE1_VERIFICATION.md) — Guarded SUM Decimal Ambiguity Phase 1 Verification
+- [`docs/history/verifications/GUARDED_SUM_PHASE_B_CORRECTIVE_VERIFICATION.md`](../../docs/history/verifications/GUARDED_SUM_PHASE_B_CORRECTIVE_VERIFICATION.md) — GUARDED SUM PHASE B CORRECTIVE VERIFICATION
+- [`docs/history/verifications/GUARDED_SUM_WIRING_PHASE1_VERIFICATION.md`](../../docs/history/verifications/GUARDED_SUM_WIRING_PHASE1_VERIFICATION.md) — Guarded SUM Wiring Phase 1 Verification
+- [`docs/history/verifications/INVESTIGATION_E2E_RUNTIME_PROBE_PHASE1_VERIFICATION.md`](../../docs/history/verifications/INVESTIGATION_E2E_RUNTIME_PROBE_PHASE1_VERIFICATION.md) — Verification: Investigation E2E Runtime Probe Phase 1
+- [`docs/history/verifications/LOCAL_DUCKDB_EXECUTOR_PHASE1_VERIFICATION.md`](../../docs/history/verifications/LOCAL_DUCKDB_EXECUTOR_PHASE1_VERIFICATION.md) — Local DuckDB Executor Phase 1 — Verification
+- [`docs/history/verifications/LOCAL_DUCKDB_EXECUTOR_PHASE2A_VERIFICATION.md`](../../docs/history/verifications/LOCAL_DUCKDB_EXECUTOR_PHASE2A_VERIFICATION.md) — Verification: Local DuckDB Executor Phase 2A
+- [`docs/history/verifications/LOCAL_DUCKDB_EXECUTOR_PHASE2B_VERIFICATION.md`](../../docs/history/verifications/LOCAL_DUCKDB_EXECUTOR_PHASE2B_VERIFICATION.md) — Verification: Local DuckDB Executor Phase 2B
+- [`docs/history/verifications/NUMERIC_HEALTH_GATE_PHASE1_VERIFICATION.md`](../../docs/history/verifications/NUMERIC_HEALTH_GATE_PHASE1_VERIFICATION.md) — Numeric Health Gate Phase 1 Verification
+- [`docs/history/verifications/PHASE2_ALIAS_VERIFICATION.md`](../../docs/history/verifications/PHASE2_ALIAS_VERIFICATION.md) — Phase 2: Alias Resolution Verification
+- [`docs/history/verifications/PRODUCTION_API_BOUNDARY_FIX_PHASE1_VERIFICATION.md`](../../docs/history/verifications/PRODUCTION_API_BOUNDARY_FIX_PHASE1_VERIFICATION.md) — Production API Boundary Fix Phase 1 — Verification
+- [`docs/history/verifications/REAL_SAMPLE_LOCALFIRST_RUNTIME_PROOF_2026-06-14.md`](../../docs/history/verifications/REAL_SAMPLE_LOCALFIRST_RUNTIME_PROOF_2026-06-14.md) — Local-First Real Sample Runtime Proof
+- [`docs/history/verifications/SAFE_SQL_QUERY_FAILURE_FIX_PHASE1_VERIFICATION.md`](../../docs/history/verifications/SAFE_SQL_QUERY_FAILURE_FIX_PHASE1_VERIFICATION.md) — Safe SQL Query Failure Fix Phase 1 Verification
+- [`docs/history/verifications/SAFE_SQL_QUERY_FAILURE_FIX_PHASE2_VERIFICATION.md`](../../docs/history/verifications/SAFE_SQL_QUERY_FAILURE_FIX_PHASE2_VERIFICATION.md) — Safe SQL Query Failure Fix Phase 2 Verification
+- [`docs/history/verifications/TAXONOMY_EXPANSION_PHASE2_VERIFICATION.md`](../../docs/history/verifications/TAXONOMY_EXPANSION_PHASE2_VERIFICATION.md) — Taxonomy Expansion Phase 2 Verification Report
+- [`docs/history/verifications/WARNING_PROPAGATION_GUARDED_SUM_PHASE1B_VERIFICATION.md`](../../docs/history/verifications/WARNING_PROPAGATION_GUARDED_SUM_PHASE1B_VERIFICATION.md) — Warning Propagation for Guarded SUM (Phase 1B) Verification
+
+
+## library-navigation
+
+- [`docs/README.md`](../../docs/README.md) — LightBI Documentation Library
+- [`docs/history/README.md`](../../docs/history/README.md) — Historical Documentation
