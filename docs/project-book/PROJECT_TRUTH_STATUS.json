@@ -138,20 +138,35 @@
   },
   "excelAnalysisWorkbook": {
     "branch": "codex/excel-analysis-workbook-20260830",
-    "head": "1be2d152b4ab8b74ec5cdee0c99e39e5487c4acd",
-    "pushed": true,
-    "nativePivotTable": false,
+    "head": "4911631e3a479302ff417e7d51b279fc7007dd29",
+    "merged": false,
+    "analysisWorkbookVersion": "lightbi.analysis-workbook.v1",
+    "multiSourcePerspectiveExport": true,
+    "singleSourceDeepBaExport": true,
     "formulaDrivenPivotView": true,
-    "analysisToDatasetsHandoff": true,
-    "cleanDataAttachment": true,
-    "publicRegressionFilesPassed": 9,
-    "publicRegressionTestsPassed": 30,
-    "desktopBuildPassed": true,
-    "productionMerged": false
+    "cleanDataAttachmentWhenCanonicalHandoffAvailable": true,
+    "nativePivotTablePivotChart": false,
+    "publicRegressionFilesPassed": 10,
+    "publicRegressionTestsPassed": 33,
+    "desktopBuildPassed": true
   },
   "implementationTracks": {
-    "publicCore": "excel_analysis_workbook_and_local_first_consumers",
-    "privateControlPlane": "authoritative_ancestry_promotion_and_non_trust_v1_foundations",
-    "trustDependent": "blocked_pending_phase2a_explicit_freeze"
+    "publicCore": {
+      "branch": "codex/excel-analysis-workbook-20260830",
+      "head": "4911631e3a479302ff417e7d51b279fc7007dd29",
+      "authority": "feature_branch_candidate"
+    },
+    "privateControlPlane": {
+      "branch": "codex/control-plane-foundations-20260830",
+      "codeHead": "3bcc88a8ed3e7cae2aef16b7beba4392663a7a05",
+      "docsHead": "d58139d9744b2b24b3d0d7638ba93ace8db6ac62",
+      "compiledTestsPassed": 73,
+      "productionMutated": false
+    },
+    "trust": {
+      "phase2aHead": "fb8225c951fc27692e6b0e7554c3112ada08e49f",
+      "freezeApproved": false,
+      "signerBlocked": true
+    }
   }
 }

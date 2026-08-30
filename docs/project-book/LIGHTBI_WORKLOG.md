@@ -1083,3 +1083,12 @@ Private control-plane Git access was re-verified and an authoritative clone now 
 - Added CP-2.1 API v1, CP-2.2 Beta-account compatibility normalization, deterministic CP-4 crypto tamper probe, and CP-3.1 staging/migration safety; current private head `34d9c5d`, 71/71 tests x3.
 - Staging remains inactive: public origin collides with production and read-only PostgreSQL status currently fails auth (`28P01`). No migration or service start occurred.
 - Phase 2A remains `fb8225c`, Draft/Open, CI green, **not frozen**; no signer/attestation/private keys were started.
+## 2026-08-30 — Dual-track core export + control-plane authority checkpoint
+
+- Public core Excel/Pivot branch advanced to `4911631e3a479302ff417e7d51b279fc7007dd29`.
+- Multi-source perspective and single-source Deep BA now share `AnalysisWorkbookPlanV1`; Datasets can attach canonical clean-data handoff sheets beside the formula-driven Pivot View.
+- Public CI-equivalent gate: release contract PASS, public/private boundary PASS, desktop build PASS, 10 regression files / 33 tests PASS.
+- Private control-plane branch advanced through CP-2.1 API v1, CP-2.2 Beta session adapter, CP-3.1 staging safety, and CP-5.1 unsigned authority read model; code checkpoint `3bcc88a8ed3e7cae2aef16b7beba4392663a7a05`, docs head `d58139d9744b2b24b3d0d7638ba93ace8db6ac62`.
+- Private compiled-runtime gate: 73/73 PASS; no migrations applied; no worker/service started; production 5174 untouched.
+- Staging blockers remain: `LIGHTBI_DISTRIBUTION_PUBLIC_URL` is not isolated and PostgreSQL status authentication returns `28P01`.
+- Trust Phase 2A remains `fb8225c...`, not frozen; signer/attestation/signed ENT remain blocked.

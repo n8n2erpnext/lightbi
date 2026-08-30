@@ -354,3 +354,12 @@ production mutation         none
 A GitHub pull request has not been opened because the available GitHub write integration returns `403 Resource not accessible by integration`; branch push through the authorized Git remote succeeds. Private pull-request CI therefore remains a promotion gate rather than a completed claim.
 
 Trust remains separate. None of these CP additions implement the Rust signer, installation certificate issuance, request attestation, signed entitlement or private Pro package authority. **Trust-1 remains blocked until the exact Phase 2A contract head receives explicit independent freeze approval.**
+## 20. Authoritative-ancestry foundation branch after Project Truth
+
+The reconstructed CP candidate was subsequently replayed/reconciled onto the real private-main ancestry in `/home/ubuntu/n8n2erpnext/lightbi-control-plane`. The active private feature branch is `codex/control-plane-foundations-20260830`; it is no longer dependent on the reconstructed Git ancestry described in section 19.
+
+Current pushed checkpoints include the CP-1→CP-6 foundation chain, `/api/v1` boundary and Beta account-session adapter, explicit migration plan/status/apply lifecycle, staging-tree isolation contract, worker fail-closed schema readiness, and a schema-gated CP-5.1 account/organization authority read model. The latter is explicitly `control_plane_database_unsigned`, `signed=false`, `finalAuthority=false`; it does **not** replace future signed ENT authority.
+
+As of code checkpoint `3bcc88a8ed3e7cae2aef16b7beba4392663a7a05`, the private CI-equivalent gate passes **73/73** compiled-runtime tests. Documentation/status is pushed through `d58139d9744b2b24b3d0d7638ba93ace8db6ac62`. Production still runs the old deployment tree and no CP PostgreSQL migration has been applied.
+
+Staging remains blocked from activation because its public origin is still production-equivalent and read-only migration status cannot authenticate (`28P01`). These are deployment-preflight blockers, not reasons to weaken migration or API gates.
