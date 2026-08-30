@@ -78,6 +78,7 @@ describe('PerspectiveCollectionResultCard selected-data analysis', () => {
     />);
 
     expect(screen.getByTestId('collection-chart').getAttribute('data-series-type')).toBe('bar');
+    expect(screen.getByTestId('collection-export-excel-analysis')).toBeTruthy();
     expect(screen.getByText('Single-period snapshot')).toBeTruthy();
     expect(screen.queryByText(/0\.0%/)).toBeNull();
 

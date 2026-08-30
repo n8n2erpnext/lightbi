@@ -33,6 +33,7 @@ jobs:
         working-directory: apps/desktop
         run: >-
           pnpm vitest run
+          src/lib/analysis-workbook.test.ts
           src/lib/understanding-core/phase-8d1-production-multisource.test.ts
           src/components/analysis/PerspectiveCollectionResultCard.test.tsx
           src/lib/understanding-core/phase-7r41-repository-corpus.test.ts
