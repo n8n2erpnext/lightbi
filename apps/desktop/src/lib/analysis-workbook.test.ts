@@ -1,6 +1,6 @@
 import * as XLSX from 'xlsx';
 import { describe, expect, it } from 'vitest';
-import { createAnalysisWorkbookPlan, createExcelAnalysisWorkbook } from './analysis-workbook';
+import { createAnalysisWorkbookPlan, createExcelAnalysisWorkbook, createSingleSourceDeepAnalysisWorkbookPlan } from './analysis-workbook';
 
 const evidence = [
   { sourceName: 'sales-2026-05.xlsx', role: 'sales', period: '2026-05', sourceRowCount: 2, rows: [{ OrderID: 'A-1', Revenue: 100 }, { OrderID: 'A-2', Revenue: 120 }] },
@@ -77,6 +77,28 @@ describe('Excel Analysis Workbook', () => {
     expect(XLSX.utils.sheet_to_json(workbook.Sheets['Clean Data'])).toHaveLength(2);
     const overview = XLSX.utils.sheet_to_json<Array<string | number>>(workbook.Sheets['Analysis Overview'], { header: 1 });
     expect(overview).toContainEqual(['Clean canonical data attached', 'Yes']);
+  });
+
+  it('builds single-source Deep BA summary from computed KPIs and only emits evidence for selected drill rows', () => {
+    const plan = createSingleSourceDeepAnalysisWorkbookPlan({
+      title: 'Stock by store', perspectiveId: 'inventory', resultId: 'result_1',
+      chartRows: [{ Store: 'A', stock_qty: 12 }],
+      kpis: [{ id: 'stock_qty', value: 12 }, { id: 'record_count', value: 1 }],
+      evidence: { rows: [{ Store: 'A', Stock: 12 }], sourceResultRowCount: 3, label: 'Store = A', truncated: false },
+      findings: ['Store A contains 12 units.'], recommendedActions: ['Review replenishment.'], caveats: ['Selected row scope only.'],
+      createdAt: '2026-08-30T00:00:00.000Z',
+    });
+    expect(plan.combinationPolicy).toBe('single_source');
+    expect(plan.tables[0].rows).toEqual([{ stock_qty: 12, record_count: 1 }]);
+    expect(plan.tables.filter(table => table.kind === 'evidence')).toHaveLength(1);
+    expect(plan.sources[0]).toMatchObject({ sourceName: 'Result result_1', role: 'selected_result_evidence', sourceRowCount: 3 });
+
+    const noEvidence = createSingleSourceDeepAnalysisWorkbookPlan({
+      title: 'Stock by store', perspectiveId: 'inventory', resultId: 'result_1',
+      chartRows: [{ Store: 'A', stock_qty: 12 }], createdAt: '2026-08-30T00:00:00.000Z',
+    });
+    expect(noEvidence.tables.filter(table => table.kind === 'evidence')).toHaveLength(0);
+    expect(noEvidence.sources).toHaveLength(0);
   });
 
 });

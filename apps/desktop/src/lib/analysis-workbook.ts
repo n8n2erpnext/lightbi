@@ -48,6 +48,24 @@ export type ExcelAnalysisWorkbookOptionsV1 = {
   cleanData?: CleanDataHandoffResultV1 | null;
 };
 
+export type SingleSourceDeepAnalysisWorkbookInputV1 = {
+  title: string;
+  perspectiveId: string;
+  resultId: string;
+  chartRows?: Record<string, unknown>[];
+  kpis?: Array<{ id: string; value: number }>;
+  evidence?: {
+    rows: Record<string, unknown>[];
+    sourceResultRowCount: number;
+    label: string;
+    truncated: boolean;
+  } | null;
+  findings?: string[];
+  recommendedActions?: string[];
+  caveats?: string[];
+  createdAt?: string;
+};
+
 export type CreateAnalysisWorkbookPlanInput = {
   title: string;
   perspectiveId: string;
@@ -94,6 +112,41 @@ function assertExcelRowLimit(title: string, rows: number): void {
 
 function cloneRows(rows: Record<string, unknown>[]): Record<string, unknown>[] {
   return rows.map(row => ({ ...row }));
+}
+
+export function createSingleSourceDeepAnalysisWorkbookPlan(input: SingleSourceDeepAnalysisWorkbookInputV1): AnalysisWorkbookPlanV1 {
+  const kpiSummary = input.kpis?.length
+    ? [Object.fromEntries(input.kpis.map(kpi => [kpi.id, kpi.value]))]
+    : [];
+  const summaryRows = kpiSummary.length ? kpiSummary : cloneRows(input.chartRows ?? []);
+  if (summaryRows.length === 0) throw new Error('ANALYSIS_WORKBOOK_SUMMARY_REQUIRED');
+  const evidenceSources = input.evidence?.rows.length
+    ? [{
+        sourceName: `Result ${input.resultId}`,
+        role: 'selected_result_evidence',
+        period: input.evidence.label || 'selected_scope',
+        sourceRowCount: input.evidence.sourceResultRowCount,
+        rows: input.evidence.rows,
+      }]
+    : [];
+  return createAnalysisWorkbookPlan({
+    title: input.title,
+    perspectiveId: input.perspectiveId,
+    sourceCount: 1,
+    summaryRows,
+    evidenceSources,
+    findings: input.findings,
+    recommendedActions: input.recommendedActions,
+    caveats: input.caveats,
+    notes: [
+      'Single-source summary uses already-computed LightBI BA KPIs when available; otherwise it preserves the governed chart-result rows.',
+      ...(input.evidence ? [
+        `Selected drill evidence: ${input.evidence.rows.length} exported rows from ${input.evidence.sourceResultRowCount} result rows.`,
+        ...(input.evidence.truncated ? ['Selected drill evidence was truncated by the runtime row limit.'] : []),
+      ] : ['No raw/detail evidence sheet is emitted unless a source-bound selected drill scope is present.']),
+    ],
+    createdAt: input.createdAt,
+  });
 }
 
 export function createAnalysisWorkbookPlan(input: CreateAnalysisWorkbookPlanInput): AnalysisWorkbookPlanV1 {

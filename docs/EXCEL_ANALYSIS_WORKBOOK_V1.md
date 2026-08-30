@@ -35,6 +35,13 @@ When the user carries the analysis into `Datasets`, the transient analysis plan 
 V1 intentionally exports governed summary tables plus a formula-driven `Pivot View` rather than manufacturing an independent Pivot engine. Native Excel PivotTable/PivotChart generation is additive if a future workbook runtime can generate it deterministically and preserve the same analysis identity, source lineage, restrictions and drill evidence.
 
 The current SheetJS path does not grant permission to fabricate a raw multi-source table merely because Excel can represent one.
+
+## Single-source Deep BA
+
+The same workbook contract is also used by `InvestigationDeepAnalysis`. When a single-source BA overview exists, its already-computed KPIs become the summary. Otherwise the governed chart-result rows are preserved as the summary. Selected drill-through rows are emitted as an `Evidence …` sheet only when a source-bound Step 2 scope exists; ordinary chart rows are never relabeled as raw evidence.
+
+This keeps multi-source perspective analysis and single-source Deep BA on one export contract without inventing a second Pivot or metric engine.
+
 ## Safety and limits
 
 - Excel data sheets are bounded by the XLSX row limit; oversized tables fail explicitly instead of truncating silently.

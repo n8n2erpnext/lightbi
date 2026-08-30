@@ -51,7 +51,10 @@ describe('InvestigationDeepAnalysis export boundary', () => {
           source: 'dataset_understanding',
         }}
         brief={null}
-        chartModel={null}
+        chartModel={{
+          id: 'chart_result_1', sourceResultId: 'result_1', status: 'ready', chartType: 'bar', title: 'Stock by store',
+          xField: 'Store', yField: 'stock_qty', seriesFields: ['stock_qty'], rows: [{ Store: 'A', stock_qty: 12 }], warnings: [], source: 'duckdb_preview_result',
+        }}
         filteredScope={{
           rows: [{ Store: 'A', Stock: 12 }],
           filters: [{ id: 'store-a', column: 'Store', operator: 'equals', value: 'A' }],
@@ -68,6 +71,7 @@ describe('InvestigationDeepAnalysis export boundary', () => {
     );
 
     expect(screen.getByTestId('filtered-deep-analysis-scope').textContent).toContain('Store = A');
+    expect(screen.getByTestId('deep-analysis-export-excel')).not.toHaveProperty('disabled', true);
     expect(screen.getByText('Deep BA analysis · Step 2')).toBeTruthy();
     expect(screen.queryByText('Run the preview first, then LightBI can explain this decision angle in depth.')).toBeNull();
     expect(screen.queryByTestId('deep-analysis-dashboard-cta')).toBeNull();
