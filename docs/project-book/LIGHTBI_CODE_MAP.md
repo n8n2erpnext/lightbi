@@ -728,3 +728,13 @@ Git-history reconciliation is now complete in [`LIGHTBI_GIT_HISTORY_MAP.md`](./L
 
 
 **Post-audit companions:** [`LIGHTBI_GIT_HISTORY_MAP.md`](./LIGHTBI_GIT_HISTORY_MAP.md), [`LIGHTBI_CI_CD_MAP.md`](./LIGHTBI_CI_CD_MAP.md), and [`LIGHTBI_CONTROL_PLANE_MAP.md`](./LIGHTBI_CONTROL_PLANE_MAP.md) complete the branch/release/deployment provenance needed to interpret this code snapshot.
+
+## 44. Post-Truth durability checkpoint: persisted analysis identity is metadata, not authority
+
+Feature-branch commit `326d991a8f305fef938e9aab47897dd233146770` adds `analysis-session-identity.ts` and integrates `AnalysisSessionIdentityV1` with the existing workspace-session persistence path. The identity can carry the current `AnalysisWorkbookPlanV1` / `DecisionVisualizationPlanV1` identity plus single-source canonical source anchors or multi-source dataset/relationship/membership anchors.
+
+The authority boundary is explicit: persisted identity carries no execution authority and requires current-source revalidation. `useHomeWorkspaceSessions` clears the transient analysis-export plan when opening/switching sessions; Home autosave does not manufacture identity from a potentially stale global export plan. Investigation is the durable-identity producer only after it has the current governed execution, current decision-visualization plan, and current canonical dataset in one lifecycle.
+
+This closes a continuity gap without turning `workspace_sessions` into canonical truth storage. Restore may recover identity/history metadata, but current governed execution and decision-use authorization must still be re-established from current source truth.
+
+The broader historical Vitest universe is currently not a clean public-main gate. A full run on the feature branch was baseline-red largely because sanitized public history no longer contains many archive-era `docs/architecture/*.json` artifacts consumed by old tests. Representative detached-head comparison at `999dc75` reproduced the same selected failure identities before this durability change. Future changes must therefore distinguish current selected release regressions from archive/governance replay debt instead of treating the full historical suite as one undifferentiated pass/fail signal.

@@ -315,3 +315,21 @@ macOS official publication     INCOMPLETE
 Apple notarization/signing     NOT IMPLEMENTED
 Phase 2A trust gates on main   NOT MERGED
 ```
+
+## 19. Public selected-CI versus historical full-suite taxonomy debt
+
+Current public CI remains the bounded gate described in section 3; it is not the full historical Vitest universe. During the `AnalysisSessionIdentityV1` durability checkpoint at `326d991`, the selected feature gates passed (release contract 3/3, public boundary, desktop build, targeted durability 4 files / 27 tests), while an explicit full-desktop Vitest run reported 198 passed / 27 failed files and 1374 passed / 51 failed / 9 skipped tests.
+
+Failure inspection showed that many historical governance/corpus tests require `docs/architecture/*.json` evidence that the sanitized public lineage intentionally does not carry, while other textual/frozen assertions had already drifted before the durability commit. A detached clean `999dc75` representative differential probe produced the same 11-pass / 7-fail identity set as the current branch. That proves those representative failures are pre-existing; it does not prove exhaustive equivalence for all 51 current full-suite failures.
+
+For 1.0, test ownership must therefore be made explicit instead of widening CI blindly:
+
+```text
+current public release/feature gates
+archive evidence replay requiring historical artifacts
+sanitized-public compatibility assertions
+full-source/end-to-end user acceptance
+native/package/platform checks
+```
+
+Until that reconciliation is complete, the accurate statement is **selected public CI can be green while the historical full suite remains baseline-red**. This is known test-infrastructure debt, not permission to ignore a new failure introduced inside the selected/current gate.

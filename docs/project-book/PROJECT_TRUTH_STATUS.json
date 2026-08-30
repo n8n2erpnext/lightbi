@@ -58,9 +58,9 @@
     "localAuditBuildPassed": true,
     "privateMainAuthority": "87b2ee457c30ac4f7d7d55332bbfc658d51b2c53",
     "promotionBranch": "codex/control-plane-foundations-20260830",
-    "promotionHead": "5d2fd3ead8a712a6a1048eb8871acd55226751e1",
+    "promotionHead": "0385b316f54f73fa4d3e7ce481fa377c93f5471b",
     "promotionPushed": true,
-    "promotionTestsPassed": 85,
+    "promotionTestsPassed": 110,
     "promotionTestsConsecutiveRuns": 3,
     "apiV1Boundary": true,
     "betaAccountFinalAuthority": false,
@@ -71,7 +71,10 @@
     "stagingDatabaseStatusErrorCode": "28P01",
     "sessionSecurityEnforcedCandidate": true,
     "runtimeAutoMigrationProhibitedCandidate": true,
-    "totpRecoveryServiceCandidate": true
+    "totpRecoveryServiceCandidate": true,
+    "webauthnAdapterCandidate": true,
+    "phishingResistantSessionCandidate": true,
+    "passkeyCandidateAvailable": true
   },
   "documentation": {
     "codeMapComplete": true,
@@ -92,7 +95,8 @@
     "private_signing_and_signed_entitlements",
     "private_pro_capability_delivery_and_offline_policy",
     "final_open_core_dependency_legal_review",
-    "control_plane_deployed_sha_marker"
+    "control_plane_deployed_sha_marker",
+    "public_historical_test_taxonomy_reconciliation"
   ],
   "postTruthCandidates": {
     "controlPlaneFoundation": {
@@ -141,7 +145,7 @@
   },
   "excelAnalysisWorkbook": {
     "branch": "codex/excel-analysis-workbook-20260830",
-    "head": "15fce252ed4f11d0d91d5213aa1aca0ec3db33f6",
+    "head": "326d991a8f305fef938e9aab47897dd233146770",
     "merged": false,
     "analysisWorkbookVersion": "lightbi.analysis-workbook.v1",
     "multiSourcePerspectiveExport": true,
@@ -153,25 +157,37 @@
     "publicRegressionTestsPassed": 30,
     "desktopBuildPassed": true,
     "decisionVisualizationPlanVersion": "lightbi.decision-visualization-plan.v1",
-    "decisionVisualizationPlanSharedAcrossChartDashboardExcel": true
+    "decisionVisualizationPlanSharedAcrossChartDashboardExcel": true,
+    "analysisSessionIdentityVersion": "lightbi.analysis-session-identity.v1",
+    "persistedExecutionAuthority": false,
+    "requiresRevalidation": true,
+    "decisionUseAuthorized": false,
+    "sessionSwitchClearsTransientExportPlan": true,
+    "durabilityTargetedFilesPassed": 4,
+    "durabilityTargetedTestsPassed": 27,
+    "releaseContractTestsPassed": 3,
+    "publicBoundaryPassedAtDurabilityHead": true,
+    "desktopBuildPassedAtDurabilityHead": true
   },
   "implementationTracks": {
     "publicCore": {
       "branch": "codex/excel-analysis-workbook-20260830",
-      "head": "15fce252ed4f11d0d91d5213aa1aca0ec3db33f6",
+      "head": "326d991a8f305fef938e9aab47897dd233146770",
       "authority": "feature_branch_candidate"
     },
     "privateControlPlane": {
       "branch": "codex/control-plane-foundations-20260830",
-      "codeHead": "83fd70463e65e8bd0fe54237e86882cfc969d274",
-      "docsHead": "5d2fd3ead8a712a6a1048eb8871acd55226751e1",
-      "compiledTestsPassed": 85,
+      "codeHead": "9c89a8171f81930f1bc24672fc26978a1a6c4377",
+      "docsHead": "0385b316f54f73fa4d3e7ce481fa377c93f5471b",
+      "compiledTestsPassed": 110,
       "productionMutated": false,
       "sessionSecurityVersionEnforcedCandidate": true,
       "runtimeAutoMigrationProhibitedCandidate": true,
       "totpRecoveryServiceCandidate": true,
       "totpEnrollmentApiEnabled": false,
-      "passkeyVerificationAvailable": false
+      "passkeyVerificationAvailable": false,
+      "passkeyVerificationCandidateAvailable": true,
+      "phishingResistantSessionCandidate": true
     },
     "trust": {
       "phase2aHead": "fb8225c951fc27692e6b0e7554c3112ada08e49f",
@@ -182,22 +198,48 @@
   "implementationCandidates": {
     "excelAnalysisWorkbook": {
       "branch": "codex/excel-analysis-workbook-20260830",
-      "head": "999dc75bc1fbe873e9d5702db9fe655d131a1163",
+      "head": "326d991a8f305fef938e9aab47897dd233146770",
       "publicRegressionFiles": 11,
       "publicRegressionTests": 38,
       "nativePivotEmbedded": false,
       "formulaPivotView": true,
-      "authority": "feature_branch_candidate"
+      "authority": "feature_branch_candidate",
+      "analysisSessionIdentityVersion": "lightbi.analysis-session-identity.v1",
+      "durabilityTargetedFiles": 4,
+      "durabilityTargetedTests": 27
     },
     "controlPlaneIdentitySecurity": {
       "branch": "codex/control-plane-foundations-20260830",
       "mfaLoginHead": "28b637063c7b67a1e0c186b16df3365583ca5e0e",
       "totpEnrollmentHead": "25fa53348bce84e7220bf530a820c228f43e3fc8",
-      "docsHead": "af80cd53708ac2709333b1242826454257cb86a6",
-      "compiledRuntimeTests": 96,
+      "docsHead": "0385b316f54f73fa4d3e7ce481fa377c93f5471b",
+      "compiledRuntimeTests": 110,
       "passkeyVerificationAvailable": false,
       "productionMutated": false,
-      "authority": "private_feature_branch_candidate"
+      "authority": "private_feature_branch_candidate",
+      "webauthnAdapterHead": "bfbf6d9",
+      "sessionAssuranceHead": "90ba49e",
+      "passkeyHead": "9c89a8171f81930f1bc24672fc26978a1a6c4377",
+      "passkeyVerificationCandidateAvailable": true,
+      "phishingResistantSessionCandidate": true
     }
+  },
+  "historicalTestUniverse": {
+    "currentFeatureHead": "326d991a8f305fef938e9aab47897dd233146770",
+    "fullDesktopVitestFilesPassed": 198,
+    "fullDesktopVitestFilesFailed": 27,
+    "fullDesktopVitestTestsPassed": 1374,
+    "fullDesktopVitestTestsFailed": 51,
+    "fullDesktopVitestTestsSkipped": 9,
+    "unhandledErrors": 1,
+    "representativeBaselineHead": "999dc75bc1fbe873e9d5702db9fe655d131a1163",
+    "representativeBaselinePassed": 11,
+    "representativeBaselineFailed": 7,
+    "representativeCurrentPassed": 11,
+    "representativeCurrentFailed": 7,
+    "representativeFailureSetIdentical": true,
+    "exhaustiveBaselineEquivalenceProven": false,
+    "selectedPublicCiIsFullHistoricalSuite": false,
+    "knownDebt": "public_historical_test_taxonomy_reconciliation"
   }
 }
