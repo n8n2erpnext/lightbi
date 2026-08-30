@@ -1074,3 +1074,12 @@ The previously discussed Excel Pivot/export direction was promoted into current 
 A dedicated public-core worktree was created at `/home/ubuntu/n8n2erpnext/LightBI-core-export`, branch `codex/excel-analysis-workbook-20260830`, based on current public `origin/main` `4668983`. Phase 2A remains isolated at `fb8225c` so the trust PR is not contaminated by unrelated export work.
 
 Private control-plane Git access was re-verified and an authoritative clone now exists at `/home/ubuntu/n8n2erpnext/lightbi-control-plane`, current private main `87b2ee4`. The CP-1→CP-6 reconstructed candidate remains a migration source only; promotion must replay/reconcile onto this authoritative ancestry before CI/staging.
+
+## 2026-08-30 — dual-track 1.0 implementation checkpoint
+
+- Added and pushed public Excel Analysis Workbook/Pivot branch; current head `1be2d15` carries governed summary/evidence through an ephemeral export handoff into Datasets and can attach the canonical clean-data package.
+- Public CI-equivalent gate: release contract 3/3, public boundary, desktop build, nine regression files / 30 tests.
+- Replayed CP-1→CP-6 onto real private-main ancestry `87b2ee4`, preserved newer private UI tests, and pushed the private promotion branch.
+- Added CP-2.1 API v1, CP-2.2 Beta-account compatibility normalization, deterministic CP-4 crypto tamper probe, and CP-3.1 staging/migration safety; current private head `34d9c5d`, 71/71 tests x3.
+- Staging remains inactive: public origin collides with production and read-only PostgreSQL status currently fails auth (`28P01`). No migration or service start occurred.
+- Phase 2A remains `fb8225c`, Draft/Open, CI green, **not frozen**; no signer/attestation/private keys were started.

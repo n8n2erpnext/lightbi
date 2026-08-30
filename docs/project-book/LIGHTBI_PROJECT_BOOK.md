@@ -1952,6 +1952,8 @@ The first production implementation may use precomputed Pivot-style summary tabl
 
 Power BI handoff and Excel Analysis Workbook should share source lineage/canonical-cleaning contracts, but they serve different outcomes: Power BI export prepares trustworthy reusable data for another BI tool; Excel Analysis Workbook carries a ready-made LightBI analysis for users who want to continue working directly in Excel.
 
+Implementation checkpoint: public branch `codex/excel-analysis-workbook-20260830` is pushed at `1be2d152b4ab8b74ec5cdee0c99e39e5487c4acd`. It now writes a formula-driven `Pivot View` referencing the governed `Analysis Summary`, keeps multi-source evidence in separate sheets, and carries the exact `AnalysisWorkbookPlanV1` through an ephemeral in-memory handoff into `Datasets`. After the canonical clean copy is prepared, `Save Excel analysis / Pivot as…` sits beside the existing Power BI package and appends Clean Data, Data Dictionary, Transformation Audit and Clean Handoff Manifest. The public CI-equivalent gate passed release contract, public boundary, desktop build and nine regression files / 30 tests.
+
 ## 72. Dual-track 1.0 execution rule
 
 From this checkpoint onward, public core and private control-plane work proceed in parallel only where their dependencies are independent.
@@ -1970,3 +1972,6 @@ BA / chart / drill continuity            commerce/analytics operations
 ```
 
 Offline/local Basic capabilities such as the governed Excel Analysis Workbook do not wait for the control plane. Online authority features must continue obeying `control-plane foundation first → core consumption second → feature UI third`. No signer, attestation, signed entitlement or Pro-package authority may begin merely because the two tracks are active in parallel; those remain blocked until the exact Phase 2A head receives independent freeze approval.
+
+
+Parallel control-plane checkpoint: the CP-1→CP-6 chain has now been replayed onto real private-main ancestry and pushed; CP-2.1/2.2 add the v1 HTTP/account compatibility boundary and CP-3.1 hardens staging/migration safety. The current pushed private candidate is `34d9c5dfe40a32f87090fc3a16c9a6fea47286e5`, with 71/71 compiled-runtime tests passing three consecutive times. Production remains unchanged and staging activation remains blocked by staging-origin and PostgreSQL-auth preflight findings.

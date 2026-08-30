@@ -315,31 +315,42 @@ Beta account/entitlement        IMPLEMENTED
 1.0 trust/signing/Pro delivery  NOT IMPLEMENTED
 ```
 
-## 19. Post-Project-Truth control-plane foundation candidate
+## 19. Post-Project-Truth control-plane foundation promotion
 
-After Project Truth 1.0 closed repository archaeology, a separate implementation workspace was created at `/home/ubuntu/n8n2erpnext/lightbi-control-plane-cp1` on local branch `codex/control-plane-foundations-20260830`.
+The original reconstructed CP-1→CP-6 workspace remains historical implementation provenance, but it is no longer the active promotion surface. Private Git authentication was restored and the foundation chain was replayed content-aware onto the **real private-main ancestry** in `/home/ubuntu/n8n2erpnext/lightbi-control-plane`, branch `codex/control-plane-foundations-20260830`, based on private `main` `87b2ee457c30ac4f7d7d55332bbfc658d51b2c53`. Newer private-main Hero/logo tests and behavior were preserved rather than overwritten by the older reconstruction.
 
-The candidate now contains the complete CP-1→CP-6 foundation chain and architecture closure guard. Its current local closure commit is `fe9216d`. The chain establishes:
-
-- strict TypeScript runtime/build boundaries;
-- modular domain/platform ownership and ordered persistence migrations;
-- PostgreSQL outbox, idempotency, generalized audit and background-worker rails;
-- identity-security persistence/primitives for future passkey, TOTP and recovery flows;
-- organization, membership, named-user seat and subject-entitlement foundations;
-- commerce/order/payment state plus asynchronous webhook/ERPNext integration rails;
-- executable architecture guards preventing 1.0 domains from growing back into the legacy Beta server, preventing new domain SQLite authority, and keeping external side effects on worker/outbox paths.
-
-Clean candidate verification on 2026-08-30 passed strict typecheck, compiled build, credential scan, architecture/DDL guards and **53/53 compiled-runtime tests**.
-
-This does **not** change authority:
+The authoritative-ancestry candidate sequence is now:
 
 ```text
-authoritative private source  private main @ 87b2ee4 (last independently audited)
-running production           /home/ubuntu/services/lightbi-control-plane on 5174
-foundation candidate         /home/ubuntu/n8n2erpnext/lightbi-control-plane-cp1 @ fe9216d
-production mutation          none
+87b2ee4  private main base
+→ 00021e6 / 8385d2b  CP-1 TypeScript/runtime replay
+→ 88b11ab              CP-2 modular persistence
+→ 7488cee              CP-3 async foundation
+→ c89d16a              CP-4 identity security foundation
+→ 02c7602              CP-5 organization/entitlement foundation
+→ 878f2f0              CP-6 commerce/integration foundation
+→ 9997b7c              architecture closure
+→ b9763e7              CP-2.1 API v1 boundary
+→ 6391929              CP-2.2 account-session v1 compatibility adapter
+→ a7056fc              deterministic CP-4 tamper-test repair
+→ 34d9c5d              CP-3.1 staging/migration safety
 ```
 
-The candidate was reconstructed while private GitHub authentication was unavailable. Its local commits are implementation checkpoints, not proven descendants of private-main Git history. Promotion still requires replay/reconciliation onto current authoritative private `main`, the complete private repository suite and GitHub Actions, staging migration/API/worker verification, then explicit production cutover.
+The branch is pushed to the private GitHub repository. Verification progressed from the private-main 39-test baseline to 58/58 after the full foundation replay, 63/63 after CP-2.1, 67/67 after CP-2.2/architecture assertions, and **71/71 on three consecutive runs** after CP-3.1. Strict TypeScript and compiled build gates also pass.
 
-Trust remains a separate gate. The candidate deliberately does not implement the Rust signer, installation certificate, request attestation, signed entitlement or Pro package signing/delivery. **Trust-1 remains blocked until Phase 2A receives explicit independent freeze approval.**
+CP-2.1 establishes a dedicated `/api/v1` HTTP boundary with Zod request validation, bounded request/correlation IDs and stable success/error envelopes. CP-2.2 exposes current account session state only as `source: beta_compatibility` with `finalAuthority: false`, preventing transitional Beta entitlement from masquerading as the future signed 1.0 authority.
+
+CP-3.1 separates staging API/worker service trees from production, adds non-mutating migration plan/status modes, makes schema apply explicit, and prevents worker startup from auto-running migrations. A read-only staging preflight confirms staging PostgreSQL, Redis, data directory and port differ from production, but staging activation is currently blocked because its public origin still equals production and PostgreSQL authentication returns `28P01`. No migration was applied and no staging/production service was started.
+
+Current authority therefore remains:
+
+```text
+private main authority      87b2ee4 until reviewed/merged promotion
+pushed promotion candidate  34d9c5d on codex/control-plane-foundations-20260830
+running production          /home/ubuntu/services/lightbi-control-plane on 5174
+production mutation         none
+```
+
+A GitHub pull request has not been opened because the available GitHub write integration returns `403 Resource not accessible by integration`; branch push through the authorized Git remote succeeds. Private pull-request CI therefore remains a promotion gate rather than a completed claim.
+
+Trust remains separate. None of these CP additions implement the Rust signer, installation certificate issuance, request attestation, signed entitlement or private Pro package authority. **Trust-1 remains blocked until the exact Phase 2A contract head receives explicit independent freeze approval.**

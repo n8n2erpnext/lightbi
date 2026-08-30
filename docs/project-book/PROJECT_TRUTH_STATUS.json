@@ -55,7 +55,20 @@
     "deployedCommitMarkerStale": true,
     "localAuditTestsPassed": 39,
     "localAuditTestsFailed": 0,
-    "localAuditBuildPassed": true
+    "localAuditBuildPassed": true,
+    "privateMainAuthority": "87b2ee457c30ac4f7d7d55332bbfc658d51b2c53",
+    "promotionBranch": "codex/control-plane-foundations-20260830",
+    "promotionHead": "34d9c5dfe40a32f87090fc3a16c9a6fea47286e5",
+    "promotionPushed": true,
+    "promotionTestsPassed": 71,
+    "promotionTestsConsecutiveRuns": 3,
+    "apiV1Boundary": true,
+    "betaAccountFinalAuthority": false,
+    "stagingMigrationApplied": false,
+    "stagingServiceStarted": false,
+    "stagingPublicOriginIsolated": false,
+    "stagingDatabaseStatusReadSucceeded": false,
+    "stagingDatabaseStatusErrorCode": "28P01"
   },
   "documentation": {
     "codeMapComplete": true,
@@ -122,5 +135,23 @@
       "onlineAuthorityRequiresControlPlanePrerequisite": true,
       "trust1BlockedPendingPhase2aFreeze": true
     }
+  },
+  "excelAnalysisWorkbook": {
+    "branch": "codex/excel-analysis-workbook-20260830",
+    "head": "1be2d152b4ab8b74ec5cdee0c99e39e5487c4acd",
+    "pushed": true,
+    "nativePivotTable": false,
+    "formulaDrivenPivotView": true,
+    "analysisToDatasetsHandoff": true,
+    "cleanDataAttachment": true,
+    "publicRegressionFilesPassed": 9,
+    "publicRegressionTestsPassed": 30,
+    "desktopBuildPassed": true,
+    "productionMerged": false
+  },
+  "implementationTracks": {
+    "publicCore": "excel_analysis_workbook_and_local_first_consumers",
+    "privateControlPlane": "authoritative_ancestry_promotion_and_non_trust_v1_foundations",
+    "trustDependent": "blocked_pending_phase2a_explicit_freeze"
   }
 }
