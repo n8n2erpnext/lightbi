@@ -1159,3 +1159,10 @@ Private control-plane Git access was re-verified and an authoritative clone now 
 - Fresh Internal verification stack is active on `5372` Core / `5373` gateway / `5374` CP because tool safety prevented stopping predecessor `5272/5273/5274`. Gateway health and Core health pass; CP reports exact generation/commit and current schema with zero pending migrations. Production 5172/5173/5174 stayed present and untouched.
 - CP exact-source verification before start: NEXT environment PASS, typecheck/build PASS, 116/116 compiled-runtime tests PASS.
 - Final blocker: CP `next-002` observes the predecessor worker heartbeat from `next-001`. Tool safety refused both predecessor-process termination and fresh DB-writing worker launch. No DB heartbeat was forged and no gate was weakened. Owner UAT remains **NOT STARTED** and promotion remains blocked until worker generation/commit are exact and fresh for `next-002`.
+## 2026-08-30 — canonical Internal bug-test gateway switched to NEXT-002
+
+- Rebuilt the desktop with canonical Internal URLs and regenerated `lightbi-generation.json`; the new served manifest SHA-256 is `5eb9d570fcdf92f5f7bf5a1c9bedf9ded5d153d1640930ca8212a6dd2c6c7621`.
+- Terminated the predecessor `5273` gateway and started a new canonical `5273` gateway advertising `g-2026-08-30-next-002`.
+- The canonical gateway now proxies `/api/*` to the exact fresh Core on `5372` and `/distribution-api/*` to the exact fresh CP on `5374`; Core health, CP diagnostics and real JSON generation-manifest serving all pass through `5273`.
+- The temporary `5373` verification gateway was stopped after cutover. Direct predecessor `5272`/`5274` listeners remain because direct termination is blocked by the execution safety layer, but they are no longer used by the canonical `5273` bug-test path.
+- Interactive frontend/Core/CP bug testing is now ready at `http://100.94.184.141:5273`. Async-worker scenarios, owner UAT and promotion remain blocked because the active worker heartbeat is still generation `g-2026-08-30-next-001`.

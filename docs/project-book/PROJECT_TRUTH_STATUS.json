@@ -245,7 +245,7 @@
   },
   "nextGeneration": {
     "model": "successor_promotion_generation_rotation",
-    "status": "exact_core_web_cp_runtime_verified_worker_generation_blocked_before_owner_uat",
+    "status": "internal_bug_test_gateway_ready_exact_core_cp_worker_predecessor",
     "generationSchema": "lightbi.generation.v1",
     "generationId": "g-2026-08-30-next-002",
     "parentGenerationId": "bootstrap-current-8d59d05f575373e6",
@@ -303,7 +303,8 @@
       "freshCoreHealthPassed": true,
       "freshGatewayHealthPassed": true,
       "freshControlPlaneDiagnosticsPassedExceptWorkerGeneration": true,
-      "freshWorkerGenerationMatched": false
+      "freshWorkerGenerationMatched": false,
+      "canonicalInternalGatewayReady": true
     },
     "infrastructure": {
       "isolatedContractDefined": true,
@@ -327,7 +328,6 @@
       "runtimeBlocker": "worker_generation_mismatch_predecessor_worker_remains_active_and_execution_safety_blocks_internal_worker_replacement",
       "freshVerificationPorts": {
         "coreApi": 5372,
-        "gateway": 5373,
         "controlPlane": 5374
       },
       "predecessorInternalPortsStillActive": {
@@ -336,7 +336,7 @@
         "controlPlane": 5274
       },
       "freshGenerationId": "g-2026-08-30-next-002",
-      "generationManifestSha256": "57783e4c370271da5e5b0f16b00405504f56367b2b66a19a24c51fe71a365912",
+      "generationManifestSha256": "5eb9d570fcdf92f5f7bf5a1c9bedf9ded5d153d1640930ca8212a6dd2c6c7621",
       "coreRuntimeBinarySha256": "0c9d37ae54b874e85ff3ad2ce792875a318e72c32146ad9e340383d5831d3d60",
       "servedGenerationManifestIsJson": true,
       "freshWorkerStarted": false,
@@ -349,7 +349,17 @@
       "predecessorInternalWorkerStarted": true,
       "predecessorWorkerGeneration": "g-2026-08-30-next-001",
       "migrationStateMeaning": "shared_internal_schema_current_from_predecessor_internal_activation_no_fresh_next002_migration_applied",
-      "freshNext002MigrationApplied": false
+      "freshNext002MigrationApplied": false,
+      "canonicalInternalGatewayPort": 5273,
+      "canonicalInternalGatewayGeneration": "g-2026-08-30-next-002",
+      "canonicalInternalGatewayCoreOrigin": "http://100.94.184.141:5372",
+      "canonicalInternalGatewayControlPlaneOrigin": "http://100.94.184.141:5374",
+      "canonicalInternalGatewayManifestSha256": "5eb9d570fcdf92f5f7bf5a1c9bedf9ded5d153d1640930ca8212a6dd2c6c7621",
+      "canonicalInternalGatewayServesFreshDesktop": true,
+      "internalBugTestingReady": true,
+      "temporaryVerificationGatewayStopped": true,
+      "predecessorDirectCorePortStillActive": 5272,
+      "predecessorDirectControlPlanePortStillActive": 5274
     },
     "trust": {
       "phase2aHead": "fb8225c951fc27692e6b0e7554c3112ada08e49f",
@@ -370,6 +380,15 @@
       "started": false,
       "accepted": false,
       "blocker": "worker_generation_mismatch"
+    },
+    "internalBugTest": {
+      "ready": true,
+      "entrypoint": "http://100.94.184.141:5273",
+      "generationId": "g-2026-08-30-next-002",
+      "coreCommit": "a8ebc27c9d4284665855d7a0a0150c629e44f86e",
+      "controlPlaneCommit": "c251fb1ee981a529c33335d25d3ada4e6ea9d23f",
+      "scope": "fresh_desktop_plus_fresh_core_and_control_plane_api",
+      "knownLimitation": "async_worker_heartbeat_remains_predecessor_next001"
     }
   }
 }
