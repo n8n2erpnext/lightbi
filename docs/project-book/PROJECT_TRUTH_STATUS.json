@@ -101,5 +101,26 @@
       "privateGitAncestryVerified": false,
       "trust1BlockedPendingPhase2aFreeze": true
     }
+  },
+  "roadmapDecisions": {
+    "excelAnalysisWorkbook": {
+      "status": "approved_direction_active_candidate",
+      "coreWorkspace": "/home/ubuntu/n8n2erpnext/LightBI-core-export",
+      "coreBranch": "codex/excel-analysis-workbook-20260830",
+      "baseMain": "466898372fcf3869ae10140cafce83bf57c5d392",
+      "rules": [
+        "reuse_canonical_governed_truth",
+        "no_separate_pivot_engine",
+        "no_blind_multisource_join",
+        "preserve_lineage_grain_relationship_restrictions",
+        "v1_prebuilt_analysis_tables_native_pivot_later"
+      ]
+    },
+    "dualTrack1_0": {
+      "status": "active",
+      "coreLocalFeaturesMayProceedIndependently": true,
+      "onlineAuthorityRequiresControlPlanePrerequisite": true,
+      "trust1BlockedPendingPhase2aFreeze": true
+    }
   }
 }

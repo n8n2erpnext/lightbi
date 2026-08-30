@@ -1928,3 +1928,45 @@ Product coding must **not** occur on `docs/project-library-cleanup-20260829`.
 This worktree is the durable knowledge/library branch. New code work should start from the correct product lineage and use a dedicated feature branch/worktree after reconciling the intended base with current public `main` and any approved open PR dependencies.
 
 The old dirty Beta-recovery worktree remains evidence/archive unless a specific recovery task explicitly chooses it as source.
+
+
+## 71. Excel Analysis Workbook / Pivot export direction
+
+LightBI 1.0 must treat Excel export as a first-class decision handoff, not merely a raw-row download. The approved product direction is to let a user import raw operational files, select a business perspective, run LightBI's governed analysis/Deep BA/drill workflow, and export a ready-to-use Excel analysis workbook without manually rebuilding the same logic in PivotTable.
+
+The export must reuse existing LightBI truth rather than create a second analysis engine:
+
+```text
+canonical source / source collection
+→ semantic + grain + relationship governance
+→ selected perspective / governed analysis plan
+→ governed result + chart/BA/drill evidence
+→ Excel Analysis Workbook
+```
+
+Required v1 workbook layers are: clean/canonical data where the current authority permits it; one or more prebuilt perspective analysis tables; evidence/drill-detail rows for the selected result; data dictionary and lineage; transformation/audit notes; caveats/restrictions; and a manifest tying the workbook back to the LightBI source/artifact/analysis identity.
+
+This feature must **not** blindly concatenate multi-source data. Cross-source rows may be combined only through an already-authorized governed relationship/metric path. Same-role period partitions may be represented as separate source/data sheets or governed metric-result tables without inventing row-level joins.
+
+The first production implementation may use precomputed Pivot-style summary tables and ordinary Excel formulas/tables. Native Excel PivotTable/PivotChart generation is an additive later capability if the workbook library/runtime supports it safely. The architecture must therefore preserve a versioned analysis-export plan rather than encoding workbook decisions directly in UI click handlers.
+
+Power BI handoff and Excel Analysis Workbook should share source lineage/canonical-cleaning contracts, but they serve different outcomes: Power BI export prepares trustworthy reusable data for another BI tool; Excel Analysis Workbook carries a ready-made LightBI analysis for users who want to continue working directly in Excel.
+
+## 72. Dual-track 1.0 execution rule
+
+From this checkpoint onward, public core and private control-plane work proceed in parallel only where their dependencies are independent.
+
+```text
+PUBLIC CORE / LOCAL-FIRST                 PRIVATE CONTROL PLANE
+canonical analysis + export              CP foundation promotion
+Excel Analysis Workbook                  identity/org/integration API consumers
+BA / chart / drill continuity            commerce/analytics operations
+        │                                         │
+        └──────── trust-dependent features ───────┘
+                          ↓
+             Phase 2A explicit FREEZE required
+                          ↓
+                 Trust-1 private Rust signer
+```
+
+Offline/local Basic capabilities such as the governed Excel Analysis Workbook do not wait for the control plane. Online authority features must continue obeying `control-plane foundation first → core consumption second → feature UI third`. No signer, attestation, signed entitlement or Pro-package authority may begin merely because the two tracks are active in parallel; those remain blocked until the exact Phase 2A head receives independent freeze approval.

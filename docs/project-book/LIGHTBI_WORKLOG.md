@@ -1066,3 +1066,11 @@ The final candidate fixes deterministic TS/Rust canonical ordering, safe-integer
 Local final acceptance passed release contract 3/3, TypeScript trust 20/20, Rust parity 5/5, desktop production build, public-boundary probe, and seven governed regression files / 26 tests. GitHub CI run `33290983683` also completed successfully on `fb8225c`.
 
 PR #4 remains Draft/Open/unmerged. The product owner explicitly excludes the concurrent macOS unsigned-validation branch/workflow from the Phase 2A freeze gate. Trust Contracts v1 is still **NOT FROZEN** until an independent re-audit of exact head `fb8225c` records explicit freeze approval. Rust signer/attestation work remains blocked.
+
+## 2026-08-30 — Excel Analysis Workbook direction and dual-track 1.0 execution
+
+The previously discussed Excel Pivot/export direction was promoted into current Project Truth. LightBI will reuse canonical understanding, grain/relationship governance, selected perspective, governed results, Deep BA and drill evidence to emit an Excel Analysis Workbook instead of creating a separate Pivot analysis engine. V1 may use precomputed Pivot-style analysis tables/formulas; native PivotTable/PivotChart support remains additive.
+
+A dedicated public-core worktree was created at `/home/ubuntu/n8n2erpnext/LightBI-core-export`, branch `codex/excel-analysis-workbook-20260830`, based on current public `origin/main` `4668983`. Phase 2A remains isolated at `fb8225c` so the trust PR is not contaminated by unrelated export work.
+
+Private control-plane Git access was re-verified and an authoritative clone now exists at `/home/ubuntu/n8n2erpnext/lightbi-control-plane`, current private main `87b2ee4`. The CP-1→CP-6 reconstructed candidate remains a migration source only; promotion must replay/reconcile onto this authoritative ancestry before CI/staging.
