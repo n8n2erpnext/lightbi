@@ -3,10 +3,13 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { DEFAULT_PREFERENCES } from '../../stores/display-preferences-store';
 import { createDecisionVisualizationPlan } from '../../lib/decision-visualization-plan';
-import * as analysisWorkbook from '../../lib/analysis-workbook';
+import * as cleanHandoff from '../../lib/clean-data-handoff';
+import * as pivotExport from '../../lib/excel-pivot-export';
 import { InvestigationDeepAnalysis } from './InvestigationDeepAnalysis';
 
 afterEach(() => { cleanup(); vi.restoreAllMocks(); });
+
+const canonicalBoundary = { datasetId: 'sales.xlsx', sourceId: 'source:sales' } as any;
 
 describe('InvestigationDeepAnalysis export boundary', () => {
   it('keeps the dashboard CTA visible but outside the image/PDF capture surface', () => {
@@ -67,6 +70,7 @@ describe('InvestigationDeepAnalysis export boundary', () => {
           maxRows: 50_000,
           isTruncated: false,
         }}
+        canonicalSourceBoundary={canonicalBoundary}
         onClose={vi.fn()}
         preferences={DEFAULT_PREFERENCES}
       />,
@@ -74,13 +78,17 @@ describe('InvestigationDeepAnalysis export boundary', () => {
 
     expect(screen.getByTestId('filtered-deep-analysis-scope').textContent).toContain('Store = A');
     expect(screen.getByTestId('deep-analysis-export-excel')).not.toHaveProperty('disabled', true);
+    fireEvent.click(screen.getByTestId('deep-analysis-export-excel'));
+    expect(screen.getByTestId('deep-analysis-export-pivot-full')).toBeTruthy();
+    expect(screen.getByTestId('deep-analysis-export-pivot-selection')).not.toHaveProperty('disabled', true);
     expect(screen.getByText('Deep BA analysis · Step 2')).toBeTruthy();
     expect(screen.queryByText('Run the preview first, then LightBI can explain this decision angle in depth.')).toBeNull();
     expect(screen.queryByTestId('deep-analysis-dashboard-cta')).toBeNull();
   });
 
-  it('exports Excel with the governed perspective identity instead of the BA mode label', async () => {
-    const save = vi.spyOn(analysisWorkbook, 'saveExcelAnalysisWorkbook').mockResolvedValue(undefined);
+  it('exports Excel Pivot with the governed perspective identity instead of the BA mode label', async () => {
+    vi.spyOn(cleanHandoff, 'createCleanDataHandoffFromCanonicalBoundary').mockResolvedValue({ artifact: { source: { sourceRows: 1 }, lineage: [] }, cleanRows: [] } as any);
+    const save = vi.spyOn(pivotExport, 'saveExcelPivotWorkbook').mockResolvedValue({ fileName: 'test.xlsx', locationLabel: 'test.xlsx', usedSaveAs: true, recipe: {} as any, exportedRowCount: 1 });
     const chartModel = {
       id: 'chart_result_sales', sourceResultId: 'result_sales', status: 'ready' as const, chartType: 'bar' as const,
       title: 'Sales by product', xField: 'Product', yField: 'sales_revenue', seriesFields: ['sales_revenue'],
@@ -107,15 +115,18 @@ describe('InvestigationDeepAnalysis export boundary', () => {
           kpis: [{ id: 'revenue', label: 'Revenue', value: 100, format: 'number' }], trend: [], trendChange: null,
           breakdowns: [], concentration: null, outlierCount: 0, findings: [], recommendedActions: [], limitations: [],
         }}
+        canonicalSourceBoundary={canonicalBoundary}
         onClose={vi.fn()}
         preferences={DEFAULT_PREFERENCES}
       />,
     );
 
     fireEvent.click(screen.getByTestId('deep-analysis-export-excel'));
+    fireEvent.click(screen.getByTestId('deep-analysis-export-pivot-full'));
     await waitFor(() => expect(save).toHaveBeenCalledTimes(1));
     expect(screen.queryByRole('alert')).toBeNull();
-    expect(save.mock.calls[0]?.[0].perspectiveId).toBe('action-sales-by-product');
+    expect(save.mock.calls[0]?.[0].mode).toBe('full');
+    expect(save.mock.calls[0]?.[0].action.id).toBe('action-sales-by-product');
     expect(save.mock.calls[0]?.[0].decisionVisualizationPlan?.perspectiveId).toBe('action-sales-by-product');
   });
 

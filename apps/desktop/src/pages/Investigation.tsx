@@ -921,6 +921,8 @@ export const Investigation: React.FC = () => {
         singleSourceBAOverview={filteredDeepAnalysisScope ? filteredSingleSourceBAOverview : singleSourceBAOverview}
         chartModel={filteredDeepAnalysisOrigin?.chartModel ?? chartModel}
         decisionVisualizationPlan={filteredDeepAnalysisOrigin ? null : primaryDecisionVisualizationPlan}
+        canonicalSourceBoundary={canonicalSourceBoundary}
+        sourceName={session.datasetId}
         filteredScope={filteredDeepAnalysisScope}
         onClose={() => setDeepAnalysisView(null)}
         onCreateDashboard={filteredDeepAnalysisScope ? undefined : () => { void createPerspectiveDashboard(); }}

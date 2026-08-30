@@ -1,7 +1,7 @@
 import * as XLSX from 'xlsx';
 import type { AdvancedSourceTable, AdvancedWorkspaceSource } from '../stores/advanced-source-store';
 import { materializeRuntimeDatasetSource } from './full-file-runtime-materializer';
-import { validateCanonicalSourceBoundary } from './understanding-core/canonical-source-boundary';
+import { validateCanonicalSourceBoundary, type CanonicalSourceBoundaryV1 } from './understanding-core/canonical-source-boundary';
 
 export const CLEAN_DATA_HANDOFF_VERSION = 'lightbi.clean-data-handoff.v1' as const;
 
@@ -182,6 +182,43 @@ export async function createCleanDataHandoff(
     },
     cleanRows,
   };
+}
+
+
+export async function createCleanDataHandoffFromCanonicalBoundary(
+  boundary: CanonicalSourceBoundaryV1,
+  sourceName = boundary.datasetId,
+  signal?: AbortSignal,
+): Promise<CleanDataHandoffResultV1> {
+  const validation = validateCanonicalSourceBoundary(boundary);
+  if (!validation.valid) throw new Error(`CLEAN_HANDOFF_SOURCE_INVALID:${validation.blockers.join(',')}`);
+  const runtimeFile = boundary.runtimeSource.files[0];
+  if (!runtimeFile) throw new Error('CLEAN_HANDOFF_RUNTIME_FILE_REQUIRED');
+  const columns = boundary.fullFileProfile.artifact.sourceProfile.columns.map(column => column.physicalColumnName);
+  const table: AdvancedSourceTable = {
+    id: 'canonical:full-file',
+    name: sourceName,
+    rowCount: boundary.sourceRowCount,
+    columns,
+    profiles: {},
+    file: runtimeFile.file,
+    sheetName: runtimeFile.sheetName,
+  };
+  const source: AdvancedWorkspaceSource = {
+    id: boundary.sourceId,
+    name: sourceName,
+    sourceType: 'canonical_source',
+    sourceKind: 'local_file',
+    tables: [table],
+    semanticSample: {
+      strategy: boundary.semanticSample.strategy,
+      sourceRowCount: boundary.sourceRowCount,
+      sampleRowCount: boundary.semanticSample.rows.length,
+    },
+    canonicalSourceBoundary: boundary,
+    registeredAt: new Date().toISOString(),
+  };
+  return createCleanDataHandoff(source, table, signal);
 }
 
 export function createPowerBiWorkbook(result: CleanDataHandoffResultV1): ArrayBuffer {

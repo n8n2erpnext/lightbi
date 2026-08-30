@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { ArrowLeft, ClipboardCheck, Download, FileImage, FileSpreadsheet, FileText, LayoutDashboard, X } from 'lucide-react';
+import { ArrowLeft, ChevronDown, ClipboardCheck, Download, FileImage, FileSpreadsheet, FileText, LayoutDashboard, X } from 'lucide-react';
 import { toPng } from 'html-to-image';
 import { jsPDF } from 'jspdf';
 import type { AnalysisAction } from '../../lib/analysis-opportunity-actions';
@@ -17,7 +17,9 @@ import type { SingleSourceBAOverview } from '../../lib/single-source-ba-overview
 import { SingleSourceBAOverviewCard } from './SingleSourceBAOverviewCard';
 import type { FilteredDeepAnalysisScope } from './InvestigationDrillThroughPanel';
 import { formatValue } from '../../lib/display-formatter';
-import { createSingleSourceDeepAnalysisWorkbookPlan, saveExcelAnalysisWorkbook } from '../../lib/analysis-workbook';
+import { createCleanDataHandoffFromCanonicalBoundary } from '../../lib/clean-data-handoff';
+import { saveExcelPivotWorkbook, type ExcelPivotExportModeV1, type ExcelPivotExportProgressV1 } from '../../lib/excel-pivot-export';
+import type { CanonicalSourceBoundaryV1 } from '../../lib/understanding-core/canonical-source-boundary';
 import type { DecisionVisualizationPlanV1 } from '../../lib/decision-visualization-plan';
 
 export interface InvestigationDeepAnalysisProps {
@@ -27,6 +29,8 @@ export interface InvestigationDeepAnalysisProps {
   singleSourceBAOverview?: SingleSourceBAOverview | null;
   chartModel: ChartPreviewModel | null;
   decisionVisualizationPlan?: DecisionVisualizationPlanV1 | null;
+  canonicalSourceBoundary?: CanonicalSourceBoundaryV1 | null;
+  sourceName?: string;
   filteredScope?: FilteredDeepAnalysisScope | null;
   onClose: () => void;
   onCreateDashboard?: () => void;
@@ -34,11 +38,13 @@ export interface InvestigationDeepAnalysisProps {
   preferences: DisplayPreferences;
 }
 
-export const InvestigationDeepAnalysis: React.FC<InvestigationDeepAnalysisProps> = ({ action, brief, businessFusionOverview, singleSourceBAOverview, chartModel, decisionVisualizationPlan = null, filteredScope, onClose, onCreateDashboard, canCreateDashboard = false, preferences }) => {
+export const InvestigationDeepAnalysis: React.FC<InvestigationDeepAnalysisProps> = ({ action, brief, businessFusionOverview, singleSourceBAOverview, chartModel, decisionVisualizationPlan = null, canonicalSourceBoundary = null, sourceName, filteredScope, onClose, onCreateDashboard, canCreateDashboard = false, preferences }) => {
   const { t, localize } = useUiLanguage();
   const exportRef = useRef<HTMLDivElement>(null);
   const [exportState, setExportState] = useState<'idle' | 'image' | 'pdf' | 'excel'>('idle');
   const [exportError, setExportError] = useState('');
+  const [pivotMenuOpen, setPivotMenuOpen] = useState(false);
+  const [pivotProgress, setPivotProgress] = useState<ExcelPivotExportProgressV1 | null>(null);
   const fileStem = (localize(action.opportunityName) || 'LightBI-BA').replace(/[\\/:*?"<>|]+/g, '-').slice(0, 80);
 
   const renderAnalysisImage = async (): Promise<string> => {
@@ -73,41 +79,35 @@ export const InvestigationDeepAnalysis: React.FC<InvestigationDeepAnalysisProps>
     finally { setExportState('idle'); }
   };
 
-  const canExportExcel = Boolean((singleSourceBAOverview?.kpis.length ?? 0) > 0 || (chartModel?.rows.length ?? 0) > 0);
-  const exportExcel = async () => {
-    if (!canExportExcel) return;
-    setExportState('excel'); setExportError('');
+  const canExportExcel = Boolean(canonicalSourceBoundary);
+  const canExportSelection = Boolean(canonicalSourceBoundary && filteredScope?.rows.length);
+  const pivotProgressLabel: Record<ExcelPivotExportProgressV1, string> = {
+    preparing_data: t('Preparing cleaned data'),
+    creating_table: t('Creating Excel table'),
+    creating_pivot: t('Creating PivotTable'),
+    finalizing: t('Finalizing workbook'),
+  };
+  const exportExcelPivot = async (mode: ExcelPivotExportModeV1) => {
+    if (!canonicalSourceBoundary || (mode === 'current_selection' && !filteredScope?.rows.length)) return;
+    setPivotMenuOpen(false); setExportState('excel'); setExportError(''); setPivotProgress('preparing_data');
     try {
-      const unique = (values: Array<string | null | undefined>) => [...new Set(values.filter((value): value is string => Boolean(value?.trim())))];
-      const plan = createSingleSourceDeepAnalysisWorkbookPlan({
+      const cleanData = await createCleanDataHandoffFromCanonicalBoundary(canonicalSourceBoundary, sourceName || canonicalSourceBoundary.datasetId);
+      await saveExcelPivotWorkbook({
+        mode,
         title: localize(action.opportunityName) || chartModel?.title || action.id,
-        perspectiveId: decisionVisualizationPlan?.perspectiveId ?? action.id,
-        resultId: chartModel?.sourceResultId ?? action.id,
-        chartRows: chartModel?.rows ?? [],
-        kpis: singleSourceBAOverview?.kpis.map(kpi => ({ id: kpi.id, value: kpi.value })) ?? [],
-        evidence: filteredScope ? {
-          rows: filteredScope.rows,
-          sourceResultRowCount: filteredScope.sourceResultRowCount,
-          label: `${filteredScope.point.dimensionField} = ${filteredScope.point.label}`,
-          truncated: filteredScope.isTruncated,
-        } : null,
-        findings: unique([
-          ...(singleSourceBAOverview?.findings ?? []),
-          ...(brief?.insights.map(insight => insight.statement) ?? []),
-        ]),
-        recommendedActions: unique([
-          ...(singleSourceBAOverview?.recommendedActions ?? []),
-          ...(brief?.decisionSuggestions.map(item => item.action) ?? []),
-        ]),
-        caveats: unique([
-          ...(singleSourceBAOverview?.limitations ?? []),
-          ...(brief?.caveats ?? []),
-        ]),
+        action,
+        cleanData,
         decisionVisualizationPlan,
+        selectedRows: mode === 'current_selection' ? filteredScope?.rows ?? [] : null,
+        appliedFilters: mode === 'current_selection' ? (filteredScope?.filters.map(filter => ({
+          column: filter.column,
+          operator: filter.operator === 'contains' ? 'contains' : filter.operator === 'not_equals' ? '!=' : '=',
+          value: filter.value,
+        })) ?? []) : [],
+        onProgress: setPivotProgress,
       });
-      await saveExcelAnalysisWorkbook(plan);
-    } catch (cause) { setExportError(cause instanceof Error ? cause.message : t('Could not export the Excel analysis workbook.')); }
-    finally { setExportState('idle'); }
+    } catch (cause) { setExportError(cause instanceof Error ? cause.message : t('Could not export the Excel Pivot workbook.')); }
+    finally { setPivotProgress(null); setExportState('idle'); }
   };
   return (
   <div className="fixed inset-0 z-40 flex justify-end bg-black/15 backdrop-blur-[1px]" onClick={onClose}>
@@ -116,7 +116,13 @@ export const InvestigationDeepAnalysis: React.FC<InvestigationDeepAnalysisProps>
       <div className="border-b border-black/5 bg-white px-5 py-3">
         <div className="flex flex-wrap items-center justify-end gap-2">
           <span className="mr-auto inline-flex items-center gap-2 text-xs text-black/45"><Download className="h-3.5 w-3.5" />{t('Export this complete perspective analysis')}</span>
-          <button data-testid="deep-analysis-export-excel" type="button" onClick={() => void exportExcel()} disabled={exportState !== 'idle' || !canExportExcel} className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-3 py-2 text-xs font-semibold text-white shadow-sm hover:bg-emerald-700 disabled:opacity-40"><FileSpreadsheet className="h-4 w-4" />{exportState === 'excel' ? t('Exporting…') : t('Export Excel analysis')}</button>
+          <div className="relative">
+            <button data-testid="deep-analysis-export-excel" type="button" onClick={() => setPivotMenuOpen(open => !open)} disabled={exportState !== 'idle' || !canExportExcel} className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-3 py-2 text-xs font-semibold text-white shadow-sm hover:bg-emerald-700 disabled:opacity-40"><FileSpreadsheet className="h-4 w-4" />{exportState === 'excel' && pivotProgress ? pivotProgressLabel[pivotProgress] : t('Export to Excel Pivot')}<ChevronDown className="h-3.5 w-3.5" /></button>
+            {pivotMenuOpen && exportState === 'idle' && <div className="absolute right-0 top-full z-20 mt-2 w-72 overflow-hidden rounded-xl border border-black/10 bg-white p-1.5 text-left shadow-xl">
+              <button data-testid="deep-analysis-export-pivot-full" type="button" onClick={() => void exportExcelPivot('full')} className="w-full rounded-lg px-3 py-2.5 text-left hover:bg-emerald-50"><span className="block text-xs font-semibold text-slate-900">{t('Full cleaned data + Pivot')}</span><span className="mt-0.5 block text-[11px] leading-4 text-slate-500">{t('All cleaned canonical rows, Pivot preset to this perspective')}</span></button>
+              <button data-testid="deep-analysis-export-pivot-selection" type="button" onClick={() => void exportExcelPivot('current_selection')} disabled={!canExportSelection} className="w-full rounded-lg px-3 py-2.5 text-left hover:bg-violet-50 disabled:cursor-not-allowed disabled:opacity-40"><span className="block text-xs font-semibold text-slate-900">{t('Current selection + Pivot')}</span><span className="mt-0.5 block text-[11px] leading-4 text-slate-500">{canExportSelection ? t('Only the rows currently selected in drill-through') : t('Select chart rows first to enable this scope')}</span></button>
+            </div>}
+          </div>
           <button data-testid="deep-analysis-export-image" type="button" onClick={() => void exportImage()} disabled={exportState !== 'idle'} className="inline-flex items-center gap-2 rounded-lg border border-black/10 bg-white px-3 py-2 text-xs font-semibold text-black/65 shadow-sm hover:bg-black/[0.035] disabled:opacity-50"><FileImage className="h-4 w-4" />{exportState === 'image' ? t('Exporting…') : t('Export image')}</button>
           <button data-testid="deep-analysis-export-pdf" type="button" onClick={() => void exportPdf()} disabled={exportState !== 'idle'} className="inline-flex items-center gap-2 rounded-lg bg-violet-600 px-3 py-2 text-xs font-semibold text-white shadow-sm hover:bg-violet-700 disabled:opacity-50"><FileText className="h-4 w-4" />{exportState === 'pdf' ? t('Exporting…') : t('Export PDF')}</button>
         </div>
