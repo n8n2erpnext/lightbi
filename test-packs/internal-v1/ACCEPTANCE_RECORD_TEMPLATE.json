@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "lightbi.uat-result.v1",
+  "testPackVersion": "lightbi.uat.v1",
+  "generationId": "REPLACE_FROM_GENERATION_MANIFEST",
+  "parentGenerationId": "REPLACE_FROM_GENERATION_MANIFEST",
+  "coreCommit": "REPLACE_FULL_SHA",
+  "controlPlaneCommit": "REPLACE_FULL_SHA",
+  "buildTimestamp": "REPLACE_ISO_TIMESTAMP",
+  "tester": "REPLACE_TESTER",
+  "startedAt": "REPLACE_ISO_TIMESTAMP",
+  "completedAt": null,
+  "decision": "HOLD",
+  "scenarios": {},
+  "notes": []
+}

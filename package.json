@@ -9,7 +9,10 @@
     "test:public-boundary": "node scripts/verify-public-boundary.mjs",
     "test:release-contract": "node --test scripts/release-manifest.test.mjs",
     "validate:native-icons": "node scripts/validate-native-icons.mjs",
-    "build:native-beta": "node scripts/build-native-beta.mjs"
+    "build:native-beta": "node scripts/build-native-beta.mjs",
+    "test:generation-contract": "node --test scripts/generation-manifest.test.mjs",
+    "build:internal-generation-manifest": "node scripts/build-generation-manifest.mjs",
+    "test:internal-uat-pack": "node scripts/validate-internal-uat-pack.mjs"
   },
   "devDependencies": {
     "typescript": "^5.9.3"

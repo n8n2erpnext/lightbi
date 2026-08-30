@@ -25,6 +25,7 @@ import {
 import { useLightBIAccount } from "../../hooks/useLightBIAccount";
 import { useUpdateStore } from "../../stores/update-store";
 import { UpdateNotificationMenu } from "./UpdateNotificationMenu";
+import { buildGenerationManifest } from "../../lib/generation-manifest";
 
 export const AppLayout: React.FC = () => {
   const location = useLocation();
@@ -35,6 +36,7 @@ export const AppLayout: React.FC = () => {
   const { t } = useUiLanguage();
   const lightbiAccount = useLightBIAccount();
   const updater = useUpdateStore();
+  const generation = buildGenerationManifest();
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const accountMenuRef = useRef<HTMLDivElement>(null);
 
@@ -128,7 +130,12 @@ export const AppLayout: React.FC = () => {
                 />
               )}
             </div>
-            {isSidebarExpanded && <UpdateNotificationMenu />}
+            {isSidebarExpanded && (
+              <div className="flex items-center gap-2">
+                {generation.channel === "internal" && <span title={generation.generation_id} className="hidden rounded-full bg-violet-100 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-violet-700 md:inline">NEXT</span>}
+                <UpdateNotificationMenu />
+              </div>
+            )}
           </div>
 
           {/* Navigation */}

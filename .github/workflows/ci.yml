@@ -27,6 +27,11 @@ jobs:
         run: pnpm test:release-contract
       - name: Verify public/private source boundary
         run: pnpm test:public-boundary
+      - name: Verify NEXT generation and owner UAT contracts
+        run: |
+          pnpm test:generation-contract
+          pnpm test:internal-uat-pack
+          pnpm --dir apps/desktop exec vitest run src/lib/generation-manifest.test.ts src/lib/generation-diagnostics.test.ts
       - name: Build desktop web surface
         run: pnpm --filter @lightbi/desktop build
       - name: Run public governed regression gates

@@ -1,0 +1,327 @@
+{
+  "schemaVersion": "lightbi.uat-pack.v1",
+  "version": "lightbi.uat.v1",
+  "name": "LightBI NEXT Internal Acceptance",
+  "generationSchema": "lightbi.generation.v1",
+  "fixtures": [
+    {
+      "id": "sales_may",
+      "path": "sample-corpus/anchors/1.3.0/Sales_ERP_May_2026.xlsx",
+      "sha256": "e2cad91d14cf4ae19daa09dd9c980ea57b6b9cc20a518a9fa6818c3b18aef9ae"
+    },
+    {
+      "id": "sales_june",
+      "path": "sample-corpus/anchors/1.3.0/Sales_ERP_June_2026.xlsx",
+      "sha256": "a0a69a4d45531090ed5a829467d25ca89320d17792a72e4a91c55b95b9469e52"
+    },
+    {
+      "id": "accounting_may",
+      "path": "sample-corpus/anchors/1.3.0/Accounting_ERP_May_2026.csv",
+      "sha256": "3c59da1c10c67ab974dfd204b737402aff1c28d748665949942579fb5fb1a2fd"
+    },
+    {
+      "id": "logistics_may",
+      "path": "sample-corpus/anchors/1.3.0/Logistics_ERP_May_2026.csv",
+      "sha256": "e093e56ae6750a5ec3bbc98983f21409f373ee71d75b9cceb12c52b2d840ff72"
+    }
+  ],
+  "levels": {
+    "smoke": [
+      "SMOKE-01",
+      "SMOKE-02",
+      "SMOKE-03",
+      "SMOKE-04"
+    ],
+    "feature": [
+      "FEATURE-01",
+      "FEATURE-02",
+      "FEATURE-03",
+      "FEATURE-04",
+      "FEATURE-05",
+      "FEATURE-06"
+    ],
+    "release": [
+      "RELEASE-01",
+      "RELEASE-02",
+      "RELEASE-03",
+      "RELEASE-04"
+    ]
+  },
+  "scenarios": [
+    {
+      "id": "SMOKE-01",
+      "title": "Generation identity and isolation",
+      "fixtures": [],
+      "actions": [
+        "Open Settings > General.",
+        "Locate LightBI NEXT · Internal panel."
+      ],
+      "expected": [
+        "Channel is Internal/NEXT.",
+        "Generation ID and parent generation are visible.",
+        "Core and control-plane SHAs are pinned.",
+        "Isolation status is OK; production distribution/update scopes are not used."
+      ],
+      "failIf": [
+        "Panel is absent in an internal build.",
+        "Isolation shows BLOCKED.",
+        "Any production infrastructure scope is shown."
+      ]
+    },
+    {
+      "id": "SMOKE-02",
+      "title": "Single-file revenue understanding",
+      "fixtures": [
+        "sales_may"
+      ],
+      "actions": [
+        "Import Sales_ERP_May_2026.xlsx.",
+        "Run the available revenue perspective/analysis."
+      ],
+      "expected": [
+        "Verified source row count is 1500.",
+        "Revenue total is 22,973,896,244.",
+        "Revenue analysis is executable from governed source evidence."
+      ],
+      "failIf": [
+        "Revenue is calculated from preview/sample-only rows.",
+        "Revenue total differs from the golden answer."
+      ]
+    },
+    {
+      "id": "SMOKE-03",
+      "title": "Deep BA and drill evidence",
+      "fixtures": [
+        "sales_may"
+      ],
+      "actions": [
+        "Open the governed revenue result in Investigation/Deep BA.",
+        "Open a drill/evidence view for a selected result."
+      ],
+      "expected": [
+        "Deep BA remains tied to the selected governed metric.",
+        "Drill/evidence shows source-bound rows rather than unrelated chart data."
+      ],
+      "failIf": [
+        "A different metric is silently substituted.",
+        "Evidence cannot identify its source scope."
+      ]
+    },
+    {
+      "id": "SMOKE-04",
+      "title": "Excel Analysis/Pivot export",
+      "fixtures": [
+        "sales_may"
+      ],
+      "actions": [
+        "From a governed analysis, export Excel analysis/Pivot.",
+        "Open the workbook in Excel/LibreOffice."
+      ],
+      "expected": [
+        "Workbook contains Analysis Overview, Analysis Summary and Pivot View.",
+        "Pivot View references governed Analysis Summary values instead of recomputing raw multi-source data.",
+        "Source Lineage and Decision Notes are present when applicable."
+      ],
+      "failIf": [
+        "Workbook is corrupt.",
+        "Pivot View invents a different metric total."
+      ]
+    },
+    {
+      "id": "FEATURE-01",
+      "title": "May vs June period comparison",
+      "fixtures": [
+        "sales_may",
+        "sales_june"
+      ],
+      "actions": [
+        "Import both monthly Sales files as a governed period pair.",
+        "Run period revenue variance."
+      ],
+      "expected": [
+        "May revenue is 22,973,896,244.",
+        "June revenue is 20,637,539,164.",
+        "Revenue delta is -2,336,357,080."
+      ],
+      "failIf": [
+        "Files are blindly row-joined.",
+        "Period identity is lost or reversed."
+      ]
+    },
+    {
+      "id": "FEATURE-02",
+      "title": "Governed commerce multi-source",
+      "fixtures": [
+        "sales_may",
+        "accounting_may",
+        "logistics_may"
+      ],
+      "actions": [
+        "Import May Sales, Accounting and Logistics sources.",
+        "Review/accept only the governed relationship path exposed by LightBI.",
+        "Run the available cross-source reconciliation."
+      ],
+      "expected": [
+        "Sales revenue is 22,973,896,244.",
+        "Accounting net revenue is 22,973,896,244.",
+        "Revenue gap is 0.",
+        "Delivery fee is 147,925,000.",
+        "Gross profit is 3,075,721,244."
+      ],
+      "failIf": [
+        "LightBI performs an arbitrary join based only on similar column names.",
+        "Cross-source evidence loses role/source identity."
+      ]
+    },
+    {
+      "id": "FEATURE-03",
+      "title": "Power BI clean handoff",
+      "fixtures": [
+        "sales_may"
+      ],
+      "actions": [
+        "Prepare the canonical clean copy in Datasets.",
+        "Choose Save Power BI package as… and open the exported workbook."
+      ],
+      "expected": [
+        "Clean Data and Data Dictionary sheets are present.",
+        "The package uses the canonical clean source rather than chart preview rows."
+      ],
+      "failIf": [
+        "Original source is modified.",
+        "Export rows are only a sampled preview."
+      ]
+    },
+    {
+      "id": "FEATURE-04",
+      "title": "Excel analysis with clean-data attachment",
+      "fixtures": [
+        "sales_may"
+      ],
+      "actions": [
+        "Run a governed analysis and hand it to Datasets.",
+        "Prepare clean data, then choose Save Excel analysis / Pivot as…."
+      ],
+      "expected": [
+        "Workbook contains analysis sheets plus Clean Data, Data Dictionary, Transformation Audit and Clean Handoff Manifest.",
+        "Analysis and clean-data lineage refer to the same current source identity."
+      ],
+      "failIf": [
+        "Analysis belongs to a previous dataset/session.",
+        "Clean-data sheets are attached without canonical handoff context."
+      ]
+    },
+    {
+      "id": "FEATURE-05",
+      "title": "Workspace save, restart and restore",
+      "fixtures": [
+        "sales_may"
+      ],
+      "actions": [
+        "Run a governed analysis and save the workspace session.",
+        "Close LightBI completely.",
+        "Open LightBI and restore the saved session."
+      ],
+      "expected": [
+        "Source is reloaded/re-inspected.",
+        "AnalysisSessionIdentity metadata can be restored only after source identity revalidation.",
+        "Old execution authority and transient Excel export plan are not silently restored."
+      ],
+      "failIf": [
+        "A saved result becomes current authority without revalidation.",
+        "Export is immediately enabled from a stale transient plan."
+      ]
+    },
+    {
+      "id": "FEATURE-06",
+      "title": "Same filename, changed content rejection",
+      "fixtures": [
+        "sales_may",
+        "sales_june"
+      ],
+      "actions": [
+        "Save a session using the May Sales source.",
+        "Outside the repository, copy the June fixture and rename the copy to Sales_ERP_May_2026.xlsx.",
+        "Point the restored workspace at that renamed copy."
+      ],
+      "expected": [
+        "Fingerprint/generation revalidation detects that the content changed.",
+        "Saved analysis is history only; current export/decision authority is not restored."
+      ],
+      "failIf": [
+        "Filename equality is treated as source identity.",
+        "The May analysis is authorized against June content."
+      ],
+      "temporaryArtifactPolicy": "The renamed file is created only in the tester's temporary folder and is never committed."
+    },
+    {
+      "id": "RELEASE-01",
+      "title": "Internal generation manifest provenance",
+      "fixtures": [],
+      "actions": [
+        "Record the generation ID shown by the app.",
+        "Archive the generated lightbi-generation.json with the test result."
+      ],
+      "expected": [
+        "Manifest uses lightbi.generation.v1.",
+        "Core/source/control-plane commits are full immutable SHAs.",
+        "Parent generation, build timestamp and test-pack version are populated."
+      ],
+      "failIf": [
+        "A commit is unknown/short.",
+        "Parent generation is missing."
+      ]
+    },
+    {
+      "id": "RELEASE-02",
+      "title": "Internal infrastructure isolation",
+      "fixtures": [],
+      "actions": [
+        "Review NEXT diagnostics and deployment environment before acceptance."
+      ],
+      "expected": [
+        "Database, Redis, data, analytics, releases and integrations scopes are internal.",
+        "Distribution origin and update channel are internal and not production."
+      ],
+      "failIf": [
+        "Any NEXT writable state points at production."
+      ]
+    },
+    {
+      "id": "RELEASE-03",
+      "title": "Successor restart continuity",
+      "fixtures": [
+        "sales_may"
+      ],
+      "actions": [
+        "Run smoke analysis, save workspace, restart the entire internal app/runtime stack, and restore."
+      ],
+      "expected": [
+        "Workspace metadata survives.",
+        "Canonical source is revalidated.",
+        "No stale execution authority is revived."
+      ],
+      "failIf": [
+        "Restart loses durable workspace metadata unexpectedly.",
+        "Restart reuses stale analysis authority."
+      ]
+    },
+    {
+      "id": "RELEASE-04",
+      "title": "Promotion evidence bundle",
+      "fixtures": [],
+      "actions": [
+        "Complete all SMOKE scenarios and required FEATURE scenarios.",
+        "Attach generation manifest and pass/fail record."
+      ],
+      "expected": [
+        "Every accepted result names exactly one generation ID.",
+        "Promotion decision refers to immutable core/control-plane commits and the same UAT pack version."
+      ],
+      "failIf": [
+        "Acceptance mixes results from multiple unidentified builds.",
+        "A rebuilt artifact cannot be traced to the tested generation."
+      ]
+    }
+  ]
+}

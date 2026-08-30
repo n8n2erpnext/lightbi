@@ -1,3 +1,4 @@
+import { assertSafeGenerationDistributionTarget } from './generation-manifest';
 const INSTALLATION_KEY = 'lightbi-installation-id';
 const TIER_KEY = 'lightbi-license-tier';
 const TELEMETRY_KEY = 'lightbi-anonymous-pairing';
@@ -27,7 +28,7 @@ export async function pairLightBIInstallation(options?: {
   if (typeof localStorage === 'undefined' && !options?.storage) return null;
   const storage = options?.storage ?? localStorage;
   if (storage.getItem(TELEMETRY_KEY) === 'disabled') return currentLicenseTier(storage);
-  const endpoint = (options?.endpoint ?? import.meta.env.VITE_LIGHTBI_DISTRIBUTION_URL ?? DEFAULT_DISTRIBUTION_URL).replace(/\/$/, '');
+  const endpoint = lightBIDistributionEndpoint(options?.endpoint);
   const fetcher = options?.fetcher ?? fetch;
   const installationId = getOrCreateInstallationId(storage);
   try {
@@ -39,7 +40,7 @@ export async function pairLightBIInstallation(options?: {
         appVersion: options?.version ?? import.meta.env.VITE_LIGHTBI_VERSION ?? '0.9.2-beta.7',
         platform: options?.platform ?? navigator.platform ?? 'unknown',
         telemetryConsent: true,
-        environment: import.meta.env.MODE === 'test' ? 'test' : 'production',
+        environment: import.meta.env.MODE === 'test' ? 'test' : (import.meta.env.VITE_LIGHTBI_CHANNEL === 'internal' ? 'internal' : 'production'),
       }),
     });
     if (!response.ok) return null;
@@ -67,7 +68,7 @@ export async function activateLightBILicense(licenseKey: string, options?: {
 }): Promise<'pro' | null> {
   if (!licenseKey.trim()) return null;
   const storage = options?.storage ?? localStorage;
-  const endpoint = (options?.endpoint ?? import.meta.env.VITE_LIGHTBI_DISTRIBUTION_URL ?? DEFAULT_DISTRIBUTION_URL).replace(/\/$/, '');
+  const endpoint = lightBIDistributionEndpoint(options?.endpoint);
   try {
     const response = await (options?.fetcher ?? fetch)(`${endpoint}/api/license/activate`, {
       method: 'POST',
@@ -91,5 +92,7 @@ export function setCurrentLicenseTier(tier: 'basic' | 'pro', storage: Pick<Stora
 }
 
 export function lightBIDistributionEndpoint(override?: string): string {
-  return (override ?? import.meta.env.VITE_LIGHTBI_DISTRIBUTION_URL ?? DEFAULT_DISTRIBUTION_URL).replace(/\/$/, '');
+  return assertSafeGenerationDistributionTarget(
+    override ?? import.meta.env.VITE_LIGHTBI_DISTRIBUTION_URL ?? DEFAULT_DISTRIBUTION_URL,
+  );
 }

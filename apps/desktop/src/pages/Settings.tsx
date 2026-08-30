@@ -13,6 +13,7 @@ import {
 } from '../lib/distribution-pairing';
 import { useLightBIAccount } from '../hooks/useLightBIAccount';
 import { UpdateSettingsPanel } from '../components/settings/UpdateSettingsPanel';
+import { InternalGenerationPanel } from '../components/settings/InternalGenerationPanel';
 
 const AccountAccess: React.FC<{ account: ReturnType<typeof useLightBIAccount> }> = ({ account }) => {
   const [mode, setMode] = useState<'login' | 'register'>('login');
@@ -101,6 +102,7 @@ export const Settings: React.FC = () => {
           {lightbiAccount.error && <div className="mt-3 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{lightbiAccount.error}</div>}
         </div>}
         {settingsSection === 'general' && <div className="p-6">
+          <InternalGenerationPanel />
           <h2 className="mb-4 text-lg font-medium text-slate-900">{t('Application')}</h2>
           <div className="grid gap-3 md:grid-cols-2">
             <div className="flex items-start gap-3 rounded-lg border border-slate-200 p-4">
