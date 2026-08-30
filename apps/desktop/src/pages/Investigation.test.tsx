@@ -11,6 +11,7 @@ import type { InvestigationSession } from '../lib/investigation-session';
 import type { ResultValidationResult } from '../lib/result-validator-contract';
 import type { RuntimePlanPreview } from '../lib/runtime-planner-preview';
 import type { RuntimeDatasetSource, RuntimeSourceBindingV1 } from '../lib/runtime-dataset-source';
+import type { DrillThroughPoint } from '../lib/drill-through-export';
 import type { CanonicalInvestigationHandoffV1 } from '../lib/understanding-core/canonical-consumer-boundary';
 import type { CanonicalSourceBoundaryV1 } from '../lib/understanding-core/canonical-source-boundary';
 import type {
@@ -37,8 +38,18 @@ vi.mock('../lib/understanding-core/governed-local-duckdb-boundary', () => ({
   createGovernedLocalDuckDBBoundary: vi.fn(() => ({ execute: vi.fn() })),
 }));
 vi.mock('../components/analysis/ChartPreviewRenderer', () => ({
-  ChartPreviewRenderer: () => <div data-testid="canonical-chart-renderer">Canonical chart</div>,
+  ChartPreviewRenderer: ({ onDrillThrough }: { onDrillThrough?: (point: DrillThroughPoint) => void }) => (
+    <button
+      type="button"
+      data-testid="canonical-chart-renderer"
+      onClick={() => onDrillThrough?.({ dimensionField: 'item.product', sourceDimensionField: 'Product', value: 'A', label: 'A', measureField: 'sales_revenue', measureValue: 10 })}
+    >Canonical chart</button>
+  ),
 }));
+vi.mock('../lib/drill-through-export', async () => {
+  const actual = await vi.importActual<typeof import('../lib/drill-through-export')>('../lib/drill-through-export');
+  return { ...actual, executeDrillThrough: vi.fn() };
+});
 vi.mock('../lib/result-validator-contract', () => ({
   validatePreviewAgainstIntent: vi.fn(),
 }));
@@ -47,6 +58,7 @@ import { getCurrentInvestigationSession } from '../lib/investigation-session';
 import { validatePreviewAgainstIntent } from '../lib/result-validator-contract';
 import { executeGovernedMetricRequest } from '../lib/understanding-core/governed-metric-executor';
 import { saveWorkspaceSession } from '../lib/workspace-session-api';
+import { executeDrillThrough } from '../lib/drill-through-export';
 
 const restriction: GovernedExecutionRestrictionV1 = {
   code: 'DECISION_USE_PROHIBITED',
@@ -318,6 +330,7 @@ const mockedSession = vi.mocked(getCurrentInvestigationSession);
 const mockedExecute = vi.mocked(executeGovernedMetricRequest);
 const mockedValidate = vi.mocked(validatePreviewAgainstIntent);
 const mockedSaveWorkspaceSession = vi.mocked(saveWorkspaceSession);
+const mockedDrillThrough = vi.mocked(executeDrillThrough);
 
 describe('Investigation canonical consumer boundary', () => {
   beforeEach(() => {
@@ -325,6 +338,12 @@ describe('Investigation canonical consumer boundary', () => {
     mockedSession.mockReturnValue(session());
     mockedExecute.mockResolvedValue(governedResult());
     mockedValidate.mockReturnValue(validation());
+    mockedDrillThrough.mockResolvedValue({
+      id: 'drill:test', sourceSqlPreviewId: 'sql:test', status: 'executed',
+      columns: ['Product', 'Revenue'], rows: [{ Product: 'A', Revenue: 10 }], rowCount: 1, maxRows: 50_000,
+      warnings: [], blockedReasons: [], source: 'governed_duckdb_execution',
+      point: { dimensionField: 'item.product', sourceDimensionField: 'Product', value: 'A', label: 'A', measureField: 'sales_revenue', measureValue: 10 },
+    });
   });
 
   afterEach(cleanup);
@@ -494,6 +513,24 @@ describe('Investigation canonical consumer boundary', () => {
     expect(current.canonicalExecutionResult?.restrictions).toEqual([restriction]);
     expect(current.canonicalExecutionResult?.evidence).toEqual([evidence]);
     expect(current.canonicalExecutionResult?.decisionUseAuthorized).toBe(false);
+  });
+
+  it('keeps perspective Deep BA independent from selected-data Step 2', async () => {
+    render(<Investigation />);
+    await waitFor(() => expect(screen.getByTestId('canonical-chart-renderer')).toBeDefined());
+
+    fireEvent.click(screen.getByTestId('canonical-chart-renderer'));
+    await waitFor(() => expect(screen.getByTestId('investigation-drill-through')).toBeDefined());
+    await waitFor(() => expect((screen.getByTestId('analyze-selected-rows') as HTMLButtonElement).disabled).toBe(false));
+    fireEvent.click(screen.getByTestId('analyze-selected-rows'));
+    await waitFor(() => expect(screen.getByTestId('filtered-deep-analysis-scope')).toBeDefined());
+
+    fireEvent.click(screen.getByTestId('deep-analysis-back'));
+    expect(screen.queryByTestId('filtered-deep-analysis-scope')).toBeNull();
+
+    fireEvent.click(screen.getByTestId('perspective-deep-analysis-button'));
+    await waitFor(() => expect(screen.getByTestId('deep-analysis-export-surface')).toBeDefined());
+    expect(screen.queryByTestId('filtered-deep-analysis-scope')).toBeNull();
   });
 
   it('contains no backend, JavaScript sandbox, or mock preview invocation', () => {

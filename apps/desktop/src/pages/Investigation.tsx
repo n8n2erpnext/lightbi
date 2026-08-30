@@ -88,8 +88,10 @@ export const Investigation: React.FC = () => {
   const [drillError, setDrillError] = useState<string | null>(null);
   const [isExecuting, setIsExecuting] = useState(false);
   const [showAiContext, setShowAiContext] = useState(false);
-  const [showDeepAnalysis, setShowDeepAnalysis] = useState(false);
-  const [filteredDeepAnalysisScope, setFilteredDeepAnalysisScope] = useState<FilteredDeepAnalysisScope | null>(null);
+  const [deepAnalysisView, setDeepAnalysisView] = useState<
+    { kind: 'perspective' } | { kind: 'selected_data'; scope: FilteredDeepAnalysisScope } | null
+  >(null);
+  const filteredDeepAnalysisScope = deepAnalysisView?.kind === 'selected_data' ? deepAnalysisView.scope : null;
   const [savedChartNotice, setSavedChartNotice] = useState<string | null>(null);
   const [supportingCharts, setSupportingCharts] = useState<Array<{
     actionId: string;
@@ -420,7 +422,7 @@ export const Investigation: React.FC = () => {
     addChartToDashboard,
     persistWorkspaceSession,
     setSavedChartNotice,
-    setShowDeepAnalysis,
+    closeDeepAnalysis: () => setDeepAnalysisView(null),
     navigate,
     t,
   });
@@ -742,7 +744,8 @@ export const Investigation: React.FC = () => {
                 {t('View')}
               </button>
               <button
-                onClick={() => { void persistWorkspaceSession().finally(() => setShowDeepAnalysis(true)); }}
+                data-testid="perspective-deep-analysis-button"
+                onClick={() => { void persistWorkspaceSession().finally(() => setDeepAnalysisView({ kind: 'perspective' })); }}
                 disabled={isExecuting || previewResult?.status !== 'executed' || !canExecute}
                 className="inline-flex items-center gap-1.5 rounded-[10px] border border-violet-200 bg-violet-50 px-3 py-2 text-xs font-medium text-violet-700 shadow-sm transition-colors hover:bg-violet-100 disabled:cursor-not-allowed disabled:border-black/10 disabled:bg-white disabled:text-black/30"
                 title="Open a deeper BA explanation for this selected decision angle"
@@ -922,7 +925,7 @@ export const Investigation: React.FC = () => {
                <BasicBAAnswerCard
                  brief={baDecisionBrief}
                 canAnalyzeDeeper={previewResult?.status === 'executed' && canExecute}
-                 onAnalyzeDeeper={() => { setFilteredDeepAnalysisScope(null); void persistWorkspaceSession().finally(() => setShowDeepAnalysis(true)); }}
+                 onAnalyzeDeeper={() => { void persistWorkspaceSession().finally(() => setDeepAnalysisView({ kind: 'perspective' })); }}
                />
              )}
 
@@ -932,8 +935,7 @@ export const Investigation: React.FC = () => {
                drillResult={drillResult}
                isDrilling={isDrilling}
                onAnalyzeSelection={(scope) => {
-                 setFilteredDeepAnalysisScope(scope);
-                 setShowDeepAnalysis(true);
+                 setDeepAnalysisView({ kind: 'selected_data', scope });
                }}
                preferences={preferences}
                selectedDrillRows={selectedDrillRows}
@@ -964,7 +966,7 @@ export const Investigation: React.FC = () => {
         </div>
 
       </main>
-      {showDeepAnalysis && <InvestigationDeepAnalysis
+      {deepAnalysisView && <InvestigationDeepAnalysis
         action={analysisAction}
         brief={filteredDeepAnalysisScope ? null : baDecisionBrief}
         businessFusionOverview={businessFusionOverview}
@@ -972,7 +974,7 @@ export const Investigation: React.FC = () => {
         chartModel={chartModel}
         decisionVisualizationPlan={primaryDecisionVisualizationPlan}
         filteredScope={filteredDeepAnalysisScope}
-        onClose={() => setShowDeepAnalysis(false)}
+        onClose={() => setDeepAnalysisView(null)}
         onCreateDashboard={filteredDeepAnalysisScope ? undefined : () => { void createPerspectiveDashboard(); }}
         canCreateDashboard={!filteredDeepAnalysisScope && previewResult?.status === 'executed' && chartModel?.status === 'ready'}
         preferences={preferences}

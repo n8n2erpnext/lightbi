@@ -21,7 +21,7 @@ export interface InvestigationChartActionsContext {
   addChartToDashboard: (dashboardId: string, chartId: string) => void;
   persistWorkspaceSession: () => Promise<any>;
   setSavedChartNotice: (notice: string | null) => void;
-  setShowDeepAnalysis: (show: boolean) => void;
+  closeDeepAnalysis: () => void;
   navigate: (to: string) => void;
   t: (value: string) => string;
 }
@@ -31,7 +31,7 @@ export function createInvestigationChartActions(context: InvestigationChartActio
     session, analysisAction, chartModel, previewResult, primaryDecisionVisualizationPlan,
     singleSourceBAOverview, baDecisionBrief, governedResultTotal, supportingCharts,
     createChart, createDashboard, addChartToDashboard, persistWorkspaceSession,
-    setSavedChartNotice, setShowDeepAnalysis, navigate, t,
+    setSavedChartNotice, closeDeepAnalysis, navigate, t,
   } = context;
 const persistChartModel = (model: ChartPreviewModel, name: string, source: string, decisionPlan: DecisionVisualizationPlanV1 | null = null) => {
   const chartType = model.chartType === 'line'
@@ -176,7 +176,7 @@ const createPerspectiveDashboard = async () => {
     const supportingChartId = persistChartModel(item.chartModel, item.label, 'perspective_dashboard_supporting');
     addChartToDashboard(dashboardId, supportingChartId);
   });
-  setShowDeepAnalysis(false);
+  closeDeepAnalysis();
   navigate(`/dashboards/${dashboardId}`);
 };
 
