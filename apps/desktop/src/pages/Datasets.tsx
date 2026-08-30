@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { CheckCircle2, Database, Download, FileSpreadsheet, ShieldCheck, Sparkles } from 'lucide-react';
 import { createCleanDataHandoff, savePowerBiWorkbook, type CleanDataHandoffResultV1 } from '../lib/clean-data-handoff';
+import { saveExcelAnalysisWorkbook } from '../lib/analysis-workbook';
+import { useAnalysisExportStore } from '../stores/analysis-export-store';
 import { useAdvancedSourceStore } from '../stores/advanced-source-store';
 import { useDisplayPreferences } from '../stores/display-preferences-store';
 import { useUiLanguage } from '../lib/ui-language';
@@ -9,6 +11,7 @@ export const Datasets: React.FC = () => {
   const { preferences } = useDisplayPreferences();
   const { t } = useUiLanguage();
   const sources = useAdvancedSourceStore(state => state.sources);
+  const analysisPlan = useAnalysisExportStore(state => state.plan);
   const [sourceId, setSourceId] = useState(sources[0]?.id ?? '');
   const source = sources.find(item => item.id === sourceId) ?? sources[0];
   const [tableId, setTableId] = useState(source?.tables[0]?.id ?? '');
@@ -17,6 +20,7 @@ export const Datasets: React.FC = () => {
   const [isBuilding, setIsBuilding] = useState(false);
   const [error, setError] = useState('');
   const [saveNotice, setSaveNotice] = useState('');
+  const [analysisSaveNotice, setAnalysisSaveNotice] = useState('');
 
   useEffect(() => {
     if (!source) return;
@@ -51,6 +55,19 @@ export const Datasets: React.FC = () => {
         : t(`Saved automatically to ${saved.locationLabel}.`));
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : t('Could not save the Power BI package.'));
+    }
+  };
+
+  const saveAnalysisPackage = async () => {
+    if (!result || !analysisPlan) return;
+    setError(''); setAnalysisSaveNotice('');
+    try {
+      const saved = await saveExcelAnalysisWorkbook(analysisPlan, { cleanData: result });
+      setAnalysisSaveNotice(saved.usedSaveAs
+        ? t(`Saved Excel analysis as ${saved.locationLabel}.`)
+        : t(`Saved Excel analysis automatically to ${saved.locationLabel}.`));
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : t('Could not save the Excel analysis workbook.'));
     }
   };
 
@@ -110,9 +127,13 @@ export const Datasets: React.FC = () => {
               <div className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-emerald-700"><CheckCircle2 className="h-5 w-5" />{t('Clean handoff ready')}</div>
             <h2 className="mt-2 text-2xl font-semibold text-gray-950">{result.artifact.output.rowCount.toLocaleString(preferences.locale)} {t('rows prepared without changing the source')}</h2>
             </div>
-            <button data-testid="download-powerbi-package" onClick={() => void savePackage()} className="rounded-xl bg-emerald-600 px-5 py-3 font-semibold text-white hover:bg-emerald-700"><Download className="mr-2 inline h-4 w-4" />{t('Save Power BI package as…')}</button>
+            <div className="flex flex-wrap gap-2">
+              <button data-testid="download-powerbi-package" onClick={() => void savePackage()} className="rounded-xl bg-emerald-600 px-5 py-3 font-semibold text-white hover:bg-emerald-700"><Download className="mr-2 inline h-4 w-4" />{t('Save Power BI package as…')}</button>
+              {analysisPlan && <button data-testid="download-excel-analysis-package" onClick={() => void saveAnalysisPackage()} className="rounded-xl bg-blue-600 px-5 py-3 font-semibold text-white hover:bg-blue-700"><FileSpreadsheet className="mr-2 inline h-4 w-4" />{t('Save Excel analysis / Pivot as…')}</button>}
+            </div>
           </div>
           {saveNotice && <div role="status" data-testid="clean-handoff-save-notice" className="rounded-xl border border-emerald-200 bg-white p-4 text-sm font-medium text-emerald-800">{saveNotice}</div>}
+          {analysisSaveNotice && <div role="status" data-testid="analysis-workbook-save-notice" className="rounded-xl border border-blue-200 bg-white p-4 text-sm font-medium text-blue-800">{analysisSaveNotice}</div>}
 
           <div className="grid gap-4 md:grid-cols-4">
               <div className="rounded-2xl bg-white p-4"><div className="text-xs uppercase text-gray-400">{t('Clean rows')}</div><div className="mt-1 text-2xl font-semibold">{result.artifact.output.rowCount.toLocaleString(preferences.locale)}</div></div>
@@ -121,11 +142,16 @@ export const Datasets: React.FC = () => {
             <div className="rounded-2xl bg-white p-4"><div className="text-xs uppercase text-gray-400">{t('Source state')}</div><div className="mt-1 text-lg font-semibold text-emerald-700">{t('Preserved')}</div></div>
           </div>
 
-          <div className="grid gap-4 lg:grid-cols-2">
+          <div className={`grid gap-4 ${analysisPlan ? 'lg:grid-cols-3' : 'lg:grid-cols-2'}`}>
             <div className="rounded-2xl border border-gray-200 bg-white p-5">
               <h3 className="font-semibold"><FileSpreadsheet className="mr-2 inline h-5 w-5 text-blue-600" />{t('Power BI workbook contents')}</h3>
               <ul className="mt-3 space-y-2 text-sm text-gray-600"><li>• Clean Data</li><li>• Data Dictionary</li><li>• Transformation Audit</li><li>• Handoff Manifest</li></ul>
             </div>
+            {analysisPlan && <div data-testid="excel-analysis-context" className="rounded-2xl border border-blue-200 bg-blue-50/40 p-5">
+              <h3 className="font-semibold text-blue-950"><FileSpreadsheet className="mr-2 inline h-5 w-5 text-blue-600" />{t('Excel Analysis / Pivot workbook')}</h3>
+              <p className="mt-2 text-sm text-blue-900/70">{analysisPlan.title} · {analysisPlan.perspectiveId}</p>
+              <ul className="mt-3 space-y-2 text-sm text-blue-900/80"><li>• Pivot View (formula-driven from governed summary)</li><li>• Analysis Summary + source-bound evidence</li><li>• Clean Data + Data Dictionary</li><li>• Transformation Audit + Decision Notes</li></ul>
+            </div>}
             <div className="rounded-2xl border border-gray-200 bg-white p-5">
               <h3 className="font-semibold">{t('Inferred grain and keys')}</h3>
               <dl className="mt-3 grid grid-cols-2 gap-3 text-sm"><dt className="text-gray-500">{t('Row form')}</dt><dd>{result.artifact.grain.structuralForm}</dd><dt className="text-gray-500">{t('Time basis')}</dt><dd>{result.artifact.grain.temporalMode}</dd><dt className="text-gray-500">{t('Candidate keys')}</dt><dd>{result.artifact.candidateKeys.join(', ') || t('Not confirmed')}</dd></dl>

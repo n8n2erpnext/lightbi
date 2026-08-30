@@ -3,6 +3,7 @@ import React from 'react';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { PerspectiveCollectionResultCard } from './PerspectiveCollectionResultCard';
+import { useAnalysisExportStore } from '../../stores/analysis-export-store';
 
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual<typeof import('react-router-dom')>('react-router-dom');
@@ -15,7 +16,7 @@ vi.mock('echarts-for-react', () => ({
   ),
 }));
 
-afterEach(cleanup);
+afterEach(() => { cleanup(); useAnalysisExportStore.getState().clearPlan(); });
 
 describe('PerspectiveCollectionResultCard selected-data analysis', () => {
   it('opens source-bound evidence and reuses Deep BA for the selected multi-file chart point', () => {
@@ -89,5 +90,10 @@ describe('PerspectiveCollectionResultCard selected-data analysis', () => {
     expect(screen.getByTestId('collection-deep-export-pdf')).toBeTruthy();
     expect(screen.getByTestId('collection-create-dashboard')).toBeTruthy();
     expect(screen.getByRole('button', { name: /Clean and export sources/i })).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: /Clean and export sources/i }));
+    const exportPlan = useAnalysisExportStore.getState().plan;
+    expect(exportPlan?.perspectiveId).toBe('executive_overview');
+    expect(exportPlan?.combinationPolicy).toBe('single_source');
+    expect(exportPlan?.tables.some(table => table.kind === 'evidence')).toBe(true);
   });
 });

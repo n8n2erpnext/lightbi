@@ -12,7 +12,8 @@ import { BusinessComparisonBriefCard } from "./BusinessComparisonBriefCard";
 import { SingleSourceBAOverviewCard } from "../investigation/SingleSourceBAOverviewCard";
 import { useDisplayPreferences } from "../../stores/display-preferences-store";
 import { formatValue } from "../../lib/display-formatter";
-import { createAnalysisWorkbookPlan, saveExcelAnalysisWorkbook } from "../../lib/analysis-workbook";
+import { createAnalysisWorkbookPlan, saveExcelAnalysisWorkbook, type AnalysisWorkbookPlanV1 } from "../../lib/analysis-workbook";
+import { useAnalysisExportStore } from "../../stores/analysis-export-store";
 import { useUiLanguage } from "../../lib/ui-language";
 
 type Row = Record<string, string | number>;
@@ -70,6 +71,7 @@ export const PerspectiveCollectionResultCard: React.FC<{
   const navigate = useNavigate();
   const createDashboard = useAppRuntime(state => state.createDashboard);
   const createChart = useAppRuntime(state => state.createChart);
+  const setAnalysisExportPlan = useAnalysisExportStore(state => state.setPlan);
   const addChartToDashboard = useAppRuntime(state => state.addChartToDashboard);
   const preferences = useDisplayPreferences((state) => state.preferences);
   const { t } = useUiLanguage();
@@ -204,32 +206,38 @@ export const PerspectiveCollectionResultCard: React.FC<{
     finally { setExportState("idle"); }
   };
 
+  const buildExcelAnalysisPlan = (): AnalysisWorkbookPlanV1 => {
+    const scopedEvidence = chartSelection ? selectedEvidence : evidenceSources;
+    return createAnalysisWorkbookPlan({
+      title: displayPerspectiveLabel,
+      perspectiveId,
+      sourceCount,
+      summaryRows: rows,
+      selectedScope: chartSelection ? { ...chartSelection } : null,
+      evidenceSources: scopedEvidence.map(source => ({
+        sourceName: source.sourceName, role: source.role, period: source.period,
+        sourceRowCount: source.sourceRowCount, rows: source.rows,
+      })),
+      findings: deepDiveBrief?.narrativeSections.flatMap(section => [section.summary, ...section.bullets]) ?? [],
+      recommendedActions: deepDiveBrief?.reasonCodes.map(reason => reason.statement) ?? [],
+      caveats: deepDiveBrief?.caveats ?? [],
+      notes: [
+        t('Analysis summary rows are governed LightBI metric results.'),
+        t('Source evidence is kept in separate sheets; LightBI does not blindly join unrelated raw rows.'),
+      ],
+    });
+  };
+
   const exportExcelAnalysis = async () => {
     setExportState("excel"); setExportError("");
-    try {
-      const scopedEvidence = chartSelection ? selectedEvidence : evidenceSources;
-      const plan = createAnalysisWorkbookPlan({
-        title: displayPerspectiveLabel,
-        perspectiveId,
-        sourceCount,
-        summaryRows: rows,
-        selectedScope: chartSelection ? { ...chartSelection } : null,
-        evidenceSources: scopedEvidence.map(source => ({
-          sourceName: source.sourceName, role: source.role, period: source.period,
-          sourceRowCount: source.sourceRowCount, rows: source.rows,
-        })),
-        findings: deepDiveBrief?.narrativeSections.flatMap(section => [section.summary, ...section.bullets]) ?? [],
-        recommendedActions: deepDiveBrief?.reasonCodes.map(reason => reason.statement) ?? [],
-        caveats: deepDiveBrief?.caveats ?? [],
-        notes: [
-          t('Analysis summary rows are governed LightBI metric results.'),
-          t('Source evidence is kept in separate sheets; LightBI does not blindly join unrelated raw rows.'),
-        ],
-      });
-      await saveExcelAnalysisWorkbook(plan);
-    } catch (cause) {
-      setExportError(cause instanceof Error ? cause.message : t("Could not export the Excel analysis workbook."));
-    } finally { setExportState("idle"); }
+    try { await saveExcelAnalysisWorkbook(buildExcelAnalysisPlan()); }
+    catch (cause) { setExportError(cause instanceof Error ? cause.message : t("Could not export the Excel analysis workbook.")); }
+    finally { setExportState("idle"); }
+  };
+
+  const openCleanExportWithAnalysis = () => {
+    setAnalysisExportPlan(buildExcelAnalysisPlan());
+    navigate('/datasets');
   };
 
   const createCollectionDashboard = () => {
@@ -414,7 +422,7 @@ export const PerspectiveCollectionResultCard: React.FC<{
       </div>
       <div className="flex flex-wrap items-center justify-end gap-2 border-t border-slate-100 bg-white px-5 py-3 md:px-6">
         <span className="mr-auto inline-flex items-center gap-2 text-xs text-slate-500"><Download className="h-4 w-4" />{t('Export this perspective analysis')}</span>
-        <button type="button" onClick={() => navigate('/datasets')} className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700"><Sparkles className="h-4 w-4" />{t('Clean and export sources')}</button>
+        <button type="button" onClick={openCleanExportWithAnalysis} className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700"><Sparkles className="h-4 w-4" />{t('Clean and export sources')}</button>
         <button data-testid="collection-export-excel-analysis" type="button" onClick={() => void exportExcelAnalysis()} disabled={exportState !== 'idle'} className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-3 py-2 text-xs font-semibold text-white disabled:opacity-50"><Download className="h-4 w-4" />{exportState === 'excel' ? t('Exporting…') : t('Export Excel analysis')}</button>
         {hasVisibleDeepAnalysis && <><button data-testid="collection-deep-export-image" type="button" onClick={() => void exportImage()} disabled={exportState !== 'idle'} className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 disabled:opacity-50"><FileImage className="h-4 w-4" />{exportState === 'image' ? t('Exporting…') : t('Export image')}</button>
         <button data-testid="collection-deep-export-pdf" type="button" onClick={() => void exportPdf()} disabled={exportState !== 'idle'} className="inline-flex items-center gap-2 rounded-lg bg-violet-600 px-3 py-2 text-xs font-semibold text-white disabled:opacity-50"><FileText className="h-4 w-4" />{exportState === 'pdf' ? t('Exporting…') : t('Export PDF')}</button></>}

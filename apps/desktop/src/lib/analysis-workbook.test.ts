@@ -24,9 +24,11 @@ describe('Excel Analysis Workbook', () => {
 
     const workbook = XLSX.read(createExcelAnalysisWorkbook(plan), { type: 'array' });
     expect(workbook.SheetNames).toEqual([
-      'Analysis Overview', 'Analysis Summary', 'Evidence sales 2026-05', 'Evidence accounting 2026-05', 'Source Lineage', 'Decision Notes',
+      'Analysis Overview', 'Analysis Summary', 'Pivot View', 'Evidence sales 2026-05', 'Evidence accounting 2026-05', 'Source Lineage', 'Decision Notes',
     ]);
     expect(XLSX.utils.sheet_to_json(workbook.Sheets['Analysis Summary'])).toEqual([{ reporting_period: '2026-05', gross_profit: 90 }]);
+    expect(workbook.Sheets['Pivot View']['B2']?.f).toBe("'Analysis Summary'!B2");
+    expect(XLSX.utils.sheet_to_json<Array<string | number>>(workbook.Sheets['Pivot View'], { header: 1 })[0]).toEqual(['Governed metric', '2026-05']);
     expect(XLSX.utils.sheet_to_json(workbook.Sheets['Evidence sales 2026-05'])).toHaveLength(2);
     expect(XLSX.utils.sheet_to_json(workbook.Sheets['Evidence accounting 2026-05'])).toHaveLength(2);
     const overview = XLSX.utils.sheet_to_json<Array<string | number>>(workbook.Sheets['Analysis Overview'], { header: 1 });
@@ -45,4 +47,36 @@ describe('Excel Analysis Workbook', () => {
     const overview = XLSX.utils.sheet_to_json<Array<string | number>>(workbook.Sheets['Analysis Overview'], { header: 1 });
     expect(overview).toContainEqual(['Raw multi-source join', 'Not applicable']);
   });
+  it('adds clean canonical data and lineage when a Datasets handoff is supplied', () => {
+    const plan = createAnalysisWorkbookPlan({
+      title: 'Sales analysis', perspectiveId: 'revenue', sourceCount: 1,
+      summaryRows: [{ reporting_period: '2026-06', sales_revenue: 250 }],
+      evidenceSources: [evidence[0]], createdAt: '2026-08-30T00:00:00.000Z',
+    });
+    const cleanData = {
+      artifact: {
+        schemaVersion: 'lightbi.clean-data-handoff.v1' as const, artifactId: 'clean:test', createdAt: '2026-08-30T00:00:00.000Z',
+        source: { sourceId: 'file:sales', sourceName: 'sales.xlsx', sourceFingerprint: 'abc', sourceRows: 2, sourceColumns: 2, sourcePreserved: true as const },
+        grain: { structuralForm: 'transactional_rows', identityBasis: 'order_id', temporalMode: 'single_period', aggregationForm: 'row_level', readiness: 'ready' },
+        lineage: [
+          { sourceColumn: 'Order ID', outputColumn: 'order_id', physicalType: 'string', semanticConcept: 'order_id', semanticState: 'resolved', nullable: false, qualityIssues: [], transformations: ['preserve_value' as const, 'canonical_name' as const] },
+          { sourceColumn: 'Revenue', outputColumn: 'sales_revenue', physicalType: 'number', semanticConcept: 'sales_revenue', semanticState: 'resolved', nullable: false, qualityIssues: [], transformations: ['preserve_value' as const, 'canonical_name' as const] },
+        ],
+        candidateKeys: ['order_id'], qualityCaveats: [],
+        auditTrail: [{ operation: 'canonical_name' as const, column: 'order_id', affectedValues: 2 }],
+        output: { rowCount: 2, columnCount: 2, powerBiReady: true as const, originalRowsMutated: false as const },
+      },
+      cleanRows: [{ order_id: 'A-1', sales_revenue: 100 }, { order_id: 'A-2', sales_revenue: 150 }],
+    };
+    const workbook = XLSX.read(createExcelAnalysisWorkbook(plan, { cleanData }), { type: 'array' });
+    expect(workbook.SheetNames).toContain('Pivot View');
+    expect(workbook.SheetNames).toContain('Clean Data');
+    expect(workbook.SheetNames).toContain('Data Dictionary');
+    expect(workbook.SheetNames).toContain('Transformation Audit');
+    expect(workbook.SheetNames).toContain('Clean Handoff Manifest');
+    expect(XLSX.utils.sheet_to_json(workbook.Sheets['Clean Data'])).toHaveLength(2);
+    const overview = XLSX.utils.sheet_to_json<Array<string | number>>(workbook.Sheets['Analysis Overview'], { header: 1 });
+    expect(overview).toContainEqual(['Clean canonical data attached', 'Yes']);
+  });
+
 });

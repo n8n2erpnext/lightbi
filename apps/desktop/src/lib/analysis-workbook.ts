@@ -1,4 +1,5 @@
 import * as XLSX from 'xlsx';
+import type { CleanDataHandoffResultV1 } from './clean-data-handoff';
 
 export const ANALYSIS_WORKBOOK_VERSION = 'lightbi.analysis-workbook.v1' as const;
 const EXCEL_MAX_DATA_ROWS = 1_048_575;
@@ -41,6 +42,10 @@ export type AnalysisWorkbookPlanV1 = {
   recommendedActions: string[];
   caveats: string[];
   notes: string[];
+};
+
+export type ExcelAnalysisWorkbookOptionsV1 = {
+  cleanData?: CleanDataHandoffResultV1 | null;
 };
 
 export type CreateAnalysisWorkbookPlanInput = {
@@ -173,7 +178,76 @@ function worksheetForRows(rows: Record<string, unknown>[], columns: string[]): X
   return worksheet;
 }
 
-export function createExcelAnalysisWorkbook(plan: AnalysisWorkbookPlanV1): ArrayBuffer {
+function excelColumn(index: number): string {
+  let value = index + 1;
+  let output = '';
+  while (value > 0) {
+    const remainder = (value - 1) % 26;
+    output = String.fromCharCode(65 + remainder) + output;
+    value = Math.floor((value - 1) / 26);
+  }
+  return output;
+}
+
+function pivotViewWorksheet(summary: AnalysisWorkbookTableV1, summarySheetName: string): XLSX.WorkSheet {
+  const dimensionColumn = summary.columns.includes('reporting_period') ? 'reporting_period' : summary.columns[0];
+  const metricColumns = summary.columns.filter(column => column !== dimensionColumn);
+  const dimensionIndex = dimensionColumn ? summary.columns.indexOf(dimensionColumn) : -1;
+  const headings = summary.rows.map((row, index) => dimensionColumn ? String(row[dimensionColumn] ?? `Row ${index + 1}`) : `Row ${index + 1}`);
+  const worksheet = XLSX.utils.aoa_to_sheet([
+    ['Governed metric', ...headings],
+    ...metricColumns.map(metric => [metric, ...summary.rows.map(() => null)]),
+  ]);
+  const escapedSummaryName = summarySheetName.replaceAll("'", "''");
+  metricColumns.forEach((metric, metricIndex) => {
+    const sourceColumnIndex = summary.columns.indexOf(metric);
+    summary.rows.forEach((_, rowIndex) => {
+      const targetCell = `${excelColumn(rowIndex + 1)}${metricIndex + 2}`;
+      const sourceCell = `${excelColumn(sourceColumnIndex)}${rowIndex + 2}`;
+      worksheet[targetCell] = { t: 'n', f: `'${escapedSummaryName}'!${sourceCell}` };
+    });
+  });
+  worksheet['!cols'] = [{ wch: 28 }, ...headings.map(heading => ({ wch: Math.min(22, Math.max(12, heading.length + 2)) }))];
+  worksheet['!autofilter'] = { ref: `A1:${excelColumn(Math.max(1, headings.length))}${Math.max(1, metricColumns.length + 1)}` };
+  if (dimensionIndex < 0 || metricColumns.length === 0 || summary.rows.length === 0) {
+    XLSX.utils.sheet_add_aoa(worksheet, [['No pivot-style view is available for this summary shape.']], { origin: 'A3' });
+  }
+  return worksheet;
+}
+
+function appendCleanDataSheets(workbook: XLSX.WorkBook, result: CleanDataHandoffResultV1, usedNames: Set<string>): void {
+  XLSX.utils.book_append_sheet(workbook, worksheetForRows(result.cleanRows, result.artifact.lineage.map(item => item.outputColumn)), safeSheetName('Clean Data', usedNames));
+  const dictionaryRows = result.artifact.lineage.map(item => ({
+    'Raw column': item.sourceColumn,
+    'Clean column': item.outputColumn,
+    'Physical type': item.physicalType,
+    'Canonical concept': item.semanticConcept ?? '',
+    'Semantic state': item.semanticState,
+    Nullable: item.nullable ? 'Yes' : 'No',
+    Transformations: item.transformations.join(', '),
+    'Quality issues': item.qualityIssues.join(', '),
+  }));
+  XLSX.utils.book_append_sheet(workbook, worksheetForRows(dictionaryRows, ['Raw column', 'Clean column', 'Physical type', 'Canonical concept', 'Semantic state', 'Nullable', 'Transformations', 'Quality issues']), safeSheetName('Data Dictionary', usedNames));
+  XLSX.utils.book_append_sheet(workbook, worksheetForRows(result.artifact.auditTrail, ['operation', 'column', 'affectedValues']), safeSheetName('Transformation Audit', usedNames));
+  const manifest = XLSX.utils.aoa_to_sheet([
+    ['LightBI Clean Data Handoff', result.artifact.schemaVersion],
+    ['Artifact ID', result.artifact.artifactId],
+    ['Source', result.artifact.source.sourceName],
+    ['Source fingerprint', result.artifact.source.sourceFingerprint ?? 'Unavailable'],
+    ['Source preserved', 'Yes'],
+    ['Rows', result.artifact.output.rowCount],
+    ['Columns', result.artifact.output.columnCount],
+    ['Grain', result.artifact.grain.structuralForm],
+    ['Identity basis', result.artifact.grain.identityBasis],
+    ['Temporal mode', result.artifact.grain.temporalMode],
+    ['Candidate keys', result.artifact.candidateKeys.join(', ')],
+    ['Quality caveats', result.artifact.qualityCaveats.join(', ')],
+  ]);
+  manifest['!cols'] = [{ wch: 28 }, { wch: 72 }];
+  XLSX.utils.book_append_sheet(workbook, manifest, safeSheetName('Clean Handoff Manifest', usedNames));
+}
+
+export function createExcelAnalysisWorkbook(plan: AnalysisWorkbookPlanV1, options: ExcelAnalysisWorkbookOptionsV1 = {}): ArrayBuffer {
   const workbook = XLSX.utils.book_new();
   const usedNames = new Set<string>();
   const overview = XLSX.utils.aoa_to_sheet([
@@ -188,11 +262,18 @@ export function createExcelAnalysisWorkbook(plan: AnalysisWorkbookPlanV1): Array
     ['Selected metric', plan.selectedScope?.metricId ?? 'All governed result metrics'],
     ['Raw multi-source join', plan.combinationPolicy === 'governed_metric_results_only' ? 'Prohibited' : 'Not applicable'],
     ['Evidence policy', 'Source-bound evidence remains in separate sheets'],
+    ['Clean canonical data attached', options.cleanData ? 'Yes' : 'No'],
   ]);
   overview['!cols'] = [{ wch: 28 }, { wch: 72 }];
   XLSX.utils.book_append_sheet(workbook, overview, safeSheetName('Analysis Overview', usedNames));
 
-  for (const table of plan.tables) {
+  const summaryTable = plan.tables.find(table => table.kind === 'summary');
+  if (summaryTable) {
+    const summaryName = safeSheetName(summaryTable.title, usedNames);
+    XLSX.utils.book_append_sheet(workbook, worksheetForRows(summaryTable.rows, summaryTable.columns), summaryName);
+    XLSX.utils.book_append_sheet(workbook, pivotViewWorksheet(summaryTable, summaryName), safeSheetName('Pivot View', usedNames));
+  }
+  for (const table of plan.tables.filter(table => table.kind !== 'summary')) {
     const worksheet = worksheetForRows(table.rows, table.columns);
     XLSX.utils.book_append_sheet(workbook, worksheet, safeSheetName(table.title, usedNames));
   }
@@ -213,6 +294,7 @@ export function createExcelAnalysisWorkbook(plan: AnalysisWorkbookPlanV1): Array
     ...plan.notes.map(message => ({ Type: 'Note', Message: message })),
   ];
   XLSX.utils.book_append_sheet(workbook, worksheetForRows(noteRows, ['Type', 'Message']), safeSheetName('Decision Notes', usedNames));
+  if (options.cleanData) appendCleanDataSheets(workbook, options.cleanData, usedNames);
 
   return XLSX.write(workbook, { type: 'array', bookType: 'xlsx', compression: true }) as ArrayBuffer;
 }
@@ -226,8 +308,8 @@ export interface AnalysisWorkbookSaveResult {
 type SaveFileHandle = { name: string; createWritable: () => Promise<{ write: (data: Blob) => Promise<void>; close: () => Promise<void> }> };
 type SavePickerWindow = Window & { showSaveFilePicker?: (options: Record<string, unknown>) => Promise<SaveFileHandle> };
 
-export async function saveExcelAnalysisWorkbook(plan: AnalysisWorkbookPlanV1): Promise<AnalysisWorkbookSaveResult> {
-  const buffer = createExcelAnalysisWorkbook(plan);
+export async function saveExcelAnalysisWorkbook(plan: AnalysisWorkbookPlanV1, options: ExcelAnalysisWorkbookOptionsV1 = {}): Promise<AnalysisWorkbookSaveResult> {
+  const buffer = createExcelAnalysisWorkbook(plan, options);
   const stem = plan.title.replace(/[^a-z0-9_-]+/gi, '_').replace(/^_+|_+$/g, '') || 'LightBI-analysis';
   const defaultName = `${stem}-LightBI-analysis.xlsx`;
   const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });

@@ -22,16 +22,17 @@ For multi-source analysis, only governed metric-result rows may appear in the co
 V1 writes:
 
 - `Analysis Overview` — workbook identity, perspective, selected scope and combination policy;
-- `Analysis Summary` — the governed metric-result table, suitable for normal Excel filtering/formulas and Pivot-style continuation;
+- `Analysis Summary` — the governed metric-result table;
+- `Pivot View` — a formula-driven cross-tab that references `Analysis Summary` cells and never recomputes business metrics;
 - one `Evidence …` sheet per source/role/period;
 - `Source Lineage` — source names, roles, periods and disclosed source row counts;
 - `Decision Notes` — findings, recommended actions, caveats and export notes.
 
-A later single-source/clean-data integration may append the existing `Clean Data`, `Data Dictionary`, `Transformation Audit`, and handoff metadata without changing the analysis authority model.
+When the user carries the analysis into `Datasets`, the transient analysis plan is combined with the existing clean-data handoff and appends `Clean Data`, `Data Dictionary`, `Transformation Audit`, and `Clean Handoff Manifest` without changing the analysis authority model. The handoff is in-memory only and is deliberately not persisted as business authority.
 
 ## Pivot policy
 
-V1 intentionally exports prebuilt analysis tables rather than manufacturing an independent Pivot engine. Native Excel PivotTable/PivotChart generation is additive if a future workbook runtime can generate it deterministically and preserve the same analysis identity, source lineage, restrictions and drill evidence.
+V1 intentionally exports governed summary tables plus a formula-driven `Pivot View` rather than manufacturing an independent Pivot engine. Native Excel PivotTable/PivotChart generation is additive if a future workbook runtime can generate it deterministically and preserve the same analysis identity, source lineage, restrictions and drill evidence.
 
 The current SheetJS path does not grant permission to fabricate a raw multi-source table merely because Excel can represent one.
 ## Safety and limits
