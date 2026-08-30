@@ -245,9 +245,9 @@
   },
   "nextGeneration": {
     "model": "successor_promotion_generation_rotation",
-    "status": "modularized_source_gates_pass_current_bootstrap_complete_runtime_rebuild_pending",
+    "status": "exact_core_web_cp_runtime_verified_worker_generation_blocked_before_owner_uat",
     "generationSchema": "lightbi.generation.v1",
-    "generationId": "g-2026-08-30-next-001",
+    "generationId": "g-2026-08-30-next-002",
     "parentGenerationId": "bootstrap-current-8d59d05f575373e6",
     "core": {
       "workspace": "/home/ubuntu/n8n2erpnext/LightBI-next-internal",
@@ -296,14 +296,21 @@
       "sourceModuleHardLimit": 1000,
       "focusedSemanticTestsPassed": 123,
       "backendTestsPassed": 20,
-      "serverRoutesPreserved": 38
+      "serverRoutesPreserved": 38,
+      "freshGenerationManifestVerified": true,
+      "freshDesktopBuildPassed": true,
+      "freshCoreBinaryBuilt": true,
+      "freshCoreHealthPassed": true,
+      "freshGatewayHealthPassed": true,
+      "freshControlPlaneDiagnosticsPassedExceptWorkerGeneration": true,
+      "freshWorkerGenerationMatched": false
     },
     "infrastructure": {
       "isolatedContractDefined": true,
       "internalDatabaseStarted": true,
       "internalRedisStarted": true,
       "internalControlPlaneStarted": true,
-      "internalWorkerStarted": true,
+      "internalWorkerStarted": false,
       "migrationsApplied": true,
       "productionMutated": false,
       "internalCoreApiStarted": true,
@@ -311,20 +318,45 @@
       "controlPlaneSchemaReportedCurrent": true,
       "controlPlanePendingMigrations": 0,
       "controlPlaneRuntimeCommit": "c251fb1ee981a529c33335d25d3ada4e6ea9d23f",
-      "coreRuntimeExactHeadVerified": false,
+      "coreRuntimeExactHeadVerified": true,
       "runtimeReconciliationBlocked": true,
       "fullIsolationRevalidated": false,
       "productionMutatedByLatestRevalidation": false,
-      "servedGenerationManifestPresent": false,
-      "internalWebArtifactExactGenerationVerified": false,
-      "runtimeBlocker": "served_generation_manifest_missing_after_latest_source_gate_build"
+      "servedGenerationManifestPresent": true,
+      "internalWebArtifactExactGenerationVerified": true,
+      "runtimeBlocker": "worker_generation_mismatch_predecessor_worker_remains_active_and_execution_safety_blocks_internal_worker_replacement",
+      "freshVerificationPorts": {
+        "coreApi": 5372,
+        "gateway": 5373,
+        "controlPlane": 5374
+      },
+      "predecessorInternalPortsStillActive": {
+        "coreApi": 5272,
+        "gateway": 5273,
+        "controlPlane": 5274
+      },
+      "freshGenerationId": "g-2026-08-30-next-002",
+      "generationManifestSha256": "57783e4c370271da5e5b0f16b00405504f56367b2b66a19a24c51fe71a365912",
+      "coreRuntimeBinarySha256": "0c9d37ae54b874e85ff3ad2ce792875a318e72c32146ad9e340383d5831d3d60",
+      "servedGenerationManifestIsJson": true,
+      "freshWorkerStarted": false,
+      "workerGenerationExpected": "g-2026-08-30-next-002",
+      "workerGenerationObserved": "g-2026-08-30-next-001",
+      "workerCommitObserved": "c251fb1ee981a529c33335d25d3ada4e6ea9d23f",
+      "workerGenerationMatch": false,
+      "toolSafetyBlockedPredecessorTermination": true,
+      "toolSafetyBlockedFreshWorkerLaunch": true,
+      "predecessorInternalWorkerStarted": true,
+      "predecessorWorkerGeneration": "g-2026-08-30-next-001",
+      "migrationStateMeaning": "shared_internal_schema_current_from_predecessor_internal_activation_no_fresh_next002_migration_applied",
+      "freshNext002MigrationApplied": false
     },
     "trust": {
       "phase2aHead": "fb8225c951fc27692e6b0e7554c3112ada08e49f",
       "freezeApproved": false,
       "trust1Blocked": true
     },
-    "generationIdAuthority": "proof_candidate_only",
+    "generationIdAuthority": "runtime_candidate_exact_except_worker",
     "historicalProofParentCandidate": "prod-v0.9.2-beta.7-28e2aae",
     "parentGenerationBootstrapRequired": false,
     "bootstrapCurrent": {
@@ -333,6 +365,11 @@
       "evidenceSha256": "8d59d05f575373e6ddf419fd7c82ca0fe61c49ddcc289889ee4fc9309e7150d1",
       "releaseManifestSha256": "486de2e6ced5ca9cd07653cb4c1e530d0cb2e0ac9195d932194590855d082a3e",
       "productionMutated": false
+    },
+    "ownerUat": {
+      "started": false,
+      "accepted": false,
+      "blocker": "worker_generation_mismatch"
     }
   }
 }

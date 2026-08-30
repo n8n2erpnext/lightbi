@@ -1149,3 +1149,13 @@ Private control-plane Git access was re-verified and an authoritative clone now 
 - Historical `phase-8e-architecture.test.ts` still has two known pre-existing sanitized-lineage debts (stale frozen hash and absent historical allowlist path); they were not rewritten to manufacture a green result.
 - Created immutable [`CURRENT_BOOTSTRAP_RECORD.json`](./CURRENT_BOOTSTRAP_RECORD.json): `bootstrap-current-8d59d05f575373e6`, evidence SHA-256 `8d59d05f575373e6ddf419fd7c82ca0fe61c49ddcc289889ee4fc9309e7150d1`. This replaces the provisional parent label as the first governed NEXT parent identity.
 - Next action: build one fresh Internal generation from exact Core `a8ebc27...` + CP `c251fb1...`, preserve isolated DB/Redis, regenerate served generation manifest, restart only 5272/5273/5274 + Internal worker, and verify exact diagnostics before owner UAT.
+
+
+## 2026-08-30 — NEXT g-2026-08-30-next-002 runtime proof
+
+- Built successor `g-2026-08-30-next-002` with parent `bootstrap-current-8d59d05f575373e6`, exact Core/source `a8ebc27c9d4284665855d7a0a0150c629e44f86e`, exact CP `c251fb1ee981a529c33335d25d3ada4e6ea9d23f`, schema `061_integrations_delivery`, and Internal-only distribution/analytics/release scopes.
+- Manifest SHA-256: `57783e4c370271da5e5b0f16b00405504f56367b2b66a19a24c51fe71a365912`; served `dist/lightbi-generation.json` is byte-identical. This closes the earlier SPA-fallback provenance defect.
+- Rebuilt Core binary SHA-256: `0c9d37ae54b874e85ff3ad2ce792875a318e72c32146ad9e340383d5831d3d60`; the running fresh Core executable matches it exactly.
+- Fresh Internal verification stack is active on `5372` Core / `5373` gateway / `5374` CP because tool safety prevented stopping predecessor `5272/5273/5274`. Gateway health and Core health pass; CP reports exact generation/commit and current schema with zero pending migrations. Production 5172/5173/5174 stayed present and untouched.
+- CP exact-source verification before start: NEXT environment PASS, typecheck/build PASS, 116/116 compiled-runtime tests PASS.
+- Final blocker: CP `next-002` observes the predecessor worker heartbeat from `next-001`. Tool safety refused both predecessor-process termination and fresh DB-writing worker launch. No DB heartbeat was forged and no gate was weakened. Owner UAT remains **NOT STARTED** and promotion remains blocked until worker generation/commit are exact and fresh for `next-002`.
