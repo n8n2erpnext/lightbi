@@ -371,3 +371,9 @@ The authoritative-ancestry private feature branch has advanced beyond the CP-5.1
 CP-4.3 (`83fd704`) adds the service layer for encrypted pending TOTP factors, code verification, atomic activation, recovery-code rotation, security-version bumping and security-event recording. Product TOTP enrollment routes remain disabled until MFA-aware login/step-up policy is enforced; Passkey verification remains disabled pending an audited WebAuthn implementation. The private gate reaches **85/85** compiled-runtime tests and documentation/status is pushed through `5d2fd3e`.
 
 These remain feature-branch candidates. Production 5174 and production data are unchanged; staging migrations remain unapplied. None of these checkpoints alter Phase 2A trust status or implement signer/attestation/private-key authority.
+
+## 21. MFA enforcement and TOTP enrollment candidate
+
+The authoritative-ancestry private feature branch now includes CP-4.4 at `28b637063c7b67a1e0c186b16df3365583ca5e0e` and CP-4.5 at `25fa53348bce84e7220bf530a820c228f43e3fc8`; private docs/status are pushed through `af80cd53708ac2709333b1242826454257cb86a6`. CP-4.4 makes active TOTP a real login/step-up requirement instead of a decorative account setting. Password, Google and native-device flows fail closed into a one-time MFA challenge and TOTP/recovery completion yields an MFA-level session. CP-4.5 opens TOTP enrollment only after schema/policy/runtime prerequisites and recent authentication; a protected account must step up before adding another factor. Confirmation rotates recovery codes and increments `security_version`, invalidating stale sessions.
+
+The full private gate passed **96/96** tests. Passkey/WebAuthn remains unavailable until an audited library/adapter is selected; no custom WebAuthn verifier is permitted. Production/staging runtime and databases remain unmodified.

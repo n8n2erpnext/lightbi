@@ -178,5 +178,26 @@
       "freezeApproved": false,
       "signerBlocked": true
     }
+  },
+  "implementationCandidates": {
+    "excelAnalysisWorkbook": {
+      "branch": "codex/excel-analysis-workbook-20260830",
+      "head": "999dc75bc1fbe873e9d5702db9fe655d131a1163",
+      "publicRegressionFiles": 11,
+      "publicRegressionTests": 38,
+      "nativePivotEmbedded": false,
+      "formulaPivotView": true,
+      "authority": "feature_branch_candidate"
+    },
+    "controlPlaneIdentitySecurity": {
+      "branch": "codex/control-plane-foundations-20260830",
+      "mfaLoginHead": "28b637063c7b67a1e0c186b16df3365583ca5e0e",
+      "totpEnrollmentHead": "25fa53348bce84e7220bf530a820c228f43e3fc8",
+      "docsHead": "af80cd53708ac2709333b1242826454257cb86a6",
+      "compiledRuntimeTests": 96,
+      "passkeyVerificationAvailable": false,
+      "productionMutated": false,
+      "authority": "private_feature_branch_candidate"
+    }
   }
 }

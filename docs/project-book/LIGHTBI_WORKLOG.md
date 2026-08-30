@@ -1099,3 +1099,10 @@ Private control-plane Git access was re-verified and an authoritative clone now 
 - Private CP-4.2 `a284598` binds security-ready sessions to account `security_version`; CP-3.2 `fc9d1d5` prohibits runtime database auto-migration outside the explicit migration CLI.
 - Private CP-4.3 `83fd704` adds encrypted TOTP/recovery service behavior but intentionally exposes no TOTP enrollment route until MFA login/step-up semantics are complete; Passkey remains deferred to audited WebAuthn.
 - Private documentation head `5d2fd3e`; full private CI-equivalent gate is 85/85. Production and staging remain unmodified. Phase 2A stays `fb8225c`, not frozen.
+
+## 2026-08-30 — MFA enforcement, TOTP enrollment and Excel CE capability closure
+
+- Private control-plane CP-4.4 pushed `28b6370`: active TOTP now causes password/Google/native primary login to require a one-time TOTP/recovery challenge; existing sessions can step up to `auth_level=mfa`. Private gate: 93/93.
+- CP-4.5 pushed `25fa533`: `/api/v1` TOTP enrollment/confirmation is gated by migration 040, enforced session/MFA policy, configured encryption/recovery secrets and recent authentication. Existing MFA accounts must step up before adding another factor. Full private gate: 96/96; private docs head `af80cd5`.
+- Public Excel branch pushed `999dc75`: governed workbook tables retain autofilters and now use bounded content-aware widths. Audit of installed SheetJS CE 0.20.3 found PivotTable/PivotCache/DrawingML chart write paths marked unsupported/TODO and README assigns PivotTables/graphs to Pro capabilities, so LightBI will not hand-edit OOXML. Formula-driven Pivot View remains v1; native Pivot/PivotChart is an additive future adapter. Public gate: 11 files / 38 tests.
+- Production remains untouched. Phase 2A remains `fb8225c`, not frozen; Passkey uses no custom verifier and Trust-1 remains blocked.
