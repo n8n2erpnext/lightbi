@@ -1,6 +1,7 @@
 import * as XLSX from 'xlsx';
 import { describe, expect, it } from 'vitest';
 import { createAnalysisWorkbookPlan, createExcelAnalysisWorkbook, createSingleSourceDeepAnalysisWorkbookPlan } from './analysis-workbook';
+import { createDecisionVisualizationPlan } from './decision-visualization-plan';
 
 const evidence = [
   { sourceName: 'sales-2026-05.xlsx', role: 'sales', period: '2026-05', sourceRowCount: 2, rows: [{ OrderID: 'A-1', Revenue: 100 }, { OrderID: 'A-2', Revenue: 120 }] },
@@ -9,9 +10,14 @@ const evidence = [
 
 describe('Excel Analysis Workbook', () => {
   it('packages governed metric results while keeping multi-source evidence separate', () => {
+    const decisionVisualizationPlan = createDecisionVisualizationPlan({
+      perspectiveId: 'profitability', sourceCount: 2, dimensionField: 'reporting_period',
+      rows: [{ reporting_period: '2026-05', gross_profit: 90 }],
+    });
     const plan = createAnalysisWorkbookPlan({
       title: 'Profitability', perspectiveId: 'profitability', sourceCount: 2,
       summaryRows: [{ reporting_period: '2026-05', gross_profit: 90 }],
+      decisionVisualizationPlan,
       evidenceSources: evidence,
       selectedScope: { period: '2026-05', metricId: 'gross_profit' },
       findings: ['Gross profit is positive.'], caveats: ['Correlation is not causation.'],
@@ -34,6 +40,8 @@ describe('Excel Analysis Workbook', () => {
     const overview = XLSX.utils.sheet_to_json<Array<string | number>>(workbook.Sheets['Analysis Overview'], { header: 1 });
     expect(overview).toContainEqual(['Combination policy', 'governed_metric_results_only']);
     expect(overview).toContainEqual(['Raw multi-source join', 'Prohibited']);
+    expect(overview).toContainEqual(['Decision plan version', 'lightbi.decision-visualization-plan.v1']);
+    expect(overview).toContainEqual(['Decision plan ID', decisionVisualizationPlan.planId]);
   });
 
   it('uses single-source policy without inventing a multi-source restriction', () => {

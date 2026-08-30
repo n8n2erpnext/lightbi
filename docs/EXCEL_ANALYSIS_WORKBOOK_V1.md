@@ -55,3 +55,8 @@ This keeps multi-source perspective analysis and single-source Deep BA on one ex
 `PerspectiveCollectionResultCard` exposes `Export Excel analysis` beside the existing analysis handoff actions. It packages the already-rendered governed summary and source-bound evidence through `analysis-workbook.ts`.
 
 The public CI regression set includes `analysis-workbook.test.ts` so future changes cannot silently remove the multi-source separation rule.
+## Shared decision-visualization plan
+
+Executed perspective results now produce `DecisionVisualizationPlanV1` (`lightbi.decision-visualization-plan.v1`) after governed execution. It is deliberately downstream from `PerspectiveAnalysisPlanV1`: the understanding plan says what may be analyzed, while the decision-visualization plan says how an already-governed result is presented.
+
+The plan carries the analysis/perspective identity, selected dimension/metric scope, source references, governed result rows, primary chart intent, and the invariant `rawMultiSourceJoinAllowed=false`. Dashboard creation and Excel workbook export consume this shared post-execution plan so they cannot silently choose incompatible result scopes or evidence policies. The dimension field is generic, so period comparison and single-source dimensions such as Store/Route/SKU can use the same contract.

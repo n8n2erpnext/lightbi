@@ -13,6 +13,7 @@ import { SingleSourceBAOverviewCard } from "../investigation/SingleSourceBAOverv
 import { useDisplayPreferences } from "../../stores/display-preferences-store";
 import { formatValue } from "../../lib/display-formatter";
 import { createAnalysisWorkbookPlan, saveExcelAnalysisWorkbook, type AnalysisWorkbookPlanV1 } from "../../lib/analysis-workbook";
+import { createDecisionVisualizationPlan, type DecisionVisualizationPlanV1 } from "../../lib/decision-visualization-plan";
 import { useAnalysisExportStore } from "../../stores/analysis-export-store";
 import { useUiLanguage } from "../../lib/ui-language";
 
@@ -21,6 +22,7 @@ type Row = Record<string, string | number>;
 export interface PerspectiveCollectionEvidenceSource {
   period: string;
   role: string;
+  sourceId?: string;
   sourceName: string;
   sourceRowCount: number;
   rows: Record<string, unknown>[];
@@ -91,7 +93,13 @@ export const PerspectiveCollectionResultCard: React.FC<{
   if (rows.length === 0) return null;
   const metricIds = [...new Set(rows.flatMap((row) =>
     Object.keys(row).filter((key) => key !== "reporting_period")))];
-  const hasPeriodComparison = rows.length >= 2;
+  const baseDecisionVisualizationPlan = createDecisionVisualizationPlan({
+    perspectiveId, rows, sourceCount, dimensionField: 'reporting_period',
+    sourceRefs: evidenceSources.map(source => ({
+      sourceId: source.sourceId ?? null, sourceName: source.sourceName, role: source.role, period: source.period, sourceRowCount: source.sourceRowCount,
+    })),
+  });
+  const hasPeriodComparison = baseDecisionVisualizationPlan.primaryVisualization.type === 'line';
   const movements = metricIds.map((metricId) => {
     const first = Number(rows[0]?.[metricId] ?? 0);
     const last = Number(rows[rows.length - 1]?.[metricId] ?? 0);
@@ -129,7 +137,7 @@ export const PerspectiveCollectionResultCard: React.FC<{
     grid: { left: 70, right: 28, top: 25, bottom: 58 },
     xAxis: {
       type: "category",
-      data: rows.map((row) => String(row.reporting_period)),
+      data: baseDecisionVisualizationPlan.result.rows.map((row) => String(row[baseDecisionVisualizationPlan.result.dimensionField] ?? '')),
       axisLabel: { color: "#475569" },
     },
     yAxis: {
@@ -139,10 +147,10 @@ export const PerspectiveCollectionResultCard: React.FC<{
     },
     series: metricIds.map((metricId, index) => ({
       name: displayMetricLabel(metricId),
-      type: hasPeriodComparison ? "line" : "bar",
-      smooth: hasPeriodComparison,
-      symbolSize: hasPeriodComparison ? 8 : undefined,
-      barMaxWidth: hasPeriodComparison ? undefined : 56,
+      type: baseDecisionVisualizationPlan.primaryVisualization.type,
+      smooth: baseDecisionVisualizationPlan.primaryVisualization.type === 'line',
+      symbolSize: baseDecisionVisualizationPlan.primaryVisualization.type === 'line' ? 8 : undefined,
+      barMaxWidth: baseDecisionVisualizationPlan.primaryVisualization.type === 'line' ? undefined : 56,
       data: rows.map((row) => Number(row[metricId] ?? 0)),
       lineStyle: { width: 3 },
       itemStyle: { color: ["#2563eb", "#059669", "#d97706"][index % 3] },
@@ -206,14 +214,27 @@ export const PerspectiveCollectionResultCard: React.FC<{
     finally { setExportState("idle"); }
   };
 
+  const buildDecisionVisualizationPlan = (): DecisionVisualizationPlanV1 => {
+    const scopedEvidence = chartSelection ? selectedEvidence : evidenceSources;
+    return createDecisionVisualizationPlan({
+      perspectiveId, rows, sourceCount, dimensionField: 'reporting_period',
+      selectedScope: chartSelection ? { dimensionField: 'reporting_period', dimensionValue: chartSelection.period, metricId: chartSelection.metricId } : null,
+      sourceRefs: scopedEvidence.map(source => ({
+        sourceId: source.sourceId ?? null, sourceName: source.sourceName, role: source.role, period: source.period, sourceRowCount: source.sourceRowCount,
+      })),
+    });
+  };
+
   const buildExcelAnalysisPlan = (): AnalysisWorkbookPlanV1 => {
     const scopedEvidence = chartSelection ? selectedEvidence : evidenceSources;
+    const decisionVisualizationPlan = buildDecisionVisualizationPlan();
     return createAnalysisWorkbookPlan({
       title: displayPerspectiveLabel,
       perspectiveId,
       sourceCount,
       summaryRows: rows,
       selectedScope: chartSelection ? { ...chartSelection } : null,
+      decisionVisualizationPlan,
       evidenceSources: scopedEvidence.map(source => ({
         sourceName: source.sourceName, role: source.role, period: source.period,
         sourceRowCount: source.sourceRowCount, rows: source.rows,
@@ -241,10 +262,9 @@ export const PerspectiveCollectionResultCard: React.FC<{
   };
 
   const createCollectionDashboard = () => {
-    const scopedRows = chartSelection
-      ? rows.filter(row => String(row.reporting_period) === chartSelection.period).map(row => ({ reporting_period: row.reporting_period, [chartSelection.metricId]: row[chartSelection.metricId] }))
-      : rows;
-    const scopedMetricIds = chartSelection ? [chartSelection.metricId] : metricIds;
+    const visualizationPlan = buildDecisionVisualizationPlan();
+    const scopedRows = visualizationPlan.result.rows as Row[];
+    const scopedMetricIds = visualizationPlan.result.metricIds;
     const scopeSources = chartSelection ? selectedEvidence : evidenceSources;
     const overviewFindings = subsetOverviews.flatMap(item => item.overview.findings);
     const overviewActions = subsetOverviews.flatMap(item => item.overview.recommendedActions);
@@ -257,6 +277,7 @@ export const PerspectiveCollectionResultCard: React.FC<{
       multiSource: true,
       evidenceScope: chartSelection ? "governed_selected_period_source_evidence" : "full_source_metric_results",
       generatedAt: new Date().toISOString(),
+      decisionVisualizationPlan: { schemaVersion: visualizationPlan.schemaVersion, planId: visualizationPlan.planId, governance: visualizationPlan.governance },
       selectedScope: chartSelection ? { period: chartSelection.period, metricId: chartSelection.metricId, sources: scopeSources.map(source => ({ role: source.role, sourceName: source.sourceName, sourceRowCount: source.sourceRowCount })) } : null,
       deepBA: deepDiveBrief ? {
         executiveSummary: deepDiveBrief.headline,
@@ -276,10 +297,10 @@ export const PerspectiveCollectionResultCard: React.FC<{
     });
     const chartId = createChart({
       projectId: "proj-1", datasetId: `multifile:${perspectiveId}`, name: displayPerspectiveLabel,
-      type: scopedRows.length >= 2 ? "Line" : "Bar",
-      xAxis: [{ columnName: "reporting_period" }],
+      type: visualizationPlan.primaryVisualization.type === 'line' ? "Line" : "Bar",
+      xAxis: [{ columnName: visualizationPlan.primaryVisualization.xField }],
       yAxis: scopedMetricIds.map(columnName => ({ columnName, aggregation: "None" as const })), filters: {},
-      formatting: { lightbiData: { source: "multifile_perspective_dashboard", perspective: displayPerspectiveLabel, chartType: scopedRows.length >= 2 ? "line" : "bar", xField: "reporting_period", yField: scopedMetricIds[0], seriesFields: scopedMetricIds, rows: scopedRows, rowCount: scopedRows.length, governed: true, evidenceScope: chartSelection ? "selected_period" : "full_source_metric_results", savedAt: new Date().toISOString() } },
+      formatting: { lightbiData: { source: "multifile_perspective_dashboard", perspective: displayPerspectiveLabel, chartType: visualizationPlan.primaryVisualization.type, xField: visualizationPlan.primaryVisualization.xField, yField: scopedMetricIds[0], seriesFields: scopedMetricIds, rows: scopedRows, rowCount: scopedRows.length, governed: true, evidenceScope: chartSelection ? "selected_period" : "full_source_metric_results", savedAt: new Date().toISOString() } },
     });
     addChartToDashboard(dashboardId, chartId);
     const latest = scopedRows[scopedRows.length - 1];

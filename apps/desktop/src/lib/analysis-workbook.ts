@@ -1,5 +1,6 @@
 import * as XLSX from 'xlsx';
 import type { CleanDataHandoffResultV1 } from './clean-data-handoff';
+import type { DecisionVisualizationPlanV1 } from './decision-visualization-plan';
 
 export const ANALYSIS_WORKBOOK_VERSION = 'lightbi.analysis-workbook.v1' as const;
 const EXCEL_MAX_DATA_ROWS = 1_048_575;
@@ -42,6 +43,7 @@ export type AnalysisWorkbookPlanV1 = {
   recommendedActions: string[];
   caveats: string[];
   notes: string[];
+  decisionVisualizationPlan: DecisionVisualizationPlanV1 | null;
 };
 
 export type ExcelAnalysisWorkbookOptionsV1 = {
@@ -77,6 +79,7 @@ export type CreateAnalysisWorkbookPlanInput = {
   recommendedActions?: string[];
   caveats?: string[];
   notes?: string[];
+  decisionVisualizationPlan?: DecisionVisualizationPlanV1 | null;
   createdAt?: string;
 };
 
@@ -182,6 +185,13 @@ export function createAnalysisWorkbookPlan(input: CreateAnalysisWorkbookPlanInpu
     });
   });
 
+  const decisionVisualizationPlan = input.decisionVisualizationPlan ?? null;
+  if (decisionVisualizationPlan && decisionVisualizationPlan.perspectiveId !== input.perspectiveId) {
+    throw new Error('ANALYSIS_WORKBOOK_DECISION_PLAN_PERSPECTIVE_MISMATCH');
+  }
+  if (decisionVisualizationPlan && decisionVisualizationPlan.sourceCount !== input.sourceCount) {
+    throw new Error('ANALYSIS_WORKBOOK_DECISION_PLAN_SOURCE_COUNT_MISMATCH');
+  }
   const createdAt = input.createdAt ?? new Date().toISOString();
   const selectedScope = input.selectedScope ?? null;
   const seed = JSON.stringify({
@@ -208,6 +218,7 @@ export function createAnalysisWorkbookPlan(input: CreateAnalysisWorkbookPlanInpu
     recommendedActions: [...(input.recommendedActions ?? [])],
     caveats: [...(input.caveats ?? [])],
     notes: [...(input.notes ?? [])],
+    decisionVisualizationPlan,
   };
 }
 
@@ -315,6 +326,8 @@ export function createExcelAnalysisWorkbook(plan: AnalysisWorkbookPlanV1, option
     ['Selected metric', plan.selectedScope?.metricId ?? 'All governed result metrics'],
     ['Raw multi-source join', plan.combinationPolicy === 'governed_metric_results_only' ? 'Prohibited' : 'Not applicable'],
     ['Evidence policy', 'Source-bound evidence remains in separate sheets'],
+    ['Decision plan version', plan.decisionVisualizationPlan?.schemaVersion ?? 'Not attached'],
+    ['Decision plan ID', plan.decisionVisualizationPlan?.planId ?? 'Not attached'],
     ['Clean canonical data attached', options.cleanData ? 'Yes' : 'No'],
   ]);
   overview['!cols'] = [{ wch: 28 }, { wch: 72 }];

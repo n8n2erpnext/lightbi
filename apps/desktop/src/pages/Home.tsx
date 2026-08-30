@@ -733,6 +733,7 @@ export const Home: React.FC = () => {
         const canonicalPerspectiveEvidenceSources = members.map((item) => ({
           period: item.draft.periodStart?.slice(0, 7) ?? 'unavailable',
           role: item.draft.role ?? 'source',
+          sourceId: item.boundary.sourceId,
           sourceName: item.file.name,
           sourceRowCount: item.boundary.sourceRowCount,
           rows: (item.source.analysis_rows ?? item.boundary.semanticSample.rows) as Record<string, unknown>[],
