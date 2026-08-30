@@ -3,8 +3,9 @@
 **Edition:** Documentation Baseline 0.1  
 **Snapshot:** 2026-08-29  
 **Scope:** Product intent, architecture evolution, canonical runtime rules, verified evidence, release state, and provenance bookmarks derived from the repository documentation corpus.  
-**Status:** **Docs-derived baseline. Not final until codebase, Git history, GitHub Actions, and CI/CD audits are completed.**
+**Status:** **Docs-derived baseline plus completed codebase map. Not final until Git history, GitHub repository, control-plane ownership, GitHub Actions, and CI/CD audits are completed.**
 **Documentation governance:** Before adding or reorganizing project documentation, follow [`LIBRARY_RULES.md`](./LIBRARY_RULES.md).
+**Code-derived companion:** [`LIGHTBI_CODE_MAP.md`](./LIGHTBI_CODE_MAP.md) records the completed 0.3 codebase baseline and explicitly separates baseline HEAD from dirty working-tree evidence.
 
 
 

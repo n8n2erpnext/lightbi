@@ -1,0 +1,719 @@
+# LightBI Code Map
+
+**Edition:** 0.3 Codebase Baseline
+**Initial snapshot:** 2026-08-29
+**Code audit completed:** 2026-08-30
+**Repository baseline:** `0142e92c75e9fd3e190f82fe2a67cf255180cfca`
+**Current VPS working branch:** `codex/beta-recovery-20260801`
+**Status:** **Codebase audit baseline complete.** Git-history, GitHub, control-plane ownership, and CI/CD reconciliation are still pending.
+
+---
+
+## Reading contract
+
+This map answers four separate questions for every important code surface:
+
+1. **Is it reachable from the current production entry point?**
+2. **Does it own truth, adapt truth, execute truth, or only present truth?**
+3. **Is it committed at the baseline HEAD, modified in the dirty worktree, or completely untracked WIP?**
+4. **What source should be read next when a behavior must be changed safely?**
+
+Do not infer current behavior from filename, age, or file size alone. LightBI retains substantial historical/compatibility code that is not on the current production path.
+# Part I — Repository Shape and Runtime Surfaces
+
+## 1. Workspace topology
+
+The repository is a hybrid TypeScript/Rust workspace.
+
+JavaScript/TypeScript workspace roots are declared by [`pnpm-workspace.yaml`](../../pnpm-workspace.yaml):
+
+```text
+apps/*
+packages/*
+```
+
+Rust workspace roots are declared by [`Cargo.toml`](../../Cargo.toml):
+
+```text
+crates/*
+apps/server
+```
+
+The current dirty VPS tree contains roughly 2,200 non-build/non-dependency files. The dominant implementation languages are TypeScript/TSX and Rust; a large additional surface is governed test/evidence JSON rather than product runtime code.
+## 2. Major executable surfaces
+
+### Desktop web application
+
+Path: [`apps/desktop`](../../apps/desktop)
+
+Technology: React 19, React Router, TypeScript, Vite, Zustand, ECharts, DuckDB WASM, Monaco, Tauri APIs.
+
+Production browser/native-webview entry point is [`apps/desktop/src/main.tsx`](../../apps/desktop/src/main.tsx), which renders the router rather than `App.tsx`.
+
+### Local core/API
+
+Path: [`apps/server`](../../apps/server)
+
+Technology: Rust, Axum, Tokio, SQLx, MongoDB driver, Tiberius, LightBI workspace crates.
+
+The binary entry point delegates to the server library; the server library owns the Axum router and project/backend state.
+
+### Native shell
+
+Path: [`crates/lightbi-tauri`](../../crates/lightbi-tauri)
+
+Tauri embeds the Axum router in-process and bridges frontend requests through a custom URI scheme rather than requiring a separately installed Node/Rust server.
+### Shared TypeScript packages
+
+`packages/*` provide contracts and lightweight shared runtime pieces:
+
+- [`packages/core-types`](../../packages/core-types) — shared dataset/query/release types;
+- [`packages/query-models`](../../packages/query-models) — query model contracts;
+- [`packages/chart-schema`](../../packages/chart-schema) and [`dashboard-schema`](../../packages/dashboard-schema) — visualization/dashboard contracts;
+- [`packages/runtime`](../../packages/runtime) — frontend application runtime/store and coordination;
+- [`packages/plugin-sdk`](../../packages/plugin-sdk) — provider plugin contract boundary;
+- [`packages/ui`](../../packages/ui) — shared UI package.
+
+### Distribution/control-plane WIP
+
+The dirty VPS worktree contains an **untracked** `apps/distribution/` Node application. This path is **dirty-working-tree-only** and therefore intentionally is not a link from the clean documentation worktree. It is not part of baseline HEAD `0142e92` and must not be treated as committed public-repository truth until Git reconciliation.
+# Part II — Frontend Production Reachability
+
+## 3. Production entry point and route graph
+
+[`apps/desktop/src/main.tsx`](../../apps/desktop/src/main.tsx) renders `RouterProvider` using [`routes/index.tsx`](../../apps/desktop/src/routes/index.tsx).
+
+Current route graph:
+
+```text
+AppLayout
+├─ /                → Home
+├─ /dashboards      → Dashboards
+├─ /dashboards/:id  → DashboardDetail
+├─ /charts          → Charts
+├─ /datasets        → Datasets
+├─ /datasources     → DataSources
+├─ /settings        → Settings
+├─ /investigation   → Investigation
+└─ /advanced        → Advanced
+```
+
+When served under `/app`, the router uses `/app` as basename. Otherwise it uses `/`.
+
+`main.tsx` in the dirty worktree also initiates installation pairing and app-usage telemetry for native LightBI. Those dependencies are untracked WIP and therefore are not baseline-HEAD behavior.
+## 4. Static reachability warning
+
+A static relative-import walk from `main.tsx` reached 249 production TS/TSX modules out of roughly 312 non-test TS/TSX files.
+
+The unreached set includes genuine legacy/dead-ish code such as [`App.tsx`](../../apps/desktop/src/App.tsx), old Understanding Next orchestration modules, shadow comparison/audit modules, and old presentation components. It also includes some worker/dynamic-import files that a simple import parser cannot prove dead.
+
+Therefore use these labels:
+
+- **reachable** — proven through the static production entry graph;
+- **dynamic/worker candidate** — may be loaded through `new Worker`, `new URL`, or dynamic framework behavior;
+- **verification-only** — tests/audit harnesses intentionally outside production entry graph;
+- **legacy/compatibility** — retained for migration or old contracts;
+- **dead candidate** — no production/import evidence yet, but deletion still requires dedicated reachability audit.
+
+Never delete a file solely because this static walk did not reach it.
+## 5. Important legacy trap: `App.tsx`
+
+[`apps/desktop/src/App.tsx`](../../apps/desktop/src/App.tsx) still contains the old Milestone-1 demonstration flow: import a sample sales CSV, create a simple chart, and export it.
+
+It is **not rendered by the current `main.tsx` entry point**.
+
+This makes it a strong example of why file existence is not runtime authority. An AI reading `App.tsx` first would reconstruct an obsolete LightBI architecture.
+
+The current product flow starts from `RouterProvider` → `AppLayout` → route pages.
+
+## 6. App shell
+
+[`components/layout/AppLayout.tsx`](../../apps/desktop/src/components/layout/AppLayout.tsx) owns the visible application shell/navigation and consumes shared runtime state.
+
+In the dirty worktree it also imports:
+
+- `useLightBIAccount`;
+- `useUpdateStore`;
+- app-usage telemetry.
+
+Those integrations are part of dirty 0.9.x work and need Git reconciliation before they can be called committed product behavior.
+# Part III — Home / Easy Mode Canonical Path
+
+## 7. `Home.tsx` is orchestration, not semantic authority
+
+[`pages/Home.tsx`](../../apps/desktop/src/pages/Home.tsx) is large because it coordinates intake, session recovery, overlays, canonical artifact construction, multi-source review, perspective selection, and Investigation handoff.
+
+It should not become a second understanding engine.
+
+The current path is approximately:
+
+```text
+source intake / inspection
+→ retained semantic/sample rows + full-source profile/runtime source
+→ canonical source boundary
+→ optional source-bound user overlay/evidence
+→ buildHomeCanonicalArtifact()
+→ canonical consumer artifact
+→ canonical presentation + capability ladder
+→ selectable governed action
+→ runtime-source continuity check
+→ canonical Investigation handoff
+→ InvestigationSession
+```
+
+Home may coordinate these stages and present them, but semantic/grain/metric/runtime authority lives below the page.
+## 8. Source boundary and full-file truth
+
+[`home-source-boundary.ts`](../../apps/desktop/src/lib/home-source-boundary.ts) converts inspected local-file evidence into [`canonical-source-boundary.ts`](../../apps/desktop/src/lib/understanding-core/canonical-source-boundary.ts).
+
+The source boundary binds:
+
+- dataset/source identity;
+- source fingerprint;
+- inspection/profile generations;
+- representative semantic sample;
+- full-file physical profile;
+- full-file semantic/grain understanding;
+- runtime file handles required to rematerialize the complete source.
+
+This is the code expression of the project rule **sample evidence is not execution authority**.
+
+[`runtime-dataset-source.ts`](../../apps/desktop/src/lib/runtime-dataset-source.ts) carries the local runtime files and source-binding identity. It deliberately distinguishes `full_file`, `retained_rows`, `semantic_sample`, and `preview` row scopes.
+
+[`runtime-source-continuity.ts`](../../apps/desktop/src/lib/runtime-source-continuity.ts) fails closed when the current runtime source no longer matches the canonical binding. A stale/reloaded session therefore requires source reselection instead of silently running against retained sample rows.
+## 9. User mapping/evidence overlay
+
+[`canonical-user-overlay.ts`](../../apps/desktop/src/lib/understanding-core/canonical-user-overlay.ts) is the governed correction layer above raw evidence.
+
+It owns versioned source-bound decisions such as:
+
+- temporary semantic mapping decisions;
+- source role declarations;
+- document identity declarations;
+- reporting period evidence;
+- reporting currency evidence;
+- inventory snapshot evidence.
+
+Every overlay is bound to source identity/generations. Validation rejects stale or incompatible declarations. Applying an overlay projects a new semantic/evidence view; it does **not mutate the original rows**.
+
+Home rebuilds the canonical artifact after overlay change and marks presentation stale/pending until the new overlay identity has been consumed successfully.
+## 10. Canonical consumer artifact is the main Easy-mode truth envelope
+
+[`canonical-consumer-boundary.ts`](../../apps/desktop/src/lib/understanding-core/canonical-consumer-boundary.ts) is one of the most important production files.
+
+For a valid input it constructs:
+
+```text
+physical full-file artifact
+→ semantic candidate/evidence/resolution
+→ optional user overlay projection
+→ grain candidate/resolution
+→ readiness
+→ canonical metric source
+→ domain activation
+→ governed metric preflight
+→ governed question/action generation
+→ CanonicalConsumerArtifactV1
+```
+
+If a modern `CanonicalSourceBoundaryV1` already exists, it reuses full-file physical/semantic/grain artifacts rather than re-inferring them from sample rows.
+
+The artifact identity binds dataset state, source identity, overlay identity, domain activation, metric preflight and question generation. Failed construction returns an explicit invalid artifact with no question/execution authority.
+## 11. Semantic registry and canonical ownership
+
+[`semantic-registry.ts`](../../apps/desktop/src/lib/semantic-registry.ts) owns atomic semantic signal definitions and the runtime taxonomy/dictionary projections.
+
+[`understanding-core/OWNERSHIP.md`](../../apps/desktop/src/lib/understanding-core/OWNERSHIP.md) freezes the intended authority split:
+
+- semantic registry owns atomic vocabulary;
+- understanding-core owns canonical dataset understanding;
+- domain support manifest owns product support truth;
+- adapters translate but must not independently profile/map/score/activate/generate authority;
+- UI, AI, execution, charting and export are downstream consumers.
+
+The directory also intentionally retains many **shadow/verification-only migration modules** from Phase 3–5. They are architectural evidence and test assets, not automatically production runtime owners.
+
+`understanding-next` remains primarily a compatibility/downstream layer. Its old independent profiler, detector and orchestrator should not regain semantic authority merely because the files still exist.
+# Part IV — Governed Business Analysis Pipeline
+
+## 12. Metric preflight: “recognized” is not “safe to aggregate”
+
+[`governed-metric-preflight.ts`](../../apps/desktop/src/lib/understanding-core/governed-metric-preflight.ts) evaluates governed metric definitions against canonical source evidence.
+
+It checks, among other things:
+
+- source/hash/full-profile integrity;
+- semantic requirements;
+- grain compatibility;
+- exact/atomic measure binding;
+- repeated-measure risk;
+- governed identity for counts;
+- source-bound document identity;
+- currency compatibility;
+- UOM compatibility;
+- inventory snapshot evidence/as-of semantics;
+- required readiness capabilities;
+- cross-source relationship requirements.
+
+Output state may be `ready`, `conditionally_ready`, `blocked`, `unknown`, `unsupported`, or `not_applicable`. A populated numeric column is never sufficient by itself to authorize SUM/AVG/count semantics.
+## 13. Question/action generation: visible lens still does not equal executable action
+
+[`governed-question-action-generator.ts`](../../apps/desktop/src/lib/understanding-core/governed-question-action-generator.ts) combines:
+
+- domain support manifest/activation;
+- governed metric preflight;
+- semantic dimension bindings;
+- time requirements;
+- question-family policy.
+
+It creates question candidates and action candidates, then immediately aligns advertised actions with runtime preflight.
+
+This is important: a question can remain useful as explanation even when runtime requirements are not satisfied. Actions that runtime preflight cannot support are removed from the runnable set and the question becomes blocked/explanation-only with structured blockers/remediation.
+
+Default ranking is deterministic and bounded; the current commerce/distribution policy limits default questions rather than hiding the full governed candidate set.
+## 14. Runtime preflight is the execution gate
+
+[`governed-runtime-preflight.ts`](../../apps/desktop/src/lib/understanding-core/governed-runtime-preflight.ts) revalidates policy identity and exact canonical bindings before planning.
+
+It rejects stale/mutated action candidates, policy-hash mismatch, unsupported domain/metric combinations, ambiguous/missing physical bindings, unsafe identity/count semantics, invalid time/as-of bindings, currency/UOM mismatch, repeated-measure risk, and unproved relationship requirements.
+
+Only `executable` or explicitly permitted `conditionally_executable` states can proceed.
+
+Even when execution is allowed, the contract deliberately retains restrictions such as `DECISION_USE_PROHIBITED`: successful execution is evidence, not automatic authorization of a business decision.
+
+The code therefore separates **runtime action authorization** from **business decision authority**.
+## 15. Query planner owns deterministic SQL shape, not semantic discovery
+
+[`governed-metric-query-planner.ts`](../../apps/desktop/src/lib/understanding-core/governed-metric-query-planner.ts) accepts only a valid governed runtime preflight.
+
+Supported governed operators currently include:
+
+- governed SUM;
+- point-in-time snapshot SUM;
+- governed average;
+- governed distinct identity count;
+- governed physical source-row count;
+- governed revenue-minus-cost for gross profit.
+
+The planner compiles physical column bindings to DuckDB SQL and structured parameters. It does not infer a new metric or repair missing evidence.
+
+For grouped results it also computes a hidden full-scope metric total (`__lightbi_full_scope_metric_total__`) so the visible top-N/group rows cannot accidentally redefine the total used by evidence/BA layers.
+## 16. Local DuckDB execution boundary
+
+[`governed-local-duckdb-boundary.ts`](../../apps/desktop/src/lib/understanding-core/governed-local-duckdb-boundary.ts) adapts a governed query plan into [`local-duckdb-executor.ts`](../../apps/desktop/src/lib/local-duckdb-executor.ts).
+
+The local executor initializes DuckDB WASM, materializes either:
+
+- the complete bound runtime source; or
+- controlled retained rows when no full runtime source exists for non-governed/legacy use.
+
+For governed production execution, callers pass the runtime source and expected binding. The file is re-materialized locally, loaded as `__LIGHTBI_PREVIEW_TABLE__`, and queried inside the browser/native webview process.
+
+Execution returns explicit scope and actual materialized row count. [`governed-metric-executor.ts`](../../apps/desktop/src/lib/understanding-core/governed-metric-executor.ts) refuses to call full-file execution successful unless expected source row count and full-file evidence match.
+
+This is the current code-level enforcement behind “Real source → real full-file local DuckDB → governed result”.
+# Part V — Multi-Source and Period Analysis
+
+## 17. Canonical multi-source boundary
+
+[`canonical-multisource-boundary.ts`](../../apps/desktop/src/lib/understanding-core/canonical-multisource-boundary.ts) keeps member sources distinct and records explicit source roles/evidence.
+
+Current source-role vocabulary includes sales, accounting, logistics, inventory snapshot, inventory movement, and unknown/other.
+
+The current governed production relationship code has an explicit Sales↔Accounting approval path using source-bound document/period/currency evidence. It produces relationship states such as confirmed, conditional, ambiguous, rejected, insufficient-evidence, and stale.
+
+A canonical multi-source dataset therefore contains:
+
+- ordered source memberships;
+- each member's canonical source/artifact/runtime source;
+- governed relationship artifacts;
+- analyses with required source IDs and a metric source;
+- dataset identity tied to source membership/evidence.
+
+It does not flatten all source files into an ungoverned table.
+## 18. Multi-source execution
+
+[`governed-multisource-duckdb-boundary.ts`](../../apps/desktop/src/lib/understanding-core/governed-multisource-duckdb-boundary.ts) validates the multi-source artifact/handoff, materializes every required member source against its source binding, and preserves source-role/period/currency/row-count lineage.
+
+The key design is still conservative: a multi-source relationship can establish that a governed business analysis is valid across a logical dataset while the actual metric may execute from one designated metric source. Relationship evidence authorizes the scope; it does not automatically authorize arbitrary cross-source measure joins.
+
+Home can also build period-partition workspaces for multiple source periods. These are canonical member artifacts, not a filename-driven month merge.
+
+## 19. Current multi-source restriction to preserve
+
+Do not generalize the existing Sales↔Accounting Gross Profit path into “LightBI may join any two files on similarly named columns.” New multi-source business capabilities require explicit relationship policy, source-role evidence, metric semantics, runtime tests, and negative probes.
+# Part VI — Investigation and BA Readout
+
+## 20. Investigation session is a handoff envelope, not canonical truth storage
+
+[`investigation-session.ts`](../../apps/desktop/src/lib/investigation-session.ts) stores the currently selected action, runtime intent/plan, rows, AI briefing, runtime source, source scope, canonical handoff, multi-source dataset, execution results and an in-memory Easy workspace snapshot.
+
+The store is currently module-level in-memory state. It helps navigation continuity but canonical validity must still be rechecked against current artifact/source identities.
+
+The comment saying “we aren't using a real backend or persistent DB yet” is historically imprecise for the whole product: workspace sessions do have backend persistence elsewhere. Treat this module comment as local implementation commentary, not global architecture truth.
+
+## 21. `Investigation.tsx` revalidates before execution
+
+[`pages/Investigation.tsx`](../../apps/desktop/src/pages/Investigation.tsx) validates canonical handoff freshness, full-file source availability, multi-source handoff identity and runtime binding before running governed execution.
+When validation passes, Investigation builds a governed execution request from the already-planned handoff and executes either:
+
+```text
+single source
+→ executeGovernedMetricRequest()
+→ createGovernedLocalDuckDBBoundary()
+```
+
+or:
+
+```text
+multi source
+→ executeCanonicalMultiSourceMetric()
+→ governed metric result
+```
+
+The resulting `canonicalExecutionResult` retains metric/action/query-plan identity, evidence, limitations, restrictions, full-file row count and source fingerprint. UI readouts consume this result rather than recomputing the metric independently.
+
+If execution returns an empty result or result validation rejects it, Investigation converts the apparent success into an explicit failed state rather than rendering a misleading chart.
+## 22. BA and chart layers are downstream consumers
+
+Investigation passes governed execution context into BA/readout components including the BA decision engine, deep-analysis panels and chart model/renderer.
+
+The relevant rule is not “BA code may infer anything useful.” It must preserve the selected action's governed metric, source scope, evidence, restrictions and full-file proof.
+
+Important downstream files include:
+
+- [`ba-decision-engine.ts`](../../apps/desktop/src/lib/ba-decision-engine.ts) — structured BA brief generation;
+- [`business-brain-brief.ts`](../../apps/desktop/src/lib/business-brain-brief.ts) — Business Brain KPI/variance/root-cause/risk/recommendation/evidence model;
+- [`ba-comparison-engine.ts`](../../apps/desktop/src/lib/ba-comparison-engine.ts) — period/comparison analysis;
+- [`chart-preview-model.ts`](../../apps/desktop/src/lib/chart-preview-model.ts) — result-to-chart model projection;
+- [`ChartPreviewRenderer.tsx`](../../apps/desktop/src/components/analysis/ChartPreviewRenderer.tsx) — ECharts presentation;
+- Investigation deep-analysis/drill-through components — interactive evidence-bound follow-up.
+
+These modules are powerful downstream analytics, but canonical source/metric/runtime authority remains upstream.
+# Part VII — Advanced Mode
+
+## 23. Advanced is a production route, not a side experiment
+
+[`pages/Advanced.tsx`](../../apps/desktop/src/pages/Advanced.tsx) is reachable from `/advanced` and is the current technical workspace for file/database users.
+
+Its page component is orchestration. Provider I/O is delegated to [`advanced-api.ts`](../../apps/desktop/src/lib/advanced-api.ts), workspace state/helpers, edit-session hooks, file-session code, and the Rust server.
+
+The dirty VPS working tree currently extends this area substantially beyond baseline HEAD. Therefore exact feature breadth must be reconciled with Git history before it is called committed product truth.
+
+Current working-tree provider coverage in the Rust backend includes PostgreSQL, MySQL/MariaDB, SQLite, MongoDB, and SQL Server. Capabilities are not symmetric: for example MongoDB uses the document-query path, and some mutation/script operations are deliberately unavailable for MongoDB or SQL Server.
+
+Advanced is therefore a provider-capability workspace, not one universal SQL abstraction pretending every backend behaves identically.
+
+## 24. Advanced → Easy handoff must re-enter the canonical boundary
+
+[`advanced-result-handoff.ts`](../../apps/desktop/src/lib/advanced-result-handoff.ts) is the critical boundary. It does not hand arbitrary query rows directly to BA code.
+
+It rebuilds a canonical consumer artifact, prepares a canonical Investigation handoff, and refuses selection overrides that would substitute a different metric/operator/action from the governed one.
+
+[`useAdvancedResultTransferActions.ts`](../../apps/desktop/src/hooks/useAdvancedResultTransferActions.ts) only opens an Advanced result in Easy/Investigation when the result is classified as complete. Partial/truncated results remain display/export material, not full-source decision authority.
+
+`returnFullSourceToEasy()` additionally blocks while edits are pending, refreshes the selected table/source in pages, materializes continuity, then feeds that complete post-edit source back through the same canonical handoff.
+
+This preserves a core architectural invariant:
+
+```text
+Advanced technical freedom
+→ complete source materialization
+→ canonical understanding/governance
+→ Investigation
+```
+
+Advanced does not get a private semantic backdoor.
+
+## 25. Advanced persistence is real and split between durable metadata and ephemeral runtime state
+
+The Rust server stores Advanced history, favorites, connection profiles, and workspace sessions in `metadata.db` through [`advanced_workspace.rs`](../../apps/server/src/advanced_workspace.rs).
+
+Connection profile secrets are encrypted before persistence; the encryption key is stored separately by the server-side vault-key path.
+
+By contrast, active connection sessions, schema/count caches, run handles, import jobs and export jobs live in the in-process `AdvancedState` and are runtime state rather than durable workspace truth.
+
+This distinction matters when restarting the embedded core:
+
+- saved profiles/history/favorites/sessions can survive;
+- active database handles, running jobs and caches do not.
+
+The frontend also keeps presentation/editor state such as Advanced tabs in browser storage. That state is convenience state and must not be confused with server metadata authority or canonical semantic truth.
+
+# Part VIII — Rust/Axum Core and Persistence
+
+## 26. `apps/server` is the local API/core boundary
+
+[`apps/server/src/lib.rs`](../../apps/server/src/lib.rs) owns `build_router()` and can run as a normal Axum HTTP server or be embedded directly inside the Tauri process.
+
+Its route families currently cover:
+
+- health and project/current-source/source-file operations;
+- chart/export/question/preview execution;
+- online CSV/Excel acquisition;
+- provider-plugin discovery;
+- Advanced connection/schema/query/mutation/script/import/export operations;
+- Advanced history/favorites/profiles;
+- saved project workspace sessions.
+
+The server constructs a `ProjectContext`, registers the DuckDB runtime backend, and shares this state across the Axum router. It is therefore broader than “just the Advanced database API”.
+
+## 27. `LIGHTBI_DATA_DIR` defines the durable local project boundary
+
+The server resolves its project root from `LIGHTBI_DATA_DIR`; without it, development falls back to a temporary `lightbi-project-1` directory.
+
+Inside that root the current server creates at least:
+
+```text
+metadata.db
+files/
+work/
+```
+
+Uploaded/saved source files are copied into `files/` under generated file IDs. Temporary exports and other generated work artifacts use `work/`.
+
+In the native Tauri shell, setup resolves the OS application-data directory, creates it, sets `LIGHTBI_DATA_DIR`, and only then builds the embedded Axum router. Packaged native persistence therefore follows the OS app-data location rather than the repository or current working directory.
+
+## 28. `lightbi-store` is an architectural persistence foundation, not the sole live persistence owner
+
+[`crates/lightbi-store`](../../crates/lightbi-store) defines SQLite initialization/migrations and a unified `ProjectStore` trait. [`lightbi-project`](../../crates/lightbi-project) depends on it.
+
+However, the current Axum server also owns a `SqlitePool` directly in `ProjectContext`, and Advanced workspace persistence performs direct SQL against that pool.
+
+The `ProjectStore` trait itself still contains skeletal placeholder domain types (`Project`, `Recipe`, `Dashboard`, `EventLog`). Therefore an AI must not read the historical persistence ADR and conclude that every current persistence operation flows through a mature `ProjectStore` implementation.
+
+Current code truth is mixed:
+
+```text
+persistence architecture foundation → lightbi-store
+live project/server SQLite pool       → ProjectContext
+Advanced durable records             → advanced_workspace direct SQL
+source-file bytes                     → project files/ directory
+```
+
+Git-history reconciliation must explain how this split evolved.
+
+# Part IX — Native Shell
+
+## 29. Tauri embeds the Axum router in-process
+
+[`crates/lightbi-tauri/src/main.rs`](../../crates/lightbi-tauri/src/main.rs) is the compiled Cargo entry point.
+
+It creates a Tokio runtime, calls `lightbi_server::build_router()`, and stores the resulting Axum `Router` inside `EmbeddedCore`. A custom `lightbi` URI protocol forwards WebView requests directly into that router with `tower::ServiceExt::oneshot()`.
+
+On Windows, WebView2 maps the custom scheme to `http://lightbi.localhost`; on other supported native paths the API base is `lightbi://localhost`. [`api-base.ts`](../../apps/desktop/src/lib/api-base.ts) contains the corresponding frontend detection/fallback logic.
+
+This means the packaged architecture is not:
+
+```text
+Tauri UI → separately spawned localhost server
+```
+
+but rather:
+
+```text
+Tauri WebView → custom protocol → embedded Axum router → local core
+```
+
+The standalone port-5172 server used on the VPS is a development/demo deployment shape, not the only product runtime shape.
+
+## 30. Native command authority is smaller than the dirty WIP suggests
+
+The compiled `src/main.rs` currently registers only the baseline native commands around runtime configuration, Beta license state, and embedded-backend readiness.
+
+The dirty working tree also contains **untracked** `crates/lightbi-tauri/main.rs` with proposed commands for OS-keyring account-session storage and SHA-256-verified update installation.
+
+Cargo does not point at that root-level file; by convention it compiles `src/main.rs`. Therefore those untracked commands are **not currently wired into the native binary**.
+
+This creates an important transitional mismatch: dirty frontend files such as `account-api.ts` and `update-store.ts` can invoke command names that the compiled native entry point does not yet register.
+
+Do not describe native account-token vaulting or automatic installer execution as completed runtime capability until Git/code integration moves those commands into the compiled entry point and tests the path.
+
+## 31. Tauri packaging configuration is Windows-Beta oriented
+
+[`tauri.conf.json`](../../crates/lightbi-tauri/tauri.conf.json) currently identifies LightBI as `digital.thaiduy.lightbi`, targets NSIS packaging, and uses the desktop Vite build as `frontendDist`.
+
+The bundle still carries MinGW runtime DLL resources for Windows packaging. The configuration has no active `externalBin` declaration; the embedded Axum core is compiled into the Tauri binary through the Rust dependency on `lightbi-server`.
+
+The `beforeBuildCommand` still runs `prepare-native-sidecar.mjs --runtime-only` before the frontend build. That build-step history must be examined during Git/CI audit rather than assumed to mean a runtime sidecar is currently launched.
+
+Current code evidence therefore favors **embedded core runtime** with some packaging/build lineage still visible from earlier sidecar work.
+
+# Part X — Dirty-Only Distribution, Account, Telemetry, and Update Work
+
+## 32. The dirty frontend has already become coupled to untracked control-plane files
+
+The current VPS working tree modifies tracked production entry files such as `main.tsx`, `AppLayout.tsx`, `Settings.tsx`, and `Advanced.tsx` while importing several completely untracked modules:
+
+```text
+apps/desktop/src/lib/distribution-pairing.ts
+apps/desktop/src/lib/account-api.ts
+apps/desktop/src/hooks/useLightBIAccount.ts
+apps/desktop/src/lib/app-usage-telemetry.ts
+apps/desktop/src/stores/update-store.ts
+packages/core-types/src/release.ts
+apps/distribution/
+```
+
+So this is not merely dormant scratch code: parts of the dirty frontend production graph reference it. But because the files are not in baseline HEAD, the capability is still **working-tree WIP**, not repository-tracked truth.
+
+This exact distinction must survive until Git reconciliation.
+
+## 33. Current dirty license/account code is transitional relative to the 1.0 trust design
+
+`distribution-pairing.ts` generates a browser-stored installation ID, pairs it with the distribution service, writes `lightbi-license-tier` to localStorage, and still exposes direct license-key activation.
+
+`account-api.ts` is a newer layer: it models an authenticated account, entitlement and devices, supports native device-login flow, email/Google auth, key redemption, device revocation, and attempts to store native session tokens through Tauri commands.
+
+These two layers coexist in the dirty tree. That coexistence is a migration signal, not a final trust architecture.
+
+The imported 1.0 design explicitly says Pro authority must not reduce to a reusable key or localStorage tier. Therefore:
+
+- localStorage tier is UI/cache state at best;
+- account + trusted installation + entitlement is the intended authority direction;
+- current `/api/license/activate` and key-redemption paths are transitional until the later control-plane audit classifies them precisely.
+
+Code existence here must not override the stronger design freeze without explicit reconciliation.
+
+## 34. Dirty telemetry is native-only and consent-gated, but installation identity is still browser-generated
+
+`app-usage-telemetry.ts` only sends app events when running in native LightBI and when anonymous pairing is enabled. It records app-open/app-close/feature-use and update lifecycle events against installation/session identifiers.
+
+`main.tsx` starts pairing and telemetry only for native runtime. `AppLayout.tsx` additionally records feature-surface usage as routes change.
+
+This is privacy-safer than unconditional browser telemetry, but the installation identifier currently originates from browser storage rather than the future device-key/certificate model described for 1.0.
+
+Treat this as **Beta operational telemetry WIP**, not final attestation or device identity.
+
+## 35. Dirty updater implements manifest check + SHA verification, but not yet the frozen 1.0 lifecycle
+
+`update-store.ts` fetches `/api/releases/latest`, validates the `lightbi.release.v1` shape, selects the Windows x86_64 artifact, compares versions, and exposes an explicit install action.
+
+The untracked proposed native command downloads over HTTPS, computes SHA-256, writes through a `.partial` file, renames to a verified installer path, starts the Windows installer and exits the app.
+
+That is useful integrity work, but it is not yet the full frozen lifecycle:
+
+```text
+detect → download → verify → stage → READY → explicit Update & Restart
+```
+
+The current dirty UI asks for explicit confirmation before invoking install, yet the native proposal performs download and installer launch in one command and is not compiled into `src/main.rs` anyway.
+
+Classify updater state as **partially designed / partially implemented / native wiring incomplete** until the later Git + release pipeline audit.
+
+## 36. `apps/distribution` is a real running control-plane implementation, but untracked in this LightBI tree
+
+The dirty VPS tree contains an untracked Node application at `apps/distribution/` (path annotation only; it is absent from this clean docs worktree baseline).
+
+Its `server.mjs` currently exposes release discovery, account auth, device-login, installation pairing, telemetry/app events, download tracking, license activation/redeem, checkout/Stripe webhook, admin auth/stats/revenue/licenses/accounts, and static distribution UI.
+
+It uses local SQLite plus optional PostgreSQL/Redis-backed helpers and mail integrations. Port defaults to `5174`, matching the current VPS distribution service.
+
+This code is substantial enough to be operational, but its location here must not be confused with repository ownership. The project already has a dedicated control-plane repository; later reconciliation must decide which copy/commit is authoritative and which is deployment/workbench residue.
+
+Until that audit, this Code Map records behavior without promoting the untracked tree into LightBI core source-of-truth.
+
+# Part XI — Legacy, Compatibility, and Reachability Classification
+
+## 37. “Not statically reachable” does not automatically mean dead
+
+The earlier static import walk found 249 production TS/TSX modules reachable from `main.tsx` out of the then-scanned production set, with 64 not reached by that simple walk.
+
+That result is a triage tool only. Worker entry points, dynamic imports, test harnesses, compatibility adapters and build-time modules can legitimately sit outside the main static graph.
+
+Use four classifications instead of one “dead code” bucket:
+
+1. **production authority/reachable** — participates in current user runtime;
+2. **production compatibility/projection** — adapts canonical truth into older contracts/UI shapes;
+3. **verification-only/historical harness** — retained because tests/audits replay old behavior;
+4. **orphan candidate** — no current route/import/test/build consumer found and safe only after Git/CI audit.
+
+Deletion requires proving category 4, not merely failing a static walk.
+
+## 38. Known examples
+
+- `App.tsx` is a strong legacy/orphan candidate: production `main.tsx` renders `RouterProvider`, not `App`.
+- `pages/ChartBuilder.tsx` currently has no route and the lightweight reference audit found no TS/TSX consumer; treat it as an orphan candidate pending Git/CI confirmation.
+- old `semantic-fields.ts` / `semantic-tag-registry.ts` and `relationship-discovery.ts` are largely test/legacy surfaces rather than current semantic authority.
+- `understanding-next` must **not** be deleted wholesale: current Home/presentation code still consumes its contracts/adapters. Canonical core projects into this shape through adapters such as `canonical-consumer-presentation-adapter.ts` and `understanding-core/next-adapter.ts`.
+- `legacy-observation-harness`, legacy/canonical comparison modules, paired replay, shadow sidecar and related Phase-5 modules are verification/history machinery. They can be outside production reachability while still protecting migration evidence.
+
+This is why filenames such as `legacy`, `next`, `shadow`, or `adapter` cannot be used as deletion instructions.
+
+# Part XII — Test and Evidence Topology
+
+## 39. Verification density is unusually high and is part of the architecture
+
+Current working-tree inventory measured:
+
+```text
+523  desktop TS/TSX source files
+211  Vitest test files under apps/desktop/src
+25   Playwright *.spec.ts files under apps/desktop
+84   Rust source files across crates + apps/server/src
+24   Rust #[test]/#[tokio::test] attributes
+354  docs/architecture machine-evidence JSON files
+```
+
+A prior exact-path audit found at least **129 of those 354 architecture JSON files directly consumed by tests/scripts**. This is why documentation cleanup froze their paths.
+
+LightBI's phase closures are therefore not merely prose archives: a significant subset of the evidence corpus participates in executable governance/regression checks.
+
+## 40. Test layers protect different kinds of truth
+
+Vitest covers semantic contracts, canonical boundaries, adapters, UI logic, phase gates and regression behavior. Playwright covers browser/user-flow evidence. Rust tests cover backend/runtime/storage/provider behavior. Architecture JSON provides frozen inputs/expected evidence for many phase-specific checks.
+
+These layers answer different questions:
+
+```text
+unit/contract test passes      ≠ production route is reachable
+browser flow passes            ≠ native packaging path is correct
+Rust handler test passes       ≠ frontend calls it correctly
+historical replay passes       ≠ legacy module should be production authority
+machine evidence is consumed   ≠ file may be freely moved
+```
+
+The later CI audit must map which of these suites actually run on push/PR/release. This Code Map only establishes where the verification surfaces live and what they protect.
+
+# Part XIII — Authority Map for Future Changes
+
+## 41. Where to start when changing behavior
+
+| Change intent | Start reading here | Authority warning |
+|---|---|---|
+| semantic recognition | `semantic-registry.ts` + understanding-core | old semantic registries are not authority |
+| source/sample/full-file handling | canonical source boundary + Home intake | never promote sample evidence to aggregate authority |
+| metric/action availability | governed metric/runtime preflight | visible metric ≠ executable metric |
+| generated SQL for governed BA | governed metric query planner | planner may not invent semantics |
+| Investigation execution | Investigation + governed executor + DuckDB boundary | handoff must be revalidated |
+| multi-source BA | canonical multi-source boundary/executor | relationship scope ≠ arbitrary join authority |
+| Advanced DB/file workspace | Advanced page/hooks + advanced API + Rust `advanced.rs` | provider capabilities differ |
+| Advanced → Easy | advanced result handoff | must rebuild canonical truth from complete source |
+| persistent workspace metadata | server `ProjectContext` + `advanced_workspace.rs` | `ProjectStore` is not yet sole live owner |
+| native API routing | Tauri `src/main.rs` + `api-base.ts` | root-level untracked `main.rs` is not compiled |
+| account/license/update | dirty WIP + dedicated control-plane repo | not final 1.0 trust authority |
+| release/distribution UI | control-plane/distribution repo | untracked LightBI copy requires reconciliation |
+## 42. Current VPS deployment shape is operational context, not architectural authority
+
+At this audit checkpoint the VPS intentionally runs host processes rather than Dockerized LightBI services:
+
+```text
+5172  LightBI API/backend
+5173  LightBI live demo / Vite frontend
+5174  distribution web/control plane
+```
+
+These ports explain the current demo/development environment. They must not be baked into product architecture assumptions: native Tauri uses the embedded router, and future deployment/containerization can change host topology without changing canonical product truth.
+
+## 43. Working-tree state is materially ahead of baseline HEAD
+
+At the 2026-08-30 continuation audit, the original LightBI worktree contains **78 tracked dirty paths and 36 untracked paths**.
+
+Several high-impact areas are among those changes: Advanced frontend/backend, app shell, Settings, native shell configuration, account/update/telemetry modules, release types, and the entire local distribution application.
+
+Therefore this map intentionally carries two truths at once:
+
+- **baseline repository truth** anchored at `0142e92...`;
+- **current VPS implementation evidence** observed in the dirty `codex/beta-recovery-20260801` worktree.
+
+The next Git-history phase must determine which dirty behaviors correspond to later commits/PRs elsewhere, which are intentional pending work, and which are abandoned residue. Until then, dirty-state findings are evidence, not merge status.

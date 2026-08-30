@@ -918,3 +918,21 @@ The governance contract requires future humans and AI agents to:
 - verify links and isolate documentation commits from product/code changes.
 
 This turns documentation organization from a one-time cleanup into an ongoing engineering contract.
+
+## 2026-08-30 — Codebase Map baseline completed
+
+`LIGHTBI_CODE_MAP.md` was completed as the code-derived layer above the documentation baseline.
+
+The audit traced the reachable desktop route graph, Home canonical understanding path, governed metric/query/runtime path, multi-source boundary, Investigation/BA consumers, Advanced workspace, Rust/Axum API, SQLite/project persistence, Tauri embedded-core runtime, dirty-only distribution/account/telemetry/update work, legacy/compatibility surfaces, and verification topology.
+
+Key corrections to docs-only understanding were recorded:
+
+- Advanced persistence is real, but durable metadata and ephemeral connection/job state are separate;
+- `lightbi-store` is an architectural persistence foundation, while current server/Advanced persistence also uses direct `ProjectContext` SQLite access;
+- native LightBI embeds the Axum router in-process rather than requiring a separately spawned runtime server;
+- the dirty updater/account frontend calls Tauri commands that currently exist only in an untracked root-level `crates/lightbi-tauri/main.rs`, not the compiled `src/main.rs`;
+- the local `apps/distribution/` implementation is operational but untracked in this LightBI worktree and still requires dedicated control-plane repository reconciliation;
+- `understanding-next` is partly compatibility/projection surface and must not be deleted wholesale;
+- static-unreachable code is classified separately as compatibility, verification-only, or orphan candidate rather than automatically called dead.
+
+At audit continuation the original working tree contained 78 tracked dirty paths and 36 untracked paths. Git history is the next required layer to distinguish pending work, later upstream work, and abandoned residue.

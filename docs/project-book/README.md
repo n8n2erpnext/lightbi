@@ -13,7 +13,7 @@
 7. [`PATH_MIGRATION_INDEX.md`](./PATH_MIGRATION_INDEX.md) — second-pass old-path → current-path lookup.
 8. [`../history/LEGACY_ROOT_INDEX.md`](../history/LEGACY_ROOT_INDEX.md) — first-pass legacy root filename lookup.
 9. [`DOCUMENT_TEMPLATE.md`](./DOCUMENT_TEMPLATE.md) — starting template for durable new engineering documents.
-10. `LIGHTBI_CODE_MAP.md` — code map draft; do not treat as complete until the codebase audit phase is closed.
+10. [`LIGHTBI_CODE_MAP.md`](./LIGHTBI_CODE_MAP.md) — completed code-derived baseline covering production reachability, authority boundaries, native/server/runtime topology, dirty-only WIP, legacy classification, and verification surfaces; Git-history/CI reconciliation is still pending.
 
 ## Snapshot boundary
 

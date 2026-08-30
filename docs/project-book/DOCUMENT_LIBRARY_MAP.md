@@ -10,7 +10,7 @@
 4. Use [`SOURCE_CATALOG.md`](./SOURCE_CATALOG.md) for exact source lookup and checksum.
 5. Use [`PATH_MIGRATION_INDEX.md`](./PATH_MIGRATION_INDEX.md) or [`../history/LEGACY_ROOT_INDEX.md`](../history/LEGACY_ROOT_INDEX.md) when an old path is mentioned.
 6. Use [`DOCUMENT_TEMPLATE.md`](./DOCUMENT_TEMPLATE.md) only when a durable new document is justified.
-7. For implementation truth, consult the Code Map and later Git/CI audit; documentation alone does not prove current code behavior.
+7. For implementation truth, consult [`LIGHTBI_CODE_MAP.md`](./LIGHTBI_CODE_MAP.md); then use the later Git/CI audit to establish merge/release truth. Documentation alone does not prove current code behavior.
 
 ## Authority-oriented shelves
 
