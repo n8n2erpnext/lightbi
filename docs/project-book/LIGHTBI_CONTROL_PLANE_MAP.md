@@ -403,3 +403,10 @@ The CP API generation and commit match the new manifest, but worker identity doe
 ## 25. Canonical Internal bug-test routing
 
 The owner-facing `5273` gateway now routes distribution/control-plane traffic to the exact NEXT-002 CP API instance on `5374`, whose diagnostics identify generation `g-2026-08-30-next-002`, commit `c251fb1ee981a529c33335d25d3ada4e6ea9d23f`, schema `061_integrations_delivery` current, and zero pending migrations. The older direct `5274` listener remains outside this gateway path. Worker-dependent release acceptance remains blocked because the shared Internal database still reports the predecessor `next-001` worker heartbeat.
+
+
+## 26. NEXT-003 owner bug-test control-plane route
+
+For owner bug testing after Core fix `eadba8f`, the canonical 5273 gateway routes control-plane calls to an Internal CP API instance on temporary port 5474. That API identifies `g-2026-08-30-next-003`, exact CP commit `c251fb1ee981a529c33335d25d3ada4e6ea9d23f`, schema `061_integrations_delivery` current, and zero pending migrations. No CP source changed for this generation; the alternate port exists only because the predecessor API process could not be replaced through the current execution boundary.
+
+The async worker still emits a fresh predecessor `g-2026-08-30-next-001` heartbeat at the same exact CP commit. This does not prevent frontend/Core/CP bug testing on 5273, but it remains an explicit release/UAT generation-identity blocker. Production CP 5174 and production persistence remain untouched.

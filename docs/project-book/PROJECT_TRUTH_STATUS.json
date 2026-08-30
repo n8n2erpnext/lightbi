@@ -245,20 +245,21 @@
   },
   "nextGeneration": {
     "model": "successor_promotion_generation_rotation",
-    "status": "internal_bug_test_gateway_ready_exact_core_cp_worker_predecessor",
+    "status": "internal_bug_test_next003_ready_exact_web_core_cp_worker_predecessor",
     "generationSchema": "lightbi.generation.v1",
-    "generationId": "g-2026-08-30-next-002",
+    "generationId": "g-2026-08-30-next-003",
     "parentGenerationId": "bootstrap-current-8d59d05f575373e6",
     "core": {
       "workspace": "/home/ubuntu/n8n2erpnext/LightBI-next-internal",
       "branch": "codex/next-internal-generation-20260830",
-      "head": "a8ebc27c9d4284665855d7a0a0150c629e44f86e",
+      "head": "eadba8fdf07b04bbdbd674518422713fefb68009",
       "baseCandidate": "326d991a8f305fef938e9aab47897dd233146770",
       "foundationHead": "ef2434ac01ec6a817f4a04f58d16ef41c447b9dc",
       "gatewayHead": "0a9d20a93682e2db528cb43dc2ece8cf699129db",
       "excelPerspectiveIdentityFixHead": "a875098220175f03feeb001d7861af26ee53d1bf",
       "uatRegressionHead": "b1b40277e5e6e8389bc13c2c75f439fdb861600c",
-      "modularizationHead": "a8ebc27c9d4284665855d7a0a0150c629e44f86e"
+      "modularizationHead": "a8ebc27c9d4284665855d7a0a0150c629e44f86e",
+      "deepBaScopeIsolationHead": "eadba8fdf07b04bbdbd674518422713fefb68009"
     },
     "controlPlane": {
       "workspace": "/home/ubuntu/n8n2erpnext/lightbi-control-plane-next-internal",
@@ -304,7 +305,10 @@
       "freshGatewayHealthPassed": true,
       "freshControlPlaneDiagnosticsPassedExceptWorkerGeneration": true,
       "freshWorkerGenerationMatched": false,
-      "canonicalInternalGatewayReady": true
+      "canonicalInternalGatewayReady": true,
+      "focusedDeepAnalysisFilesPassed": 2,
+      "focusedDeepAnalysisTestsPassed": 20,
+      "deepBaScopeIsolationRegressionPassed": true
     },
     "infrastructure": {
       "isolatedContractDefined": true,
@@ -325,22 +329,21 @@
       "productionMutatedByLatestRevalidation": false,
       "servedGenerationManifestPresent": true,
       "internalWebArtifactExactGenerationVerified": true,
-      "runtimeBlocker": "worker_generation_mismatch_predecessor_worker_remains_active_and_execution_safety_blocks_internal_worker_replacement",
+      "runtimeBlocker": "worker_generation_mismatch_predecessor_worker_remains_active",
       "freshVerificationPorts": {
         "coreApi": 5372,
-        "controlPlane": 5374
+        "controlPlane": 5474
       },
       "predecessorInternalPortsStillActive": {
         "coreApi": 5272,
-        "gateway": 5273,
         "controlPlane": 5274
       },
-      "freshGenerationId": "g-2026-08-30-next-002",
-      "generationManifestSha256": "5eb9d570fcdf92f5f7bf5a1c9bedf9ded5d153d1640930ca8212a6dd2c6c7621",
+      "freshGenerationId": "g-2026-08-30-next-003",
+      "generationManifestSha256": "b9a0ae030ad45a959c86a73d863e027d6c77996382c12f9673ecaf763cca3ca2",
       "coreRuntimeBinarySha256": "0c9d37ae54b874e85ff3ad2ce792875a318e72c32146ad9e340383d5831d3d60",
       "servedGenerationManifestIsJson": true,
       "freshWorkerStarted": false,
-      "workerGenerationExpected": "g-2026-08-30-next-002",
+      "workerGenerationExpected": "g-2026-08-30-next-003",
       "workerGenerationObserved": "g-2026-08-30-next-001",
       "workerCommitObserved": "c251fb1ee981a529c33335d25d3ada4e6ea9d23f",
       "workerGenerationMatch": false,
@@ -348,18 +351,18 @@
       "toolSafetyBlockedFreshWorkerLaunch": true,
       "predecessorInternalWorkerStarted": true,
       "predecessorWorkerGeneration": "g-2026-08-30-next-001",
-      "migrationStateMeaning": "shared_internal_schema_current_from_predecessor_internal_activation_no_fresh_next002_migration_applied",
-      "freshNext002MigrationApplied": false,
+      "migrationStateMeaning": "shared_internal_schema_current_from_predecessor_internal_activation_no_fresh_next003_migration_applied",
       "canonicalInternalGatewayPort": 5273,
-      "canonicalInternalGatewayGeneration": "g-2026-08-30-next-002",
+      "canonicalInternalGatewayGeneration": "g-2026-08-30-next-003",
       "canonicalInternalGatewayCoreOrigin": "http://100.94.184.141:5372",
-      "canonicalInternalGatewayControlPlaneOrigin": "http://100.94.184.141:5374",
-      "canonicalInternalGatewayManifestSha256": "5eb9d570fcdf92f5f7bf5a1c9bedf9ded5d153d1640930ca8212a6dd2c6c7621",
+      "canonicalInternalGatewayControlPlaneOrigin": "http://100.94.184.141:5474",
+      "canonicalInternalGatewayManifestSha256": "b9a0ae030ad45a959c86a73d863e027d6c77996382c12f9673ecaf763cca3ca2",
       "canonicalInternalGatewayServesFreshDesktop": true,
       "internalBugTestingReady": true,
       "temporaryVerificationGatewayStopped": true,
       "predecessorDirectCorePortStillActive": 5272,
-      "predecessorDirectControlPlanePortStillActive": 5274
+      "predecessorDirectControlPlanePortStillActive": 5274,
+      "freshCurrentGenerationMigrationApplied": false
     },
     "trust": {
       "phase2aHead": "fb8225c951fc27692e6b0e7554c3112ada08e49f",
@@ -384,11 +387,13 @@
     "internalBugTest": {
       "ready": true,
       "entrypoint": "http://100.94.184.141:5273",
-      "generationId": "g-2026-08-30-next-002",
-      "coreCommit": "a8ebc27c9d4284665855d7a0a0150c629e44f86e",
+      "generationId": "g-2026-08-30-next-003",
+      "coreCommit": "eadba8fdf07b04bbdbd674518422713fefb68009",
       "controlPlaneCommit": "c251fb1ee981a529c33335d25d3ada4e6ea9d23f",
-      "scope": "fresh_desktop_plus_fresh_core_and_control_plane_api",
-      "knownLimitation": "async_worker_heartbeat_remains_predecessor_next001"
+      "scope": "next003_desktop_plus_verified_core_and_next003_control_plane_api",
+      "knownLimitation": "async_worker_heartbeat_remains_predecessor_next001",
+      "deepBaScopeIsolationFixed": true,
+      "deepBaScopeIsolationRegressionTestsPassed": 20
     }
   }
 }

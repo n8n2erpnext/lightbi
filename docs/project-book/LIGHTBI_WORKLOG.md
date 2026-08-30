@@ -1166,3 +1166,12 @@ Private control-plane Git access was re-verified and an authoritative clone now 
 - The canonical gateway now proxies `/api/*` to the exact fresh Core on `5372` and `/distribution-api/*` to the exact fresh CP on `5374`; Core health, CP diagnostics and real JSON generation-manifest serving all pass through `5273`.
 - The temporary `5373` verification gateway was stopped after cutover. Direct predecessor `5272`/`5274` listeners remain because direct termination is blocked by the execution safety layer, but they are no longer used by the canonical `5273` bug-test path.
 - Interactive frontend/Core/CP bug testing is now ready at `http://100.94.184.141:5273`. Async-worker scenarios, owner UAT and promotion remain blocked because the active worker heartbeat is still generation `g-2026-08-30-next-001`.
+
+
+## 2026-08-30 — Deep BA perspective/Step-2 scope isolation bug fixed
+
+- Owner browser testing on Internal `5273` found that chart-selected Deep BA Step 2 could contaminate the later main perspective Deep BA button because `showDeepAnalysis` and `filteredDeepAnalysisScope` had independent lifecycles.
+- Fix commit `eadba8fdf07b04bbdbd674518422713fefb68009` replaces that loose coupling with a discriminated Investigation view state: `perspective` or `selected_data`. Perspective actions can no longer reopen retained selected-row scope; selected-data Step 2 remains explicitly scoped to its drill selection.
+- Added regression `keeps perspective Deep BA independent from selected-data Step 2`, reproducing chart drill-through -> selected-data Deep BA -> close -> main perspective Deep BA. Focused Investigation + DeepAnalysis verification passes **2 files / 20 tests**; desktop build PASS; source module gate PASS **464 modules / 0 violations**; `Investigation.tsx` remains below the 1,000-line hard ceiling at 985 lines.
+- Pushed Core Internal head `eadba8f...` and built `g-2026-08-30-next-003`. Served generation manifest SHA-256 is `b9a0ae030ad45a959c86a73d863e027d6c77996382c12f9673ecaf763cca3ca2`; 5273 header/body, manifest, Core health and CP diagnostics all identify the new bug-test path correctly.
+- Current owner bug-test routing is `5273 -> Core 5372` and `5273 -> CP 5474`. CP schema remains current with zero pending migrations. Production 5172/5173/5174 was not mutated. Worker generation remains predecessor `next-001` at exact CP commit `c251fb1`, so release/UAT identity remains fail-closed while manual product bug testing proceeds.

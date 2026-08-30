@@ -765,3 +765,10 @@ These `537x` ports are not product architecture and must not replace the existin
 ## 48. Internal bug-test routing after NEXT-002 cutover
 
 The canonical Internal web entrypoint is again `5273`, but its current routing is deliberately explicit: `5273 -> fresh Core 5372` for `/api/*` and `5273 -> fresh CP 5374` for `/distribution-api/*`. Static assets and the generation manifest are the `g-2026-08-30-next-002` build. Direct predecessor listeners `5272`/`5274` are therefore not in the user-facing execution path used for current bug testing. This proxy topology is operational context only and must not become a product architecture assumption.
+
+
+## 49. Perspective Deep BA and selected-data Step 2 are separate UI scopes
+
+At Core NEXT `eadba8fdf07b04bbdbd674518422713fefb68009`, Investigation no longer represents Deep BA with a loose boolean plus a retained optional drill scope. The page owns one discriminated view state: `perspective` or `selected_data`. The main perspective `Analyze deeper` action always opens the full selected perspective context; chart drill-through `Deep analysis of selected data` opens only the explicitly selected-row scope. Closing either view clears the active view, so a Step 2 scope cannot leak into a later perspective Deep BA invocation.
+
+This is a UI/context ownership invariant, not a new analytical authority. Selected-data Step 2 continues to recalculate through the existing BA framework over its selected rows, while perspective Deep BA continues to consume the governed perspective result. Regression coverage executes the exact sequence `chart drill -> selected-data Step 2 -> close -> perspective Deep BA` and requires the final view to have no filtered Step 2 scope.
