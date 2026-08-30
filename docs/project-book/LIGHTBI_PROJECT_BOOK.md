@@ -1,13 +1,18 @@
 # LightBI Project Book
 
-**Edition:** Documentation Baseline 0.1  
-**Snapshot:** 2026-08-29  
-**Scope:** Product intent, architecture evolution, canonical runtime rules, verified evidence, release state, and provenance bookmarks derived from the repository documentation corpus.  
-**Status:** **Docs-derived baseline, completed codebase map, and Git-history reconciliation are now integrated. Not final until control-plane ownership, GitHub Actions, and CI/CD audits are completed.**
+**Edition:** Project Truth 1.0
+**Initial snapshot:** 2026-08-29
+**Project Truth audit closed:** 2026-08-30
+**Scope:** Product intent, architecture evolution, canonical runtime rules, verified evidence, Git/release state, CI/CD, private control-plane ownership, and provenance bookmarks.
+**Status:** **Repository-wide archaeology complete. Docs + code + Git + GitHub Actions/release state + private control plane are reconciled. Remaining gaps are explicit implementation/release gates, not missing archaeology.**
 **Documentation governance:** Before adding or reorganizing project documentation, follow [`LIBRARY_RULES.md`](./LIBRARY_RULES.md).
 **Code-derived companion:** [`LIGHTBI_CODE_MAP.md`](./LIGHTBI_CODE_MAP.md) records the completed 0.3 codebase baseline and explicitly separates archive-baseline HEAD from dirty working-tree evidence.
 
 **Git-derived companion:** [`LIGHTBI_GIT_HISTORY_MAP.md`](./LIGHTBI_GIT_HISTORY_MAP.md) records Edition 0.4: archive/public lineage split, snapshot proof, closure-to-commit mapping, releases, PRs, supersession, and branch-relative dirty-state corrections.
+
+**CI/CD companion:** [`LIGHTBI_CI_CD_MAP.md`](./LIGHTBI_CI_CD_MAP.md) records Edition 0.5: workflows, tag-time release behavior, GitHub Actions evidence, R2/GitHub publication, and macOS publication state.
+
+**Control-plane companion:** [`LIGHTBI_CONTROL_PLANE_MAP.md`](./LIGHTBI_CONTROL_PLANE_MAP.md) records Edition 0.6: private-repository provenance, current online ownership, runtime deployment alignment, Beta entitlement behavior, and 1.0 boundary.
 
 
 
@@ -88,6 +93,20 @@
   - [55. Open-core legal/technical boundary](#55-open-core-legaltechnical-boundary)
   - [56. Frozen versus provisional road-to-1.0 decisions](#56-frozen-versus-provisional-road-to-1-0-decisions)
   - [57. Documentation-library cleanup state](#57-documentation-library-cleanup-state)
+- **[Part XV — Project Truth Baseline 1.0](#part-xv-project-truth-baseline-1-0)**
+  - [58. What “Project Truth 1.0” means](#58-what-project-truth-1-0-means)
+  - [59. Repository topology is now verified](#59-repository-topology-is-now-verified)
+  - [60. Current public Basic repository truth](#60-current-public-basic-repository-truth)
+  - [61. Current release truth](#61-current-release-truth)
+  - [62. Current CI truth](#62-current-ci-truth)
+  - [63. Current control-plane ownership truth](#63-current-control-plane-ownership-truth)
+  - [64. Current Beta entitlement versus 1.0 trust authority](#64-current-beta-entitlement-versus-1-0-trust-authority)
+  - [65. Phase 2A status is now fully reconciled](#65-phase-2a-status-is-now-fully-reconciled)
+  - [66. Basic independence is a cross-repository invariant](#66-basic-independence-is-a-cross-repository-invariant)
+  - [67. Final documentation-library disposition](#67-final-documentation-library-disposition)
+  - [68. Project Truth checkpoint](#68-project-truth-checkpoint)
+  - [69. Explicit open gates after archaeology](#69-explicit-open-gates-after-archaeology)
+  - [70. Coding gate after Project Truth 1.0](#70-coding-gate-after-project-truth-1-0)
 <!-- AUTO_TOC_END -->
 
 ---
@@ -148,7 +167,7 @@ The central differentiator is that LightBI tries to make messy operational data 
 
 The repository is a historical record, not a flat specification. Many old documents describe architectures that were later superseded.
 
-Code and Git-history reconciliation are now complete; CI/CD and control-plane audits are still pending. Use this order of authority:
+Docs, code, Git history, CI/CD, release publication, and private control-plane ownership are now reconciled. Use this order of authority:
 
 1. **Current code at the relevant exact SHA/branch + reproducible runtime evidence**, interpreted with [`LIGHTBI_CODE_MAP.md`](./LIGHTBI_CODE_MAP.md) and [`LIGHTBI_GIT_HISTORY_MAP.md`](./LIGHTBI_GIT_HISTORY_MAP.md).
 2. **Latest closure documents and machine-readable audits** for the relevant subsystem.
@@ -1369,14 +1388,15 @@ The documentation review included the previously inventoried historical Markdown
 
 This book becomes progressively more authoritative through the following editions:
 
-- **0.1 Docs Baseline** — this edition.
-- **0.2 Documentation Reorganization** — paths normalized after provenance-preserving cleanup.
-- **0.3 Codebase Map** — actual runtime/module ownership linked to book chapters.
-- **0.4 Git History Reconciliation** — commits and branch history attached to architecture decisions.
-- **0.5 CI/CD Map** — GitHub Actions, packaging, signing, release and distribution behavior documented.
-- **1.0 Project Truth Baseline** — docs + code + Git + CI/CD + control-plane reconciled.
+- **0.1 Docs Baseline** — completed.
+- **0.2 Documentation Reorganization** — completed.
+- **0.3 Codebase Map** — completed.
+- **0.4 Git History Reconciliation** — completed.
+- **0.5 CI/CD Map** — completed.
+- **0.6 Control-Plane Reconciliation** — completed.
+- **1.0 Project Truth Baseline** — completed on 2026-08-30.
 
-Only after Edition 1.0 should a new AI be considered fully onboarded to the current LightBI project without a fresh repository-wide archaeology pass.
+Edition 1.0 is now sufficient for repository-wide onboarding. Future AI work should perform scoped feature archaeology rather than repeat the entire historical audit.
 ---
 
 # Part XIV — Road to 1.0: Distribution, Licensing, Trust, and Release Direction
@@ -1585,7 +1605,7 @@ Frozen design invariants from the handoff:
 - private signer work is blocked until the public v1 contract passes audit and freeze.
 ## 53. Phase 2A current handoff state and audit blockers
 
-The session handoff records draft PR `#4`, branch `codex/phase2-trust-contracts`, based on `c06ef003...`, with audit-candidate commit `d17abe0f...`. These identifiers must be verified later against GitHub.
+Git/GitHub reconciliation confirms draft PR `#4`, branch `codex/phase2-trust-contracts`, base `c06ef003...`, and audited head `d17abe0f...`. The PR is still open/draft and not part of current `main`. GitHub CI passed at that head.
 
 The independent audit verdict was explicitly **not freezeable yet**. Private signer work remains blocked.
 
@@ -1674,6 +1694,227 @@ First safe move class:
 - `DOMAIN_CORE_AUDIT_REPORT.md` remains at root because `apps/desktop/src/audit-runner.ts` consumes it;
 - `validation_report.md` remains at root because perspective-isolation scripts consume it.
 
-Architecture JSON is intentionally not moved yet. A path-consumer audit found 129/354 `docs/architecture/*.json` files directly referenced by tests/scripts. Their location is therefore part of the current executable governance surface until the Code Map/CI audit proves otherwise.
+Architecture JSON remains intentionally unmoved after the completed Code Map/Git/CI audit. A path-consumer audit found 129/354 `docs/architecture/*.json` files directly referenced by archive tests/scripts, and current public CI intentionally does not carry this internal evidence library. Their path identity remains part of archive governance; Edition 1.0 authorizes no cosmetic move.
 
 This is the governing cleanup rule: **documentation organization may improve human navigation, but must never silently invalidate machine-governed evidence.**
+
+---
+
+# Part XV — Project Truth Baseline 1.0
+
+## 58. What “Project Truth 1.0” means
+
+This edition closes the repository-wide archaeology sequence requested before new product implementation.
+
+It reconciles five evidence layers:
+
+```text
+document corpus
++ current/archive code map
++ Git history and release tags
++ GitHub Actions / publication state
++ private control-plane source and running deployment
+```
+
+“1.0” here is the **Project Book edition**, not a claim that the LightBI desktop application has reached stable product version 1.0.
+
+Where an implementation is still transitional, the Book says so explicitly rather than converting design intent into fictional completed code.
+## 59. Repository topology is now verified
+
+LightBI intentionally has two Git histories:
+
+```text
+archive/internal lineage
+6145017 → … → 87dce4d → 0142e92
+
+public-clean lineage
+b10f8d0 → … → c06ef00 → 4668983
+```
+
+The public root is a sanitized snapshot, not a product rewrite. At the publicization boundary almost all desktop/server/package implementation files were byte-identical while the large internal documentation/history corpus was omitted.
+
+Therefore:
+
+- `storage`, recovery, and most dated backup branches are archaeology/archive sources;
+- GitHub `main` is the public Basic/release lineage;
+- local branch name `main` on the VPS is not current public truth;
+- public truth must resolve from `origin/main`/GitHub SHA, not from a local branch label.
+## 60. Current public Basic repository truth
+
+At this audit, public `main` is `466898372fcf3869ae10140cafce83bf57c5d392`.
+
+Its production architecture preserves the core findings from the Code Map:
+
+- Home/Easy enters the canonical understanding boundary before governed analysis;
+- full runtime-source continuity is required for execution;
+- multi-source joins are relationship-governed rather than inferred from file presence;
+- Investigation/BA/chart layers consume governed outputs rather than repairing semantic authority;
+- Advanced Mode may create/transform data but must re-enter the canonical boundary before Easy/BA trust claims;
+- native desktop embeds the Rust/Axum core rather than requiring a separate installed server process;
+- Basic is public AGPL source and remains local-first.
+
+Archive-baseline “dirty/untracked” labels are branch-relative historical evidence only. Several such features have later committed public history and must be traced by Git rather than guessed from the recovery worktree.
+## 61. Current release truth
+
+The latest official Beta remains `0.9.2-beta.7`, tag commit `28e2aae`.
+
+The Windows/Linux release chain is verified end-to-end:
+
+```text
+Beta tag
+→ GitHub Actions native Windows + Debian builds
+→ updater/integrity gates
+→ SHA-256 sidecars
+→ GitHub prerelease assets
+→ immutable R2 objects
+→ lightbi.release.v1 manifest
+→ release index / Beta latest
+→ distribution release-discovery API
+```
+
+Live R2 and the distribution API currently agree on Windows x86_64 EXE and Linux x86_64 DEB artifacts.
+
+GitHub Release contains matching Windows/Linux binaries and checksums.
+The current post-control-plane-split release workflow replaces private portal tests with public Basic release/boundary tests. No newer Beta tag has yet exercised that post-split tagged path end-to-end.
+
+Universal macOS Big Sur+ DMG build validation is green, including x86_64 + arm64 and ad-hoc signature verification. Official macOS publication is **not complete**: the latest post-merge publication job failed, and neither GitHub Release nor R2 latest currently advertises a macOS artifact.
+
+Apple Developer ID signing/notarization remains unfinished.
+
+## 62. Current CI truth
+
+Current public CI on `main` is green and blocks public-main push/PR on:
+
+- public Basic release contract;
+- public/private source-boundary guard;
+- desktop production build;
+- a selected governed regression suite.
+
+This is a deliberately bounded gate, not the historical full archive test matrix. Full Rust workspace, all desktop tests, all E2E, and native packaging are not ordinary-main CI gates.
+Open draft PR #4 adds public trust-contract TypeScript/Rust verification. Its head `d17abe0` has a successful GitHub CI run, but the branch is not merged into current main.
+
+A green PR #4 CI run proves implementation/test consistency for that branch. It does not override the independent Phase 2A freeze blockers recorded in the approved design handoff.
+
+## 63. Current control-plane ownership truth
+
+The online control plane is now owned by private repository `n8n2erpnext/lightbi-control-plane`, main `87b2ee457c30ac4f7d7d55332bbfc658d51b2c53` at audit.
+
+Its initial private commit copied the disclosed public `apps/distribution/` implementation exactly from public commit `653122e`; private ownership is therefore a forward boundary, not retroactive secrecy.
+
+The private service owns current online distribution/account/admin/analytics/payment/mail/release-discovery behavior.
+
+The running port-5174 service uses `/home/ubuntu/services/lightbi-control-plane/apps/distribution` and is source-aligned with private main for runtime files after line-ending normalization.
+The deployment `.deployed-commit` marker still says `5f05a55`; byte-level reconciliation shows that marker is stale and must not be used alone as runtime provenance.
+
+The private repository's current source independently passed 39/39 tests and its build command during this audit without production configuration.
+
+The old untracked `apps/distribution/` directory in Beta-recovery is not current control-plane authority. It is a historical/workbench copy and differs from private main.
+
+## 64. Current Beta entitlement versus 1.0 trust authority
+
+Current private code has real account, identity, session, device and entitlement records. It also still supports current-Beta license-key flows and installation-ID-based device records.
+
+That implementation is transitional.
+
+The frozen 1.0 authority remains:
+
+```text
+authenticated account or organization
++ trusted official installation
++ valid entitlement
+```
+
+No reusable standalone Pro key and no browser-local tier may become final Pro authority.
+Organization Business named-user seats, one-time organization claim tokens, installation certificates, request attestation, purpose-separated signing issuers, signed entitlements, encrypted Pro capability delivery, and offline Pro leases are **not implemented** in current private main.
+
+That absence is intentional at the current phase boundary.
+
+## 65. Phase 2A status is now fully reconciled
+
+Repository facts are verified:
+
+- Phase 0–1 merge/base: `c06ef003242e06884e65d992627b5706ad13dfab`;
+- Phase 2A branch: `codex/phase2-trust-contracts`;
+- current audited head: `d17abe0f7c5bc97521347526fb5fcec759857b2e`;
+- PR #4 is open and draft;
+- its trust-contract CI gate passed at that head;
+- it is not part of current public `main`.
+
+Design-freeze truth also remains: the approved independent audit marked Phase 2A **not freezeable yet** and enumerated canonicalization, keyset trust, lifecycle, semantic validation and vector hardening work.
+
+Therefore private signer work remains blocked until a later explicit Phase 2A freeze decision.
+## 66. Basic independence is a cross-repository invariant
+
+All current and future online work must preserve this failure rule:
+
+```text
+control plane unavailable
+account unavailable
+telemetry disabled
+entitlement refresh unavailable
+future attestation unavailable
+
+→ local Basic remains usable
+```
+
+Online services may disable Account/Pro-specific capability when trust cannot be proven. They must not disable the local Basic understanding/analysis workflow merely because a remote dependency is unavailable.
+
+Current control-plane pairing already returns Basic without analytics pairing when telemetry consent is false, which is consistent with this separation.
+
+## 67. Final documentation-library disposition
+
+The documentation cleanup is now complete enough to classify the remaining architecture JSON decision safely.
+
+The 354 `docs/architecture/*.json` files remain in place.
+
+Earlier audit proved at least 129 exact test/script consumers in the archive lineage; other consumers may be dynamic or historical. Current public `main` intentionally does not carry this internal evidence library, so public CI cannot be used to justify moving archive evidence paths.
+Final rule:
+
+- do not move machine-evidence JSON merely for visual folder cleanliness;
+- keep path identity stable unless a future dedicated migration updates every consumer and proves archive test parity;
+- human navigation is already solved through architecture indexes/catalogs, so there is no product value in taking that risk now.
+
+No further machine-evidence move is authorized by Edition 1.0.
+
+## 68. Project Truth checkpoint
+
+After this archaeology pass, a new AI should no longer need to re-read the entire historical repository before beginning a scoped implementation task.
+
+Required onboarding route is now:
+
+```text
+project-book/README.md
+→ LIBRARY_RULES.md
+→ LIGHTBI_PROJECT_BOOK.md
+→ LIGHTBI_CODE_MAP.md
+→ LIGHTBI_GIT_HISTORY_MAP.md
+→ LIGHTBI_CI_CD_MAP.md
+→ LIGHTBI_CONTROL_PLANE_MAP.md
+→ exact source/tests for the requested change
+```
+
+New implementation still requires a fresh **scoped** impact audit around the feature being changed. Project Truth eliminates repository-wide rediscovery; it does not eliminate engineering verification.
+## 69. Explicit open gates after archaeology
+
+Edition 1.0 does not pretend these items are complete:
+
+- Phase 2A trust-contract freeze/remediation and PR #4 disposition;
+- post-split tagged release dry run/real Beta publication;
+- failed macOS additive publication repair;
+- Apple Developer ID signing/notarization;
+- final organization/Business entitlement implementation;
+- trusted installation/attestation implementation;
+- private signing hierarchy and signed entitlement implementation;
+- private Pro capability delivery/offline lease implementation;
+- final open-core legal/dependency review;
+- stale control-plane deployed-SHA marker cleanup.
+
+These are implementation/release tasks, not missing archaeology.
+
+## 70. Coding gate after Project Truth 1.0
+
+Product coding must **not** occur on `docs/project-library-cleanup-20260829`.
+
+This worktree is the durable knowledge/library branch. New code work should start from the correct product lineage and use a dedicated feature branch/worktree after reconciling the intended base with current public `main` and any approved open PR dependencies.
+
+The old dirty Beta-recovery worktree remains evidence/archive unless a specific recovery task explicitly chooses it as source.

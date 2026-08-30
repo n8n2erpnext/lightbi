@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "lightbi.project-truth-status.v1",
+  "edition": "1.0",
+  "initialSnapshotDate": "2026-08-29",
+  "auditClosedDate": "2026-08-30",
+  "documentationBranch": "docs/project-library-cleanup-20260829",
+  "repository": {
+    "public": "n8n2erpnext/lightbi",
+    "publicMain": "466898372fcf3869ae10140cafce83bf57c5d392",
+    "archiveStorage": "87dce4dd5e2cdbe964789696946760a43f974e08",
+    "archiveRecovery": "0142e92c75e9fd3e190f82fe2a67cf255180cfca",
+    "controlPlane": "n8n2erpnext/lightbi-control-plane",
+    "controlPlaneMain": "87b2ee457c30ac4f7d7d55332bbfc658d51b2c53"
+  },
+  "release": {
+    "latestBeta": "0.9.2-beta.7",
+    "tagCommit": "28e2aae4a0f51b7fb623d0b010048e93337255a6",
+    "windowsPublished": true,
+    "linuxPublished": true,
+    "macosBuildValidated": true,
+    "macosPublished": false
+  },
+  "phase2a": {
+    "pullRequest": 4,
+    "base": "c06ef003242e06884e65d992627b5706ad13dfab",
+    "head": "d17abe0f7c5bc97521347526fb5fcec759857b2e",
+    "draft": true,
+    "merged": false,
+    "ciPassedAtHead": true,
+    "freezeApproved": false
+  },
+  "controlPlane": {
+    "runningPort": 5174,
+    "runtimeSourceAlignedWithPrivateMain": true,
+    "deployedCommitMarkerStale": true,
+    "localAuditTestsPassed": 39,
+    "localAuditTestsFailed": 0,
+    "localAuditBuildPassed": true
+  },
+  "documentation": {
+    "codeMapComplete": true,
+    "gitHistoryComplete": true,
+    "ciCdMapComplete": true,
+    "controlPlaneMapComplete": true,
+    "architectureJsonMoved": false,
+    "architectureJsonPathLockRetained": true
+  },
+  "openGates": [
+    "phase2a_freeze_and_pr4_disposition",
+    "post_split_tagged_release_proof",
+    "macos_additive_publication",
+    "apple_signing_and_notarization",
+    "organization_business_entitlement",
+    "trusted_installation_and_attestation",
+    "private_signing_and_signed_entitlements",
+    "private_pro_capability_delivery_and_offline_policy",
+    "final_open_core_dependency_legal_review",
+    "control_plane_deployed_sha_marker"
+  ]
+}

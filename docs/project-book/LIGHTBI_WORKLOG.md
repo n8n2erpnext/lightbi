@@ -954,3 +954,45 @@ Key findings:
 - Phase 0–1 later removes the public control-plane implementation and merges as `c06ef00`;
 - PR #4 remains open/draft at `d17abe0`; PR #5 later advances public main to `4668983`;
 - local `main` on the VPS is a historical-lineage branch and must not be confused with `origin/main` public truth.
+## 2026-08-30 — GitHub Actions and release publication reconciled
+
+Edition 0.5 audited current public workflows, their Git history, recent GitHub Actions run/job/step conclusions, the `v0.9.2-beta.7` tag-time workflow, GitHub Release assets, live R2 catalogs, and the running distribution release API.
+
+Verified conclusions:
+
+- current public CI at `4668983` is green;
+- `v0.9.2-beta.7` Windows + Debian build/publish completed successfully in Actions run `33028417121`;
+- GitHub Release, R2 Beta latest/index and distribution release discovery agree on the two platform artifacts;
+- current post-split release workflow no longer depends on private `apps/distribution` tests;
+- no post-split Beta tag has yet exercised that updated tagged publication path;
+- universal macOS Big Sur+ DMG validation is green;
+- post-merge macOS additive publication run `33247413779` failed in `publish-macos`, leaving no macOS artifact in GitHub Release or R2 catalogs;
+- Phase 2A trust-contract CI passed at PR #4 head `d17abe0`, but the draft PR remains unmerged.
+
+Detailed evidence is recorded in [`LIGHTBI_CI_CD_MAP.md`](./LIGHTBI_CI_CD_MAP.md).
+## 2026-08-30 — private control-plane repository reconciled
+
+The private repository `n8n2erpnext/lightbi-control-plane` was audited through its Git remote and a temporary verification clone.
+
+Provenance proof showed private initial commit `2bcf7a8` copied all 28 `apps/distribution/` files byte-for-byte from disclosed public commit `653122e`.
+
+Private main at audit is `87b2ee457c30ac4f7d7d55332bbfc658d51b2c53`. Its current source passed 39/39 tests plus the build command in an isolated local audit without production configuration.
+
+The running port-5174 service uses `/home/ubuntu/services/lightbi-control-plane/apps/distribution`. After line-ending normalization its runtime/source/config files align with private main; only test/docs files differ. The `.deployed-commit` marker still says `5f05a55`, so that marker is stale provenance metadata.
+
+The old Beta-recovery `apps/distribution/` copy is not current authority: it lacks six private migration/runtime utilities, has eight real file differences, and retains extra backup residue.
+
+The private code remains a Beta account/entitlement/operations plane. Organization Business, attestation, signer hierarchy, signed entitlement and Pro capability delivery are absent by design.
+
+Detailed evidence is recorded in [`LIGHTBI_CONTROL_PLANE_MAP.md`](./LIGHTBI_CONTROL_PLANE_MAP.md).
+## 2026-08-30 — Project Truth 1.0 archaeology closed
+
+The Project Book was promoted from a docs-derived baseline to **Project Truth 1.0** after reconciling documentation, code reachability/ownership, archive/public Git lineages, release tags/PRs, Actions/publication state, and private control-plane ownership/deployment.
+
+The final library pass deliberately moved **zero** architecture JSON files. At least 129/354 remain exact consumers of archive tests/scripts, and current public CI intentionally omits this internal evidence library; moving them for visual cleanliness would add risk without improving retrieval.
+
+Open items are now classified as implementation/release gates rather than missing archaeology. They include Phase 2A freeze, post-split tagged release proof, macOS publication/signing, organization/attestation/signer/Pro-delivery work, legal/dependency review, and the stale control-plane deployed-SHA marker.
+
+Product coding must start on a dedicated product branch/worktree, not on `docs/project-library-cleanup-20260829`.
+
+Machine-readable checkpoint state is recorded in [`PROJECT_TRUTH_STATUS.json`](./PROJECT_TRUTH_STATUS.json).

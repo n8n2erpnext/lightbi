@@ -4,7 +4,7 @@ Start with [`project-book/README.md`](./project-book/README.md). Before creating
 
 ## Primary shelves
 
-- [`project-book/`](./project-book/) — project book, governance, worklog, library map, source catalog, path migration indexes, and code-map work;
+- [`project-book/`](./project-book/) — Project Truth 1.0, governance, code/Git/CI/control-plane maps, worklog, library map, source catalog, and path indexes;
 - [`architecture/`](./architecture/) — current model/contracts, phase records, and path-sensitive machine evidence;
 - [`adr/`](./adr/) — architecture decision history;
 - [`domain-catalog/`](./domain-catalog/) — domain knowledge sources;
@@ -22,4 +22,4 @@ Start with [`project-book/README.md`](./project-book/README.md). Before creating
 4. Use [`project-book/PATH_MIGRATION_INDEX.md`](./project-book/PATH_MIGRATION_INDEX.md) and [`history/LEGACY_ROOT_INDEX.md`](./history/LEGACY_ROOT_INDEX.md) for old paths.
 5. Use [`project-book/DOCUMENT_TEMPLATE.md`](./project-book/DOCUMENT_TEMPLATE.md) when a durable new document is justified.
 6. Do not treat historical documents as current authority without checking source precedence.
-7. Do not move `docs/architecture/*.json` until Code Map + Git/CI audit proves every consumer path is safe.
+7. Keep `docs/architecture/*.json` path-locked. Edition 1.0 found archive test/script consumers and authorizes no cosmetic move; only a dedicated consumer-safe migration may change those paths.

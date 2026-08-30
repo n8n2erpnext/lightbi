@@ -5,7 +5,7 @@
 **Code audit completed:** 2026-08-30
 **Repository baseline:** `0142e92c75e9fd3e190f82fe2a67cf255180cfca`
 **Current VPS working branch:** `codex/beta-recovery-20260801`
-**Status:** **Codebase audit baseline complete. Git-history reconciliation is complete in `LIGHTBI_GIT_HISTORY_MAP.md`.** Control-plane ownership and CI/CD reconciliation remain pending.
+**Status:** **Codebase audit baseline complete and later reconciled by Git, CI/CD, and private control-plane audits.** Read the companion maps before treating branch-relative findings as current project-wide truth.
 
 ---
 
@@ -80,7 +80,7 @@ Tauri embeds the Axum router in-process and bridges frontend requests through a 
 
 ### Distribution/control-plane state in the recovery worktree
 
-The dirty VPS worktree contains an **untracked relative to `0142e92`** `apps/distribution/` Node application. Git reconciliation later proved that a public `apps/distribution/` implementation was committed on the re-rooted public `main`, evolved through Beta 7/account/update work, and was then intentionally removed from current public `main` during the Phase 0–1 private control-plane split. The local untracked directory is not byte-identical to that last public snapshot and still requires dedicated control-plane-repository reconciliation.
+The dirty VPS worktree contains an **untracked relative to `0142e92`** `apps/distribution/` Node application. Later Git and control-plane reconciliation proved that the implementation was committed publicly, then intentionally removed from public `main`, and migrated to private `n8n2erpnext/lightbi-control-plane`. The local recovery-tree copy is historical/workbench residue and is not current online-service authority.
 # Part II — Frontend Production Reachability
 
 ## 3. Production entry point and route graph
@@ -577,7 +577,7 @@ The imported 1.0 design explicitly says Pro authority must not reduce to a reusa
 
 - localStorage tier is UI/cache state at best;
 - account + trusted installation + entitlement is the intended authority direction;
-- current `/api/license/activate` and key-redemption paths are transitional until the later control-plane audit classifies them precisely.
+- control-plane reconciliation confirms `/api/license/activate` and key-redemption are current-Beta transitional flows, not frozen 1.0 Pro authority.
 
 Code existence here must not override the stronger design freeze without explicit reconciliation.
 
@@ -641,7 +641,7 @@ Deletion requires proving category 4, not merely failing a static walk.
 ## 38. Known examples
 
 - `App.tsx` is a strong legacy/orphan candidate: production `main.tsx` renders `RouterProvider`, not `App`.
-- `pages/ChartBuilder.tsx` currently has no route and the lightweight reference audit found no TS/TSX consumer; treat it as an orphan candidate pending Git/CI confirmation.
+- `pages/ChartBuilder.tsx` has no route or other TS/TSX consumer on current public `main` either; retain the classification **orphan candidate**, but deletion still requires a scoped code-change review.
 - old `semantic-fields.ts` / `semantic-tag-registry.ts` and `relationship-discovery.ts` are largely test/legacy surfaces rather than current semantic authority.
 - `understanding-next` must **not** be deleted wholesale: current Home/presentation code still consumes its contracts/adapters. Canonical core projects into this shape through adapters such as `canonical-consumer-presentation-adapter.ts` and `understanding-core/next-adapter.ts`.
 - `legacy-observation-harness`, legacy/canonical comparison modules, paired replay, shadow sidecar and related Phase-5 modules are verification/history machinery. They can be outside production reachability while still protecting migration evidence.
@@ -681,7 +681,7 @@ historical replay passes       ≠ legacy module should be production authority
 machine evidence is consumed   ≠ file may be freely moved
 ```
 
-The later CI audit must map which of these suites actually run on push/PR/release. This Code Map only establishes where the verification surfaces live and what they protect.
+The later CI audit is complete in [`LIGHTBI_CI_CD_MAP.md`](./LIGHTBI_CI_CD_MAP.md): current public CI runs a bounded selected suite rather than the entire archive verification surface. This Code Map establishes where the broader surfaces live and what they protect.
 
 # Part XIII — Authority Map for Future Changes
 
@@ -700,7 +700,7 @@ The later CI audit must map which of these suites actually run on push/PR/releas
 | persistent workspace metadata | server `ProjectContext` + `advanced_workspace.rs` | `ProjectStore` is not yet sole live owner |
 | native API routing | Tauri `src/main.rs` + `api-base.ts` | recovery snapshot differs from later public-main account/update wiring |
 | account/license/update | public-main commits + recovery-local divergence + dedicated control-plane repo | not final 1.0 trust authority |
-| release/distribution UI | committed public history, then private control-plane ownership | local untracked copy still requires control-plane reconciliation |
+| release/distribution UI | private `lightbi-control-plane` main | local recovery copy is historical/workbench residue |
 ## 42. Current VPS deployment shape is operational context, not architectural authority
 
 At this audit checkpoint the VPS intentionally runs host processes rather than Dockerized LightBI services:
@@ -725,3 +725,6 @@ Therefore this map intentionally carries two truths at once:
 - **current VPS implementation evidence** observed in the dirty `codex/beta-recovery-20260801` worktree.
 
 Git-history reconciliation is now complete in [`LIGHTBI_GIT_HISTORY_MAP.md`](./LIGHTBI_GIT_HISTORY_MAP.md). It proves that some recovery-dirty paths correspond to later public-main commits, while other local files/directories diverge from or are absent on current `main`. Dirty-state findings here remain branch-relative implementation evidence; the Git map supplies merge/release provenance.
+
+
+**Post-audit companions:** [`LIGHTBI_GIT_HISTORY_MAP.md`](./LIGHTBI_GIT_HISTORY_MAP.md), [`LIGHTBI_CI_CD_MAP.md`](./LIGHTBI_CI_CD_MAP.md), and [`LIGHTBI_CONTROL_PLANE_MAP.md`](./LIGHTBI_CONTROL_PLANE_MAP.md) complete the branch/release/deployment provenance needed to interpret this code snapshot.

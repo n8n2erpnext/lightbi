@@ -987,4 +987,4 @@ For old paths, use [`PATH_MIGRATION_INDEX.md`](./PATH_MIGRATION_INDEX.md) and [`
 
 ## source-doc
 
-- [`docs/README.md`](../../docs/README.md) — LightBI Documentation Library; `1588` bytes; SHA-256 `727ff790ef2a0fffd8423a13d7016f49309167bb6eadf273545616938fb40e61`
+- [`docs/README.md`](../../docs/README.md) — LightBI Documentation Library; `1974` bytes; SHA-256 `fe9a0a6d87afb0e5ca8bb1869955b56e392e66aba3ea727554263d507b545191`

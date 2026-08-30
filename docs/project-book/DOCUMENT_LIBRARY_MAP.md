@@ -42,9 +42,11 @@
 
 `docs/project-book/` is a governance/synthesis layer and is intentionally excluded from `SOURCE_CATALOG` to avoid self-referential catalog churn. Its files are indexed by this map and `project-book/README.md`.
 
+Project Truth companions now include Code Map 0.3, Git History 0.4, CI/CD 0.5, Control Plane 0.6, and machine-readable [`PROJECT_TRUTH_STATUS.json`](./PROJECT_TRUTH_STATUS.json).
+
 ## Machine-path lock
 
-The cleanup intentionally leaves `docs/architecture/*.json` in place. Earlier audit found a substantial subset consumed by tests/scripts. Moving them is deferred until the Code Map + GitHub Actions/CI audit identifies every static and dynamic consumer.
+The cleanup intentionally leaves `docs/architecture/*.json` in place. Earlier audit found a substantial subset consumed by tests/scripts. The completed Code Map/Git/CI audit does not authorize moving them: archive tests/scripts consume their paths, while public CI intentionally excludes this internal evidence library. Path lock is retained unless a future dedicated migration proves all consumers and archive parity.
 
 ## Historical identity rule
 

@@ -308,7 +308,7 @@ Directory-level comparison gives the following branch-relative picture:
 
 The local `apps/distribution/` directory is also **not** an exact copy of the last pre-cutover public tree at `653122e`: 28 comparable files differ and 10 local backup/generated files are absent there.
 
-Therefore local `apps/distribution/` must remain classified as a separate transitional/runtime snapshot until the dedicated `lightbi-control-plane` repository is audited. It is neither current public-main source nor a byte-for-byte historical checkout.
+Later control-plane reconciliation resolved this ambiguity: current authority is private `n8n2erpnext/lightbi-control-plane` main, while local recovery-tree `apps/distribution/` is historical/workbench residue and differs from the private source. It is neither current public-main source nor current private authority.
 ## 13. Git corrections to Code Map branch-relative labels
 
 The Code Map deliberately described what was tracked at baseline HEAD `0142e92` versus dirty in that worktree. Git reconciliation now upgrades several labels:
@@ -377,9 +377,9 @@ When a future human or AI asks “is this implemented?” use this order:
 10. preserve `storage` and backup refs as historical evidence unless the owner explicitly approves archival cleanup.
 
 For LightBI specifically, the lineage reset is intentional. Reconnecting it with an artificial merge would destroy the clean public-history model and add no product value.
-## 17. What Git history does not yet prove
+## 17. What Git history alone cannot prove
 
-The following remain intentionally unresolved after Edition 0.4:
+The following could not be established from Git history alone at Edition 0.4:
 
 - whether every workflow/job cited in commit messages still exists and passes on current `main`;
 - exact GitHub Actions triggers, matrices, allowed failures, artifact retention and release publication behavior;
@@ -391,7 +391,7 @@ The following remain intentionally unresolved after Edition 0.4:
 - Phase 2A freezeability beyond the fact that PR #4 exists and is unmerged;
 - final commercial entitlement and Pro delivery authority.
 
-Those questions belong to the CI/CD and control-plane reconciliation phases, not to Git-history inference.
+Those questions belong to the CI/CD and control-plane reconciliation phases, not to Git-history inference. Editions 0.5 and 0.6 subsequently resolve the workflow/R2/macOS/control-plane/runtime-residue questions; Phase 2A freezeability and future commercial/Pro authority remain explicit implementation/design gates.
 
 ## 18. Edition 0.4 conclusion
 
@@ -399,4 +399,4 @@ LightBI now has a reconciled repository-history model:
 
 **archive lineage preserves how the product was built; public `main` is a deliberate sanitized snapshot lineage; release tags and PRs define shipped/public transitions; branch-relative dirty state is no longer confused with project-wide Git truth.**
 
-This closes the Git History Reconciliation phase. The next authorized phase is GitHub Actions / CI/CD audit.
+This closes the Git History Reconciliation phase. GitHub Actions / CI/CD and private control-plane audits were subsequently completed and are linked from the Project Book entry point.

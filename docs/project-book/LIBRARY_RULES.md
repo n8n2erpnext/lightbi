@@ -48,7 +48,7 @@ Use `source_catalog.json` and its path, category, title/schema metadata, size, a
 Read `LIGHTBI_WORKLOG.md`, then the referenced ADR, phase record, audit, verification, or handoff.
 
 ### F. Need to verify code truth
-Documentation alone is insufficient. Use the Code Map and current codebase/Git evidence once those layers are available.
+Documentation alone is insufficient. Use `LIGHTBI_CODE_MAP.md`, `LIGHTBI_GIT_HISTORY_MAP.md`, `LIGHTBI_CI_CD_MAP.md`, and `LIGHTBI_CONTROL_PLANE_MAP.md` as the Project Truth companions, then inspect the exact current source/tests for the scoped change.
 
 Never promote a historical handoff, old roadmap, audit observation, or draft pricing document into current truth without checking precedence and date.
 

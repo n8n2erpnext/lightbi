@@ -1,9 +1,9 @@
 {
   "schemaVersion": "lightbi.project-book.source-catalog.v1",
   "snapshotDate": "2026-08-30",
-  "generatedAt": "2026-08-29T17:46:26.978831+00:00",
+  "generatedAt": "2026-08-30T01:46:59.561175+00:00",
   "branch": "docs/project-library-cleanup-20260829",
-  "head": "61aa3c39fc5253fd4b0210545ba0cb92e508dd72",
+  "head": "d0506a4c87d4231ae695de7662d1f2e29285b7d4",
   "worktreeDirty": true,
   "scope": "All project Markdown and JSON outside dependency/build/project-book directories.",
   "counts": {
@@ -296,8 +296,8 @@
     {
       "path": "docs/README.md",
       "extension": ".md",
-      "bytes": 1588,
-      "sha256": "727ff790ef2a0fffd8423a13d7016f49309167bb6eadf273545616938fb40e61",
+      "bytes": 1974,
+      "sha256": "fe9a0a6d87afb0e5ca8bb1869955b56e392e66aba3ea727554263d507b545191",
       "suggestedCategory": "source-doc",
       "title": "LightBI Documentation Library"
     },
