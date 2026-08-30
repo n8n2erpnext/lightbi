@@ -410,3 +410,10 @@ The owner-facing `5273` gateway now routes distribution/control-plane traffic to
 For owner bug testing after Core fix `eadba8f`, the canonical 5273 gateway routes control-plane calls to an Internal CP API instance on temporary port 5474. That API identifies `g-2026-08-30-next-003`, exact CP commit `c251fb1ee981a529c33335d25d3ada4e6ea9d23f`, schema `061_integrations_delivery` current, and zero pending migrations. No CP source changed for this generation; the alternate port exists only because the predecessor API process could not be replaced through the current execution boundary.
 
 The async worker still emits a fresh predecessor `g-2026-08-30-next-001` heartbeat at the same exact CP commit. This does not prevent frontend/Core/CP bug testing on 5273, but it remains an explicit release/UAT generation-identity blocker. Production CP 5174 and production persistence remain untouched.
+
+
+## 27. NEXT-004 owner bug-test control-plane route
+
+The supporting-chart drill-through change is frontend/Core-repository work only; private control-plane source remains exact `c251fb1ee981a529c33335d25d3ada4e6ea9d23f`. For owner bug testing, the Internal CP API on port 5474 was restarted with generation identity `g-2026-08-30-next-004` using the existing Internal environment file. Only the safe Internal identity/port keys were changed; credentials and persistence endpoints were preserved.
+
+Through canonical gateway 5273, diagnostics now report generation `g-2026-08-30-next-004`, exact CP commit `c251fb1ee981a529c33335d25d3ada4e6ea9d23f`, schema status `current`, expected `061_integrations_delivery`, and an empty pending-migration list. Trust remains `blocked_pending_phase2a_freeze`. The existing async worker still reports predecessor generation `g-2026-08-30-next-001` at the same CP commit, so release/UAT generation identity remains fail-closed while frontend/Core/CP bug testing is valid. Production CP 5174 and production persistence were not restarted or modified.
