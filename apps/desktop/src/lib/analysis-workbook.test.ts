@@ -88,15 +88,18 @@ describe('Excel Analysis Workbook', () => {
   });
 
   it('builds single-source Deep BA summary from computed KPIs and only emits evidence for selected drill rows', () => {
+    const decisionPlan = createDecisionVisualizationPlan({ perspectiveId: 'inventory', sourceCount: 1, dimensionField: 'Store', metricIds: ['stock_qty'], rows: [{ Store: 'A', stock_qty: 12 }] });
     const plan = createSingleSourceDeepAnalysisWorkbookPlan({
       title: 'Stock by store', perspectiveId: 'inventory', resultId: 'result_1',
       chartRows: [{ Store: 'A', stock_qty: 12 }],
       kpis: [{ id: 'stock_qty', value: 12 }, { id: 'record_count', value: 1 }],
       evidence: { rows: [{ Store: 'A', Stock: 12 }], sourceResultRowCount: 3, label: 'Store = A', truncated: false },
       findings: ['Store A contains 12 units.'], recommendedActions: ['Review replenishment.'], caveats: ['Selected row scope only.'],
+      decisionVisualizationPlan: decisionPlan,
       createdAt: '2026-08-30T00:00:00.000Z',
     });
     expect(plan.combinationPolicy).toBe('single_source');
+    expect(plan.decisionVisualizationPlan?.planId).toBe(decisionPlan.planId);
     expect(plan.tables[0].rows).toEqual([{ stock_qty: 12, record_count: 1 }]);
     expect(plan.tables.filter(table => table.kind === 'evidence')).toHaveLength(1);
     expect(plan.sources[0]).toMatchObject({ sourceName: 'Result result_1', role: 'selected_result_evidence', sourceRowCount: 3 });

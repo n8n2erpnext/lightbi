@@ -65,6 +65,7 @@ export type SingleSourceDeepAnalysisWorkbookInputV1 = {
   findings?: string[];
   recommendedActions?: string[];
   caveats?: string[];
+  decisionVisualizationPlan?: DecisionVisualizationPlanV1 | null;
   createdAt?: string;
 };
 
@@ -141,6 +142,7 @@ export function createSingleSourceDeepAnalysisWorkbookPlan(input: SingleSourceDe
     findings: input.findings,
     recommendedActions: input.recommendedActions,
     caveats: input.caveats,
+    decisionVisualizationPlan: input.decisionVisualizationPlan ?? null,
     notes: [
       'Single-source summary uses already-computed LightBI BA KPIs when available; otherwise it preserves the governed chart-result rows.',
       ...(input.evidence ? [

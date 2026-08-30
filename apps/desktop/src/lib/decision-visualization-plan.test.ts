@@ -37,4 +37,17 @@ describe('DecisionVisualizationPlanV1', () => {
     expect(plan.result.metricIds).toEqual(['stock_qty']);
     expect(plan.primaryVisualization).toMatchObject({ type: 'line', xField: 'Store' });
   });
+
+  it('uses explicit governed metric IDs instead of treating incidental result columns as measures', () => {
+    const plan = createDecisionVisualizationPlan({
+      perspectiveId: 'inventory', sourceCount: 1, dimensionField: 'Store', metricIds: ['stock_qty'],
+      rows: [{ Store: 'A', stock_qty: 12, debug_label: 'source A' }],
+    });
+    expect(plan.result.metricIds).toEqual(['stock_qty']);
+    expect(() => createDecisionVisualizationPlan({
+      perspectiveId: 'inventory', sourceCount: 1, dimensionField: 'Store', metricIds: ['missing_metric'],
+      rows: [{ Store: 'A', stock_qty: 12 }],
+    })).toThrow('DECISION_VISUALIZATION_METRIC_NOT_IN_RESULT');
+  });
+
 });

@@ -43,6 +43,7 @@ export type CreateDecisionVisualizationPlanInputV1 = {
   rows: Record<string, unknown>[];
   sourceCount: number;
   dimensionField: string;
+  metricIds?: string[];
   sourceRefs?: DecisionVisualizationSourceRefV1[];
   selectedScope?: DecisionVisualizationScopeV1;
 };
@@ -68,9 +69,14 @@ export function createDecisionVisualizationPlan(input: CreateDecisionVisualizati
       .map(row => ({ [input.dimensionField]: row[input.dimensionField], [selectedScope.metricId]: row[selectedScope.metricId] }))
     : input.rows.map(row => ({ ...row }));
   if (scopedRows.length === 0) throw new Error('DECISION_VISUALIZATION_SCOPE_EMPTY');
+  const inferredMetricIds = [...new Set(scopedRows.flatMap(row => Object.keys(row).filter(key => key !== input.dimensionField)))];
+  const requestedMetricIds = [...new Set((input.metricIds ?? []).filter(metricId => metricId !== input.dimensionField))];
   const metricIds = selectedScope
     ? [selectedScope.metricId]
-    : [...new Set(scopedRows.flatMap(row => Object.keys(row).filter(key => key !== input.dimensionField)))];
+    : requestedMetricIds.length > 0 ? requestedMetricIds : inferredMetricIds;
+  if (metricIds.some(metricId => !scopedRows.some(row => Object.prototype.hasOwnProperty.call(row, metricId)))) {
+    throw new Error('DECISION_VISUALIZATION_METRIC_NOT_IN_RESULT');
+  }
   if (metricIds.length === 0) throw new Error('DECISION_VISUALIZATION_METRIC_REQUIRED');
   const sourceRefs = (input.sourceRefs ?? []).map(source => ({ ...source }));
   const seed = JSON.stringify({ perspectiveId: input.perspectiveId, dimensionField: input.dimensionField, selectedScope, sourceCount: input.sourceCount, sourceRefs, rows: scopedRows, metricIds });

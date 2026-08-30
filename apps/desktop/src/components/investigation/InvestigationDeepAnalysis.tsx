@@ -18,6 +18,7 @@ import { SingleSourceBAOverviewCard } from './SingleSourceBAOverviewCard';
 import type { FilteredDeepAnalysisScope } from './InvestigationDrillThroughPanel';
 import { formatValue } from '../../lib/display-formatter';
 import { createSingleSourceDeepAnalysisWorkbookPlan, saveExcelAnalysisWorkbook } from '../../lib/analysis-workbook';
+import type { DecisionVisualizationPlanV1 } from '../../lib/decision-visualization-plan';
 
 export interface InvestigationDeepAnalysisProps {
   action: AnalysisAction;
@@ -25,6 +26,7 @@ export interface InvestigationDeepAnalysisProps {
   businessFusionOverview?: BusinessFusionOverview;
   singleSourceBAOverview?: SingleSourceBAOverview | null;
   chartModel: ChartPreviewModel | null;
+  decisionVisualizationPlan?: DecisionVisualizationPlanV1 | null;
   filteredScope?: FilteredDeepAnalysisScope | null;
   onClose: () => void;
   onCreateDashboard?: () => void;
@@ -32,7 +34,7 @@ export interface InvestigationDeepAnalysisProps {
   preferences: DisplayPreferences;
 }
 
-export const InvestigationDeepAnalysis: React.FC<InvestigationDeepAnalysisProps> = ({ action, brief, businessFusionOverview, singleSourceBAOverview, chartModel, filteredScope, onClose, onCreateDashboard, canCreateDashboard = false, preferences }) => {
+export const InvestigationDeepAnalysis: React.FC<InvestigationDeepAnalysisProps> = ({ action, brief, businessFusionOverview, singleSourceBAOverview, chartModel, decisionVisualizationPlan = null, filteredScope, onClose, onCreateDashboard, canCreateDashboard = false, preferences }) => {
   const { t, localize } = useUiLanguage();
   const exportRef = useRef<HTMLDivElement>(null);
   const [exportState, setExportState] = useState<'idle' | 'image' | 'pdf' | 'excel'>('idle');
@@ -101,6 +103,7 @@ export const InvestigationDeepAnalysis: React.FC<InvestigationDeepAnalysisProps>
           ...(singleSourceBAOverview?.limitations ?? []),
           ...(brief?.caveats ?? []),
         ]),
+        decisionVisualizationPlan,
       });
       await saveExcelAnalysisWorkbook(plan);
     } catch (cause) { setExportError(cause instanceof Error ? cause.message : t('Could not export the Excel analysis workbook.')); }

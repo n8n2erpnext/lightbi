@@ -39,6 +39,7 @@ import { formatValue } from '../lib/display-formatter';
 import { useUiLanguage } from '../lib/ui-language';
 import { createSingleSourceBAOverview, sampleSingleSourceBARows } from '../lib/single-source-ba-overview';
 import { claimAnalysisShape } from '../lib/dashboard-evidence-dedup';
+import { createDecisionVisualizationPlan, type DecisionVisualizationPlanV1 } from '../lib/decision-visualization-plan';
 const INVESTIGATION_SESSION_ROW_LIMIT = 250;
 const SINGLE_SOURCE_BA_OVERVIEW_ROW_LIMIT = 1000;
 
@@ -408,7 +409,25 @@ export const Investigation: React.FC = () => {
       }).format(governedResultTotal)
       : formatValue(governedResultTotal, 'number', preferences, { compact: false });
 
-  const persistChartModel = (model: ChartPreviewModel, name: string, source: string) => {
+  const primaryDecisionVisualizationPlan = useMemo<DecisionVisualizationPlanV1 | null>(() => {
+    if (!chartModel || chartModel.status !== 'ready' || !chartModel.xField || chartModel.rows.length === 0) return null;
+    const metricIds = [...new Set([...(chartModel.seriesFields ?? []), chartModel.yField]
+      .filter((value): value is string => Boolean(value && value !== chartModel.xField)))];
+    if (metricIds.length === 0) return null;
+    try {
+      return createDecisionVisualizationPlan({
+        perspectiveId: analysisAction.id,
+        rows: chartModel.rows,
+        sourceCount: 1,
+        dimensionField: chartModel.xField,
+        metricIds,
+      });
+    } catch {
+      return null;
+    }
+  }, [analysisAction.id, chartModel]);
+
+  const persistChartModel = (model: ChartPreviewModel, name: string, source: string, decisionPlan: DecisionVisualizationPlanV1 | null = null) => {
     const chartType = model.chartType === 'line'
       ? 'Line'
       : model.chartType === 'table'
@@ -436,6 +455,7 @@ export const Investigation: React.FC = () => {
           rows: model.rows.slice(0, 500),
           rowCount: model.rows.length,
           governed: true,
+          decisionVisualizationPlan: decisionPlan ? { schemaVersion: decisionPlan.schemaVersion, planId: decisionPlan.planId, governance: decisionPlan.governance } : null,
           savedAt: new Date().toISOString(),
         },
       },
@@ -445,7 +465,7 @@ export const Investigation: React.FC = () => {
   const saveChartToLibrary = async () => {
     if (!chartModel || chartModel.status !== 'ready') return;
     await persistWorkspaceSession();
-    const chartId = persistChartModel(chartModel, chartModel.title || analysisAction.opportunityName, 'simple_ba_preview');
+    const chartId = persistChartModel(chartModel, chartModel.title || analysisAction.opportunityName, 'simple_ba_preview', primaryDecisionVisualizationPlan);
     setSavedChartNotice(`Saved to Chart Library: ${chartId}`);
   };
 
@@ -458,6 +478,7 @@ export const Investigation: React.FC = () => {
       actionId: analysisAction.id,
       perspective: analysisAction.opportunityName,
       governed: true,
+      decisionVisualizationPlan: primaryDecisionVisualizationPlan ? { schemaVersion: primaryDecisionVisualizationPlan.schemaVersion, planId: primaryDecisionVisualizationPlan.planId, governance: primaryDecisionVisualizationPlan.governance } : null,
       evidenceScope: singleSourceBAOverview?.isRepresentativeSample ? 'governed_primary_with_representative_ba_sample' : 'full_source',
       generatedAt: new Date().toISOString(),
       analysisContract: {
@@ -520,7 +541,7 @@ export const Investigation: React.FC = () => {
         addChartToDashboard(dashboardId, kpiChartId);
       });
 
-    const primaryChartId = persistChartModel(chartModel, chartModel.title || analysisAction.opportunityName, 'perspective_dashboard_primary');
+    const primaryChartId = persistChartModel(chartModel, chartModel.title || analysisAction.opportunityName, 'perspective_dashboard_primary', primaryDecisionVisualizationPlan);
     addChartToDashboard(dashboardId, primaryChartId);
     const persistedShapes = new Set<string>();
     claimAnalysisShape(persistedShapes, chartModel.xField, chartModel.yField ?? analysisAction.measures[0]);
@@ -1098,6 +1119,7 @@ export const Investigation: React.FC = () => {
         businessFusionOverview={businessFusionOverview}
         singleSourceBAOverview={filteredDeepAnalysisScope ? filteredSingleSourceBAOverview : singleSourceBAOverview}
         chartModel={chartModel}
+        decisionVisualizationPlan={primaryDecisionVisualizationPlan}
         filteredScope={filteredDeepAnalysisScope}
         onClose={() => setShowDeepAnalysis(false)}
         onCreateDashboard={filteredDeepAnalysisScope ? undefined : () => { void createPerspectiveDashboard(); }}
