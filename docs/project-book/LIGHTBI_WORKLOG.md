@@ -996,3 +996,21 @@ Open items are now classified as implementation/release gates rather than missin
 Product coding must start on a dedicated product branch/worktree, not on `docs/project-library-cleanup-20260829`.
 
 Machine-readable checkpoint state is recorded in [`PROJECT_TRUTH_STATUS.json`](./PROJECT_TRUTH_STATUS.json).
+
+## 2026-08-30 — Post-1.0 implementation checkpoint: CP-1 TypeScript candidate
+
+After Project Truth 1.0 closed the repository archaeology phase, the product owner approved a behavior-preserving control-plane foundation migration before adding larger 1.0 account, security, integration, analytics, and trust features.
+
+Implementation was performed in the isolated workspace `/home/ubuntu/lightbi-control-plane-cp1`, not in the production control-plane directory and not in the historical LightBI Beta-recovery worktree.
+
+Private GitHub authentication was unavailable during the implementation session. The workspace was therefore reconstructed from deployed source previously reconciled with private control-plane main `87b2ee457c30ac4f7d7d55332bbfc658d51b2c53`. Its local Git commits are migration checkpoints, **not remote ancestry**:
+
+- `d5b532f` — strict TypeScript runtime migration;
+- `94ee5cb` — TypeScript CI and compiled runtime entry-point contract;
+- `51ba3bc` — CP-1 technical documentation and control-plane worklog.
+
+Local reconstructed verification passed strict typecheck, compiled build, browser syntax checks, credential scan, and 34/34 available compiled-runtime tests. The earlier authoritative private-main audit had 39/39 tests; the full private suite must be rerun after this migration is replayed onto current private `main`.
+
+No production service was restarted or modified. The live control plane remains authoritative until an explicit staging/cutover is approved.
+
+The future Rust signer/attestation boundary remains deferred and blocked by the independent Phase 2A freeze gate; CP-1 does not implement signing, attestation, Pro delivery, Next.js, or Python workers.
