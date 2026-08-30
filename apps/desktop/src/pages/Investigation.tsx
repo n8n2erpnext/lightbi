@@ -20,11 +20,6 @@ import { InvestigationDeepAnalysis } from '../components/investigation/Investiga
 import { InvestigationSemanticContext } from '../components/investigation/InvestigationSemanticContext';
 import { useAppRuntime } from '@lightbi/runtime';
 import { ExecutionRunCoordinator } from '@lightbi/runtime';
-import {
-  executeDrillThrough,
-  type DrillThroughPoint,
-  type DrillThroughResult,
-} from '../lib/drill-through-export';
 import { advancedSourceId, useAdvancedSourceStore } from '../stores/advanced-source-store';
 import { profileColumns } from '../lib/column-profiler';
 import { executeGovernedMetricRequest } from '../lib/understanding-core/governed-metric-executor';
@@ -41,6 +36,7 @@ import { createDecisionVisualizationPlan, type DecisionVisualizationPlanV1 } fro
 import { createSingleSourceDeepAnalysisWorkbookPlan } from '../lib/analysis-workbook';
 import { createInvestigationPersistenceActions } from '../lib/investigation-persistence-actions';
 import { createInvestigationChartActions } from '../lib/investigation-chart-actions';
+import { useInvestigationDrillThrough, type InvestigationDrillOrigin } from '../hooks/useInvestigationDrillThrough';
 const SINGLE_SOURCE_BA_OVERVIEW_ROW_LIMIT = 1000;
 
 function safeFileStem(value: string): string {
@@ -82,21 +78,17 @@ export const Investigation: React.FC = () => {
   const [previewResult, setPreviewResult] = useState<DuckDBPreviewResult | null>(null);
   const [chartModel, setChartModel] = useState<ChartPreviewModel | null>(null);
   const [validationResult, setValidationResult] = useState<ResultValidationResult | null>(null);
-  const [drillResult, setDrillResult] = useState<DrillThroughResult | null>(null);
-  const [selectedDrillRows, setSelectedDrillRows] = useState<Set<number>>(new Set());
-  const [isDrilling, setIsDrilling] = useState(false);
-  const [drillError, setDrillError] = useState<string | null>(null);
   const [isExecuting, setIsExecuting] = useState(false);
   const [showAiContext, setShowAiContext] = useState(false);
   const [deepAnalysisView, setDeepAnalysisView] = useState<
-    { kind: 'perspective' } | { kind: 'selected_data'; scope: FilteredDeepAnalysisScope } | null
+    { kind: 'perspective' } | { kind: 'selected_data'; scope: FilteredDeepAnalysisScope; origin: InvestigationDrillOrigin } | null
   >(null);
   const filteredDeepAnalysisScope = deepAnalysisView?.kind === 'selected_data' ? deepAnalysisView.scope : null;
+  const filteredDeepAnalysisOrigin = deepAnalysisView?.kind === 'selected_data' ? deepAnalysisView.origin : null;
   const [savedChartNotice, setSavedChartNotice] = useState<string | null>(null);
-  const [supportingCharts, setSupportingCharts] = useState<Array<{
+  const [supportingCharts, setSupportingCharts] = useState<Array<InvestigationDrillOrigin & {
     actionId: string;
     label: string;
-    chartModel: ChartPreviewModel;
   }>>([]);
   const [isLoadingSupportingCharts, setIsLoadingSupportingCharts] = useState(false);
   // The overview is descriptive context beside a full-source governed result.
@@ -120,19 +112,26 @@ export const Investigation: React.FC = () => {
       sampleSingleSourceBARows(filteredDeepAnalysisScope.rows, SINGLE_SOURCE_BA_OVERVIEW_ROW_LIMIT),
       {
         sourceRowCount: filteredDeepAnalysisScope.selectedRowCount,
-        analysisAction: session.analysisAction,
+        analysisAction: filteredDeepAnalysisOrigin?.analysisAction ?? session.analysisAction,
         semanticFields: session.aiBriefing?.semanticFields ?? [],
         selectedPerspective: session.workspaceDataset && typeof session.workspaceDataset === 'object' && 'selectedPerspective' in session.workspaceDataset
           ? String((session.workspaceDataset as { selectedPerspective?: unknown }).selectedPerspective ?? '') || null
           : null,
       },
     );
-  }, [session, filteredDeepAnalysisScope]);
+  }, [session, filteredDeepAnalysisOrigin, filteredDeepAnalysisScope]);
   const executionRuns = useRef(new ExecutionRunCoordinator('simple-preview'));
   const supportingRuns = useRef(new ExecutionRunCoordinator('supporting-previews'));
-  const drillRuns = useRef(new ExecutionRunCoordinator('simple-drill-through'));
   const autoPreviewSessionId = useRef<string | null>(null);
   const workspaceSessionPersisted = useRef(false);
+  const {
+    closeDrillThrough, drillError, drillExportBaseName, drillOrigin, drillResult, isDrilling,
+    runDrillThrough, selectedDrillRows, selectedRows, setSelectedDrillRows,
+  } = useInvestigationDrillThrough({
+    datasetId: session?.datasetId ?? 'lightbi', rows: session?.rows ?? [],
+    runtimeDatasetSource: session?.runtimeDatasetSource, rowScope: session?.rowScope,
+    fieldBindings: session?.aiBriefing?.semanticFields,
+  });
   const createChart = useAppRuntime(state => state.createChart);
   const createDashboard = useAppRuntime(state => state.createDashboard);
   const addChartToDashboard = useAppRuntime(state => state.addChartToDashboard);
@@ -140,7 +139,6 @@ export const Investigation: React.FC = () => {
   useEffect(() => () => {
     executionRuns.current.cancel();
     supportingRuns.current.cancel();
-    drillRuns.current.cancel();
   }, []);
 
   useEffect(() => {
@@ -210,7 +208,7 @@ export const Investigation: React.FC = () => {
     setIsLoadingSupportingCharts(true);
     setSupportingCharts([]);
     void (async () => {
-      const results: Array<{ actionId: string; label: string; chartModel: ChartPreviewModel }> = [];
+      const results: Array<InvestigationDrillOrigin & { actionId: string; label: string }> = [];
       for (const item of candidates) {
         if (!supportingRuns.current.isCurrent(run)) return;
         const preparation = prepareGovernedDescriptiveAnalysis(item.runtimePlanPreview, session.rows || []);
@@ -230,7 +228,10 @@ export const Investigation: React.FC = () => {
             runtimePlan: preparation.runtimePlan,
             analysisLabel: item.analysisAction.opportunityName,
           });
-          if (model.status === 'ready') results.push({ actionId: item.analysisAction.id, label: item.analysisAction.opportunityName, chartModel: model });
+          if (model.status === 'ready') results.push({
+            actionId: item.analysisAction.id, label: item.analysisAction.opportunityName,
+            analysisAction: item.analysisAction, runtimePlan: preparation.runtimePlan, chartModel: model,
+          });
         } catch (error) {
           console.warn('Supporting analysis skipped', item.analysisAction.id, error);
         }
@@ -448,9 +449,7 @@ export const Investigation: React.FC = () => {
     setPreviewResult(null);
     setChartModel(null);
     setValidationResult(null);
-    setDrillResult(null);
-    setSelectedDrillRows(new Set());
-    setDrillError(null);
+    closeDrillThrough();
     try {
       if (isUniversalDescriptiveAction) {
         let result = await executeGovernedDescriptiveAnalysis({
@@ -630,51 +629,6 @@ export const Investigation: React.FC = () => {
     }
   }
 
-  const handleDrillThrough = async (point: DrillThroughPoint) => {
-    const run = drillRuns.current.begin();
-    setIsDrilling(true);
-    setDrillError(null);
-    setDrillResult(null);
-    setSelectedDrillRows(new Set());
-    try {
-      const result = await executeDrillThrough({
-        runtimePlan: runtimePlanPreview,
-        point,
-        rows: rows || [],
-        runtimeDatasetSource,
-        rowScope,
-        fieldBindings: session.aiBriefing?.semanticFields,
-        limit: 50_000,
-        signal: run.signal,
-      });
-      if (!drillRuns.current.isCurrent(run)) return;
-      if (result.status === 'failed') {
-        setDrillError(result.errorMessage || 'Unable to load matching rows.');
-        return;
-      }
-      setDrillResult(result);
-      setSelectedDrillRows(new Set(result.rows.map((_, index) => index)));
-    } catch (error) {
-      if (drillRuns.current.isCurrent(run) && !(error instanceof DOMException && error.name === 'AbortError')) {
-        setDrillError(error instanceof Error ? error.message : 'Unable to load matching rows.');
-      }
-    } finally {
-      if (drillRuns.current.finish(run)) {
-        setIsDrilling(false);
-      }
-    }
-  };
-
-  const selectedRows = drillResult
-    ? drillResult.rows.filter((_, index) => selectedDrillRows.has(index))
-    : [];
-  const drillExportBaseName = drillResult
-    ? `${session.datasetId}_${drillResult.point.dimensionField}_${drillResult.point.label}`
-      .replace(/[^a-z0-9_-]+/gi, '_')
-      .replace(/^_+|_+$/g, '')
-      .slice(0, 90) || 'lightbi_filtered_rows'
-    : 'lightbi_filtered_rows';
-
   return (
     <div className="flex h-full min-h-0 flex-col overflow-y-auto bg-[#fbfbfa]">
       <header className="sticky top-0 z-10 flex items-center gap-4 border-b border-black/10 bg-[#fbfbfa]/95 px-5 py-3 backdrop-blur">
@@ -818,13 +772,13 @@ export const Investigation: React.FC = () => {
                    <DatasetInsightSummary columns={previewResult.columns} rows={previewResult.rows} rowCount={previewResult.rowCount} />
                    {chartModel && chartModel.chartType !== 'table' && (
                      <div className="rounded-[18px] border border-black/10 bg-white p-4 shadow-sm">
-                       <ChartPreviewRenderer model={chartModel} onDrillThrough={handleDrillThrough} />
+                       <ChartPreviewRenderer model={chartModel} onDrillThrough={(point) => { void runDrillThrough(point, { analysisAction, runtimePlan: isUniversalDescriptiveAction ? enhancedRuntimePlan : runtimePlanPreview, chartModel }); }} />
                      </div>
                    )}
                  </div>
                ) : chartModel && runtimeIntent.expectedShape !== 'table' ? (
                  <div className="rounded-[18px] border border-black/10 bg-white p-4 shadow-sm">
-                   <ChartPreviewRenderer model={chartModel} onDrillThrough={handleDrillThrough} />
+                   <ChartPreviewRenderer model={chartModel} onDrillThrough={(point) => { void runDrillThrough(point, { analysisAction, runtimePlan: isUniversalDescriptiveAction ? enhancedRuntimePlan : runtimePlanPreview, chartModel }); }} />
                  </div>
                ) : (
                  <div className="flex h-64 w-full flex-col items-center justify-center rounded-[18px] border-2 border-dashed border-slate-200 bg-slate-50 text-slate-400">
@@ -868,7 +822,7 @@ export const Investigation: React.FC = () => {
                      {supportingCharts.map(item => (
                        <article key={item.actionId} data-testid="supporting-analysis-chart" className="rounded-xl border border-black/10 bg-white p-3 shadow-sm">
                          <h4 className="mb-2 text-[12px] font-semibold text-[#202123]">{item.label}</h4>
-                         <ChartPreviewRenderer model={item.chartModel} />
+                         <ChartPreviewRenderer model={item.chartModel} onDrillThrough={(point) => { void runDrillThrough(point, item); }} />
                        </article>
                      ))}
                    </div>
@@ -935,19 +889,13 @@ export const Investigation: React.FC = () => {
                drillResult={drillResult}
                isDrilling={isDrilling}
                onAnalyzeSelection={(scope) => {
-                 setDeepAnalysisView({ kind: 'selected_data', scope });
+                 if (drillOrigin) setDeepAnalysisView({ kind: 'selected_data', scope, origin: drillOrigin });
                }}
                preferences={preferences}
                selectedDrillRows={selectedDrillRows}
                selectedRows={selectedRows}
                setSelectedDrillRows={setSelectedDrillRows}
-               onClose={() => {
-                 drillRuns.current.cancel();
-                 setIsDrilling(false);
-                 setDrillError(null);
-                 setDrillResult(null);
-                 setSelectedDrillRows(new Set());
-               }}
+               onClose={closeDrillThrough}
              />
           </div>
         <InvestigationDiagnostics
@@ -967,12 +915,12 @@ export const Investigation: React.FC = () => {
 
       </main>
       {deepAnalysisView && <InvestigationDeepAnalysis
-        action={analysisAction}
+        action={filteredDeepAnalysisOrigin?.analysisAction ?? analysisAction}
         brief={filteredDeepAnalysisScope ? null : baDecisionBrief}
         businessFusionOverview={businessFusionOverview}
         singleSourceBAOverview={filteredDeepAnalysisScope ? filteredSingleSourceBAOverview : singleSourceBAOverview}
-        chartModel={chartModel}
-        decisionVisualizationPlan={primaryDecisionVisualizationPlan}
+        chartModel={filteredDeepAnalysisOrigin?.chartModel ?? chartModel}
+        decisionVisualizationPlan={filteredDeepAnalysisOrigin ? null : primaryDecisionVisualizationPlan}
         filteredScope={filteredDeepAnalysisScope}
         onClose={() => setDeepAnalysisView(null)}
         onCreateDashboard={filteredDeepAnalysisScope ? undefined : () => { void createPerspectiveDashboard(); }}

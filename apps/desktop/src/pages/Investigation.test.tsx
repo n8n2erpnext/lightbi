@@ -38,17 +38,29 @@ vi.mock('../lib/understanding-core/governed-local-duckdb-boundary', () => ({
   createGovernedLocalDuckDBBoundary: vi.fn(() => ({ execute: vi.fn() })),
 }));
 vi.mock('../components/analysis/ChartPreviewRenderer', () => ({
-  ChartPreviewRenderer: ({ onDrillThrough }: { onDrillThrough?: (point: DrillThroughPoint) => void }) => (
-    <button
-      type="button"
-      data-testid="canonical-chart-renderer"
-      onClick={() => onDrillThrough?.({ dimensionField: 'item.product', sourceDimensionField: 'Product', value: 'A', label: 'A', measureField: 'sales_revenue', measureValue: 10 })}
-    >Canonical chart</button>
-  ),
+  ChartPreviewRenderer: ({ model, onDrillThrough }: {
+    model: { title: string; xField?: string; yField?: string; rows: Record<string, unknown>[] };
+    onDrillThrough?: (point: DrillThroughPoint) => void;
+  }) => {
+    const xField = model.xField ?? 'item.product';
+    const row = model.rows[0] ?? {};
+    const value = row[xField] ?? 'A';
+    const testId = model.title === 'Revenue by product'
+      ? 'canonical-chart-renderer'
+      : `supporting-chart-renderer:${model.title}`;
+    return <button type="button" data-testid={testId} onClick={() => onDrillThrough?.({
+      dimensionField: xField, sourceDimensionField: xField, value, label: String(value),
+      measureField: model.yField, measureValue: model.yField ? row[model.yField] : undefined,
+    })}>{model.title}</button>;
+  },
 }));
 vi.mock('../lib/drill-through-export', async () => {
   const actual = await vi.importActual<typeof import('../lib/drill-through-export')>('../lib/drill-through-export');
   return { ...actual, executeDrillThrough: vi.fn() };
+});
+vi.mock('../lib/governed-descriptive-executor', async () => {
+  const actual = await vi.importActual<typeof import('../lib/governed-descriptive-executor')>('../lib/governed-descriptive-executor');
+  return { ...actual, executeGovernedDescriptiveAnalysis: vi.fn() };
 });
 vi.mock('../lib/result-validator-contract', () => ({
   validatePreviewAgainstIntent: vi.fn(),
@@ -59,6 +71,7 @@ import { validatePreviewAgainstIntent } from '../lib/result-validator-contract';
 import { executeGovernedMetricRequest } from '../lib/understanding-core/governed-metric-executor';
 import { saveWorkspaceSession } from '../lib/workspace-session-api';
 import { executeDrillThrough } from '../lib/drill-through-export';
+import { executeGovernedDescriptiveAnalysis } from '../lib/governed-descriptive-executor';
 
 const restriction: GovernedExecutionRestrictionV1 = {
   code: 'DECISION_USE_PROHIBITED',
@@ -265,6 +278,49 @@ const runtimePlanPreview: RuntimePlanPreview = {
   source: 'runtime_intent',
 };
 
+const supportingTimeAction: AnalysisAction = {
+  ...analysisAction,
+  id: 'action:support-time',
+  opportunityName: 'Money over time',
+  label: 'Money over time',
+  actionType: 'trend',
+  dimensions: ['time.date'],
+};
+const supportingTimeIntent: RuntimeIntent = {
+  ...runtimeIntent,
+  id: 'intent:support-time',
+  sourceActionId: supportingTimeAction.id,
+  type: 'trend',
+  dimensions: ['time.date'],
+  expectedShape: 'line_chart',
+};
+const supportingTimePlan: RuntimePlanPreview = {
+  ...runtimePlanPreview,
+  id: 'runtime-plan:support-time',
+  sourceIntentId: supportingTimeIntent.id,
+  expectedOutput: { shape: 'line_chart', dimensions: ['time.date'], measures: ['sales_revenue'] },
+};
+const supportingItemAction: AnalysisAction = {
+  ...analysisAction,
+  id: 'action:support-item',
+  opportunityName: 'Activity volume by item',
+  label: 'Activity volume by item',
+  actionType: 'group_by',
+  measures: ['record_count'],
+};
+const supportingItemIntent: RuntimeIntent = {
+  ...runtimeIntent,
+  id: 'intent:support-item',
+  sourceActionId: supportingItemAction.id,
+  measures: ['record_count'],
+};
+const supportingItemPlan: RuntimePlanPreview = {
+  ...runtimePlanPreview,
+  id: 'runtime-plan:support-item',
+  sourceIntentId: supportingItemIntent.id,
+  expectedOutput: { shape: 'bar_chart', dimensions: ['item.product'], measures: ['record_count'] },
+};
+
 function session(overrides: Partial<InvestigationSession> = {}): InvestigationSession {
   return {
     id: 'session:test',
@@ -331,6 +387,7 @@ const mockedExecute = vi.mocked(executeGovernedMetricRequest);
 const mockedValidate = vi.mocked(validatePreviewAgainstIntent);
 const mockedSaveWorkspaceSession = vi.mocked(saveWorkspaceSession);
 const mockedDrillThrough = vi.mocked(executeDrillThrough);
+const mockedDescriptive = vi.mocked(executeGovernedDescriptiveAnalysis);
 
 describe('Investigation canonical consumer boundary', () => {
   beforeEach(() => {
@@ -338,11 +395,26 @@ describe('Investigation canonical consumer boundary', () => {
     mockedSession.mockReturnValue(session());
     mockedExecute.mockResolvedValue(governedResult());
     mockedValidate.mockReturnValue(validation());
-    mockedDrillThrough.mockResolvedValue({
-      id: 'drill:test', sourceSqlPreviewId: 'sql:test', status: 'executed',
+    mockedDrillThrough.mockImplementation(async input => ({
+      id: `drill:${input.runtimePlan.id}`, sourceSqlPreviewId: `sql:${input.runtimePlan.id}`, status: 'executed',
       columns: ['Product', 'Revenue'], rows: [{ Product: 'A', Revenue: 10 }], rowCount: 1, maxRows: 50_000,
-      warnings: [], blockedReasons: [], source: 'governed_duckdb_execution',
-      point: { dimensionField: 'item.product', sourceDimensionField: 'Product', value: 'A', label: 'A', measureField: 'sales_revenue', measureValue: 10 },
+      warnings: [], blockedReasons: [], source: 'governed_duckdb_execution', point: input.point,
+    }));
+    mockedDescriptive.mockImplementation(async ({ preparation }) => {
+      if (preparation.runtimePlan.sourceIntentId === supportingTimeIntent.id) {
+        return {
+          id: 'support-time-result', sourceSqlPreviewId: 'sql:support-time', status: 'executed',
+          columns: ['time.date', 'sales_revenue'],
+          rows: [{ 'time.date': '2026-06-10', sales_revenue: 630_467_141 }], rowCount: 1, maxRows: 100,
+          warnings: [], blockedReasons: [], source: 'governed_duckdb_execution',
+        };
+      }
+      return {
+        id: 'support-item-result', sourceSqlPreviewId: 'sql:support-item', status: 'executed',
+        columns: ['item.product', 'record_count'],
+        rows: [{ 'item.product': 'Philips FC', record_count: 52 }], rowCount: 1, maxRows: 100,
+        warnings: [], blockedReasons: [], source: 'governed_duckdb_execution',
+      };
     });
   });
 
@@ -531,6 +603,38 @@ describe('Investigation canonical consumer boundary', () => {
     fireEvent.click(screen.getByTestId('perspective-deep-analysis-button'));
     await waitFor(() => expect(screen.getByTestId('deep-analysis-export-surface')).toBeDefined());
     expect(screen.queryByTestId('filtered-deep-analysis-scope')).toBeNull();
+  });
+
+  it('drills supporting line and bar charts through their own runtime plans', async () => {
+    mockedSession.mockReturnValue(session({
+      supportingAnalyses: [
+        { analysisAction: supportingTimeAction, runtimeIntent: supportingTimeIntent, runtimePlanPreview: supportingTimePlan },
+        { analysisAction: supportingItemAction, runtimeIntent: supportingItemIntent, runtimePlanPreview: supportingItemPlan },
+      ],
+    }));
+    render(<Investigation />);
+
+    const timeChart = await screen.findByTestId('supporting-chart-renderer:Money over time');
+    const itemChart = await screen.findByTestId('supporting-chart-renderer:Activity volume by item');
+
+    fireEvent.click(timeChart);
+    await waitFor(() => expect(mockedDrillThrough).toHaveBeenCalled());
+    let call = mockedDrillThrough.mock.calls[mockedDrillThrough.mock.calls.length - 1][0];
+    expect(call.runtimePlan.id).toBe(supportingTimePlan.id);
+    expect(call.point.dimensionField).toBe('time.date');
+    fireEvent.click(await screen.findByTestId('analyze-selected-rows'));
+    await waitFor(() => expect(screen.getByTestId('filtered-deep-analysis-scope')).toBeDefined());
+    expect(screen.getAllByText('Money over time').length).toBeGreaterThanOrEqual(2);
+    fireEvent.click(screen.getByTestId('deep-analysis-back'));
+
+    fireEvent.click(itemChart);
+    await waitFor(() => expect(mockedDrillThrough).toHaveBeenCalledTimes(2));
+    call = mockedDrillThrough.mock.calls[mockedDrillThrough.mock.calls.length - 1][0];
+    expect(call.runtimePlan.id).toBe(supportingItemPlan.id);
+    expect(call.point.dimensionField).toBe('item.product');
+    fireEvent.click(await screen.findByTestId('analyze-selected-rows'));
+    await waitFor(() => expect(screen.getByTestId('filtered-deep-analysis-scope')).toBeDefined());
+    expect(screen.getAllByText('Activity volume by item').length).toBeGreaterThanOrEqual(2);
   });
 
   it('contains no backend, JavaScript sandbox, or mock preview invocation', () => {
