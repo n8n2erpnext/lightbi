@@ -417,3 +417,12 @@ The async worker still emits a fresh predecessor `g-2026-08-30-next-001` heartbe
 The supporting-chart drill-through change is frontend/Core-repository work only; private control-plane source remains exact `c251fb1ee981a529c33335d25d3ada4e6ea9d23f`. For owner bug testing, the Internal CP API on port 5474 was restarted with generation identity `g-2026-08-30-next-004` using the existing Internal environment file. Only the safe Internal identity/port keys were changed; credentials and persistence endpoints were preserved.
 
 Through canonical gateway 5273, diagnostics now report generation `g-2026-08-30-next-004`, exact CP commit `c251fb1ee981a529c33335d25d3ada4e6ea9d23f`, schema status `current`, expected `061_integrations_delivery`, and an empty pending-migration list. Trust remains `blocked_pending_phase2a_freeze`. The existing async worker still reports predecessor generation `g-2026-08-30-next-001` at the same CP commit, so release/UAT generation identity remains fail-closed while frontend/Core/CP bug testing is valid. Production CP 5174 and production persistence were not restarted or modified.
+
+
+## 28. NEXT-005 canonical Internal runtime reconciliation
+
+Native Excel Pivot work changes no private control-plane source; CP remains exact `c251fb1ee981a529c33335d25d3ada4e6ea9d23f`. The predecessor Internal processes were successfully terminated and the canonical topology was restored directly: Core `5272`, gateway `5273`, CP API `5274`, plus one Internal worker. The CP API and worker were launched with generation `g-2026-08-31-next-005` while preserving the existing Internal persistence/secrets configuration.
+
+Diagnostics now report generation `g-2026-08-31-next-005`, exact CP commit `c251fb1...`, schema status `current`, expected `061_integrations_delivery`, pending migrations `[]`, and worker status `healthy` with the same generation and commit. Trust remains correctly `blocked_pending_phase2a_freeze`. The explicit NEXT-vs-production environment verifier passes all 8 compared writable/isolation keys. The former `next-001` worker-generation mismatch is closed; no DB heartbeat was fabricated and no migration was required for this frontend/Core feature generation.
+
+Production `5174` and its persistence were not restarted, migrated or modified. Formal owner UAT/promotion and Trust Phase 2A remain separate gates.

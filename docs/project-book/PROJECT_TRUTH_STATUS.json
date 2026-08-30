@@ -97,7 +97,8 @@
     "final_open_core_dependency_legal_review",
     "control_plane_deployed_sha_marker",
     "public_historical_test_taxonomy_reconciliation",
-    "next_internal_infrastructure_activation_and_owner_uat"
+    "next_internal_owner_uat_and_promotion_acceptance",
+    "excel_desktop_native_pivot_release_acceptance"
   ],
   "postTruthCandidates": {
     "controlPlaneFoundation": {
@@ -125,7 +126,7 @@
   },
   "roadmapDecisions": {
     "excelAnalysisWorkbook": {
-      "status": "approved_direction_active_candidate",
+      "status": "next_native_pivot_internal_candidate_active",
       "coreWorkspace": "/home/ubuntu/n8n2erpnext/LightBI-core-export",
       "coreBranch": "codex/excel-analysis-workbook-20260830",
       "baseMain": "466898372fcf3869ae10140cafce83bf57c5d392",
@@ -134,7 +135,7 @@
         "no_separate_pivot_engine",
         "no_blind_multisource_join",
         "preserve_lineage_grain_relationship_restrictions",
-        "v1_prebuilt_analysis_tables_native_pivot_later"
+        "native_editable_pivot_v1_after_spike_acceptance"
       ]
     },
     "dualTrack1_0": {
@@ -168,7 +169,8 @@
     "durabilityTargetedTestsPassed": 27,
     "releaseContractTestsPassed": 3,
     "publicBoundaryPassedAtDurabilityHead": true,
-    "desktopBuildPassedAtDurabilityHead": true
+    "desktopBuildPassedAtDurabilityHead": true,
+    "supersededByNextNativePivot": true
   },
   "implementationTracks": {
     "publicCore": {
@@ -207,7 +209,8 @@
       "authority": "feature_branch_candidate",
       "analysisSessionIdentityVersion": "lightbi.analysis-session-identity.v1",
       "durabilityTargetedFiles": 4,
-      "durabilityTargetedTests": 27
+      "durabilityTargetedTests": 27,
+      "supersededByNextNativePivot": true
     },
     "controlPlaneIdentitySecurity": {
       "branch": "codex/control-plane-foundations-20260830",
@@ -245,14 +248,14 @@
   },
   "nextGeneration": {
     "model": "successor_promotion_generation_rotation",
-    "status": "internal_bug_test_gateway_ready_exact_core_cp_worker_predecessor",
+    "status": "internal_bug_test_ready_exact_core_cp_worker_native_excel_pivot",
     "generationSchema": "lightbi.generation.v1",
-    "generationId": "g-2026-08-30-next-004",
+    "generationId": "g-2026-08-31-next-005",
     "parentGenerationId": "bootstrap-current-8d59d05f575373e6",
     "core": {
       "workspace": "/home/ubuntu/n8n2erpnext/LightBI-next-internal",
       "branch": "codex/next-internal-generation-20260830",
-      "head": "1ecf36e959d3a9aa5af2e1f800b0ac0bb3f7b020",
+      "head": "1292fd71209dcfeb6d23c9b4a618d5ff081f7714",
       "baseCandidate": "326d991a8f305fef938e9aab47897dd233146770",
       "foundationHead": "ef2434ac01ec6a817f4a04f58d16ef41c447b9dc",
       "gatewayHead": "0a9d20a93682e2db528cb43dc2ece8cf699129db",
@@ -260,7 +263,8 @@
       "uatRegressionHead": "b1b40277e5e6e8389bc13c2c75f439fdb861600c",
       "modularizationHead": "a8ebc27c9d4284665855d7a0a0150c629e44f86e",
       "deepBaScopeIsolationHead": "eadba8fdf07b04bbdbd674518422713fefb68009",
-      "supportingChartDrillHead": "1ecf36e959d3a9aa5af2e1f800b0ac0bb3f7b020"
+      "supportingChartDrillHead": "1ecf36e959d3a9aa5af2e1f800b0ac0bb3f7b020",
+      "nativeExcelPivotHead": "1292fd71209dcfeb6d23c9b4a618d5ff081f7714"
     },
     "controlPlane": {
       "workspace": "/home/ubuntu/n8n2erpnext/lightbi-control-plane-next-internal",
@@ -293,7 +297,7 @@
       "nextEnvironmentVerificationPassed": true,
       "latestCoreHeadRevalidated": true,
       "latestControlPlaneHeadRevalidated": true,
-      "sourceModuleFilesChecked": 465,
+      "sourceModuleFilesChecked": 467,
       "sourceModuleViolations": 0,
       "sourceModuleHardLimit": 1000,
       "focusedSemanticTestsPassed": 123,
@@ -304,22 +308,29 @@
       "freshCoreBinaryBuilt": true,
       "freshCoreHealthPassed": true,
       "freshGatewayHealthPassed": true,
-      "freshControlPlaneDiagnosticsPassedExceptWorkerGeneration": true,
-      "freshWorkerGenerationMatched": false,
+      "freshControlPlaneDiagnosticsPassedExceptWorkerGeneration": false,
+      "freshWorkerGenerationMatched": true,
       "canonicalInternalGatewayReady": true,
       "focusedDeepAnalysisFilesPassed": 2,
       "focusedDeepAnalysisTestsPassed": 20,
       "deepBaScopeIsolationRegressionPassed": true,
       "supportingChartDrillFocusedTestFilesPassed": 2,
       "supportingChartDrillFocusedTestsPassed": 21,
-      "supportingChartGenerationDiagnosticsTestsPassed": 3
+      "supportingChartGenerationDiagnosticsTestsPassed": 3,
+      "freshControlPlaneDiagnosticsPassed": true,
+      "excelPivotCoreTestsPassed": 6,
+      "excelPivotUiBoundaryTestsPassed": 3,
+      "excelPivotFocusedTestsPassed": 9,
+      "excelPivotPackageIntegrityPassed": true,
+      "excelPivotSpreadsheetSpikeOwnerAccepted": true,
+      "excelDesktopManualAcceptanceRecorded": false
     },
     "infrastructure": {
       "isolatedContractDefined": true,
       "internalDatabaseStarted": true,
       "internalRedisStarted": true,
       "internalControlPlaneStarted": true,
-      "internalWorkerStarted": false,
+      "internalWorkerStarted": true,
       "migrationsApplied": true,
       "productionMutated": false,
       "internalCoreApiStarted": true,
@@ -328,52 +339,46 @@
       "controlPlanePendingMigrations": 0,
       "controlPlaneRuntimeCommit": "c251fb1ee981a529c33335d25d3ada4e6ea9d23f",
       "coreRuntimeExactHeadVerified": true,
-      "runtimeReconciliationBlocked": true,
-      "fullIsolationRevalidated": false,
+      "runtimeReconciliationBlocked": false,
+      "fullIsolationRevalidated": true,
       "productionMutatedByLatestRevalidation": false,
       "servedGenerationManifestPresent": true,
       "internalWebArtifactExactGenerationVerified": true,
-      "runtimeBlocker": "worker_generation_mismatch_predecessor_worker_remains_active",
-      "freshVerificationPorts": {
-        "coreApi": 5372,
-        "controlPlane": 5474
-      },
-      "predecessorInternalPortsStillActive": {
-        "coreApi": 5272,
-        "controlPlane": 5274
-      },
-      "freshGenerationId": "g-2026-08-30-next-004",
-      "generationManifestSha256": "88c19a9f770f4c400c50f64a57fb047a2e065e307fde65cce45e1e2fa1a686e5",
+      "runtimeBlocker": null,
+      "freshGenerationId": "g-2026-08-31-next-005",
+      "generationManifestSha256": "1898311c3c3bbea9304158920d5b9e3d5651527e08546bfb2528a180d53ac574",
       "coreRuntimeBinarySha256": "0c9d37ae54b874e85ff3ad2ce792875a318e72c32146ad9e340383d5831d3d60",
       "servedGenerationManifestIsJson": true,
-      "freshWorkerStarted": false,
-      "workerGenerationExpected": "g-2026-08-30-next-004",
-      "workerGenerationObserved": "g-2026-08-30-next-001",
+      "freshWorkerStarted": true,
+      "workerGenerationExpected": "g-2026-08-31-next-005",
+      "workerGenerationObserved": "g-2026-08-31-next-005",
       "workerCommitObserved": "c251fb1ee981a529c33335d25d3ada4e6ea9d23f",
-      "workerGenerationMatch": false,
-      "toolSafetyBlockedPredecessorTermination": true,
-      "toolSafetyBlockedFreshWorkerLaunch": true,
-      "predecessorInternalWorkerStarted": true,
-      "predecessorWorkerGeneration": "g-2026-08-30-next-001",
-      "migrationStateMeaning": "shared_internal_schema_current_from_predecessor_internal_activation_no_fresh_next003_migration_applied",
+      "workerGenerationMatch": true,
+      "toolSafetyBlockedPredecessorTermination": false,
+      "toolSafetyBlockedFreshWorkerLaunch": false,
+      "predecessorInternalWorkerStarted": false,
+      "predecessorWorkerGeneration": null,
+      "migrationStateMeaning": "existing_internal_schema_current_no_new_migration_required_for_next005",
       "canonicalInternalGatewayPort": 5273,
-      "canonicalInternalGatewayGeneration": "g-2026-08-30-next-004",
-      "canonicalInternalGatewayCoreOrigin": "http://100.94.184.141:5372",
-      "canonicalInternalGatewayControlPlaneOrigin": "http://100.94.184.141:5474",
-      "canonicalInternalGatewayManifestSha256": "88c19a9f770f4c400c50f64a57fb047a2e065e307fde65cce45e1e2fa1a686e5",
+      "canonicalInternalGatewayGeneration": "g-2026-08-31-next-005",
+      "canonicalInternalGatewayCoreOrigin": "http://100.94.184.141:5272",
+      "canonicalInternalGatewayControlPlaneOrigin": "http://100.94.184.141:5274",
+      "canonicalInternalGatewayManifestSha256": "1898311c3c3bbea9304158920d5b9e3d5651527e08546bfb2528a180d53ac574",
       "canonicalInternalGatewayServesFreshDesktop": true,
       "internalBugTestingReady": true,
       "temporaryVerificationGatewayStopped": true,
-      "predecessorDirectCorePortStillActive": 5272,
-      "predecessorDirectControlPlanePortStillActive": 5274,
-      "freshCurrentGenerationMigrationApplied": false
+      "predecessorDirectCorePortStillActive": false,
+      "predecessorDirectControlPlanePortStillActive": false,
+      "freshCurrentGenerationMigrationApplied": false,
+      "canonicalInternalCorePort": 5272,
+      "canonicalInternalControlPlanePort": 5274
     },
     "trust": {
       "phase2aHead": "fb8225c951fc27692e6b0e7554c3112ada08e49f",
       "freezeApproved": false,
       "trust1Blocked": true
     },
-    "generationIdAuthority": "runtime_candidate_exact_except_worker",
+    "generationIdAuthority": "runtime_candidate_exact_core_cp_worker",
     "historicalProofParentCandidate": "prod-v0.9.2-beta.7-28e2aae",
     "parentGenerationBootstrapRequired": false,
     "bootstrapCurrent": {
@@ -386,18 +391,40 @@
     "ownerUat": {
       "started": false,
       "accepted": false,
-      "blocker": "worker_generation_mismatch"
+      "blocker": "owner_acceptance_not_recorded"
     },
     "internalBugTest": {
       "ready": true,
       "entrypoint": "http://100.94.184.141:5273",
-      "generationId": "g-2026-08-30-next-004",
-      "coreCommit": "1ecf36e959d3a9aa5af2e1f800b0ac0bb3f7b020",
+      "generationId": "g-2026-08-31-next-005",
+      "coreCommit": "1292fd71209dcfeb6d23c9b4a618d5ff081f7714",
       "controlPlaneCommit": "c251fb1ee981a529c33335d25d3ada4e6ea9d23f",
-      "scope": "fresh_desktop_supporting_chart_drill_plus_exact_core_and_control_plane_api",
-      "knownLimitation": "async_worker_heartbeat_remains_predecessor_next001",
+      "scope": "native_excel_pivot_plus_current_investigation_core_and_control_plane",
+      "knownLimitation": "formal_owner_uat_and_excel_desktop_release_acceptance_not_yet_recorded",
       "deepBaScopeIsolationFixed": true,
       "deepBaScopeIsolationRegressionTestsPassed": 20
+    },
+    "excelPivotExport": {
+      "contractVersion": "lightbi.excel-pivot-export.v1",
+      "nativePivotTable": true,
+      "nativePivotChart": false,
+      "dataSheetIsExcelTable": true,
+      "dataTableName": "LightBI_Data",
+      "fullCleanedDataMode": true,
+      "currentSelectionMode": true,
+      "canonicalFullSourceAuthority": "CanonicalSourceBoundaryV1.runtimeSource -> createCleanDataHandoff",
+      "recipeAuthority": "AnalysisAction + DecisionVisualizationPlanV1 + semantic lineage + governed metric policy",
+      "safeAggregations": [
+        "sum",
+        "count"
+      ],
+      "unsafeCalculatedMeasuresSilentlyPreset": false,
+      "presetValueFieldLimit": 1,
+      "allExportedFieldsRemainPivotSelectable": true,
+      "rowLimit": 1048575,
+      "spreadsheetSpikeOwnerAccepted": true,
+      "excelDesktopManualAcceptanceRecorded": false,
+      "implementationHead": "1292fd71209dcfeb6d23c9b4a618d5ff081f7714"
     }
   }
 }
