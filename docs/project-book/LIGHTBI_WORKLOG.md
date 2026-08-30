@@ -1046,3 +1046,13 @@ Authority distinction is mandatory: these local commits were reconstructed while
 The foundation intentionally stops before trust implementation. Rust signer/attestation, Installation Certificates, signed entitlements and Pro package signing/delivery remain blocked until Phase 2A trust contracts receive explicit independent freeze approval.
 
 With CP-1→CP-6 foundation work closed, control-plane archaeology/foundation work no longer blocks returning engineering attention to the LightBI public/core lineage.
+
+## 2026-08-30 — Core Phase 2A freeze-remediation candidate completed
+
+Engineering attention moved from the completed CP-1→CP-6 foundation chain to the public LightBI core trust-contract blocker. A dedicated worktree was created at `/home/ubuntu/n8n2erpnext/LightBI-core-phase2a` from remote PR #4 head `d17abe0`, leaving Beta-recovery and the documentation worktree untouched.
+
+Local commit `87b3131` (`fix: remediate Phase 2A trust contract blockers`) addresses the twelve independent-audit remediation classes: deterministic/path-scoped canonical ordering, TypeScript/Rust safe-integer parity, root-signed keyset trust, keyset expiry/rollback/equivocation, signing-time versus current-time lifecycle separation, purpose-specific verification APIs, account/organization tier semantics, lifecycle enforcement, canonical Ed25519 encoding/lengths, SemVer and portable artifact basenames, distinct TEST-ONLY ROOT/REL/ATT/ENT/PRO full-chain vectors, and stronger public/private key-material boundary checks.
+
+The final local CI-equivalent gate passed: public release contract, public-boundary guard, trust TypeScript lint, 16/16 TypeScript trust tests, 4/4 Rust tests, desktop production build, and seven governed regression files containing 26 passing tests. A deliberate fake `rootSeed` probe was also rejected by the strengthened boundary scanner.
+
+Authority/freeze distinction remains mandatory. `87b3131` is one local commit ahead of remote `codex/phase2-trust-contracts`; it has not been pushed or independently re-audited. Phase 2A therefore remains **NOT FROZEN**, and private Rust signer/attestation work remains blocked until an independent review of the exact remediation commit records explicit `FREEZE APPROVED`.

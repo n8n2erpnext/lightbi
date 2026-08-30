@@ -27,7 +27,23 @@
     "draft": true,
     "merged": false,
     "ciPassedAtHead": true,
-    "freezeApproved": false
+    "freezeApproved": false,
+    "remediationCandidate": {
+      "workspace": "/home/ubuntu/n8n2erpnext/LightBI-core-phase2a",
+      "branch": "codex/phase2a-freeze-remediation-20260830",
+      "baseHead": "d17abe0f7c5bc97521347526fb5fcec759857b2e",
+      "localCommit": "87b3131",
+      "pushed": false,
+      "independentReauditComplete": false,
+      "freezeApproved": false,
+      "typescriptTrustTestsPassed": 16,
+      "rustTrustTestsPassed": 4,
+      "governedRegressionFilesPassed": 7,
+      "governedRegressionTestsPassed": 26,
+      "desktopBuildPassed": true,
+      "publicBoundaryPassed": true,
+      "ciEquivalentPassed": true
+    }
   },
   "controlPlane": {
     "runningPort": 5174,
