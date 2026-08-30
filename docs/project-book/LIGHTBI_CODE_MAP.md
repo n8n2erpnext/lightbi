@@ -738,3 +738,11 @@ The authority boundary is explicit: persisted identity carries no execution auth
 This closes a continuity gap without turning `workspace_sessions` into canonical truth storage. Restore may recover identity/history metadata, but current governed execution and decision-use authorization must still be re-established from current source truth.
 
 The broader historical Vitest universe is currently not a clean public-main gate. A full run on the feature branch was baseline-red largely because sanitized public history no longer contains many archive-era `docs/architecture/*.json` artifacts consumed by old tests. Representative detached-head comparison at `999dc75` reproduced the same selected failure identities before this durability change. Future changes must therefore distinguish current selected release regressions from archive/governance replay debt instead of treating the full historical suite as one undifferentiated pass/fail signal.
+
+## 45. NEXT generation identity is build/runtime provenance, not data authority
+
+Public successor commit `ef2434ac01ec6a817f4a04f58d16ef41c447b9dc` adds `LightBIGenerationManifestV1` plus desktop generation/isolation diagnostics. The manifest binds one accepted build to parent generation, core/source/control-plane commits, CP schema target, app/test-pack version, trust state and internal infrastructure scopes.
+
+This metadata answers **which successor code is running**. It does not grant semantic, entitlement or execution authority. Canonical data/analysis truth continues to come from the existing governed source/execution boundaries, and `AnalysisSessionIdentityV1` remains revalidation-only metadata.
+
+Internal desktop diagnostics cross-check the manifest against core health and the private NEXT control plane. A control-plane generation/commit mismatch marks the backend unhealthy rather than silently accepting a different generation.

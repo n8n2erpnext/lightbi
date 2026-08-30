@@ -96,7 +96,8 @@
     "private_pro_capability_delivery_and_offline_policy",
     "final_open_core_dependency_legal_review",
     "control_plane_deployed_sha_marker",
-    "public_historical_test_taxonomy_reconciliation"
+    "public_historical_test_taxonomy_reconciliation",
+    "next_internal_infrastructure_activation_and_owner_uat"
   ],
   "postTruthCandidates": {
     "controlPlaneFoundation": {
@@ -241,5 +242,61 @@
     "exhaustiveBaselineEquivalenceProven": false,
     "selectedPublicCiIsFullHistoricalSuite": false,
     "knownDebt": "public_historical_test_taxonomy_reconciliation"
+  },
+  "nextGeneration": {
+    "model": "successor_promotion_generation_rotation",
+    "status": "source_generation_candidate_ready_for_internal_activation",
+    "generationSchema": "lightbi.generation.v1",
+    "generationId": "g-2026-08-30-next-001",
+    "parentGenerationId": "prod-v0.9.2-beta.7-28e2aae",
+    "core": {
+      "workspace": "/home/ubuntu/n8n2erpnext/LightBI-next-internal",
+      "branch": "codex/next-internal-generation-20260830",
+      "head": "ef2434ac01ec6a817f4a04f58d16ef41c447b9dc",
+      "baseCandidate": "326d991a8f305fef938e9aab47897dd233146770"
+    },
+    "controlPlane": {
+      "workspace": "/home/ubuntu/n8n2erpnext/lightbi-control-plane-next-internal",
+      "branch": "codex/next-internal-generation-20260830",
+      "head": "c8a667cc0e760572f9aa620ca72cdc8cd5bfb41d",
+      "baseCandidate": "0385b316f54f73fa4d3e7ce481fa377c93f5471b",
+      "schemaTarget": "061_integrations_delivery",
+      "runtimeHeartbeatMigration": "033_runtime_heartbeats"
+    },
+    "testPack": {
+      "version": "lightbi.uat.v1",
+      "fixtures": 4,
+      "scenarios": 14,
+      "levels": 3,
+      "smokeScenarios": 4,
+      "featureScenarios": 6,
+      "releaseScenarios": 4
+    },
+    "machineGates": {
+      "generationContractTestsPassed": 3,
+      "generationDiagnosticsTestsPassed": 8,
+      "publicRegressionFilesPassed": 11,
+      "publicRegressionTestsPassed": 38,
+      "desktopBuildPassed": true,
+      "publicBoundaryPassed": true,
+      "privateCompiledRuntimeTestsPassed": 116,
+      "privateTypecheckPassed": true,
+      "privateBuildPassed": true,
+      "nextEnvironmentVerificationPassed": true
+    },
+    "infrastructure": {
+      "isolatedContractDefined": true,
+      "internalDatabaseStarted": false,
+      "internalRedisStarted": false,
+      "internalControlPlaneStarted": false,
+      "internalWorkerStarted": false,
+      "migrationsApplied": false,
+      "productionMutated": false
+    },
+    "trust": {
+      "phase2aHead": "fb8225c951fc27692e6b0e7554c3112ada08e49f",
+      "freezeApproved": false,
+      "trust1Blocked": true
+    }
   }
 }

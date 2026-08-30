@@ -333,3 +333,20 @@ native/package/platform checks
 ```
 
 Until that reconciliation is complete, the accurate statement is **selected public CI can be green while the historical full suite remains baseline-red**. This is known test-infrastructure debt, not permission to ignore a new failure introduced inside the selected/current gate.
+
+## 20. NEXT generation and owner-acceptance gates
+
+The successor branch adds a distinct verification layer ahead of promotion:
+
+```text
+generation manifest contract
+→ internal infrastructure isolation contract
+→ desktop generation/diagnostics tests
+→ existing selected governed public CI
+→ owner UAT pack
+→ explicit promotion decision
+```
+
+Core NEXT CI validates the generation manifest builder, the 4-fixture/14-scenario owner UAT manifest, generation/diagnostics contracts, desktop build and the existing selected governed regression gates. Private NEXT CI retains strict TypeScript/build/full compiled-runtime tests and additionally verifies the checked-in NEXT environment example.
+
+Owner UAT is intentionally separate from automated CI. A green CI run proves the successor satisfies machine contracts; promotion still requires user-visible acceptance against one immutable `generation_id`. This complements rather than hides the known historical full-suite taxonomy debt recorded in section 19.

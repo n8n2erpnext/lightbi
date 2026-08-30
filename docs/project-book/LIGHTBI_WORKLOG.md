@@ -1116,3 +1116,15 @@ Private control-plane Git access was re-verified and an authoritative clone now 
 - A clean detached `999dc75` representative probe produced 11 pass / 7 fail both before and after the durability change, with identical failure identities and no new representative regression. This is representative proof only, not an exhaustive full-suite baseline equivalence claim. Test-taxonomy reconciliation is now explicit 1.0 debt.
 - Private control-plane advanced through CP-4.6 `bfbf6d9`, CP-4.7 `90ba49e`, and CP-4.8 `9c89a81`, using maintained WebAuthn verification and phishing-resistant session semantics. Test progression: 100/100 → 104/104 → 110/110; docs head `0385b31`.
 - Production/staging services and databases remain untouched. Phase 2A remains `fb8225c`, not frozen; Trust-1/private signer remains blocked.
+
+## 2026-08-30 — NEXT/Internal successor generation foundation
+
+- Approved successor rotation model: CURRENT N directly fathers NEXT N+1; an accepted NEXT is promoted to become the new CURRENT rather than merged piecemeal back into the older runtime.
+- Created public successor worktree `/home/ubuntu/n8n2erpnext/LightBI-next-internal`, pushed as `ef2434ac01ec6a817f4a04f58d16ef41c447b9dc`.
+- Created private successor worktree `/home/ubuntu/n8n2erpnext/lightbi-control-plane-next-internal`, pushed as `c8a667cc0e760572f9aa620ca72cdc8cd5bfb41d`.
+- Added `lightbi.generation.v1`, fail-closed internal isolation checks, visible NEXT diagnostics and exact core/control-plane generation cross-checks.
+- Added private internal diagnostics, migration `033_runtime_heartbeats`, worker generation heartbeat, NEXT service/env templates and environment verifier.
+- Added owner-facing `lightbi.uat.v1`: four reused hashed ERP fixtures, fourteen scenarios across Smoke/Feature/Release Acceptance, checklist and acceptance-record template.
+- Machine verification: Core generation contract 3/3, diagnostics 8/8, selected public regressions 11 files / 38 tests, desktop build/release/public-boundary PASS; private successor typecheck/build/env gate PASS and 116/116 tests.
+- Generated proof candidate `g-2026-08-30-next-001` with parent `prod-v0.9.2-beta.7-28e2aae`, Core `ef2434a`, CP `c8a667c`, schema target `061_integrations_delivery`, UAT `lightbi.uat.v1`, Trust Phase 2A unfrozen.
+- No internal/prod service start, database migration or production mutation occurred. Internal infrastructure activation and owner UAT are the next promotion gates.

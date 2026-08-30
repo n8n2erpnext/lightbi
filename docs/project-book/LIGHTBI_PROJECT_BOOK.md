@@ -107,6 +107,7 @@
   - [68. Project Truth checkpoint](#68-project-truth-checkpoint)
   - [69. Explicit open gates after archaeology](#69-explicit-open-gates-after-archaeology)
   - [70. Coding gate after Project Truth 1.0](#70-coding-gate-after-project-truth-1-0)
+  - [75. NEXT/Internal successor generation foundation](#75-nextinternal-successor-generation-foundation)
   - [74. Core durability, Passkey candidate, and test-taxonomy checkpoint](#74-core-durability-passkey-candidate-and-test-taxonomy-checkpoint)
 <!-- AUTO_TOC_END -->
 
@@ -2013,3 +2014,32 @@ A broader full-desktop Vitest run exposed an important test-taxonomy debt rather
 Therefore two verification statements must remain separate: current GitHub CI intentionally runs a selected governed public regression set, while the historical full Vitest universe is presently baseline-red on the sanitized public lineage. “CI green” must never be rewritten as “every historical test is green.” The full historical suite now needs an explicit taxonomy/reconciliation phase before 1.0 so public-release gates, archive evidence tests, sanitized-path assumptions, and true current regressions are distinguishable.
 
 In parallel, the private control-plane candidate advanced through CP-4.6 `bfbf6d9` (maintained `@simplewebauthn/server` adapter), CP-4.7 `90ba49e` (phishing-resistant session assurance), and CP-4.8 `9c89a81` (policy-gated Passkey registration and discoverable passwordless login). Test progression is **100/100 → 104/104 → 110/110**; private documentation is pushed through `0385b316f54f73fa4d3e7ce481fa377c93f5471b`. Production/staging services and databases remain unmodified, and Trust-1 remains blocked pending explicit Phase 2A freeze approval.
+
+## 75. NEXT/Internal successor generation foundation
+
+The owner-approved development model is now **successor promotion**, not piecemeal merge-back into an older production runtime:
+
+```text
+CURRENT N
+→ direct inherited NEXT N+1
+→ machine gates
+→ owner UAT on isolated internal infrastructure
+→ explicit promotion
+→ NEXT becomes CURRENT N+1
+→ retain N for rollback evidence
+→ create NEXT N+2
+```
+
+Code/schema lineage is inherited; writable data infrastructure is not. NEXT must use separate PostgreSQL, Redis, data directory, public origin, analytics/release namespaces, accounts and integrations. Promotion later wires the accepted successor code to production infrastructure and applies the same ordered migration lineage; internal test data is never promoted as production authority.
+
+The first successor source generation is now pushed on public branch `codex/next-internal-generation-20260830` at `ef2434ac01ec6a817f4a04f58d16ef41c447b9dc`, inheriting core durability head `326d991`. Its private control-plane sibling is pushed at `c8a667cc0e760572f9aa620ca72cdc8cd5bfb41d`, inheriting the CP-4.8 documentation head `0385b31`.
+
+A proof manifest `lightbi.generation.v1` was generated for candidate `g-2026-08-30-next-001`, parent `prod-v0.9.2-beta.7-28e2aae`, test pack `lightbi.uat.v1`, control-plane schema target `061_integrations_delivery`, and exact core/control-plane SHAs above. The proof used non-production placeholder internal endpoints only; it did not start infrastructure or create deployment authority.
+
+The desktop successor adds a visible `NEXT` marker plus Settings diagnostics for generation ID, parent, exact SHAs, schema target/runtime state, core/control-plane health, worker health, update/trust/analytics/release identity and isolation blockers. Internal distribution calls fail closed against the known production distribution origin. The private successor adds internal-only `/api/v1/internal/diagnostics`, explicit environment isolation verification, migration `033_runtime_heartbeats`, and worker generation/commit heartbeats.
+
+Owner acceptance is now executable product infrastructure, not an informal note. `test-packs/internal-v1/` reuses four hashed existing ERP fixtures and defines **14** scenarios across SMOKE, FEATURE and RELEASE ACCEPTANCE. Golden business answers include May revenue `22,973,896,244`, June revenue `20,637,539,164`, period delta `-2,336,357,080`, May delivery fee `147,925,000`, May gross profit `3,075,721,244`, and zero Sales↔Accounting revenue gap. The pack also covers Deep BA/drill evidence, Excel Analysis/Pivot, Power BI handoff, save/restart/restore, same-filename-different-content rejection, governed multi-source behavior, infrastructure isolation and promotion evidence.
+
+Machine gates passed before push: Core NEXT generation contract 3/3, generation/diagnostics Vitest 8/8, UAT-pack validation 4 fixtures / 14 scenarios / 3 levels, release/public-boundary gates, desktop production build and the selected public governed regression set **11 files / 38 tests**. Private NEXT passed strict typecheck/build, environment verification and **116/116** compiled-runtime tests.
+
+Current status is therefore **NEXT source generation ready for internal-infrastructure activation**, not “internal deployment complete”. Production ports/services/databases remain unchanged. Phase 2A remains exact head `fb8225c951fc27692e6b0e7554c3112ada08e49f`, Draft/Open/CI-green but **not frozen**; NEXT work does not authorize Trust-1, signer, attestation, signed ENT or Pro-package signing.

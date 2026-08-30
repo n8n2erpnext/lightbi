@@ -385,3 +385,11 @@ The authoritative private feature branch advanced through CP-4.6 `bfbf6d9`, CP-4
 Passkey registration and discoverable passwordless web login are gated by required schema plus explicit RP-ID/HTTPS-origin configuration. Registration requires recent authentication or step-up and bumps `security_version`. Login uses one-time challenges, active-account credential resolution, and compare-and-set signature-counter persistence before issuing a `phishing_resistant` HttpOnly web session. The test progression is 100/100 at CP-4.6, 104/104 at CP-4.7, and 110/110 at CP-4.8.
 
 This remains a **private feature-branch candidate**, not production authority. No production/staging database migration, service restart, or runtime mutation occurred. Phase 2A Trust Contracts remain unfrozen; the Passkey work does not authorize the private signer, installation attestation, signed ENT, or Pro-package signing path.
+
+## 23. NEXT/Internal successor control-plane sibling
+
+A separate successor worktree now exists at `/home/ubuntu/n8n2erpnext/lightbi-control-plane-next-internal`, branch `codex/next-internal-generation-20260830`, pushed at `c8a667cc0e760572f9aa620ca72cdc8cd5bfb41d`. It directly inherits the CP-4.8 candidate and is paired with public Core NEXT `ef2434a` through `lightbi.generation.v1`.
+
+The successor adds migration `033_runtime_heartbeats`, a worker heartbeat keyed by service instance/generation/commit, internal-only `/api/v1/internal/diagnostics`, NEXT environment verification and isolated API/worker systemd contracts. The environment contract requires separate PostgreSQL, Redis, data directory, public origin and release endpoints; when a production env is supplied to the verifier, equality on those endpoints is a blocker.
+
+Strict typecheck/build and **116/116** compiled-runtime tests pass. The example NEXT environment also passes the isolation verifier. No internal service has been started and no migration has been applied, so this is a **source/deployment-contract candidate**, not a running internal control plane. Production 5174 remains untouched.
