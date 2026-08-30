@@ -237,10 +237,28 @@ function safeSheetName(raw: string, used: Set<string>): string {
   return candidate;
 }
 
+function displayWidth(value: unknown): number {
+  if (value == null) return 0;
+  if (value instanceof Date) return value.toISOString().length;
+  if (typeof value === 'object') {
+    try { return JSON.stringify(value).length; } catch { return String(value).length; }
+  }
+  return String(value).length;
+}
+
+function contentAwareColumns(rows: Record<string, unknown>[], columns: string[]): Array<{ wch: number }> {
+  const sample = rows.slice(0, 256);
+  return columns.map(column => {
+    let width = Math.max(10, column.length + 2);
+    for (const row of sample) width = Math.max(width, Math.min(48, displayWidth(row[column]) + 2));
+    return { wch: Math.min(48, width) };
+  });
+}
+
 function worksheetForRows(rows: Record<string, unknown>[], columns: string[]): XLSX.WorkSheet {
   const worksheet = XLSX.utils.json_to_sheet(rows, { header: columns.length ? columns : undefined });
   if (worksheet['!ref']) worksheet['!autofilter'] = { ref: worksheet['!ref'] };
-  worksheet['!cols'] = columns.map(column => ({ wch: Math.min(36, Math.max(12, column.length + 2)) }));
+  worksheet['!cols'] = contentAwareColumns(rows, columns);
   return worksheet;
 }
 
@@ -328,6 +346,7 @@ export function createExcelAnalysisWorkbook(plan: AnalysisWorkbookPlanV1, option
     ['Selected metric', plan.selectedScope?.metricId ?? 'All governed result metrics'],
     ['Raw multi-source join', plan.combinationPolicy === 'governed_metric_results_only' ? 'Prohibited' : 'Not applicable'],
     ['Evidence policy', 'Source-bound evidence remains in separate sheets'],
+    ['Pivot implementation', 'Formula-driven governed summary; native PivotTable/PivotChart is not embedded by the current CE writer'],
     ['Decision plan version', plan.decisionVisualizationPlan?.schemaVersion ?? 'Not attached'],
     ['Decision plan ID', plan.decisionVisualizationPlan?.planId ?? 'Not attached'],
     ['Clean canonical data attached', options.cleanData ? 'Yes' : 'No'],

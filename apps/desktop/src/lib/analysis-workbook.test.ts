@@ -35,11 +35,14 @@ describe('Excel Analysis Workbook', () => {
     expect(XLSX.utils.sheet_to_json(workbook.Sheets['Analysis Summary'])).toEqual([{ reporting_period: '2026-05', gross_profit: 90 }]);
     expect(workbook.Sheets['Pivot View']['B2']?.f).toBe("'Analysis Summary'!B2");
     expect(XLSX.utils.sheet_to_json<Array<string | number>>(workbook.Sheets['Pivot View'], { header: 1 })[0]).toEqual(['Governed metric', '2026-05']);
+    expect(workbook.Sheets['Analysis Summary']['!autofilter']?.ref).toBe('A1:B2');
+    expect(workbook.Sheets['Pivot View']['!autofilter']?.ref).toBe('A1:B2');
     expect(XLSX.utils.sheet_to_json(workbook.Sheets['Evidence sales 2026-05'])).toHaveLength(2);
     expect(XLSX.utils.sheet_to_json(workbook.Sheets['Evidence accounting 2026-05'])).toHaveLength(2);
     const overview = XLSX.utils.sheet_to_json<Array<string | number>>(workbook.Sheets['Analysis Overview'], { header: 1 });
     expect(overview).toContainEqual(['Combination policy', 'governed_metric_results_only']);
     expect(overview).toContainEqual(['Raw multi-source join', 'Prohibited']);
+    expect(overview).toContainEqual(['Pivot implementation', 'Formula-driven governed summary; native PivotTable/PivotChart is not embedded by the current CE writer']);
     expect(overview).toContainEqual(['Decision plan version', 'lightbi.decision-visualization-plan.v1']);
     expect(overview).toContainEqual(['Decision plan ID', decisionVisualizationPlan.planId]);
   });
@@ -110,6 +113,20 @@ describe('Excel Analysis Workbook', () => {
     });
     expect(noEvidence.tables.filter(table => table.kind === 'evidence')).toHaveLength(0);
     expect(noEvidence.sources).toHaveLength(0);
+  });
+
+  it('uses bounded content-aware widths and autofilters for Excel usability without changing analysis truth', () => {
+    const plan = createAnalysisWorkbookPlan({
+      title: 'Long label analysis', perspectiveId: 'revenue', sourceCount: 1,
+      summaryRows: [{ reporting_period: '2026-06', narrative_metric: 'A deliberately longer governed display value for Excel' }],
+      createdAt: '2026-08-30T00:00:00.000Z',
+    });
+    const workbook = XLSX.read(createExcelAnalysisWorkbook(plan), { type: 'array', cellStyles: true });
+    const summary = workbook.Sheets['Analysis Summary'];
+    expect(summary['!autofilter']?.ref).toBe('A1:B2');
+    expect(summary['!cols']?.[1]?.wch ?? 0).toBeGreaterThan('narrative_metric'.length + 2);
+    expect(summary['!cols']?.[1]?.wch ?? 0).toBeLessThanOrEqual(48);
+    expect(XLSX.utils.sheet_to_json(summary)).toEqual([{ reporting_period: '2026-06', narrative_metric: 'A deliberately longer governed display value for Excel' }]);
   });
 
 });
