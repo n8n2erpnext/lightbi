@@ -13,7 +13,8 @@
 7. [`PATH_MIGRATION_INDEX.md`](./PATH_MIGRATION_INDEX.md) — second-pass old-path → current-path lookup.
 8. [`../history/LEGACY_ROOT_INDEX.md`](../history/LEGACY_ROOT_INDEX.md) — first-pass legacy root filename lookup.
 9. [`DOCUMENT_TEMPLATE.md`](./DOCUMENT_TEMPLATE.md) — starting template for durable new engineering documents.
-10. [`LIGHTBI_CODE_MAP.md`](./LIGHTBI_CODE_MAP.md) — completed code-derived baseline covering production reachability, authority boundaries, native/server/runtime topology, dirty-only WIP, legacy classification, and verification surfaces; Git-history/CI reconciliation is still pending.
+10. [`LIGHTBI_CODE_MAP.md`](./LIGHTBI_CODE_MAP.md) — completed code-derived baseline covering production reachability, authority boundaries, native/server/runtime topology, branch-relative dirty WIP, legacy classification, and verification surfaces.
+11. [`LIGHTBI_GIT_HISTORY_MAP.md`](./LIGHTBI_GIT_HISTORY_MAP.md) — completed Edition 0.4 reconciliation of archive/public lineages, commits, closure provenance, release tags, PRs, supersession, and dirty-worktree Git truth.
 
 ## Snapshot boundary
 
@@ -25,7 +26,7 @@
 
 ## Source-precedence rule
 
-The Project Book is synthesis, not magical authority. When claims conflict, prefer current code + latest verified closure/audit, then current canonical contracts, then recent handoffs/ADRs, and finally older progress/changelog/history. The later Git/CI audit may revise docs-derived conclusions.
+The Project Book is synthesis, not magical authority. When claims conflict, prefer current code at the relevant SHA + Git provenance + latest verified closure/audit, then current canonical contracts, then recent handoffs/ADRs, and finally older progress/changelog/history. CI/CD and control-plane audits may still revise deployment/release conclusions.
 
 ## Integrity and provenance
 

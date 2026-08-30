@@ -3,9 +3,11 @@
 **Edition:** Documentation Baseline 0.1  
 **Snapshot:** 2026-08-29  
 **Scope:** Product intent, architecture evolution, canonical runtime rules, verified evidence, release state, and provenance bookmarks derived from the repository documentation corpus.  
-**Status:** **Docs-derived baseline plus completed codebase map. Not final until Git history, GitHub repository, control-plane ownership, GitHub Actions, and CI/CD audits are completed.**
+**Status:** **Docs-derived baseline, completed codebase map, and Git-history reconciliation are now integrated. Not final until control-plane ownership, GitHub Actions, and CI/CD audits are completed.**
 **Documentation governance:** Before adding or reorganizing project documentation, follow [`LIBRARY_RULES.md`](./LIBRARY_RULES.md).
-**Code-derived companion:** [`LIGHTBI_CODE_MAP.md`](./LIGHTBI_CODE_MAP.md) records the completed 0.3 codebase baseline and explicitly separates baseline HEAD from dirty working-tree evidence.
+**Code-derived companion:** [`LIGHTBI_CODE_MAP.md`](./LIGHTBI_CODE_MAP.md) records the completed 0.3 codebase baseline and explicitly separates archive-baseline HEAD from dirty working-tree evidence.
+
+**Git-derived companion:** [`LIGHTBI_GIT_HISTORY_MAP.md`](./LIGHTBI_GIT_HISTORY_MAP.md) records Edition 0.4: archive/public lineage split, snapshot proof, closure-to-commit mapping, releases, PRs, supersession, and branch-relative dirty-state corrections.
 
 
 
@@ -146,9 +148,9 @@ The central differentiator is that LightBI tries to make messy operational data 
 
 The repository is a historical record, not a flat specification. Many old documents describe architectures that were later superseded.
 
-Until the later code/Git/CI audit upgrades this book, use this order of authority:
+Code and Git-history reconciliation are now complete; CI/CD and control-plane audits are still pending. Use this order of authority:
 
-1. **Current working code + reproducible runtime evidence** — to be audited in a later phase.
+1. **Current code at the relevant exact SHA/branch + reproducible runtime evidence**, interpreted with [`LIGHTBI_CODE_MAP.md`](./LIGHTBI_CODE_MAP.md) and [`LIGHTBI_GIT_HISTORY_MAP.md`](./LIGHTBI_GIT_HISTORY_MAP.md).
 2. **Latest closure documents and machine-readable audits** for the relevant subsystem.
 3. **Current canonical contracts and architecture ownership documents.**
 4. **Current product-boundary documents and active release checklists.**
@@ -1241,6 +1243,8 @@ After the code map, audit Git commits to answer:
 
 Deliverable: code-map nodes annotated with introducing/change commits and a chronological architecture history based on Git, not filename dates alone.
 
+**Edition 0.4 status: COMPLETE.** See [`LIGHTBI_GIT_HISTORY_MAP.md`](./LIGHTBI_GIT_HISTORY_MAP.md). The audit proves that public `main` is an intentional re-rooted/sanitized snapshot lineage, while `storage` and backup/codex refs preserve the full internal development history. It also corrects branch-relative Code Map labels for public-main account, updater, Advanced SQL, release, and distribution history.
+
 ### 36.3 GitHub Actions / CI/CD audit
 
 Read every workflow and relevant action log/config to determine:
@@ -1433,7 +1437,7 @@ Sol / architecture audit
 
 An important security premise is permanent: historical public source is already disclosed. Security must never depend on old public code becoming secret again.
 
-The handoff records `c06ef003242e06884e65d992627b5706ad13dfab` as the public Phase 2 base after the Phase 0–1 public/private split. This SHA must be verified against Git history before this book upgrades the statement from session authority to repository truth.
+Git-history reconciliation verifies `c06ef003242e06884e65d992627b5706ad13dfab` as the Phase 0–1 merge/base used by the Phase 2A branch, and verifies `d17abe0f7c5bc97521347526fb5fcec759857b2e` as the current PR #4 head at audit. The PR remains open/draft and is not current `main`.
 ## 45. Licensing authority model
 
 Every installation starts as **Basic**. Basic local-first functionality must remain usable even when online trust, account, entitlement, or control-plane validation is unavailable.

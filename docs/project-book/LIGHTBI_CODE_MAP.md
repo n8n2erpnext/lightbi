@@ -5,7 +5,7 @@
 **Code audit completed:** 2026-08-30
 **Repository baseline:** `0142e92c75e9fd3e190f82fe2a67cf255180cfca`
 **Current VPS working branch:** `codex/beta-recovery-20260801`
-**Status:** **Codebase audit baseline complete.** Git-history, GitHub, control-plane ownership, and CI/CD reconciliation are still pending.
+**Status:** **Codebase audit baseline complete. Git-history reconciliation is complete in `LIGHTBI_GIT_HISTORY_MAP.md`.** Control-plane ownership and CI/CD reconciliation remain pending.
 
 ---
 
@@ -15,10 +15,14 @@ This map answers four separate questions for every important code surface:
 
 1. **Is it reachable from the current production entry point?**
 2. **Does it own truth, adapt truth, execute truth, or only present truth?**
-3. **Is it committed at the baseline HEAD, modified in the dirty worktree, or completely untracked WIP?**
+3. **Is it committed at the archive baseline HEAD, modified in that dirty worktree, or untracked relative to that branch?** Git-wide truth is reconciled separately in [`LIGHTBI_GIT_HISTORY_MAP.md`](./LIGHTBI_GIT_HISTORY_MAP.md).
 4. **What source should be read next when a behavior must be changed safely?**
 
 Do not infer current behavior from filename, age, or file size alone. LightBI retains substantial historical/compatibility code that is not on the current production path.
+
+### Post-0.4 Git reconciliation note
+
+This Code Map was intentionally branch-relative: it audited archive baseline `0142e92` plus that worktree. The later Git audit proved that the public repository was deliberately re-rooted at `b10f8d0`, preserving almost all product source while dropping the internal docs/history corpus. Several files marked dirty/untracked here — including account, updater, Advanced SQL, release-contract, and distribution surfaces — have committed public-main history. Read [`LIGHTBI_GIT_HISTORY_MAP.md`](./LIGHTBI_GIT_HISTORY_MAP.md) before interpreting any “dirty-only” label as project-wide truth.
 # Part I — Repository Shape and Runtime Surfaces
 
 ## 1. Workspace topology
@@ -74,9 +78,9 @@ Tauri embeds the Axum router in-process and bridges frontend requests through a 
 - [`packages/plugin-sdk`](../../packages/plugin-sdk) — provider plugin contract boundary;
 - [`packages/ui`](../../packages/ui) — shared UI package.
 
-### Distribution/control-plane WIP
+### Distribution/control-plane state in the recovery worktree
 
-The dirty VPS worktree contains an **untracked** `apps/distribution/` Node application. This path is **dirty-working-tree-only** and therefore intentionally is not a link from the clean documentation worktree. It is not part of baseline HEAD `0142e92` and must not be treated as committed public-repository truth until Git reconciliation.
+The dirty VPS worktree contains an **untracked relative to `0142e92`** `apps/distribution/` Node application. Git reconciliation later proved that a public `apps/distribution/` implementation was committed on the re-rooted public `main`, evolved through Beta 7/account/update work, and was then intentionally removed from current public `main` during the Phase 0–1 private control-plane split. The local untracked directory is not byte-identical to that last public snapshot and still requires dedicated control-plane-repository reconciliation.
 # Part II — Frontend Production Reachability
 
 ## 3. Production entry point and route graph
@@ -529,6 +533,8 @@ This creates an important transitional mismatch: dirty frontend files such as `a
 
 Do not describe native account-token vaulting or automatic installer execution as completed runtime capability until Git/code integration moves those commands into the compiled entry point and tests the path.
 
+**Post-Git reconciliation:** this statement is true for the audited recovery worktree snapshot, but not for public-main history as a whole. Public commits `a9d30ca` and `a9d97cd` later modify tracked `crates/lightbi-tauri/src/main.rs` for account/update integration and staged update behavior. Use the public tag/commit being audited before deciding whether native wiring is complete.
+
 ## 31. Tauri packaging configuration is Windows-Beta oriented
 
 [`tauri.conf.json`](../../crates/lightbi-tauri/tauri.conf.json) currently identifies LightBI as `digital.thaiduy.lightbi`, targets NSIS packaging, and uses the desktop Vite build as `frontendDist`.
@@ -555,9 +561,9 @@ packages/core-types/src/release.ts
 apps/distribution/
 ```
 
-So this is not merely dormant scratch code: parts of the dirty frontend production graph reference it. But because the files are not in baseline HEAD, the capability is still **working-tree WIP**, not repository-tracked truth.
+So this is not merely dormant scratch code: parts of the dirty frontend production graph reference it. Relative to baseline HEAD `0142e92`, these modules are working-tree additions.
 
-This exact distinction must survive until Git reconciliation.
+**Post-Git reconciliation:** several of these same surfaces are repository-tracked on the deliberately re-rooted public `main`: Advanced SQL in `70d671c`, release contracts in `872194d`, account/native updater in `a9d30ca`, and staged updater work in `a9d97cd`. `apps/distribution/` was also tracked publicly before being intentionally removed by the Phase 0–1 control-plane split. Branch-relative dirty state must not be promoted into a project-wide provenance claim.
 
 ## 33. Current dirty license/account code is transitional relative to the 1.0 trust design
 
@@ -599,7 +605,9 @@ detect → download → verify → stage → READY → explicit Update & Restart
 
 The current dirty UI asks for explicit confirmation before invoking install, yet the native proposal performs download and installer launch in one command and is not compiled into `src/main.rs` anyway.
 
-Classify updater state as **partially designed / partially implemented / native wiring incomplete** until the later Git + release pipeline audit.
+For the recovery-worktree snapshot alone, classify this updater copy as **partially integrated relative to that branch baseline**.
+
+**Post-Git reconciliation:** public `main` later contains committed staged-updater work at `a9d97cd` and release preparation at `5884595`; `v0.9.2-beta.7` peels to `28e2aae`. CI/CD audit is still required to prove the exact build/publication behavior of those commits.
 
 ## 36. `apps/distribution` is a real running control-plane implementation, but untracked in this LightBI tree
 
@@ -611,7 +619,7 @@ It uses local SQLite plus optional PostgreSQL/Redis-backed helpers and mail inte
 
 This code is substantial enough to be operational, but its location here must not be confused with repository ownership. The project already has a dedicated control-plane repository; later reconciliation must decide which copy/commit is authoritative and which is deployment/workbench residue.
 
-Until that audit, this Code Map records behavior without promoting the untracked tree into LightBI core source-of-truth.
+Git reconciliation confirms that public `apps/distribution/` history existed and was then deliberately removed from current public `main` during Phase 0–1. The local untracked directory is not byte-identical to the last pre-cutover public snapshot, so the separate control-plane audit is still required before assigning current ownership.
 
 # Part XI — Legacy, Compatibility, and Reachability Classification
 
@@ -690,9 +698,9 @@ The later CI audit must map which of these suites actually run on push/PR/releas
 | Advanced DB/file workspace | Advanced page/hooks + advanced API + Rust `advanced.rs` | provider capabilities differ |
 | Advanced → Easy | advanced result handoff | must rebuild canonical truth from complete source |
 | persistent workspace metadata | server `ProjectContext` + `advanced_workspace.rs` | `ProjectStore` is not yet sole live owner |
-| native API routing | Tauri `src/main.rs` + `api-base.ts` | root-level untracked `main.rs` is not compiled |
-| account/license/update | dirty WIP + dedicated control-plane repo | not final 1.0 trust authority |
-| release/distribution UI | control-plane/distribution repo | untracked LightBI copy requires reconciliation |
+| native API routing | Tauri `src/main.rs` + `api-base.ts` | recovery snapshot differs from later public-main account/update wiring |
+| account/license/update | public-main commits + recovery-local divergence + dedicated control-plane repo | not final 1.0 trust authority |
+| release/distribution UI | committed public history, then private control-plane ownership | local untracked copy still requires control-plane reconciliation |
 ## 42. Current VPS deployment shape is operational context, not architectural authority
 
 At this audit checkpoint the VPS intentionally runs host processes rather than Dockerized LightBI services:
@@ -716,4 +724,4 @@ Therefore this map intentionally carries two truths at once:
 - **baseline repository truth** anchored at `0142e92...`;
 - **current VPS implementation evidence** observed in the dirty `codex/beta-recovery-20260801` worktree.
 
-The next Git-history phase must determine which dirty behaviors correspond to later commits/PRs elsewhere, which are intentional pending work, and which are abandoned residue. Until then, dirty-state findings are evidence, not merge status.
+Git-history reconciliation is now complete in [`LIGHTBI_GIT_HISTORY_MAP.md`](./LIGHTBI_GIT_HISTORY_MAP.md). It proves that some recovery-dirty paths correspond to later public-main commits, while other local files/directories diverge from or are absent on current `main`. Dirty-state findings here remain branch-relative implementation evidence; the Git map supplies merge/release provenance.

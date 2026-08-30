@@ -936,3 +936,21 @@ Key corrections to docs-only understanding were recorded:
 - static-unreachable code is classified separately as compatibility, verification-only, or orphan candidate rather than automatically called dead.
 
 At audit continuation the original working tree contained 78 tracked dirty paths and 36 untracked paths. Git history is the next required layer to distinguish pending work, later upstream work, and abandoned residue.
+
+## 2026-08-30 — Git History Reconciliation completed
+
+Edition 0.4 was completed in [`LIGHTBI_GIT_HISTORY_MAP.md`](./LIGHTBI_GIT_HISTORY_MAP.md).
+
+The audit used GitHub branch/PR/tag/commit data plus the local object graph to reconcile the archive lineage with the deliberately re-rooted public repository.
+
+Key findings:
+
+- `storage` preserves the internal June→August development history; `codex/beta-recovery-20260801` is `storage` plus the archive-side AGPL license commit;
+- public `main` starts at root commit `b10f8d0` with no parent;
+- tree comparison proves publicization preserved all 521 desktop source files, all 5 server source files, all 33 package files and all 5 script files byte-for-byte from archive tip `87dce4d`, while removing the internal docs/history corpus;
+- Phase 5→8 closure documents are all backed by remote commits; 8F1/8F2 were bundled in checkpoint `c84605c`;
+- release tags were peeled to exact source commits through `v0.9.2-beta.7` → `28e2aae`;
+- public-main history proves account, staged updater, Advanced Monaco SQL, R2 release manifests and public distribution code were committed even when the recovery worktree shows corresponding paths as dirty/untracked;
+- Phase 0–1 later removes the public control-plane implementation and merges as `c06ef00`;
+- PR #4 remains open/draft at `d17abe0`; PR #5 later advances public main to `4668983`;
+- local `main` on the VPS is a historical-lineage branch and must not be confused with `origin/main` public truth.
