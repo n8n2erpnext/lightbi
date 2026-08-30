@@ -1014,3 +1014,21 @@ Local reconstructed verification passed strict typecheck, compiled build, browse
 No production service was restarted or modified. The live control plane remains authoritative until an explicit staging/cutover is approved.
 
 The future Rust signer/attestation boundary remains deferred and blocked by the independent Phase 2A freeze gate; CP-1 does not implement signing, attestation, Pro delivery, Next.js, or Python workers.
+## 2026-08-30 — Control-plane 1.0 foundation sequencing
+
+After CP-1 strict TypeScript completion, the frozen road-to-1.0 direction was compared against the current private control-plane shape.
+
+Key conclusion: language migration alone does not prevent future control-plane sprawl. Current ownership remains concentrated in a large HTTP server and account-auth module, with durable/transitional state split across SQLite, PostgreSQL and Redis.
+
+A dedicated private-control-plane roadmap now sequences the required foundations before feature growth:
+
+```text
+CP-2 modular API/persistence boundaries
+→ CP-3 outbox/worker/audit/idempotency
+→ CP-4 identity security
+→ CP-5 organizations/entitlement
+→ CP-6 commerce/integrations
+→ Trust-1 only after Phase 2A freeze
+```
+
+The control plane is expected to stay one foundation phase ahead of LightBI core features that depend on online authority. This is a sequencing/design decision, not a claim that these phases are implemented.
