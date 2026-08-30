@@ -1,1 +1,23 @@
-{"purpose":"release","payload":{"schema":1,"kid":"rel-test-2026-01","product_id":"digital.thaiduy.lightbi","release_id":"release_0.9.2-beta.7_windows_x86_64","version":"0.9.2-beta.7","channel":"beta","platform":"windows","architecture":"x86_64","artifact_name":"LightBI_0.9.2-beta.7_x64-setup.exe","artifact_sha256":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","artifact_size":29491200,"created_at":"2026-08-29T05:17:00Z"},"canonical_text":"{\"architecture\":\"x86_64\",\"artifact_name\":\"LightBI_0.9.2-beta.7_x64-setup.exe\",\"artifact_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"artifact_size\":29491200,\"channel\":\"beta\",\"created_at\":\"2026-08-29T05:17:00Z\",\"kid\":\"rel-test-2026-01\",\"platform\":\"windows\",\"product_id\":\"digital.thaiduy.lightbi\",\"release_id\":\"release_0.9.2-beta.7_windows_x86_64\",\"schema\":1,\"version\":\"0.9.2-beta.7\"}","sha256":"debceff4417e2bd27fc3c4212df007c6622285956beb500586e41340f75df020","public_key":"11qYAYKxCrfVS_7TyWQHOg7hcvPapiMlrwIaaPcHURo","signature":"sYEcTMC0LZYfDcet3pMDXCt_C1NOCe01o4Q-Cy1TlwCJwTi9KG6g30sRsHdFhB_nWJZ7bm3ED4N5gJv5NwFJDA"}
+{
+  "test_only": true,
+  "purpose": "release",
+  "payload": {
+    "schema": 1,
+    "kid": "test-rel-v1",
+    "product_id": "digital.thaiduy.lightbi",
+    "release_id": "release_0.9.2-beta.7_windows_x86_64",
+    "version": "0.9.2-beta.7",
+    "channel": "beta",
+    "platform": "windows",
+    "architecture": "x86_64",
+    "artifact_name": "LightBI_0.9.2-beta.7_x64-setup.exe",
+    "artifact_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "artifact_size": 29491200,
+    "created_at": "2026-08-29T05:17:00Z"
+  },
+  "canonical_text": "{\"architecture\":\"x86_64\",\"artifact_name\":\"LightBI_0.9.2-beta.7_x64-setup.exe\",\"artifact_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"artifact_size\":29491200,\"channel\":\"beta\",\"created_at\":\"2026-08-29T05:17:00Z\",\"kid\":\"test-rel-v1\",\"platform\":\"windows\",\"product_id\":\"digital.thaiduy.lightbi\",\"release_id\":\"release_0.9.2-beta.7_windows_x86_64\",\"schema\":1,\"version\":\"0.9.2-beta.7\"}",
+  "canonical_utf8_hex": "7b22617263686974656374757265223a227838365f3634222c2261727469666163745f6e616d65223a224c6967687442495f302e392e322d626574612e375f7836342d73657475702e657865222c2261727469666163745f736861323536223a2261616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161222c2261727469666163745f73697a65223a32393439313230302c226368616e6e656c223a2262657461222c22637265617465645f6174223a22323032362d30382d32395430353a31373a30305a222c226b6964223a22746573742d72656c2d7631222c22706c6174666f726d223a2277696e646f7773222c2270726f647563745f6964223a226469676974616c2e746861696475792e6c696768746269222c2272656c656173655f6964223a2272656c656173655f302e392e322d626574612e375f77696e646f77735f7838365f3634222c22736368656d61223a312c2276657273696f6e223a22302e392e322d626574612e37227d",
+  "sha256": "9093ec881872b161b244e86bd0356b10750310d2048e3770effbf5d72fcb3572",
+  "public_key": "UkzUukLptil7BbgY-bTfmVJVTG4nNj86jY4PuQzksOM",
+  "signature": "EOhMmB6tIVSvkWa7adMEXg5EJ8n5T1xZTOzi5AE81S1YrRvGEMV02wXaeIU4jW-hnBtRzn5dMLfCqF998R4eCg"
+}

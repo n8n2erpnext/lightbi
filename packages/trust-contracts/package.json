@@ -10,10 +10,12 @@
     "lint": "tsc -p tsconfig.json"
   },
   "dependencies": {
+    "semver": "^7.8.5",
     "zod": "^4.1.12"
   },
   "devDependencies": {
     "@types/node": "^24.13.3",
+    "@types/semver": "^7.8.0",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3"
   }

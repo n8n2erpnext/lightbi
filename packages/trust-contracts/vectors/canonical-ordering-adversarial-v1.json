@@ -1,0 +1,57 @@
+{
+  "test_only": true,
+  "purpose": "canonical_ordering_adversarial",
+  "payload": {
+    "A": "upper",
+    "a": "lower",
+    "-": "dash",
+    ".": "dot",
+    ":": "colon",
+    "_": "underscore",
+    "capabilities": [
+      "aaa",
+      "_aa",
+      ":aa",
+      ".aa",
+      "-aa",
+      "Aaa"
+    ],
+    "keys": [
+      {
+        "kid": "aaa"
+      },
+      {
+        "kid": "_aa"
+      },
+      {
+        "kid": ":aa"
+      },
+      {
+        "kid": ".aa"
+      },
+      {
+        "kid": "-aa"
+      },
+      {
+        "kid": "Aaa"
+      }
+    ],
+    "nested": {
+      "capabilities": [
+        "aaa",
+        "Aaa"
+      ],
+      "keys": [
+        {
+          "kid": "aaa"
+        },
+        {
+          "kid": "Aaa"
+        }
+      ]
+    }
+  },
+  "canonical_text": "{\"-\":\"dash\",\".\":\"dot\",\":\":\"colon\",\"A\":\"upper\",\"_\":\"underscore\",\"a\":\"lower\",\"capabilities\":[\"-aa\",\".aa\",\":aa\",\"Aaa\",\"_aa\",\"aaa\"],\"keys\":[{\"kid\":\"-aa\"},{\"kid\":\".aa\"},{\"kid\":\":aa\"},{\"kid\":\"Aaa\"},{\"kid\":\"_aa\"},{\"kid\":\"aaa\"}],\"nested\":{\"capabilities\":[\"aaa\",\"Aaa\"],\"keys\":[{\"kid\":\"aaa\"},{\"kid\":\"Aaa\"}]}}",
+  "canonical_utf8_hex": "7b222d223a2264617368222c222e223a22646f74222c223a223a22636f6c6f6e222c2241223a227570706572222c225f223a22756e64657273636f7265222c2261223a226c6f776572222c226361706162696c6974696573223a5b222d6161222c222e6161222c223a6161222c22416161222c225f6161222c22616161225d2c226b657973223a5b7b226b6964223a222d6161227d2c7b226b6964223a222e6161227d2c7b226b6964223a223a6161227d2c7b226b6964223a22416161227d2c7b226b6964223a225f6161227d2c7b226b6964223a22616161227d5d2c226e6573746564223a7b226361706162696c6974696573223a5b22616161222c22416161225d2c226b657973223a5b7b226b6964223a22616161227d2c7b226b6964223a22416161227d5d7d7d",
+  "sha256": "5c4fb7ff02a2244de73eab137843924eaa766552ce0e834f8609110d8d77ed71"
+}

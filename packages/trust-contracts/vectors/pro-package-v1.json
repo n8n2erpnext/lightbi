@@ -1,0 +1,23 @@
+{
+  "test_only": true,
+  "purpose": "pro_package",
+  "payload": {
+    "schema": 1,
+    "kid": "test-pro-v1",
+    "package_id": "pkg_vector_001",
+    "product_id": "digital.thaiduy.lightbi",
+    "version": "1.0.0-beta.1",
+    "core_min": "0.9.2-beta.7",
+    "core_max": "1.0.0",
+    "platform": "windows",
+    "architecture": "x86_64",
+    "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "size": 7340032,
+    "issued_at": "2026-08-30T00:00:00Z"
+  },
+  "canonical_text": "{\"architecture\":\"x86_64\",\"core_max\":\"1.0.0\",\"core_min\":\"0.9.2-beta.7\",\"issued_at\":\"2026-08-30T00:00:00Z\",\"kid\":\"test-pro-v1\",\"package_id\":\"pkg_vector_001\",\"platform\":\"windows\",\"product_id\":\"digital.thaiduy.lightbi\",\"schema\":1,\"sha256\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\"size\":7340032,\"version\":\"1.0.0-beta.1\"}",
+  "canonical_utf8_hex": "7b22617263686974656374757265223a227838365f3634222c22636f72655f6d6178223a22312e302e30222c22636f72655f6d696e223a22302e392e322d626574612e37222c226973737565645f6174223a22323032362d30382d33305430303a30303a30305a222c226b6964223a22746573742d70726f2d7631222c227061636b6167655f6964223a22706b675f766563746f725f303031222c22706c6174666f726d223a2277696e646f7773222c2270726f647563745f6964223a226469676974616c2e746861696475792e6c696768746269222c22736368656d61223a312c22736861323536223a2262626262626262626262626262626262626262626262626262626262626262626262626262626262626262626262626262626262626262626262626262626262222c2273697a65223a373334303033322c2276657273696f6e223a22312e302e302d626574612e31227d",
+  "sha256": "48e0e51974134c86e7a2f9bad6790d6c4ad9582f993401d8aa02c6ba0e027d23",
+  "public_key": "rhcEYCZjfNG9CpvCnJviqr63GRRg2USgFo-ScNgqyxk",
+  "signature": "FwPisgY_fmV9YR8ob11DDTMrKGZ_hcmjlR9rsDuEGKdJ4JfiYitlZBcBrmQu-xZ0o_1U4RUrVGZe6aliPIsDAg"
+}

@@ -1,0 +1,23 @@
+{
+  "test_only": true,
+  "purpose": "attestation",
+  "payload": {
+    "schema": 1,
+    "kid": "test-att-v1",
+    "product_id": "digital.thaiduy.lightbi",
+    "installation_id": "install_vector_001",
+    "device_key_algorithm": "Ed25519",
+    "device_public_key": "QI28exxbF6cPB4a_XiXItM8vBhOzcUp09QqMW7xNLXA",
+    "release_id": "release_0.9.2-beta.7_windows_x86_64",
+    "platform": "windows",
+    "architecture": "x86_64",
+    "issued_at": "2026-08-30T00:00:00Z",
+    "expires_at": "2027-08-30T00:00:00Z",
+    "certificate_id": "cert_vector_001"
+  },
+  "canonical_text": "{\"architecture\":\"x86_64\",\"certificate_id\":\"cert_vector_001\",\"device_key_algorithm\":\"Ed25519\",\"device_public_key\":\"QI28exxbF6cPB4a_XiXItM8vBhOzcUp09QqMW7xNLXA\",\"expires_at\":\"2027-08-30T00:00:00Z\",\"installation_id\":\"install_vector_001\",\"issued_at\":\"2026-08-30T00:00:00Z\",\"kid\":\"test-att-v1\",\"platform\":\"windows\",\"product_id\":\"digital.thaiduy.lightbi\",\"release_id\":\"release_0.9.2-beta.7_windows_x86_64\",\"schema\":1}",
+  "canonical_utf8_hex": "7b22617263686974656374757265223a227838365f3634222c2263657274696669636174655f6964223a22636572745f766563746f725f303031222c226465766963655f6b65795f616c676f726974686d223a2245643235353139222c226465766963655f7075626c69635f6b6579223a225149323865787862463663504234615f58695849744d387642684f7a635570303951714d5737784e4c5841222c22657870697265735f6174223a22323032372d30382d33305430303a30303a30305a222c22696e7374616c6c6174696f6e5f6964223a22696e7374616c6c5f766563746f725f303031222c226973737565645f6174223a22323032362d30382d33305430303a30303a30305a222c226b6964223a22746573742d6174742d7631222c22706c6174666f726d223a2277696e646f7773222c2270726f647563745f6964223a226469676974616c2e746861696475792e6c696768746269222c2272656c656173655f6964223a2272656c656173655f302e392e322d626574612e375f77696e646f77735f7838365f3634222c22736368656d61223a317d",
+  "sha256": "06af8c5aa9ac2f8da724c5b5f94496ff9322c719930d3cc350293fb7f1d40fe7",
+  "public_key": "T8maNS11-wVpbPAP7uoS8w3sFn7SxfPwwMjhVPuHDrw",
+  "signature": "Xq91feT3YIXHKrWBed2OIsW2C8zCaRn0-QXZHI8iTGH1Sp1lSfbHeeLo3aovdzvz80exmnHOMiWmxeF84ey3Dg"
+}
