@@ -1,10 +1,12 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { DEFAULT_PREFERENCES } from '../../stores/display-preferences-store';
+import { createDecisionVisualizationPlan } from '../../lib/decision-visualization-plan';
+import * as analysisWorkbook from '../../lib/analysis-workbook';
 import { InvestigationDeepAnalysis } from './InvestigationDeepAnalysis';
 
-afterEach(cleanup);
+afterEach(() => { cleanup(); vi.restoreAllMocks(); });
 
 describe('InvestigationDeepAnalysis export boundary', () => {
   it('keeps the dashboard CTA visible but outside the image/PDF capture surface', () => {
@@ -76,4 +78,45 @@ describe('InvestigationDeepAnalysis export boundary', () => {
     expect(screen.queryByText('Run the preview first, then LightBI can explain this decision angle in depth.')).toBeNull();
     expect(screen.queryByTestId('deep-analysis-dashboard-cta')).toBeNull();
   });
+
+  it('exports Excel with the governed perspective identity instead of the BA mode label', async () => {
+    const save = vi.spyOn(analysisWorkbook, 'saveExcelAnalysisWorkbook').mockResolvedValue(undefined);
+    const chartModel = {
+      id: 'chart_result_sales', sourceResultId: 'result_sales', status: 'ready' as const, chartType: 'bar' as const,
+      title: 'Sales by product', xField: 'Product', yField: 'sales_revenue', seriesFields: ['sales_revenue'],
+      rows: [{ Product: 'Aqua 250L', sales_revenue: 100 }], warnings: [], source: 'duckdb_preview_result' as const,
+    };
+    const decisionVisualizationPlan = createDecisionVisualizationPlan({
+      perspectiveId: 'action-sales-by-product', rows: chartModel.rows, sourceCount: 1,
+      dimensionField: 'Product', metricIds: ['sales_revenue'],
+    });
+
+    render(
+      <InvestigationDeepAnalysis
+        action={{
+          id: 'action-sales-by-product', opportunityName: 'Which products contribute the most sales revenue?',
+          label: 'Sales by product', description: 'Compare sales by product', actionType: 'group_by',
+          dimensions: ['product'], measures: ['sales_revenue'], confidenceScore: 100, source: 'dataset_understanding',
+        }}
+        brief={null}
+        chartModel={chartModel}
+        decisionVisualizationPlan={decisionVisualizationPlan}
+        singleSourceBAOverview={{
+          mode: 'commercial', analysisLabel: 'Revenue analysis', breakdownHeading: 'By product', rowCount: 1,
+          sourceRowCount: 1, isRepresentativeSample: false, bindings: {},
+          kpis: [{ id: 'revenue', label: 'Revenue', value: 100, format: 'number' }], trend: [], trendChange: null,
+          breakdowns: [], concentration: null, outlierCount: 0, findings: [], recommendedActions: [], limitations: [],
+        }}
+        onClose={vi.fn()}
+        preferences={DEFAULT_PREFERENCES}
+      />,
+    );
+
+    fireEvent.click(screen.getByTestId('deep-analysis-export-excel'));
+    await waitFor(() => expect(save).toHaveBeenCalledTimes(1));
+    expect(screen.queryByRole('alert')).toBeNull();
+    expect(save.mock.calls[0]?.[0].perspectiveId).toBe('action-sales-by-product');
+    expect(save.mock.calls[0]?.[0].decisionVisualizationPlan?.perspectiveId).toBe('action-sales-by-product');
+  });
+
 });

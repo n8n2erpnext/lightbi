@@ -81,7 +81,7 @@ export const InvestigationDeepAnalysis: React.FC<InvestigationDeepAnalysisProps>
       const unique = (values: Array<string | null | undefined>) => [...new Set(values.filter((value): value is string => Boolean(value?.trim())))];
       const plan = createSingleSourceDeepAnalysisWorkbookPlan({
         title: localize(action.opportunityName) || chartModel?.title || action.id,
-        perspectiveId: singleSourceBAOverview?.mode ?? action.id,
+        perspectiveId: decisionVisualizationPlan?.perspectiveId ?? action.id,
         resultId: chartModel?.sourceResultId ?? action.id,
         chartRows: chartModel?.rows ?? [],
         kpis: singleSourceBAOverview?.kpis.map(kpi => ({ id: kpi.id, value: kpi.value })) ?? [],
