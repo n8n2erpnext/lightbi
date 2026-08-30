@@ -25,7 +25,6 @@ import {
   type DrillThroughPoint,
   type DrillThroughResult,
 } from '../lib/drill-through-export';
-import { saveWorkspaceSession, type SaveWorkspaceSessionRequest } from '../lib/workspace-session-api';
 import { advancedSourceId, useAdvancedSourceStore } from '../stores/advanced-source-store';
 import { profileColumns } from '../lib/column-profiler';
 import { executeGovernedMetricRequest } from '../lib/understanding-core/governed-metric-executor';
@@ -38,16 +37,11 @@ import { executeCanonicalMultiSourceMetric } from '../lib/understanding-core/gov
 import { formatValue } from '../lib/display-formatter';
 import { useUiLanguage } from '../lib/ui-language';
 import { createSingleSourceBAOverview, sampleSingleSourceBARows } from '../lib/single-source-ba-overview';
-import { claimAnalysisShape } from '../lib/dashboard-evidence-dedup';
 import { createDecisionVisualizationPlan, type DecisionVisualizationPlanV1 } from '../lib/decision-visualization-plan';
 import { createSingleSourceDeepAnalysisWorkbookPlan } from '../lib/analysis-workbook';
-import { createAnalysisSessionIdentity } from '../lib/analysis-session-identity';
-const INVESTIGATION_SESSION_ROW_LIMIT = 250;
+import { createInvestigationPersistenceActions } from '../lib/investigation-persistence-actions';
+import { createInvestigationChartActions } from '../lib/investigation-chart-actions';
 const SINGLE_SOURCE_BA_OVERVIEW_ROW_LIMIT = 1000;
-
-function limitInvestigationRows(rows: Record<string, unknown>[] | undefined): Record<string, unknown>[] {
-  return Array.isArray(rows) ? rows.slice(0, INVESTIGATION_SESSION_ROW_LIMIT) : [];
-}
 
 function safeFileStem(value: string): string {
   return value.trim().replace(/[^a-z0-9_-]+/gi, '-').replace(/^-+|-+$/g, '') || 'lightbi-session';
@@ -272,63 +266,6 @@ export const Investigation: React.FC = () => {
       && sourceBindingsMatch(canonicalSourceBoundary, runtimeDatasetSource)
       && canonicalHandoff?.sourceFingerprint === canonicalSourceBoundary.sourceFingerprint
     );
-  const fallbackWorkspaceSessionPayload = (): SaveWorkspaceSessionRequest => {
-    const columns = rows?.[0] ? Object.keys(rows[0]) : [];
-    const retainedRows = limitInvestigationRows(rows);
-    return {
-      title: session.datasetId || analysisAction.opportunityName || 'Untitled session',
-      sourceType: businessFusionOverview ? 'business_fusion_view' : 'investigation',
-      rowCount: rows?.length ?? 0,
-      columnCount: columns.length,
-      sourceSummary: [],
-      snapshot: {
-        version: 1,
-        savedAt: new Date().toISOString(),
-        currentDataset: {
-          status: 'ready',
-          file_name: session.datasetId,
-          rows_count: rows?.length ?? 0,
-          columns,
-          profiles: {},
-          sourceType: businessFusionOverview ? 'business_fusion_view' : 'investigation',
-          sourceFiles: [],
-          analysisRows: retainedRows,
-          previewRows: retainedRows.slice(0, 100),
-          businessFusionOverview,
-          analysisRowScope: rows && rows.length > INVESTIGATION_SESSION_ROW_LIMIT ? 'retained_sample' : rowScope,
-        },
-      },
-    };
-  };
-
-  const persistWorkspaceSession = async () => {
-    let payload = session.workspaceSessionPayload || fallbackWorkspaceSessionPayload();
-    const analysisIdentity = createAnalysisSessionIdentity(durableAnalysisWorkbookPlan, session.workspaceDataset as any);
-    if (analysisIdentity) {
-      payload = { ...payload, snapshot: { ...payload.snapshot, version: 3, analysisSessionIdentity: analysisIdentity } };
-    }
-    try {
-      const saved = await saveWorkspaceSession(payload);
-      session.workspaceSessionPayload = { ...payload, id: saved.id };
-      return saved;
-    } catch (error) {
-      console.error('Could not save workspace session', error);
-      return null;
-    }
-  };
-
-  const returnToCurrentDataset = async () => {
-    const transientDataset = session.workspaceDataset as { status?: string } | undefined;
-    if (transientDataset?.status === 'ready') {
-      // The full source and its canonical bindings are still alive in this app
-      // process. Return immediately; persistence can finish in the background.
-      navigate('/', { state: null });
-      void persistWorkspaceSession();
-      return;
-    }
-    const saved = await persistWorkspaceSession();
-    navigate('/', { state: saved?.id ? { restoreWorkspaceSessionId: saved.id } : null });
-  };
 
   const readinessTier = staleHandoffBlockers.length > 0
     ? 'stale'
@@ -462,152 +399,31 @@ export const Investigation: React.FC = () => {
     }
   }, [analysisAction.id, analysisAction.opportunityName, baDecisionBrief, businessFusionOverview, chartModel, primaryDecisionVisualizationPlan, session.canonicalExecutionResult?.resultId, singleSourceBAOverview]);
 
-  const persistChartModel = (model: ChartPreviewModel, name: string, source: string, decisionPlan: DecisionVisualizationPlanV1 | null = null) => {
-    const chartType = model.chartType === 'line'
-      ? 'Line'
-      : model.chartType === 'table'
-        ? 'Table'
-        : 'Bar';
-    return createChart({
-      projectId: 'proj-1',
-      datasetId: session.datasetId,
-      name,
-      type: chartType,
-      xAxis: model.xField ? [{ columnName: model.xField }] : [],
-      yAxis: model.seriesFields.map(columnName => ({ columnName, aggregation: 'None' })),
-      filters: {},
-      formatting: {
-        lightbiData: {
-          source,
-          datasetName: session.datasetId,
-          actionId: analysisAction.id,
-          perspective: analysisAction.opportunityName,
-          title: model.title,
-          chartType: model.chartType,
-          xField: model.xField,
-          yField: model.yField,
-          seriesFields: model.seriesFields,
-          rows: model.rows.slice(0, 500),
-          rowCount: model.rows.length,
-          governed: true,
-          decisionVisualizationPlan: decisionPlan ? { schemaVersion: decisionPlan.schemaVersion, planId: decisionPlan.planId, governance: decisionPlan.governance } : null,
-          savedAt: new Date().toISOString(),
-        },
-      },
-    });
-  };
+  const { persistWorkspaceSession, returnToCurrentDataset } = createInvestigationPersistenceActions({
+    session,
+    durableAnalysisWorkbookPlan,
+    navigate,
+  });
 
-  const saveChartToLibrary = async () => {
-    if (!chartModel || chartModel.status !== 'ready') return;
-    await persistWorkspaceSession();
-    const chartId = persistChartModel(chartModel, chartModel.title || analysisAction.opportunityName, 'simple_ba_preview', primaryDecisionVisualizationPlan);
-    setSavedChartNotice(`Saved to Chart Library: ${chartId}`);
-  };
-
-  const createPerspectiveDashboard = async () => {
-    if (!chartModel || chartModel.status !== 'ready' || previewResult?.status !== 'executed') return;
-    await persistWorkspaceSession();
-    const dashboardId = createDashboard(`${analysisAction.opportunityName} — ${session.datasetId}`, {
-      source: 'easy_mode_perspective',
-      datasetId: session.datasetId,
-      actionId: analysisAction.id,
-      perspective: analysisAction.opportunityName,
-      governed: true,
-      decisionVisualizationPlan: primaryDecisionVisualizationPlan ? { schemaVersion: primaryDecisionVisualizationPlan.schemaVersion, planId: primaryDecisionVisualizationPlan.planId, governance: primaryDecisionVisualizationPlan.governance } : null,
-      evidenceScope: singleSourceBAOverview?.isRepresentativeSample ? 'governed_primary_with_representative_ba_sample' : 'full_source',
-      generatedAt: new Date().toISOString(),
-      analysisContract: {
-        actionId: analysisAction.id,
-        perspective: analysisAction.opportunityName,
-        dimensions: analysisAction.dimensions,
-        measures: analysisAction.measures,
-        measureAggregations: analysisAction.measureAggregations ?? {},
-        resolvedBindings: singleSourceBAOverview?.bindings ?? {},
-        evidenceScope: singleSourceBAOverview?.isRepresentativeSample ? 'governed_primary_with_representative_ba_sample' : 'full_source',
-      },
-      deepBA: baDecisionBrief ? {
-        executiveSummary: baDecisionBrief.executiveSummary,
-        dataTrustScore: baDecisionBrief.dataTrustScore,
-        decisionReadinessScore: baDecisionBrief.decisionReadinessScore,
-        insights: baDecisionBrief.insights.map(insight => ({
-          id: insight.id,
-          title: insight.title,
-          statement: insight.statement,
-          severity: insight.severity,
-          confidence: insight.confidence,
-          evidence: insight.evidence,
-        })),
-        decisionSuggestions: baDecisionBrief.decisionSuggestions,
-        caveats: baDecisionBrief.caveats,
-        recommendedCharts: baDecisionBrief.recommendedCharts,
-      } : null,
-      perspectiveBA: singleSourceBAOverview ? {
-        analysisLabel: singleSourceBAOverview.analysisLabel,
-        sourceRowCount: singleSourceBAOverview.sourceRowCount,
-        isRepresentativeSample: singleSourceBAOverview.isRepresentativeSample,
-        trendChange: singleSourceBAOverview.trendChange,
-        bindings: singleSourceBAOverview.bindings,
-        findings: singleSourceBAOverview.findings,
-        recommendedActions: singleSourceBAOverview.recommendedActions,
-        limitations: singleSourceBAOverview.limitations,
-      } : null,
-    });
-
-    if (governedResultTotal !== null) {
-      const metricName = session.canonicalExecutionResult?.metricId || chartModel.yField || analysisAction.measures[0] || t('Key result');
-      const kpiChartId = createChart({
-        projectId: 'proj-1', datasetId: session.datasetId, name: metricName, type: 'Number', xAxis: [],
-        yAxis: [{ columnName: 'value', aggregation: 'None' }], filters: {},
-        formatting: { lightbiData: { source: 'perspective_dashboard_kpi', actionId: analysisAction.id, perspective: analysisAction.opportunityName, yField: 'value', seriesFields: ['value'], rows: [{ value: governedResultTotal }], rowCount: 1, governed: true, savedAt: new Date().toISOString() } },
-      });
-      addChartToDashboard(dashboardId, kpiChartId);
-    }
-
-    singleSourceBAOverview?.kpis
-      .filter(kpi => !(kpi.id === 'records' && singleSourceBAOverview.isRepresentativeSample))
-      .filter(kpi => governedResultTotal === null || Math.abs(kpi.value - governedResultTotal) > 1e-9)
-      .slice(0, 4)
-      .forEach(kpi => {
-        const kpiChartId = createChart({
-          projectId: 'proj-1', datasetId: session.datasetId, name: kpi.label, type: 'Number', xAxis: [],
-          yAxis: [{ columnName: 'value', aggregation: 'None' }], filters: {},
-          formatting: { lightbiData: { source: 'perspective_dashboard_ba_kpi', actionId: analysisAction.id, perspective: analysisAction.opportunityName, valueKind: kpi.kind, yField: 'value', seriesFields: ['value'], rows: [{ value: kpi.value }], rowCount: 1, governed: false, evidenceScope: singleSourceBAOverview.isRepresentativeSample ? 'representative_sample' : 'full_source', savedAt: new Date().toISOString() } },
-        });
-        addChartToDashboard(dashboardId, kpiChartId);
-      });
-
-    const primaryChartId = persistChartModel(chartModel, chartModel.title || analysisAction.opportunityName, 'perspective_dashboard_primary', primaryDecisionVisualizationPlan);
-    addChartToDashboard(dashboardId, primaryChartId);
-    const persistedShapes = new Set<string>();
-    claimAnalysisShape(persistedShapes, chartModel.xField, chartModel.yField ?? analysisAction.measures[0]);
-    singleSourceBAOverview?.breakdowns.slice(0, 3).forEach(breakdown => {
-      if (breakdown.top.length === 0) return;
-      if (!claimAnalysisShape(
-        persistedShapes,
-        breakdown.physicalColumn,
-        singleSourceBAOverview.bindings.selectedMeasure ?? analysisAction.measures[0] ?? 'record_count',
-      )) return;
-      const rows = breakdown.top.slice(0, 10).map(item => ({ label: item.label, value: item.value, share: item.share, row_count: item.rowCount }));
-      const breakdownChartId = createChart({
-        projectId: 'proj-1', datasetId: session.datasetId, name: breakdown.label, type: 'Bar',
-        xAxis: [{ columnName: 'label' }], yAxis: [{ columnName: 'value', aggregation: 'None' }], filters: {},
-        formatting: { lightbiData: { source: 'perspective_dashboard_ba_breakdown', actionId: analysisAction.id, perspective: analysisAction.opportunityName, valueKind: breakdown.valueKind, xField: 'label', yField: 'value', seriesFields: ['value'], rows, rowCount: rows.length, governed: false, evidenceScope: singleSourceBAOverview.isRepresentativeSample ? 'representative_sample' : 'full_source', physicalColumn: breakdown.physicalColumn, savedAt: new Date().toISOString() } },
-      });
-      addChartToDashboard(dashboardId, breakdownChartId);
-    });
-    supportingCharts.forEach(item => {
-      const supportingAction = session.supportingAnalyses?.find(candidate => candidate.analysisAction.id === item.actionId)?.analysisAction;
-      if (!claimAnalysisShape(
-        persistedShapes,
-        item.chartModel.xField,
-        item.chartModel.yField ?? supportingAction?.measures[0] ?? 'record_count',
-      )) return;
-      const supportingChartId = persistChartModel(item.chartModel, item.label, 'perspective_dashboard_supporting');
-      addChartToDashboard(dashboardId, supportingChartId);
-    });
-    setShowDeepAnalysis(false);
-    navigate(`/dashboards/${dashboardId}`);
-  };
+  const { saveChartToLibrary, createPerspectiveDashboard } = createInvestigationChartActions({
+    session,
+    analysisAction,
+    chartModel,
+    previewResult,
+    primaryDecisionVisualizationPlan,
+    singleSourceBAOverview,
+    baDecisionBrief,
+    governedResultTotal,
+    supportingCharts,
+    createChart,
+    createDashboard,
+    addChartToDashboard,
+    persistWorkspaceSession,
+    setSavedChartNotice,
+    setShowDeepAnalysis,
+    navigate,
+    t,
+  });
 
   async function handleRunPreview() {
       if (!session) return;
@@ -954,7 +770,7 @@ export const Investigation: React.FC = () => {
               </button>
             </div>
           </div>
-          
+
           <div className="border-b border-black/5 bg-white p-6">
              <div className="flex flex-wrap gap-4 mb-8">
                  <div className="flex flex-col gap-1.5">
@@ -967,7 +783,7 @@ export const Investigation: React.FC = () => {
                      ))}
                    </div>
                  </div>
-                 
+
                  <div className="flex flex-col gap-1.5">
                    <span className="text-[10px] uppercase tracking-wider font-semibold text-gray-400">{t('Measures')}</span>
                    <div className="flex flex-wrap gap-2">
@@ -979,7 +795,7 @@ export const Investigation: React.FC = () => {
                    </div>
                  </div>
              </div>
-             
+
              {/* Chart Placeholder / Renderer Area */}
              <div className="mt-4 w-full">
                {previewResult?.status === 'blocked' ? (

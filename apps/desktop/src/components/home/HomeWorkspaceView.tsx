@@ -10,50 +10,30 @@ import { PerspectiveCollectionResultCard } from '../analysis/PerspectiveCollecti
 import { BusinessViewSummaryCard } from '../analysis/BusinessViewSummaryCard';
 import { homeGuidance } from '../../content/home-guidance';
 import { getActiveAnalysisContextLabel } from '../../lib/workspace-understanding-state';
+import { deriveHomeWorkspacePresentation } from '../../lib/home-workspace-presentation';
 import { parseCanonicalUserOverlay } from '../../lib/understanding-core/canonical-user-overlay';
 import { formatValue } from '../../lib/display-formatter';
 import { HomeSessionHistoryPanel } from './HomeSessionHistoryPanel';
 import { HomeResultView } from './HomeResultView';
 import { HomeDataPreviewDialog } from './HomeDataPreviewDialog';
 import { HomePlanningDialogs } from './HomePlanningDialogs';
+import { HomeSourceUnderstandingSummary } from './HomeSourceUnderstandingSummary';
 import { WorkbookSheetSelector } from './WorkbookSheetSelector';
 import { useUiLanguage } from '../../lib/ui-language';
-import { getCanonicalPerspectiveDisplay } from '../analysis/CanonicalPerspectiveSelector';
 
 export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
   const { language, t } = useUiLanguage();
   const { activeConnection, setActiveConnection, handleOnlineSourceInspected, result, isAsking, selectedTopic, currentDataset, pendingLocalBatch, setPendingLocalBatch, isPlusMenuOpen, setIsPlusMenuOpen, isReplaceMenuOpen, setIsReplaceMenuOpen, greeting, navigate, questionInputRef, inputValue, setInputValue, setIsInputFocused, askQuestion, activeAnalysisIntent, questionPlaceholder, renderSourcePickerMenu, activeChips, setAnalysisIntent, openLocalFilePicker, openOnlineDataDrawer, openDatabaseDrawer, workspaceSessions, sessionStatus, refreshWorkspaceSessions, preferences, handleOpenWorkspaceSession, handleDeleteWorkspaceSession, fileInputRef, handleFileChange, uploadError, isUploading, workspaceState, isSavingSession, handleSaveWorkspaceSession, isDataPreviewOpen, setIsDataPreviewOpen, datasetUnderstandingNext, canonicalArtifact, canonicalPresentation, canonicalDomainPerspectives, canonicalMultiSourcePresentation, runtimeSourceContinuity, handleCanonicalOverlayChange, handleCanonicalRemediation, canonicalOverlayRebuildState, canonicalReviewTarget, multiSourceBuildResult, multiSourceReviewSources, multiSourceBundles, multiSourceDrafts, setMultiSourceDrafts, multiSourceBuilding, handleReviewMultiSourceBundle, handleUseMultiSourceReviewSource, handleBuildCanonicalMultiSource, handleAnalyzeMultiSourcePerspective, handleBackToImportedPerspectives, handleCancelInspection, handleToggleWorkbookSheet, handleAnalyzeSelectedWorkbookSheets, handleAnalyzeFullWorkbook, handleUseLocalDataset, guidedInvestigationResult, datasetUnderstanding, activeBusinessViews, selectedPerspective, setSelectedPerspective, analysisMode, setAnalysisMode, selectedBusinessView, setSelectedBusinessView, visibleQuestionSuggestions, selectedViewData, previewActionId, setPreviewActionId, handleSelectAnalysisAction, handleLegacyQuestionSuggestion, lastInspectedFamilies, getEChartsOption, planningWorkflow, canonicalRows } = model;
-  const isPerspectiveCollection = currentDataset?.sourceType === 'canonical_perspective_collection';
-  const collectionRoleCount = isPerspectiveCollection
-    ? new Set((currentDataset.sourceFiles ?? []).map((source: any) => source.role).filter(Boolean)).size
-    : 0;
-  const collectionPeriodCount = isPerspectiveCollection
-    ? new Set((currentDataset.analysisRows ?? []).map((row: any) => row.reporting_period).filter(Boolean)).size
-    : 0;
-  const activePerspectiveLabel = currentDataset?.canonicalPerspectiveId
-    ? getCanonicalPerspectiveDisplay(
-      currentDataset.canonicalPerspectiveId,
-      currentDataset.canonicalPerspectiveId.replaceAll('_', ' '),
-      '',
-      language,
-    ).label
-    : null;
-  const executableActionCount = datasetUnderstandingNext?.availableActions?.filter((action: any) => action.executionScope !== 'not_supported').length ?? 0;
-  const canonicalDatasetState = isPerspectiveCollection
-    ? { label: t('Analysis ready'), className: 'border-emerald-200 bg-emerald-50 text-emerald-700' }
-    : canonicalOverlayRebuildState === 'pending'
-    ? { label: t('Rebuilding'), className: 'border-blue-200 bg-blue-50 text-blue-700' }
-    : !canonicalArtifact || canonicalArtifact.status !== 'valid'
-      ? { label: canonicalArtifact ? t('Needs review') : t('Inspecting'), className: 'border-amber-200 bg-amber-50 text-amber-800' }
-      : (canonicalPresentation?.counts.ready ?? 0) > 0 || executableActionCount > 0
-        ? { label: t('Ready'), className: 'border-emerald-200 bg-emerald-50 text-emerald-700' }
-        : (canonicalPresentation?.counts.needs_mapping_review ?? 0) > 0 || (canonicalPresentation?.counts.needs_user_evidence ?? 0) > 0
-          ? { label: t('Needs review'), className: 'border-amber-200 bg-amber-50 text-amber-800' }
-          : (canonicalPresentation?.counts.blocked_safety ?? 0) > 0
-            ? { label: t('Safety blocked'), className: 'border-red-200 bg-red-50 text-red-700' }
-            : (canonicalPresentation?.counts.unsupported_mvp ?? 0) > 0
-              ? { label: t('Not supported yet'), className: 'border-gray-200 bg-gray-50 text-gray-700' }
-              : { label: t('Inspected'), className: 'border-gray-200 bg-gray-50 text-gray-700' };
+  const { isPerspectiveCollection, collectionRoleCount, collectionPeriodCount, activePerspectiveLabel, canonicalDatasetState } = deriveHomeWorkspacePresentation({
+    currentDataset,
+    datasetUnderstandingNext,
+    canonicalOverlayRebuildState,
+    canonicalArtifact,
+    canonicalPresentation,
+    language,
+    t,
+  });
+
   return (
     <div className="flex-1 overflow-y-auto bg-[#fbfbfa] text-[#202123] font-sans" onClick={() => isPlusMenuOpen && setIsPlusMenuOpen(false)}>
 
@@ -67,46 +47,13 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
       <div className="mx-auto flex w-full max-w-[1280px] flex-col px-5 py-8 md:px-8 lg:px-10" onClick={e => e.stopPropagation()}>
         {!result && !isAsking && !selectedTopic && pendingLocalBatch && currentDataset?.status !== 'ready'
           && !(pendingLocalBatch.status === 'ready' && multiSourceReviewSources.length > 0) && (
-          <section className="mb-6 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_16px_45px_rgba(15,23,42,0.05)]">
-            <div className="flex flex-col gap-5 px-5 py-5 md:px-6 lg:flex-row lg:items-center lg:justify-between">
-              <div className="max-w-3xl">
-                <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-blue-700">
-                  <Sparkles className="h-4 w-4" />
-                  {t('Source understanding workspace')}
-                </div>
-                <h1 className="mt-2 text-[26px] font-semibold tracking-tight text-slate-950 md:text-[30px]">
-                  {pendingLocalBatch.status === 'reading' ? t('Understanding your sources') : t('Review what LightBI found')}
-                </h1>
-                <p className="mt-2 max-w-2xl text-[13px] leading-5 text-slate-600">
-                  {pendingLocalBatch.status === 'reading'
-                    ? t('LightBI is inspecting each complete source, separating schemas and preserving source identity.')
-                    : t('Choose a supported analysis, confirm only the missing evidence, then build a governed dataset. No source is combined automatically.')}
-                </p>
-              </div>
-              <div className="grid grid-cols-3 gap-2 lg:min-w-[360px]">
-                <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-3">
-                  <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">{t('Sources')}</div>
-                  <div className="mt-1 text-[20px] font-semibold text-slate-950">
-                    {Math.max(pendingLocalBatch.files.length, multiSourceReviewSources.length)}
-                  </div>
-                </div>
-                <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-3">
-                  <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">{t('Groups')}</div>
-                  <div className="mt-1 text-[20px] font-semibold text-slate-950">{pendingLocalBatch.families.length}</div>
-                </div>
-                <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-3">
-                  <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">{t('Candidates')}</div>
-                  <div className="mt-1 text-[20px] font-semibold text-slate-950">{multiSourceBundles.length}</div>
-                </div>
-              </div>
-            </div>
-            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 bg-slate-50/70 px-5 py-3 md:px-6">
-              <p className="text-[11px] text-slate-500">{t('Suggestions are evidence candidates, never confirmed facts.')}</p>
-              <button onClick={openLocalFilePicker} className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-[11px] font-semibold text-slate-700 shadow-sm hover:border-blue-300 hover:text-blue-800">
-                <Plus className="h-3.5 w-3.5" /> {t('Add or replace sources')}
-              </button>
-            </div>
-          </section>
+          <HomeSourceUnderstandingSummary
+            pendingLocalBatch={pendingLocalBatch}
+            multiSourceReviewSources={multiSourceReviewSources}
+            multiSourceBundles={multiSourceBundles}
+            openLocalFilePicker={openLocalFilePicker}
+            t={t}
+          />
         )}
 
         {!result && !isAsking && !selectedTopic && (

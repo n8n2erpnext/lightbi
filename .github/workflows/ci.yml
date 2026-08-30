@@ -32,6 +32,8 @@ jobs:
           pnpm test:generation-contract
           pnpm test:internal-uat-pack
           pnpm --dir apps/desktop exec vitest run src/lib/generation-manifest.test.ts src/lib/generation-diagnostics.test.ts
+      - name: Verify production source module size
+        run: pnpm test:source-module-size
       - name: Build desktop web surface
         run: pnpm --filter @lightbi/desktop build
       - name: Run public governed regression gates
