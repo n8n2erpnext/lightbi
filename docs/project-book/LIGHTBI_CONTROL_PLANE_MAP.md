@@ -5,7 +5,7 @@
 **Private repository:** `n8n2erpnext/lightbi-control-plane`
 **Private main at audit:** `87b2ee457c30ac4f7d7d55332bbfc658d51b2c53`
 **Running service:** host process on port 5174, working directory `/home/ubuntu/services/lightbi-control-plane/apps/distribution`
-**Status:** private source provenance, runtime ownership, deployment copy, current Beta contracts, and 1.0 boundary reconciled.
+**Status:** private source provenance, runtime ownership, deployment copy, current Beta contracts, and 1.0 boundary reconciled; post-audit CP-1→CP-6 foundation candidate tracked separately from authoritative private main/production.
 
 ---
 
@@ -314,3 +314,32 @@ current private tests/build     VERIFIED
 Beta account/entitlement        IMPLEMENTED
 1.0 trust/signing/Pro delivery  NOT IMPLEMENTED
 ```
+
+## 19. Post-Project-Truth control-plane foundation candidate
+
+After Project Truth 1.0 closed repository archaeology, a separate implementation workspace was created at `/home/ubuntu/n8n2erpnext/lightbi-control-plane-cp1` on local branch `codex/control-plane-foundations-20260830`.
+
+The candidate now contains the complete CP-1→CP-6 foundation chain and architecture closure guard. Its current local closure commit is `fe9216d`. The chain establishes:
+
+- strict TypeScript runtime/build boundaries;
+- modular domain/platform ownership and ordered persistence migrations;
+- PostgreSQL outbox, idempotency, generalized audit and background-worker rails;
+- identity-security persistence/primitives for future passkey, TOTP and recovery flows;
+- organization, membership, named-user seat and subject-entitlement foundations;
+- commerce/order/payment state plus asynchronous webhook/ERPNext integration rails;
+- executable architecture guards preventing 1.0 domains from growing back into the legacy Beta server, preventing new domain SQLite authority, and keeping external side effects on worker/outbox paths.
+
+Clean candidate verification on 2026-08-30 passed strict typecheck, compiled build, credential scan, architecture/DDL guards and **53/53 compiled-runtime tests**.
+
+This does **not** change authority:
+
+```text
+authoritative private source  private main @ 87b2ee4 (last independently audited)
+running production           /home/ubuntu/services/lightbi-control-plane on 5174
+foundation candidate         /home/ubuntu/n8n2erpnext/lightbi-control-plane-cp1 @ fe9216d
+production mutation          none
+```
+
+The candidate was reconstructed while private GitHub authentication was unavailable. Its local commits are implementation checkpoints, not proven descendants of private-main Git history. Promotion still requires replay/reconciliation onto current authoritative private `main`, the complete private repository suite and GitHub Actions, staging migration/API/worker verification, then explicit production cutover.
+
+Trust remains a separate gate. The candidate deliberately does not implement the Rust signer, installation certificate, request attestation, signed entitlement or Pro package signing/delivery. **Trust-1 remains blocked until Phase 2A receives explicit independent freeze approval.**

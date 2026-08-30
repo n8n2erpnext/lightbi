@@ -1810,6 +1810,8 @@ The private repository's current source independently passed 39/39 tests and its
 
 The old untracked `apps/distribution/` directory in Beta-recovery is not current control-plane authority. It is a historical/workbench copy and differs from private main.
 
+A later isolated foundation candidate exists at `/home/ubuntu/n8n2erpnext/lightbi-control-plane-cp1`, local closure `fe9216d`. It implements CP-1→CP-6 foundations and passed 53/53 clean-candidate tests, but it is **not** authoritative private-main history and has not been deployed. Private main/runtime authority above therefore remains unchanged until replay, CI, staging and explicit cutover.
+
 ## 64. Current Beta entitlement versus 1.0 trust authority
 
 Current private code has real account, identity, session, device and entitlement records. It also still supports current-Beta license-key flows and installation-ID-based device records.
@@ -1828,6 +1830,8 @@ No reusable standalone Pro key and no browser-local tier may become final Pro au
 Organization Business named-user seats, one-time organization claim tokens, installation certificates, request attestation, purpose-separated signing issuers, signed entitlements, encrypted Pro capability delivery, and offline Pro leases are **not implemented** in current private main.
 
 That absence is intentional at the current phase boundary.
+
+Post-audit implementation note: the isolated CP foundation candidate now contains organization/membership/named-seat/subject-entitlement models plus identity-security, async-worker and commerce/integration rails. These are foundation code only; they do not make the current private main or running Beta service a 1.0 authority, and signed entitlement/attestation/Pro delivery remain unimplemented and trust-gated.
 
 ## 65. Phase 2A status is now fully reconciled
 
@@ -1898,11 +1902,12 @@ New implementation still requires a fresh **scoped** impact audit around the fea
 
 Edition 1.0 does not pretend these items are complete:
 
+- CP-1→CP-6 foundation candidate replay/CI/staging/production cutover;
 - Phase 2A trust-contract freeze/remediation and PR #4 disposition;
 - post-split tagged release dry run/real Beta publication;
 - failed macOS additive publication repair;
 - Apple Developer ID signing/notarization;
-- final organization/Business entitlement implementation;
+- replay/promotion and product wiring of the CP-5 organization/Business entitlement foundation;
 - trusted installation/attestation implementation;
 - private signing hierarchy and signed entitlement implementation;
 - private Pro capability delivery/offline lease implementation;

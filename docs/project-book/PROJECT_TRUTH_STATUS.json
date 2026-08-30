@@ -46,15 +46,40 @@
     "architectureJsonPathLockRetained": true
   },
   "openGates": [
+    "control_plane_foundation_candidate_promotion",
     "phase2a_freeze_and_pr4_disposition",
     "post_split_tagged_release_proof",
     "macos_additive_publication",
     "apple_signing_and_notarization",
-    "organization_business_entitlement",
+    "organization_business_entitlement_candidate_promotion_and_product_wiring",
     "trusted_installation_and_attestation",
     "private_signing_and_signed_entitlements",
     "private_pro_capability_delivery_and_offline_policy",
     "final_open_core_dependency_legal_review",
     "control_plane_deployed_sha_marker"
-  ]
+  ],
+  "postTruthCandidates": {
+    "controlPlaneFoundation": {
+      "workspace": "/home/ubuntu/n8n2erpnext/lightbi-control-plane-cp1",
+      "branch": "codex/control-plane-foundations-20260830",
+      "closureCommit": "fe9216d",
+      "phases": {
+        "cp1": "candidate_complete",
+        "cp2": "candidate_complete",
+        "cp3": "candidate_complete",
+        "cp4": "candidate_complete",
+        "cp5": "candidate_complete",
+        "cp6": "candidate_complete"
+      },
+      "cleanCandidateTestsPassed": 53,
+      "cleanCandidateTestsFailed": 0,
+      "strictTypecheckPassed": true,
+      "buildPassed": true,
+      "architectureGuardsPassed": true,
+      "authoritativePrivateMain": false,
+      "productionDeployed": false,
+      "privateGitAncestryVerified": false,
+      "trust1BlockedPendingPhase2aFreeze": true
+    }
+  }
 }

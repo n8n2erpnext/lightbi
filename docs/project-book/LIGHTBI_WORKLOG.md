@@ -1001,7 +1001,7 @@ Machine-readable checkpoint state is recorded in [`PROJECT_TRUTH_STATUS.json`](.
 
 After Project Truth 1.0 closed the repository archaeology phase, the product owner approved a behavior-preserving control-plane foundation migration before adding larger 1.0 account, security, integration, analytics, and trust features.
 
-Implementation was performed in the isolated workspace `/home/ubuntu/lightbi-control-plane-cp1`, not in the production control-plane directory and not in the historical LightBI Beta-recovery worktree.
+Implementation was performed in the isolated workspace `/home/ubuntu/n8n2erpnext/lightbi-control-plane-cp1`, not in the production control-plane directory and not in the historical LightBI Beta-recovery worktree.
 
 Private GitHub authentication was unavailable during the implementation session. The workspace was therefore reconstructed from deployed source previously reconciled with private control-plane main `87b2ee457c30ac4f7d7d55332bbfc658d51b2c53`. Its local Git commits are migration checkpoints, **not remote ancestry**:
 
@@ -1032,3 +1032,17 @@ CP-2 modular API/persistence boundaries
 ```
 
 The control plane is expected to stay one foundation phase ahead of LightBI core features that depend on online authority. This is a sequencing/design decision, not a claim that these phases are implemented.
+
+## 2026-08-30 — Control-plane CP-1→CP-6 foundation candidate closed
+
+The isolated control-plane foundation chain was completed at `/home/ubuntu/n8n2erpnext/lightbi-control-plane-cp1` on local branch `codex/control-plane-foundations-20260830`.
+
+Durable checkpoints are `949f37f` (CP-2 modular persistence), `0cf16f1` (CP-3 outbox/worker/audit/idempotency), `51c795f` (CP-4 identity security), `feaab3d` (CP-5 organization/entitlement), `446205f` (CP-6 commerce/integrations), and `fe9216d` (architecture closure guards), on top of the earlier CP-1 TypeScript candidate.
+
+The clean-candidate closure gate passed strict typecheck, compiled build, credential scan, DDL/architecture boundary checks and 53/53 compiled-runtime tests. The running 5174 service remained the existing `/home/ubuntu/services/lightbi-control-plane/apps/distribution` `server.mjs` process; no production database migration, systemd change, worker start or service restart occurred.
+
+Authority distinction is mandatory: these local commits were reconstructed while private GitHub authentication was unavailable and are not proven descendants of authoritative private main. Promotion requires replay onto current private `main`, full private CI, staging migration/API/worker verification and explicit production cutover.
+
+The foundation intentionally stops before trust implementation. Rust signer/attestation, Installation Certificates, signed entitlements and Pro package signing/delivery remain blocked until Phase 2A trust contracts receive explicit independent freeze approval.
+
+With CP-1→CP-6 foundation work closed, control-plane archaeology/foundation work no longer blocks returning engineering attention to the LightBI public/core lineage.
