@@ -245,19 +245,20 @@
   },
   "nextGeneration": {
     "model": "successor_promotion_generation_rotation",
-    "status": "latest_source_gates_pass_runtime_reconciliation_blocked_before_owner_uat",
+    "status": "modularized_source_gates_pass_current_bootstrap_complete_runtime_rebuild_pending",
     "generationSchema": "lightbi.generation.v1",
     "generationId": "g-2026-08-30-next-001",
-    "parentGenerationId": null,
+    "parentGenerationId": "bootstrap-current-8d59d05f575373e6",
     "core": {
       "workspace": "/home/ubuntu/n8n2erpnext/LightBI-next-internal",
       "branch": "codex/next-internal-generation-20260830",
-      "head": "b1b40277e5e6e8389bc13c2c75f439fdb861600c",
+      "head": "a8ebc27c9d4284665855d7a0a0150c629e44f86e",
       "baseCandidate": "326d991a8f305fef938e9aab47897dd233146770",
       "foundationHead": "ef2434ac01ec6a817f4a04f58d16ef41c447b9dc",
       "gatewayHead": "0a9d20a93682e2db528cb43dc2ece8cf699129db",
       "excelPerspectiveIdentityFixHead": "a875098220175f03feeb001d7861af26ee53d1bf",
-      "uatRegressionHead": "b1b40277e5e6e8389bc13c2c75f439fdb861600c"
+      "uatRegressionHead": "b1b40277e5e6e8389bc13c2c75f439fdb861600c",
+      "modularizationHead": "a8ebc27c9d4284665855d7a0a0150c629e44f86e"
     },
     "controlPlane": {
       "workspace": "/home/ubuntu/n8n2erpnext/lightbi-control-plane-next-internal",
@@ -289,7 +290,13 @@
       "privateBuildPassed": true,
       "nextEnvironmentVerificationPassed": true,
       "latestCoreHeadRevalidated": true,
-      "latestControlPlaneHeadRevalidated": true
+      "latestControlPlaneHeadRevalidated": true,
+      "sourceModuleFilesChecked": 464,
+      "sourceModuleViolations": 0,
+      "sourceModuleHardLimit": 1000,
+      "focusedSemanticTestsPassed": 123,
+      "backendTestsPassed": 20,
+      "serverRoutesPreserved": 38
     },
     "infrastructure": {
       "isolatedContractDefined": true,
@@ -319,6 +326,13 @@
     },
     "generationIdAuthority": "proof_candidate_only",
     "historicalProofParentCandidate": "prod-v0.9.2-beta.7-28e2aae",
-    "parentGenerationBootstrapRequired": true
+    "parentGenerationBootstrapRequired": false,
+    "bootstrapCurrent": {
+      "record": "CURRENT_BOOTSTRAP_RECORD.json",
+      "recordId": "bootstrap-current-8d59d05f575373e6",
+      "evidenceSha256": "8d59d05f575373e6ddf419fd7c82ca0fe61c49ddcc289889ee4fc9309e7150d1",
+      "releaseManifestSha256": "486de2e6ced5ca9cd07653cb4c1e530d0cb2e0ac9195d932194590855d082a3e",
+      "productionMutated": false
+    }
   }
 }

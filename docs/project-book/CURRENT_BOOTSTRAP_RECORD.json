@@ -1,0 +1,83 @@
+{
+  "schema_version": "lightbi.current-bootstrap.v1",
+  "record_id": "bootstrap-current-8d59d05f575373e6",
+  "evidence_sha256": "8d59d05f575373e6ddf419fd7c82ca0fe61c49ddcc289889ee4fc9309e7150d1",
+  "created_at": "2026-08-30T22:36:48+07:00",
+  "immutable": true,
+  "evidence": {
+    "schema_version": "lightbi.current-bootstrap-evidence.v1",
+    "audit_date": "2026-08-30",
+    "authority_model": "legacy_current_composite_authority",
+    "release_authority": {
+      "version": "0.9.2-beta.7",
+      "channel": "beta",
+      "published_at": "2026-08-27T01:05:31.789Z",
+      "tag_commit": "28e2aae4a0f51b7fb623d0b010048e93337255a6",
+      "manifest_sha256": "486de2e6ced5ca9cd07653cb4c1e530d0cb2e0ac9195d932194590855d082a3e",
+      "artifacts": [
+        {
+          "platform": "windows",
+          "architecture": "x86_64",
+          "kind": "exe",
+          "filename": "LightBI_0.9.2-beta.7_x64-setup.exe",
+          "sha256": "a9cc6e81ae7c1113f79a1ad7810d87c13dfabd12c105ffec9e05f56d4c479362",
+          "size": 29440095
+        },
+        {
+          "platform": "linux",
+          "architecture": "x86_64",
+          "kind": "deb",
+          "filename": "LightBI_0.9.2-beta.7_amd64.deb",
+          "sha256": "548fc8783f88543d25ebf475dceb5d3036d02cd8fc77e89b3feb95f576a81229",
+          "size": 43937206
+        }
+      ]
+    },
+    "runtime": {
+      "core_api_5172": {
+        "git_baseline": "b4b38cd9dfdc5a6ddf97e23d6fbc1ef58d9fd3fb",
+        "worktree_dirty": true,
+        "exact_source_commit": null,
+        "exact_source_resolved": false,
+        "binary_sha256": "9a55bf6d3d7a691622886ca01f5f81a95acc0c8e909603e26d7cfc14bc452061",
+        "binary_mtime": "2026-08-20T15:22:13.053283421+07:00",
+        "identity_rule": "binary_sha256_is_runtime_artifact_identity_git_baseline_is_not_exact_build_provenance"
+      },
+      "live_demo_5173": {
+        "git_baseline": "0142e92c75e9fd3e190f82fe2a67cf255180cfca",
+        "worktree_dirty": true,
+        "exact_source_commit": null,
+        "runtime_source_envelope_sha256": "9294752529d98d0ceaba4d85e9355fcde06bf7ea4634b4679693ec6003af4db3",
+        "identity_rule": "runtime_source_envelope_is_operational_evidence_not_clean_commit_identity"
+      },
+      "control_plane_5174": {
+        "exact_runtime_source_commit": "87b2ee457c30ac4f7d7d55332bbfc658d51b2c53",
+        "runtime_relevant_files_matching_commit": 28,
+        "runtime_relevant_files_checked": 28,
+        "runtime_tree_sha256": "bdf855af077a6640af76cfc19390c55efd0c29f1d142fcec6d7511ce853c6a6d",
+        "deployed_commit_marker": "5f05a55",
+        "deployed_commit_marker_authoritative": false
+      }
+    },
+    "persistence_schema_evidence": {
+      "postgres_public_schema_sha256": "653fc31adbf4689fed722c7f9f9d73fd739f0280480a85edc43ea97c182f10dc",
+      "sqlite_schema_sha256": "51c37540b4d3a5d274758fe4cef70b23ad83730b8a4d8ed6a32db7f2ff522b9c",
+      "data_copied_into_internal": false
+    },
+    "trust": {
+      "phase2a_head": "fb8225c951fc27692e6b0e7554c3112ada08e49f",
+      "freeze_approved": false,
+      "signer_authorized": false
+    },
+    "constraints": {
+      "production_ports": [
+        "5172",
+        "5173",
+        "5174"
+      ],
+      "production_mutated_by_bootstrap_audit": false,
+      "single_exact_git_generation_possible": false,
+      "reason": "CURRENT runtime authorities are composite and legacy Core/demo provenance is dirty or unresolved"
+    }
+  }
+}

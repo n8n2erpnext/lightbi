@@ -1138,3 +1138,14 @@ Private control-plane Git access was re-verified and an authoritative clone now 
 - Read-only listener/health audit found NEXT already active on `100.94.184.141:5272/5273/5274` plus a worker. CP diagnostics report exact `c251fb1`, schema current/no pending migrations, healthy same-generation worker, and Trust blocked pending Phase 2A freeze.
 - The running Core binary predates the latest Core commits, and the latest ordinary desktop gate build removed the served `dist/lightbi-generation.json`; the gateway currently returns the SPA fallback at that path. Source-gate success must not be misread as exact runtime identity. Owner UAT remains blocked pending immutable CURRENT bootstrap and runtime reconciliation to the accepted Core/CP generation.
 - Production `5172/5173/5174` was not restarted, replaced, migrated, or otherwise mutated during this revalidation.
+
+
+## 2026-08-30 — Internal modularization and CURRENT bootstrap checkpoint
+
+- Core NEXT refactor committed/pushed at `a8ebc27c9d4284665855d7a0a0150c629e44f86e`; no production service/data mutation.
+- Removed all production source modules above 1,000 lines. Major reductions include Advanced Rust 5,735→~982, server composition 1,949→346, Home 1,230→875, Investigation 1,167→983, HomeWorkspaceView 1,052→999, plus modular question-fit/question-core/Business Brain/BA decision engines.
+- Added `pnpm test:source-module-size`: 464 production modules checked, hard fail above 1,000 lines, warning at 800. CI now enforces it.
+- Verification: focused semantics 123/123 PASS; backend 20/20 PASS; selected governed regressions 11 files / 39 tests PASS; generation contract 3/3; generation diagnostics 8/8; UAT pack 4 fixtures / 14 scenarios / 3 levels; release/public-boundary and desktop build PASS; 38/38 server route paths unchanged.
+- Historical `phase-8e-architecture.test.ts` still has two known pre-existing sanitized-lineage debts (stale frozen hash and absent historical allowlist path); they were not rewritten to manufacture a green result.
+- Created immutable [`CURRENT_BOOTSTRAP_RECORD.json`](./CURRENT_BOOTSTRAP_RECORD.json): `bootstrap-current-8d59d05f575373e6`, evidence SHA-256 `8d59d05f575373e6ddf419fd7c82ca0fe61c49ddcc289889ee4fc9309e7150d1`. This replaces the provisional parent label as the first governed NEXT parent identity.
+- Next action: build one fresh Internal generation from exact Core `a8ebc27...` + CP `c251fb1...`, preserve isolated DB/Redis, regenerate served generation manifest, restart only 5272/5273/5274 + Internal worker, and verify exact diagnostics before owner UAT.
