@@ -107,6 +107,7 @@
   - [68. Project Truth checkpoint](#68-project-truth-checkpoint)
   - [69. Explicit open gates after archaeology](#69-explicit-open-gates-after-archaeology)
   - [70. Coding gate after Project Truth 1.0](#70-coding-gate-after-project-truth-1-0)
+  - [74. Core durability, Passkey candidate, and test-taxonomy checkpoint](#74-core-durability-passkey-candidate-and-test-taxonomy-checkpoint)
 <!-- AUTO_TOC_END -->
 
 ---
