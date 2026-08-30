@@ -1605,11 +1605,11 @@ Frozen design invariants from the handoff:
 - private signer work is blocked until the public v1 contract passes audit and freeze.
 ## 53. Phase 2A current handoff state and audit blockers
 
-Git/GitHub reconciliation confirms draft PR `#4`, branch `codex/phase2-trust-contracts`, base `c06ef003...`, and audited head `d17abe0f...`. The PR is still open/draft and not part of current `main`. GitHub CI passed at that head.
+Git/GitHub reconciliation confirms draft PR `#4`, branch `codex/phase2-trust-contracts`, base `c06ef003...`. The independent audit was performed against head `d17abe0f...`; its verdict was explicitly **not freezeable yet**.
 
-The independent audit verdict was explicitly **not freezeable yet**. Private signer work remains blocked.
+The remediation was then completed in isolated core worktree `/home/ubuntu/n8n2erpnext/LightBI-core-phase2a` and pushed to the same PR branch as head `fb8225c951fc27692e6b0e7554c3112ada08e49f`. GitHub CI run `33290983683` completed successfully at that head. PR #4 remains open/draft, unmerged, and outside current `main`.
 
-Post-audit remediation was implemented in isolated core worktree `/home/ubuntu/n8n2erpnext/LightBI-core-phase2a`, branch `codex/phase2a-freeze-remediation-20260830`, local commit `87b3131` on top of PR #4 head `d17abe0`. The remediation maps all twelve blocker classes below into code/tests and passes the full local CI-equivalent gate. This commit is **not yet pushed/reconciled as remote PR authority and has not received the required independent re-audit**, so the freeze verdict remains unchanged: **NOT FROZEN**.
+The remediation maps all twelve blocker classes below into code/tests and passes both the full local CI-equivalent gate and the updated GitHub CI gate. It has **not yet received the required independent re-audit**, so the freeze verdict remains unchanged: **NOT FROZEN** and private signer work remains blocked.
 
 The major remediation classes are:
 
@@ -1841,16 +1841,17 @@ Repository facts are verified:
 
 - Phase 0–1 merge/base: `c06ef003242e06884e65d992627b5706ad13dfab`;
 - Phase 2A branch: `codex/phase2-trust-contracts`;
-- current audited head: `d17abe0f7c5bc97521347526fb5fcec759857b2e`;
+- independent-audit baseline head: `d17abe0f7c5bc97521347526fb5fcec759857b2e`;
+- current remediation head: `fb8225c951fc27692e6b0e7554c3112ada08e49f`;
 - PR #4 is open and draft;
-- its trust-contract CI gate passed at that head;
+- GitHub CI run `33290983683` passed at the current remediation head;
 - it is not part of current public `main`.
 
 Design-freeze truth also remains: the approved independent audit marked Phase 2A **not freezeable yet** and enumerated canonicalization, keyset trust, lifecycle, semantic validation and vector hardening work.
 
 Therefore private signer work remains blocked until a later explicit Phase 2A freeze decision.
 
-A local remediation candidate now exists at `87b3131` with 16/16 TypeScript trust tests, 4/4 Rust parity tests, public-boundary verification, desktop build, and the seven-file/26-test governed regression gate passing. It remains a candidate until independent review of that exact commit records explicit freeze approval.
+The pushed remediation candidate at `fb8225c` has 20/20 TypeScript trust tests, 5/5 Rust parity tests, public-boundary verification, desktop production build, and the seven-file/26-test governed regression gate passing locally; GitHub CI also passed. It remains a candidate until independent review of that exact commit records explicit freeze approval.
 ## 66. Basic independence is a cross-repository invariant
 
 All current and future online work must preserve this failure rule:

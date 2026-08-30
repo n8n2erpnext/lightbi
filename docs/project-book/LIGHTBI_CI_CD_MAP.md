@@ -71,6 +71,14 @@ Therefore the correct statement is:
 - those trust-contract gates are not current `main` policy until PR #4 is reconciled and merged;
 - private signer/attestation implementation is still not authorized by this CI result alone.
 
+### 4.1 Phase 2A remediation head update
+
+After the independent audit of `d17abe0`, remediation was pushed to the same Draft PR #4 branch as `fb8225c951fc27692e6b0e7554c3112ada08e49f`. GitHub CI run `33290983683` completed successfully at that exact head. The job passed the public Basic release contract, public/private boundary guard, TypeScript + Rust trust-contract/vector gate, desktop production build, and governed regression gate.
+
+This CI success does **not** freeze Trust Contracts v1. Independent re-audit of `fb8225c` is still required before PR #4 may merge or private signer/attestation work may begin.
+
+The concurrent macOS unsigned validation workflow is explicitly treated as a separate test branch/workflow and is **not part of the Phase 2A freeze gate**.
+
 ## 5. Current Windows release build
 
 `release.yml` builds Windows on `windows-latest` with target `x86_64-pc-windows-msvc`.

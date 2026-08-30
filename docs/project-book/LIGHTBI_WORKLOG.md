@@ -1056,3 +1056,13 @@ Local commit `87b3131` (`fix: remediate Phase 2A trust contract blockers`) addre
 The final local CI-equivalent gate passed: public release contract, public-boundary guard, trust TypeScript lint, 16/16 TypeScript trust tests, 4/4 Rust tests, desktop production build, and seven governed regression files containing 26 passing tests. A deliberate fake `rootSeed` probe was also rejected by the strengthened boundary scanner.
 
 Authority/freeze distinction remains mandatory. `87b3131` is one local commit ahead of remote `codex/phase2-trust-contracts`; it has not been pushed or independently re-audited. Phase 2A therefore remains **NOT FROZEN**, and private Rust signer/attestation work remains blocked until an independent review of the exact remediation commit records explicit `FREEZE APPROVED`.
+
+## 2026-08-30 — Phase 2A remediation pushed to Draft PR #4
+
+The independent audit instructions were executed against the existing public Phase 2A branch without merging the PR or starting Phase 2B/private signer work. The previous audit baseline remained `d17abe0`; the final remediation commit was pushed to `codex/phase2-trust-contracts` as `fb8225c951fc27692e6b0e7554c3112ada08e49f`.
+
+The final candidate fixes deterministic TS/Rust canonical ordering, safe-integer parity, root-anchored issuer-keyset verification, keyset expiry/floor/rollback/equivocation, signing-time versus current-time semantics, purpose-specific verification, entitlement subject/tier rules, lifecycle windows, canonical Ed25519 encodings, explicit Ed25519 installation signing keys, maintained npm SemVer validation/comparison, complete TEST-only ROOT/REL/ATT/ENT/PRO vectors, and stronger public secret-boundary checks.
+
+Local final acceptance passed release contract 3/3, TypeScript trust 20/20, Rust parity 5/5, desktop production build, public-boundary probe, and seven governed regression files / 26 tests. GitHub CI run `33290983683` also completed successfully on `fb8225c`.
+
+PR #4 remains Draft/Open/unmerged. The product owner explicitly excludes the concurrent macOS unsigned-validation branch/workflow from the Phase 2A freeze gate. Trust Contracts v1 is still **NOT FROZEN** until an independent re-audit of exact head `fb8225c` records explicit freeze approval. Rust signer/attestation work remains blocked.

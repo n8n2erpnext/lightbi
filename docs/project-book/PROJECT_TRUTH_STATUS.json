@@ -23,7 +23,7 @@
   "phase2a": {
     "pullRequest": 4,
     "base": "c06ef003242e06884e65d992627b5706ad13dfab",
-    "head": "d17abe0f7c5bc97521347526fb5fcec759857b2e",
+    "head": "fb8225c951fc27692e6b0e7554c3112ada08e49f",
     "draft": true,
     "merged": false,
     "ciPassedAtHead": true,
@@ -32,18 +32,22 @@
       "workspace": "/home/ubuntu/n8n2erpnext/LightBI-core-phase2a",
       "branch": "codex/phase2a-freeze-remediation-20260830",
       "baseHead": "d17abe0f7c5bc97521347526fb5fcec759857b2e",
-      "localCommit": "87b3131",
-      "pushed": false,
+      "localCommit": "fb8225c951fc27692e6b0e7554c3112ada08e49f",
+      "pushed": true,
       "independentReauditComplete": false,
       "freezeApproved": false,
-      "typescriptTrustTestsPassed": 16,
-      "rustTrustTestsPassed": 4,
+      "typescriptTrustTestsPassed": 20,
+      "rustTrustTestsPassed": 5,
       "governedRegressionFilesPassed": 7,
       "governedRegressionTestsPassed": 26,
       "desktopBuildPassed": true,
       "publicBoundaryPassed": true,
-      "ciEquivalentPassed": true
-    }
+      "ciEquivalentPassed": true,
+      "remoteBranch": "codex/phase2-trust-contracts",
+      "githubCiRun": 33290983683,
+      "githubCiPassed": true
+    },
+    "macosValidationInPhase2aGate": false
   },
   "controlPlane": {
     "runningPort": 5174,
