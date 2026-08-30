@@ -245,23 +245,28 @@
   },
   "nextGeneration": {
     "model": "successor_promotion_generation_rotation",
-    "status": "source_generation_candidate_ready_for_internal_activation",
+    "status": "latest_source_gates_pass_runtime_reconciliation_blocked_before_owner_uat",
     "generationSchema": "lightbi.generation.v1",
     "generationId": "g-2026-08-30-next-001",
-    "parentGenerationId": "prod-v0.9.2-beta.7-28e2aae",
+    "parentGenerationId": null,
     "core": {
       "workspace": "/home/ubuntu/n8n2erpnext/LightBI-next-internal",
       "branch": "codex/next-internal-generation-20260830",
-      "head": "ef2434ac01ec6a817f4a04f58d16ef41c447b9dc",
-      "baseCandidate": "326d991a8f305fef938e9aab47897dd233146770"
+      "head": "b1b40277e5e6e8389bc13c2c75f439fdb861600c",
+      "baseCandidate": "326d991a8f305fef938e9aab47897dd233146770",
+      "foundationHead": "ef2434ac01ec6a817f4a04f58d16ef41c447b9dc",
+      "gatewayHead": "0a9d20a93682e2db528cb43dc2ece8cf699129db",
+      "excelPerspectiveIdentityFixHead": "a875098220175f03feeb001d7861af26ee53d1bf",
+      "uatRegressionHead": "b1b40277e5e6e8389bc13c2c75f439fdb861600c"
     },
     "controlPlane": {
       "workspace": "/home/ubuntu/n8n2erpnext/lightbi-control-plane-next-internal",
       "branch": "codex/next-internal-generation-20260830",
-      "head": "c8a667cc0e760572f9aa620ca72cdc8cd5bfb41d",
+      "head": "c251fb1ee981a529c33335d25d3ada4e6ea9d23f",
       "baseCandidate": "0385b316f54f73fa4d3e7ce481fa377c93f5471b",
       "schemaTarget": "061_integrations_delivery",
-      "runtimeHeartbeatMigration": "033_runtime_heartbeats"
+      "runtimeHeartbeatMigration": "033_runtime_heartbeats",
+      "foundationHead": "c8a667cc0e760572f9aa620ca72cdc8cd5bfb41d"
     },
     "testPack": {
       "version": "lightbi.uat.v1",
@@ -276,27 +281,44 @@
       "generationContractTestsPassed": 3,
       "generationDiagnosticsTestsPassed": 8,
       "publicRegressionFilesPassed": 11,
-      "publicRegressionTestsPassed": 38,
+      "publicRegressionTestsPassed": 39,
       "desktopBuildPassed": true,
       "publicBoundaryPassed": true,
       "privateCompiledRuntimeTestsPassed": 116,
       "privateTypecheckPassed": true,
       "privateBuildPassed": true,
-      "nextEnvironmentVerificationPassed": true
+      "nextEnvironmentVerificationPassed": true,
+      "latestCoreHeadRevalidated": true,
+      "latestControlPlaneHeadRevalidated": true
     },
     "infrastructure": {
       "isolatedContractDefined": true,
-      "internalDatabaseStarted": false,
-      "internalRedisStarted": false,
-      "internalControlPlaneStarted": false,
-      "internalWorkerStarted": false,
-      "migrationsApplied": false,
-      "productionMutated": false
+      "internalDatabaseStarted": true,
+      "internalRedisStarted": true,
+      "internalControlPlaneStarted": true,
+      "internalWorkerStarted": true,
+      "migrationsApplied": true,
+      "productionMutated": false,
+      "internalCoreApiStarted": true,
+      "internalGatewayStarted": true,
+      "controlPlaneSchemaReportedCurrent": true,
+      "controlPlanePendingMigrations": 0,
+      "controlPlaneRuntimeCommit": "c251fb1ee981a529c33335d25d3ada4e6ea9d23f",
+      "coreRuntimeExactHeadVerified": false,
+      "runtimeReconciliationBlocked": true,
+      "fullIsolationRevalidated": false,
+      "productionMutatedByLatestRevalidation": false,
+      "servedGenerationManifestPresent": false,
+      "internalWebArtifactExactGenerationVerified": false,
+      "runtimeBlocker": "served_generation_manifest_missing_after_latest_source_gate_build"
     },
     "trust": {
       "phase2aHead": "fb8225c951fc27692e6b0e7554c3112ada08e49f",
       "freezeApproved": false,
       "trust1Blocked": true
-    }
+    },
+    "generationIdAuthority": "proof_candidate_only",
+    "historicalProofParentCandidate": "prod-v0.9.2-beta.7-28e2aae",
+    "parentGenerationBootstrapRequired": true
   }
 }

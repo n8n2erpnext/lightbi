@@ -1128,3 +1128,13 @@ Private control-plane Git access was re-verified and an authoritative clone now 
 - Machine verification: Core generation contract 3/3, diagnostics 8/8, selected public regressions 11 files / 38 tests, desktop build/release/public-boundary PASS; private successor typecheck/build/env gate PASS and 116/116 tests.
 - Generated proof candidate `g-2026-08-30-next-001` with parent `prod-v0.9.2-beta.7-28e2aae`, Core `ef2434a`, CP `c8a667c`, schema target `061_integrations_delivery`, UAT `lightbi.uat.v1`, Trust Phase 2A unfrozen.
 - No internal/prod service start, database migration or production mutation occurred. Internal infrastructure activation and owner UAT are the next promotion gates.
+
+## 2026-08-30 — NEXT latest-head revalidation and runtime reconciliation blocker
+
+- Revalidated exact Core NEXT `b1b40277e5e6e8389bc13c2c75f439fdb861600c` and exact private control-plane NEXT `c251fb1ee981a529c33335d25d3ada4e6ea9d23f`; both worktrees were clean before and after the gates.
+- Core passed generation contract 3/3, UAT pack 4 fixtures / 14 scenarios / 3 levels, release/public-boundary gates, generation diagnostics 8/8, desktop build, and the exact selected governed CI command at **11 files / 39 tests**.
+- Private NEXT passed strict typecheck/build and **116/116** compiled-runtime tests.
+- Core lineage since the foundation adds internal gateway `0a9d20a`, governed Excel perspective-identity fix `a875098`, and Deep BA Excel UAT regression `b1b4027`; private latest `c251fb1` binds the control plane to the internal interface.
+- Read-only listener/health audit found NEXT already active on `100.94.184.141:5272/5273/5274` plus a worker. CP diagnostics report exact `c251fb1`, schema current/no pending migrations, healthy same-generation worker, and Trust blocked pending Phase 2A freeze.
+- The running Core binary predates the latest Core commits, and the latest ordinary desktop gate build removed the served `dist/lightbi-generation.json`; the gateway currently returns the SPA fallback at that path. Source-gate success must not be misread as exact runtime identity. Owner UAT remains blocked pending immutable CURRENT bootstrap and runtime reconciliation to the accepted Core/CP generation.
+- Production `5172/5173/5174` was not restarted, replaced, migrated, or otherwise mutated during this revalidation.
