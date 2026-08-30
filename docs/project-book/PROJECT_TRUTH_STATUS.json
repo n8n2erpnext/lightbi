@@ -58,9 +58,9 @@
     "localAuditBuildPassed": true,
     "privateMainAuthority": "87b2ee457c30ac4f7d7d55332bbfc658d51b2c53",
     "promotionBranch": "codex/control-plane-foundations-20260830",
-    "promotionHead": "34d9c5dfe40a32f87090fc3a16c9a6fea47286e5",
+    "promotionHead": "5d2fd3ead8a712a6a1048eb8871acd55226751e1",
     "promotionPushed": true,
-    "promotionTestsPassed": 71,
+    "promotionTestsPassed": 85,
     "promotionTestsConsecutiveRuns": 3,
     "apiV1Boundary": true,
     "betaAccountFinalAuthority": false,
@@ -68,7 +68,10 @@
     "stagingServiceStarted": false,
     "stagingPublicOriginIsolated": false,
     "stagingDatabaseStatusReadSucceeded": false,
-    "stagingDatabaseStatusErrorCode": "28P01"
+    "stagingDatabaseStatusErrorCode": "28P01",
+    "sessionSecurityEnforcedCandidate": true,
+    "runtimeAutoMigrationProhibitedCandidate": true,
+    "totpRecoveryServiceCandidate": true
   },
   "documentation": {
     "codeMapComplete": true,
@@ -138,7 +141,7 @@
   },
   "excelAnalysisWorkbook": {
     "branch": "codex/excel-analysis-workbook-20260830",
-    "head": "4911631e3a479302ff417e7d51b279fc7007dd29",
+    "head": "15fce252ed4f11d0d91d5213aa1aca0ec3db33f6",
     "merged": false,
     "analysisWorkbookVersion": "lightbi.analysis-workbook.v1",
     "multiSourcePerspectiveExport": true,
@@ -147,21 +150,28 @@
     "cleanDataAttachmentWhenCanonicalHandoffAvailable": true,
     "nativePivotTablePivotChart": false,
     "publicRegressionFilesPassed": 10,
-    "publicRegressionTestsPassed": 33,
-    "desktopBuildPassed": true
+    "publicRegressionTestsPassed": 30,
+    "desktopBuildPassed": true,
+    "decisionVisualizationPlanVersion": "lightbi.decision-visualization-plan.v1",
+    "decisionVisualizationPlanSharedAcrossChartDashboardExcel": true
   },
   "implementationTracks": {
     "publicCore": {
       "branch": "codex/excel-analysis-workbook-20260830",
-      "head": "4911631e3a479302ff417e7d51b279fc7007dd29",
+      "head": "15fce252ed4f11d0d91d5213aa1aca0ec3db33f6",
       "authority": "feature_branch_candidate"
     },
     "privateControlPlane": {
       "branch": "codex/control-plane-foundations-20260830",
-      "codeHead": "3bcc88a8ed3e7cae2aef16b7beba4392663a7a05",
-      "docsHead": "d58139d9744b2b24b3d0d7638ba93ace8db6ac62",
-      "compiledTestsPassed": 73,
-      "productionMutated": false
+      "codeHead": "83fd70463e65e8bd0fe54237e86882cfc969d274",
+      "docsHead": "5d2fd3ead8a712a6a1048eb8871acd55226751e1",
+      "compiledTestsPassed": 85,
+      "productionMutated": false,
+      "sessionSecurityVersionEnforcedCandidate": true,
+      "runtimeAutoMigrationProhibitedCandidate": true,
+      "totpRecoveryServiceCandidate": true,
+      "totpEnrollmentApiEnabled": false,
+      "passkeyVerificationAvailable": false
     },
     "trust": {
       "phase2aHead": "fb8225c951fc27692e6b0e7554c3112ada08e49f",

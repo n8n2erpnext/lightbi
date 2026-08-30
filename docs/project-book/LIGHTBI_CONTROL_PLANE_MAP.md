@@ -363,3 +363,11 @@ Current pushed checkpoints include the CP-1→CP-6 foundation chain, `/api/v1` b
 As of code checkpoint `3bcc88a8ed3e7cae2aef16b7beba4392663a7a05`, the private CI-equivalent gate passes **73/73** compiled-runtime tests. Documentation/status is pushed through `d58139d9744b2b24b3d0d7638ba93ace8db6ac62`. Production still runs the old deployment tree and no CP PostgreSQL migration has been applied.
 
 Staging remains blocked from activation because its public origin is still production-equivalent and read-only migration status cannot authenticate (`28P01`). These are deployment-preflight blockers, not reasons to weaken migration or API gates.
+
+## 21. Identity-security and runtime-migration checkpoints
+
+The authoritative-ancestry private feature branch has advanced beyond the CP-5.1 read model. CP-4.2 (`a284598`) binds security-ready account sessions to the current durable `security_version`; a later credential/factor change can bump the account version and invalidate older sessions without browser-local authority. CP-3.2 (`fc9d1d5`) removes remaining API runtime calls to `runPostgresMigrations`; schema mutation is reserved for the explicit migration CLI, while runtime components must fail closed when required schema is absent.
+
+CP-4.3 (`83fd704`) adds the service layer for encrypted pending TOTP factors, code verification, atomic activation, recovery-code rotation, security-version bumping and security-event recording. Product TOTP enrollment routes remain disabled until MFA-aware login/step-up policy is enforced; Passkey verification remains disabled pending an audited WebAuthn implementation. The private gate reaches **85/85** compiled-runtime tests and documentation/status is pushed through `5d2fd3e`.
+
+These remain feature-branch candidates. Production 5174 and production data are unchanged; staging migrations remain unapplied. None of these checkpoints alter Phase 2A trust status or implement signer/attestation/private-key authority.

@@ -1092,3 +1092,10 @@ Private control-plane Git access was re-verified and an authoritative clone now 
 - Private compiled-runtime gate: 73/73 PASS; no migrations applied; no worker/service started; production 5174 untouched.
 - Staging blockers remain: `LIGHTBI_DISTRIBUTION_PUBLIC_URL` is not isolated and PostgreSQL status authentication returns `28P01`.
 - Trust Phase 2A remains `fb8225c...`, not frozen; signer/attestation/signed ENT remain blocked.
+
+## 2026-08-30 — Decision-plan and identity-security checkpoint
+
+- Public core advanced to `15fce252ed4f11d0d91d5213aa1aca0ec3db33f6`: Chart Library, Dashboard and Excel Analysis/Pivot share `DecisionVisualizationPlanV1` where a real governed dimension/metric visualization exists; latest public gate passes 10 files / 30 tests plus desktop build.
+- Private CP-4.2 `a284598` binds security-ready sessions to account `security_version`; CP-3.2 `fc9d1d5` prohibits runtime database auto-migration outside the explicit migration CLI.
+- Private CP-4.3 `83fd704` adds encrypted TOTP/recovery service behavior but intentionally exposes no TOTP enrollment route until MFA login/step-up semantics are complete; Passkey remains deferred to audited WebAuthn.
+- Private documentation head `5d2fd3e`; full private CI-equivalent gate is 85/85. Production and staging remain unmodified. Phase 2A stays `fb8225c`, not frozen.
