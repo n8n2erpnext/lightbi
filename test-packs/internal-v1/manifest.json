@@ -120,11 +120,13 @@
       "expected": [
         "Workbook contains Analysis Overview, Analysis Summary and Pivot View.",
         "Pivot View references governed Analysis Summary values instead of recomputing raw multi-source data.",
-        "Source Lineage and Decision Notes are present when applicable."
+        "Source Lineage and Decision Notes are present when applicable.",
+        "Export completes without an ANALYSIS_WORKBOOK_DECISION_PLAN_PERSPECTIVE_MISMATCH identity error."
       ],
       "failIf": [
         "Workbook is corrupt.",
-        "Pivot View invents a different metric total."
+        "Pivot View invents a different metric total.",
+        "ANALYSIS_WORKBOOK_DECISION_PLAN_PERSPECTIVE_MISMATCH is shown while the Deep BA panel and governed chart belong to the same perspective."
       ]
     },
     {
