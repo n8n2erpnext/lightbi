@@ -8,6 +8,10 @@ import type { WorkspaceSessionRecord } from '../lib/workspace-session-api';
 import { saveWorkspaceSession } from '../lib/workspace-session-api';
 import { downloadProjectSourceFile, uploadProjectSourceFile } from '../lib/project-source-file-api';
 import { persistedFilesFromSession } from '../lib/home-workspace-persistence';
+import { useAnalysisExportStore } from '../stores/analysis-export-store';
+import { createAnalysisWorkbookPlan } from '../lib/analysis-workbook';
+import { createDecisionVisualizationPlan } from '../lib/decision-visualization-plan';
+import { createAnalysisSessionIdentity } from '../lib/analysis-session-identity';
 
 vi.mock('../lib/workspace-session-api', async importOriginal => {
   const original = await importOriginal<typeof import('../lib/workspace-session-api')>();
@@ -25,7 +29,10 @@ vi.mock('../lib/project-source-file-api', () => ({
 }));
 
 describe('Home workspace session restoration', () => {
-  beforeEach(() => vi.clearAllMocks());
+  beforeEach(() => {
+    vi.clearAllMocks();
+    useAnalysisExportStore.getState().clearPlan();
+  });
 
   it('routes legacy local snapshots through source reselection instead of pretending the sample is executable', async () => {
     const requestLocalFileReselection = vi.fn();
@@ -48,6 +55,45 @@ describe('Home workspace session restoration', () => {
     expect(setCurrentDataset).toHaveBeenCalledWith(expect.objectContaining({ status: 'stale', restoredFromSessionId: 'legacy-session' }));
     expect(requestLocalFileReselection).toHaveBeenCalledWith(session);
     expect(result.current.sessionStatus).toContain('original local file');
+  });
+
+
+  it('clears transient Excel export authority when switching to a saved workspace session', async () => {
+    const decision = createDecisionVisualizationPlan({
+      perspectiveId: 'inventory', sourceCount: 1, dimensionField: 'Store', metricIds: ['stock_qty'],
+      rows: [{ Store: 'A', stock_qty: 12 }],
+    });
+    const workbook = createAnalysisWorkbookPlan({
+      title: 'Inventory', perspectiveId: 'inventory', sourceCount: 1,
+      summaryRows: [{ Store: 'A', stock_qty: 12 }], decisionVisualizationPlan: decision,
+    });
+    const boundary = {
+      datasetId: 'inventory.xlsx', sourceId: 'source-1', sourceFingerprint: 'fp-1',
+      inspectionGeneration: 'i-1', profileGeneration: 'p-1',
+    } as any;
+    const identity = createAnalysisSessionIdentity(workbook, { canonicalSourceBoundary: boundary });
+    useAnalysisExportStore.getState().setPlan(workbook);
+    const setCurrentDataset = vi.fn();
+    const deps = {
+      currentDataset: null,
+      registerAdvancedSource: vi.fn(), setCurrentDataset, setWorkspaceState: vi.fn(), setDecisionTrustReport: vi.fn(),
+      setPendingLocalBatch: vi.fn(), setMultiSourceDrafts: vi.fn(), setMultiSourceBuildResult: vi.fn(),
+      setSelectedTopic: vi.fn(), setResult: vi.fn(), setPreviewActionId: vi.fn(), requestLocalFileReselection: vi.fn(),
+    };
+    const wrapper = ({ children }: { children: ReactNode }) => <MemoryRouter>{children}</MemoryRouter>;
+    const { result } = renderHook(() => useHomeWorkspaceSessions(deps), { wrapper });
+    const session: WorkspaceSessionRecord = {
+      id: 'saved-analysis', title: 'inventory.xlsx', sourceType: 'local_xlsx', rowCount: 1, columnCount: 2,
+      sourceSummary: [], snapshot: { analysisSessionIdentity: identity, currentDataset: { status: 'ready', file_name: 'inventory.xlsx', sourceType: 'local_xlsx' } },
+      createdAt: '', updatedAt: '',
+    };
+    await act(async () => { await result.current.handleOpenWorkspaceSession(session); });
+    expect(useAnalysisExportStore.getState().plan).toBeNull();
+    const restored = setCurrentDataset.mock.calls.at(-1)?.[0];
+    expect(restored.analysisIdentityRevalidation).toMatchObject({
+      sourceValid: false, currentPlanRequired: true, exportAuthorityRestored: false,
+    });
+    expect(restored.analysisIdentityRevalidation.blockers).toContain('analysis_source_boundary_required');
   });
 
   it('persists and restores a newly saved 1,500-row local source without reselection after runtime references are discarded', async () => {

@@ -2,6 +2,7 @@ import type { PersistedProjectSourceFile } from './project-source-file-api';
 import type { SourceInspectionResult } from './source-preflight';
 import type { WorkspaceSessionRecord } from './workspace-session-api';
 import { parseCanonicalUserOverlay } from './understanding-core/canonical-user-overlay';
+import type { AnalysisSessionIdentityV1 } from './analysis-session-identity';
 
 const WORKSPACE_SESSION_ROW_LIMIT = 250;
 
@@ -14,11 +15,12 @@ function compactSemanticSample(sample: any) {
   return { strategy: sample.strategy, sourceRowCount: Number(sample.sourceRowCount) || 0, sampleRowCount: Number(sample.sampleRowCount) || 0 };
 }
 
-export function createWorkspaceSessionSnapshot(dataset: any) {
+export function createWorkspaceSessionSnapshot(dataset: any, analysisSessionIdentity: AnalysisSessionIdentityV1 | null = null) {
   const analysisRows = limitSessionRows(dataset.analysisRows);
   return {
-    version: 2,
+    version: 3,
     savedAt: new Date().toISOString(),
+    analysisSessionIdentity,
     rowRetentionLimit: WORKSPACE_SESSION_ROW_LIMIT,
     currentDataset: {
       status: 'ready', file_name: dataset.file_name, rows_count: dataset.rows_count,

@@ -15,6 +15,12 @@ import type { MultiSourceDraftV1 } from '../components/analysis/CanonicalMultiSo
 import { createLocalCanonicalSourceBoundary } from '../lib/home-source-boundary';
 import { applyHomeOnlineSourceInspection } from './useHomeOnlineSourceIntake';
 import type { AdvancedWorkspaceSource } from '../stores/advanced-source-store';
+import { useAnalysisExportStore } from '../stores/analysis-export-store';
+import {
+  parseAnalysisSessionIdentity,
+  revalidateAnalysisSessionSourceIdentity,
+  type AnalysisSessionIdentityV1,
+} from '../lib/analysis-session-identity';
 
 interface HomeWorkspaceSessionDependencies {
   registerAdvancedSource: (source: AdvancedWorkspaceSource) => void;
@@ -88,15 +94,17 @@ export function useHomeWorkspaceSessions(deps: HomeWorkspaceSessionDependencies)
     canonicalMultiSourceIdentity: dataset?.canonicalMultiSourceDataset?.identity ?? null,
   });
 
-  const createSaveRequest = (dataset: any): SaveWorkspaceSessionRequest => ({
-    id: dataset.restoredFromSessionId,
-    title: dataset.file_name || 'Untitled session',
-    sourceType: dataset.sourceType || 'dataset',
-    rowCount: Number(dataset.rows_count) || 0,
-    columnCount: Array.isArray(dataset.columns) ? dataset.columns.length : 0,
-    sourceSummary: dataset.sourceFiles || [],
-    snapshot: createWorkspaceSessionSnapshot(dataset),
-  });
+  const createSaveRequest = (dataset: any): SaveWorkspaceSessionRequest => {
+    return {
+      id: dataset.restoredFromSessionId,
+      title: dataset.file_name || 'Untitled session',
+      sourceType: dataset.sourceType || 'dataset',
+      rowCount: Number(dataset.rows_count) || 0,
+      columnCount: Array.isArray(dataset.columns) ? dataset.columns.length : 0,
+      sourceSummary: dataset.sourceFiles || [],
+      snapshot: createWorkspaceSessionSnapshot(dataset),
+    };
+  };
 
   const ensureLocalSourcesPersisted = async (dataset: any) => {
     if (typeof File === 'undefined') return dataset;
@@ -172,6 +180,7 @@ export function useHomeWorkspaceSessions(deps: HomeWorkspaceSessionDependencies)
   };
 
   const resetAnalysisState = (sessionId: string) => {
+    useAnalysisExportStore.getState().clearPlan();
     deps.setWorkspaceState(createWorkspaceUnderstandingState({ type: 'dataset', datasetId: sessionId }));
     deps.setDecisionTrustReport(null);
     deps.setPendingLocalBatch(null);
@@ -180,7 +189,24 @@ export function useHomeWorkspaceSessions(deps: HomeWorkspaceSessionDependencies)
     deps.setPreviewActionId(null);
   };
 
+  const attachAnalysisIdentityRevalidation = (dataset: any, identity: AnalysisSessionIdentityV1 | null) => {
+    if (!identity || !dataset) return dataset;
+    const validation = revalidateAnalysisSessionSourceIdentity(identity, dataset);
+    return {
+      ...dataset,
+      restoredAnalysisSessionIdentity: identity,
+      analysisIdentityRevalidation: {
+        sourceValid: validation.valid,
+        blockers: validation.blockers,
+        currentPlanRequired: true,
+        exportAuthorityRestored: false,
+      },
+    };
+  };
+
   const handleOpenWorkspaceSession = async (session: WorkspaceSessionRecord) => {
+    useAnalysisExportStore.getState().clearPlan();
+    const savedAnalysisIdentity = parseAnalysisSessionIdentity((session.snapshot as any)?.analysisSessionIdentity);
     const restoredDataset = (session.snapshot as any)?.currentDataset;
     if (!restoredDataset) {
       setSessionStatus('Saved session does not contain a dataset snapshot.');
@@ -198,9 +224,10 @@ export function useHomeWorkspaceSessions(deps: HomeWorkspaceSessionDependencies)
         if (inspection.status !== 'accessible') throw new Error(inspection.message || 'The saved online source is not accessible.');
         const applied = await applyHomeOnlineSourceInspection(inspection, {
           registerAdvancedSource: deps.registerAdvancedSource,
-          setCurrentDataset: value => deps.setCurrentDataset((current: any) => typeof value === 'function'
-            ? value(current)
-            : { ...value, restoredFromSessionId: session.id }),
+          setCurrentDataset: value => deps.setCurrentDataset((current: any) => {
+            const next = typeof value === 'function' ? value(current) : value;
+            return attachAnalysisIdentityRevalidation({ ...next, restoredFromSessionId: session.id }, savedAnalysisIdentity);
+          }),
           setWorkspaceState: deps.setWorkspaceState,
           setDecisionTrustReport: deps.setDecisionTrustReport,
           resetAnalysis: () => {
@@ -294,7 +321,7 @@ export function useHomeWorkspaceSessions(deps: HomeWorkspaceSessionDependencies)
             sheetName: firstMd?.is_workbook ? firstMd.default_sheet : undefined,
           })
           : undefined;
-        deps.setCurrentDataset({
+        deps.setCurrentDataset(attachAnalysisIdentityRevalidation({
           ...restoredDataset, status: canonicalSourceBoundary ? 'ready' : 'stale', file_name: restoredDataset.file_name || family.name,
           rows_count: family.totalRows, columns: family.columns, profiles: family.profiles,
           sourceType: family.files[0]?.result.status === 'accessible' ? family.files[0].result.sourceType : restoredDataset.sourceType,
@@ -305,7 +332,7 @@ export function useHomeWorkspaceSessions(deps: HomeWorkspaceSessionDependencies)
           analysisRowScope: rawAnalysisRows.length >= family.totalRows ? 'full' : 'not_retained',
           semanticRows: rawSemanticRows, analysisRows: rawAnalysisRows,
           previewRows: createPreviewRows(rawPreviewRows, family.columns), restoredFromSessionId: session.id,
-        });
+        }, savedAnalysisIdentity));
         resetAnalysisState(session.id);
         setSessionStatus(canonicalSourceBoundary
           ? 'Session opened from the complete saved source file.'
@@ -316,7 +343,7 @@ export function useHomeWorkspaceSessions(deps: HomeWorkspaceSessionDependencies)
         setSessionStatus(`${error instanceof Error ? error.message : 'Could not reload saved source file.'} Missing path: ${missingPath}. Showing saved snapshot.`);
       }
     }
-    deps.setCurrentDataset({ ...restoredDataset, status: 'stale', file_reference: null, runtimeDatasetSource: undefined, canonicalSourceBoundary: undefined, restoredFromSessionId: session.id });
+    deps.setCurrentDataset(attachAnalysisIdentityRevalidation({ ...restoredDataset, status: 'stale', file_reference: null, runtimeDatasetSource: undefined, canonicalSourceBoundary: undefined, restoredFromSessionId: session.id }, savedAnalysisIdentity));
     resetAnalysisState(session.id);
     setSessionStatus('This legacy session needs its original local file. Choose the same source to relink and update the saved session.');
     deps.requestLocalFileReselection?.(session);

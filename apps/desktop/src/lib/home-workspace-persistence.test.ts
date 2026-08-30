@@ -16,6 +16,8 @@ describe('workspace source persistence', () => {
       sourceFiles: [{ name: 'Online sheet', url: 'https://docs.google.com/spreadsheets/d/example/edit' }],
       runtimeFileReferences: [{ private: true }], analysisRows: [], semanticRows: [], previewRows: [],
     }) as { currentDataset: Record<string, unknown> };
+    expect((snapshot as any).version).toBe(3);
+    expect((snapshot as any).analysisSessionIdentity).toBeNull();
     expect(snapshot.currentDataset.normalizedUrl).toContain('docs.google.com');
     expect(snapshot.currentDataset).not.toHaveProperty('runtimeFileReferences');
   });

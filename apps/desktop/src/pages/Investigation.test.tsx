@@ -457,6 +457,35 @@ describe('Investigation canonical consumer boundary', () => {
     expect(navigateMock).toHaveBeenCalledWith('/', { state: { restoreWorkspaceSessionId: 'saved-session' } });
   });
 
+  it('persists a non-authoritative analysis identity after governed execution without serializing export authority', async () => {
+    const current = session({
+      workspaceDataset: { status: 'ready', canonicalSourceBoundary: sourceBoundary() },
+    });
+    mockedSession.mockReturnValue(current);
+    render(<Investigation />);
+    await waitFor(() => expect(screen.getByTestId('canonical-chart-renderer')).toBeDefined());
+    mockedSaveWorkspaceSession.mockClear();
+    fireEvent.click(screen.getByTestId('investigation-back-to-perspectives'));
+    await waitFor(() => expect(mockedSaveWorkspaceSession).toHaveBeenCalledTimes(1));
+    const payload = mockedSaveWorkspaceSession.mock.calls[0][0] as any;
+    expect(payload.snapshot.version).toBe(3);
+    expect(payload.snapshot.analysisSessionIdentity).toMatchObject({
+      schemaVersion: 'lightbi.analysis-session-identity.v1',
+      sourceAnchor: {
+        kind: 'single_source',
+        sourceId: sourceBinding.sourceId,
+        sourceFingerprint: sourceBinding.sourceFingerprint,
+      },
+      authority: {
+        persistedExecutionAuthority: false,
+        requiresRevalidation: true,
+        decisionUseAuthorized: false,
+      },
+    });
+    expect(payload.snapshot.analysisSessionIdentity.decisionVisualization.planId).toMatch(/^decision-visualization:/u);
+    expect(payload.snapshot.analysisSessionIdentity).not.toHaveProperty('rows');
+  });
+
   it('keeps restriction and evidence references attached after successful execution', async () => {
     const current = session();
     mockedSession.mockReturnValue(current);

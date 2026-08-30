@@ -40,6 +40,8 @@ import { useUiLanguage } from '../lib/ui-language';
 import { createSingleSourceBAOverview, sampleSingleSourceBARows } from '../lib/single-source-ba-overview';
 import { claimAnalysisShape } from '../lib/dashboard-evidence-dedup';
 import { createDecisionVisualizationPlan, type DecisionVisualizationPlanV1 } from '../lib/decision-visualization-plan';
+import { createSingleSourceDeepAnalysisWorkbookPlan } from '../lib/analysis-workbook';
+import { createAnalysisSessionIdentity } from '../lib/analysis-session-identity';
 const INVESTIGATION_SESSION_ROW_LIMIT = 250;
 const SINGLE_SOURCE_BA_OVERVIEW_ROW_LIMIT = 1000;
 
@@ -300,7 +302,11 @@ export const Investigation: React.FC = () => {
   };
 
   const persistWorkspaceSession = async () => {
-    const payload = session.workspaceSessionPayload || fallbackWorkspaceSessionPayload();
+    let payload = session.workspaceSessionPayload || fallbackWorkspaceSessionPayload();
+    const analysisIdentity = createAnalysisSessionIdentity(durableAnalysisWorkbookPlan, session.workspaceDataset as any);
+    if (analysisIdentity) {
+      payload = { ...payload, snapshot: { ...payload.snapshot, version: 3, analysisSessionIdentity: analysisIdentity } };
+    }
     try {
       const saved = await saveWorkspaceSession(payload);
       session.workspaceSessionPayload = { ...payload, id: saved.id };
@@ -426,6 +432,35 @@ export const Investigation: React.FC = () => {
       return null;
     }
   }, [analysisAction.id, chartModel]);
+
+  const durableAnalysisWorkbookPlan = useMemo(() => {
+    if (businessFusionOverview || !primaryDecisionVisualizationPlan || !chartModel || chartModel.status !== 'ready') return null;
+    const unique = (values: Array<string | null | undefined>) => [...new Set(values.filter((value): value is string => Boolean(value?.trim())))];
+    try {
+      return createSingleSourceDeepAnalysisWorkbookPlan({
+        title: analysisAction.opportunityName || chartModel.title || analysisAction.id,
+        perspectiveId: primaryDecisionVisualizationPlan.perspectiveId,
+        resultId: chartModel.sourceResultId ?? session.canonicalExecutionResult?.resultId ?? analysisAction.id,
+        chartRows: chartModel.rows,
+        kpis: singleSourceBAOverview?.kpis.map(kpi => ({ id: kpi.id, value: kpi.value })) ?? [],
+        findings: unique([
+          ...(singleSourceBAOverview?.findings ?? []),
+          ...(baDecisionBrief?.insights.map(insight => insight.statement) ?? []),
+        ]),
+        recommendedActions: unique([
+          ...(singleSourceBAOverview?.recommendedActions ?? []),
+          ...(baDecisionBrief?.decisionSuggestions.map(item => item.action) ?? []),
+        ]),
+        caveats: unique([
+          ...(singleSourceBAOverview?.limitations ?? []),
+          ...(baDecisionBrief?.caveats ?? []),
+        ]),
+        decisionVisualizationPlan: primaryDecisionVisualizationPlan,
+      });
+    } catch {
+      return null;
+    }
+  }, [analysisAction.id, analysisAction.opportunityName, baDecisionBrief, businessFusionOverview, chartModel, primaryDecisionVisualizationPlan, session.canonicalExecutionResult?.resultId, singleSourceBAOverview]);
 
   const persistChartModel = (model: ChartPreviewModel, name: string, source: string, decisionPlan: DecisionVisualizationPlanV1 | null = null) => {
     const chartType = model.chartType === 'line'
