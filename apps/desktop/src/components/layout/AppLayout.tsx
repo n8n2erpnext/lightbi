@@ -24,6 +24,7 @@ import {
 } from "../../lib/app-usage-telemetry";
 import { useLightBIAccount } from "../../hooks/useLightBIAccount";
 import { useUpdateStore } from "../../stores/update-store";
+import { useAnnouncementStore } from "../../stores/announcement-store";
 import { UpdateNotificationMenu } from "./UpdateNotificationMenu";
 import { buildGenerationManifest } from "../../lib/generation-manifest";
 
@@ -36,6 +37,7 @@ export const AppLayout: React.FC = () => {
   const { t } = useUiLanguage();
   const lightbiAccount = useLightBIAccount();
   const updater = useUpdateStore();
+  const announcements = useAnnouncementStore();
   const generation = buildGenerationManifest();
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const accountMenuRef = useRef<HTMLDivElement>(null);
@@ -46,6 +48,14 @@ export const AppLayout: React.FC = () => {
       () => void updater.check(),
       6 * 60 * 60 * 1000,
     );
+    return () => {
+      window.clearTimeout(startup);
+      window.clearInterval(timer);
+    };
+  }, []);
+  useEffect(() => {
+    const startup = window.setTimeout(() => void announcements.check(), 4000);
+    const timer = window.setInterval(() => void announcements.check(true), 30 * 60 * 1000);
     return () => {
       window.clearTimeout(startup);
       window.clearInterval(timer);

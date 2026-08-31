@@ -1,12 +1,16 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Bell } from "lucide-react";
 import { useUpdateStore } from "../../stores/update-store";
+import { useAnnouncementStore } from "../../stores/announcement-store";
 
 export const UpdateNotificationMenu: React.FC = () => {
   const updater = useUpdateStore();
+  const navigate = useNavigate();
+  const announcements = useAnnouncementStore();
   const [open, setOpen] = useState(false);
   const reference = useRef<HTMLDivElement>(null);
-  const active = [
+  const updateActive = [
     "available",
     "downloading",
     "verifying",
@@ -14,6 +18,9 @@ export const UpdateNotificationMenu: React.FC = () => {
     "installing",
     "failed",
   ].includes(updater.status);
+  const unreadCount = announcements.unreadCount();
+  const active = updateActive || unreadCount > 0;
+  const hasCriticalAnnouncement = announcements.items.some((item) => item.severity === "critical");
 
   useEffect(() => {
     if (!open) return;
@@ -48,7 +55,7 @@ export const UpdateNotificationMenu: React.FC = () => {
         <Bell className="h-4 w-4" strokeWidth={1.6} />
         {active && (
           <span
-            className={`absolute right-1 top-1 h-2 w-2 rounded-full ring-2 ring-white ${updater.status === "failed" ? "bg-red-500" : updater.status === "ready" ? "bg-emerald-500" : "bg-blue-600"}`}
+            className={`absolute right-1 top-1 h-2 w-2 rounded-full ring-2 ring-white ${updater.status === "failed" || hasCriticalAnnouncement ? "bg-red-500" : updater.status === "ready" ? "bg-emerald-500" : "bg-blue-600"}`}
           />
         )}
       </button>
@@ -57,6 +64,15 @@ export const UpdateNotificationMenu: React.FC = () => {
           <div className="text-xs font-semibold uppercase tracking-wider text-black/40">
             Notifications
           </div>
+          {announcements.items.filter(item => announcements.unread(item)).slice(0,3).map((item) => (
+            <button key={`${item.id}:${item.updatedAt}`} onClick={() => { announcements.markRead(item.id,item.updatedAt); setOpen(false); navigate(`/notifications/${encodeURIComponent(item.id)}`); }} className={`mt-3 block w-full rounded-lg border p-3 text-left ${item.severity === "critical" ? "border-red-100 bg-red-50" : item.severity === "warning" ? "border-amber-100 bg-amber-50" : item.severity === "success" ? "border-emerald-100 bg-emerald-50" : "border-blue-100 bg-blue-50"}`}>
+              <div className="font-semibold text-slate-900">{item.title}</div>
+              <p className="mt-1 line-clamp-2 text-xs leading-5 text-slate-600">{item.body}</p>
+            </button>
+          ))}
+          {announcements.items.length > 0 && (
+            <button onClick={() => { setOpen(false); navigate('/notifications'); }} className="mt-3 w-full rounded-md border border-black/10 bg-white px-3 py-2 text-xs font-semibold text-slate-700">Open notification inbox{unreadCount ? ` · ${unreadCount} unread` : ''}</button>
+          )}
           {preparing && (
             <div className="mt-3 rounded-lg border border-blue-100 bg-blue-50 p-3">
               <div className="font-semibold text-slate-900">

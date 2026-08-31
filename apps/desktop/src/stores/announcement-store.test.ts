@@ -1,0 +1,12 @@
+// @vitest-environment jsdom
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+vi.mock('../lib/distribution-pairing', () => ({ lightBIDistributionEndpoint: () => 'https://distribution.test' }));
+vi.mock('../lib/native-runtime', () => ({ isNativeLightBI: () => true }));
+import { useAnnouncementStore } from './announcement-store';
+const item=(updatedAt='2026-08-31T14:00:00.000Z')=>({id:'ann_12345678-abcd',title:'Service notice',body:'Scheduled work tonight.',severity:'warning' as const,dismissible:true,startsAt:null,endsAt:null,linkLabel:'Status',linkUrl:'https://lightbi.example/status',updatedAt});
+describe('announcement inbox store',()=>{
+  beforeEach(()=>{localStorage.clear();useAnnouncementStore.setState({items:[],checkedAt:null,error:''});vi.restoreAllMocks();});
+  it('pulls validated app notifications and rejects unsafe links',async()=>{const fetcher=vi.spyOn(globalThis,'fetch').mockResolvedValue(new Response(JSON.stringify({announcements:[item(),{...item(),id:'bad',linkUrl:'javascript:alert(1)'}]}),{status:200}));await useAnnouncementStore.getState().check(true);expect(fetcher).toHaveBeenCalledWith('https://distribution.test/api/announcements?channel=app',{cache:'no-store'});expect(useAnnouncementStore.getState().items.map(x=>x.id)).toEqual(['ann_12345678-abcd']);});
+  it('persists notification content locally and tracks read state by revision',async()=>{vi.spyOn(globalThis,'fetch').mockResolvedValue(new Response(JSON.stringify({announcements:[item()]}),{status:200}));await useAnnouncementStore.getState().check(true);expect(JSON.parse(localStorage.getItem('lightbi-announcement-inbox-v1')||'[]')[0].body).toBe('Scheduled work tonight.');expect(useAnnouncementStore.getState().unreadCount()).toBe(1);useAnnouncementStore.getState().markRead(item().id,item().updatedAt);expect(useAnnouncementStore.getState().unreadCount()).toBe(0);});
+  it('keeps read history but marks a revised notification unread again',async()=>{vi.spyOn(globalThis,'fetch').mockResolvedValueOnce(new Response(JSON.stringify({announcements:[item()]}),{status:200})).mockResolvedValueOnce(new Response(JSON.stringify({announcements:[item('2026-08-31T15:00:00.000Z')]}),{status:200}));await useAnnouncementStore.getState().check(true);useAnnouncementStore.getState().markRead(item().id,item().updatedAt);await useAnnouncementStore.getState().check(true);expect(useAnnouncementStore.getState().items[0]?.updatedAt).toBe('2026-08-31T15:00:00.000Z');expect(useAnnouncementStore.getState().unreadCount()).toBe(1);});
+});

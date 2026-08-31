@@ -9,6 +9,7 @@ import { DataSources } from '../pages/DataSources';
 import { Settings } from '../pages/Settings';
 import { Investigation } from '../pages/Investigation';
 import { Advanced } from '../pages/Advanced';
+import { Notifications } from '../pages/Notifications';
 
 const RouteError = () => {
   const error = useRouteError() as Error;
@@ -52,6 +53,8 @@ export const router = createBrowserRouter([
       { path: '/settings', element: <Settings /> },
       { path: '/investigation', element: <Investigation /> },
       { path: '/advanced', element: <Advanced /> },
+      { path: '/notifications', element: <Notifications /> },
+      { path: '/notifications/:id', element: <Notifications /> },
       { path: '*', element: <Navigate to="/" replace /> },
     ],
   },
