@@ -49,6 +49,7 @@
   - [2026-08-29 — documentation archaeology and Project Book creation](#2026-08-29-documentation-archaeology-and-project-book-creation)
   - [2026-08-29 — Road-to-1.0 technical direction handoff ingested](#2026-08-29-road-to-1-0-technical-direction-handoff-ingested)
   - [2026-08-29 — Documentation cleanup isolated in a dedicated worktree](#2026-08-29-documentation-cleanup-isolated-in-a-dedicated-worktree)
+  - [2026-08-31 — R1-P0 Road-to-1.0 execution baseline started](#2026-08-31-r1-p0-road-to-10-execution-baseline-started)
 <!-- AUTO_TOC_END -->
 
 ---
@@ -1286,3 +1287,17 @@ No packaged Windows binary was available to this VPS automation, so actual Windo
 - Live CP diagnostics: schema current/pending 0, worker healthy and generation/commit matched. Gateway serves a real JSON generation manifest; after final desktop build the archived manifest was explicitly restored into `dist` and verified byte-identical.
 - Exact Core revalidation PASS: generation 3/3, diagnostics 3/3, desktop build, selected governed 11 files / 39 tests, plus focused Monaco contract 1/1. CP source unchanged; prior exact-head CP suite remains 128/128.
 - Replayed secondary-route first-paint acceptance on direct CP `/docs`, `/account` and `/admin`: guard present, homepage hero absent, observed visible-home paints zero. Production 5172/5173/5174 and Trust/signer remain untouched.
+
+## 2026-08-31 — R1-P0 Road-to-1.0 execution baseline started
+
+The owner authorized a single bounded execution roadmap from immutable Internal generation NEXT-016 to stable LightBI 1.0. The operational plan is [`../history/agent/plans/AGENT_PLAN_ROAD_TO_1_0_2026-08-31.md`](../history/agent/plans/AGENT_PLAN_ROAD_TO_1_0_2026-08-31.md).
+
+Two durable architecture contracts were added before implementation work: [`../architecture/road-to-1-0-trust-release-contract.md`](../architecture/road-to-1-0-trust-release-contract.md) owns official-build/trust/anti-impersonation direction, and [`../architecture/commerce-erpnext-revenue-mirror.md`](../architecture/commerce-erpnext-revenue-mirror.md) owns the optional downstream commerce mirror.
+
+The roadmap freezes pre-1.0 scope around product acceptance, security UX, test/release cleanup, official identity, Trust, signed entitlement, physical Basic/Pro separation, platform signing and release engineering. Major new BI/BA scope is excluded unless it repairs a release blocker.
+
+Phase 2A remains exact `fb8225c951fc27692e6b0e7554c3112ada08e49f`, Draft/Open/CI-green and NOT FROZEN. No production Root/issuer keys, signer, installation attestation, signed entitlement or PRO-package authority is authorized yet. Oracle Cloud availability does not alter the offline Ed25519 Root boundary merely to consume a free KMS tier.
+
+The optional ERPNext revenue mirror is deliberately outside payment/entitlement authority. Current private CP already emits `commerce.order.completed.v1` transactionally after order/payment/entitlement state and delivers integrations asynchronously through its worker/outbox foundation. The live ERPNext instance is isolated inside LXD and n8n is available on the VPS; authentic E2E work will use a dedicated LightBI company/master boundary rather than existing sample companies.
+
+R1-P0 documentation/integrity closure verified 1,243 local links with zero missing targets, valid Project Truth/catalog JSON, updated architecture/source indexes, and a clean `git diff --check`. The isolated documentation commit is the final mechanical checkpoint; only after it is created may the optional Internal ERPNext/n8n E2E track mutate runtime/configuration.

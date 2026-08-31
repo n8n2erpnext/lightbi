@@ -12,7 +12,7 @@
 
 ## Shelf summary
 
-- Model/contract/architecture Markdown: **43**
+- Model/contract/architecture Markdown: **45**
 - Phase records: **63**
 - Machine evidence JSON: **354**
 
@@ -22,6 +22,7 @@
 - [`business-signal-registry-contract.md`](./business-signal-registry-contract.md) — Business Signal Registry Contract
 - [`business-view-question-pipeline-contract.md`](./business-view-question-pipeline-contract.md) — Business View Question Pipeline Contract
 - [`business-view-registry-v1.md`](./business-view-registry-v1.md) — Business View Registry V1 Design
+- [`commerce-erpnext-revenue-mirror.md`](./commerce-erpnext-revenue-mirror.md) — Optional Commerce → ERPNext Revenue Mirror
 - [`chart-model.md`](./chart-model.md) — Chart Architecture Model
 - [`dashboard-model.md`](./dashboard-model.md) — Dashboard Architecture Model
 - [`data-view-model.md`](./data-view-model.md) — Data View Architecture
@@ -49,6 +50,7 @@
 - [`recipe-model.md`](./recipe-model.md) — Recipe Model Architecture
 - [`recipe-planner-model.md`](./recipe-planner-model.md) — Recipe Planner Model
 - [`relationship-discovery-scoring.md`](./relationship-discovery-scoring.md) — Relationship Discovery Scoring
+- [`road-to-1-0-trust-release-contract.md`](./road-to-1-0-trust-release-contract.md) — Road to 1.0 Trust, Release, and Official Identity Contract
 - [`render-contract.md`](./render-contract.md) — Rendering Contract Architecture Model
 - [`runtime-dataset-model.md`](./runtime-dataset-model.md) — Runtime Virtual Dataset Model
 - [`runtime-model.md`](./runtime-model.md) — Runtime Model Architecture

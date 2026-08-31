@@ -1,14 +1,14 @@
 {
   "schemaVersion": "lightbi.project-book.source-catalog.v1",
-  "snapshotDate": "2026-08-30",
-  "generatedAt": "2026-08-30T01:46:59.561175+00:00",
+  "snapshotDate": "2026-08-31",
+  "generatedAt": "2026-08-31T11:00:32.515849+00:00",
   "branch": "docs/project-library-cleanup-20260829",
-  "head": "d0506a4c87d4231ae695de7662d1f2e29285b7d4",
+  "head": "8478f18c74df9a720bfda1c7425bae4d64625fe2",
   "worktreeDirty": true,
   "scope": "All project Markdown and JSON outside dependency/build/project-book directories.",
   "counts": {
-    "total": 928,
-    "markdown": 511,
+    "total": 931,
+    "markdown": 514,
     "json": 417,
     "docsJson": 354,
     "references": 0
@@ -1449,6 +1449,14 @@
       "sha256": "10f5feea82d6046413c2613888a67d827e395f124bdb538e3909f4825cdeb257",
       "suggestedCategory": "architecture-source-or-evidence",
       "title": "Chart Architecture Model"
+    },
+    {
+      "path": "docs/architecture/commerce-erpnext-revenue-mirror.md",
+      "extension": ".md",
+      "bytes": 8147,
+      "sha256": "dd2cbb86306451a7587cbab27cc93a971ff6a2323c7a91c445c8f625c1f6d292",
+      "suggestedCategory": "architecture-source-or-evidence",
+      "title": "Commerce → ERPNext Optional Revenue Mirror"
     },
     {
       "path": "docs/architecture/dashboard-model.md",
@@ -9100,6 +9108,14 @@
       "title": "Rendering Contract Architecture Model"
     },
     {
+      "path": "docs/architecture/road-to-1-0-trust-release-contract.md",
+      "extension": ".md",
+      "bytes": 7899,
+      "sha256": "e4fe808893a83c21218d864918d588098e7d486c80981af3e5b8470de976131e",
+      "suggestedCategory": "architecture-source-or-evidence",
+      "title": "Road to 1.0 Trust, Release, and Official Identity Contract"
+    },
+    {
       "path": "docs/architecture/runtime-dataset-model.md",
       "extension": ".md",
       "bytes": 1066,
@@ -10098,6 +10114,14 @@
       "sha256": "84f6109172361d97c62c6a6ae535039f47947b318af883112cfb9ae55cceadbe",
       "suggestedCategory": "historical-provenance",
       "title": "AGENT INBOX PHASE 2"
+    },
+    {
+      "path": "docs/history/agent/plans/AGENT_PLAN_ROAD_TO_1_0_2026-08-31.md",
+      "extension": ".md",
+      "bytes": 6051,
+      "sha256": "007506a74f9b248ee3c1e6d541ac2de432bbece710bc649692de1346c9c6a95d",
+      "suggestedCategory": "historical-provenance",
+      "title": "LightBI Road to 1.0 Execution Plan — 2026-08-31"
     },
     {
       "path": "docs/history/agent/plans/AGENT_TASK.md",

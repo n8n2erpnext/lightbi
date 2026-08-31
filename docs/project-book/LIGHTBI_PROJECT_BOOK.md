@@ -109,6 +109,7 @@
   - [70. Coding gate after Project Truth 1.0](#70-coding-gate-after-project-truth-1-0)
   - [75. NEXT/Internal successor generation foundation](#75-nextinternal-successor-generation-foundation)
   - [74. Core durability, Passkey candidate, and test-taxonomy checkpoint](#74-core-durability-passkey-candidate-and-test-taxonomy-checkpoint)
+  - [88. Road-to-1.0 execution freeze and optional ERPNext revenue mirror](#88-road-to-10-execution-freeze-and-optional-erpnext-revenue-mirror)
 <!-- AUTO_TOC_END -->
 
 ---
@@ -2184,3 +2185,17 @@ Private control-plane source remains exact `f1879c65453cdf0bc9798257e462264f0424
 The reconciled Internal runtime is `g-2026-08-31-next-016`, parent `bootstrap-current-8d59d05f575373e6`, Core/source `451c9b6afe0a95bce5bce473a4a84c8b918f42cd`, CP `f1879c65453cdf0bc9798257e462264f0424e907`, schema `062_documentation_content`, app version `0.9.2-beta.7-next.16`, and manifest SHA-256 `72f223df5c2508e2d1e278497e1d8a664aa55f87c5c497f8d48d5a76b77e7f90`. CP diagnostics report schema current/pending 0 and a healthy worker on the same NEXT-016 generation/CP commit. The served `5273/lightbi-generation.json` is real JSON and byte-identical to the archived manifest.
 
 Exact Core revalidation at `451c9b6...` passes the focused Monaco runtime contract 1/1, generation contract 3/3, generation diagnostics 3/3, desktop production build, and the selected governed regression 11 files / 39 tests. CP proof remains the NEXT-015 exact-head 128/128 suite because CP source did not change. Production `5172/5173/5174`, production persistence, PR #4, Trust signer/attestation and production keys remain untouched. Formal owner UAT/promotion acceptance and packaged Windows native acceptance remain separate open gates.
+
+## 88. Road-to-1.0 execution freeze and optional ERPNext revenue mirror
+
+On 2026-08-31 the owner authorized a single execution roadmap from the immutable NEXT-016 baseline to stable 1.0. The operational sequence is recorded in [`../history/agent/plans/AGENT_PLAN_ROAD_TO_1_0_2026-08-31.md`](../history/agent/plans/AGENT_PLAN_ROAD_TO_1_0_2026-08-31.md). This plan does not reopen the Business Understanding architecture; pre-1.0 scope is now product acceptance, account-security UX, test/release taxonomy, official identity, Trust, entitlement/Pro separation, platform signing, optional revenue mirroring and release engineering.
+
+The canonical official-identity contract is [`../architecture/road-to-1-0-trust-release-contract.md`](../architecture/road-to-1-0-trust-release-contract.md). Fork/rebuild rights remain governed by the public open-source license, while official Account/Pro authority is intended to require LightBI-rooted release/install/entitlement trust. A client-side `Official` claim is never authority. The exact Phase 2A head `fb8225c951fc27692e6b0e7554c3112ada08e49f` remains NOT FROZEN, so production Root/issuer keys, signer, attestation, signed ENT and PRO authority are still forbidden to start.
+
+The owner has Oracle Cloud access, but current direction does not move the LightBI Root into OCI merely to use a free KMS/HSM tier. Phase 2A uses Ed25519 and the Root boundary remains offline and user-controlled after freeze. OCI may later be evaluated for compatible operational secret/signer infrastructure without becoming the Root trust authority by convenience.
+
+A separate optional operational contract is [`../architecture/commerce-erpnext-revenue-mirror.md`](../architecture/commerce-erpnext-revenue-mirror.md). Completed LightBI commerce may be mirrored asynchronously into the owner's ERPNext for revenue tracking. ERPNext and n8n are explicitly downstream: payment/order/entitlement commit happens first in LightBI, then `commerce.order.completed.v1` flows through the transactional outbox and worker. ERPNext/n8n outage must not affect checkout, activation, Basic operation or Trust authority.
+
+The live VPS already provides both an ERPNext installation inside LXD and n8n in Docker. The ERPNext site contains substantial sample data, so any authentic LightBI E2E should use a dedicated LightBI company/master boundary rather than polluting existing sample companies. Synthetic E2E orders must be clearly marked or removed so they cannot be counted as real revenue.
+
+This checkpoint completes **R1-P0** at the documentation/integrity gate. The plan/contracts are indexed; a scoped link check resolved 1,243 local links with zero missing targets; both Project Truth JSON files parse; and `git diff --check` passes. The documentation commit remains the final mechanical checkpoint before product/integration mutation begins.

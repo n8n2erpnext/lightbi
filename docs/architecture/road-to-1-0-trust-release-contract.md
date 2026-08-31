@@ -1,0 +1,105 @@
+# Road to 1.0 Trust, Release, and Official Identity Contract
+
+Status: canonical architecture direction
+Date: 2026-08-31
+Scope: official-build identity, cryptographic authority, anti-impersonation, entitlement, Pro delivery and release gates
+Supersedes: none
+Superseded by: none
+Primary sources: ../project-book/LIGHTBI_PROJECT_BOOK.md, ../project-book/LIGHTBI_CONTROL_PLANE_MAP.md, ../project-book/LIGHTBI_CI_CD_MAP.md
+
+## Purpose
+
+Define the technical boundary between an AGPL-permitted fork/rebuild and an official LightBI installation. This contract preserves open-source Basic rights while making official Account/Pro authority depend on private cryptographic trust that cannot be obtained by changing public client code.
+
+## Core authority model
+
+A client assertion such as `official=true` is never authority. Official identity is derived from a LightBI-rooted trust chain and server verification.
+
+```text
+LightBI offline Root
+├─ REL issuer → official releases and update manifests
+├─ ATT issuer → official installation certificates
+├─ ENT issuer → account/org entitlement envelopes
+└─ PRO issuer → private Pro capability-package manifests
+```
+
+The frozen purpose identifiers are `release`, `attestation`, `entitlement`, and `pro_package`. Purpose substitution is forbidden.
+
+## Root boundary
+
+The LightBI Root uses the Ed25519 contract selected by Phase 2A. The Root private key must be generated only after exact Phase 2A receives explicit independent freeze approval.
+
+Root private material must not reside on a VPS, CI runner, control plane, production database, web service, n8n, ERPNext, or a permanently online cloud runtime. The public Root key may be pinned in official clients and published documentation.
+## Oracle Cloud disposition
+
+OCI Vault/KMS may be evaluated for operational secret storage or a constrained online signer host only when its algorithm and threat model match the specific purpose. It is not the LightBI Root authority merely because an Always Free HSM/KMS tier exists.
+
+Current LightBI Trust Contracts use Ed25519, while OCI KMS signing support is not the selected Ed25519 contract. The project must not reopen or weaken Phase 2A merely to fit a free cloud service. Root remains offline and user-controlled unless a later explicit ADR changes the trust model.
+
+## Official release identity
+
+An official release must bind version/channel, artifact digest, release metadata and allowed updater state into a strict REL-signed manifest. The application verifies the Root pin, issuer keyset, REL purpose, signature, manifest semantics, expiry/rollback rules and artifact digest before treating a release as official.
+
+OS publisher signing is a separate trust plane. REL signing does not replace Windows Authenticode or macOS Developer ID/notarization; the stable release gate should use both LightBI cryptographic identity and platform publisher identity where supported.
+
+## Installation trust
+
+On first eligible official launch, the installation generates a device keypair and retains the private key in the strongest available OS-protected storage. The public key may be sent with proof of an allowed REL-signed release.
+
+After verification, the ATT authority may issue an Installation Certificate binding at minimum installation identity, device public key, release/channel identity, validity interval and certificate identity.
+
+Sensitive official-service requests use a canonical signed envelope containing method, path, timestamp, monotonic/replay sequence, server nonce, body hash and certificate identity. The server verifies certificate validity/revocation, allowed release state, device signature, nonce, sequence and request-body integrity.
+## Entitlement and Pro authority
+
+Final Pro authority is the conjunction of:
+
+```text
+authenticated account or organization
++ trusted official installation
++ valid signed entitlement
+```
+
+A reusable plaintext key or a localStorage tier flag is not final Pro authority. Existing Beta keys may remain as purchase/claim/bootstrap tokens that exchange once for account/org entitlement state.
+
+Business licensing uses named-user seats and organization membership. Shared reusable Business keys are not entitlement authority. Complimentary grants and paid orders converge on the same signed entitlement model; partner-discount codes remain checkout offers and never grant Pro by themselves.
+
+Offline Pro may use a short-lived signed lease/grace envelope once its duration and clock/revocation policy are explicitly frozen. Expiry or revocation degrades to Basic without destroying local Basic data or workflows.
+
+## Physical Basic/Pro separation
+
+The public installer contains Basic/public implementation. Private Pro capability implementation is delivered only after official installation, authentication and entitlement checks.
+
+The delivery path uses a short-lived private-object grant, PRO-signed package manifest, artifact integrity verification and device-bound wrapping/encryption. Copying a private Pro package to another installation must not create transferable Pro authority.
+
+## Fork and impersonation behavior
+
+AGPL-compliant forks may rebuild and run local Basic functionality. A modified build may display arbitrary client text, so client-side badges can never prove official origin.
+
+A rebuilt or modified artifact that lacks an allowed REL-signed release cannot receive a valid official ATT installation certificate and therefore cannot satisfy official Account/Pro trust. A third party may create its own root/server ecosystem, but that root is cryptographically distinct from the LightBI Root.
+## User-visible official verification
+
+Official clients should expose truthful verification state rather than a decorative badge. At minimum the Settings/account surface should be able to show release identity, artifact digest, REL verification, installation certificate identity/status and OS publisher status when available.
+
+An external verification surface may validate public release/certificate identity against the LightBI Root. This closes the gap where a fork can draw a fake `Official` badge inside its own modified UI.
+
+## Trademark and branding boundary
+
+Open-source rights and trademark rights are separate. Before stable 1.0 the project should publish an explicit trademark/branding policy defining acceptable references such as `fork of LightBI` or `based on LightBI`, and prohibiting modified distributions from presenting themselves as official LightBI in a confusing way.
+
+This legal/branding layer complements but does not replace cryptographic verification.
+
+## Current implementation status
+
+Phase 2A public verification/contracts are candidate code at exact head `fb8225c951fc27692e6b0e7554c3112ada08e49f`; they are not frozen. Production Root/issuer keys, private signer, installation certificates, request attestation, signed ENT authority, PRO package signing/delivery and official-service attestation enforcement are not implemented and remain gated.
+
+Current Beta account/license plumbing, public/private repository separation, updater/release manifests and private CP foundations must not be described as equivalent to the final 1.0 trust chain.
+
+## Exit sequence
+
+`Phase 2A re-audit → explicit freeze → offline Root ceremony → purpose-separated private signer → REL → ATT → signed ENT → private PRO delivery → platform signing/anti-impersonation closure → RC/1.0`.
+
+## Source bookmarks
+
+- [`../project-book/LIGHTBI_PROJECT_BOOK.md`](../project-book/LIGHTBI_PROJECT_BOOK.md) — Road-to-1.0 trust decisions and exact freeze gate.
+- [`../project-book/LIGHTBI_CONTROL_PLANE_MAP.md`](../project-book/LIGHTBI_CONTROL_PLANE_MAP.md) — current private CP authority and explicit absent Trust-1 pieces.
+- [`../project-book/LIGHTBI_CI_CD_MAP.md`](../project-book/LIGHTBI_CI_CD_MAP.md) — current release, R2, GitHub and macOS publication truth.

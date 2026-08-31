@@ -609,5 +609,54 @@
       "packagedWindowsOwnerAcceptancePassed": false,
       "implementationHead": "3454d705a4abf4e09237aa4ac3dd9fb287f8b847"
     }
+  },
+  "roadTo1_0Execution": {
+    "status": "r1_p0_complete",
+    "startedDate": "2026-08-31",
+    "baseline": {
+      "core": "451c9b6afe0a95bce5bce473a4a84c8b918f42cd",
+      "controlPlane": "f1879c65453cdf0bc9798257e462264f0424e907",
+      "internalGeneration": "g-2026-08-31-next-016",
+      "schema": "062_documentation_content",
+      "phase2a": "fb8225c951fc27692e6b0e7554c3112ada08e49f"
+    },
+    "phase2aFrozen": false,
+    "rootCeremonyAuthorized": false,
+    "phaseOrder": [
+      "R1-P0",
+      "R1-P1",
+      "R1-P2",
+      "R1-P3",
+      "R1-P4",
+      "R1-P5",
+      "R1-P6",
+      "R1-P7",
+      "R1-P8",
+      "R1-P9",
+      "R1-P10",
+      "R1-P11",
+      "R1-P12",
+      "R1-P13"
+    ],
+    "optionalRevenueMirror": {
+      "authority": "downstream_only",
+      "criticalPath": false,
+      "erpnextOptional": true,
+      "n8nOptional": true,
+      "cpOutboxFoundationImplemented": true,
+      "liveE2eVerified": false,
+      "dedicatedErpnextCompanyRequiredForE2e": true
+    },
+    "r1P0": {
+      "planRecorded": true,
+      "trustReleaseContractRecorded": true,
+      "erpnextRevenueMirrorContractRecorded": true,
+      "architectureIndexUpdated": true,
+      "sourceCatalogIndexedSources": 931,
+      "localLinksChecked": 1243,
+      "missingLocalLinks": 0,
+      "gitDiffCheckPassed": true,
+      "documentationCommitPending": false
+    }
   }
 }
