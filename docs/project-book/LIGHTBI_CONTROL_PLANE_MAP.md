@@ -469,3 +469,11 @@ The distribution root continues to be `5274/`; `/docs` is the documentation port
 CP `f1879c65453cdf0bc9798257e462264f0424e907` installs a synchronous head guard for `/docs*`, `/account` and `/admin` and suppresses only the homepage's direct body children before they can paint. `server.test.mjs` freezes that ordering before `<body>`. Browser acceptance observes every animation frame and records no visible homepage hero on Docs index/detail, Account login, Admin login/authenticated view or Admin Accounts. Full compiled-runtime proof is 128/128.
 
 The reconciled Internal runtime is `g-2026-08-31-next-015`, Core `d96011b...`, CP `f1879c6...`, schema 062 current/pending 0, healthy matching worker, manifest SHA-256 `110d7503bed7b93a849a9e453fa82bb9fc4be7be4aad30670fb69e04f719e97a`, and exact `.deployed-commit` `f1879c6...`. Production CP 5174 and production 5172/5173 were not restarted, migrated or modified. Trust Phase 2A remains unfrozen and signer/attestation work remains blocked.
+
+## 34. NEXT-016 identity-only control-plane reconciliation
+
+NEXT-016 changes no private control-plane source or schema. CP remains exact `f1879c65453cdf0bc9798257e462264f0424e907`, migration target remains `062_documentation_content`, and the existing user-systemd CP/worker units continue to own the Internal lifecycle. Only successor generation identity is reconciled to the new Core frontend head.
+
+Live diagnostics report `g-2026-08-31-next-016`, exact CP commit `f1879c6...`, schema `current` with pending `[]`, and a healthy worker heartbeat carrying the same generation and commit. The first-paint guard introduced in NEXT-015 remains active; Chromium revalidation of direct CP `/docs`, `/account` and `/admin` shows the secondary-route marker before rendering and no visible homepage hero paint.
+
+The current immutable manifest pins Core `451c9b6afe0a95bce5bce473a4a84c8b918f42cd`, CP `f1879c65453cdf0bc9798257e462264f0424e907`, schema 062 and SHA-256 `72f223df5c2508e2d1e278497e1d8a664aa55f87c5c497f8d48d5a76b77e7f90`. Production CP 5174 and production persistence remain untouched; Trust Phase 2A remains unfrozen and signer/attestation work remains blocked.

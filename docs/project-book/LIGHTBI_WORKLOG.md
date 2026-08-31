@@ -1278,3 +1278,11 @@ No packaged Windows binary was available to this VPS automation, so actual Windo
 - Preserved immutable NEXT-014 and cut `g-2026-08-31-next-015` instead of rewriting provenance. NEXT-015 keeps Core `d96011b...`, moves CP to `f1879c6...`, schema 062, app version `0.9.2-beta.7-next.15`, manifest SHA-256 `110d7503bed7b93a849a9e453fa82bb9fc4be7be4aad30670fb69e04f719e97a`.
 - Reconciled only Internal 5272/5273/5274 + worker. Diagnostics show exact next-015/CP commit, schema current/pending 0 and healthy matching worker. Browser animation-frame acceptance reports `homeFlash=false` on Docs index/detail, Account login, Admin login, authenticated Admin and Admin Accounts.
 - Final Core governed gates were rerun after the cut and remain 11/39 plus demo/session 3/10, generation 3/3, diagnostics 8/8, UAT 4/14/3, release/public-boundary/build/source-size 471/0. Production 5172/5173/5174 remained continuously present and untouched; Phase 2A remains unfrozen.
+
+## 2026-08-31 — NEXT-016 Monaco SQL suggestion-controller closure
+
+- Core advanced from `d96011b...` to `451c9b6afe0a95bce5bce473a4a84c8b918f42cd` to explicitly enable Monaco's suggestion controller in Advanced SQL while retaining the existing contextual completion provider as semantic authority. Added runtime-contract regression 1/1 PASS.
+- Preserved CP `f1879c65453cdf0bc9798257e462264f0424e907` and schema 062. Cut/reconciled `g-2026-08-31-next-016`, app version `0.9.2-beta.7-next.16`, manifest SHA-256 `72f223df5c2508e2d1e278497e1d8a664aa55f87c5c497f8d48d5a76b77e7f90`.
+- Live CP diagnostics: schema current/pending 0, worker healthy and generation/commit matched. Gateway serves a real JSON generation manifest; after final desktop build the archived manifest was explicitly restored into `dist` and verified byte-identical.
+- Exact Core revalidation PASS: generation 3/3, diagnostics 3/3, desktop build, selected governed 11 files / 39 tests, plus focused Monaco contract 1/1. CP source unchanged; prior exact-head CP suite remains 128/128.
+- Replayed secondary-route first-paint acceptance on direct CP `/docs`, `/account` and `/admin`: guard present, homepage hero absent, observed visible-home paints zero. Production 5172/5173/5174 and Trust/signer remain untouched.

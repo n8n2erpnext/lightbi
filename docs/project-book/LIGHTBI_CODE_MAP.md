@@ -847,3 +847,11 @@ CP `f1879c65453cdf0bc9798257e462264f0424e907` closes a browser-only routing pres
 This boundary exists specifically because serving a full homepage body and then awaiting route-specific API work allowed one browser frame of incorrect Home content to paint. The guard is therefore a first-paint presentation contract, not a navigation-delay hack, redirect, second SPA router, authentication authority or SEO authority. `server.test.mjs` freezes the requirement that the guard occurs before `<body>` for Docs index/detail, Admin and Account. Headless Chromium additionally samples visibility every animation frame and requires the homepage hero never to become visible on Docs, Account, Admin or Admin Accounts navigation.
 
 NEXT-015 runtime identity is Core `d96011b...`, CP `f1879c6...`, schema 062, manifest SHA-256 `110d7503bed7b93a849a9e453fa82bb9fc4be7be4aad30670fb69e04f719e97a`; CP full tests are 128/128 and the selected Core gates remain 11/39 plus 3/10 demo/session regressions.
+
+## 58. Advanced SQL suggestions require both semantic providers and the Monaco controller
+
+Core `451c9b6afe0a95bce5bce473a4a84c8b918f42cd` clarifies the editor-side ownership boundary for contextual SQL completion. The semantic/provider layer still decides which tables, columns and SQL tokens are valid suggestions. `AdvancedSqlEditor.tsx` now also enables Monaco's suggestion controller explicitly so provider results can be presented by the editor runtime instead of existing only as registered completion data.
+
+`AdvancedSqlEditor.runtime-contract.test.ts` freezes this UI-runtime requirement independently from the earlier contextual SQL semantic tests. Recognition/suggestion authority therefore stays outside Monaco presentation state: the controller may display valid candidates, but it does not invent schema meaning, source permission or execution authority.
+
+The current Internal generation carrying this owner is `g-2026-08-31-next-016`, Core `451c9b6...`, CP `f1879c6...`, schema 062 and manifest SHA-256 `72f223df5c2508e2d1e278497e1d8a664aa55f87c5c497f8d48d5a76b77e7f90`.

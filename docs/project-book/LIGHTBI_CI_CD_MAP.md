@@ -398,3 +398,11 @@ NEXT-014 pins Core `d96011bfe2d3deca8424eac15f6d3e7d39cf7a97`, CP `497ffbf9592fa
 The owner's screen recording then supplied a new UI acceptance criterion: secondary distribution routes must never visibly paint the homepage before their own renderer takes control. CP `f1879c65453cdf0bc9798257e462264f0424e907` adds a deterministic first-paint guard plus a server regression covering `/docs`, `/docs/getting-started`, `/admin` and `/account`. Full CP proof increases to **128/128**. A Chromium animation-frame observer independently reports `homeFlash=false` for Docs index, Docs detail, Account login, Admin login, authenticated Admin and Admin Accounts.
 
 Because the CP source SHA changed, the fix was not folded into immutable NEXT-014. It was cut as `g-2026-08-31-next-015`, preserving Core `d96011b...`, moving CP to `f1879c6...`, and producing manifest SHA-256 `110d7503bed7b93a849a9e453fa82bb9fc4be7be4aad30670fb69e04f719e97a`. Final exact-head Core CI was rerun after the cut and remains green. Production 5172/5173/5174 and production data remained outside this deployment/test lifecycle.
+
+## 26. NEXT-016 Monaco suggestion-controller gate
+
+NEXT-016 advances only Core/frontend source. Core `451c9b6afe0a95bce5bce473a4a84c8b918f42cd` adds a dedicated runtime-contract test proving the Monaco suggestion controller is enabled while leaving the existing contextual SQL semantic provider as the completion authority. Focused proof is 1/1 PASS.
+
+After the change, exact-head revalidation passes generation contract 3/3, generation diagnostics 3/3, desktop production build and the selected governed suite 11 files / 39 tests. The immutable Internal manifest is `g-2026-08-31-next-016`, SHA-256 `72f223df5c2508e2d1e278497e1d8a664aa55f87c5c497f8d48d5a76b77e7f90`, with Core `451c9b6...`, unchanged CP `f1879c6...`, and schema 062. A post-build restore re-copies the archived manifest into `apps/desktop/dist/lightbi-generation.json`; gateway acceptance confirms JSON content, matching generation header and byte-identical manifest hash rather than SPA fallback.
+
+The CP first-paint gate remains inherited from unchanged CP `f1879c6...`; live Chromium revalidation continues to observe no homepage paint on Docs, Account or Admin routes. Production 5172/5173/5174 remains outside this lifecycle.
