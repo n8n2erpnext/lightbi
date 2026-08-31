@@ -23,7 +23,7 @@
   "phase2a": {
     "pullRequest": 4,
     "base": "c06ef003242e06884e65d992627b5706ad13dfab",
-    "head": "fb8225c951fc27692e6b0e7554c3112ada08e49f",
+    "head": "10de4da8e551a46f93f7b62985a0a6e611581b8e",
     "draft": true,
     "merged": false,
     "ciPassedAtHead": true,
@@ -32,11 +32,11 @@
       "workspace": "/home/ubuntu/n8n2erpnext/LightBI-core-phase2a",
       "branch": "codex/phase2a-freeze-remediation-20260830",
       "baseHead": "d17abe0f7c5bc97521347526fb5fcec759857b2e",
-      "localCommit": "fb8225c951fc27692e6b0e7554c3112ada08e49f",
+      "localCommit": "10de4da8e551a46f93f7b62985a0a6e611581b8e",
       "pushed": true,
-      "independentReauditComplete": false,
+      "independentReauditComplete": true,
       "freezeApproved": false,
-      "typescriptTrustTestsPassed": 20,
+      "typescriptTrustTestsPassed": 22,
       "rustTrustTestsPassed": 5,
       "governedRegressionFilesPassed": 7,
       "governedRegressionTestsPassed": 26,
@@ -44,8 +44,22 @@
       "publicBoundaryPassed": true,
       "ciEquivalentPassed": true,
       "remoteBranch": "codex/phase2-trust-contracts",
-      "githubCiRun": 33290983683,
-      "githubCiPassed": true
+      "githubCiRun": 33397723902,
+      "githubCiPassed": true,
+      "independentReauditVerdict": "pass_awaiting_owner_freeze",
+      "initialR1P5AuditHead": "fb8225c951fc27692e6b0e7554c3112ada08e49f",
+      "firstR1P5RemediationHead": "528b7c220df0bc5f458526fdfca693a3b101dacd",
+      "finalR1P5AuditHead": "10de4da8e551a46f93f7b62985a0a6e611581b8e",
+      "additionalFreezeBlockersRemediated": [
+        "provider_neutral_entitlement_source",
+        "canonical_semver_text",
+        "subject_scoped_entitlement_rollback_equivocation",
+        "half_open_issuer_and_claim_lifecycles",
+        "root_and_purpose_key_material_separation",
+        "strict_persisted_trust_state_validation",
+        "stable_channel_prerelease_rejection",
+        "exact_lightbi_product_id_binding"
+      ]
     },
     "macosValidationInPhase2aGate": false
   },
@@ -196,7 +210,7 @@
       "phishingResistantSessionCandidate": true
     },
     "trust": {
-      "phase2aHead": "fb8225c951fc27692e6b0e7554c3112ada08e49f",
+      "phase2aHead": "10de4da8e551a46f93f7b62985a0a6e611581b8e",
       "freezeApproved": false,
       "signerBlocked": true
     }
@@ -438,14 +452,14 @@
       "controlPlaneDocsUrl": "http://100.94.184.141:5274/docs",
       "gatewayDocsUrl": "http://100.94.184.141:5273/docs",
       "obsoleteDistributionMountExists": false,
-      "internalControlPlaneDeployedCommitMarker": "f1879c65453cdf0bc9798257e462264f0424e907",
+      "internalControlPlaneDeployedCommitMarker": "d615832768f89c861ae508c210713c92ed6b74e2",
       "coreProcessRestartedForNext013": false,
       "coreProcessRestartNote": "tool_safety_blocked_termination; rebuilt server binary hash matches running binary and NEXT-013 changes no Rust server code",
       "coreProcessRestartedForCurrentGeneration": true,
       "currentGenerationRuntimeReconciled": true
     },
     "trust": {
-      "phase2aHead": "fb8225c951fc27692e6b0e7554c3112ada08e49f",
+      "phase2aHead": "10de4da8e551a46f93f7b62985a0a6e611581b8e",
       "freezeApproved": false,
       "trust1Blocked": true
     },
@@ -467,10 +481,10 @@
     "internalBugTest": {
       "ready": true,
       "entrypoint": "http://100.94.184.141:5273",
-      "generationId": "g-2026-08-31-next-016",
-      "coreCommit": "451c9b6afe0a95bce5bce473a4a84c8b918f42cd",
-      "controlPlaneCommit": "f1879c65453cdf0bc9798257e462264f0424e907",
-      "scope": "next016_monaco_sql_suggestion_controller_plus_docs_portal_admin_demo_history_native_contracts_secondary_route_first_paint_and_existing_single_multifile_continuity",
+      "generationId": "g-2026-08-31-next-017",
+      "coreCommit": "93296e46d250be7d2f885b2cbb06e25068f38761",
+      "controlPlaneCommit": "d615832768f89c861ae508c210713c92ed6b74e2",
+      "scope": "next017_r1_account_security_release_gate_plus_existing_product_docs_demo_advanced_and_continuity_surfaces",
       "knownLimitation": "formal_owner_uat_and_release_acceptance_not_yet_recorded",
       "deepBaScopeIsolationFixed": true,
       "deepBaScopeIsolationRegressionTestsPassed": 20,
@@ -620,7 +634,7 @@
     }
   },
   "roadTo1_0Execution": {
-    "status": "r1_p0_complete",
+    "status": "r1_p5_audit_passed_awaiting_owner_freeze",
     "startedDate": "2026-08-31",
     "baseline": {
       "core": "451c9b6afe0a95bce5bce473a4a84c8b918f42cd",
@@ -688,7 +702,7 @@
     "r1p2": "internal_deployed_machine_verified_secure_context_owner_acceptance_open",
     "r1p3": "verified_release_authority_defined",
     "r1p4": "identity_contract_candidate_trademark_policy_and_final_ui_open",
-    "r1p5": "next_independent_phase2a_reaudit",
+    "r1p5": "independent_audit_passed_awaiting_owner_freeze",
     "phase2aFreezeApproved": false,
     "trust1SignerAllowed": false
   },

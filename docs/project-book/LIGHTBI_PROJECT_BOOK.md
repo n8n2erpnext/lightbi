@@ -111,6 +111,7 @@
   - [74. Core durability, Passkey candidate, and test-taxonomy checkpoint](#74-core-durability-passkey-candidate-and-test-taxonomy-checkpoint)
   - [88. Road-to-1.0 execution freeze and optional ERPNext revenue mirror](#88-road-to-10-execution-freeze-and-optional-erpnext-revenue-mirror)
   - [89. NEXT-017 account security, release gate, and Paddle accounting scaffold](#89-next-017-account-security-release-gate-and-paddle-accounting-scaffold)
+  - [90. R1-P5 Phase 2A independent re-audit PASS; owner freeze still required](#90-r1-p5-phase-2a-independent-re-audit-pass-owner-freeze-still-required)
 <!-- AUTO_TOC_END -->
 
 ---
@@ -2217,3 +2218,12 @@ The optional Paddle→ERPNext path was also corrected from a generic mirror into
 Email Template `LightBI Purchase Confirmation` and Print Format `LightBI Purchase Invoice` provide a dedicated LightBI-branded purchase/accounting copy. Notification is bound but disabled. Render proof produced a valid 24,004-byte PDF without sending mail, and the template explicitly states Paddle is Merchant of Record and owns the official payment receipt/invoice. Payment-provider setup, live HMAC activation and live/retry E2E remain intentionally open and cannot become checkout/entitlement dependencies.
 
 The next Trust action is R1-P5: independent re-audit of exact Phase 2A `fb8225c951fc27692e6b0e7554c3112ada08e49f`. Phase 2A is still unfrozen; Root ceremony, issuer private keys, signer, attestation and signed ENT/PRO work remain prohibited until an explicit freeze decision.
+## 90. R1-P5 Phase 2A independent re-audit PASS; owner freeze still required
+
+R1-P5 independently re-audited the public Trust Contracts v1 branch rather than accepting CI-green as freeze authority. The first detached audit of exact `fb8225c951fc27692e6b0e7554c3112ada08e49f` reproduced all existing green gates but still rejected the candidate for additional semantic defects: provider-specific `stripe` entitlement source after the Paddle decision, non-canonical SemVer aliases, an unused `entitlement_version`, inclusive issuer expiry, reusable Root/issuer purpose key material, unvalidated persisted trust state, claim-token expiry inconsistency, stable/prerelease ambiguity, and unconstrained signed `product_id`.
+
+Those blockers were remediated on the existing Phase 2A branch without introducing a signer or private production key. `528b7c220df0bc5f458526fdfca693a3b101dacd` adds provider-neutral `commerce`, subject-scoped entitlement rollback/equivocation state, canonical SemVer, half-open issuer/claim lifecycles, Root/REL/ATT/ENT/PRO key-material separation, strict persisted-state validation and stable-channel protection. `10de4da8e551a46f93f7b62985a0a6e611581b8e` additionally binds REL/ATT/PRO `product_id` exactly to `digital.thaiduy.lightbi`. PR #4 remains Draft/Open/unmerged at that exact head.
+
+A fresh detached worktree at `10de4da...` then passed release contract 3/3, public/private-key boundary, TypeScript Trust **22/22**, Rust parity **5/5**, desktop production build, and the governed regression set **7 files / 26 tests**. Adversarial probes prove production Root pin remains `unconfigured` with no public key, provider-specific `stripe`/`paddle` values are not signed entitlement authority, wrong-product REL/ATT/PRO payloads fail schema validation, previous entitlement trust state is required, and no production signing implementation exists outside tests. GitHub CI run `33397723902` also completed successfully at the same exact head.
+
+The independent technical verdict is therefore **AUDIT PASS / AWAITING OWNER FREEZE**. This is deliberately not `FREEZE APPROVED`: `phase2aFreezeApproved=false`, PR #4 remains unmerged/draft, and R1-P6 Root ceremony plus all issuer private-key/signer/attestation/signed-ENT/PRO work remain prohibited until the owner explicitly records the freeze decision. The macOS unsigned-validation workflow is additive and remains outside the Phase 2A gate.

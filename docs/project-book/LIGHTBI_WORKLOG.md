@@ -1319,3 +1319,11 @@ R1-P0 documentation/integrity closure verified 1,243 local links with zero missi
 - Built immutable `g-2026-08-31-next-017`, parent `g-2026-08-31-next-016`, manifest SHA-256 `b1c849eb7c88d46cd6801c340b970a8e9993cd556fdd12a0d0dfbe612510dd0a`. Archived/current/served manifests are byte-identical.
 - After supplying the correct user-systemd bus environment, only Internal gateway/CP/worker were restarted. Gateway header, served manifest, CP diagnostics and worker all report NEXT-017 / CP `d615832...`; schema `062_documentation_content` is current with zero pending migrations. Production `5172/5173/5174` retained their pre-existing processes.
 - R1-P1 formal owner/native acceptance remains open. R1-P2 is Internal-deployed and machine-verified with secure-context owner acceptance open. R1-P3 is verified. R1-P4 remains a contract candidate pending trademark policy/final verification UI. R1-P5 independent exact-head Phase 2A audit is next; Root/signer/private production-key work remains prohibited.
+
+## 2026-08-31 — R1-P5 independent Phase 2A re-audit passes; freeze remains owner-gated
+
+- Independently audited exact Phase 2A `fb8225c...` from a clean detached worktree. Existing CI was green, but semantic review found additional freeze blockers; the candidate was not frozen.
+- Remediation `528b7c220df0bc5f458526fdfca693a3b101dacd` adds provider-neutral `commerce`, canonical SemVer, subject-scoped entitlement rollback/equivocation, half-open lifecycles, strict persisted trust state, Root/purpose key-material separation and stable-channel protection.
+- Follow-up `10de4da8e551a46f93f7b62985a0a6e611581b8e` binds signed REL/ATT/PRO `product_id` exactly to `digital.thaiduy.lightbi`. Both commits were pushed to PR #4 branch `codex/phase2-trust-contracts`.
+- Fresh detached final audit at `10de4da...` PASS: release 3/3, public boundary, Trust TS 22/22, Rust 5/5, desktop build, governed regressions 7 files / 26 tests, plus adversarial provider/product/state/root probes. GitHub CI run `33397723902` is success at the same head.
+- PR #4 remains Draft/Open/unmerged. Technical verdict is `AUDIT PASS / AWAITING OWNER FREEZE`; `phase2aFreezeApproved=false`. No Root, issuer private key, signer, attestation, signed ENT or PRO authority was created.

@@ -108,7 +108,7 @@ This legal/branding layer complements but does not replace cryptographic verific
 
 ## Current implementation status
 
-Phase 2A public verification/contracts are candidate code at exact head `fb8225c951fc27692e6b0e7554c3112ada08e49f`; they are not frozen. Production Root/issuer keys, private signer, installation certificates, request attestation, signed ENT authority, PRO package signing/delivery and official-service attestation enforcement are not implemented and remain gated.
+Phase 2A public verification/contracts have passed the R1-P5 independent re-audit at exact PR #4 head `10de4da8e551a46f93f7b62985a0a6e611581b8e`. The audit rejected the earlier `fb8225c...` candidate despite green tests, then closed provider-neutral entitlement source, canonical SemVer, entitlement rollback/equivocation state, half-open lifecycle, key-material separation, strict persisted-state, stable-channel and exact LightBI product-identity blockers. Local CI-equivalent proof and GitHub CI run `33397723902` pass. **This is an audit-pass candidate, not a freeze decision**: production Root/issuer keys, private signer, installation/request attestation, signed ENT authority, PRO signing/delivery and official-service enforcement remain gated until the owner explicitly records `FREEZE APPROVED`.
 
 Current Beta account/license plumbing, public/private repository separation, updater/release manifests and private CP foundations must not be described as equivalent to the final 1.0 trust chain.
 
