@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Editor, { loader, type Monaco, type OnMount } from '@monaco-editor/react';
 import * as monaco from 'monaco-editor/editor/editor.api';
+import 'monaco-editor/editor/contrib/suggest/browser/suggestController';
 import 'monaco-editor/languages/definitions/sql/register';
 import EditorWorker from 'monaco-editor/editor/editor.worker?worker';
 import type { AdvancedConnection, AdvancedSchema } from '../../lib/advanced-api';
