@@ -1,11 +1,11 @@
 // @vitest-environment jsdom
-import { act, renderHook } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useHomeWorkspaceSessions } from './useHomeWorkspaceSessions';
 import type { WorkspaceSessionRecord } from '../lib/workspace-session-api';
-import { saveWorkspaceSession } from '../lib/workspace-session-api';
+import { deleteWorkspaceSession, loadWorkspaceSessions, saveWorkspaceSession } from '../lib/workspace-session-api';
 import { downloadProjectSourceFile, uploadProjectSourceFile } from '../lib/project-source-file-api';
 import { persistedFilesFromSession } from '../lib/home-workspace-persistence';
 import { useAnalysisExportStore } from '../stores/analysis-export-store';
@@ -32,6 +32,28 @@ describe('Home workspace session restoration', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     useAnalysisExportStore.getState().clearPlan();
+  });
+
+  it('purges legacy synthetic demo sessions while keeping real Session History entries', async () => {
+    const real: WorkspaceSessionRecord = {
+      id: 'real-session', title: 'sales.csv', sourceType: 'local_csv', rowCount: 10, columnCount: 2,
+      sourceSummary: [], snapshot: {}, createdAt: '', updatedAt: '',
+    };
+    const demo: WorkspaceSessionRecord = {
+      id: 'demo-session', title: 'LightBI_Demo_Branch_Revenue.csv', sourceType: 'local_csv', rowCount: 56, columnCount: 9,
+      sourceSummary: [], snapshot: {}, createdAt: '', updatedAt: '',
+    };
+    vi.mocked(loadWorkspaceSessions).mockResolvedValueOnce([demo, real]);
+    const deps = {
+      currentDataset: null,
+      registerAdvancedSource: vi.fn(), setCurrentDataset: vi.fn(), setWorkspaceState: vi.fn(), setDecisionTrustReport: vi.fn(),
+      setPendingLocalBatch: vi.fn(), setMultiSourceDrafts: vi.fn(), setMultiSourceBuildResult: vi.fn(),
+      setSelectedTopic: vi.fn(), setResult: vi.fn(), setPreviewActionId: vi.fn(), requestLocalFileReselection: vi.fn(),
+    };
+    const wrapper = ({ children }: { children: ReactNode }) => <MemoryRouter>{children}</MemoryRouter>;
+    const { result } = renderHook(() => useHomeWorkspaceSessions(deps), { wrapper });
+    await waitFor(() => expect(result.current.workspaceSessions).toEqual([real]));
+    expect(deleteWorkspaceSession).toHaveBeenCalledWith('demo-session');
   });
 
   it('routes legacy local snapshots through source reselection instead of pretending the sample is executable', async () => {

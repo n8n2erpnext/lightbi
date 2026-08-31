@@ -13,7 +13,7 @@ import { attachPersistedFile, createWorkspaceSessionSnapshot, persistedFilesFrom
 import { parseCanonicalUserOverlay } from '../lib/understanding-core/canonical-user-overlay';
 import type { MultiSourceDraftV1 } from '../components/analysis/CanonicalMultiSourceReview';
 import { createLocalCanonicalSourceBoundary } from '../lib/home-source-boundary';
-import { isHomeDemoDataset } from '../lib/home-demo-scenarios';
+import { isHomeDemoDataset, isHomeDemoSourceName } from '../lib/home-demo-scenarios';
 import { applyHomeOnlineSourceInspection } from './useHomeOnlineSourceIntake';
 import type { AdvancedWorkspaceSource } from '../stores/advanced-source-store';
 import { createAdvancedWorkspaceSourceFromFamily } from '../lib/advanced-source-from-family';
@@ -48,24 +48,33 @@ export function useHomeWorkspaceSessions(deps: HomeWorkspaceSessionDependencies)
   const lastAutoSaveSignatureRef = useRef('');
   const returnSessionRestoredRef = useRef<string | null>(null);
 
+  const loadVisibleWorkspaceSessions = useCallback(async () => {
+    const records = await loadWorkspaceSessions();
+    const demoRecords = records.filter(record => isHomeDemoSourceName(record.title));
+    if (demoRecords.length > 0) {
+      await Promise.allSettled(demoRecords.map(record => deleteWorkspaceSession(record.id)));
+    }
+    return records.filter(record => !isHomeDemoSourceName(record.title));
+  }, []);
+
   const refreshWorkspaceSessions = useCallback(async () => {
     try {
-      setWorkspaceSessions(await loadWorkspaceSessions());
+      setWorkspaceSessions(await loadVisibleWorkspaceSessions());
       setSessionStatus(null);
     } catch (error) {
       setSessionStatus(error instanceof Error ? error.message : 'Could not load saved sessions.');
     }
-  }, []);
+  }, [loadVisibleWorkspaceSessions]);
 
   useEffect(() => {
     let cancelled = false;
-    void loadWorkspaceSessions().then(records => {
+    void loadVisibleWorkspaceSessions().then(records => {
       if (!cancelled) setWorkspaceSessions(records);
     }).catch(error => {
       if (!cancelled) setSessionStatus(error instanceof Error ? error.message : 'Could not load saved sessions.');
     });
     return () => { cancelled = true; };
-  }, []);
+  }, [loadVisibleWorkspaceSessions]);
 
   useEffect(() => {
     const handleFocus = () => void refreshWorkspaceSessions();
