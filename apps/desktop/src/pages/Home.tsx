@@ -33,7 +33,7 @@ import { createVirtualDatasetPlan } from '../lib/virtual-dataset-planner';
 import { selectFirstNonEmptyRows } from '../lib/row-surface';
 import { useDisplayPreferences } from '../stores/display-preferences-store';
 import { ExecutionRunCoordinator } from '@lightbi/runtime';
-import { useAdvancedSourceStore } from '../stores/advanced-source-store';
+import { activateAdvancedSourceForEasyDataset, useAdvancedSourceStore } from '../stores/advanced-source-store';
 import { createAdvancedWorkspaceSourceFromFamily } from '../lib/advanced-source-from-family';
 import { createDecisionTrustReport, type DecisionTrustReport } from '../lib/decision-trust-report';
 import { createBusinessFusionOverview, type BusinessFusionOverview } from '../lib/business-fusion-overview';
@@ -68,6 +68,10 @@ export const Home: React.FC = () => {
   const [isDataPreviewOpen, setIsDataPreviewOpen] = useState(false);
   const registerAdvancedSource = useAdvancedSourceStore(state => state.registerSource);
   const [workspaceState, setWorkspaceState] = useState<WorkspaceUnderstandingState | null>(null);
+  const openCurrentDatasetInAdvanced = () => {
+    activateAdvancedSourceForEasyDataset(currentDataset);
+    navigate('/advanced');
+  };
   const {
     inputValue, setInputValue, analysisIntent, setAnalysisIntent, questionInputRef, fileInputRef, menuRef,
     questionPlaceholder, isPlusMenuOpen, setIsPlusMenuOpen, isReplaceMenuOpen, setIsReplaceMenuOpen,
@@ -846,6 +850,7 @@ export const Home: React.FC = () => {
 
   return <HomeWorkspaceView model={{
     activeConnection, setActiveConnection, handleOnlineSourceInspected, result, isAsking, selectedTopic, currentDataset, pendingLocalBatch,
+    openCurrentDatasetInAdvanced,
     isPlusMenuOpen, setIsPlusMenuOpen, isReplaceMenuOpen, setIsReplaceMenuOpen, setPendingLocalBatch, greeting: getHomeGreeting(), navigate, questionInputRef, inputValue, setInputValue, setIsInputFocused, askQuestion,
     activeAnalysisIntent, questionPlaceholder, renderSourcePickerMenu, activeChips, setAnalysisIntent, openLocalFilePicker, openOnlineDataDrawer,
     openDatabaseDrawer, workspaceSessions, sessionStatus, preferences, handleOpenWorkspaceSession, handleDeleteWorkspaceSession, fileInputRef,

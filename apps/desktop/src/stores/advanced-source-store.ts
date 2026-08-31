@@ -64,3 +64,14 @@ export const useAdvancedSourceStore = create<AdvancedSourceState>((set, get) => 
 export function advancedSourceId(sourceType: string, name: string): string {
   return `${sourceType}:${name}`.toLowerCase().replace(/[^a-z0-9:_-]+/g, '-');
 }
+
+
+export function activateAdvancedSourceForEasyDataset(dataset: { sourceType?: unknown; file_name?: unknown } | null | undefined): string | null {
+  const sourceType = typeof dataset?.sourceType === 'string' ? dataset.sourceType : '';
+  const sourceName = typeof dataset?.file_name === 'string' ? dataset.file_name : '';
+  if (!sourceType || !sourceName) return null;
+  const sourceId = advancedSourceId(sourceType, sourceName);
+  if (!useAdvancedSourceStore.getState().sources.some(source => source.id === sourceId)) return null;
+  useAdvancedSourceStore.getState().setActiveSource(sourceId);
+  return sourceId;
+}
