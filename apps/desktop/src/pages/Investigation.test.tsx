@@ -23,6 +23,7 @@ import type {
   GovernedRuntimePreflightV1,
 } from '../lib/understanding-core/governed-runtime-contracts';
 import { Investigation } from './Investigation';
+import { advancedSourceId, useAdvancedSourceStore } from '../stores/advanced-source-store';
 
 const { navigateMock } = vi.hoisted(() => ({ navigateMock: vi.fn() }));
 
@@ -392,6 +393,7 @@ const mockedDescriptive = vi.mocked(executeGovernedDescriptiveAnalysis);
 describe('Investigation canonical consumer boundary', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    useAdvancedSourceStore.setState({ sources: [], activeSourceId: null, pendingEasyReturnSourceId: null });
     mockedSession.mockReturnValue(session());
     mockedExecute.mockResolvedValue(governedResult());
     mockedValidate.mockReturnValue(validation());
@@ -419,6 +421,22 @@ describe('Investigation canonical consumer boundary', () => {
   });
 
   afterEach(cleanup);
+
+  it('registers Investigation rows as supplementary without stealing canonical Easy source authority', async () => {
+    const fileName = 'Sales_ERP_May_2026.xlsx';
+    const originalId = advancedSourceId('local_xlsx', fileName);
+    const easyDataset = { status: 'ready', sourceType: 'local_xlsx', file_name: fileName };
+    useAdvancedSourceStore.getState().registerSource({
+      id: originalId, name: fileName, sourceType: 'local_xlsx', sourceKind: 'local_file', easyReturnDataset: easyDataset, registeredAt: new Date().toISOString(),
+      tables: [{ id: '0:data', name: 'Sales', rowCount: 1500, columns: ['Product', 'Revenue'], profiles: {}, file: new File(['Product,Revenue\nA,10'], fileName) }],
+    });
+    mockedSession.mockReturnValue(session({ datasetId: fileName }));
+
+    render(<Investigation />);
+    await waitFor(() => expect(useAdvancedSourceStore.getState().sources.some(source => source.sourceType === 'investigation')).toBe(true));
+    expect(useAdvancedSourceStore.getState().activeSourceId).toBe(originalId);
+    expect(useAdvancedSourceStore.getState().sources.find(source => source.id === originalId)?.easyReturnDataset).toBe(easyDataset);
+  });
 
   it('renders canonical runtime blocking without a legacy readiness score', () => {
     mockedSession.mockReturnValue(session({
