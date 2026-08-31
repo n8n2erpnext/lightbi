@@ -248,14 +248,14 @@
   },
   "nextGeneration": {
     "model": "successor_promotion_generation_rotation",
-    "status": "internal_bug_test_ready_exact_core_cp_worker_advanced_easy_roundtrip_e2e",
+    "status": "internal_bug_test_ready_exact_core_cp_worker_single_and_multifile_advanced_easy_roundtrip_e2e",
     "generationSchema": "lightbi.generation.v1",
-    "generationId": "g-2026-08-31-next-009",
+    "generationId": "g-2026-08-31-next-012",
     "parentGenerationId": "bootstrap-current-8d59d05f575373e6",
     "core": {
       "workspace": "/home/ubuntu/n8n2erpnext/LightBI-next-internal",
       "branch": "codex/next-internal-generation-20260830",
-      "head": "ecfff03fe7924fe5d7477f10df61b26b31cd9258",
+      "head": "d82bdb625b69755af51f42c01e2a35fe00731c28",
       "baseCandidate": "326d991a8f305fef938e9aab47897dd233146770",
       "foundationHead": "ef2434ac01ec6a817f4a04f58d16ef41c447b9dc",
       "gatewayHead": "0a9d20a93682e2db528cb43dc2ece8cf699129db",
@@ -267,7 +267,10 @@
       "nativeExcelPivotHead": "1292fd71209dcfeb6d23c9b4a618d5ff081f7714",
       "contextualSqlCompletionHead": "6d895de57ca42ae0ac530424416bfc2cd741e65e",
       "advancedEasyReturnContinuityHead": "a6beb34327f0bedbfe4ac7d222b0786245f26c51",
-      "advancedCanonicalSourceRoutingHead": "ecfff03fe7924fe5d7477f10df61b26b31cd9258"
+      "advancedCanonicalSourceRoutingHead": "ecfff03fe7924fe5d7477f10df61b26b31cd9258",
+      "investigationSourceAuthorityHead": "92906b1a91b283d248b9a7eb911265a8126498b9",
+      "investigationSourceAuthorityRegressionHead": "fcefeb0d3c3a3c0d36f618d77c9cd654e8635a6d",
+      "multiFileAdvancedEasyContinuityHead": "d82bdb625b69755af51f42c01e2a35fe00731c28"
     },
     "controlPlane": {
       "workspace": "/home/ubuntu/n8n2erpnext/lightbi-control-plane-next-internal",
@@ -337,7 +340,12 @@
       "advancedSourceRoutingFocusedFilesPassed": 2,
       "advancedSourceRoutingFocusedTestsPassed": 6,
       "advancedEasyRoundTripBrowserE2ePassed": true,
-      "advancedEasyRoundTripSyntheticSessionLeakPassed": true
+      "advancedEasyRoundTripSyntheticSessionLeakPassed": true,
+      "investigationSidebarAuthorityFocusedTestsPassed": 26,
+      "investigationSidebarAuthorityBrowserE2ePassed": true,
+      "multiFileAdvancedEasyFocusedTestsPassed": 10,
+      "multiFileAdvancedEasyBrowserE2ePassed": true,
+      "multiFileAdvancedEasySecondOpenPreserved": true
     },
     "infrastructure": {
       "isolatedContractDefined": true,
@@ -359,25 +367,25 @@
       "servedGenerationManifestPresent": true,
       "internalWebArtifactExactGenerationVerified": true,
       "runtimeBlocker": null,
-      "freshGenerationId": "g-2026-08-31-next-009",
-      "generationManifestSha256": "817d27dd90e3245d0d0ef38ade89ef26386b9e5b8850410c784415db6390eff5",
+      "freshGenerationId": "g-2026-08-31-next-012",
+      "generationManifestSha256": "0f8ec8f1178a6298a69f297f5254ecb81603fea248615e4a7bfdd092f3bc9264",
       "coreRuntimeBinarySha256": "0c9d37ae54b874e85ff3ad2ce792875a318e72c32146ad9e340383d5831d3d60",
       "servedGenerationManifestIsJson": true,
       "freshWorkerStarted": true,
-      "workerGenerationExpected": "g-2026-08-31-next-009",
-      "workerGenerationObserved": "g-2026-08-31-next-009",
+      "workerGenerationExpected": "g-2026-08-31-next-012",
+      "workerGenerationObserved": "g-2026-08-31-next-012",
       "workerCommitObserved": "c251fb1ee981a529c33335d25d3ada4e6ea9d23f",
       "workerGenerationMatch": true,
       "toolSafetyBlockedPredecessorTermination": false,
       "toolSafetyBlockedFreshWorkerLaunch": false,
       "predecessorInternalWorkerStarted": false,
       "predecessorWorkerGeneration": null,
-      "migrationStateMeaning": "existing_internal_schema_current_no_new_migration_required_for_next009",
+      "migrationStateMeaning": "existing_internal_schema_current_no_new_migration_required_for_next012",
       "canonicalInternalGatewayPort": 5273,
-      "canonicalInternalGatewayGeneration": "g-2026-08-31-next-009",
+      "canonicalInternalGatewayGeneration": "g-2026-08-31-next-012",
       "canonicalInternalGatewayCoreOrigin": "http://100.94.184.141:5272",
       "canonicalInternalGatewayControlPlaneOrigin": "http://100.94.184.141:5274",
-      "canonicalInternalGatewayManifestSha256": "817d27dd90e3245d0d0ef38ade89ef26386b9e5b8850410c784415db6390eff5",
+      "canonicalInternalGatewayManifestSha256": "0f8ec8f1178a6298a69f297f5254ecb81603fea248615e4a7bfdd092f3bc9264",
       "canonicalInternalGatewayServesFreshDesktop": true,
       "internalBugTestingReady": true,
       "temporaryVerificationGatewayStopped": true,
@@ -394,7 +402,7 @@
       "freezeApproved": false,
       "trust1Blocked": true
     },
-    "generationIdAuthority": "runtime_candidate_exact_core_cp_worker_browser_roundtrip_verified",
+    "generationIdAuthority": "runtime_candidate_exact_core_cp_worker_single_and_multifile_roundtrip_verified",
     "historicalProofParentCandidate": "prod-v0.9.2-beta.7-28e2aae",
     "parentGenerationBootstrapRequired": false,
     "bootstrapCurrent": {
@@ -412,16 +420,22 @@
     "internalBugTest": {
       "ready": true,
       "entrypoint": "http://100.94.184.141:5273",
-      "generationId": "g-2026-08-31-next-009",
-      "coreCommit": "ecfff03fe7924fe5d7477f10df61b26b31cd9258",
+      "generationId": "g-2026-08-31-next-012",
+      "coreCommit": "d82bdb625b69755af51f42c01e2a35fe00731c28",
       "controlPlaneCommit": "c251fb1ee981a529c33335d25d3ada4e6ea9d23f",
-      "scope": "advanced_easy_canonical_roundtrip_plus_contextual_sql_ide_native_excel_pivot_and_current_investigation_core_control_plane",
+      "scope": "single_and_multifile_advanced_easy_canonical_roundtrip_plus_contextual_sql_ide_native_excel_pivot_and_current_investigation_core_control_plane",
       "knownLimitation": "formal_owner_uat_and_release_acceptance_not_yet_recorded",
       "deepBaScopeIsolationFixed": true,
       "deepBaScopeIsolationRegressionTestsPassed": 20,
       "advancedEasyRoundTripE2ePassed": true,
-      "advancedEasyRoundTripSyntheticHistoryBefore": 4,
-      "advancedEasyRoundTripSyntheticHistoryAfter": 4
+      "advancedEasyRoundTripSyntheticHistoryBefore": 12,
+      "advancedEasyRoundTripSyntheticHistoryAfter": 12,
+      "advancedSidebarRoundTripE2ePassed": true,
+      "multiFileAdvancedEasyRoundTripE2ePassed": true,
+      "multiFileFixtureSources": 6,
+      "multiFileFixtureRows": 9000,
+      "multiFileBusinessRoles": 3,
+      "multiFileReportingPeriods": 2
     },
     "excelPivotExport": {
       "contractVersion": "lightbi.excel-pivot-export.v1",
@@ -476,8 +490,30 @@
       "sourceReselectionRequired": false,
       "implementationHeads": {
         "easyReturnContinuity": "a6beb34327f0bedbfe4ac7d222b0786245f26c51",
-        "canonicalSourceRouting": "ecfff03fe7924fe5d7477f10df61b26b31cd9258"
-      }
+        "canonicalSourceRouting": "ecfff03fe7924fe5d7477f10df61b26b31cd9258",
+        "investigationSourceAuthority": "92906b1a91b283d248b9a7eb911265a8126498b9",
+        "investigationSourceAuthorityRegression": "fcefeb0d3c3a3c0d36f618d77c9cd654e8635a6d",
+        "multiFileCollectionContinuity": "d82bdb625b69755af51f42c01e2a35fe00731c28"
+      },
+      "sidebarNavigationPreservesCanonicalSource": true,
+      "investigationSupplementarySourceDoesNotActivate": true,
+      "multiFileCollectionReturnToEasy": true,
+      "multiFileCollectionSecondOpenPreservesSource": true
+    },
+    "multiFileAdvancedEasyRoundTrip": {
+      "fixtureSet": "repository_erp_six_file_sample_corpus",
+      "sources": 6,
+      "rows": 9000,
+      "businessRoles": 3,
+      "reportingPeriods": 2,
+      "perspective": "executive_overview",
+      "advancedTables": 6,
+      "returnButtonVisible": true,
+      "returnPreservesGovernedCollection": true,
+      "secondAdvancedOpenPreservesCollection": true,
+      "sourceReselectionRequired": false,
+      "syntheticAdvancedDatasetCreated": false,
+      "implementationHead": "d82bdb625b69755af51f42c01e2a35fe00731c28"
     }
   }
 }

@@ -1216,3 +1216,20 @@ Private control-plane Git access was re-verified and an authoritative clone now 
 - Verification PASS: continuity/session 5 files / 20 tests; focused source/return 2 files / 6 tests; governed CI 11 files / 39 tests; generation 3/3; diagnostics 8/8; UAT pack 4/14/3; release 3/3; public boundary; desktop build; source-size 470 / 0 violations.
 - Built `g-2026-08-31-next-009`, Core `ecfff03...`, CP `c251fb1...`, manifest SHA-256 `817d27dd90e3245d0d0ef38ade89ef26386b9e5b8850410c784415db6390eff5`. Canonical 5272/5273/5274 and worker are healthy; schema current/pending 0 and worker generation/commit match.
 - Internal CP and worker were moved from temporary manual launches onto the pre-existing user-systemd units. Production `5172/5173/5174` was not restarted, migrated or modified. Formal owner UAT/promotion remains open; Trust Phase 2A remains unfrozen.
+
+## 2026-08-31 — Investigation sidebar authority fixed through NEXT-011
+
+- Owner replay found a path not covered by NEXT-009: `Money by location -> sidebar Advanced -> Open CURRENT -> Return to Easy` still opened a synthetic Investigation source, auto-charted a sales trend and later required source reselection.
+- Root cause: Investigation registered supplementary result rows into the Advanced source store and ordinary registration also activated that newer source; sidebar navigation bypassed Home's exact-source activation handler.
+- Core `92906b1a91b283d248b9a7eb911265a8126498b9` makes Investigation registration non-activating while keeping the source available for intentional Advanced exploration. Exact browser replay passed without `advanced:workspace...`, auto-chart or reselection. NEXT-010 manifest SHA-256: `d8ce0a61319a565589b74f706984d3c71eaafcca18f2a289220a859490a9eb74`.
+- Core `fcefeb0d3c3a3c0d36f618d77c9cd654e8635a6d` adds an Investigation component-level guard that fails if the supplementary source can steal active authority again. NEXT-011 manifest SHA-256: `5d0495a179e62d8e17f37e80d5efce8be89a467572689463be562d767a841ab0`.
+- Reconciled NEXT-011 browser acceptance preserved the canonical source and did not increase persisted Investigation-session count. Production `5172/5173/5174` remained untouched; formal owner UAT/promotion stayed open.
+
+## 2026-08-31 — Six-file governed collection Return-to-Easy closure on NEXT-012
+
+- Reproduced the owner multi-file report with the six repository ERP fixtures: Sales May/June, Accounting May/June and Logistics May/June. Canonical understanding reports 6 sources, 9,000 rows, 3 roles and 2 periods; Executive Overview opens one Advanced source with 6 DuckDB tables.
+- Bug: `Return to Easy` was hidden because the toolbar allowed only table-context or one-table sources, and the governed collection source did not retain the Easy dataset snapshot.
+- Core `d82bdb625b69755af51f42c01e2a35fe00731c28` attaches the exact Easy `readyDataset` to the multi-table Advanced collection, records an explicit Advanced source ID, centralizes continuity/activation helpers, and allows Return whenever valid Easy continuity exists. No-op return does not query, merge, collapse or create a synthetic derived source.
+- Exact six-file browser E2E PASS: `Executive overview -> Advanced CURRENT 6 tables/9,000 rows -> Return to Easy -> 6 sources/3 roles/2 periods/Runtime Governed -> Open Advanced again -> same CURRENT 6 tables/9,000 rows`.
+- Verification PASS: focused continuity 10/10; selected governed CI 11 files / 39 tests; generation 3/3; diagnostics 8/8; UAT pack 4 fixtures / 14 scenarios / 3 levels; release 3/3; public boundary; desktop build; source-size 470 modules / 0 violations.
+- Built/reconciled `g-2026-08-31-next-012`, Core `d82bdb6...`, CP `c251fb1...`, schema current/pending 0, healthy matching worker, manifest SHA-256 `0f8ec8f1178a6298a69f297f5254ecb81603fea248615e4a7bfdd092f3bc9264`. Production remained untouched; formal owner UAT/promotion is still not recorded.
