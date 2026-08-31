@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Editor, { loader, type Monaco, type OnMount } from '@monaco-editor/react';
 import * as monaco from 'monaco-editor/editor/editor.api';
 import 'monaco-editor/languages/definitions/sql/register';
 import EditorWorker from 'monaco-editor/editor/editor.worker?worker';
 import type { AdvancedConnection, AdvancedSchema } from '../../lib/advanced-api';
-import { buildProSqlSuggestions, buildSqlLanguageSuggestions, type SqlSuggestion } from '../../lib/advanced-sql-suggestions';
+import type { SqlSuggestion } from '../../lib/advanced-sql-suggestions';
+import { buildContextualSqlCompletions } from '../../lib/advanced-sql-completion';
 
 const workerScope = globalThis as typeof globalThis & {
   MonacoEnvironment?: { getWorker: () => Worker };
@@ -42,29 +43,33 @@ export function AdvancedSqlEditor({
   const editorRef = useRef<Parameters<OnMount>[0] | null>(null);
   const monacoRef = useRef<Monaco | null>(null);
   const [editorReady, setEditorReady] = useState(false);
-  const suggestions = useMemo(() => [
-    ...buildSqlLanguageSuggestions(provider),
-    ...(proSuggestions ? buildProSqlSuggestions(schema, provider) : []),
-  ], [proSuggestions, provider, schema]);
-
   useEffect(() => {
     if (provider === 'mongodb' || !monacoRef.current) return;
     const instance = monacoRef.current;
     const disposable = instance.languages.registerCompletionItemProvider('sql', {
       triggerCharacters: ['.', ' '],
       provideCompletionItems(model: monaco.editor.ITextModel, position: monaco.Position) {
-        const word = model.getWordUntilPosition(position);
+        const beforeCursor = model.getValueInRange({
+          startLineNumber: 1, startColumn: 1,
+          endLineNumber: position.lineNumber, endColumn: position.column,
+        });
+        const completion = buildContextualSqlCompletions({
+          beforeCursor, documentText: model.getValue(), provider, schema, schemaSuggestionsEnabled: proSuggestions,
+        });
         const range = {
           startLineNumber: position.lineNumber,
           endLineNumber: position.lineNumber,
-          startColumn: word.startColumn,
-          endColumn: word.endColumn,
+          startColumn: Math.max(1, position.column - completion.prefix.length),
+          endColumn: position.column,
         };
         return {
-          suggestions: suggestions.map(item => ({
+          suggestions: completion.suggestions.map(item => ({
             label: item.label,
             detail: item.detail,
             insertText: item.insertText,
+            filterText: item.filterText,
+            sortText: item.sortText,
+            preselect: item.preselect,
             insertTextRules: item.kind === 'snippet' || item.kind === 'function' ? instance.languages.CompletionItemInsertTextRule.InsertAsSnippet : undefined,
             kind: completionKind(instance, item.kind),
             range,
@@ -73,7 +78,7 @@ export function AdvancedSqlEditor({
       },
     });
     return () => disposable.dispose();
-  }, [editorReady, proSuggestions, provider, suggestions]);
+  }, [editorReady, proSuggestions, provider, schema]);
 
   const handleMount: OnMount = (editor, instance) => {
     editorRef.current = editor;
@@ -104,8 +109,13 @@ export function AdvancedSqlEditor({
           scrollBeyondLastLine: false,
           tabSize: 2,
           wordWrap: 'off',
-          quickSuggestions: provider !== 'mongodb',
+          quickSuggestions: provider === 'mongodb' ? false : { other: true, comments: false, strings: false },
+          quickSuggestionsDelay: 75,
           suggestOnTriggerCharacters: provider !== 'mongodb',
+          suggestSelection: 'recentlyUsedByPrefix',
+          wordBasedSuggestions: 'off',
+          acceptSuggestionOnEnter: 'smart',
+          suggest: { preview: true, localityBonus: true, showWords: false },
           fixedOverflowWidgets: true,
           padding: { top: 10, bottom: 10 },
           ariaLabel: provider === 'mongodb' ? 'MongoDB document query' : 'SQL query',
