@@ -109,6 +109,34 @@ describe('Advanced full-source return to Easy', () => {
     expect(useAdvancedSourceStore.getState().pendingEasyReturnSourceId).toBeNull();
   });
 
+  it('returns a governed six-table collection to the exact Easy multi-source workspace without querying', async () => {
+    const easyReturnDataset = {
+      status: 'ready', file_name: 'executive overview analysis', rows_count: 9000, columns: ['reporting_period', 'sales_revenue'],
+      sourceType: 'canonical_perspective_collection', canonicalPerspectiveId: 'executive_overview',
+      sourceFiles: Array.from({ length: 6 }, (_, index) => ({ name: `source-${index}`, rows: 1500 })),
+    };
+    const tables = Array.from({ length: 6 }, (_, index) => ({
+      id: `table-${index}`, name: `source_${index}`, rowCount: 1500, columns: ['id'], profiles: {},
+      file: new File(['id\n1'], `source-${index}.csv`, { type: 'text/csv' }),
+    }));
+    const fileSource: AdvancedWorkspaceSource = {
+      id: 'canonical_perspective_collection:executive_overview',
+      name: 'executive overview · 6 governed sources',
+      sourceType: 'canonical_perspective_collection', sourceKind: 'local_file', registeredAt: new Date().toISOString(),
+      tables, easyReturnDataset,
+    };
+    useAdvancedSourceStore.getState().registerSource(fileSource);
+    const execute = vi.fn();
+    const { value } = context({ fileSource, fileSession: { current: { execute, open: vi.fn(), close: vi.fn() } as unknown as AdvancedFileSession } });
+
+    await createAdvancedResultTransferActions(value).returnFullSourceToEasy();
+
+    expect(execute).not.toHaveBeenCalled();
+    expect(mocks.createInvestigationSession).not.toHaveBeenCalled();
+    expect(window.location.pathname).toBe('/');
+    expect(useAdvancedSourceStore.getState().consumeEasyReturnDataset()).toBe(easyReturnDataset);
+  });
+
   it('materializes every page for a zero-edit 1,500-row local source before the Easy handoff', async () => {
     const fileSource: AdvancedWorkspaceSource = {
       id: 'local:1500', name: 'orders.csv', sourceType: 'local_csv', sourceKind: 'local_file', registeredAt: new Date().toISOString(),

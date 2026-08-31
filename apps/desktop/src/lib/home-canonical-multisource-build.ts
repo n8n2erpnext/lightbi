@@ -215,34 +215,15 @@ export async function executeHomeCanonicalMultiSourceBuild(
           rows: (item.source.analysis_rows ?? item.boundary.semanticSample.rows) as Record<string, unknown>[],
           semanticFields: generateCanonicalAIBriefing(item.artifact).semanticFields,
         }));
-        registerAdvancedSource({
-          id: advancedSourceId("canonical_perspective_collection", perspectiveId),
-          name: `${perspectiveId.replaceAll("_", " ")} · ${members.length} governed sources`,
-          sourceType: "canonical_perspective_collection",
-          sourceKind: "local_file",
-          tables: members.map((item, index) => ({
-            id: `${index}:${item.draft.role}:${item.draft.periodStart.slice(0, 7)}`,
-            name: `${item.draft.role || "source"}_${item.draft.periodStart.slice(0, 7) || index + 1}`,
-            rowCount: item.boundary.sourceRowCount,
-            columns: item.boundary.semanticSample.columns,
-            profiles: item.source.profiles ?? {},
-            file: item.file,
-            sheetName: item.metadata.is_workbook ? item.metadata.default_sheet : undefined,
-          })),
-          semanticSample: {
-            strategy: "governed_collection",
-            sourceRowCount: members.reduce((sum, item) => sum + item.boundary.sourceRowCount, 0),
-            sampleRowCount: members.reduce((sum, item) => sum + item.boundary.semanticSample.rows.length, 0),
-          },
-          registeredAt: new Date().toISOString(),
-        });
-        setCurrentDataset({
+        const collectionAdvancedSourceId = advancedSourceId("canonical_perspective_collection", perspectiveId);
+        const readyDataset = {
           status: 'ready',
           file_name: `${perspectiveId.replaceAll("_", " ")} analysis`,
           rows_count: members.reduce((sum, item) => sum + item.boundary.sourceRowCount, 0),
           columns: ["reporting_period", ...new Set(analysisRows.flatMap((row) => Object.keys(row).filter((key) => key !== "reporting_period")))],
           profiles: primary.source.profiles ?? {},
           sourceType: 'canonical_perspective_collection',
+          advancedSourceId: collectionAdvancedSourceId,
           sourceFiles: members.map((item) => ({
             name: item.file.name,
             rows: item.boundary.sourceRowCount,
@@ -273,7 +254,30 @@ export async function executeHomeCanonicalMultiSourceBuild(
           semanticRows: primary.boundary.semanticSample.rows,
           analysisRows,
           previewRows: analysisRows,
+        };
+        registerAdvancedSource({
+          id: collectionAdvancedSourceId,
+          name: `${perspectiveId.replaceAll("_", " ")} · ${members.length} governed sources`,
+          sourceType: "canonical_perspective_collection",
+          sourceKind: "local_file",
+          tables: members.map((item, index) => ({
+            id: `${index}:${item.draft.role}:${item.draft.periodStart.slice(0, 7)}`,
+            name: `${item.draft.role || "source"}_${item.draft.periodStart.slice(0, 7) || index + 1}`,
+            rowCount: item.boundary.sourceRowCount,
+            columns: item.boundary.semanticSample.columns,
+            profiles: item.source.profiles ?? {},
+            file: item.file,
+            sheetName: item.metadata.is_workbook ? item.metadata.default_sheet : undefined,
+          })),
+          semanticSample: {
+            strategy: "governed_collection",
+            sourceRowCount: members.reduce((sum, item) => sum + item.boundary.sourceRowCount, 0),
+            sampleRowCount: members.reduce((sum, item) => sum + item.boundary.semanticSample.rows.length, 0),
+          },
+          easyReturnDataset: readyDataset,
+          registeredAt: new Date().toISOString(),
         });
+        setCurrentDataset(readyDataset);
         setMultiSourceBuildResult({ relationshipState: null, blockers: [] });
         setDecisionTrustReport(null);
         setPendingLocalBatch(null);

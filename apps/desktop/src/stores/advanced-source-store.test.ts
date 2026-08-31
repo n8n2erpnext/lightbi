@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { activateAdvancedSourceForEasyDataset, advancedSourceId, useAdvancedSourceStore, type AdvancedWorkspaceSource } from './advanced-source-store';
+import { activateAdvancedSourceForEasyDataset, advancedSourceId, canReturnAdvancedSourceToEasy, getAdvancedEasyReturnDataset, useAdvancedSourceStore, type AdvancedWorkspaceSource } from './advanced-source-store';
 
 function source(id: string, name: string, sourceType: string, easyReturnDataset?: unknown): AdvancedWorkspaceSource {
   return {
@@ -31,6 +31,27 @@ describe('Advanced source authority routing', () => {
 
     expect(useAdvancedSourceStore.getState().activeSourceId).toBe(originalId);
     expect(useAdvancedSourceStore.getState().sources.some(item => item.id === 'investigation:sales')).toBe(true);
+  });
+
+  it('exposes Easy continuity for a governed multi-table collection', () => {
+    const dataset = { status: 'ready', sourceType: 'canonical_perspective_collection', file_name: 'executive overview analysis' };
+    const collection = source('canonical_perspective_collection:executive_overview', 'executive overview · 6 governed sources', 'canonical_perspective_collection', dataset);
+    collection.tables = Array.from({ length: 6 }, (_, index) => ({ ...collection.tables[0], id: `table-${index}`, name: `source_${index}` }));
+
+    expect(getAdvancedEasyReturnDataset(collection)).toBe(dataset);
+    expect(canReturnAdvancedSourceToEasy(collection)).toBe(true);
+  });
+
+  it('pins a collection by its explicit Advanced source identity instead of deriving from the display name', () => {
+    const explicitId = 'canonical_perspective_collection:executive_overview';
+    const dataset = {
+      status: 'ready', sourceType: 'canonical_perspective_collection', file_name: 'executive overview analysis', advancedSourceId: explicitId,
+    };
+    useAdvancedSourceStore.getState().registerSource(source(explicitId, 'executive overview · 6 governed sources', 'canonical_perspective_collection', dataset));
+    useAdvancedSourceStore.getState().registerSource(source('local:other', 'other.csv', 'local_csv'));
+
+    expect(activateAdvancedSourceForEasyDataset(dataset)).toBe(explicitId);
+    expect(useAdvancedSourceStore.getState().activeSourceId).toBe(explicitId);
   });
 
   it('does not pin a non-existent source id', () => {

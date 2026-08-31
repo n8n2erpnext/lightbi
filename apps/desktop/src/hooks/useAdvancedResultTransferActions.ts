@@ -4,7 +4,7 @@ import type { QueryCellValue } from '@lightbi/core-types';
 import { cancelAdvancedExportJob, cancelAdvancedImportJob, commitAdvancedMutation, downloadAdvancedExportJob, executeAdvancedDocumentQuery, executeAdvancedQuery, loadAdvancedExportJob, startAdvancedExport, type AdvancedConnection, type AdvancedFilter, type AdvancedFilterGroup, type AdvancedQueryResult, type AdvancedSort, type AdvancedTableNode } from '../lib/advanced-api';
 import { advancedResultToCsv, createAdvancedId, createAdvancedTab, splitAdvancedStatements, type AdvancedHistoryEntry } from '../lib/advanced-workspace';
 import { CREATE_NEW_IMPORT_TARGET, copyTextToClipboard, hydrateTab, importColumnSqlType, materializeSqlParameters, qualifiedTableReference, quoteIdentifier, quoteMysqlIdentifier, resultRowsAsObjects, sqlLiteral, type ImportDraft, type WorkspaceTab } from '../lib/advanced-workspace-helpers';
-import { useAdvancedSourceStore, type AdvancedWorkspaceSource } from '../stores/advanced-source-store';
+import { getAdvancedEasyReturnDataset, useAdvancedSourceStore, type AdvancedWorkspaceSource } from '../stores/advanced-source-store';
 import type { AdvancedFileSession } from '../lib/advanced-file-session';
 import { createInvestigationSession } from '../lib/investigation-session';
 import { classifyAdvancedResultCompleteness, materializeAdvancedResultPages } from '../lib/advanced-result-handoff';
@@ -260,8 +260,8 @@ export function createAdvancedResultTransferActions(context: AdvancedResultTrans
       patchTab(activeTab.id, { warnings: ['Commit or discard pending edits before returning to Easy analysis.'] });
       return;
     }
-    const easyReturnDataset = fileSource?.easyReturnDataset as { status?: string } | undefined;
-    if (fileSource && easyReturnDataset?.status === 'ready') {
+    const easyReturnDataset = getAdvancedEasyReturnDataset(fileSource);
+    if (fileSource && easyReturnDataset) {
       useAdvancedSourceStore.getState().requestEasyReturn(fileSource.id);
       const homePath = window.location.pathname.startsWith('/app') ? '/app' : '/';
       window.history.pushState(null, '', homePath);
