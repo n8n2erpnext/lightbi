@@ -1197,3 +1197,12 @@ Private control-plane Git access was re-verified and an authoritative clone now 
 - Built `g-2026-08-31-next-005`, parent `bootstrap-current-8d59d05f575373e6`, Core `1292fd7...`, CP `c251fb1...`, schema `061_integrations_delivery`; manifest SHA-256 `1898311c3c3bbea9304158920d5b9e3d5651527e08546bfb2528a180d53ac574`. Rebuilt Core binary SHA-256 remains `0c9d37ae54b874e85ff3ad2ce792875a318e72c32146ad9e340383d5831d3d60`.
 - Successfully terminated predecessor Internal Core/CP/gateway/worker processes and restored canonical `5272/5273/5274`. CP diagnostics now report exact next-005 API + healthy next-005 worker, schema current/pending 0. NEXT-vs-production environment verifier passes all 8 isolation keys.
 - Production `5172/5173/5174` remained healthy and untouched. Formal owner UAT/promotion acceptance and explicit Excel Desktop release acceptance remain open; Trust Phase 2A remains unfrozen and signer/attestation work stays blocked.
+
+
+## 2026-08-31 — Advanced SQL suggestions upgraded to VS Code-style context completion
+
+- Owner requested that the already-integrated Monaco SQL IDE feel like VS Code rather than showing one flat suggestion catalog. Audit found the provider returned every keyword/function/table/column for every cursor position and had no alias or clause context.
+- Core `6d895de57ca42ae0ac530424416bfc2cd741e65e` adds `advanced-sql-completion.ts`. The resolver distinguishes qualified-column, table, column, post-source and generic contexts; parses full-document `FROM`/`JOIN` sources; resolves aliases; qualifies ambiguous multi-source columns; suppresses strings/comments; caps output at 300; and preserves the existing schema-suggestion capability gate.
+- Monaco now receives `filterText`, `sortText`, `preselect` and an exact replacement range, with 75 ms quick suggestions, prefix history selection, locality bonus, preview and word-based suggestion noise disabled. `AdvancedSqlEditor.tsx` stays small at ~131 lines.
+- Verification: completion-focused 2 files / 12 tests PASS; full Advanced set 10 files / 58 tests PASS; selected governed CI 11 files / 39 tests PASS; desktop build PASS; source-size gate PASS at 468 production modules / 0 violations.
+- Built and activated `g-2026-08-31-next-006` on canonical Internal `5272/5273/5274`, Core `6d895de...`, CP `c251fb1...`, manifest SHA-256 `4ace871a210349479719408c081e2ce8dbf17e2aa8fa30d536e2eaf0d6a0f42d`. Gateway/Core/CP health pass; CP schema is current/pending 0 and worker generation/commit match. Production 5172/5173/5174 remained untouched.

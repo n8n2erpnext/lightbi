@@ -248,14 +248,14 @@
   },
   "nextGeneration": {
     "model": "successor_promotion_generation_rotation",
-    "status": "internal_bug_test_ready_exact_core_cp_worker_native_excel_pivot",
+    "status": "internal_bug_test_ready_exact_core_cp_worker_contextual_sql_ide",
     "generationSchema": "lightbi.generation.v1",
-    "generationId": "g-2026-08-31-next-005",
+    "generationId": "g-2026-08-31-next-006",
     "parentGenerationId": "bootstrap-current-8d59d05f575373e6",
     "core": {
       "workspace": "/home/ubuntu/n8n2erpnext/LightBI-next-internal",
       "branch": "codex/next-internal-generation-20260830",
-      "head": "1292fd71209dcfeb6d23c9b4a618d5ff081f7714",
+      "head": "6d895de57ca42ae0ac530424416bfc2cd741e65e",
       "baseCandidate": "326d991a8f305fef938e9aab47897dd233146770",
       "foundationHead": "ef2434ac01ec6a817f4a04f58d16ef41c447b9dc",
       "gatewayHead": "0a9d20a93682e2db528cb43dc2ece8cf699129db",
@@ -264,7 +264,8 @@
       "modularizationHead": "a8ebc27c9d4284665855d7a0a0150c629e44f86e",
       "deepBaScopeIsolationHead": "eadba8fdf07b04bbdbd674518422713fefb68009",
       "supportingChartDrillHead": "1ecf36e959d3a9aa5af2e1f800b0ac0bb3f7b020",
-      "nativeExcelPivotHead": "1292fd71209dcfeb6d23c9b4a618d5ff081f7714"
+      "nativeExcelPivotHead": "1292fd71209dcfeb6d23c9b4a618d5ff081f7714",
+      "contextualSqlCompletionHead": "6d895de57ca42ae0ac530424416bfc2cd741e65e"
     },
     "controlPlane": {
       "workspace": "/home/ubuntu/n8n2erpnext/lightbi-control-plane-next-internal",
@@ -297,7 +298,7 @@
       "nextEnvironmentVerificationPassed": true,
       "latestCoreHeadRevalidated": true,
       "latestControlPlaneHeadRevalidated": true,
-      "sourceModuleFilesChecked": 467,
+      "sourceModuleFilesChecked": 468,
       "sourceModuleViolations": 0,
       "sourceModuleHardLimit": 1000,
       "focusedSemanticTestsPassed": 123,
@@ -323,7 +324,12 @@
       "excelPivotFocusedTestsPassed": 9,
       "excelPivotPackageIntegrityPassed": true,
       "excelPivotSpreadsheetSpikeOwnerAccepted": true,
-      "excelDesktopManualAcceptanceRecorded": false
+      "excelDesktopManualAcceptanceRecorded": false,
+      "advancedRegressionFilesPassed": 10,
+      "advancedRegressionTestsPassed": 58,
+      "sqlCompletionFocusedFilesPassed": 2,
+      "sqlCompletionFocusedTestsPassed": 12,
+      "contextualSqlCompletionRegressionPassed": true
     },
     "infrastructure": {
       "isolatedContractDefined": true,
@@ -345,25 +351,25 @@
       "servedGenerationManifestPresent": true,
       "internalWebArtifactExactGenerationVerified": true,
       "runtimeBlocker": null,
-      "freshGenerationId": "g-2026-08-31-next-005",
-      "generationManifestSha256": "1898311c3c3bbea9304158920d5b9e3d5651527e08546bfb2528a180d53ac574",
+      "freshGenerationId": "g-2026-08-31-next-006",
+      "generationManifestSha256": "4ace871a210349479719408c081e2ce8dbf17e2aa8fa30d536e2eaf0d6a0f42d",
       "coreRuntimeBinarySha256": "0c9d37ae54b874e85ff3ad2ce792875a318e72c32146ad9e340383d5831d3d60",
       "servedGenerationManifestIsJson": true,
       "freshWorkerStarted": true,
-      "workerGenerationExpected": "g-2026-08-31-next-005",
-      "workerGenerationObserved": "g-2026-08-31-next-005",
+      "workerGenerationExpected": "g-2026-08-31-next-006",
+      "workerGenerationObserved": "g-2026-08-31-next-006",
       "workerCommitObserved": "c251fb1ee981a529c33335d25d3ada4e6ea9d23f",
       "workerGenerationMatch": true,
       "toolSafetyBlockedPredecessorTermination": false,
       "toolSafetyBlockedFreshWorkerLaunch": false,
       "predecessorInternalWorkerStarted": false,
       "predecessorWorkerGeneration": null,
-      "migrationStateMeaning": "existing_internal_schema_current_no_new_migration_required_for_next005",
+      "migrationStateMeaning": "existing_internal_schema_current_no_new_migration_required_for_next006",
       "canonicalInternalGatewayPort": 5273,
-      "canonicalInternalGatewayGeneration": "g-2026-08-31-next-005",
+      "canonicalInternalGatewayGeneration": "g-2026-08-31-next-006",
       "canonicalInternalGatewayCoreOrigin": "http://100.94.184.141:5272",
       "canonicalInternalGatewayControlPlaneOrigin": "http://100.94.184.141:5274",
-      "canonicalInternalGatewayManifestSha256": "1898311c3c3bbea9304158920d5b9e3d5651527e08546bfb2528a180d53ac574",
+      "canonicalInternalGatewayManifestSha256": "4ace871a210349479719408c081e2ce8dbf17e2aa8fa30d536e2eaf0d6a0f42d",
       "canonicalInternalGatewayServesFreshDesktop": true,
       "internalBugTestingReady": true,
       "temporaryVerificationGatewayStopped": true,
@@ -396,11 +402,11 @@
     "internalBugTest": {
       "ready": true,
       "entrypoint": "http://100.94.184.141:5273",
-      "generationId": "g-2026-08-31-next-005",
-      "coreCommit": "1292fd71209dcfeb6d23c9b4a618d5ff081f7714",
+      "generationId": "g-2026-08-31-next-006",
+      "coreCommit": "6d895de57ca42ae0ac530424416bfc2cd741e65e",
       "controlPlaneCommit": "c251fb1ee981a529c33335d25d3ada4e6ea9d23f",
-      "scope": "native_excel_pivot_plus_current_investigation_core_and_control_plane",
-      "knownLimitation": "formal_owner_uat_and_excel_desktop_release_acceptance_not_yet_recorded",
+      "scope": "contextual_sql_ide_plus_native_excel_pivot_and_current_investigation_core_control_plane",
+      "knownLimitation": "formal_owner_uat_and_release_acceptance_not_yet_recorded",
       "deepBaScopeIsolationFixed": true,
       "deepBaScopeIsolationRegressionTestsPassed": 20
     },
@@ -425,6 +431,24 @@
       "spreadsheetSpikeOwnerAccepted": true,
       "excelDesktopManualAcceptanceRecorded": false,
       "implementationHead": "1292fd71209dcfeb6d23c9b4a618d5ff081f7714"
+    },
+    "advancedSqlIde": {
+      "contextualCompletion": true,
+      "implementationHead": "6d895de57ca42ae0ac530424416bfc2cd741e65e",
+      "cursorContexts": [
+        "qualified_column",
+        "table",
+        "column",
+        "post_source",
+        "generic"
+      ],
+      "aliasQualifiedColumns": true,
+      "fullDocumentSourceResolution": true,
+      "stringAndCommentSuppression": true,
+      "schemaSuggestionLicensingBoundaryPreserved": true,
+      "maxSuggestions": 300,
+      "focusedTestsPassed": 12,
+      "advancedRegressionTestsPassed": 58
     }
   }
 }

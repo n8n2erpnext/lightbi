@@ -426,3 +426,8 @@ Native Excel Pivot work changes no private control-plane source; CP remains exac
 Diagnostics now report generation `g-2026-08-31-next-005`, exact CP commit `c251fb1...`, schema status `current`, expected `061_integrations_delivery`, pending migrations `[]`, and worker status `healthy` with the same generation and commit. Trust remains correctly `blocked_pending_phase2a_freeze`. The explicit NEXT-vs-production environment verifier passes all 8 compared writable/isolation keys. The former `next-001` worker-generation mismatch is closed; no DB heartbeat was fabricated and no migration was required for this frontend/Core feature generation.
 
 Production `5174` and its persistence were not restarted, migrated or modified. Formal owner UAT/promotion and Trust Phase 2A remain separate gates.
+
+
+## 29. NEXT-006 Advanced IDE runtime identity
+
+The Advanced SQL completion change is Core/frontend-only; private control-plane source remains exact `c251fb1ee981a529c33335d25d3ada4e6ea9d23f`. Canonical Internal CP port `5274` and its worker were restarted with generation `g-2026-08-31-next-006` using the existing isolated Internal environment. Diagnostics report exact CP commit `c251fb1...`, schema `061_integrations_delivery` current with zero pending migrations, and a healthy worker on the same `next-006` generation and commit. No production CP process, database or Redis endpoint was restarted or migrated.
