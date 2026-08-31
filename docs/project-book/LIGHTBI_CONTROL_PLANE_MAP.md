@@ -431,3 +431,9 @@ Production `5174` and its persistence were not restarted, migrated or modified. 
 ## 29. NEXT-006 Advanced IDE runtime identity
 
 The Advanced SQL completion change is Core/frontend-only; private control-plane source remains exact `c251fb1ee981a529c33335d25d3ada4e6ea9d23f`. Canonical Internal CP port `5274` and its worker were restarted with generation `g-2026-08-31-next-006` using the existing isolated Internal environment. Diagnostics report exact CP commit `c251fb1...`, schema `061_integrations_delivery` current with zero pending migrations, and a healthy worker on the same `next-006` generation and commit. No production CP process, database or Redis endpoint was restarted or migrated.
+
+## 30. NEXT-009 Internal CP/worker lifecycle reconciliation
+
+The Advanced/Easy round-trip fix changes no private control-plane source; CP remains exact `c251fb1ee981a529c33335d25d3ada4e6ea9d23f`. During the final `g-2026-08-31-next-009` cutover, the temporary manually launched CP API and worker were terminated and replaced by the already-defined user-systemd units `lightbi-control-plane-next.service` and `lightbi-control-plane-next-worker.service`. Both units load the existing isolated Internal environment; only the safe generation/commit/channel/port identity keys were updated. Database, Redis, encryption/session secrets and release credentials were not changed.
+
+Runtime diagnostics report channel `internal`, generation `g-2026-08-31-next-009`, exact CP commit `c251fb1...`, schema `061_integrations_delivery` current with no pending migrations, and a healthy worker heartbeat carrying the same generation/commit. Trust remains `blocked_pending_phase2a_freeze`. Production CP `5174` and production persistence remained continuously present and were not restarted, migrated or modified.
