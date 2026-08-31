@@ -1,12 +1,13 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
+import { generateKeyPairSync, sign as signBytes, type KeyObject } from 'node:crypto';
 import test from 'node:test';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { canonicalText, sha256Hex } from './canonical.js';
+import { canonicalText, canonicalizeSignedPayload, sha256Hex } from './canonical.js';
 import { entitlementPayloadV1Schema, installationCertificatePayloadV1Schema, issuerKeysetPayloadV1Schema, proPackagePayloadV1Schema, releasePayloadV1Schema } from './schemas.js';
 import type { RootPinV1 } from './types.js';
-import { validateKeysetProgression, verifyEd25519Signature, verifyEntitlementEnvelope, verifyInstallationCertificateEnvelope, verifyIssuerKeysetEnvelope, verifyProPackageEnvelope, verifyReleaseEnvelope } from './verify.js';
+import { validateEntitlementProgression, validateKeysetProgression, verifyEd25519Signature, verifyEntitlementEnvelope, verifyInstallationCertificateEnvelope, verifyIssuerKeysetEnvelope, verifyProPackageEnvelope, verifyReleaseEnvelope } from './verify.js';
 
 const vectorDir = resolve(dirname(fileURLToPath(import.meta.url)), '../vectors');
 const load = (name: string) => JSON.parse(readFileSync(resolve(vectorDir, name), 'utf8'));
@@ -14,6 +15,14 @@ const envelope = (vector: any) => ({ schema: 1, kid: vector.payload.kid, payload
 const keysetV1 = load('keyset-v1.json');
 const keysetEnvelopeV1 = envelope(keysetV1);
 const rootPin: RootPinV1 = { schema: 1, kid: keysetV1.payload.kid, algorithm: 'Ed25519', public_key: keysetV1.public_key, status: 'configured', minimum_keyset_version: 1 };
+
+function rawEd25519PublicKey(key: KeyObject): string {
+  const der = Buffer.from(key.export({ type:'spki', format:'der' }));
+  return der.subarray(-32).toString('base64url');
+}
+function signedEnvelope(payload: Record<string, unknown>, privateKey: KeyObject) {
+  return { schema:1, kid:String(payload.kid), payload, signature:signBytes(null, canonicalizeSignedPayload(payload), privateKey).toString('base64url') };
+}
 
 test('all TEST-ONLY vectors freeze canonical UTF-8, SHA-256 and Ed25519 signatures', () => {
   const vectors = ['keyset-v1.json', 'keyset-v1-equivocation.json', 'keyset-v2-revoked-ent-rel.json', 'release-v1.json', 'installation-v1.json', 'entitlement-account-pro-v1.json', 'entitlement-business-v1.json', 'pro-package-v1.json'];
@@ -53,18 +62,46 @@ test('keyset progression prevents rollback and same-version equivocation', () =>
   const second = verifyIssuerKeysetEnvelope({ envelope: envelope(secondVector), rootPin, previousState: first.state, at: new Date('2026-09-15T00:00:00Z') });
   assert.equal(second.state.keysetVersion, 2);
   assert.doesNotThrow(() => verifyIssuerKeysetEnvelope({ envelope: keysetEnvelopeV1, rootPin, previousState: first.state, at: new Date('2026-09-15T00:00:00Z') }));
-  assert.throws(() => validateKeysetProgression({ keysetVersion: 2, payloadDigest: 'x'.repeat(64), issuedAt: first.state.issuedAt }, first.state), /issued_at_not_monotonic/);
+  assert.throws(() => validateKeysetProgression({ keysetVersion: 2, payloadDigest: 'a'.repeat(64), issuedAt: first.state.issuedAt }, first.state), /issued_at_not_monotonic/);
   assert.throws(() => verifyIssuerKeysetEnvelope({ envelope: keysetEnvelopeV1, rootPin, previousState: second.state, at: new Date('2026-09-15T00:00:00Z') }), /rollback/);
+  assert.throws(() => verifyIssuerKeysetEnvelope({ envelope:keysetEnvelopeV1, rootPin, previousState:{ ...first.state, keysetVersion:0 } as any, at:new Date('2026-09-15T00:00:00Z') }), /invalid_keyset_trust_state/);
   const equivocation = load('keyset-v1-equivocation.json');
   assert.throws(() => verifyIssuerKeysetEnvelope({ envelope: envelope(equivocation), rootPin, previousState: first.state, at: new Date('2026-09-15T00:00:00Z') }), /equivocation/);
+});
+
+test('root/issuer key material is separated and issuer signing windows are half-open', () => {
+  const root = generateKeyPairSync('ed25519');
+  const rel = generateKeyPairSync('ed25519');
+  const rootPublic = rawEd25519PublicKey(root.publicKey);
+  const relPublic = rawEd25519PublicKey(rel.publicKey);
+  const ephemeralRoot: RootPinV1 = { schema:1, kid:'ephemeral-root', algorithm:'Ed25519', public_key:rootPublic, status:'configured', minimum_keyset_version:1 };
+  const reusedPayload = { schema:1, kid:'ephemeral-root', keyset_version:1, issued_at:'2026-01-01T00:00:00Z', expires_at:'2030-01-01T00:00:00Z', keys:[{ kid:'rel-reused', purpose:'release', algorithm:'Ed25519', public_key:rootPublic, status:'active', not_before:'2026-01-01T00:00:00Z', not_after:'2027-01-01T00:00:00Z' }] };
+  assert.throws(() => verifyIssuerKeysetEnvelope({ envelope:signedEnvelope(reusedPayload, root.privateKey), rootPin:ephemeralRoot, previousState:null, at:new Date('2026-06-01T00:00:00Z') }), /root_key_reused_as_issuer/);
+
+  const keyset = { schema:1, kid:'ephemeral-root', keyset_version:1, issued_at:'2026-01-01T00:00:00Z', expires_at:'2030-01-01T00:00:00Z', keys:[{ kid:'rel-half-open', purpose:'release', algorithm:'Ed25519', public_key:relPublic, status:'active', not_before:'2026-01-01T00:00:00Z', not_after:'2026-02-01T00:00:00Z' }] };
+  const release = { schema:1, kid:'rel-half-open', product_id:'digital.thaiduy.lightbi', release_id:'boundary_release', version:'1.0.0', channel:'stable', platform:'windows', architecture:'x86_64', artifact_name:'LightBI.exe', artifact_sha256:'a'.repeat(64), artifact_size:1, created_at:'2026-02-01T00:00:00Z' };
+  assert.throws(() => verifyReleaseEnvelope({ envelope:signedEnvelope(release, rel.privateKey), keysetEnvelope:signedEnvelope(keyset, root.privateKey), rootPin:ephemeralRoot, previousKeysetState:null, at:new Date('2026-02-02T00:00:00Z') }), /key_outside_signing_validity/);
+});
+
+test('entitlement trust state prevents subject rollback and same-version equivocation', () => {
+  const account = load('entitlement-account-pro-v1.json');
+  assert.throws(() => verifyEntitlementEnvelope({ envelope:envelope(account), keysetEnvelope:keysetEnvelopeV1, rootPin, previousKeysetState:null, at:new Date('2028-01-01T00:00:00Z') } as any), /previous_entitlement_state_required/);
+  const first = verifyEntitlementEnvelope({ previousEntitlementState:null, envelope:envelope(account), keysetEnvelope:keysetEnvelopeV1, rootPin, previousKeysetState:null, at:new Date('2028-01-01T00:00:00Z') });
+  assert.equal(first.entitlementState.entitlementVersion, account.payload.entitlement_version);
+  assert.doesNotThrow(() => verifyEntitlementEnvelope({ previousEntitlementState:first.entitlementState, envelope:envelope(account), keysetEnvelope:keysetEnvelopeV1, rootPin, previousKeysetState:null, at:new Date('2028-01-01T00:00:00Z') }));
+  assert.throws(() => verifyEntitlementEnvelope({ previousEntitlementState:{ ...first.entitlementState, entitlementVersion:first.entitlementState.entitlementVersion + 1 }, envelope:envelope(account), keysetEnvelope:keysetEnvelopeV1, rootPin, previousKeysetState:null, at:new Date('2028-01-01T00:00:00Z') }), /entitlement_rollback_detected/);
+  assert.throws(() => validateEntitlementProgression({ ...first.entitlementState, payloadDigest:'f'.repeat(64) }, first.entitlementState), /entitlement_equivocation_detected/);
+  assert.throws(() => validateEntitlementProgression({ ...first.entitlementState, entitlementVersion:first.entitlementState.entitlementVersion + 1 }, first.entitlementState), /entitlement_issued_at_not_monotonic/);
+  assert.throws(() => validateEntitlementProgression({ ...first.entitlementState, subject:{ type:'account', id:'other-account' }, entitlementVersion:first.entitlementState.entitlementVersion + 1, issuedAt:'2026-08-30T05:17:00Z' }, first.entitlementState), /entitlement_subject_state_mismatch/);
+  assert.throws(() => validateEntitlementProgression(first.entitlementState, { ...first.entitlementState, payloadDigest:'bad' } as any), /invalid_entitlement_trust_state/);
 });
 
 test('purpose-specific verification follows the full root → issuer → payload chain', () => {
   const release = load('release-v1.json'); const installation = load('installation-v1.json'); const account = load('entitlement-account-pro-v1.json'); const business = load('entitlement-business-v1.json'); const pro = load('pro-package-v1.json');
   assert.equal(verifyReleaseEnvelope({ envelope: envelope(release), keysetEnvelope: keysetEnvelopeV1, rootPin, previousKeysetState: null, at: new Date('2026-09-15T00:00:00Z') }).payload.version, '0.9.2-beta.7');
   assert.equal(verifyInstallationCertificateEnvelope({ envelope: envelope(installation), keysetEnvelope: keysetEnvelopeV1, rootPin, previousKeysetState: null, at: new Date('2026-09-15T00:00:00Z') }).payload.certificate_id, 'cert_vector_001');
-  assert.equal(verifyEntitlementEnvelope({ envelope: envelope(account), keysetEnvelope: keysetEnvelopeV1, rootPin, previousKeysetState: null, at: new Date('2028-01-01T00:00:00Z') }).payload.tier, 'pro');
-  assert.equal(verifyEntitlementEnvelope({ envelope: envelope(business), keysetEnvelope: keysetEnvelopeV1, rootPin, previousKeysetState: null, at: new Date('2028-01-01T00:00:00Z') }).payload.tier, 'business');
+  assert.equal(verifyEntitlementEnvelope({ previousEntitlementState: null, envelope: envelope(account), keysetEnvelope: keysetEnvelopeV1, rootPin, previousKeysetState: null, at: new Date('2028-01-01T00:00:00Z') }).payload.tier, 'pro');
+  assert.equal(verifyEntitlementEnvelope({ previousEntitlementState: null, envelope: envelope(business), keysetEnvelope: keysetEnvelopeV1, rootPin, previousKeysetState: null, at: new Date('2028-01-01T00:00:00Z') }).payload.tier, 'business');
   assert.equal(verifyProPackageEnvelope({ envelope: envelope(pro), keysetEnvelope: keysetEnvelopeV1, rootPin, previousKeysetState: null, at: new Date('2026-09-15T00:00:00Z') }).payload.package_id, 'pkg_vector_001');
 });
 
@@ -84,10 +121,10 @@ test('issuer validity is checked at signing time while payload validity is check
   const business = load('entitlement-business-v1.json');
   const entKey = keysetV1.payload.keys.find((key: any) => key.kid === business.payload.kid);
   assert.equal(entKey.status, 'expired'); assert.equal(entKey.not_after, '2027-01-01T00:00:00Z');
-  assert.doesNotThrow(() => verifyEntitlementEnvelope({ envelope: envelope(business), keysetEnvelope: keysetEnvelopeV1, rootPin, previousKeysetState: null, at: new Date('2028-01-01T00:00:00Z') }));
-  assert.throws(() => verifyEntitlementEnvelope({ envelope: envelope(business), keysetEnvelope: keysetEnvelopeV1, rootPin, previousKeysetState: null, at: new Date('2029-08-29T05:17:00Z') }), /entitlement_expired/);
+  assert.doesNotThrow(() => verifyEntitlementEnvelope({ previousEntitlementState: null, envelope: envelope(business), keysetEnvelope: keysetEnvelopeV1, rootPin, previousKeysetState: null, at: new Date('2028-01-01T00:00:00Z') }));
+  assert.throws(() => verifyEntitlementEnvelope({ previousEntitlementState: null, envelope: envelope(business), keysetEnvelope: keysetEnvelopeV1, rootPin, previousKeysetState: null, at: new Date('2029-08-29T05:17:00Z') }), /entitlement_expired/);
   const revoked = load('keyset-v2-revoked-ent-rel.json');
-  assert.throws(() => verifyEntitlementEnvelope({ envelope: envelope(business), keysetEnvelope: envelope(revoked), rootPin, previousKeysetState: null, at: new Date('2028-01-01T00:00:00Z') }), /revoked_key/);
+  assert.throws(() => verifyEntitlementEnvelope({ previousEntitlementState: null, envelope: envelope(business), keysetEnvelope: envelope(revoked), rootPin, previousKeysetState: null, at: new Date('2028-01-01T00:00:00Z') }), /revoked_key/);
 });
 
 test('purpose lifecycles reject not-yet-valid, expired and future payloads', () => {
@@ -99,10 +136,10 @@ test('purpose lifecycles reject not-yet-valid, expired and future payloads', () 
 
 test('tampering, malformed signatures and purpose confusion fail closed', () => {
   const business = load('entitlement-business-v1.json');
-  assert.throws(() => verifyEntitlementEnvelope({ envelope: { ...envelope(business), payload: { ...business.payload, seat_limit: 25 } }, keysetEnvelope: keysetEnvelopeV1, rootPin, previousKeysetState: null, at: new Date('2028-01-01T00:00:00Z') }), /invalid_signature/);
-  assert.throws(() => verifyEntitlementEnvelope({ envelope: { ...envelope(business), signature: 'abc' }, keysetEnvelope: keysetEnvelopeV1, rootPin, previousKeysetState: null, at: new Date('2028-01-01T00:00:00Z') }));
+  assert.throws(() => verifyEntitlementEnvelope({ previousEntitlementState: null, envelope: { ...envelope(business), payload: { ...business.payload, seat_limit: 25 } }, keysetEnvelope: keysetEnvelopeV1, rootPin, previousKeysetState: null, at: new Date('2028-01-01T00:00:00Z') }), /invalid_signature/);
+  assert.throws(() => verifyEntitlementEnvelope({ previousEntitlementState: null, envelope: { ...envelope(business), signature: 'abc' }, keysetEnvelope: keysetEnvelopeV1, rootPin, previousKeysetState: null, at: new Date('2028-01-01T00:00:00Z') }));
   const release = load('release-v1.json');
-  assert.throws(() => verifyEntitlementEnvelope({ envelope: envelope(release), keysetEnvelope: keysetEnvelopeV1, rootPin, previousKeysetState: null, at: new Date('2026-09-15T00:00:00Z') }));
+  assert.throws(() => verifyEntitlementEnvelope({ previousEntitlementState: null, envelope: envelope(release), keysetEnvelope: keysetEnvelopeV1, rootPin, previousKeysetState: null, at: new Date('2026-09-15T00:00:00Z') }));
 });
 
 test('vector payload schemas parse independently of signature verification', () => {

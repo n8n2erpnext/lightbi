@@ -3,8 +3,8 @@ import { createPublicKey, verify } from 'node:crypto';
 import type { ZodType } from 'zod';
 import { canonicalizeSignedPayload, sha256Hex } from './canonical.js';
 import { requireConfiguredRootPin } from './root-pin.js';
-import { entitlementPayloadV1Schema, installationCertificatePayloadV1Schema, issuerKeysetPayloadV1Schema, proPackagePayloadV1Schema, releasePayloadV1Schema, signedEnvelopeSchema, signedIssuerKeysetEnvelopeSchema } from './schemas.js';
-import type { EntitlementPayloadV1, InstallationCertificatePayloadV1, IssuerKeysetPayloadV1, KeyPurpose, KeysetTrustStateV1, ProPackagePayloadV1, ReleasePayloadV1, RootPinV1, VerifiedIssuerKeysetV1, VerifiedTrustPayload } from './types.js';
+import { entitlementPayloadV1Schema, entitlementTrustStateV1Schema, installationCertificatePayloadV1Schema, issuerKeysetPayloadV1Schema, keysetTrustStateV1Schema, proPackagePayloadV1Schema, releasePayloadV1Schema, signedEnvelopeSchema, signedIssuerKeysetEnvelopeSchema } from './schemas.js';
+import type { EntitlementPayloadV1, EntitlementTrustStateV1, InstallationCertificatePayloadV1, IssuerKeysetPayloadV1, KeyPurpose, KeysetTrustStateV1, ProPackagePayloadV1, ReleasePayloadV1, RootPinV1, VerifiedEntitlementV1, VerifiedIssuerKeysetV1, VerifiedTrustPayload } from './types.js';
 
 const SPKI_ED25519_PREFIX = Buffer.from('302a300506032b6570032100', 'hex');
 
@@ -25,11 +25,35 @@ function requireValidVerificationTime(at: Date): number {
   return value;
 }
 
+function parseKeysetTrustState(value: KeysetTrustStateV1): KeysetTrustStateV1 {
+  try { return keysetTrustStateV1Schema.parse(value); } catch { throw new Error('invalid_keyset_trust_state'); }
+}
+
+function parseEntitlementTrustState(value: EntitlementTrustStateV1): EntitlementTrustStateV1 {
+  try { return entitlementTrustStateV1Schema.parse(value); } catch { throw new Error('invalid_entitlement_trust_state'); }
+}
+
 export function validateKeysetProgression(next: KeysetTrustStateV1, previous?: KeysetTrustStateV1): void {
+  const current = parseKeysetTrustState(next);
   if (!previous) return;
-  if (next.keysetVersion < previous.keysetVersion) throw new Error('keyset_rollback_detected');
-  if (next.keysetVersion === previous.keysetVersion && next.payloadDigest !== previous.payloadDigest) throw new Error('keyset_equivocation_detected');
-  if (next.keysetVersion > previous.keysetVersion && Date.parse(next.issuedAt) <= Date.parse(previous.issuedAt)) throw new Error('keyset_issued_at_not_monotonic');
+  const prior = parseKeysetTrustState(previous);
+  if (current.keysetVersion < prior.keysetVersion) throw new Error('keyset_rollback_detected');
+  if (current.keysetVersion === prior.keysetVersion && current.payloadDigest !== prior.payloadDigest) throw new Error('keyset_equivocation_detected');
+  if (current.keysetVersion > prior.keysetVersion && Date.parse(current.issuedAt) <= Date.parse(prior.issuedAt)) throw new Error('keyset_issued_at_not_monotonic');
+}
+
+function sameSubject(left: EntitlementTrustStateV1['subject'], right: EntitlementTrustStateV1['subject']): boolean {
+  return left.type === right.type && left.id === right.id;
+}
+
+export function validateEntitlementProgression(next: EntitlementTrustStateV1, previous?: EntitlementTrustStateV1): void {
+  const current = parseEntitlementTrustState(next);
+  if (!previous) return;
+  const prior = parseEntitlementTrustState(previous);
+  if (!sameSubject(current.subject, prior.subject)) throw new Error('entitlement_subject_state_mismatch');
+  if (current.entitlementVersion < prior.entitlementVersion) throw new Error('entitlement_rollback_detected');
+  if (current.entitlementVersion === prior.entitlementVersion && current.payloadDigest !== prior.payloadDigest) throw new Error('entitlement_equivocation_detected');
+  if (current.entitlementVersion > prior.entitlementVersion && Date.parse(current.issuedAt) <= Date.parse(prior.issuedAt)) throw new Error('entitlement_issued_at_not_monotonic');
 }
 
 function verifyIssuerKeysetInternal({ envelope, rootPin, previousState, minimumAcceptedVersion, at = new Date() }: { envelope: unknown; rootPin?: RootPinV1; previousState: KeysetTrustStateV1 | null; minimumAcceptedVersion?: number; at?: Date }): { payload: IssuerKeysetPayloadV1; state: KeysetTrustStateV1 } {
@@ -38,6 +62,7 @@ function verifyIssuerKeysetInternal({ envelope, rootPin, previousState, minimumA
   const parsed = signedIssuerKeysetEnvelopeSchema.parse(envelope);
   if (parsed.kid !== root.kid) throw new Error('root_kid_mismatch');
   if (!verifyEd25519Signature(parsed.payload, root.public_key, parsed.signature)) throw new Error('invalid_root_signature');
+  if (parsed.payload.keys.some((key) => key.public_key === root.public_key)) throw new Error('root_key_reused_as_issuer');
   const now = requireValidVerificationTime(at); const issued = Date.parse(parsed.payload.issued_at); const expires = Date.parse(parsed.payload.expires_at);
   if (now < issued) throw new Error('keyset_not_yet_valid');
   if (now >= expires) throw new Error('keyset_expired');
@@ -61,7 +86,7 @@ function verifyIssuerPayload<T>({ envelope, payloadSchema, keyset, purpose, sign
   if (key.purpose !== purpose) throw new Error('wrong_key_purpose');
   if (key.status === 'revoked') throw new Error('revoked_key');
   const signed = Date.parse(signedAt(parsed.payload));
-  if (signed < Date.parse(key.not_before) || signed > Date.parse(key.not_after)) throw new Error('key_outside_signing_validity');
+  if (signed < Date.parse(key.not_before) || signed >= Date.parse(key.not_after)) throw new Error('key_outside_signing_validity');
   if (!verifyEd25519Signature(parsed.payload, key.public_key, parsed.signature)) throw new Error('invalid_signature');
   return parsed.payload;
 }
@@ -83,8 +108,18 @@ export function verifyReleaseEnvelope(input: { envelope: unknown; keysetEnvelope
 export function verifyInstallationCertificateEnvelope(input: { envelope: unknown; keysetEnvelope: unknown; rootPin?: RootPinV1; previousKeysetState: KeysetTrustStateV1 | null; minimumAcceptedVersion?: number; at?: Date }): VerifiedTrustPayload<InstallationCertificatePayloadV1> {
   const at = input.at ?? new Date(); return verifyWithKeyset({ ...input, at, payloadSchema: installationCertificatePayloadV1Schema, purpose: 'attestation', signedAt: (payload) => payload.issued_at, lifecycle: (payload, current) => assertCurrentWindow(payload.issued_at, payload.expires_at, current, 'installation_certificate') });
 }
-export function verifyEntitlementEnvelope(input: { envelope: unknown; keysetEnvelope: unknown; rootPin?: RootPinV1; previousKeysetState: KeysetTrustStateV1 | null; minimumAcceptedVersion?: number; at?: Date }): VerifiedTrustPayload<EntitlementPayloadV1> {
-  const at = input.at ?? new Date(); return verifyWithKeyset({ ...input, at, payloadSchema: entitlementPayloadV1Schema, purpose: 'entitlement', signedAt: (payload) => payload.issued_at, lifecycle: (payload, current) => assertCurrentWindow(payload.issued_at, payload.valid_until, current, 'entitlement') });
+export function verifyEntitlementEnvelope(input: { envelope: unknown; keysetEnvelope: unknown; rootPin?: RootPinV1; previousKeysetState: KeysetTrustStateV1 | null; previousEntitlementState: EntitlementTrustStateV1 | null; minimumAcceptedVersion?: number; at?: Date }): VerifiedEntitlementV1 {
+  if (input.previousEntitlementState === undefined) throw new Error('previous_entitlement_state_required');
+  const at = input.at ?? new Date();
+  const verified = verifyWithKeyset({ ...input, at, payloadSchema: entitlementPayloadV1Schema, purpose: 'entitlement', signedAt: (payload) => payload.issued_at, lifecycle: (payload, current) => assertCurrentWindow(payload.issued_at, payload.valid_until, current, 'entitlement') });
+  const entitlementState: EntitlementTrustStateV1 = {
+    subject: { ...verified.payload.subject },
+    entitlementVersion: verified.payload.entitlement_version,
+    payloadDigest: sha256Hex(canonicalizeSignedPayload(verified.payload)),
+    issuedAt: verified.payload.issued_at,
+  };
+  validateEntitlementProgression(entitlementState, input.previousEntitlementState ?? undefined);
+  return { ...verified, entitlementState };
 }
 export function verifyProPackageEnvelope(input: { envelope: unknown; keysetEnvelope: unknown; rootPin?: RootPinV1; previousKeysetState: KeysetTrustStateV1 | null; minimumAcceptedVersion?: number; at?: Date }): VerifiedTrustPayload<ProPackagePayloadV1> {
   const at = input.at ?? new Date(); return verifyWithKeyset({ ...input, at, payloadSchema: proPackagePayloadV1Schema, purpose: 'pro_package', signedAt: (payload) => payload.issued_at, lifecycle: (payload, current) => assertNotFuture(payload.issued_at, current, 'pro_package_issued_in_future') });

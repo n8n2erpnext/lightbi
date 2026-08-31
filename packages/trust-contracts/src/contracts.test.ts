@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { canonicalText } from './canonical.js';
 import { compare as compareSemVer } from 'semver';
-import { entitlementPayloadV1Schema, installationCertificatePayloadV1Schema, issuerKeyRecordV1Schema, issuerKeysetPayloadV1Schema, organizationClaimTokenRecordV1Schema, proPackagePayloadV1Schema, releasePayloadV1Schema, signedEntitlementEnvelopeSchema } from './schemas.js';
+import { entitlementPayloadV1Schema, installationCertificatePayloadV1Schema, issuerKeyRecordV1Schema, issuerKeysetPayloadV1Schema, organizationClaimTokenRecordV1Schema, proPackagePayloadV1Schema, releasePayloadV1Schema, semverSchema, signedEntitlementEnvelopeSchema } from './schemas.js';
 
 const publicKey = Buffer.alloc(32, 7).toString('base64url');
 const signature = Buffer.alloc(64, 9).toString('base64url');
@@ -29,12 +29,21 @@ test('subject and tier semantics are exact', () => {
   assert.equal(entitlementPayloadV1Schema.safeParse({ ...entitlement, subject: { type: 'account', id: 'acct_demo' }, tier: 'pro', seat_limit: undefined }).success, true);
   assert.equal(entitlementPayloadV1Schema.safeParse({ ...entitlement, subject: { type: 'account', id: 'acct_demo' }, tier: 'business', seat_limit: undefined }).success, false);
   assert.equal(entitlementPayloadV1Schema.safeParse({ ...entitlement, subject: { type: 'organization', id: 'org_demo' }, tier: 'pro', seat_limit: undefined }).success, false);
+  assert.equal(entitlementPayloadV1Schema.safeParse({ ...entitlement, source: 'commerce' }).success, true);
+  assert.equal(entitlementPayloadV1Schema.safeParse({ ...entitlement, source: 'stripe' }).success, false);
+  assert.equal(entitlementPayloadV1Schema.safeParse({ ...entitlement, source: 'paddle' }).success, false);
+  assert.equal(entitlementPayloadV1Schema.safeParse({ ...entitlement, source: 'partner' }).success, false);
 });
 
 test('duplicate capabilities, unknown fields and invalid purpose fail before signing', () => {
   assert.equal(entitlementPayloadV1Schema.safeParse({ ...entitlement, capabilities: ['dashboard', 'dashboard'] }).success, false);
   assert.equal(entitlementPayloadV1Schema.safeParse({ ...entitlement, surprise: true }).success, false);
   assert.equal(issuerKeyRecordV1Schema.safeParse({ kid: 'issuer-1', purpose: 'anything', algorithm: 'Ed25519', public_key: publicKey, status: 'active', not_before: entitlement.issued_at, not_after: entitlement.valid_until }).success, false);
+  const duplicateMaterial = [
+    { kid:'issuer-rel', purpose:'release', algorithm:'Ed25519', public_key:publicKey, status:'active', not_before:'2026-01-01T00:00:00Z', not_after:'2030-01-01T00:00:00Z' },
+    { kid:'issuer-ent', purpose:'entitlement', algorithm:'Ed25519', public_key:publicKey, status:'active', not_before:'2026-01-01T00:00:00Z', not_after:'2030-01-01T00:00:00Z' },
+  ];
+  assert.equal(issuerKeysetPayloadV1Schema.safeParse({ schema:1, kid:'test-root-v1', keyset_version:1, issued_at:'2026-01-01T00:00:00Z', expires_at:'2030-01-01T00:00:00Z', keys:duplicateMaterial }).success, false);
   assert.equal(signedEntitlementEnvelopeSchema.safeParse({ schema: 1, kid: 'other-kid', payload: entitlement, signature }).success, false);
 });
 
@@ -73,6 +82,11 @@ test('release and Pro contracts enforce SemVer, basename artifacts and compatibi
   const release = { schema: 1 as const, kid: 'test-rel-v1', product_id: 'digital.thaiduy.lightbi', release_id: 'release_demo', version: '1.0.0-beta.1', channel: 'beta' as const, platform: 'windows' as const, architecture: 'x86_64', artifact_name: 'LightBI.exe', artifact_sha256: 'a'.repeat(64), artifact_size: 1, created_at: entitlement.issued_at };
   assert.equal(releasePayloadV1Schema.safeParse(release).success, true);
   assert.equal(releasePayloadV1Schema.safeParse({ ...release, version: '01.0.0' }).success, false);
+  assert.equal(semverSchema.safeParse('v1.2.3').success, false);
+  assert.equal(semverSchema.safeParse(' 1.2.3 ').success, false);
+  assert.equal(semverSchema.safeParse('1.2.3+build.7').success, true);
+  assert.equal(releasePayloadV1Schema.safeParse({ ...release, channel:'stable', version:'1.0.0-beta.1' }).success, false);
+  assert.equal(releasePayloadV1Schema.safeParse({ ...release, channel:'stable', version:'1.0.0' }).success, true);
   assert.equal(releasePayloadV1Schema.safeParse({ ...release, artifact_name: '../LightBI.exe' }).success, false);
   assert.equal(releasePayloadV1Schema.safeParse({ ...release, artifact_name: 'dir\\LightBI.exe' }).success, false);
   assert.equal(releasePayloadV1Schema.safeParse({ ...release, artifact_name: 'LightBI\n.exe' }).success, false);
@@ -98,6 +112,6 @@ test('installation certificate declares Ed25519 device signing keys while one-ti
   assert.equal(organizationClaimTokenRecordV1Schema.safeParse({ ...claim, expires_at: claim.issued_at }).success, false);
   assert.equal(organizationClaimTokenRecordV1Schema.safeParse({ ...claim, expires_at: '2026-08-29T23:59:59Z' }).success, false);
   assert.equal(organizationClaimTokenRecordV1Schema.safeParse({ ...claim, consumed_at: '2026-08-29T23:59:59Z' }).success, false);
-  assert.equal(organizationClaimTokenRecordV1Schema.safeParse({ ...claim, consumed_at: claim.expires_at }).success, true);
+  assert.equal(organizationClaimTokenRecordV1Schema.safeParse({ ...claim, consumed_at: claim.expires_at }).success, false);
   assert.equal(organizationClaimTokenRecordV1Schema.safeParse({ ...claim, consumed_at: '2026-09-01T00:00:01Z' }).success, false);
 });
