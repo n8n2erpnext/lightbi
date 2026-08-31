@@ -174,7 +174,7 @@ export const Investigation: React.FC = () => {
         sampleRowCount: rows.length,
       },
       registeredAt: new Date().toISOString(),
-    });
+    }, { activate: false });
   }, [registerAdvancedSource, session]);
 
   useEffect(() => {

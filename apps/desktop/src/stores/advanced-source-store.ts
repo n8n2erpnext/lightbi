@@ -31,7 +31,7 @@ type AdvancedSourceState = {
   sources: AdvancedWorkspaceSource[];
   activeSourceId: string | null;
   pendingEasyReturnSourceId: string | null;
-  registerSource: (source: AdvancedWorkspaceSource) => void;
+  registerSource: (source: AdvancedWorkspaceSource, options?: { activate?: boolean }) => void;
   setActiveSource: (sourceId: string | null) => void;
   removeSource: (sourceId: string) => void;
   requestEasyReturn: (sourceId: string) => void;
@@ -42,9 +42,9 @@ export const useAdvancedSourceStore = create<AdvancedSourceState>((set, get) => 
   sources: [],
   activeSourceId: null,
   pendingEasyReturnSourceId: null,
-  registerSource: source => set(state => ({
+  registerSource: (source, options) => set(state => ({
     sources: [source, ...state.sources.filter(item => item.id !== source.id)].slice(0, 12),
-    activeSourceId: source.id,
+    activeSourceId: options?.activate === false ? state.activeSourceId : source.id,
   })),
   setActiveSource: activeSourceId => set({ activeSourceId }),
   removeSource: sourceId => set(state => ({
