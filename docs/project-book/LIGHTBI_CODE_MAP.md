@@ -741,7 +741,7 @@ The broader historical Vitest universe is currently not a clean public-main gate
 
 ## 45. NEXT generation identity is build/runtime provenance, not data authority
 
-The successor manifest/diagnostics foundation entered at `ef2434ac01ec6a817f4a04f58d16ef41c447b9dc`; the current Internal successor head is `d82bdb625b69755af51f42c01e2a35fe00731c28`. Early lineage through `b1b4027` added the internal gateway, governed Excel perspective identity and its UAT regression; later code-map sections record the additional feature/refactor and source-continuity heads through NEXT-012. `LightBIGenerationManifestV1` binds parent generation, core/source/control-plane commits, CP schema target, app/test-pack version, trust state and internal infrastructure scopes.
+The successor manifest/diagnostics foundation entered at `ef2434ac01ec6a817f4a04f58d16ef41c447b9dc`; the current Internal Core successor head is `d96011bfe2d3deca8424eac15f6d3e7d39cf7a97`, paired with private CP `f1879c65453cdf0bc9798257e462264f0424e907` in NEXT-015. Early lineage through `b1b4027` added the internal gateway, governed Excel perspective identity and its UAT regression; later code-map sections record the additional feature/refactor and source-continuity heads through NEXT-012. `LightBIGenerationManifestV1` binds parent generation, core/source/control-plane commits, CP schema target, app/test-pack version, trust state and internal infrastructure scopes.
 
 This metadata answers **which successor code is intended to run**. It does not grant semantic, entitlement or execution authority. Canonical data/analysis truth continues to come from the existing governed source/execution boundaries, and `AnalysisSessionIdentityV1` remains revalidation-only metadata.
 
@@ -754,7 +754,7 @@ At Core NEXT `a8ebc27c9d4284665855d7a0a0150c629e44f86e`, oversized production ow
 
 Frontend page ownership follows the same rule. `Home.tsx` delegates canonical multi-source build orchestration and presentation derivation; `Investigation.tsx` delegates persistence and chart/dashboard actions; `HomeWorkspaceView.tsx` delegates source-understanding/presentation helpers. The question-fit engine is split into shared constructors, business-lens construction and the main generator. The understanding-core question engine is a facade over shared signal context plus ordered primary/secondary candidate builders. Business Brain separates analysis from guidance; BA decision separates insight/scoring analysis from brief orchestration. These splits do **not** create new analytical authorities.
 
-The repository-wide executable guard is `scripts/check-source-module-size.mjs`, exposed as `pnpm test:source-module-size` and run by public CI. It checks production `.ts/.tsx/.rs` modules, excludes test/spec corpus, warns at 800 lines and fails above 1,000. At the current NEXT-012 checkpoint it scans 470 production modules with zero violations. A future AI must not add an allowlist or `part1/part2` style split merely to bypass this gate; an exception requires explicit owner approval and a documented architectural reason.
+The repository-wide executable guard is `scripts/check-source-module-size.mjs`, exposed as `pnpm test:source-module-size` and run by public CI. It checks production `.ts/.tsx/.rs` modules, excludes test/spec corpus, warns at 800 lines and fails above 1,000. At the current NEXT-015 checkpoint it scans 471 production modules with zero violations. A future AI must not add an allowlist or `part1/part2` style split merely to bypass this gate; an exception requires explicit owner approval and a documented architectural reason.
 
 
 ## 47. Fresh NEXT runtime proof topology
@@ -825,3 +825,25 @@ Core `d82bdb625b69755af51f42c01e2a35fe00731c28` makes `canonical_perspective_col
 `advanced-source-store.ts` owns `getAdvancedEasyReturnDataset(...)` and `canReturnAdvancedSourceToEasy(...)`. The latter allows a multi-table source to expose `Return to Easy` when a valid continuity envelope exists; table count is no longer treated as a proxy for authority. `activateAdvancedSourceForEasyDataset(...)` prefers an explicit source ID and refuses to activate an ID that is not registered.
 
 `useAdvancedResultTransferActions.ts` continues to distinguish continuity from derivation. For a six-table governed collection carrying an Easy snapshot, Return consumes that snapshot and navigates home without querying, materializing, merging or creating a synthetic Investigation dataset. All six source files, their roles/periods and governed relationship remain represented by the restored collection object. Reopening Advanced resolves the same collection source and six DuckDB tables. This is navigation/workspace continuity only; canonical multi-source analytical authority still resides in the existing collection, relationship and governed execution contracts.
+
+
+## 56. NEXT-013 recovery, demo, documentation, and routing owners
+
+Core `00e6d89c9465fd75bd72a824f48dabbdc83495b6` adds no second semantic engine. `home-demo-scenarios.ts` owns only deterministic synthetic teaching-file construction and scenario metadata; `Home.tsx` remains orchestration and sends those files through the same local intake/canonical understanding path as ordinary files. Demo suppression in the workspace-session hook prevents built-in teaching files from becoming persisted user-session authority.
+
+`account-api.ts` now owns the runtime-specific fetch credential mode: browser account calls may carry HttpOnly session cookies, while native account calls use Bearer/vault state and omit browser credentials. This is a transport/security distinction only; entitlement/account authority remains in the control plane. `project-source-file-api.ts` remains the durable full-source recovery adapter, and its native regression freezes the Windows embedded-Core origin instead of introducing a native-only persistence model.
+
+Internal gateway routing is owned by `scripts/internal-gateway-routing.mjs` plus `run-internal-gateway.mjs`. The helper deliberately recognizes only `/docs*` and `/distribution-assets/*` as public CP surfaces. `/distribution-api/*` is handled separately as the desktop API proxy; `/api/*` remains Core; `/distribution` is deliberately not a CP mount. Ports are still deployment context rather than product architecture.
+
+Private CP now advances through `497ffbf9592faddefec72280a4ddd244efab648c` and `f1879c65453cdf0bc9798257e462264f0424e907`. Documentation remains owned by `src/domains/documentation/schema.ts` and `documentation-service.ts`, while `server.ts` remains composition/routing. TypeScript under `src/web/app.ts`, `src/web/docs.ts` and `src/web/hero-demo.ts` is the editable web source; `public/app.js`, `public/docs.js` and `public/hero-demo.js` are compiled outputs. The content model remains schema-backed by `062_documentation_content`; public fallback content is read-only and admin CRUD remains under existing admin authority.
+
+Current source-size governance scans 471 production modules with zero hard-limit violations. These additions therefore preserve the anti-bloat rule established during NEXT modularization.
+
+
+## 57. Distribution first-paint ownership for secondary routes
+
+CP `f1879c65453cdf0bc9798257e462264f0424e907` closes a browser-only routing presentation gap without creating new route authority. `public/index.html` is still the common static shell, but a synchronous `<head>` guard classifies only `/docs`, `/docs/*`, `/account` and `/admin` before `<body>` is parsed. While that marker exists, CSS suppresses only the distribution homepage's direct `.nav`, `#top` and footer children. The module router in `src/web/app.ts` / compiled `public/app.js` still decides which Docs, Account or Admin renderer executes and replaces the body normally.
+
+This boundary exists specifically because serving a full homepage body and then awaiting route-specific API work allowed one browser frame of incorrect Home content to paint. The guard is therefore a first-paint presentation contract, not a navigation-delay hack, redirect, second SPA router, authentication authority or SEO authority. `server.test.mjs` freezes the requirement that the guard occurs before `<body>` for Docs index/detail, Admin and Account. Headless Chromium additionally samples visibility every animation frame and requires the homepage hero never to become visible on Docs, Account, Admin or Admin Accounts navigation.
+
+NEXT-015 runtime identity is Core `d96011b...`, CP `f1879c6...`, schema 062, manifest SHA-256 `110d7503bed7b93a849a9e453fa82bb9fc4be7be4aad30670fb69e04f719e97a`; CP full tests are 128/128 and the selected Core gates remain 11/39 plus 3/10 demo/session regressions.

@@ -351,7 +351,7 @@ Core NEXT CI validates the generation manifest builder, the 4-fixture/14-scenari
 
 Owner UAT is intentionally separate from automated CI. A green CI run proves the successor satisfies machine contracts; promotion still requires user-visible acceptance against one immutable `generation_id`. This complements rather than hides the known historical full-suite taxonomy debt recorded in section 19.
 
-The 2026-08-30 latest-head revalidation checkpoint at Core `b1b40277e5e6e8389bc13c2c75f439fdb861600c` passed generation contract 3/3, UAT-pack validation, release/public-boundary gates, generation diagnostics 8/8, desktop build, and the exact selected governed command from `.github/workflows/ci.yml` at **11 files / 39 tests**. Private control-plane head `c251fb1ee981a529c33335d25d3ada4e6ea9d23f` passed strict typecheck/build and **116/116** tests. Those source gates did not by themselves prove the already-running artifacts: at that historical checkpoint the ordinary desktop build had cleared `dist/lightbi-generation.json`, producing an SPA fallback. Later runtime sections document deliberate manifest restoration and exact generation reconciliation; NEXT-012 currently serves a real immutable generation manifest.
+The 2026-08-30 latest-head revalidation checkpoint at Core `b1b40277e5e6e8389bc13c2c75f439fdb861600c` passed generation contract 3/3, UAT-pack validation, release/public-boundary gates, generation diagnostics 8/8, desktop build, and the exact selected governed command from `.github/workflows/ci.yml` at **11 files / 39 tests**. Private control-plane head `c251fb1ee981a529c33335d25d3ada4e6ea9d23f` passed strict typecheck/build and **116/116** tests. Those source gates did not by themselves prove the already-running artifacts: at that historical checkpoint the ordinary desktop build had cleared `dist/lightbi-generation.json`, producing an SPA fallback. Later runtime sections document deliberate manifest restoration and exact generation reconciliation; NEXT-012 subsequently served a real immutable generation manifest; NEXT-013 introduced governed docs, NEXT-014 hardened docs/demos/admin, and NEXT-015 now supersedes them as the current Internal candidate after the secondary-route first-paint regression fix.
 
 ## 21. NEXT-009 round-trip regression and runtime gate
 
@@ -374,3 +374,27 @@ NEXT-012 adds a collection-scale browser acceptance in addition to the machine s
 At Core `d82bdb625b69755af51f42c01e2a35fe00731c28`, focused Advanced continuity tests pass 10/10. The exact selected governed CI command remains 11 files / 39 tests; generation contract 3/3, generation diagnostics 8/8, UAT manifest 4 fixtures / 14 scenarios / 3 levels, release contract 3/3, public boundary, desktop build and source-size 470 modules / zero violations all pass. The immutable runtime manifest is `g-2026-08-31-next-012`, SHA-256 `0f8ec8f1178a6298a69f297f5254ecb81603fea248615e4a7bfdd092f3bc9264`.
 
 A green collection replay proves continuity of the Internal test workspace; it does not authorize promotion. Explicit owner UAT and release acceptance remain required, and production `5172/5173/5174` is outside this test lifecycle.
+
+
+## 24. NEXT-013 documentation/demo/native-recovery acceptance gate
+
+NEXT-013 pins Core `00e6d89c9465fd75bd72a824f48dabbdc83495b6`, CP `d1a7d439fe43d8678626e377c2853558bc50c8d6`, schema `062_documentation_content`, and immutable manifest SHA-256 `c54df6e84f3fe90fe0ca99f9a0107d39c4b7b839ccc47ce6cd6bcbf23e400e7d`.
+
+Exact-head machine gates pass: CP TypeScript/build/full compiled-runtime **122/122**, Core desktop production build, selected governed CI **11 files / 39 tests**, release contract 3/3, public/private boundary, generation contract 3/3, generation diagnostics 8/8, owner UAT manifest 4 fixtures / 14 scenarios / 3 levels, and source-size 471 modules / zero violations. Focused exact-head native/demo regressions pass for native credential mode, native embedded source-vault routing, and deterministic demo scenarios. The known jsdom `Blob/File.text()` environment debt in an unrelated persisted-copy test is not reclassified as a product failure or hidden by changing the gate.
+
+Browser acceptance on the reconciled Internal generation proves all four starter chips execute real canonical flows. Separate Chromium checks prove CP root distribution, direct CP `/docs`, and gateway `/docs`. Real Internal admin documentation CRUD was exercised against migrated schema 062 and the temporary test page was deleted after create/read/update/delete proof.
+
+Schema mutation remains explicit: migration 062 was inspected as the only pending Internal migration, applied through the migration CLI, then re-read as 15/15 applied with zero pending. Runtime API/worker startup does not auto-apply schema. Production persistence was not migrated.
+
+One pre-existing CP tooling debt was observed during deployment verification: the `verify:runtime` package script points at a stale compiled path while the verifier is emitted under `dist/platform/runtime/`. This does not invalidate the green CP build/test/runtime diagnostics, but the script path should be repaired in a dedicated tooling change rather than silently worked around forever.
+
+Packaged Windows native E2E is not claimed by these Linux/VPS gates. The native recovery/auth code paths have contract proof, while owner acceptance on the actual Windows Tauri package remains an explicit release-quality gate.
+
+
+## 25. NEXT-014/NEXT-015 portal-hardening and first-paint gates
+
+NEXT-014 pins Core `d96011bfe2d3deca8424eac15f6d3e7d39cf7a97`, CP `497ffbf9592faddefec72280a4ddd244efab648c`, schema `062_documentation_content`, and manifest SHA-256 `2878d3b6893db87940ad82d76070da92a34bc546a024ff45ad373a55b917fe05`. Exact-machine proof added the focused demo/session suite **3 files / 10 tests** to the existing Core gate while retaining selected governed **11 files / 39 tests**, generation 3/3, diagnostics 8/8, UAT 4 fixtures / 14 scenarios / 3 levels, release/public-boundary, desktop build and source-size 471/0. CP at `497ffbf...` passed **127/127** compiled-runtime tests. Live browser acceptance covered docs/sidebar/screenshots/Internal SEO, real admin login/Docs controls and demo-history ephemerality.
+
+The owner's screen recording then supplied a new UI acceptance criterion: secondary distribution routes must never visibly paint the homepage before their own renderer takes control. CP `f1879c65453cdf0bc9798257e462264f0424e907` adds a deterministic first-paint guard plus a server regression covering `/docs`, `/docs/getting-started`, `/admin` and `/account`. Full CP proof increases to **128/128**. A Chromium animation-frame observer independently reports `homeFlash=false` for Docs index, Docs detail, Account login, Admin login, authenticated Admin and Admin Accounts.
+
+Because the CP source SHA changed, the fix was not folded into immutable NEXT-014. It was cut as `g-2026-08-31-next-015`, preserving Core `d96011b...`, moving CP to `f1879c6...`, and producing manifest SHA-256 `110d7503bed7b93a849a9e453fa82bb9fc4be7be4aad30670fb69e04f719e97a`. Final exact-head Core CI was rerun after the cut and remains green. Production 5172/5173/5174 and production data remained outside this deployment/test lifecycle.

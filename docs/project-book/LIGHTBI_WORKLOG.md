@@ -1233,3 +1233,48 @@ Private control-plane Git access was re-verified and an authoritative clone now 
 - Exact six-file browser E2E PASS: `Executive overview -> Advanced CURRENT 6 tables/9,000 rows -> Return to Easy -> 6 sources/3 roles/2 periods/Runtime Governed -> Open Advanced again -> same CURRENT 6 tables/9,000 rows`.
 - Verification PASS: focused continuity 10/10; selected governed CI 11 files / 39 tests; generation 3/3; diagnostics 8/8; UAT pack 4 fixtures / 14 scenarios / 3 levels; release 3/3; public boundary; desktop build; source-size 470 modules / 0 violations.
 - Built/reconciled `g-2026-08-31-next-012`, Core `d82bdb6...`, CP `c251fb1...`, schema current/pending 0, healthy matching worker, manifest SHA-256 `0f8ec8f1178a6298a69f297f5254ecb81603fea248615e4a7bfdd092f3bc9264`. Production remained untouched; formal owner UAT/promotion is still not recorded.
+
+
+## 2026-08-31 — NEXT-013 native recovery/auth, executable starter demos, and distribution docs
+
+### Problems reproduced
+
+Owner testing carried forward two native Beta defects and two product-onboarding gaps: saved native history could ask for source reselection, native Account login/create-account failed while the live web path worked, Home suggestion chips could lead to a blank/no-data path, and distribution had no governed user-documentation portal with admin editing.
+
+### Architecture decisions
+
+The session-history fix did not weaken `canonical_full_file_runtime_source_required`. NEXT keeps using the durable project source-file vault for new sessions; legacy history with no full source bytes must reselect once. Native account transport was split from web-cookie transport: native uses Bearer/vault state with browser credentials omitted, while web keeps HttpOnly-cookie semantics. CORS was not widened.
+
+Starter suggestions became synthetic teaching files that enter normal intake/canonical/runtime execution. Demo files are not persisted to Session History. Four owner-facing examples are executable: branch revenue, employee attendance, receivables aging, and a two-report period comparison.
+
+Documentation was implemented inside the private control plane with migration `062_documentation_content`, a dedicated documentation domain, public reads, admin CRUD, safe Markdown rendering and a NetBird-like three-column documentation experience. The distribution homepage links to `/docs`.
+
+### Router correction
+
+An initial Internal gateway implementation incorrectly invented `/distribution`. Owner review caught the error. The corrected contract is `5274/` distribution root, `5274/docs` docs, and no `/distribution` route. Gateway `5273/docs` proxies docs only; `/distribution-api` remains an API bridge. Regression tests explicitly forbid `/distribution` from becoming a CP public mount again.
+
+### Verification and deployment
+
+Core final head is `00e6d89c9465fd75bd72a824f48dabbdc83495b6`; CP final head is `d1a7d439fe43d8678626e377c2853558bc50c8d6`. Both are pushed. Internal migration status moved from one pending migration to all 15 applied/pending 0. `g-2026-08-31-next-013` was rebuilt after the router correction; archived and served generation manifests are byte-identical with SHA-256 `c54df6e84f3fe90fe0ca99f9a0107d39c4b7b839ccc47ce6cd6bcbf23e400e7d`.
+
+CP/worker were deployed through their existing user-systemd service tree, not ad-hoc process replacement. Browser acceptance passes direct distribution root, direct `/docs`, gateway `/docs`, and all four demo scenarios. Admin documentation CRUD passes create/public-read/update/delete/public-404. CP is 122/122 green; selected governed Core is 39/39; release/generation/diagnostics/UAT/build/source-size gates are green.
+
+### Remaining limits
+
+No packaged Windows binary was available to this VPS automation, so actual Windows native Account and legacy/new-session recovery acceptance remains an owner/native-platform gate. Legacy sessions with irretrievably missing file bytes are intentionally not repaired from representative samples. The Core 5272 process was not forcibly restarted because the tool safety boundary blocked termination; the rebuilt Core server binary is byte-identical to the running binary and the feature changes do not alter Rust server code. Production 5172/5173/5174 and production persistence remain untouched. Phase 2A remains unfrozen; signer/attestation work remains blocked.
+
+
+## 2026-08-31 — NEXT-014 docs/admin/demo-history hardening
+
+- Core advanced from NEXT-013 through `720cad3` (stronger deterministic demos and explicit ephemeral Investigation persistence) to `d96011bfe2d3deca8424eac15f6d3e7d39cf7a97` (purge legacy synthetic demo sessions). Private CP advanced to `497ffbf9592faddefec72280a4ddd244efab648c`, adding expanded built-in docs, screenshot media, docs sync, SEO/machine-readable surfaces and TypeScript web source ownership.
+- Cut/deployed `g-2026-08-31-next-014`, parent `bootstrap-current-8d59d05f575373e6`, schema 062, manifest SHA-256 `2878d3b6893db87940ad82d76070da92a34bc546a024ff45ad373a55b917fe05`. Rust Core binary SHA-256 is `0c9d37ae54b874e85ff3ad2ce792875a318e72c32146ad9e340383d5831d3d60`.
+- Internal docs sync created 11 pages and updated 5. `me@thaiduy.digital` was upserted as Internal admin; real browser login/session PASS. Docs sidebar/image/SEO/Admin acceptance PASS. Starter demo replay retained zero demo sessions and kept 24 real sessions unchanged.
+- Final exact-head proof: Core selected governed 11 files / 39 tests; demo/session 3 files / 10 tests; generation 3/3; diagnostics 8/8; UAT 4/14/3; release/public-boundary/build/source-size 471/0. CP 127/127. Production 5172/5173/5174 and Trust/signer remained untouched.
+
+## 2026-08-31 — NEXT-015 secondary-route homepage flash fixed
+
+- Owner recording reproduced a one-frame distribution Home splash when entering Docs/Admin/Account. Root cause was the shared full `public/index.html` homepage shell painting before asynchronous route-specific body replacement; route/proxy authority itself was already correct.
+- CP `f1879c65453cdf0bc9798257e462264f0424e907` adds a synchronous `<head>` first-paint guard for `/docs*`, `/account` and `/admin`, hiding only direct homepage `.nav`, `#top` and footer nodes. New `server.test.mjs` regression requires that guard to appear before `<body>` on all secondary routes. Focused test PASS and full CP suite is now 128/128.
+- Preserved immutable NEXT-014 and cut `g-2026-08-31-next-015` instead of rewriting provenance. NEXT-015 keeps Core `d96011b...`, moves CP to `f1879c6...`, schema 062, app version `0.9.2-beta.7-next.15`, manifest SHA-256 `110d7503bed7b93a849a9e453fa82bb9fc4be7be4aad30670fb69e04f719e97a`.
+- Reconciled only Internal 5272/5273/5274 + worker. Diagnostics show exact next-015/CP commit, schema current/pending 0 and healthy matching worker. Browser animation-frame acceptance reports `homeFlash=false` on Docs index/detail, Account login, Admin login, authenticated Admin and Admin Accounts.
+- Final Core governed gates were rerun after the cut and remain 11/39 plus demo/session 3/10, generation 3/3, diagnostics 8/8, UAT 4/14/3, release/public-boundary/build/source-size 471/0. Production 5172/5173/5174 remained continuously present and untouched; Phase 2A remains unfrozen.
