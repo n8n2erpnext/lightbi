@@ -1,14 +1,14 @@
 {
   "schemaVersion": "lightbi.project-book.source-catalog.v1",
   "snapshotDate": "2026-08-31",
-  "generatedAt": "2026-08-31T12:57:39.489193+00:00",
+  "generatedAt": "2026-08-31T16:41:56.222632+00:00",
   "branch": "docs/project-library-cleanup-20260829",
-  "head": "b3c21e674bca77b34422071b234e94cb982489f3",
+  "head": "bf1b23385e46f7f7ac84e3ea7d82957c80c94ee1",
   "worktreeDirty": true,
   "scope": "All project Markdown and JSON outside dependency/build/project-book directories.",
   "counts": {
-    "total": 931,
-    "markdown": 514,
+    "total": 932,
+    "markdown": 515,
     "json": 417,
     "docsJson": 354,
     "references": 0
@@ -10118,8 +10118,8 @@
     {
       "path": "docs/history/agent/plans/AGENT_PLAN_ROAD_TO_1_0_2026-08-31.md",
       "extension": ".md",
-      "bytes": 8440,
-      "sha256": "4ce53882960fa9e2037dbb1f9d6b5432112b04a988492a079a41be5ae149dabb",
+      "bytes": 9866,
+      "sha256": "fdb7b1744f53f0e298dcf1385fbc90c7f01893236c5cae34120d611a5410c143",
       "suggestedCategory": "historical-provenance",
       "title": "LightBI Road to 1.0 Execution Plan — 2026-08-31"
     },
@@ -10169,6 +10169,14 @@
       "sha256": "828d8be7013a209345ba587cb667055b2a832adfb2257342eafa0cf6a3787791",
       "suggestedCategory": "historical-provenance",
       "title": "AUDIT: Home Simplification (UX-5)"
+    },
+    {
+      "path": "docs/history/audits/AUDIT-next018-commerce-security-infra-2026-08-31.md",
+      "extension": ".md",
+      "bytes": 9109,
+      "sha256": "4abcc016a12a6493a33a1fc1b298ea9a92eb3ab90d86babc30a37edc68c4c3d1",
+      "suggestedCategory": "historical-provenance",
+      "title": "NEXT-018 Commerce, Marketing, Admin Security and Infrastructure Audit"
     },
     {
       "path": "docs/history/audits/AUDIT-real-file-preview-validation.md",

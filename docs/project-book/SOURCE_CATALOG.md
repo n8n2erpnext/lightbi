@@ -627,6 +627,7 @@ For old paths, use [`PATH_MIGRATION_INDEX.md`](./PATH_MIGRATION_INDEX.md) and [`
 
 - [`.vscode/extensions.json`](../../.vscode/extensions.json) — extensions.json; `61` bytes; SHA-256 `7d472e1afa21dea992300ab327ab1173613bad4f2762eba0876d38e59abe91c4`
 - [`.vscode/settings.json`](../../.vscode/settings.json) — settings.json; `662` bytes; SHA-256 `66139a0776a8e60ff816d7d727afa0ca5f3a227e6511f5e14b8d4e62f3b60b08`
+- [`docs/history/audits/AUDIT-next018-commerce-security-infra-2026-08-31.md`](../../docs/history/audits/AUDIT-next018-commerce-security-infra-2026-08-31.md) — NEXT-018 Commerce, Marketing, Admin Security and Infrastructure Audit; `9109` bytes; SHA-256 `4abcc016a12a6493a33a1fc1b298ea9a92eb3ab90d86babc30a37edc68c4c3d1`
 - [`execute_resp.json`](../../execute_resp.json) — execute_resp.json; `226` bytes; SHA-256 `94550382ef3a159f7e549fc2232c117a4d796596ed9a86e3e89cd02bbf5767fb`
 - [`import_resp.json`](../../import_resp.json) — import_resp.json; `620` bytes; SHA-256 `a421ada087f560ca45b17a2b018afa53043e233f10ec751c63e85e6019cffca1`
 - [`inv_execute.json`](../../inv_execute.json) — inv_execute.json; `258` bytes; SHA-256 `b87cf844c24c9e99839c06f6f595f9b584dcb949072f47296d6722d7237f434f`
@@ -667,7 +668,7 @@ For old paths, use [`PATH_MIGRATION_INDEX.md`](./PATH_MIGRATION_INDEX.md) and [`
 
 ## historical-provenance
 
-- [`docs/history/agent/plans/AGENT_PLAN_ROAD_TO_1_0_2026-08-31.md`](../../docs/history/agent/plans/AGENT_PLAN_ROAD_TO_1_0_2026-08-31.md) — LightBI Road to 1.0 Execution Plan — 2026-08-31; `8440` bytes; SHA-256 `4ce53882960fa9e2037dbb1f9d6b5432112b04a988492a079a41be5ae149dabb`
+- [`docs/history/agent/plans/AGENT_PLAN_ROAD_TO_1_0_2026-08-31.md`](../../docs/history/agent/plans/AGENT_PLAN_ROAD_TO_1_0_2026-08-31.md) — LightBI Road to 1.0 Execution Plan — 2026-08-31; `9866` bytes; SHA-256 `fdb7b1744f53f0e298dcf1385fbc90c7f01893236c5cae34120d611a5410c143`
 - [`docs/history/LEGACY_ROOT_INDEX.md`](../../docs/history/LEGACY_ROOT_INDEX.md) — Legacy Root Documentation Index; `33743` bytes; SHA-256 `e662adb190bc6e9d9b598d4d1c421423376931d186aafb53c15cc4f9d25a3385`
 - [`docs/history/README.md`](../../docs/history/README.md) — Historical Documentation; `1764` bytes; SHA-256 `58060865d3938943ef9a415e39457280481d8d9b78a3f4ceb7e017a60c343052`
 - [`docs/history/agent/contracts/CODEX_QA_ORCHESTRATION_CONTRACT.md`](../../docs/history/agent/contracts/CODEX_QA_ORCHESTRATION_CONTRACT.md) — Codex QA Orchestration Contract; `5244` bytes; SHA-256 `3926f159280b943b64689f2846aab12d166e9ebe05d8a4d8192819eeeeb0b69b`

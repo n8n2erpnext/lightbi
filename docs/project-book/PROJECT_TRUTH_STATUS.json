@@ -634,7 +634,7 @@
     }
   },
   "roadTo1_0Execution": {
-    "status": "r1_p5_audit_passed_awaiting_owner_freeze",
+    "status": "r1_p5_audit_passed_r1_p6_hold_next018_ready_for_owner_infra_approval",
     "startedDate": "2026-08-31",
     "baseline": {
       "core": "451c9b6afe0a95bce5bce473a4a84c8b918f42cd",
@@ -692,8 +692,28 @@
     },
     "paymentProviderDecision": {
       "provider": "paddle",
-      "status": "selected_not_configured",
+      "status": "paddle_sandbox_source_ready_unconfigured",
       "decidedDate": "2026-08-31"
+    },
+    "next018Candidate": {
+      "status": "source_verified_awaiting_owner_infra_approval",
+      "core": "57304194e7c21d3e036c6dcb1793914f97c74118",
+      "controlPlane": "1868e3db5039b3b08df63afe7bee9f7bd6f12125",
+      "activeInternalStill": "g-2026-08-31-next-017",
+      "candidateMigrations": [
+        "063_commerce_runtime_settings",
+        "064_commerce_catalog_discounts_announcements",
+        "065_marketing_newsletter_mail",
+        "066_admin_security_mfa_passkeys"
+      ],
+      "coreReleaseSuitePassed": true,
+      "controlPlaneTests": "157/157",
+      "commerceMailRedisSecurityTests": "20/20",
+      "adminSecurityTests": "4/4",
+      "dependencyAudit": "no_known_vulnerabilities",
+      "infraAudit": "docs/history/audits/AUDIT-next018-commerce-security-infra-2026-08-31.md",
+      "infraMutationApproved": false,
+      "deployed": false
     }
   },
   "roadTo1_0": {
@@ -704,7 +724,9 @@
     "r1p4": "identity_contract_candidate_trademark_policy_and_final_ui_open",
     "r1p5": "independent_audit_passed_awaiting_owner_freeze",
     "phase2aFreezeApproved": false,
-    "trust1SignerAllowed": false
+    "trust1SignerAllowed": false,
+    "r1p6": "owner_hold",
+    "commerceTrack": "next018_source_verified_awaiting_infra_approval"
   },
   "optionalCommerceRevenueMirror": {
     "provider": "paddle",
@@ -722,6 +744,8 @@
     "printFormat": "LightBI Purchase Invoice",
     "notificationEnabled": false,
     "renderProofPdfBytes": 24004,
-    "liveE2eComplete": false
+    "liveE2eComplete": false,
+    "next018SourceReady": true,
+    "infraApprovalRequired": true
   }
 }

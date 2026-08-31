@@ -95,3 +95,11 @@ The active immutable Internal successor is `g-2026-08-31-next-017`, parent `g-20
 - [`../../../project-book/LIGHTBI_CONTROL_PLANE_MAP.md`](../../../project-book/LIGHTBI_CONTROL_PLANE_MAP.md) — private CP ownership and absent Trust-1 authority.
 - [`../../../project-book/LIGHTBI_CI_CD_MAP.md`](../../../project-book/LIGHTBI_CI_CD_MAP.md) — release/publication truth.
 - [`../../../project-book/LIBRARY_RULES.md`](../../../project-book/LIBRARY_RULES.md) — documentation governance.
+
+## NEXT-018 commerce/security source checkpoint — awaiting infrastructure approval
+
+R1-P6 remains explicitly HOLD by owner decision. A parallel successor candidate closes the commerce/marketing/admin-control work without authorizing Trust Root work. Public Core `57304194e7c21d3e036c6dcb1793914f97c74118` adds the persisted in-app announcement inbox. Private CP `1868e3db5039b3b08df63afe7bee9f7bd6f12125` adds provider-neutral catalog/discount authority, Paddle sandbox and dormant Stripe support, maintenance controls, managed SMTP/newsletter delivery, Redis marketing coordination, and separate Admin TOTP/Passkey authority.
+
+Machine proof is green: Core `test:release-1.0` passes 11 governed files / 39 tests; final CP authoritative suite passes 157/157; focused commerce/mail/Redis adversarial tests pass 20/20; focused Admin Security passes 4/4; production dependency audit reports no known vulnerabilities. Exact findings and proposed deployment mutations are recorded in [`../../audits/AUDIT-next018-commerce-security-infra-2026-08-31.md`](../../audits/AUDIT-next018-commerce-security-infra-2026-08-31.md).
+
+Candidate migrations `063`–`066`, new encryption keys, service restarts, reverse-proxy changes, Paddle sandbox notification setup, n8n activation and sandbox E2E remain **NOT DEPLOYED / NOT AUTHORIZED** until the owner approves the infrastructure-impact report. Active Internal remains immutable NEXT-017.

@@ -1327,3 +1327,11 @@ R1-P0 documentation/integrity closure verified 1,243 local links with zero missi
 - Follow-up `10de4da8e551a46f93f7b62985a0a6e611581b8e` binds signed REL/ATT/PRO `product_id` exactly to `digital.thaiduy.lightbi`. Both commits were pushed to PR #4 branch `codex/phase2-trust-contracts`.
 - Fresh detached final audit at `10de4da...` PASS: release 3/3, public boundary, Trust TS 22/22, Rust 5/5, desktop build, governed regressions 7 files / 26 tests, plus adversarial provider/product/state/root probes. GitHub CI run `33397723902` is success at the same head.
 - PR #4 remains Draft/Open/unmerged. Technical verdict is `AUDIT PASS / AWAITING OWNER FREEZE`; `phase2aFreezeApproved=false`. No Root, issuer private key, signer, attestation, signed ENT or PRO authority was created.
+
+## 2026-08-31 — NEXT-018 commerce/marketing/Admin-security source candidate verified; infrastructure approval pending
+
+- Public Core `57304194e7c21d3e036c6dcb1793914f97c74118` adds a persistent native announcement inbox; `test:release-1.0` passes 11/39 plus build/generation/UAT gates.
+- Private CP `1868e3db5039b3b08df63afe7bee9f7bd6f12125` adds secure Paddle/Stripe catalog authority, public-vs-code discount separation/history, maintenance/checkout controls, managed SMTP/newsletter, Redis marketing throttle, and separate Admin TOTP/Passkey/security-version authority.
+- Final CP suite 157/157 PASS; focused commerce/mail/Redis 20/20; Admin Security 4/4; dependency audit reports no known vulnerabilities; no real credential material found in source.
+- Read-only infrastructure audit plus owner Oracle Security List evidence confirms public cloud-edge ingress is limited to 80/443 and required NetBird/VPN UDP. Direct host application binds are therefore defense-in-depth debt, not current Internet exposure.
+- Candidate migrations 063–066, new secrets, service restart, HTTPS sandbox webhook route, Paddle sandbox configuration, n8n activation and E2E remain unperformed pending explicit owner infrastructure approval. R1-P6 remains HOLD and Production remains untouched.
