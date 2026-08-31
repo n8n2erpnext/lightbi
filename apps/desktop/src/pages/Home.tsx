@@ -60,6 +60,8 @@ export const Home: React.FC = () => {
   const { preferences } = useDisplayPreferences();
   const navigate = useNavigate();
   const [currentDataset, setCurrentDataset] = useState<any>(() => {
+    const advancedReturnDataset = useAdvancedSourceStore.getState().consumeEasyReturnDataset() as any;
+    if (advancedReturnDataset?.status === 'ready') return advancedReturnDataset;
     const transientDataset = getCurrentInvestigationSession()?.workspaceDataset as any;
     return transientDataset?.status === 'ready' ? transientDataset : null;
   });
@@ -784,15 +786,7 @@ export const Home: React.FC = () => {
       });
       canonicalUserOverlay = overlay;
     }
-    registerAdvancedSource(createAdvancedWorkspaceSourceFromFamily({
-      family,
-      sourceName,
-      semanticSample,
-      canonicalSourceBoundary,
-      canonicalUserOverlay,
-    }));
-
-    setCurrentDataset({
+    const readyDataset = {
       status: 'ready',
       file_name: sourceName,
       rows_count: family.totalRows,
@@ -812,7 +806,16 @@ export const Home: React.FC = () => {
       semanticRows: rawSemanticRows,
       analysisRows: rawAnalysisRows,
       previewRows: finalPreviewRows
-    });
+    };
+    registerAdvancedSource(createAdvancedWorkspaceSourceFromFamily({
+      family,
+      sourceName,
+      semanticSample,
+      canonicalSourceBoundary,
+      canonicalUserOverlay,
+      easyReturnDataset: readyDataset,
+    }));
+    setCurrentDataset(readyDataset);
     setDecisionTrustReport(createDecisionTrustReport(family));
 
     handleCancelInspection();

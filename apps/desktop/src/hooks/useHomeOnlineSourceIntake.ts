@@ -47,18 +47,7 @@ export async function applyHomeOnlineSourceInspection(
       datasetId: sourceLabel, columns, semanticRows: rawSemanticRows, semanticSample: selectedSemanticSample,
       profile: selectedCanonicalProfile, file: inspectionResult.file, sheetName: md.default_sheet,
     });
-    if (inspectionResult.file) {
-      deps.registerAdvancedSource({
-        id: advancedSourceId(inspectionResult.sourceType, sourceLabel), name: sourceLabel,
-        sourceType: inspectionResult.sourceType, sourceKind: 'online_link', normalizedUrl: inspectionResult.normalizedUrl,
-        tables: md.is_workbook && md.sheets
-          ? Object.entries(md.sheets).map(([sheetName, sheet]: [string, any]) => ({ id: `0:${sheetName}`, name: sheetName, rowCount: sheet.rows_count, columns: sheet.columns, profiles: sheet.profiles || {}, file: inspectionResult.file!, sheetName }))
-          : [{ id: '0:data', name: 'data', rowCount: rows, columns, profiles, file: inspectionResult.file }],
-        semanticSample: selectedSemanticSample ? { strategy: selectedSemanticSample.strategy, sourceRowCount: selectedSemanticSample.source_row_count, sampleRowCount: selectedSemanticSample.sample_row_count } : undefined,
-        registeredAt: new Date().toISOString(),
-      });
-    }
-    deps.setCurrentDataset({
+    const readyDataset = {
       status: 'ready', file_name: sourceLabel, rows_count: rows, columns, profiles,
       sourceType: inspectionResult.sourceType, normalizedUrl: inspectionResult.normalizedUrl,
       sourceFiles: [{ name: sourceLabel, rows, columns: columns.length, fingerprint: `${inspectionResult.sourceType}:${columns.join('|')}`, url: inspectionResult.normalizedUrl, sheetNames, persistedFile }],
@@ -68,7 +57,20 @@ export async function applyHomeOnlineSourceInspection(
       semanticSample: selectedSemanticSample ? { strategy: selectedSemanticSample.strategy, sourceRowCount: selectedSemanticSample.source_row_count, sampleRowCount: selectedSemanticSample.sample_row_count } : undefined,
       analysisRowScope: md.is_workbook && md.default_sheet && md.sheets ? md.sheets[md.default_sheet]?.analysis_row_scope : md.analysis_row_scope,
       semanticRows: rawSemanticRows, analysisRows: rawAnalysisRows, previewRows: createPreviewRows(rawPreviewRows, columns),
-    });
+    };
+    if (inspectionResult.file) {
+      deps.registerAdvancedSource({
+        id: advancedSourceId(inspectionResult.sourceType, sourceLabel), name: sourceLabel,
+        sourceType: inspectionResult.sourceType, sourceKind: 'online_link', normalizedUrl: inspectionResult.normalizedUrl,
+        tables: md.is_workbook && md.sheets
+          ? Object.entries(md.sheets).map(([sheetName, sheet]: [string, any]) => ({ id: `0:${sheetName}`, name: sheetName, rowCount: sheet.rows_count, columns: sheet.columns, profiles: sheet.profiles || {}, file: inspectionResult.file!, sheetName }))
+          : [{ id: '0:data', name: 'data', rowCount: rows, columns, profiles, file: inspectionResult.file }],
+        semanticSample: selectedSemanticSample ? { strategy: selectedSemanticSample.strategy, sourceRowCount: selectedSemanticSample.source_row_count, sampleRowCount: selectedSemanticSample.sample_row_count } : undefined,
+        easyReturnDataset: readyDataset,
+        registeredAt: new Date().toISOString(),
+      });
+    }
+    deps.setCurrentDataset(readyDataset);
     deps.setWorkspaceState(createWorkspaceUnderstandingState({ type: 'dataset', datasetId: sourceLabel }));
     const trustFamily = familyFromInspectionResult(inspectionResult, sourceLabel);
     deps.setDecisionTrustReport(trustFamily ? createDecisionTrustReport(trustFamily) : null);

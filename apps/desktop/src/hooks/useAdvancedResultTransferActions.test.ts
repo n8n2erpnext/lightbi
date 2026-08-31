@@ -4,7 +4,7 @@ import type { AdvancedQueryResult } from '../lib/advanced-api';
 import { createAdvancedTab } from '../lib/advanced-workspace';
 import { hydrateTab } from '../lib/advanced-workspace-helpers';
 import type { AdvancedFileSession } from '../lib/advanced-file-session';
-import type { AdvancedWorkspaceSource } from '../stores/advanced-source-store';
+import { useAdvancedSourceStore, type AdvancedWorkspaceSource } from '../stores/advanced-source-store';
 
 const mocks = vi.hoisted(() => ({
   createInvestigationSession: vi.fn(),
@@ -79,7 +79,34 @@ function context(overrides: Record<string, unknown> = {}) {
 describe('Advanced full-source return to Easy', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    useAdvancedSourceStore.setState({ sources: [], activeSourceId: null, pendingEasyReturnSourceId: null });
     window.history.replaceState(null, '', '/advanced');
+  });
+
+  it('returns an understood local source to the exact Easy workspace without creating a derived dataset', async () => {
+    const easyReturnDataset = {
+      status: 'ready', file_name: 'orders.csv', rows_count: 1500, columns: ['id'], sourceType: 'local_csv',
+      runtimeDatasetSource: { kind: 'local_files', sourceRowCount: 1500 },
+    };
+    const fileSource: AdvancedWorkspaceSource = {
+      id: 'local:1500', name: 'orders.csv', sourceType: 'local_csv', sourceKind: 'local_file', registeredAt: new Date().toISOString(),
+      tables: [{ id: 'data', name: 'data', rowCount: 1500, columns: ['id'], profiles: {}, file: new File(['id\n1'], 'orders.csv', { type: 'text/csv' }) }],
+      easyReturnDataset,
+    };
+    useAdvancedSourceStore.getState().registerSource(fileSource);
+    const execute = vi.fn();
+    const { value } = context({
+      fileSource,
+      fileSession: { current: { execute, open: vi.fn(), close: vi.fn() } as unknown as AdvancedFileSession },
+    });
+
+    await createAdvancedResultTransferActions(value).returnFullSourceToEasy();
+
+    expect(execute).not.toHaveBeenCalled();
+    expect(mocks.createInvestigationSession).not.toHaveBeenCalled();
+    expect(window.location.pathname).toBe('/');
+    expect(useAdvancedSourceStore.getState().consumeEasyReturnDataset()).toBe(easyReturnDataset);
+    expect(useAdvancedSourceStore.getState().pendingEasyReturnSourceId).toBeNull();
   });
 
   it('materializes every page for a zero-edit 1,500-row local source before the Easy handoff', async () => {

@@ -15,6 +15,7 @@ export function createAdvancedWorkspaceSourceFromFamily(args: {
   semanticSample: AdvancedSourceSemanticSample;
   canonicalSourceBoundary?: CanonicalSourceBoundaryV1;
   canonicalUserOverlay?: CanonicalUserOverlayV1;
+  easyReturnDataset?: unknown;
   registeredAt?: string;
 }): AdvancedWorkspaceSource {
   const first = args.family.files.find(item => item.result.status === 'accessible');
@@ -52,6 +53,7 @@ export function createAdvancedWorkspaceSourceFromFamily(args: {
     semanticSample: args.semanticSample,
     canonicalSourceBoundary: args.canonicalSourceBoundary,
     canonicalUserOverlay: args.canonicalUserOverlay,
+    easyReturnDataset: args.easyReturnDataset,
     registeredAt: args.registeredAt ?? new Date().toISOString(),
   };
 }

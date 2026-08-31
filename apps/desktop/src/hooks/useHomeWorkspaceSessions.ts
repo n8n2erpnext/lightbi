@@ -327,16 +327,7 @@ export function useHomeWorkspaceSessions(deps: HomeWorkspaceSessionDependencies)
           sourceRowCount: family.totalRows,
           sampleRowCount: rawSemanticRows.length,
         };
-        if (canonicalSourceBoundary) {
-          deps.registerAdvancedSource(createAdvancedWorkspaceSourceFromFamily({
-            family,
-            sourceName: restoredDataset.file_name || family.name,
-            semanticSample,
-            canonicalSourceBoundary,
-            canonicalUserOverlay: parseCanonicalUserOverlay(restoredDataset.canonicalUserOverlay) ?? undefined,
-          }));
-        }
-        deps.setCurrentDataset(attachAnalysisIdentityRevalidation({
+        const readyDataset = attachAnalysisIdentityRevalidation({
           ...restoredDataset, status: canonicalSourceBoundary ? 'ready' : 'stale', file_name: restoredDataset.file_name || family.name,
           rows_count: family.totalRows, columns: family.columns, profiles: family.profiles,
           sourceType: family.files[0]?.result.status === 'accessible' ? family.files[0].result.sourceType : restoredDataset.sourceType,
@@ -347,7 +338,18 @@ export function useHomeWorkspaceSessions(deps: HomeWorkspaceSessionDependencies)
           analysisRowScope: rawAnalysisRows.length >= family.totalRows ? 'full' : 'not_retained',
           semanticRows: rawSemanticRows, analysisRows: rawAnalysisRows,
           previewRows: createPreviewRows(rawPreviewRows, family.columns), restoredFromSessionId: session.id,
-        }, savedAnalysisIdentity));
+        }, savedAnalysisIdentity);
+        if (canonicalSourceBoundary) {
+          deps.registerAdvancedSource(createAdvancedWorkspaceSourceFromFamily({
+            family,
+            sourceName: restoredDataset.file_name || family.name,
+            semanticSample,
+            canonicalSourceBoundary,
+            canonicalUserOverlay: parseCanonicalUserOverlay(restoredDataset.canonicalUserOverlay) ?? undefined,
+            easyReturnDataset: readyDataset,
+          }));
+        }
+        deps.setCurrentDataset(readyDataset);
         resetAnalysisState(session.id);
         setSessionStatus(canonicalSourceBoundary
           ? 'Session opened from the complete saved source file.'

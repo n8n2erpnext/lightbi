@@ -23,20 +23,25 @@ export type AdvancedWorkspaceSource = {
   semanticSample?: { strategy: string; sourceRowCount: number; sampleRowCount: number };
   canonicalSourceBoundary?: CanonicalSourceBoundaryV1;
   canonicalUserOverlay?: CanonicalUserOverlayV1;
+  easyReturnDataset?: unknown;
   registeredAt: string;
 };
 
 type AdvancedSourceState = {
   sources: AdvancedWorkspaceSource[];
   activeSourceId: string | null;
+  pendingEasyReturnSourceId: string | null;
   registerSource: (source: AdvancedWorkspaceSource) => void;
   setActiveSource: (sourceId: string | null) => void;
   removeSource: (sourceId: string) => void;
+  requestEasyReturn: (sourceId: string) => void;
+  consumeEasyReturnDataset: () => unknown | null;
 };
 
-export const useAdvancedSourceStore = create<AdvancedSourceState>(set => ({
+export const useAdvancedSourceStore = create<AdvancedSourceState>((set, get) => ({
   sources: [],
   activeSourceId: null,
+  pendingEasyReturnSourceId: null,
   registerSource: source => set(state => ({
     sources: [source, ...state.sources.filter(item => item.id !== source.id)].slice(0, 12),
     activeSourceId: source.id,
@@ -45,7 +50,15 @@ export const useAdvancedSourceStore = create<AdvancedSourceState>(set => ({
   removeSource: sourceId => set(state => ({
     sources: state.sources.filter(item => item.id !== sourceId),
     activeSourceId: state.activeSourceId === sourceId ? null : state.activeSourceId,
+    pendingEasyReturnSourceId: state.pendingEasyReturnSourceId === sourceId ? null : state.pendingEasyReturnSourceId,
   })),
+  requestEasyReturn: sourceId => set({ pendingEasyReturnSourceId: sourceId }),
+  consumeEasyReturnDataset: () => {
+    const sourceId = get().pendingEasyReturnSourceId;
+    const dataset = sourceId ? get().sources.find(item => item.id === sourceId)?.easyReturnDataset ?? null : null;
+    set({ pendingEasyReturnSourceId: null });
+    return dataset;
+  },
 }));
 
 export function advancedSourceId(sourceType: string, name: string): string {
