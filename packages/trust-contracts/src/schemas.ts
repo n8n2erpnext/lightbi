@@ -1,7 +1,7 @@
 import { Buffer } from 'node:buffer';
 import { z } from 'zod';
 import { compare as compareSemVer, parse as parseSemVer } from 'semver';
-import { BUSINESS_SEAT_LIMITS, KEY_PURPOSES, KEY_STATUSES } from './types.js';
+import { BUSINESS_SEAT_LIMITS, KEY_PURPOSES, KEY_STATUSES, LIGHTBI_PRODUCT_ID } from './types.js';
 
 export const canonicalTimestampSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/u).refine((value) => !Number.isNaN(Date.parse(value)) && new Date(value).toISOString() === value.replace('Z', '.000Z'), 'invalid UTC timestamp');
 const id = z.string().min(3).max(160).regex(/^[a-zA-Z0-9._:-]+$/u);
@@ -41,11 +41,11 @@ export const issuerKeysetPayloadV1Schema = strict({ schema: z.literal(1), kid: i
   if (new Set(value.keys.map((key) => key.public_key)).size !== value.keys.length) context.addIssue({ code: 'custom', path: ['keys'], message: 'issuer public keys must be purpose-separated and unique' });
   if (Date.parse(value.issued_at) >= Date.parse(value.expires_at)) context.addIssue({ code: 'custom', path: ['expires_at'], message: 'keyset validity window must increase' });
 });
-export const releasePayloadV1Schema = strict({ schema: z.literal(1), kid: id, product_id: id, release_id: id, version: semverSchema, channel: z.enum(['beta', 'stable']), platform, architecture: id, artifact_name: basenameArtifact, artifact_sha256: sha, artifact_size: positiveInteger, created_at: canonicalTimestampSchema }).superRefine((value, context) => {
+export const releasePayloadV1Schema = strict({ schema: z.literal(1), kid: id, product_id: z.literal(LIGHTBI_PRODUCT_ID), release_id: id, version: semverSchema, channel: z.enum(['beta', 'stable']), platform, architecture: id, artifact_name: basenameArtifact, artifact_sha256: sha, artifact_size: positiveInteger, created_at: canonicalTimestampSchema }).superRefine((value, context) => {
   const parsed = parseSemVer(value.version);
   if (value.channel === 'stable' && parsed && parsed.prerelease.length > 0) context.addIssue({ code: 'custom', path: ['version'], message: 'stable channel cannot carry a prerelease version' });
 });
-export const installationCertificatePayloadV1Schema = strict({ schema: z.literal(1), kid: id, product_id: id, installation_id: id, device_key_algorithm: z.literal('Ed25519'), device_public_key: devicePublicKeySchema, release_id: id, platform, architecture: id, issued_at: canonicalTimestampSchema, expires_at: canonicalTimestampSchema, certificate_id: id }).superRefine((value, context) => { if (Date.parse(value.issued_at) >= Date.parse(value.expires_at)) context.addIssue({ code: 'custom', path: ['expires_at'], message: 'installation certificate validity window must increase' }); });
+export const installationCertificatePayloadV1Schema = strict({ schema: z.literal(1), kid: id, product_id: z.literal(LIGHTBI_PRODUCT_ID), installation_id: id, device_key_algorithm: z.literal('Ed25519'), device_public_key: devicePublicKeySchema, release_id: id, platform, architecture: id, issued_at: canonicalTimestampSchema, expires_at: canonicalTimestampSchema, certificate_id: id }).superRefine((value, context) => { if (Date.parse(value.issued_at) >= Date.parse(value.expires_at)) context.addIssue({ code: 'custom', path: ['expires_at'], message: 'installation certificate validity window must increase' }); });
 export const entitlementPayloadV1Schema = strict({ schema: z.literal(1), kid: id, entitlement_id: id, subject: entitlementSubjectSchema, tier: z.enum(['basic', 'pro', 'business']), capabilities, issued_at: canonicalTimestampSchema, valid_until: canonicalTimestampSchema, entitlement_version: positiveInteger, source: z.enum(['commerce', 'complimentary', 'beta_campaign', 'internal']), seat_limit: positiveInteger.optional() }).superRefine((value, context) => {
   if (value.subject.type === 'account') {
     if (value.tier === 'business') context.addIssue({ code: 'custom', path: ['tier'], message: 'account subjects may only receive basic or pro tier' });
@@ -56,7 +56,7 @@ export const entitlementPayloadV1Schema = strict({ schema: z.literal(1), kid: id
   }
   if (Date.parse(value.issued_at) >= Date.parse(value.valid_until)) context.addIssue({ code: 'custom', path: ['valid_until'], message: 'entitlement validity window must increase' });
 });
-export const proPackagePayloadV1Schema = strict({ schema: z.literal(1), kid: id, package_id: id, product_id: id, version: semverSchema, core_min: semverSchema, core_max: semverSchema, platform, architecture: id, sha256: sha, size: positiveInteger, issued_at: canonicalTimestampSchema }).superRefine((value, context) => { if (compareSemVer(value.core_min, value.core_max) > 0) context.addIssue({ code: 'custom', path: ['core_max'], message: 'core compatibility range must increase' }); });
+export const proPackagePayloadV1Schema = strict({ schema: z.literal(1), kid: id, package_id: id, product_id: z.literal(LIGHTBI_PRODUCT_ID), version: semverSchema, core_min: semverSchema, core_max: semverSchema, platform, architecture: id, sha256: sha, size: positiveInteger, issued_at: canonicalTimestampSchema }).superRefine((value, context) => { if (compareSemVer(value.core_min, value.core_max) > 0) context.addIssue({ code: 'custom', path: ['core_max'], message: 'core compatibility range must increase' }); });
 export const signedEnvelopeSchema = <T extends z.ZodTypeAny>(payload: T) => strict({ schema: z.literal(1), kid: id, payload, signature: ed25519SignatureSchema }).superRefine((value, context) => { const envelope = value as unknown as { kid: string; payload: { kid?: string } }; if (envelope.kid !== envelope.payload.kid) context.addIssue({ code: 'custom', path: ['kid'], message: 'envelope and payload kid must match' }); });
 
 export const keysetTrustStateV1Schema = strict({ keysetVersion: positiveInteger, payloadDigest: sha, issuedAt: canonicalTimestampSchema });

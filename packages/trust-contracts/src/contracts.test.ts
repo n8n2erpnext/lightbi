@@ -81,6 +81,7 @@ test('Ed25519 encodings require canonical base64url and exact lengths', () => {
 test('release and Pro contracts enforce SemVer, basename artifacts and compatibility order', () => {
   const release = { schema: 1 as const, kid: 'test-rel-v1', product_id: 'digital.thaiduy.lightbi', release_id: 'release_demo', version: '1.0.0-beta.1', channel: 'beta' as const, platform: 'windows' as const, architecture: 'x86_64', artifact_name: 'LightBI.exe', artifact_sha256: 'a'.repeat(64), artifact_size: 1, created_at: entitlement.issued_at };
   assert.equal(releasePayloadV1Schema.safeParse(release).success, true);
+  assert.equal(releasePayloadV1Schema.safeParse({ ...release, product_id: 'other.product' }).success, false);
   assert.equal(releasePayloadV1Schema.safeParse({ ...release, version: '01.0.0' }).success, false);
   assert.equal(semverSchema.safeParse('v1.2.3').success, false);
   assert.equal(semverSchema.safeParse(' 1.2.3 ').success, false);
@@ -94,6 +95,7 @@ test('release and Pro contracts enforce SemVer, basename artifacts and compatibi
   assert.equal(releasePayloadV1Schema.safeParse({ ...release, artifact_size: Number.MAX_SAFE_INTEGER + 1 }).success, false);
   const pro = { schema: 1 as const, kid: 'test-pro-v1', package_id: 'pkg_demo', product_id: release.product_id, version: '1.0.0-beta.1', core_min: '1.0.0-beta.1', core_max: '1.0.0', platform: 'windows' as const, architecture: 'x86_64', sha256: 'b'.repeat(64), size: 1, issued_at: entitlement.issued_at };
   assert.equal(proPackagePayloadV1Schema.safeParse(pro).success, true);
+  assert.equal(proPackagePayloadV1Schema.safeParse({ ...pro, product_id: 'other.product' }).success, false);
   assert.equal(proPackagePayloadV1Schema.safeParse({ ...pro, core_min: '2.0.0', core_max: '1.0.0' }).success, false);
   assert.equal(proPackagePayloadV1Schema.safeParse({ ...pro, size: 0 }).success, false);
   assert.equal(proPackagePayloadV1Schema.safeParse({ ...pro, size: Number.MAX_SAFE_INTEGER + 1 }).success, false);
@@ -103,6 +105,7 @@ test('release and Pro contracts enforce SemVer, basename artifacts and compatibi
 test('installation certificate declares Ed25519 device signing keys while one-time claim lifecycle is strict', () => {
   const installation = { schema: 1 as const, kid: 'test-att-v1', product_id: 'digital.thaiduy.lightbi', installation_id: 'install_demo', device_key_algorithm: 'Ed25519' as const, device_public_key: publicKey, release_id: 'release_demo', platform: 'windows' as const, architecture: 'x86_64', issued_at: '2026-08-30T00:00:00Z', expires_at: '2027-08-30T00:00:00Z', certificate_id: 'cert_demo' };
   assert.equal(installationCertificatePayloadV1Schema.safeParse(installation).success, true);
+  assert.equal(installationCertificatePayloadV1Schema.safeParse({ ...installation, product_id: 'other.product' }).success, false);
   assert.equal(installationCertificatePayloadV1Schema.safeParse({ ...installation, device_key_algorithm: 'X25519' }).success, false);
   assert.equal(installationCertificatePayloadV1Schema.safeParse({ ...installation, device_public_key: Buffer.alloc(48, 7).toString('base64url') }).success, false);
   assert.equal(installationCertificatePayloadV1Schema.safeParse({ ...installation, expires_at: installation.issued_at }).success, false);
