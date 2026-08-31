@@ -3,8 +3,10 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { loadLightBIAccount, loginLightBIEmailAccount, registerLightBIEmailAccount, requestLightBIPasswordReset } from './account-api';
 import { currentLicenseTier } from './distribution-pairing';
 
+vi.mock('@tauri-apps/api/core', () => ({ invoke: vi.fn(async (command: string) => command === 'account_session_token' ? null : undefined) }));
+
 describe('LightBI account client',()=>{
-  beforeEach(()=>{localStorage.clear();vi.restoreAllMocks();});
+  beforeEach(()=>{localStorage.clear();vi.restoreAllMocks();delete (window as any).__TAURI_INTERNALS__;});
   it('accepts only server-authoritative entitlement state',async()=>{
     vi.stubGlobal('fetch',vi.fn().mockResolvedValue(new Response(JSON.stringify({authenticated:true,account:{id:'a',email:'user@example.com',provider:'google',created_at:''},entitlement:{tier:'pro',status:'active',max_devices:2},devices:[]}),{status:200,headers:{'content-type':'application/json'}})));
     const account=await loadLightBIAccount('https://distribution.test');
@@ -34,6 +36,13 @@ describe('LightBI account client',()=>{
     vi.stubGlobal('fetch',fetchMock);
     expect((await loginLightBIEmailAccount('user@example.com','a-secure-password','https://distribution.test'))?.account.provider).toBe('password');
     expect(fetchMock.mock.calls[0][0]).toBe('https://distribution.test/api/account/login');
+  });
+  it('uses bearer-style native requests without credential cookies so wildcard CORS remains valid',async()=>{
+    (window as any).__TAURI_INTERNALS__={};
+    const fetchMock=vi.fn().mockResolvedValue(new Response(JSON.stringify({accepted:true}),{status:202,headers:{'content-type':'application/json'}}));
+    vi.stubGlobal('fetch',fetchMock);
+    await registerLightBIEmailAccount({email:'native@example.com',password:'a-secure-password'},'https://distribution.test');
+    expect(fetchMock.mock.calls[0][1]).toMatchObject({method:'POST',credentials:'omit'});
   });
   it('requests password reset without exposing whether the account exists',async()=>{
     const fetchMock=vi.fn().mockResolvedValue(new Response(JSON.stringify({accepted:true}),{status:202,headers:{'content-type':'application/json'}}));

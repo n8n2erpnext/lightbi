@@ -16,6 +16,7 @@ import {
 } from '../lib/understanding-core/canonical-consumer-boundary';
 import { prepareCanonicalMultiSourceInvestigationHandoff, type CanonicalMultiSourceDatasetV1 } from '../lib/understanding-core/canonical-multisource-boundary';
 import {
+  buildDatasetCollectionUnderstanding,
   suggestedDeclarationsForPerspective,
   type ReportingPeriodScopeV1,
 } from '../lib/understanding-core/collection-understanding';
@@ -50,12 +51,13 @@ import { HomeSourcePickerMenu } from '../components/home/HomeSourcePickerMenu';
 import { createHomeChartOption, getHomeGreeting, unavailableLegacyPresentation } from '../lib/home-presentation';
 import { useHomeQuestionApi } from '../hooks/useHomeQuestionApi';
 import { evaluateRuntimeSourceContinuity } from '../lib/runtime-source-continuity';
-import { projectCanonicalDomainPerspectives, projectGovernedBundleCandidates, type CanonicalBusinessPerspectiveCandidateV1, type GovernedBundleCandidateV1 } from '../lib/canonical-source-candidate-projection';
+import { projectCanonicalBusinessPerspectives, projectCanonicalDomainPerspectives, projectGovernedBundleCandidates, type CanonicalBusinessPerspectiveCandidateV1, type GovernedBundleCandidateV1 } from '../lib/canonical-source-candidate-projection';
 import { findPendingSourceFamily, mapCollectionPerspectiveToDatasetPerspective, projectPendingMultiSourceReviewSources, selectGovernedBundleDrafts, type PendingLocalFileBatch } from '../lib/home-multisource-candidate-review';
 import { buildHomeCanonicalArtifact } from '../lib/home-canonical-artifact';
 import { createWorkbookSheetSelectionBatch, expandWorkbookSheetSelection, inspectLocalFileBatch, toggleWorkbookSheet } from '../lib/workbook-sheet-intake';
 import type { WorkspaceSessionRecord } from '../lib/workspace-session-api';
 import { executeHomeCanonicalMultiSourceBuild } from '../lib/home-canonical-multisource-build';
+import { findHomeDemoScenario, isHomeDemoSourceName, selectHomeDemoActionId, type HomeDemoScenario } from '../lib/home-demo-scenarios';
 export const Home: React.FC = () => {
   const { preferences } = useDisplayPreferences();
   const navigate = useNavigate();
@@ -79,6 +81,7 @@ export const Home: React.FC = () => {
     openLocalFilePicker, openOnlineDataDrawer, openDatabaseDrawer,
   } = useHomeSourcePicker();
   const [pendingLocalBatch, setPendingLocalBatch] = useState<PendingLocalFileBatch | null>(null);
+  const [pendingDemoScenario, setPendingDemoScenario] = useState<HomeDemoScenario | null>(null);
   const [multiSourceDrafts, setMultiSourceDrafts] = useState<Record<string, MultiSourceDraftV1>>({});
   const [multiSourceBuilding, setMultiSourceBuilding] = useState(false);
   const [multiSourceBuildResult, setMultiSourceBuildResult] = useState<{ relationshipState: CanonicalMultiSourceDatasetV1["relationship"]["validationState"] | null; blockers: string[] }>({ relationshipState: null, blockers: [] });
@@ -444,57 +447,37 @@ export const Home: React.FC = () => {
     setLastInspectedBatch(completed);
   };
 
+  const inspectLocalFiles = async (files: File[]) => {
+    if (files.length === 0) return;
+    setResult(null); setSelectedTopic(null); setSelectedPerspective(null); setSelectedBusinessView(null); setPreviewActionId(null);
+    setCurrentDataset(null); setWorkspaceState(null); setDecisionTrustReport(null); setCanonicalOverlayRebuildState('idle');
+    setIsPlusMenuOpen(false); setIsReplaceMenuOpen(false); setLastInspectedFamilies(null); setLastInspectedBatch(null);
+    setPendingLocalBatch({ files, status: 'reading', results: new Array(files.length).fill(null), families: [], selectedFamilyId: null, step: 'family_selection' });
+    const inspectionRun = inspectionRuns.current.begin();
+    try {
+      const results = await inspectLocalFileBatch(files, inspectionRun.signal);
+      if (!inspectionRuns.current.isCurrent(inspectionRun)) return;
+      const sheetSelectionBatch = createWorkbookSheetSelectionBatch(files, results);
+      if (sheetSelectionBatch) setPendingLocalBatch(sheetSelectionBatch);
+      else finalizeInspectedLocalBatch(files, results);
+    } finally {
+      inspectionRuns.current.finish(inspectionRun);
+    }
+  };
+
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
-    if (files.length === 0) return;
-    
-    setResult(null);
-    setSelectedTopic(null);
-    setSelectedPerspective(null);
-    setSelectedBusinessView(null);
-    setPreviewActionId(null);
-    setCurrentDataset(null);
-    setWorkspaceState(null);
-    setDecisionTrustReport(null);
-    setCanonicalOverlayRebuildState('idle');
+    try { await inspectLocalFiles(files); } finally { if (fileInputRef.current) fileInputRef.current.value = ''; }
+  };
 
-    // Close menus if they are open
-    setIsPlusMenuOpen(false);
-    setIsReplaceMenuOpen(false);
-
-    // Clear any previously stored inspected families because we are starting a new batch.
-    setLastInspectedFamilies(null);
-    setLastInspectedBatch(null);
-
-    setPendingLocalBatch({
-      files,
-      status: "reading",
-      results: new Array(files.length).fill(null),
-      families: [],
-      selectedFamilyId: null,
-      step: "family_selection"
-    });
-    
-    const inspectionRun = inspectionRuns.current.begin();
-
-    let results: SourceInspectionResult[];
-    try {
-      results = await inspectLocalFileBatch(files, inspectionRun.signal);
-    } catch (error) {
-      if (inspectionRun.signal.aborted) return;
-      throw error;
-    }
-    
-    if (!inspectionRuns.current.isCurrent(inspectionRun)) return;
-    
-    const sheetSelectionBatch = createWorkbookSheetSelectionBatch(files, results);
-    if (sheetSelectionBatch) setPendingLocalBatch(sheetSelectionBatch);
-    else finalizeInspectedLocalBatch(files, results);
-
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-    inspectionRuns.current.finish(inspectionRun);
+  const handleHeroChip = async (prompt: string) => {
+    setInputValue(prompt);
+    setAnalysisIntent(prompt);
+    const scenario = currentDataset?.status === 'ready' ? null : findHomeDemoScenario(prompt);
+    if (!scenario) { await askQuestion(prompt); return; }
+    setPendingDemoScenario(scenario);
+    if (scenario.targetPerspectiveId) setSelectedPerspective(scenario.targetPerspectiveId);
+    await inspectLocalFiles(scenario.createFiles());
   };
 
   const handleCancelInspection = () => {
@@ -809,7 +792,9 @@ export const Home: React.FC = () => {
       analysisRowScope: rawAnalysisRows.length >= family.totalRows ? 'full' : 'not_retained',
       semanticRows: rawSemanticRows,
       analysisRows: rawAnalysisRows,
-      previewRows: finalPreviewRows
+      previewRows: finalPreviewRows,
+      demoSynthetic: isHomeDemoSourceName(sourceName),
+      demoScenarioId: isHomeDemoSourceName(sourceName) ? pendingDemoScenario?.id ?? null : null,
     };
     registerAdvancedSource(createAdvancedWorkspaceSourceFromFamily({
       family,
@@ -824,6 +809,47 @@ export const Home: React.FC = () => {
 
     handleCancelInspection();
   };
+
+  useEffect(() => {
+    if (!pendingDemoScenario || !pendingLocalBatch || pendingLocalBatch.status !== 'ready') return;
+    if (pendingLocalBatch.files.length === 1 && pendingLocalBatch.families.length === 1) {
+      handleUseLocalDataset();
+      return;
+    }
+    if (!pendingDemoScenario.collectionPerspectiveId || multiSourceReviewSources.length < 2) return;
+    const collectionSources = multiSourceReviewSources.map(source => ({
+      key: source.key, name: source.name, rowCount: source.rowCount, columns: source.columns, candidates: source.candidates ?? null,
+    }));
+    const collection = buildDatasetCollectionUnderstanding(collectionSources, multiSourceBundles);
+    const perspective = projectCanonicalBusinessPerspectives(
+      multiSourceReviewSources.map(source => ({ key: source.key, candidates: source.candidates ?? null })),
+      multiSourceBundles,
+    ).find(item => item.perspectiveId === pendingDemoScenario.collectionPerspectiveId && item.state !== 'not_yet_executable');
+    if (!perspective) { setPendingDemoScenario(null); return; }
+    const periodScope: ReportingPeriodScopeV1 | null = collection.observedPeriods.length === 0
+      ? null
+      : collection.observedPeriods.length === 1
+        ? { mode: 'single', periodId: collection.observedPeriods[0] }
+        : { mode: 'compare', baselinePeriodId: collection.observedPeriods[0], comparisonPeriodId: collection.observedPeriods.at(-1)! };
+    setPendingDemoScenario(null);
+    handleAnalyzeMultiSourcePerspective(perspective, periodScope, { currency: pendingDemoScenario.currency ?? null });
+  }, [pendingDemoScenario, pendingLocalBatch, multiSourceReviewSources, multiSourceBundles]);
+
+  useEffect(() => {
+    if (!pendingDemoScenario?.autoRun || currentDataset?.status !== 'ready' || !datasetUnderstandingNext || !canonicalPresentation) return;
+    const perspectiveId = pendingDemoScenario.targetPerspectiveId;
+    if (!perspectiveId) { setPendingDemoScenario(null); return; }
+    const actionId = selectHomeDemoActionId(
+      pendingDemoScenario,
+      canonicalDomainPerspectives,
+      datasetUnderstandingNext.availableActions.map((item: any) => item.id),
+    );
+    if (!actionId) { setPendingDemoScenario(null); return; }
+    const action = datasetUnderstandingNext.availableActions.find((item: any) => item.id === actionId);
+    if (!action) { setPendingDemoScenario(null); return; }
+    setPendingDemoScenario(null);
+    void handleSelectAnalysisAction(adaptNextActionsToLegacy([action])[0]);
+  }, [pendingDemoScenario, currentDataset, datasetUnderstandingNext, canonicalPresentation, canonicalDomainPerspectives]);
 
   const askQuestion = useHomeQuestionApi({ apiBaseUrl: API_BASE_URL, currentDataset, setSelectedTopic, setIsAsking, setResult });
   const handleOnlineSourceInspected = useHomeOnlineSourceIntake({
@@ -851,7 +877,7 @@ export const Home: React.FC = () => {
   return <HomeWorkspaceView model={{
     activeConnection, setActiveConnection, handleOnlineSourceInspected, result, isAsking, selectedTopic, currentDataset, pendingLocalBatch,
     openCurrentDatasetInAdvanced,
-    isPlusMenuOpen, setIsPlusMenuOpen, isReplaceMenuOpen, setIsReplaceMenuOpen, setPendingLocalBatch, greeting: getHomeGreeting(), navigate, questionInputRef, inputValue, setInputValue, setIsInputFocused, askQuestion,
+    isPlusMenuOpen, setIsPlusMenuOpen, isReplaceMenuOpen, setIsReplaceMenuOpen, setPendingLocalBatch, greeting: getHomeGreeting(), navigate, questionInputRef, inputValue, setInputValue, setIsInputFocused, askQuestion, handleHeroChip,
     activeAnalysisIntent, questionPlaceholder, renderSourcePickerMenu, activeChips, setAnalysisIntent, openLocalFilePicker, openOnlineDataDrawer,
     openDatabaseDrawer, workspaceSessions, sessionStatus, preferences, handleOpenWorkspaceSession, handleDeleteWorkspaceSession, fileInputRef,
     handleFileChange, uploadError, isUploading, workspaceState, isSavingSession,

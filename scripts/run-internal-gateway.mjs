@@ -1,6 +1,7 @@
 import { createReadStream, existsSync, statSync } from 'node:fs';
 import { createServer, request as httpRequest } from 'node:http';
 import { extname, join, normalize, resolve } from 'node:path';
+import { isControlPlaneDistributionPath, isControlPlanePublicPath } from './internal-gateway-routing.mjs';
 
 const bindHost = process.env.LIGHTBI_INTERNAL_BIND_HOST?.trim() || '127.0.0.1';
 const port = Number(process.env.LIGHTBI_INTERNAL_WEB_PORT || 5273);
@@ -54,6 +55,14 @@ const server = createServer((request, response) => {
   }
   if (url.pathname === '/distribution-api' || url.pathname.startsWith('/distribution-api/')) {
     proxy(request, response, controlPlaneOrigin, '/distribution-api');
+    return;
+  }
+  if (isControlPlaneDistributionPath(url.pathname)) {
+    proxy(request, response, controlPlaneOrigin, '/distribution');
+    return;
+  }
+  if (isControlPlanePublicPath(url.pathname)) {
+    proxy(request, response, controlPlaneOrigin);
     return;
   }
   if (url.pathname === '/api' || url.pathname.startsWith('/api/')) {

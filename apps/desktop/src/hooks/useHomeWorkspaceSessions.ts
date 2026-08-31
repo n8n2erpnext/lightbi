@@ -13,6 +13,7 @@ import { attachPersistedFile, createWorkspaceSessionSnapshot, persistedFilesFrom
 import { parseCanonicalUserOverlay } from '../lib/understanding-core/canonical-user-overlay';
 import type { MultiSourceDraftV1 } from '../components/analysis/CanonicalMultiSourceReview';
 import { createLocalCanonicalSourceBoundary } from '../lib/home-source-boundary';
+import { isHomeDemoDataset } from '../lib/home-demo-scenarios';
 import { applyHomeOnlineSourceInspection } from './useHomeOnlineSourceIntake';
 import type { AdvancedWorkspaceSource } from '../stores/advanced-source-store';
 import { createAdvancedWorkspaceSourceFromFamily } from '../lib/advanced-source-from-family';
@@ -153,7 +154,7 @@ export function useHomeWorkspaceSessions(deps: HomeWorkspaceSessionDependencies)
   };
 
   const saveCurrentWorkspaceSession = async (dataset: any, options: { silent?: boolean } = {}) => {
-    if (dataset?.status !== 'ready') return null;
+    if (dataset?.status !== 'ready' || isHomeDemoDataset(dataset)) return null;
     if (!options.silent) {
       setIsSavingSession(true);
       setSessionStatus(null);

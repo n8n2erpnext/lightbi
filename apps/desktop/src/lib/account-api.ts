@@ -30,7 +30,11 @@ async function accountFetch(path: string, options: RequestInit = {}, endpoint?: 
   const headers = new Headers(options.headers);
   if (options.body && !headers.has('content-type')) headers.set('content-type', 'application/json');
   if (token) headers.set('authorization', `Bearer ${token}`);
-  return fetch(`${lightBIDistributionEndpoint(endpoint)}${path}`, { ...options, headers, credentials: 'include' });
+  return fetch(`${lightBIDistributionEndpoint(endpoint)}${path}`, {
+    ...options,
+    headers,
+    credentials: isNativeLightBI() ? 'omit' : 'include',
+  });
 }
 
 async function accountResult(response: Response, fallback: string) {
