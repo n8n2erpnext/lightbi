@@ -23,32 +23,5 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - name: Verify public Basic release contract
-        run: pnpm test:release-contract
-      - name: Verify public/private source boundary
-        run: pnpm test:public-boundary
-      - name: Verify NEXT generation and owner UAT contracts
-        run: |
-          pnpm test:generation-contract
-          pnpm test:internal-uat-pack
-          pnpm --dir apps/desktop exec vitest run src/lib/generation-manifest.test.ts src/lib/generation-diagnostics.test.ts
-      - name: Verify production source module size
-        run: pnpm test:source-module-size
-      - name: Build desktop web surface
-        run: pnpm --filter @lightbi/desktop build
-      - name: Run public governed regression gates
-        working-directory: apps/desktop
-        run: >-
-          pnpm vitest run
-          src/lib/analysis-workbook.test.ts
-          src/lib/decision-visualization-plan.test.ts
-          src/pages/Datasets.test.tsx
-          src/lib/understanding-core/phase-8d1-production-multisource.test.ts
-          src/components/analysis/PerspectiveCollectionResultCard.test.tsx
-          src/components/investigation/InvestigationDeepAnalysis.test.tsx
-          src/lib/understanding-core/phase-7r41-repository-corpus.test.ts
-          src/lib/runtime-source-continuity.test.ts
-          src/lib/distribution-pairing.test.ts
-          src/lib/understanding-core/semantic-capability-matrix.test.ts
-          src/lib/understanding-core/xomdata-sql-semantic.corpus.test.ts
-          --maxWorkers=2
+      - name: Run LightBI 1.0 release-authoritative suite
+        run: pnpm test:release-1.0
