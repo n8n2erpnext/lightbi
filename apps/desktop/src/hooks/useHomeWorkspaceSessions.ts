@@ -15,6 +15,7 @@ import type { MultiSourceDraftV1 } from '../components/analysis/CanonicalMultiSo
 import { createLocalCanonicalSourceBoundary } from '../lib/home-source-boundary';
 import { applyHomeOnlineSourceInspection } from './useHomeOnlineSourceIntake';
 import type { AdvancedWorkspaceSource } from '../stores/advanced-source-store';
+import { createAdvancedWorkspaceSourceFromFamily } from '../lib/advanced-source-from-family';
 import { useAnalysisExportStore } from '../stores/analysis-export-store';
 import {
   parseAnalysisSessionIdentity,
@@ -321,6 +322,20 @@ export function useHomeWorkspaceSessions(deps: HomeWorkspaceSessionDependencies)
             sheetName: firstMd?.is_workbook ? firstMd.default_sheet : undefined,
           })
           : undefined;
+        const semanticSample = {
+          strategy: rawSemanticRows.length >= family.totalRows ? 'full' : 'matrix_sample',
+          sourceRowCount: family.totalRows,
+          sampleRowCount: rawSemanticRows.length,
+        };
+        if (canonicalSourceBoundary) {
+          deps.registerAdvancedSource(createAdvancedWorkspaceSourceFromFamily({
+            family,
+            sourceName: restoredDataset.file_name || family.name,
+            semanticSample,
+            canonicalSourceBoundary,
+            canonicalUserOverlay: parseCanonicalUserOverlay(restoredDataset.canonicalUserOverlay) ?? undefined,
+          }));
+        }
         deps.setCurrentDataset(attachAnalysisIdentityRevalidation({
           ...restoredDataset, status: canonicalSourceBoundary ? 'ready' : 'stale', file_name: restoredDataset.file_name || family.name,
           rows_count: family.totalRows, columns: family.columns, profiles: family.profiles,
@@ -328,7 +343,7 @@ export function useHomeWorkspaceSessions(deps: HomeWorkspaceSessionDependencies)
           sourceFiles, file_reference: first?.file ?? null,
           runtimeDatasetSource: canonicalSourceBoundary?.runtimeSource,
           canonicalSourceBoundary,
-          semanticSample: { strategy: rawSemanticRows.length >= family.totalRows ? 'full' : 'matrix_sample', sourceRowCount: family.totalRows, sampleRowCount: rawSemanticRows.length },
+          semanticSample,
           analysisRowScope: rawAnalysisRows.length >= family.totalRows ? 'full' : 'not_retained',
           semanticRows: rawSemanticRows, analysisRows: rawAnalysisRows,
           previewRows: createPreviewRows(rawPreviewRows, family.columns), restoredFromSessionId: session.id,

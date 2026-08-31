@@ -7,7 +7,8 @@ import { CREATE_NEW_IMPORT_TARGET, copyTextToClipboard, hydrateTab, importColumn
 import type { AdvancedWorkspaceSource } from '../stores/advanced-source-store';
 import type { AdvancedFileSession } from '../lib/advanced-file-session';
 import { createInvestigationSession } from '../lib/investigation-session';
-import { classifyAdvancedResultCompleteness, createAdvancedResultHandoff, materializeAdvancedResultPages } from '../lib/advanced-result-handoff';
+import { classifyAdvancedResultCompleteness, materializeAdvancedResultPages } from '../lib/advanced-result-handoff';
+import { createCanonicalAdvancedEasyReturn } from '../lib/advanced-easy-return';
 
 type TabPatch = Partial<WorkspaceTab> | ((tab: WorkspaceTab) => Partial<WorkspaceTab>);
 
@@ -192,8 +193,8 @@ export function createAdvancedResultTransferActions(context: AdvancedResultTrans
     downloadBlob(`${baseName}.csv`, new Blob([advancedResultToCsv(displayResult.columns, displayResult.rows)], { type: 'text/csv;charset=utf-8' }));
   };
 
-  const openResultInSimple = (result: AdvancedQueryResult, sql: string, title = activeTab.title) => {
-    const handoff = createAdvancedResultHandoff({
+  const openResultInSimple = async (result: AdvancedQueryResult, sql: string, title = activeTab.title) => {
+    const source = {
       datasetId: `advanced:${title}:${Date.now()}`,
       title,
       provider: workspaceProvider,
@@ -206,7 +207,8 @@ export function createAdvancedResultTransferActions(context: AdvancedResultTrans
         sort: activeTab.sort ? { ...activeTab.sort } : null,
         tableContext: activeTab.tableContext ? { ...activeTab.tableContext } : null,
       },
-    }, result);
+    } as const;
+    const { handoff, canonicalSourceBoundary } = await createCanonicalAdvancedEasyReturn(source, result);
     createInvestigationSession(
       handoff.datasetId,
       handoff.analysisAction,
@@ -214,7 +216,7 @@ export function createAdvancedResultTransferActions(context: AdvancedResultTrans
       handoff.runtimePlanPreview,
       handoff.rows,
       handoff.aiBriefing,
-      undefined,
+      canonicalSourceBoundary.runtimeSource,
       handoff.rowScope,
       undefined,
       undefined,
@@ -225,7 +227,7 @@ export function createAdvancedResultTransferActions(context: AdvancedResultTrans
     window.dispatchEvent(new PopStateEvent('popstate'));
   };
 
-  const analyzeActiveResultInSimple = () => {
+  const analyzeActiveResultInSimple = async () => {
     if (!displayResult) return;
     if (displayResult.rows.length === 0) {
       patchTab(activeTab.id, { warnings: ['Run a query with rows before creating a Simple BA brief.'] });
@@ -236,7 +238,11 @@ export function createAdvancedResultTransferActions(context: AdvancedResultTrans
       patchTab(activeTab.id, { warnings: [`This result is ${completeness.state}. Full-source governed analysis is unavailable until a complete result is materialized.`] });
       return;
     }
-    openResultInSimple(displayResult, materializeSqlParameters(activeTab.sql, activeTab.parameters));
+    try {
+      await openResultInSimple(displayResult, materializeSqlParameters(activeTab.sql, activeTab.parameters));
+    } catch (cause) {
+      patchTab(activeTab.id, { error: cause instanceof Error ? cause.message : 'Could not rebuild the canonical source for Easy analysis.' });
+    }
   };
 
   const fetchQueryPage = async (tab: WorkspaceTab, offset: number, limit: number, runId: string): Promise<AdvancedQueryResult> => {
@@ -278,7 +284,7 @@ export function createAdvancedResultTransferActions(context: AdvancedResultTrans
       const complete = materializeAdvancedResultPages(pages);
       if (complete.rows.length === 0) throw new Error('The refreshed source contains no rows to analyze.');
       patchTab(activeTab.id, { isRunning: false, result: complete, warnings: [`Refreshed ${complete.rows.length.toLocaleString('en')} post-edit rows and returned them to Easy analysis.`] });
-      openResultInSimple(complete, sql, `${sourceContext.schema}.${sourceContext.table}`);
+      await openResultInSimple(complete, sql, `${sourceContext.schema}.${sourceContext.table}`);
     } catch (cause) {
       patchTab(activeTab.id, { isRunning: false, error: cause instanceof Error ? cause.message : 'Could not refresh the post-edit source for Easy analysis.' });
     }

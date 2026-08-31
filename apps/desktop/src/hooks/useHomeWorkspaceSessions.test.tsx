@@ -113,6 +113,7 @@ describe('Home workspace session restoration', () => {
     }));
     const requestLocalFileReselection = vi.fn();
     const setCurrentDataset = vi.fn();
+    const registerAdvancedSource = vi.fn();
     const dataset = {
       status: 'ready', file_name: original.name, sourceType: 'local_csv', normalizedUrl: `file://${original.name}`,
       rows_count: 1500, columns: ['id', 'value'], profiles: {},
@@ -123,7 +124,7 @@ describe('Home workspace session restoration', () => {
     };
     const deps = {
       currentDataset: dataset,
-      registerAdvancedSource: vi.fn(), setCurrentDataset, setWorkspaceState: vi.fn(), setDecisionTrustReport: vi.fn(),
+      registerAdvancedSource, setCurrentDataset, setWorkspaceState: vi.fn(), setDecisionTrustReport: vi.fn(),
       setPendingLocalBatch: vi.fn(), setMultiSourceDrafts: vi.fn(), setMultiSourceBuildResult: vi.fn(),
       setSelectedTopic: vi.fn(), setResult: vi.fn(), setPreviewActionId: vi.fn(), requestLocalFileReselection,
     };
@@ -144,6 +145,12 @@ describe('Home workspace session restoration', () => {
     const restored = setCurrentDataset.mock.calls.map(call => call[0]).find(value => typeof value === 'object' && value?.restoredFromSessionId === saved!.id);
     expect(restored).toMatchObject({ status: 'ready', rows_count: 1500, restoredFromSessionId: 'saved-session-1500' });
     expect(restored.runtimeDatasetSource).toBeTruthy();
+    expect(registerAdvancedSource).toHaveBeenCalledWith(expect.objectContaining({
+      name: original.name,
+      sourceKind: 'local_file',
+      canonicalSourceBoundary: expect.objectContaining({ datasetId: original.name }),
+      tables: [expect.objectContaining({ rowCount: 1500, file: expect.any(File) })],
+    }));
     expect(result.current.sessionStatus).toContain('complete saved source file');
   }, 30_000);
 

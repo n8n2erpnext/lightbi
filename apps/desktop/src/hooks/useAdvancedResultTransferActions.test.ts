@@ -103,6 +103,10 @@ describe('Advanced full-source return to Easy', () => {
     expect(completed.result.page).toEqual({ offset: 0, limit: 1500, hasMore: false, estimatedTotal: 1500 });
     expect(completed.error).toBeUndefined();
     expect(mocks.createInvestigationSession).toHaveBeenCalledOnce();
+    const handoffCall = mocks.createInvestigationSession.mock.calls[0];
+    expect(handoffCall[6]).toMatchObject({ kind: 'local_files', sourceRowCount: 1500 });
+    expect(handoffCall[10]?.sourceBoundary).toBeTruthy();
+    expect(handoffCall[10]?.sourceBoundary?.runtimeSource.binding).toEqual(handoffCall[6]?.binding);
     expect(window.location.pathname).toBe('/investigation');
   });
 
@@ -125,6 +129,9 @@ describe('Advanced full-source return to Easy', () => {
     const completed = patchTab.mock.calls.map(call => call[1]).find(patch => patch?.result);
     expect(completed.result.rows).toHaveLength(1500);
     expect(mocks.createInvestigationSession).toHaveBeenCalledOnce();
+    const handoffCall = mocks.createInvestigationSession.mock.calls[0];
+    expect(handoffCall[6]).toMatchObject({ kind: 'local_files', sourceRowCount: 1500 });
+    expect(handoffCall[10]?.sourceBoundary).toBeTruthy();
   });
 
   it('does not attempt a return while uncommitted edits are still active', async () => {

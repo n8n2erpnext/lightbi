@@ -3,6 +3,7 @@ import type { AnalysisAction } from './analysis-opportunity-actions';
 import { createRuntimeIntentFromAnalysisAction } from './analysis-runtime-contract';
 import { generateCanonicalAIBriefing } from './canonical-ai-briefing';
 import type { InvestigationSession } from './investigation-session';
+import type { CanonicalSourceBoundaryV1 } from './understanding-core/canonical-source-boundary';
 import { createRuntimePlanPreview } from './runtime-planner-preview';
 import {
   getOrBuildCanonicalConsumerArtifact,
@@ -185,7 +186,7 @@ function projectGovernedAction(source: AdvancedResultSource, handoff: CanonicalI
   };
 }
 
-export function createAdvancedResultHandoff(source: AdvancedResultSource, result: AdvancedQueryResult): AdvancedResultHandoff {
+export function createAdvancedResultHandoff(source: AdvancedResultSource, result: AdvancedQueryResult, sourceBoundary?: CanonicalSourceBoundaryV1): AdvancedResultHandoff {
   const rows = rowsAsObjects(result);
   const completeness = classifyAdvancedResultCompleteness(result);
   const partial = completeness.state !== 'complete';
@@ -205,6 +206,7 @@ export function createAdvancedResultHandoff(source: AdvancedResultSource, result
     rows,
     sourceRowCount: declaredRowCount,
     stateQualifier,
+    sourceBoundary,
   });
   const selectedActionCandidateId = source.governedSelection?.actionCandidateId ?? defaultActionCandidateId(canonicalArtifact);
   const initialHandoff = prepareCanonicalInvestigationHandoff(canonicalArtifact, selectedActionCandidateId);

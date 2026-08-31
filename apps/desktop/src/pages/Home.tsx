@@ -33,7 +33,8 @@ import { createVirtualDatasetPlan } from '../lib/virtual-dataset-planner';
 import { selectFirstNonEmptyRows } from '../lib/row-surface';
 import { useDisplayPreferences } from '../stores/display-preferences-store';
 import { ExecutionRunCoordinator } from '@lightbi/runtime';
-import { advancedSourceId, useAdvancedSourceStore } from '../stores/advanced-source-store';
+import { useAdvancedSourceStore } from '../stores/advanced-source-store';
+import { createAdvancedWorkspaceSourceFromFamily } from '../lib/advanced-source-from-family';
 import { createDecisionTrustReport, type DecisionTrustReport } from '../lib/decision-trust-report';
 import { createBusinessFusionOverview, type BusinessFusionOverview } from '../lib/business-fusion-overview';
 import type { GuidedInvestigationResult } from '../lib/guided-investigation-pipeline';
@@ -783,28 +784,13 @@ export const Home: React.FC = () => {
       });
       canonicalUserOverlay = overlay;
     }
-    registerAdvancedSource({
-      id: advancedSourceId((family.files[0].result as any).sourceType, sourceName),
-      name: sourceName,
-      sourceType: (family.files[0].result as any).sourceType,
-      sourceKind: 'local_file',
-      normalizedUrl: (family.files[0].result as any).normalizedUrl,
-      tables: family.files.flatMap((item, fileIndex) => {
-        if (item.result.status !== 'accessible') return [];
-        const metadata = item.result.metadata;
-        if (metadata.is_workbook && metadata.sheets) {
-          return Object.entries(metadata.sheets).map(([sheetName, sheet]) => ({
-            id: `${fileIndex}:${sheetName}`, name: family.files.length > 1 ? `${item.file.name} · ${sheetName}` : sheetName,
-            rowCount: sheet.rows_count, columns: sheet.columns, profiles: sheet.profiles || {}, file: item.file, sheetName,
-          }));
-        }
-        return [{ id: `${fileIndex}:data`, name: family.files.length > 1 ? item.file.name : 'data', rowCount: metadata.rows_count || 0, columns: metadata.columns || [], profiles: metadata.profiles || {}, file: item.file }];
-      }),
+    registerAdvancedSource(createAdvancedWorkspaceSourceFromFamily({
+      family,
+      sourceName,
       semanticSample,
       canonicalSourceBoundary,
       canonicalUserOverlay,
-      registeredAt: new Date().toISOString(),
-    });
+    }));
 
     setCurrentDataset({
       status: 'ready',
