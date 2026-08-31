@@ -1,6 +1,7 @@
 import type { InvestigationSession } from './investigation-session';
 import { createAnalysisSessionIdentity } from './analysis-session-identity';
 import { saveWorkspaceSession, type SaveWorkspaceSessionRequest } from './workspace-session-api';
+import { isHomeDemoDataset } from './home-demo-scenarios';
 
 const INVESTIGATION_SESSION_ROW_LIMIT = 250;
 
@@ -48,6 +49,7 @@ export function createInvestigationPersistenceActions(context: InvestigationPers
   };
 
   const persistWorkspaceSession = async () => {
+    if (isHomeDemoDataset(session.workspaceDataset)) return null;
     let payload = session.workspaceSessionPayload || fallbackWorkspaceSessionPayload();
     const analysisIdentity = createAnalysisSessionIdentity(durableAnalysisWorkbookPlan, session.workspaceDataset as any);
     if (analysisIdentity) {
