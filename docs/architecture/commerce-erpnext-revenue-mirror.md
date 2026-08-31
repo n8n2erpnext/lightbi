@@ -37,15 +37,20 @@ Private CP already implements:
 - per-connection/outbox-event delivery idempotency and retry state.
 ## Preferred topology
 
-The default path is direct CP worker → ERPNext API when the ERPNext endpoint is reachable safely and the receiver contract is sufficient. Existing n8n on the same VPS may be inserted as an optional orchestration/transform layer when richer mapping, notifications or future side effects justify it.
+Owner decision on 2026-08-31 selects **Paddle** as the intended payment provider for the 1.0 commerce path because Stripe is not the chosen market path. Payment-provider configuration is intentionally deferred; this contract freezes only the downstream shape.
+
+The selected revenue-mirror topology is the existing HMAC-signed CP webhook adapter → dedicated n8n workflow → ERPNext. The direct ERPNext adapter remains a supported CP capability but is not the selected operational route for this mirror.
 
 ```text
-LightBI CP outbox
-   ├─ direct ERPNext adapter → ERPNext receiver
-   └─ optional signed webhook → n8n workflow → ERPNext receiver/API
+Paddle (future configuration)
+→ LightBI commerce authority
+→ transactional outbox
+→ signed webhook
+→ n8n `LightBI Revenue Mirror to ERPNext (Paddle-ready)`
+→ ERPNext `LightBI Order Mirror` / `LightBI Inc`
 ```
 
-n8n is not an authority boundary. It must not generate or modify LightBI entitlement, payment or Trust state.
+n8n remains downstream only. It must not generate or modify LightBI entitlement, payment or Trust state.
 
 ## ERPNext isolation
 
@@ -63,22 +68,33 @@ No existing sample company should be reused merely because it already has conven
 
 ## ERP document strategy
 
-The revenue mirror should represent a completed paid LightBI order, not pretend to be an operational warehouse flow. The preferred final accounting document must be selected after inspecting the live ERPNext configuration.
+The inspected live path is now fixed for the scaffold. LightBI is a digital service, so ERPNext must not invent a warehouse lifecycle. The selected accounting mirror is:
 
-A Sales Invoice is preferable if the goal is recognized paid revenue and the company/master setup supports safe creation. A Sales Order is acceptable as a non-accounting sales mirror if later accounting automation is intentionally separate. A dedicated staging DocType is acceptable only when standard documents cannot safely preserve idempotency and accounting semantics.
+`Sales Invoice (update_stock=0, service item) → Payment Entry (Debtors → Paddle Clearing)`
+
+`Sales Order`, `Delivery Note`, `Stock Entry`, stock-ledger movement and fulfillment inventory are outside this integration. Company `LightBI Inc` owns service item `LIGHTBI-PRO`, its `LBI` accounting defaults, and `Paddle Clearing - LBI`. The service item is non-stock; an ERPNext warehouse default may exist as master metadata but is not execution authority and `update_stock=0` prevents stock movement.
+
+Paddle is the intended Merchant of Record. Paddle therefore owns the official customer payment receipt/invoice. ERPNext may produce a branded **LightBI Purchase Invoice / Accounting Copy** for operational reference, but that document must explicitly state that it does not replace Paddle's official payment document.
+
+`LightBI Order Mirror` remains as the integration ledger/idempotency checkpoint, not the final accounting document. Its state may advance through `received → invoiced → paid → reconciled` (or `error`) and it stores links to the resulting Sales Invoice/Payment Entry so retries can resume safely after a partial downstream commit.
+
 ## Event contract
 
-The downstream receiver consumes only `commerce.order.completed.v1`. Required business fields from current CP payload are:
+The inactive Paddle-ready receiver consumes only `commerce.order.completed.v1`. Before activation, the provider/commerce adapter must supply:
 
 - `orderId` — immutable LightBI order identity;
-- `productCode` — LightBI commercial SKU/product code;
-- `amountMinor` — integer minor-unit amount;
-- `currency` — ISO 4217 currency;
-- `quantity` — positive integer quantity;
-- `accountId` or `organizationId` — opaque LightBI subject reference;
-- `entitlementId` — LightBI entitlement reference for audit only, never ERP authority.
+- `productCode` — bounded LightBI product code;
+- `amountMinor` and `currency` — exact provider amount representation for audit;
+- `providerAmount` — provider-decimal string in major units; n8n must not infer a currency exponent by dividing by 100;
+- `accountingAmountVnd` — explicit VND accounting amount produced by the approved commerce/accounting policy;
+- `quantity` — positive integer;
+- `billingEmail` — optional validated customer contact for the ERP copy;
+- `providerTransactionId` — Paddle transaction identity;
+- `paidAt` — provider completion time;
+- `accountId` or `organizationId`, plus `entitlementId` — opaque LightBI audit references only;
+- `synthetic` — explicit test marker.
 
-Provider payment IDs remain owned by the commerce/payment record and may be added to the downstream mapping only when required for reconciliation. Business files, SQL, BA results and local LightBI data are never included.
+Business files, SQL text/results, BA findings and local LightBI datasets are never part of this event. Original provider amount and accounting amount are intentionally separate fields so currency/exchange policy cannot be silently guessed in n8n.
 
 ## Idempotency
 
@@ -116,7 +132,15 @@ A complete proof should demonstrate:
 
 ## Current status
 
-The CP side is foundation-complete and tested at adapter/migration level, but the live ERPNext receiver/configuration and end-to-end runtime proof are not yet established. The live ERPNext instance is inside LXD on the same VPS, and n8n is also available on the VPS as an optional orchestration path.
+As of 2026-08-31 the downstream accounting scaffold is established but deliberately **inactive** until Paddle/provider configuration is authorized. ERPNext uses isolated Company `LightBI Inc` (`LBI`, VND), non-stock service item `LIGHTBI-PRO`, dedicated `LBI` accounts/cost center, `Paddle Clearing - LBI`, and `LightBI Order Mirror` as the retry/idempotency ledger. Existing sample companies are not commerce authority.
+
+n8n workflow `lightbiRevenueMirror01` is now named **`LightBI Paddle Revenue → ERPNext Invoice + Clearing`**, remains inactive, and contains 26 nodes. It verifies the signed envelope before trusting business fields, validates the completed-commerce contract, checks/resumes the mirror ledger, creates/submits a non-stock Sales Invoice, creates/submits a Payment Entry into Paddle Clearing, and finalizes the mirror links/state. ERPNext credentials remain in n8n credential storage. HMAC/provider activation remains intentionally unresolved/fail-closed.
+
+ERPNext email/print presentation is also scaffolded but disabled for live delivery. Email Template `LightBI Purchase Confirmation`, Print Format `LightBI Purchase Invoice`, and Notification `LightBI Purchase Confirmation` are bound together; the Notification remains `enabled=0`. The PDF identifies itself as an accounting/reference copy and states that Paddle, as Merchant of Record, provides the official receipt/invoice. A render-only synthetic proof produced a valid `%PDF` document of 24,004 bytes and the synthetic draft was deleted immediately; no email was sent.
+
+A separate synthetic accounting proof successfully submitted one Sales Invoice and one Payment Entry, observed two GL entries for each accounting document, then cancelled both test documents. The tested Sales Invoice used `update_stock=0`; the integration is intentionally non-stock.
+
+Still open before live activation: Paddle checkout/webhook configuration, provider adapter fields, approved currency/tax/FX policy, HMAC credential activation, CP connection/subscription wiring, synthetic outbox E2E, duplicate replay proof, downstream-failure retry/recovery proof, Paddle payout/fee reconciliation, and an explicit owner decision to enable the ERPNext customer-copy Notification. None of those open items may block LightBI checkout or entitlement authority.
 
 ## Source bookmarks
 

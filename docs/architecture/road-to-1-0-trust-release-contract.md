@@ -84,9 +84,27 @@ An external verification surface may validate public release/certificate identit
 
 ## Trademark and branding boundary
 
-Open-source rights and trademark rights are separate. Before stable 1.0 the project should publish an explicit trademark/branding policy defining acceptable references such as `fork of LightBI` or `based on LightBI`, and prohibiting modified distributions from presenting themselves as official LightBI in a confusing way.
+Open-source rights and trademark rights are separate. Source-code rights do not grant official-product identity. The 1.0 branding contract uses these rules:
 
-This legal/branding layer complements but does not replace cryptographic verification.
+- unmodified official distributions may use the LightBI product name/logo as shipped;
+- forks and modified distributions may truthfully say `fork of LightBI`, `based on LightBI`, or equivalent attribution, but must identify their own distributor/project;
+- a modified or independently signed build must not present itself as `Official LightBI`, use an official-verification mark, or imply that its updates/accounts/Pro service are operated by LightBI;
+- retaining copyright/license notices is separate from permission to impersonate the official product;
+- third parties may describe compatibility with LightBI, but compatibility wording must not be visually or textually confusing with official distribution;
+- an official-looking logo, domain, installer name or client-side string is never cryptographic authority.
+
+The user-visible verification state is a state machine, not one decorative badge:
+
+| State | Required evidence | UI meaning |
+| --- | --- | --- |
+| `official_verified` | allowed REL chain + artifact digest + valid ATT installation state + supported OS publisher state where applicable | **Official LightBI — verified** |
+| `official_release_installation_unverified` | valid REL/artifact, but ATT is absent/pending/unavailable | **Official release; installation not verified** |
+| `modified_or_unrecognized` | REL missing/invalid, digest mismatch, unsupported signer/root, or verified local modification | **Modified or unrecognized build**; no official-service authority |
+| `verification_unavailable` | evidence cannot be fetched/evaluated without proving invalidity | **Verification unavailable**; never silently promoted to official |
+
+A fork can draw the words `Official LightBI`, but it cannot produce the LightBI Root/REL/ATT evidence required for `official_verified`. External verification should accept release/certificate evidence and independently derive the same state.
+
+This legal/branding layer complements but does not replace cryptographic verification. Before stable 1.0, the public repository/site should publish these branding rules in user-facing form; the architecture contract here is the engineering authority for product behavior.
 
 ## Current implementation status
 

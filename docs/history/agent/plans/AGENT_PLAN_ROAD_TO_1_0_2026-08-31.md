@@ -50,6 +50,8 @@ The ERPNext/n8n revenue mirror may progress after P0 because it is operational r
 `payment complete → LightBI order + entitlement commit → transactional outbox → worker → optional n8n/ERPNext mirror`
 
 ERPNext or n8n outage must never roll back payment completion or entitlement grant. Retry/delivery evidence is downstream only.
+
+Owner decision 2026-08-31: Paddle is the intended payment provider for the 1.0 commerce path. Payment configuration is deferred; the downstream n8n→ERPNext mirror scaffold may be built inactive in advance. The selected mirror path is CP signed webhook → n8n → ERPNext, while Paddle/provider logic remains upstream of commerce authority.
 ## Non-negotiable gates
 
 - NEXT generations are immutable after deployment; fixes cut a successor generation.
@@ -73,6 +75,19 @@ When implementation changes Core or CP source, use a clean successor branch/work
 3. Begin R1-P1/P2/P3/P4 work that does not violate the Trust freeze gate.
 4. Prepare R1-P5 independent audit only after current product/security/release surfaces are reconciled.
 5. Stop before Root ceremony if exact Phase 2A does not have explicit freeze approval.
+
+## Current execution checkpoint — NEXT-017
+
+As of the reconciled Internal promotion on 2026-08-31:
+
+- **R1-P0** — complete and recorded.
+- **R1-P1** — open: formal owner UAT and packaged Windows/native acceptance remain separate gates.
+- **R1-P2** — implemented, machine-verified and deployed Internal: TOTP enrollment/login, one-time recovery codes, recovery rotation, Passkey enrollment/login, factor listing/revocation, strong-auth step-up and security-version invalidation. The private CP authoritative suite passes **134/134**. Real Passkey UX still requires an HTTPS secure context for owner/browser acceptance.
+- **R1-P3** — implemented and verified: `pnpm test:release-1.0` is the single release-authoritative platform-independent suite; the historical full desktop universe remains diagnostic rather than release authority.
+- **R1-P4** — architecture/identity state-machine contract is candidate-complete; standalone trademark policy and final official-build verification UI remain open.
+- **R1-P5** — next active gate: independently re-audit exact Phase 2A head `fb8225c951fc27692e6b0e7554c3112ada08e49f`. No Root/signer/private production-key work may start unless that exact audited candidate receives explicit freeze approval.
+
+The active immutable Internal successor is `g-2026-08-31-next-017`, parent `g-2026-08-31-next-016`, Core `93296e46d250be7d2f885b2cbb06e25068f38761`, private CP `d615832768f89c861ae508c210713c92ed6b74e2`, schema `062_documentation_content`, and generation-manifest SHA-256 `b1c849eb7c88d46cd6801c340b970a8e9993cd556fdd12a0d0dfbe612510dd0a`. Gateway, CP diagnostics and worker all report NEXT-017; pending migrations are `[]`. Production `5172/5173/5174` remained running on their pre-existing processes.
 
 ## Source bookmarks
 

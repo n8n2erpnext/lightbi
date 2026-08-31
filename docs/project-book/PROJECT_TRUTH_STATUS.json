@@ -96,10 +96,12 @@
     "private_pro_capability_delivery_and_offline_policy",
     "final_open_core_dependency_legal_review",
     "control_plane_deployed_sha_marker",
-    "public_historical_test_taxonomy_reconciliation",
     "next_internal_owner_uat_and_promotion_acceptance",
     "excel_desktop_native_pivot_release_acceptance",
-    "native_windows_packaged_session_recovery_and_account_acceptance"
+    "native_windows_packaged_session_recovery_and_account_acceptance",
+    "account_security_secure_context_owner_acceptance",
+    "road_to_1_0_p4_trademark_policy_and_official_identity_ui",
+    "paddle_provider_configuration_and_live_revenue_mirror_e2e"
   ],
   "postTruthCandidates": {
     "controlPlaneFoundation": {
@@ -249,14 +251,14 @@
   },
   "nextGeneration": {
     "model": "successor_promotion_generation_rotation",
-    "status": "internal_bug_test_ready_next016_monaco_suggestions_and_first_paint_fixed",
+    "status": "internal_bug_test_ready_next017_r1_security_release_gate",
     "generationSchema": "lightbi.generation.v1",
-    "generationId": "g-2026-08-31-next-016",
-    "parentGenerationId": "bootstrap-current-8d59d05f575373e6",
+    "generationId": "g-2026-08-31-next-017",
+    "parentGenerationId": "g-2026-08-31-next-016",
     "core": {
       "workspace": "/home/ubuntu/n8n2erpnext/LightBI-next-internal",
-      "branch": "codex/next-internal-generation-20260830",
-      "head": "451c9b6afe0a95bce5bce473a4a84c8b918f42cd",
+      "branch": "detached_runtime_from_codex/next017-r1-stabilization",
+      "head": "93296e46d250be7d2f885b2cbb06e25068f38761",
       "baseCandidate": "326d991a8f305fef938e9aab47897dd233146770",
       "foundationHead": "ef2434ac01ec6a817f4a04f58d16ef41c447b9dc",
       "gatewayHead": "0a9d20a93682e2db528cb43dc2ece8cf699129db",
@@ -276,12 +278,13 @@
       "docsGatewayRoutingCorrectionHead": "00e6d89c9465fd75bd72a824f48dabbdc83495b6",
       "starterDemoStrengtheningHead": "720cad3",
       "legacySyntheticDemoPurgeHead": "d96011bfe2d3deca8424eac15f6d3e7d39cf7a97",
-      "monacoSqlSuggestionControllerHead": "451c9b6afe0a95bce5bce473a4a84c8b918f42cd"
+      "monacoSqlSuggestionControllerHead": "451c9b6afe0a95bce5bce473a4a84c8b918f42cd",
+      "release1_0GateHead": "93296e46d250be7d2f885b2cbb06e25068f38761"
     },
     "controlPlane": {
-      "workspace": "/home/ubuntu/n8n2erpnext/lightbi-control-plane-next-internal",
-      "branch": "codex/next-internal-generation-20260830",
-      "head": "f1879c65453cdf0bc9798257e462264f0424e907",
+      "workspace": "/home/ubuntu/n8n2erpnext/lightbi-control-plane-next017-r1",
+      "branch": "codex/next017-r1-stabilization",
+      "head": "d615832768f89c861ae508c210713c92ed6b74e2",
       "baseCandidate": "0385b316f54f73fa4d3e7ce481fa377c93f5471b",
       "schemaTarget": "062_documentation_content",
       "runtimeHeartbeatMigration": "033_runtime_heartbeats",
@@ -290,7 +293,8 @@
       "rootPortalCorrectionHead": "d1a7d439fe43d8678626e377c2853558bc50c8d6",
       "documentationMigration": "062_documentation_content",
       "documentationPortalHardeningHead": "497ffbf9592faddefec72280a4ddd244efab648c",
-      "secondaryRouteFirstPaintHead": "f1879c65453cdf0bc9798257e462264f0424e907"
+      "secondaryRouteFirstPaintHead": "f1879c65453cdf0bc9798257e462264f0424e907",
+      "accountSecurityManagementHead": "d615832768f89c861ae508c210713c92ed6b74e2"
     },
     "testPack": {
       "version": "lightbi.uat.v1",
@@ -308,7 +312,7 @@
       "publicRegressionTestsPassed": 39,
       "desktopBuildPassed": true,
       "publicBoundaryPassed": true,
-      "privateCompiledRuntimeTestsPassed": 128,
+      "privateCompiledRuntimeTestsPassed": 134,
       "privateTypecheckPassed": true,
       "privateBuildPassed": true,
       "nextEnvironmentVerificationPassed": true,
@@ -372,7 +376,12 @@
       "distributionSecondaryRouteFirstPaintRegressionPassed": true,
       "distributionSecondaryRouteFirstPaintBrowserChecksPassed": 6,
       "distributionSecondaryRouteHomeFlashObservedAfterFix": false,
-      "monacoSqlSuggestionControllerFocusedTestsPassed": 1
+      "monacoSqlSuggestionControllerFocusedTestsPassed": 1,
+      "release1_0SuitePassed": true,
+      "accountSecurityWebManagementRegressionPassed": true,
+      "accountSecurityApiManagementRegressionPassed": true,
+      "accountSecurityAssetDirectControlPlanePassed": true,
+      "accountSecurityAssetGatewayPassed": true
     },
     "infrastructure": {
       "isolatedContractDefined": true,
@@ -386,7 +395,7 @@
       "internalGatewayStarted": true,
       "controlPlaneSchemaReportedCurrent": true,
       "controlPlanePendingMigrations": 0,
-      "controlPlaneRuntimeCommit": "f1879c65453cdf0bc9798257e462264f0424e907",
+      "controlPlaneRuntimeCommit": "d615832768f89c861ae508c210713c92ed6b74e2",
       "coreRuntimeExactHeadVerified": true,
       "runtimeReconciliationBlocked": false,
       "fullIsolationRevalidated": true,
@@ -394,14 +403,14 @@
       "servedGenerationManifestPresent": true,
       "internalWebArtifactExactGenerationVerified": true,
       "runtimeBlocker": null,
-      "freshGenerationId": "g-2026-08-31-next-016",
-      "generationManifestSha256": "72f223df5c2508e2d1e278497e1d8a664aa55f87c5c497f8d48d5a76b77e7f90",
+      "freshGenerationId": "g-2026-08-31-next-017",
+      "generationManifestSha256": "b1c849eb7c88d46cd6801c340b970a8e9993cd556fdd12a0d0dfbe612510dd0a",
       "coreRuntimeBinarySha256": "0c9d37ae54b874e85ff3ad2ce792875a318e72c32146ad9e340383d5831d3d60",
       "servedGenerationManifestIsJson": true,
       "freshWorkerStarted": true,
-      "workerGenerationExpected": "g-2026-08-31-next-016",
-      "workerGenerationObserved": "g-2026-08-31-next-016",
-      "workerCommitObserved": "f1879c65453cdf0bc9798257e462264f0424e907",
+      "workerGenerationExpected": "g-2026-08-31-next-017",
+      "workerGenerationObserved": "g-2026-08-31-next-017",
+      "workerCommitObserved": "d615832768f89c861ae508c210713c92ed6b74e2",
       "workerGenerationMatch": true,
       "toolSafetyBlockedPredecessorTermination": false,
       "toolSafetyBlockedFreshWorkerLaunch": false,
@@ -409,10 +418,10 @@
       "predecessorWorkerGeneration": null,
       "migrationStateMeaning": "internal_schema_062_documentation_content_applied_explicitly",
       "canonicalInternalGatewayPort": 5273,
-      "canonicalInternalGatewayGeneration": "g-2026-08-31-next-016",
+      "canonicalInternalGatewayGeneration": "g-2026-08-31-next-017",
       "canonicalInternalGatewayCoreOrigin": "http://100.94.184.141:5272",
       "canonicalInternalGatewayControlPlaneOrigin": "http://100.94.184.141:5274",
-      "canonicalInternalGatewayManifestSha256": "72f223df5c2508e2d1e278497e1d8a664aa55f87c5c497f8d48d5a76b77e7f90",
+      "canonicalInternalGatewayManifestSha256": "b1c849eb7c88d46cd6801c340b970a8e9993cd556fdd12a0d0dfbe612510dd0a",
       "canonicalInternalGatewayServesFreshDesktop": true,
       "internalBugTestingReady": true,
       "temporaryVerificationGatewayStopped": true,
@@ -645,7 +654,16 @@
       "n8nOptional": true,
       "cpOutboxFoundationImplemented": true,
       "liveE2eVerified": false,
-      "dedicatedErpnextCompanyRequiredForE2e": true
+      "dedicatedErpnextCompanyRequiredForE2e": true,
+      "selectedPath": "control_plane_signed_webhook_to_n8n_to_erpnext",
+      "erpnextCompany": "LightBI Inc",
+      "erpnextDocType": "LightBI Order Mirror",
+      "n8nWorkflowId": "lightbiRevenueMirror01",
+      "n8nWorkflowName": "LightBI Revenue Mirror to ERPNext (Paddle-ready)",
+      "n8nWebhookPath": "lightbi-revenue-mirror-v1",
+      "n8nWorkflowActive": false,
+      "hmacCredentialConfigured": false,
+      "scaffoldImplemented": true
     },
     "r1P0": {
       "planRecorded": true,
@@ -657,6 +675,39 @@
       "missingLocalLinks": 0,
       "gitDiffCheckPassed": true,
       "documentationCommitPending": false
+    },
+    "paymentProviderDecision": {
+      "provider": "paddle",
+      "status": "selected_not_configured",
+      "decidedDate": "2026-08-31"
     }
+  },
+  "roadTo1_0": {
+    "r1p0": "complete",
+    "r1p1": "owner_uat_and_packaged_native_acceptance_open",
+    "r1p2": "internal_deployed_machine_verified_secure_context_owner_acceptance_open",
+    "r1p3": "verified_release_authority_defined",
+    "r1p4": "identity_contract_candidate_trademark_policy_and_final_ui_open",
+    "r1p5": "next_independent_phase2a_reaudit",
+    "phase2aFreezeApproved": false,
+    "trust1SignerAllowed": false
+  },
+  "optionalCommerceRevenueMirror": {
+    "provider": "paddle",
+    "providerConfigured": false,
+    "criticalPath": false,
+    "erpnextCompany": "LightBI Inc",
+    "serviceItem": "LIGHTBI-PRO",
+    "workflowId": "lightbiRevenueMirror01",
+    "workflowName": "LightBI Paddle Revenue → ERPNext Invoice + Clearing",
+    "workflowNodes": 26,
+    "workflowActive": false,
+    "salesInvoiceUpdateStock": false,
+    "paymentClearingAccount": "Paddle Clearing - LBI",
+    "emailTemplate": "LightBI Purchase Confirmation",
+    "printFormat": "LightBI Purchase Invoice",
+    "notificationEnabled": false,
+    "renderProofPdfBytes": 24004,
+    "liveE2eComplete": false
   }
 }

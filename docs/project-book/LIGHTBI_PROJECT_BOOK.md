@@ -110,6 +110,7 @@
   - [75. NEXT/Internal successor generation foundation](#75-nextinternal-successor-generation-foundation)
   - [74. Core durability, Passkey candidate, and test-taxonomy checkpoint](#74-core-durability-passkey-candidate-and-test-taxonomy-checkpoint)
   - [88. Road-to-1.0 execution freeze and optional ERPNext revenue mirror](#88-road-to-10-execution-freeze-and-optional-erpnext-revenue-mirror)
+  - [89. NEXT-017 account security, release gate, and Paddle accounting scaffold](#89-next-017-account-security-release-gate-and-paddle-accounting-scaffold)
 <!-- AUTO_TOC_END -->
 
 ---
@@ -2198,4 +2199,21 @@ A separate optional operational contract is [`../architecture/commerce-erpnext-r
 
 The live VPS already provides both an ERPNext installation inside LXD and n8n in Docker. The ERPNext site contains substantial sample data, so any authentic LightBI E2E should use a dedicated LightBI company/master boundary rather than polluting existing sample companies. Synthetic E2E orders must be clearly marked or removed so they cannot be counted as real revenue.
 
+Owner decision on 2026-08-31 selects Paddle as the intended payment provider; payment configuration is deferred. The downstream scaffold now uses dedicated ERPNext Company `LightBI Inc`, custom DocType `LightBI Order Mirror`, and inactive n8n workflow `lightbiRevenueMirror01` (`LightBI Revenue Mirror to ERPNext (Paddle-ready)`) at `lightbi-revenue-mirror-v1`. Its HMAC credential is intentionally unresolved, so the scaffold fails closed and cannot be treated as a live payment receiver.
+
 This checkpoint completes **R1-P0** at the documentation/integrity gate. The plan/contracts are indexed; a scoped link check resolved 1,243 local links with zero missing targets; both Project Truth JSON files parse; and `git diff --check` passes. The documentation commit remains the final mechanical checkpoint before product/integration mutation begins.
+## 89. NEXT-017 account security, release gate, and Paddle accounting scaffold
+
+NEXT-017 is the first Road-to-1.0 stabilization successor after the NEXT-016 baseline. Its exact public Core is `93296e46d250be7d2f885b2cbb06e25068f38761`; private control plane is `d615832768f89c861ae508c210713c92ed6b74e2`. The immutable Internal generation is `g-2026-08-31-next-017`, parent `g-2026-08-31-next-016`, schema `062_documentation_content`, app version `0.9.2-beta.7-next.17`, and manifest SHA-256 `b1c849eb7c88d46cd6801c340b970a8e9993cd556fdd12a0d0dfbe612510dd0a`. Archived, current-pointer and served desktop manifests are byte-identical.
+
+R1-P2 now has a real Account Security management surface rather than backend-only capability. The CP browser authority under `src/web/` exposes TOTP enrollment/login, one-time recovery codes and rotation, Passkey enrollment/login, factor listing and revoke controls, plus inline MFA/recovery step-up before sensitive mutations. Security mutations bump `security_version`, so an older session cannot remain authoritative after factor changes. Passkeys remain fail-closed outside HTTPS/secure browser context. The compiled CP authoritative suite passes **134/134** at the exact successor head; `/distribution-assets/account-security.js` is served successfully by direct CP and the Internal gateway. Secure-context/manual Passkey acceptance remains separate from machine verification.
+
+R1-P3 now has one explicit platform-independent release authority: Core `pnpm test:release-1.0`. It composes the existing release contract, public/private boundary, generation/UAT contracts and diagnostics, source-size check, production desktop build and selected governed product regressions. The historical full desktop Vitest universe remains available as `test:historical-desktop:diagnostic` and is not redefined as release authority. The new release suite passed before NEXT-017 packaging.
+
+Runtime reconciliation is complete. Gateway header, served generation manifest, CP diagnostics and worker all report NEXT-017 and exact CP `d615832...`; schema is current with pending migrations `[]`. Production `5172/5173/5174` remained running on their pre-existing processes and was not restarted or repointed. Formal owner UAT and packaged Windows acceptance remain R1-P1 gates.
+
+The optional Paddle→ERPNext path was also corrected from a generic mirror into a digital-service accounting mirror. ERPNext uses isolated `LightBI Inc`, non-stock `LIGHTBI-PRO`, `Paddle Clearing - LBI`, Sales Invoice with `update_stock=0`, Payment Entry, and `LightBI Order Mirror` as idempotent integration state. n8n workflow `lightbiRevenueMirror01` is now `LightBI Paddle Revenue → ERPNext Invoice + Clearing`, 26 nodes and inactive. It requires explicit `providerAmount` plus separately governed `accountingAmountVnd`; it never guesses minor-unit exponents or FX.
+
+Email Template `LightBI Purchase Confirmation` and Print Format `LightBI Purchase Invoice` provide a dedicated LightBI-branded purchase/accounting copy. Notification is bound but disabled. Render proof produced a valid 24,004-byte PDF without sending mail, and the template explicitly states Paddle is Merchant of Record and owns the official payment receipt/invoice. Payment-provider setup, live HMAC activation and live/retry E2E remain intentionally open and cannot become checkout/entitlement dependencies.
+
+The next Trust action is R1-P5: independent re-audit of exact Phase 2A `fb8225c951fc27692e6b0e7554c3112ada08e49f`. Phase 2A is still unfrozen; Root ceremony, issuer private keys, signer, attestation and signed ENT/PRO work remain prohibited until an explicit freeze decision.

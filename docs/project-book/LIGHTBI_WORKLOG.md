@@ -1301,3 +1301,21 @@ Phase 2A remains exact `fb8225c951fc27692e6b0e7554c3112ada08e49f`, Draft/Open/CI
 The optional ERPNext revenue mirror is deliberately outside payment/entitlement authority. Current private CP already emits `commerce.order.completed.v1` transactionally after order/payment/entitlement state and delivers integrations asynchronously through its worker/outbox foundation. The live ERPNext instance is isolated inside LXD and n8n is available on the VPS; authentic E2E work will use a dedicated LightBI company/master boundary rather than existing sample companies.
 
 R1-P0 documentation/integrity closure verified 1,243 local links with zero missing targets, valid Project Truth/catalog JSON, updated architecture/source indexes, and a clean `git diff --check`. The isolated documentation commit is the final mechanical checkpoint; only after it is created may the optional Internal ERPNext/n8n E2E track mutate runtime/configuration.
+
+## 2026-08-31 — Paddle selected; inactive n8n → ERPNext accounting scaffold created
+
+- Owner selected Paddle as the intended LightBI 1.0 payment provider and deferred gateway/webhook configuration. LightBI payment/order/entitlement authority remains upstream; n8n/ERPNext is asynchronous reporting only.
+- Created isolated ERPNext Company `LightBI Inc` (`LBI`, VND), non-stock service item `LIGHTBI-PRO`, `Paddle Clearing - LBI`, and `LightBI Order Mirror` as the downstream retry/idempotency ledger. Existing sample companies are not reused as LightBI commerce authority.
+- Reworked n8n workflow `lightbiRevenueMirror01` into `LightBI Paddle Revenue → ERPNext Invoice + Clearing`, 26 nodes and inactive. The target path is non-stock Sales Invoice (`update_stock=0`) → Payment Entry into Paddle Clearing; Sales Order/Delivery Note/Stock Entry are not part of the digital-service flow.
+- The event scaffold now requires provider-decimal `providerAmount` separately from `accountingAmountVnd`; n8n does not infer `/100`, FX or tax policy. HMAC/provider activation remains fail-closed and deferred.
+- Added ERPNext Email Template `LightBI Purchase Confirmation`, Print Format `LightBI Purchase Invoice`, and bound disabled Notification. Render-only proof produced a valid 24,004-byte PDF and sent no email. A separate synthetic invoice/payment accounting proof was submitted then cancelled.
+- Open before live use: Paddle provider wiring, approved currency/tax/FX policy, HMAC activation, CP subscription, synthetic/replay/failure-recovery E2E, payout/fee reconciliation, and owner decision to enable the ERP copy email.
+
+## 2026-08-31 — NEXT-017 reconciled; Account Security management and 1.0 release gate verified
+
+- Core `93296e46d250be7d2f885b2cbb06e25068f38761` and private CP `d615832768f89c861ae508c210713c92ed6b74e2` were committed and pushed on `codex/next017-r1-stabilization`.
+- Core defines `pnpm test:release-1.0` as the single platform-independent release-authoritative suite; historical full-desktop Vitest remains a diagnostic command rather than release authority. The release suite passed before packaging.
+- CP completes the Account Security management surface: TOTP enrollment/login, one-time recovery codes and rotation, Passkey enrollment/login, factor listing/revoke, inline strong-auth step-up and `security_version` invalidation. Exact-head CP authoritative proof passes 134/134. Passkeys remain fail-closed outside HTTPS/secure browser context.
+- Built immutable `g-2026-08-31-next-017`, parent `g-2026-08-31-next-016`, manifest SHA-256 `b1c849eb7c88d46cd6801c340b970a8e9993cd556fdd12a0d0dfbe612510dd0a`. Archived/current/served manifests are byte-identical.
+- After supplying the correct user-systemd bus environment, only Internal gateway/CP/worker were restarted. Gateway header, served manifest, CP diagnostics and worker all report NEXT-017 / CP `d615832...`; schema `062_documentation_content` is current with zero pending migrations. Production `5172/5173/5174` retained their pre-existing processes.
+- R1-P1 formal owner/native acceptance remains open. R1-P2 is Internal-deployed and machine-verified with secure-context owner acceptance open. R1-P3 is verified. R1-P4 remains a contract candidate pending trademark policy/final verification UI. R1-P5 independent exact-head Phase 2A audit is next; Root/signer/private production-key work remains prohibited.
