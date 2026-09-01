@@ -36,6 +36,16 @@ OCI Vault/KMS may be evaluated for operational secret storage or a constrained o
 
 Current LightBI Trust Contracts use Ed25519, while OCI KMS signing support is not the selected Ed25519 contract. The project must not reopen or weaken Phase 2A merely to fit a free cloud service. Root remains offline and user-controlled unless a later explicit ADR changes the trust model.
 
+## Permanent pre-production and engine/chassis boundary
+
+[`ADR-123`](../adr/ADR-123-engine-chassis-preproduction-and-disaster-recovery.md) freezes the operational promotion model. `lightbi-next.thaiduy.digital` is the permanent pre-production chassis and `lightbi.thaiduy.digital` is the permanent Production chassis; domain roles do not rotate.
+
+Only immutable engine identity is promoted: exact Core/Control Plane code, artifacts, migration definitions and runtime contracts. Database rows, Redis state, users, test commerce, telemetry, source-vault data and secrets remain chassis-local and never promote from NEXT to Production.
+
+Before public 1.0, the Beta Production database is archived and a fresh Production database is migrated from zero to establish a clean Day-0 analytics baseline. After 1.0, Production data is durable and normal promotion never resets it.
+
+NEXT uses a separate R2 internal release namespace so real updater download/verification/install flows can be exercised without touching Production. Off-host encrypted chassis backups and a fresh-VPS restore contract are mandatory because the current deployment runs on replaceable Oracle Free Tier compute.
+
 ## Official release identity
 
 An official release must bind version/channel, artifact digest, release metadata and allowed updater state into a strict REL-signed manifest. The application verifies the Root pin, issuer keyset, REL purpose, signature, manifest semantics, expiry/rollback rules and artifact digest before treating a release as official.

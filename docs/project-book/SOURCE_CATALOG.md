@@ -4,11 +4,11 @@
 
 ## Snapshot
 
-- Date: **2026-08-31**
+- Date: **2026-09-01**
 - Branch: `docs/project-library-cleanup-20260829`
-- HEAD: `b3c21e674bca77b34422071b234e94cb982489f3`
+- HEAD: `652853f605682b435af19a97645bf7cc037c6faf`
 - Worktree dirty while generated: **true**
-- Total indexed sources: **931** (514 Markdown / 417 JSON)
+- Total indexed sources: **933** (516 Markdown / 417 JSON)
 - JSON under `docs/`: **354**
 
 For old paths, use [`PATH_MIGRATION_INDEX.md`](./PATH_MIGRATION_INDEX.md) and [`../history/LEGACY_ROOT_INDEX.md`](../history/LEGACY_ROOT_INDEX.md).
@@ -155,12 +155,13 @@ For old paths, use [`PATH_MIGRATION_INDEX.md`](./PATH_MIGRATION_INDEX.md) and [`
 - [`docs/adr/ADR-120-context-aware-semantic-dictionary.md`](../../docs/adr/ADR-120-context-aware-semantic-dictionary.md) — ADR-120: Context-Aware Semantic Dictionary and Evidence Engine; `4856` bytes; SHA-256 `f1fef1cb5dac4fbe0af24916ff578832d52265e9379f34d9617f868dba172b01`
 - [`docs/adr/ADR-121-semantic-registry-source-of-truth.md`](../../docs/adr/ADR-121-semantic-registry-source-of-truth.md) — ADR-121: Runtime Semantic Registry Source of Truth; `2035` bytes; SHA-256 `e5557e54d0c3e3637742fcf702f9a3bc7e4f5033591e74cdf601eff4f2722e78`
 - [`docs/adr/ADR-122-canonical-understanding-pipeline.md`](../../docs/adr/ADR-122-canonical-understanding-pipeline.md) — ADR-122: Canonical Understanding Pipeline; `4552` bytes; SHA-256 `9e5aeb48469dc41dc8f96f4b8bc7c751059c3247c6ba7b24df4d85bea73d87f3`
-- [`docs/adr/README.md`](../../docs/adr/README.md) — Architecture Decision Records; `15892` bytes; SHA-256 `8f05781c08a3659176df3fd241139b005b7b89ddb37de6679d01afeee46ed13b`
+- [`docs/adr/ADR-123-engine-chassis-preproduction-and-disaster-recovery.md`](../../docs/adr/ADR-123-engine-chassis-preproduction-and-disaster-recovery.md) — ADR-123: Engine/Chassis Promotion, Permanent Pre-Production, and Disaster Recovery; `4465` bytes; SHA-256 `d44a7244da9b5ab0b99df04b584bb7ac2d6de563619c58eed1ca2f2ef5310e21`
+- [`docs/adr/README.md`](../../docs/adr/README.md) — Architecture Decision Records; `16112` bytes; SHA-256 `e7d927b313724fa46fefecba3aab527351ce63bfadc2dd8868c64448477d04c0`
 
 ## architecture-source-or-evidence
 
 - [`docs/architecture/commerce-erpnext-revenue-mirror.md`](../../docs/architecture/commerce-erpnext-revenue-mirror.md) — Commerce → ERPNext Optional Revenue Mirror; `11569` bytes; SHA-256 `d2265f05414cf76fe52556ecf7f324baf58d3cd24cba1cad4ad9989c20e61e7f`
-- [`docs/architecture/road-to-1-0-trust-release-contract.md`](../../docs/architecture/road-to-1-0-trust-release-contract.md) — Road to 1.0 Trust, Release, and Official Identity Contract; `10261` bytes; SHA-256 `01f5c16c7caab51ad99552bc609f5c637b7fb5c0a153144ffe8671b183aaa289`
+- [`docs/architecture/road-to-1-0-trust-release-contract.md`](../../docs/architecture/road-to-1-0-trust-release-contract.md) — Road to 1.0 Trust, Release, and Official Identity Contract; `11442` bytes; SHA-256 `145ebcd76004395d0d0bd2062d120cb312cd2a642d1cd4cb02617aa8547953c8`
 - [`docs/architecture/README.md`](../../docs/architecture/README.md) — Architecture Library; `14955` bytes; SHA-256 `766081adcbf4ecd7d41bf8375ceafc7655caccc72106a7ab782df0940d421b24`
 - [`docs/architecture/artifact-model.md`](../../docs/architecture/artifact-model.md) — Export Artifact Model; `834` bytes; SHA-256 `c444e449c8bb69aac589a0c0f35ea93e864f2a90c4b14a1e51e716737342b0e6`
 - [`docs/architecture/beta-core-ui-business-brain-bridge-audit.json`](../../docs/architecture/beta-core-ui-business-brain-bridge-audit.json) — beta-core-ui-business-brain-bridge-audit.json; `2548` bytes; SHA-256 `fb0076e78482530c1f747e09fa105c86110923f19e713ae3ef913a9416908205`

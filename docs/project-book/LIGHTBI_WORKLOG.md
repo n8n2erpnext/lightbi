@@ -1370,3 +1370,21 @@ R1-P0 documentation/integrity closure verified 1,243 local links with zero missi
 - Verification PASS: full CP 170/170, test TypeScript typecheck, focused Admin/TS boundary 3/3, `git diff --check`, and production dependency audit with no known vulnerabilities.
 - HTTPS browser acceptance used real Admin policy and TOTP fallback after Passkey-first was requested by the backend. DOM proof: expanded 220px/shell-left 244, collapsed 58px/shell-left 82, reload retained 58px, reopen returned 220px; active `Newsletter & Mail` remained selected.
 - Deployed immutable `g-2026-09-01-next-024`, parent NEXT-023, Core unchanged `ed044e0a6ceb98eb8d052ddbac17249893005bb6`, CP `ecb17a8...`, schema 065 with 19 applied migrations/pending 0 and healthy matching worker. Served/current/archive manifest SHA-256 is `a61df79d3ff76b652df8880dd95cd846bfca56f0b800bf7147803eb55d4b1c04`. Production 5172/5173/5174 remained untouched. Owner visual acceptance is still open; NEXT remains Internal test state.
+
+## 2026-09-01 — Permanent NEXT pre-production chassis and Oracle-Free-Tier DR foundation verified
+
+- Approved ADR-123: NEXT and Production are permanent, separate chassis; only exact engine identities promote. Chassis data/secrets never promote. The pre-1.0 Production plan is archive Beta state then bootstrap a clean zero-migration Production database for Day-0 metrics; no reset was performed now.
+- Activated encrypted off-host Restic/R2 backups for NEXT, Production-Beta and edge state. Eight snapshots were present at verification. Ubuntu user-systemd `Linger=yes`; NEXT/Production/edge backup and retention timers are enabled.
+- Real restore drills PASS without mutating active state: NEXT SQLite/Core metadata integrity OK, 48 PostgreSQL public tables and 19 migrations restored to an ephemeral container; Production-Beta SQLite integrity OK and 11 public tables restored.
+- Verified encrypted DR bootstrap and wrapped recovery key in R2. Rebuildable Git worktrees, `node_modules` and Rust `target/` caches are intentionally excluded from backup authority.
+- Initialized separate R2 Internal release namespace `lightbi-next/releases/` for `https://lightbi-next.thaiduy.digital` and enabled a persistent two-minute release-sync timer. Fixed its first-release lifecycle so a missing `latest.json` is a successful `no_latest_release_yet` no-op while real retrieval/integrity failures remain fail-closed; Core source fix is `2b65b88fa722ca429062a8dee19b9363bfe15baf`.
+- Private NEXT-025 CP source has advanced to `2b72e91b32b7f956eb9f1fe26bd4ec39eb4b76d0`. These are source candidates only. Active Internal remains NEXT-024; no NEXT-025 Windows artifact/deployment has been accepted yet, Production 5172/5173/5174 was not touched, and R1-P6 remains HOLD.
+
+## 2026-09-01 — NEXT-025 Windows silent-updater candidate 25.10.x published
+
+- Owner acceptance on earlier Windows pairs proved native catalog/download/progress/SHA staging, then exposed Tauri event ACL, History durability/save, Windows elevation and interactive NSIS reinstall UX defects.
+- Core `f1654419c2a0b252795cf9a637d0412c3023de29` accumulates the fixes: durable History at local-source Ready, sample-only overwrite protection, hardened native HTTP/event ACL, monotonic byte-truth progress with bounded UI smoothing, and elevated NSIS launch using `/S /UPDATE /R` for silent in-place update plus relaunch.
+- Local release authority PASS: focused updater/progress UI 15/15, History durability 13/13, desktop production build, full `test:release-1.0`, governed product regression 39/39.
+- GitHub Actions run `33524736531` / #10 PASS at exact `f165441...`; both Windows A/B jobs passed contracts, built and normalized installer/provenance, and the publisher verified immutable R2 authority.
+- R2 pair: A `0.9.2-next.25.10.1`, 29,704,226 bytes, SHA-256 `feb4897de94dfd7859d2d85813a8357c5090967e4342af424f2fcfa6d17e4c59`; B/latest `0.9.2-next.25.10.2`, 29,696,293 bytes, SHA-256 `1f794209f604aebb34808e8b10dd357bb4b5f1f098f6ef49a765ea81c013fc0e`. NEXT mirror/public latest synchronized successfully.
+- Owner Windows acceptance remains open: History must persist through analysis/Investigation/restart, and A→B must require at most UAC, show no NSIS wizard, silently update and reopen as B. Active chassis remains NEXT-024; Production and R1-P6 remain untouched/HOLD.

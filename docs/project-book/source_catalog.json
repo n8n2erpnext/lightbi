@@ -1,14 +1,14 @@
 {
   "schemaVersion": "lightbi.project-book.source-catalog.v1",
-  "snapshotDate": "2026-08-31",
-  "generatedAt": "2026-08-31T16:41:56.222632+00:00",
+  "snapshotDate": "2026-09-01",
+  "generatedAt": "2026-09-01T09:39:47.497868+00:00",
   "branch": "docs/project-library-cleanup-20260829",
-  "head": "bf1b23385e46f7f7ac84e3ea7d82957c80c94ee1",
+  "head": "652853f605682b435af19a97645bf7cc037c6faf",
   "worktreeDirty": true,
   "scope": "All project Markdown and JSON outside dependency/build/project-book directories.",
   "counts": {
-    "total": 932,
-    "markdown": 515,
+    "total": 933,
+    "markdown": 516,
     "json": 417,
     "docsJson": 354,
     "references": 0
@@ -1278,10 +1278,18 @@
       "title": "ADR-122: Canonical Understanding Pipeline"
     },
     {
+      "path": "docs/adr/ADR-123-engine-chassis-preproduction-and-disaster-recovery.md",
+      "extension": ".md",
+      "bytes": 4465,
+      "sha256": "d44a7244da9b5ab0b99df04b584bb7ac2d6de563619c58eed1ca2f2ef5310e21",
+      "suggestedCategory": "architecture-decision",
+      "title": "ADR-123: Engine/Chassis Promotion, Permanent Pre-Production, and Disaster Recovery"
+    },
+    {
       "path": "docs/adr/README.md",
       "extension": ".md",
-      "bytes": 15892,
-      "sha256": "8f05781c08a3659176df3fd241139b005b7b89ddb37de6679d01afeee46ed13b",
+      "bytes": 16112,
+      "sha256": "e7d927b313724fa46fefecba3aab527351ce63bfadc2dd8868c64448477d04c0",
       "suggestedCategory": "architecture-decision",
       "title": "Architecture Decision Records"
     },
@@ -9110,8 +9118,8 @@
     {
       "path": "docs/architecture/road-to-1-0-trust-release-contract.md",
       "extension": ".md",
-      "bytes": 10261,
-      "sha256": "01f5c16c7caab51ad99552bc609f5c637b7fb5c0a153144ffe8671b183aaa289",
+      "bytes": 11442,
+      "sha256": "145ebcd76004395d0d0bd2062d120cb312cd2a642d1cd4cb02617aa8547953c8",
       "suggestedCategory": "architecture-source-or-evidence",
       "title": "Road to 1.0 Trust, Release, and Official Identity Contract"
     },

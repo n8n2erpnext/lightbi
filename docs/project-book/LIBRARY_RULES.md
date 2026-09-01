@@ -255,6 +255,18 @@ A handoff must not masquerade as canonical architecture. Once its task is comple
 
 Temporary command output, debugging transcripts, generated logs, and one-off scratch reasoning should not become permanent Markdown unless they provide durable evidence.
 
+### 13A. Micro-checkpoint continuity rule
+
+Long-running work must maintain one short overwrite-only machine checkpoint at `.lightbi/CURRENT_CHECKPOINT.json`. Update it after a meaningful task is completed and immediately before a planned session/context switch when the next action depends on recent work.
+
+The micro-checkpoint is **current continuity state, not documentation history**. It must stay concise and contain only enough information to resume safely: timestamp, status, active runtime identity, exact source candidate identities when relevant, a short completed list, exact next action, blockers, Production-touch status, and the most useful canonical files to read next. Never put secrets, command transcripts, broad reasoning or duplicated Project Book prose in it.
+
+Overwrite the same file instead of creating dated checkpoint variants. It is intentionally excluded from `SOURCE_CATALOG.md` / `source_catalog.json` because frequent continuity updates must not churn the durable source catalog.
+
+This rule does not replace any existing governance requirement. Completed phases/tasks must still update their normal Project Book, Worklog, ADR, release evidence, verification or handoff owners when required. A micro-checkpoint may point to those records but cannot grant authority, mark an undeployed candidate as deployed, or convert machine verification into owner acceptance.
+
+A future AI should read this micro-checkpoint after the Project Book entry point/governance files when it needs the immediate execution position, then verify exact source/runtime truth before mutation.
+
 ## 14. Forbidden library behavior
 
 The following are documentation hygiene violations:

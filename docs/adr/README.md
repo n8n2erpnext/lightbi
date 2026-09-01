@@ -134,3 +134,4 @@
 - [`ADR-120-context-aware-semantic-dictionary.md`](./ADR-120-context-aware-semantic-dictionary.md) — ADR-120: Context-Aware Semantic Dictionary and Evidence Engine
 - [`ADR-121-semantic-registry-source-of-truth.md`](./ADR-121-semantic-registry-source-of-truth.md) — ADR-121: Runtime Semantic Registry Source of Truth
 - [`ADR-122-canonical-understanding-pipeline.md`](./ADR-122-canonical-understanding-pipeline.md) — ADR-122: Canonical Understanding Pipeline
+- [`ADR-123-engine-chassis-preproduction-and-disaster-recovery.md`](./ADR-123-engine-chassis-preproduction-and-disaster-recovery.md) — ADR-123: Engine/Chassis Promotion, Permanent Pre-Production, and Disaster Recovery
