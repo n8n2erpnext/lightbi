@@ -4,6 +4,7 @@ import type { RuntimeDatasetSource, RuntimeRowScope } from './runtime-dataset-so
 import type { DuckDBPreviewResult } from './duckdb-preview-sandbox';
 import type { SafeSqlPreview } from './safe-sql-preview';
 import { executeLocalDuckDB } from './local-duckdb-executor';
+import { saveBlobWithUserChoice } from './native-capabilities';
 
 export type DrillThroughPoint = {
   dimensionField: string;
@@ -205,24 +206,24 @@ export function rowsToCsv(columns: string[], rows: Record<string, unknown>[]): s
   ].join('\r\n');
 }
 
-export function downloadBlob(name: string, blob: Blob): void {
-  const url = URL.createObjectURL(blob);
-  const anchor = document.createElement('a');
-  anchor.href = url;
-  anchor.download = name;
-  anchor.click();
-  URL.revokeObjectURL(url);
+export async function downloadBlob(name: string, blob: Blob) {
+  const extension = name.includes('.') ? name.split('.').pop() || '' : '';
+  return saveBlobWithUserChoice(blob, {
+    suggestedName: name,
+    description: extension ? `${extension.toUpperCase()} file` : 'LightBI export',
+    extensions: extension ? [extension] : [],
+  });
 }
 
-export function exportRowsAsCsv(name: string, columns: string[], rows: Record<string, unknown>[]): void {
-  downloadBlob(name, new Blob([rowsToCsv(columns, rows)], { type: 'text/csv;charset=utf-8' }));
+export async function exportRowsAsCsv(name: string, columns: string[], rows: Record<string, unknown>[]) {
+  return downloadBlob(name, new Blob([rowsToCsv(columns, rows)], { type: 'text/csv;charset=utf-8' }));
 }
 
-export function exportRowsAsXlsx(name: string, columns: string[], rows: Record<string, unknown>[]): void {
+export async function exportRowsAsXlsx(name: string, columns: string[], rows: Record<string, unknown>[]) {
   const workbook = XLSX.utils.book_new();
   const orderedRows = rows.map(row => Object.fromEntries(columns.map(column => [column, row[column]])));
   const worksheet = XLSX.utils.json_to_sheet(orderedRows, { header: columns });
   XLSX.utils.book_append_sheet(workbook, worksheet, 'Filtered rows');
   const buffer = XLSX.write(workbook, { type: 'array', bookType: 'xlsx' }) as ArrayBuffer;
-  downloadBlob(name, new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
+  return downloadBlob(name, new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
 }

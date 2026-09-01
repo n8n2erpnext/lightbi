@@ -16,7 +16,9 @@
     "start:internal-gateway": "node scripts/run-internal-gateway.mjs",
     "test:source-module-size": "node scripts/check-source-module-size.mjs",
     "test:release-1.0": "node scripts/run-release-1.0-suite.mjs",
-    "test:historical-desktop:diagnostic": "pnpm --dir apps/desktop test"
+    "test:historical-desktop:diagnostic": "pnpm --dir apps/desktop test",
+    "test:preproduction-ops": "node scripts/verify-preproduction-ops.mjs",
+    "test:ops": "node scripts/verify-preproduction-ops.mjs"
   },
   "devDependencies": {
     "typescript": "^5.9.3"

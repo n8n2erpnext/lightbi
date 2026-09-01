@@ -1,0 +1,11 @@
+[Unit]
+Description=Daily LightBI NEXT chassis backup
+
+[Timer]
+OnCalendar=*-*-* 03:20:00
+RandomizedDelaySec=15m
+Persistent=true
+Unit=lightbi-next-backup.service
+
+[Install]
+WantedBy=timers.target

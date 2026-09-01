@@ -1,0 +1,13 @@
+[Unit]
+Description=LightBI restic retention and integrity maintenance
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/home/ubuntu/services/lightbi-ops/bin/lightbi-restic-retention.sh /home/ubuntu/.config/lightbi-backup-r2.env
+Nice=15
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7
+NoNewPrivileges=true
+PrivateTmp=true

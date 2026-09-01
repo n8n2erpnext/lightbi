@@ -31,3 +31,9 @@ export async function downloadProjectSourceFile(sourceFile: PersistedProjectSour
   const blob = await response.blob();
   return new File([blob], sourceFile.originalName, { type: blob.type || 'application/octet-stream' });
 }
+
+export async function resolveProjectSourceFile(originalName: string): Promise<PersistedProjectSourceFile | null> {
+  const response = await fetch(`${getApiBaseUrl()}/api/project/source-files/resolve?name=${encodeURIComponent(originalName)}`);
+  if (response.status === 404) return null;
+  return readJson<PersistedProjectSourceFile>(response);
+}

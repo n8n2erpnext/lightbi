@@ -2,6 +2,7 @@ import * as XLSX from 'xlsx';
 import type { AdvancedSourceTable, AdvancedWorkspaceSource } from '../stores/advanced-source-store';
 import { materializeRuntimeDatasetSource } from './full-file-runtime-materializer';
 import { validateCanonicalSourceBoundary, type CanonicalSourceBoundaryV1 } from './understanding-core/canonical-source-boundary';
+import { saveBlobWithUserChoice } from './native-capabilities';
 
 export const CLEAN_DATA_HANDOFF_VERSION = 'lightbi.clean-data-handoff.v1' as const;
 
@@ -252,53 +253,21 @@ export function createPowerBiWorkbook(result: CleanDataHandoffResultV1): ArrayBu
   return XLSX.write(workbook, { type: 'array', bookType: 'xlsx', compression: true }) as ArrayBuffer;
 }
 
-export function downloadPowerBiWorkbook(result: CleanDataHandoffResultV1): void {
-  const buffer = createPowerBiWorkbook(result);
-  const stem = result.artifact.source.sourceName.replace(/[^a-z0-9_-]+/gi, '_') || 'lightbi-clean-data';
-  const url = URL.createObjectURL(new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
-  const anchor = document.createElement('a');
-  anchor.href = url;
-  anchor.download = `${stem}-PowerBI-ready.xlsx`;
-  anchor.click();
-  URL.revokeObjectURL(url);
-}
-
 export interface CleanDataSaveResult {
   fileName: string;
   locationLabel: string;
   usedSaveAs: boolean;
+  cancelled?: boolean;
 }
 
-type SaveFileHandle = { name: string; createWritable: () => Promise<{ write: (data: Blob) => Promise<void>; close: () => Promise<void> }> };
-type SavePickerWindow = Window & { showSaveFilePicker?: (options: Record<string, unknown>) => Promise<SaveFileHandle> };
-
-/**
- * Lets desktop-capable browsers choose a name and destination. Browsers that do
- * not expose the File System Access API keep the existing safe Downloads fallback.
- */
 export async function savePowerBiWorkbook(result: CleanDataHandoffResultV1): Promise<CleanDataSaveResult> {
   const buffer = createPowerBiWorkbook(result);
   const stem = result.artifact.source.sourceName.replace(/[^a-z0-9_-]+/gi, '_') || 'lightbi-clean-data';
   const defaultName = `${stem}-PowerBI-ready.xlsx`;
   const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-  const picker = (window as SavePickerWindow).showSaveFilePicker;
-
-  if (picker) {
-    try {
-      const handle = await picker({
-        suggestedName: defaultName,
-        types: [{ description: 'Excel workbook', accept: { 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'] } }],
-      });
-      const writable = await handle.createWritable();
-      await writable.write(blob); await writable.close();
-      return { fileName: handle.name, locationLabel: handle.name, usedSaveAs: true };
-    } catch (cause) {
-      if (!(cause instanceof DOMException) || cause.name !== 'AbortError') throw cause;
-    }
-  }
-
-  const url = URL.createObjectURL(blob);
-  const anchor = document.createElement('a'); anchor.href = url; anchor.download = defaultName; anchor.click();
-  URL.revokeObjectURL(url);
-  return { fileName: defaultName, locationLabel: `Downloads/${defaultName}`, usedSaveAs: false };
+  return saveBlobWithUserChoice(blob, {
+    suggestedName: defaultName,
+    description: 'Excel workbook',
+    extensions: ['xlsx'],
+  });
 }

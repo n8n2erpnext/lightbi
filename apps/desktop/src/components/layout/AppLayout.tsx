@@ -26,6 +26,7 @@ import { useLightBIAccount } from "../../hooks/useLightBIAccount";
 import { useUpdateStore } from "../../stores/update-store";
 import { useAnnouncementStore } from "../../stores/announcement-store";
 import { UpdateNotificationMenu } from "./UpdateNotificationMenu";
+import { UpdateStatusBar } from "./UpdateStatusBar";
 import { buildGenerationManifest } from "../../lib/generation-manifest";
 
 export const AppLayout: React.FC = () => {
@@ -190,6 +191,7 @@ export const AppLayout: React.FC = () => {
 
           {/* Bottom Navigation */}
           <div className="flex flex-col gap-2 p-3">
+            {!isSidebarExpanded && <div className="flex justify-center"><UpdateNotificationMenu /></div>}
             <div ref={accountMenuRef} className="relative">
               {accountMenuOpen && (
                 <div
@@ -328,7 +330,8 @@ export const AppLayout: React.FC = () => {
 
         {/* Main Content */}
         <main className="flex min-w-0 flex-1 flex-col overflow-hidden bg-[#fbfbfa]">
-          <Outlet />
+          <UpdateStatusBar />
+          <div className="min-h-0 flex-1 overflow-hidden"><Outlet /></div>
         </main>
       </div>
     </UiTranslationBoundary>

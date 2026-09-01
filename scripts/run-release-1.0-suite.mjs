@@ -5,6 +5,7 @@ const governed = [
   ['public release contract', ['test:release-contract']],
   ['public/private boundary', ['test:public-boundary']],
   ['generation contract', ['test:generation-contract']],
+  ['pre-production operations contract', ['test:preproduction-ops']],
   ['owner UAT-pack contract', ['test:internal-uat-pack']],
   ['generation runtime diagnostics', ['--dir','apps/desktop','exec','vitest','run','src/lib/generation-manifest.test.ts','src/lib/generation-diagnostics.test.ts']],
   ['production source-size gate', ['test:source-module-size']],

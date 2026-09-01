@@ -23,7 +23,7 @@ export function useHomeQuestionApi(deps: HomeQuestionApiDependencies) {
       deps.setResult({ ...(await response.json()), originalQuestion: question });
     } catch (error) {
       console.error(error);
-      alert('Failed to ask question.');
+      deps.setResult({ status: 'failed', error: 'Failed to ask question.', originalQuestion: question });
     } finally {
       deps.setIsAsking(false);
     }

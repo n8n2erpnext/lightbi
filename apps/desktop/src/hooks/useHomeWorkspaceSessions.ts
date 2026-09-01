@@ -6,7 +6,7 @@ import { createPreviewRows } from '../lib/data-intake-preview-rows';
 import { createFileSourceCandidate, createSourceCandidate, type SourceCandidate, type SourceInspectionResult } from '../lib/source-preflight';
 import { inspectLocalFile } from '../lib/local-file-inspector';
 import { inspectOnlineSource } from '../lib/online-source-inspector';
-import { downloadProjectSourceFile, uploadProjectSourceFile } from '../lib/project-source-file-api';
+import { downloadProjectSourceFile, resolveProjectSourceFile, uploadProjectSourceFile, type PersistedProjectSourceFile } from '../lib/project-source-file-api';
 import { createWorkspaceUnderstandingState } from '../lib/workspace-understanding-state';
 import { deleteWorkspaceSession, loadWorkspaceSessions, saveWorkspaceSession, type SaveWorkspaceSessionRequest, type WorkspaceSessionRecord } from '../lib/workspace-session-api';
 import { attachPersistedFile, createWorkspaceSessionSnapshot, persistedFilesFromSession } from '../lib/home-workspace-persistence';
@@ -255,7 +255,22 @@ export function useHomeWorkspaceSessions(deps: HomeWorkspaceSessionDependencies)
         setSessionStatus(error instanceof Error ? error.message : 'Could not refresh the saved online source.');
       }
     }
-    const persistedFiles = persistedFilesFromSession(session);
+    const existingPersistedFiles = persistedFilesFromSession(session);
+    let persistedFiles: PersistedProjectSourceFile[] = existingPersistedFiles;
+    if (persistedFiles.length === 0) {
+      const snapshotNames = Array.isArray(restoredDataset.sourceFiles)
+        ? restoredDataset.sourceFiles.map((source: any) => source?.name).filter((name: unknown): name is string => typeof name === 'string' && name.trim().length > 0)
+        : [];
+      const summaryNames = Array.isArray(session.sourceSummary)
+        ? session.sourceSummary.map((source: any) => source?.name).filter((name: unknown): name is string => typeof name === 'string' && name.trim().length > 0)
+        : [];
+      const expectedNames: string[] = [...new Set<string>(snapshotNames.length > 0 ? snapshotNames : summaryNames.length > 0 ? summaryNames : [session.title])];
+      const resolved = await Promise.all(expectedNames.map(name => resolveProjectSourceFile(name).catch(() => null)));
+      if (resolved.length === expectedNames.length && resolved.every(Boolean)) {
+        persistedFiles = resolved as PersistedProjectSourceFile[];
+        setSessionStatus('Recovered the complete source from the local LightBI project store.');
+      }
+    }
     if (persistedFiles.length > 0) {
       setSessionStatus('Reloading saved source files...');
       try {
@@ -361,8 +376,18 @@ export function useHomeWorkspaceSessions(deps: HomeWorkspaceSessionDependencies)
         }
         deps.setCurrentDataset(readyDataset);
         resetAnalysisState(session.id);
+        if (canonicalSourceBoundary && existingPersistedFiles.length === 0) {
+          try {
+            const healed = await saveWorkspaceSession(createSaveRequest(readyDataset));
+            setWorkspaceSessions(current => [healed, ...current.filter(item => item.id !== healed.id)].slice(0, 100));
+          } catch {
+            // Restoration remains valid even when legacy metadata cannot be self-healed.
+          }
+        }
         setSessionStatus(canonicalSourceBoundary
-          ? 'Session opened from the complete saved source file.'
+          ? existingPersistedFiles.length > 0
+            ? 'Session opened from the complete saved source file.'
+            : 'Session recovered from the complete local source and upgraded for future opens.'
           : 'Saved sample restored. Reselect the complete source before analysis.');
         return;
       } catch (error) {

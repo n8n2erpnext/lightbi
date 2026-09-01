@@ -6,6 +6,7 @@ import './App.css';
 export default function App() {
   const [imported, setImported] = useState(false);
   const [chartData, setChartData] = useState<any>(null);
+  const [notice, setNotice] = useState('');
 
   const importCsv = async () => {
     const API_BASE_URL = getApiBaseUrl();
@@ -21,7 +22,7 @@ export default function App() {
       }
     } catch (e) {
       console.error(e);
-      alert("Failed to import CSV");
+      setNotice('Failed to import CSV');
     }
   };
 
@@ -33,7 +34,7 @@ export default function App() {
       setChartData(data);
     } catch (e) {
       console.error(e);
-      alert("Failed to load chart data");
+      setNotice('Failed to load chart data');
     }
   };
 
@@ -45,11 +46,11 @@ export default function App() {
       if (data.download_url) {
         // Remove file:// for typical browser download, though it won't work perfectly in a browser unless served
         // For Milestone 1, just opening the URL will show the path or we can alert it
-        alert(`Exported to: ${data.download_url}`);
+        setNotice(`Exported to: ${data.download_url}`);
       }
     } catch (e) {
       console.error(e);
-      alert("Failed to export Excel");
+      setNotice('Failed to export Excel');
     }
   };
 
@@ -92,6 +93,7 @@ export default function App() {
     <div style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto', fontFamily: 'sans-serif' }}>
       <h1>LightBI Milestone 1</h1>
       <p>Proving the first visible analytics slice.</p>
+      {notice && <p role="status">{notice}</p>}
 
       <div style={{ marginBottom: '2rem', display: 'flex', gap: '1rem' }}>
         <button 

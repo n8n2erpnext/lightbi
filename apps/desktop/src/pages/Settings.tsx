@@ -22,6 +22,8 @@ const AccountAccess: React.FC<{ account: ReturnType<typeof useLightBIAccount> }>
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [displayName, setDisplayName] = useState('');
+  const [mfaMethod, setMfaMethod] = useState<'totp' | 'recovery'>('totp');
+  const [mfaCode, setMfaCode] = useState('');
 
   const submit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -37,6 +39,20 @@ const AccountAccess: React.FC<{ account: ReturnType<typeof useLightBIAccount> }>
     }
     await account.loginEmail(email, password);
   };
+
+  if (account.mfaChallenge) return <div className="rounded-xl border border-amber-200 bg-amber-50/60 p-5">
+    <div className="flex items-start gap-3"><ShieldCheck className="mt-0.5 h-5 w-5 text-amber-700" /><div><div className="font-semibold text-slate-900">Strong authentication required</div><p className="mt-1 text-sm leading-6 text-slate-600">Your password is correct. Complete the enabled second factor before LightBI creates a native account session.</p></div></div>
+    <div className="mt-4 flex rounded-lg bg-white/80 p-1 text-sm">
+      {account.mfaChallenge.methods.includes('totp') && <button type="button" onClick={() => { setMfaMethod('totp'); setMfaCode(''); }} className={`flex-1 rounded-md px-3 py-2 font-semibold ${mfaMethod === 'totp' ? 'bg-slate-900 text-white' : 'text-slate-600'}`}>Authenticator code</button>}
+      {account.mfaChallenge.methods.includes('recovery') && <button type="button" onClick={() => { setMfaMethod('recovery'); setMfaCode(''); }} className={`flex-1 rounded-md px-3 py-2 font-semibold ${mfaMethod === 'recovery' ? 'bg-slate-900 text-white' : 'text-slate-600'}`}>Recovery code</button>}
+    </div>
+    <form className="mt-4 space-y-3" onSubmit={async event => { event.preventDefault(); if (await account.verifyMfa(mfaMethod, mfaCode)) { setMfaCode(''); setPassword(''); } }}>
+      <input autoFocus aria-label={mfaMethod === 'totp' ? 'Authenticator code' : 'Recovery code'} value={mfaCode} onChange={event => setMfaCode(event.target.value)} inputMode={mfaMethod === 'totp' ? 'numeric' : 'text'} autoComplete="one-time-code" placeholder={mfaMethod === 'totp' ? '6-digit code' : 'Recovery code'} required className="w-full rounded-lg border border-amber-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-amber-500" />
+      <div className="flex items-center justify-between gap-3"><button type="submit" disabled={account.loading || !mfaCode.trim()} className="rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50">Verify and sign in</button><button type="button" onClick={() => { account.cancelMfa(); setMfaCode(''); }} className="text-sm font-semibold text-slate-600">Back</button></div>
+      <p className="text-xs text-slate-500">Challenge expires in about {Math.max(1, Math.ceil(account.mfaChallenge.expiresIn / 60))} minutes.</p>
+    </form>
+    {account.error && <div className="mt-3 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{account.error}</div>}
+  </div>;
 
   return <div className="rounded-xl border border-slate-200 bg-slate-50 p-5">
     <div className="flex items-start gap-3"><UserRound className="mt-0.5 h-5 w-5 text-blue-600" /><div><div className="font-semibold text-slate-900">Sign in to LightBI</div><p className="mt-1 text-sm leading-6 text-slate-500">Use Google or email and password to manage Pro access and devices. Files, SQL and analysis results stay local.</p></div></div>

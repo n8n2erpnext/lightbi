@@ -1,5 +1,6 @@
 import { getOrCreateInstallationId, lightBIDistributionEndpoint, setCurrentLicenseTier } from './distribution-pairing';
 import { isNativeLightBI } from './native-runtime';
+import { externalFetch, openExternalUrl } from './native-capabilities';
 
 export type LightBIAccountSummary = {
   authenticated: true;
@@ -7,6 +8,18 @@ export type LightBIAccountSummary = {
   entitlement: { id?: string; tier: 'basic' | 'pro'; status: string; max_devices: number; expires_at?: string | null };
   devices: Array<{ id: string; display_name?: string | null; platform?: string | null; app_version?: string | null; status: string; created_at: string; last_seen_at: string; revoked_at?: string | null }>;
 };
+
+export type LightBIAccountMfaChallenge = {
+  challengeId: string;
+  methods: Array<'totp' | 'recovery'>;
+  expiresIn: number;
+  nativeLoginId?: string;
+};
+
+export type LightBIEmailLoginResult =
+  | { status: 'authenticated'; account: LightBIAccountSummary | null }
+  | ({ status: 'mfa_required' } & LightBIAccountMfaChallenge)
+  | { status: 'passkey_required'; challengeId: string; fallbackTotp: boolean; expiresIn: number; nativeLoginId?: string };
 
 const version = () => import.meta.env.VITE_LIGHTBI_VERSION ?? '0.9.2-beta.7';
 const platform = () => navigator.platform || 'unknown';
@@ -30,7 +43,7 @@ async function accountFetch(path: string, options: RequestInit = {}, endpoint?: 
   const headers = new Headers(options.headers);
   if (options.body && !headers.has('content-type')) headers.set('content-type', 'application/json');
   if (token) headers.set('authorization', `Bearer ${token}`);
-  return fetch(`${lightBIDistributionEndpoint(endpoint)}${path}`, {
+  return externalFetch(`${lightBIDistributionEndpoint(endpoint)}${path}`, {
     ...options,
     headers,
     credentials: isNativeLightBI() ? 'omit' : 'include',
@@ -58,6 +71,23 @@ export async function loadLightBIAccount(endpoint?: string): Promise<LightBIAcco
   }
 }
 
+async function finishNativeLoginPolling(base: string, loginId: string, installationId: string, expiresIn = 600): Promise<string> {
+  const deadline = Date.now() + Math.min(600, expiresIn || 600) * 1000;
+  while (Date.now() < deadline) {
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    const statusResponse = await externalFetch(`${base}/api/account/device-login/status`, {
+      method: 'POST', headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ loginId, installationId }),
+    });
+    if (!statusResponse.ok) continue;
+    const status = await statusResponse.json() as { status: string; token?: string };
+    if (status.status === 'pending' || status.status === 'mfa_required') continue;
+    if (status.status !== 'complete' || !status.token) throw new Error('Strong sign-in expired or was denied.');
+    return status.token;
+  }
+  throw new Error('Strong sign-in timed out.');
+}
+
 export async function beginLightBIGoogleLogin(endpoint?: string): Promise<LightBIAccountSummary | null> {
   const base = lightBIDistributionEndpoint(endpoint);
   if (!isNativeLightBI()) {
@@ -65,25 +95,15 @@ export async function beginLightBIGoogleLogin(endpoint?: string): Promise<LightB
     return null;
   }
   const installationId = getOrCreateInstallationId();
-  const response = await fetch(`${base}/api/account/device-login/start`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ installationId, deviceName: `LightBI on ${platform()}`, platform: platform(), appVersion: version() }) });
+  const response = await externalFetch(`${base}/api/account/device-login/start`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ installationId, deviceName: `LightBI on ${platform()}`, platform: platform(), appVersion: version() }) });
   if (!response.ok) throw new Error('Could not start Google sign-in.');
   const started = await response.json() as { loginId: string; authorizationUrl: string; expiresIn: number };
-  const { openUrl } = await import('@tauri-apps/plugin-opener');
-  await openUrl(started.authorizationUrl);
-  const deadline = Date.now() + Math.min(600, started.expiresIn || 600) * 1000;
-  while (Date.now() < deadline) {
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    const statusResponse = await fetch(`${base}/api/account/device-login/status`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ loginId: started.loginId, installationId }) });
-    if (!statusResponse.ok) continue;
-    const status = await statusResponse.json() as { status: string; token?: string };
-    if (status.status === 'pending') continue;
-    if (status.status !== 'complete' || !status.token) throw new Error('Google sign-in expired or was denied.');
-    await storeNativeToken(status.token);
-    const account = await loadLightBIAccount(endpoint);
-    window.dispatchEvent(new CustomEvent('lightbi-account-changed'));
-    return account;
-  }
-  throw new Error('Google sign-in timed out.');
+  await openExternalUrl(started.authorizationUrl);
+  const token = await finishNativeLoginPolling(base, started.loginId, installationId, started.expiresIn);
+  await storeNativeToken(token);
+  const account = await loadLightBIAccount(endpoint);
+  window.dispatchEvent(new CustomEvent('lightbi-account-changed'));
+  return account;
 }
 
 export async function registerLightBIEmailAccount(input: { email: string; password: string; displayName?: string }, endpoint?: string): Promise<void> {
@@ -91,16 +111,63 @@ export async function registerLightBIEmailAccount(input: { email: string; passwo
   await accountResult(response, 'Registration could not be completed.');
 }
 
-export async function loginLightBIEmailAccount(email: string, password: string, endpoint?: string): Promise<LightBIAccountSummary | null> {
+export async function loginLightBIEmailAccount(email: string, password: string, endpoint?: string): Promise<LightBIEmailLoginResult> {
   const native = isNativeLightBI();
   const response = await accountFetch('/api/account/login', { method: 'POST', body: JSON.stringify({
     email, password,
     ...(native ? { installationId: getOrCreateInstallationId(), deviceName: `LightBI on ${platform()}`, platform: platform(), appVersion: version() } : {}),
   }) }, endpoint);
-  const result = await accountResult(response, 'Email or password is incorrect.') as { token?: string };
+  const result = await accountResult(response, 'Email or password is incorrect.') as {
+    token?: string; authenticated?: boolean; mfaRequired?: boolean; passkeyRequired?: boolean; challengeId?: string; methods?: Array<'totp' | 'recovery'>; fallbackTotp?: boolean; expiresIn?: number; nativeLoginId?: string;
+  };
+  if (result.passkeyRequired) {
+    if (!result.challengeId) throw new Error('The passkey challenge could not be created.');
+    if (native) {
+      if (!result.nativeLoginId) throw new Error('The native passkey handoff could not be created.');
+      const installationId = getOrCreateInstallationId();
+      await openExternalUrl(`${lightBIDistributionEndpoint(endpoint)}/account?strong=${encodeURIComponent(result.challengeId)}`);
+      const token = await finishNativeLoginPolling(lightBIDistributionEndpoint(endpoint), result.nativeLoginId, installationId, result.expiresIn ?? 300);
+      await storeNativeToken(token);
+      const account = await loadLightBIAccount(endpoint);
+      window.dispatchEvent(new CustomEvent('lightbi-account-changed'));
+      return { status: 'authenticated', account };
+    }
+    window.location.href = `${lightBIDistributionEndpoint(endpoint)}/account?strong=${encodeURIComponent(result.challengeId)}`;
+    return { status: 'passkey_required', challengeId: result.challengeId, fallbackTotp: result.fallbackTotp === true, expiresIn: result.expiresIn ?? 300 };
+  }
+  if (result.mfaRequired) {
+    if (!result.challengeId) throw new Error('The strong-authentication challenge could not be created.');
+    return { status: 'mfa_required', challengeId: result.challengeId, methods: result.methods ?? ['totp', 'recovery'], expiresIn: result.expiresIn ?? 300, nativeLoginId: result.nativeLoginId };
+  }
   if (native) {
     if (!result.token) throw new Error('The account session could not be created.');
     await storeNativeToken(result.token);
+  }
+  const account = await loadLightBIAccount(endpoint);
+  window.dispatchEvent(new CustomEvent('lightbi-account-changed'));
+  return { status: 'authenticated', account };
+}
+
+export async function completeLightBIAccountMfa(
+  challengeId: string, method: 'totp' | 'recovery', code: string, endpoint?: string, nativeLoginId?: string,
+): Promise<LightBIAccountSummary | null> {
+  const response = await accountFetch('/api/v1/account/mfa/verify', {
+    method: 'POST', body: JSON.stringify({ challengeId, method, code: code.trim() }),
+  }, endpoint);
+  const envelope = await response.json().catch(() => ({})) as {
+    ok?: boolean; data?: { status?: string; sessionKind?: string; token?: string }; error?: { code?: string; message?: string };
+  };
+  if (!response.ok || !envelope.ok) throw new Error(envelope.error?.message || envelope.error?.code || 'Strong authentication failed.');
+  if (isNativeLightBI() && envelope.data?.status === 'native_login_verified') {
+    if (!nativeLoginId) throw new Error('The native strong-authentication handoff is missing.');
+    const token = await finishNativeLoginPolling(lightBIDistributionEndpoint(endpoint), nativeLoginId, getOrCreateInstallationId(), 300);
+    await storeNativeToken(token);
+  } else {
+    if (envelope.data?.status !== 'authenticated') throw new Error('Strong authentication did not create an account session.');
+    if (isNativeLightBI()) {
+      if (!envelope.data.token) throw new Error('The native account session could not be created after strong authentication.');
+      await storeNativeToken(envelope.data.token);
+    }
   }
   const account = await loadLightBIAccount(endpoint);
   window.dispatchEvent(new CustomEvent('lightbi-account-changed'));

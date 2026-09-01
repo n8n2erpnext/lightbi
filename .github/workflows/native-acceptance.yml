@@ -46,9 +46,31 @@ jobs:
         working-directory: crates/lightbi-tauri
         shell: pwsh
         env:
-          VITE_LIGHTBI_DISTRIBUTION_URL: https://lightbi.thaiduy.digital/distribution
-          VITE_LIGHTBI_VERSION: 0.9.2-beta.7-native.${{ github.run_number }}
-        run: pnpm dlx @tauri-apps/cli@2.11.4 build --target x86_64-pc-windows-msvc --config tauri.windows.conf.json
+          VITE_LIGHTBI_DISTRIBUTION_URL: https://lightbi-next.thaiduy.digital
+          VITE_LIGHTBI_VERSION: 0.9.2-beta.7-next.25-native.${{ github.run_number }}
+          VITE_LIGHTBI_GENERATION_ID: g-2026-09-01-next-025
+          VITE_LIGHTBI_PARENT_GENERATION_ID: g-2026-09-01-next-024
+          VITE_LIGHTBI_CHANNEL: internal
+          VITE_LIGHTBI_CORE_COMMIT: ${{ github.sha }}
+          VITE_LIGHTBI_CONTROL_PLANE_COMMIT: 2b72e91b32b7f956eb9f1fe26bd4ec39eb4b76d0
+          VITE_LIGHTBI_CONTROL_PLANE_SCHEMA_VERSION: 065_marketing_newsletter_mail
+          VITE_LIGHTBI_TEST_PACK_VERSION: next-025-native-boundary-acceptance
+          VITE_LIGHTBI_TRUST_STATUS: phase2a_unfrozen
+          VITE_LIGHTBI_RELEASE_UPDATE_CHANNEL: internal
+          VITE_LIGHTBI_ANALYTICS_NAMESPACE: internal-native-acceptance
+          VITE_LIGHTBI_RELEASE_NAMESPACE: internal/lightbi-next
+          VITE_LIGHTBI_SOURCE_BRANCH: ${{ github.ref_name }}
+          VITE_LIGHTBI_SOURCE_COMMIT: ${{ github.sha }}
+          VITE_LIGHTBI_BUILDER: github-actions
+          VITE_LIGHTBI_INFRA_DATABASE_SCOPE: internal
+          VITE_LIGHTBI_INFRA_REDIS_SCOPE: internal
+          VITE_LIGHTBI_INFRA_DATA_SCOPE: internal
+          VITE_LIGHTBI_INFRA_ANALYTICS_SCOPE: internal
+          VITE_LIGHTBI_INFRA_RELEASES_SCOPE: internal
+          VITE_LIGHTBI_INFRA_INTEGRATIONS_SCOPE: internal
+        run: |
+          $env:VITE_LIGHTBI_BUILD_TIMESTAMP = (Get-Date).ToUniversalTime().ToString("o")
+          pnpm dlx @tauri-apps/cli@2.11.4 build --target x86_64-pc-windows-msvc --config tauri.windows.conf.json
       - name: Generate checksum and provenance
         shell: pwsh
         run: |

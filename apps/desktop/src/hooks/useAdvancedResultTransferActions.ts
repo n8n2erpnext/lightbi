@@ -9,6 +9,7 @@ import type { AdvancedFileSession } from '../lib/advanced-file-session';
 import { createInvestigationSession } from '../lib/investigation-session';
 import { classifyAdvancedResultCompleteness, materializeAdvancedResultPages } from '../lib/advanced-result-handoff';
 import { createCanonicalAdvancedEasyReturn } from '../lib/advanced-easy-return';
+import { saveBlobWithUserChoice } from '../lib/native-capabilities';
 
 type TabPatch = Partial<WorkspaceTab> | ((tab: WorkspaceTab) => Partial<WorkspaceTab>);
 
@@ -150,13 +151,13 @@ export function createAdvancedResultTransferActions(context: AdvancedResultTrans
     if (completed.length) setActiveTabId(completed[completed.length - 1].id);
   };
 
-  const downloadBlob = (name: string, blob: Blob) => {
-    const url = URL.createObjectURL(blob);
-    const anchor = document.createElement('a');
-    anchor.href = url;
-    anchor.download = name;
-    anchor.click();
-    URL.revokeObjectURL(url);
+  const downloadBlob = async (name: string, blob: Blob) => {
+    const extension = name.includes('.') ? name.split('.').pop() || '' : '';
+    return saveBlobWithUserChoice(blob, {
+      suggestedName: name,
+      description: extension ? `${extension.toUpperCase()} file` : 'LightBI export',
+      extensions: extension ? [extension] : [],
+    });
   };
 
   const cancelFullExport = () => {
@@ -168,7 +169,7 @@ export function createAdvancedResultTransferActions(context: AdvancedResultTrans
     if (importJobIdRef.current) void cancelAdvancedImportJob(importJobIdRef.current);
   };
 
-  const exportResult = (format: 'csv' | 'xlsx' | 'json' | 'sql' = 'csv') => {
+  const exportResult = async (format: 'csv' | 'xlsx' | 'json' | 'sql' = 'csv') => {
     if (!displayResult) return;
     const baseName = activeTab.title.replace(/[^a-z0-9_-]+/gi, '_') || 'lightbi-result';
     if (format === 'xlsx') {
@@ -176,21 +177,21 @@ export function createAdvancedResultTransferActions(context: AdvancedResultTrans
       const worksheet = XLSX.utils.json_to_sheet(resultRowsAsObjects(displayResult));
       XLSX.utils.book_append_sheet(workbook, worksheet, 'Result');
       const buffer = XLSX.write(workbook, { type: 'array', bookType: 'xlsx' }) as ArrayBuffer;
-      downloadBlob(`${baseName}.xlsx`, new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
+      await downloadBlob(`${baseName}.xlsx`, new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
       return;
     }
     if (format === 'json') {
-      downloadBlob(`${baseName}.json`, new Blob([JSON.stringify(resultRowsAsObjects(displayResult), null, 2)], { type: 'application/json;charset=utf-8' }));
+      await downloadBlob(`${baseName}.json`, new Blob([JSON.stringify(resultRowsAsObjects(displayResult), null, 2)], { type: 'application/json;charset=utf-8' }));
       return;
     }
     if (format === 'sql') {
       const tableName = quoteIdentifier(activeTab.tableContext?.table || baseName);
       const columns = displayResult.columns.map(column => quoteIdentifier(column.name)).join(', ');
       const statements = displayResult.rows.map(row => `INSERT INTO ${tableName} (${columns}) VALUES (${row.map(sqlLiteral).join(', ')});`).join('\n');
-      downloadBlob(`${baseName}.sql`, new Blob([statements], { type: 'application/sql;charset=utf-8' }));
+      await downloadBlob(`${baseName}.sql`, new Blob([statements], { type: 'application/sql;charset=utf-8' }));
       return;
     }
-    downloadBlob(`${baseName}.csv`, new Blob([advancedResultToCsv(displayResult.columns, displayResult.rows)], { type: 'text/csv;charset=utf-8' }));
+    await downloadBlob(`${baseName}.csv`, new Blob([advancedResultToCsv(displayResult.columns, displayResult.rows)], { type: 'text/csv;charset=utf-8' }));
   };
 
   const openResultInSimple = async (result: AdvancedQueryResult, sql: string, title = activeTab.title) => {
@@ -338,7 +339,7 @@ export function createAdvancedResultTransferActions(context: AdvancedResultTrans
           }
           if (job.status === 'completed') {
             const blob = await downloadAdvancedExportJob(started.jobId);
-            downloadBlob(job.fileName, blob);
+            await downloadBlob(job.fileName, blob);
             patchTab(activeTab.id, { warnings: [`Exported ${job.rows.toLocaleString('en')} rows to ${format.toUpperCase()} with backend worker.`] });
             return;
           }
@@ -379,17 +380,17 @@ export function createAdvancedResultTransferActions(context: AdvancedResultTrans
         const worksheet = XLSX.utils.json_to_sheet(allRows.map(row => Object.fromEntries(columns.map((column, index) => [column.name, row[index] ?? null]))));
         XLSX.utils.book_append_sheet(workbook, worksheet, 'Result');
         const buffer = XLSX.write(workbook, { type: 'array', bookType: 'xlsx' }) as ArrayBuffer;
-        downloadBlob(`${baseName}.full.xlsx`, new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
+        await downloadBlob(`${baseName}.full.xlsx`, new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
       } else if (format === 'json') {
         const objects = allRows.map(row => Object.fromEntries(columns.map((column, index) => [column.name, row[index] ?? null])));
-        downloadBlob(`${baseName}.full.json`, new Blob([JSON.stringify(objects, null, 2)], { type: 'application/json;charset=utf-8' }));
+        await downloadBlob(`${baseName}.full.json`, new Blob([JSON.stringify(objects, null, 2)], { type: 'application/json;charset=utf-8' }));
       } else if (format === 'sql') {
         const tableName = quoteIdentifier(activeTab.tableContext?.table || baseName);
         const names = columns.map(column => quoteIdentifier(column.name)).join(', ');
         const statements = allRows.map(row => `INSERT INTO ${tableName} (${names}) VALUES (${row.map(sqlLiteral).join(', ')});`).join('\n');
-        downloadBlob(`${baseName}.full.sql`, new Blob([statements], { type: 'application/sql;charset=utf-8' }));
+        await downloadBlob(`${baseName}.full.sql`, new Blob([statements], { type: 'application/sql;charset=utf-8' }));
       } else {
-        downloadBlob(`${baseName}.full.csv`, new Blob([chunks.join('\n')], { type: 'text/csv;charset=utf-8' }));
+        await downloadBlob(`${baseName}.full.csv`, new Blob([chunks.join('\n')], { type: 'text/csv;charset=utf-8' }));
       }
       patchTab(activeTab.id, { warnings: [`Exported ${totalRows.toLocaleString('en')} rows to ${format.toUpperCase()}.`] });
     } catch (cause) {

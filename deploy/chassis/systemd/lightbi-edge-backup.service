@@ -1,0 +1,13 @@
+[Unit]
+Description=LightBI edge and NetBird encrypted backup to R2
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/home/ubuntu/services/lightbi-ops/bin/lightbi-edge-backup.sh /home/ubuntu/.config/lightbi-edge.conf
+Nice=15
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7
+NoNewPrivileges=true
+PrivateTmp=true

@@ -1,8 +1,10 @@
 import React from "react";
 import { useUpdateStore } from "../../stores/update-store";
+import { buildGenerationManifest } from "../../lib/generation-manifest";
 
 export const UpdateSettingsPanel: React.FC = () => {
   const updater = useUpdateStore();
+  const internal = buildGenerationManifest().channel === "internal";
   const busy = [
     "checking",
     "available",
@@ -41,7 +43,7 @@ export const UpdateSettingsPanel: React.FC = () => {
             </div>
           </div>
           <div className="flex flex-wrap gap-2">
-            {updater.status === "ready" && (
+            {updater.status === "ready" && !updater.qaSimulation && (
               <button
                 type="button"
                 onClick={() => void updater.install()}
@@ -61,6 +63,16 @@ export const UpdateSettingsPanel: React.FC = () => {
                 className="rounded-lg bg-red-700 px-4 py-2.5 text-sm font-semibold text-white"
               >
                 Retry
+              </button>
+            )}
+            {internal && (
+              <button
+                type="button"
+                disabled={busy}
+                onClick={() => void updater.simulateForQa()}
+                className="rounded-lg border border-violet-200 bg-violet-50 px-4 py-2.5 text-sm font-semibold text-violet-700 disabled:opacity-50"
+              >
+                Test update progress
               </button>
             )}
             <button

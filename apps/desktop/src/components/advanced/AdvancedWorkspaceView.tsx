@@ -277,7 +277,7 @@ export const AdvancedWorkspaceView: React.FC<{ model: AdvancedWorkspaceViewModel
                   {showExportMenu && <div className="absolute right-0 top-8 z-40 w-52 border border-gray-200 bg-white py-1 text-[11px] text-gray-700 shadow-lg">
                     <div className="border-b border-gray-100 px-2 py-1.5 text-[10px] font-semibold uppercase tracking-wide text-gray-500">Current page</div>
                     {(['csv', 'xlsx', 'json', 'sql'] as const).map(format => (
-                      <button key={format} onClick={() => { exportResult(format); setShowExportMenu(false); }} className="flex h-7 w-full items-center justify-between px-2 text-left hover:bg-gray-100">
+                      <button key={format} onClick={() => { void exportResult(format); setShowExportMenu(false); }} className="flex h-7 w-full items-center justify-between px-2 text-left hover:bg-gray-100">
                         <span>{format.toUpperCase()}</span>
                         <span className="text-[9px] text-gray-400">{hasActivePendingChanges ? 'edited page' : 'page'}</span>
                       </button>

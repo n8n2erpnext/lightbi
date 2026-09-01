@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { lightBIDistributionEndpoint } from '../lib/distribution-pairing';
+import { externalFetch } from '../lib/native-capabilities';
 import { isNativeLightBI } from '../lib/native-runtime';
 
 export type AppAnnouncement = {
@@ -46,7 +47,7 @@ export const useAnnouncementStore=create<AnnouncementStore>((set,get)=>({
     if(checkPromise) return checkPromise;
     if(!force&&get().checkedAt&&Date.now()-Number(get().checkedAt)<30*60*1000) return Promise.resolve();
     checkPromise=(async()=>{ try {
-      const response=await fetch(`${lightBIDistributionEndpoint()}/api/announcements?channel=app`,{cache:'no-store'});
+      const response=await externalFetch(`${lightBIDistributionEndpoint()}/api/announcements?channel=app`,{cache:'no-store'});
       if(!response.ok) throw new Error('Announcement service unavailable.');
       const payload=await response.json() as {announcements?:unknown[]};
       const incoming=(payload.announcements||[]).filter(valid);

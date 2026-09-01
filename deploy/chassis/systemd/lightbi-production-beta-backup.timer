@@ -1,0 +1,11 @@
+[Unit]
+Description=Daily LightBI Production Beta chassis backup
+
+[Timer]
+OnCalendar=*-*-* 03:50:00
+RandomizedDelaySec=15m
+Persistent=true
+Unit=lightbi-production-beta-backup.service
+
+[Install]
+WantedBy=timers.target

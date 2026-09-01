@@ -16,6 +16,7 @@ import { createAnalysisWorkbookPlan, saveExcelAnalysisWorkbook, type AnalysisWor
 import { createDecisionVisualizationPlan, type DecisionVisualizationPlanV1 } from "../../lib/decision-visualization-plan";
 import { useAnalysisExportStore } from "../../stores/analysis-export-store";
 import { useUiLanguage } from "../../lib/ui-language";
+import { saveBlobWithUserChoice, saveDataUrlWithUserChoice } from "../../lib/native-capabilities";
 
 type Row = Record<string, string | number>;
 
@@ -193,7 +194,7 @@ export const PerspectiveCollectionResultCard: React.FC<{
     setExportState("image"); setExportError("");
     try {
       const dataUrl = await renderAnalysisImage();
-      const anchor = document.createElement("a"); anchor.download = `${exportFileStem}-BA.png`; anchor.href = dataUrl; anchor.click();
+      await saveDataUrlWithUserChoice(dataUrl, { suggestedName: `${exportFileStem}-BA.png`, description: "PNG image", extensions: ["png"] });
     } catch (cause) { setExportError(cause instanceof Error ? cause.message : t("Could not export the image.")); }
     finally { setExportState("idle"); }
   };
@@ -209,7 +210,7 @@ export const PerspectiveCollectionResultCard: React.FC<{
         if (page > 0) pdf.addPage();
         pdf.addImage(dataUrl, "PNG", margin, margin - offset, width, height, undefined, "FAST");
       }
-      pdf.save(`${exportFileStem}-BA.pdf`);
+      await saveBlobWithUserChoice(pdf.output("blob"), { suggestedName: `${exportFileStem}-BA.pdf`, description: "PDF document", extensions: ["pdf"] });
     } catch (cause) { setExportError(cause instanceof Error ? cause.message : t("Could not export the PDF.")); }
     finally { setExportState("idle"); }
   };

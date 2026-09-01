@@ -5,6 +5,8 @@ use http_body_util::BodyExt;
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use std::{
+    collections::HashMap,
+    net::IpAddr,
     path::{Path, PathBuf},
     sync::{Arc, Mutex},
     time::Duration,
@@ -66,6 +68,140 @@ fn license_state() -> LicenseState {
 #[tauri::command]
 fn backend_status(state: State<'_, EmbeddedCore>) -> bool {
     state.0.lock().map(|core| core.is_some()).unwrap_or(false)
+}
+
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct NativeHttpRequest {
+    url: String,
+    method: String,
+    #[serde(default)]
+    headers: HashMap<String, String>,
+    body: Option<Vec<u8>>,
+}
+
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct NativeHttpResponse {
+    status: u16,
+    headers: HashMap<String, String>,
+    body: Vec<u8>,
+}
+
+fn native_http_url(value: &str) -> Result<reqwest::Url, String> {
+    let url = reqwest::Url::parse(value).map_err(|error| format!("Invalid external URL: {error}"))?;
+    let local_debug_http = cfg!(debug_assertions)
+        && url.scheme() == "http"
+        && matches!(url.host_str(), Some("localhost" | "127.0.0.1" | "::1"));
+    if url.scheme() != "https" && !local_debug_http {
+        return Err("Native external requests require HTTPS.".to_string());
+    }
+    if !url.username().is_empty() || url.password().is_some() {
+        return Err("Credentials embedded in external URLs are not allowed.".to_string());
+    }
+    if let Some(host) = url.host_str() {
+        if let Ok(ip) = host.parse::<IpAddr>() {
+            let blocked = match ip {
+                IpAddr::V4(ip) => ip.is_private() || ip.is_loopback() || ip.is_link_local() || ip.is_unspecified() || ip.is_multicast(),
+                IpAddr::V6(ip) => ip.is_loopback() || ip.is_unspecified() || ip.is_multicast() || ip.is_unique_local() || ip.is_unicast_link_local(),
+            };
+            if blocked && !local_debug_http {
+                return Err("Private or local network targets are not allowed for native external requests.".to_string());
+            }
+        }
+    }
+    Ok(url)
+}
+
+#[tauri::command]
+async fn native_http_request(request: NativeHttpRequest) -> Result<NativeHttpResponse, String> {
+    let url = native_http_url(&request.url)?;
+    let method = reqwest::Method::from_bytes(request.method.as_bytes())
+        .map_err(|_| "Unsupported HTTP method.".to_string())?;
+    if !matches!(method, reqwest::Method::GET | reqwest::Method::POST | reqwest::Method::PUT | reqwest::Method::PATCH | reqwest::Method::DELETE | reqwest::Method::HEAD) {
+        return Err("Unsupported HTTP method.".to_string());
+    }
+    let client = reqwest::Client::builder()
+        .redirect(reqwest::redirect::Policy::limited(8))
+        .timeout(Duration::from_secs(45))
+        .user_agent("LightBI-Native/0.9")
+        .build()
+        .map_err(|error| format!("Could not initialize native HTTP client: {error}"))?;
+    let mut builder = client.request(method, url);
+    for (name, value) in request.headers {
+        let name = reqwest::header::HeaderName::from_bytes(name.as_bytes())
+            .map_err(|_| format!("Invalid HTTP header name: {name}"))?;
+        let value = reqwest::header::HeaderValue::from_str(&value)
+            .map_err(|_| "Invalid HTTP header value.".to_string())?;
+        builder = builder.header(name, value);
+    }
+    if let Some(body) = request.body {
+        builder = builder.body(body);
+    }
+    let response = builder.send().await.map_err(|error| format!("Native HTTP request failed: {error}"))?;
+    let status = response.status().as_u16();
+    if response.content_length().unwrap_or(0) > 256 * 1024 * 1024 {
+        return Err("External response exceeds the 256 MiB native safety boundary.".to_string());
+    }
+    let headers = response.headers().iter().filter_map(|(name, value)| {
+        value.to_str().ok().map(|value| (name.to_string(), value.to_string()))
+    }).collect();
+    let body = response.bytes().await.map_err(|error| format!("Could not read native HTTP response: {error}"))?.to_vec();
+    if body.len() > 256 * 1024 * 1024 {
+        return Err("External response exceeds the 256 MiB native safety boundary.".to_string());
+    }
+    Ok(NativeHttpResponse { status, headers, body })
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct SaveExportFileRequest {
+    suggested_name: String,
+    #[serde(default)]
+    description: String,
+    #[serde(default)]
+    extensions: Vec<String>,
+    bytes: Vec<u8>,
+}
+
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct SavedExportFile {
+    file_name: String,
+    path: String,
+}
+
+fn safe_suggested_file_name(value: &str) -> String {
+    Path::new(value)
+        .file_name()
+        .and_then(|name| name.to_str())
+        .filter(|name| !name.trim().is_empty())
+        .unwrap_or("LightBI-export")
+        .chars()
+        .filter(|character| !matches!(character, '<' | '>' | ':' | '"' | '/' | '\\' | '|' | '?' | '*'))
+        .take(180)
+        .collect()
+}
+
+#[tauri::command]
+async fn save_export_file(request: SaveExportFileRequest) -> Result<Option<SavedExportFile>, String> {
+    let suggested_name = safe_suggested_file_name(&request.suggested_name);
+    let description = if request.description.trim().is_empty() { "LightBI export".to_string() } else { request.description.trim().to_string() };
+    let extensions: Vec<String> = request.extensions.into_iter()
+        .map(|value| value.trim_start_matches('.').to_ascii_lowercase())
+        .filter(|value| !value.is_empty() && value.len() <= 12 && value.chars().all(|character| character.is_ascii_alphanumeric()))
+        .collect();
+    let extension_refs: Vec<&str> = extensions.iter().map(String::as_str).collect();
+    let mut dialog = rfd::AsyncFileDialog::new().set_file_name(&suggested_name);
+    if !extension_refs.is_empty() {
+        dialog = dialog.add_filter(&description, &extension_refs);
+    }
+    let Some(handle) = dialog.save_file().await else { return Ok(None); };
+    let path = handle.path().to_path_buf();
+    tokio::fs::write(&path, request.bytes).await.map_err(|error| format!("Could not save export: {error}"))?;
+    let file_name = path.file_name().and_then(|name| name.to_str()).unwrap_or(&suggested_name).to_string();
+    Ok(Some(SavedExportFile { file_name, path: path.to_string_lossy().to_string() }))
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Eq)]
@@ -551,6 +687,8 @@ fn main() {
             runtime_config,
             license_state,
             backend_status,
+            native_http_request,
+            save_export_file,
             account_session_token,
             store_account_session_token,
             prepare_verified_update,

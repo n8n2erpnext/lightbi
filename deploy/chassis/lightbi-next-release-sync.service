@@ -1,0 +1,13 @@
+[Unit]
+Description=Mirror LightBI NEXT internal releases from R2
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/home/ubuntu/services/lightbi-ops/bin/lightbi-sync-internal-release.sh /home/ubuntu/.config/lightbi-backup-r2.env /home/ubuntu/services/lightbi-next-releases
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7
+NoNewPrivileges=true
+PrivateTmp=true

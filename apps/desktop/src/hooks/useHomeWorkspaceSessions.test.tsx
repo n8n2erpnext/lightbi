@@ -6,7 +6,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useHomeWorkspaceSessions } from './useHomeWorkspaceSessions';
 import type { WorkspaceSessionRecord } from '../lib/workspace-session-api';
 import { deleteWorkspaceSession, loadWorkspaceSessions, saveWorkspaceSession } from '../lib/workspace-session-api';
-import { downloadProjectSourceFile, uploadProjectSourceFile } from '../lib/project-source-file-api';
+import { downloadProjectSourceFile, resolveProjectSourceFile, uploadProjectSourceFile } from '../lib/project-source-file-api';
 import { persistedFilesFromSession } from '../lib/home-workspace-persistence';
 import { useAnalysisExportStore } from '../stores/analysis-export-store';
 import { createAnalysisWorkbookPlan } from '../lib/analysis-workbook';
@@ -26,11 +26,13 @@ vi.mock('../lib/workspace-session-api', async importOriginal => {
 vi.mock('../lib/project-source-file-api', () => ({
   uploadProjectSourceFile: vi.fn(),
   downloadProjectSourceFile: vi.fn(),
+  resolveProjectSourceFile: vi.fn().mockResolvedValue(null),
 }));
 
 describe('Home workspace session restoration', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.mocked(resolveProjectSourceFile).mockResolvedValue(null);
     useAnalysisExportStore.getState().clearPlan();
   });
 
@@ -79,6 +81,40 @@ describe('Home workspace session restoration', () => {
     expect(result.current.sessionStatus).toContain('original local file');
   });
 
+
+  it('self-heals a legacy local session when the complete source still exists in the project store', async () => {
+    const csv = ['id,value', ...Array.from({ length: 1500 }, (_, index) => `${index + 1},value-${index + 1}`)].join('\n');
+    const original = new File([csv], 'sales-legacy.csv', { type: 'text/csv' });
+    const persistedFile = { fileId: 'legacy-persisted', originalName: original.name, filePath: 'files/legacy-persisted', bytesWritten: original.size };
+    vi.mocked(resolveProjectSourceFile).mockResolvedValue(persistedFile);
+    vi.mocked(downloadProjectSourceFile).mockResolvedValue(original);
+    vi.mocked(saveWorkspaceSession).mockImplementation(async request => ({
+      ...request, id: request.id || 'legacy-session', createdAt: '', updatedAt: '',
+    }));
+    const requestLocalFileReselection = vi.fn();
+    const setCurrentDataset = vi.fn();
+    const deps = {
+      currentDataset: null, registerAdvancedSource: vi.fn(), setCurrentDataset, setWorkspaceState: vi.fn(), setDecisionTrustReport: vi.fn(),
+      setPendingLocalBatch: vi.fn(), setMultiSourceDrafts: vi.fn(), setMultiSourceBuildResult: vi.fn(),
+      setSelectedTopic: vi.fn(), setResult: vi.fn(), setPreviewActionId: vi.fn(), requestLocalFileReselection,
+    };
+    const wrapper = ({ children }: { children: ReactNode }) => <MemoryRouter>{children}</MemoryRouter>;
+    const { result } = renderHook(() => useHomeWorkspaceSessions(deps), { wrapper });
+    const session: WorkspaceSessionRecord = {
+      id: 'legacy-session', title: original.name, sourceType: 'local_csv', rowCount: 1500, columnCount: 2,
+      sourceSummary: [{ name: original.name, rows: 1500 }],
+      snapshot: { currentDataset: { status: 'ready', file_name: original.name, sourceType: 'local_csv', normalizedUrl: `file://${original.name}`, rows_count: 1500, columns: ['id', 'value'], sourceFiles: [{ name: original.name }] } },
+      createdAt: '', updatedAt: '',
+    };
+    await act(async () => { await result.current.handleOpenWorkspaceSession(session); });
+    expect(resolveProjectSourceFile).toHaveBeenCalledWith(original.name);
+    expect(requestLocalFileReselection).not.toHaveBeenCalled();
+    const restored = setCurrentDataset.mock.calls.map(call => call[0]).find(value => value?.restoredFromSessionId === 'legacy-session');
+    expect(restored).toMatchObject({ status: 'ready', rows_count: 1500 });
+    expect(restored.runtimeDatasetSource).toBeTruthy();
+    expect(saveWorkspaceSession).toHaveBeenCalledWith(expect.objectContaining({ id: 'legacy-session' }));
+    expect(result.current.sessionStatus).toContain('upgraded for future opens');
+  });
 
   it('clears transient Excel export authority when switching to a saved workspace session', async () => {
     const decision = createDecisionVisualizationPlan({

@@ -12,7 +12,11 @@ export type NativeLicenseState = {
 };
 
 export const isNativeLightBI = () =>
-  typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window;
+  typeof window !== 'undefined' && (
+    '__TAURI_INTERNALS__' in window
+    || window.location.protocol === 'tauri:'
+    || window.location.hostname === 'tauri.localhost'
+  );
 
 export async function readNativeRuntime(): Promise<{
   runtime: NativeRuntimeConfig;

@@ -1,6 +1,7 @@
 import type { SourceCandidate, SourceInspectionResult } from './source-preflight';
 import { getApiBaseUrl } from './api-base';
 import { inspectLocalFile } from './local-file-inspector';
+import { externalFetch } from './native-capabilities';
 
 function googleSheetsCsvExportUrl(url: string): string {
   const idMatch = url.match(/\/spreadsheets\/d\/([^/?#]+)/i);
@@ -33,7 +34,7 @@ function filenameFromUrl(url: string, fallback: string): string {
 }
 
 async function fetchText(url: string): Promise<string> {
-  const response = await fetch(url);
+  const response = await externalFetch(url);
   if (!response.ok) {
     if (response.status === 401 || response.status === 403) {
       throw new Error("ACCESS_DENIED");
@@ -64,7 +65,7 @@ async function fetchCsvThroughBackend(url: string): Promise<string> {
 }
 
 async function fetchArrayBuffer(url: string): Promise<ArrayBuffer> {
-  const response = await fetch(url);
+  const response = await externalFetch(url);
   if (!response.ok) {
     if (response.status === 401 || response.status === 403) {
       throw new Error("ACCESS_DENIED");

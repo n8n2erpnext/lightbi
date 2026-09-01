@@ -1,0 +1,13 @@
+[Unit]
+Description=LightBI NEXT encrypted chassis backup to R2
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/home/ubuntu/services/lightbi-ops/bin/lightbi-chassis-backup.sh /home/ubuntu/.config/lightbi-chassis-next.conf
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7
+NoNewPrivileges=true
+PrivateTmp=true

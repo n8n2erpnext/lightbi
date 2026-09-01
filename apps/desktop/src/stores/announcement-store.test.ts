@@ -2,6 +2,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 vi.mock('../lib/distribution-pairing', () => ({ lightBIDistributionEndpoint: () => 'https://distribution.test' }));
 vi.mock('../lib/native-runtime', () => ({ isNativeLightBI: () => true }));
+vi.mock('../lib/native-capabilities', () => ({ externalFetch: (input: string | URL, init?: RequestInit) => fetch(input, init) }));
 import { useAnnouncementStore } from './announcement-store';
 const item=(updatedAt='2026-08-31T14:00:00.000Z')=>({id:'ann_12345678-abcd',title:'Service notice',body:'Scheduled work tonight.',severity:'warning' as const,dismissible:true,startsAt:null,endsAt:null,linkLabel:'Status',linkUrl:'https://lightbi.example/status',updatedAt});
 describe('announcement inbox store',()=>{

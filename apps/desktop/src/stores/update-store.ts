@@ -4,7 +4,9 @@ import type {
   LightBIReleaseManifest,
 } from "@lightbi/core-types";
 import { lightBIDistributionEndpoint } from "../lib/distribution-pairing";
+import { externalFetch } from "../lib/native-capabilities";
 import { isNativeLightBI } from "../lib/native-runtime";
+import { buildGenerationManifest } from "../lib/generation-manifest";
 import { trackUpdateEvent } from "../lib/app-usage-telemetry";
 
 export type UpdateStatus =
@@ -97,9 +99,13 @@ type UpdateStore = {
   progress: number | null;
   error: string;
   checkedAt: number | null;
+  dismissedVersion: string | null;
+  qaSimulation: boolean;
   check: (force?: boolean) => Promise<void>;
   prepare: () => Promise<void>;
   install: () => Promise<void>;
+  dismiss: () => void;
+  simulateForQa: () => Promise<void>;
 };
 
 const invokeArgs = (
@@ -122,6 +128,8 @@ export const useUpdateStore = create<UpdateStore>((set, get) => ({
   progress: null,
   error: "",
   checkedAt: null,
+  dismissedVersion: typeof localStorage !== "undefined" ? localStorage.getItem("lightbi-update-dismissed-version") : null,
+  qaSimulation: false,
   check: (force = false) => {
     if (!isNativeLightBI()) return Promise.resolve();
     if (manifestCheckPromise) return manifestCheckPromise;
@@ -134,7 +142,7 @@ export const useUpdateStore = create<UpdateStore>((set, get) => ({
     manifestCheckPromise = (async () => {
       set({ status: "checking", error: "", progress: null });
       try {
-        const response = await fetch(
+        const response = await externalFetch(
           `${lightBIDistributionEndpoint()}/api/releases/latest`,
           { cache: force ? "no-store" : "default" },
         );
@@ -172,6 +180,8 @@ export const useUpdateStore = create<UpdateStore>((set, get) => ({
           checkedAt: Date.now(),
           error: "",
           progress: 0,
+          qaSimulation: false,
+          dismissedVersion: get().dismissedVersion === manifest.version ? get().dismissedVersion : null,
         });
         trackUpdateEvent("update_available");
         await get().prepare();
@@ -255,7 +265,8 @@ export const useUpdateStore = create<UpdateStore>((set, get) => ({
     return preparePromise;
   },
   install: async () => {
-    const { manifest, artifact, prepared, status } = get();
+    const { manifest, artifact, prepared, status, qaSimulation } = get();
+    if (qaSimulation) return;
     if (status !== "ready" || !manifest || !artifact || !prepared?.ready)
       return;
     set({ status: "installing", error: "" });
@@ -273,5 +284,48 @@ export const useUpdateStore = create<UpdateStore>((set, get) => ({
             : "Prepared update could not be applied.",
       });
     }
+  },
+  dismiss: () => {
+    const version = get().manifest?.version ?? null;
+    if (version && typeof localStorage !== "undefined") localStorage.setItem("lightbi-update-dismissed-version", version);
+    set({ dismissedVersion: version });
+  },
+  simulateForQa: async () => {
+    if (buildGenerationManifest().channel !== "internal") return;
+    const platform = currentReleasePlatform() ?? "windows";
+    const current = import.meta.env.VITE_LIGHTBI_VERSION ?? "0.9.2-beta.7";
+    const version = `${current}-qa-update`;
+    const artifact: LightBIReleaseArtifact = {
+      platform,
+      architecture: "x86_64",
+      kind: platform === "windows" ? "exe" : platform === "linux" ? "deb" : "dmg",
+      filename: platform === "windows" ? "LightBI-QA-Update.exe" : platform === "linux" ? "LightBI-QA-Update.deb" : "LightBI-QA-Update.dmg",
+      url: "https://lightbi-next.thaiduy.digital/qa/update-placeholder",
+      size: 100,
+      sha256: "0".repeat(64),
+    };
+    const manifest: LightBIReleaseManifest = {
+      schema_version: "lightbi.release.v1",
+      product: "digital.thaiduy.lightbi",
+      version,
+      channel: "beta",
+      published_at: new Date().toISOString(),
+      release_notes: "Internal updater UX simulation",
+      artifacts: [artifact],
+    };
+    if (typeof localStorage !== "undefined") localStorage.removeItem("lightbi-update-dismissed-version");
+    set({ status: "available", manifest, artifact, prepared: null, progress: 0, error: "", dismissedVersion: null, qaSimulation: true });
+    await new Promise(resolve => setTimeout(resolve, 180));
+    for (const progress of [4, 12, 24, 39, 55, 71, 86, 96, 100]) {
+      set({ status: "downloading", progress });
+      await new Promise(resolve => setTimeout(resolve, 120));
+    }
+    set({ status: "verifying", progress: 100 });
+    await new Promise(resolve => setTimeout(resolve, 420));
+    set({
+      status: "ready",
+      progress: 100,
+      prepared: { version, artifact: artifact.filename, sha256: artifact.sha256, reused: false, ready: true },
+    });
   },
 }));

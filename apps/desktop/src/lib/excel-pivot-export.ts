@@ -4,6 +4,7 @@ import type { CleanDataHandoffResultV1, CleanDataLineageV1 } from './clean-data-
 import type { DecisionVisualizationPlanV1 } from './decision-visualization-plan';
 import { GOVERNED_METRIC_DEFINITIONS_V1 } from './understanding-core/governed-metric-policy';
 import { injectNativeExcelPivot, type NativeExcelPivotAggregation } from './excel-pivot-ooxml';
+import { saveBlobWithUserChoice } from './native-capabilities';
 
 export const EXCEL_PIVOT_EXPORT_VERSION = 'lightbi.excel-pivot-export.v1' as const;
 const EXCEL_MAX_DATA_ROWS = 1_048_575;
@@ -45,6 +46,7 @@ export type ExcelPivotSaveResultV1 = {
   fileName: string;
   locationLabel: string;
   usedSaveAs: boolean;
+  cancelled?: boolean;
   recipe: ExcelPivotRecipeV1;
   exportedRowCount: number;
 };
@@ -262,9 +264,6 @@ function safeStem(value: string): string {
   return value.replace(/[^a-z0-9_-]+/gi, '_').replace(/^_+|_+$/g, '').slice(0, 90) || 'LightBI-Pivot';
 }
 
-type SaveFileHandle = { name: string; createWritable: () => Promise<{ write: (data: Blob) => Promise<void>; close: () => Promise<void> }> };
-type SavePickerWindow = Window & { showSaveFilePicker?: (options: Record<string, unknown>) => Promise<SaveFileHandle> };
-
 export async function saveExcelPivotWorkbook(request: ExcelPivotExportRequestV1): Promise<ExcelPivotSaveResultV1> {
   const createdAt = request.createdAt ?? new Date().toISOString();
   const generated = createExcelPivotWorkbook({ ...request, createdAt });
@@ -272,17 +271,10 @@ export async function saveExcelPivotWorkbook(request: ExcelPivotExportRequestV1)
   const selected = request.mode === 'current_selection' ? '_Selected' : '';
   const defaultName = `LightBI_${safeStem(request.title)}${selected}_${date}.xlsx`;
   const blob = new Blob([generated.buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-  const picker = (window as SavePickerWindow).showSaveFilePicker;
-  if (picker) {
-    try {
-      const handle = await picker({ suggestedName: defaultName, types: [{ description: 'Excel workbook', accept: { 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'] } }] });
-      const writable = await handle.createWritable(); await writable.write(blob); await writable.close();
-      return { fileName: handle.name, locationLabel: handle.name, usedSaveAs: true, recipe: generated.recipe, exportedRowCount: generated.exportedRowCount };
-    } catch (cause) {
-      if (!(cause instanceof DOMException) || cause.name !== 'AbortError') throw cause;
-    }
-  }
-  const url = URL.createObjectURL(blob);
-  const anchor = document.createElement('a'); anchor.href = url; anchor.download = defaultName; anchor.click(); URL.revokeObjectURL(url);
-  return { fileName: defaultName, locationLabel: `Downloads/${defaultName}`, usedSaveAs: false, recipe: generated.recipe, exportedRowCount: generated.exportedRowCount };
+  const saved = await saveBlobWithUserChoice(blob, {
+    suggestedName: defaultName,
+    description: 'Excel workbook',
+    extensions: ['xlsx'],
+  });
+  return { ...saved, recipe: generated.recipe, exportedRowCount: generated.exportedRowCount };
 }

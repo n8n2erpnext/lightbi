@@ -110,18 +110,18 @@ export const UpdateNotificationMenu: React.FC = () => {
             <div className="mt-3 rounded-lg border border-emerald-100 bg-emerald-50 p-3">
               <div className="font-semibold text-slate-900">Update ready</div>
               <p className="mt-1 text-xs leading-5 text-slate-600">
-                The installer is staged and verified.{" "}
-                {linux
+                {updater.qaSimulation ? "The internal progress simulation reached READY." : "The installer is staged and verified."}{" "}
+                {updater.qaSimulation ? "No installer will be launched by this simulation." : linux
                   ? "Your package manager will ask for confirmation."
                   : "Restart whenever you are ready."}
               </p>
               <div className="mt-3 flex gap-2">
-                <button
+                {!updater.qaSimulation && <button
                   onClick={() => void updater.install()}
                   className="rounded-md bg-emerald-700 px-3 py-1.5 text-xs font-semibold text-white"
                 >
                   {linux ? "Open .deb installer" : "Update & Restart"}
-                </button>
+                </button>}
                 <button
                   onClick={() => setOpen(false)}
                   className="rounded-md border border-emerald-200 bg-white px-3 py-1.5 text-xs font-semibold text-emerald-800"

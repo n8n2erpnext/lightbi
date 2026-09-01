@@ -7,6 +7,7 @@ import { generateAnalysisActions } from '../../lib/analysis-opportunity-actions'
 import { AnalysisOpportunityGrid } from './AnalysisOpportunityGrid';
 import { buildSemanticGraph } from '../../lib/semantic-graph-builder';
 import { SemanticGraphView } from './SemanticGraphView';
+import { saveBlobWithUserChoice } from '../../lib/native-capabilities';
 
 export interface DatasetUnderstandingCardProps {
   understanding: DatasetUnderstanding;
@@ -49,24 +50,15 @@ export const DatasetUnderstandingCard: React.FC<DatasetUnderstandingCardProps> =
     }
   };
 
-  const handleExportHandoff = () => {
-    const rawColumns = understanding.mappingReview?.items?.map(i => i.physicalColumn) || 
+  const handleExportHandoff = async () => {
+    const rawColumns = understanding.mappingReview?.items?.map(i => i.physicalColumn) ||
       understanding.detectedConcepts.flatMap(c => c.evidence);
     const uniqueColumns = Array.from(new Set(rawColumns));
-    
     const artifact = generateAdvancedHandoff(understanding, uniqueColumns);
-    const jsonStr = JSON.stringify(artifact, null, 2);
-    
-    const blob = new Blob([jsonStr], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `lightbi_handoff_${understanding.datasetId ?? understanding.id ?? understanding.datasetName ?? 'dataset'}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    const name = `lightbi_handoff_${understanding.datasetId ?? understanding.id ?? understanding.datasetName ?? 'dataset'}.json`;
+    await saveBlobWithUserChoice(new Blob([JSON.stringify(artifact, null, 2)], { type: 'application/json;charset=utf-8' }), {
+      suggestedName: name, description: 'JSON file', extensions: ['json'],
+    });
   };
 
   const statusConfig = getStatusConfig();
@@ -104,7 +96,7 @@ export const DatasetUnderstandingCard: React.FC<DatasetUnderstandingCardProps> =
         <div className="flex flex-col items-end gap-1.5">
           <div className="flex items-center gap-2">
             <button 
-              onClick={handleExportHandoff}
+              onClick={() => void handleExportHandoff()}
               className="flex items-center px-2.5 py-1 rounded-md text-[12px] font-medium border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 shadow-sm transition-colors"
               title="Export Advanced Handoff JSON for dbt/Python"
             >

@@ -342,6 +342,50 @@ pub(super) async fn save_project_source_file(
         .into_response()
 }
 
+
+
+#[derive(Debug, Deserialize)]
+pub(super) struct ResolveProjectSourceQuery {
+    name: String,
+}
+
+pub(super) async fn resolve_project_source_file(
+    State(state): State<Arc<AppState>>,
+    axum::extract::Query(request): axum::extract::Query<ResolveProjectSourceQuery>,
+) -> Response {
+    let original_name = sanitize_project_file_name(&request.name);
+    if original_name == "source-file" && request.name.trim() != "source-file" {
+        return (StatusCode::BAD_REQUEST, Json(json!({ "error": "Invalid source file name" }))).into_response();
+    }
+    let files_dir = state.context.project_path.join("files");
+    let mut entries = match tokio::fs::read_dir(&files_dir).await {
+        Ok(entries) => entries,
+        Err(_) => return (StatusCode::NOT_FOUND, Json(json!({ "error": "Persisted source file not found" }))).into_response(),
+    };
+    let suffix = format!("-{original_name}");
+    let mut best: Option<(std::time::SystemTime, String, u64)> = None;
+    while let Ok(Some(entry)) = entries.next_entry().await {
+        let name = entry.file_name().to_string_lossy().to_string();
+        if name != original_name && !name.ends_with(&suffix) { continue; }
+        let Ok(metadata) = entry.metadata().await else { continue; };
+        if !metadata.is_file() { continue; }
+        let modified = metadata.modified().unwrap_or(std::time::UNIX_EPOCH);
+        if best.as_ref().map(|(time, _, _)| modified > *time).unwrap_or(true) {
+            best = Some((modified, name, metadata.len()));
+        }
+    }
+    let Some((_, file_id, bytes_written)) = best else {
+        return (StatusCode::NOT_FOUND, Json(json!({ "error": "Persisted source file not found" }))).into_response();
+    };
+    let file_path = files_dir.join(&file_id);
+    (StatusCode::OK, Json(ProjectSourceFile {
+        file_id,
+        original_name,
+        file_path: file_path.to_string_lossy().to_string(),
+        bytes_written: bytes_written as usize,
+    })).into_response()
+}
+
 pub(super) async fn download_project_source_file(
     State(state): State<Arc<AppState>>,
     Path(file_id): Path<String>,

@@ -1,0 +1,12 @@
+[Unit]
+Description=Refresh LightBI NEXT internal release mirror
+
+[Timer]
+OnBootSec=2m
+OnUnitActiveSec=2m
+AccuracySec=20s
+Persistent=true
+Unit=lightbi-next-release-sync.service
+
+[Install]
+WantedBy=timers.target

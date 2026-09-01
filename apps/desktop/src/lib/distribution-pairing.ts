@@ -1,3 +1,4 @@
+import { externalFetch } from './native-capabilities';
 import { assertSafeGenerationDistributionTarget } from './generation-manifest';
 const INSTALLATION_KEY = 'lightbi-installation-id';
 const TIER_KEY = 'lightbi-license-tier';
@@ -21,7 +22,7 @@ export function getOrCreateInstallationId(storage: Pick<Storage, 'getItem' | 'se
 export async function pairLightBIInstallation(options?: {
   endpoint?: string;
   storage?: Pick<Storage, 'getItem' | 'setItem'>;
-  fetcher?: typeof fetch;
+  fetcher?: (input: string | URL, init?: RequestInit) => Promise<Response>;
   version?: string;
   platform?: string;
 }): Promise<'basic' | 'pro' | null> {
@@ -29,7 +30,7 @@ export async function pairLightBIInstallation(options?: {
   const storage = options?.storage ?? localStorage;
   if (storage.getItem(TELEMETRY_KEY) === 'disabled') return currentLicenseTier(storage);
   const endpoint = lightBIDistributionEndpoint(options?.endpoint);
-  const fetcher = options?.fetcher ?? fetch;
+  const fetcher = options?.fetcher ?? externalFetch;
   const installationId = getOrCreateInstallationId(storage);
   try {
     const response = await fetcher(`${endpoint}/api/pair`, {
@@ -64,13 +65,13 @@ export function setAnonymousPairingEnabled(enabled: boolean, storage: Pick<Stora
 export async function activateLightBILicense(licenseKey: string, options?: {
   endpoint?: string;
   storage?: Pick<Storage, 'getItem' | 'setItem'>;
-  fetcher?: typeof fetch;
+  fetcher?: (input: string | URL, init?: RequestInit) => Promise<Response>;
 }): Promise<'pro' | null> {
   if (!licenseKey.trim()) return null;
   const storage = options?.storage ?? localStorage;
   const endpoint = lightBIDistributionEndpoint(options?.endpoint);
   try {
-    const response = await (options?.fetcher ?? fetch)(`${endpoint}/api/license/activate`, {
+    const response = await (options?.fetcher ?? externalFetch)(`${endpoint}/api/license/activate`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({ installationId: getOrCreateInstallationId(storage), licenseKey: licenseKey.trim() }),

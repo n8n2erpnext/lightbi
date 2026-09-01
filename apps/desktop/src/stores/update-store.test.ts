@@ -19,6 +19,7 @@ const mocks = vi.hoisted(() => ({
 vi.mock("@tauri-apps/api/core", () => ({ invoke: mocks.invoke }));
 vi.mock("@tauri-apps/api/event", () => ({ listen: mocks.listen }));
 vi.mock("../lib/native-runtime", () => ({ isNativeLightBI: () => true }));
+vi.mock("../lib/native-capabilities", () => ({ externalFetch: (input: string | URL, init?: RequestInit) => fetch(input, init) }));
 vi.mock("../lib/app-usage-telemetry", () => ({
   trackUpdateEvent: mocks.track,
 }));

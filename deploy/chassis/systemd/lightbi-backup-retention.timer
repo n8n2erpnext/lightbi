@@ -1,0 +1,11 @@
+[Unit]
+Description=Weekly LightBI backup retention
+
+[Timer]
+OnCalendar=Sun *-*-* 05:00:00
+RandomizedDelaySec=20m
+Persistent=true
+Unit=lightbi-backup-retention.service
+
+[Install]
+WantedBy=timers.target

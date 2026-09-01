@@ -1,6 +1,7 @@
 import * as XLSX from 'xlsx';
 import type { CleanDataHandoffResultV1 } from './clean-data-handoff';
 import type { DecisionVisualizationPlanV1 } from './decision-visualization-plan';
+import { saveBlobWithUserChoice } from './native-capabilities';
 
 export const ANALYSIS_WORKBOOK_VERSION = 'lightbi.analysis-workbook.v1' as const;
 const EXCEL_MAX_DATA_ROWS = 1_048_575;
@@ -390,36 +391,17 @@ export interface AnalysisWorkbookSaveResult {
   fileName: string;
   locationLabel: string;
   usedSaveAs: boolean;
+  cancelled?: boolean;
 }
-
-type SaveFileHandle = { name: string; createWritable: () => Promise<{ write: (data: Blob) => Promise<void>; close: () => Promise<void> }> };
-type SavePickerWindow = Window & { showSaveFilePicker?: (options: Record<string, unknown>) => Promise<SaveFileHandle> };
 
 export async function saveExcelAnalysisWorkbook(plan: AnalysisWorkbookPlanV1, options: ExcelAnalysisWorkbookOptionsV1 = {}): Promise<AnalysisWorkbookSaveResult> {
   const buffer = createExcelAnalysisWorkbook(plan, options);
   const stem = plan.title.replace(/[^a-z0-9_-]+/gi, '_').replace(/^_+|_+$/g, '') || 'LightBI-analysis';
   const defaultName = `${stem}-LightBI-analysis.xlsx`;
   const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-  const picker = (window as SavePickerWindow).showSaveFilePicker;
-  if (picker) {
-    try {
-      const handle = await picker({
-        suggestedName: defaultName,
-        types: [{ description: 'Excel workbook', accept: { 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'] } }],
-      });
-      const writable = await handle.createWritable();
-      await writable.write(blob);
-      await writable.close();
-      return { fileName: handle.name, locationLabel: handle.name, usedSaveAs: true };
-    } catch (cause) {
-      if (!(cause instanceof DOMException) || cause.name !== 'AbortError') throw cause;
-    }
-  }
-  const url = URL.createObjectURL(blob);
-  const anchor = document.createElement('a');
-  anchor.href = url;
-  anchor.download = defaultName;
-  anchor.click();
-  URL.revokeObjectURL(url);
-  return { fileName: defaultName, locationLabel: `Downloads/${defaultName}`, usedSaveAs: false };
+  return saveBlobWithUserChoice(blob, {
+    suggestedName: defaultName,
+    description: 'Excel workbook',
+    extensions: ['xlsx'],
+  });
 }

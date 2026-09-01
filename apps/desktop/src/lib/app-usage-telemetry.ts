@@ -1,6 +1,7 @@
 import { getOrCreateInstallationId, anonymousPairingEnabled, lightBIDistributionEndpoint } from './distribution-pairing';
 import { generationTelemetryEnvironment } from './generation-manifest';
 import { isNativeLightBI } from './native-runtime';
+import { externalFetch } from './native-capabilities';
 
 export type LightBIFeature = 'easy_mode' | 'advanced_mode' | 'advanced_query' | 'advanced_database_edit' | 'deep_ba' | 'subset_analysis' | 'dashboard' | 'chart' | 'export' | 'data_import' | 'database_connect' | 'google_sheets';
 export type LightBIUpdateEvent = 'update_available' | 'update_download_started' | 'update_download_success' | 'update_download_failed' | 'update_install_started';
@@ -21,7 +22,7 @@ async function send(event: 'app_open' | 'app_close' | 'feature_use', feature?: L
   if (!isNativeLightBI() || !anonymousPairingEnabled()) return;
   let endpoint: string;
   try { endpoint = lightBIDistributionEndpoint(); } catch { return; }
-  await fetch(`${endpoint}/api/app/event`, {
+  await externalFetch(`${endpoint}/api/app/event`, {
     method: 'POST', headers: { 'content-type': 'application/json' }, keepalive: event === 'app_close',
     body: JSON.stringify({
       event, feature, durationSeconds, installationId: getOrCreateInstallationId(), sessionId: sessionId(),
@@ -47,5 +48,5 @@ export function trackUpdateEvent(event: LightBIUpdateEvent) {
   if (!isNativeLightBI() || !anonymousPairingEnabled()) return;
   let endpoint: string;
   try { endpoint = lightBIDistributionEndpoint(); } catch { return; }
-  void fetch(`${endpoint}/api/app/event`, { method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({event,installationId:getOrCreateInstallationId(),sessionId:sessionId(),appVersion:import.meta.env.VITE_LIGHTBI_VERSION??'0.9.2-beta.7',platform:navigator.platform??'unknown',environment:import.meta.env.MODE==='test'?'test':generationTelemetryEnvironment()}) }).catch(()=>null);
+  void externalFetch(`${endpoint}/api/app/event`, { method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({event,installationId:getOrCreateInstallationId(),sessionId:sessionId(),appVersion:import.meta.env.VITE_LIGHTBI_VERSION??'0.9.2-beta.7',platform:navigator.platform??'unknown',environment:import.meta.env.MODE==='test'?'test':generationTelemetryEnvironment()}) }).catch(()=>null);
 }

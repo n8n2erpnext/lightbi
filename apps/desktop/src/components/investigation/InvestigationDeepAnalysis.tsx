@@ -21,6 +21,7 @@ import { createCleanDataHandoffFromCanonicalBoundary } from '../../lib/clean-dat
 import { saveExcelPivotWorkbook, type ExcelPivotExportModeV1, type ExcelPivotExportProgressV1 } from '../../lib/excel-pivot-export';
 import type { CanonicalSourceBoundaryV1 } from '../../lib/understanding-core/canonical-source-boundary';
 import type { DecisionVisualizationPlanV1 } from '../../lib/decision-visualization-plan';
+import { saveBlobWithUserChoice, saveDataUrlWithUserChoice } from '../../lib/native-capabilities';
 
 export interface InvestigationDeepAnalysisProps {
   action: AnalysisAction;
@@ -56,8 +57,7 @@ export const InvestigationDeepAnalysis: React.FC<InvestigationDeepAnalysisProps>
     setExportState('image'); setExportError('');
     try {
       const dataUrl = await renderAnalysisImage();
-      const anchor = document.createElement('a');
-      anchor.download = `${fileStem}-BA.png`; anchor.href = dataUrl; anchor.click();
+      await saveDataUrlWithUserChoice(dataUrl, { suggestedName: `${fileStem}-BA.png`, description: 'PNG image', extensions: ['png'] });
     } catch (cause) { setExportError(cause instanceof Error ? cause.message : t('Could not export the image.')); }
     finally { setExportState('idle'); }
   };
@@ -74,7 +74,7 @@ export const InvestigationDeepAnalysis: React.FC<InvestigationDeepAnalysisProps>
         if (page > 0) pdf.addPage();
         pdf.addImage(dataUrl, 'PNG', margin, margin - offset, width, height, undefined, 'FAST');
       }
-      pdf.save(`${fileStem}-BA.pdf`);
+      await saveBlobWithUserChoice(pdf.output('blob'), { suggestedName: `${fileStem}-BA.pdf`, description: 'PDF document', extensions: ['pdf'] });
     } catch (cause) { setExportError(cause instanceof Error ? cause.message : t('Could not export the PDF.')); }
     finally { setExportState('idle'); }
   };
