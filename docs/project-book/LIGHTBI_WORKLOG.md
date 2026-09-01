@@ -1388,3 +1388,11 @@ R1-P0 documentation/integrity closure verified 1,243 local links with zero missi
 - GitHub Actions run `33524736531` / #10 PASS at exact `f165441...`; both Windows A/B jobs passed contracts, built and normalized installer/provenance, and the publisher verified immutable R2 authority.
 - R2 pair: A `0.9.2-next.25.10.1`, 29,704,226 bytes, SHA-256 `feb4897de94dfd7859d2d85813a8357c5090967e4342af424f2fcfa6d17e4c59`; B/latest `0.9.2-next.25.10.2`, 29,696,293 bytes, SHA-256 `1f794209f604aebb34808e8b10dd357bb4b5f1f098f6ef49a765ea81c013fc0e`. NEXT mirror/public latest synchronized successfully.
 - Owner Windows acceptance remains open: History must persist through analysis/Investigation/restart, and A→B must require at most UAC, show no NSIS wizard, silently update and reopen as B. Active chassis remains NEXT-024; Production and R1-P6 remain untouched/HOLD.
+
+## 2026-09-01 — NEXT-025 indexed A/B mirror fixed; owner 25.10 acceptance lane opened
+
+- GitHub Actions run `33524736531` / run #10 completed success at Windows artifact source `f1654419c2a0b252795cf9a637d0412c3023de29`; both Windows jobs and the isolated R2 publisher passed. Owner-test pair is A `0.9.2-next.25.10.1` SHA `feb4897d...d17e4c59` and B/latest `0.9.2-next.25.10.2` SHA `1f794209...c013fc0e`.
+- Post-publication branded-edge proof found A 404 while B was 200 although both existed in R2. Root cause: VPS release sync consumed `index.json` but materialized only the `latest.json` artifact.
+- Core ops `98b57aebc4cd038f3c4774d03de1a538edffa1d3` makes the current index authoritative for mirrored Windows releases and verifies every executable, checksum sidecar and manifest before switching local catalog pointers. Full release suite remained PASS with governed regression 39/39.
+- Atomically deployed that exact sync script to `/home/ubuntu/services/lightbi-ops/bin/`; manual user-systemd sync exited 0 and reported both `25.10.2` and `25.10.1`. Full branded HTTPS streaming verification then proved A/B HTTP 200, exact content lengths and exact SHA-256 matches.
+- Ops commit used `[skip ci]`; acceptance workflow remains run #10 and did not create `25.11.x`. Active Internal runtime truth is `g-2026-09-01-next-025` with Core `0c6a5bc...` and CP `2b72e91b...`; Production remained untouched. Owner Windows A→B + History acceptance is now the only native gate represented by this checkpoint.
