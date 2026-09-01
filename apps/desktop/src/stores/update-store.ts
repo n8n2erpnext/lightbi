@@ -121,6 +121,29 @@ type UpdateStore = {
   simulateForQa: () => Promise<void>;
 };
 
+
+async function fetchLatestReleaseManifest(force: boolean): Promise<LightBIReleaseManifest> {
+  const endpoint = lightBIDistributionEndpoint();
+  const requestInit: RequestInit = { cache: force ? "no-store" : "default" };
+  const apiResponse = await externalFetch(`${endpoint}/api/releases/latest`, requestInit);
+  if (apiResponse.ok) {
+    const catalog = (await apiResponse.json()) as { latest?: LightBIReleaseManifest };
+    if (catalog.latest?.schema_version === "lightbi.release.v1") return catalog.latest;
+  }
+
+  if (buildGenerationManifest().channel === "internal") {
+    const staticResponse = await externalFetch(`${endpoint}/internal-releases/latest.json`, { cache: "no-store" });
+    if (staticResponse.ok) {
+      const manifest = (await staticResponse.json()) as LightBIReleaseManifest;
+      if (manifest.schema_version === "lightbi.release.v1") return manifest;
+    }
+    throw new Error(`Update service unavailable (API HTTP ${apiResponse.status}, release edge HTTP ${staticResponse.status}).`);
+  }
+
+  if (!apiResponse.ok) throw new Error(`Update service unavailable (HTTP ${apiResponse.status}).`);
+  throw new Error("Update manifest is invalid.");
+}
+
 const invokeArgs = (
   manifest: LightBIReleaseManifest,
   artifact: LightBIReleaseArtifact,
@@ -161,19 +184,8 @@ export const useUpdateStore = create<UpdateStore>((set, get) => ({
     manifestCheckPromise = (async () => {
       set({ status: "checking", error: "", progress: null, qaSimulation: false });
       try {
-        const response = await externalFetch(
-          `${lightBIDistributionEndpoint()}/api/releases/latest`,
-          { cache: force ? "no-store" : "default" },
-        );
-        if (!response.ok)
-          throw new Error("Update service is temporarily unavailable.");
-        const catalog = (await response.json()) as {
-          latest?: LightBIReleaseManifest;
-        };
+        const manifest = await fetchLatestReleaseManifest(force);
         if (operation !== updateOperationEpoch) return;
-        const manifest = catalog.latest;
-        if (!manifest || manifest.schema_version !== "lightbi.release.v1")
-          throw new Error("Update manifest is invalid.");
         const artifact = selectNativeUpdateArtifact(manifest);
         if (!artifact)
           throw new Error(

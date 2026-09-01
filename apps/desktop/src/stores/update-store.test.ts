@@ -19,6 +19,7 @@ const mocks = vi.hoisted(() => ({
 vi.mock("@tauri-apps/api/core", () => ({ invoke: mocks.invoke }));
 vi.mock("@tauri-apps/api/event", () => ({ listen: mocks.listen }));
 vi.mock("../lib/native-runtime", () => ({ isNativeLightBI: () => true }));
+vi.mock("../lib/generation-manifest", () => ({ buildGenerationManifest: () => ({ channel: "internal" }) }));
 vi.mock("../lib/native-capabilities", () => ({ externalFetch: (input: string | URL, init?: RequestInit) => fetch(input, init) }));
 vi.mock("../lib/app-usage-telemetry", () => ({
   trackUpdateEvent: mocks.track,
@@ -170,6 +171,20 @@ describe("staged native updater", () => {
       progress: 100,
       prepared: { ready: true },
     });
+  });
+
+  it("falls back to the static Internal release edge when the control-plane catalog route is unavailable", async () => {
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce(new Response("gateway error", { status: 502 }))
+      .mockResolvedValueOnce(new Response(JSON.stringify(manifest()), { status: 200, headers: { "content-type": "application/json" } }));
+    vi.stubGlobal("fetch", fetchMock);
+    mocks.invoke.mockResolvedValue({
+      version: "0.9.3-beta.7", artifact: "LightBI-setup.exe", sha256: "a".repeat(64), reused: false, ready: true,
+    });
+    await useUpdateStore.getState().check(true);
+    expect(fetchMock).toHaveBeenNthCalledWith(1, "https://distribution.test/api/releases/latest", { cache: "no-store" });
+    expect(fetchMock).toHaveBeenNthCalledWith(2, "https://distribution.test/internal-releases/latest.json", { cache: "no-store" });
+    expect(useUpdateStore.getState().status).toBe("ready");
   });
 
   it("keeps the app usable while background preparation is pending", async () => {

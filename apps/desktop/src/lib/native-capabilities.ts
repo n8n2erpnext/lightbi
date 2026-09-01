@@ -67,22 +67,38 @@ export async function externalFetch(input: string | URL, init: RequestInit = {})
   const url = typeof input === 'string' ? input : input.toString();
   if (!isNativeLightBI() || !/^https?:\/\//i.test(url)) return fetch(url, init);
 
+  const method = (init.method || 'GET').toUpperCase();
+  const idempotentRead = method === 'GET' || method === 'HEAD';
   try {
     const { invoke } = await import('@tauri-apps/api/core');
     const headers = Object.fromEntries(new Headers(init.headers).entries());
     const response = await invoke<NativeHttpResponse>('native_http_request', {
       request: {
         url,
-        method: (init.method || 'GET').toUpperCase(),
+        method,
         headers,
         body: await bodyBytes(init.body),
       },
     });
-    return new Response(new Uint8Array(response.body), {
+    const nativeResponse = new Response(new Uint8Array(response.body), {
       status: response.status,
       headers: response.headers,
     });
+    if (nativeResponse.ok || !idempotentRead) return nativeResponse;
+
+    // Some Windows proxy/VPN stacks return an HTTP error instead of throwing.
+    // For read-only traffic it is safe to retry through WebView2, whose network
+    // stack can still have valid access to the same HTTPS endpoint.
+    try {
+      const webviewResponse = await fetch(url, init);
+      return webviewResponse.ok ? webviewResponse : nativeResponse;
+    } catch {
+      return nativeResponse;
+    }
   } catch (nativeCause) {
+    if (!idempotentRead) {
+      throw new Error(`Native HTTP failed: ${failureMessage(nativeCause, 'unknown native transport error')}`);
+    }
     try {
       return await fetch(url, init);
     } catch (webviewCause) {

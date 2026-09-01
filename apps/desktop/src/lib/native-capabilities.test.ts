@@ -50,6 +50,28 @@ describe('native capabilities', () => {
     await expect(response.json()).resolves.toEqual({ ok: true });
   });
 
+  it('falls back to WebView for idempotent reads when native transport returns a proxy HTTP error', async () => {
+    vi.mocked(isNativeLightBI).mockReturnValue(true);
+    vi.mocked(invoke).mockResolvedValue({ status: 407, headers: { 'content-type': 'text/plain' }, body: Array.from(new TextEncoder().encode('proxy authentication required')) });
+    const browserFetch = vi.fn().mockResolvedValue(new Response('{\"ok\":true}', { status: 200, headers: { 'content-type': 'application/json' } }));
+    vi.stubGlobal('fetch', browserFetch);
+    const response = await externalFetch('https://lightbi-next.thaiduy.digital/api/releases/latest');
+    expect(browserFetch).toHaveBeenCalledOnce();
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toEqual({ ok: true });
+  });
+
+  it('does not replay non-idempotent mutations through WebView after native transport failure', async () => {
+    vi.mocked(isNativeLightBI).mockReturnValue(true);
+    vi.mocked(invoke).mockRejectedValue('Native HTTP request failed: response lost');
+    const browserFetch = vi.fn();
+    vi.stubGlobal('fetch', browserFetch);
+    await expect(externalFetch('https://lightbi.example/api/mutate', { method: 'POST', body: '{}' })).rejects.toThrow(
+      /Native HTTP failed: Native HTTP request failed: response lost/,
+    );
+    expect(browserFetch).not.toHaveBeenCalled();
+  });
+
   it('preserves both native and WebView transport errors when both paths fail', async () => {
     vi.mocked(isNativeLightBI).mockReturnValue(true);
     vi.mocked(invoke).mockRejectedValue('Native HTTP request failed: TLS handshake');
