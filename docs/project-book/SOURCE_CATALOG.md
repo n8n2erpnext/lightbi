@@ -668,7 +668,7 @@ For old paths, use [`PATH_MIGRATION_INDEX.md`](./PATH_MIGRATION_INDEX.md) and [`
 
 ## historical-provenance
 
-- [`docs/history/agent/plans/AGENT_PLAN_ROAD_TO_1_0_2026-08-31.md`](../../docs/history/agent/plans/AGENT_PLAN_ROAD_TO_1_0_2026-08-31.md) — LightBI Road to 1.0 Execution Plan — 2026-08-31; `9866` bytes; SHA-256 `fdb7b1744f53f0e298dcf1385fbc90c7f01893236c5cae34120d611a5410c143`
+- [`docs/history/agent/plans/AGENT_PLAN_ROAD_TO_1_0_2026-08-31.md`](../../docs/history/agent/plans/AGENT_PLAN_ROAD_TO_1_0_2026-08-31.md) — LightBI Road to 1.0 Execution Plan — 2026-08-31; `11529` bytes; SHA-256 `ca11436377cc954ebe540539338cd42d5572398783b64712fcceca70949e320d`
 - [`docs/history/LEGACY_ROOT_INDEX.md`](../../docs/history/LEGACY_ROOT_INDEX.md) — Legacy Root Documentation Index; `33743` bytes; SHA-256 `e662adb190bc6e9d9b598d4d1c421423376931d186aafb53c15cc4f9d25a3385`
 - [`docs/history/README.md`](../../docs/history/README.md) — Historical Documentation; `1764` bytes; SHA-256 `58060865d3938943ef9a415e39457280481d8d9b78a3f4ceb7e017a60c343052`
 - [`docs/history/agent/contracts/CODEX_QA_ORCHESTRATION_CONTRACT.md`](../../docs/history/agent/contracts/CODEX_QA_ORCHESTRATION_CONTRACT.md) — Codex QA Orchestration Contract; `5244` bytes; SHA-256 `3926f159280b943b64689f2846aab12d166e9ebe05d8a4d8192819eeeeb0b69b`

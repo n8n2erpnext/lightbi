@@ -10118,8 +10118,8 @@
     {
       "path": "docs/history/agent/plans/AGENT_PLAN_ROAD_TO_1_0_2026-08-31.md",
       "extension": ".md",
-      "bytes": 9866,
-      "sha256": "fdb7b1744f53f0e298dcf1385fbc90c7f01893236c5cae34120d611a5410c143",
+      "bytes": 11529,
+      "sha256": "ca11436377cc954ebe540539338cd42d5572398783b64712fcceca70949e320d",
       "suggestedCategory": "historical-provenance",
       "title": "LightBI Road to 1.0 Execution Plan — 2026-08-31"
     },

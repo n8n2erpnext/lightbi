@@ -103,3 +103,16 @@ R1-P6 remains explicitly HOLD by owner decision. A parallel successor candidate 
 Machine proof is green: Core `test:release-1.0` passes 11 governed files / 39 tests; final CP authoritative suite passes 157/157; focused commerce/mail/Redis adversarial tests pass 20/20; focused Admin Security passes 4/4; production dependency audit reports no known vulnerabilities. Exact findings and proposed deployment mutations are recorded in [`../../audits/AUDIT-next018-commerce-security-infra-2026-08-31.md`](../../audits/AUDIT-next018-commerce-security-infra-2026-08-31.md).
 
 Candidate migrations `063`–`066`, new encryption keys, service restarts, reverse-proxy changes, Paddle sandbox notification setup, n8n activation and sandbox E2E remain **NOT DEPLOYED / NOT AUTHORIZED** until the owner approves the infrastructure-impact report. Active Internal remains immutable NEXT-017.
+
+## Current execution checkpoint — NEXT-022 / 2026-09-01
+
+- **R1-P0** complete.
+- **R1-P1** remains open for formal packaged Windows/native owner acceptance on an accepted successor.
+- **R1-P2** is deployed and owner-tested through NEXT-021: Admin/User TOTP, recovery, Passkey-first MFA policy, strong-auth mutation retry, reset 2-of-2 and one-time magic login are verified; owner accepted the Admin TOTP/recovery and announcement surfaces.
+- **R1-P3** remains verified; Core `test:release-1.0` is green on the current successor.
+- **R1-P4** is implemented, machine-verified and deployed in NEXT-022. `TRADEMARK_POLICY.md` defines the open-source-versus-official-origin boundary and Settings exposes fail-closed build identity. Owner visual acceptance of the Settings panel remains open.
+- **R1-P5** independent audit remains PASS at Trust head `10de4da8e551a46f93f7b62985a0a6e611581b8e`; explicit freeze is still not approved.
+- **R1-P6** remains explicitly HOLD by owner decision. P7–P12 therefore remain blocked by dependency.
+- Commerce/marketing infrastructure is deployed but intentionally unconfigured: managed SMTP disabled, no payment provider active, catalog/prices/discounts/newsletter empty. Configuration is an owner-input gate through the strong-auth Admin UI; n8n revenue mirror remains present and inactive until Paddle sandbox E2E is configured.
+
+Current immutable Internal is `g-2026-09-01-next-022`, Core `ed044e0a6ceb98eb8d052ddbac17249893005bb6`, private CP `1ef53f947af030deca54208cb5c6f71ced785e67`, schema 065/pending 0, manifest SHA-256 `e0b6a250a5d2711da1edc0f1e61ee8d1318c484b58ef1d0e40c289e9672d30fd`. Production remains no-touch.

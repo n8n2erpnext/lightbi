@@ -2255,3 +2255,13 @@ Admin Commerce/Marketing sensitive mutations use the shared `adminStrongMutation
 Private CP verification is 167/167 authoritative tests PASS, including the dedicated NEXT-021 security pack 6/6; production dependency audit reports no known vulnerabilities. HTTPS `lightbi-next.thaiduy.digital` serves the new QR/Passkey mutation assets, and `/api/v1/internal/diagnostics` reports exact NEXT-021/CP SHA, schema current with pending `[]`, and healthy matching worker.
 
 The stale runtime evidence pointer that still referenced NEXT-017 was corrected. Served, active-registry and archived NEXT-021 manifests are byte-identical at the SHA above. Production `5172/5173/5174` was not restarted or modified. Phase 2A remains unfrozen and Trust signer/attestation/private-key work remains blocked; R1-P6 remains HOLD.
+
+## 93. R1-P4 official identity/trademark boundary and NEXT-022
+
+R1-P4 now has an explicit legal/branding boundary and a truthful client identity surface. Public Core successor `ed044e0a6ceb98eb8d052ddbac17249893005bb6` adds root-level `TRADEMARK_POLICY.md`, links the policy from README, and adds a Settings `Build identity` panel. The policy preserves AGPL fork rights while separating them from misleading claims of official origin, endorsement, publisher identity, domains, signing identity, update authority, or official infrastructure.
+
+The client UI is intentionally fail-closed. Internal builds render `Internal test build` and `Not an official public release`. A public build with unfrozen Trust renders publisher verification unavailable. Even `trust1_enabled` does not by itself produce an `Official release verified` badge; that state requires independent REL/ATT evidence from later Trust phases. Editable client branding is never treated as proof of origin.
+
+Focused identity regressions pass 3/3. Core `test:release-1.0` passes the complete platform-independent release gate, including production build and governed 11-file / 39-test product regression. R1-P4 is implemented, machine-verified, committed and pushed; final owner visual acceptance of the Settings panel remains open.
+
+Immutable Internal `g-2026-09-01-next-022` is deployed with parent NEXT-021, Core `ed044e0a6ceb98eb8d052ddbac17249893005bb6`, private CP `1ef53f947af030deca54208cb5c6f71ced785e67`, schema `065_marketing_newsletter_mail`, pending migrations `[]`, healthy matching worker, and manifest SHA-256 `e0b6a250a5d2711da1edc0f1e61ee8d1318c484b58ef1d0e40c289e9672d30fd`. Production 5172/5173/5174 remained on their pre-existing processes. R1-P6 remains owner-HOLD; no Root/signer work was started.

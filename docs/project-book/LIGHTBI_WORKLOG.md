@@ -1346,3 +1346,11 @@ R1-P0 documentation/integrity closure verified 1,243 local links with zero missi
 - Existing user-systemd CP/worker/Core/gateway units were stopped, the CP service tree was replaced from a separately staged offline-production dependency install, generation env metadata was updated, and the same four Internal units were restarted. A complete NEXT-020 CP service-tree/env rollback backup was retained.
 - Post-deploy diagnostics over both NetBird origin and `https://lightbi-next.thaiduy.digital` report NEXT-021, exact CP SHA, schema current/pending 0 and healthy matching worker. HTTPS assets contain the new QR and Passkey-first mutation logic.
 - The active runtime manifest registry was discovered stale at NEXT-017 and reconciled to NEXT-021; served/current/archive manifests are byte-identical. Production `5172/5173/5174` remained untouched. Phase 2A remains unfrozen; R1-P6 remains HOLD.
+
+## 2026-09-01 — R1-P4 official identity boundary deployed as NEXT-022
+
+- Added public Core `TRADEMARK_POLICY.md` to separate AGPL fork rights from misleading claims of official LightBI origin, endorsement, domains, publisher/signing identity, update channels or official infrastructure. README now links the policy.
+- Added Settings `Build identity` UI with fail-closed wording: Internal successors are not official public releases; unfrozen Trust cannot claim cryptographic publisher verification; `trust1_enabled` alone still does not imply REL/ATT verification.
+- Focused identity regression PASS 3/3. Full Core `test:release-1.0` PASS including public/private boundary, generation/UAT contracts, production build and governed 11 files / 39 tests.
+- Deployed immutable `g-2026-09-01-next-022`, parent NEXT-021, Core `ed044e0a6ceb98eb8d052ddbac17249893005bb6`, CP `1ef53f947af030deca54208cb5c6f71ced785e67`, schema 065/pending 0, healthy matching worker. Manifest active/archive hashes are byte-identical at `e0b6a250a5d2711da1edc0f1e61ee8d1318c484b58ef1d0e40c289e9672d30fd`.
+- Production 5172/5173/5174 remained untouched. R1-P6 remains HOLD; no Root/private issuer/signer work started.
