@@ -86,7 +86,10 @@ export const Settings: React.FC = () => {
   const [accountLicenseKey, setAccountLicenseKey] = useState('');
   const lightbiAccount = useLightBIAccount();
   const requestedSection = new URLSearchParams(location.search).get('section');
-  const [settingsSection, setSettingsSection] = useState<'general' | 'account' | 'appearance' | 'privacy' | 'updates'>(requestedSection === 'account' ? 'account' : 'general');
+  const validRequestedSection = ['general', 'account', 'appearance', 'privacy', 'updates'].includes(requestedSection || '')
+    ? requestedSection as 'general' | 'account' | 'appearance' | 'privacy' | 'updates'
+    : 'general';
+  const [settingsSection, setSettingsSection] = useState<'general' | 'account' | 'appearance' | 'privacy' | 'updates'>(validRequestedSection);
   const [settingsSearch, setSettingsSearch] = useState('');
   const settingsItems = [
     { id: 'general' as const, label: t('General'), icon: Settings2 },
@@ -99,6 +102,10 @@ export const Settings: React.FC = () => {
   useEffect(() => {
     void readNativeRuntime().then(setNativeState);
   }, []);
+
+  useEffect(() => {
+    setSettingsSection(validRequestedSection);
+  }, [validRequestedSection]);
 
   return (
     <div className="flex h-full w-full overflow-hidden bg-[#fbfbfa]">

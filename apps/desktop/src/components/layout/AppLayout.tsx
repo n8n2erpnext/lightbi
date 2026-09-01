@@ -26,7 +26,8 @@ import { useLightBIAccount } from "../../hooks/useLightBIAccount";
 import { useUpdateStore } from "../../stores/update-store";
 import { useAnnouncementStore } from "../../stores/announcement-store";
 import { UpdateNotificationMenu } from "./UpdateNotificationMenu";
-import { UpdateStatusBar } from "./UpdateStatusBar";
+import { UpdateSidebarStatus } from "./UpdateSidebarStatus";
+import { ScrollMinimap } from "./ScrollMinimap";
 import { buildGenerationManifest } from "../../lib/generation-manifest";
 
 export const AppLayout: React.FC = () => {
@@ -42,6 +43,7 @@ export const AppLayout: React.FC = () => {
   const generation = buildGenerationManifest();
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const accountMenuRef = useRef<HTMLDivElement>(null);
+  const mainScrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const startup = window.setTimeout(() => void updater.check(), 2500);
@@ -78,6 +80,10 @@ export const AppLayout: React.FC = () => {
       document.removeEventListener("keydown", escape);
     };
   }, [accountMenuOpen]);
+
+  useEffect(() => {
+    mainScrollRef.current?.scrollTo({ top: 0 });
+  }, [location.pathname]);
 
   useEffect(() => {
     const feature: LightBIFeature = location.pathname.startsWith("/advanced")
@@ -309,6 +315,7 @@ export const AppLayout: React.FC = () => {
                   )}
                 </button>
               )}
+              <UpdateSidebarStatus expanded={isSidebarExpanded} />
             </div>
           </div>
 
@@ -329,9 +336,14 @@ export const AppLayout: React.FC = () => {
         </aside>
 
         {/* Main Content */}
-        <main className="flex min-w-0 flex-1 flex-col overflow-hidden bg-[#fbfbfa]">
-          <UpdateStatusBar />
-          <div className="min-h-0 flex-1 overflow-hidden"><Outlet /></div>
+        <main className="relative flex min-w-0 flex-1 flex-col overflow-hidden bg-[#fbfbfa]">
+          <div
+            ref={mainScrollRef}
+            className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          >
+            <Outlet />
+          </div>
+          <ScrollMinimap scrollRef={mainScrollRef} />
         </main>
       </div>
     </UiTranslationBoundary>

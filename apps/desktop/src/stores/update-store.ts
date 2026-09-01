@@ -37,6 +37,7 @@ type NativeProgress = {
 
 let manifestCheckPromise: Promise<void> | null = null;
 let preparePromise: Promise<void> | null = null;
+let updateOperationEpoch = 0;
 
 export function compareAppVersions(left: string, right: string): number {
   const parse = (value: string) => {
@@ -135,12 +136,18 @@ export const useUpdateStore = create<UpdateStore>((set, get) => ({
     if (manifestCheckPromise) return manifestCheckPromise;
     if (
       !force &&
+      ["checking", "available", "downloading", "verifying", "installing"].includes(get().status)
+    )
+      return Promise.resolve();
+    if (
+      !force &&
       get().checkedAt &&
       Date.now() - Number(get().checkedAt) < 6 * 60 * 60 * 1000
     )
       return Promise.resolve();
+    const operation = ++updateOperationEpoch;
     manifestCheckPromise = (async () => {
-      set({ status: "checking", error: "", progress: null });
+      set({ status: "checking", error: "", progress: null, qaSimulation: false });
       try {
         const response = await externalFetch(
           `${lightBIDistributionEndpoint()}/api/releases/latest`,
@@ -151,6 +158,7 @@ export const useUpdateStore = create<UpdateStore>((set, get) => ({
         const catalog = (await response.json()) as {
           latest?: LightBIReleaseManifest;
         };
+        if (operation !== updateOperationEpoch) return;
         const manifest = catalog.latest;
         if (!manifest || manifest.schema_version !== "lightbi.release.v1")
           throw new Error("Update manifest is invalid.");
@@ -186,12 +194,17 @@ export const useUpdateStore = create<UpdateStore>((set, get) => ({
         trackUpdateEvent("update_available");
         await get().prepare();
       } catch (cause) {
+        if (operation !== updateOperationEpoch) return;
         set({
           status: "failed",
+          manifest: null,
+          artifact: null,
+          prepared: null,
           error:
             cause instanceof Error ? cause.message : "Update check failed.",
           checkedAt: Date.now(),
           progress: null,
+          qaSimulation: false,
         });
       } finally {
         manifestCheckPromise = null;
@@ -211,8 +224,9 @@ export const useUpdateStore = create<UpdateStore>((set, get) => ({
       ) <= 0
     )
       return Promise.resolve();
+    const operation = ++updateOperationEpoch;
     preparePromise = (async () => {
-      set({ status: "downloading", error: "", progress: 0 });
+      set({ status: "downloading", error: "", progress: 0, qaSimulation: false });
       trackUpdateEvent("update_download_started");
       let unlisten: undefined | (() => void);
       try {
@@ -223,6 +237,7 @@ export const useUpdateStore = create<UpdateStore>((set, get) => ({
         unlisten = await listen<NativeProgress>(
           "lightbi://update-progress",
           (event) => {
+            if (operation !== updateOperationEpoch) return;
             const progress =
               typeof event.payload.percent === "number"
                 ? event.payload.percent
@@ -242,11 +257,13 @@ export const useUpdateStore = create<UpdateStore>((set, get) => ({
           "prepare_verified_update",
           invokeArgs(manifest, artifact),
         );
+        if (operation !== updateOperationEpoch) return;
         if (!prepared.ready)
           throw new Error("The update could not be staged safely.");
         set({ status: "ready", prepared, progress: 100, error: "" });
         trackUpdateEvent("update_download_success");
       } catch (cause) {
+        if (operation !== updateOperationEpoch) return;
         trackUpdateEvent("update_download_failed");
         set({
           status: "failed",
@@ -269,13 +286,16 @@ export const useUpdateStore = create<UpdateStore>((set, get) => ({
     if (qaSimulation) return;
     if (status !== "ready" || !manifest || !artifact || !prepared?.ready)
       return;
+    const operation = ++updateOperationEpoch;
     set({ status: "installing", error: "" });
     try {
       const { invoke } = await import("@tauri-apps/api/core");
       await invoke("apply_prepared_update", invokeArgs(manifest, artifact));
+      if (operation !== updateOperationEpoch) return;
       trackUpdateEvent("update_install_started");
       if (artifact.kind === "deb") set({ status: "ready" });
     } catch (cause) {
+      if (operation !== updateOperationEpoch) return;
       set({
         status: "failed",
         error:
@@ -292,6 +312,7 @@ export const useUpdateStore = create<UpdateStore>((set, get) => ({
   },
   simulateForQa: async () => {
     if (buildGenerationManifest().channel !== "internal") return;
+    const operation = ++updateOperationEpoch;
     const platform = currentReleasePlatform() ?? "windows";
     const current = import.meta.env.VITE_LIGHTBI_VERSION ?? "0.9.2-beta.7";
     const version = `${current}-qa-update`;
@@ -316,12 +337,16 @@ export const useUpdateStore = create<UpdateStore>((set, get) => ({
     if (typeof localStorage !== "undefined") localStorage.removeItem("lightbi-update-dismissed-version");
     set({ status: "available", manifest, artifact, prepared: null, progress: 0, error: "", dismissedVersion: null, qaSimulation: true });
     await new Promise(resolve => setTimeout(resolve, 180));
+    if (operation !== updateOperationEpoch) return;
     for (const progress of [4, 12, 24, 39, 55, 71, 86, 96, 100]) {
+      if (operation !== updateOperationEpoch) return;
       set({ status: "downloading", progress });
       await new Promise(resolve => setTimeout(resolve, 120));
     }
+    if (operation !== updateOperationEpoch) return;
     set({ status: "verifying", progress: 100 });
     await new Promise(resolve => setTimeout(resolve, 420));
+    if (operation !== updateOperationEpoch) return;
     set({
       status: "ready",
       progress: 100,

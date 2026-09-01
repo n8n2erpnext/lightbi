@@ -80,6 +80,8 @@ describe("staged native updater", () => {
       progress: null,
       error: "",
       checkedAt: null,
+      dismissedVersion: null,
+      qaSimulation: false,
     });
   });
 
@@ -212,9 +214,21 @@ describe("staged native updater", () => {
   });
 
   it("fails closed on network or malformed manifest errors without invoking native update code", async () => {
+    useUpdateStore.setState({
+      manifest: manifest(),
+      artifact: manifest().artifacts[0],
+      prepared: null,
+      qaSimulation: true,
+    });
     vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("offline")));
     await useUpdateStore.getState().check(true);
-    expect(useUpdateStore.getState().status).toBe("failed");
+    expect(useUpdateStore.getState()).toMatchObject({
+      status: "failed",
+      manifest: null,
+      artifact: null,
+      prepared: null,
+      qaSimulation: false,
+    });
     expect(mocks.invoke).not.toHaveBeenCalled();
 
     vi.stubGlobal(
