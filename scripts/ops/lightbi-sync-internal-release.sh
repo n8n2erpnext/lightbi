@@ -13,7 +13,24 @@ ENDPOINT="https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com"
 TMP=$(mktemp -d "${TMPDIR:-/tmp}/lightbi-next-release-sync.XXXXXX")
 trap 'rm -rf "$TMP"' EXIT
 get(){ local key=$1 out=$2; curl -fsS --aws-sigv4 'aws:amz:auto:s3' --user "${AWS_ACCESS_KEY_ID}:${AWS_SECRET_ACCESS_KEY}" "$ENDPOINT/$BUCKET/$key" -o "$out"; }
-get "$PREFIX/latest.json" "$TMP/latest.json"
+get_latest(){
+  local key=$1 out=$2 code
+  code=$(curl -sS -o "$out" -w '%{http_code}' --aws-sigv4 'aws:amz:auto:s3' --user "${AWS_ACCESS_KEY_ID}:${AWS_SECRET_ACCESS_KEY}" "$ENDPOINT/$BUCKET/$key")
+  if [[ "$code" == 404 ]]; then
+    rm -f "$out"
+    echo 'internal_release_available=false'
+    echo 'reason=no_latest_release_yet'
+    return 10
+  fi
+  [[ "$code" =~ ^2 ]] || { echo "R2 GET failed key=$key http=$code" >&2; return 11; }
+}
+if get_latest "$PREFIX/latest.json" "$TMP/latest.json"; then
+  :
+else
+  rc=$?
+  [[ "$rc" -eq 10 ]] && exit 0
+  exit "$rc"
+fi
 get "$PREFIX/index.json" "$TMP/index.json"
 jq -e '.schema_version=="lightbi.release.v1" and .product=="digital.thaiduy.lightbi" and .channel=="beta"' "$TMP/latest.json" >/dev/null
 VERSION=$(jq -r '.version' "$TMP/latest.json")
