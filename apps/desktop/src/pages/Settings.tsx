@@ -14,6 +14,7 @@ import {
 import { useLightBIAccount } from '../hooks/useLightBIAccount';
 import { UpdateSettingsPanel } from '../components/settings/UpdateSettingsPanel';
 import { InternalGenerationPanel } from '../components/settings/InternalGenerationPanel';
+import { BuildIdentityPanel } from '../components/settings/BuildIdentityPanel';
 
 const AccountAccess: React.FC<{ account: ReturnType<typeof useLightBIAccount> }> = ({ account }) => {
   const [mode, setMode] = useState<'login' | 'register'>('login');
@@ -103,6 +104,7 @@ export const Settings: React.FC = () => {
         </div>}
         {settingsSection === 'general' && <div className="p-6">
           <InternalGenerationPanel />
+          <BuildIdentityPanel />
           <h2 className="mb-4 text-lg font-medium text-slate-900">{t('Application')}</h2>
           <div className="grid gap-3 md:grid-cols-2">
             <div className="flex items-start gap-3 rounded-lg border border-slate-200 p-4">

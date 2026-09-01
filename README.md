@@ -172,6 +172,10 @@ Please read [SECURITY.md](SECURITY.md) before reporting a vulnerability. The loc
 
 The native Beta may send opt-out-aware anonymous installation/session duration and whitelisted feature identifiers such as Easy Mode, Advanced Mode, Deep BA, and governed database-edit events. It never sends imported files, SQL text, database URLs, schema/table/column identity, cell values, charts, or BA findings. Google or verified email/password accounts anchor entitlement/device slots. Distribution administrators can issue, email, rotate, or revoke hashed Pro keys, including complimentary and partner-discount licenses; stored/admin-visible keys expose only a masked prefix and suffix.
 
+## Branding and official origin
+
+Forking the source does not make a distribution an official LightBI release. See [TRADEMARK_POLICY.md](TRADEMARK_POLICY.md) for permitted attribution, fork branding, and claims of official origin. LightBI client UI alone is not proof of publisher identity.
+
 ## Contributing
 
 Small, evidence-backed contributions are welcome. Start with [CONTRIBUTING.md](CONTRIBUTING.md). Changes to semantic mappings, grain policy, metric authorization, or source continuity require tests that demonstrate both the intended match and an adversarial non-match.
