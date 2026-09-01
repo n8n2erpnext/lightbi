@@ -213,6 +213,24 @@ describe("staged native updater", () => {
     });
   });
 
+  it("preserves string errors returned by native Tauri commands", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(
+        new Response(JSON.stringify({ latest: manifest() }), {
+          status: 200,
+          headers: { "content-type": "application/json" },
+        }),
+      ),
+    );
+    mocks.invoke.mockRejectedValue("Update download failed: TLS handshake");
+    await useUpdateStore.getState().check(true);
+    expect(useUpdateStore.getState()).toMatchObject({
+      status: "failed",
+      error: "Update download failed: TLS handshake",
+    });
+  });
+
   it("fails closed on network or malformed manifest errors without invoking native update code", async () => {
     useUpdateStore.setState({
       manifest: manifest(),

@@ -51,24 +51,47 @@ async function bodyBytes(body: BodyInit | null | undefined): Promise<number[] | 
  * crosses the Tauri shell in packaged LightBI so browser CORS/origin policy
  * cannot silently break account, update, telemetry, or remote-source flows.
  */
+function failureMessage(cause: unknown, fallback: string): string {
+  if (cause instanceof Error && cause.message.trim()) return cause.message.trim();
+  if (typeof cause === 'string' && cause.trim()) return cause.trim();
+  try {
+    const serialized = JSON.stringify(cause);
+    if (serialized && serialized !== '{}') return serialized;
+  } catch {
+    // Fall through to the stable fallback.
+  }
+  return fallback;
+}
+
 export async function externalFetch(input: string | URL, init: RequestInit = {}): Promise<Response> {
   const url = typeof input === 'string' ? input : input.toString();
   if (!isNativeLightBI() || !/^https?:\/\//i.test(url)) return fetch(url, init);
 
-  const { invoke } = await import('@tauri-apps/api/core');
-  const headers = Object.fromEntries(new Headers(init.headers).entries());
-  const response = await invoke<NativeHttpResponse>('native_http_request', {
-    request: {
-      url,
-      method: (init.method || 'GET').toUpperCase(),
-      headers,
-      body: await bodyBytes(init.body),
-    },
-  });
-  return new Response(new Uint8Array(response.body), {
-    status: response.status,
-    headers: response.headers,
-  });
+  try {
+    const { invoke } = await import('@tauri-apps/api/core');
+    const headers = Object.fromEntries(new Headers(init.headers).entries());
+    const response = await invoke<NativeHttpResponse>('native_http_request', {
+      request: {
+        url,
+        method: (init.method || 'GET').toUpperCase(),
+        headers,
+        body: await bodyBytes(init.body),
+      },
+    });
+    return new Response(new Uint8Array(response.body), {
+      status: response.status,
+      headers: response.headers,
+    });
+  } catch (nativeCause) {
+    try {
+      return await fetch(url, init);
+    } catch (webviewCause) {
+      throw new Error(
+        `Native HTTP failed: ${failureMessage(nativeCause, 'unknown native transport error')}; ` +
+        `WebView fallback failed: ${failureMessage(webviewCause, 'unknown WebView transport error')}`,
+      );
+    }
+  }
 }
 
 /**

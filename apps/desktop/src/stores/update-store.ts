@@ -39,6 +39,18 @@ let manifestCheckPromise: Promise<void> | null = null;
 let preparePromise: Promise<void> | null = null;
 let updateOperationEpoch = 0;
 
+function updateFailureMessage(cause: unknown, fallback: string): string {
+  if (cause instanceof Error && cause.message.trim()) return cause.message.trim();
+  if (typeof cause === 'string' && cause.trim()) return cause.trim();
+  try {
+    const serialized = JSON.stringify(cause);
+    if (serialized && serialized !== '{}') return serialized;
+  } catch {
+    // Keep the stable fallback below.
+  }
+  return fallback;
+}
+
 export function compareAppVersions(left: string, right: string): number {
   const parse = (value: string) => {
     const [core, pre = ""] = value.replace(/^v/, "").split("-", 2);
@@ -201,7 +213,7 @@ export const useUpdateStore = create<UpdateStore>((set, get) => ({
           artifact: null,
           prepared: null,
           error:
-            cause instanceof Error ? cause.message : "Update check failed.",
+            updateFailureMessage(cause, "Update check failed."),
           checkedAt: Date.now(),
           progress: null,
           qaSimulation: false,
@@ -270,9 +282,7 @@ export const useUpdateStore = create<UpdateStore>((set, get) => ({
           prepared: null,
           progress: null,
           error:
-            cause instanceof Error
-              ? cause.message
-              : "Update preparation failed.",
+            updateFailureMessage(cause, "Update preparation failed."),
         });
       } finally {
         unlisten?.();
@@ -299,9 +309,7 @@ export const useUpdateStore = create<UpdateStore>((set, get) => ({
       set({
         status: "failed",
         error:
-          cause instanceof Error
-            ? cause.message
-            : "Prepared update could not be applied.",
+          updateFailureMessage(cause, "Prepared update could not be applied."),
       });
     }
   },

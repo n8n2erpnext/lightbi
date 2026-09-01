@@ -42,8 +42,10 @@ jobs:
       - name: Verify updater and native-boundary contracts
         shell: pwsh
         run: |
-          pnpm --dir apps/desktop exec vitest run src/stores/update-store.test.ts src/components/layout/UpdateStatusBar.test.tsx src/stores/announcement-store.test.ts src/lib/native-boundary-contract.test.ts src/lib/account-api.test.ts
+          pnpm --dir apps/desktop exec vitest run src/stores/update-store.test.ts src/lib/native-capabilities.test.ts src/components/layout/UpdateStatusBar.test.tsx src/stores/announcement-store.test.ts src/lib/native-boundary-contract.test.ts src/lib/account-api.test.ts src/lib/generation-diagnostics.test.ts
           cargo test -p lightbi-tauri updater_tests --target x86_64-pc-windows-msvc
+          $env:LIGHTBI_LIVE_RELEASE_CATALOG = "https://lightbi-next.thaiduy.digital/api/releases/latest"
+          cargo test -p lightbi-tauri native_http_reaches_live_internal_release_catalog --target x86_64-pc-windows-msvc -- --ignored --nocapture
       - name: Generate branded application icons
         shell: pwsh
         run: |

@@ -1,7 +1,9 @@
 import type { LightBIGenerationDiagnostics, LightBIGenerationManifestV1 } from '@lightbi/core-types';
 import { getApiBaseUrl } from './api-base';
+import { externalFetch } from './native-capabilities';
 
-type ProbeOptions = { fetcher?: typeof fetch; apiBaseUrl?: string };
+type DiagnosticsFetcher = (input: string | URL, init?: RequestInit) => Promise<Response>;
+type ProbeOptions = { fetcher?: DiagnosticsFetcher; apiBaseUrl?: string };
 
 type InternalControlPlaneDiagnostics = {
   generationId: string;
@@ -10,7 +12,7 @@ type InternalControlPlaneDiagnostics = {
   worker: { status: 'healthy' | 'unhealthy' | 'unknown' };
 };
 
-async function probeJson(fetcher: typeof fetch, url: string): Promise<boolean> {
+async function probeJson(fetcher: DiagnosticsFetcher, url: string): Promise<boolean> {
   try {
     const response = await fetcher(url, { method: 'GET', headers: { accept: 'application/json' } });
     if (!response.ok) return false;
@@ -19,7 +21,7 @@ async function probeJson(fetcher: typeof fetch, url: string): Promise<boolean> {
   } catch { return false; }
 }
 
-async function probeInternalControlPlane(fetcher: typeof fetch, url: string): Promise<InternalControlPlaneDiagnostics | null> {
+async function probeInternalControlPlane(fetcher: DiagnosticsFetcher, url: string): Promise<InternalControlPlaneDiagnostics | null> {
   try {
     const response = await fetcher(url, { method:'GET', headers:{ accept:'application/json' } });
     if (!response.ok) return null;
@@ -36,13 +38,14 @@ async function probeInternalControlPlane(fetcher: typeof fetch, url: string): Pr
 }
 
 export async function probeGenerationDiagnostics(generation: LightBIGenerationManifestV1, options: ProbeOptions = {}): Promise<LightBIGenerationDiagnostics> {
-  const fetcher = options.fetcher ?? fetch;
+  const coreFetcher = options.fetcher ?? fetch;
+  const distributionFetcher = options.fetcher ?? externalFetch;
   const apiBase = (options.apiBaseUrl ?? getApiBaseUrl()).replace(/\/$/u, '');
   const distribution = generation.distribution_origin.replace(/\/$/u, '');
   const [coreHealthy, controlPlaneHealthy, internal] = await Promise.all([
-    probeJson(fetcher, `${apiBase}/api/health`),
-    probeJson(fetcher, `${distribution}/api/v1/health`),
-    generation.channel === 'internal' ? probeInternalControlPlane(fetcher, `${distribution}/api/v1/internal/diagnostics`) : Promise.resolve(null),
+    probeJson(coreFetcher, `${apiBase}/api/health`),
+    probeJson(distributionFetcher, `${distribution}/api/v1/health`),
+    generation.channel === 'internal' ? probeInternalControlPlane(distributionFetcher, `${distribution}/api/v1/internal/diagnostics`) : Promise.resolve(null),
   ]);
   const generationMatches = internal == null || (internal.generationId === generation.generation_id && internal.controlPlaneCommit === generation.control_plane_commit);
   return {

@@ -730,6 +730,24 @@ mod updater_tests {
     }
 
     #[test]
+    #[ignore = "live internal acceptance only"]
+    fn native_http_reaches_live_internal_release_catalog() {
+        let url = std::env::var("LIGHTBI_LIVE_RELEASE_CATALOG")
+            .expect("LIGHTBI_LIVE_RELEASE_CATALOG must be set for the live smoke test");
+        let response = runtime()
+            .block_on(native_http_request(NativeHttpRequest {
+                url,
+                method: "GET".to_string(),
+                headers: HashMap::new(),
+                body: None,
+            }))
+            .expect("native HTTP transport must reach the live internal release catalog");
+        assert_eq!(response.status, 200);
+        let body = String::from_utf8(response.body).expect("release catalog must be UTF-8 JSON");
+        assert!(body.contains("lightbi.release.v1"));
+    }
+
+    #[test]
     fn rejects_unsafe_update_identity_and_filename() {
         assert!(!valid_update_version("../beta"));
         assert!(!valid_update_filename("../LightBI.exe"));

@@ -9,6 +9,7 @@ vi.mock('@tauri-apps/api/core', () => ({ invoke: vi.fn() }));
 
 describe('native capabilities', () => {
   beforeEach(() => {
+    vi.unstubAllGlobals();
     vi.clearAllMocks();
     vi.mocked(isNativeLightBI).mockReturnValue(false);
     delete (window as any).showSaveFilePicker;
@@ -37,5 +38,24 @@ describe('native capabilities', () => {
     const response = await externalFetch('https://lightbi.example/api/test', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{"hello":"world"}' });
     expect(invoke).toHaveBeenCalledWith('native_http_request', expect.objectContaining({ request: expect.objectContaining({ url: 'https://lightbi.example/api/test', method: 'POST' }) }));
     await expect(response.json()).resolves.toEqual({ ok: true });
+  });
+
+  it('falls back to WebView fetch when the packaged native transport rejects', async () => {
+    vi.mocked(isNativeLightBI).mockReturnValue(true);
+    vi.mocked(invoke).mockRejectedValue('Native HTTP request failed: connect error');
+    const browserFetch = vi.fn().mockResolvedValue(new Response('{"ok":true}', { status: 200, headers: { 'content-type': 'application/json' } }));
+    vi.stubGlobal('fetch', browserFetch);
+    const response = await externalFetch('https://lightbi.example/api/test');
+    expect(browserFetch).toHaveBeenCalledWith('https://lightbi.example/api/test', {});
+    await expect(response.json()).resolves.toEqual({ ok: true });
+  });
+
+  it('preserves both native and WebView transport errors when both paths fail', async () => {
+    vi.mocked(isNativeLightBI).mockReturnValue(true);
+    vi.mocked(invoke).mockRejectedValue('Native HTTP request failed: TLS handshake');
+    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new TypeError('Failed to fetch')));
+    await expect(externalFetch('https://lightbi.example/api/test')).rejects.toThrow(
+      /Native HTTP failed: Native HTTP request failed: TLS handshake; WebView fallback failed: Failed to fetch/,
+    );
   });
 });
