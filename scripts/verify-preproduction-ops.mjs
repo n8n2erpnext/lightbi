@@ -18,10 +18,14 @@ for (const file of required) {
   const check=spawnSync('bash',['-n',file],{stdio:'inherit'});
   if (check.status !== 0) throw new Error(`invalid_shell:${file}`);
 }
+const sync=readFileSync('scripts/ops/lightbi-sync-internal-release.sh','utf8');
+for (const marker of ['lightbi.release-index.v1', "mapfile -t RELEASES < <(jq -c '.releases[]'", 'mirrored_versions=']) {
+  if (!sync.includes(marker)) throw new Error(`internal_release_pair_mirror_missing:${marker}`);
+}
 const workflow=readFileSync('.github/workflows/native-internal-update-acceptance.yml','utf8');
 if (!workflow.includes('lightbi-next/releases')) throw new Error('internal_r2_prefix_missing');
 if (workflow.includes('release/lightbi/')) throw new Error('internal_workflow_leaks_production_prefix');
 if (!workflow.includes('https://lightbi-next.thaiduy.digital/internal-releases/')) throw new Error('next_release_edge_missing');
 const chassis=readFileSync('deploy/chassis/chassis.env.example','utf8');
 if (!chassis.includes('LIGHTBI_ENGINE_CURRENT_LINK=')) throw new Error('engine_chassis_contract_missing');
-console.log(JSON.stringify({schema:'lightbi.preproduction-ops-check.v1',shellScripts:required.length,internalPrefix:'lightbi-next/releases',productionPrefixReferenced:false}));
+console.log(JSON.stringify({schema:'lightbi.preproduction-ops-check.v1',shellScripts:required.length,internalPrefix:'lightbi-next/releases',indexedPairMirror:true,productionPrefixReferenced:false}));
