@@ -58,7 +58,7 @@ jobs:
           VITE_LIGHTBI_PARENT_GENERATION_ID: g-2026-09-01-next-024
           VITE_LIGHTBI_CHANNEL: internal
           VITE_LIGHTBI_CORE_COMMIT: ${{ github.sha }}
-          VITE_LIGHTBI_CONTROL_PLANE_COMMIT: 0c45239e6075ea9dfbaf54e711775c82e21b0843
+          VITE_LIGHTBI_CONTROL_PLANE_COMMIT: 2b72e91b32b7f956eb9f1fe26bd4ec39eb4b76d0
           VITE_LIGHTBI_CONTROL_PLANE_SCHEMA_VERSION: 065_marketing_newsletter_mail
           VITE_LIGHTBI_TEST_PACK_VERSION: next-025-native-boundary-update-acceptance
           VITE_LIGHTBI_TRUST_STATUS: phase2a_unfrozen
@@ -95,7 +95,7 @@ jobs:
             slot = [int]$env:LIGHTBI_ACCEPTANCE_SLOT
             generation_id = "g-2026-09-01-next-025"
             source_sha = "${{ github.sha }}"
-            control_plane_sha = "0c45239e6075ea9dfbaf54e711775c82e21b0843"
+            control_plane_sha = "2b72e91b32b7f956eb9f1fe26bd4ec39eb4b76d0"
             run_id = "${{ github.run_id }}"
             run_attempt = "${{ github.run_attempt }}"
             installer = $name
