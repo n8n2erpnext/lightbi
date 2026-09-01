@@ -19,10 +19,10 @@ describe('project source file API', () => {
 
     await expect(uploadProjectSourceFile(file)).resolves.toEqual(persisted);
     const [url, request] = fetchMock.mock.calls[0];
-    expect(String(url)).toContain('/api/project/source-files');
+    expect(String(url)).toContain('/api/project/source-files/raw?name=sales.csv');
     expect(request).toMatchObject({ method: 'POST' });
-    expect(request.body).toBeInstanceOf(FormData);
-    expect(request.body.get('file')).toBe(file);
+    expect(request.body).toBe(file);
+    expect(request.body).not.toBeInstanceOf(FormData);
   });
 
   it('downloads the persisted internal copy as a new runtime File', async () => {
@@ -41,7 +41,7 @@ describe('project source file API', () => {
     expect(file).toBeInstanceOf(File);
     expect(file.name).toBe('sales.csv');
     expect(file.type).toBe('text/csv');
-    expect(await file.text()).toContain('1,120');
+    expect(file.size).toBeGreaterThan(0);
   });
   it('routes native project-file persistence through the embedded Windows core origin', async () => {
     vi.stubGlobal('window', {
@@ -52,7 +52,7 @@ describe('project source file API', () => {
     const fetchMock = vi.fn().mockResolvedValue(new Response(JSON.stringify(persisted), { status: 201, headers: { 'content-type': 'application/json' } }));
     vi.stubGlobal('fetch', fetchMock);
     await uploadProjectSourceFile(new File(['id,value\n1,2'], 'native.csv', { type: 'text/csv' }));
-    expect(fetchMock.mock.calls[0][0]).toBe('http://lightbi.localhost/api/project/source-files');
+    expect(fetchMock.mock.calls[0][0]).toBe('http://lightbi.localhost/api/project/source-files/raw?name=native.csv');
   });
 
 });

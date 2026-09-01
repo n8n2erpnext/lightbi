@@ -536,6 +536,35 @@ async fn prepare_verified_update(
     })
 }
 
+
+#[cfg(target_os = "windows")]
+fn launch_windows_installer_with_elevation(path: &Path) -> Result<(), String> {
+    use std::ffi::OsStr;
+    use std::os::windows::ffi::OsStrExt;
+    use windows_sys::Win32::UI::Shell::ShellExecuteW;
+    use windows_sys::Win32::UI::WindowsAndMessaging::SW_SHOWNORMAL;
+
+    let operation: Vec<u16> = OsStr::new("runas").encode_wide().chain(Some(0)).collect();
+    let file: Vec<u16> = path.as_os_str().encode_wide().chain(Some(0)).collect();
+    let result = unsafe {
+        ShellExecuteW(
+            std::ptr::null_mut(),
+            operation.as_ptr(),
+            file.as_ptr(),
+            std::ptr::null(),
+            std::ptr::null(),
+            SW_SHOWNORMAL,
+        )
+    };
+    if result as isize <= 32 {
+        return Err(format!(
+            "Could not request permission to start the verified installer (ShellExecuteW code {}).",
+            result as isize
+        ));
+    }
+    Ok(())
+}
+
 #[tauri::command]
 async fn apply_prepared_update(
     app: AppHandle,
@@ -570,9 +599,7 @@ async fn apply_prepared_update(
     let path = directory.join(metadata.artifact);
     #[cfg(target_os = "windows")]
     {
-        std::process::Command::new(&path)
-            .spawn()
-            .map_err(|error| format!("Could not start the verified installer: {error}"))?;
+        launch_windows_installer_with_elevation(&path)?;
         app.exit(0);
         Ok(())
     }

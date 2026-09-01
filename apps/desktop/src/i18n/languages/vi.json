@@ -432,7 +432,7 @@
     "LightBI creates a new, traceable copy. The imported source is never changed.": "LightBI tạo một bản sao mới có thể truy vết. Dữ liệu nguồn đã nhập không bao giờ bị thay đổi.",
     "LightBI found caveats that may affect the decision.": "LightBI phát hiện các lưu ý có thể ảnh hưởng đến quyết định.",
     "LightBI is inspecting each complete source, separating schemas and preserving source identity.": "LightBI đang đọc toàn bộ từng nguồn, tách cấu trúc và giữ nguyên danh tính nguồn.",
-    "LightBI saves when you start an analysis or preview a chart.": "LightBI sẽ lưu khi bạn bắt đầu phân tích hoặc xem biểu đồ.",
+    "LightBI saves this workspace as soon as the source is ready.": "LightBI lưu không gian làm việc ngay khi nguồn dữ liệu sẵn sàng.",
     "LightBI summarized metrics, trends, contribution, and exceptions from the full file—not only the points visible in the chart.": "LightBI đã tổng hợp chỉ số, xu hướng, mức đóng góp và bất thường từ toàn bộ tệp — không chỉ từ các điểm đang hiện trên biểu đồ.",
     "LightBI understands this as": "LightBI hiểu đây là",
     "LightBI understood your data": "LightBI đã hiểu dữ liệu của bạn",

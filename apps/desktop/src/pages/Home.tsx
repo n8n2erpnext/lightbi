@@ -98,6 +98,7 @@ export const Home: React.FC = () => {
   const canonicalReviewReturnItem = useRef<string | null>(null);
   const inspectionRuns = useRef(new ExecutionRunCoordinator("simple-inspection"));
   const pendingSessionReselectionRef = useRef<WorkspaceSessionRecord | null>(null);
+  const autoSaveInFlightRef = useRef('');
   const {
     workspaceSessions, sessionStatus, isSavingSession, lastAutoSaveSignatureRef, sessionSignature,
     saveCurrentWorkspaceSession, handleSaveWorkspaceSession, handleOpenWorkspaceSession, handleDeleteWorkspaceSession,
@@ -129,6 +130,24 @@ export const Home: React.FC = () => {
     setCurrentDataset(rebound);
     void saveCurrentWorkspaceSession(rebound, { silent: true });
   }, [currentDataset, saveCurrentWorkspaceSession]);
+
+  useEffect(() => {
+    if (currentDataset?.status !== 'ready') return;
+    const signature = sessionSignature(currentDataset);
+    if (!signature || signature === lastAutoSaveSignatureRef.current || signature === autoSaveInFlightRef.current) return;
+    autoSaveInFlightRef.current = signature;
+    void saveCurrentWorkspaceSession(currentDataset, { silent: true }).then(saved => {
+      if (!saved) return;
+      const savedDataset = (saved.snapshot as any)?.currentDataset;
+      lastAutoSaveSignatureRef.current = sessionSignature({
+        ...currentDataset,
+        sourceFiles: Array.isArray(savedDataset?.sourceFiles) ? savedDataset.sourceFiles : currentDataset.sourceFiles,
+        restoredFromSessionId: saved.id,
+      });
+    }).finally(() => {
+      if (autoSaveInFlightRef.current === signature) autoSaveInFlightRef.current = '';
+    });
+  }, [currentDataset]);
 
   useEffect(() => () => inspectionRuns.current.cancel(), []);
   const { isUploading, uploadError } = useDatasetUpload();

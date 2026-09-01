@@ -14,11 +14,10 @@ async function readJson<T>(response: Response): Promise<T> {
 }
 
 export async function uploadProjectSourceFile(file: File): Promise<PersistedProjectSourceFile> {
-  const form = new FormData();
-  form.append('file', file);
-  return readJson(await fetch(`${getApiBaseUrl()}/api/project/source-files`, {
+  return readJson(await fetch(`${getApiBaseUrl()}/api/project/source-files/raw?name=${encodeURIComponent(file.name)}`, {
     method: 'POST',
-    body: form,
+    headers: { 'content-type': file.type || 'application/octet-stream' },
+    body: file,
   }));
 }
 

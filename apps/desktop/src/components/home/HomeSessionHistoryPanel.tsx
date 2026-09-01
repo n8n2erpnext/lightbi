@@ -62,7 +62,7 @@ export const HomeSessionHistoryPanel: React.FC<HomeSessionHistoryPanelProps> = (
     ) : (
       <div className="rounded-lg border border-dashed border-gray-200 px-3 py-5 text-center">
         <div className="text-[13px] font-medium text-gray-700">{t('No saved sessions yet')}</div>
-        <div className="mt-1 text-[12px] text-gray-400">{t('LightBI saves when you start an analysis or preview a chart.')}</div>
+        <div className="mt-1 text-[12px] text-gray-400">{t('LightBI saves this workspace as soon as the source is ready.')}</div>
       </div>
     )}
     {visibleStatus && <div className="mt-4 flex items-center justify-between gap-3 rounded-md bg-gray-50 px-3 py-2 text-[12px] text-gray-500"><span>{visibleStatus}</span>{isConnectionFailure && onRetry && <button type="button" onClick={onRetry} className="shrink-0 rounded-md border border-gray-200 bg-white px-2.5 py-1 font-semibold text-gray-700 hover:bg-gray-100">{t('Try again')}</button>}</div>}

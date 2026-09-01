@@ -263,6 +263,40 @@ fn sanitize_project_file_name(name: &str) -> String {
     }
 }
 
+#[derive(Debug, Deserialize)]
+pub(super) struct SaveProjectSourceRawQuery {
+    name: String,
+}
+
+pub(super) async fn save_project_source_file_raw(
+    State(state): State<Arc<AppState>>,
+    axum::extract::Query(request): axum::extract::Query<SaveProjectSourceRawQuery>,
+    body: axum::body::Bytes,
+) -> Response {
+    let original_name = sanitize_project_file_name(&request.name);
+    if original_name == "source-file" && request.name.trim() != "source-file" {
+        return (StatusCode::BAD_REQUEST, Json(json!({ "error": "Invalid source file name" }))).into_response();
+    }
+    if body.is_empty() {
+        return (StatusCode::BAD_REQUEST, Json(json!({ "error": "File is empty" }))).into_response();
+    }
+    let files_dir = state.context.project_path.join("files");
+    if let Err(error) = tokio::fs::create_dir_all(&files_dir).await {
+        return (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({ "error": format!("Failed to create project files directory: {error}") }))).into_response();
+    }
+    let file_id = format!("{}-{}", uuid::Uuid::new_v4(), original_name);
+    let file_path = files_dir.join(&file_id);
+    if let Err(error) = tokio::fs::write(&file_path, &body).await {
+        return (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({ "error": format!("Failed to write project source file: {error}") }))).into_response();
+    }
+    (StatusCode::CREATED, Json(ProjectSourceFile {
+        file_id,
+        original_name,
+        file_path: file_path.to_string_lossy().to_string(),
+        bytes_written: body.len(),
+    })).into_response()
+}
+
 pub(super) async fn save_project_source_file(
     State(state): State<Arc<AppState>>,
     mut multipart: Multipart,

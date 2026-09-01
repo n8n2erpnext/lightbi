@@ -43,7 +43,7 @@ jobs:
         shell: pwsh
         run: |
           node scripts/validate-native-capabilities.mjs
-          pnpm --dir apps/desktop exec vitest run src/stores/update-store.test.ts src/lib/native-capabilities.test.ts src/components/layout/UpdateStatusBar.test.tsx src/stores/announcement-store.test.ts src/lib/native-boundary-contract.test.ts src/lib/account-api.test.ts src/lib/generation-diagnostics.test.ts src/lib/home-workspace-persistence.test.ts src/lib/investigation-persistence-actions.test.ts src/hooks/useHomeWorkspaceSessions.test.tsx
+          pnpm --dir apps/desktop exec vitest run src/stores/update-store.test.ts src/lib/native-capabilities.test.ts src/components/layout/UpdateStatusBar.test.tsx src/stores/announcement-store.test.ts src/lib/native-boundary-contract.test.ts src/lib/account-api.test.ts src/lib/generation-diagnostics.test.ts src/lib/project-source-file-api.test.ts src/lib/home-workspace-persistence.test.ts src/lib/investigation-persistence-actions.test.ts src/hooks/useHomeWorkspaceSessions.test.tsx
           cargo test -p lightbi-tauri updater_tests --target x86_64-pc-windows-msvc
           $env:LIGHTBI_LIVE_RELEASE_CATALOG = "https://lightbi-next.thaiduy.digital/api/releases/latest"
           cargo test -p lightbi-tauri native_http_reaches_live_internal_release_catalog --target x86_64-pc-windows-msvc -- --ignored --nocapture

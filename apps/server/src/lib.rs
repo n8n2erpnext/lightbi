@@ -70,7 +70,7 @@ use online_sources::{fetch_online_csv, fetch_online_excel};
 use preview::execute_preview;
 use project_sources::{
     build_dynamic_sql, download_project_source_file, get_current_source, import_csv,
-    resolve_current_source, resolve_dataset_source, resolve_project_source_file, save_project_source_file, CurrentSourceSession,
+    resolve_current_source, resolve_dataset_source, resolve_project_source_file, save_project_source_file, save_project_source_file_raw, CurrentSourceSession,
 };
 
 pub(crate) struct AppState {
@@ -210,6 +210,10 @@ pub async fn build_router() -> Router {
         .route(
             "/api/project/source-files",
             post(save_project_source_file).layer(DefaultBodyLimit::max(512 * 1024 * 1024)),
+        )
+        .route(
+            "/api/project/source-files/raw",
+            post(save_project_source_file_raw).layer(DefaultBodyLimit::max(512 * 1024 * 1024)),
         )
         .route("/api/project/source-files/resolve", get(resolve_project_source_file))
         .route(
