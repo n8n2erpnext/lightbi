@@ -27,7 +27,6 @@ import { useUpdateStore } from "../../stores/update-store";
 import { useAnnouncementStore } from "../../stores/announcement-store";
 import { UpdateNotificationMenu } from "./UpdateNotificationMenu";
 import { UpdateSidebarStatus } from "./UpdateSidebarStatus";
-import { ScrollMinimap } from "./ScrollMinimap";
 import { buildGenerationManifest } from "../../lib/generation-manifest";
 
 export const AppLayout: React.FC = () => {
@@ -339,11 +338,10 @@ export const AppLayout: React.FC = () => {
         <main className="relative flex min-w-0 flex-1 flex-col overflow-hidden bg-[#fbfbfa]">
           <div
             ref={mainScrollRef}
-            className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto"
           >
             <Outlet />
           </div>
-          <ScrollMinimap scrollRef={mainScrollRef} />
         </main>
       </div>
     </UiTranslationBoundary>
