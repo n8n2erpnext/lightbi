@@ -1354,3 +1354,11 @@ R1-P0 documentation/integrity closure verified 1,243 local links with zero missi
 - Focused identity regression PASS 3/3. Full Core `test:release-1.0` PASS including public/private boundary, generation/UAT contracts, production build and governed 11 files / 39 tests.
 - Deployed immutable `g-2026-09-01-next-022`, parent NEXT-021, Core `ed044e0a6ceb98eb8d052ddbac17249893005bb6`, CP `1ef53f947af030deca54208cb5c6f71ced785e67`, schema 065/pending 0, healthy matching worker. Manifest active/archive hashes are byte-identical at `e0b6a250a5d2711da1edc0f1e61ee8d1318c484b58ef1d0e40c289e9672d30fd`.
 - Production 5172/5173/5174 remained untouched. R1-P6 remains HOLD; no Root/private issuer/signer work started.
+
+## 2026-09-01 — NEXT-023 Admin sidebar UX deployed to Internal
+
+- Owner requested an ERPNext-style left navigation for `/admin` instead of the horizontal function tabs.
+- Private CP `c4db73bfa829e4c6e36a0210fbd9db1ac311aff6` adds one canonical grouped Admin sidebar and responsive mobile fallback without changing payment, auth, catalog, newsletter, documentation or analytics authority.
+- Focused Admin UX regression PASS 4/4; full CP suite PASS 169/169.
+- Deployed immutable `g-2026-09-01-next-023`, parent NEXT-022, Core unchanged at `ed044e0a6ceb98eb8d052ddbac17249893005bb6`, CP `c4db73b...`, schema 065/pending 0, worker healthy. Manifest current/archive SHA-256 `ad2c062f8458d28a792b3b7843d88aa842ec99feba21dbfdf4028f7f3f37f728`.
+- HTTPS Internal assets expose the new `Distribution admin` navigation and sidebar CSS marker. Production 5172/5173/5174 PIDs remain unchanged. Owner visual acceptance pending.

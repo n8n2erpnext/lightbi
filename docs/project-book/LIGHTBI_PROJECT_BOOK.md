@@ -2265,3 +2265,11 @@ The client UI is intentionally fail-closed. Internal builds render `Internal tes
 Focused identity regressions pass 3/3. Core `test:release-1.0` passes the complete platform-independent release gate, including production build and governed 11-file / 39-test product regression. R1-P4 is implemented, machine-verified, committed and pushed; final owner visual acceptance of the Settings panel remains open.
 
 Immutable Internal `g-2026-09-01-next-022` is deployed with parent NEXT-021, Core `ed044e0a6ceb98eb8d052ddbac17249893005bb6`, private CP `1ef53f947af030deca54208cb5c6f71ced785e67`, schema `065_marketing_newsletter_mail`, pending migrations `[]`, healthy matching worker, and manifest SHA-256 `e0b6a250a5d2711da1edc0f1e61ee8d1318c484b58ef1d0e40c289e9672d30fd`. Production 5172/5173/5174 remained on their pre-existing processes. R1-P6 remains owner-HOLD; no Root/signer work was started.
+
+## 94. NEXT-023 ERP-style Admin navigation shell
+
+Owner UX review requested replacing the horizontal `/admin` function tabs with a left navigation pattern similar to ERPNext. Private CP successor `c4db73bfa829e4c6e36a0210fbd9db1ac311aff6` normalizes every Admin section into one canonical sidebar: Monitor (`Overview`, `App usage`), Business (`Accounts`, `Licenses`, `Revenue`, `Commerce`, `Newsletter & Mail`), and System (`Security`, `Docs`). Existing business forms, authentication and mutation authority are unchanged.
+
+Desktop Admin now reserves a fixed 220px left rail with LightBI identity, grouped navigation, active-state highlight and a bottom Sign out action. At widths below 900px the same canonical navigation becomes a horizontally scrollable responsive bar rather than consuming mobile screen width. This is one global shell enhancement rather than duplicated page-specific navigation logic.
+
+UX-focused regression passes 4/4 and the complete CP authoritative suite passes 169/169. Immutable Internal `g-2026-09-01-next-023` is deployed with parent NEXT-022, unchanged Core `ed044e0a6ceb98eb8d052ddbac17249893005bb6`, CP `c4db73bfa829e4c6e36a0210fbd9db1ac311aff6`, schema `065_marketing_newsletter_mail`, pending migrations `[]`, healthy matching worker, and manifest SHA-256 `ad2c062f8458d28a792b3b7843d88aa842ec99feba21dbfdf4028f7f3f37f728`. Production 5172/5173/5174 remained untouched. Owner visual acceptance of the new sidebar is pending.
