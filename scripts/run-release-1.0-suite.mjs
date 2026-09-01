@@ -8,6 +8,8 @@ const governed = [
   ['pre-production operations contract', ['test:preproduction-ops']],
   ['owner UAT-pack contract', ['test:internal-uat-pack']],
   ['generation runtime diagnostics', ['--dir','apps/desktop','exec','vitest','run','src/lib/generation-manifest.test.ts','src/lib/generation-diagnostics.test.ts']],
+  ['native updater capability contract', ['exec','node','scripts/validate-native-capabilities.mjs']],
+  ['workspace history durability', ['--dir','apps/desktop','exec','vitest','run','src/lib/home-workspace-persistence.test.ts','src/lib/investigation-persistence-actions.test.ts','src/hooks/useHomeWorkspaceSessions.test.tsx']],
   ['production source-size gate', ['test:source-module-size']],
   ['desktop production build', ['--filter','@lightbi/desktop','build']],
   ['governed product regression', ['--dir','apps/desktop','exec','vitest','run',

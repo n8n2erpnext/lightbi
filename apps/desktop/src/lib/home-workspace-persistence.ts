@@ -1,6 +1,6 @@
 import type { PersistedProjectSourceFile } from './project-source-file-api';
 import type { SourceInspectionResult } from './source-preflight';
-import type { WorkspaceSessionRecord } from './workspace-session-api';
+import type { SaveWorkspaceSessionRequest, WorkspaceSessionRecord } from './workspace-session-api';
 import { parseCanonicalUserOverlay } from './understanding-core/canonical-user-overlay';
 import type { AnalysisSessionIdentityV1 } from './analysis-session-identity';
 
@@ -72,4 +72,28 @@ export function attachPersistedPrimarySource(dataset: any, persistedFile: Persis
       : source)
     : [{ name: persistedFile.originalName, rows: Number(dataset?.rows_count) || 0, columns: Array.isArray(dataset?.columns) ? dataset.columns.length : 0, persistedFile }];
   return { ...dataset, sourceFiles };
+}
+
+
+export function createDurableInvestigationWorkspaceHandoff(session: WorkspaceSessionRecord, runtimeDataset: any): {
+  dataset: any;
+  payload: SaveWorkspaceSessionRequest;
+} {
+  const savedDataset = (session.snapshot as any)?.currentDataset;
+  return {
+    dataset: {
+      ...runtimeDataset,
+      sourceFiles: Array.isArray(savedDataset?.sourceFiles) ? savedDataset.sourceFiles : runtimeDataset?.sourceFiles,
+      restoredFromSessionId: session.id,
+    },
+    payload: {
+      id: session.id,
+      title: session.title,
+      sourceType: session.sourceType,
+      rowCount: session.rowCount,
+      columnCount: session.columnCount,
+      sourceSummary: session.sourceSummary,
+      snapshot: session.snapshot,
+    },
+  };
 }

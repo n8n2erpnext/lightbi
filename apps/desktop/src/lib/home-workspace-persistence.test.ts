@@ -1,24 +1,24 @@
 import { describe, expect, it } from 'vitest';
-import { attachPersistedPrimarySource, createWorkspaceSessionSnapshot, persistedFilesFromSession } from './home-workspace-persistence';
+import { createDurableInvestigationWorkspaceHandoff } from './home-workspace-persistence';
 
-describe('workspace source persistence', () => {
-  it('binds a persisted copy to a legacy single-file dataset', () => {
-    const persistedFile = { fileId: 'file-1', originalName: 'sales.xlsx', filePath: 'project/files/file-1', bytesWritten: 128 };
-    const dataset = attachPersistedPrimarySource({ file_name: 'sales.xlsx', rows_count: 10, columns: ['id'], sourceFiles: [{ name: 'sales.xlsx', rows: 10 }] }, persistedFile);
-    const files = persistedFilesFromSession({ id: 's', title: 'sales', sourceType: 'local_xlsx', rowCount: 10, columnCount: 1, sourceSummary: dataset.sourceFiles, snapshot: {}, createdAt: '', updatedAt: '' });
-    expect(files).toEqual([persistedFile]);
-  });
+describe('durable Investigation workspace handoff', () => {
+  it('uses the already-saved durable source metadata instead of rebuilding from stale runtime state', () => {
+    const persistedFile = { fileId: 'file-1', originalName: 'sales.xlsx', filePath: 'files/file-1-sales.xlsx', bytesWritten: 1234 };
+    const session = {
+      id: 'session-1', title: 'sales.xlsx', sourceType: 'local_xlsx', rowCount: 1500, columnCount: 13,
+      sourceSummary: [{ name: 'sales.xlsx', rows: 1500, persistedFile }],
+      snapshot: { currentDataset: { sourceFiles: [{ name: 'sales.xlsx', rows: 1500, persistedFile }] } },
+      createdAt: '', updatedAt: '',
+    };
+    const runtimeDataset = {
+      status: 'ready', file_name: 'sales.xlsx', sourceType: 'local_xlsx',
+      sourceFiles: [{ name: 'sales.xlsx', rows: 1500 }], runtimeFileReferences: [{ name: 'sales.xlsx' }],
+    };
 
-  it('retains the normalized online URL but excludes transient runtime file handles', () => {
-    const snapshot = createWorkspaceSessionSnapshot({
-      status: 'ready', file_name: 'Online sheet', rows_count: 2, columns: ['id'], profiles: {},
-      sourceType: 'google_sheets', normalizedUrl: 'https://docs.google.com/spreadsheets/d/example/edit',
-      sourceFiles: [{ name: 'Online sheet', url: 'https://docs.google.com/spreadsheets/d/example/edit' }],
-      runtimeFileReferences: [{ private: true }], analysisRows: [], semanticRows: [], previewRows: [],
-    }) as { currentDataset: Record<string, unknown> };
-    expect((snapshot as any).version).toBe(3);
-    expect((snapshot as any).analysisSessionIdentity).toBeNull();
-    expect(snapshot.currentDataset.normalizedUrl).toContain('docs.google.com');
-    expect(snapshot.currentDataset).not.toHaveProperty('runtimeFileReferences');
+    const handoff = createDurableInvestigationWorkspaceHandoff(session, runtimeDataset);
+    expect(handoff.dataset).toMatchObject({ restoredFromSessionId: 'session-1', sourceFiles: [expect.objectContaining({ persistedFile })] });
+    expect(handoff.dataset.runtimeFileReferences).toEqual(runtimeDataset.runtimeFileReferences);
+    expect(handoff.payload).toMatchObject({ id: 'session-1', sourceSummary: [expect.objectContaining({ persistedFile })] });
+    expect((handoff.payload.snapshot as any).currentDataset.sourceFiles[0].persistedFile).toEqual(persistedFile);
   });
 });

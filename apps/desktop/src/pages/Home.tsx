@@ -57,6 +57,7 @@ import { buildHomeCanonicalArtifact } from '../lib/home-canonical-artifact';
 import { createWorkbookSheetSelectionBatch, expandWorkbookSheetSelection, inspectLocalFileBatch, toggleWorkbookSheet } from '../lib/workbook-sheet-intake';
 import type { WorkspaceSessionRecord } from '../lib/workspace-session-api';
 import { executeHomeCanonicalMultiSourceBuild } from '../lib/home-canonical-multisource-build';
+import { createDurableInvestigationWorkspaceHandoff } from '../lib/home-workspace-persistence';
 import { findHomeDemoScenario, isHomeDemoSourceName, selectHomeDemoActionId, type HomeDemoScenario } from '../lib/home-demo-scenarios';
 export const Home: React.FC = () => {
   const { preferences } = useDisplayPreferences();
@@ -99,7 +100,6 @@ export const Home: React.FC = () => {
   const pendingSessionReselectionRef = useRef<WorkspaceSessionRecord | null>(null);
   const {
     workspaceSessions, sessionStatus, isSavingSession, lastAutoSaveSignatureRef, sessionSignature,
-    createWorkspaceSessionSaveRequest,
     saveCurrentWorkspaceSession, handleSaveWorkspaceSession, handleOpenWorkspaceSession, handleDeleteWorkspaceSession,
   } = useHomeWorkspaceSessions({
     currentDataset, registerAdvancedSource, setCurrentDataset, setWorkspaceState, setDecisionTrustReport, setPendingLocalBatch,
@@ -177,10 +177,13 @@ export const Home: React.FC = () => {
       : [];
 
     let datasetForSession = currentDataset;
+    let durableWorkspaceSessionPayload;
     if (currentDataset?.status === 'ready') {
       const saved = await saveCurrentWorkspaceSession(currentDataset, { silent: true });
       if (saved) {
-        datasetForSession = { ...currentDataset, restoredFromSessionId: saved.id };
+        const handoff = createDurableInvestigationWorkspaceHandoff(saved, currentDataset);
+        datasetForSession = handoff.dataset;
+        durableWorkspaceSessionPayload = handoff.payload;
         lastAutoSaveSignatureRef.current = sessionSignature(datasetForSession);
       }
     }
@@ -201,7 +204,7 @@ export const Home: React.FC = () => {
             ? 'semantic_sample'
             : 'preview',
       currentDataset?.businessFusionOverview,
-      datasetForSession?.status === 'ready' ? createWorkspaceSessionSaveRequest(datasetForSession) : undefined,
+      durableWorkspaceSessionPayload,
       canonicalHandoff,
       multiSourceDataset,
       supportingAnalyses,
