@@ -123,6 +123,15 @@ describe("staged native updater", () => {
       });
       mocks.progressHandler?.({
         payload: {
+          phase: "downloading",
+          downloadedBytes: 48,
+          totalBytes: 100,
+          percent: 48,
+        },
+      });
+      expect(useUpdateStore.getState().progress).toBe(50);
+      mocks.progressHandler?.({
+        payload: {
           phase: "verifying",
           downloadedBytes: 100,
           totalBytes: 100,

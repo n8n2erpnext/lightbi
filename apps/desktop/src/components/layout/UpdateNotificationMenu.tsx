@@ -3,9 +3,15 @@ import { useNavigate } from "react-router-dom";
 import { Bell } from "lucide-react";
 import { useUpdateStore } from "../../stores/update-store";
 import { useAnnouncementStore } from "../../stores/announcement-store";
+import { useSmoothedUpdateProgress } from "../../hooks/useSmoothedUpdateProgress";
 
 export const UpdateNotificationMenu: React.FC = () => {
   const updater = useUpdateStore();
+  const progress = useSmoothedUpdateProgress(
+    updater.progress,
+    updater.status === "verifying" || updater.status === "ready",
+  );
+  const progressLabel = Math.floor(progress);
   const navigate = useNavigate();
   const announcements = useAnnouncementStore();
   const [open, setOpen] = useState(false);
@@ -87,7 +93,7 @@ export const UpdateNotificationMenu: React.FC = () => {
                 <div
                   className="h-full rounded-full bg-blue-600 transition-all"
                   style={{
-                    width: `${updater.status === "verifying" ? 100 : (updater.progress ?? 4)}%`,
+                    width: `${updater.status === "verifying" ? 100 : Math.max(progress, 4)}%`,
                   }}
                 />
               </div>
@@ -95,7 +101,7 @@ export const UpdateNotificationMenu: React.FC = () => {
                 {updater.status === "verifying"
                   ? "Verifying…"
                   : typeof updater.progress === "number"
-                    ? `Downloading ${updater.progress}%`
+                    ? `Downloading ${progressLabel}%`
                     : "Downloading…"}
               </div>
               <button
@@ -113,7 +119,7 @@ export const UpdateNotificationMenu: React.FC = () => {
                 {updater.qaSimulation ? "The internal progress simulation reached READY." : "The installer is staged and verified."}{" "}
                 {updater.qaSimulation ? "No installer will be launched by this simulation." : linux
                   ? "Your package manager will ask for confirmation."
-                  : "Restart whenever you are ready."}
+                  : "Windows will ask once for permission, then LightBI updates silently and reopens."}
               </p>
               <div className="mt-3 flex gap-2">
                 {!updater.qaSimulation && <button
@@ -133,7 +139,7 @@ export const UpdateNotificationMenu: React.FC = () => {
           )}
           {updater.status === "installing" && (
             <div className="mt-3 text-sm text-slate-500">
-              Opening the verified installer…
+              Waiting for Windows permission to start the silent update…
             </div>
           )}
           {updater.status === "failed" && (

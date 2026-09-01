@@ -1,9 +1,15 @@
 import React from "react";
 import { useUpdateStore } from "../../stores/update-store";
 import { buildGenerationManifest } from "../../lib/generation-manifest";
+import { useSmoothedUpdateProgress } from "../../hooks/useSmoothedUpdateProgress";
 
 export const UpdateSettingsPanel: React.FC = () => {
   const updater = useUpdateStore();
+  const progress = useSmoothedUpdateProgress(
+    updater.progress,
+    updater.status === "verifying" || updater.status === "ready",
+  );
+  const progressLabel = Math.floor(progress);
   const internal = buildGenerationManifest().channel === "internal";
   const busy = [
     "checking",
@@ -17,13 +23,13 @@ export const UpdateSettingsPanel: React.FC = () => {
     updater.status === "checking"
       ? "Checking the release manifest…"
       : updater.status === "available" || updater.status === "downloading"
-        ? `Downloading the verified update in the background${typeof updater.progress === "number" ? ` · ${updater.progress}%` : ""}`
+        ? `Downloading the verified update in the background${typeof updater.progress === "number" ? ` · ${progressLabel}%` : ""}`
         : updater.status === "verifying"
           ? "Download complete. Verifying SHA-256 and staging atomically…"
           : updater.status === "ready"
-            ? `Version ${updater.manifest?.version} is staged and ready. Restart whenever you are ready.`
+            ? `Version ${updater.manifest?.version} is staged and ready. Update & Restart will ask Windows for permission, install silently, then reopen LightBI.`
             : updater.status === "installing"
-              ? "Opening the verified installer…"
+              ? "Waiting for Windows permission. After approval, LightBI will update silently and reopen."
               : updater.status === "failed"
                 ? updater.error
                 : "LightBI is up to date.";
@@ -91,14 +97,14 @@ export const UpdateSettingsPanel: React.FC = () => {
             <div
               className="h-full rounded-full bg-blue-600 transition-all"
               style={{
-                width: `${updater.status === "verifying" ? 100 : (updater.progress ?? 4)}%`,
+                width: `${updater.status === "verifying" ? 100 : Math.max(progress, 4)}%`,
               }}
             />
           </div>
         )}
         <p className="mt-4 text-xs leading-5 text-slate-400">
-          Updates are downloaded to LightBI's application cache. LightBI never
-          installs or restarts automatically.
+          Updates are downloaded to LightBI's application cache. Installation starts only
+          after you choose Update & Restart; Windows may ask for administrator approval.
         </p>
       </div>
     </div>

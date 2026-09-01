@@ -15,7 +15,7 @@ describe('global update status bar',()=>{
     useUpdateStore.setState({status:'ready',manifest,progress:100,prepared:{version:'0.9.3-test',artifact:'x.exe',sha256:'a'.repeat(64),reused:false,ready:true}});
     view.rerender(<UpdateStatusBar/>);
     expect(screen.getByText(/ready to install/i)).toBeTruthy();
-    expect(screen.getByRole('button',{name:/update now/i})).toBeTruthy();
+    expect(screen.getByRole('button',{name:/update & restart/i})).toBeTruthy();
   });
   it('lets the user hide a version without cancelling the updater state',()=>{
     useUpdateStore.setState({status:'downloading',manifest,progress:12});

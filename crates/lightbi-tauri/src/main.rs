@@ -235,6 +235,9 @@ struct UpdateProgress {
     percent: Option<u8>,
 }
 
+#[cfg(target_os = "windows")]
+const WINDOWS_UPDATE_INSTALLER_ARGS: &str = "/S /UPDATE /R";
+
 fn valid_update_version(value: &str) -> bool {
     !value.is_empty()
         && value.len() <= 80
@@ -546,12 +549,16 @@ fn launch_windows_installer_with_elevation(path: &Path) -> Result<(), String> {
 
     let operation: Vec<u16> = OsStr::new("runas").encode_wide().chain(Some(0)).collect();
     let file: Vec<u16> = path.as_os_str().encode_wide().chain(Some(0)).collect();
+    let parameters: Vec<u16> = OsStr::new(WINDOWS_UPDATE_INSTALLER_ARGS)
+        .encode_wide()
+        .chain(Some(0))
+        .collect();
     let result = unsafe {
         ShellExecuteW(
             std::ptr::null_mut(),
             operation.as_ptr(),
             file.as_ptr(),
-            std::ptr::null(),
+            parameters.as_ptr(),
             std::ptr::null(),
             SW_SHOWNORMAL,
         )
@@ -828,6 +835,12 @@ mod updater_tests {
             .block_on(valid_staged_update(folder.path(), &replaced))
             .expect_err("replaced immutable version must fail");
         assert!(error.contains("different checksum"));
+    }
+
+    #[cfg(target_os = "windows")]
+    #[test]
+    fn windows_update_launch_contract_is_silent_in_place_and_restarts() {
+        assert_eq!(WINDOWS_UPDATE_INSTALLER_ARGS, "/S /UPDATE /R");
     }
 
     #[test]

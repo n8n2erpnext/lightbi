@@ -250,19 +250,22 @@ export const useUpdateStore = create<UpdateStore>((set, get) => ({
           "lightbi://update-progress",
           (event) => {
             if (operation !== updateOperationEpoch) return;
-            const progress =
+            const nextProgress =
               typeof event.payload.percent === "number"
-                ? event.payload.percent
+                ? Math.max(0, Math.min(100, event.payload.percent))
                 : null;
-            set({
+            set((state) => ({
               status:
                 event.payload.phase === "verifying"
                   ? "verifying"
                   : event.payload.phase === "ready"
                     ? "ready"
                     : "downloading",
-              progress,
-            });
+              progress:
+                nextProgress === null
+                  ? state.progress
+                  : Math.max(state.progress ?? 0, nextProgress),
+            }));
           },
         );
         const prepared = await invoke<PreparedUpdate>(

@@ -21,8 +21,12 @@ if (installMode === 'perMachine') {
   if (!nativeMain.includes('ShellExecuteW') || !nativeMain.includes('OsStr::new(\"runas\")')) {
     throw new Error('Per-machine Windows installer requires an explicit UAC-aware ShellExecuteW runas launch path.');
   }
+  if (!nativeMain.includes('WINDOWS_UPDATE_INSTALLER_ARGS: &str = \"/S /UPDATE /R\"')) {
+    throw new Error('Windows updater must use Tauri NSIS silent update/restart mode (/S /UPDATE /R).');
+  }
 }
 console.log(JSON.stringify({
   schema: 'lightbi.native-capability-check.v1', capability: capability.identifier, permissions: required,
   windowsInstallMode: installMode, elevatedInstallerLaunch: installMode === 'perMachine' ? 'shell_execute_runas' : 'not_required',
+  windowsUpdateMode: installMode === 'perMachine' ? 'silent_update_restart' : 'platform_default',
 }));

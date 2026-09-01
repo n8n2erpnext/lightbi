@@ -3,6 +3,7 @@ import { AlertCircle, CheckCircle2, Download, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useUpdateStore } from "../../stores/update-store";
 import { cn } from "../../lib/utils";
+import { useSmoothedUpdateProgress } from "../../hooks/useSmoothedUpdateProgress";
 
 type UpdateSidebarStatusProps = {
   expanded: boolean;
@@ -13,6 +14,11 @@ export const UpdateSidebarStatus: React.FC<UpdateSidebarStatusProps> = ({
 }) => {
   const navigate = useNavigate();
   const updater = useUpdateStore();
+  const progress = useSmoothedUpdateProgress(
+    updater.progress,
+    updater.status === "verifying" || updater.status === "ready",
+  );
+  const progressLabel = Math.floor(progress);
   const visible = [
     "checking",
     "available",
@@ -28,7 +34,6 @@ export const UpdateSidebarStatus: React.FC<UpdateSidebarStatusProps> = ({
   const busy = ["checking", "verifying", "installing"].includes(updater.status);
   const ready = updater.status === "ready";
   const failed = updater.status === "failed";
-  const progress = Math.max(0, Math.min(100, updater.progress ?? 0));
   const label = failed
     ? `Update failed${updater.error ? `: ${updater.error}` : ""}`
     : ready
@@ -38,9 +43,9 @@ export const UpdateSidebarStatus: React.FC<UpdateSidebarStatusProps> = ({
         : updater.status === "checking"
           ? "Checking for LightBI updates"
           : updater.status === "installing"
-            ? "Opening verified LightBI update"
+            ? "Waiting for Windows permission to update LightBI"
             : `Downloading LightBI ${updater.manifest?.version ?? "update"}${
-                typeof updater.progress === "number" ? ` · ${updater.progress}%` : ""
+                typeof updater.progress === "number" ? ` · ${progressLabel}%` : ""
               }`;
 
   return (
