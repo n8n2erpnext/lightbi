@@ -406,3 +406,14 @@ NEXT-016 advances only Core/frontend source. Core `451c9b6afe0a95bce5bce473a4a84
 After the change, exact-head revalidation passes generation contract 3/3, generation diagnostics 3/3, desktop production build and the selected governed suite 11 files / 39 tests. The immutable Internal manifest is `g-2026-08-31-next-016`, SHA-256 `72f223df5c2508e2d1e278497e1d8a664aa55f87c5c497f8d48d5a76b77e7f90`, with Core `451c9b6...`, unchanged CP `f1879c6...`, and schema 062. A post-build restore re-copies the archived manifest into `apps/desktop/dist/lightbi-generation.json`; gateway acceptance confirms JSON content, matching generation header and byte-identical manifest hash rather than SPA fallback.
 
 The CP first-paint gate remains inherited from unchanged CP `f1879c6...`; live Chromium revalidation continues to observe no homepage paint on Docs, Account or Admin routes. Production 5172/5173/5174 remains outside this lifecycle.
+
+
+## 27. NEXT-026 authentication-recovery deployment gate
+
+NEXT-026 reuses exact Core `c78124df3973fcfe2107a966563f3266e97f3deb`, whose NEXT-025 transport/updater acceptance source already passed focused transport/updater/diagnostics **20/20**, History durability **13/13**, the complete `test:release-1.0` authority and governed product regression **39/39**. The new source change is private control-plane UX/documentation authority at CP `30bb58ffeaaad80014fb7c57522a7b8a4eb6feb8`.
+
+The CP-focused auth/docs gate passes **21/21** after a full server/web build, and the complete private authoritative suite passes **175/175**. The immutable generation-manifest contract passes **3/3** before packaging. The resulting Internal engine bundle was built from exact Core source, not by relabeling the predecessor runtime.
+
+Runtime acceptance for `g-2026-09-02-next-026` requires and currently proves: gateway manifest/header identity match; Core health; CP diagnostics exact generation/commit; schema `065_marketing_newsletter_mail` current with pending `[]`; healthy same-generation worker; published `/docs/sign-in-and-account-recovery`; served Account/Admin assets containing `Use authenticator or recovery code`, `Need help?` and fingerprint markers; and absence of the raw W3C WebAuthn diagnostic URL.
+
+Generation manifest SHA-256 is `98addf25986a513d728c5e19743106a25af0d0c4e90f37d1a3d76a9e8bf63b7a`; Core server binary SHA-256 is `3a6e87f37a8016eebae71b714cf4fc8e5f6f4af954b1617a543a1a35a23b9c8a`. This machine gate does not substitute for owner interaction: Admin/Account Passkey cancellation and TOTP/recovery fallback still require manual browser acceptance. The independent Windows A→B/History acceptance remains open. Production is outside this Internal deployment lifecycle.

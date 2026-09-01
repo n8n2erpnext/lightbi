@@ -1,26 +1,28 @@
 {
   "schema": "lightbi.current-checkpoint.v1",
-  "updatedAt": "2026-09-01T15:45:41Z",
-  "status": "next025_windows_25_10_pair_branded_edge_verified_owner_acceptance_pending",
-  "activeRuntime": "g-2026-09-01-next-025",
-  "activeRuntimeCore": "0c6a5bc88304e154cf074233b9f1d43ac1460669",
-  "controlPlaneCandidate": "2b72e91b32b7f956eb9f1fe26bd4ec39eb4b76d0",
-  "windowsArtifactSource": "f1654419c2a0b252795cf9a637d0412c3023de29",
+  "updatedAt": "2026-09-01T18:36:30Z",
+  "status": "next026_auth_recovery_deployed_owner_acceptance_pending",
+  "activeRuntime": "g-2026-09-02-next-026",
+  "activeRuntimeCore": "c78124df3973fcfe2107a966563f3266e97f3deb",
+  "controlPlaneCandidate": "30bb58ffeaaad80014fb7c57522a7b8a4eb6feb8",
+  "windowsArtifactSource": "c78124df3973fcfe2107a966563f3266e97f3deb",
   "releaseOpsSource": "98b57aebc4cd038f3c4774d03de1a538edffa1d3",
   "completed": [
-    "history_ready_save_and_full_source_overwrite_protection_machine_verified",
-    "silent_windows_update_S_UPDATE_R_and_smoothed_progress_machine_verified",
-    "actions_run_33524736531_windows_ab_and_r2_publisher_pass",
-    "indexed_pair_release_mirror_deployed_and_service_exit_zero",
-    "branded_https_A_and_B_http_200_size_and_sha256_verified",
-    "skip_ci_ops_commit_created_no_25_11_acceptance_run"
+    "next026_exact_core_cp_manifest_engine_bundle_built_and_deployed",
+    "cp_focused_auth_docs_21_21_and_authoritative_175_175_pass",
+    "account_admin_explicit_totp_recovery_fallback_and_fingerprint_ui_served",
+    "raw_webauthn_w3c_diagnostic_removed_from_served_assets",
+    "sign_in_and_account_recovery_docs_live_and_next026_runtime_worker_schema_reconciled"
   ],
-  "nextAction": "owner Windows acceptance: install A 0.9.2-next.25.10.1; verify a local source reaching Ready immediately creates History and remains executable after analysis, Investigation and app restart; allow B 0.9.2-next.25.10.2 background download; press Update & Restart; expected result is Windows UAC only, no NSIS wizard, silent in-place update and automatic relaunch as B; record owner verdict before closing R1-P1",
-  "blockers": ["next025_windows_native_owner_acceptance_pending"],
+  "nextAction": "owner acceptance on HTTPS Admin and Account: enter primary auth, reach strong-auth choice, open Passkey then cancel, verify LightBI shows friendly status with no raw WebAuthn/W3C text, choose authenticator or recovery code and complete sign-in, verify Need help opens /docs/sign-in-and-account-recovery; separately complete the pending Windows A-to-B updater and full-source History acceptance before closing R1-P1",
+  "blockers": [
+    "next026_passkey_fallback_owner_acceptance_pending",
+    "next025_windows_ab_history_owner_acceptance_pending"
+  ],
   "productionTouched": false,
   "readFirst": [
-    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#97",
-    "docs/adr/ADR-123-engine-chassis-preproduction-and-disaster-recovery.md",
-    "docs/architecture/road-to-1-0-trust-release-contract.md"
+    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#99-next-026-passkey-recovery-ux-and-sign-in-help-closure",
+    "docs/project-book/LIGHTBI_CONTROL_PLANE_MAP.md#35-next-026-explicit-passkey-fallback-and-recovery-help-control-plane-closure",
+    "docs/adr/ADR-123-engine-chassis-preproduction-and-disaster-recovery.md"
   ]
 }

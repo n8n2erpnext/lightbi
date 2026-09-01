@@ -477,3 +477,16 @@ NEXT-016 changes no private control-plane source or schema. CP remains exact `f1
 Live diagnostics report `g-2026-08-31-next-016`, exact CP commit `f1879c6...`, schema `current` with pending `[]`, and a healthy worker heartbeat carrying the same generation and commit. The first-paint guard introduced in NEXT-015 remains active; Chromium revalidation of direct CP `/docs`, `/account` and `/admin` shows the secondary-route marker before rendering and no visible homepage hero paint.
 
 The current immutable manifest pins Core `451c9b6afe0a95bce5bce473a4a84c8b918f42cd`, CP `f1879c65453cdf0bc9798257e462264f0424e907`, schema 062 and SHA-256 `72f223df5c2508e2d1e278497e1d8a664aa55f87c5c497f8d48d5a76b77e7f90`. Production CP 5174 and production persistence remain untouched; Trust Phase 2A remains unfrozen and signer/attestation work remains blocked.
+
+
+## 35. NEXT-026 explicit Passkey fallback and recovery-help control-plane closure
+
+Private CP `30bb58ffeaaad80014fb7c57522a7b8a4eb6feb8` advances the NEXT authentication UX without changing schema or weakening strong-auth policy. The owner-reported defect was browser-side WebAuthn cancellation: `navigator.credentials.get()` throws on Cancel/timeout, and the prior catch path exposed the browser's raw `NotAllowedError` diagnostic while leaving authenticator fallback effectively hidden.
+
+Account and Admin now share the same policy presentation: Passkey remains preferred, while an enrolled server-authorized TOTP/recovery fallback is rendered as an explicit **Use authenticator or recovery code** choice. Cancelling or timing out the Passkey picker returns LightBI-owned friendly status text instead of raw WebAuthn/W3C content. Fingerprint iconography is added to Passkey actions. The one-time email sign-in path remains a primary factor only; it cannot bypass configured strong authentication.
+
+The same CP head adds published guide `sign-in-and-account-recovery` and **Need help?** links from both sign-in surfaces. The guide documents Passkey, TOTP, recovery codes, one-time email links and reset behavior while preserving the separation between ordinary LightBI Account authority and Administrator authority.
+
+Verification at the exact CP head passes focused auth/docs **21/21** and the complete authoritative compiled-runtime suite **175/175**. No migration was introduced; the isolated Internal database remains at all 19 migrations applied with schema `065_marketing_newsletter_mail` current and pending `[]`.
+
+The deployed Internal CP marker is exact `30bb58ffeaaad80014fb7c57522a7b8a4eb6feb8`. Live diagnostics over both the Internal origin and public HTTPS report `g-2026-09-02-next-026`, the exact CP commit, current schema and a healthy matching worker. HTTPS assets contain the explicit alternate-method/help/fingerprint markers and no raw W3C WebAuthn diagnostic URL. Production CP `5174`, Production persistence and Trust/private-key authority were not changed. Owner browser acceptance of the revised fallback flow remains open.

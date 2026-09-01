@@ -1396,3 +1396,21 @@ R1-P0 documentation/integrity closure verified 1,243 local links with zero missi
 - Core ops `98b57aebc4cd038f3c4774d03de1a538edffa1d3` makes the current index authoritative for mirrored Windows releases and verifies every executable, checksum sidecar and manifest before switching local catalog pointers. Full release suite remained PASS with governed regression 39/39.
 - Atomically deployed that exact sync script to `/home/ubuntu/services/lightbi-ops/bin/`; manual user-systemd sync exited 0 and reported both `25.10.2` and `25.10.1`. Full branded HTTPS streaming verification then proved A/B HTTP 200, exact content lengths and exact SHA-256 matches.
 - Ops commit used `[skip ci]`; acceptance workflow remains run #10 and did not create `25.11.x`. Active Internal runtime truth is `g-2026-09-01-next-025` with Core `0c6a5bc...` and CP `2b72e91b...`; Production remained untouched. Owner Windows A→B + History acceptance is now the only native gate represented by this checkpoint.
+
+
+## 2026-09-01 — NEXT-025 25.11 transport fallback candidate published
+
+- Owner test of `25.10.1` failed at packaged external transport while server-side Core/CP/release endpoints remained healthy. This isolated the defect from R2/CP availability.
+- Core `c78124df3973fcfe2107a966563f3266e97f3deb` adds idempotent GET/HEAD WebView fallback after native transport failure/non-2xx and static `/internal-releases/latest.json` fallback for updater discovery; mutation methods are never replayed.
+- Focused transport/updater/diagnostics PASS 20/20; History durability 13/13; full `test:release-1.0` and governed regression 39/39 remain green.
+- GitHub Actions run `33529657486` / #11 PASS and published A `0.9.2-next.25.11.1` plus B/latest `0.9.2-next.25.11.2`; indexed mirror and branded HTTPS streams matched published sizes/hashes.
+- This remained machine evidence only; Windows A→B/History owner acceptance stayed open. Production and R1-P6 remained untouched/HOLD.
+
+## 2026-09-02 — NEXT-026 Passkey alternate-method recovery UX deployed
+
+- Owner screenshots exposed raw WebAuthn `NotAllowedError`/W3C text after cancelling Passkey and no deliberate TOTP/recovery choice. Root cause was the browser throwing from `navigator.credentials.get()` rather than returning a null credential.
+- Private CP `30bb58ffeaaad80014fb7c57522a7b8a4eb6feb8` keeps Passkey preferred but adds explicit **Use authenticator or recovery code** for server-authorized fallback, friendly cancellation/unavailability text, fingerprint iconography, and `Need help?` links for both Account and Admin.
+- Added published `/docs/sign-in-and-account-recovery` covering Passkey, TOTP, recovery codes, one-time email links and password reset. One-time email links remain primary factors and cannot bypass configured strong auth; Google remains Account-only authority.
+- Verification PASS: focused auth/docs 21/21, full CP authoritative 175/175, generation manifest 3/3. Served HTTPS assets contain the new markers and no raw W3C WebAuthn diagnostic URL.
+- Built/deployed immutable `g-2026-09-02-next-026`, parent NEXT-025, Core `c78124df...`, CP `30bb58ff...`, schema 065/pending 0, healthy matching worker. Manifest SHA `98addf25...63b7a`; Core binary SHA `3a6e87f3...b9c8a`.
+- Owner browser acceptance of Passkey Cancel → friendly LightBI state → explicit TOTP/recovery on Admin and Account remains open. Packaged Windows A→B/History acceptance also remains open. Production 5172/5173/5174 and Trust R1-P6 were not touched.
