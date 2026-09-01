@@ -84,3 +84,32 @@ release gate, not an intermediate development milestone.
     server sidecar and will receive a new checksum.
   - Signing: unsigned Beta installer; code signing remains a distribution gate.
   - Native launch, `/api/health`, and installed-app E2E remain pending.
+
+## Current R1-P1 Windows native acceptance gate — 2026-09-01
+
+This section supersedes the old MinGW/sidecar requirements in section 4 for current 1.0 acceptance. Historical verification records above remain evidence of the earlier packaging architecture.
+
+Current Windows packaging uses `x86_64-pc-windows-msvc`. The LightBI core is linked into the Tauri process through the `lightbi-server` crate and exposed through the in-process `EmbeddedCore` router. A separate `lightbi-server.exe` and the former MinGW runtime DLL chain are therefore **not** required artifacts for the current Windows package.
+
+Machine gates before owner acceptance:
+
+- [x] platform-independent `pnpm test:release-1.0` green on the accepted app source;
+- [x] release/public-boundary and updater-state-machine checks green;
+- [x] branded icon generation/validation remains part of Windows CI;
+- [ ] Windows MSVC updater-integrity tests green on GitHub Actions;
+- [ ] NSIS installer + SHA-256 + `lightbi.native-acceptance.v1` provenance produced by an artifact-only workflow with no GitHub Release/R2 publication.
+
+Owner clean-Windows acceptance:
+
+- [ ] Verify downloaded installer SHA-256 matches the workflow artifact evidence before launch.
+- [ ] Install on a Windows machine without Node.js, Rust, a LightBI development checkout, or manual backend setup.
+- [ ] Confirm first launch reaches the LightBI desktop UI and governed analysis works without a separately launched server process.
+- [ ] Confirm the install directory does not depend on a separately managed `lightbi-server.exe` runtime.
+- [ ] In Settings → General, confirm Build identity does **not** claim cryptographic official verification while Trust/REL/ATT are not active.
+- [ ] Run at least one starter scenario and one real-file Easy Mode analysis; open evidence/Deep BA and return to Easy without source loss.
+- [ ] Restart the installed app and verify persisted session/history recovery for a source whose bytes are available.
+- [ ] Exercise Account sign-in on native Windows; security failures must fail closed and must not break local Basic analysis.
+- [ ] Record installer size, checksum, SmartScreen/signing state, Windows version, and any launch/runtime defect.
+- [ ] Uninstall and confirm no manual server/service cleanup is required.
+
+Passing machine packaging does not close R1-P1 by itself. R1-P1 closes only after this owner native acceptance is recorded against the same source artifact/provenance.
