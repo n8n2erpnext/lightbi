@@ -130,6 +130,10 @@ The approved NEXT-only exception has now been exercised: private signer rehearsa
 
 The NEXT rehearsal has since crossed three downstream boundaries without changing Production phase authority. R1-P7 rehearsal uses a bounded CP-side client to exercise real Internal authority data through the TEST purpose-separated signer while rolling synthetic state back. R1-P8 rehearsal publishes only public TEST Root/keyset/REL material under `/internal-trust/`; HTTPS verification of the Root→REL chain and the real Windows installer digest passed. R1-P9 rehearsal is a separate verification-only service with no signer credentials or network authority. It validates a NEXT-only request-proof protocol binding method, path, timestamp, monotonic sequence, nonce, body digest and certificate identity to an ephemeral device signature, with durable single-node sequence/revocation state and fail-closed replay/tamper tests. None of these rehearsal passes satisfy Production R1-P7/P8/P9, and the NEXT request-proof wire format must still be frozen separately before Production use.
 
+
+R1-P10 has also been rehearsed on NEXT: a real AccountAuth session, trusted ATT/device request proof, Root-verified signed ENT and requested capability are conjunctive requirements rather than interchangeable claims. Per-subject ENT progression is persisted so rollback/equivocation remains fail-closed across verifier restart; account Pro and organization Business/5-seat paths both pass live rehearsal, while entitlement rollback and subject mismatch fail. The rehearsal leaves no synthetic account/organization/entitlement authority rows. This remains non-production evidence and does not replace the Production P10 migration/enforcement gate.
+
+
 Current Beta account/license plumbing, public/private repository separation, updater/release manifests and private CP foundations must not be described as equivalent to the final 1.0 trust chain.
 
 ## Exit sequence

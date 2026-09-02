@@ -1451,3 +1451,11 @@ R1-P0 documentation/integrity closure verified 1,243 local links with zero missi
 - Final attestation source `b4e254ed41cad42af82dcef3376e36ba9afd3c5c`; image `lightbi-next-trust-attestation:b4e254ed41ca-trust-10de4da8`, image ID `sha256:6f47bddc...c5b31`. Runtime is verification-only, `network=none`, UDS 0600, rootfs read-only, no signer secret/mount, with persistent sequence/revocation state.
 - Live request proof PASS: ephemeral device key, TEST ATT certificate, valid sequences 1/2; nonce replay, body tamper, sequence rollback and target mismatch rejected. State survived service restart with identical file SHA. Device private material was never persisted. Attestation suite 8/8, Distribution foundation guard 8/8, Distribution authoritative suite 189/189.
 - These results close only NEXT rehearsals for R1-P7/P8/P9. Production Phase 2A remains unfrozen and Production R1-P6 Root ceremony remains owner-gated.
+
+## 2026-09-02 — R1-P10 NEXT signed-entitlement migration rehearsal passes
+
+- Extended the verification-only NEXT attestation gate with Pro conjunction enforcement while keeping signer credentials absent from runtime. ENT progression is persisted per subject alongside attestation replay/revocation state.
+- Added bounded CP rehearsal `next-pro-authority-rehearsal`: actual AccountAuth register→verify→password login→session, governed `EntitlementAuthorityRepository`, TEST ATT/ENT signer, device proof, and Pro authorization. Distribution HTTP runtime does not import the rehearsal or signer client.
+- Live Account Pro: ENT v1 and v2 authorize `pro_runtime`; reusing v1 after v2 fails `entitlement_rollback_detected`; wrong authenticated account fails `pro_authority_subject_mismatch`. Live Business: active organization owner + signed `business` ENT with `seat_limit=5` authorizes.
+- Synthetic entitlement/organization rows are transaction-rolled-back and the synthetic account is deleted. Post-run DB counts are zero for rehearsal account, `p10:` authority entitlement, and rehearsal organization. Audit evidence is retained.
+- Final source `31fa5428896f6e9cb7877d353e2485b43d7a1671`; attestation image `lightbi-next-trust-attestation:31fa5428896f-trust-10de4da8`, ID `sha256:a08e1f681b6ab564b9dc19b5b3202f33224e44d5ef4f54ab5dbe3be2ee228899`. Gates: verifier/P10 12/12, CP authoritative 193/193. Production remains untouched/unfrozen.

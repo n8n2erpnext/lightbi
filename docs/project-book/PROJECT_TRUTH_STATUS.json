@@ -267,7 +267,7 @@
   },
   "nextGeneration": {
     "model": "successor_promotion_generation_rotation",
-    "status": "internal_next029_trust_rehearsal_r1p7_r1p8_r1p9_machine_verified_production_freeze_open",
+    "status": "internal_next029_trust_rehearsal_r1p7_through_r1p10_machine_verified_production_freeze_open",
     "generationSchema": "lightbi.generation.v1",
     "generationId": "g-2026-09-02-next-029",
     "parentGenerationId": "g-2026-09-02-next-028",
@@ -417,7 +417,12 @@
       "nextAttestationTestsPassed": 8,
       "nextAttestationFoundationGuardPassed": 8,
       "nextAttestationLiveE2ePassed": true,
-      "nextAttestationRestartStatePassed": true
+      "nextAttestationRestartStatePassed": true,
+      "nextProAuthorityFocusedTestsPassed": 4,
+      "nextAttestationAndProVerifierTestsPassed": 12,
+      "nextProAuthorityLiveE2ePassed": true,
+      "nextProAuthoritySyntheticDbResidue": 0,
+      "nextProAuthorityBusinessSeatLimitVerified": 5
     },
     "infrastructure": {
       "isolatedContractDefined": true,
@@ -841,11 +846,19 @@
       "r1p8": "public_test_root_keyset_rel_https_chain_and_real_installer_sha_pass",
       "r1p9": "verification_only_attestation_service_device_proof_replay_tamper_restart_state_pass",
       "attestationCommit": "b4e254ed41cad42af82dcef3376e36ba9afd3c5c",
-      "attestationImageId": "sha256:6f47bddcd728158812caea198e4c98207eea9e31ba0d4e85ce680655c8dc5b31",
+      "attestationImageId": "sha256:a08e1f681b6ab564b9dc19b5b3202f33224e44d5ef4f54ab5dbe3be2ee228899",
       "requestProtocol": "lightbi.next-attestation-request.v1",
       "requestProtocolProductionFrozen": false,
       "productionAuthorityGenerated": false,
-      "productionMutated": false
+      "productionMutated": false,
+      "r1p10": "authenticated_subject_plus_trusted_install_plus_signed_ent_conjunction_account_pro_v1_v2_business_5seat_pass",
+      "proAuthorityCommit": "31fa5428896f6e9cb7877d353e2485b43d7a1671",
+      "accountProVersions": [
+        1,
+        2
+      ],
+      "businessSeatLimit": 5,
+      "syntheticDbResidue": 0
     }
   },
   "roadTo1_0": {
@@ -862,7 +875,8 @@
     "nextTrustSigner": "nonproduction_rehearsal_live_bounded_cp_rel_publication_and_attestation_pass",
     "r1p7": "production_blocked_by_r1p6_next_rehearsal_pass",
     "r1p8": "production_blocked_by_r1p6_next_rehearsal_pass",
-    "r1p9": "production_blocked_by_r1p6_next_rehearsal_pass_request_wire_not_frozen"
+    "r1p9": "production_blocked_by_r1p6_next_rehearsal_pass_request_wire_not_frozen",
+    "r1p10": "production_blocked_by_r1p6_next_rehearsal_pass"
   },
   "optionalCommerceRevenueMirror": {
     "provider": "paddle",
