@@ -1,7 +1,7 @@
 {
   "schema": "lightbi.current-checkpoint.v1",
-  "updatedAt": "2026-09-02T02:47:00Z",
-  "status": "r1_p5_revalidated_freeze_ready_awaiting_explicit_owner_freeze_before_r1_p6_root_ceremony",
+  "updatedAt": "2026-09-02T03:52:00Z",
+  "status": "next_nonproduction_trust_signer_deployed_e2e_verified_cp_integration_not_started",
   "activeRuntime": "g-2026-09-02-next-028",
   "activeRuntimeCore": "b3ada6776417fdb422e7e852b6f4363b328ab650",
   "controlPlaneCandidate": "9606c1bd052dff641a7949b79caf47b87bbe6eb7",
@@ -10,24 +10,42 @@
     "branch": "codex/phase2-trust-contracts",
     "head": "10de4da8e551a46f93f7b62985a0a6e611581b8e",
     "r1p5": "reverified_pass_freeze_ready_awaiting_explicit_owner_freeze",
-    "r1p6": "offline_root_ceremony_owner_gated"
+    "r1p6": "production_offline_root_ceremony_owner_gated"
+  },
+  "nextTrustSigner": {
+    "environment": "next_internal_test_only",
+    "signerCommit": "8568ed90c5a44c52b048dfdca6bd94410027aaee",
+    "trustContractCommit": "10de4da8e551a46f93f7b62985a0a6e611581b8e",
+    "imageId": "sha256:8dcb8e96feda93bb54c747ced89da02176dc6ad64b425730dab7930561bac0e2",
+    "authorityId": "next-test-20260902-031220",
+    "service": "active",
+    "transport": "unix_socket_0600_network_none",
+    "verified": [
+      "release",
+      "attestation",
+      "entitlement",
+      "pro_package"
+    ],
+    "promotableToProduction": false,
+    "connectedToControlPlane": false
   },
   "completed": [
-    "r1p5_remote_pr4_exact_head_and_ci_reverified_no_drift",
-    "r1p5_fresh_local_ci_equivalent_release3_boundary_trust22_rust5_build_governed26_pass",
-    "r1p5_freeze_negative_probes_root_unconfigured_private_key_zero_no_production_signer",
-    "owner_approved_next_nonproduction_test_signer_on_hardened_arm_or_private_1x1_vps",
-    "production_root_remains_offline_test_keys_never_promote",
-    "next_nonproduction_rehearsal_signer_allowed_before_production_freeze"
+    "owner_approved_environment_separated_next_and_production_trust_domains",
+    "next_signer_source_committed_and_pushed_exact_8568ed90",
+    "next_test_root_and_purpose_separated_issuers_generated_with_root_not_mounted_to_runtime",
+    "hardened_arm_signer_network_none_uds0600_readonly_capdrop_no_new_privileges",
+    "signer_tests_6_of_6_and_existing_cp_suite_183_of_183_pass",
+    "live_rel_att_ent_pro_sign_and_public_verify_pass",
+    "negative_unauth_stable_generic_write_and_log_leak_probes_pass"
   ],
-  "nextAction": "NEXT non-production signer rehearsal may proceed on hardened ARM/1x1 using distinct test authority; Production R1-P6 still requires explicit FREEZE APPROVED — PR #4 codex/phase2-trust-contracts @ 10de4da8e551a46f93f7b62985a0a6e611581b8e before any Production Root/issuer authority is created",
+  "nextAction": "design and review a bounded NEXT Control Plane client for the UDS signer; do not connect or rotate the main NEXT runtime until the integration contract and tests are defined. Production R1-P6 still requires explicit FREEZE APPROVED for PR #4 exact 10de4da8e551a46f93f7b62985a0a6e611581b8e.",
   "blockers": [
-    "r1_p5_explicit_owner_freeze_record_missing_before_r1_p6"
+    "production_r1_p5_explicit_owner_freeze_record_missing_before_production_r1_p6"
   ],
   "productionTouched": false,
   "readFirst": [
-    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#101-r1-p5-freeze-gate-revalidated-r1-p6-offline-root-ceremony-remains-owner-gated",
-    "docs/architecture/road-to-1-0-trust-release-contract.md#current-implementation-status",
-    "docs/adr/ADR-123-engine-chassis-preproduction-and-disaster-recovery.md"
+    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#102-next-non-production-trust-signer-rehearsal-deployed-on-hardened-arm-boundary",
+    "docs/project-book/LIGHTBI_CONTROL_PLANE_MAP.md#37-next-non-production-trust-signer-service-boundary",
+    "docs/architecture/road-to-1-0-trust-release-contract.md#current-implementation-status"
   ]
 }

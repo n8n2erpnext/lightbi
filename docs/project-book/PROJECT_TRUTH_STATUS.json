@@ -788,6 +788,45 @@
       "approvedDate": "2026-09-02",
       "nextTestSignerPreFreezeAllowed": true,
       "productionAuthorityStillFreezeGated": true
+    },
+    "nextTrustSignerRehearsal": {
+      "status": "deployed_live_e2e_verified_nonproduction_only_not_connected_to_cp",
+      "environment": "next_internal_test_only",
+      "signerCommit": "8568ed90c5a44c52b048dfdca6bd94410027aaee",
+      "trustContractCommit": "10de4da8e551a46f93f7b62985a0a6e611581b8e",
+      "image": "lightbi-next-trust-signer:8568ed90c5a4-trust-10de4da8",
+      "imageId": "sha256:8dcb8e96feda93bb54c747ced89da02176dc6ad64b425730dab7930561bac0e2",
+      "authorityId": "next-test-20260902-031220",
+      "promotableToProduction": false,
+      "rootPrivateMountedInSigner": false,
+      "productionAuthorityGenerated": false,
+      "transport": "unix_socket_0600_network_none",
+      "runtimeUser": "1001:1001",
+      "readOnlyRootfs": true,
+      "capDropAll": true,
+      "noNewPrivileges": true,
+      "dockerSocketMounted": false,
+      "signerDataReadOnly": true,
+      "backupPolicy": "outside_current_next_restic_whitelist",
+      "signerTests": "6/6",
+      "controlPlaneRegression": "183/183",
+      "liveVerifiedPurposes": [
+        "release",
+        "attestation",
+        "entitlement",
+        "pro_package"
+      ],
+      "negativeLiveProbes": [
+        "unauthorized_keyset_rejected",
+        "stable_release_rejected",
+        "generic_sign_absent",
+        "rootfs_write_blocked",
+        "signer_mount_write_blocked",
+        "secret_log_scan_clean"
+      ],
+      "activeApplicationGeneration": "g-2026-09-02-next-028",
+      "connectedToControlPlane": false,
+      "productionMutated": false
     }
   },
   "roadTo1_0": {
@@ -800,7 +839,8 @@
     "phase2aFreezeApproved": false,
     "trust1SignerAllowed": false,
     "r1p6": "offline_root_ceremony_owner_hold_pending_phase2a_freeze",
-    "commerceTrack": "next018_source_verified_awaiting_infra_approval"
+    "commerceTrack": "next018_source_verified_awaiting_infra_approval",
+    "nextTrustSigner": "nonproduction_rehearsal_deployed_e2e_verified_cp_integration_not_started"
   },
   "optionalCommerceRevenueMirror": {
     "provider": "paddle",
