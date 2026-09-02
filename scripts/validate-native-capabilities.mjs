@@ -20,6 +20,19 @@ if (permissions.has('opener:allow-open-path') || permissions.has('opener:allow-o
 const tauriConfig = JSON.parse(fs.readFileSync(path.resolve('crates/lightbi-tauri/tauri.conf.json'), 'utf8'));
 const installMode = tauriConfig?.bundle?.windows?.nsis?.installMode;
 const installerHooks = tauriConfig?.bundle?.windows?.nsis?.installerHooks;
+const nsisConfig = tauriConfig?.bundle?.windows?.nsis ?? {};
+const expectedBranding = { headerImage: './windows/branding/installer-header.bmp', sidebarImage: './windows/branding/installer-sidebar.bmp', uninstallerHeaderImage: './windows/branding/installer-header.bmp' };
+for (const [key, expected] of Object.entries(expectedBranding)) {
+  if (nsisConfig[key] !== expected) throw new Error(`Windows NSIS LightBI branding missing: ${key}`);
+  if (!fs.existsSync(path.resolve('crates/lightbi-tauri', expected))) throw new Error(`Windows NSIS branding asset missing: ${expected}`);
+}
+const bmpDimensions = new Map([['./windows/branding/installer-header.bmp', [150, 57]], ['./windows/branding/installer-sidebar.bmp', [164, 314]]]);
+for (const [relative, [expectedWidth, expectedHeight]] of bmpDimensions) {
+  const bytes = fs.readFileSync(path.resolve('crates/lightbi-tauri', relative));
+  if (bytes.toString('ascii', 0, 2) !== 'BM') throw new Error(`Windows NSIS branding asset is not BMP: ${relative}`);
+  const width = bytes.readInt32LE(18); const height = Math.abs(bytes.readInt32LE(22));
+  if (width !== expectedWidth || height !== expectedHeight) throw new Error(`Windows NSIS branding dimensions invalid: ${relative} ${width}x${height}`);
+}
 const nativeMain = fs.readFileSync(path.resolve('crates/lightbi-tauri/src/main.rs'), 'utf8');
 const lifecycleSource = fs.readFileSync(path.resolve('crates/lightbi-tauri/src/installation_lifecycle.rs'), 'utf8');
 if (installerHooks !== './windows/hooks.nsh') throw new Error('Windows NSIS lifecycle hook must remain configured.');

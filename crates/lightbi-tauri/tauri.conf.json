@@ -48,7 +48,10 @@
         "installMode": "perMachine",
         "installerIcon": "icons/icon.ico",
         "uninstallerIcon": "icons/icon.ico",
-        "installerHooks": "./windows/hooks.nsh"
+        "installerHooks": "./windows/hooks.nsh",
+        "headerImage": "./windows/branding/installer-header.bmp",
+        "sidebarImage": "./windows/branding/installer-sidebar.bmp",
+        "uninstallerHeaderImage": "./windows/branding/installer-header.bmp"
       }
     }
   }
