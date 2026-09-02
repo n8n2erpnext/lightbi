@@ -23,9 +23,9 @@ export const UpdateSettingsPanel: React.FC = () => {
     updater.status === "checking"
       ? "Checking the release manifest…"
       : updater.status === "available" || updater.status === "downloading"
-        ? `Downloading the verified update in the background${typeof updater.progress === "number" ? ` · ${progressLabel}%` : ""}`
+        ? `Downloading the update artifact in the background${typeof updater.progress === "number" ? ` · ${progressLabel}%` : ""}`
         : updater.status === "verifying"
-          ? "Download complete. Verifying SHA-256 and staging atomically…"
+          ? "Download complete. Checking SHA-256 integrity and staging atomically…"
           : updater.status === "ready"
             ? `Version ${updater.manifest?.version} is staged and ready. Update & Restart will ask Windows for permission, install silently, then reopen LightBI.`
             : updater.status === "installing"
@@ -103,8 +103,7 @@ export const UpdateSettingsPanel: React.FC = () => {
           </div>
         )}
         <p className="mt-4 text-xs leading-5 text-slate-400">
-          Updates are downloaded to LightBI's application cache. Installation starts only
-          after you choose Update & Restart; Windows may ask for administrator approval.
+          SHA-256 protects download/staging integrity only; it does not prove official LightBI origin. Official identity requires independent REL/ATT evidence and the applicable OS publisher identity. Installation starts only after you choose Update & Restart.
         </p>
       </div>
     </div>

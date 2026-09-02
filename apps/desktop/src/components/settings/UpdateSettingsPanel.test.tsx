@@ -39,7 +39,7 @@ describe("UpdateSettingsPanel", () => {
     });
     render(<UpdateSettingsPanel />);
     expect(
-      screen.getByText(/Downloading the verified update.*62%/),
+      screen.getByText(/Downloading the update artifact.*62%/),
     ).toBeTruthy();
     expect(
       screen.queryByRole("button", { name: "Update & Restart" }),

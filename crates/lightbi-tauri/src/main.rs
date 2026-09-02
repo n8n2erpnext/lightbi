@@ -512,7 +512,7 @@ async fn prepare_verified_update(
     }
     tokio::fs::rename(&partial_path, &artifact_path)
         .await
-        .map_err(|error| format!("Could not atomically stage the verified update: {error}"))?;
+        .map_err(|error| format!("Could not atomically stage the integrity-checked update: {error}"))?;
     let metadata_bytes = serde_json::to_vec_pretty(&expected)
         .map_err(|error| format!("Could not serialize staged update metadata: {error}"))?;
     tokio::fs::write(&metadata_partial, metadata_bytes)
@@ -565,7 +565,7 @@ fn launch_windows_installer_with_elevation(path: &Path) -> Result<(), String> {
     };
     if result as isize <= 32 {
         return Err(format!(
-            "Could not request permission to start the verified installer (ShellExecuteW code {}).",
+            "Could not request permission to start the integrity-checked installer (ShellExecuteW code {}).",
             result as isize
         ));
     }
@@ -616,7 +616,7 @@ async fn apply_prepared_update(
         std::process::Command::new("xdg-open")
             .arg(&path)
             .spawn()
-            .map_err(|error| format!("Could not open the verified Debian package: {error}"))?;
+            .map_err(|error| format!("Could not open the integrity-checked Debian package: {error}"))?;
         Ok(())
     }
     #[cfg(not(any(target_os = "windows", target_os = "linux")))]
