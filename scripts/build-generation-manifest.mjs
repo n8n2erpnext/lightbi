@@ -5,6 +5,21 @@ import { dirname, resolve } from 'node:path';
 const PROD_DISTRIBUTION = 'https://lightbi.thaiduy.digital/distribution';
 const SHA40 = /^[0-9a-f]{40}$/u;
 
+function assertPublicBrowserUrl(value, key, { allowRelative = false } = {}) {
+  const raw = String(value ?? '').trim();
+  if (!raw) return raw;
+  if (allowRelative && raw.startsWith('/')) return raw;
+  let url;
+  try { url = new URL(raw); } catch { throw new Error(`${key} must be an HTTPS public URL or an approved relative path`); }
+  if (url.protocol !== 'https:') throw new Error(`${key} must use HTTPS for browser-facing NEXT traffic`);
+  const host = String(url.hostname || '').toLowerCase();
+  const privateIpv4 = /^(?:127\.|10\.|192\.168\.|169\.254\.)/u.test(host)
+    || /^172\.(?:1[6-9]|2\d|3[01])\./u.test(host)
+    || /^100\.(?:6[4-9]|[7-9]\d|1[01]\d|12[0-7])\./u.test(host);
+  if (host === 'localhost' || host === '::1' || privateIpv4) throw new Error(`${key} may not expose localhost or private-network addresses to the browser`);
+  return raw.replace(/\/$/u, '');
+}
+
 function git(...args) {
   return execFileSync('git', args, { encoding: 'utf8' }).trim();
 }
@@ -22,7 +37,10 @@ export function createInternalGenerationManifest(env = process.env) {
   for (const [name, value] of [['core', coreCommit], ['source', sourceCommit], ['control_plane', controlPlaneCommit]]) {
     if (!SHA40.test(value)) throw new Error(`${name} commit must be a full 40-character SHA`);
   }
-  const distributionOrigin = required(env, 'VITE_LIGHTBI_DISTRIBUTION_URL').replace(/\/$/u, '');
+  const distributionOrigin = assertPublicBrowserUrl(required(env, 'VITE_LIGHTBI_DISTRIBUTION_URL'), 'VITE_LIGHTBI_DISTRIBUTION_URL');
+  assertPublicBrowserUrl(env.VITE_API_BASE_URL, 'VITE_API_BASE_URL', { allowRelative: true });
+  assertPublicBrowserUrl(env.VITE_HEALTH_URL, 'VITE_HEALTH_URL', { allowRelative: true });
+  assertPublicBrowserUrl(env.VITE_RELEASE_MANIFEST_URL, 'VITE_RELEASE_MANIFEST_URL', { allowRelative: true });
   if (distributionOrigin === PROD_DISTRIBUTION) throw new Error('Internal generation may not target the production distribution origin');
   const phase2aHead = required(env, 'VITE_LIGHTBI_TRUST_PHASE2A_HEAD');
   if (!SHA40.test(phase2aHead)) throw new Error('VITE_LIGHTBI_TRUST_PHASE2A_HEAD must be a full 40-character SHA');

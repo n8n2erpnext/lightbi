@@ -1,5 +1,6 @@
 export function isControlPlanePublicPath(pathname) {
-  return pathname === '/docs'
+  return pathname === '/'
+    || pathname === '/docs'
     || pathname.startsWith('/docs/')
     || pathname === '/account'
     || pathname.startsWith('/account/')

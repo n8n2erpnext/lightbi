@@ -41,6 +41,14 @@ test('rejects production wiring for NEXT', () => {
   assert.throws(() => createInternalGenerationManifest({ ...base, VITE_LIGHTBI_RELEASE_UPDATE_CHANNEL:'beta' }), /update channel.*internal/iu);
 });
 
+test('rejects browser-facing private network and insecure NEXT endpoints', () => {
+  assert.throws(() => createInternalGenerationManifest({ ...base, VITE_LIGHTBI_DISTRIBUTION_URL:'http://100.94.184.141:5273/distribution-api' }), /HTTPS|private-network/iu);
+  assert.throws(() => createInternalGenerationManifest({ ...base, VITE_API_BASE_URL:'http://100.94.184.141:5273' }), /HTTPS|private-network/iu);
+  assert.throws(() => createInternalGenerationManifest({ ...base, VITE_API_BASE_URL:'https://127.0.0.1:5273' }), /private-network/iu);
+  assert.doesNotThrow(() => createInternalGenerationManifest({ ...base, VITE_API_BASE_URL:'/api', VITE_RELEASE_MANIFEST_URL:'/internal-releases/latest.json' }));
+  assert.doesNotThrow(() => createInternalGenerationManifest({ ...base, VITE_LIGHTBI_DISTRIBUTION_URL:'https://lightbi-next.thaiduy.digital/distribution-api' }));
+});
+
 test('rejects ambiguous internal namespaces', () => {
   assert.throws(() => createInternalGenerationManifest({ ...base, VITE_LIGHTBI_ANALYTICS_NAMESPACE:'production-shadow' }), /analytics namespace.*internal/iu);
   assert.throws(() => createInternalGenerationManifest({ ...base, VITE_LIGHTBI_RELEASE_NAMESPACE:'release/lightbi-next' }), /release namespace.*internal/iu);
