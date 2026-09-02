@@ -117,7 +117,9 @@
     "paddle_provider_configuration_and_live_revenue_mirror_e2e",
     "next024_admin_sidebar_owner_visual_acceptance",
     "next026_passkey_fallback_owner_acceptance",
-    "next025_windows_ab_history_owner_acceptance"
+    "next025_windows_ab_history_owner_acceptance",
+    "windows_authenticode_and_publisher_identity",
+    "production_external_verification_surface"
   ],
   "postTruthCandidates": {
     "controlPlaneFoundation": {
@@ -284,7 +286,7 @@
   },
   "nextGeneration": {
     "model": "successor_promotion_generation_rotation",
-    "status": "internal_next029_trust_rehearsal_r1p7_through_r1p10_machine_verified_production_freeze_open",
+    "status": "internal_next029_r1p12_next_software_closure_verified_production_freeze_and_platform_signing_open",
     "generationSchema": "lightbi.generation.v1",
     "generationId": "g-2026-09-02-next-029",
     "parentGenerationId": "g-2026-09-02-next-028",
@@ -313,7 +315,9 @@
       "legacySyntheticDemoPurgeHead": "d96011bfe2d3deca8424eac15f6d3e7d39cf7a97",
       "monacoSqlSuggestionControllerHead": "451c9b6afe0a95bce5bce473a4a84c8b918f42cd",
       "release1_0GateHead": "93296e46d250be7d2f885b2cbb06e25068f38761",
-      "windowsTransportHardeningHead": "c78124df3973fcfe2107a966563f3266e97f3deb"
+      "windowsTransportHardeningHead": "c78124df3973fcfe2107a966563f3266e97f3deb",
+      "antiImpersonationIdentityBaseHead": "304d4b48b2f410fe623afecef86c9ab35a8352f7",
+      "antiImpersonationCandidateHead": "079c344952749d7a01c830a1b88c1d4247a1f5cf"
     },
     "controlPlane": {
       "workspace": "/home/ubuntu/n8n2erpnext/lightbi-control-plane-next029-trust-cp",
@@ -329,7 +333,8 @@
       "documentationPortalHardeningHead": "497ffbf9592faddefec72280a4ddd244efab648c",
       "secondaryRouteFirstPaintHead": "f1879c65453cdf0bc9798257e462264f0424e907",
       "accountSecurityManagementHead": "d615832768f89c861ae508c210713c92ed6b74e2",
-      "passkeyRecoveryUxHead": "30bb58ffeaaad80014fb7c57522a7b8a4eb6feb8"
+      "passkeyRecoveryUxHead": "30bb58ffeaaad80014fb7c57522a7b8a4eb6feb8",
+      "antiImpersonationVerifierHead": "85fa6a6961ba2bb00e2d09d92e6a9f5f815a3478"
     },
     "testPack": {
       "version": "lightbi.uat.v1",
@@ -439,7 +444,14 @@
       "nextAttestationAndProVerifierTestsPassed": 12,
       "nextProAuthorityLiveE2ePassed": true,
       "nextProAuthoritySyntheticDbResidue": 0,
-      "nextProAuthorityBusinessSeatLimitVerified": 5
+      "nextProAuthorityBusinessSeatLimitVerified": 5,
+      "r1p12PublicFocusedTestsPassed": 24,
+      "r1p12RustUpdaterTestsPassed": 5,
+      "r1p12RustUpdaterLiveOnlyTestsIgnored": 1,
+      "r1p12Release1_0SuitePassed": true,
+      "r1p12GovernedRegressionTestsPassed": 39,
+      "r1p12PrivateDistributionTestsPassed": 204,
+      "r1p12GithubWorkflowRunsAtPublicHead": 0
     },
     "infrastructure": {
       "isolatedContractDefined": true,
@@ -505,7 +517,23 @@
     "trust": {
       "phase2aHead": "10de4da8e551a46f93f7b62985a0a6e611581b8e",
       "freezeApproved": false,
-      "trust1Blocked": true
+      "trust1Blocked": true,
+      "r1p12AntiImpersonation": {
+        "status": "next_software_closure_verified_production_blocked",
+        "publicCoreCommit": "079c344952749d7a01c830a1b88c1d4247a1f5cf",
+        "privateVerifierCommit": "85fa6a6961ba2bb00e2d09d92e6a9f5f815a3478",
+        "nextExternalVerifierLive": true,
+        "nextExternalVerifierUrl": "https://lightbi-next.thaiduy.digital/verify",
+        "nextAuthority": "next_internal_test_only",
+        "productionVerifierConfigured": false,
+        "windowsAuthenticode": false,
+        "windowsPeCertificateTableSize": 0,
+        "macosDeveloperIdSigned": false,
+        "macosNotarized": false,
+        "macosValidationSigning": "ad_hoc",
+        "officialVerifiedReachable": false,
+        "r1p13Authorized": false
+      }
     },
     "generationIdAuthority": "runtime_exact_next029_core_cp_worker_schema_plus_nonproduction_trust_rehearsal_machine_verified_owner_acceptance_independent",
     "historicalProofParentCandidate": "prod-v0.9.2-beta.7-28e2aae",
@@ -924,7 +952,8 @@
     "r1p10": "production_blocked_by_r1p6_next_rehearsal_pass",
     "cliLightbi": "phase_a_v0_1_machine_verified_read_only_closed",
     "r1p11": "production_blocked_by_r1p6_next_rehearsal_pass",
-    "r1p12": "active_next_anti_impersonation_audit_production_platform_signing_not_claimed"
+    "r1p12": "next_software_closure_verified_production_blocked_by_os_publisher_and_external_verifier",
+    "r1p13": "closed_until_all_prior_release_gates_including_r1p12_pass"
   },
   "optionalCommerceRevenueMirror": {
     "provider": "paddle",
