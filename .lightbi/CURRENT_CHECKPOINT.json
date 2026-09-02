@@ -1,51 +1,45 @@
 {
-  "schema": "lightbi.current-checkpoint.v1",
-  "updatedAt": "2026-09-02T03:52:00Z",
-  "status": "next_nonproduction_trust_signer_deployed_e2e_verified_cp_integration_not_started",
-  "activeRuntime": "g-2026-09-02-next-028",
+  "schema": "067_catalog_quarterly_pricing",
+  "updatedAt": "2026-09-02T05:20:00Z",
+  "status": "next029_r1p7_r1p8_r1p9_nonproduction_rehearsals_machine_verified_ready_for_r1p10_rehearsal",
+  "activeRuntime": "g-2026-09-02-next-029",
   "activeRuntimeCore": "b3ada6776417fdb422e7e852b6f4363b328ab650",
-  "controlPlaneCandidate": "9606c1bd052dff641a7949b79caf47b87bbe6eb7",
+  "controlPlaneRuntime": "6936fc4272bc92cd1badc00b9256cfd912e4a9ad",
   "phase2aAuthority": {
     "pr": 4,
-    "branch": "codex/phase2-trust-contracts",
     "head": "10de4da8e551a46f93f7b62985a0a6e611581b8e",
     "r1p5": "reverified_pass_freeze_ready_awaiting_explicit_owner_freeze",
     "r1p6": "production_offline_root_ceremony_owner_gated"
   },
-  "nextTrustSigner": {
+  "nextTrust": {
     "environment": "next_internal_test_only",
     "signerCommit": "8568ed90c5a44c52b048dfdca6bd94410027aaee",
+    "runtimeCpCommit": "6936fc4272bc92cd1badc00b9256cfd912e4a9ad",
+    "attestationCommit": "b4e254ed41cad42af82dcef3376e36ba9afd3c5c",
     "trustContractCommit": "10de4da8e551a46f93f7b62985a0a6e611581b8e",
-    "imageId": "sha256:8dcb8e96feda93bb54c747ced89da02176dc6ad64b425730dab7930561bac0e2",
-    "authorityId": "next-test-20260902-031220",
-    "service": "active",
-    "transport": "unix_socket_0600_network_none",
-    "verified": [
-      "release",
-      "attestation",
-      "entitlement",
-      "pro_package"
-    ],
-    "promotableToProduction": false,
-    "connectedToControlPlane": false
+    "r1p7Rehearsal": "pass",
+    "r1p8Rehearsal": "pass",
+    "r1p9Rehearsal": "pass",
+    "requestProtocol": "lightbi.next-attestation-request.v1",
+    "promotableToProduction": false
   },
   "completed": [
-    "owner_approved_environment_separated_next_and_production_trust_domains",
-    "next_signer_source_committed_and_pushed_exact_8568ed90",
-    "next_test_root_and_purpose_separated_issuers_generated_with_root_not_mounted_to_runtime",
-    "hardened_arm_signer_network_none_uds0600_readonly_capdrop_no_new_privileges",
-    "signer_tests_6_of_6_and_existing_cp_suite_183_of_183_pass",
-    "live_rel_att_ent_pro_sign_and_public_verify_pass",
-    "negative_unauth_stable_generic_write_and_log_leak_probes_pass"
+    "bounded_cp_to_test_signer_rel_att_ent_pro_pass_zero_synthetic_residue",
+    "next_public_root_keyset_rel_https_and_real_installer_sha_pass",
+    "verification_only_attestation_service_live",
+    "device_proof_sequences_1_2_pass_and_replay_tamper_rollback_target_fail_closed",
+    "attestation_sequence_state_survives_restart",
+    "distribution_foundation_guard_and_authoritative_suite_remain_green"
   ],
-  "nextAction": "design and review a bounded NEXT Control Plane client for the UDS signer; do not connect or rotate the main NEXT runtime until the integration contract and tests are defined. Production R1-P6 still requires explicit FREEZE APPROVED for PR #4 exact 10de4da8e551a46f93f7b62985a0a6e611581b8e.",
+  "nextAction": "implement R1-P10 NEXT signed-entitlement conjunction rehearsal using authenticated subject + trusted installation + signed ENT while keeping final authority outside Distribution Beta runtime; reconcile docs after the machine gate. Production R1-P6 remains owner-gated.",
   "blockers": [
-    "production_r1_p5_explicit_owner_freeze_record_missing_before_production_r1_p6"
+    "production_r1_p5_explicit_owner_freeze_record_missing_before_production_r1_p6",
+    "production_attestation_request_wire_format_not_frozen"
   ],
   "productionTouched": false,
   "readFirst": [
-    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#102-next-non-production-trust-signer-rehearsal-deployed-on-hardened-arm-boundary",
-    "docs/project-book/LIGHTBI_CONTROL_PLANE_MAP.md#37-next-non-production-trust-signer-service-boundary",
+    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#103-next-029-trust-chain-rehearsal-reaches-rel-publication-and-request-attestation",
+    "docs/project-book/LIGHTBI_CONTROL_PLANE_MAP.md#38-next-029-trust-publication-and-attestation-verification-boundaries",
     "docs/architecture/road-to-1-0-trust-release-contract.md#current-implementation-status"
   ]
 }
