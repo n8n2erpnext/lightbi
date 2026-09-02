@@ -5,7 +5,7 @@ import { isNativeLightBI } from '../lib/native-runtime';
 
 export type AppAnnouncement = {
   id: string; title: string; body: string;
-  severity: 'info'|'success'|'warning'|'critical';
+  severity: 'info'|'success'|'warning'|'critical'; templateKind?: 'general'|'promotion'|'update'|'warning'|'hotfix';
   dismissible: boolean; startsAt: string|null; endsAt: string|null;
   linkLabel: string|null; linkUrl: string|null; updatedAt: string;
 };
@@ -25,7 +25,7 @@ const READ_KEY='lightbi-read-announcements-v1';
 function readJson<T>(key:string, fallback:T):T { try { return JSON.parse(localStorage.getItem(key)||'') as T; } catch { return fallback; } }
 function saveJson(key:string,value:unknown){ try { localStorage.setItem(key,JSON.stringify(value)); } catch { /* local inbox must never block the app */ } }
 function valid(item:any): item is AppAnnouncement {
-  if (!(item && typeof item.id==='string' && /^ann_[a-z0-9-]{8,80}$/u.test(item.id) && typeof item.title==='string' && item.title.length<=160 && typeof item.body==='string' && item.body.length<=1200 && ['info','success','warning','critical'].includes(item.severity) && typeof item.updatedAt==='string')) return false;
+  if (!(item && typeof item.id==='string' && /^ann_[a-z0-9-]{8,80}$/u.test(item.id) && typeof item.title==='string' && item.title.length<=160 && typeof item.body==='string' && item.body.length<=1200 && ['info','success','warning','critical'].includes(item.severity) && (item.templateKind==null || ['general','promotion','update','warning','hotfix'].includes(item.templateKind)) && typeof item.updatedAt==='string')) return false;
   if (item.linkUrl!=null) { try { if (new URL(String(item.linkUrl)).protocol!=='https:') return false; } catch { return false; } }
   return true;
 }
