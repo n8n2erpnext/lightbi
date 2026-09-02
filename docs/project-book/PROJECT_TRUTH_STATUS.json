@@ -174,7 +174,10 @@
       "macosBetaDebt": "substantial_product_bugs_plus_developer_id_notarization_deferred",
       "linuxValidation": "deferred_until_windows_stable",
       "permanentWindowsOnlyDecision": false,
-      "deferredPlatformsMayClaimStableBeforeOwnGates": false
+      "deferredPlatformsMayClaimStableBeforeOwnGates": false,
+      "betaReleaseWorkflow": "windows_only",
+      "linuxBetaBuild": "deferred_until_windows_stable",
+      "windowsReleaseAuthorityHardeningCommit": "72cfb385f1d35c605d3a09f80657572dc25abe02"
     }
   },
   "excelAnalysisWorkbook": {
@@ -530,8 +533,8 @@
       "freezeApproved": false,
       "trust1Blocked": true,
       "r1p12AntiImpersonation": {
-        "status": "windows_lane_active_next_software_closure_verified_production_blocked",
-        "publicCoreCommit": "079c344952749d7a01c830a1b88c1d4247a1f5cf",
+        "status": "windows_beta_authority_hardened_real_publisher_and_production_blocked",
+        "publicCoreCommit": "72cfb385f1d35c605d3a09f80657572dc25abe02",
         "privateVerifierCommit": "85fa6a6961ba2bb00e2d09d92e6a9f5f815a3478",
         "nextExternalVerifierLive": true,
         "nextExternalVerifierUrl": "https://lightbi-next.thaiduy.digital/verify",
@@ -546,7 +549,16 @@
         "r1p13Authorized": false,
         "activePlatform": "windows",
         "macosLinuxTestingDeferredUntilWindowsStable": true,
-        "permanentWindowsOnlyDecision": false
+        "permanentWindowsOnlyDecision": false,
+        "releaseAuthorityHardeningCommit": "72cfb385f1d35c605d3a09f80657572dc25abe02",
+        "betaReleaseWorkflow": "windows_only",
+        "publicReleaseContractTests": "7/7",
+        "release1_0Suite": "pass_governed_39_39",
+        "windowsPublisherEvidenceCollector": "Get-AuthenticodeSignature",
+        "stableManifestRequiresWindowsPublisherEvidence": true,
+        "stableWindowsPublisherSubjectRequired": true,
+        "betaMayOverwriteStableGlobalLatest": false,
+        "linuxBetaBuildDeferred": true
       }
     },
     "generationIdAuthority": "runtime_exact_next029_core_cp_worker_schema_plus_nonproduction_trust_rehearsal_machine_verified_owner_acceptance_independent",
@@ -966,7 +978,7 @@
     "r1p10": "production_blocked_by_r1p6_next_rehearsal_pass",
     "cliLightbi": "phase_a_v0_1_machine_verified_read_only_closed",
     "r1p11": "production_blocked_by_r1p6_next_rehearsal_pass",
-    "r1p12": "windows_first_active_next_software_closure_verified_production_blocked_by_windows_publisher_and_external_verifier",
+    "r1p12": "windows_first_beta_authority_hardened_real_authenticode_and_production_verifier_still_blocked",
     "r1p13": "closed_until_active_windows_r1p12_and_all_prior_production_release_gates_pass"
   },
   "optionalCommerceRevenueMirror": {

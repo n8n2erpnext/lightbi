@@ -1501,3 +1501,11 @@ R1-P0 documentation/integrity closure verified 1,243 local links with zero missi
 - macOS Beta defects plus Developer ID/notarization and Linux platform validation become deferred debt until Windows is genuinely stable; this is sequencing, not a permanent Windows-only declaration.
 - R1-P12 remains active on the Windows lane. Immediate platform blocker is real Windows Authenticode plus the still-missing Production REL/ATT/external-verifier authority; macOS must remain Beta/deferred and cannot claim stable/official verification.
 - R1-P13 remains closed. Production and `cli-lightbi` Phase B/C/D authority are unchanged.
+
+## 2026-09-02 — R1-P12 Windows Beta authority hardening reaches fail-closed signing readiness
+
+- Public Windows-first source advanced to `72cfb385f1d35c605d3a09f80657572dc25abe02`. The Beta workflow is now Windows-only; Linux Beta build/publication is deferred with macOS/Linux platform work until Windows is stable.
+- Beta publication is hard-locked to Beta tags/channel. It cannot silently fall through to `stable`, and it preserves an existing stable global `latest.json` by checking the authoritative R2 object rather than a CDN-cached copy.
+- Windows CI now records an immutable `.publisher.json` sidecar from native `Get-AuthenticodeSignature`, bound to installer SHA-256. Beta may record `NotSigned`; Stable validation requires native status `Valid`, exact expected signer subject and matching SHA-256.
+- Stable Windows manifest generation now fails closed when publisher evidence/subject is absent. Release contract is **7/7 PASS**; final full `test:release-1.0` and governed regression **39/39 PASS**; YAML/public-boundary/diff checks PASS. Exact GitHub head has zero workflow runs/statuses, so this is not called GitHub CI.
+- Current NEXT Windows installer was re-probed and remains unsigned: PE certificate table `0/0`. R1-P12 is still open; R1-P13 remains closed. Production untouched.
