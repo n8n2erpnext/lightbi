@@ -27,14 +27,18 @@ The frozen purpose identifiers are `release`, `attestation`, `entitlement`, and 
 
 ## Root boundary
 
-The LightBI Root uses the Ed25519 contract selected by Phase 2A. The Root private key must be generated only after exact Phase 2A receives explicit independent freeze approval.
+The LightBI Root uses the Ed25519 contract selected by Phase 2A. The **Production Root** private key must be generated only after exact Phase 2A receives explicit independent freeze approval.
 
-Root private material must not reside on a VPS, CI runner, control plane, production database, web service, n8n, ERPNext, or a permanently online cloud runtime. The public Root key may be pinned in official clients and published documentation.
+Production Root private material must not reside on a VPS, CI runner, control plane, production database, web service, n8n, ERPNext, or a permanently online cloud runtime. The public Production Root key may be pinned in official clients and published documentation.
+
+NEXT/Internal may use a cryptographically distinct **non-production test Root** plus non-production REL/ATT/ENT/PRO issuer keys inside an isolated signer service so the full trust chain can be exercised end to end. This authority must use separate key IDs/namespaces and must never be accepted as stable Production authority. NEXT test Root/issuer private material may live on the existing ARM host or a dedicated private-subnet VPS only under a hardened signer boundary; those keys are disposable test authority and are never promoted.
+
+When an accepted NEXT engine becomes the public Production engine, trust material does not rotate with the engine. A fresh Production Root remains offline and user-controlled. Production purpose-specific issuer keys may later be provisioned to the R1-P7 online signer boundary, preferably on the separate 1x1 private-subnet VPS; co-location on the ARM host is permitted only with a dedicated OS identity/container, dedicated key volume, no Docker socket or host-filesystem access, private-only network exposure, minimal egress, read-only root filesystem where practical, `no-new-privileges`, syscall/MAC sandboxing, bounded signing API, durable audit and secret-redaction rules. The Production Root private key never enters that online signer service.
 ## Oracle Cloud disposition
 
 OCI Vault/KMS may be evaluated for operational secret storage or a constrained online signer host only when its algorithm and threat model match the specific purpose. It is not the LightBI Root authority merely because an Always Free HSM/KMS tier exists.
 
-Current LightBI Trust Contracts use Ed25519, while OCI KMS signing support is not the selected Ed25519 contract. The project must not reopen or weaken Phase 2A merely to fit a free cloud service. Root remains offline and user-controlled unless a later explicit ADR changes the trust model.
+Current LightBI Trust Contracts use Ed25519, while OCI KMS signing support is not the selected Ed25519 contract. The project must not reopen or weaken Phase 2A merely to fit a free cloud service. Production Root remains offline and user-controlled unless a later explicit ADR changes the trust model.
 
 ## Permanent pre-production and engine/chassis boundary
 

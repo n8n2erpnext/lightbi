@@ -776,6 +776,16 @@
       "ownerFreezeApproved": false,
       "requiredOwnerRecord": "FREEZE APPROVED — PR #4 codex/phase2-trust-contracts @ 10de4da8e551a46f93f7b62985a0a6e611581b8e",
       "productionMutated": false
+    },
+    "keyCustodyPolicy": {
+      "status": "owner_approved_environment_separated_trust_domains",
+      "productionRootPrivate": "offline_owner_controlled_only",
+      "nextTestRootPrivate": "allowed_hardened_internal_signer_arm_or_private_1x1_vps",
+      "nextTestAuthorityPromotable": false,
+      "productionIssuerSigner": "online_allowed_r1p7_hardened_prefer_private_1x1_vps_or_isolated_arm",
+      "productionRootAllowedInOnlineSigner": false,
+      "enginePromotionCarriesTrustMaterial": false,
+      "approvedDate": "2026-09-02"
     }
   },
   "roadTo1_0": {

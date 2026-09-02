@@ -1,6 +1,6 @@
 {
   "schema": "lightbi.current-checkpoint.v1",
-  "updatedAt": "2026-09-02T02:38:39Z",
+  "updatedAt": "2026-09-02T02:47:00Z",
   "status": "r1_p5_revalidated_freeze_ready_awaiting_explicit_owner_freeze_before_r1_p6_root_ceremony",
   "activeRuntime": "g-2026-09-02-next-028",
   "activeRuntimeCore": "b3ada6776417fdb422e7e852b6f4363b328ab650",
@@ -16,9 +16,10 @@
     "r1p5_remote_pr4_exact_head_and_ci_reverified_no_drift",
     "r1p5_fresh_local_ci_equivalent_release3_boundary_trust22_rust5_build_governed26_pass",
     "r1p5_freeze_negative_probes_root_unconfigured_private_key_zero_no_production_signer",
-    "r1p6_preflight_confirmed_root_must_run_offline_not_on_vps"
+    "owner_approved_next_nonproduction_test_signer_on_hardened_arm_or_private_1x1_vps",
+    "production_root_remains_offline_test_keys_never_promote"
   ],
-  "nextAction": "owner must explicitly record: FREEZE APPROVED — PR #4 codex/phase2-trust-contracts @ 10de4da8e551a46f93f7b62985a0a6e611581b8e; only then enter R1-P6 Offline Root ceremony",
+  "nextAction": "owner must explicitly record: FREEZE APPROVED — PR #4 codex/phase2-trust-contracts @ 10de4da8e551a46f93f7b62985a0a6e611581b8e; then enter R1-P6, allowing NEXT non-production signer rehearsal on hardened ARM/1x1 while Production Root ceremony remains offline",
   "blockers": [
     "r1_p5_explicit_owner_freeze_record_missing_before_r1_p6"
   ],
