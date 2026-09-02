@@ -218,19 +218,20 @@
     },
     "cliLightbi": {
       "branch": "codex/cli-lightbi-signer-console-v0.1",
-      "head": "a4d8ae69d28eec9cc24a6ac9edac582ef6ab4a9f",
+      "head": "86512968d02ceca91c3292bb8a8648275ce60a22",
       "trustContractCommit": "10de4da8e551a46f93f7b62985a0a6e611581b8e",
-      "phaseA": "machine_verified_installed",
-      "rustBinarySha256": "02619735a1965ba19c2deb95d683430749d92c6178dca6af52c2e6fcdaed40b1",
+      "phaseA": "machine_verified_installed_final_head",
+      "rustBinarySha256": "ee2f65c5a80e64bae49ac190be52ac5cab3e35d9d3da23a6fc5bbf58f919a7b6",
       "readOnly": true,
       "nodeTestsPassed": 15,
-      "rustTuiTestsPassed": 3,
+      "rustTuiTestsPassed": 5,
       "signerRegressionPassed": 6,
       "attestationRegressionPassed": 12,
       "distributionRegressionPassed": 193,
       "operatorMfaImplemented": false,
       "mutationsImplemented": false,
-      "productionMutated": false
+      "productionMutated": false,
+      "commandPalette": "read_only_bounded_phase_a"
     }
   },
   "implementationCandidates": {
@@ -907,7 +908,7 @@
     "r1p8": "production_blocked_by_r1p6_next_rehearsal_pass",
     "r1p9": "production_blocked_by_r1p6_next_rehearsal_pass_request_wire_not_frozen",
     "r1p10": "production_blocked_by_r1p6_next_rehearsal_pass",
-    "cliLightbi": "phase_a_v0_1_machine_verified_read_only_stop_before_phase_b_c_d"
+    "cliLightbi": "phase_a_v0_1_machine_verified_read_only_closed_resume_r1p11"
   },
   "optionalCommerceRevenueMirror": {
     "provider": "paddle",

@@ -1471,9 +1471,9 @@ R1-P0 documentation/integrity closure verified 1,243 local links with zero missi
 
 ## 2026-09-02 — `cli-lightbi` Phase A Ratatui operator console closes machine acceptance
 
-- Implemented isolated read-only console on `codex/cli-lightbi-signer-console-v0.1`; final source `a4d8ae69d28eec9cc24a6ac9edac582ef6ab4a9f`. Rust/Ratatui owns the polished TUI while the TypeScript/Node collector keeps the existing exact Trust verification/UDS read path.
+- Implemented isolated read-only console on `codex/cli-lightbi-signer-console-v0.1`; final source `86512968d02ceca91c3292bb8a8648275ce60a22`. Rust/Ratatui owns the polished TUI while the TypeScript/Node collector keeps the existing exact Trust verification/UDS read path.
 - TUI acceptance: bordered responsive btop-style hierarchy, semantic color, explicit NEXT/Internal identity, REL/ATT/ENT/PRO + health + audit panels, two-second refresh, keyboard navigation, issuer/doctor/audit/help modals, 120x38 ↔ 76x24 live resize and clean PTY quit.
 - Security/regression gates PASS: Node 15/15, Rust 3/3 + Clippy, signer 6/6, attestation/P10 12/12, Distribution 193/193. Actual TEST bearer-token and TEST Root PEM bytes are absent from CLI source/build/binary; dependency review contains no web/HTTP/async/crypto authority stack.
 - Operational negatives PASS: signer stop makes TUI `DATA STALE` and command mode exit 2; service restores active; UDS 0644 is rejected and 0600 restores cleanly; rotate/revoke/sign/raw-sign/`--skip-mfa` commands all reject and signed keyset SHA remains unchanged.
-- Immutable installed binary SHA-256 `02619735a1965ba19c2deb95d683430749d92c6178dca6af52c2e6fcdaed40b1`; final `doctor` is green. Signer image/boundary is unchanged at `sha256:8dcb8e96feda93bb54c747ced89da02176dc6ad64b425730dab7930561bac0e2` and no CLI TCP/web listener exists. Production was not mutated.
-- Per plan, STOP before Phase B/C/D. Operator MFA and issuer lifecycle mutations remain unauthorized/unimplemented. R1-P11 WIP stays paused separately.
+- Immutable installed binary SHA-256 `ee2f65c5a80e64bae49ac190be52ac5cab3e35d9d3da23a6fc5bbf58f919a7b6`; final `doctor` is green. Signer image/boundary is unchanged at `sha256:8dcb8e96feda93bb54c747ced89da02176dc6ad64b425730dab7930561bac0e2` and no CLI TCP/web listener exists. Production was not mutated.
+- Per plan, STOP before CLI Phase B/C/D. Operator MFA and issuer lifecycle mutations remain unauthorized/unimplemented. Owner then directed execution back to the main Road-to-1.0 path; resume the separately preserved R1-P11 WIP next.
