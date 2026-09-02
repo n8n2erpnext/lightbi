@@ -802,7 +802,7 @@
       "trackedPrivateKeyLiterals": 0,
       "productionSignerDetected": false,
       "ownerFreezeApproved": false,
-      "requiredOwnerRecord": "FREEZE APPROVED — PR #4 codex/phase2-trust-contracts @ 10de4da8e551a46f93f7b62985a0a6e611581b8e",
+      "requiredOwnerRecord": "FREEZE APPROVED \u2014 PR #4 codex/phase2-trust-contracts @ 10de4da8e551a46f93f7b62985a0a6e611581b8e",
       "productionMutated": false
     },
     "keyCustodyPolicy": {
@@ -875,21 +875,35 @@
         2
       ],
       "businessSeatLimit": 5,
-      "syntheticDbResidue": 0
+      "syntheticDbResidue": 0,
+      "r1p11": "private_signed_encrypted_device_bound_pro_delivery_pass_wrong_device_and_grant_replay_fail_closed",
+      "proDeliveryCommit": "deda7c284a6eafaa8cb69d491b96476a025ed15c",
+      "proDeliveryImageId": "sha256:d176985adbf35ef30275d15d53660be5d512c28ca02613c5009ca09e8c5ecfda",
+      "proDeliveryPackageId": "pkg-next-pro-p11-20260902-01",
+      "proDeliveryProtocol": "next_rehearsal_aes256gcm_x25519_hkdf_sha256_device_bound",
+      "proDeliveryProtocolProductionFrozen": false,
+      "r1p10AttestationImageId": "sha256:a08e1f681b6ab564b9dc19b5b3202f33224e44d5ef4f54ab5dbe3be2ee228899",
+      "attestationRuntimeCommit": "c958552f2a65",
+      "attestationRuntimeImageId": "sha256:7c793a03ff44f09fb87778e44780637cd57bea18599ee513674d1c79210e4222",
+      "publicBasicPrivateMarkerHits": 0,
+      "publicBasicActualContentKeyHits": 0,
+      "finalDeliveryImagePrivateMarkerOrActualContentKeyHits": 0
     },
     "cliLightbiSignerConsole": {
-      "status": "phase_a_owner_authorized_plan_recorded_implementation_pending",
+      "status": "phase_a_v0_1_machine_verified_closed",
       "plan": "docs/history/agent/plans/AGENT_PLAN_CLI_LIGHTBI_SIGNER_OPERATOR_CONSOLE.md",
       "authority": "operator_ux_only_not_signing_authority",
-      "phaseA": "read_only_tui_status_issuers_trust_verify_audit_doctor",
+      "phaseA": "implemented_machine_verified_read_only_ratatui",
       "phaseB": "not_authorized_operator_auth_totp",
       "phaseC": "not_authorized_issuer_lifecycle_mutations",
-      "phaseD": "not_authorized_operational_helpers_beyond_read_only",
+      "phaseD": "not_authorized_beyond_read_only",
       "signerRuntimeRedesigned": false,
       "genericSigningAllowed": false,
       "productionAuthorityChanged": false,
-      "r1p11PausedForPlan": true,
-      "r1p11WipBase": "31fa5428896f6e9cb7877d353e2485b43d7a1671"
+      "r1p11PausedForPlan": false,
+      "r1p11WipBase": "31fa5428896f6e9cb7877d353e2485b43d7a1671",
+      "sourceCommit": "86512968d02ceca91c3292bb8a8648275ce60a22",
+      "binarySha256": "ee2f65c5a80e64bae49ac190be52ac5cab3e35d9d3da23a6fc5bbf58f919a7b6"
     }
   },
   "roadTo1_0": {
@@ -908,7 +922,9 @@
     "r1p8": "production_blocked_by_r1p6_next_rehearsal_pass",
     "r1p9": "production_blocked_by_r1p6_next_rehearsal_pass_request_wire_not_frozen",
     "r1p10": "production_blocked_by_r1p6_next_rehearsal_pass",
-    "cliLightbi": "phase_a_v0_1_machine_verified_read_only_closed_resume_r1p11"
+    "cliLightbi": "phase_a_v0_1_machine_verified_read_only_closed",
+    "r1p11": "production_blocked_by_r1p6_next_rehearsal_pass",
+    "r1p12": "active_next_anti_impersonation_audit_production_platform_signing_not_claimed"
   },
   "optionalCommerceRevenueMirror": {
     "provider": "paddle",
@@ -917,7 +933,7 @@
     "erpnextCompany": "LightBI Inc",
     "serviceItem": "LIGHTBI-PRO",
     "workflowId": "lightbiRevenueMirror01",
-    "workflowName": "LightBI Paddle Revenue → ERPNext Invoice + Clearing",
+    "workflowName": "LightBI Paddle Revenue \u2192 ERPNext Invoice + Clearing",
     "workflowNodes": 26,
     "workflowActive": false,
     "salesInvoiceUpdateStock": false,

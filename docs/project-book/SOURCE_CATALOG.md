@@ -161,8 +161,8 @@ For old paths, use [`PATH_MIGRATION_INDEX.md`](./PATH_MIGRATION_INDEX.md) and [`
 ## architecture-source-or-evidence
 
 - [`docs/architecture/commerce-erpnext-revenue-mirror.md`](../../docs/architecture/commerce-erpnext-revenue-mirror.md) — Commerce → ERPNext Optional Revenue Mirror; `11569` bytes; SHA-256 `d2265f05414cf76fe52556ecf7f324baf58d3cd24cba1cad4ad9989c20e61e7f`
-- [`docs/architecture/road-to-1-0-trust-release-contract.md`](../../docs/architecture/road-to-1-0-trust-release-contract.md) — Road to 1.0 Trust, Release, and Official Identity Contract; `11442` bytes; SHA-256 `145ebcd76004395d0d0bd2062d120cb312cd2a642d1cd4cb02617aa8547953c8`
-- [`docs/architecture/README.md`](../../docs/architecture/README.md) — Architecture Library; `14955` bytes; SHA-256 `766081adcbf4ecd7d41bf8375ceafc7655caccc72106a7ab782df0940d421b24`
+- [`docs/architecture/road-to-1-0-trust-release-contract.md`](../../docs/architecture/road-to-1-0-trust-release-contract.md) — Road to 1.0 Trust, Release, and Official Identity Contract; `18282` bytes; SHA-256 `74cd8ba79aae4330d879da7a2da8a50c87f19ade78093c27de9d85a6b2c3fbaa`
+- [`docs/architecture/README.md`](../../docs/architecture/README.md) — Architecture Library; `15231` bytes; SHA-256 `c26a4f7c36c8085e84104f518c6a79f14fb4857673e60ccb2eed8ee40219e56a`
 - [`docs/architecture/artifact-model.md`](../../docs/architecture/artifact-model.md) — Export Artifact Model; `834` bytes; SHA-256 `c444e449c8bb69aac589a0c0f35ea93e864f2a90c4b14a1e51e716737342b0e6`
 - [`docs/architecture/beta-core-ui-business-brain-bridge-audit.json`](../../docs/architecture/beta-core-ui-business-brain-bridge-audit.json) — beta-core-ui-business-brain-bridge-audit.json; `2548` bytes; SHA-256 `fb0076e78482530c1f747e09fa105c86110923f19e713ae3ef913a9416908205`
 - [`docs/architecture/beta-inventory-shipment-perspective-audit.json`](../../docs/architecture/beta-inventory-shipment-perspective-audit.json) — beta-inventory-shipment-perspective-audit.json; `3456` bytes; SHA-256 `7afb233b5fc3a90452ba8b8f1d7b474554582d60916b3b7c54f41f6574e719ef`
@@ -707,6 +707,7 @@ For old paths, use [`PATH_MIGRATION_INDEX.md`](./PATH_MIGRATION_INDEX.md) and [`
 - [`docs/history/agent/handoffs/AGENT_HANDOFF_PRODUCTION_API_BOUNDARY_FIX_PHASE1.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_PRODUCTION_API_BOUNDARY_FIX_PHASE1.md) — Agent Handoff — Production API Boundary Fix Phase 1; `1165` bytes; SHA-256 `bd8e06f84d520042540c23b2aeb76f0b2ca09f710c293340f64f67919a5f4742`
 - [`docs/history/agent/handoffs/AGENT_HANDOFF_REAL_SAMPLE_DATA_E2E_AUDIT_2026-06-14.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_REAL_SAMPLE_DATA_E2E_AUDIT_2026-06-14.md) — Agent Handoff — Real Sample Data E2E Audit; `1986` bytes; SHA-256 `37fc8243d8c9cab39a9d9f808aad99df574802aca8244d18ea1e257557819cdf`
 - [`docs/history/agent/handoffs/AGENT_HANDOFF_REAL_SAMPLE_LOCALFIRST_RUNTIME_PROOF_2026-06-14.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_REAL_SAMPLE_LOCALFIRST_RUNTIME_PROOF_2026-06-14.md) — AGENT HANDOFF: Local-First Real Sample Runtime Proof; `2468` bytes; SHA-256 `79ad8b71134448ab77e66b3a2436388bbfb6e1942c4d2b3ac43298a66c4542b1`
+- [`docs/history/agent/handoffs/AGENT_HANDOFF_ROAD_TO_1_0_R1P12_AND_DISTRIBUTION_NEXT_2026_09_02.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_ROAD_TO_1_0_R1P12_AND_DISTRIBUTION_NEXT_2026_09_02.md) — Road-to-1.0 R1-P12 + Distribution NEXT Handoff; `3588` bytes; SHA-256 `c3f88ca542723a6dcdb56241dcebb2f51e388d7ed80f27df17e3dc0e0be70a92`
 - [`docs/history/agent/handoffs/AGENT_HANDOFF_RUNTIME_RECLASSIFICATION_2026-06-15.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_RUNTIME_RECLASSIFICATION_2026-06-15.md) — AGENT HANDOFF — Runtime Evidence Reclassification; `3157` bytes; SHA-256 `0d0543dcfbaaa852a71353056dfe4d6a1564cb8c76df50c42958d661243bfb84`
 - [`docs/history/agent/handoffs/AGENT_HANDOFF_RUNTIME_TRUTH_PHASE1.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_RUNTIME_TRUTH_PHASE1.md) — Agent Handoff: Runtime Truth Phase 1; `2133` bytes; SHA-256 `7407c0281f8b979fd26c796340c0767a1cea7f9a6b6ca8d0ea3d90a70c597357`
 - [`docs/history/agent/handoffs/AGENT_HANDOFF_RUNTIME_TRUTH_PHASE2.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_RUNTIME_TRUTH_PHASE2.md) — Runtime Truth Phase 2: Backend & Boundary Hardening; `2265` bytes; SHA-256 `12925486b3a3ab2e97687ed375e9829adb5a1990bdad592bc603b143431b3aa7`
@@ -952,7 +953,7 @@ For old paths, use [`PATH_MIGRATION_INDEX.md`](./PATH_MIGRATION_INDEX.md) and [`
 
 ## release-record
 
-- [`docs/release/BETA_RELEASE_CHECKLIST.md`](../../docs/release/BETA_RELEASE_CHECKLIST.md) — LightBI Beta release checklist; `4474` bytes; SHA-256 `e1aee3914355a4f4f3e1343d023fc922609b5932b8409598aa3f6b6d25f5e1f1`
+- [`docs/release/BETA_RELEASE_CHECKLIST.md`](../../docs/release/BETA_RELEASE_CHECKLIST.md) — LightBI Beta release checklist; `6932` bytes; SHA-256 `962da2e12897c9436183721bc5bfbe425a9ecf63cbb76d387f9e8106a7737fb2`
 
 ## root-contract-or-report
 

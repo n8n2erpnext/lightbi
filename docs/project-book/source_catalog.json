@@ -1,14 +1,14 @@
 {
   "schemaVersion": "lightbi.project-book.source-catalog.v1",
   "snapshotDate": "2026-09-02",
-  "generatedAt": "2026-09-02T06:14:13.006026+00:00",
+  "generatedAt": "2026-09-02T10:15:22+00:00",
   "branch": "docs/cli-lightbi-signer-plan-20260902",
   "head": "ec8ed7bb3a6e133db9c7c915f5b2fab74301fa6e",
   "worktreeDirty": true,
   "scope": "All project Markdown and JSON outside dependency/build/project-book directories.",
   "counts": {
-    "total": 934,
-    "markdown": 517,
+    "total": 935,
+    "markdown": 518,
     "json": 417,
     "docsJson": 354,
     "references": 0
@@ -1296,8 +1296,8 @@
     {
       "path": "docs/architecture/README.md",
       "extension": ".md",
-      "bytes": 14955,
-      "sha256": "766081adcbf4ecd7d41bf8375ceafc7655caccc72106a7ab782df0940d421b24",
+      "bytes": 15231,
+      "sha256": "c26a4f7c36c8085e84104f518c6a79f14fb4857673e60ccb2eed8ee40219e56a",
       "suggestedCategory": "architecture-source-or-evidence",
       "title": "Architecture Library"
     },
@@ -9118,8 +9118,8 @@
     {
       "path": "docs/architecture/road-to-1-0-trust-release-contract.md",
       "extension": ".md",
-      "bytes": 11442,
-      "sha256": "145ebcd76004395d0d0bd2062d120cb312cd2a642d1cd4cb02617aa8547953c8",
+      "bytes": 18282,
+      "sha256": "74cd8ba79aae4330d879da7a2da8a50c87f19ade78093c27de9d85a6b2c3fbaa",
       "suggestedCategory": "architecture-source-or-evidence",
       "title": "Road to 1.0 Trust, Release, and Official Identity Contract"
     },
@@ -9570,6 +9570,14 @@
       "sha256": "79ad8b71134448ab77e66b3a2436388bbfb6e1942c4d2b3ac43298a66c4542b1",
       "suggestedCategory": "historical-provenance",
       "title": "AGENT HANDOFF: Local-First Real Sample Runtime Proof"
+    },
+    {
+      "path": "docs/history/agent/handoffs/AGENT_HANDOFF_ROAD_TO_1_0_R1P12_AND_DISTRIBUTION_NEXT_2026_09_02.md",
+      "extension": ".md",
+      "bytes": 3588,
+      "sha256": "c3f88ca542723a6dcdb56241dcebb2f51e388d7ed80f27df17e3dc0e0be70a92",
+      "suggestedCategory": "historical-provenance",
+      "title": "Road-to-1.0 R1-P12 + Distribution NEXT Handoff"
     },
     {
       "path": "docs/history/agent/handoffs/AGENT_HANDOFF_RUNTIME_RECLASSIFICATION_2026-06-15.md",
@@ -11397,8 +11405,8 @@
     {
       "path": "docs/release/BETA_RELEASE_CHECKLIST.md",
       "extension": ".md",
-      "bytes": 4474,
-      "sha256": "e1aee3914355a4f4f3e1343d023fc922609b5932b8409598aa3f6b6d25f5e1f1",
+      "bytes": 6932,
+      "sha256": "962da2e12897c9436183721bc5bfbe425a9ecf63cbb76d387f9e8106a7737fb2",
       "suggestedCategory": "release-record",
       "title": "LightBI Beta release checklist"
     },

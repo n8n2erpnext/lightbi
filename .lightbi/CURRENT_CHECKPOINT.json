@@ -1,7 +1,7 @@
 {
   "schema": "067_catalog_quarterly_pricing",
-  "updatedAt": "2026-09-02T07:18:00Z",
-  "status": "cli_lightbi_phase_a_closed_main_road_resumed_r1p11_active",
+  "updatedAt": "2026-09-02T10:15:22Z",
+  "status": "r1p11_next_rehearsal_pass_r1p12_active_distribution_next_dynamic_data_regression_identified",
   "activeRuntime": "g-2026-09-02-next-029",
   "activeRuntimeCore": "b3ada6776417fdb422e7e852b6f4363b328ab650",
   "controlPlaneRuntime": "6936fc4272bc92cd1badc00b9256cfd912e4a9ad",
@@ -24,7 +24,14 @@
     "promotableToProduction": false,
     "r1p10Rehearsal": "pass",
     "proAuthorityCommit": "31fa5428896f6e9cb7877d353e2485b43d7a1671",
-    "attestationImageId": "sha256:a08e1f681b6ab564b9dc19b5b3202f33224e44d5ef4f54ab5dbe3be2ee228899"
+    "attestationImageId": "sha256:7c793a03ff44f09fb87778e44780637cd57bea18599ee513674d1c79210e4222",
+    "r1p11Rehearsal": "pass",
+    "proDeliveryCommit": "deda7c284a6eafaa8cb69d491b96476a025ed15c",
+    "proDeliveryImageId": "sha256:d176985adbf35ef30275d15d53660be5d512c28ca02613c5009ca09e8c5ecfda",
+    "proDeliveryPackageId": "pkg-next-pro-p11-20260902-01",
+    "proDeliveryProtocolProductionFrozen": false,
+    "r1p10AttestationImageId": "sha256:a08e1f681b6ab564b9dc19b5b3202f33224e44d5ef4f54ab5dbe3be2ee228899",
+    "attestationRuntimeCommit": "c958552f2a65"
   },
   "completed": [
     "bounded_cp_to_test_signer_rel_att_ent_pro_pass_zero_synthetic_residue",
@@ -43,9 +50,16 @@
     "cli_lightbi_live_pty_navigation_modals_resize_command_palette_quit_pass",
     "cli_lightbi_signer_down_and_socket_permission_fail_closed_recovery_pass",
     "cli_lightbi_mutation_and_bypass_commands_rejected_keyset_unchanged",
-    "cli_lightbi_final_doctor_all_required_checks_pass"
+    "cli_lightbi_final_doctor_all_required_checks_pass",
+    "r1p11_private_signed_encrypted_device_bound_pro_delivery_pass",
+    "r1p11_wrong_device_and_grant_replay_fail_closed",
+    "r1p11_public_basic_and_final_runtime_image_private_material_scan_clean",
+    "r1p11_delivery_runtime_only_image_excludes_publisher_cli",
+    "r1p11_delivery_9_attestation_14_distribution_197_pass",
+    "distribution_next_fresh_mobile_and_desktop_dynamic_hero_regression_reproduced",
+    "distribution_next_root_cause_stale_generated_admin_security_module_missing_adminStrongMutation_export"
   ],
-  "nextAction": "Resume R1-P11 NEXT physical Basic/Pro separation rehearsal from the preserved private WIP. Do not begin cli-lightbi Phase B/C/D without separate explicit owner authorization.",
+  "nextAction": "Close the Distribution NEXT generated web-module regression on a P11-descended source branch and verify fresh mobile/desktop hero data; then continue R1-P12 anti-impersonation closure. Preserve the separate 13-file docs-cleanup worktree. CLI Phase B/C/D remain unauthorized.",
   "blockers": [
     "production_r1_p5_explicit_owner_freeze_record_missing_before_production_r1_p6",
     "production_attestation_request_wire_format_not_frozen"
@@ -75,13 +89,16 @@
   },
   "r1p11Wip": {
     "base": "31fa5428896f6e9cb7877d353e2485b43d7a1671",
+    "finalCommit": "deda7c284a6eafaa8cb69d491b96476a025ed15c",
     "paused": false,
-    "uncommittedPaths": [
-      "apps/trust-attestation/src/server.ts",
-      "apps/trust-attestation/src/verifier.ts",
-      "apps/trust-attestation/src/verifier.test.ts",
-      "apps/trust-pro-delivery/"
-    ],
+    "status": "next_rehearsal_pass",
     "resumedByOwner": true
+  },
+  "distributionNext": {
+    "status": "dynamic_hero_data_blocked_by_es_module_export_mismatch",
+    "freshMobileReproduced": true,
+    "freshDesktopReproduced": true,
+    "browserError": "admin-security.js missing export adminStrongMutation",
+    "productionTouched": false
   }
 }
