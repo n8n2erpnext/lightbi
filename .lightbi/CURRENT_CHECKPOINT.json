@@ -1,7 +1,7 @@
 {
   "schema": "067_catalog_quarterly_pricing",
-  "updatedAt": "2026-09-02T12:08:46Z",
-  "status": "r1p12_next_software_closure_verified_production_platform_signing_blocked_r1p13_closed",
+  "updatedAt": "2026-09-02T13:25:00Z",
+  "status": "r1p12_windows_first_active_macos_linux_deferred_r1p13_closed",
   "activeRuntime": "g-2026-09-02-next-029",
   "activeRuntimeCore": "b3ada6776417fdb422e7e852b6f4363b328ab650",
   "controlPlaneRuntime": "6936fc4272bc92cd1badc00b9256cfd912e4a9ad",
@@ -33,7 +33,7 @@
     "r1p10AttestationImageId": "sha256:a08e1f681b6ab564b9dc19b5b3202f33224e44d5ef4f54ab5dbe3be2ee228899",
     "attestationRuntimeCommit": "c958552f2a65",
     "r1p12AntiImpersonation": {
-      "status": "next_software_closure_verified_production_exit_blocked",
+      "status": "windows_lane_active_next_software_closure_verified_production_exit_blocked",
       "publicCoreCommit": "079c344952749d7a01c830a1b88c1d4247a1f5cf",
       "publicIdentityBaseCommit": "304d4b48b2f410fe623afecef86c9ab35a8352f7",
       "privateVerifierCommit": "85fa6a6961ba2bb00e2d09d92e6a9f5f815a3478",
@@ -45,10 +45,13 @@
       "release1_0Suite": "pass_governed_39_39",
       "githubWorkflowRunsAtPublicHead": 0,
       "windowsPublisher": "unsigned_pe_certificate_table_0_0",
-      "macosPublisher": "ad_hoc_only_not_developer_id_not_notarized",
+      "macosPublisher": "deferred_debt_ad_hoc_only_not_developer_id_not_notarized",
       "productionVerifierConfigured": false,
       "officialVerifiedAllowed": false,
-      "r1p13Authorized": false
+      "r1p13Authorized": false,
+      "activePlatform": "windows",
+      "macosLinuxTestingDeferredUntilWindowsStable": true,
+      "permanentWindowsOnlyDecision": false
     }
   },
   "completed": [
@@ -82,14 +85,14 @@
     "r1p12_next_external_verifier_204_of_204_pass_live_test_only",
     "r1p12_sha_only_updater_vocabulary_reclassified_as_integrity_checked",
     "r1p12_public_identity_updater_24_of_24_rust_5_of_5_release_suite_39_of_39_pass",
-    "r1p12_production_verifier_link_fails_closed_without_explicit_https_authority"
+    "r1p12_production_verifier_link_fails_closed_without_explicit_https_authority",
+    "owner_windows_first_road_to_1_0_platform_order_recorded"
   ],
-  "nextAction": "Remain in R1-P12. Prepare supported-platform publisher-signing readiness, but do not enter R1-P13 until real Windows Authenticode and macOS Developer ID/notarization evidence plus a Production external verifier satisfy the anti-impersonation exit gate. Production R1-P5 still requires explicit owner FREEZE APPROVED before Production R1-P6. CLI Phase B/C/D remain unauthorized.",
+  "nextAction": "Remain in R1-P12 on the Windows-first lane. Harden Beta/stable release authority so unsigned/Beta artifacts cannot become stable, prepare fail-closed Windows Authenticode evidence, and continue Production verifier/REL/ATT readiness. Defer macOS/Linux testing until Windows is genuinely stable. Production R1-P5 still requires explicit owner FREEZE APPROVED before Production R1-P6. CLI Phase B/C/D remain unauthorized.",
   "blockers": [
     "production_r1_p5_explicit_owner_freeze_record_missing_before_production_r1_p6",
     "production_attestation_request_wire_format_not_frozen",
     "production_r1_p12_windows_authenticode_missing",
-    "production_r1_p12_macos_developer_id_and_notarization_missing",
     "production_r1_p12_external_verifier_not_configured",
     "r1p13_closed_until_r1p12_exit_gate"
   ],
@@ -133,5 +136,10 @@
     "freshDesktopVerified": true,
     "pageErrors": 0,
     "productionTouched": false
-  }
+  },
+  "deferredDebts": [
+    "macos_beta_substantial_product_bugs",
+    "macos_developer_id_and_notarization",
+    "linux_platform_validation"
+  ]
 }

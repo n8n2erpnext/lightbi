@@ -1494,3 +1494,10 @@ R1-P0 documentation/integrity closure verified 1,243 local links with zero missi
 - Public exact-head gates PASS: focused updater/identity **24/24**, Rust updater **5/5** plus one live-only ignored test, desktop production build, full `test:release-1.0`, governed regression **39/39**, and `git diff --check`. GitHub exposes the exact commit but has zero workflow runs at this head, so this is not recorded as GitHub CI.
 - Platform trust remains missing: Windows NEXT `25.12.2` PE certificate table is `0/0` (no Authenticode); macOS CI is explicitly ad-hoc signed, not Developer ID/notarized; Production verifier is not configured. R1-P12 therefore remains blocked and R1-P13 stays closed.
 - Active NEXT runtime remains NEXT-029/Core `b3ada677...`/CP `6936fc427...`/schema 067. Production and CLI Phase B/C/D were not touched.
+
+## 2026-09-02 — Owner sets Windows-first Road-to-1.0 platform order
+
+- Owner reports the tested macOS Beta has substantial product bugs and directs Road-to-1.0 platform work to stabilize Windows first.
+- macOS Beta defects plus Developer ID/notarization and Linux platform validation become deferred debt until Windows is genuinely stable; this is sequencing, not a permanent Windows-only declaration.
+- R1-P12 remains active on the Windows lane. Immediate platform blocker is real Windows Authenticode plus the still-missing Production REL/ATT/external-verifier authority; macOS must remain Beta/deferred and cannot claim stable/official verification.
+- R1-P13 remains closed. Production and `cli-lightbi` Phase B/C/D authority are unchanged.

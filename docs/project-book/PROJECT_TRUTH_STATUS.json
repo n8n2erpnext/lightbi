@@ -164,6 +164,17 @@
       "coreLocalFeaturesMayProceedIndependently": true,
       "onlineAuthorityRequiresControlPlanePrerequisite": true,
       "trust1BlockedPendingPhase2aFreeze": true
+    },
+    "platformStabilizationOrder": {
+      "status": "windows_first_active",
+      "ownerDecisionDate": "2026-09-02",
+      "activePlatform": "windows",
+      "windowsMustBeStableBeforeDeferredPlatforms": true,
+      "macosBetaOwnerTested": true,
+      "macosBetaDebt": "substantial_product_bugs_plus_developer_id_notarization_deferred",
+      "linuxValidation": "deferred_until_windows_stable",
+      "permanentWindowsOnlyDecision": false,
+      "deferredPlatformsMayClaimStableBeforeOwnGates": false
     }
   },
   "excelAnalysisWorkbook": {
@@ -519,7 +530,7 @@
       "freezeApproved": false,
       "trust1Blocked": true,
       "r1p12AntiImpersonation": {
-        "status": "next_software_closure_verified_production_blocked",
+        "status": "windows_lane_active_next_software_closure_verified_production_blocked",
         "publicCoreCommit": "079c344952749d7a01c830a1b88c1d4247a1f5cf",
         "privateVerifierCommit": "85fa6a6961ba2bb00e2d09d92e6a9f5f815a3478",
         "nextExternalVerifierLive": true,
@@ -530,9 +541,12 @@
         "windowsPeCertificateTableSize": 0,
         "macosDeveloperIdSigned": false,
         "macosNotarized": false,
-        "macosValidationSigning": "ad_hoc",
+        "macosValidationSigning": "ad_hoc_deferred_debt",
         "officialVerifiedReachable": false,
-        "r1p13Authorized": false
+        "r1p13Authorized": false,
+        "activePlatform": "windows",
+        "macosLinuxTestingDeferredUntilWindowsStable": true,
+        "permanentWindowsOnlyDecision": false
       }
     },
     "generationIdAuthority": "runtime_exact_next029_core_cp_worker_schema_plus_nonproduction_trust_rehearsal_machine_verified_owner_acceptance_independent",
@@ -952,8 +966,8 @@
     "r1p10": "production_blocked_by_r1p6_next_rehearsal_pass",
     "cliLightbi": "phase_a_v0_1_machine_verified_read_only_closed",
     "r1p11": "production_blocked_by_r1p6_next_rehearsal_pass",
-    "r1p12": "next_software_closure_verified_production_blocked_by_os_publisher_and_external_verifier",
-    "r1p13": "closed_until_all_prior_release_gates_including_r1p12_pass"
+    "r1p12": "windows_first_active_next_software_closure_verified_production_blocked_by_windows_publisher_and_external_verifier",
+    "r1p13": "closed_until_active_windows_r1p12_and_all_prior_production_release_gates_pass"
   },
   "optionalCommerceRevenueMirror": {
     "provider": "paddle",

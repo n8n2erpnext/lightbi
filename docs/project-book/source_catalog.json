@@ -9118,8 +9118,8 @@
     {
       "path": "docs/architecture/road-to-1-0-trust-release-contract.md",
       "extension": ".md",
-      "bytes": 20449,
-      "sha256": "cd9312340b53388759e95bcb0c9e9eaaaf872de355aec55eb70ca7cc9b839af3",
+      "bytes": 21283,
+      "sha256": "0b3a102e62b67bbd894a389ab747894035bf5c6d7412f808a9f18723d067fb19",
       "suggestedCategory": "architecture-source-or-evidence",
       "title": "Road to 1.0 Trust, Release, and Official Identity Contract"
     },

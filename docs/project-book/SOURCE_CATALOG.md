@@ -161,7 +161,7 @@ For old paths, use [`PATH_MIGRATION_INDEX.md`](./PATH_MIGRATION_INDEX.md) and [`
 ## architecture-source-or-evidence
 
 - [`docs/architecture/commerce-erpnext-revenue-mirror.md`](../../docs/architecture/commerce-erpnext-revenue-mirror.md) — Commerce → ERPNext Optional Revenue Mirror; `11569` bytes; SHA-256 `d2265f05414cf76fe52556ecf7f324baf58d3cd24cba1cad4ad9989c20e61e7f`
-- [`docs/architecture/road-to-1-0-trust-release-contract.md`](../../docs/architecture/road-to-1-0-trust-release-contract.md) — Road to 1.0 Trust, Release, and Official Identity Contract; `20449` bytes; SHA-256 `cd9312340b53388759e95bcb0c9e9eaaaf872de355aec55eb70ca7cc9b839af3`
+- [`docs/architecture/road-to-1-0-trust-release-contract.md`](../../docs/architecture/road-to-1-0-trust-release-contract.md) — Road to 1.0 Trust, Release, and Official Identity Contract; `21283` bytes; SHA-256 `0b3a102e62b67bbd894a389ab747894035bf5c6d7412f808a9f18723d067fb19`
 - [`docs/architecture/README.md`](../../docs/architecture/README.md) — Architecture Library; `15231` bytes; SHA-256 `c26a4f7c36c8085e84104f518c6a79f14fb4857673e60ccb2eed8ee40219e56a`
 - [`docs/architecture/artifact-model.md`](../../docs/architecture/artifact-model.md) — Export Artifact Model; `834` bytes; SHA-256 `c444e449c8bb69aac589a0c0f35ea93e864f2a90c4b14a1e51e716737342b0e6`
 - [`docs/architecture/beta-core-ui-business-brain-bridge-audit.json`](../../docs/architecture/beta-core-ui-business-brain-bridge-audit.json) — beta-core-ui-business-brain-bridge-audit.json; `2548` bytes; SHA-256 `fb0076e78482530c1f747e09fa105c86110923f19e713ae3ef913a9416908205`
