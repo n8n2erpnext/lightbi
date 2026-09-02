@@ -45,3 +45,13 @@ The failure is not a mobile CSS layout issue. Browser module evaluation aborts w
 ## Boundaries
 
 This handoff is continuity evidence only. It does not grant Production freeze, CLI Phase B/C/D authority, or platform publisher trust.
+
+## Session update — Distribution NEXT regression closed
+
+A P11-descended private source branch `codex/next032-distribution-module-fix` was created from `deda7c284a6eafaa8cb69d491b96476a025ed15c`. Running the governed web build regenerated the stale browser modules; commit `9f0255c` contains only `public/account-security.js`, `public/admin-security.js`, and `public/marketing-admin.js` synchronization.
+
+Distribution authoritative suite passes **197/197** after the root workspace build. The three generated modules were copied only into `/home/ubuntu/services/lightbi-control-plane-next/apps/distribution/public`; Production was not modified and no Trust service was restarted.
+
+Fresh cache-busted Chromium verification passes at both 412×915 and 1440×1000: ranked evidence has 3 rows, visible source data has 7 tokens, WHAT renders `₫82.1M`, and there are zero page errors. The reported mobile blank-data regression is therefore closed on NEXT.
+
+`cli-lightbi` remains installed at `~/.local/bin/cli-lightbi` → `/home/ubuntu/services/cli-lightbi/current/bin/cli-lightbi`, SHA-256 `ee2f65c5a80e64bae49ac190be52ac5cab3e35d9d3da23a6fc5bbf58f919a7b6`. `doctor` is fully green; Phase A remains read-only and Phase B/C/D remain unauthorized.

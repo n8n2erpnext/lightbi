@@ -1,7 +1,7 @@
 {
   "schema": "067_catalog_quarterly_pricing",
-  "updatedAt": "2026-09-02T10:15:22Z",
-  "status": "r1p11_next_rehearsal_pass_r1p12_active_distribution_next_dynamic_data_regression_identified",
+  "updatedAt": "2026-09-02T10:24:00Z",
+  "status": "r1p11_next_rehearsal_pass_r1p12_active_distribution_next_dynamic_data_regression_closed",
   "activeRuntime": "g-2026-09-02-next-029",
   "activeRuntimeCore": "b3ada6776417fdb422e7e852b6f4363b328ab650",
   "controlPlaneRuntime": "6936fc4272bc92cd1badc00b9256cfd912e4a9ad",
@@ -57,9 +57,12 @@
     "r1p11_delivery_runtime_only_image_excludes_publisher_cli",
     "r1p11_delivery_9_attestation_14_distribution_197_pass",
     "distribution_next_fresh_mobile_and_desktop_dynamic_hero_regression_reproduced",
-    "distribution_next_root_cause_stale_generated_admin_security_module_missing_adminStrongMutation_export"
+    "distribution_next_root_cause_stale_generated_admin_security_module_missing_adminStrongMutation_export",
+    "distribution_next_generated_security_modules_regenerated_commit_9f0255c",
+    "distribution_next_197_of_197_pass",
+    "distribution_next_fresh_mobile_and_desktop_dynamic_hero_data_pass_zero_page_errors"
   ],
-  "nextAction": "Close the Distribution NEXT generated web-module regression on a P11-descended source branch and verify fresh mobile/desktop hero data; then continue R1-P12 anti-impersonation closure. Preserve the separate 13-file docs-cleanup worktree. CLI Phase B/C/D remain unauthorized.",
+  "nextAction": "Continue R1-P12 anti-impersonation closure on NEXT: reconcile legal/REL/ATT/user-visible official-state/external-verification surfaces while preserving OS publisher signing as a separate gate. CLI Phase B/C/D remain unauthorized. Preserve the separate 13-file docs-cleanup worktree.",
   "blockers": [
     "production_r1_p5_explicit_owner_freeze_record_missing_before_production_r1_p6",
     "production_attestation_request_wire_format_not_frozen"
@@ -95,10 +98,14 @@
     "resumedByOwner": true
   },
   "distributionNext": {
-    "status": "dynamic_hero_data_blocked_by_es_module_export_mismatch",
+    "status": "dynamic_hero_data_regression_closed",
+    "sourceBranch": "codex/next032-distribution-module-fix",
+    "sourceCommit": "9f0255c",
+    "distributionTests": "197/197",
     "freshMobileReproduced": true,
-    "freshDesktopReproduced": true,
-    "browserError": "admin-security.js missing export adminStrongMutation",
+    "freshMobileVerified": true,
+    "freshDesktopVerified": true,
+    "pageErrors": 0,
     "productionTouched": false
   }
 }

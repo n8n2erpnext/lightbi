@@ -1,7 +1,7 @@
 {
   "schemaVersion": "lightbi.project-book.source-catalog.v1",
   "snapshotDate": "2026-09-02",
-  "generatedAt": "2026-09-02T10:15:22+00:00",
+  "generatedAt": "2026-09-02T10:24:00+00:00",
   "branch": "docs/cli-lightbi-signer-plan-20260902",
   "head": "ec8ed7bb3a6e133db9c7c915f5b2fab74301fa6e",
   "worktreeDirty": true,
@@ -9574,8 +9574,8 @@
     {
       "path": "docs/history/agent/handoffs/AGENT_HANDOFF_ROAD_TO_1_0_R1P12_AND_DISTRIBUTION_NEXT_2026_09_02.md",
       "extension": ".md",
-      "bytes": 3588,
-      "sha256": "c3f88ca542723a6dcdb56241dcebb2f51e388d7ed80f27df17e3dc0e0be70a92",
+      "bytes": 4835,
+      "sha256": "49f0f5c34e6bb8bb41b6446696a5d4fae1bc96510240ac8303d45e338925d5d3",
       "suggestedCategory": "historical-provenance",
       "title": "Road-to-1.0 R1-P12 + Distribution NEXT Handoff"
     },
