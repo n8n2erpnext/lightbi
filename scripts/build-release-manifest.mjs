@@ -1,6 +1,7 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { basename } from 'node:path';
 import { updateReleaseIndex, validateReleaseManifest } from './lib/release-manifest.mjs';
+import { validateWindowsPublisherEvidence } from './lib/windows-publisher-evidence.mjs';
 
 const args = Object.fromEntries(process.argv.slice(2).map((value, index, all) => value.startsWith('--') ? [value.slice(2), all[index + 1]] : null).filter(Boolean));
 const required = args['artifacts-json'] ? ['version', 'channel', 'output'] : ['version', 'channel', 'artifact', 'artifact-url', 'sha256', 'output'];
@@ -11,6 +12,17 @@ if (args['artifacts-json']) {
   if (!Array.isArray(artifacts) || artifacts.length === 0) throw new Error('Release artifacts JSON must contain a non-empty array');
 } else {
   artifacts = [{ platform: args.platform || 'windows', architecture: args.architecture || 'x86_64', kind: args.kind || 'exe', filename: basename(args.artifact), url: args['artifact-url'], size: Number(args.size) || null, sha256: args.sha256 }];
+}
+if (args.channel === 'stable') {
+  const windowsArtifact = artifacts.find((artifact) => artifact.platform === 'windows');
+  if (windowsArtifact) {
+    if (!args['windows-publisher-evidence']) throw new Error('stable_windows_publisher_evidence_required');
+    if (!args['windows-publisher-subject']) throw new Error('stable_windows_publisher_subject_required');
+    const publisherEvidence = JSON.parse(readFileSync(args['windows-publisher-evidence'], 'utf8'));
+    validateWindowsPublisherEvidence(publisherEvidence, {
+      mode: 'stable', expectedSha256: windowsArtifact.sha256, expectedSubject: args['windows-publisher-subject'],
+    });
+  }
 }
 const manifest = validateReleaseManifest({
   schema_version: 'lightbi.release.v1', product: 'digital.thaiduy.lightbi', version: args.version.replace(/^v/, ''), channel: args.channel,

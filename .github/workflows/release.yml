@@ -1,4 +1,4 @@
-name: Cross-platform Beta Release
+name: Windows Beta Release
 
 on:
   push:
@@ -10,7 +10,20 @@ permissions:
   contents: write
 
 jobs:
+  guard-beta-authority:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Enforce Beta-only publication authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${GITHUB_REF_TYPE}" == "tag" && ! "${GITHUB_REF_NAME}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+-beta\.[0-9A-Za-z.-]+$ ]]; then
+            echo "This workflow may publish Beta tags only; refusing ${GITHUB_REF_NAME}." >&2
+            exit 1
+          fi
+
   build-windows:
+    needs: [guard-beta-authority]
     runs-on: windows-latest
     timeout-minutes: 90
     steps:
@@ -75,71 +88,27 @@ jobs:
           if ($opaque -eq 0 -or ($yellow / $opaque) -lt 0.20) { throw "NSIS installer does not contain the branded LightBI icon" }
           $hash = (Get-FileHash -Algorithm SHA256 $installer.FullName).Hash.ToLowerInvariant()
           "$hash  $($installer.Name)" | Set-Content -NoNewline "$($installer.FullName).sha256"
+      - name: Record Windows Authenticode publisher evidence
+        shell: pwsh
+        run: |
+          $installer = Get-ChildItem "target/x86_64-pc-windows-msvc/release/bundle/nsis/*.exe" | Select-Object -First 1
+          if (-not $installer) { throw "NSIS installer was not produced" }
+          $hash = (Get-FileHash -Algorithm SHA256 $installer.FullName).Hash.ToLowerInvariant()
+          $evidence = "$($installer.FullName).publisher.json"
+          ./scripts/collect-windows-publisher-evidence.ps1 -Installer $installer.FullName -Output $evidence
+          node scripts/validate-windows-publisher-evidence.mjs --evidence $evidence --mode beta --expected-sha256 $hash
       - uses: actions/upload-artifact@v4
         with:
           name: LightBI-Windows-Beta
           path: |
             target/x86_64-pc-windows-msvc/release/bundle/nsis/*.exe
             target/x86_64-pc-windows-msvc/release/bundle/nsis/*.sha256
-          if-no-files-found: error
-
-  build-linux:
-    runs-on: ubuntu-24.04
-    timeout-minutes: 90
-    steps:
-      - uses: actions/checkout@v4
-      - name: Install Linux desktop build dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.1-dev libayatana-appindicator3-dev librsvg2-dev patchelf
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 11.4.0
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: pnpm
-      - uses: dtolnay/rust-toolchain@stable
-      - uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: . -> target
-      - run: pnpm install --frozen-lockfile
-      - name: Verify public Basic release contract
-        run: |
-          pnpm test:release-contract
-          pnpm test:public-boundary
-      - name: Verify desktop updater state machine
-        run: pnpm --dir apps/desktop exec vitest run src/stores/update-store.test.ts src/components/settings/UpdateSettingsPanel.test.tsx
-      - name: Generate branded application icons
-        run: |
-          pnpm dlx @tauri-apps/cli@2.11.4 icon apps/desktop/public/branding/lightbi-app-icon.png --output crates/lightbi-tauri/icons
-          node scripts/validate-native-icons.mjs
-      - name: Verify staged updater integrity gates
-        run: cargo test -p lightbi-tauri updater_tests
-      - name: Build Debian package
-        working-directory: crates/lightbi-tauri
-        env:
-          VITE_LIGHTBI_DISTRIBUTION_URL: https://lightbi.thaiduy.digital/distribution
-          VITE_LIGHTBI_VERSION: ${{ github.ref_name }}
-        run: |
-          export VITE_LIGHTBI_VERSION="${VITE_LIGHTBI_VERSION#v}"
-          pnpm dlx @tauri-apps/cli@2.11.4 build --config tauri.linux.conf.json --bundles deb
-      - name: Generate SHA-256 checksum
-        run: |
-          package=$(find target/release/bundle/deb -maxdepth 1 -type f -name '*.deb' | head -1)
-          test -n "$package"
-          sha256sum "$package" > "$package.sha256"
-      - uses: actions/upload-artifact@v4
-        with:
-          name: LightBI-Linux-Debian-Beta
-          path: |
-            target/release/bundle/deb/*.deb
-            target/release/bundle/deb/*.sha256
+            target/x86_64-pc-windows-msvc/release/bundle/nsis/*.publisher.json
           if-no-files-found: error
 
   publish-release:
     if: startsWith(github.ref, 'refs/tags/')
-    needs: [build-windows, build-linux]
+    needs: [guard-beta-authority, build-windows]
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
@@ -151,10 +120,6 @@ jobs:
         with:
           name: LightBI-Windows-Beta
           path: .artifacts/windows
-      - uses: actions/download-artifact@v4
-        with:
-          name: LightBI-Linux-Debian-Beta
-          path: .artifacts/linux
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
@@ -162,8 +127,7 @@ jobs:
           generate_release_notes: true
           files: |
             .artifacts/windows/*
-            .artifacts/linux/*
-      - name: Publish immutable artifacts and cross-platform manifest to Cloudflare R2
+      - name: Publish immutable Windows artifact and Beta manifest to Cloudflare R2
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
@@ -180,31 +144,37 @@ jobs:
           export R2_PUBLIC_URL="$(printf '%s' "$R2_PUBLIC_URL" | tr -d '\r\n')"
           python -m pip install --disable-pip-version-check --quiet awscli
           version="${GITHUB_REF_NAME#v}"
-          channel=stable
-          [[ "$version" == *-beta.* ]] && channel=beta
+          [[ "$version" == *-beta.* ]] || { echo "Beta workflow refuses non-Beta version: $version" >&2; exit 1; }
+          channel=beta
           endpoint="https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com"
           public="${R2_PUBLIC_URL%/}"
           windows=$(find .artifacts/windows -type f -name '*.exe' | head -1)
-          linux=$(find .artifacts/linux -type f -name '*.deb' | head -1)
-          test -n "$windows" && test -n "$linux"
+          test -n "$windows"
+          windows_publisher="$windows.publisher.json"
+          test -f "$windows_publisher"
           windows_sha=$(awk '{print tolower($1)}' "$windows.sha256")
-          linux_sha=$(awk '{print tolower($1)}' "$linux.sha256")
           windows_key="release/lightbi/$version/$(basename "$windows")"
-          linux_key="release/lightbi/$version/$(basename "$linux")"
+          windows_publisher_key="$windows_key.publisher.json"
           if aws s3api head-object --bucket "$R2_BUCKET" --key "$windows_key" --endpoint-url "$endpoint" >/dev/null 2>&1; then echo "Immutable object exists: $windows_key"; exit 1; fi
-          if aws s3api head-object --bucket "$R2_BUCKET" --key "$linux_key" --endpoint-url "$endpoint" >/dev/null 2>&1; then echo "Immutable object exists: $linux_key"; exit 1; fi
+          if aws s3api head-object --bucket "$R2_BUCKET" --key "$windows_publisher_key" --endpoint-url "$endpoint" >/dev/null 2>&1; then echo "Immutable object exists: $windows_publisher_key"; exit 1; fi
           mkdir -p .release
           jq -n \
             --arg windows_name "$(basename "$windows")" --arg windows_url "$public/$windows_key" --arg windows_sha "$windows_sha" --argjson windows_size "$(stat -c%s "$windows")" \
-            --arg linux_name "$(basename "$linux")" --arg linux_url "$public/$linux_key" --arg linux_sha "$linux_sha" --argjson linux_size "$(stat -c%s "$linux")" \
-            '[{platform:"windows",architecture:"x86_64",kind:"exe",filename:$windows_name,url:$windows_url,size:$windows_size,sha256:$windows_sha},{platform:"linux",architecture:"x86_64",kind:"deb",filename:$linux_name,url:$linux_url,size:$linux_size,sha256:$linux_sha}]' > .release/artifacts.json
+            '[{platform:"windows",architecture:"x86_64",kind:"exe",filename:$windows_name,url:$windows_url,size:$windows_size,sha256:$windows_sha}]' > .release/artifacts.json
           if ! curl --fail --silent --show-error "$public/release/lightbi/index.json" -o .release/index.previous.json; then echo 'null' > .release/index.previous.json; fi
           node scripts/build-release-manifest.mjs --version "$version" --channel "$channel" --artifacts-json .release/artifacts.json --minimum-updater-version 0.9.1-beta.7 --output .release/manifest.json --index-input .release/index.previous.json --index-output .release/index.json
           aws s3 cp "$windows" "s3://$R2_BUCKET/$windows_key" --endpoint-url "$endpoint" --cache-control "public,max-age=31536000,immutable" --content-type "application/vnd.microsoft.portable-executable"
           aws s3 cp "$windows.sha256" "s3://$R2_BUCKET/$windows_key.sha256" --endpoint-url "$endpoint" --cache-control "public,max-age=31536000,immutable" --content-type "text/plain"
-          aws s3 cp "$linux" "s3://$R2_BUCKET/$linux_key" --endpoint-url "$endpoint" --cache-control "public,max-age=31536000,immutable" --content-type "application/vnd.debian.binary-package"
-          aws s3 cp "$linux.sha256" "s3://$R2_BUCKET/$linux_key.sha256" --endpoint-url "$endpoint" --cache-control "public,max-age=31536000,immutable" --content-type "text/plain"
+          aws s3 cp "$windows_publisher" "s3://$R2_BUCKET/$windows_publisher_key" --endpoint-url "$endpoint" --cache-control "public,max-age=31536000,immutable" --content-type "application/json"
           aws s3 cp .release/manifest.json "s3://$R2_BUCKET/release/lightbi/$version/manifest.json" --endpoint-url "$endpoint" --cache-control "public,max-age=31536000,immutable" --content-type "application/json"
           aws s3 cp .release/index.json "s3://$R2_BUCKET/release/lightbi/index.json" --endpoint-url "$endpoint" --cache-control "public,max-age=60,must-revalidate" --content-type "application/json"
           aws s3 cp .release/manifest.json "s3://$R2_BUCKET/release/lightbi/$channel/latest.json" --endpoint-url "$endpoint" --cache-control "public,max-age=60,must-revalidate" --content-type "application/json"
-          aws s3 cp .release/manifest.json "s3://$R2_BUCKET/release/lightbi/latest.json" --endpoint-url "$endpoint" --cache-control "public,max-age=60,must-revalidate" --content-type "application/json"
+          global_latest_channel=""
+          if aws s3 cp "s3://$R2_BUCKET/release/lightbi/latest.json" .release/latest.previous.json --endpoint-url "$endpoint" >/dev/null 2>&1; then
+            global_latest_channel=$(jq -r '.channel // empty' .release/latest.previous.json)
+          fi
+          if [[ "$global_latest_channel" == "stable" ]]; then
+            echo "Preserving stable global latest.json; Beta may update beta/latest.json only."
+          else
+            aws s3 cp .release/manifest.json "s3://$R2_BUCKET/release/lightbi/latest.json" --endpoint-url "$endpoint" --cache-control "public,max-age=60,must-revalidate" --content-type "application/json"
+          fi
