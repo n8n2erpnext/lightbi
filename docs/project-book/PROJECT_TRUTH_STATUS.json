@@ -663,7 +663,7 @@
     }
   },
   "roadTo1_0Execution": {
-    "status": "r1_p6_freeze_review_active_exact_head_revalidated_awaiting_explicit_owner_freeze",
+    "status": "r1_p5_exact_head_revalidated_freeze_ready_r1_p6_offline_root_owner_gated",
     "startedDate": "2026-08-31",
     "baseline": {
       "core": "451c9b6afe0a95bce5bce473a4a84c8b918f42cd",
@@ -757,8 +757,8 @@
       "productionMutated": false,
       "r1p6Hold": true
     },
-    "r1P6FreezeReview": {
-      "status": "freeze_ready_awaiting_explicit_owner_freeze",
+    "r1P5FreezeGate": {
+      "status": "freeze_ready_awaiting_explicit_owner_freeze_before_r1_p6",
       "activatedDate": "2026-09-02",
       "pr": 4,
       "branch": "codex/phase2-trust-contracts",
@@ -784,10 +784,10 @@
     "r1p2": "internal_deployed_machine_verified_next026_owner_auth_recovery_acceptance_open",
     "r1p3": "verified_release_authority_defined",
     "r1p4": "implemented_machine_verified_owner_visual_acceptance_open",
-    "r1p5": "independent_audit_reverified_exact_head_pass",
+    "r1p5": "independent_audit_reverified_exact_head_pass_awaiting_explicit_owner_freeze",
     "phase2aFreezeApproved": false,
     "trust1SignerAllowed": false,
-    "r1p6": "freeze_ready_awaiting_explicit_owner_freeze",
+    "r1p6": "offline_root_ceremony_owner_hold_pending_phase2a_freeze",
     "commerceTrack": "next018_source_verified_awaiting_infra_approval"
   },
   "optionalCommerceRevenueMirror": {

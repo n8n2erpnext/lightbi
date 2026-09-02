@@ -1424,11 +1424,12 @@ R1-P0 documentation/integrity closure verified 1,243 local links with zero missi
 - GitHub Actions run `33578098883` / #12 PASS. Branded HTTPS verifies A `0.9.2-next.25.12.1` (29,704,813 bytes, SHA `87c5dd8f55debf701733ee8161c68f618d800e4e8878ea8c4bf6ccc3cfd62e54`) and B/latest `0.9.2-next.25.12.2` (29,698,186 bytes, SHA `2feb44b1a075397dc4e5b46828ee5af239c5be52290709597ba869e543afc740`); index contains both.
 - Owner visual/native acceptance remains open for the five templates/Inbox rendering and the existing A→B silent-updater/full-source History gate. Production and Trust R1-P6 remain untouched/HOLD.
 
-## 2026-09-02 — R1-P6 freeze review activated; R1-P5 exact head revalidated
+## 2026-09-02 — R1-P5 freeze gate revalidated; R1-P6 Root ceremony preflighted
 
-- Owner resumed the main Road-to-1.0 Trust path and authorized entry into R1-P6 freeze review; this is not recorded as the literal `FREEZE APPROVED` decision required by the Trust contract.
+- Owner resumed the main Road-to-1.0 Trust path and requested progression toward R1-P6. Canonical plan semantics were rechecked: R1-P5 owns the explicit freeze exit gate; R1-P6 is the Offline Root ceremony; R1-P7 is the Private Trust-1 signer. The resume instruction is not silently converted into the literal `FREEZE APPROVED` record.
 - GitHub PR #4 remains Draft/Open/unmerged at `codex/phase2-trust-contracts` exact head `10de4da8e551a46f93f7b62985a0a6e611581b8e`; historical CI run `33397723902` remains success.
 - Fresh exact-head local CI-equivalent PASS: release contract 3/3, public/private boundary, Trust TS 22/22 plus lint, Rust parity 5/5, desktop production build, governed regressions 7 files / 26 tests. Phase 2A worktree remained clean after execution.
 - Freeze-negative probes PASS: Root pin is `unconfigured` with null public key; zero tracked private-key literals; no tracked private-key artifact extensions; no production signer implementation detected.
-- R1-P6 state is now `freeze_ready_awaiting_explicit_owner_freeze`; `phase2aFrozen=false`, `rootCeremonyAuthorized=false`, `trust1SignerAllowed=false`. Exact next owner record: `FREEZE APPROVED — PR #4 codex/phase2-trust-contracts @ 10de4da8e551a46f93f7b62985a0a6e611581b8e`.
+- R1-P5 state is `freeze_ready_awaiting_explicit_owner_freeze_before_r1_p6`; `phase2aFrozen=false`, `rootCeremonyAuthorized=false`, `trust1SignerAllowed=false`. Exact next owner record: `FREEZE APPROVED — PR #4 codex/phase2-trust-contracts @ 10de4da8e551a46f93f7b62985a0a6e611581b8e`.
+- R1-P6 preflight generated no keys: the only connected remote device is online VPS-ARM, which is forbidden for Root private authority. Phase 2A has public verification/canonicalization and test-only ephemeral generation but no production ceremony/signer tooling; the real Root ceremony must execute on a separate owner-controlled offline machine after freeze approval.
 - Read-only runtime reconciliation observes Internal NEXT-028/Core `b3ada677...`/CP `9606c1bd...`/schema 067 with healthy worker and Trust blocked pending Phase2A freeze. Production was not touched.
