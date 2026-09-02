@@ -281,7 +281,7 @@ export const useUpdateStore = create<UpdateStore>((set, get) => ({
           },
         );
         const prepared = await invoke<PreparedUpdate>(
-          "prepare_verified_update",
+          "prepare_integrity_checked_update",
           invokeArgs(manifest, artifact),
         );
         if (operation !== updateOperationEpoch) return;

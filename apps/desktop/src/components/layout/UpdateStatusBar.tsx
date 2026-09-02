@@ -23,7 +23,7 @@ export const UpdateStatusBar: React.FC = () => {
       </div>
       <div className="min-w-0 flex-1">
         <div className="flex items-center justify-between gap-3 text-xs font-semibold text-slate-800">
-          <span>{failed?'Update download failed':ready?(updater.qaSimulation?'Update UX test ready':`LightBI ${version} is ready to install`):updater.status==='verifying'?'Verifying downloaded update…':`Downloading LightBI ${version} in the background`}</span>
+          <span>{failed?'Update download failed':ready?(updater.qaSimulation?'Update UX test ready':`LightBI ${version} is ready to install`):updater.status==='verifying'?'Checking downloaded update integrity…':`Downloading LightBI ${version} in the background`}</span>
           {!failed && <span data-testid="global-update-percent" className="tabular-nums text-slate-500">{progressLabel}%</span>}
         </div>
         {!failed && <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-white/80 ring-1 ring-black/5"><div className={`h-full rounded-full transition-[width] duration-300 ${ready?'bg-emerald-600':'bg-blue-600'}`} style={{width:`${progress}%`}}/></div>}

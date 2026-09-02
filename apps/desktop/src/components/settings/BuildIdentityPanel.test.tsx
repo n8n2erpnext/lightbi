@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { buildGenerationManifest } from '../../lib/generation-manifest';
-import { deriveOfficialVerificationState, describeBuildIdentity, type BuildIdentityEvidence } from './BuildIdentityPanel';
+import { deriveOfficialVerificationState, describeBuildIdentity, independentVerificationSurfaceUrl, type BuildIdentityEvidence } from './BuildIdentityPanel';
 
 const sha = 'a'.repeat(40);
 
@@ -33,6 +33,17 @@ const evidence = (overrides: Partial<BuildIdentityEvidence> = {}): BuildIdentity
 });
 
 describe('build identity presentation', () => {
+  it('derives the NEXT verifier from the public site origin instead of the API path', () => {
+    expect(independentVerificationSurfaceUrl('internal', 'https://lightbi-next.example.test/distribution')).toBe('https://lightbi-next.example.test/verify');
+  });
+
+  it('requires an explicit verifier URL for Production and rejects non-web schemes', () => {
+    expect(independentVerificationSurfaceUrl('production', 'https://lightbi.example.test/distribution')).toBeNull();
+    expect(independentVerificationSurfaceUrl('production', 'https://lightbi.example.test/distribution', 'https://verify.lightbi.example.test/check')).toBe('https://verify.lightbi.example.test/check');
+    expect(independentVerificationSurfaceUrl('production', 'https://lightbi.example.test/distribution', 'http://verify.lightbi.example.test/check')).toBeNull();
+    expect(independentVerificationSurfaceUrl('production', 'https://lightbi.example.test/distribution', 'javascript:alert(1)')).toBeNull();
+  });
+
   it('never presents an internal successor as an official public release', () => {
     const identity = describeBuildIdentity(manifest('internal', 'trust1_enabled'));
     expect(identity.verified).toBe(false);

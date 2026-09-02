@@ -7,10 +7,12 @@ use sha2::{Digest, Sha256};
 use std::{
     collections::HashMap,
     net::IpAddr,
-    path::{Path, PathBuf},
+    path::Path,
     sync::{Arc, Mutex},
     time::Duration,
 };
+#[cfg(target_os = "windows")]
+use std::path::PathBuf;
 use tauri::{AppHandle, Emitter, Manager, State};
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tower::ServiceExt;
@@ -213,7 +215,7 @@ struct PreparedUpdateMetadata {
     artifact: String,
     source_url: String,
     sha256: String,
-    verified: bool,
+    integrity_checked: bool,
 }
 
 #[derive(Clone, Serialize)]
@@ -328,7 +330,7 @@ async fn valid_staged_update(
                 .to_string(),
         );
     }
-    if metadata != *expected || !metadata.verified || !valid_update_filename(&metadata.artifact) {
+    if metadata != *expected || !metadata.integrity_checked || !valid_update_filename(&metadata.artifact) {
         return Ok(None);
     }
     let artifact_path = directory.join(&metadata.artifact);
@@ -373,7 +375,7 @@ fn store_account_session_token(token: Option<String>) -> Result<(), String> {
 }
 
 #[tauri::command]
-async fn prepare_verified_update(
+async fn prepare_integrity_checked_update(
     app: AppHandle,
     version: String,
     platform: String,
@@ -399,7 +401,7 @@ async fn prepare_verified_update(
         artifact: filename.clone(),
         source_url: url.clone(),
         sha256: sha256.to_ascii_lowercase(),
-        verified: true,
+        integrity_checked: true,
     };
     if valid_staged_update(&directory, &expected).await?.is_some() {
         return Ok(PreparedUpdateResult {
@@ -508,7 +510,7 @@ async fn prepare_verified_update(
     let actual = format!("{:x}", digest.finalize());
     if !actual.eq_ignore_ascii_case(&sha256) {
         let _ = tokio::fs::remove_file(&partial_path).await;
-        return Err("Update verification failed. The partial artifact was discarded.".to_string());
+        return Err("Update integrity check failed. The partial artifact was discarded.".to_string());
     }
     tokio::fs::rename(&partial_path, &artifact_path)
         .await
@@ -596,7 +598,7 @@ async fn apply_prepared_update(
         artifact: filename,
         source_url: url,
         sha256: sha256.to_ascii_lowercase(),
-        verified: true,
+        integrity_checked: true,
     };
     let metadata = valid_staged_update(&directory, &expected)
         .await?
@@ -725,7 +727,7 @@ fn main() {
             save_export_file,
             account_session_token,
             store_account_session_token,
-            prepare_verified_update,
+            prepare_integrity_checked_update,
             apply_prepared_update
         ])
         .run(tauri::generate_context!())
@@ -759,7 +761,7 @@ mod updater_tests {
             source_url: "https://drive.thaiduy.store/release/lightbi/0.9.2-beta.7/LightBI"
                 .to_string(),
             sha256: format!("{:x}", Sha256::digest(bytes)),
-            verified: true,
+            integrity_checked: true,
         }
     }
 
@@ -791,7 +793,7 @@ mod updater_tests {
     #[test]
     fn exact_staged_artifact_survives_restart_and_partial_never_counts() {
         let folder = tempfile::tempdir().expect("temp folder");
-        let bytes = b"verified LightBI update";
+        let bytes = b"integrity checked LightBI update";
         let expected = expected(bytes);
         std::fs::write(
             folder.path().join(format!("{}.tmp", expected.artifact)),
@@ -817,7 +819,7 @@ mod updater_tests {
     #[test]
     fn tampered_or_replaced_staged_artifact_is_rejected() {
         let folder = tempfile::tempdir().expect("temp folder");
-        let bytes = b"verified LightBI update";
+        let bytes = b"integrity checked LightBI update";
         let expected = expected(bytes);
         std::fs::write(folder.path().join(&expected.artifact), b"tampered").expect("artifact");
         std::fs::write(
@@ -837,6 +839,14 @@ mod updater_tests {
         assert!(error.contains("different checksum"));
     }
 
+    #[test]
+    fn staged_metadata_names_integrity_without_claiming_official_verification() {
+        let metadata = expected(b"integrity checked LightBI update");
+        let json = serde_json::to_string(&metadata).expect("metadata json");
+        assert!(json.contains("\"integrityChecked\":true"));
+        assert!(!json.contains("\"verified\""));
+    }
+
     #[cfg(target_os = "windows")]
     #[test]
     fn windows_update_launch_contract_is_silent_in_place_and_restarts() {
@@ -846,7 +856,7 @@ mod updater_tests {
     #[test]
     fn malformed_or_stale_metadata_is_invalidated_without_becoming_ready() {
         let folder = tempfile::tempdir().expect("temp folder");
-        let bytes = b"verified LightBI update";
+        let bytes = b"integrity checked LightBI update";
         let expected = expected(bytes);
         std::fs::write(folder.path().join(&expected.artifact), bytes).expect("artifact");
         std::fs::write(folder.path().join("staged.json"), b"{partial").expect("metadata");

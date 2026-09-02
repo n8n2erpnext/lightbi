@@ -113,7 +113,7 @@ describe("staged native updater", () => {
       ),
     );
     mocks.invoke.mockImplementation(async (command: string) => {
-      expect(command).toBe("prepare_verified_update");
+      expect(command).toBe("prepare_integrity_checked_update");
       mocks.progressHandler?.({
         payload: {
           phase: "downloading",
@@ -229,7 +229,7 @@ describe("staged native updater", () => {
         }),
       ),
     );
-    mocks.invoke.mockRejectedValue(new Error("Update verification failed."));
+    mocks.invoke.mockRejectedValue(new Error("Update integrity check failed."));
     await useUpdateStore.getState().check(true);
     expect(useUpdateStore.getState()).toMatchObject({
       status: "failed",

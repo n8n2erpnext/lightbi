@@ -17,6 +17,12 @@ if (permissions.has('core:event:default') || permissions.has('core:default')) {
 const tauriConfig = JSON.parse(fs.readFileSync(path.resolve('crates/lightbi-tauri/tauri.conf.json'), 'utf8'));
 const installMode = tauriConfig?.bundle?.windows?.nsis?.installMode;
 const nativeMain = fs.readFileSync(path.resolve('crates/lightbi-tauri/src/main.rs'), 'utf8');
+if (nativeMain.includes('prepare_verified_update') || nativeMain.includes('verified: true')) {
+  throw new Error('SHA-only updater internals must not use verified/official trust vocabulary.');
+}
+if (!nativeMain.includes('prepare_integrity_checked_update') || !nativeMain.includes('integrity_checked: true')) {
+  throw new Error('Native updater must name SHA-only staging as integrity-checked.');
+}
 if (installMode === 'perMachine') {
   if (!nativeMain.includes('ShellExecuteW') || !nativeMain.includes('OsStr::new(\"runas\")')) {
     throw new Error('Per-machine Windows installer requires an explicit UAC-aware ShellExecuteW runas launch path.');

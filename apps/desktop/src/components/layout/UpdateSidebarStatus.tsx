@@ -37,9 +37,9 @@ export const UpdateSidebarStatus: React.FC<UpdateSidebarStatusProps> = ({
   const label = failed
     ? `Update failed${updater.error ? `: ${updater.error}` : ""}`
     : ready
-      ? `LightBI ${updater.manifest?.version ?? "update"} downloaded and verified`
+      ? `LightBI ${updater.manifest?.version ?? "update"} downloaded · SHA-256 integrity checked`
       : updater.status === "verifying"
-        ? "Verifying downloaded update"
+        ? "Checking downloaded update integrity"
         : updater.status === "checking"
           ? "Checking for LightBI updates"
           : updater.status === "installing"

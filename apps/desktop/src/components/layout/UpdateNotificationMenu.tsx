@@ -86,7 +86,7 @@ export const UpdateNotificationMenu: React.FC = () => {
               </div>
               <p className="mt-1 text-xs leading-5 text-slate-600">
                 {updater.status === "verifying"
-                  ? "Download complete. Verifying the staged artifact…"
+                  ? "Download complete. Checking staged artifact integrity…"
                   : "Downloading in the background. Keep working normally."}
               </p>
               <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-blue-100">
@@ -99,7 +99,7 @@ export const UpdateNotificationMenu: React.FC = () => {
               </div>
               <div className="mt-2 text-[11px] font-medium text-blue-700">
                 {updater.status === "verifying"
-                  ? "Verifying…"
+                  ? "Checking integrity…"
                   : typeof updater.progress === "number"
                     ? `Downloading ${progressLabel}%`
                     : "Downloading…"}
@@ -116,7 +116,7 @@ export const UpdateNotificationMenu: React.FC = () => {
             <div className="mt-3 rounded-lg border border-emerald-100 bg-emerald-50 p-3">
               <div className="font-semibold text-slate-900">Update ready</div>
               <p className="mt-1 text-xs leading-5 text-slate-600">
-                {updater.qaSimulation ? "The internal progress simulation reached READY." : "The installer is staged and verified."}{" "}
+                {updater.qaSimulation ? "The internal progress simulation reached READY." : "The installer is staged and its SHA-256 integrity check passed."}{" "}
                 {updater.qaSimulation ? "No installer will be launched by this simulation." : linux
                   ? "Your package manager will ask for confirmation."
                   : "Windows will ask once for permission, then LightBI updates silently and reopens."}

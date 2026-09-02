@@ -108,11 +108,39 @@ function evidenceLabel(value: boolean | null, positive: string, negative: string
   return value === true ? positive : value === false ? negative : 'Not evaluated';
 }
 
+export function independentVerificationSurfaceUrl(
+  channel: 'internal' | 'production',
+  distributionOrigin: string,
+  explicitUrl?: string | null,
+): string | null {
+  const configured = explicitUrl?.trim();
+  if (configured) {
+    try {
+      const target = new URL(configured);
+      return target.protocol === 'https:' || (channel === 'internal' && target.protocol === 'http:') ? target.toString() : null;
+    } catch {
+      return null;
+    }
+  }
+  if (channel !== 'internal') return null;
+  try {
+    const target = new URL(distributionOrigin);
+    if (target.protocol !== 'https:' && target.protocol !== 'http:') return null;
+    return new URL('/verify', `${target.origin}/`).toString();
+  } catch {
+    return null;
+  }
+}
+
 export const BuildIdentityPanel: React.FC = () => {
   const generation = useMemo(() => buildGenerationManifest(), []);
   const evidence = EMPTY_EVIDENCE;
   const identity = useMemo(() => describeBuildIdentity(generation, evidence), [generation]);
-  const verifierUrl = `${generation.distribution_origin}/verify`;
+  const verifierUrl = independentVerificationSurfaceUrl(
+    generation.channel,
+    generation.distribution_origin,
+    (import.meta.env as Record<string, string | undefined>).VITE_LIGHTBI_VERIFICATION_URL,
+  );
 
   return (
     <div data-testid="build-identity-panel" data-verification-state={identity.state} className="mb-5 rounded-xl border border-amber-200 bg-amber-50/60 p-4">
@@ -134,7 +162,11 @@ export const BuildIdentityPanel: React.FC = () => {
       <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-slate-500">
         <span>Core source <span className="font-mono font-semibold text-slate-700">{shortSha(generation.core_commit)}</span></span>
         <span>Trust state <span className="font-semibold text-slate-700">{generation.trust_status}</span></span>
-        <a className="font-semibold text-blue-700 underline decoration-blue-300 underline-offset-2" href={verifierUrl} target="_blank" rel="noreferrer">Independent verification surface</a>
+        {verifierUrl ? (
+          <a className="font-semibold text-blue-700 underline decoration-blue-300 underline-offset-2" href={verifierUrl} target="_blank" rel="noreferrer">Independent verification surface</a>
+        ) : (
+          <span>Independent verification surface <span className="font-semibold text-slate-700">not configured</span></span>
+        )}
       </div>
       <p className="mt-3 text-[11px] text-slate-500">Official origin is a derived evidence state. Editable client text, logos, HTTPS and SHA-256 staging alone are not official LightBI authority.</p>
     </div>
