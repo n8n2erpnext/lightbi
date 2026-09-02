@@ -170,11 +170,38 @@ export async function saveDataUrlWithUserChoice(dataUrl: string, options: SaveFi
 
 export async function openExternalUrl(url: string): Promise<void> {
   const parsed = new URL(url);
-  if (parsed.protocol !== 'https:') throw new Error('Only HTTPS external links are allowed.');
+  if (!['https:', 'mailto:'].includes(parsed.protocol))
+    throw new Error('Only HTTPS and mail links may leave LightBI.');
   if (isNativeLightBI()) {
     const { openUrl } = await import('@tauri-apps/plugin-opener');
     await openUrl(parsed.toString());
     return;
   }
   window.open(parsed.toString(), '_blank', 'noopener,noreferrer');
+}
+
+export function externalAnchorUrl(target: EventTarget | null): string | null {
+  if (!(target instanceof Element)) return null;
+  const anchor = target.closest<HTMLAnchorElement>('a[href]');
+  if (!anchor || anchor.hasAttribute('download')) return null;
+  try {
+    const parsed = new URL(anchor.getAttribute('href') ?? '', window.location.href);
+    return ['https:', 'mailto:'].includes(parsed.protocol) ? parsed.toString() : null;
+  } catch {
+    return null;
+  }
+}
+
+export function installNativeExternalLinkGuard(doc: Document = document): () => void {
+  if (!isNativeLightBI()) return () => undefined;
+  const handleClick = (event: MouseEvent) => {
+    if (event.defaultPrevented || event.button !== 0) return;
+    const url = externalAnchorUrl(event.target);
+    if (!url) return;
+    event.preventDefault();
+    event.stopPropagation();
+    void openExternalUrl(url).catch((cause) => console.error('Could not open external link.', cause));
+  };
+  doc.addEventListener('click', handleClick, true);
+  return () => doc.removeEventListener('click', handleClick, true);
 }

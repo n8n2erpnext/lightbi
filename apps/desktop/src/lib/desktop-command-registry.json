@@ -1,0 +1,131 @@
+[
+  {
+    "id": "new-brief",
+    "label": "New brief",
+    "group": "File",
+    "accelerator": "CmdOrCtrl+N",
+    "kind": "route",
+    "target": "/"
+  },
+  {
+    "id": "project-data",
+    "label": "Project data",
+    "group": "File",
+    "accelerator": "CmdOrCtrl+O",
+    "kind": "route",
+    "target": "/datasets"
+  },
+  {
+    "id": "settings",
+    "label": "Settings",
+    "group": "File",
+    "accelerator": "CmdOrCtrl+,",
+    "kind": "route",
+    "target": "/settings"
+  },
+  {
+    "id": "search",
+    "label": "Search LightBI",
+    "group": "Edit",
+    "accelerator": "CmdOrCtrl+K",
+    "kind": "ui",
+    "target": "command-palette"
+  },
+  {
+    "id": "toggle-sidebar",
+    "label": "Toggle sidebar",
+    "group": "View",
+    "accelerator": "CmdOrCtrl+B",
+    "kind": "ui",
+    "target": "toggle-sidebar"
+  },
+  {
+    "id": "home",
+    "label": "Home",
+    "group": "View",
+    "accelerator": "CmdOrCtrl+1",
+    "kind": "route",
+    "target": "/"
+  },
+  {
+    "id": "decision-briefs",
+    "label": "Decision briefs",
+    "group": "View",
+    "accelerator": "CmdOrCtrl+2",
+    "kind": "route",
+    "target": "/dashboards"
+  },
+  {
+    "id": "charts",
+    "label": "Charts",
+    "group": "View",
+    "accelerator": "CmdOrCtrl+3",
+    "kind": "route",
+    "target": "/charts"
+  },
+  {
+    "id": "datasets",
+    "label": "Datasets",
+    "group": "View",
+    "accelerator": "CmdOrCtrl+4",
+    "kind": "route",
+    "target": "/datasets"
+  },
+  {
+    "id": "sources",
+    "label": "Sources",
+    "group": "View",
+    "accelerator": "CmdOrCtrl+5",
+    "kind": "route",
+    "target": "/datasources"
+  },
+  {
+    "id": "advanced",
+    "label": "Advanced",
+    "group": "View",
+    "accelerator": "CmdOrCtrl+6",
+    "kind": "route",
+    "target": "/advanced"
+  },
+  {
+    "id": "check-updates",
+    "label": "Check for updates",
+    "group": "Help",
+    "accelerator": null,
+    "kind": "ui",
+    "target": "check-updates"
+  },
+  {
+    "id": "keyboard-shortcuts",
+    "label": "Keyboard shortcuts",
+    "group": "Help",
+    "accelerator": "CmdOrCtrl+/",
+    "kind": "ui",
+    "target": "keyboard-shortcuts"
+  },
+  {
+    "id": "documentation",
+    "label": "LightBI documentation",
+    "group": "Help",
+    "accelerator": "F1",
+    "kind": "url",
+    "target": "https://lightbi-next.thaiduy.digital/docs"
+  },
+  {
+    "id": "invite",
+    "label": "Invite to LightBI",
+    "group": "Help",
+    "accelerator": null,
+    "kind": "ui",
+    "target": "invite",
+    "nativeMenu": false
+  },
+  {
+    "id": "about",
+    "label": "About LightBI",
+    "group": "Help",
+    "accelerator": null,
+    "kind": "route",
+    "target": "/settings?section=general"
+  }
+]

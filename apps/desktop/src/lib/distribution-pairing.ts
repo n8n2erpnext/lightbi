@@ -1,4 +1,5 @@
 import { externalFetch } from './native-capabilities';
+import { clearNativeInstallationLifecycleReceipt, persistNativeInstallationLifecycleReceipt } from './native-runtime';
 import { assertSafeGenerationDistributionTarget } from './generation-manifest';
 const INSTALLATION_KEY = 'lightbi-installation-id';
 const TIER_KEY = 'lightbi-license-tier';
@@ -28,7 +29,10 @@ export async function pairLightBIInstallation(options?: {
 }): Promise<'basic' | 'pro' | null> {
   if (typeof localStorage === 'undefined' && !options?.storage) return null;
   const storage = options?.storage ?? localStorage;
-  if (storage.getItem(TELEMETRY_KEY) === 'disabled') return currentLicenseTier(storage);
+  if (storage.getItem(TELEMETRY_KEY) === 'disabled') {
+    void clearNativeInstallationLifecycleReceipt();
+    return currentLicenseTier(storage);
+  }
   const endpoint = lightBIDistributionEndpoint(options?.endpoint);
   const fetcher = options?.fetcher ?? externalFetch;
   const installationId = getOrCreateInstallationId(storage);
@@ -45,9 +49,17 @@ export async function pairLightBIInstallation(options?: {
       }),
     });
     if (!response.ok) return null;
-    const result = await response.json() as { tier?: string };
+    const result = await response.json() as { tier?: string; paired?: boolean };
     const tier = result.tier === 'pro' ? 'pro' : 'basic';
     storage.setItem(TIER_KEY, tier);
+    if (result.paired !== false) {
+      void persistNativeInstallationLifecycleReceipt({
+        installationId, endpoint,
+        appVersion: options?.version ?? import.meta.env.VITE_LIGHTBI_VERSION ?? '0.9.2-beta.7',
+        platform: options?.platform ?? navigator.platform ?? 'unknown',
+        environment: import.meta.env.MODE === 'test' ? 'test' : (import.meta.env.VITE_LIGHTBI_CHANNEL === 'internal' ? 'internal' : 'production'),
+      });
+    }
     return tier;
   } catch {
     return null;

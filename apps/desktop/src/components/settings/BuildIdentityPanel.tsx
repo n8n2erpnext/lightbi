@@ -1,5 +1,6 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { buildGenerationManifest } from '../../lib/generation-manifest';
+import { readNativeOsPublisherEvidence } from '../../lib/native-runtime';
 
 function shortSha(value: string): string {
   return /^[0-9a-f]{40}$/u.test(value) ? value.slice(0, 9) : value;
@@ -19,6 +20,8 @@ export type BuildIdentityEvidence = {
   installationStatus: 'valid' | 'absent' | 'invalid' | 'unavailable';
   installationCertificateId?: string | null;
   osPublisherStatus: 'verified' | 'not_verified' | 'not_applicable' | 'unavailable';
+  osPublisherThumbprint?: string | null;
+  osPublisherReason?: string | null;
 };
 
 const EMPTY_EVIDENCE: BuildIdentityEvidence = {
@@ -134,8 +137,21 @@ export function independentVerificationSurfaceUrl(
 
 export const BuildIdentityPanel: React.FC = () => {
   const generation = useMemo(() => buildGenerationManifest(), []);
-  const evidence = EMPTY_EVIDENCE;
-  const identity = useMemo(() => describeBuildIdentity(generation, evidence), [generation]);
+  const [evidence, setEvidence] = useState<BuildIdentityEvidence>(EMPTY_EVIDENCE);
+  useEffect(() => {
+    let active = true;
+    void readNativeOsPublisherEvidence().then((publisher) => {
+      if (!active) return;
+      setEvidence((current) => ({
+        ...current,
+        osPublisherStatus: publisher.status,
+        osPublisherThumbprint: publisher.signerThumbprint,
+        osPublisherReason: publisher.reason,
+      }));
+    });
+    return () => { active = false; };
+  }, []);
+  const identity = useMemo(() => describeBuildIdentity(generation, evidence), [generation, evidence]);
   const verifierUrl = independentVerificationSurfaceUrl(
     generation.channel,
     generation.distribution_origin,
@@ -157,7 +173,7 @@ export const BuildIdentityPanel: React.FC = () => {
         <div><span className="text-slate-400">Artifact digest</span><div className="font-semibold text-slate-800">{evidence.artifactSha256 ? shortSha(evidence.artifactSha256) : evidenceLabel(evidence.artifactDigestVerified, 'Matched', 'Mismatch')}</div></div>
         <div><span className="text-slate-400">REL verification</span><div className="font-semibold text-slate-800">{evidenceLabel(evidence.relVerified, 'Verified', 'Invalid')}</div></div>
         <div><span className="text-slate-400">Installation certificate</span><div className="font-semibold text-slate-800">{evidence.installationCertificateId ?? evidence.installationStatus}</div></div>
-        <div><span className="text-slate-400">OS publisher</span><div className="font-semibold text-slate-800">{evidence.osPublisherStatus.replaceAll('_', ' ')}</div></div>
+        <div><span className="text-slate-400">OS publisher</span><div className="font-semibold text-slate-800">{evidence.osPublisherStatus.replaceAll('_', ' ')}{evidence.osPublisherThumbprint ? ` · ${evidence.osPublisherThumbprint.slice(0, 12)}…` : ''}</div></div>
       </div>
       <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-slate-500">
         <span>Core source <span className="font-mono font-semibold text-slate-700">{shortSha(generation.core_commit)}</span></span>

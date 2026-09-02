@@ -38,6 +38,12 @@ type NativeProgress = {
 let manifestCheckPromise: Promise<void> | null = null;
 let preparePromise: Promise<void> | null = null;
 let updateOperationEpoch = 0;
+const AUTO_DOWNLOAD_KEY = "lightbi-auto-download-updates";
+
+export function autoDownloadUpdatesEnabled(storage: Pick<Storage, "getItem"> = localStorage): boolean {
+  return storage.getItem(AUTO_DOWNLOAD_KEY) !== "disabled";
+}
+
 
 function updateFailureMessage(cause: unknown, fallback: string): string {
   if (cause instanceof Error && cause.message.trim()) return cause.message.trim();
@@ -114,11 +120,13 @@ type UpdateStore = {
   checkedAt: number | null;
   dismissedVersion: string | null;
   qaSimulation: boolean;
+  autoDownload: boolean;
   check: (force?: boolean) => Promise<void>;
   prepare: () => Promise<void>;
   install: () => Promise<void>;
   dismiss: () => void;
   simulateForQa: () => Promise<void>;
+  setAutoDownload: (enabled: boolean) => void;
 };
 
 
@@ -166,6 +174,7 @@ export const useUpdateStore = create<UpdateStore>((set, get) => ({
   checkedAt: null,
   dismissedVersion: typeof localStorage !== "undefined" ? localStorage.getItem("lightbi-update-dismissed-version") : null,
   qaSimulation: false,
+  autoDownload: typeof localStorage !== "undefined" ? autoDownloadUpdatesEnabled(localStorage) : true,
   check: (force = false) => {
     if (!isNativeLightBI()) return Promise.resolve();
     if (manifestCheckPromise) return manifestCheckPromise;
@@ -216,7 +225,7 @@ export const useUpdateStore = create<UpdateStore>((set, get) => ({
           dismissedVersion: get().dismissedVersion === manifest.version ? get().dismissedVersion : null,
         });
         trackUpdateEvent("update_available");
-        await get().prepare();
+        if (get().autoDownload) await get().prepare();
       } catch (cause) {
         if (operation !== updateOperationEpoch) return;
         set({
@@ -332,6 +341,11 @@ export const useUpdateStore = create<UpdateStore>((set, get) => ({
     const version = get().manifest?.version ?? null;
     if (version && typeof localStorage !== "undefined") localStorage.setItem("lightbi-update-dismissed-version", version);
     set({ dismissedVersion: version });
+  },
+  setAutoDownload: (enabled) => {
+    if (typeof localStorage !== "undefined") localStorage.setItem(AUTO_DOWNLOAD_KEY, enabled ? "enabled" : "disabled");
+    set({ autoDownload: enabled });
+    if (enabled && get().status === "available") void get().prepare();
   },
   simulateForQa: async () => {
     if (buildGenerationManifest().channel !== "internal") return;

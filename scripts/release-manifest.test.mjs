@@ -9,6 +9,7 @@ import { validateWindowsPublisherEvidence } from './lib/windows-publisher-eviden
 
 const buildScript = resolve(import.meta.dirname, 'build-release-manifest.mjs');
 const releaseWorkflow = readFileSync(resolve(import.meta.dirname, '../.github/workflows/release.yml'), 'utf8');
+const nativeAcceptanceWorkflow = readFileSync(resolve(import.meta.dirname, '../.github/workflows/native-acceptance.yml'), 'utf8');
 const publisherCollector = readFileSync(resolve(import.meta.dirname, 'collect-windows-publisher-evidence.ps1'), 'utf8');
 const manifest = (version = '0.9.2-beta.7') => ({
   schema_version: 'lightbi.release.v1', product: 'digital.thaiduy.lightbi', version, channel: 'beta',
@@ -53,6 +54,22 @@ test('Beta workflow cannot promote itself to stable release authority', () => {
   assert.match(releaseWorkflow, /name: Windows Beta Release/u);
   assert.doesNotMatch(releaseWorkflow, /build-linux|LightBI-Linux-Debian-Beta/u);
   assert.match(releaseWorkflow, /s3:\/\/\$R2_BUCKET\/release\/lightbi\/latest\.json/u);
+});
+
+
+
+test('Windows native acceptance artifact is isolated from Production publication authority', () => {
+  assert.match(nativeAcceptanceWorkflow, /workflow_dispatch:/u);
+  assert.match(nativeAcceptanceWorkflow, /VITE_LIGHTBI_CHANNEL: internal/u);
+  assert.match(nativeAcceptanceWorkflow, /VITE_LIGHTBI_DISTRIBUTION_URL: https:\/\/lightbi-next\.thaiduy\.digital/u);
+  assert.match(nativeAcceptanceWorkflow, /VITE_LIGHTBI_PARENT_GENERATION_ID: g-2026-09-02-next-029/u);
+  assert.match(nativeAcceptanceWorkflow, /VITE_LIGHTBI_CONTROL_PLANE_COMMIT: 6936fc4272bc92cd1badc00b9256cfd912e4a9ad/u);
+  assert.match(nativeAcceptanceWorkflow, /VITE_LIGHTBI_TRUST_PHASE2A_HEAD: 10de4da8e551a46f93f7b62985a0a6e611581b8e/u);
+  assert.match(nativeAcceptanceWorkflow, /VITE_LIGHTBI_RELEASE_UPDATE_CHANNEL: internal/u);
+  assert.match(nativeAcceptanceWorkflow, /src\/lib\/native-runtime\.test\.ts/u);
+  assert.match(nativeAcceptanceWorkflow, /cargo test -p lightbi-tauri windows_publisher --target x86_64-pc-windows-msvc/u);
+  assert.match(nativeAcceptanceWorkflow, /production_authority = \$false/u);
+  assert.doesNotMatch(nativeAcceptanceWorkflow, /softprops\/action-gh-release|R2_ACCESS_KEY_ID|aws s3 cp/u);
 });
 
 test('records native Windows Authenticode evidence and keeps Beta non-authoritative', () => {

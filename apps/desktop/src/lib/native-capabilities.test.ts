@@ -1,11 +1,13 @@
 // @vitest-environment jsdom
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { invoke } from '@tauri-apps/api/core';
+import { openUrl } from '@tauri-apps/plugin-opener';
 import { isNativeLightBI } from './native-runtime';
-import { externalFetch, saveBlobWithUserChoice } from './native-capabilities';
+import { externalAnchorUrl, externalFetch, installNativeExternalLinkGuard, saveBlobWithUserChoice } from './native-capabilities';
 
 vi.mock('./native-runtime', () => ({ isNativeLightBI: vi.fn() }));
 vi.mock('@tauri-apps/api/core', () => ({ invoke: vi.fn() }));
+vi.mock('@tauri-apps/plugin-opener', () => ({ openUrl: vi.fn() }));
 
 describe('native capabilities', () => {
   beforeEach(() => {
@@ -13,6 +15,31 @@ describe('native capabilities', () => {
     vi.clearAllMocks();
     vi.mocked(isNativeLightBI).mockReturnValue(false);
     delete (window as any).showSaveFilePicker;
+  });
+
+  it('recognizes only external HTTPS and mail anchors', () => {
+    const external = document.createElement('a');
+    external.href = 'https://lightbi.thaiduy.digital/docs';
+    expect(externalAnchorUrl(external)).toBe('https://lightbi.thaiduy.digital/docs');
+    const mail = document.createElement('a');
+    mail.href = 'mailto:test@example.com';
+    expect(externalAnchorUrl(mail)).toBe('mailto:test@example.com');
+    const internal = document.createElement('a');
+    internal.href = '/settings';
+    expect(externalAnchorUrl(internal)).toBeNull();
+  });
+
+  it('keeps packaged external links out of the LightBI WebView', async () => {
+    vi.mocked(isNativeLightBI).mockReturnValue(true);
+    const dispose = installNativeExternalLinkGuard();
+    const anchor = document.createElement('a');
+    anchor.href = 'https://lightbi.thaiduy.digital/docs';
+    document.body.append(anchor);
+    const event = new MouseEvent('click', { bubbles: true, cancelable: true, button: 0 });
+    expect(anchor.dispatchEvent(event)).toBe(false);
+    await vi.waitFor(() => expect(openUrl).toHaveBeenCalledWith('https://lightbi.thaiduy.digital/docs'));
+    dispose();
+    anchor.remove();
   });
 
   it('treats Save As cancellation as cancellation instead of falling through to download', async () => {

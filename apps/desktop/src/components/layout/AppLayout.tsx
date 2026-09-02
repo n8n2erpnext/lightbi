@@ -3,17 +3,21 @@ import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { useAppRuntime } from "@lightbi/runtime";
 import {
   BarChart3,
-  ChevronLeft,
-  ChevronRight,
+  PanelLeftClose,
+  PanelLeftOpen,
   Database,
   FileText,
   FolderOpen,
   Home as HomeIcon,
   LogOut,
+  RefreshCw,
+  Search,
   Server,
   Settings,
   Sparkles,
   TerminalSquare,
+  UserPlus,
+  ChevronsUpDown,
 } from "lucide-react";
 import { cn } from "../../lib/utils";
 import { useUiLanguage } from "../../lib/ui-language";
@@ -25,9 +29,8 @@ import {
 import { useLightBIAccount } from "../../hooks/useLightBIAccount";
 import { useUpdateStore } from "../../stores/update-store";
 import { useAnnouncementStore } from "../../stores/announcement-store";
-import { UpdateNotificationMenu } from "./UpdateNotificationMenu";
-import { UpdateSidebarStatus } from "./UpdateSidebarStatus";
 import { buildGenerationManifest } from "../../lib/generation-manifest";
+import { DesktopCommandCenter, dispatchDesktopCommand } from "./DesktopCommandCenter";
 
 export const AppLayout: React.FC = () => {
   const location = useLocation();
@@ -115,6 +118,7 @@ export const AppLayout: React.FC = () => {
       <UiTranslationBoundary>
         <main className="flex h-screen w-screen overflow-hidden bg-[#fbfbfa] text-[#202123]">
           <Outlet />
+          <DesktopCommandCenter signedIn={Boolean(lightbiAccount.account)} accountLabel={lightbiAccount.account?.account.email} />
         </main>
       </UiTranslationBoundary>
     );
@@ -131,31 +135,29 @@ export const AppLayout: React.FC = () => {
           )}
         >
           {/* Header / Logo Area */}
-          <div className="flex h-[72px] items-center justify-between px-4">
-            <div className="flex min-w-0 items-center">
-              <img
-                src="/branding/lightbi-icon.svg"
-                alt=""
-                className="h-9 w-9 flex-shrink-0 drop-shadow-sm"
-              />
-              {isSidebarExpanded && (
-                <img
-                  src="/branding/lightbi-wordmark.svg"
-                  alt="LightBI"
-                  className="ml-3 hidden h-5 w-[76px] object-contain md:block"
-                />
-              )}
+          <div className="flex h-[64px] items-center gap-2 px-3">
+            <button
+              type="button"
+              onClick={toggleSidebar}
+              title={`${isSidebarExpanded ? t("Collapse sidebar") : t("Expand sidebar")} · Ctrl+B`}
+              aria-label={isSidebarExpanded ? t("Collapse sidebar") : t("Expand sidebar")}
+              className="hidden h-9 w-9 shrink-0 items-center justify-center rounded-lg text-black/55 transition hover:bg-white/80 hover:text-black md:inline-flex"
+            >
+              {isSidebarExpanded ? <PanelLeftClose className="h-[18px] w-[18px]" strokeWidth={1.6} /> : <PanelLeftOpen className="h-[18px] w-[18px]" strokeWidth={1.6} />}
+            </button>
+            <div className="flex min-w-0 flex-1 items-center">
+              <img src="/branding/lightbi-icon.svg" alt="" className="h-8 w-8 flex-shrink-0 drop-shadow-sm" />
+              {isSidebarExpanded && <img src="/branding/lightbi-wordmark.svg" alt="LightBI" className="ml-2.5 hidden h-5 w-[76px] object-contain md:block" />}
             </div>
-            {isSidebarExpanded && (
-              <div className="flex items-center gap-2">
-                {generation.channel === "internal" && <span title={generation.generation_id} className="hidden rounded-full bg-violet-100 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-violet-700 md:inline">NEXT</span>}
-                <UpdateNotificationMenu />
-              </div>
-            )}
+            {isSidebarExpanded && generation.channel === "internal" && <span title={generation.generation_id} className="hidden rounded-full bg-violet-100 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-violet-700 md:inline">NEXT</span>}
           </div>
 
           {/* Navigation */}
           <nav className="flex-1 overflow-y-auto px-3 py-4">
+            <button type="button" onClick={() => dispatchDesktopCommand("search")} title="Search LightBI · Ctrl+K" className={cn("mb-4 flex h-10 w-full items-center rounded-xl border border-black/8 bg-white/65 px-3 text-sm text-black/60 shadow-sm transition hover:bg-white hover:text-black", !isSidebarExpanded ? "justify-center" : "justify-center md:justify-start")}>
+              <Search className="h-4 w-4 shrink-0" strokeWidth={1.7} />
+              {isSidebarExpanded && <><span className="ml-3 hidden flex-1 text-left md:block">{t("Search")}</span><kbd className="hidden rounded border border-black/8 bg-white px-1.5 py-0.5 text-[10px] text-black/35 md:block">Ctrl K</kbd></>}
+            </button>
             {isSidebarExpanded && (
               <div className="mb-3 hidden px-2 text-[11px] font-medium text-black/40 md:block">
                 {t("Workspace")}
@@ -196,7 +198,18 @@ export const AppLayout: React.FC = () => {
 
           {/* Bottom Navigation */}
           <div className="flex flex-col gap-2 p-3">
-            {!isSidebarExpanded && <div className="flex justify-center"><UpdateNotificationMenu /></div>}
+            {["available", "downloading", "verifying", "ready", "installing", "failed"].includes(updater.status) && (
+              <NavLink
+                to="/settings?section=updates"
+                title={updater.status === "failed" ? "Update needs attention" : "LightBI update"}
+                className={cn("flex h-10 items-center rounded-xl px-3 text-xs font-semibold transition hover:bg-white", updater.status === "failed" ? "text-red-700" : "text-black/65", !isSidebarExpanded ? "justify-center" : "justify-center md:justify-start")}
+              >
+                <RefreshCw className={cn("h-4 w-4 shrink-0", ["downloading", "verifying", "installing"].includes(updater.status) && "animate-spin")} strokeWidth={1.7} />
+                {isSidebarExpanded && <span className="ml-3 hidden flex-1 md:block">{updater.status === "ready" ? "Update" : updater.status === "failed" ? "Update issue" : updater.status === "installing" ? "Installing update" : "Downloading update"}</span>}
+                {isSidebarExpanded && updater.status === "ready" && <span className="hidden h-2 w-2 rounded-full bg-red-500 md:block" />}
+                {isSidebarExpanded && typeof updater.progress === "number" && ["downloading", "verifying"].includes(updater.status) && <span className="hidden text-[10px] text-black/40 md:block">{Math.floor(updater.progress)}%</span>}
+              </NavLink>
+            )}
             <div ref={accountMenuRef} className="relative">
               {accountMenuOpen && (
                 <div
@@ -211,11 +224,9 @@ export const AppLayout: React.FC = () => {
                         lightbiAccount.account?.account.email ||
                         "LightBI Desktop"}
                     </div>
-                    <div className="truncate text-xs text-black/45">
-                      {lightbiAccount.account
-                        ? `${lightbiAccount.account.entitlement.tier.toUpperCase()} · ${lightbiAccount.account.account.email}`
-                        : t("BA decision workspace")}
-                    </div>
+                    {lightbiAccount.account && <div className="truncate text-xs text-black/45">
+                      {`${lightbiAccount.account.entitlement.tier.toUpperCase()} · ${lightbiAccount.account.account.email}`}
+                    </div>}
                   </div>
                   <NavLink
                     to="/datasets"
@@ -225,14 +236,15 @@ export const AppLayout: React.FC = () => {
                     <FolderOpen className="h-4 w-4" />
                     {t("Project data")}
                   </NavLink>
-                  <NavLink
-                    to="/settings"
-                    onClick={() => setAccountMenuOpen(false)}
-                    className="flex h-10 items-center gap-3 rounded-xl px-3 text-sm text-black/75 hover:bg-black/[0.05]"
-                  >
-                    <Settings className="h-4 w-4" />
-                    {t("Settings")}
+                  <NavLink to="/settings" onClick={() => setAccountMenuOpen(false)} className="flex h-10 items-center gap-3 rounded-xl px-3 text-sm text-black/75 hover:bg-black/[0.05]">
+                    <Settings className="h-4 w-4" />{t("Settings")}
                   </NavLink>
+                  <NavLink to="/settings?section=updates" onClick={() => setAccountMenuOpen(false)} className="flex h-10 items-center gap-3 rounded-xl px-3 text-sm text-black/75 hover:bg-black/[0.05]">
+                    <RefreshCw className="h-4 w-4" /><span className="flex-1">{t("Updates")}</span>{updater.status === "ready" && <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-700">READY</span>}
+                  </NavLink>
+                  {lightbiAccount.account && <button type="button" onClick={() => { setAccountMenuOpen(false); dispatchDesktopCommand("invite"); }} className="flex h-10 w-full items-center gap-3 rounded-xl px-3 text-sm text-black/75 hover:bg-black/[0.05]">
+                    <UserPlus className="h-4 w-4" />Invite to LightBI
+                  </button>}
                   {lightbiAccount.account ? (
                     <button
                       type="button"
@@ -276,22 +288,11 @@ export const AppLayout: React.FC = () => {
                         <Sparkles className="h-4 w-4" strokeWidth={1.8} />
                       )}
                     </div>
-                    <div className="min-w-0">
-                      <div className="truncate text-[13px] font-medium text-[#202123]">
-                        {lightbiAccount.account?.account.display_name ||
-                          lightbiAccount.account?.account.email ||
-                          "LightBI Desktop"}
-                      </div>
-                      <div className="truncate text-[11px] text-black/45">
-                        {lightbiAccount.account
-                          ? `${lightbiAccount.account.entitlement.tier.toUpperCase()} · ${lightbiAccount.account.account.email}`
-                          : t("BA decision workspace")}
-                      </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="truncate text-[13px] font-medium text-[#202123]">{lightbiAccount.account?.account.display_name || lightbiAccount.account?.account.email || "LightBI Desktop"}</div>
+                      {lightbiAccount.account && <div className="truncate text-[11px] text-black/45">{lightbiAccount.account.account.email}</div>}
                     </div>
-                  </div>
-                  <div className="flex h-8 items-center gap-2 rounded-md px-2 text-[12px] font-medium text-black/65">
-                    <FolderOpen className="h-3.5 w-3.5" strokeWidth={1.5} />
-                    {lightbiAccount.account ? t("Settings") : t("Project data")}
+                    <ChevronsUpDown className="h-4 w-4 shrink-0 text-black/35" strokeWidth={1.6} />
                   </div>
                 </button>
               ) : (
@@ -314,24 +315,9 @@ export const AppLayout: React.FC = () => {
                   )}
                 </button>
               )}
-              <UpdateSidebarStatus expanded={isSidebarExpanded} />
             </div>
           </div>
 
-          {/* Toggle Button */}
-          <button
-            onClick={toggleSidebar}
-            className="absolute -right-3 top-[86px] z-10 hidden rounded-full border border-black/10 bg-white p-1.5 text-black/45 shadow-sm transition-colors hover:text-[#202123] focus:outline-none md:block"
-            aria-label={
-              isSidebarExpanded ? t("Collapse sidebar") : t("Expand sidebar")
-            }
-          >
-            {isSidebarExpanded ? (
-              <ChevronLeft className="w-3 h-3" />
-            ) : (
-              <ChevronRight className="w-3 h-3" />
-            )}
-          </button>
         </aside>
 
         {/* Main Content */}
@@ -343,6 +329,7 @@ export const AppLayout: React.FC = () => {
             <Outlet />
           </div>
         </main>
+        <DesktopCommandCenter signedIn={Boolean(lightbiAccount.account)} accountLabel={lightbiAccount.account?.account.email} />
       </div>
     </UiTranslationBoundary>
   );

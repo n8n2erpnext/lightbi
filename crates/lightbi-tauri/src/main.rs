@@ -1,9 +1,16 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+mod desktop_menu;
+mod installation_lifecycle;
+mod navigation_guard;
+mod windows_publisher;
+
 use axum::{body::Body, Router};
 use http_body_util::BodyExt;
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
+#[cfg(target_os = "windows")]
+use std::path::PathBuf;
 use std::{
     collections::HashMap,
     net::IpAddr,
@@ -11,8 +18,6 @@ use std::{
     sync::{Arc, Mutex},
     time::Duration,
 };
-#[cfg(target_os = "windows")]
-use std::path::PathBuf;
 use tauri::{AppHandle, Emitter, Manager, State};
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tower::ServiceExt;
@@ -72,6 +77,10 @@ fn backend_status(state: State<'_, EmbeddedCore>) -> bool {
     state.0.lock().map(|core| core.is_some()).unwrap_or(false)
 }
 
+#[tauri::command]
+fn os_publisher_evidence() -> windows_publisher::OsPublisherEvidence {
+    windows_publisher::current_os_publisher_evidence()
+}
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -92,7 +101,8 @@ struct NativeHttpResponse {
 }
 
 fn native_http_url(value: &str) -> Result<reqwest::Url, String> {
-    let url = reqwest::Url::parse(value).map_err(|error| format!("Invalid external URL: {error}"))?;
+    let url =
+        reqwest::Url::parse(value).map_err(|error| format!("Invalid external URL: {error}"))?;
     let local_debug_http = cfg!(debug_assertions)
         && url.scheme() == "http"
         && matches!(url.host_str(), Some("localhost" | "127.0.0.1" | "::1"));
@@ -105,8 +115,20 @@ fn native_http_url(value: &str) -> Result<reqwest::Url, String> {
     if let Some(host) = url.host_str() {
         if let Ok(ip) = host.parse::<IpAddr>() {
             let blocked = match ip {
-                IpAddr::V4(ip) => ip.is_private() || ip.is_loopback() || ip.is_link_local() || ip.is_unspecified() || ip.is_multicast(),
-                IpAddr::V6(ip) => ip.is_loopback() || ip.is_unspecified() || ip.is_multicast() || ip.is_unique_local() || ip.is_unicast_link_local(),
+                IpAddr::V4(ip) => {
+                    ip.is_private()
+                        || ip.is_loopback()
+                        || ip.is_link_local()
+                        || ip.is_unspecified()
+                        || ip.is_multicast()
+                }
+                IpAddr::V6(ip) => {
+                    ip.is_loopback()
+                        || ip.is_unspecified()
+                        || ip.is_multicast()
+                        || ip.is_unique_local()
+                        || ip.is_unicast_link_local()
+                }
             };
             if blocked && !local_debug_http {
                 return Err("Private or local network targets are not allowed for native external requests.".to_string());
@@ -121,7 +143,15 @@ async fn native_http_request(request: NativeHttpRequest) -> Result<NativeHttpRes
     let url = native_http_url(&request.url)?;
     let method = reqwest::Method::from_bytes(request.method.as_bytes())
         .map_err(|_| "Unsupported HTTP method.".to_string())?;
-    if !matches!(method, reqwest::Method::GET | reqwest::Method::POST | reqwest::Method::PUT | reqwest::Method::PATCH | reqwest::Method::DELETE | reqwest::Method::HEAD) {
+    if !matches!(
+        method,
+        reqwest::Method::GET
+            | reqwest::Method::POST
+            | reqwest::Method::PUT
+            | reqwest::Method::PATCH
+            | reqwest::Method::DELETE
+            | reqwest::Method::HEAD
+    ) {
         return Err("Unsupported HTTP method.".to_string());
     }
     let client = reqwest::Client::builder()
@@ -141,19 +171,37 @@ async fn native_http_request(request: NativeHttpRequest) -> Result<NativeHttpRes
     if let Some(body) = request.body {
         builder = builder.body(body);
     }
-    let response = builder.send().await.map_err(|error| format!("Native HTTP request failed: {error}"))?;
+    let response = builder
+        .send()
+        .await
+        .map_err(|error| format!("Native HTTP request failed: {error}"))?;
     let status = response.status().as_u16();
     if response.content_length().unwrap_or(0) > 256 * 1024 * 1024 {
         return Err("External response exceeds the 256 MiB native safety boundary.".to_string());
     }
-    let headers = response.headers().iter().filter_map(|(name, value)| {
-        value.to_str().ok().map(|value| (name.to_string(), value.to_string()))
-    }).collect();
-    let body = response.bytes().await.map_err(|error| format!("Could not read native HTTP response: {error}"))?.to_vec();
+    let headers = response
+        .headers()
+        .iter()
+        .filter_map(|(name, value)| {
+            value
+                .to_str()
+                .ok()
+                .map(|value| (name.to_string(), value.to_string()))
+        })
+        .collect();
+    let body = response
+        .bytes()
+        .await
+        .map_err(|error| format!("Could not read native HTTP response: {error}"))?
+        .to_vec();
     if body.len() > 256 * 1024 * 1024 {
         return Err("External response exceeds the 256 MiB native safety boundary.".to_string());
     }
-    Ok(NativeHttpResponse { status, headers, body })
+    Ok(NativeHttpResponse {
+        status,
+        headers,
+        body,
+    })
 }
 
 #[derive(Debug, Deserialize)]
@@ -181,29 +229,59 @@ fn safe_suggested_file_name(value: &str) -> String {
         .filter(|name| !name.trim().is_empty())
         .unwrap_or("LightBI-export")
         .chars()
-        .filter(|character| !matches!(character, '<' | '>' | ':' | '"' | '/' | '\\' | '|' | '?' | '*'))
+        .filter(|character| {
+            !matches!(
+                character,
+                '<' | '>' | ':' | '"' | '/' | '\\' | '|' | '?' | '*'
+            )
+        })
         .take(180)
         .collect()
 }
 
 #[tauri::command]
-async fn save_export_file(request: SaveExportFileRequest) -> Result<Option<SavedExportFile>, String> {
+async fn save_export_file(
+    request: SaveExportFileRequest,
+) -> Result<Option<SavedExportFile>, String> {
     let suggested_name = safe_suggested_file_name(&request.suggested_name);
-    let description = if request.description.trim().is_empty() { "LightBI export".to_string() } else { request.description.trim().to_string() };
-    let extensions: Vec<String> = request.extensions.into_iter()
+    let description = if request.description.trim().is_empty() {
+        "LightBI export".to_string()
+    } else {
+        request.description.trim().to_string()
+    };
+    let extensions: Vec<String> = request
+        .extensions
+        .into_iter()
         .map(|value| value.trim_start_matches('.').to_ascii_lowercase())
-        .filter(|value| !value.is_empty() && value.len() <= 12 && value.chars().all(|character| character.is_ascii_alphanumeric()))
+        .filter(|value| {
+            !value.is_empty()
+                && value.len() <= 12
+                && value
+                    .chars()
+                    .all(|character| character.is_ascii_alphanumeric())
+        })
         .collect();
     let extension_refs: Vec<&str> = extensions.iter().map(String::as_str).collect();
     let mut dialog = rfd::AsyncFileDialog::new().set_file_name(&suggested_name);
     if !extension_refs.is_empty() {
         dialog = dialog.add_filter(&description, &extension_refs);
     }
-    let Some(handle) = dialog.save_file().await else { return Ok(None); };
+    let Some(handle) = dialog.save_file().await else {
+        return Ok(None);
+    };
     let path = handle.path().to_path_buf();
-    tokio::fs::write(&path, request.bytes).await.map_err(|error| format!("Could not save export: {error}"))?;
-    let file_name = path.file_name().and_then(|name| name.to_str()).unwrap_or(&suggested_name).to_string();
-    Ok(Some(SavedExportFile { file_name, path: path.to_string_lossy().to_string() }))
+    tokio::fs::write(&path, request.bytes)
+        .await
+        .map_err(|error| format!("Could not save export: {error}"))?;
+    let file_name = path
+        .file_name()
+        .and_then(|name| name.to_str())
+        .unwrap_or(&suggested_name)
+        .to_string();
+    Ok(Some(SavedExportFile {
+        file_name,
+        path: path.to_string_lossy().to_string(),
+    }))
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Eq)]
@@ -330,7 +408,10 @@ async fn valid_staged_update(
                 .to_string(),
         );
     }
-    if metadata != *expected || !metadata.integrity_checked || !valid_update_filename(&metadata.artifact) {
+    if metadata != *expected
+        || !metadata.integrity_checked
+        || !valid_update_filename(&metadata.artifact)
+    {
         return Ok(None);
     }
     let artifact_path = directory.join(&metadata.artifact);
@@ -510,11 +591,15 @@ async fn prepare_integrity_checked_update(
     let actual = format!("{:x}", digest.finalize());
     if !actual.eq_ignore_ascii_case(&sha256) {
         let _ = tokio::fs::remove_file(&partial_path).await;
-        return Err("Update integrity check failed. The partial artifact was discarded.".to_string());
+        return Err(
+            "Update integrity check failed. The partial artifact was discarded.".to_string(),
+        );
     }
     tokio::fs::rename(&partial_path, &artifact_path)
         .await
-        .map_err(|error| format!("Could not atomically stage the integrity-checked update: {error}"))?;
+        .map_err(|error| {
+            format!("Could not atomically stage the integrity-checked update: {error}")
+        })?;
     let metadata_bytes = serde_json::to_vec_pretty(&expected)
         .map_err(|error| format!("Could not serialize staged update metadata: {error}"))?;
     tokio::fs::write(&metadata_partial, metadata_bytes)
@@ -540,7 +625,6 @@ async fn prepare_integrity_checked_update(
         ready: true,
     })
 }
-
 
 #[cfg(target_os = "windows")]
 fn launch_windows_installer_with_elevation(path: &Path) -> Result<(), String> {
@@ -618,7 +702,9 @@ async fn apply_prepared_update(
         std::process::Command::new("xdg-open")
             .arg(&path)
             .spawn()
-            .map_err(|error| format!("Could not open the integrity-checked Debian package: {error}"))?;
+            .map_err(|error| {
+                format!("Could not open the integrity-checked Debian package: {error}")
+            })?;
         Ok(())
     }
     #[cfg(not(any(target_os = "windows", target_os = "linux")))]
@@ -638,11 +724,15 @@ fn error_response(status: u16, message: &str) -> tauri::http::Response<Vec<u8>> 
 }
 
 fn main() {
+    if installation_lifecycle::handle_uninstall_tracking_arg() {
+        return;
+    }
     let embedded_core = EmbeddedCore(Arc::new(Mutex::new(None)));
     let protocol_core = embedded_core.clone();
     let setup_core = embedded_core.clone();
 
     tauri::Builder::default()
+        .plugin(navigation_guard::init())
         .plugin(tauri_plugin_opener::init())
         .register_asynchronous_uri_scheme_protocol(
             "lightbi",
@@ -717,12 +807,19 @@ fn main() {
                 .map_err(|_| "Could not initialize the LightBI core state.".to_string())? =
                 Some(InProcessCore { runtime, router });
             app.manage(setup_core.clone());
+            desktop_menu::install_native_menu(app.handle())?;
             Ok(())
+        })
+        .on_menu_event(|app, event| {
+            desktop_menu::forward_native_menu_event(app, event.id().as_ref())
         })
         .invoke_handler(tauri::generate_handler![
             runtime_config,
             license_state,
             backend_status,
+            os_publisher_evidence,
+            installation_lifecycle::store_installation_lifecycle_receipt,
+            installation_lifecycle::clear_installation_lifecycle_receipt,
             native_http_request,
             save_export_file,
             account_session_token,

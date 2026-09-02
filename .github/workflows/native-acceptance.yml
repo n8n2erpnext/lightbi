@@ -13,6 +13,9 @@ jobs:
   windows-native-acceptance:
     runs-on: windows-latest
     timeout-minutes: 90
+    env:
+      LIGHTBI_ACCEPTANCE_VERSION: 0.9.2-next.r1p12.${{ github.run_number }}
+      LIGHTBI_ACCEPTANCE_GENERATION: g-actions-r1p12-${{ github.run_id }}-${{ github.run_attempt }}
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -34,34 +37,37 @@ jobs:
         run: |
           pnpm test:release-contract
           pnpm test:public-boundary
-          pnpm --dir apps/desktop exec vitest run src/stores/update-store.test.ts src/components/settings/UpdateSettingsPanel.test.tsx src/components/settings/BuildIdentityPanel.test.tsx
+          pnpm --dir apps/desktop exec vitest run src/stores/update-store.test.ts src/components/settings/UpdateSettingsPanel.test.tsx src/components/settings/BuildIdentityPanel.test.tsx src/lib/native-runtime.test.ts
       - name: Generate branded application icons
         shell: pwsh
         run: |
           pnpm dlx @tauri-apps/cli@2.11.4 icon apps/desktop/public/branding/lightbi-app-icon.png --output crates/lightbi-tauri/icons
           node scripts/validate-native-icons.mjs
-      - name: Verify staged updater integrity gates
-        run: cargo test -p lightbi-tauri updater_tests --target x86_64-pc-windows-msvc
-      - name: Build Windows acceptance installer
+      - name: Verify native updater and Windows publisher gates
+        shell: pwsh
+        run: |
+          cargo test -p lightbi-tauri updater_tests --target x86_64-pc-windows-msvc
+          cargo test -p lightbi-tauri windows_publisher --target x86_64-pc-windows-msvc
+      - name: Build Windows R1-P12 NEXT acceptance installer
         working-directory: crates/lightbi-tauri
         shell: pwsh
         env:
           VITE_LIGHTBI_DISTRIBUTION_URL: https://lightbi-next.thaiduy.digital
-          VITE_LIGHTBI_VERSION: 0.9.2-beta.7-next.25-native.${{ github.run_number }}
-          VITE_LIGHTBI_GENERATION_ID: g-2026-09-01-next-025
-          VITE_LIGHTBI_PARENT_GENERATION_ID: g-2026-09-01-next-024
+          VITE_LIGHTBI_GENERATION_ID: ${{ env.LIGHTBI_ACCEPTANCE_GENERATION }}
+          VITE_LIGHTBI_PARENT_GENERATION_ID: g-2026-09-02-next-029
           VITE_LIGHTBI_CHANNEL: internal
           VITE_LIGHTBI_CORE_COMMIT: ${{ github.sha }}
-          VITE_LIGHTBI_CONTROL_PLANE_COMMIT: 2b72e91b32b7f956eb9f1fe26bd4ec39eb4b76d0
-          VITE_LIGHTBI_CONTROL_PLANE_SCHEMA_VERSION: 065_marketing_newsletter_mail
-          VITE_LIGHTBI_TEST_PACK_VERSION: next-025-native-boundary-acceptance
+          VITE_LIGHTBI_CONTROL_PLANE_COMMIT: 6936fc4272bc92cd1badc00b9256cfd912e4a9ad
+          VITE_LIGHTBI_CONTROL_PLANE_SCHEMA_VERSION: 067_catalog_quarterly_pricing
+          VITE_LIGHTBI_TEST_PACK_VERSION: r1p12-windows-native-acceptance
           VITE_LIGHTBI_TRUST_STATUS: phase2a_unfrozen
+          VITE_LIGHTBI_TRUST_PHASE2A_HEAD: 10de4da8e551a46f93f7b62985a0a6e611581b8e
           VITE_LIGHTBI_RELEASE_UPDATE_CHANNEL: internal
-          VITE_LIGHTBI_ANALYTICS_NAMESPACE: internal-native-acceptance
-          VITE_LIGHTBI_RELEASE_NAMESPACE: internal/lightbi-next
+          VITE_LIGHTBI_ANALYTICS_NAMESPACE: internal/r1p12-windows-native-acceptance
+          VITE_LIGHTBI_RELEASE_NAMESPACE: internal/lightbi/r1p12-windows-native-acceptance
           VITE_LIGHTBI_SOURCE_BRANCH: ${{ github.ref_name }}
           VITE_LIGHTBI_SOURCE_COMMIT: ${{ github.sha }}
-          VITE_LIGHTBI_BUILDER: github-actions
+          VITE_LIGHTBI_BUILDER: github-actions/windows-native-acceptance
           VITE_LIGHTBI_INFRA_DATABASE_SCOPE: internal
           VITE_LIGHTBI_INFRA_REDIS_SCOPE: internal
           VITE_LIGHTBI_INFRA_DATA_SCOPE: internal
@@ -69,32 +75,46 @@ jobs:
           VITE_LIGHTBI_INFRA_RELEASES_SCOPE: internal
           VITE_LIGHTBI_INFRA_INTEGRATIONS_SCOPE: internal
         run: |
+          $env:VITE_LIGHTBI_VERSION = $env:LIGHTBI_ACCEPTANCE_VERSION
           $env:VITE_LIGHTBI_BUILD_TIMESTAMP = (Get-Date).ToUniversalTime().ToString("o")
-          pnpm dlx @tauri-apps/cli@2.11.4 build --target x86_64-pc-windows-msvc --config tauri.windows.conf.json
-      - name: Generate checksum and provenance
+          @{ version = $env:LIGHTBI_ACCEPTANCE_VERSION } | ConvertTo-Json | Set-Content tauri.acceptance.conf.json
+          pnpm dlx @tauri-apps/cli@2.11.4 build --target x86_64-pc-windows-msvc --config tauri.windows.conf.json --config tauri.acceptance.conf.json
+      - name: Generate checksum, publisher evidence and provenance
         shell: pwsh
         run: |
           $installer = Get-ChildItem "target/x86_64-pc-windows-msvc/release/bundle/nsis/*.exe" | Select-Object -First 1
           if (-not $installer) { throw "NSIS installer was not produced" }
-          $hash = (Get-FileHash -Algorithm SHA256 $installer.FullName).Hash.ToLowerInvariant()
-          "$hash  $($installer.Name)" | Set-Content -NoNewline "$($installer.FullName).sha256"
+          $name = "LightBI-NEXT-$env:LIGHTBI_ACCEPTANCE_VERSION-x64-setup.exe"
+          $normalized = Join-Path $installer.Directory.FullName $name
+          Move-Item $installer.FullName $normalized -Force
+          $hash = (Get-FileHash -Algorithm SHA256 $normalized).Hash.ToLowerInvariant()
+          "$hash  $name" | Set-Content -NoNewline "$normalized.sha256"
+          $publisher = "$normalized.publisher.json"
+          ./scripts/collect-windows-publisher-evidence.ps1 -Installer $normalized -Output $publisher
+          node scripts/validate-windows-publisher-evidence.mjs --evidence $publisher --mode beta --expected-sha256 $hash
+          $publisherEvidence = Get-Content $publisher -Raw | ConvertFrom-Json
           $evidence = [ordered]@{
-            schema = "lightbi.native-acceptance.v1"
+            schema = "lightbi.native-acceptance.v2"
+            version = $env:LIGHTBI_ACCEPTANCE_VERSION
+            generation_id = $env:LIGHTBI_ACCEPTANCE_GENERATION
             source_sha = "${{ github.sha }}"
             source_ref = "${{ github.ref_name }}"
+            control_plane_sha = "6936fc4272bc92cd1badc00b9256cfd912e4a9ad"
             run_id = "${{ github.run_id }}"
             run_attempt = "${{ github.run_attempt }}"
-            installer = $installer.Name
+            installer = $name
             sha256 = $hash
-            unsigned = $true
+            publisher_status = $publisherEvidence.signature_status
+            production_authority = $false
           }
-          $evidence | ConvertTo-Json | Set-Content "target/x86_64-pc-windows-msvc/release/bundle/nsis/native-acceptance.json"
+          $evidence | ConvertTo-Json | Set-Content "$($installer.Directory.FullName)/native-acceptance.json"
       - uses: actions/upload-artifact@v4
         with:
-          name: LightBI-Windows-Native-Acceptance
+          name: LightBI-Windows-R1P12-Native-Acceptance
           retention-days: 14
           path: |
             target/x86_64-pc-windows-msvc/release/bundle/nsis/*.exe
             target/x86_64-pc-windows-msvc/release/bundle/nsis/*.sha256
+            target/x86_64-pc-windows-msvc/release/bundle/nsis/*.publisher.json
             target/x86_64-pc-windows-msvc/release/bundle/nsis/native-acceptance.json
           if-no-files-found: error
