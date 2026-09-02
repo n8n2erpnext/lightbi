@@ -1468,3 +1468,12 @@ R1-P0 documentation/integrity closure verified 1,243 local links with zero missi
 - R1-P11 WIP is paused at clean base `31fa542...`; its uncommitted attestation/delivery paths remain in the existing private worktree. CLI implementation will use a separate clean worktree. Production remains untouched.
 
 - 2026-09-02: refined `cli-lightbi` Phase A visual acceptance before further implementation: Rust/Ratatui/Crossterm presentation, responsive btop-quality dashboard, realtime refresh, keyboard navigation and modal overlays; retained the TS/Node collector as the only local Trust-verification bridge.
+
+## 2026-09-02 — `cli-lightbi` Phase A Ratatui operator console closes machine acceptance
+
+- Implemented isolated read-only console on `codex/cli-lightbi-signer-console-v0.1`; final source `a4d8ae69d28eec9cc24a6ac9edac582ef6ab4a9f`. Rust/Ratatui owns the polished TUI while the TypeScript/Node collector keeps the existing exact Trust verification/UDS read path.
+- TUI acceptance: bordered responsive btop-style hierarchy, semantic color, explicit NEXT/Internal identity, REL/ATT/ENT/PRO + health + audit panels, two-second refresh, keyboard navigation, issuer/doctor/audit/help modals, 120x38 ↔ 76x24 live resize and clean PTY quit.
+- Security/regression gates PASS: Node 15/15, Rust 3/3 + Clippy, signer 6/6, attestation/P10 12/12, Distribution 193/193. Actual TEST bearer-token and TEST Root PEM bytes are absent from CLI source/build/binary; dependency review contains no web/HTTP/async/crypto authority stack.
+- Operational negatives PASS: signer stop makes TUI `DATA STALE` and command mode exit 2; service restores active; UDS 0644 is rejected and 0600 restores cleanly; rotate/revoke/sign/raw-sign/`--skip-mfa` commands all reject and signed keyset SHA remains unchanged.
+- Immutable installed binary SHA-256 `02619735a1965ba19c2deb95d683430749d92c6178dca6af52c2e6fcdaed40b1`; final `doctor` is green. Signer image/boundary is unchanged at `sha256:8dcb8e96feda93bb54c747ced89da02176dc6ad64b425730dab7930561bac0e2` and no CLI TCP/web listener exists. Production was not mutated.
+- Per plan, STOP before Phase B/C/D. Operator MFA and issuer lifecycle mutations remain unauthorized/unimplemented. R1-P11 WIP stays paused separately.

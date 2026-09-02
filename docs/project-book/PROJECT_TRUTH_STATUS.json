@@ -215,6 +215,22 @@
       "phase2aHead": "10de4da8e551a46f93f7b62985a0a6e611581b8e",
       "freezeApproved": false,
       "signerBlocked": true
+    },
+    "cliLightbi": {
+      "branch": "codex/cli-lightbi-signer-console-v0.1",
+      "head": "a4d8ae69d28eec9cc24a6ac9edac582ef6ab4a9f",
+      "trustContractCommit": "10de4da8e551a46f93f7b62985a0a6e611581b8e",
+      "phaseA": "machine_verified_installed",
+      "rustBinarySha256": "02619735a1965ba19c2deb95d683430749d92c6178dca6af52c2e6fcdaed40b1",
+      "readOnly": true,
+      "nodeTestsPassed": 15,
+      "rustTuiTestsPassed": 3,
+      "signerRegressionPassed": 6,
+      "attestationRegressionPassed": 12,
+      "distributionRegressionPassed": 193,
+      "operatorMfaImplemented": false,
+      "mutationsImplemented": false,
+      "productionMutated": false
     }
   },
   "implementationCandidates": {
@@ -891,7 +907,7 @@
     "r1p8": "production_blocked_by_r1p6_next_rehearsal_pass",
     "r1p9": "production_blocked_by_r1p6_next_rehearsal_pass_request_wire_not_frozen",
     "r1p10": "production_blocked_by_r1p6_next_rehearsal_pass",
-    "cliLightbi": "phase_a_read_only_operator_console_authorized_not_implemented"
+    "cliLightbi": "phase_a_v0_1_machine_verified_read_only_stop_before_phase_b_c_d"
   },
   "optionalCommerceRevenueMirror": {
     "provider": "paddle",
