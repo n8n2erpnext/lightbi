@@ -785,7 +785,9 @@
       "productionIssuerSigner": "online_allowed_r1p7_hardened_prefer_private_1x1_vps_or_isolated_arm",
       "productionRootAllowedInOnlineSigner": false,
       "enginePromotionCarriesTrustMaterial": false,
-      "approvedDate": "2026-09-02"
+      "approvedDate": "2026-09-02",
+      "nextTestSignerPreFreezeAllowed": true,
+      "productionAuthorityStillFreezeGated": true
     }
   },
   "roadTo1_0": {
