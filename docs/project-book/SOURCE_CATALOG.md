@@ -4,11 +4,11 @@
 
 ## Snapshot
 
-- Date: **2026-09-01**
-- Branch: `docs/project-library-cleanup-20260829`
-- HEAD: `652853f605682b435af19a97645bf7cc037c6faf`
+- Date: **2026-09-02**
+- Branch: `docs/cli-lightbi-signer-plan-20260902`
+- HEAD: `ec8ed7bb3a6e133db9c7c915f5b2fab74301fa6e`
 - Worktree dirty while generated: **true**
-- Total indexed sources: **933** (516 Markdown / 417 JSON)
+- Total indexed sources: **934** (517 Markdown / 417 JSON)
 - JSON under `docs/`: **354**
 
 For old paths, use [`PATH_MIGRATION_INDEX.md`](./PATH_MIGRATION_INDEX.md) and [`../history/LEGACY_ROOT_INDEX.md`](../history/LEGACY_ROOT_INDEX.md).
@@ -670,8 +670,9 @@ For old paths, use [`PATH_MIGRATION_INDEX.md`](./PATH_MIGRATION_INDEX.md) and [`
 ## historical-provenance
 
 - [`docs/history/agent/plans/AGENT_PLAN_ROAD_TO_1_0_2026-08-31.md`](../../docs/history/agent/plans/AGENT_PLAN_ROAD_TO_1_0_2026-08-31.md) — LightBI Road to 1.0 Execution Plan — 2026-08-31; `11529` bytes; SHA-256 `ca11436377cc954ebe540539338cd42d5572398783b64712fcceca70949e320d`
+- [`docs/history/agent/plans/AGENT_PLAN_CLI_LIGHTBI_SIGNER_OPERATOR_CONSOLE.md`](../../docs/history/agent/plans/AGENT_PLAN_CLI_LIGHTBI_SIGNER_OPERATOR_CONSOLE.md) — `cli-lightbi signer` Operator Console Plan; `16336` bytes; SHA-256 `c8dc02b58b8f0b7f6858cd1dfb5a74419fbcd785b942d9e54064d43a2ce9ab15`
 - [`docs/history/LEGACY_ROOT_INDEX.md`](../../docs/history/LEGACY_ROOT_INDEX.md) — Legacy Root Documentation Index; `33743` bytes; SHA-256 `e662adb190bc6e9d9b598d4d1c421423376931d186aafb53c15cc4f9d25a3385`
-- [`docs/history/README.md`](../../docs/history/README.md) — Historical Documentation; `1764` bytes; SHA-256 `58060865d3938943ef9a415e39457280481d8d9b78a3f4ceb7e017a60c343052`
+- [`docs/history/README.md`](../../docs/history/README.md) — Historical Documentation; `1764` bytes; SHA-256 `757b1cf4524f9c791f015206f68ab30830079a4aeeafae540c705af84acf8603`
 - [`docs/history/agent/contracts/CODEX_QA_ORCHESTRATION_CONTRACT.md`](../../docs/history/agent/contracts/CODEX_QA_ORCHESTRATION_CONTRACT.md) — Codex QA Orchestration Contract; `5244` bytes; SHA-256 `3926f159280b943b64689f2846aab12d166e9ebe05d8a4d8192819eeeeb0b69b`
 - [`docs/history/agent/contracts/GEMINI.md`](../../docs/history/agent/contracts/GEMINI.md) — Gemini Coordination Notes; `825` bytes; SHA-256 `d786e772d19fc9b5870a870aa59c0f3c8f2223705703c91289bbc42714558a08`
 - [`docs/history/agent/handoffs/AGENT_HANDOFF.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF.md) — Agent Handoff: understanding-next UI Wiring — 2026-06-16; `200479` bytes; SHA-256 `d2134d24f82369969635bc60b3af340e98fa8a1db1d6a4ccfe9e4dfa88f87c2a`

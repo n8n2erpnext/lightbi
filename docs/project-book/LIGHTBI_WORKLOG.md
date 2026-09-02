@@ -1459,3 +1459,10 @@ R1-P0 documentation/integrity closure verified 1,243 local links with zero missi
 - Live Account Pro: ENT v1 and v2 authorize `pro_runtime`; reusing v1 after v2 fails `entitlement_rollback_detected`; wrong authenticated account fails `pro_authority_subject_mismatch`. Live Business: active organization owner + signed `business` ENT with `seat_limit=5` authorizes.
 - Synthetic entitlement/organization rows are transaction-rolled-back and the synthetic account is deleted. Post-run DB counts are zero for rehearsal account, `p10:` authority entitlement, and rehearsal organization. Audit evidence is retained.
 - Final source `31fa5428896f6e9cb7877d353e2485b43d7a1671`; attestation image `lightbi-next-trust-attestation:31fa5428896f-trust-10de4da8`, ID `sha256:a08e1f681b6ab564b9dc19b5b3202f33224e44d5ef4f54ab5dbe3be2ee228899`. Gates: verifier/P10 12/12, CP authoritative 193/193. Production remains untouched/unfrozen.
+
+## 2026-09-02 — Owner freezes `cli-lightbi` read-only signer-console plan before R1-P11 continues
+
+- Recorded the owner-approved operator plan at `docs/history/agent/plans/AGENT_PLAN_CLI_LIGHTBI_SIGNER_OPERATOR_CONSOLE.md`; it is an operational plan and does not override the canonical Trust contract.
+- `cli-lightbi` is defined as host-side operator UX. Existing Docker signer isolation, TEST/Production authority separation, offline Production Root, purpose-separated issuers and no-generic-signing rules remain unchanged.
+- Current authorization is Phase A only: TUI/status/issuer metadata/public-chain verification/audit/doctor. Mutation, operator MFA, issuer rotation/revoke and issuance helpers remain design direction pending an explicit post-v0.1 authorization.
+- R1-P11 WIP is paused at clean base `31fa542...`; its uncommitted attestation/delivery paths remain in the existing private worktree. CLI implementation will use a separate clean worktree. Production remains untouched.

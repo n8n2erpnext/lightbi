@@ -11,7 +11,7 @@ Historical documents are valuable evidence, but **historical evidence is not cur
 
 ## Shelves
 
-- [`agent/`](./agent/) — agent handoffs, plans, walkthroughs, and contracts (**107 Markdown**)
+- [`agent/`](./agent/) — agent handoffs, plans, walkthroughs, and contracts (**108 Markdown**)
 - [`audits/`](./audits/) — historical audits, including audits formerly mixed into architecture (**35 Markdown**)
 - [`changelog/`](./changelog/) — early dated phase changelog (**11 Markdown**)
 - [`checkpoints/`](./checkpoints/) — safepoints, reset decisions, Beta recovery snapshots (**24 Markdown**)

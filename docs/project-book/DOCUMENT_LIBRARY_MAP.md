@@ -35,7 +35,7 @@
 | `architecture` | 107 | 354 |
 | `design` | 1 | 0 |
 | `domain-catalog` | 8 | 0 |
-| `history` | 259 | 0 |
+| `history` | 260 | 0 |
 | `plugin-sdk` | 1 | 0 |
 | `product` | 1 | 0 |
 | `release` | 1 | 0 |

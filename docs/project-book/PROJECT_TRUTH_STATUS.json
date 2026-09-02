@@ -859,6 +859,20 @@
       ],
       "businessSeatLimit": 5,
       "syntheticDbResidue": 0
+    },
+    "cliLightbiSignerConsole": {
+      "status": "phase_a_owner_authorized_plan_recorded_implementation_pending",
+      "plan": "docs/history/agent/plans/AGENT_PLAN_CLI_LIGHTBI_SIGNER_OPERATOR_CONSOLE.md",
+      "authority": "operator_ux_only_not_signing_authority",
+      "phaseA": "read_only_tui_status_issuers_trust_verify_audit_doctor",
+      "phaseB": "not_authorized_operator_auth_totp",
+      "phaseC": "not_authorized_issuer_lifecycle_mutations",
+      "phaseD": "not_authorized_operational_helpers_beyond_read_only",
+      "signerRuntimeRedesigned": false,
+      "genericSigningAllowed": false,
+      "productionAuthorityChanged": false,
+      "r1p11PausedForPlan": true,
+      "r1p11WipBase": "31fa5428896f6e9cb7877d353e2485b43d7a1671"
     }
   },
   "roadTo1_0": {
@@ -876,7 +890,8 @@
     "r1p7": "production_blocked_by_r1p6_next_rehearsal_pass",
     "r1p8": "production_blocked_by_r1p6_next_rehearsal_pass",
     "r1p9": "production_blocked_by_r1p6_next_rehearsal_pass_request_wire_not_frozen",
-    "r1p10": "production_blocked_by_r1p6_next_rehearsal_pass"
+    "r1p10": "production_blocked_by_r1p6_next_rehearsal_pass",
+    "cliLightbi": "phase_a_read_only_operator_console_authorized_not_implemented"
   },
   "optionalCommerceRevenueMirror": {
     "provider": "paddle",

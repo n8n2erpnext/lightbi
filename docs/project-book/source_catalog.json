@@ -1,14 +1,14 @@
 {
   "schemaVersion": "lightbi.project-book.source-catalog.v1",
-  "snapshotDate": "2026-09-01",
-  "generatedAt": "2026-09-01T09:39:47.497868+00:00",
-  "branch": "docs/project-library-cleanup-20260829",
-  "head": "652853f605682b435af19a97645bf7cc037c6faf",
+  "snapshotDate": "2026-09-02",
+  "generatedAt": "2026-09-02T06:14:13.006026+00:00",
+  "branch": "docs/cli-lightbi-signer-plan-20260902",
+  "head": "ec8ed7bb3a6e133db9c7c915f5b2fab74301fa6e",
   "worktreeDirty": true,
   "scope": "All project Markdown and JSON outside dependency/build/project-book directories.",
   "counts": {
-    "total": 933,
-    "markdown": 516,
+    "total": 934,
+    "markdown": 517,
     "json": 417,
     "docsJson": 354,
     "references": 0
@@ -9295,7 +9295,7 @@
       "path": "docs/history/README.md",
       "extension": ".md",
       "bytes": 1764,
-      "sha256": "58060865d3938943ef9a415e39457280481d8d9b78a3f4ceb7e017a60c343052",
+      "sha256": "757b1cf4524f9c791f015206f68ab30830079a4aeeafae540c705af84acf8603",
       "suggestedCategory": "historical-provenance",
       "title": "Historical Documentation"
     },
@@ -10122,6 +10122,14 @@
       "sha256": "84f6109172361d97c62c6a6ae535039f47947b318af883112cfb9ae55cceadbe",
       "suggestedCategory": "historical-provenance",
       "title": "AGENT INBOX PHASE 2"
+    },
+    {
+      "path": "docs/history/agent/plans/AGENT_PLAN_CLI_LIGHTBI_SIGNER_OPERATOR_CONSOLE.md",
+      "extension": ".md",
+      "bytes": 16336,
+      "sha256": "c8dc02b58b8f0b7f6858cd1dfb5a74419fbcd785b942d9e54064d43a2ce9ab15",
+      "suggestedCategory": "historical-provenance",
+      "title": "`cli-lightbi signer` Operator Console Plan"
     },
     {
       "path": "docs/history/agent/plans/AGENT_PLAN_ROAD_TO_1_0_2026-08-31.md",
