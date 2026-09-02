@@ -16,9 +16,9 @@ describe('desktop command registry', () => {
     }
   });
 
-  it('keeps NEXT Help documentation on the NEXT documentation surface', () => {
+  it('keeps Help documentation symbolic so the routing manifest owns environment URLs', () => {
     const documentation = desktopCommands.find((item) => item.id === 'documentation');
-    expect(documentation?.target).toBe('https://lightbi-next.thaiduy.digital/docs');
+    expect(documentation?.target).toBe('docs');
   });
 
   it('matches primary keyboard shortcuts without intercepting unrelated keys', () => {

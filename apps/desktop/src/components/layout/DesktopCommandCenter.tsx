@@ -6,11 +6,10 @@ import { desktopCommandById, desktopCommands, displayAccelerator, matchesAcceler
 import { openExternalUrl } from '../../lib/native-capabilities';
 import { isNativeLightBI } from '../../lib/native-runtime';
 import { useUpdateStore } from '../../stores/update-store';
-import { buildGenerationManifest } from '../../lib/generation-manifest';
+import { lightBIFrontendUrl, resolveLightBIExternalTarget } from '../../lib/lightbi-routing';
 
-const INVITE_URL = 'https://lightbi.thaiduy.digital/';
-const DOCUMENTATION_URL = buildGenerationManifest().channel === 'internal' ? 'https://lightbi-next.thaiduy.digital/docs' : (desktopCommandById('documentation')?.target ?? 'https://lightbi.thaiduy.digital/docs');
-const KEYBOARD_SHORTCUTS_URL = `${DOCUMENTATION_URL.replace(/\/$/u, '')}/keyboard-shortcuts`;
+const INVITE_URL = lightBIFrontendUrl('home');
+const KEYBOARD_SHORTCUTS_URL = lightBIFrontendUrl('keyboardShortcuts');
 
 type DesktopCommandCenterProps = {
   signedIn: boolean;
@@ -56,7 +55,7 @@ export const DesktopCommandCenter: React.FC<DesktopCommandCenterProps> = ({ sign
     }
     if (command.kind === 'url') {
       closeOverlay();
-      await openExternalUrl(command.target);
+      await openExternalUrl(resolveLightBIExternalTarget(command.target));
       return;
     }
     if (command.target === 'command-palette') {

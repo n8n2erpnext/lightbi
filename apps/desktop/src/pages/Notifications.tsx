@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Bell, ExternalLink, Inbox, RefreshCw } from 'lucide-react';
 import { useAnnouncementStore, type AppAnnouncement } from '../stores/announcement-store';
 import { openExternalUrl } from '../lib/native-capabilities';
-import { lightBIDistributionEndpoint } from '../lib/distribution-pairing';
+import { lightBIFrontendUrl } from '../lib/lightbi-routing';
 
 const severityLabel = { info:'Information', success:'Update', warning:'Notice', critical:'Important' } as const;
 const templates={
@@ -17,7 +17,7 @@ export const Notifications:React.FC=()=>{
   const store=useAnnouncementStore(); const navigate=useNavigate(); const params=useParams();
   const selected=store.items.find(item=>item.id===params.id) ?? store.items[0] ?? null;
   useEffect(()=>{ if(selected && store.unread(selected)) store.markRead(selected.id,selected.updatedAt); },[selected?.id,selected?.updatedAt]);
-  const visual=selected?templateFor(selected):templates.general; const docsUrl=`${lightBIDistributionEndpoint()}/docs`;
+  const visual=selected?templateFor(selected):templates.general; const docsUrl=lightBIFrontendUrl('docs');
   return <div className="flex h-full w-full overflow-hidden bg-[#f6f7fb]">
     <section className="w-[360px] shrink-0 overflow-y-auto border-r border-black/10 bg-white/80">
       <div className="sticky top-0 z-10 border-b border-black/10 bg-white/95 px-5 py-4 backdrop-blur"><div className="flex items-center justify-between gap-2"><div className="flex items-center gap-2 text-sm font-semibold"><Inbox className="h-4 w-4"/>Inbox</div><button type="button" onClick={()=>void store.check(true)} className="inline-flex items-center gap-1 rounded-md border border-black/10 bg-white px-2 py-1 text-[11px] font-semibold text-slate-600"><RefreshCw className="h-3 w-3"/>Refresh</button></div><p className="mt-1 text-xs text-black/45">LightBI product and service notifications are stored locally on this device.</p></div>

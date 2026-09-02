@@ -25,17 +25,22 @@ fn valid_installation_id(value: &str) -> bool {
             .all(|character| character.is_ascii_alphanumeric() || character == '-')
 }
 
-fn allowed_endpoint(value: &str) -> bool {
-    let Ok(url) = reqwest::Url::parse(value) else {
-        return false;
-    };
+fn normalized_distribution_api_base(value: &str) -> Result<String, String> {
+    let url = reqwest::Url::parse(value).map_err(|_| "Invalid LightBI lifecycle endpoint.".to_string())?;
     if url.scheme() != "https" || !url.username().is_empty() || url.password().is_some() {
-        return false;
+        return Err("Invalid LightBI lifecycle endpoint.".to_string());
     }
-    matches!(
-        url.host_str(),
-        Some("lightbi.thaiduy.digital" | "lightbi-next.thaiduy.digital")
-    )
+    if !matches!(url.host_str(), Some("lightbi.thaiduy.digital" | "lightbi-next.thaiduy.digital")) {
+        return Err("Installation lifecycle endpoint is not an approved LightBI endpoint.".to_string());
+    }
+    if !matches!(url.path().trim_end_matches('/'), "" | "/distribution" | "/distribution-api") {
+        return Err("Installation lifecycle endpoint path is not approved.".to_string());
+    }
+    Ok(format!("{}://{}/distribution-api", url.scheme(), url.host_str().unwrap()))
+}
+
+fn allowed_endpoint(value: &str) -> bool {
+    normalized_distribution_api_base(value).is_ok()
 }
 #[cfg(target_os = "windows")]
 fn receipt_path() -> Result<PathBuf, String> {
@@ -123,7 +128,7 @@ async fn report_uninstall(receipt: &InstallationLifecycleReceipt) -> Result<(), 
     validate_receipt(receipt)?;
     let endpoint = format!(
         "{}/api/installation/uninstall",
-        receipt.endpoint.trim_end_matches('/')
+        normalized_distribution_api_base(&receipt.endpoint)?
     );
     let client = reqwest::Client::builder()
         .timeout(Duration::from_secs(2))
@@ -190,10 +195,14 @@ mod tests {
 
     #[test]
     fn accepts_only_lightbi_https_lifecycle_endpoints() {
+        assert!(validate_receipt(&receipt("https://lightbi.thaiduy.digital/distribution-api")).is_ok());
         assert!(validate_receipt(&receipt("https://lightbi.thaiduy.digital/distribution")).is_ok());
         assert!(validate_receipt(&receipt("https://lightbi-next.thaiduy.digital")).is_ok());
-        assert!(validate_receipt(&receipt("http://lightbi.thaiduy.digital/distribution")).is_err());
-        assert!(validate_receipt(&receipt("https://example.com")).is_err());
+        assert_eq!(normalized_distribution_api_base("https://lightbi-next.thaiduy.digital").unwrap(), "https://lightbi-next.thaiduy.digital/distribution-api");
+        assert_eq!(normalized_distribution_api_base("https://lightbi.thaiduy.digital/distribution").unwrap(), "https://lightbi.thaiduy.digital/distribution-api");
+        assert!(validate_receipt(&receipt("http://lightbi.thaiduy.digital/distribution-api")).is_err());
+        assert!(validate_receipt(&receipt("https://lightbi-next.thaiduy.digital/docs")).is_err());
+        assert!(validate_receipt(&receipt("https://example.com/distribution-api")).is_err());
     }
 
     #[test]

@@ -32,6 +32,7 @@ describe('distribution pairing', () => {
       expect(payload.environment).toBe('test');
       expect(payload).not.toHaveProperty('file');
       expect(payload).not.toHaveProperty('columns');
+      expect(String(_url)).toBe('https://distribution.example/api/pair');
       return new Response(JSON.stringify({ tier: 'basic' }), { status: 200 });
     });
     await expect(pairLightBIInstallation({
@@ -54,6 +55,7 @@ describe('distribution pairing', () => {
     const storage = memoryStorage();
     const id = getOrCreateInstallationId(storage);
     const fetcher = vi.fn(async (_url: string | URL | Request, init?: RequestInit) => {
+      expect(String(_url)).toBe('https://distribution.example/api/license/activate');
       expect(JSON.parse(String(init?.body))).toEqual({ installationId: id, licenseKey: 'LBI-PRO-TEST' });
       return new Response(JSON.stringify({ tier: 'pro', active: true }), { status: 200 });
     });

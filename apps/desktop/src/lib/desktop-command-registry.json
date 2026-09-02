@@ -109,7 +109,7 @@
     "group": "Help",
     "accelerator": "F1",
     "kind": "url",
-    "target": "https://lightbi-next.thaiduy.digital/docs"
+    "target": "docs"
   },
   {
     "id": "invite",

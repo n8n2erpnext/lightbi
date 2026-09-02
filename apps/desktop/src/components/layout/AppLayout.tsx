@@ -31,6 +31,7 @@ import { useUpdateStore } from "../../stores/update-store";
 import { useAnnouncementStore } from "../../stores/announcement-store";
 import { buildGenerationManifest } from "../../lib/generation-manifest";
 import { DesktopCommandCenter, dispatchDesktopCommand } from "./DesktopCommandCenter";
+import { UpdateNotificationMenu } from "./UpdateNotificationMenu";
 
 export const AppLayout: React.FC = () => {
   const location = useLocation();
@@ -149,6 +150,7 @@ export const AppLayout: React.FC = () => {
               <img src="/branding/lightbi-icon.svg" alt="" className="h-8 w-8 flex-shrink-0 drop-shadow-sm" />
               {isSidebarExpanded && <img src="/branding/lightbi-wordmark.svg" alt="LightBI" className="ml-2.5 hidden h-5 w-[76px] object-contain md:block" />}
             </div>
+            {isSidebarExpanded && <UpdateNotificationMenu />}
             {isSidebarExpanded && generation.channel === "internal" && <span title={generation.generation_id} className="hidden rounded-full bg-violet-100 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-violet-700 md:inline">NEXT</span>}
           </div>
 
@@ -198,18 +200,6 @@ export const AppLayout: React.FC = () => {
 
           {/* Bottom Navigation */}
           <div className="flex flex-col gap-2 p-3">
-            {["available", "downloading", "verifying", "ready", "installing", "failed"].includes(updater.status) && (
-              <NavLink
-                to="/settings?section=updates"
-                title={updater.status === "failed" ? "Update needs attention" : "LightBI update"}
-                className={cn("flex h-10 items-center rounded-xl px-3 text-xs font-semibold transition hover:bg-white", updater.status === "failed" ? "text-red-700" : "text-black/65", !isSidebarExpanded ? "justify-center" : "justify-center md:justify-start")}
-              >
-                <RefreshCw className={cn("h-4 w-4 shrink-0", ["downloading", "verifying", "installing"].includes(updater.status) && "animate-spin")} strokeWidth={1.7} />
-                {isSidebarExpanded && <span className="ml-3 hidden flex-1 md:block">{updater.status === "ready" ? "Update" : updater.status === "failed" ? "Update issue" : updater.status === "installing" ? "Installing update" : "Downloading update"}</span>}
-                {isSidebarExpanded && updater.status === "ready" && <span className="hidden h-2 w-2 rounded-full bg-red-500 md:block" />}
-                {isSidebarExpanded && typeof updater.progress === "number" && ["downloading", "verifying"].includes(updater.status) && <span className="hidden text-[10px] text-black/40 md:block">{Math.floor(updater.progress)}%</span>}
-              </NavLink>
-            )}
             <div ref={accountMenuRef} className="relative">
               {accountMenuOpen && (
                 <div

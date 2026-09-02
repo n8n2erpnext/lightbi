@@ -1,6 +1,7 @@
 import { getOrCreateInstallationId, lightBIDistributionEndpoint, setCurrentLicenseTier } from './distribution-pairing';
 import { isNativeLightBI } from './native-runtime';
 import { externalFetch, openExternalUrl } from './native-capabilities';
+import { lightBIFrontendUrl } from './lightbi-routing';
 
 export type LightBIAccountSummary = {
   authenticated: true;
@@ -125,14 +126,14 @@ export async function loginLightBIEmailAccount(email: string, password: string, 
     if (native) {
       if (!result.nativeLoginId) throw new Error('The native passkey handoff could not be created.');
       const installationId = getOrCreateInstallationId();
-      await openExternalUrl(`${lightBIDistributionEndpoint(endpoint)}/account?strong=${encodeURIComponent(result.challengeId)}`);
+      await openExternalUrl(`${lightBIFrontendUrl('account')}?strong=${encodeURIComponent(result.challengeId)}`);
       const token = await finishNativeLoginPolling(lightBIDistributionEndpoint(endpoint), result.nativeLoginId, installationId, result.expiresIn ?? 300);
       await storeNativeToken(token);
       const account = await loadLightBIAccount(endpoint);
       window.dispatchEvent(new CustomEvent('lightbi-account-changed'));
       return { status: 'authenticated', account };
     }
-    window.location.href = `${lightBIDistributionEndpoint(endpoint)}/account?strong=${encodeURIComponent(result.challengeId)}`;
+    window.location.href = `${lightBIFrontendUrl('account')}?strong=${encodeURIComponent(result.challengeId)}`;
     return { status: 'passkey_required', challengeId: result.challengeId, fallbackTotp: result.fallbackTotp === true, expiresIn: result.expiresIn ?? 300 };
   }
   if (result.mfaRequired) {

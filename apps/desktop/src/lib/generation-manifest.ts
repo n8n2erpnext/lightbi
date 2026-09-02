@@ -1,6 +1,8 @@
 import type { LightBIGenerationChannel, LightBIGenerationManifestV1, LightBITrustStatus } from '@lightbi/core-types';
 
-const PROD_DISTRIBUTION = 'https://lightbi.thaiduy.digital/distribution';
+const PROD_PUBLIC_ORIGIN = 'https://lightbi.thaiduy.digital';
+const PROD_DISTRIBUTION = `${PROD_PUBLIC_ORIGIN}/distribution`;
+const PROD_DISTRIBUTION_API = `${PROD_PUBLIC_ORIGIN}/distribution-api`;
 const SHA40 = /^[0-9a-f]{40}$/u;
 
 type GenerationEnv = Partial<Record<
@@ -112,8 +114,16 @@ export function assertSafeGenerationDistributionTarget(
   manifest: LightBIGenerationManifestV1 = buildGenerationManifest(),
 ): string {
   const normalized = endpoint.trim().replace(/\/$/u, '');
-  if (manifest.channel === 'internal' && normalized === PROD_DISTRIBUTION) {
-    throw new Error('LIGHTBI_INTERNAL_PRODUCTION_DISTRIBUTION_BLOCKED');
+  if (manifest.channel === 'internal') {
+    try {
+      const target = new URL(normalized);
+      if (target.origin === PROD_PUBLIC_ORIGIN) throw new Error('LIGHTBI_INTERNAL_PRODUCTION_DISTRIBUTION_BLOCKED');
+    } catch (error) {
+      if (error instanceof Error && error.message === 'LIGHTBI_INTERNAL_PRODUCTION_DISTRIBUTION_BLOCKED') throw error;
+    }
+    if (normalized === PROD_DISTRIBUTION || normalized === PROD_DISTRIBUTION_API) {
+      throw new Error('LIGHTBI_INTERNAL_PRODUCTION_DISTRIBUTION_BLOCKED');
+    }
   }
   return normalized;
 }

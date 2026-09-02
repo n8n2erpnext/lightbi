@@ -3,9 +3,11 @@ use tauri::{
     menu::{Menu, MenuItem, PredefinedMenuItem, Submenu},
     AppHandle, Emitter,
 };
+use tauri_plugin_opener::OpenerExt;
 
 const REGISTRY_JSON: &str =
     include_str!("../../../apps/desktop/src/lib/desktop-command-registry.json");
+const ROUTING_JSON: &str = include_str!("../../../apps/desktop/src/lib/lightbi-routing.json");
 const MENU_EVENT_PREFIX: &str = "lightbi:";
 
 #[derive(Clone, Debug, Deserialize)]
@@ -25,6 +27,30 @@ fn default_true() -> bool {
 
 fn commands() -> Result<Vec<DesktopCommand>, serde_json::Error> {
     serde_json::from_str(REGISTRY_JSON)
+}
+
+fn documentation_url_for(channel: &str) -> Result<String, String> {
+    let manifest: serde_json::Value = serde_json::from_str(ROUTING_JSON)
+        .map_err(|error| format!("Invalid LightBI routing manifest: {error}"))?;
+    let environment = if channel == "internal" { "next" } else { "production" };
+    let profile = manifest
+        .get(environment)
+        .ok_or_else(|| format!("Missing LightBI routing profile: {environment}"))?;
+    let origin = profile
+        .get("publicOrigin")
+        .and_then(serde_json::Value::as_str)
+        .ok_or_else(|| "LightBI routing publicOrigin is missing.".to_string())?
+        .trim_end_matches('/');
+    let path = profile
+        .get("routes")
+        .and_then(|routes| routes.get("docs"))
+        .and_then(serde_json::Value::as_str)
+        .ok_or_else(|| "LightBI docs route is missing.".to_string())?;
+    Ok(format!("{origin}{}", if path.starts_with('/') { path.to_string() } else { format!("/{path}") }))
+}
+
+fn documentation_url() -> Result<String, String> {
+    documentation_url_for(option_env!("VITE_LIGHTBI_CHANNEL").unwrap_or("production"))
 }
 
 fn append_registry_group(
@@ -106,12 +132,19 @@ pub fn forward_native_menu_event(app: &AppHandle, id: &str) {
     let Ok(registry) = commands() else {
         return;
     };
-    if registry
+    if !registry
         .iter()
         .any(|command| command.native_menu && command.id == command_id)
     {
-        let _ = app.emit("lightbi://desktop-command", command_id.to_string());
+        return;
     }
+    if command_id == "documentation" {
+        if let Ok(url) = documentation_url() {
+            let _ = app.opener().open_url(url, None::<&str>);
+        }
+        return;
+    }
+    let _ = app.emit("lightbi://desktop-command", command_id.to_string());
 }
 
 #[cfg(test)]
@@ -149,5 +182,11 @@ mod tests {
         assert!(registry
             .iter()
             .any(|item| item.id == "invite" && !item.native_menu));
+    }
+
+    #[test]
+    fn documentation_menu_uses_the_environment_routing_manifest() {
+        assert_eq!(documentation_url_for("internal").unwrap(), "https://lightbi-next.thaiduy.digital/docs");
+        assert_eq!(documentation_url_for("production").unwrap(), "https://lightbi.thaiduy.digital/docs");
     }
 }

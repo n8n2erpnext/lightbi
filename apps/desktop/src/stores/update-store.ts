@@ -7,6 +7,7 @@ import { lightBIDistributionEndpoint } from "../lib/distribution-pairing";
 import { externalFetch } from "../lib/native-capabilities";
 import { isNativeLightBI } from "../lib/native-runtime";
 import { buildGenerationManifest } from "../lib/generation-manifest";
+import { lightBIInternalReleaseUrl } from "../lib/lightbi-routing";
 import { trackUpdateEvent } from "../lib/app-usage-telemetry";
 
 export type UpdateStatus =
@@ -140,7 +141,7 @@ async function fetchLatestReleaseManifest(force: boolean): Promise<LightBIReleas
   }
 
   if (buildGenerationManifest().channel === "internal") {
-    const staticResponse = await externalFetch(`${endpoint}/internal-releases/latest.json`, { cache: "no-store" });
+    const staticResponse = await externalFetch(lightBIInternalReleaseUrl("/latest.json"), { cache: "no-store" });
     if (staticResponse.ok) {
       const manifest = (await staticResponse.json()) as LightBIReleaseManifest;
       if (manifest.schema_version === "lightbi.release.v1") return manifest;

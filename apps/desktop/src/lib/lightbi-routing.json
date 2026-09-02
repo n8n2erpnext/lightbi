@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "lightbi.routing.v1",
+  "production": {
+    "publicOrigin": "https://lightbi.thaiduy.digital",
+    "routes": {
+      "home": "/",
+      "liveDemo": "/app",
+      "docs": "/docs",
+      "keyboardShortcuts": "/docs/keyboard-shortcuts",
+      "account": "/account",
+      "admin": "/admin",
+      "verify": "/verify",
+      "distributionApi": "/distribution-api",
+      "internalReleases": "/internal-releases"
+    }
+  },
+  "next": {
+    "publicOrigin": "https://lightbi-next.thaiduy.digital",
+    "routes": {
+      "home": "/",
+      "liveDemo": "/app",
+      "docs": "/docs",
+      "keyboardShortcuts": "/docs/keyboard-shortcuts",
+      "account": "/account",
+      "admin": "/admin",
+      "verify": "/verify",
+      "distributionApi": "/distribution-api",
+      "internalReleases": "/internal-releases"
+    }
+  }
+}

@@ -1,10 +1,10 @@
 import { externalFetch } from './native-capabilities';
 import { clearNativeInstallationLifecycleReceipt, persistNativeInstallationLifecycleReceipt } from './native-runtime';
 import { assertSafeGenerationDistributionTarget } from './generation-manifest';
+import { lightBIDistributionApiBase } from './lightbi-routing';
 const INSTALLATION_KEY = 'lightbi-installation-id';
 const TIER_KEY = 'lightbi-license-tier';
 const TELEMETRY_KEY = 'lightbi-anonymous-pairing';
-const DEFAULT_DISTRIBUTION_URL = 'https://lightbi.thaiduy.digital/distribution';
 
 function fallbackId(): string {
   const bytes = new Uint8Array(16);
@@ -106,6 +106,6 @@ export function setCurrentLicenseTier(tier: 'basic' | 'pro', storage: Pick<Stora
 
 export function lightBIDistributionEndpoint(override?: string): string {
   return assertSafeGenerationDistributionTarget(
-    override ?? import.meta.env.VITE_LIGHTBI_DISTRIBUTION_URL ?? DEFAULT_DISTRIBUTION_URL,
+    override ?? lightBIDistributionApiBase(),
   );
 }
