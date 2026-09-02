@@ -1423,3 +1423,12 @@ R1-P0 documentation/integrity closure verified 1,243 local links with zero missi
 - Deployed immutable `g-2026-09-02-next-027`, parent NEXT-026, Core `b3ada677...`, CP `c012c572...`, schema 066. Manifest SHA-256 `8cb350fda7e41ef4376574f1d96374acb9275cfd5b59b1b2c06d6cc47ccfbd97`; public diagnostics report exact identity/schema and a healthy matching worker. CP mutable data was preserved independently during source swap and the NEXT-026 service tree was retained for rollback.
 - GitHub Actions run `33578098883` / #12 PASS. Branded HTTPS verifies A `0.9.2-next.25.12.1` (29,704,813 bytes, SHA `87c5dd8f55debf701733ee8161c68f618d800e4e8878ea8c4bf6ccc3cfd62e54`) and B/latest `0.9.2-next.25.12.2` (29,698,186 bytes, SHA `2feb44b1a075397dc4e5b46828ee5af239c5be52290709597ba869e543afc740`); index contains both.
 - Owner visual/native acceptance remains open for the five templates/Inbox rendering and the existing A→B silent-updater/full-source History gate. Production and Trust R1-P6 remain untouched/HOLD.
+
+## 2026-09-02 — R1-P6 freeze review activated; R1-P5 exact head revalidated
+
+- Owner resumed the main Road-to-1.0 Trust path and authorized entry into R1-P6 freeze review; this is not recorded as the literal `FREEZE APPROVED` decision required by the Trust contract.
+- GitHub PR #4 remains Draft/Open/unmerged at `codex/phase2-trust-contracts` exact head `10de4da8e551a46f93f7b62985a0a6e611581b8e`; historical CI run `33397723902` remains success.
+- Fresh exact-head local CI-equivalent PASS: release contract 3/3, public/private boundary, Trust TS 22/22 plus lint, Rust parity 5/5, desktop production build, governed regressions 7 files / 26 tests. Phase 2A worktree remained clean after execution.
+- Freeze-negative probes PASS: Root pin is `unconfigured` with null public key; zero tracked private-key literals; no tracked private-key artifact extensions; no production signer implementation detected.
+- R1-P6 state is now `freeze_ready_awaiting_explicit_owner_freeze`; `phase2aFrozen=false`, `rootCeremonyAuthorized=false`, `trust1SignerAllowed=false`. Exact next owner record: `FREEZE APPROVED — PR #4 codex/phase2-trust-contracts @ 10de4da8e551a46f93f7b62985a0a6e611581b8e`.
+- Read-only runtime reconciliation observes Internal NEXT-028/Core `b3ada677...`/CP `9606c1bd...`/schema 067 with healthy worker and Trust blocked pending Phase2A freeze. Production was not touched.

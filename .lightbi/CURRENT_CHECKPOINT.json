@@ -1,30 +1,31 @@
 {
   "schema": "lightbi.current-checkpoint.v1",
-  "updatedAt": "2026-09-02T01:33:04Z",
-  "status": "next027_announcement_templates_deployed_owner_acceptance_pending",
-  "activeRuntime": "g-2026-09-02-next-027",
+  "updatedAt": "2026-09-02T02:24:58Z",
+  "status": "r1_p6_freeze_ready_awaiting_explicit_owner_freeze",
+  "activeRuntime": "g-2026-09-02-next-028",
   "activeRuntimeCore": "b3ada6776417fdb422e7e852b6f4363b328ab650",
-  "controlPlaneCandidate": "c012c572a7b0794aea75cdbb007490cfa2ebb8a5",
-  "windowsArtifactSource": "b3ada6776417fdb422e7e852b6f4363b328ab650",
-  "releaseOpsSource": "98b57aebc4cd038f3c4774d03de1a538edffa1d3",
+  "controlPlaneCandidate": "9606c1bd052dff641a7949b79caf47b87bbe6eb7",
+  "phase2aAuthority": {
+    "pr": 4,
+    "branch": "codex/phase2-trust-contracts",
+    "head": "10de4da8e551a46f93f7b62985a0a6e611581b8e",
+    "r1p5": "reverified_pass",
+    "r1p6": "freeze_ready_awaiting_explicit_owner_freeze"
+  },
   "completed": [
-    "next027_exact_core_cp_manifest_engine_bundle_built_and_deployed",
-    "migration_066_announcement_templates_applied_20_of_20_pending_0",
-    "five_structured_admin_templates_and_branded_inbox_renderer_verified",
-    "pro_key_mail_and_announcement_preview_documentation_footer_aligned",
-    "public_diagnostics_next027_schema066_worker_healthy",
-    "windows_run_33578098883_pair_25_12_1_25_12_2_published_and_branded_hash_verified"
+    "r1p5_remote_pr4_exact_head_and_ci_reverified_no_drift",
+    "r1p5_fresh_local_ci_equivalent_release3_boundary_trust22_rust5_build_governed26_pass",
+    "r1p6_negative_freeze_probes_root_unconfigured_private_key_zero_no_production_signer",
+    "r1p6_freeze_readiness_pass"
   ],
-  "nextAction": "owner acceptance: open Internal Admin announcements and inspect all five template previews; publish a test template and verify the packaged 25.12.1/25.12.2 Inbox uses the branded card plus Documentation/Support footer; then complete A-to-B silent updater/full-source History acceptance and the still-open NEXT-026 Passkey-cancel fallback acceptance",
+  "nextAction": "owner must explicitly record: FREEZE APPROVED — PR #4 codex/phase2-trust-contracts @ 10de4da8e551a46f93f7b62985a0a6e611581b8e; only then mark Phase2A frozen and authorize R1-P7 offline Root ceremony",
   "blockers": [
-    "next027_announcement_template_visual_owner_acceptance_pending",
-    "next025_windows_ab_history_owner_acceptance_pending",
-    "next026_passkey_fallback_owner_acceptance_pending"
+    "r1_p6_explicit_owner_freeze_record_missing"
   ],
   "productionTouched": false,
   "readFirst": [
-    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#100-next-027-branded-announcement-templates-and-inboxmail-visual-convergence",
-    "docs/project-book/LIGHTBI_CONTROL_PLANE_MAP.md#36-next-027-governed-announcement-template-control-plane-closure",
+    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#101-r1-p6-freeze-readiness-opened-after-exact-head-r1-p5-revalidation",
+    "docs/architecture/road-to-1-0-trust-release-contract.md#current-implementation-status",
     "docs/adr/ADR-123-engine-chassis-preproduction-and-disaster-recovery.md"
   ]
 }

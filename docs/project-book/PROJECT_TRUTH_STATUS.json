@@ -663,7 +663,7 @@
     }
   },
   "roadTo1_0Execution": {
-    "status": "next026_internal_auth_recovery_deployed_owner_acceptance_pending_r1_p6_hold",
+    "status": "r1_p6_freeze_review_active_exact_head_revalidated_awaiting_explicit_owner_freeze",
     "startedDate": "2026-08-31",
     "baseline": {
       "core": "451c9b6afe0a95bce5bce473a4a84c8b918f42cd",
@@ -756,6 +756,26 @@
       "packagedWindowsAcceptance": false,
       "productionMutated": false,
       "r1p6Hold": true
+    },
+    "r1P6FreezeReview": {
+      "status": "freeze_ready_awaiting_explicit_owner_freeze",
+      "activatedDate": "2026-09-02",
+      "pr": 4,
+      "branch": "codex/phase2-trust-contracts",
+      "head": "10de4da8e551a46f93f7b62985a0a6e611581b8e",
+      "githubCiRun": "33397723902_success",
+      "freshReleaseContract": "3/3",
+      "freshPublicBoundary": "pass",
+      "freshTrustTypescript": "22/22",
+      "freshRustParity": "5/5",
+      "freshDesktopBuild": "pass",
+      "freshGovernedRegression": "7_files_26_tests_pass",
+      "rootPin": "unconfigured_public_key_null",
+      "trackedPrivateKeyLiterals": 0,
+      "productionSignerDetected": false,
+      "ownerFreezeApproved": false,
+      "requiredOwnerRecord": "FREEZE APPROVED — PR #4 codex/phase2-trust-contracts @ 10de4da8e551a46f93f7b62985a0a6e611581b8e",
+      "productionMutated": false
     }
   },
   "roadTo1_0": {
@@ -764,10 +784,10 @@
     "r1p2": "internal_deployed_machine_verified_next026_owner_auth_recovery_acceptance_open",
     "r1p3": "verified_release_authority_defined",
     "r1p4": "implemented_machine_verified_owner_visual_acceptance_open",
-    "r1p5": "independent_audit_passed_awaiting_owner_freeze",
+    "r1p5": "independent_audit_reverified_exact_head_pass",
     "phase2aFreezeApproved": false,
     "trust1SignerAllowed": false,
-    "r1p6": "owner_hold",
+    "r1p6": "freeze_ready_awaiting_explicit_owner_freeze",
     "commerceTrack": "next018_source_verified_awaiting_infra_approval"
   },
   "optionalCommerceRevenueMirror": {
