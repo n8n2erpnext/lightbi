@@ -27,6 +27,10 @@ vi.mock("../lib/app-usage-telemetry", () => ({
 vi.mock("../lib/distribution-pairing", () => ({
   lightBIDistributionEndpoint: () => "https://distribution.test",
 }));
+vi.mock("../lib/lightbi-routing", () => ({
+  lightBIInternalReleaseUrl: (suffix = "") =>
+    `https://distribution.test/internal-releases${suffix}`,
+}));
 
 import {
   compareAppVersions,
