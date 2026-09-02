@@ -10126,8 +10126,8 @@
     {
       "path": "docs/history/agent/plans/AGENT_PLAN_CLI_LIGHTBI_SIGNER_OPERATOR_CONSOLE.md",
       "extension": ".md",
-      "bytes": 16336,
-      "sha256": "c8dc02b58b8f0b7f6858cd1dfb5a74419fbcd785b942d9e54064d43a2ce9ab15",
+      "bytes": 17317,
+      "sha256": "ec6c056c9b9dd9f28fa3f6859030b2e6d5121e9e145db96d4da82ebdb10456ad",
       "suggestedCategory": "historical-provenance",
       "title": "`cli-lightbi signer` Operator Console Plan"
     },

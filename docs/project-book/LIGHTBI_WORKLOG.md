@@ -1466,3 +1466,5 @@ R1-P0 documentation/integrity closure verified 1,243 local links with zero missi
 - `cli-lightbi` is defined as host-side operator UX. Existing Docker signer isolation, TEST/Production authority separation, offline Production Root, purpose-separated issuers and no-generic-signing rules remain unchanged.
 - Current authorization is Phase A only: TUI/status/issuer metadata/public-chain verification/audit/doctor. Mutation, operator MFA, issuer rotation/revoke and issuance helpers remain design direction pending an explicit post-v0.1 authorization.
 - R1-P11 WIP is paused at clean base `31fa542...`; its uncommitted attestation/delivery paths remain in the existing private worktree. CLI implementation will use a separate clean worktree. Production remains untouched.
+
+- 2026-09-02: refined `cli-lightbi` Phase A visual acceptance before further implementation: Rust/Ratatui/Crossterm presentation, responsive btop-quality dashboard, realtime refresh, keyboard navigation and modal overlays; retained the TS/Node collector as the only local Trust-verification bridge.

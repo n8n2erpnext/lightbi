@@ -1,7 +1,7 @@
 {
   "schema": "067_catalog_quarterly_pricing",
   "updatedAt": "2026-09-02T05:56:00Z",
-  "status": "cli_lightbi_phase_a_plan_documented_r1p11_wip_paused_before_commit",
+  "status": "cli_lightbi_phase_a_ratatui_visual_target_recorded_implementation_in_progress_r1p11_paused",
   "activeRuntime": "g-2026-09-02-next-029",
   "activeRuntimeCore": "b3ada6776417fdb422e7e852b6f4363b328ab650",
   "controlPlaneRuntime": "6936fc4272bc92cd1badc00b9256cfd912e4a9ad",
@@ -39,7 +39,7 @@
     "p10_synthetic_database_residue_zero",
     "owner_cli_lightbi_operator_console_plan_recorded_phase_a_only_authorized"
   ],
-  "nextAction": "implement cli-lightbi v0.1 Phase A read-only operator console in a separate clean private worktree; preserve current hardened signer runtime and no mutation/MFA. Stop/report at v0.1 before returning to paused R1-P11 or authorizing Phase B/C/D.",
+  "nextAction": "replace the provisional ANSI cli-lightbi TUI with Rust/Ratatui presentation while preserving the read-only Node collector and signer boundary; finish Phase A operational acceptance, docs closure, then stop before Phase B/C/D.",
   "blockers": [
     "production_r1_p5_explicit_owner_freeze_record_missing_before_production_r1_p6",
     "production_attestation_request_wire_format_not_frozen"

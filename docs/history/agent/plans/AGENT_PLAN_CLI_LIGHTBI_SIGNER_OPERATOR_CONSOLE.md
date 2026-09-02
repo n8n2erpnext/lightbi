@@ -11,7 +11,7 @@ Primary sources: [Project Book](../../../project-book/LIGHTBI_PROJECT_BOOK.md), 
 
 Add one predictable host-side operator entrypoint named `cli-lightbi`, initially focused on the signer/trust plane. The console is operator UX only. It is not signing authority, does not replace the hardened signer container, and does not override the canonical Trust Contracts.
 
-The owner design intent follows the Frappe `bench` mental model: a complex system underneath, one predictable operator entrypoint, concise status, bounded commands, clear diagnostics and safe maintenance. The visual interaction should feel closer to `btop`/`lazygit` than to a shell-script collection.
+The owner design intent follows the Frappe `bench` mental model: a complex system underneath, one predictable operator entrypoint, concise status, bounded commands, clear diagnostics and safe maintenance. The visual acceptance target is now explicit: the TUI must be a polished system-monitor console comparable in quality to `btop`, using Ratatui layout composition, bordered panels, semantic color, responsive terminal resizing, realtime refresh, keyboard navigation, modal overlays and a dense but readable hierarchy. A plain-text menu, debug console or CRUD-style terminal list does not satisfy Phase A.
 
 Implementation authorization is intentionally narrower than the complete design below. **Phase A is authorized now. After the first usable read-only v0.1, implementation must stop and report before Phase B/C/D mutation or MFA work begins.**
 
@@ -81,7 +81,7 @@ Keyboard model: arrows navigate, `Enter` opens, `Esc` backs out, `/` searches, `
 
 Implement only:
 
-- stable `cli-lightbi` TUI home screen;
+- stable `cli-lightbi` Ratatui TUI home screen with bordered dashboard composition, semantic color and responsive resizing;
 - explicit environment/authority identity;
 - signer process/socket/health status;
 - issuer metadata for REL/ATT/ENT/PRO;
@@ -90,7 +90,9 @@ Implement only:
 - recent bounded signer audit viewer;
 - `cli-lightbi doctor` aggregate diagnostics;
 - read-only command-mode equivalents such as `trust status`, `signer status`, `signer issuers`, `audit recent`;
-- terminal-safe rendering that strips/escapes control sequences from audit/untrusted metadata.
+- terminal-safe rendering that strips/escapes control sequences from audit/untrusted metadata;
+- realtime refresh with visible last-refresh/clock state and non-blocking failure presentation;
+- keyboard-driven panel navigation plus modal overlays for help/detail/doctor/audit views.
 
 Phase A must introduce **no mutation path**. It must not modify signer keys/config, generate authority, change lifecycle state, or add a web listener.
 
@@ -224,9 +226,9 @@ Copying TEST signer volumes and renaming them Production is forbidden.
 
 ## 16. Technology decision for v0.1
 
-Preferred language is Rust when it can reuse canonical Trust semantics without duplication. `ratatui`/`crossterm` are acceptable only after dependency review.
+The Phase A presentation layer is now fixed to **Rust + Ratatui + Crossterm** after owner visual acceptance guidance. Ratatui owns terminal layout/rendering only; it must not reimplement Trust cryptography. The existing TypeScript/Node read-only collector remains the canonical bridge to the current UDS signer and exact audited Trust Contracts module, and the Rust frontend consumes only bounded structured snapshot data from that local collector. This preserves one cryptographic semantics implementation while allowing btop-quality terminal composition.
 
-Before implementation, inspect the current private signer/runtime toolchain. If a TypeScript/Node host console materially reduces attack surface because it can reuse the exact audited Trust Contracts module and existing UDS client without introducing duplicate crypto semantics or extra dependency supply-chain surface, that choice is allowed but must be recorded with the reason. No cryptographic contract may be reimplemented solely for TUI convenience.
+Dependency review is mandatory before adding Rust crates. The Ratatui frontend may depend only on the minimum terminal/render/serialization/time crates required for Phase A. It must not introduce HTTP servers, signing libraries, shell interpolation, secret storage or mutation authority.
 
 ## 17. Minimum security tests
 
@@ -240,7 +242,7 @@ Phase A live acceptance should launch the TUI on the authorized host, prove NEXT
 
 ## 19. Definition of done — first usable release
 
-`cli-lightbi` v0.1 is complete only when the TUI is stable; environment identity is unmistakable; signer health and REL/ATT/ENT/PRO metadata are correct; Root private presence/absence policy is checked; trust chain verifies; audit is usable and safe; doctor provides bounded diagnostics; no web listener/private authority/generic signing capability exists; signer hardening is unchanged; current NEXT tests remain green; Production remains untouched; and canonical/operational docs describe the console as operator UX rather than signing authority.
+`cli-lightbi` v0.1 is complete only when the Ratatui dashboard meets the polished system-monitor target (responsive bordered composition, semantic status color, realtime refresh, keyboard navigation and modal overlays) and is stable; environment identity is unmistakable; signer health and REL/ATT/ENT/PRO metadata are correct; Root private presence/absence policy is checked; trust chain verifies; audit is usable and safe; doctor provides bounded diagnostics; no web listener/private authority/generic signing capability exists; signer hardening is unchanged; current NEXT tests remain green; Production remains untouched; and canonical/operational docs describe the console as operator UX rather than signing authority.
 
 **Stop and report at this boundary. Phase B MFA and Phase C/D mutations are not implicitly authorized by completion of Phase A.**
 
