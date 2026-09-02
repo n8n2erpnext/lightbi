@@ -1,28 +1,30 @@
 {
   "schema": "lightbi.current-checkpoint.v1",
-  "updatedAt": "2026-09-01T18:36:30Z",
-  "status": "next026_auth_recovery_deployed_owner_acceptance_pending",
-  "activeRuntime": "g-2026-09-02-next-026",
-  "activeRuntimeCore": "c78124df3973fcfe2107a966563f3266e97f3deb",
-  "controlPlaneCandidate": "30bb58ffeaaad80014fb7c57522a7b8a4eb6feb8",
-  "windowsArtifactSource": "c78124df3973fcfe2107a966563f3266e97f3deb",
+  "updatedAt": "2026-09-02T01:33:04Z",
+  "status": "next027_announcement_templates_deployed_owner_acceptance_pending",
+  "activeRuntime": "g-2026-09-02-next-027",
+  "activeRuntimeCore": "b3ada6776417fdb422e7e852b6f4363b328ab650",
+  "controlPlaneCandidate": "c012c572a7b0794aea75cdbb007490cfa2ebb8a5",
+  "windowsArtifactSource": "b3ada6776417fdb422e7e852b6f4363b328ab650",
   "releaseOpsSource": "98b57aebc4cd038f3c4774d03de1a538edffa1d3",
   "completed": [
-    "next026_exact_core_cp_manifest_engine_bundle_built_and_deployed",
-    "cp_focused_auth_docs_21_21_and_authoritative_175_175_pass",
-    "account_admin_explicit_totp_recovery_fallback_and_fingerprint_ui_served",
-    "raw_webauthn_w3c_diagnostic_removed_from_served_assets",
-    "sign_in_and_account_recovery_docs_live_and_next026_runtime_worker_schema_reconciled"
+    "next027_exact_core_cp_manifest_engine_bundle_built_and_deployed",
+    "migration_066_announcement_templates_applied_20_of_20_pending_0",
+    "five_structured_admin_templates_and_branded_inbox_renderer_verified",
+    "pro_key_mail_and_announcement_preview_documentation_footer_aligned",
+    "public_diagnostics_next027_schema066_worker_healthy",
+    "windows_run_33578098883_pair_25_12_1_25_12_2_published_and_branded_hash_verified"
   ],
-  "nextAction": "owner acceptance on HTTPS Admin and Account: enter primary auth, reach strong-auth choice, open Passkey then cancel, verify LightBI shows friendly status with no raw WebAuthn/W3C text, choose authenticator or recovery code and complete sign-in, verify Need help opens /docs/sign-in-and-account-recovery; separately complete the pending Windows A-to-B updater and full-source History acceptance before closing R1-P1",
+  "nextAction": "owner acceptance: open Internal Admin announcements and inspect all five template previews; publish a test template and verify the packaged 25.12.1/25.12.2 Inbox uses the branded card plus Documentation/Support footer; then complete A-to-B silent updater/full-source History acceptance and the still-open NEXT-026 Passkey-cancel fallback acceptance",
   "blockers": [
-    "next026_passkey_fallback_owner_acceptance_pending",
-    "next025_windows_ab_history_owner_acceptance_pending"
+    "next027_announcement_template_visual_owner_acceptance_pending",
+    "next025_windows_ab_history_owner_acceptance_pending",
+    "next026_passkey_fallback_owner_acceptance_pending"
   ],
   "productionTouched": false,
   "readFirst": [
-    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#99-next-026-passkey-recovery-ux-and-sign-in-help-closure",
-    "docs/project-book/LIGHTBI_CONTROL_PLANE_MAP.md#35-next-026-explicit-passkey-fallback-and-recovery-help-control-plane-closure",
+    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#100-next-027-branded-announcement-templates-and-inboxmail-visual-convergence",
+    "docs/project-book/LIGHTBI_CONTROL_PLANE_MAP.md#36-next-027-governed-announcement-template-control-plane-closure",
     "docs/adr/ADR-123-engine-chassis-preproduction-and-disaster-recovery.md"
   ]
 }
