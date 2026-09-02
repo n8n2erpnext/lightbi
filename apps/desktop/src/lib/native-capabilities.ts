@@ -170,8 +170,8 @@ export async function saveDataUrlWithUserChoice(dataUrl: string, options: SaveFi
 
 export async function openExternalUrl(url: string): Promise<void> {
   const parsed = new URL(url);
-  if (!['https:', 'mailto:'].includes(parsed.protocol))
-    throw new Error('Only HTTPS and mail links may leave LightBI.');
+  if (!['http:', 'https:', 'mailto:'].includes(parsed.protocol))
+    throw new Error('Only web and mail links may leave LightBI.');
   if (isNativeLightBI()) {
     const { openUrl } = await import('@tauri-apps/plugin-opener');
     await openUrl(parsed.toString());
@@ -186,7 +186,9 @@ export function externalAnchorUrl(target: EventTarget | null): string | null {
   if (!anchor || anchor.hasAttribute('download')) return null;
   try {
     const parsed = new URL(anchor.getAttribute('href') ?? '', window.location.href);
-    return ['https:', 'mailto:'].includes(parsed.protocol) ? parsed.toString() : null;
+    if (parsed.protocol === 'mailto:') return parsed.toString();
+    if (!['http:', 'https:'].includes(parsed.protocol)) return null;
+    return parsed.origin === window.location.origin ? null : parsed.toString();
   } catch {
     return null;
   }

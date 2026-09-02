@@ -17,10 +17,13 @@ describe('native capabilities', () => {
     delete (window as any).showSaveFilePicker;
   });
 
-  it('recognizes only external HTTPS and mail anchors', () => {
+  it('recognizes external HTTP, HTTPS and mail anchors while keeping app routes internal', () => {
     const external = document.createElement('a');
     external.href = 'https://lightbi.thaiduy.digital/docs';
     expect(externalAnchorUrl(external)).toBe('https://lightbi.thaiduy.digital/docs');
+    const plainHttp = document.createElement('a');
+    plainHttp.href = 'http://example.com/help';
+    expect(externalAnchorUrl(plainHttp)).toBe('http://example.com/help');
     const mail = document.createElement('a');
     mail.href = 'mailto:test@example.com';
     expect(externalAnchorUrl(mail)).toBe('mailto:test@example.com');
