@@ -1,1 +1,2 @@
 sample-corpus/anchors/1.3.0/*.csv binary
+sample-corpus/**/*.json text eol=lf
