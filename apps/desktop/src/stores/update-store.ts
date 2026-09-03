@@ -40,6 +40,7 @@ let manifestCheckPromise: Promise<void> | null = null;
 let preparePromise: Promise<void> | null = null;
 let updateOperationEpoch = 0;
 const AUTO_DOWNLOAD_KEY = "lightbi-auto-download-updates";
+const UPDATE_NOTIFICATION_READ_KEY = "lightbi-read-update-notification-v1";
 
 export function autoDownloadUpdatesEnabled(storage: Pick<Storage, "getItem"> = localStorage): boolean {
   return storage.getItem(AUTO_DOWNLOAD_KEY) !== "disabled";
@@ -122,6 +123,9 @@ type UpdateStore = {
   dismissedVersion: string | null;
   qaSimulation: boolean;
   autoDownload: boolean;
+  notificationReadVersion: string | null;
+  hasUnreadNotification: () => boolean;
+  markNotificationRead: () => void;
   check: (force?: boolean) => Promise<void>;
   prepare: () => Promise<void>;
   install: () => Promise<void>;
@@ -176,6 +180,18 @@ export const useUpdateStore = create<UpdateStore>((set, get) => ({
   dismissedVersion: typeof localStorage !== "undefined" ? localStorage.getItem("lightbi-update-dismissed-version") : null,
   qaSimulation: false,
   autoDownload: typeof localStorage !== "undefined" ? autoDownloadUpdatesEnabled(localStorage) : true,
+  notificationReadVersion: typeof localStorage !== "undefined" ? localStorage.getItem(UPDATE_NOTIFICATION_READ_KEY) : null,
+  hasUnreadNotification: () => {
+    const { manifest, status, notificationReadVersion } = get();
+    if (!manifest || !["available", "downloading", "verifying", "ready"].includes(status)) return false;
+    return notificationReadVersion !== manifest.version;
+  },
+  markNotificationRead: () => {
+    const version = get().manifest?.version ?? null;
+    if (!version) return;
+    if (typeof localStorage !== "undefined") localStorage.setItem(UPDATE_NOTIFICATION_READ_KEY, version);
+    set({ notificationReadVersion: version });
+  },
   check: (force = false) => {
     if (!isNativeLightBI()) return Promise.resolve();
     if (manifestCheckPromise) return manifestCheckPromise;

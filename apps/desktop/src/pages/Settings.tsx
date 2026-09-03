@@ -16,6 +16,7 @@ import { UpdateSettingsPanel } from '../components/settings/UpdateSettingsPanel'
 import { InternalGenerationPanel } from '../components/settings/InternalGenerationPanel';
 import { BuildIdentityPanel } from '../components/settings/BuildIdentityPanel';
 import { lightBIFrontendUrl } from '../lib/lightbi-routing';
+import { useUpdateStore } from '../stores/update-store';
 
 const AccountAccess: React.FC<{ account: ReturnType<typeof useLightBIAccount> }> = ({ account }) => {
   const [mode, setMode] = useState<'login' | 'register'>('login');
@@ -86,6 +87,8 @@ export const Settings: React.FC = () => {
   const [licenseMessage, setLicenseMessage] = useState('');
   const [accountLicenseKey, setAccountLicenseKey] = useState('');
   const lightbiAccount = useLightBIAccount();
+  const updater = useUpdateStore();
+  const updateNotificationCount = updater.hasUnreadNotification() ? 1 : 0;
   const requestedSection = new URLSearchParams(location.search).get('section');
   const validRequestedSection = ['general', 'account', 'appearance', 'privacy', 'updates'].includes(requestedSection || '')
     ? requestedSection as 'general' | 'account' | 'appearance' | 'privacy' | 'updates'
@@ -106,6 +109,7 @@ export const Settings: React.FC = () => {
 
   useEffect(() => {
     setSettingsSection(validRequestedSection);
+    if (validRequestedSection === 'updates') updater.markNotificationRead();
   }, [validRequestedSection]);
 
   return (
@@ -114,7 +118,7 @@ export const Settings: React.FC = () => {
         <NavLink to="/" className="mb-4 flex h-10 items-center gap-2 rounded-xl px-3 text-sm font-medium text-black/55 hover:bg-white/70 hover:text-black"><ArrowLeft className="h-4 w-4" />{t('Back to app')}</NavLink>
         <label className="relative mb-5 block"><Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-black/40"/><input value={settingsSearch} onChange={event=>setSettingsSearch(event.target.value)} placeholder={t('Search settings…')} className="h-11 w-full rounded-2xl border border-black/10 bg-white/80 pl-10 pr-3 text-sm outline-none focus:border-blue-400"/></label>
         <div className="px-3 pb-2 text-xs font-semibold text-black/35">{t('Personal')}</div>
-        <nav className="space-y-1">{settingsItems.map(item=><button key={item.id} type="button" onClick={()=>setSettingsSection(item.id)} className={`flex h-11 w-full items-center gap-3 rounded-xl px-3 text-left text-sm ${settingsSection===item.id?'bg-black/[0.06] font-semibold text-black':'text-black/70 hover:bg-white/70'}`}><item.icon className="h-4 w-4"/><span>{item.label}</span></button>)}</nav>
+        <nav className="space-y-1">{settingsItems.map(item=><button key={item.id} type="button" onClick={()=>{setSettingsSection(item.id);if(item.id==='updates')updater.markNotificationRead();}} className={`flex h-11 w-full items-center gap-3 rounded-xl px-3 text-left text-sm ${settingsSection===item.id?'bg-black/[0.06] font-semibold text-black':'text-black/70 hover:bg-white/70'}`}><item.icon className="h-4 w-4"/><span className="flex-1">{item.label}</span>{item.id==='updates'&&updateNotificationCount>0&&<span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">{updateNotificationCount}</span>}</button>)}</nav>
         {lightbiAccount.account&&<div className="mt-auto rounded-2xl border border-black/10 bg-white/80 p-3"><div className="truncate text-sm font-semibold">{lightbiAccount.account.account.display_name||lightbiAccount.account.account.email}</div><div className="truncate text-xs text-black/45">{lightbiAccount.account.account.email}</div></div>}
       </aside>
       <section className="flex min-w-0 flex-1 flex-col overflow-hidden">

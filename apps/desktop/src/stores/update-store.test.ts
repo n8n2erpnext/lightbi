@@ -87,7 +87,20 @@ describe("staged native updater", () => {
       checkedAt: null,
       dismissedVersion: null,
       qaSimulation: false,
+      notificationReadVersion: null,
     });
+  });
+
+
+  it("emits one unread notification per update version and marks it read independently from update state", () => {
+    useUpdateStore.setState({ status: "ready", manifest: manifest("0.9.3-beta.7"), notificationReadVersion: null });
+    expect(useUpdateStore.getState().hasUnreadNotification()).toBe(true);
+    useUpdateStore.getState().markNotificationRead();
+    expect(useUpdateStore.getState().hasUnreadNotification()).toBe(false);
+    useUpdateStore.setState({ status: "downloading", manifest: manifest("0.9.3-beta.7") });
+    expect(useUpdateStore.getState().hasUnreadNotification()).toBe(false);
+    useUpdateStore.setState({ status: "available", manifest: manifest("0.9.4-beta.1") });
+    expect(useUpdateStore.getState().hasUnreadNotification()).toBe(true);
   });
 
   it("orders beta patch releases and ignores same or older manifests", () => {

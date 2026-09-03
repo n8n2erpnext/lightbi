@@ -44,6 +44,7 @@ export const AppLayout: React.FC = () => {
   const updater = useUpdateStore();
   const announcements = useAnnouncementStore();
   const generation = buildGenerationManifest();
+  const updateNotificationCount = updater.hasUnreadNotification() ? 1 : 0;
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const accountMenuRef = useRef<HTMLDivElement>(null);
   const mainScrollRef = useRef<HTMLDivElement>(null);
@@ -229,8 +230,8 @@ export const AppLayout: React.FC = () => {
                   <NavLink to="/settings" onClick={() => setAccountMenuOpen(false)} className="flex h-10 items-center gap-3 rounded-xl px-3 text-sm text-black/75 hover:bg-black/[0.05]">
                     <Settings className="h-4 w-4" />{t("Settings")}
                   </NavLink>
-                  <NavLink to="/settings?section=updates" onClick={() => setAccountMenuOpen(false)} className="flex h-10 items-center gap-3 rounded-xl px-3 text-sm text-black/75 hover:bg-black/[0.05]">
-                    <RefreshCw className="h-4 w-4" /><span className="flex-1">{t("Updates")}</span>{updater.status === "ready" && <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-700">READY</span>}
+                  <NavLink to="/settings?section=updates" onClick={() => { setAccountMenuOpen(false); updater.markNotificationRead(); }} className="flex h-10 items-center gap-3 rounded-xl px-3 text-sm text-black/75 hover:bg-black/[0.05]">
+                    <RefreshCw className="h-4 w-4" /><span className="flex-1">{t("Updates")}</span>{updateNotificationCount > 0 && <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">{updateNotificationCount}</span>}
                   </NavLink>
                   {lightbiAccount.account && <button type="button" onClick={() => { setAccountMenuOpen(false); dispatchDesktopCommand("invite"); }} className="flex h-10 w-full items-center gap-3 rounded-xl px-3 text-sm text-black/75 hover:bg-black/[0.05]">
                     <UserPlus className="h-4 w-4" />Invite to LightBI
