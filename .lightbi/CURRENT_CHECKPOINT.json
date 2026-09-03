@@ -1,11 +1,11 @@
 {
   "schema": "067_catalog_quarterly_pricing",
-  "updatedAt": "2026-09-03T03:33:23Z",
-  "status": "r1p12_next030_runtime_reconciled_windows_esigner_lane_wired_awaiting_real_signing_production_official_identity_blocked_r1p13_closed",
+  "updatedAt": "2026-09-03T04:56:15Z",
+  "status": "r1p12_next_anti_impersonation_machine_closed_r1p13_rc_work_authorized_production_freeze_still_owner_gated",
   "activeRuntime": "g-2026-09-03-next-030",
   "runtime": {
     "immutableGenerationCoreCommit": "7d15d69f2cf0bf39ac98dac9d91faa95edec7847",
-    "gatewayRuntimeOverlayCommit": "6bb55ab35c2126ae0a584aa662e919f5e3b29ea2",
+    "gatewayRuntimeOverlayCommit": "68e5bc159fe0054fd4ab08083dbeb4fa84817847",
     "publicGenerationHeader": "g-2026-09-03-next-030",
     "legacyRuntimeManifestStillReports": "g-2026-09-02-next-029",
     "legacyRuntimeManifestAuthoritative": false,
@@ -23,8 +23,11 @@
     "privateControlPlaneHead": "bb50b0d53542da5cd908e2237cbca368f7f87073",
     "trustContracts": "10de4da8e551a46f93f7b62985a0a6e611581b8e",
     "r1p11PrivateFinal": "deda7c284a6eafaa8cb69d491b96476a025ed15c",
-    "currentR1P12PublicHead": "901dda8fee8d386ed0779c3f4b8ebd5a6d7d8105",
-    "windowsSigningLaneHead": "901dda8fee8d386ed0779c3f4b8ebd5a6d7d8105"
+    "currentR1P12PublicHead": "68e5bc159fe0054fd4ab08083dbeb4fa84817847",
+    "windowsSigningLaneHead": "901dda8fee8d386ed0779c3f4b8ebd5a6d7d8105",
+    "r1p12IdentityAuthorityCorrectionHead": "a8e3db5abae935ac0e6238d892e51ffbb1d34c0f",
+    "r1p12AcceptanceProvenanceHead": "148f27a8db743f75bd4fe0c06ceee0461fb14cb5",
+    "r1p12TrustGatewayHead": "68e5bc159fe0054fd4ab08083dbeb4fa84817847"
   },
   "windowsAcceptance": {
     "runId": 33696477945,
@@ -68,9 +71,19 @@
     "r1p12_tauri_signing_covers_runtime_executable_and_nsis_installer",
     "r1p12_signing_lane_exact_sha_branch_guarded_no_publication_authority",
     "r1p12_release_contract_11_11_pass_after_signing_wiring",
-    "r1p12_release1_0_suite_pass_after_signing_wiring"
+    "r1p12_release1_0_suite_pass_after_signing_wiring",
+    "r1p12_owner_signing_definition_corrected_to_lightbi_root_rel_artifact_att",
+    "r1p12_native_acceptance_run_33713352231_success_exact_artifact_source",
+    "r1p12_exact_installer_sha_size_independently_verified",
+    "r1p12_test_rel_signed_exact_acceptance_artifact",
+    "r1p12_live_public_root_rel_verifier_pass",
+    "r1p12_att_rehearsal_and_replay_tamper_target_negatives_pass",
+    "r1p12_forged_release_with_valid_att_signature_rejected",
+    "r1p12_internal_trust_gateway_overlay_68e5bc1_live",
+    "r1p12_next_anti_impersonation_machine_gate_closed",
+    "r1p13_rc_work_owner_authorized"
   ],
-  "nextAction": "Remain in R1-P12 on NEXT. Obtain/validate the SSL.com IV code-signing certificate and eSigner enrollment, configure only the four GitHub signing secrets, then create an exact-SHA sandbox signing branch for connectivity rehearsal if desired and an exact-SHA product signing branch to prove both the installed LightBI executable and NSIS installer have matching trusted Authenticode signer evidence. No signing run has executed yet. Production Phase 2A freeze, ATT request-wire freeze, Production REL/ATT/external-verifier authority and role rotation remain owner-gated and must not be changed without explicit authorization. Do not open R1-P13. Bell dropdown remains deferred non-blocking UX debt.",
+  "nextAction": "R1-P13 is active for NEXT/RC preparation. Build a dedicated fail-closed 1.0.0-rc.N acceptance lane without inventing an rc channel and without granting stable/Production publication authority. Carry forward unresolved owner acceptance from earlier R1-P1 as an RC/stable gate rather than silently waiving it. Production Phase 2A freeze and Production Root/issuer ceremony remain separately owner-gated; do not fabricate FREEZE APPROVED. Signer administration remains cli-lightbi only; Phase B/C/D remain closed. Bell dropdown remains deferred non-blocking UX debt.",
   "blockers": {
     "phase2aFrozen": false,
     "productionAttestationRequestSchemaFrozen": false,
@@ -78,27 +91,30 @@
     "productionVerifier": false,
     "officialVerifiedReachable": false,
     "r1p12PlatformSigningComplete": false,
-    "r1p13Authorized": false,
+    "r1p13Authorized": true,
     "bellDropdownDeferred": true,
     "nextInternalControlPlaneGenerationAligned": true,
     "nextInternalWorkerHealthy": true,
     "windowsSigningLaneWired": true,
     "windowsSigningSecretsConfigured": false,
-    "windowsSigningRunExecuted": false
+    "windowsSigningRunExecuted": false,
+    "r1p12MachineClosed": true,
+    "windowsAuthenticodeBlocksR1P12": false,
+    "r1p12PlatformSigningIsFutureHardening": true
   },
   "deferredPlatformDebt": {
     "macosProductBugs": true,
     "macosDeveloperIdNotarization": false,
     "linuxValidationDeferred": true,
-    "note": "macOS/Linux are deferred until Windows is stable; neither may claim stable/official before its own gates."
+    "note": "OS-vendor signing (Windows Authenticode and Apple Developer ID/notarization) is future platform hardening under the current owner definition; macOS/Linux product validation remains deferred. None of these is the R1-P12 LightBI Root anti-impersonation signature."
   },
   "productionTouched": false,
   "readFirst": [
     "docs/project-book/LIBRARY_RULES.md",
     "docs/project-book/PROJECT_TRUTH_STATUS.json",
-    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#111-r1-p12-windows-native-acceptance-6-passes-owner-uat-bell-dropdown-is-deferred-and-official-identity-remains-blocked",
-    "docs/project-book/LIGHTBI_CI_CD_MAP.md#23-2026-09-03-r1-p12-windows-native-acceptance-6-is-green-but-not-authenticode-signed",
-    "docs/architecture/road-to-1-0-trust-release-contract.md#current-implementation-status"
+    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#114-owner-restores-lightbi-rooted-signing-authority-r1-p12-next-anti-impersonation-machine-gate-closes-and-r1-p13-opens",
+    "docs/project-book/LIGHTBI_CI_CD_MAP.md#26-2026-09-03-r1-p12-lightbi-rootrelatt-acceptance-8-closes-next-anti-impersonation-machine-gate",
+    "docs/architecture/road-to-1-0-trust-release-contract.md#official-release-identity"
   ],
   "windowsSigningLane": {
     "provider": "ssl.com-esigner-cka",
@@ -115,6 +131,45 @@
     "productionAuthority": false,
     "runExecuted": false,
     "secretsConfigured": false,
-    "githubRunsAtWiringHead": 0
+    "githubRunsAtWiringHead": 0,
+    "role": "future_platform_hardening_non_blocking_for_current_r1p12"
+  },
+  "r1p12MachineClosure": {
+    "status": "complete_next_test_authority_nonproduction",
+    "actionsRunId": 33713352231,
+    "actionsJobId": 100517314011,
+    "runNumber": 8,
+    "actionsStatus": "success",
+    "artifactId": 9878574548,
+    "artifactDigest": "sha256:092a90d5e5ae537c1cebc580b41f6ed6ee9cdb3610fdc6375091959abe3783d5",
+    "version": "0.9.2-next.r1p12.8",
+    "artifactSourceCommit": "148f27a8db743f75bd4fe0c06ceee0461fb14cb5",
+    "installer": "LightBI-NEXT-0.9.2-next.r1p12.8-x64-setup.exe",
+    "installerSha256": "1b55ee32690f01ffb7cbaedfbd2bba22c50222c049b4902356504f858eed8151",
+    "installerSize": 29781164,
+    "testAuthorityId": "next-test-20260902-031220",
+    "relReleaseId": "release:0.9.2-next.r1p12.8:windows:x86_64",
+    "liveRootKid": "next-test-root-2026-01",
+    "liveRelKid": "next-test-rel-2026-01",
+    "publicVerifierLive": true,
+    "attestationRehearsalPassed": true,
+    "forkReleaseRejected": "attestation_release_not_allowed",
+    "privateVerifierTests": "209/209",
+    "currentHeadReleaseSuite": "pass_governed_39_39",
+    "gatewayOverlay": "68e5bc159fe0054fd4ab08083dbeb4fa84817847",
+    "osPublisherStatus": "NotSigned",
+    "osPublisherBlockingCurrentR1P12": false,
+    "productionAuthority": false
+  },
+  "signerOperatorModel": {
+    "entrypoint": "cli-lightbi",
+    "mentalModel": "frappe_bench_like",
+    "tui": "rust_ratatui_crossterm",
+    "phaseA": "machine_closed_read_only",
+    "phaseB": "closed",
+    "phaseC": "closed",
+    "phaseD": "closed",
+    "webAdminAllowed": false,
+    "genericSigningAllowed": false
   }
 }

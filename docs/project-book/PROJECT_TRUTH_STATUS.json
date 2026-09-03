@@ -118,8 +118,9 @@
     "next024_admin_sidebar_owner_visual_acceptance",
     "next026_passkey_fallback_owner_acceptance",
     "next025_windows_ab_history_owner_acceptance",
-    "windows_authenticode_and_publisher_identity",
-    "production_external_verification_surface"
+    "future_windows_authenticode_platform_hardening",
+    "production_external_verification_surface",
+    "r1p13_rc_acceptance_and_soak"
   ],
   "postTruthCandidates": {
     "controlPlaneFoundation": {
@@ -300,7 +301,7 @@
   },
   "nextGeneration": {
     "model": "successor_promotion_generation_rotation",
-    "status": "internal_next030_fully_generation_reconciled_r1p12_esigner_lane_wired_real_authenticode_pending_official_identity_blocked",
+    "status": "next030_r1p12_anti_impersonation_machine_closed_r1p13_rc_preparation_authorized_production_freeze_unapproved",
     "generationSchema": "lightbi.generation.v1",
     "generationId": "g-2026-09-03-next-030",
     "parentGenerationId": "g-2026-09-02-next-029",
@@ -337,9 +338,12 @@
       "windowsInstallerBrandingHead": "38ded3f2ae01694935e464d9f87b141afb1e0e26",
       "externalLinkSystemBrowserHead": "4b8884c6a2e77c5afaa46aaf622fd45cc6f2578e",
       "windowsUatHead": "13202fd7136b134f05768a797f3c5dd12d717889",
-      "gatewayRuntimeOverlayHead": "6bb55ab35c2126ae0a584aa662e919f5e3b29ea2",
-      "currentR1P12PublicHead": "901dda8fee8d386ed0779c3f4b8ebd5a6d7d8105",
-      "windowsSigningLaneHead": "901dda8fee8d386ed0779c3f4b8ebd5a6d7d8105"
+      "gatewayRuntimeOverlayHead": "68e5bc159fe0054fd4ab08083dbeb4fa84817847",
+      "currentR1P12PublicHead": "68e5bc159fe0054fd4ab08083dbeb4fa84817847",
+      "windowsSigningLaneHead": "901dda8fee8d386ed0779c3f4b8ebd5a6d7d8105",
+      "r1p12IdentityAuthorityCorrectionHead": "a8e3db5abae935ac0e6238d892e51ffbb1d34c0f",
+      "r1p12AcceptanceProvenanceHead": "148f27a8db743f75bd4fe0c06ceee0461fb14cb5",
+      "r1p12TrustGatewayHead": "68e5bc159fe0054fd4ab08083dbeb4fa84817847"
     },
     "controlPlane": {
       "workspace": "/home/ubuntu/n8n2erpnext/lightbi-control-plane-next033-r1p12",
@@ -583,7 +587,7 @@
       "nextControlPlaneUserUnitEnabled": true,
       "activeGenerationId": "g-2026-09-03-next-030",
       "activeGenerationCoreCommit": "7d15d69f2cf0bf39ac98dac9d91faa95edec7847",
-      "activeGatewayOverlayCommit": "6bb55ab35c2126ae0a584aa662e919f5e3b29ea2",
+      "activeGatewayOverlayCommit": "68e5bc159fe0054fd4ab08083dbeb4fa84817847",
       "activeEngineSymlinkGeneration": "g-2026-09-03-next-030",
       "publicGenerationHeader": "g-2026-09-03-next-030",
       "legacyRuntimeManifestGeneration": "g-2026-09-02-next-029",
@@ -593,7 +597,7 @@
       "controlPlaneRuntimeDiagnosticsCommit": "bb50b0d53542da5cd908e2237cbca368f7f87073",
       "controlPlaneRuntimeWorkerStatus": "healthy",
       "controlPlaneRuntimeWorkerLastSeenAt": "2026-09-03T02:32:45.060Z",
-      "currentRuntimeProvenanceAuditedAt": "2026-09-03T02:35:54Z",
+      "currentRuntimeProvenanceAuditedAt": "2026-09-03T04:56:15Z",
       "publicManifestByteMatchesActiveEngine": true
     },
     "trust": {
@@ -601,8 +605,8 @@
       "freezeApproved": false,
       "trust1Blocked": true,
       "r1p12AntiImpersonation": {
-        "status": "windows_esigner_lane_wired_real_authenticode_pending_production_official_identity_blocked",
-        "publicCoreCommit": "901dda8fee8d386ed0779c3f4b8ebd5a6d7d8105",
+        "status": "next_machine_closed_lightbi_root_rel_artifact_att_owner_definition_r1p13_rc_work_authorized",
+        "publicCoreCommit": "68e5bc159fe0054fd4ab08083dbeb4fa84817847",
         "privateVerifierCommit": "85fa6a6961ba2bb00e2d09d92e6a9f5f815a3478",
         "nextExternalVerifierLive": true,
         "nextExternalVerifierUrl": "https://lightbi-next.thaiduy.digital/verify",
@@ -614,17 +618,17 @@
         "macosNotarized": false,
         "macosValidationSigning": "ad_hoc_deferred_debt",
         "officialVerifiedReachable": false,
-        "r1p13Authorized": false,
+        "r1p13Authorized": true,
         "activePlatform": "windows",
         "macosLinuxTestingDeferredUntilWindowsStable": true,
         "permanentWindowsOnlyDecision": false,
         "releaseAuthorityHardeningCommit": "72cfb385f1d35c605d3a09f80657572dc25abe02",
         "betaReleaseWorkflow": "windows_only",
         "publicReleaseContractTests": "11/11",
-        "release1_0Suite": "pass_governed_39_39_after_esigner_wiring",
+        "release1_0Suite": "pass_governed_39_39_at_68e5bc1",
         "windowsPublisherEvidenceCollector": "Get-AuthenticodeSignature",
-        "stableManifestRequiresWindowsPublisherEvidence": true,
-        "stableWindowsPublisherSubjectRequired": true,
+        "stableManifestRequiresWindowsPublisherEvidence": false,
+        "stableWindowsPublisherSubjectRequired": false,
         "betaMayOverwriteStableGlobalLatest": false,
         "linuxBetaBuildDeferred": true,
         "privateControlPlaneCurrentCommit": "bb50b0d53542da5cd908e2237cbca368f7f87073",
@@ -649,10 +653,27 @@
         "windowsSigningSecretsConfigured": false,
         "windowsSigningRunExecuted": false,
         "windowsSigningApplicationAndInstallerRequired": true,
-        "windowsRuntimeExpectedPublisherThumbprintCompiled": true
+        "windowsRuntimeExpectedPublisherThumbprintCompiled": true,
+        "windowsAuthenticodeBlocksR1P12": false,
+        "osPublisherEvidenceRole": "future_platform_hardening_optional_when_absent_strict_when_supplied",
+        "r1p12MachineClosed": true,
+        "r1p12MachineClosureActionsRunId": 33713352231,
+        "r1p12MachineClosureArtifactId": 9878574548,
+        "r1p12MachineClosureArtifactDigest": "sha256:092a90d5e5ae537c1cebc580b41f6ed6ee9cdb3610fdc6375091959abe3783d5",
+        "r1p12MachineClosureVersion": "0.9.2-next.r1p12.8",
+        "r1p12MachineClosureInstaller": "LightBI-NEXT-0.9.2-next.r1p12.8-x64-setup.exe",
+        "r1p12MachineClosureInstallerSha256": "1b55ee32690f01ffb7cbaedfbd2bba22c50222c049b4902356504f858eed8151",
+        "r1p12MachineClosureInstallerSize": 29781164,
+        "r1p12MachineClosureRelReleaseId": "release:0.9.2-next.r1p12.8:windows:x86_64",
+        "r1p12MachineClosureAuthorityId": "next-test-20260902-031220",
+        "r1p12LiveRootKid": "next-test-root-2026-01",
+        "r1p12LiveRelKid": "next-test-rel-2026-01",
+        "r1p12AttestationRehearsalPassed": true,
+        "r1p12ForkProbe": "valid_att_signature_unknown_rel_release_rejected_attestation_release_not_allowed",
+        "r1p12GatewayOverlay": "68e5bc159fe0054fd4ab08083dbeb4fa84817847"
       }
     },
-    "generationIdAuthority": "next030_engine_manifest_and_public_header_authoritative_for_core_gateway_cp_live_diagnostics_still_next029_runtime_split_recorded",
+    "generationIdAuthority": "next030_engine_manifest_public_header_cp_worker_aligned_gateway_overlay_68e5bc1_active",
     "historicalProofParentCandidate": "prod-v0.9.2-beta.7-28e2aae",
     "parentGenerationBootstrapRequired": false,
     "bootstrapCurrent": {
@@ -665,7 +686,7 @@
     "ownerUat": {
       "started": true,
       "accepted": false,
-      "blocker": "whole-generation owner acceptance remains independent; bounded R1-P12 Windows install/sidebar/external-link UAT accepted",
+      "blocker": "whole-generation owner acceptance remains independent; bounded R1-P12 Windows #6 install/sidebar/external-link UAT accepted; #8 is machine closure evidence and is not mislabeled as manual UAT",
       "r1p12WindowsBoundedAccepted": true,
       "r1p12WindowsAcceptedScope": [
         "installer_shell",
@@ -682,7 +703,7 @@
       "coreCommit": "7d15d69f2cf0bf39ac98dac9d91faa95edec7847",
       "controlPlaneCommit": "bb50b0d53542da5cd908e2237cbca368f7f87073",
       "scope": "next030_internal_core_gateway_plus_control_plane_bb50b0d; generation manifest, live CP diagnostics and worker heartbeat aligned",
-      "knownLimitation": "bounded Windows R1-P12 UAT accepted; real Windows Authenticode and owner-gated Production trust authority remain unresolved",
+      "knownLimitation": "bounded Windows #6 UAT accepted; Bell dropdown deferred; R1-P12 machine anti-impersonation closure complete; Production Phase 2A/Root authority still owner-gated",
       "deepBaScopeIsolationFixed": true,
       "deepBaScopeIsolationRegressionTestsPassed": 20,
       "advancedEasyRoundTripE2ePassed": true,
@@ -711,7 +732,7 @@
       "controlPlaneManifestCommit": "bb50b0d53542da5cd908e2237cbca368f7f87073",
       "controlPlaneLiveDiagnosticsGeneration": "g-2026-09-03-next-030",
       "controlPlaneLiveDiagnosticsCommit": "bb50b0d53542da5cd908e2237cbca368f7f87073",
-      "gatewayRuntimeOverlayCommit": "6bb55ab35c2126ae0a584aa662e919f5e3b29ea2"
+      "gatewayRuntimeOverlayCommit": "68e5bc159fe0054fd4ab08083dbeb4fa84817847"
     },
     "excelPivotExport": {
       "contractVersion": "lightbi.excel-pivot-export.v1",
@@ -848,7 +869,7 @@
     }
   },
   "roadTo1_0Execution": {
-    "status": "r1_p5_freeze_ready_production_r1_p6_owner_gated_next_r1_p7_p8_p9_rehearsals_pass",
+    "status": "r1_p12_next_machine_closed_r1_p13_rc_preparation_owner_authorized_production_phase2a_freeze_still_explicit_gate",
     "startedDate": "2026-08-31",
     "baseline": {
       "core": "451c9b6afe0a95bce5bce473a4a84c8b918f42cd",
@@ -959,7 +980,7 @@
       "trackedPrivateKeyLiterals": 0,
       "productionSignerDetected": false,
       "ownerFreezeApproved": false,
-      "requiredOwnerRecord": "FREEZE APPROVED — PR #4 codex/phase2-trust-contracts @ 10de4da8e551a46f93f7b62985a0a6e611581b8e",
+      "requiredOwnerRecord": "FREEZE APPROVED \u2014 PR #4 codex/phase2-trust-contracts @ 10de4da8e551a46f93f7b62985a0a6e611581b8e",
       "productionMutated": false
     },
     "keyCustodyPolicy": {
@@ -1060,7 +1081,9 @@
       "r1p11PausedForPlan": false,
       "r1p11WipBase": "31fa5428896f6e9cb7877d353e2485b43d7a1671",
       "sourceCommit": "86512968d02ceca91c3292bb8a8648275ce60a22",
-      "binarySha256": "ee2f65c5a80e64bae49ac190be52ac5cab3e35d9d3da23a6fc5bbf58f919a7b6"
+      "binarySha256": "ee2f65c5a80e64bae49ac190be52ac5cab3e35d9d3da23a6fc5bbf58f919a7b6",
+      "operatorModel": "cli_only_frappe_bench_like",
+      "signerWebAdminAllowed": false
     }
   },
   "roadTo1_0": {
@@ -1081,8 +1104,8 @@
     "r1p10": "production_blocked_by_r1p6_next_rehearsal_pass",
     "cliLightbi": "phase_a_v0_1_machine_verified_read_only_closed",
     "r1p11": "production_blocked_by_r1p6_next_rehearsal_pass",
-    "r1p12": "windows_first_owner_uat_accepted_bell_deferred_acceptance_artifact_not_signed_production_official_identity_still_blocked",
-    "r1p13": "closed_until_active_windows_r1p12_and_all_prior_production_release_gates_pass"
+    "r1p12": "next_anti_impersonation_machine_closed_root_rel_exact_artifact_att_fork_negative_pass_os_publisher_future_hardening",
+    "r1p13": "active_rc_preparation_owner_authorized_stable_exit_retains_inherited_owner_acceptance_and_production_freeze_gates"
   },
   "optionalCommerceRevenueMirror": {
     "provider": "paddle",
@@ -1091,7 +1114,7 @@
     "erpnextCompany": "LightBI Inc",
     "serviceItem": "LIGHTBI-PRO",
     "workflowId": "lightbiRevenueMirror01",
-    "workflowName": "LightBI Paddle Revenue → ERPNext Invoice + Clearing",
+    "workflowName": "LightBI Paddle Revenue \u2192 ERPNext Invoice + Clearing",
     "workflowNodes": 26,
     "workflowActive": false,
     "salesInvoiceUpdateStock": false,
@@ -1104,5 +1127,5 @@
     "next018SourceReady": true,
     "infraApprovalRequired": true
   },
-  "lastReconciledAt": "2026-09-03T01:40:00Z"
+  "lastReconciledAt": "2026-09-03T04:56:15Z"
 }
