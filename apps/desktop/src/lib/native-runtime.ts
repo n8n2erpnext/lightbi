@@ -20,6 +20,18 @@ export type NativeOsPublisherEvidence = {
   reason: string;
 };
 
+
+export type NativeInstallationTrustResult = {
+  status: 'issued';
+  installationId: string;
+  releaseId: string;
+  certificateId: string;
+  expiresAt: string;
+  runtimeSha256: string;
+  runtimeSize: number;
+  productionAuthority: false;
+};
+
 export type NativeInstallationLifecycleReceipt = {
   installationId: string;
   endpoint: string;
@@ -109,5 +121,15 @@ export async function clearNativeInstallationLifecycleReceipt(): Promise<boolean
     return await invoke<boolean>('clear_installation_lifecycle_receipt');
   } catch {
     return false;
+  }
+}
+export async function ensureNativeInstallationTrust(installationId: string): Promise<NativeInstallationTrustResult | null> {
+  if (!isNativeLightBI() || import.meta.env.VITE_LIGHTBI_CHANNEL !== 'internal') return null;
+  try {
+    const { invoke } = await import('@tauri-apps/api/core');
+    const result = await invoke<NativeInstallationTrustResult>('ensure_installation_trust', { installationId });
+    return result?.productionAuthority === false && result?.status === 'issued' ? result : null;
+  } catch {
+    return null;
   }
 }

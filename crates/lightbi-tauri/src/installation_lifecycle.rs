@@ -19,7 +19,7 @@ pub struct InstallationLifecycleReceipt {
     pub environment: String,
 }
 
-fn valid_installation_id(value: &str) -> bool {
+pub(crate) fn valid_installation_id(value: &str) -> bool {
     (20..=80).contains(&value.len())
         && value
             .chars()

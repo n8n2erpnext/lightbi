@@ -63,6 +63,7 @@ jobs:
           VITE_LIGHTBI_GENERATION_ID: ${{ env.LIGHTBI_RC_GENERATION }}
           VITE_LIGHTBI_PARENT_GENERATION_ID: g-2026-09-03-next-030
           VITE_LIGHTBI_CHANNEL: internal
+          LIGHTBI_RUNTIME_CHANNEL: internal
           VITE_LIGHTBI_CORE_COMMIT: ${{ github.sha }}
           VITE_LIGHTBI_CONTROL_PLANE_COMMIT: bb50b0d53542da5cd908e2237cbca368f7f87073
           VITE_LIGHTBI_CONTROL_PLANE_SCHEMA_VERSION: 067_catalog_quarterly_pricing
@@ -91,12 +92,20 @@ jobs:
         run: |
           $installer = Get-ChildItem "target/x86_64-pc-windows-msvc/release/bundle/nsis/*.exe" | Select-Object -First 1
           if (-not $installer) { throw "NSIS RC installer was not produced" }
+          $runtime = Get-Item "target/x86_64-pc-windows-msvc/release/LightBI.exe" -ErrorAction SilentlyContinue
+          if (-not $runtime) { throw "Exact LightBI.exe runtime was not produced" }
           $name = "LightBI-RC-$env:LIGHTBI_RC_VERSION-x64-setup.exe"
           $normalized = Join-Path $installer.Directory.FullName $name
           Move-Item $installer.FullName $normalized -Force
           $hash = (Get-FileHash -Algorithm SHA256 $normalized).Hash.ToLowerInvariant()
           $size = (Get-Item $normalized).Length
           "$hash  $name" | Set-Content -NoNewline "$normalized.sha256"
+          $runtimeName = "LightBI.exe"
+          $runtimeHash = (Get-FileHash -Algorithm SHA256 $runtime.FullName).Hash.ToLowerInvariant()
+          $runtimeSize = $runtime.Length
+          $runtimeCopy = Join-Path $installer.Directory.FullName $runtimeName
+          Copy-Item $runtime.FullName $runtimeCopy -Force
+          "$runtimeHash  $runtimeName" | Set-Content -NoNewline "$runtimeCopy.sha256"
           $publisher = "$normalized.publisher.json"
           ./scripts/collect-windows-publisher-evidence.ps1 -Installer $normalized -Output $publisher
           node scripts/validate-windows-publisher-evidence.mjs --evidence $publisher --mode beta --expected-sha256 $hash
@@ -116,6 +125,10 @@ jobs:
             installer = $name
             sha256 = $hash
             installer_size = [int64]$size
+            runtime_artifact = $runtimeName
+            runtime_release_id = "release:$env:LIGHTBI_RC_VERSION:windows:x86_64:runtime"
+            runtime_sha256 = $runtimeHash
+            runtime_size = [int64]$runtimeSize
             publisher_status = $publisherEvidence.signature_status
             lightbi_identity_required = "root_rel_exact_artifact_att"
             os_publisher_required_for_current_rc = $false
@@ -135,5 +148,7 @@ jobs:
             target/x86_64-pc-windows-msvc/release/bundle/nsis/*.exe
             target/x86_64-pc-windows-msvc/release/bundle/nsis/*.sha256
             target/x86_64-pc-windows-msvc/release/bundle/nsis/*.publisher.json
+            target/x86_64-pc-windows-msvc/release/bundle/nsis/LightBI.exe
+            target/x86_64-pc-windows-msvc/release/bundle/nsis/LightBI.exe.sha256
             target/x86_64-pc-windows-msvc/release/bundle/nsis/rc-acceptance.json
           if-no-files-found: error

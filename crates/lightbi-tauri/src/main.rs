@@ -2,6 +2,7 @@
 
 mod desktop_menu;
 mod installation_lifecycle;
+mod installation_trust;
 mod navigation_guard;
 mod windows_publisher;
 
@@ -820,6 +821,7 @@ fn main() {
             os_publisher_evidence,
             installation_lifecycle::store_installation_lifecycle_receipt,
             installation_lifecycle::clear_installation_lifecycle_receipt,
+            installation_trust::ensure_installation_trust,
             native_http_request,
             save_export_file,
             account_session_token,
