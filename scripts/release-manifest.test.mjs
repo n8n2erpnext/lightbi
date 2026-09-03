@@ -10,6 +10,7 @@ import { validateWindowsPublisherEvidence } from './lib/windows-publisher-eviden
 const buildScript = resolve(import.meta.dirname, 'build-release-manifest.mjs');
 const releaseWorkflow = readFileSync(resolve(import.meta.dirname, '../.github/workflows/release.yml'), 'utf8');
 const nativeAcceptanceWorkflow = readFileSync(resolve(import.meta.dirname, '../.github/workflows/native-acceptance.yml'), 'utf8');
+const r1p13RcWorkflow = readFileSync(resolve(import.meta.dirname, '../.github/workflows/r1p13-rc-acceptance.yml'), 'utf8');
 const nextEsignerWorkflow = readFileSync(resolve(import.meta.dirname, '../.github/workflows/windows-next-esigner-signing.yml'), 'utf8');
 const esignerPrepareScript = readFileSync(resolve(import.meta.dirname, 'prepare-windows-esigner-cka.ps1'), 'utf8');
 const esignerCleanupScript = readFileSync(resolve(import.meta.dirname, 'cleanup-windows-esigner-cka.ps1'), 'utf8');
@@ -75,6 +76,24 @@ test('Windows native acceptance artifact is isolated from Production publication
   assert.match(nativeAcceptanceWorkflow, /installer_size = \[int64\]\$size/u);
   assert.match(nativeAcceptanceWorkflow, /LIGHTBI_NATIVE_ACCEPTANCE=\$acceptanceJson/u);
   assert.doesNotMatch(nativeAcceptanceWorkflow, /softprops\/action-gh-release|R2_ACCESS_KEY_ID|aws s3 cp/u);
+});
+
+test('R1-P13 RC acceptance is prerelease-only artifact authority', () => {
+  assert.match(r1p13RcWorkflow, /name: R1-P13 RC Acceptance Artifact/u);
+  assert.match(r1p13RcWorkflow, /codex\/r1p13-rc-\*/u);
+  assert.match(r1p13RcWorkflow, /LIGHTBI_RC_VERSION: 1\.0\.0-rc\.\$\{\{ github\.run_number \}\}/u);
+  assert.match(r1p13RcWorkflow, /pnpm test:release-1\.0/u);
+  assert.match(r1p13RcWorkflow, /VITE_LIGHTBI_CHANNEL: internal/u);
+  assert.match(r1p13RcWorkflow, /VITE_LIGHTBI_RELEASE_UPDATE_CHANNEL: internal/u);
+  assert.match(r1p13RcWorkflow, /release_channel = "beta"/u);
+  assert.match(r1p13RcWorkflow, /lightbi_identity_required = "root_rel_exact_artifact_att"/u);
+  assert.match(r1p13RcWorkflow, /os_publisher_required_for_current_rc = \$false/u);
+  assert.match(r1p13RcWorkflow, /production_authority = \$false/u);
+  assert.match(r1p13RcWorkflow, /stable_publication_authority = \$false/u);
+  assert.match(r1p13RcWorkflow, /inherited_owner_acceptance_gate = \$true/u);
+  assert.match(r1p13RcWorkflow, /production_phase2a_freeze_gate = \$true/u);
+  assert.match(r1p13RcWorkflow, /permissions:\s*\n\s*contents: read/u);
+  assert.doesNotMatch(r1p13RcWorkflow, /contents: write|softprops\/action-gh-release|R2_ACCESS_KEY_ID|aws s3|--channel\s+stable|SSL_COM_ESIGNER/u);
 });
 
 test('records native Windows Authenticode evidence and keeps Beta non-authoritative', () => {

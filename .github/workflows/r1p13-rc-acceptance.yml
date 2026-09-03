@@ -1,0 +1,140 @@
+name: R1-P13 RC Acceptance Artifact
+
+on:
+  push:
+    branches:
+      - "codex/r1p13-rc-*"
+
+permissions:
+  contents: read
+
+jobs:
+  guard-rc-authority:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Enforce non-production RC source authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "${GITHUB_REF_TYPE}" == "branch" ]] || { echo "RC acceptance refuses tags." >&2; exit 1; }
+          [[ "${GITHUB_REF_NAME}" == codex/r1p13-rc-* ]] || { echo "Unexpected RC branch: ${GITHUB_REF_NAME}" >&2; exit 1; }
+          echo "R1-P13 RC acceptance is artifact-only and has no stable publication authority."
+
+  windows-rc-acceptance:
+    needs: [guard-rc-authority]
+    runs-on: windows-latest
+    timeout-minutes: 100
+    env:
+      LIGHTBI_RC_VERSION: 1.0.0-rc.${{ github.run_number }}
+      LIGHTBI_RC_GENERATION: g-actions-r1p13-rc-${{ github.run_id }}-${{ github.run_attempt }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.4.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: . -> target
+      - run: pnpm install --frozen-lockfile
+      - name: Verify complete platform-independent 1.0 gate
+        shell: pwsh
+        run: pnpm test:release-1.0
+      - name: Generate branded application icons
+        shell: pwsh
+        run: |
+          pnpm dlx @tauri-apps/cli@2.11.4 icon apps/desktop/public/branding/lightbi-app-icon.png --output crates/lightbi-tauri/icons
+          node scripts/validate-native-icons.mjs
+      - name: Verify native updater and Windows publisher diagnostics
+        shell: pwsh
+        run: |
+          cargo test -p lightbi-tauri updater_tests --target x86_64-pc-windows-msvc
+          cargo test -p lightbi-tauri windows_publisher --target x86_64-pc-windows-msvc
+      - name: Build Windows R1-P13 NEXT RC installer
+        working-directory: crates/lightbi-tauri
+        shell: pwsh
+        env:
+          VITE_LIGHTBI_DISTRIBUTION_URL: https://lightbi-next.thaiduy.digital
+          VITE_LIGHTBI_GENERATION_ID: ${{ env.LIGHTBI_RC_GENERATION }}
+          VITE_LIGHTBI_PARENT_GENERATION_ID: g-2026-09-03-next-030
+          VITE_LIGHTBI_CHANNEL: internal
+          VITE_LIGHTBI_CORE_COMMIT: ${{ github.sha }}
+          VITE_LIGHTBI_CONTROL_PLANE_COMMIT: bb50b0d53542da5cd908e2237cbca368f7f87073
+          VITE_LIGHTBI_CONTROL_PLANE_SCHEMA_VERSION: 067_catalog_quarterly_pricing
+          VITE_LIGHTBI_TEST_PACK_VERSION: r1p13-windows-rc-acceptance
+          VITE_LIGHTBI_TRUST_STATUS: phase2a_unfrozen
+          VITE_LIGHTBI_TRUST_PHASE2A_HEAD: 10de4da8e551a46f93f7b62985a0a6e611581b8e
+          VITE_LIGHTBI_RELEASE_UPDATE_CHANNEL: internal
+          VITE_LIGHTBI_ANALYTICS_NAMESPACE: internal/r1p13-rc
+          VITE_LIGHTBI_RELEASE_NAMESPACE: internal/lightbi/r1p13-rc
+          VITE_LIGHTBI_SOURCE_BRANCH: ${{ github.ref_name }}
+          VITE_LIGHTBI_SOURCE_COMMIT: ${{ github.sha }}
+          VITE_LIGHTBI_BUILDER: github-actions/r1p13-rc-acceptance
+          VITE_LIGHTBI_INFRA_DATABASE_SCOPE: internal
+          VITE_LIGHTBI_INFRA_REDIS_SCOPE: internal
+          VITE_LIGHTBI_INFRA_DATA_SCOPE: internal
+          VITE_LIGHTBI_INFRA_ANALYTICS_SCOPE: internal
+          VITE_LIGHTBI_INFRA_RELEASES_SCOPE: internal
+          VITE_LIGHTBI_INFRA_INTEGRATIONS_SCOPE: internal
+        run: |
+          $env:VITE_LIGHTBI_VERSION = $env:LIGHTBI_RC_VERSION
+          $env:VITE_LIGHTBI_BUILD_TIMESTAMP = (Get-Date).ToUniversalTime().ToString("o")
+          @{ version = $env:LIGHTBI_RC_VERSION } | ConvertTo-Json | Set-Content tauri.rc.conf.json
+          pnpm dlx @tauri-apps/cli@2.11.4 build --target x86_64-pc-windows-msvc --config tauri.windows.conf.json --config tauri.rc.conf.json
+      - name: Generate exact RC checksum and provenance
+        shell: pwsh
+        run: |
+          $installer = Get-ChildItem "target/x86_64-pc-windows-msvc/release/bundle/nsis/*.exe" | Select-Object -First 1
+          if (-not $installer) { throw "NSIS RC installer was not produced" }
+          $name = "LightBI-RC-$env:LIGHTBI_RC_VERSION-x64-setup.exe"
+          $normalized = Join-Path $installer.Directory.FullName $name
+          Move-Item $installer.FullName $normalized -Force
+          $hash = (Get-FileHash -Algorithm SHA256 $normalized).Hash.ToLowerInvariant()
+          $size = (Get-Item $normalized).Length
+          "$hash  $name" | Set-Content -NoNewline "$normalized.sha256"
+          $publisher = "$normalized.publisher.json"
+          ./scripts/collect-windows-publisher-evidence.ps1 -Installer $normalized -Output $publisher
+          node scripts/validate-windows-publisher-evidence.mjs --evidence $publisher --mode beta --expected-sha256 $hash
+          $publisherEvidence = Get-Content $publisher -Raw | ConvertFrom-Json
+          $evidence = [ordered]@{
+            schema = "lightbi.rc-acceptance.v1"
+            environment = "next_internal_test_only"
+            stage = "r1p13_rc"
+            version = $env:LIGHTBI_RC_VERSION
+            release_channel = "beta"
+            generation_id = $env:LIGHTBI_RC_GENERATION
+            source_sha = "${{ github.sha }}"
+            source_ref = "${{ github.ref_name }}"
+            control_plane_sha = "bb50b0d53542da5cd908e2237cbca368f7f87073"
+            run_id = "${{ github.run_id }}"
+            run_attempt = "${{ github.run_attempt }}"
+            installer = $name
+            sha256 = $hash
+            installer_size = [int64]$size
+            publisher_status = $publisherEvidence.signature_status
+            lightbi_identity_required = "root_rel_exact_artifact_att"
+            os_publisher_required_for_current_rc = $false
+            production_authority = $false
+            stable_publication_authority = $false
+            inherited_owner_acceptance_gate = $true
+            production_phase2a_freeze_gate = $true
+          }
+          $rcJson = $evidence | ConvertTo-Json -Compress
+          $rcJson | Set-Content "$($installer.Directory.FullName)/rc-acceptance.json"
+          Write-Host "LIGHTBI_RC_ACCEPTANCE=$rcJson"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: LightBI-Windows-R1P13-RC-Acceptance
+          retention-days: 14
+          path: |
+            target/x86_64-pc-windows-msvc/release/bundle/nsis/*.exe
+            target/x86_64-pc-windows-msvc/release/bundle/nsis/*.sha256
+            target/x86_64-pc-windows-msvc/release/bundle/nsis/*.publisher.json
+            target/x86_64-pc-windows-msvc/release/bundle/nsis/rc-acceptance.json
+          if-no-files-found: error
