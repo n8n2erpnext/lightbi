@@ -1,6 +1,6 @@
 import { spawnSync } from 'node:child_process';
 
-const pnpm = process.platform === 'win32' ? 'pnpm.cmd' : 'pnpm';
+const pnpm = 'pnpm';
 const governed = [
   ['public release contract', ['test:release-contract']],
   ['public/private boundary', ['test:public-boundary']],
@@ -31,7 +31,7 @@ console.log('LightBI 1.0 release-authoritative platform-independent suite');
 console.log('Historical full-desktop Vitest is diagnostic only and is intentionally excluded from release-green semantics.');
 for (const [label,args] of governed) {
   console.log(`\n== ${label} ==`);
-  const run=spawnSync(pnpm,args,{stdio:'inherit',env:process.env});
+  const run=spawnSync(pnpm,args,{stdio:'inherit',env:process.env,shell:process.platform==='win32'});
   if (run.error) throw run.error;
   if (run.status!==0) process.exit(run.status ?? 1);
 }
