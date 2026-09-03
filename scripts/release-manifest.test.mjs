@@ -89,7 +89,7 @@ test('R1-P13 RC acceptance is prerelease-only artifact authority', () => {
   assert.match(r1p13RcWorkflow, /VITE_LIGHTBI_RELEASE_UPDATE_CHANNEL: internal/u);
   assert.equal(tauriConfig.mainBinaryName, 'LightBI');
   assert.match(r1p13RcWorkflow, /Get-Item "target\/x86_64-pc-windows-msvc\/release\/LightBI\.exe"/u);
-  assert.match(r1p13RcWorkflow, /runtime_release_id = "release:\$env:LIGHTBI_RC_VERSION:windows:x86_64:runtime"/u);
+  assert.match(r1p13RcWorkflow, /runtime_release_id = "release:\$\(\$env:LIGHTBI_RC_VERSION\):windows:x86_64:runtime"/u);
   assert.match(r1p13RcWorkflow, /runtime_sha256 = \$runtimeHash/u);
   assert.match(r1p13RcWorkflow, /runtime_size = \[int64\]\$runtimeSize/u);
   assert.match(r1p13RcWorkflow, /release_channel = "beta"/u);

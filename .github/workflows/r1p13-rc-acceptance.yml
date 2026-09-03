@@ -126,7 +126,7 @@ jobs:
             sha256 = $hash
             installer_size = [int64]$size
             runtime_artifact = $runtimeName
-            runtime_release_id = "release:$env:LIGHTBI_RC_VERSION:windows:x86_64:runtime"
+            runtime_release_id = "release:$($env:LIGHTBI_RC_VERSION):windows:x86_64:runtime"
             runtime_sha256 = $runtimeHash
             runtime_size = [int64]$runtimeSize
             publisher_status = $publisherEvidence.signature_status
