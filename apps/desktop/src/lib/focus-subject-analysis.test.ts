@@ -113,3 +113,31 @@ describe('Focus Subject Analysis experiment', () => {
     expect(buildFocusSubjectComparison(rows, { ...subject, value: 'missing' })).toBeNull();
   });
 });
+
+
+describe('Focus Subject full-source header normalization', () => {
+  it('matches a selected subject when the runtime parser lowercases verified headers', () => {
+    const candidate = deriveFocusSubjectCandidates(understanding, rows).find(item => item.canonicalId === 'employee_id')!;
+    const subject = createFocusSubjectSelection(candidate, searchFocusSubjectOptions(candidate, '24128')[0], understanding);
+    const runtimeRows = rows.map(row => Object.fromEntries(Object.entries(row).map(([key, value]) => [key.toLocaleLowerCase(), value])));
+    const comparison = buildFocusSubjectComparison(runtimeRows, subject);
+    expect(comparison?.matchedSubjectRowCount).toBe(1);
+    expect(comparison?.rankValue).toBe('1769');
+    expect(comparison?.metrics.some(metric => metric.field === 'TRUNG BÌNH ĐIỂM 4 TIÊU CHÍ')).toBe(true);
+  });
+});
+
+describe('Focus Subject selected-measure priority', () => {
+  it('maps a governed aggregate metric id back to its physical focus metric', () => {
+    const candidate = deriveFocusSubjectCandidates(understanding, rows).find(item => item.canonicalId === 'employee_id')!;
+    const subject = createFocusSubjectSelection(candidate, searchFocusSubjectOptions(candidate, '24128')[0], understanding);
+    const action = {
+      id: 'quality-summary', opportunityName: 'What is the governed average quality score?', label: 'Quality', description: '',
+      actionType: 'summary' as const, dimensions: [], measures: ['average_quality_score'],
+      measureAggregations: { average_quality_score: 'AVG' as const }, confidenceScore: 100, source: 'dataset_understanding' as const,
+    };
+    const comparison = buildFocusSubjectComparison(rows, subject, action)!;
+    expect(comparison.metrics[0]?.field).toBe('TRUNG BÌNH ĐIỂM 4 TIÊU CHÍ');
+    expect(comparison.metrics[0]?.subjectValue).toBeCloseTo(8.7667);
+  });
+});

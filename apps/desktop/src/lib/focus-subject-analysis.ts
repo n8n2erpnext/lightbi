@@ -27,6 +27,7 @@ export type FocusSubjectSelection = {
   displayLabel: string;
   labelField?: string;
   metricFields: string[];
+  metricBindings?: Array<{ canonicalId: string; field: string }>;
   rankField?: string;
 };
 
@@ -92,6 +93,18 @@ function numberValue(value: unknown): number | null {
   if (!raw) return null;
   const parsed = Number(raw);
   return Number.isFinite(parsed) ? parsed : null;
+}
+
+function normalizedField(value: string): string {
+  return value.trim().toLocaleLowerCase();
+}
+
+function rowValue(row: Record<string, unknown>, field: string | undefined): unknown {
+  if (!field) return undefined;
+  if (Object.prototype.hasOwnProperty.call(row, field)) return row[field];
+  const wanted = normalizedField(field);
+  const resolved = Object.keys(row).find(key => normalizedField(key) === wanted);
+  return resolved ? row[resolved] : undefined;
 }
 
 function eligibleSignal(signal: BusinessSignal): boolean {
@@ -176,9 +189,8 @@ export function createFocusSubjectSelection(
   option: FocusSubjectOption,
   understanding: DatasetUnderstandingResult,
 ): FocusSubjectSelection {
-  const metricFields = understanding.signals
-    .filter(signal => signal.role === 'measure' && signal.confidence >= 0.55)
-    .map(signal => signal.physicalColumn);
+  const metricSignals = understanding.signals.filter(signal => signal.role === 'measure' && signal.confidence >= 0.55);
+  const metricFields = metricSignals.map(signal => signal.physicalColumn);
   const rankField = understanding.signals.find(signal => signal.canonicalId === 'performance_rank')?.physicalColumn;
   return {
     candidateId: candidate.id,
@@ -189,6 +201,7 @@ export function createFocusSubjectSelection(
     displayLabel: option.displayLabel,
     labelField: candidate.labelField,
     metricFields: [...new Set(metricFields)],
+    metricBindings: metricSignals.map(signal => ({ canonicalId: signal.canonicalId, field: signal.physicalColumn })),
     rankField,
   };
 }
@@ -199,14 +212,26 @@ export function searchFocusSubjectOptions(candidate: FocusSubjectCandidate, quer
   return source.slice(0, Math.max(1, limit));
 }
 
+function actionMeasureField(subject: FocusSubjectSelection, measure: string): string | null {
+  const normalizedMeasure = normalizedField(measure).replace(/[^a-z0-9_]+/g, '_');
+  const binding = subject.metricBindings?.find(item => {
+    const canonical = normalizedField(item.canonicalId).replace(/[^a-z0-9_]+/g, '_');
+    return normalizedMeasure === canonical
+      || normalizedMeasure.endsWith(`_${canonical}`)
+      || canonical.endsWith(`_${normalizedMeasure}`);
+  });
+  return binding?.field ?? null;
+}
+
 function comparisonMetricFields(rows: Record<string, unknown>[], subject: FocusSubjectSelection, action?: AnalysisAction): string[] {
-  const preferred = [...(action?.measures ?? []), ...subject.metricFields];
+  const actionFields = (action?.measures ?? []).map(measure => actionMeasureField(subject, measure) ?? measure);
+  const preferred = [...actionFields, ...subject.metricFields];
   const fallbackColumns = [...new Set(rows.slice(0, 1000).flatMap(row => Object.keys(row)))];
   const ordered = [...new Set([...preferred, ...fallbackColumns])];
   return ordered.filter(field => {
     if (field === subject.field || field === subject.labelField || field === subject.rankField) return false;
     if (IDENTIFIERISH_HEADER.test(field) || TIMEISH_HEADER.test(field)) return false;
-    const values = rows.slice(0, 5000).map(row => row[field]).filter(value => text(value));
+    const values = rows.slice(0, 5000).map(row => rowValue(row, field)).filter(value => text(value));
     if (values.length < Math.min(3, rows.length)) return false;
     return values.filter(value => numberValue(value) !== null).length / values.length >= 0.8;
   }).slice(0, 6);
@@ -229,15 +254,18 @@ export function buildFocusSubjectComparison(
   topN = 10,
 ): FocusSubjectComparison | null {
   if (!rows.length) return null;
-  const subjectRows = rows.filter(row => text(row[subject.field]) === subject.value);
+  const subjectRows = rows.filter(row => text(rowValue(row, subject.field)) === subject.value);
   if (!subjectRows.length) return null;
   const metrics: FocusMetricComparison[] = [];
   for (const field of comparisonMetricFields(rows, subject, action)) {
-    const aggregation = action?.measureAggregations?.[field] ?? (action?.measures.includes(field) ? 'SUM' : 'AVG');
+    const actionMeasure = action?.measures.find(measure => (actionMeasureField(subject, measure) ?? measure) === field);
+    const aggregation = action?.measureAggregations?.[field]
+      ?? (actionMeasure ? action?.measureAggregations?.[actionMeasure] : undefined)
+      ?? (actionMeasure ? 'SUM' : 'AVG');
     const grouped = new Map<string, number[]>();
     for (const row of rows) {
-      const entity = text(row[subject.field]);
-      const value = numberValue(row[field]);
+      const entity = text(rowValue(row, subject.field));
+      const value = numberValue(rowValue(row, field));
       if (!entity || value === null) continue;
       const values = grouped.get(entity) ?? [];
       values.push(value);
@@ -262,7 +290,7 @@ export function buildFocusSubjectComparison(
       populationCount: population.length,
     });
   }
-  const rankValue = subject.rankField ? text(subjectRows[0]?.[subject.rankField]) || undefined : undefined;
+  const rankValue = subject.rankField ? text(rowValue(subjectRows[0] ?? {}, subject.rankField)) || undefined : undefined;
   return {
     subject,
     populationRowCount: rows.length,

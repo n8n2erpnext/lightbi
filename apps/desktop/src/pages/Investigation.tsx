@@ -660,8 +660,6 @@ export const Investigation: React.FC = () => {
       </header>
 
       <main className="mx-auto flex w-full max-w-[1180px] flex-1 flex-col gap-5 p-5 pb-24 md:p-8">
-        <FocusSubjectComparisonCard state={focusComparison} />
-
         {aiBriefing && <InvestigationSemanticContext
           briefing={aiBriefing}
           briefingRationale={briefingRationale}
@@ -687,8 +685,8 @@ export const Investigation: React.FC = () => {
         <div className="flex flex-col overflow-hidden rounded-[18px] border border-black/10 bg-white shadow-sm">
           <div className="flex flex-col gap-4 border-b border-black/5 bg-white px-6 py-5 lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <h2 className="mb-1 text-[16px] font-semibold text-[#202123]">{t('Decision workspace')}</h2>
-              <p className="text-[13px] text-black/45">{t('Chart preview, BA brief, and raw evidence stay together for review.')}</p>
+              <h2 className="mb-1 text-[16px] font-semibold text-[#202123]">{session.focusSubject ? 'Focused decision workspace' : t('Decision workspace')}</h2>
+              <p className="text-[13px] text-black/45">{session.focusSubject ? 'The selected entity is the primary readout; full-population evidence remains available below.' : t('Chart preview, BA brief, and raw evidence stay together for review.')}</p>
             </div>
             <div className="flex flex-wrap gap-2">
               <span className="inline-flex items-center gap-1.5 rounded-[10px] border border-black/10 bg-[#fbfbfa] px-3 py-2 text-xs font-medium text-black/65 shadow-sm">
@@ -761,7 +759,18 @@ export const Investigation: React.FC = () => {
 
              {/* Chart Placeholder / Renderer Area */}
              <div className="mt-4 w-full">
-               {previewResult?.status === 'blocked' ? (
+               {session.focusSubject ? (
+                 <div className="space-y-4" data-testid="focused-primary-analysis">
+                   <FocusSubjectComparisonCard state={focusComparison} />
+                   {chartModel && <details data-testid="focus-population-context" className="rounded-[14px] border border-slate-200 bg-slate-50/70 p-4">
+                     <summary className="cursor-pointer text-xs font-semibold text-slate-600">View full-population governed chart</summary>
+                     <p className="mt-2 text-[11px] leading-5 text-slate-400">This chart remains the governed population evidence. It is supporting context; the focused benchmark above is the primary readout.</p>
+                     <div className="mt-4 rounded-[18px] border border-black/10 bg-white p-4 shadow-sm">
+                       <ChartPreviewRenderer model={chartModel} onDrillThrough={(point) => { void runDrillThrough(point, { analysisAction, runtimePlan: isUniversalDescriptiveAction ? enhancedRuntimePlan : runtimePlanPreview, chartModel }); }} />
+                     </div>
+                   </details>}
+                 </div>
+               ) : previewResult?.status === 'blocked' ? (
                  <div className="flex h-64 w-full flex-col items-center justify-center rounded-[18px] border-2 border-dashed border-amber-200 bg-amber-50/50 p-6 text-center text-amber-700">
                    <AlertTriangle className="mb-2 h-8 w-8 text-amber-500" />
                    <span className="text-sm font-medium">Analysis Blocked</span>

@@ -31,7 +31,13 @@ async function readResponse<T>(response: Response): Promise<T> {
 }
 
 export async function loadWorkspaceSessions(): Promise<WorkspaceSessionRecord[]> {
-  return readResponse(await fetch(`${getApiBaseUrl()}/api/project/sessions`));
+  const url = `${getApiBaseUrl()}/api/project/sessions`;
+  let response = await fetch(url);
+  if (response.status === 404) {
+    await new Promise(resolve => setTimeout(resolve, 350));
+    response = await fetch(url);
+  }
+  return readResponse(response);
 }
 
 export async function saveWorkspaceSession(record: SaveWorkspaceSessionRequest): Promise<WorkspaceSessionRecord> {
