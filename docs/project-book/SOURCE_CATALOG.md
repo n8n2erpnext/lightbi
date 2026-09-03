@@ -4,11 +4,11 @@
 
 ## Snapshot
 
-- Date: **2026-09-02**
+- Date: **2026-09-03**
 - Branch: `docs/cli-lightbi-signer-plan-20260902`
-- HEAD: `ec8ed7bb3a6e133db9c7c915f5b2fab74301fa6e`
+- HEAD: `aee3cdf1842effe3fa6d438a6b0246718c977b6c`
 - Worktree dirty while generated: **true**
-- Total indexed sources: **934** (517 Markdown / 417 JSON)
+- Total indexed sources: **936** (519 Markdown / 417 JSON)
 - JSON under `docs/`: **354**
 
 For old paths, use [`PATH_MIGRATION_INDEX.md`](./PATH_MIGRATION_INDEX.md) and [`../history/LEGACY_ROOT_INDEX.md`](../history/LEGACY_ROOT_INDEX.md).
@@ -654,6 +654,7 @@ For old paths, use [`PATH_MIGRATION_INDEX.md`](./PATH_MIGRATION_INDEX.md) and [`
 
 ## design-baseline
 
+- [`docs/design/focus-subject-analysis.md`](../../docs/design/focus-subject-analysis.md) — Focus Subject Analysis — experimental design; `5848` bytes; SHA-256 `e7b22c1a6297d4799f6e6fe7e5cd04654ed1c168b00c3906a7d65452cef62442`
 - [`docs/design/ui-baseline.md`](../../docs/design/ui-baseline.md) — LightBI UI Visual Baseline; `3910` bytes; SHA-256 `e11a1ac58f3e27c41fd8bc726207698e7b7e7cc4748cb135afc6e13b4624c37d`
 
 ## domain-catalog

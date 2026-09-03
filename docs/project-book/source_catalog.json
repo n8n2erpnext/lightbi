@@ -1,14 +1,14 @@
 {
   "schemaVersion": "lightbi.project-book.source-catalog.v1",
-  "snapshotDate": "2026-09-02",
-  "generatedAt": "2026-09-02T10:24:00+00:00",
+  "snapshotDate": "2026-09-03",
+  "generatedAt": "2026-09-03T11:46:18+00:00",
   "branch": "docs/cli-lightbi-signer-plan-20260902",
-  "head": "ec8ed7bb3a6e133db9c7c915f5b2fab74301fa6e",
+  "head": "aee3cdf1842effe3fa6d438a6b0246718c977b6c",
   "worktreeDirty": true,
   "scope": "All project Markdown and JSON outside dependency/build/project-book directories.",
   "counts": {
-    "total": 935,
-    "markdown": 518,
+    "total": 936,
+    "markdown": 519,
     "json": 417,
     "docsJson": 354,
     "references": 0
@@ -9210,6 +9210,14 @@
       "sha256": "30bb1af92ee702793b0c69dbd21f90001dc93cfd075d6e3a0e0230ec81c42367",
       "suggestedCategory": "architecture-source-or-evidence",
       "title": "Analytical Workspace Model"
+    },
+    {
+      "path": "docs/design/focus-subject-analysis.md",
+      "extension": ".md",
+      "bytes": 5848,
+      "sha256": "e7b22c1a6297d4799f6e6fe7e5cd04654ed1c168b00c3906a7d65452cef62442",
+      "suggestedCategory": "design-baseline",
+      "title": "Focus Subject Analysis — experimental design"
     },
     {
       "path": "docs/design/ui-baseline.md",

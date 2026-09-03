@@ -1,7 +1,7 @@
 {
   "schema": "067_catalog_quarterly_pricing",
-  "updatedAt": "2026-09-03T04:56:15Z",
-  "status": "r1p12_next_anti_impersonation_machine_closed_r1p13_rc_work_authorized_production_freeze_still_owner_gated",
+  "updatedAt": "2026-09-03T11:29:00Z",
+  "status": "r1p13_next_roadmap_frozen_at_827ac88_focus_subject_experiment_authorized",
   "activeRuntime": "g-2026-09-03-next-030",
   "runtime": {
     "immutableGenerationCoreCommit": "7d15d69f2cf0bf39ac98dac9d91faa95edec7847",
@@ -83,7 +83,7 @@
     "r1p12_next_anti_impersonation_machine_gate_closed",
     "r1p13_rc_work_owner_authorized"
   ],
-  "nextAction": "R1-P13 is active for NEXT/RC preparation. Build a dedicated fail-closed 1.0.0-rc.N acceptance lane without inventing an rc channel and without granting stable/Production publication authority. Carry forward unresolved owner acceptance from earlier R1-P1 as an RC/stable gate rather than silently waiving it. Production Phase 2A freeze and Production Root/issuer ceremony remain separately owner-gated; do not fabricate FREEZE APPROVED. Signer administration remains cli-lightbi only; Phase B/C/D remain closed. Bell dropdown remains deferred non-blocking UX debt.",
+  "nextAction": "Keep Road-to-1.0/R1-P13 frozen at NEXT baseline 827ac888350193c7aac6c3a577b7411378e4a1c8 while the owner-approved Focus Subject Analysis experiment runs on a separate branch/worktree. Do not mutate the frozen R1-P13 branch, main/CURRENT/Production, or rotate roles. The experiment is additive only: no-focus behavior must remain baseline-equivalent; Focus Subject must retain the governed comparison population and reuse existing perspective/question and Deep BA authority. Merge-back requires full regression gates plus explicit owner UAT.",
   "blockers": {
     "phase2aFrozen": false,
     "productionAttestationRequestSchemaFrozen": false,
@@ -171,5 +171,23 @@
     "phaseD": "closed",
     "webAdminAllowed": false,
     "genericSigningAllowed": false
+  },
+  "roadmapFreeze": {
+    "active": true,
+    "scope": "Road-to-1.0 / NEXT R1-P13 feature progression",
+    "baselineCommit": "827ac888350193c7aac6c3a577b7411378e4a1c8",
+    "reason": "Owner-approved bounded Focus Subject Analysis experiment",
+    "productionAuthorityChanged": false,
+    "roleRotationAuthorized": false
+  },
+  "focusSubjectExperiment": {
+    "authorized": true,
+    "status": "design_recorded_branch_creation_pending",
+    "design": "docs/design/focus-subject-analysis.md",
+    "requiredBranchIsolation": true,
+    "additiveOnly": true,
+    "noFocusRegressionEquivalent": true,
+    "preserveComparisonPopulation": true,
+    "ownerAcceptanceRequiredForMergeBack": true
   }
 }

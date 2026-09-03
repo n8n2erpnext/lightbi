@@ -1546,3 +1546,12 @@ R1-P0 documentation/integrity closure verified 1,243 local links with zero missi
 - Private verifier remains 209/209 PASS. Current public head `68e5bc1` re-passes full `test:release-1.0`, release 11/11, generation/routing 8/8, desktop build and governed regression 39/39.
 - Previous bounded owner Windows UAT remains accepted only for install/sidebar/external-browser behavior; #8 is not falsely marked manually UAT'd. Bell dropdown stays deferred non-blocking.
 - R1-P12 NEXT anti-impersonation machine gate is CLOSED under the corrected owner definition. Owner authorized progression to R1-P13 RC work. Production Phase 2A freeze remains explicitly unresolved; no Production Root/issuer authority was created. Signer administration remains CLI-only/Bench-like; `cli-lightbi` Phase B/C/D remains closed.
+
+## 2026-09-03 — Road-to-1.0 temporarily freezes for Focus Subject Analysis experiment
+
+- Owner froze further R1-P13 feature progression at exact NEXT baseline `827ac888350193c7aac6c3a577b7411378e4a1c8`; this does not promote NEXT, touch Production, or invalidate already-proven RC evidence.
+- New design draft: [`docs/design/focus-subject-analysis.md`](../design/focus-subject-analysis.md).
+- Focus Subject is optional pre-analysis context beside the existing perspective/question step. It names the entity the analysis should revolve around while retaining the full governed comparison population.
+- No-focus behavior must remain regression-equivalent to the frozen baseline. Existing perspectives/questions, charting, Deep BA, chart-click Step 2, History/export and Advanced/Easy continuity remain authoritative and unchanged.
+- First owner proof case is the 2,200-row management-ranking workbook with employee `24128 — Thái Đăng Duy`; expected comparisons include population average, Top N/Bottom N and position/driver evidence where supported.
+- Implementation must use a separate branch/worktree based on exact NEXT `827ac88...`. Merge-back is owner-gated after deterministic evidence tests, no-regression proof and UAT.
