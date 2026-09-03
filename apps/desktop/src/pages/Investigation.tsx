@@ -39,6 +39,7 @@ import { createInvestigationChartActions } from '../lib/investigation-chart-acti
 import { useInvestigationDrillThrough, type InvestigationDrillOrigin } from '../hooks/useInvestigationDrillThrough';
 import { useFocusSubjectComparison } from '../hooks/useFocusSubjectComparison';
 import { FocusSubjectComparisonCard } from '../components/investigation/FocusSubjectComparisonCard';
+import { FocusSubjectBAAnswerCard, FocusSubjectContextBundle } from '../components/investigation/FocusSubjectContextBundle';
 const SINGLE_SOURCE_BA_OVERVIEW_ROW_LIMIT = 1000;
 
 function safeFileStem(value: string): string {
@@ -191,6 +192,11 @@ export const Investigation: React.FC = () => {
   }, [session, canExecute]);
 
   useEffect(() => {
+    if (session?.focusSubject) {
+      setSupportingCharts([]);
+      setIsLoadingSupportingCharts(false);
+      return;
+    }
     if (!session?.supportingAnalyses?.length || !session.runtimeDatasetSource) {
       setSupportingCharts([]);
       return;
@@ -819,7 +825,7 @@ export const Investigation: React.FC = () => {
                </div>
              )}
 
-             {(isLoadingSupportingCharts || supportingCharts.length > 0) && (
+             {focusComparison.status === 'ready' ? <FocusSubjectContextBundle comparison={focusComparison.comparison} /> : (isLoadingSupportingCharts || supportingCharts.length > 0) && (
                <section data-testid="perspective-analysis-bundle" className="mt-5 rounded-[16px] border border-blue-100 bg-blue-50/35 p-4">
                  <div className="flex items-start justify-between gap-3">
                    <div>
@@ -845,7 +851,7 @@ export const Investigation: React.FC = () => {
                </section>
              )}
 
-             {governedResultTotal !== null && session.canonicalExecutionResult && (
+             {focusComparison.status !== 'ready' && governedResultTotal !== null && session.canonicalExecutionResult && (
                <div data-testid="governed-result-summary" className="mt-4 rounded-[14px] border border-emerald-200 bg-emerald-50 p-4 text-emerald-950">
                  <p className="text-[11px] font-semibold uppercase tracking-wide">{t('Governed result total')}</p>
                  <p className="mt-1 text-2xl font-semibold">{governedResultTotalLabel}</p>
@@ -890,10 +896,16 @@ export const Investigation: React.FC = () => {
                </details>
              )}
 
-             {baDecisionBrief && (
+             {focusComparison.status === 'ready' ? (
+               <FocusSubjectBAAnswerCard
+                 comparison={focusComparison.comparison}
+                 canAnalyzeDeeper={previewResult?.status === 'executed' && canExecute}
+                 onAnalyzeDeeper={() => { void persistWorkspaceSession().finally(() => setDeepAnalysisView({ kind: 'perspective' })); }}
+               />
+             ) : baDecisionBrief && (
                <BasicBAAnswerCard
                  brief={baDecisionBrief}
-                canAnalyzeDeeper={previewResult?.status === 'executed' && canExecute}
+                 canAnalyzeDeeper={previewResult?.status === 'executed' && canExecute}
                  onAnalyzeDeeper={() => { void persistWorkspaceSession().finally(() => setDeepAnalysisView({ kind: 'perspective' })); }}
                />
              )}
@@ -939,6 +951,7 @@ export const Investigation: React.FC = () => {
         canonicalSourceBoundary={canonicalSourceBoundary}
         sourceName={session.datasetId}
         filteredScope={filteredDeepAnalysisScope}
+        focusComparison={focusComparison.status === 'ready' ? focusComparison.comparison : null}
         onClose={() => setDeepAnalysisView(null)}
         onCreateDashboard={filteredDeepAnalysisScope ? undefined : () => { void createPerspectiveDashboard(); }}
         canCreateDashboard={!filteredDeepAnalysisScope && previewResult?.status === 'executed' && chartModel?.status === 'ready'}

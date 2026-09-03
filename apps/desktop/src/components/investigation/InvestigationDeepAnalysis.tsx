@@ -22,6 +22,8 @@ import { saveExcelPivotWorkbook, type ExcelPivotExportModeV1, type ExcelPivotExp
 import type { CanonicalSourceBoundaryV1 } from '../../lib/understanding-core/canonical-source-boundary';
 import type { DecisionVisualizationPlanV1 } from '../../lib/decision-visualization-plan';
 import { saveBlobWithUserChoice, saveDataUrlWithUserChoice } from '../../lib/native-capabilities';
+import type { FocusSubjectComparison } from '../../lib/focus-subject-analysis';
+import { FocusSubjectDeepAnalysisPanel } from './FocusSubjectDeepAnalysisPanel';
 
 export interface InvestigationDeepAnalysisProps {
   action: AnalysisAction;
@@ -33,13 +35,14 @@ export interface InvestigationDeepAnalysisProps {
   canonicalSourceBoundary?: CanonicalSourceBoundaryV1 | null;
   sourceName?: string;
   filteredScope?: FilteredDeepAnalysisScope | null;
+  focusComparison?: FocusSubjectComparison | null;
   onClose: () => void;
   onCreateDashboard?: () => void;
   canCreateDashboard?: boolean;
   preferences: DisplayPreferences;
 }
 
-export const InvestigationDeepAnalysis: React.FC<InvestigationDeepAnalysisProps> = ({ action, brief, businessFusionOverview, singleSourceBAOverview, chartModel, decisionVisualizationPlan = null, canonicalSourceBoundary = null, sourceName, filteredScope, onClose, onCreateDashboard, canCreateDashboard = false, preferences }) => {
+export const InvestigationDeepAnalysis: React.FC<InvestigationDeepAnalysisProps> = ({ action, brief, businessFusionOverview, singleSourceBAOverview, chartModel, decisionVisualizationPlan = null, canonicalSourceBoundary = null, sourceName, filteredScope, focusComparison = null, onClose, onCreateDashboard, canCreateDashboard = false, preferences }) => {
   const { t, localize } = useUiLanguage();
   const exportRef = useRef<HTMLDivElement>(null);
   const [exportState, setExportState] = useState<'idle' | 'image' | 'pdf' | 'excel'>('idle');
@@ -112,7 +115,7 @@ export const InvestigationDeepAnalysis: React.FC<InvestigationDeepAnalysisProps>
   return (
   <div className="fixed inset-0 z-40 flex justify-end bg-black/15 backdrop-blur-[1px]" onClick={onClose}>
     <aside className="h-full w-full max-w-[1120px] overflow-y-auto border-l border-black/10 bg-[#fbfbfa] shadow-2xl" onClick={event => event.stopPropagation()}>
-      <div className="sticky top-0 z-10 flex items-start justify-between gap-4 border-b border-black/10 bg-white/95 px-6 py-5 backdrop-blur"><div className="flex items-start gap-3"><button data-testid="deep-analysis-back" onClick={onClose} className="mt-0.5 inline-flex items-center gap-1.5 rounded-lg border border-black/10 bg-white px-3 py-2 text-xs font-semibold text-black/60 shadow-sm transition-colors hover:bg-black/[0.035] hover:text-black" title={t('Back to chart')}><ArrowLeft className="h-4 w-4" />{t('Back')}</button><div><div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-violet-600"><ClipboardCheck className="h-3.5 w-3.5" />{filteredScope ? t('Deep BA analysis · Step 2') : t('Deep BA analysis')}</div><h2 className="mt-1 text-xl font-semibold text-[#202123]">{localize(action.opportunityName)}</h2><p className="mt-1 text-xs leading-5 text-black/50">{filteredScope ? t('The existing deep-analysis framework is now applied only to the rows selected from the chart drill-through.') : t('Explanation, governed evidence, caveats, drivers, and recommended actions for the decision angle currently shown in the chart.')}</p></div></div><button onClick={onClose} className="rounded-full border border-black/10 bg-white p-2 text-black/50 shadow-sm transition-colors hover:bg-black/[0.035] hover:text-black" title={t('Close analysis panel')}><X className="h-4 w-4" /></button></div>
+      <div className="sticky top-0 z-10 flex items-start justify-between gap-4 border-b border-black/10 bg-white/95 px-6 py-5 backdrop-blur"><div className="flex items-start gap-3"><button data-testid="deep-analysis-back" onClick={onClose} className="mt-0.5 inline-flex items-center gap-1.5 rounded-lg border border-black/10 bg-white px-3 py-2 text-xs font-semibold text-black/60 shadow-sm transition-colors hover:bg-black/[0.035] hover:text-black" title={t('Back to chart')}><ArrowLeft className="h-4 w-4" />{t('Back')}</button><div><div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-violet-600"><ClipboardCheck className="h-3.5 w-3.5" />{filteredScope ? t('Deep BA analysis · Step 2') : focusComparison ? 'Deep BA analysis · Focus' : t('Deep BA analysis')}</div><h2 className="mt-1 text-xl font-semibold text-[#202123]">{focusComparison && !filteredScope ? `${focusComparison.subject.displayLabel} · ${localize(action.opportunityName)}` : localize(action.opportunityName)}</h2><p className="mt-1 text-xs leading-5 text-black/50">{filteredScope ? t('The existing deep-analysis framework is now applied only to the rows selected from the chart drill-through.') : focusComparison ? `Every Deep BA readout remains anchored to ${focusComparison.subject.displayLabel}; the full population is comparison evidence only.` : t('Explanation, governed evidence, caveats, drivers, and recommended actions for the decision angle currently shown in the chart.')}</p></div></div><button onClick={onClose} className="rounded-full border border-black/10 bg-white p-2 text-black/50 shadow-sm transition-colors hover:bg-black/[0.035] hover:text-black" title={t('Close analysis panel')}><X className="h-4 w-4" /></button></div>
       <div className="border-b border-black/5 bg-white px-5 py-3">
         <div className="flex flex-wrap items-center justify-end gap-2">
           <span className="mr-auto inline-flex items-center gap-2 text-xs text-black/45"><Download className="h-3.5 w-3.5" />{t('Export this complete perspective analysis')}</span>
@@ -135,9 +138,21 @@ export const InvestigationDeepAnalysis: React.FC<InvestigationDeepAnalysisProps>
           <p className="mt-3 text-xs leading-5 text-violet-800">{t('All KPIs, breakdowns, findings and recommendations below are recalculated by the existing BA framework from these selected rows only.')}</p>
           {filteredScope.isTruncated && <p className="mt-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">{t('This drill-through reached its row limit. The analysis covers the selected rows retrieved within that limit, not every possible matching source row.')}</p>}
         </section>}
-        {businessFusionOverview && <><BusinessBrainBriefPanel brief={createBusinessBrainBrief({ action, chartModel, overview: businessFusionOverview })} preferences={preferences} /><BusinessFusionAngleReadout action={action} chartModel={chartModel} overview={businessFusionOverview} preferences={preferences} /><div className="mb-5"><BusinessFusionOverviewCard overview={businessFusionOverview} /></div></>}
-        {!businessFusionOverview && singleSourceBAOverview && <SingleSourceBAOverviewCard overview={singleSourceBAOverview} preferences={preferences} selectedDataScope={Boolean(filteredScope)} />}
-        {brief ? <BADecisionBriefPanel brief={brief} /> : !filteredScope && <div className="rounded-[16px] border border-black/10 bg-white p-6 text-sm text-black/55 shadow-sm">{t('Run the preview first, then LightBI can explain this decision angle in depth.')}</div>}
+        {focusComparison && !filteredScope ? <>
+          <FocusSubjectDeepAnalysisPanel action={action} comparison={focusComparison} />
+          {(brief || singleSourceBAOverview) && <details className="mt-5 rounded-[16px] border border-black/10 bg-white p-4">
+            <summary className="cursor-pointer text-xs font-semibold text-slate-600">Population perspective evidence</summary>
+            <p className="mt-2 text-xs leading-5 text-slate-400">This legacy perspective evidence is retained for auditability; it does not replace the active Focus context.</p>
+            <div className="mt-4 space-y-4">
+              {singleSourceBAOverview && <SingleSourceBAOverviewCard overview={singleSourceBAOverview} preferences={preferences} selectedDataScope={false} />}
+              {brief && <BADecisionBriefPanel brief={brief} />}
+            </div>
+          </details>}
+        </> : <>
+          {businessFusionOverview && <><BusinessBrainBriefPanel brief={createBusinessBrainBrief({ action, chartModel, overview: businessFusionOverview })} preferences={preferences} /><BusinessFusionAngleReadout action={action} chartModel={chartModel} overview={businessFusionOverview} preferences={preferences} /><div className="mb-5"><BusinessFusionOverviewCard overview={businessFusionOverview} /></div></>}
+          {!businessFusionOverview && singleSourceBAOverview && <SingleSourceBAOverviewCard overview={singleSourceBAOverview} preferences={preferences} selectedDataScope={Boolean(filteredScope)} />}
+          {brief ? <BADecisionBriefPanel brief={brief} /> : !filteredScope && <div className="rounded-[16px] border border-black/10 bg-white p-6 text-sm text-black/55 shadow-sm">{t('Run the preview first, then LightBI can explain this decision angle in depth.')}</div>}
+        </>}
       </div>
       {onCreateDashboard && <section data-testid="deep-analysis-dashboard-cta" className="mx-5 mb-5 rounded-xl border border-black/10 bg-white p-5 shadow-sm">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">

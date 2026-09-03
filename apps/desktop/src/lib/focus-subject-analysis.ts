@@ -1,5 +1,6 @@
 import type { AnalysisAction } from './analysis-opportunity-actions';
 import type { BusinessSignal, DatasetUnderstandingResult, DomainId } from './understanding-next/contracts';
+import { GOVERNED_METRIC_DEFINITIONS_V1 } from './understanding-core/governed-metric-policy';
 
 export type FocusSubjectOption = {
   value: string;
@@ -33,6 +34,8 @@ export type FocusSubjectSelection = {
 
 export type FocusMetricComparison = {
   field: string;
+  canonicalId?: string;
+  aggregation: 'SUM' | 'COUNT' | 'AVG';
   subjectValue: number;
   populationAverage: number;
   topAverage: number;
@@ -48,6 +51,19 @@ export type FocusSubjectComparison = {
   matchedSubjectRowCount: number;
   rankValue?: string;
   metrics: FocusMetricComparison[];
+};
+
+export type FocusSubjectInsight = {
+  id: string;
+  title: string;
+  statement: string;
+};
+
+export type FocusSubjectNarrative = {
+  headline: string;
+  summary: string;
+  insights: FocusSubjectInsight[];
+  followUpQuestions: string[];
 };
 
 export type FocusPerspectiveCandidate = {
@@ -223,13 +239,48 @@ function actionMeasureField(subject: FocusSubjectSelection, measure: string): st
   return binding?.field ?? null;
 }
 
-function comparisonMetricFields(rows: Record<string, unknown>[], subject: FocusSubjectSelection, action?: AnalysisAction): string[] {
-  const actionFields = (action?.measures ?? []).map(measure => actionMeasureField(subject, measure) ?? measure);
-  const preferred = [...actionFields, ...subject.metricFields];
-  const fallbackColumns = [...new Set(rows.slice(0, 1000).flatMap(row => Object.keys(row)))];
-  const ordered = [...new Set([...preferred, ...fallbackColumns])];
-  return ordered.filter(field => {
-    if (field === subject.field || field === subject.labelField || field === subject.rankField) return false;
+function governedAggregation(measure: string | undefined): 'SUM' | 'COUNT' | 'AVG' | null {
+  if (!measure) return null;
+  const definition = GOVERNED_METRIC_DEFINITIONS_V1.find(item => item.metricId === measure);
+  if (!definition) return null;
+  if (definition.aggregationOperator === 'sum') return 'SUM';
+  if (definition.aggregationOperator === 'average') return 'AVG';
+  if (definition.aggregationOperator === 'count_source_rows') return 'COUNT';
+  return null;
+}
+
+type ComparisonMetricCandidate = {
+  field: string;
+  canonicalId?: string;
+  aggregation: 'SUM' | 'COUNT' | 'AVG';
+};
+
+function comparisonMetricFields(rows: Record<string, unknown>[], subject: FocusSubjectSelection, action?: AnalysisAction): ComparisonMetricCandidate[] {
+  const descriptors: ComparisonMetricCandidate[] = [];
+  const push = (field: string, canonicalId: string | undefined, aggregation: 'SUM' | 'COUNT' | 'AVG') => {
+    const normalized = normalizedField(field);
+    const semanticKey = canonicalId ? `semantic:${canonicalId}` : `field:${normalized}`;
+    if (descriptors.some(item => (item.canonicalId ? `semantic:${item.canonicalId}` : `field:${normalizedField(item.field)}`) === semanticKey)) return;
+    if (descriptors.some(item => normalizedField(item.field) === normalized)) return;
+    descriptors.push({ field, canonicalId, aggregation });
+  };
+
+  for (const measure of action?.measures ?? []) {
+    const field = actionMeasureField(subject, measure) ?? measure;
+    push(field, measure, governedAggregation(measure)
+      ?? action?.measureAggregations?.[measure]
+      ?? action?.measureAggregations?.[field]
+      ?? 'SUM');
+  }
+  for (const binding of subject.metricBindings ?? []) push(binding.field, binding.canonicalId, 'AVG');
+  for (const field of subject.metricFields) push(field, undefined, 'AVG');
+  for (const field of [...new Set(rows.slice(0, 1000).flatMap(row => Object.keys(row)))]) push(field, undefined, 'AVG');
+
+  return descriptors.filter(candidate => {
+    const { field } = candidate;
+    if (normalizedField(field) === normalizedField(subject.field)
+      || normalizedField(field) === normalizedField(subject.labelField ?? '')
+      || normalizedField(field) === normalizedField(subject.rankField ?? '')) return false;
     if (IDENTIFIERISH_HEADER.test(field) || TIMEISH_HEADER.test(field)) return false;
     const values = rows.slice(0, 5000).map(row => rowValue(row, field)).filter(value => text(value));
     if (values.length < Math.min(3, rows.length)) return false;
@@ -257,11 +308,8 @@ export function buildFocusSubjectComparison(
   const subjectRows = rows.filter(row => text(rowValue(row, subject.field)) === subject.value);
   if (!subjectRows.length) return null;
   const metrics: FocusMetricComparison[] = [];
-  for (const field of comparisonMetricFields(rows, subject, action)) {
-    const actionMeasure = action?.measures.find(measure => (actionMeasureField(subject, measure) ?? measure) === field);
-    const aggregation = action?.measureAggregations?.[field]
-      ?? (actionMeasure ? action?.measureAggregations?.[actionMeasure] : undefined)
-      ?? (actionMeasure ? 'SUM' : 'AVG');
+  for (const metricCandidate of comparisonMetricFields(rows, subject, action)) {
+    const { field, canonicalId, aggregation } = metricCandidate;
     const grouped = new Map<string, number[]>();
     for (const row of rows) {
       const entity = text(rowValue(row, subject.field));
@@ -280,7 +328,7 @@ export function buildFocusSubjectComparison(
     const populationAverage = average(population);
     const lessOrEqual = population.filter(value => value <= subjectValue).length;
     metrics.push({
-      field,
+      field, canonicalId, aggregation,
       subjectValue,
       populationAverage,
       topAverage: average(sorted.slice(0, n)),
@@ -297,5 +345,59 @@ export function buildFocusSubjectComparison(
     matchedSubjectRowCount: subjectRows.length,
     rankValue,
     metrics,
+  };
+}
+
+function signed(value: number): string {
+  const rounded = Math.round(value * 100) / 100;
+  return `${rounded >= 0 ? '+' : ''}${rounded}`;
+}
+
+export function deriveFocusSubjectNarrative(comparison: FocusSubjectComparison): FocusSubjectNarrative {
+  const primary = comparison.metrics[0];
+  const subject = comparison.subject.displayLabel;
+  if (!primary) return {
+    headline: `Analysis around ${subject}`,
+    summary: 'The focus is verified in the full source, but no governed numeric comparison is available for this action.',
+    insights: [],
+    followUpQuestions: [`What other governed measures are available for ${subject}?`],
+  };
+  const metricLabel = primary.field;
+  const topGap = primary.subjectValue - primary.topAverage;
+  const bottomGap = primary.subjectValue - primary.bottomAverage;
+  const secondary = comparison.metrics.slice(1)
+    .sort((a, b) => Math.abs(b.percentile - 50) - Math.abs(a.percentile - 50))[0];
+  const insights: FocusSubjectInsight[] = [
+    {
+      id: 'position',
+      title: 'Position in the population',
+      statement: `${subject} is at the ${Math.round(primary.percentile * 10) / 10}th percentile for ${metricLabel}, ${signed(primary.deltaFromAverage)} versus the population average.`,
+    },
+    {
+      id: 'cohort-gap',
+      title: 'Distance to comparison cohorts',
+      statement: `${subject} is ${signed(topGap)} versus the Top 10 average and ${signed(bottomGap)} versus the Bottom 10 average for ${metricLabel}.`,
+    },
+  ];
+  if (secondary) insights.push({
+    id: 'secondary-signal',
+    title: 'Another signal that stands out',
+    statement: `${secondary.field} sits at the ${Math.round(secondary.percentile * 10) / 10}th percentile (${signed(secondary.deltaFromAverage)} versus average).`,
+  });
+  const rank = Number(String(comparison.rankValue ?? '').replace(/,/g, ''));
+  if (Number.isFinite(rank) && rank > 0 && primary.populationCount > 1) insights.push({
+    id: 'rank-context',
+    title: 'Rank and selected metric tell different stories',
+    statement: `${subject} has recorded rank ${comparison.rankValue}, while ${metricLabel} is at the ${Math.round(primary.percentile * 10) / 10}th percentile. The rank likely reflects additional inputs beyond this metric, so LightBI should inspect those drivers rather than infer causality.`,
+  });
+  return {
+    headline: `${subject} in context`,
+    summary: `The full population remains the benchmark; every readout below is anchored to ${subject}.`,
+    insights,
+    followUpQuestions: [
+      `Which governed metrics differ most for ${subject} versus the population?`,
+      `How far is ${subject} from the Top 10 and Bottom 10 cohorts?`,
+      comparison.rankValue ? `Which available signals may help explain the recorded rank ${comparison.rankValue}?` : `Which comparison cohort is most relevant for ${subject}?`,
+    ],
   };
 }

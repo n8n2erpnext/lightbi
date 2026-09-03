@@ -4,6 +4,7 @@ import {
   buildFocusSubjectComparison,
   createFocusSubjectSelection,
   deriveFocusSubjectCandidates,
+  deriveFocusSubjectNarrative,
   resolveFocusAutoPerspectiveId,
   searchFocusSubjectOptions,
 } from './focus-subject-analysis';
@@ -139,5 +140,38 @@ describe('Focus Subject selected-measure priority', () => {
     const comparison = buildFocusSubjectComparison(rows, subject, action)!;
     expect(comparison.metrics[0]?.field).toBe('TRUNG BÌNH ĐIỂM 4 TIÊU CHÍ');
     expect(comparison.metrics[0]?.subjectValue).toBeCloseTo(8.7667);
+  });
+});
+
+describe('Focus Subject semantic coherence', () => {
+  it('deduplicates case-variant metric headers and lets governed AVG override an unsafe action SUM', () => {
+    const candidate = deriveFocusSubjectCandidates(understanding, rows).find(item => item.canonicalId === 'employee_id')!;
+    const subject = createFocusSubjectSelection(candidate, searchFocusSubjectOptions(candidate, '24128')[0], understanding);
+    const runtimeRows = rows.map(row => Object.fromEntries(Object.entries(row).map(([key, value]) => [key.toLocaleLowerCase(), value])));
+    const duplicateSubjectRows = runtimeRows.concat([{
+      'msnv quản lý': '24128', 'họ tên quản lý': 'Thái Đăng Duy', ranking: 1769, 'tổng sao': 0, 'trung bình điểm 4 tiêu chí': 9.2, 'khu vực': 'Region 2',
+    }]);
+    const action = {
+      id: 'quality-summary', opportunityName: 'What is the governed average quality score?', label: 'Quality', description: '',
+      actionType: 'summary' as const, dimensions: [], measures: ['average_quality_score'],
+      measureAggregations: { average_quality_score: 'SUM' as const }, confidenceScore: 100, source: 'dataset_understanding' as const,
+    };
+    const comparison = buildFocusSubjectComparison(duplicateSubjectRows, subject, action)!;
+    const normalized = comparison.metrics.map(metric => metric.field.toLocaleLowerCase());
+    expect(new Set(normalized).size).toBe(normalized.length);
+    expect(comparison.metrics[0]?.aggregation).toBe('AVG');
+    expect(comparison.metrics[0]?.subjectValue).toBeCloseTo((8.7667 + 9.2) / 2);
+    expect(comparison.metrics[0]?.topAverage).toBeLessThanOrEqual(10);
+  });
+
+  it('builds one narrative that stays anchored to the selected subject', () => {
+    const candidate = deriveFocusSubjectCandidates(understanding, rows).find(item => item.canonicalId === 'employee_id')!;
+    const subject = createFocusSubjectSelection(candidate, searchFocusSubjectOptions(candidate, '24128')[0], understanding);
+    const comparison = buildFocusSubjectComparison(rows, subject)!;
+    const narrative = deriveFocusSubjectNarrative(comparison);
+    expect(narrative.headline).toContain('24128');
+    expect(narrative.summary).toContain('24128');
+    expect(narrative.insights.every(item => item.statement.includes('24128') || item.id === 'secondary-signal')).toBe(true);
+    expect(narrative.followUpQuestions.every(question => question.includes('24128') || question.includes('recorded rank'))).toBe(true);
   });
 });
