@@ -41,6 +41,8 @@
   - [13. Advanced Mode: technical workspace, not a bypass around governance](#13-advanced-mode-technical-workspace-not-a-bypass-around-governance)
   - [14. Investigation is the governed execution workspace](#14-investigation-is-the-governed-execution-workspace)
   - [15. Deep BA / Business Brain: evidence-bound analytical narrative](#15-deep-ba-business-brain-evidence-bound-analytical-narrative)
+  - [15A. BA/DA Mode: future analyst workbench direction](#15a-bada-mode-future-analyst-workbench-direction)
+  - [15B. Team Workspace / Realtime BA: future collaboration direction](#15b-team-workspace--realtime-ba-future-collaboration-direction)
   - [16. AI is an optional consumer, not the analytical authority](#16-ai-is-an-optional-consumer-not-the-analytical-authority)
 - **[Part V — Semantic Knowledge, Domains, and Business Coverage](#part-v-semantic-knowledge-domains-and-business-coverage)**
   - [17. Semantic Registry is the supported runtime vocabulary source](#17-semantic-registry-is-the-supported-runtime-vocabulary-source)
@@ -48,6 +50,7 @@
 - **[Part VI — Planning, Runtime, Storage, and Connectors](#part-vi-planning-runtime-storage-and-connectors)**
   - [19. Recipe / Planner / Runtime separation is a long-lived architectural principle](#19-recipe-planner-runtime-separation-is-a-long-lived-architectural-principle)
   - [20. Local-first is a product rule, not only a deployment choice](#20-local-first-is-a-product-rule-not-only-a-deployment-choice)
+  - [20A. Future Team / Realtime infrastructure direction](#20a-future-team--realtime-infrastructure-direction)
   - [21. Provider/plugin expansion must not bloat core or fake support](#21-providerplugin-expansion-must-not-bloat-core-or-fake-support)
 - **[Part VII — Visualization, Dashboard, Export, and Handoff](#part-vii-visualization-dashboard-export-and-handoff)**
   - [22. Visualization consumes governed data contracts; it does not invent analytical truth](#22-visualization-consumes-governed-data-contracts-it-does-not-invent-analytical-truth)
@@ -686,6 +689,33 @@ Risk rules documented in V1 include low margin, high AR, deferred-payment exposu
 A recommendation must not overclaim. `do_now` is appropriate only when the evidence and risk state support it; otherwise the system should use `investigate` or `need_more_data`.
 
 Primary bookmark: [`../progress/phase-28-business-brain-orchestrator.md`](../history/progress/phase-28-business-brain-orchestrator.md).
+
+## 15A. BA/DA Mode: future analyst workbench direction
+
+**Status: future product direction, not implemented runtime truth.**
+
+On 2026-09-03 the product owner approved a future mode that extends Deep BA into a professional analyst workbench without replacing Easy Mode or Advanced Mode. BA/DA Mode starts from a governed business overview, turns secondary questions into an internal investigation graph, and progressively drills through dimensions, segments, drivers, evidence, hypotheses, tests and findings.
+
+The direction explicitly reuses the technical IDE/runtime owned by Advanced Mode. In BA/DA context the editor should inherit the current semantic/evidence context and support LightBI analytical Python templates/library functions, user-authored Python, and adjacent SQL work. Saved work should become reproducible Analysis Artifacts rather than orphaned scripts.
+
+The intended mode responsibilities are: Easy answers quickly; Deep BA explains the governed result; BA/DA investigates why the result looks that way and lets analysts extend it; Advanced provides technical manipulation/query tooling. Mode switching should preserve one analytical context rather than create competing truths.
+
+The long-term product thesis is workflow gravity rather than lock-in: LightBI should become the place users instinctively open when data work begins, while continuing to support open export/handoff to Excel, BI tools, Python/notebooks and databases.
+
+Primary bookmark: [`../product/ba-da-mode-future-analyst-workbench.md`](../product/ba-da-mode-future-analyst-workbench.md).
+
+## 15B. Team Workspace / Realtime BA: future collaboration direction
+
+**Status: future product direction, not implemented runtime truth and not a current pricing contract.**
+
+The future Team Workspace extends LightBI's local-first single-user workflow into an organizational context. Share is the bridge: a governed Deep BA/BA/DA/report/dashboard artifact can be published into a team workspace without forcing a manager to consume the underlying SQL/Python or requiring the analyst to rebuild the analysis. Shared artifacts should preserve revision, evidence, lineage and permission context.
+
+Realtime BA is the future recurring-analysis layer: selected governed analytical questions may be refreshed/re-evaluated as authorized source data changes. “Realtime” may use bounded refresh windows, event/schedule triggers and quotas rather than unlimited row streaming. The current packaging direction is roughly one Realtime BA allowance per five seats (5/10/20 seats → 1/2/4 allowances), but the allowance unit and pricing remain future decisions.
+
+Local-first remains a hard product boundary. Team sync may share analytical state, report revisions, chart definitions, findings, evidence metadata, permissions and source/lineage references without silently uploading complete raw datasets. Cloud-hosted source execution may exist only through explicit organization policy/authorization.
+
+Primary bookmark: [`../product/team-workspace-realtime-ba-future-direction.md`](../product/team-workspace-realtime-ba-future-direction.md).
+
 ## 16. AI is an optional consumer, not the analytical authority
 
 The project repeatedly draws a hard line around AI responsibility.
@@ -855,6 +885,19 @@ Primary bookmarks:
 - [`../changelog/2026-06-01-phase11-persistence.md`](../history/changelog/2026-06-01-phase11-persistence.md)
 - [`../changelog/2026-06-01-phase12-project-runtime.md`](../history/changelog/2026-06-01-phase12-project-runtime.md)
 - [`../product/product-direction-and-pricing-v1.md`](../product/product-direction-and-pricing-v1.md)
+
+## 20A. Future Team / Realtime infrastructure direction
+
+**Status: future architecture direction, not a deployment record.**
+
+Future Team Workspace and Realtime BA should add shared collaboration/execution planes without turning LightBI into a mandatory cloud-first product. The conceptual responsibilities are a local analysis plane, collaboration state plane, bounded Realtime BA execution plane, control/identity/entitlement plane, immutable artifact/distribution plane and continuity/recovery plane. These are responsibility boundaries, not frozen host/service technology.
+
+Shared raw data is not the default synchronization unit. Compact analytical artifacts, revisions, evidence/lineage references, permissions and job state may sync while full source data stays local unless an organization explicitly authorizes server-side/hosted execution. Realtime execution placement may therefore be local/edge, server-side, or hybrid depending on source authority.
+
+Shared authoritative state should use one active write authority unless a deliberate multi-writer protocol exists. Continuity/failover requires fencing before promotion to avoid split-brain. The HOMELAB Warm Continuity Node discussion is an early recovery-generation prototype: it is not an equal second-primary. Production Root remains offline and must never be synchronized to continuity/worker nodes; recovery must not collapse signing/trust boundaries.
+
+Primary bookmark: [`../architecture/future-team-realtime-infrastructure-direction.md`](../architecture/future-team-realtime-infrastructure-direction.md).
+
 ## 21. Provider/plugin expansion must not bloat core or fake support
 
 `@lightbi/plugin-sdk` defines the provider contract for source-specific behavior. In the documented state it is a trusted first-party/built-in contract layer, **not yet an arbitrary third-party marketplace loader**.

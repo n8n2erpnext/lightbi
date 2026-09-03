@@ -4,11 +4,11 @@
 
 ## Snapshot
 
-- Date: **2026-09-01**
-- Branch: `docs/project-library-cleanup-20260829`
-- HEAD: `652853f605682b435af19a97645bf7cc037c6faf`
+- Date: **2026-09-03**
+- Branch: `docs/ba-da-mode-future-20260903`
+- HEAD: `ec8ed7bb3a6e133db9c7c915f5b2fab74301fa6e`
 - Worktree dirty while generated: **true**
-- Total indexed sources: **933** (516 Markdown / 417 JSON)
+- Total indexed sources: **936** (519 Markdown / 417 JSON)
 - JSON under `docs/`: **354**
 
 For old paths, use [`PATH_MIGRATION_INDEX.md`](./PATH_MIGRATION_INDEX.md) and [`../history/LEGACY_ROOT_INDEX.md`](../history/LEGACY_ROOT_INDEX.md).
@@ -162,7 +162,7 @@ For old paths, use [`PATH_MIGRATION_INDEX.md`](./PATH_MIGRATION_INDEX.md) and [`
 
 - [`docs/architecture/commerce-erpnext-revenue-mirror.md`](../../docs/architecture/commerce-erpnext-revenue-mirror.md) — Commerce → ERPNext Optional Revenue Mirror; `11569` bytes; SHA-256 `d2265f05414cf76fe52556ecf7f324baf58d3cd24cba1cad4ad9989c20e61e7f`
 - [`docs/architecture/road-to-1-0-trust-release-contract.md`](../../docs/architecture/road-to-1-0-trust-release-contract.md) — Road to 1.0 Trust, Release, and Official Identity Contract; `11442` bytes; SHA-256 `145ebcd76004395d0d0bd2062d120cb312cd2a642d1cd4cb02617aa8547953c8`
-- [`docs/architecture/README.md`](../../docs/architecture/README.md) — Architecture Library; `14955` bytes; SHA-256 `766081adcbf4ecd7d41bf8375ceafc7655caccc72106a7ab782df0940d421b24`
+- [`docs/architecture/README.md`](../../docs/architecture/README.md) — Architecture Library; `15401` bytes; SHA-256 `a6b1de5fd5e0f4e434de848c8d4594854cd35bf0df96b31b763dbd8e5bed7978`
 - [`docs/architecture/artifact-model.md`](../../docs/architecture/artifact-model.md) — Export Artifact Model; `834` bytes; SHA-256 `c444e449c8bb69aac589a0c0f35ea93e864f2a90c4b14a1e51e716737342b0e6`
 - [`docs/architecture/beta-core-ui-business-brain-bridge-audit.json`](../../docs/architecture/beta-core-ui-business-brain-bridge-audit.json) — beta-core-ui-business-brain-bridge-audit.json; `2548` bytes; SHA-256 `fb0076e78482530c1f747e09fa105c86110923f19e713ae3ef913a9416908205`
 - [`docs/architecture/beta-inventory-shipment-perspective-audit.json`](../../docs/architecture/beta-inventory-shipment-perspective-audit.json) — beta-inventory-shipment-perspective-audit.json; `3456` bytes; SHA-256 `7afb233b5fc3a90452ba8b8f1d7b474554582d60916b3b7c54f41f6574e719ef`
@@ -186,6 +186,7 @@ For old paths, use [`PATH_MIGRATION_INDEX.md`](./PATH_MIGRATION_INDEX.md) and [`
 - [`docs/architecture/execution-strategy.md`](../../docs/architecture/execution-strategy.md) — Execution Strategy Model; `962` bytes; SHA-256 `69a95d971098bead71ee930422d539d69b9722d210b09507b88653da3caed64e`
 - [`docs/architecture/export-model.md`](../../docs/architecture/export-model.md) — Export Architecture Model; `1018` bytes; SHA-256 `2e0d694bdee79ab95e6f3752d9f95851462247df9675a60c285954e1fb4d49c1`
 - [`docs/architecture/frontend-boundary.md`](../../docs/architecture/frontend-boundary.md) — Frontend Boundary Model; `833` bytes; SHA-256 `b8b3083c914a1f95bfe9c1b340b002d84ef9269ce359daca19ad849ce2a3bf12`
+- [`docs/architecture/future-team-realtime-infrastructure-direction.md`](../../docs/architecture/future-team-realtime-infrastructure-direction.md) — Future Team / Realtime BA Infrastructure Direction; `14169` bytes; SHA-256 `d29b6138a355d22720ae9371d04c7bbfc75e372af65d22044cb69c234c70acb7`
 - [`docs/architecture/insight-model.md`](../../docs/architecture/insight-model.md) — Insight Architecture Model; `1061` bytes; SHA-256 `b65012acafe379496400afb29a7e07c9175ffcde2b1f5b9ebecec94481ed5bd6`
 - [`docs/architecture/intent-model.md`](../../docs/architecture/intent-model.md) — Analytical Intent Model; `1012` bytes; SHA-256 `a775be1d16b314719c107d7dbdea314fd7bc50cd62d4e9a9083400095ea34057`
 - [`docs/architecture/materialization-model.md`](../../docs/architecture/materialization-model.md) — Materialization Strategy Model; `1110` bytes; SHA-256 `72c76c230a22271735c0753ffbed3db382aaf3aa5e173a2c175baf3c00314cdb`
@@ -947,6 +948,8 @@ For old paths, use [`PATH_MIGRATION_INDEX.md`](./PATH_MIGRATION_INDEX.md) and [`
 
 ## product-draft-or-contract
 
+- [`docs/product/ba-da-mode-future-analyst-workbench.md`](../../docs/product/ba-da-mode-future-analyst-workbench.md) — LightBI BA/DA Mode — Future Analyst Workbench Product Concept; `21382` bytes; SHA-256 `eaeb06dad89a144109f0f460886616bb3b907ce0ad1b2e6bc41ac0702f37581f`
+- [`docs/product/team-workspace-realtime-ba-future-direction.md`](../../docs/product/team-workspace-realtime-ba-future-direction.md) — LightBI Team Workspace and Realtime BA — Future Product Direction; `10451` bytes; SHA-256 `1165c2f182453871a0a8e85855aff344eb84563753d6ac1992850e2559af3671`
 - [`docs/product/product-direction-and-pricing-v1.md`](../../docs/product/product-direction-and-pricing-v1.md) — LightBI Product Direction and Pricing Strategy; `4687` bytes; SHA-256 `bcca7ed04fad0873be70afa0e681e0f87dad89e4d4de34d2d71cc507293063ff`
 
 ## release-record

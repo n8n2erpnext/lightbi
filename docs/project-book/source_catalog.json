@@ -1,14 +1,14 @@
 {
   "schemaVersion": "lightbi.project-book.source-catalog.v1",
-  "snapshotDate": "2026-09-01",
-  "generatedAt": "2026-09-01T09:39:47.497868+00:00",
-  "branch": "docs/project-library-cleanup-20260829",
-  "head": "652853f605682b435af19a97645bf7cc037c6faf",
+  "snapshotDate": "2026-09-03",
+  "generatedAt": "2026-09-03T04:18:46.951551+00:00",
+  "branch": "docs/ba-da-mode-future-20260903",
+  "head": "ec8ed7bb3a6e133db9c7c915f5b2fab74301fa6e",
   "worktreeDirty": true,
   "scope": "All project Markdown and JSON outside dependency/build/project-book directories.",
   "counts": {
-    "total": 933,
-    "markdown": 516,
+    "total": 936,
+    "markdown": 519,
     "json": 417,
     "docsJson": 354,
     "references": 0
@@ -1296,8 +1296,8 @@
     {
       "path": "docs/architecture/README.md",
       "extension": ".md",
-      "bytes": 14955,
-      "sha256": "766081adcbf4ecd7d41bf8375ceafc7655caccc72106a7ab782df0940d421b24",
+      "bytes": 15401,
+      "sha256": "a6b1de5fd5e0f4e434de848c8d4594854cd35bf0df96b31b763dbd8e5bed7978",
       "suggestedCategory": "architecture-source-or-evidence",
       "title": "Architecture Library"
     },
@@ -9212,6 +9212,14 @@
       "title": "Analytical Workspace Model"
     },
     {
+      "path": "docs/architecture/future-team-realtime-infrastructure-direction.md",
+      "extension": ".md",
+      "bytes": 14169,
+      "sha256": "d29b6138a355d22720ae9371d04c7bbfc75e372af65d22044cb69c234c70acb7",
+      "suggestedCategory": "architecture-source-or-evidence",
+      "title": "Future Team / Realtime BA Infrastructure Direction"
+    },
+    {
       "path": "docs/design/ui-baseline.md",
       "extension": ".md",
       "bytes": 3910,
@@ -11385,6 +11393,22 @@
       "sha256": "bcca7ed04fad0873be70afa0e681e0f87dad89e4d4de34d2d71cc507293063ff",
       "suggestedCategory": "product-draft-or-contract",
       "title": "LightBI Product Direction and Pricing Strategy"
+    },
+    {
+      "path": "docs/product/ba-da-mode-future-analyst-workbench.md",
+      "extension": ".md",
+      "bytes": 21382,
+      "sha256": "eaeb06dad89a144109f0f460886616bb3b907ce0ad1b2e6bc41ac0702f37581f",
+      "suggestedCategory": "product-draft-or-contract",
+      "title": "LightBI BA/DA Mode — Future Analyst Workbench Product Concept"
+    },
+    {
+      "path": "docs/product/team-workspace-realtime-ba-future-direction.md",
+      "extension": ".md",
+      "bytes": 10451,
+      "sha256": "1165c2f182453871a0a8e85855aff344eb84563753d6ac1992850e2559af3671",
+      "suggestedCategory": "product-draft-or-contract",
+      "title": "LightBI Team Workspace and Realtime BA — Future Product Direction"
     },
     {
       "path": "docs/release/BETA_RELEASE_CHECKLIST.md",

@@ -32,12 +32,12 @@
 | `MVP_sol.md` | 1 | 0 |
 | `README.md` | 1 | 0 |
 | `adr` | 123 | 0 |
-| `architecture` | 107 | 354 |
+| `architecture` | 108 | 354 |
 | `design` | 1 | 0 |
 | `domain-catalog` | 8 | 0 |
 | `history` | 259 | 0 |
 | `plugin-sdk` | 1 | 0 |
-| `product` | 1 | 0 |
+| `product` | 3 | 0 |
 | `release` | 1 | 0 |
 
 `docs/project-book/` is a governance/synthesis layer and is intentionally excluded from `SOURCE_CATALOG` to avoid self-referential catalog churn. Its files are indexed by this map and `project-book/README.md`.

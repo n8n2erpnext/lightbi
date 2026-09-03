@@ -12,7 +12,7 @@
 
 ## Shelf summary
 
-- Model/contract/architecture Markdown: **45**
+- Model/contract/architecture Markdown: **46**
 - Phase records: **63**
 - Machine evidence JSON: **354**
 
@@ -36,6 +36,7 @@
 - [`execution-strategy.md`](./execution-strategy.md) — Execution Strategy Model
 - [`export-model.md`](./export-model.md) — Export Architecture Model
 - [`frontend-boundary.md`](./frontend-boundary.md) — Frontend Boundary Model
+- [`future-team-realtime-infrastructure-direction.md`](./future-team-realtime-infrastructure-direction.md) — Future Team / Realtime BA Infrastructure Direction (draft)
 - [`insight-model.md`](./insight-model.md) — Insight Architecture Model
 - [`intent-model.md`](./intent-model.md) — Analytical Intent Model
 - [`materialization-model.md`](./materialization-model.md) — Materialization Strategy Model
