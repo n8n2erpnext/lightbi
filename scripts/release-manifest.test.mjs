@@ -10,6 +10,9 @@ import { validateWindowsPublisherEvidence } from './lib/windows-publisher-eviden
 const buildScript = resolve(import.meta.dirname, 'build-release-manifest.mjs');
 const releaseWorkflow = readFileSync(resolve(import.meta.dirname, '../.github/workflows/release.yml'), 'utf8');
 const nativeAcceptanceWorkflow = readFileSync(resolve(import.meta.dirname, '../.github/workflows/native-acceptance.yml'), 'utf8');
+const nextEsignerWorkflow = readFileSync(resolve(import.meta.dirname, '../.github/workflows/windows-next-esigner-signing.yml'), 'utf8');
+const esignerPrepareScript = readFileSync(resolve(import.meta.dirname, 'prepare-windows-esigner-cka.ps1'), 'utf8');
+const esignerCleanupScript = readFileSync(resolve(import.meta.dirname, 'cleanup-windows-esigner-cka.ps1'), 'utf8');
 const publisherCollector = readFileSync(resolve(import.meta.dirname, 'collect-windows-publisher-evidence.ps1'), 'utf8');
 const manifest = (version = '0.9.2-beta.7') => ({
   schema_version: 'lightbi.release.v1', product: 'digital.thaiduy.lightbi', version, channel: 'beta',
@@ -63,7 +66,7 @@ test('Windows native acceptance artifact is isolated from Production publication
   assert.match(nativeAcceptanceWorkflow, /VITE_LIGHTBI_CHANNEL: internal/u);
   assert.match(nativeAcceptanceWorkflow, /VITE_LIGHTBI_DISTRIBUTION_URL: https:\/\/lightbi-next\.thaiduy\.digital/u);
   assert.match(nativeAcceptanceWorkflow, /VITE_LIGHTBI_PARENT_GENERATION_ID: g-2026-09-02-next-029/u);
-  assert.match(nativeAcceptanceWorkflow, /VITE_LIGHTBI_CONTROL_PLANE_COMMIT: 6936fc4272bc92cd1badc00b9256cfd912e4a9ad/u);
+  assert.match(nativeAcceptanceWorkflow, /VITE_LIGHTBI_CONTROL_PLANE_COMMIT: bb50b0d53542da5cd908e2237cbca368f7f87073/u);
   assert.match(nativeAcceptanceWorkflow, /VITE_LIGHTBI_TRUST_PHASE2A_HEAD: 10de4da8e551a46f93f7b62985a0a6e611581b8e/u);
   assert.match(nativeAcceptanceWorkflow, /VITE_LIGHTBI_RELEASE_UPDATE_CHANNEL: internal/u);
   assert.match(nativeAcceptanceWorkflow, /src\/lib\/native-runtime\.test\.ts/u);
@@ -113,4 +116,48 @@ test('stable manifest builder fails closed until Windows publisher evidence is s
   } finally {
     rmSync(folder, { recursive: true, force: true });
   }
+});
+
+test('NEXT eSigner workflow is exact-SHA branch gated and non-publishing', () => {
+  assert.match(nextEsignerWorkflow, /name: NEXT Windows Authenticode Acceptance/u);
+  assert.match(nextEsignerWorkflow, /codex\/native-signing-r1p12-sandbox-\*/u);
+  assert.match(nextEsignerWorkflow, /codex\/native-signing-r1p12-product-\*/u);
+  assert.doesNotMatch(nextEsignerWorkflow, /workflow_dispatch:/u);
+  assert.match(nextEsignerWorkflow, /expected.*\^\[0-9a-f\]\{40\}\$/u);
+  assert.match(nextEsignerWorkflow, /expected.*GITHUB_SHA/u);
+  assert.match(nextEsignerWorkflow, /mode=.*GITHUB_OUTPUT/u);
+  assert.match(nextEsignerWorkflow, /permissions:\s*\n\s*contents: read/u);
+  assert.doesNotMatch(nextEsignerWorkflow, /contents: write|softprops\/action-gh-release|R2_ACCESS_KEY_ID|aws s3 cp/u);
+});
+
+test('NEXT eSigner workflow signs both runtime app and installer without gaining Production authority', () => {
+  assert.match(nextEsignerWorkflow, /VITE_LIGHTBI_CHANNEL: internal/u);
+  assert.match(nextEsignerWorkflow, /LIGHTBI_SIGNED_CONTROL_PLANE: bb50b0d53542da5cd908e2237cbca368f7f87073/u);
+  assert.match(nextEsignerWorkflow, /SSL_COM_ESIGNER_EXPECTED_SUBJECT/u);
+  assert.match(nextEsignerWorkflow, /certificateThumbprint = \$env:LIGHTBI_WINDOWS_PUBLISHER_THUMBPRINT/u);
+  assert.match(nextEsignerWorkflow, /digestAlgorithm = 'sha256'/u);
+  assert.match(nextEsignerWorkflow, /timestampUrl = 'http:\/\/ts\.ssl\.com'/u);
+  assert.match(nextEsignerWorkflow, /collect-windows-publisher-evidence\.ps1 -Installer \$app\.FullName/u);
+  assert.match(nextEsignerWorkflow, /collect-windows-publisher-evidence\.ps1 -Installer \$normalizedInstaller/u);
+  assert.match(nextEsignerWorkflow, /--mode stable --expected-sha256 \$appHash --expected-subject/u);
+  assert.match(nextEsignerWorkflow, /--mode stable --expected-sha256 \$installerHash --expected-subject/u);
+  assert.match(nextEsignerWorkflow, /appEvidence\.signer_thumbprint -ne \$installerEvidence\.signer_thumbprint/u);
+  assert.match(nextEsignerWorkflow, /runtime_expected_thumbprint = \$env:LIGHTBI_WINDOWS_PUBLISHER_THUMBPRINT/u);
+  assert.match(nextEsignerWorkflow, /environment = 'next_internal_test_only'/u);
+  assert.match(nextEsignerWorkflow, /promotable_to_production = \$false/u);
+  assert.match(nextEsignerWorkflow, /production_authority = \$false/u);
+  assert.doesNotMatch(nextEsignerWorkflow, /--channel\s+stable|release\/lightbi\/stable/u);
+});
+
+test('SSL.com eSigner CKA preparation is provider-authenticated and exact-subject gated', () => {
+  assert.match(esignerPrepareScript, /https:\/\/ssl\.com\/download\/ssl-com-esigner-cka/u);
+  assert.match(esignerPrepareScript, /Get-AuthenticodeSignature -FilePath \$ckaInstaller\.FullName/u);
+  assert.match(esignerPrepareScript, /config -mode \$Mode -user \$username -pass \$password -totp \$totpSecret/u);
+  assert.match(esignerPrepareScript, /Cert:\\CurrentUser\\My -CodeSigningCert/u);
+  assert.match(esignerPrepareScript, /Where-Object \{ \$_\.Subject -eq \$ExpectedSubject \}/u);
+  assert.match(esignerPrepareScript, /LIGHTBI_WINDOWS_PUBLISHER_THUMBPRINT/u);
+  assert.match(esignerPrepareScript, /LIGHTBI_ESIGNER_CKA_TOOL/u);
+  assert.match(esignerPrepareScript, /& \$ckaTool unload/u);
+  assert.match(esignerCleanupScript, /LIGHTBI_ESIGNER_MASTER_KEY/u);
+  assert.match(esignerCleanupScript, /LIGHTBI_ESIGNER_WORKING_ROOT/u);
 });

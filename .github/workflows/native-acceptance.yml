@@ -57,7 +57,7 @@ jobs:
           VITE_LIGHTBI_PARENT_GENERATION_ID: g-2026-09-02-next-029
           VITE_LIGHTBI_CHANNEL: internal
           VITE_LIGHTBI_CORE_COMMIT: ${{ github.sha }}
-          VITE_LIGHTBI_CONTROL_PLANE_COMMIT: 6936fc4272bc92cd1badc00b9256cfd912e4a9ad
+          VITE_LIGHTBI_CONTROL_PLANE_COMMIT: bb50b0d53542da5cd908e2237cbca368f7f87073
           VITE_LIGHTBI_CONTROL_PLANE_SCHEMA_VERSION: 067_catalog_quarterly_pricing
           VITE_LIGHTBI_TEST_PACK_VERSION: r1p12-windows-native-acceptance
           VITE_LIGHTBI_TRUST_STATUS: phase2a_unfrozen
@@ -99,7 +99,7 @@ jobs:
             generation_id = $env:LIGHTBI_ACCEPTANCE_GENERATION
             source_sha = "${{ github.sha }}"
             source_ref = "${{ github.ref_name }}"
-            control_plane_sha = "6936fc4272bc92cd1badc00b9256cfd912e4a9ad"
+            control_plane_sha = "bb50b0d53542da5cd908e2237cbca368f7f87073"
             run_id = "${{ github.run_id }}"
             run_attempt = "${{ github.run_attempt }}"
             installer = $name
