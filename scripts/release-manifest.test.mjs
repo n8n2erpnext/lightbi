@@ -72,6 +72,8 @@ test('Windows native acceptance artifact is isolated from Production publication
   assert.match(nativeAcceptanceWorkflow, /src\/lib\/native-runtime\.test\.ts/u);
   assert.match(nativeAcceptanceWorkflow, /cargo test -p lightbi-tauri windows_publisher --target x86_64-pc-windows-msvc/u);
   assert.match(nativeAcceptanceWorkflow, /production_authority = \$false/u);
+  assert.match(nativeAcceptanceWorkflow, /installer_size = \[int64\]\$size/u);
+  assert.match(nativeAcceptanceWorkflow, /LIGHTBI_NATIVE_ACCEPTANCE=\$acceptanceJson/u);
   assert.doesNotMatch(nativeAcceptanceWorkflow, /softprops\/action-gh-release|R2_ACCESS_KEY_ID|aws s3 cp/u);
 });
 

@@ -88,6 +88,7 @@ jobs:
           $normalized = Join-Path $installer.Directory.FullName $name
           Move-Item $installer.FullName $normalized -Force
           $hash = (Get-FileHash -Algorithm SHA256 $normalized).Hash.ToLowerInvariant()
+          $size = (Get-Item $normalized).Length
           "$hash  $name" | Set-Content -NoNewline "$normalized.sha256"
           $publisher = "$normalized.publisher.json"
           ./scripts/collect-windows-publisher-evidence.ps1 -Installer $normalized -Output $publisher
@@ -104,10 +105,13 @@ jobs:
             run_attempt = "${{ github.run_attempt }}"
             installer = $name
             sha256 = $hash
+            installer_size = [int64]$size
             publisher_status = $publisherEvidence.signature_status
             production_authority = $false
           }
-          $evidence | ConvertTo-Json | Set-Content "$($installer.Directory.FullName)/native-acceptance.json"
+          $acceptanceJson = $evidence | ConvertTo-Json -Compress
+          $acceptanceJson | Set-Content "$($installer.Directory.FullName)/native-acceptance.json"
+          Write-Host "LIGHTBI_NATIVE_ACCEPTANCE=$acceptanceJson"
       - uses: actions/upload-artifact@v4
         with:
           name: LightBI-Windows-R1P12-Native-Acceptance
