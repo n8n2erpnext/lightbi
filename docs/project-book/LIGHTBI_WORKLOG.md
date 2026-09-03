@@ -1518,3 +1518,11 @@ R1-P0 documentation/integrity closure verified 1,243 local links with zero missi
 - Exact native publisher evidence says `NotSigned` with no signer identity and `production_authority=false`; this closes the acceptance-build question but **not** Windows Authenticode or Official identity.
 - Owner accepted the bounded Windows install/sidebar/external-browser checks. The Bell dropdown bug is explicitly deferred and non-blocking; no broader manual acceptance is inferred.
 - R1-P12 remains active. Production Phase 2A freeze, Production ATT wire freeze, real Windows publisher trust and Production REL/ATT/external verifier remain unresolved; R1-P13 stays closed. Production untouched.
+
+## 2026-09-03 — NEXT-030 Control Plane/worker generation reconciliation closes the runtime drift
+
+- Private CP exact head `bb50b0d53542da5cd908e2237cbca368f7f87073` passed **209/209**. Read-only migration status against the Internal database reported 21 applied / 0 pending, expected schema `067_catalog_quarterly_pricing`; no migration was executed.
+- A temporary port-5374 candidate proved NEXT-030 / `bb50b0d...` / current schema before cutover. The existing user-systemd CP runtime tree was then swapped from deployed marker `6936fc427...` to `bb50b0d...`; the old Distribution folder was retained as rollback evidence. DB/Redis/secrets and Trust signer/attestation/delivery authorities were unchanged.
+- Added NEXT-030 CP/worker identity override. CP now reports `g-2026-09-03-next-030` / `bb50b0d...`; the previously disabled worker unit was re-enabled and now reports a healthy matching heartbeat. HTTPS `/`, `/docs`, `/verify`, `/account`, `/distribution-api/api/v1/health` and gateway diagnostics pass. Production was not touched.
+- Revalidated public R1-P12 source `13202fd...` with full `test:release-1.0`: release 8/8, generation 8/8, diagnostics 8/8, history 13/13, governed 39/39, boundary/native/source-size/build PASS.
+- R1-P12 remains open only on real Windows Authenticode plus owner-gated Production official-identity prerequisites. The exact #6 installer remains `NotSigned`; R1-P13 remains closed and Bell dropdown remains deferred non-blocking UX debt.

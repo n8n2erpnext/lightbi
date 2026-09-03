@@ -1,7 +1,7 @@
 {
   "schema": "067_catalog_quarterly_pricing",
-  "updatedAt": "2026-09-03T01:40:00Z",
-  "status": "r1p12_windows_owner_uat_accepted_bell_deferred_acceptance_artifact_not_signed_production_official_identity_blocked_r1p13_closed",
+  "updatedAt": "2026-09-03T02:35:54Z",
+  "status": "r1p12_next030_runtime_reconciled_windows_owner_uat_accepted_acceptance_artifact_not_signed_production_official_identity_blocked_r1p13_closed",
   "activeRuntime": "g-2026-09-03-next-030",
   "runtime": {
     "immutableGenerationCoreCommit": "7d15d69f2cf0bf39ac98dac9d91faa95edec7847",
@@ -10,11 +10,11 @@
     "legacyRuntimeManifestStillReports": "g-2026-09-02-next-029",
     "legacyRuntimeManifestAuthoritative": false,
     "immutableGenerationManifestControlPlaneCommit": "bb50b0d53542da5cd908e2237cbca368f7f87073",
-    "liveControlPlaneDiagnosticsGeneration": "g-2026-09-02-next-029",
-    "liveControlPlaneDiagnosticsCommit": "6936fc4272bc92cd1badc00b9256cfd912e4a9ad",
-    "liveControlPlaneWorkerStatus": "unhealthy",
-    "liveControlPlaneWorkerGeneration": "g-2026-09-02-next-029",
-    "runtimeFullyReconciled": false,
+    "liveControlPlaneDiagnosticsGeneration": "g-2026-09-03-next-030",
+    "liveControlPlaneDiagnosticsCommit": "bb50b0d53542da5cd908e2237cbca368f7f87073",
+    "liveControlPlaneWorkerStatus": "healthy",
+    "liveControlPlaneWorkerGeneration": "g-2026-09-03-next-030",
+    "runtimeFullyReconciled": true,
     "immutableGenerationManifestSha256": "d6c072872f2f413931f39e35ae386fea1b96c8d9c4ecbc40f1ca6bb949c9532c",
     "coreBinarySha256": "9bb29649724154e99c6a6dccfaf88027d83e8bb4b12a46ecfedd91b8daccfbb1"
   },
@@ -56,9 +56,14 @@
     "windows_acceptance_publisher_evidence_not_signed_fail_closed",
     "owner_windows_uat_accepted_bounded_shell_sidebar_external_link_scope",
     "bell_dropdown_bug_deferred_non_blocking_by_owner",
-    "next030_runtime_reconciled_with_gateway_overlay_without_claiming_uat_head_as_live_generation"
+    "next030_runtime_reconciled_with_gateway_overlay_without_claiming_uat_head_as_live_generation",
+    "next030_control_plane_deployed_exact_bb50b0d",
+    "next030_worker_reenabled_healthy_exact_bb50b0d",
+    "next030_runtime_fully_generation_reconciled",
+    "r1p12_private_control_plane_exact_head_209_209_pass",
+    "r1p12_release1_0_suite_revalidated_after_runtime_reconcile"
   ],
-  "nextAction": "First reconcile the NEXT/Internal Control Plane generation identity and unhealthy worker with the active NEXT-030 chassis without touching Production. Then remain in R1-P12: procure/configure real Windows Authenticode and prove final signed bytes; close Production Phase 2A freeze, ATT request-wire freeze and Production REL/ATT/external-verifier authority only with explicit owner authorization. Do not open R1-P13. Bell dropdown remains deferred non-blocking UX debt.",
+  "nextAction": "Remain in R1-P12 on NEXT: procure/configure real Windows Authenticode and prove final signed bytes. Production Phase 2A freeze, ATT request-wire freeze and Production REL/ATT/external-verifier authority remain owner-gated and must not be changed without explicit authorization. Do not open R1-P13. Bell dropdown remains deferred non-blocking UX debt.",
   "blockers": {
     "phase2aFrozen": false,
     "productionAttestationRequestSchemaFrozen": false,
@@ -68,8 +73,8 @@
     "r1p12PlatformSigningComplete": false,
     "r1p13Authorized": false,
     "bellDropdownDeferred": true,
-    "nextInternalControlPlaneGenerationAligned": false,
-    "nextInternalWorkerHealthy": false
+    "nextInternalControlPlaneGenerationAligned": true,
+    "nextInternalWorkerHealthy": true
   },
   "deferredPlatformDebt": {
     "macosProductBugs": true,
