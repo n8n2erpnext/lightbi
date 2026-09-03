@@ -59,6 +59,7 @@ import type { WorkspaceSessionRecord } from '../lib/workspace-session-api';
 import { executeHomeCanonicalMultiSourceBuild } from '../lib/home-canonical-multisource-build';
 import { createDurableInvestigationWorkspaceHandoff } from '../lib/home-workspace-persistence';
 import { findHomeDemoScenario, isHomeDemoSourceName, selectHomeDemoActionId, type HomeDemoScenario } from '../lib/home-demo-scenarios';
+import { createFocusSubjectSelection, deriveFocusSubjectCandidates, type FocusSubjectCandidate, type FocusSubjectOption, type FocusSubjectSelection } from '../lib/focus-subject-analysis';
 export const Home: React.FC = () => {
   const { preferences } = useDisplayPreferences();
   const navigate = useNavigate();
@@ -227,7 +228,8 @@ export const Home: React.FC = () => {
       canonicalHandoff,
       multiSourceDataset,
       supportingAnalyses,
-      datasetForSession ? { ...datasetForSession, selectedPerspective } : datasetForSession
+      datasetForSession ? { ...datasetForSession, selectedPerspective } : datasetForSession,
+      selectedFocusSubject ?? undefined
     );
     navigate('/investigation');
   };
@@ -236,6 +238,7 @@ export const Home: React.FC = () => {
   type AnalysisMode = "explore" | "investigate" | "ask";
   const [analysisMode, setAnalysisMode] = useState<AnalysisMode>("explore");
   const [selectedPerspective, setSelectedPerspective] = useState<string | null>(null);
+  const [selectedFocusSubject, setSelectedFocusSubject] = useState<FocusSubjectSelection | null>(null);
   const [selectedBusinessView, setSelectedBusinessView] = useState<string | null>(null);
   const activeAnalysisIntent = analysisIntent || selectedTopic || null;
 
@@ -294,6 +297,17 @@ export const Home: React.FC = () => {
   );
   const datasetUnderstandingNext = canonicalCapabilityLadder?.understanding ?? null;
   const canonicalDomainPerspectives = canonicalCapabilityLadder?.perspectives ?? [];
+  const focusSubjectCandidates = React.useMemo(
+    () => deriveFocusSubjectCandidates(datasetUnderstandingNext, canonicalRows),
+    [datasetUnderstandingNext, canonicalRows],
+  );
+  const handleSelectFocusSubject = useCallback((candidate: FocusSubjectCandidate, option: FocusSubjectOption) => {
+    if (!datasetUnderstandingNext) return;
+    setSelectedFocusSubject(createFocusSubjectSelection(candidate, option, datasetUnderstandingNext));
+  }, [datasetUnderstandingNext]);
+  useEffect(() => {
+    setSelectedFocusSubject(null);
+  }, [currentDataset?.file_name, currentDataset?.runtimeDatasetSource?.binding?.sourceFingerprint]);
   const runtimeSourceContinuity = React.useMemo(() => evaluateRuntimeSourceContinuity({
     artifact: canonicalArtifact, runtimeSource: currentDataset?.runtimeDatasetSource, multiSourceDataset: currentDataset?.canonicalMultiSourceDataset,
   }), [canonicalArtifact, currentDataset?.runtimeDatasetSource, currentDataset?.canonicalMultiSourceDataset]);
@@ -471,7 +485,7 @@ export const Home: React.FC = () => {
 
   const inspectLocalFiles = async (files: File[]) => {
     if (files.length === 0) return;
-    setResult(null); setSelectedTopic(null); setSelectedPerspective(null); setSelectedBusinessView(null); setPreviewActionId(null);
+    setResult(null); setSelectedTopic(null); setSelectedPerspective(null); setSelectedFocusSubject(null); setSelectedBusinessView(null); setPreviewActionId(null);
     setCurrentDataset(null); setWorkspaceState(null); setDecisionTrustReport(null); setCanonicalOverlayRebuildState('idle');
     setIsPlusMenuOpen(false); setIsReplaceMenuOpen(false); setLastInspectedFamilies(null); setLastInspectedBatch(null);
     setPendingLocalBatch({ files, status: 'reading', results: new Array(files.length).fill(null), families: [], selectedFamilyId: null, step: 'family_selection' });
@@ -904,7 +918,7 @@ export const Home: React.FC = () => {
     openDatabaseDrawer, workspaceSessions, sessionStatus, preferences, handleOpenWorkspaceSession, handleDeleteWorkspaceSession, fileInputRef,
     handleFileChange, uploadError, isUploading, workspaceState, isSavingSession,
     handleSaveWorkspaceSession, isDataPreviewOpen, setIsDataPreviewOpen, datasetUnderstandingNext,
-    canonicalArtifact, canonicalPresentation, canonicalDomainPerspectives, handleCanonicalOverlayChange, handleCanonicalRemediation, canonicalOverlayRebuildState,
+    canonicalArtifact, canonicalPresentation, canonicalDomainPerspectives, focusSubjectCandidates, selectedFocusSubject, handleSelectFocusSubject, setSelectedFocusSubject, handleCanonicalOverlayChange, handleCanonicalRemediation, canonicalOverlayRebuildState,
     runtimeSourceContinuity,
     canonicalMultiSourcePresentation,
     canonicalReviewTarget, multiSourceBuildResult, multiSourceReviewSources, multiSourceBundles, multiSourceDrafts, setMultiSourceDrafts, multiSourceBuilding,

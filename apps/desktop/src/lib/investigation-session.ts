@@ -9,6 +9,7 @@ import type { CanonicalInvestigationHandoffV1 } from './understanding-core/canon
 import type { GovernedMetricExecutionResultV1 } from './understanding-core/governed-runtime-contracts';
 import type { CanonicalMultiSourceDatasetV1, CanonicalMultiSourceInvestigationHandoffV1 } from './understanding-core/canonical-multisource-boundary';
 import type { CanonicalMultiSourceExecutionResultV1 } from './understanding-core/governed-multisource-duckdb-boundary';
+import type { FocusSubjectSelection } from './focus-subject-analysis';
 
 export interface InvestigationSession {
   id: string;
@@ -38,6 +39,8 @@ export interface InvestigationSession {
    * and profiling the persisted file again. It is never serialized.
    */
   workspaceDataset?: unknown;
+  /** Optional pre-analysis subject context. It never narrows rows or runtime authority. */
+  focusSubject?: FocusSubjectSelection;
 }
 
 // In-memory store for now, since we aren't using a real backend or persistent DB yet.
@@ -58,7 +61,8 @@ export function createInvestigationSession(
   canonicalHandoff?: CanonicalInvestigationHandoffV1 | CanonicalMultiSourceInvestigationHandoffV1,
   canonicalMultiSourceDataset?: CanonicalMultiSourceDatasetV1,
   supportingAnalyses?: InvestigationSession['supportingAnalyses'],
-  workspaceDataset?: unknown
+  workspaceDataset?: unknown,
+  focusSubject?: FocusSubjectSelection
 ): InvestigationSession {
   let safeRows = rows;
   // Deep clone to preserve original
@@ -82,6 +86,7 @@ export function createInvestigationSession(
     canonicalMultiSourceDataset,
     supportingAnalyses,
     workspaceDataset,
+    focusSubject,
   };
   
   currentSession = session;

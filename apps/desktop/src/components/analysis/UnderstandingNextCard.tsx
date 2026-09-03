@@ -9,6 +9,8 @@ import { AnalysisOpportunityGrid } from './AnalysisOpportunityGrid';
 import type { AnalysisAction } from '../../lib/analysis-opportunity-actions';
 import { CanonicalPerspectiveSelector } from './CanonicalPerspectiveSelector';
 import { useUiLanguage } from '../../lib/ui-language';
+import { FocusSubjectSelector } from './FocusSubjectSelector';
+import { resolveFocusAutoPerspectiveId, type FocusSubjectCandidate, type FocusSubjectOption, type FocusSubjectSelection } from '../../lib/focus-subject-analysis';
 
 const DOCUMENT_TYPE_LABELS: Record<string, string> = {
   retail_sales_document: 'retail sales data',
@@ -51,6 +53,11 @@ export interface UnderstandingNextCardProps {
   canonicalPerspectives?: CanonicalDomainPerspectiveCandidateV1[];
   selectedPerspectiveId?: string | null;
   onSelectPerspective?: (perspectiveId: string) => void;
+  onClearPerspective?: () => void;
+  focusCandidates?: FocusSubjectCandidate[];
+  selectedFocusSubject?: FocusSubjectSelection | null;
+  onSelectFocusSubject?: (candidate: FocusSubjectCandidate, option: FocusSubjectOption) => void;
+  onClearFocusSubject?: () => void;
   onRemediate?: (operation: CanonicalRemediationOperationV1, itemId: string) => void;
 }
 
@@ -62,6 +69,11 @@ export const UnderstandingNextCard: React.FC<UnderstandingNextCardProps> = ({
   canonicalPerspectives = [],
   selectedPerspectiveId = null,
   onSelectPerspective,
+  onClearPerspective,
+  focusCandidates = [],
+  selectedFocusSubject = null,
+  onSelectFocusSubject,
+  onClearFocusSubject,
   onRemediate,
 }) => {
   const { t } = useUiLanguage();
@@ -97,6 +109,9 @@ export const UnderstandingNextCard: React.FC<UnderstandingNextCardProps> = ({
   // viewpoint can run now is communicated by its state; hiding it made the
   // understanding layer appear much narrower than the data actually was.
   const actionablePerspectives = canonicalPerspectives;
+  const focusAutoPerspectiveId = selectedFocusSubject && !selectedPerspectiveId
+    ? resolveFocusAutoPerspectiveId(selectedFocusSubject, canonicalPerspectives)
+    : null;
   const grainLabel = GRAIN_LABELS[understanding.profile.grain] ?? humanize(understanding.profile.grain);
 
 
@@ -228,6 +243,14 @@ export const UnderstandingNextCard: React.FC<UnderstandingNextCardProps> = ({
         <>
           <CanonicalUnderstandingSummary presentation={canonicalPresentation} />
           <div className="border-t border-gray-100 pt-4">
+            <div className="mb-4">
+              <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-blue-700">
+                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-100 text-[10px]">1</span>
+                {t('Analysis context')}
+              </div>
+              <h3 className="mt-1 text-[17px] font-semibold text-slate-950">{t('Choose a perspective, a focus, or both.')}</h3>
+              <p className="mt-1 text-[12px] text-slate-500">{t('Perspective controls the business angle. Focus controls the entity at the center of the analysis.')}</p>
+            </div>
             <CanonicalPerspectiveSelector
               items={actionablePerspectives.map((perspective) => ({
                 id: perspective.perspectiveId,
@@ -246,7 +269,22 @@ export const UnderstandingNextCard: React.FC<UnderstandingNextCardProps> = ({
               }))}
               selectedId={selectedPerspectiveId}
               onSelect={(id) => onSelectPerspective?.(id)}
+              onClear={onClearPerspective}
+              eyebrow="Business perspective (optional)"
+              stepNumber={null}
+              title="What business angle do you want to investigate?"
+              description="Optional. Choose a perspective, a focus below, or combine both."
             />
+            {focusCandidates.length > 0 && onSelectFocusSubject && onClearFocusSubject && (
+              <div className="mt-4 border-t border-slate-100 pt-4">
+                <FocusSubjectSelector
+                  candidates={focusCandidates}
+                  selected={selectedFocusSubject}
+                  onSelect={onSelectFocusSubject}
+                  onClear={onClearFocusSubject}
+                />
+              </div>
+            )}
             {canonicalPerspectives.some(perspective => perspective.state !== 'governed_action_available') && (
               <details className="mt-3 rounded-xl border border-slate-200 bg-slate-50/60">
                 <summary className="cursor-pointer px-4 py-3 text-[12px] font-semibold text-slate-600">
@@ -266,6 +304,8 @@ export const UnderstandingNextCard: React.FC<UnderstandingNextCardProps> = ({
             presentation={canonicalPresentation}
             understanding={understanding}
             selectedPerspectiveId={selectedPerspectiveId}
+            focusSubject={selectedFocusSubject}
+            focusAutoPerspectiveId={focusAutoPerspectiveId}
             onSelectAction={onSelectAction}
             onRemediate={onRemediate}
           />
@@ -502,18 +542,21 @@ const CanonicalAnalysisStates: React.FC<{
   presentation: CanonicalDatasetPresentationV1;
   understanding: DatasetUnderstandingResult;
   selectedPerspectiveId?: string | null;
+  focusSubject?: FocusSubjectSelection | null;
+  focusAutoPerspectiveId?: string | null;
   onSelectAction?: (action: AnalysisAction) => void;
   onRemediate?: (operation: CanonicalRemediationOperationV1, itemId: string) => void;
-}> = ({ presentation, understanding, selectedPerspectiveId, onSelectAction, onRemediate }) => {
+}> = ({ presentation, understanding, selectedPerspectiveId, focusSubject = null, focusAutoPerspectiveId = null, onSelectAction, onRemediate }) => {
   const { t } = useUiLanguage();
+  const analysisPerspectiveId = selectedPerspectiveId ?? focusAutoPerspectiveId;
   const actionById = new Map(understanding.availableActions.map(action => [action.id, action]));
-  const perspectiveAnalyses = selectedPerspectiveId
-    ? presentation.analyses.filter(item => (item.businessPerspectiveIds ?? []).some(id => id === selectedPerspectiveId))
+  const perspectiveAnalyses = analysisPerspectiveId
+    ? presentation.analyses.filter(item => (item.businessPerspectiveIds ?? []).some(id => id === analysisPerspectiveId))
     : [];
-  const universalQuestions = selectedPerspectiveId
+  const universalQuestions = analysisPerspectiveId
     ? understanding.recommendedQuestions.filter((question) =>
         question.id.startsWith('universal:')
-        && question.domain === selectedPerspectiveId
+        && question.domain === analysisPerspectiveId
         && question.executionScope !== 'not_supported')
     : [];
   const universalActions = universalQuestions.flatMap((question) => {
@@ -544,6 +587,13 @@ const CanonicalAnalysisStates: React.FC<{
   const readyExecutableAnalyses = perspectiveAnalyses
     .filter(item => item.state === 'ready' && item.executionReadiness !== 'not_executable' && item.actionCandidateId && actionById.has(item.actionCandidateId))
     .sort((left, right) => Number(right.advertisedAsDefault) - Number(left.advertisedAsDefault) || (left.rank ?? 99) - (right.rank ?? 99));
+  const contextMode = selectedPerspectiveId && focusSubject ? 'combined' : selectedPerspectiveId ? 'perspective' : focusSubject ? 'focus' : 'none';
+  const primaryButtonLabel = contextMode === 'combined'
+    ? 'Analyze focused perspective'
+    : contextMode === 'focus'
+      ? 'Analyze this focus'
+      : 'Analyze this perspective';
+  const analysisPerspectiveLabel = analysisPerspectiveId ? humanize(analysisPerspectiveId) : null;
   const renderItem = (item: CanonicalAnalysisPresentationV1) => {
     const action = item.actionCandidateId ? actionById.get(item.actionCandidateId) : undefined;
     const canInvestigate = item.state === 'ready' && item.executionReadiness !== 'not_executable' && action;
@@ -587,20 +637,31 @@ const CanonicalAnalysisStates: React.FC<{
         <p className="mt-0.5 text-[12px] text-gray-500">{t('Only analyses that pass governed checks are available.')}</p>
       </div>
       <div className="flex flex-wrap gap-2" aria-label="Canonical analysis state summary">
-        {selectedPerspectiveId && countRows.map(([state, en]) => <span key={state} data-testid={`canonical-count-${state}`} className="rounded border border-gray-200 bg-gray-50 px-2 py-1 text-[11px] text-gray-600">{t(en)}: <strong>{perspectiveAnalyses.filter(item => item.state === state).length}</strong></span>)}
+        {analysisPerspectiveId && countRows.map(([state, en]) => <span key={state} data-testid={`canonical-count-${state}`} className="rounded border border-gray-200 bg-gray-50 px-2 py-1 text-[11px] text-gray-600">{t(en)}: <strong>{perspectiveAnalyses.filter(item => item.state === state).length}</strong></span>)}
       </div>
     </div>
 
-    {!selectedPerspectiveId && <div className="mt-3 rounded-lg border border-indigo-100 bg-indigo-50 p-3 text-[12px] text-indigo-800" data-testid="canonical-select-perspective-prompt">
-      {t('Choose a business perspective above. LightBI will select the best supported analysis for you.')}
+    {(selectedPerspectiveId || focusSubject) && <div className="mt-3 flex flex-wrap gap-2" data-testid="analysis-context-summary">
+      {selectedPerspectiveId && <span className="rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-[11px] font-semibold text-blue-700">Perspective: {humanize(selectedPerspectiveId)}</span>}
+      {focusSubject && <span className="rounded-full border border-slate-300 bg-white px-3 py-1 text-[11px] font-semibold text-slate-700">Focus: {focusSubject.displayLabel}</span>}
+      {!selectedPerspectiveId && focusSubject && analysisPerspectiveLabel && <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[11px] text-slate-500">Auto lens: {analysisPerspectiveLabel}</span>}
     </div>}
 
-    {selectedPerspectiveId && primaryAnalysis && primaryAction && <div className="mt-4 rounded-2xl border border-blue-200 bg-gradient-to-br from-blue-50 via-white to-emerald-50 p-5" data-testid="canonical-primary-analysis">
+    {!analysisPerspectiveId && !focusSubject && <div className="mt-3 rounded-lg border border-indigo-100 bg-indigo-50 p-3 text-[12px] text-indigo-800" data-testid="canonical-select-perspective-prompt">
+      {t('Choose a business perspective, a focus, or both. LightBI will select the best supported analysis for that context.')}
+    </div>}
+
+    {focusSubject && !analysisPerspectiveId && <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-[12px] text-amber-800" data-testid="canonical-focus-no-governed-lens">
+      {t('This focus is recognized, but no governed analysis lens is executable for it yet. No chart will be fabricated.')}
+    </div>}
+
+    {analysisPerspectiveId && primaryAnalysis && primaryAction && <div className="mt-4 rounded-2xl border border-blue-200 bg-gradient-to-br from-blue-50 via-white to-emerald-50 p-5" data-testid="canonical-primary-analysis">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="min-w-0">
           <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-blue-700"><Sparkles className="h-4 w-4" />{t('Recommended by LightBI')}</div>
           <h5 className="mt-2 text-[18px] font-semibold text-slate-950">{primaryAnalysis.title}</h5>
           <p className="mt-1 max-w-3xl text-[13px] leading-5 text-slate-600">{primaryAnalysis.description}</p>
+          {focusSubject && <p className="mt-2 text-[12px] font-medium text-slate-700">Focus: {focusSubject.displayLabel} · benchmark population remains full-source.</p>}
         </div>
         <button
           type="button"
@@ -609,12 +670,12 @@ const CanonicalAnalysisStates: React.FC<{
           className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-blue-700 px-5 py-3 text-[13px] font-semibold text-white shadow-sm transition hover:bg-blue-800"
         >
           <Sparkles className="h-4 w-4" />
-          {t('Analyze this perspective')}
+          {t(primaryButtonLabel)}
         </button>
       </div>
     </div>}
 
-    {selectedPerspectiveId && !primaryAction && universalActions.length > 0 && <div className="mt-4 rounded-2xl border border-blue-200 bg-gradient-to-br from-blue-50 via-white to-emerald-50 p-5" data-testid="universal-primary-analysis">
+    {analysisPerspectiveId && !primaryAction && universalActions.length > 0 && <div className="mt-4 rounded-2xl border border-blue-200 bg-gradient-to-br from-blue-50 via-white to-emerald-50 p-5" data-testid="universal-primary-analysis">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="min-w-0">
           <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-blue-700"><Sparkles className="h-4 w-4" />{t('Recommended by LightBI')}</div>
@@ -628,7 +689,7 @@ const CanonicalAnalysisStates: React.FC<{
       </div>
     </div>}
 
-    {selectedPerspectiveId && universalActions.length > (primaryAction ? 0 : 1) && <section className="mt-4" data-testid="universal-ready-angles">
+    {analysisPerspectiveId && universalActions.length > (primaryAction ? 0 : 1) && <section className="mt-4" data-testid="universal-ready-angles">
       <div className="mb-2"><h5 className="text-[13px] font-semibold text-slate-900">{t('Other questions this data can answer')}</h5></div>
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
         {universalActions.slice(primaryAction ? 0 : 1).map(({ question, action }) => <button key={action.id} type="button" onClick={() => onSelectAction?.(adaptNextActionsToLegacy([action])[0])} className="min-h-[118px] rounded-xl border border-slate-200 bg-white p-4 text-left shadow-sm transition hover:border-blue-300 hover:bg-blue-50/40">
@@ -639,7 +700,7 @@ const CanonicalAnalysisStates: React.FC<{
       </div>
     </section>}
 
-    {selectedPerspectiveId && readyExecutableAnalyses.length > 1 && <section className="mt-4" aria-labelledby="canonical-ready-angles-heading" data-testid="canonical-ready-angles" data-ready-count={readyExecutableAnalyses.length}>
+    {analysisPerspectiveId && readyExecutableAnalyses.length > 1 && <section className="mt-4" aria-labelledby="canonical-ready-angles-heading" data-testid="canonical-ready-angles" data-ready-count={readyExecutableAnalyses.length}>
       <div className="mb-2 flex items-end justify-between gap-3">
         <div>
           <h5 id="canonical-ready-angles-heading" className="text-[13px] font-semibold text-slate-900">{t('Other questions this data can answer')}</h5>
@@ -668,7 +729,7 @@ const CanonicalAnalysisStates: React.FC<{
       </div>
     </section>}
 
-    {selectedPerspectiveId && perspectiveAnalyses.length === 0 && universalActions.length === 0 && <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-[12px] text-amber-800" data-testid="canonical-perspective-recognized-only">
+    {analysisPerspectiveId && perspectiveAnalyses.length === 0 && universalActions.length === 0 && <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-[12px] text-amber-800" data-testid="canonical-perspective-recognized-only">
       LightBI recognizes this perspective from canonical business signals, but no governed question or metric contract is available for it yet. No chart will be fabricated.
     </div>}
 
@@ -677,7 +738,7 @@ const CanonicalAnalysisStates: React.FC<{
       {presentation.datasetBlockers.map(blocker => <p key={blocker.code} className="mt-1 text-[12px]">{blocker.message}</p>)}
     </div>}
 
-    {selectedPerspectiveId && groups.length > 0 && <details className="mt-4 rounded-xl border border-slate-200 bg-slate-50/60">
+    {analysisPerspectiveId && groups.length > 0 && <details className="mt-4 rounded-xl border border-slate-200 bg-slate-50/60">
       <summary className="cursor-pointer px-4 py-3 text-[12px] font-semibold text-slate-700">{t('Explore another question or review evidence')}</summary>
       <div className="space-y-4 border-t border-slate-200 p-4">
         {groups.map(group => <section key={group.id} aria-labelledby={`canonical-group-${group.id}`} data-testid={`canonical-group-${group.id}`}>

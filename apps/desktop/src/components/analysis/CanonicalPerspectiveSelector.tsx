@@ -16,8 +16,11 @@ type Props = {
   items: CanonicalPerspectiveSelectionItemV1[];
   selectedId: string | null;
   onSelect: (id: string) => void;
+  onClear?: () => void;
   title?: string;
   description?: string;
+  eyebrow?: string;
+  stepNumber?: string | null;
 };
 
 export function getCanonicalPerspectiveDisplay(
@@ -36,8 +39,11 @@ export const CanonicalPerspectiveSelector: React.FC<Props> = ({
   items,
   selectedId,
   onSelect,
+  onClear,
   title = "What do you want LightBI to investigate?",
   description = "Perspectives are derived from canonical business evidence. Choose one before reviewing questions or generating a chart.",
+  eyebrow = "Choose a business perspective",
+  stepNumber = "1",
 }) => {
   const { language, t } = useUiLanguage();
   const stateLabels: Record<CanonicalPerspectiveSelectionItemV1["state"], string> = {
@@ -51,15 +57,18 @@ export const CanonicalPerspectiveSelector: React.FC<Props> = ({
     <div className="mb-3 flex flex-wrap items-end justify-between gap-3">
       <div>
         <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-blue-700">
-          <span className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-100 text-[10px]">1</span>
-          {t("Choose a business perspective")}
+          {stepNumber && <span className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-100 text-[10px]">{stepNumber}</span>}
+          {t(eyebrow)}
         </div>
         <h3 className="mt-1 text-[17px] font-semibold text-slate-950">{t(title)}</h3>
         <p className="mt-1 text-[12px] text-slate-500">{t(description)}</p>
       </div>
-      <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[11px] text-slate-500">
-        {t(`${items.length} evidence-backed perspective${items.length === 1 ? "" : "s"}`)}
-      </span>
+      <div className="flex items-center gap-2">
+        {selectedId && onClear && <button type="button" onClick={onClear} className="rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] font-semibold text-slate-600 hover:bg-slate-50">{t("Clear perspective")}</button>}
+        <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[11px] text-slate-500">
+          {t(`${items.length} evidence-backed perspective${items.length === 1 ? "" : "s"}`)}
+        </span>
+      </div>
     </div>
 
     {items.length > 0 ? (

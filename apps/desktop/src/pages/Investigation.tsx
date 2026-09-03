@@ -37,6 +37,8 @@ import { createSingleSourceDeepAnalysisWorkbookPlan } from '../lib/analysis-work
 import { createInvestigationPersistenceActions } from '../lib/investigation-persistence-actions';
 import { createInvestigationChartActions } from '../lib/investigation-chart-actions';
 import { useInvestigationDrillThrough, type InvestigationDrillOrigin } from '../hooks/useInvestigationDrillThrough';
+import { useFocusSubjectComparison } from '../hooks/useFocusSubjectComparison';
+import { FocusSubjectComparisonCard } from '../components/investigation/FocusSubjectComparisonCard';
 const SINGLE_SOURCE_BA_OVERVIEW_ROW_LIMIT = 1000;
 
 function safeFileStem(value: string): string {
@@ -47,6 +49,7 @@ export const Investigation: React.FC = () => {
   const { t } = useUiLanguage();
   const navigate = useNavigate();
   const session = getCurrentInvestigationSession();
+  const focusComparison = useFocusSubjectComparison(session);
   const isUniversalDescriptiveAction = Boolean(session?.analysisAction.id.startsWith('universal:'));
   const canonicalMultiSourceHandoff = session?.canonicalHandoff && 'multiSource' in session.canonicalHandoff
     ? session.canonicalHandoff as CanonicalMultiSourceInvestigationHandoffV1
@@ -651,11 +654,14 @@ export const Investigation: React.FC = () => {
             <span className="rounded border border-black/10 bg-white px-1.5 py-0.5 text-[11px] font-medium text-black/60">
               {analysisAction.actionType}
             </span>
+            {session.focusSubject && <span className="rounded border border-slate-200 bg-slate-50 px-1.5 py-0.5 text-[11px] font-medium text-slate-700">Focus: {session.focusSubject.displayLabel}</span>}
           </div>
         </div>
       </header>
 
       <main className="mx-auto flex w-full max-w-[1180px] flex-1 flex-col gap-5 p-5 pb-24 md:p-8">
+        <FocusSubjectComparisonCard state={focusComparison} />
+
         {aiBriefing && <InvestigationSemanticContext
           briefing={aiBriefing}
           briefingRationale={briefingRationale}
