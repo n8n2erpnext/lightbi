@@ -40,9 +40,7 @@ export function deriveOfficialVerificationState(
   }
   if (evidence.relVerified === true && evidence.artifactDigestVerified === true) {
     if (evidence.installationStatus !== 'valid') return 'official_release_installation_unverified';
-    if (evidence.osPublisherStatus === 'verified' || evidence.osPublisherStatus === 'not_applicable') {
-      return 'official_verified';
-    }
+    return 'official_verified';
   }
   return 'verification_unavailable';
 }
@@ -74,7 +72,7 @@ export function describeBuildIdentity(
       state,
       title: 'Official LightBI — verified',
       badge: 'Official verified',
-      detail: 'REL, artifact digest, installation certificate and the applicable OS publisher identity all passed independent verification.',
+      detail: 'The LightBI Root/REL chain, exact artifact digest and installation certificate all passed independent verification. OS publisher signing is a separate platform-hardening signal.',
       verified: true,
     };
   }
@@ -98,11 +96,11 @@ export function describeBuildIdentity(
   }
   return {
     state,
-    title: 'Publisher identity not cryptographically verified',
+    title: 'LightBI identity not cryptographically verified',
     badge: 'Verification unavailable',
     detail: generation.trust_status === 'phase2a_unfrozen'
       ? 'Release and installation trust are not active in this build. Do not rely on branding or an in-app badge as proof of origin.'
-      : 'Trust contracts may be enabled, but this UI has not received the complete REL/ATT and OS publisher evidence required for official_verified.',
+      : 'Trust contracts may be enabled, but this UI has not received the complete LightBI Root/REL/artifact/ATT evidence required for official_verified.',
     verified: false,
   };
 }

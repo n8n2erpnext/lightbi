@@ -52,7 +52,7 @@ describe('build identity presentation', () => {
     expect(identity.badge).toContain('TEST authority');
   });
 
-  it('fails closed when public publisher verification is unavailable', () => {
+  it('fails closed when LightBI cryptographic verification is unavailable', () => {
     const identity = describeBuildIdentity(manifest('production', 'phase2a_unfrozen'));
     expect(identity.verified).toBe(false);
     expect(identity.state).toBe('verification_unavailable');
@@ -63,9 +63,10 @@ describe('build identity presentation', () => {
     const identity = describeBuildIdentity(manifest('production', 'trust1_enabled'));
     expect(identity.verified).toBe(false);
     expect(identity.state).toBe('verification_unavailable');
-    expect(identity.detail).toContain('REL/ATT');
+    expect(identity.detail).toContain('Root/REL');
+    expect(identity.detail).toContain('ATT');
   });
-  it('derives official_verified only from the full evidence conjunction', () => {
+  it('derives official_verified from LightBI Root/REL, artifact and ATT evidence independently of OS publisher signing', () => {
     expect(deriveOfficialVerificationState('production', evidence({
       relVerified: true,
       artifactDigestVerified: true,
@@ -77,7 +78,13 @@ describe('build identity presentation', () => {
       artifactDigestVerified: true,
       installationStatus: 'valid',
       osPublisherStatus: 'unavailable',
-    }))).toBe('verification_unavailable');
+    }))).toBe('official_verified');
+    expect(deriveOfficialVerificationState('production', evidence({
+      relVerified: true,
+      artifactDigestVerified: true,
+      installationStatus: 'valid',
+      osPublisherStatus: 'not_verified',
+    }))).toBe('official_verified');
   });
 
   it('distinguishes a verified release from an unverified installation', () => {

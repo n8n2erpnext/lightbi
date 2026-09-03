@@ -65,7 +65,7 @@ test('Windows native acceptance artifact is isolated from Production publication
   assert.match(nativeAcceptanceWorkflow, /workflow_dispatch:/u);
   assert.match(nativeAcceptanceWorkflow, /VITE_LIGHTBI_CHANNEL: internal/u);
   assert.match(nativeAcceptanceWorkflow, /VITE_LIGHTBI_DISTRIBUTION_URL: https:\/\/lightbi-next\.thaiduy\.digital/u);
-  assert.match(nativeAcceptanceWorkflow, /VITE_LIGHTBI_PARENT_GENERATION_ID: g-2026-09-02-next-029/u);
+  assert.match(nativeAcceptanceWorkflow, /VITE_LIGHTBI_PARENT_GENERATION_ID: g-2026-09-03-next-030/u);
   assert.match(nativeAcceptanceWorkflow, /VITE_LIGHTBI_CONTROL_PLANE_COMMIT: bb50b0d53542da5cd908e2237cbca368f7f87073/u);
   assert.match(nativeAcceptanceWorkflow, /VITE_LIGHTBI_TRUST_PHASE2A_HEAD: 10de4da8e551a46f93f7b62985a0a6e611581b8e/u);
   assert.match(nativeAcceptanceWorkflow, /VITE_LIGHTBI_RELEASE_UPDATE_CHANNEL: internal/u);
@@ -96,7 +96,7 @@ test('stable Windows publisher evidence requires exact trusted subject and artif
 });
 
 
-test('stable manifest builder fails closed until Windows publisher evidence is supplied', () => {
+test('stable manifest identity does not require OS publisher evidence, while supplied platform evidence remains strict', () => {
   const folder = mkdtempSync(join(tmpdir(), 'lightbi-stable-publisher-'));
   try {
     const artifactsPath = join(folder, 'artifacts.json');
@@ -104,15 +104,22 @@ test('stable manifest builder fails closed until Windows publisher evidence is s
     const outputPath = join(folder, 'manifest.json');
     const artifact = { ...manifest('1.0.0').artifacts[0], sha256: 'f'.repeat(64), url: 'https://drive.thaiduy.store/release/lightbi/1.0.0/LightBI.exe' };
     writeFileSync(artifactsPath, JSON.stringify([artifact]));
-    const blocked = spawnSync(process.execPath, [buildScript, '--version', '1.0.0', '--channel', 'stable', '--artifacts-json', artifactsPath, '--output', outputPath], { encoding: 'utf8' });
-    assert.notEqual(blocked.status, 0);
-    assert.match(blocked.stderr, /stable_windows_publisher_evidence_required/u);
+    execFileSync(process.execPath, [buildScript, '--version', '1.0.0', '--channel', 'stable', '--artifacts-json', artifactsPath, '--output', outputPath]);
+    assert.equal(JSON.parse(readFileSync(outputPath, 'utf8')).channel, 'stable');
+
+    writeFileSync(evidencePath, JSON.stringify({
+      schema_version: 'lightbi.windows-publisher-evidence.v1', artifact: 'LightBI.exe', sha256: artifact.sha256,
+      signature_status: 'NotSigned', signer_subject: null, signer_thumbprint: null,
+    }));
+    const rejected = spawnSync(process.execPath, [buildScript, '--version', '1.0.0', '--channel', 'stable', '--artifacts-json', artifactsPath, '--windows-publisher-evidence', evidencePath, '--windows-publisher-subject', 'CN=Thai Duy', '--output', outputPath], { encoding: 'utf8' });
+    assert.notEqual(rejected.status, 0);
+    assert.match(rejected.stderr, /windows_authenticode_signature_not_valid/u);
+
     writeFileSync(evidencePath, JSON.stringify({
       schema_version: 'lightbi.windows-publisher-evidence.v1', artifact: 'LightBI.exe', sha256: artifact.sha256,
       signature_status: 'Valid', signer_subject: 'CN=Thai Duy', signer_thumbprint: '0011AA',
     }));
     execFileSync(process.execPath, [buildScript, '--version', '1.0.0', '--channel', 'stable', '--artifacts-json', artifactsPath, '--windows-publisher-evidence', evidencePath, '--windows-publisher-subject', 'CN=Thai Duy', '--output', outputPath]);
-    assert.equal(JSON.parse(readFileSync(outputPath, 'utf8')).channel, 'stable');
   } finally {
     rmSync(folder, { recursive: true, force: true });
   }
