@@ -3,7 +3,7 @@ import test from 'node:test';
 import { isControlPlaneApiPath, isControlPlanePublicPath } from './internal-gateway-routing.mjs';
 
 test('routes public Control Plane surfaces through the internal gateway', () => {
-  for (const pathname of ['/','/docs','/docs/keyboard-shortcuts','/account','/account/verify','/admin','/verify','/distribution-assets/logo.svg','/internal-releases/latest.json']) {
+  for (const pathname of ['/','/docs','/docs/keyboard-shortcuts','/account','/account/verify','/admin','/verify','/distribution-assets/logo.svg','/internal-releases/latest.json','/internal-trust/latest.json','/internal-trust/releases/0.9.2-next.test/windows-x86_64.rel.json']) {
     assert.equal(isControlPlanePublicPath(pathname), true, pathname);
   }
 });

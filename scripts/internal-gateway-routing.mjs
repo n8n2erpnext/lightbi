@@ -37,5 +37,7 @@ export function isControlPlanePublicPath(pathname) {
     || pathname === '/distribution-assets'
     || pathname.startsWith('/distribution-assets/')
     || pathname === '/internal-releases'
-    || pathname.startsWith('/internal-releases/');
+    || pathname.startsWith('/internal-releases/')
+    || pathname === '/internal-trust'
+    || pathname.startsWith('/internal-trust/');
 }
