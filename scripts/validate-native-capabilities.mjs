@@ -4,7 +4,7 @@ import path from 'node:path';
 const capabilityPath = path.resolve('crates/lightbi-tauri/capabilities/main.json');
 const capability = JSON.parse(fs.readFileSync(capabilityPath, 'utf8'));
 const permissions = new Set(Array.isArray(capability.permissions) ? capability.permissions : []);
-const required = ['core:event:allow-listen', 'core:event:allow-unlisten', 'opener:allow-default-urls'];
+const required = ['core:event:allow-listen', 'core:event:allow-unlisten', 'opener:allow-open-url', 'opener:allow-default-urls'];
 for (const permission of required) {
   if (!permissions.has(permission)) throw new Error(`Missing native capability: ${permission}`);
 }
@@ -14,8 +14,11 @@ if (!Array.isArray(capability.windows) || !capability.windows.includes('main')) 
 if (permissions.has('core:event:default') || permissions.has('core:default')) {
   throw new Error('Native updater capability is broader than required.');
 }
-if (permissions.has('opener:allow-open-path') || permissions.has('opener:allow-open-url') || permissions.has('opener:default')) {
-  throw new Error('External-link capability must remain URL-only and restricted to opener default URL schemes.');
+if (permissions.has('opener:allow-open-path') || permissions.has('opener:default')) {
+  throw new Error('External-link capability must remain URL-only and must not grant filesystem reveal/open authority.');
+}
+if (!permissions.has('opener:allow-open-url') || !permissions.has('opener:allow-default-urls')) {
+  throw new Error('System-browser links require both the opener command and the restricted default-URL scope.');
 }
 const tauriConfig = JSON.parse(fs.readFileSync(path.resolve('crates/lightbi-tauri/tauri.conf.json'), 'utf8'));
 const installMode = tauriConfig?.bundle?.windows?.nsis?.installMode;

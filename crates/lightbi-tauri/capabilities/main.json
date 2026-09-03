@@ -6,6 +6,7 @@
   "permissions": [
     "core:event:allow-listen",
     "core:event:allow-unlisten",
+    "opener:allow-open-url",
     "opener:allow-default-urls"
   ]
 }
