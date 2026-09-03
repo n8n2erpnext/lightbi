@@ -1,7 +1,7 @@
 {
   "schema": "067_catalog_quarterly_pricing",
-  "updatedAt": "2026-09-03T02:35:54Z",
-  "status": "r1p12_next030_runtime_reconciled_windows_owner_uat_accepted_acceptance_artifact_not_signed_production_official_identity_blocked_r1p13_closed",
+  "updatedAt": "2026-09-03T03:33:23Z",
+  "status": "r1p12_next030_runtime_reconciled_windows_esigner_lane_wired_awaiting_real_signing_production_official_identity_blocked_r1p13_closed",
   "activeRuntime": "g-2026-09-03-next-030",
   "runtime": {
     "immutableGenerationCoreCommit": "7d15d69f2cf0bf39ac98dac9d91faa95edec7847",
@@ -22,7 +22,9 @@
     "windowsUatPublicHead": "13202fd7136b134f05768a797f3c5dd12d717889",
     "privateControlPlaneHead": "bb50b0d53542da5cd908e2237cbca368f7f87073",
     "trustContracts": "10de4da8e551a46f93f7b62985a0a6e611581b8e",
-    "r1p11PrivateFinal": "deda7c284a6eafaa8cb69d491b96476a025ed15c"
+    "r1p11PrivateFinal": "deda7c284a6eafaa8cb69d491b96476a025ed15c",
+    "currentR1P12PublicHead": "901dda8fee8d386ed0779c3f4b8ebd5a6d7d8105",
+    "windowsSigningLaneHead": "901dda8fee8d386ed0779c3f4b8ebd5a6d7d8105"
   },
   "windowsAcceptance": {
     "runId": 33696477945,
@@ -61,9 +63,14 @@
     "next030_worker_reenabled_healthy_exact_bb50b0d",
     "next030_runtime_fully_generation_reconciled",
     "r1p12_private_control_plane_exact_head_209_209_pass",
-    "r1p12_release1_0_suite_revalidated_after_runtime_reconcile"
+    "r1p12_release1_0_suite_revalidated_after_runtime_reconcile",
+    "r1p12_sslcom_esigner_next_signing_lane_wired_fail_closed",
+    "r1p12_tauri_signing_covers_runtime_executable_and_nsis_installer",
+    "r1p12_signing_lane_exact_sha_branch_guarded_no_publication_authority",
+    "r1p12_release_contract_11_11_pass_after_signing_wiring",
+    "r1p12_release1_0_suite_pass_after_signing_wiring"
   ],
-  "nextAction": "Remain in R1-P12 on NEXT: procure/configure real Windows Authenticode and prove final signed bytes. Production Phase 2A freeze, ATT request-wire freeze and Production REL/ATT/external-verifier authority remain owner-gated and must not be changed without explicit authorization. Do not open R1-P13. Bell dropdown remains deferred non-blocking UX debt.",
+  "nextAction": "Remain in R1-P12 on NEXT. Obtain/validate the SSL.com IV code-signing certificate and eSigner enrollment, configure only the four GitHub signing secrets, then create an exact-SHA sandbox signing branch for connectivity rehearsal if desired and an exact-SHA product signing branch to prove both the installed LightBI executable and NSIS installer have matching trusted Authenticode signer evidence. No signing run has executed yet. Production Phase 2A freeze, ATT request-wire freeze, Production REL/ATT/external-verifier authority and role rotation remain owner-gated and must not be changed without explicit authorization. Do not open R1-P13. Bell dropdown remains deferred non-blocking UX debt.",
   "blockers": {
     "phase2aFrozen": false,
     "productionAttestationRequestSchemaFrozen": false,
@@ -74,7 +81,10 @@
     "r1p13Authorized": false,
     "bellDropdownDeferred": true,
     "nextInternalControlPlaneGenerationAligned": true,
-    "nextInternalWorkerHealthy": true
+    "nextInternalWorkerHealthy": true,
+    "windowsSigningLaneWired": true,
+    "windowsSigningSecretsConfigured": false,
+    "windowsSigningRunExecuted": false
   },
   "deferredPlatformDebt": {
     "macosProductBugs": true,
@@ -89,5 +99,22 @@
     "docs/project-book/LIGHTBI_PROJECT_BOOK.md#111-r1-p12-windows-native-acceptance-6-passes-owner-uat-bell-dropdown-is-deferred-and-official-identity-remains-blocked",
     "docs/project-book/LIGHTBI_CI_CD_MAP.md#23-2026-09-03-r1-p12-windows-native-acceptance-6-is-green-but-not-authenticode-signed",
     "docs/architecture/road-to-1-0-trust-release-contract.md#current-implementation-status"
-  ]
+  ],
+  "windowsSigningLane": {
+    "provider": "ssl.com-esigner-cka",
+    "publicHead": "901dda8fee8d386ed0779c3f4b8ebd5a6d7d8105",
+    "workflow": ".github/workflows/windows-next-esigner-signing.yml",
+    "trigger": "exact_sha_branch_only",
+    "sandboxBranchPattern": "codex/native-signing-r1p12-sandbox-<exact-40-sha>",
+    "productBranchPattern": "codex/native-signing-r1p12-product-<exact-40-sha>",
+    "signsApplicationExecutable": true,
+    "signsInstaller": true,
+    "runtimeExpectedPublisherThumbprintCompiled": true,
+    "publisherEvidenceCollector": "Get-AuthenticodeSignature",
+    "publishesRelease": false,
+    "productionAuthority": false,
+    "runExecuted": false,
+    "secretsConfigured": false,
+    "githubRunsAtWiringHead": 0
+  }
 }

@@ -300,7 +300,7 @@
   },
   "nextGeneration": {
     "model": "successor_promotion_generation_rotation",
-    "status": "internal_next030_fully_generation_reconciled_r1p12_owner_uat_bounded_accepted_official_identity_blocked",
+    "status": "internal_next030_fully_generation_reconciled_r1p12_esigner_lane_wired_real_authenticode_pending_official_identity_blocked",
     "generationSchema": "lightbi.generation.v1",
     "generationId": "g-2026-09-03-next-030",
     "parentGenerationId": "g-2026-09-02-next-029",
@@ -337,7 +337,9 @@
       "windowsInstallerBrandingHead": "38ded3f2ae01694935e464d9f87b141afb1e0e26",
       "externalLinkSystemBrowserHead": "4b8884c6a2e77c5afaa46aaf622fd45cc6f2578e",
       "windowsUatHead": "13202fd7136b134f05768a797f3c5dd12d717889",
-      "gatewayRuntimeOverlayHead": "6bb55ab35c2126ae0a584aa662e919f5e3b29ea2"
+      "gatewayRuntimeOverlayHead": "6bb55ab35c2126ae0a584aa662e919f5e3b29ea2",
+      "currentR1P12PublicHead": "901dda8fee8d386ed0779c3f4b8ebd5a6d7d8105",
+      "windowsSigningLaneHead": "901dda8fee8d386ed0779c3f4b8ebd5a6d7d8105"
     },
     "controlPlane": {
       "workspace": "/home/ubuntu/n8n2erpnext/lightbi-control-plane-next033-r1p12",
@@ -483,7 +485,7 @@
       "r1p12DesktopShellFocusedTestsPassed": 15,
       "r1p12TauriTestsPassed": 12,
       "r1p12TauriLiveOnlyTestsIgnored": 1,
-      "r1p12PublicReleaseContractTestsPassed": 8,
+      "r1p12PublicReleaseContractTestsPassed": 11,
       "r1p12PrivateSourceDistributionTestsPassed": 206,
       "r1p12NextRuntimeCompiledTestsPassed": 192,
       "r1p12KeyboardShortcutDocsLive": true,
@@ -508,7 +510,13 @@
       "nextRuntimeWorkerHealthy": true,
       "r1p12PrivateControlPlaneExactHeadTestsPassed": 209,
       "r1p12RuntimeReconciliationVerified": true,
-      "r1p12Release1_0SuiteRevalidatedAfterRuntimeReconcile": true
+      "r1p12Release1_0SuiteRevalidatedAfterRuntimeReconcile": true,
+      "r1p12WindowsEsignerLaneWired": true,
+      "r1p12WindowsEsignerWorkflowRunExecuted": false,
+      "r1p12WindowsEsignerGithubRunsAtWiringHead": 0,
+      "r1p12WindowsSigningCoversRuntimeExe": true,
+      "r1p12WindowsSigningCoversInstaller": true,
+      "r1p12WindowsRuntimePublisherThumbprintCompiled": true
     },
     "infrastructure": {
       "isolatedContractDefined": true,
@@ -593,8 +601,8 @@
       "freezeApproved": false,
       "trust1Blocked": true,
       "r1p12AntiImpersonation": {
-        "status": "windows_owner_uat_accepted_acceptance_artifact_not_signed_production_official_identity_blocked",
-        "publicCoreCommit": "13202fd7136b134f05768a797f3c5dd12d717889",
+        "status": "windows_esigner_lane_wired_real_authenticode_pending_production_official_identity_blocked",
+        "publicCoreCommit": "901dda8fee8d386ed0779c3f4b8ebd5a6d7d8105",
         "privateVerifierCommit": "85fa6a6961ba2bb00e2d09d92e6a9f5f815a3478",
         "nextExternalVerifierLive": true,
         "nextExternalVerifierUrl": "https://lightbi-next.thaiduy.digital/verify",
@@ -612,8 +620,8 @@
         "permanentWindowsOnlyDecision": false,
         "releaseAuthorityHardeningCommit": "72cfb385f1d35c605d3a09f80657572dc25abe02",
         "betaReleaseWorkflow": "windows_only",
-        "publicReleaseContractTests": "8/8",
-        "release1_0Suite": "pass_governed_39_39",
+        "publicReleaseContractTests": "11/11",
+        "release1_0Suite": "pass_governed_39_39_after_esigner_wiring",
         "windowsPublisherEvidenceCollector": "Get-AuthenticodeSignature",
         "stableManifestRequiresWindowsPublisherEvidence": true,
         "stableWindowsPublisherSubjectRequired": true,
@@ -633,7 +641,15 @@
           "external_link_system_browser_behavior"
         ],
         "windowsBellDropdownDeferred": true,
-        "windowsBellDropdownBlocking": false
+        "windowsBellDropdownBlocking": false,
+        "windowsAcceptancePublicHead": "13202fd7136b134f05768a797f3c5dd12d717889",
+        "windowsSigningLaneHead": "901dda8fee8d386ed0779c3f4b8ebd5a6d7d8105",
+        "windowsSigningProvider": "ssl.com-esigner-cka",
+        "windowsSigningTrigger": "exact_sha_branch_only",
+        "windowsSigningSecretsConfigured": false,
+        "windowsSigningRunExecuted": false,
+        "windowsSigningApplicationAndInstallerRequired": true,
+        "windowsRuntimeExpectedPublisherThumbprintCompiled": true
       }
     },
     "generationIdAuthority": "next030_engine_manifest_and_public_header_authoritative_for_core_gateway_cp_live_diagnostics_still_next029_runtime_split_recorded",
