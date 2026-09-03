@@ -26,7 +26,6 @@
   "bundle": {
     "active": true,
     "publisher": "Thai Duy",
-    "homepage": "https://lightbi.thaiduy.digital",
     "category": "Business",
     "shortDescription": "Evidence-governed business analysis for real operational data",
     "longDescription": "LightBI is a local-first workspace for understanding operational data, running governed analysis, drilling into evidence, and preparing decision briefs without uploading business data to the distribution service.",

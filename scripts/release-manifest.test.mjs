@@ -65,7 +65,7 @@ test('Beta workflow cannot promote itself to stable release authority', () => {
 test('Windows native acceptance artifact is isolated from Production publication authority', () => {
   assert.match(nativeAcceptanceWorkflow, /workflow_dispatch:/u);
   assert.match(nativeAcceptanceWorkflow, /VITE_LIGHTBI_CHANNEL: internal/u);
-  assert.match(nativeAcceptanceWorkflow, /VITE_LIGHTBI_DISTRIBUTION_URL: https:\/\/lightbi-next\.thaiduy\.digital/u);
+  assert.doesNotMatch(nativeAcceptanceWorkflow, /VITE_LIGHTBI_DISTRIBUTION_URL:/u);
   assert.match(nativeAcceptanceWorkflow, /VITE_LIGHTBI_PARENT_GENERATION_ID: g-2026-09-03-next-030/u);
   assert.match(nativeAcceptanceWorkflow, /VITE_LIGHTBI_CONTROL_PLANE_COMMIT: bb50b0d53542da5cd908e2237cbca368f7f87073/u);
   assert.match(nativeAcceptanceWorkflow, /VITE_LIGHTBI_TRUST_PHASE2A_HEAD: 10de4da8e551a46f93f7b62985a0a6e611581b8e/u);

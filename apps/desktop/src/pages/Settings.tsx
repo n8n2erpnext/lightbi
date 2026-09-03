@@ -15,6 +15,7 @@ import { useLightBIAccount } from '../hooks/useLightBIAccount';
 import { UpdateSettingsPanel } from '../components/settings/UpdateSettingsPanel';
 import { InternalGenerationPanel } from '../components/settings/InternalGenerationPanel';
 import { BuildIdentityPanel } from '../components/settings/BuildIdentityPanel';
+import { lightBIFrontendUrl } from '../lib/lightbi-routing';
 
 const AccountAccess: React.FC<{ account: ReturnType<typeof useLightBIAccount> }> = ({ account }) => {
   const [mode, setMode] = useState<'login' | 'register'>('login');
@@ -189,7 +190,7 @@ export const Settings: React.FC = () => {
                 </button>
               </div>
               {licenseMessage && <div className="mt-2 text-xs text-slate-500">{licenseMessage}</div>}
-              <a href="https://lightbi.thaiduy.digital/distribution/#plans" className="mt-2 inline-block text-xs font-semibold text-blue-700">{t('View Basic and Pro plans')}</a>
+              <a href={lightBIFrontendUrl('plans')} className="mt-2 inline-block text-xs font-semibold text-blue-700">{t('View Basic and Pro plans')}</a>
             </div>
           </div>
         </div>}

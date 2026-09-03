@@ -20,13 +20,16 @@ function join(origin: string, path: string): string {
   return suffix === '/' ? `${base}/` : `${base}${suffix}`;
 }
 
+export function resolveLightBIRoutingUrl(profile: RoutingProfile, route: LightBIRouteName): string {
+  return join(profile.publicOrigin, profile.routes[route]);
+}
+
 export function lightBIPublicOrigin(environment?: LightBIRoutingEnvironment): string {
   return lightBIRoutingProfile(environment).publicOrigin.replace(/\/$/u, '');
 }
 
 export function lightBIFrontendUrl(route: LightBIRouteName, environment?: LightBIRoutingEnvironment): string {
-  const profile = lightBIRoutingProfile(environment);
-  return join(profile.publicOrigin, profile.routes[route]);
+  return resolveLightBIRoutingUrl(lightBIRoutingProfile(environment), route);
 }
 
 export function lightBIDistributionApiBase(environment?: LightBIRoutingEnvironment): string {

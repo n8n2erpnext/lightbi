@@ -186,7 +186,12 @@ mod tests {
 
     #[test]
     fn documentation_menu_uses_the_environment_routing_manifest() {
-        assert_eq!(documentation_url_for("internal").unwrap(), "https://lightbi-next.thaiduy.digital/docs");
-        assert_eq!(documentation_url_for("production").unwrap(), "https://lightbi.thaiduy.digital/docs");
+        let routing: serde_json::Value = serde_json::from_str(ROUTING_JSON).unwrap();
+        for (channel, environment) in [("internal", "next"), ("production", "production")] {
+            let profile = &routing[environment];
+            let origin = profile["publicOrigin"].as_str().unwrap().trim_end_matches('/');
+            let path = profile["routes"]["docs"].as_str().unwrap();
+            assert_eq!(documentation_url_for(channel).unwrap(), format!("{origin}{path}"));
+        }
     }
 }

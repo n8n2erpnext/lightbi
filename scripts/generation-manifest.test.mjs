@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { createInternalGenerationManifest } from './build-generation-manifest.mjs';
+import { lightBIRouteUrl } from './lightbi-routing.mjs';
 
 const SHA_A = 'a'.repeat(40);
 const SHA_B = 'b'.repeat(40);
@@ -36,7 +37,7 @@ test('builds an immutable internal successor manifest', () => {
 });
 
 test('rejects production wiring for NEXT', () => {
-  assert.throws(() => createInternalGenerationManifest({ ...base, VITE_LIGHTBI_DISTRIBUTION_URL:'https://lightbi.thaiduy.digital/distribution' }), /production distribution/iu);
+  assert.throws(() => createInternalGenerationManifest({ ...base, VITE_LIGHTBI_DISTRIBUTION_URL:lightBIRouteUrl('production','distributionApi') }), /production distribution/iu);
   assert.throws(() => createInternalGenerationManifest({ ...base, VITE_LIGHTBI_INFRA_DATABASE_SCOPE:'production' }), /DATABASE_SCOPE.*internal/iu);
   assert.throws(() => createInternalGenerationManifest({ ...base, VITE_LIGHTBI_RELEASE_UPDATE_CHANNEL:'beta' }), /update channel.*internal/iu);
 });
@@ -46,7 +47,7 @@ test('rejects browser-facing private network and insecure NEXT endpoints', () =>
   assert.throws(() => createInternalGenerationManifest({ ...base, VITE_API_BASE_URL:'http://100.94.184.141:5273' }), /HTTPS|private-network/iu);
   assert.throws(() => createInternalGenerationManifest({ ...base, VITE_API_BASE_URL:'https://127.0.0.1:5273' }), /private-network/iu);
   assert.doesNotThrow(() => createInternalGenerationManifest({ ...base, VITE_API_BASE_URL:'/api', VITE_RELEASE_MANIFEST_URL:'/internal-releases/latest.json' }));
-  assert.doesNotThrow(() => createInternalGenerationManifest({ ...base, VITE_LIGHTBI_DISTRIBUTION_URL:'https://lightbi-next.thaiduy.digital/distribution-api' }));
+  assert.doesNotThrow(() => createInternalGenerationManifest({ ...base, VITE_LIGHTBI_DISTRIBUTION_URL:lightBIRouteUrl('next','distributionApi') }));
 });
 
 test('rejects ambiguous internal namespaces', () => {

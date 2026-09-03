@@ -46,8 +46,8 @@ if (!lifecycleHook.includes('NSIS_HOOK_PREUNINSTALL') || !lifecycleHook.includes
 if (!lifecycleHook.includes('--lightbi-uninstall-track') || !lifecycleHook.includes('/TIMEOUT=3000')) {
   throw new Error('Windows uninstall lifecycle tracking must stay bounded and fail-open.');
 }
-if (!lifecycleSource.includes('lightbi.thaiduy.digital') || !lifecycleSource.includes('lightbi-next.thaiduy.digital')) {
-  throw new Error('Uninstall lifecycle receipt must be restricted to approved LightBI HTTPS endpoints.');
+if (!lifecycleSource.includes('lightbi-routing.json') || !lifecycleSource.includes('ROUTING_JSON')) {
+  throw new Error('Uninstall lifecycle receipt must derive approved LightBI HTTPS endpoints from the routing manifest.');
 }
 if (nativeMain.includes('prepare_verified_update') || nativeMain.includes('verified: true')) {
   throw new Error('SHA-only updater internals must not use verified/official trust vocabulary.');

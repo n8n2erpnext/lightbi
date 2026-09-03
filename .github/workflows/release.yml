@@ -58,7 +58,6 @@ jobs:
         working-directory: crates/lightbi-tauri
         shell: pwsh
         env:
-          VITE_LIGHTBI_DISTRIBUTION_URL: https://lightbi.thaiduy.digital/distribution
           VITE_LIGHTBI_VERSION: ${{ github.ref_name }}
         run: |
           $env:VITE_LIGHTBI_VERSION = $env:VITE_LIGHTBI_VERSION.TrimStart('v')

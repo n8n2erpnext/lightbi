@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { buildGenerationManifest, generationIsolationBlockers, generationIsSafeForInternal } from './generation-manifest';
+import routing from './lightbi-routing.json';
 
 const CORE = '326d991a8f305fef938e9aab47897dd233146770';
 const CP = '9c89a8171f81930f1bc24672fc26978a1a6c4377';
@@ -52,7 +53,7 @@ describe('LightBI generation manifest', () => {
 
   it('blocks an internal generation from falling back to production distribution and scopes', () => {
     const env = internalEnv();
-    env.VITE_LIGHTBI_DISTRIBUTION_URL = 'https://lightbi.thaiduy.digital/distribution';
+    env.VITE_LIGHTBI_DISTRIBUTION_URL = new URL(routing.production.routes.distributionApi, `${routing.production.publicOrigin}/`).toString();
     env.VITE_LIGHTBI_RELEASE_UPDATE_CHANNEL = 'beta';
     env.VITE_LIGHTBI_INFRA_DATABASE_SCOPE = 'production';
     const blockers = generationIsolationBlockers(buildGenerationManifest(env));

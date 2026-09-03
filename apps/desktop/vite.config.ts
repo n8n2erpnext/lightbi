@@ -1,6 +1,10 @@
 /// <reference types="vitest" />
 import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
+import { readFileSync } from 'node:fs'
+
+const routing = JSON.parse(readFileSync(new URL('./src/lib/lightbi-routing.json', import.meta.url), 'utf8')) as Record<'production' | 'next', { publicOrigin: string }>
+const allowedHosts = ['production', 'next'].map(environment => new URL(routing[environment as 'production' | 'next'].publicOrigin).hostname)
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -42,7 +46,7 @@ export default defineConfig({
     },
   ],
   server: {
-    allowedHosts: ['lightbi.thaiduy.digital'],
+    allowedHosts,
     proxy: {
       '/distribution-assets': {
         target: 'http://127.0.0.1:5174',

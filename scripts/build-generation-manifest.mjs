@@ -1,8 +1,10 @@
 import { execFileSync } from 'node:child_process';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
+import { lightBIRouteUrl } from './lightbi-routing.mjs';
 
-const PROD_DISTRIBUTION = 'https://lightbi.thaiduy.digital/distribution';
+const PROD_PUBLIC_ORIGIN = lightBIRouteUrl('production', 'publicOrigin').replace(/\/$/u, '');
+const NEXT_DISTRIBUTION_API = lightBIRouteUrl('next', 'distributionApi').replace(/\/$/u, '');
 const SHA40 = /^[0-9a-f]{40}$/u;
 
 function assertPublicBrowserUrl(value, key, { allowRelative = false } = {}) {
@@ -37,11 +39,11 @@ export function createInternalGenerationManifest(env = process.env) {
   for (const [name, value] of [['core', coreCommit], ['source', sourceCommit], ['control_plane', controlPlaneCommit]]) {
     if (!SHA40.test(value)) throw new Error(`${name} commit must be a full 40-character SHA`);
   }
-  const distributionOrigin = assertPublicBrowserUrl(required(env, 'VITE_LIGHTBI_DISTRIBUTION_URL'), 'VITE_LIGHTBI_DISTRIBUTION_URL');
+  const distributionOrigin = assertPublicBrowserUrl(env.VITE_LIGHTBI_DISTRIBUTION_URL?.trim() || NEXT_DISTRIBUTION_API, 'VITE_LIGHTBI_DISTRIBUTION_URL');
   assertPublicBrowserUrl(env.VITE_API_BASE_URL, 'VITE_API_BASE_URL', { allowRelative: true });
   assertPublicBrowserUrl(env.VITE_HEALTH_URL, 'VITE_HEALTH_URL', { allowRelative: true });
   assertPublicBrowserUrl(env.VITE_RELEASE_MANIFEST_URL, 'VITE_RELEASE_MANIFEST_URL', { allowRelative: true });
-  if (distributionOrigin === PROD_DISTRIBUTION) throw new Error('Internal generation may not target the production distribution origin');
+  if (new URL(distributionOrigin).origin === PROD_PUBLIC_ORIGIN) throw new Error('Internal generation may not target the production distribution origin');
   const phase2aHead = required(env, 'VITE_LIGHTBI_TRUST_PHASE2A_HEAD');
   if (!SHA40.test(phase2aHead)) throw new Error('VITE_LIGHTBI_TRUST_PHASE2A_HEAD must be a full 40-character SHA');
   const analyticsNamespace = required(env, 'VITE_LIGHTBI_ANALYTICS_NAMESPACE');

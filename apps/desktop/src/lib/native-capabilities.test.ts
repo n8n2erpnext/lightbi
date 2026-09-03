@@ -19,8 +19,8 @@ describe('native capabilities', () => {
 
   it('recognizes external HTTP, HTTPS and mail anchors while keeping app routes internal', () => {
     const external = document.createElement('a');
-    external.href = 'https://lightbi.thaiduy.digital/docs';
-    expect(externalAnchorUrl(external)).toBe('https://lightbi.thaiduy.digital/docs');
+    external.href = 'https://external.example/docs';
+    expect(externalAnchorUrl(external)).toBe('https://external.example/docs');
     const plainHttp = document.createElement('a');
     plainHttp.href = 'http://example.com/help';
     expect(externalAnchorUrl(plainHttp)).toBe('http://example.com/help');
@@ -36,11 +36,11 @@ describe('native capabilities', () => {
     vi.mocked(isNativeLightBI).mockReturnValue(true);
     const dispose = installNativeExternalLinkGuard();
     const anchor = document.createElement('a');
-    anchor.href = 'https://lightbi.thaiduy.digital/docs';
+    anchor.href = 'https://external.example/docs';
     document.body.append(anchor);
     const event = new MouseEvent('click', { bubbles: true, cancelable: true, button: 0 });
     expect(anchor.dispatchEvent(event)).toBe(false);
-    await vi.waitFor(() => expect(openUrl).toHaveBeenCalledWith('https://lightbi.thaiduy.digital/docs'));
+    await vi.waitFor(() => expect(openUrl).toHaveBeenCalledWith('https://external.example/docs'));
     dispose();
     anchor.remove();
   });
@@ -85,7 +85,7 @@ describe('native capabilities', () => {
     vi.mocked(invoke).mockResolvedValue({ status: 407, headers: { 'content-type': 'text/plain' }, body: Array.from(new TextEncoder().encode('proxy authentication required')) });
     const browserFetch = vi.fn().mockResolvedValue(new Response('{\"ok\":true}', { status: 200, headers: { 'content-type': 'application/json' } }));
     vi.stubGlobal('fetch', browserFetch);
-    const response = await externalFetch('https://lightbi-next.thaiduy.digital/api/releases/latest');
+    const response = await externalFetch('https://next-external.example/api/releases/latest');
     expect(browserFetch).toHaveBeenCalledOnce();
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toEqual({ ok: true });

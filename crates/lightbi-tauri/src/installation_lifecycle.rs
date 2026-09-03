@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 use std::{path::PathBuf, time::Duration};
 
 const UNINSTALL_TRACK_ARG: &str = "--lightbi-uninstall-track";
+const ROUTING_JSON: &str = include_str!("../../../apps/desktop/src/lib/lightbi-routing.json");
 #[cfg(target_os = "windows")]
 const RECEIPT_DIR: &str = "digital.thaiduy.lightbi";
 #[cfg(target_os = "windows")]
@@ -25,18 +26,35 @@ fn valid_installation_id(value: &str) -> bool {
             .all(|character| character.is_ascii_alphanumeric() || character == '-')
 }
 
+fn routing_public_origin(environment: &str) -> Result<String, String> {
+    let routing: serde_json::Value = serde_json::from_str(ROUTING_JSON)
+        .map_err(|_| "Invalid LightBI routing manifest.".to_string())?;
+    let value = routing
+        .get(environment)
+        .and_then(|profile| profile.get("publicOrigin"))
+        .and_then(serde_json::Value::as_str)
+        .ok_or_else(|| "LightBI routing publicOrigin is missing.".to_string())?;
+    let url = reqwest::Url::parse(value).map_err(|_| "Invalid LightBI routing origin.".to_string())?;
+    if url.scheme() != "https" || !url.username().is_empty() || url.password().is_some() || url.path() != "/" {
+        return Err("Invalid LightBI routing origin.".to_string());
+    }
+    Ok(url.origin().ascii_serialization())
+}
+
 fn normalized_distribution_api_base(value: &str) -> Result<String, String> {
     let url = reqwest::Url::parse(value).map_err(|_| "Invalid LightBI lifecycle endpoint.".to_string())?;
     if url.scheme() != "https" || !url.username().is_empty() || url.password().is_some() {
         return Err("Invalid LightBI lifecycle endpoint.".to_string());
     }
-    if !matches!(url.host_str(), Some("lightbi.thaiduy.digital" | "lightbi-next.thaiduy.digital")) {
+    let origin = url.origin().ascii_serialization();
+    let approved = [routing_public_origin("production")?, routing_public_origin("next")?];
+    if !approved.iter().any(|candidate| candidate == &origin) {
         return Err("Installation lifecycle endpoint is not an approved LightBI endpoint.".to_string());
     }
     if !matches!(url.path().trim_end_matches('/'), "" | "/distribution" | "/distribution-api") {
         return Err("Installation lifecycle endpoint path is not approved.".to_string());
     }
-    Ok(format!("{}://{}/distribution-api", url.scheme(), url.host_str().unwrap()))
+    Ok(format!("{origin}/distribution-api"))
 }
 
 fn allowed_endpoint(value: &str) -> bool {
@@ -194,14 +212,16 @@ mod tests {
     }
 
     #[test]
-    fn accepts_only_lightbi_https_lifecycle_endpoints() {
-        assert!(validate_receipt(&receipt("https://lightbi.thaiduy.digital/distribution-api")).is_ok());
-        assert!(validate_receipt(&receipt("https://lightbi.thaiduy.digital/distribution")).is_ok());
-        assert!(validate_receipt(&receipt("https://lightbi-next.thaiduy.digital")).is_ok());
-        assert_eq!(normalized_distribution_api_base("https://lightbi-next.thaiduy.digital").unwrap(), "https://lightbi-next.thaiduy.digital/distribution-api");
-        assert_eq!(normalized_distribution_api_base("https://lightbi.thaiduy.digital/distribution").unwrap(), "https://lightbi.thaiduy.digital/distribution-api");
-        assert!(validate_receipt(&receipt("http://lightbi.thaiduy.digital/distribution-api")).is_err());
-        assert!(validate_receipt(&receipt("https://lightbi-next.thaiduy.digital/docs")).is_err());
+    fn accepts_only_routing_manifest_https_lifecycle_endpoints() {
+        let production = routing_public_origin("production").unwrap();
+        let next = routing_public_origin("next").unwrap();
+        assert!(validate_receipt(&receipt(&format!("{production}/distribution-api"))).is_ok());
+        assert!(validate_receipt(&receipt(&format!("{production}/distribution"))).is_ok());
+        assert!(validate_receipt(&receipt(&next)).is_ok());
+        assert_eq!(normalized_distribution_api_base(&next).unwrap(), format!("{next}/distribution-api"));
+        assert_eq!(normalized_distribution_api_base(&format!("{production}/distribution")).unwrap(), format!("{production}/distribution-api"));
+        assert!(validate_receipt(&receipt("http://example.com/distribution-api")).is_err());
+        assert!(validate_receipt(&receipt(&format!("{next}/docs"))).is_err());
         assert!(validate_receipt(&receipt("https://example.com/distribution-api")).is_err());
     }
 

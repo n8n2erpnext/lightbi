@@ -5,6 +5,7 @@ const governed = [
   ['public release contract', ['test:release-contract']],
   ['public/private boundary', ['test:public-boundary']],
   ['generation contract', ['test:generation-contract']],
+  ['routing authority contract', ['test:routing-authority']],
   ['pre-production operations contract', ['test:preproduction-ops']],
   ['owner UAT-pack contract', ['test:internal-uat-pack']],
   ['generation runtime diagnostics', ['--dir','apps/desktop','exec','vitest','run','src/lib/generation-manifest.test.ts','src/lib/generation-diagnostics.test.ts']],

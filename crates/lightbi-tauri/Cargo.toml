@@ -5,7 +5,6 @@ edition = "2021"
 build = "build.rs"
 authors = ["Thai Duy <support@thaiduy.digital>"]
 description = "Local-first evidence-governed business analysis workspace"
-homepage = "https://lightbi.thaiduy.digital"
 repository = "https://github.com/n8n2erpnext/lightbi"
 
 [dependencies]

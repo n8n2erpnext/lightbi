@@ -7,7 +7,7 @@ import { lightBIDistributionEndpoint } from "../lib/distribution-pairing";
 import { externalFetch } from "../lib/native-capabilities";
 import { isNativeLightBI } from "../lib/native-runtime";
 import { buildGenerationManifest } from "../lib/generation-manifest";
-import { lightBIInternalReleaseUrl } from "../lib/lightbi-routing";
+import { lightBIFrontendUrl, lightBIInternalReleaseUrl } from "../lib/lightbi-routing";
 import { trackUpdateEvent } from "../lib/app-usage-telemetry";
 
 export type UpdateStatus =
@@ -359,7 +359,7 @@ export const useUpdateStore = create<UpdateStore>((set, get) => ({
       architecture: "x86_64",
       kind: platform === "windows" ? "exe" : platform === "linux" ? "deb" : "dmg",
       filename: platform === "windows" ? "LightBI-QA-Update.exe" : platform === "linux" ? "LightBI-QA-Update.deb" : "LightBI-QA-Update.dmg",
-      url: "https://lightbi-next.thaiduy.digital/qa/update-placeholder",
+      url: lightBIFrontendUrl("qaUpdatePlaceholder", "next"),
       size: 100,
       sha256: "0".repeat(64),
     };

@@ -45,7 +45,7 @@ jobs:
           node scripts/validate-native-capabilities.mjs
           pnpm --dir apps/desktop exec vitest run src/stores/update-store.test.ts src/lib/native-capabilities.test.ts src/components/layout/UpdateStatusBar.test.tsx src/stores/announcement-store.test.ts src/lib/native-boundary-contract.test.ts src/lib/account-api.test.ts src/lib/generation-diagnostics.test.ts src/lib/project-source-file-api.test.ts src/lib/home-workspace-persistence.test.ts src/lib/investigation-persistence-actions.test.ts src/hooks/useHomeWorkspaceSessions.test.tsx
           cargo test -p lightbi-tauri updater_tests --target x86_64-pc-windows-msvc
-          $env:LIGHTBI_LIVE_RELEASE_CATALOG = "https://lightbi-next.thaiduy.digital/api/releases/latest"
+          $env:LIGHTBI_LIVE_RELEASE_CATALOG = node scripts/lightbi-routing.mjs next releaseCatalog
           cargo test -p lightbi-tauri native_http_reaches_live_internal_release_catalog --target x86_64-pc-windows-msvc -- --ignored --nocapture
       - name: Generate branded application icons
         shell: pwsh
@@ -56,7 +56,6 @@ jobs:
         working-directory: crates/lightbi-tauri
         shell: pwsh
         env:
-          VITE_LIGHTBI_DISTRIBUTION_URL: https://lightbi-next.thaiduy.digital
           VITE_LIGHTBI_GENERATION_ID: g-2026-09-01-next-025
           VITE_LIGHTBI_PARENT_GENERATION_ID: g-2026-09-01-next-024
           VITE_LIGHTBI_CHANNEL: internal
@@ -147,7 +146,8 @@ jobs:
             sha=$(jq -r .sha256 "$meta")
             filename=$(basename "$exe")
             size=$(stat -c %s "$exe")
-            url="https://lightbi-next.thaiduy.digital/internal-releases/$version/$filename"
+            release_base=$(node scripts/lightbi-routing.mjs next internalReleases)
+            url="${release_base%/}/$version/$filename"
             out=".release/manifest-$slot.json"
             next_index=".release/index-$slot.json"
             node scripts/build-release-manifest.mjs --version "$version" --channel beta --artifact "$exe" --artifact-url "$url" --sha256 "$sha" --size "$size" --platform windows --architecture x86_64 --kind exe --output "$out" --index-input "$index" --index-output "$next_index" --release-notes "LightBI NEXT-025 internal update acceptance slot $slot"

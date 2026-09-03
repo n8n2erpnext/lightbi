@@ -11,7 +11,11 @@
       "admin": "/admin",
       "verify": "/verify",
       "distributionApi": "/distribution-api",
-      "internalReleases": "/internal-releases"
+      "internalReleases": "/internal-releases",
+      "distribution": "/distribution",
+      "plans": "/distribution/#plans",
+      "releaseCatalog": "/distribution-api/api/releases/latest",
+      "qaUpdatePlaceholder": "/qa/update-placeholder"
     }
   },
   "next": {
@@ -25,7 +29,11 @@
       "admin": "/admin",
       "verify": "/verify",
       "distributionApi": "/distribution-api",
-      "internalReleases": "/internal-releases"
+      "internalReleases": "/internal-releases",
+      "distribution": "/distribution",
+      "plans": "/distribution/#plans",
+      "releaseCatalog": "/distribution-api/api/releases/latest",
+      "qaUpdatePlaceholder": "/qa/update-placeholder"
     }
   }
 }

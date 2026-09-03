@@ -1,8 +1,10 @@
 import type { LightBIGenerationChannel, LightBIGenerationManifestV1, LightBITrustStatus } from '@lightbi/core-types';
+import routing from './lightbi-routing.json';
 
-const PROD_PUBLIC_ORIGIN = 'https://lightbi.thaiduy.digital';
-const PROD_DISTRIBUTION = `${PROD_PUBLIC_ORIGIN}/distribution`;
-const PROD_DISTRIBUTION_API = `${PROD_PUBLIC_ORIGIN}/distribution-api`;
+const PROD_PUBLIC_ORIGIN = routing.production.publicOrigin.replace(/\/$/u, '');
+const PROD_DISTRIBUTION_API = new URL(routing.production.routes.distributionApi, `${PROD_PUBLIC_ORIGIN}/`).toString().replace(/\/$/u, '');
+const NEXT_PUBLIC_ORIGIN = routing.next.publicOrigin.replace(/\/$/u, '');
+const NEXT_DISTRIBUTION_API = new URL(routing.next.routes.distributionApi, `${NEXT_PUBLIC_ORIGIN}/`).toString().replace(/\/$/u, '');
 const SHA40 = /^[0-9a-f]{40}$/u;
 
 type GenerationEnv = Partial<Record<
@@ -72,7 +74,7 @@ export function buildGenerationManifest(
     trust_status: trustStatus(env.VITE_LIGHTBI_TRUST_STATUS),
     trust_phase2a_head: text(env.VITE_LIGHTBI_TRUST_PHASE2A_HEAD, 'fb8225c951fc27692e6b0e7554c3112ada08e49f'),
     release_update_channel: updateChannel(env.VITE_LIGHTBI_RELEASE_UPDATE_CHANNEL),
-    distribution_origin: text(env.VITE_LIGHTBI_DISTRIBUTION_URL, PROD_DISTRIBUTION).replace(/\/$/u, ''),
+    distribution_origin: text(env.VITE_LIGHTBI_DISTRIBUTION_URL, buildChannel === 'internal' ? NEXT_DISTRIBUTION_API : PROD_DISTRIBUTION_API).replace(/\/$/u, ''),
     analytics_namespace: text(env.VITE_LIGHTBI_ANALYTICS_NAMESPACE, buildChannel),
     release_namespace: text(env.VITE_LIGHTBI_RELEASE_NAMESPACE, buildChannel === 'internal' ? 'internal/lightbi' : 'release/lightbi'),
     infrastructure_scope: {
@@ -98,7 +100,11 @@ export function generationIsolationBlockers(manifest: LightBIGenerationManifestV
   if (!SHA40.test(manifest.core_commit)) blockers.push('core_commit_not_pinned');
   if (!SHA40.test(manifest.control_plane_commit)) blockers.push('control_plane_commit_not_pinned');
   if (!SHA40.test(manifest.build_provenance.source_commit)) blockers.push('source_commit_not_pinned');
-  if (manifest.distribution_origin === PROD_DISTRIBUTION) blockers.push('production_distribution_origin');
+  try {
+    if (new URL(manifest.distribution_origin).origin === PROD_PUBLIC_ORIGIN) blockers.push('production_distribution_origin');
+  } catch {
+    blockers.push('distribution_origin_invalid');
+  }
   if (manifest.release_update_channel !== 'internal') blockers.push('production_update_channel');
   if (!/^internal(?:[-/:]|$)/iu.test(manifest.analytics_namespace)) blockers.push('analytics_namespace_not_internal');
   if (!/^internal(?:\/|$)/u.test(manifest.release_namespace)) blockers.push('release_namespace_not_internal');
@@ -121,7 +127,7 @@ export function assertSafeGenerationDistributionTarget(
     } catch (error) {
       if (error instanceof Error && error.message === 'LIGHTBI_INTERNAL_PRODUCTION_DISTRIBUTION_BLOCKED') throw error;
     }
-    if (normalized === PROD_DISTRIBUTION || normalized === PROD_DISTRIBUTION_API) {
+    if (normalized === PROD_DISTRIBUTION_API) {
       throw new Error('LIGHTBI_INTERNAL_PRODUCTION_DISTRIBUTION_BLOCKED');
     }
   }
@@ -138,4 +144,4 @@ export function generationIsSafeForInternal(manifest: LightBIGenerationManifestV
   return generationIsolationBlockers(manifest).length === 0;
 }
 
-export const PRODUCTION_DISTRIBUTION_ORIGIN = PROD_DISTRIBUTION;
+export const PRODUCTION_DISTRIBUTION_ORIGIN = PROD_DISTRIBUTION_API;

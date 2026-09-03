@@ -26,7 +26,7 @@ mod tests {
         for url in ["http://tauri.localhost/", "http://lightbi.localhost/api", "tauri://localhost/", "lightbi://localhost/"] {
             assert!(allows_embedded_navigation(&Url::parse(url).unwrap()), "expected allowed: {url}");
         }
-        for url in ["https://lightbi.thaiduy.digital/docs", "https://example.com/", "http://example.com/"] {
+        for url in ["https://external.example/docs", "https://example.com/", "http://example.com/"] {
             assert!(!allows_embedded_navigation(&Url::parse(url).unwrap()), "expected blocked: {url}");
         }
     }
