@@ -46,7 +46,7 @@ export const UpdateNotificationMenu: React.FC = () => {
         )}
       </button>
       {open && (
-        <div className="absolute right-0 top-10 z-50 w-80 rounded-2xl border border-black/10 bg-white p-4 shadow-2xl">
+        <div data-testid="notification-popover" className="absolute left-0 top-10 z-50 w-80 max-w-[calc(100vw-2rem)] rounded-2xl border border-black/10 bg-white p-4 shadow-2xl">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-black/45"><Inbox className="h-4 w-4" />Inbox</div>
             <button type="button" onClick={() => void announcements.check(true)} className="rounded-lg p-1.5 text-black/40 hover:bg-black/[0.05] hover:text-black" title="Refresh notifications"><RefreshCw className="h-3.5 w-3.5" /></button>
