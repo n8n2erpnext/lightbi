@@ -1509,3 +1509,12 @@ R1-P0 documentation/integrity closure verified 1,243 local links with zero missi
 - Windows CI now records an immutable `.publisher.json` sidecar from native `Get-AuthenticodeSignature`, bound to installer SHA-256. Beta may record `NotSigned`; Stable validation requires native status `Valid`, exact expected signer subject and matching SHA-256.
 - Stable Windows manifest generation now fails closed when publisher evidence/subject is absent. Release contract is **7/7 PASS**; final full `test:release-1.0` and governed regression **39/39 PASS**; YAML/public-boundary/diff checks PASS. Exact GitHub head has zero workflow runs/statuses, so this is not called GitHub CI.
 - Current NEXT Windows installer was re-probed and remains unsigned: PE certificate table `0/0`. R1-P12 is still open; R1-P13 remains closed. Production untouched.
+
+
+## 2026-09-03 — R1-P12 Windows Acceptance #6 succeeds; bounded owner UAT accepted, Bell deferred
+
+- Reconciled current Windows/UAT source to `13202fd7136b134f05768a797f3c5dd12d717889` and private CP source candidate to `bb50b0d53542da5cd908e2237cbca368f7f87073`. Active engine symlink/public header is NEXT-030 with Core `7d15d69f2cf0bf39ac98dac9d91faa95edec7847` and gateway overlay `6bb55ab35c2126ae0a584aa662e919f5e3b29ea2`, but live CP diagnostics still report NEXT-029 / `6936fc4272bc92cd1badc00b9256cfd912e4a9ad` and an unhealthy NEXT-029 worker. Runtime generation identity is therefore explicitly recorded as split, not fully reconciled.
+- GitHub Actions `Native Acceptance Artifact` run `33696477945` / #6 succeeded at exact source `13202fd7136b134f05768a797f3c5dd12d717889`. Artifact `9873149821` contains `0.9.2-next.r1p12.6`; installer SHA-256 is `398760459a69520f9b6fa3ec80d7007dc6c8989d64e17764ac66fe2810887cd7`.
+- Exact native publisher evidence says `NotSigned` with no signer identity and `production_authority=false`; this closes the acceptance-build question but **not** Windows Authenticode or Official identity.
+- Owner accepted the bounded Windows install/sidebar/external-browser checks. The Bell dropdown bug is explicitly deferred and non-blocking; no broader manual acceptance is inferred.
+- R1-P12 remains active. Production Phase 2A freeze, Production ATT wire freeze, real Windows publisher trust and Production REL/ATT/external verifier remain unresolved; R1-P13 stays closed. Production untouched.
