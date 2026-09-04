@@ -1,14 +1,14 @@
 {
   "schemaVersion": "lightbi.project-book.source-catalog.v1",
-  "snapshotDate": "2026-09-03",
-  "generatedAt": "2026-09-03T04:18:46.951551+00:00",
+  "snapshotDate": "2026-09-04",
+  "generatedAt": "2026-09-04T03:24:45.372954+00:00",
   "branch": "docs/ba-da-mode-future-20260903",
-  "head": "ec8ed7bb3a6e133db9c7c915f5b2fab74301fa6e",
+  "head": "c42afe9a58f755920be5cef1ae013d9e40c46791",
   "worktreeDirty": true,
   "scope": "All project Markdown and JSON outside dependency/build/project-book directories.",
   "counts": {
-    "total": 936,
-    "markdown": 519,
+    "total": 939,
+    "markdown": 522,
     "json": 417,
     "docsJson": 354,
     "references": 0
@@ -1286,18 +1286,26 @@
       "title": "ADR-123: Engine/Chassis Promotion, Permanent Pre-Production, and Disaster Recovery"
     },
     {
+      "path": "docs/adr/ADR-124-micro-semantic-brain-vector-inference.md",
+      "extension": ".md",
+      "bytes": 7743,
+      "sha256": "4074e4a8dd060436f2b7eb373c5754352cc0170164481701ecfdb1f18f5e856a",
+      "suggestedCategory": "architecture-decision",
+      "title": "ADR-124: Micro Semantic Brain for Evidence-Bound Vector Inference"
+    },
+    {
       "path": "docs/adr/README.md",
       "extension": ".md",
-      "bytes": 16112,
-      "sha256": "e7d927b313724fa46fefecba3aab527351ce63bfadc2dd8868c64448477d04c0",
+      "bytes": 16289,
+      "sha256": "fc16bb5f3c015def86a330bfea3a9812b1ace34c834cc2845ebebcc58513cebe",
       "suggestedCategory": "architecture-decision",
       "title": "Architecture Decision Records"
     },
     {
       "path": "docs/architecture/README.md",
       "extension": ".md",
-      "bytes": 15401,
-      "sha256": "a6b1de5fd5e0f4e434de848c8d4594854cd35bf0df96b31b763dbd8e5bed7978",
+      "bytes": 15551,
+      "sha256": "a3baf8b874d4d9971bc17f2e9756bee3bc323787d383af892a14d7017524cc04",
       "suggestedCategory": "architecture-source-or-evidence",
       "title": "Architecture Library"
     },
@@ -1585,6 +1593,14 @@
       "sha256": "72c76c230a22271735c0753ffbed3db382aaf3aa5e173a2c175baf3c00314cdb",
       "suggestedCategory": "architecture-source-or-evidence",
       "title": "Materialization Strategy Model"
+    },
+    {
+      "path": "docs/architecture/micro-semantic-brain-vector-inference.md",
+      "extension": ".md",
+      "bytes": 19051,
+      "sha256": "121f724b67452cfbb6382833939c9f0fa60421d78de55d43723a212d74c30195",
+      "suggestedCategory": "architecture-source-or-evidence",
+      "title": "Micro Semantic Brain and Vector Inference Architecture"
     },
     {
       "path": "docs/architecture/motodetail-semantic-support-audit.json",
@@ -9118,8 +9134,8 @@
     {
       "path": "docs/architecture/road-to-1-0-trust-release-contract.md",
       "extension": ".md",
-      "bytes": 11442,
-      "sha256": "145ebcd76004395d0d0bd2062d120cb312cd2a642d1cd4cb02617aa8547953c8",
+      "bytes": 16469,
+      "sha256": "f5cae6fc47bcd42c367d888e51c08d3458d8ebbf33e5b218738e1019d1b3677c",
       "suggestedCategory": "architecture-source-or-evidence",
       "title": "Road to 1.0 Trust, Release, and Official Identity Contract"
     },
@@ -10138,6 +10154,14 @@
       "sha256": "ca11436377cc954ebe540539338cd42d5572398783b64712fcceca70949e320d",
       "suggestedCategory": "historical-provenance",
       "title": "LightBI Road to 1.0 Execution Plan — 2026-08-31"
+    },
+    {
+      "path": "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_MICRO_SEMANTIC_BRAIN_V1_2026-09-04.md",
+      "extension": ".md",
+      "bytes": 12948,
+      "sha256": "4bc9e771eb87c82392557514b98115280079cb3c4855935a31979c1cbca9b563",
+      "suggestedCategory": "historical-provenance",
+      "title": "LightBI Micro Semantic Brain V1 Implementation Plan — 2026-09-04"
     },
     {
       "path": "docs/history/agent/plans/AGENT_TASK.md",
@@ -11413,8 +11437,8 @@
     {
       "path": "docs/release/BETA_RELEASE_CHECKLIST.md",
       "extension": ".md",
-      "bytes": 4474,
-      "sha256": "e1aee3914355a4f4f3e1343d023fc922609b5932b8409598aa3f6b6d25f5e1f1",
+      "bytes": 6932,
+      "sha256": "962da2e12897c9436183721bc5bfbe425a9ecf63cbb76d387f9e8106a7737fb2",
       "suggestedCategory": "release-record",
       "title": "LightBI Beta release checklist"
     },

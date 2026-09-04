@@ -1459,3 +1459,11 @@ R1-P0 documentation/integrity closure verified 1,243 local links with zero missi
 - Live Account Pro: ENT v1 and v2 authorize `pro_runtime`; reusing v1 after v2 fails `entitlement_rollback_detected`; wrong authenticated account fails `pro_authority_subject_mismatch`. Live Business: active organization owner + signed `business` ENT with `seat_limit=5` authorizes.
 - Synthetic entitlement/organization rows are transaction-rolled-back and the synthetic account is deleted. Post-run DB counts are zero for rehearsal account, `p10:` authority entitlement, and rehearsal organization. Audit evidence is retained.
 - Final source `31fa5428896f6e9cb7877d353e2485b43d7a1671`; attestation image `lightbi-next-trust-attestation:31fa5428896f-trust-10de4da8`, ID `sha256:a08e1f681b6ab564b9dc19b5b3202f33224e44d5ef4f54ab5dbe3be2ee228899`. Gates: verifier/P10 12/12, CP authoritative 193/193. Production remains untouched/unfrozen.
+
+## 2026-09-04 — Micro Semantic Brain vector-inference architecture approved and planned
+
+- Owner approved a local Micro Semantic Brain as a recall/inference layer in front of the canonical semantic resolver. The current semantic registry remains the canonical vocabulary; domain support, grain/readiness, metric preflight and runtime authority remain separate gates.
+- ADR-124 and the architecture contract define an approximately 10 MB typed knowledge target, positive/negative/relation knowledge, deterministic hybrid BM25 + TF-IDF/LSA retrieval, reciprocal-rank fusion, and the rule that vector similarity is retrieval provenance rather than semantic confidence.
+- Unsupported domains may be surfaced as inferred and analyzed only in evidence-bound mode when generic grain/aggregation safety passes. Understanding UI must disclose inference/support state; Focus, Deep BA and BA Step 2 must preserve that provenance.
+- A staged MB-0..MB-7 implementation plan was added. Implementation has not started and must use a clean product worktree; the current Focus experimental worktree is not a Micro Brain implementation base.
+- No product runtime, production service, semantic registry entry, domain pack, metric contract, or release artifact changed in this documentation step.

@@ -4,11 +4,11 @@
 
 ## Snapshot
 
-- Date: **2026-09-03**
+- Date: **2026-09-04**
 - Branch: `docs/ba-da-mode-future-20260903`
-- HEAD: `ec8ed7bb3a6e133db9c7c915f5b2fab74301fa6e`
+- HEAD: `c42afe9a58f755920be5cef1ae013d9e40c46791`
 - Worktree dirty while generated: **true**
-- Total indexed sources: **936** (519 Markdown / 417 JSON)
+- Total indexed sources: **939** (522 Markdown / 417 JSON)
 - JSON under `docs/`: **354**
 
 For old paths, use [`PATH_MIGRATION_INDEX.md`](./PATH_MIGRATION_INDEX.md) and [`../history/LEGACY_ROOT_INDEX.md`](../history/LEGACY_ROOT_INDEX.md).
@@ -156,13 +156,14 @@ For old paths, use [`PATH_MIGRATION_INDEX.md`](./PATH_MIGRATION_INDEX.md) and [`
 - [`docs/adr/ADR-121-semantic-registry-source-of-truth.md`](../../docs/adr/ADR-121-semantic-registry-source-of-truth.md) — ADR-121: Runtime Semantic Registry Source of Truth; `2035` bytes; SHA-256 `e5557e54d0c3e3637742fcf702f9a3bc7e4f5033591e74cdf601eff4f2722e78`
 - [`docs/adr/ADR-122-canonical-understanding-pipeline.md`](../../docs/adr/ADR-122-canonical-understanding-pipeline.md) — ADR-122: Canonical Understanding Pipeline; `4552` bytes; SHA-256 `9e5aeb48469dc41dc8f96f4b8bc7c751059c3247c6ba7b24df4d85bea73d87f3`
 - [`docs/adr/ADR-123-engine-chassis-preproduction-and-disaster-recovery.md`](../../docs/adr/ADR-123-engine-chassis-preproduction-and-disaster-recovery.md) — ADR-123: Engine/Chassis Promotion, Permanent Pre-Production, and Disaster Recovery; `4465` bytes; SHA-256 `d44a7244da9b5ab0b99df04b584bb7ac2d6de563619c58eed1ca2f2ef5310e21`
-- [`docs/adr/README.md`](../../docs/adr/README.md) — Architecture Decision Records; `16112` bytes; SHA-256 `e7d927b313724fa46fefecba3aab527351ce63bfadc2dd8868c64448477d04c0`
+- [`docs/adr/ADR-124-micro-semantic-brain-vector-inference.md`](../../docs/adr/ADR-124-micro-semantic-brain-vector-inference.md) — ADR-124: Micro Semantic Brain for Evidence-Bound Vector Inference; `7743` bytes; SHA-256 `4074e4a8dd060436f2b7eb373c5754352cc0170164481701ecfdb1f18f5e856a`
+- [`docs/adr/README.md`](../../docs/adr/README.md) — Architecture Decision Records; `16289` bytes; SHA-256 `fc16bb5f3c015def86a330bfea3a9812b1ace34c834cc2845ebebcc58513cebe`
 
 ## architecture-source-or-evidence
 
 - [`docs/architecture/commerce-erpnext-revenue-mirror.md`](../../docs/architecture/commerce-erpnext-revenue-mirror.md) — Commerce → ERPNext Optional Revenue Mirror; `11569` bytes; SHA-256 `d2265f05414cf76fe52556ecf7f324baf58d3cd24cba1cad4ad9989c20e61e7f`
-- [`docs/architecture/road-to-1-0-trust-release-contract.md`](../../docs/architecture/road-to-1-0-trust-release-contract.md) — Road to 1.0 Trust, Release, and Official Identity Contract; `11442` bytes; SHA-256 `145ebcd76004395d0d0bd2062d120cb312cd2a642d1cd4cb02617aa8547953c8`
-- [`docs/architecture/README.md`](../../docs/architecture/README.md) — Architecture Library; `15401` bytes; SHA-256 `a6b1de5fd5e0f4e434de848c8d4594854cd35bf0df96b31b763dbd8e5bed7978`
+- [`docs/architecture/road-to-1-0-trust-release-contract.md`](../../docs/architecture/road-to-1-0-trust-release-contract.md) — Road to 1.0 Trust, Release, and Official Identity Contract; `16469` bytes; SHA-256 `f5cae6fc47bcd42c367d888e51c08d3458d8ebbf33e5b218738e1019d1b3677c`
+- [`docs/architecture/README.md`](../../docs/architecture/README.md) — Architecture Library; `15551` bytes; SHA-256 `a3baf8b874d4d9971bc17f2e9756bee3bc323787d383af892a14d7017524cc04`
 - [`docs/architecture/artifact-model.md`](../../docs/architecture/artifact-model.md) — Export Artifact Model; `834` bytes; SHA-256 `c444e449c8bb69aac589a0c0f35ea93e864f2a90c4b14a1e51e716737342b0e6`
 - [`docs/architecture/beta-core-ui-business-brain-bridge-audit.json`](../../docs/architecture/beta-core-ui-business-brain-bridge-audit.json) — beta-core-ui-business-brain-bridge-audit.json; `2548` bytes; SHA-256 `fb0076e78482530c1f747e09fa105c86110923f19e713ae3ef913a9416908205`
 - [`docs/architecture/beta-inventory-shipment-perspective-audit.json`](../../docs/architecture/beta-inventory-shipment-perspective-audit.json) — beta-inventory-shipment-perspective-audit.json; `3456` bytes; SHA-256 `7afb233b5fc3a90452ba8b8f1d7b474554582d60916b3b7c54f41f6574e719ef`
@@ -190,6 +191,7 @@ For old paths, use [`PATH_MIGRATION_INDEX.md`](./PATH_MIGRATION_INDEX.md) and [`
 - [`docs/architecture/insight-model.md`](../../docs/architecture/insight-model.md) — Insight Architecture Model; `1061` bytes; SHA-256 `b65012acafe379496400afb29a7e07c9175ffcde2b1f5b9ebecec94481ed5bd6`
 - [`docs/architecture/intent-model.md`](../../docs/architecture/intent-model.md) — Analytical Intent Model; `1012` bytes; SHA-256 `a775be1d16b314719c107d7dbdea314fd7bc50cd62d4e9a9083400095ea34057`
 - [`docs/architecture/materialization-model.md`](../../docs/architecture/materialization-model.md) — Materialization Strategy Model; `1110` bytes; SHA-256 `72c76c230a22271735c0753ffbed3db382aaf3aa5e173a2c175baf3c00314cdb`
+- [`docs/architecture/micro-semantic-brain-vector-inference.md`](../../docs/architecture/micro-semantic-brain-vector-inference.md) — Micro Semantic Brain and Vector Inference Architecture; `19051` bytes; SHA-256 `121f724b67452cfbb6382833939c9f0fa60421d78de55d43723a212d74c30195`
 - [`docs/architecture/motodetail-semantic-support-audit.json`](../../docs/architecture/motodetail-semantic-support-audit.json) — motodetail-semantic-support-audit.json; `810` bytes; SHA-256 `a48d447fed40f9ae14b3bec6f7de0d348330c891a22bf77d0a6b6f8954e5b888`
 - [`docs/architecture/narrative-model.md`](../../docs/architecture/narrative-model.md) — Analytical Narrative Model; `927` bytes; SHA-256 `932fb62b61913e7f7cdce93cc090daa6e1d7586d88443d91f58872478a6dc593`
 - [`docs/architecture/persistence-model.md`](../../docs/architecture/persistence-model.md) — Persistence Model Architecture; `1254` bytes; SHA-256 `567c50bcce1318f1424ec74359222ed41a0016415b89f1876a28a6012ba0406a`
@@ -671,6 +673,7 @@ For old paths, use [`PATH_MIGRATION_INDEX.md`](./PATH_MIGRATION_INDEX.md) and [`
 ## historical-provenance
 
 - [`docs/history/agent/plans/AGENT_PLAN_ROAD_TO_1_0_2026-08-31.md`](../../docs/history/agent/plans/AGENT_PLAN_ROAD_TO_1_0_2026-08-31.md) — LightBI Road to 1.0 Execution Plan — 2026-08-31; `11529` bytes; SHA-256 `ca11436377cc954ebe540539338cd42d5572398783b64712fcceca70949e320d`
+- [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_MICRO_SEMANTIC_BRAIN_V1_2026-09-04.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_MICRO_SEMANTIC_BRAIN_V1_2026-09-04.md) — LightBI Micro Semantic Brain V1 Implementation Plan — 2026-09-04; `12948` bytes; SHA-256 `4bc9e771eb87c82392557514b98115280079cb3c4855935a31979c1cbca9b563`
 - [`docs/history/LEGACY_ROOT_INDEX.md`](../../docs/history/LEGACY_ROOT_INDEX.md) — Legacy Root Documentation Index; `33743` bytes; SHA-256 `e662adb190bc6e9d9b598d4d1c421423376931d186aafb53c15cc4f9d25a3385`
 - [`docs/history/README.md`](../../docs/history/README.md) — Historical Documentation; `1764` bytes; SHA-256 `58060865d3938943ef9a415e39457280481d8d9b78a3f4ceb7e017a60c343052`
 - [`docs/history/agent/contracts/CODEX_QA_ORCHESTRATION_CONTRACT.md`](../../docs/history/agent/contracts/CODEX_QA_ORCHESTRATION_CONTRACT.md) — Codex QA Orchestration Contract; `5244` bytes; SHA-256 `3926f159280b943b64689f2846aab12d166e9ebe05d8a4d8192819eeeeb0b69b`
@@ -954,7 +957,7 @@ For old paths, use [`PATH_MIGRATION_INDEX.md`](./PATH_MIGRATION_INDEX.md) and [`
 
 ## release-record
 
-- [`docs/release/BETA_RELEASE_CHECKLIST.md`](../../docs/release/BETA_RELEASE_CHECKLIST.md) — LightBI Beta release checklist; `4474` bytes; SHA-256 `e1aee3914355a4f4f3e1343d023fc922609b5932b8409598aa3f6b6d25f5e1f1`
+- [`docs/release/BETA_RELEASE_CHECKLIST.md`](../../docs/release/BETA_RELEASE_CHECKLIST.md) — LightBI Beta release checklist; `6932` bytes; SHA-256 `962da2e12897c9436183721bc5bfbe425a9ecf63cbb76d387f9e8106a7737fb2`
 
 ## root-contract-or-report
 

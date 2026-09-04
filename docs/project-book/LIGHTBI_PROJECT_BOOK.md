@@ -46,6 +46,7 @@
   - [16. AI is an optional consumer, not the analytical authority](#16-ai-is-an-optional-consumer-not-the-analytical-authority)
 - **[Part V — Semantic Knowledge, Domains, and Business Coverage](#part-v-semantic-knowledge-domains-and-business-coverage)**
   - [17. Semantic Registry is the supported runtime vocabulary source](#17-semantic-registry-is-the-supported-runtime-vocabulary-source)
+  - [17A. Micro Semantic Brain broadens recall without becoming semantic authority](#17a-micro-semantic-brain-broadens-recall-without-becoming-semantic-authority)
   - [18. Domain Knowledge Catalog separates business knowledge from execution code](#18-domain-knowledge-catalog-separates-business-knowledge-from-execution-code)
 - **[Part VI — Planning, Runtime, Storage, and Connectors](#part-vi-planning-runtime-storage-and-connectors)**
   - [19. Recipe / Planner / Runtime separation is a long-lived architectural principle](#19-recipe-planner-runtime-separation-is-a-long-lived-architectural-principle)
@@ -775,6 +776,27 @@ The registry owns or bridges:
 A new signal may be recognized as partial/research-level without immediately receiving a BA playbook, governed metric, or executable action.
 
 Primary bookmark: [`../progress/phase-30-semantic-registry-unification.md`](../history/progress/phase-30-semantic-registry-unification.md).
+
+### 17A. Micro Semantic Brain broadens recall without becoming semantic authority
+
+Owner decision on 2026-09-04 adds a future local **Micro Semantic Brain** before conservative semantic resolution. Its job is to retrieve and interpolate business concepts that may be absent from current aliases or official domain packs; it does not replace the canonical registry and it does not own metric truth.
+
+The initial design budget is approximately 10 MB of typed, curated business knowledge. The V1 retrieval design is deterministic and local: sparse terminology retrieval plus an LSA dense vector projection, fused only for candidate retrieval. `retrieval_similarity` is never called semantic confidence.
+
+The authority separation is permanent:
+
+```text
+Micro Brain retrieval -> candidate hypothesis
+Canonical Registry -> stable canonical identity
+Evidence Resolver -> semantic resolution / abstention
+Domain Support Manifest -> official product assurance
+Grain + M1/M2/M3 + metric preflight -> calculation authority
+```
+
+An unsupported domain may therefore be shown as **inferred** and may receive evidence-bound analysis when generic grain/aggregation safety is independently established. The UI must disclose that the domain is not officially supported. Focus, Deep BA, and BA Step 2 must preserve this provenance instead of silently promoting inferred semantics into supported facts.
+
+Primary bookmarks: [`../adr/ADR-124-micro-semantic-brain-vector-inference.md`](../adr/ADR-124-micro-semantic-brain-vector-inference.md), [`../architecture/micro-semantic-brain-vector-inference.md`](../architecture/micro-semantic-brain-vector-inference.md).
+
 ## 18. Domain Knowledge Catalog separates business knowledge from execution code
 
 The domain catalog is intentionally documentation-first knowledge. The documented knowledge flow is:

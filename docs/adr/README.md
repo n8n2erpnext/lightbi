@@ -4,9 +4,9 @@
 
 ## Numbering integrity
 
-- Files: **122**
-- Unique ADR numbers: **121**
-- Range: **1–122**
+- Files: **124**
+- Unique ADR numbers: **123**
+- Range: **1–124**
 - Historical gap: **ADR-023 is absent from the repository corpus**.
 - Historical collision: **ADR-089 has two distinct documents**. They are preserved as-is; cleanup does not renumber history.
 
@@ -135,3 +135,4 @@
 - [`ADR-121-semantic-registry-source-of-truth.md`](./ADR-121-semantic-registry-source-of-truth.md) — ADR-121: Runtime Semantic Registry Source of Truth
 - [`ADR-122-canonical-understanding-pipeline.md`](./ADR-122-canonical-understanding-pipeline.md) — ADR-122: Canonical Understanding Pipeline
 - [`ADR-123-engine-chassis-preproduction-and-disaster-recovery.md`](./ADR-123-engine-chassis-preproduction-and-disaster-recovery.md) — ADR-123: Engine/Chassis Promotion, Permanent Pre-Production, and Disaster Recovery
+- [`ADR-124-micro-semantic-brain-vector-inference.md`](./ADR-124-micro-semantic-brain-vector-inference.md) — ADR-124: Micro Semantic Brain for Evidence-Bound Vector Inference
