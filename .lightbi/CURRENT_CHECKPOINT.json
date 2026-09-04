@@ -1,29 +1,39 @@
 {
   "schema": "lightbi.current-checkpoint.v1",
-  "updatedAt": "2026-09-04T07:35:00Z",
-  "status": "micro_semantic_brain_mb5_complete_mb6_next",
-  "activeRuntime": "product_branch_only_no_production_deployment",
+  "updatedAt": "2026-09-04T08:52:00Z",
+  "status": "road_to_1_0_integrated_mb6_primary_signed_transport_foundation_verified",
+  "activeRuntime": "source_branches_only_no_production_deployment",
   "sourceCandidate": {
     "repo": "/home/ubuntu/n8n2erpnext/LightBI-exp-focus-subject",
-    "branch": "codex/exp-focus-subject-analysis",
-    "head": "8a4a5e4",
-    "buildFix": "fbb1444"
+    "branch": "codex/r1-roadmap-integration",
+    "head": "a8d55ee",
+    "mb5Head": "8a4a5e4"
+  },
+  "controlPlaneCandidate": {
+    "repo": "/home/ubuntu/n8n2erpnext/lightbi-control-plane-r1p14-signed-transport",
+    "branch": "codex/r1p14-signed-transport",
+    "head": "c5875eb"
   },
   "completed": [
     "mb5_domain_inference_artifact_separate_from_official_support",
-    "understanding_ui_discloses_inferred_domain_and_support_state",
-    "no_probability_or_similarity_exposed_as_semantic_confidence",
-    "targeted_regression_build_and_playwright_pass"
+    "one_roadmap_successor_branch_created",
+    "signed_transport_rust_proof_primitive_3_of_3",
+    "private_uds_verification_edge_attestation_15_of_15_distribution_220_of_220",
+    "ssd_heavy_build_guard_recovered_to_84_percent"
   ],
   "nextAction": "MB-6: propagate domainInference, officialSupport, analysisMode, metric/formula authorization, limitations and evidence references through Focus, Deep BA and BA Step 2 while preserving identical governed factual values.",
+  "parallelFollowUp": "Signed Transport: freeze query binding + response integrity + route classes before native_http_request integration or signed-by-default enforcement.",
   "blockers": [
     "MB-7 full release-authoritative acceptance is still pending",
-    "legacy Phase-3A path-bound suites require machine-audit JSON not present in this product worktree"
+    "legacy Phase-3A path-bound suites require machine-audit JSON not present in this product worktree",
+    "Production Phase-2A freeze remains owner-gated and false"
   ],
   "productionTouched": false,
+  "phase2aFrozen": false,
   "readFirst": [
-    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#17a-micro-semantic-brain-broadens-recall-without-becoming-semantic-authority",
+    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#105-2026-09-04-successor-road-to-10-integration-checkpoint",
     "docs/architecture/micro-semantic-brain-vector-inference.md#current-status",
-    "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_MICRO_SEMANTIC_BRAIN_V1_2026-09-04.md#execution-status--2026-09-04"
+    "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_MICRO_SEMANTIC_BRAIN_V1_2026-09-04.md#execution-status--2026-09-04",
+    "docs/architecture/road-to-1-0-trust-release-contract.md#signed-transport-successor-foundation--2026-09-04"
   ]
 }

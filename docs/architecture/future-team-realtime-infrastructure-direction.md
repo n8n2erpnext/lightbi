@@ -283,6 +283,16 @@ As of 2026-09-03 this is future architecture direction only. The current public/
 
 Before implementation, future work must perform a fresh current-state audit of the active generation, control plane, account/organization schema, source connector placement, current continuity topology and measured workload/cost profile.
 
+## 17A. Private Authenticated Transport is a capability, not a WireGuard dependency
+
+Future Team/Workspace infrastructure may benefit from a private authenticated data path between authorized local/edge agents and shared services. The durable product capability is named **Private Authenticated Transport** rather than `WireGuard mode` so infrastructure technology does not become product authority.
+
+Candidate implementations may include WireGuard, a QUIC-based overlay, MASQUE, an mTLS private gateway, or a later equivalent. Selection must be based on measured NAT traversal, enterprise deployability, mobile/desktop support, revocation, observability, operating cost and failure behavior at implementation time.
+
+This transport is additive defense/data-plane isolation only. Overlay membership must never replace LightBI account/organization authorization, named-seat entitlement, trusted installation identity, signed request proof, connector/source authorization or privileged admin policy. A compromised or misconfigured private network member must still fail application-level authorization.
+
+Private Authenticated Transport is **future Team/Workspace scope and not a LightBI 1.0 blocker**. The current 1.0 roadmap may reuse generic Signed Transport primitives without committing to any future overlay technology.
+
 ## 18. Repository bookmarks
 
 - [Team Workspace and Realtime BA](../product/team-workspace-realtime-ba-future-direction.md) — product behavior this infrastructure is intended to support.

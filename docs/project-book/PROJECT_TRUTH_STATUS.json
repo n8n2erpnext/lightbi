@@ -859,6 +859,41 @@
       ],
       "businessSeatLimit": 5,
       "syntheticDbResidue": 0
+    },
+    "successorOverlay20260904": {
+      "status": "one_roadmap_mb6_primary_signed_transport_foundation_parallel",
+      "productBranch": "codex/r1-roadmap-integration",
+      "productHead": "a8d55ee",
+      "controlPlaneBranch": "codex/r1p14-signed-transport",
+      "controlPlaneHead": "c5875eb",
+      "microBrain": {
+        "completedThrough": "MB-5",
+        "primaryNext": "MB-6",
+        "acceptanceAfter": "MB-7"
+      },
+      "signedTransport": {
+        "state": "foundation_verified_not_enforced",
+        "rustGoldenVectors": "3/3",
+        "attestationTests": "15/15",
+        "distributionTests": "220/220",
+        "signedByDefault": false,
+        "queryBindingFrozen": false,
+        "responseIntegrityFrozen": false
+      },
+      "futurePrivateAuthenticatedTransport": {
+        "scope": "team_workspace_future",
+        "criticalPath1_0": false,
+        "technologyFrozen": false,
+        "candidates": [
+          "wireguard",
+          "quic_overlay",
+          "masque",
+          "mtls_private_gateway"
+        ]
+      },
+      "productionTouched": false,
+      "phase2aFrozen": false,
+      "productionRootCeremonyAuthorized": false
     }
   },
   "roadTo1_0": {
@@ -876,7 +911,8 @@
     "r1p7": "production_blocked_by_r1p6_next_rehearsal_pass",
     "r1p8": "production_blocked_by_r1p6_next_rehearsal_pass",
     "r1p9": "production_blocked_by_r1p6_next_rehearsal_pass_request_wire_not_frozen",
-    "r1p10": "production_blocked_by_r1p6_next_rehearsal_pass"
+    "r1p10": "production_blocked_by_r1p6_next_rehearsal_pass",
+    "successorOverlay": "mb6_then_mb7_primary_signed_transport_foundation_parallel_not_enforced"
   },
   "optionalCommerceRevenueMirror": {
     "provider": "paddle",

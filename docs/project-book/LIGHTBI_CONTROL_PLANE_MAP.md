@@ -526,3 +526,11 @@ The existing verification-only `lightbi-next-trust-attestation` sibling now also
 `/v1/pro-authorize` binds the device signature to a canonical `lightbi.next-pro-authority.v1` request containing the authenticated account identity, requested capability and digest of the exact ENT envelope. Authorization requires a trusted installation/release, valid ENT signature/lifecycle, subject match, capability match, and monotonic per-subject entitlement progression. For Business, the bounded caller also supplies an active organization membership read from CP authority; organization ID and member account must match the authenticated subject, and the signed entitlement must carry tier `business` plus a supported named-user seat limit.
 
 Final runtime source is `31fa5428896f6e9cb7877d353e2485b43d7a1671`, image `lightbi-next-trust-attestation:31fa5428896f-trust-10de4da8`, image ID `sha256:a08e1f681b6ab564b9dc19b5b3202f33224e44d5ef4f54ab5dbe3be2ee228899`. Account Pro v1→v2 and Business 5-seat live authorization pass; ENT rollback and account-subject mismatch fail closed. No synthetic CP authority rows remain after the rehearsal. Distribution server source remains outside the signing/attestation implementation boundary.
+
+## 2026-09-04 — Internal Signed Transport thin verification edge
+
+Private CP branch `codex/r1p14-signed-transport` at `c5875eb` adds `NextAttestationClient`, an Internal-only Distribution edge to the separate verification-only attestation service over a private Unix-domain socket. The edge can obtain a nonce and forward a signed request for verification; verifier state reports the last accepted sequence so anti-replay progression survives client or verifier restart.
+
+Authority remains split: Distribution has no signer credentials/private keys, no attestation verifier implementation and no signing endpoint. The reconciled foundation guard explicitly allows this thin UDS client while continuing to reject verifier/signing authority inside Distribution. Exact checkpoint gates are trust-attestation 15/15 and complete Distribution 220/220 plus TypeScript/build/diff checks.
+
+No public route is yet declared signed-by-default. Query canonicalization, response integrity, native client wiring and per-route enforcement remain separate follow-up gates. Production control-plane/runtime services were not changed by this source checkpoint.

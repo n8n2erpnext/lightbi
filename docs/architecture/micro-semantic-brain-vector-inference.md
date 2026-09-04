@@ -400,7 +400,7 @@ Such a backend change does not change the authority model: embedding similarity 
 
 ## Current Status
 
-Architecture approved and implementation has progressed through **MB-5** on product branch `codex/exp-focus-subject-analysis`. The foundation/shadow line begins at `96fa58e`; the conservative evidence bridge landed at `f32d88d`; registry-aligned product integration is visible at `d4fa6e5`; MB-5 domain-inference/support separation is `8a4a5e4`, preceded by build-mode type-safety closure `fbb1444`.
+Architecture approved and implementation has progressed through **MB-5**. MB-5 domain-inference/support separation is `8a4a5e4`, preceded by build-mode type-safety closure `fbb1444`; the active successor line is now `codex/r1-roadmap-integration` at `a8d55ee`, which preserves MB-5 semantics and adds an independent Signed Transport primitive. The foundation/shadow line begins at `96fa58e`; the conservative evidence bridge landed at `f32d88d`; registry-aligned product integration is visible at `d4fa6e5`.
 
 The current implementation preserves the authority model: Micro Brain retrieval/rank is evidence provenance, official support remains owned by the governed domain-support manifest/runtime gates, and unsupported inferred domains remain evidence-bound. Understanding now exposes inferred domain source, official-support state, semantic concept counts, conflict count and analysis mode without turning similarity/rank into a probability.
 

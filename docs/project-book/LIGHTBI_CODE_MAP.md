@@ -855,3 +855,9 @@ Core `451c9b6afe0a95bce5bce473a4a84c8b918f42cd` clarifies the editor-side owners
 `AdvancedSqlEditor.runtime-contract.test.ts` freezes this UI-runtime requirement independently from the earlier contextual SQL semantic tests. Recognition/suggestion authority therefore stays outside Monaco presentation state: the controller may display valid candidates, but it does not invent schema meaning, source permission or execution authority.
 
 The current Internal generation carrying this owner is `g-2026-08-31-next-016`, Core `451c9b6...`, CP `f1879c6...`, schema 062 and manifest SHA-256 `72f223df5c2508e2d1e278497e1d8a664aa55f87c5c497f8d48d5a76b77e7f90`.
+
+## 2026-09-04 — successor Signed Transport proof primitive
+
+Current successor product branch `codex/r1-roadmap-integration` at `a8d55ee` adds `crates/lightbi-tauri/src/signed_transport.rs`. The module implements deterministic canonical JSON compatible with the public Trust Contract rules needed by request proofs, body SHA-256 and Ed25519 proof construction for `lightbi.next-attestation-request.v1`. It is intentionally not exposed through Tauri's invoke handler and does not yet modify `native_http_request`; frontend code cannot ask the shell to sign arbitrary payloads. An isolated three-test Rust golden-vector harness validates canonical bytes/body digest/proof digest and signature verification without compiling the unrelated DuckDB/Tauri dependency graph.
+
+This source is a reusable security primitive only. The next transport integration must freeze query/response binding and route classes before any signed-by-default claim.

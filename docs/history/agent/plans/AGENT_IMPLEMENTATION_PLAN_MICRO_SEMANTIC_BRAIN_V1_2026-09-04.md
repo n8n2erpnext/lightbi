@@ -1,6 +1,6 @@
 # LightBI Micro Semantic Brain V1 Implementation Plan — 2026-09-04
 
-Status: implementation active; MB-0 through MB-5 machine-verified on product branch, MB-6 next
+Status: implementation active; MB-0 through MB-5 machine-verified, successor branch integrated into Road-to-1.0, MB-6 next
 Date: 2026-09-04
 Scope: staged construction, evaluation, and integration of the local Micro Semantic Brain
 Supersedes: none
@@ -49,6 +49,7 @@ Each phase produces its own machine evidence and can stop without forcing the ne
 - **MB-5:** completed at product commit `8a4a5e4`, with build-mode type-safety closure `fbb1444`. Domain inference is separate from official support; Understanding shows inferred source, support state, semantic concept counts, conflict count and analysis mode. Unsupported-domain disclosure remains explicit.
 - **Verification:** MB-5 code passed 37 targeted regression tests, production `pnpm run build`, and Playwright healthcare acceptance 1/1; after the final E2E base-URL portability edit, focused MB-5/UI tests remained 9/9 and Playwright remained 1/1. `git diff --check` passed before commit.
 - **Production:** untouched. No production domain pack, metric authorization contract, release artifact or stable runtime was promoted by MB-5.
+- **Successor branch:** the active product line is now `codex/r1-roadmap-integration` at `a8d55ee`. The additive Signed Transport primitive in that commit does not change MB phase authority or semantic outputs.
 - **Next:** MB-6 must propagate `domainInference`, `officialSupport`, `analysisMode`, metric/formula authorization, limitations and evidence references through Focus / Deep BA / BA Step 2, preserving identical governed factual values.
 
 ## MB-0 — Baseline and Contract Freeze

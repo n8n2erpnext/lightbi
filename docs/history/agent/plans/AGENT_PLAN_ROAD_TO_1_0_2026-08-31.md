@@ -116,3 +116,27 @@ Candidate migrations `063`–`066`, new encryption keys, service restarts, rever
 - Commerce/marketing infrastructure is deployed but intentionally unconfigured: managed SMTP disabled, no payment provider active, catalog/prices/discounts/newsletter empty. Configuration is an owner-input gate through the strong-auth Admin UI; n8n revenue mirror remains present and inactive until Paddle sandbox E2E is configured.
 
 Current immutable Internal is `g-2026-09-01-next-022`, Core `ed044e0a6ceb98eb8d052ddbac17249893005bb6`, private CP `1ef53f947af030deca54208cb5c6f71ced785e67`, schema 065/pending 0, manifest SHA-256 `e0b6a250a5d2711da1edc0f1e61ee8d1318c484b58ef1d0e40c289e9672d30fd`. Production remains no-touch.
+
+## 2026-09-04 successor execution overlay — one Road to 1.0
+
+This overlay updates execution priority without rewriting the historical R1-P0…R1-P13 phase table above. The canonical P13 meaning remains RC → stable 1.0. References in working conversation to an “accepted R1-P13 foundation” must be interpreted as accepted successor installation-trust groundwork, not as a claim that stable 1.0 already passed.
+
+### Primary critical path
+
+`MB-6 → MB-7 → integrated product/security/release acceptance`
+
+MB-6 owns provenance-preserving Focus / Deep BA / BA Step 2 propagation. MB-7 owns corpus, counterfactual, performance, deterministic-index, no-network and release-authoritative acceptance. Neither may relax grain, aggregation, domain-support or metric-preflight authority.
+
+### Bounded parallel foundation — Signed Transport
+
+Product successor `codex/r1-roadmap-integration` / `a8d55ee` and private CP `codex/r1p14-signed-transport` / `c5875eb` establish the minimum reusable primitives: canonical body digest, Ed25519 device proof, server nonce, persisted monotonic sequence floor, anti-replay verification and a thin Internal-only UDS verification edge. Current gates: Rust golden vectors 3/3, attestation 15/15, Distribution 220/220.
+
+This lane is **foundation, not enforcement**. No general route is signed-by-default yet. Required follow-up before enforcement: canonical query binding, response-integrity contract, route-class policy, native `native_http_request` integration and negative replay/fallback probes. Bootstrap pairing/trust issuance remains separately classified.
+
+### Future Team/Workspace transport
+
+Record a future capability named **Private Authenticated Transport**. WireGuard, QUIC overlay, MASQUE and mTLS private gateway are candidate implementations. Do not freeze the product to one technology and do not place this capability on the 1.0 critical path.
+
+### Authority invariants
+
+`phase2aFrozen=false` remains authoritative. The successor overlay does not authorize Production Root ceremony, Production issuer keys, Production signer, stable REL/ATT/ENT/PRO authority or official-service enforcement. NEXT/Internal test authority remains cryptographically separate and non-promotable. Production remains no-touch until its explicit gates are satisfied.

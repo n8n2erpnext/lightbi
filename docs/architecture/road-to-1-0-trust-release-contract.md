@@ -136,6 +136,18 @@ R1-P10 has also been rehearsed on NEXT: a real AccountAuth session, trusted ATT/
 
 Current Beta account/license plumbing, public/private repository separation, updater/release manifests and private CP foundations must not be described as equivalent to the final 1.0 trust chain.
 
+## Signed Transport successor foundation — 2026-09-04
+
+A bounded NEXT/Internal successor foundation now exists without changing Production trust authority. Product commit `a8d55ee` adds a Rust canonicalizer/body digest/request-proof builder compatible with the existing `lightbi.next-attestation-request.v1` rehearsal payload and Ed25519 device key. It is a private Rust module, not a generic frontend signing API, and is not yet wired into every native HTTP request. Golden-vector parity and signature verification pass 3/3 in an isolated harness.
+
+Private control-plane commit `c5875eb` extends the verification-only attestation appliance with a generic private `/v1/verify-request` UDS operation and exposes a thin Internal Distribution client for nonce/verification. Nonce responses include the persisted `lastAcceptedSequence`, allowing a client to choose a strictly greater monotonic sequence after restart instead of resetting or guessing. Distribution receives no signer token/private key and does not implement the verifier or canonical signer. Attestation verification passes 15/15; the full Distribution suite passes 220/220.
+
+The Distribution foundation boundary was deliberately reconciled: the old guard rejected any `attestation` reference, including a client to a separate verifier. The current guard permits only the thin UDS verification client while explicitly continuing to forbid attestation verifier implementation, private key/seed material, signer imports and signing authority inside Distribution.
+
+This is **not signed-by-default transport yet**. Query-bearing GET semantics are not frozen into the request-proof path, response integrity is not yet bound to an authenticated response envelope, and general `native_http_request` wiring remains pending. Therefore announcements/releases/config and mutations must not be advertised as signed-transport protected until those dependencies and route-specific negative probes pass.
+
+None of this changes the Production freeze state: `phase2aFrozen=false`, Production Root ceremony remains owner-gated, and NEXT/Internal TEST authority cannot satisfy stable/public Production verification.
+
 ## Exit sequence
 
 `Phase 2A re-audit → explicit freeze → offline Root ceremony → purpose-separated private signer → REL → ATT → signed ENT → private PRO delivery → platform signing/anti-impersonation closure → RC/1.0`.
