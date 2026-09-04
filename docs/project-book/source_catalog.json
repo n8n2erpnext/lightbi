@@ -1,14 +1,14 @@
 {
   "schemaVersion": "lightbi.project-book.source-catalog.v1",
   "snapshotDate": "2026-09-04",
-  "generatedAt": "2026-09-04T15:37:08Z",
+  "generatedAt": "2026-09-04T16:49:42.018585Z",
   "branch": "docs/ba-da-mode-future-20260903",
-  "head": "904c3736c5ac8485b10de4bbd8f10168f14f25a5",
+  "head": "7b6c0e6075275b06b96e3f62a525b893df2ae81e",
   "worktreeDirty": true,
   "scope": "All project Markdown and JSON outside dependency/build/project-book directories.",
   "counts": {
-    "total": 940,
-    "markdown": 523,
+    "total": 941,
+    "markdown": 524,
     "json": 417,
     "docsJson": 354,
     "references": 0
@@ -9860,6 +9860,14 @@
       "title": "Implementation Plan: Canonical Schema Projection Phase 2"
     },
     {
+      "path": "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DECISION_PRESENTATION_UI_UX_REFACTOR_2026-09-04.md",
+      "extension": ".md",
+      "bytes": 36565,
+      "sha256": "6ad73c005d0ea509afa888a5783cf57252117e166fc60d10f69f02cd8e6e2f7d",
+      "suggestedCategory": "historical-provenance",
+      "title": "Agent Implementation Plan — Decision Presentation + UI/UX Refactor — 2026-09-04"
+    },
+    {
       "path": "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DOMAIN_AUDIT.md",
       "extension": ".md",
       "bytes": 2803,
@@ -10166,8 +10174,8 @@
     {
       "path": "docs/history/agent/plans/AGENT_PLAN_ROAD_TO_1_0_2026-08-31.md",
       "extension": ".md",
-      "bytes": 17547,
-      "sha256": "65955de7d2a8c1c21046ca577b2db014712ac5758d6d88bcce469e9bf0c0d446",
+      "bytes": 18824,
+      "sha256": "bc1811b48dbc7de92db335f846959c23953a8a519c01e85214eb1ed0328df91c",
       "suggestedCategory": "historical-provenance",
       "title": "LightBI Road to 1.0 Execution Plan — 2026-08-31"
     },

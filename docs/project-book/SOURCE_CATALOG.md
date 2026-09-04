@@ -6,9 +6,9 @@
 
 - Date: **2026-09-04**
 - Branch: `docs/ba-da-mode-future-20260903`
-- HEAD: `904c3736c5ac8485b10de4bbd8f10168f14f25a5`
+- HEAD: `7b6c0e6075275b06b96e3f62a525b893df2ae81e`
 - Worktree dirty while generated: **true**
-- Total indexed sources: **940** (523 Markdown / 417 JSON)
+- Total indexed sources: **941** (524 Markdown / 417 JSON)
 - JSON under `docs/`: **354**
 
 For old paths, use [`PATH_MIGRATION_INDEX.md`](./PATH_MIGRATION_INDEX.md) and [`../history/LEGACY_ROOT_INDEX.md`](../history/LEGACY_ROOT_INDEX.md).
@@ -673,7 +673,7 @@ For old paths, use [`PATH_MIGRATION_INDEX.md`](./PATH_MIGRATION_INDEX.md) and [`
 
 ## historical-provenance
 
-- [`docs/history/agent/plans/AGENT_PLAN_ROAD_TO_1_0_2026-08-31.md`](../../docs/history/agent/plans/AGENT_PLAN_ROAD_TO_1_0_2026-08-31.md) — LightBI Road to 1.0 Execution Plan — 2026-08-31; `17547` bytes; SHA-256 `65955de7d2a8c1c21046ca577b2db014712ac5758d6d88bcce469e9bf0c0d446`
+- [`docs/history/agent/plans/AGENT_PLAN_ROAD_TO_1_0_2026-08-31.md`](../../docs/history/agent/plans/AGENT_PLAN_ROAD_TO_1_0_2026-08-31.md) — LightBI Road to 1.0 Execution Plan — 2026-08-31; `18824` bytes; SHA-256 `bc1811b48dbc7de92db335f846959c23953a8a519c01e85214eb1ed0328df91c`
 - [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_MICRO_SEMANTIC_BRAIN_V1_2026-09-04.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_MICRO_SEMANTIC_BRAIN_V1_2026-09-04.md) — LightBI Micro Semantic Brain V1 Implementation Plan — 2026-09-04; `15358` bytes; SHA-256 `c9628a4100002b93296727355ae2da373f7399b7baac548bffb59155a8cae77a`
 - [`docs/history/LEGACY_ROOT_INDEX.md`](../../docs/history/LEGACY_ROOT_INDEX.md) — Legacy Root Documentation Index; `33743` bytes; SHA-256 `e662adb190bc6e9d9b598d4d1c421423376931d186aafb53c15cc4f9d25a3385`
 - [`docs/history/README.md`](../../docs/history/README.md) — Historical Documentation; `1764` bytes; SHA-256 `58060865d3938943ef9a415e39457280481d8d9b78a3f4ceb7e017a60c343052`
@@ -743,6 +743,7 @@ For old paths, use [`PATH_MIGRATION_INDEX.md`](./PATH_MIGRATION_INDEX.md) and [`
 - [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_ALIAS_BATCH2.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_ALIAS_BATCH2.md) — Agent Implementation Plan: Alias Batch 2; `3915` bytes; SHA-256 `92dc6a46a7cbf868aa5ad683fd53be1c077866189f2f832438fbbd22c38aba1f`
 - [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_BACKEND_RUNTIME_HARDENING_NEXT.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_BACKEND_RUNTIME_HARDENING_NEXT.md) — Implementation Plan: Backend Runtime Hardening Next; `4169` bytes; SHA-256 `99095d407f263d5f1e5326578f9e84f326daeee700c6e1c5511d3d9e5d710c63`
 - [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_CANONICAL_SCHEMA_PROJECTION_PHASE2.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_CANONICAL_SCHEMA_PROJECTION_PHASE2.md) — Implementation Plan: Canonical Schema Projection Phase 2; `1628` bytes; SHA-256 `b21958af48ad0f5e14755deaf96beda8d84f9c995edddbe919d8a07062488080`
+- [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DECISION_PRESENTATION_UI_UX_REFACTOR_2026-09-04.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DECISION_PRESENTATION_UI_UX_REFACTOR_2026-09-04.md) — Agent Implementation Plan — Decision Presentation + UI/UX Refactor — 2026-09-04; `36565` bytes; SHA-256 `6ad73c005d0ea509afa888a5783cf57252117e166fc60d10f69f02cd8e6e2f7d`
 - [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DOMAIN_AUDIT.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DOMAIN_AUDIT.md) — Domain Sample Data Pack & Core Behavior Audit (Implementation Plan); `2803` bytes; SHA-256 `2c54bfdb86a722b41038828d6fc35ed857478015cb2fc46188d1acb8c1fd165a`
 - [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DUCKDB_RUNTIME_ERROR_CLASSIFICATION_PHASE1.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DUCKDB_RUNTIME_ERROR_CLASSIFICATION_PHASE1.md) — Implementation Plan: DuckDB Runtime Error Classification Phase 1; `3651` bytes; SHA-256 `b13fad56a913c25b64355ff5dfcdac963bd1791aaa664abdb81504854f8bf544`
 - [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DUCKDB_WASM_BOOTSTRAP.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DUCKDB_WASM_BOOTSTRAP.md) — Implementation Plan: DuckDB WASM Feasibility Bootstrap; `2824` bytes; SHA-256 `5cf1e3aa0e41775fd1774fc8213ee5004d9b33f986589b6f38c4ef6f28f48fd8`

@@ -154,3 +154,13 @@ Record a future capability named **Private Authenticated Transport**. WireGuard,
 ### Authority invariants
 
 `phase2aFrozen=false` remains authoritative. The successor overlay does not authorize Production Root ceremony, Production issuer keys, Production signer, stable REL/ATT/ENT/PRO authority or official-service enforcement. NEXT/Internal test authority remains cryptographically separate and non-promotable. Production remains no-touch until its explicit gates are satisfied.
+
+### Owner-approved Decision Presentation + UI/UX refactor lane — 2026-09-04
+
+The owner review of chart selection, Dashboard composition, Question/Perspective UX, Deep BA, BA Step 2, evidence placement, export pagination and the card-everywhere surface model is now consolidated in [`AGENT_IMPLEMENTATION_PLAN_DECISION_PRESENTATION_UI_UX_REFACTOR_2026-09-04.md`](./AGENT_IMPLEMENTATION_PLAN_DECISION_PRESENTATION_UI_UX_REFACTOR_2026-09-04.md).
+
+This is a product-quality refactor lane, not a new R1 phase number and not an authority change. It preserves governed metric/evidence truth while adding Question/Perspective Intelligence, Analysis Narrative Intelligence, Visualization Intelligence, Dashboard Composition Intelligence, a shared Evidence Inspector, canvas-first/card-by-exception presentation and true report pagination.
+
+Micro Brain/domain inference may influence question relevance, domain visual conventions and explanation provenance, but it cannot authorize metrics, formulas, joins, runtime execution or official domain support.
+
+The documentation step does not alter the current Signed Transport critical path, active NEXT generation or Production state. Exact execution scheduling relative to the remaining Road-to-1.0 gates is owner-gated at DPR-0 kickoff.
