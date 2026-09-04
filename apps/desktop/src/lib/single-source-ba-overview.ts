@@ -158,7 +158,7 @@ function normalize(value: string): string {
   return value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/đ/g, 'd').replace(/[^a-z0-9]/g, '');
 }
 
-type SemanticFieldBinding = { canonicalId?: string; physicalColumn?: string; role?: string };
+type SemanticFieldBinding = { canonicalId?: string; physicalColumn?: string; role?: string; confidence?: number; semanticSource?: 'registry' | 'micro_brain'; resolutionState?: 'confirmed' | 'probable' };
 
 function semanticKey(canonicalId: string): string | null {
   const value = normalize(canonicalId);

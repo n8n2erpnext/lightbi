@@ -16,8 +16,8 @@ export const FocusSubjectComparisonCard: React.FC<{ state: FocusComparisonState 
   const benchmarkBars = primaryMetric ? [
     { label: 'Focus', value: primaryMetric.subjectValue, emphasis: true },
     { label: 'Average', value: primaryMetric.populationAverage, emphasis: false },
-    { label: 'Top 10 avg', value: primaryMetric.topAverage, emphasis: false },
-    { label: 'Bottom 10 avg', value: primaryMetric.bottomAverage, emphasis: false },
+    { label: `Top ${primaryMetric.cohortSize} avg`, value: primaryMetric.topAverage, emphasis: false },
+    { label: `Bottom ${primaryMetric.cohortSize} avg`, value: primaryMetric.bottomAverage, emphasis: false },
   ] : [];
   const maxBarValue = Math.max(1, ...benchmarkBars.map(item => Math.abs(item.value)));
 
@@ -48,7 +48,7 @@ export const FocusSubjectComparisonCard: React.FC<{ state: FocusComparisonState 
 
     {comparison.metrics.length > 0 ? <div className="overflow-x-auto p-5">
       <table className="w-full min-w-[760px] text-left text-xs">
-        <thead><tr className="border-b border-slate-200 text-[10px] uppercase tracking-wider text-slate-400"><th className="pb-2 pr-4">Metric</th><th className="pb-2 pr-4">Focus</th><th className="pb-2 pr-4">Average</th><th className="pb-2 pr-4">Top 10 avg</th><th className="pb-2 pr-4">Bottom 10 avg</th><th className="pb-2 pr-4">Δ vs avg</th><th className="pb-2">Percentile</th></tr></thead>
+        <thead><tr className="border-b border-slate-200 text-[10px] uppercase tracking-wider text-slate-400"><th className="pb-2 pr-4">Metric</th><th className="pb-2 pr-4">Focus</th><th className="pb-2 pr-4">Average</th><th className="pb-2 pr-4">Top {primaryMetric?.cohortSize ?? 0} avg</th><th className="pb-2 pr-4">Bottom {primaryMetric?.cohortSize ?? 0} avg</th><th className="pb-2 pr-4">Δ vs avg</th><th className="pb-2">Percentile</th></tr></thead>
         <tbody>{comparison.metrics.map(metric => <tr key={metric.field} className="border-b border-slate-100 last:border-0"><td className="py-3 pr-4 font-medium text-slate-800">{metric.field}</td><td className="py-3 pr-4 font-semibold text-violet-700">{number(metric.subjectValue)}</td><td className="py-3 pr-4 text-slate-600">{number(metric.populationAverage)}</td><td className="py-3 pr-4 text-slate-600">{number(metric.topAverage)}</td><td className="py-3 pr-4 text-slate-600">{number(metric.bottomAverage)}</td><td className="py-3 pr-4 font-medium text-slate-700">{metric.deltaFromAverage >= 0 ? '+' : ''}{number(metric.deltaFromAverage)}</td><td className="py-3 text-slate-600">{number(metric.percentile)}%</td></tr>)}</tbody>
       </table>
       <p className="mt-3 text-[11px] leading-5 text-slate-400">Top/Bottom values describe the metric distribution only; LightBI does not infer that a larger value is inherently better unless the governed metric contract says so.</p>

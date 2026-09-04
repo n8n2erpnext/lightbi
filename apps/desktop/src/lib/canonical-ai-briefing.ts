@@ -1,4 +1,5 @@
 import type { AISafeBriefing, AISemanticField } from "./ai-briefing-contract";
+import { SEMANTIC_SIGNAL_BY_ID } from "./semantic-registry";
 import type { CanonicalConsumerBuildResultV1 } from "./understanding-core/canonical-consumer-boundary";
 
 function briefingGrain(value: string): AISafeBriefing["grain"] {
@@ -28,14 +29,21 @@ export function generateCanonicalAIBriefing(artifact: CanonicalConsumerBuildResu
   const semanticFields: AISemanticField[] = artifact.canonicalSource.semantic.columns.flatMap((column) => {
     if (!column.selectedCandidateId || !["confirmed", "probable"].includes(column.finalState)) return [];
     const trace = column.candidateTraces.find((candidate) => candidate.candidateId === column.selectedCandidateId);
+    const definition = SEMANTIC_SIGNAL_BY_ID.get(column.selectedCandidateId);
+    const semanticSource = trace?.lexicalClass === "semantic_retrieval" || column.ruleIds.includes("R-MB-PROBABLE")
+      ? "micro_brain" as const
+      : "registry" as const;
     return [{
       canonicalId: column.selectedCandidateId,
-      label: physicalByIndex.get(column.sourceColumnIndex) ?? column.physicalColumn,
-      domain: "canonical",
-      role: column.selectedCandidateId.includes("date") || column.selectedCandidateId.includes("period") ? "time" : "unknown",
+      label: definition?.label ?? physicalByIndex.get(column.sourceColumnIndex) ?? column.physicalColumn,
+      domain: definition?.domain ?? "unknown",
+      role: definition?.role ?? "unknown",
       confidence: column.finalState === "confirmed" ? 100 : 75,
+      resolutionState: column.finalState,
+      semanticSource,
+      registryCoverageStatus: definition?.coverageStatus,
       physicalColumn: column.physicalColumn,
-      reason: trace?.ruleIds.join(", "),
+      reason: [...new Set([...(trace?.ruleIds ?? []), ...column.ruleIds])].join(", "),
     }];
   });
   const trustRatios = artifact.canonicalSource.readiness.trustDimensions.map((item) => item.measurableRatio?.ratio).filter((value): value is number => value !== null && value !== undefined);

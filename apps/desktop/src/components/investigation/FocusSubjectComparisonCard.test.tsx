@@ -15,7 +15,7 @@ const readyState: FocusComparisonState = {
     populationRowCount: 2200, matchedSubjectRowCount: 1, rankValue: '1769',
     metrics: [{
       field: 'TRUNG BÌNH ĐIỂM 4 TIÊU CHÍ', subjectValue: 8.7667, populationAverage: 8.2369,
-      topAverage: 9.4, bottomAverage: 6.8, deltaFromAverage: 0.5298, percentile: 73.2, populationCount: 2200,
+      topAverage: 9.4, bottomAverage: 6.8, deltaFromAverage: 0.5298, percentile: 73.2, populationCount: 2200, cohortSize: 10,
     }],
   },
 };
@@ -32,4 +32,18 @@ describe('FocusSubjectComparisonCard primary readout', () => {
     expect(screen.getAllByText('Top 10 avg').length).toBeGreaterThan(0);
     expect(screen.getAllByText('Bottom 10 avg').length).toBeGreaterThan(0);
   });
+  it('renders the actual cohort size instead of a hard-coded Top/Bottom 10 label', () => {
+    const smallState: FocusComparisonState = {
+      ...readyState,
+      comparison: {
+        ...readyState.comparison,
+        metrics: readyState.comparison.metrics.map(metric => ({ ...metric, cohortSize: 1 })),
+      },
+    };
+    render(<FocusSubjectComparisonCard state={smallState} />);
+    expect(screen.getAllByText('Top 1 avg').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Bottom 1 avg').length).toBeGreaterThan(0);
+    expect(screen.queryByText('Top 10 avg')).toBeNull();
+  });
+
 });

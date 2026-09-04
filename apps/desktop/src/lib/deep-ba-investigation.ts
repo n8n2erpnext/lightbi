@@ -10,7 +10,7 @@ import type {
 } from './single-source-ba-overview';
 
 type Row = Record<string, unknown>;
-type SemanticField = { canonicalId?: string; physicalColumn?: string; confidence?: number };
+type SemanticField = { canonicalId?: string; physicalColumn?: string; confidence?: number; semanticSource?: 'registry' | 'micro_brain'; resolutionState?: 'confirmed' | 'probable' };
 
 const DOMAIN_MAP: Record<SingleSourceBAOverview['mode'], DomainBAId> = {
   commercial: 'revenue', finance: 'finance', inventory: 'inventory', operations: 'operations',
@@ -28,6 +28,7 @@ const DECOMPOSITIONS: Record<DomainBAId, Array<{ id: string; label: string; sign
   ],
   operations: [
     { id: 'service_delivery', label: 'Service and exception bridge', signals: [['deliveryStatus', 'Delivery status'], ['waitingTime', 'Lead time / delay'], ['route', 'Route'], ['carrier', 'Carrier']] },
+    { id: 'schedule_adherence', label: 'Schedule adherence evidence', signals: [['eta', 'ETA / promised time'], ['actualTime', 'Actual completion time'], ['onTimeStatus', 'On-time status'], ['route', 'Route']] },
     { id: 'cost_per_shipment', label: 'Logistics unit economics', signals: [['deliveryFee', 'Transport cost'], ['shipment', 'Shipment identity'], ['warehouse', 'Hub / warehouse']] },
   ],
   finance: [
@@ -61,8 +62,10 @@ function evidenceRows(rows: Row[], fields: string[], predicate?: (row: Row) => b
 }
 
 function confidence(fields: string[], semanticFields: SemanticField[], representative: boolean): DeepBAConfidence {
-  const scores = fields.map(field => semanticFields.find(candidate => candidate.physicalColumn === field)?.confidence).filter((value): value is number => typeof value === 'number');
-  const score = scores.length ? Math.min(...scores) : 0.7;
+  const matched = fields.map(field => semanticFields.find(candidate => candidate.physicalColumn === field)).filter((value): value is SemanticField => Boolean(value));
+  const scores = matched.map(field => field.confidence).filter((value): value is number => typeof value === 'number').map(value => value > 1 ? value / 100 : value);
+  let score = scores.length ? Math.min(...scores) : 0.7;
+  if (matched.some(field => field.semanticSource === 'micro_brain' || field.resolutionState === 'probable')) score = Math.min(score, 0.79);
   if (!representative && score >= 0.8) return 'high';
   if (score >= 0.55) return 'medium';
   return 'low';
@@ -75,10 +78,23 @@ function finding(
   return { id, title, statement, basis, confidence: confidence(fields, semanticFields, representative), evidenceFields: fields, evidenceRows: evidenceRows(rows, fields, predicate) };
 }
 
+const DECOMPOSITION_SIGNAL_ALIASES: Record<string, string[]> = {
+  stock: ['stock', 'stock_qty', 'inventory', 'inventory_qty'],
+  margin: ['margin', 'margin_pct', 'gross_margin_pct'],
+  cost: ['cost', 'total_cost', 'cost_of_goods_sold', 'operational_cost'],
+  profit: ['profit', 'gross_profit'],
+  date: ['date', 'report_date', 'order_date', 'transaction_date', 'time_period'],
+};
+
 function resolveSignal(signal: string, overview: SingleSourceBAOverview, semanticFields: SemanticField[]): string | undefined {
   if (overview.bindings[signal]) return overview.bindings[signal];
   const normalized = signal.toLowerCase().replace(/[^a-z0-9]/g, '');
-  return semanticFields.find(field => field.physicalColumn && (field.canonicalId ?? '').toLowerCase().replace(/[^a-z0-9]/g, '').includes(normalized))?.physicalColumn;
+  const accepted = new Set([signal, ...(DECOMPOSITION_SIGNAL_ALIASES[signal] ?? [])].map(value => value.toLowerCase().replace(/[^a-z0-9]/g, '')));
+  return semanticFields.find(field => {
+    if (!field.physicalColumn) return false;
+    const canonical = (field.canonicalId ?? '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    return accepted.has(canonical) || canonical.endsWith(normalized);
+  })?.physicalColumn;
 }
 
 function decomposition(domain: DomainBAId, overview: SingleSourceBAOverview, semanticFields: SemanticField[]): DeepBADecomposition[] {
