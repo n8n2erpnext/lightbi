@@ -4,6 +4,7 @@ mod desktop_menu;
 mod installation_lifecycle;
 mod installation_trust;
 mod navigation_guard;
+mod signed_transport;
 mod windows_publisher;
 
 use axum::{body::Body, Router};
