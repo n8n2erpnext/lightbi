@@ -5,6 +5,7 @@ import {
   SEMANTIC_CANDIDATE_SCHEMA_VERSION,
   type CandidateArtifactV1,
   type ColumnObservationState,
+  type ConflictEvidenceV1,
   type EvidenceV1,
   type SemanticCandidateV1,
 } from "../semantic-candidate-contracts";
@@ -110,6 +111,7 @@ function bridgeProfileEvidence(
 function createCandidate(candidateId: string, evidence: EvidenceV1, column: ColumnPhysicalProfileV1): SemanticCandidateV1 | null {
   const definition = SEMANTIC_SIGNAL_BY_ID.get(candidateId);
   if (!definition) return null;
+  const profileEvidence = bridgeProfileEvidence(definition, column, column.sourceId);
   return {
     schemaVersion: SEMANTIC_CANDIDATE_SCHEMA_VERSION,
     candidateId: definition.canonicalId,
@@ -120,8 +122,8 @@ function createCandidate(candidateId: string, evidence: EvidenceV1, column: Colu
     signalType: definition.type,
     role: definition.role,
     registryCoverage: definition.coverageStatus,
-    evidence: [evidence, ...bridgeProfileEvidence(definition, column, column.sourceId)].filter((item) => item.direction !== "conflict"),
-    conflictEvidence: bridgeProfileEvidence(definition, column, column.sourceId).filter((item) => item.direction === "conflict"),
+    evidence: [evidence, ...profileEvidence].filter((item) => item.direction !== "conflict"),
+    conflictEvidence: profileEvidence.filter((item): item is ConflictEvidenceV1 => item.direction === "conflict"),
     limitations: [
       "Candidate was recovered by Micro Brain retrieval and remains unresolved.",
       "Canonical identity comes from the semantic registry; Micro Brain does not create canonical IDs.",

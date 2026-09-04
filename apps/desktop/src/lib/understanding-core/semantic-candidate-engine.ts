@@ -33,6 +33,7 @@ const EVIDENCE_STRENGTH: Record<SemanticEvidenceType, number> = {
   alias_exact: 0.82,
   alias_token_containment: 0.55,
   alias_collision: 0.5,
+  micro_brain_retrieval: 0.2,
   value_alias: 0.66,
   value_pattern: 0.62,
   physical_type_compatible: 0.45,

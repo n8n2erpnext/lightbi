@@ -27,7 +27,7 @@ export function generateCanonicalAIBriefing(artifact: CanonicalConsumerBuildResu
   }
   const physicalByIndex = new Map(artifact.canonicalSource.physical.sourceProfile.columns.map((column) => [column.sourceColumnIndex, column.physicalColumnName]));
   const semanticFields: AISemanticField[] = artifact.canonicalSource.semantic.columns.flatMap((column) => {
-    if (!column.selectedCandidateId || !["confirmed", "probable"].includes(column.finalState)) return [];
+    if (!column.selectedCandidateId || (column.finalState !== "confirmed" && column.finalState !== "probable")) return [];
     const trace = column.candidateTraces.find((candidate) => candidate.candidateId === column.selectedCandidateId);
     const definition = SEMANTIC_SIGNAL_BY_ID.get(column.selectedCandidateId);
     const semanticSource = trace?.lexicalClass === "semantic_retrieval" || column.ruleIds.includes("R-MB-PROBABLE")
