@@ -6,7 +6,7 @@
 
 - Date: **2026-09-04**
 - Branch: `docs/ba-da-mode-future-20260903`
-- HEAD: `adf41ce8cbcc4ff0ff5aa5fafb520052c9f351b2`
+- HEAD: `f06d60e1de1340c902edcd6294f1e23a2e640aa9`
 - Worktree dirty while generated: **true**
 - Total indexed sources: **940** (523 Markdown / 417 JSON)
 - JSON under `docs/`: **354**
@@ -673,7 +673,7 @@ For old paths, use [`PATH_MIGRATION_INDEX.md`](./PATH_MIGRATION_INDEX.md) and [`
 
 ## historical-provenance
 
-- [`docs/history/agent/plans/AGENT_PLAN_ROAD_TO_1_0_2026-08-31.md`](../../docs/history/agent/plans/AGENT_PLAN_ROAD_TO_1_0_2026-08-31.md) — LightBI Road to 1.0 Execution Plan — 2026-08-31; `16078` bytes; SHA-256 `91f96974d211477b539aec71642c35a562a80da37b7dd88255032e3fa57c544e`
+- [`docs/history/agent/plans/AGENT_PLAN_ROAD_TO_1_0_2026-08-31.md`](../../docs/history/agent/plans/AGENT_PLAN_ROAD_TO_1_0_2026-08-31.md) — LightBI Road to 1.0 Execution Plan — 2026-08-31; `16614` bytes; SHA-256 `18dfd06463766c78202850ae7c474fa8038fd8c949e15e154d750d350acfc09f`
 - [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_MICRO_SEMANTIC_BRAIN_V1_2026-09-04.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_MICRO_SEMANTIC_BRAIN_V1_2026-09-04.md) — LightBI Micro Semantic Brain V1 Implementation Plan — 2026-09-04; `15358` bytes; SHA-256 `c9628a4100002b93296727355ae2da373f7399b7baac548bffb59155a8cae77a`
 - [`docs/history/LEGACY_ROOT_INDEX.md`](../../docs/history/LEGACY_ROOT_INDEX.md) — Legacy Root Documentation Index; `33743` bytes; SHA-256 `e662adb190bc6e9d9b598d4d1c421423376931d186aafb53c15cc4f9d25a3385`
 - [`docs/history/README.md`](../../docs/history/README.md) — Historical Documentation; `1764` bytes; SHA-256 `58060865d3938943ef9a415e39457280481d8d9b78a3f4ceb7e017a60c343052`

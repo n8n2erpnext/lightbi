@@ -123,11 +123,13 @@ This overlay updates execution priority without rewriting the historical R1-P0�
 
 ### Primary critical path
 
-`integrated product UX parity -> Intelligence Pack/update trust -> Signed Transport integration -> packaged Windows/UAT + release acceptance`
+`Intelligence Pack/update trust -> Signed Transport integration -> packaged Windows/UAT + release acceptance`
 
-Micro Brain V1 is source-accepted through MB-7 at product successor `codex/r1-roadmap-integration` / `a1f6ee8`. MB no longer owns the critical path. The successor now returns to the main Road-to-1.0 integration lane without renumbering R1-P0…R1-P13 or claiming stable 1.0.
+Micro Brain V1 acceptance remains anchored at `a1f6ee8`; the product successor has since advanced to `codex/r1-roadmap-integration` / `8abc669`. MB no longer owns the critical path. The successor continues on the Road-to-1.0 integration lane without renumbering R1-P0…R1-P13 or claiming stable 1.0.
 
-The first executable product item is **multi-file UX parity + Focus Subject**. The governed six-file/multi-source engine remains accepted; do not rewrite relationship/grain/period/currency/cardinality policy. Converge single- and multi-file workflows at a shared Analysis Context layer, add Focus Subject over the governed multi-source model, and keep unresolved relationships source-scoped/evidence-bound. Rename the existing multi-file narrative `BA FOCUS` treatment so it cannot be confused with Focus Subject.
+**Multi-file UX parity + Focus Subject is complete** at product successor `codex/r1-roadmap-integration` / `8abc669`. Focus is an Analysis Context sidecar over governed multi-source evidence: summary metrics and relationship/grain/period/currency/cardinality policy remain unchanged; only exact canonical-concept/value matches scope source evidence and Deep BA. Unmatched sources fail closed rather than inheriting another source identity. The narrative label `BA FOCUS` is renamed `Key attention`. Six-file ERP browser acceptance passes before/after governed-summary parity and exact Focus drill-through.
+
+The active immutable NEXT generation is `g-2026-09-04-next-031`, parent `g-2026-09-03-next-030-focus-exp-03`, app/source `8abc669`, reused server-binary provenance Core `ed4b9233`, private CP runtime `bb50b0d`, schema `067_catalog_quarterly_pricing`, manifest SHA-256 `08fe08ea9dcc72d575721f1db891cd46ce46d030556c53d14c472dc4149c9797`. Core/Gateway/CP/worker all report NEXT031 and the worker is healthy. Owner role rotation has not been performed.
 
 The next update/security integration item is **Intelligence Pack Updater V1**: signed, versioned, compatibility-gated, data-only MB/dictionary/domain knowledge packs with staging/active/previous atomic rollback. Executable algorithm/runtime changes remain Full App Update. Pack-signing authority must remain distinct from application release signing and runtime request signing; exact trust anchoring is frozen before implementation.
 
@@ -139,7 +141,7 @@ Cross-Domain Semantic Expansion is recorded as a durable post-MB-V1 direction, n
 
 ### Bounded parallel foundation — Signed Transport
 
-Product successor is now `codex/r1-roadmap-integration` / `a1f6ee8`; the Signed Transport primitive remains the earlier ancestor `a8d55ee`. Private CP remains `codex/r1p14-signed-transport` / `c5875eb`. Together the bounded security foundation provides canonical body digest, Ed25519 device proof, server nonce, persisted monotonic sequence floor, anti-replay verification and a thin Internal-only UDS verification edge. Current gates: Rust golden vectors 3/3, attestation 15/15, Distribution 220/220.
+Product successor is now `codex/r1-roadmap-integration` / `8abc669`; the Signed Transport primitive remains the earlier ancestor `a8d55ee`. Private CP remains `codex/r1p14-signed-transport` / `c5875eb`. Together the bounded security foundation provides canonical body digest, Ed25519 device proof, server nonce, persisted monotonic sequence floor, anti-replay verification and a thin Internal-only UDS verification edge. Current gates: Rust golden vectors 3/3, attestation 15/15, Distribution 220/220.
 
 This lane is **foundation, not enforcement**. No general route is signed-by-default yet. Required follow-up before enforcement: canonical query binding, response-integrity contract, route-class policy, native `native_http_request` integration and negative replay/fallback probes. Bootstrap pairing/trust issuance remains separately classified.
 

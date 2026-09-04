@@ -1,15 +1,16 @@
 {
   "schema": "lightbi.current-checkpoint.v1",
-  "updatedAt": "2026-09-04T10:38:16Z",
-  "status": "road_to_1_0_mb7_complete_main_map_resumed",
-  "activeRuntime": "source_branches_only_no_production_deployment",
+  "updatedAt": "2026-09-04T12:45:00Z",
+  "status": "road_to_1_0_multifile_focus_complete_next031_active",
+  "activeRuntime": "NEXT g-2026-09-04-next-031 on 5272/5273/5274; worker healthy; owner role rotation not performed",
   "sourceCandidate": {
     "repo": "/home/ubuntu/n8n2erpnext/LightBI-exp-focus-subject",
     "branch": "codex/r1-roadmap-integration",
-    "head": "a1f6ee8",
+    "head": "8abc669",
     "mb5Head": "8a4a5e4",
     "mb6Head": "94fa40c",
-    "mb7Head": "a1f6ee8"
+    "mb7Head": "a1f6ee8",
+    "multifileFocusHead": "8abc669"
   },
   "controlPlaneCandidate": {
     "repo": "/home/ubuntu/n8n2erpnext/lightbi-control-plane-r1p14-signed-transport",
@@ -18,16 +19,17 @@
   },
   "completed": [
     "micro_brain_mb7_source_acceptance_and_cutover_review",
-    "mb7_active_core_benchmark_30_samples_19_sources_379_columns",
-    "mb7_only_three_eta_recoveries_zero_confirmed_regressions",
-    "mb7_release_1_0_suite_pass",
-    "mb7_playwright_mb5_mb6_2_of_2",
+    "multifile_focus_subject_source_acceptance_8abc669",
+    "multifile_focus_governed_summary_parity_and_exact_source_binding",
+    "multifile_focus_release_1_0_suite_11_files_41_tests_pass",
+    "multifile_focus_playwright_six_file_erp_pass",
+    "next031_runtime_reconciled_core_gateway_cp_worker",
+    "next031_direct_5273_multifile_focus_playwright_1_of_1",
     "signed_transport_foundation_verified_not_enforced",
-    "ssd_guard_stable_84_percent_20_gib_free"
+    "ssd_guard_85_percent_20_gib_free"
   ],
-  "nextAction": "Multi-file UX parity: converge on shared Analysis Context and add Focus Subject over the governed multi-source model without weakening relationship/grain/period/currency/cardinality safety.",
+  "nextAction": "Freeze and implement Intelligence Pack Updater V1 as signed data-only MB/dictionary/domain knowledge packs with compatibility gates, staging/active/previous atomic rollback, and separated signing authority.",
   "afterNext": [
-    "Freeze and implement Intelligence Pack Updater V1 as signed data-only MB/dictionary/domain knowledge packs with compatibility gates and atomic rollback.",
     "Complete Signed Transport query binding, response integrity, route-class policy, native_http_request integration and replay/fallback negative probes.",
     "Run packaged Windows/UAT and integrated Road-to-1.0 release acceptance."
   ],
@@ -39,10 +41,9 @@
   "productionTouched": false,
   "phase2aFrozen": false,
   "readFirst": [
-    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#106-2026-09-04-micro-brain-v1-acceptance-closure-and-return-to-main-road-to-10-map",
+    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#108-2026-09-04-multi-file-focus-subject-closure-and-next031-runtime-acceptance",
     "docs/history/agent/plans/AGENT_PLAN_ROAD_TO_1_0_2026-08-31.md#2026-09-04-successor-execution-overlay--one-road-to-10",
     "docs/architecture/road-to-1-0-trust-release-contract.md#intelligence-pack-updater-direction--2026-09-04",
-    "docs/architecture/phase-8f2-multifile-operational-parity-closure.md#post-closure-ux-parity-follow-up--2026-09-04",
     "docs/architecture/micro-brain-cross-domain-semantic-expansion.md#purpose"
   ],
   "futureSemanticDirection": {
@@ -51,5 +52,16 @@
     "criticalPath1_0": false,
     "rawUserDataSelfTrainingAllowed": false,
     "status": "recorded_for_future_semantic_expansion_after_current_roadmap_priority"
+  },
+  "activeNextGeneration": {
+    "generationId": "g-2026-09-04-next-031",
+    "parentGenerationId": "g-2026-09-03-next-030-focus-exp-03",
+    "sourceCommit": "8abc66971d5cae6cb232a4d6b48bd107fd77a52a",
+    "coreBinaryCommit": "ed4b9233f690b9ddeb872ee858e0e9a8c46644e0",
+    "controlPlaneCommit": "bb50b0d53542da5cd908e2237cbca368f7f87073",
+    "schema": "067_catalog_quarterly_pricing",
+    "manifestSha256": "08fe08ea9dcc72d575721f1db891cd46ce46d030556c53d14c472dc4149c9797",
+    "workerHealthy": true,
+    "roleRotationPerformed": false
   }
 }

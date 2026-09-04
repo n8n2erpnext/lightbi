@@ -19,13 +19,13 @@
     },
     {
       "path": "docs/project-book/LIGHTBI_PROJECT_BOOK.md",
-      "bytes": 232734,
-      "sha256": "d8caa41f90b80ed386619b99cad74b91e370093cab0583d0e33d7fdc268d01a1"
+      "bytes": 236088,
+      "sha256": "f2802c55dcaaf322c4cb0da2f48ec0b8fc03a40efd06453a141eb6024a0eeff9"
     },
     {
       "path": "docs/project-book/LIGHTBI_WORKLOG.md",
-      "bytes": 137490,
-      "sha256": "3bebe305e488c36e5882f9121dd87099274f6975ed03f5a3c94322cf4fec4ee5"
+      "bytes": 139295,
+      "sha256": "de1a81d521ce8bac33452ccf5f7f67c07d57a900905abf0e1b9875d58c30a0e7"
     },
     {
       "path": "docs/project-book/README.md",
@@ -35,12 +35,12 @@
     {
       "path": "docs/project-book/SOURCE_CATALOG.md",
       "bytes": 250199,
-      "sha256": "c434b5b3e4c9e603ab175f0f1594617996f2de3ea75b71efdb3aa3ef5c427c9e"
+      "sha256": "f1064391d636581cf2e4722437d3e47cf2362bc786aef3a2eb0516004237b996"
     },
     {
       "path": "docs/project-book/source_catalog.json",
       "bytes": 439941,
-      "sha256": "b1b5974b7e34bb5035cb0e69f162da85608b46290caa18e86ad367eeef722b82"
+      "sha256": "a28c2fb1db0be5cd4747c065bf24ac7a3bc36ccab3abf5cedfbce0e590594e69"
     }
   ]
 }
