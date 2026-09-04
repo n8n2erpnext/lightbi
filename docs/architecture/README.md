@@ -12,7 +12,7 @@
 
 ## Shelf summary
 
-- Model/contract/architecture Markdown: **47**
+- Model/contract/architecture Markdown: **48**
 - Phase records: **63**
 - Machine evidence JSON: **354**
 
@@ -41,6 +41,7 @@
 - [`intent-model.md`](./intent-model.md) — Analytical Intent Model
 - [`materialization-model.md`](./materialization-model.md) — Materialization Strategy Model
 - [`micro-semantic-brain-vector-inference.md`](./micro-semantic-brain-vector-inference.md) — Micro Semantic Brain and Vector Inference Architecture
+- [`micro-brain-cross-domain-semantic-expansion.md`](./micro-brain-cross-domain-semantic-expansion.md) — Micro Brain Cross-Domain Semantic Expansion Direction
 - [`narrative-model.md`](./narrative-model.md) — Analytical Narrative Model
 - [`persistence-model.md`](./persistence-model.md) — Persistence Model Architecture
 - [`perspective-model.md`](./perspective-model.md) — Perspective Model Architecture

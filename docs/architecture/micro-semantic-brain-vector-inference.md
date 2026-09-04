@@ -1,6 +1,6 @@
 # Micro Semantic Brain and Vector Inference Architecture
 
-Status: owner-approved design; not implemented
+Status: canonical architecture; MB V1 source-accepted through MB-7 on successor source line
 Date: 2026-09-04
 Scope: local semantic knowledge corpus, vector retrieval, evidence bridge, unsupported-domain inference, and UI provenance
 Supersedes: none
@@ -417,5 +417,7 @@ MB-7 machine evidence is `apps/desktop/src/lib/understanding-core/micro-brain/ba
 The complete release-authoritative `test:release-1.0` suite passes, including production build and governed product regression (11 files / 40 tests). MB-specific determinism/retrieval/counterfactual gates pass 14 files / 41 tests; current oracle/runtime acceptance passes 3 files / 6 tests; Playwright MB-5 + MB-6 passes 2/2. The Micro Brain runtime path has no network dependency and remains below the 64 MB index budget.
 
 This closes MB V1 **source acceptance and cutover review**, not Production deployment. Production services, production domain packs, metric/formula/decision authority and stable release runtime remain unchanged. The Road-to-1.0 main map now owns remaining product UX parity, updater/security integration and packaged release acceptance.
+
+Future semantic growth is governed by [`micro-brain-cross-domain-semantic-expansion.md`](./micro-brain-cross-domain-semantic-expansion.md). That direction records the owner-approved rationale for long-tail/pathological schemas, cross-domain ontology, safe real-data learning, modular corpus growth, and future hospitality/healthcare/pharma/agriculture/manufacturing/banking/science breadth. It does not reopen MB-7 or change current execution priority.
 
 Implementation sequencing is governed by [`../history/agent/plans/AGENT_IMPLEMENTATION_PLAN_MICRO_SEMANTIC_BRAIN_V1_2026-09-04.md`](../history/agent/plans/AGENT_IMPLEMENTATION_PLAN_MICRO_SEMANTIC_BRAIN_V1_2026-09-04.md).

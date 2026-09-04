@@ -918,6 +918,21 @@
           "engineRewrite": false,
           "governedRelationshipSafetyPreserved": true
         }
+      },
+      "futureSemanticDirection": {
+        "name": "LightBI Cross-Domain Semantic Expansion",
+        "state": "canonical_future_direction_not_current_1_0_blocker",
+        "architecture": "docs/architecture/micro-brain-cross-domain-semantic-expansion.md",
+        "priorities": [
+          "hospitality",
+          "healthcare_pharma",
+          "agriculture_livestock_aquaculture",
+          "manufacturing",
+          "banking_specialization",
+          "science_primitives"
+        ],
+        "learningPolicy": "sanitized_evidence_offline_curation_batch_rebuild_no_direct_user_data_self_training",
+        "authorityInvariant": "registry_then_micro_brain_then_evidence_resolver_then_domain_support_then_metric_runtime"
       }
     }
   },

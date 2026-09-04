@@ -133,6 +133,10 @@ The next update/security integration item is **Intelligence Pack Updater V1**: s
 
 After the pack contract is frozen, continue the bounded Signed Transport lane through canonical query binding, response-integrity semantics, route classes, native `native_http_request` integration and replay/fallback negative probes. Only then run packaged Windows/UAT and integrated release acceptance on the successor. Historical R1-P1/R1-P4 owner-acceptance items remain open where recorded; Production R1-P5/P6 authority remains separately owner-gated.
 
+### Future semantic expansion lane
+
+Cross-Domain Semantic Expansion is recorded as a durable post-MB-V1 direction, not as a new blocker on the 1.0 critical path. It strengthens universal ontology and semantic breadth across hospitality, healthcare/pharma, agriculture/livestock/aquaculture, manufacturing, banking specialization and scientific primitives, then retunes MB in validated corpus batches. See [`../../architecture/micro-brain-cross-domain-semantic-expansion.md`](../../../architecture/micro-brain-cross-domain-semantic-expansion.md). The lane preserves registry/domain-support/runtime authority separation and forbids direct self-training from raw user datasets.
+
 ### Bounded parallel foundation — Signed Transport
 
 Product successor is now `codex/r1-roadmap-integration` / `a1f6ee8`; the Signed Transport primitive remains the earlier ancestor `a8d55ee`. Private CP remains `codex/r1p14-signed-transport` / `c5875eb`. Together the bounded security foundation provides canonical body digest, Ed25519 device proof, server nonce, persisted monotonic sequence floor, anti-replay verification and a thin Internal-only UDS verification edge. Current gates: Rust golden vectors 3/3, attestation 15/15, Distribution 220/220.

@@ -1,14 +1,14 @@
 {
   "schemaVersion": "lightbi.project-book.source-catalog.v1",
   "snapshotDate": "2026-09-04",
-  "generatedAt": "2026-09-04T10:18:17Z",
+  "generatedAt": "2026-09-04T10:41:18Z",
   "branch": "docs/ba-da-mode-future-20260903",
-  "head": "717f2532fb2697b6772f66698526b7ea6a3b563f",
+  "head": "adf41ce8cbcc4ff0ff5aa5fafb520052c9f351b2",
   "worktreeDirty": true,
   "scope": "All project Markdown and JSON outside dependency/build/project-book directories.",
   "counts": {
-    "total": 939,
-    "markdown": 522,
+    "total": 940,
+    "markdown": 523,
     "json": 417,
     "docsJson": 354,
     "references": 0
@@ -1304,8 +1304,8 @@
     {
       "path": "docs/architecture/README.md",
       "extension": ".md",
-      "bytes": 15551,
-      "sha256": "a3baf8b874d4d9971bc17f2e9756bee3bc323787d383af892a14d7017524cc04",
+      "bytes": 15712,
+      "sha256": "066c0a3fd25b82063abe481b829deb3acef1e53e151ef5bde7a2d8f9e1878997",
       "suggestedCategory": "architecture-source-or-evidence",
       "title": "Architecture Library"
     },
@@ -1571,6 +1571,14 @@
       "title": "Frontend Boundary Model"
     },
     {
+      "path": "docs/architecture/future-team-realtime-infrastructure-direction.md",
+      "extension": ".md",
+      "bytes": 15492,
+      "sha256": "45a56cf3971135188fa24a119ac5d8be640b1000d5f9ea999476da921b3f53d7",
+      "suggestedCategory": "architecture-source-or-evidence",
+      "title": "Future Team / Realtime BA Infrastructure Direction"
+    },
+    {
       "path": "docs/architecture/insight-model.md",
       "extension": ".md",
       "bytes": 1061,
@@ -1595,10 +1603,18 @@
       "title": "Materialization Strategy Model"
     },
     {
+      "path": "docs/architecture/micro-brain-cross-domain-semantic-expansion.md",
+      "extension": ".md",
+      "bytes": 18557,
+      "sha256": "a539f30f68ec25617a17114210e0ac9a0667145fbe7ef8665bb3cbb9b13d41cb",
+      "suggestedCategory": "architecture-source-or-evidence",
+      "title": "Micro Brain Cross-Domain Semantic Expansion Direction"
+    },
+    {
       "path": "docs/architecture/micro-semantic-brain-vector-inference.md",
       "extension": ".md",
-      "bytes": 22608,
-      "sha256": "58667b42e606e54341ca5e4bcdb7257dbbfa1a9790d62b2a6f5ab250ce9dcfc2",
+      "bytes": 23107,
+      "sha256": "ca9d10b51a3ee81f546683b5684c143d20d2311f2d4454e209d642657dc125d8",
       "suggestedCategory": "architecture-source-or-evidence",
       "title": "Micro Semantic Brain and Vector Inference Architecture"
     },
@@ -9228,14 +9244,6 @@
       "title": "Analytical Workspace Model"
     },
     {
-      "path": "docs/architecture/future-team-realtime-infrastructure-direction.md",
-      "extension": ".md",
-      "bytes": 15492,
-      "sha256": "45a56cf3971135188fa24a119ac5d8be640b1000d5f9ea999476da921b3f53d7",
-      "suggestedCategory": "architecture-source-or-evidence",
-      "title": "Future Team / Realtime BA Infrastructure Direction"
-    },
-    {
       "path": "docs/design/ui-baseline.md",
       "extension": ".md",
       "bytes": 3910,
@@ -9988,6 +9996,14 @@
       "title": "Implementation Plan: Measure Typing Guarded SUM"
     },
     {
+      "path": "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_MICRO_SEMANTIC_BRAIN_V1_2026-09-04.md",
+      "extension": ".md",
+      "bytes": 15358,
+      "sha256": "c9628a4100002b93296727355ae2da373f7399b7baac548bffb59155a8cae77a",
+      "suggestedCategory": "historical-provenance",
+      "title": "LightBI Micro Semantic Brain V1 Implementation Plan — 2026-09-04"
+    },
+    {
       "path": "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_MULTI_FILE_UNDERSTANDING_PROOF_2026-06-15.md",
       "extension": ".md",
       "bytes": 4891,
@@ -10150,18 +10166,10 @@
     {
       "path": "docs/history/agent/plans/AGENT_PLAN_ROAD_TO_1_0_2026-08-31.md",
       "extension": ".md",
-      "bytes": 15402,
-      "sha256": "0acd8cc28d9719892d88ee7e8393ab65ccb668f456e428f519a49f236354c826",
+      "bytes": 16078,
+      "sha256": "91f96974d211477b539aec71642c35a562a80da37b7dd88255032e3fa57c544e",
       "suggestedCategory": "historical-provenance",
       "title": "LightBI Road to 1.0 Execution Plan — 2026-08-31"
-    },
-    {
-      "path": "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_MICRO_SEMANTIC_BRAIN_V1_2026-09-04.md",
-      "extension": ".md",
-      "bytes": 15358,
-      "sha256": "c9628a4100002b93296727355ae2da373f7399b7baac548bffb59155a8cae77a",
-      "suggestedCategory": "historical-provenance",
-      "title": "LightBI Micro Semantic Brain V1 Implementation Plan — 2026-09-04"
     },
     {
       "path": "docs/history/agent/plans/AGENT_TASK.md",
@@ -11411,20 +11419,20 @@
       "title": "LightBI Provider Plugin SDK Manual"
     },
     {
-      "path": "docs/product/product-direction-and-pricing-v1.md",
-      "extension": ".md",
-      "bytes": 4687,
-      "sha256": "bcca7ed04fad0873be70afa0e681e0f87dad89e4d4de34d2d71cc507293063ff",
-      "suggestedCategory": "product-draft-or-contract",
-      "title": "LightBI Product Direction and Pricing Strategy"
-    },
-    {
       "path": "docs/product/ba-da-mode-future-analyst-workbench.md",
       "extension": ".md",
       "bytes": 21382,
       "sha256": "eaeb06dad89a144109f0f460886616bb3b907ce0ad1b2e6bc41ac0702f37581f",
       "suggestedCategory": "product-draft-or-contract",
       "title": "LightBI BA/DA Mode — Future Analyst Workbench Product Concept"
+    },
+    {
+      "path": "docs/product/product-direction-and-pricing-v1.md",
+      "extension": ".md",
+      "bytes": 4687,
+      "sha256": "bcca7ed04fad0873be70afa0e681e0f87dad89e4d4de34d2d71cc507293063ff",
+      "suggestedCategory": "product-draft-or-contract",
+      "title": "LightBI Product Direction and Pricing Strategy"
     },
     {
       "path": "docs/product/team-workspace-realtime-ba-future-direction.md",

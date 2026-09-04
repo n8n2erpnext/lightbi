@@ -1,6 +1,6 @@
 {
   "schema": "lightbi.current-checkpoint.v1",
-  "updatedAt": "2026-09-04T10:17:29Z",
+  "updatedAt": "2026-09-04T10:38:16Z",
   "status": "road_to_1_0_mb7_complete_main_map_resumed",
   "activeRuntime": "source_branches_only_no_production_deployment",
   "sourceCandidate": {
@@ -42,6 +42,14 @@
     "docs/project-book/LIGHTBI_PROJECT_BOOK.md#106-2026-09-04-micro-brain-v1-acceptance-closure-and-return-to-main-road-to-10-map",
     "docs/history/agent/plans/AGENT_PLAN_ROAD_TO_1_0_2026-08-31.md#2026-09-04-successor-execution-overlay--one-road-to-10",
     "docs/architecture/road-to-1-0-trust-release-contract.md#intelligence-pack-updater-direction--2026-09-04",
-    "docs/architecture/phase-8f2-multifile-operational-parity-closure.md#post-closure-ux-parity-follow-up--2026-09-04"
-  ]
+    "docs/architecture/phase-8f2-multifile-operational-parity-closure.md#post-closure-ux-parity-follow-up--2026-09-04",
+    "docs/architecture/micro-brain-cross-domain-semantic-expansion.md#purpose"
+  ],
+  "futureSemanticDirection": {
+    "name": "LightBI Cross-Domain Semantic Expansion",
+    "architecture": "docs/architecture/micro-brain-cross-domain-semantic-expansion.md",
+    "criticalPath1_0": false,
+    "rawUserDataSelfTrainingAllowed": false,
+    "status": "recorded_for_future_semantic_expansion_after_current_roadmap_priority"
+  }
 }

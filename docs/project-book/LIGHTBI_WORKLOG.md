@@ -1505,3 +1505,11 @@ R1-P0 documentation/integrity closure verified 1,243 local links with zero missi
 - Gates PASS: MB-specific 14 files / 41 tests; runtime/oracle 3 files / 6 tests; acceptance-integrity/runtime-invariant 2 files / 4 tests; complete `test:release-1.0`; production build; source-size gate; Playwright MB-5 + MB-6 2/2; `git diff --check`. SSD remained 84% / ~20 GiB free.
 - MB V1 source acceptance/cutover review is complete; Production was not deployed and authority was not expanded.
 - Main Road-to-1.0 resumes with multi-file Analysis Context + Focus Subject UX parity, followed by Intelligence Pack updater/trust integration, Signed Transport wiring/negative probes, then packaged Windows/UAT + integrated release acceptance.
+
+## 2026-09-04 — Micro Brain strategic rationale and cross-domain semantic direction recorded
+
+- Distilled the owner-approved external conversation handoff into canonical architecture without importing stale implementation status. Current repo truth remains MB-7 source acceptance complete at `a1f6ee8`; the handoff is used for rationale and future semantic direction only.
+- Added `micro-brain-cross-domain-semantic-expansion.md` covering the finite-dictionary problem, pathological schemas, safe learning lifecycle, negative knowledge, guarded formulas, the non-permanent 10 MB guardrail, cross-domain ontology, modular growth and promotion boundaries.
+- Froze the future semantic initiative name **LightBI Cross-Domain Semantic Expansion** with priority breadth in hospitality, healthcare/pharma, agriculture/livestock/aquaculture, manufacturing, banking specialization and scientific primitives. The target is reusable semantic breadth, not immediate official support for every industry.
+- Reaffirmed that raw user datasets do not self-train production semantic truth. Future learning is curated evidence -> validation -> batch rebuild -> held-out/counterfactual/grain/formula/performance/release gates, with future validated data-only updates fitting the separately governed Intelligence Pack lifecycle.
+- Corrected the stale Micro Brain architecture header from `not implemented` to the current MB-7 source-accepted state. Road-to-1.0 sequencing is unchanged: multi-file UX parity / Focus Subject remains next. Production remains no-touch.
