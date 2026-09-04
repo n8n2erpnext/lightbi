@@ -8,6 +8,8 @@ import type {
   PhysicalTypeName,
   RepresentativeEvidenceRowV1,
 } from "./profiling-contracts";
+import type { CompiledMicroBrainIndexV1 } from "./micro-brain/contracts";
+import { augmentCandidateArtifactWithMicroBrain } from "./micro-brain/evidence-bridge";
 import {
   CANDIDATE_ARTIFACT_SCHEMA_VERSION,
   COLUMN_OBSERVATION_SCHEMA_VERSION,
@@ -67,6 +69,11 @@ type EvidenceFactoryInput = {
 
 export type SemanticCandidateGeneratorOptionsV1 = {
   registry?: readonly SemanticSignalDefinition[];
+  microBrain?: {
+    index: CompiledMicroBrainIndexV1;
+    mode?: "selective" | "all";
+    maxCandidatesPerColumn?: number;
+  };
 };
 
 export function normalizeSemanticSurface(value: unknown): string {
@@ -246,7 +253,7 @@ export function generateSemanticCandidateArtifact(
     return counts;
   }, initialCounts);
 
-  return {
+  const artifact: CandidateArtifactV1 = {
     schemaVersion: CANDIDATE_ARTIFACT_SCHEMA_VERSION,
     sourceId,
     sourceHash: physicalArtifact.provenance.sourceHash ?? null,
@@ -264,6 +271,12 @@ export function generateSemanticCandidateArtifact(
       "Representative values are evidence witnesses, not full-file semantic truth.",
     ],
   };
+  return options.microBrain
+    ? augmentCandidateArtifactWithMicroBrain(physicalArtifact, artifact, options.microBrain.index, {
+        mode: options.microBrain.mode,
+        maxCandidatesPerColumn: options.microBrain.maxCandidatesPerColumn,
+      })
+    : artifact;
 }
 
 function buildObservation(

@@ -1,0 +1,1908 @@
+[
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.available_quantity",
+    "status": "validated",
+    "kind": "snapshot",
+    "labels": [
+      "Available Quantity",
+      "ATP",
+      "free stock",
+      "khả dụng"
+    ],
+    "canonicalSignal": "available_qty",
+    "semanticFamily": "quantity",
+    "relatedDomains": [
+      "inventory",
+      "operations"
+    ],
+    "definition": "Quantity available for new demand under a stated availability formula or allocation policy.",
+    "positiveClues": [
+      "available qty",
+      "atp",
+      "free stock"
+    ],
+    "negativeClues": [
+      "not automatically equal on-hand minus reserved unless policy says so",
+      "future supply may be included"
+    ],
+    "compatibleTypes": [
+      "number",
+      "string"
+    ],
+    "relations": [
+      {
+        "subject": "concept.available_quantity",
+        "predicate": "distinct_from",
+        "object": "concept.reserved_quantity",
+        "polarity": "distinct_from",
+        "explanation": "Reserved and available quantities have opposite allocation roles and depend on policy."
+      }
+    ],
+    "requiredEvidence": [
+      "snapshot_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.barcode",
+    "status": "validated",
+    "kind": "identifier",
+    "labels": [
+      "Barcode",
+      "EAN",
+      "UPC",
+      "mã vạch"
+    ],
+    "canonicalSignal": "barcode",
+    "semanticFamily": "item",
+    "relatedDomains": [
+      "inventory",
+      "revenue"
+    ],
+    "definition": "Machine-readable product or package identifier used for scanning and lookup.",
+    "positiveClues": [
+      "barcode",
+      "ean",
+      "upc"
+    ],
+    "negativeClues": [
+      "barcode is not necessarily internal SKU",
+      "pack-level barcode may differ from unit-level item"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "identifier_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.batch",
+    "status": "validated",
+    "kind": "identifier",
+    "labels": [
+      "Batch",
+      "Lot",
+      "lô hàng"
+    ],
+    "canonicalSignal": "batch",
+    "semanticFamily": "item",
+    "relatedDomains": [
+      "inventory"
+    ],
+    "definition": "Identifier grouping units produced, received or managed together for traceability.",
+    "positiveClues": [
+      "batch",
+      "lot",
+      "batch no"
+    ],
+    "negativeClues": [
+      "batch is not SKU",
+      "same batch semantics can be source-specific"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "identifier_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.bin_location",
+    "status": "validated",
+    "kind": "dimension",
+    "labels": [
+      "Bin Location",
+      "rack",
+      "shelf",
+      "vị trí kho"
+    ],
+    "canonicalSignal": "bin_location",
+    "semanticFamily": "location",
+    "relatedDomains": [
+      "inventory",
+      "operations"
+    ],
+    "definition": "Fine-grained storage location inside a warehouse such as bin, rack or shelf.",
+    "positiveClues": [
+      "bin",
+      "rack",
+      "shelf",
+      "storage location"
+    ],
+    "negativeClues": [
+      "bin is not warehouse",
+      "same bin code can repeat across warehouses"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "dimension_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.bom",
+    "status": "validated",
+    "kind": "identifier",
+    "labels": [
+      "Bill of Materials",
+      "BOM",
+      "định mức nguyên liệu"
+    ],
+    "canonicalSignal": "bom",
+    "semanticFamily": "item",
+    "relatedDomains": [
+      "inventory",
+      "operations"
+    ],
+    "definition": "Structured definition of components and quantities required to produce or assemble an item.",
+    "positiveClues": [
+      "bom",
+      "bill of materials",
+      "component list"
+    ],
+    "negativeClues": [
+      "BOM quantity is planned requirement, not actual consumption",
+      "BOM is not stock balance"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "identifier_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.brand",
+    "status": "validated",
+    "kind": "dimension",
+    "labels": [
+      "Brand",
+      "Manufacturer",
+      "thương hiệu"
+    ],
+    "canonicalSignal": "brand",
+    "semanticFamily": "item",
+    "relatedDomains": [
+      "inventory",
+      "revenue"
+    ],
+    "definition": "Brand, maker or manufacturer associated with a product or material.",
+    "positiveClues": [
+      "brand",
+      "manufacturer",
+      "maker"
+    ],
+    "negativeClues": [
+      "brand is not product category",
+      "manufacturer and supplier can differ"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "dimension_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.buyer",
+    "status": "validated",
+    "kind": "dimension",
+    "labels": [
+      "Buyer",
+      "Purchaser",
+      "nhân viên mua hàng"
+    ],
+    "canonicalSignal": "buyer",
+    "semanticFamily": "entity",
+    "relatedDomains": [
+      "inventory",
+      "performance"
+    ],
+    "definition": "Person or organizational role responsible for procurement activity or supplier purchasing.",
+    "positiveClues": [
+      "buyer",
+      "purchaser",
+      "procurement owner"
+    ],
+    "negativeClues": [
+      "not customer buyer in a sales dataset",
+      "not supplier identity"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "dimension_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.category",
+    "status": "validated",
+    "kind": "dimension",
+    "labels": [
+      "Category",
+      "product category",
+      "nhóm hàng"
+    ],
+    "canonicalSignal": "category",
+    "semanticFamily": "item",
+    "relatedDomains": [
+      "inventory",
+      "revenue"
+    ],
+    "definition": "Hierarchical or categorical grouping of products or materials.",
+    "positiveClues": [
+      "category",
+      "item group",
+      "product group",
+      "nhóm hàng"
+    ],
+    "negativeClues": [
+      "category is not brand",
+      "hierarchy level must not be guessed"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "dimension_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.goods_movement",
+    "status": "validated",
+    "kind": "event",
+    "labels": [
+      "Goods Movement",
+      "material document",
+      "biến động vật tư"
+    ],
+    "canonicalSignal": "goods_movement",
+    "semanticFamily": "document",
+    "relatedDomains": [
+      "inventory",
+      "operations",
+      "finance"
+    ],
+    "definition": "Recorded inventory movement event affecting quantity, location, status or valuation.",
+    "positiveClues": [
+      "goods movement",
+      "material document",
+      "movement document"
+    ],
+    "negativeClues": [
+      "movement document is not purchase order",
+      "movement type determines direction and business meaning"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "event_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.goods_receipt",
+    "status": "validated",
+    "kind": "event",
+    "labels": [
+      "Goods Receipt",
+      "GRN",
+      "phiếu nhập"
+    ],
+    "canonicalSignal": "goods_receipt",
+    "semanticFamily": "document",
+    "relatedDomains": [
+      "inventory",
+      "operations",
+      "finance"
+    ],
+    "definition": "Document or event confirming goods were received into a location or inventory process.",
+    "positiveClues": [
+      "goods receipt",
+      "grn",
+      "receiving document"
+    ],
+    "negativeClues": [
+      "not purchase order",
+      "receipt does not automatically mean invoice paid"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "event_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.inbound_quantity",
+    "status": "validated",
+    "kind": "flow",
+    "labels": [
+      "Inbound Quantity",
+      "receipt quantity",
+      "nhập kho"
+    ],
+    "canonicalSignal": "inbound",
+    "semanticFamily": "quantity",
+    "relatedDomains": [
+      "inventory",
+      "operations"
+    ],
+    "definition": "Quantity entering an inventory location during a period through receipt, transfer or other inbound event.",
+    "positiveClues": [
+      "inbound",
+      "receipt qty",
+      "nhập kho"
+    ],
+    "negativeClues": [
+      "not ending stock",
+      "purchase order quantity is not actual receipt"
+    ],
+    "compatibleTypes": [
+      "number",
+      "string"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "flow_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.inventory_balance",
+    "status": "validated",
+    "kind": "snapshot",
+    "labels": [
+      "Inventory Balance",
+      "stock balance",
+      "số dư tồn"
+    ],
+    "canonicalSignal": "inventory",
+    "semanticFamily": "inventory",
+    "relatedDomains": [
+      "inventory"
+    ],
+    "definition": "Point-in-time inventory position whose precise quantity/value basis depends on the source field.",
+    "positiveClues": [
+      "inventory",
+      "stock balance",
+      "on hand"
+    ],
+    "negativeClues": [
+      "not period movement",
+      "not automatically inventory value"
+    ],
+    "compatibleTypes": [
+      "number",
+      "string"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "snapshot_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.inventory_turnover",
+    "status": "validated",
+    "kind": "formula",
+    "labels": [
+      "Inventory Turnover",
+      "stock turnover",
+      "vòng quay tồn kho"
+    ],
+    "canonicalSignal": "turnover",
+    "semanticFamily": "inventory",
+    "relatedDomains": [
+      "inventory",
+      "finance"
+    ],
+    "definition": "Rate at which inventory is sold or consumed relative to average inventory over a period, using a compatible cost or quantity basis.",
+    "positiveClues": [
+      "inventory turnover",
+      "stock turnover"
+    ],
+    "negativeClues": [
+      "sales revenue divided by quantity stock is not a valid generic formula",
+      "average inventory basis must match numerator"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [
+      {
+        "subject": "concept.inventory_turnover",
+        "predicate": "distinct_from",
+        "object": "concept.stock_age",
+        "polarity": "distinct_from",
+        "explanation": "Turnover is a rate over a period; stock age is elapsed time for inventory."
+      },
+      {
+        "subject": "concept.inventory_turnover",
+        "predicate": "requires_input",
+        "object": "period_flow_basis",
+        "polarity": "requires",
+        "explanation": "Formula concept.inventory_turnover requires explicit evidence for period_flow_basis."
+      },
+      {
+        "subject": "concept.inventory_turnover",
+        "predicate": "requires_input",
+        "object": "average_inventory_basis",
+        "polarity": "requires",
+        "explanation": "Formula concept.inventory_turnover requires explicit evidence for average_inventory_basis."
+      }
+    ],
+    "requiredEvidence": [
+      "formula_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "guarded_formula",
+    "formula": {
+      "expression": "period_flow_basis / average_inventory_basis",
+      "requiredInputs": [
+        "period_flow_basis",
+        "average_inventory_basis"
+      ],
+      "requiredGrain": [
+        "same inventory scope"
+      ],
+      "requiredUnits": [
+        "compatible cost or quantity basis"
+      ],
+      "requiredTimeBasis": [
+        "same period with valid opening/closing or average snapshots"
+      ],
+      "blockers": [
+        "basis mismatch",
+        "missing average inventory"
+      ]
+    },
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.inventory_value",
+    "status": "validated",
+    "kind": "snapshot",
+    "labels": [
+      "Inventory Value",
+      "stock value",
+      "giá trị tồn kho"
+    ],
+    "canonicalSignal": "stock_value",
+    "semanticFamily": "money",
+    "relatedDomains": [
+      "inventory",
+      "finance"
+    ],
+    "definition": "Monetary carrying or management value of inventory at an as-of time under a stated valuation basis.",
+    "positiveClues": [
+      "inventory value",
+      "stock value",
+      "ending inventory value"
+    ],
+    "negativeClues": [
+      "not cost of goods sold for the period",
+      "not safely additive across snapshot dates",
+      "valuation basis must be known"
+    ],
+    "compatibleTypes": [
+      "number",
+      "string"
+    ],
+    "relations": [
+      {
+        "subject": "concept.inventory_value",
+        "predicate": "distinct_from",
+        "object": "concept.cost_of_goods_sold",
+        "polarity": "distinct_from",
+        "explanation": "COGS is a period flow; inventory value is a point-in-time carrying value."
+      }
+    ],
+    "requiredEvidence": [
+      "snapshot_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.material",
+    "status": "validated",
+    "kind": "identifier",
+    "labels": [
+      "Material",
+      "material number",
+      "vật tư"
+    ],
+    "canonicalSignal": "material",
+    "semanticFamily": "item",
+    "relatedDomains": [
+      "inventory",
+      "operations"
+    ],
+    "definition": "Inventory or production material identified for procurement, storage, consumption or manufacturing.",
+    "positiveClues": [
+      "material",
+      "material no",
+      "item number",
+      "vật tư"
+    ],
+    "negativeClues": [
+      "material identifier is not quantity",
+      "material master does not prove on-hand balance"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "identifier_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.movement_type",
+    "status": "validated",
+    "kind": "dimension",
+    "labels": [
+      "Movement Type",
+      "stock movement type",
+      "loại biến động"
+    ],
+    "canonicalSignal": "movement_type",
+    "semanticFamily": "inventory",
+    "relatedDomains": [
+      "inventory",
+      "operations"
+    ],
+    "definition": "Categorization of an inventory movement such as receipt, issue, transfer, reversal or adjustment.",
+    "positiveClues": [
+      "movement type",
+      "receipt issue",
+      "transfer",
+      "reversal"
+    ],
+    "negativeClues": [
+      "numeric-looking movement code is categorical",
+      "code meaning depends on source system"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "dimension_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.ordered_quantity",
+    "status": "validated",
+    "kind": "flow",
+    "labels": [
+      "Ordered Quantity",
+      "order qty",
+      "số lượng đặt"
+    ],
+    "canonicalSignal": "ordered_qty",
+    "semanticFamily": "quantity",
+    "relatedDomains": [
+      "inventory",
+      "revenue",
+      "operations"
+    ],
+    "definition": "Quantity requested or committed on an order before fulfillment or receipt.",
+    "positiveClues": [
+      "ordered qty",
+      "order quantity",
+      "số lượng đặt"
+    ],
+    "negativeClues": [
+      "not received quantity",
+      "not sold or shipped quantity when partial fulfillment exists"
+    ],
+    "compatibleTypes": [
+      "number",
+      "string"
+    ],
+    "relations": [
+      {
+        "subject": "concept.ordered_quantity",
+        "predicate": "distinct_from",
+        "object": "concept.received_quantity",
+        "polarity": "distinct_from",
+        "explanation": "Ordered quantity represents demand/commitment; received quantity represents actual receipt."
+      }
+    ],
+    "requiredEvidence": [
+      "flow_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.outbound_quantity",
+    "status": "validated",
+    "kind": "flow",
+    "labels": [
+      "Outbound Quantity",
+      "issue quantity",
+      "xuất kho"
+    ],
+    "canonicalSignal": "outbound",
+    "semanticFamily": "quantity",
+    "relatedDomains": [
+      "inventory",
+      "operations"
+    ],
+    "definition": "Quantity leaving an inventory location during a period through issue, sale, transfer or other outbound event.",
+    "positiveClues": [
+      "outbound",
+      "issue qty",
+      "xuất kho"
+    ],
+    "negativeClues": [
+      "not ending stock",
+      "not always sales quantity"
+    ],
+    "compatibleTypes": [
+      "number",
+      "string"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "flow_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.procurement_lead_time",
+    "status": "validated",
+    "kind": "measure",
+    "labels": [
+      "Procurement Lead Time",
+      "supplier lead time",
+      "thời gian mua hàng"
+    ],
+    "canonicalSignal": "lead_time",
+    "semanticFamily": "time",
+    "relatedDomains": [
+      "inventory",
+      "operations",
+      "performance"
+    ],
+    "definition": "Elapsed time between defined procurement milestones such as order placement and receipt.",
+    "positiveClues": [
+      "procurement lead time",
+      "supplier lead time",
+      "order to receipt"
+    ],
+    "negativeClues": [
+      "start and end milestones must be defined",
+      "not the same as delivery SLA unless process matches"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "measure_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.product",
+    "status": "validated",
+    "kind": "dimension",
+    "labels": [
+      "Product",
+      "Item",
+      "sản phẩm"
+    ],
+    "canonicalSignal": "product",
+    "semanticFamily": "item",
+    "relatedDomains": [
+      "inventory",
+      "revenue"
+    ],
+    "definition": "Goods or service item described for sales, inventory, procurement or analysis.",
+    "positiveClues": [
+      "product",
+      "item",
+      "sản phẩm",
+      "mặt hàng"
+    ],
+    "negativeClues": [
+      "product label is not always a stable SKU",
+      "service and stock item behavior can differ"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "dimension_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.purchase_order",
+    "status": "validated",
+    "kind": "identifier",
+    "labels": [
+      "Purchase Order",
+      "PO",
+      "đơn mua hàng"
+    ],
+    "canonicalSignal": "purchase_order",
+    "semanticFamily": "document",
+    "relatedDomains": [
+      "inventory",
+      "finance"
+    ],
+    "definition": "Formal procurement document authorizing or requesting purchase from a supplier.",
+    "positiveClues": [
+      "purchase order",
+      "po no",
+      "đơn mua hàng"
+    ],
+    "negativeClues": [
+      "not goods receipt",
+      "ordered value is not necessarily accrued expense or cash paid"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "identifier_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.purchase_request",
+    "status": "validated",
+    "kind": "identifier",
+    "labels": [
+      "Purchase Request",
+      "purchase requisition",
+      "PR"
+    ],
+    "canonicalSignal": "purchase_request",
+    "semanticFamily": "document",
+    "relatedDomains": [
+      "inventory",
+      "finance",
+      "performance"
+    ],
+    "definition": "Internal request for goods or services before supplier ordering.",
+    "positiveClues": [
+      "purchase request",
+      "requisition",
+      "pr no"
+    ],
+    "negativeClues": [
+      "not an approved purchase order",
+      "request quantity is not received quantity"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "identifier_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.received_quantity",
+    "status": "validated",
+    "kind": "flow",
+    "labels": [
+      "Received Quantity",
+      "receipt qty",
+      "số lượng nhận"
+    ],
+    "canonicalSignal": "received_qty",
+    "semanticFamily": "quantity",
+    "relatedDomains": [
+      "inventory",
+      "operations"
+    ],
+    "definition": "Quantity actually recorded as received against a procurement or inbound process.",
+    "positiveClues": [
+      "received qty",
+      "quantity received",
+      "goods received"
+    ],
+    "negativeClues": [
+      "not ordered quantity",
+      "not automatically accepted usable stock if QC/returns exist"
+    ],
+    "compatibleTypes": [
+      "number",
+      "string"
+    ],
+    "relations": [
+      {
+        "subject": "concept.received_quantity",
+        "predicate": "distinct_from",
+        "object": "concept.ordered_quantity",
+        "polarity": "distinct_from",
+        "explanation": "Ordered quantity represents demand/commitment; received quantity represents actual receipt."
+      }
+    ],
+    "requiredEvidence": [
+      "flow_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.reorder_level",
+    "status": "validated",
+    "kind": "snapshot",
+    "labels": [
+      "Reorder Level",
+      "minimum stock",
+      "mức đặt hàng lại"
+    ],
+    "canonicalSignal": "reorder_level",
+    "semanticFamily": "quantity",
+    "relatedDomains": [
+      "inventory",
+      "performance"
+    ],
+    "definition": "Inventory threshold used to trigger replenishment under a defined policy.",
+    "positiveClues": [
+      "reorder level",
+      "min stock",
+      "minimum stock"
+    ],
+    "negativeClues": [
+      "not current stock on hand",
+      "not necessarily safety stock"
+    ],
+    "compatibleTypes": [
+      "number",
+      "string"
+    ],
+    "relations": [
+      {
+        "subject": "concept.reorder_level",
+        "predicate": "distinct_from",
+        "object": "concept.stock_on_hand",
+        "polarity": "distinct_from",
+        "explanation": "Reorder level is a threshold, not current balance."
+      }
+    ],
+    "requiredEvidence": [
+      "snapshot_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.reorder_point",
+    "status": "validated",
+    "kind": "formula",
+    "labels": [
+      "Reorder Point",
+      "ROP",
+      "điểm đặt hàng lại"
+    ],
+    "semanticFamily": "inventory",
+    "relatedDomains": [
+      "inventory",
+      "performance"
+    ],
+    "definition": "Inventory position threshold at which replenishment should be triggered based on lead-time demand and buffer policy.",
+    "positiveClues": [
+      "reorder point",
+      "rop",
+      "order point"
+    ],
+    "negativeClues": [
+      "not the same as safety stock",
+      "formula varies by replenishment policy"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [
+      {
+        "subject": "concept.reorder_point",
+        "predicate": "distinct_from",
+        "object": "concept.safety_stock",
+        "polarity": "distinct_from",
+        "explanation": "Safety stock is a buffer; reorder point usually includes lead-time demand plus buffer."
+      },
+      {
+        "subject": "concept.reorder_point",
+        "predicate": "requires_input",
+        "object": "lead_time_demand",
+        "polarity": "requires",
+        "explanation": "Formula concept.reorder_point requires explicit evidence for lead_time_demand."
+      },
+      {
+        "subject": "concept.reorder_point",
+        "predicate": "requires_input",
+        "object": "safety_stock",
+        "polarity": "requires",
+        "explanation": "Formula concept.reorder_point requires explicit evidence for safety_stock."
+      }
+    ],
+    "requiredEvidence": [
+      "formula_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "guarded_formula",
+    "formula": {
+      "expression": "lead_time_demand + safety_stock",
+      "requiredInputs": [
+        "lead_time_demand",
+        "safety_stock"
+      ],
+      "requiredGrain": [
+        "item-location replenishment grain"
+      ],
+      "requiredUnits": [
+        "same UOM"
+      ],
+      "requiredTimeBasis": [
+        "lead-time demand horizon"
+      ],
+      "blockers": [
+        "missing lead time",
+        "incompatible demand basis"
+      ]
+    },
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.reserved_quantity",
+    "status": "validated",
+    "kind": "snapshot",
+    "labels": [
+      "Reserved Quantity",
+      "allocated quantity",
+      "số lượng giữ chỗ"
+    ],
+    "canonicalSignal": "reserved_qty",
+    "semanticFamily": "quantity",
+    "relatedDomains": [
+      "inventory",
+      "operations"
+    ],
+    "definition": "On-hand or expected quantity reserved or allocated to demand under the inventory allocation policy.",
+    "positiveClues": [
+      "reserved qty",
+      "allocated qty",
+      "committed qty"
+    ],
+    "negativeClues": [
+      "reserved quantity is not available quantity",
+      "reservation does not prove physical shipment"
+    ],
+    "compatibleTypes": [
+      "number",
+      "string"
+    ],
+    "relations": [
+      {
+        "subject": "concept.reserved_quantity",
+        "predicate": "distinct_from",
+        "object": "concept.available_quantity",
+        "polarity": "distinct_from",
+        "explanation": "Reserved and available quantities have opposite allocation roles and depend on policy."
+      }
+    ],
+    "requiredEvidence": [
+      "snapshot_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.rfq",
+    "status": "validated",
+    "kind": "identifier",
+    "labels": [
+      "Request for Quotation",
+      "RFQ",
+      "yêu cầu báo giá"
+    ],
+    "canonicalSignal": "rfq",
+    "semanticFamily": "document",
+    "relatedDomains": [
+      "inventory",
+      "finance"
+    ],
+    "definition": "Procurement document soliciting supplier pricing or terms before award or purchase order.",
+    "positiveClues": [
+      "rfq",
+      "request for quotation"
+    ],
+    "negativeClues": [
+      "not purchase commitment",
+      "supplier quote is not actual purchase cost"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "identifier_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.safety_stock",
+    "status": "validated",
+    "kind": "snapshot",
+    "labels": [
+      "Safety Stock",
+      "buffer stock",
+      "tồn an toàn"
+    ],
+    "semanticFamily": "quantity",
+    "relatedDomains": [
+      "inventory",
+      "performance"
+    ],
+    "definition": "Buffer inventory held to protect against demand or supply variability according to a service policy.",
+    "positiveClues": [
+      "safety stock",
+      "buffer stock",
+      "min buffer",
+      "buffer inventory",
+      "demand uncertainty buffer",
+      "supplier variability buffer",
+      "service level buffer"
+    ],
+    "negativeClues": [
+      "not reorder point",
+      "not current on-hand quantity"
+    ],
+    "compatibleTypes": [
+      "number",
+      "string"
+    ],
+    "relations": [
+      {
+        "subject": "concept.safety_stock",
+        "predicate": "distinct_from",
+        "object": "concept.reorder_point",
+        "polarity": "distinct_from",
+        "explanation": "Safety stock is a buffer; reorder point usually includes lead-time demand plus buffer."
+      }
+    ],
+    "requiredEvidence": [
+      "snapshot_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.serial_number",
+    "status": "validated",
+    "kind": "identifier",
+    "labels": [
+      "Serial Number",
+      "SN",
+      "IMEI",
+      "số seri"
+    ],
+    "canonicalSignal": "serial_number",
+    "semanticFamily": "item",
+    "relatedDomains": [
+      "inventory"
+    ],
+    "definition": "Identifier for an individual serialized unit or asset instance.",
+    "positiveClues": [
+      "serial number",
+      "imei",
+      "sn"
+    ],
+    "negativeClues": [
+      "serial number is not batch",
+      "one serial normally identifies one unit but source quality must confirm"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "identifier_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.sku",
+    "status": "validated",
+    "kind": "identifier",
+    "labels": [
+      "SKU",
+      "stock keeping unit",
+      "mã hàng"
+    ],
+    "canonicalSignal": "sku",
+    "semanticFamily": "item",
+    "relatedDomains": [
+      "inventory",
+      "revenue"
+    ],
+    "definition": "Commercial or inventory identifier for a distinct stock-keeping item or sellable variant.",
+    "positiveClues": [
+      "sku",
+      "item code",
+      "product code",
+      "mã hàng"
+    ],
+    "negativeClues": [
+      "sku is not product name",
+      "one product can have multiple SKUs"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "identifier_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.stock_age",
+    "status": "validated",
+    "kind": "measure",
+    "labels": [
+      "Stock Age",
+      "inventory age",
+      "tuổi tồn kho"
+    ],
+    "canonicalSignal": "stock_age",
+    "semanticFamily": "inventory",
+    "relatedDomains": [
+      "inventory"
+    ],
+    "definition": "Elapsed time since an inventory-relevant origin such as receipt, production or last movement, according to a declared aging basis.",
+    "positiveClues": [
+      "stock age",
+      "aging days",
+      "days in inventory"
+    ],
+    "negativeClues": [
+      "aging basis must be defined",
+      "average age is not inventory turnover"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [
+      {
+        "subject": "concept.stock_age",
+        "predicate": "distinct_from",
+        "object": "concept.inventory_turnover",
+        "polarity": "distinct_from",
+        "explanation": "Turnover is a rate over a period; stock age is elapsed time for inventory."
+      }
+    ],
+    "requiredEvidence": [
+      "measure_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.stock_movement",
+    "status": "validated",
+    "kind": "flow",
+    "labels": [
+      "Stock Movement",
+      "inventory movement",
+      "luân chuyển kho"
+    ],
+    "canonicalSignal": "stock_movement",
+    "semanticFamily": "inventory",
+    "relatedDomains": [
+      "inventory",
+      "operations"
+    ],
+    "definition": "Event or quantity flow that changes inventory position through receipt, issue, transfer or adjustment.",
+    "positiveClues": [
+      "stock movement",
+      "inventory movement",
+      "receipt issue transfer"
+    ],
+    "negativeClues": [
+      "movement quantity is not ending stock",
+      "sign and movement type must be understood"
+    ],
+    "compatibleTypes": [
+      "number",
+      "string"
+    ],
+    "relations": [
+      {
+        "subject": "concept.stock_movement",
+        "predicate": "distinct_from",
+        "object": "concept.stock_on_hand",
+        "polarity": "distinct_from",
+        "explanation": "On-hand stock is a snapshot; movement is a flow."
+      }
+    ],
+    "requiredEvidence": [
+      "flow_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.stock_on_hand",
+    "status": "validated",
+    "kind": "snapshot",
+    "labels": [
+      "Stock on Hand",
+      "on-hand quantity",
+      "tồn kho"
+    ],
+    "canonicalSignal": "stock_qty",
+    "semanticFamily": "quantity",
+    "relatedDomains": [
+      "inventory",
+      "operations"
+    ],
+    "definition": "Quantity physically or logically on hand at a stated as-of time and inventory scope.",
+    "positiveClues": [
+      "stock qty",
+      "on hand",
+      "closing stock",
+      "tồn kho"
+    ],
+    "negativeClues": [
+      "not sales quantity",
+      "not movement flow",
+      "do not sum across snapshot dates"
+    ],
+    "compatibleTypes": [
+      "number",
+      "string"
+    ],
+    "relations": [
+      {
+        "subject": "concept.stock_on_hand",
+        "predicate": "distinct_from",
+        "object": "concept.stock_movement",
+        "polarity": "distinct_from",
+        "explanation": "On-hand stock is a snapshot; movement is a flow."
+      },
+      {
+        "subject": "concept.stock_on_hand",
+        "predicate": "distinct_from",
+        "object": "concept.sold_quantity",
+        "polarity": "distinct_from",
+        "explanation": "Current inventory balance is not quantity sold during a period."
+      },
+      {
+        "subject": "concept.stock_on_hand",
+        "predicate": "distinct_from",
+        "object": "concept.reorder_level",
+        "polarity": "distinct_from",
+        "explanation": "Reorder level is a threshold, not current balance."
+      }
+    ],
+    "requiredEvidence": [
+      "numeric_shape",
+      "inventory_context",
+      "as_of_time_basis",
+      "uom_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.stockout_rate",
+    "status": "validated",
+    "kind": "formula",
+    "labels": [
+      "Stockout Rate",
+      "out-of-stock rate",
+      "tỷ lệ hết hàng"
+    ],
+    "canonicalSignal": "stockout_rate",
+    "semanticFamily": "percentage",
+    "relatedDomains": [
+      "inventory",
+      "performance"
+    ],
+    "definition": "Share of defined demand, item-time observations or opportunities experiencing stockout under an explicit denominator.",
+    "positiveClues": [
+      "stockout rate",
+      "out of stock rate",
+      "oos rate"
+    ],
+    "negativeClues": [
+      "denominator cannot be guessed",
+      "one stockout status is not a rate"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [
+      {
+        "subject": "concept.stockout_rate",
+        "predicate": "requires_input",
+        "object": "stockout_events",
+        "polarity": "requires",
+        "explanation": "Formula concept.stockout_rate requires explicit evidence for stockout_events."
+      },
+      {
+        "subject": "concept.stockout_rate",
+        "predicate": "requires_input",
+        "object": "eligible_demand_opportunities",
+        "polarity": "requires",
+        "explanation": "Formula concept.stockout_rate requires explicit evidence for eligible_demand_opportunities."
+      }
+    ],
+    "requiredEvidence": [
+      "formula_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "guarded_formula",
+    "formula": {
+      "expression": "stockout_events / eligible_demand_opportunities * 100",
+      "requiredInputs": [
+        "stockout_events",
+        "eligible_demand_opportunities"
+      ],
+      "requiredGrain": [
+        "same item/location opportunity grain"
+      ],
+      "requiredUnits": [
+        "count/count"
+      ],
+      "requiredTimeBasis": [
+        "same observation period"
+      ],
+      "blockers": [
+        "missing denominator",
+        "snapshot sampling bias"
+      ]
+    },
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.supplier",
+    "status": "validated",
+    "kind": "dimension",
+    "labels": [
+      "Supplier",
+      "Vendor",
+      "nhà cung cấp"
+    ],
+    "canonicalSignal": "supplier",
+    "semanticFamily": "entity",
+    "relatedDomains": [
+      "inventory",
+      "finance"
+    ],
+    "definition": "Party providing goods or services to the organization.",
+    "positiveClues": [
+      "supplier",
+      "vendor",
+      "nhà cung cấp"
+    ],
+    "negativeClues": [
+      "supplier is not manufacturer by default",
+      "supplier name is not always a stable identifier"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "dimension_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.warehouse",
+    "status": "validated",
+    "kind": "dimension",
+    "labels": [
+      "Warehouse",
+      "Kho",
+      "storage site"
+    ],
+    "canonicalSignal": "warehouse",
+    "semanticFamily": "location",
+    "relatedDomains": [
+      "inventory",
+      "operations"
+    ],
+    "definition": "Physical or logical storage facility where inventory is held or processed.",
+    "positiveClues": [
+      "warehouse",
+      "hub",
+      "depot",
+      "kho"
+    ],
+    "negativeClues": [
+      "warehouse is not bin location",
+      "branch and warehouse may be different entities"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "dimension_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  }
+]

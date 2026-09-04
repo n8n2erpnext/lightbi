@@ -1,0 +1,2017 @@
+[
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.account_balance",
+    "status": "validated",
+    "kind": "snapshot",
+    "labels": [
+      "Account Balance",
+      "balance",
+      "số dư"
+    ],
+    "canonicalSignal": "balance",
+    "semanticFamily": "money",
+    "relatedDomains": [
+      "finance"
+    ],
+    "definition": "Point-in-time balance of an account, ledger, bank account or other balance-bearing object.",
+    "positiveClues": [
+      "balance",
+      "số dư",
+      "closing balance"
+    ],
+    "negativeClues": [
+      "not a period flow",
+      "summing balances across dates usually double counts stock"
+    ],
+    "compatibleTypes": [
+      "number",
+      "string"
+    ],
+    "relations": [
+      {
+        "subject": "concept.account_balance",
+        "predicate": "distinct_from",
+        "object": "concept.flow_measure",
+        "polarity": "distinct_from",
+        "explanation": "Balance is point-in-time stock; flow accumulates events over a period."
+      }
+    ],
+    "requiredEvidence": [
+      "snapshot_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.accounts_payable",
+    "status": "validated",
+    "kind": "snapshot",
+    "labels": [
+      "Accounts Payable",
+      "AP",
+      "phải trả"
+    ],
+    "canonicalSignal": "payable",
+    "semanticFamily": "money",
+    "relatedDomains": [
+      "finance",
+      "inventory"
+    ],
+    "definition": "Amount owed by the business to suppliers or counterparties at a stated time.",
+    "positiveClues": [
+      "accounts payable",
+      "payable",
+      "ap balance",
+      "phải trả"
+    ],
+    "negativeClues": [
+      "payable balance is not expense for the period",
+      "not safely additive across snapshot dates"
+    ],
+    "compatibleTypes": [
+      "number",
+      "string"
+    ],
+    "relations": [
+      {
+        "subject": "concept.accounts_payable",
+        "predicate": "distinct_from",
+        "object": "concept.expense",
+        "polarity": "distinct_from",
+        "explanation": "Payable is a liability balance; expense recognition can occur on a different basis."
+      }
+    ],
+    "requiredEvidence": [
+      "snapshot_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.accounts_receivable",
+    "status": "validated",
+    "kind": "snapshot",
+    "labels": [
+      "Accounts Receivable",
+      "AR",
+      "phải thu"
+    ],
+    "canonicalSignal": "receivable",
+    "semanticFamily": "money",
+    "relatedDomains": [
+      "finance",
+      "revenue"
+    ],
+    "definition": "Amount owed to the business by customers at a stated time or accounting basis.",
+    "positiveClues": [
+      "accounts receivable",
+      "receivable",
+      "ar balance",
+      "phải thu",
+      "customer amount owed",
+      "customer outstanding balance",
+      "money customers owe",
+      "unpaid customer balance"
+    ],
+    "negativeClues": [
+      "receivable balance is not revenue for the period",
+      "not safely additive across snapshot dates"
+    ],
+    "compatibleTypes": [
+      "number",
+      "string"
+    ],
+    "relations": [
+      {
+        "subject": "concept.accounts_receivable",
+        "predicate": "distinct_from",
+        "object": "concept.revenue",
+        "polarity": "distinct_from",
+        "explanation": "Receivable is a point-in-time claim on customers, not period revenue."
+      }
+    ],
+    "requiredEvidence": [
+      "snapshot_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.accrual",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "Accrual",
+      "accrued amount",
+      "dồn tích"
+    ],
+    "semanticFamily": "accounting",
+    "relatedDomains": [
+      "finance"
+    ],
+    "definition": "Recognition of revenue or expense in a period before or independently of the related cash settlement.",
+    "positiveClues": [
+      "accrual",
+      "accrued",
+      "dồn tích"
+    ],
+    "negativeClues": [
+      "not the same as cash movement",
+      "requires accounting-period context"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "concept_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.bank_inflow",
+    "status": "validated",
+    "kind": "flow",
+    "labels": [
+      "Bank Inflow",
+      "deposit",
+      "money in"
+    ],
+    "canonicalSignal": "deposit_amount",
+    "semanticFamily": "money",
+    "relatedDomains": [
+      "finance"
+    ],
+    "definition": "Increase recorded as incoming movement in a bank account during a period.",
+    "positiveClues": [
+      "deposit",
+      "inflow",
+      "money in",
+      "money into bank account",
+      "incoming bank transfer",
+      "credit to bank account",
+      "own account transfer in"
+    ],
+    "negativeClues": [
+      "bank inflow is not automatically revenue",
+      "transfers between own accounts can create non-revenue inflow"
+    ],
+    "compatibleTypes": [
+      "number",
+      "string"
+    ],
+    "relations": [
+      {
+        "subject": "concept.bank_inflow",
+        "predicate": "distinct_from",
+        "object": "concept.revenue",
+        "polarity": "distinct_from",
+        "explanation": "Bank inflow is a cash movement and does not establish revenue recognition."
+      }
+    ],
+    "requiredEvidence": [
+      "flow_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.bank_outflow",
+    "status": "validated",
+    "kind": "flow",
+    "labels": [
+      "Bank Outflow",
+      "withdrawal",
+      "money out"
+    ],
+    "canonicalSignal": "withdrawal_amount",
+    "semanticFamily": "money",
+    "relatedDomains": [
+      "finance"
+    ],
+    "definition": "Decrease recorded as outgoing movement in a bank account during a period.",
+    "positiveClues": [
+      "withdrawal",
+      "outflow",
+      "money out"
+    ],
+    "negativeClues": [
+      "bank outflow is not automatically expense",
+      "internal transfers and debt repayments are different economic events"
+    ],
+    "compatibleTypes": [
+      "number",
+      "string"
+    ],
+    "relations": [
+      {
+        "subject": "concept.bank_outflow",
+        "predicate": "distinct_from",
+        "object": "concept.expense",
+        "polarity": "distinct_from",
+        "explanation": "Bank outflow is not sufficient evidence for expense recognition."
+      }
+    ],
+    "requiredEvidence": [
+      "flow_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.budget",
+    "status": "validated",
+    "kind": "measure",
+    "labels": [
+      "Budget",
+      "plan amount",
+      "ngân sách"
+    ],
+    "canonicalSignal": "budget",
+    "semanticFamily": "money",
+    "relatedDomains": [
+      "finance",
+      "performance"
+    ],
+    "definition": "Planned or authorized amount for a defined period, scope and organizational grain.",
+    "positiveClues": [
+      "budget",
+      "plan",
+      "ngân sách"
+    ],
+    "negativeClues": [
+      "budget is not actual spend",
+      "period and organizational scope must match actuals"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "measure_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.capex",
+    "status": "validated",
+    "kind": "flow",
+    "labels": [
+      "Capital Expenditure",
+      "CapEx",
+      "chi đầu tư"
+    ],
+    "semanticFamily": "money",
+    "relatedDomains": [
+      "finance",
+      "operations"
+    ],
+    "definition": "Expenditure to acquire or improve long-lived assets or productive capacity.",
+    "positiveClues": [
+      "capex",
+      "capital expenditure",
+      "asset purchase"
+    ],
+    "negativeClues": [
+      "not automatically current-period operating expense",
+      "cash timing and depreciation timing differ"
+    ],
+    "compatibleTypes": [
+      "number",
+      "string"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "flow_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.cash_payment",
+    "status": "validated",
+    "kind": "flow",
+    "labels": [
+      "Cash Payment",
+      "cash disbursement",
+      "chi tiền"
+    ],
+    "semanticFamily": "money",
+    "relatedDomains": [
+      "finance"
+    ],
+    "definition": "Cash or bank value paid during a period, regardless of accounting expense recognition.",
+    "positiveClues": [
+      "cash paid",
+      "payment",
+      "disbursement",
+      "chi tiền"
+    ],
+    "negativeClues": [
+      "cash payment is not automatically expense",
+      "may buy an asset, repay debt or prepay future cost"
+    ],
+    "compatibleTypes": [
+      "number",
+      "string"
+    ],
+    "relations": [
+      {
+        "subject": "concept.cash_payment",
+        "predicate": "distinct_from",
+        "object": "concept.expense",
+        "polarity": "distinct_from",
+        "explanation": "Cash disbursement can acquire assets, repay debt or prepay costs rather than represent period expense."
+      }
+    ],
+    "requiredEvidence": [
+      "flow_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.cash_receipt",
+    "status": "validated",
+    "kind": "flow",
+    "labels": [
+      "Cash Receipt",
+      "cash collected",
+      "thu tiền"
+    ],
+    "semanticFamily": "money",
+    "relatedDomains": [
+      "finance",
+      "revenue"
+    ],
+    "definition": "Cash or bank value received during a period, regardless of whether it represents current-period revenue.",
+    "positiveClues": [
+      "cash received",
+      "receipt",
+      "collection",
+      "thu tiền"
+    ],
+    "negativeClues": [
+      "cash receipt is not automatically revenue",
+      "may settle prior receivables, deposits or loans"
+    ],
+    "compatibleTypes": [
+      "number",
+      "string"
+    ],
+    "relations": [
+      {
+        "subject": "concept.cash_receipt",
+        "predicate": "distinct_from",
+        "object": "concept.revenue",
+        "polarity": "distinct_from",
+        "explanation": "Cash receipt can settle prior receivables, deposits, financing or other non-revenue items."
+      }
+    ],
+    "requiredEvidence": [
+      "flow_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.closing_balance",
+    "status": "validated",
+    "kind": "snapshot",
+    "labels": [
+      "Closing Balance",
+      "ending balance",
+      "số dư cuối kỳ"
+    ],
+    "canonicalSignal": "closing_balance",
+    "semanticFamily": "money",
+    "relatedDomains": [
+      "finance"
+    ],
+    "definition": "Balance at the end of a defined reporting period.",
+    "positiveClues": [
+      "closing balance",
+      "ending balance",
+      "số dư cuối kỳ"
+    ],
+    "negativeClues": [
+      "not a period flow",
+      "do not sum across consecutive snapshot periods"
+    ],
+    "compatibleTypes": [
+      "number",
+      "string"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "snapshot_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.cost",
+    "status": "validated",
+    "kind": "measure",
+    "labels": [
+      "Cost",
+      "chi phí",
+      "giá vốn"
+    ],
+    "canonicalSignal": "cost",
+    "semanticFamily": "money",
+    "relatedDomains": [
+      "finance",
+      "operations"
+    ],
+    "definition": "Monetary sacrifice or resource consumption attributed to an item, activity, service or period under a defined costing basis.",
+    "positiveClues": [
+      "cost",
+      "chi phí",
+      "giá vốn"
+    ],
+    "negativeClues": [
+      "unit cost is not total cost",
+      "cost is not sale price",
+      "inventory value is not period COGS"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [
+      {
+        "subject": "concept.cost",
+        "predicate": "distinct_from",
+        "object": "concept.unit_price",
+        "polarity": "distinct_from",
+        "explanation": "Cost and selling price are different economic roles even when both are monetary."
+      }
+    ],
+    "requiredEvidence": [
+      "measure_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.cost_of_goods_sold",
+    "status": "validated",
+    "kind": "flow",
+    "labels": [
+      "Cost of Goods Sold",
+      "COGS",
+      "cost of sales",
+      "giá vốn hàng bán"
+    ],
+    "canonicalSignal": "total_cost",
+    "semanticFamily": "money",
+    "relatedDomains": [
+      "finance",
+      "revenue",
+      "inventory"
+    ],
+    "definition": "Cost attributed to goods or services sold in the same analytical period and grain as the associated revenue.",
+    "positiveClues": [
+      "cogs",
+      "cost of sales",
+      "giá vốn"
+    ],
+    "negativeClues": [
+      "inventory on hand value is not COGS",
+      "purchase cost is not automatically COGS",
+      "requires aligned sales grain and period"
+    ],
+    "compatibleTypes": [
+      "number",
+      "string"
+    ],
+    "relations": [
+      {
+        "subject": "concept.cost_of_goods_sold",
+        "predicate": "distinct_from",
+        "object": "concept.inventory_value",
+        "polarity": "distinct_from",
+        "explanation": "COGS is a period flow; inventory value is a point-in-time carrying value."
+      }
+    ],
+    "requiredEvidence": [
+      "flow_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.credit",
+    "status": "validated",
+    "kind": "measure",
+    "labels": [
+      "Credit",
+      "credit amount",
+      "phát sinh có"
+    ],
+    "canonicalSignal": "credit",
+    "semanticFamily": "accounting",
+    "relatedDomains": [
+      "finance"
+    ],
+    "definition": "Credit-side posting amount in double-entry accounting; meaning depends on account type and posting context.",
+    "positiveClues": [
+      "credit",
+      "cr",
+      "phát sinh có"
+    ],
+    "negativeClues": [
+      "credit does not universally mean revenue or cash inflow",
+      "credit is not simply positive"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [
+      {
+        "subject": "concept.credit",
+        "predicate": "distinct_from",
+        "object": "concept.revenue",
+        "polarity": "distinct_from",
+        "explanation": "Credit meaning depends on account type and cannot be globally re-labeled as revenue."
+      }
+    ],
+    "requiredEvidence": [
+      "measure_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.debit",
+    "status": "validated",
+    "kind": "measure",
+    "labels": [
+      "Debit",
+      "debit amount",
+      "phát sinh nợ"
+    ],
+    "canonicalSignal": "debit",
+    "semanticFamily": "accounting",
+    "relatedDomains": [
+      "finance"
+    ],
+    "definition": "Debit-side posting amount in double-entry accounting; meaning depends on account type and posting context.",
+    "positiveClues": [
+      "debit",
+      "dr",
+      "phát sinh nợ"
+    ],
+    "negativeClues": [
+      "debit does not universally mean expense or cash outflow",
+      "debit is not simply negative"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [
+      {
+        "subject": "concept.debit",
+        "predicate": "distinct_from",
+        "object": "concept.expense",
+        "polarity": "distinct_from",
+        "explanation": "Debit meaning depends on account type and cannot be globally re-labeled as expense."
+      }
+    ],
+    "requiredEvidence": [
+      "measure_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.depreciation",
+    "status": "validated",
+    "kind": "flow",
+    "labels": [
+      "Depreciation",
+      "khấu hao"
+    ],
+    "semanticFamily": "money",
+    "relatedDomains": [
+      "finance",
+      "operations"
+    ],
+    "definition": "Periodic allocation of a depreciable asset's cost over its useful life under a defined method.",
+    "positiveClues": [
+      "depreciation",
+      "khấu hao",
+      "amortization"
+    ],
+    "negativeClues": [
+      "not the same as asset purchase cash outflow",
+      "method and useful life matter"
+    ],
+    "compatibleTypes": [
+      "number",
+      "string"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "flow_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.discount",
+    "status": "validated",
+    "kind": "measure",
+    "labels": [
+      "Discount",
+      "discount amount",
+      "giảm giá",
+      "chiết khấu"
+    ],
+    "canonicalSignal": "discount",
+    "semanticFamily": "money",
+    "relatedDomains": [
+      "revenue",
+      "finance"
+    ],
+    "definition": "Reduction from a gross selling amount or price according to the transaction's discount policy.",
+    "positiveClues": [
+      "discount",
+      "promotion discount",
+      "chiết khấu"
+    ],
+    "negativeClues": [
+      "discount is not automatically an operating expense",
+      "percentage discount and amount discount are different units"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [
+      {
+        "subject": "concept.discount",
+        "predicate": "distinct_from",
+        "object": "concept.expense",
+        "polarity": "distinct_from",
+        "explanation": "Transaction discount commonly reduces gross consideration and is not automatically operating expense."
+      }
+    ],
+    "requiredEvidence": [
+      "measure_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.exchange_rate",
+    "status": "validated",
+    "kind": "measure",
+    "labels": [
+      "Exchange Rate",
+      "FX rate",
+      "tỷ giá"
+    ],
+    "canonicalSignal": "exchange_rate",
+    "semanticFamily": "ratio",
+    "relatedDomains": [
+      "finance"
+    ],
+    "definition": "Conversion ratio between two currencies for a stated date, source and rate type.",
+    "positiveClues": [
+      "exchange rate",
+      "fx",
+      "tỷ giá"
+    ],
+    "negativeClues": [
+      "rate is not currency amount",
+      "different rate dates or types can change converted values"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "measure_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.expense",
+    "status": "validated",
+    "kind": "flow",
+    "labels": [
+      "Expense",
+      "operating expense",
+      "chi phí phát sinh"
+    ],
+    "canonicalSignal": "expense",
+    "semanticFamily": "money",
+    "relatedDomains": [
+      "finance"
+    ],
+    "definition": "Expense recognized for a period according to the dataset's accounting or management reporting basis.",
+    "positiveClues": [
+      "expense",
+      "opex",
+      "chi phí"
+    ],
+    "negativeClues": [
+      "cash payment is not automatically expense",
+      "capital expenditure may not be expensed immediately",
+      "payable balance is not period expense"
+    ],
+    "compatibleTypes": [
+      "number",
+      "string"
+    ],
+    "relations": [
+      {
+        "subject": "concept.expense",
+        "predicate": "distinct_from",
+        "object": "concept.accounts_payable",
+        "polarity": "distinct_from",
+        "explanation": "Payable is a liability balance; expense recognition can occur on a different basis."
+      },
+      {
+        "subject": "concept.expense",
+        "predicate": "distinct_from",
+        "object": "concept.debit",
+        "polarity": "distinct_from",
+        "explanation": "Debit meaning depends on account type and cannot be globally re-labeled as expense."
+      },
+      {
+        "subject": "concept.expense",
+        "predicate": "distinct_from",
+        "object": "concept.cash_payment",
+        "polarity": "distinct_from",
+        "explanation": "Cash disbursement can acquire assets, repay debt or prepay costs rather than represent period expense."
+      },
+      {
+        "subject": "concept.expense",
+        "predicate": "distinct_from",
+        "object": "concept.bank_outflow",
+        "polarity": "distinct_from",
+        "explanation": "Bank outflow is not sufficient evidence for expense recognition."
+      },
+      {
+        "subject": "concept.expense",
+        "predicate": "distinct_from",
+        "object": "concept.discount",
+        "polarity": "distinct_from",
+        "explanation": "Transaction discount commonly reduces gross consideration and is not automatically operating expense."
+      }
+    ],
+    "requiredEvidence": [
+      "flow_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.gross_margin_pct",
+    "status": "validated",
+    "kind": "formula",
+    "labels": [
+      "Gross Margin %",
+      "gross margin percentage",
+      "biên lợi nhuận gộp"
+    ],
+    "canonicalSignal": "margin_pct",
+    "semanticFamily": "percentage",
+    "relatedDomains": [
+      "finance",
+      "revenue"
+    ],
+    "definition": "Gross profit divided by revenue under the same grain and period.",
+    "positiveClues": [
+      "gross margin",
+      "margin pct",
+      "gross profit percentage"
+    ],
+    "negativeClues": [
+      "margin percent is not markup percent",
+      "percentages are not additive",
+      "zero revenue blocks calculation"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [
+      {
+        "subject": "concept.gross_margin_pct",
+        "predicate": "distinct_from",
+        "object": "concept.percentage",
+        "polarity": "distinct_from",
+        "explanation": "Gross margin is a specific ratio with defined numerator and denominator, not any percent field."
+      },
+      {
+        "subject": "concept.gross_margin_pct",
+        "predicate": "requires_input",
+        "object": "gross_profit",
+        "polarity": "requires",
+        "explanation": "Formula concept.gross_margin_pct requires explicit evidence for gross_profit."
+      },
+      {
+        "subject": "concept.gross_margin_pct",
+        "predicate": "requires_input",
+        "object": "revenue",
+        "polarity": "requires",
+        "explanation": "Formula concept.gross_margin_pct requires explicit evidence for revenue."
+      }
+    ],
+    "requiredEvidence": [
+      "formula_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "guarded_formula",
+    "formula": {
+      "expression": "gross_profit / revenue * 100",
+      "requiredInputs": [
+        "gross_profit",
+        "revenue"
+      ],
+      "requiredGrain": [
+        "aligned reporting grain"
+      ],
+      "requiredUnits": [
+        "same currency basis"
+      ],
+      "requiredTimeBasis": [
+        "same reporting period"
+      ],
+      "blockers": [
+        "zero revenue",
+        "incompatible numerator and denominator"
+      ]
+    },
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.gross_profit",
+    "status": "validated",
+    "kind": "formula",
+    "labels": [
+      "Gross Profit",
+      "lợi nhuận gộp"
+    ],
+    "canonicalSignal": "gross_profit",
+    "semanticFamily": "money",
+    "relatedDomains": [
+      "finance",
+      "revenue"
+    ],
+    "definition": "Revenue less aligned cost of goods sold or equivalent direct cost under a compatible grain and period.",
+    "positiveClues": [
+      "gross profit",
+      "revenue minus cogs",
+      "lợi nhuận gộp"
+    ],
+    "negativeClues": [
+      "do not subtract unrelated operating expense unless definition says so",
+      "revenue and cost from incompatible grains cannot be combined"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [
+      {
+        "subject": "concept.gross_profit",
+        "predicate": "requires_input",
+        "object": "revenue",
+        "polarity": "requires",
+        "explanation": "Formula concept.gross_profit requires explicit evidence for revenue."
+      },
+      {
+        "subject": "concept.gross_profit",
+        "predicate": "requires_input",
+        "object": "cost_of_goods_sold",
+        "polarity": "requires",
+        "explanation": "Formula concept.gross_profit requires explicit evidence for cost_of_goods_sold."
+      }
+    ],
+    "requiredEvidence": [
+      "formula_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "guarded_formula",
+    "formula": {
+      "expression": "revenue - cost_of_goods_sold",
+      "requiredInputs": [
+        "revenue",
+        "cost_of_goods_sold"
+      ],
+      "requiredGrain": [
+        "aligned transaction or reporting grain"
+      ],
+      "requiredUnits": [
+        "same currency and monetary basis"
+      ],
+      "requiredTimeBasis": [
+        "same reporting period"
+      ],
+      "blockers": [
+        "repeated parent totals",
+        "currency mismatch",
+        "unproven cross-source relationship"
+      ]
+    },
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.invoice_total",
+    "status": "validated",
+    "kind": "measure",
+    "labels": [
+      "Invoice Total",
+      "invoice amount",
+      "tổng hóa đơn"
+    ],
+    "canonicalSignal": "invoice_total",
+    "semanticFamily": "money",
+    "relatedDomains": [
+      "revenue",
+      "finance"
+    ],
+    "definition": "Total amount recorded for an invoice or billing document, potentially including tax, freight, discount and other components.",
+    "positiveClues": [
+      "invoice total",
+      "billing total",
+      "total amount"
+    ],
+    "negativeClues": [
+      "not automatically net revenue",
+      "may repeat on invoice lines",
+      "may include tax or freight"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [
+      {
+        "subject": "concept.invoice_total",
+        "predicate": "distinct_from",
+        "object": "concept.revenue",
+        "polarity": "distinct_from",
+        "explanation": "Invoice total can contain tax, freight, discounts or repeated parent totals and is not automatically net revenue."
+      }
+    ],
+    "requiredEvidence": [
+      "measure_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.net_revenue",
+    "status": "validated",
+    "kind": "measure",
+    "labels": [
+      "Net Revenue",
+      "net sales",
+      "doanh thu thuần"
+    ],
+    "canonicalSignal": "net_revenue",
+    "semanticFamily": "money",
+    "relatedDomains": [
+      "revenue",
+      "finance"
+    ],
+    "definition": "Revenue after explicitly defined deductions such as discounts, returns or allowances according to the dataset contract.",
+    "positiveClues": [
+      "net revenue",
+      "net sales",
+      "doanh thu thuần"
+    ],
+    "negativeClues": [
+      "not necessarily cash collected",
+      "deduction policy must be known",
+      "tax treatment cannot be assumed"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "measure_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.opening_balance",
+    "status": "validated",
+    "kind": "snapshot",
+    "labels": [
+      "Opening Balance",
+      "beginning balance",
+      "số dư đầu kỳ"
+    ],
+    "canonicalSignal": "opening_balance",
+    "semanticFamily": "money",
+    "relatedDomains": [
+      "finance"
+    ],
+    "definition": "Balance at the beginning of a defined reporting period.",
+    "positiveClues": [
+      "opening balance",
+      "beginning balance",
+      "số dư đầu kỳ"
+    ],
+    "negativeClues": [
+      "not a period inflow",
+      "do not add opening and closing balances as activity"
+    ],
+    "compatibleTypes": [
+      "number",
+      "string"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "snapshot_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.opex",
+    "status": "validated",
+    "kind": "flow",
+    "labels": [
+      "Operating Expense",
+      "OpEx",
+      "chi phí hoạt động"
+    ],
+    "canonicalSignal": "operational_cost",
+    "semanticFamily": "money",
+    "relatedDomains": [
+      "finance",
+      "operations"
+    ],
+    "definition": "Recurring operating cost incurred to run the business within the stated reporting basis.",
+    "positiveClues": [
+      "opex",
+      "operating expense",
+      "operational cost"
+    ],
+    "negativeClues": [
+      "not capital expenditure",
+      "not necessarily direct cost of goods sold"
+    ],
+    "compatibleTypes": [
+      "number",
+      "string"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "flow_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.outstanding_debt",
+    "status": "validated",
+    "kind": "snapshot",
+    "labels": [
+      "Outstanding Debt",
+      "outstanding amount",
+      "công nợ"
+    ],
+    "canonicalSignal": "debt",
+    "semanticFamily": "money",
+    "relatedDomains": [
+      "finance",
+      "revenue"
+    ],
+    "definition": "Unsettled monetary obligation remaining at a stated point or due basis.",
+    "positiveClues": [
+      "outstanding",
+      "debt",
+      "công nợ",
+      "unpaid balance"
+    ],
+    "negativeClues": [
+      "not automatically overdue",
+      "not period revenue or expense",
+      "requires sign and counterparty context"
+    ],
+    "compatibleTypes": [
+      "number",
+      "string"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "snapshot_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.prepayment",
+    "status": "validated",
+    "kind": "snapshot",
+    "labels": [
+      "Prepayment",
+      "prepaid expense",
+      "trả trước"
+    ],
+    "semanticFamily": "accounting",
+    "relatedDomains": [
+      "finance"
+    ],
+    "definition": "Payment made before the related expense or service is recognized, usually carried as a balance until consumed.",
+    "positiveClues": [
+      "prepaid",
+      "prepayment",
+      "trả trước"
+    ],
+    "negativeClues": [
+      "cash payment is not immediate expense by default",
+      "balance is not period consumption"
+    ],
+    "compatibleTypes": [
+      "number",
+      "string"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "snapshot_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.profit",
+    "status": "validated",
+    "kind": "measure",
+    "labels": [
+      "Profit",
+      "net profit",
+      "lợi nhuận"
+    ],
+    "canonicalSignal": "profit",
+    "semanticFamily": "money",
+    "relatedDomains": [
+      "finance"
+    ],
+    "definition": "Residual monetary result after the costs and expenses included by the stated profit definition.",
+    "positiveClues": [
+      "profit",
+      "net profit",
+      "lợi nhuận"
+    ],
+    "negativeClues": [
+      "profit definition varies by level",
+      "gross profit and net profit are not interchangeable"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [
+      {
+        "subject": "concept.profit",
+        "predicate": "distinct_from",
+        "object": "concept.roas",
+        "polarity": "distinct_from",
+        "explanation": "ROAS compares attributed revenue to ad spend and is not accounting profit or ROI."
+      }
+    ],
+    "requiredEvidence": [
+      "measure_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.refund_amount",
+    "status": "validated",
+    "kind": "flow",
+    "labels": [
+      "Refund Amount",
+      "refund",
+      "hoàn tiền"
+    ],
+    "canonicalSignal": "refund",
+    "semanticFamily": "money",
+    "relatedDomains": [
+      "revenue",
+      "finance"
+    ],
+    "definition": "Money returned or credited back to a customer for a transaction, return or adjustment.",
+    "positiveClues": [
+      "refund",
+      "refund amount",
+      "hoàn tiền"
+    ],
+    "negativeClues": [
+      "refund is not the same as physical return quantity",
+      "cash refund timing may differ from revenue reversal timing"
+    ],
+    "compatibleTypes": [
+      "number",
+      "string"
+    ],
+    "relations": [
+      {
+        "subject": "concept.refund_amount",
+        "predicate": "distinct_from",
+        "object": "concept.returns",
+        "polarity": "distinct_from",
+        "explanation": "Refund is monetary; returns can be physical quantity or process activity."
+      }
+    ],
+    "requiredEvidence": [
+      "flow_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.revenue",
+    "status": "validated",
+    "kind": "measure",
+    "labels": [
+      "Revenue",
+      "sales revenue",
+      "doanh thu"
+    ],
+    "canonicalSignal": "revenue",
+    "semanticFamily": "money",
+    "relatedDomains": [
+      "revenue",
+      "finance"
+    ],
+    "definition": "Income recognized from ordinary business activity under the applicable business and accounting basis.",
+    "positiveClues": [
+      "revenue",
+      "sales revenue",
+      "doanh thu",
+      "net sales"
+    ],
+    "negativeClues": [
+      "cash received is not automatically revenue",
+      "invoice gross total may include tax or non-revenue components",
+      "unit price is not revenue"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [
+      {
+        "subject": "concept.revenue",
+        "predicate": "distinct_from",
+        "object": "concept.cash_receipt",
+        "polarity": "distinct_from",
+        "explanation": "Cash receipt can settle prior receivables, deposits, financing or other non-revenue items."
+      },
+      {
+        "subject": "concept.revenue",
+        "predicate": "distinct_from",
+        "object": "concept.bank_inflow",
+        "polarity": "distinct_from",
+        "explanation": "Bank inflow is a cash movement and does not establish revenue recognition."
+      },
+      {
+        "subject": "concept.revenue",
+        "predicate": "distinct_from",
+        "object": "concept.invoice_total",
+        "polarity": "distinct_from",
+        "explanation": "Invoice total can contain tax, freight, discounts or repeated parent totals and is not automatically net revenue."
+      },
+      {
+        "subject": "concept.revenue",
+        "predicate": "distinct_from",
+        "object": "concept.unit_price",
+        "polarity": "distinct_from",
+        "explanation": "Unit price is a rate per unit; revenue requires quantity or a transaction amount basis."
+      },
+      {
+        "subject": "concept.revenue",
+        "predicate": "distinct_from",
+        "object": "concept.tax_amount",
+        "polarity": "distinct_from",
+        "explanation": "Tax collected can be payable to authorities and is not business revenue by default."
+      },
+      {
+        "subject": "concept.revenue",
+        "predicate": "distinct_from",
+        "object": "concept.accounts_receivable",
+        "polarity": "distinct_from",
+        "explanation": "Receivable is a point-in-time claim on customers, not period revenue."
+      },
+      {
+        "subject": "concept.revenue",
+        "predicate": "distinct_from",
+        "object": "concept.credit",
+        "polarity": "distinct_from",
+        "explanation": "Credit meaning depends on account type and cannot be globally re-labeled as revenue."
+      },
+      {
+        "subject": "concept.revenue",
+        "predicate": "distinct_from",
+        "object": "concept.cod_amount",
+        "polarity": "distinct_from",
+        "explanation": "COD collection is not carrier or merchant revenue by default without transaction semantics."
+      },
+      {
+        "subject": "concept.revenue",
+        "predicate": "distinct_from",
+        "object": "concept.declared_value",
+        "polarity": "distinct_from",
+        "explanation": "Declared shipment value is used for liability/insurance and is not sales revenue by default."
+      },
+      {
+        "subject": "concept.revenue",
+        "predicate": "distinct_from",
+        "object": "concept.opportunity",
+        "polarity": "distinct_from",
+        "explanation": "Pipeline opportunity value is potential future business, not recognized revenue."
+      }
+    ],
+    "requiredEvidence": [
+      "numeric_shape",
+      "revenue_semantics",
+      "grain_compatibility",
+      "currency_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.tax_amount",
+    "status": "validated",
+    "kind": "measure",
+    "labels": [
+      "Tax Amount",
+      "VAT amount",
+      "GST amount",
+      "tiền thuế"
+    ],
+    "canonicalSignal": "tax_amount",
+    "semanticFamily": "money",
+    "relatedDomains": [
+      "finance",
+      "revenue"
+    ],
+    "definition": "Monetary tax component associated with a transaction or reporting record.",
+    "positiveClues": [
+      "tax amount",
+      "vat",
+      "gst",
+      "tiền thuế"
+    ],
+    "negativeClues": [
+      "tax collected is not business revenue by default",
+      "tax amount is not tax rate"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [
+      {
+        "subject": "concept.tax_amount",
+        "predicate": "distinct_from",
+        "object": "concept.revenue",
+        "polarity": "distinct_from",
+        "explanation": "Tax collected can be payable to authorities and is not business revenue by default."
+      }
+    ],
+    "requiredEvidence": [
+      "measure_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.tax_rate",
+    "status": "validated",
+    "kind": "measure",
+    "labels": [
+      "Tax Rate",
+      "VAT rate",
+      "thuế suất"
+    ],
+    "canonicalSignal": "tax_rate",
+    "semanticFamily": "percentage",
+    "relatedDomains": [
+      "finance",
+      "revenue"
+    ],
+    "definition": "Percentage applied to a defined taxable base to determine tax according to the dataset's tax logic.",
+    "positiveClues": [
+      "tax rate",
+      "vat rate",
+      "thuế suất"
+    ],
+    "negativeClues": [
+      "tax rate is not tax amount",
+      "rate cannot be summed across transactions"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "measure_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.variance",
+    "status": "validated",
+    "kind": "formula",
+    "labels": [
+      "Variance",
+      "budget variance",
+      "chênh lệch"
+    ],
+    "semanticFamily": "performance",
+    "relatedDomains": [
+      "finance",
+      "performance"
+    ],
+    "definition": "Difference between an actual value and a comparable plan, budget, target or prior value.",
+    "positiveClues": [
+      "variance",
+      "difference",
+      "gap",
+      "chênh lệch"
+    ],
+    "negativeClues": [
+      "direction depends on metric semantics",
+      "incompatible units or periods invalidate comparison"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [
+      {
+        "subject": "concept.variance",
+        "predicate": "requires_input",
+        "object": "actual",
+        "polarity": "requires",
+        "explanation": "Formula concept.variance requires explicit evidence for actual."
+      },
+      {
+        "subject": "concept.variance",
+        "predicate": "requires_input",
+        "object": "baseline",
+        "polarity": "requires",
+        "explanation": "Formula concept.variance requires explicit evidence for baseline."
+      }
+    ],
+    "requiredEvidence": [
+      "formula_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "guarded_formula",
+    "formula": {
+      "expression": "actual - baseline",
+      "requiredInputs": [
+        "actual",
+        "baseline"
+      ],
+      "requiredGrain": [
+        "same comparison grain"
+      ],
+      "requiredUnits": [
+        "same unit"
+      ],
+      "requiredTimeBasis": [
+        "same or explicitly comparable period"
+      ],
+      "blockers": [
+        "unit mismatch",
+        "scope mismatch"
+      ]
+    },
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.working_capital",
+    "status": "validated",
+    "kind": "formula",
+    "labels": [
+      "Working Capital",
+      "vốn lưu động"
+    ],
+    "semanticFamily": "money",
+    "relatedDomains": [
+      "finance"
+    ],
+    "definition": "Net short-term operating liquidity commonly represented as current assets less current liabilities when those components are explicitly available.",
+    "positiveClues": [
+      "working capital",
+      "current assets minus current liabilities"
+    ],
+    "negativeClues": [
+      "cannot be inferred from cash alone",
+      "component definitions and reporting date must align"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [
+      {
+        "subject": "concept.working_capital",
+        "predicate": "requires_input",
+        "object": "current_assets",
+        "polarity": "requires",
+        "explanation": "Formula concept.working_capital requires explicit evidence for current_assets."
+      },
+      {
+        "subject": "concept.working_capital",
+        "predicate": "requires_input",
+        "object": "current_liabilities",
+        "polarity": "requires",
+        "explanation": "Formula concept.working_capital requires explicit evidence for current_liabilities."
+      }
+    ],
+    "requiredEvidence": [
+      "formula_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "guarded_formula",
+    "formula": {
+      "expression": "current_assets - current_liabilities",
+      "requiredInputs": [
+        "current_assets",
+        "current_liabilities"
+      ],
+      "requiredGrain": [
+        "same reporting entity"
+      ],
+      "requiredUnits": [
+        "same currency"
+      ],
+      "requiredTimeBasis": [
+        "same as-of date"
+      ],
+      "blockers": [
+        "missing balance-sheet scope",
+        "date mismatch"
+      ]
+    },
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  }
+]

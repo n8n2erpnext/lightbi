@@ -19,9 +19,13 @@
     "test:release-1.0": "node scripts/run-release-1.0-suite.mjs",
     "test:historical-desktop:diagnostic": "pnpm --dir apps/desktop test",
     "test:preproduction-ops": "node scripts/verify-preproduction-ops.mjs",
-    "test:ops": "node scripts/verify-preproduction-ops.mjs"
+    "test:ops": "node scripts/verify-preproduction-ops.mjs",
+    "micro-brain:seed": "node scripts/micro-brain/synthesize-foundation-v1.mjs",
+    "micro-brain:compile": "node scripts/micro-brain/compile-foundation-v1.mjs",
+    "micro-brain:build": "pnpm micro-brain:seed && pnpm micro-brain:compile"
   },
   "devDependencies": {
+    "ml-matrix": "6.15.0",
     "typescript": "^5.9.3"
   }
 }

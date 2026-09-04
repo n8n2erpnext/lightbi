@@ -6,6 +6,7 @@ import { deterministicPolicySha256 } from "./contextual-evidence-policy";
 import { EVIDENCE_FAMILY_BY_TYPE } from "./contextual-evidence-policy";
 import { SEMANTIC_RESOLUTION_ARTIFACT_VERSION, SEMANTIC_RESOLUTION_POLICY_VERSION, type CandidateResolutionTraceV1, type ColumnSemanticResolutionV1, type EvidenceDependencyKind, type LexicalEvidenceClass, type ResolutionDebtV1, type ResolutionLimitationV1, type SemanticResolutionArtifactV1, type SemanticResolutionState } from "./semantic-resolution-contracts";
 import { LEXICAL_CLASS_ORDER, SEMANTIC_RESOLUTION_POLICY, semanticResolutionPolicyHash } from "./semantic-resolution-policy";
+import { SEMANTIC_SIGNAL_BY_ID } from "../semantic-registry";
 
 const exactTypes = new Set(["canonical_header_exact", "header_alias_exact", "alias_exact"]);
 const fullFileFamilies = new Set(["physical_compatibility", "cardinality_role"]);
@@ -17,11 +18,21 @@ function lexicalClass(profile: CandidateEvidenceProfileV1): LexicalEvidenceClass
   if (evidence.some((e) => e.type === "header_alias_exact")) return "header_alias_exact";
   if (evidence.some((e) => e.type === "alias_exact")) return "alias_exact";
   if (evidence.some((e) => e.type === "alias_token_containment")) return "token_containment";
+  if (evidence.some((e) => e.type === "micro_brain_retrieval")) return "semantic_retrieval";
   if (evidence.some((e) => e.type === "value_alias" || e.type === "value_pattern")) return "value_only";
   return "none";
 }
 function lexicalStrength(value: LexicalEvidenceClass) { return LEXICAL_CLASS_ORDER.indexOf(value); }
 function references(profile: CandidateEvidenceProfileV1) { return [...new Set([...profile.supportingEvidence, ...profile.conflictingEvidence, ...profile.neutralEvidence].map((e) => e.evidenceId))].sort(); }
+function microBrainTimeCorroborated(profile: CandidateEvidenceProfileV1): boolean {
+  const definition = SEMANTIC_SIGNAL_BY_ID.get(profile.candidateId);
+  if (!definition || definition.type !== "time" || definition.role !== "time") return false;
+  const support = profile.supportingEvidence;
+  const consensus = support.some((evidence) => evidence.type === "micro_brain_retrieval" && evidence.source === "micro_brain" && evidence.explanationCode === "micro_brain_dual_retrieval_consensus");
+  const typeCompatible = support.some((evidence) => evidence.type === "physical_type_compatible" && evidence.source === "source_profile");
+  const fullFileDateShape = support.some((evidence) => evidence.type === "date_shape" && evidence.source === "source_profile");
+  return consensus && typeCompatible && fullFileDateShape;
+}
 function debtFor(column: string, debt: CandidateAbsenceDebtV1[]): ResolutionDebtV1[] {
   return debt.filter((item) => item.physicalColumn === column || item.physicalColumn.endsWith(`:${column}`)).map((item) => ({ ...item, effect: "blocks_confirmation" as const })).sort((a,b)=>`${a.physicalColumn}|${a.candidateId}`.localeCompare(`${b.physicalColumn}|${b.candidateId}`));
 }
@@ -53,7 +64,8 @@ function trace(profile: CandidateEvidenceProfileV1, contextual: ContextualEviden
   }).map((f) => f.family);
   const conflicts = [...new Set([...profile.conflictSummary.unresolvedConflictCodes, ...profile.structuralAndParsingLimitations.filter((x) => materialIssues.has(x))])].sort();
   const nonLexical = independentFamilies.filter((f) => f !== "lexical_identity");
-  const weak = ["token_containment", "value_only", "none"].includes(lexical);
+  const mbTimeCorroborated = lexical === "semantic_retrieval" && microBrainTimeCorroborated(profile);
+  const weak = ["token_containment", "value_only", "none"].includes(lexical) || (lexical === "semantic_retrieval" && !mbTimeCorroborated);
   const disposition = conflicts.length ? "materially_conflicted" : weak || nonLexical.length === 0 ? (relation.independentContext.length && weak ? "correlated_evidence_only" : "insufficient_evidence") : "viable";
   const all = [...profile.supportingEvidence, ...profile.conflictingEvidence, ...profile.neutralEvidence];
   const correlatedHeader = all.filter((e) => exactTypes.has(e.type) || e.type === "alias_token_containment").slice(1).map((e) => ({ evidenceReference: e.evidenceId, dependency: "same_header_surface" as const, dependsOn: [all.find((x) => exactTypes.has(x.type) || x.type === "alias_token_containment")?.evidenceId ?? ""] }));
@@ -98,7 +110,7 @@ function applyDominance(traces: CandidateResolutionTraceV1[]) {
     ].includes(item.explanationCode));
     const exactOverWeak = qualifiedComposition
       && ["canonical_id_exact", "canonical_label_exact", "header_alias_exact", "alias_exact"].includes(left.lexicalClass)
-      && ["token_containment", "value_only", "none"].includes(right.lexicalClass)
+      && ["token_containment", "semantic_retrieval", "value_only", "none"].includes(right.lexicalClass)
       && [...b].every((family) => a.has(family))
       && left.materialConflictCodes.length <= right.materialConflictCodes.length;
     if (exactOverWeak) {
@@ -109,7 +121,7 @@ function applyDominance(traces: CandidateResolutionTraceV1[]) {
 function resolveColumn(index: number, physical: DatasetUnderstandingArtifactV1, candidate: CandidateArtifactV1, contextual: ContextualEvidenceArtifactV1): ColumnSemanticResolutionV1 {
   const observation=candidate.observations[index], context=contextual.observations[index], column=physical.sourceProfile.columns[index];
   const traces=context.candidateProfiles.map((p)=>trace(p,contextual)); applyDominance(traces);
-  const debt=debtFor(observation.physicalColumn, contextual.candidateAbsenceDebt),viable=traces.filter((t)=>t.disposition==="viable"),collisionAlternatives=traces.filter((item)=>item!==viable[0]),collisionCanResolve=viable.length===1&&(viable[0].independence.independentContextFamilies.length>0||collisionAlternatives.every((item)=>item.disposition==="materially_conflicted"||item.disposition==="dominated")||collisionAlternatives.every((item)=>item.disposition==="insufficient_evidence"&&["token_containment","value_only","none"].includes(item.lexicalClass)));
+  const debt=debtFor(observation.physicalColumn, contextual.candidateAbsenceDebt),viable=traces.filter((t)=>t.disposition==="viable"),collisionAlternatives=traces.filter((item)=>item!==viable[0]),collisionCanResolve=viable.length===1&&(viable[0].independence.independentContextFamilies.length>0||collisionAlternatives.every((item)=>item.disposition==="materially_conflicted"||item.disposition==="dominated")||collisionAlternatives.every((item)=>item.disposition==="insufficient_evidence"&&["token_containment","semantic_retrieval","value_only","none"].includes(item.lexicalClass)));
   let finalState: SemanticResolutionState="unknown", selectedCandidateId:string|null=null, rules:string[]=["R-NO-CANDIDATE"];
   if(observation.state==="technical_candidate"){finalState="technical";rules=["R-TECHNICAL"];}
   else if(observation.state==="unsupported_input"){finalState="unsupported_input";rules=["R-UNSUPPORTED"];}
@@ -117,9 +129,10 @@ function resolveColumn(index: number, physical: DatasetUnderstandingArtifactV1, 
     if(debt.length){ finalState=viable.length ? "ambiguous" : "unknown"; rules=["R-DEBT",viable.length?"R-AMBIGUOUS":"R-NO-CANDIDATE"]; debt.forEach((d)=>d.effect=viable.length?"forces_ambiguity":"forces_unknown"); }
     else if(observation.candidateSet.hasAliasCollision&&traces.length>1&&!collisionCanResolve){finalState="ambiguous";rules=["R-AMBIGUOUS"];}
     else if(viable.length>1){finalState="ambiguous";rules=["R-AMBIGUOUS"];}
-    else if(viable.length===1){const winner=viable[0];const beyond=winner.independence.independentSupportFamilies.filter((f)=>f!=="lexical_identity");const hasFull=beyond.some((f)=>fullFileFamilies.has(f));const exact=["canonical_id_exact","canonical_label_exact","header_alias_exact","alias_exact"].includes(winner.lexicalClass);const highImpact=column.issues.some((i)=>i.severity==="error"||materialIssues.has(i.code));
+    else if(viable.length===1){const winner=viable[0];const beyond=winner.independence.independentSupportFamilies.filter((f)=>f!=="lexical_identity");const hasFull=beyond.some((f)=>fullFileFamilies.has(f));const exact=["canonical_id_exact","canonical_label_exact","header_alias_exact","alias_exact"].includes(winner.lexicalClass);const mbTime=winner.lexicalClass==="semantic_retrieval"&&microBrainTimeCorroborated(winner.completeEvidenceProfile);const highImpact=column.issues.some((i)=>i.severity==="error"||materialIssues.has(i.code));
       if(exact&&beyond.length>=2&&hasFull&&!highImpact){finalState="confirmed";rules=["R-CONFIRMED"];}
       else if(exact&&beyond.length>=1&&!highImpact){finalState="probable";rules=["R-PROBABLE"];}
+      else if(mbTime&&beyond.includes("physical_compatibility")&&hasFull&&!highImpact){finalState="probable";rules=["R-MB-PROBABLE"];}
       else{finalState="unknown";rules=["R-WEAK-ONLY"];}
       if(finalState==="confirmed"||finalState==="probable"){selectedCandidateId=winner.candidateId;winner.disposition="selected";winner.ruleIds.push(...rules);}
     } else if(traces.filter((t)=>t.disposition==="materially_conflicted").length){rules=["R-MATERIAL-CONFLICT"];}

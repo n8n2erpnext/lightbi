@@ -1,0 +1,1107 @@
+[
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.as_of_time",
+    "status": "validated",
+    "kind": "time",
+    "labels": [
+      "As-of Time",
+      "snapshot date",
+      "ngày chốt"
+    ],
+    "semanticFamily": "time",
+    "relatedDomains": [
+      "core",
+      "inventory",
+      "finance"
+    ],
+    "definition": "Point-in-time basis defining when a balance or snapshot is valid.",
+    "positiveClues": [
+      "as of",
+      "snapshot date",
+      "closing date",
+      "ngày chốt"
+    ],
+    "negativeClues": [
+      "not a flow period by itself",
+      "snapshots across dates are not safely additive"
+    ],
+    "compatibleTypes": [
+      "date",
+      "datetime",
+      "timestamp",
+      "string"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "time_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.atomic_measure",
+    "status": "validated",
+    "kind": "measure",
+    "labels": [
+      "Atomic Measure",
+      "row-level measure",
+      "giá trị nguyên tử"
+    ],
+    "semanticFamily": "measure_role",
+    "relatedDomains": [
+      "core"
+    ],
+    "definition": "Measure whose value belongs to the current analytical grain and can be aggregated according to its declared additivity.",
+    "positiveClues": [
+      "line amount",
+      "event amount",
+      "atomic quantity"
+    ],
+    "negativeClues": [
+      "not every numeric column is atomic",
+      "parent totals and rates require separate treatment"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "measure_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.business_document",
+    "status": "validated",
+    "kind": "identifier",
+    "labels": [
+      "Business Document",
+      "document number",
+      "chứng từ"
+    ],
+    "semanticFamily": "document",
+    "relatedDomains": [
+      "core",
+      "operations"
+    ],
+    "definition": "Identifier for a business document such as an order, invoice, receipt, shipment or work order.",
+    "positiveClues": [
+      "document no",
+      "document id",
+      "voucher no",
+      "chứng từ"
+    ],
+    "negativeClues": [
+      "row number alone is not a business document",
+      "document identity does not prove line grain"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "identifier_shape",
+      "document_context"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.currency",
+    "status": "validated",
+    "kind": "unit",
+    "labels": [
+      "Currency",
+      "currency code",
+      "tiền tệ"
+    ],
+    "canonicalSignal": "currency",
+    "semanticFamily": "money",
+    "relatedDomains": [
+      "core",
+      "finance"
+    ],
+    "definition": "Currency denomination such as VND, USD or EUR used by monetary values.",
+    "positiveClues": [
+      "currency",
+      "ccy",
+      "vnd",
+      "usd",
+      "eur"
+    ],
+    "negativeClues": [
+      "currency code is not an exchange rate",
+      "absence of currency does not prove same-currency compatibility"
+    ],
+    "compatibleTypes": [
+      "string"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "unit_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.distinct_count",
+    "status": "validated",
+    "kind": "formula",
+    "labels": [
+      "Distinct Count",
+      "unique count",
+      "đếm duy nhất"
+    ],
+    "semanticFamily": "count",
+    "relatedDomains": [
+      "core"
+    ],
+    "definition": "Count of distinct values of a proven business identity rather than physical rows.",
+    "positiveClues": [
+      "unique customers",
+      "distinct orders",
+      "count distinct"
+    ],
+    "negativeClues": [
+      "row count is not distinct entity count",
+      "identity must be stable and non-technical"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [
+      {
+        "subject": "concept.distinct_count",
+        "predicate": "requires_input",
+        "object": "identity",
+        "polarity": "requires",
+        "explanation": "Formula concept.distinct_count requires explicit evidence for identity."
+      }
+    ],
+    "requiredEvidence": [
+      "formula_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "guarded_formula",
+    "formula": {
+      "expression": "COUNT(DISTINCT identity)",
+      "requiredInputs": [
+        "identity"
+      ],
+      "requiredGrain": [
+        "declared entity or document grain"
+      ],
+      "requiredUnits": [
+        "identity"
+      ],
+      "requiredTimeBasis": [
+        "selected period"
+      ],
+      "blockers": [
+        "technical id",
+        "unstable or missing identity"
+      ]
+    },
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.entity_identity",
+    "status": "validated",
+    "kind": "identifier",
+    "labels": [
+      "Entity ID",
+      "business entity key",
+      "mã đối tượng"
+    ],
+    "semanticFamily": "entity",
+    "relatedDomains": [
+      "core"
+    ],
+    "definition": "Stable identifier for a business entity such as customer, product, employee, asset or supplier.",
+    "positiveClues": [
+      "entity id",
+      "master key",
+      "business key"
+    ],
+    "negativeClues": [
+      "name text is not always a stable identifier",
+      "do not distinct-count without identity evidence"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "identifier_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.event_time",
+    "status": "validated",
+    "kind": "time",
+    "labels": [
+      "Event Time",
+      "event timestamp",
+      "thời điểm sự kiện"
+    ],
+    "canonicalSignal": "time_period",
+    "semanticFamily": "time",
+    "relatedDomains": [
+      "core",
+      "operations"
+    ],
+    "definition": "Timestamp at which a business event occurred.",
+    "positiveClues": [
+      "occurred at",
+      "event time",
+      "transaction date",
+      "created at"
+    ],
+    "negativeClues": [
+      "not the same as snapshot as-of time",
+      "not necessarily due or promise time"
+    ],
+    "compatibleTypes": [
+      "date",
+      "datetime",
+      "timestamp",
+      "string"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "time_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.flow_measure",
+    "status": "validated",
+    "kind": "flow",
+    "labels": [
+      "Flow Measure",
+      "period movement",
+      "phát sinh trong kỳ"
+    ],
+    "semanticFamily": "flow",
+    "relatedDomains": [
+      "core",
+      "inventory",
+      "finance"
+    ],
+    "definition": "Measure accumulated from events occurring within a defined period.",
+    "positiveClues": [
+      "inflow",
+      "outflow",
+      "movement",
+      "transactions during period"
+    ],
+    "negativeClues": [
+      "not an ending balance",
+      "requires a time window"
+    ],
+    "compatibleTypes": [
+      "number",
+      "string"
+    ],
+    "relations": [
+      {
+        "subject": "concept.flow_measure",
+        "predicate": "distinct_from",
+        "object": "concept.account_balance",
+        "polarity": "distinct_from",
+        "explanation": "Balance is point-in-time stock; flow accumulates events over a period."
+      }
+    ],
+    "requiredEvidence": [
+      "flow_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.money_amount",
+    "status": "validated",
+    "kind": "measure",
+    "labels": [
+      "Money Amount",
+      "monetary amount",
+      "số tiền"
+    ],
+    "semanticFamily": "money",
+    "relatedDomains": [
+      "core",
+      "finance"
+    ],
+    "definition": "Numeric amount expressed in a currency or monetary basis.",
+    "positiveClues": [
+      "amount",
+      "value",
+      "money",
+      "số tiền"
+    ],
+    "negativeClues": [
+      "numeric amount is not automatically revenue or cost",
+      "currency must be known for cross-source addition"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "numeric_shape",
+      "monetary_context",
+      "currency_compatibility_when_combined"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.parent_document_total",
+    "status": "validated",
+    "kind": "measure",
+    "labels": [
+      "Parent Document Total",
+      "header total",
+      "tổng chứng từ"
+    ],
+    "semanticFamily": "money",
+    "relatedDomains": [
+      "core",
+      "revenue",
+      "finance"
+    ],
+    "definition": "Amount recorded at parent-document level that may repeat on multiple detail rows.",
+    "positiveClues": [
+      "invoice total",
+      "order total",
+      "document total"
+    ],
+    "negativeClues": [
+      "repeated parent totals must not be summed across detail rows",
+      "line grain does not make a header total atomic"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "numeric_shape",
+      "parent_repetition_evidence",
+      "document_identity"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.percentage",
+    "status": "validated",
+    "kind": "measure",
+    "labels": [
+      "Percentage",
+      "percent",
+      "tỷ lệ %"
+    ],
+    "semanticFamily": "percentage",
+    "relatedDomains": [
+      "core"
+    ],
+    "definition": "Ratio expressed on a percentage scale, normally requiring a defined numerator and denominator.",
+    "positiveClues": [
+      "percent",
+      "pct",
+      "%",
+      "rate"
+    ],
+    "negativeClues": [
+      "percentage is not safely additive",
+      "averaging percentages without denominator weights can be wrong"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [
+      {
+        "subject": "concept.percentage",
+        "predicate": "distinct_from",
+        "object": "concept.gross_margin_pct",
+        "polarity": "distinct_from",
+        "explanation": "Gross margin is a specific ratio with defined numerator and denominator, not any percent field."
+      }
+    ],
+    "requiredEvidence": [
+      "measure_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.quantity",
+    "status": "validated",
+    "kind": "measure",
+    "labels": [
+      "Quantity",
+      "qty",
+      "units",
+      "số lượng"
+    ],
+    "canonicalSignal": "quantity",
+    "semanticFamily": "quantity",
+    "relatedDomains": [
+      "core",
+      "inventory",
+      "operations"
+    ],
+    "definition": "Count or amount of physical or logical units measured in a unit of measure.",
+    "positiveClues": [
+      "quantity",
+      "qty",
+      "units",
+      "số lượng"
+    ],
+    "negativeClues": [
+      "quantity is not a money amount",
+      "different units of measure cannot be summed without conversion"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "measure_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.ratio",
+    "status": "validated",
+    "kind": "formula",
+    "labels": [
+      "Ratio",
+      "rate",
+      "tỷ lệ"
+    ],
+    "semanticFamily": "ratio",
+    "relatedDomains": [
+      "core"
+    ],
+    "definition": "Derived comparison of a numerator to a denominator under a shared grain and time basis.",
+    "positiveClues": [
+      "ratio",
+      "rate",
+      "per",
+      "tỷ lệ"
+    ],
+    "negativeClues": [
+      "ratio is not a raw additive measure",
+      "denominator definition cannot be guessed"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [
+      {
+        "subject": "concept.ratio",
+        "predicate": "requires_input",
+        "object": "numerator",
+        "polarity": "requires",
+        "explanation": "Formula concept.ratio requires explicit evidence for numerator."
+      },
+      {
+        "subject": "concept.ratio",
+        "predicate": "requires_input",
+        "object": "denominator",
+        "polarity": "requires",
+        "explanation": "Formula concept.ratio requires explicit evidence for denominator."
+      }
+    ],
+    "requiredEvidence": [
+      "formula_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "guarded_formula",
+    "formula": {
+      "expression": "numerator / denominator",
+      "requiredInputs": [
+        "numerator",
+        "denominator"
+      ],
+      "requiredGrain": [
+        "compatible numerator and denominator grain"
+      ],
+      "requiredUnits": [
+        "compatible units"
+      ],
+      "requiredTimeBasis": [
+        "same analysis period"
+      ],
+      "blockers": [
+        "zero denominator",
+        "missing denominator definition"
+      ]
+    },
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.record_identity",
+    "status": "validated",
+    "kind": "identifier",
+    "labels": [
+      "Record ID",
+      "row identifier",
+      "record key",
+      "mã bản ghi"
+    ],
+    "canonicalSignal": "record_id",
+    "semanticFamily": "identity",
+    "relatedDomains": [
+      "core"
+    ],
+    "definition": "Identifier intended to distinguish one source record or atomic row from another.",
+    "positiveClues": [
+      "record id",
+      "row id",
+      "line id",
+      "unique record key"
+    ],
+    "negativeClues": [
+      "not automatically a business document id",
+      "not a measure to sum"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "identifier_shape",
+      "high_uniqueness_or_declared_key"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.reporting_period",
+    "status": "validated",
+    "kind": "time",
+    "labels": [
+      "Reporting Period",
+      "period",
+      "kỳ báo cáo",
+      "tháng báo cáo"
+    ],
+    "canonicalSignal": "time_period",
+    "semanticFamily": "time",
+    "relatedDomains": [
+      "core"
+    ],
+    "definition": "Time bucket used to group or compare business observations.",
+    "positiveClues": [
+      "period",
+      "month",
+      "quarter",
+      "year",
+      "kỳ"
+    ],
+    "negativeClues": [
+      "period label is not necessarily event timestamp",
+      "do not compare incompatible calendars"
+    ],
+    "compatibleTypes": [
+      "date",
+      "datetime",
+      "timestamp",
+      "string"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "time_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.row_count",
+    "status": "validated",
+    "kind": "formula",
+    "labels": [
+      "Row Count",
+      "source record count",
+      "số dòng"
+    ],
+    "semanticFamily": "count",
+    "relatedDomains": [
+      "core"
+    ],
+    "definition": "Count of physical source rows after the active filters, without claiming they are unique business entities.",
+    "positiveClues": [
+      "rows",
+      "records",
+      "source records"
+    ],
+    "negativeClues": [
+      "not automatically customer count, order count or shipment count",
+      "duplicates remain included"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [
+      {
+        "subject": "concept.row_count",
+        "predicate": "requires_input",
+        "object": "source_rows",
+        "polarity": "requires",
+        "explanation": "Formula concept.row_count requires explicit evidence for source_rows."
+      }
+    ],
+    "requiredEvidence": [
+      "formula_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "guarded_formula",
+    "formula": {
+      "expression": "COUNT(*)",
+      "requiredInputs": [
+        "source_rows"
+      ],
+      "requiredGrain": [
+        "physical row grain"
+      ],
+      "requiredUnits": [
+        "rows"
+      ],
+      "requiredTimeBasis": [
+        "selected period if filtered"
+      ],
+      "blockers": [
+        "claiming unique entity semantics"
+      ]
+    },
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.snapshot_measure",
+    "status": "validated",
+    "kind": "snapshot",
+    "labels": [
+      "Snapshot Measure",
+      "point-in-time balance",
+      "số dư tại thời điểm"
+    ],
+    "semanticFamily": "snapshot",
+    "relatedDomains": [
+      "core",
+      "inventory",
+      "finance"
+    ],
+    "definition": "Measure valid at a point in time rather than accumulated across a period.",
+    "positiveClues": [
+      "as of",
+      "balance",
+      "on hand",
+      "closing"
+    ],
+    "negativeClues": [
+      "do not sum the same balance across snapshot dates",
+      "not a period flow"
+    ],
+    "compatibleTypes": [
+      "number",
+      "string"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "snapshot_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.status",
+    "status": "validated",
+    "kind": "status",
+    "labels": [
+      "Status",
+      "state",
+      "trạng thái"
+    ],
+    "canonicalSignal": "status",
+    "semanticFamily": "status",
+    "relatedDomains": [
+      "core"
+    ],
+    "definition": "Categorical state describing the current or recorded condition of an entity, document or event.",
+    "positiveClues": [
+      "status",
+      "state",
+      "condition"
+    ],
+    "negativeClues": [
+      "generic status does not reveal which business process it belongs to",
+      "status code is not a numeric measure"
+    ],
+    "compatibleTypes": [
+      "string",
+      "boolean",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "status_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.unit_of_measure",
+    "status": "validated",
+    "kind": "unit",
+    "labels": [
+      "Unit of Measure",
+      "UOM",
+      "đơn vị tính",
+      "ĐVT"
+    ],
+    "canonicalSignal": "uom",
+    "semanticFamily": "quantity",
+    "relatedDomains": [
+      "core",
+      "inventory",
+      "operations"
+    ],
+    "definition": "Unit that gives meaning to a quantity such as pieces, kilograms, hours or meters.",
+    "positiveClues": [
+      "uom",
+      "unit",
+      "pcs",
+      "kg",
+      "đvt"
+    ],
+    "negativeClues": [
+      "unit text is not a quantity",
+      "incompatible units block direct aggregation"
+    ],
+    "compatibleTypes": [
+      "string"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "unit_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.weighted_average",
+    "status": "validated",
+    "kind": "formula",
+    "labels": [
+      "Weighted Average",
+      "weighted mean",
+      "trung bình gia quyền"
+    ],
+    "semanticFamily": "aggregation",
+    "relatedDomains": [
+      "core"
+    ],
+    "definition": "Average where each observation is weighted by an explicit exposure, quantity or denominator.",
+    "positiveClues": [
+      "weighted average",
+      "weighted mean",
+      "sum value times weight"
+    ],
+    "negativeClues": [
+      "simple average of subgroup averages can be wrong",
+      "weights must be explicit and compatible"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [
+      {
+        "subject": "concept.weighted_average",
+        "predicate": "requires_input",
+        "object": "value",
+        "polarity": "requires",
+        "explanation": "Formula concept.weighted_average requires explicit evidence for value."
+      },
+      {
+        "subject": "concept.weighted_average",
+        "predicate": "requires_input",
+        "object": "weight",
+        "polarity": "requires",
+        "explanation": "Formula concept.weighted_average requires explicit evidence for weight."
+      }
+    ],
+    "requiredEvidence": [
+      "formula_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "guarded_formula",
+    "formula": {
+      "expression": "SUM(value * weight) / SUM(weight)",
+      "requiredInputs": [
+        "value",
+        "weight"
+      ],
+      "requiredGrain": [
+        "compatible observation grain"
+      ],
+      "requiredUnits": [
+        "compatible value and weight units"
+      ],
+      "requiredTimeBasis": [
+        "same analysis period"
+      ],
+      "blockers": [
+        "missing weight",
+        "zero total weight"
+      ]
+    },
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  }
+]

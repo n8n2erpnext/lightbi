@@ -8,6 +8,7 @@ export const EVIDENCE_FAMILY_ORDER: EvidenceFamily[] = [
 export const EVIDENCE_FAMILY_BY_TYPE: Record<SemanticEvidenceType, EvidenceFamily> = {
   canonical_header_exact: "lexical_identity", header_alias_exact: "lexical_identity",
   alias_exact: "lexical_identity", alias_token_containment: "lexical_identity", alias_collision: "lexical_identity",
+  micro_brain_retrieval: "lexical_identity",
   value_alias: "value_semantics", value_pattern: "value_semantics",
   physical_type_compatible: "physical_compatibility", physical_type_conflict: "physical_compatibility",
   numeric_shape: "physical_compatibility", date_shape: "physical_compatibility", string_shape: "physical_compatibility",
@@ -23,7 +24,8 @@ export const CONTEXTUAL_EVIDENCE_POLICY: AggregationPolicyV1 = {
   rules: [
     "deduplicate evidence by canonical content excluding evidenceId",
     "same rule and normalized witnesses contribute once per family",
-    "exact lexical and containment evidence remain one independent lexical contribution",
+    "exact lexical, containment, and Micro Brain retrieval evidence remain one independent lexical contribution",
+    "Micro Brain retrieval similarity is candidate recall provenance and never an independent confidence family",
     "repeated value witnesses do not create independent value families",
     "representative evidence never becomes full-file truth",
     "family magnitude is bounded to zero through one",

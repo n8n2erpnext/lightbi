@@ -1,0 +1,1702 @@
+[
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.actual_completion_time",
+    "status": "validated",
+    "kind": "time",
+    "labels": [
+      "Actual Completion Time",
+      "actual delivery time",
+      "thời gian thực tế"
+    ],
+    "canonicalSignal": "actual_time",
+    "semanticFamily": "time",
+    "relatedDomains": [
+      "operations",
+      "performance"
+    ],
+    "definition": "Observed time at which an operational task, delivery or event actually completed.",
+    "positiveClues": [
+      "actual time",
+      "actual delivery",
+      "completed at"
+    ],
+    "negativeClues": [
+      "not ETA",
+      "event semantics must identify what completed"
+    ],
+    "compatibleTypes": [
+      "date",
+      "datetime",
+      "timestamp",
+      "string"
+    ],
+    "relations": [
+      {
+        "subject": "concept.actual_completion_time",
+        "predicate": "distinct_from",
+        "object": "concept.eta",
+        "polarity": "distinct_from",
+        "explanation": "ETA is expected/promised time; actual completion is observed time."
+      }
+    ],
+    "requiredEvidence": [
+      "time_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.carrier",
+    "status": "validated",
+    "kind": "dimension",
+    "labels": [
+      "Carrier",
+      "logistics provider",
+      "đơn vị vận chuyển"
+    ],
+    "canonicalSignal": "carrier",
+    "semanticFamily": "entity",
+    "relatedDomains": [
+      "operations",
+      "finance"
+    ],
+    "definition": "Organization or service provider responsible for transporting goods.",
+    "positiveClues": [
+      "carrier",
+      "shipping provider",
+      "logistics provider"
+    ],
+    "negativeClues": [
+      "carrier is not driver",
+      "carrier name is not a freight amount"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [
+      {
+        "subject": "concept.carrier",
+        "predicate": "distinct_from",
+        "object": "concept.driver",
+        "polarity": "distinct_from",
+        "explanation": "Carrier is an organization/provider; driver is a person/role."
+      }
+    ],
+    "requiredEvidence": [
+      "dimension_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.cod_amount",
+    "status": "validated",
+    "kind": "measure",
+    "labels": [
+      "COD Amount",
+      "Cash on Delivery",
+      "tiền thu hộ"
+    ],
+    "canonicalSignal": "cod_amount",
+    "semanticFamily": "money",
+    "relatedDomains": [
+      "operations",
+      "finance",
+      "revenue"
+    ],
+    "definition": "Amount the delivery process is expected to collect from the consignee on behalf of another party.",
+    "positiveClues": [
+      "cod",
+      "cash on delivery",
+      "thu hộ"
+    ],
+    "negativeClues": [
+      "not carrier revenue by default",
+      "not freight fee",
+      "collection amount may differ from settled remittance"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [
+      {
+        "subject": "concept.cod_amount",
+        "predicate": "distinct_from",
+        "object": "concept.freight_fee",
+        "polarity": "distinct_from",
+        "explanation": "COD is money collected on behalf of another party; freight fee is a transport charge."
+      },
+      {
+        "subject": "concept.cod_amount",
+        "predicate": "distinct_from",
+        "object": "concept.revenue",
+        "polarity": "distinct_from",
+        "explanation": "COD collection is not carrier or merchant revenue by default without transaction semantics."
+      }
+    ],
+    "requiredEvidence": [
+      "measure_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.current_location",
+    "status": "validated",
+    "kind": "dimension",
+    "labels": [
+      "Current Location",
+      "current hub",
+      "vị trí hiện tại"
+    ],
+    "canonicalSignal": "current_location",
+    "semanticFamily": "location",
+    "relatedDomains": [
+      "operations",
+      "inventory"
+    ],
+    "definition": "Latest recorded operational location of an item, shipment, vehicle or asset.",
+    "positiveClues": [
+      "current location",
+      "current hub",
+      "current warehouse"
+    ],
+    "negativeClues": [
+      "not origin or destination by definition",
+      "latest event timestamp is required for current-state claims"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "dimension_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.declared_value",
+    "status": "validated",
+    "kind": "measure",
+    "labels": [
+      "Declared Value",
+      "insured value",
+      "giá trị khai báo"
+    ],
+    "canonicalSignal": "declared_value",
+    "semanticFamily": "money",
+    "relatedDomains": [
+      "operations",
+      "inventory",
+      "finance"
+    ],
+    "definition": "Value declared for a shipment for insurance, liability or service purposes.",
+    "positiveClues": [
+      "declared value",
+      "insured value",
+      "giá trị khai báo"
+    ],
+    "negativeClues": [
+      "not sales revenue",
+      "not necessarily replacement or inventory carrying value"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [
+      {
+        "subject": "concept.declared_value",
+        "predicate": "distinct_from",
+        "object": "concept.revenue",
+        "polarity": "distinct_from",
+        "explanation": "Declared shipment value is used for liability/insurance and is not sales revenue by default."
+      }
+    ],
+    "requiredEvidence": [
+      "measure_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.delay",
+    "status": "validated",
+    "kind": "measure",
+    "labels": [
+      "Delay",
+      "lateness",
+      "chậm trễ"
+    ],
+    "canonicalSignal": "delay",
+    "semanticFamily": "time",
+    "relatedDomains": [
+      "operations",
+      "performance"
+    ],
+    "definition": "Amount by which actual timing exceeds a planned, expected or promised timing basis.",
+    "positiveClues": [
+      "delay",
+      "late minutes",
+      "lateness"
+    ],
+    "negativeClues": [
+      "requires both actual and reference time",
+      "negative values may mean early rather than bad data"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [
+      {
+        "subject": "concept.delay",
+        "predicate": "distinct_from",
+        "object": "concept.waiting_time",
+        "polarity": "distinct_from",
+        "explanation": "Waiting time is process dwell; delay is deviation from a reference schedule."
+      }
+    ],
+    "requiredEvidence": [
+      "measure_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.delivery_fee",
+    "status": "validated",
+    "kind": "measure",
+    "labels": [
+      "Delivery Fee",
+      "shipping fee",
+      "phí giao hàng"
+    ],
+    "canonicalSignal": "delivery_fee",
+    "semanticFamily": "money",
+    "relatedDomains": [
+      "operations",
+      "finance"
+    ],
+    "definition": "Fee associated with delivery service under a defined billing or cost context.",
+    "positiveClues": [
+      "delivery fee",
+      "shipping fee",
+      "phí giao"
+    ],
+    "negativeClues": [
+      "must distinguish fee charged from cost incurred",
+      "not shipment count"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "measure_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.delivery_status",
+    "status": "validated",
+    "kind": "status",
+    "labels": [
+      "Delivery Status",
+      "shipping status",
+      "trạng thái giao hàng"
+    ],
+    "canonicalSignal": "delivery_status",
+    "semanticFamily": "status",
+    "relatedDomains": [
+      "operations"
+    ],
+    "definition": "State of a shipment or delivery process such as pending, in transit, delivered, failed or cancelled.",
+    "positiveClues": [
+      "delivered",
+      "in transit",
+      "failed",
+      "pending",
+      "delivery status"
+    ],
+    "negativeClues": [
+      "not payment status",
+      "delivered status alone does not prove on-time performance"
+    ],
+    "compatibleTypes": [
+      "string",
+      "boolean",
+      "number"
+    ],
+    "relations": [
+      {
+        "subject": "concept.delivery_status",
+        "predicate": "distinct_from",
+        "object": "concept.on_time_status",
+        "polarity": "distinct_from",
+        "explanation": "Delivery completion state does not establish whether timing met a promise."
+      },
+      {
+        "subject": "concept.delivery_status",
+        "predicate": "distinct_from",
+        "object": "concept.fulfillment_status",
+        "polarity": "distinct_from",
+        "explanation": "Fulfilled/shipped state can precede final delivery state."
+      }
+    ],
+    "requiredEvidence": [
+      "status_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.delivery_time",
+    "status": "validated",
+    "kind": "time",
+    "labels": [
+      "Delivery Time",
+      "delivered at",
+      "ngày giao"
+    ],
+    "canonicalSignal": "delivery_date",
+    "semanticFamily": "time",
+    "relatedDomains": [
+      "operations"
+    ],
+    "definition": "Time when delivery completion was recorded according to the operational process.",
+    "positiveClues": [
+      "delivery date",
+      "delivered at",
+      "completion time"
+    ],
+    "negativeClues": [
+      "not promised ETA",
+      "failed attempts may have event times without successful delivery"
+    ],
+    "compatibleTypes": [
+      "date",
+      "datetime",
+      "timestamp",
+      "string"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "time_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.destination_location",
+    "status": "validated",
+    "kind": "dimension",
+    "labels": [
+      "Destination Location",
+      "to hub",
+      "điểm đến"
+    ],
+    "canonicalSignal": "destination_location",
+    "semanticFamily": "location",
+    "relatedDomains": [
+      "operations",
+      "inventory"
+    ],
+    "definition": "Location to which a movement, shipment or transfer is intended to go.",
+    "positiveClues": [
+      "destination",
+      "to warehouse",
+      "dest hub"
+    ],
+    "negativeClues": [
+      "not origin",
+      "delivery address may differ from operational hub"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "dimension_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.distance",
+    "status": "validated",
+    "kind": "measure",
+    "labels": [
+      "Distance",
+      "mileage",
+      "quãng đường"
+    ],
+    "canonicalSignal": "distance",
+    "semanticFamily": "quantity",
+    "relatedDomains": [
+      "operations",
+      "performance"
+    ],
+    "definition": "Travelled, planned or billed distance measured in a stated length unit.",
+    "positiveClues": [
+      "distance",
+      "km",
+      "mileage"
+    ],
+    "negativeClues": [
+      "planned and actual distance may differ",
+      "distance cannot be added across incompatible units"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "measure_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.driver",
+    "status": "validated",
+    "kind": "dimension",
+    "labels": [
+      "Driver",
+      "Courier",
+      "Bưu tá",
+      "tài xế"
+    ],
+    "canonicalSignal": "driver",
+    "semanticFamily": "entity",
+    "relatedDomains": [
+      "operations",
+      "performance"
+    ],
+    "definition": "Person assigned to drive, courier or delivery work under an operational process.",
+    "positiveClues": [
+      "driver",
+      "courier",
+      "shipper",
+      "tài xế"
+    ],
+    "negativeClues": [
+      "driver is not carrier organization",
+      "assignment does not prove ownership of vehicle"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [
+      {
+        "subject": "concept.driver",
+        "predicate": "distinct_from",
+        "object": "concept.carrier",
+        "polarity": "distinct_from",
+        "explanation": "Carrier is an organization/provider; driver is a person/role."
+      }
+    ],
+    "requiredEvidence": [
+      "dimension_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.eta",
+    "status": "validated",
+    "kind": "time",
+    "labels": [
+      "ETA",
+      "Promised Time",
+      "dự kiến đến",
+      "thời gian dự kiến đến",
+      "giờ dự kiến đến",
+      "ngày dự kiến đến"
+    ],
+    "canonicalSignal": "eta",
+    "semanticFamily": "time",
+    "relatedDomains": [
+      "operations",
+      "performance"
+    ],
+    "definition": "Expected or promised arrival or completion time used as a service expectation basis.",
+    "positiveClues": [
+      "eta",
+      "promised delivery",
+      "expected arrival",
+      "thoi gian du kien den",
+      "gio du kien den",
+      "ngay du kien den",
+      "du kien den"
+    ],
+    "negativeClues": [
+      "not actual completion time",
+      "forecast updates may overwrite earlier promises"
+    ],
+    "compatibleTypes": [
+      "date",
+      "datetime",
+      "timestamp",
+      "string"
+    ],
+    "relations": [
+      {
+        "subject": "concept.eta",
+        "predicate": "distinct_from",
+        "object": "concept.actual_completion_time",
+        "polarity": "distinct_from",
+        "explanation": "ETA is expected/promised time; actual completion is observed time."
+      }
+    ],
+    "requiredEvidence": [
+      "time_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.freight_fee",
+    "status": "validated",
+    "kind": "measure",
+    "labels": [
+      "Freight Fee",
+      "shipping charge",
+      "cước vận chuyển"
+    ],
+    "canonicalSignal": "freight_fee",
+    "semanticFamily": "money",
+    "relatedDomains": [
+      "operations",
+      "finance",
+      "revenue"
+    ],
+    "definition": "Amount charged for transportation service to a customer or counterparty under a billing basis.",
+    "positiveClues": [
+      "freight fee",
+      "shipping charge",
+      "cước"
+    ],
+    "negativeClues": [
+      "freight billed is not transportation cost paid",
+      "may be revenue component but not product revenue by default"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [
+      {
+        "subject": "concept.freight_fee",
+        "predicate": "distinct_from",
+        "object": "concept.transportation_cost",
+        "polarity": "distinct_from",
+        "explanation": "Freight fee billed and transportation cost incurred are different monetary roles."
+      },
+      {
+        "subject": "concept.freight_fee",
+        "predicate": "distinct_from",
+        "object": "concept.cod_amount",
+        "polarity": "distinct_from",
+        "explanation": "COD is money collected on behalf of another party; freight fee is a transport charge."
+      }
+    ],
+    "requiredEvidence": [
+      "measure_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.fuel_cost",
+    "status": "validated",
+    "kind": "measure",
+    "labels": [
+      "Fuel Cost",
+      "xăng dầu"
+    ],
+    "canonicalSignal": "fuel_cost",
+    "semanticFamily": "money",
+    "relatedDomains": [
+      "operations",
+      "finance"
+    ],
+    "definition": "Cost of fuel consumed or purchased for transportation or equipment operation.",
+    "positiveClues": [
+      "fuel cost",
+      "fuel expense",
+      "xăng dầu"
+    ],
+    "negativeClues": [
+      "fuel purchased is not always fuel consumed in the same period",
+      "not transportation revenue"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "measure_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.fulfillment",
+    "status": "validated",
+    "kind": "identifier",
+    "labels": [
+      "Fulfillment",
+      "item fulfillment",
+      "pick pack ship"
+    ],
+    "canonicalSignal": "fulfillment",
+    "semanticFamily": "document",
+    "relatedDomains": [
+      "operations",
+      "inventory",
+      "revenue"
+    ],
+    "definition": "Operational document or process instance that picks, packs or ships demand against an order.",
+    "positiveClues": [
+      "fulfillment",
+      "pick ticket",
+      "packing",
+      "shipping fulfillment"
+    ],
+    "negativeClues": [
+      "not sales order itself",
+      "partial fulfillment may create multiple records per order"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "identifier_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.fulfillment_status",
+    "status": "validated",
+    "kind": "status",
+    "labels": [
+      "Fulfillment Status",
+      "pick status",
+      "ship status"
+    ],
+    "canonicalSignal": "fulfillment_status",
+    "semanticFamily": "status",
+    "relatedDomains": [
+      "operations",
+      "inventory",
+      "revenue"
+    ],
+    "definition": "State of fulfillment such as unfulfilled, picked, packed, shipped, partial or completed.",
+    "positiveClues": [
+      "fulfilled",
+      "unfulfilled",
+      "picked",
+      "packed",
+      "shipped"
+    ],
+    "negativeClues": [
+      "not payment status",
+      "fulfilled does not necessarily mean delivered"
+    ],
+    "compatibleTypes": [
+      "string",
+      "boolean",
+      "number"
+    ],
+    "relations": [
+      {
+        "subject": "concept.fulfillment_status",
+        "predicate": "distinct_from",
+        "object": "concept.delivery_status",
+        "polarity": "distinct_from",
+        "explanation": "Fulfilled/shipped state can precede final delivery state."
+      }
+    ],
+    "requiredEvidence": [
+      "status_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.on_time_rate",
+    "status": "validated",
+    "kind": "formula",
+    "labels": [
+      "On-Time Rate",
+      "OTD",
+      "tỷ lệ đúng hạn"
+    ],
+    "canonicalSignal": "on_time_rate",
+    "semanticFamily": "performance",
+    "relatedDomains": [
+      "operations",
+      "performance"
+    ],
+    "definition": "Share of eligible completed events meeting the defined on-time rule.",
+    "positiveClues": [
+      "on time rate",
+      "otd",
+      "ontime percentage"
+    ],
+    "negativeClues": [
+      "delivery count alone cannot establish on-time rate",
+      "eligibility denominator and promise basis must be explicit"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [
+      {
+        "subject": "concept.on_time_rate",
+        "predicate": "requires_input",
+        "object": "on_time_eligible_events",
+        "polarity": "requires",
+        "explanation": "Formula concept.on_time_rate requires explicit evidence for on_time_eligible_events."
+      },
+      {
+        "subject": "concept.on_time_rate",
+        "predicate": "requires_input",
+        "object": "eligible_completed_events",
+        "polarity": "requires",
+        "explanation": "Formula concept.on_time_rate requires explicit evidence for eligible_completed_events."
+      }
+    ],
+    "requiredEvidence": [
+      "formula_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "guarded_formula",
+    "formula": {
+      "expression": "on_time_eligible_events / eligible_completed_events * 100",
+      "requiredInputs": [
+        "on_time_eligible_events",
+        "eligible_completed_events"
+      ],
+      "requiredGrain": [
+        "same delivery or event grain"
+      ],
+      "requiredUnits": [
+        "count/count"
+      ],
+      "requiredTimeBasis": [
+        "same service period and promise basis"
+      ],
+      "blockers": [
+        "missing promised time",
+        "ambiguous eligibility",
+        "duplicate event rows"
+      ]
+    },
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.on_time_status",
+    "status": "validated",
+    "kind": "status",
+    "labels": [
+      "On-time Status",
+      "late status",
+      "đúng hẹn"
+    ],
+    "canonicalSignal": "on_time_status",
+    "semanticFamily": "performance",
+    "relatedDomains": [
+      "operations",
+      "performance"
+    ],
+    "definition": "Categorical comparison of actual completion against a promised or required time threshold.",
+    "positiveClues": [
+      "on time",
+      "late",
+      "early",
+      "đúng hẹn"
+    ],
+    "negativeClues": [
+      "requires promised and actual basis",
+      "delivery status is not on-time status"
+    ],
+    "compatibleTypes": [
+      "string",
+      "boolean",
+      "number"
+    ],
+    "relations": [
+      {
+        "subject": "concept.on_time_status",
+        "predicate": "distinct_from",
+        "object": "concept.delivery_status",
+        "polarity": "distinct_from",
+        "explanation": "Delivery completion state does not establish whether timing met a promise."
+      }
+    ],
+    "requiredEvidence": [
+      "status_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.origin_location",
+    "status": "validated",
+    "kind": "dimension",
+    "labels": [
+      "Origin Location",
+      "from hub",
+      "điểm đi"
+    ],
+    "canonicalSignal": "origin_location",
+    "semanticFamily": "location",
+    "relatedDomains": [
+      "operations",
+      "inventory"
+    ],
+    "definition": "Location from which a movement, shipment or transfer starts.",
+    "positiveClues": [
+      "origin",
+      "from warehouse",
+      "source hub"
+    ],
+    "negativeClues": [
+      "not destination",
+      "current location may differ during transit"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "dimension_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.pickup_time",
+    "status": "validated",
+    "kind": "time",
+    "labels": [
+      "Pickup Time",
+      "pickup date",
+      "ngày lấy hàng"
+    ],
+    "canonicalSignal": "pickup_date",
+    "semanticFamily": "time",
+    "relatedDomains": [
+      "operations"
+    ],
+    "definition": "Time when goods were or are scheduled to be collected from origin under the source process.",
+    "positiveClues": [
+      "pickup time",
+      "pickup date",
+      "collected at"
+    ],
+    "negativeClues": [
+      "planned and actual pickup must not be mixed",
+      "not delivery time"
+    ],
+    "compatibleTypes": [
+      "date",
+      "datetime",
+      "timestamp",
+      "string"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "time_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.route",
+    "status": "validated",
+    "kind": "dimension",
+    "labels": [
+      "Route",
+      "delivery route",
+      "tuyến"
+    ],
+    "canonicalSignal": "route",
+    "semanticFamily": "location",
+    "relatedDomains": [
+      "operations"
+    ],
+    "definition": "Planned or assigned operational path or service zone for movement or delivery.",
+    "positiveClues": [
+      "route",
+      "zone",
+      "tuyến",
+      "service area"
+    ],
+    "negativeClues": [
+      "route is not one trip",
+      "region label is not exact travelled distance"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [
+      {
+        "subject": "concept.route",
+        "predicate": "distinct_from",
+        "object": "concept.trip",
+        "polarity": "distinct_from",
+        "explanation": "Route describes a path or service area; trip describes an execution instance."
+      }
+    ],
+    "requiredEvidence": [
+      "dimension_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.service_group",
+    "status": "validated",
+    "kind": "dimension",
+    "labels": [
+      "Service Group",
+      "service type",
+      "nhóm dịch vụ"
+    ],
+    "canonicalSignal": "service_group",
+    "semanticFamily": "item",
+    "relatedDomains": [
+      "operations",
+      "revenue"
+    ],
+    "definition": "Category of logistics or operational service such as express, economy, cold chain or special handling.",
+    "positiveClues": [
+      "service group",
+      "service code",
+      "service type"
+    ],
+    "negativeClues": [
+      "service category is not shipment status",
+      "code meaning depends on provider taxonomy"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "dimension_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.shipment",
+    "status": "validated",
+    "kind": "identifier",
+    "labels": [
+      "Shipment",
+      "waybill",
+      "parcel",
+      "vận đơn"
+    ],
+    "canonicalSignal": "shipment",
+    "semanticFamily": "document",
+    "relatedDomains": [
+      "operations",
+      "revenue"
+    ],
+    "definition": "Identified consignment or shipping document used to move goods through a delivery process.",
+    "positiveClues": [
+      "shipment",
+      "waybill",
+      "awb",
+      "tracking",
+      "vận đơn"
+    ],
+    "negativeClues": [
+      "shipment line is not necessarily one shipment",
+      "shipment identity does not prove delivered status"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [
+      {
+        "subject": "concept.shipment",
+        "predicate": "distinct_from",
+        "object": "concept.trip",
+        "polarity": "distinct_from",
+        "explanation": "A trip can carry many shipments and a shipment can move through multiple operational events."
+      }
+    ],
+    "requiredEvidence": [
+      "identifier_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.sla",
+    "status": "validated",
+    "kind": "dimension",
+    "labels": [
+      "SLA",
+      "service level target",
+      "cam kết dịch vụ"
+    ],
+    "canonicalSignal": "sla",
+    "semanticFamily": "performance",
+    "relatedDomains": [
+      "operations",
+      "performance"
+    ],
+    "definition": "Defined service-level requirement such as deadline, response target or completion threshold.",
+    "positiveClues": [
+      "sla",
+      "deadline",
+      "service target"
+    ],
+    "negativeClues": [
+      "SLA target is not actual performance",
+      "metric definition and clock basis must be known"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "dimension_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.toll_fee",
+    "status": "validated",
+    "kind": "measure",
+    "labels": [
+      "Toll Fee",
+      "road fee",
+      "phí cầu đường"
+    ],
+    "canonicalSignal": "toll_fee",
+    "semanticFamily": "money",
+    "relatedDomains": [
+      "operations",
+      "finance"
+    ],
+    "definition": "Road, toll or access charge incurred during transportation under an operational cost basis.",
+    "positiveClues": [
+      "toll",
+      "road fee",
+      "parking fee"
+    ],
+    "negativeClues": [
+      "not freight revenue",
+      "requires trip or cost attribution context"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "measure_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.transportation_cost",
+    "status": "validated",
+    "kind": "measure",
+    "labels": [
+      "Transportation Cost",
+      "logistics cost",
+      "chi phí vận chuyển"
+    ],
+    "canonicalSignal": "transportation_cost",
+    "semanticFamily": "money",
+    "relatedDomains": [
+      "operations",
+      "finance"
+    ],
+    "definition": "Cost incurred to move goods, people or assets under a defined operational scope.",
+    "positiveClues": [
+      "transport cost",
+      "freight cost",
+      "logistics cost"
+    ],
+    "negativeClues": [
+      "cost incurred is not freight fee billed",
+      "allocation across shipments or trips must be explicit"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [
+      {
+        "subject": "concept.transportation_cost",
+        "predicate": "distinct_from",
+        "object": "concept.freight_fee",
+        "polarity": "distinct_from",
+        "explanation": "Freight fee billed and transportation cost incurred are different monetary roles."
+      }
+    ],
+    "requiredEvidence": [
+      "measure_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.trip",
+    "status": "validated",
+    "kind": "identifier",
+    "labels": [
+      "Trip",
+      "route trip",
+      "chuyến xe"
+    ],
+    "canonicalSignal": "trip",
+    "semanticFamily": "document",
+    "relatedDomains": [
+      "operations"
+    ],
+    "definition": "Operational journey or dispatch instance performed by a vehicle, driver or route.",
+    "positiveClues": [
+      "trip",
+      "trip id",
+      "chuyến xe"
+    ],
+    "negativeClues": [
+      "route is not trip identity",
+      "multiple shipments can belong to one trip"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [
+      {
+        "subject": "concept.trip",
+        "predicate": "distinct_from",
+        "object": "concept.shipment",
+        "polarity": "distinct_from",
+        "explanation": "A trip can carry many shipments and a shipment can move through multiple operational events."
+      },
+      {
+        "subject": "concept.trip",
+        "predicate": "distinct_from",
+        "object": "concept.route",
+        "polarity": "distinct_from",
+        "explanation": "Route describes a path or service area; trip describes an execution instance."
+      }
+    ],
+    "requiredEvidence": [
+      "identifier_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.volume",
+    "status": "validated",
+    "kind": "measure",
+    "labels": [
+      "Volume",
+      "CBM",
+      "thể tích"
+    ],
+    "canonicalSignal": "volume",
+    "semanticFamily": "quantity",
+    "relatedDomains": [
+      "operations",
+      "inventory"
+    ],
+    "definition": "Physical or billed volume of goods measured in a stated cubic unit.",
+    "positiveClues": [
+      "volume",
+      "cbm",
+      "m3"
+    ],
+    "negativeClues": [
+      "not weight",
+      "unit conversion may be required"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "measure_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.waiting_time",
+    "status": "validated",
+    "kind": "measure",
+    "labels": [
+      "Waiting Time",
+      "queue time",
+      "thời gian chờ"
+    ],
+    "canonicalSignal": "waiting_time",
+    "semanticFamily": "time",
+    "relatedDomains": [
+      "operations",
+      "performance"
+    ],
+    "definition": "Elapsed time spent waiting between defined operational milestones.",
+    "positiveClues": [
+      "waiting time",
+      "queue time",
+      "dwell time"
+    ],
+    "negativeClues": [
+      "start and end milestones must be defined",
+      "not total cycle time"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [
+      {
+        "subject": "concept.waiting_time",
+        "predicate": "distinct_from",
+        "object": "concept.delay",
+        "polarity": "distinct_from",
+        "explanation": "Waiting time is process dwell; delay is deviation from a reference schedule."
+      }
+    ],
+    "requiredEvidence": [
+      "measure_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.weight",
+    "status": "validated",
+    "kind": "measure",
+    "labels": [
+      "Weight",
+      "gross weight",
+      "trọng lượng"
+    ],
+    "canonicalSignal": "weight",
+    "semanticFamily": "quantity",
+    "relatedDomains": [
+      "operations",
+      "inventory"
+    ],
+    "definition": "Mass of a shipment, item or load measured in a stated weight unit.",
+    "positiveClues": [
+      "weight",
+      "kg",
+      "gross weight"
+    ],
+    "negativeClues": [
+      "volumetric weight may differ from physical weight",
+      "unit must be known"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "measure_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  }
+]

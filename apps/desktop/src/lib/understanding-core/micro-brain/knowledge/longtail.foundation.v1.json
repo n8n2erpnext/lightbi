@@ -1,0 +1,1872 @@
+[
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.appointment",
+    "status": "validated",
+    "kind": "identifier",
+    "labels": [
+      "Appointment",
+      "Booking",
+      "lịch hẹn"
+    ],
+    "canonicalSignal": "appointment",
+    "semanticFamily": "document",
+    "relatedDomains": [
+      "healthcare",
+      "operations",
+      "customer"
+    ],
+    "definition": "Scheduled healthcare or service booking for a patient/customer and provider/resource.",
+    "positiveClues": [
+      "appointment",
+      "booking",
+      "schedule"
+    ],
+    "negativeClues": [
+      "appointment is not completed visit",
+      "cancellation/no-show states matter"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "identifier_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.assessment",
+    "status": "validated",
+    "kind": "dimension",
+    "labels": [
+      "Assessment",
+      "Exam",
+      "Test"
+    ],
+    "canonicalSignal": "assessment",
+    "semanticFamily": "quality",
+    "relatedDomains": [
+      "education",
+      "performance"
+    ],
+    "definition": "Defined evaluation event or instrument used to measure performance or knowledge.",
+    "positiveClues": [
+      "assessment",
+      "exam",
+      "test"
+    ],
+    "negativeClues": [
+      "assessment identity is not grade value",
+      "different assessments may not be directly comparable"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "dimension_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.asset",
+    "status": "validated",
+    "kind": "identifier",
+    "labels": [
+      "Asset",
+      "Fixed Asset",
+      "Equipment Asset"
+    ],
+    "canonicalSignal": "asset",
+    "semanticFamily": "entity",
+    "relatedDomains": [
+      "maintenance",
+      "operations",
+      "finance"
+    ],
+    "definition": "Identified long-lived resource tracked for ownership, operation, maintenance or accounting.",
+    "positiveClues": [
+      "asset",
+      "fixed asset",
+      "equipment asset"
+    ],
+    "negativeClues": [
+      "asset identity is not book value",
+      "asset and machine may overlap but are not guaranteed identical"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "identifier_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.claim",
+    "status": "validated",
+    "kind": "identifier",
+    "labels": [
+      "Claim",
+      "Insurance Claim"
+    ],
+    "canonicalSignal": "claim",
+    "semanticFamily": "document",
+    "relatedDomains": [
+      "healthcare",
+      "insurance",
+      "finance"
+    ],
+    "definition": "Identified request for reimbursement or benefit under an insurance or claims process.",
+    "positiveClues": [
+      "claim",
+      "claim id",
+      "insurance claim"
+    ],
+    "negativeClues": [
+      "claim amount is not paid amount",
+      "submitted claim is not approved claim"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "identifier_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.course",
+    "status": "validated",
+    "kind": "dimension",
+    "labels": [
+      "Course",
+      "Class",
+      "Subject"
+    ],
+    "canonicalSignal": "course",
+    "semanticFamily": "organization",
+    "relatedDomains": [
+      "education",
+      "performance"
+    ],
+    "definition": "Educational course, class or subject used to group enrollment, assessment or learning activity.",
+    "positiveClues": [
+      "course",
+      "class",
+      "subject"
+    ],
+    "negativeClues": [
+      "course is not student identity",
+      "course name can repeat across terms"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "dimension_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.crop",
+    "status": "validated",
+    "kind": "dimension",
+    "labels": [
+      "Crop",
+      "Variety",
+      "cây trồng"
+    ],
+    "canonicalSignal": "crop",
+    "semanticFamily": "item",
+    "relatedDomains": [
+      "agriculture",
+      "inventory",
+      "operations"
+    ],
+    "definition": "Crop species or variety cultivated on an agricultural field.",
+    "positiveClues": [
+      "crop",
+      "variety",
+      "seed variety"
+    ],
+    "negativeClues": [
+      "crop is not harvested quantity",
+      "variety and field are separate dimensions"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "dimension_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.defect_code",
+    "status": "validated",
+    "kind": "dimension",
+    "labels": [
+      "Defect Code",
+      "Nonconformance Code"
+    ],
+    "canonicalSignal": "defect_code",
+    "semanticFamily": "quality",
+    "relatedDomains": [
+      "manufacturing",
+      "quality",
+      "performance"
+    ],
+    "definition": "Categorical code identifying a type of defect or nonconformance.",
+    "positiveClues": [
+      "defect code",
+      "nc code",
+      "nonconformance"
+    ],
+    "negativeClues": [
+      "defect code is not defect rate",
+      "code frequency is not severity"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "dimension_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.diagnosis",
+    "status": "validated",
+    "kind": "dimension",
+    "labels": [
+      "Diagnosis",
+      "Diagnosis Code",
+      "ICD"
+    ],
+    "canonicalSignal": "diagnosis",
+    "semanticFamily": "status",
+    "relatedDomains": [
+      "healthcare",
+      "operations"
+    ],
+    "definition": "Recorded diagnostic classification or reason associated with an encounter or claim.",
+    "positiveClues": [
+      "diagnosis",
+      "icd",
+      "reason code"
+    ],
+    "negativeClues": [
+      "diagnosis code is categorical",
+      "LightBI recognition must not create medical advice or causal claims"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "dimension_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.error_event",
+    "status": "validated",
+    "kind": "status",
+    "labels": [
+      "Error Event",
+      "Alarm",
+      "Alert"
+    ],
+    "canonicalSignal": "error_event",
+    "semanticFamily": "system",
+    "relatedDomains": [
+      "iot",
+      "operations",
+      "performance"
+    ],
+    "definition": "Recorded alarm, error, warning or abnormal event from a system, device or process.",
+    "positiveClues": [
+      "error",
+      "warning",
+      "critical",
+      "alarm"
+    ],
+    "negativeClues": [
+      "event count is not downtime duration",
+      "severity taxonomy is source-specific"
+    ],
+    "compatibleTypes": [
+      "string",
+      "boolean",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "status_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.failure_code",
+    "status": "validated",
+    "kind": "dimension",
+    "labels": [
+      "Failure Code",
+      "Fault Code"
+    ],
+    "canonicalSignal": "failure_code",
+    "semanticFamily": "status",
+    "relatedDomains": [
+      "maintenance",
+      "operations",
+      "performance"
+    ],
+    "definition": "Categorical code describing an observed equipment failure, fault or breakdown mode.",
+    "positiveClues": [
+      "failure code",
+      "fault code",
+      "breakdown code"
+    ],
+    "negativeClues": [
+      "code is not downtime duration",
+      "failure frequency is not severity"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "dimension_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.field",
+    "status": "validated",
+    "kind": "identifier",
+    "labels": [
+      "Field",
+      "Farm Plot",
+      "thửa ruộng"
+    ],
+    "canonicalSignal": "field",
+    "semanticFamily": "location",
+    "relatedDomains": [
+      "agriculture",
+      "operations",
+      "inventory"
+    ],
+    "definition": "Identified agricultural plot or field used to group crop, input, irrigation or harvest activity.",
+    "positiveClues": [
+      "field",
+      "farm plot",
+      "plot"
+    ],
+    "negativeClues": [
+      "field is not crop",
+      "field area needs a unit"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "identifier_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.grade",
+    "status": "validated",
+    "kind": "measure",
+    "labels": [
+      "Grade",
+      "Exam Score",
+      "Test Score"
+    ],
+    "canonicalSignal": "grade",
+    "semanticFamily": "performance",
+    "relatedDomains": [
+      "education",
+      "performance"
+    ],
+    "definition": "Recorded educational score or grade under a stated assessment scale.",
+    "positiveClues": [
+      "grade",
+      "exam score",
+      "test score"
+    ],
+    "negativeClues": [
+      "grading scales differ",
+      "score alone does not prove learning causality"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "measure_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.harvest_quantity",
+    "status": "validated",
+    "kind": "flow",
+    "labels": [
+      "Harvest Quantity",
+      "Yield Quantity",
+      "sản lượng thu hoạch"
+    ],
+    "canonicalSignal": "harvest_qty",
+    "semanticFamily": "quantity",
+    "relatedDomains": [
+      "agriculture",
+      "inventory",
+      "operations",
+      "revenue"
+    ],
+    "definition": "Quantity harvested from a crop or field during a defined harvest event or period.",
+    "positiveClues": [
+      "harvest qty",
+      "yield quantity",
+      "harvested weight"
+    ],
+    "negativeClues": [
+      "harvest quantity is not agronomic yield rate unless divided by area",
+      "unit must be known"
+    ],
+    "compatibleTypes": [
+      "number",
+      "string"
+    ],
+    "relations": [
+      {
+        "subject": "concept.harvest_quantity",
+        "predicate": "distinct_from",
+        "object": "concept.productivity",
+        "polarity": "distinct_from",
+        "explanation": "Harvest quantity is output volume; agronomic productivity requires an input denominator such as area."
+      }
+    ],
+    "requiredEvidence": [
+      "flow_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.humidity",
+    "status": "validated",
+    "kind": "measure",
+    "labels": [
+      "Humidity",
+      "Relative Humidity",
+      "độ ẩm"
+    ],
+    "canonicalSignal": "humidity",
+    "semanticFamily": "measurement",
+    "relatedDomains": [
+      "iot",
+      "operations",
+      "performance"
+    ],
+    "definition": "Humidity measurement, commonly relative humidity percentage, under a stated measurement basis.",
+    "positiveClues": [
+      "humidity",
+      "relative humidity",
+      "rh"
+    ],
+    "negativeClues": [
+      "percentage scale must be known",
+      "not temperature"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "measure_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.inspection_lot",
+    "status": "validated",
+    "kind": "identifier",
+    "labels": [
+      "Inspection Lot",
+      "QC Lot"
+    ],
+    "canonicalSignal": "inspection_lot",
+    "semanticFamily": "quality",
+    "relatedDomains": [
+      "manufacturing",
+      "quality",
+      "operations"
+    ],
+    "definition": "Identified batch or set of units subject to a quality inspection process.",
+    "positiveClues": [
+      "inspection lot",
+      "qc lot",
+      "quality lot"
+    ],
+    "negativeClues": [
+      "inspection lot is not production batch unless explicitly linked",
+      "lot count is not defect count"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "identifier_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.irrigation",
+    "status": "validated",
+    "kind": "flow",
+    "labels": [
+      "Irrigation",
+      "Water Usage",
+      "tưới tiêu"
+    ],
+    "canonicalSignal": "irrigation",
+    "semanticFamily": "quantity",
+    "relatedDomains": [
+      "agriculture",
+      "operations",
+      "performance"
+    ],
+    "definition": "Water applied to agricultural production over a defined field and time basis.",
+    "positiveClues": [
+      "irrigation",
+      "water usage",
+      "watering"
+    ],
+    "negativeClues": [
+      "irrigation volume is not rainfall",
+      "unit and field area context matter"
+    ],
+    "compatibleTypes": [
+      "number",
+      "string"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "flow_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.lease",
+    "status": "validated",
+    "kind": "identifier",
+    "labels": [
+      "Lease",
+      "Rental Contract"
+    ],
+    "canonicalSignal": "lease",
+    "semanticFamily": "document",
+    "relatedDomains": [
+      "real_estate",
+      "finance",
+      "customer"
+    ],
+    "definition": "Contractual agreement granting use of property or space for a defined term and consideration.",
+    "positiveClues": [
+      "lease",
+      "rental contract",
+      "lease id"
+    ],
+    "negativeClues": [
+      "lease is not rent payment",
+      "contract term and cash collection can differ"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [
+      {
+        "subject": "concept.lease",
+        "predicate": "distinct_from",
+        "object": "concept.rent_amount",
+        "polarity": "distinct_from",
+        "explanation": "Lease is the contract; rent amount is a monetary charge under the contract."
+      }
+    ],
+    "requiredEvidence": [
+      "identifier_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.machine",
+    "status": "validated",
+    "kind": "dimension",
+    "labels": [
+      "Machine",
+      "Work Center",
+      "Equipment"
+    ],
+    "canonicalSignal": "machine",
+    "semanticFamily": "entity",
+    "relatedDomains": [
+      "manufacturing",
+      "operations",
+      "performance"
+    ],
+    "definition": "Machine or work-center resource used to perform production or operational activity.",
+    "positiveClues": [
+      "machine",
+      "work center",
+      "equipment"
+    ],
+    "negativeClues": [
+      "machine identity is not production quantity",
+      "capacity and actual output differ"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "dimension_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.maintenance_cost",
+    "status": "validated",
+    "kind": "flow",
+    "labels": [
+      "Maintenance Cost",
+      "Repair Cost",
+      "chi phí bảo trì"
+    ],
+    "canonicalSignal": "maintenance_cost",
+    "semanticFamily": "money",
+    "relatedDomains": [
+      "maintenance",
+      "finance",
+      "operations"
+    ],
+    "definition": "Cost attributed to maintenance, repair or servicing under a defined asset and period scope.",
+    "positiveClues": [
+      "maintenance cost",
+      "repair cost",
+      "service cost"
+    ],
+    "negativeClues": [
+      "work-order estimate is not actual cost",
+      "capitalized improvement may differ from maintenance expense"
+    ],
+    "compatibleTypes": [
+      "number",
+      "string"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "flow_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.maintenance_order",
+    "status": "validated",
+    "kind": "identifier",
+    "labels": [
+      "Maintenance Order",
+      "Repair Order",
+      "Service Order"
+    ],
+    "canonicalSignal": "maintenance_order",
+    "semanticFamily": "document",
+    "relatedDomains": [
+      "maintenance",
+      "operations"
+    ],
+    "definition": "Work document authorizing maintenance, repair or service activity on an asset or equipment.",
+    "positiveClues": [
+      "maintenance order",
+      "repair order",
+      "service order"
+    ],
+    "negativeClues": [
+      "not production work order by default",
+      "order creation does not prove repair completion"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "identifier_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.meter_reading",
+    "status": "validated",
+    "kind": "measure",
+    "labels": [
+      "Meter Reading",
+      "Odometer",
+      "Runtime Hours"
+    ],
+    "canonicalSignal": "meter_reading",
+    "semanticFamily": "measurement",
+    "relatedDomains": [
+      "maintenance",
+      "operations",
+      "performance"
+    ],
+    "definition": "Cumulative or current reading from a usage meter such as odometer or machine runtime counter.",
+    "positiveClues": [
+      "meter reading",
+      "odometer",
+      "runtime hours"
+    ],
+    "negativeClues": [
+      "cumulative reading is not period consumption without differencing",
+      "counter reset or rollover can invalidate deltas"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [
+      {
+        "subject": "concept.meter_reading",
+        "predicate": "distinct_from",
+        "object": "concept.utility_consumption",
+        "polarity": "distinct_from",
+        "explanation": "Cumulative meter reading must be differenced to derive interval consumption."
+      }
+    ],
+    "requiredEvidence": [
+      "measure_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.occupancy_status",
+    "status": "validated",
+    "kind": "status",
+    "labels": [
+      "Occupancy Status",
+      "Vacancy Status"
+    ],
+    "canonicalSignal": "occupancy_status",
+    "semanticFamily": "status",
+    "relatedDomains": [
+      "real_estate",
+      "operations",
+      "finance"
+    ],
+    "definition": "State describing whether a property unit is occupied, vacant, reserved or otherwise available.",
+    "positiveClues": [
+      "occupied",
+      "vacant",
+      "available",
+      "reserved"
+    ],
+    "negativeClues": [
+      "occupancy status is not occupancy rate",
+      "reserved and occupied can differ"
+    ],
+    "compatibleTypes": [
+      "string",
+      "boolean",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "status_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.outage",
+    "status": "validated",
+    "kind": "status",
+    "labels": [
+      "Outage",
+      "Interruption",
+      "service outage"
+    ],
+    "canonicalSignal": "outage",
+    "semanticFamily": "utility",
+    "relatedDomains": [
+      "utilities",
+      "operations",
+      "performance"
+    ],
+    "definition": "Service interruption event or state affecting availability of a utility or service.",
+    "positiveClues": [
+      "outage",
+      "interruption",
+      "service unavailable"
+    ],
+    "negativeClues": [
+      "outage count is not outage duration",
+      "planned and unplanned outages differ"
+    ],
+    "compatibleTypes": [
+      "string",
+      "boolean",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "status_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.patient",
+    "status": "validated",
+    "kind": "identifier",
+    "labels": [
+      "Patient",
+      "bệnh nhân"
+    ],
+    "canonicalSignal": "patient",
+    "semanticFamily": "entity",
+    "relatedDomains": [
+      "healthcare",
+      "customer",
+      "operations"
+    ],
+    "definition": "Person receiving healthcare services, identified under a patient or encounter system.",
+    "positiveClues": [
+      "patient",
+      "patient id",
+      "bệnh nhân"
+    ],
+    "negativeClues": [
+      "patient identity is sensitive and not a diagnosis",
+      "one patient can have many encounters"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "identifier_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.property",
+    "status": "validated",
+    "kind": "identifier",
+    "labels": [
+      "Property",
+      "Building",
+      "Site Property"
+    ],
+    "canonicalSignal": "property",
+    "semanticFamily": "location",
+    "relatedDomains": [
+      "real_estate",
+      "operations",
+      "finance"
+    ],
+    "definition": "Identified real-estate property or building managed for occupancy, lease, cost or operations.",
+    "positiveClues": [
+      "property",
+      "building",
+      "site"
+    ],
+    "negativeClues": [
+      "property is not unit/space",
+      "property value is a separate measure"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [
+      {
+        "subject": "concept.property",
+        "predicate": "distinct_from",
+        "object": "concept.space_unit",
+        "polarity": "distinct_from",
+        "explanation": "Property is a parent site/building; unit is an individual space within it."
+      }
+    ],
+    "requiredEvidence": [
+      "identifier_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.provider",
+    "status": "validated",
+    "kind": "dimension",
+    "labels": [
+      "Provider",
+      "Practitioner",
+      "Clinician"
+    ],
+    "canonicalSignal": "provider",
+    "semanticFamily": "entity",
+    "relatedDomains": [
+      "healthcare",
+      "operations",
+      "performance"
+    ],
+    "definition": "Professional or organization providing a healthcare or specialized service.",
+    "positiveClues": [
+      "provider",
+      "practitioner",
+      "clinician",
+      "doctor"
+    ],
+    "negativeClues": [
+      "provider is not patient",
+      "provider assignment does not prove procedure outcome"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "dimension_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.qc_result",
+    "status": "validated",
+    "kind": "status",
+    "labels": [
+      "QC Result",
+      "Inspection Result"
+    ],
+    "canonicalSignal": "qc_result",
+    "semanticFamily": "quality",
+    "relatedDomains": [
+      "manufacturing",
+      "quality",
+      "performance"
+    ],
+    "definition": "Outcome of a quality inspection such as pass, fail, hold or rejected.",
+    "positiveClues": [
+      "pass",
+      "fail",
+      "accepted",
+      "rejected",
+      "hold"
+    ],
+    "negativeClues": [
+      "result is not defect code",
+      "pass/fail rule depends on inspection criteria"
+    ],
+    "compatibleTypes": [
+      "string",
+      "boolean",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "status_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.rent_amount",
+    "status": "validated",
+    "kind": "measure",
+    "labels": [
+      "Rent Amount",
+      "Rental Amount"
+    ],
+    "canonicalSignal": "rent_amount",
+    "semanticFamily": "money",
+    "relatedDomains": [
+      "real_estate",
+      "finance",
+      "revenue"
+    ],
+    "definition": "Rental charge or amount due for use of property under a stated lease and period basis.",
+    "positiveClues": [
+      "rent",
+      "rental amount",
+      "lease charge"
+    ],
+    "negativeClues": [
+      "rent due is not cash received",
+      "deposit is not rent revenue by default"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [
+      {
+        "subject": "concept.rent_amount",
+        "predicate": "distinct_from",
+        "object": "concept.lease",
+        "polarity": "distinct_from",
+        "explanation": "Lease is the contract; rent amount is a monetary charge under the contract."
+      }
+    ],
+    "requiredEvidence": [
+      "measure_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.rework_quantity",
+    "status": "validated",
+    "kind": "flow",
+    "labels": [
+      "Rework Quantity",
+      "repair quantity"
+    ],
+    "canonicalSignal": "rework_qty",
+    "semanticFamily": "quality",
+    "relatedDomains": [
+      "manufacturing",
+      "quality",
+      "operations"
+    ],
+    "definition": "Quantity routed through rework or repair to correct a production or quality issue.",
+    "positiveClues": [
+      "rework qty",
+      "repair qty",
+      "reprocessed units"
+    ],
+    "negativeClues": [
+      "rework is not scrap",
+      "reworked unit may later pass and should not be double-counted as final output"
+    ],
+    "compatibleTypes": [
+      "number",
+      "string"
+    ],
+    "relations": [
+      {
+        "subject": "concept.rework_quantity",
+        "predicate": "distinct_from",
+        "object": "concept.scrap_quantity",
+        "polarity": "distinct_from",
+        "explanation": "Scrap is discarded output; rework is output routed for correction."
+      }
+    ],
+    "requiredEvidence": [
+      "flow_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.sensor",
+    "status": "validated",
+    "kind": "identifier",
+    "labels": [
+      "Sensor",
+      "IoT Device"
+    ],
+    "canonicalSignal": "sensor",
+    "semanticFamily": "entity",
+    "relatedDomains": [
+      "iot",
+      "operations",
+      "performance"
+    ],
+    "definition": "Identified sensing or telemetry device producing measurements or events.",
+    "positiveClues": [
+      "sensor",
+      "device id",
+      "iot device"
+    ],
+    "negativeClues": [
+      "sensor id is not measured value",
+      "one device can emit multiple measurement types"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "identifier_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.space_unit",
+    "status": "validated",
+    "kind": "identifier",
+    "labels": [
+      "Unit",
+      "Room",
+      "Space",
+      "Apartment"
+    ],
+    "canonicalSignal": "unit",
+    "semanticFamily": "location",
+    "relatedDomains": [
+      "real_estate",
+      "operations",
+      "finance"
+    ],
+    "definition": "Individual rentable or managed space within a property.",
+    "positiveClues": [
+      "unit",
+      "room",
+      "apartment",
+      "space"
+    ],
+    "negativeClues": [
+      "unit is not unit of measure in this context",
+      "unit number may repeat across properties"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [
+      {
+        "subject": "concept.space_unit",
+        "predicate": "distinct_from",
+        "object": "concept.property",
+        "polarity": "distinct_from",
+        "explanation": "Property is a parent site/building; unit is an individual space within it."
+      }
+    ],
+    "requiredEvidence": [
+      "identifier_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.student",
+    "status": "validated",
+    "kind": "identifier",
+    "labels": [
+      "Student",
+      "Learner",
+      "học sinh",
+      "sinh viên"
+    ],
+    "canonicalSignal": "student",
+    "semanticFamily": "entity",
+    "relatedDomains": [
+      "education",
+      "customer",
+      "performance"
+    ],
+    "definition": "Learner identified within an education or training context.",
+    "positiveClues": [
+      "student",
+      "learner",
+      "student id"
+    ],
+    "negativeClues": [
+      "student is not course",
+      "name alone may not be unique"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "identifier_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.subscription_usage",
+    "status": "validated",
+    "kind": "measure",
+    "labels": [
+      "Usage Units",
+      "Consumption Units",
+      "Seats Used"
+    ],
+    "canonicalSignal": "usage_units",
+    "semanticFamily": "quantity",
+    "relatedDomains": [
+      "saas",
+      "customer",
+      "performance",
+      "revenue"
+    ],
+    "definition": "Measured consumption or usage of a subscription service under a stated unit such as seats, requests, GB or minutes.",
+    "positiveClues": [
+      "usage",
+      "seat count",
+      "consumption units"
+    ],
+    "negativeClues": [
+      "usage units are not recurring revenue",
+      "unit and billing policy must be known"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "measure_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.tariff",
+    "status": "validated",
+    "kind": "dimension",
+    "labels": [
+      "Tariff",
+      "Rate Plan"
+    ],
+    "canonicalSignal": "tariff",
+    "semanticFamily": "utility",
+    "relatedDomains": [
+      "utilities",
+      "finance",
+      "customer"
+    ],
+    "definition": "Pricing schedule or rate plan applied to utility or service consumption.",
+    "positiveClues": [
+      "tariff",
+      "rate plan",
+      "price plan"
+    ],
+    "negativeClues": [
+      "tariff label is not billed amount",
+      "tiered rates require quantity bands"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "dimension_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.temperature",
+    "status": "validated",
+    "kind": "measure",
+    "labels": [
+      "Temperature",
+      "Temp",
+      "nhiệt độ"
+    ],
+    "canonicalSignal": "temperature",
+    "semanticFamily": "measurement",
+    "relatedDomains": [
+      "iot",
+      "operations",
+      "performance"
+    ],
+    "definition": "Temperature measurement requiring a stated unit and measurement context.",
+    "positiveClues": [
+      "temperature",
+      "temp",
+      "celsius",
+      "fahrenheit"
+    ],
+    "negativeClues": [
+      "Celsius and Fahrenheit cannot be mixed without conversion",
+      "sensor reading is not ambient truth without context"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "measure_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.utility_consumption",
+    "status": "validated",
+    "kind": "flow",
+    "labels": [
+      "Consumption",
+      "Usage Amount",
+      "kWh"
+    ],
+    "canonicalSignal": "consumption",
+    "semanticFamily": "utility",
+    "relatedDomains": [
+      "utilities",
+      "operations",
+      "finance"
+    ],
+    "definition": "Utility consumption over a defined interval measured in an explicit unit such as kWh or cubic meters.",
+    "positiveClues": [
+      "consumption",
+      "kwh",
+      "water usage"
+    ],
+    "negativeClues": [
+      "cumulative meter reading is not interval consumption without differencing",
+      "units must match"
+    ],
+    "compatibleTypes": [
+      "number",
+      "string"
+    ],
+    "relations": [
+      {
+        "subject": "concept.utility_consumption",
+        "predicate": "distinct_from",
+        "object": "concept.meter_reading",
+        "polarity": "distinct_from",
+        "explanation": "Cumulative meter reading must be differenced to derive interval consumption."
+      }
+    ],
+    "requiredEvidence": [
+      "flow_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.utility_meter",
+    "status": "validated",
+    "kind": "identifier",
+    "labels": [
+      "Meter ID",
+      "Service Meter"
+    ],
+    "canonicalSignal": "meter_id",
+    "semanticFamily": "utility",
+    "relatedDomains": [
+      "utilities",
+      "operations",
+      "customer"
+    ],
+    "definition": "Identifier for a utility consumption meter or service measurement point.",
+    "positiveClues": [
+      "meter id",
+      "meter number",
+      "service meter"
+    ],
+    "negativeClues": [
+      "meter id is not meter reading",
+      "one customer may have multiple meters"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "identifier_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.work_order",
+    "status": "validated",
+    "kind": "identifier",
+    "labels": [
+      "Work Order",
+      "Production Order",
+      "lệnh sản xuất"
+    ],
+    "canonicalSignal": "work_order",
+    "semanticFamily": "document",
+    "relatedDomains": [
+      "manufacturing",
+      "operations"
+    ],
+    "definition": "Operational document authorizing production, maintenance or other structured work.",
+    "positiveClues": [
+      "work order",
+      "production order",
+      "wo no"
+    ],
+    "negativeClues": [
+      "not sales order",
+      "planned quantity is not actual output"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "identifier_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  }
+]

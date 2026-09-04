@@ -64,7 +64,7 @@ describe("Phase 3B2A deterministic semantic shadow resolution",()=>{
     expect(mutated.candidateTraces.flatMap((trace)=>trace.independence.independentSupportFamilies)).not.toContain("value_semantics");
   });
   it("uses a canonical SHA-256 policy identity",()=>{
-    expect(semanticResolutionPolicyHash()).toBe("064e6861cc208e7d35074d9b872e0d4a11dfacdbc850e6d017c24f32462d6ad3");expect(semanticResolutionPolicyHash()).toMatch(/^[a-f0-9]{64}$/);expect(semanticResolutionPolicyHash({a:1,b:2})).toBe(semanticResolutionPolicyHash({b:2,a:1}));expect(semanticResolutionPolicyHash({...SEMANTIC_RESOLUTION_POLICY,forbiddenInference:[...SEMANTIC_RESOLUTION_POLICY.forbiddenInference,"mutation"]})).not.toBe(semanticResolutionPolicyHash());
+    expect(semanticResolutionPolicyHash()).toBe("d6414828720ae8a90bece397a3a98e8517fecaca5e287b693c8c403649b60eaa");expect(semanticResolutionPolicyHash()).toMatch(/^[a-f0-9]{64}$/);expect(semanticResolutionPolicyHash({a:1,b:2})).toBe(semanticResolutionPolicyHash({b:2,a:1}));expect(semanticResolutionPolicyHash({...SEMANTIC_RESOLUTION_POLICY,forbiddenInference:[...SEMANTIC_RESOLUTION_POLICY.forbiddenInference,"mutation"]})).not.toBe(semanticResolutionPolicyHash());
   });
   it("fails closed on artifact identity, policy, columns, and candidate preservation",()=>{
     const {physical,candidate,contextual}=artifacts();expect(()=>resolveSemanticShadow(physical,{...candidate,sourceId:"other"},contextual)).toThrow("ARTIFACT_MISMATCH");

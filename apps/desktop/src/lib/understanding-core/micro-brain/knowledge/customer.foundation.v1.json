@@ -1,0 +1,1909 @@
+[
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.account",
+    "status": "validated",
+    "kind": "dimension",
+    "labels": [
+      "Account",
+      "Company",
+      "Organization",
+      "công ty"
+    ],
+    "canonicalSignal": "account",
+    "semanticFamily": "entity",
+    "relatedDomains": [
+      "customer",
+      "revenue"
+    ],
+    "definition": "Business customer or organization account used to group contacts, opportunities or transactions.",
+    "positiveClues": [
+      "account",
+      "company",
+      "organization"
+    ],
+    "negativeClues": [
+      "account is not contact person",
+      "account name may not be unique"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "dimension_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.acquisition_cost",
+    "status": "validated",
+    "kind": "measure",
+    "labels": [
+      "Customer Acquisition Cost",
+      "CAC",
+      "chi phí thu hút"
+    ],
+    "canonicalSignal": "acquisition_cost",
+    "semanticFamily": "money",
+    "relatedDomains": [
+      "customer",
+      "finance"
+    ],
+    "definition": "Cost attributed to acquiring customers under an explicit cost pool and acquired-customer denominator.",
+    "positiveClues": [
+      "cac",
+      "acquisition cost",
+      "customer acquisition"
+    ],
+    "negativeClues": [
+      "marketing spend alone is not CAC without denominator and cost scope",
+      "new customer identity must be defined"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "measure_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.agent",
+    "status": "validated",
+    "kind": "dimension",
+    "labels": [
+      "Agent",
+      "Owner",
+      "Assignee",
+      "người phụ trách"
+    ],
+    "canonicalSignal": "agent",
+    "semanticFamily": "entity",
+    "relatedDomains": [
+      "performance",
+      "customer",
+      "operations"
+    ],
+    "definition": "Person or team assigned to handle a service, case or operational record.",
+    "positiveClues": [
+      "agent",
+      "assignee",
+      "owner"
+    ],
+    "negativeClues": [
+      "assignment is not necessarily resolver identity",
+      "owner may change over time"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "dimension_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.campaign",
+    "status": "validated",
+    "kind": "dimension",
+    "labels": [
+      "Campaign",
+      "marketing campaign",
+      "chiến dịch"
+    ],
+    "canonicalSignal": "campaign",
+    "semanticFamily": "marketing",
+    "relatedDomains": [
+      "customer",
+      "revenue",
+      "performance"
+    ],
+    "definition": "Named marketing or outreach initiative grouping spend, contacts, content or responses.",
+    "positiveClues": [
+      "campaign",
+      "utm campaign",
+      "marketing campaign"
+    ],
+    "negativeClues": [
+      "campaign association does not prove causal impact",
+      "campaign is not channel by itself"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [
+      {
+        "subject": "concept.campaign",
+        "predicate": "distinct_from",
+        "object": "concept.source_medium",
+        "polarity": "distinct_from",
+        "explanation": "Campaign and acquisition source/medium are different attribution dimensions."
+      }
+    ],
+    "requiredEvidence": [
+      "dimension_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.churn_rate",
+    "status": "validated",
+    "kind": "formula",
+    "labels": [
+      "Churn Rate",
+      "attrition rate",
+      "tỷ lệ rời bỏ"
+    ],
+    "canonicalSignal": "churn",
+    "semanticFamily": "engagement",
+    "relatedDomains": [
+      "customer",
+      "performance"
+    ],
+    "definition": "Share of an eligible population that exits or becomes inactive during a defined period according to an explicit churn rule.",
+    "positiveClues": [
+      "churn",
+      "attrition",
+      "lost customers"
+    ],
+    "negativeClues": [
+      "requires stable entity identity and denominator",
+      "not always exactly one minus retention"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [
+      {
+        "subject": "concept.churn_rate",
+        "predicate": "distinct_from",
+        "object": "concept.retention_rate",
+        "polarity": "distinct_from",
+        "explanation": "Retention and churn require aligned cohort definitions before treating them as complements."
+      },
+      {
+        "subject": "concept.churn_rate",
+        "predicate": "requires_input",
+        "object": "churned_eligible_entities",
+        "polarity": "requires",
+        "explanation": "Formula concept.churn_rate requires explicit evidence for churned_eligible_entities."
+      },
+      {
+        "subject": "concept.churn_rate",
+        "predicate": "requires_input",
+        "object": "starting_eligible_entities",
+        "polarity": "requires",
+        "explanation": "Formula concept.churn_rate requires explicit evidence for starting_eligible_entities."
+      }
+    ],
+    "requiredEvidence": [
+      "formula_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "guarded_formula",
+    "formula": {
+      "expression": "churned_eligible_entities / starting_eligible_entities * 100",
+      "requiredInputs": [
+        "churned_eligible_entities",
+        "starting_eligible_entities"
+      ],
+      "requiredGrain": [
+        "stable entity cohort grain"
+      ],
+      "requiredUnits": [
+        "count/count"
+      ],
+      "requiredTimeBasis": [
+        "defined churn window"
+      ],
+      "blockers": [
+        "unstable identity",
+        "undefined churn event"
+      ]
+    },
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.clicks",
+    "status": "validated",
+    "kind": "flow",
+    "labels": [
+      "Clicks",
+      "click count",
+      "lượt nhấp"
+    ],
+    "canonicalSignal": "clicks",
+    "semanticFamily": "marketing",
+    "relatedDomains": [
+      "performance",
+      "customer"
+    ],
+    "definition": "Count of recorded click interactions under the platform's tracking definition.",
+    "positiveClues": [
+      "clicks",
+      "link clicks",
+      "lượt nhấp"
+    ],
+    "negativeClues": [
+      "clicks are not unique users",
+      "not conversions"
+    ],
+    "compatibleTypes": [
+      "number",
+      "string"
+    ],
+    "relations": [
+      {
+        "subject": "concept.clicks",
+        "predicate": "distinct_from",
+        "object": "concept.impressions",
+        "polarity": "distinct_from",
+        "explanation": "Impressions are displays; clicks are interactions."
+      },
+      {
+        "subject": "concept.clicks",
+        "predicate": "distinct_from",
+        "object": "concept.conversion",
+        "polarity": "distinct_from",
+        "explanation": "Clicks do not prove conversion."
+      }
+    ],
+    "requiredEvidence": [
+      "flow_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.close_date",
+    "status": "validated",
+    "kind": "time",
+    "labels": [
+      "Close Date",
+      "expected close date",
+      "ngày đóng"
+    ],
+    "canonicalSignal": "close_date",
+    "semanticFamily": "time",
+    "relatedDomains": [
+      "performance",
+      "revenue"
+    ],
+    "definition": "Expected or actual date an opportunity or commercial process closes; source semantics must distinguish planned from actual.",
+    "positiveClues": [
+      "close date",
+      "expected close",
+      "closed at"
+    ],
+    "negativeClues": [
+      "expected and actual close dates are not interchangeable",
+      "not invoice date"
+    ],
+    "compatibleTypes": [
+      "date",
+      "datetime",
+      "timestamp",
+      "string"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "time_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.contact",
+    "status": "validated",
+    "kind": "dimension",
+    "labels": [
+      "Contact",
+      "Contact Person",
+      "người liên hệ"
+    ],
+    "canonicalSignal": "contact",
+    "semanticFamily": "entity",
+    "relatedDomains": [
+      "customer"
+    ],
+    "definition": "Individual person associated with an account, lead, customer or service interaction.",
+    "positiveClues": [
+      "contact",
+      "contact person",
+      "contact id"
+    ],
+    "negativeClues": [
+      "contact is not account",
+      "email or phone may not be stable unique identity"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "dimension_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.conversion",
+    "status": "validated",
+    "kind": "formula",
+    "labels": [
+      "Conversion",
+      "conversion rate",
+      "chuyển đổi"
+    ],
+    "canonicalSignal": "conversion",
+    "semanticFamily": "marketing",
+    "relatedDomains": [
+      "performance",
+      "revenue",
+      "customer"
+    ],
+    "definition": "Successful target actions or the rate of such actions, depending on source definition; numerator and denominator must be explicit.",
+    "positiveClues": [
+      "conversion",
+      "conversions",
+      "converted"
+    ],
+    "negativeClues": [
+      "conversion count and conversion rate are different units",
+      "causal attribution cannot be inferred from association"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [
+      {
+        "subject": "concept.conversion",
+        "predicate": "distinct_from",
+        "object": "concept.win_probability",
+        "polarity": "distinct_from",
+        "explanation": "Opportunity probability is an estimate; conversion is an observed outcome/count or rate."
+      },
+      {
+        "subject": "concept.conversion",
+        "predicate": "distinct_from",
+        "object": "concept.clicks",
+        "polarity": "distinct_from",
+        "explanation": "Clicks do not prove conversion."
+      },
+      {
+        "subject": "concept.conversion",
+        "predicate": "requires_input",
+        "object": "conversions",
+        "polarity": "requires",
+        "explanation": "Formula concept.conversion requires explicit evidence for conversions."
+      },
+      {
+        "subject": "concept.conversion",
+        "predicate": "requires_input",
+        "object": "eligible_opportunities",
+        "polarity": "requires",
+        "explanation": "Formula concept.conversion requires explicit evidence for eligible_opportunities."
+      }
+    ],
+    "requiredEvidence": [
+      "formula_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "guarded_formula",
+    "formula": {
+      "expression": "conversions / eligible_opportunities * 100",
+      "requiredInputs": [
+        "conversions",
+        "eligible_opportunities"
+      ],
+      "requiredGrain": [
+        "same funnel opportunity grain"
+      ],
+      "requiredUnits": [
+        "count/count"
+      ],
+      "requiredTimeBasis": [
+        "same attribution window"
+      ],
+      "blockers": [
+        "missing denominator",
+        "undefined conversion event"
+      ]
+    },
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.cpc",
+    "status": "validated",
+    "kind": "formula",
+    "labels": [
+      "CPC",
+      "Cost per Click"
+    ],
+    "canonicalSignal": "cpc",
+    "semanticFamily": "money",
+    "relatedDomains": [
+      "finance",
+      "performance"
+    ],
+    "definition": "Marketing spend divided by eligible clicks for a comparable campaign or placement scope.",
+    "positiveClues": [
+      "cpc",
+      "cost per click"
+    ],
+    "negativeClues": [
+      "not click-through rate",
+      "zero clicks blocks calculation"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [
+      {
+        "subject": "concept.cpc",
+        "predicate": "distinct_from",
+        "object": "concept.ctr",
+        "polarity": "distinct_from",
+        "explanation": "CTR is interaction rate; CPC is monetary cost per click."
+      },
+      {
+        "subject": "concept.cpc",
+        "predicate": "requires_input",
+        "object": "marketing_spend",
+        "polarity": "requires",
+        "explanation": "Formula concept.cpc requires explicit evidence for marketing_spend."
+      },
+      {
+        "subject": "concept.cpc",
+        "predicate": "requires_input",
+        "object": "clicks",
+        "polarity": "requires",
+        "explanation": "Formula concept.cpc requires explicit evidence for clicks."
+      }
+    ],
+    "requiredEvidence": [
+      "formula_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "guarded_formula",
+    "formula": {
+      "expression": "marketing_spend / clicks",
+      "requiredInputs": [
+        "marketing_spend",
+        "clicks"
+      ],
+      "requiredGrain": [
+        "same campaign or placement grain"
+      ],
+      "requiredUnits": [
+        "currency per click"
+      ],
+      "requiredTimeBasis": [
+        "same reporting window"
+      ],
+      "blockers": [
+        "zero clicks",
+        "mismatched spend scope"
+      ]
+    },
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.ctr",
+    "status": "validated",
+    "kind": "formula",
+    "labels": [
+      "CTR",
+      "Click-Through Rate"
+    ],
+    "canonicalSignal": "ctr",
+    "semanticFamily": "percentage",
+    "relatedDomains": [
+      "performance",
+      "customer"
+    ],
+    "definition": "Clicks divided by eligible impressions under the same campaign, placement and reporting basis.",
+    "positiveClues": [
+      "ctr",
+      "click through rate"
+    ],
+    "negativeClues": [
+      "not clicks divided by users unless explicitly defined",
+      "rates from different denominators should not be averaged naively"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [
+      {
+        "subject": "concept.ctr",
+        "predicate": "distinct_from",
+        "object": "concept.cpc",
+        "polarity": "distinct_from",
+        "explanation": "CTR is interaction rate; CPC is monetary cost per click."
+      },
+      {
+        "subject": "concept.ctr",
+        "predicate": "requires_input",
+        "object": "clicks",
+        "polarity": "requires",
+        "explanation": "Formula concept.ctr requires explicit evidence for clicks."
+      },
+      {
+        "subject": "concept.ctr",
+        "predicate": "requires_input",
+        "object": "impressions",
+        "polarity": "requires",
+        "explanation": "Formula concept.ctr requires explicit evidence for impressions."
+      }
+    ],
+    "requiredEvidence": [
+      "formula_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "guarded_formula",
+    "formula": {
+      "expression": "clicks / impressions * 100",
+      "requiredInputs": [
+        "clicks",
+        "impressions"
+      ],
+      "requiredGrain": [
+        "same campaign or placement grain"
+      ],
+      "requiredUnits": [
+        "count/count"
+      ],
+      "requiredTimeBasis": [
+        "same reporting window"
+      ],
+      "blockers": [
+        "zero impressions",
+        "mismatched platform scope"
+      ]
+    },
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.customer_value",
+    "status": "validated",
+    "kind": "formula",
+    "labels": [
+      "Customer Value",
+      "customer contribution",
+      "giá trị khách hàng"
+    ],
+    "canonicalSignal": "customer_value",
+    "semanticFamily": "money",
+    "relatedDomains": [
+      "customer",
+      "finance"
+    ],
+    "definition": "Monetary value attributed to a customer over a defined period or lifecycle according to an explicit contribution or lifetime-value policy.",
+    "positiveClues": [
+      "customer value",
+      "ltv",
+      "customer contribution"
+    ],
+    "negativeClues": [
+      "not revenue alone",
+      "future lifetime value requires model assumptions",
+      "identity and time horizon must be stable"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [
+      {
+        "subject": "concept.customer_value",
+        "predicate": "requires_input",
+        "object": "customer_identity",
+        "polarity": "requires",
+        "explanation": "Formula concept.customer_value requires explicit evidence for customer_identity."
+      },
+      {
+        "subject": "concept.customer_value",
+        "predicate": "requires_input",
+        "object": "contribution_measure",
+        "polarity": "requires",
+        "explanation": "Formula concept.customer_value requires explicit evidence for contribution_measure."
+      }
+    ],
+    "requiredEvidence": [
+      "formula_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "guarded_formula",
+    "formula": {
+      "expression": "defined_customer_contribution_over_horizon",
+      "requiredInputs": [
+        "customer_identity",
+        "contribution_measure"
+      ],
+      "requiredGrain": [
+        "stable customer grain"
+      ],
+      "requiredUnits": [
+        "same currency"
+      ],
+      "requiredTimeBasis": [
+        "declared historical or forecast horizon"
+      ],
+      "blockers": [
+        "unstable customer identity",
+        "undefined contribution policy"
+      ]
+    },
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.impressions",
+    "status": "validated",
+    "kind": "flow",
+    "labels": [
+      "Impressions",
+      "ad views",
+      "hiển thị"
+    ],
+    "canonicalSignal": "impressions",
+    "semanticFamily": "marketing",
+    "relatedDomains": [
+      "performance",
+      "customer"
+    ],
+    "definition": "Count of times an advertisement or content item was served or displayed under the platform definition.",
+    "positiveClues": [
+      "impressions",
+      "views",
+      "served"
+    ],
+    "negativeClues": [
+      "impressions are not unique people",
+      "not clicks or conversions"
+    ],
+    "compatibleTypes": [
+      "number",
+      "string"
+    ],
+    "relations": [
+      {
+        "subject": "concept.impressions",
+        "predicate": "distinct_from",
+        "object": "concept.clicks",
+        "polarity": "distinct_from",
+        "explanation": "Impressions are displays; clicks are interactions."
+      }
+    ],
+    "requiredEvidence": [
+      "flow_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.lead",
+    "status": "validated",
+    "kind": "identifier",
+    "labels": [
+      "Lead",
+      "Prospect",
+      "khách tiềm năng"
+    ],
+    "canonicalSignal": "lead",
+    "semanticFamily": "entity",
+    "relatedDomains": [
+      "customer",
+      "revenue"
+    ],
+    "definition": "Potential customer or contact that has not yet become a confirmed customer opportunity or transaction under the source process.",
+    "positiveClues": [
+      "lead",
+      "prospect",
+      "khách tiềm năng"
+    ],
+    "negativeClues": [
+      "lead is not customer by default",
+      "lead creation is not conversion"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [
+      {
+        "subject": "concept.lead",
+        "predicate": "distinct_from",
+        "object": "concept.customer",
+        "polarity": "distinct_from",
+        "explanation": "A lead is a prospect and is not necessarily a converted customer."
+      }
+    ],
+    "requiredEvidence": [
+      "identifier_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.marketing_spend",
+    "status": "validated",
+    "kind": "flow",
+    "labels": [
+      "Marketing Spend",
+      "Ad Spend",
+      "chi phí quảng cáo"
+    ],
+    "canonicalSignal": "spend",
+    "semanticFamily": "money",
+    "relatedDomains": [
+      "finance",
+      "performance",
+      "customer"
+    ],
+    "definition": "Amount spent on advertising or marketing activity under the platform or accounting basis.",
+    "positiveClues": [
+      "ad spend",
+      "amount spent",
+      "marketing cost"
+    ],
+    "negativeClues": [
+      "spend is not revenue",
+      "platform spend and accounting expense can differ by timing or tax"
+    ],
+    "compatibleTypes": [
+      "number",
+      "string"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "flow_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.opportunity",
+    "status": "validated",
+    "kind": "identifier",
+    "labels": [
+      "Opportunity",
+      "Deal",
+      "cơ hội"
+    ],
+    "canonicalSignal": "opportunity",
+    "semanticFamily": "document",
+    "relatedDomains": [
+      "customer",
+      "revenue",
+      "performance"
+    ],
+    "definition": "Tracked potential commercial deal with an expected value, stage or close outcome.",
+    "positiveClues": [
+      "opportunity",
+      "deal",
+      "pipeline deal"
+    ],
+    "negativeClues": [
+      "opportunity value is not recognized revenue",
+      "won/lost status requires stage semantics"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [
+      {
+        "subject": "concept.opportunity",
+        "predicate": "distinct_from",
+        "object": "concept.revenue",
+        "polarity": "distinct_from",
+        "explanation": "Pipeline opportunity value is potential future business, not recognized revenue."
+      }
+    ],
+    "requiredEvidence": [
+      "identifier_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.pipeline_stage",
+    "status": "validated",
+    "kind": "status",
+    "labels": [
+      "Pipeline Stage",
+      "deal stage",
+      "giai đoạn bán hàng"
+    ],
+    "canonicalSignal": "pipeline_stage",
+    "semanticFamily": "status",
+    "relatedDomains": [
+      "customer",
+      "performance"
+    ],
+    "definition": "Categorical position of a lead or opportunity in a sales process.",
+    "positiveClues": [
+      "qualified",
+      "proposal",
+      "negotiation",
+      "won",
+      "lost"
+    ],
+    "negativeClues": [
+      "stage names are process-specific",
+      "stage is not win probability unless explicitly mapped"
+    ],
+    "compatibleTypes": [
+      "string",
+      "boolean",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "status_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.priority",
+    "status": "validated",
+    "kind": "status",
+    "labels": [
+      "Priority",
+      "Severity",
+      "Urgency",
+      "mức ưu tiên"
+    ],
+    "canonicalSignal": "priority",
+    "semanticFamily": "status",
+    "relatedDomains": [
+      "performance",
+      "customer",
+      "operations"
+    ],
+    "definition": "Categorical urgency or impact classification used to prioritize work.",
+    "positiveClues": [
+      "low",
+      "medium",
+      "high",
+      "critical",
+      "p1"
+    ],
+    "negativeClues": [
+      "priority is not outcome severity unless taxonomy says so",
+      "codes are categorical"
+    ],
+    "compatibleTypes": [
+      "string",
+      "boolean",
+      "number"
+    ],
+    "relations": [
+      {
+        "subject": "concept.priority",
+        "predicate": "distinct_from",
+        "object": "concept.ticket_status",
+        "polarity": "distinct_from",
+        "explanation": "Priority expresses urgency; status expresses workflow state."
+      }
+    ],
+    "requiredEvidence": [
+      "status_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.rating_score",
+    "status": "validated",
+    "kind": "measure",
+    "labels": [
+      "Rating Score",
+      "review score",
+      "điểm đánh giá"
+    ],
+    "canonicalSignal": "rating_score",
+    "semanticFamily": "engagement",
+    "relatedDomains": [
+      "customer",
+      "performance"
+    ],
+    "definition": "Numeric rating assigned by a respondent, reviewer or evaluator on a defined scale.",
+    "positiveClues": [
+      "rating",
+      "review score",
+      "assessment score"
+    ],
+    "negativeClues": [
+      "scale can differ across sources",
+      "average ratings should consider weighting and missingness"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "measure_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.resolution_time",
+    "status": "validated",
+    "kind": "measure",
+    "labels": [
+      "Resolution Time",
+      "time to resolve",
+      "thời gian xử lý"
+    ],
+    "canonicalSignal": "resolution_time",
+    "semanticFamily": "time",
+    "relatedDomains": [
+      "performance",
+      "customer",
+      "operations"
+    ],
+    "definition": "Elapsed time from an eligible request start to the defined resolved or closed event.",
+    "positiveClues": [
+      "resolution time",
+      "solve time",
+      "time to close"
+    ],
+    "negativeClues": [
+      "not first response time",
+      "reopen cycles can alter definition"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [
+      {
+        "subject": "concept.resolution_time",
+        "predicate": "distinct_from",
+        "object": "concept.response_time",
+        "polarity": "distinct_from",
+        "explanation": "First response and final resolution are different service intervals."
+      }
+    ],
+    "requiredEvidence": [
+      "measure_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.response_time",
+    "status": "validated",
+    "kind": "measure",
+    "labels": [
+      "Response Time",
+      "first response time",
+      "thời gian phản hồi"
+    ],
+    "canonicalSignal": "response_time",
+    "semanticFamily": "time",
+    "relatedDomains": [
+      "performance",
+      "customer",
+      "operations"
+    ],
+    "definition": "Elapsed time from an eligible request start to the defined first response event.",
+    "positiveClues": [
+      "first response",
+      "response time"
+    ],
+    "negativeClues": [
+      "not resolution time",
+      "business-hours and calendar-hours clocks differ"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [
+      {
+        "subject": "concept.response_time",
+        "predicate": "distinct_from",
+        "object": "concept.resolution_time",
+        "polarity": "distinct_from",
+        "explanation": "First response and final resolution are different service intervals."
+      }
+    ],
+    "requiredEvidence": [
+      "measure_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.retention_rate",
+    "status": "validated",
+    "kind": "formula",
+    "labels": [
+      "Retention Rate",
+      "customer retention",
+      "tỷ lệ giữ chân"
+    ],
+    "canonicalSignal": "retention",
+    "semanticFamily": "engagement",
+    "relatedDomains": [
+      "customer",
+      "performance"
+    ],
+    "definition": "Share of an eligible starting cohort that remains active or retained at a defined future point under an explicit retention rule.",
+    "positiveClues": [
+      "retention",
+      "retained customers",
+      "retention rate"
+    ],
+    "negativeClues": [
+      "requires cohort and time horizon",
+      "not simply one minus churn unless definitions align"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [
+      {
+        "subject": "concept.retention_rate",
+        "predicate": "distinct_from",
+        "object": "concept.churn_rate",
+        "polarity": "distinct_from",
+        "explanation": "Retention and churn require aligned cohort definitions before treating them as complements."
+      },
+      {
+        "subject": "concept.retention_rate",
+        "predicate": "requires_input",
+        "object": "retained_eligible_entities",
+        "polarity": "requires",
+        "explanation": "Formula concept.retention_rate requires explicit evidence for retained_eligible_entities."
+      },
+      {
+        "subject": "concept.retention_rate",
+        "predicate": "requires_input",
+        "object": "starting_eligible_entities",
+        "polarity": "requires",
+        "explanation": "Formula concept.retention_rate requires explicit evidence for starting_eligible_entities."
+      }
+    ],
+    "requiredEvidence": [
+      "formula_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "guarded_formula",
+    "formula": {
+      "expression": "retained_eligible_entities / starting_eligible_entities * 100",
+      "requiredInputs": [
+        "retained_eligible_entities",
+        "starting_eligible_entities"
+      ],
+      "requiredGrain": [
+        "stable entity cohort grain"
+      ],
+      "requiredUnits": [
+        "count/count"
+      ],
+      "requiredTimeBasis": [
+        "defined cohort start and retention horizon"
+      ],
+      "blockers": [
+        "unstable identity",
+        "undefined active rule"
+      ]
+    },
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.roas",
+    "status": "validated",
+    "kind": "formula",
+    "labels": [
+      "ROAS",
+      "Return on Ad Spend"
+    ],
+    "canonicalSignal": "roas",
+    "semanticFamily": "performance",
+    "relatedDomains": [
+      "performance",
+      "finance",
+      "revenue"
+    ],
+    "definition": "Attributed revenue divided by advertising spend under an explicit attribution and revenue basis.",
+    "positiveClues": [
+      "roas",
+      "return on ad spend"
+    ],
+    "negativeClues": [
+      "not accounting ROI",
+      "attribution method must be explicit",
+      "revenue and spend currency must align"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [
+      {
+        "subject": "concept.roas",
+        "predicate": "distinct_from",
+        "object": "concept.profit",
+        "polarity": "distinct_from",
+        "explanation": "ROAS compares attributed revenue to ad spend and is not accounting profit or ROI."
+      },
+      {
+        "subject": "concept.roas",
+        "predicate": "requires_input",
+        "object": "attributed_revenue",
+        "polarity": "requires",
+        "explanation": "Formula concept.roas requires explicit evidence for attributed_revenue."
+      },
+      {
+        "subject": "concept.roas",
+        "predicate": "requires_input",
+        "object": "marketing_spend",
+        "polarity": "requires",
+        "explanation": "Formula concept.roas requires explicit evidence for marketing_spend."
+      }
+    ],
+    "requiredEvidence": [
+      "formula_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "guarded_formula",
+    "formula": {
+      "expression": "attributed_revenue / marketing_spend",
+      "requiredInputs": [
+        "attributed_revenue",
+        "marketing_spend"
+      ],
+      "requiredGrain": [
+        "same campaign attribution grain"
+      ],
+      "requiredUnits": [
+        "same currency"
+      ],
+      "requiredTimeBasis": [
+        "same attribution/reporting window"
+      ],
+      "blockers": [
+        "zero spend",
+        "unproven attribution",
+        "currency mismatch"
+      ]
+    },
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.satisfaction",
+    "status": "validated",
+    "kind": "measure",
+    "labels": [
+      "Satisfaction",
+      "CSAT-like score",
+      "hài lòng"
+    ],
+    "canonicalSignal": "satisfaction",
+    "semanticFamily": "engagement",
+    "relatedDomains": [
+      "customer",
+      "performance"
+    ],
+    "definition": "Recorded satisfaction rating or derived satisfaction measure under a stated survey or feedback scale.",
+    "positiveClues": [
+      "satisfaction",
+      "csat",
+      "hài lòng"
+    ],
+    "negativeClues": [
+      "scale direction and range must be known",
+      "not causal proof of retention"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [
+      {
+        "subject": "concept.satisfaction",
+        "predicate": "distinct_from",
+        "object": "concept.sentiment",
+        "polarity": "distinct_from",
+        "explanation": "Survey satisfaction and text sentiment are different measurement constructs."
+      }
+    ],
+    "requiredEvidence": [
+      "measure_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.segment",
+    "status": "validated",
+    "kind": "dimension",
+    "labels": [
+      "Customer Segment",
+      "cohort",
+      "phân khúc"
+    ],
+    "canonicalSignal": "segment",
+    "semanticFamily": "entity",
+    "relatedDomains": [
+      "customer"
+    ],
+    "definition": "Grouping of customers or accounts according to defined business characteristics or behavior.",
+    "positiveClues": [
+      "segment",
+      "cohort",
+      "customer group"
+    ],
+    "negativeClues": [
+      "segment is not stable identity",
+      "segment membership can change over time"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "dimension_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.sentiment",
+    "status": "validated",
+    "kind": "dimension",
+    "labels": [
+      "Sentiment",
+      "positive/neutral/negative",
+      "cảm xúc"
+    ],
+    "canonicalSignal": "sentiment",
+    "semanticFamily": "engagement",
+    "relatedDomains": [
+      "customer",
+      "performance"
+    ],
+    "definition": "Categorical or scored interpretation of expressed attitude under a defined sentiment method.",
+    "positiveClues": [
+      "positive",
+      "neutral",
+      "negative",
+      "sentiment"
+    ],
+    "negativeClues": [
+      "sentiment is not satisfaction score by default",
+      "model-derived sentiment is not ground truth opinion"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [
+      {
+        "subject": "concept.sentiment",
+        "predicate": "distinct_from",
+        "object": "concept.satisfaction",
+        "polarity": "distinct_from",
+        "explanation": "Survey satisfaction and text sentiment are different measurement constructs."
+      }
+    ],
+    "requiredEvidence": [
+      "dimension_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.source_medium",
+    "status": "validated",
+    "kind": "dimension",
+    "labels": [
+      "Source / Medium",
+      "UTM source",
+      "traffic source"
+    ],
+    "canonicalSignal": "source_medium",
+    "semanticFamily": "marketing",
+    "relatedDomains": [
+      "customer",
+      "revenue"
+    ],
+    "definition": "Recorded origin or medium through which traffic, lead or customer activity was attributed by the tracking system.",
+    "positiveClues": [
+      "utm source",
+      "utm medium",
+      "traffic source",
+      "referral"
+    ],
+    "negativeClues": [
+      "tracking attribution is not causal proof",
+      "source and campaign are distinct dimensions"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [
+      {
+        "subject": "concept.source_medium",
+        "predicate": "distinct_from",
+        "object": "concept.campaign",
+        "polarity": "distinct_from",
+        "explanation": "Campaign and acquisition source/medium are different attribution dimensions."
+      }
+    ],
+    "requiredEvidence": [
+      "dimension_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.support_cost",
+    "status": "validated",
+    "kind": "measure",
+    "labels": [
+      "Support Cost",
+      "service cost",
+      "chi phí hỗ trợ"
+    ],
+    "canonicalSignal": "support_cost",
+    "semanticFamily": "money",
+    "relatedDomains": [
+      "customer",
+      "finance"
+    ],
+    "definition": "Cost attributed to customer support or service operations under a defined allocation basis.",
+    "positiveClues": [
+      "support cost",
+      "service cost",
+      "customer service expense"
+    ],
+    "negativeClues": [
+      "ticket count is not support cost",
+      "allocation policy must be explicit"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "measure_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.ticket",
+    "status": "validated",
+    "kind": "identifier",
+    "labels": [
+      "Support Ticket",
+      "Case",
+      "yêu cầu hỗ trợ"
+    ],
+    "canonicalSignal": "ticket",
+    "semanticFamily": "document",
+    "relatedDomains": [
+      "customer",
+      "operations"
+    ],
+    "definition": "Identified customer-service or incident record representing a request, issue or case.",
+    "positiveClues": [
+      "ticket",
+      "case",
+      "support request"
+    ],
+    "negativeClues": [
+      "ticket row is not necessarily one ticket if comments/events are expanded",
+      "ticket count is not resolution count"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "identifier_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.ticket_status",
+    "status": "validated",
+    "kind": "status",
+    "labels": [
+      "Ticket Status",
+      "case status",
+      "trạng thái hỗ trợ"
+    ],
+    "canonicalSignal": "ticket_status",
+    "semanticFamily": "status",
+    "relatedDomains": [
+      "customer",
+      "operations",
+      "performance"
+    ],
+    "definition": "Current or historical workflow state of a support ticket or case.",
+    "positiveClues": [
+      "open",
+      "pending",
+      "resolved",
+      "closed",
+      "reopened"
+    ],
+    "negativeClues": [
+      "not delivery status",
+      "closed does not necessarily mean SLA met"
+    ],
+    "compatibleTypes": [
+      "string",
+      "boolean",
+      "number"
+    ],
+    "relations": [
+      {
+        "subject": "concept.ticket_status",
+        "predicate": "distinct_from",
+        "object": "concept.priority",
+        "polarity": "distinct_from",
+        "explanation": "Priority expresses urgency; status expresses workflow state."
+      }
+    ],
+    "requiredEvidence": [
+      "status_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.win_probability",
+    "status": "validated",
+    "kind": "measure",
+    "labels": [
+      "Win Probability",
+      "opportunity probability",
+      "xác suất thắng"
+    ],
+    "canonicalSignal": "probability",
+    "semanticFamily": "percentage",
+    "relatedDomains": [
+      "performance",
+      "customer"
+    ],
+    "definition": "Estimated probability that an opportunity reaches a defined successful outcome.",
+    "positiveClues": [
+      "probability",
+      "win probability",
+      "chance"
+    ],
+    "negativeClues": [
+      "not actual conversion rate",
+      "subjective probability is not observed frequency"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [
+      {
+        "subject": "concept.win_probability",
+        "predicate": "distinct_from",
+        "object": "concept.conversion",
+        "polarity": "distinct_from",
+        "explanation": "Opportunity probability is an estimate; conversion is an observed outcome/count or rate."
+      }
+    ],
+    "requiredEvidence": [
+      "measure_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  }
+]

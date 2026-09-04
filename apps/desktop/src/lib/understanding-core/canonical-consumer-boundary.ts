@@ -25,6 +25,7 @@ import { resolveGrainSignatureShadow } from "./grain-resolver";
 import { profilePhysicalSource } from "./profiler";
 import { buildUnderstandingReadiness } from "./readiness-engine";
 import { generateSemanticCandidateArtifact } from "./semantic-candidate-engine";
+import { getBuiltInMicroBrainIndex } from "./micro-brain/built-in-index";
 import { resolveSemanticShadow } from "./semantic-resolver";
 import type { CanonicalSourceBoundaryV1 } from "./canonical-source-boundary";
 import { validateCanonicalSourceBoundary } from "./canonical-source-boundary";
@@ -217,7 +218,7 @@ function buildArtifact(input: CanonicalDatasetStateInputV1, fingerprint: string)
     ) {
       return invalidArtifact(fingerprint, ["canonical_physical_profile_does_not_match_dataset_state"], input.sourceBoundary, input.userOverlay?.overlayId ?? null);
     }
-    const candidates = input.sourceBoundary ? null : generateSemanticCandidateArtifact(physical, { registry: SEMANTIC_SIGNAL_REGISTRY_V1 });
+    const candidates = input.sourceBoundary ? null : generateSemanticCandidateArtifact(physical, { registry: SEMANTIC_SIGNAL_REGISTRY_V1, microBrain: { index: getBuiltInMicroBrainIndex(), mode: "selective" } });
     const inferredSemantic = input.sourceBoundary
       ? input.sourceBoundary.fullFileUnderstanding.semantic
       : resolveSemanticShadow(physical, candidates!, aggregateContextualEvidence(physical, candidates!));

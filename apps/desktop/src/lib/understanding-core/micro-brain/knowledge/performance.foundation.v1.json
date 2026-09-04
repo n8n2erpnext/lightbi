@@ -1,0 +1,1706 @@
+[
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.achievement_rate",
+    "status": "validated",
+    "kind": "formula",
+    "labels": [
+      "Achievement Rate",
+      "Attainment",
+      "tỷ lệ hoàn thành"
+    ],
+    "canonicalSignal": "achievement",
+    "semanticFamily": "performance",
+    "relatedDomains": [
+      "performance"
+    ],
+    "definition": "Actual result relative to a comparable target under an explicit direction and unit policy.",
+    "positiveClues": [
+      "achievement",
+      "attainment",
+      "completion rate"
+    ],
+    "negativeClues": [
+      "higher is not always better for every metric",
+      "target zero can block ratio"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [
+      {
+        "subject": "concept.achievement_rate",
+        "predicate": "requires_input",
+        "object": "actual",
+        "polarity": "requires",
+        "explanation": "Formula concept.achievement_rate requires explicit evidence for actual."
+      },
+      {
+        "subject": "concept.achievement_rate",
+        "predicate": "requires_input",
+        "object": "target",
+        "polarity": "requires",
+        "explanation": "Formula concept.achievement_rate requires explicit evidence for target."
+      }
+    ],
+    "requiredEvidence": [
+      "formula_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "guarded_formula",
+    "formula": {
+      "expression": "actual / target * 100",
+      "requiredInputs": [
+        "actual",
+        "target"
+      ],
+      "requiredGrain": [
+        "same metric and organizational grain"
+      ],
+      "requiredUnits": [
+        "same unit"
+      ],
+      "requiredTimeBasis": [
+        "same target period"
+      ],
+      "blockers": [
+        "zero target",
+        "metric direction ambiguity",
+        "scope mismatch"
+      ]
+    },
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.actual",
+    "status": "validated",
+    "kind": "measure",
+    "labels": [
+      "Actual",
+      "Result",
+      "thực tế"
+    ],
+    "canonicalSignal": "actual",
+    "semanticFamily": "performance",
+    "relatedDomains": [
+      "performance"
+    ],
+    "definition": "Observed performance result for a defined metric, period and scope.",
+    "positiveClues": [
+      "actual",
+      "result",
+      "thực tế"
+    ],
+    "negativeClues": [
+      "actual is not target",
+      "metric unit must be known"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [
+      {
+        "subject": "concept.actual",
+        "predicate": "distinct_from",
+        "object": "concept.target",
+        "polarity": "distinct_from",
+        "explanation": "Target is planned expectation; actual is observed result."
+      }
+    ],
+    "requiredEvidence": [
+      "measure_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.approval_status",
+    "status": "validated",
+    "kind": "status",
+    "labels": [
+      "Approval Status",
+      "workflow status",
+      "trạng thái phê duyệt"
+    ],
+    "canonicalSignal": "approval_status",
+    "semanticFamily": "status",
+    "relatedDomains": [
+      "performance",
+      "finance",
+      "operations"
+    ],
+    "definition": "State of an approval workflow such as draft, submitted, approved, rejected or pending.",
+    "positiveClues": [
+      "approved",
+      "rejected",
+      "pending approval",
+      "submitted"
+    ],
+    "negativeClues": [
+      "approval does not prove payment or execution",
+      "workflow state is categorical"
+    ],
+    "compatibleTypes": [
+      "string",
+      "boolean",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "status_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.attendance_status",
+    "status": "validated",
+    "kind": "status",
+    "labels": [
+      "Attendance Status",
+      "Present/Absent",
+      "chấm công"
+    ],
+    "canonicalSignal": "attendance_status",
+    "semanticFamily": "status",
+    "relatedDomains": [
+      "performance",
+      "operations"
+    ],
+    "definition": "Recorded attendance state for a person and work period such as present, absent, late or leave.",
+    "positiveClues": [
+      "present",
+      "absent",
+      "late",
+      "leave"
+    ],
+    "negativeClues": [
+      "attendance status is not productivity",
+      "late status needs scheduled-time context"
+    ],
+    "compatibleTypes": [
+      "string",
+      "boolean",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "status_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.audit_finding",
+    "status": "validated",
+    "kind": "dimension",
+    "labels": [
+      "Audit Finding",
+      "Finding",
+      "phát hiện kiểm toán"
+    ],
+    "canonicalSignal": "audit_finding",
+    "semanticFamily": "risk",
+    "relatedDomains": [
+      "performance",
+      "finance",
+      "operations"
+    ],
+    "definition": "Observed control, compliance or process issue recorded through an audit or review.",
+    "positiveClues": [
+      "audit finding",
+      "finding",
+      "observation"
+    ],
+    "negativeClues": [
+      "finding count is not risk severity",
+      "finding does not prove financial loss"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "dimension_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.capacity",
+    "status": "validated",
+    "kind": "measure",
+    "labels": [
+      "Capacity",
+      "công suất"
+    ],
+    "canonicalSignal": "capacity",
+    "semanticFamily": "performance",
+    "relatedDomains": [
+      "performance",
+      "operations"
+    ],
+    "definition": "Maximum, planned or available ability of a resource to produce, process or serve within a time basis.",
+    "positiveClues": [
+      "capacity",
+      "maximum output",
+      "available capacity"
+    ],
+    "negativeClues": [
+      "capacity is not actual output",
+      "rated and available capacity can differ"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "measure_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.control_id",
+    "status": "validated",
+    "kind": "identifier",
+    "labels": [
+      "Control ID",
+      "control code",
+      "kiểm soát"
+    ],
+    "canonicalSignal": "control_id",
+    "semanticFamily": "risk",
+    "relatedDomains": [
+      "performance",
+      "finance",
+      "operations"
+    ],
+    "definition": "Identifier for a governance, risk or internal-control activity.",
+    "positiveClues": [
+      "control id",
+      "control code",
+      "internal control"
+    ],
+    "negativeClues": [
+      "control existence does not prove control effectiveness",
+      "not audit finding identity"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "identifier_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.defect_rate",
+    "status": "validated",
+    "kind": "formula",
+    "labels": [
+      "Defect Rate",
+      "error rate",
+      "tỷ lệ lỗi"
+    ],
+    "canonicalSignal": "defect_rate",
+    "semanticFamily": "percentage",
+    "relatedDomains": [
+      "performance",
+      "operations"
+    ],
+    "definition": "Share of inspected or produced eligible units classified as defective under a defined quality rule.",
+    "positiveClues": [
+      "defect rate",
+      "reject rate",
+      "error rate"
+    ],
+    "negativeClues": [
+      "defect count alone is not a rate",
+      "inspection denominator must be explicit"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [
+      {
+        "subject": "concept.defect_rate",
+        "predicate": "distinct_from",
+        "object": "concept.yield_rate",
+        "polarity": "distinct_from",
+        "explanation": "Defect and yield rates use different event definitions and may not be exact complements."
+      },
+      {
+        "subject": "concept.defect_rate",
+        "predicate": "requires_input",
+        "object": "defective_units",
+        "polarity": "requires",
+        "explanation": "Formula concept.defect_rate requires explicit evidence for defective_units."
+      },
+      {
+        "subject": "concept.defect_rate",
+        "predicate": "requires_input",
+        "object": "inspected_or_produced_units",
+        "polarity": "requires",
+        "explanation": "Formula concept.defect_rate requires explicit evidence for inspected_or_produced_units."
+      }
+    ],
+    "requiredEvidence": [
+      "formula_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "guarded_formula",
+    "formula": {
+      "expression": "defective_units / inspected_or_produced_units * 100",
+      "requiredInputs": [
+        "defective_units",
+        "inspected_or_produced_units"
+      ],
+      "requiredGrain": [
+        "same quality unit grain"
+      ],
+      "requiredUnits": [
+        "count/count"
+      ],
+      "requiredTimeBasis": [
+        "same production or inspection period"
+      ],
+      "blockers": [
+        "missing denominator",
+        "rework double counting"
+      ]
+    },
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.department",
+    "status": "validated",
+    "kind": "dimension",
+    "labels": [
+      "Department",
+      "Team",
+      "phòng ban"
+    ],
+    "canonicalSignal": "department",
+    "semanticFamily": "organization",
+    "relatedDomains": [
+      "performance"
+    ],
+    "definition": "Organizational unit grouping people, activities or costs under a defined structure.",
+    "positiveClues": [
+      "department",
+      "dept",
+      "team",
+      "phòng ban"
+    ],
+    "negativeClues": [
+      "department is not individual employee",
+      "organizational hierarchy can change over time"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "dimension_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.downtime",
+    "status": "validated",
+    "kind": "measure",
+    "labels": [
+      "Downtime",
+      "idle time",
+      "thời gian dừng"
+    ],
+    "canonicalSignal": "downtime",
+    "semanticFamily": "time",
+    "relatedDomains": [
+      "operations",
+      "performance"
+    ],
+    "definition": "Time a machine, asset or process is unavailable or stopped according to a defined operational clock.",
+    "positiveClues": [
+      "downtime",
+      "stop time",
+      "idle time"
+    ],
+    "negativeClues": [
+      "planned and unplanned downtime may differ",
+      "not necessarily waiting time"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "measure_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.efficiency",
+    "status": "validated",
+    "kind": "measure",
+    "labels": [
+      "Efficiency",
+      "hiệu suất"
+    ],
+    "canonicalSignal": "efficiency",
+    "semanticFamily": "performance",
+    "relatedDomains": [
+      "performance",
+      "operations"
+    ],
+    "definition": "Relationship between actual resource use or output and an explicit standard, capacity or theoretical reference.",
+    "positiveClues": [
+      "efficiency",
+      "resource efficiency"
+    ],
+    "negativeClues": [
+      "not synonymous with productivity",
+      "reference standard must be defined"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [
+      {
+        "subject": "concept.efficiency",
+        "predicate": "distinct_from",
+        "object": "concept.productivity",
+        "polarity": "distinct_from",
+        "explanation": "Productivity is output relative to input; efficiency compares performance with a standard/resource basis."
+      },
+      {
+        "subject": "concept.efficiency",
+        "predicate": "distinct_from",
+        "object": "concept.utilization",
+        "polarity": "distinct_from",
+        "explanation": "Utilization measures capacity usage, not efficiency of converting resources to output."
+      }
+    ],
+    "requiredEvidence": [
+      "measure_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.employee",
+    "status": "validated",
+    "kind": "dimension",
+    "labels": [
+      "Employee",
+      "Staff",
+      "nhân viên"
+    ],
+    "canonicalSignal": "employee",
+    "semanticFamily": "entity",
+    "relatedDomains": [
+      "performance",
+      "operations"
+    ],
+    "definition": "Person engaged as employee or staff under the source workforce model.",
+    "positiveClues": [
+      "employee",
+      "staff",
+      "nhân viên"
+    ],
+    "negativeClues": [
+      "employee label is not employee id",
+      "contractor and employee populations can differ"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "dimension_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.employee_id",
+    "status": "validated",
+    "kind": "identifier",
+    "labels": [
+      "Employee ID",
+      "Staff ID",
+      "mã nhân viên"
+    ],
+    "canonicalSignal": "employee_id",
+    "semanticFamily": "entity",
+    "relatedDomains": [
+      "performance",
+      "operations"
+    ],
+    "definition": "Stable workforce identifier for an employee or staff member within an organization.",
+    "positiveClues": [
+      "employee id",
+      "staff id",
+      "msnv"
+    ],
+    "negativeClues": [
+      "employee name alone is not stable identity",
+      "manager id is a different role unless explicitly mapped"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "identifier_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.hire_date",
+    "status": "validated",
+    "kind": "time",
+    "labels": [
+      "Hire Date",
+      "Joining Date",
+      "ngày vào làm"
+    ],
+    "canonicalSignal": "hire_date",
+    "semanticFamily": "time",
+    "relatedDomains": [
+      "performance"
+    ],
+    "definition": "Date employment or service relationship began under the workforce record.",
+    "positiveClues": [
+      "hire date",
+      "joining date",
+      "start date"
+    ],
+    "negativeClues": [
+      "not birth date",
+      "rehire scenarios may have multiple start dates"
+    ],
+    "compatibleTypes": [
+      "date",
+      "datetime",
+      "timestamp",
+      "string"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "time_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.job_title",
+    "status": "validated",
+    "kind": "dimension",
+    "labels": [
+      "Job Title",
+      "Position",
+      "chức danh"
+    ],
+    "canonicalSignal": "job_title",
+    "semanticFamily": "organization",
+    "relatedDomains": [
+      "performance"
+    ],
+    "definition": "Role or position title assigned to a worker within an organizational structure.",
+    "positiveClues": [
+      "job title",
+      "position",
+      "designation"
+    ],
+    "negativeClues": [
+      "job title is not department",
+      "title changes over time"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "dimension_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.manager",
+    "status": "validated",
+    "kind": "dimension",
+    "labels": [
+      "Manager",
+      "Supervisor",
+      "quản lý"
+    ],
+    "canonicalSignal": "manager",
+    "semanticFamily": "entity",
+    "relatedDomains": [
+      "performance",
+      "operations"
+    ],
+    "definition": "Person assigned management or supervisory responsibility for employees, teams or work.",
+    "positiveClues": [
+      "manager",
+      "supervisor",
+      "team lead"
+    ],
+    "negativeClues": [
+      "manager role is not employee identity unless linked",
+      "current manager may differ from historical manager"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "dimension_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.milestone",
+    "status": "validated",
+    "kind": "dimension",
+    "labels": [
+      "Milestone",
+      "Project Phase",
+      "cột mốc"
+    ],
+    "canonicalSignal": "milestone",
+    "semanticFamily": "project",
+    "relatedDomains": [
+      "performance",
+      "operations"
+    ],
+    "definition": "Defined project checkpoint or phase used to track progress or completion.",
+    "positiveClues": [
+      "milestone",
+      "phase",
+      "project phase"
+    ],
+    "negativeClues": [
+      "milestone is not progress percentage",
+      "completion criteria must be defined"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "dimension_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.performance_rank",
+    "status": "validated",
+    "kind": "dimension",
+    "labels": [
+      "Performance Rank",
+      "ranking",
+      "xếp hạng"
+    ],
+    "canonicalSignal": "performance_rank",
+    "semanticFamily": "performance",
+    "relatedDomains": [
+      "performance"
+    ],
+    "definition": "Ordinal position of an entity within a defined comparison set and ranking metric.",
+    "positiveClues": [
+      "rank",
+      "ranking",
+      "xếp hạng"
+    ],
+    "negativeClues": [
+      "rank is not a cardinal performance difference",
+      "comparison population must be known"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "dimension_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.productivity",
+    "status": "validated",
+    "kind": "measure",
+    "labels": [
+      "Productivity",
+      "năng suất"
+    ],
+    "canonicalSignal": "productivity",
+    "semanticFamily": "performance",
+    "relatedDomains": [
+      "performance",
+      "operations"
+    ],
+    "definition": "Output relative to an explicitly defined input such as labor time, machine time or resource consumed.",
+    "positiveClues": [
+      "productivity",
+      "output per hour",
+      "units per worker"
+    ],
+    "negativeClues": [
+      "output volume alone is not productivity",
+      "input denominator and quality context matter"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [
+      {
+        "subject": "concept.productivity",
+        "predicate": "distinct_from",
+        "object": "concept.efficiency",
+        "polarity": "distinct_from",
+        "explanation": "Productivity is output relative to input; efficiency compares performance with a standard/resource basis."
+      },
+      {
+        "subject": "concept.productivity",
+        "predicate": "distinct_from",
+        "object": "concept.harvest_quantity",
+        "polarity": "distinct_from",
+        "explanation": "Harvest quantity is output volume; agronomic productivity requires an input denominator such as area."
+      }
+    ],
+    "requiredEvidence": [
+      "measure_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.progress_pct",
+    "status": "validated",
+    "kind": "measure",
+    "labels": [
+      "Progress %",
+      "completion percent",
+      "tiến độ"
+    ],
+    "canonicalSignal": "progress_pct",
+    "semanticFamily": "percentage",
+    "relatedDomains": [
+      "performance",
+      "operations"
+    ],
+    "definition": "Reported degree of completion for a project, task or scope under a defined progress method.",
+    "positiveClues": [
+      "progress percent",
+      "completion pct",
+      "tiến độ"
+    ],
+    "negativeClues": [
+      "percent complete may be subjective",
+      "averaging tasks equally can distort project progress"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "measure_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.project",
+    "status": "validated",
+    "kind": "dimension",
+    "labels": [
+      "Project",
+      "Job",
+      "Dự án"
+    ],
+    "canonicalSignal": "project",
+    "semanticFamily": "organization",
+    "relatedDomains": [
+      "performance",
+      "finance"
+    ],
+    "definition": "Organized body of work used to group costs, progress, resources or deliverables.",
+    "positiveClues": [
+      "project",
+      "job",
+      "contract project"
+    ],
+    "negativeClues": [
+      "project is not cost center by default",
+      "project status and progress are separate"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "dimension_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.quality_score",
+    "status": "validated",
+    "kind": "measure",
+    "labels": [
+      "Quality Score",
+      "quality rating",
+      "điểm chất lượng"
+    ],
+    "canonicalSignal": "quality_score",
+    "semanticFamily": "performance",
+    "relatedDomains": [
+      "performance"
+    ],
+    "definition": "Score representing quality according to a defined assessment method or scale.",
+    "positiveClues": [
+      "quality score",
+      "quality rating",
+      "assessment score"
+    ],
+    "negativeClues": [
+      "scale direction and validity must be known",
+      "score is not causal proof of performance drivers"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "measure_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.remediation_status",
+    "status": "validated",
+    "kind": "status",
+    "labels": [
+      "Remediation Status",
+      "corrective action status"
+    ],
+    "canonicalSignal": "remediation_status",
+    "semanticFamily": "risk",
+    "relatedDomains": [
+      "performance",
+      "operations"
+    ],
+    "definition": "Workflow state of corrective or remediation action for an identified issue.",
+    "positiveClues": [
+      "open",
+      "in progress",
+      "closed",
+      "overdue"
+    ],
+    "negativeClues": [
+      "closed status does not prove effectiveness",
+      "not the same as audit finding severity"
+    ],
+    "compatibleTypes": [
+      "string",
+      "boolean",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "status_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.salary",
+    "status": "validated",
+    "kind": "measure",
+    "labels": [
+      "Salary",
+      "Payroll Amount",
+      "lương"
+    ],
+    "canonicalSignal": "salary",
+    "semanticFamily": "money",
+    "relatedDomains": [
+      "finance",
+      "performance"
+    ],
+    "definition": "Employee compensation amount under a stated gross, net, base or payroll basis.",
+    "positiveClues": [
+      "salary",
+      "gross pay",
+      "net pay",
+      "payroll"
+    ],
+    "negativeClues": [
+      "gross and net pay are not interchangeable",
+      "salary is not productivity"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "measure_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.scrap_quantity",
+    "status": "validated",
+    "kind": "flow",
+    "labels": [
+      "Scrap Quantity",
+      "reject quantity",
+      "phế phẩm"
+    ],
+    "canonicalSignal": "scrap_qty",
+    "semanticFamily": "quantity",
+    "relatedDomains": [
+      "operations",
+      "inventory",
+      "performance"
+    ],
+    "definition": "Quantity discarded or written off as scrap under a production or quality process.",
+    "positiveClues": [
+      "scrap qty",
+      "waste",
+      "reject qty"
+    ],
+    "negativeClues": [
+      "scrap is not rework quantity",
+      "UOM must match production quantity"
+    ],
+    "compatibleTypes": [
+      "number",
+      "string"
+    ],
+    "relations": [
+      {
+        "subject": "concept.scrap_quantity",
+        "predicate": "distinct_from",
+        "object": "concept.rework_quantity",
+        "polarity": "distinct_from",
+        "explanation": "Scrap is discarded output; rework is output routed for correction."
+      }
+    ],
+    "requiredEvidence": [
+      "flow_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.shift",
+    "status": "validated",
+    "kind": "dimension",
+    "labels": [
+      "Shift",
+      "Work Shift",
+      "ca làm"
+    ],
+    "canonicalSignal": "shift",
+    "semanticFamily": "time",
+    "relatedDomains": [
+      "performance",
+      "operations"
+    ],
+    "definition": "Scheduled work period or shift classification assigned to personnel or operations.",
+    "positiveClues": [
+      "shift",
+      "ca 1",
+      "ca 2",
+      "morning",
+      "night"
+    ],
+    "negativeClues": [
+      "shift label is not work-hours measure",
+      "shift duration can vary"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "dimension_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.target",
+    "status": "validated",
+    "kind": "measure",
+    "labels": [
+      "Target",
+      "Goal",
+      "mục tiêu"
+    ],
+    "canonicalSignal": "target",
+    "semanticFamily": "performance",
+    "relatedDomains": [
+      "performance"
+    ],
+    "definition": "Planned or expected performance level for a metric, period and organizational scope.",
+    "positiveClues": [
+      "target",
+      "goal",
+      "plan",
+      "mục tiêu"
+    ],
+    "negativeClues": [
+      "target is not actual result",
+      "unit and scope must match actual"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [
+      {
+        "subject": "concept.target",
+        "predicate": "distinct_from",
+        "object": "concept.actual",
+        "polarity": "distinct_from",
+        "explanation": "Target is planned expectation; actual is observed result."
+      }
+    ],
+    "requiredEvidence": [
+      "measure_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.termination_date",
+    "status": "validated",
+    "kind": "time",
+    "labels": [
+      "Termination Date",
+      "Last Working Date",
+      "ngày nghỉ việc"
+    ],
+    "canonicalSignal": "termination_date",
+    "semanticFamily": "time",
+    "relatedDomains": [
+      "performance"
+    ],
+    "definition": "Date employment or service relationship ended under the workforce record.",
+    "positiveClues": [
+      "termination date",
+      "last working date",
+      "exit date"
+    ],
+    "negativeClues": [
+      "absence of termination date does not always prove active status",
+      "not resignation notice date unless defined"
+    ],
+    "compatibleTypes": [
+      "date",
+      "datetime",
+      "timestamp",
+      "string"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "time_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.utilization",
+    "status": "validated",
+    "kind": "formula",
+    "labels": [
+      "Utilization",
+      "capacity utilization",
+      "mức sử dụng"
+    ],
+    "canonicalSignal": "utilization",
+    "semanticFamily": "percentage",
+    "relatedDomains": [
+      "performance",
+      "operations"
+    ],
+    "definition": "Share of available capacity or time that is actually used under a defined capacity basis.",
+    "positiveClues": [
+      "utilization",
+      "capacity utilization",
+      "used capacity"
+    ],
+    "negativeClues": [
+      "utilization is not efficiency",
+      "available capacity denominator must be explicit"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [
+      {
+        "subject": "concept.utilization",
+        "predicate": "distinct_from",
+        "object": "concept.efficiency",
+        "polarity": "distinct_from",
+        "explanation": "Utilization measures capacity usage, not efficiency of converting resources to output."
+      },
+      {
+        "subject": "concept.utilization",
+        "predicate": "requires_input",
+        "object": "used_capacity",
+        "polarity": "requires",
+        "explanation": "Formula concept.utilization requires explicit evidence for used_capacity."
+      },
+      {
+        "subject": "concept.utilization",
+        "predicate": "requires_input",
+        "object": "available_capacity",
+        "polarity": "requires",
+        "explanation": "Formula concept.utilization requires explicit evidence for available_capacity."
+      }
+    ],
+    "requiredEvidence": [
+      "formula_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "guarded_formula",
+    "formula": {
+      "expression": "used_capacity / available_capacity * 100",
+      "requiredInputs": [
+        "used_capacity",
+        "available_capacity"
+      ],
+      "requiredGrain": [
+        "same resource grain"
+      ],
+      "requiredUnits": [
+        "same capacity unit"
+      ],
+      "requiredTimeBasis": [
+        "same observation period"
+      ],
+      "blockers": [
+        "zero capacity",
+        "planned versus theoretical capacity ambiguity"
+      ]
+    },
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.work_hours",
+    "status": "validated",
+    "kind": "measure",
+    "labels": [
+      "Work Hours",
+      "Hours Worked",
+      "giờ công"
+    ],
+    "canonicalSignal": "work_hours",
+    "semanticFamily": "time",
+    "relatedDomains": [
+      "performance",
+      "operations",
+      "finance"
+    ],
+    "definition": "Recorded or calculated time worked under the workforce or operational timekeeping policy.",
+    "positiveClues": [
+      "work hours",
+      "hours worked",
+      "giờ công"
+    ],
+    "negativeClues": [
+      "scheduled hours and actual hours differ",
+      "overtime may be separate"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "measure_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.yield_rate",
+    "status": "validated",
+    "kind": "formula",
+    "labels": [
+      "Yield Rate",
+      "First Pass Yield",
+      "FPY"
+    ],
+    "canonicalSignal": "yield_rate",
+    "semanticFamily": "percentage",
+    "relatedDomains": [
+      "performance",
+      "operations"
+    ],
+    "definition": "Share of eligible production units meeting acceptance criteria, optionally on first pass depending on definition.",
+    "positiveClues": [
+      "yield rate",
+      "fpy",
+      "first pass yield"
+    ],
+    "negativeClues": [
+      "yield is not throughput",
+      "first-pass and final yield are different definitions"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [
+      {
+        "subject": "concept.yield_rate",
+        "predicate": "distinct_from",
+        "object": "concept.defect_rate",
+        "polarity": "distinct_from",
+        "explanation": "Defect and yield rates use different event definitions and may not be exact complements."
+      },
+      {
+        "subject": "concept.yield_rate",
+        "predicate": "requires_input",
+        "object": "accepted_units",
+        "polarity": "requires",
+        "explanation": "Formula concept.yield_rate requires explicit evidence for accepted_units."
+      },
+      {
+        "subject": "concept.yield_rate",
+        "predicate": "requires_input",
+        "object": "eligible_input_units",
+        "polarity": "requires",
+        "explanation": "Formula concept.yield_rate requires explicit evidence for eligible_input_units."
+      }
+    ],
+    "requiredEvidence": [
+      "formula_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "guarded_formula",
+    "formula": {
+      "expression": "accepted_units / eligible_input_units * 100",
+      "requiredInputs": [
+        "accepted_units",
+        "eligible_input_units"
+      ],
+      "requiredGrain": [
+        "same production step grain"
+      ],
+      "requiredUnits": [
+        "count/count"
+      ],
+      "requiredTimeBasis": [
+        "same production period"
+      ],
+      "blockers": [
+        "undefined acceptance rule",
+        "rework mixed with first pass"
+      ]
+    },
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  }
+]
