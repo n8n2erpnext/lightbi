@@ -1,0 +1,91 @@
+{
+  "schemaVersion": "lightbi.micro-brain.active-core-benchmark.v1",
+  "generatedAt": "2026-09-04T10:04:35.958Z",
+  "hardware": {
+    "architecture": "arm64",
+    "cpuModel": "Neoverse-N1",
+    "logicalCpuCount": 4,
+    "totalMemoryBytes": 25139560448,
+    "nodeVersion": "v22.23.1",
+    "platform": "linux 6.17.0-1020-oracle"
+  },
+  "corpus": {
+    "sampleCount": 30,
+    "uniqueSourceCount": 19,
+    "physicalColumnCount": 379,
+    "prepareMs": 2299.833688
+  },
+  "activeCore": {
+    "runs": 5,
+    "warmups": 1,
+    "mbOff": {
+      "count": 5,
+      "minMs": 9536.409911000002,
+      "p50Ms": 9558.086248,
+      "p95Ms": 9699.885339,
+      "p99Ms": 9699.885339,
+      "maxMs": 9699.885339,
+      "meanMs": 9580.6951602
+    },
+    "mbSelective": {
+      "count": 5,
+      "minMs": 10164.534381000005,
+      "p50Ms": 10208.496981000004,
+      "p95Ms": 10218.714968,
+      "p99Ms": 10218.714968,
+      "maxMs": 10218.714968,
+      "meanMs": 10198.707659600002
+    },
+    "p50DeltaMs": 650.4107330000043,
+    "p50DeltaPct": 6.8048217616377,
+    "queryCountPerRun": 243,
+    "bridgedCandidateCountPerRun": 472,
+    "retrievalLatency": {
+      "count": 243,
+      "minMs": 1.403974000015296,
+      "p50Ms": 2.254023000015877,
+      "p95Ms": 2.936028999989503,
+      "p99Ms": 3.34699299998465,
+      "maxMs": 3.8027580000052694,
+      "meanMs": 2.3008029094652644
+    },
+    "offResolutionDigest": "7a519ae415362d51f87e89a6b86050326c0bf282fea458c999aac8bb73433911",
+    "onResolutionDigest": "2b99752357edb52c1ad763b43d75d3b5c9873948f8f081cc4b1370676e4505c3",
+    "semanticDifferences": [
+      {
+        "sourceId": "sample-corpus/versions/1.4.0/fixtures/delivery-1912-sanitized.xlsx#NhapXuatDungGioTTKT",
+        "physicalColumn": "Thời gian dự kiến đến",
+        "beforeState": "unknown",
+        "beforeSelected": null,
+        "afterState": "probable",
+        "afterSelected": "eta"
+      },
+      {
+        "sourceId": "sample-corpus/versions/1.4.0/fixtures/delivery-2312-sanitized.xlsx#NhapXuatDungGioTTKT",
+        "physicalColumn": "Thời gian dự kiến đến",
+        "beforeState": "unknown",
+        "beforeSelected": null,
+        "afterState": "probable",
+        "afterSelected": "eta"
+      },
+      {
+        "sourceId": "sample-corpus/versions/1.4.0/fixtures/delivery-2412-sanitized.xlsx#NhapXuatDungGioTTKT",
+        "physicalColumn": "Thời gian dự kiến đến",
+        "beforeState": "unknown",
+        "beforeSelected": null,
+        "afterState": "probable",
+        "afterSelected": "eta"
+      }
+    ],
+    "confirmedRegressions": []
+  },
+  "indexColdLoad": {
+    "artifactBytes": 6605467,
+    "readMs": 2.855188000000002,
+    "parseMs": 125.318691,
+    "totalLoadMs": 128.173879,
+    "rssDeltaBytes": 47357952,
+    "heapUsedDeltaBytes": 13202040
+  },
+  "indexIdentity": "3f852998b900ffe1627f67e445d128354cf11442fc24d27e63b405b7ec363e71"
+}

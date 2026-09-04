@@ -1,0 +1,139 @@
+{
+  "schemaVersion": "lightbi.micro-brain.mb7-acceptance.v1",
+  "generatedAt": "2026-09-04T10:10:23.748078Z",
+  "sourceCandidate": {
+    "branch": "codex/r1-roadmap-integration",
+    "baseHead": "94fa40c01deb43e314e87dbb09c2d240661012d9"
+  },
+  "acceptance": {
+    "state": "source_acceptance_complete_cutover_review_passed_production_not_deployed",
+    "productionDeploymentExecuted": false,
+    "productionAuthorityChanged": false,
+    "decisionUseAuthorityExpanded": false
+  },
+  "determinism": {
+    "indexByteSha256": "6415fddef704732e0d2e08936aaed729278f4a9c759b30a4daacb1c7ab7d8ec0",
+    "logicalIndexSha256": "3f852998b900ffe1627f67e445d128354cf11442fc24d27e63b405b7ec363e71",
+    "rebuildByteIdentityPassed": true
+  },
+  "footprint": {
+    "indexBytes": 6605467,
+    "indexGzip9Bytes": 1866404,
+    "budgetBytes": 67108864,
+    "withinBudget": true
+  },
+  "activeCoreBenchmark": {
+    "artifact": "apps/desktop/src/lib/understanding-core/micro-brain/baseline/mb7-active-core-benchmark.v1.json",
+    "artifactSha256": "9cff8dd04a4d9ed27f108103bd8425bfe8bb1c90d93c733c71ede233482b0eba",
+    "hardware": {
+      "architecture": "arm64",
+      "cpuModel": "Neoverse-N1",
+      "logicalCpuCount": 4,
+      "totalMemoryBytes": 25139560448,
+      "nodeVersion": "v22.23.1",
+      "platform": "linux 6.17.0-1020-oracle"
+    },
+    "corpus": {
+      "sampleCount": 30,
+      "uniqueSourceCount": 19,
+      "physicalColumnCount": 379,
+      "prepareMs": 2299.833688
+    },
+    "mbOff": {
+      "count": 5,
+      "minMs": 9536.409911000002,
+      "p50Ms": 9558.086248,
+      "p95Ms": 9699.885339,
+      "p99Ms": 9699.885339,
+      "maxMs": 9699.885339,
+      "meanMs": 9580.6951602
+    },
+    "mbSelective": {
+      "count": 5,
+      "minMs": 10164.534381000005,
+      "p50Ms": 10208.496981000004,
+      "p95Ms": 10218.714968,
+      "p99Ms": 10218.714968,
+      "maxMs": 10218.714968,
+      "meanMs": 10198.707659600002
+    },
+    "p50DeltaMs": 650.4107330000043,
+    "p50DeltaPct": 6.8048217616377,
+    "queryCountPerRun": 243,
+    "bridgedCandidateCountPerRun": 472,
+    "retrievalLatency": {
+      "count": 243,
+      "minMs": 1.403974000015296,
+      "p50Ms": 2.254023000015877,
+      "p95Ms": 2.936028999989503,
+      "p99Ms": 3.34699299998465,
+      "maxMs": 3.8027580000052694,
+      "meanMs": 2.3008029094652644
+    },
+    "semanticDifferences": [
+      {
+        "sourceId": "sample-corpus/versions/1.4.0/fixtures/delivery-1912-sanitized.xlsx#NhapXuatDungGioTTKT",
+        "physicalColumn": "Thời gian dự kiến đến",
+        "beforeState": "unknown",
+        "beforeSelected": null,
+        "afterState": "probable",
+        "afterSelected": "eta"
+      },
+      {
+        "sourceId": "sample-corpus/versions/1.4.0/fixtures/delivery-2312-sanitized.xlsx#NhapXuatDungGioTTKT",
+        "physicalColumn": "Thời gian dự kiến đến",
+        "beforeState": "unknown",
+        "beforeSelected": null,
+        "afterState": "probable",
+        "afterSelected": "eta"
+      },
+      {
+        "sourceId": "sample-corpus/versions/1.4.0/fixtures/delivery-2412-sanitized.xlsx#NhapXuatDungGioTTKT",
+        "physicalColumn": "Thời gian dự kiến đến",
+        "beforeState": "unknown",
+        "beforeSelected": null,
+        "afterState": "probable",
+        "afterSelected": "eta"
+      }
+    ],
+    "confirmedRegressions": [],
+    "indexColdLoad": {
+      "artifactBytes": 6605467,
+      "readMs": 2.855188000000002,
+      "parseMs": 125.318691,
+      "totalLoadMs": 128.173879,
+      "rssDeltaBytes": 47357952,
+      "heapUsedDeltaBytes": 13202040
+    }
+  },
+  "oracle": {
+    "artifact": "docs/architecture/phase-7r34-independent-oracle-results.json",
+    "artifactSha256": "aa3c31861c56f3f7674dced87ac8447d65c07adf1a6638b45aba9094a316154d",
+    "oracleSourceSha256": "cadcaf590d9fe01d0647ff718164155673b95a627208d0271beefba55a5534ba",
+    "corpusManifestSha256": "446f4456002ceadd2cbad80cde45dbcee43f3c3e2967b1b37ffc00957173d281",
+    "corpusDirectoryHash": "d11300ed904aec3b302a6b873294a5244f622912617091ce6eb8472671b3d133",
+    "importsLightBI": false,
+    "readsExpectedManifestValues": false,
+    "phase7r35Passed": true,
+    "phase8bPassed": true
+  },
+  "gates": {
+    "microBrainSpecific": "14_files_41_tests_pass",
+    "runtimeOracle": "3_files_6_tests_pass",
+    "compilerDeterminism": true,
+    "runtimeNoNetworkInvariant": true,
+    "negativeKnowledgeAndCounterfactuals": true,
+    "releaseAuthoritativeSuite": "passed",
+    "releaseGovernedProductRegression": "11_files_40_tests_pass",
+    "typescriptAndProductionBuild": "passed_3790_modules",
+    "sourceModuleSize": "passed_507_production_modules_hard_limit_1000",
+    "playwright": "2_of_2_pass_mb5_mb6",
+    "gitDiffCheckRequiredBeforeCommit": true
+  },
+  "limitations": [
+    "Active-core p50 overhead on the shared ARM Neoverse-N1 VPS is measured at the recorded value and is not extrapolated to a specific mainstream-PC speedup.",
+    "Cold-load RSS delta is an isolated Node JSON parse-process measurement and can include allocator/runtime effects; heap delta is also recorded separately.",
+    "MB retrieval remains local-only evidence provenance and does not create official domain, metric, formula or decision-use authority.",
+    "Production deployment/cutover is not executed by this acceptance artifact."
+  ]
+}

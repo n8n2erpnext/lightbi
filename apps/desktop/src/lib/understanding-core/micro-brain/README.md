@@ -1,6 +1,6 @@
 # Micro Semantic Brain V1
 
-Status: MB-0/MB-1/MB-2 foundation; no production semantic wiring.
+Status: MB-7 successor-source acceptance complete; production deployment/cutover has not been executed.
 
 This module is a local deterministic recall/inference helper for `understanding-core`. It broadens semantic candidate discovery from typed business knowledge without replacing the canonical registry, resolver, domain support manifest, grain/readiness gates, M1/M2/M3, metric preflight, or runtime authority.
 
@@ -44,4 +44,10 @@ The build regenerates source cards and the immutable compiled hybrid index. Iden
 
 ## Phase rule
 
-MB-0 through MB-2 are additive only. MB-3 may observe physical columns in shadow mode but must not change Phase 3A candidates or resolver output. MB-4 is the earliest phase allowed to propose a versioned evidence bridge, and even then vector retrieval alone cannot create `probable` or `confirmed` semantics.
+MB-0 through MB-2 are additive foundation. MB-3 introduced shadow retrieval, MB-4 the conservative evidence bridge, MB-5 inferred-domain/support separation, and MB-6 shared BA authority propagation. MB-7 closes successor-source acceptance without granting production deployment or decision-use authority. Vector retrieval alone never becomes semantic confidence or metric/formula authority.
+
+## MB-7 acceptance
+
+Machine evidence lives in `baseline/mb7-acceptance.v1.json` and `baseline/mb7-active-core-benchmark.v1.json`. On the shared ARM Neoverse-N1 VPS, the active selective bridge measured a p50 semantic-pass delta of about 6.8% across 30 governed samples / 19 sources / 379 columns, with no confirmed semantic regressions. The only active-core resolution changes were three TTKT ETA recoveries from `unknown` to evidence-bound `probable`. The compiled index is about 6.61 MB raw (~1.87 MB gzip9), remains deterministic, and the runtime path has no network dependency.
+
+This acceptance is source/cutover-readiness evidence only. Production runtime promotion remains governed by the Road-to-1.0 release authority and is not performed by Micro Brain acceptance.
