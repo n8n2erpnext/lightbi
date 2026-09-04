@@ -1,0 +1,392 @@
+[
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.domain_customer",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "Customer Domain",
+      "customer business domain"
+    ],
+    "semanticFamily": "domain",
+    "relatedDomains": [
+      "customer"
+    ],
+    "definition": "Analyze customer behavior, segmentation, and retention.",
+    "positiveClues": [
+      "customer",
+      "Customer Domain",
+      "khách hàng",
+      "Segment",
+      "phân khúc",
+      "Order Count",
+      "số lượng đơn",
+      "Revenue",
+      "doanh thu",
+      "Retention",
+      "giữ chân",
+      "Last Purchase",
+      "mua hàng lần cuối",
+      "Contribution",
+      "đóng góp",
+      "Purchase Behavior",
+      "hành vi mua hàng",
+      "Customer Segmentation",
+      "Customer Contribution",
+      "Customer Retention"
+    ],
+    "negativeClues": [
+      "domain recognition does not authorize a metric or formula",
+      "one matching field does not prove the dataset belongs exclusively to this domain"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "concept_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive",
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI domain knowledge catalog v1",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "Domain context improves retrieval only; official runtime support remains controlled by LightBI contracts."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.domain_finance",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "Finance Domain",
+      "finance business domain"
+    ],
+    "semanticFamily": "domain",
+    "relatedDomains": [
+      "finance"
+    ],
+    "definition": "Analyze profitability, margins, and expenses.",
+    "positiveClues": [
+      "finance",
+      "Finance Domain",
+      "Revenue",
+      "doanh thu",
+      "Cost",
+      "chi phí",
+      "Profit",
+      "lợi nhuận",
+      "Margin",
+      "biên lợi nhuận",
+      "Expense",
+      "chi tiêu",
+      "Discount",
+      "chiết khấu",
+      "Purchase Cost",
+      "giá mua",
+      "Operational Cost",
+      "chi phí hoạt động",
+      "Supplier Cost",
+      "chi phí nhà cung cấp",
+      "Profitability Analysis",
+      "Margin Analysis",
+      "Cost Impact",
+      "Expense Review",
+      "Supplier Cost Analysis"
+    ],
+    "negativeClues": [
+      "domain recognition does not authorize a metric or formula",
+      "one matching field does not prove the dataset belongs exclusively to this domain"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "concept_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive",
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI domain knowledge catalog v1",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "Domain context improves retrieval only; official runtime support remains controlled by LightBI contracts."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.domain_inventory",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "Inventory Domain",
+      "inventory business domain"
+    ],
+    "semanticFamily": "domain",
+    "relatedDomains": [
+      "inventory"
+    ],
+    "definition": "Analyze stock levels, movement, and warehouse health.",
+    "positiveClues": [
+      "inventory",
+      "Inventory Domain",
+      "SKU",
+      "mã hàng",
+      "Product",
+      "sản phẩm",
+      "tồn kho",
+      "Stock Quantity",
+      "stock_qty",
+      "số lượng tồn",
+      "Warehouse",
+      "kho",
+      "Stock Movement",
+      "luân chuyển kho",
+      "Inbound",
+      "nhập kho",
+      "Outbound",
+      "xuất kho",
+      "Supplier",
+      "nhà cung cấp",
+      "Replenishment",
+      "bổ sung hàng",
+      "Stock Age",
+      "tuổi tồn kho",
+      "Inventory Health",
+      "Inventory Aging",
+      "Replenishment Risk",
+      "Supplier Inventory",
+      "Product Performance",
+      "Supplier Inventory Analysis"
+    ],
+    "negativeClues": [
+      "domain recognition does not authorize a metric or formula",
+      "one matching field does not prove the dataset belongs exclusively to this domain"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "concept_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive",
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI domain knowledge catalog v1",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "Domain context improves retrieval only; official runtime support remains controlled by LightBI contracts."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.domain_operations",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "Operations Domain",
+      "operations business domain"
+    ],
+    "semanticFamily": "domain",
+    "relatedDomains": [
+      "operations"
+    ],
+    "definition": "Analyze operational performance, logistics, and supply chain execution.",
+    "positiveClues": [
+      "operations",
+      "Operations Domain",
+      "Driver",
+      "tài xế",
+      "nhân viên giao hàng",
+      "Route",
+      "tuyến đường",
+      "Shipment",
+      "đơn hàng giao",
+      "Delivery Status",
+      "trạng thái giao hàng",
+      "SLA",
+      "cam kết dịch vụ",
+      "Warehouse",
+      "kho",
+      "Delay",
+      "chậm trễ",
+      "Vehicle",
+      "xe",
+      "Delay Analysis",
+      "SLA Analysis",
+      "Route Performance",
+      "Driver Performance",
+      "Warehouse Flow",
+      "Logistics Journey",
+      "Delivery SLA"
+    ],
+    "negativeClues": [
+      "domain recognition does not authorize a metric or formula",
+      "one matching field does not prove the dataset belongs exclusively to this domain"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "concept_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive",
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI domain knowledge catalog v1",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "Domain context improves retrieval only; official runtime support remains controlled by LightBI contracts."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.domain_performance",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "Performance Domain",
+      "performance business domain"
+    ],
+    "semanticFamily": "domain",
+    "relatedDomains": [
+      "performance"
+    ],
+    "definition": "Analyze KPIs, target achievements, and operational efficiency.",
+    "positiveClues": [
+      "performance",
+      "Performance Domain",
+      "KPI",
+      "chỉ số",
+      "Target",
+      "mục tiêu",
+      "Actual",
+      "thực tế",
+      "Achievement",
+      "đạt được",
+      "Productivity",
+      "năng suất",
+      "Utilization",
+      "sử dụng",
+      "Department",
+      "phòng ban",
+      "Efficiency",
+      "hiệu quả",
+      "Performance Gap",
+      "chênh lệch",
+      "Target Achievement",
+      "KPI Monitoring",
+      "Efficiency Analysis",
+      "Operational Performance",
+      "Department Performance"
+    ],
+    "negativeClues": [
+      "domain recognition does not authorize a metric or formula",
+      "one matching field does not prove the dataset belongs exclusively to this domain"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "concept_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive",
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI domain knowledge catalog v1",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "Domain context improves retrieval only; official runtime support remains controlled by LightBI contracts."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.domain_revenue",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "Revenue Domain",
+      "revenue business domain"
+    ],
+    "semanticFamily": "domain",
+    "relatedDomains": [
+      "revenue"
+    ],
+    "definition": "Analyze sales, revenue generation, and product performance.",
+    "positiveClues": [
+      "revenue",
+      "Revenue Domain",
+      "doanh thu",
+      "Sales",
+      "bán hàng",
+      "Order",
+      "đơn hàng",
+      "Branch",
+      "chi nhánh",
+      "Salesperson",
+      "nhân viên bán hàng",
+      "Discount",
+      "chiết khấu",
+      "Product",
+      "sản phẩm",
+      "Customer",
+      "khách hàng",
+      "Revenue Trend",
+      "Revenue Ranking",
+      "Branch Performance",
+      "Salesperson Performance",
+      "Discount Impact",
+      "Order Performance",
+      "Revenue Performance"
+    ],
+    "negativeClues": [
+      "domain recognition does not authorize a metric or formula",
+      "one matching field does not prove the dataset belongs exclusively to this domain"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "concept_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive",
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI domain knowledge catalog v1",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "Domain context improves retrieval only; official runtime support remains controlled by LightBI contracts."
+      ]
+    }
+  }
+]

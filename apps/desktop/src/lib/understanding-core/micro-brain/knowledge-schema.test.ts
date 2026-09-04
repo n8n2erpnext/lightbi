@@ -30,8 +30,11 @@ describe("Micro Brain knowledge foundation", () => {
     const result = validateMicroBrainKnowledgeCorpus(corpus);
     expect(result.errors).toEqual([]);
     expect(result.valid).toBe(true);
-    expect(corpus.cards).toHaveLength(248);
-    expect(manifest.counts).toMatchObject({ canonicalBridges: 225, openConcepts: 23, guardedFormulas: 25, confusionPairs: 56 });
+    expect(corpus.cards).toHaveLength(401);
+    expect(manifest.counts).toMatchObject({
+      canonicalBridges: 372, openConcepts: 29, guardedFormulas: 25, confusionPairs: 56,
+      supportedRuntimeDomains: 6, registryCanonicalSignals: 370, registryAlignedCanonicalSignals: 370,
+    });
   });
   it("preserves high-risk negative knowledge and guarded formulas", () => {
     const { corpus } = loadCorpus();

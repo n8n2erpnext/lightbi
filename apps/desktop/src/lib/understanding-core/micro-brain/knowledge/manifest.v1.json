@@ -1,28 +1,33 @@
 {
   "schemaVersion": "lightbi.micro-brain.source-manifest.v1",
   "corpusId": "lightbi.micro-brain.foundation",
-  "version": "0.1.0",
-  "maturityLabel": "foundational_seed_target_35_percent",
-  "maturityNote": "The 35% label is an engineering seed target for reusable business-semantic coverage, not a claim to quantify all business knowledge.",
-  "sourceStrategy": "model_synthesis_plus_lightbi_contract_alignment",
+  "version": "0.2.0",
+  "maturityLabel": "registry_aligned_foundation_v1",
+  "maturityNote": "Foundation is aligned to every canonical signal exposed by the six supported runtime BA domains; this is semantic recall coverage, not a claim of metric authorization or complete business knowledge.",
+  "sourceStrategy": "model_synthesis_plus_registry_and_domain_contract_alignment",
   "synthesizedAt": "2026-09-04",
   "files": [
     "commerce.foundation.v1.json",
     "core.foundation.v1.json",
     "customer.foundation.v1.json",
+    "domain.foundation.v1.json",
     "finance.foundation.v1.json",
     "inventory.foundation.v1.json",
     "logistics.foundation.v1.json",
     "longtail.foundation.v1.json",
-    "performance.foundation.v1.json"
+    "performance.foundation.v1.json",
+    "registry.foundation.v1.json"
   ],
   "counts": {
-    "cards": 248,
-    "canonicalBridges": 225,
-    "openConcepts": 23,
+    "cards": 401,
+    "canonicalBridges": 372,
+    "openConcepts": 29,
     "guardedFormulas": 25,
     "relations": 159,
-    "confusionPairs": 56
+    "confusionPairs": 56,
+    "supportedRuntimeDomains": 6,
+    "registryCanonicalSignals": 370,
+    "registryAlignedCanonicalSignals": 370
   },
   "invariants": [
     "retrieval_similarity_is_not_semantic_confidence",

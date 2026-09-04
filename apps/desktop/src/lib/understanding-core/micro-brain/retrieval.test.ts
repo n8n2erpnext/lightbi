@@ -16,7 +16,10 @@ describe("Micro Brain hybrid retrieval", () => {
   it("loads a structurally complete deterministic index", () => {
     const result = validateCompiledMicroBrainIndex(index);
     expect(result).toEqual({ valid: true, errors: [] });
-    expect(index.manifest).toMatchObject({ cardCount: 248, unitCount: 1118, featureCount: 2048, vectorDimensions: 128 });
+    expect(index.manifest).toMatchObject({
+      cardCount: 401, unitCount: 1424, featureCount: 2048, vectorDimensions: 128,
+      precisionCardCount: 248, sparseRecallCardCount: 153,
+    });
     expect(index.manifest.logicalIndexSha256).toMatch(/^[a-f0-9]{64}$/);
   });
 

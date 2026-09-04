@@ -68,11 +68,16 @@ function canonicalJson(value) {
   if (value && typeof value === "object") return `{${Object.keys(value).sort().map((key) => `${JSON.stringify(key)}:${canonicalJson(value[key])}`).join(",")}}`;
   return JSON.stringify(value);
 }
+function isSparseRecallCard(card) {
+  return card.provenance?.sourceType === "registry_augmentation" || card.id.startsWith("concept.domain_");
+}
+
 function typedTags(card) {
   return [
     `kind:${card.kind}`,
     `family:${normalize(card.semanticFamily).replace(/\s+/g, "_")}`,
     `analysis:${card.analysisClass}`,
+    ...(isSparseRecallCard(card) ? ["tier:sparse_recall"] : []),
     ...card.relatedDomains.map((domain) => `domain:${normalize(domain).replace(/\s+/g, "_")}`),
     ...card.compatibleTypes.map((type) => `type:${normalize(type).replace(/\s+/g, "_")}`),
   ].sort();
@@ -84,6 +89,14 @@ function unit(parentCardId, kind, text, polarity, tags) {
 
 function retrievalUnits(card) {
   const tags = typedTags(card);
+  // Registry augmentation is a recall fallback. Keep its index footprint narrow so generated
+  // dictionary bridges do not drown out the richer manual foundation and negative-knowledge cards.
+  if (isSparseRecallCard(card)) {
+    return [
+      unit(card.id, "terminology", `${card.labels.join(" ; ")} ; ${card.semanticFamily} ; ${card.relatedDomains.join(" ; ")}`, "positive", tags),
+      unit(card.id, "positive_clues", card.positiveClues.join(" ; "), "positive", tags),
+    ];
+  }
   const units = [
     unit(card.id, "definition", `${card.labels.join(" ; ")} . ${card.definition}`, "neutral", tags),
     unit(card.id, "terminology", `${card.labels.join(" ; ")} ; ${card.semanticFamily} ; ${card.relatedDomains.join(" ; ")}`, "positive", tags),
@@ -109,12 +122,17 @@ for (const fileName of [...sourceManifest.files].sort()) {
 }
 cards.sort((left, right) => left.id.localeCompare(right.id));
 const units = cards.flatMap(retrievalUnits);
-const trainingDocuments = cards.map((card) => {
+const precisionCards = cards.filter((card) => !isSparseRecallCard(card));
+const sparseRecallCards = cards.filter(isSparseRecallCard);
+const precisionCardIds = new Set(precisionCards.map((card) => card.id));
+const trainingDocuments = precisionCards.map((card) => {
   const cardUnits = units.filter((item) => item.parentCardId === card.id);
   const lexical = cardUnits.flatMap((item) => featuresForText(item.text, item.kind === "terminology" || item.kind === "positive_clues"));
   return [...lexical, ...typedTags(card).map((tag) => `t:${tag}`)];
 });
 
+// Dense semantics are trained only on the curated precision foundation. Generated registry/domain
+// cards stay out of LSA so dictionary expansion cannot rotate the semantic space or dilute negative knowledge.
 const documentFrequency = new Map();
 const collectionFrequency = new Map();
 for (const document of trainingDocuments) {
@@ -152,7 +170,7 @@ function denseTfidf(features) {
 const trainingMatrix = new Matrix(trainingDocuments.map(denseTfidf));
 const vectorDimensions = Math.min(VECTOR_DIMENSIONS_TARGET, trainingMatrix.rows - 1, trainingMatrix.columns);
 if (vectorDimensions < 16) throw new Error(`Insufficient rank for LSA: ${vectorDimensions}`);
-console.log(`Compiling SVD: cards=${trainingMatrix.rows}, features=${trainingMatrix.columns}, k=${vectorDimensions}`);
+console.log(`Compiling SVD: precisionCards=${trainingMatrix.rows}, sparseRecallCards=${sparseRecallCards.length}, features=${trainingMatrix.columns}, k=${vectorDimensions}`);
 const svd = new SingularValueDecomposition(trainingMatrix, { autoTranspose: true });
 const rawProjection = svd.rightSingularVectors.subMatrix(0, featureVocabulary.length - 1, 0, vectorDimensions - 1).to2DArray();
 
@@ -185,12 +203,15 @@ function unitFeatures(item) {
 }
 
 const unitFeatureLists = units.map(unitFeatures);
-const documentVectors = unitFeatureLists.map((features) => projectSparseVector(denseTfidf(features)));
+const documentVectors = unitFeatureLists.map((features, unitIndex) =>
+  precisionCardIds.has(units[unitIndex].parentCardId)
+    ? projectSparseVector(denseTfidf(features))
+    : Array(vectorDimensions).fill(0));
 const documentLengths = units.map((item) => Math.max(1, words(item.text).length + item.typedTags.length));
 const averageDocumentLength = documentLengths.reduce((sum, value) => sum + value, 0) / documentLengths.length;
 const postings = {};
 for (let unitIndex = 0; unitIndex < units.length; unitIndex += 1) {
-  const counts = countTerms(unitFeatureLists[unitIndex].filter((feature) => featureIndex.has(feature)));
+  const counts = countTerms(unitFeatureLists[unitIndex]);
   for (const [feature, count] of counts) {
     (postings[feature] ??= []).push([unitIndex, count]);
   }
@@ -223,6 +244,8 @@ const compiled = {
     cardCount: cards.length,
     unitCount: units.length,
     featureCount: featureVocabulary.length,
+    precisionCardCount: precisionCards.length,
+    sparseRecallCardCount: sparseRecallCards.length,
   },
   cards: cards.map((card) => ({
     id: card.id,

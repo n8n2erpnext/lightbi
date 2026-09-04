@@ -112,6 +112,8 @@ export type MicroBrainIndexManifestV1 = {
   cardCount: number;
   unitCount: number;
   featureCount: number;
+  precisionCardCount?: number;
+  sparseRecallCardCount?: number;
 };
 export type MicroBrainRetrievalHitV1 = {
   conceptId: string;

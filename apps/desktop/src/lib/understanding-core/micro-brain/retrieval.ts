@@ -27,6 +27,8 @@ type ConceptAccumulator = {
 type PreparedMicroBrainIndex = {
   featureIndex: Map<string, number>;
   canonicalSignalByConcept: Map<string, string | null>;
+  labelsByConcept: Map<string, string[]>;
+  sparseRecallConcepts: Set<string>;
 };
 
 const PREPARED_INDEX = new WeakMap<CompiledMicroBrainIndexV1, PreparedMicroBrainIndex>();
@@ -34,9 +36,14 @@ const PREPARED_INDEX = new WeakMap<CompiledMicroBrainIndexV1, PreparedMicroBrain
 function prepareIndex(index: CompiledMicroBrainIndexV1): PreparedMicroBrainIndex {
   const cached = PREPARED_INDEX.get(index);
   if (cached) return cached;
+  const sparseRecallConcepts = new Set(index.units
+    .filter((unit) => unit.typedTags.includes("tier:sparse_recall"))
+    .map((unit) => unit.parentCardId));
   const prepared = {
     featureIndex: new Map(index.featureVocabulary.map((feature, featurePosition) => [feature, featurePosition])),
     canonicalSignalByConcept: new Map(index.cards.map((card) => [card.id, card.canonicalSignal])),
+    labelsByConcept: new Map(index.cards.map((card) => [card.id, card.labels ?? []])),
+    sparseRecallConcepts,
   };
   PREPARED_INDEX.set(index, prepared);
   return prepared;
@@ -87,7 +94,8 @@ function sparseRank(index: CompiledMicroBrainIndexV1, queryFeatures: readonly st
     for (const [unitIndex, termFrequency] of posting) {
       const documentLength = index.bm25.documentLengths[unitIndex] ?? averageLength;
       const denominator = termFrequency + k1 * (1 - b + b * (documentLength / averageLength));
-      const contribution = inverseDocumentFrequency * ((termFrequency * (k1 + 1)) / denominator) * queryWeight;
+      const recallTierWeight = index.units[unitIndex]?.typedTags.includes("tier:sparse_recall") ? 0.55 : 1;
+      const contribution = inverseDocumentFrequency * ((termFrequency * (k1 + 1)) / denominator) * queryWeight * recallTierWeight;
       scores.set(unitIndex, (scores.get(unitIndex) ?? 0) + contribution);
     }
   }
@@ -158,6 +166,20 @@ function recordUnit(accumulator: ConceptAccumulator, index: CompiledMicroBrainIn
   else accumulator.positiveUnitIds.add(unit.unitId);
 }
 
+const GENERIC_EXACT_RECALL_LABELS = new Set(["status", "account", "role", "type", "name", "date", "amount", "value", "code", "id"]);
+
+function hasExactRecallSurface(index: CompiledMicroBrainIndexV1, conceptId: string, normalizedQuery: string): boolean {
+  const prepared = prepareIndex(index);
+  if (!prepared.sparseRecallConcepts.has(conceptId)) return false;
+  for (const rawLabel of prepared.labelsByConcept.get(conceptId) ?? []) {
+    const label = normalizeMicroBrainSurface(rawLabel);
+    if (!label || GENERIC_EXACT_RECALL_LABELS.has(label)) continue;
+    const paddedQuery = ` ${normalizedQuery} `;
+    if (paddedQuery.includes(` ${label} `)) return true;
+  }
+  return false;
+}
+
 export function retrieveMicroBrainConcepts(
   index: CompiledMicroBrainIndexV1,
   query: MicroBrainQueryV1,
@@ -209,7 +231,17 @@ export function retrieveMicroBrainConcepts(
       || left.conceptId.localeCompare(right.conceptId));
 
   const limit = Math.min(Math.max(query.limit ?? 8, 1), 16);
-  const hits: MicroBrainRetrievalHitV1[] = ranked.slice(0, limit).map((item, indexPosition) => ({
+  const selected = ranked.slice(0, limit);
+  const selectedIds = new Set(selected.map((item) => item.conceptId));
+  const exactRecall = ranked
+    .filter((item) => !selectedIds.has(item.conceptId) && hasExactRecallSurface(index, item.conceptId, normalizedQuery))
+    .sort((left, right) => (left.sparseRank ?? Number.MAX_SAFE_INTEGER) - (right.sparseRank ?? Number.MAX_SAFE_INTEGER))
+    .slice(0, Math.min(2, limit));
+  for (const recall of exactRecall) {
+    if (selected.length < limit) selected.push(recall);
+    else selected[selected.length - 1] = recall;
+  }
+  const hits: MicroBrainRetrievalHitV1[] = selected.map((item, indexPosition) => ({
     conceptId: item.conceptId,
     canonicalSignal: item.canonicalSignal,
     sparseRank: item.sparseRank,

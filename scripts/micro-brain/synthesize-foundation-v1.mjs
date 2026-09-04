@@ -1,11 +1,12 @@
 import fs from "node:fs";
 import path from "node:path";
+import { DOMAIN_KNOWLEDGE_CATALOG_V1 } from "../../apps/desktop/src/lib/domain-knowledge-catalog.ts";
+import { SEMANTIC_SIGNAL_REGISTRY_V1, SUPPORTED_RUNTIME_BA_DOMAINS } from "../../apps/desktop/src/lib/semantic-registry.ts";
 
 const ROOT = path.resolve(import.meta.dirname, "../..");
 const KNOWLEDGE_DIR = path.join(ROOT, "apps/desktop/src/lib/understanding-core/micro-brain/knowledge");
-const REGISTRY_PATH = path.join(ROOT, "apps/desktop/src/lib/semantic-registry.ts");
-const registryText = fs.readFileSync(REGISTRY_PATH, "utf8");
-const canonicalSignals = new Set([...registryText.matchAll(/canonicalId:\s*'([^']+)'/g)].map((match) => match[1]));
+const canonicalSignals = new Set(SEMANTIC_SIGNAL_REGISTRY_V1.map((definition) => definition.canonicalId));
+const supportedRuntimeDomains = new Set(SUPPORTED_RUNTIME_BA_DOMAINS);
 
 const SCHEMA = "lightbi.micro-brain.knowledge-card.v1";
 const SYNTHESIZED_AT = "2026-09-04";
@@ -29,6 +30,19 @@ const defaultTypes = {
 function relation(subject, predicate, object, polarity, explanation) {
   return { subject, predicate, object, polarity, explanation };
 }
+function uniqueSurface(values) {
+  const seen = new Set();
+  const result = [];
+  for (const value of values) {
+    const text = String(value ?? "").trim();
+    const key = text.toLocaleLowerCase().replace(/[^\p{L}\p{N}]+/gu, " ").trim();
+    if (!text || seen.has(key)) continue;
+    seen.add(key);
+    result.push(text);
+  }
+  return result;
+}
+
 function K(batch, id, canonicalSignal, kind, semanticFamily, relatedDomains, labels, definition, positiveClues, negativeClues, options = {}) {
   if (canonicalSignal && !canonicalSignals.has(canonicalSignal)) {
     throw new Error(`Unknown canonical signal for ${id}: ${canonicalSignal}`);
@@ -329,6 +343,68 @@ K("longtail", "field", "field", "identifier", "location", ["agriculture", "opera
 K("longtail", "crop", "crop", "dimension", "item", ["agriculture", "inventory", "operations"], ["Crop", "Variety", "cây trồng"], "Crop species or variety cultivated on an agricultural field.", ["crop", "variety", "seed variety"], ["crop is not harvested quantity", "variety and field are separate dimensions"]);
 K("longtail", "harvest_quantity", "harvest_qty", "flow", "quantity", ["agriculture", "inventory", "operations", "revenue"], ["Harvest Quantity", "Yield Quantity", "sản lượng thu hoạch"], "Quantity harvested from a crop or field during a defined harvest event or period.", ["harvest qty", "yield quantity", "harvested weight"], ["harvest quantity is not agronomic yield rate unless divided by area", "unit must be known"]);
 K("longtail", "irrigation", "irrigation", "flow", "quantity", ["agriculture", "operations", "performance"], ["Irrigation", "Water Usage", "tưới tiêu"], "Water applied to agricultural production over a defined field and time basis.", ["irrigation", "water usage", "watering"], ["irrigation volume is not rainfall", "unit and field area context matter"]);
+// Registry/domain alignment layer. This is generated from LightBI contracts rather than free-form prose.
+// It guarantees that the Micro Brain can retrieve every canonical signal exposed by the six runtime BA domains
+// while keeping registry coverage, type, role, and evidence requirements authoritative.
+const roleToKind = { time: "time", dimension: "dimension", measure: "measure", status: "status", identifier: "identifier" };
+const roleNegativeClues = {
+  time: ["date or timestamp shape alone does not establish this business-time meaning", "different business-time fields are not interchangeable"],
+  dimension: ["categorical values are not a numeric measure", "similar labels across columns do not prove the same business entity"],
+  measure: ["numeric shape alone does not establish this metric", "aggregation requires compatible grain, unit, and time basis"],
+  status: ["status values are categorical and must not be summed", "a generic status must not be relabeled as a different process status"],
+  identifier: ["identifier values are not a measure to sum", "name or code shape alone does not prove stable business identity"],
+};
+const roleEvidence = {
+  time: ["time_shape", "business_time_context", "registry_semantic_compatibility"],
+  dimension: ["dimension_shape", "business_dimension_context", "registry_semantic_compatibility"],
+  measure: ["numeric_shape", "metric_semantics", "grain_compatibility", "unit_or_currency_compatibility"],
+  status: ["categorical_shape", "process_status_context", "registry_semantic_compatibility"],
+  identifier: ["identifier_shape", "identity_context", "registry_semantic_compatibility"],
+};
+
+for (const catalog of DOMAIN_KNOWLEDGE_CATALOG_V1.filter((entry) => supportedRuntimeDomains.has(entry.id))) {
+  const clues = uniqueSurface([
+    catalog.id, catalog.label,
+    ...catalog.concepts.flatMap((concept) => [concept.label, concept.canonicalSignal, ...concept.aliases]),
+    ...catalog.intentFamilies.flatMap((intent) => [intent.label, ...intent.requiredSignals, ...intent.optionalSignals]),
+    ...catalog.businessViews.flatMap((view) => [view.label, ...view.requiredSignals, ...view.optionalSignals]),
+  ]);
+  K("domain", `domain_${catalog.id}`, null, "concept", "domain", [catalog.id],
+    uniqueSurface([catalog.label, `${catalog.id} business domain`]),
+    catalog.purpose, clues,
+    ["domain recognition does not authorize a metric or formula", "one matching field does not prove the dataset belongs exclusively to this domain"],
+    { analysisClass: "descriptive", sourceType: "lightbi_contract", sourceLabel: "LightBI domain knowledge catalog v1", notes: ["Domain context improves retrieval only; official runtime support remains controlled by LightBI contracts."] });
+}
+
+const existingCanonicalBridges = new Set([...batches.values()].flat().map((card) => card.canonicalSignal).filter(Boolean));
+for (const definition of SEMANTIC_SIGNAL_REGISTRY_V1) {
+  const relatedDomains = uniqueSurface(definition.domains.filter((domain) => supportedRuntimeDomains.has(domain)));
+  if (!relatedDomains.length || existingCanonicalBridges.has(definition.canonicalId)) continue;
+  const labels = uniqueSurface([definition.label, definition.canonicalId.replaceAll("_", " ")]);
+  const positiveClues = uniqueSurface([
+    definition.label, definition.canonicalId,
+    ...definition.aliases, ...(definition.exactHeaderAliases ?? []), ...definition.headerAliases,
+  ]);
+  const blockers = definition.coverageStatus === "partial"
+    ? ["registry_partial_coverage_requires_contextual_evidence"]
+    : definition.coverageStatus === "advertised_only"
+      ? ["registry_advertised_only_not_runtime_authority"]
+      : [];
+  K("registry", `registry_${definition.canonicalId}`, definition.canonicalId, roleToKind[definition.role], definition.semanticFamily, relatedDomains,
+    labels,
+    `${definition.label} is the LightBI canonical semantic '${definition.canonicalId}' in ${relatedDomains.join(", ")}. Retrieval may propose this meaning only; resolver evidence remains authoritative.`,
+    positiveClues, roleNegativeClues[definition.role],
+    {
+      compatibleTypes: definition.compatibleTypes,
+      requiredEvidence: roleEvidence[definition.role],
+      blockers,
+      analysisClass: "canonical_bridge",
+      sourceType: "registry_augmentation",
+      sourceLabel: "LightBI semantic registry v1",
+      notes: [`registry_coverage:${definition.coverageStatus}`, "Generated from the canonical dictionary; retrieval rank never becomes semantic confidence."],
+    });
+}
+
 // Counterfactual / confusion graph. These edges are first-class negative knowledge.
 confuse("revenue", "cash_receipt", "Cash receipt can settle prior receivables, deposits, financing or other non-revenue items.");
 confuse("revenue", "bank_inflow", "Bank inflow is a cash movement and does not establish revenue recognition.");
@@ -418,10 +494,10 @@ const relationCount = allCards.reduce((sum, card) => sum + card.relations.length
 const manifest = {
   schemaVersion: "lightbi.micro-brain.source-manifest.v1",
   corpusId: "lightbi.micro-brain.foundation",
-  version: "0.1.0",
-  maturityLabel: "foundational_seed_target_35_percent",
-  maturityNote: "The 35% label is an engineering seed target for reusable business-semantic coverage, not a claim to quantify all business knowledge.",
-  sourceStrategy: "model_synthesis_plus_lightbi_contract_alignment",
+  version: "0.2.0",
+  maturityLabel: "registry_aligned_foundation_v1",
+  maturityNote: "Foundation is aligned to every canonical signal exposed by the six supported runtime BA domains; this is semantic recall coverage, not a claim of metric authorization or complete business knowledge.",
+  sourceStrategy: "model_synthesis_plus_registry_and_domain_contract_alignment",
   synthesizedAt: SYNTHESIZED_AT,
   files,
   counts: {
@@ -431,6 +507,9 @@ const manifest = {
     guardedFormulas: formulaCount,
     relations: relationCount,
     confusionPairs: CONFUSIONS.length,
+    supportedRuntimeDomains: SUPPORTED_RUNTIME_BA_DOMAINS.length,
+    registryCanonicalSignals: SEMANTIC_SIGNAL_REGISTRY_V1.length,
+    registryAlignedCanonicalSignals: new Set(allCards.map((card) => card.canonicalSignal).filter(Boolean)).size,
   },
   invariants: [
     "retrieval_similarity_is_not_semantic_confidence",
