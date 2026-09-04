@@ -1,6 +1,6 @@
 # LightBI Micro Semantic Brain V1 Implementation Plan — 2026-09-04
 
-Status: approved implementation plan; not started
+Status: implementation active; MB-0 through MB-5 machine-verified on product branch, MB-6 next
 Date: 2026-09-04
 Scope: staged construction, evaluation, and integration of the local Micro Semantic Brain
 Supersedes: none
@@ -13,7 +13,7 @@ Convert the approved Micro Brain architecture into a safe sequence that can be i
 
 The initial Brain corpus is an engineering synthesis task. The executor is expected to build and curate the knowledge corpus from reusable business knowledge and existing LightBI contracts/corpus evidence; the owner should not need to manually write thousands of knowledge cards.
 
-## Starting Truth
+## Starting Truth at Plan Approval
 
 - `semantic-registry.ts` is the canonical vocabulary authority.
 - Phase 3A candidate generation is currently lexical/contextual and explicitly has no embeddings.
@@ -40,6 +40,16 @@ Implementation begins from a clean product worktree created from the accepted pr
 | MB-7 | acceptance + cutover | corpus, counterfactual, performance, and regression gates pass |
 
 Each phase produces its own machine evidence and can stop without forcing the next phase.
+
+## Execution Status — 2026-09-04
+
+- **MB-0 through MB-3:** foundation, typed knowledge/index contracts, deterministic retrieval and shadow benchmark landed in product history beginning at `96fa58e` (`feat(understanding): add micro semantic brain foundation and shadow benchmark`).
+- **MB-4:** conservative candidate/evidence bridge landed at `f32d88d`; later product integration/registry alignment is visible in `7166370` and `d4fa6e5`. Vector/rank evidence remains retrieval provenance rather than semantic confidence.
+- **BA provenance plumbing:** `7e86a9f` carries Micro Brain semantic provenance into BA consumers, but this does **not** complete MB-6 because inferred-domain/support/analysis-mode state is not yet propagated end-to-end.
+- **MB-5:** completed at product commit `8a4a5e4`, with build-mode type-safety closure `fbb1444`. Domain inference is separate from official support; Understanding shows inferred source, support state, semantic concept counts, conflict count and analysis mode. Unsupported-domain disclosure remains explicit.
+- **Verification:** MB-5 code passed 37 targeted regression tests, production `pnpm run build`, and Playwright healthcare acceptance 1/1; after the final E2E base-URL portability edit, focused MB-5/UI tests remained 9/9 and Playwright remained 1/1. `git diff --check` passed before commit.
+- **Production:** untouched. No production domain pack, metric authorization contract, release artifact or stable runtime was promoted by MB-5.
+- **Next:** MB-6 must propagate `domainInference`, `officialSupport`, `analysisMode`, metric/formula authorization, limitations and evidence references through Focus / Deep BA / BA Step 2, preserving identical governed factual values.
 
 ## MB-0 — Baseline and Contract Freeze
 

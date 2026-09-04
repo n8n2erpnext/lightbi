@@ -1,9 +1,9 @@
 {
   "schemaVersion": "lightbi.project-book.source-catalog.v1",
   "snapshotDate": "2026-09-04",
-  "generatedAt": "2026-09-04T03:24:45.372954+00:00",
+  "generatedAt": "2026-09-04T07:32:39.270402+00:00",
   "branch": "docs/ba-da-mode-future-20260903",
-  "head": "c42afe9a58f755920be5cef1ae013d9e40c46791",
+  "head": "604ac8864f29d565bef56a3164dd2e0c4f881f12",
   "worktreeDirty": true,
   "scope": "All project Markdown and JSON outside dependency/build/project-book directories.",
   "counts": {
@@ -1597,8 +1597,8 @@
     {
       "path": "docs/architecture/micro-semantic-brain-vector-inference.md",
       "extension": ".md",
-      "bytes": 19051,
-      "sha256": "121f724b67452cfbb6382833939c9f0fa60421d78de55d43723a212d74c30195",
+      "bytes": 20092,
+      "sha256": "a7149fa0cb54c850eaad2d1c4d3c2bf1f1678c675d44cd220e3d81459885ba71",
       "suggestedCategory": "architecture-source-or-evidence",
       "title": "Micro Semantic Brain and Vector Inference Architecture"
     },
@@ -10158,8 +10158,8 @@
     {
       "path": "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_MICRO_SEMANTIC_BRAIN_V1_2026-09-04.md",
       "extension": ".md",
-      "bytes": 12948,
-      "sha256": "4bc9e771eb87c82392557514b98115280079cb3c4855935a31979c1cbca9b563",
+      "bytes": 14732,
+      "sha256": "f1a3f427343925fc393fb1706158789cf1e6d0a8784d0e4bd8d9d72b23180676",
       "suggestedCategory": "historical-provenance",
       "title": "LightBI Micro Semantic Brain V1 Implementation Plan — 2026-09-04"
     },

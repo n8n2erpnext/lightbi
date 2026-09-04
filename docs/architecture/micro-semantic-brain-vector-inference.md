@@ -400,6 +400,10 @@ Such a backend change does not change the authority model: embedding similarity 
 
 ## Current Status
 
-Architecture approved; implementation not started. Existing `semantic-registry.ts`, candidate/resolution contracts, domain packs, Focus, Deep BA, BA Step 2, and production runtime remain unchanged.
+Architecture approved and implementation has progressed through **MB-5** on product branch `codex/exp-focus-subject-analysis`. The foundation/shadow line begins at `96fa58e`; the conservative evidence bridge landed at `f32d88d`; registry-aligned product integration is visible at `d4fa6e5`; MB-5 domain-inference/support separation is `8a4a5e4`, preceded by build-mode type-safety closure `fbb1444`.
+
+The current implementation preserves the authority model: Micro Brain retrieval/rank is evidence provenance, official support remains owned by the governed domain-support manifest/runtime gates, and unsupported inferred domains remain evidence-bound. Understanding now exposes inferred domain source, official-support state, semantic concept counts, conflict count and analysis mode without turning similarity/rank into a probability.
+
+Focus/Deep BA/BA Step 2 already receive Micro Brain semantic provenance through earlier product plumbing (`7e86a9f`), but **MB-6 is not complete**: the new `domainInference`, official-support state, analysis mode, metric/formula authorization and limitations still need end-to-end propagation. Production services, production domain packs, metric authority and stable release runtime remain unchanged.
 
 Implementation sequencing is governed by [`../history/agent/plans/AGENT_IMPLEMENTATION_PLAN_MICRO_SEMANTIC_BRAIN_V1_2026-09-04.md`](../history/agent/plans/AGENT_IMPLEMENTATION_PLAN_MICRO_SEMANTIC_BRAIN_V1_2026-09-04.md).

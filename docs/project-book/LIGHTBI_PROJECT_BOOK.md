@@ -779,7 +779,7 @@ Primary bookmark: [`../progress/phase-30-semantic-registry-unification.md`](../h
 
 ### 17A. Micro Semantic Brain broadens recall without becoming semantic authority
 
-Owner decision on 2026-09-04 adds a future local **Micro Semantic Brain** before conservative semantic resolution. Its job is to retrieve and interpolate business concepts that may be absent from current aliases or official domain packs; it does not replace the canonical registry and it does not own metric truth.
+Owner decision on 2026-09-04 establishes a local **Micro Semantic Brain** before conservative semantic resolution. Its job is to retrieve and interpolate business concepts that may be absent from current aliases or official domain packs; it does not replace the canonical registry and it does not own metric truth.
 
 The initial design budget is approximately 10 MB of typed, curated business knowledge. The V1 retrieval design is deterministic and local: sparse terminology retrieval plus an LSA dense vector projection, fused only for candidate retrieval. `retrieval_similarity` is never called semantic confidence.
 
@@ -794,6 +794,8 @@ Grain + M1/M2/M3 + metric preflight -> calculation authority
 ```
 
 An unsupported domain may therefore be shown as **inferred** and may receive evidence-bound analysis when generic grain/aggregation safety is independently established. The UI must disclose that the domain is not officially supported. Focus, Deep BA, and BA Step 2 must preserve this provenance instead of silently promoting inferred semantics into supported facts.
+
+Current implementation status on 2026-09-04: the product branch `codex/exp-focus-subject-analysis` has progressed through **MB-5** at commit `8a4a5e4` (`feat(understanding): separate inferred domain support`). MB-5 adds a versioned domain-inference artifact, keeps official support owned by the governed manifest/runtime gate, and renders inferred-domain/support state separately in Understanding. The production build passes and a Playwright healthcare probe confirms `Semantic inference (Micro Brain)` + `Not production-active` + `Evidence-bound inferred domain` with no percentage/similarity exposed. Production services and production domain/metric authority remain untouched. **MB-6** is the next phase: propagate `domainInference`, official support, analysis mode, authorization and limitations through Focus / Deep BA / BA Step 2 without status loss.
 
 Primary bookmarks: [`../adr/ADR-124-micro-semantic-brain-vector-inference.md`](../adr/ADR-124-micro-semantic-brain-vector-inference.md), [`../architecture/micro-semantic-brain-vector-inference.md`](../architecture/micro-semantic-brain-vector-inference.md).
 

@@ -6,7 +6,7 @@
 
 - Date: **2026-09-04**
 - Branch: `docs/ba-da-mode-future-20260903`
-- HEAD: `c42afe9a58f755920be5cef1ae013d9e40c46791`
+- HEAD: `604ac8864f29d565bef56a3164dd2e0c4f881f12`
 - Worktree dirty while generated: **true**
 - Total indexed sources: **939** (522 Markdown / 417 JSON)
 - JSON under `docs/`: **354**
@@ -191,7 +191,7 @@ For old paths, use [`PATH_MIGRATION_INDEX.md`](./PATH_MIGRATION_INDEX.md) and [`
 - [`docs/architecture/insight-model.md`](../../docs/architecture/insight-model.md) — Insight Architecture Model; `1061` bytes; SHA-256 `b65012acafe379496400afb29a7e07c9175ffcde2b1f5b9ebecec94481ed5bd6`
 - [`docs/architecture/intent-model.md`](../../docs/architecture/intent-model.md) — Analytical Intent Model; `1012` bytes; SHA-256 `a775be1d16b314719c107d7dbdea314fd7bc50cd62d4e9a9083400095ea34057`
 - [`docs/architecture/materialization-model.md`](../../docs/architecture/materialization-model.md) — Materialization Strategy Model; `1110` bytes; SHA-256 `72c76c230a22271735c0753ffbed3db382aaf3aa5e173a2c175baf3c00314cdb`
-- [`docs/architecture/micro-semantic-brain-vector-inference.md`](../../docs/architecture/micro-semantic-brain-vector-inference.md) — Micro Semantic Brain and Vector Inference Architecture; `19051` bytes; SHA-256 `121f724b67452cfbb6382833939c9f0fa60421d78de55d43723a212d74c30195`
+- [`docs/architecture/micro-semantic-brain-vector-inference.md`](../../docs/architecture/micro-semantic-brain-vector-inference.md) — Micro Semantic Brain and Vector Inference Architecture; `20092` bytes; SHA-256 `a7149fa0cb54c850eaad2d1c4d3c2bf1f1678c675d44cd220e3d81459885ba71`
 - [`docs/architecture/motodetail-semantic-support-audit.json`](../../docs/architecture/motodetail-semantic-support-audit.json) — motodetail-semantic-support-audit.json; `810` bytes; SHA-256 `a48d447fed40f9ae14b3bec6f7de0d348330c891a22bf77d0a6b6f8954e5b888`
 - [`docs/architecture/narrative-model.md`](../../docs/architecture/narrative-model.md) — Analytical Narrative Model; `927` bytes; SHA-256 `932fb62b61913e7f7cdce93cc090daa6e1d7586d88443d91f58872478a6dc593`
 - [`docs/architecture/persistence-model.md`](../../docs/architecture/persistence-model.md) — Persistence Model Architecture; `1254` bytes; SHA-256 `567c50bcce1318f1424ec74359222ed41a0016415b89f1876a28a6012ba0406a`
@@ -673,7 +673,7 @@ For old paths, use [`PATH_MIGRATION_INDEX.md`](./PATH_MIGRATION_INDEX.md) and [`
 ## historical-provenance
 
 - [`docs/history/agent/plans/AGENT_PLAN_ROAD_TO_1_0_2026-08-31.md`](../../docs/history/agent/plans/AGENT_PLAN_ROAD_TO_1_0_2026-08-31.md) — LightBI Road to 1.0 Execution Plan — 2026-08-31; `11529` bytes; SHA-256 `ca11436377cc954ebe540539338cd42d5572398783b64712fcceca70949e320d`
-- [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_MICRO_SEMANTIC_BRAIN_V1_2026-09-04.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_MICRO_SEMANTIC_BRAIN_V1_2026-09-04.md) — LightBI Micro Semantic Brain V1 Implementation Plan — 2026-09-04; `12948` bytes; SHA-256 `4bc9e771eb87c82392557514b98115280079cb3c4855935a31979c1cbca9b563`
+- [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_MICRO_SEMANTIC_BRAIN_V1_2026-09-04.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_MICRO_SEMANTIC_BRAIN_V1_2026-09-04.md) — LightBI Micro Semantic Brain V1 Implementation Plan — 2026-09-04; `14732` bytes; SHA-256 `f1a3f427343925fc393fb1706158789cf1e6d0a8784d0e4bd8d9d72b23180676`
 - [`docs/history/LEGACY_ROOT_INDEX.md`](../../docs/history/LEGACY_ROOT_INDEX.md) — Legacy Root Documentation Index; `33743` bytes; SHA-256 `e662adb190bc6e9d9b598d4d1c421423376931d186aafb53c15cc4f9d25a3385`
 - [`docs/history/README.md`](../../docs/history/README.md) — Historical Documentation; `1764` bytes; SHA-256 `58060865d3938943ef9a415e39457280481d8d9b78a3f4ceb7e017a60c343052`
 - [`docs/history/agent/contracts/CODEX_QA_ORCHESTRATION_CONTRACT.md`](../../docs/history/agent/contracts/CODEX_QA_ORCHESTRATION_CONTRACT.md) — Codex QA Orchestration Contract; `5244` bytes; SHA-256 `3926f159280b943b64689f2846aab12d166e9ebe05d8a4d8192819eeeeb0b69b`
