@@ -659,7 +659,10 @@
     "labels": [
       "ETA",
       "Promised Time",
-      "dự kiến đến"
+      "dự kiến đến",
+      "thời gian dự kiến đến",
+      "giờ dự kiến đến",
+      "ngày dự kiến đến"
     ],
     "canonicalSignal": "eta",
     "semanticFamily": "time",
@@ -671,7 +674,11 @@
     "positiveClues": [
       "eta",
       "promised delivery",
-      "expected arrival"
+      "expected arrival",
+      "thoi gian du kien den",
+      "gio du kien den",
+      "ngay du kien den",
+      "du kien den"
     ],
     "negativeClues": [
       "not actual completion time",

@@ -31,3 +31,4 @@ export * from "./readiness-validation";
 export * from "./relationship-candidate-engine";
 export * from "./signal-engine";
 export * from "./source-input";
+export * from "./micro-brain";

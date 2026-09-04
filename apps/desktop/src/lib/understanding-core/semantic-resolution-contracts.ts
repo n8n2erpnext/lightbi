@@ -6,7 +6,7 @@ export const SEMANTIC_RESOLUTION_POLICY_VERSION = "lightbi.semantic-resolution-p
 
 export type SemanticResolutionState = "confirmed" | "probable" | "ambiguous" | "unknown" | "technical" | "unsupported_input";
 export type CandidateDisposition = "selected" | "viable" | "insufficient_evidence" | "materially_conflicted" | "dominated" | "correlated_evidence_only" | "candidate_absent";
-export type LexicalEvidenceClass = "canonical_id_exact" | "canonical_label_exact" | "alias_exact" | "header_alias_exact" | "token_containment" | "value_only" | "none";
+export type LexicalEvidenceClass = "canonical_id_exact" | "canonical_label_exact" | "alias_exact" | "header_alias_exact" | "token_containment" | "semantic_retrieval" | "value_only" | "none";
 export type EvidenceDependencyKind = "independent" | "same_header_surface" | "same_representative_sample" | "lexical_sibling_reuse" | "mutual_sibling_support" | "shared_collision_surface" | "duplicate_physical_fact" | "repeated_relation_class";
 
 export type EvidenceIndependenceAssessmentV1 = {

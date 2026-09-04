@@ -12,7 +12,8 @@ export type EvidenceSource =
   | "source_profile"
   | "representative_evidence"
   | "structural_profile"
-  | "candidate_generator";
+  | "candidate_generator"
+  | "micro_brain";
 
 export type SemanticEvidenceType =
   | "canonical_header_exact"
@@ -20,6 +21,7 @@ export type SemanticEvidenceType =
   | "alias_exact"
   | "alias_token_containment"
   | "alias_collision"
+  | "micro_brain_retrieval"
   | "value_alias"
   | "value_pattern"
   | "physical_type_compatible"
@@ -112,6 +114,18 @@ export type ColumnObservationV1 = {
   limitations: string[];
 };
 
+export type MicroBrainCandidateBridgeSummaryV1 = {
+  schemaVersion: "lightbi.micro-brain.candidate-bridge.v1";
+  mode: "selective" | "all";
+  corpusVersion: string;
+  indexVersion: string;
+  indexIdentity: string;
+  queryCount: number;
+  bridgedCandidateCount: number;
+  openConceptHitCount: number;
+  retrievalOnly: true;
+};
+
 export type CandidateArtifactV1 = {
   schemaVersion: typeof CANDIDATE_ARTIFACT_SCHEMA_VERSION;
   sourceId: string;
@@ -119,6 +133,7 @@ export type CandidateArtifactV1 = {
   profileSchemaVersion: string;
   registryVersion: "semantic-signal-registry.v1";
   observations: ColumnObservationV1[];
+  microBrainBridge?: MicroBrainCandidateBridgeSummaryV1;
   coverage: {
     physicalColumnCount: number;
     observedColumnCount: number;

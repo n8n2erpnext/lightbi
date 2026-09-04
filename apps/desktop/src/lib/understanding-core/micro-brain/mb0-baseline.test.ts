@@ -43,8 +43,9 @@ describe("Micro Brain MB-0 frozen baseline", () => {
     });
   });
 
-  it("does not export Micro Brain through understanding-core production exports yet", () => {
+  it("records that MB-5 exposes Micro Brain through the production core boundary", () => {
     const coreIndex = fs.readFileSync(path.resolve(process.cwd(), "src/lib/understanding-core/index.ts"), "utf8");
-    expect(coreIndex).not.toMatch(/micro-brain/);
+    expect(coreIndex.match(/export \* from "\.\/micro-brain";/g)).toHaveLength(1);
+    expect(coreIndex).not.toContain("retrieveMicroBrainConcepts(");
   });
 });

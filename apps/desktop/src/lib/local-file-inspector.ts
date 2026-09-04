@@ -9,6 +9,7 @@ import { SEMANTIC_SIGNAL_REGISTRY_V1 } from './semantic-registry';
 import { generateSemanticCandidateArtifact } from './understanding-core/semantic-candidate-engine';
 import { aggregateContextualEvidence } from './understanding-core/contextual-evidence-aggregator';
 import { resolveSemanticShadow } from './understanding-core/semantic-resolver';
+import { getBuiltInMicroBrainIndex } from './understanding-core/micro-brain/built-in-index';
 import { generateGrainCandidateArtifact } from './understanding-core/grain-candidate-engine';
 import { resolveGrainSignatureShadow } from './understanding-core/grain-resolver';
 import { browserSha256 } from './browser-sha256';
@@ -75,7 +76,7 @@ function createCanonicalFullFileProfile(args: {
     rawRows: args.rawRows,
     maxHeaderScanRows: args.maxHeaderScanRows,
   });
-  const candidates = generateSemanticCandidateArtifact(artifact, { registry: SEMANTIC_SIGNAL_REGISTRY_V1 });
+  const candidates = generateSemanticCandidateArtifact(artifact, { registry: SEMANTIC_SIGNAL_REGISTRY_V1, microBrain: { index: getBuiltInMicroBrainIndex(), mode: 'selective' } });
   const semantic = resolveSemanticShadow(artifact, candidates, aggregateContextualEvidence(artifact, candidates));
   const grainCandidates = generateGrainCandidateArtifact(artifact, semantic, args.rawRows);
   const grain = resolveGrainSignatureShadow(grainCandidates, { sourceId, sourceHash: grainCandidates.sourceHash });
