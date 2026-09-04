@@ -1,4 +1,5 @@
 import { buildDeepBAInvestigation } from './deep-ba-investigation';
+import type { BAAnalysisAuthorityContextV1 } from './understanding-core/ba-analysis-authority-context';
 
 export interface SingleSourceKpi {
   id: string;
@@ -46,6 +47,7 @@ export interface SingleSourceBAOverview {
   findings: string[];
   recommendedActions: string[];
   limitations: string[];
+  analysisAuthority?: BAAnalysisAuthorityContextV1;
   investigation?: DeepBAInvestigation;
 }
 
@@ -81,6 +83,7 @@ export interface DeepBADecomposition {
 
 export interface DeepBAInvestigation {
   domain: string;
+  analysisAuthority?: BAAnalysisAuthorityContextV1;
   whatHappened: DeepBAFinding[];
   whereItHappened: DeepBAFinding[];
   whyItMayHaveHappened: DeepBAFinding[];
@@ -447,6 +450,7 @@ export interface SingleSourceBAOverviewOptions {
   sourceRowCount?: number;
   selectedPerspective?: string | null;
   semanticFields?: SemanticFieldBinding[];
+  analysisAuthority?: BAAnalysisAuthorityContextV1 | null;
   analysisAction?: {
     id?: string;
     opportunityName?: string;
@@ -893,6 +897,7 @@ export function createSingleSourceBAOverview(rows: Row[], options: SingleSourceB
   if (!overview) return null;
   return {
     ...overview,
-    investigation: buildDeepBAInvestigation(rows, overview, options.semanticFields ?? [], options.selectedPerspective),
+    ...(options.analysisAuthority ? { analysisAuthority: options.analysisAuthority } : {}),
+    investigation: buildDeepBAInvestigation(rows, overview, options.semanticFields ?? [], options.selectedPerspective, options.analysisAuthority ?? null),
   };
 }

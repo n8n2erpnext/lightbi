@@ -27,6 +27,7 @@ import type { GovernedMetricExecutionRequestV1 } from '../lib/understanding-core
 import { createGovernedLocalDuckDBBoundary } from '../lib/understanding-core/governed-local-duckdb-boundary';
 import { sourceBindingsMatch } from '../lib/understanding-core/canonical-source-boundary';
 import { getLatestCanonicalConsumerArtifact, validateCanonicalInvestigationHandoff } from '../lib/understanding-core/canonical-consumer-boundary';
+import { createBAAnalysisAuthorityContext } from '../lib/understanding-core/ba-analysis-authority-context';
 import { validateCanonicalMultiSourceInvestigationHandoff, type CanonicalMultiSourceInvestigationHandoffV1 } from '../lib/understanding-core/canonical-multisource-boundary';
 import { executeCanonicalMultiSourceMetric } from '../lib/understanding-core/governed-multisource-duckdb-boundary';
 import { formatValue } from '../lib/display-formatter';
@@ -51,12 +52,16 @@ export const Investigation: React.FC = () => {
   const { t } = useUiLanguage();
   const navigate = useNavigate();
   const session = getCurrentInvestigationSession();
-  const focusComparison = useFocusSubjectComparison(session);
   const isUniversalDescriptiveAction = Boolean(session?.analysisAction.id.startsWith('universal:'));
   const canonicalMultiSourceHandoff = session?.canonicalHandoff && 'multiSource' in session.canonicalHandoff
     ? session.canonicalHandoff as CanonicalMultiSourceInvestigationHandoffV1
     : null;
   const currentCanonicalArtifact = session ? getLatestCanonicalConsumerArtifact(session.datasetId) : null;
+  const primaryAnalysisAuthority = useMemo(() => createBAAnalysisAuthorityContext(currentCanonicalArtifact, {
+    actionCandidateId: session?.analysisAction.id ?? null,
+    runtimePreflight: session?.canonicalHandoff?.runtimePreflight ?? null,
+  }), [currentCanonicalArtifact?.identity, session?.analysisAction.id, session?.canonicalHandoff?.runtimePreflight.identity]);
+  const focusComparison = useFocusSubjectComparison(session, primaryAnalysisAuthority);
   const staleHandoffBlockers = canonicalMultiSourceHandoff && session?.canonicalMultiSourceDataset
     ? validateCanonicalMultiSourceInvestigationHandoff(canonicalMultiSourceHandoff, session.canonicalMultiSourceDataset)
     : session?.canonicalHandoff && currentCanonicalArtifact
@@ -90,6 +95,14 @@ export const Investigation: React.FC = () => {
   >(null);
   const filteredDeepAnalysisScope = deepAnalysisView?.kind === 'selected_data' ? deepAnalysisView.scope : null;
   const filteredDeepAnalysisOrigin = deepAnalysisView?.kind === 'selected_data' ? deepAnalysisView.origin : null;
+  const filteredAnalysisAuthority = useMemo(() => {
+    if (!session || !filteredDeepAnalysisScope) return null;
+    const action = filteredDeepAnalysisOrigin?.analysisAction ?? session.analysisAction;
+    return createBAAnalysisAuthorityContext(currentCanonicalArtifact, {
+      actionCandidateId: action.id,
+      runtimePreflight: action.id === session.analysisAction.id ? session.canonicalHandoff?.runtimePreflight ?? null : null,
+    });
+  }, [currentCanonicalArtifact?.identity, filteredDeepAnalysisOrigin?.analysisAction.id, filteredDeepAnalysisScope, session?.analysisAction.id, session?.canonicalHandoff?.runtimePreflight.identity]);
   const [savedChartNotice, setSavedChartNotice] = useState<string | null>(null);
   const [supportingCharts, setSupportingCharts] = useState<Array<InvestigationDrillOrigin & {
     actionId: string;
@@ -106,11 +119,12 @@ export const Investigation: React.FC = () => {
       sourceRowCount: session.runtimeDatasetSource?.sourceRowCount ?? session.rows?.length,
       analysisAction: session.analysisAction,
       semanticFields: session.aiBriefing?.semanticFields ?? [],
+      analysisAuthority: primaryAnalysisAuthority,
       selectedPerspective: session.workspaceDataset && typeof session.workspaceDataset === 'object' && 'selectedPerspective' in session.workspaceDataset
         ? String((session.workspaceDataset as { selectedPerspective?: unknown }).selectedPerspective ?? '') || null
         : null,
     });
-  }, [session]);
+  }, [session, primaryAnalysisAuthority?.artifactIdentity, primaryAnalysisAuthority?.authorization.metric?.metricId, primaryAnalysisAuthority?.authorization.metric?.runtimeState]);
   const filteredSingleSourceBAOverview = useMemo(() => {
     if (!session || !filteredDeepAnalysisScope || session.businessFusionOverview) return null;
     return createSingleSourceBAOverview(
@@ -119,20 +133,22 @@ export const Investigation: React.FC = () => {
         sourceRowCount: filteredDeepAnalysisScope.selectedRowCount,
         analysisAction: filteredDeepAnalysisOrigin?.analysisAction ?? session.analysisAction,
         semanticFields: session.aiBriefing?.semanticFields ?? [],
+        analysisAuthority: filteredAnalysisAuthority,
         selectedPerspective: session.workspaceDataset && typeof session.workspaceDataset === 'object' && 'selectedPerspective' in session.workspaceDataset
           ? String((session.workspaceDataset as { selectedPerspective?: unknown }).selectedPerspective ?? '') || null
           : null,
       },
     );
-  }, [session, filteredDeepAnalysisOrigin, filteredDeepAnalysisScope]);
+  }, [session, filteredDeepAnalysisOrigin, filteredDeepAnalysisScope, filteredAnalysisAuthority?.artifactIdentity, filteredAnalysisAuthority?.authorization.metric?.metricId, filteredAnalysisAuthority?.authorization.metric?.runtimeState]);
   const filteredFocusComparison = useMemo(() => {
     if (!session?.focusSubject || !filteredDeepAnalysisScope) return null;
     return buildFocusSubjectComparison(
       filteredDeepAnalysisScope.rows, session.focusSubject,
       filteredDeepAnalysisOrigin?.analysisAction ?? session.analysisAction, 10,
       { kind: 'selected_rows', isTruncated: filteredDeepAnalysisScope.isTruncated },
+      filteredAnalysisAuthority,
     );
-  }, [session, filteredDeepAnalysisOrigin, filteredDeepAnalysisScope]);
+  }, [session, filteredDeepAnalysisOrigin, filteredDeepAnalysisScope, filteredAnalysisAuthority?.artifactIdentity, filteredAnalysisAuthority?.authorization.metric?.metricId, filteredAnalysisAuthority?.authorization.metric?.runtimeState]);
   const executionRuns = useRef(new ExecutionRunCoordinator('simple-preview'));
   const supportingRuns = useRef(new ExecutionRunCoordinator('supporting-previews'));
   const autoPreviewSessionId = useRef<string | null>(null);
@@ -962,6 +978,7 @@ export const Investigation: React.FC = () => {
         filteredScope={filteredDeepAnalysisScope}
         focusComparison={focusComparison.status === 'ready' ? focusComparison.comparison : null}
         filteredFocusComparison={filteredFocusComparison}
+        analysisAuthority={filteredDeepAnalysisScope ? filteredAnalysisAuthority : primaryAnalysisAuthority}
         onClose={() => setDeepAnalysisView(null)}
         onCreateDashboard={filteredDeepAnalysisScope ? undefined : () => { void createPerspectiveDashboard(); }}
         canCreateDashboard={!filteredDeepAnalysisScope && previewResult?.status === 'executed' && chartModel?.status === 'ready'}

@@ -24,6 +24,8 @@ import type { DecisionVisualizationPlanV1 } from '../../lib/decision-visualizati
 import { saveBlobWithUserChoice, saveDataUrlWithUserChoice } from '../../lib/native-capabilities';
 import type { FocusSubjectComparison } from '../../lib/focus-subject-analysis';
 import { FocusSubjectDeepAnalysisPanel } from './FocusSubjectDeepAnalysisPanel';
+import { BAAnalysisAuthorityBanner } from './BAAnalysisAuthorityBanner';
+import type { BAAnalysisAuthorityContextV1 } from '../../lib/understanding-core/ba-analysis-authority-context';
 
 export interface InvestigationDeepAnalysisProps {
   action: AnalysisAction;
@@ -37,13 +39,14 @@ export interface InvestigationDeepAnalysisProps {
   filteredScope?: FilteredDeepAnalysisScope | null;
   focusComparison?: FocusSubjectComparison | null;
   filteredFocusComparison?: FocusSubjectComparison | null;
+  analysisAuthority?: BAAnalysisAuthorityContextV1 | null;
   onClose: () => void;
   onCreateDashboard?: () => void;
   canCreateDashboard?: boolean;
   preferences: DisplayPreferences;
 }
 
-export const InvestigationDeepAnalysis: React.FC<InvestigationDeepAnalysisProps> = ({ action, brief, businessFusionOverview, singleSourceBAOverview, chartModel, decisionVisualizationPlan = null, canonicalSourceBoundary = null, sourceName, filteredScope, focusComparison = null, filteredFocusComparison = null, onClose, onCreateDashboard, canCreateDashboard = false, preferences }) => {
+export const InvestigationDeepAnalysis: React.FC<InvestigationDeepAnalysisProps> = ({ action, brief, businessFusionOverview, singleSourceBAOverview, chartModel, decisionVisualizationPlan = null, canonicalSourceBoundary = null, sourceName, filteredScope, focusComparison = null, filteredFocusComparison = null, analysisAuthority = null, onClose, onCreateDashboard, canCreateDashboard = false, preferences }) => {
   const { t, localize } = useUiLanguage();
   const exportRef = useRef<HTMLDivElement>(null);
   const [exportState, setExportState] = useState<'idle' | 'image' | 'pdf' | 'excel'>('idle');
@@ -133,6 +136,7 @@ export const InvestigationDeepAnalysis: React.FC<InvestigationDeepAnalysisProps>
         {exportError && <p role="alert" className="mt-2 text-xs text-red-600">{exportError}</p>}
       </div>
       <div ref={exportRef} data-testid="deep-analysis-export-surface" className="p-5">
+        <BAAnalysisAuthorityBanner context={analysisAuthority} scopeLabel={filteredScope ? 'Step 2 · selected rows' : focusComparison ? 'Focus · full source' : 'Deep BA'} />
         {filteredScope && <section data-testid="filtered-deep-analysis-scope" className="mb-5 rounded-xl border border-violet-200 bg-violet-50 p-4 text-sm text-violet-950">
           <div className="flex flex-wrap items-center justify-between gap-2"><div><p className="text-xs font-semibold uppercase tracking-wide text-violet-700">{t('Step 2 · Selected-data scope')}</p><p className="mt-1 font-semibold">{filteredScope.point.dimensionField} = {filteredScope.point.label}</p></div><p className="rounded-lg bg-white px-3 py-2 text-xs font-semibold shadow-sm">{formatValue(filteredScope.selectedRowCount, 'number', preferences)} / {formatValue(filteredScope.matchedRowCount, 'number', preferences)} {t('filtered rows selected')}</p></div>
           {filteredScope.filters.length > 0 && <div className="mt-3 flex flex-wrap gap-2">{filteredScope.filters.map(filter => <span key={filter.id} className="rounded-full border border-violet-200 bg-white px-2.5 py-1 text-xs">{filter.column} {filter.operator === 'contains' ? t('contains') : filter.operator === 'not_equals' ? '≠' : '='} {filter.value}</span>)}</div>}

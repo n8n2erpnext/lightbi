@@ -8,6 +8,7 @@ import type {
   DeepBAInvestigation,
   SingleSourceBAOverview,
 } from './single-source-ba-overview';
+import type { BAAnalysisAuthorityContextV1 } from './understanding-core/ba-analysis-authority-context';
 
 type Row = Record<string, unknown>;
 type SemanticField = { canonicalId?: string; physicalColumn?: string; confidence?: number; semanticSource?: 'registry' | 'micro_brain'; resolutionState?: 'confirmed' | 'probable' };
@@ -113,7 +114,7 @@ function decomposition(domain: DomainBAId, overview: SingleSourceBAOverview, sem
   });
 }
 
-export function buildDeepBAInvestigation(rows: Row[], overview: SingleSourceBAOverview, semanticFields: SemanticField[], selectedPerspective?: string | null): DeepBAInvestigation {
+export function buildDeepBAInvestigation(rows: Row[], overview: SingleSourceBAOverview, semanticFields: SemanticField[], selectedPerspective?: string | null, analysisAuthority: BAAnalysisAuthorityContextV1 | null = null): DeepBAInvestigation {
   const perspectiveDomain = selectedPerspective && DOMAIN_BA_PLAYBOOKS.some(item => item.domainId === selectedPerspective)
     ? selectedPerspective as DomainBAId
     : null;
@@ -168,5 +169,5 @@ export function buildDeepBAInvestigation(rows: Row[], overview: SingleSourceBAOv
     ...comparisons.filter(item => item.status === 'unavailable').map(item => ({ label: `${item.label} unavailable`, missingSignals: [item.kind], impact: item.statement })),
     ...overview.limitations.map((limitation, index) => ({ label: `Evidence limitation ${index + 1}`, missingSignals: [], impact: limitation })),
   ];
-  return { domain, whatHappened, whereItHappened, whyItMayHaveHappened, unusual, priorities, decompositions, comparisons, followUpQuestions: followUpQuestions.slice(0, 5), actions, unknowns };
+  return { domain, ...(analysisAuthority ? { analysisAuthority } : {}), whatHappened, whereItHappened, whyItMayHaveHappened, unusual, priorities, decompositions, comparisons, followUpQuestions: followUpQuestions.slice(0, 5), actions, unknowns };
 }

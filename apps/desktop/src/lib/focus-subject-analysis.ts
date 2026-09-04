@@ -1,6 +1,7 @@
 import type { AnalysisAction } from "./analysis-opportunity-actions";
 import { GOVERNED_METRIC_DEFINITIONS_V1 } from "./understanding-core/governed-metric-policy";
 import type { FocusSubjectSelection } from "./focus-subject-candidates";
+import type { BAAnalysisAuthorityContextV1 } from "./understanding-core/ba-analysis-authority-context";
 
 export {
   createFocusSubjectSelection,
@@ -70,6 +71,7 @@ export type FocusDriverBreakdown = {
 
 export type FocusSubjectComparison = {
   subject: FocusSubjectSelection;
+  analysisAuthority?: BAAnalysisAuthorityContextV1;
   scope?: { kind: "full_source" | "selected_rows"; isTruncated?: boolean };
   populationRowCount: number;
   matchedSubjectRowCount: number;
@@ -727,6 +729,7 @@ export function buildFocusSubjectComparison(
     kind: "full_source",
     isTruncated: false,
   },
+  analysisAuthority: BAAnalysisAuthorityContextV1 | null = null,
 ): FocusSubjectComparison | null {
   if (!rows.length) return null;
   const subjectRows = rows.filter(
@@ -796,6 +799,7 @@ export function buildFocusSubjectComparison(
     : undefined;
   return {
     subject,
+    ...(analysisAuthority ? { analysisAuthority } : {}),
     scope,
     populationRowCount: rows.length,
     matchedSubjectRowCount: subjectRows.length,

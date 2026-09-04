@@ -1,0 +1,84 @@
+{
+  "schemaVersion": "lightbi.micro-brain.mb6-analysis-authority-propagation.v1",
+  "capturedOn": "2026-09-04",
+  "authority": "machine_evidence",
+  "product": {
+    "branch": "codex/r1-roadmap-integration",
+    "baseCommit": "a8d55ee2deef9a83d5ed2a3d445562adf57b87c3"
+  },
+  "scope": {
+    "phase": "MB-6",
+    "purpose": "Propagate semantic/domain/analysis authority through Focus, Deep BA and BA Step 2 without changing governed factual values.",
+    "consumers": ["focus", "deep_ba", "ba_step_2"]
+  },
+  "authorityContract": {
+    "contextSchema": "lightbi.ba-analysis-authority-context.v1",
+    "domainInferencePropagated": true,
+    "officialSupportPropagated": true,
+    "analysisModePropagated": true,
+    "metricPreflightPropagated": true,
+    "runtimeExecutionAuthorizationPropagated": true,
+    "formulaAuthority": "not_independently_authorized",
+    "retrievalSimilarityIsConfidence": false,
+    "evidenceRankIsConfidence": false
+  },
+  "factualParity": {
+    "focus": {
+      "verified": true,
+      "subjectValue": 30,
+      "aggregation": "SUM",
+      "populationValue": 70,
+      "populationCount": 3,
+      "assertion": "Core Focus facts are deep-equal before and after authority propagation."
+    },
+    "deepBA": {
+      "verified": true,
+      "assertion": "KPIs, breakdowns and findings are deep-equal before and after authority propagation."
+    }
+  },
+  "browserAcceptance": {
+    "fixture": "synthetic healthcare CSV with Patient ID, Appointment ID, Provider and Diagnosis",
+    "domain": "healthcare",
+    "domainSource": "micro_brain_relation",
+    "officialSupport": "not_production_active",
+    "analysisMode": "evidence_bound_inferred_domain",
+    "deepBA": {
+      "authorityVisible": true,
+      "scopeLabel": "Deep BA",
+      "metricAuthority": "no_matched_governed_metric_authority",
+      "formulaAuthority": "not_independently_authorized",
+      "recordCountAnalysisOnly": true
+    },
+    "step2": {
+      "authorityVisible": true,
+      "scopeLabel": "Step 2 · selected rows",
+      "metricAuthority": "no_matched_governed_metric_authority",
+      "formulaAuthority": "not_independently_authorized"
+    },
+    "forbiddenAuthorityLeakage": {
+      "percentageConfidence": false,
+      "similarity": false,
+      "evidenceRank": false,
+      "retrievalConfidence": false
+    }
+  },
+  "verification": {
+    "vitest": "15 files / 79 tests passed",
+    "typescript": "passed",
+    "viteProductionBuild": "passed; 3790 modules; 19.33s",
+    "playwright": "1/1 passed; MB-6 Deep BA + Step 2 inferred-domain acceptance",
+    "gitDiffCheck": "passed"
+  },
+  "production": {
+    "servicesTouched": false,
+    "portsTouched": [],
+    "domainSupportActivationChanged": false,
+    "metricAuthorizationChangedByMicroBrain": false
+  },
+  "invariants": [
+    "Micro Brain may broaden semantic understanding but may not invent a factual value, metric, formula authority or decision-use authority.",
+    "Unsupported inferred domains remain evidence-bound and not production-active.",
+    "Focus, Deep BA and BA Step 2 consume the same authority context rather than calling retrieval independently.",
+    "Retrieval similarity and evidence rank remain provenance only and are not rendered as semantic confidence."
+  ]
+}

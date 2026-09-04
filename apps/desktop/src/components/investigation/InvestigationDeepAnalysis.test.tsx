@@ -143,3 +143,29 @@ describe('InvestigationDeepAnalysis export boundary', () => {
   });
 
 });
+
+describe('MB-6 authority disclosure', () => {
+  it('shows the selected-row Step 2 authority state without changing the selected-row scope', () => {
+    const analysisAuthority = {
+      schemaVersion: 'lightbi.ba-analysis-authority-context.v1', artifactIdentity: 'artifact:step2', datasetStateIdentity: 'state:step2', sourceFingerprint: 'source:step2',
+      domain: { primaryDomain: 'healthcare', primaryDomainSource: 'micro_brain_relation', officialSupport: { packId: 'commerce_distribution_mvp', state: 'unsupported', productionActive: false }, analysisMode: 'evidence_bound_inferred_domain', semanticConcepts: { confirmed: 0, probable: 2, microBrainRecovered: 2, ambiguous: 0, unknown: 0, unresolved: 0 }, evidenceConflicts: 0, evidence: [] },
+      authorization: { metric: null, formula: { state: 'not_independently_authorized', decisionUseAuthorized: false, reason: 'No separate formula authority.' } },
+      limitations: [], evidenceReferences: ['artifact:step2'], decisionUseAuthorized: false,
+    } as const;
+    render(<InvestigationDeepAnalysis
+      action={{ id: 'action-step2', opportunityName: 'Selected rows', label: 'Selected rows', description: 'Selected rows', actionType: 'table_preview', dimensions: [], measures: [], confidenceScore: 100, source: 'dataset_understanding' }}
+      brief={null}
+      chartModel={null}
+      filteredScope={{ rows: [{ Patient: 'A' }], filters: [], point: { dimensionField: 'Patient', value: 'A', label: 'A' }, matchedRowCount: 1, selectedRowCount: 1, sourceResultRowCount: 1, maxRows: 50_000, isTruncated: false }}
+      analysisAuthority={analysisAuthority}
+      onClose={vi.fn()}
+      preferences={DEFAULT_PREFERENCES}
+    />);
+    const authority = screen.getByTestId('ba-analysis-authority').textContent ?? '';
+    expect(authority).toContain('Step 2 · selected rows');
+    expect(authority).toContain('Evidence-bound inferred domain');
+    expect(authority).toContain('Semantic inference (Micro Brain)');
+    expect(authority).toContain('Not production-active');
+    expect(screen.getByTestId('filtered-deep-analysis-scope').textContent).toContain('Patient = A');
+  });
+});

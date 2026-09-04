@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import type { InvestigationSession } from '../lib/investigation-session';
 import { materializeRuntimeDatasetSource } from '../lib/full-file-runtime-materializer';
 import { buildFocusSubjectComparison, type FocusSubjectComparison } from '../lib/focus-subject-analysis';
+import type { BAAnalysisAuthorityContextV1 } from '../lib/understanding-core/ba-analysis-authority-context';
 
 export type FocusComparisonState =
   | { status: 'idle'; comparison: null; error: '' }
@@ -9,7 +10,7 @@ export type FocusComparisonState =
   | { status: 'ready'; comparison: FocusSubjectComparison; error: '' }
   | { status: 'unavailable'; comparison: null; error: string };
 
-export function useFocusSubjectComparison(session: InvestigationSession | null): FocusComparisonState {
+export function useFocusSubjectComparison(session: InvestigationSession | null, analysisAuthority: BAAnalysisAuthorityContextV1 | null = null): FocusComparisonState {
   const [state, setState] = useState<FocusComparisonState>({ status: 'idle', comparison: null, error: '' });
 
   useEffect(() => {
@@ -34,7 +35,7 @@ export function useFocusSubjectComparison(session: InvestigationSession | null):
       if (!Array.isArray(rows) || materialized.rowCount !== session.runtimeDatasetSource?.sourceRowCount || rows.length !== materialized.rowCount) {
         throw new Error('FOCUS_COMPARISON_FULL_SOURCE_MISMATCH');
       }
-      const comparison = buildFocusSubjectComparison(rows, session.focusSubject!, session.analysisAction);
+      const comparison = buildFocusSubjectComparison(rows, session.focusSubject!, session.analysisAction, 10, { kind: 'full_source', isTruncated: false }, analysisAuthority);
       if (!comparison) throw new Error('FOCUS_SUBJECT_NOT_FOUND_IN_FULL_SOURCE');
       setState({ status: 'ready', comparison, error: '' });
     }).catch(error => {
@@ -49,7 +50,7 @@ export function useFocusSubjectComparison(session: InvestigationSession | null):
     });
 
     return () => controller.abort();
-  }, [session?.id, session?.focusSubject?.candidateId, session?.focusSubject?.value]);
+  }, [session?.id, session?.focusSubject?.candidateId, session?.focusSubject?.value, analysisAuthority?.artifactIdentity, analysisAuthority?.authorization.metric?.metricId, analysisAuthority?.authorization.metric?.runtimeState]);
 
   return state;
 }

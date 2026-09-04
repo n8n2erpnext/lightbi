@@ -1,6 +1,7 @@
 import React from 'react';
 import { Target } from 'lucide-react';
 import type { FocusComparisonState } from '../../hooks/useFocusSubjectComparison';
+import { BAAnalysisAuthorityBanner } from './BAAnalysisAuthorityBanner';
 
 function number(value: number): string {
   return value.toLocaleString(undefined, { maximumFractionDigits: 3 });
@@ -32,6 +33,7 @@ export const FocusSubjectComparisonCard: React.FC<{ state: FocusComparisonState 
         {comparison.rankValue && <div className="rounded-xl border border-violet-100 bg-white px-4 py-2 text-right"><div className="text-[10px] uppercase tracking-wider text-slate-400">Recorded rank</div><div className="mt-0.5 text-lg font-semibold text-slate-900">{comparison.rankValue}</div></div>}
       </div>
     </div>
+    <div className="px-5 pt-4"><BAAnalysisAuthorityBanner context={comparison.analysisAuthority} scopeLabel="Focus" /></div>
 
     {primaryMetric && <div data-testid="focus-primary-benchmark" className="border-b border-slate-100 p-5">
       <div className="mb-4 flex flex-wrap items-end justify-between gap-2">
