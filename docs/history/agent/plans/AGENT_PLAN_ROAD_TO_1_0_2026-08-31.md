@@ -123,7 +123,7 @@ This overlay updates execution priority without rewriting the historical R1-P0â€
 
 ### Primary critical path
 
-`Intelligence Pack/update trust -> Signed Transport integration -> packaged Windows/UAT + release acceptance`
+`Intelligence Pack V1 source closure -> NEXT032 runtime acceptance -> Signed Transport integration -> packaged Windows/UAT + release acceptance`
 
 Micro Brain V1 acceptance remains anchored at `a1f6ee8`; the product successor has since advanced to `codex/r1-roadmap-integration` / `8abc669`. MB no longer owns the critical path. The successor continues on the Road-to-1.0 integration lane without renumbering R1-P0â€¦R1-P13 or claiming stable 1.0.
 
@@ -131,7 +131,9 @@ Micro Brain V1 acceptance remains anchored at `a1f6ee8`; the product successor h
 
 The active immutable NEXT generation is `g-2026-09-04-next-031`, parent `g-2026-09-03-next-030-focus-exp-03`, app/source `8abc669`, reused server-binary provenance Core `ed4b9233`, private CP runtime `bb50b0d`, schema `067_catalog_quarterly_pricing`, manifest SHA-256 `08fe08ea9dcc72d575721f1db891cd46ce46d030556c53d14c472dc4149c9797`. Core/Gateway/CP/worker all report NEXT031 and the worker is healthy. Owner role rotation has not been performed.
 
-The next update/security integration item is **Intelligence Pack Updater V1**: signed, versioned, compatibility-gated, data-only MB/dictionary/domain knowledge packs with staging/active/previous atomic rollback. Executable algorithm/runtime changes remain Full App Update. Pack-signing authority must remain distinct from application release signing and runtime request signing; exact trust anchoring is frozen before implementation.
+**Intelligence Pack Updater V1 source implementation is now closed** at product `262bd768` and private CP `72eacf75`. The implemented NEXT-only contract is signed/versioned/compatibility-gated/data-only, uses content-addressed `staged/active/previous` state plus an accepted-version floor, fails closed to previous/bundled intelligence, and keeps pack signing distinct from release/runtime-request authority. Exact-head gates pass: pack Rust `6/6`, frontend `2/2`, candidate `1.0.0-next.1` verifies to the accepted MB payload SHA, CP authoritative `222/222`, release-authoritative product gate PASS, and native Tauri `cargo check` PASS. Stable/public INT Root anchoring remains deliberately unfrozen; only the non-promotable NEXT/Internal TEST authority is used.
+
+The immediate execution gate is therefore **immutable NEXT032 runtime acceptance**. NEXT031 remains active until NEXT032 is built from exact committed source, wired to the Internal Intelligence Pack distribution edge, and passes stage/activate/restart/fallback/rollback/downgrade/runtime-identity probes. After that, continue Signed Transport query/response/route/native integration.
 
 After the pack contract is frozen, continue the bounded Signed Transport lane through canonical query binding, response-integrity semantics, route classes, native `native_http_request` integration and replay/fallback negative probes. Only then run packaged Windows/UAT and integrated release acceptance on the successor. Historical R1-P1/R1-P4 owner-acceptance items remain open where recorded; Production R1-P5/P6 authority remains separately owner-gated.
 

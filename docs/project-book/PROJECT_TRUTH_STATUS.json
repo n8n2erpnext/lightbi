@@ -267,7 +267,7 @@
   },
   "nextGeneration": {
     "model": "successor_promotion_generation_rotation",
-    "status": "internal_next031_multifile_focus_runtime_verified_owner_role_rotation_not_performed",
+    "status": "internal_next031_active_intelligence_pack_v1_source_closed_next032_runtime_acceptance_pending",
     "generationSchema": "lightbi.generation.v1",
     "generationId": "g-2026-09-04-next-031",
     "parentGenerationId": "g-2026-09-03-next-030-focus-exp-03",
@@ -422,7 +422,14 @@
       "nextAttestationAndProVerifierTestsPassed": 12,
       "nextProAuthorityLiveE2ePassed": true,
       "nextProAuthoritySyntheticDbResidue": 0,
-      "nextProAuthorityBusinessSeatLimitVerified": 5
+      "nextProAuthorityBusinessSeatLimitVerified": 5,
+      "intelligencePackRustTestsPassed": 6,
+      "intelligencePackFrontendTestsPassed": 2,
+      "intelligencePackCandidateVerified": true,
+      "intelligencePackCandidateEnvelopeSha256": "1c2446321ebecec5687f01f95dff0efe574efe4e56bdf10f13ed0802caea3376",
+      "intelligencePackCandidatePayloadSha256": "6415fddef704732e0d2e08936aaed729278f4a9c759b30a4daacb1c7ab7d8ec0",
+      "intelligencePackControlPlaneTestsPassed": 222,
+      "intelligencePackNativeCargoCheckPassed": true
     },
     "infrastructure": {
       "isolatedContractDefined": true,
@@ -884,11 +891,11 @@
       "syntheticDbResidue": 0
     },
     "successorOverlay20260904": {
-      "status": "one_roadmap_multifile_focus_complete_next031_active_intelligence_pack_primary",
+      "status": "one_roadmap_intelligence_pack_v1_source_closed_next031_active_next032_runtime_pending",
       "productBranch": "codex/r1-roadmap-integration",
-      "productHead": "8abc669",
+      "productHead": "262bd768",
       "controlPlaneBranch": "codex/r1p14-signed-transport",
-      "controlPlaneHead": "c5875eb",
+      "controlPlaneHead": "72eacf75",
       "microBrain": {
         "completedThrough": "MB-7",
         "state": "source_acceptance_complete_cutover_review_passed_production_not_deployed",
@@ -925,7 +932,7 @@
       "phase2aFrozen": false,
       "productionRootCeremonyAuthorized": false,
       "integratedNext": {
-        "primary": "intelligence_pack_updater_v1_contract_and_implementation",
+        "primary": "intelligence_pack_v1_next032_runtime_acceptance",
         "then": [
           "signed_transport_query_response_route_native_integration",
           "packaged_windows_uat_and_integrated_release_acceptance"
@@ -934,7 +941,19 @@
           "dataOnlyV1": true,
           "arbitraryExecutableCodeAllowed": false,
           "atomicRollbackRequired": true,
-          "signingSeparationRequired": true
+          "signingSeparationRequired": true,
+          "state": "source_closed_runtime_acceptance_pending",
+          "productHead": "262bd768",
+          "controlPlaneHead": "72eacf75",
+          "packVersion": "1.0.0-next.1",
+          "candidateEnvelopeSha256": "1c2446321ebecec5687f01f95dff0efe574efe4e56bdf10f13ed0802caea3376",
+          "candidatePayloadSha256": "6415fddef704732e0d2e08936aaed729278f4a9c759b30a4daacb1c7ab7d8ec0",
+          "rustTests": "6/6",
+          "frontendTests": "2/2",
+          "controlPlaneTests": "222/222",
+          "releaseAuthoritativeSuite": true,
+          "nativeCargoCheck": true,
+          "runtimeGenerationAccepted": false
         },
         "multiFileFocus": {
           "engineRewrite": false,
@@ -987,7 +1006,7 @@
     "r1p8": "production_blocked_by_r1p6_next_rehearsal_pass",
     "r1p9": "production_blocked_by_r1p6_next_rehearsal_pass_request_wire_not_frozen",
     "r1p10": "production_blocked_by_r1p6_next_rehearsal_pass",
-    "successorOverlay": "integrated_product_security_release_after_mb7_complete_signed_transport_not_enforced"
+    "successorOverlay": "intelligence_pack_v1_source_closed_next032_runtime_pending_signed_transport_not_enforced"
   },
   "optionalCommerceRevenueMirror": {
     "provider": "paddle",

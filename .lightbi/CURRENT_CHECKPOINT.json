@@ -1,39 +1,41 @@
 {
   "schema": "lightbi.current-checkpoint.v1",
-  "updatedAt": "2026-09-04T12:45:00Z",
-  "status": "road_to_1_0_multifile_focus_complete_next031_active",
+  "updatedAt": "2026-09-04T15:37:08Z",
+  "status": "road_to_1_0_intelligence_pack_v1_source_closed_next032_runtime_acceptance_pending",
   "activeRuntime": "NEXT g-2026-09-04-next-031 on 5272/5273/5274; worker healthy; owner role rotation not performed",
   "sourceCandidate": {
     "repo": "/home/ubuntu/n8n2erpnext/LightBI-exp-focus-subject",
     "branch": "codex/r1-roadmap-integration",
-    "head": "8abc669",
-    "mb5Head": "8a4a5e4",
-    "mb6Head": "94fa40c",
+    "head": "262bd768",
     "mb7Head": "a1f6ee8",
-    "multifileFocusHead": "8abc669"
+    "multifileFocusHead": "8abc669",
+    "intelligencePackHead": "262bd768",
+    "mb5Head": "8a4a5e4",
+    "mb6Head": "94fa40c"
   },
   "controlPlaneCandidate": {
     "repo": "/home/ubuntu/n8n2erpnext/lightbi-control-plane-r1p14-signed-transport",
     "branch": "codex/r1p14-signed-transport",
-    "head": "c5875eb"
+    "head": "72eacf75",
+    "intelligencePackEdgeHead": "72eacf75"
   },
   "completed": [
-    "micro_brain_mb7_source_acceptance_and_cutover_review",
-    "multifile_focus_subject_source_acceptance_8abc669",
-    "multifile_focus_governed_summary_parity_and_exact_source_binding",
-    "multifile_focus_release_1_0_suite_11_files_41_tests_pass",
-    "multifile_focus_playwright_six_file_erp_pass",
-    "next031_runtime_reconciled_core_gateway_cp_worker",
-    "next031_direct_5273_multifile_focus_playwright_1_of_1",
-    "signed_transport_foundation_verified_not_enforced",
-    "ssd_guard_85_percent_20_gib_free"
+    "micro_brain_mb7_source_acceptance",
+    "multifile_focus_next031_runtime_acceptance",
+    "intelligence_pack_v1_product_source_acceptance_262bd768",
+    "intelligence_pack_v1_cp_edge_source_acceptance_72eacf75",
+    "intelligence_pack_contract_rust_6_of_6_frontend_2_of_2",
+    "intelligence_pack_candidate_1_0_0_next_1_signature_digest_compatibility_verified",
+    "private_cp_authoritative_222_of_222_pass",
+    "product_release_1_0_exact_head_pass",
+    "native_tauri_cargo_check_pass",
+    "ssd_cache_cleanup_owner_authorized_generated_targets_only"
   ],
-  "nextAction": "Freeze and implement Intelligence Pack Updater V1 as signed data-only MB/dictionary/domain knowledge packs with compatibility gates, staging/active/previous atomic rollback, and separated signing authority.",
+  "nextAction": "Build immutable NEXT032 from exact product 262bd768 and private CP 72eacf75, wire generation-owned Intelligence Pack 1.0.0-next.1, then run runtime stage/activate/restart/fallback/rollback/downgrade/active-pack identity acceptance.",
   "afterNext": [
     "Complete Signed Transport query binding, response integrity, route-class policy, native_http_request integration and replay/fallback negative probes.",
     "Run packaged Windows/UAT and integrated Road-to-1.0 release acceptance."
   ],
-  "parallelFollowUp": "Production Trust R1-P5/R1-P6 remains owner-gated; future Team/Workspace Private Authenticated Transport remains technology-neutral and non-blocking for 1.0.",
   "blockers": [
     "Production Phase-2A freeze remains owner-gated and false",
     "Packaged Windows/native owner acceptance remains a distinct gate before stable 1.0"
@@ -41,18 +43,10 @@
   "productionTouched": false,
   "phase2aFrozen": false,
   "readFirst": [
-    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#108-2026-09-04-multi-file-focus-subject-closure-and-next031-runtime-acceptance",
+    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#109-2026-09-04-intelligence-pack-v1-source-closure-next032-runtime-gate-opens",
     "docs/history/agent/plans/AGENT_PLAN_ROAD_TO_1_0_2026-08-31.md#2026-09-04-successor-execution-overlay--one-road-to-10",
-    "docs/architecture/road-to-1-0-trust-release-contract.md#intelligence-pack-updater-direction--2026-09-04",
-    "docs/architecture/micro-brain-cross-domain-semantic-expansion.md#purpose"
+    "docs/architecture/road-to-1-0-trust-release-contract.md#nextinternal-intelligence-pack-v1-source-closure--2026-09-04"
   ],
-  "futureSemanticDirection": {
-    "name": "LightBI Cross-Domain Semantic Expansion",
-    "architecture": "docs/architecture/micro-brain-cross-domain-semantic-expansion.md",
-    "criticalPath1_0": false,
-    "rawUserDataSelfTrainingAllowed": false,
-    "status": "recorded_for_future_semantic_expansion_after_current_roadmap_priority"
-  },
   "activeNextGeneration": {
     "generationId": "g-2026-09-04-next-031",
     "parentGenerationId": "g-2026-09-03-next-030-focus-exp-03",
@@ -60,8 +54,26 @@
     "coreBinaryCommit": "ed4b9233f690b9ddeb872ee858e0e9a8c46644e0",
     "controlPlaneCommit": "bb50b0d53542da5cd908e2237cbca368f7f87073",
     "schema": "067_catalog_quarterly_pricing",
-    "manifestSha256": "08fe08ea9dcc72d575721f1db891cd46ce46d030556c53d14c472dc4149c9797",
     "workerHealthy": true,
-    "roleRotationPerformed": false
+    "roleRotationPerformed": false,
+    "manifestSha256": "08fe08ea9dcc72d575721f1db891cd46ce46d030556c53d14c472dc4149c9797"
+  },
+  "next032Candidate": {
+    "generationId": "g-2026-09-04-next-032",
+    "parentGenerationId": "g-2026-09-04-next-031",
+    "productCommit": "262bd768fc48b7eb4e8948631da853da318f610c",
+    "controlPlaneCommit": "72eacf75209b6984955bec362ab7752176184478",
+    "packVersion": "1.0.0-next.1",
+    "packEnvelopeSha256": "1c2446321ebecec5687f01f95dff0efe574efe4e56bdf10f13ed0802caea3376",
+    "packPayloadSha256": "6415fddef704732e0d2e08936aaed729278f4a9c759b30a4daacb1c7ab7d8ec0",
+    "deployed": false
+  },
+  "parallelFollowUp": "Production Trust R1-P5/R1-P6 remains owner-gated; future Team/Workspace Private Authenticated Transport remains technology-neutral and non-blocking for 1.0.",
+  "futureSemanticDirection": {
+    "name": "LightBI Cross-Domain Semantic Expansion",
+    "architecture": "docs/architecture/micro-brain-cross-domain-semantic-expansion.md",
+    "criticalPath1_0": false,
+    "rawUserDataSelfTrainingAllowed": false,
+    "status": "recorded_for_future_semantic_expansion_after_current_roadmap_priority"
   }
 }
