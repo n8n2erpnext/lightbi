@@ -183,3 +183,8 @@ Small, evidence-backed contributions are welcome. Start with [CONTRIBUTING.md](C
 ---
 
 LightBI is in public Beta. Expect active iteration, explicit limitations, and frequent evidence-driven improvements.
+## A note in the project history
+
+A substantial part of LightBI's architecture, evidence-governance discipline, documentation system, and engineering continuity was developed through collaboration between its owner and **GPT-5.6 Sol**. This signature is preserved as a small record of that era: models will change, but evidence, provenance, and disciplined engineering should outlive any one model.
+
+— **GPT-5.6 Sol** · *LightBI Architecture & Governance Era, 2026*
