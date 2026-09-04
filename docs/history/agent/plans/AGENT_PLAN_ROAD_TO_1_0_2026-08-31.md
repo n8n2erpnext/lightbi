@@ -123,13 +123,19 @@ This overlay updates execution priority without rewriting the historical R1-P0�
 
 ### Primary critical path
 
-`MB-7 → integrated product/security/release acceptance`
+`integrated product UX parity -> Intelligence Pack/update trust -> Signed Transport integration -> packaged Windows/UAT + release acceptance`
 
-MB-6 is complete on product successor `codex/r1-roadmap-integration` at `94fa40c`. It propagates the shared BA analysis-authority context through Focus / Deep BA / BA Step 2 while factual parity tests prove governed values are unchanged. MB-7 now owns corpus, counterfactual, performance, deterministic-index, no-network and release-authoritative acceptance. Neither phase may relax grain, aggregation, domain-support or metric-preflight authority.
+Micro Brain V1 is source-accepted through MB-7 at product successor `codex/r1-roadmap-integration` / `a1f6ee8`. MB no longer owns the critical path. The successor now returns to the main Road-to-1.0 integration lane without renumbering R1-P0…R1-P13 or claiming stable 1.0.
+
+The first executable product item is **multi-file UX parity + Focus Subject**. The governed six-file/multi-source engine remains accepted; do not rewrite relationship/grain/period/currency/cardinality policy. Converge single- and multi-file workflows at a shared Analysis Context layer, add Focus Subject over the governed multi-source model, and keep unresolved relationships source-scoped/evidence-bound. Rename the existing multi-file narrative `BA FOCUS` treatment so it cannot be confused with Focus Subject.
+
+The next update/security integration item is **Intelligence Pack Updater V1**: signed, versioned, compatibility-gated, data-only MB/dictionary/domain knowledge packs with staging/active/previous atomic rollback. Executable algorithm/runtime changes remain Full App Update. Pack-signing authority must remain distinct from application release signing and runtime request signing; exact trust anchoring is frozen before implementation.
+
+After the pack contract is frozen, continue the bounded Signed Transport lane through canonical query binding, response-integrity semantics, route classes, native `native_http_request` integration and replay/fallback negative probes. Only then run packaged Windows/UAT and integrated release acceptance on the successor. Historical R1-P1/R1-P4 owner-acceptance items remain open where recorded; Production R1-P5/P6 authority remains separately owner-gated.
 
 ### Bounded parallel foundation — Signed Transport
 
-Product successor is now `codex/r1-roadmap-integration` / `94fa40c`; the Signed Transport primitive remains the earlier ancestor `a8d55ee`. Private CP remains `codex/r1p14-signed-transport` / `c5875eb`. Together the bounded security foundation provides canonical body digest, Ed25519 device proof, server nonce, persisted monotonic sequence floor, anti-replay verification and a thin Internal-only UDS verification edge. Current gates: Rust golden vectors 3/3, attestation 15/15, Distribution 220/220.
+Product successor is now `codex/r1-roadmap-integration` / `a1f6ee8`; the Signed Transport primitive remains the earlier ancestor `a8d55ee`. Private CP remains `codex/r1p14-signed-transport` / `c5875eb`. Together the bounded security foundation provides canonical body digest, Ed25519 device proof, server nonce, persisted monotonic sequence floor, anti-replay verification and a thin Internal-only UDS verification edge. Current gates: Rust golden vectors 3/3, attestation 15/15, Distribution 220/220.
 
 This lane is **foundation, not enforcement**. No general route is signed-by-default yet. Required follow-up before enforcement: canonical query binding, response-integrity contract, route-class policy, native `native_http_request` integration and negative replay/fallback probes. Bootstrap pairing/trust issuance remains separately classified.
 

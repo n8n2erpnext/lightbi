@@ -861,21 +861,22 @@
       "syntheticDbResidue": 0
     },
     "successorOverlay20260904": {
-      "status": "one_roadmap_mb7_primary_signed_transport_foundation_parallel",
+      "status": "one_roadmap_integrated_product_security_release_primary_after_mb7_complete",
       "productBranch": "codex/r1-roadmap-integration",
-      "productHead": "94fa40c",
+      "productHead": "a1f6ee8",
       "controlPlaneBranch": "codex/r1p14-signed-transport",
       "controlPlaneHead": "c5875eb",
       "microBrain": {
-        "completedThrough": "MB-6",
-        "primaryNext": "MB-7",
-        "acceptanceAfter": "integrated_product_security_release_acceptance",
-        "mb6Head": "94fa40c",
-        "mb6Vitest": "15_files_79_tests_pass",
-        "mb6Playwright": "1_of_1_deep_ba_step2_pass",
-        "mb6ProductionBuild": true,
-        "mb6FactualParity": true,
-        "mb6FormulaAuthority": "not_independently_authorized"
+        "completedThrough": "MB-7",
+        "state": "source_acceptance_complete_cutover_review_passed_production_not_deployed",
+        "mb7Head": "a1f6ee8",
+        "indexByteSha256": "6415fddef704732e0d2e08936aaed729278f4a9c759b30a4daacb1c7ab7d8ec0",
+        "activeP50DeltaPct": 6.8048217616377,
+        "semanticDifferences": 3,
+        "confirmedRegressions": 0,
+        "releaseAuthoritativeSuite": true,
+        "playwright": "2/2",
+        "productionDeploymentExecuted": false
       },
       "signedTransport": {
         "state": "foundation_verified_not_enforced",
@@ -899,7 +900,25 @@
       },
       "productionTouched": false,
       "phase2aFrozen": false,
-      "productionRootCeremonyAuthorized": false
+      "productionRootCeremonyAuthorized": false,
+      "integratedNext": {
+        "primary": "multi_file_analysis_context_and_focus_subject_ux_parity",
+        "then": [
+          "intelligence_pack_updater_v1_contract_and_implementation",
+          "signed_transport_query_response_route_native_integration",
+          "packaged_windows_uat_and_integrated_release_acceptance"
+        ],
+        "intelligencePack": {
+          "dataOnlyV1": true,
+          "arbitraryExecutableCodeAllowed": false,
+          "atomicRollbackRequired": true,
+          "signingSeparationRequired": true
+        },
+        "multiFileFocus": {
+          "engineRewrite": false,
+          "governedRelationshipSafetyPreserved": true
+        }
+      }
     }
   },
   "roadTo1_0": {
@@ -918,7 +937,7 @@
     "r1p8": "production_blocked_by_r1p6_next_rehearsal_pass",
     "r1p9": "production_blocked_by_r1p6_next_rehearsal_pass_request_wire_not_frozen",
     "r1p10": "production_blocked_by_r1p6_next_rehearsal_pass",
-    "successorOverlay": "mb7_primary_after_mb6_complete_signed_transport_foundation_parallel_not_enforced"
+    "successorOverlay": "integrated_product_security_release_after_mb7_complete_signed_transport_not_enforced"
   },
   "optionalCommerceRevenueMirror": {
     "provider": "paddle",

@@ -392,6 +392,16 @@ Before any production authority change, evaluate at least:
 
 A Brain release fails if it increases semantic coverage by silently promoting unsupported calculations or materially weakens abstention.
 
+## Real-Data Learning Evidence Pipeline — 2026-09-04
+
+Micro Brain V1 is not an online self-training neural model. Real-world improvement is governed as a corpus-and-evidence lifecycle, not as automatic learning from customer rows.
+
+Approved evidence sources are curated repository/sample corpora; unresolved or ambiguous semantic cases; counterfactual/negative failures; and explicit user corrections that can be reduced to sanitized semantic evidence. Raw customer datasets are local-first and are not uploaded for training by default. An opt-in learning packet may contain normalized header shape, physical type/value-shape summaries, neighboring semantic concepts, candidate/resolution state and explicit correction outcome, but must exclude raw business rows, direct identifiers and customer-specific values unless a later privacy contract explicitly authorizes them.
+
+Feedback never mutates the active Brain immediately. Promotion remains `collect -> sanitize -> review -> candidate knowledge change -> draft -> validated -> indexed -> golden/holdout/counterfactual gates -> performance/safety benchmark -> signed Intelligence Pack`. A malicious or mistaken correction therefore cannot poison the active index by itself.
+
+A later tiny learned ranker (for example logistic regression, boosted trees or a small local MLP) may be evaluated once enough governed examples exist. Its authority is still candidate ranking only. It may not create canonical truth, metric authority, official domain support, formula authority or decision-use authority.
+
 ## Evolution Boundary
 
 V1 intentionally favors transparent LSA/BM25 retrieval. A later local neural embedding model may replace or supplement the dense backend only if a benchmark proves meaningful recall/precision benefit within acceptable local resource cost.
@@ -400,10 +410,12 @@ Such a backend change does not change the authority model: embedding similarity 
 
 ## Current Status
 
-Architecture approved and implementation has progressed through **MB-6**. MB-5 domain-inference/support separation is `8a4a5e4`, preceded by build-mode type-safety closure `fbb1444`; MB-6 is `94fa40c` on active successor line `codex/r1-roadmap-integration`. The foundation/shadow line begins at `96fa58e`; the conservative evidence bridge landed at `f32d88d`; registry-aligned product integration is visible at `d4fa6e5`. The independent Signed Transport primitive remains ancestor `a8d55ee` and does not change semantic authority.
+Architecture approved and **MB-7 successor-source acceptance is complete** on `codex/r1-roadmap-integration` at `a1f6ee8` (`test(understanding): close micro brain v1 acceptance`). MB-5 domain-inference/support separation remains `8a4a5e4`; MB-6 shared BA authority propagation is `94fa40c`; the Signed Transport proof primitive remains independent ancestor `a8d55ee`. The foundation/shadow line begins at `96fa58e`, the conservative evidence bridge landed at `f32d88d`, and registry alignment at `d4fa6e5`.
 
-The current implementation preserves the authority model: Micro Brain retrieval/rank is evidence provenance, official support remains owned by the governed domain-support manifest/runtime gates, and unsupported inferred domains remain evidence-bound. Understanding exposes inferred domain source/support state; MB-6 then propagates `lightbi.ba-analysis-authority-context.v1` into Focus, Deep BA and BA Step 2. Metric preflight/runtime execution authority remains governed, formula authority is explicitly `not_independently_authorized`, and decision-use authority remains false rather than inheriting from semantic inference.
+MB-7 machine evidence is `apps/desktop/src/lib/understanding-core/micro-brain/baseline/mb7-acceptance.v1.json`. On the shared ARM Neoverse-N1 VPS, active-core MB OFF p50 is ~9.558 s and selective MB p50 ~10.208 s across 30 governed samples / 19 sources / 379 columns: +650 ms / +6.80%. Selective retrieval runs 243 queries per pass with p50 ~2.25 ms, p95 ~2.94 ms and p99 ~3.35 ms. The only active semantic differences are three TTKT `Thời gian dự kiến đến` recoveries from `unknown` to evidence-bound `probable eta`; confirmed regressions are zero. The compiled index is 6,605,467 bytes (~1,866,404 bytes gzip9), deterministic byte SHA-256 `6415fddef704732e0d2e08936aaed729278f4a9c759b30a4daacb1c7ab7d8ec0`. Isolated raw JSON read+parse is ~128 ms; recorded heap delta is ~13.2 MB and RSS delta ~47 MB, with the RSS number treated as allocator/runtime-inclusive process evidence rather than a guaranteed application delta.
 
-MB-6 factual-parity tests prove the authority context is additive: Focus aggregation/value/population facts and Deep BA KPI/breakdown/finding outputs remain unchanged. Playwright acceptance also proves the same healthcare inferred-domain disclosure survives full Deep BA and selected-row Step 2 without percentage/similarity/evidence-rank confidence leakage. Production services, production domain packs, metric authority and stable release runtime remain unchanged. **MB-7 is next.**
+The complete release-authoritative `test:release-1.0` suite passes, including production build and governed product regression (11 files / 40 tests). MB-specific determinism/retrieval/counterfactual gates pass 14 files / 41 tests; current oracle/runtime acceptance passes 3 files / 6 tests; Playwright MB-5 + MB-6 passes 2/2. The Micro Brain runtime path has no network dependency and remains below the 64 MB index budget.
+
+This closes MB V1 **source acceptance and cutover review**, not Production deployment. Production services, production domain packs, metric/formula/decision authority and stable release runtime remain unchanged. The Road-to-1.0 main map now owns remaining product UX parity, updater/security integration and packaged release acceptance.
 
 Implementation sequencing is governed by [`../history/agent/plans/AGENT_IMPLEMENTATION_PLAN_MICRO_SEMANTIC_BRAIN_V1_2026-09-04.md`](../history/agent/plans/AGENT_IMPLEMENTATION_PLAN_MICRO_SEMANTIC_BRAIN_V1_2026-09-04.md).

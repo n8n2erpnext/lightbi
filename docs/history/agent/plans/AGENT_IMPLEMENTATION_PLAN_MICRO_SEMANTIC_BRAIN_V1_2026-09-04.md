@@ -43,15 +43,16 @@ Each phase produces its own machine evidence and can stop without forcing the ne
 
 ## Execution Status — 2026-09-04
 
-- **MB-0 through MB-3:** foundation, typed knowledge/index contracts, deterministic retrieval and shadow benchmark landed in product history beginning at `96fa58e` (`feat(understanding): add micro semantic brain foundation and shadow benchmark`).
-- **MB-4:** conservative candidate/evidence bridge landed at `f32d88d`; later product integration/registry alignment is visible in `7166370` and `d4fa6e5`. Vector/rank evidence remains retrieval provenance rather than semantic confidence.
-- **BA provenance plumbing:** `7e86a9f` first carried Micro Brain semantic provenance into BA consumers without granting additional authority.
-- **MB-5:** completed at product commit `8a4a5e4`, with build-mode type-safety closure `fbb1444`. Domain inference is separate from official support; Understanding shows inferred source, support state, semantic concept counts, conflict count and analysis mode. Unsupported-domain disclosure remains explicit.
-- **MB-6:** completed at successor commit `94fa40c` (`feat(understanding): propagate analysis authority through BA`). `lightbi.ba-analysis-authority-context.v1` carries domain inference/support, analysis mode, metric preflight/runtime authorization, explicit `not_independently_authorized` formula state, limitations and evidence references through Focus / Deep BA / BA Step 2. Focus factual aggregation/value/population outputs and Deep BA KPI/breakdown/finding outputs are regression-checked for parity before/after propagation.
-- **Verification:** final MB-6 gate passed 15 Vitest files / 79 tests, TypeScript, production Vite build (3,790 modules), Playwright healthcare Deep BA + Step 2 acceptance 1/1, JSON evidence parse and `git diff --check`. Authority UI forbids percentage/similarity/evidence-rank/retrieval-confidence leakage.
-- **Production:** untouched. No production domain pack, metric authorization contract, release artifact or stable runtime was promoted by MB-5 or MB-6.
-- **Successor branch:** active product line is `codex/r1-roadmap-integration` at `94fa40c`. Signed Transport remains a bounded parallel foundation originating at ancestor `a8d55ee`; it does not change MB semantic authority.
-- **Next:** MB-7 owns corpus/counterfactual/performance/deterministic-index/no-network/full release-authoritative acceptance and cutover review.
+- **MB-0 through MB-3:** foundation, typed knowledge/index contracts, deterministic retrieval and shadow benchmark landed beginning at `96fa58e`.
+- **MB-4:** conservative candidate/evidence bridge landed at `f32d88d`; registry/product alignment is visible in `7166370` and `d4fa6e5`. Retrieval rank/similarity remains provenance rather than confidence.
+- **MB-5:** completed at `8a4a5e4` with domain inference separated from official support.
+- **MB-6:** completed at `94fa40c`; `lightbi.ba-analysis-authority-context.v1` propagates domain/support/analysis-mode/metric authority limitations through Focus / Deep BA / BA Step 2 while factual parity remains unchanged.
+- **MB-7:** completed at successor commit `a1f6ee8` (`test(understanding): close micro brain v1 acceptance`). Current independent oracle evidence was regenerated from the isolated oracle without importing LightBI or expected manifest truth, then Phase 7R3.5/8B passed. Deterministic index identity, no-network runtime, negative/counterfactual safety, active-core performance, full release-authoritative gates and Playwright MB-5/MB-6 all pass.
+- **Active-core benchmark:** 30 governed samples / 19 sources / 379 columns on ARM Neoverse-N1. MB OFF p50 ~9.558 s; selective MB p50 ~10.208 s; delta ~+650 ms / +6.80%. Retrieval p50 ~2.25 ms, p95 ~2.94 ms, p99 ~3.35 ms across 243 queries/run. Three TTKT ETA fields improve `unknown -> probable`; confirmed regressions are zero.
+- **Footprint:** compiled index 6,605,467 bytes / ~1,866,404 bytes gzip9; deterministic byte SHA-256 `6415fddef704732e0d2e08936aaed729278f4a9c759b30a4daacb1c7ab7d8ec0`; isolated read+parse ~128 ms. Runtime network dependency is absent.
+- **Release gate:** complete `pnpm test:release-1.0` passes, including production build and governed product regression 11 files / 40 tests. MB-specific gate is 14 files / 41 tests; runtime/oracle gate 3 files / 6 tests; Playwright MB-5 + MB-6 is 2/2.
+- **Authority:** MB V1 source acceptance and cutover review are complete, but Production deployment is not executed. Production domain packs, metric/formula/decision authority and stable runtime remain unchanged.
+- **Next:** Micro Brain no longer owns the critical path. Execution returns to the main Road-to-1.0 integrated product/security/release map.
 
 ## MB-0 — Baseline and Contract Freeze
 

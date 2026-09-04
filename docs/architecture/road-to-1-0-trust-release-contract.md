@@ -148,6 +148,18 @@ This is **not signed-by-default transport yet**. Query-bearing GET semantics are
 
 None of this changes the Production freeze state: `phase2aFrozen=false`, Production Root ceremony remains owner-gated, and NEXT/Internal TEST authority cannot satisfy stable/public Production verification.
 
+## Intelligence Pack updater direction — 2026-09-04
+
+Micro Brain creates a second update lifecycle that should not require a full Windows application replacement for every knowledge improvement. LightBI therefore keeps the existing **Full App Update** lane for executable/runtime changes and adds a planned **Intelligence Pack Update** lane for compatible data-only intelligence artifacts.
+
+Intelligence Pack V1 may contain the compiled Micro Brain index, semantic registry/dictionary data, validated domain-knowledge cards, negative-knowledge relations and schema-governed declarative formula/rule metadata. It must not contain arbitrary JavaScript, native code or another executable algorithm payload. Changes to resolver/compiler/runtime algorithm implementation continue through the full application updater. A future sandboxed WASM/plugin mechanism requires a separate authority decision and cannot be inferred from this direction.
+
+A pack manifest must bind at minimum pack version, Brain/registry schema versions, compatible Core range, required feature contracts, artifact SHA-256, signing identity and creation metadata. The client stages the pack, verifies signature/digest/compatibility, runs bounded smoke validation, then atomically switches `staging -> active` while retaining `previous` for rollback. A failed load or validation restores the previous pack without modifying local user data.
+
+Pack signing authority must be cryptographically distinct from runtime request signing and from the application-release signing operation. The exact Root/issuer anchoring for Intelligence Packs is not frozen here; it must be selected before implementation without reusing an online API key or weakening REL authority. Artifact signature verification remains authoritative even when the bytes travel over HTTPS/CDN/Signed Transport.
+
+The current MB V1 index is about 6.61 MB raw and 1.87 MB gzip9, demonstrating why a bounded pack update can be materially lighter than a full Windows installer. This size observation is evidence, not a permanent pack-size promise.
+
 ## Exit sequence
 
 `Phase 2A re-audit → explicit freeze → offline Root ceremony → purpose-separated private signer → REL → ATT → signed ENT → private PRO delivery → platform signing/anti-impersonation closure → RC/1.0`.

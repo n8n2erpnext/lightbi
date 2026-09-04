@@ -1,14 +1,15 @@
 {
   "schema": "lightbi.current-checkpoint.v1",
-  "updatedAt": "2026-09-04T09:34:37Z",
-  "status": "road_to_1_0_mb6_complete_mb7_primary_signed_transport_foundation_verified",
+  "updatedAt": "2026-09-04T10:17:29Z",
+  "status": "road_to_1_0_mb7_complete_main_map_resumed",
   "activeRuntime": "source_branches_only_no_production_deployment",
   "sourceCandidate": {
     "repo": "/home/ubuntu/n8n2erpnext/LightBI-exp-focus-subject",
     "branch": "codex/r1-roadmap-integration",
-    "head": "94fa40c",
+    "head": "a1f6ee8",
     "mb5Head": "8a4a5e4",
-    "mb6Head": "94fa40c"
+    "mb6Head": "94fa40c",
+    "mb7Head": "a1f6ee8"
   },
   "controlPlaneCandidate": {
     "repo": "/home/ubuntu/n8n2erpnext/lightbi-control-plane-r1p14-signed-transport",
@@ -16,29 +17,31 @@
     "head": "c5875eb"
   },
   "completed": [
-    "mb5_domain_inference_artifact_separate_from_official_support",
-    "one_roadmap_successor_branch_created",
-    "signed_transport_rust_proof_primitive_3_of_3",
-    "private_uds_verification_edge_attestation_15_of_15_distribution_220_of_220",
-    "mb6_shared_ba_analysis_authority_context",
-    "mb6_focus_deep_ba_step2_factual_parity",
-    "mb6_vitest_15_files_79_tests_typescript_build_pass",
-    "mb6_playwright_healthcare_deep_ba_step2_1_of_1",
+    "micro_brain_mb7_source_acceptance_and_cutover_review",
+    "mb7_active_core_benchmark_30_samples_19_sources_379_columns",
+    "mb7_only_three_eta_recoveries_zero_confirmed_regressions",
+    "mb7_release_1_0_suite_pass",
+    "mb7_playwright_mb5_mb6_2_of_2",
+    "signed_transport_foundation_verified_not_enforced",
     "ssd_guard_stable_84_percent_20_gib_free"
   ],
-  "nextAction": "MB-7: run corpus/counterfactual/negative-knowledge, deterministic-index rebuild, no-network, package-size/cold-load/query-latency and full release-authoritative acceptance; then perform explicit cutover authority review.",
-  "parallelFollowUp": "Signed Transport remains foundation only: freeze query binding + response integrity + route classes before native_http_request integration or signed-by-default enforcement.",
+  "nextAction": "Multi-file UX parity: converge on shared Analysis Context and add Focus Subject over the governed multi-source model without weakening relationship/grain/period/currency/cardinality safety.",
+  "afterNext": [
+    "Freeze and implement Intelligence Pack Updater V1 as signed data-only MB/dictionary/domain knowledge packs with compatibility gates and atomic rollback.",
+    "Complete Signed Transport query binding, response integrity, route-class policy, native_http_request integration and replay/fallback negative probes.",
+    "Run packaged Windows/UAT and integrated Road-to-1.0 release acceptance."
+  ],
+  "parallelFollowUp": "Production Trust R1-P5/R1-P6 remains owner-gated; future Team/Workspace Private Authenticated Transport remains technology-neutral and non-blocking for 1.0.",
   "blockers": [
-    "MB-7 full release-authoritative acceptance is still pending",
-    "legacy Phase-3A path-bound suites require machine-audit JSON not present in this product worktree",
-    "Production Phase-2A freeze remains owner-gated and false"
+    "Production Phase-2A freeze remains owner-gated and false",
+    "Packaged Windows/native owner acceptance remains a distinct gate before stable 1.0"
   ],
   "productionTouched": false,
   "phase2aFrozen": false,
   "readFirst": [
-    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#105-2026-09-04-successor-road-to-10-integration-checkpoint",
-    "docs/architecture/micro-semantic-brain-vector-inference.md#current-status",
-    "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_MICRO_SEMANTIC_BRAIN_V1_2026-09-04.md#execution-status--2026-09-04",
-    "docs/history/agent/plans/AGENT_PLAN_ROAD_TO_1_0_2026-08-31.md#2026-09-04-successor-execution-overlay--one-road-to-10"
+    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#106-2026-09-04-micro-brain-v1-acceptance-closure-and-return-to-main-road-to-10-map",
+    "docs/history/agent/plans/AGENT_PLAN_ROAD_TO_1_0_2026-08-31.md#2026-09-04-successor-execution-overlay--one-road-to-10",
+    "docs/architecture/road-to-1-0-trust-release-contract.md#intelligence-pack-updater-direction--2026-09-04",
+    "docs/architecture/phase-8f2-multifile-operational-parity-closure.md#post-closure-ux-parity-follow-up--2026-09-04"
   ]
 }

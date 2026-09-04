@@ -83,3 +83,9 @@ governed Revenue, Delivery, period-partition, and Sales-plus-Accounting Gross
 Profit paths.
 
 `ready_governed_six_file_perspective_flow`
+
+## Post-closure UX parity follow-up — 2026-09-04
+
+This closure proved the governed multi-source engine and Deep BA path; it did **not** provide Focus Subject parity with the single-file workflow. A later 2560×1440 Playwright review confirmed that single-file exposes a shared Analysis Context (`Perspective` + `Add a focus`) while multi-file still presents a separate Sales → Accounting → Delivery setup and uses `BA FOCUS` for a narrative attention card rather than the Focus Subject feature.
+
+The accepted follow-up is UX convergence, not a rewrite of the multi-source engine: keep relationship/grain/period/currency/cardinality governance, insert a shared Analysis Context layer before analysis, and add Focus Subject over the governed multi-source model. When a cross-source relationship is not safe enough to unify, Focus must remain source-scoped/evidence-bound and disclose the unresolved source instead of joining silently. The existing narrative `BA FOCUS` label should be renamed to avoid collision with Focus Subject semantics.

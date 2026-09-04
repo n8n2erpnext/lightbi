@@ -1,9 +1,9 @@
 {
   "schemaVersion": "lightbi.project-book.source-catalog.v1",
   "snapshotDate": "2026-09-04",
-  "generatedAt": "2026-09-04T09:36:12Z",
+  "generatedAt": "2026-09-04T10:18:17Z",
   "branch": "docs/ba-da-mode-future-20260903",
-  "head": "ee6e1d93558eb74bef3d6d318898ad2edea83180",
+  "head": "717f2532fb2697b6772f66698526b7ea6a3b563f",
   "worktreeDirty": true,
   "scope": "All project Markdown and JSON outside dependency/build/project-book directories.",
   "counts": {
@@ -1597,8 +1597,8 @@
     {
       "path": "docs/architecture/micro-semantic-brain-vector-inference.md",
       "extension": ".md",
-      "bytes": 20498,
-      "sha256": "7b142ef2178e59c4a94b7bee4b2990da5f2c46da340e9d4e8ae1748586b54fb0",
+      "bytes": 22608,
+      "sha256": "58667b42e606e54341ca5e4bcdb7257dbbfa1a9790d62b2a6f5ab250ce9dcfc2",
       "suggestedCategory": "architecture-source-or-evidence",
       "title": "Micro Semantic Brain and Vector Inference Architecture"
     },
@@ -8923,8 +8923,8 @@
     {
       "path": "docs/architecture/phase-8f2-multifile-operational-parity-closure.md",
       "extension": ".md",
-      "bytes": 3906,
-      "sha256": "0d42f0c1161524562e7b8c3cb61507f22da176c17094f6570accf23a33ac4b0f",
+      "bytes": 4953,
+      "sha256": "77be2299ca1c40c6f285d343e2d27a7dff0daf5fc1bd53c2a0c7e7bb34bf3ec9",
       "suggestedCategory": "architecture-source-or-evidence",
       "title": "Phase 8F.2 Multi-File Operational Parity Closure"
     },
@@ -9134,8 +9134,8 @@
     {
       "path": "docs/architecture/road-to-1-0-trust-release-contract.md",
       "extension": ".md",
-      "bytes": 18630,
-      "sha256": "fc5067e423db963281b0861b857d2f15a0b8ba188c789037275f916e69ff1312",
+      "bytes": 20704,
+      "sha256": "4cf51e05cfbfd01ffaf3c67e099dc410c000fe5e45b59b320883e4d71fc01134",
       "suggestedCategory": "architecture-source-or-evidence",
       "title": "Road to 1.0 Trust, Release, and Official Identity Contract"
     },
@@ -10150,16 +10150,16 @@
     {
       "path": "docs/history/agent/plans/AGENT_PLAN_ROAD_TO_1_0_2026-08-31.md",
       "extension": ".md",
-      "bytes": 14084,
-      "sha256": "b24818efe2159459cb18063b780018d9a1a4a164f8c97e907e0003a0fb5d8a64",
+      "bytes": 15402,
+      "sha256": "0acd8cc28d9719892d88ee7e8393ab65ccb668f456e428f519a49f236354c826",
       "suggestedCategory": "historical-provenance",
       "title": "LightBI Road to 1.0 Execution Plan — 2026-08-31"
     },
     {
       "path": "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_MICRO_SEMANTIC_BRAIN_V1_2026-09-04.md",
       "extension": ".md",
-      "bytes": 15373,
-      "sha256": "4d0e408fcfd45cba4722052c8b66aeb0db879d523fcd69d82888146e1466d990",
+      "bytes": 15358,
+      "sha256": "c9628a4100002b93296727355ae2da373f7399b7baac548bffb59155a8cae77a",
       "suggestedCategory": "historical-provenance",
       "title": "LightBI Micro Semantic Brain V1 Implementation Plan — 2026-09-04"
     },
