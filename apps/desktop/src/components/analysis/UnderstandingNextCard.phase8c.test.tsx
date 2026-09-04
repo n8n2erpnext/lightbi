@@ -40,6 +40,25 @@ const canonicalPerspectives: CanonicalDomainPerspectiveCandidateV1[] = [
   { perspectiveId: "customer", label: "Customer", purpose: "Analyze customer behavior.", sourceId: "source:1", sourceArtifactId: "artifact:1", matchedSignalIds: ["customer"], matchedPhysicalColumns: ["Customer"], questionIds: [], actionCandidateIds: [], state: "recognized_only", evidence: ["Customer:customer:confirmed"], blockers: ["canonical_semantics_recognized_but_governed_question_policy_not_available"], provenance: "inferred_candidate" },
 ];
 
+const inferredDomainPresentation: CanonicalDatasetPresentationV1 = {
+  ...perspectivePresentation,
+  understanding: {
+    source: { label: "healthcare.csv", kind: "local_file", sheetOrTable: null, connectedFiles: ["healthcare.csv"], sourceRowCount: 2, profiledRowCount: 2, columnCount: 4, profileScope: "full", profileConfidence: "high", dataRegionState: "confirmed" },
+    representativeEvidence: { strategy: "bounded_representative", sampledRowCount: 2, fullFileTruth: false, coveredRegions: ["head"] },
+    qualityIssues: [],
+    mappings: [
+      { physicalColumn: "Patient ID", state: "probable", canonicalSignal: "patient", provenance: "canonical_resolution" },
+      { physicalColumn: "Appointment ID", state: "probable", canonicalSignal: "appointment", provenance: "canonical_resolution" },
+    ],
+    mappingStateCounts: { probable: 2, unknown: 2 }, unknownBusinessFields: ["Provider", "Diagnosis"], ignoredFields: [],
+    grain: { structuralForm: "event", structuralState: "probable", identityBasis: "appointment", temporalMode: "unknown", aggregationForm: "atomic" },
+    relationships: { state: "source_local_not_evaluated", sourceCount: 1, explanation: "Source-local artifact only." },
+    domainSupport: { packId: "commerce_distribution_mvp", state: "unsupported", concepts: [], metrics: [] },
+    domainInference: { primaryDomain: "healthcare", primaryDomainSource: "micro_brain_relation", domains: [{ domainId: "healthcare", source: "micro_brain_relation", evidenceRank: 1, canonicalSignalIds: ["patient", "appointment"], physicalColumns: ["Patient ID", "Appointment ID", "Provider", "Diagnosis"] }], semanticConcepts: { confirmed: 0, probable: 2, microBrainRecovered: 2, ambiguous: 0, unknown: 2, unresolved: 2 }, evidenceConflicts: 0, officialSupport: { packId: "commerce_distribution_mvp", state: "unsupported", productionActive: false }, analysisMode: "evidence_bound_inferred_domain", limitations: ["Retrieval rank is not semantic confidence."] },
+    evidence: { observedEvidenceCount: 4, userConfirmedMappingCount: 0, userConfirmedDeclarationCount: 0 }, readinessRestrictions: ["unsupported_domain"],
+  },
+};
+
 describe("UnderstandingNextCard Phase 8C functional states", () => {
   it("does not globally block a mixed-readiness dataset and exposes only governed operations", () => {
     const investigate = vi.fn();
@@ -112,5 +131,16 @@ describe("UnderstandingNextCard Phase 8C functional states", () => {
     render(<UnderstandingNextCard understanding={understanding} canonicalPresentation={perspectivePresentation} canonicalPerspectives={twoReady} />);
     expect(screen.getAllByText("Recommended")).toHaveLength(1);
     expect(screen.getByTestId("business-evidence-customer").textContent).toContain("not enough evidence");
+  });
+  it("shows inferred domain separately from official support without exposing a probability", () => {
+    render(<UnderstandingNextCard understanding={understanding} canonicalPresentation={inferredDomainPresentation} canonicalPerspectives={canonicalPerspectives} />);
+    const summary = screen.getByTestId("domain-inference-summary");
+    expect(summary.textContent).toContain("Healthcare");
+    expect(summary.textContent).toContain("Semantic inference (Micro Brain)");
+    expect(summary.textContent).toMatch(/not production-active/i);
+    expect(summary.textContent).toContain("Evidence-bound inferred domain");
+    expect(summary.textContent).toContain("This domain is not officially supported");
+    expect(summary.textContent).not.toMatch(/\b\d{1,3}%\b/);
+    expect(summary.textContent).not.toContain("similarity");
   });
 });

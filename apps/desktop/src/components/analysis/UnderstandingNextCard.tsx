@@ -41,6 +41,19 @@ const DOMAIN_LABELS: Record<string, string> = {
   finance: 'Finance',
 };
 
+const DOMAIN_INFERENCE_SOURCE_LABELS: Record<string, string> = {
+  canonical_resolution: 'Canonical resolution',
+  micro_brain_relation: 'Semantic inference (Micro Brain)',
+  mixed: 'Canonical + semantic inference',
+};
+
+const DOMAIN_ANALYSIS_MODE_LABELS: Record<string, string> = {
+  governed_supported: 'Governed supported',
+  canonical_detect_only: 'Canonical detect-only',
+  evidence_bound_inferred_domain: 'Evidence-bound inferred domain',
+  unknown_or_ambiguous: 'Unknown or ambiguous',
+};
+
 function humanize(value: string): string {
   return value.replace(/_/g, ' ');
 }
@@ -95,9 +108,13 @@ export const UnderstandingNextCard: React.FC<UnderstandingNextCardProps> = ({
     .sort((left, right) => right.confidence - left.confidence)
     .slice(0, 5);
   const topStakeholders = [...(understanding.stakeholderFits ?? [])].slice(0, 4);
-  const topDomains = (understanding.domainAffinities?.length
-    ? understanding.domainAffinities.map(affinity => affinity.domain)
-    : understanding.profile.detectedDomains
+  const domainInference = canonicalPresentation?.understanding?.domainInference ?? null;
+  const inferredDomainIds = domainInference?.domains.map(item => item.domainId) ?? [];
+  const topDomains = (inferredDomainIds.length
+    ? inferredDomainIds
+    : understanding.domainAffinities?.length
+      ? understanding.domainAffinities.map(affinity => affinity.domain)
+      : understanding.profile.detectedDomains
   ).slice(0, 4).map(domain => DOMAIN_LABELS[domain] ?? humanize(domain));
   const readyQuestionCount = readyLenses.reduce((sum, lens) => sum + lens.questions.filter(question => question.defaultAction).length, 0);
   const blockedAnalysisCount = understanding.unavailableActions.length + partialLenses.reduce((sum, lens) => sum + lens.questions.filter(question => !question.defaultAction).length, 0);
@@ -183,6 +200,20 @@ export const UnderstandingNextCard: React.FC<UnderstandingNextCardProps> = ({
                 <span key={domain} className="rounded-full border border-blue-100 bg-white px-2.5 py-1 text-[12px] font-medium text-blue-700">{domain}</span>
               )) : <span className="text-[12px] text-gray-400">No strong business domain detected yet.</span>}
             </div>
+            {domainInference && (
+              <div className="mt-3 rounded-lg border border-blue-100 bg-white/80 p-3 text-[11px] text-gray-600" data-testid="domain-inference-summary">
+                <div className="font-semibold text-gray-800">
+                  {domainInference.primaryDomain ? (DOMAIN_LABELS[domainInference.primaryDomain] ?? domainInference.primaryDomain.split('_').map(part => part ? part[0].toUpperCase() + part.slice(1) : part).join(' ')) : 'Domain unresolved'}
+                </div>
+                <div className="mt-1">Domain source: {domainInference.primaryDomainSource ? (DOMAIN_INFERENCE_SOURCE_LABELS[domainInference.primaryDomainSource] ?? humanize(domainInference.primaryDomainSource)) : 'Unresolved'}</div>
+                <div>Official support: {domainInference.officialSupport.productionActive ? humanize(domainInference.officialSupport.state) : 'Not production-active'} · {humanize(domainInference.officialSupport.packId)}</div>
+                <div>Semantic concepts: {domainInference.semanticConcepts.confirmed} confirmed · {domainInference.semanticConcepts.probable} probable · {domainInference.semanticConcepts.unresolved} unresolved{domainInference.semanticConcepts.microBrainRecovered > 0 ? ` · ${domainInference.semanticConcepts.microBrainRecovered} MB-recovered` : ''}</div>
+                <div>Evidence conflicts: {domainInference.evidenceConflicts} · Analysis mode: {DOMAIN_ANALYSIS_MODE_LABELS[domainInference.analysisMode] ?? humanize(domainInference.analysisMode)}</div>
+                {domainInference.analysisMode === 'evidence_bound_inferred_domain' && (
+                  <p className="mt-2 text-amber-700">This domain is not officially supported. Analysis remains evidence-bound; unsupported calculations stay unavailable.</p>
+                )}
+              </div>
+            )}
             {topStakeholders.length > 0 && (
               <div className="mt-3">
                 <div className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-gray-500">Relevant roles</div>

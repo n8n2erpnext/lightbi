@@ -135,6 +135,16 @@ export type CanonicalUnderstandingPresentationV1 = {
     concepts: Array<{ conceptId: string; state: string }>;
     metrics: Array<{ metricId: string; state: string }>;
   };
+  domainInference: {
+    primaryDomain: string | null;
+    primaryDomainSource: string | null;
+    domains: Array<{ domainId: string; source: string; evidenceRank: number; canonicalSignalIds: string[]; physicalColumns: string[] }>;
+    semanticConcepts: { confirmed: number; probable: number; microBrainRecovered: number; ambiguous: number; unknown: number; unresolved: number };
+    evidenceConflicts: number;
+    officialSupport: { packId: string; state: string; productionActive: boolean };
+    analysisMode: string;
+    limitations: string[];
+  };
   evidence: {
     observedEvidenceCount: number;
     userConfirmedMappingCount: number;
@@ -458,6 +468,16 @@ function understandingPresentation(artifact: ValidCanonicalArtifact): CanonicalU
       state: artifact.domainActivation.state,
       concepts: artifact.domainActivation.concepts.map((concept) => ({ conceptId: concept.conceptId, state: concept.state })),
       metrics: artifact.metricPreflight.metrics.map((metric) => ({ metricId: metric.metricId, state: metric.state })),
+    },
+    domainInference: {
+      primaryDomain: artifact.domainInference.primaryDomain,
+      primaryDomainSource: artifact.domainInference.primaryDomainSource,
+      domains: artifact.domainInference.domains.map((item) => ({ domainId: item.domainId, source: item.source, evidenceRank: item.evidenceRank, canonicalSignalIds: [...item.canonicalSignalIds], physicalColumns: [...item.physicalColumns] })),
+      semanticConcepts: { ...artifact.domainInference.semanticConcepts },
+      evidenceConflicts: artifact.domainInference.evidenceConflicts,
+      officialSupport: { ...artifact.domainInference.officialSupport },
+      analysisMode: artifact.domainInference.analysisMode,
+      limitations: [...artifact.domainInference.limitations],
     },
     evidence: {
       observedEvidenceCount,

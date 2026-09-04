@@ -3,6 +3,8 @@ import { activateCommerceDistributionDomain } from "./commerce-distribution-doma
 import { questionActionPolicyHash } from "./commerce-distribution-question-policy";
 import { aggregateContextualEvidence } from "./contextual-evidence-aggregator";
 import { deterministicPolicySha256 } from "./contextual-evidence-policy";
+import { inferDomainState } from "./domain-inference";
+import type { DomainInferenceArtifactV1 } from "./domain-inference-contracts";
 import type { CanonicalMetricSourceV1, DomainActivationArtifactV1, GovernedMetricPreflightV1 } from "./governed-domain-metric-contracts";
 import { preflightGovernedMetrics } from "./governed-metric-preflight";
 import { governedMetricPolicyHash } from "./governed-metric-policy";
@@ -66,6 +68,7 @@ export type CanonicalConsumerArtifactV1 = {
   overlayValidation: CanonicalOverlayValidationV1;
   canonicalSource: CanonicalMetricSourceV1;
   domainActivation: DomainActivationArtifactV1;
+  domainInference: DomainInferenceArtifactV1;
   metricPreflight: GovernedMetricPreflightV1;
   questionGeneration: QuestionActionGenerationV1;
   blockers: string[];
@@ -240,6 +243,7 @@ function buildArtifact(input: CanonicalDatasetStateInputV1, fingerprint: string)
       evaluationContext,
       expectedPolicyHash: governedMetricPolicyHash(),
     });
+    const domainInference = inferDomainState({ semantic, domainActivation, metricPreflight });
     const questionGeneration = generateGovernedCommerceQuestionsAndActions({
       schemaVersion: "lightbi.question-action-generation-input.v1",
       canonicalSource,
@@ -261,7 +265,7 @@ function buildArtifact(input: CanonicalDatasetStateInputV1, fingerprint: string)
       ...metricPreflight.limitations.map((item) => item.code),
       ...questionGeneration.limitations.map((item) => item.code),
     ]);
-    const identity = `canonical-consumer:${deterministicPolicySha256({ datasetStateIdentity, sourceId, overlayIdentity: overlayProjection.overlayIdentity, domainActivation: domainActivation.identity, metricPreflight: metricPreflight.identity, questions: questionGeneration.identity })}`;
+    const identity = `canonical-consumer:${deterministicPolicySha256({ datasetStateIdentity, sourceId, overlayIdentity: overlayProjection.overlayIdentity, domainActivation: domainActivation.identity, domainInference, metricPreflight: metricPreflight.identity, questions: questionGeneration.identity })}`;
     const sourceFingerprint = input.sourceBoundary?.sourceFingerprint ?? fingerprint;
     return {
       schemaVersion: CANONICAL_CONSUMER_ARTIFACT_VERSION,
@@ -274,6 +278,7 @@ function buildArtifact(input: CanonicalDatasetStateInputV1, fingerprint: string)
       overlayValidation: overlayProjection.validation,
       canonicalSource,
       domainActivation,
+      domainInference,
       metricPreflight,
       questionGeneration,
       blockers,
