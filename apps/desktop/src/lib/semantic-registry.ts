@@ -1,3 +1,5 @@
+export const SEMANTIC_REGISTRY_SCHEMA_VERSION = 'lightbi.semantic-registry.v1' as const;
+
 export type SignalType = 'time' | 'dimension' | 'measure';
 export type SemanticRole = 'time' | 'dimension' | 'measure' | 'status' | 'identifier';
 export type SemanticCoverageSupport = 'supported' | 'partial' | 'advertised_only';

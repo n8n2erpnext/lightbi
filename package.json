@@ -22,7 +22,8 @@
     "test:ops": "node scripts/verify-preproduction-ops.mjs",
     "micro-brain:seed": "node scripts/micro-brain/synthesize-foundation-v1.mjs",
     "micro-brain:compile": "node scripts/micro-brain/compile-foundation-v1.mjs",
-    "micro-brain:build": "pnpm micro-brain:seed && pnpm micro-brain:compile"
+    "micro-brain:build": "pnpm micro-brain:seed && pnpm micro-brain:compile",
+    "test:intelligence-pack-contract": "node scripts/run-intelligence-pack-contract.mjs"
   },
   "devDependencies": {
     "ml-matrix": "6.15.0",

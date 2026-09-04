@@ -3102,6 +3102,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "lightbi-intelligence-pack"
+version = "0.1.0"
+dependencies = [
+ "base64 0.22.1",
+ "ring",
+ "semver",
+ "serde",
+ "serde_json",
+ "sha2 0.10.9",
+ "tempfile",
+ "windows-sys 0.59.0",
+]
+
+[[package]]
 name = "lightbi-perspective"
 version = "0.1.0"
 dependencies = [
@@ -3274,6 +3288,7 @@ dependencies = [
  "base64 0.22.1",
  "http-body-util",
  "keyring",
+ "lightbi-intelligence-pack",
  "lightbi-server",
  "reqwest 0.12.28",
  "rfd",

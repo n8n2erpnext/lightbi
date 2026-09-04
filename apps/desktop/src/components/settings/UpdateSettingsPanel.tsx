@@ -1,8 +1,11 @@
 import React from 'react';
 import { CheckCircle2, ChevronRight, Download, RefreshCw, ShieldCheck } from 'lucide-react';
 import { useUpdateStore } from '../../stores/update-store';
+import { useIntelligencePackStore } from '../../stores/intelligence-pack-store';
 import { buildGenerationManifest } from '../../lib/generation-manifest';
 import { useSmoothedUpdateProgress } from '../../hooks/useSmoothedUpdateProgress';
+import { isNativeLightBI } from '../../lib/native-runtime';
+import { bundledMicroBrainIndexIdentity, getActiveMicroBrainPackIdentity } from '../../lib/understanding-core/micro-brain/built-in-index';
 
 const friendlyFailure = (detail: string) => {
   if (/HTTP\s+\d+/i.test(detail) || /unavailable/i.test(detail)) return "LightBI couldn't reach the update service. Your current version keeps working.";
@@ -12,11 +15,30 @@ const friendlyFailure = (detail: string) => {
 
 export const UpdateSettingsPanel: React.FC = () => {
   const updater = useUpdateStore();
+  const intelligence = useIntelligencePackStore();
   const progress = useSmoothedUpdateProgress(updater.progress, updater.status === 'verifying' || updater.status === 'ready');
   const progressLabel = Math.floor(progress);
   const internal = buildGenerationManifest().channel === 'internal';
   const busy = ['checking', 'downloading', 'verifying', 'installing'].includes(updater.status);
   const linux = updater.artifact?.kind === 'deb';
+  const native = isNativeLightBI();
+  const activeIntelligence = getActiveMicroBrainPackIdentity();
+  const intelligenceBusy = ['checking', 'preparing', 'activating'].includes(intelligence.status);
+  const intelligenceStatus = intelligence.status === 'checking'
+    ? 'Checking for a compatible signed Intelligence Pack…'
+    : intelligence.status === 'available'
+      ? `Intelligence Pack ${intelligence.latest?.packVersion} is available`
+      : intelligence.status === 'preparing'
+        ? 'Downloading and verifying the signed data-only pack…'
+        : intelligence.status === 'activating'
+          ? 'Atomically activating the verified pack…'
+          : intelligence.status === 'up_to_date'
+            ? `Active intelligence is current${activeIntelligence ? ` · ${activeIntelligence.packVersion}` : ''}`
+            : intelligence.status === 'active'
+              ? `Signed Intelligence Pack ${activeIntelligence?.packVersion ?? intelligence.runtime?.packVersion ?? ''} is active`
+              : intelligence.status === 'failed'
+                ? 'The Intelligence Pack update was rejected. Bundled intelligence remains available.'
+                : 'Using the intelligence bundled with this LightBI build.';
 
   const statusLabel = updater.status === 'ready'
     ? `Version ${updater.manifest?.version} is ready to install`
@@ -65,6 +87,26 @@ export const UpdateSettingsPanel: React.FC = () => {
     </div>
 
     {internal && <button type="button" disabled={busy} onClick={() => void updater.simulateForQa()} className="mt-4 rounded-xl border border-violet-200 bg-violet-50 px-4 py-2.5 text-sm font-semibold text-violet-700 disabled:opacity-50">Test update progress</button>}
+
+    <div className="mt-5 overflow-hidden rounded-2xl border border-slate-200">
+      <div className="flex flex-col gap-4 border-b border-slate-100 p-5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="min-w-0">
+          <div className="flex items-center gap-2 text-sm font-semibold text-slate-900"><ShieldCheck className="h-4 w-4 text-violet-600" />Intelligence Pack</div>
+          <p className={`mt-1 text-sm leading-6 ${intelligence.status === 'failed' ? 'text-amber-700' : 'text-slate-500'}`}>{native ? intelligenceStatus : 'Desktop native builds can update intelligence independently; web/demo uses the bundled Brain.'}</p>
+        </div>
+        {native && <div className="flex shrink-0 flex-wrap gap-2">
+          {intelligence.status === 'available' && <button type="button" onClick={() => void intelligence.update()} className="rounded-xl bg-violet-600 px-4 py-2.5 text-sm font-semibold text-white">Update intelligence</button>}
+          {intelligence.runtime?.previousPackVersion && <button type="button" disabled={intelligenceBusy} onClick={() => void intelligence.rollback()} className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 disabled:opacity-50">Rollback pack</button>}
+          <button type="button" disabled={intelligenceBusy} onClick={() => void intelligence.check(true)} className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 disabled:opacity-50">Check intelligence</button>
+        </div>}
+      </div>
+      <div className="grid gap-3 p-5 text-xs text-slate-500 sm:grid-cols-2">
+        <div><span className="font-semibold text-slate-700">Runtime source</span><p className="mt-1">{activeIntelligence ? `Signed pack ${activeIntelligence.packVersion}` : 'Bundled Micro Brain'}</p></div>
+        <div><span className="font-semibold text-slate-700">Identity</span><p className="mt-1 break-all">{activeIntelligence?.payloadSha256 ?? bundledMicroBrainIndexIdentity()}</p></div>
+      </div>
+      <p className="border-t border-slate-100 px-5 py-4 text-xs leading-5 text-slate-500">Intelligence Packs are signed data only. They may improve semantic recall and knowledge, but they cannot add executable code, create canonical signals, activate official domain support, or grant metric/formula authority.</p>
+      {intelligence.error && <code className="block overflow-x-auto border-t border-slate-100 bg-slate-50 p-4 text-[11px] text-amber-700">{intelligence.error}</code>}
+    </div>
 
     <details className="mt-5 rounded-xl border border-slate-200 bg-slate-50/70 px-4 py-3 text-sm text-slate-500">
       <summary className="flex cursor-pointer list-none items-center justify-between font-semibold text-slate-700">Technical details <ChevronRight className="h-4 w-4" /></summary>

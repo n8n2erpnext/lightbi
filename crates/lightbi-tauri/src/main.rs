@@ -3,6 +3,7 @@
 mod desktop_menu;
 mod installation_lifecycle;
 mod installation_trust;
+mod intelligence_pack;
 mod navigation_guard;
 mod signed_transport;
 mod windows_publisher;
@@ -823,6 +824,10 @@ fn main() {
             installation_lifecycle::store_installation_lifecycle_receipt,
             installation_lifecycle::clear_installation_lifecycle_receipt,
             installation_trust::ensure_installation_trust,
+            intelligence_pack::load_intelligence_pack,
+            intelligence_pack::prepare_intelligence_pack_update,
+            intelligence_pack::activate_intelligence_pack,
+            intelligence_pack::rollback_intelligence_pack,
             native_http_request,
             save_export_file,
             account_session_token,
