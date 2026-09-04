@@ -70,6 +70,16 @@ describe('InvestigationDeepAnalysis export boundary', () => {
           maxRows: 50_000,
           isTruncated: false,
         }}
+        focusComparison={{
+          subject: { candidateId: 'store:Store', canonicalId: 'store', domain: 'inventory', field: 'Store', value: 'A', displayLabel: 'Store A', metricFields: ['Stock'] },
+          scope: { kind: 'full_source', isTruncated: false }, populationRowCount: 100, matchedSubjectRowCount: 10, drivers: [],
+          metrics: [{ field: 'Stock', aggregationAuthority: 'action_contract', aggregation: 'SUM', subjectValue: 120, populationAverage: 90, topAverage: 140, bottomAverage: 50, deltaFromAverage: 30, percentile: 75, populationCount: 8, cohortSize: 4 }],
+        }}
+        filteredFocusComparison={{
+          subject: { candidateId: 'store:Store', canonicalId: 'store', domain: 'inventory', field: 'Store', value: 'A', displayLabel: 'Store A', metricFields: ['Stock'] },
+          scope: { kind: 'selected_rows', isTruncated: false }, populationRowCount: 1, matchedSubjectRowCount: 1, drivers: [],
+          metrics: [],
+        }}
         canonicalSourceBoundary={canonicalBoundary}
         onClose={vi.fn()}
         preferences={DEFAULT_PREFERENCES}
@@ -82,6 +92,8 @@ describe('InvestigationDeepAnalysis export boundary', () => {
     expect(screen.getByTestId('deep-analysis-export-pivot-full')).toBeTruthy();
     expect(screen.getByTestId('deep-analysis-export-pivot-selection')).not.toHaveProperty('disabled', true);
     expect(screen.getByText('Deep BA analysis · Step 2')).toBeTruthy();
+    expect(screen.getByTestId('focus-deep-analysis').textContent).toContain('bounded to the selected Step 2 rows');
+    expect(screen.getByTestId('focus-deep-analysis').textContent).not.toContain('120');
     expect(screen.queryByText('Run the preview first, then LightBI can explain this decision angle in depth.')).toBeNull();
     expect(screen.queryByTestId('deep-analysis-dashboard-cta')).toBeNull();
   });

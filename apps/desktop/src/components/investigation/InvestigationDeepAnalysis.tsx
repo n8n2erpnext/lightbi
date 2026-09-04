@@ -36,13 +36,14 @@ export interface InvestigationDeepAnalysisProps {
   sourceName?: string;
   filteredScope?: FilteredDeepAnalysisScope | null;
   focusComparison?: FocusSubjectComparison | null;
+  filteredFocusComparison?: FocusSubjectComparison | null;
   onClose: () => void;
   onCreateDashboard?: () => void;
   canCreateDashboard?: boolean;
   preferences: DisplayPreferences;
 }
 
-export const InvestigationDeepAnalysis: React.FC<InvestigationDeepAnalysisProps> = ({ action, brief, businessFusionOverview, singleSourceBAOverview, chartModel, decisionVisualizationPlan = null, canonicalSourceBoundary = null, sourceName, filteredScope, focusComparison = null, onClose, onCreateDashboard, canCreateDashboard = false, preferences }) => {
+export const InvestigationDeepAnalysis: React.FC<InvestigationDeepAnalysisProps> = ({ action, brief, businessFusionOverview, singleSourceBAOverview, chartModel, decisionVisualizationPlan = null, canonicalSourceBoundary = null, sourceName, filteredScope, focusComparison = null, filteredFocusComparison = null, onClose, onCreateDashboard, canCreateDashboard = false, preferences }) => {
   const { t, localize } = useUiLanguage();
   const exportRef = useRef<HTMLDivElement>(null);
   const [exportState, setExportState] = useState<'idle' | 'image' | 'pdf' | 'excel'>('idle');
@@ -138,6 +139,9 @@ export const InvestigationDeepAnalysis: React.FC<InvestigationDeepAnalysisProps>
           <p className="mt-3 text-xs leading-5 text-violet-800">{t('All KPIs, breakdowns, findings and recommendations below are recalculated by the existing BA framework from these selected rows only.')}</p>
           {filteredScope.isTruncated && <p className="mt-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">{t('This drill-through reached its row limit. The analysis covers the selected rows retrieved within that limit, not every possible matching source row.')}</p>}
         </section>}
+        {filteredScope && filteredFocusComparison && <div className="mb-5">
+          <FocusSubjectDeepAnalysisPanel action={action} comparison={filteredFocusComparison} />
+        </div>}
         {focusComparison && !filteredScope ? <>
           <FocusSubjectDeepAnalysisPanel action={action} comparison={focusComparison} />
           {(brief || singleSourceBAOverview) && <details className="mt-5 rounded-[16px] border border-black/10 bg-white p-4">

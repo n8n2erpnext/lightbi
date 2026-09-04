@@ -40,6 +40,7 @@ import { useInvestigationDrillThrough, type InvestigationDrillOrigin } from '../
 import { useFocusSubjectComparison } from '../hooks/useFocusSubjectComparison';
 import { FocusSubjectComparisonCard } from '../components/investigation/FocusSubjectComparisonCard';
 import { FocusSubjectBAAnswerCard, FocusSubjectContextBundle } from '../components/investigation/FocusSubjectContextBundle';
+import { buildFocusSubjectComparison } from '../lib/focus-subject-analysis';
 const SINGLE_SOURCE_BA_OVERVIEW_ROW_LIMIT = 1000;
 
 function safeFileStem(value: string): string {
@@ -122,6 +123,14 @@ export const Investigation: React.FC = () => {
           ? String((session.workspaceDataset as { selectedPerspective?: unknown }).selectedPerspective ?? '') || null
           : null,
       },
+    );
+  }, [session, filteredDeepAnalysisOrigin, filteredDeepAnalysisScope]);
+  const filteredFocusComparison = useMemo(() => {
+    if (!session?.focusSubject || !filteredDeepAnalysisScope) return null;
+    return buildFocusSubjectComparison(
+      filteredDeepAnalysisScope.rows, session.focusSubject,
+      filteredDeepAnalysisOrigin?.analysisAction ?? session.analysisAction, 10,
+      { kind: 'selected_rows', isTruncated: filteredDeepAnalysisScope.isTruncated },
     );
   }, [session, filteredDeepAnalysisOrigin, filteredDeepAnalysisScope]);
   const executionRuns = useRef(new ExecutionRunCoordinator('simple-preview'));
@@ -952,6 +961,7 @@ export const Investigation: React.FC = () => {
         sourceName={session.datasetId}
         filteredScope={filteredDeepAnalysisScope}
         focusComparison={focusComparison.status === 'ready' ? focusComparison.comparison : null}
+        filteredFocusComparison={filteredFocusComparison}
         onClose={() => setDeepAnalysisView(null)}
         onCreateDashboard={filteredDeepAnalysisScope ? undefined : () => { void createPerspectiveDashboard(); }}
         canCreateDashboard={!filteredDeepAnalysisScope && previewResult?.status === 'executed' && chartModel?.status === 'ready'}

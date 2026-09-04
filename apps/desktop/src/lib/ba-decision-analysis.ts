@@ -330,7 +330,8 @@ function selectKeyRiskField(
 export function mineTopConcentrationInsight(
   rows: Record<string, unknown>[],
   categoryField: string | null,
-  numericField: string | null
+  numericField: string | null,
+  resultScope: 'complete' | 'preview' = 'complete'
 ): BAInsight | null {
   if (!categoryField || !numericField || rows.length === 0) return null;
 
@@ -354,8 +355,10 @@ export function mineTopConcentrationInsight(
   return {
     id: 'ba_top_concentration',
     type: 'top_concentration',
-    title: `Top ${categoryField} drives ${numericField}`,
-    statement: `${top.label} is the largest contributor for ${numericField}.`,
+    title: resultScope === 'preview' ? `Top ${categoryField} in executed preview` : `Top ${categoryField} drives ${numericField}`,
+    statement: resultScope === 'preview'
+      ? `${top.label} is the largest observed contributor for ${numericField} within the executed preview; additional result groups exist.`
+      : `${top.label} is the largest contributor for ${numericField}.`,
     severity,
     confidence: clampScore(70 + Math.min(20, values.length * 2)),
     evidence: [

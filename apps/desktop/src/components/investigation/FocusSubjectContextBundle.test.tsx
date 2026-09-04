@@ -9,8 +9,8 @@ const comparison = {
   subject: { candidateId: 'employee_id:MSNV', canonicalId: 'employee_id', domain: 'performance' as const, field: 'MSNV', value: '24128', displayLabel: '24128 — Thái Đăng Duy', metricFields: ['Score'] },
   populationRowCount: 2200, matchedSubjectRowCount: 1, rankValue: '1769',
   metrics: [
-    { field: 'Quality score', canonicalId: 'average_quality_score', aggregation: 'AVG' as const, subjectValue: 8.767, populationAverage: 8.237, topAverage: 9.6, bottomAverage: 6.4, deltaFromAverage: 0.53, percentile: 72.727, populationCount: 2200 },
-    { field: 'Star total', canonicalId: 'performance_star_total', aggregation: 'AVG' as const, subjectValue: 0, populationAverage: 1.77, topAverage: 5.2, bottomAverage: 0, deltaFromAverage: -1.77, percentile: 28.273, populationCount: 2200 },
+    { field: 'Quality score', canonicalId: 'average_quality_score', aggregation: 'AVG' as const, subjectValue: 8.767, populationAverage: 8.237, topAverage: 9.6, bottomAverage: 6.4, deltaFromAverage: 0.53, percentile: 72.727, populationCount: 2200, cohortSize: 10 },
+    { field: 'Star total', canonicalId: 'performance_star_total', aggregation: 'AVG' as const, subjectValue: 0, populationAverage: 1.77, topAverage: 5.2, bottomAverage: 0, deltaFromAverage: -1.77, percentile: 28.273, populationCount: 2200, cohortSize: 10 },
   ],
 };
 
@@ -33,5 +33,13 @@ describe('Focus Subject context propagation UI', () => {
     rerender(<FocusSubjectDeepAnalysisPanel action={action} comparison={comparison} />);
     expect(screen.getByTestId('focus-deep-analysis').textContent).toContain('24128');
     expect(screen.getByTestId('focus-deep-analysis').textContent).toContain('Top 10 avg');
+  });
+
+  it('shows the actual dynamic cohort size in Deep BA', () => {
+    const smallComparison = { ...comparison, metrics: comparison.metrics.map(metric => ({ ...metric, cohortSize: 1 })) };
+    render(<FocusSubjectDeepAnalysisPanel action={action} comparison={smallComparison} />);
+    expect(screen.getByTestId('focus-deep-analysis').textContent).toContain('Top 1 avg');
+    expect(screen.getByTestId('focus-deep-analysis').textContent).toContain('Bottom 1 avg');
+    expect(screen.getByTestId('focus-deep-analysis').textContent).not.toContain('Top 10 avg');
   });
 });

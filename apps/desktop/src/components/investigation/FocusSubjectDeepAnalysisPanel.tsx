@@ -17,7 +17,7 @@ export const FocusSubjectDeepAnalysisPanel: React.FC<{ action: AnalysisAction; c
       <h3 className="mt-2 text-xl font-semibold text-slate-950">{comparison.subject.displayLabel}</h3>
       <p className="mt-1 text-sm leading-6 text-slate-600">{action.opportunityName}. {narrative.summary}</p>
       {primary && <div className="mt-4 grid gap-3 sm:grid-cols-4">
-        {[['Focus', primary.subjectValue], ['Average', primary.populationAverage], ['Top 10 avg', primary.topAverage], ['Bottom 10 avg', primary.bottomAverage]].map(([label, value]) => <div key={String(label)} className="rounded-xl border border-violet-100 bg-white p-3"><div className="text-[10px] uppercase tracking-wide text-slate-400">{label}</div><div className="mt-1 text-lg font-semibold text-slate-950">{n(Number(value))}</div></div>)}
+        {[['Focus', primary.subjectValue], ['Average', primary.populationAverage], [`Top ${primary.cohortSize} avg`, primary.topAverage], [`Bottom ${primary.cohortSize} avg`, primary.bottomAverage]].map(([label, value]) => <div key={String(label)} className="rounded-xl border border-violet-100 bg-white p-3"><div className="text-[10px] uppercase tracking-wide text-slate-400">{label}</div><div className="mt-1 text-lg font-semibold text-slate-950">{n(Number(value))}</div></div>)}
       </div>}
     </div>
     <div className="grid gap-4 lg:grid-cols-2">

@@ -556,3 +556,27 @@ describe('ba decision engine', () => {
     expect(brief.executiveSummary).not.toContain('1632009600000');
   });
 });
+
+describe('BA preview authority wording', () => {
+  it('does not claim a global largest contributor from a truncated governed result page', () => {
+    const brief = createBADecisionBrief({
+      datasetId: 'sales.csv',
+      previewResult: {
+        ...previewResult,
+        resultBuffer: {
+          runId: 'run-truncated',
+          columns: [],
+          rows: [],
+          page: { offset: 0, limit: 100, hasMore: true, estimatedTotal: 150 },
+          truncated: true,
+        },
+      },
+      chartModel,
+      runtimeIntent,
+    });
+    const top = brief.insights.find(insight => insight.type === 'top_concentration');
+    expect(top?.title).toContain('executed preview');
+    expect(top?.statement).toContain('within the executed preview');
+    expect(top?.statement).toContain('additional result groups exist');
+  });
+});

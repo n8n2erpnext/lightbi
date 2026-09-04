@@ -310,7 +310,12 @@ export function createBADecisionBrief(input: CreateBADecisionBriefInput): BADeci
       chartHint: 'table' as const,
     } : null,
     minePositiveRateInsight(rows, columns, categoryField, runtimeIntent),
-    mineTopConcentrationInsight(rows, categoryField, numericField),
+    mineTopConcentrationInsight(
+      rows,
+      categoryField,
+      numericField,
+      previewResult.resultBuffer?.truncated || previewResult.resultBuffer?.page.hasMore ? 'preview' : 'complete',
+    ),
     mineBottomInsight(rows, categoryField, numericField),
     mineSegmentSpreadInsight(rows, categoryField, numericField),
     mineTrendInsight(rows, chartModel?.xField ?? categoryField, numericField, runtimeIntent, chartModel),
