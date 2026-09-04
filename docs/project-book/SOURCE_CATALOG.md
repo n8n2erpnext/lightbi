@@ -6,7 +6,7 @@
 
 - Date: **2026-09-04**
 - Branch: `docs/ba-da-mode-future-20260903`
-- HEAD: `73c7a4db23b4e8932a0d4e37bc4a445252c99944`
+- HEAD: `ee6e1d93558eb74bef3d6d318898ad2edea83180`
 - Worktree dirty while generated: **true**
 - Total indexed sources: **939** (522 Markdown / 417 JSON)
 - JSON under `docs/`: **354**
@@ -191,7 +191,7 @@ For old paths, use [`PATH_MIGRATION_INDEX.md`](./PATH_MIGRATION_INDEX.md) and [`
 - [`docs/architecture/insight-model.md`](../../docs/architecture/insight-model.md) — Insight Architecture Model; `1061` bytes; SHA-256 `b65012acafe379496400afb29a7e07c9175ffcde2b1f5b9ebecec94481ed5bd6`
 - [`docs/architecture/intent-model.md`](../../docs/architecture/intent-model.md) — Analytical Intent Model; `1012` bytes; SHA-256 `a775be1d16b314719c107d7dbdea314fd7bc50cd62d4e9a9083400095ea34057`
 - [`docs/architecture/materialization-model.md`](../../docs/architecture/materialization-model.md) — Materialization Strategy Model; `1110` bytes; SHA-256 `72c76c230a22271735c0753ffbed3db382aaf3aa5e173a2c175baf3c00314cdb`
-- [`docs/architecture/micro-semantic-brain-vector-inference.md`](../../docs/architecture/micro-semantic-brain-vector-inference.md) — Micro Semantic Brain and Vector Inference Architecture; `20200` bytes; SHA-256 `58919b75b0a1a58bed3c844a2820142feb25ac7be96a5d287712bcd864430806`
+- [`docs/architecture/micro-semantic-brain-vector-inference.md`](../../docs/architecture/micro-semantic-brain-vector-inference.md) — Micro Semantic Brain and Vector Inference Architecture; `20498` bytes; SHA-256 `7b142ef2178e59c4a94b7bee4b2990da5f2c46da340e9d4e8ae1748586b54fb0`
 - [`docs/architecture/motodetail-semantic-support-audit.json`](../../docs/architecture/motodetail-semantic-support-audit.json) — motodetail-semantic-support-audit.json; `810` bytes; SHA-256 `a48d447fed40f9ae14b3bec6f7de0d348330c891a22bf77d0a6b6f8954e5b888`
 - [`docs/architecture/narrative-model.md`](../../docs/architecture/narrative-model.md) — Analytical Narrative Model; `927` bytes; SHA-256 `932fb62b61913e7f7cdce93cc090daa6e1d7586d88443d91f58872478a6dc593`
 - [`docs/architecture/persistence-model.md`](../../docs/architecture/persistence-model.md) — Persistence Model Architecture; `1254` bytes; SHA-256 `567c50bcce1318f1424ec74359222ed41a0016415b89f1876a28a6012ba0406a`
@@ -672,8 +672,8 @@ For old paths, use [`PATH_MIGRATION_INDEX.md`](./PATH_MIGRATION_INDEX.md) and [`
 
 ## historical-provenance
 
-- [`docs/history/agent/plans/AGENT_PLAN_ROAD_TO_1_0_2026-08-31.md`](../../docs/history/agent/plans/AGENT_PLAN_ROAD_TO_1_0_2026-08-31.md) — LightBI Road to 1.0 Execution Plan — 2026-08-31; `13827` bytes; SHA-256 `138c2eccd2ca9541223158b805e698567de63a7a51156b93cd4f58ce4ca8610d`
-- [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_MICRO_SEMANTIC_BRAIN_V1_2026-09-04.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_MICRO_SEMANTIC_BRAIN_V1_2026-09-04.md) — LightBI Micro Semantic Brain V1 Implementation Plan — 2026-09-04; `14971` bytes; SHA-256 `cc2cf57020d4ad75ec18f6826506aa22c2a7a396546a5df207f01fb3e815163a`
+- [`docs/history/agent/plans/AGENT_PLAN_ROAD_TO_1_0_2026-08-31.md`](../../docs/history/agent/plans/AGENT_PLAN_ROAD_TO_1_0_2026-08-31.md) — LightBI Road to 1.0 Execution Plan — 2026-08-31; `14084` bytes; SHA-256 `b24818efe2159459cb18063b780018d9a1a4a164f8c97e907e0003a0fb5d8a64`
+- [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_MICRO_SEMANTIC_BRAIN_V1_2026-09-04.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_MICRO_SEMANTIC_BRAIN_V1_2026-09-04.md) — LightBI Micro Semantic Brain V1 Implementation Plan — 2026-09-04; `15373` bytes; SHA-256 `4d0e408fcfd45cba4722052c8b66aeb0db879d523fcd69d82888146e1466d990`
 - [`docs/history/LEGACY_ROOT_INDEX.md`](../../docs/history/LEGACY_ROOT_INDEX.md) — Legacy Root Documentation Index; `33743` bytes; SHA-256 `e662adb190bc6e9d9b598d4d1c421423376931d186aafb53c15cc4f9d25a3385`
 - [`docs/history/README.md`](../../docs/history/README.md) — Historical Documentation; `1764` bytes; SHA-256 `58060865d3938943ef9a415e39457280481d8d9b78a3f4ceb7e017a60c343052`
 - [`docs/history/agent/contracts/CODEX_QA_ORCHESTRATION_CONTRACT.md`](../../docs/history/agent/contracts/CODEX_QA_ORCHESTRATION_CONTRACT.md) — Codex QA Orchestration Contract; `5244` bytes; SHA-256 `3926f159280b943b64689f2846aab12d166e9ebe05d8a4d8192819eeeeb0b69b`

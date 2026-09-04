@@ -45,12 +45,13 @@ Each phase produces its own machine evidence and can stop without forcing the ne
 
 - **MB-0 through MB-3:** foundation, typed knowledge/index contracts, deterministic retrieval and shadow benchmark landed in product history beginning at `96fa58e` (`feat(understanding): add micro semantic brain foundation and shadow benchmark`).
 - **MB-4:** conservative candidate/evidence bridge landed at `f32d88d`; later product integration/registry alignment is visible in `7166370` and `d4fa6e5`. Vector/rank evidence remains retrieval provenance rather than semantic confidence.
-- **BA provenance plumbing:** `7e86a9f` carries Micro Brain semantic provenance into BA consumers, but this does **not** complete MB-6 because inferred-domain/support/analysis-mode state is not yet propagated end-to-end.
+- **BA provenance plumbing:** `7e86a9f` first carried Micro Brain semantic provenance into BA consumers without granting additional authority.
 - **MB-5:** completed at product commit `8a4a5e4`, with build-mode type-safety closure `fbb1444`. Domain inference is separate from official support; Understanding shows inferred source, support state, semantic concept counts, conflict count and analysis mode. Unsupported-domain disclosure remains explicit.
-- **Verification:** MB-5 code passed 37 targeted regression tests, production `pnpm run build`, and Playwright healthcare acceptance 1/1; after the final E2E base-URL portability edit, focused MB-5/UI tests remained 9/9 and Playwright remained 1/1. `git diff --check` passed before commit.
-- **Production:** untouched. No production domain pack, metric authorization contract, release artifact or stable runtime was promoted by MB-5.
-- **Successor branch:** the active product line is now `codex/r1-roadmap-integration` at `a8d55ee`. The additive Signed Transport primitive in that commit does not change MB phase authority or semantic outputs.
-- **Next:** MB-6 must propagate `domainInference`, `officialSupport`, `analysisMode`, metric/formula authorization, limitations and evidence references through Focus / Deep BA / BA Step 2, preserving identical governed factual values.
+- **MB-6:** completed at successor commit `94fa40c` (`feat(understanding): propagate analysis authority through BA`). `lightbi.ba-analysis-authority-context.v1` carries domain inference/support, analysis mode, metric preflight/runtime authorization, explicit `not_independently_authorized` formula state, limitations and evidence references through Focus / Deep BA / BA Step 2. Focus factual aggregation/value/population outputs and Deep BA KPI/breakdown/finding outputs are regression-checked for parity before/after propagation.
+- **Verification:** final MB-6 gate passed 15 Vitest files / 79 tests, TypeScript, production Vite build (3,790 modules), Playwright healthcare Deep BA + Step 2 acceptance 1/1, JSON evidence parse and `git diff --check`. Authority UI forbids percentage/similarity/evidence-rank/retrieval-confidence leakage.
+- **Production:** untouched. No production domain pack, metric authorization contract, release artifact or stable runtime was promoted by MB-5 or MB-6.
+- **Successor branch:** active product line is `codex/r1-roadmap-integration` at `94fa40c`. Signed Transport remains a bounded parallel foundation originating at ancestor `a8d55ee`; it does not change MB semantic authority.
+- **Next:** MB-7 owns corpus/counterfactual/performance/deterministic-index/no-network/full release-authoritative acceptance and cutover review.
 
 ## MB-0 — Baseline and Contract Freeze
 

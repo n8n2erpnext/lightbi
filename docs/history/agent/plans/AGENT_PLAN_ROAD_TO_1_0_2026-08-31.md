@@ -123,13 +123,13 @@ This overlay updates execution priority without rewriting the historical R1-P0�
 
 ### Primary critical path
 
-`MB-6 → MB-7 → integrated product/security/release acceptance`
+`MB-7 → integrated product/security/release acceptance`
 
-MB-6 owns provenance-preserving Focus / Deep BA / BA Step 2 propagation. MB-7 owns corpus, counterfactual, performance, deterministic-index, no-network and release-authoritative acceptance. Neither may relax grain, aggregation, domain-support or metric-preflight authority.
+MB-6 is complete on product successor `codex/r1-roadmap-integration` at `94fa40c`. It propagates the shared BA analysis-authority context through Focus / Deep BA / BA Step 2 while factual parity tests prove governed values are unchanged. MB-7 now owns corpus, counterfactual, performance, deterministic-index, no-network and release-authoritative acceptance. Neither phase may relax grain, aggregation, domain-support or metric-preflight authority.
 
 ### Bounded parallel foundation — Signed Transport
 
-Product successor `codex/r1-roadmap-integration` / `a8d55ee` and private CP `codex/r1p14-signed-transport` / `c5875eb` establish the minimum reusable primitives: canonical body digest, Ed25519 device proof, server nonce, persisted monotonic sequence floor, anti-replay verification and a thin Internal-only UDS verification edge. Current gates: Rust golden vectors 3/3, attestation 15/15, Distribution 220/220.
+Product successor is now `codex/r1-roadmap-integration` / `94fa40c`; the Signed Transport primitive remains the earlier ancestor `a8d55ee`. Private CP remains `codex/r1p14-signed-transport` / `c5875eb`. Together the bounded security foundation provides canonical body digest, Ed25519 device proof, server nonce, persisted monotonic sequence floor, anti-replay verification and a thin Internal-only UDS verification edge. Current gates: Rust golden vectors 3/3, attestation 15/15, Distribution 220/220.
 
 This lane is **foundation, not enforcement**. No general route is signed-by-default yet. Required follow-up before enforcement: canonical query binding, response-integrity contract, route-class policy, native `native_http_request` integration and negative replay/fallback probes. Bootstrap pairing/trust issuance remains separately classified.
 

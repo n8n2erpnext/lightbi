@@ -861,15 +861,21 @@
       "syntheticDbResidue": 0
     },
     "successorOverlay20260904": {
-      "status": "one_roadmap_mb6_primary_signed_transport_foundation_parallel",
+      "status": "one_roadmap_mb7_primary_signed_transport_foundation_parallel",
       "productBranch": "codex/r1-roadmap-integration",
-      "productHead": "a8d55ee",
+      "productHead": "94fa40c",
       "controlPlaneBranch": "codex/r1p14-signed-transport",
       "controlPlaneHead": "c5875eb",
       "microBrain": {
-        "completedThrough": "MB-5",
-        "primaryNext": "MB-6",
-        "acceptanceAfter": "MB-7"
+        "completedThrough": "MB-6",
+        "primaryNext": "MB-7",
+        "acceptanceAfter": "integrated_product_security_release_acceptance",
+        "mb6Head": "94fa40c",
+        "mb6Vitest": "15_files_79_tests_pass",
+        "mb6Playwright": "1_of_1_deep_ba_step2_pass",
+        "mb6ProductionBuild": true,
+        "mb6FactualParity": true,
+        "mb6FormulaAuthority": "not_independently_authorized"
       },
       "signedTransport": {
         "state": "foundation_verified_not_enforced",
@@ -912,7 +918,7 @@
     "r1p8": "production_blocked_by_r1p6_next_rehearsal_pass",
     "r1p9": "production_blocked_by_r1p6_next_rehearsal_pass_request_wire_not_frozen",
     "r1p10": "production_blocked_by_r1p6_next_rehearsal_pass",
-    "successorOverlay": "mb6_then_mb7_primary_signed_transport_foundation_parallel_not_enforced"
+    "successorOverlay": "mb7_primary_after_mb6_complete_signed_transport_foundation_parallel_not_enforced"
   },
   "optionalCommerceRevenueMirror": {
     "provider": "paddle",

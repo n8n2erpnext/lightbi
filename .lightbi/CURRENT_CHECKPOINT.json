@@ -1,13 +1,14 @@
 {
   "schema": "lightbi.current-checkpoint.v1",
-  "updatedAt": "2026-09-04T08:52:00Z",
-  "status": "road_to_1_0_integrated_mb6_primary_signed_transport_foundation_verified",
+  "updatedAt": "2026-09-04T09:34:37Z",
+  "status": "road_to_1_0_mb6_complete_mb7_primary_signed_transport_foundation_verified",
   "activeRuntime": "source_branches_only_no_production_deployment",
   "sourceCandidate": {
     "repo": "/home/ubuntu/n8n2erpnext/LightBI-exp-focus-subject",
     "branch": "codex/r1-roadmap-integration",
-    "head": "a8d55ee",
-    "mb5Head": "8a4a5e4"
+    "head": "94fa40c",
+    "mb5Head": "8a4a5e4",
+    "mb6Head": "94fa40c"
   },
   "controlPlaneCandidate": {
     "repo": "/home/ubuntu/n8n2erpnext/lightbi-control-plane-r1p14-signed-transport",
@@ -19,10 +20,14 @@
     "one_roadmap_successor_branch_created",
     "signed_transport_rust_proof_primitive_3_of_3",
     "private_uds_verification_edge_attestation_15_of_15_distribution_220_of_220",
-    "ssd_heavy_build_guard_recovered_to_84_percent"
+    "mb6_shared_ba_analysis_authority_context",
+    "mb6_focus_deep_ba_step2_factual_parity",
+    "mb6_vitest_15_files_79_tests_typescript_build_pass",
+    "mb6_playwright_healthcare_deep_ba_step2_1_of_1",
+    "ssd_guard_stable_84_percent_20_gib_free"
   ],
-  "nextAction": "MB-6: propagate domainInference, officialSupport, analysisMode, metric/formula authorization, limitations and evidence references through Focus, Deep BA and BA Step 2 while preserving identical governed factual values.",
-  "parallelFollowUp": "Signed Transport: freeze query binding + response integrity + route classes before native_http_request integration or signed-by-default enforcement.",
+  "nextAction": "MB-7: run corpus/counterfactual/negative-knowledge, deterministic-index rebuild, no-network, package-size/cold-load/query-latency and full release-authoritative acceptance; then perform explicit cutover authority review.",
+  "parallelFollowUp": "Signed Transport remains foundation only: freeze query binding + response integrity + route classes before native_http_request integration or signed-by-default enforcement.",
   "blockers": [
     "MB-7 full release-authoritative acceptance is still pending",
     "legacy Phase-3A path-bound suites require machine-audit JSON not present in this product worktree",
@@ -34,6 +39,6 @@
     "docs/project-book/LIGHTBI_PROJECT_BOOK.md#105-2026-09-04-successor-road-to-10-integration-checkpoint",
     "docs/architecture/micro-semantic-brain-vector-inference.md#current-status",
     "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_MICRO_SEMANTIC_BRAIN_V1_2026-09-04.md#execution-status--2026-09-04",
-    "docs/architecture/road-to-1-0-trust-release-contract.md#signed-transport-successor-foundation--2026-09-04"
+    "docs/history/agent/plans/AGENT_PLAN_ROAD_TO_1_0_2026-08-31.md#2026-09-04-successor-execution-overlay--one-road-to-10"
   ]
 }
