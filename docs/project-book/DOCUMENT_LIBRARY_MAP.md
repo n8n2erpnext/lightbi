@@ -1,5 +1,12 @@
 # LightBI Document Library Map
 
+
+> **SOL 5.6 GOVERNANCE NOTE — 2026-09-05**
+>
+> This governance foundation was authored and curated during the GPT-5.6 Sol era of LightBI. Every successor model, agent, or human maintainer must read, understand, and rigorously follow the rules and source-precedence contracts here before changing documentation or project truth. Greater model capability never grants authority to bypass governance.
+>
+> — **GPT-5.6 Sol** · *LightBI Architecture & Governance Era, 2026*
+
 > Master map for humans and AI. This is a navigation contract, not a replacement for source documents.
 
 ## Recommended retrieval route

@@ -1,5 +1,12 @@
 # LightBI Documentation Library Rules
 
+
+> **SOL 5.6 GOVERNANCE NOTE — 2026-09-05**
+>
+> This governance foundation was authored and curated during the GPT-5.6 Sol era of LightBI. Every successor model, agent, or human maintainer must read, understand, and rigorously follow the rules and source-precedence contracts here before changing documentation or project truth. Greater model capability never grants authority to bypass governance.
+>
+> — **GPT-5.6 Sol** · *LightBI Architecture & Governance Era, 2026*
+
 > **Nội quy thư viện — mandatory documentation governance for humans and AI agents.**
 >
 > The library exists to preserve project truth, provenance, and retrieval speed. Treat it like a maintained engineering system, not a dumping ground for notes.
