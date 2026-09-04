@@ -17,6 +17,7 @@ import { createDecisionVisualizationPlan, type DecisionVisualizationPlanV1 } fro
 import { useAnalysisExportStore } from "../../stores/analysis-export-store";
 import { useUiLanguage } from "../../lib/ui-language";
 import { saveBlobWithUserChoice, saveDataUrlWithUserChoice } from "../../lib/native-capabilities";
+import { filterRowsForMultiSourceFocus, type MultiSourceFocusSourceBindingV1, type MultiSourceFocusSubjectSelectionV1 } from "../../lib/multisource-focus-subject";
 
 type Row = Record<string, string | number>;
 
@@ -28,6 +29,7 @@ export interface PerspectiveCollectionEvidenceSource {
   sourceRowCount: number;
   rows: Record<string, unknown>[];
   semanticFields: AISemanticField[];
+  focusBinding?: MultiSourceFocusSourceBindingV1 | null;
 }
 
 type ChartSelection = { period: string; metricId: string };
@@ -62,8 +64,10 @@ export const PerspectiveCollectionResultCard: React.FC<{
   rows: Row[];
   sourceCount: number;
   deepDiveBrief?: DomainComparisonBrief | null;
+  focusDeepDiveBrief?: DomainComparisonBrief | null;
+  focusSubject?: MultiSourceFocusSubjectSelectionV1 | null;
   evidenceSources?: PerspectiveCollectionEvidenceSource[];
-}> = ({ perspectiveId, rows, sourceCount, deepDiveBrief, evidenceSources = [] }) => {
+}> = ({ perspectiveId, rows, sourceCount, deepDiveBrief, focusDeepDiveBrief, focusSubject = null, evidenceSources = [] }) => {
   const [showDeepDive, setShowDeepDive] = useState(false);
   const [chartSelection, setChartSelection] = useState<ChartSelection | null>(null);
   const [showSubsetDeepDive, setShowSubsetDeepDive] = useState(false);
@@ -78,6 +82,9 @@ export const PerspectiveCollectionResultCard: React.FC<{
   const addChartToDashboard = useAppRuntime(state => state.addChartToDashboard);
   const preferences = useDisplayPreferences((state) => state.preferences);
   const { t } = useUiLanguage();
+  const effectiveDeepDiveBrief = focusSubject ? focusDeepDiveBrief ?? null : deepDiveBrief ?? null;
+  const rowsForEvidence = (source: PerspectiveCollectionEvidenceSource) =>
+    filterRowsForMultiSourceFocus(source.rows, focusSubject, source.focusBinding);
   const displayMetricLabel = (metricId: string) => {
     const english = metricLabel(metricId);
     return t(english);
@@ -166,8 +173,10 @@ export const PerspectiveCollectionResultCard: React.FC<{
   const subsetOverviews = useMemo(() => {
     if (!chartSelection || !showSubsetDeepDive) return [];
     return selectedEvidence.flatMap(source => {
-      const overview = createSingleSourceBAOverview(sampleSingleSourceBARows(source.rows, 1000), {
-        sourceRowCount: source.sourceRowCount,
+      const scopedRows = rowsForEvidence(source);
+      if (scopedRows.length === 0) return [];
+      const overview = createSingleSourceBAOverview(sampleSingleSourceBARows(scopedRows, 1000), {
+        sourceRowCount: focusSubject ? scopedRows.length : source.sourceRowCount,
         selectedPerspective: perspectiveId,
         semanticFields: source.semanticFields,
         analysisAction: {
@@ -179,8 +188,8 @@ export const PerspectiveCollectionResultCard: React.FC<{
       });
       return overview ? [{ source, overview }] : [];
     });
-  }, [chartSelection, displayMetricLabel, perspectiveId, selectedEvidence, showSubsetDeepDive]);
-  const previewRows = activeEvidence?.rows.slice(0, 100) ?? [];
+  }, [chartSelection, displayMetricLabel, focusSubject, perspectiveId, selectedEvidence, showSubsetDeepDive]);
+  const previewRows = activeEvidence ? rowsForEvidence(activeEvidence).slice(0, 100) : [];
   const previewColumns = [...new Set(previewRows.flatMap(row => Object.keys(row)))].slice(0, 12);
   const hasVisibleDeepAnalysis = showDeepDive || (showSubsetDeepDive && subsetOverviews.length > 0);
   const exportFileStem = `${displayPerspectiveLabel}${chartSelection ? `-${chartSelection.period}-${displayMetricLabel(chartSelection.metricId)}` : ""}`
@@ -236,16 +245,21 @@ export const PerspectiveCollectionResultCard: React.FC<{
       summaryRows: rows,
       selectedScope: chartSelection ? { ...chartSelection } : null,
       decisionVisualizationPlan,
-      evidenceSources: scopedEvidence.map(source => ({
-        sourceName: source.sourceName, role: source.role, period: source.period,
-        sourceRowCount: source.sourceRowCount, rows: source.rows,
-      })),
-      findings: deepDiveBrief?.narrativeSections.flatMap(section => [section.summary, ...section.bullets]) ?? [],
-      recommendedActions: deepDiveBrief?.reasonCodes.map(reason => reason.statement) ?? [],
-      caveats: deepDiveBrief?.caveats ?? [],
+      evidenceSources: scopedEvidence.flatMap(source => {
+        const evidenceRows = rowsForEvidence(source);
+        if (focusSubject && evidenceRows.length === 0) return [];
+        return [{
+          sourceName: source.sourceName, role: source.role, period: source.period,
+          sourceRowCount: focusSubject ? evidenceRows.length : source.sourceRowCount, rows: evidenceRows,
+        }];
+      }),
+      findings: effectiveDeepDiveBrief?.narrativeSections.flatMap(section => [section.summary, ...section.bullets]) ?? [],
+      recommendedActions: effectiveDeepDiveBrief?.reasonCodes.map(reason => reason.statement) ?? [],
+      caveats: effectiveDeepDiveBrief?.caveats ?? [],
       notes: [
         t('Analysis summary rows are governed LightBI metric results.'),
         t('Source evidence is kept in separate sheets; LightBI does not blindly join unrelated raw rows.'),
+        ...(focusSubject ? [t(`Focus Subject: ${focusSubject.displayLabel}. Evidence sheets contain only exact matched rows; summary metrics remain full-population governed results.`)] : []),
       ],
     });
   };
@@ -279,17 +293,18 @@ export const PerspectiveCollectionResultCard: React.FC<{
       evidenceScope: chartSelection ? "governed_selected_period_source_evidence" : "full_source_metric_results",
       generatedAt: new Date().toISOString(),
       decisionVisualizationPlan: { schemaVersion: visualizationPlan.schemaVersion, planId: visualizationPlan.planId, governance: visualizationPlan.governance },
-      selectedScope: chartSelection ? { period: chartSelection.period, metricId: chartSelection.metricId, sources: scopeSources.map(source => ({ role: source.role, sourceName: source.sourceName, sourceRowCount: source.sourceRowCount })) } : null,
-      deepBA: deepDiveBrief ? {
-        executiveSummary: deepDiveBrief.headline,
-        dataTrustScore: deepDiveBrief.trustScore,
-        decisionReadinessScore: deepDiveBrief.decisionReadinessScore,
-        insights: deepDiveBrief.narrativeSections.map(section => ({ id: section.id, title: section.title, statement: section.summary, severity: section.severity, evidence: section.bullets })),
-        caveats: deepDiveBrief.caveats,
+      selectedScope: chartSelection ? { period: chartSelection.period, metricId: chartSelection.metricId, sources: scopeSources.map(source => ({ role: source.role, sourceName: source.sourceName, sourceRowCount: source.sourceRowCount, focusMatchedRowCount: focusSubject ? rowsForEvidence(source).length : undefined })) } : null,
+      focusSubject: focusSubject ? { canonicalId: focusSubject.canonicalId, value: focusSubject.value, displayLabel: focusSubject.displayLabel } : null,
+      deepBA: effectiveDeepDiveBrief ? {
+        executiveSummary: effectiveDeepDiveBrief.headline,
+        dataTrustScore: effectiveDeepDiveBrief.trustScore,
+        decisionReadinessScore: effectiveDeepDiveBrief.decisionReadinessScore,
+        insights: effectiveDeepDiveBrief.narrativeSections.map(section => ({ id: section.id, title: section.title, statement: section.summary, severity: section.severity, evidence: section.bullets })),
+        caveats: effectiveDeepDiveBrief.caveats,
       } : null,
       perspectiveBA: {
         analysisLabel: chartSelection ? `${displayMetricLabel(chartSelection.metricId)} · ${chartSelection.period}` : displayPerspectiveLabel,
-        sourceRowCount: scopeSources.reduce((sum, source) => sum + source.sourceRowCount, 0),
+        sourceRowCount: scopeSources.reduce((sum, source) => sum + (focusSubject ? rowsForEvidence(source).length : source.sourceRowCount), 0),
         isRepresentativeSample: subsetOverviews.some(item => item.overview.isRepresentativeSample),
         findings: overviewFindings,
         recommendedActions: overviewActions,
@@ -342,9 +357,10 @@ export const PerspectiveCollectionResultCard: React.FC<{
               )}
             </p>
           </div>
-          <span className="rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1.5 text-[10px] font-semibold text-emerald-200">
-            {t('Full-file governed')}
-          </span>
+          <div className="flex flex-wrap justify-end gap-2">
+            {focusSubject && <span data-testid="collection-focus-badge" className="rounded-full border border-violet-300/30 bg-violet-300/10 px-3 py-1.5 text-[10px] font-semibold text-violet-100">Focus: {focusSubject.displayLabel}</span>}
+            <span className="rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1.5 text-[10px] font-semibold text-emerald-200">{t('Full-file governed')}</span>
+          </div>
         </div>
       </div>
 
@@ -396,7 +412,7 @@ export const PerspectiveCollectionResultCard: React.FC<{
           <div className="rounded-xl border border-amber-100 bg-amber-50 p-4">
             <div className="flex items-center gap-2 text-amber-800">
               <Lightbulb className="h-4 w-4" />
-              <p className="text-[11px] font-semibold uppercase tracking-wide">{t('BA focus')}</p>
+              <p className="text-[11px] font-semibold uppercase tracking-wide">{t('Key attention')}</p>
             </div>
             <p className="mt-2 text-[12px] leading-5 text-amber-900/80">
               {largestMovement
@@ -414,7 +430,7 @@ export const PerspectiveCollectionResultCard: React.FC<{
                     key={question}
                     type="button"
                     onClick={() => {
-                      if (deepDiveBrief) {
+                      if (effectiveDeepDiveBrief) {
                         setShowDeepDive(true);
                         return;
                       }
@@ -425,7 +441,7 @@ export const PerspectiveCollectionResultCard: React.FC<{
                       }
                     }}
                     className="flex w-full items-center justify-between gap-3 rounded-lg border border-amber-200 bg-white/80 px-3 py-2 text-left text-[11px] font-medium leading-4 text-slate-700 transition hover:border-amber-400 hover:text-slate-950 disabled:cursor-default"
-                    disabled={!deepDiveBrief && (hasPeriodComparison || !largestMovement || evidenceSources.length === 0)}
+                    disabled={!effectiveDeepDiveBrief && (hasPeriodComparison || !largestMovement || evidenceSources.length === 0)}
                   >
                     <span>{question}</span>
                     <ChevronRight className="h-3.5 w-3.5 shrink-0 text-amber-600" />
@@ -437,7 +453,9 @@ export const PerspectiveCollectionResultCard: React.FC<{
           <div className="flex items-start gap-2 rounded-xl border border-blue-100 bg-blue-50 p-3 text-[11px] leading-5 text-blue-800">
             <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0" />
               {t(
-                'Results were computed per governed source relationship and period. LightBI combined metrics, not unrelated raw rows.',
+                focusSubject
+                  ? 'Summary metrics remain full-population governed results. Focus scopes only source evidence and Deep BA where an exact entity match exists.'
+                  : 'Results were computed per governed source relationship and period. LightBI combined metrics, not unrelated raw rows.',
               )}
           </div>
         </div>
@@ -461,21 +479,22 @@ export const PerspectiveCollectionResultCard: React.FC<{
                 <h4 className="mt-1 text-base font-semibold text-slate-950">{chartSelection.period} · {displayMetricLabel(chartSelection.metricId)}</h4>
                 <p className="mt-1 text-xs leading-5 text-slate-600">{t('LightBI keeps each governed source separate and analyzes only the period and metric selected on the chart.')}</p>
               </div>
-              <button type="button" disabled={selectedEvidence.length === 0} onClick={() => setShowSubsetDeepDive(true)} className="rounded-lg bg-slate-950 px-4 py-2.5 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-40">{t('Deep BA analysis · Step 2')}</button>
+              <button type="button" disabled={selectedEvidence.every(source => rowsForEvidence(source).length === 0)} onClick={() => setShowSubsetDeepDive(true)} className="rounded-lg bg-slate-950 px-4 py-2.5 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-40">{t('Deep BA analysis · Step 2')}</button>
             </div>
             {selectedEvidence.length === 0 ? (
               <p className="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800">{t('No source-bound row evidence is available for this chart point.')}</p>
             ) : (
               <>
                 <div className="mt-4 flex flex-wrap gap-2">
-                  {selectedEvidence.map((source, index) => <button key={`${source.period}:${source.role}:${source.sourceName}`} type="button" onClick={() => setActiveEvidenceIndex(index)} className={`rounded-lg border px-3 py-2 text-xs font-medium ${index === activeEvidenceIndex ? 'border-blue-500 bg-white text-blue-800' : 'border-slate-200 bg-slate-50 text-slate-600'}`}>{t(source.role)} · {source.sourceName} · {source.sourceRowCount.toLocaleString(preferences.locale)} {t('rows')}</button>)}
+                  {selectedEvidence.map((source, index) => <button key={`${source.period}:${source.role}:${source.sourceName}`} type="button" onClick={() => setActiveEvidenceIndex(index)} className={`rounded-lg border px-3 py-2 text-xs font-medium ${index === activeEvidenceIndex ? 'border-blue-500 bg-white text-blue-800' : 'border-slate-200 bg-slate-50 text-slate-600'}`}>{t(source.role)} · {source.sourceName} · {source.sourceRowCount.toLocaleString(preferences.locale)} {t('rows')}{focusSubject ? ` · ${rowsForEvidence(source).length} focus match${rowsForEvidence(source).length === 1 ? '' : 'es'}` : ''}</button>)}
                 </div>
-                {activeEvidence && <div className="mt-4 max-h-[420px] overflow-auto rounded-lg border border-slate-200 bg-white">
+                {activeEvidence && focusSubject && previewRows.length === 0 && <p data-testid="collection-focus-unavailable" className="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800">This source has no exact evidence for the selected Focus Subject. LightBI will not infer a cross-source identity match.</p>}
+                {activeEvidence && previewRows.length > 0 && <div className="mt-4 max-h-[420px] overflow-auto rounded-lg border border-slate-200 bg-white">
                   <table className="min-w-full text-left text-[11px]">
                     <thead className="sticky top-0 bg-slate-50 text-slate-500"><tr>{previewColumns.map(column => <th key={column} className="whitespace-nowrap border-b border-slate-200 px-3 py-2 font-semibold">{column}</th>)}</tr></thead>
                     <tbody>{previewRows.map((row, rowIndex) => <tr key={rowIndex} className="border-b border-slate-100 last:border-0">{previewColumns.map(column => <td key={column} className="max-w-[240px] truncate whitespace-nowrap px-3 py-2 text-slate-700">{String(row[column] ?? '')}</td>)}</tr>)}</tbody>
                   </table>
-                  <p className="border-t border-slate-100 px-3 py-2 text-[11px] text-slate-500">{t('Preview shows the first 100 selected rows; Deep BA uses a representative sample with the full source-row scope disclosed.')}</p>
+                  <p className="border-t border-slate-100 px-3 py-2 text-[11px] text-slate-500">{t(focusSubject ? 'Preview shows the first 100 exact Focus Subject matches; Deep BA uses that exact matched row scope. The source chip keeps the full source-row count visible.' : 'Preview shows the first 100 selected rows; Deep BA uses a representative sample with the full source-row scope disclosed.')}</p>
                 </div>}
               </>
             )}
@@ -485,17 +504,19 @@ export const PerspectiveCollectionResultCard: React.FC<{
           </div>}
         </div>
       )}
-      {showDeepDive && deepDiveBrief && (
+      {showDeepDive && effectiveDeepDiveBrief && (
         <div data-testid="governed-ba-deep-dive" className="border-t border-slate-100 bg-slate-50/60 p-5 md:p-6">
           <div className="mb-3">
             <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-blue-700">{t('Deep analysis')}</p>
             <p className="mt-1 text-[12px] leading-5 text-slate-600">
               {t(
-                'Driver rankings use the complete period sources behind this governed result. They are separated from observations that do not yet have causal evidence.',
+                focusSubject
+                  ? 'Driver rankings use only exact Focus Subject matches from governed source evidence; the summary chart above remains the full population.'
+                  : 'Driver rankings use the complete period sources behind this governed result. They are separated from observations that do not yet have causal evidence.',
               )}
             </p>
           </div>
-          <BusinessComparisonBriefCard brief={deepDiveBrief} />
+          <BusinessComparisonBriefCard brief={effectiveDeepDiveBrief} />
         </div>
       )}
       </div>

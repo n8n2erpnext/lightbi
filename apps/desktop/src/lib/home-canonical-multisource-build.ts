@@ -10,6 +10,7 @@ import { createDomainComparisonBrief, type BAComparisonPeriodInput } from './ba-
 import { generateCanonicalAIBriefing } from './canonical-ai-briefing';
 import type { PendingLocalFileBatch } from './home-multisource-candidate-review';
 import type { CanonicalBusinessPerspectiveCandidateV1 } from './canonical-source-candidate-projection';
+import { filterRowsForMultiSourceFocus, focusBindingForSource, type MultiSourceFocusSubjectSelectionV1 } from './multisource-focus-subject';
 
 export interface HomeCanonicalMultiSourceBuildContext {
   pendingLocalBatch: PendingLocalFileBatch | null;
@@ -26,6 +27,7 @@ export async function executeHomeCanonicalMultiSourceBuild(
   context: HomeCanonicalMultiSourceBuildContext,
   draftsOverride?: Record<string, MultiSourceDraftV1>,
   perspectiveId?: CanonicalBusinessPerspectiveCandidateV1["perspectiveId"],
+  focusSubject?: MultiSourceFocusSubjectSelectionV1 | null,
 ) {
   const {
     pendingLocalBatch, multiSourceDrafts, registerAdvancedSource, setCurrentDataset,
@@ -43,7 +45,7 @@ export async function executeHomeCanonicalMultiSourceBuild(
         return draft?.selected && result?.status === 'accessible' ? [{ key, file, draft, result }] : [];
       });
       if (selected.length < 2) throw new Error('Select at least two accessible sources.');
-      const members = selected.map(({ file, draft, result }) => {
+      const members = selected.map(({ key, file, draft, result }) => {
         const metadata = result.metadata;
         const source = metadata.is_workbook && metadata.default_sheet && metadata.sheets
           ? metadata.sheets[metadata.default_sheet]
@@ -76,7 +78,7 @@ export async function executeHomeCanonicalMultiSourceBuild(
           userOverlay: overlay,
         });
         if (built.status !== 'valid') throw new Error(`${file.name}: ${built.blockers.join(', ')}`);
-        return { file, metadata, source, boundary, overlay, artifact: built, draft };
+        return { key, file, metadata, source, boundary, overlay, artifact: built, draft };
       });
 
       if (perspectiveId && perspectiveId !== "data_trust") {
@@ -206,6 +208,33 @@ export async function executeHomeCanonicalMultiSourceBuild(
                 : "revenue",
           })
           : null;
+        const focusedDeepDivePeriods: BAComparisonPeriodInput[] = focusSubject ? members
+          .filter((item) => item.draft.role === deepDiveRole)
+          .flatMap((item) => {
+            const binding = focusBindingForSource(focusSubject, item.key);
+            const scopedRows = filterRowsForMultiSourceFocus(
+              (item.source.analysis_rows ?? item.boundary.semanticSample.rows) as Record<string, unknown>[],
+              focusSubject,
+              binding,
+            );
+            return scopedRows.length > 0 ? [{
+              id: `${item.boundary.sourceId}:focus:${focusSubject.value}`,
+              label: item.draft.periodStart.slice(0, 7),
+              sourceName: item.file.name,
+              rows: scopedRows,
+              labelConfidence: "high" as const,
+              labelReason: `Exact ${focusSubject.canonicalId} value match in the governed source.`,
+              sortableKey: item.draft.periodStart.slice(0, 7),
+            }] : [];
+          })
+          : [];
+        const canonicalPerspectiveFocusBrief = focusSubject && focusedDeepDivePeriods.length >= 2
+          ? createDomainComparisonBrief({
+            datasetName: `${perspectiveId.replaceAll("_", " ")} · ${focusSubject.displayLabel}`,
+            periods: focusedDeepDivePeriods,
+            preferredDomain: deepDiveRole === "accounting" ? "finance" : deepDiveRole === "logistics" ? "operations" : "revenue",
+          })
+          : null;
         const canonicalPerspectiveEvidenceSources = members.map((item) => ({
           period: item.draft.periodStart?.slice(0, 7) ?? 'unavailable',
           role: item.draft.role ?? 'source',
@@ -214,6 +243,7 @@ export async function executeHomeCanonicalMultiSourceBuild(
           sourceRowCount: item.boundary.sourceRowCount,
           rows: (item.source.analysis_rows ?? item.boundary.semanticSample.rows) as Record<string, unknown>[],
           semanticFields: generateCanonicalAIBriefing(item.artifact).semanticFields,
+          focusBinding: focusBindingForSource(focusSubject, item.key),
         }));
         const collectionAdvancedSourceId = advancedSourceId("canonical_perspective_collection", perspectiveId);
         const readyDataset = {
@@ -247,6 +277,8 @@ export async function executeHomeCanonicalMultiSourceBuild(
           canonicalUserOverlay: primary.overlay,
           canonicalPerspectiveId: perspectiveId,
           canonicalPerspectiveBrief,
+          canonicalPerspectiveFocusBrief,
+          canonicalPerspectiveFocusSubject: focusSubject ?? null,
           canonicalPerspectiveEvidenceSources,
           canonicalPerspectiveExecutions: periodExecutions,
           canonicalPerspectiveMultiSourceExecutions: multiSourceExecutions,

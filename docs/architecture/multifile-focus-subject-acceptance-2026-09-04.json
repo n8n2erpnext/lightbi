@@ -1,0 +1,77 @@
+{
+  "schemaVersion": "lightbi.multifile-focus-subject-acceptance.v1",
+  "capturedAt": "2026-09-04T12:26:07Z",
+  "branch": "codex/r1-roadmap-integration",
+  "sourceBaseHead": "a1f6ee8",
+  "scope": "Multi-file UX parity + Focus Subject over governed multi-source analysis",
+  "nextOnly": true,
+  "roleRotationPerformed": false,
+  "fixture": {
+    "corpus": "sample-corpus/anchors/1.3.0 six ERP files",
+    "focusCanonicalId": "product",
+    "focusValue": "Aqua 250L",
+    "sourceCount": 6,
+    "expectedExactBindings": 6
+  },
+  "invariants": {
+    "governedSummaryMetricsUnchangedByFocus": true,
+    "rawSourcesNeverBlindJoinedForFocus": true,
+    "crossSourceIdentityRequiresExactCanonicalValueEvidence": true,
+    "sameDisplayLabelDoesNotAuthorizeDifferentIdentity": true,
+    "unmatchedSourceReturnsNoFocusedRows": true,
+    "deepBAUsesExactMatchedRowsOnly": true,
+    "excelEvidenceUsesExactMatchedRowsOnlyWhenFocused": true,
+    "summaryExportRemainsFullPopulationGoverned": true,
+    "narrativeLabelCollisionRemoved": "Key attention",
+    "bindingsCoverImportedSourcesWhileUiReportsActivePerspective": true
+  },
+  "gates": {
+    "focusTargetedVitest": {
+      "status": "pass",
+      "files": 3,
+      "tests": 8
+    },
+    "typescriptBuildGraph": {
+      "status": "pass"
+    },
+    "playwrightSixFileParity": {
+      "status": "pass",
+      "tests": 1,
+      "runtimeSeconds": 69.86,
+      "origin": "http://127.0.0.1:5183/app"
+    },
+    "releaseAuthoritativeSuite": {
+      "status": "pass",
+      "marker": "release_1_0_suite=passed",
+      "governedRegressionFiles": 11,
+      "governedRegressionTests": 41
+    },
+    "desktopBuild": {
+      "status": "pass",
+      "modulesTransformed": 3792,
+      "runtimeSeconds": 19.08
+    },
+    "sourceSize": {
+      "status": "pass",
+      "productionModulesChecked": 509,
+      "hardLimitLines": 1000,
+      "largestTouchedModuleLines": 999,
+      "largestTouchedModule": "apps/desktop/src/components/home/HomeWorkspaceView.tsx"
+    },
+    "gitDiffCheck": {
+      "status": "pass"
+    },
+    "ssd": {
+      "usePercent": 84,
+      "freeGiBApprox": 20
+    }
+  },
+  "sourceSha256": {
+    "apps/desktop/src/lib/multisource-focus-subject.ts": "71a0b7d5f4d27f0cc814b1f2b858f6367a61dfb1c7cd591ef796c20531b9b208",
+    "apps/desktop/src/components/analysis/MultiSourceFocusSubjectSelector.tsx": "cf700b0c8c6bf2d910c89c2956110560143c5d98a2879909dc950a1d7470cd81",
+    "apps/desktop/src/lib/home-canonical-multisource-build.ts": "bf7a0235807de9e4ee5b4f8e16a767e2e007d9b1474c41e0b465031583964e6c",
+    "apps/desktop/src/components/analysis/PerspectiveCollectionResultCard.tsx": "63c82b3fb0e1020a285c6f6a9b64aeb8d52e9ade91ba0f592529544cc161879a",
+    "apps/desktop/e2e/multifile_focus_subject_acceptance.spec.ts": "9b2b543e193c92e14d329f4b3f84f6446fb529369fdce7a388a0d55a2d0db95e"
+  },
+  "acceptance": "source_checkpoint_ready_for_next_generation_build"
+}

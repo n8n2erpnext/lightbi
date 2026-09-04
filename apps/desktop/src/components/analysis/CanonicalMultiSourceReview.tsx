@@ -23,6 +23,9 @@ import {
 import { CanonicalPerspectiveSelector, getCanonicalPerspectiveDisplay } from "./CanonicalPerspectiveSelector";
 import { useDisplayPreferences } from "../../stores/display-preferences-store";
 import { useUiLanguage } from "../../lib/ui-language";
+import type { FocusSubjectCandidate } from "../../lib/focus-subject-analysis";
+import { MultiSourceFocusSubjectSelector } from "./MultiSourceFocusSubjectSelector";
+import type { MultiSourceFocusSubjectSelectionV1 } from "../../lib/multisource-focus-subject";
 
 export type MultiSourceDraftV1 = {
   selected: boolean;
@@ -40,6 +43,7 @@ export type MultiSourceReviewSourceV1 = {
   rowCount: number;
   columns: string[];
   candidates?: CanonicalSourceCandidateProjectionV1 | null;
+  focusCandidates?: FocusSubjectCandidate[];
 };
 
 type Props = {
@@ -56,6 +60,8 @@ type Props = {
   ) => void;
   onBuild: () => void;
   building: boolean;
+  selectedFocusSubject?: MultiSourceFocusSubjectSelectionV1 | null;
+  onFocusSubjectChange?: (selection: MultiSourceFocusSubjectSelectionV1 | null) => void;
   relationshipState?: GovernedRelationshipStateV1 | null;
   blockers?: string[];
   relationshipPresentation?: {
@@ -83,6 +89,8 @@ export const CanonicalMultiSourceReview: React.FC<Props> = ({
   onAnalyzePerspective,
   onBuild,
   building,
+  selectedFocusSubject = null,
+  onFocusSubjectChange,
   relationshipState,
   blockers = [],
   relationshipPresentation = null,
@@ -250,7 +258,7 @@ export const CanonicalMultiSourceReview: React.FC<Props> = ({
             selectable: perspective.state !== "reviewable" || perspective.perspectiveId === "data_trust",
           }))}
           selectedId={selectedPerspectiveId}
-          onSelect={(id) => setSelectedPerspectiveId(id as CanonicalBusinessPerspectiveCandidateV1["perspectiveId"])}
+          onSelect={(id) => { setSelectedPerspectiveId(id as CanonicalBusinessPerspectiveCandidateV1["perspectiveId"]); onFocusSubjectChange?.(null); }}
           description={t(
             'Pick the business view that matches your job. LightBI handles source selection and analysis automatically.',
           )}
@@ -263,6 +271,8 @@ export const CanonicalMultiSourceReview: React.FC<Props> = ({
                 <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-blue-700">{t('Your analysis')}</div>
                 <h3 className="mt-2 text-[20px] font-semibold text-slate-950">{selectedPerspectiveDisplay?.label ?? selectedPerspective.label}</h3>
                 <p className="mt-1 text-[13px] leading-6 text-slate-600">{selectedPerspectiveDisplay?.question ?? selectedPerspective.purpose}</p>
+
+                {onFocusSubjectChange && <MultiSourceFocusSubjectSelector sources={sources} activeSourceKeys={selectedPerspective.sourceKeys} selected={selectedFocusSubject} onChange={onFocusSubjectChange} />}
 
                 {collection.observedPeriods.length > 1 && (
                   <div className="mt-5 flex flex-wrap items-end gap-3">
@@ -380,7 +390,7 @@ export const CanonicalMultiSourceReview: React.FC<Props> = ({
                           Correct role if needed
                           <select
                             value={draft.role}
-                            onChange={(event) => onChange(source.key, { ...draft, role: event.target.value as CanonicalSourceRoleV1 | "" })}
+                            onChange={(event) => { onFocusSubjectChange?.(null); onChange(source.key, { ...draft, role: event.target.value as CanonicalSourceRoleV1 | "" }); }}
                             className="mt-1.5 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-[11px] normal-case tracking-normal text-slate-800"
                           >
                             <option value="">Use LightBI suggestion</option>

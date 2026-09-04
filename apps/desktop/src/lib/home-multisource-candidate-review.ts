@@ -1,10 +1,12 @@
 import type { MultiSourceDraftV1, MultiSourceReviewSourceV1 } from "../components/analysis/CanonicalMultiSourceReview";
 import type { DatasetFamily } from "./batch-inspection";
-import { projectCanonicalSourceCandidates, type GovernedBundleCandidateV1 } from "./canonical-source-candidate-projection";
+import { projectCanonicalDomainPerspectives, projectCanonicalSourceCandidates, type GovernedBundleCandidateV1 } from "./canonical-source-candidate-projection";
 import type { SourceInspectionResult } from "./source-preflight";
 import { createLocalCanonicalSourceBoundary } from "./home-source-boundary";
 import { getOrBuildCanonicalConsumerArtifact } from "./understanding-core/canonical-consumer-boundary";
 import type { BusinessFusionOverview } from "./business-fusion-overview";
+import { projectCanonicalCapabilityLadder } from "./canonical-capability-ladder";
+import { deriveFocusSubjectCandidates } from "./focus-subject-analysis";
 
 export type PendingLocalFileBatch = {
   files: File[];
@@ -48,12 +50,26 @@ export function projectPendingMultiSourceReviewSources(
       sheet: metadata.is_workbook ? metadata.default_sheet : undefined,
       sourceBoundary: boundary,
     }) : null;
+    const capability = artifact && boundary ? projectCanonicalCapabilityLadder(
+      artifact,
+      projectCanonicalDomainPerspectives(artifact),
+      {
+        sourceKind: "local_file",
+        sourceLabel: file.name,
+        fileNames: [file.name],
+        sheetNames: metadata.is_workbook && metadata.default_sheet ? [metadata.default_sheet] : [],
+        columns: boundary.semanticSample.columns,
+        rows: boundary.semanticSample.rows,
+        sourceRowCount: boundary.sourceRowCount,
+      },
+    ) : null;
     return [{
       key: `${index}:${file.name}`,
       name: file.name,
       rowCount: selected.rows_count ?? 0,
       columns: selected.columns ?? [],
       candidates: artifact ? projectCanonicalSourceCandidates(artifact) : null,
+      focusCandidates: capability ? deriveFocusSubjectCandidates(capability.understanding, boundary!.semanticSample.rows) : [],
     }];
   });
 }

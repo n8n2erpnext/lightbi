@@ -60,6 +60,7 @@ import { executeHomeCanonicalMultiSourceBuild } from '../lib/home-canonical-mult
 import { createDurableInvestigationWorkspaceHandoff } from '../lib/home-workspace-persistence';
 import { findHomeDemoScenario, isHomeDemoSourceName, selectHomeDemoActionId, type HomeDemoScenario } from '../lib/home-demo-scenarios';
 import { createFocusSubjectSelection, deriveFocusSubjectCandidates, type FocusSubjectCandidate, type FocusSubjectOption, type FocusSubjectSelection } from '../lib/focus-subject-analysis';
+import type { MultiSourceFocusSubjectSelectionV1 } from '../lib/multisource-focus-subject';
 export const Home: React.FC = () => {
   const { preferences } = useDisplayPreferences();
   const navigate = useNavigate();
@@ -239,6 +240,7 @@ export const Home: React.FC = () => {
   const [analysisMode, setAnalysisMode] = useState<AnalysisMode>("explore");
   const [selectedPerspective, setSelectedPerspective] = useState<string | null>(null);
   const [selectedFocusSubject, setSelectedFocusSubject] = useState<FocusSubjectSelection | null>(null);
+  const [selectedMultiSourceFocusSubject, setSelectedMultiSourceFocusSubject] = useState<MultiSourceFocusSubjectSelectionV1 | null>(null);
   const [selectedBusinessView, setSelectedBusinessView] = useState<string | null>(null);
   const activeAnalysisIntent = analysisIntent || selectedTopic || null;
 
@@ -485,7 +487,7 @@ export const Home: React.FC = () => {
 
   const inspectLocalFiles = async (files: File[]) => {
     if (files.length === 0) return;
-    setResult(null); setSelectedTopic(null); setSelectedPerspective(null); setSelectedFocusSubject(null); setSelectedBusinessView(null); setPreviewActionId(null);
+    setResult(null); setSelectedTopic(null); setSelectedPerspective(null); setSelectedFocusSubject(null); setSelectedMultiSourceFocusSubject(null); setSelectedBusinessView(null); setPreviewActionId(null);
     setCurrentDataset(null); setWorkspaceState(null); setDecisionTrustReport(null); setCanonicalOverlayRebuildState('idle');
     setIsPlusMenuOpen(false); setIsReplaceMenuOpen(false); setLastInspectedFamilies(null); setLastInspectedBatch(null);
     setPendingLocalBatch({ files, status: 'reading', results: new Array(files.length).fill(null), families: [], selectedFamilyId: null, step: 'family_selection' });
@@ -563,6 +565,7 @@ export const Home: React.FC = () => {
   );
 
   const handleReviewMultiSourceBundle = (bundle: GovernedBundleCandidateV1) => {
+    setSelectedMultiSourceFocusSubject(null);
     setMultiSourceDrafts((current) => selectGovernedBundleDrafts(current, bundle));
     setMultiSourceBuildResult({ relationshipState: null, blockers: [] });
   };
@@ -586,7 +589,7 @@ export const Home: React.FC = () => {
     setMultiSourceBuildResult,
     setMultiSourceBuilding,
     setPendingLocalBatch,
-  }, draftsOverride, perspectiveId);
+  }, draftsOverride, perspectiveId, selectedMultiSourceFocusSubject);
 
   const handleAnalyzeMultiSourcePerspective = (
     perspective: CanonicalBusinessPerspectiveCandidateV1,
@@ -921,7 +924,7 @@ export const Home: React.FC = () => {
     canonicalArtifact, canonicalPresentation, canonicalDomainPerspectives, focusSubjectCandidates, selectedFocusSubject, handleSelectFocusSubject, setSelectedFocusSubject, handleCanonicalOverlayChange, handleCanonicalRemediation, canonicalOverlayRebuildState,
     runtimeSourceContinuity,
     canonicalMultiSourcePresentation,
-    canonicalReviewTarget, multiSourceBuildResult, multiSourceReviewSources, multiSourceBundles, multiSourceDrafts, setMultiSourceDrafts, multiSourceBuilding,
+    canonicalReviewTarget, multiSourceBuildResult, multiSourceReviewSources, multiSourceBundles, multiSourceDrafts, setMultiSourceDrafts, multiSourceBuilding, selectedMultiSourceFocusSubject, setSelectedMultiSourceFocusSubject,
     handleReviewMultiSourceBundle, handleUseMultiSourceReviewSource, handleBuildCanonicalMultiSource, handleAnalyzeMultiSourcePerspective, handleBackToImportedPerspectives, handleCancelInspection,
     handleToggleWorkbookSheet, handleAnalyzeSelectedWorkbookSheets, handleAnalyzeFullWorkbook, handleUseLocalDataset, guidedInvestigationResult, datasetUnderstanding,
     activeBusinessViews, selectedPerspective, setSelectedPerspective, analysisMode, setAnalysisMode, selectedBusinessView, setSelectedBusinessView,
