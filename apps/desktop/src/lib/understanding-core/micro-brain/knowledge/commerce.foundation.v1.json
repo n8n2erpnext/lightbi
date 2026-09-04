@@ -1,0 +1,1377 @@
+[
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.arr",
+    "status": "validated",
+    "kind": "formula",
+    "labels": [
+      "ARR",
+      "Annual Recurring Revenue"
+    ],
+    "canonicalSignal": "arr",
+    "semanticFamily": "money",
+    "relatedDomains": [
+      "revenue",
+      "finance"
+    ],
+    "definition": "Normalized annual recurring revenue under a stated subscription policy, commonly based on recurring monthly value.",
+    "positiveClues": [
+      "arr",
+      "annual recurring revenue"
+    ],
+    "negativeClues": [
+      "not annual cash collected",
+      "do not multiply seasonal or one-time revenue by twelve"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [
+      {
+        "subject": "concept.arr",
+        "predicate": "requires_input",
+        "object": "mrr",
+        "polarity": "requires",
+        "explanation": "Formula concept.arr requires explicit evidence for mrr."
+      }
+    ],
+    "requiredEvidence": [
+      "formula_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "guarded_formula",
+    "formula": {
+      "expression": "mrr * 12",
+      "requiredInputs": [
+        "mrr"
+      ],
+      "requiredGrain": [
+        "recurring subscription grain"
+      ],
+      "requiredUnits": [
+        "same currency"
+      ],
+      "requiredTimeBasis": [
+        "annualized from normalized month"
+      ],
+      "blockers": [
+        "non_recurring_mrr_basis",
+        "seasonal_only_month"
+      ]
+    },
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.billing_document",
+    "status": "validated",
+    "kind": "identifier",
+    "labels": [
+      "Billing Document",
+      "invoice document",
+      "chứng từ hóa đơn"
+    ],
+    "canonicalSignal": "billing_document",
+    "semanticFamily": "document",
+    "relatedDomains": [
+      "finance",
+      "revenue"
+    ],
+    "definition": "Document establishing an amount billed to a customer under a stated billing process.",
+    "positiveClues": [
+      "billing document",
+      "invoice",
+      "billing no"
+    ],
+    "negativeClues": [
+      "not the same as cash receipt",
+      "billing does not prove payment"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "identifier_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.branch",
+    "status": "validated",
+    "kind": "dimension",
+    "labels": [
+      "Branch",
+      "Store",
+      "cửa hàng",
+      "chi nhánh"
+    ],
+    "canonicalSignal": "branch",
+    "semanticFamily": "location",
+    "relatedDomains": [
+      "revenue",
+      "customer",
+      "performance"
+    ],
+    "definition": "Business location or organizational selling unit used for grouping performance or transactions.",
+    "positiveClues": [
+      "branch",
+      "store",
+      "outlet",
+      "cửa hàng"
+    ],
+    "negativeClues": [
+      "branch name is not customer or warehouse unless explicitly shared"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "dimension_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.cashier",
+    "status": "validated",
+    "kind": "dimension",
+    "labels": [
+      "Cashier",
+      "thu ngân"
+    ],
+    "canonicalSignal": "cashier",
+    "semanticFamily": "entity",
+    "relatedDomains": [
+      "performance",
+      "revenue",
+      "finance"
+    ],
+    "definition": "Person operating or assigned to a checkout or payment process.",
+    "positiveClues": [
+      "cashier",
+      "operator",
+      "thu ngân"
+    ],
+    "negativeClues": [
+      "not necessarily salesperson",
+      "terminal ownership and cashier assignment can differ"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "dimension_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.commission",
+    "status": "validated",
+    "kind": "measure",
+    "labels": [
+      "Commission",
+      "sales commission",
+      "hoa hồng"
+    ],
+    "canonicalSignal": "commission",
+    "semanticFamily": "money",
+    "relatedDomains": [
+      "finance",
+      "revenue",
+      "performance"
+    ],
+    "definition": "Compensation or fee calculated from eligible sales, transactions or other commissionable base.",
+    "positiveClues": [
+      "commission",
+      "sales commission",
+      "hoa hồng"
+    ],
+    "negativeClues": [
+      "commission is not gross profit",
+      "rate and eligible base must be known"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "measure_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.coupon",
+    "status": "validated",
+    "kind": "dimension",
+    "labels": [
+      "Coupon",
+      "promo code",
+      "mã giảm giá"
+    ],
+    "canonicalSignal": "coupon",
+    "semanticFamily": "marketing",
+    "relatedDomains": [
+      "revenue",
+      "customer"
+    ],
+    "definition": "Promotion or voucher code applied to influence transaction price or eligibility.",
+    "positiveClues": [
+      "coupon",
+      "promo code",
+      "voucher code"
+    ],
+    "negativeClues": [
+      "coupon code is not discount amount",
+      "promotion assignment does not prove causal uplift"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "dimension_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.customer",
+    "status": "validated",
+    "kind": "dimension",
+    "labels": [
+      "Customer",
+      "Client",
+      "Buyer",
+      "khách hàng"
+    ],
+    "canonicalSignal": "customer",
+    "semanticFamily": "entity",
+    "relatedDomains": [
+      "customer",
+      "revenue"
+    ],
+    "definition": "Party purchasing, consuming or receiving goods or services under a commercial relationship.",
+    "positiveClues": [
+      "customer",
+      "client",
+      "buyer",
+      "khách hàng"
+    ],
+    "negativeClues": [
+      "customer name is not always a stable unique identity",
+      "bill-to and ship-to parties may differ"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [
+      {
+        "subject": "concept.customer",
+        "predicate": "distinct_from",
+        "object": "concept.lead",
+        "polarity": "distinct_from",
+        "explanation": "A lead is a prospect and is not necessarily a converted customer."
+      }
+    ],
+    "requiredEvidence": [
+      "dimension_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.distribution_channel",
+    "status": "validated",
+    "kind": "dimension",
+    "labels": [
+      "Distribution Channel",
+      "dist channel",
+      "kênh phân phối"
+    ],
+    "canonicalSignal": "distribution_channel",
+    "semanticFamily": "sales_channel",
+    "relatedDomains": [
+      "revenue",
+      "customer"
+    ],
+    "definition": "Organizational or commercial channel used to distribute products to customers, often distinct from marketing source.",
+    "positiveClues": [
+      "distribution channel",
+      "wholesale",
+      "retail channel"
+    ],
+    "negativeClues": [
+      "not necessarily marketing acquisition channel",
+      "not warehouse route"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "dimension_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.expected_revenue",
+    "status": "validated",
+    "kind": "measure",
+    "labels": [
+      "Expected Revenue",
+      "pipeline value",
+      "forecast revenue"
+    ],
+    "canonicalSignal": "expected_revenue",
+    "semanticFamily": "money",
+    "relatedDomains": [
+      "revenue",
+      "customer",
+      "performance"
+    ],
+    "definition": "Potential future revenue associated with opportunities or forecasts, not yet realized revenue.",
+    "positiveClues": [
+      "expected revenue",
+      "pipeline value",
+      "deal value"
+    ],
+    "negativeClues": [
+      "not recognized revenue",
+      "probability weighting must be explicit"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "measure_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.mrr",
+    "status": "validated",
+    "kind": "formula",
+    "labels": [
+      "MRR",
+      "Monthly Recurring Revenue"
+    ],
+    "canonicalSignal": "mrr",
+    "semanticFamily": "money",
+    "relatedDomains": [
+      "revenue",
+      "finance"
+    ],
+    "definition": "Normalized recurring revenue attributable to one month under a stated subscription revenue policy.",
+    "positiveClues": [
+      "mrr",
+      "monthly recurring revenue"
+    ],
+    "negativeClues": [
+      "not total monthly cash receipts",
+      "one-time fees should not be included unless policy says so"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [
+      {
+        "subject": "concept.mrr",
+        "predicate": "requires_input",
+        "object": "recurring_contract_value",
+        "polarity": "requires",
+        "explanation": "Formula concept.mrr requires explicit evidence for recurring_contract_value."
+      },
+      {
+        "subject": "concept.mrr",
+        "predicate": "requires_input",
+        "object": "billing_interval",
+        "polarity": "requires",
+        "explanation": "Formula concept.mrr requires explicit evidence for billing_interval."
+      }
+    ],
+    "requiredEvidence": [
+      "formula_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "guarded_formula",
+    "formula": {
+      "expression": "normalized_monthly_recurring_revenue",
+      "requiredInputs": [
+        "recurring_contract_value",
+        "billing_interval"
+      ],
+      "requiredGrain": [
+        "active subscription grain"
+      ],
+      "requiredUnits": [
+        "same currency"
+      ],
+      "requiredTimeBasis": [
+        "month normalization"
+      ],
+      "blockers": [
+        "one_time_fee_mixed_in",
+        "missing billing interval"
+      ]
+    },
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.order",
+    "status": "validated",
+    "kind": "identifier",
+    "labels": [
+      "Order",
+      "customer order",
+      "đơn hàng"
+    ],
+    "canonicalSignal": "order",
+    "semanticFamily": "document",
+    "relatedDomains": [
+      "revenue",
+      "operations"
+    ],
+    "definition": "Commercial request or commitment from a customer for goods or services, identified at order or document level.",
+    "positiveClues": [
+      "order id",
+      "order no",
+      "đơn hàng"
+    ],
+    "negativeClues": [
+      "order row is not necessarily one order",
+      "order quantity is not order identity"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "identifier_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.payment_method",
+    "status": "validated",
+    "kind": "dimension",
+    "labels": [
+      "Payment Method",
+      "tender",
+      "phương thức thanh toán"
+    ],
+    "canonicalSignal": "payment_method",
+    "semanticFamily": "money",
+    "relatedDomains": [
+      "revenue",
+      "finance"
+    ],
+    "definition": "Method used to settle a transaction, such as cash, card, bank transfer, COD or voucher.",
+    "positiveClues": [
+      "cash",
+      "card",
+      "bank transfer",
+      "cod",
+      "payment method"
+    ],
+    "negativeClues": [
+      "method is categorical, not payment amount",
+      "COD is not always immediate settlement"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "dimension_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.payment_status",
+    "status": "validated",
+    "kind": "status",
+    "labels": [
+      "Payment Status",
+      "paid status",
+      "trạng thái thanh toán"
+    ],
+    "canonicalSignal": "payment_status",
+    "semanticFamily": "status",
+    "relatedDomains": [
+      "revenue",
+      "finance"
+    ],
+    "definition": "State of settlement such as paid, unpaid, partial, overdue or refunded under the source process.",
+    "positiveClues": [
+      "paid",
+      "unpaid",
+      "partial",
+      "overdue"
+    ],
+    "negativeClues": [
+      "payment status is not delivery status",
+      "paid does not define revenue recognition basis"
+    ],
+    "compatibleTypes": [
+      "string",
+      "boolean",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "status_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.pos_terminal",
+    "status": "validated",
+    "kind": "dimension",
+    "labels": [
+      "POS Terminal",
+      "cash register",
+      "máy POS"
+    ],
+    "canonicalSignal": "pos_terminal",
+    "semanticFamily": "sales_channel",
+    "relatedDomains": [
+      "revenue",
+      "finance"
+    ],
+    "definition": "Physical or logical checkout terminal that records point-of-sale transactions.",
+    "positiveClues": [
+      "pos terminal",
+      "register",
+      "terminal id"
+    ],
+    "negativeClues": [
+      "terminal is not cashier identity",
+      "terminal count is not transaction count"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "dimension_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.quotation",
+    "status": "validated",
+    "kind": "identifier",
+    "labels": [
+      "Quotation",
+      "Quote",
+      "báo giá"
+    ],
+    "canonicalSignal": "quotation",
+    "semanticFamily": "document",
+    "relatedDomains": [
+      "revenue"
+    ],
+    "definition": "Commercial offer describing proposed goods, services, quantities or prices before an order is accepted.",
+    "positiveClues": [
+      "quotation",
+      "quote",
+      "estimate",
+      "báo giá"
+    ],
+    "negativeClues": [
+      "not confirmed sales revenue",
+      "not necessarily an accepted order"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "identifier_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.receipt",
+    "status": "validated",
+    "kind": "identifier",
+    "labels": [
+      "Receipt",
+      "payment receipt",
+      "phiếu thu"
+    ],
+    "canonicalSignal": "receipt",
+    "semanticFamily": "document",
+    "relatedDomains": [
+      "finance",
+      "revenue"
+    ],
+    "definition": "Document or reference evidencing receipt of money or settlement under a payment process.",
+    "positiveClues": [
+      "receipt",
+      "payment receipt",
+      "phiếu thu"
+    ],
+    "negativeClues": [
+      "not automatically invoice identity",
+      "receipt amount can settle prior-period receivables"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "identifier_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.receipt_line",
+    "status": "validated",
+    "kind": "identifier",
+    "labels": [
+      "Receipt Line",
+      "transaction line",
+      "dòng hóa đơn"
+    ],
+    "canonicalSignal": "receipt_line",
+    "semanticFamily": "document",
+    "relatedDomains": [
+      "revenue",
+      "inventory"
+    ],
+    "definition": "Line-level item or charge within a receipt or transaction document.",
+    "positiveClues": [
+      "line item",
+      "receipt line",
+      "line no"
+    ],
+    "negativeClues": [
+      "line count is not receipt count",
+      "parent totals may repeat on lines"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "identifier_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.refund",
+    "status": "validated",
+    "kind": "flow",
+    "labels": [
+      "Refund",
+      "refund amount",
+      "hoàn tiền"
+    ],
+    "canonicalSignal": "refund",
+    "semanticFamily": "money",
+    "relatedDomains": [
+      "revenue",
+      "finance"
+    ],
+    "definition": "Monetary value returned to a customer after reversal, cancellation, dispute or adjustment.",
+    "positiveClues": [
+      "refund",
+      "money back",
+      "hoàn tiền"
+    ],
+    "negativeClues": [
+      "refund amount is not returned quantity",
+      "refund timing can differ from physical return"
+    ],
+    "compatibleTypes": [
+      "number",
+      "string"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "flow_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.return_document",
+    "status": "validated",
+    "kind": "identifier",
+    "labels": [
+      "Return Document",
+      "sales return",
+      "phiếu trả"
+    ],
+    "canonicalSignal": "return_document",
+    "semanticFamily": "document",
+    "relatedDomains": [
+      "revenue",
+      "inventory",
+      "operations"
+    ],
+    "definition": "Document recording a return of goods or reversal-related commercial process.",
+    "positiveClues": [
+      "return document",
+      "sales return",
+      "return no"
+    ],
+    "negativeClues": [
+      "return document count is not returned quantity",
+      "return may not yet be refunded"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "identifier_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.returns",
+    "status": "validated",
+    "kind": "flow",
+    "labels": [
+      "Returns",
+      "returned units",
+      "trả hàng"
+    ],
+    "canonicalSignal": "returns",
+    "semanticFamily": "quantity",
+    "relatedDomains": [
+      "revenue",
+      "inventory"
+    ],
+    "definition": "Returned quantity or return activity within a defined period and grain.",
+    "positiveClues": [
+      "returns",
+      "return qty",
+      "returned units"
+    ],
+    "negativeClues": [
+      "return quantity is not refund amount",
+      "return event may not equal one document"
+    ],
+    "compatibleTypes": [
+      "number",
+      "string"
+    ],
+    "relations": [
+      {
+        "subject": "concept.returns",
+        "predicate": "distinct_from",
+        "object": "concept.refund_amount",
+        "polarity": "distinct_from",
+        "explanation": "Refund is monetary; returns can be physical quantity or process activity."
+      }
+    ],
+    "requiredEvidence": [
+      "flow_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.sales_amount",
+    "status": "validated",
+    "kind": "measure",
+    "labels": [
+      "Sales Amount",
+      "sales",
+      "doanh số"
+    ],
+    "canonicalSignal": "sales",
+    "semanticFamily": "money",
+    "relatedDomains": [
+      "revenue"
+    ],
+    "definition": "Monetary sales measure whose exact gross/net/tax basis must be established from source semantics.",
+    "positiveClues": [
+      "sales",
+      "sales amount",
+      "doanh số"
+    ],
+    "negativeClues": [
+      "generic sales may not equal net revenue",
+      "cash receipt timing can differ"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "measure_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.sales_channel",
+    "status": "validated",
+    "kind": "dimension",
+    "labels": [
+      "Sales Channel",
+      "storefront",
+      "kênh bán"
+    ],
+    "canonicalSignal": "sales_channel",
+    "semanticFamily": "sales_channel",
+    "relatedDomains": [
+      "revenue",
+      "customer"
+    ],
+    "definition": "Route or platform through which a sale is originated, such as retail store, ecommerce, marketplace or wholesale.",
+    "positiveClues": [
+      "sales channel",
+      "marketplace",
+      "retail",
+      "online"
+    ],
+    "negativeClues": [
+      "channel is not geographic territory",
+      "platform label alone does not define attribution"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "dimension_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.sales_order",
+    "status": "validated",
+    "kind": "identifier",
+    "labels": [
+      "Sales Order",
+      "SO",
+      "đơn bán hàng"
+    ],
+    "canonicalSignal": "sales_order",
+    "semanticFamily": "document",
+    "relatedDomains": [
+      "revenue",
+      "operations"
+    ],
+    "definition": "Formal sales document recording accepted customer demand before fulfillment or billing.",
+    "positiveClues": [
+      "sales order",
+      "so number",
+      "đơn bán hàng"
+    ],
+    "negativeClues": [
+      "not automatically an invoice",
+      "not proof of shipment or payment"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "identifier_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.salesperson",
+    "status": "validated",
+    "kind": "dimension",
+    "labels": [
+      "Salesperson",
+      "sales rep",
+      "nhân viên bán hàng"
+    ],
+    "canonicalSignal": "salesperson",
+    "semanticFamily": "entity",
+    "relatedDomains": [
+      "revenue",
+      "performance"
+    ],
+    "definition": "Person credited with or responsible for sales activity under the source assignment logic.",
+    "positiveClues": [
+      "salesperson",
+      "sales rep",
+      "seller"
+    ],
+    "negativeClues": [
+      "not necessarily order creator",
+      "credit attribution rules may differ"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "dimension_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.sold_quantity",
+    "status": "validated",
+    "kind": "flow",
+    "labels": [
+      "Sold Quantity",
+      "sales quantity",
+      "số lượng bán"
+    ],
+    "canonicalSignal": "sold_qty",
+    "semanticFamily": "quantity",
+    "relatedDomains": [
+      "revenue",
+      "inventory"
+    ],
+    "definition": "Quantity sold within the transaction or reporting period at the active sales grain.",
+    "positiveClues": [
+      "sold qty",
+      "sales qty",
+      "quantity sold"
+    ],
+    "negativeClues": [
+      "not stock on hand",
+      "not ordered quantity when fulfillment is partial"
+    ],
+    "compatibleTypes": [
+      "number",
+      "string"
+    ],
+    "relations": [
+      {
+        "subject": "concept.sold_quantity",
+        "predicate": "distinct_from",
+        "object": "concept.stock_on_hand",
+        "polarity": "distinct_from",
+        "explanation": "Current inventory balance is not quantity sold during a period."
+      }
+    ],
+    "requiredEvidence": [
+      "flow_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.subscription",
+    "status": "validated",
+    "kind": "identifier",
+    "labels": [
+      "Subscription",
+      "subscription id",
+      "gói đăng ký"
+    ],
+    "canonicalSignal": "subscription",
+    "semanticFamily": "subscription",
+    "relatedDomains": [
+      "customer",
+      "revenue"
+    ],
+    "definition": "Ongoing customer entitlement or service commitment billed or consumed over time.",
+    "positiveClues": [
+      "subscription",
+      "sub id",
+      "recurring plan"
+    ],
+    "negativeClues": [
+      "subscription does not equal invoice",
+      "active subscription does not prove current-period revenue"
+    ],
+    "compatibleTypes": [
+      "string",
+      "number"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "identifier_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.unit_price",
+    "status": "validated",
+    "kind": "measure",
+    "labels": [
+      "Unit Price",
+      "selling price",
+      "đơn giá"
+    ],
+    "canonicalSignal": "unit_price",
+    "semanticFamily": "money",
+    "relatedDomains": [
+      "revenue",
+      "finance"
+    ],
+    "definition": "Price per stated unit of item or service before or after adjustments according to the field definition.",
+    "positiveClues": [
+      "unit price",
+      "price each",
+      "đơn giá"
+    ],
+    "negativeClues": [
+      "unit price is not revenue",
+      "must not be summed as transaction value",
+      "currency and UOM must be compatible"
+    ],
+    "compatibleTypes": [
+      "number",
+      "integer",
+      "float",
+      "double",
+      "decimal",
+      "currency"
+    ],
+    "relations": [
+      {
+        "subject": "concept.unit_price",
+        "predicate": "distinct_from",
+        "object": "concept.revenue",
+        "polarity": "distinct_from",
+        "explanation": "Unit price is a rate per unit; revenue requires quantity or a transaction amount basis."
+      },
+      {
+        "subject": "concept.unit_price",
+        "predicate": "distinct_from",
+        "object": "concept.cost",
+        "polarity": "distinct_from",
+        "explanation": "Cost and selling price are different economic roles even when both are monetary."
+      }
+    ],
+    "requiredEvidence": [
+      "measure_shape",
+      "contextual_compatibility"
+    ],
+    "blockers": [],
+    "analysisClass": "descriptive_or_canonical_bridge",
+    "provenance": {
+      "sourceType": "model_synthesis",
+      "sourceLabel": "GPT-5.6 Sol foundational business knowledge synthesis",
+      "synthesizedAt": "2026-09-04",
+      "notes": [
+        "General reusable business knowledge; not fixture-specific truth."
+      ]
+    }
+  }
+]

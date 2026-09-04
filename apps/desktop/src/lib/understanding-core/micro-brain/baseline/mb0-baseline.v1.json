@@ -1,0 +1,72 @@
+{
+  "schemaVersion": "lightbi.micro-brain.mb0-baseline.v1",
+  "capturedOn": "2026-09-04",
+  "productBase": {
+    "branch": "codex/r1p13-rc-acceptance",
+    "commit": "827ac888350193c7aac6c3a577b7411378e4a1c8"
+  },
+  "semanticRegistry": {
+    "signalCount": 370,
+    "coverageStatusCounts": {
+      "supported": 63,
+      "partial": 307
+    },
+    "primaryDomainCounts": {
+      "core": 3,
+      "customer": 60,
+      "finance": 68,
+      "inventory": 44,
+      "operations": 87,
+      "performance": 70,
+      "revenue": 38
+    },
+    "normalizedAliasCollisions": 58,
+    "normalizedHeaderAliasCollisions": 75
+  },
+  "resolverCorpus": {
+    "caseCount": 30,
+    "physicalColumnCount": 752,
+    "headerOnlyCollisionCases": 84,
+    "stateCounts": {
+      "confirmed": 47,
+      "probable": 353,
+      "ambiguous": 160,
+      "unknown": 191,
+      "technical": 1,
+      "unsupported_input": 0
+    },
+    "candidateAbsenceDebt": {
+      "required_candidate_absent": 1,
+      "contextual_candidate_absent": 9
+    }
+  },
+  "domainSupport": {
+    "packId": "commerce_distribution_mvp",
+    "packStatus": "conditional",
+    "productionActive": false,
+    "conceptStates": {
+      "active": 1,
+      "conditional": 9,
+      "detect_only": 2
+    }
+  },
+  "baselineVerification": {
+    "semanticCandidateResolverCounterfactual": "22/22 passed",
+    "corpusResolutionProbe": "3/3 passed",
+    "microBrainTargetedAfterAdditiveMb1Mb2": "10/10 passed",
+    "typescriptNoEmit": "passed"
+  },
+  "invariants": [
+    "Micro Brain MB-0 through MB-2 must not change resolver state counts.",
+    "Header-only alias collisions remain ambiguous or unknown.",
+    "Retrieval similarity is not semantic confidence.",
+    "Domain support remains controlled by the support manifest.",
+    "Production wiring remains absent through MB-2."
+  ],
+  "referenceBenchmarkProcedure": {
+    "coldLoad": "Measure JSON read+parse time and process RSS delta before the first query.",
+    "warmQuery": "Run a fixed multilingual query set for at least 100 iterations and report p50/p95/p99.",
+    "compile": "Rebuild twice from identical source and require byte-identical SHA-256.",
+    "lowEndMachine": "Repeat before MB-7 on the owner-selected low-end Windows reference device; VPS ARM numbers are development diagnostics only."
+  }
+}

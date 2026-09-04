@@ -1,0 +1,351 @@
+{
+  "schemaVersion": "lightbi.micro-brain.mb3-shadow-benchmark.v1",
+  "capturedOn": "2026-09-04",
+  "authority": "machine_evidence",
+  "hardware": {
+    "shape": "Oracle VM.Standard.A1.Flex",
+    "architecture": "arm64",
+    "cpuModel": "Neoverse-N1",
+    "ocpus": 4,
+    "memoryGiB": 24,
+    "nodeVersion": "v22.23.1",
+    "kernel": "linux 6.17.0-1020-oracle"
+  },
+  "corpus": {
+    "sampleCount": 30,
+    "uniqueSourceCount": 19,
+    "uniquePhysicalColumnCount": 379,
+    "prepareMs": 2370.791663
+  },
+  "baseline": {
+    "runs": 5,
+    "warmups": 1,
+    "semanticPass": {
+      "count": 5,
+      "minMs": 9773.228337,
+      "p50Ms": 9785.152775999995,
+      "p95Ms": 9816.294404,
+      "p99Ms": 9816.294404,
+      "maxMs": 9816.294404,
+      "meanMs": 9790.466259800001
+    },
+    "resolutionDigest": "924b981e6122d84887f3714c72912a91c722671cf74f1afd1f2a815fc06ad058"
+  },
+  "selective": {
+    "runs": 5,
+    "warmups": 1,
+    "semanticPass": {
+      "count": 5,
+      "minMs": 10014.999186000001,
+      "p50Ms": 10037.820375000003,
+      "p95Ms": 10245.864722999999,
+      "p99Ms": 10245.864722999999,
+      "maxMs": 10245.864722999999,
+      "meanMs": 10082.8069966
+    },
+    "brainQueries": {
+      "count": 1215,
+      "minMs": 0.8105280000017956,
+      "p50Ms": 1.0401700000002165,
+      "p95Ms": 1.3450930000035441,
+      "p99Ms": 1.6718560000008438,
+      "maxMs": 2.9896700000026613,
+      "meanMs": 1.062779716872427
+    },
+    "queryCountPerRun": 243,
+    "invocationReasons": {
+      "alias_collision": 104,
+      "weak_lexical_candidate": 71,
+      "no_lexical_candidate": 68
+    },
+    "indexLoad": {
+      "artifactBytes": 5630028,
+      "readMs": 2.059339999999793,
+      "parseMs": 60.5535219999997,
+      "totalLoadMs": 62.612861999999495,
+      "rssDeltaBytes": 14770176,
+      "heapUsedDeltaBytes": 18897880
+    },
+    "resolutionDigest": "924b981e6122d84887f3714c72912a91c722671cf74f1afd1f2a815fc06ad058",
+    "p50OverheadMs": 252.6675990000076,
+    "p50OverheadPct": 2.5821528266755776,
+    "directQueryBudgetPct": 2.6392584470773097
+  },
+  "allColumns": {
+    "runs": 5,
+    "warmups": 1,
+    "semanticPass": {
+      "count": 5,
+      "minMs": 9927.331678999995,
+      "p50Ms": 9954.344067999999,
+      "p95Ms": 9998.048701,
+      "p99Ms": 9998.048701,
+      "maxMs": 9998.048701,
+      "meanMs": 9961.353040999998
+    },
+    "brainQueries": {
+      "count": 1895,
+      "minMs": 0.7710479999987001,
+      "p50Ms": 0.9868500000011409,
+      "p95Ms": 1.2641330000042217,
+      "p99Ms": 1.6202159999957075,
+      "maxMs": 2.5583059999989928,
+      "meanMs": 1.0158339598945834
+    },
+    "queryCountPerRun": 379,
+    "indexLoad": {
+      "artifactBytes": 5630028,
+      "readMs": 2.1010610000003,
+      "parseMs": 60.564242999999806,
+      "totalLoadMs": 62.665304000000106,
+      "rssDeltaBytes": 15310848,
+      "heapUsedDeltaBytes": 18897856
+    },
+    "resolutionDigest": "924b981e6122d84887f3714c72912a91c722671cf74f1afd1f2a815fc06ad058",
+    "directQueryBudgetPct": 3.9345432781012644
+  },
+  "quality": {
+    "governedRecall": {
+      "required": {
+        "total": 128,
+        "baseline": 127,
+        "brainTop8": 57,
+        "union": 128,
+        "recovered": [
+          {
+            "sampleId": "ops.ttkt_20241224",
+            "allowedFinalStates": [
+              "probable",
+              "confirmed"
+            ],
+            "canonicalSignal": "eta",
+            "physicalColumn": "Thời gian dự kiến đến"
+          }
+        ]
+      },
+      "ambiguous": {
+        "total": 44,
+        "baseline": 35,
+        "brainTop8": 20,
+        "union": 35,
+        "recovered": []
+      }
+    },
+    "foundationProbes": {
+      "passed": 10,
+      "total": 10,
+      "details": [
+        {
+          "query": "buffer inventory maintained against supplier and demand uncertainty",
+          "expected": "concept.safety_stock",
+          "hits": [
+            "concept.safety_stock",
+            "concept.supplier",
+            "concept.reorder_point",
+            "concept.stock_age",
+            "concept.procurement_lead_time"
+          ],
+          "passed": true
+        },
+        {
+          "query": "inventory trigger threshold combining lead time demand and buffer",
+          "expected": "concept.reorder_point",
+          "hits": [
+            "concept.procurement_lead_time",
+            "concept.safety_stock",
+            "concept.inventory_balance",
+            "concept.stock_age",
+            "concept.reorder_point"
+          ],
+          "passed": true
+        },
+        {
+          "query": "cash received now to settle old customer invoices",
+          "expected": "concept.cash_receipt",
+          "hits": [
+            "concept.cash_receipt",
+            "concept.received_quantity",
+            "concept.accounts_receivable",
+            "concept.segment",
+            "concept.invoice_total"
+          ],
+          "passed": true
+        },
+        {
+          "query": "units routed back for correction instead of being discarded",
+          "expected": "concept.rework_quantity",
+          "hits": [
+            "concept.subscription_usage",
+            "concept.productivity",
+            "concept.rework_quantity",
+            "concept.quantity",
+            "concept.returns"
+          ],
+          "passed": true
+        },
+        {
+          "query": "cumulative equipment counter reading from odometer or runtime meter",
+          "expected": "concept.meter_reading",
+          "hits": [
+            "concept.meter_reading",
+            "concept.utility_meter",
+            "concept.machine",
+            "concept.asset",
+            "concept.sentiment"
+          ],
+          "passed": true
+        },
+        {
+          "query": "individual apartment or rentable room inside a managed building",
+          "expected": "concept.space_unit",
+          "hits": [
+            "concept.space_unit",
+            "concept.department",
+            "concept.lease",
+            "concept.accounts_receivable",
+            "concept.audit_finding"
+          ],
+          "passed": true
+        },
+        {
+          "query": "water applied to a farm plot during a growing cycle",
+          "expected": "concept.irrigation",
+          "hits": [
+            "concept.irrigation",
+            "concept.field",
+            "concept.utility_consumption",
+            "concept.machine",
+            "concept.inspection_lot"
+          ],
+          "passed": true
+        },
+        {
+          "query": "quality inspection batch evaluated pass fail hold",
+          "expected": "concept.inspection_lot",
+          "hits": [
+            "concept.inspection_lot",
+            "concept.qc_result",
+            "concept.defect_code",
+            "concept.quality_score",
+            "concept.rework_quantity"
+          ],
+          "passed": true
+        },
+        {
+          "query": "monthly normalized recurring subscription revenue",
+          "expected": "concept.mrr",
+          "hits": [
+            "concept.subscription",
+            "concept.arr",
+            "concept.mrr",
+            "concept.expected_revenue",
+            "concept.revenue"
+          ],
+          "passed": true
+        },
+        {
+          "query": "amount owed by customers at a stated month end",
+          "expected": "concept.accounts_receivable",
+          "hits": [
+            "concept.accounts_receivable",
+            "concept.rent_amount",
+            "concept.segment",
+            "concept.customer_value",
+            "concept.distinct_count"
+          ],
+          "passed": true
+        }
+      ]
+    },
+    "safetyProbes": {
+      "expectedTop3Passed": 5,
+      "forbiddenTop1Avoided": 5,
+      "total": 5,
+      "details": [
+        {
+          "query": "cash on delivery amount collected by courier for merchant",
+          "expected": "concept.cod_amount",
+          "forbiddenTop1": "concept.revenue",
+          "hits": [
+            "concept.cod_amount",
+            "concept.eta",
+            "concept.delivery_time",
+            "concept.delivery_status",
+            "concept.delivery_fee"
+          ],
+          "expectedFound": true,
+          "forbiddenAvoidedAtTop1": true
+        },
+        {
+          "query": "current warehouse inventory carrying value as of closing date",
+          "expected": "concept.inventory_value",
+          "forbiddenTop1": "concept.cost_of_goods_sold",
+          "hits": [
+            "concept.current_location",
+            "concept.inventory_value",
+            "concept.declared_value",
+            "concept.as_of_time",
+            "concept.working_capital"
+          ],
+          "expectedFound": true,
+          "forbiddenAvoidedAtTop1": true
+        },
+        {
+          "query": "money transferred into bank account from another own account",
+          "expected": "concept.bank_inflow",
+          "forbiddenTop1": "concept.revenue",
+          "hits": [
+            "concept.bank_inflow",
+            "concept.account",
+            "concept.accounts_payable",
+            "concept.accrual",
+            "concept.accounts_receivable"
+          ],
+          "expectedFound": true,
+          "forbiddenAvoidedAtTop1": true
+        },
+        {
+          "query": "customer balance still owed at month end",
+          "expected": "concept.accounts_receivable",
+          "forbiddenTop1": "concept.revenue",
+          "hits": [
+            "concept.accounts_receivable",
+            "concept.segment",
+            "concept.customer_value",
+            "concept.account_balance",
+            "concept.customer"
+          ],
+          "expectedFound": true,
+          "forbiddenAvoidedAtTop1": true
+        },
+        {
+          "query": "selling price per piece for one item",
+          "expected": "concept.unit_price",
+          "forbiddenTop1": "concept.revenue",
+          "hits": [
+            "concept.unit_price",
+            "concept.receipt_line",
+            "concept.product",
+            "concept.crop",
+            "concept.sku"
+          ],
+          "expectedFound": true,
+          "forbiddenAvoidedAtTop1": true
+        }
+      ]
+    }
+  },
+  "acceptance": {
+    "resolverDigestUnchanged": true,
+    "requiredMappingRecallBaseline": "127/128",
+    "requiredMappingRecallUnion": "128/128",
+    "foundationProbes": "10/10",
+    "highRiskConfusionProbes": "5/5",
+    "verdict": "PASS_FOR_MB3_SHADOW_AND_MB4_BRIDGE_WORK"
+  },
+  "limitations": [
+    "VPS timings are development diagnostics under normal shared-service load, not a Windows hardware certification.",
+    "Micro Brain retrieval rank is not semantic confidence.",
+    "MB-3 does not authorize final semantic resolution or domain support."
+  ]
+}
