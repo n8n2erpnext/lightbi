@@ -9150,8 +9150,8 @@
     {
       "path": "docs/architecture/road-to-1-0-trust-release-contract.md",
       "extension": ".md",
-      "bytes": 23303,
-      "sha256": "8d7837fe992961a09df5c5a2d94a5045d4f0a48d7605be7cf4f12d0ae80852b4",
+      "bytes": 26175,
+      "sha256": "ccead18ee8a54f544fae409301561dd1f5efb8715c3cc7c6bca103fcce6abab3",
       "suggestedCategory": "architecture-source-or-evidence",
       "title": "Road to 1.0 Trust, Release, and Official Identity Contract"
     },
@@ -10166,8 +10166,8 @@
     {
       "path": "docs/history/agent/plans/AGENT_PLAN_ROAD_TO_1_0_2026-08-31.md",
       "extension": ".md",
-      "bytes": 17363,
-      "sha256": "88721bd56c3e3233d602d07aeb3361ca388e694c02f493d33f4e5ec30936738a",
+      "bytes": 17547,
+      "sha256": "65955de7d2a8c1c21046ca577b2db014712ac5758d6d88bcce469e9bf0c0d446",
       "suggestedCategory": "historical-provenance",
       "title": "LightBI Road to 1.0 Execution Plan — 2026-08-31"
     },

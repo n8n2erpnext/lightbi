@@ -267,10 +267,10 @@
   },
   "nextGeneration": {
     "model": "successor_promotion_generation_rotation",
-    "status": "internal_next031_active_intelligence_pack_v1_source_closed_next032_runtime_acceptance_pending",
+    "status": "internal_next032_active_intelligence_pack_v1_runtime_accepted_signed_transport_next",
     "generationSchema": "lightbi.generation.v1",
-    "generationId": "g-2026-09-04-next-031",
-    "parentGenerationId": "g-2026-09-03-next-030-focus-exp-03",
+    "generationId": "g-2026-09-04-next-032",
+    "parentGenerationId": "g-2026-09-04-next-031",
     "core": {
       "workspace": "/home/ubuntu/n8n2erpnext/LightBI-next025-native-boundary",
       "branch": "codex/next025-native-boundary",
@@ -429,7 +429,16 @@
       "intelligencePackCandidateEnvelopeSha256": "1c2446321ebecec5687f01f95dff0efe574efe4e56bdf10f13ed0802caea3376",
       "intelligencePackCandidatePayloadSha256": "6415fddef704732e0d2e08936aaed729278f4a9c759b30a4daacb1c7ab7d8ec0",
       "intelligencePackControlPlaneTestsPassed": 222,
-      "intelligencePackNativeCargoCheckPassed": true
+      "intelligencePackNativeCargoCheckPassed": true,
+      "intelligencePackRuntimeGenerationAccepted": true,
+      "intelligencePackLiveCatalogArtifactIdentityPassed": true,
+      "intelligencePackRealCandidateStageActivatePassed": true,
+      "intelligencePackRestartReconcilePassed": true,
+      "intelligencePackAcceptedFloorRejectPassed": true,
+      "intelligencePackCorruptStateFailClosedPassed": true,
+      "intelligencePackRollbackPreviousFixturePassed": true,
+      "intelligencePackFrontendRealCandidateTestsPassed": 2,
+      "next032SystemdRestartPersistencePassed": true
     },
     "infrastructure": {
       "isolatedContractDefined": true,
@@ -443,7 +452,7 @@
       "internalGatewayStarted": true,
       "controlPlaneSchemaReportedCurrent": true,
       "controlPlanePendingMigrations": 0,
-      "controlPlaneRuntimeCommit": "bb50b0d53542da5cd908e2237cbca368f7f87073",
+      "controlPlaneRuntimeCommit": "72eacf75209b6984955bec362ab7752176184478",
       "coreRuntimeExactHeadVerified": true,
       "runtimeReconciliationBlocked": false,
       "fullIsolationRevalidated": true,
@@ -451,14 +460,14 @@
       "servedGenerationManifestPresent": true,
       "internalWebArtifactExactGenerationVerified": true,
       "runtimeBlocker": null,
-      "freshGenerationId": "g-2026-09-04-next-031",
-      "generationManifestSha256": "08fe08ea9dcc72d575721f1db891cd46ce46d030556c53d14c472dc4149c9797",
+      "freshGenerationId": "g-2026-09-04-next-032",
+      "generationManifestSha256": "28e8f20e9acdfb037fe464a95cb0039489bca8333c620e16757de0073fecda40",
       "coreRuntimeBinarySha256": "95be788197a853cff8c6d1665ef4d62e62ac71fd9dfa9546253efcda0b78aa7e",
       "servedGenerationManifestIsJson": true,
       "freshWorkerStarted": true,
-      "workerGenerationExpected": "g-2026-09-04-next-031",
-      "workerGenerationObserved": "g-2026-09-04-next-031",
-      "workerCommitObserved": "bb50b0d53542da5cd908e2237cbca368f7f87073",
+      "workerGenerationExpected": "g-2026-09-04-next-032",
+      "workerGenerationObserved": "g-2026-09-04-next-032",
+      "workerCommitObserved": "72eacf75209b6984955bec362ab7752176184478",
       "workerGenerationMatch": true,
       "toolSafetyBlockedPredecessorTermination": false,
       "toolSafetyBlockedFreshWorkerLaunch": false,
@@ -466,10 +475,10 @@
       "predecessorWorkerGeneration": null,
       "migrationStateMeaning": "internal_schema_067_catalog_quarterly_pricing_current_all_21_migrations_applied",
       "canonicalInternalGatewayPort": 5273,
-      "canonicalInternalGatewayGeneration": "g-2026-09-04-next-031",
+      "canonicalInternalGatewayGeneration": "g-2026-09-04-next-032",
       "canonicalInternalGatewayCoreOrigin": "http://100.94.184.141:5272",
       "canonicalInternalGatewayControlPlaneOrigin": "http://100.94.184.141:5274",
-      "canonicalInternalGatewayManifestSha256": "08fe08ea9dcc72d575721f1db891cd46ce46d030556c53d14c472dc4149c9797",
+      "canonicalInternalGatewayManifestSha256": "28e8f20e9acdfb037fe464a95cb0039489bca8333c620e16757de0073fecda40",
       "canonicalInternalGatewayServesFreshDesktop": true,
       "internalBugTestingReady": true,
       "temporaryVerificationGatewayStopped": true,
@@ -486,7 +495,7 @@
       "controlPlaneDocsUrl": "http://100.94.184.141:5274/docs",
       "gatewayDocsUrl": "http://100.94.184.141:5273/docs",
       "obsoleteDistributionMountExists": false,
-      "internalControlPlaneDeployedCommitMarker": "6936fc4272bc92cd1badc00b9256cfd912e4a9ad",
+      "internalControlPlaneDeployedCommitMarker": "72eacf75209b6984955bec362ab7752176184478",
       "coreProcessRestartedForNext013": false,
       "coreProcessRestartNote": "tool_safety_blocked_termination; rebuilt server binary hash matches running binary and NEXT-013 changes no Rust server code",
       "coreProcessRestartedForCurrentGeneration": true,
@@ -497,7 +506,7 @@
       "freezeApproved": false,
       "trust1Blocked": true
     },
-    "generationIdAuthority": "runtime_exact_next031_core_gateway_cp_worker_schema_plus_multifile_focus_browser_acceptance_owner_role_rotation_independent",
+    "generationIdAuthority": "runtime_exact_next032_core_gateway_cp_worker_schema_plus_intelligence_pack_live_identity_restart_acceptance_owner_role_rotation_independent",
     "historicalProofParentCandidate": "prod-v0.9.2-beta.7-28e2aae",
     "parentGenerationBootstrapRequired": false,
     "bootstrapCurrent": {
@@ -515,10 +524,10 @@
     "internalBugTest": {
       "ready": true,
       "entrypoint": "https://lightbi-next.thaiduy.digital",
-      "generationId": "g-2026-09-04-next-031",
-      "coreCommit": "8abc66971d5cae6cb232a4d6b48bd107fd77a52a",
-      "controlPlaneCommit": "bb50b0d53542da5cd908e2237cbca368f7f87073",
-      "scope": "next031_internal_multifile_focus_and_existing_product_surfaces",
+      "generationId": "g-2026-09-04-next-032",
+      "coreCommit": "262bd768fc48b7eb4e8948631da853da318f610c",
+      "controlPlaneCommit": "72eacf75209b6984955bec362ab7752176184478",
+      "scope": "next032_internal_intelligence_pack_and_existing_product_surfaces",
       "knownLimitation": "packaged Windows/native owner acceptance remains independent; owner role rotation not performed",
       "deepBaScopeIsolationFixed": true,
       "deepBaScopeIsolationRegressionTestsPassed": 20,
@@ -547,7 +556,8 @@
       "signInRecoveryHelpDocLive": true,
       "multiFileFocusSubjectAccepted": true,
       "multiFileFocusSubjectPlaywrightPassed": true,
-      "multiFileFocusSubjectPlaywrightSeconds": 46.9
+      "multiFileFocusSubjectPlaywrightSeconds": 46.9,
+      "intelligencePackRuntimeAccepted": true
     },
     "excelPivotExport": {
       "contractVersion": "lightbi.excel-pivot-export.v1",
@@ -683,23 +693,27 @@
       "windowsTransportHardeningHead": "c78124df3973fcfe2107a966563f3266e97f3deb"
     },
     "runtimeCurrent20260904": {
-      "generationId": "g-2026-09-04-next-031",
-      "parentGenerationId": "g-2026-09-03-next-030-focus-exp-03",
+      "generationId": "g-2026-09-04-next-032",
+      "parentGenerationId": "g-2026-09-04-next-031",
       "sourceBranch": "codex/r1-roadmap-integration",
-      "sourceCommit": "8abc66971d5cae6cb232a4d6b48bd107fd77a52a",
+      "sourceCommit": "262bd768fc48b7eb4e8948631da853da318f610c",
       "coreBinaryCommit": "ed4b9233f690b9ddeb872ee858e0e9a8c46644e0",
       "coreBinarySha256": "95be788197a853cff8c6d1665ef4d62e62ac71fd9dfa9546253efcda0b78aa7e",
-      "controlPlaneCommit": "bb50b0d53542da5cd908e2237cbca368f7f87073",
+      "controlPlaneCommit": "72eacf75209b6984955bec362ab7752176184478",
       "schema": "067_catalog_quarterly_pricing",
-      "manifestSha256": "08fe08ea9dcc72d575721f1db891cd46ce46d030556c53d14c472dc4149c9797",
+      "manifestSha256": "28e8f20e9acdfb037fe464a95cb0039489bca8333c620e16757de0073fecda40",
       "ports": {
         "core": 5272,
         "gateway": 5273,
         "controlPlane": 5274
       },
       "workerHealthy": true,
-      "multifileFocusPlaywright": "1/1",
-      "multifileFocusRuntimeSeconds": 46.9,
+      "intelligencePackVersion": "1.0.0-next.1",
+      "intelligencePackEnvelopeSha256": "1c2446321ebecec5687f01f95dff0efe574efe4e56bdf10f13ed0802caea3376",
+      "intelligencePackPayloadSha256": "6415fddef704732e0d2e08936aaed729278f4a9c759b30a4daacb1c7ab7d8ec0",
+      "intelligencePackRuntimeAccepted": true,
+      "twoVersionLiveRollbackProven": false,
+      "rollbackPreviousRecoveryFixtureProven": true,
       "roleRotationPerformed": false
     }
   },
@@ -891,7 +905,7 @@
       "syntheticDbResidue": 0
     },
     "successorOverlay20260904": {
-      "status": "one_roadmap_intelligence_pack_v1_source_closed_next031_active_next032_runtime_pending",
+      "status": "one_roadmap_intelligence_pack_v1_runtime_accepted_next032_signed_transport_next",
       "productBranch": "codex/r1-roadmap-integration",
       "productHead": "262bd768",
       "controlPlaneBranch": "codex/r1p14-signed-transport",
@@ -932,9 +946,8 @@
       "phase2aFrozen": false,
       "productionRootCeremonyAuthorized": false,
       "integratedNext": {
-        "primary": "intelligence_pack_v1_next032_runtime_acceptance",
+        "primary": "signed_transport_query_response_route_native_integration",
         "then": [
-          "signed_transport_query_response_route_native_integration",
           "packaged_windows_uat_and_integrated_release_acceptance"
         ],
         "intelligencePack": {
@@ -942,7 +955,7 @@
           "arbitraryExecutableCodeAllowed": false,
           "atomicRollbackRequired": true,
           "signingSeparationRequired": true,
-          "state": "source_closed_runtime_acceptance_pending",
+          "state": "next032_runtime_accepted",
           "productHead": "262bd768",
           "controlPlaneHead": "72eacf75",
           "packVersion": "1.0.0-next.1",
@@ -953,7 +966,16 @@
           "controlPlaneTests": "222/222",
           "releaseAuthoritativeSuite": true,
           "nativeCargoCheck": true,
-          "runtimeGenerationAccepted": false
+          "runtimeGenerationAccepted": true,
+          "runtimeGeneration": "g-2026-09-04-next-032",
+          "liveCatalogArtifactIdentityPassed": true,
+          "realCandidateStageActivateRestartReconcilePassed": true,
+          "acceptedFloorRejectPassed": true,
+          "corruptStateFailClosedPassed": true,
+          "rollbackPreviousRecoveryFixturePassed": true,
+          "twoVersionLiveRollbackProven": false,
+          "frontendRealCandidateTests": "2/2",
+          "systemdRestartPersistencePassed": true
         },
         "multiFileFocus": {
           "engineRewrite": false,
@@ -981,11 +1003,12 @@
         "authorityInvariant": "registry_then_micro_brain_then_evidence_resolver_then_domain_support_then_metric_runtime"
       },
       "activeNext": {
-        "generationId": "g-2026-09-04-next-031",
-        "sourceCommit": "8abc66971d5cae6cb232a4d6b48bd107fd77a52a",
-        "controlPlaneCommit": "bb50b0d53542da5cd908e2237cbca368f7f87073",
+        "generationId": "g-2026-09-04-next-032",
+        "sourceCommit": "262bd768fc48b7eb4e8948631da853da318f610c",
+        "controlPlaneCommit": "72eacf75209b6984955bec362ab7752176184478",
         "schema": "067_catalog_quarterly_pricing",
         "workerHealthy": true,
+        "intelligencePackVersion": "1.0.0-next.1",
         "roleRotationPerformed": false
       }
     }
@@ -1006,7 +1029,7 @@
     "r1p8": "production_blocked_by_r1p6_next_rehearsal_pass",
     "r1p9": "production_blocked_by_r1p6_next_rehearsal_pass_request_wire_not_frozen",
     "r1p10": "production_blocked_by_r1p6_next_rehearsal_pass",
-    "successorOverlay": "intelligence_pack_v1_source_closed_next032_runtime_pending_signed_transport_not_enforced"
+    "successorOverlay": "intelligence_pack_v1_runtime_accepted_next032_signed_transport_not_enforced"
   },
   "optionalCommerceRevenueMirror": {
     "provider": "paddle",

@@ -1,8 +1,8 @@
 {
   "schema": "lightbi.current-checkpoint.v1",
-  "updatedAt": "2026-09-04T15:37:08Z",
-  "status": "road_to_1_0_intelligence_pack_v1_source_closed_next032_runtime_acceptance_pending",
-  "activeRuntime": "NEXT g-2026-09-04-next-031 on 5272/5273/5274; worker healthy; owner role rotation not performed",
+  "updatedAt": "2026-09-04T16:16:00Z",
+  "status": "road_to_1_0_intelligence_pack_v1_runtime_accepted_next032",
+  "activeRuntime": "NEXT g-2026-09-04-next-032 on 5272/5273/5274; worker healthy; Intelligence Pack V1 runtime acceptance passed; owner role rotation not performed",
   "sourceCandidate": {
     "repo": "/home/ubuntu/n8n2erpnext/LightBI-exp-focus-subject",
     "branch": "codex/r1-roadmap-integration",
@@ -29,11 +29,17 @@
     "private_cp_authoritative_222_of_222_pass",
     "product_release_1_0_exact_head_pass",
     "native_tauri_cargo_check_pass",
-    "ssd_cache_cleanup_owner_authorized_generated_targets_only"
+    "ssd_cache_cleanup_owner_authorized_generated_targets_only",
+    "intelligence_pack_next032_immutable_generation_activated",
+    "intelligence_pack_live_catalog_artifact_sha_identity_pass",
+    "intelligence_pack_real_candidate_stage_activate_restart_reconcile_pass",
+    "intelligence_pack_real_candidate_accepted_floor_and_corrupt_state_fail_closed_pass",
+    "intelligence_pack_store_rollback_previous_recovery_cryptographic_fixture_pass",
+    "intelligence_pack_frontend_real_candidate_active_identity_2_of_2",
+    "next032_systemd_restart_persistence_pass"
   ],
-  "nextAction": "Build immutable NEXT032 from exact product 262bd768 and private CP 72eacf75, wire generation-owned Intelligence Pack 1.0.0-next.1, then run runtime stage/activate/restart/fallback/rollback/downgrade/active-pack identity acceptance.",
+  "nextAction": "Complete Signed Transport query binding, response integrity, route-class policy, native_http_request integration, replay/fallback negative probes, and NEXT-only acceptance without enabling Production trust authority.",
   "afterNext": [
-    "Complete Signed Transport query binding, response integrity, route-class policy, native_http_request integration and replay/fallback negative probes.",
     "Run packaged Windows/UAT and integrated Road-to-1.0 release acceptance."
   ],
   "blockers": [
@@ -43,20 +49,24 @@
   "productionTouched": false,
   "phase2aFrozen": false,
   "readFirst": [
-    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#109-2026-09-04-intelligence-pack-v1-source-closure-next032-runtime-gate-opens",
+    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#110-2026-09-04-intelligence-pack-v1-runtime-acceptance-next032-active",
     "docs/history/agent/plans/AGENT_PLAN_ROAD_TO_1_0_2026-08-31.md#2026-09-04-successor-execution-overlay--one-road-to-10",
-    "docs/architecture/road-to-1-0-trust-release-contract.md#nextinternal-intelligence-pack-v1-source-closure--2026-09-04"
+    "docs/architecture/road-to-1-0-trust-release-contract.md#nextinternal-intelligence-pack-v1-runtime-acceptance--2026-09-04"
   ],
   "activeNextGeneration": {
-    "generationId": "g-2026-09-04-next-031",
-    "parentGenerationId": "g-2026-09-03-next-030-focus-exp-03",
-    "sourceCommit": "8abc66971d5cae6cb232a4d6b48bd107fd77a52a",
+    "generationId": "g-2026-09-04-next-032",
+    "parentGenerationId": "g-2026-09-04-next-031",
+    "sourceCommit": "262bd768fc48b7eb4e8948631da853da318f610c",
     "coreBinaryCommit": "ed4b9233f690b9ddeb872ee858e0e9a8c46644e0",
-    "controlPlaneCommit": "bb50b0d53542da5cd908e2237cbca368f7f87073",
+    "controlPlaneCommit": "72eacf75209b6984955bec362ab7752176184478",
     "schema": "067_catalog_quarterly_pricing",
     "workerHealthy": true,
     "roleRotationPerformed": false,
-    "manifestSha256": "08fe08ea9dcc72d575721f1db891cd46ce46d030556c53d14c472dc4149c9797"
+    "manifestSha256": "28e8f20e9acdfb037fe464a95cb0039489bca8333c620e16757de0073fecda40",
+    "coreBinarySha256": "95be788197a853cff8c6d1665ef4d62e62ac71fd9dfa9546253efcda0b78aa7e",
+    "intelligencePackVersion": "1.0.0-next.1",
+    "intelligencePackEnvelopeSha256": "1c2446321ebecec5687f01f95dff0efe574efe4e56bdf10f13ed0802caea3376",
+    "intelligencePackPayloadSha256": "6415fddef704732e0d2e08936aaed729278f4a9c759b30a4daacb1c7ab7d8ec0"
   },
   "next032Candidate": {
     "generationId": "g-2026-09-04-next-032",
@@ -66,7 +76,9 @@
     "packVersion": "1.0.0-next.1",
     "packEnvelopeSha256": "1c2446321ebecec5687f01f95dff0efe574efe4e56bdf10f13ed0802caea3376",
     "packPayloadSha256": "6415fddef704732e0d2e08936aaed729278f4a9c759b30a4daacb1c7ab7d8ec0",
-    "deployed": false
+    "deployed": true,
+    "runtimeAccepted": true,
+    "acceptanceBoundary": "real candidate stage/activate/reconcile/floor/corrupt-state plus live HTTPS/restart; rollback/previous recovery fixture-proven because no second durable signed live pack exists"
   },
   "parallelFollowUp": "Production Trust R1-P5/R1-P6 remains owner-gated; future Team/Workspace Private Authenticated Transport remains technology-neutral and non-blocking for 1.0.",
   "futureSemanticDirection": {

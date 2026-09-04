@@ -123,19 +123,19 @@ This overlay updates execution priority without rewriting the historical R1-P0�
 
 ### Primary critical path
 
-`Intelligence Pack V1 source closure -> NEXT032 runtime acceptance -> Signed Transport integration -> packaged Windows/UAT + release acceptance`
+`Signed Transport integration -> packaged Windows/UAT + release acceptance`
 
-Micro Brain V1 acceptance remains anchored at `a1f6ee8`; the product successor has since advanced to `codex/r1-roadmap-integration` / `8abc669`. MB no longer owns the critical path. The successor continues on the Road-to-1.0 integration lane without renumbering R1-P0…R1-P13 or claiming stable 1.0.
+Micro Brain V1 acceptance remains anchored at `a1f6ee8`; the product successor has since advanced to `codex/r1-roadmap-integration` / `262bd768`. MB no longer owns the critical path. The successor continues on the Road-to-1.0 integration lane without renumbering R1-P0…R1-P13 or claiming stable 1.0.
 
 **Multi-file UX parity + Focus Subject is complete** at product successor `codex/r1-roadmap-integration` / `8abc669`. Focus is an Analysis Context sidecar over governed multi-source evidence: summary metrics and relationship/grain/period/currency/cardinality policy remain unchanged; only exact canonical-concept/value matches scope source evidence and Deep BA. Unmatched sources fail closed rather than inheriting another source identity. The narrative label `BA FOCUS` is renamed `Key attention`. Six-file ERP browser acceptance passes before/after governed-summary parity and exact Focus drill-through.
 
-The active immutable NEXT generation is `g-2026-09-04-next-031`, parent `g-2026-09-03-next-030-focus-exp-03`, app/source `8abc669`, reused server-binary provenance Core `ed4b9233`, private CP runtime `bb50b0d`, schema `067_catalog_quarterly_pricing`, manifest SHA-256 `08fe08ea9dcc72d575721f1db891cd46ce46d030556c53d14c472dc4149c9797`. Core/Gateway/CP/worker all report NEXT031 and the worker is healthy. Owner role rotation has not been performed.
+The active immutable NEXT generation is now `g-2026-09-04-next-032`, parent `g-2026-09-04-next-031`, product source `262bd768`, reused server-binary provenance Core `ed4b9233`, private CP runtime `72eacf75`, schema `067_catalog_quarterly_pricing`, manifest SHA-256 `28e8f20e9acdfb037fe464a95cb0039489bca8333c620e16757de0073fecda40`. Core/Gateway/CP/worker all report NEXT032 and the worker is healthy. Owner role rotation has not been performed.
 
 **Intelligence Pack Updater V1 source implementation is now closed** at product `262bd768` and private CP `72eacf75`. The implemented NEXT-only contract is signed/versioned/compatibility-gated/data-only, uses content-addressed `staged/active/previous` state plus an accepted-version floor, fails closed to previous/bundled intelligence, and keeps pack signing distinct from release/runtime-request authority. Exact-head gates pass: pack Rust `6/6`, frontend `2/2`, candidate `1.0.0-next.1` verifies to the accepted MB payload SHA, CP authoritative `222/222`, release-authoritative product gate PASS, and native Tauri `cargo check` PASS. Stable/public INT Root anchoring remains deliberately unfrozen; only the non-promotable NEXT/Internal TEST authority is used.
 
-The immediate execution gate is therefore **immutable NEXT032 runtime acceptance**. NEXT031 remains active until NEXT032 is built from exact committed source, wired to the Internal Intelligence Pack distribution edge, and passes stage/activate/restart/fallback/rollback/downgrade/runtime-identity probes. After that, continue Signed Transport query/response/route/native integration.
+**Intelligence Pack V1 runtime acceptance is complete on NEXT032.** The exact signed candidate passes live catalog/artifact identity, real-candidate stage→activate and fresh-process reconcile, accepted-version-floor and corrupt-state fail-closed probes, frontend active-identity handoff, plus NEXT-only systemd restart persistence. Rollback/verified-previous recovery is fixture-proven because only one durable signed Internal pack version currently exists; no two-version live rollback is claimed. The immediate execution gate is now Signed Transport query/response/route/native integration.
 
-After the pack contract is frozen, continue the bounded Signed Transport lane through canonical query binding, response-integrity semantics, route classes, native `native_http_request` integration and replay/fallback negative probes. Only then run packaged Windows/UAT and integrated release acceptance on the successor. Historical R1-P1/R1-P4 owner-acceptance items remain open where recorded; Production R1-P5/P6 authority remains separately owner-gated.
+Continue the bounded Signed Transport lane through canonical query binding, response-integrity semantics, route classes, native `native_http_request` integration and replay/fallback negative probes. Only then run packaged Windows/UAT and integrated release acceptance on the successor. Historical R1-P1/R1-P4 owner-acceptance items remain open where recorded; Production R1-P5/P6 authority remains separately owner-gated.
 
 ### Future semantic expansion lane
 
@@ -143,7 +143,7 @@ Cross-Domain Semantic Expansion is recorded as a durable post-MB-V1 direction, n
 
 ### Bounded parallel foundation — Signed Transport
 
-Product successor is now `codex/r1-roadmap-integration` / `8abc669`; the Signed Transport primitive remains the earlier ancestor `a8d55ee`. Private CP remains `codex/r1p14-signed-transport` / `c5875eb`. Together the bounded security foundation provides canonical body digest, Ed25519 device proof, server nonce, persisted monotonic sequence floor, anti-replay verification and a thin Internal-only UDS verification edge. Current gates: Rust golden vectors 3/3, attestation 15/15, Distribution 220/220.
+Product successor is now `codex/r1-roadmap-integration` / `262bd768`; the Signed Transport primitive remains the earlier ancestor `a8d55ee`. Private CP is now `codex/r1p14-signed-transport` / `72eacf75`, with the Signed Transport verification-edge foundation at ancestor `c5875eb`. Together the bounded security foundation provides canonical body digest, Ed25519 device proof, server nonce, persisted monotonic sequence floor, anti-replay verification and a thin Internal-only UDS verification edge. Current gates: Rust golden vectors 3/3, attestation 15/15, Distribution 220/220.
 
 This lane is **foundation, not enforcement**. No general route is signed-by-default yet. Required follow-up before enforcement: canonical query binding, response-integrity contract, route-class policy, native `native_http_request` integration and negative replay/fallback probes. Bootstrap pairing/trust issuance remains separately classified.
 
