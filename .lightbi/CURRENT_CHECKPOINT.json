@@ -1,64 +1,64 @@
 {
   "schema": "lightbi.current-checkpoint.v1",
-  "updatedAt": "2026-09-05T11:49:21Z",
-  "status": "road_to_1_0_next036_native_oauth_device_activation_pass_signed_transport_account_refresh_concurrency_open",
-  "activeRuntime": "engine g-2026-09-05-next-034; live Internal CP 2e6ad237; owner Windows package 0.9.2-beta.7-next.36; owner role rotation not performed",
+  "updatedAt": "2026-09-05T14:45:00Z",
+  "status": "road_to_1_0_next038_signed_transport_concurrency_remediated_machine_server_pass_owner_windows_uat_ready",
+  "activeRuntime": "engine g-2026-09-05-next-034; live Internal CP 2e6ad237; owner currently still on NEXT036 until NEXT038 install; NEXT038 TEST runtime REL published; owner role rotation not performed",
   "sourceCandidate": {
     "repo": "/home/ubuntu/n8n2erpnext/LightBI-exp-focus-subject",
     "branch": "codex/r1-roadmap-integration",
-    "head": "9f728bd674cd8812b035098c1a3487dfa6f4936f"
+    "head": "3423cad0e02a0a95cb3a80b74b12ecc818124d2e"
   },
   "runtimeControlPlane": "2e6ad2370f54f1f22dde06cb886cc410056df0d0",
   "publicationControlPlaneHead": "263edd0c8b88a3117a51ce5f0260dd42d3e17935",
-  "acceptanceOrchestration": "72e3f15de18e4beb685f4d48f71c32c79c2a4af6",
+  "acceptanceOrchestration": "1a28a5703cb68ea8ebc3c1831275d976df1cefe2",
   "completed": [
-    "next036_windows_machine_acceptance_run_33956396827_pass",
-    "next036_nsis_installed_runtime_rel_published_exact_sha_3e492343",
-    "next036_server_installation_challenge_issue_probe_pass",
-    "owner_google_native_callback_reaches_account_native_connected",
-    "owner_account_page_shows_active_next036_win32_device",
-    "rust_and_typescript_response_correlation_contract_source_parity_verified"
+    "next036_concurrency_root_cause_closed_by_sanitized_live_trace",
+    "account_session_refresh_single_flight_added",
+    "signed_transport_sequence_critical_section_serialized_process_local_and_windows_cross_process",
+    "next037_superseded_before_publication_due_thread_affine_mutex_review",
+    "next038_windows_machine_acceptance_run_33968609558_pass",
+    "next038_nsis_installed_runtime_rel_published_exact_sha_7bc89b9a",
+    "next038_issuer_and_attestation_snapshots_reloaded",
+    "next038_external_installation_challenge_issue_probe_pass"
   ],
-  "nextAction": "Capture one sanitized failing Account trace and bind the two near-simultaneous /api/account/session calls to the observed attestation_sequence_replay. Then remove duplicate account-refresh ownership/single-flight the UI path and make Signed Transport sequence allocation concurrency-safe without weakening replay/correlation or allowing WebView downgrade. Run targeted + release-authoritative gates, cut a new immutable successor (NEXT037 or later), publish only its NSIS-installed runtime TEST REL, prove server issuance, then rerun owner Windows UAT.",
+  "nextAction": "Owner installs only the verified NEXT038 NSIS artifact, launches it, opens Account, completes/retries Google native login if needed, then exercises restart and near-simultaneous protected activity while server evidence is correlated. Accept only if protected /api/account/session returns with valid response correlation and no legitimate attestation_sequence_replay, device_signature_invalid, or signed_transport_response_correlation failure.",
   "blockers": [
-    "Owner desktop protected account/session refresh fails closed as signed_transport_response_correlation_invalid after native Google callback succeeds",
-    "Current investigation observed duplicate /api/account/session plus attestation_sequence_replay; exact causal pair still needs one sanitized confirmation trace",
-    "Signed Transport sequence lifecycle is not yet hardened for legitimate concurrent protected requests / multi-process Windows activity",
+    "Owner Windows packaged UAT on NEXT038 has not yet been executed",
     "OS publisher remains NotSigned for Internal beta artifacts",
     "Production Phase-2A freeze remains owner-gated and false"
   ],
-  "next036": {
-    "version": "0.9.2-beta.7-next.36",
-    "generation": "g-2026-09-05-next-036",
-    "sourceHead": "9f728bd674cd8812b035098c1a3487dfa6f4936f",
-    "acceptanceControlPlaneBaseline": "3afb85b38e7cd6f9bd65eafbda723f9f6e0e88d4",
-    "windowsRun": 33956396827,
-    "orchestrationCommit": "72e3f15de18e4beb685f4d48f71c32c79c2a4af6",
-    "runtimeSha256": "3e492343d622179b41e9dc8f6a821c5d270ee0cba94dde745b144e163404fe11",
-    "runtimeSize": 76492288,
+  "next038": {
+    "version": "0.9.2-beta.7-next.38",
+    "generation": "g-2026-09-05-next-038",
+    "sourceHead": "3423cad0e02a0a95cb3a80b74b12ecc818124d2e",
+    "acceptanceControlPlaneBaseline": "2e6ad2370f54f1f22dde06cb886cc410056df0d0",
+    "windowsRun": 33968609558,
+    "orchestrationCommit": "1a28a5703cb68ea8ebc3c1831275d976df1cefe2",
+    "runtimeSha256": "7bc89b9a0704815e10b7c9fca627ae754bd20012b27d17139592b9ce12f11336",
+    "runtimeSize": 76506624,
     "runtimeIdentitySource": "nsis_silent_install",
-    "installerSha256": "3518617f1dd851d9987d31cac4a68c48bc8a12a4d5650f6e0f9834dcc531d640",
-    "installerSize": 31801482,
+    "installerSha256": "3b5200cf0de5d182f36420f8ecbe7f7de8056195761d81f86d8f6d50790975c5",
+    "installerSize": 31790434,
     "installerPayloadVerified": true,
     "testRelPublished": true,
     "serverCertificateIssuePassed": true,
-    "ownerBrowserNativeConnected": true,
-    "ownerDeviceActive": true,
     "ownerDesktopSignedAccountRefreshPassed": false,
-    "ownerUatAccepted": false
+    "ownerUatAccepted": false,
+    "productionAuthority": false
   },
   "liveSplit": {
     "engineGeneration": "g-2026-09-05-next-034",
     "engineSymlink": "/home/ubuntu/services/lightbi-next-engines/current",
     "liveControlPlane": "2e6ad2370f54f1f22dde06cb886cc410056df0d0",
     "liveControlPlanePort": 5274,
-    "ownerWindowsVersion": "0.9.2-beta.7-next.36"
+    "ownerWindowsVersion": "0.9.2-beta.7-next.36",
+    "nextOwnerCandidate": "0.9.2-beta.7-next.38"
   },
   "productionTouched": false,
   "phase2aFrozen": false,
   "readFirst": [
-    "docs/history/agent/handoffs/post-beta/AGENT_HANDOFF_NEXT036_SIGNED_TRANSPORT_RESPONSE_CORRELATION_2026-09-05.md",
-    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#119-2026-09-05-next036-native-oauth-reaches-device-activation-protected-account-refresh-exposes-signed-transport-concurrency-gate",
-    "docs/project-book/LIGHTBI_WORKLOG.md"
+    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#120-2026-09-05-next038-signed-transport-concurrency-remediation-reaches-owner-uat-gate",
+    "docs/project-book/LIGHTBI_WORKLOG.md",
+    "docs/history/agent/handoffs/post-beta/AGENT_HANDOFF_NEXT036_SIGNED_TRANSPORT_RESPONSE_CORRELATION_2026-09-05.md"
   ]
 }
