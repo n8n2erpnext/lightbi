@@ -1,66 +1,46 @@
 {
   "schema": "lightbi.current-checkpoint.v1",
-  "updatedAt": "2026-09-05T02:03:00Z",
-  "status": "road_to_1_0_next033_owner_packaged_runtime_mismatch_install_canonical_artifact",
-  "activeRuntime": "NEXT g-2026-09-05-next-033 on 5272/5273/5274; product 6c1f117; CP/worker 3afb85b; worker healthy; owner role rotation not performed",
+  "updatedAt": "2026-09-05T02:45:00Z",
+  "status": "road_to_1_0_next033_nsis_runtime_identity_root_cause_confirmed_next33_1_build_pending",
+  "activeRuntime": "NEXT g-2026-09-05-next-033; product 6c1f117; runtime CP/worker 3afb85b; owner role rotation not performed",
   "sourceCandidate": {
     "repo": "/home/ubuntu/n8n2erpnext/LightBI-exp-focus-subject",
     "branch": "codex/r1-roadmap-integration",
     "head": "6c1f11758093f21b1f7c03218d8fea52d3602d0f"
   },
-  "controlPlaneCandidate": {
-    "repo": "/home/ubuntu/n8n2erpnext/lightbi-control-plane-r1p14-signed-transport",
-    "branch": "codex/r1p14-signed-transport",
-    "head": "3afb85b38e7cd6f9bd65eafbda723f9f6e0e88d4"
-  },
+  "runtimeControlPlane": "3afb85b38e7cd6f9bd65eafbda723f9f6e0e88d4",
+  "publicationControlPlaneHead": "263edd0c8b88a3117a51ce5f0260dd42d3e17935",
   "completed": [
     "next033_server_edge_signed_transport_v2_accepted",
-    "canonical_windows_run_33933622073_success",
-    "canonical_next033_runtime_rel_external_crypto_verified",
-    "server_exact_runtime_installation_certificate_issue_pass",
-    "owner_packaged_restart_reached_installation_issuer",
-    "owner_packaged_noncanonical_runtime_rejected_fail_closed"
+    "owner_fresh_install_runtime_sha_observed_2031fc4b9185b1c649f75b5463ebd0d2a09c603dd8edcf0419aff700a57e131c_size_76444672",
+    "canonical_installer_probe_33939455110_installed_same_2031fc4b_runtime",
+    "root_cause_old_ci_signed_prebundle_runtime_not_nsis_installed_runtime",
+    "runtime_rel_publisher_hardened_263edd0_6_of_6_focused_223_of_223_full"
   ],
-  "nextAction": "Install the canonical NEXT033 CI installer from Actions run 33933622073 (installer SHA256 e02b61b270181cffa52dff37fb3f90db8b5ed3428df001f3e0cf733d0c79c5d4), fully restart LightBI, then open Account. Correlate issuer logs for exact-runtime certificate issuance and attestation/Distribution logs for packaged Signed Transport V2. Do not relax the verifier or publish an alternate REL for the mismatching current bytes.",
-  "afterNext": [
-    "Run integrated Road-to-1.0 release acceptance after packaged-native owner/UAT proof."
-  ],
+  "nextAction": "Wait for the sole canonical Windows remediation run 33939698146 at acceptance commit 7dfda736. If PASS, verify version 0.9.2-beta.7-next.33.1 artifact and rc-acceptance evidence proves nsis_silent_install identity, publish a new immutable TEST runtime REL through publisher 263edd0, reload NEXT installation issuer, prove exact challenge-to-certificate, then ask owner to install only that 33.1 installer and run packaged V2 UAT.",
   "blockers": [
-    "Current owner-installed NEXT033 executable failed canonical runtime SHA/size authorization with installation_issuer_runtime_artifact_mismatch",
-    "Packaged Signed Transport V2 cannot proceed until installation trust succeeds on the canonical CI runtime",
-    "OS publisher remains NotSigned/not verified for this TEST artifact",
+    "Corrected Windows packaging revision 0.9.2-beta.7-next.33.1 is still building in GitHub Actions run 33939698146",
+    "Published next.33 TEST REL intentionally remains immutable and does not authorize the actual old NSIS-installed runtime",
+    "OS publisher remains NotSigned/not verified for TEST artifacts",
     "Production Phase-2A freeze remains owner-gated and false"
   ],
+  "next033Packaging": {
+    "oldCanonicalRun": 33933622073,
+    "oldRuntimeRelSha256": "77952884cfa93559157536e6b884a12522f4f5f02123fe8717ba91ea3a0dae9d",
+    "oldInstallerSha256": "e02b61b270181cffa52dff37fb3f90db8b5ed3428df001f3e0cf733d0c79c5d4",
+    "actualInstalledRuntimeSha256": "2031fc4b9185b1c649f75b5463ebd0d2a09c603dd8edcf0419aff700a57e131c",
+    "runtimeSize": 76444672,
+    "probeRun": 33939455110,
+    "probeCommit": "972170559c635240958eae4bf31ebecdbb81df28",
+    "remediationVersion": "0.9.2-beta.7-next.33.1",
+    "remediationRun": 33939698146,
+    "remediationCommit": "7dfda736a615aaf345918dd46bd9e377c5323ec1",
+    "ownerUatAccepted": false
+  },
   "productionTouched": false,
   "phase2aFrozen": false,
   "readFirst": [
-    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#115-2026-09-05-owner-packaged-next033-restart-fails-closed-on-non-canonical-runtime-bytes",
-    "docs/architecture/road-to-1-0-trust-release-contract.md#next033-owner-packaged-native-negative-proof--non-canonical-runtime-rejected--2026-09-05",
-    "docs/history/agent/plans/AGENT_PLAN_ROAD_TO_1_0_2026-08-31.md#signed-transport-v2-runtime-acceptance-and-packaged-native-gate"
-  ],
-  "next033NativeTrust": {
-    "generationId": "g-2026-09-05-next-033",
-    "productCommit": "6c1f11758093f21b1f7c03218d8fea52d3602d0f",
-    "controlPlaneCommit": "3afb85b38e7cd6f9bd65eafbda723f9f6e0e88d4",
-    "githubRun": 33933622073,
-    "orchestrationCommit": "21ea8f8bc1d7af2959b11fb88aced8fa3e45bc98",
-    "runtimeReleaseId": "release:0.9.2-beta.7-next.33:windows:x86_64:runtime",
-    "runtimeSha256": "77952884cfa93559157536e6b884a12522f4f5f02123fe8717ba91ea3a0dae9d",
-    "runtimeSize": 76444672,
-    "installerSha256": "e02b61b270181cffa52dff37fb3f90db8b5ed3428df001f3e0cf733d0c79c5d4",
-    "installerSize": 31794432,
-    "runtimeRelPublished": true,
-    "externalCryptographicVerification": true,
-    "serverInstallationCertificateIssuePassed": true,
-    "osPublisher": "NotSigned",
-    "ownerUatAccepted": false,
-    "productionAuthority": false,
-    "promotableToProduction": false,
-    "ownerRestartAttempted": true,
-    "ownerRuntimeCanonicalMatch": false,
-    "ownerRuntimeRejection": "installation_issuer_runtime_artifact_mismatch",
-    "ownerSubmittedRuntimeDigestKnown": false,
-    "ownerInstallationCertificateIssued": false,
-    "packagedV2Reached": false
-  }
+    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#116-2026-09-05-next033-nsis-runtime-identity-drift-root-cause-confirmed",
+    "docs/project-book/LIGHTBI_WORKLOG.md"
+  ]
 }
