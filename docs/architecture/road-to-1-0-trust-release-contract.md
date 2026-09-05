@@ -205,6 +205,17 @@ This closes the **NEXT/Internal server/edge runtime** portion only. The operator
 
 `phase2aFrozen=false`; no Production Root/issuer/signer authority was created, no owner role rotation occurred, and Production was not touched.
 
+
+### NEXT033 canonical Windows runtime REL and server installation-trust closure — 2026-09-05
+
+The missing runtime-REL blocker recorded above is now machine-closed without changing the owner-acceptance boundary. Governed Windows run `33933622073` built exact product `6c1f11758093f21b1f7c03218d8fea52d3602d0f` with CP identity `3afb85b38e7cd6f9bd65eafbda723f9f6e0e88d4` for `g-2026-09-05-next-033`. Canonical `LightBI.exe` is 76,444,672 bytes / SHA-256 `77952884cfa93559157536e6b884a12522f4f5f02123fe8717ba91ea3a0dae9d`; the NSIS installer is 31,794,432 bytes / SHA-256 `e02b61b270181cffa52dff37fb3f90db8b5ed3428df001f3e0cf733d0c79c5d4`. The acceptance evidence explicitly keeps `production_authority=false`, `stable_publication_authority=false`, `owner_uat_accepted=false`; OS publisher evidence is `NotSigned`.
+
+The canonical NEXT runtime publisher signed `release:0.9.2-beta.7-next.33:windows:x86_64:runtime` through the isolated TEST REL authority after exact artifact/provenance checks. Publication was rehearsed against a staging copy, then only the immutable REL, runtime summary and `index.json` were atomically advanced in the live Internal trust directory, with `index.json` last. External HTTPS bytes match local publication bytes exactly. Independent verification using externally retrieved Root pin and issuer keyset validates the REL under key `next-test-rel-2026-01`, authority `next-test-20260902-031220`, Trust Contracts `10de4da8...`, and exact artifact SHA/size. `promotableToProduction=false` remains explicit.
+
+Installation issuance is also machine-proven for the exact release. The first challenge rejected `installation_issuer_release_not_allowed` because `NextInstallationAuthority.create()` snapshots `index.json` at process startup. No issuer-source drift existed between the running image's source and current CP, so the same hardened issuer image was restarted to reload public trust state rather than rebuilt or patched. Post-reload UDS health reports TEST-only, attestation-only, no production authority. A real external challenge with an ephemeral Ed25519 device key, exact release ID and exact runtime SHA/size then accepted the device signature and issued a TEST installation certificate.
+
+This does **not** prove the owner's currently installed executable has the canonical SHA, that its OS credential vault persisted the device key/certificate, or that packaged Tauri V2 traffic exercised the no-WebView-downgrade behavior. The owner-visible NEXT033 instance predates publication and installation trust retries only at native startup. Those items remain the final packaged-native owner/UAT gate before integrated release acceptance. TEST REL/ATT evidence does not establish OS Authenticode publisher identity. `phase2aFrozen=false`; Production remains untouched and no role rotation occurred.
+
 ## Exit sequence
 
 `Phase 2A re-audit → explicit freeze → offline Root ceremony → purpose-separated private signer → REL → ATT → signed ENT → private PRO delivery → platform signing/anti-impersonation closure → RC/1.0`.

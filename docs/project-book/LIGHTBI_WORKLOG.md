@@ -1570,3 +1570,13 @@ R1-P0 documentation/integrity closure verified 1,243 local links with zero missi
 - Restarted CP/worker/Core/Gateway and verifier; all PIDs changed and NEXT033 identity, healthy worker, blocked Trust state and external V2 probes remained green after restart. SSD stayed ~75% used / ~31 GiB free; no heavy Rust/Core rebuild was needed.
 - Runtime acceptance boundary is server/edge only. The operator harness used an ephemeral TEST ATT certificate; Distribution never received signer authority. Current TEST Trust publication has two installer RELs and **no `LightBI.exe` runtime REL** for `release:0.9.2-beta.7-next.33:windows:x86_64:runtime`, so packaged Windows `ensure_installation_trust`, OS-protected device key, packaged `native_http_request`, no-WebView-downgrade UAT and owner acceptance remain the next gate.
 - Production untouched, owner role rotation not performed, `phase2aFrozen=false`.
+
+
+## 2026-09-05 — NEXT033 Windows runtime REL published; exact installation issuer passes
+
+- GitHub Actions run `33933622073` on `codex/r1p13-rc-acceptance` built exact product `6c1f117...` / CP `3afb85b...` for `g-2026-09-05-next-033`; exact-source gate, Windows native tests/build, canonical acceptance evidence and upload passed. Orchestration commit `21ea8f8...` is CI authority only.
+- GitHub artifact ZIP SHA-256 verified `162a3246...b7572`. Canonical `LightBI.exe`: 76,444,672 bytes / SHA-256 `77952884...dae9d`. NSIS installer: 31,794,432 bytes / SHA-256 `e02b61b2...9c5d4`. Acceptance remains `next_internal_test_only`, `owner_uat_accepted=false`, OS publisher `NotSigned`.
+- Published exact runtime REL `release:0.9.2-beta.7-next.33:windows:x86_64:runtime` through TEST authority `next-test-20260902-031220`; external Root/keyset verification and external/local byte parity passed. TEST authority is non-promotable.
+- Initial challenge failed `installation_issuer_release_not_allowed` because issuer snapshots the trust index at startup. No issuer code drift existed from its image source to current CP, so the same image was restarted. Post-reload exact external challenge + ephemeral Ed25519 device proof + certificate issue passed; issuer remains attestation-only, `productionAuthority=false`.
+- Owner Windows screenshots show correct NEXT033/`6c1f117`/`3afb85b`, healthy services, Isolation OK and Intelligence Pack active, but they predate REL publication and therefore still show REL/artifact not evaluated and installation certificate unavailable. Native installation trust retries only at app startup.
+- Next gate: close/reopen the owner Windows app and prove exact installed runtime/certificate plus packaged V2 signed native request/no-WebView-downgrade behavior. Production untouched; role rotation not performed; `phase2aFrozen=false`.

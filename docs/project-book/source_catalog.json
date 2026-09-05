@@ -1,14 +1,14 @@
 {
   "schemaVersion": "lightbi.project-book.source-catalog.v1",
   "snapshotDate": "2026-09-05",
-  "generatedAt": "2026-09-05T00:35:00Z",
+  "generatedAt": "2026-09-05T01:46:13Z",
   "branch": "docs/ba-da-mode-future-20260903",
-  "head": "3ba303aed2ab486d060f798096e15dea7a6cd00c",
+  "head": "f7f7f79bb0d2efd5c24d21269c2172e83b08fd6e",
   "worktreeDirty": true,
   "scope": "All project Markdown and JSON outside dependency/build/project-book directories.",
   "counts": {
-    "total": 941,
-    "markdown": 524,
+    "total": 946,
+    "markdown": 529,
     "json": 417,
     "docsJson": 354,
     "references": 0
@@ -5593,7 +5593,8 @@
       "extension": ".md",
       "bytes": 3770,
       "sha256": "20fea7edb2bf7855bf9c57cff2ba11efaab7bb383e0a3cf275cf093699ebeec0",
-      "suggestedCategory": "architecture-source-or-evidence"
+      "suggestedCategory": "architecture-source-or-evidence",
+      "title": "phase-7r31-required-family-closure.md"
     },
     {
       "path": "docs/architecture/phase-7r32-conditional-gross-profit-closure.md",
@@ -9150,8 +9151,8 @@
     {
       "path": "docs/architecture/road-to-1-0-trust-release-contract.md",
       "extension": ".md",
-      "bytes": 32184,
-      "sha256": "5f0a144077532465198c6ef6d4c6dc8cfd960df20f9c6c41a443086b5ba35297",
+      "bytes": 35015,
+      "sha256": "d60d65e517311943ca268f96d33dffb7103986cdaad6e1fb621724928386e879",
       "suggestedCategory": "architecture-source-or-evidence",
       "title": "Road to 1.0 Trust, Release, and Official Identity Contract"
     },
@@ -9242,6 +9243,46 @@
       "sha256": "30bb1af92ee702793b0c69dbd21f90001dc93cfd075d6e3a0e0230ec81c42367",
       "suggestedCategory": "architecture-source-or-evidence",
       "title": "Analytical Workspace Model"
+    },
+    {
+      "path": "docs/compliance/LEGAL_RESEARCH_BASELINE_2026-09-05.md",
+      "extension": ".md",
+      "bytes": 10584,
+      "sha256": "f2d2642b29c2b8d6c515f4fd28185fba64f349863d2a34cb5bd63d89da363006",
+      "suggestedCategory": "compliance-source-or-evidence",
+      "title": "LightBI Legal Research Baseline — EU/EEA, United States, Vietnam"
+    },
+    {
+      "path": "docs/compliance/LIGHTBI_PUBLIC_COMPLIANCE_FRAMEWORK.md",
+      "extension": ".md",
+      "bytes": 18366,
+      "sha256": "4897c3d070d03d560236d9f6d91fb683f69bd49f4387eaf14814efab54e35649",
+      "suggestedCategory": "compliance-source-or-evidence",
+      "title": "LightBI Public Compliance & Disclosure Framework"
+    },
+    {
+      "path": "docs/compliance/PHASE_B_INVENTORY_2026-09-05.md",
+      "extension": ".md",
+      "bytes": 8585,
+      "sha256": "523c17cbea6f29ccdd127363b52d3ccff6340b60474035abf4bdca60dc3aa348",
+      "suggestedCategory": "compliance-source-or-evidence",
+      "title": "Phase B — Compliance Inventory Baseline"
+    },
+    {
+      "path": "docs/compliance/R1_PRE_RELEASE_ARMOR_TRUST_COMPLIANCE_PLAN.md",
+      "extension": ".md",
+      "bytes": 10902,
+      "sha256": "f468e97ec4e6ec11de501fc258fe7da2e6c60a741b9cd8d5e2202c0a3d4e3742",
+      "suggestedCategory": "compliance-source-or-evidence",
+      "title": "R1 Pre-Release Armor / Trust & Compliance Plan"
+    },
+    {
+      "path": "docs/compliance/README.md",
+      "extension": ".md",
+      "bytes": 2403,
+      "sha256": "aa2ced1e58f917517d0100726c071839f3af52de3cdfc961d076b24d7827565e",
+      "suggestedCategory": "compliance-source-or-evidence",
+      "title": "LightBI Compliance Governance"
     },
     {
       "path": "docs/design/ui-baseline.md",
@@ -10174,8 +10215,8 @@
     {
       "path": "docs/history/agent/plans/AGENT_PLAN_ROAD_TO_1_0_2026-08-31.md",
       "extension": ".md",
-      "bytes": 20149,
-      "sha256": "2761c9918b717030631d728d4f5894eb60c815fc82b8c47368deb305ffd3d558",
+      "bytes": 20471,
+      "sha256": "5436d7389229603d254702ef651c1903f259213a732d86f711afdfaa62551c3a",
       "suggestedCategory": "historical-provenance",
       "title": "LightBI Road to 1.0 Execution Plan — 2026-08-31"
     },
@@ -10184,7 +10225,8 @@
       "extension": ".md",
       "bytes": 349,
       "sha256": "f42cedb986737b45c39795b740bbe175adf56ebd573aa8b1f4458116589ee569",
-      "suggestedCategory": "historical-provenance"
+      "suggestedCategory": "historical-provenance",
+      "title": "AGENT_TASK.md"
     },
     {
       "path": "docs/history/agent/walkthroughs/AGENT_WALKTHROUGH.md",
