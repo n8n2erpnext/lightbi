@@ -1,9 +1,62 @@
 use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine as _};
 use serde::{Deserialize, Serialize};
-use std::{collections::HashMap, net::IpAddr, time::Duration};
+use std::{collections::HashMap, net::IpAddr, sync::OnceLock, time::Duration};
 use tauri::AppHandle;
 
+#[cfg(target_os = "windows")]
+use windows_sys::Win32::{
+    Foundation::{CloseHandle, HANDLE, WAIT_ABANDONED, WAIT_OBJECT_0},
+    System::Threading::{CreateMutexW, ReleaseMutex, WaitForSingleObject},
+};
+
 use crate::{installation_trust, signed_transport};
+
+static SIGNED_TRANSPORT_PROCESS_LOCK: OnceLock<tokio::sync::Mutex<()>> = OnceLock::new();
+#[cfg(target_os = "windows")]
+const SIGNED_TRANSPORT_MUTEX_NAME: &str = "Local\\LightBISignedTransportSequenceV1";
+
+fn signed_transport_process_lock() -> &'static tokio::sync::Mutex<()> {
+    SIGNED_TRANSPORT_PROCESS_LOCK.get_or_init(|| tokio::sync::Mutex::new(()))
+}
+
+#[cfg(target_os = "windows")]
+struct SignedTransportInterprocessLock(usize);
+
+#[cfg(target_os = "windows")]
+impl Drop for SignedTransportInterprocessLock {
+    fn drop(&mut self) {
+        unsafe {
+            let handle = self.0 as HANDLE;
+            let _ = ReleaseMutex(handle);
+            let _ = CloseHandle(handle);
+        }
+    }
+}
+
+#[cfg(target_os = "windows")]
+fn acquire_signed_transport_interprocess_lock() -> Result<SignedTransportInterprocessLock, String> {
+    let name: Vec<u16> = SIGNED_TRANSPORT_MUTEX_NAME.encode_utf16().chain(Some(0)).collect();
+    let handle = unsafe { CreateMutexW(std::ptr::null(), 0, name.as_ptr()) };
+    if handle.is_null() {
+        return Err("Could not create signed-transport sequence lock.".to_string());
+    }
+    let wait = unsafe { WaitForSingleObject(handle, 60_000) };
+    if wait != WAIT_OBJECT_0 && wait != WAIT_ABANDONED {
+        unsafe {
+            let _ = CloseHandle(handle);
+        }
+        return Err("Timed out waiting for signed-transport sequence lock.".to_string());
+    }
+    Ok(SignedTransportInterprocessLock(handle as usize))
+}
+
+#[cfg(not(target_os = "windows"))]
+struct SignedTransportInterprocessLock;
+
+#[cfg(not(target_os = "windows"))]
+fn acquire_signed_transport_interprocess_lock() -> Result<SignedTransportInterprocessLock, String> {
+    Ok(SignedTransportInterprocessLock)
+}
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -148,6 +201,12 @@ async fn signed_native_http_request(
     {
         return Err("signed_transport_read_body_forbidden".to_string());
     }
+    // The nonce only exposes the persisted sequence floor. Keep nonce acquisition,
+    // sequence selection, request verification and correlated response collection
+    // in one critical section so concurrent callers cannot sign the same floor + 1.
+    // The named Windows mutex extends the invariant across multiple LightBI processes.
+    let _process_lock = signed_transport_process_lock().lock().await;
+    let _interprocess_lock = acquire_signed_transport_interprocess_lock()?;
     let identity = installation_trust::load_signed_transport_identity(app).await?;
     let client = reqwest::Client::builder()
         .redirect(reqwest::redirect::Policy::none())

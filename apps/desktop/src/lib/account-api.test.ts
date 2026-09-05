@@ -14,6 +14,20 @@ describe('LightBI account client',()=>{
     expect(account?.entitlement.tier).toBe('pro');
     expect(currentLicenseTier()).toBe('pro');
   });
+  it('single-flights concurrent account session refreshes for the same endpoint',async()=>{
+    const fetchMock=vi.fn(async()=>{
+      await new Promise(resolve=>setTimeout(resolve,10));
+      return new Response(JSON.stringify({authenticated:false}),{status:401,headers:{'content-type':'application/json'}});
+    });
+    vi.stubGlobal('fetch',fetchMock);
+    const [first,second]=await Promise.all([
+      loadLightBIAccount('https://distribution.test'),
+      loadLightBIAccount('https://distribution.test'),
+    ]);
+    expect(first).toBeNull();
+    expect(second).toBeNull();
+    expect(fetchMock).toHaveBeenCalledOnce();
+  });
   it('downgrades local state when the server rejects the session',async()=>{
     localStorage.setItem('lightbi-license-tier','pro');
     vi.stubGlobal('fetch',vi.fn().mockResolvedValue(new Response(JSON.stringify({authenticated:false}),{status:401,headers:{'content-type':'application/json'}})));

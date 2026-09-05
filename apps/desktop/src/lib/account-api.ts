@@ -26,6 +26,7 @@ const version = () => import.meta.env.VITE_LIGHTBI_VERSION ?? '0.9.2-beta.7';
 const platform = () => navigator.platform || 'unknown';
 const ENTITLEMENT_CHECK_KEY = 'lightbi-account-entitlement-checked-at';
 const OFFLINE_GRACE_MS = 7 * 24 * 60 * 60 * 1000;
+const accountLoadInFlight = new Map<string, Promise<LightBIAccountSummary | null>>();
 
 async function nativeToken(): Promise<string | null> {
   if (!isNativeLightBI()) return null;
@@ -108,7 +109,7 @@ async function accountResult(response: Response, fallback: string) {
   return result;
 }
 
-export async function loadLightBIAccount(endpoint?: string): Promise<LightBIAccountSummary | null> {
+async function loadLightBIAccountRequest(endpoint?: string): Promise<LightBIAccountSummary | null> {
   try {
     const response = await accountFetch('/api/account/session', {}, endpoint);
     const result = await response.json().catch(() => ({})) as Record<string, unknown>;
@@ -127,6 +128,18 @@ export async function loadLightBIAccount(endpoint?: string): Promise<LightBIAcco
     if (!checkedAt || Date.now() - checkedAt > OFFLINE_GRACE_MS) setCurrentLicenseTier('basic');
     throw normalizedAccountFailure(error);
   }
+}
+
+export function loadLightBIAccount(endpoint?: string): Promise<LightBIAccountSummary | null> {
+  const key = endpoint ?? '__default__';
+  const existing = accountLoadInFlight.get(key);
+  if (existing) return existing;
+  let pending: Promise<LightBIAccountSummary | null>;
+  pending = loadLightBIAccountRequest(endpoint).finally(() => {
+    if (accountLoadInFlight.get(key) === pending) accountLoadInFlight.delete(key);
+  });
+  accountLoadInFlight.set(key, pending);
+  return pending;
 }
 
 async function finishNativeLoginPolling(base: string, loginId: string, installationId: string, expiresIn = 600): Promise<string> {
