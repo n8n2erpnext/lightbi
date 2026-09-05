@@ -1,5 +1,5 @@
 import { getOrCreateInstallationId, lightBIDistributionEndpoint, setCurrentLicenseTier } from './distribution-pairing';
-import { isNativeLightBI } from './native-runtime';
+import { invalidateNativeInstallationTrust, isNativeLightBI, requireNativeInstallationTrust } from './native-runtime';
 import { externalFetch, openExternalUrl } from './native-capabilities';
 import { lightBIFrontendUrl } from './lightbi-routing';
 
@@ -39,16 +39,67 @@ async function storeNativeToken(token: string | null): Promise<void> {
   await invoke('store_account_session_token', { token });
 }
 
+function accountFailureMessage(cause: unknown): string {
+  if (cause instanceof Error && cause.message.trim()) return cause.message.trim();
+  if (typeof cause === 'string' && cause.trim()) return cause.trim();
+  return 'Unknown account transport error.';
+}
+
+function recoverableLocalTrustFailure(cause: unknown): boolean {
+  const message = accountFailureMessage(cause).toLowerCase();
+  return message.includes('installation certificate device-key binding mismatch')
+    || message.includes('installation certificate is not available yet')
+    || message.includes('stored installation certificate is invalid')
+    || message.includes('stored installation certificate authority is invalid')
+    || message.includes('stored installation certificate identity is invalid')
+    || message.includes('stored installation certificate envelope is invalid');
+}
+
+function normalizedAccountFailure(cause: unknown): Error {
+  const message = accountFailureMessage(cause);
+  if (message.startsWith('LightBI secure account connection is not ready.') || message.startsWith('LightBI account service is unreachable.')) {
+    return cause instanceof Error ? cause : new Error(message);
+  }
+  const lower = message.toLowerCase();
+  if (lower.includes('installation trust') || lower.includes('installation certificate') || lower.includes('signed transport')) {
+    return new Error(`LightBI secure account connection is not ready. ${message}`);
+  }
+  if (/(timed out|timeout|connect|connection|dns|tls|network|failed to fetch|unreachable|proxy|firewall)/i.test(message)) {
+    return new Error(`LightBI account service is unreachable. Local analysis remains available. Check internet, DNS, firewall, proxy or VPN access, then retry. ${message}`);
+  }
+  return cause instanceof Error ? cause : new Error(message);
+}
+
 async function accountFetch(path: string, options: RequestInit = {}, endpoint?: string) {
-  const token = await nativeToken();
-  const headers = new Headers(options.headers);
-  if (options.body && !headers.has('content-type')) headers.set('content-type', 'application/json');
-  if (token) headers.set('authorization', `Bearer ${token}`);
-  return externalFetch(`${lightBIDistributionEndpoint(endpoint)}${path}`, {
-    ...options,
-    headers,
-    credentials: isNativeLightBI() ? 'omit' : 'include',
-  });
+  const native = isNativeLightBI();
+  const installationId = native ? getOrCreateInstallationId() : null;
+  const send = async () => {
+    const token = await nativeToken();
+    const headers = new Headers(options.headers);
+    if (options.body && !headers.has('content-type')) headers.set('content-type', 'application/json');
+    if (token) headers.set('authorization', `Bearer ${token}`);
+    return externalFetch(`${lightBIDistributionEndpoint(endpoint)}${path}`, {
+      ...options,
+      headers,
+      credentials: native ? 'omit' : 'include',
+    });
+  };
+
+  try {
+    if (installationId) await requireNativeInstallationTrust(installationId);
+    return await send();
+  } catch (cause) {
+    if (installationId && recoverableLocalTrustFailure(cause)) {
+      invalidateNativeInstallationTrust();
+      try {
+        await requireNativeInstallationTrust(installationId);
+        return await send();
+      } catch (retryCause) {
+        throw normalizedAccountFailure(retryCause);
+      }
+    }
+    throw normalizedAccountFailure(cause);
+  }
 }
 
 async function accountResult(response: Response, fallback: string) {
@@ -60,27 +111,50 @@ async function accountResult(response: Response, fallback: string) {
 export async function loadLightBIAccount(endpoint?: string): Promise<LightBIAccountSummary | null> {
   try {
     const response = await accountFetch('/api/account/session', {}, endpoint);
-    if (!response.ok) { setCurrentLicenseTier('basic'); localStorage.removeItem(ENTITLEMENT_CHECK_KEY); return null; }
-    const result = await response.json() as LightBIAccountSummary;
-    setCurrentLicenseTier(result.entitlement?.tier === 'pro' ? 'pro' : 'basic');
+    const result = await response.json().catch(() => ({})) as Record<string, unknown>;
+    if (response.status === 401 && result.authenticated === false && typeof result.error !== 'string') {
+      setCurrentLicenseTier('basic');
+      localStorage.removeItem(ENTITLEMENT_CHECK_KEY);
+      return null;
+    }
+    if (!response.ok) throw new Error(typeof result.error === 'string' ? result.error : `Account service returned HTTP ${response.status}.`);
+    const account = result as unknown as LightBIAccountSummary;
+    setCurrentLicenseTier(account.entitlement?.tier === 'pro' ? 'pro' : 'basic');
     localStorage.setItem(ENTITLEMENT_CHECK_KEY, String(Date.now()));
-    return result;
+    return account;
   } catch (error) {
     const checkedAt = Number(localStorage.getItem(ENTITLEMENT_CHECK_KEY) || 0);
     if (!checkedAt || Date.now() - checkedAt > OFFLINE_GRACE_MS) setCurrentLicenseTier('basic');
-    throw error;
+    throw normalizedAccountFailure(error);
   }
 }
 
 async function finishNativeLoginPolling(base: string, loginId: string, installationId: string, expiresIn = 600): Promise<string> {
   const deadline = Date.now() + Math.min(600, expiresIn || 600) * 1000;
+  let consecutiveTransportFailures = 0;
   while (Date.now() < deadline) {
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    const statusResponse = await externalFetch(`${base}/api/account/device-login/status`, {
-      method: 'POST', headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ loginId, installationId }),
-    });
-    if (!statusResponse.ok) continue;
+    await new Promise(resolve => setTimeout(resolve, Math.min(5000, 1500 * Math.max(1, consecutiveTransportFailures))));
+    let statusResponse: Response;
+    try {
+      statusResponse = await accountFetch('/api/account/device-login/status', {
+        method: 'POST', headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ loginId, installationId }),
+      }, base);
+    } catch (cause) {
+      consecutiveTransportFailures += 1;
+      if (consecutiveTransportFailures >= 3) throw normalizedAccountFailure(cause);
+      continue;
+    }
+    if (!statusResponse.ok) {
+      const failure = await statusResponse.json().catch(() => ({})) as { error?: string };
+      if (statusResponse.status === 429 || statusResponse.status >= 500) {
+        consecutiveTransportFailures += 1;
+        if (consecutiveTransportFailures >= 3) throw new Error(failure.error || `Account service returned HTTP ${statusResponse.status}.`);
+        continue;
+      }
+      throw new Error(failure.error || 'Strong sign-in expired or was denied.');
+    }
+    consecutiveTransportFailures = 0;
     const status = await statusResponse.json() as { status: string; token?: string };
     if (status.status === 'pending' || status.status === 'mfa_required') continue;
     if (status.status !== 'complete' || !status.token) throw new Error('Strong sign-in expired or was denied.');
@@ -96,9 +170,8 @@ export async function beginLightBIGoogleLogin(endpoint?: string): Promise<LightB
     return null;
   }
   const installationId = getOrCreateInstallationId();
-  const response = await externalFetch(`${base}/api/account/device-login/start`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ installationId, deviceName: `LightBI on ${platform()}`, platform: platform(), appVersion: version() }) });
-  if (!response.ok) throw new Error('Could not start Google sign-in.');
-  const started = await response.json() as { loginId: string; authorizationUrl: string; expiresIn: number };
+  const response = await accountFetch('/api/account/device-login/start', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ installationId, deviceName: `LightBI on ${platform()}`, platform: platform(), appVersion: version() }) }, base);
+  const started = await accountResult(response, 'Could not start Google sign-in.') as unknown as { loginId: string; authorizationUrl: string; expiresIn: number };
   await openExternalUrl(started.authorizationUrl);
   const token = await finishNativeLoginPolling(base, started.loginId, installationId, started.expiresIn);
   await storeNativeToken(token);

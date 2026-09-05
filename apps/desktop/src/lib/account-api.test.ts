@@ -7,7 +7,7 @@ import { currentLicenseTier } from './distribution-pairing';
 vi.mock('@tauri-apps/api/core', () => ({ invoke: vi.fn(async (command: string) => command === 'account_session_token' ? null : undefined) }));
 
 describe('LightBI account client',()=>{
-  beforeEach(()=>{localStorage.clear();vi.restoreAllMocks();delete (window as any).__TAURI_INTERNALS__;});
+  beforeEach(()=>{localStorage.clear();vi.restoreAllMocks();vi.unstubAllEnvs();delete (window as any).__TAURI_INTERNALS__;});
   it('accepts only server-authoritative entitlement state',async()=>{
     vi.stubGlobal('fetch',vi.fn().mockResolvedValue(new Response(JSON.stringify({authenticated:true,account:{id:'a',email:'user@example.com',provider:'google',created_at:''},entitlement:{tier:'pro',status:'active',max_devices:2},devices:[]}),{status:200,headers:{'content-type':'application/json'}})));
     const account=await loadLightBIAccount('https://distribution.test');
@@ -16,9 +16,23 @@ describe('LightBI account client',()=>{
   });
   it('downgrades local state when the server rejects the session',async()=>{
     localStorage.setItem('lightbi-license-tier','pro');
-    vi.stubGlobal('fetch',vi.fn().mockResolvedValue(new Response('{}',{status:401})));
+    vi.stubGlobal('fetch',vi.fn().mockResolvedValue(new Response(JSON.stringify({authenticated:false}),{status:401,headers:{'content-type':'application/json'}})));
     expect(await loadLightBIAccount('https://distribution.test')).toBeNull();
     expect(currentLicenseTier()).toBe('basic');
+  });
+  it('does not misclassify a signed-transport 401 as an unauthenticated account session',async()=>{
+    localStorage.setItem('lightbi-license-tier','pro');
+    localStorage.setItem('lightbi-account-entitlement-checked-at',String(Date.now()));
+    vi.stubGlobal('fetch',vi.fn().mockResolvedValue(new Response(JSON.stringify({error:'attestation_device_signature_invalid'}),{status:401,headers:{'content-type':'application/json'}})));
+    await expect(loadLightBIAccount('https://distribution.test')).rejects.toThrow(/attestation_device_signature_invalid/);
+    expect(currentLicenseTier()).toBe('pro');
+  });
+  it('keeps recent Pro state during a temporary account-service outage',async()=>{
+    localStorage.setItem('lightbi-license-tier','pro');
+    localStorage.setItem('lightbi-account-entitlement-checked-at',String(Date.now()));
+    vi.stubGlobal('fetch',vi.fn().mockResolvedValue(new Response(JSON.stringify({error:'temporary_unavailable'}),{status:503,headers:{'content-type':'application/json'}})));
+    await expect(loadLightBIAccount('https://distribution.test')).rejects.toThrow(/temporary_unavailable/);
+    expect(currentLicenseTier()).toBe('pro');
   });
   it('registers an email account without storing credentials locally',async()=>{
     const fetchMock=vi.fn().mockResolvedValue(new Response(JSON.stringify({accepted:true}),{status:202,headers:{'content-type':'application/json'}}));
@@ -49,6 +63,46 @@ describe('LightBI account client',()=>{
     });
     await registerLightBIEmailAccount({email:'native@example.com',password:'a-secure-password'},'https://distribution.test');
     expect(invoke).toHaveBeenCalledWith('native_http_request',expect.objectContaining({request:expect.objectContaining({url:'https://distribution.test/api/account/register',method:'POST'})}));
+  });
+  it('awaits native installation trust before sending a protected account request',async()=>{
+    vi.stubEnv('VITE_LIGHTBI_CHANNEL','internal');
+    (window as any).__TAURI_INTERNALS__={};
+    const order:string[]=[];
+    vi.mocked(invoke).mockImplementation(async (command: string,args?:any) => {
+      if(command==='ensure_installation_trust'){
+        order.push('trust');
+        return {status:'issued',installationId:args?.installationId,releaseId:'release:test',certificateId:'cert-test',expiresAt:new Date(Date.now()+60*60*1000).toISOString(),runtimeSha256:'a'.repeat(64),runtimeSize:1,productionAuthority:false};
+      }
+      if(command==='account_session_token')return null;
+      if(command==='native_http_request'){
+        order.push('request');
+        return {status:202,headers:{'content-type':'application/json'},body:Array.from(new TextEncoder().encode('{"accepted":true}')),signedTransport:true};
+      }
+      return undefined;
+    });
+    await registerLightBIEmailAccount({email:'native@example.com',password:'a-secure-password'},'https://distribution.test');
+    expect(order).toEqual(['trust','request']);
+  });
+  it('repairs a local certificate-key mismatch once before retrying the protected request',async()=>{
+    vi.stubEnv('VITE_LIGHTBI_CHANNEL','internal');
+    (window as any).__TAURI_INTERNALS__={};
+    const order:string[]=[];
+    let requestCount=0;
+    vi.mocked(invoke).mockImplementation(async (command: string,args?:any) => {
+      if(command==='ensure_installation_trust'){
+        order.push('trust');
+        return {status:'issued',installationId:args?.installationId,releaseId:'release:test',certificateId:'cert-test',expiresAt:new Date(Date.now()+3600000).toISOString(),runtimeSha256:'a'.repeat(64),runtimeSize:1,productionAuthority:false};
+      }
+      if(command==='account_session_token')return null;
+      if(command==='native_http_request'){
+        requestCount+=1; order.push(`request-${requestCount}`);
+        if(requestCount===1)throw new Error('Signed transport required: Installation certificate device-key binding mismatch.');
+        return {status:202,headers:{'content-type':'application/json'},body:Array.from(new TextEncoder().encode('{"accepted":true}')),signedTransport:true};
+      }
+      return undefined;
+    });
+    await registerLightBIEmailAccount({email:'native@example.com',password:'a-secure-password'},'https://distribution.test');
+    expect(order).toEqual(['trust','request-1','trust','request-2']);
   });
   it('returns the server MFA challenge instead of misreporting a successful password as sign-in failure',async()=>{
     const fetchMock=vi.fn().mockResolvedValue(new Response(JSON.stringify({authenticated:false,mfaRequired:true,challengeId:'challenge-12345678901234567890',methods:['totp','recovery'],expiresIn:300}),{status:200,headers:{'content-type':'application/json'}}));

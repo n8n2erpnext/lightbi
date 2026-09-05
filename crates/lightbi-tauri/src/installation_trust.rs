@@ -11,6 +11,7 @@ use tauri::{AppHandle, Manager};
 #[cfg(target_os = "windows")]
 use windows_sys::Win32::{
     Foundation::{CloseHandle, HANDLE, WAIT_ABANDONED, WAIT_OBJECT_0},
+    Storage::FileSystem::{MoveFileExW, MOVEFILE_REPLACE_EXISTING, MOVEFILE_WRITE_THROUGH},
     System::Threading::{CreateMutexW, ReleaseMutex, WaitForSingleObject},
 };
 
@@ -384,6 +385,35 @@ async fn post<T: Serialize, R: DeserializeOwned>(
     serde_json::from_slice::<R>(&body)
         .map_err(|_| "Installation trust returned invalid JSON.".to_string())
 }
+#[cfg(target_os = "windows")]
+async fn replace_certificate_file(temp: &Path, path: &Path) -> Result<(), String> {
+    use std::os::windows::ffi::OsStrExt;
+
+    let temp_w: Vec<u16> = temp.as_os_str().encode_wide().chain(Some(0)).collect();
+    let path_w: Vec<u16> = path.as_os_str().encode_wide().chain(Some(0)).collect();
+    let moved = unsafe {
+        MoveFileExW(
+            temp_w.as_ptr(),
+            path_w.as_ptr(),
+            MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH,
+        )
+    };
+    if moved == 0 {
+        return Err(format!(
+            "Could not atomically replace installation certificate: {}",
+            std::io::Error::last_os_error()
+        ));
+    }
+    Ok(())
+}
+
+#[cfg(not(target_os = "windows"))]
+async fn replace_certificate_file(temp: &Path, path: &Path) -> Result<(), String> {
+    tokio::fs::rename(temp, path)
+        .await
+        .map_err(|error| format!("Could not atomically replace installation certificate: {error}"))
+}
+
 async fn persist_certificate(app: &AppHandle, cache: &CertificateCache<'_>) -> Result<(), String> {
     let directory = app
         .path()
@@ -394,15 +424,16 @@ async fn persist_certificate(app: &AppHandle, cache: &CertificateCache<'_>) -> R
         .await
         .map_err(|error| format!("Could not create LightBI trust storage: {error}"))?;
     let path = directory.join(CERTIFICATE_FILE);
-    let temp = directory.join(format!("{CERTIFICATE_FILE}.tmp"));
+    let temp = directory.join(format!("{CERTIFICATE_FILE}.{}.tmp", std::process::id()));
     let bytes = serde_json::to_vec_pretty(cache)
         .map_err(|error| format!("Could not encode installation certificate: {error}"))?;
     tokio::fs::write(&temp, bytes)
         .await
         .map_err(|error| format!("Could not write installation certificate: {error}"))?;
-    tokio::fs::rename(&temp, &path)
-        .await
-        .map_err(|error| format!("Could not finalize installation certificate: {error}"))?;
+    if let Err(error) = replace_certificate_file(&temp, &path).await {
+        let _ = tokio::fs::remove_file(&temp).await;
+        return Err(error);
+    }
     Ok(())
 }
 
@@ -475,6 +506,7 @@ pub async fn ensure_installation_trust(
     let device_public_key = device_public_key(&key_pair);
     let base = next_distribution_api_base()?;
     let client = reqwest::Client::builder()
+        .connect_timeout(Duration::from_secs(4))
         .timeout(Duration::from_secs(7))
         .user_agent(format!("LightBI-NEXT-InstallationTrust/{version}"))
         .build()
@@ -572,6 +604,18 @@ pub async fn ensure_installation_trust(
 mod tests {
     use super::*;
     use ring::signature::{UnparsedPublicKey, ED25519};
+
+    #[tokio::test]
+    async fn certificate_cache_replace_overwrites_existing_file() {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("installation-certificate.json");
+        let temp = directory.path().join("installation-certificate.json.tmp");
+        tokio::fs::write(&path, b"old-certificate").await.unwrap();
+        tokio::fs::write(&temp, b"new-certificate").await.unwrap();
+        replace_certificate_file(&temp, &path).await.unwrap();
+        assert_eq!(tokio::fs::read(&path).await.unwrap(), b"new-certificate");
+        assert!(!temp.exists());
+    }
 
     #[test]
     fn certificate_binding_rejects_device_key_drift() {

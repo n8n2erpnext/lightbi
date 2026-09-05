@@ -151,7 +151,8 @@ async fn signed_native_http_request(
     let identity = installation_trust::load_signed_transport_identity(app).await?;
     let client = reqwest::Client::builder()
         .redirect(reqwest::redirect::Policy::none())
-        .timeout(Duration::from_secs(45))
+        .connect_timeout(Duration::from_secs(5))
+        .timeout(Duration::from_secs(15))
         .user_agent("LightBI-Native-Signed/0.9")
         .build()
         .map_err(|error| format!("Could not initialize signed native HTTP client: {error}"))?;

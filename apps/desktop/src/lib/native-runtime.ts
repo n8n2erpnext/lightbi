@@ -123,12 +123,65 @@ export async function clearNativeInstallationLifecycleReceipt(): Promise<boolean
     return false;
   }
 }
-export async function ensureNativeInstallationTrust(installationId: string): Promise<NativeInstallationTrustResult | null> {
-  if (!isNativeLightBI() || import.meta.env.VITE_LIGHTBI_CHANNEL !== 'internal') return null;
-  try {
+type InstallationTrustFlight = {
+  installationId: string;
+  promise: Promise<NativeInstallationTrustResult>;
+};
+
+let installationTrustFlight: InstallationTrustFlight | null = null;
+let installationTrustReady: NativeInstallationTrustResult | null = null;
+
+function nativeTrustFailureMessage(cause: unknown): string {
+  if (cause instanceof Error && cause.message.trim()) return cause.message.trim();
+  if (typeof cause === 'string' && cause.trim()) return cause.trim();
+  return 'Installation trust is unavailable.';
+}
+
+function installationTrustFresh(result: NativeInstallationTrustResult, installationId: string): boolean {
+  if (result.installationId !== installationId || result.productionAuthority !== false || result.status !== 'issued') return false;
+  const expiresAt = Date.parse(result.expiresAt);
+  return Number.isFinite(expiresAt) && expiresAt - Date.now() > 60_000;
+}
+
+function installationTrustPromise(installationId: string): Promise<NativeInstallationTrustResult> {
+  if (installationTrustReady && installationTrustFresh(installationTrustReady, installationId)) {
+    return Promise.resolve(installationTrustReady);
+  }
+  if (installationTrustFlight?.installationId === installationId) return installationTrustFlight.promise;
+
+  const promise = (async () => {
     const { invoke } = await import('@tauri-apps/api/core');
     const result = await invoke<NativeInstallationTrustResult>('ensure_installation_trust', { installationId });
-    return result?.productionAuthority === false && result?.status === 'issued' ? result : null;
+    if (!result || !installationTrustFresh(result, installationId)) {
+      throw new Error('Installation trust returned an invalid or expired certificate.');
+    }
+    installationTrustReady = result;
+    return result;
+  })();
+  installationTrustFlight = { installationId, promise };
+  void promise.finally(() => {
+    if (installationTrustFlight?.promise === promise) installationTrustFlight = null;
+  }).catch(() => undefined);
+  return promise;
+}
+
+export function invalidateNativeInstallationTrust(): void {
+  installationTrustReady = null;
+  installationTrustFlight = null;
+}
+
+export async function requireNativeInstallationTrust(installationId: string): Promise<NativeInstallationTrustResult | null> {
+  if (!isNativeLightBI() || import.meta.env.VITE_LIGHTBI_CHANNEL !== 'internal') return null;
+  try {
+    return await installationTrustPromise(installationId);
+  } catch (cause) {
+    throw new Error(nativeTrustFailureMessage(cause));
+  }
+}
+
+export async function ensureNativeInstallationTrust(installationId: string): Promise<NativeInstallationTrustResult | null> {
+  try {
+    return await requireNativeInstallationTrust(installationId);
   } catch {
     return null;
   }
