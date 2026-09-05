@@ -1,0 +1,152 @@
+name: NEXT033 Windows Native Trust UAT Build
+
+on:
+  push:
+    branches:
+      - "codex/next033-windows-uat-orchestration"
+
+permissions:
+  contents: read
+
+jobs:
+  windows-next033-native-trust:
+    runs-on: windows-latest
+    timeout-minutes: 120
+    env:
+      LIGHTBI_PRODUCT_SOURCE_SHA: 6c1f11758093f21b1f7c03218d8fea52d3602d0f
+      LIGHTBI_CP_SHA: 3afb85b38e7cd6f9bd65eafbda723f9f6e0e88d4
+      LIGHTBI_UAT_VERSION: 0.9.2-beta.7-next.33
+      LIGHTBI_UAT_GENERATION: g-2026-09-05-next-033
+    steps:
+      - name: Checkout exact accepted product source
+        uses: actions/checkout@v4
+        with:
+          ref: 6c1f11758093f21b1f7c03218d8fea52d3602d0f
+          fetch-depth: 1
+      - name: Prove exact source pin
+        shell: pwsh
+        run: |
+          $actual = (git rev-parse HEAD).Trim()
+          if ($actual -ne $env:LIGHTBI_PRODUCT_SOURCE_SHA) { throw "source drift: $actual" }
+          if (git status --porcelain) { throw 'exact source checkout is dirty before build' }
+          Write-Host "EXACT_PRODUCT_SOURCE=$actual"
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.4.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: . -> target
+      - run: pnpm install --frozen-lockfile
+      - name: Verify exact-source release and Signed Transport gates
+        shell: pwsh
+        run: |
+          pnpm test:release-1.0
+          cargo test -p lightbi-tauri signed_transport::tests --target x86_64-pc-windows-msvc -- --nocapture
+          cargo test -p lightbi-tauri installation_trust::tests --target x86_64-pc-windows-msvc -- --nocapture
+      - name: Generate branded application icons
+        shell: pwsh
+        run: |
+          pnpm dlx @tauri-apps/cli@2.11.4 icon apps/desktop/public/branding/lightbi-app-icon.png --output crates/lightbi-tauri/icons
+          node scripts/validate-native-icons.mjs
+      - name: Build exact NEXT033 Windows runtime and installer
+        working-directory: crates/lightbi-tauri
+        shell: pwsh
+        env:
+          LIGHTBI_RUNTIME_CHANNEL: internal
+          VITE_LIGHTBI_GENERATION_ID: g-2026-09-05-next-033
+          VITE_LIGHTBI_PARENT_GENERATION_ID: g-2026-09-04-next-032
+          VITE_LIGHTBI_CHANNEL: internal
+          VITE_LIGHTBI_CORE_COMMIT: 6c1f11758093f21b1f7c03218d8fea52d3602d0f
+          VITE_LIGHTBI_CONTROL_PLANE_COMMIT: 3afb85b38e7cd6f9bd65eafbda723f9f6e0e88d4
+          VITE_LIGHTBI_CONTROL_PLANE_SCHEMA_VERSION: 067_catalog_quarterly_pricing
+          VITE_LIGHTBI_TEST_PACK_VERSION: intelligence-pack-1.0.0-next.1
+          VITE_LIGHTBI_TRUST_STATUS: phase2a_unfrozen
+          VITE_LIGHTBI_TRUST_PHASE2A_HEAD: 10de4da8e551a46f93f7b62985a0a6e611581b8e
+          VITE_LIGHTBI_RELEASE_UPDATE_CHANNEL: internal
+          VITE_LIGHTBI_DISTRIBUTION_URL: https://lightbi-next.thaiduy.digital/distribution-api
+          VITE_LIGHTBI_ANALYTICS_NAMESPACE: internal/g-2026-09-05-next-033
+          VITE_LIGHTBI_RELEASE_NAMESPACE: internal/lightbi/g-2026-09-05-next-033
+          VITE_LIGHTBI_SOURCE_BRANCH: codex/r1-roadmap-integration
+          VITE_LIGHTBI_SOURCE_COMMIT: 6c1f11758093f21b1f7c03218d8fea52d3602d0f
+          VITE_LIGHTBI_BUILDER: github-actions/next033-windows-native-trust-uat
+          VITE_LIGHTBI_INFRA_DATABASE_SCOPE: internal
+          VITE_LIGHTBI_INFRA_REDIS_SCOPE: internal
+          VITE_LIGHTBI_INFRA_DATA_SCOPE: internal
+          VITE_LIGHTBI_INFRA_ANALYTICS_SCOPE: internal
+          VITE_LIGHTBI_INFRA_RELEASES_SCOPE: internal
+          VITE_LIGHTBI_INFRA_INTEGRATIONS_SCOPE: internal
+        run: |
+          $env:VITE_LIGHTBI_VERSION = $env:LIGHTBI_UAT_VERSION
+          $env:VITE_LIGHTBI_BUILD_TIMESTAMP = (Get-Date).ToUniversalTime().ToString('o')
+          @{ version = $env:LIGHTBI_UAT_VERSION } | ConvertTo-Json | Set-Content tauri.acceptance.conf.json
+          pnpm dlx @tauri-apps/cli@2.11.4 build --target x86_64-pc-windows-msvc --config tauri.windows.conf.json --config tauri.acceptance.conf.json
+      - name: Capture exact runtime, installer and provenance
+        shell: pwsh
+        run: |
+          $releaseRoot = (Resolve-Path 'target/x86_64-pc-windows-msvc/release').Path
+          $runtime = Get-Item "$releaseRoot/LightBI.exe" -ErrorAction Stop
+          $installer = Get-ChildItem "$releaseRoot/bundle/nsis/*.exe" | Select-Object -First 1
+          if (-not $installer) { throw 'NSIS installer was not produced' }
+          $installerName = "LightBI-NEXT-$env:LIGHTBI_UAT_VERSION-x64-setup.exe"
+          $normalizedInstaller = Join-Path $installer.Directory.FullName $installerName
+          Move-Item $installer.FullName $normalizedInstaller -Force
+          $runtimeCopy = Join-Path $installer.Directory.FullName 'LightBI.exe'
+          Copy-Item $runtime.FullName $runtimeCopy -Force
+          $runtimeHash = (Get-FileHash -Algorithm SHA256 $runtimeCopy).Hash.ToLowerInvariant()
+          $installerHash = (Get-FileHash -Algorithm SHA256 $normalizedInstaller).Hash.ToLowerInvariant()
+          $runtimeSize = (Get-Item $runtimeCopy).Length
+          $installerSize = (Get-Item $normalizedInstaller).Length
+          "$runtimeHash  LightBI.exe" | Set-Content -NoNewline "$runtimeCopy.sha256"
+          "$installerHash  $installerName" | Set-Content -NoNewline "$normalizedInstaller.sha256"
+          $runtimePublisher = "$runtimeCopy.publisher.json"
+          $installerPublisher = "$normalizedInstaller.publisher.json"
+          ./scripts/collect-windows-publisher-evidence.ps1 -Installer $runtimeCopy -Output $runtimePublisher
+          ./scripts/collect-windows-publisher-evidence.ps1 -Installer $normalizedInstaller -Output $installerPublisher
+          node scripts/validate-windows-publisher-evidence.mjs --evidence $runtimePublisher --mode beta --expected-sha256 $runtimeHash
+          node scripts/validate-windows-publisher-evidence.mjs --evidence $installerPublisher --mode beta --expected-sha256 $installerHash
+          $evidence = [ordered]@{
+            schema = 'lightbi.next033-native-trust-uat-build.v1'
+            environment = 'next_internal_test_only'
+            production_authority = $false
+            promotable_to_production = $false
+            version = $env:LIGHTBI_UAT_VERSION
+            generation_id = $env:LIGHTBI_UAT_GENERATION
+            product_source_sha = $env:LIGHTBI_PRODUCT_SOURCE_SHA
+            control_plane_sha = $env:LIGHTBI_CP_SHA
+            orchestration_ref = '${{ github.ref_name }}'
+            orchestration_sha = '${{ github.sha }}'
+            run_id = '${{ github.run_id }}'
+            run_attempt = '${{ github.run_attempt }}'
+            runtime = [ordered]@{
+              file = 'LightBI.exe'
+              release_id = "release:$($env:LIGHTBI_UAT_VERSION):windows:x86_64:runtime"
+              sha256 = $runtimeHash
+              size = [int64]$runtimeSize
+            }
+            installer = [ordered]@{ file = $installerName; sha256 = $installerHash; size = [int64]$installerSize }
+            owner_uat_accepted = $false
+          }
+          $evidence | ConvertTo-Json -Depth 6 | Set-Content "$($installer.Directory.FullName)/next033-native-trust-uat-build.json"
+          Write-Host "NEXT033_RUNTIME_SHA=$runtimeHash"
+          Write-Host "NEXT033_RUNTIME_SIZE=$runtimeSize"
+          Write-Host "NEXT033_RUNTIME_RELEASE_ID=release:$($env:LIGHTBI_UAT_VERSION):windows:x86_64:runtime"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: LightBI-Windows-NEXT033-Native-Trust-UAT
+          retention-days: 14
+          path: |
+            target/x86_64-pc-windows-msvc/release/bundle/nsis/LightBI.exe
+            target/x86_64-pc-windows-msvc/release/bundle/nsis/LightBI.exe.sha256
+            target/x86_64-pc-windows-msvc/release/bundle/nsis/LightBI.exe.publisher.json
+            target/x86_64-pc-windows-msvc/release/bundle/nsis/LightBI-NEXT-*.exe
+            target/x86_64-pc-windows-msvc/release/bundle/nsis/LightBI-NEXT-*.sha256
+            target/x86_64-pc-windows-msvc/release/bundle/nsis/LightBI-NEXT-*.publisher.json
+            target/x86_64-pc-windows-msvc/release/bundle/nsis/next033-native-trust-uat-build.json
+          if-no-files-found: error
