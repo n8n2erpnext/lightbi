@@ -307,12 +307,15 @@ async fn valid_staged_update(
     Ok(Some(metadata))
 }
 
+fn account_session_entry() -> Result<keyring::Entry, String> {
+    keyring::Entry::new("digital.thaiduy.lightbi", "account-session").map_err(|error| {
+        format!("Could not open the operating-system credential vault: {error}")
+    })
+}
+
 #[tauri::command]
 fn account_session_token() -> Result<Option<String>, String> {
-    let entry =
-        keyring::Entry::new("digital.thaiduy.lightbi", "account-session").map_err(|error| {
-            format!("Could not open the operating-system credential vault: {error}")
-        })?;
+    let entry = account_session_entry()?;
     match entry.get_password() {
         Ok(value) => Ok(Some(value)),
         Err(keyring::Error::NoEntry) => Ok(None),
@@ -322,14 +325,18 @@ fn account_session_token() -> Result<Option<String>, String> {
 
 #[tauri::command]
 fn store_account_session_token(token: Option<String>) -> Result<(), String> {
-    let entry =
-        keyring::Entry::new("digital.thaiduy.lightbi", "account-session").map_err(|error| {
-            format!("Could not open the operating-system credential vault: {error}")
-        })?;
+    let entry = account_session_entry()?;
     match token.filter(|value| !value.trim().is_empty()) {
-        Some(value) => entry
-            .set_password(&value)
-            .map_err(|error| format!("Could not store the account session: {error}")),
+        Some(value) => {
+            entry.set_password(&value)
+                .map_err(|error| format!("Could not store the account session: {error}"))?;
+            let persisted = account_session_entry()?.get_password()
+                .map_err(|error| format!("Could not verify the persisted account session: {error}"))?;
+            if persisted != value {
+                return Err("The operating-system credential vault did not persist the account session.".to_string());
+            }
+            Ok(())
+        }
         None => match entry.delete_credential() {
             Ok(()) | Err(keyring::Error::NoEntry) => Ok(()),
             Err(error) => Err(format!("Could not clear the account session: {error}")),
@@ -829,6 +836,16 @@ mod updater_tests {
         let json = serde_json::to_string(&metadata).expect("metadata json");
         assert!(json.contains("\"integrityChecked\":true"));
         assert!(!json.contains("\"verified\""));
+    }
+
+    #[cfg(target_os = "windows")]
+    #[test]
+    fn windows_account_vault_is_persistent_until_explicit_delete() {
+        use keyring::credential::{CredentialBuilderApi, CredentialPersistence};
+        assert!(matches!(
+            keyring::default::default_credential_builder().persistence(),
+            CredentialPersistence::UntilDelete
+        ));
     }
 
     #[cfg(target_os = "windows")]

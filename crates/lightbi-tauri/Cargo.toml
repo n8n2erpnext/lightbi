@@ -17,7 +17,7 @@ lightbi-intelligence-pack = { path = "../lightbi-intelligence-pack" }
 axum = "0.7.5"
 http-body-util = "0.1"
 tower = { version = "0.5", features = ["util"] }
-keyring = "3"
+keyring = { version = "3", features = ["windows-native"] }
 tauri-plugin-opener = "2"
 reqwest = { version = "0.12", default-features = false, features = ["rustls-tls-native-roots", "system-proxy", "stream", "json"] }
 sha2 = "0.10"
