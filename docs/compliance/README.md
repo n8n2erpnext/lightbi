@@ -33,3 +33,7 @@ Follow [`../project-book/LIBRARY_RULES.md`](../project-book/LIBRARY_RULES.md) be
 - [`R1_PRE_RELEASE_ARMOR_TRUST_COMPLIANCE_PLAN.md`](./R1_PRE_RELEASE_ARMOR_TRUST_COMPLIANCE_PLAN.md) — hard Road-to-1.0 plan for the public Technology Showcase, legal/public documents, IP/OSS, privacy, security, claim audit and final binary reconciliation.
 
 The research baseline is reference evidence, not a substitute for the current text of law/regulator guidance or qualified legal advice.
+## Active R1 execution
+
+- [`R1_PRE_RELEASE_ARMOR_TRUST_COMPLIANCE_PLAN.md`](./R1_PRE_RELEASE_ARMOR_TRUST_COMPLIANCE_PLAN.md) now includes the mandatory MB/machine-learning transparency splash and `Privacy & Learning` control requirement.
+- [`PHASE_B_INVENTORY_2026-09-05.md`](./PHASE_B_INVENTORY_2026-09-05.md) is the active evidence inventory checkpoint for technology, dependency/IP, data/network boundaries, public claims and planned learning disclosure.

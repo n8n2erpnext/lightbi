@@ -91,3 +91,18 @@ A vulnerability finding is not automatically a blocker solely by severity label.
 The R1 Armor Gate closes only when every material public claim traces to the exact release behavior/evidence, every material technology/asset has provenance and obligation status, relevant legal triggers are dated and assessed, required public legal/security/technology documents are consistent, and no release-critical blocker remains unresolved.
 
 Passing this gate means `release governance complete for the assessed scope`; it does not authorize an unqualified claim that LightBI is universally legally compliant.
+## 7. MB / Machine-Learning transparency splash — implementation requirement
+
+Before any durable adaptive/local-learning behavior is enabled for a user, LightBI must implement an explicit onboarding/in-product disclosure rather than burying the behavior only in Privacy/Terms.
+
+The splash must explain in plain language: why LightBI learns; the distinction between Micro Brain semantic assistance and durable machine/local learning; what categories may become learned patterns; what raw/source values are excluded from learned memory; whether learned state leaves the device/workspace; how learned candidates affect hypothesis ranking without becoming semantic truth; and that disabling learning does not disable normal LightBI analysis.
+
+The interaction must provide an explicit choice such as `Allow local learning` and `Do not allow`, with no deceptive visual hierarchy. Do not use a generic `OK = consent` pattern where consent is the required legal/UX basis. Exact consent/legal-basis requirements remain jurisdiction-dependent and must be reconciled in W3/W4.
+
+Settings must provide a durable `Privacy & Learning` control surface covering learning ON/OFF, scope, learned-pattern count/storage where technically meaningful, inspect learned memory, clear learned memory, and links to `How LightBI learns` plus the current privacy/data commitment.
+
+Public wording must not claim `no user data is stored` merely because raw rows are excluded. It must distinguish source/raw data, learned semantic patterns, account/license/auth metadata and other operational data according to verified implementation.
+
+Implementation evidence must prove the splash state, preference persistence, disabled-learning behavior, inspect/delete semantics, local/network boundary and uninstall/reset behavior. These become W4, W7, W8 and W9 release-gate evidence.
+
+This splash is a **planned mandatory R1 artifact**, not evidence that local learning is already implemented. Final wording must be generated from the verified Data Flow/Privacy and AI/ML/MB registers and re-reviewed if learning architecture changes.
