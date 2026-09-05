@@ -1,0 +1,73 @@
+name: R1-P13 Acceptance Artifact Transfer
+
+on:
+  push:
+    tags:
+      - "next331-transfer-*"
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  mirror-next331-acceptance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      RUN_ID: "33939698146"
+      ARTIFACT_NAME: "LightBI-Windows-NEXT033-R1P13-Native-Trust-Acceptance"
+      EXPECTED_RUNTIME_SHA: "8c6678d304cba3039cb8886ecbd75f6bb54dafabaca08bd85aed124e0237b811"
+      EXPECTED_INSTALLER_SHA: "fe4357a676dfdc11130d1f79ef32b8b1f965b82932abe6d6d9378d4e85dec8f5"
+      AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: auto
+      R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+      R2_BUCKET: drive
+      R2_PREFIX: lightbi-next/acceptance-transfer/33939698146
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: .acceptance
+          run-id: ${{ env.RUN_ID }}
+          github-token: ${{ github.token }}
+      - name: Verify canonical NSIS-installed runtime evidence
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          cd .acceptance
+          test "$(sha256sum LightBI.exe | awk '{print $1}')" = "$EXPECTED_RUNTIME_SHA"
+          installer=$(find . -maxdepth 1 -type f -name 'LightBI-NEXT-0.9.2-beta.7-next.33.1-x64-setup.exe' -print -quit)
+          test -n "$installer"
+          test "$(sha256sum "$installer" | awk '{print $1}')" = "$EXPECTED_INSTALLER_SHA"
+          jq -e --arg run "$RUN_ID" --arg sha "$EXPECTED_RUNTIME_SHA" '
+            .run_id == $run and
+            .version == "0.9.2-beta.7-next.33.1" and
+            .runtime_sha256 == $sha and
+            .runtime_identity_source == "nsis_silent_install" and
+            .installer_payload_verified == true and
+            .production_authority == false
+          ' rc-acceptance.json >/dev/null
+          echo "acceptance_transfer_evidence=verified"
+      - name: Upload immutable private R2 transfer objects
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          endpoint="https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com"
+          cd .acceptance
+          for file in LightBI.exe rc-acceptance.json LightBI-NEXT-0.9.2-beta.7-next.33.1-x64-setup.exe; do
+            key="$R2_PREFIX/$file"
+            if aws s3api head-object --bucket "$R2_BUCKET" --key "$key" --endpoint-url "$endpoint" >/dev/null 2>&1; then
+              echo "immutable transfer object already exists: $key" >&2
+              exit 1
+            fi
+            case "$file" in
+              *.exe) type='application/vnd.microsoft.portable-executable' ;;
+              *.json) type='application/json' ;;
+            esac
+            aws s3 cp "$file" "s3://$R2_BUCKET/$key" --endpoint-url "$endpoint" --cache-control 'private,max-age=31536000,immutable' --content-type "$type"
+          done
+          for file in LightBI.exe rc-acceptance.json LightBI-NEXT-0.9.2-beta.7-next.33.1-x64-setup.exe; do
+            aws s3api head-object --bucket "$R2_BUCKET" --key "$R2_PREFIX/$file" --endpoint-url "$endpoint" >/dev/null
+          done
+          echo "private_r2_acceptance_transfer=verified"
