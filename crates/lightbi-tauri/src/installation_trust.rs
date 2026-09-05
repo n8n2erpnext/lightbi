@@ -5,7 +5,13 @@ use ring::{
 };
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use sha2::{Digest, Sha256};
-use std::{fs::File, io::Read, path::Path, time::Duration};
+use std::{
+    fs::File,
+    io::Read,
+    path::Path,
+    sync::{Mutex, OnceLock},
+    time::Duration,
+};
 use tauri::{AppHandle, Manager};
 
 #[cfg(target_os = "windows")]
@@ -20,6 +26,7 @@ const DEVICE_KEY_SERVICE: &str = "digital.thaiduy.lightbi";
 const DEVICE_KEY_ACCOUNT: &str = "installation-trust-ed25519-v1";
 const ROUTING_JSON: &str = include_str!("../../../apps/desktop/src/lib/lightbi-routing.json");
 const CERTIFICATE_FILE: &str = "installation-certificate.json";
+static DEVICE_KEY_PKCS8_CACHE: OnceLock<Mutex<Option<Vec<u8>>>> = OnceLock::new();
 #[cfg(target_os = "windows")]
 const DEVICE_KEY_MUTEX_NAME: &str = "Local\\LightBIInstallationTrustDeviceKeyV1";
 
@@ -199,6 +206,10 @@ fn device_public_key(key_pair: &Ed25519KeyPair) -> String {
     URL_SAFE_NO_PAD.encode(key_pair.public_key().as_ref())
 }
 
+fn binding_mismatch(field: &str) -> String {
+    format!("Installation certificate device-key binding mismatch: {field}.")
+}
+
 fn validate_certificate_binding(
     certificate: &serde_json::Value,
     certificate_id: &str,
@@ -211,58 +222,128 @@ fn validate_certificate_binding(
         .get("payload")
         .and_then(serde_json::Value::as_object)
         .ok_or_else(|| "Installation certificate payload is missing.".to_string())?;
-    let matches = payload
-        .get("certificate_id")
-        .and_then(serde_json::Value::as_str)
-        == Some(certificate_id)
-        && payload
-            .get("installation_id")
-            .and_then(serde_json::Value::as_str)
-            == Some(installation_id)
-        && payload
-            .get("release_id")
-            .and_then(serde_json::Value::as_str)
-            == Some(release_id)
-        && payload
-            .get("device_key_algorithm")
-            .and_then(serde_json::Value::as_str)
-            == Some("Ed25519")
-        && payload
-            .get("device_public_key")
-            .and_then(serde_json::Value::as_str)
-            == Some(expected_device_public_key)
-        && payload.get("platform").and_then(serde_json::Value::as_str) == Some("windows")
-        && payload
-            .get("architecture")
-            .and_then(serde_json::Value::as_str)
-            == Some(architecture);
-    if !matches {
-        return Err("Installation certificate device-key binding mismatch.".to_string());
+    let checks = [
+        (
+            "certificate_id",
+            payload
+                .get("certificate_id")
+                .and_then(serde_json::Value::as_str)
+                == Some(certificate_id),
+        ),
+        (
+            "installation_id",
+            payload
+                .get("installation_id")
+                .and_then(serde_json::Value::as_str)
+                == Some(installation_id),
+        ),
+        (
+            "release_id",
+            payload
+                .get("release_id")
+                .and_then(serde_json::Value::as_str)
+                == Some(release_id),
+        ),
+        (
+            "device_key_algorithm",
+            payload
+                .get("device_key_algorithm")
+                .and_then(serde_json::Value::as_str)
+                == Some("Ed25519"),
+        ),
+        (
+            "device_public_key",
+            payload
+                .get("device_public_key")
+                .and_then(serde_json::Value::as_str)
+                == Some(expected_device_public_key),
+        ),
+        (
+            "platform",
+            payload.get("platform").and_then(serde_json::Value::as_str) == Some("windows"),
+        ),
+        (
+            "architecture",
+            payload
+                .get("architecture")
+                .and_then(serde_json::Value::as_str)
+                == Some(architecture),
+        ),
+    ];
+    for (field, matches) in checks {
+        if !matches {
+            return Err(binding_mismatch(field));
+        }
     }
     Ok(())
 }
 
+fn device_key_cache() -> &'static Mutex<Option<Vec<u8>>> {
+    DEVICE_KEY_PKCS8_CACHE.get_or_init(|| Mutex::new(None))
+}
+
+fn cached_device_key_bytes() -> Result<Option<Vec<u8>>, String> {
+    device_key_cache()
+        .lock()
+        .map(|guard| guard.clone())
+        .map_err(|_| "Installation device-key process cache is poisoned.".to_string())
+}
+
+fn remember_device_key_bytes(bytes: &[u8]) -> Result<(), String> {
+    let mut guard = device_key_cache()
+        .lock()
+        .map_err(|_| "Installation device-key process cache is poisoned.".to_string())?;
+    *guard = Some(bytes.to_vec());
+    Ok(())
+}
+
+fn key_pair_from_pkcs8(pkcs8: &[u8]) -> Result<Ed25519KeyPair, String> {
+    Ed25519KeyPair::from_pkcs8(pkcs8)
+        .map_err(|_| "Stored installation device key could not be opened.".to_string())
+}
+
+fn decode_stored_device_key(encoded: String) -> Result<Vec<u8>, String> {
+    URL_SAFE_NO_PAD
+        .decode(encoded)
+        .map_err(|_| "Stored installation device key is invalid.".to_string())
+}
+
 fn load_or_create_device_key() -> Result<Ed25519KeyPair, String> {
+    if let Some(pkcs8) = cached_device_key_bytes()? {
+        return key_pair_from_pkcs8(&pkcs8);
+    }
+
     let _lock = acquire_device_key_lock()?;
+    if let Some(pkcs8) = cached_device_key_bytes()? {
+        return key_pair_from_pkcs8(&pkcs8);
+    }
+
     let entry = keyring::Entry::new(DEVICE_KEY_SERVICE, DEVICE_KEY_ACCOUNT)
         .map_err(|error| format!("Could not open installation trust credential vault: {error}"))?;
     let pkcs8 = match entry.get_password() {
-        Ok(encoded) => URL_SAFE_NO_PAD
-            .decode(encoded)
-            .map_err(|_| "Stored installation device key is invalid.".to_string())?,
+        Ok(encoded) => decode_stored_device_key(encoded)?,
         Err(keyring::Error::NoEntry) => {
             let document = Ed25519KeyPair::generate_pkcs8(&SystemRandom::new())
                 .map_err(|_| "Could not generate installation device key.".to_string())?;
             let bytes = document.as_ref().to_vec();
+            let encoded = URL_SAFE_NO_PAD.encode(&bytes);
             entry
-                .set_password(&URL_SAFE_NO_PAD.encode(&bytes))
+                .set_password(&encoded)
                 .map_err(|error| format!("Could not store installation device key: {error}"))?;
+            let read_back = entry.get_password().map_err(|error| {
+                format!("Could not verify stored installation device key: {error}")
+            })?;
+            let read_back = decode_stored_device_key(read_back)?;
+            if read_back != bytes {
+                return Err("Stored installation device key failed credential-vault read-back verification.".to_string());
+            }
             bytes
         }
         Err(error) => return Err(format!("Could not read installation device key: {error}")),
     };
-    Ed25519KeyPair::from_pkcs8(&pkcs8)
-        .map_err(|_| "Stored installation device key could not be opened.".to_string())
+    let key_pair = key_pair_from_pkcs8(&pkcs8)?;
+    remember_device_key_bytes(&pkcs8)?;
+    Ok(key_pair)
 }
 pub(crate) struct SignedTransportIdentity {
     pub certificate: serde_json::Value,
@@ -639,15 +720,18 @@ mod tests {
             "x86_64",
         )
         .is_ok());
-        assert!(validate_certificate_binding(
-            &certificate,
-            "next-cert-test-001",
-            "lbi-test-001",
-            "release:0.9.2-beta.7-next.33.2:windows:x86_64:runtime",
-            "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
-            "x86_64",
-        )
-        .is_err());
+        assert_eq!(
+            validate_certificate_binding(
+                &certificate,
+                "next-cert-test-001",
+                "lbi-test-001",
+                "release:0.9.2-beta.7-next.33.2:windows:x86_64:runtime",
+                "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
+                "x86_64",
+            )
+            .unwrap_err(),
+            "Installation certificate device-key binding mismatch: device_public_key."
+        );
     }
 
     #[test]
