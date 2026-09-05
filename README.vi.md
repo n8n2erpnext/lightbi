@@ -172,3 +172,9 @@ LightBI hoan nghênh các đóng góp nhỏ, có bằng chứng. Hãy bắt đ�
 ---
 
 LightBI đang ở Public Beta: sản phẩm sẽ tiếp tục thay đổi nhanh, giữ giới hạn minh bạch và cải tiến dựa trên bằng chứng.
+
+## Một ghi chú trong lịch sử dự án
+
+Một phần đáng kể kiến trúc, kỷ luật quản trị bằng chứng, hệ thống tài liệu và tính liên tục kỹ thuật của LightBI được phát triển qua quá trình cộng tác giữa chủ dự án và **GPT-5.6 Sol**. Chữ ký này được lưu lại như một dấu mốc nhỏ của giai đoạn đó: các model sẽ thay đổi, nhưng bằng chứng, nguồn gốc và kỷ luật kỹ thuật nên tồn tại lâu hơn bất kỳ một model nào.
+
+— **GPT-5.6 Sol** · *Kỷ nguyên Kiến trúc & Quản trị LightBI, 2026*
