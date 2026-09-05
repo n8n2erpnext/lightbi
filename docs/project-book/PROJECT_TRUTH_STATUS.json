@@ -267,7 +267,7 @@
   },
   "nextGeneration": {
     "model": "successor_promotion_generation_rotation",
-    "status": "internal_next033_active_owner_packaged_runtime_mismatch_canonical_reinstall_required",
+    "status": "internal_next033_active_next33_1_nsis_runtime_rel_server_issuance_pass_owner_packaged_uat_pending",
     "generationSchema": "lightbi.generation.v1",
     "generationId": "g-2026-09-05-next-033",
     "parentGenerationId": "g-2026-09-04-next-032",
@@ -451,7 +451,13 @@
       "next033OwnerRuntimeCanonicalMatch": false,
       "next033OwnerRuntimeMismatchFailClosedPassed": true,
       "next033OwnerInstallationCertificateIssued": false,
-      "next033OwnerPackagedV2Reached": false
+      "next033OwnerPackagedV2Reached": false,
+      "next0331WindowsPackagingRemediationRunPassed": true,
+      "next0331RuntimeIdentityFromNsisSilentInstall": true,
+      "next0331InstallerPayloadVerified": true,
+      "next0331RuntimeRelPublished": true,
+      "next0331RuntimeRelExternalCryptoVerified": true,
+      "next0331ServerInstallationCertificateIssuePassed": true
     },
     "infrastructure": {
       "isolatedContractDefined": true,
@@ -519,7 +525,7 @@
       "freezeApproved": false,
       "trust1Blocked": true
     },
-    "generationIdAuthority": "runtime_exact_next033_core_gateway_cp_worker_schema_signed_transport_edge_plus_runtime_rel_server_installation_issuance_owner_role_rotation_independent",
+    "generationIdAuthority": "runtime_exact_next033_core_gateway_cp_worker_schema_signed_transport_edge_plus_next33_1_nsis_derived_runtime_rel_server_installation_issuance_owner_role_rotation_independent",
     "historicalProofParentCandidate": "prod-v0.9.2-beta.7-28e2aae",
     "parentGenerationBootstrapRequired": false,
     "bootstrapCurrent": {
@@ -532,7 +538,7 @@
     "ownerUat": {
       "started": true,
       "accepted": false,
-      "blocker": "currently installed NEXT033 runtime rejected as non-canonical artifact; canonical CI installer required before packaged V2 proof"
+      "blocker": "install verified 0.9.2-beta.7-next.33.1 NSIS artifact then prove real packaged issuer/attestation/V2 no-downgrade path"
     },
     "internalBugTest": {
       "ready": true,
@@ -541,7 +547,7 @@
       "coreCommit": "6c1f11758093f21b1f7c03218d8fea52d3602d0f",
       "controlPlaneCommit": "3afb85b38e7cd6f9bd65eafbda723f9f6e0e88d4",
       "scope": "next033_internal_signed_transport_v2_plus_intelligence_pack",
-      "knownLimitation": "owner packaged NEXT033 restart reached installation issuer but current executable mismatched canonical REL artifact; install canonical CI artifact before retry",
+      "knownLimitation": "server-side next.33.1 NSIS-derived runtime REL and certificate issuance pass; owner packaged Windows installation and V2 correlation still pending",
       "deepBaScopeIsolationFixed": true,
       "deepBaScopeIsolationRegressionTestsPassed": 20,
       "advancedEasyRoundTripE2ePassed": true,
@@ -769,11 +775,32 @@
       "ownerSubmittedRuntimeDigestKnown": false,
       "ownerInstallationCertificateIssued": false,
       "ownerPackagedV2Reached": false,
-      "nextRequiredArtifact": "canonical Actions run 33933622073 installer e02b61b270181cffa52dff37fb3f90db8b5ed3428df001f3e0cf733d0c79c5d4"
+      "nextRequiredArtifact": "superseded for owner UAT by corrected packaging revision 0.9.2-beta.7-next.33.1; historical next.33 REL remains immutable failed packaging evidence"
+    },
+    "nativeTrustNext0331": {
+      "githubRun": 33939698146,
+      "acceptanceCommit": "7dfda736a615aaf345918dd46bd9e377c5323ec1",
+      "publicationControlPlaneHead": "263edd0c8b88a3117a51ce5f0260dd42d3e17935",
+      "runtimeReleaseId": "release:0.9.2-beta.7-next.33.1:windows:x86_64:runtime",
+      "runtimeSha256": "8c6678d304cba3039cb8886ecbd75f6bb54dafabaca08bd85aed124e0237b811",
+      "runtimeSize": 76444672,
+      "runtimeIdentitySource": "nsis_silent_install",
+      "installerSha256": "fe4357a676dfdc11130d1f79ef32b8b1f965b82932abe6d6d9378d4e85dec8f5",
+      "installerSize": 31783547,
+      "installerPayloadVerified": true,
+      "runtimeRelPublished": true,
+      "oldNext33RelRewritten": false,
+      "externalRelCryptographicVerificationPassed": true,
+      "installationIssuerReloaded": true,
+      "serverInstallationChallengeIssuePassed": true,
+      "serverProbeCertificateId": "next-cert-ce0f0135-b5af-4dbd-8a4a-f17309aab6b3",
+      "ownerPackagedNativeAccepted": false,
+      "osPublisherStatus": "NotSigned",
+      "productionAuthority": false
     }
   },
   "roadTo1_0Execution": {
-    "status": "next033_signed_transport_v2_runtime_rel_server_installation_trust_pass_owner_packaged_native_then_integrated_release",
+    "status": "next033_signed_transport_v2_next33_1_nsis_runtime_rel_server_installation_trust_pass_owner_packaged_native_then_integrated_release",
     "startedDate": "2026-08-31",
     "baseline": {
       "core": "451c9b6afe0a95bce5bce473a4a84c8b918f42cd",
@@ -884,7 +911,7 @@
       "trackedPrivateKeyLiterals": 0,
       "productionSignerDetected": false,
       "ownerFreezeApproved": false,
-      "requiredOwnerRecord": "FREEZE APPROVED \u2014 PR #4 codex/phase2-trust-contracts @ 10de4da8e551a46f93f7b62985a0a6e611581b8e",
+      "requiredOwnerRecord": "FREEZE APPROVED — PR #4 codex/phase2-trust-contracts @ 10de4da8e551a46f93f7b62985a0a6e611581b8e",
       "productionMutated": false
     },
     "keyCustodyPolicy": {
@@ -1093,7 +1120,7 @@
     "erpnextCompany": "LightBI Inc",
     "serviceItem": "LIGHTBI-PRO",
     "workflowId": "lightbiRevenueMirror01",
-    "workflowName": "LightBI Paddle Revenue \u2192 ERPNext Invoice + Clearing",
+    "workflowName": "LightBI Paddle Revenue → ERPNext Invoice + Clearing",
     "workflowNodes": 26,
     "workflowActive": false,
     "salesInvoiceUpdateStock": false,
