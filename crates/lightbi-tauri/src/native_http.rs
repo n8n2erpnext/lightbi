@@ -5,15 +5,15 @@ use tauri::AppHandle;
 
 #[cfg(target_os = "windows")]
 use windows_sys::Win32::{
-    Foundation::{CloseHandle, HANDLE, WAIT_ABANDONED, WAIT_OBJECT_0},
-    System::Threading::{CreateMutexW, ReleaseMutex, WaitForSingleObject},
+    Foundation::{CloseHandle, HANDLE, WAIT_OBJECT_0},
+    System::Threading::{CreateSemaphoreW, ReleaseSemaphore, WaitForSingleObject},
 };
 
 use crate::{installation_trust, signed_transport};
 
 static SIGNED_TRANSPORT_PROCESS_LOCK: OnceLock<tokio::sync::Mutex<()>> = OnceLock::new();
 #[cfg(target_os = "windows")]
-const SIGNED_TRANSPORT_MUTEX_NAME: &str = "Local\\LightBISignedTransportSequenceV1";
+const SIGNED_TRANSPORT_SEMAPHORE_NAME: &str = "Local\\LightBISignedTransportSequenceV1";
 
 fn signed_transport_process_lock() -> &'static tokio::sync::Mutex<()> {
     SIGNED_TRANSPORT_PROCESS_LOCK.get_or_init(|| tokio::sync::Mutex::new(()))
@@ -27,7 +27,7 @@ impl Drop for SignedTransportInterprocessLock {
     fn drop(&mut self) {
         unsafe {
             let handle = self.0 as HANDLE;
-            let _ = ReleaseMutex(handle);
+            let _ = ReleaseSemaphore(handle, 1, std::ptr::null_mut());
             let _ = CloseHandle(handle);
         }
     }
@@ -35,13 +35,13 @@ impl Drop for SignedTransportInterprocessLock {
 
 #[cfg(target_os = "windows")]
 fn acquire_signed_transport_interprocess_lock() -> Result<SignedTransportInterprocessLock, String> {
-    let name: Vec<u16> = SIGNED_TRANSPORT_MUTEX_NAME.encode_utf16().chain(Some(0)).collect();
-    let handle = unsafe { CreateMutexW(std::ptr::null(), 0, name.as_ptr()) };
+    let name: Vec<u16> = SIGNED_TRANSPORT_SEMAPHORE_NAME.encode_utf16().chain(Some(0)).collect();
+    let handle = unsafe { CreateSemaphoreW(std::ptr::null(), 1, 1, name.as_ptr()) };
     if handle.is_null() {
         return Err("Could not create signed-transport sequence lock.".to_string());
     }
     let wait = unsafe { WaitForSingleObject(handle, 60_000) };
-    if wait != WAIT_OBJECT_0 && wait != WAIT_ABANDONED {
+    if wait != WAIT_OBJECT_0 {
         unsafe {
             let _ = CloseHandle(handle);
         }
@@ -204,7 +204,7 @@ async fn signed_native_http_request(
     // The nonce only exposes the persisted sequence floor. Keep nonce acquisition,
     // sequence selection, request verification and correlated response collection
     // in one critical section so concurrent callers cannot sign the same floor + 1.
-    // The named Windows mutex extends the invariant across multiple LightBI processes.
+    // The named Windows semaphore extends the invariant across multiple LightBI processes without thread-affine ownership.
     let _process_lock = signed_transport_process_lock().lock().await;
     let _interprocess_lock = acquire_signed_transport_interprocess_lock()?;
     let identity = installation_trust::load_signed_transport_identity(app).await?;
@@ -366,4 +366,64 @@ pub(crate) async fn native_http_request_impl(
         .await
         .map_err(|error| format!("Native HTTP request failed: {error}"))?;
     collect_native_response(response, false, None).await
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::sync::{
+        atomic::{AtomicUsize, Ordering},
+        Arc, Barrier,
+    };
+    use std::thread;
+
+    #[test]
+    fn signed_transport_process_lock_serializes_concurrent_callers() {
+        let barrier = Arc::new(Barrier::new(3));
+        let active = Arc::new(AtomicUsize::new(0));
+        let max_active = Arc::new(AtomicUsize::new(0));
+        let mut workers = Vec::new();
+
+        for _ in 0..2 {
+            let barrier = Arc::clone(&barrier);
+            let active = Arc::clone(&active);
+            let max_active = Arc::clone(&max_active);
+            workers.push(thread::spawn(move || {
+                barrier.wait();
+                let _guard = signed_transport_process_lock().blocking_lock();
+                let now = active.fetch_add(1, Ordering::SeqCst) + 1;
+                max_active.fetch_max(now, Ordering::SeqCst);
+                thread::sleep(Duration::from_millis(25));
+                active.fetch_sub(1, Ordering::SeqCst);
+            }));
+        }
+
+        barrier.wait();
+        for worker in workers {
+            worker.join().unwrap();
+        }
+        assert_eq!(max_active.load(Ordering::SeqCst), 1);
+    }
+
+    #[cfg(target_os = "windows")]
+    #[test]
+    fn signed_transport_windows_semaphore_is_single_slot_and_releasable_across_threads() {
+        use std::sync::mpsc;
+
+        let first = acquire_signed_transport_interprocess_lock().unwrap();
+        let (started_tx, started_rx) = mpsc::channel();
+        let (acquired_tx, acquired_rx) = mpsc::channel();
+        let worker = thread::spawn(move || {
+            started_tx.send(()).unwrap();
+            let second = acquire_signed_transport_interprocess_lock().unwrap();
+            acquired_tx.send(()).unwrap();
+            drop(second);
+        });
+
+        started_rx.recv_timeout(Duration::from_secs(1)).unwrap();
+        assert!(acquired_rx.recv_timeout(Duration::from_millis(75)).is_err());
+        drop(first);
+        acquired_rx.recv_timeout(Duration::from_secs(2)).unwrap();
+        worker.join().unwrap();
+    }
 }
