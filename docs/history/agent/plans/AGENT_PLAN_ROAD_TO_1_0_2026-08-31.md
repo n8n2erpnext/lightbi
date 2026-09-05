@@ -123,9 +123,9 @@ This overlay updates execution priority without rewriting the historical R1-P0�
 
 ### Primary critical path
 
-`Signed Transport integration -> packaged Windows/UAT + release acceptance`
+`Signed Transport V2 NEXT runtime acceptance -> packaged Windows/UAT + release acceptance`
 
-Micro Brain V1 acceptance remains anchored at `a1f6ee8`; the product successor has since advanced to `codex/r1-roadmap-integration` / `262bd768`. MB no longer owns the critical path. The successor continues on the Road-to-1.0 integration lane without renumbering R1-P0…R1-P13 or claiming stable 1.0.
+Micro Brain V1 acceptance remains anchored at `a1f6ee8`; the product successor has since advanced to `codex/r1-roadmap-integration` / `6c1f117`. MB no longer owns the critical path. The successor continues on the Road-to-1.0 integration lane without renumbering R1-P0…R1-P13 or claiming stable 1.0.
 
 **Multi-file UX parity + Focus Subject is complete** at product successor `codex/r1-roadmap-integration` / `8abc669`. Focus is an Analysis Context sidecar over governed multi-source evidence: summary metrics and relationship/grain/period/currency/cardinality policy remain unchanged; only exact canonical-concept/value matches scope source evidence and Deep BA. Unmatched sources fail closed rather than inheriting another source identity. The narrative label `BA FOCUS` is renamed `Key attention`. Six-file ERP browser acceptance passes before/after governed-summary parity and exact Focus drill-through.
 
@@ -133,19 +133,21 @@ The active immutable NEXT generation is now `g-2026-09-04-next-032`, parent `g-2
 
 **Intelligence Pack Updater V1 source implementation is now closed** at product `262bd768` and private CP `72eacf75`. The implemented NEXT-only contract is signed/versioned/compatibility-gated/data-only, uses content-addressed `staged/active/previous` state plus an accepted-version floor, fails closed to previous/bundled intelligence, and keeps pack signing distinct from release/runtime-request authority. Exact-head gates pass: pack Rust `6/6`, frontend `2/2`, candidate `1.0.0-next.1` verifies to the accepted MB payload SHA, CP authoritative `222/222`, release-authoritative product gate PASS, and native Tauri `cargo check` PASS. Stable/public INT Root anchoring remains deliberately unfrozen; only the non-promotable NEXT/Internal TEST authority is used.
 
-**Intelligence Pack V1 runtime acceptance is complete on NEXT032.** The exact signed candidate passes live catalog/artifact identity, real-candidate stage→activate and fresh-process reconcile, accepted-version-floor and corrupt-state fail-closed probes, frontend active-identity handoff, plus NEXT-only systemd restart persistence. Rollback/verified-previous recovery is fixture-proven because only one durable signed Internal pack version currently exists; no two-version live rollback is claimed. The immediate execution gate is now Signed Transport query/response/route/native integration.
+**Intelligence Pack V1 runtime acceptance is complete on NEXT032.** The exact signed candidate passes live catalog/artifact identity, real-candidate stage→activate and fresh-process reconcile, accepted-version-floor and corrupt-state fail-closed probes, frontend active-identity handoff, plus NEXT-only systemd restart persistence. Rollback/verified-previous recovery is fixture-proven because only one durable signed Internal pack version currently exists; no two-version live rollback is claimed.
 
-Continue the bounded Signed Transport lane through canonical query binding, response-integrity semantics, route classes, native `native_http_request` integration and replay/fallback negative probes. Only then run packaged Windows/UAT and integrated release acceptance on the successor. Historical R1-P1/R1-P4 owner-acceptance items remain open where recorded; Production R1-P5/P6 authority remains separately owner-gated.
+**Signed Transport V2 source closure is complete** at product `6c1f117` and private CP `3afb85b`. The exact native contract now binds method + canonical path/query + raw-body SHA + server nonce/sequence/certificate/device signature; `/api/account/*` and `/api/license/activate` are the bounded protected set, trust bootstrap stays separate, and Signed Transport failure cannot downgrade into WebView fallback. Response SHA/sequence correlation is HTTPS-bound integrity/correlation rather than a server-signature claim. Source gates pass attestation 16/16, CP 223/223, frontend 11/11 + TypeScript, real Tauri 6/6, source-size 516 modules and the complete release-authoritative suite with governed 41/41.
+
+The immediate execution gate is now **NEXT runtime acceptance of those exact source commits**. Cut a new immutable successor from product `6c1f117...` + CP `3afb85b...`, then prove accepted signed native traffic plus query/body/replay/fallback/response-correlation negatives. Only after that run packaged Windows/UAT and integrated release acceptance. Historical R1-P1/R1-P4 owner-acceptance items remain open where recorded; Production R1-P5/P6 authority remains separately owner-gated.
 
 ### Future semantic expansion lane
 
 Cross-Domain Semantic Expansion is recorded as a durable post-MB-V1 direction, not as a new blocker on the 1.0 critical path. It strengthens universal ontology and semantic breadth across hospitality, healthcare/pharma, agriculture/livestock/aquaculture, manufacturing, banking specialization and scientific primitives, then retunes MB in validated corpus batches. See [`../../architecture/micro-brain-cross-domain-semantic-expansion.md`](../../../architecture/micro-brain-cross-domain-semantic-expansion.md). The lane preserves registry/domain-support/runtime authority separation and forbids direct self-training from raw user datasets.
 
-### Bounded parallel foundation — Signed Transport
+### Signed Transport V2 source closure and runtime gate
 
-Product successor is now `codex/r1-roadmap-integration` / `262bd768`; the Signed Transport primitive remains the earlier ancestor `a8d55ee`. Private CP is now `codex/r1p14-signed-transport` / `72eacf75`, with the Signed Transport verification-edge foundation at ancestor `c5875eb`. Together the bounded security foundation provides canonical body digest, Ed25519 device proof, server nonce, persisted monotonic sequence floor, anti-replay verification and a thin Internal-only UDS verification edge. Current gates: Rust golden vectors 3/3, attestation 15/15, Distribution 220/220.
+Product successor is now `codex/r1-roadmap-integration` / `6c1f117`; private CP is `codex/r1p14-signed-transport` / `3afb85b`. The earlier V1 rehearsal remains intact while V2 adds deterministic query-target binding, exact raw-body digest, native route classes, device-certificate signing and replay-safe nonce/sequence handling. Distribution remains only a thin Internal verifier client over UDS and has no signing authority.
 
-This lane is **foundation, not enforcement**. No general route is signed-by-default yet. Required follow-up before enforcement: canonical query binding, response-integrity contract, route-class policy, native `native_http_request` integration and negative replay/fallback probes. Bootstrap pairing/trust issuance remains separately classified.
+Source implementation is complete but **runtime enforcement is not yet accepted**. Active NEXT remains NEXT032 on product `262bd768` / CP `72eacf75`. The next immutable successor must prove accepted signed native Account/license traffic, query/body tamper rejection, nonce/sequence replay rejection, no WebView downgrade for protected requests, correct response digest/sequence correlation, and unchanged bootstrap/public-read behavior before this lane is runtime-closed.
 
 ### Future Team/Workspace transport
 

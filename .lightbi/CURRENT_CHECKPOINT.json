@@ -1,23 +1,25 @@
 {
   "schema": "lightbi.current-checkpoint.v1",
-  "updatedAt": "2026-09-04T16:16:00Z",
-  "status": "road_to_1_0_intelligence_pack_v1_runtime_accepted_next032",
-  "activeRuntime": "NEXT g-2026-09-04-next-032 on 5272/5273/5274; worker healthy; Intelligence Pack V1 runtime acceptance passed; owner role rotation not performed",
+  "updatedAt": "2026-09-05T00:08:56Z",
+  "status": "road_to_1_0_signed_transport_v2_source_closed_next_runtime_gate",
+  "activeRuntime": "NEXT g-2026-09-04-next-032 on 5272/5273/5274; restored after VPS reboot with exact immutable activation recipe; worker healthy; Signed Transport V2 source not yet deployed; owner role rotation not performed",
   "sourceCandidate": {
     "repo": "/home/ubuntu/n8n2erpnext/LightBI-exp-focus-subject",
     "branch": "codex/r1-roadmap-integration",
-    "head": "262bd768",
+    "head": "6c1f117",
     "mb7Head": "a1f6ee8",
     "multifileFocusHead": "8abc669",
     "intelligencePackHead": "262bd768",
     "mb5Head": "8a4a5e4",
-    "mb6Head": "94fa40c"
+    "mb6Head": "94fa40c",
+    "signedTransportV2Head": "6c1f117"
   },
   "controlPlaneCandidate": {
     "repo": "/home/ubuntu/n8n2erpnext/lightbi-control-plane-r1p14-signed-transport",
     "branch": "codex/r1p14-signed-transport",
-    "head": "72eacf75",
-    "intelligencePackEdgeHead": "72eacf75"
+    "head": "3afb85b",
+    "intelligencePackEdgeHead": "72eacf75",
+    "signedTransportV2Head": "3afb85b"
   },
   "completed": [
     "micro_brain_mb7_source_acceptance",
@@ -36,9 +38,19 @@
     "intelligence_pack_real_candidate_accepted_floor_and_corrupt_state_fail_closed_pass",
     "intelligence_pack_store_rollback_previous_recovery_cryptographic_fixture_pass",
     "intelligence_pack_frontend_real_candidate_active_identity_2_of_2",
-    "next032_systemd_restart_persistence_pass"
+    "next032_systemd_restart_persistence_pass",
+    "signed_transport_v2_product_source_acceptance_6c1f117",
+    "signed_transport_v2_cp_source_acceptance_3afb85b",
+    "signed_transport_v2_attestation_16_of_16_pass",
+    "signed_transport_v2_private_cp_223_of_223_pass",
+    "signed_transport_v2_frontend_11_of_11_typescript_pass",
+    "signed_transport_v2_tauri_6_of_6_real_compile_link_pass",
+    "signed_transport_v2_release_1_0_governed_41_of_41_pass",
+    "signed_transport_v2_source_size_516_modules_main_864_pass",
+    "next032_post_reboot_exact_recipe_restore_pass",
+    "ssd_guard_88_percent_final_75_percent_target_17g"
   ],
-  "nextAction": "Complete Signed Transport query binding, response integrity, route-class policy, native_http_request integration, replay/fallback negative probes, and NEXT-only acceptance without enabling Production trust authority.",
+  "nextAction": "Build the next immutable NEXT successor from exact product 6c1f11758093f21b1f7c03218d8fea52d3602d0f plus CP 3afb85b38e7cd6f9bd65eafbda723f9f6e0e88d4, then run signed native positive and query/body/replay/fallback/response-correlation negative acceptance before marking Signed Transport V2 runtime-accepted.",
   "afterNext": [
     "Run packaged Windows/UAT and integrated Road-to-1.0 release acceptance."
   ],
@@ -49,9 +61,9 @@
   "productionTouched": false,
   "phase2aFrozen": false,
   "readFirst": [
-    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#110-2026-09-04-intelligence-pack-v1-runtime-acceptance-next032-active",
-    "docs/history/agent/plans/AGENT_PLAN_ROAD_TO_1_0_2026-08-31.md#2026-09-04-successor-execution-overlay--one-road-to-10",
-    "docs/architecture/road-to-1-0-trust-release-contract.md#nextinternal-intelligence-pack-v1-runtime-acceptance--2026-09-04"
+    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#112-2026-09-05-signed-transport-v2-source-closure-next-runtime-gate-opens",
+    "docs/architecture/road-to-1-0-trust-release-contract.md#nextinternal-signed-transport-v2-source-closure--2026-09-05",
+    "docs/history/agent/plans/AGENT_PLAN_ROAD_TO_1_0_2026-08-31.md#signed-transport-v2-source-closure-and-runtime-gate"
   ],
   "activeNextGeneration": {
     "generationId": "g-2026-09-04-next-032",
@@ -87,5 +99,30 @@
     "criticalPath1_0": false,
     "rawUserDataSelfTrainingAllowed": false,
     "status": "recorded_for_future_semantic_expansion_after_current_roadmap_priority"
+  },
+  "signedTransportV2SourceGate": {
+    "productCommit": "6c1f11758093f21b1f7c03218d8fea52d3602d0f",
+    "controlPlaneCommit": "3afb85b38e7cd6f9bd65eafbda723f9f6e0e88d4",
+    "requestSchema": "lightbi.next-attestation-request.v2",
+    "responseCorrelationSchema": "lightbi.next-response-correlation.v1",
+    "protectedNativeRoutes": [
+      "/api/account/*",
+      "/api/license/activate"
+    ],
+    "bootstrapRoutes": [
+      "/api/pair",
+      "/api/installation/trust/challenge",
+      "/api/installation/trust/issue",
+      "/api/installation/trust/nonce"
+    ],
+    "attestationTests": "16/16 PASS",
+    "privateCpTests": "223/223 PASS",
+    "frontendTests": "11/11 PASS + TypeScript PASS",
+    "tauriTests": "6/6 PASS after real compile/link",
+    "releaseSuite": "PASS; governed product regression 11 files / 41 tests",
+    "sourceSize": "PASS; 516 modules; main.rs 864 lines",
+    "responseAuthority": "HTTPS-bound digest + accepted-sequence correlation; not independent cryptographic server authentication",
+    "runtimeDeployed": false,
+    "runtimeAccepted": false
   }
 }
