@@ -226,3 +226,9 @@ Phase E — Automate: machine-readable claim/register IDs, SBOM/license checks, 
 ## 22. Definition of done
 
 This framework is operational when every material public claim can be traced to current behavior and evidence; every material technology/data flow has an accountable disclosure classification; every relevant jurisdiction has a dated applicability assessment; EN/VI public semantics are controlled; and release automation/process can identify unresolved compliance blockers before publication.
+
+## 23. Research provenance and R1 execution bookmarks
+
+The dated research basis for this framework is [`LEGAL_RESEARCH_BASELINE_2026-09-05.md`](./LEGAL_RESEARCH_BASELINE_2026-09-05.md). It preserves the Deep Research provenance, jurisdiction/source baseline and authoritative-source links used to establish this governance layer.
+
+The executable pre-1.0 planning overlay is [`R1_PRE_RELEASE_ARMOR_TRUST_COMPLIANCE_PLAN.md`](./R1_PRE_RELEASE_ARMOR_TRUST_COMPLIANCE_PLAN.md). The plan cannot weaken this framework; where they conflict, this canonical framework governs until explicitly superseded.

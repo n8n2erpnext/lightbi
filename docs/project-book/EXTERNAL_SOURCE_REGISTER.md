@@ -33,3 +33,14 @@ Authority rule: use this source for intended road-to-1.0 technical direction, bu
 - Visual 7 — Deep BA long-form screenshot: 69,431 bytes; SHA-256 `a5e4daf4a5ea418eebccf76cf64fdae94bc0fc64185b97aa91e0d36c7a4c1862`.
 
 Authority rule: these visuals establish owner UX intent and observable presentation defects only. Product/source/runtime truth remains Git/code/test governed; semantic and metric authority remain under canonical contracts.
+## EXT-2026-09-05-DEEP-RESEARCH-LEGAL-COMPLIANCE
+
+- Source name: ChatGPT Deep Research — LightBI 1.0 legal/compliance research for EU/EEA, United States and Vietnam.
+- Research session: `6a9b699a-b2b8-83ec-ae04-46f210cf4b9f`.
+- Supplied: 2026-09-05 in the active owner/assistant conversation.
+- Classification: external legal/compliance research baseline; reference evidence, not legal advice or legal authority.
+- Repository-native at intake: no; Deep Research did not expose a standalone report file for direct repository copy.
+- Preserved repository snapshot: `docs/compliance/LEGAL_RESEARCH_BASELINE_2026-09-05.md`, reconstructed from the research scope/results and reverified against authoritative regulator/statutory sources.
+- Incorporated into: `docs/compliance/LIGHTBI_PUBLIC_COMPLIANCE_FRAMEWORK.md` and `docs/compliance/R1_PRE_RELEASE_ARMOR_TRUST_COMPLIANCE_PLAN.md`.
+
+Authority rule: the research snapshot establishes provenance and issues-to-assess. Current statutes/regulator sources outrank it; actual LightBI applicability must be reassessed against current product/business facts and qualified counsel where required.
