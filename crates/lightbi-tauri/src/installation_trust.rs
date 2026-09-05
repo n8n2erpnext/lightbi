@@ -8,11 +8,19 @@ use sha2::{Digest, Sha256};
 use std::{fs::File, io::Read, path::Path, time::Duration};
 use tauri::{AppHandle, Manager};
 
+#[cfg(target_os = "windows")]
+use windows_sys::Win32::{
+    Foundation::{CloseHandle, HANDLE, WAIT_ABANDONED, WAIT_OBJECT_0},
+    System::Threading::{CreateMutexW, ReleaseMutex, WaitForSingleObject},
+};
+
 const PROTOCOL: &str = "lightbi.next-installation-trust.v1";
 const DEVICE_KEY_SERVICE: &str = "digital.thaiduy.lightbi";
 const DEVICE_KEY_ACCOUNT: &str = "installation-trust-ed25519-v1";
 const ROUTING_JSON: &str = include_str!("../../../apps/desktop/src/lib/lightbi-routing.json");
 const CERTIFICATE_FILE: &str = "installation-certificate.json";
+#[cfg(target_os = "windows")]
+const DEVICE_KEY_MUTEX_NAME: &str = "Local\\LightBIInstallationTrustDeviceKeyV1";
 
 #[derive(Debug, Deserialize)]
 struct EdgeResponse<T> {
@@ -145,7 +153,96 @@ fn hash_file(path: &Path) -> Result<(String, u64), String> {
     Ok((format!("{:x}", hasher.finalize()), size))
 }
 
+#[cfg(target_os = "windows")]
+struct DeviceKeyLock(HANDLE);
+
+#[cfg(target_os = "windows")]
+impl Drop for DeviceKeyLock {
+    fn drop(&mut self) {
+        unsafe {
+            let _ = ReleaseMutex(self.0);
+            let _ = CloseHandle(self.0);
+        }
+    }
+}
+
+#[cfg(target_os = "windows")]
+fn acquire_device_key_lock() -> Result<DeviceKeyLock, String> {
+    let name: Vec<u16> = DEVICE_KEY_MUTEX_NAME
+        .encode_utf16()
+        .chain(Some(0))
+        .collect();
+    let handle = unsafe { CreateMutexW(std::ptr::null(), 0, name.as_ptr()) };
+    if handle.is_null() {
+        return Err("Could not create installation device-key lock.".to_string());
+    }
+    let wait = unsafe { WaitForSingleObject(handle, 10_000) };
+    if wait != WAIT_OBJECT_0 && wait != WAIT_ABANDONED {
+        unsafe {
+            let _ = CloseHandle(handle);
+        }
+        return Err("Timed out waiting for installation device-key lock.".to_string());
+    }
+    Ok(DeviceKeyLock(handle))
+}
+
+#[cfg(not(target_os = "windows"))]
+struct DeviceKeyLock;
+
+#[cfg(not(target_os = "windows"))]
+fn acquire_device_key_lock() -> Result<DeviceKeyLock, String> {
+    Ok(DeviceKeyLock)
+}
+
+fn device_public_key(key_pair: &Ed25519KeyPair) -> String {
+    URL_SAFE_NO_PAD.encode(key_pair.public_key().as_ref())
+}
+
+fn validate_certificate_binding(
+    certificate: &serde_json::Value,
+    certificate_id: &str,
+    installation_id: &str,
+    release_id: &str,
+    expected_device_public_key: &str,
+    architecture: &str,
+) -> Result<(), String> {
+    let payload = certificate
+        .get("payload")
+        .and_then(serde_json::Value::as_object)
+        .ok_or_else(|| "Installation certificate payload is missing.".to_string())?;
+    let matches = payload
+        .get("certificate_id")
+        .and_then(serde_json::Value::as_str)
+        == Some(certificate_id)
+        && payload
+            .get("installation_id")
+            .and_then(serde_json::Value::as_str)
+            == Some(installation_id)
+        && payload
+            .get("release_id")
+            .and_then(serde_json::Value::as_str)
+            == Some(release_id)
+        && payload
+            .get("device_key_algorithm")
+            .and_then(serde_json::Value::as_str)
+            == Some("Ed25519")
+        && payload
+            .get("device_public_key")
+            .and_then(serde_json::Value::as_str)
+            == Some(expected_device_public_key)
+        && payload.get("platform").and_then(serde_json::Value::as_str) == Some("windows")
+        && payload
+            .get("architecture")
+            .and_then(serde_json::Value::as_str)
+            == Some(architecture);
+    if !matches {
+        return Err("Installation certificate device-key binding mismatch.".to_string());
+    }
+    Ok(())
+}
+
 fn load_or_create_device_key() -> Result<Ed25519KeyPair, String> {
+    let _lock = acquire_device_key_lock()?;
     let entry = keyring::Entry::new(DEVICE_KEY_SERVICE, DEVICE_KEY_ACCOUNT)
         .map_err(|error| format!("Could not open installation trust credential vault: {error}"))?;
     let pkcs8 = match entry.get_password() {
@@ -206,15 +303,35 @@ pub(crate) async fn load_signed_transport_identity(
         .filter(|value| !value.is_empty())
         .ok_or_else(|| "Stored installation certificate identity is invalid.".to_string())?
         .to_string();
+    let installation_id = cache
+        .get("installationId")
+        .and_then(serde_json::Value::as_str)
+        .filter(|value| !value.is_empty())
+        .ok_or_else(|| "Stored installation identity is invalid.".to_string())?;
+    let release_id = cache
+        .get("releaseId")
+        .and_then(serde_json::Value::as_str)
+        .filter(|value| !value.is_empty())
+        .ok_or_else(|| "Stored installation release identity is invalid.".to_string())?;
     let certificate = cache
         .get("certificate")
         .filter(|value| value.is_object())
         .cloned()
         .ok_or_else(|| "Stored installation certificate envelope is invalid.".to_string())?;
+    let key_pair = load_or_create_device_key()?;
+    let public_key = device_public_key(&key_pair);
+    validate_certificate_binding(
+        &certificate,
+        &certificate_id,
+        installation_id,
+        release_id,
+        &public_key,
+        std::env::consts::ARCH,
+    )?;
     Ok(SignedTransportIdentity {
         certificate,
         certificate_id,
-        key_pair: load_or_create_device_key()?,
+        key_pair,
     })
 }
 
@@ -355,7 +472,7 @@ pub async fn ensure_installation_trust(
     let architecture = std::env::consts::ARCH.to_string();
     let release_id = release_id(&version, &architecture)?;
     let key_pair = load_or_create_device_key()?;
-    let device_public_key = URL_SAFE_NO_PAD.encode(key_pair.public_key().as_ref());
+    let device_public_key = device_public_key(&key_pair);
     let base = next_distribution_api_base()?;
     let client = reqwest::Client::builder()
         .timeout(Duration::from_secs(7))
@@ -414,6 +531,14 @@ pub async fn ensure_installation_trust(
     {
         return Err("Installation certificate identity mismatch.".to_string());
     }
+    validate_certificate_binding(
+        &issued.certificate,
+        &issued.certificate_id,
+        &installation_id,
+        &release_id,
+        &device_public_key,
+        &architecture,
+    )?;
     persist_certificate(
         &app,
         &CertificateCache {
@@ -447,6 +572,39 @@ pub async fn ensure_installation_trust(
 mod tests {
     use super::*;
     use ring::signature::{UnparsedPublicKey, ED25519};
+
+    #[test]
+    fn certificate_binding_rejects_device_key_drift() {
+        let certificate = serde_json::json!({
+            "payload": {
+                "certificate_id": "next-cert-test-001",
+                "installation_id": "lbi-test-001",
+                "device_key_algorithm": "Ed25519",
+                "device_public_key": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+                "release_id": "release:0.9.2-beta.7-next.33.2:windows:x86_64:runtime",
+                "platform": "windows",
+                "architecture": "x86_64"
+            }
+        });
+        assert!(validate_certificate_binding(
+            &certificate,
+            "next-cert-test-001",
+            "lbi-test-001",
+            "release:0.9.2-beta.7-next.33.2:windows:x86_64:runtime",
+            "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+            "x86_64",
+        )
+        .is_ok());
+        assert!(validate_certificate_binding(
+            &certificate,
+            "next-cert-test-001",
+            "lbi-test-001",
+            "release:0.9.2-beta.7-next.33.2:windows:x86_64:runtime",
+            "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
+            "x86_64",
+        )
+        .is_err());
+    }
 
     #[test]
     fn runtime_release_id_is_separate_from_installer_release() {
