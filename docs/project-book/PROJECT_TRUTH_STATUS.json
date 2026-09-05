@@ -267,10 +267,10 @@
   },
   "nextGeneration": {
     "model": "successor_promotion_generation_rotation",
-    "status": "internal_next033_active_next33_1_nsis_runtime_rel_server_issuance_pass_owner_packaged_uat_pending",
+    "status": "internal_next034_active_device_key_continuity_hardening_windows_acceptance_pending",
     "generationSchema": "lightbi.generation.v1",
-    "generationId": "g-2026-09-05-next-033",
-    "parentGenerationId": "g-2026-09-04-next-032",
+    "generationId": "g-2026-09-05-next-034",
+    "parentGenerationId": "g-2026-09-05-next-033",
     "core": {
       "workspace": "/home/ubuntu/n8n2erpnext/LightBI-next025-native-boundary",
       "branch": "codex/next025-native-boundary",
@@ -457,7 +457,18 @@
       "next0331InstallerPayloadVerified": true,
       "next0331RuntimeRelPublished": true,
       "next0331RuntimeRelExternalCryptoVerified": true,
-      "next0331ServerInstallationCertificateIssuePassed": true
+      "next0331ServerInstallationCertificateIssuePassed": true,
+      "next0331OwnerInstallationCertificateIssued": true,
+      "next0331OwnerPackagedAttestationNonceIssued": true,
+      "next0331OwnerPackagedV2Accepted": false,
+      "next0331OwnerPackagedV2Failure": "attestation_device_signature_invalid",
+      "deviceKeyContinuitySourceGuardHead": "410f318e51bc969d8ee4bad34840cecfff531f0a",
+      "deviceKeyContinuityInstallationTrustTestsPassed": 4,
+      "deviceKeyContinuitySignedTransportTestsPassed": 6,
+      "deviceKeyContinuityCrossLanguageSignatureProbePassed": true,
+      "deviceKeyContinuityReleaseSuitePassed": true,
+      "next034RuntimeGenerationAccepted": true,
+      "next034WindowsAcceptanceRun": 33943332283
     },
     "infrastructure": {
       "isolatedContractDefined": true,
@@ -479,13 +490,13 @@
       "servedGenerationManifestPresent": true,
       "internalWebArtifactExactGenerationVerified": true,
       "runtimeBlocker": null,
-      "freshGenerationId": "g-2026-09-05-next-033",
-      "generationManifestSha256": "75bece214fed73acf836caf1421f128b476bfb890d8f29dd9ba9d8d861c5ced9",
+      "freshGenerationId": "g-2026-09-05-next-034",
+      "generationManifestSha256": "b2c9f8f933269f13e369f3597f49d88941e430dbf1578e7da1396e5d8230c89c",
       "coreRuntimeBinarySha256": "95be788197a853cff8c6d1665ef4d62e62ac71fd9dfa9546253efcda0b78aa7e",
       "servedGenerationManifestIsJson": true,
       "freshWorkerStarted": true,
-      "workerGenerationExpected": "g-2026-09-05-next-033",
-      "workerGenerationObserved": "g-2026-09-05-next-033",
+      "workerGenerationExpected": "g-2026-09-05-next-034",
+      "workerGenerationObserved": "g-2026-09-05-next-034",
       "workerCommitObserved": "3afb85b38e7cd6f9bd65eafbda723f9f6e0e88d4",
       "workerGenerationMatch": true,
       "toolSafetyBlockedPredecessorTermination": false,
@@ -494,7 +505,7 @@
       "predecessorWorkerGeneration": null,
       "migrationStateMeaning": "internal_schema_067_catalog_quarterly_pricing_current_all_21_migrations_applied",
       "canonicalInternalGatewayPort": 5273,
-      "canonicalInternalGatewayGeneration": "g-2026-09-05-next-033",
+      "canonicalInternalGatewayGeneration": "g-2026-09-05-next-034",
       "canonicalInternalGatewayCoreOrigin": "http://100.94.184.141:5272",
       "canonicalInternalGatewayControlPlaneOrigin": "http://100.94.184.141:5274",
       "canonicalInternalGatewayManifestSha256": "75bece214fed73acf836caf1421f128b476bfb890d8f29dd9ba9d8d861c5ced9",
@@ -538,16 +549,16 @@
     "ownerUat": {
       "started": true,
       "accepted": false,
-      "blocker": "install verified 0.9.2-beta.7-next.33.1 NSIS artifact then prove real packaged issuer/attestation/V2 no-downgrade path"
+      "blocker": "next.33.1 installation certificate and nonce passed but packaged V2 device signature failed; NEXT034 Windows package/REL/owner retry pending"
     },
     "internalBugTest": {
       "ready": true,
       "entrypoint": "https://lightbi-next.thaiduy.digital",
-      "generationId": "g-2026-09-05-next-033",
-      "coreCommit": "6c1f11758093f21b1f7c03218d8fea52d3602d0f",
+      "generationId": "g-2026-09-05-next-034",
+      "coreCommit": "410f318e51bc969d8ee4bad34840cecfff531f0a",
       "controlPlaneCommit": "3afb85b38e7cd6f9bd65eafbda723f9f6e0e88d4",
-      "scope": "next033_internal_signed_transport_v2_plus_intelligence_pack",
-      "knownLimitation": "server-side next.33.1 NSIS-derived runtime REL and certificate issuance pass; owner packaged Windows installation and V2 correlation still pending",
+      "scope": "next034_internal_device_key_continuity_hardening_plus_signed_transport_v2",
+      "knownLimitation": "owner packaged NEXT033.1 request failed attestation device signature after certificate+nonce; NEXT034 Windows acceptance pending",
       "deepBaScopeIsolationFixed": true,
       "deepBaScopeIsolationRegressionTestsPassed": 20,
       "advancedEasyRoundTripE2ePassed": true,
@@ -736,16 +747,15 @@
       "roleRotationPerformed": false
     },
     "runtimeCurrent20260905": {
-      "generationId": "g-2026-09-05-next-033",
-      "parentGenerationId": "g-2026-09-04-next-032",
+      "generationId": "g-2026-09-05-next-034",
+      "parentGenerationId": "g-2026-09-05-next-033",
       "sourceBranch": "codex/r1-roadmap-integration",
-      "sourceCommit": "6c1f11758093f21b1f7c03218d8fea52d3602d0f",
+      "sourceCommit": "410f318e51bc969d8ee4bad34840cecfff531f0a",
       "coreBinaryCommit": "ed4b9233f690b9ddeb872ee858e0e9a8c46644e0",
       "coreBinarySha256": "95be788197a853cff8c6d1665ef4d62e62ac71fd9dfa9546253efcda0b78aa7e",
       "controlPlaneCommit": "3afb85b38e7cd6f9bd65eafbda723f9f6e0e88d4",
-      "controlPlaneServerSha256": "768852b6d4d6e73850c2d69c6fbe1ec34b9d91ea5dead8917a2ce25f1a871742",
       "schema": "067_catalog_quarterly_pricing",
-      "manifestSha256": "75bece214fed73acf836caf1421f128b476bfb890d8f29dd9ba9d8d861c5ced9",
+      "manifestSha256": "b2c9f8f933269f13e369f3597f49d88941e430dbf1578e7da1396e5d8230c89c",
       "workerHealthy": true,
       "intelligencePackVersion": "1.0.0-next.1",
       "roleRotationPerformed": false
@@ -800,7 +810,7 @@
     }
   },
   "roadTo1_0Execution": {
-    "status": "next033_signed_transport_v2_next33_1_nsis_runtime_rel_server_installation_trust_pass_owner_packaged_native_then_integrated_release",
+    "status": "next034_device_key_continuity_hardening_active_windows_package_rel_owner_retry_pending",
     "startedDate": "2026-08-31",
     "baseline": {
       "core": "451c9b6afe0a95bce5bce473a4a84c8b918f42cd",
@@ -911,7 +921,7 @@
       "trackedPrivateKeyLiterals": 0,
       "productionSignerDetected": false,
       "ownerFreezeApproved": false,
-      "requiredOwnerRecord": "FREEZE APPROVED — PR #4 codex/phase2-trust-contracts @ 10de4da8e551a46f93f7b62985a0a6e611581b8e",
+      "requiredOwnerRecord": "FREEZE APPROVED \u2014 PR #4 codex/phase2-trust-contracts @ 10de4da8e551a46f93f7b62985a0a6e611581b8e",
       "productionMutated": false
     },
     "keyCustodyPolicy": {
@@ -1120,7 +1130,7 @@
     "erpnextCompany": "LightBI Inc",
     "serviceItem": "LIGHTBI-PRO",
     "workflowId": "lightbiRevenueMirror01",
-    "workflowName": "LightBI Paddle Revenue → ERPNext Invoice + Clearing",
+    "workflowName": "LightBI Paddle Revenue \u2192 ERPNext Invoice + Clearing",
     "workflowNodes": 26,
     "workflowActive": false,
     "salesInvoiceUpdateStock": false,

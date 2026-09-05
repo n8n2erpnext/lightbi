@@ -235,6 +235,17 @@ Publication used exact acceptance/runtime bytes re-hashed on the operator VPS, a
 This closes corrected **machine/server packaging identity publication and issuance**, not owner packaged-native acceptance. The final owner gate is to install the exact `33.1` NSIS artifact, restart LightBI, open Account and correlate the real Windows process through installation issuer → attestation nonce/proof → protected Signed Transport V2 request without WebView downgrade. Build Identity UI remains non-authoritative for REL/ATT evidence. OS publisher remains `NotSigned`; `phase2aFrozen=false`; Production and role state are untouched.
 
 
+### NEXT033.1 packaged device-key continuity failure and NEXT034 hardening — 2026-09-05
+
+Owner installation of the corrected `next.33.1` package proves the NSIS-derived runtime identity fix and real installation certificate path: the live issuer issued certificate `next-cert-3f9a0a28-eb44-4a8f-ba64-2230ea99d9d5` for the exact corrected runtime. After the attestation verifier reloaded the new REL, the packaged Account request obtained a nonce for that certificate but failed closed at `attestation_device_signature_invalid`. Therefore packaged V2 reached the cryptographic verifier but is **not accepted**.
+
+Investigation separates unrelated credentials and eliminates one protocol hypothesis. Native Google/email login persists the API session in keyring account `account-session`; installation trust uses the distinct Ed25519 account `installation-trust-ed25519-v1`. A Rust V2 proof generated from the current product implementation verifies successfully with the exact deployed Trust Contracts JS `verifyEd25519Signature`, so the current V2 canonicalization/signature format is not treated as the observed failure cause.
+
+Product `410f318e51bc969d8ee4bad34840cecfff531f0a` adds local continuity defenses without changing request schema V2: Windows cross-process named mutex serialization around installation-key creation/load, exact signed certificate-payload identity binding to the current Ed25519 public key before persistence, and the same certificate→current-key check before native signed transport. Regression gates pass installation trust 4/4, Signed Transport 6/6 and the complete release-authoritative suite including governed 41/41.
+
+Immutable NEXT034 (`g-2026-09-05-next-034`) is active with product/source `410f318...`, unchanged CP `3afb85b...`, reused Core binary SHA-256 `95be7881...`, byte-identical Intelligence Pack and generation-manifest SHA-256 `b2c9f8f9...`. External identity/worker/Trust sanity passes. This is runtime/source hardening only; Windows package run `33943332283`, its NSIS-derived runtime REL, and the final owner packaged-native retry remain open. Production remains untouched, role rotation is not performed and `phase2aFrozen=false`.
+
+
 ## Exit sequence
 
 `Phase 2A re-audit → explicit freeze → offline Root ceremony → purpose-separated private signer → REL → ATT → signed ENT → private PRO delivery → platform signing/anti-impersonation closure → RC/1.0`.
