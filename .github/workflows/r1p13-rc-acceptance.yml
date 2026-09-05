@@ -1,34 +1,37 @@
-name: R1-P13 RC Acceptance Artifact
+name: R1-P13 NEXT033 Native Trust Acceptance
 
 on:
   push:
     branches:
-      - "codex/r1p13-rc-*"
+      - "codex/r1p13-rc-acceptance"
 
 permissions:
   contents: read
 
 jobs:
-  guard-rc-authority:
-    runs-on: ubuntu-24.04
-    steps:
-      - name: Enforce non-production RC source authority
-        shell: bash
-        run: |
-          set -euo pipefail
-          [[ "${GITHUB_REF_TYPE}" == "branch" ]] || { echo "RC acceptance refuses tags." >&2; exit 1; }
-          [[ "${GITHUB_REF_NAME}" == codex/r1p13-rc-* ]] || { echo "Unexpected RC branch: ${GITHUB_REF_NAME}" >&2; exit 1; }
-          echo "R1-P13 RC acceptance is artifact-only and has no stable publication authority."
-
-  windows-rc-acceptance:
-    needs: [guard-rc-authority]
+  windows-next033-native-trust:
     runs-on: windows-latest
-    timeout-minutes: 100
+    timeout-minutes: 120
     env:
-      LIGHTBI_RC_VERSION: 1.0.0-rc.${{ github.run_number }}
-      LIGHTBI_RC_GENERATION: g-actions-r1p13-rc-${{ github.run_id }}-${{ github.run_attempt }}
+      LIGHTBI_PRODUCT_SOURCE_SHA: 6c1f11758093f21b1f7c03218d8fea52d3602d0f
+      LIGHTBI_CP_SHA: 3afb85b38e7cd6f9bd65eafbda723f9f6e0e88d4
+      LIGHTBI_UAT_VERSION: 0.9.2-beta.7-next.33
+      LIGHTBI_UAT_GENERATION: g-2026-09-05-next-033
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout exact accepted product source
+        uses: actions/checkout@v4
+        with:
+          ref: 6c1f11758093f21b1f7c03218d8fea52d3602d0f
+          fetch-depth: 1
+      - name: Prove exact product source and acceptance authority
+        shell: pwsh
+        run: |
+          $actual = (git rev-parse HEAD).Trim()
+          if ($actual -ne $env:LIGHTBI_PRODUCT_SOURCE_SHA) { throw "source drift: $actual" }
+          if ('${{ github.ref_name }}' -ne 'codex/r1p13-rc-acceptance') { throw 'unexpected acceptance authority branch' }
+          if (git status --porcelain) { throw 'exact source checkout is dirty before build' }
+          Write-Host "EXACT_PRODUCT_SOURCE=$actual"
+          Write-Host "ACCEPTANCE_ORCHESTRATION_SHA=${{ github.sha }}"
       - uses: pnpm/action-setup@v4
         with:
           version: 11.4.0
@@ -43,39 +46,38 @@ jobs:
         with:
           workspaces: . -> target
       - run: pnpm install --frozen-lockfile
-      - name: Verify complete platform-independent 1.0 gate
+      - name: Verify complete exact-source gate
         shell: pwsh
-        run: pnpm test:release-1.0
+        run: |
+          pnpm test:release-1.0
+          cargo test -p lightbi-tauri signed_transport::tests --target x86_64-pc-windows-msvc -- --nocapture
+          cargo test -p lightbi-tauri installation_trust::tests --target x86_64-pc-windows-msvc -- --nocapture
       - name: Generate branded application icons
         shell: pwsh
         run: |
           pnpm dlx @tauri-apps/cli@2.11.4 icon apps/desktop/public/branding/lightbi-app-icon.png --output crates/lightbi-tauri/icons
           node scripts/validate-native-icons.mjs
-      - name: Verify native updater and Windows publisher diagnostics
-        shell: pwsh
-        run: |
-          cargo test -p lightbi-tauri updater_tests --target x86_64-pc-windows-msvc
-          cargo test -p lightbi-tauri windows_publisher --target x86_64-pc-windows-msvc
-      - name: Build Windows R1-P13 NEXT RC installer
+      - name: Build exact NEXT033 Windows runtime and installer
         working-directory: crates/lightbi-tauri
         shell: pwsh
         env:
-          VITE_LIGHTBI_GENERATION_ID: ${{ env.LIGHTBI_RC_GENERATION }}
-          VITE_LIGHTBI_PARENT_GENERATION_ID: g-2026-09-03-next-030
-          VITE_LIGHTBI_CHANNEL: internal
           LIGHTBI_RUNTIME_CHANNEL: internal
-          VITE_LIGHTBI_CORE_COMMIT: ${{ github.sha }}
-          VITE_LIGHTBI_CONTROL_PLANE_COMMIT: bb50b0d53542da5cd908e2237cbca368f7f87073
+          VITE_LIGHTBI_GENERATION_ID: g-2026-09-05-next-033
+          VITE_LIGHTBI_PARENT_GENERATION_ID: g-2026-09-04-next-032
+          VITE_LIGHTBI_CHANNEL: internal
+          VITE_LIGHTBI_CORE_COMMIT: 6c1f11758093f21b1f7c03218d8fea52d3602d0f
+          VITE_LIGHTBI_CONTROL_PLANE_COMMIT: 3afb85b38e7cd6f9bd65eafbda723f9f6e0e88d4
           VITE_LIGHTBI_CONTROL_PLANE_SCHEMA_VERSION: 067_catalog_quarterly_pricing
-          VITE_LIGHTBI_TEST_PACK_VERSION: r1p13-windows-rc-acceptance
+          VITE_LIGHTBI_TEST_PACK_VERSION: intelligence-pack-1.0.0-next.1
           VITE_LIGHTBI_TRUST_STATUS: phase2a_unfrozen
           VITE_LIGHTBI_TRUST_PHASE2A_HEAD: 10de4da8e551a46f93f7b62985a0a6e611581b8e
           VITE_LIGHTBI_RELEASE_UPDATE_CHANNEL: internal
-          VITE_LIGHTBI_ANALYTICS_NAMESPACE: internal/r1p13-rc
-          VITE_LIGHTBI_RELEASE_NAMESPACE: internal/lightbi/r1p13-rc
-          VITE_LIGHTBI_SOURCE_BRANCH: ${{ github.ref_name }}
-          VITE_LIGHTBI_SOURCE_COMMIT: ${{ github.sha }}
-          VITE_LIGHTBI_BUILDER: github-actions/r1p13-rc-acceptance
+          VITE_LIGHTBI_DISTRIBUTION_URL: https://lightbi-next.thaiduy.digital/distribution-api
+          VITE_LIGHTBI_ANALYTICS_NAMESPACE: internal/g-2026-09-05-next-033
+          VITE_LIGHTBI_RELEASE_NAMESPACE: internal/lightbi/g-2026-09-05-next-033
+          VITE_LIGHTBI_SOURCE_BRANCH: codex/r1-roadmap-integration
+          VITE_LIGHTBI_SOURCE_COMMIT: 6c1f11758093f21b1f7c03218d8fea52d3602d0f
+          VITE_LIGHTBI_BUILDER: github-actions/r1p13-next033-native-trust-acceptance
           VITE_LIGHTBI_INFRA_DATABASE_SCOPE: internal
           VITE_LIGHTBI_INFRA_REDIS_SCOPE: internal
           VITE_LIGHTBI_INFRA_DATA_SCOPE: internal
@@ -83,72 +85,75 @@ jobs:
           VITE_LIGHTBI_INFRA_RELEASES_SCOPE: internal
           VITE_LIGHTBI_INFRA_INTEGRATIONS_SCOPE: internal
         run: |
-          $env:VITE_LIGHTBI_VERSION = $env:LIGHTBI_RC_VERSION
-          $env:VITE_LIGHTBI_BUILD_TIMESTAMP = (Get-Date).ToUniversalTime().ToString("o")
-          @{ version = $env:LIGHTBI_RC_VERSION } | ConvertTo-Json | Set-Content tauri.rc.conf.json
-          pnpm dlx @tauri-apps/cli@2.11.4 build --target x86_64-pc-windows-msvc --config tauri.windows.conf.json --config tauri.rc.conf.json
-      - name: Generate exact RC checksum and provenance
+          $env:VITE_LIGHTBI_VERSION = $env:LIGHTBI_UAT_VERSION
+          $env:VITE_LIGHTBI_BUILD_TIMESTAMP = (Get-Date).ToUniversalTime().ToString('o')
+          @{ version = $env:LIGHTBI_UAT_VERSION } | ConvertTo-Json | Set-Content tauri.acceptance.conf.json
+          pnpm dlx @tauri-apps/cli@2.11.4 build --target x86_64-pc-windows-msvc --config tauri.windows.conf.json --config tauri.acceptance.conf.json
+      - name: Generate canonical runtime acceptance evidence
         shell: pwsh
         run: |
-          $installer = Get-ChildItem "target/x86_64-pc-windows-msvc/release/bundle/nsis/*.exe" | Select-Object -First 1
-          if (-not $installer) { throw "NSIS RC installer was not produced" }
-          $runtime = Get-Item "target/x86_64-pc-windows-msvc/release/LightBI.exe" -ErrorAction SilentlyContinue
-          if (-not $runtime) { throw "Exact LightBI.exe runtime was not produced" }
-          $name = "LightBI-RC-$env:LIGHTBI_RC_VERSION-x64-setup.exe"
-          $normalized = Join-Path $installer.Directory.FullName $name
-          Move-Item $installer.FullName $normalized -Force
-          $hash = (Get-FileHash -Algorithm SHA256 $normalized).Hash.ToLowerInvariant()
-          $size = (Get-Item $normalized).Length
-          "$hash  $name" | Set-Content -NoNewline "$normalized.sha256"
-          $runtimeName = "LightBI.exe"
-          $runtimeHash = (Get-FileHash -Algorithm SHA256 $runtime.FullName).Hash.ToLowerInvariant()
-          $runtimeSize = $runtime.Length
-          $runtimeCopy = Join-Path $installer.Directory.FullName $runtimeName
+          $releaseRoot = (Resolve-Path 'target/x86_64-pc-windows-msvc/release').Path
+          $runtime = Get-Item "$releaseRoot/LightBI.exe" -ErrorAction Stop
+          $installer = Get-ChildItem "$releaseRoot/bundle/nsis/*.exe" | Select-Object -First 1
+          if (-not $installer) { throw 'NSIS installer was not produced' }
+          $installerName = "LightBI-NEXT-$env:LIGHTBI_UAT_VERSION-x64-setup.exe"
+          $normalizedInstaller = Join-Path $installer.Directory.FullName $installerName
+          Move-Item $installer.FullName $normalizedInstaller -Force
+          $runtimeCopy = Join-Path $installer.Directory.FullName 'LightBI.exe'
           Copy-Item $runtime.FullName $runtimeCopy -Force
-          "$runtimeHash  $runtimeName" | Set-Content -NoNewline "$runtimeCopy.sha256"
-          $publisher = "$normalized.publisher.json"
-          ./scripts/collect-windows-publisher-evidence.ps1 -Installer $normalized -Output $publisher
-          node scripts/validate-windows-publisher-evidence.mjs --evidence $publisher --mode beta --expected-sha256 $hash
-          $publisherEvidence = Get-Content $publisher -Raw | ConvertFrom-Json
+          $runtimeHash = (Get-FileHash -Algorithm SHA256 $runtimeCopy).Hash.ToLowerInvariant()
+          $installerHash = (Get-FileHash -Algorithm SHA256 $normalizedInstaller).Hash.ToLowerInvariant()
+          $runtimeSize = (Get-Item $runtimeCopy).Length
+          $installerSize = (Get-Item $normalizedInstaller).Length
+          "$runtimeHash  LightBI.exe" | Set-Content -NoNewline "$runtimeCopy.sha256"
+          "$installerHash  $installerName" | Set-Content -NoNewline "$normalizedInstaller.sha256"
+          $runtimePublisher = "$runtimeCopy.publisher.json"
+          $installerPublisher = "$normalizedInstaller.publisher.json"
+          ./scripts/collect-windows-publisher-evidence.ps1 -Installer $runtimeCopy -Output $runtimePublisher
+          ./scripts/collect-windows-publisher-evidence.ps1 -Installer $normalizedInstaller -Output $installerPublisher
+          node scripts/validate-windows-publisher-evidence.mjs --evidence $runtimePublisher --mode beta --expected-sha256 $runtimeHash
+          node scripts/validate-windows-publisher-evidence.mjs --evidence $installerPublisher --mode beta --expected-sha256 $installerHash
+          $publisherEvidence = Get-Content $installerPublisher -Raw | ConvertFrom-Json
           $evidence = [ordered]@{
-            schema = "lightbi.rc-acceptance.v1"
-            environment = "next_internal_test_only"
-            stage = "r1p13_rc"
-            version = $env:LIGHTBI_RC_VERSION
-            release_channel = "beta"
-            generation_id = $env:LIGHTBI_RC_GENERATION
-            source_sha = "${{ github.sha }}"
-            source_ref = "${{ github.ref_name }}"
-            control_plane_sha = "bb50b0d53542da5cd908e2237cbca368f7f87073"
-            run_id = "${{ github.run_id }}"
-            run_attempt = "${{ github.run_attempt }}"
-            installer = $name
-            sha256 = $hash
-            installer_size = [int64]$size
-            runtime_artifact = $runtimeName
-            runtime_release_id = "release:$($env:LIGHTBI_RC_VERSION):windows:x86_64:runtime"
+            schema = 'lightbi.rc-acceptance.v1'
+            environment = 'next_internal_test_only'
+            stage = 'r1p13_rc'
+            version = $env:LIGHTBI_UAT_VERSION
+            release_channel = 'beta'
+            generation_id = $env:LIGHTBI_UAT_GENERATION
+            source_sha = $env:LIGHTBI_PRODUCT_SOURCE_SHA
+            source_ref = 'codex/r1p13-rc-acceptance'
+            control_plane_sha = $env:LIGHTBI_CP_SHA
+            orchestration_sha = '${{ github.sha }}'
+            run_id = '${{ github.run_id }}'
+            run_attempt = '${{ github.run_attempt }}'
+            runtime_artifact = 'LightBI.exe'
+            runtime_release_id = "release:$($env:LIGHTBI_UAT_VERSION):windows:x86_64:runtime"
             runtime_sha256 = $runtimeHash
             runtime_size = [int64]$runtimeSize
+            installer = $installerName
+            sha256 = $installerHash
+            installer_size = [int64]$installerSize
             publisher_status = $publisherEvidence.signature_status
-            lightbi_identity_required = "root_rel_exact_artifact_att"
-            os_publisher_required_for_current_rc = $false
             production_authority = $false
             stable_publication_authority = $false
-            inherited_owner_acceptance_gate = $true
+            owner_uat_accepted = $false
             production_phase2a_freeze_gate = $true
           }
-          $rcJson = $evidence | ConvertTo-Json -Compress
-          $rcJson | Set-Content "$($installer.Directory.FullName)/rc-acceptance.json"
-          Write-Host "LIGHTBI_RC_ACCEPTANCE=$rcJson"
+          $evidence | ConvertTo-Json -Depth 6 | Set-Content "$($installer.Directory.FullName)/rc-acceptance.json"
+          Write-Host "NEXT033_RUNTIME_SHA=$runtimeHash"
+          Write-Host "NEXT033_RUNTIME_SIZE=$runtimeSize"
+          Write-Host "NEXT033_RUNTIME_RELEASE_ID=release:$($env:LIGHTBI_UAT_VERSION):windows:x86_64:runtime"
       - uses: actions/upload-artifact@v4
         with:
-          name: LightBI-Windows-R1P13-RC-Acceptance
+          name: LightBI-Windows-NEXT033-R1P13-Native-Trust-Acceptance
           retention-days: 14
           path: |
-            target/x86_64-pc-windows-msvc/release/bundle/nsis/*.exe
-            target/x86_64-pc-windows-msvc/release/bundle/nsis/*.sha256
-            target/x86_64-pc-windows-msvc/release/bundle/nsis/*.publisher.json
             target/x86_64-pc-windows-msvc/release/bundle/nsis/LightBI.exe
             target/x86_64-pc-windows-msvc/release/bundle/nsis/LightBI.exe.sha256
+            target/x86_64-pc-windows-msvc/release/bundle/nsis/LightBI.exe.publisher.json
+            target/x86_64-pc-windows-msvc/release/bundle/nsis/LightBI-NEXT-*.exe
+            target/x86_64-pc-windows-msvc/release/bundle/nsis/LightBI-NEXT-*.sha256
+            target/x86_64-pc-windows-msvc/release/bundle/nsis/LightBI-NEXT-*.publisher.json
             target/x86_64-pc-windows-msvc/release/bundle/nsis/rc-acceptance.json
           if-no-files-found: error
