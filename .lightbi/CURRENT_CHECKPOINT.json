@@ -1,7 +1,7 @@
 {
   "schema": "lightbi.current-checkpoint.v1",
-  "updatedAt": "2026-09-05T01:50:00Z",
-  "status": "road_to_1_0_next033_runtime_rel_and_server_installation_trust_pass_owner_packaged_native_pending",
+  "updatedAt": "2026-09-05T02:03:00Z",
+  "status": "road_to_1_0_next033_owner_packaged_runtime_mismatch_install_canonical_artifact",
   "activeRuntime": "NEXT g-2026-09-05-next-033 on 5272/5273/5274; product 6c1f117; CP/worker 3afb85b; worker healthy; owner role rotation not performed",
   "sourceCandidate": {
     "repo": "/home/ubuntu/n8n2erpnext/LightBI-exp-focus-subject",
@@ -14,29 +14,28 @@
     "head": "3afb85b38e7cd6f9bd65eafbda723f9f6e0e88d4"
   },
   "completed": [
-    "micro_brain_mb7_focus_next031_intelligence_pack_next032_accepted",
-    "signed_transport_v2_source_and_next033_server_edge_runtime_accepted",
-    "windows_canonical_run_33933622073_build_and_acceptance_evidence_pass",
-    "windows_artifact_zip_sha256_162a3246e5744d4be73c6008512bf6d238682aaf7e957bb968460773406b7572_verified",
-    "next033_runtime_lightbi_exe_sha256_77952884cfa93559157536e6b884a12522f4f5f02123fe8717ba91ea3a0dae9d_size_76444672_verified",
-    "next033_test_runtime_rel_external_publish_and_root_keyset_crypto_verify_pass",
-    "installation_issuer_catalog_snapshot_reload_pass",
-    "exact_runtime_external_challenge_device_signature_certificate_issue_pass"
+    "next033_server_edge_signed_transport_v2_accepted",
+    "canonical_windows_run_33933622073_success",
+    "canonical_next033_runtime_rel_external_crypto_verified",
+    "server_exact_runtime_installation_certificate_issue_pass",
+    "owner_packaged_restart_reached_installation_issuer",
+    "owner_packaged_noncanonical_runtime_rejected_fail_closed"
   ],
-  "nextAction": "Owner: fully close and reopen the currently running NEXT033 Windows app once. Do not use the current Build Identity REL/ATT labels as proof; that panel only consumes OS-publisher evidence. After restart, correlate the packaged app in installation-issuer logs. Then open Account to trigger a protected /api/account/* request and verify packaged V2 signed transport from issuer/attestation/Distribution evidence. If the exact runtime is rejected, install the canonical CI artifact SHA256 77952884cfa93559157536e6b884a12522f4f5f02123fe8717ba91ea3a0dae9d.",
+  "nextAction": "Install the canonical NEXT033 CI installer from Actions run 33933622073 (installer SHA256 e02b61b270181cffa52dff37fb3f90db8b5ed3428df001f3e0cf733d0c79c5d4), fully restart LightBI, then open Account. Correlate issuer logs for exact-runtime certificate issuance and attestation/Distribution logs for packaged Signed Transport V2. Do not relax the verifier or publish an alternate REL for the mismatching current bytes.",
   "afterNext": [
     "Run integrated Road-to-1.0 release acceptance after packaged-native owner/UAT proof."
   ],
   "blockers": [
-    "Owner packaged-native restart must be correlated in issuer/attestation logs; current Build Identity panel is not REL/ATT evidence authority",
-    "OS publisher is NotSigned/not verified for this TEST artifact",
+    "Current owner-installed NEXT033 executable failed canonical runtime SHA/size authorization with installation_issuer_runtime_artifact_mismatch",
+    "Packaged Signed Transport V2 cannot proceed until installation trust succeeds on the canonical CI runtime",
+    "OS publisher remains NotSigned/not verified for this TEST artifact",
     "Production Phase-2A freeze remains owner-gated and false"
   ],
   "productionTouched": false,
   "phase2aFrozen": false,
   "readFirst": [
-    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#114-2026-09-05-next033-canonical-windows-runtime-rel--server-installation-trust-closure",
-    "docs/architecture/road-to-1-0-trust-release-contract.md#next033-canonical-windows-runtime-rel-and-server-installation-trust-closure--2026-09-05",
+    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#115-2026-09-05-owner-packaged-next033-restart-fails-closed-on-non-canonical-runtime-bytes",
+    "docs/architecture/road-to-1-0-trust-release-contract.md#next033-owner-packaged-native-negative-proof--non-canonical-runtime-rejected--2026-09-05",
     "docs/history/agent/plans/AGENT_PLAN_ROAD_TO_1_0_2026-08-31.md#signed-transport-v2-runtime-acceptance-and-packaged-native-gate"
   ],
   "next033NativeTrust": {
@@ -56,6 +55,12 @@
     "osPublisher": "NotSigned",
     "ownerUatAccepted": false,
     "productionAuthority": false,
-    "promotableToProduction": false
+    "promotableToProduction": false,
+    "ownerRestartAttempted": true,
+    "ownerRuntimeCanonicalMatch": false,
+    "ownerRuntimeRejection": "installation_issuer_runtime_artifact_mismatch",
+    "ownerSubmittedRuntimeDigestKnown": false,
+    "ownerInstallationCertificateIssued": false,
+    "packagedV2Reached": false
   }
 }

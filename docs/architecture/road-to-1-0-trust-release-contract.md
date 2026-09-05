@@ -216,6 +216,14 @@ Installation issuance is also machine-proven for the exact release. The first ch
 
 This does **not** prove the owner's currently installed executable has the canonical SHA, that its OS credential vault persisted the device key/certificate, or that packaged Tauri V2 traffic exercised the no-WebView-downgrade behavior. Installation trust retries only at native startup. The current Build Identity panel is not an ATT/REL evidence consumer: it reads OS-publisher evidence while REL/artifact/installation fields remain default state. Therefore owner proof must correlate the packaged restart and protected request against issuer/attestation runtime evidence rather than infer success from that panel. Those items remain the final packaged-native owner/UAT gate before integrated release acceptance. TEST REL/ATT evidence does not establish OS Authenticode publisher identity. `phase2aFrozen=false`; Production remains untouched and no role rotation occurred.
 
+
+### NEXT033 owner packaged-native negative proof — non-canonical runtime rejected — 2026-09-05
+
+After the canonical REL/server-issuance closure above, the owner fully restarted the installed NEXT033 Windows application and opened Account. The installation issuer rejected the startup challenge as `installation_issuer_runtime_artifact_mismatch`; no attestation/V2 verifier event followed. Since the loaded TEST REL successfully authorizes the canonical runtime in an independent exact-runtime challenge, the owner process is not the canonical `LightBI.exe` SHA-256/size pair. The issuer intentionally omits the submitted runtime digest/size from logs, so the contract records only a canonical-artifact mismatch, not an invented owner hash.
+
+The security decision is to keep the failure closed. Same version/generation text cannot substitute for byte identity, and no alternate REL may be minted merely to accommodate an earlier build. Owner packaged-native UAT must restart from the canonical Actions run `33933622073` installer (`e02b61b2...9c5d4`), then prove installation-certificate issuance from the real executable and a protected V2 request without WebView fallback.
+
+
 ## Exit sequence
 
 `Phase 2A re-audit → explicit freeze → offline Root ceremony → purpose-separated private signer → REL → ATT → signed ENT → private PRO delivery → platform signing/anti-impersonation closure → RC/1.0`.

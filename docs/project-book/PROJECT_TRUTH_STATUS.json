@@ -267,7 +267,7 @@
   },
   "nextGeneration": {
     "model": "successor_promotion_generation_rotation",
-    "status": "internal_next033_active_signed_transport_v2_runtime_rel_server_installation_trust_pass_owner_packaged_native_pending",
+    "status": "internal_next033_active_owner_packaged_runtime_mismatch_canonical_reinstall_required",
     "generationSchema": "lightbi.generation.v1",
     "generationId": "g-2026-09-05-next-033",
     "parentGenerationId": "g-2026-09-04-next-032",
@@ -446,7 +446,12 @@
       "next033WindowsCanonicalGithubRunPassed": true,
       "next033RuntimeRelPublished": true,
       "next033RuntimeRelExternalCryptoVerified": true,
-      "next033ServerInstallationCertificateIssuePassed": true
+      "next033ServerInstallationCertificateIssuePassed": true,
+      "next033OwnerPackagedRestartAttempted": true,
+      "next033OwnerRuntimeCanonicalMatch": false,
+      "next033OwnerRuntimeMismatchFailClosedPassed": true,
+      "next033OwnerInstallationCertificateIssued": false,
+      "next033OwnerPackagedV2Reached": false
     },
     "infrastructure": {
       "isolatedContractDefined": true,
@@ -527,7 +532,7 @@
     "ownerUat": {
       "started": true,
       "accepted": false,
-      "blocker": "owner_packaged_restart_must_correlate_exact_runtime_certificate_and_v2_native_request_in_issuer_attestation_logs; current_build_identity_panel_not_rel_att_evidence_consumer"
+      "blocker": "currently installed NEXT033 runtime rejected as non-canonical artifact; canonical CI installer required before packaged V2 proof"
     },
     "internalBugTest": {
       "ready": true,
@@ -536,7 +541,7 @@
       "coreCommit": "6c1f11758093f21b1f7c03218d8fea52d3602d0f",
       "controlPlaneCommit": "3afb85b38e7cd6f9bd65eafbda723f9f6e0e88d4",
       "scope": "next033_internal_signed_transport_v2_plus_intelligence_pack",
-      "knownLimitation": "server-side runtime REL and installation issuance pass; owner packaged-native exact-runtime/certificate/native request proof remains independent",
+      "knownLimitation": "owner packaged NEXT033 restart reached installation issuer but current executable mismatched canonical REL artifact; install canonical CI artifact before retry",
       "deepBaScopeIsolationFixed": true,
       "deepBaScopeIsolationRegressionTestsPassed": 20,
       "advancedEasyRoundTripE2ePassed": true,
@@ -757,7 +762,14 @@
       "productionAuthority": false,
       "stablePublicationAuthority": false,
       "buildIdentityPanelConsumesRelAttEvidence": false,
-      "ownerProofAuthority": "installation_issuer_and_attestation_runtime_evidence_after_packaged_restart_not_current_build_identity_panel"
+      "ownerProofAuthority": "installation_issuer_and_attestation_runtime_evidence_after_packaged_restart_not_current_build_identity_panel",
+      "ownerRestartAttempted": true,
+      "ownerRuntimeCanonicalMatch": false,
+      "ownerRuntimeRejection": "installation_issuer_runtime_artifact_mismatch",
+      "ownerSubmittedRuntimeDigestKnown": false,
+      "ownerInstallationCertificateIssued": false,
+      "ownerPackagedV2Reached": false,
+      "nextRequiredArtifact": "canonical Actions run 33933622073 installer e02b61b270181cffa52dff37fb3f90db8b5ed3428df001f3e0cf733d0c79c5d4"
     }
   },
   "roadTo1_0Execution": {

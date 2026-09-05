@@ -1580,3 +1580,13 @@ R1-P0 documentation/integrity closure verified 1,243 local links with zero missi
 - Initial challenge failed `installation_issuer_release_not_allowed` because issuer snapshots the trust index at startup. No issuer code drift existed from its image source to current CP, so the same image was restarted. Post-reload exact external challenge + ephemeral Ed25519 device proof + certificate issue passed; issuer remains attestation-only, `productionAuthority=false`.
 - Owner Windows screenshots show correct NEXT033/`6c1f117`/`3afb85b`, healthy services, Isolation OK and Intelligence Pack active. The current Build Identity panel reads OS-publisher evidence only; its REL/artifact/installation fields remain default evidence and therefore cannot be used to prove certificate issuance. Native installation trust retries only at app startup.
 - Next gate: close/reopen the owner Windows app, correlate that packaged startup in installation-issuer logs, then trigger a protected Account request and prove packaged V2 signed native transport/no-WebView-downgrade behavior from server-side evidence. Production untouched; role rotation not performed; `phase2aFrozen=false`.
+
+
+## 2026-09-05 — Owner NEXT033 packaged restart rejects non-canonical runtime
+
+- Owner fully restarted the currently installed NEXT033 Windows app and opened Account.
+- Installation issuer recorded `installation_issuer_runtime_artifact_mismatch`; attestation/V2 logs remained empty for that attempt, so protected native transport did not advance past installation trust.
+- The canonical REL already authorizes only `LightBI.exe` SHA-256 `77952884...dae9d`, size 76,444,672. The issuer does not log the submitted owner hash/size, so only mismatch to the canonical pair is claimed.
+- This proves the fail-closed identity boundary works: same visible version/generation does not authorize different executable bytes. No verifier relaxation or alternate REL was introduced.
+- Next action is one manual install of the canonical NEXT033 CI installer from run `33933622073`, SHA-256 `e02b61b2...9c5d4`, followed by restart and issuer/attestation/Distribution correlation.
+- Production untouched, role rotation not performed, `phase2aFrozen=false`.
