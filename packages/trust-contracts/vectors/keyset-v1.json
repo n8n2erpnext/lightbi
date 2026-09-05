@@ -1,0 +1,54 @@
+{
+  "test_only": true,
+  "purpose": "root_keyset",
+  "payload": {
+    "schema": 1,
+    "kid": "test-root-v1",
+    "keyset_version": 1,
+    "issued_at": "2026-08-29T05:17:00Z",
+    "expires_at": "2030-08-29T05:17:00Z",
+    "keys": [
+      {
+        "kid": "test-rel-v1",
+        "purpose": "release",
+        "algorithm": "Ed25519",
+        "public_key": "UkzUukLptil7BbgY-bTfmVJVTG4nNj86jY4PuQzksOM",
+        "status": "active",
+        "not_before": "2026-01-01T00:00:00Z",
+        "not_after": "2027-12-31T23:59:59Z"
+      },
+      {
+        "kid": "test-att-v1",
+        "purpose": "attestation",
+        "algorithm": "Ed25519",
+        "public_key": "T8maNS11-wVpbPAP7uoS8w3sFn7SxfPwwMjhVPuHDrw",
+        "status": "active",
+        "not_before": "2026-01-01T00:00:00Z",
+        "not_after": "2027-12-31T23:59:59Z"
+      },
+      {
+        "kid": "test-ent-v1",
+        "purpose": "entitlement",
+        "algorithm": "Ed25519",
+        "public_key": "RCbsDy2-W3esGi4WsLoDRSjCWwSGcRYKCFC-4NVaZBo",
+        "status": "expired",
+        "not_before": "2026-01-01T00:00:00Z",
+        "not_after": "2027-01-01T00:00:00Z"
+      },
+      {
+        "kid": "test-pro-v1",
+        "purpose": "pro_package",
+        "algorithm": "Ed25519",
+        "public_key": "rhcEYCZjfNG9CpvCnJviqr63GRRg2USgFo-ScNgqyxk",
+        "status": "active",
+        "not_before": "2026-01-01T00:00:00Z",
+        "not_after": "2027-12-31T23:59:59Z"
+      }
+    ]
+  },
+  "canonical_text": "{\"expires_at\":\"2030-08-29T05:17:00Z\",\"issued_at\":\"2026-08-29T05:17:00Z\",\"keys\":[{\"algorithm\":\"Ed25519\",\"kid\":\"test-att-v1\",\"not_after\":\"2027-12-31T23:59:59Z\",\"not_before\":\"2026-01-01T00:00:00Z\",\"public_key\":\"T8maNS11-wVpbPAP7uoS8w3sFn7SxfPwwMjhVPuHDrw\",\"purpose\":\"attestation\",\"status\":\"active\"},{\"algorithm\":\"Ed25519\",\"kid\":\"test-ent-v1\",\"not_after\":\"2027-01-01T00:00:00Z\",\"not_before\":\"2026-01-01T00:00:00Z\",\"public_key\":\"RCbsDy2-W3esGi4WsLoDRSjCWwSGcRYKCFC-4NVaZBo\",\"purpose\":\"entitlement\",\"status\":\"expired\"},{\"algorithm\":\"Ed25519\",\"kid\":\"test-pro-v1\",\"not_after\":\"2027-12-31T23:59:59Z\",\"not_before\":\"2026-01-01T00:00:00Z\",\"public_key\":\"rhcEYCZjfNG9CpvCnJviqr63GRRg2USgFo-ScNgqyxk\",\"purpose\":\"pro_package\",\"status\":\"active\"},{\"algorithm\":\"Ed25519\",\"kid\":\"test-rel-v1\",\"not_after\":\"2027-12-31T23:59:59Z\",\"not_before\":\"2026-01-01T00:00:00Z\",\"public_key\":\"UkzUukLptil7BbgY-bTfmVJVTG4nNj86jY4PuQzksOM\",\"purpose\":\"release\",\"status\":\"active\"}],\"keyset_version\":1,\"kid\":\"test-root-v1\",\"schema\":1}",
+  "canonical_utf8_hex": "7b22657870697265735f6174223a22323033302d30382d32395430353a31373a30305a222c226973737565645f6174223a22323032362d30382d32395430353a31373a30305a222c226b657973223a5b7b22616c676f726974686d223a2245643235353139222c226b6964223a22746573742d6174742d7631222c226e6f745f6166746572223a22323032372d31322d33315432333a35393a35395a222c226e6f745f6265666f7265223a22323032362d30312d30315430303a30303a30305a222c227075626c69635f6b6579223a2254386d614e5331312d7756706250415037756f5338773373466e375378665077774d6a6856507548447277222c22707572706f7365223a226174746573746174696f6e222c22737461747573223a22616374697665227d2c7b22616c676f726974686d223a2245643235353139222c226b6964223a22746573742d656e742d7631222c226e6f745f6166746572223a22323032372d30312d30315430303a30303a30305a222c226e6f745f6265666f7265223a22323032362d30312d30315430303a30303a30305a222c227075626c69635f6b6579223a22524362734479322d5733657347693457734c6f4452536a43577753476352594b4346432d344e56615a426f222c22707572706f7365223a22656e7469746c656d656e74222c22737461747573223a2265787069726564227d2c7b22616c676f726974686d223a2245643235353139222c226b6964223a22746573742d70726f2d7631222c226e6f745f6166746572223a22323032372d31322d33315432333a35393a35395a222c226e6f745f6265666f7265223a22323032362d30312d30315430303a30303a30305a222c227075626c69635f6b6579223a227268634559435a6a664e4739437076436e4a7669717236334752526732555367466f2d53634e677179786b222c22707572706f7365223a2270726f5f7061636b616765222c22737461747573223a22616374697665227d2c7b22616c676f726974686d223a2245643235353139222c226b6964223a22746573742d72656c2d7631222c226e6f745f6166746572223a22323032372d31322d33315432333a35393a35395a222c226e6f745f6265666f7265223a22323032362d30312d30315430303a30303a30305a222c227075626c69635f6b6579223a22556b7a55756b4c7074696c37426267592d6254666d564a565447346e4e6a38366a59345075517a6b734f4d222c22707572706f7365223a2272656c65617365222c22737461747573223a22616374697665227d5d2c226b65797365745f76657273696f6e223a312c226b6964223a22746573742d726f6f742d7631222c22736368656d61223a317d",
+  "sha256": "e3720e05adf7f00686be917c2efdde25de6ff8685f654210fc9c521592eaa669",
+  "public_key": "N8RmPjzLbV7b6ayhmT45ZxiivXyZPKk66B5JSeWH1zQ",
+  "signature": "oZ9ixAPAIVdIy5XQdsIz7IzgMAOIS2LsD9hYq83pPX40KkAUh-nCx6D6fo0dPglably1qycXM6PcPvPmIvNUBg"
+}

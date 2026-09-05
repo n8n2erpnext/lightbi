@@ -1,0 +1,27 @@
+{
+  "test_only": true,
+  "purpose": "entitlement",
+  "payload": {
+    "schema": 1,
+    "kid": "test-ent-v1",
+    "entitlement_id": "ent_account_vector_001",
+    "subject": {
+      "type": "account",
+      "id": "acct_vector_001"
+    },
+    "tier": "pro",
+    "capabilities": [
+      "pro_runtime",
+      "dashboard"
+    ],
+    "issued_at": "2026-08-29T05:17:00Z",
+    "valid_until": "2029-08-29T05:17:00Z",
+    "entitlement_version": 2,
+    "source": "internal"
+  },
+  "canonical_text": "{\"capabilities\":[\"dashboard\",\"pro_runtime\"],\"entitlement_id\":\"ent_account_vector_001\",\"entitlement_version\":2,\"issued_at\":\"2026-08-29T05:17:00Z\",\"kid\":\"test-ent-v1\",\"schema\":1,\"source\":\"internal\",\"subject\":{\"id\":\"acct_vector_001\",\"type\":\"account\"},\"tier\":\"pro\",\"valid_until\":\"2029-08-29T05:17:00Z\"}",
+  "canonical_utf8_hex": "7b226361706162696c6974696573223a5b2264617368626f617264222c2270726f5f72756e74696d65225d2c22656e7469746c656d656e745f6964223a22656e745f6163636f756e745f766563746f725f303031222c22656e7469746c656d656e745f76657273696f6e223a322c226973737565645f6174223a22323032362d30382d32395430353a31373a30305a222c226b6964223a22746573742d656e742d7631222c22736368656d61223a312c22736f75726365223a22696e7465726e616c222c227375626a656374223a7b226964223a22616363745f766563746f725f303031222c2274797065223a226163636f756e74227d2c2274696572223a2270726f222c2276616c69645f756e74696c223a22323032392d30382d32395430353a31373a30305a227d",
+  "sha256": "a1fee5995309975ca221c313817c6a368fc1191b3d1e5a7b601e7d2b86b06851",
+  "public_key": "RCbsDy2-W3esGi4WsLoDRSjCWwSGcRYKCFC-4NVaZBo",
+  "signature": "KRAHy5QgIMkwG-TE6CAzsJi5FntglaWk2XvpYs3ogoOiMMU8-QUd7voEiPv_tf22AW27URz__su7NnfCub0IBQ"
+}
