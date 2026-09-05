@@ -26,6 +26,7 @@
 13. [`LIGHTBI_CONTROL_PLANE_MAP.md`](./LIGHTBI_CONTROL_PLANE_MAP.md) — Edition 0.6 private source/deployment ownership, online services, Beta entitlement, and 1.0 boundary.
 14. [`PROJECT_TRUTH_STATUS.json`](./PROJECT_TRUTH_STATUS.json) — machine-readable checkpoint IDs and open gates.
 15. [`CURRENT_BOOTSTRAP_RECORD.json`](./CURRENT_BOOTSTRAP_RECORD.json) — immutable evidence-derived identity for the legacy CURRENT parent of the first governed NEXT generation.
+16. [`../compliance/README.md`](../compliance/README.md) — canonical public-compliance entry point for claims, technology/data/security/AI/IP disclosure, legal applicability, and release publication gates.
 
 ## Snapshot boundary
 

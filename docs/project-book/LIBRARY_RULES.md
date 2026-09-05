@@ -130,6 +130,7 @@ Place a document according to its **function**, not according to which agent cre
 | Domain knowledge catalogs | `docs/domain-catalog/` |
 | Plugin/provider SDK documentation | `docs/plugin-sdk/` |
 | Product/commercial drafts or contracts | `docs/product/` |
+| Public compliance governance, disclosure controls, applicability registers | `docs/compliance/` |
 | Release checklist/evidence | `docs/release/` |
 | Durable design baseline | `docs/design/` |
 | Agent handoff/plan/walkthrough | `docs/history/agent/` in the matching subtype |

@@ -29,6 +29,7 @@
 - **Plugin/provider surface:** `docs/plugin-sdk/`.
 - **Product/commercial drafts:** `docs/product/` — draft status must be preserved; do not treat pricing drafts as current business truth automatically.
 - **Release records:** `docs/release/` — dated release evidence/checklists.
+- **Public compliance governance:** `docs/compliance/` — canonical claim/disclosure/legal-applicability framework and future compliance registers; not a substitute for implementation evidence or qualified legal advice.
 - **Design baseline:** `docs/design/`.
 - **Historical archive:** `docs/history/` — provenance, superseded plans, audits, checkpoints, progress/changelog.
 
