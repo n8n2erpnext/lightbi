@@ -64,7 +64,7 @@ describe('native capabilities', () => {
 
   it('moves packaged external HTTPS requests out of the WebView', async () => {
     vi.mocked(isNativeLightBI).mockReturnValue(true);
-    vi.mocked(invoke).mockResolvedValue({ status: 200, headers: { 'content-type': 'application/json' }, body: Array.from(new TextEncoder().encode('{"ok":true}')) });
+    vi.mocked(invoke).mockResolvedValue({ status: 200, headers: { 'content-type': 'application/json' }, body: Array.from(new TextEncoder().encode('{"ok":true}')), signedTransport: false });
     const response = await externalFetch('https://lightbi.example/api/test', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{"hello":"world"}' });
     expect(invoke).toHaveBeenCalledWith('native_http_request', expect.objectContaining({ request: expect.objectContaining({ url: 'https://lightbi.example/api/test', method: 'POST' }) }));
     await expect(response.json()).resolves.toEqual({ ok: true });
@@ -82,13 +82,34 @@ describe('native capabilities', () => {
 
   it('falls back to WebView for idempotent reads when native transport returns a proxy HTTP error', async () => {
     vi.mocked(isNativeLightBI).mockReturnValue(true);
-    vi.mocked(invoke).mockResolvedValue({ status: 407, headers: { 'content-type': 'text/plain' }, body: Array.from(new TextEncoder().encode('proxy authentication required')) });
+    vi.mocked(invoke).mockResolvedValue({ status: 407, headers: { 'content-type': 'text/plain' }, body: Array.from(new TextEncoder().encode('proxy authentication required')), signedTransport: false });
     const browserFetch = vi.fn().mockResolvedValue(new Response('{\"ok\":true}', { status: 200, headers: { 'content-type': 'application/json' } }));
     vi.stubGlobal('fetch', browserFetch);
     const response = await externalFetch('https://next-external.example/api/releases/latest');
     expect(browserFetch).toHaveBeenCalledOnce();
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toEqual({ ok: true });
+  });
+
+  it('does not downgrade signed idempotent reads to WebView fallback', async () => {
+    vi.mocked(isNativeLightBI).mockReturnValue(true);
+    vi.mocked(invoke).mockRejectedValue('Signed transport required: signed_transport_response_correlation_invalid');
+    const browserFetch = vi.fn();
+    vi.stubGlobal('fetch', browserFetch);
+    await expect(externalFetch('https://next-signed.example/distribution-api/api/account/session')).rejects.toThrow(
+      /Signed transport required: signed_transport_response_correlation_invalid/,
+    );
+    expect(browserFetch).not.toHaveBeenCalled();
+  });
+
+  it('keeps a correlated signed HTTP error on the native path instead of retrying through WebView', async () => {
+    vi.mocked(isNativeLightBI).mockReturnValue(true);
+    vi.mocked(invoke).mockResolvedValue({ status: 401, headers: { 'content-type': 'application/json' }, body: Array.from(new TextEncoder().encode('{"error":"unauthorized"}')), signedTransport: true });
+    const browserFetch = vi.fn();
+    vi.stubGlobal('fetch', browserFetch);
+    const response = await externalFetch('https://next-signed.example/distribution-api/api/account/session');
+    expect(response.status).toBe(401);
+    expect(browserFetch).not.toHaveBeenCalled();
   });
 
   it('does not replay non-idempotent mutations through WebView after native transport failure', async () => {

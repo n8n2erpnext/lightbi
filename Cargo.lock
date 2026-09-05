@@ -3302,6 +3302,7 @@ dependencies = [
  "tempfile",
  "tokio",
  "tower",
+ "url",
  "windows-sys 0.59.0",
 ]
 

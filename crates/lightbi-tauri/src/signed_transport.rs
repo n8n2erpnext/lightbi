@@ -5,6 +5,8 @@ use serde_json::Value;
 use sha2::{Digest, Sha256};
 
 const REQUEST_SCHEMA: &str = "lightbi.next-attestation-request.v1";
+pub(crate) const REQUEST_SCHEMA_V2: &str = "lightbi.next-attestation-request.v2";
+pub(crate) const RESPONSE_CORRELATION_V1: &str = "lightbi.next-response-correlation.v1";
 const MAX_SAFE_INTEGER: u64 = 9_007_199_254_740_991;
 
 fn exact_path(path: &[String], expected: &[&str]) -> bool {
@@ -124,6 +126,98 @@ pub(crate) fn canonical_bytes(value: &Value) -> Result<Vec<u8>, String> {
 pub(crate) fn body_sha256(value: &Value) -> Result<String, String> {
     Ok(format!("{:x}", Sha256::digest(canonical_bytes(value)?)))
 }
+
+pub(crate) fn raw_body_sha256(value: &[u8]) -> String {
+    format!("{:x}", Sha256::digest(value))
+}
+
+pub(crate) fn validate_response_correlation(
+    correlation: Option<&str>,
+    observed_sequence: Option<&str>,
+    digest: Option<&str>,
+    body: &[u8],
+    expected_sequence: u64,
+) -> Result<(), String> {
+    let sequence = observed_sequence.and_then(|value| value.parse::<u64>().ok());
+    let expected_digest = raw_body_sha256(body);
+    if correlation != Some(RESPONSE_CORRELATION_V1)
+        || sequence != Some(expected_sequence)
+        || digest != Some(expected_digest.as_str())
+    {
+        return Err("signed_transport_response_correlation_invalid".to_string());
+    }
+    Ok(())
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(crate) enum SignedRouteClass {
+    Bootstrap,
+    PublicRead,
+    NativeProtected,
+}
+
+pub(crate) fn signed_route_class(pathname: &str) -> SignedRouteClass {
+    if matches!(
+        pathname,
+        "/api/installation/trust/challenge"
+            | "/api/installation/trust/issue"
+            | "/api/installation/trust/nonce"
+            | "/api/pair"
+    ) {
+        return SignedRouteClass::Bootstrap;
+    }
+    if pathname.starts_with("/api/account/") || pathname == "/api/license/activate" {
+        return SignedRouteClass::NativeProtected;
+    }
+    SignedRouteClass::PublicRead
+}
+
+pub(crate) fn canonical_next_api_target(
+    url: &url::Url,
+    api_base: &str,
+) -> Result<Option<String>, String> {
+    let base =
+        url::Url::parse(api_base).map_err(|_| "signed_transport_base_invalid".to_string())?;
+    if url.scheme() != base.scheme()
+        || url.host_str() != base.host_str()
+        || url.port_or_known_default() != base.port_or_known_default()
+    {
+        return Ok(None);
+    }
+    let base_path = base.path().trim_end_matches('/');
+    let path = url.path();
+    if !path.starts_with(base_path) {
+        return Ok(None);
+    }
+    let remainder = &path[base_path.len()..];
+    if !remainder.starts_with('/') {
+        return Ok(None);
+    }
+    let mut pairs: Vec<(String, String)> = url
+        .query_pairs()
+        .map(|(key, value)| (key.into_owned(), value.into_owned()))
+        .collect();
+    pairs.sort_by(|left, right| {
+        left.0
+            .as_bytes()
+            .cmp(right.0.as_bytes())
+            .then_with(|| left.1.as_bytes().cmp(right.1.as_bytes()))
+    });
+    let mut query = url::form_urlencoded::Serializer::new(String::new());
+    for (key, value) in pairs {
+        query.append_pair(&key, &value);
+    }
+    let query = query.finish();
+    let target = if query.is_empty() {
+        remainder.to_string()
+    } else {
+        format!("{remainder}?{query}")
+    };
+    if target.len() > 1024 || target.contains('#') {
+        return Err("signed_transport_target_invalid".to_string());
+    }
+    Ok(Some(target))
+}
 #[derive(Debug, Serialize)]
 struct RequestProofPayload<'a> {
     schema: &'static str,
@@ -183,6 +277,65 @@ pub(crate) fn build_request_proof<'a>(
     Ok(SignedRequestProof { payload, signature })
 }
 
+#[derive(Debug, Serialize)]
+struct RequestProofPayloadV2<'a> {
+    schema: &'static str,
+    certificate_id: &'a str,
+    method: &'a str,
+    target: &'a str,
+    timestamp: &'a str,
+    sequence: u64,
+    server_nonce: &'a str,
+    body_sha256: String,
+}
+
+#[derive(Debug, Serialize)]
+pub(crate) struct SignedRequestProofV2<'a> {
+    payload: RequestProofPayloadV2<'a>,
+    signature: String,
+}
+
+pub(crate) fn build_request_proof_v2<'a>(
+    key_pair: &Ed25519KeyPair,
+    certificate_id: &'a str,
+    method: &'a str,
+    target: &'a str,
+    timestamp: &'a str,
+    sequence: u64,
+    server_nonce: &'a str,
+    body: &[u8],
+) -> Result<SignedRequestProofV2<'a>, String> {
+    if sequence == 0 || sequence > MAX_SAFE_INTEGER {
+        return Err("signed_transport_sequence_invalid".to_string());
+    }
+    if method.len() < 3
+        || method.len() > 12
+        || !method.bytes().all(|byte| byte.is_ascii_uppercase())
+    {
+        return Err("signed_transport_method_invalid".to_string());
+    }
+    if !target.starts_with('/') || target.contains('#') || target.len() > 1024 {
+        return Err("signed_transport_target_invalid".to_string());
+    }
+    if certificate_id.is_empty() || server_nonce.is_empty() || timestamp.is_empty() {
+        return Err("signed_transport_identity_invalid".to_string());
+    }
+    let payload = RequestProofPayloadV2 {
+        schema: REQUEST_SCHEMA_V2,
+        certificate_id,
+        method,
+        target,
+        timestamp,
+        sequence,
+        server_nonce,
+        body_sha256: raw_body_sha256(body),
+    };
+    let value = serde_json::to_value(&payload)
+        .map_err(|_| "signed_transport_payload_encode_failed".to_string())?;
+    let signature = URL_SAFE_NO_PAD.encode(key_pair.sign(&canonical_bytes(&value)?).as_ref());
+    Ok(SignedRequestProofV2 { payload, signature })
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -232,6 +385,81 @@ mod tests {
             &URL_SAFE_NO_PAD.decode(&proof.signature).unwrap(),
         )
         .unwrap();
+    }
+
+    #[test]
+    fn v2_canonical_target_sorts_query_and_preserves_route_class() {
+        let url = url::Url::parse("https://next-signed.example/distribution-api/api/account/session?z=2&a=hello%20world&a=alpha").unwrap();
+        let target = canonical_next_api_target(
+            &url,
+            "https://next-signed.example/distribution-api",
+        )
+        .unwrap()
+        .unwrap();
+        assert_eq!(target, "/api/account/session?a=alpha&a=hello+world&z=2");
+        assert_eq!(
+            signed_route_class("/api/account/session"),
+            SignedRouteClass::NativeProtected
+        );
+        assert_eq!(
+            signed_route_class("/api/releases/latest"),
+            SignedRouteClass::PublicRead
+        );
+    }
+
+    #[test]
+    fn v2_proof_binds_raw_body_and_query_target() {
+        let document = Ed25519KeyPair::generate_pkcs8(&SystemRandom::new()).unwrap();
+        let key = Ed25519KeyPair::from_pkcs8(document.as_ref()).unwrap();
+        let proof = build_request_proof_v2(
+            &key,
+            "next-cert-test-001",
+            "POST",
+            "/api/account/session?a=1&b=2",
+            "2026-09-04T16:00:00Z",
+            11,
+            "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+            br#"{"hello":"world"}"#,
+        )
+        .unwrap();
+        let payload = serde_json::to_value(&proof.payload).unwrap();
+        assert_eq!(
+            payload.get("schema").and_then(Value::as_str),
+            Some(REQUEST_SCHEMA_V2)
+        );
+        assert_eq!(
+            payload.get("target").and_then(Value::as_str),
+            Some("/api/account/session?a=1&b=2")
+        );
+        assert_eq!(
+            payload.get("body_sha256").and_then(Value::as_str),
+            Some(raw_body_sha256(br#"{"hello":"world"}"#).as_str())
+        );
+        let canonical = canonical_bytes(&payload).unwrap();
+        ring::signature::UnparsedPublicKey::new(
+            &ring::signature::ED25519,
+            key.public_key().as_ref(),
+        )
+        .verify(
+            &canonical,
+            &URL_SAFE_NO_PAD.decode(&proof.signature).unwrap(),
+        )
+        .unwrap();
+    }
+
+    #[test]
+    fn v2_response_correlation_rejects_sequence_or_body_tamper() {
+        let body = br#"{\"ok\":true}"#;
+        let digest = raw_body_sha256(body);
+        assert!(validate_response_correlation(
+            Some(RESPONSE_CORRELATION_V1), Some("12"), Some(&digest), body, 12
+        ).is_ok());
+        assert!(validate_response_correlation(
+            Some(RESPONSE_CORRELATION_V1), Some("11"), Some(&digest), body, 12
+        ).is_err());
+        assert!(validate_response_correlation(
+            Some(RESPONSE_CORRELATION_V1), Some("12"), Some(&digest), br#"{\"ok\":false}"#, 12
+        ).is_err());
     }
 
     #[test]

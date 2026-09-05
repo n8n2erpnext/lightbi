@@ -82,10 +82,10 @@ struct CertificateCache<'a> {
     production_authority: bool,
 }
 
-fn internal_build() -> bool {
+pub(crate) fn internal_build() -> bool {
     matches!(option_env!("LIGHTBI_RUNTIME_CHANNEL"), Some("internal"))
 }
-fn next_distribution_api_base() -> Result<String, String> {
+pub(crate) fn next_distribution_api_base() -> Result<String, String> {
     let routing: serde_json::Value = serde_json::from_str(ROUTING_JSON)
         .map_err(|_| "Invalid LightBI routing manifest.".to_string())?;
     let value = routing
@@ -101,29 +101,42 @@ fn next_distribution_api_base() -> Result<String, String> {
     {
         return Err("Invalid NEXT routing origin.".to_string());
     }
-    Ok(format!("{}/distribution-api", url.origin().ascii_serialization()))
+    Ok(format!(
+        "{}/distribution-api",
+        url.origin().ascii_serialization()
+    ))
 }
 
 fn release_id(version: &str, architecture: &str) -> Result<String, String> {
     if version.is_empty()
         || architecture.is_empty()
-        || !version.chars().all(|c| c.is_ascii_alphanumeric() || ".-_".contains(c))
-        || !architecture.chars().all(|c| c.is_ascii_alphanumeric() || "_-".contains(c))
+        || !version
+            .chars()
+            .all(|c| c.is_ascii_alphanumeric() || ".-_".contains(c))
+        || !architecture
+            .chars()
+            .all(|c| c.is_ascii_alphanumeric() || "_-".contains(c))
     {
         return Err("Invalid installation trust release identity.".to_string());
     }
     Ok(format!("release:{version}:windows:{architecture}:runtime"))
 }
 fn hash_file(path: &Path) -> Result<(String, u64), String> {
-    let mut file = File::open(path).map_err(|error| format!("Could not open LightBI runtime: {error}"))?;
-    let size = file.metadata().map_err(|error| format!("Could not inspect LightBI runtime: {error}"))?.len();
+    let mut file =
+        File::open(path).map_err(|error| format!("Could not open LightBI runtime: {error}"))?;
+    let size = file
+        .metadata()
+        .map_err(|error| format!("Could not inspect LightBI runtime: {error}"))?
+        .len();
     if size == 0 {
         return Err("LightBI runtime is empty.".to_string());
     }
     let mut hasher = Sha256::new();
     let mut buffer = [0u8; 128 * 1024];
     loop {
-        let read = file.read(&mut buffer).map_err(|error| format!("Could not hash LightBI runtime: {error}"))?;
+        let read = file
+            .read(&mut buffer)
+            .map_err(|error| format!("Could not hash LightBI runtime: {error}"))?;
         if read == 0 {
             break;
         }
@@ -143,7 +156,8 @@ fn load_or_create_device_key() -> Result<Ed25519KeyPair, String> {
             let document = Ed25519KeyPair::generate_pkcs8(&SystemRandom::new())
                 .map_err(|_| "Could not generate installation device key.".to_string())?;
             let bytes = document.as_ref().to_vec();
-            entry.set_password(&URL_SAFE_NO_PAD.encode(&bytes))
+            entry
+                .set_password(&URL_SAFE_NO_PAD.encode(&bytes))
                 .map_err(|error| format!("Could not store installation device key: {error}"))?;
             bytes
         }
@@ -152,6 +166,58 @@ fn load_or_create_device_key() -> Result<Ed25519KeyPair, String> {
     Ed25519KeyPair::from_pkcs8(&pkcs8)
         .map_err(|_| "Stored installation device key could not be opened.".to_string())
 }
+pub(crate) struct SignedTransportIdentity {
+    pub certificate: serde_json::Value,
+    pub certificate_id: String,
+    pub key_pair: Ed25519KeyPair,
+}
+
+pub(crate) async fn load_signed_transport_identity(
+    app: &AppHandle,
+) -> Result<SignedTransportIdentity, String> {
+    if !internal_build() {
+        return Err("Signed transport is unavailable outside Internal builds.".to_string());
+    }
+    let path = app
+        .path()
+        .app_data_dir()
+        .map_err(|error| format!("Could not resolve LightBI trust storage: {error}"))?
+        .join("trust")
+        .join(CERTIFICATE_FILE);
+    let bytes = tokio::fs::read(&path)
+        .await
+        .map_err(|_| "Installation certificate is not available yet.".to_string())?;
+    let cache: serde_json::Value = serde_json::from_slice(&bytes)
+        .map_err(|_| "Stored installation certificate is invalid.".to_string())?;
+    if cache.get("schema").and_then(serde_json::Value::as_str)
+        != Some("lightbi.next-installation-certificate-cache.v1")
+        || cache.get("environment").and_then(serde_json::Value::as_str)
+            != Some("next_internal_test_only")
+        || cache
+            .get("productionAuthority")
+            .and_then(serde_json::Value::as_bool)
+            != Some(false)
+    {
+        return Err("Stored installation certificate authority is invalid.".to_string());
+    }
+    let certificate_id = cache
+        .get("certificateId")
+        .and_then(serde_json::Value::as_str)
+        .filter(|value| !value.is_empty())
+        .ok_or_else(|| "Stored installation certificate identity is invalid.".to_string())?
+        .to_string();
+    let certificate = cache
+        .get("certificate")
+        .filter(|value| value.is_object())
+        .cloned()
+        .ok_or_else(|| "Stored installation certificate envelope is invalid.".to_string())?;
+    Ok(SignedTransportIdentity {
+        certificate,
+        certificate_id,
+        key_pair: load_or_create_device_key()?,
+    })
+}
+
 fn challenge_transcript(payload: &ChallengePayload) -> String {
     [
         PROTOCOL.to_string(),
@@ -175,14 +241,26 @@ async fn post<T: Serialize, R: DeserializeOwned>(
     payload: &T,
     expected_status: reqwest::StatusCode,
 ) -> Result<R, String> {
-    let response = client.post(url).json(payload).send().await
+    let response = client
+        .post(url)
+        .json(payload)
+        .send()
+        .await
         .map_err(|error| format!("Installation trust request failed: {error}"))?;
     let status = response.status();
-    let body = response.bytes().await
+    let body = response
+        .bytes()
+        .await
         .map_err(|error| format!("Installation trust response failed: {error}"))?;
     if status != expected_status {
-        let error = serde_json::from_slice::<serde_json::Value>(&body).ok()
-            .and_then(|value| value.get("error").and_then(serde_json::Value::as_str).map(str::to_string))
+        let error = serde_json::from_slice::<serde_json::Value>(&body)
+            .ok()
+            .and_then(|value| {
+                value
+                    .get("error")
+                    .and_then(serde_json::Value::as_str)
+                    .map(str::to_string)
+            })
             .unwrap_or_else(|| format!("http_{}", status.as_u16()));
         return Err(format!("Installation trust was rejected: {error}"));
     }
@@ -190,18 +268,23 @@ async fn post<T: Serialize, R: DeserializeOwned>(
         .map_err(|_| "Installation trust returned invalid JSON.".to_string())
 }
 async fn persist_certificate(app: &AppHandle, cache: &CertificateCache<'_>) -> Result<(), String> {
-    let directory = app.path().app_data_dir()
+    let directory = app
+        .path()
+        .app_data_dir()
         .map_err(|error| format!("Could not resolve LightBI trust storage: {error}"))?
         .join("trust");
-    tokio::fs::create_dir_all(&directory).await
+    tokio::fs::create_dir_all(&directory)
+        .await
         .map_err(|error| format!("Could not create LightBI trust storage: {error}"))?;
     let path = directory.join(CERTIFICATE_FILE);
     let temp = directory.join(format!("{CERTIFICATE_FILE}.tmp"));
     let bytes = serde_json::to_vec_pretty(cache)
         .map_err(|error| format!("Could not encode installation certificate: {error}"))?;
-    tokio::fs::write(&temp, bytes).await
+    tokio::fs::write(&temp, bytes)
+        .await
         .map_err(|error| format!("Could not write installation certificate: {error}"))?;
-    tokio::fs::rename(&temp, &path).await
+    tokio::fs::rename(&temp, &path)
+        .await
         .map_err(|error| format!("Could not finalize installation certificate: {error}"))?;
     Ok(())
 }
@@ -255,9 +338,14 @@ pub async fn ensure_installation_trust(
     }
     let runtime_path = std::env::current_exe()
         .map_err(|error| format!("Could not resolve LightBI runtime path: {error}"))?;
-    let runtime_name = runtime_path.file_name().and_then(|value| value.to_str()).unwrap_or_default();
+    let runtime_name = runtime_path
+        .file_name()
+        .and_then(|value| value.to_str())
+        .unwrap_or_default();
     if !runtime_name.eq_ignore_ascii_case("LightBI.exe") {
-        return Err(format!("Unexpected LightBI runtime filename: {runtime_name}"));
+        return Err(format!(
+            "Unexpected LightBI runtime filename: {runtime_name}"
+        ));
     }
     let hash_path = runtime_path.clone();
     let (runtime_sha256, runtime_size) = tokio::task::spawn_blocking(move || hash_file(&hash_path))
@@ -288,7 +376,8 @@ pub async fn ensure_installation_trust(
             "architecture": architecture,
         }),
         reqwest::StatusCode::CREATED,
-    ).await?;
+    )
+    .await?;
     if !challenge_response.ok {
         return Err("Installation trust challenge was not acknowledged.".to_string());
     }
@@ -312,7 +401,8 @@ pub async fn ensure_installation_trust(
             "signature": signature,
         }),
         reqwest::StatusCode::CREATED,
-    ).await?;
+    )
+    .await?;
     let issued = issue_response.data;
     if !issue_response.ok
         || issued.environment != "next_internal_test_only"
@@ -324,18 +414,22 @@ pub async fn ensure_installation_trust(
     {
         return Err("Installation certificate identity mismatch.".to_string());
     }
-    persist_certificate(&app, &CertificateCache {
-        schema: "lightbi.next-installation-certificate-cache.v1",
-        environment: "next_internal_test_only",
-        installation_id: &installation_id,
-        release_id: &release_id,
-        runtime_sha256: &runtime_sha256,
-        runtime_size,
-        certificate_id: &issued.certificate_id,
-        expires_at: &issued.expires_at,
-        certificate: &issued.certificate,
-        production_authority: false,
-    }).await?;
+    persist_certificate(
+        &app,
+        &CertificateCache {
+            schema: "lightbi.next-installation-certificate-cache.v1",
+            environment: "next_internal_test_only",
+            installation_id: &installation_id,
+            release_id: &release_id,
+            runtime_sha256: &runtime_sha256,
+            runtime_size,
+            certificate_id: &issued.certificate_id,
+            expires_at: &issued.expires_at,
+            certificate: &issued.certificate,
+            production_authority: false,
+        },
+    )
+    .await?;
 
     Ok(InstallationTrustResult {
         status: "issued",

@@ -5,6 +5,7 @@ mod installation_lifecycle;
 mod installation_trust;
 mod intelligence_pack;
 mod navigation_guard;
+mod native_http;
 mod signed_transport;
 mod windows_publisher;
 
@@ -16,12 +17,12 @@ use sha2::{Digest, Sha256};
 use std::path::PathBuf;
 use std::{
     collections::HashMap,
-    net::IpAddr,
     path::Path,
     sync::{Arc, Mutex},
     time::Duration,
 };
 use tauri::{AppHandle, Emitter, Manager, State};
+use native_http::{native_http_request, native_http_request_impl, NativeHttpRequest};
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tower::ServiceExt;
 
@@ -83,128 +84,6 @@ fn backend_status(state: State<'_, EmbeddedCore>) -> bool {
 #[tauri::command]
 fn os_publisher_evidence() -> windows_publisher::OsPublisherEvidence {
     windows_publisher::current_os_publisher_evidence()
-}
-
-#[derive(Debug, Deserialize)]
-#[serde(rename_all = "camelCase")]
-struct NativeHttpRequest {
-    url: String,
-    method: String,
-    #[serde(default)]
-    headers: HashMap<String, String>,
-    body: Option<Vec<u8>>,
-}
-
-#[derive(Debug, Serialize)]
-#[serde(rename_all = "camelCase")]
-struct NativeHttpResponse {
-    status: u16,
-    headers: HashMap<String, String>,
-    body: Vec<u8>,
-}
-
-fn native_http_url(value: &str) -> Result<reqwest::Url, String> {
-    let url =
-        reqwest::Url::parse(value).map_err(|error| format!("Invalid external URL: {error}"))?;
-    let local_debug_http = cfg!(debug_assertions)
-        && url.scheme() == "http"
-        && matches!(url.host_str(), Some("localhost" | "127.0.0.1" | "::1"));
-    if url.scheme() != "https" && !local_debug_http {
-        return Err("Native external requests require HTTPS.".to_string());
-    }
-    if !url.username().is_empty() || url.password().is_some() {
-        return Err("Credentials embedded in external URLs are not allowed.".to_string());
-    }
-    if let Some(host) = url.host_str() {
-        if let Ok(ip) = host.parse::<IpAddr>() {
-            let blocked = match ip {
-                IpAddr::V4(ip) => {
-                    ip.is_private()
-                        || ip.is_loopback()
-                        || ip.is_link_local()
-                        || ip.is_unspecified()
-                        || ip.is_multicast()
-                }
-                IpAddr::V6(ip) => {
-                    ip.is_loopback()
-                        || ip.is_unspecified()
-                        || ip.is_multicast()
-                        || ip.is_unique_local()
-                        || ip.is_unicast_link_local()
-                }
-            };
-            if blocked && !local_debug_http {
-                return Err("Private or local network targets are not allowed for native external requests.".to_string());
-            }
-        }
-    }
-    Ok(url)
-}
-
-#[tauri::command]
-async fn native_http_request(request: NativeHttpRequest) -> Result<NativeHttpResponse, String> {
-    let url = native_http_url(&request.url)?;
-    let method = reqwest::Method::from_bytes(request.method.as_bytes())
-        .map_err(|_| "Unsupported HTTP method.".to_string())?;
-    if !matches!(
-        method,
-        reqwest::Method::GET
-            | reqwest::Method::POST
-            | reqwest::Method::PUT
-            | reqwest::Method::PATCH
-            | reqwest::Method::DELETE
-            | reqwest::Method::HEAD
-    ) {
-        return Err("Unsupported HTTP method.".to_string());
-    }
-    let client = reqwest::Client::builder()
-        .redirect(reqwest::redirect::Policy::limited(8))
-        .timeout(Duration::from_secs(45))
-        .user_agent("LightBI-Native/0.9")
-        .build()
-        .map_err(|error| format!("Could not initialize native HTTP client: {error}"))?;
-    let mut builder = client.request(method, url);
-    for (name, value) in request.headers {
-        let name = reqwest::header::HeaderName::from_bytes(name.as_bytes())
-            .map_err(|_| format!("Invalid HTTP header name: {name}"))?;
-        let value = reqwest::header::HeaderValue::from_str(&value)
-            .map_err(|_| "Invalid HTTP header value.".to_string())?;
-        builder = builder.header(name, value);
-    }
-    if let Some(body) = request.body {
-        builder = builder.body(body);
-    }
-    let response = builder
-        .send()
-        .await
-        .map_err(|error| format!("Native HTTP request failed: {error}"))?;
-    let status = response.status().as_u16();
-    if response.content_length().unwrap_or(0) > 256 * 1024 * 1024 {
-        return Err("External response exceeds the 256 MiB native safety boundary.".to_string());
-    }
-    let headers = response
-        .headers()
-        .iter()
-        .filter_map(|(name, value)| {
-            value
-                .to_str()
-                .ok()
-                .map(|value| (name.to_string(), value.to_string()))
-        })
-        .collect();
-    let body = response
-        .bytes()
-        .await
-        .map_err(|error| format!("Could not read native HTTP response: {error}"))?
-        .to_vec();
-    if body.len() > 256 * 1024 * 1024 {
-        return Err("External response exceeds the 256 MiB native safety boundary.".to_string());
-    }
-    Ok(NativeHttpResponse {
-        status,
-        headers,
-        body,
-    })
 }
 
 #[derive(Debug, Deserialize)]
@@ -876,7 +755,7 @@ mod updater_tests {
         let url = std::env::var("LIGHTBI_LIVE_RELEASE_CATALOG")
             .expect("LIGHTBI_LIVE_RELEASE_CATALOG must be set for the live smoke test");
         let response = runtime()
-            .block_on(native_http_request(NativeHttpRequest {
+            .block_on(native_http_request_impl(None, NativeHttpRequest {
                 url,
                 method: "GET".to_string(),
                 headers: HashMap::new(),

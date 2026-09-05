@@ -17,6 +17,7 @@ type NativeHttpResponse = {
   status: number;
   headers: Record<string, string>;
   body: number[];
+  signedTransport: boolean;
 };
 
 type NativeSavedFile = {
@@ -84,7 +85,7 @@ export async function externalFetch(input: string | URL, init: RequestInit = {})
       status: response.status,
       headers: response.headers,
     });
-    if (nativeResponse.ok || !idempotentRead) return nativeResponse;
+    if (response.signedTransport || nativeResponse.ok || !idempotentRead) return nativeResponse;
 
     // Some Windows proxy/VPN stacks return an HTTP error instead of throwing.
     // For read-only traffic it is safe to retry through WebView2, whose network
@@ -96,14 +97,15 @@ export async function externalFetch(input: string | URL, init: RequestInit = {})
       return nativeResponse;
     }
   } catch (nativeCause) {
-    if (!idempotentRead) {
-      throw new Error(`Native HTTP failed: ${failureMessage(nativeCause, 'unknown native transport error')}`);
+    const nativeFailure = failureMessage(nativeCause, 'unknown native transport error');
+    if (!idempotentRead || nativeFailure.startsWith('Signed transport required:')) {
+      throw new Error(`Native HTTP failed: ${nativeFailure}`);
     }
     try {
       return await fetch(url, init);
     } catch (webviewCause) {
       throw new Error(
-        `Native HTTP failed: ${failureMessage(nativeCause, 'unknown native transport error')}; ` +
+        `Native HTTP failed: ${nativeFailure}; ` +
         `WebView fallback failed: ${failureMessage(webviewCause, 'unknown WebView transport error')}`,
       );
     }

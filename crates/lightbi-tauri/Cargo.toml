@@ -19,11 +19,12 @@ http-body-util = "0.1"
 tower = { version = "0.5", features = ["util"] }
 keyring = "3"
 tauri-plugin-opener = "2"
-reqwest = { version = "0.12", default-features = false, features = ["rustls-tls-native-roots", "system-proxy", "stream"] }
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls-native-roots", "system-proxy", "stream", "json"] }
 sha2 = "0.10"
 base64 = "0.22"
 ring = "0.17"
 rfd = "0.15"
+url = "2"
 
 [target.'cfg(target_os = "windows")'.dependencies]
 windows-sys = { version = "0.59", features = ["Win32_Foundation", "Win32_Security_Cryptography", "Win32_Security_Cryptography_Catalog", "Win32_Security_Cryptography_Sip", "Win32_Security_WinTrust", "Win32_UI_Shell", "Win32_UI_WindowsAndMessaging"] }
