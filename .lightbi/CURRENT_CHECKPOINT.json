@@ -1,6 +1,6 @@
 {
   "schema": "lightbi.current-checkpoint.v1",
-  "updatedAt": "2026-09-05T01:42:00Z",
+  "updatedAt": "2026-09-05T01:50:00Z",
   "status": "road_to_1_0_next033_runtime_rel_and_server_installation_trust_pass_owner_packaged_native_pending",
   "activeRuntime": "NEXT g-2026-09-05-next-033 on 5272/5273/5274; product 6c1f117; CP/worker 3afb85b; worker healthy; owner role rotation not performed",
   "sourceCandidate": {
@@ -23,12 +23,12 @@
     "installation_issuer_catalog_snapshot_reload_pass",
     "exact_runtime_external_challenge_device_signature_certificate_issue_pass"
   ],
-  "nextAction": "Owner: close and reopen the currently running NEXT033 Windows app once. Then verify Build Identity/technical details show exact runtime REL and installation certificate. If runtime hash differs from 77952884cfa93559157536e6b884a12522f4f5f02123fe8717ba91ea3a0dae9d, install the canonical CI artifact before continuing. After certificate proof, exercise packaged native_http_request signed positive/no-WebView-downgrade/restart behavior.",
+  "nextAction": "Owner: fully close and reopen the currently running NEXT033 Windows app once. Do not use the current Build Identity REL/ATT labels as proof; that panel only consumes OS-publisher evidence. After restart, correlate the packaged app in installation-issuer logs. Then open Account to trigger a protected /api/account/* request and verify packaged V2 signed transport from issuer/attestation/Distribution evidence. If the exact runtime is rejected, install the canonical CI artifact SHA256 77952884cfa93559157536e6b884a12522f4f5f02123fe8717ba91ea3a0dae9d.",
   "afterNext": [
     "Run integrated Road-to-1.0 release acceptance after packaged-native owner/UAT proof."
   ],
   "blockers": [
-    "Owner packaged-native exact-runtime/certificate/native_http_request proof remains open",
+    "Owner packaged-native restart must be correlated in issuer/attestation logs; current Build Identity panel is not REL/ATT evidence authority",
     "OS publisher is NotSigned/not verified for this TEST artifact",
     "Production Phase-2A freeze remains owner-gated and false"
   ],

@@ -527,7 +527,7 @@
     "ownerUat": {
       "started": true,
       "accepted": false,
-      "blocker": "owner_restart_exact_installed_runtime_certificate_and_packaged_v2_native_http_no_downgrade_proof_pending"
+      "blocker": "owner_packaged_restart_must_correlate_exact_runtime_certificate_and_v2_native_request_in_issuer_attestation_logs; current_build_identity_panel_not_rel_att_evidence_consumer"
     },
     "internalBugTest": {
       "ready": true,
@@ -755,7 +755,9 @@
       "osPublisherStatus": "NotSigned",
       "ownerPackagedNativeAccepted": false,
       "productionAuthority": false,
-      "stablePublicationAuthority": false
+      "stablePublicationAuthority": false,
+      "buildIdentityPanelConsumesRelAttEvidence": false,
+      "ownerProofAuthority": "installation_issuer_and_attestation_runtime_evidence_after_packaged_restart_not_current_build_identity_panel"
     }
   },
   "roadTo1_0Execution": {
