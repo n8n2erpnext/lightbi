@@ -194,6 +194,17 @@ Final source gates on the accepted snapshots are green: trust-attestation V2/fou
 
 This is **source closure, not runtime acceptance**. Active immutable runtime remains `g-2026-09-04-next-032` on the previously accepted product `262bd768` and CP `72eacf75`; no owner role rotation occurred. The next gate is to cut a new immutable NEXT successor from exact product `6c1f117...` plus CP `3afb85b...`, prove signed native request acceptance and negative query/body/replay/fallback/response-correlation behavior on NEXT, and only then mark Signed Transport V2 runtime-accepted. `phase2aFrozen=false` and Production remains untouched.
 
+
+### NEXT/Internal Signed Transport V2 edge/runtime acceptance — 2026-09-05
+
+Immutable NEXT033 (`g-2026-09-05-next-033`) now carries product `6c1f117...` and private CP `3afb85b...` with reused Core binary SHA-256 `95be7881...`; generation manifest SHA-256 is `75bece214fed73acf836caf1421f128b476bfb890d8f29dd9ba9d8d861c5ced9`. The accepted Intelligence Pack object remains byte-identical at envelope SHA-256 `1c244632...3376`. The V2 attestation verifier image is built from exact `3afb85b...` plus Trust Contracts `10de4da8...`, remains `network=none` / read-only / non-root and reports `networkAuthority=false`, `signingAuthority=false`. Distribution process evidence contains the attestation and installation-issuer UDS paths but no signer token/socket authority; the verifier has no signer mount.
+
+Real HTTPS runtime acceptance proves a valid ephemeral TEST ATT/device proof is accepted before normal Account authorization: `/api/account/session?a=alpha&z=2` returns the independent unauthenticated `401` together with exact response-correlation schema, accepted sequence and response SHA-256. Exact replay is rejected as `attestation_nonce_replayed`, query mutation as `attestation_request_target_mismatch`, and raw-body mutation as `attestation_body_hash_mismatch`. After restarting the four NEXT services and the verifier, all process IDs changed while NEXT033 / `3afb85b` identity, worker health, blocked Trust state and the same external V2 probes remained green.
+
+This closes the **NEXT/Internal server/edge runtime** portion only. The operator harness intentionally used an ephemeral TEST ATT certificate signed through the isolated rehearsal signer and did not delegate signer authority to Distribution. The current TEST REL publication contains only installer REL artifacts; no `LightBI.exe` runtime REL exists for `release:0.9.2-beta.7-next.33:windows:x86_64:runtime`. Consequently packaged Windows `ensure_installation_trust`, OS-protected device-key persistence, actual packaged native HTTP calls and runtime no-WebView-downgrade behavior remain unaccepted until the packaged Windows/UAT gate. Source tests already lock the no-downgrade contract, but they are not substituted for native UAT evidence.
+
+`phase2aFrozen=false`; no Production Root/issuer/signer authority was created, no owner role rotation occurred, and Production was not touched.
+
 ## Exit sequence
 
 `Phase 2A re-audit → explicit freeze → offline Root ceremony → purpose-separated private signer → REL → ATT → signed ENT → private PRO delivery → platform signing/anti-impersonation closure → RC/1.0`.

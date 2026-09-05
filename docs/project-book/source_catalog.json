@@ -1,9 +1,9 @@
 {
   "schemaVersion": "lightbi.project-book.source-catalog.v1",
   "snapshotDate": "2026-09-05",
-  "generatedAt": "2026-09-05T00:10:14.113448Z",
+  "generatedAt": "2026-09-05T00:35:00Z",
   "branch": "docs/ba-da-mode-future-20260903",
-  "head": "3907eac919b75673e16d7294df4c1a1fbb1076b3",
+  "head": "3ba303aed2ab486d060f798096e15dea7a6cd00c",
   "worktreeDirty": true,
   "scope": "All project Markdown and JSON outside dependency/build/project-book directories.",
   "counts": {
@@ -9150,8 +9150,8 @@
     {
       "path": "docs/architecture/road-to-1-0-trust-release-contract.md",
       "extension": ".md",
-      "bytes": 29818,
-      "sha256": "5ef9f8e2daf14338694585cf32072949386e1884a86ad139bf1b5c1caba36938",
+      "bytes": 32184,
+      "sha256": "5f0a144077532465198c6ef6d4c6dc8cfd960df20f9c6c41a443086b5ba35297",
       "suggestedCategory": "architecture-source-or-evidence",
       "title": "Road to 1.0 Trust, Release, and Official Identity Contract"
     },
@@ -10174,8 +10174,8 @@
     {
       "path": "docs/history/agent/plans/AGENT_PLAN_ROAD_TO_1_0_2026-08-31.md",
       "extension": ".md",
-      "bytes": 19491,
-      "sha256": "f19bacf69be9983ff7cb1ee8c8cc0939767864bfcc314b69215db16b13dd485c",
+      "bytes": 20149,
+      "sha256": "2761c9918b717030631d728d4f5894eb60c815fc82b8c47368deb305ffd3d558",
       "suggestedCategory": "historical-provenance",
       "title": "LightBI Road to 1.0 Execution Plan — 2026-08-31"
     },
