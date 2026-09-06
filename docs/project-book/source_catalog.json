@@ -1605,16 +1605,16 @@
     {
       "path": "docs/architecture/micro-brain-cross-domain-semantic-expansion.md",
       "extension": ".md",
-      "bytes": 18557,
-      "sha256": "a539f30f68ec25617a17114210e0ac9a0667145fbe7ef8665bb3cbb9b13d41cb",
+      "bytes": 19407,
+      "sha256": "c27e854867d822d4a9a5c41b05281fa659ae9b67da42c1f6838a4fc6cb722d71",
       "suggestedCategory": "architecture-source-or-evidence",
       "title": "Micro Brain Cross-Domain Semantic Expansion Direction"
     },
     {
       "path": "docs/architecture/micro-semantic-brain-vector-inference.md",
       "extension": ".md",
-      "bytes": 23107,
-      "sha256": "ca9d10b51a3ee81f546683b5684c143d20d2311f2d4454e209d642657dc125d8",
+      "bytes": 25369,
+      "sha256": "ec31eba1ccf04fb5be4f231d2c7f52087122f000e0fec4327fe881a78e28983a",
       "suggestedCategory": "architecture-source-or-evidence",
       "title": "Micro Semantic Brain and Vector Inference Architecture"
     },
@@ -9903,8 +9903,8 @@
     {
       "path": "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DECISION_PRESENTATION_UI_UX_REFACTOR_2026-09-04.md",
       "extension": ".md",
-      "bytes": 36565,
-      "sha256": "6ad73c005d0ea509afa888a5783cf57252117e166fc60d10f69f02cd8e6e2f7d",
+      "bytes": 55016,
+      "sha256": "4db05c3110ae3c684ae464767a95a4ff0c6cb15e1b4765f660cfbb520dd96b06",
       "suggestedCategory": "historical-provenance",
       "title": "Agent Implementation Plan — Decision Presentation + UI/UX Refactor — 2026-09-04"
     },

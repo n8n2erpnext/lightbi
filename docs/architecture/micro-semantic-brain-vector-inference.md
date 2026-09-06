@@ -408,6 +408,16 @@ V1 intentionally favors transparent LSA/BM25 retrieval. A later local neural emb
 
 Such a backend change does not change the authority model: embedding similarity remains retrieval evidence, not final semantic truth.
 
+## Presentation advisory extension — 2026-09-06
+
+Owner approved a bounded second Micro Brain lane for the Decision Presentation/UI refactor. Product commit `4be593ae57b4b1385a833675dd4ea2349900d378` implements a separate presentation advisory corpus/index and `presentation-advisor.ts` without wiring it directly into current BA/chart runtime selection. The semantic foundation index remains unchanged and retains its accepted identity.
+
+The presentation lane is intentionally isolated from semantic retrieval so chart/domain/perspective/dashboard knowledge cannot rotate or dilute the accepted semantic LSA space. The initial deterministic corpus contains **88 advisory cards**: 32 common-domain profiles, 31 chart patterns, 12 perspective profiles, 7 constitutional/self-charter cards, plus dashboard narrative and anti-pattern knowledge. Its compiled index is **3,360,712 bytes**; bundled with the 6,605,467-byte semantic index, total raw index footprint is **9,966,179 bytes**, below the owner-approved near-term **20 MiB** ceiling.
+
+Authority remains bounded: MB may rank analytical intents, chart candidates, domain conventions, perspective priorities, dashboard roles, narrative order, missing-evidence signals and abstention/prohibition knowledge. Every suggestion is rejectable. Deterministic Question/Narrative/Visualization/Dashboard planners must validate user-selected domain/perspective, governed metric/evidence state, source identity, grain, units, time basis, cardinality and renderer prerequisites before accepting output. MB cannot directly persist/select a renderer chart type, invent metrics/numbers, authorize formulas/aggregations/joins, strengthen causal claims, or create runtime/domain-support authority.
+
+Closure verification on the ARM VPS: presentation source validation + advisory recall/prohibition tests + compiler determinism + semantic counterfactual/ETA bridge regression passed **14/14** targeted tests; an isolated MB-7 benchmark passed with the same three ETA recoveries and **0 confirmed semantic regressions**. Desktop production build and source-size gate also passed. This is **source closure for the advisory foundation only**; DPR-2..DPR-7 still own the future runtime integration and final planner decision gates.
+
 ## Current Status
 
 Architecture approved and **MB-7 successor-source acceptance is complete** on `codex/r1-roadmap-integration` at `a1f6ee8` (`test(understanding): close micro brain v1 acceptance`). MB-5 domain-inference/support separation remains `8a4a5e4`; MB-6 shared BA authority propagation is `94fa40c`; the Signed Transport proof primitive remains independent ancestor `a8d55ee`. The foundation/shadow line begins at `96fa58e`, the conservative evidence bridge landed at `f32d88d`, and registry alignment at `d4fa6e5`.

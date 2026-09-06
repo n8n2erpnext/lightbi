@@ -1,7 +1,10 @@
 # Agent Implementation Plan — Decision Presentation + UI/UX Refactor — 2026-09-04
 
-Status: **OWNER-APPROVED PLANNING DIRECTION — IMPLEMENTATION NOT STARTED**
+Status: **OWNER-APPROVED PLANNING DIRECTION — UI/UX DPR IMPLEMENTATION NOT STARTED; MB PRESENTATION-ADVISORY FOUNDATION SOURCE-CLOSED**
 Date: 2026-09-04
+Amended: 2026-09-05 — owner added design-system/i18n hardening and Frappe UI reference direction.
+Amended: 2026-09-06 — owner elevated Frappe Books as a primary product-UX study source and added a canonical chart-pattern/visual-grammar library direction.
+Amended: 2026-09-06 — owner explicitly admitted Micro Brain into DPR-2..DPR-7 as bounded presentation/domain/chart/narrative advice; deterministic planners remain final decision gates.
 Scope: Question/Perspective, narrative, visualization, Dashboard, evidence, export and product UI-surface refactor.
 Authority: design/implementation plan; not runtime or metric authority.
 Code-audit snapshot: product successor `codex/r1-roadmap-integration` at `262bd768`; re-verify exact head at DPR-0.
@@ -214,6 +217,25 @@ Examples:
 - Agriculture: yield, field/plot, season, irrigation/weather and geography; trend, seasonal comparison, relationship and map views are common when evidence allows.
 
 MB must never directly say “draw Donut and therefore it is correct”. It supplies reusable domain context; the planner checks the actual question, cardinality, grain, units, semantics and governed authority.
+
+## 8A. Owner decision — Micro Brain joins the refactor as a bounded semantic/presentation advisor
+
+Owner decision on 2026-09-06: Micro Brain is an explicit participant in the Decision Presentation + UI/UX refactor because DPR-2 through DPR-7 change question ranking, BA narrative, chart planning and Dashboard composition deep enough that domain/chart knowledge should be reusable rather than re-hard-coded independently in each planner.
+
+The approved role is **advisor, never final decision maker**. The refactor should consume MB through a bounded presentation-advice contract that can rank domain conventions, analytical intents, chart patterns, perspective priorities, dashboard roles, narrative order and missing-evidence/abstention signals. Deterministic planners remain responsible for validating the actual question, source identity, grain, units, time basis, cardinality, governed metric/evidence state and renderer prerequisites before any output is accepted.
+
+The planned authority order is:
+
+`user-selected domain/perspective -> governed schema + metrics -> canonical semantics -> domain rules -> MB presentation advice -> deterministic Narrative/Visualization/Dashboard planner -> UI heuristic/rendering`.
+
+MB may therefore influence **what is worth considering and why**, but it may not strengthen authority. It must not invent metrics/numbers, authorize aggregations/formulas/joins, infer causality from correlation, override an explicit user domain/perspective, hide evidence gaps, or convert retrieval similarity into semantic confidence.
+
+The presentation-advice lane should remain isolated from the accepted semantic-retrieval dense space. This allows chart/domain/dashboard knowledge to grow without rotating or diluting semantic concept recovery. The initial product implementation may use two locally bundled indexes/lobes behind one Micro Brain boundary: a semantic lobe for business meaning and a presentation lobe for chart/domain/narrative advice. This is an implementation shape, not a claim of biological cognition or autonomy.
+
+The advisor contract should expose enough provenance for downstream planning, including the advisory card/concept identity, definition, advisory kind, candidate chart families/analytical intents/dashboard roles, evidence requirements, constraints/prohibitions and retrieval provenance. The UI should normally show the consequence of this reasoning, not raw retrieval scores or internal MB machinery.
+
+This decision is especially relevant to DPR-2, DPR-3, DPR-5, DPR-6 and DPR-7. DPR-5 owns the canonical chart/domain knowledge contract; DPR-6 and DPR-7 remain the final deterministic chart/dashboard decision gates; DPR-3 may use MB only to prioritize/report domain context and must preserve observed/calculated/inferred/hypothesis provenance.
+
 ## 9. Dashboard Composition Intelligence — current defect and target
 
 The owner observed dashboards that generated five Bar cards. Code inspection confirms that this is structurally possible and sometimes expected by the current implementation.
@@ -442,6 +464,109 @@ Render as a focused investigation of the selected subject/finding, not a second 
 ## 18. Design-baseline reconciliation
 
 `docs/design/ui-baseline.md` remains an existing locked historical/current baseline and is **not modified by this planning-only task**. It contains useful “dense, calm, analytical” principles but its card/surface rules must be explicitly reconciled during the refactor kickoff before UI implementation begins.
+
+## 18A. LightBI design-system foundation + Frappe UI reference
+
+Owner direction on 2026-09-05: use [Frappe UI](https://github.com/frappe/frappe-ui) as a **design-system and interaction reference**, not as a direct runtime dependency or framework migration target.
+
+Current product-code inspection at successor HEAD `6732108f288e` confirms LightBI Desktop is React 19 + Vite + Tauri with Tailwind, Lucide, Framer Motion, TanStack Table, ECharts and Monaco. Frappe UI is Vue-oriented. Therefore this plan explicitly rejects a Vue bridge or React-to-Vue migration merely to consume Frappe UI components.
+
+Instead, use Frappe UI as a reference for:
+
+- consistent primitive contracts and interaction states;
+- restrained enterprise visual density;
+- composable dialogs, drawers, popovers, dropdowns, forms, tabs, tables, empty states and toasts;
+- semantic design tokens instead of per-feature ad-hoc styling;
+- clear separation between reusable UI primitives and business-feature components.
+
+The existing `packages/ui` workspace is the intended home for a real `@lightbi/ui` React design system. It is currently only a placeholder and must be promoted deliberately rather than allowing each feature folder to invent its own surface language.
+
+Initial primitive target:
+
+`Button | IconButton | Input | Select | Tabs | Dialog | Drawer | Popover | Dropdown | Tooltip | Badge | Toast | EmptyState | DataTable shell | Toolbar | Sidebar | Section | Surface | Inset | Divider | Disclosure | Metric/KPI primitive | EvidenceDisclosure | StatusIndicator`.
+
+Do **not** introduce one universal `Card` primitive as the default layout abstraction. The canvas-first/card-by-exception rule remains controlling. Prefer `Surface`, `Section`, `Group`, `Inset`, `Divider` and `Disclosure`; reserve Card for genuinely bounded entities/results.
+
+Before expanding `@lightbi/ui`, reconcile its React dependency/peer contract with Desktop. The code audit found Desktop on React `19.2.8` while `packages/ui` still declares React `18.3.1` / peer `^18.2.0`. DPR-0 must remove the duplicate-version ambiguity before shared hooks/components are introduced.
+
+### Language architecture is part of the UI refactor
+
+Owner rule is reaffirmed: **user-facing language must not be hard-coded into production feature/business code.**
+
+The audit on 2026-09-05 found an existing i18n foundation (`i18n/language-registry.ts`, `UiTranslationBoundary.tsx`, `ui-language.ts` and coverage tests), but recent feature work has started placing Vietnamese/English presentation strings directly inside business and component code. This must be corrected during the refactor.
+
+Required separation:
+
+- semantic knowledge/aliases may contain multilingual terms because they are machine-understanding inputs;
+- fixtures/tests/sample datasets may contain literal Vietnamese/English source text;
+- canonical IDs, planner contracts and engine state remain language-neutral;
+- **all user-facing labels, narrative templates, empty states, errors, actions and business prose must resolve through the language catalog/message contract**.
+
+Add an i18n CI guard that scans production `.ts/.tsx` sources, with explicit allowlists for semantic knowledge, tests/fixtures and translation catalogs. The guard should fail new user-facing Vietnamese or English literals outside approved message/catalog locations, while avoiding false positives on source-column aliases and domain vocabulary.
+
+The design-system API should also make the correct path easy: reusable components should accept message IDs/resolved strings consistently rather than encouraging embedded language literals.
+
+## 18B. Frappe Books product-study source + canonical chart-pattern library
+
+Owner direction on 2026-09-06: elevate [Frappe Books](https://github.com/frappe/books) from a screenshot/style reference into a **required product-source study** for the UI/UX refactor. Intake snapshot for provenance: `frappe/books` `master` at `a79a1e3b03f424805ad094e2fd8731d04f84d36f`. Frappe UI remains a companion design-system reference at intake `main` `ada484717135d9c50e272402012e718ef1dfc2d3`. Re-pin both at DPR-0 before implementation because upstream evolves.
+
+The intent is not to copy Books pixel-for-pixel. Study how a real, shipping accounting desktop product makes a complex business domain feel calm, modern, direct and logically ordered. Frappe UI's own project history states that reusable components grew out of the Frappe Books design work; this makes Books useful as the product-level behavior reference and Frappe UI useful as the extracted primitive/design-language reference.
+
+Required Books study dimensions before broad LightBI screen refactor:
+
+- application shell, sidebar, page header and navigation density;
+- typography/ink hierarchy, whitespace rhythm, thin dividers and restrained use of borders;
+- when a bounded object earns a surface/card versus when content stays on the canvas;
+- list, table, form, empty/loading/error and progressive-disclosure behavior;
+- dashboard information hierarchy: dominant analytical canvas first, supporting metrics second, detail/evidence last;
+- financial dashboard treatment of cashflow, paid/unpaid status, P&L, expense composition and other mixed chart/table material without turning the page into a widget wall;
+- interaction placement: primary action, secondary actions, search, filters, period selectors and navigation affordances;
+- responsive/window behavior and desktop-product ergonomics relevant to LightBI's Tauri shell;
+- source-level component boundaries and state contracts, not screenshot imitation alone.
+
+Books/Frappe principles to translate into LightBI rather than clone:
+
+`flat canvas -> strong typography -> whitespace/alignment -> thin divider -> subtle surface -> bounded card only when necessary`.
+
+Color remains semantic and restrained. Neutral/gray is the default UI language; accent colors must encode selection, state or analytical meaning rather than decorate every section. The refactor should prefer one dominant action/accent per local decision surface instead of a rainbow of equal-weight controls.
+
+### Chart Pattern Library is a semantic grammar, not a gallery
+
+The owner also supplied additional dashboard references that broaden the visual vocabulary. LightBI should learn from them as **question-to-visual patterns**, not attempt to maximize chart variety. The canonical planning chain becomes:
+
+`data semantics -> analytical intent -> chart pattern -> layout/story role -> visual theme`.
+
+Introduce a durable `ChartPatternDefinition` / equivalent contract above renderer-specific chart types. Each pattern should define at least:
+
+- analytical intent and management question;
+- required dimension/measure/time semantics;
+- allowed cardinality and series count;
+- unit/scale compatibility;
+- positive suitability rules and explicit forbidden/negative rules;
+- sorting, ranking/top-N and normalization behavior;
+- axis, label, legend, tooltip and reference-line policy;
+- semantic color mode: `categorical | sequential | diverging | status`;
+- accessibility/contrast and dense-label fallback;
+- evidence/drill-down behavior;
+- fallback visual when prerequisites fail;
+- optional domain prior, which may recommend but never authorize the visual.
+
+Initial canonical pattern corpus should target roughly **20–30 high-quality patterns**, not dozens of renderer primitives. It should at minimum cover:
+
+`KPI | KPI+delta/sparkline | target/progress | vertical comparison bar | horizontal ranked bar | grouped bar | stacked bar | 100% stacked composition | line trend | area trend | bar+line amount/rate or actual/target combo | donut low-cardinality part-to-whole | scatter/bubble relationship | histogram/distribution | heatmap/matrix | waterfall contribution | funnel | conditional radar/profile | conditional geo/map | evidence/detail table`.
+
+Examples from the latest owner references become acceptance patterns:
+
+- bookings by month + conversion rate -> amount/rate combo when both measures are semantically related;
+- booking source ranking -> sorted horizontal bar;
+- exhaustive low-cardinality channel share -> donut allowed, otherwise ranked bar;
+- monthly channel mix -> stacked/100%-stacked pattern depending whether the question is volume or share;
+- staff performance -> table/ranking when exact values and multiple columns matter more than another decorative chart.
+
+Do not create fake visual diversity. If two materially different questions are both best answered by bars, two bars are acceptable. Conversely, a donut, radar or map is forbidden merely to make the dashboard look varied.
+
+Frappe Books and Frappe UI are external references only. No Vue/Electron dependency, source-code copy, design-token copy or framework migration is authorized by this plan; LightBI must translate learned principles into its existing React/Tauri architecture and its own product identity.
+
 ## 19. Proposed implementation phases
 
 ### DPR-0 — Baseline audit and contract freeze
@@ -450,6 +575,12 @@ Render as a focused investigation of the selected subject/finding, not a second 
 - Capture representative Home, Understanding, Decision Workspace, Dashboard, Deep BA and Step 2 acceptance screenshots.
 - Inventory every chart-type conversion/loss and every duplicate question/presentation path.
 - Reconcile `ui-baseline.md` with the owner-approved canvas-first/card-by-exception rules.
+- Pin and study the current Frappe Books source, especially shell/navigation, Dashboard, lists/tables/forms and dense business workflows; record exact source bookmarks and translate principles rather than copying screenshots.
+- Review current Frappe UI design/token/component/chart guidance alongside Books, noting upstream chart-v2/API movement so LightBI does not freeze against a stale external abstraction.
+- Build the initial chart-pattern acceptance corpus from owner references before expanding renderer breadth.
+- Audit `packages/ui` and establish `@lightbi/ui` as the shared React design-system boundary; use Frappe UI only as an external reference, not a dependency/framework target.
+- Reconcile Desktop React 19 with the stale React 18 dependency/peer declarations in `packages/ui` before shared component work.
+- Inventory hard-coded user-facing language separately from valid multilingual semantic aliases/test fixtures; freeze the i18n contract and define CI-guard allowlists.
 
 ### DPR-1 — Claim + Question Provenance foundation
 
@@ -461,12 +592,14 @@ Render as a focused investigation of the selected subject/finding, not a second 
 
 - Separate Domain from Perspective.
 - Feed `domainInference`/MB context into question discovery/ranking/presentation without changing governed authority.
+- Consume bounded MB presentation advice for domain/perspective relevance and abstention/missing-evidence signals; MB candidates may reorder what is considered but may not make an ungoverned question executable.
 - Merge/deduplicate universal + governed question presentation.
 - Add answerability states and neutral wording rules.
 
 ### DPR-3 — Analysis Narrative Planner + Deep BA hierarchy
 
 - Build answer-first narrative plan over existing governed outputs.
+- Allow MB presentation advice to contribute domain-context priorities, narrative-role candidates and explicit abstention/unknown signals, while observed/calculated/inferred/hypothesis provenance remains deterministic and inspectable.
 - Remove repeated same-weight Main Answer / driver / risk blocks.
 - Add supporting-analysis relevance gate.
 - Preserve numeric/evidence parity.
@@ -476,9 +609,12 @@ Render as a focused investigation of the selected subject/finding, not a second 
 - Replace “Deep BA on selected rows” presentation with selected-subject investigation semantics.
 - Add benchmark/context decomposition and concise next-action structure.
 - Synthesize multi-source evidence into one answer where appropriate.
-### DPR-5 — Visualization ontology + Domain Visual Profiles
+### DPR-5 — Visualization ontology + Chart Pattern Library + Domain Visual Profiles
 
 - Define analytical intents and visual suitability/negative rules.
+- Define a canonical 20–30-pattern chart grammar from the supplied references; renderer chart types remain implementation details beneath the pattern contract.
+- Treat the MB presentation lobe as a versioned advisory knowledge source for chart patterns, common-domain profiles, perspective priorities, dashboard narrative roles, anti-patterns and constitutional prohibitions; it is not the canonical renderer registry or metric authority.
+- Add categorical/sequential/diverging/status color semantics, cardinality limits, label/axis/tooltip rules and graceful fallbacks to each pattern.
 - Define initial standard visual vocabulary from the supplied reference set.
 - Add domain visual profiles as MB/domain context, not execution authority.
 - Add metric desirability vocabulary for interpretation where evidence permits.
@@ -486,22 +622,31 @@ Render as a focused investigation of the selected subject/finding, not a second 
 ### DPR-6 — Visualization Planner + renderer/type preservation
 
 - Introduce governed `VisualizationPlan`.
+- Resolve `analytical intent -> ChartPatternDefinition -> renderer family` explicitly instead of mapping intent directly to a renderer primitive.
+- Accept MB chart/domain candidates as ranking priors only; deterministic suitability checks must be able to reject every MB suggestion and fall back to a safer visual/table or abstention.
 - Fix chart type collapse during persistence/rendering.
 - Make chart choice depend on intent, semantic roles, time ordering, cardinality, units and domain prior.
+- Preserve pattern-level rules through persistence, dashboard composition, export and evidence drill-down.
 - Expand chart renderer/library only after the planner contract is stable.
 
 ### DPR-7 — Dashboard Composition Planner
 
 - Introduce semantic card/section roles and story order.
 - Add narrative/visual duplication checks and information budget.
+- Accept MB domain/perspective/dashboard-role advice as a prior for story composition, but require the Dashboard planner to prove each included section answers a distinct evidence-backed management question.
+- Apply the Books-derived product lesson: one coherent analytical page, not a wall of equally weighted widgets; prefer whitespace/dividers and a dominant analytical canvas before additional bounded surfaces.
 - Use Domain Dashboard Grammar plus current perspective/audience.
 - Remove hard-coded Bar breakdown generation as the default.
 
-### DPR-8 — Canvas-first surface refactor
+### DPR-8 — Canvas-first surface refactor + shared UI system
 
+- Build/adopt the approved `@lightbi/ui` primitives and tokens before broad screen migration.
+- Translate the Books/Frappe product language into LightBI: flat canvas, strong ink/type hierarchy, restrained semantic color, thin separators, logical action placement and dense-but-breathable business screens.
 - Flatten Home, Understanding, Decision Workspace, Deep BA and Step 2 according to section 17.
 - Replace duplicate technical details with the shared Evidence Inspector.
 - Enforce card-by-exception and nested-card-depth rules.
+- Remove hard-coded user-facing Vietnamese/English from migrated surfaces and route presentation text through the i18n catalog/message contract.
+- Add the production-source i18n CI guard and regression fixtures so new hard-coded presentation language cannot silently return.
 - Preserve accessibility, responsive behavior and existing owner-approved navigation shell.
 
 ### DPR-9 — Report Page Model + true export pagination
@@ -512,7 +657,9 @@ Render as a focused investigation of the selected subject/finding, not a second 
 
 ### DPR-10 — Cross-domain acceptance and release regression
 
-- Run semantic/numeric/evidence parity, question relevance, chart recommendation, dashboard composition, narrative and export acceptance.
+- Run semantic/numeric/evidence parity, question relevance, chart-pattern recommendation, dashboard composition, narrative and export acceptance.
+- Add MB advisory regression proving deterministic rebuild, bounded local footprint, advisor provenance, domain/chart recall, abstention/prohibition recall, and the ability of deterministic planners to reject every MB candidate without changing governed numeric truth.
+- Add visual-regression cases that verify calm hierarchy/card budgets and semantic color/label behavior without requiring pixel identity with external references.
 - Re-run current supported domains plus evidence-bound inferred-domain probes.
 - Perform packaged Windows/native visual/UAT acceptance before any stable promotion.
 ## 20. Acceptance corpus and regression requirements
@@ -537,16 +684,23 @@ Cross-domain corpus should progressively include current supported domains plus 
 - Governed source values, aggregation semantics and evidence references must remain unchanged unless a separately reviewed correctness bug is found.
 - `SUM` remains `SUM`; presentation refactor must not mutate factual values to improve narrative.
 - Micro Brain remains non-authoritative for metrics, formulas, joins, relationships and runtime execution.
+- Every MB presentation candidate is rejectable. MB must not directly persist/select a renderer `ChartType`, mutate governed analysis output, or bypass the deterministic Narrative/Visualization/Dashboard planner gates.
+- The semantic-retrieval and presentation-advisory dense spaces remain isolated unless a separately benchmarked architecture change proves that merging them cannot regress semantic recall/abstention.
 - Unsupported inferred domains remain explicitly unsupported/evidence-bound.
 - No claim may silently strengthen from observation/correlation into cause.
 - Supporting visual labels must match the metric actually plotted; `UnitPrice` must not be presented as revenue/money total.
 - Question, chart, dashboard and report planners may preserve or reduce authority, never strengthen it.
 - Evidence must remain reachable even when removed from the main visual flow.
 - No raw business data should be sent to new telemetry merely to support this UI refactor.
+- No framework migration or Vue bridge is authorized merely to consume Frappe UI; LightBI remains on its current React/Tauri frontend architecture unless separately decided.
+- User-facing language must not be embedded in production feature/business code; semantic aliases and multilingual understanding knowledge are not presentation strings and remain allowed.
+- Shared UI primitives must not reintroduce Card as the universal layout default.
+- External Frappe Books/Frappe UI study must remain principle/behavior translation; no framework migration, source copy or pixel-clone requirement is implied.
+- Chart variety is never an acceptance goal; semantic suitability and readability outrank decorative diversity.
 
 ## 22. Expected product architecture after refactor
 
-`Raw source -> Understanding + Micro Brain -> Question/Perspective Intelligence -> governed question/metric authority -> Analysis Narrative Intelligence -> Visualization Intelligence -> Dashboard Composition Intelligence -> Report/Presentation Intelligence -> canvas-first UI + shared Evidence Inspector`
+`Raw source -> Understanding + semantic MB -> Question/Perspective Intelligence -> governed question/metric authority -> governed analysis artifacts -> MB presentation advice -> deterministic Analysis Narrative / Visualization / Dashboard planners -> Chart Pattern Library + renderer -> Report/Presentation Intelligence -> @lightbi/ui design system + i18n boundary -> canvas-first UI + shared Evidence Inspector`
 
 The desired product feeling is:
 
@@ -556,7 +710,7 @@ LightBI should guide the user from **what the data means** to **what question ma
 
 ## 23. Implementation gate
 
-This document is the refactor plan only. No product source, runtime, NEXT generation, Production service, metric authority, Micro Brain corpus, domain-support pack or release artifact is changed by this documentation step.
+This document remains the refactor plan. The 2026-09-06 MB presentation-advisory foundation is now source-closed separately at product commit `4be593ae57b4b1385a833675dd4ea2349900d378`, but it is not wired into current BA/chart runtime selection. No NEXT generation, Production service, metric authority, domain-support pack or release artifact is changed by this planning update.
 
 Before DPR-0 implementation starts, reconcile the exact active product head/current Road-to-1.0 state and obtain owner execution instruction. Documentation work must continue to follow `docs/project-book/LIBRARY_RULES.md`.
 ## 24. Source bookmarks
@@ -566,5 +720,9 @@ Before DPR-0 implementation starts, reconcile the exact active product head/curr
 - [`./AGENT_PLAN_ROAD_TO_1_0_2026-08-31.md`](./AGENT_PLAN_ROAD_TO_1_0_2026-08-31.md) — current Road-to-1.0 execution overlay and scheduling boundary.
 - [`../../../project-book/EXTERNAL_SOURCE_REGISTER.md`](../../../project-book/EXTERNAL_SOURCE_REGISTER.md) — owner-supplied visual reference provenance and SHA-256 records.
 - [`../../../design/ui-baseline.md`](../../../design/ui-baseline.md) — existing design baseline to reconcile at DPR-0 before implementation.
+- [Frappe Books](https://github.com/frappe/books) — required product-level UI/UX study source for clean accounting/dashboard workflows; external reference only. Intake `master` snapshot: `a79a1e3b03f424805ad094e2fd8731d04f84d36f`.
+- [Frappe UI](https://github.com/frappe/frappe-ui) — external Vue design-system/interaction reference only; not an approved LightBI runtime dependency. Intake `main` snapshot: `ada484717135d9c50e272402012e718ef1dfc2d3`.
+- [Frappe UI design language](https://github.com/frappe/frappe-ui/blob/main/skills/frappe-ui/DESIGN.md) — hierarchy/density/color reference to inspect at DPR-0, not a LightBI contract.
+- Product code audit bookmarks: `apps/desktop/package.json`, `packages/ui/package.json`, `packages/ui/index.ts`, `apps/desktop/src/i18n/language-registry.ts`, `apps/desktop/src/components/layout/UiTranslationBoundary.tsx`, `apps/desktop/src/lib/ui-language.ts`.
 
 Product code paths cited in this plan were inspected on the separate product successor worktree at snapshot `262bd768`; they must be re-read from the exact active product head before mutation.

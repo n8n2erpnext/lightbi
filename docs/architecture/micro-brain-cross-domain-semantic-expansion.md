@@ -194,9 +194,13 @@ Gross Profit = Revenue - COGS
 
 is only safe when relevant grain, currency, period, relationship, and repeated-parent-total constraints are satisfied. Formula retrieval may suggest a hypothesis; governed metric/runtime layers remain the execution authority.
 
-## The 10 MB target is a guardrail, not a ceiling
+## Local footprint budget — original 10 MB guardrail, near-term 20 MiB ceiling
 
-The original approximately 10 MB source-knowledge target was selected as a conservative engineering guardrail for normal personal computers. It is not a permanent product ceiling.
+The original approximately 10 MB source-knowledge target was selected as a deliberately conservative engineering guardrail for normal personal computers. It was never a permanent product ceiling.
+
+Owner decision on 2026-09-06 raises the **near-term bundled Micro Brain raw-index ceiling to <=20 MiB** so LightBI can add materially useful cross-domain and presentation knowledge without prematurely optimizing around an undersized corpus. This is a budget, not a target to fill: every increase still requires deterministic rebuild, quality regression and local runtime measurement.
+
+The approved growth direction may keep semantic-retrieval knowledge and presentation/domain/chart knowledge in separate local indexes behind one bounded Micro Brain contract. Separation is preferred when it prevents chart/domain advisory knowledge from rotating or diluting the accepted semantic dense space. A larger knowledge pack does not grant broader metric, formula, join, domain-support or decision authority.
 
 As semantic breadth grows, runtime cost should not be forced to scale linearly with total knowledge. Future optimization directions include:
 

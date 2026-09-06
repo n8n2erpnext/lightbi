@@ -1638,6 +1638,13 @@ R1-P0 documentation/integrity closure verified 1,243 local links with zero missi
 - Fresh external exact-runtime challenge/issue PASSed `201/201`; certificate verified against public Root/keyset, matched device/release, persisted no probe private key and remained `productionAuthority=false`.
 - Machine/server gate is closed. Remaining gate is owner Windows UAT on the verified NEXT038 installer. Engine remains NEXT034, live CP remains `2e6ad23`, Production untouched, `phase2aFrozen=false`.
 
+## 2026-09-05 — UI/UX refactor plan amended with design-system and i18n guardrails
+
+- Owner added Frappe UI as a design-system/interaction reference for the existing Decision Presentation + UI/UX refactor. Product audit confirms LightBI remains React 19 + Vite + Tauri; Frappe UI is reference-only and no Vue bridge/framework migration is authorized.
+- The existing `packages/ui` placeholder is now the planned home for a real `@lightbi/ui` React design system, with canvas-first/card-by-exception preserved and React 18/19 package-contract mismatch explicitly gated at DPR-0.
+- Reaffirmed the owner rule that user-facing language must not be hard-coded in production feature/business code. Existing multilingual semantic aliases/test fixtures remain valid; presentation strings must use the i18n catalog/message boundary. DPR-0/DPR-8 now include a hard-code inventory and CI guard.
+- Planning/documentation only; no product source or runtime was changed by this amendment.
+
 ## 2026-09-06 — NEXT040 closes holistic native account/auth machine-server gate
 
 - Full auth audit replaced the incremental-fix loop. Product `6c15ef9...` completes Windows credential persistence, protected native MFA, stale-token cleanup, Google/email/MFA handoff ordering and registration confirmation; CP `ac02c7f...` enforces Signed Transport for native authority, cookie-only browser security authority and re-registration password safety.
@@ -1659,3 +1666,19 @@ R1-P0 documentation/integrity closure verified 1,243 local links with zero missi
 - TEST runtime REL was published for NEXT041; issuer/attestation snapshots were reloaded; fresh exact-runtime installation challenge/issue PASSed 201/201 with certificate/release/device binding verified and `productionAuthority=false`.
 - Owner packaged UAT exercised the real full-slot path: desktop limit panel → browser device chooser → explicit existing-device selection → replacement → desktop authenticated without a second login. Account state showed one active device and historical revoked devices. Auth/device-slot workstream is owner-PASS.
 - Do not return to the main roadmap yet. Owner states additional technical debt remains. This entry does not promote untested packaged email/password/MFA branches to owner PASS and does not mark whole release UAT complete. Production untouched; `phase2aFrozen=false`.
+
+## 2026-09-06 — UI/UX refactor adds Frappe Books source study and chart-pattern grammar
+
+- Owner elevated `frappe/books` from visual inspiration to a required DPR-0 product-source study. Intake `master` SHA is `a79a1e3b03f424805ad094e2fd8731d04f84d36f`; companion Frappe UI intake `main` SHA is `ada484717135d9c50e272402012e718ef1dfc2d3`. Upstream must be re-pinned before implementation.
+- The study scope now explicitly covers shell/navigation, typography/whitespace/divider hierarchy, card-by-exception behavior, lists/tables/forms, empty/loading/error states, action placement, dashboard rhythm and desktop-product ergonomics. No Vue/Electron migration, source copy or pixel clone is authorized.
+- Visualization work now requires a canonical Chart Pattern Library above renderer types: analytical intent, semantic prerequisites, negative rules, cardinality/series limits, axis/label/tooltip/sort policy, categorical/sequential/diverging/status color semantics, evidence interaction and safe fallback. Initial target is roughly 20–30 strong patterns.
+- Latest owner dashboard examples were converted into acceptance patterns (amount+rate combo, source ranking, low-cardinality composition, stacked mix, staff detail table) rather than a mandate for decorative chart diversity.
+- Planning/documentation only; no LightBI product source, runtime, NEXT generation or Production service was changed.
+
+## 2026-09-06 — Micro Brain presentation-advisory foundation source closure
+
+- Owner formally admitted Micro Brain into DPR-2..DPR-7 as a bounded advisor for question/perspective relevance, narrative priority, chart/domain patterns and Dashboard composition; deterministic planners remain final authority.
+- Product commit `4be593ae57b4b1385a833675dd4ea2349900d378` adds an isolated presentation corpus/index and advisor API without wiring MB directly into current BA/chart runtime decisions. Semantic and presentation dense spaces remain separate.
+- Presentation corpus: 88 cards = 32 domain profiles, 31 chart patterns, 12 perspective profiles, 7 constitutional/self-charter cards plus dashboard narrative and anti-pattern knowledge. Presentation index is 3,360,712 bytes; combined with semantic index total is 9,966,179 bytes raw (~2,619,814 bytes gzip9), below the 20 MiB near-term ceiling.
+- Closure verification PASS: targeted presentation/determinism/semantic-regression set 14/14; isolated MB-7 active-core benchmark PASS with the same three TTKT ETA recoveries and zero confirmed semantic regressions; Desktop production build + TypeScript/Vite + source-size gate PASS.
+- Runtime integration remains intentionally deferred to the UI/UX refactor planners. Production/NEXT runtime, metric/formula/join/domain-support authority and current release role are unchanged by this closure.

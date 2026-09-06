@@ -44,3 +44,27 @@ Authority rule: these visuals establish owner UX intent and observable presentat
 - Incorporated into: `docs/compliance/LIGHTBI_PUBLIC_COMPLIANCE_FRAMEWORK.md` and `docs/compliance/R1_PRE_RELEASE_ARMOR_TRUST_COMPLIANCE_PLAN.md`.
 
 Authority rule: the research snapshot establishes provenance and issues-to-assess. Current statutes/regulator sources outrank it; actual LightBI applicability must be reassessed against current product/business facts and qualified counsel where required.
+
+## EXT-2026-09-05-FRAPPE-UI-REFERENCE
+
+- Source name: Frappe UI — `https://github.com/frappe/frappe-ui`.
+- Reviewed: 2026-09-05 against the current LightBI successor frontend stack.
+- Classification: external design-system / interaction reference; non-authoritative for LightBI runtime architecture.
+- Repository-native at intake: no.
+- Incorporated into: `docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DECISION_PRESENTATION_UI_UX_REFACTOR_2026-09-04.md`.
+- LightBI compatibility finding: use as design/interaction inspiration only. Current LightBI Desktop is React/Tauri; no Vue bridge or framework migration is approved to consume Frappe UI directly.
+
+Authority rule: Frappe UI may inform primitive composition, tokens, interaction density and enterprise UX patterns. LightBI code, tests, design baseline and owner decisions remain authoritative for implementation.
+
+## EXT-2026-09-06-FRAPPE-BOOKS-REFERENCE
+
+- Source name: Frappe Books — `https://github.com/frappe/books`.
+- Intake snapshot: `master` at `a79a1e3b03f424805ad094e2fd8731d04f84d36f` on 2026-09-06; re-pin at DPR-0 before implementation.
+- Companion source: Frappe UI `https://github.com/frappe/frappe-ui`, observed `main` at `ada484717135d9c50e272402012e718ef1dfc2d3` for the same amendment.
+- Classification: external product UI/UX, dashboard-composition and interaction reference; non-authoritative for LightBI runtime/metric architecture.
+- Repository-native at intake: no.
+- Incorporated into: `docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DECISION_PRESENTATION_UI_UX_REFACTOR_2026-09-04.md`.
+- Owner intent: study the source implementation, not only screenshots, with special attention to clean accounting workflows, flat-canvas hierarchy, restrained surfaces, navigation/action placement, tables/forms and dashboard information rhythm.
+- Chart direction: use Frappe/owner references to build a semantic LightBI Chart Pattern Library; do not copy external chart APIs or pursue visual variety for its own sake.
+
+Authority rule: Frappe Books/Frappe UI may inform product behavior, design-system structure and visualization grammar. LightBI owner decisions, current React/Tauri code, governed evidence/metric contracts, accessibility requirements and LightBI-specific acceptance remain authoritative.
