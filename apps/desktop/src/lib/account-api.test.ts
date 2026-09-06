@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { invoke } from '@tauri-apps/api/core';
-import { beginLightBIGoogleLogin, completeLightBIAccountMfa, loadLightBIAccount, loginLightBIEmailAccount, registerLightBIEmailAccount, requestLightBIPasswordReset } from './account-api';
+import { beginLightBIGoogleLogin, completeLightBIAccountMfa, LightBIDeviceLimitError, loadLightBIAccount, loginLightBIEmailAccount, registerLightBIEmailAccount, replaceLightBIDeviceSlot, requestLightBIPasswordReset } from './account-api';
 import { currentLicenseTier } from './distribution-pairing';
 
 vi.mock('@tauri-apps/api/core', () => ({ invoke: vi.fn(async (command: string) => command === 'account_session_token' ? null : undefined) }));
@@ -231,6 +231,72 @@ describe('LightBI account client',()=>{
       const account=await pending;
       expect(account?.account.provider).toBe('google');
       expect(token).toBe('native-google-token');
+    }finally{vi.useRealTimers();}
+  });
+
+  it('surfaces a native email device-slot limit as an explicit replacement handoff',async()=>{
+    (window as any).__TAURI_INTERNALS__={};
+    vi.mocked(invoke).mockImplementation(async (command:string,args?:any)=>{
+      if(command==='ensure_installation_trust')return {status:'issued'} as any;
+      if(command==='account_session_token')return null;
+      if(command==='native_http_request'&&String(args?.request?.url).endsWith('/api/account/login'))return {status:200,headers:{'content-type':'application/json'},body:Array.from(new TextEncoder().encode(JSON.stringify({authenticated:false,mfaRequired:false,passkeyRequired:false,deviceLimitReached:true,nativeLoginId:'login-device-limit',replacementUrl:'https://lightbi-next.example/account#device-replace=token-123',expiresIn:600,maxDevices:1}))),signedTransport:true};
+      return undefined;
+    });
+    const result=await loginLightBIEmailAccount('native@example.com','a-secure-password','https://distribution.test');
+    expect(result).toEqual({status:'device_limit',deviceLimit:{loginId:'login-device-limit',replacementUrl:'https://lightbi-next.example/account#device-replace=token-123',expiresIn:600,maxDevices:1}});
+  });
+
+  it('keeps polling the same native login after explicit device replacement and stores the resulting token',async()=>{
+    vi.useFakeTimers();
+    try{
+      (window as any).__TAURI_INTERNALS__={};
+      let token:string|null=null;let statusReads=0;
+      const summary={authenticated:true,account:{id:'acct-replaced',email:'replace@example.com',provider:'google',created_at:''},entitlement:{tier:'basic',status:'active',max_devices:1},devices:[]};
+      vi.mocked(invoke).mockImplementation(async (command:string,args?:any)=>{
+        if(command==='ensure_installation_trust')return {status:'issued'} as any;
+        if(command==='account_session_token')return token;
+        if(command==='store_account_session_token'){token=args?.token??null;return undefined;}
+        if(command==='native_http_request'){
+          const request=args?.request;
+          if(String(request?.url).endsWith('/api/account/device-login/status')){
+            statusReads+=1;
+            const payload=statusReads===1?{status:'device_limit',expiresIn:600}:{status:'complete',token:'replacement-native-token'};
+            return {status:200,headers:{'content-type':'application/json'},body:Array.from(new TextEncoder().encode(JSON.stringify(payload))),signedTransport:true};
+          }
+          if(String(request?.url).endsWith('/api/account/session')){
+            expect(request.headers.authorization).toBe('Bearer replacement-native-token');
+            return {status:200,headers:{'content-type':'application/json'},body:Array.from(new TextEncoder().encode(JSON.stringify(summary))),signedTransport:true};
+          }
+        }
+        return undefined;
+      });
+      const pending=replaceLightBIDeviceSlot({loginId:'login-device-limit',replacementUrl:'https://lightbi-next.example/account#device-replace=token-123',expiresIn:600,maxDevices:1},'https://distribution.test');
+      await vi.advanceTimersByTimeAsync(3200);
+      const account=await pending;
+      expect(account?.account.id).toBe('acct-replaced');
+      expect(token).toBe('replacement-native-token');
+      expect(statusReads).toBeGreaterThanOrEqual(2);
+    }finally{vi.useRealTimers();}
+  });
+
+  it('turns Google polling device-limit state into a resumable typed error instead of a raw server error',async()=>{
+    vi.useFakeTimers();
+    try{
+      (window as any).__TAURI_INTERNALS__={};
+      vi.mocked(invoke).mockImplementation(async (command:string,args?:any)=>{
+        if(command==='ensure_installation_trust')return {status:'issued'} as any;
+        if(command==='account_session_token')return null;
+        if(command==='native_http_request'){
+          const request=args?.request;
+          if(String(request?.url).endsWith('/api/account/device-login/start'))return {status:200,headers:{'content-type':'application/json'},body:Array.from(new TextEncoder().encode(JSON.stringify({loginId:'login-google-limit',authorizationUrl:'https://lightbi-next.example/api/auth/google/native-start?state=state-12345678901234567890',expiresIn:60}))),signedTransport:true};
+          if(String(request?.url).endsWith('/api/account/device-login/status'))return {status:200,headers:{'content-type':'application/json'},body:Array.from(new TextEncoder().encode(JSON.stringify({status:'device_limit',replacementUrl:'https://lightbi-next.example/account#device-replace=google-token',expiresIn:600,maxDevices:3}))),signedTransport:true};
+        }
+        return undefined;
+      });
+      const pending=beginLightBIGoogleLogin('https://distribution.test').catch(error=>error);
+      await vi.advanceTimersByTimeAsync(1600);
+      const failure=await pending;
+      expect(failure).toMatchObject({name:'LightBIDeviceLimitError',details:{loginId:'login-google-limit',maxDevices:3}} satisfies Partial<LightBIDeviceLimitError>);
     }finally{vi.useRealTimers();}
   });
 

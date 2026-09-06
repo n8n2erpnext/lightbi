@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { beginLightBIGoogleLogin, completeLightBIAccountMfa, loadLightBIAccount, loginLightBIEmailAccount, logoutLightBIAccount, redeemLightBIAccountLicense, registerLightBIEmailAccount, requestLightBIPasswordReset, revokeLightBIDevice, type LightBIAccountMfaChallenge, type LightBIAccountSummary } from '../lib/account-api';
+import { beginLightBIGoogleLogin, completeLightBIAccountMfa, deviceLimitFromError, loadLightBIAccount, loginLightBIEmailAccount, logoutLightBIAccount, openLightBIAccountDeviceManager, redeemLightBIAccountLicense, registerLightBIEmailAccount, replaceLightBIDeviceSlot, requestLightBIPasswordReset, retryLightBIDeviceSlot, revokeLightBIDevice, type LightBIAccountMfaChallenge, type LightBIAccountSummary, type LightBIDeviceLimit } from '../lib/account-api';
 
 type AccountConnectionState = 'checking' | 'online' | 'unavailable';
 
@@ -17,6 +17,7 @@ export function useLightBIAccount() {
   const [error, setError] = useState('');
   const [connectionState, setConnectionState] = useState<AccountConnectionState>('checking');
   const [mfaChallenge, setMfaChallenge] = useState<LightBIAccountMfaChallenge | null>(null);
+  const [deviceLimit, setDeviceLimit] = useState<LightBIDeviceLimit | null>(null);
 
   const recordFailure = useCallback((cause: unknown, fallback: string) => {
     const message = failureMessage(cause, fallback);
@@ -52,12 +53,15 @@ export function useLightBIAccount() {
 
   const login = async () => {
     setError('');
+    setDeviceLimit(null);
     setLoading(true);
     try {
       setAccount(await beginLightBIGoogleLogin());
       setConnectionState('online');
     } catch (cause) {
-      recordFailure(cause, 'Sign-in failed.');
+      const limit=deviceLimitFromError(cause);
+      if(limit){setDeviceLimit(limit);setConnectionState('online');}
+      else recordFailure(cause, 'Sign-in failed.');
     } finally {
       setLoading(false);
     }
@@ -66,12 +70,14 @@ export function useLightBIAccount() {
   const loginEmail = async (email: string, password: string) => {
     setError('');
     setMfaChallenge(null);
+    setDeviceLimit(null);
     setLoading(true);
     try {
       const result = await loginLightBIEmailAccount(email, password);
       setConnectionState('online');
       if (result.status === 'mfa_required') { setMfaChallenge(result); return 'mfa_required' as const; }
       if (result.status === 'passkey_required') return 'passkey_required' as const;
+      if (result.status === 'device_limit') { setDeviceLimit(result.deviceLimit); return 'device_limit' as const; }
       setAccount(result.account);
       return 'authenticated' as const;
     } catch (cause) {
@@ -92,6 +98,8 @@ export function useLightBIAccount() {
       setConnectionState('online');
       return true;
     } catch (cause) {
+      const limit=deviceLimitFromError(cause);
+      if(limit){setMfaChallenge(null);setDeviceLimit(limit);setConnectionState('online');return false;}
       recordFailure(cause, 'Strong authentication failed.');
       return false;
     } finally {
@@ -100,11 +108,25 @@ export function useLightBIAccount() {
   };
 
   const cancelMfa = () => { setMfaChallenge(null); setError(''); };
+  const cancelDeviceLimit = () => { setDeviceLimit(null); setError(''); };
+  const replaceDevice = async () => {
+    if(!deviceLimit)return false;setError('');setLoading(true);
+    try{setAccount(await replaceLightBIDeviceSlot(deviceLimit));setDeviceLimit(null);setConnectionState('online');return true;}
+    catch(cause){const limit=deviceLimitFromError(cause);if(limit)setDeviceLimit(limit);else recordFailure(cause,'Device replacement could not be completed.');return false;}
+    finally{setLoading(false);}
+  };
+  const retryDeviceSlot = async () => {
+    if(!deviceLimit)return false;setError('');setLoading(true);
+    try{setAccount(await retryLightBIDeviceSlot(deviceLimit));setDeviceLimit(null);setConnectionState('online');return true;}
+    catch(cause){const limit=deviceLimitFromError(cause);if(limit){setDeviceLimit({...deviceLimit,...limit});setConnectionState('online');}else recordFailure(cause,'Device slot retry failed.');return false;}
+    finally{setLoading(false);}
+  };
+  const manageDevices = async () => { await openLightBIAccountDeviceManager(); };
   const registerEmail = async (email: string, password: string, displayName?: string) => { setError(''); setLoading(true); try { await registerLightBIEmailAccount({ email, password, displayName }); setConnectionState('online'); return true; } catch (cause) { recordFailure(cause, 'Registration failed.'); return false; } finally { setLoading(false); } };
   const requestPasswordReset = async (email: string) => { setError(''); setLoading(true); try { await requestLightBIPasswordReset(email); setConnectionState('online'); return true; } catch (cause) { recordFailure(cause, 'Reset email could not be sent.'); return false; } finally { setLoading(false); } };
-  const logout = async () => { await logoutLightBIAccount(); setAccount(null); setMfaChallenge(null); setConnectionState('online'); };
+  const logout = async () => { await logoutLightBIAccount(); setAccount(null); setMfaChallenge(null); setDeviceLimit(null); setConnectionState('online'); };
   const redeem = async (key: string) => { setError(''); try { setAccount(await redeemLightBIAccountLicense(key)); setConnectionState('online'); } catch (cause) { recordFailure(cause, 'Key redemption failed.'); } };
   const revokeDevice = async (id: string) => { setError(''); try { await revokeLightBIDevice(id); await refresh(); } catch (cause) { recordFailure(cause, 'Device revocation failed.'); } };
 
-  return { account, loading, error, connectionState, mfaChallenge, login, loginEmail, verifyMfa, cancelMfa, registerEmail, requestPasswordReset, logout, redeem, revokeDevice, refresh };
+  return { account, loading, error, connectionState, mfaChallenge, deviceLimit, login, loginEmail, verifyMfa, cancelMfa, cancelDeviceLimit, replaceDevice, retryDeviceSlot, manageDevices, registerEmail, requestPasswordReset, logout, redeem, revokeDevice, refresh };
 }

@@ -17,10 +17,31 @@ export type LightBIAccountMfaChallenge = {
   nativeLoginId?: string;
 };
 
+export type LightBIDeviceLimit = {
+  loginId: string;
+  replacementUrl: string;
+  expiresIn: number;
+  maxDevices?: number;
+};
+
+export class LightBIDeviceLimitError extends Error {
+  readonly details: LightBIDeviceLimit;
+  constructor(details: LightBIDeviceLimit) {
+    super('device_limit_reached');
+    this.name = 'LightBIDeviceLimitError';
+    this.details = details;
+  }
+}
+
+export function deviceLimitFromError(cause: unknown): LightBIDeviceLimit | null {
+  return cause instanceof LightBIDeviceLimitError ? cause.details : null;
+}
+
 export type LightBIEmailLoginResult =
   | { status: 'authenticated'; account: LightBIAccountSummary | null }
   | ({ status: 'mfa_required' } & LightBIAccountMfaChallenge)
-  | { status: 'passkey_required'; challengeId: string; fallbackTotp: boolean; expiresIn: number; nativeLoginId?: string };
+  | { status: 'passkey_required'; challengeId: string; fallbackTotp: boolean; expiresIn: number; nativeLoginId?: string }
+  | { status: 'device_limit'; deviceLimit: LightBIDeviceLimit };
 
 const version = () => import.meta.env.VITE_LIGHTBI_VERSION ?? '0.9.2-beta.7';
 const platform = () => navigator.platform || 'unknown';
@@ -143,7 +164,7 @@ export function loadLightBIAccount(endpoint?: string): Promise<LightBIAccountSum
   return pending;
 }
 
-async function finishNativeLoginPolling(base: string, loginId: string, installationId: string, expiresIn = 600): Promise<string> {
+async function finishNativeLoginPolling(base: string, loginId: string, installationId: string, expiresIn = 600, knownLimit?: LightBIDeviceLimit, waitThroughDeviceLimit = false): Promise<string> {
   const deadline = Date.now() + Math.min(600, expiresIn || 600) * 1000;
   let consecutiveTransportFailures = 0;
   while (Date.now() < deadline) {
@@ -169,8 +190,18 @@ async function finishNativeLoginPolling(base: string, loginId: string, installat
       throw new Error(failure.error || 'Strong sign-in expired or was denied.');
     }
     consecutiveTransportFailures = 0;
-    const status = await statusResponse.json() as { status: string; token?: string };
+    const status = await statusResponse.json() as { status: string; token?: string; replacementUrl?: string; expiresIn?: number; maxDevices?: number };
     if (status.status === 'pending' || status.status === 'mfa_required') continue;
+    if (status.status === 'device_limit') {
+      const details: LightBIDeviceLimit = {
+        loginId,
+        replacementUrl: status.replacementUrl || knownLimit?.replacementUrl || '',
+        expiresIn: status.expiresIn ?? knownLimit?.expiresIn ?? expiresIn,
+        ...(status.maxDevices ?? knownLimit?.maxDevices ? { maxDevices: status.maxDevices ?? knownLimit?.maxDevices } : {}),
+      };
+      if (waitThroughDeviceLimit) continue;
+      throw new LightBIDeviceLimitError(details);
+    }
     if (status.status !== 'complete' || !status.token) throw new Error('Strong sign-in expired or was denied.');
     return status.token;
   }
@@ -206,8 +237,12 @@ export async function loginLightBIEmailAccount(email: string, password: string, 
     ...(native ? { installationId: getOrCreateInstallationId(), deviceName: `LightBI on ${platform()}`, platform: platform(), appVersion: version() } : {}),
   }) }, endpoint);
   const result = await accountResult(response, 'Email or password is incorrect.') as {
-    token?: string; authenticated?: boolean; mfaRequired?: boolean; passkeyRequired?: boolean; challengeId?: string; methods?: Array<'totp' | 'recovery'>; fallbackTotp?: boolean; expiresIn?: number; nativeLoginId?: string;
+    token?: string; authenticated?: boolean; mfaRequired?: boolean; passkeyRequired?: boolean; deviceLimitReached?: boolean; challengeId?: string; methods?: Array<'totp' | 'recovery'>; fallbackTotp?: boolean; expiresIn?: number; nativeLoginId?: string; replacementUrl?: string; maxDevices?: number;
   };
+  if (result.deviceLimitReached) {
+    if (!native || !result.nativeLoginId || !result.replacementUrl) throw new Error('The device replacement handoff could not be created.');
+    return { status:'device_limit', deviceLimit:{ loginId:result.nativeLoginId, replacementUrl:result.replacementUrl, expiresIn:result.expiresIn ?? 600, ...(result.maxDevices ? { maxDevices:result.maxDevices } : {}) } };
+  }
   if (result.passkeyRequired) {
     if (!result.challengeId) throw new Error('The passkey challenge could not be created.');
     if (native) {
@@ -260,6 +295,31 @@ export async function completeLightBIAccountMfa(
   const account = await loadLightBIAccount(endpoint);
   window.dispatchEvent(new CustomEvent('lightbi-account-changed'));
   return account;
+}
+
+export async function replaceLightBIDeviceSlot(limit: LightBIDeviceLimit, endpoint?: string): Promise<LightBIAccountSummary | null> {
+  if (!isNativeLightBI()) throw new Error('Device replacement is available only in LightBI Desktop.');
+  if (!limit.replacementUrl) throw new Error('The device replacement request has expired.');
+  await openExternalUrl(limit.replacementUrl);
+  const token = await finishNativeLoginPolling(lightBIDistributionEndpoint(endpoint), limit.loginId, getOrCreateInstallationId(), limit.expiresIn, limit, true);
+  await storeNativeToken(token);
+  const account = await loadLightBIAccount(endpoint);
+  window.dispatchEvent(new CustomEvent('lightbi-account-changed'));
+  return account;
+}
+
+export async function retryLightBIDeviceSlot(limit: LightBIDeviceLimit, endpoint?: string): Promise<LightBIAccountSummary | null> {
+  if (!isNativeLightBI()) throw new Error('Device replacement is available only in LightBI Desktop.');
+  const token = await finishNativeLoginPolling(lightBIDistributionEndpoint(endpoint), limit.loginId, getOrCreateInstallationId(), Math.min(limit.expiresIn, 30), limit, false);
+  await storeNativeToken(token);
+  const account = await loadLightBIAccount(endpoint);
+  window.dispatchEvent(new CustomEvent('lightbi-account-changed'));
+  return account;
+}
+
+export async function openLightBIAccountDeviceManager(): Promise<void> {
+  if (isNativeLightBI()) { await openExternalUrl(lightBIFrontendUrl('account')); return; }
+  window.location.href = lightBIFrontendUrl('account');
 }
 
 export async function requestLightBIPasswordReset(email: string, endpoint?: string): Promise<void> {

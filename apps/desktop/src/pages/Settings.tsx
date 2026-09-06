@@ -19,6 +19,7 @@ import { lightBIFrontendUrl } from '../lib/lightbi-routing';
 import { useUpdateStore } from '../stores/update-store';
 
 const AccountAccess: React.FC<{ account: ReturnType<typeof useLightBIAccount> }> = ({ account }) => {
+  const { t } = useUiLanguage();
   const [mode, setMode] = useState<'login' | 'register'>('login');
   const [message, setMessage] = useState('');
   const [email, setEmail] = useState('');
@@ -46,6 +47,14 @@ const AccountAccess: React.FC<{ account: ReturnType<typeof useLightBIAccount> }>
     }
     await account.loginEmail(email, password);
   };
+
+  if (account.deviceLimit) return <div className="rounded-xl border border-amber-200 bg-amber-50/60 p-5">
+    <div className="flex items-start gap-3"><Monitor className="mt-0.5 h-5 w-5 text-amber-700" /><div><div className="font-semibold text-slate-900">{t('Device limit reached')}</div><p className="mt-1 text-sm leading-6 text-slate-600">{t('Your plan has no free device slot. LightBI will never sign out another active device without your approval.')}</p></div></div>
+    <div className="mt-4 rounded-lg border border-amber-200 bg-white/80 px-4 py-3 text-sm text-slate-700">{account.deviceLimit.maxDevices ? <>{t('This account allows')} {account.deviceLimit.maxDevices} {t('active device slots. Choose exactly which existing device to replace, or manage devices manually in the browser.')}</> : t('Choose exactly which existing device to replace, or manage devices manually in the browser.')}</div>
+    <div className="mt-4 flex flex-wrap gap-2"><button type="button" disabled={account.loading} onClick={() => void account.replaceDevice()} className="rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50">{account.loading ? t('Waiting for replacement…') : t('Replace a device')}</button><button type="button" disabled={account.loading} onClick={() => void account.manageDevices()} className="rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 disabled:opacity-50">{t('Manage devices')}</button><button type="button" disabled={account.loading} onClick={() => void account.retryDeviceSlot()} className="rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 disabled:opacity-50">{t('Retry')}</button><button type="button" disabled={account.loading} onClick={() => account.cancelDeviceLimit()} className="px-2 py-2.5 text-sm font-semibold text-slate-500 disabled:opacity-50">{t('Back')}</button></div>
+    <p className="mt-3 text-xs leading-5 text-slate-500">{t('Replacing a device revokes only its LightBI account session. It does not delete files or analysis stored on that computer.')}</p>
+    {account.error && <div className="mt-3 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{account.error}</div>}
+  </div>;
 
   if (account.mfaChallenge) return <div className="rounded-xl border border-amber-200 bg-amber-50/60 p-5">
     <div className="flex items-start gap-3"><ShieldCheck className="mt-0.5 h-5 w-5 text-amber-700" /><div><div className="font-semibold text-slate-900">Strong authentication required</div><p className="mt-1 text-sm leading-6 text-slate-600">Your password is correct. Complete the enabled second factor before LightBI creates a native account session.</p></div></div>
