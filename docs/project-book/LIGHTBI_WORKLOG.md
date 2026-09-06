@@ -1637,3 +1637,14 @@ R1-P0 documentation/integrity closure verified 1,243 local links with zero missi
 - Published only the new NEXT038 TEST runtime REL through staging; bounded live diff was the new REL plus `index.json` and `runtime-latest.json`. Restarted installation issuer + attestation snapshot consumers; both returned active.
 - Fresh external exact-runtime challenge/issue PASSed `201/201`; certificate verified against public Root/keyset, matched device/release, persisted no probe private key and remained `productionAuthority=false`.
 - Machine/server gate is closed. Remaining gate is owner Windows UAT on the verified NEXT038 installer. Engine remains NEXT034, live CP remains `2e6ad23`, Production untouched, `phase2aFrozen=false`.
+
+## 2026-09-06 — NEXT040 closes holistic native account/auth machine-server gate
+
+- Full auth audit replaced the incremental-fix loop. Product `6c15ef9...` completes Windows credential persistence, protected native MFA, stale-token cleanup, Google/email/MFA handoff ordering and registration confirmation; CP `ac02c7f...` enforces Signed Transport for native authority, cookie-only browser security authority and re-registration password safety.
+- Local gates PASS: product complete release-authoritative suite with governed 41/41; CP focused auth/security 56/56 and full suite 228/228; synthetic NEXT DB/Redis rehearsal PASSed register/verify/re-register safety/native password/TOTP/native MFA/web MFA/logout/cleanup without secret persistence.
+- Live NEXT API + worker now both run exact CP `ac02c7f...`; engine remains NEXT034. Unsigned native login/MFA fail closed as `signed_transport_required`. Production was not touched.
+- Immutable NEXT040 Windows run `34004815638`, orchestration `b3bc588...`, PASSed every exact-source/Windows/native/NSIS/evidence step. Installed runtime: 76,523,520 bytes / SHA `36b323ad...d7c1`; installer: 31,792,197 bytes / SHA `3ee3d10b...78a9`.
+- Transfer run `34007566525` verified exact acceptance bytes and mirrored them to immutable private R2; VPS re-fetch/re-hash PASSed.
+- Hardened TEST publisher staged then live-published only the new NEXT040 REL plus `runtime-latest.json` and `index.json`; bounded diff PASS, `promotableToProduction=false`, external HTTPS runtime-latest is byte-identical.
+- Restarted installation issuer + attestation snapshot consumers. External exact-runtime challenge/issue PASSed 201/201 with ephemeral Ed25519 proof; certificate binding and public Root/keyset verification PASS, `productionAuthority=false`.
+- Machine/server gate is closed. Remaining gate: owner installs the verified NEXT040 NSIS package and UATs Google + email/password + verification/MFA + restart persistence + logout/re-login. Owner UAT remains false until that packaged test succeeds.
