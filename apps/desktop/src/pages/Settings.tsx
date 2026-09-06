@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ArrowLeft, CheckCircle2, Coins, Globe2, HardDrive, KeyRound, Laptop, LogOut, Monitor, Palette, RefreshCw, Search, Settings2, Shield, ShieldCheck, UserRound } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, Coins, Globe2, HardDrive, KeyRound, Laptop, LogOut, Monitor, Network, Palette, RefreshCw, Search, Settings2, Shield, ShieldCheck, UserRound } from 'lucide-react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { readNativeRuntime, type NativeLicenseState, type NativeRuntimeConfig } from '../lib/native-runtime';
 import { useDisplayPreferences } from '../stores/display-preferences-store';
@@ -15,6 +15,7 @@ import { useLightBIAccount } from '../hooks/useLightBIAccount';
 import { UpdateSettingsPanel } from '../components/settings/UpdateSettingsPanel';
 import { InternalGenerationPanel } from '../components/settings/InternalGenerationPanel';
 import { BuildIdentityPanel } from '../components/settings/BuildIdentityPanel';
+import { ConnectionSettingsPanel } from '../components/settings/ConnectionSettingsPanel';
 import { lightBIFrontendUrl } from '../lib/lightbi-routing';
 import { useUpdateStore } from '../stores/update-store';
 
@@ -106,14 +107,15 @@ export const Settings: React.FC = () => {
   const updater = useUpdateStore();
   const updateNotificationCount = updater.hasUnreadNotification() ? 1 : 0;
   const requestedSection = new URLSearchParams(location.search).get('section');
-  const validRequestedSection = ['general', 'account', 'appearance', 'privacy', 'updates'].includes(requestedSection || '')
-    ? requestedSection as 'general' | 'account' | 'appearance' | 'privacy' | 'updates'
+  const validRequestedSection = ['general', 'account', 'connection', 'appearance', 'privacy', 'updates'].includes(requestedSection || '')
+    ? requestedSection as 'general' | 'account' | 'connection' | 'appearance' | 'privacy' | 'updates'
     : 'general';
-  const [settingsSection, setSettingsSection] = useState<'general' | 'account' | 'appearance' | 'privacy' | 'updates'>(validRequestedSection);
+  const [settingsSection, setSettingsSection] = useState<'general' | 'account' | 'connection' | 'appearance' | 'privacy' | 'updates'>(validRequestedSection);
   const [settingsSearch, setSettingsSearch] = useState('');
   const settingsItems = [
     { id: 'general' as const, label: t('General'), icon: Settings2 },
     { id: 'account' as const, label: t('Account'), icon: UserRound },
+    { id: 'connection' as const, label: t('Connection'), icon: Network },
     { id: 'appearance' as const, label: t('Appearance'), icon: Palette },
     { id: 'privacy' as const, label: t('Privacy and local data'), icon: Shield },
     { id: 'updates' as const, label: t('Updates'), icon: RefreshCw },
@@ -214,6 +216,8 @@ export const Settings: React.FC = () => {
             </div>
           </div>
         </div>}
+
+        {settingsSection === 'connection' && <div className="p-6"><ConnectionSettingsPanel accountConnectionState={lightbiAccount.connectionState} /></div>}
 
         {settingsSection === 'appearance' && <div className="p-6">
           <h2 className="mb-4 text-lg font-medium text-slate-900">{t('Language and reporting defaults')}</h2>

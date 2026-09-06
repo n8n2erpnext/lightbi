@@ -1,6 +1,5 @@
-import { getApiBaseUrl } from '../lib/api-base';
-import React, { useState, useEffect } from 'react';
-import { Database, FileSpreadsheet, Activity, ServerCog } from 'lucide-react';
+import React from 'react';
+import { Database, FileSpreadsheet } from 'lucide-react';
 import { useAppRuntime } from '@lightbi/runtime';
 import { useUiLanguage } from '../lib/ui-language';
 
@@ -9,48 +8,13 @@ export const DataSources: React.FC = () => {
   const sourcesObj = useAppRuntime(s => s.datasources);
   const sources = Object.values(sourcesObj);
   
-  const [apiHealth, setApiHealth] = useState<'checking' | 'online' | 'offline'>('checking');
-  
-  const API_BASE_URL = getApiBaseUrl();
 
-  useEffect(() => {
-    const checkHealth = async () => {
-      try {
-        const res = await fetch(`${API_BASE_URL}/api/health`);
-        if (res.ok) setApiHealth('online');
-        else setApiHealth('offline');
-      } catch (err) {
-        setApiHealth('offline');
-      }
-    };
-    checkHealth();
-  }, [API_BASE_URL]);
 
   return (
     <div className="flex-1 p-4 flex flex-col overflow-hidden">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-semibold text-gray-800 flex items-center">
-            <ServerCog className="w-6 h-6 mr-3 text-gray-400" />
-            {t('Advanced Management')}
-          </h1>
-          <p className="text-[13px] text-gray-500 mt-1">{t('Manage imported datasets, optional connectors, and system health.')}</p>
-          <div className="flex items-center mt-3 space-x-3 text-[11px] text-gray-500">
-            <span className="px-2 py-1 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-100 font-medium">
-              {t('Local file analysis: Available offline')}
-            </span>
-            <span className="flex items-center">
-              <Activity className="w-3 h-3 mr-1" />
-              {t('Connector API')}: {apiHealth === 'checking' ? t('Checking...') : apiHealth === 'online' ? <span className="text-emerald-500 font-medium">{t('Online')}</span> : <span className="text-amber-600 font-medium">{t('Offline')}</span>}
-            </span>
-            <span>{t('Target')}: {API_BASE_URL}</span>
-          </div>
-          {apiHealth === 'offline' && (
-            <p className="text-[12px] text-gray-500 mt-2 max-w-2xl">
-              {t('Backend is only needed for ERP/database/API connectors, persistence, shared jobs, or server-side execution. Uploaded local files continue to parse and preview in-browser.')}
-            </p>
-          )}
-        </div>
+      <div className="mb-6">
+        <h1 className="text-2xl font-semibold text-gray-800">{t('Sources')}</h1>
+        <p className="mt-1 text-[13px] text-gray-500">{t('Manage imported datasets and source profiles. Connection diagnostics are available in Settings.')}</p>
       </div>
 
 

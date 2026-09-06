@@ -7,6 +7,8 @@ import { openExternalUrl } from '../../lib/native-capabilities';
 import { isNativeLightBI } from '../../lib/native-runtime';
 import { useUpdateStore } from '../../stores/update-store';
 import { lightBIFrontendUrl, resolveLightBIExternalTarget } from '../../lib/lightbi-routing';
+import { sendLightBIInvite } from '../../lib/account-api';
+import { useUiLanguage } from '../../lib/ui-language';
 
 const INVITE_URL = lightBIFrontendUrl('home');
 const KEYBOARD_SHORTCUTS_URL = lightBIFrontendUrl('keyboardShortcuts');
@@ -24,11 +26,16 @@ export const dispatchDesktopCommand = (id: string) => {
 };
 export const DesktopCommandCenter: React.FC<DesktopCommandCenterProps> = ({ signedIn, accountLabel }) => {
   const navigate = useNavigate();
+  const { t } = useUiLanguage();
   const toggleSidebar = useAppRuntime((state) => state.toggleSidebar);
   const updater = useUpdateStore();
   const [overlay, setOverlay] = useState<Overlay>(null);
   const [query, setQuery] = useState('');
   const [inviteCopied, setInviteCopied] = useState(false);
+  const [inviteEmail, setInviteEmail] = useState('');
+  const [inviteSending, setInviteSending] = useState(false);
+  const [inviteMessage, setInviteMessage] = useState('');
+  const [inviteError, setInviteError] = useState('');
 
   const visibleCommands = useMemo(() => {
     const needle = query.trim().toLowerCase();
@@ -43,6 +50,10 @@ export const DesktopCommandCenter: React.FC<DesktopCommandCenterProps> = ({ sign
     setOverlay(null);
     setQuery('');
     setInviteCopied(false);
+    setInviteEmail('');
+    setInviteSending(false);
+    setInviteMessage('');
+    setInviteError('');
   }, []);
 
   const execute = useCallback(async (id: string) => {
@@ -151,11 +162,32 @@ export const DesktopCommandCenter: React.FC<DesktopCommandCenterProps> = ({ sign
         <button type="button" onClick={() => void openExternalUrl(KEYBOARD_SHORTCUTS_URL)} className="mx-2 inline-flex items-center gap-2 text-sm font-semibold text-blue-700"><BookOpen className="h-4 w-4" />Open keyboard shortcut guide</button>
       </div>}
       {overlay === 'invite' && <div className="p-5">
-        <p className="text-sm leading-6 text-slate-600">Share LightBI with a teammate or friend. This sends no account data and does not create a seat or entitlement.</p>
-        {accountLabel && <div className="mt-3 rounded-xl bg-slate-50 px-3 py-2 text-xs text-slate-500">Signed in as <strong className="text-slate-700">{accountLabel}</strong></div>}
-        <div className="mt-4 grid gap-2 sm:grid-cols-2">
-          <button type="button" onClick={async () => { await navigator.clipboard.writeText(INVITE_URL); setInviteCopied(true); }} className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50"><Copy className="h-4 w-4" />{inviteCopied ? 'Copied invite link' : 'Copy invite link'}</button>
-          <button type="button" onClick={() => void openExternalUrl(`mailto:?subject=${encodeURIComponent('Try LightBI')}&body=${encodeURIComponent(`I use LightBI for local-first business analysis. You can try it here: ${INVITE_URL}`)}`)} className="inline-flex items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white"><Mail className="h-4 w-4" />Open email app</button>
+        <p className="text-sm leading-6 text-slate-600">{t('Invite a friend or teammate to discover LightBI. The invitation is sent by LightBI Distribution and does not create a seat or entitlement.')}</p>
+        {accountLabel && <div className="mt-3 rounded-xl bg-slate-50 px-3 py-2 text-xs text-slate-500">{t('Invitation sender')}: <strong className="text-slate-700">{accountLabel}</strong></div>}
+        <form className="mt-4" onSubmit={async (event) => {
+          event.preventDefault();
+          if (!inviteEmail.trim() || inviteSending) return;
+          setInviteSending(true); setInviteMessage(''); setInviteError('');
+          try {
+            const recipient = inviteEmail.trim();
+            await sendLightBIInvite(recipient);
+            setInviteMessage(`${t('Invitation sent to')} ${recipient}`);
+            setInviteEmail('');
+          } catch (cause) {
+            setInviteError(cause instanceof Error ? cause.message : t('The invitation could not be sent.'));
+          } finally { setInviteSending(false); }
+        }}>
+          <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400" htmlFor="lightbi-invite-email">{t('Email address')}</label>
+          <div className="mt-2 flex flex-col gap-2 sm:flex-row">
+            <input id="lightbi-invite-email" autoFocus type="email" value={inviteEmail} onChange={(event) => setInviteEmail(event.target.value)} placeholder={t('friend@example.com')} required className="h-12 min-w-0 flex-1 rounded-xl border border-slate-200 bg-white px-4 text-sm outline-none focus:border-blue-400" />
+            <button type="submit" disabled={inviteSending || !inviteEmail.trim()} className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-slate-900 px-5 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"><Mail className="h-4 w-4" />{inviteSending ? t('Sending…') : t('Send invitation')}</button>
+          </div>
+        </form>
+        {inviteMessage && <div className="mt-3 rounded-xl bg-emerald-50 px-3 py-2 text-sm text-emerald-800">{inviteMessage}</div>}
+        {inviteError && <div className="mt-3 rounded-xl bg-red-50 px-3 py-2 text-sm text-red-700">{inviteError}</div>}
+        <div className="mt-4 flex items-center justify-between gap-3 border-t border-slate-100 pt-4">
+          <p className="text-xs leading-5 text-slate-400">{t('You can also copy the public LightBI link without sending email.')}</p>
+          <button type="button" onClick={async () => { await navigator.clipboard.writeText(INVITE_URL); setInviteCopied(true); }} className="inline-flex shrink-0 items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50"><Copy className="h-3.5 w-3.5" />{inviteCopied ? t('Copied') : t('Copy link')}</button>
         </div>
       </div>}
     </section>

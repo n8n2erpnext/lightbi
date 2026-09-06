@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { invoke } from '@tauri-apps/api/core';
-import { beginLightBIGoogleLogin, completeLightBIAccountMfa, LightBIDeviceLimitError, loadLightBIAccount, loginLightBIEmailAccount, registerLightBIEmailAccount, replaceLightBIDeviceSlot, requestLightBIPasswordReset } from './account-api';
+import { beginLightBIGoogleLogin, completeLightBIAccountMfa, LightBIDeviceLimitError, loadLightBIAccount, loginLightBIEmailAccount, registerLightBIEmailAccount, replaceLightBIDeviceSlot, requestLightBIPasswordReset, sendLightBIInvite } from './account-api';
 import { currentLicenseTier } from './distribution-pairing';
 
 vi.mock('@tauri-apps/api/core', () => ({ invoke: vi.fn(async (command: string) => command === 'account_session_token' ? null : undefined) }));
@@ -57,6 +57,16 @@ describe('LightBI account client',()=>{
     const [,request]=fetchMock.mock.calls[0];
     expect(JSON.parse(String(request.body))).toEqual({email:'user@example.com',password:'a-secure-password',displayName:'LightBI User'});
     expect(localStorage.length).toBe(0);
+  });
+  it('sends invitations only through the authenticated account endpoint',async()=>{
+    const fetchMock=vi.fn().mockResolvedValue(new Response(JSON.stringify({sent:true}),{status:202,headers:{'content-type':'application/json'}}));
+    vi.stubGlobal('fetch',fetchMock);
+    await sendLightBIInvite(' Friend@Example.com ','https://distribution.test');
+    expect(fetchMock).toHaveBeenCalledOnce();
+    const [url,request]=fetchMock.mock.calls[0];
+    expect(url).toBe('https://distribution.test/api/account/invitations');
+    expect(request.method).toBe('POST');
+    expect(JSON.parse(String(request.body))).toEqual({email:'friend@example.com'});
   });
   it('signs in with email through the server-authoritative web cookie',async()=>{
     const summary={authenticated:true,account:{id:'a',email:'user@example.com',provider:'password',created_at:''},entitlement:{tier:'basic',status:'active',max_devices:1},devices:[]};
