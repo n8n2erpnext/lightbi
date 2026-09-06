@@ -61,12 +61,12 @@ describe('LightBI account client',()=>{
   it('sends invitations only through the authenticated account endpoint',async()=>{
     const fetchMock=vi.fn().mockResolvedValue(new Response(JSON.stringify({sent:true}),{status:202,headers:{'content-type':'application/json'}}));
     vi.stubGlobal('fetch',fetchMock);
-    await sendLightBIInvite(' Friend@Example.com ','https://distribution.test');
+    await sendLightBIInvite(' Friend@Example.com ','https://distribution.test','vi');
     expect(fetchMock).toHaveBeenCalledOnce();
     const [url,request]=fetchMock.mock.calls[0];
     expect(url).toBe('https://distribution.test/api/account/invitations');
     expect(request.method).toBe('POST');
-    expect(JSON.parse(String(request.body))).toEqual({email:'friend@example.com'});
+    expect(JSON.parse(String(request.body))).toEqual({email:'friend@example.com',locale:'vi'});
   });
   it('preserves invitation server error codes for the localized presentation boundary',async()=>{
     vi.stubGlobal('fetch',vi.fn().mockResolvedValue(new Response(JSON.stringify({error:'invite_rate_limited'}),{status:429,headers:{'content-type':'application/json'}})));

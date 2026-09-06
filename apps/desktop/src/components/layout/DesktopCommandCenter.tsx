@@ -26,7 +26,7 @@ export const dispatchDesktopCommand = (id: string) => {
 };
 export const DesktopCommandCenter: React.FC<DesktopCommandCenterProps> = ({ signedIn, accountLabel }) => {
   const navigate = useNavigate();
-  const { t } = useUiLanguage();
+  const { t, language } = useUiLanguage();
   const toggleSidebar = useAppRuntime((state) => state.toggleSidebar);
   const updater = useUpdateStore();
   const [overlay, setOverlay] = useState<Overlay>(null);
@@ -170,7 +170,7 @@ export const DesktopCommandCenter: React.FC<DesktopCommandCenterProps> = ({ sign
           setInviteSending(true); setInviteMessage(''); setInviteError('');
           try {
             const recipient = inviteEmail.trim();
-            await sendLightBIInvite(recipient);
+            await sendLightBIInvite(recipient, undefined, language === 'vi' ? 'vi' : 'en');
             setInviteMessage(`${t('Invitation sent to')} ${recipient}`);
             setInviteEmail('');
           } catch (cause) {
@@ -178,6 +178,7 @@ export const DesktopCommandCenter: React.FC<DesktopCommandCenterProps> = ({ sign
             const messages: Record<string, string> = {
               invite_email_required: t('Enter an email address to invite.'),
               invite_email_invalid: t('Enter a valid email address.'),
+              invite_locale_invalid: t('The invitation language could not be resolved. Try again.'),
               invite_self_not_allowed: t('Choose a different email address. Your signed-in account cannot invite itself.'),
               invite_rate_limited: t('Too many invitations were sent recently. Try again later.'),
               invite_mail_unavailable: t('LightBI invitation email is temporarily unavailable.'),

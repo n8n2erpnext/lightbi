@@ -322,10 +322,10 @@ export async function openLightBIAccountDeviceManager(): Promise<void> {
   window.location.href = lightBIFrontendUrl('account');
 }
 
-export async function sendLightBIInvite(email: string, endpoint?: string): Promise<void> {
+export async function sendLightBIInvite(email: string, endpoint?: string, locale: 'en' | 'vi' = 'en'): Promise<void> {
   const recipient = email.trim().toLowerCase();
   if (!recipient) throw new Error('invite_email_required');
-  const response = await accountFetch('/api/account/invitations', { method: 'POST', body: JSON.stringify({ email: recipient }) }, endpoint);
+  const response = await accountFetch('/api/account/invitations', { method: 'POST', body: JSON.stringify({ email: recipient, locale }) }, endpoint);
   const result = await response.json().catch(() => ({})) as { error?: string };
   if (response.ok) return;
   throw new Error(typeof result.error === 'string' && result.error ? result.error : 'invite_send_failed');
