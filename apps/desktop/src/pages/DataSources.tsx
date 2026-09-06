@@ -14,7 +14,7 @@ export const DataSources: React.FC = () => {
     <div className="flex-1 p-4 flex flex-col overflow-hidden">
       <div className="mb-6">
         <h1 className="text-2xl font-semibold text-gray-800">{t('Sources')}</h1>
-        <p className="mt-1 text-[13px] text-gray-500">{t('Manage imported datasets and source profiles. Connection diagnostics are available in Settings.')}</p>
+        <p className="mt-1 text-[13px] text-gray-500">{t('Manage imported datasets and source profiles.')}</p>
       </div>
 
 

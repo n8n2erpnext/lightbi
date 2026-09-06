@@ -552,12 +552,70 @@ pub(crate) struct SaveProfileRequest {
     safe_mode: Option<String>,
 }
 
+const PROFILE_PUBLIC_LIST_SQL: &str = "SELECT id, name, provider, database_name, tls_mode, ssh_host, ssh_port, ssh_user, group_name, tag_name, safe_mode, created_at, updated_at FROM advanced_connection_profiles ORDER BY updated_at DESC, created_at DESC, id ASC";
+const PROFILE_PUBLIC_BY_ID_SQL: &str = "SELECT id, name, provider, database_name, tls_mode, ssh_host, ssh_port, ssh_user, group_name, tag_name, safe_mode, created_at, updated_at FROM advanced_connection_profiles WHERE id = ?";
+
+async fn list_profile_records(pool: &SqlitePool) -> Result<Vec<ConnectionProfile>, ApiError> {
+    let rows = sqlx::query(PROFILE_PUBLIC_LIST_SQL)
+        .fetch_all(pool)
+        .await
+        .map_err(|error| ApiError::storage(format!("Could not load connection profiles: {error}")))?;
+    Ok(rows.into_iter().map(profile_from_row).collect())
+}
+
+async fn load_profile_record(pool: &SqlitePool, profile_id: &str) -> Result<ConnectionProfile, ApiError> {
+    let row = sqlx::query(PROFILE_PUBLIC_BY_ID_SQL)
+        .bind(profile_id)
+        .fetch_optional(pool)
+        .await
+        .map_err(|error| ApiError::storage(format!("Could not load connection profile: {error}")))?
+        .ok_or_else(|| ApiError::bad_request("ADVANCED_PROFILE_NOT_FOUND", "Connection profile was not found."))?;
+    Ok(profile_from_row(row))
+}
+
+async fn touch_profile_last_used_at(
+    pool: &SqlitePool,
+    profile_id: &str,
+    updated_at: &str,
+) -> Result<ConnectionProfile, ApiError> {
+    let result = sqlx::query("UPDATE advanced_connection_profiles SET updated_at = ? WHERE id = ?")
+        .bind(updated_at)
+        .bind(profile_id)
+        .execute(pool)
+        .await
+        .map_err(|error| ApiError::storage(format!("Could not update connection profile last-used time: {error}")))?;
+    if result.rows_affected() == 0 {
+        return Err(ApiError::bad_request(
+            "ADVANCED_PROFILE_NOT_FOUND",
+            "Connection profile was not found.",
+        ));
+    }
+    load_profile_record(pool, profile_id).await
+}
+
+async fn delete_profile_record(pool: &SqlitePool, profile_id: &str) -> Result<(), ApiError> {
+    sqlx::query("DELETE FROM advanced_connection_profiles WHERE id = ?")
+        .bind(profile_id)
+        .execute(pool)
+        .await
+        .map_err(|error| ApiError::storage(format!("Could not delete connection profile: {error}")))?;
+    Ok(())
+}
+
 pub(crate) async fn list_profiles(
     State(state): State<Arc<AppState>>,
 ) -> Result<Json<Vec<ConnectionProfile>>, ApiError> {
-    let rows = sqlx::query("SELECT id, name, provider, database_name, tls_mode, ssh_host, ssh_port, ssh_user, group_name, tag_name, safe_mode, created_at, updated_at FROM advanced_connection_profiles ORDER BY COALESCE(group_name, ''), updated_at DESC")
-        .fetch_all(&state.context.sqlite_pool).await.map_err(|error| ApiError::storage(format!("Could not load connection profiles: {error}")))?;
-    Ok(Json(rows.into_iter().map(profile_from_row).collect()))
+    Ok(Json(list_profile_records(&state.context.sqlite_pool).await?))
+}
+
+pub(crate) async fn touch_profile(
+    State(state): State<Arc<AppState>>,
+    Path(profile_id): Path<String>,
+) -> Result<Json<ConnectionProfile>, ApiError> {
+    let now = Utc::now().to_rfc3339();
+    Ok(Json(
+        touch_profile_last_used_at(&state.context.sqlite_pool, &profile_id, &now).await?,
+    ))
 }
 
 pub(crate) async fn save_profile(
@@ -665,13 +723,7 @@ pub(crate) async fn delete_profile(
     State(state): State<Arc<AppState>>,
     Path(profile_id): Path<String>,
 ) -> Result<StatusCode, ApiError> {
-    sqlx::query("DELETE FROM advanced_connection_profiles WHERE id = ?")
-        .bind(profile_id)
-        .execute(&state.context.sqlite_pool)
-        .await
-        .map_err(|error| {
-            ApiError::storage(format!("Could not delete connection profile: {error}"))
-        })?;
+    delete_profile_record(&state.context.sqlite_pool, &profile_id).await?;
     Ok(StatusCode::NO_CONTENT)
 }
 
@@ -690,5 +742,113 @@ fn profile_from_row(row: sqlx::sqlite::SqliteRow) -> ConnectionProfile {
         safe_mode: row.get("safe_mode"),
         created_at: row.get("created_at"),
         updated_at: row.get("updated_at"),
+    }
+}
+
+#[cfg(test)]
+mod profile_tests {
+    use super::*;
+    use sqlx::sqlite::SqlitePoolOptions;
+
+    async fn profile_pool() -> SqlitePool {
+        let pool = SqlitePoolOptions::new()
+            .max_connections(1)
+            .connect("sqlite::memory:")
+            .await
+            .expect("profile sqlite pool");
+        initialize(&pool).await.expect("initialize profile tables");
+        pool
+    }
+
+    async fn insert_profile(
+        pool: &SqlitePool,
+        id: &str,
+        group_name: &str,
+        created_at: &str,
+        updated_at: &str,
+        cipher: &str,
+        nonce: &str,
+    ) {
+        sqlx::query("INSERT INTO advanced_connection_profiles (id, name, provider, database_name, tls_mode, ssh_host, ssh_port, ssh_user, group_name, tag_name, safe_mode, credential_cipher, credential_nonce, created_at, updated_at) VALUES (?, ?, 'postgresql', 'analytics', 'driver-default', NULL, NULL, NULL, ?, NULL, 'confirm_writes', ?, ?, ?, ?)")
+            .bind(id)
+            .bind(format!("Profile {id}"))
+            .bind(group_name)
+            .bind(cipher)
+            .bind(nonce)
+            .bind(created_at)
+            .bind(updated_at)
+            .execute(pool)
+            .await
+            .expect("insert profile");
+    }
+
+    #[tokio::test]
+    async fn recent_profiles_sort_by_last_used_and_never_serialize_vault_secrets() {
+        let pool = profile_pool().await;
+        insert_profile(&pool, "older", "A group", "2026-09-01T00:00:00Z", "2026-09-02T00:00:00Z", "cipher-older-secret", "nonce-older-secret").await;
+        insert_profile(&pool, "recent", "Z group", "2026-09-01T00:00:00Z", "2026-09-03T00:00:00Z", "cipher-recent-secret", "nonce-recent-secret").await;
+
+        let profiles = match list_profile_records(&pool).await {
+            Ok(profiles) => profiles,
+            Err(_) => panic!("list profiles"),
+        };
+        assert_eq!(profiles.iter().map(|profile| profile.id.as_str()).collect::<Vec<_>>(), vec!["recent", "older"]);
+
+        let public_json = serde_json::to_string(&profiles).expect("serialize public profile list");
+        for forbidden in ["credential", "cipher", "nonce", "password", "connectionUrl", "cipher-recent-secret", "nonce-recent-secret"] {
+            assert!(!public_json.contains(forbidden), "public profile list leaked {forbidden}");
+        }
+    }
+
+    #[tokio::test]
+    async fn successful_touch_updates_only_last_used_and_reorders_recent_profiles() {
+        let pool = profile_pool().await;
+        insert_profile(&pool, "target", "A", "2026-09-01T00:00:00Z", "2026-09-02T00:00:00Z", "cipher-target", "nonce-target").await;
+        insert_profile(&pool, "other", "B", "2026-09-01T00:00:00Z", "2026-09-03T00:00:00Z", "cipher-other", "nonce-other").await;
+
+        let touched = match touch_profile_last_used_at(&pool, "target", "2026-09-04T00:00:00Z").await {
+            Ok(profile) => profile,
+            Err(_) => panic!("touch target"),
+        };
+        assert_eq!(touched.updated_at, "2026-09-04T00:00:00Z");
+        assert_eq!(touched.created_at, "2026-09-01T00:00:00Z");
+
+        let other_updated_at: String = sqlx::query_scalar("SELECT updated_at FROM advanced_connection_profiles WHERE id = 'other'")
+            .fetch_one(&pool)
+            .await
+            .expect("read other timestamp");
+        assert_eq!(other_updated_at, "2026-09-03T00:00:00Z");
+        let profiles = match list_profile_records(&pool).await {
+            Ok(profiles) => profiles,
+            Err(_) => panic!("list profiles after touch"),
+        };
+        assert_eq!(profiles[0].id, "target");
+    }
+
+    #[tokio::test]
+    async fn failed_touch_preserves_existing_profile_timestamp() {
+        let pool = profile_pool().await;
+        insert_profile(&pool, "existing", "A", "2026-09-01T00:00:00Z", "2026-09-02T00:00:00Z", "cipher-existing", "nonce-existing").await;
+
+        assert!(touch_profile_last_used_at(&pool, "missing", "2026-09-05T00:00:00Z").await.is_err());
+        let updated_at: String = sqlx::query_scalar("SELECT updated_at FROM advanced_connection_profiles WHERE id = 'existing'")
+            .fetch_one(&pool)
+            .await
+            .expect("read preserved timestamp");
+        assert_eq!(updated_at, "2026-09-02T00:00:00Z");
+    }
+
+    #[tokio::test]
+    async fn deleting_profile_removes_its_encrypted_secret_row() {
+        let pool = profile_pool().await;
+        insert_profile(&pool, "delete-me", "A", "2026-09-01T00:00:00Z", "2026-09-02T00:00:00Z", "cipher-delete-secret", "nonce-delete-secret").await;
+        if delete_profile_record(&pool, "delete-me").await.is_err() {
+            panic!("delete profile");
+        }
+        let count: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM advanced_connection_profiles WHERE id = 'delete-me'")
+            .fetch_one(&pool)
+            .await
+            .expect("count deleted profile");
+        assert_eq!(count, 0);
     }
 }

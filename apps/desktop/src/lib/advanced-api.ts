@@ -391,6 +391,10 @@ export async function saveAdvancedProfile(record: {
   }));
 }
 
+export async function touchAdvancedProfile(profileId: string): Promise<AdvancedConnectionProfile> {
+  return readResponse(await fetch(`${getApiBaseUrl()}/api/advanced/profiles/${encodeURIComponent(profileId)}/touch`, { method: 'POST' }));
+}
+
 export async function deleteAdvancedProfile(profileId: string): Promise<void> {
   const response = await fetch(`${getApiBaseUrl()}/api/advanced/profiles/${encodeURIComponent(profileId)}`, { method: 'DELETE' });
   if (!response.ok) throw new Error(`Advanced API returned ${response.status}.`);

@@ -18,6 +18,7 @@ import {
   saveAdvancedFavorite,
   saveAdvancedHistory,
   saveAdvancedProfile,
+  touchAdvancedProfile,
   type AdvancedConnection,
   type AdvancedConnectionProfile,
   type AdvancedFilter,
@@ -330,6 +331,14 @@ export const Advanced: React.FC = () => {
       setConnection(nextConnection);
       const nextSchema = await loadAdvancedSchema(nextConnection.connectionId);
       setSchema(nextSchema);
+      if (profile) {
+        try {
+          const touched = await touchAdvancedProfile(profile.id);
+          setProfiles(current => [touched, ...current.filter(item => item.id !== touched.id)]);
+        } catch {
+          // The database session is already usable; keep the previous recent ordering if metadata touch fails.
+        }
+      }
       if (activeTab.title.startsWith('Query ') && !activeTab.result) {
         const defaultSql = nextConnection.provider === 'mongodb'
           ? JSON.stringify({ collection: nextSchema.schemas[0]?.tables[0]?.name || '', filter: {}, projection: {}, sort: {} }, null, 2)

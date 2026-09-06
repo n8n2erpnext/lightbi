@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { CheckCircle2, Cloud, LockKeyhole, Monitor, Network, ShieldCheck } from 'lucide-react';
+import { Building2, Cloud, Monitor, Network, ShieldCheck } from 'lucide-react';
 import { getApiBaseUrl } from '../../lib/api-base';
 import { isNativeLightBI } from '../../lib/native-runtime';
 import { lightBIDistributionApiBase } from '../../lib/lightbi-routing';
@@ -25,7 +25,7 @@ export const ConnectionSettingsPanel: React.FC<{ accountConnectionState: Connect
   return <div className="space-y-4">
     <div>
       <h2 className="text-lg font-medium text-slate-900">{t('Connection')}</h2>
-      <p className="mt-1 text-sm leading-6 text-slate-500">{t('See how LightBI connects locally and to account services. Team and Workspace connection controls can live here after v1.')}</p>
+      <p className="mt-1 text-sm leading-6 text-slate-500">{t('See how LightBI connects locally and how remote traffic is protected.')}</p>
     </div>
 
     <div className="grid gap-3 lg:grid-cols-2">
@@ -43,11 +43,18 @@ export const ConnectionSettingsPanel: React.FC<{ accountConnectionState: Connect
     </div>
 
     <div className="rounded-xl border border-slate-200 p-4">
-      <div className="flex items-start gap-3"><Network className="mt-0.5 h-5 w-5 text-violet-600"/><div className="min-w-0 flex-1"><div className="font-semibold text-slate-900">{t('Connection mode')}</div><p className="mt-1 text-sm text-slate-500">{t('LightBI 1.0 does not expose a remote plain-HTTP mode. Standard secure transport is the current authority.')}</p></div></div>
+      <div className="flex items-start gap-3"><Network className="mt-0.5 h-5 w-5 text-violet-600"/><div className="min-w-0 flex-1"><div className="font-semibold text-slate-900">{t('Connection security')}</div><p className="mt-1 text-sm text-slate-500">{t('Protected native routes do not expose an HTTPS-only downgrade switch.')}</p></div></div>
       <div className="mt-3 grid gap-2 md:grid-cols-2">
-        <div className="flex items-start gap-3 rounded-lg border border-blue-200 bg-blue-50/50 p-3"><CheckCircle2 className="mt-0.5 h-4 w-4 text-blue-700"/><div><div className="text-sm font-semibold text-slate-900">{t('Standard secure connection')}</div><div className="mt-1 text-xs leading-5 text-slate-500">{t('HTTPS + LightBI application authentication; Signed Transport is required for protected native account traffic.')}</div></div></div>
-        <div className="flex items-start gap-3 rounded-lg border border-dashed border-slate-200 bg-slate-50 p-3 opacity-75"><LockKeyhole className="mt-0.5 h-4 w-4 text-slate-500"/><div><div className="text-sm font-semibold text-slate-700">{t('Private Team / Workspace transport')}</div><div className="mt-1 text-xs leading-5 text-slate-500">{t('Planned after v1. The implementation may use WireGuard, QUIC, MASQUE, mTLS or another suitable private transport; it will remain additive to HTTPS and LightBI authorization.')}</div></div></div>
+        <div className="rounded-lg border border-blue-200 bg-blue-50/50 p-3">
+          <div className="flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-blue-700"/><div className="text-sm font-semibold text-slate-900">{t('LightBI Secure Connection')}</div><span className="rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-semibold text-blue-700">{t('Recommended / Default')}</span></div>
+          <p className="mt-2 text-xs leading-5 text-slate-600">{t('HTTPS plus device-bound Signed Transport protects native routes with replay protection and response correlation.')}</p>
+        </div>
+        <div className="rounded-lg border border-slate-200 bg-slate-50/70 p-3">
+          <div className="flex items-center gap-2"><Building2 className="h-4 w-4 text-slate-600"/><div className="text-sm font-semibold text-slate-900">{t('Enterprise network compatibility')}</div></div>
+          <p className="mt-2 text-xs leading-5 text-slate-600">{t('Native LightBI uses the system proxy and native certificate roots. Enterprise CA or TLS inspection can work through those OS settings; Signed Transport remains required, and a proxy that changes a signed query or request body is rejected.')}</p>
+        </div>
       </div>
+      <p className="mt-3 text-xs leading-5 text-slate-500">{t('Private Authenticated Transport is future Team / Workspace scope, not a current selectable mode. It may later add a private data path without replacing LightBI authorization or Signed Transport.')}</p>
     </div>
   </div>;
 };

@@ -329,6 +329,10 @@ pub async fn build_router() -> Router {
             axum::routing::delete(advanced_workspace::delete_profile),
         )
         .route(
+            "/api/advanced/profiles/:profile_id/touch",
+            post(advanced_workspace::touch_profile),
+        )
+        .route(
             "/api/project/sessions",
             get(advanced_workspace::list_workspace_sessions)
                 .post(advanced_workspace::save_workspace_session)

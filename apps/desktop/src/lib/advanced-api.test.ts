@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { createAdvancedConnection, executeAdvancedQuery, loadAdvancedProviderPlugins, loadAdvancedTableCount } from './advanced-api';
+import { createAdvancedConnection, createAdvancedConnectionFromProfile, executeAdvancedQuery, loadAdvancedProfiles, loadAdvancedProviderPlugins, loadAdvancedTableCount, touchAdvancedProfile } from './advanced-api';
 
 describe('advanced api', () => {
   afterEach(() => vi.restoreAllMocks());
@@ -16,6 +16,47 @@ describe('advanced api', () => {
 
     expect(connection).toEqual({ connectionId: 'connection-1', name: 'Warehouse', database: 'analytics', provider: 'postgresql' });
     expect(fetchMock).toHaveBeenCalledWith(expect.stringContaining('/api/advanced/connections'), expect.objectContaining({ method: 'POST' }));
+  });
+
+  it('reconnects saved profiles by profileId without sending a URL or password', async () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(JSON.stringify({
+      connectionId: 'connection-profile-1', name: 'Saved Warehouse', database: 'analytics', provider: 'postgresql'
+    }), { status: 201, headers: { 'content-type': 'application/json' } }));
+    const profile = {
+      id: 'profile-1', name: 'Saved Warehouse', provider: 'postgresql' as const, database: 'analytics', tlsMode: 'verify-full',
+      safeMode: 'confirm_writes' as const, createdAt: '2026-09-01T00:00:00Z', updatedAt: '2026-09-02T00:00:00Z'
+    };
+
+    await createAdvancedConnectionFromProfile(profile.name, profile);
+
+    const init = fetchMock.mock.calls[0][1];
+    const body = JSON.parse(String(init?.body)) as Record<string, unknown>;
+    expect(body.profileId).toBe('profile-1');
+    expect(body).not.toHaveProperty('connectionUrl');
+    expect(JSON.stringify(body)).not.toMatch(/password|secret/i);
+  });
+
+  it('touches only profile metadata and accepts a secret-free public profile response', async () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(JSON.stringify({
+      id: 'profile-1', name: 'Saved Warehouse', provider: 'postgresql', database: 'analytics', tlsMode: 'verify-full',
+      safeMode: 'confirm_writes', createdAt: '2026-09-01T00:00:00Z', updatedAt: '2026-09-04T00:00:00Z'
+    }), { status: 200, headers: { 'content-type': 'application/json' } }));
+
+    const touched = await touchAdvancedProfile('profile-1');
+
+    expect(touched.updatedAt).toBe('2026-09-04T00:00:00Z');
+    expect(fetchMock).toHaveBeenCalledWith(expect.stringContaining('/api/advanced/profiles/profile-1/touch'), { method: 'POST' });
+    expect(JSON.stringify(touched)).not.toMatch(/credential|cipher|nonce|password|connectionUrl/i);
+  });
+
+  it('keeps loaded profile contracts secret-free', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(JSON.stringify([{
+      id: 'profile-1', name: 'Saved Warehouse', provider: 'postgresql', database: 'analytics', tlsMode: 'driver-default',
+      safeMode: 'confirm_writes', createdAt: '2026-09-01T00:00:00Z', updatedAt: '2026-09-02T00:00:00Z'
+    }]), { status: 200, headers: { 'content-type': 'application/json' } }));
+
+    const profiles = await loadAdvancedProfiles();
+    expect(JSON.stringify(profiles)).not.toMatch(/credential|cipher|nonce|password|connectionUrl/i);
   });
 
   it('keeps query results in matrix form with native column metadata', async () => {

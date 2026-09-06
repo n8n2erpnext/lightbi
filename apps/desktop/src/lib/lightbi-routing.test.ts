@@ -15,7 +15,7 @@ describe('LightBI environment routing manifest', () => {
     const production = { ...lightBIRoutingProfile('production'), publicOrigin: 'https://lightbi.app' };
     const next = { ...lightBIRoutingProfile('next'), publicOrigin: 'https://next.lightbi.app' };
     expect(resolveLightBIRoutingUrl(production, 'docs')).toBe('https://lightbi.app/docs');
-    expect(resolveLightBIRoutingUrl(production, 'plans')).toBe('https://lightbi.app/distribution/#plans');
+    expect(resolveLightBIRoutingUrl(production, 'plans')).toBe('https://lightbi.app/#plans');
     expect(resolveLightBIRoutingUrl(next, 'account')).toBe('https://next.lightbi.app/account');
     expect(resolveLightBIRoutingUrl(next, 'distributionApi')).toBe('https://next.lightbi.app/distribution-api');
   });
