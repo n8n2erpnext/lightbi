@@ -2644,6 +2644,14 @@
     ,"Survey Response Count": "Số lượt phản hồi khảo sát"
     ,"Transaction": "Giao dịch"
     ,"Trip Type": "Loại hành trình"
+    ,"Enter an email address to invite.": "Nhập địa chỉ email bạn muốn mời."
+    ,"Enter a valid email address.": "Nhập một địa chỉ email hợp lệ."
+    ,"Choose a different email address. Your signed-in account cannot invite itself.": "Hãy chọn email khác. Tài khoản đang đăng nhập không thể tự mời chính mình."
+    ,"Too many invitations were sent recently. Try again later.": "Đã gửi quá nhiều lời mời trong thời gian gần đây. Hãy thử lại sau."
+    ,"LightBI invitation email is temporarily unavailable.": "Dịch vụ gửi email mời LightBI hiện tạm thời không khả dụng."
+    ,"The invitation email could not be delivered. Try again later.": "Không thể gửi email lời mời. Hãy thử lại sau."
+    ,"Sign in to LightBI before sending an invitation.": "Hãy đăng nhập LightBI trước khi gửi lời mời."
+    ,"The LightBI invitation could not be sent.": "Không thể gửi lời mời LightBI."
   },
   "patterns": [
     {

@@ -68,6 +68,11 @@ describe('LightBI account client',()=>{
     expect(request.method).toBe('POST');
     expect(JSON.parse(String(request.body))).toEqual({email:'friend@example.com'});
   });
+  it('preserves invitation server error codes for the localized presentation boundary',async()=>{
+    vi.stubGlobal('fetch',vi.fn().mockResolvedValue(new Response(JSON.stringify({error:'invite_rate_limited'}),{status:429,headers:{'content-type':'application/json'}})));
+    await expect(sendLightBIInvite('friend@example.com','https://distribution.test')).rejects.toThrow('invite_rate_limited');
+    await expect(sendLightBIInvite('   ','https://distribution.test')).rejects.toThrow('invite_email_required');
+  });
   it('signs in with email through the server-authoritative web cookie',async()=>{
     const summary={authenticated:true,account:{id:'a',email:'user@example.com',provider:'password',created_at:''},entitlement:{tier:'basic',status:'active',max_devices:1},devices:[]};
     const fetchMock=vi.fn()

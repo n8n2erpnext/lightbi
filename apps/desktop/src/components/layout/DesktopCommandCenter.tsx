@@ -174,7 +174,18 @@ export const DesktopCommandCenter: React.FC<DesktopCommandCenterProps> = ({ sign
             setInviteMessage(`${t('Invitation sent to')} ${recipient}`);
             setInviteEmail('');
           } catch (cause) {
-            setInviteError(cause instanceof Error ? cause.message : t('The invitation could not be sent.'));
+            const code = cause instanceof Error ? cause.message : 'invite_send_failed';
+            const messages: Record<string, string> = {
+              invite_email_required: t('Enter an email address to invite.'),
+              invite_email_invalid: t('Enter a valid email address.'),
+              invite_self_not_allowed: t('Choose a different email address. Your signed-in account cannot invite itself.'),
+              invite_rate_limited: t('Too many invitations were sent recently. Try again later.'),
+              invite_mail_unavailable: t('LightBI invitation email is temporarily unavailable.'),
+              invite_delivery_failed: t('The invitation email could not be delivered. Try again later.'),
+              unauthorized: t('Sign in to LightBI before sending an invitation.'),
+              invite_send_failed: t('The LightBI invitation could not be sent.'),
+            };
+            setInviteError(messages[code] ?? t('The LightBI invitation could not be sent.'));
           } finally { setInviteSending(false); }
         }}>
           <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400" htmlFor="lightbi-invite-email">{t('Email address')}</label>

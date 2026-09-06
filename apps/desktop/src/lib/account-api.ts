@@ -324,19 +324,11 @@ export async function openLightBIAccountDeviceManager(): Promise<void> {
 
 export async function sendLightBIInvite(email: string, endpoint?: string): Promise<void> {
   const recipient = email.trim().toLowerCase();
-  if (!recipient) throw new Error('Enter an email address to invite.');
+  if (!recipient) throw new Error('invite_email_required');
   const response = await accountFetch('/api/account/invitations', { method: 'POST', body: JSON.stringify({ email: recipient }) }, endpoint);
   const result = await response.json().catch(() => ({})) as { error?: string };
   if (response.ok) return;
-  const friendly: Record<string, string> = {
-    invite_email_invalid: 'Enter a valid email address.',
-    invite_self_not_allowed: 'Choose a different email address. Your signed-in account cannot invite itself.',
-    invite_rate_limited: 'Too many invitations were sent recently. Try again later.',
-    invite_mail_unavailable: 'LightBI invitation email is temporarily unavailable.',
-    invite_delivery_failed: 'The invitation email could not be delivered. Try again later.',
-    unauthorized: 'Sign in to LightBI before sending an invitation.',
-  };
-  throw new Error(result.error && friendly[result.error] ? friendly[result.error] : 'The LightBI invitation could not be sent.');
+  throw new Error(typeof result.error === 'string' && result.error ? result.error : 'invite_send_failed');
 }
 
 export async function requestLightBIPasswordReset(email: string, endpoint?: string): Promise<void> {
