@@ -1,0 +1,100 @@
+name: R1-P13 NEXT040 Acceptance Artifact Transfer
+
+on:
+  push:
+    tags:
+      - "next040-transfer-*"
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  mirror-next040-acceptance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      RUN_ID: "34004815638"
+      ARTIFACT_NAME: "LightBI-Windows-NEXT040-R1P13-Native-Trust-Acceptance"
+      EXPECTED_RUNTIME_SHA: "36b323ad05beb6b13a6b6752fda588c6dcb023a9670be84b0bb559b26115d7c1"
+      EXPECTED_RUNTIME_SIZE: "76523520"
+      EXPECTED_INSTALLER_SHA: "3ee3d10bdbc75ee14f7de12987dca136f0d7e8260aaca6a12a496f0c1de178a9"
+      EXPECTED_INSTALLER_SIZE: "31792197"
+      EXPECTED_SOURCE_SHA: "6c15ef9810e0230a50895b916f8262cd110114a6"
+      EXPECTED_CP_SHA: "ac02c7f9f943d4221328e5e0fdf819a7d50cca03"
+      EXPECTED_ORCHESTRATION_SHA: "b3bc5888c9b9117981a28d51e2666a432e71784b"
+      EXPECTED_VERSION: "0.9.2-beta.7-next.40"
+      EXPECTED_GENERATION: "g-2026-09-06-next-040"
+      AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: auto
+      R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+      R2_BUCKET: drive
+      R2_PREFIX: lightbi-next/acceptance-transfer/34004815638
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: .acceptance
+          run-id: ${{ env.RUN_ID }}
+          github-token: ${{ github.token }}
+
+      - name: Verify canonical NEXT040 NSIS-installed runtime evidence
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          cd .acceptance
+          test "$(sha256sum LightBI.exe | awk '{print $1}')" = "$EXPECTED_RUNTIME_SHA"
+          test "$(stat -c %s LightBI.exe)" = "$EXPECTED_RUNTIME_SIZE"
+          installer=$(find . -maxdepth 1 -type f -name 'LightBI-NEXT-0.9.2-beta.7-next.40-x64-setup.exe' -print -quit)
+          test -n "$installer"
+          test "$(sha256sum "$installer" | awk '{print $1}')" = "$EXPECTED_INSTALLER_SHA"
+          test "$(stat -c %s "$installer")" = "$EXPECTED_INSTALLER_SIZE"
+          jq -e \
+            --arg run "$RUN_ID" \
+            --arg runtime_sha "$EXPECTED_RUNTIME_SHA" \
+            --arg installer_sha "$EXPECTED_INSTALLER_SHA" \
+            --arg source_sha "$EXPECTED_SOURCE_SHA" \
+            --arg cp_sha "$EXPECTED_CP_SHA" \
+            --arg orchestration_sha "$EXPECTED_ORCHESTRATION_SHA" \
+            --arg version "$EXPECTED_VERSION" \
+            --arg generation "$EXPECTED_GENERATION" '
+              .run_id == $run and
+              .version == $version and
+              .generation_id == $generation and
+              .source_sha == $source_sha and
+              .control_plane_sha == $cp_sha and
+              .orchestration_sha == $orchestration_sha and
+              .runtime_sha256 == $runtime_sha and
+              .sha256 == $installer_sha and
+              .runtime_identity_source == "nsis_silent_install" and
+              .installer_payload_verified == true and
+              .production_authority == false and
+              .stable_publication_authority == false and
+              .owner_uat_accepted == false
+            ' rc-acceptance.json >/dev/null
+          echo "next040_acceptance_transfer_evidence=verified"
+
+      - name: Upload immutable private R2 transfer objects
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          endpoint="https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com"
+          cd .acceptance
+          installer="LightBI-NEXT-0.9.2-beta.7-next.40-x64-setup.exe"
+          for file in LightBI.exe rc-acceptance.json "$installer"; do
+            key="$R2_PREFIX/$file"
+            if aws s3api head-object --bucket "$R2_BUCKET" --key "$key" --endpoint-url "$endpoint" >/dev/null 2>&1; then
+              echo "immutable transfer object already exists: $key" >&2
+              exit 1
+            fi
+            case "$file" in
+              *.exe) type='application/vnd.microsoft.portable-executable' ;;
+              *.json) type='application/json' ;;
+            esac
+            aws s3 cp "$file" "s3://$R2_BUCKET/$key" --endpoint-url "$endpoint" --cache-control 'private,max-age=31536000,immutable' --content-type "$type"
+          done
+          for file in LightBI.exe rc-acceptance.json "$installer"; do
+            aws s3api head-object --bucket "$R2_BUCKET" --key "$R2_PREFIX/$file" --endpoint-url "$endpoint" >/dev/null
+          done
+          echo "private_r2_next040_acceptance_transfer=verified"
