@@ -6,3 +6,4 @@ export * from "./retrieval";
 export * from "./query-signature";
 export * from "./built-in-index";
 export * from "./evidence-bridge";
+export * from "./presentation-advisor";

@@ -1,0 +1,10 @@
+{
+  "schemaVersion": "lightbi.micro-brain.corpus.v1",
+  "corpusId": "lightbi.micro-brain.presentation.v1",
+  "version": "1.0.0",
+  "maturityLabel": "bounded-presentation-advisory",
+  "description": "Domain-aware chart grammar, perspectives, dashboard narrative and constitutional boundaries for Micro Brain presentation intelligence.",
+  "files": [
+    "presentation.semantic.v1.json"
+  ]
+}

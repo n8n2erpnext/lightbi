@@ -1,4 +1,5 @@
 import foundationIndexRaw from "./compiled/foundation.index.v1.json?raw";
+import presentationIndexRaw from "./compiled/presentation.index.v1.json?raw";
 import type { CompiledMicroBrainIndexV1 } from "./contracts";
 import { validateCompiledMicroBrainIndex } from "./index-loader";
 
@@ -10,6 +11,7 @@ export type ActiveMicroBrainPackIdentityV1 = {
 };
 
 let cachedBuiltInIndex: CompiledMicroBrainIndexV1 | null = null;
+let cachedPresentationIndex: CompiledMicroBrainIndexV1 | null = null;
 let activePack: { index: CompiledMicroBrainIndexV1; identity: ActiveMicroBrainPackIdentityV1 } | null = null;
 
 function getBundledIndex(): CompiledMicroBrainIndexV1 {
@@ -21,6 +23,17 @@ function getBundledIndex(): CompiledMicroBrainIndexV1 {
   }
   cachedBuiltInIndex = parsed;
   return cachedBuiltInIndex;
+}
+
+function getBundledPresentationIndex(): CompiledMicroBrainIndexV1 {
+  if (cachedPresentationIndex) return cachedPresentationIndex;
+  const parsed = JSON.parse(presentationIndexRaw) as CompiledMicroBrainIndexV1;
+  const validation = validateCompiledMicroBrainIndex(parsed);
+  if (!validation.valid) {
+    throw new Error(`MICRO_BRAIN_PRESENTATION_INDEX_INVALID:${validation.errors.join(",")}`);
+  }
+  cachedPresentationIndex = parsed;
+  return cachedPresentationIndex;
 }
 
 export function installActiveMicroBrainPack(
@@ -46,6 +59,10 @@ export function getBuiltInMicroBrainIndex(): CompiledMicroBrainIndexV1 {
   return activePack?.index ?? getBundledIndex();
 }
 
+export function getBuiltInMicroBrainPresentationIndex(): CompiledMicroBrainIndexV1 {
+  return getBundledPresentationIndex();
+}
+
 export function bundledMicroBrainIndexIdentity(): string {
   const index = getBundledIndex();
   return index.manifest.logicalIndexSha256 ?? index.manifest.corpusSha256;
@@ -53,5 +70,10 @@ export function bundledMicroBrainIndexIdentity(): string {
 
 export function builtInMicroBrainIndexIdentity(): string {
   const index = getBuiltInMicroBrainIndex();
+  return index.manifest.logicalIndexSha256 ?? index.manifest.corpusSha256;
+}
+
+export function builtInMicroBrainPresentationIndexIdentity(): string {
+  const index = getBundledPresentationIndex();
   return index.manifest.logicalIndexSha256 ?? index.manifest.corpusSha256;
 }

@@ -48,6 +48,34 @@ export type MicroBrainFormulaV1 = {
   blockers: string[];
 };
 
+export type MicroBrainKnowledgeLaneV1 = "semantic" | "presentation";
+export type MicroBrainPresentationAdvisoryKindV1 =
+  | "self_charter"
+  | "chart_pattern"
+  | "domain_profile"
+  | "perspective_profile"
+  | "dashboard_narrative"
+  | "anti_pattern";
+export type MicroBrainPresentationAdvisoryV1 = {
+  schemaVersion: "lightbi.micro-brain.presentation-advisory.v1";
+  advisoryKind: MicroBrainPresentationAdvisoryKindV1;
+  authority: "advisory_only";
+  analyticalIntents?: string[];
+  chartFamilies?: string[];
+  discouragedChartFamilies?: string[];
+  dashboardRoles?: string[];
+  perspectives?: string[];
+  requiredRoles?: string[];
+  optionalRoles?: string[];
+  evidenceRequirements?: string[];
+  constraints?: string[];
+  priorities?: string[];
+  may?: string[];
+  must?: string[];
+  mustNot?: string[];
+  abstainWhen?: string[];
+};
+
 export type MicroBrainKnowledgeCardV1 = {
   schemaVersion: typeof MICRO_BRAIN_KNOWLEDGE_SCHEMA_VERSION;
   id: string;
@@ -66,6 +94,8 @@ export type MicroBrainKnowledgeCardV1 = {
   blockers: string[];
   analysisClass: MicroBrainAnalysisClass;
   formula?: MicroBrainFormulaV1;
+  knowledgeLane?: MicroBrainKnowledgeLaneV1;
+  presentation?: MicroBrainPresentationAdvisoryV1;
   provenance: MicroBrainKnowledgeProvenanceV1;
 };
 export type MicroBrainKnowledgeCorpusV1 = {
@@ -153,6 +183,8 @@ export type CompiledMicroBrainIndexV1 = {
     requiredEvidence: string[];
     blockers: string[];
     formula?: MicroBrainFormulaV1 | null;
+    knowledgeLane?: MicroBrainKnowledgeLaneV1;
+    presentation?: MicroBrainPresentationAdvisoryV1;
   }>;
   units: MicroBrainRetrievalUnitV1[];
   featureVocabulary: string[];

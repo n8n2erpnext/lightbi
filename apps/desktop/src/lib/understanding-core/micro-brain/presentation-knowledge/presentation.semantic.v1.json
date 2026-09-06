@@ -1,0 +1,6346 @@
+[
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_anti_card_everywhere",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "card everywhere",
+      "presentation anti pattern"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "presentation_intelligence"
+    ],
+    "definition": "Do not turn every metric and chart into a boxed card. Prefer a coherent analytical canvas, whitespace, hierarchy and thin separators unless a card has a real interaction or grouping role.",
+    "positiveClues": [
+      "avoid misleading visual",
+      "prefer evidence driven chart"
+    ],
+    "negativeClues": [
+      "visual novelty",
+      "decorative dashboard"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "governed schema and user context"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "anti_pattern",
+      "must": [
+        "Do not turn every metric and chart into a boxed card. Prefer a coherent analytical canvas, whitespace, hierarchy and thin separators unless a card has a real interaction or grouping role."
+      ],
+      "mustNot": [
+        "choose a chart for decoration alone"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_anti_chart_diversity",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "chart diversity",
+      "presentation anti pattern"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "presentation_intelligence"
+    ],
+    "definition": "Chart diversity is not a success metric. Repeating the same chart family is correct when distinct analytical questions require it; never add donut, radar or map merely to look varied.",
+    "positiveClues": [
+      "avoid misleading visual",
+      "prefer evidence driven chart"
+    ],
+    "negativeClues": [
+      "visual novelty",
+      "decorative dashboard"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "governed schema and user context"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "anti_pattern",
+      "must": [
+        "Chart diversity is not a success metric. Repeating the same chart family is correct when distinct analytical questions require it; never add donut, radar or map merely to look varied."
+      ],
+      "mustNot": [
+        "choose a chart for decoration alone"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_anti_unsupported_donut",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "unsupported donut",
+      "presentation anti pattern"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "presentation_intelligence"
+    ],
+    "definition": "A donut requires low cardinality and a valid part-to-whole denominator; otherwise use a bar or table.",
+    "positiveClues": [
+      "avoid misleading visual",
+      "prefer evidence driven chart"
+    ],
+    "negativeClues": [
+      "visual novelty",
+      "decorative dashboard"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "governed schema and user context"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "anti_pattern",
+      "must": [
+        "A donut requires low cardinality and a valid part-to-whole denominator; otherwise use a bar or table."
+      ],
+      "mustNot": [
+        "choose a chart for decoration alone"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_anti_unsupported_map",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "unsupported map",
+      "presentation anti pattern"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "presentation_intelligence"
+    ],
+    "definition": "A map requires valid geographic evidence and a geographic question; place names, labels or decorative geographic context alone are insufficient.",
+    "positiveClues": [
+      "avoid misleading visual",
+      "prefer evidence driven chart"
+    ],
+    "negativeClues": [
+      "visual novelty",
+      "decorative dashboard"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "governed schema and user context"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "anti_pattern",
+      "must": [
+        "A map requires valid geographic evidence and a geographic question; place names, labels or decorative geographic context alone are insufficient."
+      ],
+      "mustNot": [
+        "choose a chart for decoration alone"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_anti_unsupported_radar",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "unsupported radar",
+      "presentation anti pattern"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "presentation_intelligence"
+    ],
+    "definition": "Radar requires comparable same-scale dimensions and a small dimension count; otherwise prefer bars or small multiples.",
+    "positiveClues": [
+      "avoid misleading visual",
+      "prefer evidence driven chart"
+    ],
+    "negativeClues": [
+      "visual novelty",
+      "decorative dashboard"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "governed schema and user context"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "anti_pattern",
+      "must": [
+        "Radar requires comparable same-scale dimensions and a small dimension count; otherwise prefer bars or small multiples."
+      ],
+      "mustNot": [
+        "choose a chart for decoration alone"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_chart_area",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "area",
+      "area chart",
+      "trend",
+      "balance flow"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "presentation_intelligence"
+    ],
+    "definition": "Area charts support cumulative or magnitude-focused time trends when filled area does not imply a false part-to-whole relationship.",
+    "positiveClues": [
+      "intent trend",
+      "intent balance_flow",
+      "ordered time field",
+      "numeric measure"
+    ],
+    "negativeClues": [
+      "missing required evidence",
+      "chart chosen only for visual variety"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "ordered time field",
+      "numeric measure"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "chart_pattern",
+      "analyticalIntents": [
+        "trend",
+        "balance_flow"
+      ],
+      "chartFamilies": [
+        "area"
+      ],
+      "evidenceRequirements": [
+        "ordered time field",
+        "numeric measure"
+      ],
+      "constraints": [
+        "chart selection must pass deterministic evidence validation",
+        "chart diversity is not a goal"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_chart_bar",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "bar",
+      "bar chart",
+      "category comparison",
+      "ranking"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "presentation_intelligence"
+    ],
+    "definition": "Horizontal bars are preferred for ranked categories, long labels and operational comparisons.",
+    "positiveClues": [
+      "intent category_comparison",
+      "intent ranking",
+      "categorical dimension",
+      "numeric measure"
+    ],
+    "negativeClues": [
+      "missing required evidence",
+      "chart chosen only for visual variety"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "categorical dimension",
+      "numeric measure"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "chart_pattern",
+      "analyticalIntents": [
+        "category_comparison",
+        "ranking"
+      ],
+      "chartFamilies": [
+        "bar"
+      ],
+      "evidenceRequirements": [
+        "categorical dimension",
+        "numeric measure"
+      ],
+      "constraints": [
+        "chart selection must pass deterministic evidence validation",
+        "chart diversity is not a goal"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_chart_box_plot",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "box plot",
+      "box plot chart",
+      "distribution",
+      "quality control"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "presentation_intelligence"
+    ],
+    "definition": "Box plots compare distributions and outliers across groups when users can interpret quartiles.",
+    "positiveClues": [
+      "intent distribution",
+      "intent quality_control",
+      "numeric observations",
+      "grouping dimension optional"
+    ],
+    "negativeClues": [
+      "missing required evidence",
+      "chart chosen only for visual variety"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "numeric observations",
+      "grouping dimension optional"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "chart_pattern",
+      "analyticalIntents": [
+        "distribution",
+        "quality_control"
+      ],
+      "chartFamilies": [
+        "box_plot"
+      ],
+      "evidenceRequirements": [
+        "numeric observations",
+        "grouping dimension optional"
+      ],
+      "constraints": [
+        "chart selection must pass deterministic evidence validation",
+        "chart diversity is not a goal"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_chart_bubble",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "bubble",
+      "bubble chart",
+      "relationship",
+      "risk concentration"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "presentation_intelligence"
+    ],
+    "definition": "Bubble charts add a third magnitude to a scatter only when the size encoding is meaningful and not visually overwhelming.",
+    "positiveClues": [
+      "intent relationship",
+      "intent risk_concentration",
+      "two numeric measures",
+      "size measure",
+      "entity grain"
+    ],
+    "negativeClues": [
+      "missing required evidence",
+      "chart chosen only for visual variety"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "two numeric measures",
+      "size measure",
+      "entity grain"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "chart_pattern",
+      "analyticalIntents": [
+        "relationship",
+        "risk_concentration"
+      ],
+      "chartFamilies": [
+        "bubble"
+      ],
+      "evidenceRequirements": [
+        "two numeric measures",
+        "size measure",
+        "entity grain"
+      ],
+      "constraints": [
+        "chart selection must pass deterministic evidence validation",
+        "chart diversity is not a goal"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_chart_bullet",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "bullet",
+      "bullet chart",
+      "target attainment",
+      "variance"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "presentation_intelligence"
+    ],
+    "definition": "Bullet charts compare actual against target compactly without decorative gauges.",
+    "positiveClues": [
+      "intent target_attainment",
+      "intent variance",
+      "actual measure",
+      "target or benchmark"
+    ],
+    "negativeClues": [
+      "missing required evidence",
+      "chart chosen only for visual variety"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "actual measure",
+      "target or benchmark"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "chart_pattern",
+      "analyticalIntents": [
+        "target_attainment",
+        "variance"
+      ],
+      "chartFamilies": [
+        "bullet"
+      ],
+      "evidenceRequirements": [
+        "actual measure",
+        "target or benchmark"
+      ],
+      "constraints": [
+        "chart selection must pass deterministic evidence validation",
+        "chart diversity is not a goal"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_chart_calendar_heatmap",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "calendar heatmap",
+      "calendar heatmap chart",
+      "trend",
+      "anomaly scan"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "presentation_intelligence"
+    ],
+    "definition": "Calendar heatmaps show daily seasonality and gaps across long ranges when exact daily values are secondary.",
+    "positiveClues": [
+      "intent trend",
+      "intent anomaly_scan",
+      "daily date grain",
+      "numeric measure"
+    ],
+    "negativeClues": [
+      "missing required evidence",
+      "chart chosen only for visual variety"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "daily date grain",
+      "numeric measure"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "chart_pattern",
+      "analyticalIntents": [
+        "trend",
+        "anomaly_scan"
+      ],
+      "chartFamilies": [
+        "calendar_heatmap"
+      ],
+      "evidenceRequirements": [
+        "daily date grain",
+        "numeric measure"
+      ],
+      "constraints": [
+        "chart selection must pass deterministic evidence validation",
+        "chart diversity is not a goal"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_chart_cohort_heatmap",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "cohort heatmap",
+      "cohort heatmap chart",
+      "cohort retention"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "presentation_intelligence"
+    ],
+    "definition": "Cohort heatmaps show retention or behavior by cohort and elapsed period when cohort identity is trustworthy.",
+    "positiveClues": [
+      "intent cohort_retention",
+      "cohort key",
+      "period since cohort",
+      "retention or activity measure"
+    ],
+    "negativeClues": [
+      "missing required evidence",
+      "chart chosen only for visual variety"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "cohort key",
+      "period since cohort",
+      "retention or activity measure"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "chart_pattern",
+      "analyticalIntents": [
+        "cohort_retention"
+      ],
+      "chartFamilies": [
+        "cohort_heatmap"
+      ],
+      "evidenceRequirements": [
+        "cohort key",
+        "period since cohort",
+        "retention or activity measure"
+      ],
+      "constraints": [
+        "chart selection must pass deterministic evidence validation",
+        "chart diversity is not a goal"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_chart_column",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "column",
+      "column chart",
+      "category comparison",
+      "period comparison"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "presentation_intelligence"
+    ],
+    "definition": "Columns compare a modest number of categories or discrete periods when vertical labels remain readable.",
+    "positiveClues": [
+      "intent category_comparison",
+      "intent period_comparison",
+      "categorical or discrete time dimension",
+      "numeric measure"
+    ],
+    "negativeClues": [
+      "missing required evidence",
+      "chart chosen only for visual variety"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "categorical or discrete time dimension",
+      "numeric measure"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "chart_pattern",
+      "analyticalIntents": [
+        "category_comparison",
+        "period_comparison"
+      ],
+      "chartFamilies": [
+        "column"
+      ],
+      "evidenceRequirements": [
+        "categorical or discrete time dimension",
+        "numeric measure"
+      ],
+      "constraints": [
+        "chart selection must pass deterministic evidence validation",
+        "chart diversity is not a goal"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_chart_combo_bar_line",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "combo bar line",
+      "combo bar line chart",
+      "target attainment",
+      "relationship",
+      "period comparison"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "presentation_intelligence"
+    ],
+    "definition": "Bar-line combo is useful for amount plus rate or actual plus target when axes and units are explicit.",
+    "positiveClues": [
+      "intent target_attainment",
+      "intent relationship",
+      "intent period_comparison",
+      "shared ordered dimension",
+      "two compatible analytical measures"
+    ],
+    "negativeClues": [
+      "missing required evidence",
+      "chart chosen only for visual variety"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "shared ordered dimension",
+      "two compatible analytical measures"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "chart_pattern",
+      "analyticalIntents": [
+        "target_attainment",
+        "relationship",
+        "period_comparison"
+      ],
+      "chartFamilies": [
+        "combo_bar_line"
+      ],
+      "evidenceRequirements": [
+        "shared ordered dimension",
+        "two compatible analytical measures"
+      ],
+      "constraints": [
+        "chart selection must pass deterministic evidence validation",
+        "chart diversity is not a goal"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_chart_control_chart",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "control chart",
+      "control chart chart",
+      "quality control",
+      "anomaly scan"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "presentation_intelligence"
+    ],
+    "definition": "Control charts support process stability analysis only when limits or baselines are governed rather than guessed.",
+    "positiveClues": [
+      "intent quality_control",
+      "intent anomaly_scan",
+      "ordered measurements",
+      "validated control limits or governed baseline"
+    ],
+    "negativeClues": [
+      "missing required evidence",
+      "chart chosen only for visual variety"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "ordered measurements",
+      "validated control limits or governed baseline"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "chart_pattern",
+      "analyticalIntents": [
+        "quality_control",
+        "anomaly_scan"
+      ],
+      "chartFamilies": [
+        "control_chart"
+      ],
+      "evidenceRequirements": [
+        "ordered measurements",
+        "validated control limits or governed baseline"
+      ],
+      "constraints": [
+        "chart selection must pass deterministic evidence validation",
+        "chart diversity is not a goal"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_chart_diverging_bar",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "diverging bar",
+      "diverging bar chart",
+      "variance",
+      "period comparison"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "presentation_intelligence"
+    ],
+    "definition": "Diverging bars emphasize values around a meaningful zero, baseline or benchmark.",
+    "positiveClues": [
+      "intent variance",
+      "intent period_comparison",
+      "signed or centered measure",
+      "comparison dimension"
+    ],
+    "negativeClues": [
+      "missing required evidence",
+      "chart chosen only for visual variety"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "signed or centered measure",
+      "comparison dimension"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "chart_pattern",
+      "analyticalIntents": [
+        "variance",
+        "period_comparison"
+      ],
+      "chartFamilies": [
+        "diverging_bar"
+      ],
+      "evidenceRequirements": [
+        "signed or centered measure",
+        "comparison dimension"
+      ],
+      "constraints": [
+        "chart selection must pass deterministic evidence validation",
+        "chart diversity is not a goal"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_chart_donut",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "donut",
+      "donut chart",
+      "composition"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "presentation_intelligence"
+    ],
+    "definition": "Donut is conditional: only for a small, understandable set of parts with a trustworthy whole; prefer bars for precise comparison.",
+    "positiveClues": [
+      "intent composition",
+      "low cardinality exhaustive categories",
+      "valid part-to-whole measure"
+    ],
+    "negativeClues": [
+      "missing required evidence",
+      "chart chosen only for visual variety"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "low cardinality exhaustive categories",
+      "valid part-to-whole measure"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "chart_pattern",
+      "analyticalIntents": [
+        "composition"
+      ],
+      "chartFamilies": [
+        "donut"
+      ],
+      "evidenceRequirements": [
+        "low cardinality exhaustive categories",
+        "valid part-to-whole measure"
+      ],
+      "constraints": [
+        "chart selection must pass deterministic evidence validation",
+        "chart diversity is not a goal"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_chart_funnel",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "funnel",
+      "funnel chart"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "presentation_intelligence"
+    ],
+    "definition": "Funnels show attrition through ordered stages only when stage definitions and population basis are consistent.",
+    "positiveClues": [
+      "intent funnel",
+      "ordered process stages",
+      "comparable population basis"
+    ],
+    "negativeClues": [
+      "missing required evidence",
+      "chart chosen only for visual variety"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "ordered process stages",
+      "comparable population basis"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "chart_pattern",
+      "analyticalIntents": [
+        "funnel"
+      ],
+      "chartFamilies": [
+        "funnel"
+      ],
+      "evidenceRequirements": [
+        "ordered process stages",
+        "comparable population basis"
+      ],
+      "constraints": [
+        "chart selection must pass deterministic evidence validation",
+        "chart diversity is not a goal"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_chart_grouped_bar",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "grouped bar",
+      "grouped bar chart",
+      "category comparison",
+      "period comparison"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "presentation_intelligence"
+    ],
+    "definition": "Grouped bars compare a small number of series across categories without implying composition.",
+    "positiveClues": [
+      "intent category_comparison",
+      "intent period_comparison",
+      "categorical dimension",
+      "small series dimension",
+      "numeric measure"
+    ],
+    "negativeClues": [
+      "missing required evidence",
+      "chart chosen only for visual variety"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "categorical dimension",
+      "small series dimension",
+      "numeric measure"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "chart_pattern",
+      "analyticalIntents": [
+        "category_comparison",
+        "period_comparison"
+      ],
+      "chartFamilies": [
+        "grouped_bar"
+      ],
+      "evidenceRequirements": [
+        "categorical dimension",
+        "small series dimension",
+        "numeric measure"
+      ],
+      "constraints": [
+        "chart selection must pass deterministic evidence validation",
+        "chart diversity is not a goal"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_chart_heatmap",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "heatmap",
+      "heatmap chart",
+      "anomaly scan",
+      "capacity utilization",
+      "quality control"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "presentation_intelligence"
+    ],
+    "definition": "Heatmaps reveal dense patterns across two discrete dimensions such as hour by weekday, machine by shift or region by period.",
+    "positiveClues": [
+      "intent anomaly_scan",
+      "intent capacity_utilization",
+      "intent quality_control",
+      "two discrete dimensions",
+      "numeric intensity measure"
+    ],
+    "negativeClues": [
+      "missing required evidence",
+      "chart chosen only for visual variety"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "two discrete dimensions",
+      "numeric intensity measure"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "chart_pattern",
+      "analyticalIntents": [
+        "anomaly_scan",
+        "capacity_utilization",
+        "quality_control"
+      ],
+      "chartFamilies": [
+        "heatmap"
+      ],
+      "evidenceRequirements": [
+        "two discrete dimensions",
+        "numeric intensity measure"
+      ],
+      "constraints": [
+        "chart selection must pass deterministic evidence validation",
+        "chart diversity is not a goal"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_chart_histogram",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "histogram",
+      "histogram chart",
+      "distribution",
+      "aging",
+      "process time"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "presentation_intelligence"
+    ],
+    "definition": "Histogram reveals distribution shape, age bands, lead time or duration without ranking individual records.",
+    "positiveClues": [
+      "intent distribution",
+      "intent aging",
+      "intent process_time",
+      "numeric observations",
+      "meaningful bins"
+    ],
+    "negativeClues": [
+      "missing required evidence",
+      "chart chosen only for visual variety"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "numeric observations",
+      "meaningful bins"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "chart_pattern",
+      "analyticalIntents": [
+        "distribution",
+        "aging",
+        "process_time"
+      ],
+      "chartFamilies": [
+        "histogram"
+      ],
+      "evidenceRequirements": [
+        "numeric observations",
+        "meaningful bins"
+      ],
+      "constraints": [
+        "chart selection must pass deterministic evidence validation",
+        "chart diversity is not a goal"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_chart_line",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "line",
+      "line chart",
+      "trend",
+      "period comparison"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "presentation_intelligence"
+    ],
+    "definition": "Use line charts for continuous or ordered temporal trends with compatible units and a meaningful sequence.",
+    "positiveClues": [
+      "intent trend",
+      "intent period_comparison",
+      "ordered time field",
+      "numeric measure"
+    ],
+    "negativeClues": [
+      "missing required evidence",
+      "chart chosen only for visual variety"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "ordered time field",
+      "numeric measure"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "chart_pattern",
+      "analyticalIntents": [
+        "trend",
+        "period_comparison"
+      ],
+      "chartFamilies": [
+        "line"
+      ],
+      "evidenceRequirements": [
+        "ordered time field",
+        "numeric measure"
+      ],
+      "constraints": [
+        "chart selection must pass deterministic evidence validation",
+        "chart diversity is not a goal"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_chart_map",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "map",
+      "map chart",
+      "geospatial"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "presentation_intelligence"
+    ],
+    "definition": "Maps are appropriate only when geography materially answers the question and locations are valid; never use maps as decoration.",
+    "positiveClues": [
+      "intent geospatial",
+      "validated geographic dimension",
+      "numeric or categorical encoding"
+    ],
+    "negativeClues": [
+      "missing required evidence",
+      "chart chosen only for visual variety"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "validated geographic dimension",
+      "numeric or categorical encoding"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "chart_pattern",
+      "analyticalIntents": [
+        "geospatial"
+      ],
+      "chartFamilies": [
+        "map"
+      ],
+      "evidenceRequirements": [
+        "validated geographic dimension",
+        "numeric or categorical encoding"
+      ],
+      "constraints": [
+        "chart selection must pass deterministic evidence validation",
+        "chart diversity is not a goal"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_chart_normalized_stacked",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "normalized stacked",
+      "normalized stacked chart",
+      "composition",
+      "composition over time"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "presentation_intelligence"
+    ],
+    "definition": "Use 100 percent stacking only when the denominator is valid and the parts represent the intended whole.",
+    "positiveClues": [
+      "intent composition",
+      "intent composition_over_time",
+      "dimension",
+      "part measure",
+      "complete or explicitly scoped denominator"
+    ],
+    "negativeClues": [
+      "missing required evidence",
+      "chart chosen only for visual variety"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "dimension",
+      "part measure",
+      "complete or explicitly scoped denominator"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "chart_pattern",
+      "analyticalIntents": [
+        "composition",
+        "composition_over_time"
+      ],
+      "chartFamilies": [
+        "normalized_stacked"
+      ],
+      "evidenceRequirements": [
+        "dimension",
+        "part measure",
+        "complete or explicitly scoped denominator"
+      ],
+      "constraints": [
+        "chart selection must pass deterministic evidence validation",
+        "chart diversity is not a goal"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_chart_number",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "number",
+      "number chart",
+      "single value",
+      "target attainment"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "presentation_intelligence"
+    ],
+    "definition": "A number card emphasizes one governed value; add delta or sparkline only when a valid comparison or time series exists.",
+    "positiveClues": [
+      "intent single_value",
+      "intent target_attainment",
+      "one governed scalar measure"
+    ],
+    "negativeClues": [
+      "missing required evidence",
+      "chart chosen only for visual variety"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "one governed scalar measure"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "chart_pattern",
+      "analyticalIntents": [
+        "single_value",
+        "target_attainment"
+      ],
+      "chartFamilies": [
+        "number"
+      ],
+      "evidenceRequirements": [
+        "one governed scalar measure"
+      ],
+      "constraints": [
+        "chart selection must pass deterministic evidence validation",
+        "chart diversity is not a goal"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_chart_pareto",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "pareto",
+      "pareto chart",
+      "risk concentration"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "presentation_intelligence"
+    ],
+    "definition": "Pareto combines descending contribution with cumulative share to expose concentration and priority candidates.",
+    "positiveClues": [
+      "intent pareto",
+      "intent risk_concentration",
+      "ranked categories",
+      "numeric contribution"
+    ],
+    "negativeClues": [
+      "missing required evidence",
+      "chart chosen only for visual variety"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "ranked categories",
+      "numeric contribution"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "chart_pattern",
+      "analyticalIntents": [
+        "pareto",
+        "risk_concentration"
+      ],
+      "chartFamilies": [
+        "pareto"
+      ],
+      "evidenceRequirements": [
+        "ranked categories",
+        "numeric contribution"
+      ],
+      "constraints": [
+        "chart selection must pass deterministic evidence validation",
+        "chart diversity is not a goal"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_chart_radar",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "radar",
+      "radar chart",
+      "category comparison"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "presentation_intelligence"
+    ],
+    "definition": "Radar is highly conditional and only suitable for a small set of comparable dimensions on a common normalized scale; bars are usually clearer.",
+    "positiveClues": [
+      "intent category_comparison",
+      "same-scale comparable dimensions",
+      "small dimension count"
+    ],
+    "negativeClues": [
+      "missing required evidence",
+      "chart chosen only for visual variety"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "same-scale comparable dimensions",
+      "small dimension count"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "chart_pattern",
+      "analyticalIntents": [
+        "category_comparison"
+      ],
+      "chartFamilies": [
+        "radar"
+      ],
+      "evidenceRequirements": [
+        "same-scale comparable dimensions",
+        "small dimension count"
+      ],
+      "constraints": [
+        "chart selection must pass deterministic evidence validation",
+        "chart diversity is not a goal"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_chart_sankey",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "sankey",
+      "sankey chart",
+      "flow"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "presentation_intelligence"
+    ],
+    "definition": "Sankey diagrams require genuine source-to-target flow records; similar labels across files are not enough to create a flow.",
+    "positiveClues": [
+      "intent flow",
+      "validated source nodes",
+      "validated target nodes",
+      "flow measure"
+    ],
+    "negativeClues": [
+      "missing required evidence",
+      "chart chosen only for visual variety"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "validated source nodes",
+      "validated target nodes",
+      "flow measure"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "chart_pattern",
+      "analyticalIntents": [
+        "flow"
+      ],
+      "chartFamilies": [
+        "sankey"
+      ],
+      "evidenceRequirements": [
+        "validated source nodes",
+        "validated target nodes",
+        "flow measure"
+      ],
+      "constraints": [
+        "chart selection must pass deterministic evidence validation",
+        "chart diversity is not a goal"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_chart_scatter",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "scatter",
+      "scatter chart",
+      "relationship"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "presentation_intelligence"
+    ],
+    "definition": "Scatter plots explore association between two numeric measures at the same entity grain; association is not causation.",
+    "positiveClues": [
+      "intent relationship",
+      "two numeric measures at compatible grain"
+    ],
+    "negativeClues": [
+      "missing required evidence",
+      "chart chosen only for visual variety"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "two numeric measures at compatible grain"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "chart_pattern",
+      "analyticalIntents": [
+        "relationship"
+      ],
+      "chartFamilies": [
+        "scatter"
+      ],
+      "evidenceRequirements": [
+        "two numeric measures at compatible grain"
+      ],
+      "constraints": [
+        "chart selection must pass deterministic evidence validation",
+        "chart diversity is not a goal"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_chart_small_multiples",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "small multiples",
+      "small multiples chart",
+      "trend",
+      "category comparison"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "presentation_intelligence"
+    ],
+    "definition": "Small multiples compare repeated patterns across entities while preserving a common visual grammar.",
+    "positiveClues": [
+      "intent trend",
+      "intent category_comparison",
+      "shared measure and axes",
+      "moderate facet dimension"
+    ],
+    "negativeClues": [
+      "missing required evidence",
+      "chart chosen only for visual variety"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "shared measure and axes",
+      "moderate facet dimension"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "chart_pattern",
+      "analyticalIntents": [
+        "trend",
+        "category_comparison"
+      ],
+      "chartFamilies": [
+        "small_multiples"
+      ],
+      "evidenceRequirements": [
+        "shared measure and axes",
+        "moderate facet dimension"
+      ],
+      "constraints": [
+        "chart selection must pass deterministic evidence validation",
+        "chart diversity is not a goal"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_chart_sparkline",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "sparkline",
+      "sparkline chart",
+      "trend"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "presentation_intelligence"
+    ],
+    "definition": "A sparkline shows compact direction next to a KPI and should not replace a full chart when precise comparison matters.",
+    "positiveClues": [
+      "intent trend",
+      "ordered time field",
+      "numeric measure"
+    ],
+    "negativeClues": [
+      "missing required evidence",
+      "chart chosen only for visual variety"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "ordered time field",
+      "numeric measure"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "chart_pattern",
+      "analyticalIntents": [
+        "trend"
+      ],
+      "chartFamilies": [
+        "sparkline"
+      ],
+      "evidenceRequirements": [
+        "ordered time field",
+        "numeric measure"
+      ],
+      "constraints": [
+        "chart selection must pass deterministic evidence validation",
+        "chart diversity is not a goal"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_chart_stacked_bar",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "stacked bar",
+      "stacked bar chart",
+      "composition",
+      "category comparison"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "presentation_intelligence"
+    ],
+    "definition": "Stacked bars show category totals and their components when absolute contribution matters.",
+    "positiveClues": [
+      "intent composition",
+      "intent category_comparison",
+      "category dimension",
+      "series dimension",
+      "numeric measure"
+    ],
+    "negativeClues": [
+      "missing required evidence",
+      "chart chosen only for visual variety"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "category dimension",
+      "series dimension",
+      "numeric measure"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "chart_pattern",
+      "analyticalIntents": [
+        "composition",
+        "category_comparison"
+      ],
+      "chartFamilies": [
+        "stacked_bar"
+      ],
+      "evidenceRequirements": [
+        "category dimension",
+        "series dimension",
+        "numeric measure"
+      ],
+      "constraints": [
+        "chart selection must pass deterministic evidence validation",
+        "chart diversity is not a goal"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_chart_stacked_column",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "stacked column",
+      "stacked column chart",
+      "composition over time"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "presentation_intelligence"
+    ],
+    "definition": "Stacked columns show changing absolute composition across discrete periods.",
+    "positiveClues": [
+      "intent composition_over_time",
+      "ordered time field",
+      "series dimension",
+      "numeric measure"
+    ],
+    "negativeClues": [
+      "missing required evidence",
+      "chart chosen only for visual variety"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "ordered time field",
+      "series dimension",
+      "numeric measure"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "chart_pattern",
+      "analyticalIntents": [
+        "composition_over_time"
+      ],
+      "chartFamilies": [
+        "stacked_column"
+      ],
+      "evidenceRequirements": [
+        "ordered time field",
+        "series dimension",
+        "numeric measure"
+      ],
+      "constraints": [
+        "chart selection must pass deterministic evidence validation",
+        "chart diversity is not a goal"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_chart_table",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "table",
+      "table chart",
+      "evidence detail",
+      "ranking"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "presentation_intelligence"
+    ],
+    "definition": "Tables are the default for precise evidence, many attributes and drill-down where graphical encoding would hide detail.",
+    "positiveClues": [
+      "intent evidence_detail",
+      "intent ranking",
+      "record or grouped evidence"
+    ],
+    "negativeClues": [
+      "missing required evidence",
+      "chart chosen only for visual variety"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "record or grouped evidence"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "chart_pattern",
+      "analyticalIntents": [
+        "evidence_detail",
+        "ranking"
+      ],
+      "chartFamilies": [
+        "table"
+      ],
+      "evidenceRequirements": [
+        "record or grouped evidence"
+      ],
+      "constraints": [
+        "chart selection must pass deterministic evidence validation",
+        "chart diversity is not a goal"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_chart_timeline",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "timeline",
+      "timeline chart",
+      "schedule",
+      "process time"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "presentation_intelligence"
+    ],
+    "definition": "Timelines show ordered events, intervals or milestones when temporal sequence is the analytical object.",
+    "positiveClues": [
+      "intent schedule",
+      "intent process_time",
+      "event timestamp or interval",
+      "entity or status"
+    ],
+    "negativeClues": [
+      "missing required evidence",
+      "chart chosen only for visual variety"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "event timestamp or interval",
+      "entity or status"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "chart_pattern",
+      "analyticalIntents": [
+        "schedule",
+        "process_time"
+      ],
+      "chartFamilies": [
+        "timeline"
+      ],
+      "evidenceRequirements": [
+        "event timestamp or interval",
+        "entity or status"
+      ],
+      "constraints": [
+        "chart selection must pass deterministic evidence validation",
+        "chart diversity is not a goal"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_chart_waterfall",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "waterfall",
+      "waterfall chart",
+      "contribution",
+      "variance",
+      "balance flow"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "presentation_intelligence"
+    ],
+    "definition": "Waterfall explains additive positive and negative contributions or bridges between reconciled values.",
+    "positiveClues": [
+      "intent contribution",
+      "intent variance",
+      "intent balance_flow",
+      "ordered signed contributions",
+      "reconciled start or end value"
+    ],
+    "negativeClues": [
+      "missing required evidence",
+      "chart chosen only for visual variety"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "ordered signed contributions",
+      "reconciled start or end value"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "chart_pattern",
+      "analyticalIntents": [
+        "contribution",
+        "variance",
+        "balance_flow"
+      ],
+      "chartFamilies": [
+        "waterfall"
+      ],
+      "evidenceRequirements": [
+        "ordered signed contributions",
+        "reconciled start or end value"
+      ],
+      "constraints": [
+        "chart selection must pass deterministic evidence validation",
+        "chart diversity is not a goal"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_charter_abstention",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "Micro Brain abstention",
+      "say unavailable",
+      "insufficient evidence"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "presentation_intelligence"
+    ],
+    "definition": "When required evidence, grain, unit, time basis or entity identity is missing or contradictory, Micro Brain should abstain and explain what evidence is needed instead of manufacturing a chart story.",
+    "positiveClues": [
+      "missing evidence",
+      "contradictory evidence",
+      "needs field",
+      "cannot support"
+    ],
+    "negativeClues": [
+      "fill missing data",
+      "guess grain",
+      "assume entity identity"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "governed schema and user context"
+    ],
+    "blockers": [
+      "required evidence is missing",
+      "entity identity is ambiguous",
+      "grain or unit conflicts",
+      "time basis is incompatible"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "self_charter",
+      "must": [
+        "preserve uncertainty",
+        "name missing evidence"
+      ],
+      "abstainWhen": [
+        "required evidence is missing",
+        "entity identity is ambiguous",
+        "grain or unit conflicts",
+        "time basis is incompatible"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_charter_authority",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "Micro Brain authority",
+      "authority chain",
+      "metric authority boundary"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "presentation_intelligence"
+    ],
+    "definition": "Authority order is user selected domain and perspective, governed schema and metrics, canonical semantics, domain rules, Micro Brain advice, then UI heuristics. Micro Brain participates in Dashboard Intelligence but never Metric Authority.",
+    "positiveClues": [
+      "user selected domain",
+      "governed metric",
+      "canonical semantics",
+      "advisory ranking"
+    ],
+    "negativeClues": [
+      "override user perspective",
+      "authorize metric",
+      "replace schema"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "governed schema and user context"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "self_charter",
+      "must": [
+        "preserve authority order",
+        "treat retrieval similarity as advice not evidence"
+      ],
+      "mustNot": [
+        "authorize an ungoverned metric",
+        "override user selected domain or perspective",
+        "upgrade similarity to evidence"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_charter_identity",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "Micro Brain identity",
+      "presentation advisor",
+      "LightBI local advisory memory"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "presentation_intelligence"
+    ],
+    "definition": "Micro Brain is a local deterministic advisory memory that helps LightBI recall semantics and plan truthful domain-aware presentation; it is not an autonomous authority or a conscious agent.",
+    "positiveClues": [
+      "local deterministic advisory",
+      "semantic recall",
+      "presentation intelligence",
+      "truthful explanation"
+    ],
+    "negativeClues": [
+      "autonomous authority",
+      "conscious agent",
+      "self governing metric engine"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "governed schema and user context"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "self_charter",
+      "priorities": [
+        "truth before visual novelty",
+        "evidence before inference",
+        "user intent before advisory preference"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_charter_mission",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "Micro Brain mission",
+      "reason for existence",
+      "trusted insight mission"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "presentation_intelligence"
+    ],
+    "definition": "Its mission is to help LightBI turn available evidence into understandable analytical intent, chart candidates, dashboard narrative and explicit evidence gaps without inventing business truth.",
+    "positiveClues": [
+      "understand data",
+      "domain aware presentation",
+      "analytical intent",
+      "evidence gap"
+    ],
+    "negativeClues": [
+      "invent metric",
+      "decorate dashboard",
+      "maximize chart variety"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "governed schema and user context"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "self_charter",
+      "may": [
+        "rank analytical intents",
+        "rank chart families",
+        "suggest dashboard narrative",
+        "surface missing evidence",
+        "abstain"
+      ],
+      "priorities": [
+        "trusted insight",
+        "domain relevance",
+        "explainability"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_charter_prohibitions",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "Micro Brain prohibitions",
+      "must not",
+      "forbidden authority"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "presentation_intelligence"
+    ],
+    "definition": "Micro Brain must not invent numbers or metrics, authorize ungoverned aggregation or formulas, join unrelated sources, infer causality from correlation, hide evidence gaps, mutate itself from user data, or perform online self-training.",
+    "positiveClues": [
+      "must not invent",
+      "must not join",
+      "must not self train",
+      "must preserve evidence gaps"
+    ],
+    "negativeClues": [
+      "hallucinated metric",
+      "automatic online learning",
+      "silent cross file join"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "governed schema and user context"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "self_charter",
+      "mustNot": [
+        "invent metrics or numbers",
+        "authorize ungoverned aggregation or formula",
+        "join unrelated sources",
+        "infer causality from correlation",
+        "hide evidence gaps",
+        "self train from user data",
+        "mutate runtime knowledge"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_charter_responsibilities",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "Micro Brain responsibilities",
+      "presentation responsibilities",
+      "duties"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "presentation_intelligence"
+    ],
+    "definition": "Micro Brain may recognize domain vocabulary, rank analytical intents and chart families, suggest narrative order, detect presentation redundancy and recommend abstention when evidence is insufficient.",
+    "positiveClues": [
+      "rank candidates",
+      "domain vocabulary",
+      "narrative order",
+      "presentation redundancy"
+    ],
+    "negativeClues": [
+      "compute ledger truth",
+      "write source data",
+      "decide unsupported formula"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "governed schema and user context"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "self_charter",
+      "may": [
+        "recognize domain context",
+        "rank presentation candidates",
+        "suggest alternatives",
+        "flag redundancy",
+        "abstain"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_charter_runtime_discipline",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "Micro Brain runtime discipline",
+      "offline deterministic",
+      "no online learning"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "presentation_intelligence"
+    ],
+    "definition": "Bundled and signed Micro Brain knowledge is versioned, deterministic, local-first and read-only at runtime; user data may be queried but must not silently retrain or mutate the knowledge pack.",
+    "positiveClues": [
+      "offline",
+      "deterministic",
+      "versioned pack",
+      "read only runtime"
+    ],
+    "negativeClues": [
+      "background model download without policy",
+      "silent retraining",
+      "user data mutation"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "governed schema and user context"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "self_charter",
+      "must": [
+        "operate deterministically",
+        "remain local first",
+        "use versioned validated knowledge"
+      ],
+      "mustNot": [
+        "silently retrain from user data",
+        "mutate validated knowledge at runtime"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_domain_agriculture",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "agriculture",
+      "farm",
+      "crop"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "agriculture",
+      "presentation_intelligence"
+    ],
+    "definition": "Domain profile for agriculture prioritizes analytical intents and chart families that commonly answer operational questions, subject to actual schema, governed metrics and the selected user perspective.",
+    "positiveClues": [
+      "agriculture",
+      "farm",
+      "crop",
+      "trend",
+      "relationship",
+      "anomaly scan",
+      "geospatial",
+      "distribution",
+      "line chart",
+      "scatter chart",
+      "heatmap chart",
+      "map chart",
+      "histogram chart"
+    ],
+    "negativeClues": [
+      "generic dashboard regardless of domain",
+      "decorative chart selection",
+      "unsupported domain assumption"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "governed schema and user context"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "domain_profile",
+      "analyticalIntents": [
+        "trend",
+        "relationship",
+        "anomaly_scan",
+        "geospatial",
+        "distribution"
+      ],
+      "chartFamilies": [
+        "line",
+        "scatter",
+        "heatmap",
+        "map",
+        "histogram"
+      ],
+      "constraints": [
+        "user selected perspective overrides default domain emphasis",
+        "domain preference never authorizes a metric"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_domain_banking_financial_services",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "banking",
+      "financial services",
+      "bank"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "banking_financial_services",
+      "presentation_intelligence"
+    ],
+    "definition": "Domain profile for banking prioritizes analytical intents and chart families that commonly answer operational questions, subject to actual schema, governed metrics and the selected user perspective.",
+    "positiveClues": [
+      "banking",
+      "financial services",
+      "bank",
+      "trend",
+      "risk concentration",
+      "funnel",
+      "distribution",
+      "evidence detail",
+      "line chart",
+      "pareto chart",
+      "funnel chart",
+      "histogram chart",
+      "table chart"
+    ],
+    "negativeClues": [
+      "generic dashboard regardless of domain",
+      "decorative chart selection",
+      "unsupported domain assumption"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "governed schema and user context"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "domain_profile",
+      "analyticalIntents": [
+        "trend",
+        "risk_concentration",
+        "funnel",
+        "distribution",
+        "evidence_detail"
+      ],
+      "chartFamilies": [
+        "line",
+        "pareto",
+        "funnel",
+        "histogram",
+        "table"
+      ],
+      "constraints": [
+        "user selected perspective overrides default domain emphasis",
+        "domain preference never authorizes a metric"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_domain_construction",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "construction",
+      "site",
+      "project construction"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "construction",
+      "presentation_intelligence"
+    ],
+    "definition": "Domain profile for construction prioritizes analytical intents and chart families that commonly answer operational questions, subject to actual schema, governed metrics and the selected user perspective.",
+    "positiveClues": [
+      "construction",
+      "site",
+      "project construction",
+      "schedule",
+      "variance",
+      "target attainment",
+      "trend",
+      "risk concentration",
+      "timeline chart",
+      "diverging bar chart",
+      "bullet chart",
+      "line chart",
+      "pareto chart"
+    ],
+    "negativeClues": [
+      "generic dashboard regardless of domain",
+      "decorative chart selection",
+      "unsupported domain assumption"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "governed schema and user context"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "domain_profile",
+      "analyticalIntents": [
+        "schedule",
+        "variance",
+        "target_attainment",
+        "trend",
+        "risk_concentration"
+      ],
+      "chartFamilies": [
+        "timeline",
+        "diverging_bar",
+        "bullet",
+        "line",
+        "pareto"
+      ],
+      "constraints": [
+        "user selected perspective overrides default domain emphasis",
+        "domain preference never authorizes a metric"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_domain_customer_crm_support",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "crm",
+      "customer support",
+      "customer service"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "customer_crm_support",
+      "presentation_intelligence"
+    ],
+    "definition": "Domain profile for crm prioritizes analytical intents and chart families that commonly answer operational questions, subject to actual schema, governed metrics and the selected user perspective.",
+    "positiveClues": [
+      "crm",
+      "customer support",
+      "customer service",
+      "trend",
+      "funnel",
+      "process time",
+      "ranking",
+      "distribution",
+      "line chart",
+      "funnel chart",
+      "histogram chart",
+      "bar chart",
+      "box plot chart"
+    ],
+    "negativeClues": [
+      "generic dashboard regardless of domain",
+      "decorative chart selection",
+      "unsupported domain assumption"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "governed schema and user context"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "domain_profile",
+      "analyticalIntents": [
+        "trend",
+        "funnel",
+        "process_time",
+        "ranking",
+        "distribution"
+      ],
+      "chartFamilies": [
+        "line",
+        "funnel",
+        "histogram",
+        "bar",
+        "box_plot"
+      ],
+      "constraints": [
+        "user selected perspective overrides default domain emphasis",
+        "domain preference never authorizes a metric"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_domain_cybersecurity_it_ops",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "cybersecurity",
+      "it operations",
+      "observability"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "cybersecurity_it_ops",
+      "presentation_intelligence"
+    ],
+    "definition": "Domain profile for cybersecurity prioritizes analytical intents and chart families that commonly answer operational questions, subject to actual schema, governed metrics and the selected user perspective.",
+    "positiveClues": [
+      "cybersecurity",
+      "it operations",
+      "observability",
+      "trend",
+      "anomaly scan",
+      "risk concentration",
+      "distribution",
+      "process time",
+      "line chart",
+      "heatmap chart",
+      "pareto chart",
+      "histogram chart",
+      "timeline chart"
+    ],
+    "negativeClues": [
+      "generic dashboard regardless of domain",
+      "decorative chart selection",
+      "unsupported domain assumption"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "governed schema and user context"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "domain_profile",
+      "analyticalIntents": [
+        "trend",
+        "anomaly_scan",
+        "risk_concentration",
+        "distribution",
+        "process_time"
+      ],
+      "chartFamilies": [
+        "line",
+        "heatmap",
+        "pareto",
+        "histogram",
+        "timeline"
+      ],
+      "constraints": [
+        "user selected perspective overrides default domain emphasis",
+        "domain preference never authorizes a metric"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_domain_education",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "education",
+      "school",
+      "learning"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "education",
+      "presentation_intelligence"
+    ],
+    "definition": "Domain profile for education prioritizes analytical intents and chart families that commonly answer operational questions, subject to actual schema, governed metrics and the selected user perspective.",
+    "positiveClues": [
+      "education",
+      "school",
+      "learning",
+      "trend",
+      "distribution",
+      "cohort retention",
+      "ranking",
+      "target attainment",
+      "line chart",
+      "histogram chart",
+      "cohort heatmap chart",
+      "bar chart",
+      "bullet chart"
+    ],
+    "negativeClues": [
+      "generic dashboard regardless of domain",
+      "decorative chart selection",
+      "unsupported domain assumption"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "governed schema and user context"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "domain_profile",
+      "analyticalIntents": [
+        "trend",
+        "distribution",
+        "cohort_retention",
+        "ranking",
+        "target_attainment"
+      ],
+      "chartFamilies": [
+        "line",
+        "histogram",
+        "cohort_heatmap",
+        "bar",
+        "bullet"
+      ],
+      "constraints": [
+        "user selected perspective overrides default domain emphasis",
+        "domain preference never authorizes a metric"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_domain_finance_accounting",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "cash flow",
+      "accounting",
+      "finance"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "finance_accounting",
+      "presentation_intelligence"
+    ],
+    "definition": "Domain profile for cash flow prioritizes analytical intents and chart families that commonly answer operational questions, subject to actual schema, governed metrics and the selected user perspective.",
+    "positiveClues": [
+      "cash flow",
+      "accounting",
+      "finance",
+      "balance flow",
+      "variance",
+      "aging",
+      "trend",
+      "contribution",
+      "evidence detail",
+      "line chart",
+      "waterfall chart",
+      "diverging bar chart",
+      "bar chart",
+      "table chart"
+    ],
+    "negativeClues": [
+      "generic dashboard regardless of domain",
+      "decorative chart selection",
+      "unsupported domain assumption"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "governed schema and user context"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "domain_profile",
+      "analyticalIntents": [
+        "balance_flow",
+        "variance",
+        "aging",
+        "trend",
+        "contribution",
+        "evidence_detail"
+      ],
+      "chartFamilies": [
+        "line",
+        "waterfall",
+        "diverging_bar",
+        "bar",
+        "table"
+      ],
+      "constraints": [
+        "user selected perspective overrides default domain emphasis",
+        "domain preference never authorizes a metric"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_domain_food_beverage_restaurant",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "restaurant",
+      "food and beverage",
+      "f&b"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "food_beverage_restaurant",
+      "presentation_intelligence"
+    ],
+    "definition": "Domain profile for restaurant prioritizes analytical intents and chart families that commonly answer operational questions, subject to actual schema, governed metrics and the selected user perspective.",
+    "positiveClues": [
+      "restaurant",
+      "food and beverage",
+      "f&b",
+      "trend",
+      "ranking",
+      "distribution",
+      "anomaly scan",
+      "composition",
+      "line chart",
+      "bar chart",
+      "histogram chart",
+      "heatmap chart",
+      "stacked bar chart"
+    ],
+    "negativeClues": [
+      "generic dashboard regardless of domain",
+      "decorative chart selection",
+      "unsupported domain assumption"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "governed schema and user context"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "domain_profile",
+      "analyticalIntents": [
+        "trend",
+        "ranking",
+        "distribution",
+        "anomaly_scan",
+        "composition"
+      ],
+      "chartFamilies": [
+        "line",
+        "bar",
+        "histogram",
+        "heatmap",
+        "stacked_bar"
+      ],
+      "constraints": [
+        "user selected perspective overrides default domain emphasis",
+        "domain preference never authorizes a metric"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_domain_healthcare_pharma",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "healthcare",
+      "pharma",
+      "clinic"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "healthcare_pharma",
+      "presentation_intelligence"
+    ],
+    "definition": "Domain profile for healthcare prioritizes analytical intents and chart families that commonly answer operational questions, subject to actual schema, governed metrics and the selected user perspective.",
+    "positiveClues": [
+      "healthcare",
+      "pharma",
+      "clinic",
+      "process time",
+      "capacity utilization",
+      "trend",
+      "distribution",
+      "evidence detail",
+      "histogram chart",
+      "heatmap chart",
+      "line chart",
+      "box plot chart",
+      "table chart"
+    ],
+    "negativeClues": [
+      "generic dashboard regardless of domain",
+      "decorative chart selection",
+      "unsupported domain assumption"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "governed schema and user context"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "domain_profile",
+      "analyticalIntents": [
+        "process_time",
+        "capacity_utilization",
+        "trend",
+        "distribution",
+        "evidence_detail"
+      ],
+      "chartFamilies": [
+        "histogram",
+        "heatmap",
+        "line",
+        "box_plot",
+        "table"
+      ],
+      "constraints": [
+        "user selected perspective overrides default domain emphasis",
+        "domain preference never authorizes a metric"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_domain_hospitality_hotel",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "hospitality",
+      "hotel",
+      "booking"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "hospitality_hotel",
+      "presentation_intelligence"
+    ],
+    "definition": "Domain profile for hospitality prioritizes analytical intents and chart families that commonly answer operational questions, subject to actual schema, governed metrics and the selected user perspective.",
+    "positiveClues": [
+      "hospitality",
+      "hotel",
+      "booking",
+      "trend",
+      "target attainment",
+      "composition",
+      "ranking",
+      "distribution",
+      "combo bar line chart",
+      "line chart",
+      "stacked bar chart",
+      "bar chart",
+      "histogram chart"
+    ],
+    "negativeClues": [
+      "generic dashboard regardless of domain",
+      "decorative chart selection",
+      "unsupported domain assumption"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "governed schema and user context"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "domain_profile",
+      "analyticalIntents": [
+        "trend",
+        "target_attainment",
+        "composition",
+        "ranking",
+        "distribution"
+      ],
+      "chartFamilies": [
+        "combo_bar_line",
+        "line",
+        "stacked_bar",
+        "bar",
+        "histogram"
+      ],
+      "constraints": [
+        "user selected perspective overrides default domain emphasis",
+        "domain preference never authorizes a metric"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_domain_hr_workforce",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "hr",
+      "workforce",
+      "people"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "hr_workforce",
+      "presentation_intelligence"
+    ],
+    "definition": "Domain profile for hr prioritizes analytical intents and chart families that commonly answer operational questions, subject to actual schema, governed metrics and the selected user perspective.",
+    "positiveClues": [
+      "hr",
+      "workforce",
+      "people",
+      "trend",
+      "distribution",
+      "composition",
+      "process time",
+      "risk concentration",
+      "line chart",
+      "histogram chart",
+      "stacked bar chart",
+      "bar chart",
+      "heatmap chart"
+    ],
+    "negativeClues": [
+      "generic dashboard regardless of domain",
+      "decorative chart selection",
+      "unsupported domain assumption"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "governed schema and user context"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "domain_profile",
+      "analyticalIntents": [
+        "trend",
+        "distribution",
+        "composition",
+        "process_time",
+        "risk_concentration"
+      ],
+      "chartFamilies": [
+        "line",
+        "histogram",
+        "stacked_bar",
+        "bar",
+        "heatmap"
+      ],
+      "constraints": [
+        "user selected perspective overrides default domain emphasis",
+        "domain preference never authorizes a metric"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_domain_insurance",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "insurance",
+      "claims",
+      "policy"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "insurance",
+      "presentation_intelligence"
+    ],
+    "definition": "Domain profile for insurance prioritizes analytical intents and chart families that commonly answer operational questions, subject to actual schema, governed metrics and the selected user perspective.",
+    "positiveClues": [
+      "insurance",
+      "claims",
+      "policy",
+      "trend",
+      "distribution",
+      "process time",
+      "risk concentration",
+      "composition",
+      "line chart",
+      "histogram chart",
+      "box plot chart",
+      "pareto chart",
+      "stacked bar chart"
+    ],
+    "negativeClues": [
+      "generic dashboard regardless of domain",
+      "decorative chart selection",
+      "unsupported domain assumption"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "governed schema and user context"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "domain_profile",
+      "analyticalIntents": [
+        "trend",
+        "distribution",
+        "process_time",
+        "risk_concentration",
+        "composition"
+      ],
+      "chartFamilies": [
+        "line",
+        "histogram",
+        "box_plot",
+        "pareto",
+        "stacked_bar"
+      ],
+      "constraints": [
+        "user selected perspective overrides default domain emphasis",
+        "domain preference never authorizes a metric"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_domain_inventory_warehouse",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "inventory",
+      "warehouse",
+      "stock"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "inventory_warehouse",
+      "presentation_intelligence"
+    ],
+    "definition": "Domain profile for inventory prioritizes analytical intents and chart families that commonly answer operational questions, subject to actual schema, governed metrics and the selected user perspective.",
+    "positiveClues": [
+      "inventory",
+      "warehouse",
+      "stock",
+      "aging",
+      "ranking",
+      "distribution",
+      "risk concentration",
+      "anomaly scan",
+      "bar chart",
+      "histogram chart",
+      "pareto chart",
+      "heatmap chart",
+      "scatter chart"
+    ],
+    "negativeClues": [
+      "generic dashboard regardless of domain",
+      "decorative chart selection",
+      "unsupported domain assumption"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "governed schema and user context"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "domain_profile",
+      "analyticalIntents": [
+        "aging",
+        "ranking",
+        "distribution",
+        "risk_concentration",
+        "anomaly_scan"
+      ],
+      "chartFamilies": [
+        "bar",
+        "histogram",
+        "pareto",
+        "heatmap",
+        "scatter"
+      ],
+      "constraints": [
+        "user selected perspective overrides default domain emphasis",
+        "domain preference never authorizes a metric"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_domain_iot_industrial_telemetry",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "iot",
+      "telemetry",
+      "sensor"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "iot_industrial_telemetry",
+      "presentation_intelligence"
+    ],
+    "definition": "Domain profile for iot prioritizes analytical intents and chart families that commonly answer operational questions, subject to actual schema, governed metrics and the selected user perspective.",
+    "positiveClues": [
+      "iot",
+      "telemetry",
+      "sensor",
+      "trend",
+      "anomaly scan",
+      "quality control",
+      "capacity utilization",
+      "relationship",
+      "line chart",
+      "control chart chart",
+      "heatmap chart",
+      "scatter chart",
+      "small multiples chart"
+    ],
+    "negativeClues": [
+      "generic dashboard regardless of domain",
+      "decorative chart selection",
+      "unsupported domain assumption"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "governed schema and user context"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "domain_profile",
+      "analyticalIntents": [
+        "trend",
+        "anomaly_scan",
+        "quality_control",
+        "capacity_utilization",
+        "relationship"
+      ],
+      "chartFamilies": [
+        "line",
+        "control_chart",
+        "heatmap",
+        "scatter",
+        "small_multiples"
+      ],
+      "constraints": [
+        "user selected perspective overrides default domain emphasis",
+        "domain preference never authorizes a metric"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_domain_laboratory_scientific",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "laboratory",
+      "scientific",
+      "experiment"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "laboratory_scientific",
+      "presentation_intelligence"
+    ],
+    "definition": "Domain profile for laboratory prioritizes analytical intents and chart families that commonly answer operational questions, subject to actual schema, governed metrics and the selected user perspective.",
+    "positiveClues": [
+      "laboratory",
+      "scientific",
+      "experiment",
+      "distribution",
+      "relationship",
+      "quality control",
+      "trend",
+      "evidence detail",
+      "scatter chart",
+      "box plot chart",
+      "control chart chart",
+      "line chart",
+      "table chart"
+    ],
+    "negativeClues": [
+      "generic dashboard regardless of domain",
+      "decorative chart selection",
+      "unsupported domain assumption"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "governed schema and user context"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "domain_profile",
+      "analyticalIntents": [
+        "distribution",
+        "relationship",
+        "quality_control",
+        "trend",
+        "evidence_detail"
+      ],
+      "chartFamilies": [
+        "scatter",
+        "box_plot",
+        "control_chart",
+        "line",
+        "table"
+      ],
+      "constraints": [
+        "user selected perspective overrides default domain emphasis",
+        "domain preference never authorizes a metric"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_domain_logistics_transportation",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "logistics",
+      "transportation",
+      "delivery"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "logistics_transportation",
+      "presentation_intelligence"
+    ],
+    "definition": "Domain profile for logistics prioritizes analytical intents and chart families that commonly answer operational questions, subject to actual schema, governed metrics and the selected user perspective.",
+    "positiveClues": [
+      "logistics",
+      "transportation",
+      "delivery",
+      "trend",
+      "process time",
+      "ranking",
+      "geospatial",
+      "anomaly scan",
+      "line chart",
+      "histogram chart",
+      "bar chart",
+      "map chart",
+      "heatmap chart"
+    ],
+    "negativeClues": [
+      "generic dashboard regardless of domain",
+      "decorative chart selection",
+      "unsupported domain assumption"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "governed schema and user context"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "domain_profile",
+      "analyticalIntents": [
+        "trend",
+        "process_time",
+        "ranking",
+        "geospatial",
+        "anomaly_scan"
+      ],
+      "chartFamilies": [
+        "line",
+        "histogram",
+        "bar",
+        "map",
+        "heatmap"
+      ],
+      "constraints": [
+        "user selected perspective overrides default domain emphasis",
+        "domain preference never authorizes a metric"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_domain_maintenance_asset",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "maintenance",
+      "asset management",
+      "equipment"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "maintenance_asset",
+      "presentation_intelligence"
+    ],
+    "definition": "Domain profile for maintenance prioritizes analytical intents and chart families that commonly answer operational questions, subject to actual schema, governed metrics and the selected user perspective.",
+    "positiveClues": [
+      "maintenance",
+      "asset management",
+      "equipment",
+      "trend",
+      "process time",
+      "pareto",
+      "schedule",
+      "risk concentration",
+      "line chart",
+      "histogram chart",
+      "pareto chart",
+      "timeline chart",
+      "bar chart"
+    ],
+    "negativeClues": [
+      "generic dashboard regardless of domain",
+      "decorative chart selection",
+      "unsupported domain assumption"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "governed schema and user context"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "domain_profile",
+      "analyticalIntents": [
+        "trend",
+        "process_time",
+        "pareto",
+        "schedule",
+        "risk_concentration"
+      ],
+      "chartFamilies": [
+        "line",
+        "histogram",
+        "pareto",
+        "timeline",
+        "bar"
+      ],
+      "constraints": [
+        "user selected perspective overrides default domain emphasis",
+        "domain preference never authorizes a metric"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_domain_manufacturing",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "manufacturing",
+      "production",
+      "factory"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "manufacturing",
+      "presentation_intelligence"
+    ],
+    "definition": "Domain profile for manufacturing prioritizes analytical intents and chart families that commonly answer operational questions, subject to actual schema, governed metrics and the selected user perspective.",
+    "positiveClues": [
+      "manufacturing",
+      "production",
+      "factory",
+      "trend",
+      "quality control",
+      "pareto",
+      "capacity utilization",
+      "target attainment",
+      "line chart",
+      "control chart chart",
+      "pareto chart",
+      "heatmap chart",
+      "bullet chart"
+    ],
+    "negativeClues": [
+      "generic dashboard regardless of domain",
+      "decorative chart selection",
+      "unsupported domain assumption"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "governed schema and user context"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "domain_profile",
+      "analyticalIntents": [
+        "trend",
+        "quality_control",
+        "pareto",
+        "capacity_utilization",
+        "target_attainment"
+      ],
+      "chartFamilies": [
+        "line",
+        "control_chart",
+        "pareto",
+        "heatmap",
+        "bullet"
+      ],
+      "constraints": [
+        "user selected perspective overrides default domain emphasis",
+        "domain preference never authorizes a metric"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_domain_marketing_growth",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "marketing",
+      "growth",
+      "acquisition"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "marketing_growth",
+      "presentation_intelligence"
+    ],
+    "definition": "Domain profile for marketing prioritizes analytical intents and chart families that commonly answer operational questions, subject to actual schema, governed metrics and the selected user perspective.",
+    "positiveClues": [
+      "marketing",
+      "growth",
+      "acquisition",
+      "trend",
+      "funnel",
+      "target attainment",
+      "relationship",
+      "ranking",
+      "combo bar line chart",
+      "funnel chart",
+      "line chart",
+      "scatter chart",
+      "bar chart"
+    ],
+    "negativeClues": [
+      "generic dashboard regardless of domain",
+      "decorative chart selection",
+      "unsupported domain assumption"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "governed schema and user context"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "domain_profile",
+      "analyticalIntents": [
+        "trend",
+        "funnel",
+        "target_attainment",
+        "relationship",
+        "ranking"
+      ],
+      "chartFamilies": [
+        "combo_bar_line",
+        "funnel",
+        "line",
+        "scatter",
+        "bar"
+      ],
+      "constraints": [
+        "user selected perspective overrides default domain emphasis",
+        "domain preference never authorizes a metric"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_domain_media_content",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "media",
+      "content",
+      "publisher"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "media_content",
+      "presentation_intelligence"
+    ],
+    "definition": "Domain profile for media prioritizes analytical intents and chart families that commonly answer operational questions, subject to actual schema, governed metrics and the selected user perspective.",
+    "positiveClues": [
+      "media",
+      "content",
+      "publisher",
+      "trend",
+      "ranking",
+      "funnel",
+      "cohort retention",
+      "composition",
+      "line chart",
+      "bar chart",
+      "funnel chart",
+      "cohort heatmap chart",
+      "stacked bar chart"
+    ],
+    "negativeClues": [
+      "generic dashboard regardless of domain",
+      "decorative chart selection",
+      "unsupported domain assumption"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "governed schema and user context"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "domain_profile",
+      "analyticalIntents": [
+        "trend",
+        "ranking",
+        "funnel",
+        "cohort_retention",
+        "composition"
+      ],
+      "chartFamilies": [
+        "line",
+        "bar",
+        "funnel",
+        "cohort_heatmap",
+        "stacked_bar"
+      ],
+      "constraints": [
+        "user selected perspective overrides default domain emphasis",
+        "domain preference never authorizes a metric"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_domain_nonprofit",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "nonprofit",
+      "ngo",
+      "donation"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "nonprofit",
+      "presentation_intelligence"
+    ],
+    "definition": "Domain profile for nonprofit prioritizes analytical intents and chart families that commonly answer operational questions, subject to actual schema, governed metrics and the selected user perspective.",
+    "positiveClues": [
+      "nonprofit",
+      "ngo",
+      "donation",
+      "trend",
+      "contribution",
+      "target attainment",
+      "composition",
+      "evidence detail",
+      "line chart",
+      "waterfall chart",
+      "bullet chart",
+      "stacked bar chart",
+      "table chart"
+    ],
+    "negativeClues": [
+      "generic dashboard regardless of domain",
+      "decorative chart selection",
+      "unsupported domain assumption"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "governed schema and user context"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "domain_profile",
+      "analyticalIntents": [
+        "trend",
+        "contribution",
+        "target_attainment",
+        "composition",
+        "evidence_detail"
+      ],
+      "chartFamilies": [
+        "line",
+        "waterfall",
+        "bullet",
+        "stacked_bar",
+        "table"
+      ],
+      "constraints": [
+        "user selected perspective overrides default domain emphasis",
+        "domain preference never authorizes a metric"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_domain_procurement_supply_chain",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "procurement",
+      "purchasing",
+      "supply chain"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "procurement_supply_chain",
+      "presentation_intelligence"
+    ],
+    "definition": "Domain profile for procurement prioritizes analytical intents and chart families that commonly answer operational questions, subject to actual schema, governed metrics and the selected user perspective.",
+    "positiveClues": [
+      "procurement",
+      "purchasing",
+      "supply chain",
+      "trend",
+      "ranking",
+      "process time",
+      "variance",
+      "risk concentration",
+      "line chart",
+      "bar chart",
+      "histogram chart",
+      "diverging bar chart",
+      "pareto chart"
+    ],
+    "negativeClues": [
+      "generic dashboard regardless of domain",
+      "decorative chart selection",
+      "unsupported domain assumption"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "governed schema and user context"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "domain_profile",
+      "analyticalIntents": [
+        "trend",
+        "ranking",
+        "process_time",
+        "variance",
+        "risk_concentration"
+      ],
+      "chartFamilies": [
+        "line",
+        "bar",
+        "histogram",
+        "diverging_bar",
+        "pareto"
+      ],
+      "constraints": [
+        "user selected perspective overrides default domain emphasis",
+        "domain preference never authorizes a metric"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_domain_project_professional_services",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "project",
+      "professional services",
+      "consulting"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "project_professional_services",
+      "presentation_intelligence"
+    ],
+    "definition": "Domain profile for project prioritizes analytical intents and chart families that commonly answer operational questions, subject to actual schema, governed metrics and the selected user perspective.",
+    "positiveClues": [
+      "project",
+      "professional services",
+      "consulting",
+      "target attainment",
+      "schedule",
+      "capacity utilization",
+      "variance",
+      "trend",
+      "bullet chart",
+      "timeline chart",
+      "heatmap chart",
+      "diverging bar chart",
+      "line chart"
+    ],
+    "negativeClues": [
+      "generic dashboard regardless of domain",
+      "decorative chart selection",
+      "unsupported domain assumption"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "governed schema and user context"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "domain_profile",
+      "analyticalIntents": [
+        "target_attainment",
+        "schedule",
+        "capacity_utilization",
+        "variance",
+        "trend"
+      ],
+      "chartFamilies": [
+        "bullet",
+        "timeline",
+        "heatmap",
+        "diverging_bar",
+        "line"
+      ],
+      "constraints": [
+        "user selected perspective overrides default domain emphasis",
+        "domain preference never authorizes a metric"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_domain_public_sector",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "public sector",
+      "government",
+      "public service"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "public_sector",
+      "presentation_intelligence"
+    ],
+    "definition": "Domain profile for public sector prioritizes analytical intents and chart families that commonly answer operational questions, subject to actual schema, governed metrics and the selected user perspective.",
+    "positiveClues": [
+      "public sector",
+      "government",
+      "public service",
+      "trend",
+      "process time",
+      "target attainment",
+      "geospatial",
+      "evidence detail",
+      "line chart",
+      "histogram chart",
+      "bullet chart",
+      "map chart",
+      "table chart"
+    ],
+    "negativeClues": [
+      "generic dashboard regardless of domain",
+      "decorative chart selection",
+      "unsupported domain assumption"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "governed schema and user context"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "domain_profile",
+      "analyticalIntents": [
+        "trend",
+        "process_time",
+        "target_attainment",
+        "geospatial",
+        "evidence_detail"
+      ],
+      "chartFamilies": [
+        "line",
+        "histogram",
+        "bullet",
+        "map",
+        "table"
+      ],
+      "constraints": [
+        "user selected perspective overrides default domain emphasis",
+        "domain preference never authorizes a metric"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_domain_quality",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "quality",
+      "qa",
+      "quality control"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "quality",
+      "presentation_intelligence"
+    ],
+    "definition": "Domain profile for quality prioritizes analytical intents and chart families that commonly answer operational questions, subject to actual schema, governed metrics and the selected user perspective.",
+    "positiveClues": [
+      "quality",
+      "qa",
+      "quality control",
+      "distribution",
+      "pareto",
+      "anomaly scan",
+      "control chart chart",
+      "box plot chart",
+      "pareto chart",
+      "histogram chart"
+    ],
+    "negativeClues": [
+      "generic dashboard regardless of domain",
+      "decorative chart selection",
+      "unsupported domain assumption"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "governed schema and user context"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "domain_profile",
+      "analyticalIntents": [
+        "quality_control",
+        "distribution",
+        "pareto",
+        "anomaly_scan"
+      ],
+      "chartFamilies": [
+        "control_chart",
+        "box_plot",
+        "pareto",
+        "histogram"
+      ],
+      "constraints": [
+        "user selected perspective overrides default domain emphasis",
+        "domain preference never authorizes a metric"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_domain_real_estate_property",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "real estate",
+      "property",
+      "leasing"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "real_estate_property",
+      "presentation_intelligence"
+    ],
+    "definition": "Domain profile for real estate prioritizes analytical intents and chart families that commonly answer operational questions, subject to actual schema, governed metrics and the selected user perspective.",
+    "positiveClues": [
+      "real estate",
+      "property",
+      "leasing",
+      "trend",
+      "geospatial",
+      "ranking",
+      "distribution",
+      "capacity utilization",
+      "line chart",
+      "map chart",
+      "bar chart",
+      "histogram chart",
+      "heatmap chart"
+    ],
+    "negativeClues": [
+      "generic dashboard regardless of domain",
+      "decorative chart selection",
+      "unsupported domain assumption"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "governed schema and user context"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "domain_profile",
+      "analyticalIntents": [
+        "trend",
+        "geospatial",
+        "ranking",
+        "distribution",
+        "capacity_utilization"
+      ],
+      "chartFamilies": [
+        "line",
+        "map",
+        "bar",
+        "histogram",
+        "heatmap"
+      ],
+      "constraints": [
+        "user selected perspective overrides default domain emphasis",
+        "domain preference never authorizes a metric"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_domain_retail_ecommerce",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "retail",
+      "ecommerce",
+      "commerce"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "retail_ecommerce",
+      "presentation_intelligence"
+    ],
+    "definition": "Domain profile for retail prioritizes analytical intents and chart families that commonly answer operational questions, subject to actual schema, governed metrics and the selected user perspective.",
+    "positiveClues": [
+      "retail",
+      "ecommerce",
+      "commerce",
+      "trend",
+      "ranking",
+      "composition over time",
+      "funnel",
+      "cohort retention",
+      "line chart",
+      "bar chart",
+      "stacked column chart",
+      "funnel chart",
+      "cohort heatmap chart"
+    ],
+    "negativeClues": [
+      "generic dashboard regardless of domain",
+      "decorative chart selection",
+      "unsupported domain assumption"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "governed schema and user context"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "domain_profile",
+      "analyticalIntents": [
+        "trend",
+        "ranking",
+        "composition_over_time",
+        "funnel",
+        "cohort_retention"
+      ],
+      "chartFamilies": [
+        "line",
+        "bar",
+        "stacked_column",
+        "funnel",
+        "cohort_heatmap"
+      ],
+      "constraints": [
+        "user selected perspective overrides default domain emphasis",
+        "domain preference never authorizes a metric"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_domain_saas_subscription",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "saas",
+      "subscription",
+      "recurring revenue"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "saas_subscription",
+      "presentation_intelligence"
+    ],
+    "definition": "Domain profile for saas prioritizes analytical intents and chart families that commonly answer operational questions, subject to actual schema, governed metrics and the selected user perspective.",
+    "positiveClues": [
+      "saas",
+      "subscription",
+      "recurring revenue",
+      "trend",
+      "cohort retention",
+      "funnel",
+      "composition",
+      "risk concentration",
+      "line chart",
+      "cohort heatmap chart",
+      "funnel chart",
+      "stacked bar chart",
+      "pareto chart"
+    ],
+    "negativeClues": [
+      "generic dashboard regardless of domain",
+      "decorative chart selection",
+      "unsupported domain assumption"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "governed schema and user context"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "domain_profile",
+      "analyticalIntents": [
+        "trend",
+        "cohort_retention",
+        "funnel",
+        "composition",
+        "risk_concentration"
+      ],
+      "chartFamilies": [
+        "line",
+        "cohort_heatmap",
+        "funnel",
+        "stacked_bar",
+        "pareto"
+      ],
+      "constraints": [
+        "user selected perspective overrides default domain emphasis",
+        "domain preference never authorizes a metric"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_domain_sales_revenue",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "sales",
+      "revenue",
+      "commercial"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "sales_revenue",
+      "presentation_intelligence"
+    ],
+    "definition": "Domain profile for sales prioritizes analytical intents and chart families that commonly answer operational questions, subject to actual schema, governed metrics and the selected user perspective.",
+    "positiveClues": [
+      "sales",
+      "revenue",
+      "commercial",
+      "trend",
+      "ranking",
+      "contribution",
+      "composition",
+      "target attainment",
+      "line chart",
+      "bar chart",
+      "waterfall chart",
+      "stacked bar chart",
+      "bullet chart"
+    ],
+    "negativeClues": [
+      "generic dashboard regardless of domain",
+      "decorative chart selection",
+      "unsupported domain assumption"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "governed schema and user context"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "domain_profile",
+      "analyticalIntents": [
+        "trend",
+        "ranking",
+        "contribution",
+        "composition",
+        "target_attainment"
+      ],
+      "chartFamilies": [
+        "line",
+        "bar",
+        "waterfall",
+        "stacked_bar",
+        "bullet"
+      ],
+      "constraints": [
+        "user selected perspective overrides default domain emphasis",
+        "domain preference never authorizes a metric"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_domain_telecom",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "telecom",
+      "network operator",
+      "subscriber"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "telecom",
+      "presentation_intelligence"
+    ],
+    "definition": "Domain profile for telecom prioritizes analytical intents and chart families that commonly answer operational questions, subject to actual schema, governed metrics and the selected user perspective.",
+    "positiveClues": [
+      "telecom",
+      "network operator",
+      "subscriber",
+      "trend",
+      "risk concentration",
+      "geospatial",
+      "anomaly scan",
+      "ranking",
+      "line chart",
+      "pareto chart",
+      "map chart",
+      "heatmap chart",
+      "bar chart"
+    ],
+    "negativeClues": [
+      "generic dashboard regardless of domain",
+      "decorative chart selection",
+      "unsupported domain assumption"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "governed schema and user context"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "domain_profile",
+      "analyticalIntents": [
+        "trend",
+        "risk_concentration",
+        "geospatial",
+        "anomaly_scan",
+        "ranking"
+      ],
+      "chartFamilies": [
+        "line",
+        "pareto",
+        "map",
+        "heatmap",
+        "bar"
+      ],
+      "constraints": [
+        "user selected perspective overrides default domain emphasis",
+        "domain preference never authorizes a metric"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_domain_travel_aviation",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "travel",
+      "aviation",
+      "airline"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "travel_aviation",
+      "presentation_intelligence"
+    ],
+    "definition": "Domain profile for travel prioritizes analytical intents and chart families that commonly answer operational questions, subject to actual schema, governed metrics and the selected user perspective.",
+    "positiveClues": [
+      "travel",
+      "aviation",
+      "airline",
+      "trend",
+      "capacity utilization",
+      "process time",
+      "geospatial",
+      "ranking",
+      "line chart",
+      "heatmap chart",
+      "histogram chart",
+      "map chart",
+      "bar chart"
+    ],
+    "negativeClues": [
+      "generic dashboard regardless of domain",
+      "decorative chart selection",
+      "unsupported domain assumption"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "governed schema and user context"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "domain_profile",
+      "analyticalIntents": [
+        "trend",
+        "capacity_utilization",
+        "process_time",
+        "geospatial",
+        "ranking"
+      ],
+      "chartFamilies": [
+        "line",
+        "heatmap",
+        "histogram",
+        "map",
+        "bar"
+      ],
+      "constraints": [
+        "user selected perspective overrides default domain emphasis",
+        "domain preference never authorizes a metric"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_domain_utilities_energy",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "utilities",
+      "energy",
+      "power"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "utilities_energy",
+      "presentation_intelligence"
+    ],
+    "definition": "Domain profile for utilities prioritizes analytical intents and chart families that commonly answer operational questions, subject to actual schema, governed metrics and the selected user perspective.",
+    "positiveClues": [
+      "utilities",
+      "energy",
+      "power",
+      "trend",
+      "capacity utilization",
+      "anomaly scan",
+      "distribution",
+      "geospatial",
+      "line chart",
+      "heatmap chart",
+      "calendar heatmap chart",
+      "histogram chart",
+      "map chart"
+    ],
+    "negativeClues": [
+      "generic dashboard regardless of domain",
+      "decorative chart selection",
+      "unsupported domain assumption"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "governed schema and user context"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "domain_profile",
+      "analyticalIntents": [
+        "trend",
+        "capacity_utilization",
+        "anomaly_scan",
+        "distribution",
+        "geospatial"
+      ],
+      "chartFamilies": [
+        "line",
+        "heatmap",
+        "calendar_heatmap",
+        "histogram",
+        "map"
+      ],
+      "constraints": [
+        "user selected perspective overrides default domain emphasis",
+        "domain preference never authorizes a metric"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_narrative_overview_drivers_risk_evidence",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "dashboard narrative",
+      "overview drivers risk evidence",
+      "analysis story"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "presentation_intelligence"
+    ],
+    "definition": "A default analytical dashboard should progress from what is happening, to where or what drives it, to meaningful risk or exceptions, and finally to evidence detail; omit stages that lack evidence rather than filling them with generic charts.",
+    "positiveClues": [
+      "what is happening",
+      "main drivers",
+      "risk and exceptions",
+      "evidence detail"
+    ],
+    "negativeClues": [
+      "widget wall",
+      "random chart order",
+      "duplicate chart story"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "governed schema and user context"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "dashboard_narrative",
+      "dashboardRoles": [
+        "overview",
+        "drivers",
+        "risk",
+        "evidence"
+      ],
+      "priorities": [
+        "answer before decoration",
+        "avoid duplicate analytical questions",
+        "preserve drill down"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_perspective_analyst",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "analyst view",
+      "data analyst"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "presentation_intelligence"
+    ],
+    "definition": "analyst view prioritizes a domain-aware analytical narrative for that decision context while preserving the same governed evidence.",
+    "positiveClues": [
+      "distribution",
+      "relationship",
+      "trend",
+      "evidence detail",
+      "anomaly scan",
+      "shape",
+      "exceptions",
+      "evidence"
+    ],
+    "negativeClues": [
+      "override governed metric",
+      "hide conflicting evidence"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "governed schema and user context"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "perspective_profile",
+      "analyticalIntents": [
+        "distribution",
+        "relationship",
+        "trend",
+        "evidence_detail",
+        "anomaly_scan"
+      ],
+      "dashboardRoles": [
+        "shape",
+        "relationship",
+        "exceptions",
+        "evidence"
+      ],
+      "perspectives": [
+        "analyst"
+      ],
+      "priorities": [
+        "shape",
+        "relationship",
+        "exceptions",
+        "evidence"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_perspective_customer_service",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "customer service view",
+      "support view"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "presentation_intelligence"
+    ],
+    "definition": "customer service view prioritizes a domain-aware analytical narrative for that decision context while preserving the same governed evidence.",
+    "positiveClues": [
+      "process time",
+      "trend",
+      "distribution",
+      "ranking",
+      "funnel",
+      "demand",
+      "response",
+      "resolution",
+      "evidence"
+    ],
+    "negativeClues": [
+      "override governed metric",
+      "hide conflicting evidence"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "governed schema and user context"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "perspective_profile",
+      "analyticalIntents": [
+        "process_time",
+        "trend",
+        "distribution",
+        "ranking",
+        "funnel"
+      ],
+      "dashboardRoles": [
+        "demand",
+        "response",
+        "resolution",
+        "evidence"
+      ],
+      "perspectives": [
+        "customer_service"
+      ],
+      "priorities": [
+        "demand",
+        "response",
+        "resolution",
+        "evidence"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_perspective_executive",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "executive",
+      "ceo",
+      "owner"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "presentation_intelligence"
+    ],
+    "definition": "executive prioritizes a domain-aware analytical narrative for that decision context while preserving the same governed evidence.",
+    "positiveClues": [
+      "single value",
+      "trend",
+      "variance",
+      "risk concentration",
+      "contribution",
+      "overview",
+      "drivers",
+      "risk",
+      "evidence"
+    ],
+    "negativeClues": [
+      "override governed metric",
+      "hide conflicting evidence"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "governed schema and user context"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "perspective_profile",
+      "analyticalIntents": [
+        "single_value",
+        "trend",
+        "variance",
+        "risk_concentration",
+        "contribution"
+      ],
+      "dashboardRoles": [
+        "overview",
+        "drivers",
+        "risk",
+        "evidence"
+      ],
+      "perspectives": [
+        "executive"
+      ],
+      "priorities": [
+        "overview",
+        "drivers",
+        "risk",
+        "evidence"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_perspective_finance",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "finance view",
+      "cfo",
+      "accounting view"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "presentation_intelligence"
+    ],
+    "definition": "finance view prioritizes a domain-aware analytical narrative for that decision context while preserving the same governed evidence.",
+    "positiveClues": [
+      "balance flow",
+      "variance",
+      "aging",
+      "trend",
+      "evidence detail",
+      "cash",
+      "profitability",
+      "working capital",
+      "evidence"
+    ],
+    "negativeClues": [
+      "override governed metric",
+      "hide conflicting evidence"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "governed schema and user context"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "perspective_profile",
+      "analyticalIntents": [
+        "balance_flow",
+        "variance",
+        "aging",
+        "trend",
+        "evidence_detail"
+      ],
+      "dashboardRoles": [
+        "cash",
+        "profitability",
+        "working capital",
+        "evidence"
+      ],
+      "perspectives": [
+        "finance"
+      ],
+      "priorities": [
+        "cash",
+        "profitability",
+        "working capital",
+        "evidence"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_perspective_inventory",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "inventory view",
+      "warehouse view"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "presentation_intelligence"
+    ],
+    "definition": "inventory view prioritizes a domain-aware analytical narrative for that decision context while preserving the same governed evidence.",
+    "positiveClues": [
+      "aging",
+      "ranking",
+      "risk concentration",
+      "distribution",
+      "anomaly scan",
+      "stock health",
+      "concentration",
+      "evidence"
+    ],
+    "negativeClues": [
+      "override governed metric",
+      "hide conflicting evidence"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "governed schema and user context"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "perspective_profile",
+      "analyticalIntents": [
+        "aging",
+        "ranking",
+        "risk_concentration",
+        "distribution",
+        "anomaly_scan"
+      ],
+      "dashboardRoles": [
+        "stock health",
+        "aging",
+        "concentration",
+        "evidence"
+      ],
+      "perspectives": [
+        "inventory"
+      ],
+      "priorities": [
+        "stock health",
+        "aging",
+        "concentration",
+        "evidence"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_perspective_marketing",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "marketing view",
+      "growth view"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "presentation_intelligence"
+    ],
+    "definition": "marketing view prioritizes a domain-aware analytical narrative for that decision context while preserving the same governed evidence.",
+    "positiveClues": [
+      "trend",
+      "funnel",
+      "relationship",
+      "ranking",
+      "target attainment",
+      "acquisition",
+      "conversion",
+      "efficiency",
+      "evidence"
+    ],
+    "negativeClues": [
+      "override governed metric",
+      "hide conflicting evidence"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "governed schema and user context"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "perspective_profile",
+      "analyticalIntents": [
+        "trend",
+        "funnel",
+        "relationship",
+        "ranking",
+        "target_attainment"
+      ],
+      "dashboardRoles": [
+        "acquisition",
+        "conversion",
+        "efficiency",
+        "evidence"
+      ],
+      "perspectives": [
+        "marketing"
+      ],
+      "priorities": [
+        "acquisition",
+        "conversion",
+        "efficiency",
+        "evidence"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_perspective_operations",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "operations view",
+      "coo"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "presentation_intelligence"
+    ],
+    "definition": "operations view prioritizes a domain-aware analytical narrative for that decision context while preserving the same governed evidence.",
+    "positiveClues": [
+      "trend",
+      "process time",
+      "capacity utilization",
+      "anomaly scan",
+      "variance",
+      "throughput",
+      "service level",
+      "bottleneck",
+      "evidence"
+    ],
+    "negativeClues": [
+      "override governed metric",
+      "hide conflicting evidence"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "governed schema and user context"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "perspective_profile",
+      "analyticalIntents": [
+        "trend",
+        "process_time",
+        "capacity_utilization",
+        "anomaly_scan",
+        "variance"
+      ],
+      "dashboardRoles": [
+        "throughput",
+        "service level",
+        "bottleneck",
+        "evidence"
+      ],
+      "perspectives": [
+        "operations"
+      ],
+      "priorities": [
+        "throughput",
+        "service level",
+        "bottleneck",
+        "evidence"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_perspective_people",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "people view",
+      "hr view"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "presentation_intelligence"
+    ],
+    "definition": "people view prioritizes a domain-aware analytical narrative for that decision context while preserving the same governed evidence.",
+    "positiveClues": [
+      "trend",
+      "distribution",
+      "composition",
+      "process time",
+      "risk concentration",
+      "workforce",
+      "movement",
+      "capacity",
+      "evidence"
+    ],
+    "negativeClues": [
+      "override governed metric",
+      "hide conflicting evidence"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "governed schema and user context"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "perspective_profile",
+      "analyticalIntents": [
+        "trend",
+        "distribution",
+        "composition",
+        "process_time",
+        "risk_concentration"
+      ],
+      "dashboardRoles": [
+        "workforce",
+        "movement",
+        "capacity",
+        "evidence"
+      ],
+      "perspectives": [
+        "people"
+      ],
+      "priorities": [
+        "workforce",
+        "movement",
+        "capacity",
+        "evidence"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_perspective_procurement",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "procurement view",
+      "buyer view"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "presentation_intelligence"
+    ],
+    "definition": "procurement view prioritizes a domain-aware analytical narrative for that decision context while preserving the same governed evidence.",
+    "positiveClues": [
+      "ranking",
+      "process time",
+      "variance",
+      "risk concentration",
+      "trend",
+      "supplier",
+      "lead time",
+      "cost",
+      "evidence"
+    ],
+    "negativeClues": [
+      "override governed metric",
+      "hide conflicting evidence"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "governed schema and user context"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "perspective_profile",
+      "analyticalIntents": [
+        "ranking",
+        "process_time",
+        "variance",
+        "risk_concentration",
+        "trend"
+      ],
+      "dashboardRoles": [
+        "supplier",
+        "lead time",
+        "cost",
+        "evidence"
+      ],
+      "perspectives": [
+        "procurement"
+      ],
+      "priorities": [
+        "supplier",
+        "lead time",
+        "cost",
+        "evidence"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_perspective_project",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "project view",
+      "delivery manager"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "presentation_intelligence"
+    ],
+    "definition": "project view prioritizes a domain-aware analytical narrative for that decision context while preserving the same governed evidence.",
+    "positiveClues": [
+      "schedule",
+      "variance",
+      "target attainment",
+      "capacity utilization",
+      "risk concentration",
+      "progress",
+      "capacity",
+      "risk"
+    ],
+    "negativeClues": [
+      "override governed metric",
+      "hide conflicting evidence"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "governed schema and user context"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "perspective_profile",
+      "analyticalIntents": [
+        "schedule",
+        "variance",
+        "target_attainment",
+        "capacity_utilization",
+        "risk_concentration"
+      ],
+      "dashboardRoles": [
+        "progress",
+        "schedule",
+        "capacity",
+        "risk"
+      ],
+      "perspectives": [
+        "project"
+      ],
+      "priorities": [
+        "progress",
+        "schedule",
+        "capacity",
+        "risk"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_perspective_risk_compliance",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "risk view",
+      "compliance view"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "presentation_intelligence"
+    ],
+    "definition": "risk view prioritizes a domain-aware analytical narrative for that decision context while preserving the same governed evidence.",
+    "positiveClues": [
+      "risk concentration",
+      "anomaly scan",
+      "variance",
+      "evidence detail",
+      "trend",
+      "exposure",
+      "exceptions",
+      "control",
+      "evidence"
+    ],
+    "negativeClues": [
+      "override governed metric",
+      "hide conflicting evidence"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "governed schema and user context"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "perspective_profile",
+      "analyticalIntents": [
+        "risk_concentration",
+        "anomaly_scan",
+        "variance",
+        "evidence_detail",
+        "trend"
+      ],
+      "dashboardRoles": [
+        "exposure",
+        "exceptions",
+        "control",
+        "evidence"
+      ],
+      "perspectives": [
+        "risk_compliance"
+      ],
+      "priorities": [
+        "exposure",
+        "exceptions",
+        "control",
+        "evidence"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  },
+  {
+    "schemaVersion": "lightbi.micro-brain.knowledge-card.v1",
+    "id": "concept.presentation_perspective_sales",
+    "status": "validated",
+    "kind": "concept",
+    "labels": [
+      "sales view",
+      "sales manager"
+    ],
+    "semanticFamily": "presentation_intelligence",
+    "relatedDomains": [
+      "presentation_intelligence"
+    ],
+    "definition": "sales view prioritizes a domain-aware analytical narrative for that decision context while preserving the same governed evidence.",
+    "positiveClues": [
+      "trend",
+      "ranking",
+      "target attainment",
+      "funnel",
+      "contribution",
+      "performance",
+      "drivers",
+      "pipeline",
+      "evidence"
+    ],
+    "negativeClues": [
+      "override governed metric",
+      "hide conflicting evidence"
+    ],
+    "compatibleTypes": [
+      "presentation_advisory"
+    ],
+    "relations": [],
+    "requiredEvidence": [
+      "governed schema and user context"
+    ],
+    "blockers": [
+      "missing or contradictory evidence"
+    ],
+    "analysisClass": "descriptive",
+    "knowledgeLane": "presentation",
+    "presentation": {
+      "schemaVersion": "lightbi.micro-brain.presentation-advisory.v1",
+      "authority": "advisory_only",
+      "advisoryKind": "perspective_profile",
+      "analyticalIntents": [
+        "trend",
+        "ranking",
+        "target_attainment",
+        "funnel",
+        "contribution"
+      ],
+      "dashboardRoles": [
+        "performance",
+        "drivers",
+        "pipeline",
+        "evidence"
+      ],
+      "perspectives": [
+        "sales"
+      ],
+      "priorities": [
+        "performance",
+        "drivers",
+        "pipeline",
+        "evidence"
+      ]
+    },
+    "provenance": {
+      "sourceType": "lightbi_contract",
+      "sourceLabel": "LightBI Micro Brain Presentation Constitution V1",
+      "synthesizedAt": "2026-09-06T00:00:00.000Z",
+      "notes": [
+        "Presentation intelligence is advisory only; metric authority remains deterministic and governed."
+      ]
+    }
+  }
+]

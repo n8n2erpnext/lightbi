@@ -22,7 +22,10 @@
     "test:ops": "node scripts/verify-preproduction-ops.mjs",
     "micro-brain:seed": "node scripts/micro-brain/synthesize-foundation-v1.mjs",
     "micro-brain:compile": "node scripts/micro-brain/compile-foundation-v1.mjs",
-    "micro-brain:build": "pnpm micro-brain:seed && pnpm micro-brain:compile",
+    "micro-brain:presentation:seed": "node scripts/micro-brain/synthesize-presentation-v1.mjs",
+    "micro-brain:presentation:compile": "node scripts/micro-brain/compile-presentation-v1.mjs",
+    "micro-brain:presentation:build": "pnpm micro-brain:presentation:seed && pnpm micro-brain:presentation:compile",
+    "micro-brain:build": "pnpm micro-brain:seed && pnpm micro-brain:compile && pnpm micro-brain:presentation:build",
     "test:intelligence-pack-contract": "node scripts/run-intelligence-pack-contract.mjs"
   },
   "devDependencies": {
