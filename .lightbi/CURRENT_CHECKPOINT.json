@@ -1,12 +1,12 @@
 {
   "schema": "lightbi.current-checkpoint.v1",
-  "updatedAt": "2026-09-06T12:07:11Z",
-  "status": "road_to_1_0_next041_native_auth_device_slot_owner_pass_remaining_technical_debt_open",
+  "updatedAt": "2026-09-06T15:06:46Z",
+  "status": "road_to_1_0_next041_owner_auth_pass_mb_presentation_advisory_source_closed_remaining_technical_debt_open",
   "activeRuntime": "engine g-2026-09-05-next-034; live Internal CP API+worker f1f053e7; owner Windows NEXT041; NEXT041 TEST runtime REL published; no role rotation",
   "sourceCandidate": {
     "repo": "/home/ubuntu/n8n2erpnext/LightBI-exp-focus-subject",
     "branch": "codex/r1-roadmap-integration",
-    "head": "4510b1ad15a82d084a8adcdbcc559a53e37bf70f"
+    "head": "4be593ae57b4b1385a833675dd4ea2349900d378"
   },
   "runtimeControlPlane": "f1f053e7e008a43b572edb414e3a986da04fed0c",
   "publicationControlPlaneHead": "f1f053e7e008a43b572edb414e3a986da04fed0c",
@@ -22,14 +22,21 @@
     "next041_windows_acceptance_run_34009698180_pass",
     "next041_test_runtime_rel_published",
     "next041_external_installation_challenge_issue_probe_pass",
-    "next041_owner_full_slot_replace_device_uat_pass"
+    "next041_owner_full_slot_replace_device_uat_pass",
+    "micro_brain_presentation_advisory_lobe_source_closed_4be593a",
+    "micro_brain_presentation_corpus_88_cards_32_domains_31_chart_patterns_12_perspectives_7_charter",
+    "micro_brain_combined_raw_indexes_9966179_bytes_under_20_mib_ceiling",
+    "micro_brain_targeted_closure_14_of_14_pass",
+    "micro_brain_isolated_mb7_benchmark_pass_zero_confirmed_regressions",
+    "micro_brain_uiux_roadmap_dpr2_to_dpr7_advisor_role_documented_48dbd4f"
   ],
-  "nextAction": "Do not return to the main roadmap yet. Await the owner's remaining technical-debt list and work only those debts against NEXT041 as the accepted native-auth/device-slot baseline.",
+  "nextAction": "Before any further Micro Brain or Decision Presentation/UI work, read the canonical MB architecture, cross-domain expansion direction, and DPR refactor plan. MB presentation advice is source-closed but intentionally not wired into current BA/chart runtime; runtime integration belongs to DPR-2..DPR-7 and deterministic planners remain final authority. Whole Road-to-1.0 sequencing remains owner-gated with remaining technical debt open.",
   "blockers": [
     "Owner states additional technical debt remains before main-roadmap return",
     "Packaged email/password/MFA owner UAT is not promoted to PASS by the device-replacement test",
     "OS publisher remains NotSigned for Internal beta artifacts",
-    "Production Phase-2A freeze remains owner-gated and false"
+    "Production Phase-2A freeze remains owner-gated and false",
+    "MB presentation advisory foundation is not runtime-wired; DPR-2..DPR-7 integration remains future owner-gated work"
   ],
   "next041": {
     "version": "0.9.2-beta.7-next.41",
@@ -66,8 +73,13 @@
   "productionTouched": false,
   "phase2aFrozen": false,
   "readFirst": [
-    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#122-2026-09-06-next041-explicit-device-slot-replacement-closes-owner-authdevice-management-uat",
+    "docs/architecture/micro-semantic-brain-vector-inference.md#presentation-advisory-extension--2026-09-06",
+    "docs/architecture/micro-brain-cross-domain-semantic-expansion.md",
+    "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DECISION_PRESENTATION_UI_UX_REFACTOR_2026-09-04.md#8a-owner-decision--micro-brain-joins-the-refactor-as-a-bounded-semanticpresentation-advisor",
+    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#111-2026-09-04-decision-presentation--uiux-refactor-direction",
     "docs/project-book/LIGHTBI_WORKLOG.md",
+    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#122-2026-09-06-next041-explicit-device-slot-replacement-closes-owner-authdevice-management-uat",
     "docs/history/agent/handoffs/post-beta/AGENT_HANDOFF_NEXT036_SIGNED_TRANSPORT_RESPONSE_CORRELATION_2026-09-05.md"
-  ]
+  ],
+  "documentationHead": "48dbd4ff045391ac06f5f08421bec16a608a5830"
 }
