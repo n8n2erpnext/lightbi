@@ -16,8 +16,10 @@ import { UpdateSettingsPanel } from '../components/settings/UpdateSettingsPanel'
 import { InternalGenerationPanel } from '../components/settings/InternalGenerationPanel';
 import { BuildIdentityPanel } from '../components/settings/BuildIdentityPanel';
 import { ConnectionSettingsPanel } from '../components/settings/ConnectionSettingsPanel';
+import { MicroBrainPrivacyPanel } from '../components/settings/MicroBrainPrivacyPanel';
 import { lightBIFrontendUrl } from '../lib/lightbi-routing';
 import { useUpdateStore } from '../stores/update-store';
+import { openExternalUrl } from '../lib/native-capabilities';
 
 const AccountAccess: React.FC<{ account: ReturnType<typeof useLightBIAccount> }> = ({ account }) => {
   const { t } = useUiLanguage();
@@ -212,7 +214,7 @@ export const Settings: React.FC = () => {
                 </button>
               </div>
               {licenseMessage && <div className="mt-2 text-xs text-slate-500">{licenseMessage}</div>}
-              <a href={lightBIFrontendUrl('plans')} className="mt-2 inline-block text-xs font-semibold text-blue-700">{t('View Basic and Pro plans')}</a>
+              <button type="button" onClick={()=>void openExternalUrl(lightBIFrontendUrl('plans'))} className="mt-2 inline-block text-xs font-semibold text-blue-700">{t('View Basic and Pro plans')}</button>
             </div>
           </div>
         </div>}
@@ -302,6 +304,7 @@ export const Settings: React.FC = () => {
               </div>
               <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-600" />
             </div>
+            <MicroBrainPrivacyPanel />
             <div className="flex items-center justify-between rounded-md border border-slate-200 p-4">
               <div>
                 <div className="font-medium text-slate-800">{t('Embedded analysis core')}</div>

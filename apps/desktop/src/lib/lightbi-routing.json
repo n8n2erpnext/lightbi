@@ -13,7 +13,8 @@
       "distributionApi": "/distribution-api",
       "internalReleases": "/internal-releases",
       "distribution": "/distribution",
-      "plans": "/distribution/#plans",
+      "plans": "/#plans",
+      "microBrainStatus": "/micro-brain/status",
       "releaseCatalog": "/distribution-api/api/releases/latest",
       "qaUpdatePlaceholder": "/qa/update-placeholder"
     }
@@ -31,7 +32,8 @@
       "distributionApi": "/distribution-api",
       "internalReleases": "/internal-releases",
       "distribution": "/distribution",
-      "plans": "/distribution/#plans",
+      "plans": "/#plans",
+      "microBrainStatus": "/micro-brain/status",
       "releaseCatalog": "/distribution-api/api/releases/latest",
       "qaUpdatePlaceholder": "/qa/update-placeholder"
     }

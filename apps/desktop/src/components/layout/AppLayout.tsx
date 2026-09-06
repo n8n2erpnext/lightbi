@@ -32,6 +32,8 @@ import { useAnnouncementStore } from "../../stores/announcement-store";
 import { buildGenerationManifest } from "../../lib/generation-manifest";
 import { DesktopCommandCenter, dispatchDesktopCommand } from "./DesktopCommandCenter";
 import { UpdateNotificationMenu } from "./UpdateNotificationMenu";
+import { MicroBrainConsentSplash } from "./MicroBrainConsentSplash";
+import { MicroBrainHealthBadge } from "./MicroBrainHealthBadge";
 
 export const AppLayout: React.FC = () => {
   const location = useLocation();
@@ -120,6 +122,7 @@ export const AppLayout: React.FC = () => {
       <UiTranslationBoundary>
         <main className="flex h-screen w-screen overflow-hidden bg-[#fbfbfa] text-[#202123]">
           <Outlet />
+          <MicroBrainConsentSplash />
           <DesktopCommandCenter signedIn={Boolean(lightbiAccount.account)} accountLabel={lightbiAccount.account?.account.email} />
         </main>
       </UiTranslationBoundary>
@@ -129,6 +132,7 @@ export const AppLayout: React.FC = () => {
   return (
     <UiTranslationBoundary>
       <div className="flex h-screen w-screen overflow-hidden bg-[#f5f5f4] text-[#202123]">
+        <MicroBrainConsentSplash />
         {/* Sidebar */}
         <aside
           className={cn(
@@ -201,6 +205,9 @@ export const AppLayout: React.FC = () => {
 
           {/* Bottom Navigation */}
           <div className="flex flex-col gap-2 p-3">
+            <div className={cn("flex", isSidebarExpanded ? "justify-start" : "justify-center")}>
+              <MicroBrainHealthBadge compact={!isSidebarExpanded} />
+            </div>
             <div ref={accountMenuRef} className="relative">
               {accountMenuOpen && (
                 <div

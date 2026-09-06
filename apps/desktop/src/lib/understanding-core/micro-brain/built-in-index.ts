@@ -77,3 +77,10 @@ export function builtInMicroBrainPresentationIndexIdentity(): string {
   const index = getBundledPresentationIndex();
   return index.manifest.logicalIndexSha256 ?? index.manifest.corpusSha256;
 }
+
+export function microBrainBundledIndexFootprint(): { semanticBytes: number; presentationBytes: number; totalBytes: number; ceilingBytes: number } {
+  const encoder = new TextEncoder();
+  const semanticBytes = encoder.encode(foundationIndexRaw).byteLength;
+  const presentationBytes = encoder.encode(presentationIndexRaw).byteLength;
+  return { semanticBytes, presentationBytes, totalBytes: semanticBytes + presentationBytes, ceilingBytes: 20 * 1024 * 1024 };
+}

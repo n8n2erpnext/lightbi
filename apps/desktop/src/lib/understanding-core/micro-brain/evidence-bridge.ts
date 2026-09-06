@@ -12,6 +12,7 @@ import {
 import type { CompiledMicroBrainIndexV1 } from "./contracts";
 import { buildMicroBrainQuerySignature, microBrainShadowInvocationReason } from "./query-signature";
 import { retrieveMicroBrainConcepts } from "./retrieval";
+import { recordMicroBrainRuntimeActivity } from "../../micro-brain-privacy";
 
 export const MICRO_BRAIN_CANDIDATE_BRIDGE_VERSION = "lightbi.micro-brain.candidate-bridge.v1" as const;
 
@@ -186,6 +187,7 @@ export function augmentCandidateArtifactWithMicroBrain(
     queryCount += 1;
     const signature = buildMicroBrainQuerySignature(physicalArtifact.sourceProfile, column, { limit: maxCandidates });
     const retrieval = retrieveMicroBrainConcepts(index, signature.query);
+    recordMicroBrainRuntimeActivity(retrieval.hits.length);
     const candidates = observation.candidateSet.candidates.map((candidate) => ({
       ...candidate,
       evidence: [...candidate.evidence],
