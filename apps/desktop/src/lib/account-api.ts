@@ -62,7 +62,7 @@ function normalizedAccountFailure(cause: unknown): Error {
     return cause instanceof Error ? cause : new Error(message);
   }
   const lower = message.toLowerCase();
-  if (lower.includes('installation trust') || lower.includes('installation certificate') || lower.includes('signed transport')) {
+  if (lower.includes('installation trust') || lower.includes('installation certificate') || lower.includes('signed transport') || lower.includes('signed_transport')) {
     return new Error(`LightBI secure account connection is not ready. ${message}`);
   }
   if (/(timed out|timeout|connect|connection|dns|tls|network|failed to fetch|unreachable|proxy|firewall)/i.test(message)) {
@@ -114,6 +114,7 @@ async function loadLightBIAccountRequest(endpoint?: string): Promise<LightBIAcco
     const response = await accountFetch('/api/account/session', {}, endpoint);
     const result = await response.json().catch(() => ({})) as Record<string, unknown>;
     if (response.status === 401 && result.authenticated === false && typeof result.error !== 'string') {
+      if (isNativeLightBI()) await storeNativeToken(null);
       setCurrentLicenseTier('basic');
       localStorage.removeItem(ENTITLEMENT_CHECK_KEY);
       return null;
@@ -238,7 +239,7 @@ export async function loginLightBIEmailAccount(email: string, password: string, 
 export async function completeLightBIAccountMfa(
   challengeId: string, method: 'totp' | 'recovery', code: string, endpoint?: string, nativeLoginId?: string,
 ): Promise<LightBIAccountSummary | null> {
-  const response = await accountFetch('/api/v1/account/mfa/verify', {
+  const response = await accountFetch(isNativeLightBI() ? '/api/account/native/mfa/verify' : '/api/v1/account/mfa/verify', {
     method: 'POST', body: JSON.stringify({ challengeId, method, code: code.trim() }),
   }, endpoint);
   const envelope = await response.json().catch(() => ({})) as {

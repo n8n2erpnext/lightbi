@@ -402,6 +402,14 @@ mod tests {
             SignedRouteClass::NativeProtected
         );
         assert_eq!(
+            signed_route_class("/api/account/native/mfa/verify"),
+            SignedRouteClass::NativeProtected
+        );
+        assert_eq!(
+            signed_route_class("/api/v1/account/mfa/verify"),
+            SignedRouteClass::PublicRead
+        );
+        assert_eq!(
             signed_route_class("/api/releases/latest"),
             SignedRouteClass::PublicRead
         );

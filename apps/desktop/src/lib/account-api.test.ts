@@ -1,10 +1,11 @@
 // @vitest-environment jsdom
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { invoke } from '@tauri-apps/api/core';
-import { completeLightBIAccountMfa, loadLightBIAccount, loginLightBIEmailAccount, registerLightBIEmailAccount, requestLightBIPasswordReset } from './account-api';
+import { beginLightBIGoogleLogin, completeLightBIAccountMfa, loadLightBIAccount, loginLightBIEmailAccount, registerLightBIEmailAccount, requestLightBIPasswordReset } from './account-api';
 import { currentLicenseTier } from './distribution-pairing';
 
 vi.mock('@tauri-apps/api/core', () => ({ invoke: vi.fn(async (command: string) => command === 'account_session_token' ? null : undefined) }));
+vi.mock('@tauri-apps/plugin-opener', () => ({ openUrl: vi.fn(async () => undefined) }));
 
 describe('LightBI account client',()=>{
   beforeEach(()=>{localStorage.clear();vi.restoreAllMocks();vi.unstubAllEnvs();delete (window as any).__TAURI_INTERNALS__;});
@@ -133,7 +134,7 @@ describe('LightBI account client',()=>{
       if(command==='store_account_session_token')return undefined;
       if(command==='native_http_request'){
         const url=args?.request?.url as string;
-        const payload=url.endsWith('/api/v1/account/mfa/verify')?{ok:true,data:{status:'authenticated',sessionKind:'native',token:'native-token'}}:summary;
+        const payload=url.endsWith('/api/account/native/mfa/verify')?{ok:true,data:{status:'authenticated',sessionKind:'native',token:'native-token'}}:summary;
         return {status:200,headers:{'content-type':'application/json'},body:Array.from(new TextEncoder().encode(JSON.stringify(payload)))};
       }
       return undefined;
@@ -141,6 +142,96 @@ describe('LightBI account client',()=>{
     const account=await completeLightBIAccountMfa('challenge-12345678901234567890','totp','123456','https://distribution.test');
     expect(account?.account.email).toBe('user@example.com');
     expect(invoke).toHaveBeenCalledWith('store_account_session_token',{token:'native-token'});
+  });
+
+  it('persists a native email login token before the authenticated session read',async()=>{
+    (window as any).__TAURI_INTERNALS__={};
+    let token:string|null=null;
+    const summary={authenticated:true,account:{id:'acct-native-email',email:'native@example.com',provider:'password',created_at:''},entitlement:{tier:'basic',status:'active',max_devices:1},devices:[]};
+    vi.mocked(invoke).mockImplementation(async (command:string,args?:any)=>{
+      if(command==='ensure_installation_trust')return {status:'issued'} as any;
+      if(command==='account_session_token')return token;
+      if(command==='store_account_session_token'){token=args?.token??null;return undefined;}
+      if(command==='native_http_request'){
+        const request=args?.request;
+        if(String(request?.url).endsWith('/api/account/login'))return {status:200,headers:{'content-type':'application/json'},body:Array.from(new TextEncoder().encode(JSON.stringify({authenticated:true,token:'native-email-token'}))),signedTransport:true};
+        if(String(request?.url).endsWith('/api/account/session')){
+          expect(request.headers.authorization).toBe('Bearer native-email-token');
+          return {status:200,headers:{'content-type':'application/json'},body:Array.from(new TextEncoder().encode(JSON.stringify(summary))),signedTransport:true};
+        }
+      }
+      return undefined;
+    });
+    const result=await loginLightBIEmailAccount('native@example.com','a-secure-password','https://distribution.test');
+    expect(result.status).toBe('authenticated');
+    expect(token).toBe('native-email-token');
+  });
+
+  it('routes native MFA through protected account transport and persists its token',async()=>{
+    (window as any).__TAURI_INTERNALS__={};
+    let token:string|null=null;
+    const summary={authenticated:true,account:{id:'acct-native-mfa',email:'mfa@example.com',provider:'password',created_at:''},entitlement:{tier:'basic',status:'active',max_devices:1},devices:[]};
+    vi.mocked(invoke).mockImplementation(async (command:string,args?:any)=>{
+      if(command==='ensure_installation_trust')return {status:'issued'} as any;
+      if(command==='account_session_token')return token;
+      if(command==='store_account_session_token'){token=args?.token??null;return undefined;}
+      if(command==='native_http_request'){
+        const request=args?.request;
+        if(String(request?.url).endsWith('/api/account/native/mfa/verify'))return {status:200,headers:{'content-type':'application/json'},body:Array.from(new TextEncoder().encode(JSON.stringify({ok:true,data:{status:'authenticated',sessionKind:'native',token:'native-mfa-token'}}))),signedTransport:true};
+        if(String(request?.url).endsWith('/api/account/session')){
+          expect(request.headers.authorization).toBe('Bearer native-mfa-token');
+          return {status:200,headers:{'content-type':'application/json'},body:Array.from(new TextEncoder().encode(JSON.stringify(summary))),signedTransport:true};
+        }
+        throw new Error(`unexpected native URL: ${request?.url}`);
+      }
+      return undefined;
+    });
+    const account=await completeLightBIAccountMfa('challenge-12345678901234567890','totp','123456','https://distribution.test');
+    expect(account?.account.id).toBe('acct-native-mfa');
+    expect(token).toBe('native-mfa-token');
+  });
+
+  it('clears a stale native bearer when the authoritative session is unauthenticated',async()=>{
+    (window as any).__TAURI_INTERNALS__={};
+    let token:string|null='stale-native-token';
+    vi.mocked(invoke).mockImplementation(async (command:string,args?:any)=>{
+      if(command==='ensure_installation_trust')return {status:'issued'} as any;
+      if(command==='account_session_token')return token;
+      if(command==='store_account_session_token'){token=args?.token??null;return undefined;}
+      if(command==='native_http_request')return {status:401,headers:{'content-type':'application/json'},body:Array.from(new TextEncoder().encode('{"authenticated":false}')),signedTransport:true};
+      return undefined;
+    });
+    expect(await loadLightBIAccount('https://distribution.test')).toBeNull();
+    expect(token).toBeNull();
+  });
+
+  it('persists the native Google handoff token before reading the desktop session',async()=>{
+    vi.useFakeTimers();
+    try{
+      (window as any).__TAURI_INTERNALS__={};
+      let token:string|null=null;
+      const summary={authenticated:true,account:{id:'acct-google',email:'google@example.com',provider:'google',created_at:''},entitlement:{tier:'basic',status:'active',max_devices:1},devices:[]};
+      vi.mocked(invoke).mockImplementation(async (command:string,args?:any)=>{
+        if(command==='ensure_installation_trust')return {status:'issued'} as any;
+        if(command==='account_session_token')return token;
+        if(command==='store_account_session_token'){token=args?.token??null;return undefined;}
+        if(command==='native_http_request'){
+          const request=args?.request;
+          if(String(request?.url).endsWith('/api/account/device-login/start'))return {status:200,headers:{'content-type':'application/json'},body:Array.from(new TextEncoder().encode(JSON.stringify({loginId:'login-google',authorizationUrl:'https://lightbi-next.example/api/auth/google/native-start?state=state-12345678901234567890',expiresIn:60}))),signedTransport:true};
+          if(String(request?.url).endsWith('/api/account/device-login/status'))return {status:200,headers:{'content-type':'application/json'},body:Array.from(new TextEncoder().encode(JSON.stringify({status:'complete',token:'native-google-token'}))),signedTransport:true};
+          if(String(request?.url).endsWith('/api/account/session')){
+            expect(request.headers.authorization).toBe('Bearer native-google-token');
+            return {status:200,headers:{'content-type':'application/json'},body:Array.from(new TextEncoder().encode(JSON.stringify(summary))),signedTransport:true};
+          }
+        }
+        return undefined;
+      });
+      const pending=beginLightBIGoogleLogin('https://distribution.test');
+      await vi.advanceTimersByTimeAsync(1600);
+      const account=await pending;
+      expect(account?.account.provider).toBe('google');
+      expect(token).toBe('native-google-token');
+    }finally{vi.useRealTimers();}
   });
 
   it('requests password reset without exposing whether the account exists',async()=>{

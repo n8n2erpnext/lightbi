@@ -23,19 +23,24 @@ const AccountAccess: React.FC<{ account: ReturnType<typeof useLightBIAccount> }>
   const [message, setMessage] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [passwordConfirm, setPasswordConfirm] = useState('');
   const [displayName, setDisplayName] = useState('');
+  const [formError, setFormError] = useState('');
   const [mfaMethod, setMfaMethod] = useState<'totp' | 'recovery'>('totp');
   const [mfaCode, setMfaCode] = useState('');
 
   const submit = async (event: React.FormEvent) => {
     event.preventDefault();
     setMessage('');
+    setFormError('');
     if (mode === 'register') {
+      if (password !== passwordConfirm) { setFormError('Passwords do not match.'); return; }
       const accepted = await account.registerEmail(email, password, displayName);
       if (accepted) {
         setMessage('Check your email to verify the account, then sign in here.');
         setMode('login');
         setPassword('');
+        setPasswordConfirm('');
       }
       return;
     }
@@ -60,11 +65,13 @@ const AccountAccess: React.FC<{ account: ReturnType<typeof useLightBIAccount> }>
     <div className="flex items-start gap-3"><UserRound className="mt-0.5 h-5 w-5 text-blue-600" /><div><div className="font-semibold text-slate-900">Sign in to LightBI</div><p className="mt-1 text-sm leading-6 text-slate-500">Use Google or email and password to manage Pro access and devices. Files, SQL and analysis results stay local.</p></div></div>
     <button type="button" disabled={account.loading} onClick={() => void account.login()} className="mt-4 w-full rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50">{account.loading ? 'Checking account…' : 'Continue with Google'}</button>
     <div className="my-4 flex items-center gap-3 text-xs uppercase tracking-wider text-slate-400"><span className="h-px flex-1 bg-slate-200" />or use email<span className="h-px flex-1 bg-slate-200" /></div>
-    <div className="mb-3 flex rounded-lg bg-slate-200/70 p-1 text-sm"><button type="button" onClick={() => { setMode('login'); setMessage(''); }} className={`flex-1 rounded-md px-3 py-2 font-semibold ${mode === 'login' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'}`}>Sign in</button><button type="button" onClick={() => { setMode('register'); setMessage(''); }} className={`flex-1 rounded-md px-3 py-2 font-semibold ${mode === 'register' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'}`}>Create account</button></div>
+    <div className="mb-3 flex rounded-lg bg-slate-200/70 p-1 text-sm"><button type="button" onClick={() => { setMode('login'); setMessage(''); setFormError(''); setPasswordConfirm(''); }} className={`flex-1 rounded-md px-3 py-2 font-semibold ${mode === 'login' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'}`}>Sign in</button><button type="button" onClick={() => { setMode('register'); setMessage(''); setFormError(''); }} className={`flex-1 rounded-md px-3 py-2 font-semibold ${mode === 'register' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'}`}>Create account</button></div>
     <form onSubmit={submit} className="space-y-3">
       {mode === 'register' && <input aria-label="Display name" value={displayName} onChange={event => setDisplayName(event.target.value)} autoComplete="name" placeholder="Display name" maxLength={120} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm" />}
       <input aria-label="Email" value={email} onChange={event => setEmail(event.target.value)} type="email" autoComplete="email" placeholder="Email" required className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm" />
       <input aria-label="Password" value={password} onChange={event => setPassword(event.target.value)} type="password" autoComplete={mode === 'login' ? 'current-password' : 'new-password'} placeholder={mode === 'register' ? 'Password (12+ characters)' : 'Password'} minLength={mode === 'register' ? 12 : undefined} required className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm" />
+      {mode === 'register' && <input aria-label="Confirm password" value={passwordConfirm} onChange={event => setPasswordConfirm(event.target.value)} type="password" autoComplete="new-password" placeholder="Confirm password" minLength={12} required className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm" />}
+      {formError && <div className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{formError}</div>}
       <div className="flex flex-wrap items-center justify-between gap-2"><button type="submit" disabled={account.loading} className="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50">{mode === 'register' ? 'Create account' : 'Sign in with email'}</button>{mode === 'login' && <button type="button" disabled={!email || account.loading} onClick={async () => { setMessage(''); if (await account.requestPasswordReset(email)) setMessage('If this email has a password account, a reset link has been sent.'); }} className="text-sm font-semibold text-blue-700 disabled:text-slate-400">Forgot password?</button>}</div>
     </form>
     {message && <div className="mt-3 rounded-md bg-emerald-50 px-3 py-2 text-sm text-emerald-800">{message}</div>}
