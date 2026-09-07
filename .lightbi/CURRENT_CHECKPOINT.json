@@ -1,85 +1,54 @@
 {
   "schema": "lightbi.current-checkpoint.v1",
-  "updatedAt": "2026-09-06T15:06:46Z",
-  "status": "road_to_1_0_next041_owner_auth_pass_mb_presentation_advisory_source_closed_remaining_technical_debt_open",
-  "activeRuntime": "engine g-2026-09-05-next-034; live Internal CP API+worker f1f053e7; owner Windows NEXT041; NEXT041 TEST runtime REL published; no role rotation",
+  "updatedAt": "2026-09-07T03:04:00Z",
+  "status": "next044_test_rel_active_next046_candidate_untracked_mb_live_lab_and_learning_pipeline_plan_recorded",
+  "activeRuntime": "engine g-2026-09-05-next-034; live Internal CP eea0de3; TEST runtime REL NEXT044; Production untouched",
   "sourceCandidate": {
     "repo": "/home/ubuntu/n8n2erpnext/LightBI-exp-focus-subject",
     "branch": "codex/r1-roadmap-integration",
-    "head": "4be593ae57b4b1385a833675dd4ea2349900d378"
+    "head": "fc82ce52340f17a2724cca0fa2746133418776ab"
   },
-  "runtimeControlPlane": "f1f053e7e008a43b572edb414e3a986da04fed0c",
-  "publicationControlPlaneHead": "f1f053e7e008a43b572edb414e3a986da04fed0c",
-  "hardenedPublisherBaseline": "263edd0c8b88a3117a51ce5f0260dd42d3e17935",
-  "acceptanceOrchestration": "e5d86455f45998a6e80056b3d51586a0ea966886",
-  "completed": [
-    "next040_packaged_google_native_login_owner_pass",
-    "next040_windows_credential_session_persistence_owner_pass",
-    "next041_explicit_device_slot_replacement_implemented",
-    "next041_product_release_authoritative_gate_pass",
-    "next041_control_plane_229_of_229_pass",
-    "next041_basic_and_multislot_synthetic_replacement_rehearsal_pass",
-    "next041_windows_acceptance_run_34009698180_pass",
-    "next041_test_runtime_rel_published",
-    "next041_external_installation_challenge_issue_probe_pass",
-    "next041_owner_full_slot_replace_device_uat_pass",
-    "micro_brain_presentation_advisory_lobe_source_closed_4be593a",
-    "micro_brain_presentation_corpus_88_cards_32_domains_31_chart_patterns_12_perspectives_7_charter",
-    "micro_brain_combined_raw_indexes_9966179_bytes_under_20_mib_ceiling",
-    "micro_brain_targeted_closure_14_of_14_pass",
-    "micro_brain_isolated_mb7_benchmark_pass_zero_confirmed_regressions",
-    "micro_brain_uiux_roadmap_dpr2_to_dpr7_advisor_role_documented_48dbd4f"
-  ],
-  "nextAction": "Before any further Micro Brain or Decision Presentation/UI work, read the canonical MB architecture, cross-domain expansion direction, and DPR refactor plan. MB presentation advice is source-closed but intentionally not wired into current BA/chart runtime; runtime integration belongs to DPR-2..DPR-7 and deterministic planners remain final authority. Whole Road-to-1.0 sequencing remains owner-gated with remaining technical debt open.",
-  "blockers": [
-    "Owner states additional technical debt remains before main-roadmap return",
-    "Packaged email/password/MFA owner UAT is not promoted to PASS by the device-replacement test",
-    "OS publisher remains NotSigned for Internal beta artifacts",
-    "Production Phase-2A freeze remains owner-gated and false",
-    "MB presentation advisory foundation is not runtime-wired; DPR-2..DPR-7 integration remains future owner-gated work"
-  ],
-  "next041": {
-    "version": "0.9.2-beta.7-next.41",
-    "generation": "g-2026-09-06-next-041",
-    "sourceHead": "4510b1ad15a82d084a8adcdbcc559a53e37bf70f",
-    "controlPlane": "f1f053e7e008a43b572edb414e3a986da04fed0c",
-    "windowsRun": 34009698180,
-    "orchestrationCommit": "e5d86455f45998a6e80056b3d51586a0ea966886",
-    "artifactId": 9982507437,
-    "artifactZipSha256": "6b7a8b160a7cb6184978211d3590135b327b68c2c258558e9736a0777f96d50b",
-    "runtimeSha256": "aea8254493a5cde6c138afce6ed2afb421bb7c4e6a650e7d05a75b40a80647a2",
-    "runtimeSize": 76523520,
-    "runtimeIdentitySource": "nsis_silent_install",
-    "installerSha256": "d149c1fdb6eee6980b2cd0982079c948a1e6eb78c43717dcf288570450c9de6d",
-    "installerSize": 31798320,
-    "installerPayloadVerified": true,
-    "testRelPublished": true,
-    "serverCertificateIssuePassed": true,
-    "ownerGoogleNativeLoginPassed": true,
-    "ownerDeviceReplacementPassed": true,
-    "ownerAuthDeviceSlotAccepted": true,
-    "ownerEmailPasswordMfaPackagedStatus": "not_demonstrated_in_this_closure",
-    "ownerWholeReleaseUatAccepted": false,
+  "runtimeControlPlane": "eea0de340615c145feeb8461d568364c5d041d66",
+  "acceptanceOrchestration": "664cf65a28d4d83270d6e6e4e364f3ff1cf2231e",
+  "databaseSchema": {
+    "latest": "068_micro_brain_observability",
+    "count": 22,
+    "pending": 0
+  },
+  "trustRuntime": {
+    "testRelVersion": "0.9.2-beta.7-next.44",
+    "testRelSource": "c5713ce0188b08a689adab85181f7fbf29deaaad",
+    "issuerPid": 3817149,
+    "signerPid": 12020,
+    "attestationPid": 823035,
     "productionAuthority": false
   },
-  "liveSplit": {
-    "engineGeneration": "g-2026-09-05-next-034",
-    "engineSymlink": "/home/ubuntu/services/lightbi-next-engines/current",
-    "liveControlPlane": "f1f053e7e008a43b572edb414e3a986da04fed0c",
-    "liveControlPlanePort": 5274,
-    "ownerWindowsVersion": "0.9.2-beta.7-next.41",
-    "nextOwnerCandidate": "none_auth_device_slot_baseline_is_next041"
-  },
+  "completed": [
+    "micro_brain_live_lab_deployed_on_next_with_schema_068",
+    "privacy_safe_desktop_observation_sender_source_closed_fc82ce5",
+    "complimentary_pro_entitlement_reconciled_for_owner_test_account",
+    "attestation_release_catalog_hot_reload_fixed_eea0de3",
+    "attestation_focused_18_of_18_pass",
+    "control_plane_full_suite_242_of_242_pass",
+    "next044_challenge_issue_nonce_live_probe_pass_after_attestation_fix",
+    "next046_acceptance_workflow_pushed_664cf65_status_intentionally_not_tracked",
+    "owner_approved_micro_brain_r2_redis_learning_pipeline_plan_committed_903931f",
+    "redis_cache_worker_audit_recorded_without_granting_redis_authority"
+  ],
+  "nextAction": "Do not treat NEXT046 as built or accepted without fresh evidence. Continue the owner-directed successor/UAT loop as requested. The new MB R2/Redis learning plan is future implementation direction; when explicitly started, begin at MB-LQ0 contracts/migration design and preserve local-first/privacy/trust boundaries.",
+  "blockers": [
+    "NEXT046 GitHub Actions result was intentionally not tracked in this session",
+    "NEXT046 runtime REL is not published and owner UAT is not accepted",
+    "Micro Brain R2/Redis learning contribution pipeline is planned but not implemented",
+    "Production promotion/authority remains owner-gated"
+  ],
   "productionTouched": false,
   "phase2aFrozen": false,
   "readFirst": [
-    "docs/architecture/micro-semantic-brain-vector-inference.md#presentation-advisory-extension--2026-09-06",
+    "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_MICRO_BRAIN_R2_REDIS_LEARNING_PIPELINE_2026-09-07.md",
     "docs/architecture/micro-brain-cross-domain-semantic-expansion.md",
-    "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DECISION_PRESENTATION_UI_UX_REFACTOR_2026-09-04.md#8a-owner-decision--micro-brain-joins-the-refactor-as-a-bounded-semanticpresentation-advisor",
-    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#111-2026-09-04-decision-presentation--uiux-refactor-direction",
-    "docs/project-book/LIGHTBI_WORKLOG.md",
-    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#122-2026-09-06-next041-explicit-device-slot-replacement-closes-owner-authdevice-management-uat",
-    "docs/history/agent/handoffs/post-beta/AGENT_HANDOFF_NEXT036_SIGNED_TRANSPORT_RESPONSE_CORRELATION_2026-09-05.md"
+    "docs/architecture/road-to-1-0-trust-release-contract.md",
+    "docs/history/agent/handoffs/post-beta/AGENT_HANDOFF_PRE_NEXT_SUCCESSOR_TECH_DEBT_AND_ISSUER_HOT_RELOAD_2026-09-07.md"
   ],
-  "documentationHead": "48dbd4ff045391ac06f5f08421bec16a608a5830"
+  "documentationHead": "903931fd031f1770b4ed38639fd6484aa3fac07c"
 }
