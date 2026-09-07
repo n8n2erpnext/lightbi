@@ -1,56 +1,84 @@
 {
   "schema": "lightbi.current-checkpoint.v1",
-  "updatedAt": "2026-09-07T06:02:47Z",
-  "status": "next046_test_rel_active_mb_lq2_source_schema_rehearsal_closed_live_cp_not_rotated_owner_uat_open",
-  "activeRuntime": "engine g-2026-09-05-next-034; live Internal CP eea0de3; TEST runtime REL NEXT046; Production untouched",
+  "updatedAt": "2026-09-07T09:27:28Z",
+  "status": "mb_lq3_source_schema_attestation_workers_live_r2_dedicated_credential_gate_next047_candidate_untracked_owner_uat_open",
+  "activeRuntime": "engine g-2026-09-05-next-034; live Internal CP c302f99; TEST runtime REL NEXT046; NEXT047 acceptance candidate cut but untracked; Production untouched",
   "sourceCandidate": {
     "repo": "/home/ubuntu/n8n2erpnext/LightBI-exp-focus-subject",
     "branch": "codex/r1-roadmap-integration",
-    "head": "fc82ce52340f17a2724cca0fa2746133418776ab"
+    "head": "65092cd86c7c63c861109a6c01796f1c35a62978"
   },
   "controlPlaneSourceCandidate": {
     "repo": "/home/ubuntu/n8n2erpnext/lightbi-control-plane-r1p14-signed-transport",
     "branch": "codex/r1p14-signed-transport",
-    "head": "dbf7bfeb77cac8bbabff4b1525b6e7efe3665697"
+    "head": "c302f9935f2d7809167838defffc19f9be24af15"
   },
-  "runtimeControlPlane": "eea0de340615c145feeb8461d568364c5d041d66",
-  "acceptanceOrchestration": "664cf65a28d4d83270d6e6e4e364f3ff1cf2231e",
+  "runtimeControlPlane": {
+    "head": "c302f9935f2d7809167838defffc19f9be24af15",
+    "directory": "/home/ubuntu/services/lightbi-control-plane-next034-c302f99/apps/distribution",
+    "apiPid": 1598271,
+    "legacyWorkerPid": 1598272,
+    "asyncWorkers": {
+      "short": 1606932,
+      "default": 1606946,
+      "long": 1606982
+    }
+  },
+  "acceptanceOrchestration": {
+    "head": "2ba518263d7ef5072de1b364dfc977ee1f4515ef",
+    "version": "0.9.2-beta.7-next.47",
+    "generation": "g-2026-09-07-next-047",
+    "parentGeneration": "g-2026-09-07-next-046",
+    "actionStatus": "intentionally_untracked_not_claimed_pass"
+  },
   "databaseSchema": {
-    "latest": "070_micro_brain_learning_scheduler_hardening",
-    "count": 24,
+    "latest": "071_micro_brain_learning_r2_transport",
+    "count": 25,
     "pending": 0
   },
   "trustRuntime": {
     "testRelVersion": "0.9.2-beta.7-next.46",
+    "testRelReleaseId": "release:0.9.2-beta.7-next.46:windows:x86_64:runtime",
     "issuerPid": 3817149,
     "signerPid": 12020,
-    "attestationPid": 823035,
-    "productionAuthority": false,
-    "testRelSource": "fc82ce52340f17a2724cca0fa2746133418776ab"
+    "attestationPid": 1505209,
+    "attestationImage": "lightbi-next-trust-attestation:387db91e1123-trust-10de4da8",
+    "trustContracts": "10de4da8e551a46f93f7b62985a0a6e611581b8e",
+    "productionAuthority": false
+  },
+  "learningTransport": {
+    "brokerSocket": "/home/ubuntu/.local/run/lightbi-mb-r2-broker/broker.sock",
+    "brokerActive": false,
+    "dedicatedLearningCredentialPresent": false,
+    "sharedProductionCredentialReused": false,
+    "activeClientCollectionJobsObserved": 0,
+    "newClientCollectionJobsObserved15m": 0,
+    "readinessBehavior": "fail_closed_learning_transport_unavailable"
   },
   "completed": [
     "mb_lq0_contracts_and_migration_design_source_closed_00e8abb",
     "mb_lq1_postgres_redis_worker_foundation_source_closed_77dd7df",
-    "mb_lq1_short_default_long_systemd_templates_recorded_84099b3",
-    "mb_lq1_next_postgres_redis_rehydration_and_expired_lease_rehearsal_pass",
-    "mb_lq2_scheduler_admin_queue_source_closed_dbf7bfe",
-    "control_plane_full_suite_264_of_264_pass_after_lq2",
-    "migration_070_applied_on_next_with_24_total_pending_0",
-    "mb_lq2_next_rehearsal_redis_leader_client_job_server_exclusion_backpressure_pass",
-    "mb_lq2_rehearsal_cleanup_postgres_zero_and_redis_key_removed",
-    "mb_lq2_docs_owner_update_committed_2a4c6c7",
-    "next046_actions_run_34077352854_success_artifact_10003383390_verified",
-    "next046_runtime_rel_published_be643683_without_issuer_or_signer_restart",
-    "next046_issuer_hot_reload_publication_count_12_latest_next046",
-    "next046_public_challenge_issue_certificate_verify_nonce_201_201_201_pass"
+    "mb_lq2_scheduler_admin_queue_source_schema_and_synthetic_rehearsal_closed_dbf7bfe",
+    "mb_lq3_product_direct_r2_native_client_source_closed_65092cd",
+    "mb_lq3_control_plane_direct_r2_transport_source_closed_387db91",
+    "mb_lq3_r2_readiness_fail_closed_hardening_c302f99",
+    "migration_071_applied_on_next_25_total_pending_0",
+    "control_plane_exact_c302f99_full_suite_275_of_275_pass",
+    "product_release_suite_pass_governed_41_of_41_native_28_pass_0_fail_1_live_only_ignored",
+    "attestation_suite_18_of_18_pass_and_image_387db91_trust_10de4da8_live",
+    "live_v2_micro_brain_learning_poll_verified_installation_binding_exact_next046_release_pass",
+    "live_cp_legacy_worker_and_short_default_long_async_workers_exact_c302f99",
+    "r2_broker_absent_readiness_gate_proved_zero_client_collection_jobs",
+    "next047_acceptance_candidate_2ba5182_cut_with_product_65092cd_cp_c302f99_schema_071_parent_next046",
+    "mb_lq3_docs_owner_update_committed_a42b470"
   ],
-  "nextAction": "Owner retries secure account connection on installed NEXT046. If it passes, record owner evidence; if it fails, capture the exact new error. MB-LQ3 remains the engineering next phase after this owner gate.",
+  "nextAction": "Provision a dedicated least-privileged NEXT Micro Brain learning R2 credential/bucket, create /home/ubuntu/.config/lightbi-mb-r2-broker.env, activate the broker, then run real direct single/multipart/resume/validation/dedup/reject/withdrawal-cleanup rehearsal and cleanup. Separately, when NEXT047 Actions is known ready, verify the exact artifact and publish/probe its TEST runtime REL before owner installation.",
   "blockers": [
-    "NEXT046 packaged owner account/login UAT remains open until Retry connection succeeds",
-    "live NEXT Control Plane still runs eea0de3, so dbf7bfe Admin Queue/Scheduler is not live-served",
-    "user systemd manager PID 943 is alive but /run/user/1000/bus is absent; systemctl --user cannot control new worker units",
-    "short/default/long async worker units are recorded but not live-activated",
-    "MB-LQ3 direct R2 contribution transport is not implemented yet",
+    "No dedicated NEXT learning-only R2 credential/bucket is provisioned; all existing VPS R2 keys compare equal to the broad Production credential and must not be reused",
+    "Real Cloudflare R2 MB-LQ3 end-to-end rehearsal remains open until the dedicated broker credential exists",
+    "NEXT047 Actions result is intentionally untracked and NEXT047 is not trust-ready until artifact verification + TEST REL publication + challenge/issue/nonce proof",
+    "NEXT046 packaged owner account/login UAT remains open unless the owner separately confirms Retry connection success",
+    "User systemd manager control socket /run/user/1000/bus is absent; do not restart the manager because protected trust services could be disturbed, although current CP/workers are already running",
     "Production promotion/authority remains owner-gated"
   ],
   "productionTouched": false,
@@ -61,5 +89,5 @@
     "docs/architecture/road-to-1-0-trust-release-contract.md",
     "docs/project-book/LIGHTBI_PROJECT_BOOK.md"
   ],
-  "documentationHead": "2a4c6c71297f932f45c48ba8618959395fe29c1e"
+  "documentationHead": "a42b47085d2976107662f18b8533154345c0bdfd"
 }
