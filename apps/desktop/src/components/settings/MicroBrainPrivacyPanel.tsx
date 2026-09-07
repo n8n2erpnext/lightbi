@@ -58,7 +58,7 @@ export const MicroBrainPrivacyPanel: React.FC = () => {
     </section>
 
     <div className="grid gap-3 sm:grid-cols-2">
-      <div className="flex gap-3 rounded-lg border border-slate-200 p-4"><HardDrive className="mt-0.5 h-5 w-5 text-slate-500"/><div><div className="font-medium text-slate-800">{t("On-device boundary")}</div><p className="mt-1 text-sm leading-6 text-slate-500">{t("Local learning evidence stays on this device. When local learning and anonymous pairing are enabled, LightBI may send aggregate retrieval counters only; raw files, queries, values and local memory are never uploaded.")}</p></div></div>
+      <div className="flex gap-3 rounded-lg border border-slate-200 p-4"><HardDrive className="mt-0.5 h-5 w-5 text-slate-500"/><div><div className="font-medium text-slate-800">{t("On-device boundary")}</div><p className="mt-1 text-sm leading-6 text-slate-500">{t("Local learning memory stays on this device. When local learning and anonymous pairing are enabled, an assigned internal learning job may upload a strictly sanitized aggregate package directly to private R2 intake; raw files, SQL, queries, business values and local memory are never included.")}</p></div></div>
       <div className="flex gap-3 rounded-lg border border-slate-200 p-4"><ShieldCheck className="mt-0.5 h-5 w-5 text-emerald-600"/><div><div className="font-medium text-slate-800">{t("Evidence authority stays unchanged")}</div><p className="mt-1 text-sm leading-6 text-slate-500">{t("Turning learning on never lets retrieval similarity override evidence, domain support, formulas, governed metrics, or deterministic presentation planners.")}</p></div></div>
     </div>
   </div>;

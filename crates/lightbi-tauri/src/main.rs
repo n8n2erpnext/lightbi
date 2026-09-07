@@ -4,6 +4,7 @@ mod desktop_menu;
 mod installation_lifecycle;
 mod installation_trust;
 mod intelligence_pack;
+mod micro_brain_learning;
 mod navigation_guard;
 mod native_http;
 mod signed_transport;
@@ -714,6 +715,9 @@ fn main() {
             intelligence_pack::prepare_intelligence_pack_update,
             intelligence_pack::activate_intelligence_pack,
             intelligence_pack::rollback_intelligence_pack,
+            micro_brain_learning::stage_micro_brain_learning_package,
+            micro_brain_learning::upload_micro_brain_learning_part,
+            micro_brain_learning::discard_micro_brain_learning_package,
             native_http_request,
             save_export_file,
             account_session_token,

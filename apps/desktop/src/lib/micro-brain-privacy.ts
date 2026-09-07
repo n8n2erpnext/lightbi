@@ -21,6 +21,8 @@ export type MicroBrainRuntimeState = {
   lastActivityAt: string | null;
 };
 
+export type MicroBrainLearningEvidenceSnapshot = { retrievals:number; candidateHits:number; abstentions:number; capturedAt:string };
+
 const STORAGE_KEY = "lightbi.micro-brain.local-learning.v1";
 const EVENT = "lightbi-micro-brain-state";
 const EMPTY_EVIDENCE = { retrievals: 0, candidateHits: 0, abstentions: 0, lastActivityAt: null } as const;
@@ -98,6 +100,19 @@ export function recordMicroBrainRuntimeActivity(hitCount: number): void {
 }
 
 export function readMicroBrainRuntimeState(): MicroBrainRuntimeState { return { ...runtimeState }; }
+export function snapshotMicroBrainLearningEvidence(): MicroBrainLearningEvidenceSnapshot {
+  const evidence = readMicroBrainLearningState().evidence;
+  return { retrievals:evidence.retrievals, candidateHits:evidence.candidateHits, abstentions:evidence.abstentions, capturedAt:new Date().toISOString() };
+}
+export function consumeMicroBrainLearningEvidence(snapshot: MicroBrainLearningEvidenceSnapshot): void {
+  const state = readMicroBrainLearningState();
+  write({ ...state, evidence: {
+    retrievals: Math.max(0, state.evidence.retrievals - Math.max(0, snapshot.retrievals)),
+    candidateHits: Math.max(0, state.evidence.candidateHits - Math.max(0, snapshot.candidateHits)),
+    abstentions: Math.max(0, state.evidence.abstentions - Math.max(0, snapshot.abstentions)),
+    lastActivityAt: state.evidence.lastActivityAt,
+  }});
+}
 export function microBrainLearningMemoryBytes(): number {
   const state = readMicroBrainLearningState();
   return new TextEncoder().encode(JSON.stringify(state.evidence)).byteLength;

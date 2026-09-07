@@ -166,7 +166,10 @@ pub(crate) fn signed_route_class(pathname: &str) -> SignedRouteClass {
     ) {
         return SignedRouteClass::Bootstrap;
     }
-    if pathname.starts_with("/api/account/") || pathname == "/api/license/activate" {
+    if pathname.starts_with("/api/account/")
+        || pathname.starts_with("/api/micro-brain/learning/")
+        || pathname == "/api/license/activate"
+    {
         return SignedRouteClass::NativeProtected;
     }
     SignedRouteClass::PublicRead
@@ -408,6 +411,10 @@ mod tests {
         assert_eq!(
             signed_route_class("/api/v1/account/mfa/verify"),
             SignedRouteClass::PublicRead
+        );
+        assert_eq!(
+            signed_route_class("/api/micro-brain/learning/poll"),
+            SignedRouteClass::NativeProtected
         );
         assert_eq!(
             signed_route_class("/api/releases/latest"),

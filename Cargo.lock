@@ -3288,6 +3288,7 @@ version = "0.9.2-beta.7"
 dependencies = [
  "axum",
  "base64 0.22.1",
+ "flate2",
  "http-body-util",
  "keyring",
  "lightbi-intelligence-pack",
@@ -3302,7 +3303,9 @@ dependencies = [
  "tauri-build",
  "tauri-plugin-opener",
  "tempfile",
+ "time",
  "tokio",
+ "tokio-util",
  "tower",
  "url",
  "windows-sys 0.59.0",

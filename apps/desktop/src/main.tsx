@@ -5,6 +5,7 @@ import { router } from './routes';
 import { getOrCreateInstallationId, pairLightBIInstallation } from './lib/distribution-pairing';
 import { ensureNativeInstallationTrust, isNativeLightBI } from './lib/native-runtime';
 import { startAppUsageTelemetry } from './lib/app-usage-telemetry';
+import { startMicroBrainContributionLoop } from './lib/micro-brain-learning-contribution';
 import { installNativeExternalLinkGuard } from './lib/native-capabilities';
 import { useIntelligencePackStore } from './stores/intelligence-pack-store';
 import './index.css';
@@ -20,6 +21,7 @@ async function startLightBI() {
       void ensureNativeInstallationTrust(installationId);
     }
     startAppUsageTelemetry();
+    startMicroBrainContributionLoop();
     installNativeExternalLinkGuard();
     void useIntelligencePackStore.getState().check();
   }

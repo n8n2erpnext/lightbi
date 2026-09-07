@@ -2,12 +2,14 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import {
   clearMicroBrainLearningMemory,
+  consumeMicroBrainLearningEvidence,
   decideMicroBrainLearning,
   microBrainLearningMemoryBytes,
   readMicroBrainLearningState,
   readMicroBrainRuntimeState,
   recordMicroBrainRuntimeActivity,
   setMicroBrainLearningEnabled,
+  snapshotMicroBrainLearningEvidence,
 } from "./micro-brain-privacy";
 
 describe("Micro Brain local learning consent", () => {
@@ -38,4 +40,13 @@ describe("Micro Brain local learning consent", () => {
     clearMicroBrainLearningMemory();
     expect(readMicroBrainLearningState()).toMatchObject({ consent: "allowed", learningEnabled: true, evidence: { retrievals: 0, candidateHits: 0, abstentions: 0, lastActivityAt: null } });
   });
+});
+
+it("consumes only the accepted snapshot and preserves learning events that arrived during upload", () => {
+  decideMicroBrainLearning(true);
+  recordMicroBrainRuntimeActivity(0);
+  const snapshot = snapshotMicroBrainLearningEvidence();
+  recordMicroBrainRuntimeActivity(0);
+  consumeMicroBrainLearningEvidence(snapshot);
+  expect(readMicroBrainLearningState().evidence).toMatchObject({ retrievals: 1, abstentions: 1 });
 });
