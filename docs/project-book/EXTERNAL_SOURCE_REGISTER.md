@@ -66,6 +66,9 @@ Authority rule: Frappe UI may inform primitive composition, tokens, interaction 
 - Incorporated into: `docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DECISION_PRESENTATION_UI_UX_REFACTOR_2026-09-04.md`.
 - Owner intent: study the source implementation, not only screenshots, with special attention to clean accounting workflows, flat-canvas hierarchy, restrained surfaces, navigation/action placement, tables/forms and dashboard information rhythm.
 - Chart direction: use Frappe/owner references to build a semantic LightBI Chart Pattern Library; do not copy external chart APIs or pursue visual variety for its own sake.
+- DPR-0 re-pin: verified again at exact `a79a1e3b03f424805ad094e2fd8731d04f84d36f` and cloned read-only to `/home/ubuntu/n8n2erpnext/_external-reference/frappe-books-a79a1e3` for source study.
+- Measured study scope now includes Windows/macOS window chrome, 28px Windows title bar, 64px page header, 14rem sidebar, row-height rhythm, Inter typography scale, neutral/semantic color palette, spacing/radius/shadow usage, dashboard section ratios and drag/no-drag window-control behavior.
+- Source finding: Books ships dedicated Bar/Line/Donut charts plus progress-style invoice status; it does not cover LightBI's full target chart grammar, so owner chart references remain required.
 
 Authority rule: Frappe Books/Frappe UI may inform product behavior, design-system structure and visualization grammar. LightBI owner decisions, current React/Tauri code, governed evidence/metric contracts, accessibility requirements and LightBI-specific acceptance remain authoritative.
 

@@ -1,13 +1,14 @@
 # Agent Implementation Plan — Decision Presentation + UI/UX Refactor — 2026-09-04
 
-Status: **OWNER-APPROVED PLANNING DIRECTION — UI/UX DPR IMPLEMENTATION NOT STARTED; MB PRESENTATION-ADVISORY FOUNDATION SOURCE-CLOSED**
+Status: **DPR-0 ACTIVE — BASELINE AUDIT / CONTRACT FREEZE IN PROGRESS; MB PRESENTATION-ADVISORY FOUNDATION SOURCE-CLOSED**
 Date: 2026-09-04
 Amended: 2026-09-05 — owner added design-system/i18n hardening and Frappe UI reference direction.
 Amended: 2026-09-06 — owner elevated Frappe Books as a primary product-UX study source and added a canonical chart-pattern/visual-grammar library direction.
 Amended: 2026-09-06 — owner explicitly admitted Micro Brain into DPR-2..DPR-7 as bounded presentation/domain/chart/narrative advice; deterministic planners remain final decision gates.
+Amended: 2026-09-07 — DPR-0 re-pinned and cloned Frappe Books `a79a1e3...`; owner expanded the required Books study to exact visual-system measurements including proportions, spacing, typography, color, layout and desktop window chrome.
 Scope: Question/Perspective, narrative, visualization, Dashboard, evidence, export and product UI-surface refactor.
 Authority: design/implementation plan; not runtime or metric authority.
-Code-audit snapshot: product successor `codex/r1-roadmap-integration` at `262bd768`; re-verify exact head at DPR-0.
+Code-audit snapshot: DPR-0 re-verified product successor `codex/r1-roadmap-integration` at `40ca2d8b1dbd213bca510e51b9e09c5c19279f5d`; implementation mutations remain pending a clean DPR worktree.
 Supersedes: none.
 
 Repository target when implementation is authorized: public LightBI product successor.
@@ -529,6 +530,24 @@ Books/Frappe principles to translate into LightBI rather than clone:
 `flat canvas -> strong typography -> whitespace/alignment -> thin divider -> subtle surface -> bounded card only when necessary`.
 
 Color remains semantic and restrained. Neutral/gray is the default UI language; accent colors must encode selection, state or analytical meaning rather than decorate every section. The refactor should prefer one dominant action/accent per local decision surface instead of a rainbow of equal-weight controls.
+
+### Books visual-system measurements — DPR-0 source study
+
+DPR-0 re-verified and cloned Frappe Books at exact `a79a1e3b03f424805ad094e2fd8731d04f84d36f`. The following are observed source measurements/reference behavior, not LightBI tokens to copy blindly.
+
+- Base product frame: `1200x826` on Windows, with a `1200x800` content design basis. Sidebar is `14rem` (~224px); normal page header is `4rem` (64px). Row rhythm is 32 / 40 / 48 / 56 / 64px, with 48px as the common dense data/list row.
+- Typography: Inter variable font. Tailwind scale is 11 / 12 / 13 / 14 / 18 / 20 / 24 / 28px; ordinary business copy is primarily 12–14px, section headings 13px semibold, page titles 18px semibold. Density comes from disciplined type hierarchy, not tiny unreadable text.
+- Surface hierarchy: default canvas is white or near-white; sidebar uses `gray-25 #FBFBFB`; dividers commonly use `gray-100 #F3F3F3`; borders/shadows are restrained. Form/card-like bounded surfaces usually use 5–8px radii, with larger 12px radius reserved for stronger containers.
+- Color grammar: neutral gray dominates shell/chrome. Primary ink begins from `#1E293B`; analytical accents use semantic families such as blue (`#33A1FF`) and pink (`#DF9EB8`) rather than decorating every section. Dark canvas uses `#171717/#212121/#1C1C1C` layers.
+- Dashboard composition is flat: a dominant full-width cashflow visual, thin divider, two-column invoice status, divider, then two-column P&L and expense composition. Bounded chart surfaces do not imply every surrounding section needs a card.
+- Controls are compact: standard background button height 32px; dashboard period selector is 12px text with 12px chevron and minimal vertical padding. Search/back/forward are grouped in the 64px page header rather than consuming a separate large toolbar.
+- Windows chrome is a separate 28px custom title bar. The drag region owns the center; click targets are explicitly `no-drag`. Minimize/maximize/close controls use ~48x28px hit areas with 12–16px icons; neutral hover for minimize/maximize and red close hover. The centered window title is only 12px.
+- macOS uses hidden native title-bar treatment with traffic lights positioned at `(16,16)`. The product therefore distinguishes OS window chrome from the 64px application page header instead of merging both roles into one oversized web-style bar.
+- Animation is restrained: sidebar/quick-edit transitions are ~150ms ease-out. Scrolling, dividers and hover/selection states carry most navigation feedback.
+
+Translation rule for LightBI: preserve these ratios and hierarchy principles where they improve desktop ergonomics, but implement them as React/Tauri design tokens/components. Do not import Vue/Electron code or assume Books' accounting-specific dimensions are universal. Window controls must use Tauri window authority and preserve platform accessibility/drag-region behavior.
+
+Books is not a sufficient visualization vocabulary: its dedicated chart components are only Bar, Line and Donut. Owner chart references remain required acceptance sources for KPI bands, combo/dual-axis, stacked, ranked horizontal, radar/profile, target/progress, geo/map, scatter/bubble, funnel, heatmap/treemap and other patterns not implemented by Books.
 
 ### Chart Pattern Library is a semantic grammar, not a gallery
 

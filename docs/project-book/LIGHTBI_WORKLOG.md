@@ -1747,3 +1747,11 @@ R1-P0 documentation/integrity closure verified 1,243 local links with zero missi
 - Final state: schema `26/26`, learning contributions/jobs `0`, all worker lanes running with failures `0` and circuits closed; issuer `3817149`, signer `12020`, attestation `1505209` unchanged. Production untouched.
 - User Account TOTP/Passkey is live after canonical v1 route-prefix repair. NEXT047 installation-issuer mismatch remains intentionally deferred until an official release build; do not restart Trust merely for that stale test candidate.
 - SSD guard recovered from 92% to 67% by deleting only the ~30 GiB Product Cargo build cache. Immediate execution position returns to Roadmap 1.0; cut a fresh successor when packaging is actually needed.
+
+## 2026-09-07 — DPR-0 Frappe Books source study expands to exact visual-system measurements
+
+- Re-pinned `frappe/books` at exact `a79a1e3b03f424805ad094e2fd8731d04f84d36f` and cloned it read-only under `_external-reference/` for direct source study. No external source was copied into LightBI product code.
+- Confirmed Books as the primary UI/UX composition reference: 14rem sidebar, 64px page header, 32/40/48/56/64px row rhythm, Inter 11–28px type scale, restrained neutral surfaces/dividers and semantic accent color.
+- Confirmed desktop chrome behavior: Windows custom 28px title bar with ~48x28px minimize/maximize/close hit targets and explicit drag/no-drag regions; macOS uses hidden native title-bar treatment with traffic lights at `(16,16)`. Window chrome and page/application toolbar remain separate hierarchy layers.
+- Confirmed Books chart coverage is intentionally small: dedicated Bar, Line and Donut components plus a progress-style invoice status bar. Owner chart references remain the acceptance corpus for combo, stacked, radar, geo/map, target/progress and other analytical patterns Books lacks.
+- DPR plan amended with exact source measurements as reference observations, not copy-ready LightBI tokens. LightBI remains React/Tauri and must translate the principles rather than import Vue/Electron implementation.
