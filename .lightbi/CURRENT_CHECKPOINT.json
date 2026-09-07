@@ -1,8 +1,8 @@
 {
   "schema": "lightbi.current-checkpoint.v1",
-  "updatedAt": "2026-09-07T11:22:46Z",
-  "status": "mb_lq3_worker_safety_source_schema_rehearsal_closed_live_activation_blocked_r2_locked_next047_pre_worker_safety_candidate",
-  "activeRuntime": "engine g-2026-09-05-next-034; live Internal CP/workers c302f9933c8; Worker Safety candidate 975884e not activated; TEST runtime REL NEXT046; Production untouched",
+  "updatedAt": "2026-09-07T12:25:31Z",
+  "status": "mb_lq3_worker_safety_live_gate_closed_r2_dedicated_authority_gate_open",
+  "activeRuntime": "engine g-2026-09-05-next-034; live Internal CP/API/workers exact 2d2b87e51e63; Worker Safety Gate B PASS; TEST runtime REL NEXT046; R2 broker absent; Production untouched",
   "sourceCandidate": {
     "repo": "/home/ubuntu/n8n2erpnext/LightBI-exp-focus-subject",
     "branch": "codex/r1-roadmap-integration",
@@ -11,30 +11,52 @@
   "controlPlaneSourceCandidate": {
     "repo": "/home/ubuntu/n8n2erpnext/lightbi-control-plane-r1p14-signed-transport",
     "branch": "codex/r1p14-signed-transport",
-    "head": "975884e4a009049e94341aab570c9acef5c30c71"
+    "head": "2d2b87e51e63cbd8e2c7c037a415e98f5884603f"
   },
   "runtimeControlPlane": {
-    "head": "c302f9933c8ba50b189df2e596eb84f6e936881a",
-    "directory": "/home/ubuntu/services/lightbi-control-plane-next034-c302f99/apps/distribution",
-    "apiPid": 1598271,
-    "legacyWorkerPid": 1598272,
+    "head": "2d2b87e51e63cbd8e2c7c037a415e98f5884603f",
+    "directory": "/home/ubuntu/services/lightbi-control-plane-next034-2d2b87e/apps/distribution",
+    "apiPid": 1979932,
+    "legacyWorkerPid": 1979945,
     "asyncWorkers": {
-      "short": 1606932,
-      "default": 1606946,
-      "long": 1606982
+      "short": 1999295,
+      "default": 1980491,
+      "long": 1980855
     }
   },
   "workerSafety": {
-    "candidateDeploy": "/home/ubuntu/services/lightbi-control-plane-next034-975884e",
-    "candidateHead": "975884e4a009049e94341aab570c9acef5c30c71",
-    "focusedTests": "23/23 PASS",
+    "candidateDeploy": "/home/ubuntu/services/lightbi-control-plane-next034-2d2b87e",
+    "candidateHead": "2d2b87e51e63cbd8e2c7c037a415e98f5884603f",
     "fullControlPlaneTests": "286/286 PASS",
     "postgresRehearsal": "PASS",
-    "liveActivation": "OPEN",
+    "liveActivation": "PASS",
+    "liveAcceptance": "PASS",
+    "redisReconnectOwnershipFix": "PASS",
     "userManagerPid": 943,
-    "userBusPresent": false,
-    "userSystemdPrivatePresent": false,
-    "safeSystemdControlPathFound": false
+    "userUid": 1001,
+    "userBusPresent": true,
+    "userSystemdPrivatePresent": true,
+    "safeSystemdControlPathFound": true,
+    "idle35s": {
+      "shortCpuPct": 0.0,
+      "defaultCpuPct": 0.0286,
+      "longCpuPct": 0.0286,
+      "rssDeltaKiB": {
+        "short": 312,
+        "default": 0,
+        "long": 0
+      },
+      "errorEvents": 0
+    },
+    "finalCleanup": {
+      "asyncJobs": 0,
+      "syntheticJobs": 0,
+      "syntheticHeartbeats": 0,
+      "syntheticRedisDispatchMarkers": 0,
+      "allLanesRunning": true,
+      "allLaneFailures": 0,
+      "allCircuitsClosed": true
+    }
   },
   "acceptanceOrchestration": {
     "head": "2ba518263d7ef5072de1b364dfc977ee1f4515ef",
@@ -42,7 +64,8 @@
     "generation": "g-2026-09-07-next-047",
     "parentGeneration": "g-2026-09-07-next-046",
     "actionStatus": "intentionally_untracked_not_claimed_pass",
-    "workerSafetyIncluded": false
+    "workerSafetyIncluded": false,
+    "recommendation": "prefer_fresh_successor_after_r2_closure"
   },
   "databaseSchema": {
     "latest": "072_micro_brain_worker_safety",
@@ -72,32 +95,32 @@
   "completed": [
     "mb_lq0_lq2_foundation_scheduler_schema_synthetic_gates_closed",
     "mb_lq3_product_direct_r2_native_source_closed_65092cd",
-    "mb_lq3_control_plane_direct_r2_source_and_readiness_closed_through_c302f99",
-    "worker_safety_source_closed_975884e_focused_23_of_23_full_cp_286_of_286",
+    "mb_lq3_control_plane_direct_r2_source_and_readiness_closed",
     "migration_072_applied_next_26_total_pending_0",
-    "worker_safety_postgres_rehearsal_pass_and_synthetic_cleanup_pass",
-    "immutable_975884e_deploy_env_and_dropins_prepared_not_activated",
-    "gate_a_runtime_truth_reread_live_pids_cwd_schema_trust_and_bus_state_confirmed",
-    "docs_handoff_catalog_project_book_worklog_committed_980310c"
+    "worker_safety_parent_975884e_postgres_rehearsal_pass",
+    "safe_user_systemd_control_corrected_to_uid_1001_without_manager_restart",
+    "worker_safety_live_outage_bug_found_and_fixed_2d2b87e",
+    "worker_safety_exact_2d2b87e_full_cp_286_of_286",
+    "worker_safety_live_11_point_acceptance_pass",
+    "worker_safety_final_pg_redis_cleanup_pass",
+    "trust_health_preserved_test_only",
+    "docs_project_book_126_worklog_committed_f47b47a"
   ],
-  "nextAction": "Keep Worker Safety live activation OPEN unless a demonstrably safe user-systemd control path appears. Do not restart/kill user manager PID 943. If safe control becomes available, daemon-reload and rotate only CP API/legacy/short/default/long to exact 975884e, then run the full 11-point live Worker Safety acceptance and cleanup. Only after that provision dedicated NEXT learning-only R2 broker authority and run the 13-point MB-LQ3 R2 rehearsal.",
+  "nextAction": "Gate C only: provision a dedicated least-privileged NEXT learning-only Cloudflare R2 credential and bucket/prefix for the Unix-socket broker. Do not reuse broad Production/distribution/backup authority. Prove broker prefix confinement and prove CP/async-worker environments do not inherit R2 access-key/secret fields. Then execute the 13-point MB-LQ3 real R2 rehearsal with complete R2/PG/Redis cleanup before classifying LQ3 complete.",
   "blockers": [
-    "/run/user/1000/bus and /run/user/1000/systemd/private are absent; systemctl --user and tested --machine variants cannot control the live user manager safely",
-    "User manager PID 943 parents protected Trust launchers and must not be restarted/killed merely to recover control",
-    "Worker Safety exact 975884e is not live; current API/workers still execute exact c302f9933c8ba50b189df2e596eb84f6e936881a",
-    "No dedicated NEXT learning-only R2 credential/bucket is provisioned; broad Production R2 authority must not be reused",
-    "Real MB-LQ3 Cloudflare R2 end-to-end rehearsal remains locked behind Worker Safety live PASS and dedicated broker authority",
-    "NEXT047 predates Worker Safety/schema 072 and is candidate-only, not Trust-ready or owner-UAT accepted",
+    "Dedicated NEXT learning-only R2 credential/bucket or prefix authority is not provisioned; broad Production R2 authority is forbidden for this lane",
+    "Real MB-LQ3 Cloudflare R2 rehearsal remains OPEN until dedicated broker authority exists",
+    "NEXT047 predates Worker Safety/schema 072 and Redis reconnect fix and is not the preferred owner-install successor",
     "Production promotion/authority remains owner-gated"
   ],
   "productionTouched": false,
   "phase2aFrozen": false,
   "readFirst": [
     "docs/project-book/LIBRARY_RULES.md",
+    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#126-2026-09-07-worker-safety-live-gate-closes-on-redis-backoff-successor-2d2b87e",
     "docs/history/agent/handoffs/post-beta/AGENT_HANDOFF_MB_LQ3_WORKER_SAFETY_AND_R2_GATE_2026-09-07.md",
     "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_MICRO_BRAIN_R2_REDIS_LEARNING_PIPELINE_2026-09-07.md",
-    "docs/architecture/road-to-1-0-trust-release-contract.md",
-    "docs/project-book/LIGHTBI_PROJECT_BOOK.md"
+    "docs/architecture/road-to-1-0-trust-release-contract.md"
   ],
-  "documentationHead": "980310c537c2a47fc489cd6123e7e7a3e8163b38"
+  "documentationHead": "f47b47acc281d59f8a942af0499d37c40a06d70b"
 }
