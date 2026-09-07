@@ -1682,3 +1682,14 @@ R1-P0 documentation/integrity closure verified 1,243 local links with zero missi
 - Presentation corpus: 88 cards = 32 domain profiles, 31 chart patterns, 12 perspective profiles, 7 constitutional/self-charter cards plus dashboard narrative and anti-pattern knowledge. Presentation index is 3,360,712 bytes; combined with semantic index total is 9,966,179 bytes raw (~2,619,814 bytes gzip9), below the 20 MiB near-term ceiling.
 - Closure verification PASS: targeted presentation/determinism/semantic-regression set 14/14; isolated MB-7 active-core benchmark PASS with the same three TTKT ETA recoveries and zero confirmed semantic regressions; Desktop production build + TypeScript/Vite + source-size gate PASS.
 - Runtime integration remains intentionally deferred to the UI/UX refactor planners. Production/NEXT runtime, metric/formula/join/domain-support authority and current release role are unchanged by this closure.
+
+
+## 2026-09-07 — Micro Brain MB-LQ2 scheduler/Admin source + NEXT schema/rehearsal closure
+
+- Control Plane `dbf7bfeb77cac8bbabff4b1525b6e7efe3665697` source-closes MB-LQ2: explicit `server|client` async-job targets, 5:3:1 learning scheduler, aging/value/network-fit scoring, cadence/quota/backpressure policy, Redis leader coordination, and strong-auth/audited Admin Queue/Scheduler controls.
+- Full Control Plane regression PASSed `264/264`; `git diff --check` and cached diff checks were clean before commit/push.
+- Read-only NEXT migration status proved `070_micro_brain_learning_scheduler_hardening` was the sole pending migration. It was applied; current NEXT schema is `24` migrations, `pending=0`.
+- Real NEXT Postgres+Redis rehearsal PASSed: Redis leader election; two synthetic client collection jobs; server dispatcher excluded client jobs; server lease against a client job returned no authority; ready-lake pressure reached exactly 100% and blocked further issuance as `backpressure_paused`.
+- Rehearsal cleanup PASSed: Postgres synthetic `installations=0`, `jobs=0`, `contributions=0`; temporary Redis scheduler leader key removed.
+- Live NEXT CP remains `eea0de340615c145feeb8461d568364c5d041d66`; LQ2 Admin UI/API is therefore not live-deployed yet. User systemd PID `943` is alive but `/run/user/1000/bus` remains absent, so `short/default/long` unit activation stays OPEN rather than restarting the manager and risking trust processes.
+- Trust issuer PID `3817149` and signer PID `12020` remained unchanged; Production untouched. Next implementation phase is MB-LQ3 App -> R2 direct contribution transport.
