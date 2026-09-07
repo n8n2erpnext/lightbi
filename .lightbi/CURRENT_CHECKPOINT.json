@@ -1,71 +1,57 @@
 {
   "schema": "lightbi.current-checkpoint.v1",
-  "updatedAt": "2026-09-07T12:25:31Z",
-  "status": "mb_lq3_worker_safety_live_gate_closed_r2_dedicated_authority_gate_open",
-  "activeRuntime": "engine g-2026-09-05-next-034; live Internal CP/API/workers exact 2d2b87e51e63; Worker Safety Gate B PASS; TEST runtime REL NEXT046; R2 broker absent; Production untouched",
+  "updatedAt": "2026-09-07T15:58:43Z",
+  "status": "mb_lq3_worker_safety_signed_capability_closed_return_to_roadmap_1_0",
+  "activeRuntime": "engine g-2026-09-05-next-034; five live NEXT CP/API/workers exact fd18429e271da398062719a0e404389d85f46f97; R2 broker exact b0d65b343d9bc73e90e90097d87eda3f92218d36; scheduler paused; Production untouched",
   "sourceCandidate": {
     "repo": "/home/ubuntu/n8n2erpnext/LightBI-exp-focus-subject",
     "branch": "codex/r1-roadmap-integration",
-    "head": "65092cd86c7c63c861109a6c01796f1c35a62978"
+    "head": "40ca2d8b1dbd213bca510e51b9e09c5c19279f5d"
   },
   "controlPlaneSourceCandidate": {
     "repo": "/home/ubuntu/n8n2erpnext/lightbi-control-plane-r1p14-signed-transport",
     "branch": "codex/r1p14-signed-transport",
-    "head": "2d2b87e51e63cbd8e2c7c037a415e98f5884603f"
+    "head": "b0d65b343d9bc73e90e90097d87eda3f92218d36"
   },
   "runtimeControlPlane": {
-    "head": "2d2b87e51e63cbd8e2c7c037a415e98f5884603f",
-    "directory": "/home/ubuntu/services/lightbi-control-plane-next034-2d2b87e/apps/distribution",
-    "apiPid": 1979932,
-    "legacyWorkerPid": 1979945,
+    "head": "fd18429e271da398062719a0e404389d85f46f97",
+    "directory": "/home/ubuntu/services/lightbi-control-plane-next034-fd18429/apps/distribution",
+    "apiPid": 2346997,
+    "legacyWorkerPid": 2347000,
     "asyncWorkers": {
-      "short": 1999295,
-      "default": 1980491,
-      "long": 1980855
+      "short": 2347005,
+      "default": 2347001,
+      "long": 2347002
+    }
+  },
+  "learningTransport": {
+    "brokerHead": "b0d65b343d9bc73e90e90097d87eda3f92218d36",
+    "brokerDirectory": "/home/ubuntu/services/lightbi-control-plane-next034-b0d65b3/apps/distribution",
+    "brokerPid": 2449688,
+    "brokerActive": true,
+    "brokerEnabled": true,
+    "physicalBasePrefix": "mb-learn-db",
+    "schedulerEnabled": false,
+    "fullR2Rehearsal": "13/13 PASS",
+    "schedulerTransactionalSmoke": "PASS",
+    "finalCleanup": {
+      "contributions": 0,
+      "learningJobs": 0,
+      "redisResidue": 0,
+      "r2Residue": 0
     }
   },
   "workerSafety": {
-    "candidateDeploy": "/home/ubuntu/services/lightbi-control-plane-next034-2d2b87e",
-    "candidateHead": "2d2b87e51e63cbd8e2c7c037a415e98f5884603f",
-    "fullControlPlaneTests": "286/286 PASS",
-    "postgresRehearsal": "PASS",
-    "liveActivation": "PASS",
-    "liveAcceptance": "PASS",
-    "redisReconnectOwnershipFix": "PASS",
-    "userManagerPid": 943,
-    "userUid": 1001,
-    "userBusPresent": true,
-    "userSystemdPrivatePresent": true,
-    "safeSystemdControlPathFound": true,
-    "idle35s": {
-      "shortCpuPct": 0.0,
-      "defaultCpuPct": 0.0286,
-      "longCpuPct": 0.0286,
-      "rssDeltaKiB": {
-        "short": 312,
-        "default": 0,
-        "long": 0
-      },
-      "errorEvents": 0
-    },
-    "finalCleanup": {
-      "asyncJobs": 0,
-      "syntheticJobs": 0,
-      "syntheticHeartbeats": 0,
-      "syntheticRedisDispatchMarkers": 0,
-      "allLanesRunning": true,
-      "allLaneFailures": 0,
-      "allCircuitsClosed": true
-    }
+    "gate": "CLOSED",
+    "allLanesRunning": true,
+    "allLaneFailures": 0,
+    "allCircuitsClosed": true,
+    "schema": "072_micro_brain_worker_safety"
   },
-  "acceptanceOrchestration": {
-    "head": "2ba518263d7ef5072de1b364dfc977ee1f4515ef",
-    "version": "0.9.2-beta.7-next.47",
-    "generation": "g-2026-09-07-next-047",
-    "parentGeneration": "g-2026-09-07-next-046",
-    "actionStatus": "intentionally_untracked_not_claimed_pass",
-    "workerSafetyIncluded": false,
-    "recommendation": "prefer_fresh_successor_after_r2_closure"
+  "signedAuthority": {
+    "microBrainLearning": "verified Signed Transport + attestation installation binding required",
+    "intelligencePack": "Signed Transport catalog -> short-lived artifact capability -> INT Ed25519 verification",
+    "consentWithdrawal": "authority-first rejection + remote cleanup + durable client retry intent"
   },
   "databaseSchema": {
     "latest": "072_micro_brain_worker_safety",
@@ -73,54 +59,35 @@
     "pending": 0
   },
   "trustRuntime": {
-    "testRelVersion": "0.9.2-beta.7-next.46",
-    "testRelReleaseId": "release:0.9.2-beta.7-next.46:windows:x86_64:runtime",
     "issuerPid": 3817149,
     "signerPid": 12020,
     "attestationPid": 1505209,
-    "attestationImage": "lightbi-next-trust-attestation:387db91e1123-trust-10de4da8",
-    "trustContracts": "10de4da8e551a46f93f7b62985a0a6e611581b8e",
-    "issuerHotReload": true,
-    "issuerSnapshotHealth": "healthy",
-    "issuerPublicationCount": 12,
-    "productionAuthority": false
-  },
-  "learningTransport": {
-    "brokerSocket": "/home/ubuntu/.local/run/lightbi-mb-r2-broker/broker.sock",
-    "brokerActive": false,
-    "dedicatedLearningCredentialPresent": false,
-    "sharedProductionCredentialReused": false,
-    "readinessBehavior": "fail_closed_learning_transport_unavailable"
+    "productionAuthority": false,
+    "testRelease": "0.9.2-beta.7-next.46"
   },
   "completed": [
-    "mb_lq0_lq2_foundation_scheduler_schema_synthetic_gates_closed",
-    "mb_lq3_product_direct_r2_native_source_closed_65092cd",
-    "mb_lq3_control_plane_direct_r2_source_and_readiness_closed",
-    "migration_072_applied_next_26_total_pending_0",
-    "worker_safety_parent_975884e_postgres_rehearsal_pass",
-    "safe_user_systemd_control_corrected_to_uid_1001_without_manager_restart",
-    "worker_safety_live_outage_bug_found_and_fixed_2d2b87e",
-    "worker_safety_exact_2d2b87e_full_cp_286_of_286",
-    "worker_safety_live_11_point_acceptance_pass",
-    "worker_safety_final_pg_redis_cleanup_pass",
-    "trust_health_preserved_test_only",
-    "docs_project_book_126_worklog_committed_f47b47a"
+    "worker_safety_gate_b_closed_and_revalidated_on_descendant_runtime",
+    "user_account_totp_passkey_route_repaired_live",
+    "micro_brain_signed_transport_and_consent_withdrawal_closed",
+    "intelligence_pack_signed_catalog_capability_and_package_signature_closed",
+    "owner_authorized_distribution_r2_reuse_broker_only_mb_learn_db_prefix",
+    "r2_live_13_point_rehearsal_pass_and_full_cleanup",
+    "next_only_scheduler_transactional_smoke_pass",
+    "control_plane_full_regression_297_of_297_pass",
+    "docs_project_book_128_worklog_committed_35b8746"
   ],
-  "nextAction": "Gate C only: provision a dedicated least-privileged NEXT learning-only Cloudflare R2 credential and bucket/prefix for the Unix-socket broker. Do not reuse broad Production/distribution/backup authority. Prove broker prefix confinement and prove CP/async-worker environments do not inherit R2 access-key/secret fields. Then execute the 13-point MB-LQ3 real R2 rehearsal with complete R2/PG/Redis cleanup before classifying LQ3 complete.",
+  "nextAction": "Return to the canonical Roadmap 1.0. Reconcile the current Roadmap/Project Book phase before new mutation, then continue the next owner-approved Roadmap item from current Product 40ca2d8 / CP source b0d65b3. Do not resume from stale NEXT047 as a release candidate; cut a fresh successor only when packaging is needed.",
   "blockers": [
-    "Dedicated NEXT learning-only R2 credential/bucket or prefix authority is not provisioned; broad Production R2 authority is forbidden for this lane",
-    "Real MB-LQ3 Cloudflare R2 rehearsal remains OPEN until dedicated broker authority exists",
-    "NEXT047 predates Worker Safety/schema 072 and Redis reconnect fix and is not the preferred owner-install successor",
-    "Production promotion/authority remains owner-gated"
+    "NEXT047 predates the completed Worker Safety/R2/signed-capability work and is not a valid post-LQ3 release candidate",
+    "NEXT047 test-build installation_issuer_release_not_allowed is deferred until an official release build; do not restart Trust merely for the stale test build",
+    "Production promotion and role rotation remain owner-gated"
   ],
   "productionTouched": false,
   "phase2aFrozen": false,
   "readFirst": [
     "docs/project-book/LIBRARY_RULES.md",
-    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#126-2026-09-07-worker-safety-live-gate-closes-on-redis-backoff-successor-2d2b87e",
-    "docs/history/agent/handoffs/post-beta/AGENT_HANDOFF_MB_LQ3_WORKER_SAFETY_AND_R2_GATE_2026-09-07.md",
-    "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_MICRO_BRAIN_R2_REDIS_LEARNING_PIPELINE_2026-09-07.md",
+    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#128-2026-09-07-mb-lq3-r2-learning-transport-and-signed-capability-detour-close-roadmap-10-may-resume",
     "docs/architecture/road-to-1-0-trust-release-contract.md"
   ],
-  "documentationHead": "f47b47acc281d59f8a942af0499d37c40a06d70b"
+  "documentationHead": "35b87467df84c495d5d55a5b672e75a0c760698a"
 }
