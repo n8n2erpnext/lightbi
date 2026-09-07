@@ -7,8 +7,8 @@
   "worktreeDirty": true,
   "scope": "All project Markdown and JSON outside dependency/build/project-book directories.",
   "counts": {
-    "total": 947,
-    "markdown": 530,
+    "total": 948,
+    "markdown": 531,
     "json": 417,
     "docsJson": 354,
     "references": 0
@@ -9795,6 +9795,14 @@
       "sha256": "ab4768d490a6b578564ea8345f7e16d11975817a50e80a53fcdf8d89b9d3009d",
       "suggestedCategory": "historical-provenance",
       "title": "LightBI Session Master Handoff and Roadmap"
+    },
+    {
+      "path": "docs/history/agent/handoffs/post-beta/AGENT_HANDOFF_MB_LQ3_WORKER_SAFETY_AND_R2_GATE_2026-09-07.md",
+      "extension": ".md",
+      "bytes": 32948,
+      "sha256": "9cd929f3a1c1df66d005dc4447eac0f93772d85e074c05651382138994a4b825",
+      "suggestedCategory": "historical-provenance",
+      "title": "Agent Handoff — MB-LQ3, Worker Safety, R2 Gate, NEXT047 — 2026-09-07"
     },
     {
       "path": "docs/history/agent/handoffs/post-beta/POST_BETA_AI_HANDOFF_2026-08-13.md",

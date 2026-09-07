@@ -8,7 +8,7 @@
 - Branch: `docs/ba-da-mode-future-20260903`
 - HEAD: `85bcb724b42a80cb8fe005e29ff5d6c4c002d7a5`
 - Worktree dirty while generated: **true**
-- Total indexed sources: **947** (530 Markdown / 417 JSON)
+- Total indexed sources: **948** (531 Markdown / 417 JSON)
 - JSON under `docs/`: **354**
 
 For old paths, use [`PATH_MIGRATION_INDEX.md`](./PATH_MIGRATION_INDEX.md) and [`../history/LEGACY_ROOT_INDEX.md`](../history/LEGACY_ROOT_INDEX.md).
@@ -739,6 +739,7 @@ For old paths, use [`PATH_MIGRATION_INDEX.md`](./PATH_MIGRATION_INDEX.md) and [`
 - [`docs/history/agent/handoffs/AGENT_HANDOFF_WARNING_PROPAGATION_GUARDED_SUM_PHASE1B.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_WARNING_PROPAGATION_GUARDED_SUM_PHASE1B.md) — Warning Propagation for Guarded SUM (Phase 1B) Handoff; `1985` bytes; SHA-256 `93f136c2e86a834cc9a7ba74fcbcf4cfcbb47fb3454f9fe0c556a5eaed3e7cf0`
 - [`docs/history/agent/handoffs/AGENT_OUTBOX.md`](../../docs/history/agent/handoffs/AGENT_OUTBOX.md) — AGENT OUTBOX — Phase 6 Complete; `291` bytes; SHA-256 `a6d5d6f61ddad853959728c1a41757828d0ec85d0422cc8d01844cc917b1199f`
 - [`docs/history/agent/handoffs/SESSION_MASTER_HANDOFF_AND_ROADMAP_2026-06-12.md`](../../docs/history/agent/handoffs/SESSION_MASTER_HANDOFF_AND_ROADMAP_2026-06-12.md) — LightBI Session Master Handoff and Roadmap; `19627` bytes; SHA-256 `ab4768d490a6b578564ea8345f7e16d11975817a50e80a53fcdf8d89b9d3009d`
+- [`docs/history/agent/handoffs/post-beta/AGENT_HANDOFF_MB_LQ3_WORKER_SAFETY_AND_R2_GATE_2026-09-07.md`](../../docs/history/agent/handoffs/post-beta/AGENT_HANDOFF_MB_LQ3_WORKER_SAFETY_AND_R2_GATE_2026-09-07.md) — Agent Handoff — MB-LQ3, Worker Safety, R2 Gate, NEXT047 — 2026-09-07; `32948` bytes; SHA-256 `9cd929f3a1c1df66d005dc4447eac0f93772d85e074c05651382138994a4b825`
 - [`docs/history/agent/handoffs/post-beta/POST_BETA_AI_HANDOFF_2026-08-13.md`](../../docs/history/agent/handoffs/post-beta/POST_BETA_AI_HANDOFF_2026-08-13.md) — LightBI Post-Beta AI Handoff — 2026-08-13; `8069` bytes; SHA-256 `78fc605115ab0b6ce474c6e8cfce65191a5258b6e15c84e50a41285b22f12874`
 - [`docs/history/agent/handoffs/post-beta/POST_BETA_DEEP_BA_INVESTIGATION_HANDOFF_2026-08-13.md`](../../docs/history/agent/handoffs/post-beta/POST_BETA_DEEP_BA_INVESTIGATION_HANDOFF_2026-08-13.md) — Post-Beta Deep BA Investigation Handoff — 2026-08-13; `4060` bytes; SHA-256 `f734fc4cc6d7c7abe8ec6775bff5b0eefd6dbdf4cb8a2855469a1bc90fe08929`
 - [`docs/history/agent/handoffs/post-beta/POST_BETA_DEEP_BA_VI_COMPLETION_HANDOFF_2026-08-13.md`](../../docs/history/agent/handoffs/post-beta/POST_BETA_DEEP_BA_VI_COMPLETION_HANDOFF_2026-08-13.md) — Post-Beta Deep BA Vietnamese completion — 2026-08-13; `2586` bytes; SHA-256 `edafca8cc7c5701e9f933a8859f1c9aaf414bf1f2b85542b1095185a3daa39d7`
