@@ -6,9 +6,10 @@ Amended: 2026-09-05 — owner added design-system/i18n hardening and Frappe UI r
 Amended: 2026-09-06 — owner elevated Frappe Books as a primary product-UX study source and added a canonical chart-pattern/visual-grammar library direction.
 Amended: 2026-09-06 — owner explicitly admitted Micro Brain into DPR-2..DPR-7 as bounded presentation/domain/chart/narrative advice; deterministic planners remain final decision gates.
 Amended: 2026-09-07 — DPR-0 re-pinned and cloned Frappe Books `a79a1e3...`; owner expanded the required Books study to exact visual-system measurements including proportions, spacing, typography, color, layout and desktop window chrome.
+Amended: 2026-09-08 — owner promoted Figma `LightBI Logo Concept` node `19:5` (`optimized li`) to the LightBI primary mark and required SVG-first derivation across Desktop/native/Distribution branding.
 Scope: Question/Perspective, narrative, visualization, Dashboard, evidence, export and product UI-surface refactor.
 Authority: design/implementation plan; not runtime or metric authority.
-Code-audit snapshot: DPR-0 re-verified product successor `codex/r1-roadmap-integration` at `40ca2d8b1dbd213bca510e51b9e09c5c19279f5d`; implementation mutations remain pending a clean DPR worktree.
+Code-audit snapshot: DPR-0 baseline remains product `40ca2d8b1dbd213bca510e51b9e09c5c19279f5d`; brand-only source closure is Product `fde259a5441b36825f211914cbd0c82fc595f27f` and Control Plane `b6bc2735bcf99218443ae5c427701e5b1a7c938f`; broad presentation refactor mutations remain pending.
 Supersedes: none.
 
 Repository target when implementation is authorized: public LightBI product successor.
@@ -566,6 +567,19 @@ The Books reference is also an interaction-system source, not only a visual-layo
 - Dropdowns/popovers use anchored Popper placement, click-outside close, arrow-key highlight, Enter selection and `scrollIntoView(nearest)`; modal close is registered as an active Escape shortcut. Motion stays in the 100–150ms range.
 
 Translation rule for LightBI: adopt the interaction principles, not every Books shortcut or hidden-control decision. LightBI should preserve discoverability and accessibility, and its global search must be scoped to LightBI concepts/actions/data without leaking raw business data to network services. Tauri/native window and keyboard boundaries remain authoritative.
+
+### Primary logo and brand-asset authority — DPR-0
+
+Owner decision on 2026-09-08 promotes the third concept in Figma `LightBI Logo Concept` — node `19:5`, named `LightBI li mark` / `optimized li` — to the official LightBI primary mark. The owner-exported SVG is the canonical geometry source.
+
+- Canonical SVG: `700x700`, rounded black canvas (`rx=18`) with two `#FFC20A` glyph paths forming the optimized `li`; SHA-256 `9486181bb525d1d4a704addaebfc2f1caa5abbd9d1240bad252b85a3f58e0d7b`; source size `505` bytes.
+- Source hierarchy: Figma concept/node + owner-exported SVG -> repository SVG masters -> raster/native installer derivatives. PNG, ICO and BMP outputs are generated artifacts and must never become independent geometry/color authorities.
+- Desktop canonical surface: `apps/desktop/public/branding/lightbi-icon.svg`; `apps/desktop/public/favicon.svg` must remain byte-identical. Native Tauri PNG/ICO and NSIS header/sidebar are derived from the same mark.
+- Distribution canonical surface: `apps/distribution/public/logo.svg`; Account, Docs, Verify, marketing shell and Admin sidebar must consume that asset rather than maintain a hand-drawn or text-only substitute.
+- Product source closure: branch `codex/dpr0-logo-primary-mark`, commit `fde259a5441b36825f211914cbd0c82fc595f27f`. Desktop production build, native icon validator and native capability validator PASS.
+- Control Plane source closure: branch `codex/primary-logo-optimized-li`, commit `b6bc2735bcf99218443ae5c427701e5b1a7c938f`. Distribution build and focused server suite PASS `32/32`.
+- Figma MCP Starter quota prevented the in-canvas rename/export-setting mutation after node verification. This is not a geometry ambiguity: the owner exported the exact SVG and explicitly selected node `19:5`. When MCP quota becomes available, Figma metadata may be updated without changing the approved geometry.
+- Books/Frappe visual-system guidance may influence surrounding shell spacing, chrome and neutral surfaces, but it must not recolor, redraw or reinterpret the primary LightBI mark.
 
 ### Chart Pattern Library is a semantic grammar, not a gallery
 

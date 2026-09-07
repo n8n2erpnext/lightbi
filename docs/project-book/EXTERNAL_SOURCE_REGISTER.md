@@ -84,3 +84,16 @@ Authority rule: Frappe Books/Frappe UI may inform product behavior, design-syste
 - Owner intent: scale learning contribution without VPS pull connections, use private R2 as bounded learning lakes, adopt ERPNext-style `short/default/long` workers, expose queue/scheduler/lake controls in Admin, and selectively expand Redis caching without granting it authority.
 
 Authority rule: this source approves design direction. PostgreSQL/Redis/R2/worker code, migrations, NEXT runtime evidence and owner UAT must separately prove implementation; raw-user-data collection or automatic semantic promotion is not authorized by this discussion.
+## EXT-2026-09-08-FIGMA-PRIMARY-LOGO
+
+- Source name: Figma `LightBI Logo Concept` + owner-exported `LightBI li mark.svg`.
+- Supplied/approved: 2026-09-08 in the active owner/assistant conversation.
+- Figma file key: `wfvLVoNvzVzyNHq51U0DPB`; selected node: `19:5`; concept: third / `optimized li`.
+- Canonical SVG: 505 bytes; SHA-256 `9486181bb525d1d4a704addaebfc2f1caa5abbd9d1240bad252b85a3f58e0d7b`; palette `#000000` + `#FFC20A`.
+- Classification: owner-approved product identity / primary logo source; non-authoritative for cryptographic release identity.
+- Repository-native at intake: no; the exact owner-exported SVG was subsequently adopted into Product and Control Plane branding assets.
+- Product reconciliation: `fde259a5441b36825f211914cbd0c82fc595f27f` on `codex/dpr0-logo-primary-mark`.
+- Control Plane reconciliation: `b6bc2735bcf99218443ae5c427701e5b1a7c938f` on `codex/primary-logo-optimized-li`.
+- Figma MCP note: node identity/design context was verified, but Starter-plan call limits prevented metadata rename/export-setting writes. No partial Figma mutation was claimed.
+
+Authority rule: node `19:5` plus the owner-exported SVG define the LightBI primary mark geometry. Repository SVG masters may derive raster/native assets, but product-logo appearance never establishes official-build cryptographic authority by itself.

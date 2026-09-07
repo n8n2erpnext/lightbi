@@ -1763,3 +1763,11 @@ R1-P0 documentation/integrity closure verified 1,243 local links with zero missi
 - Quick Search is keyboard-first (`Ctrl/Cmd+K`) with 600px modal width, 20px input, 48px rows, fuzzy/incremental narrowing, local recents, group filters, arrow/Enter/Esc operation and nearest-row scroll preservation.
 - Books preserves native WebView scrolling and themes the scrollbar (~9.6px) rather than installing a JavaScript scroll engine. Sidebar whole-panel collapse/reveal and most popover/modal motion stay around 100–150ms.
 - DPR plan amended with these behaviors as LightBI interaction references. Translation remains React/Tauri-native and accessibility/discoverability may intentionally improve on Books rather than pixel-copying hidden controls.
+
+## 2026-09-08 — optimized `li` becomes LightBI primary logo
+
+- Owner selected the third Figma `LightBI Logo Concept` option, node `19:5` / `optimized li`, as the official LightBI primary mark and supplied the exact exported SVG. Canonical SVG SHA-256 is `9486181bb525d1d4a704addaebfc2f1caa5abbd9d1240bad252b85a3f58e0d7b`.
+- Product branch `codex/dpr0-logo-primary-mark` commit `fde259a5441b36825f211914cbd0c82fc595f27f` replaces Desktop shell SVG, favicon, app PNG, Tauri PNG/ICO and NSIS header/sidebar with derivatives of that SVG. Desktop production build PASS; native icon and capability validators PASS.
+- Control Plane branch `codex/primary-logo-optimized-li` commit `b6bc2735bcf99218443ae5c427701e5b1a7c938f` replaces Distribution `logo.svg` and makes the Admin sidebar consume the same real asset instead of hard-coded `Li` text. Distribution build + focused server suite PASS `32/32`.
+- SVG is now the brand geometry authority; PNG/ICO/BMP are derived outputs. Figma MCP Starter quota blocked only canvas metadata/export-setting writes, not source verification or owner approval.
+- No live Production/Trust runtime was rotated for this brand-only source change. Deployment should ride the next Roadmap-1.0 successor rather than create an infrastructure side quest.
