@@ -59,7 +59,7 @@
     "View Micro Brain live status": "Xem trạng thái trực tiếp Micro Brain",
     "Clear local learning memory": "Xóa bộ nhớ học cục bộ",
     "On-device boundary": "Ranh giới trên thiết bị",
-    "Local learning evidence stays on this device and is not uploaded by this setting.": "Bằng chứng học cục bộ chỉ ở trên thiết bị này và không được tải lên bởi cài đặt này.",
+    "Local learning evidence stays on this device. When local learning and anonymous pairing are enabled, LightBI may send aggregate retrieval counters only; raw files, queries, values and local memory are never uploaded.": "Bằng chứng học cục bộ vẫn ở trên thiết bị này. Khi học cục bộ và ghép nối ẩn danh đều được bật, LightBI chỉ có thể gửi các bộ đếm truy hồi tổng hợp; tệp thô, câu truy vấn, giá trị và bộ nhớ cục bộ không bao giờ được tải lên.",
     "Evidence authority stays unchanged": "Quyền bằng chứng không thay đổi",
     "Turning learning on never lets retrieval similarity override evidence, domain support, formulas, or governed metrics.": "Bật học cục bộ không bao giờ cho phép độ tương đồng truy hồi ghi đè bằng chứng, hỗ trợ miền, công thức hay chỉ số được quản trị.",
     "Meet Micro Brain": "Làm quen với Micro Brain",

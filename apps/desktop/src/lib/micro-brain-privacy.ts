@@ -1,3 +1,4 @@
+import { recordMicroBrainObservation } from './app-usage-telemetry';
 export type MicroBrainConsent = "unset" | "allowed" | "declined";
 
 export type MicroBrainLearningState = {
@@ -86,6 +87,7 @@ export function recordMicroBrainRuntimeActivity(hitCount: number): void {
   };
   const state = readMicroBrainLearningState();
   if (state.learningEnabled) {
+    recordMicroBrainObservation(hitCount);
     write({ ...state, evidence: {
       retrievals: state.evidence.retrievals + 1,
       candidateHits: state.evidence.candidateHits + Math.max(0, hitCount),
