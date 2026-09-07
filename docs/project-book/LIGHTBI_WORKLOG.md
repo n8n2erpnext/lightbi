@@ -1734,3 +1734,16 @@ R1-P0 documentation/integrity closure verified 1,243 local links with zero missi
 - Live CP remains Worker Safety exact `2d2b87e...`; daemon reload did not rotate the five CP units. Process-environment inspection proves API/legacy/short/default/long carry only the broker socket reference and no R2/AWS account, access-key, secret or bucket credentials.
 - Wrangler 4.129.0 is installed but unauthenticated; no connected Cloudflare/R2 provider is available. Broad existing Production R2 authority remains forbidden, including as a parent for derived learning credentials.
 - Gate C is blocked only on creating a dedicated NEXT learning bucket and a new R2 Object Read & Write token restricted to that bucket, then writing the secret only into mode-0600 broker env. Production untouched.
+
+
+## 2026-09-07 — MB-LQ3 R2 + signed capability detour closes; return to Roadmap 1.0
+
+- Owner authorized reuse of existing Distribution R2 S3 authority for NEXT MB Learn, but only inside the broker and under a separate physical `mb-learn-db` base prefix. CP/API/workers keep no R2 access-key/secret fields; logical learning paths remain independent of the legacy Distribution bucket/base-prefix layout.
+- Product `40ca2d8...` closes strict Signed Transport for MB Learn and durable consent withdrawal. CP descendants close signed Intelligence Pack catalog + short-lived artifact capability, user `/account` TOTP/Passkey routing through `/distribution-api`, authority-first remote withdrawal and permanent privacy rejection without poison retries.
+- Live five-unit CP runtime is immutable `fd18429...`; current CP source is `b0d65b3...`. Broker alone runs immutable `b0d65b3...`; focused R2 `17/17` and complete CP `297/297` PASS.
+- Real R2 rehearsal found and fixed three live-only issues: AWS SigV4 multipart query byte ordering, missing-object HEAD normalization, and multipart HEAD size recovery via 1-byte Range GET when Cloudflare omits Content-Length.
+- Final real rehearsal PASS `13/13`: direct single upload, quarantine/validation/ready, SHA/size/schema/privacy, dedupe, multipart crash/resume, malformed rejection with no retry, bounded broker outage/no CP proxy fallback, consent withdrawal + remote deletion and complete R2/PG/Redis cleanup.
+- Controlled scheduler smoke PASSed inside a rollback transaction: exactly one synthetic auto client job was issued; post-smoke scheduler remains OFF and synthetic installation/job counts are zero.
+- Final state: schema `26/26`, learning contributions/jobs `0`, all worker lanes running with failures `0` and circuits closed; issuer `3817149`, signer `12020`, attestation `1505209` unchanged. Production untouched.
+- User Account TOTP/Passkey is live after canonical v1 route-prefix repair. NEXT047 installation-issuer mismatch remains intentionally deferred until an official release build; do not restart Trust merely for that stale test candidate.
+- SSD guard recovered from 92% to 67% by deleting only the ~30 GiB Product Cargo build cache. Immediate execution position returns to Roadmap 1.0; cut a fresh successor when packaging is actually needed.
