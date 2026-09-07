@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { BrainCircuit, CheckCircle2, ExternalLink, HardDrive, RotateCcw, ShieldCheck, AlertTriangle } from "lucide-react";
 import { openExternalUrl } from "../../lib/native-capabilities";
+import { requestMicroBrainRemoteWithdrawal } from "../../lib/micro-brain-learning-contribution";
 import { lightBIFrontendUrl } from "../../lib/lightbi-routing";
 import { useUiLanguage } from "../../lib/ui-language";
 import { readMicroBrainHealth, type MicroBrainHealthV1 } from "../../lib/understanding-core/micro-brain/health";
@@ -10,6 +11,7 @@ import {
   readMicroBrainLearningState,
   readMicroBrainRuntimeState,
   setMicroBrainLearningEnabled,
+  withdrawMicroBrainLearningConsent,
   subscribeMicroBrainState,
 } from "../../lib/micro-brain-privacy";
 
@@ -18,12 +20,20 @@ export const MicroBrainPrivacyPanel: React.FC = () => {
   const [state, setState] = useState(readMicroBrainLearningState);
   const [runtime, setRuntime] = useState(readMicroBrainRuntimeState);
   const [health, setHealth] = useState<MicroBrainHealthV1 | null>(null);
+  const [withdrawalStatus, setWithdrawalStatus] = useState<string>("");
   useEffect(() => subscribeMicroBrainState(() => { setState(readMicroBrainLearningState()); setRuntime(readMicroBrainRuntimeState()); }), []);
   useEffect(() => { const timer = window.setTimeout(() => setHealth(readMicroBrainHealth(true)), 50); return () => window.clearTimeout(timer); }, []);
   const memoryBytes = microBrainLearningMemoryBytes();
   const healthy = health?.status === "healthy";
   const passedChecks = health?.checks.filter((item) => item.ok).length ?? 0;
   const totalChecks = health?.checks.length ?? 0;
+  const withdrawConsent = async () => {
+    if (!window.confirm(t("Withdraw Micro Brain learning consent and delete contributed learning data? Local learning memory is cleared immediately; remote cleanup retries safely if this device is offline."))) return;
+    withdrawMicroBrainLearningConsent();
+    setWithdrawalStatus(t("Local learning consent withdrawn. Removing contributed learning data…"));
+    const complete = await requestMicroBrainRemoteWithdrawal();
+    setWithdrawalStatus(complete ? t("Learning consent withdrawn and contributed learning data removed.") : t("Local consent is withdrawn. Remote cleanup is pending and will retry automatically."));
+  };
 
   return <div className="space-y-5">
     <section className="rounded-xl border border-violet-200 bg-violet-50/50 p-5">
@@ -45,7 +55,9 @@ export const MicroBrainPrivacyPanel: React.FC = () => {
       <div className="mt-4 flex flex-wrap gap-2">
         <button type="button" onClick={()=>void openExternalUrl(lightBIFrontendUrl("microBrainStatus"))} className="inline-flex items-center gap-2 rounded-lg bg-slate-900 px-3 py-2 text-sm font-semibold text-white"><ExternalLink className="h-4 w-4" />{t("View Micro Brain live status")}</button>
         <button type="button" onClick={clearMicroBrainLearningMemory} className="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700"><RotateCcw className="h-4 w-4" />{t("Clear local learning memory")}</button>
+        <button type="button" onClick={()=>void withdrawConsent()} className="inline-flex items-center gap-2 rounded-lg border border-rose-300 bg-white px-3 py-2 text-sm font-semibold text-rose-700"><ShieldCheck className="h-4 w-4" />{t("Withdraw learning consent & delete contributed data")}</button>
       </div>
+      {withdrawalStatus && <p className="mt-3 text-xs text-slate-600" role="status">{withdrawalStatus}</p>}
     </section>
 
     <section className="p-1">

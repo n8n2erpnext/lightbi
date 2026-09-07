@@ -35,3 +35,15 @@ it('requires strict native Signed Transport for every Micro Brain learning contr
   expect(source).toContain("signedNativeFetch(`${endpoint}/api/micro-brain/learning/${path}`");
   expect(source).not.toContain('externalFetch(`${endpoint}/api/micro-brain/learning/');
 });
+
+
+it("persists consent-withdrawal cleanup intent and retries only through signed native transport", async () => {
+  const { readFileSync } = await import('node:fs');
+  const source = readFileSync(new URL('./micro-brain-learning-contribution.ts', import.meta.url), 'utf8');
+  expect(source).toContain("WITHDRAWAL_KEY");
+  expect(source).toContain("requestMicroBrainRemoteWithdrawal");
+  expect(source).toContain("'consent/withdraw'");
+  expect(source).toContain("if(readWithdrawalPending()){await requestMicroBrainRemoteWithdrawal();return;}");
+  expect(source).toContain("signedNativeFetch");
+  expect(source).toContain("writeWithdrawalPending(false)");
+});

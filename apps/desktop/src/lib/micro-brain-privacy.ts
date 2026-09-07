@@ -74,6 +74,11 @@ export function setMicroBrainLearningEnabled(enabled: boolean): void {
   write({ ...state, consent: enabled ? "allowed" : state.consent === "unset" ? "declined" : state.consent, learningEnabled: enabled, decidedAt: state.decidedAt || new Date().toISOString() });
 }
 
+export function withdrawMicroBrainLearningConsent(): void {
+  const state = readMicroBrainLearningState();
+  write({ ...state, consent: "declined", learningEnabled: false, decidedAt: new Date().toISOString(), evidence: { ...EMPTY_EVIDENCE } });
+}
+
 export function clearMicroBrainLearningMemory(): void {
   const state = readMicroBrainLearningState();
   write({ ...state, evidence: { ...EMPTY_EVIDENCE } });

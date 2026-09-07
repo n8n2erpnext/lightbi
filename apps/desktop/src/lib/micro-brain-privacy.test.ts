@@ -10,6 +10,7 @@ import {
   recordMicroBrainRuntimeActivity,
   setMicroBrainLearningEnabled,
   snapshotMicroBrainLearningEvidence,
+  withdrawMicroBrainLearningConsent,
 } from "./micro-brain-privacy";
 
 describe("Micro Brain local learning consent", () => {
@@ -23,7 +24,7 @@ describe("Micro Brain local learning consent", () => {
     expect(readMicroBrainLearningState().evidence.retrievals).toBe(0);
   });
 
-  it("persists only sanitized counters after explicit allow and can be withdrawn", () => {
+  it("persists only sanitized counters after explicit allow and can be paused", () => {
     decideMicroBrainLearning(true);
     recordMicroBrainRuntimeActivity(2);
     recordMicroBrainRuntimeActivity(0);
@@ -32,6 +33,15 @@ describe("Micro Brain local learning consent", () => {
     setMicroBrainLearningEnabled(false);
     recordMicroBrainRuntimeActivity(7);
     expect(readMicroBrainLearningState().evidence.retrievals).toBe(2);
+  });
+
+
+  it("explicit consent withdrawal clears retained local learning evidence and records declined consent", () => {
+    decideMicroBrainLearning(true);
+    recordMicroBrainRuntimeActivity(0);
+    expect(readMicroBrainLearningState().evidence.retrievals).toBe(1);
+    withdrawMicroBrainLearningConsent();
+    expect(readMicroBrainLearningState()).toMatchObject({ consent: "declined", learningEnabled: false, evidence: { retrievals: 0, candidateHits: 0, abstentions: 0, lastActivityAt: null } });
   });
 
   it("clears local learning memory without changing the user's consent choice", () => {
