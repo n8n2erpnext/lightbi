@@ -1,8 +1,8 @@
 {
   "schema": "lightbi.current-checkpoint.v1",
-  "updatedAt": "2026-09-07T09:27:28Z",
-  "status": "mb_lq3_source_schema_attestation_workers_live_r2_dedicated_credential_gate_next047_candidate_untracked_owner_uat_open",
-  "activeRuntime": "engine g-2026-09-05-next-034; live Internal CP c302f99; TEST runtime REL NEXT046; NEXT047 acceptance candidate cut but untracked; Production untouched",
+  "updatedAt": "2026-09-07T11:22:46Z",
+  "status": "mb_lq3_worker_safety_source_schema_rehearsal_closed_live_activation_blocked_r2_locked_next047_pre_worker_safety_candidate",
+  "activeRuntime": "engine g-2026-09-05-next-034; live Internal CP/workers c302f9933c8; Worker Safety candidate 975884e not activated; TEST runtime REL NEXT046; Production untouched",
   "sourceCandidate": {
     "repo": "/home/ubuntu/n8n2erpnext/LightBI-exp-focus-subject",
     "branch": "codex/r1-roadmap-integration",
@@ -11,10 +11,10 @@
   "controlPlaneSourceCandidate": {
     "repo": "/home/ubuntu/n8n2erpnext/lightbi-control-plane-r1p14-signed-transport",
     "branch": "codex/r1p14-signed-transport",
-    "head": "c302f9935f2d7809167838defffc19f9be24af15"
+    "head": "975884e4a009049e94341aab570c9acef5c30c71"
   },
   "runtimeControlPlane": {
-    "head": "c302f9935f2d7809167838defffc19f9be24af15",
+    "head": "c302f9933c8ba50b189df2e596eb84f6e936881a",
     "directory": "/home/ubuntu/services/lightbi-control-plane-next034-c302f99/apps/distribution",
     "apiPid": 1598271,
     "legacyWorkerPid": 1598272,
@@ -24,16 +24,29 @@
       "long": 1606982
     }
   },
+  "workerSafety": {
+    "candidateDeploy": "/home/ubuntu/services/lightbi-control-plane-next034-975884e",
+    "candidateHead": "975884e4a009049e94341aab570c9acef5c30c71",
+    "focusedTests": "23/23 PASS",
+    "fullControlPlaneTests": "286/286 PASS",
+    "postgresRehearsal": "PASS",
+    "liveActivation": "OPEN",
+    "userManagerPid": 943,
+    "userBusPresent": false,
+    "userSystemdPrivatePresent": false,
+    "safeSystemdControlPathFound": false
+  },
   "acceptanceOrchestration": {
     "head": "2ba518263d7ef5072de1b364dfc977ee1f4515ef",
     "version": "0.9.2-beta.7-next.47",
     "generation": "g-2026-09-07-next-047",
     "parentGeneration": "g-2026-09-07-next-046",
-    "actionStatus": "intentionally_untracked_not_claimed_pass"
+    "actionStatus": "intentionally_untracked_not_claimed_pass",
+    "workerSafetyIncluded": false
   },
   "databaseSchema": {
-    "latest": "071_micro_brain_learning_r2_transport",
-    "count": 25,
+    "latest": "072_micro_brain_worker_safety",
+    "count": 26,
     "pending": 0
   },
   "trustRuntime": {
@@ -44,6 +57,9 @@
     "attestationPid": 1505209,
     "attestationImage": "lightbi-next-trust-attestation:387db91e1123-trust-10de4da8",
     "trustContracts": "10de4da8e551a46f93f7b62985a0a6e611581b8e",
+    "issuerHotReload": true,
+    "issuerSnapshotHealth": "healthy",
+    "issuerPublicationCount": 12,
     "productionAuthority": false
   },
   "learningTransport": {
@@ -51,43 +67,37 @@
     "brokerActive": false,
     "dedicatedLearningCredentialPresent": false,
     "sharedProductionCredentialReused": false,
-    "activeClientCollectionJobsObserved": 0,
-    "newClientCollectionJobsObserved15m": 0,
     "readinessBehavior": "fail_closed_learning_transport_unavailable"
   },
   "completed": [
-    "mb_lq0_contracts_and_migration_design_source_closed_00e8abb",
-    "mb_lq1_postgres_redis_worker_foundation_source_closed_77dd7df",
-    "mb_lq2_scheduler_admin_queue_source_schema_and_synthetic_rehearsal_closed_dbf7bfe",
-    "mb_lq3_product_direct_r2_native_client_source_closed_65092cd",
-    "mb_lq3_control_plane_direct_r2_transport_source_closed_387db91",
-    "mb_lq3_r2_readiness_fail_closed_hardening_c302f99",
-    "migration_071_applied_on_next_25_total_pending_0",
-    "control_plane_exact_c302f99_full_suite_275_of_275_pass",
-    "product_release_suite_pass_governed_41_of_41_native_28_pass_0_fail_1_live_only_ignored",
-    "attestation_suite_18_of_18_pass_and_image_387db91_trust_10de4da8_live",
-    "live_v2_micro_brain_learning_poll_verified_installation_binding_exact_next046_release_pass",
-    "live_cp_legacy_worker_and_short_default_long_async_workers_exact_c302f99",
-    "r2_broker_absent_readiness_gate_proved_zero_client_collection_jobs",
-    "next047_acceptance_candidate_2ba5182_cut_with_product_65092cd_cp_c302f99_schema_071_parent_next046",
-    "mb_lq3_docs_owner_update_committed_a42b470"
+    "mb_lq0_lq2_foundation_scheduler_schema_synthetic_gates_closed",
+    "mb_lq3_product_direct_r2_native_source_closed_65092cd",
+    "mb_lq3_control_plane_direct_r2_source_and_readiness_closed_through_c302f99",
+    "worker_safety_source_closed_975884e_focused_23_of_23_full_cp_286_of_286",
+    "migration_072_applied_next_26_total_pending_0",
+    "worker_safety_postgres_rehearsal_pass_and_synthetic_cleanup_pass",
+    "immutable_975884e_deploy_env_and_dropins_prepared_not_activated",
+    "gate_a_runtime_truth_reread_live_pids_cwd_schema_trust_and_bus_state_confirmed",
+    "docs_handoff_catalog_project_book_worklog_committed_980310c"
   ],
-  "nextAction": "Provision a dedicated least-privileged NEXT Micro Brain learning R2 credential/bucket, create /home/ubuntu/.config/lightbi-mb-r2-broker.env, activate the broker, then run real direct single/multipart/resume/validation/dedup/reject/withdrawal-cleanup rehearsal and cleanup. Separately, when NEXT047 Actions is known ready, verify the exact artifact and publish/probe its TEST runtime REL before owner installation.",
+  "nextAction": "Keep Worker Safety live activation OPEN unless a demonstrably safe user-systemd control path appears. Do not restart/kill user manager PID 943. If safe control becomes available, daemon-reload and rotate only CP API/legacy/short/default/long to exact 975884e, then run the full 11-point live Worker Safety acceptance and cleanup. Only after that provision dedicated NEXT learning-only R2 broker authority and run the 13-point MB-LQ3 R2 rehearsal.",
   "blockers": [
-    "No dedicated NEXT learning-only R2 credential/bucket is provisioned; all existing VPS R2 keys compare equal to the broad Production credential and must not be reused",
-    "Real Cloudflare R2 MB-LQ3 end-to-end rehearsal remains open until the dedicated broker credential exists",
-    "NEXT047 Actions result is intentionally untracked and NEXT047 is not trust-ready until artifact verification + TEST REL publication + challenge/issue/nonce proof",
-    "NEXT046 packaged owner account/login UAT remains open unless the owner separately confirms Retry connection success",
-    "User systemd manager control socket /run/user/1000/bus is absent; do not restart the manager because protected trust services could be disturbed, although current CP/workers are already running",
+    "/run/user/1000/bus and /run/user/1000/systemd/private are absent; systemctl --user and tested --machine variants cannot control the live user manager safely",
+    "User manager PID 943 parents protected Trust launchers and must not be restarted/killed merely to recover control",
+    "Worker Safety exact 975884e is not live; current API/workers still execute exact c302f9933c8ba50b189df2e596eb84f6e936881a",
+    "No dedicated NEXT learning-only R2 credential/bucket is provisioned; broad Production R2 authority must not be reused",
+    "Real MB-LQ3 Cloudflare R2 end-to-end rehearsal remains locked behind Worker Safety live PASS and dedicated broker authority",
+    "NEXT047 predates Worker Safety/schema 072 and is candidate-only, not Trust-ready or owner-UAT accepted",
     "Production promotion/authority remains owner-gated"
   ],
   "productionTouched": false,
   "phase2aFrozen": false,
   "readFirst": [
+    "docs/project-book/LIBRARY_RULES.md",
+    "docs/history/agent/handoffs/post-beta/AGENT_HANDOFF_MB_LQ3_WORKER_SAFETY_AND_R2_GATE_2026-09-07.md",
     "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_MICRO_BRAIN_R2_REDIS_LEARNING_PIPELINE_2026-09-07.md",
-    "docs/architecture/micro-brain-cross-domain-semantic-expansion.md",
     "docs/architecture/road-to-1-0-trust-release-contract.md",
     "docs/project-book/LIGHTBI_PROJECT_BOOK.md"
   ],
-  "documentationHead": "a42b47085d2976107662f18b8533154345c0bdfd"
+  "documentationHead": "980310c537c2a47fc489cd6123e7e7a3e8163b38"
 }
