@@ -549,6 +549,24 @@ Translation rule for LightBI: preserve these ratios and hierarchy principles whe
 
 Books is not a sufficient visualization vocabulary: its dedicated chart components are only Bar, Line and Donut. Owner chart references remain required acceptance sources for KPI bands, combo/dual-axis, stacked, ranked horizontal, radar/profile, target/progress, geo/map, scatter/bubble, funnel, heatmap/treemap and other patterns not implemented by Books.
 
+### Books interaction-system measurements — DPR-0 source study
+
+The Books reference is also an interaction-system source, not only a visual-layout source. DPR-0 source inspection records these behaviors as implementation references:
+
+- Chart hover uses a cursor-anchored Popper tooltip with flip/prevent-overflow and ~15px offset. Tooltip visibility fades in/out at ~100ms; value surfaces remain compact instead of opening a card or persistent inspector.
+- Bar hover binds directly to the hovered bar, brightens it slightly and shows category + formatted value with the series color as a thin accent edge.
+- Line hover is proximity-based: mouse coordinates are transformed into SVG space, the nearest series point is selected, and the tooltip is suppressed beyond a distance threshold. The active point gains a brightened marker/drop-shadow so eye, cursor and value remain synchronized.
+- Donut hover does not require a floating tooltip: the active sector thickens by 4 SVG units and the center label/value switch to the hovered sector; mouse-leave restores the total. This is a useful alternative for compact part-to-whole visuals.
+- Scrolling remains native WebView scrolling. Books styles `::-webkit-scrollbar` at `0.6rem` (~9.6px), keeps the track nearly invisible except for a 1px divider, uses neutral thumbs with a darker hover state, and hides the scrollbar entirely only on selected calm canvases while preserving scroll behavior. LightBI should preserve native scroll physics/accessibility and theme it rather than introduce a custom JavaScript scroll engine.
+- The shortcut system is context-aware. Newer/active contexts win; propagation is explicit. Ordinary key presses are ignored while the user is typing in inputs/contenteditable unless a modifier is present. Platform-primary modifier maps to Ctrl on Windows/Linux and Command on macOS.
+- Global Books shortcuts include Ctrl/Cmd+K Quick Search, Shift+Backspace previous page, Shift+H sidebar toggle and F1 documentation. Entry/list/POS contexts add their own scoped shortcuts; a built-in Shortcuts surface documents them with platform-specific keycaps.
+- Quick Search is a 600px command-palette style modal. Input is 20px, result rows use the 48px data-row rhythm, roughly six suggestions are visible before scrolling, and keyboard operation is first-class: arrows navigate, Enter selects, Esc closes. Search supports fuzzy/incremental narrowing, local recents (up to 10), type/group filters and priority ordering.
+- Search results use restrained semantic group color only as metadata; the selected row is indicated primarily by neutral background plus a 4px leading border. Keyboard navigation scrolls only enough to keep the selected row visible (`scrollIntoView({block:'nearest'})`).
+- Sidebar state is simple and global: full 14rem sidebar shown/hidden, not a permanently collapsed icon rail. Hide/show uses width + translate + opacity over ~150ms. Internal groups expand according to active route rather than becoming independently toggled accordions. When hidden, a small bottom-left reveal affordance appears on hover.
+- Dropdowns/popovers use anchored Popper placement, click-outside close, arrow-key highlight, Enter selection and `scrollIntoView(nearest)`; modal close is registered as an active Escape shortcut. Motion stays in the 100–150ms range.
+
+Translation rule for LightBI: adopt the interaction principles, not every Books shortcut or hidden-control decision. LightBI should preserve discoverability and accessibility, and its global search must be scoped to LightBI concepts/actions/data without leaking raw business data to network services. Tauri/native window and keyboard boundaries remain authoritative.
+
 ### Chart Pattern Library is a semantic grammar, not a gallery
 
 The owner also supplied additional dashboard references that broaden the visual vocabulary. LightBI should learn from them as **question-to-visual patterns**, not attempt to maximize chart variety. The canonical planning chain becomes:

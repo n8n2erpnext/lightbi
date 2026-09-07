@@ -1755,3 +1755,11 @@ R1-P0 documentation/integrity closure verified 1,243 local links with zero missi
 - Confirmed desktop chrome behavior: Windows custom 28px title bar with ~48x28px minimize/maximize/close hit targets and explicit drag/no-drag regions; macOS uses hidden native title-bar treatment with traffic lights at `(16,16)`. Window chrome and page/application toolbar remain separate hierarchy layers.
 - Confirmed Books chart coverage is intentionally small: dedicated Bar, Line and Donut components plus a progress-style invoice status bar. Owner chart references remain the acceptance corpus for combo, stacked, radar, geo/map, target/progress and other analytical patterns Books lacks.
 - DPR plan amended with exact source measurements as reference observations, not copy-ready LightBI tokens. LightBI remains React/Tauri and must translate the principles rather than import Vue/Electron implementation.
+
+## 2026-09-07 — DPR-0 Frappe Books interaction-system study
+
+- Extended the exact pinned Books source study beyond layout/tokens into interaction behavior: chart hover/tooltip, native scrollbar theming, contextual shortcuts, Quick Search, sidebar collapse/reveal and popover/modal keyboard behavior.
+- Chart findings: Bar uses direct hover + compact cursor-follow tooltip; Line selects the nearest data point within a distance threshold and highlights it; Donut expands the active sector and replaces center value/label instead of requiring a floating popup.
+- Quick Search is keyboard-first (`Ctrl/Cmd+K`) with 600px modal width, 20px input, 48px rows, fuzzy/incremental narrowing, local recents, group filters, arrow/Enter/Esc operation and nearest-row scroll preservation.
+- Books preserves native WebView scrolling and themes the scrollbar (~9.6px) rather than installing a JavaScript scroll engine. Sidebar whole-panel collapse/reveal and most popover/modal motion stay around 100–150ms.
+- DPR plan amended with these behaviors as LightBI interaction references. Translation remains React/Tauri-native and accessibility/discoverability may intentionally improve on Books rather than pixel-copying hidden controls.
