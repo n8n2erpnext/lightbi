@@ -3,7 +3,7 @@ import test from 'node:test';
 import { isControlPlaneApiPath, isControlPlanePublicPath } from './internal-gateway-routing.mjs';
 
 test('routes public Control Plane surfaces through the internal gateway', () => {
-  for (const pathname of ['/','/docs','/docs/keyboard-shortcuts','/account','/account/verify','/admin','/verify','/distribution-assets/logo.svg','/internal-releases/latest.json','/internal-trust/latest.json','/internal-trust/releases/0.9.2-next.test/windows-x86_64.rel.json']) {
+  for (const pathname of ['/','/docs','/docs/keyboard-shortcuts','/account','/account/verify','/admin','/verify','/micro-brain/status','/distribution-assets/logo.svg','/internal-releases/latest.json','/internal-trust/latest.json','/internal-trust/releases/0.9.2-next.test/windows-x86_64.rel.json']) {
     assert.equal(isControlPlanePublicPath(pathname), true, pathname);
   }
 });
@@ -18,7 +18,7 @@ test('routes Control Plane API namespaces to the Control Plane', () => {
   for (const pathname of [
     '/api/admin/login','/api/admin/passkey/login/start','/api/account/session','/api/account/verify',
     '/api/releases/latest','/api/installation/uninstall','/api/license/activate','/api/pair',
-    '/api/docs','/api/catalog','/api/auth/google/start','/api/newsletter/unsubscribe','/api/webhooks/stripe',
+    '/api/docs','/api/catalog','/api/micro-brain/status','/api/auth/google/start','/api/newsletter/unsubscribe','/api/webhooks/stripe',
   ]) assert.equal(isControlPlaneApiPath(pathname), true, pathname);
 });
 

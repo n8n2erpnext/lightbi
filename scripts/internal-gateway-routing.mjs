@@ -11,6 +11,7 @@ const controlPlaneApiPrefixes = [
   '/api/download',
   '/api/installation',
   '/api/license',
+  '/api/micro-brain',
   '/api/newsletter',
   '/api/pair',
   '/api/releases',
@@ -34,6 +35,7 @@ export function isControlPlanePublicPath(pathname) {
     || pathname.startsWith('/account/')
     || pathname === '/admin'
     || pathname === '/verify'
+    || pathname === '/micro-brain/status'
     || pathname === '/distribution-assets'
     || pathname.startsWith('/distribution-assets/')
     || pathname === '/internal-releases'
