@@ -1725,3 +1725,12 @@ R1-P0 documentation/integrity closure verified 1,243 local links with zero missi
 - Admin logical controls PASS with audit: Pause, Resume, Stop, Start, Drain→Paused, Resume, Reset circuit. Drain finished in ~6s and did not change the worker PID, confirming Admin authority is logical rather than systemd/shell authority.
 - Final queue-empty 35s observation: CPU `0.0000% / 0.0286% / 0.0286%` short/default/long, bounded RSS, zero Worker Safety error events. Cleanup: async jobs `0`, synthetic jobs/heartbeats `0`, synthetic Redis dispatch markers `0`; all lanes running with failures `0`, circuit null.
 - Issuer/attestation health remained green and TEST-only; protected Trust launchers were not rotated for this gate. Worker Safety Gate B is CLOSED. R2 broker remains absent; Gate C now blocks only on a dedicated least-privileged NEXT learning-only R2 credential/bucket. Broad Production R2 credentials remain forbidden. Production untouched.
+
+
+## 2026-09-07 — Gate C R2 broker preflight removes restart-storm risk; credential still external
+
+- Audited the MB-LQ3 R2 broker before secret provisioning and found `Restart=always` / 3s in its service template. Hardened CP source `07ab6c3dd4bfbb3d4107d8c47d225b413a7f3f58` to bounded `on-failure` restart (3/300s, 15s delay) plus Tasks/CPU/RAM ceilings. Focused R2 `11/11` and full CP `287/287` PASS.
+- Built immutable broker candidate `/home/ubuntu/services/lightbi-control-plane-next034-07ab6c3`; loaded the exact user unit but left it `inactive` + `disabled`. No broker env or socket exists, so no R2 learning traffic is active.
+- Live CP remains Worker Safety exact `2d2b87e...`; daemon reload did not rotate the five CP units. Process-environment inspection proves API/legacy/short/default/long carry only the broker socket reference and no R2/AWS account, access-key, secret or bucket credentials.
+- Wrangler 4.129.0 is installed but unauthenticated; no connected Cloudflare/R2 provider is available. Broad existing Production R2 authority remains forbidden, including as a parent for derived learning credentials.
+- Gate C is blocked only on creating a dedicated NEXT learning bucket and a new R2 Object Read & Write token restricted to that bucket, then writing the secret only into mode-0600 broker env. Production untouched.
