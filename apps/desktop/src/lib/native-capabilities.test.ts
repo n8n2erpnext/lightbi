@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { invoke } from '@tauri-apps/api/core';
 import { openUrl } from '@tauri-apps/plugin-opener';
 import { isNativeLightBI } from './native-runtime';
-import { externalAnchorUrl, externalFetch, installNativeExternalLinkGuard, saveBlobWithUserChoice } from './native-capabilities';
+import { externalAnchorUrl, externalFetch, installNativeExternalLinkGuard, saveBlobWithUserChoice, signedNativeFetch } from './native-capabilities';
 
 vi.mock('./native-runtime', () => ({ isNativeLightBI: vi.fn() }));
 vi.mock('@tauri-apps/api/core', () => ({ invoke: vi.fn() }));
@@ -68,6 +68,24 @@ describe('native capabilities', () => {
     const response = await externalFetch('https://lightbi.example/api/test', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{"hello":"world"}' });
     expect(invoke).toHaveBeenCalledWith('native_http_request', expect.objectContaining({ request: expect.objectContaining({ url: 'https://lightbi.example/api/test', method: 'POST' }) }));
     await expect(response.json()).resolves.toEqual({ ok: true });
+  });
+
+  it('strict signed native fetch rejects unsigned native responses without WebView fallback', async () => {
+    vi.mocked(isNativeLightBI).mockReturnValue(true);
+    vi.mocked(invoke).mockResolvedValue({ status: 200, headers: { 'content-type': 'application/json' }, body: [], signedTransport: false });
+    const browserFetch = vi.fn();
+    vi.stubGlobal('fetch', browserFetch);
+    await expect(signedNativeFetch('https://next-signed.example/distribution-api/api/micro-brain/learning/poll')).rejects.toThrow(/signed_transport_not_verified/);
+    expect(browserFetch).not.toHaveBeenCalled();
+  });
+
+  it('strict signed native fetch accepts correlated signed responses only on native HTTPS', async () => {
+    vi.mocked(isNativeLightBI).mockReturnValue(true);
+    vi.mocked(invoke).mockResolvedValue({ status: 200, headers: { 'content-type': 'application/json' }, body: Array.from(new TextEncoder().encode('{"ok":true}')), signedTransport: true });
+    const response = await signedNativeFetch('https://next-signed.example/distribution-api/api/intelligence-packs/latest');
+    await expect(response.json()).resolves.toEqual({ ok: true });
+    vi.mocked(isNativeLightBI).mockReturnValue(false);
+    await expect(signedNativeFetch('https://next-signed.example/distribution-api/api/intelligence-packs/latest')).rejects.toThrow(/packaged native LightBI/);
   });
 
   it('falls back to WebView fetch when the packaged native transport rejects', async () => {

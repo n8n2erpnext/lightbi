@@ -26,3 +26,12 @@ it('keeps consent withdrawal cleanup retryable and blocks complete after consent
   expect(source).toContain("if(!contributionStillAllowed(pending)){await abortPending(pending);return;}await api('complete'");
   expect(source).toContain("if(pending&&pending.jobId!==job.id){await abortPending(pending);pending=null;}");
 });
+
+
+it('requires strict native Signed Transport for every Micro Brain learning control request', async () => {
+  const { readFileSync } = await import('node:fs');
+  const source = readFileSync(new URL('./micro-brain-learning-contribution.ts', import.meta.url), 'utf8');
+  expect(source).toContain("import { signedNativeFetch } from './native-capabilities'");
+  expect(source).toContain("signedNativeFetch(`${endpoint}/api/micro-brain/learning/${path}`");
+  expect(source).not.toContain('externalFetch(`${endpoint}/api/micro-brain/learning/');
+});

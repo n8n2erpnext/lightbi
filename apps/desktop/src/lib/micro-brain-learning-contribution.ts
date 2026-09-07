@@ -1,6 +1,6 @@
 import { getOrCreateInstallationId, anonymousPairingEnabled, lightBIDistributionEndpoint } from './distribution-pairing';
 import { buildGenerationManifest } from './generation-manifest';
-import { externalFetch } from './native-capabilities';
+import { signedNativeFetch } from './native-capabilities';
 import { isNativeLightBI, requireNativeInstallationTrust } from './native-runtime';
 import {
   consumeMicroBrainLearningEvidence,
@@ -26,7 +26,7 @@ function pendingStorage(): Storage | null { try{return typeof localStorage==='un
 function readPending():PendingContribution|null{try{const value=JSON.parse(pendingStorage()?.getItem(PENDING_KEY)||'null');return value?.schemaVersion==='lightbi.micro-brain.contribution.pending.v1'?value:null;}catch{return null;}}
 function writePending(value:PendingContribution|null){try{const storage=pendingStorage();if(!storage)return;value?storage.setItem(PENDING_KEY,JSON.stringify(value)):storage.removeItem(PENDING_KEY);}catch{}}
 async function invoke<T>(command:string,args:Record<string,unknown>):Promise<T>{const api=await import('@tauri-apps/api/core');return api.invoke<T>(command,args);}
-async function api<T>(path:string,init:RequestInit={}):Promise<T>{const endpoint=lightBIDistributionEndpoint();const response=await externalFetch(`${endpoint}/api/micro-brain/learning/${path}`,init);const value=await response.json().catch(()=>({})) as Record<string,unknown>;if(!response.ok)throw new Error(typeof value.error==='string'?value.error:`micro_brain_learning_http_${response.status}`);return value as T;}
+async function api<T>(path:string,init:RequestInit={}):Promise<T>{const endpoint=lightBIDistributionEndpoint();const response=await signedNativeFetch(`${endpoint}/api/micro-brain/learning/${path}`,init);const value=await response.json().catch(()=>({})) as Record<string,unknown>;if(!response.ok)throw new Error(typeof value.error==='string'?value.error:`micro_brain_learning_http_${response.status}`);return value as T;}
 function json(body:unknown):RequestInit{return{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)}};
 function contributionStillAllowed(pending?:PendingContribution){const state=readMicroBrainLearningState();if(!state.learningEnabled||!anonymousPairingEnabled())return false;if(pending&&(state.evidence.retrievals<pending.evidence.retrievals||state.evidence.abstentions<pending.evidence.abstentions))return false;return true;}
 async function discardLocal(packageId:string){await invoke('discard_micro_brain_learning_package',{packageId}).catch(()=>undefined);}

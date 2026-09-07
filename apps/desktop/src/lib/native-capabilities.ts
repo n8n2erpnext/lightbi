@@ -64,6 +64,26 @@ function failureMessage(cause: unknown, fallback: string): string {
   return fallback;
 }
 
+export async function signedNativeFetch(input: string | URL, init: RequestInit = {}): Promise<Response> {
+  const url = typeof input === 'string' ? input : input.toString();
+  if (!isNativeLightBI() || !/^https:\/\//i.test(url)) {
+    throw new Error('Signed transport requires packaged native LightBI over HTTPS.');
+  }
+  const method = (init.method || 'GET').toUpperCase();
+  try {
+    const { invoke } = await import('@tauri-apps/api/core');
+    const headers = Object.fromEntries(new Headers(init.headers).entries());
+    const response = await invoke<NativeHttpResponse>('native_http_request', {
+      request: { url, method, headers, body: await bodyBytes(init.body) },
+    });
+    if (!response.signedTransport) throw new Error('signed_transport_not_verified');
+    return new Response(new Uint8Array(response.body), { status: response.status, headers: response.headers });
+  } catch (cause) {
+    const failure = failureMessage(cause, 'unknown signed transport error');
+    throw new Error(`Signed transport required: ${failure}`);
+  }
+}
+
 export async function externalFetch(input: string | URL, init: RequestInit = {}): Promise<Response> {
   const url = typeof input === 'string' ? input : input.toString();
   if (!isNativeLightBI() || !/^https?:\/\//i.test(url)) return fetch(url, init);

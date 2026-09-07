@@ -23,3 +23,15 @@ describe('Intelligence Pack frontend validation', () => {
     expect(validateIntelligencePackPayload(JSON.stringify(unknownBridge)).errors).toContain('canonical_bridge_not_in_registry');
   });
 });
+
+
+it('requires signed catalog authority while retaining cryptographic pack verification before activation', async () => {
+  const { readFileSync } = await import('node:fs');
+  const store = readFileSync(new URL('../stores/intelligence-pack-store.ts', import.meta.url), 'utf8');
+  const native = readFileSync(new URL('../../../../crates/lightbi-tauri/src/intelligence_pack.rs', import.meta.url), 'utf8');
+  expect(store).toContain("import { signedNativeFetch } from '../lib/native-capabilities'");
+  expect(store).toContain('signedNativeFetch(`${endpoint}/api/intelligence-packs/latest');
+  expect(store).not.toContain('externalFetch(`${endpoint}/api/intelligence-packs/latest');
+  expect(native).toContain('store.stage(&raw, Some(&envelope_sha256), &context(), &trusted_keys())');
+  expect(native).toContain('activate_staged(&context(), &trusted_keys())');
+});

@@ -168,6 +168,7 @@ pub(crate) fn signed_route_class(pathname: &str) -> SignedRouteClass {
     }
     if pathname.starts_with("/api/account/")
         || pathname.starts_with("/api/micro-brain/learning/")
+        || pathname == "/api/intelligence-packs/latest"
         || pathname == "/api/license/activate"
     {
         return SignedRouteClass::NativeProtected;
@@ -414,6 +415,10 @@ mod tests {
         );
         assert_eq!(
             signed_route_class("/api/micro-brain/learning/poll"),
+            SignedRouteClass::NativeProtected
+        );
+        assert_eq!(
+            signed_route_class("/api/intelligence-packs/latest"),
             SignedRouteClass::NativeProtected
         );
         assert_eq!(

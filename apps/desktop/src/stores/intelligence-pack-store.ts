@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { lightBIDistributionEndpoint } from '../lib/distribution-pairing';
-import { externalFetch } from '../lib/native-capabilities';
+import { signedNativeFetch } from '../lib/native-capabilities';
 import { isNativeLightBI } from '../lib/native-runtime';
 import {
   applyVerifiedRuntimePack,
@@ -56,7 +56,7 @@ function compareVersions(left: string, right: string): number {
 
 async function latestCatalog(force: boolean): Promise<IntelligencePackCatalogV1> {
   const endpoint = lightBIDistributionEndpoint();
-  const response = await externalFetch(`${endpoint}/api/intelligence-packs/latest${force ? '?refresh=1' : ''}`, { cache: force ? 'no-store' : 'default' });
+  const response = await signedNativeFetch(`${endpoint}/api/intelligence-packs/latest${force ? '?refresh=1' : ''}`, { cache: force ? 'no-store' : 'default' });
   if (response.status === 404) return { schemaVersion: INTELLIGENCE_PACK_CATALOG_SCHEMA_VERSION, latest: null };
   if (!response.ok) throw new Error(`Intelligence Pack service unavailable (HTTP ${response.status}).`);
   const catalog = await response.json() as IntelligencePackCatalogV1;
