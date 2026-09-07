@@ -1,4 +1,4 @@
-name: R1-P13 NEXT044 Native Trust Acceptance
+name: R1-P13 NEXT045 Native Trust Acceptance
 
 on:
   push:
@@ -9,19 +9,19 @@ permissions:
   contents: read
 
 jobs:
-  windows-next044-native-trust:
+  windows-next045-native-trust:
     runs-on: windows-latest
     timeout-minutes: 120
     env:
-      LIGHTBI_PRODUCT_SOURCE_SHA: c5713ce0188b08a689adab85181f7fbf29deaaad
+      LIGHTBI_PRODUCT_SOURCE_SHA: 60b44ebd3ba14bd2eb37d5134234f92403a3cd48
       LIGHTBI_CP_SHA: e4deadf864c9d26e673c0e0c4b05492c32406030
-      LIGHTBI_UAT_VERSION: 0.9.2-beta.7-next.44
-      LIGHTBI_UAT_GENERATION: g-2026-09-07-next-044
+      LIGHTBI_UAT_VERSION: 0.9.2-beta.7-next.45
+      LIGHTBI_UAT_GENERATION: g-2026-09-07-next-045
     steps:
       - name: Checkout exact accepted product source
         uses: actions/checkout@v4
         with:
-          ref: c5713ce0188b08a689adab85181f7fbf29deaaad
+          ref: 60b44ebd3ba14bd2eb37d5134234f92403a3cd48
           fetch-depth: 1
       - name: Prove exact product source and acceptance authority
         shell: pwsh
@@ -60,15 +60,15 @@ jobs:
         run: |
           pnpm dlx @tauri-apps/cli@2.11.4 icon apps/desktop/public/branding/lightbi-app-icon.png --output crates/lightbi-tauri/icons
           node scripts/validate-native-icons.mjs
-      - name: Build exact NEXT044 Windows runtime and installer
+      - name: Build exact NEXT045 Windows runtime and installer
         working-directory: crates/lightbi-tauri
         shell: pwsh
         env:
           LIGHTBI_RUNTIME_CHANNEL: internal
-          VITE_LIGHTBI_GENERATION_ID: g-2026-09-07-next-044
-          VITE_LIGHTBI_PARENT_GENERATION_ID: g-2026-09-06-next-043
+          VITE_LIGHTBI_GENERATION_ID: g-2026-09-07-next-045
+          VITE_LIGHTBI_PARENT_GENERATION_ID: g-2026-09-07-next-044
           VITE_LIGHTBI_CHANNEL: internal
-          VITE_LIGHTBI_CORE_COMMIT: c5713ce0188b08a689adab85181f7fbf29deaaad
+          VITE_LIGHTBI_CORE_COMMIT: 60b44ebd3ba14bd2eb37d5134234f92403a3cd48
           VITE_LIGHTBI_CONTROL_PLANE_COMMIT: e4deadf864c9d26e673c0e0c4b05492c32406030
           VITE_LIGHTBI_CONTROL_PLANE_SCHEMA_VERSION: 067_catalog_quarterly_pricing
           VITE_LIGHTBI_TEST_PACK_VERSION: intelligence-pack-1.0.0-next.1
@@ -76,11 +76,11 @@ jobs:
           VITE_LIGHTBI_TRUST_PHASE2A_HEAD: 10de4da8e551a46f93f7b62985a0a6e611581b8e
           VITE_LIGHTBI_RELEASE_UPDATE_CHANNEL: internal
           VITE_LIGHTBI_DISTRIBUTION_URL: https://lightbi-next.thaiduy.digital/distribution-api
-          VITE_LIGHTBI_ANALYTICS_NAMESPACE: internal/g-2026-09-07-next-044
-          VITE_LIGHTBI_RELEASE_NAMESPACE: internal/lightbi/g-2026-09-07-next-044
+          VITE_LIGHTBI_ANALYTICS_NAMESPACE: internal/g-2026-09-07-next-045
+          VITE_LIGHTBI_RELEASE_NAMESPACE: internal/lightbi/g-2026-09-07-next-045
           VITE_LIGHTBI_SOURCE_BRANCH: codex/r1-roadmap-integration
-          VITE_LIGHTBI_SOURCE_COMMIT: c5713ce0188b08a689adab85181f7fbf29deaaad
-          VITE_LIGHTBI_BUILDER: github-actions/r1p13-next044-native-trust-acceptance
+          VITE_LIGHTBI_SOURCE_COMMIT: 60b44ebd3ba14bd2eb37d5134234f92403a3cd48
+          VITE_LIGHTBI_BUILDER: github-actions/r1p13-next045-native-trust-acceptance
           VITE_LIGHTBI_INFRA_DATABASE_SCOPE: internal
           VITE_LIGHTBI_INFRA_REDIS_SCOPE: internal
           VITE_LIGHTBI_INFRA_DATA_SCOPE: internal
@@ -102,7 +102,7 @@ jobs:
           $installerName = "LightBI-NEXT-$env:LIGHTBI_UAT_VERSION-x64-setup.exe"
           $normalizedInstaller = Join-Path $installer.Directory.FullName $installerName
           Move-Item $installer.FullName $normalizedInstaller -Force
-          $installDir = Join-Path $env:RUNNER_TEMP 'lightbi-next044-canonical-install'
+          $installDir = Join-Path $env:RUNNER_TEMP 'lightbi-next045-canonical-install'
           if (Test-Path $installDir) { Remove-Item $installDir -Recurse -Force }
           $install = Start-Process -FilePath $normalizedInstaller -ArgumentList '/S', "/D=$installDir" -Wait -PassThru
           if ($install.ExitCode -ne 0) { throw "NSIS canonical install failed: exit=$($install.ExitCode)" }
@@ -157,14 +157,14 @@ jobs:
             production_phase2a_freeze_gate = $true
           }
           $evidence | ConvertTo-Json -Depth 6 | Set-Content "$($installer.Directory.FullName)/rc-acceptance.json"
-          Write-Host "NEXT044_PREBUNDLE_RUNTIME_SHA=$prebundleHash"
-          Write-Host "NEXT044_INSTALLED_RUNTIME_SHA=$runtimeHash"
-          Write-Host "NEXT044_RUNTIME_SHA=$runtimeHash"
-          Write-Host "NEXT044_RUNTIME_SIZE=$runtimeSize"
-          Write-Host "NEXT044_RUNTIME_RELEASE_ID=release:$($env:LIGHTBI_UAT_VERSION):windows:x86_64:runtime"
+          Write-Host "NEXT045_PREBUNDLE_RUNTIME_SHA=$prebundleHash"
+          Write-Host "NEXT045_INSTALLED_RUNTIME_SHA=$runtimeHash"
+          Write-Host "NEXT045_RUNTIME_SHA=$runtimeHash"
+          Write-Host "NEXT045_RUNTIME_SIZE=$runtimeSize"
+          Write-Host "NEXT045_RUNTIME_RELEASE_ID=release:$($env:LIGHTBI_UAT_VERSION):windows:x86_64:runtime"
       - uses: actions/upload-artifact@v4
         with:
-          name: LightBI-Windows-NEXT044-R1P13-Native-Trust-Acceptance
+          name: LightBI-Windows-NEXT045-R1P13-Native-Trust-Acceptance
           retention-days: 14
           path: |
             target/x86_64-pc-windows-msvc/release/bundle/nsis/LightBI.exe
