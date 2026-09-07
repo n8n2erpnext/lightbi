@@ -345,7 +345,11 @@ Target scheduler/API overhead should remain small relative to analysis work. Nor
 
 ## 22. Current status
 
-**Plan approved; implementation not started by this document.** Existing Live Lab aggregate observation remains the only implemented learning telemetry lane at the planning baseline. Redis queue classes, R2 learning lakes, contribution polling and the cache additions in §13 require future code/migration/runtime acceptance.
+**Implementation has started on NEXT.** MB-LQ0 contracts/migration design are source-closed at Control Plane `00e8abb7aed68d2fa872dd4758c0443819ba1527`. MB-LQ1 durable Postgres jobs, Redis Streams dispatch/rehydration, lease-governed async runtime and diagnostics are source-closed at `77dd7df5804da725169bd4c2260b1c7c944d7134`; NEXT async systemd unit templates are recorded at `84099b3ea7470243519682b7604a3f64da45f21e`.
+
+Migration `069_micro_brain_learning_foundation` is applied on NEXT with zero pending migrations. A real NEXT Postgres+Redis rehearsal proved normal dispatch, Redis dispatch-state loss followed by PostgreSQL rehydration, and expired-worker-lease recovery; synthetic jobs/messages were removed after the proof. Full Control Plane regression after LQ1 was `254/254 PASS`.
+
+Live activation of the three new `short/default/long` systemd workers remains **OPEN**, not failed: the existing user systemd manager is alive but its `/run/user/1000` control/DBus socket is absent. Restarting that manager could restart the protected trust issuer/signer services, so activation is deliberately deferred until the control plane can be restored without violating the no-restart trust rule. MB-LQ2 scheduler/Admin work may proceed in source while this operational gate remains open. R2 learning lakes, contribution polling/transport, training workers and selective Redis cache additions remain future phases.
 ## 23. Source bookmarks
 
 Canonical architecture:

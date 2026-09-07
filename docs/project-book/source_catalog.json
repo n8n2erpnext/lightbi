@@ -10047,8 +10047,8 @@
     {
       "path": "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_MICRO_BRAIN_R2_REDIS_LEARNING_PIPELINE_2026-09-07.md",
       "extension": ".md",
-      "bytes": 25479,
-      "sha256": "367e20c73e1a9cdb8bf69e2c36ef2f82824c35ab68703258b737b0bc0f2218e0",
+      "bytes": 26570,
+      "sha256": "6ee0de8aa290b743a8b4fdf06be29a54a19954800c1a66b1b6e19add35cd07d6",
       "suggestedCategory": "historical-provenance",
       "title": "Agent Implementation Plan — Micro Brain R2 + Redis Learning Pipeline — 2026-09-07"
     },
