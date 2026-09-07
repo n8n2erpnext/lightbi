@@ -68,3 +68,15 @@ Authority rule: Frappe UI may inform primitive composition, tokens, interaction 
 - Chart direction: use Frappe/owner references to build a semantic LightBI Chart Pattern Library; do not copy external chart APIs or pursue visual variety for its own sake.
 
 Authority rule: Frappe Books/Frappe UI may inform product behavior, design-system structure and visualization grammar. LightBI owner decisions, current React/Tauri code, governed evidence/metric contracts, accessibility requirements and LightBI-specific acceptance remain authoritative.
+
+## EXT-2026-09-07-MICRO-BRAIN-LEARNING-PIPELINE
+
+- Source name: Owner-approved Micro Brain live-learning / R2 data-lake / Redis worker design discussion.
+- Supplied: 2026-09-07 in the active owner/assistant conversation.
+- Classification: owner architecture direction and implementation-planning input; not proof of deployed behavior.
+- Repository-native at intake: no.
+- Incorporated into: `docs/architecture/micro-brain-cross-domain-semantic-expansion.md` and `docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_MICRO_BRAIN_R2_REDIS_LEARNING_PIPELINE_2026-09-07.md`.
+- Code reconciliation: yes for the planning baseline — current Desktop observation cadence and current Control Plane Redis/outbox/worker/cache primitives were inspected directly before the plan was written.
+- Owner intent: scale learning contribution without VPS pull connections, use private R2 as bounded learning lakes, adopt ERPNext-style `short/default/long` workers, expose queue/scheduler/lake controls in Admin, and selectively expand Redis caching without granting it authority.
+
+Authority rule: this source approves design direction. PostgreSQL/Redis/R2/worker code, migrations, NEXT runtime evidence and owner UAT must separately prove implementation; raw-user-data collection or automatic semantic promotion is not authorized by this discussion.

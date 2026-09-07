@@ -1,14 +1,14 @@
 {
   "schemaVersion": "lightbi.project-book.source-catalog.v1",
-  "snapshotDate": "2026-09-05",
-  "generatedAt": "2026-09-05T03:22:42Z",
+  "snapshotDate": "2026-09-07",
+  "generatedAt": "2026-09-07T03:24:11Z",
   "branch": "docs/ba-da-mode-future-20260903",
-  "head": "721f5b647e282c98f840d95aa8095ea4ed50a9ff",
+  "head": "85bcb724b42a80cb8fe005e29ff5d6c4c002d7a5",
   "worktreeDirty": true,
   "scope": "All project Markdown and JSON outside dependency/build/project-book directories.",
   "counts": {
-    "total": 946,
-    "markdown": 529,
+    "total": 947,
+    "markdown": 530,
     "json": 417,
     "docsJson": 354,
     "references": 0
@@ -1605,8 +1605,8 @@
     {
       "path": "docs/architecture/micro-brain-cross-domain-semantic-expansion.md",
       "extension": ".md",
-      "bytes": 19407,
-      "sha256": "c27e854867d822d4a9a5c41b05281fa659ae9b67da42c1f6838a4fc6cb722d71",
+      "bytes": 22351,
+      "sha256": "3a4e6caa9789341003c50aa1dcbcfae09984a3138117bacc0e8bd9d1ca65e668",
       "suggestedCategory": "architecture-source-or-evidence",
       "title": "Micro Brain Cross-Domain Semantic Expansion Direction"
     },
@@ -10043,6 +10043,14 @@
       "sha256": "1509f037c3e7a54505f4cb0ed450f702f22f0e0d4cf8930b735821957a22e543",
       "suggestedCategory": "historical-provenance",
       "title": "Implementation Plan: Measure Typing Guarded SUM"
+    },
+    {
+      "path": "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_MICRO_BRAIN_R2_REDIS_LEARNING_PIPELINE_2026-09-07.md",
+      "extension": ".md",
+      "bytes": 25479,
+      "sha256": "367e20c73e1a9cdb8bf69e2c36ef2f82824c35ab68703258b737b0bc0f2218e0",
+      "suggestedCategory": "historical-provenance",
+      "title": "Agent Implementation Plan — Micro Brain R2 + Redis Learning Pipeline — 2026-09-07"
     },
     {
       "path": "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_MICRO_SEMANTIC_BRAIN_V1_2026-09-04.md",

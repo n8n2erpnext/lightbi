@@ -7,6 +7,7 @@ Supersedes: none
 Superseded by: none
 Primary sources: ./micro-semantic-brain-vector-inference.md, ../adr/ADR-124-micro-semantic-brain-vector-inference.md, ../project-book/LIGHTBI_PROJECT_BOOK.md
 Conversation provenance: owner-approved `LIGHTBI_MICRO_BRAIN_CONVERSATION_HANDOFF_2026-09-04.md`, generated outside the repo and distilled here; implementation status reconciled against current repo truth.
+2026-09-07 learning-pipeline provenance: [`EXT-2026-09-07-MICRO-BRAIN-LEARNING-PIPELINE`](../project-book/EXTERNAL_SOURCE_REGISTER.md#ext-2026-09-07-micro-brain-learning-pipeline); owner-approved design direction, not deployed-runtime evidence.
 
 ## Purpose
 
@@ -158,6 +159,29 @@ Sample datasets primarily serve as:
 - held-out terminology tests.
 
 The core owner rule remains: **Có bằng chứng thì nói có. Thiếu bằng chứng thì nói thiếu.**
+
+## Scalable contribution transport and learning operations direction — 2026-09-07
+
+The owner-approved scale direction separates lightweight observation from heavier learning contribution. The existing aggregate observation pulse remains a small privacy-safe operational signal; it must not become the transport for large training material.
+
+A future contribution pipeline should use client polling plus bounded jobs rather than inbound server connections to Desktop installations. Eligible Desktop clients poll for work with jitter/backoff, prepare a sanitized contribution package locally, and upload large bytes directly to private R2 using short-lived grants. The VPS consumes bounded R2 objects/chunks asynchronously instead of proxying large customer uploads through the Control Plane.
+
+The durable infrastructure roles are:
+
+```text
+PostgreSQL  -> job/lake/config/audit truth
+Redis       -> short/default/long dispatch, leases, presence, rate/backpressure and bounded read cache
+R2          -> private immutable contribution objects and logical learning lakes
+Workers     -> validation/candidate extraction; never signing or promotion authority
+```
+
+The initial owner-approved queue model follows ERPNext-style `short`, `default`, and `long` worker classes. Learning-size fairness begins with Small/Medium/Large service weights of 5:3:1, bounded by per-installation/global quotas and backpressure. Default contribution-job size is at most 1 GiB, with a hard exceptional ceiling of 2 GiB and a default VPS active training working set no larger than 2 GiB.
+
+R2 is logically partitioned through `intake -> quarantine -> ready -> training -> learned/rejected -> archive`. These names describe processing state only. `learned` means candidate evidence was processed; it still does not grant semantic authority. The lifecycle from validated candidate knowledge through holdout/counterfactual review and signed Intelligence Pack remains unchanged.
+
+Redis is explicitly non-authoritative. It may accelerate Live Lab rollups, app presence, queue/lake dashboards, public catalog/docs/announcement read models and scheduler indexes, but it must never grant Trust, entitlement/security, migration, governed BA/evidence or signed-pack authority. Redis loss must be recoverable from durable sources.
+
+Detailed implementation phases, queue semantics, cache-adoption audit and Admin controls are recorded in [`../history/agent/plans/AGENT_IMPLEMENTATION_PLAN_MICRO_BRAIN_R2_REDIS_LEARNING_PIPELINE_2026-09-07.md`](../history/agent/plans/AGENT_IMPLEMENTATION_PLAN_MICRO_BRAIN_R2_REDIS_LEARNING_PIPELINE_2026-09-07.md). That plan is implementation direction, not proof that the pipeline is already deployed.
 
 ## Negative knowledge is first-class
 

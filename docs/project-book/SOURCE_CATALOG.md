@@ -4,11 +4,11 @@
 
 ## Snapshot
 
-- Date: **2026-09-05**
+- Date: **2026-09-07**
 - Branch: `docs/ba-da-mode-future-20260903`
-- HEAD: `721f5b647e282c98f840d95aa8095ea4ed50a9ff`
+- HEAD: `85bcb724b42a80cb8fe005e29ff5d6c4c002d7a5`
 - Worktree dirty while generated: **true**
-- Total indexed sources: **946** (529 Markdown / 417 JSON)
+- Total indexed sources: **947** (530 Markdown / 417 JSON)
 - JSON under `docs/`: **354**
 
 For old paths, use [`PATH_MIGRATION_INDEX.md`](./PATH_MIGRATION_INDEX.md) and [`../history/LEGACY_ROOT_INDEX.md`](../history/LEGACY_ROOT_INDEX.md).
@@ -191,7 +191,7 @@ For old paths, use [`PATH_MIGRATION_INDEX.md`](./PATH_MIGRATION_INDEX.md) and [`
 - [`docs/architecture/insight-model.md`](../../docs/architecture/insight-model.md) — Insight Architecture Model; `1061` bytes; SHA-256 `b65012acafe379496400afb29a7e07c9175ffcde2b1f5b9ebecec94481ed5bd6`
 - [`docs/architecture/intent-model.md`](../../docs/architecture/intent-model.md) — Analytical Intent Model; `1012` bytes; SHA-256 `a775be1d16b314719c107d7dbdea314fd7bc50cd62d4e9a9083400095ea34057`
 - [`docs/architecture/materialization-model.md`](../../docs/architecture/materialization-model.md) — Materialization Strategy Model; `1110` bytes; SHA-256 `72c76c230a22271735c0753ffbed3db382aaf3aa5e173a2c175baf3c00314cdb`
-- [`docs/architecture/micro-brain-cross-domain-semantic-expansion.md`](../../docs/architecture/micro-brain-cross-domain-semantic-expansion.md) — Micro Brain Cross-Domain Semantic Expansion Direction; `19407` bytes; SHA-256 `c27e854867d822d4a9a5c41b05281fa659ae9b67da42c1f6838a4fc6cb722d71`
+- [`docs/architecture/micro-brain-cross-domain-semantic-expansion.md`](../../docs/architecture/micro-brain-cross-domain-semantic-expansion.md) — Micro Brain Cross-Domain Semantic Expansion Direction; `22351` bytes; SHA-256 `3a4e6caa9789341003c50aa1dcbcfae09984a3138117bacc0e8bd9d1ca65e668`
 - [`docs/architecture/micro-semantic-brain-vector-inference.md`](../../docs/architecture/micro-semantic-brain-vector-inference.md) — Micro Semantic Brain and Vector Inference Architecture; `25369` bytes; SHA-256 `ec31eba1ccf04fb5be4f231d2c7f52087122f000e0fec4327fe881a78e28983a`
 - [`docs/architecture/motodetail-semantic-support-audit.json`](../../docs/architecture/motodetail-semantic-support-audit.json) — motodetail-semantic-support-audit.json; `810` bytes; SHA-256 `a48d447fed40f9ae14b3bec6f7de0d348330c891a22bf77d0a6b6f8954e5b888`
 - [`docs/architecture/narrative-model.md`](../../docs/architecture/narrative-model.md) — Analytical Narrative Model; `927` bytes; SHA-256 `932fb62b61913e7f7cdce93cc090daa6e1d7586d88443d91f58872478a6dc593`
@@ -682,6 +682,7 @@ For old paths, use [`PATH_MIGRATION_INDEX.md`](./PATH_MIGRATION_INDEX.md) and [`
 ## historical-provenance
 
 - [`docs/history/agent/plans/AGENT_PLAN_ROAD_TO_1_0_2026-08-31.md`](../../docs/history/agent/plans/AGENT_PLAN_ROAD_TO_1_0_2026-08-31.md) — LightBI Road to 1.0 Execution Plan — 2026-08-31; `21999` bytes; SHA-256 `ea0a0e6c90e248ec9d5b02f81c1248cc425fd169daff2573d25031ef26ee443f`
+- [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_MICRO_BRAIN_R2_REDIS_LEARNING_PIPELINE_2026-09-07.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_MICRO_BRAIN_R2_REDIS_LEARNING_PIPELINE_2026-09-07.md) — Agent Implementation Plan — Micro Brain R2 + Redis Learning Pipeline — 2026-09-07; `25479` bytes; SHA-256 `367e20c73e1a9cdb8bf69e2c36ef2f82824c35ab68703258b737b0bc0f2218e0`
 - [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_MICRO_SEMANTIC_BRAIN_V1_2026-09-04.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_MICRO_SEMANTIC_BRAIN_V1_2026-09-04.md) — LightBI Micro Semantic Brain V1 Implementation Plan — 2026-09-04; `15358` bytes; SHA-256 `c9628a4100002b93296727355ae2da373f7399b7baac548bffb59155a8cae77a`
 - [`docs/history/LEGACY_ROOT_INDEX.md`](../../docs/history/LEGACY_ROOT_INDEX.md) — Legacy Root Documentation Index; `33743` bytes; SHA-256 `e662adb190bc6e9d9b598d4d1c421423376931d186aafb53c15cc4f9d25a3385`
 - [`docs/history/README.md`](../../docs/history/README.md) — Historical Documentation; `1764` bytes; SHA-256 `58060865d3938943ef9a415e39457280481d8d9b78a3f4ceb7e017a60c343052`
