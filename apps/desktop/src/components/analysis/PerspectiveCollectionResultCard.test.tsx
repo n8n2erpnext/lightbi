@@ -4,6 +4,7 @@ import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { PerspectiveCollectionResultCard } from './PerspectiveCollectionResultCard';
 import { useAnalysisExportStore } from '../../stores/analysis-export-store';
+import { createDomainComparisonBrief } from '../../lib/ba-comparison-engine';
 
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual<typeof import('react-router-dom')>('react-router-dom');
@@ -56,7 +57,7 @@ describe('PerspectiveCollectionResultCard selected-data analysis', () => {
     expect(screen.getByTestId('deep-ba-selected-scope')).toBeTruthy();
   });
 
-  it('treats one reporting period as a snapshot and opens existing Deep BA from the BA focus', () => {
+  it('treats one reporting period as a snapshot and routes through evidence before Step 2', () => {
     render(<PerspectiveCollectionResultCard
       perspectiveId="executive_overview"
       rows={[{ reporting_period: '2026-06', sales_revenue: 250 }]}
@@ -84,11 +85,21 @@ describe('PerspectiveCollectionResultCard selected-data analysis', () => {
     expect(screen.queryByText(/0\.0%/)).toBeNull();
 
     fireEvent.click(screen.getByRole('button', { name: /What explains the composition/i }));
+    expect(screen.getByTestId('collection-evidence-drill-surface')).toBeTruthy();
     expect(screen.getByTestId('collection-chart-drill')).toBeTruthy();
+    expect(screen.queryByTestId('collection-subset-deep-ba')).toBeNull();
+    expect(screen.queryByTestId('collection-decision-workspace')).toBeNull();
+
+    fireEvent.click(screen.getByRole('button', { name: /Deep BA analysis · Step 2/i }));
+    expect(screen.getByTestId('collection-deep-selected-surface')).toBeTruthy();
     expect(screen.getByTestId('collection-subset-deep-ba')).toBeTruthy();
+    expect(screen.queryByTestId('collection-chart-drill')).toBeNull();
     expect(screen.getByTestId('collection-deep-export-image')).toBeTruthy();
     expect(screen.getByTestId('collection-deep-export-pdf')).toBeTruthy();
     expect(screen.getByTestId('collection-create-dashboard')).toBeTruthy();
+
+    fireEvent.click(screen.getByTestId('collection-deep-selected-back'));
+    expect(screen.getByTestId('collection-evidence-drill-surface')).toBeTruthy();
     expect(screen.getByRole('button', { name: /Clean and export sources/i })).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: /Clean and export sources/i }));
     const exportPlan = useAnalysisExportStore.getState().plan;
@@ -96,6 +107,62 @@ describe('PerspectiveCollectionResultCard selected-data analysis', () => {
     expect(exportPlan?.combinationPolicy).toBe('single_source');
     expect(exportPlan?.tables.some(table => table.kind === 'evidence')).toBe(true);
   });
+  it('keeps full Deep BA and selected Step 2 mutually exclusive and restores the exact evidence source on Back', () => {
+    const deepDiveBrief = createDomainComparisonBrief({
+      periods: [
+        { id: 'may', label: '2026-05', labelConfidence: 'high', labelReason: 'test', sortableKey: '2026-05', rows: [{ Product: 'A', Revenue: 300 }] },
+        { id: 'june', label: '2026-06', labelConfidence: 'high', labelReason: 'test', sortableKey: '2026-06', rows: [{ Product: 'A', Revenue: 250 }] },
+      ],
+      preferredDomain: 'revenue',
+    });
+    const semanticFields = [
+      { canonicalId: 'product', label: 'Product', domain: 'canonical', role: 'unknown', confidence: 100, physicalColumn: 'Product', reason: 'test' },
+      { canonicalId: 'revenue', label: 'Revenue', domain: 'canonical', role: 'unknown', confidence: 100, physicalColumn: 'Revenue', reason: 'test' },
+    ] as const;
+
+    render(<PerspectiveCollectionResultCard
+      perspectiveId="executive_overview"
+      rows={[{ reporting_period: '2026-05', sales_revenue: 300 }, { reporting_period: '2026-06', sales_revenue: 250 }]}
+      sourceCount={2}
+      deepDiveBrief={deepDiveBrief}
+      evidenceSources={[
+        { period: '2026-05', role: 'sales', sourceName: 'sales-a.xlsx', sourceRowCount: 2, rows: [{ Product: 'A', Revenue: 100 }, { Product: 'B', Revenue: 200 }], semanticFields: [...semanticFields] },
+        { period: '2026-05', role: 'sales', sourceName: 'sales-b.xlsx', sourceRowCount: 2, rows: [{ Product: 'C', Revenue: 120 }, { Product: 'D', Revenue: 180 }], semanticFields: [...semanticFields] },
+      ]}
+    />);
+
+    expect(screen.getByTestId('collection-decision-workspace')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: /What drove the change/i }));
+    expect(screen.getByTestId('collection-deep-perspective-surface')).toBeTruthy();
+    expect(screen.getByTestId('governed-ba-deep-dive')).toBeTruthy();
+    expect(screen.queryByTestId('collection-decision-workspace')).toBeNull();
+    expect(screen.queryByTestId('collection-deep-selected-surface')).toBeNull();
+    expect(screen.queryByTestId('collection-chart-drill')).toBeNull();
+
+    fireEvent.click(screen.getByTestId('collection-deep-perspective-back'));
+    expect(screen.getByTestId('collection-decision-workspace')).toBeTruthy();
+    fireEvent.click(screen.getByTestId('collection-chart'));
+    expect(screen.getByTestId('collection-evidence-drill-surface')).toBeTruthy();
+    fireEvent.click(screen.getByTestId('collection-evidence-source-1'));
+    expect(screen.getByTestId('collection-evidence-source-1').getAttribute('aria-pressed')).toBe('true');
+    expect(screen.getByRole('table').textContent).toContain('C');
+
+    fireEvent.click(screen.getByRole('button', { name: /Deep BA analysis · Step 2/i }));
+    expect(screen.getByTestId('collection-deep-selected-surface')).toBeTruthy();
+    expect(screen.queryByTestId('collection-deep-perspective-surface')).toBeNull();
+    expect(screen.queryByTestId('governed-ba-deep-dive')).toBeNull();
+    expect(screen.queryByTestId('collection-chart-drill')).toBeNull();
+
+    fireEvent.click(screen.getByTestId('collection-deep-selected-back'));
+    expect(screen.getByTestId('collection-evidence-drill-surface')).toBeTruthy();
+    expect(screen.getByTestId('collection-evidence-source-1').getAttribute('aria-pressed')).toBe('true');
+    expect(screen.getByRole('table').textContent).toContain('C');
+
+    fireEvent.click(screen.getByTestId('collection-evidence-back'));
+    expect(screen.getByTestId('collection-decision-workspace')).toBeTruthy();
+    expect(screen.queryByTestId('collection-chart-drill')).toBeNull();
+  });
+
   it('keeps governed summary totals unchanged while Focus scopes only exact source evidence', () => {
     const focusSubject = {
       schemaVersion: 'lightbi.multisource-focus-subject.v1' as const,

@@ -1,6 +1,6 @@
 import React, { useMemo, useRef, useState } from "react";
 import ReactECharts from "echarts-for-react";
-import { ArrowDownRight, ArrowUpRight, CheckCircle2, ChevronRight, Download, FileImage, FileText, LayoutDashboard, Lightbulb, Search, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowDownRight, ArrowLeft, ArrowUpRight, CheckCircle2, ChevronRight, Download, FileImage, FileText, LayoutDashboard, Lightbulb, Search, ShieldCheck, Sparkles } from "lucide-react";
 import { toPng } from "html-to-image";
 import { jsPDF } from "jspdf";
 import { useNavigate } from "react-router-dom";
@@ -33,6 +33,7 @@ export interface PerspectiveCollectionEvidenceSource {
 }
 
 type ChartSelection = { period: string; metricId: string };
+type CollectionAnalysisView = 'decision_workspace' | 'evidence_drill' | 'deep_perspective' | 'deep_selected';
 
 function rolesForMetric(metricId: string): string[] {
   if (metricId === "sales_revenue") return ["sales"];
@@ -68,9 +69,8 @@ export const PerspectiveCollectionResultCard: React.FC<{
   focusSubject?: MultiSourceFocusSubjectSelectionV1 | null;
   evidenceSources?: PerspectiveCollectionEvidenceSource[];
 }> = ({ perspectiveId, rows, sourceCount, deepDiveBrief, focusDeepDiveBrief, focusSubject = null, evidenceSources = [] }) => {
-  const [showDeepDive, setShowDeepDive] = useState(false);
+  const [analysisView, setAnalysisView] = useState<CollectionAnalysisView>('decision_workspace');
   const [chartSelection, setChartSelection] = useState<ChartSelection | null>(null);
-  const [showSubsetDeepDive, setShowSubsetDeepDive] = useState(false);
   const [activeEvidenceIndex, setActiveEvidenceIndex] = useState(0);
   const [exportState, setExportState] = useState<"idle" | "image" | "pdf" | "excel">("idle");
   const [exportError, setExportError] = useState("");
@@ -171,7 +171,7 @@ export const PerspectiveCollectionResultCard: React.FC<{
   }, [chartSelection, evidenceSources]);
   const activeEvidence = selectedEvidence[Math.min(activeEvidenceIndex, Math.max(0, selectedEvidence.length - 1))];
   const subsetOverviews = useMemo(() => {
-    if (!chartSelection || !showSubsetDeepDive) return [];
+    if (!chartSelection || analysisView !== 'deep_selected') return [];
     return selectedEvidence.flatMap(source => {
       const scopedRows = rowsForEvidence(source);
       if (scopedRows.length === 0) return [];
@@ -188,10 +188,9 @@ export const PerspectiveCollectionResultCard: React.FC<{
       });
       return overview ? [{ source, overview }] : [];
     });
-  }, [chartSelection, displayMetricLabel, focusSubject, perspectiveId, selectedEvidence, showSubsetDeepDive]);
+  }, [analysisView, chartSelection, displayMetricLabel, focusSubject, perspectiveId, selectedEvidence]);
   const previewRows = activeEvidence ? rowsForEvidence(activeEvidence).slice(0, 100) : [];
   const previewColumns = [...new Set(previewRows.flatMap(row => Object.keys(row)))].slice(0, 12);
-  const hasVisibleDeepAnalysis = showDeepDive || (showSubsetDeepDive && subsetOverviews.length > 0);
   const exportFileStem = `${displayPerspectiveLabel}${chartSelection ? `-${chartSelection.period}-${displayMetricLabel(chartSelection.metricId)}` : ""}`
     .replace(/[\\/:*?"<>|]+/g, "-").slice(0, 100) || "LightBI-multifile-BA";
 
@@ -341,6 +340,76 @@ export const PerspectiveCollectionResultCard: React.FC<{
     navigate(`/dashboards/${dashboardId}`);
   };
 
+  const renderCollectionActionBar = (includeDeepExport: boolean) => (
+    <div className="flex flex-wrap items-center justify-end gap-2 border-t border-slate-100 bg-white px-5 py-3 md:px-6">
+      <span className="mr-auto inline-flex items-center gap-2 text-xs text-slate-500"><Download className="h-4 w-4" />{t('Export this perspective analysis')}</span>
+      <button type="button" onClick={openCleanExportWithAnalysis} className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700"><Sparkles className="h-4 w-4" />{t('Clean and export sources')}</button>
+      <button data-testid="collection-export-excel-analysis" type="button" onClick={() => void exportExcelAnalysis()} disabled={exportState !== 'idle'} className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-3 py-2 text-xs font-semibold text-white disabled:opacity-50"><Download className="h-4 w-4" />{exportState === 'excel' ? t('Exporting…') : t('Export Excel analysis')}</button>
+      {includeDeepExport && <><button data-testid="collection-deep-export-image" type="button" onClick={() => void exportImage()} disabled={exportState !== 'idle'} className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 disabled:opacity-50"><FileImage className="h-4 w-4" />{exportState === 'image' ? t('Exporting…') : t('Export image')}</button>
+      <button data-testid="collection-deep-export-pdf" type="button" onClick={() => void exportPdf()} disabled={exportState !== 'idle'} className="inline-flex items-center gap-2 rounded-lg bg-violet-600 px-3 py-2 text-xs font-semibold text-white disabled:opacity-50"><FileText className="h-4 w-4" />{exportState === 'pdf' ? t('Exporting…') : t('Export PDF')}</button></>}
+      <button data-testid="collection-create-dashboard" type="button" onClick={createCollectionDashboard} className="inline-flex items-center gap-2 rounded-lg bg-slate-950 px-3 py-2 text-xs font-semibold text-white"><LayoutDashboard className="h-4 w-4" />{t('Create perspective dashboard')}</button>
+    </div>
+  );
+
+  if (analysisView === 'evidence_drill' && chartSelection) {
+    return (
+      <section data-testid="perspective-collection-result" className="overflow-hidden rounded-2xl border border-blue-100 bg-white shadow-sm">
+        <div data-testid="collection-evidence-drill-surface" className="bg-white">
+          <div className="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 bg-slate-950 px-5 py-5 text-white md:px-6">
+            <div className="flex items-start gap-3">
+              <button data-testid="collection-evidence-back" type="button" onClick={() => setAnalysisView('decision_workspace')} className="mt-0.5 inline-flex items-center gap-1.5 rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-xs font-semibold text-white hover:bg-white/15"><ArrowLeft className="h-4 w-4" />{t('Back')}</button>
+              <div><div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-sky-300"><Search className="h-4 w-4" />{t('Evidence drill')}</div><h3 className="mt-1 text-lg font-semibold">{chartSelection.period} · {displayMetricLabel(chartSelection.metricId)}</h3><p className="mt-1 text-xs leading-5 text-slate-300">{displayPerspectiveLabel} · {t('Governed source evidence remains separated by source.')}</p></div>
+            </div>
+            {focusSubject && <span data-testid="collection-focus-badge" className="rounded-full border border-violet-300/30 bg-violet-300/10 px-3 py-1.5 text-[10px] font-semibold text-violet-100">Focus: {focusSubject.displayLabel}</span>}
+          </div>
+          <div data-testid="collection-chart-drill" className="p-5 md:p-6">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div><p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-blue-700">{t('Step 2 · Selected-data scope')}</p><p className="mt-1 max-w-2xl text-xs leading-5 text-slate-600">{t('LightBI keeps each governed source separate and analyzes only the period and metric selected on the chart.')}</p></div>
+              <button type="button" disabled={selectedEvidence.every(source => rowsForEvidence(source).length === 0)} onClick={() => setAnalysisView('deep_selected')} className="rounded-lg bg-slate-950 px-4 py-2.5 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-40">{t('Deep BA analysis · Step 2')}</button>
+            </div>
+            {selectedEvidence.length === 0 ? <p className="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800">{t('No source-bound row evidence is available for this chart point.')}</p> : <>
+              <div className="mt-4 flex flex-wrap gap-2">{selectedEvidence.map((source, index) => <button key={`${source.period}:${source.role}:${source.sourceName}`} type="button" data-testid={`collection-evidence-source-${index}`} aria-pressed={index === activeEvidenceIndex} onClick={() => setActiveEvidenceIndex(index)} className={`rounded-lg border px-3 py-2 text-xs font-medium ${index === activeEvidenceIndex ? 'border-blue-500 bg-white text-blue-800' : 'border-slate-200 bg-slate-50 text-slate-600'}`}>{t(source.role)} · {source.sourceName} · {source.sourceRowCount.toLocaleString(preferences.locale)} {t('rows')}{focusSubject ? ` · ${rowsForEvidence(source).length} focus match${rowsForEvidence(source).length === 1 ? '' : 'es'}` : ''}</button>)}</div>
+              {activeEvidence && focusSubject && previewRows.length === 0 && <p data-testid="collection-focus-unavailable" className="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800">This source has no exact evidence for the selected Focus Subject. LightBI will not infer a cross-source identity match.</p>}
+              {activeEvidence && previewRows.length > 0 && <div className="mt-4 max-h-[420px] overflow-auto rounded-lg border border-slate-200 bg-white"><table className="min-w-full text-left text-[11px]"><thead className="sticky top-0 bg-slate-50 text-slate-500"><tr>{previewColumns.map(column => <th key={column} className="whitespace-nowrap border-b border-slate-200 px-3 py-2 font-semibold">{column}</th>)}</tr></thead><tbody>{previewRows.map((row, rowIndex) => <tr key={rowIndex} className="border-b border-slate-100 last:border-0">{previewColumns.map(column => <td key={column} className="max-w-[240px] truncate whitespace-nowrap px-3 py-2 text-slate-700">{String(row[column] ?? '')}</td>)}</tr>)}</tbody></table><p className="border-t border-slate-100 px-3 py-2 text-[11px] text-slate-500">{t(focusSubject ? 'Preview shows the first 100 exact Focus Subject matches; Deep BA uses that exact matched row scope. The source chip keeps the full source-row count visible.' : 'Preview shows the first 100 selected rows; Deep BA uses a representative sample with the full source-row scope disclosed.')}</p></div>}
+            </>}
+          </div>
+          {renderCollectionActionBar(false)}
+          {exportError && <p role="alert" className="border-t border-red-100 bg-red-50 px-5 py-2 text-xs text-red-700 md:px-6">{exportError}</p>}
+        </div>
+      </section>
+    );
+  }
+
+  if (analysisView === 'deep_selected' && chartSelection) {
+    return (
+      <section data-testid="perspective-collection-result" className="overflow-hidden rounded-2xl border border-violet-100 bg-white shadow-sm">
+        <div data-testid="collection-deep-selected-surface">
+          <div className="flex items-start gap-3 border-b border-slate-100 bg-slate-950 px-5 py-5 text-white md:px-6"><button data-testid="collection-deep-selected-back" type="button" onClick={() => setAnalysisView('evidence_drill')} className="mt-0.5 inline-flex items-center gap-1.5 rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-xs font-semibold text-white hover:bg-white/15"><ArrowLeft className="h-4 w-4" />{t('Back')}</button><div><p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-violet-300">{t('Deep BA analysis · Step 2')}</p><h3 className="mt-1 text-lg font-semibold">{chartSelection.period} · {displayMetricLabel(chartSelection.metricId)}</h3><p className="mt-1 text-xs leading-5 text-slate-300">{t('This surface recalculates BA only from the exact selected evidence scope; the governed summary remains unchanged.')}</p></div></div>
+          {renderCollectionActionBar(true)}
+          {exportError && <p role="alert" className="border-t border-red-100 bg-red-50 px-5 py-2 text-xs text-red-700 md:px-6">{exportError}</p>}
+          <div ref={deepExportRef} data-testid="collection-deep-analysis-export-surface" className="p-5 md:p-6">
+            <div data-testid="collection-subset-deep-ba" className="space-y-5">
+              {subsetOverviews.length > 0 ? subsetOverviews.map(({ source, overview }) => <div key={`${source.period}:${source.role}:${source.sourceName}`}><div className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">{t(source.role)} · {source.sourceName}</div><SingleSourceBAOverviewCard overview={overview} preferences={preferences} selectedDataScope /></div>) : <p className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800">{t('No eligible selected evidence is available for Deep BA Step 2.')}</p>}
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (analysisView === 'deep_perspective' && effectiveDeepDiveBrief) {
+    return (
+      <section data-testid="perspective-collection-result" className="overflow-hidden rounded-2xl border border-blue-100 bg-white shadow-sm">
+        <div data-testid="collection-deep-perspective-surface">
+          <div className="flex items-start gap-3 border-b border-slate-100 bg-slate-950 px-5 py-5 text-white md:px-6"><button data-testid="collection-deep-perspective-back" type="button" onClick={() => setAnalysisView('decision_workspace')} className="mt-0.5 inline-flex items-center gap-1.5 rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-xs font-semibold text-white hover:bg-white/15"><ArrowLeft className="h-4 w-4" />{t('Back')}</button><div><p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-sky-300">{t('Deep analysis')}</p><h3 className="mt-1 text-lg font-semibold">{displayPerspectiveLabel}</h3><p className="mt-1 text-xs leading-5 text-slate-300">{t(focusSubject ? 'Driver rankings use only exact Focus Subject matches from governed source evidence; the summary remains the full population.' : 'Driver rankings use the complete period sources behind this governed result. Observations remain separated from unsupported causal claims.')}</p></div></div>
+          {renderCollectionActionBar(true)}
+          {exportError && <p role="alert" className="border-t border-red-100 bg-red-50 px-5 py-2 text-xs text-red-700 md:px-6">{exportError}</p>}
+          <div ref={deepExportRef} data-testid="collection-deep-analysis-export-surface" className="p-5 md:p-6"><div data-testid="governed-ba-deep-dive"><BusinessComparisonBriefCard brief={effectiveDeepDiveBrief} /></div></div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section data-testid="perspective-collection-result" className="overflow-hidden rounded-2xl border border-blue-100 bg-white shadow-sm">
       <div className="border-b border-slate-100 bg-gradient-to-r from-slate-950 to-slate-900 px-5 py-5 text-white md:px-6">
@@ -364,7 +433,7 @@ export const PerspectiveCollectionResultCard: React.FC<{
         </div>
       </div>
 
-      <div className="grid gap-5 p-5 xl:grid-cols-[1.55fr_0.65fr] md:p-6">
+      <div data-testid="collection-decision-workspace" className="grid gap-5 p-5 xl:grid-cols-[1.55fr_0.65fr] md:p-6">
         <div className="min-h-[460px] min-w-0 rounded-xl border border-slate-100 bg-slate-50/40 p-3">
           <ReactECharts
             option={option}
@@ -377,7 +446,7 @@ export const PerspectiveCollectionResultCard: React.FC<{
                 if (!Number.isInteger(dataIndex) || !Number.isInteger(seriesIndex) || !metricIds[seriesIndex]) return;
                 setChartSelection({ period: String(rows[dataIndex]?.reporting_period ?? ""), metricId: metricIds[seriesIndex] });
                 setActiveEvidenceIndex(0);
-                setShowSubsetDeepDive(false);
+                setAnalysisView('evidence_drill');
               },
             }}
           />
@@ -385,7 +454,7 @@ export const PerspectiveCollectionResultCard: React.FC<{
             {rows.flatMap((row) => metricIds.map((metricId) => {
               const period = String(row.reporting_period ?? '');
               const active = chartSelection?.period === period && chartSelection.metricId === metricId;
-              return <button key={`${period}:${metricId}`} type="button" data-testid={`collection-chart-point-${period}-${metricId}`} onClick={() => { setChartSelection({ period, metricId }); setActiveEvidenceIndex(0); setShowSubsetDeepDive(false); }} className={`rounded-md border px-2 py-1 text-[10px] font-medium ${active ? 'border-blue-500 bg-blue-50 text-blue-800' : 'border-slate-200 bg-white text-slate-500 hover:border-blue-300'}`}>{period} · {displayMetricLabel(metricId)}</button>;
+              return <button key={`${period}:${metricId}`} type="button" data-testid={`collection-chart-point-${period}-${metricId}`} onClick={() => { setChartSelection({ period, metricId }); setActiveEvidenceIndex(0); setAnalysisView('evidence_drill'); }} className={`rounded-md border px-2 py-1 text-[10px] font-medium ${active ? 'border-blue-500 bg-blue-50 text-blue-800' : 'border-slate-200 bg-white text-slate-500 hover:border-blue-300'}`}>{period} · {displayMetricLabel(metricId)}</button>;
             }))}
           </div>
         </div>
@@ -431,13 +500,14 @@ export const PerspectiveCollectionResultCard: React.FC<{
                     type="button"
                     onClick={() => {
                       if (effectiveDeepDiveBrief) {
-                        setShowDeepDive(true);
+                        setChartSelection(null);
+                        setAnalysisView('deep_perspective');
                         return;
                       }
                       if (!hasPeriodComparison && largestMovement) {
                         setChartSelection({ period: firstPeriod, metricId: largestMovement.metricId });
                         setActiveEvidenceIndex(0);
-                        setShowSubsetDeepDive(true);
+                        setAnalysisView('evidence_drill');
                       }
                     }}
                     className="flex w-full items-center justify-between gap-3 rounded-lg border border-amber-200 bg-white/80 px-3 py-2 text-left text-[11px] font-medium leading-4 text-slate-700 transition hover:border-amber-400 hover:text-slate-950 disabled:cursor-default"
@@ -460,66 +530,8 @@ export const PerspectiveCollectionResultCard: React.FC<{
           </div>
         </div>
       </div>
-      <div className="flex flex-wrap items-center justify-end gap-2 border-t border-slate-100 bg-white px-5 py-3 md:px-6">
-        <span className="mr-auto inline-flex items-center gap-2 text-xs text-slate-500"><Download className="h-4 w-4" />{t('Export this perspective analysis')}</span>
-        <button type="button" onClick={openCleanExportWithAnalysis} className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700"><Sparkles className="h-4 w-4" />{t('Clean and export sources')}</button>
-        <button data-testid="collection-export-excel-analysis" type="button" onClick={() => void exportExcelAnalysis()} disabled={exportState !== 'idle'} className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-3 py-2 text-xs font-semibold text-white disabled:opacity-50"><Download className="h-4 w-4" />{exportState === 'excel' ? t('Exporting…') : t('Export Excel analysis')}</button>
-        {hasVisibleDeepAnalysis && <><button data-testid="collection-deep-export-image" type="button" onClick={() => void exportImage()} disabled={exportState !== 'idle'} className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 disabled:opacity-50"><FileImage className="h-4 w-4" />{exportState === 'image' ? t('Exporting…') : t('Export image')}</button>
-        <button data-testid="collection-deep-export-pdf" type="button" onClick={() => void exportPdf()} disabled={exportState !== 'idle'} className="inline-flex items-center gap-2 rounded-lg bg-violet-600 px-3 py-2 text-xs font-semibold text-white disabled:opacity-50"><FileText className="h-4 w-4" />{exportState === 'pdf' ? t('Exporting…') : t('Export PDF')}</button></>}
-        <button data-testid="collection-create-dashboard" type="button" onClick={createCollectionDashboard} className="inline-flex items-center gap-2 rounded-lg bg-slate-950 px-3 py-2 text-xs font-semibold text-white"><LayoutDashboard className="h-4 w-4" />{t('Create perspective dashboard')}</button>
-      </div>
+      {renderCollectionActionBar(false)}
       {exportError && <p role="alert" className="border-t border-red-100 bg-red-50 px-5 py-2 text-xs text-red-700 md:px-6">{exportError}</p>}
-      <div ref={deepExportRef} data-testid="collection-deep-analysis-export-surface">
-      {chartSelection && (
-        <div data-testid="collection-chart-drill" className="border-t border-slate-100 bg-white p-5 md:p-6">
-          <div className="rounded-xl border border-blue-100 bg-blue-50/50 p-4">
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-blue-700"><Search className="h-4 w-4" />{t('Step 2 · Selected-data scope')}</div>
-                <h4 className="mt-1 text-base font-semibold text-slate-950">{chartSelection.period} · {displayMetricLabel(chartSelection.metricId)}</h4>
-                <p className="mt-1 text-xs leading-5 text-slate-600">{t('LightBI keeps each governed source separate and analyzes only the period and metric selected on the chart.')}</p>
-              </div>
-              <button type="button" disabled={selectedEvidence.every(source => rowsForEvidence(source).length === 0)} onClick={() => setShowSubsetDeepDive(true)} className="rounded-lg bg-slate-950 px-4 py-2.5 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-40">{t('Deep BA analysis · Step 2')}</button>
-            </div>
-            {selectedEvidence.length === 0 ? (
-              <p className="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800">{t('No source-bound row evidence is available for this chart point.')}</p>
-            ) : (
-              <>
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {selectedEvidence.map((source, index) => <button key={`${source.period}:${source.role}:${source.sourceName}`} type="button" onClick={() => setActiveEvidenceIndex(index)} className={`rounded-lg border px-3 py-2 text-xs font-medium ${index === activeEvidenceIndex ? 'border-blue-500 bg-white text-blue-800' : 'border-slate-200 bg-slate-50 text-slate-600'}`}>{t(source.role)} · {source.sourceName} · {source.sourceRowCount.toLocaleString(preferences.locale)} {t('rows')}{focusSubject ? ` · ${rowsForEvidence(source).length} focus match${rowsForEvidence(source).length === 1 ? '' : 'es'}` : ''}</button>)}
-                </div>
-                {activeEvidence && focusSubject && previewRows.length === 0 && <p data-testid="collection-focus-unavailable" className="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800">This source has no exact evidence for the selected Focus Subject. LightBI will not infer a cross-source identity match.</p>}
-                {activeEvidence && previewRows.length > 0 && <div className="mt-4 max-h-[420px] overflow-auto rounded-lg border border-slate-200 bg-white">
-                  <table className="min-w-full text-left text-[11px]">
-                    <thead className="sticky top-0 bg-slate-50 text-slate-500"><tr>{previewColumns.map(column => <th key={column} className="whitespace-nowrap border-b border-slate-200 px-3 py-2 font-semibold">{column}</th>)}</tr></thead>
-                    <tbody>{previewRows.map((row, rowIndex) => <tr key={rowIndex} className="border-b border-slate-100 last:border-0">{previewColumns.map(column => <td key={column} className="max-w-[240px] truncate whitespace-nowrap px-3 py-2 text-slate-700">{String(row[column] ?? '')}</td>)}</tr>)}</tbody>
-                  </table>
-                  <p className="border-t border-slate-100 px-3 py-2 text-[11px] text-slate-500">{t(focusSubject ? 'Preview shows the first 100 exact Focus Subject matches; Deep BA uses that exact matched row scope. The source chip keeps the full source-row count visible.' : 'Preview shows the first 100 selected rows; Deep BA uses a representative sample with the full source-row scope disclosed.')}</p>
-                </div>}
-              </>
-            )}
-          </div>
-          {showSubsetDeepDive && subsetOverviews.length > 0 && <div className="mt-5 space-y-5" data-testid="collection-subset-deep-ba">
-            {subsetOverviews.map(({ source, overview }) => <div key={`${source.period}:${source.role}:${source.sourceName}`}><div className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">{t(source.role)} · {source.sourceName}</div><SingleSourceBAOverviewCard overview={overview} preferences={preferences} selectedDataScope /></div>)}
-          </div>}
-        </div>
-      )}
-      {showDeepDive && effectiveDeepDiveBrief && (
-        <div data-testid="governed-ba-deep-dive" className="border-t border-slate-100 bg-slate-50/60 p-5 md:p-6">
-          <div className="mb-3">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-blue-700">{t('Deep analysis')}</p>
-            <p className="mt-1 text-[12px] leading-5 text-slate-600">
-              {t(
-                focusSubject
-                  ? 'Driver rankings use only exact Focus Subject matches from governed source evidence; the summary chart above remains the full population.'
-                  : 'Driver rankings use the complete period sources behind this governed result. They are separated from observations that do not yet have causal evidence.',
-              )}
-            </p>
-          </div>
-          <BusinessComparisonBriefCard brief={effectiveDeepDiveBrief} />
-        </div>
-      )}
-      </div>
     </section>
   );
 };
