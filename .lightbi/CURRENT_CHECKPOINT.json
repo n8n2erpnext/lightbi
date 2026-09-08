@@ -1,13 +1,13 @@
 {
   "schema": "lightbi.current-checkpoint.v1",
-  "updatedAt": "2026-09-08T06:45:35Z",
-  "status": "roadmap_1_0_dpr4_closed_dpr5_active",
-  "activeRuntime": "NEXT Core generation g-2026-09-05-next-034 on 5272; immutable DPR-4 UI root dpr4-9d1d4a6 on gateway 5273 PID 15820; Control Plane 5274 unchanged; Production untouched",
+  "updatedAt": "2026-09-08T07:31:00Z",
+  "status": "roadmap_1_0_dpr5_closed_dpr6_active",
+  "activeRuntime": "NEXT Core generation g-2026-09-05-next-034 on 5272; immutable DPR-5 UI root dpr5-d3770e7 on gateway 5273 PID 170768; Control Plane 5274 unchanged; Production untouched",
   "sourceCandidate": {
     "repo": "/home/ubuntu/n8n2erpnext/LightBI-dpr0-contract-freeze",
     "branch": "codex/dpr0-contract-freeze",
-    "head": "9d1d4a6c1df4a69bf8aa3c0366e7f4eac8fce311",
-    "liveUiSource": "9d1d4a6c1df4a69bf8aa3c0366e7f4eac8fce311"
+    "head": "d3770e761ed2a5f08eb50aa6927f4b1dce58bded",
+    "liveUiSource": "d3770e761ed2a5f08eb50aa6927f4b1dce58bded"
   },
   "roadmapDpr": {
     "dpr0": "CLOSED",
@@ -15,19 +15,22 @@
     "dpr2": "CLOSED",
     "dpr3": "CLOSED",
     "dpr4": "CLOSED",
-    "dpr5": "ACTIVE — Visualization ontology + Chart Pattern Library + Domain Visual Profiles"
-  },
-  "dpr4": {
-    "contract": "lightbi.selected-subject-investigation.v1; selected scope only; source separation preserved; no cross-source JOIN authority; governed summary unchanged; benchmark context is not authority; MB cannot strengthen authority",
-    "productCommit": "9d1d4a6c1df4a69bf8aa3c0366e7f4eac8fce311",
-    "verification": "integration+i18n 16/16 across 6 files; Focus/MB/DPR3 authority regression 52/52 across 12 files; release-authoritative PASS with governed regression 11 files/42 tests; production build 3809 modules; exact-SHA rebuild PASS",
-    "runtimeAcceptance": "PASS on NEXT 5273 for six-file ERP + Focus Aqua 250L multi-file selected-subject flow and canonical single-source Revenue drill; single-file 1/1 PASS in 19.7s",
-    "liveUiRoot": "/home/ubuntu/services/lightbi-next-web/dpr4-9d1d4a6"
+    "dpr5": "CLOSED",
+    "dpr6": "ACTIVE — Visualization Planner + renderer/type preservation"
   },
   "dpr5": {
+    "state": "CLOSED",
+    "contract": "lightbi.visualization-ontology.v1 + lightbi.visualization-suitability.v1 + lightbi.domain-visual-profile.v1 + lightbi.visualization-acceptance-cases.v1",
+    "productCommit": "d3770e761ed2a5f08eb50aa6927f4b1dce58bded",
+    "verification": "semantic 19/19; focused+i18n 22/22; MB/provenance 30/30; source-size 537 production modules; exact-SHA build 3809 modules; release-authoritative PASS with governed regression 11 files/42 tests",
+    "runtimeAcceptance": "PASS on NEXT 5273 for /app -> canonical single source -> Revenue -> governed analysis -> /investigation with zero page errors; known account-session CORS warning remains pre-existing",
+    "liveUiRoot": "/home/ubuntu/services/lightbi-next-web/dpr5-d3770e7"
+  },
+  "dpr6": {
     "state": "ACTIVE",
-    "scope": "define analytical intents; canonical 20–30 chart-pattern grammar; suitability and negative rules; semantic color/cardinality/label/axis/tooltip rules; graceful fallback; Domain Visual Profiles",
-    "authorityInvariant": "MB chart/domain knowledge is advisory only; DPR-5 does not grant chart selection, renderer, metric, formula, join or runtime authority; deterministic suitability remains final"
+    "scope": "introduce governed VisualizationPlan; resolve analytical intent -> ChartPatternDefinition -> renderer family; reuse DPR-5 suitability so every MB/domain suggestion can be rejected; preserve renderer/type through persistence/dashboard/export/evidence drill-down; retire dashboard-renderer-type-collapse only with proof",
+    "authorityInvariant": "MB remains advisory only and cannot authorize metrics, formulas, joins, renderer selection or execution; deterministic suitability and governed metric/evidence authority remain final",
+    "openDebt": "dashboard-renderer-type-collapse remains OPEN and owned by DPR-6"
   },
   "trustRuntime": {
     "userManagerPid": 943,
@@ -36,7 +39,7 @@
     "attestationLauncherPid": 1505209,
     "productionAuthority": false
   },
-  "nextAction": "Begin DPR-5 from clean Product HEAD 9d1d4a6. Re-read the active DPR-5 plan section and current visualization/chart persistence code before mutation; define and test the ontology/pattern/domain-profile contract first, including negative rules and safe fallback. Do not jump to DPR-6 renderer choice or DPR-8 broad UI migration. Validate shared Web Live Demo/Desktop source on NEXT 52xx only.",
+  "nextAction": "Begin DPR-6 from clean Product HEAD d3770e7. Re-read DecisionVisualizationPlan, ChartPreviewModel, DashboardBuilder renderer collapse, persisted ChartType and relevant tests before mutation. Define governed VisualizationPlan above renderer primitives, reuse DPR-5 suitability and prove requested renderer/type preservation before retiring DPR-6 debt. Do not jump to DPR-7/DPR-8. Validate shared Web Live Demo/Desktop source on NEXT 52xx only.",
   "blockers": [
     "Production promotion and Offline Root/phase2a freeze remain owner-gated",
     "NEXT047 remains stale and is not the current post-DPR release candidate"
@@ -44,8 +47,8 @@
   "productionTouched": false,
   "readFirst": [
     "docs/project-book/LIBRARY_RULES.md",
-    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#135-2026-09-08-dpr-4-selected-subject-investigation-closes-on-next-dpr-5-becomes-active",
+    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#136-2026-09-08-dpr-5-visualization-ontology-closes-on-next-dpr-6-becomes-active",
     "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DECISION_PRESENTATION_UI_UX_REFACTOR_2026-09-04.md"
   ],
-  "documentationHead": "d763b340b7f77d7a18b3ed196cd2dba51beaf625"
+  "documentationHead": "99708f5d64569bb8eb7346d71ec5528720c7c802"
 }
