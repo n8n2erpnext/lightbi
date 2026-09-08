@@ -94,3 +94,23 @@ test('DPR-8 Decision Workspace is answer-first in both single-file and multi-fil
   assert.match(multi, /data-layout="answer-first-canvas"/);
   assert.doesNotMatch(multi.slice(multi.indexOf('collection-decision-workspace')), /xl:grid-cols-\[1\.55fr_0\.65fr\]/);
 });
+
+test('DPR-8 Deep BA reads as a numbered management document instead of a card stack', async () => {
+  const shell = await read('apps/desktop/src/components/investigation/InvestigationDeepAnalysis.tsx');
+  const narrative = await read('apps/desktop/src/components/investigation/AnalysisNarrativeBoard.tsx');
+  const single = await read('apps/desktop/src/components/investigation/SingleSourceBAOverviewCard.tsx');
+  const comparison = await read('apps/desktop/src/components/analysis/BusinessComparisonBriefCard.tsx');
+  const multi = await read('apps/desktop/src/components/analysis/PerspectiveCollectionResultCard.tsx');
+  assert.match(shell, /data-testid="deep-analysis-surface" data-layout="management-document"/);
+  assert.match(shell, /data-testid="deep-analysis-export-surface" data-layout="management-document"/);
+  assert.match(shell, /data-testid="deep-ba-legacy-brief-details"/);
+  assert.match(narrative, /data-testid="deep-ba-investigation" data-layout="management-document"/);
+  assert.match(narrative, /data-testid="deep-ba-management-section-01" data-section-number="01"/);
+  assert.doesNotMatch(narrative, /grid gap-3 lg:grid-cols-2/);
+  assert.match(single, /data-testid="single-source-ba-overview" data-layout="management-document"/);
+  assert.doesNotMatch(single, /rounded-\[20px\]|shadow-sm/);
+  assert.match(comparison, /data-testid="comparison-management-document" data-layout="management-document"/);
+  for (const number of ['01', '02', '03', '04', '05']) assert.match(comparison, new RegExp(`data-section-number="${number}"`));
+  assert.doesNotMatch(comparison, /rounded-xl border p-4 shadow-sm/);
+  assert.match(multi, /data-testid="collection-deep-perspective-surface" data-layout="management-document"/);
+});

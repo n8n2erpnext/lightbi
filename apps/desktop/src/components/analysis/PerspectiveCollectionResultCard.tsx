@@ -550,12 +550,12 @@ export const PerspectiveCollectionResultCard: React.FC<{
 
   if (analysisView === 'deep_perspective' && effectiveDeepDiveBrief) {
     return (
-      <section data-testid="perspective-collection-result" className="overflow-hidden rounded-2xl border border-blue-100 bg-white shadow-sm">
-        <div data-testid="collection-deep-perspective-surface">
-          <div className="flex items-start gap-3 border-b border-slate-100 bg-slate-950 px-5 py-5 text-white md:px-6"><button data-testid="collection-deep-perspective-back" type="button" onClick={() => setAnalysisView('decision_workspace')} className="mt-0.5 inline-flex items-center gap-1.5 rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-xs font-semibold text-white hover:bg-white/15"><ArrowLeft className="h-4 w-4" />{t('Back')}</button><div><p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-sky-300">{t('Deep analysis')}</p><h3 className="mt-1 text-lg font-semibold">{displayPerspectiveLabel}</h3><p className="mt-1 text-xs leading-5 text-slate-300">{t(focusSubject ? 'Driver rankings use only exact Focus Subject matches from governed source evidence; the summary remains the full population.' : 'Driver rankings use the complete period sources behind this governed result. Observations remain separated from unsupported causal claims.')}</p></div></div>
+      <section data-testid="perspective-collection-result" data-layout="management-document" className="bg-white">
+        <div data-testid="collection-deep-perspective-surface" data-layout="management-document">
+          <header className="flex items-start gap-3 border-y border-[var(--lb-divider)] px-5 py-4 md:px-6"><button data-testid="collection-deep-perspective-back" type="button" onClick={() => setAnalysisView('decision_workspace')} className="mt-0.5 inline-flex items-center gap-1.5 rounded-lg border border-black/10 bg-white px-3 py-2 text-xs font-semibold text-black/60 hover:bg-black/[0.035]"><ArrowLeft className="h-4 w-4" />{t('Back')}</button><div><p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-sky-700">{t('Deep analysis')}</p><h3 className="mt-1 text-lg font-semibold text-slate-950">{displayPerspectiveLabel}</h3><p className="mt-1 max-w-4xl text-xs leading-5 text-slate-500">{t(focusSubject ? 'Driver rankings use only exact Focus Subject matches from governed source evidence; the summary remains the full population.' : 'Driver rankings use the complete period sources behind this governed result. Observations remain separated from unsupported causal claims.')}</p></div></header>
           {renderCollectionActionBar(true)}
           {exportError && <p role="alert" className="border-t border-red-100 bg-red-50 px-5 py-2 text-xs text-red-700 md:px-6">{exportError}</p>}
-          <div ref={deepExportRef} data-testid="collection-deep-analysis-export-surface" className="p-5 md:p-6"><div data-testid="governed-ba-deep-dive"><BusinessComparisonBriefCard brief={effectiveDeepDiveBrief} /></div></div>
+          <div ref={deepExportRef} data-testid="collection-deep-analysis-export-surface" data-layout="management-document" className="px-5 py-4 md:px-6"><div data-testid="governed-ba-deep-dive"><BusinessComparisonBriefCard brief={effectiveDeepDiveBrief} /></div></div>
         </div>
       </section>
     );

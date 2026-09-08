@@ -45,7 +45,10 @@ describe('InvestigationDeepAnalysis export boundary', () => {
       />,
     );
 
+    const deepSurface = screen.getByTestId('deep-analysis-surface');
+    expect(deepSurface.getAttribute('data-layout')).toBe('management-document');
     const exportSurface = screen.getByTestId('deep-analysis-export-surface');
+    expect(exportSurface.getAttribute('data-layout')).toBe('management-document');
     const dashboardCta = screen.getByTestId('deep-analysis-dashboard-cta');
     expect(dashboardCta).toBeTruthy();
     expect(exportSurface.contains(dashboardCta)).toBe(false);

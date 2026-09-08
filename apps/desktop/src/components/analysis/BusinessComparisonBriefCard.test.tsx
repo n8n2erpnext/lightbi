@@ -1,8 +1,10 @@
 // @vitest-environment jsdom
-import { render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { cleanup, render, screen } from '@testing-library/react';
+import { afterEach, describe, expect, it } from 'vitest';
 import type { DomainComparisonBrief } from '../../lib/ba-comparison-engine';
 import { BusinessComparisonBriefCard } from './BusinessComparisonBriefCard';
+
+afterEach(() => cleanup());
 
 const brief: DomainComparisonBrief = {
   presetId: 'business_period_review', businessQuestion: 'What changed?', domainId: 'revenue', domainLabel: 'Revenue', periods: ['P1', 'P2'],
@@ -27,4 +29,14 @@ describe('BusinessComparisonBriefCard DPR-3 narrative hierarchy', () => {
     expect(screen.queryByText('Top growth')).toBeNull();
     expect(screen.getByTestId('comparison-supporting-reasons').textContent).toContain('No additional reason code remains after narrative deduplication.');
   });
+  it('renders Deep BA comparison as an ordered management document', () => {
+    render(<BusinessComparisonBriefCard brief={brief} />);
+    const document = screen.getByTestId('comparison-management-document');
+    expect(document.getAttribute('data-layout')).toBe('management-document');
+    expect(screen.getByTestId('comparison-management-section-01').getAttribute('data-section-number')).toBe('01');
+    expect(screen.getByTestId('comparison-management-section-03').getAttribute('data-section-number')).toBe('03');
+    expect(screen.getByTestId('comparison-management-section-04').getAttribute('data-section-number')).toBe('04');
+    expect(screen.getByTestId('comparison-management-section-05').getAttribute('data-section-number')).toBe('05');
+  });
+
 });
