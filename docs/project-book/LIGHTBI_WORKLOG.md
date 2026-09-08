@@ -1867,3 +1867,11 @@ R1-P0 documentation/integrity closure verified 1,243 local links with zero missi
 - Verification PASS: focused `19/19`; broad DPR presentation/MB/Focus/renderer `27` files / `116` tests; TypeScript; source-size `543` modules; final release-authoritative production build `3818` modules and governed regression `11 files / 44 tests`, marker `release_1_0_suite=passed`; exact committed-SHA rebuild PASS.
 - Immutable NEXT UI `/home/ubuntu/services/lightbi-next-web/dpr7-324eceb` is live on 5273 and reports exact `324eceb...`. Gateway rotated `303041 -> 471868`; Core `3376963`, CP `2346997`, user manager `943` and Trust container/parent PIDs stayed unchanged. Chromium ARM browser acceptance PASSed `2/2` in `34.7s` for canonical multi-file and single-file Dashboard creation, bounded 1–8 widgets, zero page errors. Production untouched.
 - DPR-7 CLOSED; DPR-8 Canvas-first surface refactor + shared UI system ACTIVE. Broad layout migration starts only after this continuity closure.
+
+## 2026-09-08 — DPR-8 shared canvas/UI foundation source/live checkpoint
+
+- Product `e030e4ddfc2997b8abe0ca75d5fe2541b8d9d5f7` adds shared canvas-first UI primitives/density classes without a universal Card; AppLayout consumes LightBI shell tokens and moves expanded desktop sidebar `280px -> 224px` while preserving compact `56px`.
+- Tailwind shared-source scanning no longer recursively traverses package `node_modules`. `scripts/dpr8-ui-contract.test.mjs` protects primitive/no-Card, tokenized shell geometry and scan scope and is included in the release-authoritative suite.
+- Verification PASS: DPR-8 contract `3/3`; TypeScript/diff-check; source-size `545` modules; release-authoritative build `3818` modules + governed `11 files / 44 tests`, marker `release_1_0_suite=passed`; exact-SHA rebuild PASS.
+- Immutable NEXT `/home/ubuntu/services/lightbi-next-web/dpr8-foundation-e030e4d` is live on 5273. Gateway `471868 -> 558013`; Core `3376963`, CP `2346997`, manager `943`, Trust container/parent PIDs unchanged. Browser shell acceptance `1/1` PASS with 224px/56px responsive geometry and zero page errors. Production untouched.
+- DPR-8 remains ACTIVE. Next chunk: Understanding canvas-first migration; do not reinterpret semantic/planner/evidence authority while flattening presentation.

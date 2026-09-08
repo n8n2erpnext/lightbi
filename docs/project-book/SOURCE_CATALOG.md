@@ -6,7 +6,7 @@
 
 - Date: **2026-09-08**
 - Branch: `docs/ba-da-mode-future-20260903`
-- HEAD: `af3d22f27d87e23676ef9c891fd6d2a2e6d5ca32`
+- HEAD: `755a2dc588a6a387976fb64748391d3c17548f04`
 - Worktree dirty while generated: **true**
 - Total indexed sources: **949** (532 Markdown / 417 JSON)
 - JSON under `docs/`: **354**
@@ -754,7 +754,7 @@ For old paths, use [`PATH_MIGRATION_INDEX.md`](./PATH_MIGRATION_INDEX.md) and [`
 - [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_ALIAS_BATCH2.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_ALIAS_BATCH2.md) — Agent Implementation Plan: Alias Batch 2; `3915` bytes; SHA-256 `92dc6a46a7cbf868aa5ad683fd53be1c077866189f2f832438fbbd22c38aba1f`
 - [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_BACKEND_RUNTIME_HARDENING_NEXT.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_BACKEND_RUNTIME_HARDENING_NEXT.md) — Implementation Plan: Backend Runtime Hardening Next; `4169` bytes; SHA-256 `99095d407f263d5f1e5326578f9e84f326daeee700c6e1c5511d3d9e5d710c63`
 - [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_CANONICAL_SCHEMA_PROJECTION_PHASE2.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_CANONICAL_SCHEMA_PROJECTION_PHASE2.md) — Implementation Plan: Canonical Schema Projection Phase 2; `1628` bytes; SHA-256 `b21958af48ad0f5e14755deaf96beda8d84f9c995edddbe919d8a07062488080`
-- [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DECISION_PRESENTATION_UI_UX_REFACTOR_2026-09-04.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DECISION_PRESENTATION_UI_UX_REFACTOR_2026-09-04.md) — Agent Implementation Plan — Decision Presentation + UI/UX Refactor — 2026-09-04; `104925` bytes; SHA-256 `f2701452076865b2dddf2d95e3ff4a904cb4f3e1a315064ec3ff128342cc2359`
+- [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DECISION_PRESENTATION_UI_UX_REFACTOR_2026-09-04.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DECISION_PRESENTATION_UI_UX_REFACTOR_2026-09-04.md) — Agent Implementation Plan — Decision Presentation + UI/UX Refactor — 2026-09-04; `107455` bytes; SHA-256 `041bf18f6b893b4aad82a1208b5e6490b0fd20714f5ce37ac9c71d344de0611f`
 - [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DOMAIN_AUDIT.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DOMAIN_AUDIT.md) — Domain Sample Data Pack & Core Behavior Audit (Implementation Plan); `2803` bytes; SHA-256 `2c54bfdb86a722b41038828d6fc35ed857478015cb2fc46188d1acb8c1fd165a`
 - [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DUCKDB_RUNTIME_ERROR_CLASSIFICATION_PHASE1.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DUCKDB_RUNTIME_ERROR_CLASSIFICATION_PHASE1.md) — Implementation Plan: DuckDB Runtime Error Classification Phase 1; `3651` bytes; SHA-256 `b13fad56a913c25b64355ff5dfcdac963bd1791aaa664abdb81504854f8bf544`
 - [`docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DUCKDB_WASM_BOOTSTRAP.md`](../../docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DUCKDB_WASM_BOOTSTRAP.md) — Implementation Plan: DuckDB WASM Feasibility Bootstrap; `2824` bytes; SHA-256 `5cf1e3aa0e41775fd1774fc8213ee5004d9b33f986589b6f38c4ef6f28f48fd8`
