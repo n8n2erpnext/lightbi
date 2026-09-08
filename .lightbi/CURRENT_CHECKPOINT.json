@@ -1,7 +1,7 @@
 {
   "schema": "lightbi.current-checkpoint.v1",
-  "updatedAt": "2026-09-08T04:45:57Z",
-  "status": "roadmap_1_0_dpr3_closed_dpr4_ba_step2_investigation_active",
+  "updatedAt": "2026-09-08T05:24:00Z",
+  "status": "roadmap_1_0_dpr3_closed_dpr4_wip_handoff_ready",
   "activeRuntime": "NEXT Core generation g-2026-09-05-next-034 on 5272; UI-only immutable DPR-3 web root dpr3-804fb2f on gateway 5273 (PID 4013056); Control Plane 5274 unchanged; MB scheduler paused; Production untouched",
   "sourceCandidate": {
     "repo": "/home/ubuntu/n8n2erpnext/LightBI-dpr0-contract-freeze",
@@ -70,7 +70,7 @@
     "attestationPid": 1505209,
     "productionAuthority": false
   },
-  "nextAction": "DPR-4: audit the current selected-data/Step 2 paths and formalize one dedicated reversible selected-subject investigation model that remains mutually exclusive with full-scope Deep BA at full visual weight. Reuse DPR-3 AnalysisNarrativePlan/provenance contracts, add benchmark/context decomposition and concise next-action structure, preserve numeric/evidence authority, and validate Web Live Demo /app on NEXT before DPR-5.",
+  "nextAction": "Resume DPR-4 from the intentional dirty Product worktree at HEAD 804fb2f. Preserve the five selected-subject-investigation WIP paths, finish single-file + multi-file selected-scope convergence, validate scope counts/truncation/source attribution/Focus fail-closed semantics, run focused+i18n+DPR3+TypeScript+release-authoritative gates, then deploy an immutable UI-only successor to NEXT 5273 before closing DPR-4.",
   "blockers": [
     "Production promotion and Offline Root/phase2a freeze remain owner-gated",
     "NEXT047 is stale and not a post-LQ3 release candidate; its installation-issuer mismatch remains deferred until an official release build"
@@ -81,9 +81,10 @@
   "readFirst": [
     "docs/project-book/LIBRARY_RULES.md",
     "docs/project-book/LIGHTBI_PROJECT_BOOK.md#134-2026-09-08-dpr-3-analysis-narrative-planner-closes-on-next-dpr-4-becomes-active",
-    "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DECISION_PRESENTATION_UI_UX_REFACTOR_2026-09-04.md"
+    "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DECISION_PRESENTATION_UI_UX_REFACTOR_2026-09-04.md",
+    "docs/history/agent/handoffs/AGENT_HANDOFF_UI_UX_REFACTOR_DPR0_TO_DPR4_2026-09-08.md"
   ],
-  "documentationHead": "a21b8b44203f6c71c08b15186985e17229b842f3",
+  "documentationHead": "d06ef0d56bdfcf85c65749a4bfb4b2b9fcaf923d",
   "dpr2": {
     "state": "CLOSED",
     "productCommit": "a876fb998b980f1eef0c5834822f622a80435b44",
@@ -103,5 +104,17 @@
     "nextRuntimeAcceptance": "PASS on 5273 /app -> built-in governed sales demo -> /app/investigation -> Analyze deeper; Analysis Narrative hierarchy rendered with no page error",
     "liveUiRoot": "/home/ubuntu/services/lightbi-next-web/dpr3-804fb2f",
     "knownUnrelatedWarning": "public NEXT account-session request still reports a pre-existing CORS warning against the Production Distribution origin; outside DPR-3 diff and non-blocking for governed demo acceptance"
+  },
+  "dpr4Wip": {
+    "state": "ACTIVE_UNCOMMITTED",
+    "baseHead": "804fb2feec8528dc061ce299486ff653d02a92db",
+    "paths": [
+      "apps/desktop/src/components/analysis/PerspectiveCollectionResultCard.tsx",
+      "apps/desktop/src/components/investigation/SelectedSubjectInvestigationBoard.tsx",
+      "apps/desktop/src/components/investigation/SelectedSubjectInvestigationBoard.test.tsx",
+      "apps/desktop/src/lib/selected-subject-investigation.ts",
+      "apps/desktop/src/lib/selected-subject-investigation.test.ts"
+    ],
+    "focusedVerification": "4/4 PASS across 2 new focused test files; no DPR-4 full integration/release-authoritative closure yet"
   }
 }
