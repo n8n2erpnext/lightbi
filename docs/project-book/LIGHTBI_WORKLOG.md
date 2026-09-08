@@ -1924,3 +1924,11 @@ R1-P0 documentation/integrity closure verified 1,243 local links with zero missi
 - Immutable NEXT `/home/ubuntu/services/lightbi-next-web/dpr9-aa51184` is live on gateway 5273 (`1211805 -> 1461645`); Core `3376963`, CP `2346997`, manager `943` and Trust container PIDs `1505255/3817195/13384/13437` remained unchanged. Direct/external `/app` HTTP 200; Production/51xx untouched.
 - Exact-live multi-file export PASSed. Exact-live single remains pending only because the temporary test incorrectly assumed all report `<details>` start closed; Product is not known defective. Correct acceptance snapshots each detail's `open` state and requires exact restoration after PNG and PDF. DPR-9 remains ACTIVE; do not advance DPR-10 until that rerun passes and canonical closure is recorded.
 - Handoff written at `docs/history/agent/handoffs/AGENT_HANDOFF_DPR9_SEMANTIC_REPORT_PAGINATION_2026-09-09.md`. Disk check: `/` 121G total / 84G used / 37G free (70%); NEXT web roots ~1.5G; disposable `/tmp/dpr9-report-*` artifacts are only a few MiB each.
+
+## 2026-09-09 — DPR-9 semantic report pagination final source/live closure
+
+- Product `aa511844bb7b2f9fbfb5b575bc726fef293e9952` unifies single/multi report export behind `lightbi.analysis-report-plan.v1`; semantic page roles, keep-together/break rules and evidence-only splitting replace giant-image PDF crop offsets. Multi-page PNG export is a ZIP of numbered bounded pages; PDF pages are real semantic pages.
+- Full release-authoritative PASS: DPR-8+DPR-9 contracts `11/11`, i18n PASS, source-size `547`, build `3824`, governed `11 files / 45 tests`, marker `release_1_0_suite=passed`; exact-SHA rebuild `3824` PASS.
+- Candidate browser artifact proof: canonical multi `4` PNG pages + `4`-page PDF; tracked MB-6 single `5` PNG pages + `5`-page PDF. Final exact-live rerun PASSed both lanes `2/2` in `61s`, restored exact `<details>` open state after PNG/PDF and had zero page errors.
+- NEXT root `/home/ubuntu/services/lightbi-next-web/dpr9-aa51184` is live on 5273 PID `1461645`; Core/CP/systemd-user/Trust unchanged. Production/51xx untouched.
+- DPR-9 CLOSED; DPR-10 Cross-domain acceptance and release regression ACTIVE.

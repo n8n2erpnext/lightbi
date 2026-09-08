@@ -3010,3 +3010,11 @@ Immutable `/home/ubuntu/services/lightbi-next-web/dpr9-aa51184` is live only on 
 DPR-9 is **not yet CLOSED**. Exact-live multi-file artifact export PASSed, but the first exact-live single-file test stopped before export because the temporary harness incorrectly required every report-expanded `<details>` to begin closed. Single Deep BA intentionally has some details open. The correct invariant is exact pre/post state restoration. The harness was corrected but not rerun before context handoff. The successor must rerun that exact-live single + multi artifact acceptance before marking DPR-9 CLOSED or activating DPR-10. See [`AGENT_HANDOFF_DPR9_SEMANTIC_REPORT_PAGINATION_2026-09-09.md`](../history/agent/handoffs/AGENT_HANDOFF_DPR9_SEMANTIC_REPORT_PAGINATION_2026-09-09.md).
 
 Resource state at handoff: root filesystem is `121G` total / `84G` used / `37G` free (`70%`); immutable NEXT web roots use about `1.5G`. Reproducible DPR-9 browser artifacts under `/tmp/dpr9-report-*` total only a few MiB each and may be cleaned, but immutable runtime roots must not be deleted merely for space. Long successor sessions must continue recording `df -h`/relevant `du` checks.
+
+## 146. 2026-09-09 DPR-9 closes with true semantic report pagination; DPR-10 is active
+
+- Product `aa511844bb7b2f9fbfb5b575bc726fef293e9952` closes the shared `lightbi.analysis-report-plan.v1` page model and exporter. Semantic sections, keep-together rules, explicit breaks and evidence-only splitting replace giant-image crop pagination across single/multi Deep BA and selected-subject report surfaces.
+- Release-authoritative verification PASSed with DPR-8+DPR-9 contracts `11/11`, source-size `547`, build `3824`, governed regression `11 files / 45 tests`, and `release_1_0_suite=passed`; exact-SHA build also PASSed.
+- Candidate artifact proof produced multi `4` PNG pages + `4`-page PDF and single `5` PNG pages + `5`-page PDF. Final exact-live NEXT acceptance PASSed `2/2` in `61s`, preserved exact report-detail open/closed state after both export formats, and had zero page errors.
+- Immutable NEXT `dpr9-aa51184` is live on gateway 5273 PID `1461645`; Core `3376963`, CP `2346997`, user manager `943` and Trust init PIDs stayed unchanged. Production/51xx remain untouched.
+- DPR-9 CLOSED. DPR-10 Cross-domain acceptance and release regression ACTIVE.
