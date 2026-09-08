@@ -117,7 +117,7 @@ export const AppLayout: React.FC = () => {
   if (location.pathname === "/settings") {
     return (
       <UiTranslationBoundary>
-        <main className="flex h-screen w-screen overflow-hidden bg-[#fbfbfa] text-[#202123]">
+        <main className="flex h-screen w-screen overflow-hidden bg-[var(--lb-canvas)] text-[var(--lb-ink)]">
           <Outlet />
           <MicroBrainConsentSplash />
           <DesktopCommandCenter signedIn={Boolean(lightbiAccount.account)} accountLabel={lightbiAccount.account?.account.email} />
@@ -128,17 +128,17 @@ export const AppLayout: React.FC = () => {
 
   return (
     <UiTranslationBoundary>
-      <div className="flex h-screen w-screen overflow-hidden bg-[#f5f5f4] text-[#202123]">
+      <div className="flex h-screen w-screen overflow-hidden bg-[var(--lb-canvas)] text-[var(--lb-ink)]">
         <MicroBrainConsentSplash />
         {/* Sidebar */}
         <aside
           className={cn(
-            "relative flex flex-col border-r border-black/10 bg-[#f1f1f0] transition-all duration-300",
-            isSidebarExpanded ? "w-[56px] md:w-[280px]" : "w-[56px]",
+            "relative flex flex-col border-r border-[var(--lb-divider)] bg-[var(--lb-sidebar)] transition-[width] duration-[var(--lb-motion-normal)]",
+            isSidebarExpanded ? "w-[56px] md:w-[var(--lb-sidebar-width)]" : "w-[56px]",
           )}
         >
           {/* Header / Logo Area */}
-          <div className="flex h-[64px] items-center gap-2 px-3">
+          <div className="flex h-[var(--lb-app-header-height)] items-center gap-2 px-3">
             <button
               type="button"
               onClick={toggleSidebar}
@@ -313,7 +313,7 @@ export const AppLayout: React.FC = () => {
         </aside>
 
         {/* Main Content */}
-        <main className="relative flex min-w-0 flex-1 flex-col overflow-hidden bg-[#fbfbfa]">
+        <main className="relative flex min-w-0 flex-1 flex-col overflow-hidden bg-[var(--lb-canvas)]">
           <div
             ref={mainScrollRef}
             className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto"
