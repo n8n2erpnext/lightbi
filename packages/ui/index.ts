@@ -1,1 +1,1 @@
-// Export module for ui
+export { lightbiDesignTokens, type LightBIDesignTokens } from './tokens';

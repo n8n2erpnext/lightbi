@@ -14,3 +14,21 @@ test('shared UI consumes host React 19 instead of shipping a private React runti
   assert.equal(ui.devDependencies?.react, desktop.dependencies?.react);
   assert.equal(ui.devDependencies?.['react-dom'], desktop.dependencies?.['react-dom']);
 });
+
+
+test('LightBI design tokens encode the DPR-0 visual-system contract without external namespaces', async () => {
+  const css = await readFile(new URL('../packages/ui/tokens.css', import.meta.url), 'utf8');
+  const ts = await readFile(new URL('../packages/ui/tokens.ts', import.meta.url), 'utf8');
+  const index = await readFile(new URL('../packages/ui/index.ts', import.meta.url), 'utf8');
+  const appCss = await readFile(new URL('../apps/desktop/src/index.css', import.meta.url), 'utf8');
+  for (const required of [
+    '--lb-sidebar-width: 224px', '--lb-app-header-height: 64px', '--lb-window-chrome-height: 28px',
+    '--lb-window-control-width: 48px', '--lb-row-data-height: 48px', '--lb-control-compact-height: 32px',
+    '--lb-motion-fast: 100ms', '--lb-motion-normal: 150ms', '--lb-scrollbar-size: 10px',
+    '--lb-brand-mark: #ffc20a', '--lb-canvas: #fbfbfa', '--lb-ink: #202123',
+  ]) assert.ok(css.includes(required), `missing design token: ${required}`);
+  assert.doesNotMatch(`${css}\n${ts}`, /books[-_]/i);
+  assert.match(index, /lightbiDesignTokens/);
+  assert.match(appCss, /packages\/ui\/tokens\.css/);
+  assert.match(appCss, /font-family: var\(--lb-font-sans\)/);
+});

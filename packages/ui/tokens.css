@@ -1,0 +1,59 @@
+:root {
+  --lb-font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --lb-font-mono: "Fira Code", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  --lb-text-caption: 11px;
+  --lb-text-ui: 12px;
+  --lb-text-body-sm: 13px;
+  --lb-text-body: 14px;
+  --lb-text-section: 14px;
+  --lb-text-page-title: 18px;
+
+  --lb-space-1: 4px;
+  --lb-space-2: 8px;
+  --lb-space-3: 12px;
+  --lb-space-4: 16px;
+  --lb-space-5: 20px;
+  --lb-space-6: 24px;
+  --lb-space-8: 32px;
+
+  --lb-control-compact-height: 32px;
+  --lb-row-compact-height: 40px;
+  --lb-row-data-height: 48px;
+  --lb-row-comfortable-height: 56px;
+  --lb-app-header-height: 64px;
+  --lb-sidebar-width: 224px;
+  --lb-window-chrome-height: 28px;
+  --lb-window-control-width: 48px;
+
+  --lb-radius-compact: 5px;
+  --lb-radius-default: 8px;
+  --lb-radius-strong: 12px;
+  --lb-motion-fast: 100ms;
+  --lb-motion-normal: 150ms;
+  --lb-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --lb-scrollbar-size: 10px;
+
+  --lb-canvas: #fbfbfa;
+  --lb-sidebar: #f1f1f0;
+  --lb-surface: #ffffff;
+  --lb-surface-subtle: #fbfbfb;
+  --lb-divider: rgba(0, 0, 0, 0.10);
+  --lb-ink: #202123;
+  --lb-ink-secondary: #596170;
+  --lb-ink-muted: #7a818d;
+  --lb-brand-mark: #ffc20a;
+  --lb-action: #315bea;
+  --lb-focus: #2563eb;
+  --lb-danger: #dc2626;
+  --lb-success: #15803d;
+  --lb-warning: #a16207;
+
+  --lb-chart-blue: #33a1ff;
+  --lb-chart-pink: #df9eb8;
+  --lb-chart-teal: #2fc8b1;
+  --lb-chart-amber: #f4bd50;
+
+  /* Compatibility aliases only; new shared UI should consume --lb-* tokens directly. */
+  --background: #ffffff;
+  --foreground: #1f2937;
+}
