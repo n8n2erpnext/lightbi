@@ -1,13 +1,13 @@
 {
   "schema": "lightbi.current-checkpoint.v1",
-  "updatedAt": "2026-09-08T10:38:00Z",
-  "status": "roadmap_1_0_dpr8_active_foundation_live_understanding_next",
-  "activeRuntime": "NEXT Core generation g-2026-09-05-next-034 on 5272 PID 3376963; immutable DPR-8 foundation UI root dpr8-foundation-e030e4d on gateway 5273 PID 558013; Control Plane 5274 PID 2346997 unchanged; Production untouched",
+  "updatedAt": "2026-09-08T11:56:07Z",
+  "status": "roadmap_1_0_dpr8_active_understanding_live_home_next",
+  "activeRuntime": "NEXT Core generation g-2026-09-05-next-034 on 5272 PID 3376963; immutable DPR-8 Understanding UI root dpr8-understanding-900d7aa on gateway 5273 PID 729433; Control Plane 5274 PID 2346997 unchanged; Production untouched",
   "sourceCandidate": {
     "repo": "/home/ubuntu/n8n2erpnext/LightBI-dpr0-contract-freeze",
     "branch": "codex/dpr0-contract-freeze",
-    "head": "e030e4ddfc2997b8abe0ca75d5fe2541b8d9d5f7",
-    "liveUiSource": "e030e4ddfc2997b8abe0ca75d5fe2541b8d9d5f7"
+    "head": "900d7aa93d59b2c58501ba6efe49390182a157be",
+    "liveUiSource": "900d7aa93d59b2c58501ba6efe49390182a157be"
   },
   "roadmapDpr": {
     "dpr0": "CLOSED",
@@ -29,14 +29,14 @@
     "liveUiRoot": "/home/ubuntu/services/lightbi-next-web/dpr7-324eceb"
   },
   "dpr8": {
-    "state": "ACTIVE — foundation source/live-closed; Understanding canvas migration next",
-    "scope": "apply Product-wide Information Architecture + Density Contract and shared @lightbi/ui tokens/primitives across shared Desktop/Tauri and Web Live Demo /app presentation; flatten card-everywhere Home, Understanding, Decision Workspace, Deep BA and selected-subject surfaces while preserving semantic planner/evidence authority, accessibility and responsive behavior",
-    "boundary": "DPR-8 owns layout/presentation only; it must consume DPR-1..DPR-7 semantic contracts rather than re-derive metrics/questions/narratives/charts/dashboard membership; native-only divergence stays behind explicit capability adapters",
+    "state": "ACTIVE — foundation + Understanding source/live-accepted; Home / New Brief next",
+    "scope": "apply Product-wide Information Architecture + Density Contract and shared @lightbi/ui tokens/primitives across Desktop/Tauri and Web Live Demo /app; Understanding is accepted, while Home/New Brief, Decision Workspace, Deep BA and BA Step 2 remain presentation targets",
+    "boundary": "DPR-8 owns layout/presentation only; consume DPR-1..DPR-7 semantic contracts without re-deriving metrics/questions/narratives/charts/dashboard membership; no metric/formula/join/evidence/MB authority escalation",
     "foundationProductCommit": "e030e4ddfc2997b8abe0ca75d5fe2541b8d9d5f7",
-    "foundationContract": "@lightbi/ui Canvas/Section/SectionHeader/Inset/Divider + summary|working|evidence density; no universal Card; tokenized 224px desktop shell; bounded Tailwind shared-source scan; DPR-8 executable release gate",
-    "foundationVerification": "DPR-8 contract 3/3; TypeScript/diff-check PASS; source-size 545 production modules; release-authoritative PASS with build 3818 modules and governed regression 11 files/44 tests; exact-SHA rebuild PASS",
-    "foundationRuntimeAcceptance": "NEXT 5273 PASS 1/1: 224px desktop expanded, 56px collapsed, 56px compact at 720px viewport, pageerror=[]",
-    "liveUiRoot": "/home/ubuntu/services/lightbi-next-web/dpr8-foundation-e030e4d"
+    "understandingProductCommit": "900d7aa93d59b2c58501ba6efe49390182a157be",
+    "understandingVerification": "DPR-8 contract 4/4; Understanding 8/8; focused Understanding+i18n 11/11; TypeScript/diff-check PASS; source-size 545 modules; release-authoritative build 3822 + governed regression 11 files/44 tests; release_1_0_suite=passed; exact-SHA rebuild 3822 PASS",
+    "understandingRuntimeAcceptance": "NEXT 5273 Chromium PASS on canonical inventory: four ordered regions; perspective rows 40/40/40/40px; three vertical secondary questions; semantic+technical evidence collapsed; primary visible; Analyze CTA top=852 bottom=896 inside 900px viewport at scrollY=0; sidebar 224px/56px; pageerror=[]",
+    "liveUiRoot": "/home/ubuntu/services/lightbi-next-web/dpr8-understanding-900d7aa"
   },
   "trustRuntime": {
     "userManagerPid": 943,
@@ -45,7 +45,7 @@
     "attestationLauncherPid": 1505209,
     "productionAuthority": false
   },
-  "nextAction": "Continue DPR-8 from clean Product HEAD e030e4d. Migrate Understanding first: audit UnderstandingNextCard and its composition/tests/i18n; preserve semantic/governed output, evidence reachability, test IDs and accessibility while replacing equal-weight card grids with canvas-first regions meaning -> proposed analyses -> assumptions -> evidence/details, ranked perspective/question lists and progressive disclosure. Use shared @lightbi/ui primitives/density classes and card-by-exception. Run focused + i18n/DPR-8 contracts + TypeScript + source-size + release-authoritative, then exact-SHA immutable NEXT 5273 acceptance. Do not touch Production/51xx/Core/Control Plane/Trust.",
+  "nextAction": "Continue DPR-8 from clean Product HEAD 900d7aa. Home / New Brief is the first remaining unmigrated bounded target in plan section 17: keep the question prompt as command surface and suggestions as small actions/pills; flatten source-entry/history card stacks into calm sections/rows/tiles; avoid nested-card empty/retry states. Audit HomeWorkspaceView/Home presentation and tests/i18n first, define executable presentation invariants, preserve governed semantics and Desktop/Web /app parity, then run focused+i18n+DPR-8+TypeScript+source-size+release-authoritative, exact-SHA rebuild and immutable NEXT 5273 browser acceptance. Do not touch Production/51xx/Core/Control Plane/Trust.",
   "blockers": [
     "Production promotion and Offline Root/phase2a freeze remain owner-gated",
     "NEXT047 remains stale and is not the current post-DPR release candidate"
@@ -53,8 +53,8 @@
   "productionTouched": false,
   "readFirst": [
     "docs/project-book/LIBRARY_RULES.md",
-    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#139-2026-09-08-dpr-8-shared-canvas-foundation-is-live-understanding-migration-is-next",
+    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#140-2026-09-08-dpr-8-understanding-meets-above-fold-acceptance-on-next-home-new-brief-is-next",
     "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DECISION_PRESENTATION_UI_UX_REFACTOR_2026-09-04.md"
   ],
-  "documentationHead": "65a0e6d6ed2283d3aee14af3bc3d80cdaa006910"
+  "documentationHead": "7e37981f5acf7aa8ecaf171e685782cca26c4a3f"
 }
