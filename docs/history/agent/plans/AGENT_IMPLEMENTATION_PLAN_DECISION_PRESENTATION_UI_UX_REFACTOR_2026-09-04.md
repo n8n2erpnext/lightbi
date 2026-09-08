@@ -1,6 +1,6 @@
 # Agent Implementation Plan — Decision Presentation + UI/UX Refactor — 2026-09-04
 
-Status: **DPR-1 CLOSED — CLAIM/QUESTION PROVENANCE FOUNDATION LIVE-ACCEPTED ON NEXT; DPR-2 OPEN-WORLD QUESTION/PERSPECTIVE INTELLIGENCE ACTIVE**
+Status: **DPR-2 CLOSED — OPEN-WORLD QUESTION/PERSPECTIVE INTELLIGENCE LIVE-ACCEPTED ON NEXT; DPR-3 ANALYSIS NARRATIVE PLANNER ACTIVE**
 Date: 2026-09-04
 Amended: 2026-09-05 — owner added design-system/i18n hardening and Frappe UI reference direction.
 Amended: 2026-09-06 — owner elevated Frappe Books as a primary product-UX study source and added a canonical chart-pattern/visual-grammar library direction.
@@ -11,9 +11,10 @@ Amended: 2026-09-08 — owner promoted Figma `LightBI Logo Concept` node `19:5` 
 Amended: 2026-09-08 — owner elevated app-wide information architecture/density to a hard product contract, required multi-file terminal Deep BA/Step 2 workflow convergence before visual-baseline freeze, and made Web Live Demo `/app` a near-1:1 product-validation lane alongside Desktop.
 Amended: 2026-09-08 — DPR-0 terminal workflow convergence source-closed at Product `ce5c961...`; corrected NEXT `/app` baseline accepted and evidence source-closed at `14c2d99...`; DPR-0 closed and DPR-1 is next.
 Amended: 2026-09-08 — DPR-1 provenance foundation source-closed at Product `d027bb3...`: exact plan vocabulary, explicit evidence/knowledge/derivation contract, non-escalation guard, shared Evidence Inspector and NEXT 5273 runtime acceptance. DPR-2 is active.
+Amended: 2026-09-08 — DPR-2 source/live-closed at Product `a876fb9...`: one deterministic open-world Question/Perspective Intelligence projection now separates Domain from Perspective, deduplicates governed + universal questions, admits MB/domain-context question candidates only as non-executable review items, preserves governed action authority, and passed NEXT 5273 runtime acceptance. DPR-3 is active.
 Scope: Question/Perspective, narrative, visualization, Dashboard, evidence, export and product UI-surface refactor.
 Authority: design/implementation plan; not runtime or metric authority.
-Code-audit snapshot: current clean Product worktree is `codex/dpr0-contract-freeze` at `d027bb34e403968a60f6f3b053e3cfaf9ad42025`, descendant of optimized-li brand source `fde259a5441b36825f211914cbd0c82fc595f27f`; Control Plane brand source remains `b6bc2735bcf99218443ae5c427701e5b1a7c938f`. DPR-0 is closed at baseline evidence `14c2d99...`; DPR-1 claim/question provenance foundation is source/live-closed at `d027bb3...`; DPR-2 is the active implementation phase.
+Code-audit snapshot: current clean Product worktree is `codex/dpr0-contract-freeze` at `a876fb998b980f1eef0c5834822f622a80435b44`, descendant of optimized-li brand source `fde259a5441b36825f211914cbd0c82fc595f27f`; Control Plane brand source remains `b6bc2735bcf99218443ae5c427701e5b1a7c938f`. DPR-0 is closed at baseline evidence `14c2d99...`; DPR-1 provenance is source/live-closed at `d027bb3...`; DPR-2 Question/Perspective Intelligence is source/live-closed at `a876fb9...`; DPR-3 is the active implementation phase.
 Supersedes: none.
 
 Repository target when implementation is authorized: public LightBI product successor.
@@ -751,11 +752,15 @@ Frappe Books and Frappe UI are external references only. No Vue/Electron depende
 
 ### DPR-2 — Open-world Question / Perspective Intelligence
 
-- Separate Domain from Perspective.
-- Feed `domainInference`/MB context into question discovery/ranking/presentation without changing governed authority.
-- Consume bounded MB presentation advice for domain/perspective relevance and abstention/missing-evidence signals; MB candidates may reorder what is considered but may not make an ungoverned question executable.
-- Merge/deduplicate universal + governed question presentation.
-- Add answerability states and neutral wording rules.
+**CLOSED on Product `a876fb998b980f1eef0c5834822f622a80435b44` and live NEXT 5273 acceptance.**
+
+- `question-perspective-intelligence.ts` is the deterministic presentation planner above existing governed question/action generation. Domain and Perspective remain separate inputs; inferred domain or MB context never becomes selected perspective or official support.
+- Governed + Universal presentation candidates are normalized and semantic siblings are deduplicated into one ranked lane. Existing governed executable authority wins only because it already existed upstream; an existing safe descriptive action may remain descriptive, never governed by presentation merge.
+- Answerability is explicit: `executable_now | descriptive_only | needs_more_evidence | unsupported`. Ranking uses selected perspective, existing executability/authority, evidence completeness, Focus relevance and bounded MB ordinal advice; `rankScore` is deterministic planner ordering, not semantic confidence.
+- MB presentation advice may contribute domain/perspective priorities, analytical intents, evidence requirements, abstentions and prohibitions. Domain-context questions may be synthesized only as `needs_more_evidence` review candidates with `actionAuthority=none`; they never expose an Analyze action until a governed/safe action exists upstream. Retrieval scores/similarity and internal semantic dedupe keys are not emitted in the public planner contract.
+- Understanding now shows one unified primary/other-question path, keeps primary governed evidence/restrictions inspectable, and places non-executable domain-context questions inside the collapsed review surface. The DPR-0 duplicate-question-lane debt fixture is retired; DPR-6 chart-type-collapse debt remains open.
+- Neutral management wording removes default evaluative best/worst/leader/laggard semantics in planner-projected questions. Dynamic open-world copy is covered by the language package rather than creating i18n debt.
+- Focused DPR-2/authority/i18n verification PASSed `56/56`; TypeScript PASSed; the final release-authoritative suite PASSed with governed regression `11 files / 42 tests`, production build and source-size gate. Exact `a876fb9...` is live through immutable `/home/ubuntu/services/lightbi-next-web/dpr2-a876fb9` on gateway 5273. Browser acceptance PASSed `1/1` in `5.3s`: one question lane, visible domain context, MB domain-context review candidates present and zero execution buttons inside that review. Core 5272 PID `3376963`, Control Plane 5274 PID `2346997`, signer `12020`, issuer `3817149` and attestation `1505209` remained unchanged.
 
 ### DPR-3 — Analysis Narrative Planner + Deep BA hierarchy
 

@@ -1806,3 +1806,13 @@ R1-P0 documentation/integrity closure verified 1,243 local links with zero missi
 - Verification PASS: focused `25/25`, TypeScript, release-authoritative suite, governed regression `11 files / 42 tests`, production build.
 - Immutable NEXT UI `/home/ubuntu/services/lightbi-next-web/dpr1-d027bb3` is live on 5273; runtime provenance smoke PASS `1/1` in 8.8s. Core 5272, CP 5274 and Trust PIDs unchanged.
 - DPR-1 CLOSED; DPR-2 Open-world Question / Perspective Intelligence ACTIVE. Production untouched.
+
+## 2026-09-08 — DPR-2 open-world Question / Perspective Intelligence source/live closure
+
+- Product `a876fb998b980f1eef0c5834822f622a80435b44` adds one deterministic Question/Perspective Intelligence projection above existing governed question/action generation. Domain remains separate from Perspective; inferred domain/MB context cannot activate official support or executable authority.
+- Governed + Universal presentation candidates are semantically deduplicated and ranked by selected perspective, existing answerability/authority, evidence completeness, Focus relevance and bounded MB ordinal advice. Public answerability is `executable_now | descriptive_only | needs_more_evidence | unsupported`; planner rank is not confidence.
+- MB/domain context may create open-world review questions only as `needs_more_evidence`, `actionAuthority=none`. The UI renders them inside collapsed review with explicit advisory-only/missing-evidence disclosure and no Analyze button. Retrieval scores and internal semantic dedupe keys do not escape the planner contract.
+- Unified Understanding presentation retires the DPR-2 duplicate-question-lane debt while retaining inspectable primary governed evidence/restrictions. Neutral question wording avoids best/worst/leader/laggard evaluation defaults. i18n change is additive: 15 new message keys, 0 existing translations changed, plus 2 dynamic patterns.
+- Acceptance PASS: focused DPR-2/authority/i18n `56/56`, TypeScript, final release-authoritative suite, governed regression `11 files / 42 tests`, production build and source-size gate.
+- Immutable NEXT UI `/home/ubuntu/services/lightbi-next-web/dpr2-a876fb9` is live on 5273 and both direct/public identity report exact `a876fb9...`. Browser acceptance PASS `1/1` in `5.3s`. Core 5272 PID `3376963`, CP 5274 PID `2346997`, Trust launchers `12020/3817149/1505209` unchanged. Production untouched.
+- DPR-2 CLOSED; DPR-3 Analysis Narrative Planner + Deep BA hierarchy ACTIVE.
