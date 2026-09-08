@@ -6,7 +6,7 @@
 
 - Date: **2026-09-08**
 - Branch: `docs/ba-da-mode-future-20260903`
-- HEAD: `637ef3bea60f515bbc9a1091d1804aece68ba914`
+- HEAD: `4e0a727b1547753529a819f40f9275fa3528daf5`
 - Worktree dirty while generated: **true**
 - Total indexed sources: **949** (532 Markdown / 417 JSON)
 - JSON under `docs/`: **354**
@@ -732,7 +732,7 @@ For old paths, use [`PATH_MIGRATION_INDEX.md`](./PATH_MIGRATION_INDEX.md) and [`
 - [`docs/history/agent/handoffs/AGENT_HANDOFF_TAXONOMY_EXPANSION_PHASE2.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_TAXONOMY_EXPANSION_PHASE2.md) — Agent Handoff: Taxonomy Expansion Phase 2; `1758` bytes; SHA-256 `1e5fb48642845c7d22e36eb5d75b16da6e3edc3c516e197febb6610af79efe33`
 - [`docs/history/agent/handoffs/AGENT_HANDOFF_TRUST_MAPPING_PHASE1.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_TRUST_MAPPING_PHASE1.md) — Agent Handoff: Trust & Mapping Review Phase 1; `2607` bytes; SHA-256 `6adcc230912afa78edc4307f3cefb460f171c9d50aef3b7a2297d757b1cbc2b5`
 - [`docs/history/agent/handoffs/AGENT_HANDOFF_TRUST_MAPPING_PHASE2.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_TRUST_MAPPING_PHASE2.md) — Agent Handoff: Trust & Mapping Review Phase 2; `2162` bytes; SHA-256 `baabb832894f965454d81768d019a66d3b8eb1b8eccc21c6f5bd7e6607318fe1`
-- [`docs/history/agent/handoffs/AGENT_HANDOFF_UI_UX_REFACTOR_DPR0_TO_DPR4_2026-09-08.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_UI_UX_REFACTOR_DPR0_TO_DPR4_2026-09-08.md) — Agent Handoff — LightBI UI/UX Refactor, DPR-0 through active DPR-4 — 2026-09-08; `33861` bytes; SHA-256 `546d98e2cee3209b414c2a277ff28985dad95c8d1360edfe36edeb94c883b869`
+- [`docs/history/agent/handoffs/AGENT_HANDOFF_UI_UX_REFACTOR_DPR0_TO_DPR4_2026-09-08.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_UI_UX_REFACTOR_DPR0_TO_DPR4_2026-09-08.md) — Agent Handoff — LightBI UI/UX Refactor, DPR-0 through active DPR-4 — 2026-09-08; `33855` bytes; SHA-256 `bbe64d817d374faf9ee1d92403f8cce6e12c2d7bffd37cf06421a65d5129187c`
 - [`docs/history/agent/handoffs/AGENT_HANDOFF_VIETTEL_LOGISTICS_SAMPLE_ACCEPTANCE_2026-06-15.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_VIETTEL_LOGISTICS_SAMPLE_ACCEPTANCE_2026-06-15.md) — Agent Handoff: Viettel Logistics Sample Acceptance (2026-06-15); `2090` bytes; SHA-256 `762f422e7b813bda4f9a276a4544c9cc8cd856eed7f6944376e033b4d005d7f5`
 - [`docs/history/agent/handoffs/AGENT_HANDOFF_VIRTUAL_BUSINESS_VIEW_REAL_DATA_AUDIT.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_VIRTUAL_BUSINESS_VIEW_REAL_DATA_AUDIT.md) — Virtual Business View Real Data Audit; `4107` bytes; SHA-256 `a05aa6e9ef569aad0635227cf15a3ab8b004b0f83686e4ad3a5a0aca9e49dd06`
 - [`docs/history/agent/handoffs/AGENT_HANDOFF_VIRTUAL_BUSINESS_VIEW_REAL_DATA_EXECUTION_2026-06-15.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_VIRTUAL_BUSINESS_VIEW_REAL_DATA_EXECUTION_2026-06-15.md) — Agent Handoff: Virtual Business View Real Data Execution; `2203` bytes; SHA-256 `97465a354d38e90bacf1b5d1d15fb268c7dc9a58a5dce24c2b0bcb479e862745`

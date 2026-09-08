@@ -1,9 +1,9 @@
 {
   "schemaVersion": "lightbi.project-book.source-catalog.v1",
   "snapshotDate": "2026-09-08",
-  "generatedAt": "2026-09-08T05:24:00Z",
+  "generatedAt": "2026-09-08T05:26:00Z",
   "branch": "docs/ba-da-mode-future-20260903",
-  "head": "637ef3bea60f515bbc9a1091d1804aece68ba914",
+  "head": "4e0a727b1547753529a819f40f9275fa3528daf5",
   "worktreeDirty": true,
   "scope": "All project Markdown and JSON outside dependency/build/project-book directories.",
   "counts": {
@@ -9743,8 +9743,8 @@
     {
       "path": "docs/history/agent/handoffs/AGENT_HANDOFF_UI_UX_REFACTOR_DPR0_TO_DPR4_2026-09-08.md",
       "extension": ".md",
-      "bytes": 33861,
-      "sha256": "546d98e2cee3209b414c2a277ff28985dad95c8d1360edfe36edeb94c883b869",
+      "bytes": 33855,
+      "sha256": "bbe64d817d374faf9ee1d92403f8cce6e12c2d7bffd37cf06421a65d5129187c",
       "suggestedCategory": "historical-provenance",
       "title": "Agent Handoff — LightBI UI/UX Refactor, DPR-0 through active DPR-4 — 2026-09-08"
     },
