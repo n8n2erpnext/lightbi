@@ -1,12 +1,12 @@
 {
   "schema": "lightbi.current-checkpoint.v1",
-  "updatedAt": "2026-09-08T00:31:35Z",
-  "status": "roadmap_1_0_dpr0_active_contract_freeze_chunk1_closed",
+  "updatedAt": "2026-09-08T01:14:39Z",
+  "status": "roadmap_1_0_dpr0_active_design_foundation_closed_multifile_terminal_convergence_next",
   "activeRuntime": "NEXT engine g-2026-09-05-next-034; five live CP/API/workers exact fd18429e271da398062719a0e404389d85f46f97; R2 broker exact b0d65b343d9bc73e90e90097d87eda3f92218d36; MB scheduler paused; Production untouched",
   "sourceCandidate": {
     "repo": "/home/ubuntu/n8n2erpnext/LightBI-dpr0-contract-freeze",
     "branch": "codex/dpr0-contract-freeze",
-    "head": "85734e4a262b93b6b0964b37cd0b03148320d115",
+    "head": "ca454ecab5aa029fb504388374837695e1e2cd11",
     "basePrimaryLogoCommit": "fde259a5441b36825f211914cbd0c82fc595f27f"
   },
   "brandAuthority": {
@@ -19,20 +19,61 @@
   "dpr0": {
     "state": "ACTIVE",
     "chunk1": "CLOSED",
+    "chunk2DesignTokens": "CLOSED",
     "reactBoundary": "@lightbi/ui consumes host React 19; duplicate React 18 runtime removed",
-    "i18nDebtBaseline": {"mixedVietnamese": 7, "uncatalogedEnglish": 263, "uncatalogedVietnamese": 1, "policy": "may only shrink; new debt fails release suite"},
-    "openDebtFixtures": ["DPR-2 duplicate question lanes", "DPR-6 dashboard chart-type collapse"],
-    "focusedGuards": "5/5 PASS",
+    "i18nDebtBaseline": {
+      "mixedVietnamese": 7,
+      "uncatalogedEnglish": 263,
+      "uncatalogedVietnamese": 1,
+      "policy": "may only shrink; new debt fails release suite"
+    },
+    "designFoundation": "LightBI-owned --lb-* tokens established; current screens not broadly migrated yet",
+    "openDebtFixtures": [
+      "DPR-2 duplicate question lanes",
+      "DPR-6 dashboard chart-type collapse"
+    ],
     "releaseAuthoritative": "PASS; governed product regression 11 files / 41 tests; production build PASS"
+  },
+  "informationArchitecture": {
+    "rule": "More information must create more structure, not more cards",
+    "densityClasses": [
+      "Calm",
+      "Working",
+      "Analytical",
+      "Evidence/Technical"
+    ],
+    "multiFileTerminalTarget": "decision_workspace -> evidence_drill -> deep_perspective | deep_selected",
+    "deepPerspectiveAndSelectedMutuallyExclusive": true,
+    "visualBaseline": "PAUSED/NOT ACCEPTED until multi-file terminal workflow convergence"
+  },
+  "liveDemoParity": {
+    "productSurface": "/app",
+    "role": "near-1:1 fast product-validation environment, not simplified demo UI",
+    "shared": "React routes/components/state/planners/tokens/i18n/chart/evidence behavior",
+    "nativeOnly": "explicit capability adapters/truthful unavailable states",
+    "phaseGate": "Web Live Demo /app -> Desktop shared surface -> packaged/native when applicable"
   },
   "controlPlaneSourceCandidate": {
     "repo": "/home/ubuntu/n8n2erpnext/lightbi-control-plane-r1p14-signed-transport",
     "head": "b0d65b343d9bc73e90e90097d87eda3f92218d36"
   },
-  "learningTransport": {"brokerHead": "b0d65b343d9bc73e90e90097d87eda3f92218d36", "schedulerEnabled": false, "fullR2Rehearsal": "13/13 PASS", "finalCleanup": "PASS"},
-  "workerSafety": {"gate": "CLOSED", "schema": "072_micro_brain_worker_safety"},
-  "trustRuntime": {"issuerPid": 3817149, "signerPid": 12020, "attestationPid": 1505209, "productionAuthority": false},
-  "nextAction": "Continue DPR-0 on Product 85734e4: establish LightBI-owned shared design tokens/primitives derived from the pinned Books/Frappe visual+interaction study, then capture baseline visual acceptance before broad canvas-first surface migration. Do not fix DPR-2/DPR-6 behavior inside DPR-0 merely to satisfy debt fixtures.",
+  "learningTransport": {
+    "brokerHead": "b0d65b343d9bc73e90e90097d87eda3f92218d36",
+    "schedulerEnabled": false,
+    "fullR2Rehearsal": "13/13 PASS",
+    "finalCleanup": "PASS"
+  },
+  "workerSafety": {
+    "gate": "CLOSED",
+    "schema": "072_micro_brain_worker_safety"
+  },
+  "trustRuntime": {
+    "issuerPid": 3817149,
+    "signerPid": 12020,
+    "attestationPid": 1505209,
+    "productionAuthority": false
+  },
+  "nextAction": "On Product ca454ec, converge multi-file terminal Decision Workspace/Evidence Drill/Deep BA/Step 2 onto the shared reversible state/surface grammar used by single-file without changing multi-source governance. Then capture corrected tracked-corpus visual baselines on Web Live Demo /app and equivalent Desktop/shared surfaces before broad DPR-8 migration.",
   "blockers": [
     "Production promotion and Offline Root/phase2a freeze remain owner-gated",
     "NEXT047 is stale and not a post-LQ3 release candidate; its installation-issuer mismatch remains deferred until an official release build"
@@ -42,8 +83,8 @@
   "resourceState": "root filesystem ~68% used, ~40 GiB free; DPR Product target cache ~198 MiB",
   "readFirst": [
     "docs/project-book/LIBRARY_RULES.md",
-    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#129-2026-09-08-dpr-0-contract-freeze-chunk-1-closes-reacti18npresentation-debt-boundaries",
+    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#130-2026-09-08-dpr-0-elevates-information-architecture-multi-file-workflow-convergence-and-web-live-demo-parity",
     "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DECISION_PRESENTATION_UI_UX_REFACTOR_2026-09-04.md"
   ],
-  "documentationHead": "8a4384563f546601ad09d8b6ca42e44df0d0270f"
+  "documentationHead": "3afa80c9060f898c043325c9f89d74af1506868a"
 }
