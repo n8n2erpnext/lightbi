@@ -1,0 +1,85 @@
+{
+  "schema": "lightbi.dpr0-next-visual-baseline.v1",
+  "captured_at_utc": "2026-09-08T02:09:50+00:00",
+  "environment": "NEXT",
+  "direct_surface": "http://100.94.184.141:5273/app/",
+  "public_surface": "https://lightbi-next.thaiduy.digital/app/",
+  "ui_source_commit": "ce5c961d099bf4d2343a74508211a828daa3df4b",
+  "ui_source_branch": "codex/dpr0-contract-freeze",
+  "core_generation": "g-2026-09-05-next-034",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "acceptance": {
+    "playwright_tests": 2,
+    "playwright_passed": 2,
+    "full_page_height_equals_viewport_for_all_captures": true,
+    "purpose": "Corrected post-convergence IA baseline; PNG evidence remains in ignored ui-audit storage."
+  },
+  "captures": [
+    {
+      "file": "01-home.png",
+      "sha256": "758dbd6ec003176f3bfad4181d49985391d13c582f169a8338be0a7cd79d4d99",
+      "bytes": 92146,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "02-understanding-multisource.png",
+      "sha256": "17b2902bf3e2df66cf7c474a9b9d951e7f064bb2f2c595f9fb4896a7170c3453",
+      "bytes": 151426,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "03-multifile-decision-workspace.png",
+      "sha256": "a7c20113b85937dce569547d21501eebae6e0b65c1d5c20a1941eede57990bf4",
+      "bytes": 111612,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "04-multifile-deep-ba.png",
+      "sha256": "07f684028ceec8fe47377c7a73a07f9982d9b075a03cfc9e19ba876761b95863",
+      "bytes": 154592,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "05-multifile-evidence-drill.png",
+      "sha256": "29f1dc85b5e6dc58c2e6f6d262835571fc23b31d8c5a13c83f6963dc122746b5",
+      "bytes": 150264,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "06-multifile-step2.png",
+      "sha256": "23f770947d7e108df4a6be9518710823ab1c18f56695e9f0c395431204e6e498",
+      "bytes": 182953,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "07-dashboard.png",
+      "sha256": "1e0ec788c2ec1f96c3f0b7f16eb6293a687cd1428358f876a82818e1c27746a3",
+      "bytes": 143243,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "08-singlefile-decision-workspace.png",
+      "sha256": "d9a770558a9c51eb6620ea9b2116a25c2ee6c0bdfd09233015f98e929b2a4f59",
+      "bytes": 80980,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "09-singlefile-deep-ba.png",
+      "sha256": "7747ae420b51ab1892f3a7fd7486a06b6c9ad795f1af4fea0e2fe794a2b0bc62",
+      "bytes": 213694,
+      "width": 1440,
+      "height": 900
+    }
+  ]
+}
