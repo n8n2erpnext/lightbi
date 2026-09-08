@@ -1,93 +1,49 @@
 {
   "schema": "lightbi.current-checkpoint.v1",
-  "updatedAt": "2026-09-07T15:58:43Z",
-  "status": "mb_lq3_worker_safety_signed_capability_closed_return_to_roadmap_1_0",
-  "activeRuntime": "engine g-2026-09-05-next-034; five live NEXT CP/API/workers exact fd18429e271da398062719a0e404389d85f46f97; R2 broker exact b0d65b343d9bc73e90e90097d87eda3f92218d36; scheduler paused; Production untouched",
+  "updatedAt": "2026-09-08T00:31:35Z",
+  "status": "roadmap_1_0_dpr0_active_contract_freeze_chunk1_closed",
+  "activeRuntime": "NEXT engine g-2026-09-05-next-034; five live CP/API/workers exact fd18429e271da398062719a0e404389d85f46f97; R2 broker exact b0d65b343d9bc73e90e90097d87eda3f92218d36; MB scheduler paused; Production untouched",
   "sourceCandidate": {
-    "repo": "/home/ubuntu/n8n2erpnext/LightBI-exp-focus-subject",
-    "branch": "codex/r1-roadmap-integration",
-    "head": "40ca2d8b1dbd213bca510e51b9e09c5c19279f5d"
+    "repo": "/home/ubuntu/n8n2erpnext/LightBI-dpr0-contract-freeze",
+    "branch": "codex/dpr0-contract-freeze",
+    "head": "85734e4a262b93b6b0964b37cd0b03148320d115",
+    "basePrimaryLogoCommit": "fde259a5441b36825f211914cbd0c82fc595f27f"
+  },
+  "brandAuthority": {
+    "figmaConcept": "LightBI Logo Concept / node 19:5 / optimized li",
+    "canonicalSvgSha256": "9486181bb525d1d4a704addaebfc2f1caa5abbd9d1240bad252b85a3f58e0d7b",
+    "productCommit": "fde259a5441b36825f211914cbd0c82fc595f27f",
+    "controlPlaneBrandCommit": "b6bc2735bcf99218443ae5c427701e5b1a7c938f",
+    "liveRotatedForBrand": false
+  },
+  "dpr0": {
+    "state": "ACTIVE",
+    "chunk1": "CLOSED",
+    "reactBoundary": "@lightbi/ui consumes host React 19; duplicate React 18 runtime removed",
+    "i18nDebtBaseline": {"mixedVietnamese": 7, "uncatalogedEnglish": 263, "uncatalogedVietnamese": 1, "policy": "may only shrink; new debt fails release suite"},
+    "openDebtFixtures": ["DPR-2 duplicate question lanes", "DPR-6 dashboard chart-type collapse"],
+    "focusedGuards": "5/5 PASS",
+    "releaseAuthoritative": "PASS; governed product regression 11 files / 41 tests; production build PASS"
   },
   "controlPlaneSourceCandidate": {
     "repo": "/home/ubuntu/n8n2erpnext/lightbi-control-plane-r1p14-signed-transport",
-    "branch": "codex/r1p14-signed-transport",
     "head": "b0d65b343d9bc73e90e90097d87eda3f92218d36"
   },
-  "runtimeControlPlane": {
-    "head": "fd18429e271da398062719a0e404389d85f46f97",
-    "directory": "/home/ubuntu/services/lightbi-control-plane-next034-fd18429/apps/distribution",
-    "apiPid": 2346997,
-    "legacyWorkerPid": 2347000,
-    "asyncWorkers": {
-      "short": 2347005,
-      "default": 2347001,
-      "long": 2347002
-    }
-  },
-  "learningTransport": {
-    "brokerHead": "b0d65b343d9bc73e90e90097d87eda3f92218d36",
-    "brokerDirectory": "/home/ubuntu/services/lightbi-control-plane-next034-b0d65b3/apps/distribution",
-    "brokerPid": 2449688,
-    "brokerActive": true,
-    "brokerEnabled": true,
-    "physicalBasePrefix": "mb-learn-db",
-    "schedulerEnabled": false,
-    "fullR2Rehearsal": "13/13 PASS",
-    "schedulerTransactionalSmoke": "PASS",
-    "finalCleanup": {
-      "contributions": 0,
-      "learningJobs": 0,
-      "redisResidue": 0,
-      "r2Residue": 0
-    }
-  },
-  "workerSafety": {
-    "gate": "CLOSED",
-    "allLanesRunning": true,
-    "allLaneFailures": 0,
-    "allCircuitsClosed": true,
-    "schema": "072_micro_brain_worker_safety"
-  },
-  "signedAuthority": {
-    "microBrainLearning": "verified Signed Transport + attestation installation binding required",
-    "intelligencePack": "Signed Transport catalog -> short-lived artifact capability -> INT Ed25519 verification",
-    "consentWithdrawal": "authority-first rejection + remote cleanup + durable client retry intent"
-  },
-  "databaseSchema": {
-    "latest": "072_micro_brain_worker_safety",
-    "count": 26,
-    "pending": 0
-  },
-  "trustRuntime": {
-    "issuerPid": 3817149,
-    "signerPid": 12020,
-    "attestationPid": 1505209,
-    "productionAuthority": false,
-    "testRelease": "0.9.2-beta.7-next.46"
-  },
-  "completed": [
-    "worker_safety_gate_b_closed_and_revalidated_on_descendant_runtime",
-    "user_account_totp_passkey_route_repaired_live",
-    "micro_brain_signed_transport_and_consent_withdrawal_closed",
-    "intelligence_pack_signed_catalog_capability_and_package_signature_closed",
-    "owner_authorized_distribution_r2_reuse_broker_only_mb_learn_db_prefix",
-    "r2_live_13_point_rehearsal_pass_and_full_cleanup",
-    "next_only_scheduler_transactional_smoke_pass",
-    "control_plane_full_regression_297_of_297_pass",
-    "docs_project_book_128_worklog_committed_35b8746"
-  ],
-  "nextAction": "Return to the canonical Roadmap 1.0. Reconcile the current Roadmap/Project Book phase before new mutation, then continue the next owner-approved Roadmap item from current Product 40ca2d8 / CP source b0d65b3. Do not resume from stale NEXT047 as a release candidate; cut a fresh successor only when packaging is needed.",
+  "learningTransport": {"brokerHead": "b0d65b343d9bc73e90e90097d87eda3f92218d36", "schedulerEnabled": false, "fullR2Rehearsal": "13/13 PASS", "finalCleanup": "PASS"},
+  "workerSafety": {"gate": "CLOSED", "schema": "072_micro_brain_worker_safety"},
+  "trustRuntime": {"issuerPid": 3817149, "signerPid": 12020, "attestationPid": 1505209, "productionAuthority": false},
+  "nextAction": "Continue DPR-0 on Product 85734e4: establish LightBI-owned shared design tokens/primitives derived from the pinned Books/Frappe visual+interaction study, then capture baseline visual acceptance before broad canvas-first surface migration. Do not fix DPR-2/DPR-6 behavior inside DPR-0 merely to satisfy debt fixtures.",
   "blockers": [
-    "NEXT047 predates the completed Worker Safety/R2/signed-capability work and is not a valid post-LQ3 release candidate",
-    "NEXT047 test-build installation_issuer_release_not_allowed is deferred until an official release build; do not restart Trust merely for the stale test build",
-    "Production promotion and role rotation remain owner-gated"
+    "Production promotion and Offline Root/phase2a freeze remain owner-gated",
+    "NEXT047 is stale and not a post-LQ3 release candidate; its installation-issuer mismatch remains deferred until an official release build"
   ],
   "productionTouched": false,
   "phase2aFrozen": false,
+  "resourceState": "root filesystem ~68% used, ~40 GiB free; DPR Product target cache ~198 MiB",
   "readFirst": [
     "docs/project-book/LIBRARY_RULES.md",
-    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#128-2026-09-07-mb-lq3-r2-learning-transport-and-signed-capability-detour-close-roadmap-10-may-resume",
-    "docs/architecture/road-to-1-0-trust-release-contract.md"
+    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#129-2026-09-08-dpr-0-contract-freeze-chunk-1-closes-reacti18npresentation-debt-boundaries",
+    "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DECISION_PRESENTATION_UI_UX_REFACTOR_2026-09-04.md"
   ],
-  "documentationHead": "35b87467df84c495d5d55a5b672e75a0c760698a"
+  "documentationHead": "8a4384563f546601ad09d8b6ca42e44df0d0270f"
 }
