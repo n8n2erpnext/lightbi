@@ -1,2 +1,4 @@
 sample-corpus/anchors/1.3.0/*.csv binary
 sample-corpus/**/*.json text eol=lf
+apps/desktop/public/branding/lightbi-icon.svg text eol=lf
+apps/desktop/public/favicon.svg text eol=lf
