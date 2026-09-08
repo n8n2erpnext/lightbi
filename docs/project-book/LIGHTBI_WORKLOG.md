@@ -1900,3 +1900,11 @@ R1-P0 documentation/integrity closure verified 1,243 local links with zero missi
 - Immutable NEXT `/home/ubuntu/services/lightbi-next-web/dpr8-decision-73506f0` is live on 5273. Gateway `804962 -> 961459`; Core `3376963`, CP `2346997`, manager `943`, Trust containers/parents unchanged; NetBird/external `/app` HTTP 200; Production untouched.
 - Final live Chromium acceptance PASSed tracked six-file multi-source and sanitized single-file inventory. Both preserve DOM answer-first order, default-collapsed Evidence, no overflow/pageerror; multi Evidence Drill Back round-trip PASS. Single-file correctly omitted an unproven key number.
 - DPR-8 remains ACTIVE. Next bounded target per section 17: Deep BA, then BA Step 2.
+
+## 2026-09-08 — DPR-8 Deep BA management-document source/live checkpoint
+
+- Product `d7ea5ce8d024145df612c7bdea44701bf10e4129` flattens full-scope single/multi Deep BA into numbered management-document hierarchy while preserving DPR-1..DPR-7 semantic, provenance, evidence, Focus and visualization authority. BA Step 2 is not changed in this chunk.
+- Verification PASS: DPR-8 `7/7`; focused Deep BA `6/6`; broad `12 files / 56 tests`; TypeScript/i18n/diff-check; source-size `545`; release build `3822` + governed `11 files / 45 tests`; `release_1_0_suite=passed`; exact-SHA rebuild `3822` PASS.
+- Immutable NEXT `/home/ubuntu/services/lightbi-next-web/dpr8-deep-ba-d7ea5ce` is live on 5273. Gateway `961459 -> 1079822`; Core `3376963`, CP `2346997`, manager `943`, Trust containers/launchers unchanged; NetBird/external `/app` HTTP 200; Production untouched.
+- Final live Chromium acceptance PASS `2/2` in `33.6s`: tracked multi Deep BA sections `01–05`, tracked single Deep BA management document, Back paths restored Decision Workspace, no overflow/pageerror.
+- DPR-8 remains ACTIVE. BA Step 2 is the final remaining bounded target before phase closure.
