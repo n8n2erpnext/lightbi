@@ -1,13 +1,13 @@
 {
   "schema": "lightbi.current-checkpoint.v1",
-  "updatedAt": "2026-09-08T13:59:36Z",
-  "status": "roadmap_1_0_dpr8_active_decision_workspace_live_deep_ba_next",
-  "activeRuntime": "NEXT Core generation g-2026-09-05-next-034 on 5272 PID 3376963; immutable DPR-8 Decision Workspace UI root dpr8-decision-73506f0 on gateway 5273 PID 961459; Control Plane 5274 PID 2346997 unchanged; Production untouched",
+  "updatedAt": "2026-09-08T14:47:57Z",
+  "status": "roadmap_1_0_dpr8_active_deep_ba_live_step2_next",
+  "activeRuntime": "NEXT Core generation g-2026-09-05-next-034 on 5272 PID 3376963; immutable DPR-8 Deep BA UI root dpr8-deep-ba-d7ea5ce on gateway 5273 PID 1079822; Control Plane 5274 PID 2346997 unchanged; Production untouched",
   "sourceCandidate": {
     "repo": "/home/ubuntu/n8n2erpnext/LightBI-dpr0-contract-freeze",
     "branch": "codex/dpr0-contract-freeze",
-    "head": "73506f0ef8f1a656d592df6031399106a7de3ffe",
-    "liveUiSource": "73506f0ef8f1a656d592df6031399106a7de3ffe"
+    "head": "d7ea5ce8d024145df612c7bdea44701bf10e4129",
+    "liveUiSource": "d7ea5ce8d024145df612c7bdea44701bf10e4129"
   },
   "roadmapDpr": {
     "dpr0": "CLOSED",
@@ -29,20 +29,23 @@
     "liveUiRoot": "/home/ubuntu/services/lightbi-next-web/dpr7-324eceb"
   },
   "dpr8": {
-    "state": "ACTIVE — foundation + Understanding + Home/New Brief + Decision Workspace source/live-accepted; Deep BA next",
-    "scope": "apply Product-wide Information Architecture + Density Contract and shared @lightbi/ui tokens/primitives across Desktop/Tauri and Web Live Demo /app; Deep BA and BA Step 2 remain bounded presentation targets",
+    "state": "ACTIVE — foundation + Understanding + Home/New Brief + Decision Workspace + Deep BA source/live-accepted; BA Step 2 final bounded target next",
+    "scope": "apply Product-wide Information Architecture + Density Contract and shared @lightbi/ui tokens/primitives across Desktop/Tauri and Web Live Demo /app; BA Step 2 / selected-subject investigation is the final remaining bounded presentation target before DPR-8 closure",
     "boundary": "DPR-8 owns layout/presentation only; consume DPR-1..DPR-7 semantic contracts without re-deriving metrics/questions/narratives/charts/dashboard membership; no metric/formula/join/evidence/MB authority escalation",
     "foundationProductCommit": "e030e4ddfc2997b8abe0ca75d5fe2541b8d9d5f7",
     "understandingProductCommit": "900d7aa93d59b2c58501ba6efe49390182a157be",
     "understandingVerification": "DPR-8 contract 4/4; Understanding 8/8; focused Understanding+i18n 11/11; TypeScript/diff-check PASS; source-size 545 modules; release-authoritative build 3822 + governed regression 11 files/44 tests; release_1_0_suite=passed; exact-SHA rebuild 3822 PASS",
     "understandingRuntimeAcceptance": "NEXT 5273 Chromium PASS on canonical inventory: four ordered regions; perspective rows 40/40/40/40px; three vertical secondary questions; semantic+technical evidence collapsed; primary visible; Analyze CTA top=852 bottom=896 inside 900px viewport at scrollY=0; sidebar 224px/56px; pageerror=[]",
-    "liveUiRoot": "/home/ubuntu/services/lightbi-next-web/dpr8-decision-73506f0",
+    "liveUiRoot": "/home/ubuntu/services/lightbi-next-web/dpr8-deep-ba-d7ea5ce",
     "homeProductCommit": "eeaf4464da4d28306edf4f4daa095655a94c0a21",
     "homeVerification": "Home history 2/2; i18n 3/3; DPR-8 contract 5/5; TypeScript/diff-check PASS; source-size 545 modules; release-authoritative build 3822 + governed regression 11 files/44 tests; release_1_0_suite=passed; exact-SHA rebuild 3822 PASS",
     "homeRuntimeAcceptance": "NEXT 5273 Chromium PASS: command 179.5–259.5px; suggestions 275.5–317.5px; three vertical source rows; six real session-history rows in flat list; no horizontal overflow at 1440px or 720px; pageerror=[]",
     "decisionWorkspaceProductCommit": "73506f0ef8f1a656d592df6031399106a7de3ffe",
     "decisionWorkspaceVerification": "DPR-8 contract 6/6; focused 16/16; Investigation 19/19; broad 14 files/64 tests; TypeScript/diff-check PASS; source-size 545 modules; release-authoritative build 3822 + governed regression 11 files/45 tests; release_1_0_suite=passed; exact-SHA rebuild 3822 PASS",
-    "decisionWorkspaceRuntimeAcceptance": "NEXT 5273 Chromium PASS: tracked six-file multi-source and sanitized single-file preserve answer-first order; multi Evidence Drill Back round-trip PASS; Evidence collapsed; no horizontal overflow/pageerror; single correctly omits unproven key number"
+    "decisionWorkspaceRuntimeAcceptance": "NEXT 5273 Chromium PASS: tracked six-file multi-source and sanitized single-file preserve answer-first order; multi Evidence Drill Back round-trip PASS; Evidence collapsed; no horizontal overflow/pageerror; single correctly omits unproven key number",
+    "deepBAProductCommit": "d7ea5ce8d024145df612c7bdea44701bf10e4129",
+    "deepBAVerification": "DPR-8 contract 7/7; focused Deep BA 6/6; broad 12 files/56 tests; TypeScript/i18n/diff-check PASS; source-size 545 modules; release-authoritative build 3822 + governed regression 11 files/45 tests; release_1_0_suite=passed; exact-SHA rebuild 3822 PASS",
+    "deepBARuntimeAcceptance": "NEXT 5273 Chromium PASS 2/2 in 33.6s: tracked multi Deep BA numbered 01–05 with collapsed supporting context/reasons and Back to Decision Workspace; tracked single Deep BA management document + primary section and Back; no horizontal overflow/pageerror"
   },
   "trustRuntime": {
     "userManagerPid": 943,
@@ -51,7 +54,7 @@
     "attestationLauncherPid": 1505209,
     "productionAuthority": false
   },
-  "nextAction": "Continue DPR-8 from clean Product HEAD 73506f0. Deep BA is the first remaining bounded target in plan section 17, followed by BA Step 2. Re-read plan sections 14 and 17 and audit the current single-file + multi-file Deep BA renderers before mutation. Preserve DPR-1..DPR-7 narrative/provenance/evidence/visualization/dashboard/MB authority and the reversible decision_workspace/evidence_drill/deep_perspective/deep_selected state grammar; change presentation only. Flatten Deep BA to one primary answer, prioritized evidence-backed findings, concise next action, progressive evidence/technical disclosure, card-by-exception and responsive shared canvas. Run focused+i18n+DPR-8+TypeScript+source-size+release-authoritative, exact-SHA rebuild and immutable NEXT 5273 browser acceptance. Do not touch Production/51xx/Core/Control Plane/Trust.",
+  "nextAction": "Continue DPR-8 from clean Product HEAD d7ea5ce. BA Step 2 / selected-subject investigation is the final remaining bounded presentation target in plan sections 12 and 17. Audit SelectedSubjectInvestigationBoard plus single-file filteredScope and multi-file deep_selected shells before mutation. Preserve DPR-4 selected-scope-only authority, exact source separation, governed-summary unchanged, benchmark-as-context, Focus exact-match fail-closed, MB non-escalation and the reversible evidence_drill/deep_selected state grammar. Change presentation only: render Step 2 as a focused selected-subject investigation, shorter than Deep BA, with one attributed answer, bounded benchmark/context, parallel source evidence, concise next questions/actions/unknowns, and progressive detailed evidence. Run focused+i18n+DPR-8+TypeScript+source-size+release-authoritative, exact-SHA rebuild and immutable NEXT 5273 browser acceptance. If PASS, close DPR-8 canonical docs/checkpoint and advance only to DPR-9. Do not touch Production/51xx/Core/Control Plane/Trust.",
   "blockers": [
     "Production promotion and Offline Root/phase2a freeze remain owner-gated",
     "NEXT047 remains stale and is not the current post-DPR release candidate"
@@ -59,8 +62,8 @@
   "productionTouched": false,
   "readFirst": [
     "docs/project-book/LIBRARY_RULES.md",
-    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#142-2026-09-08-dpr-8-decision-workspace-is-answer-first-and-live-deep-ba-is-next",
+    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#143-2026-09-08-dpr-8-deep-ba-is-a-management-document-and-live-ba-step-2-is-next",
     "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DECISION_PRESENTATION_UI_UX_REFACTOR_2026-09-04.md"
   ],
-  "documentationHead": "37c048e988e7d4a3ba0f30932b82ea9562d37dde"
+  "documentationHead": "781e5fa29e1eb43a5ec0b1989ddc90be21e98470"
 }
