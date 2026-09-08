@@ -1771,3 +1771,12 @@ R1-P0 documentation/integrity closure verified 1,243 local links with zero missi
 - Control Plane branch `codex/primary-logo-optimized-li` commit `b6bc2735bcf99218443ae5c427701e5b1a7c938f` replaces Distribution `logo.svg` and makes the Admin sidebar consume the same real asset instead of hard-coded `Li` text. Distribution build + focused server suite PASS `32/32`.
 - SVG is now the brand geometry authority; PNG/ICO/BMP are derived outputs. Figma MCP Starter quota blocked only canvas metadata/export-setting writes, not source verification or owner approval.
 - No live Production/Trust runtime was rotated for this brand-only source change. Deployment should ride the next Roadmap-1.0 successor rather than create an infrastructure side quest.
+
+## 2026-09-08 — DPR-0 contract-freeze chunk 1 source-closed
+
+- Created clean worktree `/home/ubuntu/n8n2erpnext/LightBI-dpr0-contract-freeze`, branch `codex/dpr0-contract-freeze`, based on approved logo commit `fde259a...`; original integration worktree dirty audit JSON remained untouched.
+- Product `85734e4...` removes React 18/ReactDOM 18 from `@lightbi/ui` runtime dependencies and aligns React 19 host peers/dev tooling with Desktop; lockfile removes the duplicate React-18 scheduler chain.
+- Added monotonic i18n debt baseline: 7 mixed Vietnamese messages, 263 uncataloged English UI strings, 1 uncataloged Vietnamese UI string. New debt now fails the authoritative release suite while existing debt can only shrink.
+- Added DPR-0 presentation debt fixtures for Dashboard renderer chart-type collapse (owner DPR-6) and duplicate question lanes/headings in Understanding (owner DPR-2). These fixtures document defects; they do not authorize them.
+- Added durable React-boundary test and wired both DPR guards into `test:release-1.0`. Focused DPR guards PASS `5/5`; final release-authoritative suite PASS, governed regression `11 files / 41 tests`, production build PASS.
+- Cache/resource check: Product Cargo target ~198 MiB; root filesystem ~68% used with ~40 GiB free. No Production, NEXT runtime or Trust process was changed.

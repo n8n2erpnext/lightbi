@@ -1,11 +1,12 @@
 # Agent Implementation Plan — Decision Presentation + UI/UX Refactor — 2026-09-04
 
-Status: **DPR-0 ACTIVE — BASELINE AUDIT / CONTRACT FREEZE IN PROGRESS; MB PRESENTATION-ADVISORY FOUNDATION SOURCE-CLOSED**
+Status: **DPR-0 ACTIVE — BASELINE AUDIT / CONTRACT FREEZE IN PROGRESS; CHUNK 1 SOURCE-CLOSED; MB PRESENTATION-ADVISORY FOUNDATION SOURCE-CLOSED**
 Date: 2026-09-04
 Amended: 2026-09-05 — owner added design-system/i18n hardening and Frappe UI reference direction.
 Amended: 2026-09-06 — owner elevated Frappe Books as a primary product-UX study source and added a canonical chart-pattern/visual-grammar library direction.
 Amended: 2026-09-06 — owner explicitly admitted Micro Brain into DPR-2..DPR-7 as bounded presentation/domain/chart/narrative advice; deterministic planners remain final decision gates.
 Amended: 2026-09-07 — DPR-0 re-pinned and cloned Frappe Books `a79a1e3...`; owner expanded the required Books study to exact visual-system measurements including proportions, spacing, typography, color, layout and desktop window chrome.
+Amended: 2026-09-08 — DPR-0 contract-freeze chunk 1 source-closed at Product `85734e4...`: React-19 shared boundary, monotonic i18n debt guard, durable chart/question debt fixtures and release-suite enforcement.
 Amended: 2026-09-08 — owner promoted Figma `LightBI Logo Concept` node `19:5` (`optimized li`) to the LightBI primary mark and required SVG-first derivation across Desktop/native/Distribution branding.
 Scope: Question/Perspective, narrative, visualization, Dashboard, evidence, export and product UI-surface refactor.
 Authority: design/implementation plan; not runtime or metric authority.
@@ -621,6 +622,15 @@ Frappe Books and Frappe UI are external references only. No Vue/Electron depende
 ## 19. Proposed implementation phases
 
 ### DPR-0 — Baseline audit and contract freeze
+
+#### DPR-0 chunk 1 — source-closed contract freeze (2026-09-08)
+
+- Product branch `codex/dpr0-contract-freeze` at `85734e4a262b93b6b0964b37cd0b03148320d115`, based on the approved optimized-li logo commit `fde259a...`.
+- `@lightbi/ui` no longer ships a private React 18 runtime. React/ReactDOM are host peers `^19.2.0`; package dev dependencies align with Desktop `^19.2.8`. The lockfile drops the duplicate React 18/scheduler chain.
+- i18n debt is frozen monotonically at the observed `fde259a` baseline: 7 mixed Vietnamese messages, 263 uncataloged English presentation strings and 1 uncataloged Vietnamese presentation string. Existing debt may shrink; any new debt fails the release-authoritative suite.
+- Two known presentation defects are now durable debt fixtures, not accepted behavior: Dashboard renderer type collapse (`DPR-6`) and duplicate “Other questions this data can answer” lanes (`DPR-2`). Repairing either requires explicitly retiring/updating its fixture in the owning DPR phase.
+- `scripts/run-release-1.0-suite.mjs` now runs the shared React boundary and presentation/i18n debt guards. Final authoritative run PASSed, including production build and governed regression `11 files / 41 tests`; focused DPR guards PASS `5/5`.
+- No chart planner, question planner, metric/evidence authority or screen composition was changed by this chunk. DPR-0 remains ACTIVE; next work is LightBI design-token/shared-primitive foundation plus baseline visual acceptance capture before broad surface migration.
 
 - Freeze current governed numeric/evidence parity fixtures before presentation refactor.
 - Capture representative Home, Understanding, Decision Workspace, Dashboard, Deep BA and Step 2 acceptance screenshots.
