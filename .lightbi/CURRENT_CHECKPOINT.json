@@ -1,7 +1,7 @@
 {
   "schema": "lightbi.current-checkpoint.v1",
-  "updatedAt": "2026-09-08T18:19:14Z",
-  "status": "roadmap_1_0_dpr9_active_source_live_final_exact_live_single_artifact_acceptance_pending",
+  "updatedAt": "2026-09-09T01:31:00Z",
+  "status": "roadmap_1_0_dpr9_closed_dpr10_cross_domain_acceptance_active",
   "activeRuntime": "NEXT Core generation g-2026-09-05-next-034 on 5272 PID 3376963; immutable DPR-9 semantic-report UI root dpr9-aa51184 on gateway 5273 PID 1461645; Control Plane 5274 PID 2346997 unchanged; Product source aa511844bb7b2f9fbfb5b575bc726fef293e9952; Production untouched",
   "sourceCandidate": {
     "repo": "/home/ubuntu/n8n2erpnext/LightBI-dpr0-contract-freeze",
@@ -19,7 +19,8 @@
     "dpr6": "CLOSED",
     "dpr7": "CLOSED",
     "dpr8": "CLOSED",
-    "dpr9": "ACTIVE — semantic report pagination source/release/live; exact-live single artifact rerun pending"
+    "dpr9": "CLOSED — semantic report pagination source/release/live accepted",
+    "dpr10": "ACTIVE — cross-domain acceptance and release regression"
   },
   "dpr7": {
     "state": "CLOSED",
@@ -64,22 +65,20 @@
     },
     "productionAuthority": false
   },
-  "nextAction": "Read the DPR-9 handoff first, verify Product/docs/live runtime identity, then recreate a temporary corrected Playwright harness against https://lightbi-next.thaiduy.digital/app. Run canonical six-file multi Deep BA and tracked MB-6 Healthcare single Deep BA. For details[data-report-export-expand=true], snapshot exact open[] states before export and require the same states after PNG and PDF; do not require all details to start closed. Require semantic report-plan metadata, real PNG ZIP/PDF downloads, zero pageerror, and inspect artifacts with unzip/identify/file plus optional PDF page-object check. Multi exact-live already PASSed; single exact-live still needs this corrected rerun. If both PASS, close DPR-9 in the existing plan, append Project Book/Worklog, refresh catalogs, commit/push canonical docs, then checkpoint separately and activate DPR-10. Check disk before/after long build/export work. Do not touch Production/51xx/Core/Control Plane/Trust.",
+  "nextAction": "DPR-10: read the active UI/UX refactor plan section 20 acceptance corpus and DPR-10 scope. Build a tracked cross-domain acceptance matrix across Web Live Demo /app and Desktop/shared-source surfaces; verify semantic/numeric/evidence parity, question relevance, chart-pattern recommendation, Dashboard composition, narrative and DPR-9 export pagination. Add MB advisory regression for deterministic rebuild, bounded footprint, provenance, domain/chart recall, abstention/prohibition recall, and deterministic-planner rejection without governed numeric drift. Add calm-hierarchy/color-label visual regression. Include current supported domains plus evidence-bound inferred-domain probes; preserve owner-gated Production/native promotion. Do not touch Production/51xx/Core/Control Plane/Trust.",
   "blockers": [
-    "DPR-9 closure is pending one corrected exact-live single-file artifact acceptance rerun; first live failure was a temporary harness assumption, not a known Product defect",
     "Production promotion and Offline Root/phase2a freeze remain owner-gated",
     "NEXT047 remains stale and is not the current post-DPR release candidate"
   ],
   "productionTouched": false,
   "readFirst": [
     "docs/project-book/LIBRARY_RULES.md",
-    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#145-2026-09-09-dpr-9-semantic-report-pagination-is-source-live-exact-live-single-artifact-closure-remains-pending",
-    "docs/history/agent/handoffs/AGENT_HANDOFF_DPR9_SEMANTIC_REPORT_PAGINATION_2026-09-09.md",
+    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#146-2026-09-09-dpr-9-closes-with-true-semantic-report-pagination-dpr-10-is-active",
     "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DECISION_PRESENTATION_UI_UX_REFACTOR_2026-09-04.md"
   ],
-  "documentationHead": "85f3ca5bfe96dfdbf1e82c0ba78d9e7e64c72bc8",
+  "documentationHead": "147004ae49d0da46db3a24bc388663b1508c5686",
   "dpr9": {
-    "state": "ACTIVE — source/release/deploy complete; final exact-live single artifact acceptance pending",
+    "state": "CLOSED — source/release/deploy and exact-live single+multi artifact acceptance complete",
     "scope": "lightbi.analysis-report-plan.v1 shared semantic report page model; semantic page breaks/keep-together; bounded PNG page export; true multi-page PDF; exact detail-state restore after export",
     "boundary": "consume closed DPR-1..DPR-8 governed analysis/presentation authority; report pagination may not create or strengthen metric/formula/join/causal/evidence authority; preserve Web Live Demo /app and Desktop/shared-source parity",
     "productCommit": "aa511844bb7b2f9fbfb5b575bc726fef293e9952",
@@ -87,8 +86,15 @@
     "candidateArtifactAcceptance": "multi canonical six-file: 7 semantic sections, 4 bounded PNG pages + 4-page PDF; single tracked MB-6 Healthcare: 14 semantic sections, 5 bounded PNG pages + 5-page PDF; no browser errors",
     "liveUiRoot": "/home/ubuntu/services/lightbi-next-web/dpr9-aa51184",
     "liveGatewayPid": 1461645,
-    "liveAcceptance": "multi exact-live artifact export PASS; single exact-live first attempt stopped before export because temporary harness incorrectly required all report details closed; rerun with exact open-state snapshot/restore invariant is pending",
+    "liveAcceptance": "PASS 2/2 in 61s on exact live NEXT aa511844...: canonical six-file multi and tracked MB-6 Healthcare single both used lightbi.analysis-report-plan.v1, produced real PNG/PDF downloads, restored exact pre-export details open[] state, and had zero page errors; live artifacts verified multi 4 PNG pages + 4-page PDF and single 5 PNG pages + 5-page PDF",
     "diskAtHandoff": "/ 121G total / 84G used / 37G free (70%); lightbi-next-web approximately 1.5G; disposable /tmp/dpr9-report-* artifacts only a few MiB each",
-    "nextTarget": "corrected exact-live single+multi artifact acceptance -> canonical DPR-9 closure -> DPR-10"
+    "nextTarget": "CLOSED; DPR-10 Cross-domain acceptance and release regression is active"
+  },
+  "dpr10": {
+    "state": "ACTIVE",
+    "scope": "cross-domain acceptance and release regression across semantic/numeric/evidence, questions, visualization patterns, Dashboard composition, narrative, report export, MB advisory behavior and calm presentation hierarchy",
+    "boundary": "acceptance/regression only unless a separately proven defect requires a scoped fix; no new metric/formula/join/causal/evidence/MB authority; Production promotion remains owner-gated",
+    "productBase": "aa511844bb7b2f9fbfb5b575bc726fef293e9952",
+    "liveUiRoot": "/home/ubuntu/services/lightbi-next-web/dpr9-aa51184"
   }
 }
