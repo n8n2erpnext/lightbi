@@ -1,13 +1,13 @@
 {
   "schema": "lightbi.current-checkpoint.v1",
-  "updatedAt": "2026-09-08T15:49:16Z",
-  "status": "roadmap_1_0_dpr8_closed_dpr9_active_report_page_model_next",
-  "activeRuntime": "NEXT Core generation g-2026-09-05-next-034 on 5272 PID 3376963; immutable DPR-8 Step 2 UI root dpr8-step2-6d51850 on gateway 5273 PID 1211805; Control Plane 5274 PID 2346997 unchanged; Production untouched",
+  "updatedAt": "2026-09-08T18:19:14Z",
+  "status": "roadmap_1_0_dpr9_active_source_live_final_exact_live_single_artifact_acceptance_pending",
+  "activeRuntime": "NEXT Core generation g-2026-09-05-next-034 on 5272 PID 3376963; immutable DPR-9 semantic-report UI root dpr9-aa51184 on gateway 5273 PID 1461645; Control Plane 5274 PID 2346997 unchanged; Product source aa511844bb7b2f9fbfb5b575bc726fef293e9952; Production untouched",
   "sourceCandidate": {
     "repo": "/home/ubuntu/n8n2erpnext/LightBI-dpr0-contract-freeze",
     "branch": "codex/dpr0-contract-freeze",
-    "head": "6d5185085c7c1c31ae0e427dd2d79ecf2aa93dd9",
-    "liveUiSource": "6d5185085c7c1c31ae0e427dd2d79ecf2aa93dd9"
+    "head": "aa511844bb7b2f9fbfb5b575bc726fef293e9952",
+    "liveUiSource": "aa511844bb7b2f9fbfb5b575bc726fef293e9952"
   },
   "roadmapDpr": {
     "dpr0": "CLOSED",
@@ -19,7 +19,7 @@
     "dpr6": "CLOSED",
     "dpr7": "CLOSED",
     "dpr8": "CLOSED",
-    "dpr9": "ACTIVE — Report Page Model + true export pagination"
+    "dpr9": "ACTIVE — semantic report pagination source/release/live; exact-live single artifact rerun pending"
   },
   "dpr7": {
     "state": "CLOSED",
@@ -56,24 +56,39 @@
     "signerLauncherPid": 12020,
     "issuerLauncherPid": 3817149,
     "attestationLauncherPid": 1505209,
+    "currentContainerInitPids": {
+      "signer": 13437,
+      "installationIssuer": 3817195,
+      "attestation": 1505255,
+      "proDelivery": 13384
+    },
     "productionAuthority": false
   },
-  "nextAction": "Continue DPR-9 from clean Product HEAD 6d51850. Re-read plan DPR-9 plus report/export invariants, then audit existing PNG/PDF/export code paths before mutation. Define one shared deterministic page-plan contract covering screen, PNG and PDF with semantic page breaks/keep-together rules. Preserve closed DPR-1..DPR-8 semantic, evidence, narrative, visualization, Dashboard and presentation authority; pagination must not create metrics/formulas/joins/causal claims or hide required evidence. Maintain Web Live Demo /app and Desktop/shared-source parity; native-only divergence must remain explicit. Run focused+i18n+TypeScript+source-size+release-authoritative, exact-SHA rebuild and immutable NEXT 5273 browser acceptance. Do not touch Production/51xx/Core/Control Plane/Trust.",
+  "nextAction": "Read the DPR-9 handoff first, verify Product/docs/live runtime identity, then recreate a temporary corrected Playwright harness against https://lightbi-next.thaiduy.digital/app. Run canonical six-file multi Deep BA and tracked MB-6 Healthcare single Deep BA. For details[data-report-export-expand=true], snapshot exact open[] states before export and require the same states after PNG and PDF; do not require all details to start closed. Require semantic report-plan metadata, real PNG ZIP/PDF downloads, zero pageerror, and inspect artifacts with unzip/identify/file plus optional PDF page-object check. Multi exact-live already PASSed; single exact-live still needs this corrected rerun. If both PASS, close DPR-9 in the existing plan, append Project Book/Worklog, refresh catalogs, commit/push canonical docs, then checkpoint separately and activate DPR-10. Check disk before/after long build/export work. Do not touch Production/51xx/Core/Control Plane/Trust.",
   "blockers": [
+    "DPR-9 closure is pending one corrected exact-live single-file artifact acceptance rerun; first live failure was a temporary harness assumption, not a known Product defect",
     "Production promotion and Offline Root/phase2a freeze remain owner-gated",
     "NEXT047 remains stale and is not the current post-DPR release candidate"
   ],
   "productionTouched": false,
   "readFirst": [
     "docs/project-book/LIBRARY_RULES.md",
-    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#144-2026-09-08-dpr-8-closes-with-focused-ba-step-2-dpr-9-is-active",
+    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#145-2026-09-09-dpr-9-semantic-report-pagination-is-source-live-exact-live-single-artifact-closure-remains-pending",
+    "docs/history/agent/handoffs/AGENT_HANDOFF_DPR9_SEMANTIC_REPORT_PAGINATION_2026-09-09.md",
     "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DECISION_PRESENTATION_UI_UX_REFACTOR_2026-09-04.md"
   ],
-  "documentationHead": "7934873a5b71209ed7cf852a8cb8bbdc7f180341",
+  "documentationHead": "85f3ca5bfe96dfdbf1e82c0ba78d9e7e64c72bc8",
   "dpr9": {
-    "state": "ACTIVE — Report Page Model + true export pagination",
-    "scope": "shared screen/PNG/PDF page plan; semantic page breaks and keep-together rules; bounded PNG sections/pages; true multi-page PDF",
-    "boundary": "consume closed DPR-1..DPR-8 governed analysis/presentation authority; pagination/composition may not create or strengthen metric/formula/join/causal authority; preserve Web Live Demo /app and Desktop/shared-source parity",
-    "nextTarget": "audit existing report/export code paths and define the deterministic shared page-plan contract before implementation"
+    "state": "ACTIVE — source/release/deploy complete; final exact-live single artifact acceptance pending",
+    "scope": "lightbi.analysis-report-plan.v1 shared semantic report page model; semantic page breaks/keep-together; bounded PNG page export; true multi-page PDF; exact detail-state restore after export",
+    "boundary": "consume closed DPR-1..DPR-8 governed analysis/presentation authority; report pagination may not create or strengthen metric/formula/join/causal/evidence authority; preserve Web Live Demo /app and Desktop/shared-source parity",
+    "productCommit": "aa511844bb7b2f9fbfb5b575bc726fef293e9952",
+    "verification": "report plan 4/4; focused report/Deep BA/Step2/multi 20/20; TypeScript PASS; DPR-8+DPR-9 release contracts 11/11; i18n PASS after cataloging two PNG save descriptions; source-size 547; build 3824; governed 11 files/45 tests; release_1_0_suite=passed; exact-SHA build 3824 PASS",
+    "candidateArtifactAcceptance": "multi canonical six-file: 7 semantic sections, 4 bounded PNG pages + 4-page PDF; single tracked MB-6 Healthcare: 14 semantic sections, 5 bounded PNG pages + 5-page PDF; no browser errors",
+    "liveUiRoot": "/home/ubuntu/services/lightbi-next-web/dpr9-aa51184",
+    "liveGatewayPid": 1461645,
+    "liveAcceptance": "multi exact-live artifact export PASS; single exact-live first attempt stopped before export because temporary harness incorrectly required all report details closed; rerun with exact open-state snapshot/restore invariant is pending",
+    "diskAtHandoff": "/ 121G total / 84G used / 37G free (70%); lightbi-next-web approximately 1.5G; disposable /tmp/dpr9-report-* artifacts only a few MiB each",
+    "nextTarget": "corrected exact-live single+multi artifact acceptance -> canonical DPR-9 closure -> DPR-10"
   }
 }
