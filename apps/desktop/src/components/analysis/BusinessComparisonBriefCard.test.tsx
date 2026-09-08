@@ -34,9 +34,13 @@ describe('BusinessComparisonBriefCard DPR-3 narrative hierarchy', () => {
     const document = screen.getByTestId('comparison-management-document');
     expect(document.getAttribute('data-layout')).toBe('management-document');
     expect(screen.getByTestId('comparison-management-section-01').getAttribute('data-section-number')).toBe('01');
+    expect(screen.getByTestId('comparison-management-section-01').getAttribute('data-report-role')).toBe('executive_summary');
     expect(screen.getByTestId('comparison-management-section-03').getAttribute('data-section-number')).toBe('03');
+    expect(screen.getByTestId('comparison-management-section-03').getAttribute('data-report-role')).toBe('explanation_status');
     expect(screen.getByTestId('comparison-management-section-04').getAttribute('data-section-number')).toBe('04');
     expect(screen.getByTestId('comparison-management-section-05').getAttribute('data-section-number')).toBe('05');
+    expect(screen.getByTestId('comparison-supporting-context').getAttribute('data-report-role')).toBe('evidence_appendix');
+    expect(screen.getByTestId('comparison-supporting-context').getAttribute('data-report-export-expand')).toBe('true');
   });
 
 });

@@ -326,6 +326,8 @@
     "Context, grain, and safe actions for execution": "Bối cảnh, cấp độ dữ liệu và các hành động an toàn",
     "Could not export the image.": "Không thể xuất ảnh.",
     "Could not export the PDF.": "Không thể xuất PDF.",
+    "PNG report page": "Trang báo cáo PNG",
+    "PNG report pages": "Các trang báo cáo PNG",
     "Could not inspect this file.": "Không thể tìm hiểu tệp này.",
     "Could not prepare the clean-data handoff.": "Không thể chuẩn bị gói dữ liệu sạch.",
     "Could not save the Power BI package.": "Không thể lưu gói Power BI.",

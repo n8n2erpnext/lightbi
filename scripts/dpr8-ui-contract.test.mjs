@@ -102,7 +102,8 @@ test('DPR-8 Deep BA reads as a numbered management document instead of a card st
   const comparison = await read('apps/desktop/src/components/analysis/BusinessComparisonBriefCard.tsx');
   const multi = await read('apps/desktop/src/components/analysis/PerspectiveCollectionResultCard.tsx');
   assert.match(shell, /data-testid="deep-analysis-surface" data-layout=\{filteredScope \? 'focused-investigation' : 'management-document'\}/);
-  assert.match(shell, /data-testid="deep-analysis-export-surface" data-layout=\{filteredScope \? 'focused-investigation' : 'management-document'\}/);
+  assert.match(shell, /data-testid="deep-analysis-export-surface"/);
+  assert.match(shell, /data-layout=\{filteredScope \? 'focused-investigation' : 'management-document'\}/);
   assert.match(shell, /data-testid="deep-ba-legacy-brief-details"/);
   assert.match(narrative, /data-testid="deep-ba-investigation" data-layout="management-document"/);
   assert.match(narrative, /data-testid="deep-ba-management-section-01" data-section-number="01"/);

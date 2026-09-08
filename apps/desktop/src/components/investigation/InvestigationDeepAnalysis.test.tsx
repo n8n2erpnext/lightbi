@@ -49,6 +49,7 @@ describe('InvestigationDeepAnalysis export boundary', () => {
     expect(deepSurface.getAttribute('data-layout')).toBe('management-document');
     const exportSurface = screen.getByTestId('deep-analysis-export-surface');
     expect(exportSurface.getAttribute('data-layout')).toBe('management-document');
+    expect(exportSurface.getAttribute('data-report-plan')).toBe('lightbi.analysis-report-plan.v1');
     const dashboardCta = screen.getByTestId('deep-analysis-dashboard-cta');
     expect(dashboardCta).toBeTruthy();
     expect(exportSurface.contains(dashboardCta)).toBe(false);
@@ -104,6 +105,11 @@ describe('InvestigationDeepAnalysis export boundary', () => {
     expect(screen.getByTestId('deep-analysis-export-surface').getAttribute('data-layout')).toBe('focused-investigation');
     expect(screen.getByTestId('filtered-deep-analysis-scope').textContent).toContain('Store = A');
     expect(screen.getByTestId('selected-subject-investigation')).toBeTruthy();
+    expect(screen.getByTestId('selected-subject-benchmark').getAttribute('data-report-role')).toBe('performance_overview');
+    expect(screen.getByTestId('selected-subject-main-answer').getAttribute('data-report-role')).toBe('answer_overview');
+    expect(screen.getByTestId('selected-subject-source-synthesis').getAttribute('data-report-role')).toBe('drivers_components');
+    expect(screen.getByTestId('selected-subject-evidence-details').getAttribute('data-report-role')).toBe('evidence_appendix');
+    expect(screen.getByTestId('selected-subject-evidence-details').getAttribute('data-report-export-expand')).toBe('true');
     const benchmark = screen.getByTestId('selected-subject-benchmark').textContent ?? '';
     expect(benchmark).toContain('sales.xlsx');
     expect(benchmark).not.toContain('null');

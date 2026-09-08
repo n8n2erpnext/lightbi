@@ -21,7 +21,7 @@ export const SingleSourceBAOverviewCard: React.FC<{ overview: SingleSourceBAOver
   const selectedDimensions = Object.entries(overview.bindings).filter(([key]) => /^selectedDimension\d+$/.test(key)).sort(([left], [right]) => left.localeCompare(right)).map(([, column]) => column);
   const narrativePlan = useMemo(() => buildSingleSourceAnalysisNarrativePlan(overview), [overview]);
   return <section className="mb-5" data-testid="single-source-ba-overview" data-layout="management-document">
-    <header className="border-y border-[var(--lb-divider)] py-5">
+    <header data-report-section="true" data-report-role="executive_summary" data-report-keep-together="true" className="border-y border-[var(--lb-divider)] py-5">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div className="min-w-0">
           <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-emerald-700"><CheckCircle2 className="h-4 w-4" />{overviewText(language, overview.analysisLabel)}</div>
@@ -36,7 +36,7 @@ export const SingleSourceBAOverviewCard: React.FC<{ overview: SingleSourceBAOver
     </header>
 
     <div className="space-y-6 py-5">
-      {(selectedMeasure || selectedDimensions.length > 0) && <section data-testid="deep-ba-selected-scope" className="border-b border-[var(--lb-divider)] pb-4">
+      {(selectedMeasure || selectedDimensions.length > 0) && <section data-testid="deep-ba-selected-scope" data-report-section="true" data-report-role="executive_summary" data-report-keep-together="true" className="border-b border-[var(--lb-divider)] pb-4">
         <div className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">{t('Selected analysis scope')}</div>
         <div className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-xs text-slate-700">
           {selectedMeasure && <span><strong>{t('Measure')}:</strong> {selectedMeasure}</span>}
@@ -47,7 +47,7 @@ export const SingleSourceBAOverviewCard: React.FC<{ overview: SingleSourceBAOver
 
       {overview.investigation && <AnalysisNarrativeBoard overview={overview} plan={narrativePlan} />}
 
-      {narrativePlan.supporting.showKpis && <section data-testid="deep-ba-supporting-metrics" className="border-t border-[var(--lb-divider)] pt-4">
+      {narrativePlan.supporting.showKpis && <section data-testid="deep-ba-supporting-metrics" data-report-section="true" data-report-role="performance_overview" data-report-keep-together="true" className="border-t border-[var(--lb-divider)] pt-4">
         <h4 className="mb-3 flex items-center gap-2 text-[12px] font-semibold uppercase tracking-wide text-slate-600"><BarChart3 className="h-4 w-4 text-blue-600" />{t('Key metrics')}</h4>
         <div className="grid border-y border-[var(--lb-divider)] sm:grid-cols-2 xl:grid-cols-4 sm:divide-x sm:divide-[var(--lb-divider)]">
           {overview.kpis.map(kpi => <div key={kpi.id} className="border-b border-[var(--lb-divider)] px-3 py-3 last:border-b-0 sm:border-b-0">
@@ -56,13 +56,13 @@ export const SingleSourceBAOverviewCard: React.FC<{ overview: SingleSourceBAOver
         </div>
       </section>}
 
-      {narrativePlan.supporting.showLegacyFindings && overview.findings.length > 0 && <section className="divide-y divide-amber-100 border-y border-amber-100">
+      {narrativePlan.supporting.showLegacyFindings && overview.findings.length > 0 && <section data-report-section="true" data-report-role="explanation_status" data-report-keep-together="true" className="divide-y divide-amber-100 border-y border-amber-100">
         {overview.findings.map((finding, index) => <div key={finding} className="py-3">
           <div className="flex items-center gap-2 text-[11px] font-semibold uppercase text-amber-700"><Lightbulb className="h-4 w-4" />{t('Finding')} {index + 1}</div><p className="mt-1 text-[13px] leading-5 text-amber-950">{overviewText(language, finding)}</p>
         </div>)}
       </section>}
 
-      {narrativePlan.supporting.showDiagnostics && <section data-testid="deep-ba-decision-diagnostics" className="border-t border-[var(--lb-divider)] pt-4">
+      {narrativePlan.supporting.showDiagnostics && <section data-testid="deep-ba-decision-diagnostics" data-report-section="true" data-report-role="explanation_status" data-report-keep-together="true" className="border-t border-[var(--lb-divider)] pt-4">
         <h4 className="mb-3 text-[12px] font-semibold uppercase tracking-wide text-slate-600">{t('Decision diagnostics')}</h4>
         <div className="grid border-y border-[var(--lb-divider)] sm:grid-cols-3 sm:divide-x sm:divide-[var(--lb-divider)]">
           {overview.concentration && <div className="px-3 py-3"><div className="text-[11px] font-semibold uppercase text-slate-400">{t('Largest group concentration')}</div><div className="mt-1 text-[15px] font-semibold text-slate-950">{overview.concentration.label}</div><div className="mt-1 text-sm text-slate-600">{(overview.concentration.share * 100).toFixed(1)}%</div></div>}
@@ -71,7 +71,7 @@ export const SingleSourceBAOverviewCard: React.FC<{ overview: SingleSourceBAOver
         </div>
       </section>}
 
-      {narrativePlan.supporting.breakdownIds.length > 0 && <section className="border-t border-[var(--lb-divider)] pt-4">
+      {narrativePlan.supporting.breakdownIds.length > 0 && <section data-report-section="true" data-report-role="drivers_components" data-report-keep-together="true" className="border-t border-[var(--lb-divider)] pt-4">
         <h4 className="mb-2 text-[12px] font-semibold uppercase tracking-wide text-slate-600">{overviewText(language, overview.breakdownHeading)}</h4>
         <div className="divide-y divide-[var(--lb-divider)] border-y border-[var(--lb-divider)]">
           {overview.breakdowns.filter(breakdown => narrativePlan.supporting.breakdownIds.includes(breakdown.id)).map(breakdown => <article key={breakdown.id} className="py-4">
@@ -82,7 +82,7 @@ export const SingleSourceBAOverviewCard: React.FC<{ overview: SingleSourceBAOver
         </div>
       </section>}
 
-      {(narrativePlan.supporting.showLegacyActions || narrativePlan.supporting.showLimitations) && <section className="divide-y divide-[var(--lb-divider)] border-y border-[var(--lb-divider)]">
+      {(narrativePlan.supporting.showLegacyActions || narrativePlan.supporting.showLimitations) && <section data-report-section="true" data-report-role="recommendations_risks" data-report-keep-together="true" className="divide-y divide-[var(--lb-divider)] border-y border-[var(--lb-divider)]">
         {narrativePlan.supporting.showLegacyActions && <div className="py-4"><h4 className="text-[12px] font-semibold uppercase tracking-wide text-emerald-700">{t('What should happen next?')}</h4><ol className="mt-2 space-y-2 text-[13px] leading-5 text-slate-700">{overview.recommendedActions.map((item, index) => <li key={item}>{index + 1}. {overviewText(language, item)}</li>)}</ol></div>}
         {narrativePlan.supporting.showLimitations && <div className="border-l-2 border-amber-300 py-4 pl-3"><h4 className="flex items-center gap-2 text-[12px] font-semibold uppercase tracking-wide text-amber-700"><AlertTriangle className="h-4 w-4" />{t('Evidence limitations')}</h4><ul className="mt-2 space-y-2 text-[12px] leading-5 text-amber-950">{overview.limitations.map(item => <li key={item}>• {overviewText(language, item)}</li>)}</ul></div>}
       </section>}

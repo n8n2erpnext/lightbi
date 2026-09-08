@@ -102,6 +102,8 @@ describe('PerspectiveCollectionResultCard selected-data analysis', () => {
     expect(screen.queryByTestId('collection-chart-drill')).toBeNull();
     expect(screen.getByTestId('collection-deep-export-image')).toBeTruthy();
     expect(screen.getByTestId('collection-deep-export-pdf')).toBeTruthy();
+    expect(screen.getByTestId('collection-deep-analysis-export-surface').getAttribute('data-report-plan')).toBe('lightbi.analysis-report-plan.v1');
+    expect(screen.getByTestId('selected-subject-evidence-details').getAttribute('data-report-role')).toBe('evidence_appendix');
     expect(screen.getByTestId('collection-create-dashboard')).toBeTruthy();
 
     fireEvent.click(screen.getByTestId('collection-deep-selected-back'));

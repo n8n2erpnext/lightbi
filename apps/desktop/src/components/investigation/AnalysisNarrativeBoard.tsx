@@ -12,6 +12,10 @@ const ROLE_LABELS: Record<AnalysisNarrativeSectionV1['role'], string> = {
 };
 const BASIS_LABELS = { evidence_backed: 'Evidence-backed', hypothesis: 'Hypothesis', needs_verification: 'Needs verification' } as const;
 const CONFIDENCE_STYLES = { high: 'border-emerald-200 bg-emerald-50 text-emerald-800', medium: 'border-amber-200 bg-amber-50 text-amber-800', low: 'border-slate-200 bg-slate-50 text-slate-700' } as const;
+const REPORT_ROLE_BY_NARRATIVE_ROLE = {
+  key_driver: 'drivers_components', risk_exception: 'recommendations_risks', hypothesis: 'explanation_status',
+  supporting_observation: 'explanation_status', unknown: 'explanation_status', next_action: 'recommendations_risks', supporting_evidence: 'evidence_appendix',
+} as const;
 
 function FindingView({ finding, overview, usesDomainContext = false, primary = false }: { finding: DeepBAFinding; overview: SingleSourceBAOverview; usesDomainContext?: boolean; primary?: boolean }) {
   const { t } = useUiLanguage();
@@ -40,14 +44,14 @@ export const AnalysisNarrativeBoard: React.FC<{ overview: SingleSourceBAOverview
       <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-blue-700"><Search className="h-4 w-4" />{t('Analysis narrative')}</div>
       <p className="mt-1 max-w-3xl text-xs leading-5 text-slate-500">{t('Narrative order may use bounded domain advice; every finding keeps its original evidence basis and authority.')}</p>
     </header>
-    <section data-testid="deep-ba-management-section-01" data-section-number="01" className="grid gap-3 border-b border-[var(--lb-divider)] py-5 md:grid-cols-[44px_minmax(0,1fr)]">
+    <section data-testid="deep-ba-management-section-01" data-section-number="01" data-report-section="true" data-report-role="answer_overview" data-report-keep-together="true" className="grid gap-3 border-b border-[var(--lb-divider)] py-5 md:grid-cols-[44px_minmax(0,1fr)]">
       <div className="text-[11px] font-semibold tracking-[0.14em] text-slate-400">01</div>
       <div><div className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">{t('Main answer')}</div><FindingView finding={plan.primaryAnswer.finding} overview={overview} primary /></div>
     </section>
     <div className="divide-y divide-[var(--lb-divider)]">
       {plan.sections.map((section, index) => {
         const number = String(index + 2).padStart(2, '0');
-        return <details key={section.role} open={!section.collapsedByDefault} className="group py-4" data-testid={`deep-ba-narrative-section-${section.role}`} data-section-number={number}>
+        return <details key={section.role} open={!section.collapsedByDefault} data-report-section="true" data-report-role={REPORT_ROLE_BY_NARRATIVE_ROLE[section.role]} data-report-keep-together={section.role === 'supporting_evidence' ? 'false' : 'true'} data-report-splittable={section.role === 'supporting_evidence' ? 'true' : 'false'} data-report-break-before={section.role === 'supporting_evidence' ? 'true' : 'false'} data-report-export-expand="true" className="group py-4" data-testid={`deep-ba-narrative-section-${section.role}`} data-section-number={number}>
           <summary className="grid cursor-pointer list-none grid-cols-[44px_minmax(0,1fr)_20px] items-center gap-3 text-[13px] font-semibold text-slate-900">
             <span className="text-[11px] tracking-[0.14em] text-slate-400">{number}</span><span>{t(ROLE_LABELS[section.role])}</span><ChevronDown className="h-4 w-4 text-slate-400 transition-transform group-open:rotate-180" />
           </summary>

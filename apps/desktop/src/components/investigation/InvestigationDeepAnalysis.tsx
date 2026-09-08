@@ -1,7 +1,5 @@
 import React, { useMemo, useRef, useState } from 'react';
 import { ArrowLeft, ChevronDown, ClipboardCheck, Download, FileImage, FileSpreadsheet, FileText, LayoutDashboard, X } from 'lucide-react';
-import { toPng } from 'html-to-image';
-import { jsPDF } from 'jspdf';
 import type { AnalysisAction } from '../../lib/analysis-opportunity-actions';
 import { BADecisionBriefPanel } from '../analysis/BADecisionBriefPanel';
 import type { BADecisionBrief } from '../../lib/ba-decision-engine';
@@ -21,7 +19,7 @@ import { createCleanDataHandoffFromCanonicalBoundary } from '../../lib/clean-dat
 import { saveExcelPivotWorkbook, type ExcelPivotExportModeV1, type ExcelPivotExportProgressV1 } from '../../lib/excel-pivot-export';
 import type { CanonicalSourceBoundaryV1 } from '../../lib/understanding-core/canonical-source-boundary';
 import type { DecisionVisualizationPlanV1 } from '../../lib/decision-visualization-plan';
-import { saveBlobWithUserChoice, saveDataUrlWithUserChoice } from '../../lib/native-capabilities';
+import { saveAnalysisReportPdf, saveAnalysisReportPngPages } from '../../lib/analysis-report-export';
 import type { FocusSubjectComparison } from '../../lib/focus-subject-analysis';
 import { FocusSubjectDeepAnalysisPanel } from './FocusSubjectDeepAnalysisPanel';
 import { BAAnalysisAuthorityBanner } from './BAAnalysisAuthorityBanner';
@@ -78,16 +76,11 @@ export const InvestigationDeepAnalysis: React.FC<InvestigationDeepAnalysisProps>
     }]);
   }, [action.measures, canonicalSourceBoundary?.sourceId, filteredFocusComparison?.subject.displayLabel, filteredScope, selectedSourceName, singleSourceBAOverview]);
 
-  const renderAnalysisImage = async (): Promise<string> => {
-    if (!exportRef.current) throw new Error(t('The analysis is not ready to export.'));
-    return toPng(exportRef.current, { backgroundColor: '#fbfbfa', cacheBust: true, pixelRatio: 2 });
-  };
-
   const exportImage = async () => {
     setExportState('image'); setExportError('');
     try {
-      const dataUrl = await renderAnalysisImage();
-      await saveDataUrlWithUserChoice(dataUrl, { suggestedName: `${fileStem}-BA.png`, description: 'PNG image', extensions: ['png'] });
+      if (!exportRef.current) throw new Error(t('The analysis is not ready to export.'));
+      await saveAnalysisReportPngPages(exportRef.current, fileStem);
     } catch (cause) { setExportError(cause instanceof Error ? cause.message : t('Could not export the image.')); }
     finally { setExportState('idle'); }
   };
@@ -95,16 +88,8 @@ export const InvestigationDeepAnalysis: React.FC<InvestigationDeepAnalysisProps>
   const exportPdf = async () => {
     setExportState('pdf'); setExportError('');
     try {
-      const dataUrl = await renderAnalysisImage();
-      const image = new Image(); image.src = dataUrl; await image.decode();
-      const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait', compress: true });
-      const margin = 8; const pageWidth = pdf.internal.pageSize.getWidth(); const pageHeight = pdf.internal.pageSize.getHeight();
-      const width = pageWidth - margin * 2; const height = image.height * width / image.width; const printable = pageHeight - margin * 2;
-      for (let offset = 0, page = 0; offset < height; offset += printable, page += 1) {
-        if (page > 0) pdf.addPage();
-        pdf.addImage(dataUrl, 'PNG', margin, margin - offset, width, height, undefined, 'FAST');
-      }
-      await saveBlobWithUserChoice(pdf.output('blob'), { suggestedName: `${fileStem}-BA.pdf`, description: 'PDF document', extensions: ['pdf'] });
+      if (!exportRef.current) throw new Error(t('The analysis is not ready to export.'));
+      await saveAnalysisReportPdf(exportRef.current, fileStem);
     } catch (cause) { setExportError(cause instanceof Error ? cause.message : t('Could not export the PDF.')); }
     finally { setExportState('idle'); }
   };
@@ -158,8 +143,8 @@ export const InvestigationDeepAnalysis: React.FC<InvestigationDeepAnalysisProps>
         </div>
         {exportError && <p role="alert" className="mt-2 text-xs text-red-600">{exportError}</p>}
       </div>
-      <div ref={exportRef} data-testid="deep-analysis-export-surface" data-layout={filteredScope ? 'focused-investigation' : 'management-document'} className="px-5 py-4 md:px-6">
-        <BAAnalysisAuthorityBanner context={analysisAuthority} scopeLabel={filteredScope ? 'Selected-subject investigation · selected rows' : focusComparison ? 'Focus · full source' : 'Deep BA'} />
+      <div ref={exportRef} data-testid="deep-analysis-export-surface" data-report-plan="lightbi.analysis-report-plan.v1" data-layout={filteredScope ? 'focused-investigation' : 'management-document'} className="px-5 py-4 md:px-6">
+        {analysisAuthority && <section data-report-section="true" data-report-role="executive_summary" data-report-keep-together="true" data-report-id="analysis-authority"><BAAnalysisAuthorityBanner context={analysisAuthority} scopeLabel={filteredScope ? 'Selected-subject investigation · selected rows' : focusComparison ? 'Focus · full source' : 'Deep BA'} /></section>}
         {filteredScope ? <>
           {selectedSubjectInvestigationPlan ? <div data-testid="filtered-deep-analysis-scope" className="mb-5">
             <SelectedSubjectInvestigationBoard
@@ -167,20 +152,20 @@ export const InvestigationDeepAnalysis: React.FC<InvestigationDeepAnalysisProps>
               sourceOverviews={[{ sourceKey: selectedSubjectInvestigationPlan.sources[0].sourceKey, overview: singleSourceBAOverview! }]}
               preferences={preferences}
             />
-          </div> : <section data-testid="filtered-deep-analysis-scope" className="mb-5 border-y border-slate-200 bg-white px-5 py-5 text-sm text-slate-800">
+          </div> : <section data-testid="filtered-deep-analysis-scope" data-report-section="true" data-report-role="answer_overview" data-report-keep-together="true" className="mb-5 border-y border-slate-200 bg-white px-5 py-5 text-sm text-slate-800">
             <p className="text-xs font-semibold uppercase tracking-wide text-violet-700">{t('Selected-subject investigation')}</p>
             <p className="mt-1 font-semibold">{filteredScope.point.dimensionField} = {filteredScope.point.label}</p>
             <p className="mt-2 text-xs leading-5 text-slate-600">{formatValue(filteredScope.selectedRowCount, 'number', preferences)} / {formatValue(filteredScope.matchedRowCount, 'number', preferences)} {t('filtered rows selected')}. {t('No evidence-backed selected-scope answer is available yet.')}</p>
             {filteredScope.filters.length > 0 && <div className="mt-3 flex flex-wrap gap-2">{filteredScope.filters.map(filter => <span key={filter.id} className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs">{filter.column} {filter.operator === 'contains' ? t('contains') : filter.operator === 'not_equals' ? '≠' : '='} {filter.value}</span>)}</div>}
             {filteredScope.isTruncated && <p className="mt-3 text-xs leading-5 text-amber-800">{t('This drill-through reached its row limit. The investigation covers only the retrieved selected evidence, not every possible matching source row.')}</p>}
           </section>}
-          {filteredFocusComparison && <details data-testid="selected-focus-comparison-details" className="mb-5 border-y border-slate-200 bg-white px-5 py-4">
+          {filteredFocusComparison && <details data-testid="selected-focus-comparison-details" data-report-section="true" data-report-role="evidence_appendix" data-report-splittable="true" data-report-break-before="true" data-report-export-expand="true" className="mb-5 border-y border-slate-200 bg-white px-5 py-4">
             <summary className="cursor-pointer text-xs font-semibold text-slate-700">{t('Selected Focus comparison details')}</summary>
             <div className="mt-4"><FocusSubjectDeepAnalysisPanel action={action} comparison={filteredFocusComparison} /></div>
           </details>}
         </> : focusComparison ? <>
-          <FocusSubjectDeepAnalysisPanel action={action} comparison={focusComparison} />
-          {(brief || singleSourceBAOverview) && <details className="mt-5 border-y border-[var(--lb-divider)] py-3">
+          <section data-report-section="true" data-report-role="answer_overview" data-report-keep-together="true" data-report-id="focus-analysis"><FocusSubjectDeepAnalysisPanel action={action} comparison={focusComparison} /></section>
+          {(brief || singleSourceBAOverview) && <details data-report-section="true" data-report-role="evidence_appendix" data-report-splittable="true" data-report-break-before="true" data-report-export-expand="true" className="mt-5 border-y border-[var(--lb-divider)] py-3">
             <summary className="cursor-pointer text-xs font-semibold text-slate-600">Population perspective evidence</summary>
             <p className="mt-2 text-xs leading-5 text-slate-400">This legacy perspective evidence is retained for auditability; it does not replace the active Focus context.</p>
             <div className="mt-4 space-y-4">
@@ -189,9 +174,9 @@ export const InvestigationDeepAnalysis: React.FC<InvestigationDeepAnalysisProps>
             </div>
           </details>}
         </> : <>
-          {businessFusionOverview && <><BusinessBrainBriefPanel brief={createBusinessBrainBrief({ action, chartModel, overview: businessFusionOverview })} preferences={preferences} /><details data-testid="deep-ba-business-fusion-supporting" className="mt-5 border-y border-[var(--lb-divider)] py-3"><summary className="cursor-pointer text-xs font-semibold text-slate-700">{t('Supporting evidence & checks')}</summary><div className="mt-4 space-y-4"><BusinessFusionAngleReadout action={action} chartModel={chartModel} overview={businessFusionOverview} preferences={preferences} /><BusinessFusionOverviewCard overview={businessFusionOverview} /></div></details></>}
+          {businessFusionOverview && <><section data-report-section="true" data-report-role="answer_overview" data-report-keep-together="true" data-report-id="business-brain-brief"><BusinessBrainBriefPanel brief={createBusinessBrainBrief({ action, chartModel, overview: businessFusionOverview })} preferences={preferences} /></section><details data-testid="deep-ba-business-fusion-supporting" data-report-section="true" data-report-role="evidence_appendix" data-report-splittable="true" data-report-break-before="true" data-report-export-expand="true" className="mt-5 border-y border-[var(--lb-divider)] py-3"><summary className="cursor-pointer text-xs font-semibold text-slate-700">{t('Supporting evidence & checks')}</summary><div className="mt-4 space-y-4"><BusinessFusionAngleReadout action={action} chartModel={chartModel} overview={businessFusionOverview} preferences={preferences} /><BusinessFusionOverviewCard overview={businessFusionOverview} /></div></details></>}
           {!businessFusionOverview && singleSourceBAOverview && <SingleSourceBAOverviewCard overview={singleSourceBAOverview} preferences={preferences} selectedDataScope={false} />}
-          {brief && singleSourceBAOverview ? <details data-testid="deep-ba-legacy-brief-details" className="mt-5 border-y border-[var(--lb-divider)] py-3"><summary className="cursor-pointer text-xs font-semibold text-slate-700">{t('Supporting evidence & checks')}</summary><div className="mt-4"><BADecisionBriefPanel brief={brief} /></div></details> : brief ? <BADecisionBriefPanel brief={brief} /> : !singleSourceBAOverview && !businessFusionOverview ? <div className="border-y border-[var(--lb-divider)] py-5 text-sm text-black/55">{t('Run the preview first, then LightBI can explain this decision angle in depth.')}</div> : null}
+          {brief && singleSourceBAOverview ? <details data-testid="deep-ba-legacy-brief-details" data-report-section="true" data-report-role="evidence_appendix" data-report-splittable="true" data-report-break-before="true" data-report-export-expand="true" className="mt-5 border-y border-[var(--lb-divider)] py-3"><summary className="cursor-pointer text-xs font-semibold text-slate-700">{t('Supporting evidence & checks')}</summary><div className="mt-4"><BADecisionBriefPanel brief={brief} /></div></details> : brief ? <section data-report-section="true" data-report-role="answer_overview" data-report-keep-together="true" data-report-id="legacy-decision-brief"><BADecisionBriefPanel brief={brief} /></section> : !singleSourceBAOverview && !businessFusionOverview ? <div data-report-section="true" data-report-role="answer_overview" data-report-keep-together="true" data-report-id="analysis-not-ready" className="border-y border-[var(--lb-divider)] py-5 text-sm text-black/55">{t('Run the preview first, then LightBI can explain this decision angle in depth.')}</div> : null}
         </>}
       </div>
       {onCreateDashboard && <section data-testid="deep-analysis-dashboard-cta" className="mx-5 mb-5 border-t border-[var(--lb-divider)] py-4">

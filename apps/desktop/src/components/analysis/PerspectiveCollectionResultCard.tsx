@@ -1,8 +1,6 @@
 import React, { useMemo, useRef, useState } from "react";
 import ReactECharts from "echarts-for-react";
 import { ArrowLeft, CheckCircle2, ChevronRight, Download, FileImage, FileText, LayoutDashboard, Lightbulb, Search, ShieldCheck, Sparkles } from "lucide-react";
-import { toPng } from "html-to-image";
-import { jsPDF } from "jspdf";
 import { useNavigate } from "react-router-dom";
 import { useAppRuntime } from "@lightbi/runtime";
 import type { DomainComparisonBrief } from "../../lib/ba-comparison-engine";
@@ -20,7 +18,7 @@ import { adviseDashboardComposition } from "../../lib/dashboard-composition-advi
 import { createDashboardBreakdownVisualizationPlan, createExecutiveDashboardInformationBudget, dashboardAdvisoryRoles, dashboardDecisionVisualizationMetadata, persistedDashboardChartType } from "../../lib/dashboard-composition-writer";
 import { useAnalysisExportStore } from "../../stores/analysis-export-store";
 import { useUiLanguage } from "../../lib/ui-language";
-import { saveBlobWithUserChoice, saveDataUrlWithUserChoice } from "../../lib/native-capabilities";
+import { saveAnalysisReportPdf, saveAnalysisReportPngPages } from "../../lib/analysis-report-export";
 import { filterRowsForMultiSourceFocus, type MultiSourceFocusSourceBindingV1, type MultiSourceFocusSubjectSelectionV1 } from "../../lib/multisource-focus-subject";
 
 type Row = Record<string, string | number>;
@@ -229,31 +227,19 @@ export const PerspectiveCollectionResultCard: React.FC<{
   const exportFileStem = `${displayPerspectiveLabel}${chartSelection ? `-${chartSelection.period}-${displayMetricLabel(chartSelection.metricId)}` : ""}`
     .replace(/[\\/:*?"<>|]+/g, "-").slice(0, 100) || "LightBI-multifile-BA";
 
-  const renderAnalysisImage = async () => {
-    if (!deepExportRef.current) throw new Error(t("The analysis is not ready to export."));
-    return toPng(deepExportRef.current, { backgroundColor: "#fbfbfa", cacheBust: true, pixelRatio: 2 });
-  };
   const exportImage = async () => {
     setExportState("image"); setExportError("");
     try {
-      const dataUrl = await renderAnalysisImage();
-      await saveDataUrlWithUserChoice(dataUrl, { suggestedName: `${exportFileStem}-BA.png`, description: "PNG image", extensions: ["png"] });
+      if (!deepExportRef.current) throw new Error(t("The analysis is not ready to export."));
+      await saveAnalysisReportPngPages(deepExportRef.current, exportFileStem);
     } catch (cause) { setExportError(cause instanceof Error ? cause.message : t("Could not export the image.")); }
     finally { setExportState("idle"); }
   };
   const exportPdf = async () => {
     setExportState("pdf"); setExportError("");
     try {
-      const dataUrl = await renderAnalysisImage();
-      const image = new Image(); image.src = dataUrl; await image.decode();
-      const pdf = new jsPDF({ unit: "mm", format: "a4", orientation: "portrait", compress: true });
-      const margin = 8; const pageWidth = pdf.internal.pageSize.getWidth(); const pageHeight = pdf.internal.pageSize.getHeight();
-      const width = pageWidth - margin * 2; const height = image.height * width / image.width; const printable = pageHeight - margin * 2;
-      for (let offset = 0, page = 0; offset < height; offset += printable, page += 1) {
-        if (page > 0) pdf.addPage();
-        pdf.addImage(dataUrl, "PNG", margin, margin - offset, width, height, undefined, "FAST");
-      }
-      await saveBlobWithUserChoice(pdf.output("blob"), { suggestedName: `${exportFileStem}-BA.pdf`, description: "PDF document", extensions: ["pdf"] });
+      if (!deepExportRef.current) throw new Error(t("The analysis is not ready to export."));
+      await saveAnalysisReportPdf(deepExportRef.current, exportFileStem);
     } catch (cause) { setExportError(cause instanceof Error ? cause.message : t("Could not export the PDF.")); }
     finally { setExportState("idle"); }
   };
@@ -538,7 +524,7 @@ export const PerspectiveCollectionResultCard: React.FC<{
           <header className="flex items-start gap-3 border-y border-[var(--lb-divider)] px-5 py-4 md:px-6"><button data-testid="collection-deep-selected-back" type="button" onClick={() => setAnalysisView('evidence_drill')} className="mt-0.5 inline-flex items-center gap-1.5 rounded-lg border border-black/10 bg-white px-3 py-2 text-xs font-semibold text-black/60 hover:bg-black/[0.035]"><ArrowLeft className="h-4 w-4" />{t('Back')}</button><div><p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-violet-700">{t('Selected-subject investigation')}</p><h3 className="mt-1 text-lg font-semibold text-slate-950">{chartSelection.period} · {displayMetricLabel(chartSelection.metricId)}</h3><p className="mt-1 max-w-4xl text-xs leading-5 text-slate-500">{t('This surface investigates only the selected evidence scope; source evidence remains separate and the governed summary remains unchanged.')}</p></div></header>
           {renderCollectionActionBar(true)}
           {exportError && <p role="alert" className="border-t border-red-100 bg-red-50 px-5 py-2 text-xs text-red-700 md:px-6">{exportError}</p>}
-          <div ref={deepExportRef} data-testid="collection-deep-analysis-export-surface" data-layout="focused-investigation" className="px-5 py-4 md:px-6">
+          <div ref={deepExportRef} data-testid="collection-deep-analysis-export-surface" data-report-plan="lightbi.analysis-report-plan.v1" data-layout="focused-investigation" className="px-5 py-4 md:px-6">
             <div data-testid="collection-subset-deep-ba">
               {selectedSubjectInvestigationPlan ? <SelectedSubjectInvestigationBoard plan={selectedSubjectInvestigationPlan} sourceOverviews={subsetOverviews.map(({ source, overview }) => ({ sourceKey: `${source.period}:${source.role}:${source.sourceName}`, overview }))} preferences={preferences} /> : <p className="border-y border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-800">{t('No eligible selected evidence is available for this investigation.')}</p>}
             </div>
@@ -555,7 +541,7 @@ export const PerspectiveCollectionResultCard: React.FC<{
           <header className="flex items-start gap-3 border-y border-[var(--lb-divider)] px-5 py-4 md:px-6"><button data-testid="collection-deep-perspective-back" type="button" onClick={() => setAnalysisView('decision_workspace')} className="mt-0.5 inline-flex items-center gap-1.5 rounded-lg border border-black/10 bg-white px-3 py-2 text-xs font-semibold text-black/60 hover:bg-black/[0.035]"><ArrowLeft className="h-4 w-4" />{t('Back')}</button><div><p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-sky-700">{t('Deep analysis')}</p><h3 className="mt-1 text-lg font-semibold text-slate-950">{displayPerspectiveLabel}</h3><p className="mt-1 max-w-4xl text-xs leading-5 text-slate-500">{t(focusSubject ? 'Driver rankings use only exact Focus Subject matches from governed source evidence; the summary remains the full population.' : 'Driver rankings use the complete period sources behind this governed result. Observations remain separated from unsupported causal claims.')}</p></div></header>
           {renderCollectionActionBar(true)}
           {exportError && <p role="alert" className="border-t border-red-100 bg-red-50 px-5 py-2 text-xs text-red-700 md:px-6">{exportError}</p>}
-          <div ref={deepExportRef} data-testid="collection-deep-analysis-export-surface" data-layout="management-document" className="px-5 py-4 md:px-6"><div data-testid="governed-ba-deep-dive"><BusinessComparisonBriefCard brief={effectiveDeepDiveBrief} /></div></div>
+          <div ref={deepExportRef} data-testid="collection-deep-analysis-export-surface" data-report-plan="lightbi.analysis-report-plan.v1" data-layout="management-document" className="px-5 py-4 md:px-6"><div data-testid="governed-ba-deep-dive"><BusinessComparisonBriefCard brief={effectiveDeepDiveBrief} /></div></div>
         </div>
       </section>
     );
