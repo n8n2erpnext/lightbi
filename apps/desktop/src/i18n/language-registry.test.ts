@@ -55,10 +55,26 @@ describe('language catalog registry', () => {
       .toBe('Số lượng thay đổi -86, vì vậy biến động sản lượng có thể đã góp phần tạo ra thay đổi này.');
   });
 
+  it('translates neutral DPR-3 narrative ranking copy without mixing languages', () => {
+    expect(translateCatalogMessage('vi', 'LightBI ranked the segments with the largest observed revenue increases and decreases.'))
+      .toBe('LightBI đã xếp hạng các phân khúc có mức tăng và giảm doanh thu quan sát lớn nhất.');
+    expect(translateCatalogMessage('vi', 'Observed increase #1: Store A: revenue change 120 (20%)'))
+      .toBe('Mức tăng quan sát #1: Store A: thay đổi doanh thu 120 (20%)');
+    expect(translateCatalogMessage('vi', 'Observed decrease #2: Store B: revenue change -40 (-10%)'))
+      .toBe('Mức giảm quan sát #2: Store B: thay đổi doanh thu -40 (-10%)');
+    expect(translateCatalogMessage('vi', 'Observed profit value #1: Store A: profit 80, margin 20%, revenue 400'))
+      .toBe('Giá trị lợi nhuận quan sát #1: Store A: lợi nhuận 80, biên lợi nhuận 20%, doanh thu 400');
+    expect(translateCatalogMessage('vi', 'Store A has the highest observed profit value, which differs from the segment with the largest observed revenue increase Store B.'))
+      .toBe('Store A có giá trị lợi nhuận quan sát cao nhất, khác với phân khúc có mức tăng doanh thu quan sát lớn nhất Store B.');
+    expect(translateCatalogMessage('vi', 'Store A has the highest observed contribution in this breakdown with 66.7% across 2 rows.'))
+      .toBe('Store A có mức đóng góp quan sát cao nhất trong phân rã này, chiếm 66.7% trên 2 dòng.');
+  });
+
+
   it('translates every dynamic layer of the deep BA investigation framework', () => {
     const cases: Array<[string, string]> = [
       ['Largest contribution by branch', 'Mức đóng góp lớn nhất theo branch'],
-      ['Store A leads this breakdown with 42.5% across 170 rows.', 'Store A đứng đầu phân rã này với 42.5% trên 170 dòng.'],
+      ['Store A has the highest observed contribution in this breakdown with 42.5% across 170 rows.', 'Store A có mức đóng góp quan sát cao nhất trong phân rã này, chiếm 42.5% trên 170 dòng.'],
       ['Inventory health is only partially testable. Verify Aging / dead stock, Turnover before attributing the result to these drivers.', 'Phân rã này hiện chỉ kiểm chứng được một phần. Cần bổ sung các tín hiệu còn thiếu trước khi quy kết kết quả cho các yếu tố này.'],
       ['12 rows are above the IQR threshold and should be reviewed individually.', '12 dòng vượt ngưỡng IQR và cần được kiểm tra riêng.'],
       ['Store A represents 55.0% of the analyzed scope.', 'Store A chiếm 55.0% phạm vi đã phân tích.'],

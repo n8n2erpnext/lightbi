@@ -642,11 +642,11 @@ function buildNarrativeSections(params: {
       id: 'where_changed',
       title: 'Where it changed',
       summary: topGrowthDrivers[0] || topDeclineDrivers[0]
-        ? 'LightBI ranked the TOP 10 segments that created growth and the TOP 10 segments that created decline.'
+        ? 'LightBI ranked the segments with the largest observed revenue increases and decreases.'
         : 'LightBI did not find a reliable segment dimension for growth/decline ranking.',
       bullets: [
-        ...topGrowthDrivers.slice(0, 10).map((driver, index) => `Growth #${index + 1}: ${driverLine(driver)}`),
-        ...topDeclineDrivers.slice(0, 10).map((driver, index) => `Decline #${index + 1}: ${driverLine(driver)}`)
+        ...topGrowthDrivers.slice(0, 10).map((driver, index) => `Observed increase #${index + 1}: ${driverLine(driver)}`),
+        ...topDeclineDrivers.slice(0, 10).map((driver, index) => `Observed decrease #${index + 1}: ${driverLine(driver)}`)
       ],
       severity: topGrowthDrivers[0] || topDeclineDrivers[0] ? 'neutral' : 'warning'
     }
@@ -670,7 +670,7 @@ function buildNarrativeSections(params: {
     const topRevenue = topGrowthDrivers[0]?.key;
     const topProfit = topProfitDrivers[0]?.key;
     const profitSummary = topProfit
-      ? `${topProfit} currently ranks highest by profit${topRevenue && topRevenue !== topProfit ? `, which is different from the top revenue growth driver ${topRevenue}` : ''}.`
+      ? `${topProfit} has the highest observed profit value${topRevenue && topRevenue !== topProfit ? `, which differs from the segment with the largest observed revenue increase ${topRevenue}` : ''}.`
       : 'Profit can be calculated, but no reliable profit driver was found.';
     sections.push({
       id: 'profitability_answer',
@@ -679,7 +679,7 @@ function buildNarrativeSections(params: {
       bullets: [
         `Profit evidence: ${profitEvidenceStatus === 'available' ? 'direct profit/margin field' : 'estimated from cost-like fields'}`,
         `Profit change: ${formatNumber(profitDelta)} (${formatPercent(safePercent(profitDelta, previousTotals.profit))})`,
-        ...topProfitDrivers.slice(0, 10).map((driver, index) => `Profit #${index + 1}: ${driverLine(driver, 'profit')}`)
+        ...topProfitDrivers.slice(0, 10).map((driver, index) => `Observed profit value #${index + 1}: ${driverLine(driver, 'profit')}`)
       ],
       severity: profitDelta >= 0 ? 'positive' : 'warning'
     });
@@ -690,7 +690,7 @@ function buildNarrativeSections(params: {
       summary: 'LightBI will not claim which item is more profitable because cost, profit, margin, fee, or storage-cost evidence is missing.',
       bullets: [
         'Add cost, gross profit, margin, fee, storage cost, or cost-of-goods fields to unlock profit ranking.',
-        'Until then, revenue leaders must not be treated as profit leaders.'
+        'Until then, high observed revenue must not be treated as evidence of high profit.'
       ],
       severity: 'critical'
     });

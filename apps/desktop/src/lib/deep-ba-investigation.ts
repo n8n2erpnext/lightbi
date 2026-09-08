@@ -128,7 +128,7 @@ export function buildDeepBAInvestigation(rows: Row[], overview: SingleSourceBAOv
     const top = breakdown.top[0];
     if (!top) return [];
     const fields = [...new Set([breakdown.physicalColumn, selectedMeasure].filter((value): value is string => Boolean(value)))];
-    return [finding(`where_${index}`, `Largest contribution by ${breakdown.label}`, `${top.label} leads this breakdown with ${(top.share * 100).toFixed(1)}% across ${top.rowCount} rows.`, rows, fields, semanticFields, overview.isRepresentativeSample, 'evidence_backed', row => String(row[breakdown.physicalColumn] ?? '').trim() === top.label)];
+    return [finding(`where_${index}`, `Largest contribution by ${breakdown.label}`, `${top.label} has the highest observed contribution in this breakdown with ${(top.share * 100).toFixed(1)}% across ${top.rowCount} rows.`, rows, fields, semanticFields, overview.isRepresentativeSample, 'evidence_backed', row => String(row[breakdown.physicalColumn] ?? '').trim() === top.label)];
   });
   const decompositions = decomposition(domain, overview, semanticFields);
   const whyItMayHaveHappened = decompositions.filter(item => item.status !== 'unavailable').map((item, index) => {

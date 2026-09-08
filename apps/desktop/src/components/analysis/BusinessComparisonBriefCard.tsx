@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { AlertTriangle, ArrowDownRight, ArrowUpRight, BarChart3, CheckCircle2, Download, FileDown, ShieldAlert, TrendingUp } from 'lucide-react';
 import type { DomainComparisonBrief, DriverContribution, MetricDelta, NarrativeSection } from '../../lib/ba-comparison-engine';
+import { buildComparisonAnalysisNarrativePlan } from '../../lib/analysis-narrative-plan';
 import { exportRowsAsCsv, exportRowsAsXlsx } from '../../lib/drill-through-export';
 import { useUiLanguage } from '../../lib/ui-language';
 import { useDisplayPreferences } from '../../stores/display-preferences-store';
@@ -102,6 +103,7 @@ export const BusinessComparisonBriefCard: React.FC<BusinessComparisonBriefCardPr
   useEffect(() => {
     setDraftLabels(initialLabels);
   }, [initialLabels]);
+  const narrativePlan = useMemo(() => buildComparisonAnalysisNarrativePlan(brief), [brief]);
   const criticalReason = brief.reasonCodes.find(reason => reason.severity === 'critical');
   const trustTone = brief.decisionReadinessScore >= 70
     ? 'border-emerald-100 bg-emerald-50 text-emerald-900'
@@ -118,7 +120,7 @@ export const BusinessComparisonBriefCard: React.FC<BusinessComparisonBriefCardPr
             <h3 className="text-[15px] font-semibold">{t('Business comparison brief')}</h3>
             <span className="rounded border border-white/70 bg-white/70 px-2 py-0.5 text-[11px] font-semibold">{t(brief.domainLabel)}</span>
           </div>
-          <p className="mt-1 text-[13px] leading-5 opacity-85">{t(brief.headline)}</p>
+          <p data-testid="comparison-narrative-primary" className="mt-1 text-[13px] leading-5 opacity-85">{t(narrativePlan.primaryAnswer)}</p>
           {brief.periods.length >= 2 && (
             <p className="mt-1 text-[12px] opacity-70">{brief.periods[0]} → {brief.periods[brief.periods.length - 1]}</p>
           )}
@@ -140,7 +142,9 @@ export const BusinessComparisonBriefCard: React.FC<BusinessComparisonBriefCardPr
         </div>
       </div>
 
-      <div className="mt-4 grid gap-3 lg:grid-cols-[1.2fr_0.8fr]">
+      <details data-testid="comparison-supporting-context" className="mt-4 rounded-lg border border-white/70 bg-white/55 px-3 py-2">
+        <summary className="cursor-pointer text-[12px] font-semibold uppercase tracking-wide text-black/55">{t('Supporting context & evidence')}</summary>
+        <div className="mt-3 grid gap-3 lg:grid-cols-[1.2fr_0.8fr]">
         <div className="rounded-lg border border-white/70 bg-white/70 p-3">
           <div className="mb-2 flex items-center gap-2">
             {brief.periodMappingNeedsReview ? <AlertTriangle className="h-4 w-4 text-amber-600" /> : <CheckCircle2 className="h-4 w-4 text-emerald-600" />}
@@ -197,6 +201,7 @@ export const BusinessComparisonBriefCard: React.FC<BusinessComparisonBriefCardPr
           </p>
         </div>
       </div>
+      </details>
 
       <div className="mt-4 grid gap-3 md:grid-cols-2">
         {brief.metricDeltas.map(metric => (
@@ -214,32 +219,32 @@ export const BusinessComparisonBriefCard: React.FC<BusinessComparisonBriefCardPr
       </div>
 
       <div className="mt-4 grid gap-3 xl:grid-cols-2">
-        {brief.narrativeSections.map(section => (
+        {narrativePlan.narrativeSections.map(section => (
           <NarrativeSectionCard key={section.id} section={section} t={t} />
         ))}
       </div>
 
-      <div className="mt-4 grid gap-3 xl:grid-cols-3">
-        <DriverList title={t('Top growth')} drivers={brief.topGrowthDrivers} mode="growth" locale={locale} t={t} />
-        <DriverList title={t('Top decline')} drivers={brief.topDeclineDrivers} mode="decline" locale={locale} t={t} />
-        <DriverList title={t('Top profit')} drivers={brief.topProfitDrivers} mode="profit" locale={locale} t={t} />
-      </div>
+      {narrativePlan.driverPanels.length > 0 && <div data-testid="comparison-narrative-contributors" className="mt-4 grid gap-3 xl:grid-cols-3">
+        {narrativePlan.driverPanels.includes('growth') && <DriverList title={t('Largest observed increases')} drivers={brief.topGrowthDrivers} mode="growth" locale={locale} t={t} />}
+        {narrativePlan.driverPanels.includes('decline') && <DriverList title={t('Largest observed decreases')} drivers={brief.topDeclineDrivers} mode="decline" locale={locale} t={t} />}
+        {narrativePlan.driverPanels.includes('profit') && <DriverList title={t('Highest observed profit values')} drivers={brief.topProfitDrivers} mode="profit" locale={locale} t={t} />}
+      </div>}
 
       <div className="mt-4 grid gap-3 lg:grid-cols-2">
-        <div className="rounded-lg border border-black/10 bg-white p-3">
-          <div className="mb-2 flex items-center gap-2">
+        <details data-testid="comparison-supporting-reasons" className="rounded-lg border border-black/10 bg-white p-3">
+          <summary className="flex cursor-pointer list-none items-center gap-2">
             <BarChart3 className="h-4 w-4 text-blue-600" />
-            <h4 className="text-[12px] font-semibold uppercase tracking-wide text-black/55">{t('Why it changed')}</h4>
-          </div>
-          <div className="space-y-2">
-            {brief.reasonCodes.map(reason => (
+            <span className="text-[12px] font-semibold uppercase tracking-wide text-black/55">{t('Supporting reason codes')}</span>
+          </summary>
+          <div className="mt-3 space-y-2">
+            {narrativePlan.reasonCodes.length === 0 ? <p className="text-[12px] text-black/45">{t('No additional reason code remains after narrative deduplication.')}</p> : narrativePlan.reasonCodes.map(reason => (
               <div key={reason.id} className="rounded-md bg-black/[0.025] p-2">
                 <p className="text-[13px] font-medium text-[#202123]">{t(reason.label)}</p>
                 <p className="mt-0.5 text-[12px] leading-5 text-black/55">{t(reason.statement)}</p>
               </div>
             ))}
           </div>
-        </div>
+        </details>
 
         <div className="rounded-lg border border-black/10 bg-white p-3">
           <div className="mb-2 flex items-center gap-2">

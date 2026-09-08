@@ -91,7 +91,7 @@ describe('ba comparison engine', () => {
     expect(brief.topProfitDrivers[0]?.key).toBe('Lower revenue strong margin');
     expect(brief.topProfitDrivers[0]?.currentProfit).toBe(950);
     expect(brief.topGrowthDrivers[0]?.currentProfit).toBe(50);
-    expect(brief.narrativeSections.find(section => section.id === 'profitability_answer')?.summary).toContain('different from the top revenue growth driver');
+    expect(brief.narrativeSections.find(section => section.id === 'profitability_answer')?.summary).toContain('differs from the segment with the largest observed revenue increase');
   });
 
   it('supports Vietnamese sales report headers without locking to one sample file', () => {
@@ -283,9 +283,10 @@ describe('ba comparison engine', () => {
     expect(brief.topDeclineDrivers.length).toBeLessThanOrEqual(10);
     expect(brief.topProfitDrivers.length).toBeGreaterThan(0);
     expect(brief.topProfitDrivers.length).toBeLessThanOrEqual(10);
-    expect(whereChanged?.summary).toContain('TOP 10');
-    expect(whereChanged?.bullets.filter(bullet => bullet.startsWith('Growth #')).length).toBeGreaterThan(0);
-    expect(profitability?.bullets.filter(bullet => bullet.startsWith('Profit #')).length).toBeGreaterThan(0);
+    expect(whereChanged?.summary).toContain('largest observed revenue increases and decreases');
+    expect(whereChanged?.bullets.filter(bullet => bullet.startsWith('Observed increase #')).length).toBeGreaterThan(0);
+    expect(profitability?.bullets.filter(bullet => bullet.startsWith('Observed profit value #')).length).toBeGreaterThan(0);
+    expect(JSON.stringify(brief.narrativeSections)).not.toMatch(/\bTOP\b|Growth #|Decline #|Profit #/);
     expect(brief.caveats.join(' ')).not.toContain('Profitability is not decision-ready');
   });
 
