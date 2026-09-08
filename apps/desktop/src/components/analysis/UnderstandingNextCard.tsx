@@ -1,4 +1,5 @@
 import React from 'react';
+import { Canvas, Inset, Section } from '@lightbi/ui';
 import { AlertTriangle, Layers, CheckCircle2, XCircle, FileText, Wrench, Sparkles } from 'lucide-react';
 import type { DatasetUnderstandingResult } from '../../lib/understanding-next/contracts';
 import type { CanonicalAnalysisPresentationV1, CanonicalDatasetPresentationV1, CanonicalRemediationOperationV1 } from '../../lib/understanding-core/canonical-consumer-presentation-contract';
@@ -140,38 +141,9 @@ export const UnderstandingNextCard: React.FC<UnderstandingNextCardProps> = ({
 
 
   return (
-    <div className="w-full bg-white border border-gray-200 rounded-xl shadow-sm p-5 flex flex-col gap-5 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      {/* Technical source facts stay available without leading the Easy Mode journey. */}
-      <details className="rounded-xl border border-slate-200 bg-slate-50/60">
-        <summary className="cursor-pointer list-none px-4 py-3 text-[13px] font-semibold text-slate-700">
-          {t('Review technical evidence')}
-        </summary>
-        <div className="flex justify-between items-start border-t border-slate-200 px-4 py-3">
-          <div className="flex flex-col gap-2">
-          <div className="flex items-center gap-3">
-            <h3 className="text-[16px] font-semibold text-gray-900">{t('Dataset profile')}</h3>
-            <div className={`flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium ${statusConfig.bg} ${statusConfig.text} border ${statusConfig.border}`}>
-              <StatusIcon className="w-3.5 h-3.5 mr-1" />
-              {statusConfig.text}
-            </div>
-          </div>
-          <div className="flex items-center gap-4 text-[13px] text-gray-600">
-             <div className="flex items-center gap-1.5"><FileText className="w-4 h-4 text-gray-400"/> {documentLabel}</div>
-             <div className="flex items-center gap-1.5"><Layers className="w-4 h-4 text-gray-400"/> Grain: {grainLabel}</div>
-          </div>
-          </div>
-          <div className="flex flex-col items-end gap-1.5">
-          <div className="text-[11px] font-medium px-2.5 py-1 bg-slate-50 border border-slate-200 rounded-md text-slate-600 flex flex-col items-end">
-            <div><span className="text-slate-400">Source Rows:</span> <span className="font-semibold text-slate-700">{understanding.source.sourceRowCount > 0 ? understanding.source.sourceRowCount.toLocaleString() : 'Unknown'}</span></div>
-            <div><span className="text-slate-400">Sample Rows:</span> <span className="font-semibold text-slate-700">{understanding.source.sampleRowCount.toLocaleString()}</span></div>
-            <div><span className="text-slate-400">Parsed Rows:</span> <span className="font-semibold text-slate-700">{understanding.source.parsedRowCount.toLocaleString()}</span></div>
-          </div>
-          </div>
-        </div>
-      </details>
-
+    <Canvas density="working" data-testid="understanding-canvas" className="animate-in fade-in slide-in-from-bottom-4 pb-[var(--lb-space-8)] duration-500">
       {/* BA summary */}
-      <div className="rounded-xl border border-blue-100 bg-gradient-to-br from-blue-50 via-white to-emerald-50 p-4">
+      <Section density="summary" separated={false} data-testid="understanding-meaning">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div className="min-w-0">
             <div className="text-[11px] font-semibold uppercase tracking-wide text-blue-600">{t('LightBI understands this as')}</div>
@@ -187,11 +159,11 @@ export const UnderstandingNextCard: React.FC<UnderstandingNextCardProps> = ({
             </p>
           </div>
           <div className="grid min-w-[220px] grid-cols-2 gap-2 text-[11px]">
-            <div className="rounded-lg border border-white/80 bg-white/80 p-2">
+            <div className="border-l border-[var(--lb-divider)] pl-3">
               <div className="text-gray-400">{t('Ready analyses')}</div>
               <div className="mt-0.5 text-[18px] font-semibold text-emerald-700">{readyLenses.length}</div>
             </div>
-            <div className="rounded-lg border border-white/80 bg-white/80 p-2">
+            <div className="border-l border-[var(--lb-divider)] pl-3">
               <div className="text-gray-400">{t('Review needed')}</div>
               <div className="mt-0.5 text-[18px] font-semibold text-amber-700">{partialLenses.length}</div>
             </div>
@@ -246,40 +218,11 @@ export const UnderstandingNextCard: React.FC<UnderstandingNextCardProps> = ({
             </div>
           </div>
         </div>
-      </div>
-
-      {/* Dirty Signals Banner */}
-      {understanding.quality.dirtySignals.length > 0 && (() => {
-        const blocking = understanding.quality.dirtySignals.filter(signal => signal.severity === 'blocking');
-        const warnings = understanding.quality.dirtySignals.filter(signal => signal.severity !== 'blocking');
-        return <details className={`rounded-xl border ${blocking.length ? 'border-red-200 bg-red-50' : 'border-amber-200 bg-amber-50/70'}`}>
-          <summary className={`cursor-pointer px-4 py-3 text-[12px] font-semibold ${blocking.length ? 'text-red-800' : 'text-amber-800'}`}>
-            <span className="inline-flex items-center gap-2"><AlertTriangle className="h-4 w-4" />{t(
-              `${understanding.quality.dirtySignals.length} data-quality finding${understanding.quality.dirtySignals.length === 1 ? '' : 's'} retained`,
-            )}</span>
-            <span className="ml-2 font-normal opacity-75">{t('Analysis continues with explicit limitations.')}</span>
-          </summary>
-          <div className="space-y-2 border-t border-current/10 px-4 py-3">
-            {[...blocking, ...warnings].map((signal, index) => <div key={`${signal.kind}:${signal.column ?? ''}:${index}`} className="text-[12px] leading-5">
-              <span className="font-semibold">{humanize(signal.kind)}</span>{signal.column ? ` · ${signal.column}` : ''}: {signal.message}
-            </div>)}
-          </div>
-        </details>;
-      })()}
-
-      {!canonicalPresentation && understanding.quality.blockedReasons.length > 0 && (
-        <div className="flex flex-col gap-2 p-3 bg-red-50 border border-red-200 rounded-lg text-red-800">
-           <span className="text-[13px] font-semibold flex items-center"><XCircle className="w-4 h-4 mr-2" /> Blocked Analysis</span>
-           <ul className="list-disc pl-6 text-[12px]">
-              {understanding.quality.blockedReasons.map((r, i) => <li key={i}>{r}</li>)}
-           </ul>
-        </div>
-      )}
+      </Section>
 
       {canonicalPresentation && (
         <>
-          <CanonicalUnderstandingSummary presentation={canonicalPresentation} />
-          <div className="border-t border-gray-100 pt-4">
+          <Section density="working" data-testid="understanding-proposed-analyses">
             <div className="mb-4">
               <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-blue-700">
                 <span className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-100 text-[10px]">1</span>
@@ -336,7 +279,6 @@ export const UnderstandingNextCard: React.FC<UnderstandingNextCardProps> = ({
                 </div>
               </details>
             )}
-          </div>
           <CanonicalAnalysisStates
             presentation={canonicalPresentation}
             understanding={understanding}
@@ -346,6 +288,7 @@ export const UnderstandingNextCard: React.FC<UnderstandingNextCardProps> = ({
             onSelectAction={onSelectAction}
             onRemediate={onRemediate}
           />
+          </Section>
         </>
       )}
 
@@ -521,7 +464,73 @@ export const UnderstandingNextCard: React.FC<UnderstandingNextCardProps> = ({
           </div>
         </div>
       </details>}
-    </div>
+
+      {(understanding.quality.dirtySignals.length > 0 || (!canonicalPresentation && understanding.quality.blockedReasons.length > 0)) && <Section density="evidence" data-testid="understanding-assumptions">
+        <div>
+          <h3 className="text-[14px] font-semibold text-[var(--lb-ink)]">{t('Limitations')}</h3>
+          <p className="mt-1 text-[12px] text-[var(--lb-ink-secondary)]">{t('Analysis continues with explicit limitations.')}</p>
+        </div>
+      {/* Dirty Signals Banner */}
+      {understanding.quality.dirtySignals.length > 0 && (() => {
+        const blocking = understanding.quality.dirtySignals.filter(signal => signal.severity === 'blocking');
+        const warnings = understanding.quality.dirtySignals.filter(signal => signal.severity !== 'blocking');
+        return <details className={`rounded-xl border ${blocking.length ? 'border-red-200 bg-red-50' : 'border-amber-200 bg-amber-50/70'}`}>
+          <summary className={`cursor-pointer px-4 py-3 text-[12px] font-semibold ${blocking.length ? 'text-red-800' : 'text-amber-800'}`}>
+            <span className="inline-flex items-center gap-2"><AlertTriangle className="h-4 w-4" />{t(
+              `${understanding.quality.dirtySignals.length} data-quality finding${understanding.quality.dirtySignals.length === 1 ? '' : 's'} retained`,
+            )}</span>
+            <span className="ml-2 font-normal opacity-75">{t('Analysis continues with explicit limitations.')}</span>
+          </summary>
+          <div className="space-y-2 border-t border-current/10 px-4 py-3">
+            {[...blocking, ...warnings].map((signal, index) => <div key={`${signal.kind}:${signal.column ?? ''}:${index}`} className="text-[12px] leading-5">
+              <span className="font-semibold">{humanize(signal.kind)}</span>{signal.column ? ` · ${signal.column}` : ''}: {signal.message}
+            </div>)}
+          </div>
+        </details>;
+      })()}
+
+      {!canonicalPresentation && understanding.quality.blockedReasons.length > 0 && (
+        <div className="flex flex-col gap-2 p-3 bg-red-50 border border-red-200 rounded-lg text-red-800">
+           <span className="text-[13px] font-semibold flex items-center"><XCircle className="w-4 h-4 mr-2" /> Blocked Analysis</span>
+           <ul className="list-disc pl-6 text-[12px]">
+              {understanding.quality.blockedReasons.map((r, i) => <li key={i}>{r}</li>)}
+           </ul>
+        </div>
+      )}
+      </Section>}
+
+      <Section density="evidence" data-testid="understanding-evidence-details">
+        {canonicalPresentation && <CanonicalUnderstandingSummary presentation={canonicalPresentation} />}
+      {/* Technical source facts stay available without leading the Easy Mode journey. */}
+      <details className="rounded-xl border border-slate-200 bg-slate-50/60">
+        <summary className="cursor-pointer list-none px-4 py-3 text-[13px] font-semibold text-slate-700">
+          {t('Review technical evidence')}
+        </summary>
+        <div className="flex justify-between items-start border-t border-slate-200 px-4 py-3">
+          <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-3">
+            <h3 className="text-[16px] font-semibold text-gray-900">{t('Dataset profile')}</h3>
+            <div className={`flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium ${statusConfig.bg} ${statusConfig.text} border ${statusConfig.border}`}>
+              <StatusIcon className="w-3.5 h-3.5 mr-1" />
+              {statusConfig.text}
+            </div>
+          </div>
+          <div className="flex items-center gap-4 text-[13px] text-gray-600">
+             <div className="flex items-center gap-1.5"><FileText className="w-4 h-4 text-gray-400"/> {documentLabel}</div>
+             <div className="flex items-center gap-1.5"><Layers className="w-4 h-4 text-gray-400"/> Grain: {grainLabel}</div>
+          </div>
+          </div>
+          <div className="flex flex-col items-end gap-1.5">
+          <div className="text-[11px] font-medium px-2.5 py-1 bg-slate-50 border border-slate-200 rounded-md text-slate-600 flex flex-col items-end">
+            <div><span className="text-slate-400">Source Rows:</span> <span className="font-semibold text-slate-700">{understanding.source.sourceRowCount > 0 ? understanding.source.sourceRowCount.toLocaleString() : 'Unknown'}</span></div>
+            <div><span className="text-slate-400">Sample Rows:</span> <span className="font-semibold text-slate-700">{understanding.source.sampleRowCount.toLocaleString()}</span></div>
+            <div><span className="text-slate-400">Parsed Rows:</span> <span className="font-semibold text-slate-700">{understanding.source.parsedRowCount.toLocaleString()}</span></div>
+          </div>
+          </div>
+        </div>
+      </details>
+      </Section>
+    </Canvas>
   );
 };
 
@@ -634,7 +643,7 @@ const CanonicalAnalysisStates: React.FC<{
     const action = item.actionCandidateId ? actionById.get(item.actionCandidateId) : undefined;
     const canInvestigate = item.state === 'ready' && item.executionReadiness !== 'not_executable' && action;
     const remediationOperations = dedupeCanonicalRemediations(item.remediationOperations);
-    return <article key={item.itemId} tabIndex={-1} id={`analysis-item-${item.itemId}`} data-testid={`canonical-analysis-${item.itemId}`} data-state={item.state} className="min-w-0 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+    return <article key={item.itemId} tabIndex={-1} id={`analysis-item-${item.itemId}`} data-testid={`canonical-analysis-${item.itemId}`} data-state={item.state} className="min-w-0 border-t border-[var(--lb-divider)] py-3 first:border-t-0">
       <div>
         <span className="inline-flex rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5 text-[10px] font-semibold uppercase text-gray-700">{t(STATE_LABELS[item.state])}</span>
         <div className="mt-2 min-w-0">
@@ -692,7 +701,7 @@ const CanonicalAnalysisStates: React.FC<{
       {t('This focus is recognized, but no governed analysis lens is executable for it yet. No chart will be fabricated.')}
     </div>}
 
-    {analysisPerspectiveId && primaryQuestion && primaryQuestionAction && <div className="mt-4 rounded-2xl border border-blue-200 bg-gradient-to-br from-blue-50 via-white to-emerald-50 p-5" data-testid={primaryQuestion.actionAuthority === 'governed' ? 'canonical-primary-analysis' : 'universal-primary-analysis'}>
+    {analysisPerspectiveId && primaryQuestion && primaryQuestionAction && <Inset density="summary" className="mt-4 border-l-blue-500 bg-blue-50/35" data-testid={primaryQuestion.actionAuthority === 'governed' ? 'canonical-primary-analysis' : 'universal-primary-analysis'}>
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-blue-700"><Sparkles className="h-4 w-4" />{t('Recommended by LightBI')}
@@ -723,7 +732,7 @@ const CanonicalAnalysisStates: React.FC<{
           {t(primaryButtonLabel)}
         </button>
       </div>
-    </div>}
+    </Inset>}
 
     {analysisPerspectiveId && otherActionableQuestions.length > 0 && <section className="mt-4" data-testid="question-intelligence-other-questions">
       <div className="mb-2 flex items-end justify-between gap-3">
@@ -733,25 +742,30 @@ const CanonicalAnalysisStates: React.FC<{
         </div>
         <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[10px] font-semibold text-slate-600">{otherActionableQuestions.length} {t('other questions')}</span>
       </div>
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
-        {otherActionableQuestions.map(candidate => {
+      <div className="border-y border-[var(--lb-divider)]" data-layout="ranked-question-stack">
+        {otherActionableQuestions.map((candidate, index) => {
           const action = candidate.actionId ? actionById.get(candidate.actionId) : undefined;
           return <button
             key={candidate.candidateId}
             type="button"
             data-testid={`question-intelligence-candidate-${candidate.candidateId}`}
             onClick={() => action && onSelectAction?.(adaptNextActionsToLegacy([action])[0])}
-            className="min-h-[118px] rounded-xl border border-slate-200 bg-white p-4 text-left shadow-sm transition hover:border-blue-300 hover:bg-blue-50/40"
+            aria-posinset={index + 1}
+            aria-setsize={otherActionableQuestions.length}
+            className="flex w-full min-w-0 gap-4 border-b border-[var(--lb-divider)] px-1 py-3 text-left transition last:border-b-0 hover:bg-blue-50/35"
           >
+            <span className="w-7 shrink-0 pt-0.5 text-[11px] font-semibold tabular-nums text-[var(--lb-ink-muted)]">{String(index + 1).padStart(2, '0')}</span>
+            <div className="min-w-0 flex-1">
             <div className="flex items-start justify-between gap-2">
               <span className="text-[13px] font-semibold leading-5 text-slate-900">{candidate.title}</span>
               <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-blue-600" />
             </div>
             <p className="mt-2 line-clamp-2 text-[11px] leading-4 text-slate-500">{candidate.description}</p>
-            <div className="mt-3 flex flex-wrap items-center gap-1.5">
+            <div className="mt-2 flex flex-wrap items-center gap-1.5">
               <span className={`rounded border px-1.5 py-0.5 text-[9px] font-semibold ${answerabilityClass(candidate.answerability)}`}>{t(answerabilityLabel(candidate.answerability))}</span>
               {candidate.basis === 'data_plus_domain' && <span className="rounded border border-violet-200 bg-violet-50 px-1.5 py-0.5 text-[9px] font-semibold text-violet-700">{t('Domain context')}</span>}
               <span className="ml-auto text-[11px] font-semibold text-blue-700">{t('Analyze')} →</span>
+            </div>
             </div>
           </button>;
         })}
@@ -775,8 +789,8 @@ const CanonicalAnalysisStates: React.FC<{
             <h5 className="text-[12px] font-semibold text-slate-700">{t('Questions suggested by domain context')} <span className="font-normal text-slate-400">({domainContextQuestions.length})</span></h5>
             <p className="mt-0.5 text-[11px] text-slate-500">{t('Relevant to this domain or perspective, but not executable yet.')}</p>
           </div>
-          <div className="grid grid-cols-1 gap-3 xl:grid-cols-2">
-            {domainContextQuestions.map(candidate => <article key={candidate.candidateId} data-testid={`question-intelligence-domain-question-${candidate.candidateId}`} className="rounded-lg border border-violet-100 bg-white p-3">
+          <div className="divide-y divide-[var(--lb-divider)] border-y border-[var(--lb-divider)]">
+            {domainContextQuestions.map(candidate => <article key={candidate.candidateId} data-testid={`question-intelligence-domain-question-${candidate.candidateId}`} className="py-3">
               <div className="flex flex-wrap items-start justify-between gap-2">
                 <div className="min-w-0">
                   <div className="text-[12px] font-semibold leading-5 text-slate-800">{t(candidate.title)}</div>
@@ -791,7 +805,7 @@ const CanonicalAnalysisStates: React.FC<{
         </section>}
         {groups.map(group => <section key={group.id} aria-labelledby={`canonical-group-${group.id}`} data-testid={`canonical-group-${group.id}`}>
           <h5 id={`canonical-group-${group.id}`} className="mb-2 text-[12px] font-semibold text-gray-700">{t(group.label)} <span className="font-normal text-gray-400">({group.items.length})</span></h5>
-          <div className="grid grid-cols-1 gap-3 xl:grid-cols-2">{group.items.map(renderItem)}</div>
+          <div className="border-y border-[var(--lb-divider)]">{group.items.map(renderItem)}</div>
         </section>)}
       </div>
     </details>}

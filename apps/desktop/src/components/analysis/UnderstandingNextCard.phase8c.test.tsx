@@ -129,7 +129,9 @@ describe("UnderstandingNextCard Phase 8C functional states", () => {
       { ...canonicalPerspectives[0], perspectiveId: "operations", label: "Operations" },
       canonicalPerspectives[1],
     ] as CanonicalDomainPerspectiveCandidateV1[];
-    render(<UnderstandingNextCard understanding={understanding} canonicalPresentation={perspectivePresentation} canonicalPerspectives={twoReady} />);
+    const view = render(<UnderstandingNextCard understanding={understanding} canonicalPresentation={perspectivePresentation} canonicalPerspectives={twoReady} />);
+    expect(view.container.querySelector('[data-layout="ranked-stack"]')).toBeTruthy();
+    expect(screen.getAllByTestId(/business-perspective-/)).toHaveLength(3);
     expect(screen.getAllByText("Recommended")).toHaveLength(1);
     expect(screen.getByTestId("business-evidence-customer").textContent).toContain("not enough evidence");
   });

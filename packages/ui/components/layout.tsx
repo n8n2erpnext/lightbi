@@ -41,7 +41,7 @@ export function Section({ density = 'working', separated = true, className, ...p
   />;
 }
 
-export interface SectionHeaderProps extends HTMLAttributes<HTMLDivElement> {
+export interface SectionHeaderProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'> {
   title: ReactNode;
   description?: ReactNode;
   eyebrow?: ReactNode;

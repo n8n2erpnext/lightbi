@@ -219,6 +219,12 @@ importers:
         specifier: ^3.4.19
         version: 3.4.19
     devDependencies:
+      '@types/react':
+        specifier: ^19.2.18
+        version: 19.2.18
+      '@types/react-dom':
+        specifier: ^19.2.4
+        version: 19.2.4(@types/react@19.2.18)
       react:
         specifier: ^19.2.8
         version: 19.2.8

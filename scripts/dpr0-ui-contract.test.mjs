@@ -13,6 +13,8 @@ test('shared UI consumes host React 19 instead of shipping a private React runti
   assert.equal(ui.peerDependencies?.['react-dom'], '^19.2.0');
   assert.equal(ui.devDependencies?.react, desktop.dependencies?.react);
   assert.equal(ui.devDependencies?.['react-dom'], desktop.dependencies?.['react-dom']);
+  assert.equal(ui.devDependencies?.['@types/react'], desktop.devDependencies?.['@types/react']);
+  assert.equal(ui.devDependencies?.['@types/react-dom'], desktop.devDependencies?.['@types/react-dom']);
 });
 
 

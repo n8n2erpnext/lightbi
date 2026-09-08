@@ -72,8 +72,8 @@ export const CanonicalPerspectiveSelector: React.FC<Props> = ({
     </div>
 
     {items.length > 0 ? (
-      <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-        {items.map((item) => {
+      <div className="border-y border-[var(--lb-divider)]" data-layout="ranked-stack">
+        {items.map((item, index) => {
           const active = item.id === selectedId;
           const selectable = item.selectable ?? (item.state === "ready" || item.state === "partial");
           const localized = getCanonicalPerspectiveDisplay(item.id, item.label, item.question, language);
@@ -84,36 +84,39 @@ export const CanonicalPerspectiveSelector: React.FC<Props> = ({
               data-testid={`business-perspective-${item.id}`}
               aria-pressed={active}
               aria-disabled={!selectable}
+              aria-posinset={index + 1}
+              aria-setsize={items.length}
               disabled={!selectable}
               onClick={() => selectable && onSelect(item.id)}
-              className={`min-h-[170px] min-w-0 overflow-hidden rounded-xl border p-4 text-left transition ${
+              className={`group flex w-full min-w-0 items-start gap-4 border-b border-[var(--lb-divider)] px-1 py-3 text-left transition last:border-b-0 ${
                 active
-                  ? "border-blue-500 bg-blue-50 shadow-sm ring-2 ring-blue-100"
+                  ? "border-l-2 border-l-blue-600 bg-blue-50/50 pl-3"
                   : selectable
-                    ? "border-slate-200 bg-white hover:border-blue-300 hover:bg-slate-50"
-                    : "cursor-not-allowed border-slate-200 bg-slate-50 opacity-75"
+                    ? "hover:bg-black/[0.025]"
+                    : "cursor-not-allowed bg-black/[0.015] opacity-65"
               }`}
             >
-              <div className="flex items-start justify-between gap-3">
-                <span className={`flex h-9 w-9 items-center justify-center rounded-lg ${active ? "bg-blue-700 text-white" : "bg-slate-100 text-slate-600"}`}>
-                  <Sparkles className="h-4 w-4" />
+              <span className="w-7 shrink-0 pt-0.5 text-[11px] font-semibold tabular-nums text-[var(--lb-ink-muted)]">{String(index + 1).padStart(2, "0")}</span>
+              <span className="min-w-0 flex-1">
+                <span className="flex flex-wrap items-center gap-2">
+                  <span className="text-[14px] font-semibold text-[var(--lb-ink)]">{localized.label}</span>
+                  {item.recommended && <span className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wide text-blue-700"><Sparkles className="h-3 w-3" />{t("Recommended")}</span>}
                 </span>
-                <span className={`rounded-full px-2 py-1 text-[9px] font-semibold uppercase tracking-wide ${
-                  item.state === "ready"
-                    ? "bg-emerald-50 text-emerald-700"
-                    : item.state === "partial"
-                      ? "bg-amber-50 text-amber-700"
-                      : "bg-slate-100 text-slate-600"
-                }`}>
-                  {stateLabels[item.state]}
-                </span>
-              </div>
-              <h4 className="mt-3 text-[14px] font-semibold text-slate-950">{localized.label}</h4>
-              <p className="mt-1 text-[12px] leading-5 text-slate-600">{localized.question}</p>
-              <div className="mt-3 flex flex-wrap gap-1.5">
-                {item.badges.slice(0, 8).map((badge) => <span key={badge} className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] text-slate-600">{badge}</span>)}
-              </div>
-              {item.recommended && <div className="mt-3 text-[10px] font-semibold uppercase tracking-wide text-blue-700">{t("Recommended")}</div>}
+                <span className="mt-1 block max-w-3xl text-[12px] leading-5 text-[var(--lb-ink-secondary)]">{localized.question}</span>
+                {item.badges.length > 0 && <span className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-[10px] text-[var(--lb-ink-muted)]">
+                  {item.badges.slice(0, 4).map((badge) => <span key={badge}>{badge}</span>)}
+                  {item.badges.length > 4 && <span>+{item.badges.length - 4}</span>}
+                </span>}
+              </span>
+              <span className={`shrink-0 rounded-full px-2 py-1 text-[9px] font-semibold uppercase tracking-wide ${
+                item.state === "ready"
+                  ? "bg-emerald-50 text-emerald-700"
+                  : item.state === "partial"
+                    ? "bg-amber-50 text-amber-700"
+                    : "bg-slate-100 text-slate-600"
+              }`}>
+                {stateLabels[item.state]}
+              </span>
             </button>
           );
         })}

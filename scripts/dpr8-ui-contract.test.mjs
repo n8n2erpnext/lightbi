@@ -37,3 +37,20 @@ test('Tailwind scans shared TSX primitives without recursively scanning package 
   assert.match(config, /packages\/ui\/components\/\*\*\/\*\.\{js,ts,jsx,tsx\}/);
   assert.doesNotMatch(config, /packages\/ui\/\*\*\/\*\.\{js,ts,jsx,tsx\}/);
 });
+
+
+test('DPR-8 Understanding uses the shared canvas hierarchy and ranked stacks', async () => {
+  const understanding = await read('apps/desktop/src/components/analysis/UnderstandingNextCard.tsx');
+  const perspectives = await read('apps/desktop/src/components/analysis/CanonicalPerspectiveSelector.tsx');
+  for (const region of ['understanding-canvas', 'understanding-meaning', 'understanding-assumptions', 'understanding-proposed-analyses', 'understanding-evidence-details']) {
+    assert.match(understanding, new RegExp(region), `missing Understanding region ${region}`);
+  }
+  const regionOrder = ['understanding-meaning', 'understanding-proposed-analyses', 'understanding-assumptions', 'understanding-evidence-details'].map(region => understanding.indexOf(region));
+  assert.deepEqual([...regionOrder].sort((a, b) => a - b), regionOrder, 'Understanding regions must follow meaning -> proposed analyses -> assumptions -> evidence/details');
+  assert.match(understanding, /<Canvas density="working"/);
+  assert.match(understanding, /<Section density="summary"/);
+  assert.match(understanding, /<Inset density="summary"/);
+  assert.match(understanding, /data-layout="ranked-question-stack"/);
+  assert.match(perspectives, /data-layout="ranked-stack"/);
+  assert.doesNotMatch(perspectives, /grid-cols|min-h-\[170px\]|shadow-sm/);
+});
