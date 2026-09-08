@@ -1,13 +1,13 @@
 {
   "schema": "lightbi.current-checkpoint.v1",
-  "updatedAt": "2026-09-08T02:18:00Z",
-  "status": "roadmap_1_0_dpr0_closed_dpr1_claim_question_provenance_next",
-  "activeRuntime": "NEXT Core generation g-2026-09-05-next-034 on 5272; UI-only immutable web root dpr0-ce5c961 on gateway 5273; Control Plane 5274 five-unit runtime remains fd18429e271da398062719a0e404389d85f46f97; R2 broker b0d65b343d9bc73e90e90097d87eda3f92218d36; MB scheduler paused; Production untouched",
+  "updatedAt": "2026-09-08T02:48:00Z",
+  "status": "roadmap_1_0_dpr1_closed_dpr2_open_world_question_perspective_active",
+  "activeRuntime": "NEXT Core generation g-2026-09-05-next-034 on 5272; UI-only immutable DPR-1 web root dpr1-d027bb3 on gateway 5273; Control Plane 5274 unchanged; MB scheduler paused; Production untouched",
   "sourceCandidate": {
     "repo": "/home/ubuntu/n8n2erpnext/LightBI-dpr0-contract-freeze",
     "branch": "codex/dpr0-contract-freeze",
-    "head": "14c2d99801cde82716f58127bd006e150118e8c5",
-    "liveUiSource": "ce5c961d099bf4d2343a74508211a828daa3df4b",
+    "head": "d027bb34e403968a60f6f3b053e3cfaf9ad42025",
+    "liveUiSource": "d027bb34e403968a60f6f3b053e3cfaf9ad42025",
     "basePrimaryLogoCommit": "fde259a5441b36825f211914cbd0c82fc595f27f"
   },
   "brandAuthority": {
@@ -30,7 +30,12 @@
   },
   "informationArchitecture": {
     "rule": "More information must create more structure, not more cards",
-    "densityClasses": ["Calm", "Working", "Analytical", "Evidence/Technical"],
+    "densityClasses": [
+      "Calm",
+      "Working",
+      "Analytical",
+      "Evidence/Technical"
+    ],
     "deepPerspectiveAndSelectedMutuallyExclusive": true,
     "visualBaseline": "ACCEPTED after workflow convergence"
   },
@@ -43,12 +48,13 @@
     "portContract": "NEXT acceptance uses 5272/5273/5274; no 51xx harness"
   },
   "dpr1": {
-    "state": "NEXT",
-    "scope": [
-      "presentation-layer claim provenance for data evidence, MB/domain context and mixed inference",
-      "claim basis / causal status / limitations contract",
-      "shared Evidence Inspector contract and navigation model"
-    ]
+    "state": "CLOSED",
+    "productCommit": "d027bb34e403968a60f6f3b053e3cfaf9ad42025",
+    "contract": "OBSERVED | CALCULATED | SEMANTICALLY_RESOLVED | DOMAIN_CONTEXT | INFERRED | HYPOTHESIS + evidenceRefs/knowledgeRefs/derivation/limitations/causalStatus/decisionUseRestrictions",
+    "authorityInvariant": "presentation planners may preserve or reduce authority, never strengthen it; MB retrieval/advisory relevance is never semantic confidence",
+    "focusedVerification": "25/25 PASS + TypeScript PASS",
+    "releaseAuthoritative": "PASS; governed product regression 11 files / 42 tests; production build PASS",
+    "nextRuntimeAcceptance": "1/1 PASS in 8.8s on 5273 /app"
   },
   "controlPlaneSourceCandidate": {
     "repo": "/home/ubuntu/n8n2erpnext/lightbi-control-plane-r1p14-signed-transport",
@@ -65,18 +71,30 @@
     "attestationPid": 1505209,
     "productionAuthority": false
   },
-  "nextAction": "Begin DPR-1 on Product 14c2d99: audit existing claim/evidence/provenance structures, define one presentation-layer Claim Provenance contract (basis, causal status, limitations, source/evidence links, MB/domain advisory provenance) and shared Evidence Inspector navigation model without changing governed numeric authority. Validate shared behavior on NEXT 5273 /app before any packaged-native requirement.",
+  "nextAction": "DPR-2: audit current Universal + Canonical question lanes and the canonical question-generation call chain; introduce one deterministic Question/Perspective Intelligence projection that consumes domainInference + bounded MB presentation advice, deduplicates presentation candidates, models answerability/abstention/missing evidence, and always reuses governed question/metric executable authority. Validate on NEXT 5273 /app before proceeding to DPR-3.",
   "blockers": [
     "Production promotion and Offline Root/phase2a freeze remain owner-gated",
     "NEXT047 is stale and not a post-LQ3 release candidate; its installation-issuer mismatch remains deferred until an official release build"
   ],
   "productionTouched": false,
   "phase2aFrozen": false,
-  "resourceState": "root filesystem ~69% used, ~39 GiB free; NEXT DPR-0 UI overlay ~93 MiB; visual evidence ~1.3 MiB ignored",
+  "resourceState": "root filesystem ~69% used, ~39 GiB free; NEXT DPR-1 UI overlay ~93 MiB; no 51xx harness",
   "readFirst": [
     "docs/project-book/LIBRARY_RULES.md",
-    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#131-2026-09-08-dpr-0-closes-on-corrected-multi-file-terminal-flow-and-next-visual-baseline",
+    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#132-2026-09-08-dpr-1-claim-question-provenance-foundation-closes-on-next-dpr-2-becomes-active",
     "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DECISION_PRESENTATION_UI_UX_REFACTOR_2026-09-04.md"
   ],
-  "documentationHead": "cfbbd4c58cb641838eb05c2546cfa30e51a0e3d1"
+  "documentationHead": "741572e601ff25613441bde28eb8ca0f912a6a15",
+  "dpr2": {
+    "state": "ACTIVE",
+    "scope": [
+      "separate Domain from Perspective",
+      "feed canonical domainInference and bounded MB presentation advice into question discovery/ranking/presentation",
+      "merge/dedupe Universal + governed question presentation",
+      "add answerability/abstention/missing-evidence states and neutral wording",
+      "retain governed metric/question gate as final executable authority"
+    ],
+    "authorityOrder": "user-selected domain/perspective -> governed schema + metrics -> canonical semantics -> domain rules -> MB presentation advice -> deterministic question/planner gate -> UI",
+    "mbBoundary": "MB may affect candidate relevance/order/context only; cannot create metric/formula/join/causal/execution/decision authority"
+  }
 }
