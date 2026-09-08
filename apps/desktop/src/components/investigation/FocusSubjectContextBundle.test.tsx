@@ -2,7 +2,7 @@
 import React from 'react';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { FocusSubjectBAAnswerCard, FocusSubjectContextBundle } from './FocusSubjectContextBundle';
+import { FocusSubjectBAAnswerCard, FocusSubjectBANextAction, FocusSubjectContextBundle } from './FocusSubjectContextBundle';
 import { FocusSubjectDeepAnalysisPanel } from './FocusSubjectDeepAnalysisPanel';
 
 const comparison = {
@@ -25,9 +25,11 @@ describe('Focus Subject context propagation UI', () => {
     expect(screen.getByText(/Rank and selected metric tell different stories/i)).toBeTruthy();
   });
 
-  it('uses a focus-specific BA answer and deep-analysis surface', () => {
+  it('keeps the focus answer separate from the next-action CTA and deep-analysis surface', () => {
     const onAnalyze = vi.fn();
-    const { rerender } = render(<FocusSubjectBAAnswerCard comparison={comparison} canAnalyzeDeeper onAnalyzeDeeper={onAnalyze} />);
+    const { rerender } = render(<FocusSubjectBAAnswerCard comparison={comparison} />);
+    expect(screen.queryByRole('button', { name: /Analyze this focus deeper/i })).toBeNull();
+    rerender(<FocusSubjectBANextAction canAnalyzeDeeper onAnalyzeDeeper={onAnalyze} />);
     fireEvent.click(screen.getByRole('button', { name: /Analyze this focus deeper/i }));
     expect(onAnalyze).toHaveBeenCalledOnce();
     rerender(<FocusSubjectDeepAnalysisPanel action={action} comparison={comparison} />);

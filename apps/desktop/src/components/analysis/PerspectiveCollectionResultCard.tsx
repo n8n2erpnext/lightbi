@@ -1,6 +1,6 @@
 import React, { useMemo, useRef, useState } from "react";
 import ReactECharts from "echarts-for-react";
-import { ArrowDownRight, ArrowLeft, ArrowUpRight, CheckCircle2, ChevronRight, Download, FileImage, FileText, LayoutDashboard, Lightbulb, Search, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowLeft, CheckCircle2, ChevronRight, Download, FileImage, FileText, LayoutDashboard, Lightbulb, Search, ShieldCheck, Sparkles } from "lucide-react";
 import { toPng } from "html-to-image";
 import { jsPDF } from "jspdf";
 import { useNavigate } from "react-router-dom";
@@ -562,127 +562,66 @@ export const PerspectiveCollectionResultCard: React.FC<{
   }
 
   return (
-    <section data-testid="perspective-collection-result" className="overflow-hidden rounded-2xl border border-blue-100 bg-white shadow-sm">
-      <div className="border-b border-slate-100 bg-gradient-to-r from-slate-950 to-slate-900 px-5 py-5 text-white md:px-6">
+    <section data-testid="perspective-collection-result" data-layout="answer-first-canvas" className="bg-white">
+      <header className="border-y border-[var(--lb-divider)] px-5 py-4 md:px-6">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-sky-300">
-              <CheckCircle2 className="h-4 w-4" />
-              {t('Analysis ready')}
-            </div>
-            <h3 className="mt-2 text-[21px] font-semibold">{displayPerspectiveLabel}</h3>
-            <p className="mt-1 text-[12px] text-slate-300">
-              {t(
-                `LightBI analyzed ${sourceCount} complete source${sourceCount === 1 ? '' : 's'} across ${rows.length} reporting period${rows.length === 1 ? '' : 's'}.`,
-              )}
-            </p>
+            <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-sky-700"><CheckCircle2 className="h-4 w-4" />{t('Analysis ready')}</div>
+            <h3 className="mt-1 text-[19px] font-semibold text-slate-950">{displayPerspectiveLabel}</h3>
+            <p className="mt-1 text-[12px] text-slate-500">{t(`LightBI analyzed ${sourceCount} complete source${sourceCount === 1 ? '' : 's'} across ${rows.length} reporting period${rows.length === 1 ? '' : 's'}.`)}</p>
           </div>
           <div className="flex flex-wrap justify-end gap-2">
-            {focusSubject && <span data-testid="collection-focus-badge" className="rounded-full border border-violet-300/30 bg-violet-300/10 px-3 py-1.5 text-[10px] font-semibold text-violet-100">Focus: {focusSubject.displayLabel}</span>}
-            <span className="rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1.5 text-[10px] font-semibold text-emerald-200">{t('Full-file governed')}</span>
+            {focusSubject && <span data-testid="collection-focus-badge" className="rounded-full border border-violet-200 bg-violet-50 px-3 py-1.5 text-[10px] font-semibold text-violet-700">Focus: {focusSubject.displayLabel}</span>}
+            <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-[10px] font-semibold text-emerald-700">{t('Full-file governed')}</span>
           </div>
         </div>
-      </div>
+      </header>
 
-      <div data-testid="collection-decision-workspace" className="grid gap-5 p-5 xl:grid-cols-[1.55fr_0.65fr] md:p-6">
-        <div className="min-h-[460px] min-w-0 rounded-xl border border-slate-100 bg-slate-50/40 p-3">
-          <ReactECharts
-            option={option}
-            style={{ height: "390px", width: "100%" }}
-            notMerge
-            onEvents={{
-              click: (params: { dataIndex?: number; seriesIndex?: number }) => {
-                const dataIndex = Number(params.dataIndex);
-                const seriesIndex = Number(params.seriesIndex);
-                if (!Number.isInteger(dataIndex) || !Number.isInteger(seriesIndex) || !metricIds[seriesIndex]) return;
-                setChartSelection({ period: String(rows[dataIndex]?.reporting_period ?? ""), metricId: metricIds[seriesIndex] });
-                setActiveEvidenceIndex(0);
-                setAnalysisView('evidence_drill');
-              },
-            }}
-          />
-          <div className="mt-2 flex flex-wrap items-center gap-1.5" aria-label={t('Select a chart point to inspect evidence')}>
-            {rows.flatMap((row) => metricIds.map((metricId) => {
-              const period = String(row.reporting_period ?? '');
-              const active = chartSelection?.period === period && chartSelection.metricId === metricId;
-              return <button key={`${period}:${metricId}`} type="button" data-testid={`collection-chart-point-${period}-${metricId}`} onClick={() => { setChartSelection({ period, metricId }); setActiveEvidenceIndex(0); setAnalysisView('evidence_drill'); }} className={`rounded-md border px-2 py-1 text-[10px] font-medium ${active ? 'border-blue-500 bg-blue-50 text-blue-800' : 'border-slate-200 bg-white text-slate-500 hover:border-blue-300'}`}>{period} · {displayMetricLabel(metricId)}</button>;
-            }))}
-          </div>
-        </div>
-        <div className="space-y-3">
-          {movements.map((movement) => {
-            const Icon = hasPeriodComparison
-              ? movement.delta >= 0 ? ArrowUpRight : ArrowDownRight
-              : CheckCircle2;
-            return (
-              <article key={movement.metricId} className="rounded-xl border border-slate-200 p-4">
-                <div className="flex items-center justify-between gap-3">
-                  <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">{displayMetricLabel(movement.metricId)}</p>
-                  <Icon className={`h-4 w-4 ${!hasPeriodComparison || movement.delta >= 0 ? "text-emerald-600" : "text-red-600"}`} />
-                </div>
-                <p className="mt-2 text-[22px] font-semibold text-slate-950">{formatMetric(movement.metricId, movement.last)}</p>
-                <p className={`mt-1 text-[11px] ${!hasPeriodComparison || movement.delta >= 0 ? "text-emerald-700" : "text-red-700"}`}>
-                  {hasPeriodComparison
-                    ? <>{movement.delta >= 0 ? "+" : "−"}{formatMetric(movement.metricId, Math.abs(movement.delta))}{movement.percent === null ? "" : ` (${Math.abs(movement.percent * 100).toFixed(1)}%)`} {t('vs first period')}</>
-                    : t('Single-period snapshot')}
-                </p>
-              </article>
-            );
-          })}
-          <div className="rounded-xl border border-amber-100 bg-amber-50 p-4">
-            <div className="flex items-center gap-2 text-amber-800">
-              <Lightbulb className="h-4 w-4" />
-              <p className="text-[11px] font-semibold uppercase tracking-wide">{t('Key attention')}</p>
+      <div data-testid="collection-decision-workspace" data-layout="answer-first-canvas" className="space-y-5 px-5 py-5 md:px-6">
+        <section data-testid="collection-main-answer" className="border-b border-[var(--lb-divider)] pb-4">
+          <div className="flex items-center gap-2 text-amber-800"><Lightbulb className="h-4 w-4" /><p className="text-[11px] font-semibold uppercase tracking-wide">{t('Key attention')}</p></div>
+          <p className="mt-2 max-w-4xl text-[13px] leading-6 text-slate-700">
+            {largestMovement
+              ? hasPeriodComparison
+                ? t(`${displayMetricLabel(largestMovement.metricId)} has the largest relative movement (${Math.abs((largestMovement.percent ?? 0) * 100).toFixed(1)}%). This is the strongest place to begin; it is an observation, not yet a cause.`)
+                : t(`This view contains one reporting period (${firstPeriod}), so period movement cannot be calculated. Select a metric to inspect its governed source evidence and run Deep BA Step 2.`)
+              : t('No measurable period movement was found. Review mix, segments, and data coverage before drawing a conclusion.')}
+          </p>
+        </section>
+
+        {largestMovement && <section data-testid="collection-key-number" className="border-b border-[var(--lb-divider)] pb-4">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">{displayMetricLabel(largestMovement.metricId)}</p>
+          <p className="mt-1 text-2xl font-semibold text-slate-950">{formatMetric(largestMovement.metricId, largestMovement.last)}</p>
+          <p className="mt-1 text-[11px] text-slate-500">{hasPeriodComparison ? <>{largestMovement.delta >= 0 ? '+' : '−'}{formatMetric(largestMovement.metricId, Math.abs(largestMovement.delta))}{largestMovement.percent === null ? '' : ` (${Math.abs(largestMovement.percent * 100).toFixed(1)}%)`} {t('vs first period')}</> : t('Single-period snapshot')}</p>
+        </section>}
+
+        <section data-testid="collection-primary-visual" className="min-w-0">
+          <div className="min-h-[430px] rounded-xl border border-slate-100 bg-slate-50/40 p-3">
+            <ReactECharts option={option} style={{ height: '390px', width: '100%' }} notMerge onEvents={{ click: (params: { dataIndex?: number; seriesIndex?: number }) => { const dataIndex = Number(params.dataIndex); const seriesIndex = Number(params.seriesIndex); if (!Number.isInteger(dataIndex) || !Number.isInteger(seriesIndex) || !metricIds[seriesIndex]) return; setChartSelection({ period: String(rows[dataIndex]?.reporting_period ?? ''), metricId: metricIds[seriesIndex] }); setActiveEvidenceIndex(0); setAnalysisView('evidence_drill'); } }} />
+            <div className="mt-2 flex flex-wrap items-center gap-1.5" aria-label={t('Select a chart point to inspect evidence')}>
+              {rows.flatMap(row => metricIds.map(metricId => { const period = String(row.reporting_period ?? ''); const active = chartSelection?.period === period && chartSelection.metricId === metricId; return <button key={`${period}:${metricId}`} type="button" data-testid={`collection-chart-point-${period}-${metricId}`} onClick={() => { setChartSelection({ period, metricId }); setActiveEvidenceIndex(0); setAnalysisView('evidence_drill'); }} className={`rounded-md border px-2 py-1 text-[10px] font-medium ${active ? 'border-blue-500 bg-blue-50 text-blue-800' : 'border-slate-200 bg-white text-slate-500 hover:border-blue-300'}`}>{period} · {displayMetricLabel(metricId)}</button>; }))}
             </div>
-            <p className="mt-2 text-[12px] leading-5 text-amber-900/80">
-              {largestMovement
-                ? hasPeriodComparison
-                  ? t(`${displayMetricLabel(largestMovement.metricId)} has the largest relative movement (${Math.abs((largestMovement.percent ?? 0) * 100).toFixed(1)}%). This is the strongest place to begin; it is an observation, not yet a cause.`)
-                  : t(`This view contains one reporting period (${firstPeriod}), so period movement cannot be calculated. Select a metric to inspect its governed source evidence and run Deep BA Step 2.`)
-                : t(
-                  "No measurable period movement was found. Review mix, segments, and data coverage before drawing a conclusion.",
-                )}
-            </p>
-            {questions.length > 0 && (
-              <div className="mt-3 space-y-2">
-                {questions.map((question) => (
-                  <button
-                    key={question}
-                    type="button"
-                    onClick={() => {
-                      if (effectiveDeepDiveBrief) {
-                        setChartSelection(null);
-                        setAnalysisView('deep_perspective');
-                        return;
-                      }
-                      if (!hasPeriodComparison && largestMovement) {
-                        setChartSelection({ period: firstPeriod, metricId: largestMovement.metricId });
-                        setActiveEvidenceIndex(0);
-                        setAnalysisView('evidence_drill');
-                      }
-                    }}
-                    className="flex w-full items-center justify-between gap-3 rounded-lg border border-amber-200 bg-white/80 px-3 py-2 text-left text-[11px] font-medium leading-4 text-slate-700 transition hover:border-amber-400 hover:text-slate-950 disabled:cursor-default"
-                    disabled={!effectiveDeepDiveBrief && (hasPeriodComparison || !largestMovement || evidenceSources.length === 0)}
-                  >
-                    <span>{question}</span>
-                    <ChevronRight className="h-3.5 w-3.5 shrink-0 text-amber-600" />
-                  </button>
-                ))}
-              </div>
-            )}
           </div>
-          <div className="flex items-start gap-2 rounded-xl border border-blue-100 bg-blue-50 p-3 text-[11px] leading-5 text-blue-800">
-            <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0" />
-              {t(
-                focusSubject
-                  ? 'Summary metrics remain full-population governed results. Focus scopes only source evidence and Deep BA where an exact entity match exists.'
-                  : 'Results were computed per governed source relationship and period. LightBI combined metrics, not unrelated raw rows.',
-              )}
+        </section>
+
+        {questions.length > 0 && <section data-testid="collection-explanation" className="border-t border-[var(--lb-divider)] pt-4">
+          <div className="space-y-1">{questions.map(question => <button key={question} type="button" onClick={() => { if (effectiveDeepDiveBrief) { setChartSelection(null); setAnalysisView('deep_perspective'); return; } if (!hasPeriodComparison && largestMovement) { setChartSelection({ period: firstPeriod, metricId: largestMovement.metricId }); setActiveEvidenceIndex(0); setAnalysisView('evidence_drill'); } }} disabled={!effectiveDeepDiveBrief && (hasPeriodComparison || !largestMovement || evidenceSources.length === 0)} className="flex w-full items-center justify-between gap-3 border-b border-[var(--lb-divider)] px-1 py-2.5 text-left text-[12px] font-medium leading-5 text-slate-700 transition last:border-b-0 hover:bg-black/[0.025] disabled:cursor-default"><span>{question}</span><ChevronRight className="h-3.5 w-3.5 shrink-0 text-amber-600" /></button>)}</div>
+        </section>}
+
+        {movements.length > 1 && <section data-testid="collection-supporting-metrics" className="border-t border-[var(--lb-divider)] pt-4">
+          <div className="grid gap-x-6 gap-y-3 sm:grid-cols-2 xl:grid-cols-3">
+            {movements.filter(movement => movement.metricId !== largestMovement?.metricId).map(movement => <div key={movement.metricId} className="flex items-baseline justify-between gap-4 border-b border-[var(--lb-divider)] pb-2 text-xs"><span className="font-medium text-slate-600">{displayMetricLabel(movement.metricId)}</span><span className="font-semibold text-slate-900">{formatMetric(movement.metricId, movement.last)}</span></div>)}
           </div>
-        </div>
+        </section>}
+
+        <section data-testid="collection-next-action" className="border-t border-[var(--lb-divider)] pt-3">{renderCollectionActionBar(false)}</section>
+
+        <details data-testid="collection-evidence-details" className="border-t border-[var(--lb-divider)] pt-4 text-xs text-slate-600">
+          <summary className="cursor-pointer font-semibold text-slate-800">{t('Full-file governed')}</summary>
+          <div className="mt-3 flex items-start gap-2 leading-5 text-blue-800"><ShieldCheck className="mt-0.5 h-4 w-4 shrink-0" />{t(focusSubject ? 'Summary metrics remain full-population governed results. Focus scopes only source evidence and Deep BA where an exact entity match exists.' : 'Results were computed per governed source relationship and period. LightBI combined metrics, not unrelated raw rows.')}</div>
+        </details>
+        {exportError && <p role="alert" className="border-t border-red-100 bg-red-50 px-5 py-2 text-xs text-red-700 md:px-6">{exportError}</p>}
       </div>
-      {renderCollectionActionBar(false)}
-      {exportError && <p role="alert" className="border-t border-red-100 bg-red-50 px-5 py-2 text-xs text-red-700 md:px-6">{exportError}</p>}
     </section>
   );
 };

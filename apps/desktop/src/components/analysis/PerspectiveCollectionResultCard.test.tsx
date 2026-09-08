@@ -275,4 +275,22 @@ describe('PerspectiveCollectionResultCard selected-data analysis', () => {
     expect(breakdown?.formatting?.lightbiData?.sourceName).toBe('current-period.xlsx');
   });
 
+  it('renders the multi-file Decision Workspace in answer-first order', () => {
+    render(<PerspectiveCollectionResultCard
+      perspectiveId="executive_overview"
+      rows={[
+        { reporting_period: '2026-05', sales_revenue: 300, gross_profit: 120 },
+        { reporting_period: '2026-06', sales_revenue: 250, gross_profit: 130 },
+      ]}
+      sourceCount={1}
+      evidenceSources={[{ period: '2026-05', role: 'sales', sourceName: 'sales.xlsx', sourceRowCount: 2, rows: [{ Product: 'A', Revenue: 100 }], semanticFields: [] }]}
+    />);
+    const markers = ['collection-main-answer', 'collection-key-number', 'collection-primary-visual', 'collection-explanation', 'collection-supporting-metrics', 'collection-next-action', 'collection-evidence-details'];
+    const nodes = markers.map(marker => screen.getByTestId(marker));
+    for (let index = 0; index < nodes.length - 1; index += 1) {
+      expect(nodes[index].compareDocumentPosition(nodes[index + 1]) & Node.DOCUMENT_POSITION_FOLLOWING).not.toBe(0);
+    }
+    expect(screen.getByTestId('collection-decision-workspace').getAttribute('data-layout')).toBe('answer-first-canvas');
+  });
+
 });

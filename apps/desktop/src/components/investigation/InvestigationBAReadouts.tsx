@@ -148,22 +148,39 @@ export const BusinessFusionAngleReadout: React.FC<{
   );
 };
 
-export const BasicBAAnswerCard: React.FC<{
+export const BasicBAAnswerCard: React.FC<{ brief: BADecisionBrief }> = ({ brief }) => {
+  const { t, localize } = useUiLanguage();
+  return (
+    <section data-testid="decision-main-answer" className="border-y border-[var(--lb-divider)] py-4">
+      <div className="mb-2 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wide text-violet-600"><ClipboardCheck className="h-4 w-4" />{t('BA answer')}</div>
+      <p className="max-w-4xl text-[15px] font-medium leading-7 text-slate-800">{localize(brief.executiveSummary)}</p>
+    </section>
+  );
+};
+
+export const BasicBAExplanation: React.FC<{ brief: BADecisionBrief }> = ({ brief }) => {
+  const { t, localize } = useUiLanguage();
+  const primaryInsights = brief.insights.slice(0, 2);
+  return (
+    <section data-testid="decision-explanation" className="border-t border-[var(--lb-divider)] pt-4">
+      <h3 className="text-[12px] font-semibold uppercase tracking-wide text-slate-500">{t('Overview analysis')}</h3>
+      <div className="mt-3 divide-y divide-[var(--lb-divider)] border-y border-[var(--lb-divider)]">
+        {primaryInsights.length > 0 ? primaryInsights.map(insight => <div key={insight.id} className="py-3"><div className="text-xs font-semibold text-slate-800">{localize(insight.title)}</div><p className="mt-1 text-xs leading-5 text-slate-600">{localize(insight.statement)}</p></div>) : <div className="py-3 text-xs text-slate-600">{t('No immediate insight was produced. Open the deeper analysis panel for caveats and diagnostics.')}</div>}
+      </div>
+    </section>
+  );
+};
+
+export const BasicBANextAction: React.FC<{
   brief: BADecisionBrief;
   onAnalyzeDeeper: () => void;
   canAnalyzeDeeper: boolean;
 }> = ({ brief, onAnalyzeDeeper, canAnalyzeDeeper }) => {
   const { t, localize } = useUiLanguage();
-  const primaryInsights = brief.insights.slice(0, 2);
   return (
-    <section className="mt-5 rounded-[16px] border border-black/10 bg-white shadow-sm">
-      <div className="flex flex-col gap-4 px-5 py-4 md:flex-row md:items-start md:justify-between">
-        <div className="min-w-0 flex-1"><div className="mb-2 flex items-center gap-2"><div className="flex h-8 w-8 items-center justify-center rounded-[10px] bg-violet-50 text-violet-600"><ClipboardCheck className="h-4 w-4" /></div><div><h3 className="text-sm font-semibold text-[#202123]">{t('BA answer')}</h3><p className="text-xs text-black/45">{t('Basic answer for this selected decision angle.')}</p></div></div><p className="text-sm leading-6 text-slate-700">{localize(brief.executiveSummary)}</p></div>
-      </div>
-      <div className="grid gap-3 border-t border-black/5 px-5 py-4 md:grid-cols-[1fr_220px]">
-        <div className="grid gap-3 md:grid-cols-2">{primaryInsights.length > 0 ? primaryInsights.map(insight => <div key={insight.id} className="rounded-[12px] border border-amber-100 bg-amber-50 p-3 text-amber-900"><div className="mb-1 text-xs font-semibold">{localize(insight.title)}</div><p className="text-xs leading-5 opacity-90">{localize(insight.statement)}</p></div>) : <div className="rounded-[12px] border border-slate-100 bg-slate-50 p-3 text-xs text-slate-600">{t('No immediate insight was produced. Open the deeper analysis panel for caveats and diagnostics.')}</div>}</div>
-        <div className="flex flex-col justify-between gap-3 rounded-[12px] border border-black/5 bg-[#fbfbfa] p-3"><div><div className="text-[10px] font-semibold uppercase tracking-wide text-black/45">{t('Decision caveat')}</div><p className="mt-1 line-clamp-3 text-xs leading-5 text-black/60">{localize(brief.caveats[0] ?? t('Review the chart and evidence rows before using this result for an operational decision.'))}</p></div><button onClick={onAnalyzeDeeper} disabled={!canAnalyzeDeeper} title={!canAnalyzeDeeper ? t('Run the governed analysis successfully before opening the deeper explanation.') : undefined} className="rounded-[10px] bg-[#202123] px-3 py-2 text-xs font-medium text-white shadow-sm transition-colors hover:bg-black disabled:cursor-not-allowed disabled:opacity-40">{t('Analyze deeper')}</button></div>
-      </div>
+    <section data-testid="decision-next-action" className="flex flex-col gap-3 border-t border-[var(--lb-divider)] pt-4 md:flex-row md:items-start md:justify-between">
+      <div className="max-w-3xl"><div className="text-[10px] font-semibold uppercase tracking-wide text-black/45">{t('Decision caveat')}</div><p className="mt-1 text-xs leading-5 text-black/60">{localize(brief.caveats[0] ?? t('Review the chart and evidence rows before using this result for an operational decision.'))}</p></div>
+      <button onClick={onAnalyzeDeeper} disabled={!canAnalyzeDeeper} title={!canAnalyzeDeeper ? t('Run the governed analysis successfully before opening the deeper explanation.') : undefined} className="shrink-0 rounded-[10px] bg-[#202123] px-3 py-2 text-xs font-medium text-white transition-colors hover:bg-black disabled:cursor-not-allowed disabled:opacity-40">{t('Analyze deeper')}</button>
     </section>
   );
 };

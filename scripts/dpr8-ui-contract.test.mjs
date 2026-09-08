@@ -80,3 +80,17 @@ test('DPR-8 Home keeps New Brief as a command surface and flattens source/histor
   assert.doesNotMatch(history, /bg-white border border-black\/10 rounded-xl p-5 shadow-sm/);
   assert.doesNotMatch(history, /border-dashed/);
 });
+
+test('DPR-8 Decision Workspace is answer-first in both single-file and multi-file lanes', async () => {
+  const single = await read('apps/desktop/src/pages/Investigation.tsx');
+  const multi = await read('apps/desktop/src/components/analysis/PerspectiveCollectionResultCard.tsx');
+  const singleOrder = ['decision-main-answer-region', 'decision-key-number', 'decision-primary-visual', '<BasicBAExplanation', 'perspective-analysis-bundle', '<BasicBANextAction', 'decision-evidence-details'].map(marker => single.indexOf(marker));
+  assert.ok(singleOrder.every(index => index >= 0), 'single-file Decision Workspace must expose every answer-first region');
+  assert.deepEqual([...singleOrder].sort((a, b) => a - b), singleOrder, 'single-file Decision Workspace must follow answer -> key number -> visual -> explanation -> supporting -> next -> evidence');
+  assert.match(single, /data-layout="answer-first-canvas"/);
+  const multiOrder = ['collection-main-answer', 'collection-key-number', 'collection-primary-visual', 'collection-explanation', 'collection-supporting-metrics', 'collection-next-action', 'collection-evidence-details'].map(marker => multi.indexOf(marker));
+  assert.ok(multiOrder.every(index => index >= 0), 'multi-file Decision Workspace must expose every answer-first region');
+  assert.deepEqual([...multiOrder].sort((a, b) => a - b), multiOrder, 'multi-file Decision Workspace must follow answer -> key number -> visual -> explanation -> supporting -> next -> evidence');
+  assert.match(multi, /data-layout="answer-first-canvas"/);
+  assert.doesNotMatch(multi.slice(multi.indexOf('collection-decision-workspace')), /xl:grid-cols-\[1\.55fr_0\.65fr\]/);
+});
