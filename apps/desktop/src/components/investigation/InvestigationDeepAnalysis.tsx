@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { ArrowLeft, ChevronDown, ClipboardCheck, Download, FileImage, FileSpreadsheet, FileText, LayoutDashboard, X } from 'lucide-react';
 import { toPng } from 'html-to-image';
 import { jsPDF } from 'jspdf';
@@ -26,6 +26,8 @@ import type { FocusSubjectComparison } from '../../lib/focus-subject-analysis';
 import { FocusSubjectDeepAnalysisPanel } from './FocusSubjectDeepAnalysisPanel';
 import { BAAnalysisAuthorityBanner } from './BAAnalysisAuthorityBanner';
 import type { BAAnalysisAuthorityContextV1 } from '../../lib/understanding-core/ba-analysis-authority-context';
+import { buildSelectedSubjectInvestigationPlan } from '../../lib/selected-subject-investigation';
+import { SelectedSubjectInvestigationBoard } from './SelectedSubjectInvestigationBoard';
 
 export interface InvestigationDeepAnalysisProps {
   action: AnalysisAction;
@@ -54,6 +56,27 @@ export const InvestigationDeepAnalysis: React.FC<InvestigationDeepAnalysisProps>
   const [pivotMenuOpen, setPivotMenuOpen] = useState(false);
   const [pivotProgress, setPivotProgress] = useState<ExcelPivotExportProgressV1 | null>(null);
   const fileStem = (localize(action.opportunityName) || 'LightBI-BA').replace(/[\\/:*?"<>|]+/g, '-').slice(0, 80);
+  const selectedSourceName = sourceName || canonicalSourceBoundary?.datasetId || action.opportunityName;
+  const selectedSubjectInvestigationPlan = useMemo(() => {
+    if (!filteredScope || !singleSourceBAOverview) return null;
+    return buildSelectedSubjectInvestigationPlan({
+      dimensionField: filteredScope.point.dimensionField,
+      label: filteredScope.point.label,
+      metricId: action.measures[0] ?? null,
+      focusLabel: filteredFocusComparison?.subject.displayLabel ?? null,
+      filters: filteredScope.filters.map(filter => `${filter.column}:${filter.operator}:${filter.value}`),
+    }, [{
+      sourceKey: canonicalSourceBoundary?.sourceId || `selected:${selectedSourceName}`,
+      sourceName: selectedSourceName,
+      role: null,
+      selectedRowCount: filteredScope.selectedRowCount,
+      matchedRowCount: filteredScope.matchedRowCount,
+      referenceRowCount: filteredScope.sourceResultRowCount,
+      referenceScope: 'chart_group_rows',
+      isTruncated: filteredScope.isTruncated,
+      overview: singleSourceBAOverview,
+    }]);
+  }, [action.measures, canonicalSourceBoundary?.sourceId, filteredFocusComparison?.subject.displayLabel, filteredScope, selectedSourceName, singleSourceBAOverview]);
 
   const renderAnalysisImage = async (): Promise<string> => {
     if (!exportRef.current) throw new Error(t('The analysis is not ready to export.'));
@@ -119,10 +142,10 @@ export const InvestigationDeepAnalysis: React.FC<InvestigationDeepAnalysisProps>
   return (
   <div className="fixed inset-0 z-40 flex justify-end bg-black/15 backdrop-blur-[1px]" onClick={onClose}>
     <aside className="h-full w-full max-w-[1120px] overflow-y-auto border-l border-black/10 bg-[#fbfbfa] shadow-2xl" onClick={event => event.stopPropagation()}>
-      <div className="sticky top-0 z-10 flex items-start justify-between gap-4 border-b border-black/10 bg-white/95 px-6 py-5 backdrop-blur"><div className="flex items-start gap-3"><button data-testid="deep-analysis-back" onClick={onClose} className="mt-0.5 inline-flex items-center gap-1.5 rounded-lg border border-black/10 bg-white px-3 py-2 text-xs font-semibold text-black/60 shadow-sm transition-colors hover:bg-black/[0.035] hover:text-black" title={t('Back to chart')}><ArrowLeft className="h-4 w-4" />{t('Back')}</button><div><div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-violet-600"><ClipboardCheck className="h-3.5 w-3.5" />{filteredScope ? t('Deep BA analysis · Step 2') : focusComparison ? 'Deep BA analysis · Focus' : t('Deep BA analysis')}</div><h2 className="mt-1 text-xl font-semibold text-[#202123]">{focusComparison && !filteredScope ? `${focusComparison.subject.displayLabel} · ${localize(action.opportunityName)}` : localize(action.opportunityName)}</h2><p className="mt-1 text-xs leading-5 text-black/50">{filteredScope ? t('The existing deep-analysis framework is now applied only to the rows selected from the chart drill-through.') : focusComparison ? `Every Deep BA readout remains anchored to ${focusComparison.subject.displayLabel}; the full population is comparison evidence only.` : t('Explanation, governed evidence, caveats, drivers, and recommended actions for the decision angle currently shown in the chart.')}</p></div></div><button onClick={onClose} className="rounded-full border border-black/10 bg-white p-2 text-black/50 shadow-sm transition-colors hover:bg-black/[0.035] hover:text-black" title={t('Close analysis panel')}><X className="h-4 w-4" /></button></div>
+      <div className="sticky top-0 z-10 flex items-start justify-between gap-4 border-b border-black/10 bg-white/95 px-6 py-5 backdrop-blur"><div className="flex items-start gap-3"><button data-testid="deep-analysis-back" onClick={onClose} className="mt-0.5 inline-flex items-center gap-1.5 rounded-lg border border-black/10 bg-white px-3 py-2 text-xs font-semibold text-black/60 shadow-sm transition-colors hover:bg-black/[0.035] hover:text-black" title={t('Back to chart')}><ArrowLeft className="h-4 w-4" />{t('Back')}</button><div><div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-violet-600"><ClipboardCheck className="h-3.5 w-3.5" />{filteredScope ? t('Selected-subject investigation') : focusComparison ? 'Deep BA analysis · Focus' : t('Deep BA analysis')}</div><h2 className="mt-1 text-xl font-semibold text-[#202123]">{focusComparison && !filteredScope ? `${focusComparison.subject.displayLabel} · ${localize(action.opportunityName)}` : localize(action.opportunityName)}</h2><p className="mt-1 text-xs leading-5 text-black/50">{filteredScope ? t('This investigation is bounded to the selected evidence scope; the governed summary remains unchanged.') : focusComparison ? `Every Deep BA readout remains anchored to ${focusComparison.subject.displayLabel}; the full population is comparison evidence only.` : t('Explanation, governed evidence, caveats, drivers, and recommended actions for the decision angle currently shown in the chart.')}</p></div></div><button onClick={onClose} className="rounded-full border border-black/10 bg-white p-2 text-black/50 shadow-sm transition-colors hover:bg-black/[0.035] hover:text-black" title={t('Close analysis panel')}><X className="h-4 w-4" /></button></div>
       <div className="border-b border-black/5 bg-white px-5 py-3">
         <div className="flex flex-wrap items-center justify-end gap-2">
-          <span className="mr-auto inline-flex items-center gap-2 text-xs text-black/45"><Download className="h-3.5 w-3.5" />{t('Export this complete perspective analysis')}</span>
+          <span className="mr-auto inline-flex items-center gap-2 text-xs text-black/45"><Download className="h-3.5 w-3.5" />{t(filteredScope ? 'Export this selected-subject investigation' : 'Export this complete perspective analysis')}</span>
           <div className="relative">
             <button data-testid="deep-analysis-export-excel" type="button" onClick={() => setPivotMenuOpen(open => !open)} disabled={exportState !== 'idle' || !canExportExcel} className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-3 py-2 text-xs font-semibold text-white shadow-sm hover:bg-emerald-700 disabled:opacity-40"><FileSpreadsheet className="h-4 w-4" />{exportState === 'excel' && pivotProgress ? pivotProgressLabel[pivotProgress] : t('Export to Excel Pivot')}<ChevronDown className="h-3.5 w-3.5" /></button>
             {pivotMenuOpen && exportState === 'idle' && <div className="absolute right-0 top-full z-20 mt-2 w-72 overflow-hidden rounded-xl border border-black/10 bg-white p-1.5 text-left shadow-xl">
@@ -136,17 +159,26 @@ export const InvestigationDeepAnalysis: React.FC<InvestigationDeepAnalysisProps>
         {exportError && <p role="alert" className="mt-2 text-xs text-red-600">{exportError}</p>}
       </div>
       <div ref={exportRef} data-testid="deep-analysis-export-surface" className="p-5">
-        <BAAnalysisAuthorityBanner context={analysisAuthority} scopeLabel={filteredScope ? 'Step 2 · selected rows' : focusComparison ? 'Focus · full source' : 'Deep BA'} />
-        {filteredScope && <section data-testid="filtered-deep-analysis-scope" className="mb-5 rounded-xl border border-violet-200 bg-violet-50 p-4 text-sm text-violet-950">
-          <div className="flex flex-wrap items-center justify-between gap-2"><div><p className="text-xs font-semibold uppercase tracking-wide text-violet-700">{t('Step 2 · Selected-data scope')}</p><p className="mt-1 font-semibold">{filteredScope.point.dimensionField} = {filteredScope.point.label}</p></div><p className="rounded-lg bg-white px-3 py-2 text-xs font-semibold shadow-sm">{formatValue(filteredScope.selectedRowCount, 'number', preferences)} / {formatValue(filteredScope.matchedRowCount, 'number', preferences)} {t('filtered rows selected')}</p></div>
-          {filteredScope.filters.length > 0 && <div className="mt-3 flex flex-wrap gap-2">{filteredScope.filters.map(filter => <span key={filter.id} className="rounded-full border border-violet-200 bg-white px-2.5 py-1 text-xs">{filter.column} {filter.operator === 'contains' ? t('contains') : filter.operator === 'not_equals' ? '≠' : '='} {filter.value}</span>)}</div>}
-          <p className="mt-3 text-xs leading-5 text-violet-800">{t('All KPIs, breakdowns, findings and recommendations below are recalculated by the existing BA framework from these selected rows only.')}</p>
-          {filteredScope.isTruncated && <p className="mt-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">{t('This drill-through reached its row limit. The analysis covers the selected rows retrieved within that limit, not every possible matching source row.')}</p>}
-        </section>}
-        {filteredScope && filteredFocusComparison && <div className="mb-5">
-          <FocusSubjectDeepAnalysisPanel action={action} comparison={filteredFocusComparison} />
-        </div>}
-        {focusComparison && !filteredScope ? <>
+        <BAAnalysisAuthorityBanner context={analysisAuthority} scopeLabel={filteredScope ? 'Selected-subject investigation · selected rows' : focusComparison ? 'Focus · full source' : 'Deep BA'} />
+        {filteredScope ? <>
+          {selectedSubjectInvestigationPlan ? <div data-testid="filtered-deep-analysis-scope" className="mb-5">
+            <SelectedSubjectInvestigationBoard
+              plan={selectedSubjectInvestigationPlan}
+              sourceOverviews={[{ sourceKey: selectedSubjectInvestigationPlan.sources[0].sourceKey, overview: singleSourceBAOverview! }]}
+              preferences={preferences}
+            />
+          </div> : <section data-testid="filtered-deep-analysis-scope" className="mb-5 border-y border-slate-200 bg-white px-5 py-5 text-sm text-slate-800">
+            <p className="text-xs font-semibold uppercase tracking-wide text-violet-700">{t('Selected-subject investigation')}</p>
+            <p className="mt-1 font-semibold">{filteredScope.point.dimensionField} = {filteredScope.point.label}</p>
+            <p className="mt-2 text-xs leading-5 text-slate-600">{formatValue(filteredScope.selectedRowCount, 'number', preferences)} / {formatValue(filteredScope.matchedRowCount, 'number', preferences)} {t('filtered rows selected')}. {t('No evidence-backed selected-scope answer is available yet.')}</p>
+            {filteredScope.filters.length > 0 && <div className="mt-3 flex flex-wrap gap-2">{filteredScope.filters.map(filter => <span key={filter.id} className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs">{filter.column} {filter.operator === 'contains' ? t('contains') : filter.operator === 'not_equals' ? '≠' : '='} {filter.value}</span>)}</div>}
+            {filteredScope.isTruncated && <p className="mt-3 text-xs leading-5 text-amber-800">{t('This drill-through reached its row limit. The investigation covers only the retrieved selected evidence, not every possible matching source row.')}</p>}
+          </section>}
+          {filteredFocusComparison && <details data-testid="selected-focus-comparison-details" className="mb-5 border-y border-slate-200 bg-white px-5 py-4">
+            <summary className="cursor-pointer text-xs font-semibold text-slate-700">{t('Selected Focus comparison details')}</summary>
+            <div className="mt-4"><FocusSubjectDeepAnalysisPanel action={action} comparison={filteredFocusComparison} /></div>
+          </details>}
+        </> : focusComparison ? <>
           <FocusSubjectDeepAnalysisPanel action={action} comparison={focusComparison} />
           {(brief || singleSourceBAOverview) && <details className="mt-5 rounded-[16px] border border-black/10 bg-white p-4">
             <summary className="cursor-pointer text-xs font-semibold text-slate-600">Population perspective evidence</summary>
@@ -158,8 +190,8 @@ export const InvestigationDeepAnalysis: React.FC<InvestigationDeepAnalysisProps>
           </details>}
         </> : <>
           {businessFusionOverview && <><BusinessBrainBriefPanel brief={createBusinessBrainBrief({ action, chartModel, overview: businessFusionOverview })} preferences={preferences} /><BusinessFusionAngleReadout action={action} chartModel={chartModel} overview={businessFusionOverview} preferences={preferences} /><div className="mb-5"><BusinessFusionOverviewCard overview={businessFusionOverview} /></div></>}
-          {!businessFusionOverview && singleSourceBAOverview && <SingleSourceBAOverviewCard overview={singleSourceBAOverview} preferences={preferences} selectedDataScope={Boolean(filteredScope)} />}
-          {brief ? <BADecisionBriefPanel brief={brief} /> : !filteredScope && <div className="rounded-[16px] border border-black/10 bg-white p-6 text-sm text-black/55 shadow-sm">{t('Run the preview first, then LightBI can explain this decision angle in depth.')}</div>}
+          {!businessFusionOverview && singleSourceBAOverview && <SingleSourceBAOverviewCard overview={singleSourceBAOverview} preferences={preferences} selectedDataScope={false} />}
+          {brief ? <BADecisionBriefPanel brief={brief} /> : <div className="rounded-[16px] border border-black/10 bg-white p-6 text-sm text-black/55 shadow-sm">{t('Run the preview first, then LightBI can explain this decision angle in depth.')}</div>}
         </>}
       </div>
       {onCreateDashboard && <section data-testid="deep-analysis-dashboard-cta" className="mx-5 mb-5 rounded-xl border border-black/10 bg-white p-5 shadow-sm">

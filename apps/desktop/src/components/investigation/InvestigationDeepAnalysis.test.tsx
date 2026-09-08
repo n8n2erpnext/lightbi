@@ -11,6 +11,16 @@ afterEach(() => { cleanup(); vi.restoreAllMocks(); });
 
 const canonicalBoundary = { datasetId: 'sales.xlsx', sourceId: 'source:sales' } as any;
 
+const selectedOverview = {
+  mode: 'inventory', analysisLabel: 'Selected stock', breakdownHeading: 'By store', rowCount: 1, sourceRowCount: 1, isRepresentativeSample: false,
+  bindings: { inventory: 'Stock' }, kpis: [], trend: [], trendChange: null, breakdowns: [], concentration: null, outlierCount: 0,
+  findings: [], recommendedActions: [], limitations: [], investigation: {
+    domain: 'inventory',
+    whatHappened: [{ id: 'selected:answer', title: 'Selected stock answer', statement: 'Selected evidence shows stock 12 for Store A.', confidence: 'medium', basis: 'evidence_backed', evidenceFields: ['Stock'], evidenceRows: [{ rowIndex: 0, label: 'Store A', values: { Stock: 12 } }], priorityScore: 20 }],
+    whereItHappened: [], whyItMayHaveHappened: [], unusual: [], priorities: [], decompositions: [], comparisons: [], followUpQuestions: [], actions: [], unknowns: [],
+  },
+} as any;
+
 describe('InvestigationDeepAnalysis export boundary', () => {
   it('keeps the dashboard CTA visible but outside the image/PDF capture surface', () => {
     render(
@@ -41,7 +51,7 @@ describe('InvestigationDeepAnalysis export boundary', () => {
     expect(exportSurface.contains(dashboardCta)).toBe(false);
   });
 
-  it('reuses the existing deep-analysis surface for the selected-row scope without showing full-source decision content', () => {
+  it('uses the selected-subject investigation surface for selected rows without showing full-source decision content', () => {
     render(
       <InvestigationDeepAnalysis
         action={{
@@ -60,6 +70,7 @@ describe('InvestigationDeepAnalysis export boundary', () => {
           id: 'chart_result_1', sourceResultId: 'result_1', status: 'ready', chartType: 'bar', title: 'Stock by store',
           xField: 'Store', yField: 'stock_qty', seriesFields: ['stock_qty'], rows: [{ Store: 'A', stock_qty: 12 }], warnings: [], source: 'duckdb_preview_result',
         }}
+        singleSourceBAOverview={selectedOverview}
         filteredScope={{
           rows: [{ Store: 'A', Stock: 12 }],
           filters: [{ id: 'store-a', column: 'Store', operator: 'equals', value: 'A' }],
@@ -87,12 +98,19 @@ describe('InvestigationDeepAnalysis export boundary', () => {
     );
 
     expect(screen.getByTestId('filtered-deep-analysis-scope').textContent).toContain('Store = A');
+    expect(screen.getByTestId('selected-subject-investigation')).toBeTruthy();
+    const benchmark = screen.getByTestId('selected-subject-benchmark').textContent ?? '';
+    expect(benchmark).toContain('sales.xlsx');
+    expect(benchmark).not.toContain('null');
+    expect(benchmark).toContain('1');
+    expect(benchmark).toContain('3');
+    expect(screen.queryByTestId('single-source-ba-overview')).toBeNull();
     expect(screen.getByTestId('deep-analysis-export-excel')).not.toHaveProperty('disabled', true);
     fireEvent.click(screen.getByTestId('deep-analysis-export-excel'));
     expect(screen.getByTestId('deep-analysis-export-pivot-full')).toBeTruthy();
     expect(screen.getByTestId('deep-analysis-export-pivot-selection')).not.toHaveProperty('disabled', true);
-    expect(screen.getByText('Deep BA analysis · Step 2')).toBeTruthy();
-    expect(screen.getByTestId('focus-deep-analysis').textContent).toContain('bounded to the selected Step 2 rows');
+    expect(screen.getByTestId('selected-focus-comparison-details')).not.toHaveProperty('open', true);
+    expect(screen.getByTestId('selected-focus-comparison-details').textContent).toContain('bounded to the selected evidence rows');
     expect(screen.getByTestId('focus-deep-analysis').textContent).not.toContain('120');
     expect(screen.queryByText('Run the preview first, then LightBI can explain this decision angle in depth.')).toBeNull();
     expect(screen.queryByTestId('deep-analysis-dashboard-cta')).toBeNull();
@@ -145,7 +163,7 @@ describe('InvestigationDeepAnalysis export boundary', () => {
 });
 
 describe('MB-6 authority disclosure', () => {
-  it('shows the selected-row Step 2 authority state without changing the selected-row scope', () => {
+  it('shows selected-subject authority state without changing the selected-row scope', () => {
     const analysisAuthority = {
       schemaVersion: 'lightbi.ba-analysis-authority-context.v1', artifactIdentity: 'artifact:step2', datasetStateIdentity: 'state:step2', sourceFingerprint: 'source:step2',
       domain: { primaryDomain: 'healthcare', primaryDomainSource: 'micro_brain_relation', officialSupport: { packId: 'commerce_distribution_mvp', state: 'unsupported', productionActive: false }, analysisMode: 'evidence_bound_inferred_domain', semanticConcepts: { confirmed: 0, probable: 2, microBrainRecovered: 2, ambiguous: 0, unknown: 0, unresolved: 0 }, evidenceConflicts: 0, evidence: [] },
@@ -162,7 +180,7 @@ describe('MB-6 authority disclosure', () => {
       preferences={DEFAULT_PREFERENCES}
     />);
     const authority = screen.getByTestId('ba-analysis-authority').textContent ?? '';
-    expect(authority).toContain('Step 2 · selected rows');
+    expect(authority).toContain('Selected-subject investigation · selected rows');
     expect(authority).toContain('Evidence-bound inferred domain');
     expect(authority).toContain('Semantic inference (Micro Brain)');
     expect(authority).toContain('Not production-active');

@@ -9,7 +9,8 @@ import type { DomainComparisonBrief } from "../../lib/ba-comparison-engine";
 import type { AISemanticField } from "../../lib/ai-briefing-contract";
 import { createSingleSourceBAOverview, sampleSingleSourceBARows } from "../../lib/single-source-ba-overview";
 import { BusinessComparisonBriefCard } from "./BusinessComparisonBriefCard";
-import { SingleSourceBAOverviewCard } from "../investigation/SingleSourceBAOverviewCard";
+import { SelectedSubjectInvestigationBoard } from "../investigation/SelectedSubjectInvestigationBoard";
+import { buildSelectedSubjectInvestigationPlan } from "../../lib/selected-subject-investigation";
 import { useDisplayPreferences } from "../../stores/display-preferences-store";
 import { formatValue } from "../../lib/display-formatter";
 import { createAnalysisWorkbookPlan, saveExcelAnalysisWorkbook, type AnalysisWorkbookPlanV1 } from "../../lib/analysis-workbook";
@@ -189,6 +190,30 @@ export const PerspectiveCollectionResultCard: React.FC<{
       return overview ? [{ source, overview }] : [];
     });
   }, [analysisView, chartSelection, displayMetricLabel, focusSubject, perspectiveId, selectedEvidence]);
+  const selectedSubjectInvestigationPlan = useMemo(() => {
+    if (!chartSelection || analysisView !== 'deep_selected' || subsetOverviews.length === 0) return null;
+    return buildSelectedSubjectInvestigationPlan({
+      dimensionField: 'reporting_period',
+      label: chartSelection.period,
+      period: chartSelection.period,
+      metricId: chartSelection.metricId,
+      focusLabel: focusSubject?.displayLabel ?? null,
+    }, subsetOverviews.map(({ source, overview }) => {
+      const selectedRows = rowsForEvidence(source).length;
+      const availableRows = source.rows.length;
+      return {
+        sourceKey: `${source.period}:${source.role}:${source.sourceName}`,
+        sourceName: source.sourceName,
+        role: source.role,
+        selectedRowCount: selectedRows,
+        matchedRowCount: focusSubject ? selectedRows : availableRows,
+        referenceRowCount: source.sourceRowCount,
+        referenceScope: 'source_rows' as const,
+        isTruncated: availableRows < source.sourceRowCount,
+        overview,
+      };
+    }), { perspectiveId });
+  }, [analysisView, chartSelection, focusSubject?.displayLabel, perspectiveId, subsetOverviews]);
   const previewRows = activeEvidence ? rowsForEvidence(activeEvidence).slice(0, 100) : [];
   const previewColumns = [...new Set(previewRows.flatMap(row => Object.keys(row)))].slice(0, 12);
   const exportFileStem = `${displayPerspectiveLabel}${chartSelection ? `-${chartSelection.period}-${displayMetricLabel(chartSelection.metricId)}` : ""}`
@@ -364,13 +389,13 @@ export const PerspectiveCollectionResultCard: React.FC<{
           </div>
           <div data-testid="collection-chart-drill" className="p-5 md:p-6">
             <div className="flex flex-wrap items-start justify-between gap-3">
-              <div><p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-blue-700">{t('Step 2 · Selected-data scope')}</p><p className="mt-1 max-w-2xl text-xs leading-5 text-slate-600">{t('LightBI keeps each governed source separate and analyzes only the period and metric selected on the chart.')}</p></div>
-              <button type="button" disabled={selectedEvidence.every(source => rowsForEvidence(source).length === 0)} onClick={() => setAnalysisView('deep_selected')} className="rounded-lg bg-slate-950 px-4 py-2.5 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-40">{t('Deep BA analysis · Step 2')}</button>
+              <div><p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-blue-700">{t('Selected evidence scope')}</p><p className="mt-1 max-w-2xl text-xs leading-5 text-slate-600">{t('LightBI keeps each governed source separate and bounds the investigation to the period and metric selected on the chart.')}</p></div>
+              <button type="button" disabled={selectedEvidence.every(source => rowsForEvidence(source).length === 0)} onClick={() => setAnalysisView('deep_selected')} className="rounded-lg bg-slate-950 px-4 py-2.5 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-40">{t('Investigate selected evidence')}</button>
             </div>
             {selectedEvidence.length === 0 ? <p className="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800">{t('No source-bound row evidence is available for this chart point.')}</p> : <>
               <div className="mt-4 flex flex-wrap gap-2">{selectedEvidence.map((source, index) => <button key={`${source.period}:${source.role}:${source.sourceName}`} type="button" data-testid={`collection-evidence-source-${index}`} aria-pressed={index === activeEvidenceIndex} onClick={() => setActiveEvidenceIndex(index)} className={`rounded-lg border px-3 py-2 text-xs font-medium ${index === activeEvidenceIndex ? 'border-blue-500 bg-white text-blue-800' : 'border-slate-200 bg-slate-50 text-slate-600'}`}>{t(source.role)} · {source.sourceName} · {source.sourceRowCount.toLocaleString(preferences.locale)} {t('rows')}{focusSubject ? ` · ${rowsForEvidence(source).length} focus match${rowsForEvidence(source).length === 1 ? '' : 'es'}` : ''}</button>)}</div>
               {activeEvidence && focusSubject && previewRows.length === 0 && <p data-testid="collection-focus-unavailable" className="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800">This source has no exact evidence for the selected Focus Subject. LightBI will not infer a cross-source identity match.</p>}
-              {activeEvidence && previewRows.length > 0 && <div className="mt-4 max-h-[420px] overflow-auto rounded-lg border border-slate-200 bg-white"><table className="min-w-full text-left text-[11px]"><thead className="sticky top-0 bg-slate-50 text-slate-500"><tr>{previewColumns.map(column => <th key={column} className="whitespace-nowrap border-b border-slate-200 px-3 py-2 font-semibold">{column}</th>)}</tr></thead><tbody>{previewRows.map((row, rowIndex) => <tr key={rowIndex} className="border-b border-slate-100 last:border-0">{previewColumns.map(column => <td key={column} className="max-w-[240px] truncate whitespace-nowrap px-3 py-2 text-slate-700">{String(row[column] ?? '')}</td>)}</tr>)}</tbody></table><p className="border-t border-slate-100 px-3 py-2 text-[11px] text-slate-500">{t(focusSubject ? 'Preview shows the first 100 exact Focus Subject matches; Deep BA uses that exact matched row scope. The source chip keeps the full source-row count visible.' : 'Preview shows the first 100 selected rows; Deep BA uses a representative sample with the full source-row scope disclosed.')}</p></div>}
+              {activeEvidence && previewRows.length > 0 && <div className="mt-4 max-h-[420px] overflow-auto rounded-lg border border-slate-200 bg-white"><table className="min-w-full text-left text-[11px]"><thead className="sticky top-0 bg-slate-50 text-slate-500"><tr>{previewColumns.map(column => <th key={column} className="whitespace-nowrap border-b border-slate-200 px-3 py-2 font-semibold">{column}</th>)}</tr></thead><tbody>{previewRows.map((row, rowIndex) => <tr key={rowIndex} className="border-b border-slate-100 last:border-0">{previewColumns.map(column => <td key={column} className="max-w-[240px] truncate whitespace-nowrap px-3 py-2 text-slate-700">{String(row[column] ?? '')}</td>)}</tr>)}</tbody></table><p className="border-t border-slate-100 px-3 py-2 text-[11px] text-slate-500">{t(focusSubject ? 'Preview shows the first 100 exact Focus Subject matches; the investigation uses that exact matched row scope. The source chip keeps the full source-row count visible.' : 'Preview shows the first 100 selected rows; the investigation keeps the full source-row scope disclosed.')}</p></div>}
             </>}
           </div>
           {renderCollectionActionBar(false)}
@@ -384,12 +409,12 @@ export const PerspectiveCollectionResultCard: React.FC<{
     return (
       <section data-testid="perspective-collection-result" className="overflow-hidden rounded-2xl border border-violet-100 bg-white shadow-sm">
         <div data-testid="collection-deep-selected-surface">
-          <div className="flex items-start gap-3 border-b border-slate-100 bg-slate-950 px-5 py-5 text-white md:px-6"><button data-testid="collection-deep-selected-back" type="button" onClick={() => setAnalysisView('evidence_drill')} className="mt-0.5 inline-flex items-center gap-1.5 rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-xs font-semibold text-white hover:bg-white/15"><ArrowLeft className="h-4 w-4" />{t('Back')}</button><div><p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-violet-300">{t('Deep BA analysis · Step 2')}</p><h3 className="mt-1 text-lg font-semibold">{chartSelection.period} · {displayMetricLabel(chartSelection.metricId)}</h3><p className="mt-1 text-xs leading-5 text-slate-300">{t('This surface recalculates BA only from the exact selected evidence scope; the governed summary remains unchanged.')}</p></div></div>
+          <div className="flex items-start gap-3 border-b border-slate-100 bg-slate-950 px-5 py-5 text-white md:px-6"><button data-testid="collection-deep-selected-back" type="button" onClick={() => setAnalysisView('evidence_drill')} className="mt-0.5 inline-flex items-center gap-1.5 rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-xs font-semibold text-white hover:bg-white/15"><ArrowLeft className="h-4 w-4" />{t('Back')}</button><div><p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-violet-300">{t('Selected-subject investigation')}</p><h3 className="mt-1 text-lg font-semibold">{chartSelection.period} · {displayMetricLabel(chartSelection.metricId)}</h3><p className="mt-1 text-xs leading-5 text-slate-300">{t('This surface investigates only the selected evidence scope; source evidence remains separate and the governed summary remains unchanged.')}</p></div></div>
           {renderCollectionActionBar(true)}
           {exportError && <p role="alert" className="border-t border-red-100 bg-red-50 px-5 py-2 text-xs text-red-700 md:px-6">{exportError}</p>}
           <div ref={deepExportRef} data-testid="collection-deep-analysis-export-surface" className="p-5 md:p-6">
             <div data-testid="collection-subset-deep-ba" className="space-y-5">
-              {subsetOverviews.length > 0 ? subsetOverviews.map(({ source, overview }) => <div key={`${source.period}:${source.role}:${source.sourceName}`}><div className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">{t(source.role)} · {source.sourceName}</div><SingleSourceBAOverviewCard overview={overview} preferences={preferences} selectedDataScope /></div>) : <p className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800">{t('No eligible selected evidence is available for Deep BA Step 2.')}</p>}
+              {selectedSubjectInvestigationPlan ? <SelectedSubjectInvestigationBoard plan={selectedSubjectInvestigationPlan} sourceOverviews={subsetOverviews.map(({ source, overview }) => ({ sourceKey: `${source.period}:${source.role}:${source.sourceName}`, overview }))} preferences={preferences} /> : <p className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800">{t('No eligible selected evidence is available for this investigation.')}</p>}
             </div>
           </div>
         </div>
@@ -450,7 +475,7 @@ export const PerspectiveCollectionResultCard: React.FC<{
               },
             }}
           />
-          <div className="mt-2 flex flex-wrap items-center gap-1.5" aria-label={t('Select a chart point for step 2 analysis')}>
+          <div className="mt-2 flex flex-wrap items-center gap-1.5" aria-label={t('Select a chart point to inspect evidence')}>
             {rows.flatMap((row) => metricIds.map((metricId) => {
               const period = String(row.reporting_period ?? '');
               const active = chartSelection?.period === period && chartSelection.metricId === metricId;

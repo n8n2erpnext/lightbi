@@ -20,7 +20,7 @@ vi.mock('echarts-for-react', () => ({
 afterEach(() => { cleanup(); useAnalysisExportStore.getState().clearPlan(); });
 
 describe('PerspectiveCollectionResultCard selected-data analysis', () => {
-  it('opens source-bound evidence and reuses Deep BA for the selected multi-file chart point', () => {
+  it('opens source-bound evidence and enters selected-subject investigation for the selected multi-file chart point', () => {
     render(<PerspectiveCollectionResultCard
       perspectiveId="executive_overview"
       rows={[
@@ -51,13 +51,14 @@ describe('PerspectiveCollectionResultCard selected-data analysis', () => {
     expect(screen.getByText('Product')).toBeTruthy();
     expect(screen.getByRole('table').parentElement?.className).toContain('max-h-[420px]');
 
-    fireEvent.click(screen.getByRole('button', { name: /Deep BA analysis · Step 2/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Investigate selected evidence/i }));
     expect(screen.getByTestId('collection-subset-deep-ba')).toBeTruthy();
-    expect(screen.getByTestId('single-source-ba-overview')).toBeTruthy();
-    expect(screen.getByTestId('deep-ba-selected-scope')).toBeTruthy();
+    expect(screen.getByTestId('selected-subject-investigation')).toBeTruthy();
+    expect(screen.getByTestId('selected-subject-benchmark').textContent).toContain('sales-2026-05.xlsx');
+    expect(screen.queryByTestId('single-source-ba-overview')).toBeNull();
   });
 
-  it('treats one reporting period as a snapshot and routes through evidence before Step 2', () => {
+  it('treats one reporting period as a snapshot and routes through evidence before selected-subject investigation', () => {
     render(<PerspectiveCollectionResultCard
       perspectiveId="executive_overview"
       rows={[{ reporting_period: '2026-06', sales_revenue: 250 }]}
@@ -90,7 +91,7 @@ describe('PerspectiveCollectionResultCard selected-data analysis', () => {
     expect(screen.queryByTestId('collection-subset-deep-ba')).toBeNull();
     expect(screen.queryByTestId('collection-decision-workspace')).toBeNull();
 
-    fireEvent.click(screen.getByRole('button', { name: /Deep BA analysis · Step 2/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Investigate selected evidence/i }));
     expect(screen.getByTestId('collection-deep-selected-surface')).toBeTruthy();
     expect(screen.getByTestId('collection-subset-deep-ba')).toBeTruthy();
     expect(screen.queryByTestId('collection-chart-drill')).toBeNull();
@@ -107,7 +108,7 @@ describe('PerspectiveCollectionResultCard selected-data analysis', () => {
     expect(exportPlan?.combinationPolicy).toBe('single_source');
     expect(exportPlan?.tables.some(table => table.kind === 'evidence')).toBe(true);
   });
-  it('keeps full Deep BA and selected Step 2 mutually exclusive and restores the exact evidence source on Back', () => {
+  it('keeps full Deep BA and selected-subject investigation mutually exclusive and restores the exact evidence source on Back', () => {
     const deepDiveBrief = createDomainComparisonBrief({
       periods: [
         { id: 'may', label: '2026-05', labelConfidence: 'high', labelReason: 'test', sortableKey: '2026-05', rows: [{ Product: 'A', Revenue: 300 }] },
@@ -147,7 +148,7 @@ describe('PerspectiveCollectionResultCard selected-data analysis', () => {
     expect(screen.getByTestId('collection-evidence-source-1').getAttribute('aria-pressed')).toBe('true');
     expect(screen.getByRole('table').textContent).toContain('C');
 
-    fireEvent.click(screen.getByRole('button', { name: /Deep BA analysis · Step 2/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Investigate selected evidence/i }));
     expect(screen.getByTestId('collection-deep-selected-surface')).toBeTruthy();
     expect(screen.queryByTestId('collection-deep-perspective-surface')).toBeNull();
     expect(screen.queryByTestId('governed-ba-deep-dive')).toBeNull();
@@ -221,6 +222,13 @@ describe('PerspectiveCollectionResultCard selected-data analysis', () => {
     expect(evidenceTables).toHaveLength(1);
     expect(evidenceTables[0].rows).toEqual([{ Product: 'A', Revenue: 100 }, { Product: 'A', Revenue: 120 }]);
     expect(exportPlan?.notes.join(' ')).toMatch(/Focus Subject: A — Widget.*summary metrics remain full-population/i);
+
+    fireEvent.click(salesButton);
+    fireEvent.click(screen.getByRole('button', { name: /Investigate selected evidence/i }));
+    const investigation = screen.getByTestId('selected-subject-investigation');
+    expect(investigation.textContent).toContain('sales.xlsx');
+    expect(investigation.textContent).not.toContain('accounting.xlsx');
+    expect(investigation.textContent).toContain('Source-separation policy');
   });
 
 });

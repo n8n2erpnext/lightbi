@@ -832,7 +832,7 @@ export function deriveFocusSubjectNarrative(
     return {
       headline: `Analysis around ${subject}`,
       summary: selectedScope
-        ? `This readout is bounded to the selected Step 2 rows${comparison.scope?.isTruncated ? " retrieved within the drill-through limit" : ""}; no governed numeric peer comparison is available inside this selected scope.`
+        ? `This readout is bounded to the selected evidence rows${comparison.scope?.isTruncated ? " retrieved within the drill-through limit" : ""}; no governed numeric peer comparison is available inside this selected scope.`
         : "The focus is verified in the full source, but no governed numeric comparison is available for this action.",
       insights: [],
       followUpQuestions: [
@@ -940,7 +940,7 @@ export function deriveFocusSubjectNarrative(
   return {
     headline: `${subject} in context`,
     summary: selectedScope
-      ? `This readout is bounded to the selected Step 2 rows${comparison.scope?.isTruncated ? " retrieved within the drill-through limit" : ""}; LightBI does not extend these claims to the full source.`
+      ? `This readout is bounded to the selected evidence rows${comparison.scope?.isTruncated ? " retrieved within the drill-through limit" : ""}; LightBI does not extend these claims to the full source.`
       : `The verified full population remains the benchmark; every readout below is anchored to ${subject}.`,
     insights,
     followUpQuestions,
