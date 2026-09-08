@@ -1,6 +1,6 @@
 # Agent Implementation Plan — Decision Presentation + UI/UX Refactor — 2026-09-04
 
-Status: **DPR-3 CLOSED — ANALYSIS NARRATIVE PLANNER LIVE-ACCEPTED ON NEXT; DPR-4 BA STEP 2 INVESTIGATION MODEL ACTIVE**
+Status: **DPR-4 CLOSED — SELECTED-SUBJECT INVESTIGATION LIVE-ACCEPTED ON NEXT; DPR-5 VISUALIZATION ONTOLOGY + CHART PATTERN LIBRARY ACTIVE**
 Date: 2026-09-04
 Amended: 2026-09-05 — owner added design-system/i18n hardening and Frappe UI reference direction.
 Amended: 2026-09-06 — owner elevated Frappe Books as a primary product-UX study source and added a canonical chart-pattern/visual-grammar library direction.
@@ -13,9 +13,10 @@ Amended: 2026-09-08 — DPR-0 terminal workflow convergence source-closed at Pro
 Amended: 2026-09-08 — DPR-1 provenance foundation source-closed at Product `d027bb3...`: exact plan vocabulary, explicit evidence/knowledge/derivation contract, non-escalation guard, shared Evidence Inspector and NEXT 5273 runtime acceptance. DPR-2 is active.
 Amended: 2026-09-08 — DPR-2 source/live-closed at Product `a876fb9...`: one deterministic open-world Question/Perspective Intelligence projection now separates Domain from Perspective, deduplicates governed + universal questions, admits MB/domain-context question candidates only as non-executable review items, preserves governed action authority, and passed NEXT 5273 runtime acceptance. DPR-3 is active.
 Amended: 2026-09-08 — DPR-3 source/live-closed at Product `804fb2f...`: deterministic `AnalysisNarrativePlan v1` now makes governed Deep BA/comparison output answer-first, deduplicates same-weight narrative output, applies supporting-analysis relevance gates, admits MB only as bounded ordinal narrative advice, and passed immutable NEXT 5273 browser acceptance. DPR-4 is active.
+Amended: 2026-09-08 — DPR-4 source/live-closed at Product `9d1d4a6...`: single-file and multi-file selected-data flows now converge on `SelectedSubjectInvestigation v1`, preserve source separation/count/truncation/Focus fail-closed truth, keep governed summary and MB authority unchanged, and passed immutable NEXT 5273 browser acceptance. DPR-5 is active.
 Scope: Question/Perspective, narrative, visualization, Dashboard, evidence, export and product UI-surface refactor.
 Authority: design/implementation plan; not runtime or metric authority.
-Code-audit snapshot: current clean Product worktree is `codex/dpr0-contract-freeze` at `804fb2feec8528dc061ce299486ff653d02a92db`, descendant of optimized-li brand source `fde259a5441b36825f211914cbd0c82fc595f27f`; Control Plane brand source remains `b6bc2735bcf99218443ae5c427701e5b1a7c938f`. DPR-0 is closed at baseline evidence `14c2d99...`; DPR-1 provenance is source/live-closed at `d027bb3...`; DPR-2 Question/Perspective Intelligence is source/live-closed at `a876fb9...`; DPR-3 Analysis Narrative Planner is source/live-closed at `804fb2f...`; DPR-4 is the active implementation phase.
+Code-audit snapshot: current clean Product worktree is `codex/dpr0-contract-freeze` at `9d1d4a6c1df4a69bf8aa3c0366e7f4eac8fce311`, descendant of optimized-li brand source `fde259a5441b36825f211914cbd0c82fc595f27f`; Control Plane brand source remains `b6bc2735bcf99218443ae5c427701e5b1a7c938f`. DPR-0 is closed at baseline evidence `14c2d99...`; DPR-1 provenance is source/live-closed at `d027bb3...`; DPR-2 Question/Perspective Intelligence is source/live-closed at `a876fb9...`; DPR-3 Analysis Narrative Planner is source/live-closed at `804fb2f...`; DPR-4 Selected-subject Investigation is source/live-closed at `9d1d4a6...`; DPR-5 is the active implementation phase.
 Supersedes: none.
 
 Repository target when implementation is authorized: public LightBI product successor.
@@ -787,6 +788,16 @@ Closure evidence — 2026-09-08:
 - Replace “Deep BA on selected rows” presentation with selected-subject investigation semantics.
 - Add benchmark/context decomposition and concise next-action structure.
 - Synthesize multi-source evidence into one answer where appropriate.
+
+Closure evidence — 2026-09-08:
+
+- Product `9d1d4a6c1df4a69bf8aa3c0366e7f4eac8fce311` publishes `lightbi.selected-subject-investigation.v1` and converges both single-file filtered drill-through and multi-file evidence drill into the same selected-subject presentation contract. Full-scope Deep BA and selected-subject investigation remain mutually exclusive at full visual weight with reversible Back state.
+- The selected-scope contract preserves upstream authority: `selectedScopeOnly=true`, `preserveSourceSeparation=true`, `crossSourceJoinAllowed=false`, `governedSummaryUnchanged=true`, `benchmarkIsContextNotAuthority=true`, `mbMayStrengthenAuthority=false`. Benchmark ratios are context only; selected rows do not rewrite governed summary values or create cross-source identity.
+- Scope truth is explicit. Single-file uses the existing `selectedRowCount`, `matchedRowCount`, `sourceResultRowCount` and `isTruncated` evidence from `FilteredDeepAnalysisScope`. Multi-file no longer equates matched rows with selected rows unconditionally; bounded evidence is disclosed as bounded/representative rather than claimed as full-source coverage. Focus remains exact-match fail-closed when a source lacks a matched binding.
+- `SelectedSubjectInvestigationBoard` is answer-first and canvas-first: one primary attributed answer, secondary benchmark/context, parallel source evidence with attribution, concise next actions/questions/unknowns, and detailed per-source narratives collapsed by default. The old user-facing “Deep BA analysis · Step 2” presentation is removed from active selected-scope UI.
+- Verification is green: DPR-4 integration + i18n `16/16` across `6` files; Focus/MB/DPR-3 authority regression `52/52` across `12` files; `git diff --check` PASS; TypeScript/Vite production build PASS with `3809` modules; final release-authoritative suite PASS including governed product regression `11 files / 42 tests`. Exact committed SHA was rebuilt successfully after push.
+- Immutable `/home/ubuntu/services/lightbi-next-web/dpr4-9d1d4a6` is live only on NEXT gateway 5273 and reports exact source `9d1d4a6...`. Browser acceptance PASSed both paths: six-file ERP + Focus `Aqua 250L` reaches parallel selected-subject investigation with exact-source evidence separation; a canonical single-source Revenue flow reaches chart drill -> `Investigate selected evidence` -> selected-subject investigation (`1/1` PASS in `19.7s`). Gateway rotated intentionally to PID `15820`; Core `3376963`, Control Plane `2346997`, signer launcher `12020`, issuer launcher `3817149`, attestation launcher `1505209` and user manager `943` remained unchanged. Production was not touched.
+
 ### DPR-5 — Visualization ontology + Chart Pattern Library + Domain Visual Profiles
 
 - Define analytical intents and visual suitability/negative rules.
@@ -899,9 +910,9 @@ LightBI should guide the user from **what the data means** to **what question ma
 
 ## 23. Implementation gate
 
-This document remains the refactor plan. The 2026-09-06 MB presentation-advisory foundation is now source-closed separately at product commit `4be593ae57b4b1385a833675dd4ea2349900d378`, but it is not wired into current BA/chart runtime selection. No NEXT generation, Production service, metric authority, domain-support pack or release artifact is changed by this planning update.
+This document remains the refactor plan. The 2026-09-06 MB presentation-advisory foundation is source-closed separately at product commit `4be593ae57b4b1385a833675dd4ea2349900d378`; DPR-2 through DPR-4 now consume bounded MB presentation advice for question relevance, narrative priority and selected-subject presentation while deterministic governed authority remains upstream. MB still has no direct chart-selection, renderer, metric, formula, join or runtime-execution authority; DPR-5/DPR-6 must preserve that boundary. Production promotion remains owner-gated.
 
-DPR-0, DPR-1, DPR-2 and DPR-3 are CLOSED. The active implementation phase is DPR-4 BA Step 2 investigation model. DPR-4 must preserve the DPR-0 reversible terminal-state grammar, DPR-1 provenance/non-escalation contract, DPR-2 question/perspective authority boundaries and DPR-3 answer-first narrative policy while making selected-data investigation a dedicated bounded surface rather than a second full-weight Deep BA report. Broad visual-system migration remains owned by DPR-8 after the preceding planner/ontology phases. Documentation work must continue to follow `docs/project-book/LIBRARY_RULES.md`.
+DPR-0, DPR-1, DPR-2, DPR-3 and DPR-4 are CLOSED. The active implementation phase is DPR-5 Visualization ontology + Chart Pattern Library + Domain Visual Profiles. DPR-5 must define analytical intents, canonical chart-pattern suitability/negative rules, semantic color/cardinality/label/axis/tooltip behavior and graceful fallbacks before DPR-6 is allowed to choose renderer families. Micro Brain presentation/domain/chart knowledge remains advisory only; deterministic suitability checks remain final and cannot strengthen governed metric/evidence authority. Broad visual-system migration remains owned by DPR-8 after DPR-5 through DPR-7 planner work. Documentation work must continue to follow `docs/project-book/LIBRARY_RULES.md`.
 ## 24. Source bookmarks
 
 - [`../../../project-book/LIBRARY_RULES.md`](../../../project-book/LIBRARY_RULES.md) — documentation governance used for this plan.
