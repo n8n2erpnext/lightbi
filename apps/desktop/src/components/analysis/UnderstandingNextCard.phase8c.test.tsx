@@ -69,7 +69,8 @@ describe("UnderstandingNextCard Phase 8C functional states", () => {
     expect(screen.getByTestId("canonical-primary-analysis").textContent).toContain("Revenue");
     fireEvent.click(screen.getByTestId("canonical-analyze-perspective"));
     expect(investigate).toHaveBeenCalledWith(expect.objectContaining({ id: "action:revenue" }));
-    expect(screen.getAllByRole("button", { name: "Investigate" })).toHaveLength(1);
+    expect(screen.queryByRole("button", { name: "Investigate" })).toBeNull();
+    expect(screen.getByTestId("canonical-analyze-perspective")).toBeTruthy();
     expect(screen.queryByTestId("canonical-analysis-q:unsafe")).toBeNull();
     expect(screen.queryByTestId("canonical-analysis-concept:forecast")).toBeNull();
     fireEvent.click(screen.getByTestId("canonical-remediate-q:profit-open_currency_declaration"));
@@ -78,10 +79,10 @@ describe("UnderstandingNextCard Phase 8C functional states", () => {
 
   it("preserves evidence provenance and decision-use restrictions in details", () => {
     render(<UnderstandingNextCard understanding={understanding} canonicalPresentation={perspectivePresentation} canonicalPerspectives={canonicalPerspectives} selectedPerspectiveId="revenue" />);
-    const article = screen.getByTestId("canonical-analysis-q:revenue");
-    fireEvent.click(article.querySelector("summary")!);
-    expect(article.textContent).toContain("canonical_artifact");
-    expect(article.textContent).toContain("Review evidence before deciding.");
+    const evidence = screen.getByTestId("question-intelligence-primary-evidence-q:revenue");
+    fireEvent.click(evidence.querySelector("summary")!);
+    expect(evidence.textContent).toContain("canonical_artifact");
+    expect(evidence.textContent).toContain("Review evidence before deciding.");
   });
 
   it("keeps raw source identity out of the primary blocker card", () => {
@@ -142,5 +143,12 @@ describe("UnderstandingNextCard Phase 8C functional states", () => {
     expect(summary.textContent).toContain("This domain is not officially supported");
     expect(summary.textContent).not.toMatch(/\b\d{1,3}%\b/);
     expect(summary.textContent).not.toContain("similarity");
+  });
+  it("keeps MB domain-context questions review-only without execution authority", () => {
+    render(<UnderstandingNextCard understanding={understanding} canonicalPresentation={inferredDomainPresentation} canonicalPerspectives={canonicalPerspectives} selectedPerspectiveId="performance" />);
+    const section = screen.getByTestId("question-intelligence-domain-context-questions");
+    expect(section.textContent).toContain("Micro Brain advisory only");
+    expect(section.querySelectorAll("button")).toHaveLength(0);
+    expect(screen.getByTestId("canonical-perspective-recognized-only")).toBeTruthy();
   });
 });

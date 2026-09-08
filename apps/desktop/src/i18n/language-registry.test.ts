@@ -32,6 +32,8 @@ describe('language catalog registry', () => {
 
   it('uses language-package patterns for dynamic UI sentences', () => {
     expect(translateCatalogMessage('vi-VN', '25 of 100 rows selected for export')).toBe('Đã chọn 25 / 100 dòng để xuất');
+    expect(translateCatalogMessage('vi', 'What evidence is needed to evaluate capacity utilization?')).toBe('Cần bằng chứng nào để đánh giá capacity utilization?');
+    expect(translateCatalogMessage('vi', 'healthcare context makes this question relevant, but LightBI will not calculate it until governed evidence and action authority are available.')).toBe('Ngữ cảnh healthcare khiến câu hỏi này đáng xem xét, nhưng LightBI sẽ không tính toán cho đến khi có bằng chứng được quản trị và thẩm quyền thực thi phù hợp.');
   });
 
   it('translates legacy Vietnamese engine output when English is selected', () => {

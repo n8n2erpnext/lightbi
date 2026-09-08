@@ -3,10 +3,10 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 
-type Defect = { id: string; ownerPhase: string; source: string; evidence: string; expectedVisibleHeadingOccurrences?: number; laneSymbols?: string[] };
+type Defect = { id: string; ownerPhase: string; source: string; evidence: string; expectedVisibleHeadingOccurrences?: number; laneSymbols?: string[]; status?: 'resolved' };
 const here = path.dirname(fileURLToPath(import.meta.url));
 const srcRoot = path.resolve(here, '..');
-const baseline = JSON.parse(fs.readFileSync(path.join(here, 'dpr0-presentation-debt-baseline.json'), 'utf8')) as { defects: Defect[] };
+const baseline = JSON.parse(fs.readFileSync(path.join(here, 'dpr0-presentation-debt-baseline.json'), 'utf8')) as { defects: Defect[]; resolvedDefects?: Defect[] };
 
 const defect = (id: string) => {
   const found = baseline.defects.find(item => item.id === id);
@@ -22,11 +22,15 @@ describe('DPR-0 presentation debt baseline', () => {
     expect(source).toContain(item.evidence);
   });
 
-  it('keeps duplicate question-lane debt explicit until DPR-2 consolidates it', () => {
-    const item = defect('duplicate-other-question-lanes');
-    const source = fs.readFileSync(path.join(srcRoot, item.source), 'utf8');
-    expect(item.ownerPhase).toBe('DPR-2');
-    expect(item.laneSymbols?.every(symbol => source.includes(symbol))).toBe(true);
-    expect(source.split(item.evidence).length - 1).toBe(item.expectedVisibleHeadingOccurrences);
+  it('keeps the DPR-2 duplicate question-lane debt retired after unified Question Intelligence', () => {
+    expect(baseline.defects.some(item => item.id === 'duplicate-other-question-lanes')).toBe(false);
+    const item = baseline.resolvedDefects?.find(entry => entry.id === 'duplicate-other-question-lanes');
+    expect(item?.ownerPhase).toBe('DPR-2');
+    expect(item?.status).toBe('resolved');
+    const source = fs.readFileSync(path.join(srcRoot, item!.source), 'utf8');
+    expect(item?.laneSymbols?.every(symbol => source.includes(symbol))).toBe(true);
+    expect(source.split(item!.evidence).length - 1).toBe(item?.expectedVisibleHeadingOccurrences);
+    expect(source).not.toContain('data-testid="universal-ready-angles"');
+    expect(source).not.toContain('data-testid="canonical-ready-angles"');
   });
 });

@@ -11,6 +11,7 @@ import { CanonicalPerspectiveSelector } from './CanonicalPerspectiveSelector';
 import { useUiLanguage } from '../../lib/ui-language';
 import { FocusSubjectSelector } from './FocusSubjectSelector';
 import { resolveFocusAutoPerspectiveId, type FocusSubjectCandidate, type FocusSubjectOption, type FocusSubjectSelection } from '../../lib/focus-subject-analysis';
+import { buildQuestionPerspectiveIntelligence } from '../../lib/question-perspective-intelligence';
 
 const DOCUMENT_TYPE_LABELS: Record<string, string> = {
   retail_sales_document: 'retail sales data',
@@ -54,6 +55,11 @@ const DOMAIN_ANALYSIS_MODE_LABELS: Record<string, string> = {
   unknown_or_ambiguous: 'Unknown or ambiguous',
 };
 
+const QUESTION_ANSWERABILITY_LABELS: Record<string, string> = { executable_now: 'Governed answer', descriptive_only: 'Safe descriptive', needs_more_evidence: 'Needs evidence', unsupported: 'Unsupported' };
+const QUESTION_ANSWERABILITY_CLASSES: Record<string, string> = {
+  executable_now: 'border-emerald-200 bg-emerald-50 text-emerald-700', descriptive_only: 'border-blue-200 bg-blue-50 text-blue-700',
+  needs_more_evidence: 'border-amber-200 bg-amber-50 text-amber-700', unsupported: 'border-slate-200 bg-slate-50 text-slate-500',
+};
 function humanize(value: string): string {
   return value.replace(/_/g, ' ');
 }
@@ -582,19 +588,25 @@ const CanonicalAnalysisStates: React.FC<{
   const analysisPerspectiveId = selectedPerspectiveId ?? focusAutoPerspectiveId;
   const actionById = new Map(understanding.availableActions.map(action => [action.id, action]));
   const perspectiveAnalyses = analysisPerspectiveId
-    ? presentation.analyses.filter(item => (item.businessPerspectiveIds ?? []).some(id => id === analysisPerspectiveId))
+    ? presentation.analyses.filter(item => (item.businessPerspectiveIds ?? []).some(id => String(id) === analysisPerspectiveId))
     : [];
-  const universalQuestions = analysisPerspectiveId
-    ? understanding.recommendedQuestions.filter((question) =>
-        question.id.startsWith('universal:')
-        && question.domain === analysisPerspectiveId
-        && question.executionScope !== 'not_supported')
-    : [];
-  const universalActions = universalQuestions.flatMap((question) => {
-    const action = understanding.availableActions.find((candidate) =>
-      candidate.id.startsWith('universal:') && candidate.questionId === question.id);
-    return action ? [{ question, action }] : [];
+  const questionIntelligence = buildQuestionPerspectiveIntelligence({
+    presentation,
+    understanding,
+    selectedPerspectiveId: analysisPerspectiveId,
+    focusLabel: focusSubject?.displayLabel ?? null,
   });
+  const primaryQuestion = questionIntelligence.primary;
+  const primaryQuestionAction = primaryQuestion?.actionId ? actionById.get(primaryQuestion.actionId) : undefined;
+  const primaryGovernedAnalysis = primaryQuestion?.governingAnalysisId
+    ? perspectiveAnalyses.find(item => item.itemId === primaryQuestion.governingAnalysisId) ?? null
+    : null;
+  const otherActionableQuestions = questionIntelligence.candidates.filter(candidate =>
+    candidate.candidateId !== primaryQuestion?.candidateId
+    && Boolean(candidate.actionId && actionById.has(candidate.actionId))
+    && (candidate.answerability === 'executable_now' || candidate.answerability === 'descriptive_only'));
+  const domainContextQuestions = questionIntelligence.candidates.filter(candidate =>
+    candidate.source === 'domain_context' && candidate.answerability === 'needs_more_evidence');
   const countRows: Array<[CanonicalAnalysisPresentationV1['state'], string]> = [
     ['ready', 'Ready now'],
     ['needs_user_evidence', 'Needs confirmation'],
@@ -603,21 +615,12 @@ const CanonicalAnalysisStates: React.FC<{
     ['unsupported_mvp', 'Unsupported'],
   ];
   const groups = [
-    { id: 'recommended', label: 'Recommended now', items: perspectiveAnalyses.filter(item => item.state === 'ready' && item.advertisedAsDefault).sort((a, b) => (a.rank ?? 99) - (b.rank ?? 99)) },
-    { id: 'additional', label: 'Additional supported analyses', items: perspectiveAnalyses.filter(item => item.state === 'ready' && !item.advertisedAsDefault) },
     { id: 'resolvable', label: 'Resolvable analyses', items: perspectiveAnalyses.filter(item => item.state === 'needs_user_evidence' || item.state === 'needs_mapping_review') },
     { id: 'blocked', label: 'Safety-blocked analyses', items: perspectiveAnalyses.filter(item => item.state === 'blocked_safety') },
     { id: 'execution-failed', label: 'Execution failed', items: perspectiveAnalyses.filter(item => item.state === 'execution_failed') },
     { id: 'unsupported', label: 'Not supported yet', items: perspectiveAnalyses.filter(item => item.state === 'unsupported_mvp') },
     { id: 'stale', label: 'Stale analyses', items: perspectiveAnalyses.filter(item => item.state === 'stale') },
   ].filter(group => group.items.length > 0);
-  const primaryAnalysis = perspectiveAnalyses
-    .filter(item => item.state === 'ready' && item.executionReadiness !== 'not_executable' && item.actionCandidateId && actionById.has(item.actionCandidateId))
-    .sort((left, right) => Number(right.advertisedAsDefault) - Number(left.advertisedAsDefault) || (left.rank ?? 99) - (right.rank ?? 99))[0] ?? null;
-  const primaryAction = primaryAnalysis?.actionCandidateId ? actionById.get(primaryAnalysis.actionCandidateId) : undefined;
-  const readyExecutableAnalyses = perspectiveAnalyses
-    .filter(item => item.state === 'ready' && item.executionReadiness !== 'not_executable' && item.actionCandidateId && actionById.has(item.actionCandidateId))
-    .sort((left, right) => Number(right.advertisedAsDefault) - Number(left.advertisedAsDefault) || (left.rank ?? 99) - (right.rank ?? 99));
   const contextMode = selectedPerspectiveId && focusSubject ? 'combined' : selectedPerspectiveId ? 'perspective' : focusSubject ? 'focus' : 'none';
   const primaryButtonLabel = contextMode === 'combined'
     ? 'Analyze focused perspective'
@@ -625,6 +628,8 @@ const CanonicalAnalysisStates: React.FC<{
       ? 'Analyze this focus'
       : 'Analyze this perspective';
   const analysisPerspectiveLabel = analysisPerspectiveId ? humanize(analysisPerspectiveId) : null;
+  const answerabilityLabel = (value: string) => QUESTION_ANSWERABILITY_LABELS[value] ?? QUESTION_ANSWERABILITY_LABELS.unsupported;
+  const answerabilityClass = (value: string) => QUESTION_ANSWERABILITY_CLASSES[value] ?? QUESTION_ANSWERABILITY_CLASSES.unsupported;
   const renderItem = (item: CanonicalAnalysisPresentationV1) => {
     const action = item.actionCandidateId ? actionById.get(item.actionCandidateId) : undefined;
     const canInvestigate = item.state === 'ready' && item.executionReadiness !== 'not_executable' && action;
@@ -665,7 +670,7 @@ const CanonicalAnalysisStates: React.FC<{
           {t('Your analysis')}
         </div>
         <h4 id="canonical-analysis-heading" className="mt-1 text-[15px] font-semibold text-gray-900">{t('LightBI will calculate and visualize the best supported answer.')}</h4>
-        <p className="mt-0.5 text-[12px] text-gray-500">{t('Only analyses that pass governed checks are available.')}</p>
+        <p className="mt-0.5 text-[12px] text-gray-500">{t('Question ranking may use domain context, but only existing governed or safe descriptive actions can run.')}</p>
       </div>
       <div className="flex flex-wrap gap-2" aria-label="Canonical analysis state summary">
         {analysisPerspectiveId && countRows.map(([state, en]) => <span key={state} data-testid={`canonical-count-${state}`} className="rounded border border-gray-200 bg-gray-50 px-2 py-1 text-[11px] text-gray-600">{t(en)}: <strong>{perspectiveAnalyses.filter(item => item.state === state).length}</strong></span>)}
@@ -676,6 +681,7 @@ const CanonicalAnalysisStates: React.FC<{
       {selectedPerspectiveId && <span className="rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-[11px] font-semibold text-blue-700">Perspective: {humanize(selectedPerspectiveId)}</span>}
       {focusSubject && <span className="rounded-full border border-slate-300 bg-white px-3 py-1 text-[11px] font-semibold text-slate-700">Focus: {focusSubject.displayLabel}</span>}
       {!selectedPerspectiveId && focusSubject && analysisPerspectiveLabel && <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[11px] text-slate-500">Auto lens: {analysisPerspectiveLabel}</span>}
+      {questionIntelligence.domainContext.primaryDomain && <span data-testid="question-intelligence-domain-context" className="rounded-full border border-violet-200 bg-violet-50 px-3 py-1 text-[11px] text-violet-700">Domain: {humanize(questionIntelligence.domainContext.primaryDomain)}</span>}
     </div>}
 
     {!analysisPerspectiveId && !focusSubject && <div className="mt-3 rounded-lg border border-indigo-100 bg-indigo-50 p-3 text-[12px] text-indigo-800" data-testid="canonical-select-perspective-prompt">
@@ -686,18 +692,31 @@ const CanonicalAnalysisStates: React.FC<{
       {t('This focus is recognized, but no governed analysis lens is executable for it yet. No chart will be fabricated.')}
     </div>}
 
-    {analysisPerspectiveId && primaryAnalysis && primaryAction && <div className="mt-4 rounded-2xl border border-blue-200 bg-gradient-to-br from-blue-50 via-white to-emerald-50 p-5" data-testid="canonical-primary-analysis">
+    {analysisPerspectiveId && primaryQuestion && primaryQuestionAction && <div className="mt-4 rounded-2xl border border-blue-200 bg-gradient-to-br from-blue-50 via-white to-emerald-50 p-5" data-testid={primaryQuestion.actionAuthority === 'governed' ? 'canonical-primary-analysis' : 'universal-primary-analysis'}>
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="min-w-0">
-          <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-blue-700"><Sparkles className="h-4 w-4" />{t('Recommended by LightBI')}</div>
-          <h5 className="mt-2 text-[18px] font-semibold text-slate-950">{primaryAnalysis.title}</h5>
-          <p className="mt-1 max-w-3xl text-[13px] leading-5 text-slate-600">{primaryAnalysis.description}</p>
+          <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-blue-700"><Sparkles className="h-4 w-4" />{t('Recommended by LightBI')}
+            <span className={`rounded border px-2 py-0.5 text-[9px] tracking-normal ${answerabilityClass(primaryQuestion.answerability)}`}>{t(answerabilityLabel(primaryQuestion.answerability))}</span>
+            {primaryQuestion.basis === 'data_plus_domain' && <span className="rounded border border-violet-200 bg-violet-50 px-2 py-0.5 text-[9px] tracking-normal text-violet-700">{t('Domain context')}</span>}
+          </div>
+          <h5 className="mt-2 text-[18px] font-semibold text-slate-950">{primaryQuestion.title}</h5>
+          <p className="mt-1 max-w-3xl text-[13px] leading-5 text-slate-600">{primaryQuestion.description}</p>
           {focusSubject && <p className="mt-2 text-[12px] font-medium text-slate-700">Focus: {focusSubject.displayLabel} · benchmark population remains full-source.</p>}
+          {primaryQuestion.actionAuthority === 'descriptive_existing' && <p className="mt-2 text-[11px] text-slate-500">{t('Safe descriptive analysis from detected business signals; no causal claim is made.')}</p>}
+          {primaryGovernedAnalysis && (primaryGovernedAnalysis.evidence.length > 0 || primaryGovernedAnalysis.limitations.length > 0 || primaryGovernedAnalysis.decisionUseRestrictions.length > 0) && <details
+            data-testid={`question-intelligence-primary-evidence-${primaryGovernedAnalysis.itemId}`}
+            className="mt-3 rounded-lg border border-slate-200 bg-white/80 px-3 py-2 text-[11px] text-slate-500"
+          >
+            <summary className="cursor-pointer font-medium text-slate-600">{t('Evidence and limitations')}</summary>
+            {primaryGovernedAnalysis.limitations.map((code, index) => <p key={`${code}:${index}`} className="mt-1">{t('Limitation')}: {humanize(code)}</p>)}
+            {primaryGovernedAnalysis.evidence.map((entry, index) => <p key={`${entry.evidenceId}:${entry.provenance}:${index}`} className="mt-1">{t('Evidence')}: {entry.evidenceId} ({entry.provenance})</p>)}
+            {primaryGovernedAnalysis.decisionUseRestrictions.map((restriction, index) => <p key={`${restriction.code}:${index}`} className="mt-1">{t('Restriction')}: {restriction.reason}</p>)}
+          </details>}
         </div>
         <button
           type="button"
-          data-testid="canonical-analyze-perspective"
-          onClick={() => onSelectAction?.(adaptNextActionsToLegacy([primaryAction])[0])}
+          data-testid={primaryQuestion.actionAuthority === 'governed' ? 'canonical-analyze-perspective' : 'universal-analyze-perspective'}
+          onClick={() => onSelectAction?.(adaptNextActionsToLegacy([primaryQuestionAction])[0])}
           className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-blue-700 px-5 py-3 text-[13px] font-semibold text-white shadow-sm transition hover:bg-blue-800"
         >
           <Sparkles className="h-4 w-4" />
@@ -706,62 +725,41 @@ const CanonicalAnalysisStates: React.FC<{
       </div>
     </div>}
 
-    {analysisPerspectiveId && !primaryAction && universalActions.length > 0 && <div className="mt-4 rounded-2xl border border-blue-200 bg-gradient-to-br from-blue-50 via-white to-emerald-50 p-5" data-testid="universal-primary-analysis">
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-        <div className="min-w-0">
-          <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-blue-700"><Sparkles className="h-4 w-4" />{t('Recommended by LightBI')}</div>
-          <h5 className="mt-2 text-[18px] font-semibold text-slate-950">{universalActions[0].question.label}</h5>
-          <p className="mt-1 max-w-3xl text-[13px] leading-5 text-slate-600">{universalActions[0].question.userPrompt}</p>
-          <p className="mt-2 text-[11px] text-slate-500">{t('Safe descriptive analysis from detected business signals; no causal claim is made.')}</p>
-        </div>
-        <button type="button" data-testid="universal-analyze-perspective" onClick={() => onSelectAction?.(adaptNextActionsToLegacy([universalActions[0].action])[0])} className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-blue-700 px-5 py-3 text-[13px] font-semibold text-white shadow-sm transition hover:bg-blue-800">
-          <Sparkles className="h-4 w-4" />{t('Analyze this perspective')}
-        </button>
-      </div>
-    </div>}
-
-    {analysisPerspectiveId && universalActions.length > (primaryAction ? 0 : 1) && <section className="mt-4" data-testid="universal-ready-angles">
-      <div className="mb-2"><h5 className="text-[13px] font-semibold text-slate-900">{t('Other questions this data can answer')}</h5></div>
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
-        {universalActions.slice(primaryAction ? 0 : 1).map(({ question, action }) => <button key={action.id} type="button" onClick={() => onSelectAction?.(adaptNextActionsToLegacy([action])[0])} className="min-h-[118px] rounded-xl border border-slate-200 bg-white p-4 text-left shadow-sm transition hover:border-blue-300 hover:bg-blue-50/40">
-          <div className="flex items-start justify-between gap-2"><span className="text-[13px] font-semibold leading-5 text-slate-900">{question.label}</span><Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-blue-600" /></div>
-          <p className="mt-2 line-clamp-2 text-[11px] leading-4 text-slate-500">{question.userPrompt}</p>
-          <span className="mt-3 inline-flex text-[11px] font-semibold text-blue-700">{t('Analyze')} →</span>
-        </button>)}
-      </div>
-    </section>}
-
-    {analysisPerspectiveId && readyExecutableAnalyses.length > 1 && <section className="mt-4" aria-labelledby="canonical-ready-angles-heading" data-testid="canonical-ready-angles" data-ready-count={readyExecutableAnalyses.length}>
+    {analysisPerspectiveId && otherActionableQuestions.length > 0 && <section className="mt-4" data-testid="question-intelligence-other-questions">
       <div className="mb-2 flex items-end justify-between gap-3">
         <div>
-          <h5 id="canonical-ready-angles-heading" className="text-[13px] font-semibold text-slate-900">{t('Other questions this data can answer')}</h5>
-          <p className="mt-0.5 text-[11px] text-slate-500">{t('Every option below passed the same governed checks.')}</p>
+          <h5 className="text-[13px] font-semibold text-slate-900">{t('Other questions this data can answer')}</h5>
+          <p className="mt-0.5 text-[11px] text-slate-500">{t('One ranked list combines governed and safe descriptive questions without changing their authority.')}</p>
         </div>
-        <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[10px] font-semibold text-emerald-700">{readyExecutableAnalyses.length} {t('ready angles')}</span>
+        <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[10px] font-semibold text-slate-600">{otherActionableQuestions.length} {t('other questions')}</span>
       </div>
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
-        {readyExecutableAnalyses.slice(1).map(item => {
-          const action = actionById.get(item.actionCandidateId!);
+        {otherActionableQuestions.map(candidate => {
+          const action = candidate.actionId ? actionById.get(candidate.actionId) : undefined;
           return <button
-            key={item.itemId}
+            key={candidate.candidateId}
             type="button"
-            data-testid={`canonical-ready-angle-${item.itemId}`}
+            data-testid={`question-intelligence-candidate-${candidate.candidateId}`}
             onClick={() => action && onSelectAction?.(adaptNextActionsToLegacy([action])[0])}
             className="min-h-[118px] rounded-xl border border-slate-200 bg-white p-4 text-left shadow-sm transition hover:border-blue-300 hover:bg-blue-50/40"
           >
             <div className="flex items-start justify-between gap-2">
-              <span className="text-[13px] font-semibold leading-5 text-slate-900">{item.title}</span>
+              <span className="text-[13px] font-semibold leading-5 text-slate-900">{candidate.title}</span>
               <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-blue-600" />
             </div>
-            <p className="mt-2 line-clamp-2 text-[11px] leading-4 text-slate-500">{item.description}</p>
-            <span className="mt-3 inline-flex text-[11px] font-semibold text-blue-700">{t('Analyze')} →</span>
+            <p className="mt-2 line-clamp-2 text-[11px] leading-4 text-slate-500">{candidate.description}</p>
+            <div className="mt-3 flex flex-wrap items-center gap-1.5">
+              <span className={`rounded border px-1.5 py-0.5 text-[9px] font-semibold ${answerabilityClass(candidate.answerability)}`}>{t(answerabilityLabel(candidate.answerability))}</span>
+              {candidate.basis === 'data_plus_domain' && <span className="rounded border border-violet-200 bg-violet-50 px-1.5 py-0.5 text-[9px] font-semibold text-violet-700">{t('Domain context')}</span>}
+              <span className="ml-auto text-[11px] font-semibold text-blue-700">{t('Analyze')} →</span>
+            </div>
           </button>;
         })}
       </div>
     </section>}
 
-    {analysisPerspectiveId && perspectiveAnalyses.length === 0 && universalActions.length === 0 && <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-[12px] text-amber-800" data-testid="canonical-perspective-recognized-only">
-      LightBI recognizes this perspective from canonical business signals, but no governed question or metric contract is available for it yet. No chart will be fabricated.
+    {analysisPerspectiveId && !primaryQuestionAction && <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-[12px] text-amber-800" data-testid="canonical-perspective-recognized-only">
+      {t('LightBI recognizes this perspective, but no governed or safe descriptive action is executable for it yet. No chart will be fabricated.')}
     </div>}
 
     {presentation.datasetBlockers.length > 0 && <div className="mt-3 rounded-lg border border-red-200 bg-red-50 p-3 text-red-800" role="alert" data-testid="canonical-dataset-blocker">
@@ -769,9 +767,28 @@ const CanonicalAnalysisStates: React.FC<{
       {presentation.datasetBlockers.map(blocker => <p key={blocker.code} className="mt-1 text-[12px]">{blocker.message}</p>)}
     </div>}
 
-    {analysisPerspectiveId && groups.length > 0 && <details className="mt-4 rounded-xl border border-slate-200 bg-slate-50/60">
-      <summary className="cursor-pointer px-4 py-3 text-[12px] font-semibold text-slate-700">{t('Explore another question or review evidence')}</summary>
+    {analysisPerspectiveId && (groups.length > 0 || domainContextQuestions.length > 0) && <details className="mt-4 rounded-xl border border-slate-200 bg-slate-50/60">
+      <summary className="cursor-pointer px-4 py-3 text-[12px] font-semibold text-slate-700">{t('Review questions that need evidence or are blocked')}</summary>
       <div className="space-y-4 border-t border-slate-200 p-4">
+        {domainContextQuestions.length > 0 && <section data-testid="question-intelligence-domain-context-questions">
+          <div className="mb-2">
+            <h5 className="text-[12px] font-semibold text-slate-700">{t('Questions suggested by domain context')} <span className="font-normal text-slate-400">({domainContextQuestions.length})</span></h5>
+            <p className="mt-0.5 text-[11px] text-slate-500">{t('Relevant to this domain or perspective, but not executable yet.')}</p>
+          </div>
+          <div className="grid grid-cols-1 gap-3 xl:grid-cols-2">
+            {domainContextQuestions.map(candidate => <article key={candidate.candidateId} data-testid={`question-intelligence-domain-question-${candidate.candidateId}`} className="rounded-lg border border-violet-100 bg-white p-3">
+              <div className="flex flex-wrap items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <div className="text-[12px] font-semibold leading-5 text-slate-800">{t(candidate.title)}</div>
+                  <p className="mt-1 text-[11px] leading-4 text-slate-500">{t(candidate.description)}</p>
+                </div>
+                <span className="rounded border border-amber-200 bg-amber-50 px-1.5 py-0.5 text-[9px] font-semibold text-amber-700">{t('Needs evidence')}</span>
+              </div>
+              {candidate.missingEvidence.length > 0 && <p className="mt-2 text-[10px] text-slate-500"><span className="font-semibold text-slate-600">{t('Missing evidence')}:</span> {candidate.missingEvidence.map(humanize).join(', ')}</p>}
+              <p className="mt-2 text-[10px] text-violet-700">{t('Micro Brain advisory only — no metric or execution authority.')}</p>
+            </article>)}
+          </div>
+        </section>}
         {groups.map(group => <section key={group.id} aria-labelledby={`canonical-group-${group.id}`} data-testid={`canonical-group-${group.id}`}>
           <h5 id={`canonical-group-${group.id}`} className="mb-2 text-[12px] font-semibold text-gray-700">{t(group.label)} <span className="font-normal text-gray-400">({group.items.length})</span></h5>
           <div className="grid grid-cols-1 gap-3 xl:grid-cols-2">{group.items.map(renderItem)}</div>

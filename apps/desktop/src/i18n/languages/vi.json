@@ -2749,8 +2749,31 @@
     ,"Micro Brain does not authorize governed metrics, formulas, joins, runtime execution, decision use, or causal claims.": "Micro Brain không cấp quyền cho chỉ số được quản trị, công thức, phép nối, thực thi khi chạy, sử dụng cho quyết định hay nhận định nhân quả."
     ,"This presentation context does not itself authorize a business decision.": "Ngữ cảnh trình bày này tự nó không cấp quyền đưa ra quyết định kinh doanh."
     ,"Micro Brain": "Micro Brain"
+    ,"Question ranking may use domain context, but only existing governed or safe descriptive actions can run.": "Thứ tự câu hỏi có thể dùng ngữ cảnh miền, nhưng chỉ các hành động đã được quản trị hoặc mô tả an toàn sẵn có mới được phép chạy."
+    ,"Domain:": "Miền:"
+    ,"One ranked list combines governed and safe descriptive questions without changing their authority.": "Một danh sách được xếp hạng hợp nhất các câu hỏi được quản trị và mô tả an toàn mà không thay đổi thẩm quyền của chúng."
+    ,"other questions": "câu hỏi khác"
+    ,"LightBI recognizes this perspective, but no governed or safe descriptive action is executable for it yet. No chart will be fabricated.": "LightBI nhận diện được góc nhìn này, nhưng hiện chưa có hành động được quản trị hoặc mô tả an toàn nào có thể thực thi. LightBI sẽ không tạo biểu đồ giả định."
+    ,"Review questions that need evidence or are blocked": "Xem các câu hỏi cần thêm bằng chứng hoặc đang bị chặn"
+    ,"Evidence and limitations": "Bằng chứng và giới hạn"
+    ,"Limitation": "Giới hạn"
+    ,"Restriction": "Ràng buộc"
+    ,"Governed answer": "Câu trả lời được quản trị"
+    ,"Safe descriptive": "Mô tả an toàn"
+    ,"Needs evidence": "Cần thêm bằng chứng"
+    ,"Questions suggested by domain context": "Câu hỏi được gợi ý từ ngữ cảnh miền"
+    ,"Relevant to this domain or perspective, but not executable yet.": "Có liên quan đến miền hoặc góc nhìn này, nhưng hiện chưa thể thực thi."
+    ,"Micro Brain advisory only — no metric or execution authority.": "Micro Brain chỉ tư vấn — không có thẩm quyền về chỉ số hay thực thi."
   },
   "patterns": [
+    {
+      "source": "^What evidence is needed to evaluate (.+)\\?$",
+      "target": "Cần bằng chứng nào để đánh giá $1?"
+    },
+    {
+      "source": "^(.+) context makes this question relevant, but LightBI will not calculate it until governed evidence and action authority are available\\.$",
+      "target": "Ngữ cảnh $1 khiến câu hỏi này đáng xem xét, nhưng LightBI sẽ không tính toán cho đến khi có bằng chứng được quản trị và thẩm quyền thực thi phù hợp."
+    },
     {
       "source": "^([\\d,.]+) sources contain ([\\d,.]+|unresolved) business roles? across ([\\d,.]+) reporting periods?\\.$",
       "target": "$1 nguồn chứa $2 vai trò nghiệp vụ trong $3 kỳ báo cáo."
