@@ -30,14 +30,12 @@ export const FocusSubjectSelector: React.FC<{
 
   if (candidates.length === 0) return null;
 
-  if (!expanded && !selected) return <section data-testid="focus-subject-selector" className="rounded-xl border border-dashed border-slate-200 bg-white px-4 py-3">
-    <div className="flex flex-wrap items-center justify-between gap-3">
-      <div>
-        <button data-testid="add-focus-button" type="button" onClick={() => setExpanded(true)} className="inline-flex items-center gap-2 text-[13px] font-semibold text-slate-700 hover:text-slate-950">
-          <Plus className="h-4 w-4" /> Add a focus <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-400">Optional</span>
-        </button>
-        <p className="mt-1 text-[11px] leading-5 text-slate-400">Skip this to analyze the whole dataset as usual. Add a focus only when one entity should be at the center of the analysis.</p>
-      </div>
+  if (!expanded && !selected) return <section data-testid="focus-subject-selector" data-layout="inline-focus-control" className="border-y border-[var(--lb-divider)] py-2">
+    <div className="flex min-w-0 items-center gap-3">
+      <button data-testid="add-focus-button" type="button" onClick={() => setExpanded(true)} className="inline-flex shrink-0 items-center gap-2 text-[12px] font-semibold text-slate-700 hover:text-slate-950">
+        <Plus className="h-4 w-4" /> Add a focus <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-slate-400">Optional</span>
+      </button>
+      <p className="min-w-0 flex-1 truncate text-[11px] text-slate-400">Skip this to analyze the whole dataset as usual. Add a focus only when one entity should be at the center of the analysis.</p>
     </div>
   </section>;
 

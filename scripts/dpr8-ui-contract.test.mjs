@@ -42,6 +42,7 @@ test('Tailwind scans shared TSX primitives without recursively scanning package 
 test('DPR-8 Understanding uses the shared canvas hierarchy and ranked stacks', async () => {
   const understanding = await read('apps/desktop/src/components/analysis/UnderstandingNextCard.tsx');
   const perspectives = await read('apps/desktop/src/components/analysis/CanonicalPerspectiveSelector.tsx');
+  const focus = await read('apps/desktop/src/components/analysis/FocusSubjectSelector.tsx');
   for (const region of ['understanding-canvas', 'understanding-meaning', 'understanding-assumptions', 'understanding-proposed-analyses', 'understanding-evidence-details']) {
     assert.match(understanding, new RegExp(region), `missing Understanding region ${region}`);
   }
@@ -52,5 +53,13 @@ test('DPR-8 Understanding uses the shared canvas hierarchy and ranked stacks', a
   assert.match(understanding, /<Inset density="summary"/);
   assert.match(understanding, /data-layout="ranked-question-stack"/);
   assert.match(perspectives, /data-layout="ranked-stack"/);
-  assert.doesNotMatch(perspectives, /grid-cols|min-h-\[170px\]|shadow-sm/);
+  assert.match(perspectives, /data-density="compact"/);
+  assert.match(perspectives, /min-h-10/);
+  assert.doesNotMatch(perspectives, /grid-cols|min-h-\[170px\]|shadow-sm|py-3/);
+  assert.match(focus, /data-layout="inline-focus-control"/);
+  const evidenceIndex = understanding.indexOf('understanding-evidence-details');
+  assert.ok(understanding.indexOf('understanding-semantic-evidence') > evidenceIndex, 'semantic/readiness detail must live in Evidence');
+  assert.ok(understanding.indexOf('domain-inference-summary') > evidenceIndex, 'detailed domain support must live in Evidence');
+  const primaryIndex = understanding.indexOf('canonical-primary-analysis');
+  assert.ok(primaryIndex >= 0 && understanding.indexOf('canonical-analysis-readiness') > primaryIndex, 'readiness counts must not push the primary answer down');
 });

@@ -138,6 +138,7 @@ describe("UnderstandingNextCard Phase 8C functional states", () => {
   it("shows inferred domain separately from official support without exposing a probability", () => {
     render(<UnderstandingNextCard understanding={understanding} canonicalPresentation={inferredDomainPresentation} canonicalPerspectives={canonicalPerspectives} />);
     const summary = screen.getByTestId("domain-inference-summary");
+    expect(screen.getByTestId("understanding-semantic-evidence").hasAttribute("open")).toBe(false);
     expect(summary.textContent).toContain("Healthcare");
     expect(summary.textContent).toContain("Semantic inference (Micro Brain)");
     expect(summary.textContent).toMatch(/not production-active/i);

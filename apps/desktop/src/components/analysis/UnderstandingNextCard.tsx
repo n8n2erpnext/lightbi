@@ -144,78 +144,25 @@ export const UnderstandingNextCard: React.FC<UnderstandingNextCardProps> = ({
     <Canvas density="working" data-testid="understanding-canvas" className="animate-in fade-in slide-in-from-bottom-4 pb-[var(--lb-space-8)] duration-500">
       {/* BA summary */}
       <Section density="summary" separated={false} data-testid="understanding-meaning">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+        <div className="flex min-w-0 flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
           <div className="min-w-0">
-            <div className="text-[11px] font-semibold uppercase tracking-wide text-blue-600">{t('LightBI understands this as')}</div>
-            <h4 className="mt-1 text-[18px] font-semibold text-gray-950">
+            <div className="text-[10px] font-semibold uppercase tracking-wide text-blue-600">{t('LightBI understands this as')}</div>
+            <h4 className="mt-0.5 text-[17px] font-semibold text-gray-950">
               {documentLabel}
               <span className="text-gray-400"> · </span>
               {grainLabel}
             </h4>
-            <p className="mt-1 max-w-2xl text-[13px] leading-5 text-gray-600">
+            <p className="mt-0.5 max-w-3xl truncate text-[12px] leading-5 text-gray-600">
               {t(
                 `LightBI sees ${understanding.source.sourceRowCount > 0 ? understanding.source.sourceRowCount.toLocaleString() : 'an unknown number of'} source rows, ${understanding.source.sourceColumnCount.toLocaleString()} columns, and enough business signals to offer ${readyQuestionCount} ready runtime action${readyQuestionCount === 1 ? '' : 's'}.${blockedAnalysisCount > 0 ? ` ${blockedAnalysisCount} other angle${blockedAnalysisCount === 1 ? '' : 's'} need more signals before they are safe to run.` : ''}`,
               )}
             </p>
           </div>
-          <div className="grid min-w-[220px] grid-cols-2 gap-2 text-[11px]">
-            <div className="border-l border-[var(--lb-divider)] pl-3">
-              <div className="text-gray-400">{t('Ready analyses')}</div>
-              <div className="mt-0.5 text-[18px] font-semibold text-emerald-700">{readyLenses.length}</div>
-            </div>
-            <div className="border-l border-[var(--lb-divider)] pl-3">
-              <div className="text-gray-400">{t('Review needed')}</div>
-              <div className="mt-0.5 text-[18px] font-semibold text-amber-700">{partialLenses.length}</div>
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-4 grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
-          <div>
-            <div className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-gray-500">{t('Business domains')}</div>
-            <div className="flex flex-wrap gap-2">
-              {topDomains.length > 0 ? topDomains.map(domain => (
-                <span key={domain} className="rounded-full border border-blue-100 bg-white px-2.5 py-1 text-[12px] font-medium text-blue-700">{domain}</span>
-              )) : <span className="text-[12px] text-gray-400">No strong business domain detected yet.</span>}
-            </div>
-            {domainInference && (
-              <div className="mt-3 rounded-lg border border-blue-100 bg-white/80 p-3 text-[11px] text-gray-600" data-testid="domain-inference-summary">
-                <div className="font-semibold text-gray-800">
-                  {domainInference.primaryDomain ? (DOMAIN_LABELS[domainInference.primaryDomain] ?? domainInference.primaryDomain.split('_').map(part => part ? part[0].toUpperCase() + part.slice(1) : part).join(' ')) : 'Domain unresolved'}
-                </div>
-                <div className="mt-1">Domain source: {domainInference.primaryDomainSource ? (DOMAIN_INFERENCE_SOURCE_LABELS[domainInference.primaryDomainSource] ?? humanize(domainInference.primaryDomainSource)) : 'Unresolved'}</div>
-                <div>Official support: {domainInference.officialSupport.productionActive ? humanize(domainInference.officialSupport.state) : 'Not production-active'} · {humanize(domainInference.officialSupport.packId)}</div>
-                <div>Semantic concepts: {domainInference.semanticConcepts.confirmed} confirmed · {domainInference.semanticConcepts.probable} probable · {domainInference.semanticConcepts.unresolved} unresolved{domainInference.semanticConcepts.microBrainRecovered > 0 ? ` · ${domainInference.semanticConcepts.microBrainRecovered} MB-recovered` : ''}</div>
-                <div>Evidence conflicts: {domainInference.evidenceConflicts} · Analysis mode: {DOMAIN_ANALYSIS_MODE_LABELS[domainInference.analysisMode] ?? humanize(domainInference.analysisMode)}</div>
-                {domainInference.analysisMode === 'evidence_bound_inferred_domain' && (
-                  <p className="mt-2 text-amber-700">This domain is not officially supported. Analysis remains evidence-bound; unsupported calculations stay unavailable.</p>
-                )}
-              </div>
-            )}
-            {topStakeholders.length > 0 && (
-              <div className="mt-3">
-                <div className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-gray-500">Relevant roles</div>
-                <div className="flex flex-wrap gap-2">
-                  {topStakeholders.map(role => (
-                    <span key={role.id} className="rounded-full border border-emerald-100 bg-white px-2.5 py-1 text-[12px] font-medium text-emerald-700">
-                      {role.label}
-                      <span className="ml-1 text-emerald-400">{role.score}</span>
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-          <div>
-            <div className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-gray-500">{t('Key signals found')}</div>
-            <div className="flex flex-wrap gap-2">
-              {topSignals.length > 0 ? topSignals.map(signal => (
-                <span key={`${signal.canonicalId}:${signal.physicalColumn}`} className="rounded-full border border-gray-200 bg-white px-2.5 py-1 text-[12px] text-gray-700">
-                  <span className="font-medium">{signal.label}</span>
-                  <span className="text-gray-400">: {signal.physicalColumn}</span>
-                </span>
-              )) : <span className="text-[12px] text-gray-400">No reusable business signal detected.</span>}
-            </div>
+          <div className="flex shrink-0 flex-wrap items-center gap-1.5 lg:max-w-[42%] lg:justify-end">
+            <span className="mr-1 text-[9px] font-semibold uppercase tracking-wide text-gray-400">{t('Business domains')}</span>
+            {topDomains.length > 0 ? topDomains.map(domain => (
+              <span key={domain} className="rounded-full border border-blue-100 bg-white px-2 py-0.5 text-[10px] font-medium text-blue-700">{domain}</span>
+            )) : <span className="text-[11px] text-gray-400">No strong business domain detected yet.</span>}
           </div>
         </div>
       </Section>
@@ -223,14 +170,6 @@ export const UnderstandingNextCard: React.FC<UnderstandingNextCardProps> = ({
       {canonicalPresentation && (
         <>
           <Section density="working" data-testid="understanding-proposed-analyses">
-            <div className="mb-4">
-              <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-blue-700">
-                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-100 text-[10px]">1</span>
-                {t('Analysis context')}
-              </div>
-              <h3 className="mt-1 text-[17px] font-semibold text-slate-950">{t('Choose a perspective, a focus, or both.')}</h3>
-              <p className="mt-1 text-[12px] text-slate-500">{t('Perspective controls the business angle. Focus controls the entity at the center of the analysis.')}</p>
-            </div>
             <CanonicalPerspectiveSelector
               items={actionablePerspectives.map((perspective) => ({
                 id: perspective.perspectiveId,
@@ -256,28 +195,12 @@ export const UnderstandingNextCard: React.FC<UnderstandingNextCardProps> = ({
               description="Optional. Choose a perspective, a focus below, or combine both."
             />
             {focusCandidates.length > 0 && onSelectFocusSubject && onClearFocusSubject && (
-              <div className="mt-4 border-t border-slate-100 pt-4">
-                <FocusSubjectSelector
-                  candidates={focusCandidates}
-                  selected={selectedFocusSubject}
-                  onSelect={onSelectFocusSubject}
-                  onClear={onClearFocusSubject}
-                />
-              </div>
-            )}
-            {canonicalPerspectives.some(perspective => perspective.state !== 'governed_action_available') && (
-              <details className="mt-3 rounded-xl border border-slate-200 bg-slate-50/60">
-                <summary className="cursor-pointer px-4 py-3 text-[12px] font-semibold text-slate-600">
-                  {t('Other signals LightBI found')}
-                </summary>
-                <div className="flex flex-wrap gap-2 border-t border-slate-200 px-4 py-3">
-                  {canonicalPerspectives.filter(perspective => perspective.state !== 'governed_action_available').map(perspective => (
-                    <span key={perspective.perspectiveId} data-testid={`business-evidence-${perspective.perspectiveId}`} className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[11px] text-slate-600">
-                      {perspective.label} · {t('not enough evidence to analyze safely')}
-                    </span>
-                  ))}
-                </div>
-              </details>
+              <FocusSubjectSelector
+                candidates={focusCandidates}
+                selected={selectedFocusSubject}
+                onSelect={onSelectFocusSubject}
+                onClear={onClearFocusSubject}
+              />
             )}
           <CanonicalAnalysisStates
             presentation={canonicalPresentation}
@@ -465,10 +388,11 @@ export const UnderstandingNextCard: React.FC<UnderstandingNextCardProps> = ({
         </div>
       </details>}
 
-      {(understanding.quality.dirtySignals.length > 0 || (!canonicalPresentation && understanding.quality.blockedReasons.length > 0)) && <Section density="evidence" data-testid="understanding-assumptions">
+      {(understanding.quality.dirtySignals.length > 0 || (!canonicalPresentation && understanding.quality.blockedReasons.length > 0) || domainInference?.analysisMode === 'evidence_bound_inferred_domain') && <Section density="evidence" data-testid="understanding-assumptions">
         <div>
           <h3 className="text-[14px] font-semibold text-[var(--lb-ink)]">{t('Limitations')}</h3>
           <p className="mt-1 text-[12px] text-[var(--lb-ink-secondary)]">{t('Analysis continues with explicit limitations.')}</p>
+          {domainInference?.analysisMode === 'evidence_bound_inferred_domain' && <p className="mt-1 text-[11px] font-medium text-amber-700">This domain is not officially supported. Analysis remains evidence-bound; unsupported calculations stay unavailable.</p>}
         </div>
       {/* Dirty Signals Banner */}
       {understanding.quality.dirtySignals.length > 0 && (() => {
@@ -500,6 +424,36 @@ export const UnderstandingNextCard: React.FC<UnderstandingNextCardProps> = ({
       </Section>}
 
       <Section density="evidence" data-testid="understanding-evidence-details">
+        <details data-testid="understanding-semantic-evidence" className="border-y border-[var(--lb-divider)]">
+          <summary className="cursor-pointer px-1 py-2 text-[12px] font-semibold text-slate-700">{t('Review what LightBI found')}</summary>
+          <div className="space-y-4 border-t border-[var(--lb-divider)] px-1 py-3 text-[11px] text-slate-600">
+            <div className="flex flex-wrap gap-x-5 gap-y-2">
+              <span>{t('Ready analyses')}: <strong className="text-emerald-700">{readyLenses.length}</strong></span>
+              <span>{t('Review needed')}: <strong className="text-amber-700">{partialLenses.length}</strong></span>
+            </div>
+            {domainInference && (
+              <div className="border-l-2 border-blue-100 pl-3" data-testid="domain-inference-summary">
+                <div className="font-semibold text-gray-800">
+                  {domainInference.primaryDomain ? (DOMAIN_LABELS[domainInference.primaryDomain] ?? domainInference.primaryDomain.split('_').map(part => part ? part[0].toUpperCase() + part.slice(1) : part).join(' ')) : 'Domain unresolved'}
+                </div>
+                <div className="mt-1">Domain source: {domainInference.primaryDomainSource ? (DOMAIN_INFERENCE_SOURCE_LABELS[domainInference.primaryDomainSource] ?? humanize(domainInference.primaryDomainSource)) : 'Unresolved'}</div>
+                <div>Official support: {domainInference.officialSupport.productionActive ? humanize(domainInference.officialSupport.state) : 'Not production-active'} · {humanize(domainInference.officialSupport.packId)}</div>
+                <div>Semantic concepts: {domainInference.semanticConcepts.confirmed} confirmed · {domainInference.semanticConcepts.probable} probable · {domainInference.semanticConcepts.unresolved} unresolved{domainInference.semanticConcepts.microBrainRecovered > 0 ? ` · ${domainInference.semanticConcepts.microBrainRecovered} MB-recovered` : ''}</div>
+                <div>Evidence conflicts: {domainInference.evidenceConflicts} · Analysis mode: {DOMAIN_ANALYSIS_MODE_LABELS[domainInference.analysisMode] ?? humanize(domainInference.analysisMode)}</div>
+                {domainInference.analysisMode === 'evidence_bound_inferred_domain' && <p className="mt-1 text-amber-700">This domain is not officially supported. Analysis remains evidence-bound; unsupported calculations stay unavailable.</p>}
+              </div>
+            )}
+            {topStakeholders.length > 0 && <div><span className="font-semibold text-slate-700">Relevant roles</span>: {topStakeholders.map(role => `${role.label} (${role.score})`).join(' · ')}</div>}
+            {topSignals.length > 0 && <div><span className="font-semibold text-slate-700">{t('Key signals found')}:</span> {topSignals.map(signal => `${signal.label}: ${signal.physicalColumn}`).join(' · ')}</div>}
+            {canonicalPerspectives.some(perspective => perspective.state !== 'governed_action_available') && <div className="flex flex-wrap gap-2">
+              {canonicalPerspectives.filter(perspective => perspective.state !== 'governed_action_available').map(perspective => (
+                <span key={perspective.perspectiveId} data-testid={`business-evidence-${perspective.perspectiveId}`} className="rounded-full border border-slate-200 bg-white px-2 py-1 text-[10px] text-slate-600">
+                  {perspective.label} · {t('not enough evidence to analyze safely')}
+                </span>
+              ))}
+            </div>}
+          </div>
+        </details>
         {canonicalPresentation && <CanonicalUnderstandingSummary presentation={canonicalPresentation} />}
       {/* Technical source facts stay available without leading the Easy Mode journey. */}
       <details className="rounded-xl border border-slate-200 bg-slate-50/60">
@@ -671,22 +625,13 @@ const CanonicalAnalysisStates: React.FC<{
       </details>}
     </article>;
   };
-  return <section className="border-t border-gray-100 pt-4" aria-labelledby="canonical-analysis-heading" data-testid="canonical-analysis-states">
-    <div className="flex flex-wrap items-start justify-between gap-3">
-      <div>
-        <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-blue-700">
-          <span className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-100 text-[10px]">2</span>
-          {t('Your analysis')}
-        </div>
-        <h4 id="canonical-analysis-heading" className="mt-1 text-[15px] font-semibold text-gray-900">{t('LightBI will calculate and visualize the best supported answer.')}</h4>
-        <p className="mt-0.5 text-[12px] text-gray-500">{t('Question ranking may use domain context, but only existing governed or safe descriptive actions can run.')}</p>
-      </div>
-      <div className="flex flex-wrap gap-2" aria-label="Canonical analysis state summary">
-        {analysisPerspectiveId && countRows.map(([state, en]) => <span key={state} data-testid={`canonical-count-${state}`} className="rounded border border-gray-200 bg-gray-50 px-2 py-1 text-[11px] text-gray-600">{t(en)}: <strong>{perspectiveAnalyses.filter(item => item.state === state).length}</strong></span>)}
-      </div>
+  return <section className="pt-1" aria-labelledby="canonical-analysis-heading" data-testid="canonical-analysis-states">
+    <div className="flex min-w-0 items-baseline gap-3">
+      <div className="shrink-0 text-[10px] font-semibold uppercase tracking-[0.12em] text-blue-700">{t('Your analysis')}</div>
+      <h4 id="canonical-analysis-heading" className="min-w-0 truncate text-[14px] font-semibold text-gray-900">{t('LightBI will calculate and visualize the best supported answer.')}</h4>
     </div>
 
-    {(selectedPerspectiveId || focusSubject) && <div className="mt-3 flex flex-wrap gap-2" data-testid="analysis-context-summary">
+    {(selectedPerspectiveId || focusSubject) && <div className="mt-2 flex flex-wrap gap-2" data-testid="analysis-context-summary">
       {selectedPerspectiveId && <span className="rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-[11px] font-semibold text-blue-700">Perspective: {humanize(selectedPerspectiveId)}</span>}
       {focusSubject && <span className="rounded-full border border-slate-300 bg-white px-3 py-1 text-[11px] font-semibold text-slate-700">Focus: {focusSubject.displayLabel}</span>}
       {!selectedPerspectiveId && focusSubject && analysisPerspectiveLabel && <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[11px] text-slate-500">Auto lens: {analysisPerspectiveLabel}</span>}
@@ -771,6 +716,14 @@ const CanonicalAnalysisStates: React.FC<{
         })}
       </div>
     </section>}
+
+    {analysisPerspectiveId && <details data-testid="canonical-analysis-readiness" className="mt-3 border-y border-[var(--lb-divider)]">
+      <summary className="cursor-pointer px-1 py-2 text-[11px] font-semibold text-slate-600">{t('Review needed')}</summary>
+      <div className="flex flex-wrap gap-2 border-t border-[var(--lb-divider)] px-1 py-2" aria-label="Canonical analysis state summary">
+        {countRows.map(([state, en]) => <span key={state} data-testid={`canonical-count-${state}`} className="text-[11px] text-gray-600">{t(en)}: <strong>{perspectiveAnalyses.filter(item => item.state === state).length}</strong></span>)}
+        <p className="basis-full text-[11px] text-gray-500">{t('Question ranking may use domain context, but only existing governed or safe descriptive actions can run.')}</p>
+      </div>
+    </details>}
 
     {analysisPerspectiveId && !primaryQuestionAction && <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-[12px] text-amber-800" data-testid="canonical-perspective-recognized-only">
       {t('LightBI recognizes this perspective, but no governed or safe descriptive action is executable for it yet. No chart will be fabricated.')}
