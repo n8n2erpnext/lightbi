@@ -1,6 +1,6 @@
 # Agent Implementation Plan — Decision Presentation + UI/UX Refactor — 2026-09-04
 
-Status: **DPR-0 CLOSED — WORKFLOW + NEXT VISUAL BASELINE ACCEPTED; DPR-1 CLAIM/QUESTION PROVENANCE NEXT**
+Status: **DPR-1 CLOSED — CLAIM/QUESTION PROVENANCE FOUNDATION LIVE-ACCEPTED ON NEXT; DPR-2 OPEN-WORLD QUESTION/PERSPECTIVE INTELLIGENCE ACTIVE**
 Date: 2026-09-04
 Amended: 2026-09-05 — owner added design-system/i18n hardening and Frappe UI reference direction.
 Amended: 2026-09-06 — owner elevated Frappe Books as a primary product-UX study source and added a canonical chart-pattern/visual-grammar library direction.
@@ -10,9 +10,10 @@ Amended: 2026-09-08 — DPR-0 contract-freeze chunk 1 source-closed at Product `
 Amended: 2026-09-08 — owner promoted Figma `LightBI Logo Concept` node `19:5` (`optimized li`) to the LightBI primary mark and required SVG-first derivation across Desktop/native/Distribution branding.
 Amended: 2026-09-08 — owner elevated app-wide information architecture/density to a hard product contract, required multi-file terminal Deep BA/Step 2 workflow convergence before visual-baseline freeze, and made Web Live Demo `/app` a near-1:1 product-validation lane alongside Desktop.
 Amended: 2026-09-08 — DPR-0 terminal workflow convergence source-closed at Product `ce5c961...`; corrected NEXT `/app` baseline accepted and evidence source-closed at `14c2d99...`; DPR-0 closed and DPR-1 is next.
+Amended: 2026-09-08 — DPR-1 provenance foundation source-closed at Product `d027bb3...`: exact plan vocabulary, explicit evidence/knowledge/derivation contract, non-escalation guard, shared Evidence Inspector and NEXT 5273 runtime acceptance. DPR-2 is active.
 Scope: Question/Perspective, narrative, visualization, Dashboard, evidence, export and product UI-surface refactor.
 Authority: design/implementation plan; not runtime or metric authority.
-Code-audit snapshot: current clean Product worktree is `codex/dpr0-contract-freeze` at `14c2d99801cde82716f58127bd006e150118e8c5`, descendant of optimized-li brand source `fde259a5441b36825f211914cbd0c82fc595f27f`; Control Plane brand source remains `b6bc2735bcf99218443ae5c427701e5b1a7c938f`. Multi-file terminal flow is source-closed at UI commit `ce5c961d099bf4d2343a74508211a828daa3df4b`; corrected NEXT visual-baseline evidence is source-closed at `14c2d99...`. DPR-0 is closed; DPR-1 is the next implementation phase.
+Code-audit snapshot: current clean Product worktree is `codex/dpr0-contract-freeze` at `d027bb34e403968a60f6f3b053e3cfaf9ad42025`, descendant of optimized-li brand source `fde259a5441b36825f211914cbd0c82fc595f27f`; Control Plane brand source remains `b6bc2735bcf99218443ae5c427701e5b1a7c938f`. DPR-0 is closed at baseline evidence `14c2d99...`; DPR-1 claim/question provenance foundation is source/live-closed at `d027bb3...`; DPR-2 is the active implementation phase.
 Supersedes: none.
 
 Repository target when implementation is authorized: public LightBI product successor.
@@ -739,9 +740,14 @@ Frappe Books and Frappe UI are external references only. No Vue/Electron depende
 
 ### DPR-1 — Claim + Question Provenance foundation
 
-- Add presentation-layer provenance for data evidence, MB/domain context and mixed inference.
-- Add claim basis / causal status / limitations contract.
-- Build one shared Evidence Inspector contract and navigation model.
+**CLOSED on Product `d027bb34e403968a60f6f3b053e3cfaf9ad42025` and live NEXT 5273 acceptance.**
+
+- Presentation provenance now uses the plan-owned public basis vocabulary exactly: `OBSERVED | CALCULATED | SEMANTICALLY_RESOLVED | DOMAIN_CONTEXT | INFERRED | HYPOTHESIS`. The contract separately retains `evidenceRefs[]`, `knowledgeRefs[]`, `derivation`, limitations, causal status and decision-use restrictions; retrieval/advisory rank is never emitted as semantic confidence.
+- `projectDeepBAFindingProvenance()` binds source rows/fields and only attaches domain/MB knowledge when the claim derivation actually uses domain context. Observed findings remain descriptive/evidence-bound; hypothesis/needs-verification findings remain hypothesis-only and cannot inherit stronger authority from MB or canonical domain inference.
+- `projectCanonicalQuestionProvenance()` projects governed/canonical question evidence without turning question eligibility/policy into result, execution, decision-use or causal authority. DPR-2 owns the later UI merge/ranking of question lanes so this foundation does not duplicate that work.
+- `capPresentationAuthority()` establishes the shared downstream invariant: presentation planners may preserve or reduce authority but cannot strengthen it; equal-rank semantic class changes preserve the upstream class rather than silently re-labelling it.
+- Shared `EvidenceInspector` is progressive-disclosure and sits adjacent to Deep BA claims. It exposes basis, causal status, derivation, source/governed/canonical evidence, bounded knowledge context, limitations and decision-use restrictions while remaining collapsed by default.
+- Focused DPR-1/MB/Deep-BA/i18n verification PASSed `25/25`; TypeScript PASSed; release-authoritative suite PASSed with governed regression `11 files / 42 tests` and production build. Live NEXT `/app` provenance smoke PASSed `1/1` in `8.8s` on exact UI source `d027bb3...`; Core 5272, CP 5274 and Trust PIDs were unchanged by the UI-only gateway rotation.
 
 ### DPR-2 — Open-world Question / Perspective Intelligence
 
@@ -880,7 +886,7 @@ LightBI should guide the user from **what the data means** to **what question ma
 
 This document remains the refactor plan. The 2026-09-06 MB presentation-advisory foundation is now source-closed separately at product commit `4be593ae57b4b1385a833675dd4ea2349900d378`, but it is not wired into current BA/chart runtime selection. No NEXT generation, Production service, metric authority, domain-support pack or release artifact is changed by this planning update.
 
-DPR-0 is CLOSED. Multi-file terminal workflow convergence and corrected NEXT Web Live Demo `/app` visual acceptance are source/live proven as recorded above. The next implementation phase is DPR-1 Claim + Question Provenance foundation; broad surface migration remains owned by DPR-8 after the preceding planner/ontology phases. Documentation work must continue to follow `docs/project-book/LIBRARY_RULES.md`.
+DPR-0 and DPR-1 are CLOSED. The active implementation phase is DPR-2 Open-world Question / Perspective Intelligence. DPR-2 may consume `domainInference` and bounded Micro Brain presentation advice for relevance, abstention and missing-evidence signals, but deterministic governed question/metric gates remain final and no downstream planner may strengthen authority. Broad surface migration remains owned by DPR-8 after the preceding planner/ontology phases. Documentation work must continue to follow `docs/project-book/LIBRARY_RULES.md`.
 ## 24. Source bookmarks
 
 - [`../../../project-book/LIBRARY_RULES.md`](../../../project-book/LIBRARY_RULES.md) — documentation governance used for this plan.

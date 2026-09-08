@@ -1797,3 +1797,12 @@ R1-P0 documentation/integrity closure verified 1,243 local links with zero missi
 - Built immutable NEXT UI root `/home/ubuntu/services/lightbi-next-web/dpr0-ce5c961` and rotated only gateway 5273 to it. Core 5272, CP 5274 and Trust PIDs stayed unchanged. Direct 5273 and public `/app` both report UI source `ce5c961`.
 - Real NEXT multi-file runtime smoke PASS `1/1` in 26.6s. Corrected visual-baseline PASS `2/2` in 32.9s over nine tracked-corpus surfaces; every full-page capture is `1440x900`, confirming no document-level giant-scroll at the reference viewport.
 - Product `14c2d99...` source-closes the NEXT baseline spec + hash/dimension manifest. DPR-0 is CLOSED; DPR-1 Claim + Question Provenance is NEXT. Production untouched.
+
+## 2026-09-08 — DPR-1 provenance foundation source/live closure
+
+- Product `d027bb3...` implements the exact plan vocabulary `OBSERVED | CALCULATED | SEMANTICALLY_RESOLVED | DOMAIN_CONTEXT | INFERRED | HYPOTHESIS` plus explicit `evidenceRefs[]`, `knowledgeRefs[]`, derivation, limitations, causal status and decision-use restrictions.
+- Added downstream presentation non-escalation guard; MB/domain knowledge cannot upgrade evidence-bound or hypothesis-only output into governed/causal authority. Question provenance projects eligibility/policy without inventing result authority.
+- Added shared collapsed-by-default Evidence Inspector beside Deep BA findings. Domain/MB knowledge is attached only when the finding derivation actually consumes it; retrieval relevance never becomes confidence.
+- Verification PASS: focused `25/25`, TypeScript, release-authoritative suite, governed regression `11 files / 42 tests`, production build.
+- Immutable NEXT UI `/home/ubuntu/services/lightbi-next-web/dpr1-d027bb3` is live on 5273; runtime provenance smoke PASS `1/1` in 8.8s. Core 5272, CP 5274 and Trust PIDs unchanged.
+- DPR-1 CLOSED; DPR-2 Open-world Question / Perspective Intelligence ACTIVE. Production untouched.
