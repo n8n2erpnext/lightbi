@@ -1,13 +1,13 @@
 {
   "schema": "lightbi.current-checkpoint.v1",
-  "updatedAt": "2026-09-08T02:48:00Z",
-  "status": "roadmap_1_0_dpr1_closed_dpr2_open_world_question_perspective_active",
-  "activeRuntime": "NEXT Core generation g-2026-09-05-next-034 on 5272; UI-only immutable DPR-1 web root dpr1-d027bb3 on gateway 5273; Control Plane 5274 unchanged; MB scheduler paused; Production untouched",
+  "updatedAt": "2026-09-08T03:33:12Z",
+  "status": "roadmap_1_0_dpr2_closed_dpr3_analysis_narrative_active",
+  "activeRuntime": "NEXT Core generation g-2026-09-05-next-034 on 5272; UI-only immutable DPR-2 web root dpr2-a876fb9 on gateway 5273; Control Plane 5274 unchanged; MB scheduler paused; Production untouched",
   "sourceCandidate": {
     "repo": "/home/ubuntu/n8n2erpnext/LightBI-dpr0-contract-freeze",
     "branch": "codex/dpr0-contract-freeze",
-    "head": "d027bb34e403968a60f6f3b053e3cfaf9ad42025",
-    "liveUiSource": "d027bb34e403968a60f6f3b053e3cfaf9ad42025",
+    "head": "a876fb998b980f1eef0c5834822f622a80435b44",
+    "liveUiSource": "a876fb998b980f1eef0c5834822f622a80435b44",
     "basePrimaryLogoCommit": "fde259a5441b36825f211914cbd0c82fc595f27f"
   },
   "brandAuthority": {
@@ -24,7 +24,6 @@
     "baselineEvidenceCommit": "14c2d99801cde82716f58127bd006e150118e8c5",
     "releaseAuthoritative": "PASS; governed product regression 11 files / 42 tests; production build PASS",
     "openDebtFixtures": [
-      "DPR-2 duplicate question lanes",
       "DPR-6 dashboard chart-type collapse"
     ]
   },
@@ -71,30 +70,27 @@
     "attestationPid": 1505209,
     "productionAuthority": false
   },
-  "nextAction": "DPR-2: audit current Universal + Canonical question lanes and the canonical question-generation call chain; introduce one deterministic Question/Perspective Intelligence projection that consumes domainInference + bounded MB presentation advice, deduplicates presentation candidates, models answerability/abstention/missing evidence, and always reuses governed question/metric executable authority. Validate on NEXT 5273 /app before proceeding to DPR-3.",
+  "nextAction": "DPR-3: audit current Deep BA/Decision Workspace narrative construction and duplicated same-weight finding sections; introduce a deterministic Analysis Narrative Plan over existing governed outputs with answer-first hierarchy, supporting-analysis relevance gates, reversible DPR-0 surface grammar, DPR-1 provenance/non-escalation, and bounded MB domain/perspective priority + abstention advice. Preserve numeric/evidence parity and validate shared Web Live Demo /app on NEXT 5273 before DPR-4.",
   "blockers": [
     "Production promotion and Offline Root/phase2a freeze remain owner-gated",
     "NEXT047 is stale and not a post-LQ3 release candidate; its installation-issuer mismatch remains deferred until an official release build"
   ],
   "productionTouched": false,
   "phase2aFrozen": false,
-  "resourceState": "root filesystem ~69% used, ~39 GiB free; NEXT DPR-1 UI overlay ~93 MiB; no 51xx harness",
+  "resourceState": "root filesystem ~69% used, ~39 GiB free; NEXT DPR-2 UI overlay ~93 MiB; no 51xx harness",
   "readFirst": [
     "docs/project-book/LIBRARY_RULES.md",
-    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#132-2026-09-08-dpr-1-claim-question-provenance-foundation-closes-on-next-dpr-2-becomes-active",
+    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#133-2026-09-08-dpr-2-open-world-question-perspective-intelligence-closes-on-next-dpr-3-becomes-active",
     "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DECISION_PRESENTATION_UI_UX_REFACTOR_2026-09-04.md"
   ],
-  "documentationHead": "741572e601ff25613441bde28eb8ca0f912a6a15",
+  "documentationHead": "ee49acf2e5afac1bdf20069e7ce4239aadbd526c",
   "dpr2": {
-    "state": "ACTIVE",
-    "scope": [
-      "separate Domain from Perspective",
-      "feed canonical domainInference and bounded MB presentation advice into question discovery/ranking/presentation",
-      "merge/dedupe Universal + governed question presentation",
-      "add answerability/abstention/missing-evidence states and neutral wording",
-      "retain governed metric/question gate as final executable authority"
-    ],
-    "authorityOrder": "user-selected domain/perspective -> governed schema + metrics -> canonical semantics -> domain rules -> MB presentation advice -> deterministic question/planner gate -> UI",
-    "mbBoundary": "MB may affect candidate relevance/order/context only; cannot create metric/formula/join/causal/execution/decision authority"
+    "state": "CLOSED",
+    "productCommit": "a876fb998b980f1eef0c5834822f622a80435b44",
+    "contract": "Domain and Perspective separated; governed + Universal questions deduplicated/ranked; answerability executable_now | descriptive_only | needs_more_evidence | unsupported; open-world MB/domain candidates are review-only actionAuthority=none",
+    "authorityInvariant": "MB/domain context may affect relevance/order/evidence requirements/abstention only; governed/safe upstream action authority remains final; retrieval rank is not semantic confidence",
+    "focusedVerification": "56/56 PASS + TypeScript PASS",
+    "releaseAuthoritative": "PASS; governed product regression 11 files / 42 tests; production build and source-size gate PASS",
+    "nextRuntimeAcceptance": "1/1 PASS in 5.3s on 5273 /app; one question lane; domain-context review candidates present; zero execution buttons in advisory section"
   }
 }
