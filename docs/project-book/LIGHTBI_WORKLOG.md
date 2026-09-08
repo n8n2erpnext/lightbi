@@ -1875,3 +1875,11 @@ R1-P0 documentation/integrity closure verified 1,243 local links with zero missi
 - Verification PASS: DPR-8 contract `3/3`; TypeScript/diff-check; source-size `545` modules; release-authoritative build `3818` modules + governed `11 files / 44 tests`, marker `release_1_0_suite=passed`; exact-SHA rebuild PASS.
 - Immutable NEXT `/home/ubuntu/services/lightbi-next-web/dpr8-foundation-e030e4d` is live on 5273. Gateway `471868 -> 558013`; Core `3376963`, CP `2346997`, manager `943`, Trust container/parent PIDs unchanged. Browser shell acceptance `1/1` PASS with 224px/56px responsive geometry and zero page errors. Production untouched.
 - DPR-8 remains ACTIVE. Next chunk: Understanding canvas-first migration; do not reinterpret semantic/planner/evidence authority while flattening presentation.
+
+## 2026-09-08 — DPR-8 Understanding above-fold source/live checkpoint
+
+- Product `900d7aa93d59b2c58501ba6efe49390182a157be` is the accepted Understanding closure. Intermediate `524747c...` functional acceptance was not enough: section-17 viewport measurement failed at CTA bottom `~1690.75px` in a 900px viewport, so docs closure was reverted/withheld.
+- Final density patch keeps governed semantics unchanged while compacting meaning, perspective rows and default Focus; readiness/domain/key-signal detail moves to Evidence after the primary answer. DPR-8 contract `4/4`; Understanding `8/8`; focused+i18n `11/11`; TypeScript/diff-check; source-size `545`; release build `3822` + governed `11 files / 44 tests`; `release_1_0_suite=passed`; exact-SHA build `3822` PASS.
+- Immutable NEXT root `/home/ubuntu/services/lightbi-next-web/dpr8-understanding-900d7aa` is live on 5273. Gateway `638133 -> 729433`; Core `3376963`, CP `2346997`, manager `943`, Trust `12020/3817149/1505209` unchanged; NetBird/external `/app` HTTP 200; Production untouched.
+- Final live Chromium acceptance PASS: four ordered regions; perspective rows `40/40/40/40px`; three vertical secondary questions; semantic/technical evidence collapsed; primary visible; CTA `852–896px` in 900px viewport at `scrollY=0`; sidebar `224px/56px`; `pageerror=[]`. Temporary harness removed.
+- DPR-8 remains ACTIVE. Next bounded target is Home / New Brief because it is the first remaining unmigrated target listed in plan section 17.
