@@ -68,7 +68,7 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                 </div>
 
                 <div className="relative flex w-full max-w-[820px] flex-col items-center">
-                  <div className="relative flex w-full items-center rounded-[24px] border border-black/10 bg-white shadow-[0_22px_65px_rgba(15,23,42,0.10)] transition-shadow duration-300 focus-within:shadow-[0_28px_75px_rgba(15,23,42,0.14)]">
+                  <div data-testid="home-question-command" className="relative flex w-full items-center rounded-[24px] border border-black/10 bg-white shadow-[0_22px_65px_rgba(15,23,42,0.10)] transition-shadow duration-300 focus-within:shadow-[0_28px_75px_rgba(15,23,42,0.14)]">
                     <button
                       onClick={() => setIsPlusMenuOpen(!isPlusMenuOpen)}
                       className="source-picker-toggle absolute left-4 z-10 flex h-10 w-10 items-center justify-center rounded-xl text-black/55 transition-colors hover:bg-black/[0.04] hover:text-[#202123]"
@@ -97,7 +97,7 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                     />
                   </div>
 
-                  <div className="mt-4 flex min-h-[42px] flex-wrap content-start justify-center gap-2">
+                  <div data-testid="home-quick-suggestions" data-layout="action-pills" className="mt-4 flex min-h-[42px] flex-wrap content-start justify-center gap-2">
                     {activeChips.map((chip: any, idx: number) => {
                       const style = homeGuidance.heroChipCategoryStyles[chip.category] || homeGuidance.heroChipCategoryStyles.general;
                       return (
@@ -123,31 +123,19 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                     })}
                   </div>
 
-                  <div className="mt-9 grid w-full grid-cols-1 gap-3 md:grid-cols-3">
-                    <button
-                      onClick={openLocalFilePicker}
-                      className="group rounded-[16px] border border-black/10 bg-white p-5 text-left shadow-sm transition-all duration-200 hover:-translate-y-1 hover:bg-white hover:shadow-lg"
-                    >
-                      <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-[12px] bg-emerald-50 text-emerald-600 shadow-sm transition-transform duration-200 group-hover:scale-105"><FileSpreadsheet className="h-5 w-5" strokeWidth={1.7} /></div>
-                      <div className="text-[15px] font-medium text-[#202123]">{t('Import local files')}</div>
-                      <div className="mt-1 text-[13px] leading-5 text-black/45">{t('Excel, CSV, JSON, TSV with matrix sampling and quality score.')}</div>
-                    </button>
-                    <button
-                      onClick={openOnlineDataDrawer}
-                      className="group rounded-[16px] border border-black/10 bg-white p-5 text-left shadow-sm transition-all duration-200 hover:-translate-y-1 hover:bg-white hover:shadow-lg"
-                    >
-                      <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-[12px] bg-blue-50 text-blue-600 shadow-sm transition-transform duration-200 group-hover:scale-105"><Link className="h-5 w-5" strokeWidth={1.7} /></div>
-                      <div className="text-[15px] font-medium text-[#202123]">{t('Connect online sheet')}</div>
-                      <div className="mt-1 text-[13px] leading-5 text-black/45">{t('Short or full links stay online-first, then LightBI builds a BA brief.')}</div>
-                    </button>
-                    <button
-                      onClick={openDatabaseDrawer}
-                      className="group rounded-[16px] border border-black/10 bg-white p-5 text-left shadow-sm transition-all duration-200 hover:-translate-y-1 hover:bg-white hover:shadow-lg"
-                    >
-                      <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-[12px] bg-violet-50 text-violet-600 shadow-sm transition-transform duration-200 group-hover:scale-105"><Server className="h-5 w-5" strokeWidth={1.7} /></div>
-                      <div className="text-[15px] font-medium text-[#202123]">{t('Connect database system')}</div>
-                      <div className="mt-1 text-[13px] leading-5 text-black/45">{t('Postgres, MySQL, MariaDB, MongoDB, SQLite, then LightBI builds a BA brief.')}</div>
-                    </button>
+                  <div data-testid="home-source-actions" data-layout="source-action-stack" className="mt-8 w-full border-y border-[var(--lb-divider)]">
+                    {[
+                      { label: 'Import local files', description: 'Excel, CSV, JSON, TSV with matrix sampling and quality score.', icon: FileSpreadsheet, iconClass: 'bg-emerald-50 text-emerald-600', action: openLocalFilePicker },
+                      { label: 'Connect online sheet', description: 'Short or full links stay online-first, then LightBI builds a BA brief.', icon: Link, iconClass: 'bg-blue-50 text-blue-600', action: openOnlineDataDrawer },
+                      { label: 'Connect database system', description: 'Postgres, MySQL, MariaDB, MongoDB, SQLite, then LightBI builds a BA brief.', icon: Server, iconClass: 'bg-violet-50 text-violet-600', action: openDatabaseDrawer },
+                    ].map(source => {
+                      const SourceIcon = source.icon;
+                      return <button key={source.label} type="button" onClick={source.action} className="group flex w-full items-center gap-3 border-b border-[var(--lb-divider)] px-1 py-3 text-left transition last:border-b-0 hover:bg-black/[0.025]">
+                        <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${source.iconClass}`}><SourceIcon className="h-4 w-4" strokeWidth={1.7} /></span>
+                        <span className="min-w-0 flex-1"><span className="block text-[13px] font-semibold text-[#202123]">{t(source.label)}</span><span className="mt-0.5 block text-[12px] leading-5 text-black/45">{t(source.description)}</span></span>
+                        <ChevronRight className="h-4 w-4 shrink-0 text-black/25 transition group-hover:translate-x-0.5 group-hover:text-black/50" />
+                      </button>;
+                    })}
                   </div>
 
                   <HomeSessionHistoryPanel

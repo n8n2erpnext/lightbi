@@ -24,19 +24,19 @@ export const HomeSessionHistoryPanel: React.FC<HomeSessionHistoryPanelProps> = (
     ? t('Session history is temporarily unavailable. Check the local LightBI core, then try again.')
     : status ? t(status) : status;
   return (
-  <div data-testid="session-history" className={`bg-white border border-black/10 rounded-xl p-5 shadow-sm ${className}`}>
-    <div className="mb-4 flex items-center justify-between gap-3">
+  <section data-testid="session-history" data-layout="session-history-list" className={className}>
+    <div className="mb-3 flex items-center justify-between gap-3 px-1">
       <h3 className="flex items-center text-[12px] font-semibold uppercase tracking-wider text-gray-500">
         <History className="mr-2 h-4 w-4 text-gray-400" /> {t('Session history')}
       </h3>
       <span className="text-[11px] text-gray-400">{sessions.length}</span>
     </div>
     {sessions.length > 0 ? (
-      <div className="grid gap-2">
+      <div className="border-y border-[var(--lb-divider)]">
         {sessions.slice(0, 6).map(session => {
           const isActive = activeSessionId === session.id;
           return (
-            <div key={session.id} data-testid="session-history-item" data-session-id={session.id} data-source-type={session.sourceType} className={`rounded-lg border p-3 transition-colors ${isActive ? 'border-emerald-200 bg-emerald-50/70' : 'border-gray-100 bg-white hover:border-gray-200'}`}>
+            <div key={session.id} data-testid="session-history-item" data-session-id={session.id} data-source-type={session.sourceType} className={`border-b border-[var(--lb-divider)] px-1 py-3 transition last:border-b-0 ${isActive ? 'border-l-2 border-l-emerald-500 bg-emerald-50/60 pl-3' : 'hover:bg-black/[0.025]'}`}>
               <div className="flex items-start justify-between gap-2">
                 <button onClick={() => onOpen(session)} className="min-w-0 flex-1 text-left" title={t('Open saved session')}>
                   <div className="truncate text-[13px] font-semibold text-gray-900">{session.title}</div>
@@ -60,12 +60,12 @@ export const HomeSessionHistoryPanel: React.FC<HomeSessionHistoryPanelProps> = (
         })}
       </div>
     ) : (
-      <div className="rounded-lg border border-dashed border-gray-200 px-3 py-5 text-center">
+      <div data-testid="session-history-empty" className="border-y border-[var(--lb-divider)] px-2 py-5 text-center">
         <div className="text-[13px] font-medium text-gray-700">{t('No saved sessions yet')}</div>
         <div className="mt-1 text-[12px] text-gray-400">{t('LightBI saves this workspace as soon as the source is ready.')}</div>
       </div>
     )}
-    {visibleStatus && <div className="mt-4 flex items-center justify-between gap-3 rounded-md bg-gray-50 px-3 py-2 text-[12px] text-gray-500"><span>{visibleStatus}</span>{isConnectionFailure && onRetry && <button type="button" onClick={onRetry} className="shrink-0 rounded-md border border-gray-200 bg-white px-2.5 py-1 font-semibold text-gray-700 hover:bg-gray-100">{t('Try again')}</button>}</div>}
-  </div>
+    {visibleStatus && <div data-testid="session-history-status" className="mt-3 flex items-center justify-between gap-3 border-t border-[var(--lb-divider)] px-1 pt-3 text-[12px] text-gray-500"><span>{visibleStatus}</span>{isConnectionFailure && onRetry && <button type="button" onClick={onRetry} className="shrink-0 rounded-md border border-gray-200 bg-white px-2.5 py-1 font-semibold text-gray-700 hover:bg-gray-100">{t('Try again')}</button>}</div>}
+  </section>
   );
 };

@@ -63,3 +63,20 @@ test('DPR-8 Understanding uses the shared canvas hierarchy and ranked stacks', a
   const primaryIndex = understanding.indexOf('canonical-primary-analysis');
   assert.ok(primaryIndex >= 0 && understanding.indexOf('canonical-analysis-readiness') > primaryIndex, 'readiness counts must not push the primary answer down');
 });
+
+test('DPR-8 Home keeps New Brief as a command surface and flattens source/history stacks', async () => {
+  const home = await read('apps/desktop/src/components/home/HomeWorkspaceView.tsx');
+  const history = await read('apps/desktop/src/components/home/HomeSessionHistoryPanel.tsx');
+  assert.match(home, /data-testid="home-question-command"/);
+  assert.match(home, /data-testid="home-quick-suggestions" data-layout="action-pills"/);
+  assert.match(home, /data-testid="home-source-actions" data-layout="source-action-stack"/);
+  const sourceStart = home.indexOf('data-testid="home-source-actions"');
+  const sourceEnd = home.indexOf('<HomeSessionHistoryPanel', sourceStart);
+  const sourceBlock = home.slice(sourceStart, sourceEnd);
+  assert.doesNotMatch(sourceBlock, /grid-cols|shadow-sm|shadow-lg|hover:-translate-y-1/);
+  assert.match(history, /data-layout="session-history-list"/);
+  assert.match(history, /data-testid="session-history-empty"/);
+  assert.match(history, /data-testid="session-history-status"/);
+  assert.doesNotMatch(history, /bg-white border border-black\/10 rounded-xl p-5 shadow-sm/);
+  assert.doesNotMatch(history, /border-dashed/);
+});
