@@ -1932,3 +1932,12 @@ R1-P0 documentation/integrity closure verified 1,243 local links with zero missi
 - Candidate browser artifact proof: canonical multi `4` PNG pages + `4`-page PDF; tracked MB-6 single `5` PNG pages + `5`-page PDF. Final exact-live rerun PASSed both lanes `2/2` in `61s`, restored exact `<details>` open state after PNG/PDF and had zero page errors.
 - NEXT root `/home/ubuntu/services/lightbi-next-web/dpr9-aa51184` is live on 5273 PID `1461645`; Core/CP/systemd-user/Trust unchanged. Production/51xx untouched.
 - DPR-9 CLOSED; DPR-10 Cross-domain acceptance and release regression ACTIVE.
+
+## 2026-09-09 — DPR-10 cross-domain source/live acceptance checkpoint
+
+- Product `8ed2370809a5a4ddc413277a3d1eb7956eaa5020` adds test-only DPR-10 release gates: one cross-domain planner/presentation matrix and one deterministic/bounded Micro Brain presentation rebuild contract. Product LOCAL=REMOTE and clean; no production feature code changed.
+- DPR-10 focused acceptance PASSes `50/50`; MB deterministic rebuild PASSes `1/1`. Presentation index SHA-256 remains `a74cad36a714ad3a296cef4f902ad409b447e4fee978ddc6a9b062903e65f041`; presentation index `3,360,712` bytes; two-lobe total `9,966,179` bytes; `88` presentation cards / `32` domain profiles / `31` chart-pattern cards.
+- Final release-authoritative rerun PASSed i18n, source-size `547`, build `3824`, governed regression `11 files / 45 tests`, marker `release_1_0_suite=passed`. Visual acceptance locks neutral/context-dependent semantics and Dashboard information-budget rejection.
+- Live NEXT canonical six-file + Focus PASSed `1/1` in `52s`; tracked Healthcare Deep BA + selected-subject Step 2 PASSed `1/1` in `8.3s`; additional Manufacturing/Agriculture/Hospitality inferred-domain matrix PASSed `3/3`, with Hospitality intentionally safe-abstaining unresolved because semantic evidence is insufficient.
+- First legacy six-file live harness timed out only because the new Micro Brain consent splash intercepted the old perspective click; after dismissing consent it next hit a stale `<article>` selector removed by DPR-8 flattening. Current-contract harness then passed. No Product analytics fix was required.
+- DPR-10 remains ACTIVE. Remaining gate: packaged Windows/native visual UAT before any stable promotion. Production/51xx/Core/Control Plane/Trust untouched.
