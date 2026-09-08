@@ -1,12 +1,12 @@
 {
   "schema": "lightbi.current-checkpoint.v1",
-  "updatedAt": "2026-09-09T01:31:00Z",
-  "status": "roadmap_1_0_dpr9_closed_dpr10_cross_domain_acceptance_active",
-  "activeRuntime": "NEXT Core generation g-2026-09-05-next-034 on 5272 PID 3376963; immutable DPR-9 semantic-report UI root dpr9-aa51184 on gateway 5273 PID 1461645; Control Plane 5274 PID 2346997 unchanged; Product source aa511844bb7b2f9fbfb5b575bc726fef293e9952; Production untouched",
+  "updatedAt": "2026-09-08T19:28:47Z",
+  "status": "roadmap_1_0_dpr10_web_shared_acceptance_green_native_windows_uat_pending",
+  "activeRuntime": "NEXT Core generation g-2026-09-05-next-034 on 5272 PID 3376963; immutable DPR-9 UI root dpr9-aa51184 on gateway 5273 PID 1461645; Control Plane 5274 PID 2346997 unchanged; live UI source aa511844bb7b2f9fbfb5b575bc726fef293e9952; DPR-10 test/release gate Product HEAD 8ed2370809a5a4ddc413277a3d1eb7956eaa5020; Production untouched",
   "sourceCandidate": {
     "repo": "/home/ubuntu/n8n2erpnext/LightBI-dpr0-contract-freeze",
     "branch": "codex/dpr0-contract-freeze",
-    "head": "aa511844bb7b2f9fbfb5b575bc726fef293e9952",
+    "head": "8ed2370809a5a4ddc413277a3d1eb7956eaa5020",
     "liveUiSource": "aa511844bb7b2f9fbfb5b575bc726fef293e9952"
   },
   "roadmapDpr": {
@@ -20,7 +20,7 @@
     "dpr7": "CLOSED",
     "dpr8": "CLOSED",
     "dpr9": "CLOSED — semantic report pagination source/release/live accepted",
-    "dpr10": "ACTIVE — cross-domain acceptance and release regression"
+    "dpr10": "ACTIVE — web/shared-source cross-domain acceptance release-green; packaged Windows/native visual UAT pending"
   },
   "dpr7": {
     "state": "CLOSED",
@@ -65,7 +65,7 @@
     },
     "productionAuthority": false
   },
-  "nextAction": "DPR-10: read the active UI/UX refactor plan section 20 acceptance corpus and DPR-10 scope. Build a tracked cross-domain acceptance matrix across Web Live Demo /app and Desktop/shared-source surfaces; verify semantic/numeric/evidence parity, question relevance, chart-pattern recommendation, Dashboard composition, narrative and DPR-9 export pagination. Add MB advisory regression for deterministic rebuild, bounded footprint, provenance, domain/chart recall, abstention/prohibition recall, and deterministic-planner rejection without governed numeric drift. Add calm-hierarchy/color-label visual regression. Include current supported domains plus evidence-bound inferred-domain probes; preserve owner-gated Production/native promotion. Do not touch Production/51xx/Core/Control Plane/Trust.",
+  "nextAction": "DPR-10 final gate: perform packaged Windows/native visual UAT on a Windows build derived from the current Product line before any stable promotion. Reuse the closed web/shared-source acceptance as semantic baseline; verify shared product surfaces, hierarchy/responsiveness, chart labels/color semantics, Deep BA/Step 2, report export, and record any intentional native-only divergence. Do not promote stable or touch Production until this UAT is accepted.",
   "blockers": [
     "Production promotion and Offline Root/phase2a freeze remain owner-gated",
     "NEXT047 remains stale and is not the current post-DPR release candidate"
@@ -76,7 +76,7 @@
     "docs/project-book/LIGHTBI_PROJECT_BOOK.md#146-2026-09-09-dpr-9-closes-with-true-semantic-report-pagination-dpr-10-is-active",
     "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DECISION_PRESENTATION_UI_UX_REFACTOR_2026-09-04.md"
   ],
-  "documentationHead": "147004ae49d0da46db3a24bc388663b1508c5686",
+  "documentationHead": "424501f603b6a0c0580aa79d0bf9f33262e1db86",
   "dpr9": {
     "state": "CLOSED — source/release/deploy and exact-live single+multi artifact acceptance complete",
     "scope": "lightbi.analysis-report-plan.v1 shared semantic report page model; semantic page breaks/keep-together; bounded PNG page export; true multi-page PDF; exact detail-state restore after export",
@@ -91,10 +91,13 @@
     "nextTarget": "CLOSED; DPR-10 Cross-domain acceptance and release regression is active"
   },
   "dpr10": {
-    "state": "ACTIVE",
-    "scope": "cross-domain acceptance and release regression across semantic/numeric/evidence, questions, visualization patterns, Dashboard composition, narrative, report export, MB advisory behavior and calm presentation hierarchy",
-    "boundary": "acceptance/regression only unless a separately proven defect requires a scoped fix; no new metric/formula/join/causal/evidence/MB authority; Production promotion remains owner-gated",
-    "productBase": "aa511844bb7b2f9fbfb5b575bc726fef293e9952",
-    "liveUiRoot": "/home/ubuntu/services/lightbi-next-web/dpr9-aa51184"
+    "state": "ACTIVE — web/shared-source acceptance green; packaged Windows/native visual UAT pending",
+    "scope": "cross-domain semantic/numeric/evidence parity, questions, visualization patterns, Dashboard composition, narrative, report export, MB advisory behavior and calm presentation hierarchy",
+    "boundary": "acceptance/regression only; no new metric/formula/join/causal/evidence/MB authority; Production promotion remains owner-gated",
+    "productGateCommit": "8ed2370809a5a4ddc413277a3d1eb7956eaa5020",
+    "liveUiSource": "aa511844bb7b2f9fbfb5b575bc726fef293e9952",
+    "verification": "DPR-10 focused 50/50; MB deterministic rebuild 1/1; presentation byte SHA a74cad36a714ad3a296cef4f902ad409b447e4fee978ddc6a9b062903e65f041; two-lobe footprint 9,966,179 bytes; final release suite PASS, source-size 547, build 3824, governed 11 files/45 tests",
+    "liveAcceptance": "six-file + Focus 1/1 in 52s; Healthcare Deep BA/selected-subject 1/1 in 8.3s; inferred-domain probes 3/3 with Manufacturing/Agriculture evidence-bound and Hospitality safe-abstain unresolved; zero page errors in accepted lanes",
+    "remainingGate": "packaged Windows/native visual UAT before stable promotion"
   }
 }
