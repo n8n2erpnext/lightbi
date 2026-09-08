@@ -1,6 +1,6 @@
 # Agent Implementation Plan — Decision Presentation + UI/UX Refactor — 2026-09-04
 
-Status: **DPR-0 ACTIVE — CONTRACT FREEZE + DESIGN FOUNDATION SOURCE-CLOSED; MULTI-FILE TERMINAL WORKFLOW CONVERGENCE PRECEDES VISUAL BASELINE FREEZE**
+Status: **DPR-0 CLOSED — WORKFLOW + NEXT VISUAL BASELINE ACCEPTED; DPR-1 CLAIM/QUESTION PROVENANCE NEXT**
 Date: 2026-09-04
 Amended: 2026-09-05 — owner added design-system/i18n hardening and Frappe UI reference direction.
 Amended: 2026-09-06 — owner elevated Frappe Books as a primary product-UX study source and added a canonical chart-pattern/visual-grammar library direction.
@@ -9,9 +9,10 @@ Amended: 2026-09-07 — DPR-0 re-pinned and cloned Frappe Books `a79a1e3...`; ow
 Amended: 2026-09-08 — DPR-0 contract-freeze chunk 1 source-closed at Product `85734e4...`: React-19 shared boundary, monotonic i18n debt guard, durable chart/question debt fixtures and release-suite enforcement.
 Amended: 2026-09-08 — owner promoted Figma `LightBI Logo Concept` node `19:5` (`optimized li`) to the LightBI primary mark and required SVG-first derivation across Desktop/native/Distribution branding.
 Amended: 2026-09-08 — owner elevated app-wide information architecture/density to a hard product contract, required multi-file terminal Deep BA/Step 2 workflow convergence before visual-baseline freeze, and made Web Live Demo `/app` a near-1:1 product-validation lane alongside Desktop.
+Amended: 2026-09-08 — DPR-0 terminal workflow convergence source-closed at Product `ce5c961...`; corrected NEXT `/app` baseline accepted and evidence source-closed at `14c2d99...`; DPR-0 closed and DPR-1 is next.
 Scope: Question/Perspective, narrative, visualization, Dashboard, evidence, export and product UI-surface refactor.
 Authority: design/implementation plan; not runtime or metric authority.
-Code-audit snapshot: current clean DPR-0 Product worktree is `codex/dpr0-contract-freeze` at `ca454ecab5aa029fb504388374837695e1e2cd11`, descendant of optimized-li brand source `fde259a5441b36825f211914cbd0c82fc595f27f`; Control Plane brand source remains `b6bc2735bcf99218443ae5c427701e5b1a7c938f`. Contract/dependency/design-token foundation is source-closed; broad surface migration remains pending behind multi-file terminal workflow convergence and a corrected cross-environment visual baseline.
+Code-audit snapshot: current clean Product worktree is `codex/dpr0-contract-freeze` at `14c2d99801cde82716f58127bd006e150118e8c5`, descendant of optimized-li brand source `fde259a5441b36825f211914cbd0c82fc595f27f`; Control Plane brand source remains `b6bc2735bcf99218443ae5c427701e5b1a7c938f`. Multi-file terminal flow is source-closed at UI commit `ce5c961d099bf4d2343a74508211a828daa3df4b`; corrected NEXT visual-baseline evidence is source-closed at `14c2d99...`. DPR-0 is closed; DPR-1 is the next implementation phase.
 Supersedes: none.
 
 Repository target when implementation is authorized: public LightBI product successor.
@@ -708,13 +709,22 @@ Frappe Books and Frappe UI are external references only. No Vue/Electron depende
 - Existing screen geometry remains unchanged until DPR-8 migration; current 280px sidebar/older motion values are not silently treated as migrated merely because target tokens exist.
 - Focused token/contract checks and TypeScript PASS; the release-authoritative suite remains PASS with governed regression `11 files / 41 tests` and production build.
 
+#### DPR-0 chunk 3 — multi-file terminal workflow + corrected NEXT baseline source/live closure (2026-09-08)
+
+- Product `ce5c961d099bf4d2343a74508211a828daa3df4b` replaces independent `showDeepDive` / `showSubsetDeepDive` booleans with one discriminated terminal state grammar: `decision_workspace | evidence_drill | deep_perspective | deep_selected`. Full-scope Deep BA and selected-data Step 2 are mutually exclusive and reversible; evidence-source selection survives Back from Step 2.
+- Focused/integration acceptance PASSed `17/17`, including the unchanged multi-source relationship/period/currency/cardinality/fail-closed production suite. Release-authoritative acceptance PASSed with production build and governed regression `11 files / 42 tests`. New presentation strings were added to the catalog rather than weakening the DPR-0 i18n debt guard.
+- NEXT 5273 now serves an immutable UI-only web root for `ce5c961` while Core 5272 remains generation `g-2026-09-05-next-034` and Control Plane 5274/Trust remain untouched. Direct 5273 `/app` and public `https://lightbi-next.thaiduy.digital/app/` both expose `lightbi-ui-build.json` binding the live UI to exact `ce5c961`.
+- Runtime multi-file smoke on NEXT `/app` PASSed `1/1` in 26.6s through the real 5272/5274 backends. Corrected visual-baseline spec then PASSed `2/2` in 32.9s and captured nine tracked-corpus surfaces: Home, multi-file Understanding, multi-file Decision Workspace, full Deep BA, Evidence Drill, Step 2, Dashboard, single-file Decision Workspace and single-file Deep BA.
+- All nine full-page captures are `1440x900`, proving that these acceptance states no longer create document-level giant-scroll at the reference viewport. PNG evidence stays under ignored `ui-audit/`; `14c2d99801cde82716f58127bd006e150118e8c5` source-closes the reproducible NEXT spec plus SHA-256/bytes/dimensions manifest.
+- No 51xx process is part of NEXT acceptance. NEXT testing uses 5272/5273/5274; the mistaken temporary 51xx harness was removed before this closure.
+
 #### Current DPR-0 execution order — corrected after multi-file IA review
 
 1. Freeze numeric/evidence/runtime authority and presentation debt — **done**.
 2. Establish shared React/design-token foundation — **done**.
-3. Converge the multi-file terminal Decision Workspace / Deep BA / Step 2 state model with the single-file workflow, preserving multi-source governance — **NEXT and required before visual freeze**.
-4. Capture corrected representative visual baselines for Home, Understanding, Decision Workspace, Dashboard, Deep BA and Step 2 in the Web Live Demo `/app`, with equivalent Desktop/source checks where applicable.
-5. Only then begin broad canvas-first surface migration and later DPR phase work.
+3. Converge the multi-file terminal Decision Workspace / Deep BA / Step 2 state model with the single-file workflow, preserving multi-source governance — **done at `ce5c961...`**.
+4. Capture corrected representative visual baselines for Home, Understanding, Decision Workspace, Dashboard, Deep BA and Step 2 in the Web Live Demo `/app`, with equivalent Desktop/source checks where applicable — **done; evidence `14c2d99...`**.
+5. DPR-0 closes here. Continue in declared phase order with **DPR-1 Claim + Question Provenance foundation**; DPR-8 owns the later broad canvas-first surface migration.
 
 - Freeze current governed numeric/evidence parity fixtures before presentation refactor.
 - Capture representative Home, Understanding, Decision Workspace, Dashboard, Deep BA and Step 2 acceptance screenshots.
@@ -870,7 +880,7 @@ LightBI should guide the user from **what the data means** to **what question ma
 
 This document remains the refactor plan. The 2026-09-06 MB presentation-advisory foundation is now source-closed separately at product commit `4be593ae57b4b1385a833675dd4ea2349900d378`, but it is not wired into current BA/chart runtime selection. No NEXT generation, Production service, metric authority, domain-support pack or release artifact is changed by this planning update.
 
-DPR-0 is active and owner-authorized. Broad visual-baseline freeze and screen migration are now gated by the multi-file terminal workflow convergence defined in §16A, followed by equivalent Web Live Demo `/app` and Desktop/shared-surface acceptance. Documentation work must continue to follow `docs/project-book/LIBRARY_RULES.md`.
+DPR-0 is CLOSED. Multi-file terminal workflow convergence and corrected NEXT Web Live Demo `/app` visual acceptance are source/live proven as recorded above. The next implementation phase is DPR-1 Claim + Question Provenance foundation; broad surface migration remains owned by DPR-8 after the preceding planner/ontology phases. Documentation work must continue to follow `docs/project-book/LIBRARY_RULES.md`.
 ## 24. Source bookmarks
 
 - [`../../../project-book/LIBRARY_RULES.md`](../../../project-book/LIBRARY_RULES.md) — documentation governance used for this plan.

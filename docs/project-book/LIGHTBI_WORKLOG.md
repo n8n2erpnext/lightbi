@@ -1789,3 +1789,11 @@ R1-P0 documentation/integrity closure verified 1,243 local links with zero missi
 - Stopped the pre-convergence visual-baseline run rather than canonizing the current giant-scroll IA. DPR-0 visual acceptance must be captured only after the workflow converges.
 - Elevated Web Live Demo `/app` to a near-1:1 product-validation lane. Shared UI/UX phases must reuse the same React/state/planner/token/i18n implementation across `/app` and Desktop; only genuine native capabilities may diverge through explicit adapters/truthful unavailable states. Phase acceptance now records Web Live Demo, Desktop shared surface and packaged/native where applicable.
 - Current Product DPR foundation remains `ca454ecab5aa029fb504388374837695e1e2cd11`; no Production/Trust/NEXT runtime mutation was performed for this plan correction.
+
+## 2026-09-08 — DPR-0 multi-file convergence + corrected NEXT visual baseline closes
+
+- Product `ce5c961...` replaces the append-everything multi-file terminal booleans with mutually exclusive `decision_workspace -> evidence_drill -> deep_perspective | deep_selected` states; Back restores the exact preceding evidence context. Governed multi-source truth is unchanged.
+- Focused/integration acceptance PASS `17/17`; release-authoritative PASS with governed `11 files / 42 tests` and production build. Four new presentation strings were added to the i18n catalog after the debt guard correctly rejected them.
+- Built immutable NEXT UI root `/home/ubuntu/services/lightbi-next-web/dpr0-ce5c961` and rotated only gateway 5273 to it. Core 5272, CP 5274 and Trust PIDs stayed unchanged. Direct 5273 and public `/app` both report UI source `ce5c961`.
+- Real NEXT multi-file runtime smoke PASS `1/1` in 26.6s. Corrected visual-baseline PASS `2/2` in 32.9s over nine tracked-corpus surfaces; every full-page capture is `1440x900`, confirming no document-level giant-scroll at the reference viewport.
+- Product `14c2d99...` source-closes the NEXT baseline spec + hash/dimension manifest. DPR-0 is CLOSED; DPR-1 Claim + Question Provenance is NEXT. Production untouched.
