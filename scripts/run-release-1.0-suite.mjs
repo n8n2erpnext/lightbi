@@ -12,6 +12,8 @@ const governed = [
   ['native updater capability contract', ['exec','node','scripts/validate-native-capabilities.mjs']],
   ['intelligence pack trust and runtime contract', ['test:intelligence-pack-contract']],
   ['workspace history durability', ['--dir','apps/desktop','exec','vitest','run','src/lib/project-source-file-api.test.ts','src/lib/home-workspace-persistence.test.ts','src/lib/investigation-persistence-actions.test.ts','src/hooks/useHomeWorkspaceSessions.test.tsx']],
+  ['DPR-0 shared UI React boundary', ['exec','node','--test','scripts/dpr0-ui-contract.test.mjs']],
+  ['DPR-0 presentation and i18n debt guards', ['--dir','apps/desktop','exec','vitest','run','src/i18n/language-coverage.test.ts','src/lib/dpr0-presentation-debt-baseline.test.ts']],
   ['production source-size gate', ['test:source-module-size']],
   ['desktop production build', ['--filter','@lightbi/desktop','build']],
   ['governed product regression', ['--dir','apps/desktop','exec','vitest','run',

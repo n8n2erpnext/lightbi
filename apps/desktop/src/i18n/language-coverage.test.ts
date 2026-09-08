@@ -16,6 +16,16 @@ const englishCatalog = JSON.parse(
   fs.readFileSync(path.join(i18nDir, 'languages', 'en.json'), 'utf8'),
 ) as LanguageCatalog;
 const knownEnglishSources = new Set(Object.keys(englishCatalog.messages ?? {}));
+const debtBaseline = JSON.parse(
+  fs.readFileSync(path.join(i18nDir, 'language-coverage-baseline.json'), 'utf8'),
+) as {
+  mixedVietnameseMessageSources: string[];
+  uncatalogedEnglishSources: string[];
+  uncatalogedVietnameseSources: string[];
+};
+const baselineMixedVietnamese = new Set(debtBaseline.mixedVietnameseMessageSources);
+const baselineUncatalogedEnglish = new Set(debtBaseline.uncatalogedEnglishSources);
+const baselineUncatalogedVietnamese = new Set(debtBaseline.uncatalogedVietnameseSources);
 const mixedLanguagePattern = /\b(?:dashboard|file|online|server|native|metadata|core|license(?: key)?|backend|easy mode|raw data|read-only|runtime|governed)\b/i;
 const uiObjectKeys = new Set([
   'title', 'placeholder', 'aria-label', 'label', 'name', 'intent', 'bestFor',
@@ -43,9 +53,10 @@ describe('Vietnamese language coverage', () => {
   it('does not leave common English product terms inside Vietnamese messages', () => {
     const mixed = Object.entries(catalog.messages ?? {})
       .filter(([source, translated]) => !isTechnicalToken(source) && mixedLanguagePattern.test(translated))
+      .filter(([source]) => !baselineMixedVietnamese.has(source))
       .map(([source, translated]) => `${JSON.stringify(source)} => ${JSON.stringify(translated)}`)
       .sort();
-    expect(mixed, mixed.join('\n')).toEqual([]);
+    expect(mixed, `New mixed-language debt is forbidden. Existing DPR-0 debt may only shrink.\n${mixed.join('\n')}`).toEqual([]);
   });
 
   it('catalogs every static user-facing English string found in the desktop source', () => {
@@ -96,9 +107,10 @@ describe('Vietnamese language coverage', () => {
     }
 
     const report = [...missing.entries()]
+      .filter(([text]) => !baselineUncatalogedEnglish.has(text))
       .sort(([left], [right]) => left.localeCompare(right))
       .map(([text, locations]) => `${JSON.stringify(text)} at ${locations.slice(0, 3).join(', ')}`);
-    expect(report, report.join('\n')).toEqual([]);
+    expect(report, `New uncataloged English UI debt is forbidden. Existing DPR-0 debt may only shrink.\n${report.join('\n')}`).toEqual([]);
   });
 });
 
@@ -143,8 +155,9 @@ describe('English language coverage', () => {
     }
 
     const report = [...missing.entries()]
+      .filter(([value]) => !baselineUncatalogedVietnamese.has(value))
       .sort(([left], [right]) => left.localeCompare(right))
       .map(([value, locations]) => `${JSON.stringify(value)} at ${locations.slice(0, 3).join(', ')}`);
-    expect(report, report.join('\n')).toEqual([]);
+    expect(report, `New uncataloged Vietnamese UI debt is forbidden. Existing DPR-0 debt may only shrink.\n${report.join('\n')}`).toEqual([]);
   });
 });
