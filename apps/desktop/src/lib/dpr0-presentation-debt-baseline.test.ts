@@ -15,11 +15,15 @@ const defect = (id: string) => {
 };
 
 describe('DPR-0 presentation debt baseline', () => {
-  it('keeps the chart-type collapse defect explicit until DPR-6 retires it', () => {
-    const item = defect('dashboard-renderer-type-collapse');
-    const source = fs.readFileSync(path.join(srcRoot, item.source), 'utf8');
-    expect(item.ownerPhase).toBe('DPR-6');
-    expect(source).toContain(item.evidence);
+  it('keeps the DPR-6 dashboard renderer collapse retired with Scatter preservation proof', () => {
+    expect(baseline.defects.some(item => item.id === 'dashboard-renderer-type-collapse')).toBe(false);
+    const item = baseline.resolvedDefects?.find(entry => entry.id === 'dashboard-renderer-type-collapse');
+    expect(item?.ownerPhase).toBe('DPR-6');
+    expect(item?.status).toBe('resolved');
+    const source = fs.readFileSync(path.join(srcRoot, item!.source), 'utf8');
+    expect(source).toContain(item!.evidence);
+    expect(item?.laneSymbols?.every(symbol => source.includes(symbol))).toBe(true);
+    expect(source).not.toContain("chart.type === 'Line' ? 'line' : chart.type === 'Donut' || chart.type === 'Pie' ? 'donut' : 'bar'");
   });
 
   it('keeps the DPR-2 duplicate question-lane debt retired after unified Question Intelligence', () => {

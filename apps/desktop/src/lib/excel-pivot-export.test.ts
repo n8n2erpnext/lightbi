@@ -36,7 +36,7 @@ const action = {
 };
 
 function decisionPlan() {
-  return createDecisionVisualizationPlan({ perspectiveId: action.id, sourceCount: 1, dimensionField: 'Product', metricIds: ['sales_revenue'], rows: [{ Product: 'TV', sales_revenue: 250 }] });
+  return createDecisionVisualizationPlan({ perspectiveId: action.id, sourceCount: 1, dimensionField: 'Product', metricIds: ['sales_revenue'], rows: [{ Product: 'TV', sales_revenue: 250 }], analyticalIntent: 'category_comparison', availableRoles: ['category','measure'], cardinality: { points: 1, categories: 1, series: 1 }, requiredSurfaces: ['preview','persistence','dashboard'] });
 }
 
 describe('Excel Pivot export', () => {

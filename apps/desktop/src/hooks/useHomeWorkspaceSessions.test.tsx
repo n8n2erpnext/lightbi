@@ -119,7 +119,9 @@ describe('Home workspace session restoration', () => {
   it('clears transient Excel export authority when switching to a saved workspace session', async () => {
     const decision = createDecisionVisualizationPlan({
       perspectiveId: 'inventory', sourceCount: 1, dimensionField: 'Store', metricIds: ['stock_qty'],
-      rows: [{ Store: 'A', stock_qty: 12 }],
+      rows: [{ Store: 'A', stock_qty: 12 }], analyticalIntent: 'category_comparison',
+      availableRoles: ['category','measure'], cardinality: { points: 1, categories: 1, series: 1 },
+      requiredSurfaces: ['preview','persistence','dashboard'],
     });
     const workbook = createAnalysisWorkbookPlan({
       title: 'Inventory', perspectiveId: 'inventory', sourceCount: 1,

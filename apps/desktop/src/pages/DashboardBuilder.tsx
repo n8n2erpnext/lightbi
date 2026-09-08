@@ -28,6 +28,13 @@ type SavedChartPayload = {
   valueKind?: 'money' | 'number' | 'percent';
 };
 
+export const resolveDashboardRendererType = (chartType: Chart['type']): 'bar' | 'line' | 'donut' | 'scatter' => {
+  if (chartType === 'Line') return 'line';
+  if (chartType === 'Scatter') return 'scatter';
+  if (chartType === 'Donut' || chartType === 'Pie') return 'donut';
+  return 'bar';
+};
+
 const getSavedChartPayload = (chart: Chart): SavedChartPayload | null => {
   const payload = chart.formatting?.lightbiData;
   if (!payload || typeof payload !== 'object') return null;
@@ -56,8 +63,13 @@ const DashboardWidgetCard: React.FC<{ widget: DashboardWidget; chart?: Chart }> 
     );
   }
 
-  const xAxisKey = payload.xField || chart.xAxis?.[0]?.columnName || Object.keys(payload.rows[0] ?? {})[0] || 'name';
-  const seriesKey = payload.yField || payload.seriesFields?.[0] || chart.yAxis?.[0]?.columnName || Object.keys(payload.rows[0] ?? {}).find(key => key !== xAxisKey) || 'value';
+  const scatterFields = chart.type === 'Scatter' ? payload.seriesFields?.slice(0, 2) ?? [] : [];
+  const xAxisKey = chart.type === 'Scatter'
+    ? scatterFields[0] || chart.xAxis?.[0]?.columnName || Object.keys(payload.rows[0] ?? {})[0] || 'x'
+    : payload.xField || chart.xAxis?.[0]?.columnName || Object.keys(payload.rows[0] ?? {})[0] || 'name';
+  const seriesKey = chart.type === 'Scatter'
+    ? scatterFields[1] || chart.yAxis?.[0]?.columnName || Object.keys(payload.rows[0] ?? {}).find(key => key !== xAxisKey) || 'y'
+    : payload.yField || payload.seriesFields?.[0] || chart.yAxis?.[0]?.columnName || Object.keys(payload.rows[0] ?? {}).find(key => key !== xAxisKey) || 'value';
 
   if (chart.type === 'Number') {
     const value = Number(payload.rows[0]?.[seriesKey] ?? payload.rowCount ?? 0);
@@ -80,7 +92,7 @@ const DashboardWidgetCard: React.FC<{ widget: DashboardWidget; chart?: Chart }> 
     <div data-testid="dashboard-widget" style={widgetGridStyle(widget)}>
       <DashboardChartWidget
         title={localize(chart.name)}
-        chartType={chart.type === 'Line' ? 'line' : chart.type === 'Donut' || chart.type === 'Pie' ? 'donut' : 'bar'}
+        chartType={resolveDashboardRendererType(chart.type)}
         data={payload.rows}
         xAxisKey={xAxisKey}
         seriesKey={seriesKey}

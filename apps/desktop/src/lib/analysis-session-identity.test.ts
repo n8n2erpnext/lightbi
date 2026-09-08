@@ -12,7 +12,8 @@ import {
 function plan() {
   const decision = createDecisionVisualizationPlan({
     perspectiveId: 'inventory', sourceCount: 1, dimensionField: 'Store', metricIds: ['stock_qty'],
-    rows: [{ Store: 'A', stock_qty: 12 }],
+    rows: [{ Store: 'A', stock_qty: 12 }], analyticalIntent: 'category_comparison', availableRoles: ['category','measure'],
+    cardinality: { points: 1, categories: 1, series: 1 }, requiredSurfaces: ['preview','persistence','dashboard'],
   });
   return createAnalysisWorkbookPlan({
     title: 'Inventory', perspectiveId: 'inventory', sourceCount: 1,
@@ -58,7 +59,8 @@ describe('AnalysisSessionIdentityV1', () => {
     expect(revalidateAnalysisSessionPlanIdentity(identity, savedPlan).valid).toBe(true);
     const changedDecision = createDecisionVisualizationPlan({
       perspectiveId: 'inventory', sourceCount: 1, dimensionField: 'Store', metricIds: ['stock_qty'],
-      rows: [{ Store: 'B', stock_qty: 99 }],
+      rows: [{ Store: 'B', stock_qty: 99 }], analyticalIntent: 'category_comparison', availableRoles: ['category','measure'],
+      cardinality: { points: 1, categories: 1, series: 1 }, requiredSurfaces: ['preview','persistence','dashboard'],
     });
     const changedPlan = createAnalysisWorkbookPlan({
       title: 'Inventory', perspectiveId: 'inventory', sourceCount: 1,
@@ -72,7 +74,8 @@ describe('AnalysisSessionIdentityV1', () => {
   it('fails multi-source restore until the governed relationship identity is rebuilt exactly', () => {
     const multiPlanDecision = createDecisionVisualizationPlan({
       perspectiveId: 'executive', sourceCount: 2, dimensionField: 'reporting_period', metricIds: ['gross_profit'],
-      rows: [{ reporting_period: '2026-08', gross_profit: 42 }],
+      rows: [{ reporting_period: '2026-08', gross_profit: 42 }], analyticalIntent: 'category_comparison', availableRoles: ['category','measure'],
+      cardinality: { points: 1, categories: 1, series: 1 }, requiredSurfaces: ['preview','persistence','dashboard'],
       sourceRefs: [
         { sourceId: 'sales', sourceName: 'sales.xlsx', role: 'sales', period: '2026-08', sourceRowCount: 10 },
         { sourceId: 'accounting', sourceName: 'accounting.xlsx', role: 'accounting', period: '2026-08', sourceRowCount: 10 },

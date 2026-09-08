@@ -5,7 +5,7 @@ import { formatValue } from '../../lib/display-formatter';
 
 export interface DashboardChartWidgetProps {
   title: string;
-  chartType: 'bar' | 'line' | 'donut';
+  chartType: 'bar' | 'line' | 'donut' | 'scatter';
   data: any[];
   xAxisKey?: string;
   seriesKey?: string;
@@ -87,6 +87,21 @@ export const generateDashboardChartOptions = (
           data: data.map(d => ({ name: d[xAxisKey], value: d[seriesKey] }))
         }
       ]
+    };
+  }
+
+  if (chartType === 'scatter') {
+    return {
+      tooltip: { trigger: 'item' },
+      grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+      xAxis: { type: 'value', axisLabel: { formatter: axisFormatter } },
+      yAxis: { type: 'value', axisLabel: { formatter: axisFormatter } },
+      series: [{
+        name: title,
+        type: 'scatter',
+        data: data.map(d => [Number(d[xAxisKey] ?? 0), Number(d[seriesKey] ?? 0)]),
+        itemStyle: { color: '#4F46E5' },
+      }],
     };
   }
 

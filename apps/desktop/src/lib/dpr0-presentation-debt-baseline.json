@@ -2,15 +2,19 @@
   "schemaVersion": "lightbi.dpr0-presentation-debt-baseline.v1",
   "baseCommit": "fde259a5441b36825f211914cbd0c82fc595f27f",
   "policy": "These are observed defects, not accepted product behavior. Fixing one requires retiring or updating its baseline entry in the owning DPR phase.",
-  "defects": [
+  "defects": [],
+  "resolvedDefects": [
     {
       "id": "dashboard-renderer-type-collapse",
       "ownerPhase": "DPR-6",
       "source": "pages/DashboardBuilder.tsx",
-      "evidence": "chart.type === 'Line' ? 'line' : chart.type === 'Donut' || chart.type === 'Pie' ? 'donut' : 'bar'"
-    }
-  ],
-  "resolvedDefects": [
+      "evidence": "chartType={resolveDashboardRendererType(chart.type)}",
+      "laneSymbols": [
+        "resolveDashboardRendererType",
+        "chartType === 'Scatter'"
+      ],
+      "status": "resolved"
+    },
     {
       "id": "duplicate-other-question-lanes",
       "ownerPhase": "DPR-2",

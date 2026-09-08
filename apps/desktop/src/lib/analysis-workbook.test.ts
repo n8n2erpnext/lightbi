@@ -12,7 +12,9 @@ describe('Excel Analysis Workbook', () => {
   it('packages governed metric results while keeping multi-source evidence separate', () => {
     const decisionVisualizationPlan = createDecisionVisualizationPlan({
       perspectiveId: 'profitability', sourceCount: 2, dimensionField: 'reporting_period',
-      rows: [{ reporting_period: '2026-05', gross_profit: 90 }],
+      rows: [{ reporting_period: '2026-05', gross_profit: 90 }], metricIds: ['gross_profit'],
+      analyticalIntent: 'category_comparison', availableRoles: ['category','measure'],
+      cardinality: { points: 1, categories: 1, series: 1 }, requiredSurfaces: ['preview','persistence','dashboard'],
     });
     const plan = createAnalysisWorkbookPlan({
       title: 'Profitability', perspectiveId: 'profitability', sourceCount: 2,
@@ -43,7 +45,10 @@ describe('Excel Analysis Workbook', () => {
     expect(overview).toContainEqual(['Combination policy', 'governed_metric_results_only']);
     expect(overview).toContainEqual(['Raw multi-source join', 'Prohibited']);
     expect(overview).toContainEqual(['Pivot implementation', 'Formula-driven governed summary; native PivotTable/PivotChart is not embedded by the current CE writer']);
-    expect(overview).toContainEqual(['Decision plan version', 'lightbi.decision-visualization-plan.v1']);
+    expect(overview).toContainEqual(['Decision plan version', 'lightbi.decision-visualization-plan.v2']);
+    expect(overview).toContainEqual(['Visualization pattern', decisionVisualizationPlan.visualizationPlan.patternId]);
+    expect(overview).toContainEqual(['Renderer family', decisionVisualizationPlan.visualizationPlan.rendererFamily]);
+    expect(overview.some(row => row[0] === 'Pattern negative rules' && String(row[1]).length > 0)).toBe(true);
     expect(overview).toContainEqual(['Decision plan ID', decisionVisualizationPlan.planId]);
   });
 
@@ -91,7 +96,7 @@ describe('Excel Analysis Workbook', () => {
   });
 
   it('builds single-source Deep BA summary from computed KPIs and only emits evidence for selected drill rows', () => {
-    const decisionPlan = createDecisionVisualizationPlan({ perspectiveId: 'inventory', sourceCount: 1, dimensionField: 'Store', metricIds: ['stock_qty'], rows: [{ Store: 'A', stock_qty: 12 }] });
+    const decisionPlan = createDecisionVisualizationPlan({ perspectiveId: 'inventory', sourceCount: 1, dimensionField: 'Store', metricIds: ['stock_qty'], rows: [{ Store: 'A', stock_qty: 12 }], analyticalIntent: 'category_comparison', availableRoles: ['category','measure'], cardinality: { points: 1, categories: 1, series: 1 }, requiredSurfaces: ['preview','persistence','dashboard'] });
     const plan = createSingleSourceDeepAnalysisWorkbookPlan({
       title: 'Stock by store', perspectiveId: 'inventory', resultId: 'result_1',
       chartRows: [{ Store: 'A', stock_qty: 12 }],

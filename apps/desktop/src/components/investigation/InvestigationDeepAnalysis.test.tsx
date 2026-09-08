@@ -126,7 +126,9 @@ describe('InvestigationDeepAnalysis export boundary', () => {
     };
     const decisionVisualizationPlan = createDecisionVisualizationPlan({
       perspectiveId: 'action-sales-by-product', rows: chartModel.rows, sourceCount: 1,
-      dimensionField: 'Product', metricIds: ['sales_revenue'],
+      dimensionField: 'Product', metricIds: ['sales_revenue'], analyticalIntent: 'category_comparison',
+      availableRoles: ['category','measure'], cardinality: { points: 1, categories: 1, series: 1 },
+      requiredSurfaces: ['preview','persistence','dashboard'],
     });
 
     render(

@@ -350,6 +350,11 @@ export function createExcelAnalysisWorkbook(plan: AnalysisWorkbookPlanV1, option
     ['Pivot implementation', 'Formula-driven governed summary; native PivotTable/PivotChart is not embedded by the current CE writer'],
     ['Decision plan version', plan.decisionVisualizationPlan?.schemaVersion ?? 'Not attached'],
     ['Decision plan ID', plan.decisionVisualizationPlan?.planId ?? 'Not attached'],
+    ['Visualization plan version', plan.decisionVisualizationPlan?.visualizationPlan.schemaVersion ?? 'Not attached'],
+    ['Visualization pattern', plan.decisionVisualizationPlan?.visualizationPlan.patternId ?? 'Not attached'],
+    ['Renderer family', plan.decisionVisualizationPlan?.visualizationPlan.rendererFamily ?? 'Not attached'],
+    ['Pattern negative rules', plan.decisionVisualizationPlan?.visualizationPlan.patternRules?.negativeRules.join(' | ') ?? 'Not attached'],
+    ['Pattern tooltip rules', plan.decisionVisualizationPlan?.visualizationPlan.patternRules?.tooltipRules.join(' | ') ?? 'Not attached'],
     ['Clean canonical data attached', options.cleanData ? 'Yes' : 'No'],
   ]);
   overview['!cols'] = [{ wch: 28 }, { wch: 72 }];

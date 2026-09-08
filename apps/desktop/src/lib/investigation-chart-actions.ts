@@ -5,6 +5,8 @@ import type { InvestigationSession } from './investigation-session';
 import type { BADecisionBrief } from './ba-decision-engine';
 import type { SingleSourceBAOverview } from './single-source-ba-overview';
 import type { DuckDBPreviewResult } from './duckdb-preview-sandbox';
+import type { ChartType } from '@lightbi/core-types';
+import { rendererCapabilityForPattern } from './visualization-renderer-registry';
 
 export interface InvestigationChartActionsContext {
   session: InvestigationSession;
@@ -26,6 +28,22 @@ export interface InvestigationChartActionsContext {
   t: (value: string) => string;
 }
 
+export function resolvePersistedChartType(
+  model: ChartPreviewModel,
+  decisionPlan: DecisionVisualizationPlanV1 | null = null,
+): ChartType {
+  const patternId = decisionPlan?.visualizationPlan.patternId;
+  if (patternId) {
+    const persisted = rendererCapabilityForPattern(patternId).persistedChartType;
+    if (!persisted) throw new Error(`VISUALIZATION_PERSISTENCE_UNAVAILABLE:${patternId}`);
+    return persisted;
+  }
+  if (model.chartType === 'line') return 'Line';
+  if (model.chartType === 'table') return 'Table';
+  if (model.chartType === 'scatter') return 'Scatter';
+  return 'Bar';
+}
+
 export function createInvestigationChartActions(context: InvestigationChartActionsContext) {
   const {
     session, analysisAction, chartModel, previewResult, primaryDecisionVisualizationPlan,
@@ -34,18 +52,19 @@ export function createInvestigationChartActions(context: InvestigationChartActio
     setSavedChartNotice, closeDeepAnalysis, navigate, t,
   } = context;
 const persistChartModel = (model: ChartPreviewModel, name: string, source: string, decisionPlan: DecisionVisualizationPlanV1 | null = null) => {
-  const chartType = model.chartType === 'line'
-    ? 'Line'
-    : model.chartType === 'table'
-      ? 'Table'
-      : 'Bar';
+  const chartType = resolvePersistedChartType(model, decisionPlan);
+  const scatterFields = chartType === 'Scatter' ? model.seriesFields.slice(0, 2) : [];
+  const xAxis = chartType === 'Scatter'
+    ? (scatterFields[0] ? [{ columnName: scatterFields[0] }] : [])
+    : model.xField ? [{ columnName: model.xField }] : [];
+  const yAxisFields = chartType === 'Scatter' ? scatterFields.slice(1) : model.seriesFields;
   return createChart({
     projectId: 'proj-1',
     datasetId: session.datasetId,
     name,
     type: chartType,
-    xAxis: model.xField ? [{ columnName: model.xField }] : [],
-    yAxis: model.seriesFields.map(columnName => ({ columnName, aggregation: 'None' })),
+    xAxis,
+    yAxis: yAxisFields.map(columnName => ({ columnName, aggregation: 'None' })),
     filters: {},
     formatting: {
       lightbiData: {
@@ -61,7 +80,20 @@ const persistChartModel = (model: ChartPreviewModel, name: string, source: strin
         rows: model.rows.slice(0, 500),
         rowCount: model.rows.length,
         governed: true,
-        decisionVisualizationPlan: decisionPlan ? { schemaVersion: decisionPlan.schemaVersion, planId: decisionPlan.planId, governance: decisionPlan.governance } : null,
+        decisionVisualizationPlan: decisionPlan ? {
+          schemaVersion: decisionPlan.schemaVersion,
+          planId: decisionPlan.planId,
+          governance: decisionPlan.governance,
+          visualizationPlan: {
+            schemaVersion: decisionPlan.visualizationPlan.schemaVersion,
+            planId: decisionPlan.visualizationPlan.planId,
+            analyticalIntent: decisionPlan.visualizationPlan.analyticalIntent,
+            patternId: decisionPlan.visualizationPlan.patternId,
+            rendererFamily: decisionPlan.visualizationPlan.rendererFamily,
+            patternRules: decisionPlan.visualizationPlan.patternRules,
+            governance: decisionPlan.visualizationPlan.governance,
+          },
+        } : null,
         savedAt: new Date().toISOString(),
       },
     },

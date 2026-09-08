@@ -33,7 +33,8 @@ import { executeCanonicalMultiSourceMetric } from '../lib/understanding-core/gov
 import { formatValue } from '../lib/display-formatter';
 import { useUiLanguage } from '../lib/ui-language';
 import { createSingleSourceBAOverview, sampleSingleSourceBARows } from '../lib/single-source-ba-overview';
-import { createDecisionVisualizationPlan, type DecisionVisualizationPlanV1 } from '../lib/decision-visualization-plan';
+import type { DecisionVisualizationPlanV1 } from '../lib/decision-visualization-plan';
+import { buildInvestigationDecisionVisualizationPlan } from '../lib/investigation-visualization-plan';
 import { createSingleSourceDeepAnalysisWorkbookPlan } from '../lib/analysis-workbook';
 import { createInvestigationPersistenceActions } from '../lib/investigation-persistence-actions';
 import { createInvestigationChartActions } from '../lib/investigation-chart-actions';
@@ -389,23 +390,13 @@ export const Investigation: React.FC = () => {
       }).format(governedResultTotal)
       : formatValue(governedResultTotal, 'number', preferences, { compact: false });
 
-  const primaryDecisionVisualizationPlan = useMemo<DecisionVisualizationPlanV1 | null>(() => {
-    if (!chartModel || chartModel.status !== 'ready' || !chartModel.xField || chartModel.rows.length === 0) return null;
-    const metricIds = [...new Set([...(chartModel.seriesFields ?? []), chartModel.yField]
-      .filter((value): value is string => Boolean(value && value !== chartModel.xField)))];
-    if (metricIds.length === 0) return null;
-    try {
-      return createDecisionVisualizationPlan({
-        perspectiveId: analysisAction.id,
-        rows: chartModel.rows,
-        sourceCount: 1,
-        dimensionField: chartModel.xField,
-        metricIds,
-      });
-    } catch {
-      return null;
-    }
-  }, [analysisAction.id, chartModel]);
+  const primaryDecisionVisualizationPlan = useMemo<DecisionVisualizationPlanV1 | null>(() =>
+    buildInvestigationDecisionVisualizationPlan({
+      chartModel, runtimeIntent, analysisAction,
+      primaryDomain: primaryAnalysisAuthority?.domain.primaryDomain ?? null,
+    }),
+  [analysisAction, chartModel, primaryAnalysisAuthority?.domain.primaryDomain, runtimeIntent]);
+
 
   const durableAnalysisWorkbookPlan = useMemo(() => {
     if (businessFusionOverview || !primaryDecisionVisualizationPlan || !chartModel || chartModel.status !== 'ready') return null;

@@ -102,13 +102,20 @@ export const PerspectiveCollectionResultCard: React.FC<{
   if (rows.length === 0) return null;
   const metricIds = [...new Set(rows.flatMap((row) =>
     Object.keys(row).filter((key) => key !== "reporting_period")))];
+  const distinctPeriodCount = new Set(rows.map(row => String(row.reporting_period ?? ''))).size;
+  const hasPeriodComparison = distinctPeriodCount >= 2;
   const baseDecisionVisualizationPlan = createDecisionVisualizationPlan({
-    perspectiveId, rows, sourceCount, dimensionField: 'reporting_period',
+    perspectiveId, rows, sourceCount, dimensionField: 'reporting_period', metricIds,
+    analyticalIntent: hasPeriodComparison ? 'trend' : 'category_comparison',
+    availableRoles: hasPeriodComparison
+      ? ['ordered_time','measure', ...(metricIds.length > 1 ? ['series' as const] : [])]
+      : ['category','measure', ...(metricIds.length > 1 ? ['series' as const] : [])],
+    cardinality: { points: rows.length, categories: distinctPeriodCount, series: metricIds.length },
+    requiredSurfaces: ['preview','persistence','dashboard'],
     sourceRefs: evidenceSources.map(source => ({
       sourceId: source.sourceId ?? null, sourceName: source.sourceName, role: source.role, period: source.period, sourceRowCount: source.sourceRowCount,
     })),
   });
-  const hasPeriodComparison = baseDecisionVisualizationPlan.primaryVisualization.type === 'line';
   const movements = metricIds.map((metricId) => {
     const first = Number(rows[0]?.[metricId] ?? 0);
     const last = Number(rows[rows.length - 1]?.[metricId] ?? 0);
@@ -250,9 +257,21 @@ export const PerspectiveCollectionResultCard: React.FC<{
 
   const buildDecisionVisualizationPlan = (): DecisionVisualizationPlanV1 => {
     const scopedEvidence = chartSelection ? selectedEvidence : evidenceSources;
+    const selected = Boolean(chartSelection);
     return createDecisionVisualizationPlan({
       perspectiveId, rows, sourceCount, dimensionField: 'reporting_period',
+      metricIds: selected && chartSelection ? [chartSelection.metricId] : metricIds,
       selectedScope: chartSelection ? { dimensionField: 'reporting_period', dimensionValue: chartSelection.period, metricId: chartSelection.metricId } : null,
+      analyticalIntent: selected ? 'category_comparison' : hasPeriodComparison ? 'trend' : 'category_comparison',
+      availableRoles: selected
+        ? ['category','measure']
+        : hasPeriodComparison
+          ? ['ordered_time','measure', ...(metricIds.length > 1 ? ['series' as const] : [])]
+          : ['category','measure', ...(metricIds.length > 1 ? ['series' as const] : [])],
+      cardinality: selected
+        ? { points: 1, categories: 1, series: 1 }
+        : { points: rows.length, categories: distinctPeriodCount, series: metricIds.length },
+      requiredSurfaces: ['preview','persistence','dashboard'],
       sourceRefs: scopedEvidence.map(source => ({
         sourceId: source.sourceId ?? null, sourceName: source.sourceName, role: source.role, period: source.period, sourceRowCount: source.sourceRowCount,
       })),

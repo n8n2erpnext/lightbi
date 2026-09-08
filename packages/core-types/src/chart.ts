@@ -2,6 +2,7 @@ export type ChartType =
   | 'Number'
   | 'Bar'
   | 'Line'
+  | 'Scatter'
   | 'Row'
   | 'Pie'
   | 'Donut'
