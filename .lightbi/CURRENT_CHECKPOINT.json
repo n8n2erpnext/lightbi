@@ -1,13 +1,13 @@
 {
   "schema": "lightbi.current-checkpoint.v1",
-  "updatedAt": "2026-09-08T03:33:12Z",
-  "status": "roadmap_1_0_dpr2_closed_dpr3_analysis_narrative_active",
-  "activeRuntime": "NEXT Core generation g-2026-09-05-next-034 on 5272; UI-only immutable DPR-2 web root dpr2-a876fb9 on gateway 5273; Control Plane 5274 unchanged; MB scheduler paused; Production untouched",
+  "updatedAt": "2026-09-08T04:45:57Z",
+  "status": "roadmap_1_0_dpr3_closed_dpr4_ba_step2_investigation_active",
+  "activeRuntime": "NEXT Core generation g-2026-09-05-next-034 on 5272; UI-only immutable DPR-3 web root dpr3-804fb2f on gateway 5273 (PID 4013056); Control Plane 5274 unchanged; MB scheduler paused; Production untouched",
   "sourceCandidate": {
     "repo": "/home/ubuntu/n8n2erpnext/LightBI-dpr0-contract-freeze",
     "branch": "codex/dpr0-contract-freeze",
-    "head": "a876fb998b980f1eef0c5834822f622a80435b44",
-    "liveUiSource": "a876fb998b980f1eef0c5834822f622a80435b44",
+    "head": "804fb2feec8528dc061ce299486ff653d02a92db",
+    "liveUiSource": "804fb2feec8528dc061ce299486ff653d02a92db",
     "basePrimaryLogoCommit": "fde259a5441b36825f211914cbd0c82fc595f27f"
   },
   "brandAuthority": {
@@ -70,20 +70,20 @@
     "attestationPid": 1505209,
     "productionAuthority": false
   },
-  "nextAction": "DPR-3: audit current Deep BA/Decision Workspace narrative construction and duplicated same-weight finding sections; introduce a deterministic Analysis Narrative Plan over existing governed outputs with answer-first hierarchy, supporting-analysis relevance gates, reversible DPR-0 surface grammar, DPR-1 provenance/non-escalation, and bounded MB domain/perspective priority + abstention advice. Preserve numeric/evidence parity and validate shared Web Live Demo /app on NEXT 5273 before DPR-4.",
+  "nextAction": "DPR-4: audit the current selected-data/Step 2 paths and formalize one dedicated reversible selected-subject investigation model that remains mutually exclusive with full-scope Deep BA at full visual weight. Reuse DPR-3 AnalysisNarrativePlan/provenance contracts, add benchmark/context decomposition and concise next-action structure, preserve numeric/evidence authority, and validate Web Live Demo /app on NEXT before DPR-5.",
   "blockers": [
     "Production promotion and Offline Root/phase2a freeze remain owner-gated",
     "NEXT047 is stale and not a post-LQ3 release candidate; its installation-issuer mismatch remains deferred until an official release build"
   ],
   "productionTouched": false,
   "phase2aFrozen": false,
-  "resourceState": "root filesystem ~69% used, ~39 GiB free; NEXT DPR-2 UI overlay ~93 MiB; no 51xx harness",
+  "resourceState": "root filesystem 69% used, ~38 GiB free; NEXT DPR-3 immutable UI root active on 5273; no 51xx harness",
   "readFirst": [
     "docs/project-book/LIBRARY_RULES.md",
-    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#133-2026-09-08-dpr-2-open-world-question-perspective-intelligence-closes-on-next-dpr-3-becomes-active",
+    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#134-2026-09-08-dpr-3-analysis-narrative-planner-closes-on-next-dpr-4-becomes-active",
     "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DECISION_PRESENTATION_UI_UX_REFACTOR_2026-09-04.md"
   ],
-  "documentationHead": "ee49acf2e5afac1bdf20069e7ce4239aadbd526c",
+  "documentationHead": "a21b8b44203f6c71c08b15186985e17229b842f3",
   "dpr2": {
     "state": "CLOSED",
     "productCommit": "a876fb998b980f1eef0c5834822f622a80435b44",
@@ -92,5 +92,16 @@
     "focusedVerification": "56/56 PASS + TypeScript PASS",
     "releaseAuthoritative": "PASS; governed product regression 11 files / 42 tests; production build and source-size gate PASS",
     "nextRuntimeAcceptance": "1/1 PASS in 5.3s on 5273 /app; one question lane; domain-context review candidates present; zero execution buttons in advisory section"
+  },
+  "dpr3": {
+    "state": "CLOSED",
+    "productCommit": "804fb2feec8528dc061ce299486ff653d02a92db",
+    "contract": "lightbi.analysis-narrative-plan.v1; answer-first primary_answer plus key_driver/risk_exception/hypothesis/supporting_observation/unknown/next_action/supporting_evidence; comparison briefs reuse the same non-escalating presentation policy",
+    "authorityInvariant": "MB may supply bounded ordinal narrative advice, abstention/evidence requirements/constraints only; it cannot strengthen authority; finding identity/evidence rows are preserved; retrieval rank is not confidence",
+    "focusedVerification": "56/56 PASS across 10 files; git diff --check PASS",
+    "releaseBuild": "tsc -b + Vite production build PASS; 3807 modules transformed",
+    "nextRuntimeAcceptance": "PASS on 5273 /app -> built-in governed sales demo -> /app/investigation -> Analyze deeper; Analysis Narrative hierarchy rendered with no page error",
+    "liveUiRoot": "/home/ubuntu/services/lightbi-next-web/dpr3-804fb2f",
+    "knownUnrelatedWarning": "public NEXT account-session request still reports a pre-existing CORS warning against the Production Distribution origin; outside DPR-3 diff and non-blocking for governed demo acceptance"
   }
 }
