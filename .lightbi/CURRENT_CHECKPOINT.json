@@ -1,13 +1,13 @@
 {
   "schema": "lightbi.current-checkpoint.v1",
-  "updatedAt": "2026-09-08T10:10:41Z",
-  "status": "roadmap_1_0_dpr7_closed_dpr8_active",
-  "activeRuntime": "NEXT Core generation g-2026-09-05-next-034 on 5272 PID 3376963; immutable DPR-7 UI root dpr7-324eceb on gateway 5273 PID 471868; Control Plane 5274 PID 2346997 unchanged; Production untouched",
+  "updatedAt": "2026-09-08T10:38:00Z",
+  "status": "roadmap_1_0_dpr8_active_foundation_live_understanding_next",
+  "activeRuntime": "NEXT Core generation g-2026-09-05-next-034 on 5272 PID 3376963; immutable DPR-8 foundation UI root dpr8-foundation-e030e4d on gateway 5273 PID 558013; Control Plane 5274 PID 2346997 unchanged; Production untouched",
   "sourceCandidate": {
     "repo": "/home/ubuntu/n8n2erpnext/LightBI-dpr0-contract-freeze",
     "branch": "codex/dpr0-contract-freeze",
-    "head": "324eceb91329fbff5a26fb70d6840d00f3483483",
-    "liveUiSource": "324eceb91329fbff5a26fb70d6840d00f3483483"
+    "head": "e030e4ddfc2997b8abe0ca75d5fe2541b8d9d5f7",
+    "liveUiSource": "e030e4ddfc2997b8abe0ca75d5fe2541b8d9d5f7"
   },
   "roadmapDpr": {
     "dpr0": "CLOSED",
@@ -29,9 +29,14 @@
     "liveUiRoot": "/home/ubuntu/services/lightbi-next-web/dpr7-324eceb"
   },
   "dpr8": {
-    "state": "ACTIVE",
+    "state": "ACTIVE — foundation source/live-closed; Understanding canvas migration next",
     "scope": "apply Product-wide Information Architecture + Density Contract and shared @lightbi/ui tokens/primitives across shared Desktop/Tauri and Web Live Demo /app presentation; flatten card-everywhere Home, Understanding, Decision Workspace, Deep BA and selected-subject surfaces while preserving semantic planner/evidence authority, accessibility and responsive behavior",
-    "boundary": "DPR-8 owns layout/presentation only; it must consume DPR-1..DPR-7 semantic contracts rather than re-derive metrics/questions/narratives/charts/dashboard membership; native-only divergence stays behind explicit capability adapters"
+    "boundary": "DPR-8 owns layout/presentation only; it must consume DPR-1..DPR-7 semantic contracts rather than re-derive metrics/questions/narratives/charts/dashboard membership; native-only divergence stays behind explicit capability adapters",
+    "foundationProductCommit": "e030e4ddfc2997b8abe0ca75d5fe2541b8d9d5f7",
+    "foundationContract": "@lightbi/ui Canvas/Section/SectionHeader/Inset/Divider + summary|working|evidence density; no universal Card; tokenized 224px desktop shell; bounded Tailwind shared-source scan; DPR-8 executable release gate",
+    "foundationVerification": "DPR-8 contract 3/3; TypeScript/diff-check PASS; source-size 545 production modules; release-authoritative PASS with build 3818 modules and governed regression 11 files/44 tests; exact-SHA rebuild PASS",
+    "foundationRuntimeAcceptance": "NEXT 5273 PASS 1/1: 224px desktop expanded, 56px collapsed, 56px compact at 720px viewport, pageerror=[]",
+    "liveUiRoot": "/home/ubuntu/services/lightbi-next-web/dpr8-foundation-e030e4d"
   },
   "trustRuntime": {
     "userManagerPid": 943,
@@ -40,7 +45,7 @@
     "attestationLauncherPid": 1505209,
     "productionAuthority": false
   },
-  "nextAction": "Begin DPR-8 only from clean Product HEAD 324eceb. Re-read active plan Information Architecture + Density Contract and DPR-8 section, then audit current shared shell/@lightbi/ui primitives/tokens plus Home, Understanding, Investigation/Decision Workspace, Deep BA, SelectedSubjectInvestigationBoard and Dashboard surfaces. Define migration order and executable shared presentation invariants before broad edits. Preserve Desktop/Web /app parity, DPR-1..7 planner/evidence authority, responsive/accessibility behavior and i18n monotonic guard. Use NEXT 52xx only for acceptance; do not touch Production/51xx/Core/Control Plane/Trust.",
+  "nextAction": "Continue DPR-8 from clean Product HEAD e030e4d. Migrate Understanding first: audit UnderstandingNextCard and its composition/tests/i18n; preserve semantic/governed output, evidence reachability, test IDs and accessibility while replacing equal-weight card grids with canvas-first regions meaning -> proposed analyses -> assumptions -> evidence/details, ranked perspective/question lists and progressive disclosure. Use shared @lightbi/ui primitives/density classes and card-by-exception. Run focused + i18n/DPR-8 contracts + TypeScript + source-size + release-authoritative, then exact-SHA immutable NEXT 5273 acceptance. Do not touch Production/51xx/Core/Control Plane/Trust.",
   "blockers": [
     "Production promotion and Offline Root/phase2a freeze remain owner-gated",
     "NEXT047 remains stale and is not the current post-DPR release candidate"
@@ -48,8 +53,8 @@
   "productionTouched": false,
   "readFirst": [
     "docs/project-book/LIBRARY_RULES.md",
-    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#138-2026-09-08-dpr-7-dashboard-composition-planner-closes-on-next-dpr-8-becomes-active",
+    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#139-2026-09-08-dpr-8-shared-canvas-foundation-is-live-understanding-migration-is-next",
     "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DECISION_PRESENTATION_UI_UX_REFACTOR_2026-09-04.md"
   ],
-  "documentationHead": "a98455e14de408cad380c14b65c0f8df084513dd"
+  "documentationHead": "65a0e6d6ed2283d3aee14af3bc3d80cdaa006910"
 }
