@@ -1837,3 +1837,14 @@ R1-P0 documentation/integrity closure verified 1,243 local links with zero missi
 - Immutable NEXT UI `/home/ubuntu/services/lightbi-next-web/dpr4-9d1d4a6` is live on 5273 and reports exact `9d1d4a6...`. Six-file ERP + Focus `Aqua 250L` multi-file browser path PASSed; canonical single-source Revenue drill also PASSed `1/1` in `19.7s` through `Investigate selected evidence` to selected-subject investigation.
 - Runtime after UI-only rotate: gateway 5273 PID `15820`; Core 5272 `3376963`; CP 5274 `2346997`; signer/issuer/attestation launchers `12020/3817149/1505209`; user manager `943`. Only gateway rotated. Production untouched.
 - DPR-4 CLOSED. DPR-5 Visualization ontology + Chart Pattern Library + Domain Visual Profiles ACTIVE; do not jump to DPR-8.
+
+## 2026-09-08 — DPR-5 Visualization Ontology source/live closure
+
+- Product `d3770e761ed2a5f08eb50aa6927f4b1dce58bded` adds `lightbi.visualization-ontology.v1` with exactly 30 semantic patterns and no renderer/`ChartType` binding. Each pattern carries intent, evidence roles, units, cardinality, color semantics, label/axis/tooltip rules, negative rules and safe fallbacks.
+- Added deterministic `lightbi.visualization-suitability.v1`: intent/evidence/cardinality/unit/desirability failures reject the pattern before renderer selection. High/low is not good/bad by default; risky donut/radar/map/Sankey/control/scatter semantics are explicitly bounded.
+- Added advisory-only `lightbi.domain-visual-profile.v1`; all chart families and analytical intents in the current MB presentation pack map to canonical patterns. Unknown future chart families remain explicit unmapped gaps. MB still cannot authorize metrics/formulas/joins/renderers or turn retrieval rank into confidence.
+- Added reusable renderer-free `lightbi.visualization-acceptance-cases.v1` covering the representative plan cases for ranking, trend, target, composition, relationship and context-sensitive desirability.
+- Verification PASS: semantic `19/19`; focused+i18n `22/22`; MB/provenance `30/30`; source-size `537` production modules; exact-SHA build `3809` modules; release-authoritative suite including governed regression `11 files / 42 tests`. The i18n gate caught 29 new labels and they were cataloged rather than waived.
+- Immutable NEXT UI `/home/ubuntu/services/lightbi-next-web/dpr5-d3770e7` is live on 5273 and reports exact `d3770e7...`. Browser regression PASSed `/app -> canonical single source -> Revenue -> governed analysis -> /investigation`, zero page errors; known account-session CORS console warning remains unrelated debt.
+- Runtime after UI-only rotate: gateway `170768`; Core `3376963`; CP `2346997`; user manager `943`; signer/issuer/attestation launchers `12020/3817149/1505209`. Production untouched.
+- DPR-5 CLOSED; DPR-6 Visualization Planner + renderer/type preservation ACTIVE. `dashboard-renderer-type-collapse` remains OPEN for DPR-6 and was not modified in DPR-5.
