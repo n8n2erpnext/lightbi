@@ -15,6 +15,9 @@ import { useDisplayPreferences } from "../../stores/display-preferences-store";
 import { formatValue } from "../../lib/display-formatter";
 import { createAnalysisWorkbookPlan, saveExcelAnalysisWorkbook, type AnalysisWorkbookPlanV1 } from "../../lib/analysis-workbook";
 import { createDecisionVisualizationPlan, type DecisionVisualizationPlanV1 } from "../../lib/decision-visualization-plan";
+import { createDashboardCompositionPlan, type DashboardCompositionCandidateV1 } from "../../lib/dashboard-composition-plan";
+import { adviseDashboardComposition } from "../../lib/dashboard-composition-advice";
+import { createDashboardBreakdownVisualizationPlan, createExecutiveDashboardInformationBudget, dashboardAdvisoryRoles, dashboardDecisionVisualizationMetadata, persistedDashboardChartType } from "../../lib/dashboard-composition-writer";
 import { useAnalysisExportStore } from "../../stores/analysis-export-store";
 import { useUiLanguage } from "../../lib/ui-language";
 import { saveBlobWithUserChoice, saveDataUrlWithUserChoice } from "../../lib/native-capabilities";
@@ -327,60 +330,164 @@ export const PerspectiveCollectionResultCard: React.FC<{
     const overviewFindings = subsetOverviews.flatMap(item => item.overview.findings);
     const overviewActions = subsetOverviews.flatMap(item => item.overview.recommendedActions);
     const overviewLimitations = subsetOverviews.flatMap(item => item.overview.limitations);
-    const dashboardId = createDashboard(`${displayPerspectiveLabel}${chartSelection ? ` · ${chartSelection.period}` : ""}`, {
-      source: "easy_mode_perspective",
+    const domainId = effectiveDeepDiveBrief?.domainId
+      ?? subsetOverviews[0]?.overview.investigation?.domain
+      ?? subsetOverviews[0]?.overview.mode
+      ?? null;
+    const candidates: DashboardCompositionCandidateV1[] = [];
+    const materializers = new Map<string, () => string>();
+    const deepBACandidateId = 'narrative:deep_ba';
+    const perspectiveBACandidateId = 'narrative:perspective_context';
+    const evidenceScope = chartSelection ? 'selected_period' : 'full_source_metric_results';
+
+    if (effectiveDeepDiveBrief) {
+      candidates.push({
+        id: deepBACandidateId,
+        managementQuestion: `What is the evidence-backed decision answer for ${displayPerspectiveLabel}?`,
+        semanticRole: 'primary_answer', artifactKind: 'narrative', evidenceBacked: true,
+        evidenceRefs: [`domain-comparison:${effectiveDeepDiveBrief.domainId}:${perspectiveId}`], decisionImportance: 97,
+        advisoryRoles: dashboardAdvisoryRoles('primary_answer', [effectiveDeepDiveBrief.domainId, perspectiveId]),
+        placementGroup: 'primary_canvas', reasonForInclusion: 'Keeps the evidence-backed comparison answer ahead of supporting visual detail.',
+      });
+    }
+
+    candidates.push({
+      id: perspectiveBACandidateId,
+      managementQuestion: `What governed source scope and supporting context back ${displayPerspectiveLabel}?`,
+      semanticRole: 'primary_answer', artifactKind: 'narrative', evidenceBacked: scopeSources.length > 0,
+      evidenceRefs: scopeSources.map(source => `source:${source.sourceName}:${source.role}:${source.period}`),
+      decisionImportance: 86,
+      advisoryRoles: dashboardAdvisoryRoles('primary_answer', [domainId ?? '', perspectiveId, ...scopeSources.map(source => source.role)]),
+      placementGroup: 'primary_canvas', reasonForInclusion: 'Preserves source scope, findings, actions and limitations without merging unrelated raw rows.',
+    });
+
+    const primaryCandidateId = 'visual:primary';
+    const primaryMeasure = scopedMetricIds[0] ?? 'record_count';
+    candidates.push({
+      id: primaryCandidateId,
+      managementQuestion: `How does ${displayMetricLabel(primaryMeasure)} vary across the governed reporting scope?`,
+      semanticRole: 'primary_answer', artifactKind: 'visual', evidenceBacked: scopedRows.length > 0,
+      evidenceRefs: [`decision-visualization:${visualizationPlan.planId}`, ...scopeSources.map(source => `source:${source.sourceName}:${source.role}:${source.period}`)],
+      decisionImportance: 94,
+      analysisShape: { dimension: visualizationPlan.result.dimensionField, measure: primaryMeasure },
+      advisoryRoles: dashboardAdvisoryRoles('primary_answer', [domainId ?? '', perspectiveId, visualizationPlan.visualizationPlan.analyticalIntent]),
+      visualizationPlanId: visualizationPlan.visualizationPlan.planId,
+      placementGroup: 'primary_canvas', reasonForInclusion: 'Primary governed visual for the selected multi-source perspective and reporting scope.',
+    });
+    materializers.set(primaryCandidateId, () => createChart({
+      projectId: 'proj-1', datasetId: `multifile:${perspectiveId}`, name: displayPerspectiveLabel,
+      type: persistedDashboardChartType(visualizationPlan),
+      xAxis: [{ columnName: visualizationPlan.primaryVisualization.xField }],
+      yAxis: scopedMetricIds.map(columnName => ({ columnName, aggregation: 'None' as const })), filters: {},
+      formatting: { lightbiData: {
+        source: 'multifile_perspective_dashboard', perspective: displayPerspectiveLabel,
+        chartType: visualizationPlan.primaryVisualization.type,
+        xField: visualizationPlan.primaryVisualization.xField, yField: scopedMetricIds[0], seriesFields: scopedMetricIds,
+        rows: scopedRows, rowCount: scopedRows.length, governed: true, evidenceScope,
+        decisionVisualizationPlan: dashboardDecisionVisualizationMetadata(visualizationPlan), savedAt: new Date().toISOString(),
+      } },
+    }));
+
+    const latest = scopedRows[scopedRows.length - 1];
+    scopedMetricIds.forEach((metricId, index) => {
+      const value = Number(latest?.[metricId]);
+      if (!Number.isFinite(value)) return;
+      const candidateId = `metric:${metricId}`;
+      candidates.push({
+        id: candidateId,
+        managementQuestion: index === 0 ? `What is the current governed ${displayMetricLabel(metricId)}?` : `What supporting value does ${displayMetricLabel(metricId)} add?`,
+        semanticRole: index === 0 ? 'hero_metric' : 'context_metric', artifactKind: 'metric', evidenceBacked: true,
+        evidenceRefs: [`governed-metric:${metricId}:${chartSelection?.period ?? 'all-periods'}`], decisionImportance: 100 - index,
+        advisoryRoles: dashboardAdvisoryRoles(index === 0 ? 'hero_metric' : 'context_metric', [metricId, domainId ?? '']),
+        placementGroup: index === 0 ? 'hero' : 'support_band', reasonForInclusion: index === 0 ? 'Primary governed metric for this dashboard scope.' : 'Bounded supporting metric for the same governed scope.',
+      });
+      materializers.set(candidateId, () => createChart({
+        projectId: 'proj-1', datasetId: `multifile:${perspectiveId}`, name: displayMetricLabel(metricId), type: 'Number', xAxis: [],
+        yAxis: [{ columnName: 'value', aggregation: 'None' }], filters: {},
+        formatting: { lightbiData: { source: 'multifile_perspective_dashboard_kpi', perspective: displayPerspectiveLabel, valueKind: /(revenue|profit|cost|amount|margin)/i.test(metricId) ? 'money' : 'number', yField: 'value', seriesFields: ['value'], rows: [{ value }], rowCount: 1, governed: true, evidenceScope, savedAt: new Date().toISOString() } },
+      }));
+    });
+
+    subsetOverviews.flatMap(item => item.overview.breakdowns.map(breakdown => ({ source: item.source, overview: item.overview, breakdown }))).forEach(({ source, overview, breakdown }, index) => {
+      if (!breakdown.top.length) return;
+      const breakdownRows = breakdown.top.slice(0, 10).map(item => ({ label: item.label, value: item.value, share: item.share, row_count: item.rowCount }));
+      const decisionPlan = createDashboardBreakdownVisualizationPlan({ perspectiveId, sourceCount: 1, rows: breakdownRows });
+      const candidateId = `visual:breakdown:${source.period}:${source.role}:${source.sourceName}:${breakdown.id}`;
+      candidates.push({
+        id: candidateId,
+        managementQuestion: `Which ${breakdown.label} groups have the highest observed values in ${source.role} evidence?`,
+        semanticRole: 'ranked_driver', artifactKind: 'visual', evidenceBacked: true,
+        evidenceRefs: [`source:${source.sourceName}:${source.role}:${source.period}`, `breakdown:${breakdown.id}`], decisionImportance: 72 - index,
+        analysisShape: { dimension: breakdown.physicalColumn, measure: overview.bindings.selectedMeasure ?? chartSelection?.metricId ?? primaryMeasure },
+        advisoryRoles: dashboardAdvisoryRoles('ranked_driver', [domainId ?? '', source.role, breakdown.physicalColumn, breakdown.label]),
+        visualizationPlanId: decisionPlan.visualizationPlan.planId,
+        placementGroup: 'supporting', reasonForInclusion: 'Adds a distinct source-bound ranked driver only when composition and visualization gates both pass.',
+      });
+      materializers.set(candidateId, () => createChart({
+        projectId: 'proj-1', datasetId: `multifile:${perspectiveId}`, name: `${breakdown.label} · ${source.role}`,
+        type: persistedDashboardChartType(decisionPlan), xAxis: [{ columnName: 'label' }],
+        yAxis: [{ columnName: 'value', aggregation: 'None' }], filters: {},
+        formatting: { lightbiData: {
+          source: 'multifile_selected_scope_ba_breakdown', perspective: displayPerspectiveLabel,
+          valueKind: breakdown.valueKind, xField: 'label', yField: 'value', seriesFields: ['value'],
+          rows: breakdownRows, rowCount: breakdownRows.length, governed: false,
+          evidenceScope: 'representative_selected_source', physicalColumn: breakdown.physicalColumn,
+          sourceName: source.sourceName, sourceRole: source.role,
+          decisionVisualizationPlan: dashboardDecisionVisualizationMetadata(decisionPlan), savedAt: new Date().toISOString(),
+        } },
+      }));
+    });
+
+    const advice = adviseDashboardComposition({
+      domainId, perspectiveId,
+      userQuestion: effectiveDeepDiveBrief?.businessQuestion ?? displayPerspectiveLabel,
+      semanticSignals: [...scopedMetricIds, ...scopeSources.map(source => source.role), ...subsetOverviews.flatMap(item => Object.keys(item.overview.bindings))],
+      availableRoles: candidates.flatMap(candidate => candidate.advisoryRoles ?? []),
+    });
+    const compositionPlan = createDashboardCompositionPlan({
+      candidates,
+      informationBudget: createExecutiveDashboardInformationBudget(candidates),
+      decisionPerspective: perspectiveId,
+      audience: null,
+      domainId,
+      advisoryRoleOrder: advice.roleOrder,
+    });
+    const admitted = new Set(compositionPlan.items.map(item => item.candidateId));
+
+    const dashboardId = createDashboard(`${displayPerspectiveLabel}${chartSelection ? ` · ${chartSelection.period}` : ''}`, {
+      source: 'easy_mode_perspective',
       datasetId: `multifile:${perspectiveId}`,
       perspective: displayPerspectiveLabel,
       governed: true,
       multiSource: true,
-      evidenceScope: chartSelection ? "governed_selected_period_source_evidence" : "full_source_metric_results",
+      evidenceScope: chartSelection ? 'governed_selected_period_source_evidence' : 'full_source_metric_results',
       generatedAt: new Date().toISOString(),
       decisionVisualizationPlan: { schemaVersion: visualizationPlan.schemaVersion, planId: visualizationPlan.planId, governance: visualizationPlan.governance },
+      dashboardCompositionPlan: compositionPlan,
+      dashboardCompositionAdvice: advice,
       selectedScope: chartSelection ? { period: chartSelection.period, metricId: chartSelection.metricId, sources: scopeSources.map(source => ({ role: source.role, sourceName: source.sourceName, sourceRowCount: source.sourceRowCount, focusMatchedRowCount: focusSubject ? rowsForEvidence(source).length : undefined })) } : null,
       focusSubject: focusSubject ? { canonicalId: focusSubject.canonicalId, value: focusSubject.value, displayLabel: focusSubject.displayLabel } : null,
-      deepBA: effectiveDeepDiveBrief ? {
+      deepBA: effectiveDeepDiveBrief && admitted.has(deepBACandidateId) ? {
         executiveSummary: effectiveDeepDiveBrief.headline,
         dataTrustScore: effectiveDeepDiveBrief.trustScore,
         decisionReadinessScore: effectiveDeepDiveBrief.decisionReadinessScore,
         insights: effectiveDeepDiveBrief.narrativeSections.map(section => ({ id: section.id, title: section.title, statement: section.summary, severity: section.severity, evidence: section.bullets })),
         caveats: effectiveDeepDiveBrief.caveats,
       } : null,
-      perspectiveBA: {
+      perspectiveBA: admitted.has(perspectiveBACandidateId) ? {
         analysisLabel: chartSelection ? `${displayMetricLabel(chartSelection.metricId)} · ${chartSelection.period}` : displayPerspectiveLabel,
         sourceRowCount: scopeSources.reduce((sum, source) => sum + (focusSubject ? rowsForEvidence(source).length : source.sourceRowCount), 0),
         isRepresentativeSample: subsetOverviews.some(item => item.overview.isRepresentativeSample),
         findings: overviewFindings,
         recommendedActions: overviewActions,
         limitations: overviewLimitations,
-      },
+      } : null,
     });
-    const chartId = createChart({
-      projectId: "proj-1", datasetId: `multifile:${perspectiveId}`, name: displayPerspectiveLabel,
-      type: visualizationPlan.primaryVisualization.type === 'line' ? "Line" : "Bar",
-      xAxis: [{ columnName: visualizationPlan.primaryVisualization.xField }],
-      yAxis: scopedMetricIds.map(columnName => ({ columnName, aggregation: "None" as const })), filters: {},
-      formatting: { lightbiData: { source: "multifile_perspective_dashboard", perspective: displayPerspectiveLabel, chartType: visualizationPlan.primaryVisualization.type, xField: visualizationPlan.primaryVisualization.xField, yField: scopedMetricIds[0], seriesFields: scopedMetricIds, rows: scopedRows, rowCount: scopedRows.length, governed: true, evidenceScope: chartSelection ? "selected_period" : "full_source_metric_results", savedAt: new Date().toISOString() } },
-    });
-    addChartToDashboard(dashboardId, chartId);
-    const latest = scopedRows[scopedRows.length - 1];
-    scopedMetricIds.forEach(metricId => {
-      const value = Number(latest?.[metricId]);
-      if (!Number.isFinite(value)) return;
-      const kpiId = createChart({
-        projectId: "proj-1", datasetId: `multifile:${perspectiveId}`, name: displayMetricLabel(metricId), type: "Number", xAxis: [], yAxis: [{ columnName: "value", aggregation: "None" }], filters: {},
-        formatting: { lightbiData: { source: "multifile_perspective_dashboard_kpi", perspective: displayPerspectiveLabel, valueKind: /(revenue|profit|cost|amount|margin)/i.test(metricId) ? "money" : "number", yField: "value", seriesFields: ["value"], rows: [{ value }], rowCount: 1, governed: true, savedAt: new Date().toISOString() } },
-      });
-      addChartToDashboard(dashboardId, kpiId);
-    });
-    subsetOverviews.flatMap(item => item.overview.breakdowns.slice(0, 2).map(breakdown => ({ source: item.source, breakdown }))).slice(0, 4).forEach(({ source, breakdown }) => {
-      if (!breakdown.top.length) return;
-      const breakdownRows = breakdown.top.slice(0, 10).map(item => ({ label: item.label, value: item.value, share: item.share, row_count: item.rowCount }));
-      const breakdownId = createChart({
-        projectId: "proj-1", datasetId: `multifile:${perspectiveId}`, name: `${breakdown.label} · ${source.role}`, type: "Bar", xAxis: [{ columnName: "label" }], yAxis: [{ columnName: "value", aggregation: "None" }], filters: {},
-        formatting: { lightbiData: { source: "multifile_selected_scope_ba_breakdown", perspective: displayPerspectiveLabel, valueKind: breakdown.valueKind, xField: "label", yField: "value", seriesFields: ["value"], rows: breakdownRows, rowCount: breakdownRows.length, governed: false, evidenceScope: "representative_selected_source", physicalColumn: breakdown.physicalColumn, savedAt: new Date().toISOString() } },
-      });
-      addChartToDashboard(dashboardId, breakdownId);
-    });
+    for (const item of compositionPlan.items) {
+      const materialize = materializers.get(item.candidateId);
+      if (!materialize) continue;
+      addChartToDashboard(dashboardId, materialize());
+    }
     navigate(`/dashboards/${dashboardId}`);
   };
 

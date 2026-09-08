@@ -5,6 +5,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { PerspectiveCollectionResultCard } from './PerspectiveCollectionResultCard';
 import { useAnalysisExportStore } from '../../stores/analysis-export-store';
 import { createDomainComparisonBrief } from '../../lib/ba-comparison-engine';
+import { useAppRuntime } from '@lightbi/runtime';
 
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual<typeof import('react-router-dom')>('react-router-dom');
@@ -17,7 +18,11 @@ vi.mock('echarts-for-react', () => ({
   ),
 }));
 
-afterEach(() => { cleanup(); useAnalysisExportStore.getState().clearPlan(); });
+afterEach(() => {
+  cleanup();
+  useAnalysisExportStore.getState().clearPlan();
+  useAppRuntime.setState({ dashboards: {}, charts: {}, activeDashboardId: null, activeChartId: null });
+});
 
 describe('PerspectiveCollectionResultCard selected-data analysis', () => {
   it('opens source-bound evidence and enters selected-subject investigation for the selected multi-file chart point', () => {
@@ -229,6 +234,45 @@ describe('PerspectiveCollectionResultCard selected-data analysis', () => {
     expect(investigation.textContent).toContain('sales.xlsx');
     expect(investigation.textContent).not.toContain('accounting.xlsx');
     expect(investigation.textContent).toContain('Source-separation policy');
+  });
+
+  it('composes a selected multi-file dashboard before materializing widgets and preserves ranked-driver visualization authority', () => {
+    render(<PerspectiveCollectionResultCard
+      perspectiveId="executive_overview"
+      rows={[{ reporting_period: '2026-06', sales_revenue: 250 }]}
+      sourceCount={1}
+      evidenceSources={[{
+        period: '2026-06', role: 'sales', sourceName: 'current-period.xlsx', sourceRowCount: 4,
+        rows: [
+          { Product: 'A', Revenue: 100 }, { Product: 'A', Revenue: 70 },
+          { Product: 'B', Revenue: 50 }, { Product: 'C', Revenue: 30 },
+        ],
+        semanticFields: [
+          { canonicalId: 'product', label: 'Product', domain: 'canonical', role: 'unknown', confidence: 100, physicalColumn: 'Product', reason: 'test' },
+          { canonicalId: 'revenue', label: 'Revenue', domain: 'canonical', role: 'unknown', confidence: 100, physicalColumn: 'Revenue', reason: 'test' },
+        ],
+      }]}
+    />);
+
+    fireEvent.click(screen.getByTestId('collection-chart'));
+    fireEvent.click(screen.getByRole('button', { name: /Investigate selected evidence/i }));
+    fireEvent.click(screen.getByTestId('collection-create-dashboard'));
+
+    const runtime = useAppRuntime.getState();
+    const dashboard = runtime.dashboards[runtime.activeDashboardId ?? ''];
+    expect(dashboard).toBeTruthy();
+    const composition = dashboard.metadata?.dashboardCompositionPlan as any;
+    expect(composition.schemaVersion).toBe('lightbi.dashboard-composition-plan.v1');
+    expect(composition.governance).toMatchObject({ deterministicMembershipFinal: true, mbAuthority: 'advisory_only', mbMayChangeMembership: false });
+    expect(composition.items.some((item: any) => item.semanticRole === 'ranked_driver')).toBe(true);
+
+    const charts = dashboard.widgets.map(widget => runtime.charts[widget.referenceId ?? '']).filter(Boolean);
+    expect(charts[0]?.type).toBe('Number');
+    expect(charts.some(chart => chart.formatting?.lightbiData?.source === 'multifile_perspective_dashboard')).toBe(true);
+    const breakdown = charts.find(chart => chart.formatting?.lightbiData?.source === 'multifile_selected_scope_ba_breakdown');
+    expect(breakdown?.type).toBe('Bar');
+    expect(breakdown?.formatting?.lightbiData?.decisionVisualizationPlan?.visualizationPlan?.patternId).toBe('ranking_bar');
+    expect(breakdown?.formatting?.lightbiData?.sourceName).toBe('current-period.xlsx');
   });
 
 });
