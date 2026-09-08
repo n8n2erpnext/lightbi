@@ -1,120 +1,51 @@
 {
   "schema": "lightbi.current-checkpoint.v1",
-  "updatedAt": "2026-09-08T05:24:00Z",
-  "status": "roadmap_1_0_dpr3_closed_dpr4_wip_handoff_ready",
-  "activeRuntime": "NEXT Core generation g-2026-09-05-next-034 on 5272; UI-only immutable DPR-3 web root dpr3-804fb2f on gateway 5273 (PID 4013056); Control Plane 5274 unchanged; MB scheduler paused; Production untouched",
+  "updatedAt": "2026-09-08T06:45:35Z",
+  "status": "roadmap_1_0_dpr4_closed_dpr5_active",
+  "activeRuntime": "NEXT Core generation g-2026-09-05-next-034 on 5272; immutable DPR-4 UI root dpr4-9d1d4a6 on gateway 5273 PID 15820; Control Plane 5274 unchanged; Production untouched",
   "sourceCandidate": {
     "repo": "/home/ubuntu/n8n2erpnext/LightBI-dpr0-contract-freeze",
     "branch": "codex/dpr0-contract-freeze",
-    "head": "804fb2feec8528dc061ce299486ff653d02a92db",
-    "liveUiSource": "804fb2feec8528dc061ce299486ff653d02a92db",
-    "basePrimaryLogoCommit": "fde259a5441b36825f211914cbd0c82fc595f27f"
+    "head": "9d1d4a6c1df4a69bf8aa3c0366e7f4eac8fce311",
+    "liveUiSource": "9d1d4a6c1df4a69bf8aa3c0366e7f4eac8fce311"
   },
-  "brandAuthority": {
-    "figmaConcept": "LightBI Logo Concept / node 19:5 / optimized li",
-    "canonicalSvgSha256": "9486181bb525d1d4a704addaebfc2f1caa5abbd9d1240bad252b85a3f58e0d7b",
-    "productCommit": "fde259a5441b36825f211914cbd0c82fc595f27f",
-    "controlPlaneBrandCommit": "b6bc2735bcf99218443ae5c427701e5b1a7c938f"
+  "roadmapDpr": {
+    "dpr0": "CLOSED",
+    "dpr1": "CLOSED",
+    "dpr2": "CLOSED",
+    "dpr3": "CLOSED",
+    "dpr4": "CLOSED",
+    "dpr5": "ACTIVE — Visualization ontology + Chart Pattern Library + Domain Visual Profiles"
   },
-  "dpr0": {
-    "state": "CLOSED",
-    "reactDesignFoundation": "CLOSED",
-    "multiFileTerminalConvergence": "CLOSED at ce5c961; decision_workspace -> evidence_drill -> deep_perspective | deep_selected",
-    "nextVisualBaseline": "PASS; 2/2 Playwright; nine tracked-corpus captures; all full-page captures 1440x900",
-    "baselineEvidenceCommit": "14c2d99801cde82716f58127bd006e150118e8c5",
-    "releaseAuthoritative": "PASS; governed product regression 11 files / 42 tests; production build PASS",
-    "openDebtFixtures": [
-      "DPR-6 dashboard chart-type collapse"
-    ]
+  "dpr4": {
+    "contract": "lightbi.selected-subject-investigation.v1; selected scope only; source separation preserved; no cross-source JOIN authority; governed summary unchanged; benchmark context is not authority; MB cannot strengthen authority",
+    "productCommit": "9d1d4a6c1df4a69bf8aa3c0366e7f4eac8fce311",
+    "verification": "integration+i18n 16/16 across 6 files; Focus/MB/DPR3 authority regression 52/52 across 12 files; release-authoritative PASS with governed regression 11 files/42 tests; production build 3809 modules; exact-SHA rebuild PASS",
+    "runtimeAcceptance": "PASS on NEXT 5273 for six-file ERP + Focus Aqua 250L multi-file selected-subject flow and canonical single-source Revenue drill; single-file 1/1 PASS in 19.7s",
+    "liveUiRoot": "/home/ubuntu/services/lightbi-next-web/dpr4-9d1d4a6"
   },
-  "informationArchitecture": {
-    "rule": "More information must create more structure, not more cards",
-    "densityClasses": [
-      "Calm",
-      "Working",
-      "Analytical",
-      "Evidence/Technical"
-    ],
-    "deepPerspectiveAndSelectedMutuallyExclusive": true,
-    "visualBaseline": "ACCEPTED after workflow convergence"
-  },
-  "liveDemoParity": {
-    "productSurface": "/app",
-    "directNext": "5273 /app",
-    "publicNext": "https://lightbi-next.thaiduy.digital/app/",
-    "role": "near-1:1 fast product-validation environment, not simplified demo UI",
-    "shared": "React routes/components/state/planners/tokens/i18n/chart/evidence behavior",
-    "portContract": "NEXT acceptance uses 5272/5273/5274; no 51xx harness"
-  },
-  "dpr1": {
-    "state": "CLOSED",
-    "productCommit": "d027bb34e403968a60f6f3b053e3cfaf9ad42025",
-    "contract": "OBSERVED | CALCULATED | SEMANTICALLY_RESOLVED | DOMAIN_CONTEXT | INFERRED | HYPOTHESIS + evidenceRefs/knowledgeRefs/derivation/limitations/causalStatus/decisionUseRestrictions",
-    "authorityInvariant": "presentation planners may preserve or reduce authority, never strengthen it; MB retrieval/advisory relevance is never semantic confidence",
-    "focusedVerification": "25/25 PASS + TypeScript PASS",
-    "releaseAuthoritative": "PASS; governed product regression 11 files / 42 tests; production build PASS",
-    "nextRuntimeAcceptance": "1/1 PASS in 8.8s on 5273 /app"
-  },
-  "controlPlaneSourceCandidate": {
-    "repo": "/home/ubuntu/n8n2erpnext/lightbi-control-plane-r1p14-signed-transport",
-    "head": "b0d65b343d9bc73e90e90097d87eda3f92218d36"
-  },
-  "learningTransport": {
-    "schedulerEnabled": false,
-    "fullR2Rehearsal": "13/13 PASS",
-    "finalCleanup": "PASS"
+  "dpr5": {
+    "state": "ACTIVE",
+    "scope": "define analytical intents; canonical 20–30 chart-pattern grammar; suitability and negative rules; semantic color/cardinality/label/axis/tooltip rules; graceful fallback; Domain Visual Profiles",
+    "authorityInvariant": "MB chart/domain knowledge is advisory only; DPR-5 does not grant chart selection, renderer, metric, formula, join or runtime authority; deterministic suitability remains final"
   },
   "trustRuntime": {
-    "issuerPid": 3817149,
-    "signerPid": 12020,
-    "attestationPid": 1505209,
+    "userManagerPid": 943,
+    "signerLauncherPid": 12020,
+    "issuerLauncherPid": 3817149,
+    "attestationLauncherPid": 1505209,
     "productionAuthority": false
   },
-  "nextAction": "Resume DPR-4 from the intentional dirty Product worktree at HEAD 804fb2f. Preserve the five selected-subject-investigation WIP paths, finish single-file + multi-file selected-scope convergence, validate scope counts/truncation/source attribution/Focus fail-closed semantics, run focused+i18n+DPR3+TypeScript+release-authoritative gates, then deploy an immutable UI-only successor to NEXT 5273 before closing DPR-4.",
+  "nextAction": "Begin DPR-5 from clean Product HEAD 9d1d4a6. Re-read the active DPR-5 plan section and current visualization/chart persistence code before mutation; define and test the ontology/pattern/domain-profile contract first, including negative rules and safe fallback. Do not jump to DPR-6 renderer choice or DPR-8 broad UI migration. Validate shared Web Live Demo/Desktop source on NEXT 52xx only.",
   "blockers": [
     "Production promotion and Offline Root/phase2a freeze remain owner-gated",
-    "NEXT047 is stale and not a post-LQ3 release candidate; its installation-issuer mismatch remains deferred until an official release build"
+    "NEXT047 remains stale and is not the current post-DPR release candidate"
   ],
   "productionTouched": false,
-  "phase2aFrozen": false,
-  "resourceState": "root filesystem 69% used, ~38 GiB free; NEXT DPR-3 immutable UI root active on 5273; no 51xx harness",
   "readFirst": [
     "docs/project-book/LIBRARY_RULES.md",
-    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#134-2026-09-08-dpr-3-analysis-narrative-planner-closes-on-next-dpr-4-becomes-active",
-    "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DECISION_PRESENTATION_UI_UX_REFACTOR_2026-09-04.md",
-    "docs/history/agent/handoffs/AGENT_HANDOFF_UI_UX_REFACTOR_DPR0_TO_DPR4_2026-09-08.md"
+    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#135-2026-09-08-dpr-4-selected-subject-investigation-closes-on-next-dpr-5-becomes-active",
+    "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DECISION_PRESENTATION_UI_UX_REFACTOR_2026-09-04.md"
   ],
-  "documentationHead": "d06ef0d56bdfcf85c65749a4bfb4b2b9fcaf923d",
-  "dpr2": {
-    "state": "CLOSED",
-    "productCommit": "a876fb998b980f1eef0c5834822f622a80435b44",
-    "contract": "Domain and Perspective separated; governed + Universal questions deduplicated/ranked; answerability executable_now | descriptive_only | needs_more_evidence | unsupported; open-world MB/domain candidates are review-only actionAuthority=none",
-    "authorityInvariant": "MB/domain context may affect relevance/order/evidence requirements/abstention only; governed/safe upstream action authority remains final; retrieval rank is not semantic confidence",
-    "focusedVerification": "56/56 PASS + TypeScript PASS",
-    "releaseAuthoritative": "PASS; governed product regression 11 files / 42 tests; production build and source-size gate PASS",
-    "nextRuntimeAcceptance": "1/1 PASS in 5.3s on 5273 /app; one question lane; domain-context review candidates present; zero execution buttons in advisory section"
-  },
-  "dpr3": {
-    "state": "CLOSED",
-    "productCommit": "804fb2feec8528dc061ce299486ff653d02a92db",
-    "contract": "lightbi.analysis-narrative-plan.v1; answer-first primary_answer plus key_driver/risk_exception/hypothesis/supporting_observation/unknown/next_action/supporting_evidence; comparison briefs reuse the same non-escalating presentation policy",
-    "authorityInvariant": "MB may supply bounded ordinal narrative advice, abstention/evidence requirements/constraints only; it cannot strengthen authority; finding identity/evidence rows are preserved; retrieval rank is not confidence",
-    "focusedVerification": "56/56 PASS across 10 files; git diff --check PASS",
-    "releaseBuild": "tsc -b + Vite production build PASS; 3807 modules transformed",
-    "nextRuntimeAcceptance": "PASS on 5273 /app -> built-in governed sales demo -> /app/investigation -> Analyze deeper; Analysis Narrative hierarchy rendered with no page error",
-    "liveUiRoot": "/home/ubuntu/services/lightbi-next-web/dpr3-804fb2f",
-    "knownUnrelatedWarning": "public NEXT account-session request still reports a pre-existing CORS warning against the Production Distribution origin; outside DPR-3 diff and non-blocking for governed demo acceptance"
-  },
-  "dpr4Wip": {
-    "state": "ACTIVE_UNCOMMITTED",
-    "baseHead": "804fb2feec8528dc061ce299486ff653d02a92db",
-    "paths": [
-      "apps/desktop/src/components/analysis/PerspectiveCollectionResultCard.tsx",
-      "apps/desktop/src/components/investigation/SelectedSubjectInvestigationBoard.tsx",
-      "apps/desktop/src/components/investigation/SelectedSubjectInvestigationBoard.test.tsx",
-      "apps/desktop/src/lib/selected-subject-investigation.ts",
-      "apps/desktop/src/lib/selected-subject-investigation.test.ts"
-    ],
-    "focusedVerification": "4/4 PASS across 2 new focused test files; no DPR-4 full integration/release-authoritative closure yet"
-  }
+  "documentationHead": "d763b340b7f77d7a18b3ed196cd2dba51beaf625"
 }
