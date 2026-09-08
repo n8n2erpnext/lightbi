@@ -1,13 +1,13 @@
 {
   "schema": "lightbi.current-checkpoint.v1",
-  "updatedAt": "2026-09-08T08:38:12Z",
-  "status": "roadmap_1_0_dpr6_closed_dpr7_active",
-  "activeRuntime": "NEXT Core generation g-2026-09-05-next-034 on 5272; immutable DPR-6 UI root dpr6-18e267a on gateway 5273 PID 303041; Control Plane 5274 unchanged; Production untouched",
+  "updatedAt": "2026-09-08T10:10:41Z",
+  "status": "roadmap_1_0_dpr7_closed_dpr8_active",
+  "activeRuntime": "NEXT Core generation g-2026-09-05-next-034 on 5272 PID 3376963; immutable DPR-7 UI root dpr7-324eceb on gateway 5273 PID 471868; Control Plane 5274 PID 2346997 unchanged; Production untouched",
   "sourceCandidate": {
     "repo": "/home/ubuntu/n8n2erpnext/LightBI-dpr0-contract-freeze",
     "branch": "codex/dpr0-contract-freeze",
-    "head": "18e267a0f0b248d40536f6c6f003cd8d2a099fa9",
-    "liveUiSource": "18e267a0f0b248d40536f6c6f003cd8d2a099fa9"
+    "head": "324eceb91329fbff5a26fb70d6840d00f3483483",
+    "liveUiSource": "324eceb91329fbff5a26fb70d6840d00f3483483"
   },
   "roadmapDpr": {
     "dpr0": "CLOSED",
@@ -17,22 +17,21 @@
     "dpr4": "CLOSED",
     "dpr5": "CLOSED",
     "dpr6": "CLOSED",
-    "dpr7": "ACTIVE — Dashboard Composition Planner"
-  },
-  "dpr6": {
-    "state": "CLOSED",
-    "contract": "lightbi.visualization-plan.v1 + lightbi.visualization-renderer-registry.v1 + lightbi.decision-visualization-plan.v2; deterministic DPR-5 suitability precedes renderer binding; MB/domain prior remains advisory only",
-    "productCommit": "18e267a0f0b248d40536f6c6f003cd8d2a099fa9",
-    "verification": "broad integration 74/74 across 18 files; focused post-debt/extraction 22/22; TypeScript PASS; source-size 540 production modules with Investigation.tsx 981 lines; exact-SHA build 3815 modules; release-authoritative PASS with governed regression 11 files/43 tests",
-    "runtimeAcceptance": "PASS 2/2 in 44.4s on Chromium ARM NEXT 5273 for canonical single-source Revenue drill and six-file ERP + Focus Aqua 250L parallel selected-subject flow",
-    "liveUiRoot": "/home/ubuntu/services/lightbi-next-web/dpr6-18e267a",
-    "resolvedDebt": "dashboard-renderer-type-collapse retired only after persistence -> Chart.type=Scatter -> Dashboard renderer -> ECharts scatter proof"
+    "dpr7": "CLOSED",
+    "dpr8": "ACTIVE — Canvas-first surface refactor + shared UI system"
   },
   "dpr7": {
+    "state": "CLOSED",
+    "contract": "lightbi.dashboard-composition-plan.v1; deterministic evidence-backed semantic roles/story order and membership before materialization; MB dashboardRoles advisory ordering prior only; hard-coded automated breakdown Bar default removed via DPR-6 DecisionVisualizationPlan v2",
+    "productCommit": "324eceb91329fbff5a26fb70d6840d00f3483483",
+    "verification": "focused 19/19; broad presentation/MB/Focus/renderer 27 files/116 tests; TypeScript PASS; source-size 543 production modules; release-authoritative PASS with build 3818 modules and governed regression 11 files/44 tests; exact-SHA rebuild PASS",
+    "runtimeAcceptance": "PASS 2/2 in 34.7s on Chromium ARM 151.0.7922.34 for canonical six-file multi-source Dashboard and canonical single-file inventory Deep BA -> Dashboard; current materialized writer budget 1–8 widgets; pageerror=[]",
+    "liveUiRoot": "/home/ubuntu/services/lightbi-next-web/dpr7-324eceb"
+  },
+  "dpr8": {
     "state": "ACTIVE",
-    "scope": "introduce deterministic Dashboard Composition Planner with semantic section/widget roles, story order, narrative/visual duplication checks and information budget; consume DPR-3 narrative + DPR-6 visualization plans; MB dashboard/domain/perspective advice is rejectable prior only",
-    "verifiedAuditBoundary": "createInvestigationChartActions() and PerspectiveCollectionResultCard currently compose saved dashboards directly; both still create supporting BA breakdown charts with hard-coded Chart.type='Bar'. DashboardBuilder/DashboardChartWidget are downstream renderers; Charts.tsx and Dashboards.tsx are manual/dashboard entry surfaces.",
-    "authorityInvariant": "Dashboard composition may preserve or reduce upstream presentation authority but cannot strengthen governed metric/evidence authority, create joins/formulas/metrics, bypass VisualizationPlan suitability, or let MB directly persist renderer/chart/dashboard authority"
+    "scope": "apply Product-wide Information Architecture + Density Contract and shared @lightbi/ui tokens/primitives across shared Desktop/Tauri and Web Live Demo /app presentation; flatten card-everywhere Home, Understanding, Decision Workspace, Deep BA and selected-subject surfaces while preserving semantic planner/evidence authority, accessibility and responsive behavior",
+    "boundary": "DPR-8 owns layout/presentation only; it must consume DPR-1..DPR-7 semantic contracts rather than re-derive metrics/questions/narratives/charts/dashboard membership; native-only divergence stays behind explicit capability adapters"
   },
   "trustRuntime": {
     "userManagerPid": 943,
@@ -41,7 +40,7 @@
     "attestationLauncherPid": 1505209,
     "productionAuthority": false
   },
-  "nextAction": "Begin DPR-7 from clean Product HEAD 18e267a. Re-read createInvestigationChartActions(), PerspectiveCollectionResultCard dashboard-save composition, createDashboard/addChartToDashboard store contracts, DashboardBuilder/DashboardChartWidget and Charts.tsx/Dashboards.tsx before mutation. Define a semantic Dashboard Composition Plan above those writers; require each included section/widget to answer a distinct evidence-backed management question, enforce narrative/visual duplication and information budget, consume DPR-6 VisualizationPlan rather than hard-coded Bar defaults, and keep MB/domain/perspective Dashboard advice rejectable. Do not jump to DPR-8 layout migration. Validate shared Web Live Demo/Desktop source on NEXT 52xx only.",
+  "nextAction": "Begin DPR-8 only from clean Product HEAD 324eceb. Re-read active plan Information Architecture + Density Contract and DPR-8 section, then audit current shared shell/@lightbi/ui primitives/tokens plus Home, Understanding, Investigation/Decision Workspace, Deep BA, SelectedSubjectInvestigationBoard and Dashboard surfaces. Define migration order and executable shared presentation invariants before broad edits. Preserve Desktop/Web /app parity, DPR-1..7 planner/evidence authority, responsive/accessibility behavior and i18n monotonic guard. Use NEXT 52xx only for acceptance; do not touch Production/51xx/Core/Control Plane/Trust.",
   "blockers": [
     "Production promotion and Offline Root/phase2a freeze remain owner-gated",
     "NEXT047 remains stale and is not the current post-DPR release candidate"
@@ -49,8 +48,8 @@
   "productionTouched": false,
   "readFirst": [
     "docs/project-book/LIBRARY_RULES.md",
-    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#137-2026-09-08-dpr-6-visualization-planner-and-renderertype-preservation-close-on-next-dpr-7-becomes-active",
+    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#138-2026-09-08-dpr-7-dashboard-composition-planner-closes-on-next-dpr-8-becomes-active",
     "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DECISION_PRESENTATION_UI_UX_REFACTOR_2026-09-04.md"
   ],
-  "documentationHead": "7819a9dcddb8e2ce64f01f1562cdf62208fd8f76"
+  "documentationHead": "a98455e14de408cad380c14b65c0f8df084513dd"
 }
