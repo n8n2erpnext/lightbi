@@ -4,11 +4,11 @@
 
 ## Snapshot
 
-- Date: **2026-09-08**
+- Date: **2026-09-09**
 - Branch: `docs/ba-da-mode-future-20260903`
-- HEAD: `3295139e774197116622d429484efe75eb2bae7e`
+- HEAD: `d48c170a4a3935cc7cb7765932efe9724deee9f7`
 - Worktree dirty while generated: **true**
-- Total indexed sources: **949** (532 Markdown / 417 JSON)
+- Total indexed sources: **950** (533 Markdown / 417 JSON)
 - JSON under `docs/`: **354**
 
 For old paths, use [`PATH_MIGRATION_INDEX.md`](./PATH_MIGRATION_INDEX.md) and [`../history/LEGACY_ROOT_INDEX.md`](../history/LEGACY_ROOT_INDEX.md).
@@ -693,6 +693,7 @@ For old paths, use [`PATH_MIGRATION_INDEX.md`](./PATH_MIGRATION_INDEX.md) and [`
 - [`docs/history/agent/handoffs/AGENT_HANDOFF_ANALYSIS_OPPORTUNITY_VALIDATION_AUDIT.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_ANALYSIS_OPPORTUNITY_VALIDATION_AUDIT.md) — AGENT HANDOFF: Analysis Opportunity Validation Audit; `4272` bytes; SHA-256 `45fb98ee3e7d644e594443abf6e3bc9ed2a126caf7f682678cd80bd0f54adb2d`
 - [`docs/history/agent/handoffs/AGENT_HANDOFF_CANONICAL_SCHEMA_PROJECTION_PHASE1.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_CANONICAL_SCHEMA_PROJECTION_PHASE1.md) — Handoff: Canonical Schema Projection Phase 1; `1651` bytes; SHA-256 `7467be32c0b6544641d43016240441a4988c216ab20701d53563878e43cc3afe`
 - [`docs/history/agent/handoffs/AGENT_HANDOFF_CANONICAL_SCHEMA_PROJECTION_PHASE2.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_CANONICAL_SCHEMA_PROJECTION_PHASE2.md) — Execution Handoff: Canonical Schema Projection Phase 2; `1648` bytes; SHA-256 `3a04247716507d9744f5de3291c13d44ac538befa26ed5957dbe641b2d824ac2`
+- [`docs/history/agent/handoffs/AGENT_HANDOFF_DPR9_SEMANTIC_REPORT_PAGINATION_2026-09-09.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_DPR9_SEMANTIC_REPORT_PAGINATION_2026-09-09.md) — Agent Handoff — LightBI DPR-9 Semantic Report Pagination — 2026-09-09; `29592` bytes; SHA-256 `35791521c9f429a46263a0e25d7214e4dba7d53f52d0136478bc5badf2dadb28`
 - [`docs/history/agent/handoffs/AGENT_HANDOFF_DUCKDB_RUNTIME_ERROR_CLASSIFICATION_PHASE1.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_DUCKDB_RUNTIME_ERROR_CLASSIFICATION_PHASE1.md) — DuckDB Runtime Error Classification Phase 1 Handoff; `1540` bytes; SHA-256 `ca5859c9d5d3b2f6b5ec47e261137a5e4998eae02795333df197061f48c518eb`
 - [`docs/history/agent/handoffs/AGENT_HANDOFF_EXECUTION_BOUNDARY_LEGACY_MAPPING_AUDIT.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_EXECUTION_BOUNDARY_LEGACY_MAPPING_AUDIT.md) — AGENT HANDOFF — Execution Boundary & Legacy Mapping Audit; `5014` bytes; SHA-256 `00fb471fb6781f2cca6be65d8c61f28309a7521c09f2022f3d43028d801cf120`
 - [`docs/history/agent/handoffs/AGENT_HANDOFF_EXECUTION_BOUNDARY_LEGACY_MAPPING_FIX.md`](../../docs/history/agent/handoffs/AGENT_HANDOFF_EXECUTION_BOUNDARY_LEGACY_MAPPING_FIX.md) — AGENT HANDOFF — Execution Boundary & Legacy Mapping Fix; `1994` bytes; SHA-256 `ed997dadfbf654d4c432e04fd226ca55fe4d61ca399cd3ebec52bf079855670f`

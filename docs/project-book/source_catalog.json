@@ -1,14 +1,14 @@
 {
   "schemaVersion": "lightbi.project-book.source-catalog.v1",
-  "snapshotDate": "2026-09-08",
-  "generatedAt": "2026-09-08T15:46:46.594Z",
+  "snapshotDate": "2026-09-09",
+  "generatedAt": "2026-09-08T18:13:28.075Z",
   "branch": "docs/ba-da-mode-future-20260903",
-  "head": "3295139e774197116622d429484efe75eb2bae7e",
+  "head": "d48c170a4a3935cc7cb7765932efe9724deee9f7",
   "worktreeDirty": true,
   "scope": "All project Markdown and JSON outside dependency/build/project-book directories.",
   "counts": {
-    "total": 949,
-    "markdown": 532,
+    "total": 950,
+    "markdown": 533,
     "json": 417,
     "docsJson": 354,
     "references": 0
@@ -9427,6 +9427,14 @@
       "sha256": "3a04247716507d9744f5de3291c13d44ac538befa26ed5957dbe641b2d824ac2",
       "suggestedCategory": "historical-provenance",
       "title": "Execution Handoff: Canonical Schema Projection Phase 2"
+    },
+    {
+      "path": "docs/history/agent/handoffs/AGENT_HANDOFF_DPR9_SEMANTIC_REPORT_PAGINATION_2026-09-09.md",
+      "extension": ".md",
+      "bytes": 29592,
+      "sha256": "35791521c9f429a46263a0e25d7214e4dba7d53f52d0136478bc5badf2dadb28",
+      "suggestedCategory": "historical-provenance",
+      "title": "Agent Handoff — LightBI DPR-9 Semantic Report Pagination — 2026-09-09"
     },
     {
       "path": "docs/history/agent/handoffs/AGENT_HANDOFF_DUCKDB_RUNTIME_ERROR_CLASSIFICATION_PHASE1.md",
