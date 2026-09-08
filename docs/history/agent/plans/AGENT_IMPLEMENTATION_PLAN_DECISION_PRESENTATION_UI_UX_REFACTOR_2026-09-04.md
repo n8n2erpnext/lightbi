@@ -1,6 +1,6 @@
 # Agent Implementation Plan — Decision Presentation + UI/UX Refactor — 2026-09-04
 
-Status: **DPR-0 ACTIVE — BASELINE AUDIT / CONTRACT FREEZE IN PROGRESS; CHUNK 1 SOURCE-CLOSED; MB PRESENTATION-ADVISORY FOUNDATION SOURCE-CLOSED**
+Status: **DPR-0 ACTIVE — CONTRACT FREEZE + DESIGN FOUNDATION SOURCE-CLOSED; MULTI-FILE TERMINAL WORKFLOW CONVERGENCE PRECEDES VISUAL BASELINE FREEZE**
 Date: 2026-09-04
 Amended: 2026-09-05 — owner added design-system/i18n hardening and Frappe UI reference direction.
 Amended: 2026-09-06 — owner elevated Frappe Books as a primary product-UX study source and added a canonical chart-pattern/visual-grammar library direction.
@@ -8,9 +8,10 @@ Amended: 2026-09-06 — owner explicitly admitted Micro Brain into DPR-2..DPR-7 
 Amended: 2026-09-07 — DPR-0 re-pinned and cloned Frappe Books `a79a1e3...`; owner expanded the required Books study to exact visual-system measurements including proportions, spacing, typography, color, layout and desktop window chrome.
 Amended: 2026-09-08 — DPR-0 contract-freeze chunk 1 source-closed at Product `85734e4...`: React-19 shared boundary, monotonic i18n debt guard, durable chart/question debt fixtures and release-suite enforcement.
 Amended: 2026-09-08 — owner promoted Figma `LightBI Logo Concept` node `19:5` (`optimized li`) to the LightBI primary mark and required SVG-first derivation across Desktop/native/Distribution branding.
+Amended: 2026-09-08 — owner elevated app-wide information architecture/density to a hard product contract, required multi-file terminal Deep BA/Step 2 workflow convergence before visual-baseline freeze, and made Web Live Demo `/app` a near-1:1 product-validation lane alongside Desktop.
 Scope: Question/Perspective, narrative, visualization, Dashboard, evidence, export and product UI-surface refactor.
 Authority: design/implementation plan; not runtime or metric authority.
-Code-audit snapshot: DPR-0 baseline remains product `40ca2d8b1dbd213bca510e51b9e09c5c19279f5d`; brand-only source closure is Product `fde259a5441b36825f211914cbd0c82fc595f27f` and Control Plane `b6bc2735bcf99218443ae5c427701e5b1a7c938f`; broad presentation refactor mutations remain pending.
+Code-audit snapshot: current clean DPR-0 Product worktree is `codex/dpr0-contract-freeze` at `ca454ecab5aa029fb504388374837695e1e2cd11`, descendant of optimized-li brand source `fde259a5441b36825f211914cbd0c82fc595f27f`; Control Plane brand source remains `b6bc2735bcf99218443ae5c427701e5b1a7c938f`. Contract/dependency/design-token foundation is source-closed; broad surface migration remains pending behind multi-file terminal workflow convergence and a corrected cross-environment visual baseline.
 Supersedes: none.
 
 Repository target when implementation is authorized: public LightBI product successor.
@@ -430,6 +431,53 @@ Suggested surface hierarchy:
 - Level 4 — Modal/Drawer/Overlay: focused task or deep evidence.
 
 A practical Easy Mode surface budget is approximately two strong surfaces and three simultaneous bordered containers, with exceptions for data grids, true visual panels, drawers/modals and real entity collections.
+
+## 16A. Product-wide Information Architecture + Density Contract
+
+Books supplies a calm visual and interaction reference, but LightBI carries substantially denser BI/BA information. The product must therefore solve density with information architecture rather than by either hiding useful evidence or restoring a wall of cards. The controlling rule is:
+
+> **More information must create more structure, not more cards.**
+
+This contract applies to every LightBI product surface: Home/New Brief, Understanding/Analysis Context, single-file, multi-file, Focus, Decision Workspace, Deep BA, BA Step 2, Dashboard, Charts, Datasets, Advanced/SQL, evidence/raw-row views, Settings, Account, Admin and the Web Live Demo product surface.
+
+Required hierarchy and disclosure rules:
+
+- **One surface = one primary user objective.** A surface may contain supporting context, but it must not simultaneously behave as overview, deep report, selected-row investigation and raw-evidence browser.
+- **Progressive disclosure is structural:** `summary -> detail -> evidence -> raw/technical rows`. Crossing into a deeper analytical level changes route/surface/state or opens a bounded inspector/drawer; it must not append an unlimited new report beneath the current report.
+- Default information order is `Orientation -> Primary answer -> Main evidence -> Supporting context -> Deep analysis -> Raw/technical evidence`. Higher-value/decision-level content appears before implementation/diagnostic detail.
+- At most **two analytical depth layers** should be materially visible in one viewport. Opening a third layer replaces, collapses or reduces the earlier layers to compact sticky context rather than rendering all three at full weight.
+- **Card is not a density tool.** Tables, aligned rows, lists, dividers, typography, grouping and compact insets carry dense information. Cards remain for bounded KPIs, warnings, decision summaries, entities or genuinely independent results.
+- Dense does not mean cramped. Use disciplined typography, alignment, grid and the 32/40/48px row rhythm before adding borders, shadows or extra surfaces.
+- As a default analytical viewport budget, target approximately **one primary answer/headline, three-to-five key KPIs, one dominant chart, one attention/decision block and at most one supporting table/list visible at once**. Domain-specific exceptions are allowed only when deliberate and must preserve hierarchy; this is a composition budget, not a metric-authority limit.
+- Raw evidence must remain close and reachable but normally lives in an Evidence Inspector, drawer, drill surface or dedicated evidence view. Do not dump large raw tables between narrative sections merely because the rows are available.
+- **Context is sticky; detail scrolls.** Dataset/source, Perspective/question, Focus, period and selected scope remain visible or recoverable as compact orientation while the user drills deeper.
+- Deep states are reversible. Back/Close returns to the exact prior analytical state without re-importing data or re-running the governed analysis solely to reconstruct UI state.
+- Responsive density follows priority, not naive vertical stacking. Wide screens may use two or three coordinated regions; narrower screens must preserve the same priority order and progressively disclose lower-priority information rather than stacking every desktop panel end-to-end.
+
+LightBI uses four density classes as composition guidance:
+
+- **Calm** — Home/onboarding/Account/Settings: low density, generous whitespace, few simultaneous decisions.
+- **Working** — Understanding, dataset review, perspective selection, Dashboard: medium density, compact rows and clear workspace tools.
+- **Analytical** — Decision Workspace, charts, Deep BA: high density, answer-first hierarchy and progressive disclosure.
+- **Evidence / Technical** — raw rows, SQL, schema, diagnostics: very high density, table/monospace/compact controls, with technical information visually subordinate to the product decision flow.
+
+### Multi-file terminal analysis convergence is a prerequisite, not polish
+
+Current multi-file source has logic/governance parity but not terminal workflow parity. `PerspectiveCollectionResultCard` can render the governed overview, chart drill/raw evidence, full-scope Deep BA and selected-data BA Step 2 into one growing scroll surface. Single-file already uses an explicit `deepAnalysisView = perspective | selected_data | null` model and a separate `InvestigationDeepAnalysis` surface.
+
+Before visual-baseline freeze or broad DPR-8 styling, multi-file must converge on the same **state/surface grammar** while preserving all multi-source governance:
+
+`decision_workspace -> evidence_drill -> deep_perspective | deep_selected`
+
+- `decision_workspace`: Executive Overview, primary chart, main metrics, Key attention/questions and governance disclosure only.
+- `evidence_drill`: selected period/metric/source scope plus bounded evidence preview and the Step 2 CTA.
+- `deep_perspective`: full-scope/focus-scope Deep BA in its own surface with Back/Close to the Decision Workspace.
+- `deep_selected`: BA Step 2 over exact selected evidence in its own surface with Back to the selected evidence state.
+- `deep_perspective` and `deep_selected` are **mutually exclusive**; full Deep BA and Step 2 must never be rendered simultaneously at full weight on the same screen.
+- Prefer a shared analysis navigation/state shell with single-file and multi-file adapters over duplicating two presentation stacks. Do not force incompatible data shapes into one component, and do not rewrite relationship/grain/period/currency/cardinality/Focus authority merely to achieve visual parity.
+
+The attempted pre-convergence visual baseline is **not an acceptance baseline** and must not be committed as evidence of desired layout. Capture the canonical baseline only after this terminal workflow convergence.
+
 ## 17. Screen-specific flattening targets
 
 ### Home / New Brief
@@ -582,6 +630,27 @@ Owner decision on 2026-09-08 promotes the third concept in Figma `LightBI Logo C
 - Figma MCP Starter quota prevented the in-canvas rename/export-setting mutation after node verification. This is not a geometry ambiguity: the owner exported the exact SVG and explicitly selected node `19:5`. When MCP quota becomes available, Figma metadata may be updated without changing the approved geometry.
 - Books/Frappe visual-system guidance may influence surrounding shell spacing, chrome and neutral surfaces, but it must not recolor, redraw or reinterpret the primary LightBI mark.
 
+## 18C. Desktop ↔ Web Live Demo product-parity contract
+
+The Web Live Demo is not a simplified marketing mock. The product surface at **`/app`** is a near-1:1 fast validation environment used to test LightBI behavior before paying the cost of a native build. The public marketing/root surface may remain separate; this contract applies to the actual LightBI product workspace.
+
+Required architecture:
+
+- Desktop/Tauri and Web Live Demo reuse the same React routes, business components, analysis state machines, planners, design tokens, i18n messages, chart/evidence behavior and responsive rules wherever the platform supports them.
+- Do not maintain a "demo UI" and a "desktop UI" that can drift. Platform differences belong behind explicit capability adapters/boundaries, not duplicated presentation implementations.
+- Governed metric/evidence semantics, question/perspective selection, Focus, multi-file governance, Deep BA, Step 2, Dashboard composition and chart planning must behave the same in both environments for the same tracked fixture and user path. The live demo may not bypass governance or fabricate capability merely to make a showcase look complete.
+- Browser testing uses tracked/sanitized sample corpus files and deterministic fixtures; do not make acceptance depend on local-only ignored data.
+
+Intentional platform divergence is limited to genuinely native authority, including Tauri window chrome, native filesystem/open/save dialogs and permissions, installation-bound Signed Transport/trust/capabilities, and other OS integrations that have no browser equivalent. The web lane must expose an honest browser-equivalent flow, clear disabled state or explicit capability boundary; it must never fake native success.
+
+Every DPR phase that changes presentation or interaction must maintain an acceptance matrix:
+
+`Web Live Demo /app PASS -> Desktop webview/source PASS -> packaged/native PASS when the phase touches native behavior`
+
+The browser/live-demo lane is the default **fast product acceptance lane** for navigation, hierarchy, responsiveness, i18n, analysis state, chart behavior, evidence flow and visual composition. Native packaging/UAT remains required for native-only boundaries and final release acceptance, but ordinary UI/UX changes should not require rebuilding the desktop installer merely to discover presentation defects.
+
+Visual regression and screenshots must identify their environment and should use equivalent viewport/data/state pairs across web and desktop when possible. A visual PASS in only one environment is insufficient when shared product surfaces are expected to be identical.
+
 ### Chart Pattern Library is a semantic grammar, not a gallery
 
 The owner also supplied additional dashboard references that broaden the visual vocabulary. LightBI should learn from them as **question-to-visual patterns**, not attempt to maximize chart variety. The canonical planning chain becomes:
@@ -630,7 +699,22 @@ Frappe Books and Frappe UI are external references only. No Vue/Electron depende
 - i18n debt is frozen monotonically at the observed `fde259a` baseline: 7 mixed Vietnamese messages, 263 uncataloged English presentation strings and 1 uncataloged Vietnamese presentation string. Existing debt may shrink; any new debt fails the release-authoritative suite.
 - Two known presentation defects are now durable debt fixtures, not accepted behavior: Dashboard renderer type collapse (`DPR-6`) and duplicate “Other questions this data can answer” lanes (`DPR-2`). Repairing either requires explicitly retiring/updating its fixture in the owning DPR phase.
 - `scripts/run-release-1.0-suite.mjs` now runs the shared React boundary and presentation/i18n debt guards. Final authoritative run PASSed, including production build and governed regression `11 files / 41 tests`; focused DPR guards PASS `5/5`.
-- No chart planner, question planner, metric/evidence authority or screen composition was changed by this chunk. DPR-0 remains ACTIVE; next work is LightBI design-token/shared-primitive foundation plus baseline visual acceptance capture before broad surface migration.
+- No chart planner, question planner, metric/evidence authority or screen composition was changed by this chunk. DPR-0 remains ACTIVE; subsequent work owns the design foundation and workflow/visual baseline gates.
+
+#### DPR-0 chunk 2 — LightBI design-token foundation source-closed (2026-09-08)
+
+- Product `ca454ecab5aa029fb504388374837695e1e2cd11` on `codex/dpr0-contract-freeze` adds the LightBI-owned `--lb-*` semantic token layer and typed shared-token contract in `@lightbi/ui`; it does not copy Books/Frappe namespaces or migrate current screens wholesale.
+- Reference/target tokens encode the studied desktop proportions and interaction rhythm: sidebar 224px, application header 64px, Windows chrome 28px, ~48x28px window-control hit area, 32px compact controls, 48px common data rows, 100/150ms motion, native-scrollbar theming around 10px, restrained surfaces/dividers/ink and semantic analytical/status colors.
+- Existing screen geometry remains unchanged until DPR-8 migration; current 280px sidebar/older motion values are not silently treated as migrated merely because target tokens exist.
+- Focused token/contract checks and TypeScript PASS; the release-authoritative suite remains PASS with governed regression `11 files / 41 tests` and production build.
+
+#### Current DPR-0 execution order — corrected after multi-file IA review
+
+1. Freeze numeric/evidence/runtime authority and presentation debt — **done**.
+2. Establish shared React/design-token foundation — **done**.
+3. Converge the multi-file terminal Decision Workspace / Deep BA / Step 2 state model with the single-file workflow, preserving multi-source governance — **NEXT and required before visual freeze**.
+4. Capture corrected representative visual baselines for Home, Understanding, Decision Workspace, Dashboard, Deep BA and Step 2 in the Web Live Demo `/app`, with equivalent Desktop/source checks where applicable.
+5. Only then begin broad canvas-first surface migration and later DPR phase work.
 
 - Freeze current governed numeric/evidence parity fixtures before presentation refactor.
 - Capture representative Home, Understanding, Decision Workspace, Dashboard, Deep BA and Step 2 acceptance screenshots.
@@ -659,6 +743,7 @@ Frappe Books and Frappe UI are external references only. No Vue/Electron depende
 
 ### DPR-3 — Analysis Narrative Planner + Deep BA hierarchy
 
+- Enforce the shared analysis-surface state grammar so overview, full-scope Deep BA and selected-data investigation are distinct reversible states rather than appended reports.
 - Build answer-first narrative plan over existing governed outputs.
 - Allow MB presentation advice to contribute domain-context priorities, narrative-role candidates and explicit abstention/unknown signals, while observed/calculated/inferred/hypothesis provenance remains deterministic and inspectable.
 - Remove repeated same-weight Main Answer / driver / risk blocks.
@@ -667,6 +752,7 @@ Frappe Books and Frappe UI are external references only. No Vue/Electron depende
 
 ### DPR-4 — BA Step 2 investigation model
 
+- Make selected-data Step 2 a dedicated reversible analysis surface that is mutually exclusive with full-scope Deep BA at full visual weight.
 - Replace “Deep BA on selected rows” presentation with selected-subject investigation semantics.
 - Add benchmark/context decomposition and concise next-action structure.
 - Synthesize multi-source evidence into one answer where appropriate.
@@ -701,6 +787,8 @@ Frappe Books and Frappe UI are external references only. No Vue/Electron depende
 
 ### DPR-8 — Canvas-first surface refactor + shared UI system
 
+- Apply the Product-wide Information Architecture + Density Contract and density classes before cosmetic flattening; cleaner visuals must not reduce useful analytical capacity or recreate information overload.
+- Keep Desktop/Tauri and Web Live Demo `/app` on the same shared presentation implementation, with divergence only through explicit native capability adapters.
 - Build/adopt the approved `@lightbi/ui` primitives and tokens before broad screen migration.
 - Translate the Books/Frappe product language into LightBI: flat canvas, strong ink/type hierarchy, restrained semantic color, thin separators, logical action placement and dense-but-breathable business screens.
 - Flatten Home, Understanding, Decision Workspace, Deep BA and Step 2 according to section 17.
@@ -718,6 +806,7 @@ Frappe Books and Frappe UI are external references only. No Vue/Electron depende
 
 ### DPR-10 — Cross-domain acceptance and release regression
 
+- Run equivalent tracked-corpus acceptance through Web Live Demo `/app` and Desktop/shared-source surfaces; record intentional native-only divergences explicitly before packaged/native UAT.
 - Run semantic/numeric/evidence parity, question relevance, chart-pattern recommendation, dashboard composition, narrative and export acceptance.
 - Add MB advisory regression proving deterministic rebuild, bounded local footprint, advisor provenance, domain/chart recall, abstention/prohibition recall, and the ability of deterministic planners to reject every MB candidate without changing governed numeric truth.
 - Add visual-regression cases that verify calm hierarchy/card budgets and semantic color/label behavior without requiring pixel identity with external references.
@@ -740,6 +829,9 @@ Representative cases:
 - Inventory coverage -> range/context-sensitive; both extremes may deserve review.
 
 Cross-domain corpus should progressively include current supported domains plus Hospitality, Healthcare/Pharma, Agriculture/Livestock/Aquaculture, Manufacturing and other Cross-Domain Semantic Expansion probes without claiming official support merely because test vocabulary exists.
+
+For each presentation acceptance case, record the **environment matrix** (`web_live_demo`, `desktop_shared_surface`, and `native_packaged` when applicable), viewport, tracked fixture identity, analytical state and any intentional native capability divergence. Shared product behavior must not silently pass on one host and drift on the other.
+
 ## 21. Hard invariants during implementation
 
 - Governed source values, aggregation semantics and evidence references must remain unchanged unless a separately reviewed correctness bug is found.
@@ -758,10 +850,15 @@ Cross-domain corpus should progressively include current supported domains plus 
 - Shared UI primitives must not reintroduce Card as the universal layout default.
 - External Frappe Books/Frappe UI study must remain principle/behavior translation; no framework migration, source copy or pixel-clone requirement is implied.
 - Chart variety is never an acceptance goal; semantic suitability and readability outrank decorative diversity.
+- More information must create more structure, not more cards; presentation density is solved with hierarchy/progressive disclosure, not infinite vertical append.
+- Full-scope Deep BA and selected-data BA Step 2 must not render simultaneously at full weight on one analysis surface.
+- Known IA defects must not be frozen as visual acceptance baselines merely because screenshots can be reproduced.
+- Web Live Demo `/app` and Desktop share the same product presentation/state architecture wherever capability exists; native-only differences must be explicit adapters or truthful unavailable states, never a second divergent UI.
+- A shared UI/UX phase is not accepted on web alone or desktop alone when both are expected to expose the same surface; environment parity is part of the phase gate.
 
 ## 22. Expected product architecture after refactor
 
-`Raw source -> Understanding + semantic MB -> Question/Perspective Intelligence -> governed question/metric authority -> governed analysis artifacts -> MB presentation advice -> deterministic Analysis Narrative / Visualization / Dashboard planners -> Chart Pattern Library + renderer -> Report/Presentation Intelligence -> @lightbi/ui design system + i18n boundary -> canvas-first UI + shared Evidence Inspector`
+`Raw source -> Understanding + semantic MB -> Question/Perspective Intelligence -> governed question/metric authority -> governed analysis artifacts -> MB presentation advice -> deterministic Analysis Narrative / Visualization / Dashboard planners -> Chart Pattern Library + renderer -> Report/Presentation Intelligence -> @lightbi/ui + i18n + Information Architecture/Density contract -> shared React product surfaces -> {Web Live Demo /app | Tauri/Desktop host} -> explicit native capability adapters`
 
 The desired product feeling is:
 
@@ -773,7 +870,7 @@ LightBI should guide the user from **what the data means** to **what question ma
 
 This document remains the refactor plan. The 2026-09-06 MB presentation-advisory foundation is now source-closed separately at product commit `4be593ae57b4b1385a833675dd4ea2349900d378`, but it is not wired into current BA/chart runtime selection. No NEXT generation, Production service, metric authority, domain-support pack or release artifact is changed by this planning update.
 
-Before DPR-0 implementation starts, reconcile the exact active product head/current Road-to-1.0 state and obtain owner execution instruction. Documentation work must continue to follow `docs/project-book/LIBRARY_RULES.md`.
+DPR-0 is active and owner-authorized. Broad visual-baseline freeze and screen migration are now gated by the multi-file terminal workflow convergence defined in §16A, followed by equivalent Web Live Demo `/app` and Desktop/shared-surface acceptance. Documentation work must continue to follow `docs/project-book/LIBRARY_RULES.md`.
 ## 24. Source bookmarks
 
 - [`../../../project-book/LIBRARY_RULES.md`](../../../project-book/LIBRARY_RULES.md) — documentation governance used for this plan.
