@@ -100,6 +100,8 @@ describe('InvestigationDeepAnalysis export boundary', () => {
       />,
     );
 
+    expect(screen.getByTestId('deep-analysis-surface').getAttribute('data-layout')).toBe('focused-investigation');
+    expect(screen.getByTestId('deep-analysis-export-surface').getAttribute('data-layout')).toBe('focused-investigation');
     expect(screen.getByTestId('filtered-deep-analysis-scope').textContent).toContain('Store = A');
     expect(screen.getByTestId('selected-subject-investigation')).toBeTruthy();
     const benchmark = screen.getByTestId('selected-subject-benchmark').textContent ?? '';

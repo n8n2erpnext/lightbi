@@ -141,7 +141,7 @@ export const InvestigationDeepAnalysis: React.FC<InvestigationDeepAnalysisProps>
   };
   return (
   <div className="fixed inset-0 z-40 flex justify-end bg-black/15 backdrop-blur-[1px]" onClick={onClose}>
-    <aside data-testid="deep-analysis-surface" data-layout="management-document" className="h-full w-full max-w-[1120px] overflow-y-auto border-l border-[var(--lb-divider)] bg-white" onClick={event => event.stopPropagation()}>
+    <aside data-testid="deep-analysis-surface" data-layout={filteredScope ? 'focused-investigation' : 'management-document'} className="h-full w-full max-w-[1120px] overflow-y-auto border-l border-[var(--lb-divider)] bg-white" onClick={event => event.stopPropagation()}>
       <div className="sticky top-0 z-10 flex items-start justify-between gap-4 border-b border-[var(--lb-divider)] bg-white/95 px-5 py-4 backdrop-blur"><div className="flex items-start gap-3"><button data-testid="deep-analysis-back" onClick={onClose} className="mt-0.5 inline-flex items-center gap-1.5 rounded-lg border border-black/10 bg-white px-3 py-2 text-xs font-semibold text-black/60 transition-colors hover:bg-black/[0.035] hover:text-black" title={t('Back to chart')}><ArrowLeft className="h-4 w-4" />{t('Back')}</button><div><div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-violet-600"><ClipboardCheck className="h-3.5 w-3.5" />{filteredScope ? t('Selected-subject investigation') : focusComparison ? 'Deep BA analysis · Focus' : t('Deep BA analysis')}</div><h2 className="mt-1 text-xl font-semibold text-[#202123]">{focusComparison && !filteredScope ? `${focusComparison.subject.displayLabel} · ${localize(action.opportunityName)}` : localize(action.opportunityName)}</h2><p className="mt-1 text-xs leading-5 text-black/50">{filteredScope ? t('This investigation is bounded to the selected evidence scope; the governed summary remains unchanged.') : focusComparison ? `Every Deep BA readout remains anchored to ${focusComparison.subject.displayLabel}; the full population is comparison evidence only.` : t('Explanation, governed evidence, caveats, drivers, and recommended actions for the decision angle currently shown in the chart.')}</p></div></div><button onClick={onClose} className="rounded-full border border-black/10 bg-white p-2 text-black/50 transition-colors hover:bg-black/[0.035] hover:text-black" title={t('Close analysis panel')}><X className="h-4 w-4" /></button></div>
       <div data-testid="deep-analysis-export-tools" className="border-b border-[var(--lb-divider)] bg-white px-5 py-2">
         <div className="flex flex-wrap items-center justify-end gap-2">
@@ -158,7 +158,7 @@ export const InvestigationDeepAnalysis: React.FC<InvestigationDeepAnalysisProps>
         </div>
         {exportError && <p role="alert" className="mt-2 text-xs text-red-600">{exportError}</p>}
       </div>
-      <div ref={exportRef} data-testid="deep-analysis-export-surface" data-layout="management-document" className="px-5 py-4 md:px-6">
+      <div ref={exportRef} data-testid="deep-analysis-export-surface" data-layout={filteredScope ? 'focused-investigation' : 'management-document'} className="px-5 py-4 md:px-6">
         <BAAnalysisAuthorityBanner context={analysisAuthority} scopeLabel={filteredScope ? 'Selected-subject investigation · selected rows' : focusComparison ? 'Focus · full source' : 'Deep BA'} />
         {filteredScope ? <>
           {selectedSubjectInvestigationPlan ? <div data-testid="filtered-deep-analysis-scope" className="mb-5">

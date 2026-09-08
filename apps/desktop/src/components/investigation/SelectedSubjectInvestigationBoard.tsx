@@ -14,77 +14,41 @@ export const SelectedSubjectInvestigationBoard: React.FC<{
   const { t, localize } = useUiLanguage();
   const overviewBySource = new Map(sourceOverviews.map(item => [item.sourceKey, item.overview]));
   const sourceLabel = (role: string | null, sourceName: string) => [role ? t(role) : '', sourceName].filter(Boolean).join(' · ');
-  const subjectBits = [
-    `${plan.subject.dimensionField} = ${plan.subject.label}`,
-    plan.subject.metricId ? t(plan.subject.metricId) : '',
-    plan.subject.period && plan.subject.period !== plan.subject.label ? plan.subject.period : '',
-    plan.subject.focusLabel ? `${t('Focus')}: ${plan.subject.focusLabel}` : '',
-  ].filter(Boolean);
+  const subjectBits = [`${plan.subject.dimensionField} = ${plan.subject.label}`, plan.subject.metricId ? t(plan.subject.metricId) : '', plan.subject.period && plan.subject.period !== plan.subject.label ? plan.subject.period : '', plan.subject.focusLabel ? `${t('Focus')}: ${plan.subject.focusLabel}` : ''].filter(Boolean);
+  const sectionClass = 'grid gap-3 border-t border-[var(--lb-divider)] px-5 py-4 md:grid-cols-[40px_minmax(0,1fr)] md:px-6';
 
-  return <section data-testid="selected-subject-investigation" className="border-y border-slate-200 bg-transparent">
-    <header className="px-5 py-5 md:px-6">
+  return <section data-testid="selected-subject-investigation" data-layout="focused-investigation" className="border-y border-[var(--lb-divider)] bg-transparent">
+    <header className="px-5 py-4 md:px-6">
       <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-violet-700"><Search className="h-4 w-4" />{t('Selected-subject investigation')}</div>
       <h4 className="mt-2 text-lg font-semibold text-slate-950">{subjectBits.join(' · ')}</h4>
       <p className="mt-1 max-w-3xl text-xs leading-5 text-slate-500">{t('This investigation is bounded to the selected evidence scope. Source rows remain separate and the governed summary is unchanged.')}</p>
     </header>
 
-    <div data-testid="selected-subject-main-answer" className="border-t border-slate-100 px-5 py-5 md:px-6">
-      <div className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">{t('Main answer')}</div>
-      {plan.primaryAnswer ? <div className="mt-2 border-l-2 border-violet-300 pl-4">
-        <div className="flex flex-wrap items-center gap-2"><strong className="text-base text-slate-950">{t(plan.primaryAnswer.title)}</strong><span className="rounded border border-violet-100 bg-violet-50 px-1.5 py-0.5 text-[9px] font-semibold uppercase text-violet-700">{t(plan.primaryAnswer.basis === 'evidence_backed' ? 'Evidence-backed' : plan.primaryAnswer.basis === 'hypothesis' ? 'Hypothesis' : 'Needs verification')}</span></div>
-        <p className="mt-2 text-sm leading-6 text-slate-800">{t(plan.primaryAnswer.statement)}</p>
-        <p className="mt-2 text-[10px] text-slate-500">{t('Source')}: {sourceLabel(plan.primaryAnswer.role, plan.primaryAnswer.sourceName)} · {formatValue(plan.primaryAnswer.evidenceRowCount, 'number', preferences)} {t('evidence rows')}</p>
-      </div> : <p className="mt-2 text-sm text-slate-500">{t('No evidence-backed selected-scope answer is available yet.')}</p>}
-    </div>
-
-    <section data-testid="selected-subject-benchmark" className="border-t border-slate-100 px-5 py-5 md:px-6">
-      <div className="flex items-center gap-2 text-sm font-semibold text-slate-900"><Compass className="h-4 w-4 text-blue-600" />{t('Benchmark & context')}</div>
-      <p className="mt-1 text-xs leading-5 text-slate-500">{t('Row coverage is context only; it does not create metric or comparison authority.')}</p>
-      <div className="mt-3 divide-y divide-slate-100 border-y border-slate-100">
-        {plan.sources.map(source => <div key={source.sourceKey} className="grid gap-2 py-3 text-xs md:grid-cols-[minmax(180px,1.2fr)_repeat(3,minmax(110px,.6fr))] md:items-center">
-          <div><strong className="text-slate-900">{sourceLabel(source.role, source.sourceName)}</strong>{(source.truncated || source.representativeSample) && <div className="mt-1 text-[10px] text-amber-700">{source.truncated ? t('Available row evidence is bounded.') : ''} {source.representativeSample ? t('BA uses a representative selected-scope sample.') : ''}</div>}</div>
-          <div><span className="block text-[10px] uppercase text-slate-400">{t('Selected')}</span><strong>{formatValue(source.selectedRowCount, 'number', preferences)}</strong></div>
-          <div><span className="block text-[10px] uppercase text-slate-400">{t(source.truncated ? 'Matched in available evidence' : 'Matched')}</span><strong>{formatValue(source.matchedRowCount, 'number', preferences)}</strong>{source.selectedOfMatchedRatio !== null && <span className="ml-1 text-[10px] text-slate-500">({formatValue(source.selectedOfMatchedRatio * 100, 'number', preferences)}%)</span>}</div>
-          <div><span className="block text-[10px] uppercase text-slate-400">{t(source.referenceScope === 'source_rows' ? 'Source rows' : source.truncated ? 'Retrieved chart-group rows' : 'Chart-group rows')}</span><strong>{formatValue(source.referenceRowCount, 'number', preferences)}</strong>{source.selectedOfReferenceRatio !== null && <span className="ml-1 text-[10px] text-slate-500">({formatValue(source.selectedOfReferenceRatio * 100, 'number', preferences)}%)</span>}</div>
-        </div>)}
+    <section data-testid="selected-subject-benchmark" data-section-number="01" className={sectionClass}>
+      <div className="text-[11px] font-semibold tracking-[0.14em] text-slate-400">01</div>
+      <div><div className="flex items-center gap-2 text-sm font-semibold text-slate-900"><Compass className="h-4 w-4 text-blue-600" />{t('Benchmark & context')}</div><p className="mt-1 text-xs leading-5 text-slate-500">{t('Row coverage is context only; it does not create metric or comparison authority.')}</p>
+        <div className="mt-3 divide-y divide-[var(--lb-divider)] border-y border-[var(--lb-divider)]">{plan.sources.map(source => <div key={source.sourceKey} className="grid gap-2 py-2.5 text-xs md:grid-cols-[minmax(180px,1.2fr)_repeat(3,minmax(110px,.6fr))] md:items-center"><div><strong className="text-slate-900">{sourceLabel(source.role, source.sourceName)}</strong>{(source.truncated || source.representativeSample) && <div className="mt-1 text-[10px] text-amber-700">{source.truncated ? t('Available row evidence is bounded.') : ''} {source.representativeSample ? t('BA uses a representative selected-scope sample.') : ''}</div>}</div><div><span className="block text-[10px] uppercase text-slate-400">{t('Selected')}</span><strong>{formatValue(source.selectedRowCount, 'number', preferences)}</strong></div><div><span className="block text-[10px] uppercase text-slate-400">{t(source.truncated ? 'Matched in available evidence' : 'Matched')}</span><strong>{formatValue(source.matchedRowCount, 'number', preferences)}</strong>{source.selectedOfMatchedRatio !== null && <span className="ml-1 text-[10px] text-slate-500">({formatValue(source.selectedOfMatchedRatio * 100, 'number', preferences)}%)</span>}</div><div><span className="block text-[10px] uppercase text-slate-400">{t(source.referenceScope === 'source_rows' ? 'Source rows' : source.truncated ? 'Retrieved chart-group rows' : 'Chart-group rows')}</span><strong>{formatValue(source.referenceRowCount, 'number', preferences)}</strong>{source.selectedOfReferenceRatio !== null && <span className="ml-1 text-[10px] text-slate-500">({formatValue(source.selectedOfReferenceRatio * 100, 'number', preferences)}%)</span>}</div></div>)}</div>
       </div>
     </section>
 
-    <section data-testid="selected-subject-source-synthesis" className="border-t border-slate-100 px-5 py-5 md:px-6">
-      <h5 className="text-sm font-semibold text-slate-900">{t(plan.sourceMode === 'parallel_sources' ? 'Parallel source evidence' : 'Selected-scope source evidence')}</h5>
-      <p className="mt-1 text-xs leading-5 text-slate-500">{t(plan.sourceMode === 'parallel_sources' ? 'LightBI synthesizes the presentation across sources while keeping every raw source and finding attributed separately.' : 'The selected-scope answer stays bound to this source and its retained evidence.')}</p>
-      <div className="mt-3 divide-y divide-slate-100 border-y border-slate-100">{plan.sources.map(source => <div key={source.sourceKey} className="py-3">
-        <div className="flex flex-wrap items-center justify-between gap-2"><strong className="text-xs text-slate-900">{sourceLabel(source.role, source.sourceName)}</strong><span className="text-[10px] text-slate-500">{formatValue(source.analysisRowCount, 'number', preferences)} {t('rows analyzed')}</span></div>
-        {source.primaryAnswer && <p className="mt-2 text-xs leading-5 text-slate-700">{t(source.primaryAnswer.statement)}</p>}
-        {source.keyDrivers.length > 0 && <ul className="mt-2 space-y-1 text-[11px] text-slate-600">{source.keyDrivers.slice(0, 2).map(driver => <li key={driver.findingId}>• {t(driver.statement)}</li>)}</ul>}
-        {source.contextDecomposition.length > 0 && <div className="mt-2 text-[10px] text-slate-500">{source.contextDecomposition.map(item => `${t(item.label)}: ${t(item.status)}`).join(' · ')}</div>}
-      </div>)}</div>
+    <section data-testid="selected-subject-main-answer" data-section-number="02" className={sectionClass}>
+      <div className="text-[11px] font-semibold tracking-[0.14em] text-slate-400">02</div>
+      <div><div className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">{t('Main answer')}</div>{plan.primaryAnswer ? <div className="mt-2 border-l-2 border-violet-300 pl-4"><div className="flex flex-wrap items-center gap-2"><strong className="text-base text-slate-950">{t(plan.primaryAnswer.title)}</strong><span className="rounded border border-violet-100 bg-violet-50 px-1.5 py-0.5 text-[9px] font-semibold uppercase text-violet-700">{t(plan.primaryAnswer.basis === 'evidence_backed' ? 'Evidence-backed' : plan.primaryAnswer.basis === 'hypothesis' ? 'Hypothesis' : 'Needs verification')}</span></div><p className="mt-2 text-sm leading-6 text-slate-800">{t(plan.primaryAnswer.statement)}</p><p className="mt-2 text-[10px] text-slate-500">{t('Source')}: {sourceLabel(plan.primaryAnswer.role, plan.primaryAnswer.sourceName)} · {formatValue(plan.primaryAnswer.evidenceRowCount, 'number', preferences)} {t('evidence rows')}</p></div> : <p className="mt-2 text-sm text-slate-500">{t('No evidence-backed selected-scope answer is available yet.')}</p>}</div>
     </section>
 
-    {(plan.nextActions.length > 0 || plan.followUpQuestions.length > 0) && <section data-testid="selected-subject-next-actions" className="border-t border-slate-100 px-5 py-5 md:px-6">
-      <h5 className="text-sm font-semibold text-slate-900">{t('What can be checked next?')}</h5>
-      <div className="mt-3 grid gap-3 lg:grid-cols-2">
-        {plan.nextActions.map(action => <article key={`${action.title}-${action.sourceKeys.join(':')}`} className="border-l border-slate-200 py-1 pl-3 text-xs"><strong className="text-slate-900">{t(action.title)}</strong><p className="mt-1 text-slate-700">{localize(action.action)}</p><p className="mt-1 text-[10px] text-slate-500">{t('Verify')}: {t(action.verification)} · {t('Sources')}: {action.sourceNames.join(', ')}</p></article>)}
-        {plan.followUpQuestions.map(item => <article key={item.question} className="border-l border-blue-200 py-1 pl-3 text-xs"><strong className="text-slate-900">{t(item.question)}</strong><p className="mt-1 text-slate-500">{t(item.rationale)} · {t('Sources')}: {item.sourceNames.join(', ')}</p></article>)}
-      </div>
-    </section>}
+    <section data-testid="selected-subject-source-synthesis" data-section-number="03" className={sectionClass}>
+      <div className="text-[11px] font-semibold tracking-[0.14em] text-slate-400">03</div>
+      <div><h5 className="text-sm font-semibold text-slate-900">{t(plan.sourceMode === 'parallel_sources' ? 'Parallel source evidence' : 'Selected-scope source evidence')}</h5><p className="mt-1 text-xs leading-5 text-slate-500">{t(plan.sourceMode === 'parallel_sources' ? 'LightBI synthesizes the presentation across sources while keeping every raw source and finding attributed separately.' : 'The selected-scope answer stays bound to this source and its retained evidence.')}</p><div className="mt-3 divide-y divide-[var(--lb-divider)]">{plan.sources.map(source => <div key={source.sourceKey} className="py-2.5"><div className="flex flex-wrap items-center justify-between gap-2"><strong className="text-xs text-slate-900">{sourceLabel(source.role, source.sourceName)}</strong><span className="text-[10px] text-slate-500">{formatValue(source.analysisRowCount, 'number', preferences)} {t('rows analyzed')}</span></div>{source.primaryAnswer && <p className="mt-1.5 text-xs leading-5 text-slate-700">{t(source.primaryAnswer.statement)}</p>}{source.keyDrivers.length > 0 && <ul className="mt-1.5 space-y-1 text-[11px] text-slate-600">{source.keyDrivers.slice(0, 2).map(driver => <li key={driver.findingId}>• {t(driver.statement)}</li>)}</ul>}{source.contextDecomposition.length > 0 && <div className="mt-1.5 text-[10px] text-slate-500">{source.contextDecomposition.map(item => `${t(item.label)}: ${t(item.status)}`).join(' · ')}</div>}</div>)}</div></div>
+    </section>
 
-    {plan.unknowns.length > 0 && <section data-testid="selected-subject-unknowns" className="border-t border-slate-100 px-5 py-5 md:px-6"><h5 className="text-sm font-semibold text-slate-900">{t('What is still unknown?')}</h5><div className="mt-3 space-y-2">{plan.unknowns.map(item => <div key={`${item.label}-${item.sourceKeys.join(':')}`} className="text-xs"><strong className="text-amber-900">{t(item.label)}</strong><p className="mt-1 text-amber-800">{t(item.impact)}</p><p className="mt-1 text-[10px] text-slate-500">{t('Missing')}: {item.missingSignals.map(signal => t(signal)).join(', ')} · {t('Sources')}: {item.sourceNames.join(', ')}</p></div>)}</div></section>}
+    {plan.unknowns.length > 0 && <section data-testid="selected-subject-unknowns" data-section-number="04" className={sectionClass}><div className="text-[11px] font-semibold tracking-[0.14em] text-slate-400">04</div><div><h5 className="text-sm font-semibold text-slate-900">{t('What is still unknown?')}</h5><div className="mt-2 divide-y divide-[var(--lb-divider)]">{plan.unknowns.map(item => <div key={`${item.label}-${item.sourceKeys.join(':')}`} className="py-2 text-xs"><strong className="text-amber-900">{t(item.label)}</strong><p className="mt-1 text-amber-800">{t(item.impact)}</p><p className="mt-1 text-[10px] text-slate-500">{t('Missing')}: {item.missingSignals.map(signal => t(signal)).join(', ')} · {t('Sources')}: {item.sourceNames.join(', ')}</p></div>)}</div></div></section>}
 
-    <div className="border-t border-slate-100 px-5 py-4 md:px-6">
-      <div className="flex items-center gap-2 text-[11px] font-semibold text-emerald-800"><ShieldCheck className="h-4 w-4" />{t('Source-separation policy')}</div>
-      <p className="mt-1 text-[10px] leading-4 text-slate-500">{t('Selected rows may change this investigation only. They do not rewrite the governed summary, authorize a cross-source join, or strengthen Micro Brain authority.')}</p>
-    </div>
+    {(plan.nextActions.length > 0 || plan.followUpQuestions.length > 0) && <section data-testid="selected-subject-next-actions" data-section-number="05" className={sectionClass}><div className="text-[11px] font-semibold tracking-[0.14em] text-slate-400">05</div><div><h5 className="text-sm font-semibold text-slate-900">{t('What can be checked next?')}</h5><div className="mt-2 divide-y divide-[var(--lb-divider)]">{plan.nextActions.map(action => <article key={`${action.title}-${action.sourceKeys.join(':')}`} className="py-2 text-xs"><strong className="text-slate-900">{t(action.title)}</strong><p className="mt-1 text-slate-700">{localize(action.action)}</p><p className="mt-1 text-[10px] text-slate-500">{t('Verify')}: {t(action.verification)} · {t('Sources')}: {action.sourceNames.join(', ')}</p></article>)}{plan.followUpQuestions.map(item => <article key={item.question} className="py-2 text-xs"><strong className="text-slate-900">{t(item.question)}</strong><p className="mt-1 text-slate-500">{t(item.rationale)} · {t('Sources')}: {item.sourceNames.join(', ')}</p></article>)}</div></div></section>}
 
-    <div className="border-t border-slate-100">
-      {plan.sources.map(source => {
-        const overview = overviewBySource.get(source.sourceKey);
-        if (!overview || !source.narrativePlan.primaryAnswer) return null;
-        return <details key={source.sourceKey} className="group px-5 py-4 md:px-6" data-testid={`selected-subject-source-narrative-${source.sourceKey}`}>
-          <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-xs font-semibold text-slate-700"><span>{t('Detailed source narrative')} · {sourceLabel(source.role, source.sourceName)}</span><ChevronDown className="h-4 w-4 text-slate-400 transition-transform group-open:rotate-180" /></summary>
-          <div className="mt-4"><AnalysisNarrativeBoard overview={overview} plan={source.narrativePlan} /></div>
-        </details>;
-      })}
-    </div>
+    <details data-testid="selected-subject-evidence-details" className="group border-t border-[var(--lb-divider)] px-5 py-3 md:px-6">
+      <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-xs font-semibold text-slate-700"><span>{t('Supporting evidence & checks')}</span><ChevronDown className="h-4 w-4 text-slate-400 transition-transform group-open:rotate-180" /></summary>
+      <div className="mt-3"><div className="flex items-center gap-2 text-[11px] font-semibold text-emerald-800"><ShieldCheck className="h-4 w-4" />{t('Source-separation policy')}</div><p className="mt-1 text-[10px] leading-4 text-slate-500">{t('Selected rows may change this investigation only. They do not rewrite the governed summary, authorize a cross-source join, or strengthen Micro Brain authority.')}</p></div>
+      <div className="mt-3 divide-y divide-[var(--lb-divider)]">{plan.sources.map(source => { const overview = overviewBySource.get(source.sourceKey); if (!overview || !source.narrativePlan.primaryAnswer) return null; return <details key={source.sourceKey} className="group/source py-3" data-testid={`selected-subject-source-narrative-${source.sourceKey}`}><summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-xs font-semibold text-slate-700"><span>{t('Detailed source narrative')} · {sourceLabel(source.role, source.sourceName)}</span><ChevronDown className="h-4 w-4 text-slate-400 transition-transform group-open/source:rotate-180" /></summary><div className="mt-3"><AnalysisNarrativeBoard overview={overview} plan={source.narrativePlan} /></div></details>; })}</div>
+    </details>
   </section>;
 };

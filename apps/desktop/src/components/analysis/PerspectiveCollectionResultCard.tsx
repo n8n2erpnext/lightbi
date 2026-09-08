@@ -533,14 +533,14 @@ export const PerspectiveCollectionResultCard: React.FC<{
 
   if (analysisView === 'deep_selected' && chartSelection) {
     return (
-      <section data-testid="perspective-collection-result" className="overflow-hidden rounded-2xl border border-violet-100 bg-white shadow-sm">
-        <div data-testid="collection-deep-selected-surface">
-          <div className="flex items-start gap-3 border-b border-slate-100 bg-slate-950 px-5 py-5 text-white md:px-6"><button data-testid="collection-deep-selected-back" type="button" onClick={() => setAnalysisView('evidence_drill')} className="mt-0.5 inline-flex items-center gap-1.5 rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-xs font-semibold text-white hover:bg-white/15"><ArrowLeft className="h-4 w-4" />{t('Back')}</button><div><p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-violet-300">{t('Selected-subject investigation')}</p><h3 className="mt-1 text-lg font-semibold">{chartSelection.period} · {displayMetricLabel(chartSelection.metricId)}</h3><p className="mt-1 text-xs leading-5 text-slate-300">{t('This surface investigates only the selected evidence scope; source evidence remains separate and the governed summary remains unchanged.')}</p></div></div>
+      <section data-testid="perspective-collection-result" className="bg-white">
+        <div data-testid="collection-deep-selected-surface" data-layout="focused-investigation">
+          <header className="flex items-start gap-3 border-y border-[var(--lb-divider)] px-5 py-4 md:px-6"><button data-testid="collection-deep-selected-back" type="button" onClick={() => setAnalysisView('evidence_drill')} className="mt-0.5 inline-flex items-center gap-1.5 rounded-lg border border-black/10 bg-white px-3 py-2 text-xs font-semibold text-black/60 hover:bg-black/[0.035]"><ArrowLeft className="h-4 w-4" />{t('Back')}</button><div><p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-violet-700">{t('Selected-subject investigation')}</p><h3 className="mt-1 text-lg font-semibold text-slate-950">{chartSelection.period} · {displayMetricLabel(chartSelection.metricId)}</h3><p className="mt-1 max-w-4xl text-xs leading-5 text-slate-500">{t('This surface investigates only the selected evidence scope; source evidence remains separate and the governed summary remains unchanged.')}</p></div></header>
           {renderCollectionActionBar(true)}
           {exportError && <p role="alert" className="border-t border-red-100 bg-red-50 px-5 py-2 text-xs text-red-700 md:px-6">{exportError}</p>}
-          <div ref={deepExportRef} data-testid="collection-deep-analysis-export-surface" className="p-5 md:p-6">
-            <div data-testid="collection-subset-deep-ba" className="space-y-5">
-              {selectedSubjectInvestigationPlan ? <SelectedSubjectInvestigationBoard plan={selectedSubjectInvestigationPlan} sourceOverviews={subsetOverviews.map(({ source, overview }) => ({ sourceKey: `${source.period}:${source.role}:${source.sourceName}`, overview }))} preferences={preferences} /> : <p className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800">{t('No eligible selected evidence is available for this investigation.')}</p>}
+          <div ref={deepExportRef} data-testid="collection-deep-analysis-export-surface" data-layout="focused-investigation" className="px-5 py-4 md:px-6">
+            <div data-testid="collection-subset-deep-ba">
+              {selectedSubjectInvestigationPlan ? <SelectedSubjectInvestigationBoard plan={selectedSubjectInvestigationPlan} sourceOverviews={subsetOverviews.map(({ source, overview }) => ({ sourceKey: `${source.period}:${source.role}:${source.sourceName}`, overview }))} preferences={preferences} /> : <p className="border-y border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-800">{t('No eligible selected evidence is available for this investigation.')}</p>}
             </div>
           </div>
         </div>

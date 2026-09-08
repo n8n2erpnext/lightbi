@@ -97,7 +97,7 @@ describe('PerspectiveCollectionResultCard selected-data analysis', () => {
     expect(screen.queryByTestId('collection-decision-workspace')).toBeNull();
 
     fireEvent.click(screen.getByRole('button', { name: /Investigate selected evidence/i }));
-    expect(screen.getByTestId('collection-deep-selected-surface')).toBeTruthy();
+    expect(screen.getByTestId('collection-deep-selected-surface').getAttribute('data-layout')).toBe('focused-investigation');
     expect(screen.getByTestId('collection-subset-deep-ba')).toBeTruthy();
     expect(screen.queryByTestId('collection-chart-drill')).toBeNull();
     expect(screen.getByTestId('collection-deep-export-image')).toBeTruthy();

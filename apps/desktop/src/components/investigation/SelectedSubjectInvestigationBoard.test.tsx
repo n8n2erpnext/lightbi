@@ -24,7 +24,14 @@ describe('SelectedSubjectInvestigationBoard', () => {
     ];
     const plan = buildSelectedSubjectInvestigationPlan({ dimensionField: 'reporting_period', label: '2026-06', metricId: 'gross_profit' }, inputs, { advisor: noAdvice as any });
     render(<SelectedSubjectInvestigationBoard plan={plan} sourceOverviews={[{ sourceKey: 'sales', overview: sales }, { sourceKey: 'accounting', overview: accounting }]} preferences={DEFAULT_PREFERENCES} />);
-    expect(screen.getByTestId('selected-subject-investigation')).toBeTruthy();
+    const investigation = screen.getByTestId('selected-subject-investigation');
+    expect(investigation.getAttribute('data-layout')).toBe('focused-investigation');
+    const benchmarkNode = screen.getByTestId('selected-subject-benchmark');
+    const answerNode = screen.getByTestId('selected-subject-main-answer');
+    const synthesisNode = screen.getByTestId('selected-subject-source-synthesis');
+    expect(benchmarkNode.compareDocumentPosition(answerNode) & Node.DOCUMENT_POSITION_FOLLOWING).not.toBe(0);
+    expect(answerNode.compareDocumentPosition(synthesisNode) & Node.DOCUMENT_POSITION_FOLLOWING).not.toBe(0);
+    expect(screen.getByTestId('selected-subject-evidence-details')).not.toHaveProperty('open', true);
     expect(screen.getByTestId('selected-subject-main-answer').textContent).toContain('accounting selected answer');
     expect(screen.getByTestId('selected-subject-benchmark').textContent).toContain('sales.xlsx');
     expect(screen.getByTestId('selected-subject-benchmark').textContent).toContain('accounting.xlsx');

@@ -101,8 +101,8 @@ test('DPR-8 Deep BA reads as a numbered management document instead of a card st
   const single = await read('apps/desktop/src/components/investigation/SingleSourceBAOverviewCard.tsx');
   const comparison = await read('apps/desktop/src/components/analysis/BusinessComparisonBriefCard.tsx');
   const multi = await read('apps/desktop/src/components/analysis/PerspectiveCollectionResultCard.tsx');
-  assert.match(shell, /data-testid="deep-analysis-surface" data-layout="management-document"/);
-  assert.match(shell, /data-testid="deep-analysis-export-surface" data-layout="management-document"/);
+  assert.match(shell, /data-testid="deep-analysis-surface" data-layout=\{filteredScope \? 'focused-investigation' : 'management-document'\}/);
+  assert.match(shell, /data-testid="deep-analysis-export-surface" data-layout=\{filteredScope \? 'focused-investigation' : 'management-document'\}/);
   assert.match(shell, /data-testid="deep-ba-legacy-brief-details"/);
   assert.match(narrative, /data-testid="deep-ba-investigation" data-layout="management-document"/);
   assert.match(narrative, /data-testid="deep-ba-management-section-01" data-section-number="01"/);
@@ -113,4 +113,21 @@ test('DPR-8 Deep BA reads as a numbered management document instead of a card st
   for (const number of ['01', '02', '03', '04', '05']) assert.match(comparison, new RegExp(`data-section-number="${number}"`));
   assert.doesNotMatch(comparison, /rounded-xl border p-4 shadow-sm/);
   assert.match(multi, /data-testid="collection-deep-perspective-surface" data-layout="management-document"/);
+});
+
+test('DPR-8 BA Step 2 is a focused selected-subject investigation, not a second full report', async () => {
+  const board = await read('apps/desktop/src/components/investigation/SelectedSubjectInvestigationBoard.tsx');
+  const single = await read('apps/desktop/src/components/investigation/InvestigationDeepAnalysis.tsx');
+  const multi = await read('apps/desktop/src/components/analysis/PerspectiveCollectionResultCard.tsx');
+  assert.match(board, /data-layout="focused-investigation"/);
+  const order = ['selected-subject-benchmark', 'selected-subject-main-answer', 'selected-subject-source-synthesis', 'selected-subject-unknowns', 'selected-subject-next-actions', 'selected-subject-evidence-details'].map(marker => board.indexOf(marker));
+  assert.ok(order.every(index => index >= 0), 'Step 2 source must retain benchmark, answer, synthesis, unknown, next-action and evidence regions');
+  assert.deepEqual([...order].sort((a, b) => a - b), order, 'Step 2 must progress context -> answer -> components -> unknowns -> next -> evidence');
+  assert.doesNotMatch(board, /selected-subject-next-actions[\s\S]{0,500}lg:grid-cols-2/);
+  assert.match(single, /data-layout=\{filteredScope \? 'focused-investigation' : 'management-document'\}/);
+  const selectedStart = multi.indexOf("analysisView === 'deep_selected'");
+  const selectedEnd = multi.indexOf("analysisView === 'deep_perspective'", selectedStart);
+  const selectedBlock = multi.slice(selectedStart, selectedEnd);
+  assert.match(selectedBlock, /data-layout="focused-investigation"/);
+  assert.doesNotMatch(selectedBlock, /bg-slate-950|rounded-2xl[^\n]*shadow-sm/);
 });
