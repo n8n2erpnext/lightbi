@@ -1883,3 +1883,11 @@ R1-P0 documentation/integrity closure verified 1,243 local links with zero missi
 - Immutable NEXT root `/home/ubuntu/services/lightbi-next-web/dpr8-understanding-900d7aa` is live on 5273. Gateway `638133 -> 729433`; Core `3376963`, CP `2346997`, manager `943`, Trust `12020/3817149/1505209` unchanged; NetBird/external `/app` HTTP 200; Production untouched.
 - Final live Chromium acceptance PASS: four ordered regions; perspective rows `40/40/40/40px`; three vertical secondary questions; semantic/technical evidence collapsed; primary visible; CTA `852–896px` in 900px viewport at `scrollY=0`; sidebar `224px/56px`; `pageerror=[]`. Temporary harness removed.
 - DPR-8 remains ACTIVE. Next bounded target is Home / New Brief because it is the first remaining unmigrated target listed in plan section 17.
+
+## 2026-09-08 — DPR-8 Home / New Brief source/live checkpoint
+
+- Product `eeaf4464da4d28306edf4f4daa095655a94c0a21` keeps the question prompt as the Home command surface and suggestions as compact pills while replacing the three source-entry cards with one vertical row stack and Session History card nesting with a flat divider/list section. Empty/retry states are inline; intake and saved-session behaviors are unchanged.
+- Focused verification PASS: Home history `2/2`, i18n `3/3`, DPR-8 contract `5/5`, TypeScript/diff-check, source-size `545`; final release-authoritative production build `3822` + governed `11 files / 44 tests`, marker `release_1_0_suite=passed`; exact-SHA build `3822` PASS.
+- Immutable NEXT root `/home/ubuntu/services/lightbi-next-web/dpr8-home-eeaf446` is live on 5273. Gateway `729433 -> 804962`; Core `3376963`, CP `2346997`, manager `943`, Trust `12020/3817149/1505209` unchanged; NetBird/external `/app` HTTP 200; Production untouched.
+- Final live Chromium acceptance PASS: command `179.5–259.5px`; suggestions `275.5–317.5px`; three vertical source rows; six real session-history rows in a flat list; no horizontal overflow at 1440px or 720px; `pageerror=[]`. Full history is intentionally allowed below the fold because section 17 requires calm hierarchy, not hiding useful session history.
+- DPR-8 remains ACTIVE. Next bounded target per plan section 17: Decision Workspace; Deep BA and BA Step 2 remain later DPR-8 presentation work.
