@@ -1891,3 +1891,12 @@ R1-P0 documentation/integrity closure verified 1,243 local links with zero missi
 - Immutable NEXT root `/home/ubuntu/services/lightbi-next-web/dpr8-home-eeaf446` is live on 5273. Gateway `729433 -> 804962`; Core `3376963`, CP `2346997`, manager `943`, Trust `12020/3817149/1505209` unchanged; NetBird/external `/app` HTTP 200; Production untouched.
 - Final live Chromium acceptance PASS: command `179.5–259.5px`; suggestions `275.5–317.5px`; three vertical source rows; six real session-history rows in a flat list; no horizontal overflow at 1440px or 720px; `pageerror=[]`. Full history is intentionally allowed below the fold because section 17 requires calm hierarchy, not hiding useful session history.
 - DPR-8 remains ACTIVE. Next bounded target per plan section 17: Decision Workspace; Deep BA and BA Step 2 remain later DPR-8 presentation work.
+
+## 2026-09-08 — DPR-8 Decision Workspace answer-first source/live checkpoint
+
+- Product `73506f0ef8f1a656d592df6031399106a7de3ffe` migrates both single-file and multi-file Decision Workspace to the section-14 answer-first hierarchy without changing planners, metrics, evidence, Focus or MB authority. Single-file keeps a key-number region conditional on actual canonical full-scope authority; multi-file reuses existing Key attention/largest-movement evidence.
+- Focus BA answer and next action are separated; Focus supporting context is flattened to divider/list structure. The multi-file `decision_workspace -> evidence_drill -> deep_perspective | deep_selected` state machine and exact source-separation behavior are unchanged.
+- Verification PASS: DPR-8 contract `6/6`; focused `16/16`; canonical Investigation `19/19`; broad `14 files / 64 tests`; TypeScript/diff-check; source-size `545`; release build `3822` + governed `11 files / 45 tests`; `release_1_0_suite=passed`; exact-SHA build `3822` PASS.
+- Immutable NEXT `/home/ubuntu/services/lightbi-next-web/dpr8-decision-73506f0` is live on 5273. Gateway `804962 -> 961459`; Core `3376963`, CP `2346997`, manager `943`, Trust containers/parents unchanged; NetBird/external `/app` HTTP 200; Production untouched.
+- Final live Chromium acceptance PASSed tracked six-file multi-source and sanitized single-file inventory. Both preserve DOM answer-first order, default-collapsed Evidence, no overflow/pageerror; multi Evidence Drill Back round-trip PASS. Single-file correctly omitted an unproven key number.
+- DPR-8 remains ACTIVE. Next bounded target per section 17: Deep BA, then BA Step 2.
