@@ -2985,3 +2985,15 @@ Single-file `AnalysisNarrativeBoard` and `SingleSourceBAOverviewCard` preserve t
 Verification is green: DPR-8 contract `7/7`; focused Deep BA `6/6`; broad regression `12 files / 56 tests`; TypeScript/i18n/diff-check PASS; source-size `545` modules. Release-authoritative PASSed build `3822` + governed regression `11 files / 45 tests`, marker `release_1_0_suite=passed`; exact-SHA rebuild PASSed. Immutable NEXT `/home/ubuntu/services/lightbi-next-web/dpr8-deep-ba-d7ea5ce` is live on gateway 5273 (`961459 -> 1079822`) with Core `3376963`, CP `2346997`, manager `943` and Trust container/launcher PIDs unchanged. Live Chromium acceptance PASSed `2/2` in `33.6s`, with no horizontal overflow/page errors and correct Back paths. Production remains untouched.
 
 DPR-8 remains **ACTIVE**. Per section 17, BA Step 2 / selected-subject investigation is the final remaining bounded presentation target before DPR-8 may close.
+
+## 144. 2026-09-08 DPR-8 closes with focused BA Step 2; DPR-9 is active
+
+Product `6d5185085c7c1c31ae0e427dd2d79ecf2aa93dd9` completes BA Step 2 / selected-subject presentation and closes DPR-8. Step 2 is intentionally shorter and narrower than Deep BA: benchmark/context first, one attributed selected-scope answer, source-separated synthesis, unknowns, next checks/actions, then collapsed detailed evidence. Single-file filtered scope and multi-file `deep_selected` use the same focused-investigation grammar and preserve their existing Back state.
+
+Authority did not move. Selected rows can change only the selected-subject investigation; they cannot rewrite the governed summary, authorize a cross-source join, turn benchmark ratios into metric authority, infer Focus identity across sources, or let Micro Brain strengthen evidence/decision authority. Detailed source narratives remain available under progressive disclosure.
+
+Verification is release-green: DPR-8 contract `8/8`, i18n guard PASS, source-size `545` modules, production build `3822`, governed regression `11 files / 45 tests`, marker `release_1_0_suite=passed`, plus exact-SHA rebuild `3822` PASS. Final live NEXT Chromium acceptance PASSed single tracked MB-6 selected-row Step 2 and multi six-file selected-evidence Step 2 `2/2` in `33.6s`, with correct Back paths, default-collapsed evidence, no horizontal overflow and no page errors.
+
+Immutable NEXT root `/home/ubuntu/services/lightbi-next-web/dpr8-step2-6d51850` is live on gateway 5273 (`1079822 -> 1211805`). Core `3376963`, Control Plane `2346997`, manager `943` and Trust container/launcher PIDs remained unchanged; NetBird/external `/app` return HTTP 200; Production and 51xx were untouched.
+
+DPR-8 is **CLOSED**. DPR-9 **Report Page Model + true export pagination** is **ACTIVE**. Its first job is to define the shared screen/PNG/PDF page plan and semantic keep-together/page-break rules without re-deriving the closed analytical authority.

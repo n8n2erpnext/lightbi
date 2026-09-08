@@ -1908,3 +1908,11 @@ R1-P0 documentation/integrity closure verified 1,243 local links with zero missi
 - Immutable NEXT `/home/ubuntu/services/lightbi-next-web/dpr8-deep-ba-d7ea5ce` is live on 5273. Gateway `961459 -> 1079822`; Core `3376963`, CP `2346997`, manager `943`, Trust containers/launchers unchanged; NetBird/external `/app` HTTP 200; Production untouched.
 - Final live Chromium acceptance PASS `2/2` in `33.6s`: tracked multi Deep BA sections `01–05`, tracked single Deep BA management document, Back paths restored Decision Workspace, no overflow/pageerror.
 - DPR-8 remains ACTIVE. BA Step 2 is the final remaining bounded target before phase closure.
+
+## 2026-09-08 — DPR-8 BA Step 2 source/live closure; DPR-9 active
+
+- Product `6d5185085c7c1c31ae0e427dd2d79ecf2aa93dd9` changes BA Step 2 presentation only: `focused-investigation` hierarchy for single filtered scope and multi `deep_selected`, with benchmark/context -> attributed answer -> source synthesis -> unknowns -> next checks -> collapsed evidence. DPR-4 authority, exact source separation, governed-summary invariance, Focus fail-closed behavior and MB non-escalation remain unchanged.
+- Verification PASS: DPR-8 contract `8/8`; i18n; source-size `545`; release-authoritative build `3822`; governed `11 files / 45 tests`; `release_1_0_suite=passed`; exact committed-SHA build `3822` PASS.
+- Candidate browser acceptance PASSed tracked MB-6 single selected-row Step 2 and canonical six-file multi Step 2. Final live NEXT acceptance PASS `2/2` in `33.6s`: both focused layouts, correct section order, evidence default closed, correct Back state, no overflow/pageerror.
+- Immutable NEXT `/home/ubuntu/services/lightbi-next-web/dpr8-step2-6d51850` is live on 5273. Gateway `1079822 -> 1211805`; Core `3376963`, CP `2346997`, manager `943`, Trust container/launchers unchanged; NetBird/external `/app` HTTP 200; Production/51xx untouched.
+- DPR-8 CLOSED. DPR-9 Report Page Model + true export pagination ACTIVE. Next: read the existing export/report paths and define the shared page-plan + semantic break/keep-together contract before implementation.
