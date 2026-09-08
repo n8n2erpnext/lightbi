@@ -3,6 +3,8 @@ import { AlertTriangle, BarChart3, CheckCircle2, ChevronDown, Lightbulb, Search,
 import type { SingleSourceBAOverview, SingleSourceKpi } from '../../lib/single-source-ba-overview';
 import type { DisplayPreferences } from '../../stores/display-preferences-store';
 import { pickUiText, useUiLanguage, type UiLanguage } from '../../lib/ui-language';
+import { createEvidenceInspectorModel, projectDeepBAFindingProvenance } from '../../lib/presentation-provenance';
+import { EvidenceInspector } from '../analysis/EvidenceInspector';
 
 function overviewText(language: UiLanguage, value: string): string {
   return pickUiText(language, value);
@@ -99,6 +101,7 @@ export const SingleSourceBAOverviewCard: React.FC<{
                   {item.priorityScore !== undefined && <span className="text-[10px] text-slate-500">{t('Priority score')}: {item.priorityScore}</span>}
                 </div>
                 <p className="mt-2 text-xs leading-5 text-slate-700">{t(item.statement)}</p>
+                <EvidenceInspector model={createEvidenceInspectorModel(projectDeepBAFindingProvenance(item, overview.investigation?.analysisAuthority ?? overview.analysisAuthority ?? null, { usesDomainContext: layer.id === 'why' }))} />
                 {item.evidenceRows.length > 0 && <details className="mt-2">
                   <summary className="cursor-pointer text-[10px] font-semibold text-blue-700">{t('View evidence rows')} ({item.evidenceRows.length})</summary>
                   <div className="mt-2 space-y-1">{item.evidenceRows.map(row => <div key={`${item.id}-${row.rowIndex}`} className="rounded bg-slate-50 px-2 py-1.5 text-[10px] text-slate-600"><span className="font-semibold">{t(row.label)}</span> · {Object.entries(row.values).map(([field, value]) => `${field}=${String(value ?? '∅')}`).join(' · ')}</div>)}</div>
